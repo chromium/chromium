@@ -11,6 +11,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "components/policy/core/common/schema.h"
 #include "components/policy/core/common/schema_internal.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -199,12 +200,12 @@ void TestSchemaValidationHelper(const std::string& source,
 
 void TestSchemaValidationWithPath(Schema schema,
                                   const base::Value& value,
-                                  const std::string& expected_failure_path) {
-  std::string error_path = "NOT_SET";
+                                  PolicyErrorPath expected_failure_path) {
+  PolicyErrorPath error_path;
   std::string error;
 
   bool returned = schema.Validate(value, SCHEMA_STRICT, &error_path, &error);
-  ASSERT_FALSE(returned) << error_path;
+  ASSERT_FALSE(returned) << error_path.size();
   EXPECT_EQ(error_path, expected_failure_path);
 }
 
@@ -794,7 +795,7 @@ TEST(SchemaTest, Validate) {
                        SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY, true);
   TestSchemaValidation(schema, bundle, SCHEMA_ALLOW_UNKNOWN_WITHOUT_WARNING,
                        true);
-  TestSchemaValidationWithPath(schema, bundle, "");
+  TestSchemaValidationWithPath(schema, bundle, {});
   bundle.RemoveKey("boom");
 
   // Invalid top level property.
@@ -805,7 +806,7 @@ TEST(SchemaTest, Validate) {
                        SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY, false);
   TestSchemaValidation(schema, bundle, SCHEMA_ALLOW_UNKNOWN_WITHOUT_WARNING,
                        false);
-  TestSchemaValidationWithPath(schema, bundle, "Boolean");
+  TestSchemaValidationWithPath(schema, bundle, {"Boolean"});
   bundle.SetBoolKey("Boolean", true);
 
   // Tests on ObjectOfObject.
@@ -822,7 +823,7 @@ TEST(SchemaTest, Validate) {
                          SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY, true);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN_WITHOUT_WARNING,
                          true);
-    TestSchemaValidationWithPath(subschema, root, "Object");
+    TestSchemaValidationWithPath(subschema, root, {"Object"});
     root.RemovePath("Object.three");
 
     // Invalid property.
@@ -833,7 +834,7 @@ TEST(SchemaTest, Validate) {
                          SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY, false);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN_WITHOUT_WARNING,
                          false);
-    TestSchemaValidationWithPath(subschema, root, "Object.one");
+    TestSchemaValidationWithPath(subschema, root, {"Object", "one"});
     root.RemovePath("Object.one");
   }
 
@@ -854,7 +855,7 @@ TEST(SchemaTest, Validate) {
                          SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY, true);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN_WITHOUT_WARNING,
                          true);
-    TestSchemaValidationWithPath(subschema, root, "items[0]");
+    TestSchemaValidationWithPath(subschema, root, {0});
     root_list.erase(root_list.end() - 1);
 
     // Invalid property.
@@ -867,7 +868,7 @@ TEST(SchemaTest, Validate) {
                          SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY, true);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN_WITHOUT_WARNING,
                          false);
-    TestSchemaValidationWithPath(subschema, root, "items[0].two");
+    TestSchemaValidationWithPath(subschema, root, {0, "two"});
   }
 
   // Tests on ObjectOfArray.
@@ -896,7 +897,7 @@ TEST(SchemaTest, Validate) {
                          SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY, true);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN_WITHOUT_WARNING,
                          false);
-    TestSchemaValidationWithPath(subschema, root, "List.items[1]");
+    TestSchemaValidationWithPath(subschema, root, {"List", 1});
   }
 
   // Tests on ArrayOfObjectOfArray.
@@ -926,7 +927,7 @@ TEST(SchemaTest, Validate) {
                          SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY, true);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN_WITHOUT_WARNING,
                          false);
-    TestSchemaValidationWithPath(subschema, root, "items[0].List.items[1]");
+    TestSchemaValidationWithPath(subschema, root, {0, "List", 1});
   }
 
   // Tests on StringWithPattern.

@@ -54,16 +54,21 @@ absl::optional<std::string> GetSubkeyString(const base::Value& dict,
                                             const std::string& policy,
                                             const std::string& subkey) {
   const base::Value* policy_value = dict.FindKey(subkey);
+
   if (!policy_value) {
-    errors->AddError(policy, subkey, IDS_POLICY_NOT_SPECIFIED_ERROR);
+    errors->AddError(policy, IDS_POLICY_NOT_SPECIFIED_ERROR,
+                     PolicyErrorPath{subkey});
     return absl::nullopt;
   }
   if (!policy_value->is_string()) {
-    errors->AddError(policy, subkey, IDS_POLICY_TYPE_ERROR, "string");
+    errors->AddError(policy, IDS_POLICY_TYPE_ERROR,
+                     base::Value::GetTypeName(base::Value::Type::STRING),
+                     PolicyErrorPath{subkey});
     return absl::nullopt;
   }
   if (policy_value->GetString().empty()) {
-    errors->AddError(policy, subkey, IDS_POLICY_NOT_SPECIFIED_ERROR);
+    errors->AddError(policy, IDS_POLICY_NOT_SPECIFIED_ERROR,
+                     PolicyErrorPath{subkey});
     return absl::nullopt;
   }
   return policy_value->GetString();
@@ -168,14 +173,16 @@ bool ExternalDataPolicyHandler::CheckPolicySettings(
 
   const GURL url(url_string.value());
   if (!url.is_valid()) {
-    errors->AddError(policy, kSubkeyURL, IDS_POLICY_INVALID_URL_ERROR);
+    errors->AddError(policy, IDS_POLICY_INVALID_URL_ERROR,
+                     PolicyErrorPath{kSubkeyURL});
     return false;
   }
 
   std::vector<uint8_t> hash;
   if (!base::HexStringToBytes(hash_string.value(), &hash) ||
       hash.size() != crypto::kSHA256Length) {
-    errors->AddError(policy, kSubkeyHash, IDS_POLICY_INVALID_HASH_ERROR);
+    errors->AddError(policy, IDS_POLICY_INVALID_HASH_ERROR,
+                     PolicyErrorPath{kSubkeyHash});
     return false;
   }
 

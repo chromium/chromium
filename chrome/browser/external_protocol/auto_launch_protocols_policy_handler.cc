@@ -15,6 +15,7 @@
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "components/policy/core/common/schema.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/strings/grit/components_strings.h"
@@ -79,8 +80,8 @@ bool AutoLaunchProtocolsPolicyHandler::CheckPolicySettings(
         policy::external_protocol::kProtocolNameKey);
     DCHECK(protocol);
     if (!IsValidProtocol(*protocol)) {
-      errors->AddError(policy::key::kAutoLaunchProtocolsFromOrigins, i,
-                       IDS_POLICY_INVALID_PROTOCOL_ERROR);
+      errors->AddError(policy::key::kAutoLaunchProtocolsFromOrigins,
+                       IDS_POLICY_INVALID_PROTOCOL_ERROR, PolicyErrorPath{i});
     }
 
     const base::Value* origins_list = protocol_origins_map.FindListKey(
@@ -89,14 +90,14 @@ bool AutoLaunchProtocolsPolicyHandler::CheckPolicySettings(
       const std::string pattern = entry.GetString();
       // If it's not a valid origin pattern mark it as an error.
       if (!IsValidOriginMatchingPattern(pattern)) {
-        errors->AddError(policy::key::kAutoLaunchProtocolsFromOrigins, i,
-                         IDS_POLICY_INVALID_ORIGIN_ERROR);
+        errors->AddError(policy::key::kAutoLaunchProtocolsFromOrigins,
+                         IDS_POLICY_INVALID_ORIGIN_ERROR, PolicyErrorPath{i});
       }
     }
     // If the origin list is empty mark it as an error.
     if (origins_list->GetListDeprecated().empty()) {
-      errors->AddError(policy::key::kAutoLaunchProtocolsFromOrigins, i,
-                       IDS_POLICY_EMPTY_ORIGIN_LIST_ERROR);
+      errors->AddError(policy::key::kAutoLaunchProtocolsFromOrigins,
+                       IDS_POLICY_EMPTY_ORIGIN_LIST_ERROR, PolicyErrorPath{i});
     }
   }
 

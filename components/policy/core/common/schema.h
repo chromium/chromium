@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "absl/types/variant.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
@@ -23,6 +24,18 @@ struct POLICY_EXPORT PropertyNode;
 struct POLICY_EXPORT PropertiesNode;
 
 }  // namespace internal
+
+// The error path, which leads to an error occurred. Members of the
+// error path can either be ints in case of list items or strings in case of
+// dictionary keys.
+typedef std::vector<absl::variant<int, std::string>> PolicyErrorPath;
+
+// Returns a formatted string for a given error path |error_path|, consisting
+// of list indices and dict keys.
+// For example, ErrorPathToString("TestPolicy", {4, "testField"}) will be
+// encoded as "TestPolicy[4].testField"
+POLICY_EXPORT std::string ErrorPathToString(const std::string& policy_name,
+                                            PolicyErrorPath error_path);
 
 // Option flags passed to Schema::Validate() and Schema::Normalize(), describing
 // the strategy to handle unknown properties or invalid values for dict type.
@@ -137,7 +150,7 @@ class POLICY_EXPORT Schema {
   // will be returned.
   bool Validate(const base::Value& value,
                 SchemaOnErrorStrategy strategy,
-                std::string* out_error_path,
+                PolicyErrorPath* out_error_path,
                 std::string* out_error) const;
 
   // Similar to Validate() but drop values with errors instead of ignoring them.
@@ -149,7 +162,7 @@ class POLICY_EXPORT Schema {
   // dropped base::Value and destroy them.
   bool Normalize(base::Value* value,
                  SchemaOnErrorStrategy strategy,
-                 std::string* out_error_path,
+                 PolicyErrorPath* out_error_path,
                  std::string* out_error,
                  bool* out_changed) const;
 

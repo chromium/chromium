@@ -35,8 +35,9 @@ bool DownloadAutoOpenPolicyHandler::CheckPolicySettings(
     // If it's empty or malformed, then mark it as an error.
     if (extension.empty() ||
         *extension.begin() == base::FilePath::kExtensionSeparator) {
-      errors->AddError(policy::key::kAutoOpenFileTypes, i,
-                       IDS_POLICY_INVALID_FILE_EXTENSION_ERROR);
+      errors->AddError(policy::key::kAutoOpenFileTypes,
+                       IDS_POLICY_INVALID_FILE_EXTENSION_ERROR,
+                       policy::PolicyErrorPath{i});
     }
   }
 

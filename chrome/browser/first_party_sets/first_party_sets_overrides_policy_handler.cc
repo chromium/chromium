@@ -13,6 +13,7 @@
 #include "components/policy/core/common/schema.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/first_party_sets_handler.h"
 #include "net/base/schemeful_site.h"
 
@@ -82,11 +83,10 @@ bool FirstPartySetsOverridesPolicyHandler::CheckPolicySettings(
               content::FirstPartySetsHandler::ValidateEnterprisePolicy(
                   policy_value->GetDict());
       maybe_error.has_value()) {
-    errors->AddError(policy_name(),
-                     base::StringPrintf("%s.items[%d]",
-                                        SetTypeToString(maybe_error->set_type),
-                                        maybe_error->error_index),
-                     ParseErrorToString(maybe_error->error));
+    policy::PolicyErrorPath error_path = {
+        SetTypeToString(maybe_error->set_type), maybe_error->error_index};
+    errors->AddError(policy_name(), IDS_POLICY_SCHEMA_VALIDATION_ERROR,
+                     ParseErrorToString(maybe_error->error), error_path);
     return false;
   }
 

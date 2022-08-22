@@ -214,16 +214,10 @@
   <message name="IDS_POLICY_URL_ALLOW_BLOCK_LIST_MAX_FILTERS_LIMIT_WARNING" desc="The text displayed in the status column of the URLAllowlist and URLBlocklist policies when the max number of filters is exceeded.">
     This field should not have more than <ph name="MAX_ITEMS_LIMIT">$1<ex>1000</ex></ph> entries. All further entries will be ignored.
   </message>
-  <message name="IDS_POLICY_SUBKEY_ERROR" desc="The text displayed in the status column for errors in a subkey of a policy.">
-    Key "<ph name="SUBKEY">$1<ex>ProxyMode</ex></ph>": <ph name="ERROR">$2<ex>Must be specified.</ex></ph>
-  </message>
-  <message name="IDS_POLICY_LIST_ENTRY_ERROR" desc="The text displayed in the status column for errors in list entry in a policy.">
-    List entry "<ph name="ENTRY_INDEX">$1<ex>3</ex></ph>": <ph name="ERROR">$2<ex>Value is out of range.</ex></ph>
+  <message name="IDS_POLICY_ERROR_WITH_PATH" desc="The text displayed in the status column when a policy error message contains an error path.">
+    Error at <ph name="ERROR_PATH">$1<ex>AC.Delays.ScreenOff</ex></ph>: <ph name="ERROR_MESSAGE">$2<ex>Value is out of range.</ex></ph>
   </message>
   <message name="IDS_POLICY_SCHEMA_VALIDATION_ERROR" desc="The text displayed in the status column when the policy value doesn't conform to the policy schema.">
-    Schema validation error at "<ph name="ERROR_PATH">$1<ex>AC.Delays.ScreenOff</ex></ph>": <ph name="ERROR">$2<ex>Value is out of range.</ex></ph>
-  </message>
-  <message name="IDS_POLICY_SCHEMA_VALIDATION_ERROR_WITHOUT_PATH" desc="The text displayed in the status column when the policy value doesn't conform to the policy schema.">
     Schema validation error: <ph name="ERROR">$1<ex>Value is out of range.</ex></ph>
   </message>
   <message name="IDS_POLICY_INVALID_JSON_ERROR" desc="The text displayed in the status column when the policy value should be a valid JSON string, but it cannot be parsed as JSON.">

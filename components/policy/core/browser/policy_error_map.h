@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "components/policy/core/common/schema.h"
 #include "components/policy/policy_export.h"
 
 namespace policy {
@@ -34,55 +35,36 @@ class POLICY_EXPORT PolicyErrorMap {
   // IsReady is true. IsReady will be true once the UI message loop has started.
   bool IsReady() const;
 
-  // Adds an entry with key |policy| and the error message corresponding to
-  // |message_id| in grit/generated_resources.h to the map.
-  void AddError(const std::string& policy, int message_id);
-
-  // Adds an entry with key |policy|, subkey |subkey|, and the error message
-  // corresponding to |message_id| in grit/generated_resources.h to the map.
-  void AddError(const std::string& policy,
-                const std::string& subkey,
-                int message_id);
-
-  // Adds an entry with key |policy|, list index |index|, and the error message
-  // corresponding to |message_id| in grit/generated_resources.h to the map.
-  void AddError(const std::string& policy, int index, int message_id);
-
-  // Adds an entry with key |policy| and the error message corresponding to
-  // |message_id| in grit/generated_resources.h to the map and replaces the
-  // placeholder within the error message with |replacement_string|.
+  // Adds an entry with key |policy|, the error message corresponding to
+  // |message_id| in grit/generated_resources.h and its error_path |error_path|
+  // to the map.
   void AddError(const std::string& policy,
                 int message_id,
-                const std::string& replacement_string);
+                PolicyErrorPath error_path = {});
+
+  // Adds an entry with key |policy|, the error message corresponding to
+  // |message_id| in grit/generated_resources.h and its error_path |error_path|
+  // to the map and replaces the placeholder within the error message with
+  // |replacement_string|.
+  void AddError(const std::string& policy,
+                int message_id,
+                const std::string& replacement_string,
+                PolicyErrorPath error_path = {});
 
   // Same as AddError above but supports two replacement strings.
   void AddError(const std::string& policy,
                 int message_id,
                 const std::string& replacement_a,
-                const std::string& replacement_b);
+                const std::string& replacement_b,
+                PolicyErrorPath error_path = {});
 
-  // Adds an entry with key |policy|, subkey |subkey| and the error message
-  // corresponding to |message_id| in grit/generated_resources.h to the map.
-  // Replaces the placeholder in the error message with
-  // |replacement_string|.
+  // Adds an entry with key |policy|, an untranslated error |message| and the
+  // error_path |error_path|.
+  // TODO(crbug.com/1313477): Should be removed in favor of translated error
+  // messages
   void AddError(const std::string& policy,
-                const std::string& subkey,
-                int message_id,
-                const std::string& replacement_string);
-
-  // Adds an entry with key |policy|, list index |index| and the error message
-  // corresponding to |message_id| in grit/generated_resources.h to the map.
-  // Replaces the placeholder in the error message with |replacement_string|.
-  void AddError(const std::string& policy,
-                int index,
-                int message_id,
-                const std::string& replacement_string);
-
-  // Adds an entry with key |policy|, the schema validation error location
-  // |error_path|, and detailed error |message|.
-  void AddError(const std::string& policy,
-                const std::string& error_path,
-                const std::string& message);
+                const std::string& message,
+                PolicyErrorPath error_path = {});
 
   // Returns true if there is any error for |policy|.
   bool HasError(const std::string& policy);

@@ -13,6 +13,7 @@
 #include <memory>
 #include <ostream>
 #include <set>
+#include <sstream>
 #include <string>
 #include <utility>
 
@@ -23,6 +24,7 @@
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "components/policy/core/common/json_schema_constants.h"
@@ -38,6 +40,23 @@ using internal::PropertyNode;
 using internal::RestrictionNode;
 using internal::SchemaData;
 using internal::SchemaNode;
+
+std::string ErrorPathToString(const std::string& policy_name,
+                              PolicyErrorPath error_path) {
+  if (error_path.empty())
+    return std::string();
+
+  std::stringstream error_path_string{policy_name};
+  error_path_string << policy_name;
+  for (auto& entry : error_path) {
+    if (absl::holds_alternative<int>(entry)) {
+      error_path_string << "[" << absl::get<int>(entry) << "]";
+    } else if (absl::holds_alternative<std::string>(entry)) {
+      error_path_string << "." << absl::get<std::string>(entry);
+    }
+  }
+  return error_path_string.str();
+}
 
 namespace {
 
@@ -237,30 +256,24 @@ bool StrategyAllowUnknownWithoutWarning(SchemaOnErrorStrategy strategy) {
   return strategy == SCHEMA_ALLOW_UNKNOWN_WITHOUT_WARNING;
 }
 
-void SchemaErrorFound(std::string* out_error_path,
+void SchemaErrorFound(PolicyErrorPath* out_error_path,
                       std::string* out_error,
                       const std::string& msg) {
   if (out_error_path)
-    *out_error_path = "";
+    *out_error_path = {};
   if (out_error)
     *out_error = msg;
 }
 
-void AddListIndexPrefixToPath(int index, std::string* path) {
+void AddListIndexPrefixToPath(int index, PolicyErrorPath* path) {
   if (path) {
-    if (path->empty())
-      *path = base::StringPrintf("items[%d]", index);
-    else
-      *path = base::StringPrintf("items[%d].", index) + *path;
+    path->emplace(path->begin(), index);
   }
 }
 
-void AddDictKeyPrefixToPath(const std::string& key, std::string* path) {
+void AddDictKeyPrefixToPath(const std::string& key, PolicyErrorPath* path) {
   if (path) {
-    if (path->empty())
-      *path = key;
-    else
-      *path = key + "." + *path;
+    path->emplace(path->begin(), key);
   }
 }
 
@@ -1200,7 +1213,7 @@ Schema Schema::Wrap(const SchemaData* data) {
 
 bool Schema::Validate(const base::Value& value,
                       SchemaOnErrorStrategy strategy,
-                      std::string* out_error_path,
+                      PolicyErrorPath* out_error_path,
                       std::string* out_error) const {
   if (!valid()) {
     SchemaErrorFound(out_error_path, out_error, "The schema is invalid.");
@@ -1296,7 +1309,7 @@ bool Schema::Validate(const base::Value& value,
 
 bool Schema::Normalize(base::Value* value,
                        SchemaOnErrorStrategy strategy,
-                       std::string* out_error_path,
+                       PolicyErrorPath* out_error_path,
                        std::string* out_error,
                        bool* out_changed) const {
   if (!valid()) {

@@ -17,6 +17,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/schema.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/strings/grit/components_strings.h"
@@ -30,7 +31,6 @@ constexpr char kDevicesKey[] = "devices";
 constexpr char kVendorIdKey[] = "vendor_id";
 constexpr char kProductIdKey[] = "product_id";
 constexpr char kUrlsKey[] = "urls";
-constexpr char kErrorPathTemplate[] = "items[%d].%s.items[%d]";
 constexpr char kMissingVendorIdError[] = "A vendor_id must also be specified";
 constexpr char kInvalidNumberOfUrlsError[] =
     "Each urls string entry must contain between 1 to 2 URLs";
@@ -56,7 +56,7 @@ bool WebUsbAllowDevicesForUrlsPolicyHandler::CheckPolicySettings(
   bool result =
       SchemaValidatingPolicyHandler::CheckPolicySettings(policies, errors);
 
-  std::string error_path;
+  PolicyErrorPath error_path;
   std::string error;
   if (!result)
     return result;
@@ -78,8 +78,8 @@ bool WebUsbAllowDevicesForUrlsPolicyHandler::CheckPolicySettings(
         // If a |product_id| is specified, then a |vendor_id| must also be
         // specified. Otherwise, the policy is invalid.
         if (!vendor_id.has_value()) {
-          error_path = base::StringPrintf(kErrorPathTemplate, item_index,
-                                          kDevicesKey, device_index);
+          error_path = {item_index, kDevicesKey, device_index};
+
           error = kMissingVendorIdError;
           result = false;
           break;
@@ -93,8 +93,7 @@ bool WebUsbAllowDevicesForUrlsPolicyHandler::CheckPolicySettings(
     auto* urls_list = item.GetDict().FindList(kUrlsKey);
     DCHECK(urls_list);
     for (const auto& url_value : *urls_list) {
-      const std::string url_error_path = base::StringPrintf(
-          kErrorPathTemplate, item_index, kUrlsKey, url_index);
+      PolicyErrorPath url_error_path = {item_index, kUrlsKey, url_index};
 
       DCHECK(url_value.is_string());
       const std::vector<std::string> urls =
@@ -139,7 +138,7 @@ bool WebUsbAllowDevicesForUrlsPolicyHandler::CheckPolicySettings(
   }
 
   if (errors && !error.empty()) {
-    errors->AddError(policy_name(), error_path, error);
+    errors->AddError(policy_name(), error, error_path);
   }
 
   return result;

@@ -119,8 +119,9 @@ bool ExtensionInstallForceListPolicyHandler::ParseList(
     ++index;
     if (!entry.is_string()) {
       if (errors) {
-        errors->AddError(policy_name(), index, IDS_POLICY_TYPE_ERROR,
-                         base::Value::GetTypeName(base::Value::Type::STRING));
+        errors->AddError(policy_name(), IDS_POLICY_TYPE_ERROR,
+                         base::Value::GetTypeName(base::Value::Type::STRING),
+                         policy::PolicyErrorPath{index});
       }
       continue;
     }
@@ -144,8 +145,8 @@ bool ExtensionInstallForceListPolicyHandler::ParseList(
     if (!crx_file::id_util::IdIsValid(extension_id) ||
         !GURL(update_url).is_valid()) {
       if (errors) {
-        errors->AddError(policy_name(), index,
-                         IDS_POLICY_INVALID_EXTENSION_ERROR);
+        errors->AddError(policy_name(), IDS_POLICY_INVALID_EXTENSION_ERROR,
+                         policy::PolicyErrorPath{index});
       }
       continue;
     }
@@ -188,8 +189,9 @@ bool ExtensionURLPatternListPolicyHandler::CheckPolicySettings(
   int index = 0;
   for (const auto& entry : value->GetListDeprecated()) {
     if (!entry.is_string()) {
-      errors->AddError(policy_name(), index, IDS_POLICY_TYPE_ERROR,
-                       base::Value::GetTypeName(base::Value::Type::STRING));
+      errors->AddError(policy_name(), IDS_POLICY_TYPE_ERROR,
+                       base::Value::GetTypeName(base::Value::Type::STRING),
+                       policy::PolicyErrorPath{index});
       return false;
     }
     std::string url_pattern_string = entry.GetString();
@@ -197,7 +199,8 @@ bool ExtensionURLPatternListPolicyHandler::CheckPolicySettings(
     URLPattern pattern(URLPattern::SCHEME_ALL);
     if (pattern.Parse(url_pattern_string) !=
         URLPattern::ParseResult::kSuccess) {
-      errors->AddError(policy_name(), index, IDS_POLICY_INVALID_URL_ERROR);
+      errors->AddError(policy_name(), IDS_POLICY_INVALID_URL_ERROR,
+                       policy::PolicyErrorPath{index});
       return false;
     }
     ++index;
@@ -266,9 +269,9 @@ void ExtensionSettingsPolicyHandler::SanitizePolicySettings(
             sub_dict.FindString(schema_constants::kUpdateUrl);
         if (!update_url || update_url->empty()) {
           if (errors) {
-            errors->AddError(policy_name(),
-                             entry.first + "." + schema_constants::kUpdateUrl,
-                             IDS_POLICY_NOT_SPECIFIED_ERROR);
+            errors->AddError(policy_name(), IDS_POLICY_NOT_SPECIFIED_ERROR,
+                             policy::PolicyErrorPath{
+                                 entry.first, schema_constants::kUpdateUrl});
           }
           invalid_keys.insert(entry.first);
           continue;
@@ -307,11 +310,12 @@ void ExtensionSettingsPolicyHandler::SanitizePolicySettings(
             if (!pattern.match_all_urls()) {
               if (errors) {
                 errors->AddError(
-                    policy_name(), entry.first,
+                    policy_name(),
                     "The URL pattern '" + unparsed_url + "' for attribute " +
                         key + " has a path specified. Paths are not " +
                         "supported, please remove the path and try again. " +
-                        "e.g. *://example.com/ => *://example.com");
+                        "e.g. *://example.com/ => *://example.com",
+                    policy::PolicyErrorPath{entry.first});
               }
               invalid_keys.insert(entry.first);
               break;
@@ -319,9 +323,10 @@ void ExtensionSettingsPolicyHandler::SanitizePolicySettings(
           }
           if (parse_result != URLPattern::ParseResult::kSuccess) {
             if (errors) {
-              errors->AddError(policy_name(), entry.first,
+              errors->AddError(policy_name(),
                                "Invalid URL pattern '" + unparsed_url +
-                                   "' for attribute " + key);
+                                   "' for attribute " + key,
+                               policy::PolicyErrorPath{entry.first});
             }
             invalid_keys.insert(entry.first);
             break;
@@ -336,11 +341,12 @@ void ExtensionSettingsPolicyHandler::SanitizePolicySettings(
         runtime_blocked_hosts->size() >
             schema_constants::kMaxItemsURLPatternSet) {
       if (errors) {
+        policy::PolicyErrorPath error_path = {
+            entry.first, schema_constants::kPolicyBlockedHosts};
         errors->AddError(
-            policy_name(),
-            entry.first + "." + schema_constants::kPolicyBlockedHosts,
-            IDS_POLICY_EXTENSION_SETTINGS_ORIGIN_LIMIT_WARNING,
-            base::NumberToString(schema_constants::kMaxItemsURLPatternSet));
+            policy_name(), IDS_POLICY_EXTENSION_SETTINGS_ORIGIN_LIMIT_WARNING,
+            base::NumberToString(schema_constants::kMaxItemsURLPatternSet),
+            error_path);
       }
     }
 
@@ -350,11 +356,12 @@ void ExtensionSettingsPolicyHandler::SanitizePolicySettings(
         runtime_allowed_hosts->size() >
             schema_constants::kMaxItemsURLPatternSet) {
       if (errors) {
+        policy::PolicyErrorPath error_path = {
+            entry.first, schema_constants::kPolicyAllowedHosts};
         errors->AddError(
-            policy_name(),
-            entry.first + "." + schema_constants::kPolicyAllowedHosts,
-            IDS_POLICY_EXTENSION_SETTINGS_ORIGIN_LIMIT_WARNING,
-            base::NumberToString(schema_constants::kMaxItemsURLPatternSet));
+            policy_name(), IDS_POLICY_EXTENSION_SETTINGS_ORIGIN_LIMIT_WARNING,
+            base::NumberToString(schema_constants::kMaxItemsURLPatternSet),
+            error_path);
       }
     }
   }

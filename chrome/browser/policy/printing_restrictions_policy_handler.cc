@@ -8,6 +8,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/browser/policy_error_map.h"
+#include "components/policy/core/common/schema.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/strings/grit/components_strings.h"
@@ -191,14 +192,16 @@ bool PrintingPaperSizeDefaultPolicyHandler::CheckIntSubkey(
   const base::Value* value = dict->FindKey(key);
   if (!value) {
     if (errors) {
-      errors->AddError(policy_name(), key, IDS_POLICY_NOT_SPECIFIED_ERROR);
+      errors->AddError(policy_name(), IDS_POLICY_NOT_SPECIFIED_ERROR,
+                       PolicyErrorPath{key});
     }
     return false;
   }
   if (!value->is_int()) {
     if (errors) {
-      errors->AddError(policy_name(), key, IDS_POLICY_TYPE_ERROR,
-                       base::Value::GetTypeName(base::Value::Type::INTEGER));
+      errors->AddError(policy_name(), IDS_POLICY_TYPE_ERROR,
+                       base::Value::GetTypeName(base::Value::Type::INTEGER),
+                       PolicyErrorPath{key});
     }
     return false;
   }
@@ -230,9 +233,9 @@ bool PrintingPaperSizeDefaultPolicyHandler::GetValue(
   }
   if (!name->is_string()) {
     if (errors) {
-      errors->AddError(policy_name(), printing::kPaperSizeName,
-                       IDS_POLICY_TYPE_ERROR,
-                       base::Value::GetTypeName(base::Value::Type::STRING));
+      errors->AddError(policy_name(), IDS_POLICY_TYPE_ERROR,
+                       base::Value::GetTypeName(base::Value::Type::STRING),
+                       PolicyErrorPath{printing::kPaperSizeName});
     }
     return false;
   }
@@ -246,9 +249,9 @@ bool PrintingPaperSizeDefaultPolicyHandler::GetValue(
     if (!custom_size->is_dict()) {
       if (errors) {
         errors->AddError(
-            policy_name(), printing::kPaperSizeCustomSize,
-            IDS_POLICY_TYPE_ERROR,
-            base::Value::GetTypeName(base::Value::Type::DICTIONARY));
+            policy_name(), IDS_POLICY_TYPE_ERROR,
+            base::Value::GetTypeName(base::Value::Type::DICTIONARY),
+            PolicyErrorPath{printing::kPaperSizeCustomSize});
       }
       return false;
     }

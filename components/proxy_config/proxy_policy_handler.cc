@@ -14,6 +14,7 @@
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/proxy_settings_constants.h"
+#include "components/policy/core/common/schema.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
@@ -24,6 +25,7 @@ namespace {
 
 using policy::kProxyPacMandatory;
 using policy::PolicyErrorMap;
+using policy::PolicyErrorPath;
 using policy::PolicyMap;
 using policy::key::kProxyBypassList;
 using policy::key::kProxyMode;
@@ -136,8 +138,8 @@ bool ProxyPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
       GetProxyPolicyValue(&proxy_settings, kProxyBypassList);
 
   if ((server || pac_url || bypass_list) && !(mode || server_mode)) {
-    errors->AddError(kProxySettings, kProxyMode,
-                     IDS_POLICY_NOT_SPECIFIED_ERROR);
+    errors->AddError(kProxySettings, IDS_POLICY_NOT_SPECIFIED_ERROR,
+                     PolicyErrorPath{kProxyMode});
     return false;
   }
 
@@ -159,18 +161,20 @@ bool ProxyPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
     is_valid_mode = true;
 
     if (!entry.pac_url_allowed && pac_url) {
-      errors->AddError(kProxySettings, kProxyPacUrl, entry.error_message_id);
+      errors->AddError(kProxySettings, entry.error_message_id,
+                       PolicyErrorPath{kProxyPacUrl});
     }
     if (!entry.pac_mandatory_allowed && pac_mandatory) {
-      errors->AddError(kProxySettings, kProxyPacMandatory,
-                       entry.error_message_id);
+      errors->AddError(kProxySettings, entry.error_message_id,
+                       PolicyErrorPath{kProxyPacMandatory});
     }
     if (!entry.bypass_list_allowed && bypass_list) {
-      errors->AddError(kProxySettings, kProxyBypassList,
-                       entry.error_message_id);
+      errors->AddError(kProxySettings, entry.error_message_id,
+                       PolicyErrorPath{kProxyBypassList});
     }
     if (!entry.server_allowed && server) {
-      errors->AddError(kProxySettings, kProxyServer, entry.error_message_id);
+      errors->AddError(kProxySettings, entry.error_message_id,
+                       PolicyErrorPath{kProxyServer});
     }
 
     if ((!entry.pac_url_allowed && pac_url) ||
@@ -182,8 +186,8 @@ bool ProxyPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
   }
 
   if (!is_valid_mode) {
-    errors->AddError(kProxySettings, mode ? kProxyMode : kProxyServerMode,
-                     IDS_POLICY_OUT_OF_RANGE_ERROR, mode_value);
+    errors->AddError(kProxySettings, IDS_POLICY_OUT_OF_RANGE_ERROR, mode_value,
+                     PolicyErrorPath{mode ? kProxyMode : kProxyServerMode});
     return false;
   }
   return true;
@@ -306,37 +310,39 @@ bool ProxyPolicyHandler::CheckProxyModeAndServerMode(
   // When both are specified, the mode takes precedence.
   if (mode) {
     if (server_mode) {
-      errors->AddError(kProxySettings, kProxyServerMode, IDS_POLICY_OVERRIDDEN,
-                       kProxyMode);
+      errors->AddError(kProxySettings, IDS_POLICY_OVERRIDDEN, kProxyMode,
+                       PolicyErrorPath{kProxyServerMode});
     }
     if (!mode->is_string()) {
-      errors->AddError(kProxySettings, kProxyMode, IDS_POLICY_TYPE_ERROR,
-                       base::Value::GetTypeName(base::Value::Type::BOOLEAN));
+      errors->AddError(kProxySettings, IDS_POLICY_TYPE_ERROR,
+                       base::Value::GetTypeName(base::Value::Type::BOOLEAN),
+                       PolicyErrorPath{kProxyMode});
       return false;
     }
     *mode_value = mode->GetString();
 
     ProxyPrefs::ProxyMode proxy_mode;
     if (!ProxyPrefs::StringToProxyMode(*mode_value, &proxy_mode)) {
-      errors->AddError(kProxySettings, kProxyMode,
-                       IDS_POLICY_INVALID_PROXY_MODE_ERROR);
+      errors->AddError(kProxySettings, IDS_POLICY_INVALID_PROXY_MODE_ERROR,
+                       PolicyErrorPath{kProxyMode});
       return false;
     }
 
     if (proxy_mode == ProxyPrefs::MODE_PAC_SCRIPT && !pac_url) {
-      errors->AddError(kProxySettings, kProxyPacUrl,
-                       IDS_POLICY_NOT_SPECIFIED_ERROR);
+      errors->AddError(kProxySettings, IDS_POLICY_NOT_SPECIFIED_ERROR,
+                       PolicyErrorPath{kProxyPacUrl});
       return false;
     }
     if (proxy_mode == ProxyPrefs::MODE_FIXED_SERVERS && !server) {
-      errors->AddError(kProxySettings, kProxyServer,
-                       IDS_POLICY_NOT_SPECIFIED_ERROR);
+      errors->AddError(kProxySettings, IDS_POLICY_NOT_SPECIFIED_ERROR,
+                       PolicyErrorPath{kProxyServer});
       return false;
     }
   } else if (server_mode) {
     if (!server_mode->is_int()) {
-      errors->AddError(kProxySettings, kProxyServerMode, IDS_POLICY_TYPE_ERROR,
-                       base::Value::GetTypeName(base::Value::Type::INTEGER));
+      errors->AddError(kProxySettings, IDS_POLICY_TYPE_ERROR,
+                       base::Value::GetTypeName(base::Value::Type::INTEGER),
+                       PolicyErrorPath{kProxyServerMode});
       return false;
     }
 
@@ -350,14 +356,18 @@ bool ProxyPolicyHandler::CheckProxyModeAndServerMode(
       case PROXY_MANUALLY_CONFIGURED_PROXY_SERVER_MODE:
         if (server && pac_url) {
           int message_id = IDS_POLICY_PROXY_BOTH_SPECIFIED_ERROR;
-          errors->AddError(kProxySettings, kProxyServer, message_id);
-          errors->AddError(kProxySettings, kProxyPacUrl, message_id);
+          errors->AddError(kProxySettings, message_id,
+                           PolicyErrorPath{kProxyServer});
+          errors->AddError(kProxySettings, message_id,
+                           PolicyErrorPath{kProxyPacUrl});
           return false;
         }
         if (!server && !pac_url) {
           int message_id = IDS_POLICY_PROXY_NEITHER_SPECIFIED_ERROR;
-          errors->AddError(kProxySettings, kProxyServer, message_id);
-          errors->AddError(kProxySettings, kProxyPacUrl, message_id);
+          errors->AddError(kProxySettings, message_id,
+                           PolicyErrorPath{kProxyServer});
+          errors->AddError(kProxySettings, message_id,
+                           PolicyErrorPath{kProxyPacUrl});
           return false;
         }
         *mode_value = pac_url ? ProxyPrefs::kPacScriptProxyModeName
@@ -367,9 +377,9 @@ bool ProxyPolicyHandler::CheckProxyModeAndServerMode(
         *mode_value = ProxyPrefs::kSystemProxyModeName;
         break;
       default:
-        errors->AddError(kProxySettings, kProxyServerMode,
-                         IDS_POLICY_OUT_OF_RANGE_ERROR,
-                         base::NumberToString(server_mode->GetInt()));
+        errors->AddError(kProxySettings, IDS_POLICY_OUT_OF_RANGE_ERROR,
+                         base::NumberToString(server_mode->GetInt()),
+                         PolicyErrorPath{kProxyServerMode});
         return false;
     }
   }

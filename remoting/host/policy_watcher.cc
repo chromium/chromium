@@ -254,19 +254,21 @@ bool PolicyWatcher::NormalizePolicies(base::DictionaryValue* policy_dict) {
   //    schema for this policy on this particular platform).
   auto strategy = policy::SCHEMA_ALLOW_UNKNOWN;
 
-  std::string path;
+  policy::PolicyErrorPath path;
   std::string error;
   bool changed = false;
   const policy::Schema* schema = GetPolicySchema();
   if (schema->Normalize(policy_dict, strategy, &path, &error, &changed)) {
     if (changed) {
-      LOG(WARNING) << "Unknown (unrecognized or unsupported) policy: " << path
-                   << ": " << error;
+      LOG(WARNING) << "Unknown (unrecognized or unsupported) policy at: "
+                   << policy::ErrorPathToString("toplevel", path) << ": "
+                   << error;
     }
     HandleDeprecatedPolicies(policy_dict);
     return true;
   } else {
-    LOG(ERROR) << "Invalid policy contents: " << path << ": " << error;
+    LOG(ERROR) << "Invalid policy contents at: "
+               << policy::ErrorPathToString("toplevel", path) << ": " << error;
     return false;
   }
 }

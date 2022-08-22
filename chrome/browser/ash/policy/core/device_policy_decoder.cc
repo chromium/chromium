@@ -23,6 +23,7 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
+#include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/chrome_schema.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/external_data_manager.h"
@@ -2077,20 +2078,26 @@ absl::optional<base::Value> DecodeJsonStringAndNormalize(
   CHECK(schema.valid());
 
   std::string schema_error;
-  std::string error_path;
+  PolicyErrorPath error_path;
   bool changed = false;
   if (!schema.Normalize(&root, SCHEMA_ALLOW_UNKNOWN, &error_path, &schema_error,
                         &changed)) {
     std::ostringstream msg;
     msg << "Invalid policy value: " << schema_error << " (at "
-        << (error_path.empty() ? "toplevel" : error_path) << ")";
+        << (error_path.empty()
+                ? policy_name
+                : policy::ErrorPathToString(policy_name, error_path))
+        << ")";
     *error = msg.str();
     return absl::nullopt;
   }
   if (changed) {
     std::ostringstream msg;
     msg << "Dropped unknown properties: " << schema_error << " (at "
-        << (error_path.empty() ? "toplevel" : error_path) << ")";
+        << (error_path.empty()
+                ? policy_name
+                : policy::ErrorPathToString(policy_name, error_path))
+        << ")";
     *error = msg.str();
   }
 

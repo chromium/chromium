@@ -35,6 +35,7 @@ source_set("first_party_sets") {
     "//components/policy/proto",
     "//components/pref_registry",
     "//components/prefs:prefs",
+    "//components/strings:components_strings_grit",
   ]
   public_deps = [ "//content/public/browser" ]
 }

@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/containers/adapters.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
@@ -24,6 +25,7 @@
 #include "base/values.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/schema.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/strings/grit/components_strings.h"
@@ -146,16 +148,17 @@ bool ListPolicyHandler::CheckAndGetList(const policy::PolicyMap& policies,
     const base::Value& entry = list[list_index];
     if (entry.type() != list_entry_type_) {
       if (errors) {
-        errors->AddError(policy_name(), list_index, IDS_POLICY_TYPE_ERROR,
-                         base::Value::GetTypeName(list_entry_type_));
+        errors->AddError(policy_name(), IDS_POLICY_TYPE_ERROR,
+                         base::Value::GetTypeName(list_entry_type_),
+                         PolicyErrorPath{list_index});
       }
       continue;
     }
 
     if (!CheckListEntry(entry)) {
       if (errors) {
-        errors->AddError(policy_name(), list_index,
-                         IDS_POLICY_VALUE_FORMAT_ERROR);
+        errors->AddError(policy_name(), IDS_POLICY_VALUE_FORMAT_ERROR,
+                         PolicyErrorPath{list_index});
       }
       continue;
     }
@@ -268,8 +271,9 @@ bool StringMappingListPolicyHandler::Convert(const base::Value* input,
     ++index;
     if (!entry.is_string()) {
       if (errors) {
-        errors->AddError(policy_name(), index, IDS_POLICY_TYPE_ERROR,
-                         base::Value::GetTypeName(base::Value::Type::STRING));
+        errors->AddError(policy_name(), IDS_POLICY_TYPE_ERROR,
+                         base::Value::GetTypeName(base::Value::Type::STRING),
+                         PolicyErrorPath{index});
       }
       continue;
     }
@@ -281,7 +285,8 @@ bool StringMappingListPolicyHandler::Convert(const base::Value* input,
             base::Value::FromUniquePtrValue(std::move(mapped_value)));
       }
     } else if (errors) {
-      errors->AddError(policy_name(), index, IDS_POLICY_OUT_OF_RANGE_ERROR);
+      errors->AddError(policy_name(), IDS_POLICY_OUT_OF_RANGE_ERROR,
+                       PolicyErrorPath{index});
     }
   }
 
@@ -391,12 +396,13 @@ bool SchemaValidatingPolicyHandler::CheckPolicySettings(
   if (!value)
     return true;
 
-  std::string error_path;
+  PolicyErrorPath error_path;
   std::string error;
   bool result = schema_.Validate(*value, strategy_, &error_path, &error);
 
   if (errors && !error.empty()) {
-    errors->AddError(policy_name(), error_path, error);
+    errors->AddError(policy_name(), IDS_POLICY_SCHEMA_VALIDATION_ERROR, error,
+                     error_path);
   }
 
   return result;
@@ -412,13 +418,14 @@ bool SchemaValidatingPolicyHandler::CheckAndGetValue(
     return true;
 
   *output = base::Value::ToUniquePtrValue(value->Clone());
-  std::string error_path;
+  PolicyErrorPath error_path;
   std::string error;
   bool result =
       schema_.Normalize(output->get(), strategy_, &error_path, &error, nullptr);
 
   if (errors && !error.empty()) {
-    errors->AddError(policy_name(), error_path, error);
+    errors->AddError(policy_name(), IDS_POLICY_SCHEMA_VALIDATION_ERROR, error,
+                     error_path);
   }
 
   return result;
@@ -561,8 +568,9 @@ bool SimpleJsonStringSchemaValidatingPolicyHandler::CheckListOfJsonStrings(
     const base::Value& entry = list[index];
     if (!entry.is_string()) {
       if (errors) {
-        errors->AddError(policy_name(), index, IDS_POLICY_TYPE_ERROR,
-                         base::Value::GetTypeName(base::Value::Type::STRING));
+        errors->AddError(policy_name(), IDS_POLICY_TYPE_ERROR,
+                         base::Value::GetTypeName(base::Value::Type::STRING),
+                         PolicyErrorPath{index});
       }
       continue;
     }
@@ -587,15 +595,15 @@ bool SimpleJsonStringSchemaValidatingPolicyHandler::ValidateJsonString(
       json_string, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
   if (!value_with_error.has_value()) {
     if (errors) {
-      errors->AddError(policy_name(), ErrorPath(index, ""),
-                       IDS_POLICY_INVALID_JSON_ERROR,
-                       value_with_error.error().message);
+      PolicyErrorPath error_path = {index};
+      errors->AddError(policy_name(), IDS_POLICY_INVALID_JSON_ERROR,
+                       value_with_error.error().message, error_path);
     }
     return false;
   }
 
   std::string schema_error;
-  std::string error_path;
+  PolicyErrorPath error_path;
   const Schema json_string_schema =
       IsListSchema() ? schema_.GetItems() : schema_;
   // Even though we are validating this schema here, we don't actually change
@@ -603,24 +611,15 @@ bool SimpleJsonStringSchemaValidatingPolicyHandler::ValidateJsonString(
   // the user errors.
   bool validated = json_string_schema.Validate(
       *value_with_error, SCHEMA_ALLOW_UNKNOWN, &error_path, &schema_error);
-  if (errors && !schema_error.empty())
-    errors->AddError(policy_name(), ErrorPath(index, error_path), schema_error);
+  if (errors && !schema_error.empty()) {
+    error_path.emplace(error_path.begin(), index);
+    errors->AddError(policy_name(), IDS_POLICY_SCHEMA_VALIDATION_ERROR,
+                     schema_error, error_path);
+  }
   if (!validated)
     return false;
 
   return true;
-}
-
-std::string SimpleJsonStringSchemaValidatingPolicyHandler::ErrorPath(
-    int index,
-    std::string json_error_path) {
-  if (IsListSchema()) {
-    return json_error_path.empty()
-               ? base::StringPrintf("items[%d]", index)
-               : base::StringPrintf("items[%d].%s", index,
-                                    json_error_path.c_str());
-  }
-  return json_error_path;
 }
 
 void SimpleJsonStringSchemaValidatingPolicyHandler::ApplyPolicySettings(

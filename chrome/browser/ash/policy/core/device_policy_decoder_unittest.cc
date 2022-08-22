@@ -155,9 +155,9 @@ TEST_F(DevicePolicyDecoderTest, DecodeJsonStringAndNormalizeInvalidValue) {
   std::string localized_error = l10n_util::GetStringFUTF8(
       IDS_POLICY_PROTO_PARSING_ERROR, base::UTF8ToUTF16(error));
   EXPECT_EQ(
-      "Policy parsing error: Invalid policy value: "
-      "Policy type mismatch: expected: \"string\", actual: \"integer\". (at "
-      "url)",
+      "Policy parsing error: Invalid policy value: Policy type mismatch: "
+      "expected: \"string\", actual: \"integer\". (at "
+      "DeviceWallpaperImage.url)",
       localized_error);
 }
 
@@ -170,7 +170,7 @@ TEST_F(DevicePolicyDecoderTest, DecodeJsonStringAndNormalizeUnknownProperty) {
   EXPECT_EQ(*GetWallpaperDict(), decoded_json.value());
   EXPECT_EQ(
       "Policy parsing error: Dropped unknown properties: Unknown property: "
-      "unknown-field (at toplevel)",
+      "unknown-field (at DeviceWallpaperImage)",
       localized_error);
 }
 
@@ -372,8 +372,10 @@ TEST_F(DevicePolicyDecoderTest, DecodeServiceUUIDListError) {
       kInvalidBluetoothServiceUUIDList, key::kDeviceAllowedBluetoothServices,
       &error);
   EXPECT_FALSE(decoded_json.has_value());
-  EXPECT_EQ("Invalid policy value: Invalid value for string (at items[0])",
-            error);
+  EXPECT_EQ(
+      "Invalid policy value: Invalid value for string (at "
+      "DeviceAllowedBluetoothServices[0])",
+      error);
 }
 
 TEST_F(DevicePolicyDecoderTest,
