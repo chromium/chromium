@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_DRIVEFS_DRIVEFS_AUTH_H_
-#define ASH_COMPONENTS_DRIVEFS_DRIVEFS_AUTH_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DRIVEFS_DRIVEFS_AUTH_H_
+#define CHROMEOS_ASH_COMPONENTS_DRIVEFS_DRIVEFS_AUTH_H_
 
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "base/component_export.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
@@ -31,7 +31,7 @@ class PrimaryAccountAccessTokenFetcher;
 
 namespace drivefs {
 
-class COMPONENT_EXPORT(DRIVEFS) DriveFsAuth {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsAuth {
  public:
   class Delegate {
    public:
@@ -106,4 +106,4 @@ class COMPONENT_EXPORT(DRIVEFS) DriveFsAuth {
 
 }  // namespace drivefs
 
-#endif  // ASH_COMPONENTS_DRIVEFS_DRIVEFS_AUTH_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DRIVEFS_DRIVEFS_AUTH_H_

@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/drivefs/drivefs_host.h"
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/memory/singleton.h"
@@ -19,6 +18,7 @@
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "chromeos/ash/components/drivefs/drivefs_host.h"
 #include "components/drive/drive_notification_observer.h"
 #include "components/drive/file_errors.h"
 #include "components/drive/file_system_core_util.h"

@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 
 #include "ash/components/arc/arc_util.h"
-#include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "base/atomic_ref_count.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
@@ -27,6 +26,7 @@
 #include "chrome/browser/ash/smb_client/smbfs_share.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/browser_task_traits.h"

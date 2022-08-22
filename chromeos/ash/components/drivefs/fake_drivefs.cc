@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/drivefs/fake_drivefs.h"
+#include "chromeos/ash/components/drivefs/fake_drivefs.h"
 
 #include <algorithm>
 #include <tuple>
 #include <utility>
 #include <vector>
 
-#include "ash/components/drivefs/drivefs_util.h"
-#include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
@@ -25,6 +23,8 @@
 #include "base/threading/thread_restrictions.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/dbus/cros_disks/fake_cros_disks_client.h"
+#include "chromeos/ash/components/drivefs/drivefs_util.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -353,11 +353,9 @@ void FakeDriveFs::GetMetadata(const base::FilePath& path,
   metadata->shared = stored_metadata.shared;
 
   metadata->content_mime_type = stored_metadata.mime_type;
-  metadata->type = stored_metadata.hosted
-                       ? mojom::FileMetadata::Type::kHosted
-                       : info.is_directory
-                             ? mojom::FileMetadata::Type::kDirectory
-                             : mojom::FileMetadata::Type::kFile;
+  metadata->type = stored_metadata.hosted ? mojom::FileMetadata::Type::kHosted
+                   : info.is_directory ? mojom::FileMetadata::Type::kDirectory
+                                       : mojom::FileMetadata::Type::kFile;
 
   if (!stored_metadata.alternate_url.empty()) {
     metadata->alternate_url = stored_metadata.alternate_url;

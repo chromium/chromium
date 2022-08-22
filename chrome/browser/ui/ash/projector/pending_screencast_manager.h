@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "ash/components/drivefs/drivefs_host.h"
-#include "ash/components/drivefs/drivefs_host_observer.h"
 #include "ash/webui/projector_app/projector_app_client.h"
 #include "ash/webui/projector_app/projector_xhr_sender.h"
 #include "base/callback.h"
@@ -17,6 +15,8 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/ash/projector/projector_drivefs_provider.h"
+#include "chromeos/ash/components/drivefs/drivefs_host.h"
+#include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
 
 namespace drivefs {
 namespace mojom {

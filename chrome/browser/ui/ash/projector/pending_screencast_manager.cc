@@ -7,7 +7,6 @@
 #include <map>
 #include <vector>
 
-#include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "ash/constants/ash_features.h"
 #include "ash/projector/projector_metrics.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
@@ -24,6 +23,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/url_util.h"

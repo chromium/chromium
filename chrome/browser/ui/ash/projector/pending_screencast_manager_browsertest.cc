@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/ash/projector/pending_screencast_manager.h"
 
-#include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "ash/constants/ash_features.h"
 #include "ash/webui/projector_app/projector_app_client.h"
 #include "ash/webui/projector_app/test/mock_xhr_sender.h"
@@ -31,6 +30,7 @@
 #include "chrome/browser/ui/ash/projector/projector_app_client_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "services/network/test/test_url_loader_factory.h"

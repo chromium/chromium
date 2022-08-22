@@ -11,7 +11,6 @@
 #include "ash/components/arc/mojom/file_system.mojom-forward.h"
 #include "ash/components/arc/session/connection_holder.h"
 #include "ash/components/arc/session/connection_observer.h"
-#include "ash/components/drivefs/drivefs_host_observer.h"
 #include "base/callback.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
@@ -21,6 +20,7 @@
 #include "chrome/browser/chromeos/fileapi/file_change_service_observer.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
+#include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
 
 namespace base {
 class FilePath;

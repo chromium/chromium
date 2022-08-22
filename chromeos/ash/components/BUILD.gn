@@ -18,6 +18,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus:unit_tests",
     "//chromeos/ash/components/device_activity:unit_tests",
     "//chromeos/ash/components/disks:unit_tests",
+    "//chromeos/ash/components/drivefs:unit_tests",
     "//chromeos/ash/components/feature_usage:unit_tests",
     "//chromeos/ash/components/human_presence:unit_tests",
     "//chromeos/ash/components/install_attributes:unit_tests",

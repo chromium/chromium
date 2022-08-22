@@ -13,7 +13,6 @@
 
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/enterprise/arc_data_snapshotd_manager.h"
-#include "ash/components/drivefs/fake_drivefs_launcher_client.h"
 #include "ash/components/fwupd/firmware_update_manager.h"
 #include "ash/components/login/session/session_termination_manager.h"
 #include "ash/components/peripheral_notification/peripheral_notification_manager.h"
@@ -204,6 +203,7 @@
 #include "chromeos/ash/components/device_activity/device_active_use_case.h"
 #include "chromeos/ash/components/device_activity/device_activity_controller.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
+#include "chromeos/ash/components/drivefs/fake_drivefs_launcher_client.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy_factory.h"
 #include "chromeos/ash/components/network/fast_transition_observer.h"

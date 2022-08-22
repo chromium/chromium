@@ -9,8 +9,8 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "components/drive/file_errors.h"
 #include "extensions/browser/entry_info.h"
 

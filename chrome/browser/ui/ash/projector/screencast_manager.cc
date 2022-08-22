@@ -7,7 +7,6 @@
 #include <memory>
 #include <vector>
 
-#include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "ash/webui/projector_app/projector_screencast.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/check.h"
@@ -25,6 +24,7 @@
 #include "chrome/services/media_gallery_util/public/cpp/local_media_data_source_factory.h"
 #include "chrome/services/media_gallery_util/public/cpp/safe_media_metadata_parser.h"
 #include "chrome/services/media_gallery_util/public/mojom/media_parser.mojom.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 

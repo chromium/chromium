@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/drivefs/drivefs_http_client.h"
+#include "chromeos/ash/components/drivefs/drivefs_http_client.h"
 
 #include <initializer_list>
 #include <utility>
 
-#include "ash/components/drivefs/mojom/drivefs.mojom-shared.h"
-#include "ash/components/drivefs/mojom/drivefs.mojom-test-utils.h"
-#include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-shared.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-test-utils.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/http/http_status_code.h"

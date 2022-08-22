@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "ash/components/drivefs/fake_drivefs.h"
 #include "ash/webui/projector_app/buildflags.h"
 #include "ash/webui/projector_app/projector_app_client.h"
 #include "ash/webui/projector_app/projector_screencast.h"
@@ -26,6 +25,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/web_applications/test/profile_test_helper.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/ash/components/drivefs/fake_drivefs.h"
 #include "components/drive/file_errors.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"

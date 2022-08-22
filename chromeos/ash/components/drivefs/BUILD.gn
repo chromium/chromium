@@ -31,12 +31,12 @@ component("drivefs") {
     ]
   }
   deps = [
-    "//ash/components/drivefs/mojom",
     "//ash/constants",
     "//base",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/cros_disks",
     "//chromeos/ash/components/disks",
+    "//chromeos/ash/components/drivefs/mojom",
     "//chromeos/components/mojo_bootstrap",
     "//components/account_id",
     "//components/drive",
@@ -48,7 +48,7 @@ component("drivefs") {
     "//net",
     "//services/network/public/cpp:cpp",
   ]
-  defines = [ "IS_DRIVEFS_IMPL" ]
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_DRIVEFS_IMPL" ]
 }
 
 source_set("test_support") {
@@ -59,10 +59,10 @@ source_set("test_support") {
   ]
   deps = [
     ":drivefs",
-    "//ash/components/drivefs/mojom",
     "//base",
     "//chromeos/ash/components/dbus:test_support",
     "//chromeos/ash/components/dbus/cros_disks",
+    "//chromeos/ash/components/drivefs/mojom",
     "//net",
     "//testing/gmock",
   ]
@@ -82,10 +82,10 @@ source_set("unit_tests") {
   deps = [
     ":drivefs",
     ":test_support",
-    "//ash/components/drivefs/mojom",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/disks:test_support",
+    "//chromeos/ash/components/drivefs/mojom",
     "//chromeos/components/mojo_bootstrap",
     "//components/account_id",
     "//components/drive",

@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_DRIVEFS_DRIVEFS_SEARCH_H_
-#define ASH_COMPONENTS_DRIVEFS_DRIVEFS_SEARCH_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DRIVEFS_DRIVEFS_SEARCH_H_
+#define CHROMEOS_ASH_COMPONENTS_DRIVEFS_DRIVEFS_SEARCH_H_
 
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -24,7 +24,7 @@ class NetworkConnectionTracker;
 namespace drivefs {
 
 // Handles search queries to DriveFS.
-class COMPONENT_EXPORT(DRIVEFS) DriveFsSearch {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsSearch {
  public:
   DriveFsSearch(mojom::DriveFs* drivefs,
                 network::NetworkConnectionTracker* network_connection_tracker,
@@ -59,4 +59,4 @@ class COMPONENT_EXPORT(DRIVEFS) DriveFsSearch {
 
 }  // namespace drivefs
 
-#endif  // ASH_COMPONENTS_DRIVEFS_DRIVEFS_SEARCH_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DRIVEFS_DRIVEFS_SEARCH_H_

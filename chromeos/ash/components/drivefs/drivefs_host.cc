@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/drivefs/drivefs_host.h"
+#include "chromeos/ash/components/drivefs/drivefs_host.h"
 
 #include <map>
 #include <set>
 #include <utility>
 
-#include "ash/components/drivefs/drivefs_bootstrap.h"
-#include "ash/components/drivefs/drivefs_host_observer.h"
-#include "ash/components/drivefs/drivefs_http_client.h"
-#include "ash/components/drivefs/drivefs_search.h"
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/strings/strcat.h"
 #include "base/unguessable_token.h"
+#include "chromeos/ash/components/drivefs/drivefs_bootstrap.h"
+#include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
+#include "chromeos/ash/components/drivefs/drivefs_http_client.h"
+#include "chromeos/ash/components/drivefs/drivefs_search.h"
 #include "components/drive/drive_notification_manager.h"
 #include "components/drive/drive_notification_observer.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -56,8 +56,7 @@ class DriveFsHost::MountState : public DriveFsSession,
         bool{host->account_token_delegate_->GetCachedAccessToken()};
     search_ = std::make_unique<DriveFsSearch>(
         drivefs_interface(), host_->network_connection_tracker_, host_->clock_);
-    if (base::FeatureList::IsEnabled(
-            chromeos::features::kDriveFsChromeNetworking)) {
+    if (base::FeatureList::IsEnabled(ash::features::kDriveFsChromeNetworking)) {
       http_client_ = std::make_unique<DriveFsHttpClient>(
           host_->delegate_->GetURLLoaderFactory());
     }
@@ -89,10 +88,9 @@ class DriveFsHost::MountState : public DriveFsSession,
         std::move(access_token),
         auth_delegate->IsMetricsCollectionEnabled(),
         delegate->GetLostAndFoundDirectoryName(),
-        base::FeatureList::IsEnabled(chromeos::features::kDriveFsMirroring),
+        base::FeatureList::IsEnabled(ash::features::kDriveFsMirroring),
         delegate->IsVerboseLoggingEnabled(),
-        base::FeatureList::IsEnabled(
-            chromeos::features::kDriveFsChromeNetworking),
+        base::FeatureList::IsEnabled(ash::features::kDriveFsChromeNetworking),
     };
     return DriveFsConnection::Create(delegate->CreateMojoListener(),
                                      std::move(config));
@@ -206,7 +204,7 @@ class DriveFsHost::MountState : public DriveFsSession,
   }
 
   void GetMachineRootID(GetMachineRootIDCallback callback) override {
-    if (!chromeos::features::IsDriveFsMirroringEnabled()) {
+    if (!ash::features::IsDriveFsMirroringEnabled()) {
       std::move(callback).Run({});
       return;
     }
@@ -214,7 +212,7 @@ class DriveFsHost::MountState : public DriveFsSession,
   }
 
   void PersistMachineRootID(const std::string& id) override {
-    if (!chromeos::features::IsDriveFsMirroringEnabled()) {
+    if (!ash::features::IsDriveFsMirroringEnabled()) {
       return;
     }
     host_->delegate_->PersistMachineRootID(std::move(id));

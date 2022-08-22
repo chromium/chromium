@@ -6,8 +6,6 @@
 
 #include <stddef.h>
 
-#include "ash/components/drivefs/drivefs_util.h"
-#include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -23,6 +21,8 @@
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
+#include "chromeos/ash/components/drivefs/drivefs_util.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "components/drive/drive_api_util.h"
 #include "components/drive/file_system_core_util.h"
 #include "content/public/browser/browser_thread.h"

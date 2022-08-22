@@ -2,24 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_DRIVEFS_DRIVEFS_SESSION_H_
-#define ASH_COMPONENTS_DRIVEFS_DRIVEFS_SESSION_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DRIVEFS_DRIVEFS_SESSION_H_
+#define CHROMEOS_ASH_COMPONENTS_DRIVEFS_DRIVEFS_SESSION_H_
 
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 
 namespace drivefs {
 
 // Utility class to simplify mounting with DiskMountManager.
-class COMPONENT_EXPORT(DRIVEFS) DiskMounter {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DiskMounter {
  public:
   DiskMounter() = default;
 
@@ -41,7 +41,8 @@ class DriveFsConnection;
 
 // Represents single Drive mount session. Hides the complexity
 // of determining whether DriveFs is mounted or not.
-class COMPONENT_EXPORT(DRIVEFS) DriveFsSession : public mojom::DriveFsDelegate {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsSession
+    : public mojom::DriveFsDelegate {
  public:
   class MountObserver {
    public:
@@ -122,4 +123,4 @@ class COMPONENT_EXPORT(DRIVEFS) DriveFsSession : public mojom::DriveFsDelegate {
 
 }  // namespace drivefs
 
-#endif  // ASH_COMPONENTS_DRIVEFS_DRIVEFS_SESSION_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DRIVEFS_DRIVEFS_SESSION_H_

@@ -15,12 +15,12 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_manager/trash_info_validator.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/extensions/file_manager/logged_extension_function.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "components/drive/file_errors.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"

@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "ash/components/arc/arc_prefs.h"
-#include "ash/components/drivefs/drivefs_host.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/tablet_mode.h"
@@ -57,6 +56,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/disks/disk.h"
+#include "chromeos/ash/components/drivefs/drivefs_host.h"
 #include "chromeos/components/disks/disks_prefs.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/login/login_state/login_state.h"

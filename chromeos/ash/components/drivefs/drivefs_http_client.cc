@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/drivefs/drivefs_http_client.h"
+#include "chromeos/ash/components/drivefs/drivefs_http_client.h"
 
 #include <cstdint>
 #include <memory>
 #include <type_traits>
 #include <utility>
 
-#include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "base/bind.h"
 #include "base/containers/enum_set.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"

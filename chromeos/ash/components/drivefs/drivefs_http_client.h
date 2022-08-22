@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_DRIVEFS_DRIVEFS_HTTP_CLIENT_H_
-#define ASH_COMPONENTS_DRIVEFS_DRIVEFS_HTTP_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DRIVEFS_DRIVEFS_HTTP_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DRIVEFS_DRIVEFS_HTTP_CLIENT_H_
 
-#include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "base/component_export.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -14,7 +14,7 @@ namespace drivefs {
 
 // Handles HTTP requests for DriveFS by translating them to a URLLoader
 // request and passing the responses back to DriveFS.
-class COMPONENT_EXPORT(DRIVEFS) DriveFsHttpClient {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsHttpClient {
  public:
   explicit DriveFsHttpClient(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
@@ -34,4 +34,4 @@ class COMPONENT_EXPORT(DRIVEFS) DriveFsHttpClient {
 
 }  // namespace drivefs
 
-#endif  // ASH_COMPONENTS_DRIVEFS_DRIVEFS_HTTP_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DRIVEFS_DRIVEFS_HTTP_CLIENT_H_

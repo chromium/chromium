@@ -10,13 +10,13 @@
 #include <memory>
 #include <vector>
 
-#include "ash/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "base/callback.h"
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/file_system_provider/icon_set.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "components/drive/file_errors.h"
 #include "storage/browser/file_system/file_system_url.h"
 
