@@ -6,10 +6,8 @@
 
 #include <stdint.h>
 
-#include <map>
 #include <memory>
 #include <string>
-#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
@@ -22,7 +20,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/version.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -77,11 +74,11 @@
 #if BUILDFLAG(ENABLE_NACL)
 #include "components/nacl/common/nacl_constants.h"
 #include "components/nacl/common/nacl_process_type.h"
+#include "ppapi/shared_impl/ppapi_permissions.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(ENABLE_PPAPI)
 #include "content/public/common/pepper_plugin_info.h"
-#include "ppapi/shared_impl/ppapi_permissions.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -192,27 +189,6 @@ void ChromeContentClient::SetActiveURL(const GURL& url,
 void ChromeContentClient::SetGpuInfo(const gpu::GPUInfo& gpu_info) {
   gpu::SetKeysForCrashLogging(gpu_info);
 }
-
-#if BUILDFLAG(ENABLE_PPAPI)
-// static
-content::PepperPluginInfo* ChromeContentClient::FindMostRecentPlugin(
-    const std::vector<std::unique_ptr<content::PepperPluginInfo>>& plugins) {
-  if (plugins.empty())
-    return nullptr;
-
-  using PluginSortKey = std::tuple<base::Version, bool>;
-
-  std::map<PluginSortKey, content::PepperPluginInfo*> plugin_map;
-
-  for (auto& plugin : plugins) {
-    base::Version version(plugin->version);
-    DCHECK(version.IsValid());
-    plugin_map[PluginSortKey(version, plugin->is_external)] = plugin.get();
-  }
-
-  return plugin_map.rbegin()->second;
-}
-#endif  // BUILDFLAG(ENABLE_PPAPI)
 
 void ChromeContentClient::AddPepperPlugins(
     std::vector<content::PepperPluginInfo>* plugins) {
