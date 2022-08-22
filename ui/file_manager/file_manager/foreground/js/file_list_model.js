@@ -675,6 +675,16 @@ export class FileListModel extends ArrayDataModel {
   }
 
   /**
+   * Refresh the group by data, e.g. when date modified changes due to
+   * timezone change.
+   */
+  refreshGroupBySnapshot() {
+    if (this.groupByField_ === GROUP_BY_FIELD_MODIFICATION_TIME) {
+      this.updateGroupBySnapshot_();
+    }
+  }
+
+  /**
    * Return the groupBy snapshot.
    * @return {!Array<!GroupHeader>}
    */

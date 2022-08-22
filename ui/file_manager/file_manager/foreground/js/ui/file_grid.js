@@ -706,6 +706,16 @@ export class FileGrid extends Grid {
     return new FileGridSelectionController(assert(sm), this);
   }
 
+  updateGroupHeading_() {
+    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+    if (fileListModel &&
+        fileListModel.groupByField === GROUP_BY_FIELD_MODIFICATION_TIME) {
+      // TODO(crbug.com/1353650): find a way to update heading instead of
+      // redraw.
+      this.redraw();
+    }
+  }
+
   /**
    * Updates items to reflect metadata changes.
    * @param {string} type Type of metadata changed.
@@ -726,6 +736,7 @@ export class FileGrid extends Grid {
       this.decorateThumbnailBox_(assert(listItem), entry);
       this.updateSharedStatus_(assert(listItem), entry);
     }
+    this.updateGroupHeading_();
   }
 
   /**

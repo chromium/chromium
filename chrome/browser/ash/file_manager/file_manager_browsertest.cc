@@ -1926,6 +1926,14 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .EnableFiltersInRecents()
             .EnableFiltersInRecentsV2()
             .FilesSwa(),
+        TestCase("recentsRespondToTimezoneChangeForGridView")
+            .EnableFiltersInRecents()
+            .EnableFiltersInRecentsV2()
+            .FilesSwa(),
+        TestCase("recentsRespondToTimezoneChangeForListView")
+            .EnableFiltersInRecents()
+            .EnableFiltersInRecentsV2()
+            .FilesSwa(),
         TestCase("recentsTimePeriodHeadings")
             .EnableFiltersInRecents()
             .EnableFiltersInRecentsV2(),

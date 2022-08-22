@@ -13,7 +13,7 @@ import {importerHistoryInterfaces} from '../../../externs/background/import_hist
 import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
 import {VolumeManager} from '../../../externs/volume_manager.js';
 import {FilesTooltip} from '../../elements/files_tooltip.js';
-import {FileListModel} from '../file_list_model.js';
+import {FileListModel, GROUP_BY_FIELD_MODIFICATION_TIME} from '../file_list_model.js';
 import {ListThumbnailLoader} from '../list_thumbnail_loader.js';
 import {MetadataModel} from '../metadata/metadata_model.js';
 
@@ -1029,6 +1029,15 @@ export class FileTable extends Table {
     div.textContent = this.formatter_.formatModDate(modTime);
   }
 
+  updateGroupHeading_() {
+    const fileListModel = /** @type {FileListModel} */ (this.dataModel);
+    if (fileListModel &&
+        fileListModel.groupByField === GROUP_BY_FIELD_MODIFICATION_TIME) {
+      // TODO(crbug.com/1353650): find a way to update heading instead of redraw
+      this.redraw();
+    }
+  }
+
   /**
    * Updates the file metadata in the table item.
    *
@@ -1069,6 +1078,7 @@ export class FileTable extends Table {
       forEachCell('.table-row-cell > .size', function(item, entry, unused) {
         this.updateSize_(item, entry);
       });
+      this.updateGroupHeading_();
     } else if (type === 'external') {
       // The cell name does not matter as the entire list item is needed.
       forEachCell('.table-row-cell > .date', function(item, entry, listItem) {

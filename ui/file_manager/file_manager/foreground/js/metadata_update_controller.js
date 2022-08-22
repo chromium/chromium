@@ -80,6 +80,7 @@ export class MetadataUpdateController {
    * @private
    */
   onCachedMetadataUpdate_(event) {
+    this.listContainer_.dataModel.refreshGroupBySnapshot();
     // TODO(hirono): Specify property name instead of metadata type.
     this.listContainer_.currentView.updateListItemsMetadata(
         'filesystem', event.entries);

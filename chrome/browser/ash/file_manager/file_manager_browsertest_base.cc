@@ -78,6 +78,7 @@
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/smb_client/smb_service.h"
 #include "chrome/browser/ash/smb_client/smb_service_factory.h"
+#include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/browser_process.h"
@@ -111,6 +112,7 @@
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_view_host.h"
@@ -3098,6 +3100,14 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
             &run_loop),
         profile());
     run_loop.Run();
+    return;
+  }
+
+  if (name == "setTimezone") {
+    const std::string* timezone = value.FindString("timezone");
+    ASSERT_TRUE(timezone);
+    auto* user = user_manager::UserManager::Get()->GetActiveUser();
+    chromeos::system::SetSystemTimezone(user, *timezone);
     return;
   }
 
