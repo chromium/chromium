@@ -1874,9 +1874,6 @@ void BrowserView::FullscreenStateChanged() {
 
   if (AppUsesWindowControlsOverlay())
     UpdateWindowControlsOverlayEnabled();
-  if (AppUsesBorderlessMode())
-    UpdateBorderlessModeEnabled();
-
 #endif  // BUILDFLAG(IS_MAC)
 
   GetExclusiveAccessManager()

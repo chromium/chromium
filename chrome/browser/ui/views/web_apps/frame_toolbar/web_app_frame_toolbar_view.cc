@@ -299,15 +299,15 @@ void WebAppFrameToolbarView::OnWindowControlsOverlayEnabledChanged() {
 }
 
 void WebAppFrameToolbarView::UpdateBorderlessModeEnabled() {
-  bool is_borderless_mode_enabled_ = browser_view_->IsBorderlessModeEnabled();
+  bool is_borderless_mode_enabled = browser_view_->IsBorderlessModeEnabled();
 
   // The toolbar and menu button are hidden and not set to nullptrs,
   // because there are many features that depend on the toolbar and would not
   // work without it. For example all the shortcut commands (e.g. Ctrl+F, zoom)
   // rely on the menu button and toolbar so when these are hidden, the shortcuts
   // will still work.
-  SetVisible(!is_borderless_mode_enabled_);
-  GetAppMenuButton()->SetVisible(!is_borderless_mode_enabled_);
+  SetVisible(!is_borderless_mode_enabled);
+  GetAppMenuButton()->SetVisible(!is_borderless_mode_enabled);
 }
 
 void WebAppFrameToolbarView::SetWindowControlsOverlayToggleVisible(
