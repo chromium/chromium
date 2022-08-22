@@ -72,6 +72,27 @@ import java.util.concurrent.TimeUnit;
  * the end and they seem to be padded with zeros to the nearest four-byte boundary.
  */
 
+/* CONVERT_TO_JAVA
+ *
+ * Since the Builder classes disappeared (see NO_BUILDER tag, above) and since
+ * we've actually dropped using the FIDO SDK in Chromium, test data is often
+ * now captured from a device. To do this, print the data in question using:
+ *   Base64.encodeToString(data, Base64.NO_WRAP);
+ *
+ * Then it can be converted to a Java array using this Python 3 code:
+ *
+ * import codecs
+ * import sys
+ *
+ * def f(x):
+ *   if x < 128:
+ *     return x
+ *   return x - 256
+ *
+ * b = codecs.decode(bytes(sys.argv[1], 'ascii'), 'base64')
+ * print([f(x) for x in b])
+ */
+
 /**
  * A Helper class for testing Fido2ApiHandlerInternal.
  */
@@ -112,6 +133,46 @@ public class Fido2ApiTestHelper {
             79, -71, -71, 34, 88, 32, -24, -33, 64, 97, -31, -34, 96, -83, -119, -25, 21, -14, -56,
             -70, -37, -116, -21, -33, -128, -66, 61, 41, 107, 16, -25, 120, 106, -113, 54, -62,
             -102, 42, 0, 0};
+
+    /**
+     * This byte array was captured from a device and resulted from creating a passkey.
+     *
+     * It contains fields such as the list of transports, which is useful for testing. See
+     * CONVERT_TO_JAVA tag, above, about creating it.
+     */
+    private static final byte[] TEST_AUTHENTICATOR_PASSKEY_ATTESTATION_RESPONSE = new byte[] {69,
+            79, -1, -1, -84, 2, 0, 0, 1, 0, -1, -1, 52, 0, 0, 0, 22, 0, 0, 0, 99, 0, 71, 0, 67, 0,
+            103, 0, 71, 0, 99, 0, 71, 0, 54, 0, 115, 0, 75, 0, 90, 0, 48, 0, 114, 0, 84, 0, 103, 0,
+            78, 0, 121, 0, 95, 0, 119, 0, 57, 0, 87, 0, 65, 0, 0, 0, 0, 0, 2, 0, -1, -1, 28, 0, 0,
+            0, 10, 0, 0, 0, 112, 0, 117, 0, 98, 0, 108, 0, 105, 0, 99, 0, 45, 0, 107, 0, 101, 0,
+            121, 0, 0, 0, 0, 0, 3, 0, -1, -1, 20, 0, 0, 0, 16, 0, 0, 0, 112, 96, -96, 25, -63, -70,
+            -80, -90, 116, -83, 56, 13, -53, -4, 61, 88, 4, 0, -1, -1, 8, 2, 0, 0, 69, 79, -1, -1,
+            0, 2, 0, 0, 2, 0, -1, -1, 20, 0, 0, 0, 16, 0, 0, 0, 112, 96, -96, 25, -63, -70, -80,
+            -90, 116, -83, 56, 13, -53, -4, 61, 88, 3, 0, -1, -1, -72, 0, 0, 0, -79, 0, 0, 0, 123,
+            34, 116, 121, 112, 101, 34, 58, 34, 119, 101, 98, 97, 117, 116, 104, 110, 46, 99, 114,
+            101, 97, 116, 101, 34, 44, 34, 99, 104, 97, 108, 108, 101, 110, 103, 101, 34, 58, 34,
+            100, 103, 101, 55, 76, 107, 120, 73, 98, 121, 98, 100, 77, 102, 81, 118, 111, 103, 49,
+            99, 79, 98, 57, 68, 122, 80, 76, 70, 69, 119, 107, 79, 52, 95, 90, 55, 111, 117, 109,
+            79, 48, 69, 99, 34, 44, 34, 111, 114, 105, 103, 105, 110, 34, 58, 34, 104, 116, 116,
+            112, 115, 58, 92, 47, 92, 47, 115, 101, 99, 117, 114, 105, 116, 121, 107, 101, 121, 115,
+            46, 105, 110, 102, 111, 34, 44, 34, 97, 110, 100, 114, 111, 105, 100, 80, 97, 99, 107,
+            97, 103, 101, 78, 97, 109, 101, 34, 58, 34, 99, 111, 109, 46, 103, 111, 111, 103, 108,
+            101, 46, 97, 110, 100, 114, 111, 105, 100, 46, 97, 112, 112, 115, 46, 99, 104, 114, 111,
+            109, 101, 34, 125, 0, 0, 0, 4, 0, -1, -1, -72, 0, 0, 0, -78, 0, 0, 0, -93, 99, 102, 109,
+            116, 100, 110, 111, 110, 101, 103, 97, 116, 116, 83, 116, 109, 116, -96, 104, 97, 117,
+            116, 104, 68, 97, 116, 97, 88, -108, 38, -67, 114, 120, -66, 70, 55, 97, -15, -6, -95,
+            -79, 10, -76, -60, -8, 38, 112, 38, -100, 65, 12, 114, 106, 31, -42, -32, 88, 85, -31,
+            -101, 70, 69, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 112,
+            96, -96, 25, -63, -70, -80, -90, 116, -83, 56, 13, -53, -4, 61, 88, -91, 1, 2, 3, 38,
+            32, 1, 33, 88, 32, 44, 116, -29, 17, -108, 13, 49, 87, 1, 111, 117, 117, -110, -42, 6,
+            -108, 108, -120, -2, 31, 62, 75, 4, 51, -5, 73, 70, -84, -30, -123, -38, 98, 34, 88, 32,
+            -14, -91, 17, -54, 52, -36, -82, -36, 60, 19, -34, 79, -103, 80, -71, 92, -40, 113, 12,
+            98, 107, -88, 95, 7, -27, 39, -43, 52, -111, -85, -77, 14, 0, 0, 5, 0, -1, -1, 92, 0, 0,
+            0, 6, 0, 0, 0, 3, 0, 0, 0, 98, 0, 108, 0, 101, 0, 0, 0, 2, 0, 0, 0, 98, 0, 116, 0, 0, 0,
+            0, 0, 5, 0, 0, 0, 99, 0, 97, 0, 98, 0, 108, 0, 101, 0, 0, 0, 8, 0, 0, 0, 105, 0, 110, 0,
+            116, 0, 101, 0, 114, 0, 110, 0, 97, 0, 108, 0, 0, 0, 0, 0, 3, 0, 0, 0, 110, 0, 102, 0,
+            99, 0, 0, 0, 3, 0, 0, 0, 117, 0, 115, 0, 98, 0, 0, 0, 8, 0, -1, -1, 24, 0, 0, 0, 8, 0,
+            0, 0, 112, 0, 108, 0, 97, 0, 116, 0, 102, 0, 111, 0, 114, 0, 109, 0, 0, 0, 0, 0};
 
     /**
      * This byte array was produced by
@@ -248,6 +309,16 @@ public class Fido2ApiTestHelper {
     public static Intent createSuccessfulMakeCredentialIntent() {
         Intent intent = new Intent();
         intent.putExtra(Fido2Api.CREDENTIAL_EXTRA, TEST_AUTHENTICATOR_ATTESTATION_RESPONSE);
+        return intent;
+    }
+
+    /**
+     * Builds a test intent to be returned by a successful call to makeCredential.
+     * @return Intent containing the response from the Fido2 API.
+     */
+    public static Intent createSuccessfulPasskeyMakeCredentialIntent() {
+        Intent intent = new Intent();
+        intent.putExtra(Fido2Api.CREDENTIAL_EXTRA, TEST_AUTHENTICATOR_PASSKEY_ATTESTATION_RESPONSE);
         return intent;
     }
 

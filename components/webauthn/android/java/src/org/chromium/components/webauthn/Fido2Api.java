@@ -525,6 +525,19 @@ public final class Fido2Api {
         }
     }
 
+    private static int stringToAttachment(String v) {
+        // This is the closest one can get to a static assert that no new enumeration values have
+        // been added.
+        assert AuthenticatorAttachment.MAX_VALUE == AuthenticatorAttachment.CROSS_PLATFORM;
+
+        if (v.equals("platform")) {
+            return AuthenticatorAttachment.PLATFORM;
+        } else if (v.equals("cross-platform")) {
+            return AuthenticatorAttachment.CROSS_PLATFORM;
+        }
+        return AuthenticatorAttachment.MIN_VALUE - 1;
+    }
+
     private static String credentialTypeToString(int credType) {
         // This is the closest one can get to a static assert that no new enumeration values have
         // been added.
@@ -667,15 +680,23 @@ public final class Fido2Api {
         }
         final int endPosition = addLengthToParcelPosition(header.second, parcel);
 
+        MakeCredentialAuthenticatorResponse creationResponse = null;
         GetAssertionAuthenticatorResponse assertionResponse = null;
         Extensions extensions = null;
+        int attachment = AuthenticatorAttachment.MIN_VALUE - 1;
 
         while (parcel.dataPosition() < endPosition) {
             header = readHeader(parcel);
             switch (header.first) {
                 case 4:
                     // Attestation response
-                    return parseAttestationResponse(parcel);
+                    creationResponse = parseAttestationResponse(parcel);
+                    if (creationResponse == null) {
+                        throw new IllegalArgumentException();
+                    }
+                    // The response may need to have attachment information included, which is in
+                    // another field.
+                    break;
 
                 case 5:
                     // Sign response
@@ -699,10 +720,22 @@ public final class Fido2Api {
                     }
                     break;
 
+                case 8:
+                    // authenticatorAttachment
+                    attachment = stringToAttachment(parcel.readString());
+                    break;
+
                 default:
                     // unknown tag. Skip over it.
                     parcel.setDataPosition(addLengthToParcelPosition(header.second, parcel));
             }
+        }
+
+        if (creationResponse != null) {
+            if (attachment >= AuthenticatorAttachment.MIN_VALUE) {
+                creationResponse.authenticatorAttachment = attachment;
+            }
+            return creationResponse;
         }
 
         if (assertionResponse != null) {
@@ -712,6 +745,9 @@ public final class Fido2Api {
                 assertionResponse.userVerificationMethods =
                         extensions.userVerificationMethods.toArray(
                                 assertionResponse.userVerificationMethods);
+            }
+            if (attachment >= AuthenticatorAttachment.MIN_VALUE) {
+                assertionResponse.authenticatorAttachment = attachment;
             }
             return assertionResponse;
         }
@@ -730,6 +766,7 @@ public final class Fido2Api {
         byte[] keyHandle = null;
         byte[] clientDataJson = null;
         byte[] attestationObject = null;
+        int[] transports = new int[] {};
 
         while (parcel.dataPosition() < endPosition) {
             header = readHeader(parcel);
@@ -744,6 +781,10 @@ public final class Fido2Api {
 
                 case 4:
                     attestationObject = parcel.createByteArray();
+                    break;
+
+                case 5:
+                    transports = parseTransports(parcel);
                     break;
 
                 default:
@@ -769,15 +810,42 @@ public final class Fido2Api {
         ret.publicKeyAlgo = parts.coseAlgorithm;
         info.authenticatorData = parts.authenticatorData;
         ret.publicKeyDer = parts.spki;
-
-        // An empty transports array indicates that we don't have any
-        // information about the available transports.
-        ret.transports = new int[] {};
+        ret.transports = transports;
 
         info.id = encodeId(keyHandle);
         info.rawId = keyHandle;
         info.clientDataJson = clientDataJson;
         ret.info = info;
+        return ret;
+    }
+
+    private static int[] parseTransports(Parcel parcel) throws IllegalArgumentException {
+        int numValues = parcel.readInt();
+        int[] pending = new int[numValues];
+        int j = 0;
+
+        for (int i = 0; i < numValues; i++) {
+            String transport = parcel.readString();
+
+            if (transport.equals("usb")) {
+                pending[j++] = AuthenticatorTransport.USB;
+            } else if (transport.equals("nfc")) {
+                pending[j++] = AuthenticatorTransport.NFC;
+            } else if (transport.equals("ble")) {
+                pending[j++] = AuthenticatorTransport.BLE;
+            } else if (transport.equals("cable") || transport.equals("hybrid")) {
+                pending[j++] = AuthenticatorTransport.HYBRID;
+            } else if (transport.equals("internal")) {
+                pending[j++] = AuthenticatorTransport.INTERNAL;
+            }
+        }
+
+        if (j == numValues) {
+            return pending;
+        }
+
+        int[] ret = new int[j];
+        System.arraycopy(pending, 0, ret, 0, j);
         return ret;
     }
 

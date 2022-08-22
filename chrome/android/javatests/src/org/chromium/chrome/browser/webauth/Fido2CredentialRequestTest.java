@@ -41,6 +41,8 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.blink.mojom.AuthenticatorStatus;
+import org.chromium.blink.mojom.AuthenticatorAttachment;
+import org.chromium.blink.mojom.AuthenticatorTransport;
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
 import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
 import org.chromium.blink.mojom.PaymentOptions;
@@ -473,6 +475,28 @@ public class Fido2CredentialRequestTest {
         Assert.assertEquals(mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.SUCCESS));
         Fido2ApiTestHelper.validateMakeCredentialResponse(mCallback.getMakeCredentialResponse());
         Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
+    }
+
+    @Test
+    @SmallTest
+    public void testPasskeyMakeCredential_success() {
+        mIntentSender.setNextResultIntent(
+                Fido2ApiTestHelper.createSuccessfulPasskeyMakeCredentialIntent());
+
+        mRequest.handleMakeCredentialRequest(mCreationOptions, mFrameHost, mOrigin,
+                (responseStatus, response)
+                        -> mCallback.onRegisterResponse(responseStatus, response),
+                errorStatus -> mCallback.onError(errorStatus));
+        mCallback.blockUntilCalled();
+        Assert.assertEquals(mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.SUCCESS));
+
+        MakeCredentialAuthenticatorResponse response = mCallback.getMakeCredentialResponse();
+        Assert.assertArrayEquals(response.transports,
+                new int[] {AuthenticatorTransport.BLE, AuthenticatorTransport.HYBRID,
+                        AuthenticatorTransport.INTERNAL, AuthenticatorTransport.NFC,
+                        AuthenticatorTransport.USB});
+        Assert.assertEquals(
+                response.authenticatorAttachment, AuthenticatorAttachment.PLATFORM);
     }
 
     @Test
