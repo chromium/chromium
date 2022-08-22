@@ -221,6 +221,11 @@ class HistoryService : public KeyedService {
                                 int nav_entry_id,
                                 const GURL& url);
 
+  void SetPageLanguageForVisit(ContextID context_id,
+                               int nav_entry_id,
+                               const GURL& url,
+                               const std::string& page_language);
+
   // Updates the history database with the content model annotations for the
   // visit.
   void AddContentModelAnnotationsForVisit(

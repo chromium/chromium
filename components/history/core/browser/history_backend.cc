@@ -508,6 +508,42 @@ void HistoryBackend::SetBrowsingTopicsAllowed(ContextID context_id,
   ScheduleCommit();
 }
 
+void HistoryBackend::SetPageLanguageForVisit(ContextID context_id,
+                                             int nav_entry_id,
+                                             const GURL& url,
+                                             const std::string& page_language) {
+  VisitID visit_id = tracker_.GetLastVisit(context_id, nav_entry_id, url);
+  if (!visit_id)
+    return;
+
+  SetPageLanguageForVisitByVisitID(visit_id, page_language);
+}
+
+void HistoryBackend::SetPageLanguageForVisitByVisitID(
+    VisitID visit_id,
+    const std::string& page_language) {
+  TRACE_EVENT0("browser", "HistoryBackend::SetPageLanguageForVisitByVisitID");
+
+  if (!db_)
+    return;
+
+  // Only add to the annotations table if the visit_id exists in the visits
+  // table.
+  VisitRow visit_row;
+  if (db_->GetRowForVisit(visit_id, &visit_row)) {
+    VisitContentAnnotations annotations;
+    if (db_->GetContentAnnotationsForVisit(visit_id, &annotations)) {
+      annotations.page_language = page_language;
+      db_->UpdateContentAnnotationsForVisit(visit_id, annotations);
+    } else {
+      annotations.page_language = page_language;
+      db_->AddContentAnnotationsForVisit(visit_id, annotations);
+    }
+    NotifyVisitUpdated(visit_row);
+    ScheduleCommit();
+  }
+}
+
 void HistoryBackend::AddContentModelAnnotationsForVisit(
     VisitID visit_id,
     const VisitContentModelAnnotations& model_annotations) {

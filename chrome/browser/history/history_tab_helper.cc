@@ -13,6 +13,7 @@
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
+#include "chrome/browser/translate/chrome_translate_client.h"
 #include "components/history/content/browser/history_context_helper.h"
 #include "components/history/core/browser/history_constants.h"
 #include "components/history/core/browser/history_service.h"
@@ -147,7 +148,13 @@ history::VisitContextAnnotations::BrowserType GetBrowserType(
 
 HistoryTabHelper::HistoryTabHelper(WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<HistoryTabHelper>(*web_contents) {}
+      content::WebContentsUserData<HistoryTabHelper>(*web_contents) {
+  // A translate client is not always attached to web contents (e.g. tests).
+  if (ChromeTranslateClient* translate_client =
+          ChromeTranslateClient::FromWebContents(web_contents)) {
+    translate_observation_.Observe(translate_client->GetTranslateDriver());
+  }
+}
 
 HistoryTabHelper::~HistoryTabHelper() = default;
 
@@ -385,6 +392,20 @@ void HistoryTabHelper::DidOpenRequestedURL(
   new_history_tab_helper->opener_web_contents_ = web_contents()->GetWeakPtr();
 }
 
+void HistoryTabHelper::OnLanguageDetermined(
+    const translate::LanguageDetectionDetails& details) {
+  if (history::HistoryService* hs = GetHistoryService()) {
+    NavigationEntry* entry =
+        web_contents()->GetController().GetLastCommittedEntry();
+    if (entry) {
+      hs->SetPageLanguageForVisit(
+          history::ContextIDForWebContents(web_contents()),
+          entry->GetUniqueID(), web_contents()->GetLastCommittedURL(),
+          details.adopted_language);
+    }
+  }
+}
+
 void HistoryTabHelper::TitleWasSet(NavigationEntry* entry) {
   if (!entry)
     return;
@@ -418,6 +439,8 @@ history::HistoryService* HistoryTabHelper::GetHistoryService() {
 }
 
 void HistoryTabHelper::WebContentsDestroyed() {
+  translate_observation_.Reset();
+
   // We update the history for this URL.
   WebContents* tab = web_contents();
   Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());

@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_HISTORY_HISTORY_TAB_HELPER_H_
 #define CHROME_BROWSER_HISTORY_HISTORY_TAB_HELPER_H_
 
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/translate/core/browser/translate_driver.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -15,8 +17,10 @@ struct HistoryAddPageArgs;
 class HistoryService;
 }
 
-class HistoryTabHelper : public content::WebContentsObserver,
-                         public content::WebContentsUserData<HistoryTabHelper> {
+class HistoryTabHelper
+    : public content::WebContentsObserver,
+      public translate::TranslateDriver::LanguageDetectionObserver,
+      public content::WebContentsUserData<HistoryTabHelper> {
  public:
   HistoryTabHelper(const HistoryTabHelper&) = delete;
   HistoryTabHelper& operator=(const HistoryTabHelper&) = delete;
@@ -69,11 +73,24 @@ class HistoryTabHelper : public content::WebContentsObserver,
                            bool started_from_context_menu,
                            bool renderer_initiated) override;
 
+  // TranslateDriver::LanguageDetectionObserver implementation.
+  void OnLanguageDetermined(
+      const translate::LanguageDetectionDetails& details) override;
+
   // Helper function to return the history service.  May return null.
   history::HistoryService* GetHistoryService();
 
   // Returns true if our observed web contents is an eligible tab.
   bool IsEligibleTab(const history::HistoryAddPageArgs& add_page_args) const;
+
+  // Observes LanguageDetectionObserver, which notifies us when the language of
+  // the contents of the current page has been determined.
+  base::ScopedObservation<
+      translate::TranslateDriver,
+      translate::TranslateDriver::LanguageDetectionObserver,
+      &translate::TranslateDriver::AddLanguageDetectionObserver,
+      &translate::TranslateDriver::RemoveLanguageDetectionObserver>
+      translate_observation_{this};
 
   // True after navigation to a page is complete and the page is currently
   // loading. Only applies to the main frame of the page.

@@ -444,6 +444,23 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
     return got_content_annotations;
   }
 
+  bool ModelAnnotationsFieldsAreSetForURL(const GURL& url) {
+    absl::optional<history::VisitContentAnnotations> got_content_annotations =
+        GetContentAnnotationsForURL(url);
+    // No content annotations -> no model annotations fields.
+    if (!got_content_annotations)
+      return false;
+
+    const history::VisitContentModelAnnotations& model_annotations =
+        got_content_annotations->model_annotations;
+
+    // Return true if any of the fields have non-empty/non-default values.
+    return (model_annotations.visibility_score !=
+            history::VisitContentModelAnnotations::kDefaultVisibilityScore) ||
+           !model_annotations.categories.empty() ||
+           !model_annotations.entities.empty();
+  }
+
   void Annotate(const HistoryVisit& visit) {
     PageContentAnnotationsService* service =
         PageContentAnnotationsServiceFactory::GetForProfile(
@@ -762,7 +779,10 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceNoHistoryTest,
       "ContentAnnotationsStorageStatus",
       0);
 
-  EXPECT_FALSE(GetContentAnnotationsForURL(url).has_value());
+  // The ContentAnnotations should either not exist at all, or if they do
+  // (because some other code added some annotations), the model-related fields
+  // should be empty/unset.
+  EXPECT_FALSE(ModelAnnotationsFieldsAreSetForURL(url));
 }
 
 // Flaky on Linux Tests (dbg): crbug.com/1338408
@@ -897,7 +917,10 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBatchVisitTest,
       "ContentAnnotationsStorageStatus",
       0);
 
-  EXPECT_FALSE(GetContentAnnotationsForURL(url).has_value());
+  // The ContentAnnotations should either not exist at all, or if they do
+  // (because some other code added some annotations), the model-related fields
+  // should be empty/unset.
+  EXPECT_FALSE(ModelAnnotationsFieldsAreSetForURL(url));
 }
 
 class PageContentAnnotationsServiceBatchVisitNoAnnotateTest
@@ -980,7 +1003,10 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBatchVisitTest,
       "ContentAnnotationsStorageStatus",
       0);
 
-  EXPECT_FALSE(GetContentAnnotationsForURL(url).has_value());
+  // The ContentAnnotations should either not exist at all, or if they do
+  // (because some other code added some annotations), the model-related fields
+  // should be empty/unset.
+  EXPECT_FALSE(ModelAnnotationsFieldsAreSetForURL(url));
 }
 
 class PageContentAnnotationsServiceModelNotLoadedOnStartupTest
