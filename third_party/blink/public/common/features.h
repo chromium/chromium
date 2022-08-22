@@ -17,6 +17,7 @@
 namespace blink {
 namespace features {
 
+BLINK_COMMON_EXPORT extern const base::Feature kAnonymousIframeOriginTrial;
 BLINK_COMMON_EXPORT extern const base::Feature kAutomaticLazyFrameLoadingToAds;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kTimeoutMillisForLazyAds;

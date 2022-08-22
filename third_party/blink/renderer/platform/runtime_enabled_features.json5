@@ -180,7 +180,7 @@
     {
       name: "AnonymousIframe",
       origin_trial_allows_third_party: true,
-      origin_trial_feature_name: "AnonymousIframe",
+      origin_trial_feature_name: "AnonymousIframeOriginTrial",
       status: "test",
     },
     {

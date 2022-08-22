@@ -7,9 +7,9 @@ const enableAnonymousIframeOriginTrial = () => {
   // ./tools/origin_trials/generate_token.py \
   //  --expire-days 5000 \
   //  --version 3  \
-  //  https://www.web-platform.test:8444/ \
-  //  AnonymousIframe
-  meta.content = 'AwdHTTICbNy8uTXRBoXUyIR2BqCZTs2wEYHEChRfeyzgFI06chb5ud7lfDB3it3gFS5X9z4H/vxF0M58xWmLfwMAAABgeyJvcmlnaW4iOiAiaHR0cHM6Ly93ZWItcGxhdGZvcm0udGVzdDo4NDQ0IiwgImZlYXR1cmUiOiAiQW5vbnltb3VzSWZyYW1lIiwgImV4cGlyeSI6IDIwODMzMTQ1MTR9';
+  //  https://web-platform.test:8444/ \
+  //  AnonymousIframeOriginTrial
+  meta.content = 'A2GNv/0K8qpCxmqQjvwr83zGAFqexdNDFCYsl5QmcJXJrmighEpxp9kazeYJE2vfmF4btL8QOKyjUKv4gXZu4A8AAABreyJvcmlnaW4iOiAiaHR0cHM6Ly93ZWItcGxhdGZvcm0udGVzdDo4NDQ0IiwgImZlYXR1cmUiOiAiQW5vbnltb3VzSWZyYW1lT3JpZ2luVHJpYWwiLCAiZXhwaXJ5IjogMjA5MjczMzQ5OX0=';
   document.getElementsByTagName('head')[0].appendChild(meta);
 };
 
