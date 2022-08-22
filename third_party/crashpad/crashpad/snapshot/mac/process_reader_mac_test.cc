@@ -359,8 +359,15 @@ void ExpectSeveralThreads(ThreadMap* thread_map,
       mach_vm_address_t expected_stack_region_end = iterator->second.stack_base;
       if (thread_index > 0) {
         // Non-main threads use the stack region to store thread data. See
-        // _pthread_allocate.
+        // macOS 12 libpthread-486.100.11 src/pthread.c _pthread_allocate().
+#if defined(ARCH_CPU_ARM64)
+        // arm64 has an additional offset for alignment. See macOS 12 
+        // libpthread-486.100.11 src/pthread.c _pthread_allocate() and
+        // PTHREAD_T_OFFSET (defined in src/types_internal.h).
+        expected_stack_region_end += sizeof(_opaque_pthread_t) + 0x3000;
+#else
         expected_stack_region_end += sizeof(_opaque_pthread_t);
+#endif
       }
       EXPECT_LT(iterator->second.stack_base - iterator->second.stack_size,
                 thread.stack_region_address);
