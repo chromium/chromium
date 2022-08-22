@@ -279,6 +279,11 @@ void PartitionAllocMallocHookOnAfterForkInChild() {
 namespace internal {
 
 namespace {
+// 64 was chosen arbitrarily, as it seems like a reasonable trade-off between
+// performance and purging opportunity. Higher value (i.e. smaller slots)
+// wouldn't necessarily increase chances of purging, but would result in
+// more work and larger |slot_usage| array. Lower value would probably decrease
+// chances of purging. Not empirically tested.
 constexpr size_t kMaxPurgeableSlotsPerSystemPage = 64;
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
 MinPurgeableSlotSize() {
@@ -294,9 +299,6 @@ static size_t PartitionPurgeSlotSpan(
   const internal::PartitionBucket<thread_safe>* bucket = slot_span->bucket;
   size_t slot_size = bucket->slot_size;
 
-  // We will do nothing if slot_size is smaller than SystemPageSize() / 2
-  // because |kMaxSlotCount| will be too large in that case, which leads to
-  // |slot_usage| using up too much memory.
   if (slot_size < MinPurgeableSlotSize() || !slot_span->num_allocated_slots)
     return 0;
 
