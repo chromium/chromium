@@ -1083,13 +1083,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             // true/false. Otherwise, it will cause infinite loop of calling recreate().
             if (wasStartSurfaceAsHomepage == null || wasHomepageEnabled == null) return;
 
-            // We need to check
-            // {@link ReturnToChromeUtil#shouldShowStartSurfaceAsTheHomePage(Context)}
-            // which checks both 1) whether homepage URI is customized and 2) whether the homepage
-            // is enabled.
-            if (wasStartSurfaceAsHomepage != isStartSurfaceAsHomepage
-                    || (wasHomepageEnabled != isHomepageEnabled
-                            && ReturnToChromeUtil.shouldOpenNTPInsteadOfStart())) {
+            if (mIsStartSurfaceEnabled != ReturnToChromeUtil.isStartSurfaceEnabled(mActivity)) {
                 // If the state of whether Start surface is enabled is changed due to the homepage
                 // settings change, we need to recreate CTA to adopt this config change.
                 recreateActivityWithTabReparenting();
