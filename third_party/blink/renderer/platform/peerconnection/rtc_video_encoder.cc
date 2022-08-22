@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <numeric>
 #include <vector>
 
 #include "base/callback_helpers.h"
@@ -452,6 +453,23 @@ void RecordEncoderShutdownReasonUMA(RTCVideoEncoderShutdownReason reason,
   }
 }
 
+std::unique_ptr<std::pair<base::UnsafeSharedMemoryRegion,
+                          base::WritableSharedMemoryMapping>>
+CreateInputBuffer(const gfx::Size& input_coded_size) {
+  base::UnsafeSharedMemoryRegion shm =
+      base::UnsafeSharedMemoryRegion::Create(media::VideoFrame::AllocationSize(
+          media::PIXEL_FORMAT_I420, input_coded_size));
+  if (!shm.IsValid()) {
+    return nullptr;
+  }
+  base::WritableSharedMemoryMapping mapping = shm.Map();
+  if (!mapping.IsValid()) {
+    return nullptr;
+  }
+  return std::make_unique<std::pair<base::UnsafeSharedMemoryRegion,
+                                    base::WritableSharedMemoryMapping>>(
+      std::move(shm), std::move(mapping));
+}
 }  // namespace
 
 namespace features {
@@ -994,27 +1012,12 @@ void RTCVideoEncoder::Impl::RequireBitstreamBuffers(
 
   // |input_buffers_| is only needed in non import mode.
   if (!use_native_input_) {
-    for (unsigned int i = 0; i < input_count + kInputBufferExtraCount; ++i) {
-      base::UnsafeSharedMemoryRegion shm =
-          base::UnsafeSharedMemoryRegion::Create(
-              media::VideoFrame::AllocationSize(media::PIXEL_FORMAT_I420,
-                                                input_coded_size));
-      if (!shm.IsValid()) {
-        LogAndNotifyError(FROM_HERE, "failed to create input buffer ",
-                          media::VideoEncodeAccelerator::kPlatformFailureError);
-        return;
-      }
-      base::WritableSharedMemoryMapping mapping = shm.Map();
-      if (!mapping.IsValid()) {
-        LogAndNotifyError(FROM_HERE, "failed to create input buffer ",
-                          media::VideoEncodeAccelerator::kPlatformFailureError);
-        return;
-      }
-      input_buffers_.push_back(
-          std::make_unique<std::pair<base::UnsafeSharedMemoryRegion,
-                                     base::WritableSharedMemoryMapping>>(
-              std::move(shm), std::move(mapping)));
-      input_buffers_free_.push_back(i);
+    const wtf_size_t num_input_buffers = input_count + kInputBufferExtraCount;
+    input_buffers_free_.resize(num_input_buffers);
+    input_buffers_.resize(num_input_buffers);
+    for (wtf_size_t i = 0; i < num_input_buffers; i++) {
+      input_buffers_free_[i] = i;
+      input_buffers_[i] = nullptr;
     }
   }
 
@@ -1396,21 +1399,29 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
         return;
       }
     } else {
-      std::pair<base::UnsafeSharedMemoryRegion,
-                base::WritableSharedMemoryMapping>* input_buffer =
-          input_buffers_[index].get();
+      if (!input_buffers_[index]) {
+        input_buffers_[index] = CreateInputBuffer(input_frame_coded_size_);
+        if (!input_buffers_[index]) {
+          LogAndNotifyError(
+              FROM_HERE, "Failed to create input buffer",
+              media::VideoEncodeAccelerator::kPlatformFailureError);
+          return;
+        }
+      }
+
+      const auto& [shm_region, shm_mapping] = *input_buffers_[index];
       frame = media::VideoFrame::WrapExternalData(
           media::PIXEL_FORMAT_I420, input_frame_coded_size_,
           gfx::Rect(input_visible_size_), input_visible_size_,
-          input_buffer->second.GetMemoryAsSpan<uint8_t>().data(),
-          input_buffer->second.size(), timestamp);
+          shm_mapping.GetMemoryAsSpan<uint8_t>().data(), shm_mapping.size(),
+          timestamp);
       if (!frame.get()) {
         LogAndNotifyError(FROM_HERE, "failed to create frame",
                           media::VideoEncodeAccelerator::kPlatformFailureError);
         async_encode_event_.SetAndReset(WEBRTC_VIDEO_CODEC_ERROR);
         return;
       }
-      frame->BackWithSharedMemory(&input_buffer->first);
+      frame->BackWithSharedMemory(&shm_region);
 
       // Do a strided copy and scale (if necessary) the input frame to match
       // the input requirements for the encoder.
