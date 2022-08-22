@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/optimization_guide/features.gni")
+
 if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
@@ -21,11 +23,14 @@ source_set("embedder") {
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:features",
     "//components/segmentation_platform/internal",
-    "//components/segmentation_platform/internal:optimization_guide_segmentation_handler",
     "//components/segmentation_platform/internal/proto",
     "//components/segmentation_platform/public",
     "//url",
   ]
+
+  if (build_with_tflite_lib) {
+    deps += [ "//components/segmentation_platform/internal:optimization_guide_segmentation_handler" ]
+  }
 }
 
 source_set("unit_tests") {
