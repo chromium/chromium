@@ -5,6 +5,7 @@
 #include "ash/quick_pair/repository/fast_pair/saved_device_registry.h"
 
 #include "ash/quick_pair/common/mock_quick_pair_browser_delegate.h"
+#include "build/build_config.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -194,7 +195,15 @@ TEST_F(SavedDeviceRegistryTest, DeleteAccountKey_AccountKey) {
   EXPECT_FALSE(saved_device_registry_->DeleteAccountKey(kAccountKey1));
 }
 
-TEST_F(SavedDeviceRegistryTest, IsAccountKeySavedToRegistry_DeviceRemoved) {
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_IsAccountKeySavedToRegistry_DeviceRemoved \
+  DISABLED_IsAccountKeySavedToRegistry_DeviceRemoved
+#else
+#define MAYBE_IsAccountKeySavedToRegistry_DeviceRemoved \
+  IsAccountKeySavedToRegistry_DeviceRemoved
+#endif
+TEST_F(SavedDeviceRegistryTest,
+       MAYBE_IsAccountKeySavedToRegistry_DeviceRemoved) {
   // Simulate a user saving devices to their account.
   saved_device_registry_->SaveAccountKey(kFirstSavedMacAddress, kAccountKey1);
   saved_device_registry_->SaveAccountKey(kSecondSavedMacAddress, kAccountKey2);
