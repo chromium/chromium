@@ -80,7 +80,6 @@
 #include "chromeos/crosapi/mojom/sharesheet.mojom.h"
 #include "chromeos/crosapi/mojom/speech_recognition.mojom.h"
 #include "chromeos/crosapi/mojom/sync.mojom.h"
-#include "chromeos/crosapi/mojom/system_display.mojom.h"
 #include "chromeos/crosapi/mojom/task_manager.mojom.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/crosapi/mojom/timezone.mojom.h"
@@ -455,8 +454,6 @@ LacrosService::LacrosService()
   ConstructRemote<crosapi::mojom::SyncService,
                   &crosapi::mojom::Crosapi::BindSyncService,
                   Crosapi::MethodMinVersions::kBindSyncServiceMinVersion>();
-  ConstructRemote<crosapi::mojom::SystemDisplay, &Crosapi::BindSystemDisplay,
-                  Crosapi::MethodMinVersions::kBindSystemDisplayMinVersion>();
   ConstructRemote<crosapi::mojom::TaskManager,
                   &crosapi::mojom::Crosapi::BindTaskManager,
                   Crosapi::MethodMinVersions::kBindTaskManagerMinVersion>();

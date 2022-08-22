@@ -547,8 +547,8 @@ interface Crosapi {
 
   // Binds the System Display interface for querying display info.
   // Added in M92.
-  [MinVersion=24] BindSystemDisplay@29(
-      pending_receiver<SystemDisplay> receiver);
+  [MinVersion=24] REMOVED_29@29(
+      pending_receiver<SystemDisplayDeprecated> receiver);
 
   // Binds the Task Manager interface for integrating lacros tasks in ash
   // task manager.

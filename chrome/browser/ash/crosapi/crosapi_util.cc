@@ -327,7 +327,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::StructuredMetricsService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::SnapshotCapturer>(),
     MakeInterfaceVersionEntry<crosapi::mojom::SyncService>(),
-    MakeInterfaceVersionEntry<crosapi::mojom::SystemDisplay>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::SystemDisplayDeprecated>(),
     MakeInterfaceVersionEntry<crosapi::mojom::TaskManager>(),
     MakeInterfaceVersionEntry<crosapi::mojom::TestController>(),
     MakeInterfaceVersionEntry<crosapi::mojom::TimeZoneService>(),

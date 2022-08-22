@@ -82,7 +82,6 @@
 #include "chrome/browser/ash/crosapi/sharesheet_ash.h"
 #include "chrome/browser/ash/crosapi/speech_recognition_ash.h"
 #include "chrome/browser/ash/crosapi/structured_metrics_service_ash.h"
-#include "chrome/browser/ash/crosapi/system_display_ash.h"
 #include "chrome/browser/ash/crosapi/task_manager_ash.h"
 #include "chrome/browser/ash/crosapi/time_zone_service_ash.h"
 #include "chrome/browser/ash/crosapi/url_handler_ash.h"
@@ -244,7 +243,6 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       speech_recognition_ash_(std::make_unique<SpeechRecognitionAsh>()),
       structured_metrics_service_ash_(
           std::make_unique<StructuredMetricsServiceAsh>()),
-      system_display_ash_(std::make_unique<SystemDisplayAsh>()),
       task_manager_ash_(std::make_unique<TaskManagerAsh>()),
       time_zone_service_ash_(std::make_unique<TimeZoneServiceAsh>()),
       tts_ash_(std::make_unique<TtsAsh>(g_browser_process->profile_manager())),
@@ -560,9 +558,9 @@ void CrosapiAsh::BindSyncService(
   sync_service_ash->BindReceiver(std::move(receiver));
 }
 
-void CrosapiAsh::BindSystemDisplay(
-    mojo::PendingReceiver<mojom::SystemDisplay> receiver) {
-  system_display_ash_->BindReceiver(std::move(receiver));
+void CrosapiAsh::REMOVED_29(
+    mojo::PendingReceiver<mojom::SystemDisplayDeprecated> receiver) {
+  NOTIMPLEMENTED();
 }
 
 void CrosapiAsh::BindTaskManager(

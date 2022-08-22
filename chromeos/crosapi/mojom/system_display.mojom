@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// This interface is deprecated and is not used anymore.
+// Please use cros_display_config.mojom instead.
+
 module crosapi.mojom;
 
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -148,9 +151,12 @@ interface DisplayChangeObserver {
   OnCrosapiDisplayChanged@0();
 };
 
+// Deprecated.
+// Replaced by CrosDisplayConfigController.
 // Crosapi support for chrome.system.display extensions API.
-[Stable, Uuid="07f25a88-9762-4876-a8ce-2c1e6ad9f797"]
-interface SystemDisplay {
+[Stable, Uuid="07f25a88-9762-4876-a8ce-2c1e6ad9f797",
+ RenamedFrom="crosapi.mojom.SystemDisplay"]
+interface SystemDisplayDeprecated {
   // Returns the properties for all displays. If |single_unified| is true, a
   // single display will be returned if the display layout is in unifed mode.
   GetDisplayUnitInfoList@0(bool single_unified) =>

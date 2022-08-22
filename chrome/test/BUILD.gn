@@ -8055,7 +8055,6 @@ test("unit_tests") {
         "../browser/extensions/external_pref_loader_unittest.cc",
         "../browser/extensions/external_provider_impl_chromeos_unittest.cc",
         "../browser/extensions/system_display/display_info_provider_chromeos_unittest.cc",
-        "../browser/extensions/system_display/system_display_serialization_unittest.cc",
         "../browser/media_galleries/chromeos/mtp_device_object_enumerator_unittest.cc",
         "../browser/policy/restricted_mgs_policy_provider_ash_unittest.cc",
         "../browser/ui/webui/about_ui_unittest.cc",

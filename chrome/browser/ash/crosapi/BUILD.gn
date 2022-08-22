@@ -188,8 +188,6 @@ source_set("crosapi") {
     "speech_recognition_ash.h",
     "structured_metrics_service_ash.cc",
     "structured_metrics_service_ash.h",
-    "system_display_ash.cc",
-    "system_display_ash.h",
     "task_manager_ash.cc",
     "task_manager_ash.h",
     "test_mojo_connection_manager.cc",

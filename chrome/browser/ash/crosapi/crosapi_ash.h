@@ -93,7 +93,6 @@ class SelectFileAsh;
 class SharesheetAsh;
 class SpeechRecognitionAsh;
 class StructuredMetricsServiceAsh;
-class SystemDisplayAsh;
 class TaskManagerAsh;
 class TimeZoneServiceAsh;
 class TtsAsh;
@@ -284,8 +283,8 @@ class CrosapiAsh : public mojom::Crosapi {
           receiver) override;
   void BindSyncService(
       mojo::PendingReceiver<mojom::SyncService> receiver) override;
-  void BindSystemDisplay(
-      mojo::PendingReceiver<mojom::SystemDisplay> receiver) override;
+  void REMOVED_29(
+      mojo::PendingReceiver<mojom::SystemDisplayDeprecated> receiver) override;
   void BindVirtualKeyboard(
       mojo::PendingReceiver<mojom::VirtualKeyboard> receiver) override;
   void BindVpnService(
@@ -509,7 +508,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<SharesheetAsh> sharesheet_ash_;
   std::unique_ptr<SpeechRecognitionAsh> speech_recognition_ash_;
   std::unique_ptr<StructuredMetricsServiceAsh> structured_metrics_service_ash_;
-  std::unique_ptr<SystemDisplayAsh> system_display_ash_;
   std::unique_ptr<TaskManagerAsh> task_manager_ash_;
   std::unique_ptr<TimeZoneServiceAsh> time_zone_service_ash_;
   std::unique_ptr<TtsAsh> tts_ash_;
