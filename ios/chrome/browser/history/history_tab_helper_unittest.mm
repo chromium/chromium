@@ -39,7 +39,7 @@ class HistoryTabHelperTest : public PlatformTest {
     HistoryTabHelper::CreateForWebState(&web_state_);
   }
 
-  // Queries the history service for information about the given |url| and
+  // Queries the history service for information about the given `url` and
   // returns the response.  Spins the runloop until a response is received.
   void QueryURL(const GURL& url) {
     history::HistoryService* service =
@@ -57,7 +57,7 @@ class HistoryTabHelperTest : public PlatformTest {
     loop.Run();
   }
 
-  // Adds an entry for the given |url| to the history database.
+  // Adds an entry for the given `url` to the history database.
   void AddVisitForURL(const GURL& url) {
     history::HistoryService* service =
         ios::HistoryServiceFactory::GetForBrowserState(
@@ -73,7 +73,7 @@ class HistoryTabHelperTest : public PlatformTest {
   web::FakeWebState web_state_;
   base::CancelableTaskTracker tracker_;
 
-  // Cached data from the last call to |QueryURL()|.
+  // Cached data from the last call to `QueryURL()`.
   history::URLRow latest_row_result_;
 };
 
