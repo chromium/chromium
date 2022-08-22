@@ -67,7 +67,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/chromeos/extensions/active_tab_permission_granter_delegate_chromeos.h"
 #include "chrome/browser/chromeos/extensions/extension_tab_util_delegate_chromeos.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/permissions_updater.h"
@@ -178,10 +177,6 @@ bool GetUserLockAttributes(const user_manager::User* user,
 void SetPublicAccountDelegates() {
   extensions::ExtensionTabUtil::SetPlatformDelegate(
       std::make_unique<extensions::ExtensionTabUtilDelegateChromeOS>());
-
-  extensions::ActiveTabPermissionGranter::SetPlatformDelegate(
-      std::make_unique<
-          extensions::ActiveTabPermissionGranterDelegateChromeOS>());
 }
 
 policy::MinimumVersionPolicyHandler* GetMinimumVersionPolicyHandler() {
@@ -291,7 +286,6 @@ ChromeUserManagerImpl::CreateChromeUserManager() {
 // static
 void ChromeUserManagerImpl::ResetPublicAccountDelegatesForTesting() {
   extensions::ExtensionTabUtil::SetPlatformDelegate(nullptr);
-  extensions::ActiveTabPermissionGranter::SetPlatformDelegate(nullptr);
 }
 
 ChromeUserManagerImpl::ChromeUserManagerImpl()

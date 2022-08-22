@@ -5,14 +5,12 @@
 #include "chrome/browser/extensions/active_tab_permission_granter.h"
 
 #include <set>
-#include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
-#include "base/no_destructor.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -32,6 +30,7 @@
 #include "extensions/common/mojom/renderer.mojom.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "extensions/common/url_pattern_set.h"
 #include "extensions/common/user_script.h"
 #include "url/gurl.h"
 
@@ -93,27 +92,6 @@ void SendRendererMessageToProcesses(
     renderer_message.Run(false, tab_process);
 }
 
-std::unique_ptr<ActiveTabPermissionGranter::Delegate>&
-GetActiveTabPermissionGranterDelegateWrapper() {
-  static base::NoDestructor<
-      std::unique_ptr<ActiveTabPermissionGranter::Delegate>>
-      delegate_wrapper;
-  return *delegate_wrapper;
-}
-
-ActiveTabPermissionGranter::Delegate* GetActiveTabPermissionGranterDelegate() {
-  return GetActiveTabPermissionGranterDelegateWrapper().get();
-}
-
-// Returns true if activeTab is allowed to be granted to the extension. This can
-// return false for platform-specific implementations.
-bool ShouldGrantActiveTabOrPrompt(const Extension* extension,
-                                  content::WebContents* web_contents) {
-  return !GetActiveTabPermissionGranterDelegate() ||
-         GetActiveTabPermissionGranterDelegate()->ShouldGrantActiveTabOrPrompt(
-             extension, web_contents);
-}
-
 void SetCorsOriginAccessList(content::BrowserContext* browser_context,
                              const Extension& extension,
                              base::OnceClosure closure) {
@@ -143,12 +121,6 @@ ActiveTabPermissionGranter::ActiveTabPermissionGranter(
 
 ActiveTabPermissionGranter::~ActiveTabPermissionGranter() {}
 
-// static
-void ActiveTabPermissionGranter::SetPlatformDelegate(
-    std::unique_ptr<Delegate> delegate) {
-  GetActiveTabPermissionGranterDelegateWrapper() = std::move(delegate);
-}
-
 void ActiveTabPermissionGranter::GrantIfRequested(const Extension* extension) {
   if (granted_extensions_.Contains(extension->id()))
     return;
@@ -165,16 +137,11 @@ void ActiveTabPermissionGranter::GrantIfRequested(const Extension* extension) {
   // withheld, we grant it active tab-style permissions, even if it doesn't have
   // the activeTab permission in the manifest. This is necessary for the
   // runtime host permissions feature to work.
-  // Note: It's important that we check if the extension has activeTab before
-  // checking ShouldGrantActiveTabOrPrompt() in order to prevent
-  // ShouldGrantActiveTabOrPrompt() from prompting for extensions that don't
-  // request the activeTab permission.
   content::BrowserContext* browser_context =
       web_contents()->GetBrowserContext();
-  if ((permissions_data->HasAPIPermission(mojom::APIPermissionID::kActiveTab) ||
-       permissions_data->withheld_permissions().effective_hosts().MatchesURL(
-           url)) &&
-      ShouldGrantActiveTabOrPrompt(extension, web_contents())) {
+  if (permissions_data->HasAPIPermission(mojom::APIPermissionID::kActiveTab) ||
+      permissions_data->withheld_permissions().effective_hosts().MatchesURL(
+          url)) {
     // Gate activeTab for file urls on extensions having explicit access to file
     // urls.
     int valid_schemes = UserScript::ValidUserScriptSchemes();

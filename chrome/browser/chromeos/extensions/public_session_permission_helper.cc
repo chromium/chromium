@@ -152,14 +152,6 @@ bool PublicSessionPermissionHelper::HandlePermissionRequestImpl(
 
   auto permissions_prompt = std::make_unique<ExtensionInstallPrompt::Prompt>(
       ExtensionInstallPrompt::PERMISSIONS_PROMPT);
-  // activeTab has no permission message by default, so one is added here.
-  if (unprompted_permissions.ContainsID(APIPermissionID::kActiveTab)) {
-    PermissionMessages messages;
-    messages.push_back(PermissionMessage(
-        l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_WARNING_CURRENT_HOST),
-        extensions::PermissionIDSet()));
-    permissions_prompt->AddPermissionMessages(messages);
-  }
 
   // This Unretained is safe because the lifetime of this object is until
   // process exit.
