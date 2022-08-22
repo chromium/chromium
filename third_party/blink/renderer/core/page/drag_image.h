@@ -52,7 +52,6 @@ class CORE_EXPORT DragImage {
   static std::unique_ptr<DragImage> Create(
       Image*,
       RespectImageOrientationEnum = kRespectImageOrientation,
-      float device_scale_factor = 1,
       InterpolationQuality = kInterpolationDefault,
       float opacity = 1,
       gfx::Vector2dF image_scale = gfx::Vector2dF(1, 1));
@@ -71,7 +70,6 @@ class CORE_EXPORT DragImage {
                                           const gfx::Size& max_size);
 
   const SkBitmap& Bitmap() { return bitmap_; }
-  float ResolutionScale() const { return resolution_scale_; }
   gfx::Size Size() const {
     return gfx::Size(bitmap_.width(), bitmap_.height());
   }
@@ -79,10 +77,9 @@ class CORE_EXPORT DragImage {
   void Scale(float scale_x, float scale_y);
 
  private:
-  DragImage(const SkBitmap&, float resolution_scale, InterpolationQuality);
+  DragImage(const SkBitmap&, InterpolationQuality);
 
   SkBitmap bitmap_;
-  float resolution_scale_;
   InterpolationQuality interpolation_quality_;
 };
 

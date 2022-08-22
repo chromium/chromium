@@ -47,7 +47,6 @@
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
-#include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/drag_image.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/cull_rect_updater.h"
@@ -61,7 +60,6 @@
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink.h"
-#include "ui/display/screen_info.h"
 
 namespace blink {
 
@@ -370,6 +368,7 @@ void DataTransfer::SetDragImageElement(Node* node, const gfx::Point& loc) {
   setDragImage(nullptr, node, loc);
 }
 
+// static
 gfx::RectF DataTransfer::ClipByVisualViewport(const gfx::RectF& absolute_rect,
                                               const LocalFrame& frame) {
   gfx::Rect viewport_in_root_frame =
@@ -379,9 +378,10 @@ gfx::RectF DataTransfer::ClipByVisualViewport(const gfx::RectF& absolute_rect,
   return IntersectRects(absolute_viewport, absolute_rect);
 }
 
-// static
 // Returns a DragImage whose bitmap contains |contents|, positioned and scaled
 // in device space.
+//
+// static
 std::unique_ptr<DragImage> DataTransfer::CreateDragImageForFrame(
     LocalFrame& frame,
     float opacity,
@@ -412,16 +412,12 @@ std::unique_ptr<DragImage> DataTransfer::CreateDragImageForFrame(
 
   scoped_refptr<Image> image =
       UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot());
-  ChromeClient& chrome_client = frame.GetPage()->GetChromeClient();
-  float screen_device_scale_factor =
-      chrome_client.GetScreenInfo(frame).device_scale_factor;
 
   // There is no orientation information in the image, so pass
   // kDoNotRespectImageOrientation in order to avoid wasted work looking
   // at orientation.
   return DragImage::Create(image.get(), kDoNotRespectImageOrientation,
-                           screen_device_scale_factor, kInterpolationDefault,
-                           opacity);
+                           kInterpolationDefault, opacity);
 }
 
 // static
@@ -433,15 +429,20 @@ std::unique_ptr<DragImage> DataTransfer::NodeImage(LocalFrame& frame,
 
 std::unique_ptr<DragImage> DataTransfer::CreateDragImage(
     gfx::Point& loc,
+    float device_scale_factor,
     LocalFrame* frame) const {
   if (drag_image_element_) {
     loc = drag_loc_;
-
+    // The image below is already rendered, so shouldn't be scaled (using
+    // device_scale_factor).
     return NodeImage(*frame, *drag_image_element_);
   }
   if (drag_image_) {
     loc = drag_loc_;
-    return DragImage::Create(drag_image_->GetImage());
+    std::unique_ptr<DragImage> drag_image =
+        DragImage::Create(drag_image_->GetImage());
+    drag_image.get()->Scale(device_scale_factor, device_scale_factor);
+    return drag_image;
   }
   return nullptr;
 }

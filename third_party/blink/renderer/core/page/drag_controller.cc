@@ -1101,8 +1101,7 @@ std::unique_ptr<DragImage> DragImageForImage(
                                    MaxDragImageSize(device_scale_factor));
 
   return DragImage::Create(image.get(), respect_orientation,
-                           device_scale_factor, interpolation_quality,
-                           kDragImageAlpha, image_scale);
+                           interpolation_quality, kDragImageAlpha, image_scale);
 }
 
 gfx::Point DragLocationForImage(const DragImage* drag_image,
@@ -1226,11 +1225,14 @@ bool DragController::StartDrag(LocalFrame* src,
   gfx::Point drag_offset;
 
   DataTransfer* data_transfer = state.drag_data_transfer_.Get();
+  float device_scale_factor =
+      src->GetChromeClient().GetScreenInfo(*src).device_scale_factor;
+
   // We allow DHTML/JS to set the drag image, even if its a link, image or text
   // we're dragging.  This is in the spirit of the IE API, which allows
   // overriding of pasteboard data and DragOp.
   std::unique_ptr<DragImage> drag_image =
-      data_transfer->CreateDragImage(drag_offset, src);
+      data_transfer->CreateDragImage(drag_offset, device_scale_factor, src);
   if (drag_image) {
     drag_obj_location =
         DragLocationForDHTMLDrag(mouse_dragged_point, drag_initiation_location,
@@ -1238,13 +1240,13 @@ bool DragController::StartDrag(LocalFrame* src,
   }
 
   Node* node = state.drag_src_.Get();
+  gfx::Point effective_drag_initiation_location = drag_initiation_location;
+
   if (state.drag_type_ == kDragSourceActionSelection) {
     if (!drag_image) {
       drag_image = DragController::DragImageForSelection(*src, kDragImageAlpha);
       drag_obj_location = DragLocationForSelectionDrag(*src);
     }
-    DoSystemDrag(drag_image.get(), drag_obj_location, drag_initiation_location,
-                 data_transfer, src);
   } else if (state.drag_type_ == kDragSourceActionImage) {
     auto* element = DynamicTo<Element>(node);
     if (image_url.IsEmpty() || !element || !CanDragImage(*element))
@@ -1256,22 +1258,18 @@ bool DragController::StartDrag(LocalFrame* src,
       gfx::Size image_size_in_pixels = gfx::ScaleToFlooredSize(
           image_rect.size(), src->GetPage()->GetVisualViewport().Scale());
 
-      float screen_device_scale_factor =
-          src->GetChromeClient().GetScreenInfo(*src).device_scale_factor;
       // Pass the selected image size in DIP becasue dragImageForImage clips the
       // image in DIP.  The coordinates of the locations are in Viewport
       // coordinates, and they're converted in the Blink client.
       // TODO(oshima): Currently, the dragged image on high DPI is scaled and
       // can be blurry because of this.  Consider to clip in the screen
       // coordinates to use high resolution image on high DPI screens.
-      drag_image = DragImageForImage(*element, screen_device_scale_factor,
+      drag_image = DragImageForImage(*element, device_scale_factor,
                                      image_size_in_pixels);
-      drag_obj_location =
-          DragLocationForImage(drag_image.get(), drag_initiation_location,
-                               image_rect.origin(), image_size_in_pixels);
+      drag_obj_location = DragLocationForImage(
+          drag_image.get(), effective_drag_initiation_location,
+          image_rect.origin(), image_size_in_pixels);
     }
-    DoSystemDrag(drag_image.get(), drag_obj_location, drag_initiation_location,
-                 data_transfer, src);
   } else if (state.drag_type_ == kDragSourceActionLink) {
     if (link_url.IsEmpty())
       return false;
@@ -1295,25 +1293,20 @@ bool DragController::StartDrag(LocalFrame* src,
 
     if (!drag_image) {
       DCHECK(src->GetPage());
-      float screen_device_scale_factor =
-          src->GetChromeClient().GetScreenInfo(*src).device_scale_factor;
-      drag_image =
-          DragImageForLink(link_url, hit_test_result.TextContent(),
-                           screen_device_scale_factor, src->GetDocument());
+      drag_image = DragImageForLink(link_url, hit_test_result.TextContent(),
+                                    device_scale_factor, src->GetDocument());
       drag_obj_location = DragLocationForLink(
-          drag_image.get(), mouse_dragged_point, screen_device_scale_factor,
+          drag_image.get(), mouse_dragged_point, device_scale_factor,
           src->GetPage()->PageScaleFactor());
     }
-    DoSystemDrag(drag_image.get(), drag_obj_location, mouse_dragged_point,
-                 data_transfer, src);
-  } else if (state.drag_type_ == kDragSourceActionDHTML) {
-    DoSystemDrag(drag_image.get(), drag_obj_location, drag_initiation_location,
-                 data_transfer, src);
-  } else {
+    effective_drag_initiation_location = mouse_dragged_point;
+  } else if (state.drag_type_ != kDragSourceActionDHTML) {
     NOTREACHED();
     return false;
   }
 
+  DoSystemDrag(drag_image.get(), drag_obj_location,
+               effective_drag_initiation_location, data_transfer, src);
   return true;
 }
 
@@ -1326,31 +1319,20 @@ void DragController::DoSystemDrag(DragImage* image,
   drag_initiator_ = frame->DomWindow();
   SetExecutionContext(frame->DomWindow());
 
-  // TODO(pdr): |drag_location| and |event_pos| should be passed in as
+  // TODO(pdr): |drag_obj_location| and |event_pos| should be passed in as
   // FloatPoints and we should calculate these adjusted values in floating
   // point to avoid unnecessary rounding.
-  gfx::Point adjusted_drag_location =
+  gfx::Point adjusted_drag_obj_location =
       frame->View()->FrameToViewport(drag_obj_location);
   gfx::Point adjusted_event_pos =
       frame->View()->FrameToViewport(drag_initiation_location);
   gfx::Point offset_point =
-      adjusted_event_pos - adjusted_drag_location.OffsetFromOrigin();
+      adjusted_event_pos - adjusted_drag_obj_location.OffsetFromOrigin();
   WebDragData drag_data = data_transfer->GetDataObject()->ToWebDragData();
   drag_data.SetReferrerPolicy(drag_initiator_->GetReferrerPolicy());
   DragOperationsMask drag_operation_mask = data_transfer->SourceOperation();
-  SkBitmap drag_image;
 
-  if (image) {
-    float resolution_scale = image->ResolutionScale();
-    float device_scale_factor =
-        frame->GetChromeClient().GetScreenInfo(*frame).device_scale_factor;
-    if (device_scale_factor != resolution_scale) {
-      DCHECK_GT(resolution_scale, 0);
-      float scale = device_scale_factor / resolution_scale;
-      image->Scale(scale, scale);
-    }
-    drag_image = image->Bitmap();
-  }
+  SkBitmap drag_image = image ? image->Bitmap() : SkBitmap();
 
   page_->GetChromeClient().StartDragging(frame, drag_data, drag_operation_mask,
                                          std::move(drag_image), offset_point);

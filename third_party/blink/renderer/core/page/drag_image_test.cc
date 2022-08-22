@@ -168,7 +168,7 @@ TEST(DragImageTest, InterpolationNone) {
   scoped_refptr<TestImage> test_image =
       TestImage::Create(SkImage::MakeFromBitmap(test_bitmap));
   std::unique_ptr<DragImage> drag_image = DragImage::Create(
-      test_image.get(), kRespectImageOrientation, 1, kInterpolationNone);
+      test_image.get(), kRespectImageOrientation, kInterpolationNone);
   ASSERT_TRUE(drag_image);
   drag_image->Scale(2, 2);
   const SkBitmap& drag_bitmap = drag_image->Bitmap();

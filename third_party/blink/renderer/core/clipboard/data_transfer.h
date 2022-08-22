@@ -105,6 +105,7 @@ class CORE_EXPORT DataTransfer final : public ScriptWrappable,
   void SetDragImageElement(Node*, const gfx::Point&);
 
   std::unique_ptr<DragImage> CreateDragImage(gfx::Point& drag_location,
+                                             float device_scale_factor,
                                              LocalFrame*) const;
   void DeclareAndWriteDragImage(Element*,
                                 const KURL& link_url,
