@@ -44,6 +44,13 @@ class DeviceScheduledRebootHandler
   // Sets reboot delay for testing.
   void SetRebootDelayForTest(const base::TimeDelta& reboot_delay);
 
+  // Returns value of |scheduled_reboot_data_|.
+  absl::optional<ScheduledTaskExecutor::ScheduledTaskData>
+  GetScheduledRebootDataForTest() const;
+
+  // Returns value of |skip_reboot_|.
+  bool IsRebootSkippedForTest() const;
+
  protected:
   // Called when scheduled timer fires. Triggers a reboot and
   // schedules the next reboot based on |scheduled_reboot_data_|.
