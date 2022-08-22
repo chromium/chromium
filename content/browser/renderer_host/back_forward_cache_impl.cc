@@ -1394,6 +1394,9 @@ BackForwardCacheCanStoreTreeResult::BackForwardCacheCanStoreTreeResult(
       children_(std::move(children)),
       is_same_origin_(
           rfh->GetLastCommittedOrigin().IsSameOriginWith(main_document_origin)),
+      id_(rfh->frame_tree_node()->html_id()),
+      name_(rfh->frame_tree_node()->html_name()),
+      src_(rfh->frame_tree_node()->html_src()),
       url_(rfh->GetLastCommittedURL()) {}
 
 BackForwardCacheCanStoreTreeResult::~BackForwardCacheCanStoreTreeResult() =
@@ -1428,6 +1431,38 @@ BackForwardCacheCanStoreTreeResult::CreateEmptyTree(RenderFrameHostImpl* rfh) {
                                              empty_result,
                                              std::move(empty_vector)));
   return empty_tree;
+}
+
+blink::mojom::BackForwardCacheNotRestoredReasonsPtr
+BackForwardCacheCanStoreTreeResult::GetWebExposedNotRestoredReasons() {
+  blink::mojom::BackForwardCacheNotRestoredReasonsPtr not_restored_reasons =
+      blink::mojom::BackForwardCacheNotRestoredReasons::New();
+  if (IsSameOrigin()) {
+    // Only include same_origin_details for documents that are same-origin with
+    // the main document. Stop recursion as soon as we hit a cross-origin
+    // document.
+    not_restored_reasons->same_origin_details =
+        blink::mojom::SameOriginBfcacheNotRestoredDetails::New();
+    not_restored_reasons->same_origin_details->url = url_.spec();
+    not_restored_reasons->same_origin_details->src = src_;
+    not_restored_reasons->same_origin_details->id = id_;
+    not_restored_reasons->same_origin_details->name = name_;
+    not_restored_reasons->same_origin_details->reasons =
+        GetDocumentResult().GetStringReasons();
+
+    not_restored_reasons->blocked = !GetDocumentResult().CanRestore();
+    for (const auto& subtree : GetChildren()) {
+      not_restored_reasons->same_origin_details->children.push_back(
+          subtree->GetWebExposedNotRestoredReasons());
+    }
+  } else {
+    // If the subtree's root document is cross-origin from the main frame
+    // document, report whether or not this entire subtree is blocking
+    // back/forward cache.
+    not_restored_reasons->blocked =
+        !GetDocumentResult().CanRestore() || !FlattenTree().CanRestore();
+  }
+  return not_restored_reasons;
 }
 
 BackForwardCacheCanStoreDocumentResultWithTree::

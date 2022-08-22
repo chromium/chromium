@@ -2076,7 +2076,9 @@ WebLocalFrameImpl::WebLocalFrameImpl(
           MakeGarbageCollected<FindInPage>(*this, interface_registry)),
       interface_registry_(interface_registry),
       input_method_controller_(*this),
-      spell_check_panel_host_client_(nullptr) {
+      spell_check_panel_host_client_(nullptr),
+      not_restored_reasons_(
+          mojom::BackForwardCacheNotRestoredReasonsPtr(nullptr)) {
   CHECK(client_);
   g_frame_count++;
   client_->BindToFrame(this);
@@ -2979,6 +2981,34 @@ void WebLocalFrameImpl::SetSessionStorageArea(
         session_storage_area) {
   CoreInitializer::GetInstance().SetSessionStorageArea(
       *GetFrame(), std::move(session_storage_area));
+}
+
+void WebLocalFrameImpl::SetNotRestoredReasons(
+    const mojom::BackForwardCacheNotRestoredReasonsPtr& not_restored_reasons) {
+  not_restored_reasons_ =
+      not_restored_reasons.is_null()
+          ? mojom::BackForwardCacheNotRestoredReasonsPtr(nullptr)
+          : not_restored_reasons->Clone();
+}
+
+bool WebLocalFrameImpl::HasBlockingReasons() {
+  if (!not_restored_reasons_)
+    return false;
+  return HasBlockingReasonsHelper(not_restored_reasons_);
+}
+
+bool WebLocalFrameImpl::HasBlockingReasonsHelper(
+    const mojom::BackForwardCacheNotRestoredReasonsPtr& not_restored) {
+  if (not_restored->blocked)
+    return true;
+  if (not_restored->same_origin_details) {
+    for (const auto& child : not_restored->same_origin_details->children) {
+      if (HasBlockingReasonsHelper(child))
+        return true;
+    }
+    return false;
+  }
+  return not_restored->blocked;
 }
 
 void WebLocalFrameImpl::AddHitTestOnTouchStartCallback(

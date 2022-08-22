@@ -93,6 +93,7 @@ class CONTENT_EXPORT BackForwardCacheCanStoreDocumentResult {
   const std::set<ax::mojom::Event>& ax_events() const { return ax_events_; }
 
   std::string ToString() const;
+  std::vector<std::string> GetStringReasons() const;
 
   void WriteIntoTrace(
       perfetto::TracedProto<
@@ -101,7 +102,11 @@ class CONTENT_EXPORT BackForwardCacheCanStoreDocumentResult {
 
  private:
   void AddNotRestoredReason(BackForwardCacheMetrics::NotRestoredReason reason);
+  // Returns a one-sentence of explanation for a NotRestoredReason.
   std::string NotRestoredReasonToString(
+      BackForwardCacheMetrics::NotRestoredReason reason) const;
+  // Returns a name in string for a NotRestoredReason.
+  std::string NotRestoredReasonToReportString(
       BackForwardCacheMetrics::NotRestoredReason reason) const;
 
   NotRestoredReasons not_restored_reasons_;

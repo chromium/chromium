@@ -236,6 +236,7 @@
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom.h"
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
@@ -12242,6 +12243,27 @@ void RenderFrameHostImpl::SendCommitNavigation(
       }
     }
   }
+
+  blink::mojom::BackForwardCacheNotRestoredReasonsPtr not_restored_reasons;
+  // Only populate the web-exposed NotRestoredReasons when needed by the
+  // NotRestoredReasons API, i.e. for cross-document main frame history
+  // navigations that are not served by back/forward cache.
+  if (IsBackForwardCacheEnabled() &&
+      base::FeatureList::IsEnabled(
+          blink::features::kBackForwardCacheSendNotRestoredReasons) &&
+      navigation_request->IsInMainFrame() &&
+      !navigation_request->IsServedFromBackForwardCache()) {
+    if (NavigationEntryImpl* entry = static_cast<NavigationEntryImpl*>(
+            navigation_request->GetNavigationEntry())) {
+      if (auto* metrics = entry->back_forward_cache_metrics()) {
+        not_restored_reasons = metrics->GetWebExposedNotRestoredReasons();
+      }
+    }
+  }
+  // Save the last sent NotRestoredReasons value for testing, so that we can
+  // verify them in tests.
+  not_restored_reasons_for_testing_ = not_restored_reasons.Clone();
+
   commit_params->commit_sent = base::TimeTicks::Now();
   navigation_client->CommitNavigation(
       std::move(common_params), std::move(commit_params),
@@ -12252,7 +12274,7 @@ void RenderFrameHostImpl::SendCommitNavigation(
       std::move(prefetch_loader_factory), devtools_navigation_token,
       permissions_policy, std::move(policy_container),
       std::move(code_cache_host), std::move(cookie_manager_info),
-      std::move(storage_info),
+      std::move(storage_info), std::move(not_restored_reasons),
       BuildCommitNavigationCallback(navigation_request));
   base::UmaHistogramTimes(
       base::StrCat({"Navigation.SendCommitNavigationTime.",

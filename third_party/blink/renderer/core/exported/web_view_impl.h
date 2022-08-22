@@ -301,7 +301,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       mojom::blink::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces)
       override;
 
-  void DispatchPageshow(base::TimeTicks navigation_start);
+  void DispatchPersistedPageshow(base::TimeTicks navigation_start);
   void DispatchPagehide(mojom::blink::PagehideDispatch pagehide_dispatch);
   void HookBackForwardCacheEviction(bool hook);
 

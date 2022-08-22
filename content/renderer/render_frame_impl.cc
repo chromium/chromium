@@ -2573,6 +2573,7 @@ void RenderFrameImpl::CommitNavigation(
     mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
     mojom::CookieManagerInfoPtr cookie_manager_info,
     mojom::StorageInfoPtr storage_info,
+    blink::mojom::BackForwardCacheNotRestoredReasonsPtr not_restored_reasons,
     mojom::NavigationClient::CommitNavigationCallback commit_callback) {
   DCHECK(navigation_client_impl_);
   DCHECK(!blink::IsRendererDebugURL(common_params->url));
@@ -2621,7 +2622,7 @@ void RenderFrameImpl::CommitNavigation(
       std::move(controller_service_worker_info), std::move(container_info),
       std::move(prefetch_loader_factory), std::move(code_cache_host),
       std::move(cookie_manager_info), std::move(storage_info),
-      std::move(document_state));
+      std::move(document_state), std::move(not_restored_reasons));
 
   // Handle a navigation that has a non-empty `data_url_as_string`, or perform
   // a "loadDataWithBaseURL" navigation, which is different from a normal data:
@@ -2742,6 +2743,7 @@ void RenderFrameImpl::CommitNavigationWithParams(
     mojom::CookieManagerInfoPtr cookie_manager_info,
     mojom::StorageInfoPtr storage_info,
     std::unique_ptr<DocumentState> document_state,
+    blink::mojom::BackForwardCacheNotRestoredReasonsPtr not_restored_reasons,
     std::unique_ptr<WebNavigationParams> navigation_params) {
   if (common_params->url.IsAboutSrcdoc()) {
     WebNavigationParams::FillStaticResponse(navigation_params.get(),
@@ -2761,6 +2763,21 @@ void RenderFrameImpl::CommitNavigationWithParams(
   // in a special mode.
   if (commit_params->is_view_source)
     frame_->EnableViewSourceMode(true);
+
+  if (IsBackForwardCacheEnabled() &&
+      base::FeatureList::IsEnabled(
+          blink::features::kBackForwardCacheSendNotRestoredReasons) &&
+      IsMainFrame() &&
+      common_params->navigation_type ==
+          blink::mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT) {
+    DCHECK(not_restored_reasons);
+    // Save the Back/Forward Cache NotRestoredReasons struct to WebLocalFrame to
+    // report for PerformanceNavigationTiming API.
+    frame_->SetNotRestoredReasons(std::move(not_restored_reasons));
+    // For cross-document main frame history navigations, |not_restored_reasons|
+    // should be populated and has blocking reasons.
+    DCHECK(frame_->HasBlockingReasons());
+  }
 
   // Note: this intentionally does not call |Detach()| before |reset()|. If
   // there is an active |MHTMLBodyLoaderClient|, the browser-side navigation

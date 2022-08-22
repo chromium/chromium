@@ -74,6 +74,7 @@
 #include "third_party/blink/public/web/web_input_element.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_meaningful_layout.h"
+#include "third_party/blink/public/web/web_navigation_type.h"
 #include "third_party/blink/public/web/web_node.h"
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/public/web/web_range.h"
@@ -2502,7 +2503,7 @@ void WebViewImpl::SetPageLifecycleStateInternal(
       }
     }
 
-    DispatchPageshow(page_restore_params->navigation_start);
+    DispatchPersistedPageshow(page_restore_params->navigation_start);
 
     Scheduler()->SetPageBackForwardCached(new_state->is_in_back_forward_cache);
     if (MainFrame()->IsWebLocalFrame()) {
@@ -2583,7 +2584,16 @@ void WebViewImpl::DispatchPagehide(
   }
 }
 
-void WebViewImpl::DispatchPageshow(base::TimeTicks navigation_start) {
+void WebViewImpl::DispatchPersistedPageshow(base::TimeTicks navigation_start) {
+  // Reset NotRestoredReasons for successful back/forward cache restore here,
+  // so that we set a new value for NotRestoredReasons every time main-frame
+  // history navigation is completed. For history navigation that is not
+  // restored from back/forward cache, we set a new value in
+  // |CommitNavigationWithParams()|.
+  if (MainFrame()->IsWebLocalFrame()) {
+    MainFrame()->ToWebLocalFrame()->SetNotRestoredReasons(nullptr);
+  }
+
   for (Frame* frame = GetPage()->MainFrame(); frame;
        frame = frame->Tree().TraverseNext()) {
     auto* local_frame = DynamicTo<LocalFrame>(frame);

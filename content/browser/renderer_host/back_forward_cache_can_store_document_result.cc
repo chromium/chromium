@@ -291,15 +291,22 @@ std::string DisallowActivationReasonsToString(
 std::string BackForwardCacheCanStoreDocumentResult::ToString() const {
   if (CanStore())
     return "Yes";
-
   std::vector<std::string> reason_strs;
-
   for (BackForwardCacheMetrics::NotRestoredReason reason :
        not_restored_reasons_) {
     reason_strs.push_back(NotRestoredReasonToString(reason));
   }
-
   return "No: " + base::JoinString(reason_strs, ", ");
+}
+
+std::vector<std::string>
+BackForwardCacheCanStoreDocumentResult::GetStringReasons() const {
+  std::vector<std::string> reason_strs;
+  for (BackForwardCacheMetrics::NotRestoredReason reason :
+       not_restored_reasons_) {
+    reason_strs.push_back(NotRestoredReasonToReportString(reason));
+  }
+  return reason_strs;
 }
 
 std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
@@ -423,6 +430,72 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
       return "Error documents cannot be stored in bfcache";
     case Reason::kFencedFramesEmbedder:
       return "Pages using FencedFrames cannot be stored in bfcache.";
+  }
+}
+
+std::string
+BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToReportString(
+    BackForwardCacheMetrics::NotRestoredReason reason) const {
+  using Reason = BackForwardCacheMetrics::NotRestoredReason;
+
+  switch (reason) {
+    // TODO(crbug.com/1349223): Add string to all reasons. Be sure to mask
+    // extension related reasons so that its presence would not be visible to
+    // the API.
+    case Reason::kNotPrimaryMainFrame:
+    case Reason::kBackForwardCacheDisabled:
+    case Reason::kRelatedActiveContentsExist:
+    case Reason::kHTTPStatusNotOK:
+    case Reason::kSchemeNotHTTPOrHTTPS:
+    case Reason::kLoading:
+    case Reason::kWasGrantedMediaAccess:
+    case Reason::kDisableForRenderFrameHostCalled:
+    case Reason::kDomainNotAllowed:
+    case Reason::kHTTPMethodNotGET:
+    case Reason::kSubframeIsNavigating:
+    case Reason::kTimeout:
+    case Reason::kCacheLimit:
+    case Reason::kForegroundCacheLimit:
+    case Reason::kJavaScriptExecution:
+    case Reason::kRendererProcessKilled:
+    case Reason::kRendererProcessCrashed:
+    case Reason::kSchedulerTrackedFeatureUsed:
+    case Reason::kConflictingBrowsingInstance:
+    case Reason::kCacheFlushed:
+    case Reason::kServiceWorkerVersionActivation:
+    case Reason::kSessionRestored:
+    case Reason::kUnknown:
+    case Reason::kServiceWorkerPostMessage:
+    case Reason::kEnteredBackForwardCacheBeforeServiceWorkerHostAdded:
+    case Reason::kNotMostRecentNavigationEntry:
+    case Reason::kServiceWorkerClaim:
+    case Reason::kIgnoreEventAndEvict:
+    case Reason::kHaveInnerContents:
+    case Reason::kTimeoutPuttingInCache:
+    case Reason::kBackForwardCacheDisabledByLowMemory:
+    case Reason::kBackForwardCacheDisabledByCommandLine:
+    case Reason::kNavigationCancelledWhileRestoring:
+    case Reason::kNetworkRequestRedirected:
+    case Reason::kNetworkRequestTimeout:
+    case Reason::kNetworkExceedsBufferLimit:
+    case Reason::kUserAgentOverrideDiffers:
+    case Reason::kNetworkRequestDatapipeDrainedAsBytesConsumer:
+    case Reason::kBrowsingInstanceNotSwapped:
+    case Reason::kBackForwardCacheDisabledForDelegate:
+    case Reason::kUnloadHandlerExistsInMainFrame:
+    case Reason::kUnloadHandlerExistsInSubFrame:
+    case Reason::kServiceWorkerUnregistration:
+    case Reason::kCacheControlNoStore:
+    case Reason::kCacheControlNoStoreCookieModified:
+    case Reason::kCacheControlNoStoreHTTPOnlyCookieModified:
+    case Reason::kNoResponseHead:
+    case Reason::kErrorDocument:
+    case Reason::kFencedFramesEmbedder:
+      return "Other";
+    // Return a matching string for blocklisted feature, so that we can test
+    // with a dummy feature in tests.
+    case Reason::kBlocklistedFeatures:
+      return DescribeFeatures(blocklisted_features_);
   }
 }
 

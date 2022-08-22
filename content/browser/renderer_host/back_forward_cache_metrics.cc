@@ -362,6 +362,11 @@ void BackForwardCacheMetrics::SetNotRestoredReasons(
   AddNotRestoredFlattenedReasonsToExistingResult(can_store.flattened_reasons);
 }
 
+blink::mojom::BackForwardCacheNotRestoredReasonsPtr
+BackForwardCacheMetrics::GetWebExposedNotRestoredReasons() {
+  return page_store_tree_result_->GetWebExposedNotRestoredReasons();
+}
+
 void BackForwardCacheMetrics::UpdateNotRestoredReasonsForNavigation(
     NavigationRequest* navigation) {
   DCHECK(IsHistoryNavigation(navigation));

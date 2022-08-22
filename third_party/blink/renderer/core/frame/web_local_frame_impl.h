@@ -44,6 +44,7 @@
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-blink.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-blink-forward.h"
@@ -373,6 +374,11 @@ class CORE_EXPORT WebLocalFrameImpl final
       CrossVariantMojoRemote<mojom::blink::BlobURLTokenInterfaceBase>
           blob_url_token) override;
 
+  void SetNotRestoredReasons(
+      const mojom::BackForwardCacheNotRestoredReasonsPtr&) override;
+  // Returns if the current frame's NotRestoredReasons has any blocking reasons.
+  bool HasBlockingReasons() override;
+
   void InitializeCoreFrame(
       Page&,
       FrameOwner*,
@@ -532,6 +538,10 @@ class CORE_EXPORT WebLocalFrameImpl final
   // Sets the local core frame and registers destruction observers.
   void SetCoreFrame(LocalFrame*);
 
+  // Helper function for |HasBlockingReasons()|.
+  bool HasBlockingReasonsHelper(
+      const mojom::BackForwardCacheNotRestoredReasonsPtr&);
+
   // Inherited from WebFrame, but intentionally hidden: it never makes sense
   // to call these on a WebLocalFrameImpl.
   bool IsWebLocalFrame() const override;
@@ -622,6 +632,8 @@ class CORE_EXPORT WebLocalFrameImpl final
   WebTextCheckClient* text_check_client_;
 
   WebSpellCheckPanelHostClient* spell_check_panel_host_client_;
+
+  mojom::BackForwardCacheNotRestoredReasonsPtr not_restored_reasons_;
 
   // Oilpan: WebLocalFrameImpl must remain alive until close() is called.
   // Accomplish that by keeping a self-referential Persistent<>. It is

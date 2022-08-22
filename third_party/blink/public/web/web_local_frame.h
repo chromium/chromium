@@ -24,6 +24,7 @@
 #include "third_party/blink/public/common/frame/user_activation_update_source.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom-forward.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-shared.h"
 #include "third_party/blink/public/mojom/commit_result/commit_result.mojom-shared.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-shared.h"
@@ -216,6 +217,12 @@ class WebLocalFrame : public WebFrame {
   // the first time that document has been loaded, and will change whenever the
   // loaded document changes (e.g. frame navigated to a different document).
   virtual ui::AXTreeID GetAXTreeID() const = 0;
+
+  // Sets BackForwardCache NotRestoredReasons for the current frame.
+  virtual void SetNotRestoredReasons(
+      const mojom::BackForwardCacheNotRestoredReasonsPtr&) = 0;
+  // Returns if the current frame's NotRestoredReasons has any blocking reasons.
+  virtual bool HasBlockingReasons() = 0;
 
   // Hierarchy ----------------------------------------------------------
 

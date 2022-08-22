@@ -45,6 +45,7 @@ def _CheckForWrongMojomIncludes(input_api, output_api):
                 r'third_party[\\/]blink[\\/]common[\\/]',
                 r'third_party[\\/]blink[\\/]public[\\/]common[\\/]',
                 r'third_party[\\/]blink[\\/]renderer[\\/]platform[\\/]loader[\\/]fetch[\\/]url_loader[\\/]',
+                r'third_party[\\/]blink[\\/]renderer[\\/]core[\\/]frame[\\/]web_view_impl.*\.(cc|h)$',
                 r'third_party[\\/]blink[\\/]renderer[\\/]core[\\/]frame[\\/]web.*frame.*\.(cc|h)$',
             ])
 

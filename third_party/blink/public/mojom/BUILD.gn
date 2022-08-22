@@ -28,6 +28,7 @@ mojom("mojom_platform") {
     "array_buffer/array_buffer_contents.mojom",
     "associated_interfaces/associated_interfaces.mojom",
     "autoplay/autoplay.mojom",
+    "back_forward_cache_not_restored_reasons.mojom",
     "background_fetch/background_fetch.mojom",
     "background_sync/background_sync.mojom",
     "badging/badging.mojom",

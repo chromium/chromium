@@ -83,6 +83,10 @@ const base::FeatureParam<AutomaticLazyFrameLoadingToEmbedLoadingStrategy>
 const base::Feature kBackForwardCacheDedicatedWorker{
     "BackForwardCacheDedicatedWorker", base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kBackForwardCacheSendNotRestoredReasons{
+    "BackForwardCacheSendNotRestoredReasons",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Accumulates the fetch requests for resources while parsing chunks of HTML so
 // they can be evaluated, prioritized and processed as a group rather than as
 // they are discovered.

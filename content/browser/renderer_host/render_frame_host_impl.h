@@ -105,6 +105,7 @@
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-forward.h"
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
 #include "third_party/blink/public/mojom/feature_observer/feature_observer.mojom-forward.h"
@@ -512,6 +513,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // stickiness is required, otherwise
   // BackForwardCacheBrowserTest::AddBlocklistedFeature should be used.
   void UseDummyStickyBackForwardCacheDisablingFeatureForTesting();
+
+  const blink::mojom::BackForwardCacheNotRestoredReasonsPtr&
+  NotRestoredReasonsForTesting() {
+    return not_restored_reasons_for_testing_;
+  }
 
   // Returns the current WebPreferences for the WebContents associated with this
   // RenderFrameHost. Will create one if it does not exist (and update all the
@@ -4190,6 +4196,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // If true, RenderFrameHost should not be actually deleted and should be left
   // stuck in pending deletion.
   bool do_not_delete_for_testing_ = false;
+
+  // Contains NotRestoredReasons for the navigation. Gets reset whenever
+  // |SendCommitNavigation()| is called.
+  blink::mojom::BackForwardCacheNotRestoredReasonsPtr
+      not_restored_reasons_for_testing_;
 
   // Embedding token for the document in this RenderFrameHost. This differs from
   // |frame_token_| in that |frame_token_| has a lifetime matching that of the
