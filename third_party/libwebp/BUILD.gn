@@ -16,8 +16,10 @@ config("libwebp_config_internal") {
   defines = [
     "WEBP_NEAR_LOSSLESS=0",
     "WEBP_DISABLE_STATS",
-    "WEBP_REDUCE_SIZE",
   ]
+  if (!is_chromeos) {
+    defines += [ "WEBP_REDUCE_SIZE" ]
+  }
   if (!is_ios) {
     defines += [ "WEBP_REDUCE_CSP" ]
   }
