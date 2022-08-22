@@ -85,6 +85,9 @@ const base::Feature kIPHAutoDarkUserEducationMessageOptInFeature{
 const base::Feature kIPHContextualPageActionsPriceTrackingFeature{
     "IPH_ContextualPageActions_PriceTracking",
     base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kIPHContextualPageActionsPriceTrackingActionChipFeature{
+    "IPH_ContextualPageActions_PriceTrackingActionChip",
+    base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHCrowFeature{"IPH_Crow",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHDataSaverDetailFeature{

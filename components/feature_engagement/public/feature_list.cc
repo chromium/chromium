@@ -36,6 +36,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHChromeReengagementNotification2Feature,
     &kIPHChromeReengagementNotification3Feature,
     &kIPHContextualPageActionsPriceTrackingFeature,
+    &kIPHContextualPageActionsPriceTrackingActionChipFeature,
     &kIPHContextualSearchTranslationEnableFeature,
     &kIPHContextualSearchWebSearchFeature,
     &kIPHContextualSearchPromoteTapFeature,

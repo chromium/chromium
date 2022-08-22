@@ -231,6 +231,24 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
                     Comparator(LESS_THAN, 3), 90, 360));
     return config;
   }
+  if (kIPHContextualPageActionsPriceTrackingActionChipFeature.name ==
+      feature->name) {
+    // A config that allows the Price Tracking Action Chip to be shown:
+    // * 3 times per session.
+    // * 5 times per day.
+    // * 10 times per week.
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(LESS_THAN, 3);
+    config->trigger = EventConfig(
+        "contextual_page_actions_price_tracking_action_chip_iph_trigger",
+        Comparator(LESS_THAN, 5), 1, 360);
+    config->event_configs.insert(EventConfig(
+        "contextual_page_actions_price_tracking_action_chip_iph_trigger",
+        Comparator(LESS_THAN, 10), 7, 360));
+    return config;
+  }
   if (kIPHAddToHomescreenMessageFeature.name == feature->name) {
     // A config that allows the Add to homescreen message IPH to be shown:
     // * Once per 15 days
