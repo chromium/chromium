@@ -16,7 +16,6 @@
 #include "base/sequence_checker.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/types/pass_key.h"
-#include "mojo/public/cpp/system/core.h"
 #include "mojo/public/cpp/system/wait_set.h"
 
 namespace mojo {

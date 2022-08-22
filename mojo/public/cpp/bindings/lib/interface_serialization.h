@@ -7,7 +7,6 @@
 
 #include <type_traits>
 
-#include "mojo/public/cpp/bindings/associated_group_controller.h"
 #include "mojo/public/cpp/bindings/associated_interface_ptr_info.h"
 #include "mojo/public/cpp/bindings/interface_data_view.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"

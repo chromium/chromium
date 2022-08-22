@@ -11,7 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/services/cros_dbus_service.h"
 #include "dbus/exported_object.h"
-#include "mojo/public/cpp/system/core.h"
+#include "mojo/public/cpp/system/handle.h"
 
 namespace dbus {
 class MethodCall;

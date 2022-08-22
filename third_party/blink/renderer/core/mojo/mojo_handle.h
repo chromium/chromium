@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_MOJO_MOJO_HANDLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_MOJO_MOJO_HANDLE_H_
 
-#include "mojo/public/cpp/system/core.h"
+#include "mojo/public/cpp/system/handle.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"

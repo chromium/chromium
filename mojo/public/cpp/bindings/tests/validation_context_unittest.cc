@@ -9,7 +9,6 @@
 
 #include "mojo/public/cpp/bindings/lib/serialization_util.h"
 #include "mojo/public/cpp/bindings/lib/validation_context.h"
-#include "mojo/public/cpp/system/core.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo {

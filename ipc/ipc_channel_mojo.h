@@ -26,7 +26,6 @@
 #include "ipc/ipc_channel_factory.h"
 #include "ipc/ipc_message_pipe_reader.h"
 #include "ipc/ipc_mojo_bootstrap.h"
-#include "mojo/public/cpp/system/core.h"
 
 namespace IPC {
 

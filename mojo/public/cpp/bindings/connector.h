@@ -20,8 +20,8 @@
 #include "mojo/public/cpp/bindings/connection_group.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/message_header_validator.h"
-#include "mojo/public/cpp/system/core.h"
 #include "mojo/public/cpp/system/handle_signal_tracker.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

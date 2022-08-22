@@ -45,6 +45,7 @@
 #include "base/thread_annotations.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
+#include "mojo/public/cpp/system/data_pipe.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/blob/data_element.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"

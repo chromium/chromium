@@ -15,7 +15,7 @@
 #include "mojo/public/cpp/bindings/interface_id.h"
 #include "mojo/public/cpp/bindings/lib/template_util.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
-#include "mojo/public/cpp/system/core.h"
+#include "mojo/public/cpp/system/handle.h"
 
 namespace mojo {
 

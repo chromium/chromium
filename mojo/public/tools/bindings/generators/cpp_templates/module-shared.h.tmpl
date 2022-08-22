@@ -62,6 +62,7 @@ namespace {{namespace}} {
 {#- Avoid transitive includes of interface headers if possible. #}
 {% if not disallow_interfaces and uses_interfaces -%}
 #include "mojo/public/cpp/bindings/lib/interface_serialization.h"
+#include "mojo/public/cpp/system/data_pipe.h"
 {%- endif %}
 
 {% if not disallow_native_types and uses_native_types %}

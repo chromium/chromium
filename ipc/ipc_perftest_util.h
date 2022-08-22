@@ -26,7 +26,7 @@
 #include "ipc/ipc_sender.h"
 #include "ipc/ipc_test.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/system/core.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>

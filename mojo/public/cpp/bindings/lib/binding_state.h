@@ -27,7 +27,6 @@
 #include "mojo/public/cpp/bindings/pending_flush.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
-#include "mojo/public/cpp/system/core.h"
 
 namespace mojo {
 

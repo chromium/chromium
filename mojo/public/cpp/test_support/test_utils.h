@@ -11,9 +11,11 @@
 #include "base/run_loop.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
-#include "mojo/public/cpp/system/core.h"
 
 namespace mojo {
+
+class MessagePipeHandle;
+
 namespace test {
 
 // This overload is used for mojom structures with struct traits. The C++

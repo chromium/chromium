@@ -22,6 +22,7 @@
 #include "components/cast_channel/cast_channel_enum.h"
 #include "components/cast_channel/cast_transport.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"

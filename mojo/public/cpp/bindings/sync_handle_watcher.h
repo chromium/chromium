@@ -9,7 +9,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "mojo/public/cpp/bindings/sync_handle_registry.h"
-#include "mojo/public/cpp/system/core.h"
 
 namespace mojo {
 
