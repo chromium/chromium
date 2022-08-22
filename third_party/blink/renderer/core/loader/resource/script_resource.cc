@@ -423,12 +423,16 @@ void ScriptResource::ResponseBodyReceived(
 
 void ScriptResource::DidReceiveDecodedData(
     const String& data,
-    std::unique_ptr<ParkableStringImpl::SecureDigest> digest) {
+    std::unique_ptr<DecodedDataInfo> info) {
   // Web snapshots use RawSourceText(), and don't need the decoded data.
   if (IsWebSnapshot())
     return;
 
-  source_text_ = ParkableString(data.Impl(), std::move(digest));
+  if (!info)
+    return;
+
+  source_text_ = ParkableString(
+      data.Impl(), std::move(To<ScriptDecodedDataInfo>(info.get())->digest_));
   SetDecodedSize(source_text_.CharactersSizeInBytes());
 }
 

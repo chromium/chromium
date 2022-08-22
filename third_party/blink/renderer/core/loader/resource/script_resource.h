@@ -87,9 +87,19 @@ class CORE_EXPORT ScriptResource final : public TextResource {
   void ResponseBodyReceived(
       ResponseBodyLoaderDrainableInterface& body_loader,
       scoped_refptr<base::SingleThreadTaskRunner> loader_task_runner) override;
-  void DidReceiveDecodedData(
-      const String& data,
-      std::unique_ptr<ParkableStringImpl::SecureDigest> digest) override;
+
+  class ScriptDecodedDataInfo final : public DecodedDataInfo {
+   public:
+    explicit ScriptDecodedDataInfo(
+        std::unique_ptr<ParkableStringImpl::SecureDigest> digest)
+        : digest_(std::move(digest)) {}
+
+    ResourceType GetType() const override { return ResourceType::kScript; }
+
+    std::unique_ptr<ParkableStringImpl::SecureDigest> digest_;
+  };
+  void DidReceiveDecodedData(const String& data,
+                             std::unique_ptr<DecodedDataInfo> info) override;
 
   void Trace(Visitor*) const override;
 
@@ -256,6 +266,13 @@ template <>
 struct DowncastTraits<ScriptResource> {
   static bool AllowFrom(const Resource& resource) {
     return resource.GetType() == ResourceType::kScript;
+  }
+};
+
+template <>
+struct DowncastTraits<ScriptResource::ScriptDecodedDataInfo> {
+  static bool AllowFrom(const Resource::DecodedDataInfo& info) {
+    return info.GetType() == ResourceType::kScript;
   }
 };
 
