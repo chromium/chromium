@@ -9,7 +9,7 @@ import {ExecuteScriptError} from '../remote_call.js';
 import {addEntries, ENTRIES, EntryType, getCaller, getHistogramCount, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo, wait} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
-import {mountCrostini, navigateWithDirectoryTree, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {mountCrostini, mountGuestOs, navigateWithDirectoryTree, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
 import {BASIC_ANDROID_ENTRY_SET, BASIC_FAKE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, BASIC_ZIP_ENTRY_SET, MODIFIED_ENTRY_SET} from './test_data.js';
 
 /**
@@ -658,6 +658,19 @@ testcase.openQuickViewCrostini = async () => {
 
   // Open a Crostini file in Quick View.
   await mountCrostini(appId);
+  await openQuickView(appId, ENTRIES.hello.nameText);
+};
+
+/**
+ * Tests opening Quick View on a GuestOS file.
+ */
+testcase.openQuickViewGuestOs = async () => {
+  // Open Files app on Downloads containing ENTRIES.photos.
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
+
+  // Open a GuestOS file in Quick View.
+  await mountGuestOs(appId, BASIC_LOCAL_ENTRY_SET);
   await openQuickView(appId, ENTRIES.hello.nameText);
 };
 

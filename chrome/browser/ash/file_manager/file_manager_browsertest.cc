@@ -882,6 +882,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .FilesSwa(),
         TestCase("openQuickViewCrostini"),
         TestCase("openQuickViewCrostini").FilesSwa(),
+        TestCase("openQuickViewGuestOs").EnableGuestOsFiles(),
+        TestCase("openQuickViewGuestOs").EnableGuestOsFiles().FilesSwa(),
         TestCase("openQuickViewLastModifiedMetaData")
             .EnableGenericDocumentsProvider(),
         TestCase("openQuickViewLastModifiedMetaData")

@@ -235,6 +235,7 @@ struct AddEntriesMessage {
     LOCAL_VOLUME,
     DRIVE_VOLUME,
     CROSTINI_VOLUME,
+    GUEST_OS_VOLUME_0,  // GuestOS volume with provider id 0 (i.e. the first).
     USB_VOLUME,
     ANDROID_FILES_VOLUME,
     GENERIC_DOCUMENTS_PROVIDER_VOLUME,
@@ -285,6 +286,8 @@ struct AddEntriesMessage {
       *volume = DRIVE_VOLUME;
     else if (value == "crostini")
       *volume = CROSTINI_VOLUME;
+    else if (value == "guest_os_0")
+      *volume = GUEST_OS_VOLUME_0;
     else if (value == "usb")
       *volume = USB_VOLUME;
     else if (value == "android_files")
@@ -2579,6 +2582,11 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
           CHECK(crostini_volume_);
           ASSERT_TRUE(crostini_volume_->Initialize(profile()));
           crostini_volume_->CreateEntry(*message.entries[i]);
+          break;
+        case AddEntriesMessage::GUEST_OS_VOLUME_0:
+          CHECK(guest_os_volumes_.size() > 0)
+              << "Must call registerMountableGuest first";
+          guest_os_volumes_["sftp://0:1234"]->CreateEntry(*message.entries[i]);
           break;
         case AddEntriesMessage::DRIVE_VOLUME:
           if (drive_volume_) {

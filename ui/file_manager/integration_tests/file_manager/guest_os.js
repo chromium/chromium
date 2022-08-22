@@ -94,7 +94,7 @@ testcase.listUpdatedWhenGuestsChanged = async () => {
 
 /**
  * Tests that clicking on a Guest OS entry in the sidebar mounts the
- * corresponding volume, and that the UI is update appropriately (volume in
+ * corresponding volume, and that the UI is updated appropriately (volume in
  * sidebar and not fake, contents show up once done loading, etc).
  */
 testcase.mountGuestSuccess = async () => {

@@ -502,6 +502,37 @@ export async function mountCrostini(
 }
 
 /**
+ * Registers a GuestOS, mounts the volume, and populates it with tbe specified
+ * entries.
+ * @param {string} appId Files app windowId.
+ * @param {!Array<!TestEntryInfo>} initialEntries List of initial entries to
+ *     load in the volume.
+ */
+export async function mountGuestOs(appId, initialEntries) {
+  const id = await sendTestMessage({
+    name: 'registerMountableGuest',
+    displayName: 'Bluejohn',
+    canMount: true,
+    vmType: 'bruschetta',
+  });
+  const placeholder = '#directory-tree [root-type-icon="bruschetta"]';
+  const real = '#directory-tree [volume-type-icon="bruschetta"]';
+
+  // Wait for the GuestOS fake root then click it.
+  remoteCall.waitAndClickElement(appId, placeholder);
+
+  // Wait for the volume to get mounted.
+  await remoteCall.waitForElement(appId, real);
+
+  // Add entries to GuestOS volume
+  await addEntries(['guest_os_0'], initialEntries);
+
+  // Ensure real root and files are shown.
+  const files = TestEntryInfo.getExpectedRows(initialEntries);
+  await remoteCall.waitForFiles(appId, files);
+}
+
+/**
  * Returns true if the SinglePartitionFormat flag is on.
  * @param {string} appId Files app windowId.
  */
