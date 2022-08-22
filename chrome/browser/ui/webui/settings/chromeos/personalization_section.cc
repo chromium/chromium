@@ -8,6 +8,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
+#include "chrome/browser/ui/webui/settings/chromeos/change_picture_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/settings/chromeos/personalization_hub_handler.h"
 #include "chrome/common/chrome_features.h"
@@ -39,6 +40,17 @@ const std::vector<SearchConcept>& GetPersonalizationSearchConcepts() {
        {.setting = mojom::Setting::kOpenWallpaper},
        {IDS_OS_SETTINGS_TAG_CHANGE_WALLPAPER_ALT1,
         IDS_OS_SETTINGS_TAG_CHANGE_WALLPAPER_ALT2, SearchConcept::kAltTagEnd}},
+      {IDS_OS_SETTINGS_TAG_CHANGE_DEVICE_ACCOUNT_IMAGE,
+       mojom::kChangePictureSubpagePath,
+       mojom::SearchResultIcon::kAvatar,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kChangeDeviceAccountImage},
+       {IDS_OS_SETTINGS_TAG_CHANGE_DEVICE_ACCOUNT_IMAGE_ALT1,
+        IDS_OS_SETTINGS_TAG_CHANGE_DEVICE_ACCOUNT_IMAGE_ALT2,
+        IDS_OS_SETTINGS_TAG_CHANGE_DEVICE_ACCOUNT_IMAGE_ALT3,
+        IDS_OS_SETTINGS_TAG_CHANGE_DEVICE_ACCOUNT_IMAGE_ALT4,
+        SearchConcept::kAltTagEnd}},
   });
   return *tags;
 }
@@ -103,6 +115,8 @@ void PersonalizationSection::AddLoadTimeData(
 }
 
 void PersonalizationSection::AddHandlers(content::WebUI* web_ui) {
+  web_ui->AddMessageHandler(
+      std::make_unique<chromeos::settings::ChangePictureHandler>());
   if (ash::features::IsPersonalizationHubEnabled()) {
     web_ui->AddMessageHandler(
         std::make_unique<chromeos::settings::PersonalizationHubHandler>());
@@ -134,6 +148,14 @@ bool PersonalizationSection::LogMetric(mojom::Setting setting,
 void PersonalizationSection::RegisterHierarchy(
     HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSetting(mojom::Setting::kOpenWallpaper);
+
+  // Change picture.
+  generator->RegisterTopLevelSubpage(
+      IDS_OS_SETTINGS_CHANGE_PICTURE_TITLE, mojom::Subpage::kChangePicture,
+      mojom::SearchResultIcon::kAvatar, mojom::SearchResultDefaultRank::kMedium,
+      mojom::kChangePictureSubpagePath);
+  generator->RegisterNestedSetting(mojom::Setting::kChangeDeviceAccountImage,
+                                   mojom::Subpage::kChangePicture);
 }
 
 }  // namespace settings

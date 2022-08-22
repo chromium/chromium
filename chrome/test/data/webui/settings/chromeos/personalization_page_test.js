@@ -52,4 +52,34 @@ suite('PersonalizationHandler', function() {
     personalizationPage.remove();
     Router.getInstance().resetRouteForTesting();
   });
+
+  test('changePicture', function() {
+    const row =
+        personalizationPage.shadowRoot.getElementById('changePictureRow');
+    assertTrue(!!row);
+    row.click();
+    assertEquals(routes.CHANGE_PICTURE, Router.getInstance().getCurrentRoute());
+  });
+
+  test('Deep link to change account picture', async () => {
+    const params = new URLSearchParams();
+    params.append('settingId', '503');
+    Router.getInstance().navigateTo(routes.CHANGE_PICTURE, params);
+
+    flush();
+
+    await waitAfterNextRender(personalizationPage);
+
+    const changePicturePage =
+        personalizationPage.shadowRoot.querySelector('settings-change-picture');
+    assertTrue(!!changePicturePage);
+    const deepLinkElement =
+        changePicturePage.shadowRoot.querySelector('#pictureList')
+            .shadowRoot.querySelector('#selector')
+            .$$('[class="iron-selected"]');
+    await waitAfterNextRender(deepLinkElement);
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'Account picture elem should be focused for settingId=503.');
+  });
 });

@@ -1,0 +1,98 @@
+<style include="settings-shared">
+  :host {
+    /* #headerLine height + padding */
+    --cr-settings-header-height: calc(62px + 1.34em);
+    --title-height: 2em;
+    --title-padding: 16px;
+    display: block;
+    min-height: 328px;
+  }
+
+  #title {
+    height: var(--title-height);
+    margin-inline-start: 20px;
+    padding-top: var(--title-padding);
+  }
+
+  #container {
+    align-items: flex-start;
+    display: flex;
+    margin-inline-start: 20px;
+    position: absolute;
+    top: calc(var(--cr-settings-header-height) +
+              var(--title-padding) +
+              var(--title-height));
+    user-select: none;
+  }
+
+  #picturePane {
+    --cr-picture-image-size: 192px;
+    flex-shrink: 0;
+    height: 288px;
+    margin-inline-end: 24px;
+    margin-top: 6px;
+    position: relative;
+    width: 288px;
+  }
+
+  #sourceInfo {
+    color: var(--cros-text-color-disabled);
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+  }
+
+  #pictureList {
+    /* TODO(reveman): Find a way to have height align to viewport
+        without using fixed position. */
+    height: calc(100vh -
+        var(--cr-toolbar-height) -
+        var(--cr-toolbar-padding-top) -
+        var(--cr-settings-header-height) -
+        var(--title-padding) -
+        var(--title-height));
+    margin-inline-end: 16px;
+    margin-top: 0;
+    min-height: 332px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    position: relative;
+  }
+
+</style>
+<div id="title">$i18n{changePicturePageDescription}</div>
+<div id="container">
+  <div>
+    <cr-picture-pane id="picturePane"
+        camera-present="[[cameraPresent_]]",
+        image-src="[[getImageSrc_(selectedItem_)]]"
+        image-type="[[getImageType_(selectedItem_)]]"
+        discard-image-label="$i18n{discardPhoto}"
+        preview-alt-text="$i18n{previewAltText}"
+        take-photo-label="$i18n{takePhoto}"
+        capture-video-label="$i18n{captureVideo}"
+        switch-mode-to-camera-label="$i18n{switchModeToCamera}"
+        switch-mode-to-video-label="$i18n{switchModeToVideo}"
+        camera-video-mode-enabled="[[cameraVideoModeEnabled_]]"
+        on-keys-pressed="onCameraPaneKeysPressed_">
+    </cr-picture-pane>
+    <div id="sourceInfo"
+        hidden="[[!shouldShowSourceInfo_(selectedItem_, authorInfo_, websiteInfo_)]]">
+      [[authorInfo_]]
+      <a href="[[websiteInfo_]]" target="_blank">
+        [[websiteInfo_]]
+      </a>
+    </div>
+  </div>
+  <cr-picture-list id="pictureList"
+      hidden="[[!currentDefaultImages_]]"
+      camera-present="[[cameraPresent_]]"
+      default-images="[[currentDefaultImages_]]"
+      selected-item="{{selectedItem_}}"
+      choose-file-label="$i18n{chooseFile}"
+      old-image-label="[[oldImageLabel_]]"
+      profile-image-label="$i18n{profilePhoto}"
+      take-photo-label="$i18n{takePhoto}"
+      capture-video-label="$i18n{captureVideo}">
+  </cr-picture-list>
+</div>

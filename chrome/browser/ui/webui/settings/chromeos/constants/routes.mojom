@@ -79,7 +79,7 @@ enum Subpage {
   kAudio = 408,
 
   // Personalization section.
-  // 500 was used for kChangePicture. Do not reuse.
+  kChangePicture = 500,
   // 501 was used for kAmbientMode. Do not reuse.
   // Note: Value 502 was for deprecated kAmbientModePhotos. Do not reuse.
   // 503 was used for kAmbientModeGooglePhotosAlbum. Do not reuse.
@@ -205,6 +205,7 @@ const string kPowerSubpagePath = "power";
 
 // Personalization section.
 const string kPersonalizationSectionPath = "personalization";
+const string kChangePictureSubpagePath = "changePicture";
 
 // Search and Assistant section.
 const string kSearchAndAssistantSectionPath = "osSearch";
