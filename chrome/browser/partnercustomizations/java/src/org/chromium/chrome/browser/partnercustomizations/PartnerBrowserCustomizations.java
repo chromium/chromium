@@ -369,7 +369,7 @@ public class PartnerBrowserCustomizations {
             Log.w(TAG,
                     "Partner homepage must be HTTP(S) or NewTabPage. "
                             + "Got invalid URL \"%s\"",
-                    url);
+                    url.getPossiblyInvalidSpec());
             return false;
         }
         if (url.getSpec().length() > HOMEPAGE_URL_MAX_LENGTH) {
