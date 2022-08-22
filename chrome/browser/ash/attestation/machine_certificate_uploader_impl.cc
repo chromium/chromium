@@ -42,12 +42,12 @@ const int kRetryLimit = 100;
 
 void DBusPrivacyCACallback(
     const base::RepeatingCallback<void(const std::string&)> on_success,
-    const base::RepeatingCallback<
-        void(chromeos::attestation::AttestationStatus)> on_failure,
+    const base::RepeatingCallback<void(ash::attestation::AttestationStatus)>
+        on_failure,
     const base::Location& from_here,
-    chromeos::attestation::AttestationStatus status,
+    ash::attestation::AttestationStatus status,
     const std::string& data) {
-  if (status == chromeos::attestation::ATTESTATION_SUCCESS) {
+  if (status == ash::attestation::ATTESTATION_SUCCESS) {
     on_success.Run(data);
     return;
   }

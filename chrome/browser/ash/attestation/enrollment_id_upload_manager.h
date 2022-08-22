@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/attestation/enrollment_certificate_uploader.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
-#include "chromeos/dbus/constants/attestation_constants.h"
+#include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 
 namespace policy {
 class CloudPolicyClient;

@@ -3,7 +3,7 @@ noparent = True
 include_rules = [
   "+base",
   "+chromeos/ash/components/cryptohome",
-  "+chromeos/ash/components/dbus/attestation",
+  "+chromeos/ash/components/dbus",
   "+chromeos/dbus",
   "+components/account_id",
   "+crypto",

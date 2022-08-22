@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_CONSTANTS_ATTESTATION_CONSTANTS_H_
-#define CHROMEOS_DBUS_CONSTANTS_ATTESTATION_CONSTANTS_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_CONSTANTS_ATTESTATION_CONSTANTS_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_CONSTANTS_ATTESTATION_CONSTANTS_H_
 
 #include "base/component_export.h"
 
-namespace chromeos {
-namespace attestation {
+namespace ash::attestation {
 
 enum VerifiedAccessType {
   DEFAULT_VA,  // The default Verified Access server.
@@ -74,65 +73,39 @@ enum PrivacyCAType {
 
 // A key name for the Enterprise Machine Key.  This key should always be stored
 // as a DEVICE_KEY.
-COMPONENT_EXPORT(CHROMEOS_DBUS_CONSTANTS)
+COMPONENT_EXPORT(ASH_DBUS_CONSTANTS)
 extern const char kEnterpriseMachineKey[];
 
 // A key name for the Enterprise Enrollmnent Key.  This key should always be
 // stored as a DEVICE_KEY.
-COMPONENT_EXPORT(CHROMEOS_DBUS_CONSTANTS)
+COMPONENT_EXPORT(ASH_DBUS_CONSTANTS)
 extern const char kEnterpriseEnrollmentKey[];
 
 // A key name for the Enterprise User Key.  This key should always be stored as
 // a USER_KEY.
-COMPONENT_EXPORT(CHROMEOS_DBUS_CONSTANTS)
+COMPONENT_EXPORT(ASH_DBUS_CONSTANTS)
 extern const char kEnterpriseUserKey[];
 
 // The key name prefix for content protection keys.  This prefix must be
 // appended with an origin-specific identifier to form the final key name.
-COMPONENT_EXPORT(CHROMEOS_DBUS_CONSTANTS)
+COMPONENT_EXPORT(ASH_DBUS_CONSTANTS)
 extern const char kContentProtectionKeyPrefix[];
 
 // The key name for the soft bind key. This key should always be stored as a
 // USER_KEY.
-COMPONENT_EXPORT(CHROMEOS_DBUS_CONSTANTS)
+COMPONENT_EXPORT(ASH_DBUS_CONSTANTS)
 extern const char kSoftBindKey[];
 
 // The key name for the device setup certificate. This key should always be
 // stored as a DEVICE_KEY.
-COMPONENT_EXPORT(CHROMEOS_DBUS_CONSTANTS)
+COMPONENT_EXPORT(ASH_DBUS_CONSTANTS)
 extern const char kDeviceSetupKey[];
 
-}  // namespace attestation
-}  // namespace chromeos
+}  // namespace ash::attestation
 
-// TODO(https://crbug.com/1164001): remove before finalizing ChromeOS
-// source migration.
-namespace ash {
-namespace attestation {
-using ::chromeos::attestation::ATTESTATION_SERVER_BAD_REQUEST_FAILURE;
-using ::chromeos::attestation::ATTESTATION_SUCCESS;
-using ::chromeos::attestation::ATTESTATION_UNSPECIFIED_FAILURE;
-using ::chromeos::attestation::AttestationCertificateProfile;
-using ::chromeos::attestation::AttestationKeyType;
-using ::chromeos::attestation::AttestationStatus;
-using ::chromeos::attestation::DEFAULT_PCA;
-using ::chromeos::attestation::kContentProtectionKeyPrefix;
-using ::chromeos::attestation::kDeviceSetupKey;
-using ::chromeos::attestation::kEnterpriseEnrollmentKey;
-using ::chromeos::attestation::kEnterpriseMachineKey;
-using ::chromeos::attestation::kEnterpriseUserKey;
-using ::chromeos::attestation::KEY_DEVICE;
-using ::chromeos::attestation::KEY_USER;
-using ::chromeos::attestation::kSoftBindKey;
-using ::chromeos::attestation::PrivacyCAType;
-using ::chromeos::attestation::PROFILE_CONTENT_PROTECTION_CERTIFICATE;
-using ::chromeos::attestation::PROFILE_DEVICE_SETUP_CERTIFICATE;
-using ::chromeos::attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE;
-using ::chromeos::attestation::PROFILE_ENTERPRISE_MACHINE_CERTIFICATE;
-using ::chromeos::attestation::PROFILE_ENTERPRISE_USER_CERTIFICATE;
-using ::chromeos::attestation::PROFILE_SOFT_BIND_CERTIFICATE;
-using ::chromeos::attestation::TEST_PCA;
-}  // namespace attestation
-}  // namespace ash
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::attestation {
+using ::ash::attestation::KEY_DEVICE;
+}
 
-#endif  // CHROMEOS_DBUS_CONSTANTS_ATTESTATION_CONSTANTS_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_CONSTANTS_ATTESTATION_CONSTANTS_H_

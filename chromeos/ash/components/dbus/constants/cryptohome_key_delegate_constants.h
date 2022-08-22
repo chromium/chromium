@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_CONSTANTS_CRYPTOHOME_KEY_DELEGATE_CONSTANTS_H_
-#define CHROMEOS_DBUS_CONSTANTS_CRYPTOHOME_KEY_DELEGATE_CONSTANTS_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_CONSTANTS_CRYPTOHOME_KEY_DELEGATE_CONSTANTS_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_CONSTANTS_CRYPTOHOME_KEY_DELEGATE_CONSTANTS_H_
 
 #include "base/component_export.h"
 
@@ -14,11 +14,11 @@ namespace cryptohome {
 // definition in the Chrome OS repo in
 // src/platform2/cryptohome/dbus_bindings/
 //   org.chromium.CryptohomeKeyDelegateInterface.xml .
-COMPONENT_EXPORT(CHROMEOS_DBUS_CONSTANTS)
+COMPONENT_EXPORT(ASH_DBUS_CONSTANTS)
 extern const char kCryptohomeKeyDelegateServiceName[];
-COMPONENT_EXPORT(CHROMEOS_DBUS_CONSTANTS)
+COMPONENT_EXPORT(ASH_DBUS_CONSTANTS)
 extern const char kCryptohomeKeyDelegateServicePath[];
 
 }  // namespace cryptohome
 
-#endif  // CHROMEOS_DBUS_CONSTANTS_CRYPTOHOME_KEY_DELEGATE_CONSTANTS_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_CONSTANTS_CRYPTOHOME_KEY_DELEGATE_CONSTANTS_H_

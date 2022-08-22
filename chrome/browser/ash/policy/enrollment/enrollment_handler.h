@@ -16,9 +16,9 @@
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/policy/device_account_initializer.h"
 #include "chromeos/ash/components/dbus/authpolicy/authpolicy_client.h"
+#include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
-#include "chromeos/dbus/constants/attestation_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
@@ -162,7 +162,7 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
   // certificate if any. Otherwise, it attempted to fetch a fresh certificate.
   void HandleRegistrationCertificateResult(
       bool is_initial_attempt,
-      chromeos::attestation::AttestationStatus status,
+      ash::attestation::AttestationStatus status,
       const std::string& pem_certificate_chain);
 
   // Starts registration if the store is initialized.

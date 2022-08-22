@@ -39,7 +39,7 @@ namespace {
 
 const char kUserEmail[] = "test@google.com";
 
-void FakeRunCheckNotRegister(chromeos::attestation::AttestationKeyType key_type,
+void FakeRunCheckNotRegister(ash::attestation::AttestationKeyType key_type,
                              Profile* profile,
                              ash::attestation::TpmChallengeKeyCallback callback,
                              const std::string& challenge,

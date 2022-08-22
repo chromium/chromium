@@ -22,7 +22,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_ca.pb.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
-#include "chromeos/dbus/constants/attestation_constants.h"
+#include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "components/device_signals/core/common/signals_constants.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -137,14 +137,13 @@ TEST_F(AshAttestationServiceTest, BuildChallengeResponse_Success) {
       });
 
   auto protoChallenge = GetSerializedSignedChallenge();
-  EXPECT_CALL(
-      *mock_challenge_key_,
-      BuildResponse(chromeos::attestation::AttestationKeyType::KEY_DEVICE,
-                    /*profile=*/&test_profile_, /*callback=*/_,
-                    /*challenge=*/protoChallenge,
-                    /*register_key=*/false,
-                    /*key_name_for_spkac=*/std::string(),
-                    /*signals=*/_))
+  EXPECT_CALL(*mock_challenge_key_,
+              BuildResponse(ash::attestation::AttestationKeyType::KEY_DEVICE,
+                            /*profile=*/&test_profile_, /*callback=*/_,
+                            /*challenge=*/protoChallenge,
+                            /*register_key=*/false,
+                            /*key_name_for_spkac=*/std::string(),
+                            /*signals=*/_))
       .WillOnce(RunOnceCallback<2>(
           ash::attestation::TpmChallengeKeyResult::MakeChallengeResponse(
               kFakeResponse)));

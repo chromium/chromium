@@ -9,10 +9,6 @@ component("constants") {
   defines = [ "IS_CHROMEOS_DBUS_CONSTANTS_IMPL" ]
   deps = [ "//base" ]
   sources = [
-    "attestation_constants.cc",
-    "attestation_constants.h",
-    "cryptohome_key_delegate_constants.cc",
-    "cryptohome_key_delegate_constants.h",
     "dbus_paths.cc",
     "dbus_paths.h",
     "dbus_switches.cc",

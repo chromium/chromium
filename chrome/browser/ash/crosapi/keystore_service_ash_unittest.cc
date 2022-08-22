@@ -702,7 +702,7 @@ TEST_F(KeystoreServiceAshTest, ChallengeUserKeyNoMigrateSuccess) {
 
   EXPECT_CALL(
       *challenge_key_ptr,
-      BuildResponse(chromeos::attestation::AttestationKeyType::KEY_USER,
+      BuildResponse(ash::attestation::AttestationKeyType::KEY_USER,
                     /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
                     /*register_key=*/false,
                     /*key_name_for_spkac=*/std::string(),
@@ -730,7 +730,7 @@ TEST_F(KeystoreServiceAshTest, ChallengeUserKeyMigrateSuccess) {
 
   EXPECT_CALL(
       *challenge_key_ptr,
-      BuildResponse(chromeos::attestation::AttestationKeyType::KEY_USER,
+      BuildResponse(ash::attestation::AttestationKeyType::KEY_USER,
                     /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
                     /*register_key=*/true,
                     /*key_name_for_spkac=*/std::string(),
@@ -758,7 +758,7 @@ TEST_F(KeystoreServiceAshTest, ChallengeDeviceKeyNoMigrateSuccess) {
 
   EXPECT_CALL(
       *challenge_key_ptr,
-      BuildResponse(chromeos::attestation::AttestationKeyType::KEY_DEVICE,
+      BuildResponse(ash::attestation::AttestationKeyType::KEY_DEVICE,
                     /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
                     /*register_key=*/false,
                     /*key_name_for_spkac=*/std::string(),
@@ -787,7 +787,7 @@ TEST_F(KeystoreServiceAshTest, ChallengeDeviceKeyMigrateSuccess) {
   EXPECT_CALL(
       *challenge_key_ptr,
       BuildResponse(
-          chromeos::attestation::AttestationKeyType::KEY_DEVICE,
+          ash::attestation::AttestationKeyType::KEY_DEVICE,
           /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
           /*register_key=*/true,
           /*key_name_for_spkac=*/StrStartsWith("attest-ent-machine-keystore-"),
@@ -815,7 +815,7 @@ TEST_F(KeystoreServiceAshTest, ChallengeKeyFail) {
 
   EXPECT_CALL(
       *challenge_key_ptr,
-      BuildResponse(chromeos::attestation::AttestationKeyType::KEY_USER,
+      BuildResponse(ash::attestation::AttestationKeyType::KEY_USER,
                     /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
                     /*register_key=*/false,
                     /*key_name_for_spkac=*/std::string(),
@@ -1068,7 +1068,7 @@ TEST_F(KeystoreServiceAshTest, DeprecatedChallengeUserKeyNoMigrateSuccess) {
 
   EXPECT_CALL(
       *challenge_key_ptr,
-      BuildResponse(chromeos::attestation::AttestationKeyType::KEY_USER,
+      BuildResponse(ash::attestation::AttestationKeyType::KEY_USER,
                     /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
                     /*register_key=*/false,
                     /*key_name_for_spkac=*/std::string(),
@@ -1096,7 +1096,7 @@ TEST_F(KeystoreServiceAshTest, DeprecatedChallengeUserKeyMigrateSuccess) {
 
   EXPECT_CALL(
       *challenge_key_ptr,
-      BuildResponse(chromeos::attestation::AttestationKeyType::KEY_USER,
+      BuildResponse(ash::attestation::AttestationKeyType::KEY_USER,
                     /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
                     /*register_key=*/true,
                     /*key_name_for_spkac=*/std::string(),
@@ -1124,7 +1124,7 @@ TEST_F(KeystoreServiceAshTest, DeprecatedChallengeDeviceKeyNoMigrateSuccess) {
 
   EXPECT_CALL(
       *challenge_key_ptr,
-      BuildResponse(chromeos::attestation::AttestationKeyType::KEY_DEVICE,
+      BuildResponse(ash::attestation::AttestationKeyType::KEY_DEVICE,
                     /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
                     /*register_key=*/false,
                     /*key_name_for_spkac=*/std::string(),
@@ -1153,7 +1153,7 @@ TEST_F(KeystoreServiceAshTest, DeprecatedChallengeDeviceKeyMigrateSuccess) {
   EXPECT_CALL(
       *challenge_key_ptr,
       BuildResponse(
-          chromeos::attestation::AttestationKeyType::KEY_DEVICE,
+          ash::attestation::AttestationKeyType::KEY_DEVICE,
           /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
           /*register_key=*/true,
           /*key_name_for_spkac=*/StrStartsWith("attest-ent-machine-lacros-"),
@@ -1181,7 +1181,7 @@ TEST_F(KeystoreServiceAshTest, DeprecatedChallengeKeyFail) {
 
   EXPECT_CALL(
       *challenge_key_ptr,
-      BuildResponse(chromeos::attestation::AttestationKeyType::KEY_USER,
+      BuildResponse(ash::attestation::AttestationKeyType::KEY_USER,
                     /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
                     /*register_key=*/false,
                     /*key_name_for_spkac=*/std::string(),

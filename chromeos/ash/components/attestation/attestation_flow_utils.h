@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "chromeos/dbus/constants/attestation_constants.h"
+#include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 
 namespace ash {
 namespace attestation {

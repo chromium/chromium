@@ -95,8 +95,7 @@ void AllowlistSimpleChallengeSigningKey() {
   AttestationClient::Get()->GetTestInterface()->AllowlistSignSimpleChallengeKey(
       /*username=*/"",
       attestation::GetKeyNameForProfile(
-          chromeos::attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE,
-          ""));
+          attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, ""));
 }
 
 class EnrollmentEmbeddedPolicyServerBase : public OobeBaseTest {

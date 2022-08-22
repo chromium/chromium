@@ -101,9 +101,9 @@ void CertCallbackSuccess(
     ash::attestation::AttestationFlow::CertificateCallback callback,
     std::string certificate) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback),
-                                chromeos::attestation::ATTESTATION_SUCCESS,
-                                std::move(certificate)));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), ash::attestation::ATTESTATION_SUCCESS,
+                     std::move(certificate)));
 }
 
 void CertCallbackSuccessWithValidCertificate(
@@ -1048,11 +1048,10 @@ TEST_P(DeviceCloudPolicyManagerAshEnrollmentTest, DisableMachineCertReq) {
       ash::switches::kDisableMachineCertRequest);
 
   // Set expectation that a request for a machine cert is never made.
-  EXPECT_CALL(
-      mock_attestation_flow_,
-      GetCertificate(chromeos::attestation::AttestationCertificateProfile::
-                         PROFILE_ENTERPRISE_MACHINE_CERTIFICATE,
-                     _, _, _, _, _))
+  EXPECT_CALL(mock_attestation_flow_,
+              GetCertificate(ash::attestation::AttestationCertificateProfile::
+                                 PROFILE_ENTERPRISE_MACHINE_CERTIFICATE,
+                             _, _, _, _, _))
       .Times(0);
 
   RunTest();

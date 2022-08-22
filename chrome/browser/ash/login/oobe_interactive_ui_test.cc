@@ -919,10 +919,9 @@ class OobeZeroTouchInteractiveUITest : public OobeInteractiveUITest {
     AttestationClient::Get()
         ->GetTestInterface()
         ->AllowlistSignSimpleChallengeKey(
-            /*username=*/"", attestation::GetKeyNameForProfile(
-                                 chromeos::attestation::
-                                     PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE,
-                                 ""));
+            /*username=*/"",
+            attestation::GetKeyNameForProfile(
+                attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, ""));
     OobeInteractiveUITest::SetUpOnMainThread();
     policy_test_server_mixin_.ConfigureFakeStatisticsForZeroTouch(
         &fake_statistics_provider_);

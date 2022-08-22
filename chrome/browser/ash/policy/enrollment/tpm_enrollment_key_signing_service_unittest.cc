@@ -55,8 +55,7 @@ TEST_F(TpmEnrollmentKeySigningServiceTest, SigningSuccess) {
       ->AllowlistSignSimpleChallengeKey(
           /*username=*/"",
           ash::attestation::GetKeyNameForProfile(
-              chromeos::attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE,
-              ""));
+              ash::attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE, ""));
 
   base::RunLoop run_loop;
   bool returned_success = false;

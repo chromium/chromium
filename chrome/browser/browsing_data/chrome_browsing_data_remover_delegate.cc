@@ -173,8 +173,8 @@
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
+#include "chromeos/ash/components/dbus/constants/attestation_constants.h"  // nogncheck
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"  // nogncheck
-#include "chromeos/dbus/constants/attestation_constants.h"     // nogncheck
 #include "components/user_manager/user.h"
 #include "device/fido/cros/credential_store.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1067,7 +1067,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
                                  user->GetAccountId())
                                  .account_id());
         request.set_key_label_match(
-            chromeos::attestation::kContentProtectionKeyPrefix);
+            ash::attestation::kContentProtectionKeyPrefix);
         request.set_match_behavior(
             ::attestation::DeleteKeysRequest::MATCH_BEHAVIOR_PREFIX);
 

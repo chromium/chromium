@@ -8,7 +8,7 @@
 #include <string>
 
 #include "chrome/browser/ash/attestation/tpm_challenge_key.h"
-#include "chromeos/dbus/constants/attestation_constants.h"
+#include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {
@@ -23,7 +23,7 @@ class MockTpmChallengeKey : public TpmChallengeKey {
 
   MOCK_METHOD(void,
               BuildResponse,
-              (chromeos::attestation::AttestationKeyType key_type,
+              (AttestationKeyType key_type,
                Profile* profile,
                TpmChallengeKeyCallback callback,
                const std::string& challenge,

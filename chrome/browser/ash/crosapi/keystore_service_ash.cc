@@ -206,19 +206,19 @@ void KeystoreServiceAsh::ChallengeAttestationOnlyKeystore(
     return;
   }
 
-  chromeos::attestation::AttestationKeyType key_type;
+  ash::attestation::AttestationKeyType key_type;
   switch (type) {
     case mojom::KeystoreType::kUser:
-      key_type = chromeos::attestation::KEY_USER;
+      key_type = ash::attestation::KEY_USER;
       break;
     case mojom::KeystoreType::kDevice:
-      key_type = chromeos::attestation::KEY_DEVICE;
+      key_type = ash::attestation::KEY_DEVICE;
       break;
   }
   Profile* profile = ProfileManager::GetActiveUserProfile();
 
   std::string key_name_for_spkac;
-  if (migrate && (key_type == chromeos::attestation::KEY_DEVICE)) {
+  if (migrate && (key_type == ash::attestation::KEY_DEVICE)) {
     key_name_for_spkac = base::StrCat(
         {ash::attestation::kEnterpriseMachineKeyForSpkacPrefix, "keystore-",
          base::UnguessableToken::Create().ToString()});
@@ -283,19 +283,19 @@ void KeystoreServiceAsh::DEPRECATED_ChallengeAttestationOnlyKeystore(
     return;
   }
 
-  chromeos::attestation::AttestationKeyType key_type;
+  ash::attestation::AttestationKeyType key_type;
   switch (type) {
     case mojom::KeystoreType::kUser:
-      key_type = chromeos::attestation::KEY_USER;
+      key_type = ash::attestation::KEY_USER;
       break;
     case mojom::KeystoreType::kDevice:
-      key_type = chromeos::attestation::KEY_DEVICE;
+      key_type = ash::attestation::KEY_DEVICE;
       break;
   }
   Profile* profile = ProfileManager::GetActiveUserProfile();
 
   std::string key_name_for_spkac;
-  if (migrate && (key_type == chromeos::attestation::KEY_DEVICE)) {
+  if (migrate && (key_type == ash::attestation::KEY_DEVICE)) {
     key_name_for_spkac =
         base::StrCat({ash::attestation::kEnterpriseMachineKeyForSpkacPrefix,
                       "lacros-", base::UnguessableToken::Create().ToString()});

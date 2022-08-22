@@ -12,7 +12,7 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
-#include "chromeos/dbus/constants/attestation_constants.h"
+#include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/openssl_util.h"
 #include "crypto/random.h"
