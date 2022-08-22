@@ -2576,8 +2576,8 @@ void Element::showPopUp(ExceptionState& exception_state) {
   }
 
   GetPopupData()->setAnimationFinishedListener(nullptr);
-  GetPopupData()->setPreviouslyFocusedElement(
-      should_restore_focus ? document.FocusedElement() : nullptr);
+  GetPopupData()->setPreviouslyFocusedElement(nullptr);
+  Element* originally_focused_element = document.FocusedElement();
   document.AddToTopLayer(this);
   // Remove display:none styling:
   GetPopupData()->setVisibilityState(PopupVisibilityState::kTransitioning);
@@ -2594,6 +2594,13 @@ void Element::showPopUp(ExceptionState& exception_state) {
   PseudoStateChanged(CSSSelector::kPseudoTopLayer);
 
   SetPopupFocusOnShow();
+
+  // Only restore focus (later) if focus changed as a result of showing the
+  // pop-up.
+  if (should_restore_focus && HasValidPopupAttribute() &&
+      originally_focused_element != document.FocusedElement()) {
+    GetPopupData()->setPreviouslyFocusedElement(originally_focused_element);
+  }
 }
 
 // static
@@ -2819,7 +2826,7 @@ void Element::SetPopupFocusOnShow() {
     control = this;
   } else {
     // Otherwise, look for a child control that has the autofocus attribute.
-    control = GetPopupFocusableArea(/*autofocus_only=*/true);
+    control = GetPopupFocusableArea();
   }
 
   // If the popup does not use autofocus, then the focus should remain on the
@@ -2853,7 +2860,7 @@ void Element::SetPopupFocusOnShow() {
 // and can possibly be merged with the similar logic for <dialog>. The spec for
 // https://html.spec.whatwg.org/multipage/interaction.html#get-the-focusable-area
 // does not include dialogs or popups yet.
-Element* Element::GetPopupFocusableArea(bool autofocus_only) const {
+Element* Element::GetPopupFocusableArea() const {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
       GetDocument().GetExecutionContext()));
   Node* next = nullptr;
@@ -2866,8 +2873,7 @@ Element* Element::GetPopupFocusableArea(bool autofocus_only) const {
       next = FlatTreeTraversal::NextSkippingChildren(*element, this);
       continue;
     }
-    if (element->IsFocusable() &&
-        (!autofocus_only || element->IsAutofocusable())) {
+    if (element->IsFocusable() && element->IsAutofocusable()) {
       return element;
     }
   }

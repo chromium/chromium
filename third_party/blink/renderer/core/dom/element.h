@@ -1407,7 +1407,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   };
 
   // Special focus handling for popups.
-  Element* GetPopupFocusableArea(bool autofocus_only) const;
+  Element* GetPopupFocusableArea() const;
 
   void UpdateFirstLetterPseudoElement(StyleUpdatePhase,
                                       const StyleRecalcContext&);

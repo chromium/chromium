@@ -85,6 +85,7 @@
   }
   function addPriorFocus(t) {
     const priorFocus = document.createElement('button');
+    priorFocus.id = 'priorFocus';
     document.body.appendChild(priorFocus);
     t.add_cleanup(() => priorFocus.remove());
     return priorFocus;
@@ -98,7 +99,8 @@
     promise_test(async t => {
       const priorFocus = addPriorFocus(t);
       let expectedFocusedElement = popUp.matches('.should-be-focused') ? popUp : popUp.querySelector('.should-be-focused');
-      if (popUp.hasAttribute('data-no-focus')) {
+      const changesFocus = !popUp.hasAttribute('data-no-focus');
+      if (!changesFocus) {
         expectedFocusedElement = priorFocus;
       }
       assert_true(!!expectedFocusedElement);
@@ -110,7 +112,7 @@
       popUp.showPopUp();
       assert_equals(document.activeElement, expectedFocusedElement, `${testName} activated by popUp.showPopUp()`);
       popUp.hidePopUp();
-      assert_equals(document.activeElement, priorFocus, 'prior element should get focus on hide');
+      assert_equals(document.activeElement, priorFocus, 'prior element should get focus on hide, or if focus didn\'t shift on show, focus should stay where it was');
       await finishAnimationsAndVerifyHide(popUp);
 
       // Hit Escape:
@@ -169,6 +171,17 @@
       assert_false(popUp.matches(':top-layer'));
       assert_equals(document.activeElement, priorFocus, 'prior element should get focus on button-toggled hide');
       await finishAnimationsAndVerifyHide(popUp);
+
+      // Focus another element:
+      const anotherFocus = addPriorFocus(t);
+      priorFocus.focus();
+      assert_equals(document.activeElement, priorFocus);
+      popUp.showPopUp();
+      assert_equals(document.activeElement, expectedFocusedElement, `${testName} activated by popUp.showPopUp()`);
+      anotherFocus.focus();
+      assert_false(popUp.matches(':top-layer'),'focusing another element should hide the pop-up');
+      assert_equals(document.activeElement, anotherFocus, 'prior element should *not* get focus in this case');
+      await finishAnimationsAndVerifyHide(popUp);
     }, "Popup focus test: " + testName);
 
     promise_test(async t => {
@@ -182,24 +195,31 @@
       assert_equals(document.activeElement, priorFocus);
       popUp.showPopUp();
       assert_true(popUp.matches(':top-layer'));
-      await clickOn(button); // This will not light dismiss, but will "toggle" the popUp.
+      await clickOn(button); // This will *not* light dismiss, but will "toggle" the popUp.
       assert_false(popUp.matches(':top-layer'));
-      assert_equals(document.activeElement, priorFocus, 'Focus should return to prior focus');
+      const changesFocus = !popUp.hasAttribute('data-no-focus');
+      if (changesFocus)
+        assert_equals(document.activeElement, priorFocus, 'focus should return to the prior focus, if focus moved on show');
+      else
+        assert_equals(document.activeElement, button, 'focus should remain on the button, since focus didn\t move on show');
       await finishAnimationsAndVerifyHide(popUp);
 
       // Same thing, but the button is contained within the pop-up
       button.removeAttribute('popuptoggletarget');
       button.setAttribute('popuphidetarget', popUp.id);
       popUp.appendChild(button);
+      t.add_cleanup(() => button.remove());
       priorFocus.focus();
       popUp.showPopUp();
       assert_true(popUp.matches(':top-layer'));
-      if (!popUp.hasAttribute('data-no-focus')) {
+      if (changesFocus) {
         assert_not_equals(document.activeElement, priorFocus, 'focus should shift for this element');
       }
       await clickOn(button);
       assert_false(popUp.matches(':top-layer'), 'clicking button should hide the pop-up');
-      assert_equals(document.activeElement, priorFocus, 'Contained button should return focus to the previously focused element');
+      if (changesFocus) {
+        assert_equals(document.activeElement, priorFocus, 'Contained button should return focus to the previously focused element, if focus moved on show');
+      }
       await finishAnimationsAndVerifyHide(popUp);
 
       // Same thing, but the button is unrelated (no popuptoggletarget)
