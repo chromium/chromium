@@ -99,6 +99,12 @@ const ui::TemplateReplacements* SystemExtensionsDataSource::GetReplacements() {
 
 std::string SystemExtensionsDataSource::GetContentSecurityPolicy(
     network::mojom::CSPDirectiveName directive) {
+  // System extensions are unable to create trusted types policies and require
+  // disabling trusted types to run.
+  if (directive == network::mojom::CSPDirectiveName::RequireTrustedTypesFor ||
+      directive == network::mojom::CSPDirectiveName::TrustedTypes) {
+    return std::string();
+  }
   return content::URLDataSource::GetContentSecurityPolicy(directive);
 }
 
