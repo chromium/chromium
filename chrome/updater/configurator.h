@@ -39,6 +39,8 @@ class ExternalConstants;
 class PolicyService;
 class UpdaterPrefs;
 
+// This class is free-threaded. Its instance is shared by multiple sequences and
+// it can't be mutated.
 class Configurator : public update_client::Configurator {
  public:
   Configurator(scoped_refptr<UpdaterPrefs> prefs,
@@ -82,6 +84,8 @@ class Configurator : public update_client::Configurator {
   crx_file::VerifierFormat GetCrxVerifierFormat() const;
 
   // This reloads the policy managers.
+  // TODO(crbug.com/1353925) - eliminate this function because the instance
+  // of the `Configurator` can't be mutated.
   void ResetPolicyService();
 
  private:

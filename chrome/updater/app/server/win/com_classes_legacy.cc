@@ -869,6 +869,42 @@ struct LastCheckedTimeResult
   virtual ~LastCheckedTimeResult() = default;
 };
 
+// Holds the result of the IPC to retrieve PolicyService data.
+template <typename T>
+class PolicyStatusResult
+    : public base::RefCountedThreadSafe<PolicyStatusResult<T>> {
+ public:
+  using ValueGetter = base::RepeatingCallback<bool(PolicyStatus<T>*, T*)>;
+
+  static auto Get(ValueGetter value_getter) {
+    auto result = base::WrapRefCounted(new PolicyStatusResult<T>(value_getter));
+    AppServerSingletonInstance()->main_task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&PolicyStatusResult::GetValueOnSequence, result));
+    result->completion_event.TimedWait(base::Seconds(60));
+    return result->value;
+  }
+
+ private:
+  friend base::RefCountedThreadSafe<PolicyStatusResult<T>>;
+  virtual ~PolicyStatusResult() = default;
+
+  explicit PolicyStatusResult(ValueGetter value_getter)
+      : value_getter(value_getter) {}
+
+  void GetValueOnSequence() {
+    PolicyStatus<T> policy_status;
+    if (value_getter.Run(&policy_status, nullptr)) {
+      value = policy_status;
+    }
+    completion_event.Signal();
+  }
+
+  ValueGetter value_getter;
+  absl::optional<PolicyStatus<T>> value;
+  base::WaitableEvent completion_event;
+};
+
 }  // namespace
 
 STDMETHODIMP PolicyStatusImpl::get_lastCheckedTime(DATE* last_checked) {
@@ -926,17 +962,16 @@ STDMETHODIMP PolicyStatusImpl::refreshPolicies() {
                          AppServerSingletonInstance()->config(),
                          AppServerSingletonInstance()->main_task_runner()),
                      base::DoNothing()));
-
   return S_OK;
 }
 
 STDMETHODIMP PolicyStatusImpl::get_lastCheckPeriodMinutes(
     IPolicyStatusValue** value) {
   DCHECK(value);
-
-  PolicyStatus<int> policy_status;
-  return policy_service_->GetLastCheckPeriodMinutes(&policy_status, nullptr)
-             ? PolicyStatusValueImpl::Create(policy_status, value)
+  auto policy_status = PolicyStatusResult<int>::Get(base::BindRepeating(
+      &PolicyService::GetLastCheckPeriodMinutes, policy_service_));
+  return policy_status.has_value()
+             ? PolicyStatusValueImpl::Create(*policy_status, value)
              : E_FAIL;
 }
 
@@ -946,80 +981,77 @@ STDMETHODIMP PolicyStatusImpl::get_updatesSuppressedTimes(
   DCHECK(value);
   DCHECK(are_updates_suppressed);
 
-  UpdatesSuppressedTimes updates_suppressed_times;
-  PolicyStatus<UpdatesSuppressedTimes> policy_status;
-  if (!policy_service_->GetUpdatesSuppressedTimes(&policy_status,
-                                                  &updates_suppressed_times) ||
-      !updates_suppressed_times.valid()) {
+  auto policy_status =
+      PolicyStatusResult<UpdatesSuppressedTimes>::Get(base::BindRepeating(
+          &PolicyService::GetUpdatesSuppressedTimes, policy_service_));
+  if (!policy_status.has_value())
     return E_FAIL;
-  }
-
+  const UpdatesSuppressedTimes updates_suppressed_times =
+      policy_status->effective_policy()->policy;
+  if (!updates_suppressed_times.valid())
+    return E_FAIL;
   base::Time::Exploded now;
   base::Time::Now().LocalExplode(&now);
   *are_updates_suppressed =
       updates_suppressed_times.contains(now.hour, now.minute) ? VARIANT_TRUE
                                                               : VARIANT_FALSE;
-
-  return PolicyStatusValueImpl::Create(policy_status, value);
+  return PolicyStatusValueImpl::Create(*policy_status, value);
 }
 
 STDMETHODIMP PolicyStatusImpl::get_downloadPreferenceGroupPolicy(
     IPolicyStatusValue** value) {
   DCHECK(value);
-
-  PolicyStatus<std::string> policy_status;
-  return policy_service_->GetDownloadPreferenceGroupPolicy(&policy_status,
-                                                           nullptr)
-             ? PolicyStatusValueImpl::Create(policy_status, value)
+  auto policy_status = PolicyStatusResult<std::string>::Get(base::BindRepeating(
+      &PolicyService::GetDownloadPreferenceGroupPolicy, policy_service_));
+  return policy_status.has_value()
+             ? PolicyStatusValueImpl::Create(*policy_status, value)
              : E_FAIL;
 }
 
 STDMETHODIMP PolicyStatusImpl::get_packageCacheSizeLimitMBytes(
     IPolicyStatusValue** value) {
   DCHECK(value);
-
-  PolicyStatus<int> policy_status;
-  return policy_service_->GetPackageCacheSizeLimitMBytes(&policy_status,
-                                                         nullptr)
-             ? PolicyStatusValueImpl::Create(policy_status, value)
+  auto policy_status = PolicyStatusResult<int>::Get(base::BindRepeating(
+      &PolicyService::GetPackageCacheSizeLimitMBytes, policy_service_));
+  return policy_status.has_value()
+             ? PolicyStatusValueImpl::Create(*policy_status, value)
              : E_FAIL;
 }
 
 STDMETHODIMP PolicyStatusImpl::get_packageCacheExpirationTimeDays(
     IPolicyStatusValue** value) {
   DCHECK(value);
-
-  PolicyStatus<int> policy_status;
-  return policy_service_->GetPackageCacheExpirationTimeDays(&policy_status,
-                                                            nullptr)
-             ? PolicyStatusValueImpl::Create(policy_status, value)
+  auto policy_status = PolicyStatusResult<int>::Get(base::BindRepeating(
+      &PolicyService::GetPackageCacheExpirationTimeDays, policy_service_));
+  return policy_status.has_value()
+             ? PolicyStatusValueImpl::Create(*policy_status, value)
              : E_FAIL;
 }
 
 STDMETHODIMP PolicyStatusImpl::get_proxyMode(IPolicyStatusValue** value) {
   DCHECK(value);
-
-  PolicyStatus<std::string> policy_status;
-  return policy_service_->GetProxyMode(&policy_status, nullptr)
-             ? PolicyStatusValueImpl::Create(policy_status, value)
+  auto policy_status = PolicyStatusResult<std::string>::Get(
+      base::BindRepeating(&PolicyService::GetProxyMode, policy_service_));
+  return policy_status.has_value()
+             ? PolicyStatusValueImpl::Create(*policy_status, value)
              : E_FAIL;
 }
 
 STDMETHODIMP PolicyStatusImpl::get_proxyPacUrl(IPolicyStatusValue** value) {
   DCHECK(value);
-
-  PolicyStatus<std::string> policy_status;
-  return policy_service_->GetProxyPacUrl(&policy_status, nullptr)
-             ? PolicyStatusValueImpl::Create(policy_status, value)
+  auto policy_status = PolicyStatusResult<std::string>::Get(
+      base::BindRepeating(&PolicyService::GetProxyPacUrl, policy_service_));
+  return policy_status.has_value()
+             ? PolicyStatusValueImpl::Create(*policy_status, value)
              : E_FAIL;
 }
 
 STDMETHODIMP PolicyStatusImpl::get_proxyServer(IPolicyStatusValue** value) {
   DCHECK(value);
-
-  PolicyStatus<std::string> policy_status;
-  return policy_service_->GetProxyServer(&policy_status, nullptr)
-             ? PolicyStatusValueImpl::Create(policy_status, value)
+  auto policy_status = PolicyStatusResult<std::string>::Get(
+      base::BindRepeating(&PolicyService::GetProxyServer, policy_service_));
+  return policy_status.has_value()
+             ? PolicyStatusValueImpl::Create(*policy_status, value)
              : E_FAIL;
 }
 
@@ -1027,11 +1059,11 @@ STDMETHODIMP PolicyStatusImpl::get_effectivePolicyForAppInstalls(
     BSTR app_id,
     IPolicyStatusValue** value) {
   DCHECK(value);
-
-  PolicyStatus<int> policy_status;
-  return policy_service_->GetEffectivePolicyForAppInstalls(
-             base::WideToASCII(app_id), &policy_status, nullptr)
-             ? PolicyStatusValueImpl::Create(policy_status, value)
+  auto policy_status = PolicyStatusResult<int>::Get(
+      base::BindRepeating(&PolicyService::GetEffectivePolicyForAppInstalls,
+                          policy_service_, base::WideToASCII(app_id)));
+  return policy_status.has_value()
+             ? PolicyStatusValueImpl::Create(*policy_status, value)
              : E_FAIL;
 }
 
@@ -1039,11 +1071,11 @@ STDMETHODIMP PolicyStatusImpl::get_effectivePolicyForAppUpdates(
     BSTR app_id,
     IPolicyStatusValue** value) {
   DCHECK(value);
-
-  PolicyStatus<int> policy_status;
-  return policy_service_->GetEffectivePolicyForAppUpdates(
-             base::WideToASCII(app_id), &policy_status, nullptr)
-             ? PolicyStatusValueImpl::Create(policy_status, value)
+  auto policy_status = PolicyStatusResult<int>::Get(
+      base::BindRepeating(&PolicyService::GetEffectivePolicyForAppUpdates,
+                          policy_service_, base::WideToASCII(app_id)));
+  return policy_status.has_value()
+             ? PolicyStatusValueImpl::Create(*policy_status, value)
              : E_FAIL;
 }
 
@@ -1051,11 +1083,11 @@ STDMETHODIMP PolicyStatusImpl::get_targetVersionPrefix(
     BSTR app_id,
     IPolicyStatusValue** value) {
   DCHECK(value);
-
-  PolicyStatus<std::string> policy_status;
-  return policy_service_->GetTargetVersionPrefix(base::WideToASCII(app_id),
-                                                 &policy_status, nullptr)
-             ? PolicyStatusValueImpl::Create(policy_status, value)
+  auto policy_status = PolicyStatusResult<std::string>::Get(
+      base::BindRepeating(&PolicyService::GetTargetVersionPrefix,
+                          policy_service_, base::WideToASCII(app_id)));
+  return policy_status.has_value()
+             ? PolicyStatusValueImpl::Create(*policy_status, value)
              : E_FAIL;
 }
 
@@ -1063,22 +1095,22 @@ STDMETHODIMP PolicyStatusImpl::get_isRollbackToTargetVersionAllowed(
     BSTR app_id,
     IPolicyStatusValue** value) {
   DCHECK(value);
-
-  PolicyStatus<bool> policy_status;
-  return policy_service_->IsRollbackToTargetVersionAllowed(
-             base::WideToASCII(app_id), &policy_status, nullptr)
-             ? PolicyStatusValueImpl::Create(policy_status, value)
+  auto policy_status = PolicyStatusResult<bool>::Get(
+      base::BindRepeating(&PolicyService::IsRollbackToTargetVersionAllowed,
+                          policy_service_, base::WideToASCII(app_id)));
+  return policy_status.has_value()
+             ? PolicyStatusValueImpl::Create(*policy_status, value)
              : E_FAIL;
 }
 
 STDMETHODIMP PolicyStatusImpl::get_targetChannel(BSTR app_id,
                                                  IPolicyStatusValue** value) {
   DCHECK(value);
-
-  PolicyStatus<std::string> policy_status;
-  return policy_service_->GetTargetChannel(base::WideToASCII(app_id),
-                                           &policy_status, nullptr)
-             ? PolicyStatusValueImpl::Create(policy_status, value)
+  auto policy_status = PolicyStatusResult<std::string>::Get(
+      base::BindRepeating(&PolicyService::GetTargetChannel, policy_service_,
+                          base::WideToASCII(app_id)));
+  return policy_status.has_value()
+             ? PolicyStatusValueImpl::Create(*policy_status, value)
              : E_FAIL;
 }
 
@@ -1086,10 +1118,11 @@ STDMETHODIMP PolicyStatusImpl::get_forceInstallApps(
     VARIANT_BOOL is_machine,
     IPolicyStatusValue** value) {
   DCHECK(value);
-
-  PolicyStatus<std::vector<std::string>> policy_status;
-  return policy_service_->GetForceInstallApps(&policy_status, nullptr)
-             ? PolicyStatusValueImpl::Create(policy_status, value)
+  auto policy_status =
+      PolicyStatusResult<std::vector<std::string>>::Get(base::BindRepeating(
+          &PolicyService::GetForceInstallApps, policy_service_));
+  return policy_status.has_value()
+             ? PolicyStatusValueImpl::Create(*policy_status, value)
              : E_FAIL;
 }
 
