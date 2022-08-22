@@ -269,6 +269,21 @@
             ]
         }
     ],
+    "AndroidPermissionsCache": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidPermissionsCache"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidPhotoPickerComparison": [
         {
             "platforms": [
@@ -3429,6 +3444,21 @@
                     "name": "DialEnforceUrlIPAddress",
                     "enable_features": [
                         "DialEnforceUrlIPAddress"
+                    ]
+                }
+            ]
+        }
+    ],
+    "DifferentWorkQueueCapacities": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DifferentWorkQueueCapacities"
                     ]
                 }
             ]
@@ -8703,6 +8733,21 @@
                     },
                     "enable_features": [
                         "TimedHTMLParserBudget"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ToolbarPhoneOptimizations": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ToolbarPhoneOptimizations"
                     ]
                 }
             ]
