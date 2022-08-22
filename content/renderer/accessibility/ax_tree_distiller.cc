@@ -19,8 +19,6 @@
 
 namespace {
 
-static constexpr int kMaxNodes = 5000;
-
 // TODO: Consider moving this to AXNodeProperties.
 static const ax::mojom::Role kContentRoles[]{
     ax::mojom::Role::kHeading,
@@ -136,8 +134,11 @@ void AXTreeDistiller::SnapshotAXTree() {
   ui::AXMode ax_mode =
       ui::AXMode::kWebContents | ui::AXMode::kHTML | ui::AXMode::kScreenReader;
   AXTreeSnapshotterImpl snapshotter(render_frame_, ax_mode);
+  // Setting max_node_count = 0 means there is no max.
+  // TODO(crbug.com/1266555): Set a timeout to ensure that huge pages do not
+  // cause the snapshotter to hang.
   snapshotter.Snapshot(
-      /* exclude_offscreen= */ false, kMaxNodes,
+      /* exclude_offscreen= */ false, /* max_node_count= */ 0,
       /* timeout= */ {}, snapshot_.get());
 }
 
