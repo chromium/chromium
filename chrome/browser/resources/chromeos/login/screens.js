@@ -50,7 +50,7 @@ import './screens/login/management_transition.m.js';
 import './screens/login/offline_login.m.js';
 import './screens/login/update_required_card.m.js';
 // SCREENS USED DURING THE OOBE FLOW
-import './screens/oobe/auto_enrollment_check.m.js';
+import './screens/oobe/auto_enrollment_check.js';
 import './screens/oobe/demo_preferences.m.js';
 import './screens/oobe/demo_setup.m.js';
 import './screens/oobe/enable_debugging.m.js';
