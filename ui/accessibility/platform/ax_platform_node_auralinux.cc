@@ -919,7 +919,7 @@ AtkHyperlink* GetLink(AtkHypertext* hypertext, int index) {
     return nullptr;
 
   const AXLegacyHypertext& ax_hypertext = obj->GetAXHypertext();
-  if (index > static_cast<int>(ax_hypertext.hyperlinks.size()) || index < 0)
+  if (index >= static_cast<int>(ax_hypertext.hyperlinks.size()) || index < 0)
     return nullptr;
 
   int32_t id = ax_hypertext.hyperlinks[index];
