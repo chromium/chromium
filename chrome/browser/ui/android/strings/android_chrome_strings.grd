@@ -3875,6 +3875,12 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_RDS_GLOBAL_OPT_IN_MESSAGE_TITLE" desc="Title of the message shown for the user to opt in to the desktop site global setting based on device conditions.">
         Request desktop sites by default?
       </message>
+      <message name="IDS_RDS_APP_MENU_USER_EDUCATION_DIALOG_TITLE" desc="Title of the dialog shown to educate the user about the desktop site app menu site-level setting.">
+        Chrome will remember your choice
+      </message>
+      <message name="IDS_RDS_APP_MENU_USER_EDUCATION_DIALOG_MESSAGE" desc="Message on the dialog shown to educate the user about the desktop site app menu site-level setting.">
+        When you select desktop site once, the setting is applied to the site each time you visit
+      </message>
 
       <!-- Accessibility -->
 

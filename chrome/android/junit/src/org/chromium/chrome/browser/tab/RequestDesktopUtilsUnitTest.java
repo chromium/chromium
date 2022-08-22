@@ -40,6 +40,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -54,10 +55,17 @@ import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -88,6 +96,10 @@ public class RequestDesktopUtilsUnitTest {
     private Activity mActivity;
     @Mock
     private Profile mProfile;
+    @Mock
+    private ModalDialogManager mModalDialogManager;
+    @Mock
+    private Tracker mTracker;
 
     private @ContentSettingValues int mRdsDefaultValue;
     private SharedPreferencesManager mSharedPreferencesManager;
@@ -152,6 +164,8 @@ public class RequestDesktopUtilsUnitTest {
 
         mResources = ApplicationProvider.getApplicationContext().getResources();
         when(mActivity.getResources()).thenReturn(mResources);
+
+        TrackerFactory.setTrackerForTests(mTracker);
     }
 
     @After
@@ -162,6 +176,7 @@ public class RequestDesktopUtilsUnitTest {
                 ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING);
         mSharedPreferencesManager.removeKey(
                 SingleCategorySettings.USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY);
+        TrackerFactory.setTrackerForTests(null);
     }
 
     @Test
@@ -490,6 +505,42 @@ public class RequestDesktopUtilsUnitTest {
     public void testUpdateDesktopSiteGlobalSettingOnUserRequest_MobileSite() {
         RequestDesktopUtils.updateDesktopSiteGlobalSettingOnUserRequest(mProfile, false);
         verifyUpdateDesktopSiteGlobalSettingOnUserRequest(false);
+    }
+
+    @Test
+    public void testMaybeShowUserEducationPromptForAppMenuSelection() {
+        when(mTracker.shouldTriggerHelpUI(FeatureConstants.REQUEST_DESKTOP_SITE_APP_MENU_FEATURE))
+                .thenReturn(true);
+        boolean shown = RequestDesktopUtils.maybeShowUserEducationPromptForAppMenuSelection(
+                mProfile, mActivity, mModalDialogManager);
+        Assert.assertTrue("User education prompt should be shown.", shown);
+        ArgumentCaptor<PropertyModel> dialog = ArgumentCaptor.forClass(PropertyModel.class);
+        verify(mModalDialogManager).showDialog(dialog.capture(), eq(ModalDialogType.APP), eq(true));
+        Assert.assertEquals("Dialog title should match.",
+                mResources.getString(R.string.rds_app_menu_user_education_dialog_title),
+                dialog.getValue().get(ModalDialogProperties.TITLE));
+        Assert.assertEquals("Dialog message should match.",
+                mResources.getString(R.string.rds_app_menu_user_education_dialog_message),
+                dialog.getValue().get(ModalDialogProperties.MESSAGE_PARAGRAPH_1));
+        Assert.assertEquals("Dialog button text should match.",
+                mResources.getString(R.string.got_it),
+                dialog.getValue().get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
+        Assert.assertTrue("Dialog should be dismissed on touch outside.",
+                dialog.getValue().get(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE));
+
+        // Verify that the button click dismisses the dialog.
+        dialog.getValue()
+                .get(ModalDialogProperties.CONTROLLER)
+                .onClick(dialog.getValue(), ButtonType.POSITIVE);
+        verify(mModalDialogManager)
+                .dismissDialog(
+                        eq(dialog.getValue()), eq(DialogDismissalCause.POSITIVE_BUTTON_CLICKED));
+
+        // Verify that dialog dismissal dismisses the feature in the tracker.
+        dialog.getValue()
+                .get(ModalDialogProperties.CONTROLLER)
+                .onDismiss(dialog.getValue(), DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+        verify(mTracker).dismissed(FeatureConstants.REQUEST_DESKTOP_SITE_APP_MENU_FEATURE);
     }
 
     private void enableFeatureRequestDesktopSiteDefaults(Map<String, String> params) {

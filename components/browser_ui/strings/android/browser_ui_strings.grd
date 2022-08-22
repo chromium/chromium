@@ -175,7 +175,7 @@
     <messages fallback_to_english="true">
       <part file="site_settings.grdp" />
 
-      <message name="IDS_GOT_IT" desc="Button for the user to accept a disclosure/message">
+      <message name="IDS_GOT_IT" desc="Button for the user to accept a disclosure/message" formatter_data="android_java">
         Got it
       </message>
       <message name="IDS_OK" desc="Label for a confirm button. Used in multiple contexts. [CHAR_LIMIT=20]">
