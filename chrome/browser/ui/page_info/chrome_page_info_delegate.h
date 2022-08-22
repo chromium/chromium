@@ -53,6 +53,7 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
       const url::Origin& origin) override;
 
 #if !BUILDFLAG(IS_ANDROID)
+  absl::optional<std::u16string> GetFpsOwner(const GURL& site_url) override;
   bool CreateInfoBarDelegate() override;
   // In Chrome's case, this may show the site settings page or an app settings
   // page, depending on context.
@@ -85,6 +86,7 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
 #endif
 
  private:
+  bool IsFpsAllowed() const;
   Profile* GetProfile() const;
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   safe_browsing::ChromePasswordProtectionService*

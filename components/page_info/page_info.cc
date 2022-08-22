@@ -1159,10 +1159,14 @@ void PageInfo::PresentSiteDataInternal(base::OnceClosure done) {
     cookies_info.blocked_sites_count =
         GetThirdPartySitesWithBlockedCookiesAccessCount(site_url_);
 
-    // TODO(crbug.com/1346305): Add dummy function for FPS information.
-    if (privacy_sandbox::kPrivacySandboxFirstPartySetsUISampleSets.Get() &&
-        site_url_.host() == "example.com") {
-      cookies_info.fps_info.owner_name = u"example.com";
+    if (base::FeatureList::IsEnabled(
+            privacy_sandbox::kPrivacySandboxFirstPartySetsUI)) {
+#if !BUILDFLAG(IS_ANDROID)
+      auto fps_owner = delegate_->GetFpsOwner(site_url_);
+      if (fps_owner)
+        cookies_info.fps_info = PageInfoUI::CookiesFPSInfo(*fps_owner);
+
+#endif
     }
 
     ui_->SetCookieInfo(cookies_info);

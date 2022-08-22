@@ -373,7 +373,10 @@ PageInfoUI::CookieInfo::CookieInfo() : allowed(-1), blocked(-1) {}
 
 PageInfoUI::CookiesNewInfo::CookiesNewInfo() = default;
 
-PageInfoUI::CookiesFPSInfo::CookiesFPSInfo() = default;
+PageInfoUI::CookiesNewInfo::~CookiesNewInfo() = default;
+
+PageInfoUI::CookiesFPSInfo::CookiesFPSInfo(const std::u16string& owner_name)
+    : owner_name(owner_name) {}
 
 PageInfoUI::CookiesFPSInfo::~CookiesFPSInfo() = default;
 

@@ -89,11 +89,8 @@ class PageInfoUI {
 
   // |CookiesFPSInfo| contains information about a specific First-Party Set.
   struct CookiesFPSInfo {
-    CookiesFPSInfo();
+    explicit CookiesFPSInfo(const std::u16string& owner_name);
     ~CookiesFPSInfo();
-
-    // The number of sites in the same FPS.
-    int sites_accessing_data_count = -1;
 
     // The name of the owner of the FPS.
     std::u16string owner_name;
@@ -105,6 +102,7 @@ class PageInfoUI {
   // cookies subpage implementation
   struct CookiesNewInfo {
     CookiesNewInfo();
+    ~CookiesNewInfo();
 
     // The number of third-party sites blocked.
     int blocked_sites_count = -1;
@@ -112,7 +110,7 @@ class PageInfoUI {
     // The number of sites allowed to access cookies.
     int allowed_sites_count = -1;
 
-    CookiesFPSInfo fps_info;
+    absl::optional<CookiesFPSInfo> fps_info;
   };
 
   // |ChosenObjectInfo| contains information about a single |chooser_object| of

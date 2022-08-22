@@ -13,6 +13,8 @@
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
@@ -77,6 +79,11 @@ ChromePageInfoDelegate::ChromePageInfoDelegate(
 
 Profile* ChromePageInfoDelegate::GetProfile() const {
   return Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+}
+
+bool ChromePageInfoDelegate::IsFpsAllowed() const {
+  return PrivacySandboxServiceFactory::GetForProfile(GetProfile())
+      ->ShouldShowDetailedFpsControls();
 }
 
 permissions::ObjectPermissionContextBase*
@@ -161,6 +168,14 @@ permissions::PermissionResult ChromePageInfoDelegate::GetPermissionResult(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+absl::optional<std::u16string> ChromePageInfoDelegate::GetFpsOwner(
+    const GURL& site_url) {
+  return IsFpsAllowed()
+             ? PrivacySandboxServiceFactory::GetForProfile(GetProfile())
+                   ->GetFpsOwnerForDisplay(site_url)
+             : absl::nullopt;
+}
+
 bool ChromePageInfoDelegate::CreateInfoBarDelegate() {
   infobars::ContentInfoBarManager* infobar_manager =
       infobars::ContentInfoBarManager::FromWebContents(web_contents_);

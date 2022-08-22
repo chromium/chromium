@@ -129,14 +129,14 @@ void PageInfoCookiesContentView::SetCookieInfo(
   // Update the text displaying the number of blocked sites.
   blocking_third_party_cookies_subtitle_label_->SetText(num_blocked_sites_text);
 
-  // TODO(crbug.com/1346305): Add checking if FPS is blocked.
   if (base::FeatureList::IsEnabled(
-          privacy_sandbox::kPrivacySandboxFirstPartySetsUI)) {
+          privacy_sandbox::kPrivacySandboxFirstPartySetsUI) &&
+      cookie_info.fps_info) {
     const std::u16string fps_button_title = l10n_util::GetStringFUTF16(
-        IDS_PAGE_FPS_BUTTON_TITLE, cookie_info.fps_info.owner_name);
+        IDS_PAGE_FPS_BUTTON_TITLE, cookie_info.fps_info->owner_name);
 
     const std::u16string fps_button_subtitle = l10n_util::GetStringFUTF16(
-        IDS_PAGE_FPS_BUTTON_SUBTITLE, cookie_info.fps_info.owner_name);
+        IDS_PAGE_FPS_BUTTON_SUBTITLE, cookie_info.fps_info->owner_name);
 
     InitFPSButton();
     fps_button_->SetTitleText(fps_button_title);

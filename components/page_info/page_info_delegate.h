@@ -66,6 +66,10 @@ class PageInfoDelegate {
       blink::PermissionType permission,
       const url::Origin& origin) = 0;
 #if !BUILDFLAG(IS_ANDROID)
+  // Returns absl::nullopt if `site_url` is not recognised as a member of any
+  // FPS or if FPS functionality is not allowed .
+  virtual absl::optional<std::u16string> GetFpsOwner(const GURL& site_url) = 0;
+
   // Creates an infobars::ContentInfoBarManager and an InfoBarDelegate using it,
   // if possible. Returns true if an InfoBarDelegate was created, false
   // otherwise.
