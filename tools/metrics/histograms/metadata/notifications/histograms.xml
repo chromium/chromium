@@ -545,47 +545,51 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.NotificationHelper.ComServerModuleStatus"
-    enum="NotificationHelperComServerModuleStatus" expires_after="M87">
+    enum="NotificationHelperComServerModuleStatus" expires_after="2023-09-01">
   <owner>finnur@chromium.org</owner>
   <summary>
     The execute status of a ComServerModule class instance. Logged whenever a
-    notification_helper process is launched by Windows.
+    notification_helper process is launched by Windows. Note: Not logged after
+    M87 until end of August 2022.
   </summary>
 </histogram>
 
 <histogram
     name="Notifications.NotificationHelper.NotificationActivatorPrimaryStatus"
     enum="NotificationHelperNotificationActivatorPrimaryStatus"
-    expires_after="M85">
+    expires_after="2023-09-01">
   <owner>chengx@chromium.org</owner>
   <owner>finnur@chromium.org</owner>
   <summary>
     The primary execute status of NotificationActivator::Activate. Logged
-    whenever a notification_helper process is launched by Windows.
+    whenever a notification_helper process is launched by Windows. Note: Not
+    logged after M85 until end of August 2022.
   </summary>
 </histogram>
 
 <histogram
     name="Notifications.NotificationHelper.NotificationActivatorSecondaryStatus"
     enum="NotificationHelperNotificationActivatorSecondaryStatus"
-    expires_after="M85">
+    expires_after="2023-09-01">
   <owner>chengx@chromium.org</owner>
   <owner>finnur@chromium.org</owner>
   <summary>
     The secondary execute status of NotificationActivator::Activate. Logged
-    whenever a notification_helper process is launched by Windows.
+    whenever a notification_helper process is launched by Windows. Note: Not
+    logged after M85 until end of August 2022.
   </summary>
 </histogram>
 
 <histogram name="Notifications.NotificationHelper.ServerRuntime" units="ms"
-    expires_after="M87">
+    expires_after="2023-09-01">
   <owner>finnur@chromium.org</owner>
   <summary>
     The runtime of the notification_helper server process. This process is
     created when a notification is activated from the Windows Action Center.
     Once created, this process does some COM class registration work, so that
     Windows can call certain APIs to handle the notification activation. Upon
-    finishing the API calls, Windows signals this process to exit.
+    finishing the API calls, Windows signals this process to exit. Note: Not
+    logged after M87 until end of August 2022.
   </summary>
 </histogram>
 
@@ -1000,40 +1004,43 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Windows.ActivationStatus"
-    enum="WindowsNotificationActivationStatus" expires_after="2022-01-02">
+    enum="WindowsNotificationActivationStatus" expires_after="2023-09-01">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <owner>chengx@chromium.org</owner>
   <summary>
     The status of Activation requests in NotificationPlatformBridgeWin (Windows
-    only). Logged whenever an activation from a notification occurs.
+    only). Logged whenever an activation from a notification occurs. Note: Not
+    logged from January 2021 to end of August 2022.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Windows.CloseStatus"
-    enum="WindowsNotificationCloseStatus" expires_after="M98">
+    enum="WindowsNotificationCloseStatus" expires_after="2023-09-01">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     The status of Close requests in NotificationPlatformBridgeWin (Windows
-    only). Logged whenever a notification is closed.
+    only). Logged whenever a notification is closed. Note: Not logged after M98
+    until end of August 2022.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Windows.CreateToastManagerErrorCode"
-    enum="Hresult" expires_after="M98">
+    enum="Hresult" expires_after="2023-09-01">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     The HRESULT returned by the Windows Action Center, when trying to create a
     toast manager fails. This provides a more detailed error in the cases the
     histogram Notifications.Windows.DisplayStatus reported
-    CREATE_TOAST_NOTIFIER_WITH_ID_FAILED.
+    CREATE_TOAST_NOTIFIER_WITH_ID_FAILED. Note: Not logged after M89 until end
+    of August 2022.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Windows.DisplayFailure" enum="Hresult"
-    expires_after="2023-01-15">
+    expires_after="2023-09-01">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -1043,7 +1050,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Windows.DisplayStatus"
-    enum="WindowsNotificationDisplayStatus" expires_after="2022-01-02">
+    enum="WindowsNotificationDisplayStatus" expires_after="2023-09-01">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -1051,56 +1058,61 @@ chromium-metrics-reviews@google.com.
     only). Logged whenever a notification is displayed. For a more detailed
     error about CREATE_TOAST_NOTIFIER_WITH_ID_FAILED and SHOWING_TOAST_FAILED,
     see Notification.Windows histograms CreateToastManagerErrorCode and
-    ShowFailedErrorCode (respectively).
+    ShowFailedErrorCode (respectively). Note: Not logged between January 2022
+    until end of August 2022.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Windows.GetDisplayedLaunchIdStatus"
-    enum="WindowsNotificationGetDisplayedLaunchIdStatus" expires_after="M98">
+    enum="WindowsNotificationGetDisplayedLaunchIdStatus"
+    expires_after="2023-09-01">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     The status of decoding launch ids while processing a GetDisplayed requests
     in NotificationPlatformBridgeWin (Windows only). Logged whenever a request
-    to retrieve all displayed notifications comes in.
+    to retrieve all displayed notifications comes in. Note: Not logged after M98
+    until end of August 2022.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Windows.GetDisplayedStatus"
-    enum="WindowsNotificationGetDisplayedStatus" expires_after="M98">
+    enum="WindowsNotificationGetDisplayedStatus" expires_after="2023-09-01">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     The status of GetDisplayedStatus requests in NotificationPlatformBridgeWin
     (Windows only). Logged whenever a request to retrieve all displayed
-    notifications comes in.
+    notifications comes in. Note: Not logged after M98 until end of August 2022.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Windows.GetNotificationLaunchIdStatus"
     enum="WindowsNotificationGetNotificationLaunchIdStatus"
-    expires_after="2022-01-02">
+    expires_after="2023-09-01">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     The status of GetNotificationLaunchId requests in
     NotificationPlatformBridgeWin (Windows only). Logged whenever a request to
-    decode the GetNotificationLaunchId comes in.
+    decode the GetNotificationLaunchId comes in. Note: Not logged between
+    January 2022 until end of August 2022.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Windows.GetSettingPolicy"
-    enum="WindowsNotificationGetSettingPolicy" expires_after="M98">
+    enum="WindowsNotificationGetSettingPolicy" expires_after="2023-09-01">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     The policy value provided by get_Setting in NotificationPlatformBridgeWin
     (Windows only). Logged whenever a request to show a notification comes in.
+    Note: Not logged after M98 until end of August 2022.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Windows.GetSettingPolicyStartup"
-    enum="WindowsNotificationGetSettingPolicy" expires_after="2022-08-21">
+    enum="WindowsNotificationGetSettingPolicy" expires_after="2023-09-01">
   <owner>finnur@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
@@ -1111,7 +1123,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Windows.GetSettingStatus"
-    enum="WindowsNotificationGetSettingStatus" expires_after="2022-08-28">
+    enum="WindowsNotificationGetSettingStatus" expires_after="2023-09-01">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -1121,7 +1133,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Windows.GetSettingStatusStartup"
-    enum="WindowsNotificationGetSettingStatus" expires_after="2022-09-11">
+    enum="WindowsNotificationGetSettingStatus" expires_after="2023-09-01">
   <owner>finnur@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
@@ -1132,75 +1144,84 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Windows.HandleEventStatus"
-    enum="WindowsNotificationHandleEventStatus" expires_after="2022-01-02">
+    enum="WindowsNotificationHandleEventStatus" expires_after="2023-09-01">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     The status of HandleEvent requests in NotificationPlatformBridgeWin (Windows
-    only). Logged whenever a notification event is being handled.
+    only). Logged whenever a notification event is being handled. Note: Not
+    logged between January 2022 and end of August 2022.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Windows.HistoryStatus"
-    enum="WindowsNotificationHistoryStatus" expires_after="M98">
+    enum="WindowsNotificationHistoryStatus" expires_after="2023-09-01">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     The status of History requests in NotificationPlatformBridgeWin (Windows
-    only). Logged whenever history is requested for notifications.
+    only). Logged whenever history is requested for notifications. Note: Not
+    logged after M98 until end of August 2022.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Windows.LaunchIdDecodeStatus"
-    enum="WindowsNotificationLaunchIdDecodeStatus" expires_after="M87">
+    enum="WindowsNotificationLaunchIdDecodeStatus" expires_after="2023-09-01">
   <owner>chengx@chromium.org</owner>
   <owner>finnur@chromium.org</owner>
   <summary>
     Used to indicate the status of decoding an input launch id string (Windows
-    only). Logged whenever a notification event is being handled.
+    only). Logged whenever a notification event is being handled. Note: Not
+    logged after M87 until end of August 2022.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Windows.OnFailedStatus"
-    enum="WindowsNotificationOnFailedStatus" expires_after="M98">
+    enum="WindowsNotificationOnFailedStatus" expires_after="2023-09-01">
   <owner>chengx@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     The status of OnFailed requests in NotificationPlatformBridgeWin (Windows
-    only). Logged whenever a failed event is handled.
+    only). Logged whenever a failed event is handled. Note: Not logged after M98
+    until end of August 2022.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Windows.SetReadyCallbackStatus2"
-    enum="WindowsNotificationSetReadyCallbackStatus2" expires_after="M98">
+    enum="WindowsNotificationSetReadyCallbackStatus2"
+    expires_after="2023-09-01">
   <owner>chengx@chromium.org</owner>
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     The status of SetReadyCallback requests in NotificationPlatformBridgeWin
-    (Windows only). Logged once at startup.
+    (Windows only). Logged once at startup. Note: Not logged after M98 until end
+    of August 2022.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Windows.ShowFailedErrorCode" enum="Hresult"
-    expires_after="M98">
+    expires_after="2023-09-01">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     The HRESULT returned by the Windows Action Center, when trying to create a
     toast manager fails. This provides a more detailed error in the cases the
     histogram Notifications.Windows.DisplayStatus reported SHOWING_TOAST_FAILED.
+    Note: Not logged after M98 until end of August 2022.
   </summary>
 </histogram>
 
 <histogram name="Notifications.Windows.StartMenuShortcutStatus"
-    enum="WindowsNotificationStartMenuShortcutStatus" expires_after="M98">
+    enum="WindowsNotificationStartMenuShortcutStatus"
+    expires_after="2023-09-01">
   <owner>chengx@chromium.org</owner>
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     Used to indicate the status of start menu shortcut (Windows only). Logged
-    whenever a notification display attempt is made.
+    whenever a notification display attempt is made. Note: Not logged after M98
+    until end of August 2022.
   </summary>
 </histogram>
 
