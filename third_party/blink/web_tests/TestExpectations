@@ -1466,7 +1466,7 @@ crbug.com/1076027 external/wpt/css/css-grid/masonry/* [ Skip ]
 
 # external/wpt/css/css-fonts/... tests triaged away from the default WPT bug ID
 crbug.com/1211460 external/wpt/css/css-fonts/alternates-order.html [ Failure ]
-crbug.com/1240186 [ Mac ] external/wpt/css/css-fonts/font-family-name-025.html [ Failure ]
+crbug.com/641861 [ Mac ] external/wpt/css/css-fonts/font-family-name-025.html [ Failure ]
 crbug.com/443467 external/wpt/css/css-fonts/font-feature-settings-descriptor-01.html [ Failure ]
 crbug.com/819816 external/wpt/css/css-fonts/font-kerning-03.html [ Failure ]
 crbug.com/1219875 external/wpt/css/css-fonts/font-size-adjust-009.html [ Failure ]
