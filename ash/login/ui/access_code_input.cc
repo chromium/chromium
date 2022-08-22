@@ -305,8 +305,17 @@ absl::optional<std::string> FixedLengthCodeInput::GetCode() const {
 }
 
 void FixedLengthCodeInput::SetInputColor(SkColor color) {
+  const SkColor kErrorColor = AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorAlert);
+
   for (auto* field : input_fields_) {
     field->SetTextColor(color);
+    // We don't update the underline color to red.
+    if (color != kErrorColor) {
+      field->SetBorder(views::CreateSolidSidedBorder(
+          gfx::Insets::TLBR(0, 0, kAccessCodeInputFieldUnderlineThicknessDp, 0),
+          color));
+    }
   }
 }
 
