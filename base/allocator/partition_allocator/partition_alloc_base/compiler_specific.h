@@ -7,10 +7,6 @@
 
 #include "build/build_config.h"
 
-#if defined(COMPILER_MSVC) && !defined(__clang__)
-#error "Only clang-cl is supported on Windows, see https://crbug.com/988071"
-#endif
-
 // This is a wrapper around `__has_cpp_attribute`, which can be used to test for
 // the presence of an attribute. In case the compiler does not support this
 // macro it will simply evaluate to 0.
