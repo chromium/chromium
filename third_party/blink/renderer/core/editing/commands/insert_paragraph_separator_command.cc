@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/html/html_br_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/html/html_object_element.h"
 #include "third_party/blink/renderer/core/html/html_quote_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -166,13 +167,20 @@ Element* InsertParagraphSeparatorCommand::CloneHierarchyUnderNewBlock(
   // Make clones of ancestors in between the start node and the start block.
   Element* parent = block_to_insert;
   for (wtf_size_t i = ancestors.size(); i != 0; --i) {
-    Element& child = ancestors[i - 1]->CloneWithoutChildren();
+    Element& ancestor = *ancestors[i - 1];
+    Element& child = ancestor.CloneWithoutChildren();
     // It should always be okay to remove id from the cloned elements, since the
     // originals are not deleted.
     child.removeAttribute(html_names::kIdAttr);
     AppendNode(&child, parent, editing_state);
     if (editing_state->IsAborted())
       return nullptr;
+    if (auto* html_object = DynamicTo<HTMLObjectElement>(ancestor)) {
+      if (html_object->UseFallbackContent()) {
+        To<HTMLObjectElement>(child).RenderFallbackContent(
+            HTMLObjectElement::ErrorEventPolicy::kDoNotDispatch);
+      }
+    }
     parent = &child;
   }
 

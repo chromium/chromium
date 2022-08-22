@@ -88,4 +88,22 @@ TEST_F(InsertParagraphSeparatorCommandTest, CrashWithCaptionBeforeBody) {
                                         Selection().GetSelectionInDOMTree()));
 }
 
+// http://crbug.com/1345989
+TEST_F(InsertParagraphSeparatorCommandTest, CrashWithObject) {
+  GetDocument().setDesignMode("on");
+  Selection().SetSelection(
+      SetSelectionTextToBody("<object><b>|ABC</b></object>"),
+      SetSelectionOptions());
+  base::RunLoop().RunUntilIdle();  // prepare <object> fallback content
+
+  auto* command =
+      MakeGarbageCollected<InsertParagraphSeparatorCommand>(GetDocument());
+
+  EXPECT_TRUE(command->Apply());
+  EXPECT_EQ(
+      "<div><object><b><br></b></object></div>"
+      "<object><b>|ABC</b></object>",
+      GetSelectionTextFromBody());
+}
+
 }  // namespace blink
