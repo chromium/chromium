@@ -447,7 +447,8 @@ const NSTimeInterval kSyncOperationTimeout = 10.0;
 
 // Tests to open the sign-out confirmation dialog, and then open an external
 // URL.
-- (void)testInterruptDuringSignOutConfirmation {
+// TODO(crbug.com/1352968): Re-enable this test after defalking.
+- (void)DISABLED_testInterruptDuringSignOutConfirmation {
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -471,7 +472,8 @@ const NSTimeInterval kSyncOperationTimeout = 10.0;
 
 // Tests that opening and closing the sign-out confirmation dialog does
 // not affect the user's sign-in state.
-- (void)testDismissSignOutConfirmationTwice {
+// TODO(crbug.com/1352968): Re-enable this test after defalking.
+- (void)DISABLED_testDismissSignOutConfirmationTwice {
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
