@@ -645,7 +645,7 @@ js_library("file_manager") {
     "//ui/file_manager/file_manager/externs:command_handler_deps",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
     "//ui/file_manager/file_manager/externs/background:crostini",
-    "//ui/file_manager/file_manager/externs/background:file_browser_background_full",
+    "//ui/file_manager/file_manager/externs/background:file_manager_base",
     "//ui/file_manager/file_manager/externs/background:file_operation_manager",
     "//ui/file_manager/file_manager/externs/background:import_history",
     "//ui/file_manager/file_manager/externs/background:media_import_handler",

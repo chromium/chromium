@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// init_globals.js must be the first loaded module.
-import './init_globals.js';
 import './strings.m.js';
 import 'chrome://file-manager/background/js/metrics_start.js';
 import './test_util_swa.js';
 
-import {background} from 'chrome://file-manager/background/js/background.js';
+import {background} from 'chrome://file-manager/background/js/file_manager_base.js';
 import {VolumeManagerImpl} from 'chrome://file-manager/background/js/volume_manager_impl.js';
 import {GlitchType, reportGlitch} from 'chrome://file-manager/common/js/glitch.js';
 

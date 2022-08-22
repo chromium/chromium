@@ -6,11 +6,10 @@ import("//third_party/closure_compiler/compile_js.gni")
 
 group("js_modules") {
   deps = [
-    ":background_base",
     ":crostini",
     ":drive_sync_handler",
     ":duplicate_finder",
-    ":file_browser_background_full",
+    ":file_manager_base",
     ":file_operation_manager",
     ":import_history",
     ":media_import_handler",
@@ -18,24 +17,6 @@ group("js_modules") {
     ":progress_center",
     ":task_queue",
   ]
-}
-
-js_library("file_browser_background_full") {
-  deps = [
-    ":background_base",
-    ":crostini",
-    ":drive_sync_handler",
-    ":file_operation_manager",
-    ":import_history",
-    ":media_import_handler",
-    ":media_scanner",
-    ":progress_center",
-    "//ui/file_manager/file_manager/common/js:files_app_state",
-  ]
-}
-
-js_library("background_base") {
-  deps = [ "..:volume_manager" ]
 }
 
 js_library("drive_sync_handler") {
@@ -51,6 +32,20 @@ js_library("duplicate_finder") {
 
 js_library("crostini") {
   deps = [ "..:volume_manager" ]
+}
+
+js_library("file_manager_base") {
+  deps = [
+    ":crostini",
+    ":drive_sync_handler",
+    ":file_operation_manager",
+    ":import_history",
+    ":media_import_handler",
+    ":media_scanner",
+    ":progress_center",
+    "..:volume_manager",
+    "//ui/file_manager/file_manager/common/js:files_app_state",
+  ]
 }
 
 js_library("file_operation_manager") {

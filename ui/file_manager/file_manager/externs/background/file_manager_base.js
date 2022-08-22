@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import {FilesAppState} from '../../common/js/files_app_state.js';
+import {VolumeManager} from '../volume_manager.js';
 
-import {BackgroundBase} from './background_base.js';
 import {Crostini} from './crostini.js';
 import {DriveSyncHandler} from './drive_sync_handler.js';
 import {FileOperationManager} from './file_operation_manager.js';
@@ -13,12 +13,16 @@ import {mediaImportInterfaces} from './media_import_handler.js';
 import {mediaScannerInterfaces} from './media_scanner.js';
 import {ProgressCenter} from './progress_center.js';
 
+/** @typedef {function(!Array<string>):!Promise} */
+export let LaunchHandler;
+
 /**
  * @interface
  */
-export class FileBrowserBackgroundFull extends BackgroundBase {
+export class FileManagerBaseInterface {
   constructor() {
-    super();
+    /** @type {!Object<!Window>} */
+    this.dialogs;
 
     /**
      * @type {!DriveSyncHandler}
@@ -61,6 +65,15 @@ export class FileBrowserBackgroundFull extends BackgroundBase {
      */
     this.crostini;
   }
+
+  /**
+   * Set a handler which is called when an app is launched.
+   * @param {!LaunchHandler} handler Function to be called.
+   */
+  setLaunchHandler(handler) {}
+
+  /** @return {!Promise<!VolumeManager>} */
+  getVolumeManager() {}
 
   /**
    * Register callback to be invoked after initialization of the background

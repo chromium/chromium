@@ -36,7 +36,7 @@ generate_grd("build_static_grdp") {
     "common/js/url_constants.js",
     "common/js/xfm.js",
     "foreground/js/metadata/image_orientation.js",
-    "externs/background/background_base.js",
+    "externs/background/file_manager_base.js",
     "externs/entry_location.js",
     "externs/files_app_entry_interfaces.js",
     "externs/volume_info.js",

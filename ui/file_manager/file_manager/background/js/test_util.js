@@ -6,7 +6,7 @@ import {FilesAppState} from '../../common/js/files_app_state.js';
 import {ProgressCenterItem} from '../../common/js/progress_center_common.js';
 import {util} from '../../common/js/util.js';
 
-import {background} from './background.js';
+import {background} from './file_manager_base.js';
 import {launcher} from './launcher.js';
 import {test} from './test_util_base.js';
 

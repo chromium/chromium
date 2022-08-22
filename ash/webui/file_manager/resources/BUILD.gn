@@ -86,7 +86,6 @@ preprocess_if_expr("preprocess") {
   out_manifest = "$target_gen_dir/manifest_preprocess.json"
 
   in_files = [
-    "init_globals.js",
     "main.js",
     "runtime_loaded_test_util_swa.js",
     "script_loader.js",
@@ -94,7 +93,6 @@ preprocess_if_expr("preprocess") {
   ]
 
   deps = [
-    ":init_globals",
     ":main",
     ":script_loader",
   ]
@@ -163,7 +161,10 @@ generate_grd("build_static_grdp") {
 
   input_files_base_dir = rebase_path(".", "//")
 
-  input_files = [ "images/icon192.png" ]
+  input_files = [
+    "images/icon192.png",
+    "init_globals.js",
+  ]
 }
 
 grd_prefix = "file_manager_swa"

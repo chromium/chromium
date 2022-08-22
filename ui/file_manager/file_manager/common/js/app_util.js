@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BackgroundBase} from '../../externs/background/background_base.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {xfm} from './xfm.js';
 
@@ -163,24 +162,6 @@ appUtil.AppCache.cleanup_ = map => {
   for (let i = 0; i != itemsToDelete; i++) {
     delete map[keys[i]];
   }
-};
-
-/**
- * Fetches the VolumeManager from the background page.
- * @return {!Promise<!VolumeManager>}.
- */
-appUtil.getVolumeManager = async () => {
-  const backgroundWindow = new Promise(resolve => {
-    if (window.isSWA) {
-      resolve(window);
-    } else {
-      chrome.runtime.getBackgroundPage(resolve);
-    }
-  });
-
-  /** @type {!BackgroundBase} */
-  const backgroundPage = (await backgroundWindow).background;
-  return backgroundPage.getVolumeManager();
 };
 
 export {appUtil};

@@ -906,8 +906,8 @@ util.getCurrentLocaleOrDefault = () => {
  */
 util.entriesToURLs = entries => {
   return entries.map(entry => {
-    // When building background.js, cachedUrl is not refered other than here.
-    // Thus closure compiler raises an error if we refer the property like
+    // When building file_manager_base.js, cachedUrl is not referred other than
+    // here. Thus closure compiler raises an error if we refer the property like
     // entry.cachedUrl.
     return entry['cachedUrl'] || entry.toURL();
   });

@@ -19,7 +19,7 @@ import {ProgressItemState} from '../../common/js/progress_center_common.js';
 import {str, util} from '../../common/js/util.js';
 import {AllowedPaths, VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {Crostini} from '../../externs/background/crostini.js';
-import {FileBrowserBackgroundFull} from '../../externs/background/file_browser_background_full.js';
+import {FileManagerBaseInterface} from '../../externs/background/file_manager_base.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 import {importerHistoryInterfaces} from '../../externs/background/import_history.js';
 import {mediaImportInterfaces} from '../../externs/background/media_import_handler.js';
@@ -366,12 +366,12 @@ export class FileManager extends EventTarget {
 
     /**
      * Background page.
-     * @private {?BackgroundWindow}
+     * @type {?BackgroundWindow}.
      */
     this.backgroundPage_ = null;
 
     /**
-     * @private {?FileBrowserBackgroundFull}
+     * @private {?FileManagerBaseInterface}
      */
     this.fileBrowserBackground_ = null;
 
@@ -1004,7 +1004,7 @@ export class FileManager extends EventTarget {
 
     assert(this.backgroundPage_);
     this.fileBrowserBackground_ =
-        /** @type {!FileBrowserBackgroundFull} */ (
+        /** @type {!FileManagerBaseInterface} */ (
             this.backgroundPage_.background);
 
     await new Promise(resolve => this.fileBrowserBackground_.ready(resolve));

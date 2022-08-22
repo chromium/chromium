@@ -1,7 +1,10 @@
 // Copyright (c) 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
+import {resolveIsolatedEntries} from '../../common/js/api.js';
 import {FilesAppState} from '../../common/js/files_app_state.js';
 import {importer} from '../../common/js/importer_common.js';
 import {metrics} from '../../common/js/metrics.js';
@@ -11,7 +14,7 @@ import {xfm} from '../../common/js/xfm.js';
 import {Crostini} from '../../externs/background/crostini.js';
 import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.js';
 import {duplicateFinderInterfaces} from '../../externs/background/duplicate_finder.js';
-import {FileBrowserBackgroundFull} from '../../externs/background/file_browser_background_full.js';
+import {FileManagerBaseInterface} from '../../externs/background/file_manager_base.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 import {importerHistoryInterfaces} from '../../externs/background/import_history.js';
 import {mediaImportInterfaces} from '../../externs/background/media_import_handler.js';
@@ -20,7 +23,6 @@ import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
-import {BackgroundBaseImpl} from './background_base.js';
 import {CrostiniImpl} from './crostini.js';
 import {DeviceHandler} from './device_handler.js';
 import {DriveSyncHandlerImpl} from './drive_sync_handler.js';
@@ -36,13 +38,47 @@ import {MountMetrics} from './mount_metrics.js';
 import {ProgressCenterImpl} from './progress_center.js';
 import {volumeManagerFactory} from './volume_manager_factory.js';
 
+/** @typedef {function(!Array<string>):!Promise} */
+let LaunchHandler;
+
 /**
- * Root class of the background page.
- * @implements {FileBrowserBackgroundFull}
+ * Root class of the former background page.
+ * @implements {FileManagerBaseInterface}
  */
-class FileBrowserBackgroundImpl extends BackgroundBaseImpl {
+export class FileManagerBase {
   constructor() {
-    super();
+    /**
+     * Map of all currently open file dialogs. The key is an app ID.
+     * @type {!Object<!Window>}
+     */
+    this.dialogs = {};
+
+    /**
+     * Initializes the strings. This needs for the volume manager.
+     * @type {?Promise}
+     */
+    this.initializationPromise_ = new Promise((fulfill, reject) => {
+      chrome.fileManagerPrivate.getStrings(stringData => {
+        if (chrome.runtime.lastError) {
+          console.error(chrome.runtime.lastError.message);
+          return;
+        }
+        if (!loadTimeData.isInitialized()) {
+          loadTimeData.data = assert(stringData);
+        }
+        fulfill(stringData);
+      });
+    });
+
+    /** @private {?LaunchHandler} */
+    this.launchHandler_ = null;
+
+    // Initialize handlers.
+    if (!window.isSWA) {
+      chrome.app.runtime.onLaunched.addListener(this.onLaunched_.bind(this));
+      chrome.app.runtime.onRestarted.addListener(this.onRestarted_.bind(this));
+    }
+
     this.setLaunchHandler(this.launch_);
 
     /**
@@ -163,6 +199,68 @@ class FileBrowserBackgroundImpl extends BackgroundBaseImpl {
         this.onMountCompleted_.bind(this));
 
     launcher.setInitializationPromise(this.initializationPromise_);
+  }
+
+  /**
+   * @return {!Promise<!VolumeManager>}
+   */
+  async getVolumeManager() {
+    return volumeManagerFactory.getInstance();
+  }
+
+  /**
+   * Called when an app is launched.
+   *
+   * @param {!Object} launchData Launch data. See the manual of
+   *     chrome.app.runtime.onLaunched for detail.
+   */
+  async onLaunched_(launchData) {
+    metrics.startInterval('Load.BackgroundLaunch');
+    console.warn('onLaunched: ' + (launchData ? launchData.source : ''));
+    if (!launchData || !launchData.items || launchData.items.length == 0) {
+      this.launch_(undefined);
+      return;
+    }
+    // Skip if files are not selected.
+    if (!launchData || !launchData.items || launchData.items.length == 0) {
+      return;
+    }
+
+    await this.initializationPromise_;
+
+    // Volume list needs to be initialized (more precisely,
+    // chrome.fileManagerPrivate.getVolumeRoot needs to be called to grant
+    // access).
+    await volumeManagerFactory.getInstance();
+
+    const isolatedEntries = launchData.items.map(item => item.entry);
+
+    let urls = [];
+    try {
+      // Obtains entries in non-isolated file systems.
+      // The entries in launchData are stored in the isolated file system.
+      // We need to map the isolated entries to the normal entries to retrieve
+      // their parent directory.
+      const externalEntries =
+          await retryResolveIsolatedEntries(isolatedEntries);
+      urls = util.entriesToURLs(externalEntries);
+    } catch (error) {
+      // Just log the error and default no file/URL so we spawn the app window.
+      console.warn(error);
+      urls = [];
+    }
+
+    if (this.launchHandler_) {
+      this.launchHandler_(urls);
+    }
+  }
+
+  /**
+   * Set a handler which is called when an app is launched.
+   * @param {!LaunchHandler} handler Function to be called.
+   */
+  setLaunchHandler(handler) {
+    this.launchHandler_ = handler;
   }
 
   /**
@@ -369,21 +467,6 @@ class FileBrowserBackgroundImpl extends BackgroundBaseImpl {
   /**
    * Launches the app.
    * @private
-   * @override
-   */
-  async onLaunched_(launchData) {
-    metrics.startInterval('Load.BackgroundLaunch');
-    console.warn('onLaunched: ' + (launchData ? launchData.source : ''));
-    if (!launchData || !launchData.items || launchData.items.length == 0) {
-      this.launch_(undefined);
-      return;
-    }
-    BackgroundBaseImpl.prototype.onLaunched_.apply(this, [launchData]);
-  }
-
-  /**
-   * Launches the app.
-   * @private
    * @param {!Array<string>|undefined} urls
    */
   launch_(urls) {
@@ -415,7 +498,6 @@ class FileBrowserBackgroundImpl extends BackgroundBaseImpl {
   /**
    * Restarted the app, restore windows.
    * @private
-   * @override
    */
   onRestarted_() {
     // Reopen file manager windows.
@@ -558,6 +640,43 @@ class FileBrowserBackgroundImpl extends BackgroundBaseImpl {
   }
 }
 
+/** @private {number} Total number of retries for the resolve entries below.*/
+const MAX_RETRIES = 6;
+
+/**
+ * Retry the resolveIsolatedEntries() until we get the same number of entries
+ * back.
+ * @param {!Array<!Entry>} isolatedEntries Entries that need to be resolved.
+ * @return {!Promise<!Array<!Entry>>} Promise resolved with the entries
+ *   resolved.
+ */
+async function retryResolveIsolatedEntries(isolatedEntries) {
+  let count = 0;
+  let externalEntries = [];
+  // Wait time in milliseconds between attempts. We double this value after
+  // every wait.
+  let waitTime = 25;
+
+  // Total waiting time is ~1.5 second for `waitTime` starting at 25ms and total
+  // of 6 attempts.
+  while (count <= MAX_RETRIES) {
+    externalEntries = await resolveIsolatedEntries(isolatedEntries);
+    if (externalEntries.length >= isolatedEntries.length) {
+      return externalEntries;
+    }
+
+    console.warn(`Failed to resolve, retrying in ${waitTime}ms...`);
+    await new Promise(resolve => setTimeout(resolve, waitTime));
+    waitTime = waitTime * 2;
+    count += 1;
+  }
+
+  console.warn(
+      `Failed to resolve: Requested ${isolatedEntries.length},` +
+      ` resolved: ${externalEntries.length}.`);
+  return [];
+}
+
 /**
  * Prefix for the dialog ID.
  * @type {!string}
@@ -573,13 +692,13 @@ let nextFileManagerDialogID = 0;
 
 /**
  * Singleton instance of Background object.
- * @type {!FileBrowserBackgroundFull}
+ * @type {!FileManagerBaseInterface}
  */
-export const background = new FileBrowserBackgroundImpl();
+export const background = new FileManagerBase();
 window.background = background;
 
 /**
- * Lastly, end recording of the background page Load.BackgroundScript metric.
+ * End recording of the background page Load.BackgroundScript metric.
  * NOTE: This call must come after the call to metrics.clearUserId.
  */
 metrics.recordInterval('Load.BackgroundScript');

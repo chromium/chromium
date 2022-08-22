@@ -8,5 +8,5 @@
 
 import './metrics_start.js';
 import '../../common/js/error_counter.js';
-import './background.js';
+import './file_manager_base.js';
 import './test_util.js';
