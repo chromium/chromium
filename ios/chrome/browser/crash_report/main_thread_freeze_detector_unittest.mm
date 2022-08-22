@@ -33,7 +33,7 @@ TEST_F(MainThreadFreezeDetectorTest, FileMoveSameModificationDate) {
   NSDate* date1 = [[file_manager attributesOfItemAtPath:original_file error:nil]
       objectForKey:NSFileModificationDate];
   // Spin the run loop so, if the move below uses an updated modification date,
-  // |date2| will not match (which would be a test failure).
+  // `date2` will not match (which would be a test failure).
   base::test::ios::SpinRunLoopWithMinDelay(base::Milliseconds(40));
   ASSERT_TRUE([file_manager moveItemAtPath:original_file
                                     toPath:new_file

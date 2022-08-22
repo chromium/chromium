@@ -158,7 +158,7 @@ void SetEnabled(bool enabled) {
   // value immediately on startup, such as in safe mode or extensions.
   crash_helper::common::SetUserEnabledUploading(enabled);
 
-  // It is necessary to always call |MainThreadFreezeDetector setEnabled| as
+  // It is necessary to always call `MainThreadFreezeDetector setEnabled` as
   // the function will update its preference based on finch.
   [[MainThreadFreezeDetector sharedInstance] setEnabled:enabled];
 

@@ -41,9 +41,9 @@ class CrashRestoreHelperTest : public PlatformTest {
   }
 
  protected:
-  // Creates the session for |session_id|, if |session_id| is nil a session
+  // Creates the session for `session_id`, if `session_id` is nil a session
   // will be created in the default location.
-  // Returns |true| if the creation was successful.
+  // Returns `true` if the creation was successful.
   bool CreateSession(NSString* session_id) {
     NSFileManager* file_manager = [NSFileManager defaultManager];
     ChromeBrowserState* browser_states[] = {
@@ -74,8 +74,8 @@ class CrashRestoreHelperTest : public PlatformTest {
     return true;
   }
 
-  // Returns |true| if session for |session_id| was erased from its default
-  // location. if |session_id| is nil, the default session location is used.
+  // Returns `true` if session for `session_id` was erased from its default
+  // location. if `session_id` is nil, the default session location is used.
   bool IsSessionErased(NSString* session_id) {
     NSFileManager* file_manager = [NSFileManager defaultManager];
     ChromeBrowserState* browser_states[] = {
@@ -94,8 +94,8 @@ class CrashRestoreHelperTest : public PlatformTest {
     return true;
   }
 
-  // Returns |true| if the session with |session_id| was backed up correctly,
-  // and deletes the backup file. if |session_id| is nil, the default backup
+  // Returns `true` if the session with `session_id` was backed up correctly,
+  // and deletes the backup file. if `session_id` is nil, the default backup
   // session location is used.
   bool CheckAndDeleteSessionBackedUp(NSString* session_id,
                                      ChromeBrowserState* browser_state) {

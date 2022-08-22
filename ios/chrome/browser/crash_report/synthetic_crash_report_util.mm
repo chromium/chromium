@@ -23,7 +23,7 @@
 
 namespace {
 
-// Appends |config| vector with key value pair, respecting max value length.
+// Appends `config` vector with key value pair, respecting max value length.
 void AppendConfig(std::vector<std::string>& config,
                   std::string key,
                   std::string value) {
@@ -44,7 +44,7 @@ void AppendConfig(std::vector<std::string>& config,
   }
 }
 
-// Appends |config| vector with key value pair, respecting max value length.
+// Appends `config` vector with key value pair, respecting max value length.
 // Key is prepent with BreakpadServerParameterPrefix_.
 void AppendConfigWithBreakpadServerParam(std::vector<std::string>& config,
                                          std::string key,

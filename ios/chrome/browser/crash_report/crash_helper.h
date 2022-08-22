@@ -38,7 +38,7 @@ void ProcessIntermediateReportsForSafeMode();
 int GetPendingCrashReportCount();
 
 // Gets the number of pending crash reports on a background thread and invokes
-// |callback| with the result when complete.
+// `callback` with the result when complete.
 void GetPendingCrashReportCount(void (^callback)(int));
 
 // Check if there is currently a crash report to upload. This function will wait

@@ -28,7 +28,7 @@
 
 namespace {
 // Returns an OCMArg validator which checks that the parameter value is a string
-// containing |count| occurances of |substring|.
+// containing `count` occurances of `substring`.
 id StringParameterValidatorWithCountOfSubstring(NSUInteger count,
                                                 NSString* substring) {
   return [OCMArg checkWithBlock:^(id value) {
@@ -67,7 +67,7 @@ class CrashReporterBreadcrumbObserverTest : public PlatformTest {
         [OCMockObject mockForClass:[BreakpadController class]];
 
     // Swizzle +[BreakpadController sharedInstance] to return
-    // |mock_breakpad_controller_| instead of the normal singleton instance.
+    // `mock_breakpad_controller_` instead of the normal singleton instance.
     id implementation_block = ^BreakpadController*(id self) {
       return mock_breakpad_controller_;
     };
@@ -83,8 +83,8 @@ class CrashReporterBreadcrumbObserverTest : public PlatformTest {
   }
 
  protected:
-  // Returns the BreadcrumbManagerKeyedService for |browser_state|, and sets
-  // |crash_reporter_breadcrumb_observer_| as its observer.
+  // Returns the BreadcrumbManagerKeyedService for `browser_state`, and sets
+  // `crash_reporter_breadcrumb_observer_` as its observer.
   breadcrumbs::BreadcrumbManagerKeyedService* GetAndObserveBreadcrumbService(
       web::BrowserState* const browser_state) {
     breadcrumbs::BreadcrumbManagerKeyedService* const breadcrumb_service =

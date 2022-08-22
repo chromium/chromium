@@ -58,24 +58,24 @@
 - (void)removeTabId:(NSString*)tabId;
 // Removes document related information from tabCurrentStateByTabId_.
 - (void)closingDocumentInTab:(NSString*)tabId;
-// Sets a tab |tabId| specific information with key |key| and value |value| in
+// Sets a tab `tabId` specific information with key `key` and value `value` in
 // tabCurrentStateByTabId_.
 - (void)setTabInfo:(NSString*)key
          withValue:(const NSString*)value
             forTab:(NSString*)tabId;
-// Retrieves the |key| information for tab |tabID|.
+// Retrieves the `key` information for tab `tabID`.
 - (id)tabInfo:(NSString*)key forTab:(NSString*)tabID;
-// Removes the |key| information for tab |tabId|
+// Removes the `key` information for tab `tabId`
 - (void)removeTabInfo:(NSString*)key forTab:(NSString*)tabId;
-// Observes |webState| by this instance of the CrashReporterTabStateObserver.
+// Observes `webState` by this instance of the CrashReporterTabStateObserver.
 - (void)observeWebState:(web::WebState*)webState;
-// Stop Observing |webState| by this instance of the
+// Stop Observing `webState` by this instance of the
 // CrashReporterTabStateObserver.
 - (void)stopObservingWebState:(web::WebState*)webState;
-// Observes |webStateList| by this instance of the
+// Observes `webStateList` by this instance of the
 // CrashReporterTabStateObserver.
 - (void)observeWebStateList:(WebStateList*)webStateList;
-// Stop Observing |webStateList| by this instance of the
+// Stop Observing `webStateList` by this instance of the
 // CrashReporterTabStateObserver.
 - (void)stopObservingWebStateList:(WebStateList*)webStateList;
 @end

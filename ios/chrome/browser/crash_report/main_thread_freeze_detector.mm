@@ -22,7 +22,7 @@
 #endif
 namespace {
 // The info contains a dictionary with info about the freeze report.
-// See description at |_lastSessionFreezeInfo|.
+// See description at `_lastSessionFreezeInfo`.
 const char kNsUserDefaultKeyLastSessionInfo[] =
     "MainThreadDetectionLastThreadWasFrozenInfo";
 
@@ -72,7 +72,7 @@ bool IsMetricKitReport(crash_reporter::Report report) {
 // The callback that is called regularly on watchdog thread.
 - (void)runInFreezeDetectionQueue;
 // These 4 properties will be accessed from both thread. Make them atomic.
-// The date at which |runInMainLoop| was last called.
+// The date at which `runInMainLoop` was last called.
 @property(atomic) NSDate* lastSeenMainThread;
 // Whether the watchdog should continue running.
 @property(atomic) BOOL running;
@@ -89,8 +89,8 @@ bool IsMetricKitReport(crash_reporter::Report report) {
 
   // The information on the UTE report that was created on last session.
   // Contains 3 fields:
-  // "dump": the file name of the .dmp file in |_UTEDirectory|,
-  // "config": the file name of the config file in |_UTEDirectory|,
+  // "dump": the file name of the .dmp file in `_UTEDirectory`,
+  // "config": the file name of the config file in `_UTEDirectory`,
   // "date": the date at which the UTE file was generated.
   // NOTE: Fields are unused with crashpad.
   NSDictionary* _lastSessionFreezeInfo;
@@ -296,7 +296,7 @@ bool IsMetricKitReport(crash_reporter::Report report) {
   }
   // The report is always generated in the BreakpadDirectory.
   // As only one report can be uploaded per session, this report is
-  // moved out of the Breakpad directory and put in a |UTE| directory.
+  // moved out of the Breakpad directory and put in a `UTE` directory.
   NSString* configFile =
       [breakpadReportInfo objectForKey:@BREAKPAD_OUTPUT_CONFIG_FILE];
   NSString* UTEConfigFile = [_UTEDirectory
@@ -445,8 +445,8 @@ bool IsMetricKitReport(crash_reporter::Report report) {
   [self restoreLastSessionReportIfNeeded];
   NSFileManager* fileManager = [[NSFileManager alloc] init];
   // It is possible that this call will delete a report on the current session.
-  // But this is unlikely because |handleLastSessionReport| run on the
-  // |_freezeDetectionQueue| and is called directly from setEnabled which means
+  // But this is unlikely because `handleLastSessionReport` run on the
+  // `_freezeDetectionQueue` and is called directly from setEnabled which means
   // that main thread was responding recently.
   [fileManager removeItemAtPath:_UTEDirectory error:nil];
   [fileManager createDirectoryAtPath:_UTEDirectory

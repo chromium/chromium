@@ -12,7 +12,7 @@ class FilePath;
 }
 
 // Creates Synthetic Crash Report for Unexplained Termination Event to be
-// uploaded by Breakpad. |path| should be a path to Breakpad directory and
+// uploaded by Breakpad. `path` should be a path to Breakpad directory and
 // the rest of the arguments are Breakpad specific values.
 void CreateSyntheticCrashReportForUte(
     const base::FilePath& path,

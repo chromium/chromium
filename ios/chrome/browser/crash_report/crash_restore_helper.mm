@@ -60,7 +60,7 @@
     (ChromeBrowserState*)browserState;
 
 // Restores the sessions after a crash. It should only be called if
-// |moveAsideSessions:forBrowserState| for the browser state of the current
+// `moveAsideSessions:forBrowserState` for the browser state of the current
 // browser was successful.
 - (BOOL)restoreSessionsAfterCrash;
 
@@ -86,7 +86,7 @@ const base::FilePath::CharType kSessionBackupDirectory[] =
 const base::FilePath::CharType kSessionBackupFileName[] =
     FILE_PATH_LITERAL("session.backup.plist");
 
-// Convert |path| to NSString.
+// Convert `path` to NSString.
 NSString* PathAsNSString(const base::FilePath& path) {
   return base::SysUTF8ToNSString(path.AsUTF8Unsafe());
 }
@@ -132,7 +132,7 @@ class InfoBarManagerObserverBridge : infobars::InfoBarManager::Observer {
 // A delegate for the InfoBar shown when the previous session has crashed.
 class SessionCrashedInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
-  // Creates a session crashed infobar  and adds it to |infobar_manager|.
+  // Creates a session crashed infobar  and adds it to `infobar_manager`.
   static bool Create(infobars::InfoBarManager* infobar_manager,
                      CrashRestoreHelper* crash_restore_helper);
 
@@ -227,7 +227,7 @@ bool SessionCrashedInfoBarDelegate::Accept() {
       recordConfirmInfobarEvent:MobileMessagesConfirmInfobarEvents::Accepted
           forInfobarConfirmType:InfobarConfirmType::kInfobarConfirmTypeRestore];
   // Accept should return NO if the infobar is going to be dismissed.
-  // Since |restoreSessionAfterCrash| returns YES if a single NTP tab is closed,
+  // Since `restoreSessionAfterCrash` returns YES if a single NTP tab is closed,
   // which will dismiss the infobar, invert the bool.
   return ![crash_restore_helper_ restoreSessionsAfterCrash];
 }

@@ -34,7 +34,7 @@ namespace {
 // Max number of urls to send. This represent 1 URL per WebState group.
 const int kNumberOfURLsToSend = 3;
 
-// Keep the following two CrashKey arrays in sync with |kNumberOfURLsToSend|.
+// Keep the following two CrashKey arrays in sync with `kNumberOfURLsToSend`.
 static crash_reporter::CrashKeyString<1024> url_crash_keys[] = {
     {"url0", CrashKeyString<1024>::Tag::kArray},
     {"url1", CrashKeyString<1024>::Tag::kArray},
