@@ -6,8 +6,11 @@ module blink.mojom;
 
 // Indicates the service worker fetch handler can be skipped.
 // Experimental feature. Not followed by the spec.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum ServiceWorkerFetchHandlerType {
-  kNoHandler,
-  kNotSkippable,
-  kEmptyFetchHandler,
+  kNoHandler = 0,
+  kNotSkippable = 1,
+  kEmptyFetchHandler = 2,
 };

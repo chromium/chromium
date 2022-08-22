@@ -425,6 +425,11 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
   DCHECK_NE(active_version->fetch_handler_existence(),
             ServiceWorkerVersion::FetchHandlerExistence::UNKNOWN);
 
+  base::UmaHistogramEnumeration(
+      "ServiceWorker.FetchHandler."
+      "TypeAtContinueWithActivatedVersion",
+      active_version->fetch_handler_type());
+
   if (blink::IsRequestDestinationFrame(destination_))
     container_host_->AddServiceWorkerToUpdate(active_version);
 

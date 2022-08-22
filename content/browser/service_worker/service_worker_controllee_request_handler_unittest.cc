@@ -469,6 +469,86 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, NullContext) {
   EXPECT_EQ(GURL("https://host/scope/doc"), container_host_->url());
 }
 
+TEST_F(ServiceWorkerControlleeRequestHandlerTest, HasNotSkippedMetrics) {
+  base::HistogramTester tester;
+
+  version_->set_fetch_handler_type(
+      ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
+  version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
+  registration_->SetWaitingVersion(version_);
+  base::RunLoop loop;
+  context()->registry()->StoreRegistration(
+      registration_.get(), version_.get(),
+      base::BindLambdaForTesting(
+          [&loop](blink::ServiceWorkerStatusCode status) { loop.Quit(); }));
+  loop.Run();
+
+  // Conduct a main resource load.
+  ServiceWorkerRequestTestResources test_resources(
+      this, GURL("https://host/scope/doc"),
+      network::mojom::RequestDestination::kDocument);
+  test_resources.MaybeCreateLoader();
+  EXPECT_FALSE(test_resources.loader());
+  EXPECT_FALSE(version_->HasControllee());
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(test_resources.loader());
+  EXPECT_TRUE(version_->HasControllee());
+  tester.ExpectUniqueSample("ServiceWorker.FetchHandler.SkipReason",
+                            ServiceWorkerControlleeRequestHandler::
+                                FetchHandlerSkipReason::kNotSkipped,
+                            1);
+  tester.ExpectUniqueSample(
+      "ServiceWorker.FetchHandler."
+      "TypeAtContinueWithActivatedVersion",
+      ServiceWorkerVersion::FetchHandlerType::kNotSkippable, 1);
+
+  test_resources.ResetHandler();
+}
+
+TEST_F(ServiceWorkerControlleeRequestHandlerTest,
+       HasSkippedForEmptyFetchHandlerMetrics) {
+  base::HistogramTester tester;
+
+  version_->set_fetch_handler_type(
+      ServiceWorkerVersion::FetchHandlerType::kEmptyFetchHandler);
+  version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
+  registration_->SetWaitingVersion(version_);
+  base::RunLoop loop;
+  context()->registry()->StoreRegistration(
+      registration_.get(), version_.get(),
+      base::BindLambdaForTesting(
+          [&loop](blink::ServiceWorkerStatusCode status) { loop.Quit(); }));
+  loop.Run();
+
+  // Conduct a main resource load.
+  ServiceWorkerRequestTestResources test_resources(
+      this, GURL("https://host/scope/doc"),
+      network::mojom::RequestDestination::kDocument);
+  test_resources.MaybeCreateLoader();
+  EXPECT_FALSE(test_resources.loader());
+  EXPECT_FALSE(version_->HasControllee());
+
+  base::RunLoop().RunUntilIdle();
+
+  // Since the ServiceWorkerSkipIgnorableFetchHandler feature is disabled,
+  // the loader should be true.
+  EXPECT_TRUE(test_resources.loader());
+  EXPECT_TRUE(version_->HasControllee());
+  // Since the feature is disabled, the fetch handler should not be skipped.
+  tester.ExpectUniqueSample("ServiceWorker.FetchHandler.SkipReason",
+                            ServiceWorkerControlleeRequestHandler::
+                                FetchHandlerSkipReason::kNotSkipped,
+                            1);
+  tester.ExpectUniqueSample(
+      "ServiceWorker.FetchHandler."
+      "TypeAtContinueWithActivatedVersion",
+      ServiceWorkerVersion::FetchHandlerType::kEmptyFetchHandler, 1);
+
+  test_resources.ResetHandler();
+}
+
 class ServiceWorkerSkipEmptyFetchHandlerTest
     : public ServiceWorkerControlleeRequestHandlerTest {
  public:
@@ -513,6 +593,10 @@ TEST_F(ServiceWorkerSkipEmptyFetchHandlerTest, HasNotSkippedMetrics) {
                             ServiceWorkerControlleeRequestHandler::
                                 FetchHandlerSkipReason::kNotSkipped,
                             1);
+  tester.ExpectUniqueSample(
+      "ServiceWorker.FetchHandler."
+      "TypeAtContinueWithActivatedVersion",
+      ServiceWorkerVersion::FetchHandlerType::kNotSkippable, 1);
 
   test_resources.ResetHandler();
 }
@@ -549,6 +633,10 @@ TEST_F(ServiceWorkerSkipEmptyFetchHandlerTest,
       ServiceWorkerControlleeRequestHandler::FetchHandlerSkipReason::
           kSkippedForEmptyFetchHandler,
       1);
+  tester.ExpectUniqueSample(
+      "ServiceWorker.FetchHandler."
+      "TypeAtContinueWithActivatedVersion",
+      ServiceWorkerVersion::FetchHandlerType::kEmptyFetchHandler, 1);
 
   test_resources.ResetHandler();
 }

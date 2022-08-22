@@ -397,6 +397,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.FetchHandler.TypeAtContinueWithActivatedVersion"
+    enum="ServiceWorkerFetchHandlerType" expires_after="2023-06-30">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The type of the fetch handler recorded just before dispatching the fetch
+    handler. This represent the fetch handler type, and does not represent if
+    the fetch handler is skipped or not.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.InstallEvent.All.FetchCount" units="fetches"
     expires_after="2023-01-26">
   <owner>wanderview@chromium.org</owner>

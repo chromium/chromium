@@ -87378,6 +87378,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="Skipped for Empty Fetch Handler"/>
 </enum>
 
+<enum name="ServiceWorkerFetchHandlerType">
+  <int value="0" label="No Fetch Handler"/>
+  <int value="1" label="Not Skippable"/>
+  <int value="2" label="Empty Fetch Handler"/>
+</enum>
+
 <enum name="ServiceWorkerInstalledScriptsManager.FinishedReason">
   <int value="0" label="NOT_FINISHED"/>
   <int value="1" label="SUCCESS"/>
