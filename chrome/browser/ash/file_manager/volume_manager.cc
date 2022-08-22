@@ -931,7 +931,7 @@ bool VolumeManager::RegisterMediaViewForTesting(
 bool VolumeManager::RemoveAndroidFilesDirectoryForTesting(
     const base::FilePath& path) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DoUnmountEvent(ash::MountError::kNone, *Volume::CreateForAndroidFiles(path));
+  DoUnmountEvent(*Volume::CreateForAndroidFiles(path));
   return true;
 }
 
@@ -939,7 +939,7 @@ void VolumeManager::RemoveDownloadsDirectoryForTesting() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   base::FilePath path;
   if (FindDownloadsMountPointPath(profile_, &path)) {
-    DoUnmountEvent(ash::MountError::kNone, *Volume::CreateForDownloads(path));
+    DoUnmountEvent(*Volume::CreateForDownloads(path));
   }
 }
 
@@ -949,8 +949,7 @@ bool VolumeManager::RegisterDownloadsDirectoryForTesting(
 
   base::FilePath old_path;
   if (FindDownloadsMountPointPath(profile_, &old_path)) {
-    DoUnmountEvent(ash::MountError::kNone,
-                   *Volume::CreateForDownloads(old_path));
+    DoUnmountEvent(*Volume::CreateForDownloads(old_path));
   }
 
   bool success = RegisterDownloadsMountPoint(profile_, path);
@@ -1003,10 +1002,9 @@ void VolumeManager::RemoveVolumeForTesting(
     const std::string& drive_label,
     const std::string& file_system_type) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DoUnmountEvent(
-      ash::MountError::kNone,
-      *Volume::CreateForTesting(path, volume_type, device_type, read_only,
-                                device_path, drive_label, file_system_type));
+  DoUnmountEvent(*Volume::CreateForTesting(path, volume_type, device_type,
+                                           read_only, device_path, drive_label,
+                                           file_system_type));
 }
 
 void VolumeManager::OnFileSystemMounted() {
@@ -1022,8 +1020,7 @@ void VolumeManager::OnFileSystemMounted() {
 void VolumeManager::OnFileSystemBeingUnmounted() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  DoUnmountEvent(ash::MountError::kNone,
-                 *Volume::CreateForDrive(GetDriveMountPointPath()));
+  DoUnmountEvent(*Volume::CreateForDrive(GetDriveMountPointPath()));
 }
 
 void VolumeManager::OnAutoMountableDiskEvent(
@@ -1132,7 +1129,7 @@ void VolumeManager::OnMountEvent(
     }
 
     case ash::disks::DiskMountManager::UNMOUNTING:
-      DoUnmountEvent(error_code, *volume);
+      DoUnmountEvent(*volume, error_code);
       return;
   }
 
@@ -1387,7 +1384,7 @@ void VolumeManager::OnProvidedFileSystemUnmount(
                                           : ash::MountError::kUnknown;
   std::unique_ptr<Volume> volume = Volume::CreateForProvidedFileSystem(
       file_system_info, MOUNT_CONTEXT_UNKNOWN);
-  DoUnmountEvent(mount_error, *volume);
+  DoUnmountEvent(*volume, mount_error);
 
   // The fusebox_mounter_ is enabled by a chrome flag.
   if (!fusebox_mounter_)
@@ -1404,7 +1401,7 @@ void VolumeManager::OnProvidedFileSystemUnmount(
   std::unique_ptr<Volume> fusebox_volume =
       Volume::CreateForFuseBoxProvidedFileSystem(mount_path, file_system_info,
                                                  MOUNT_CONTEXT_UNKNOWN);
-  DoUnmountEvent(mount_error, *fusebox_volume);
+  DoUnmountEvent(*fusebox_volume, mount_error);
 
   // Remove the fusebox FSP storage device from chrome::storage.
   auto* mount_points = storage::ExternalMountPoints::GetSystemInstance();
@@ -1462,18 +1459,13 @@ void VolumeManager::OnArcPlayStoreEnabledChanged(bool enabled) {
                    Volume::CreateForAndroidFiles(
                        base::FilePath(util::kAndroidFilesPath)));
   } else {
-    DoUnmountEvent(ash::MountError::kNone,
-                   *Volume::CreateForMediaView(arc::kImagesRootDocumentId));
-    DoUnmountEvent(ash::MountError::kNone,
-                   *Volume::CreateForMediaView(arc::kVideosRootDocumentId));
-    DoUnmountEvent(ash::MountError::kNone,
-                   *Volume::CreateForMediaView(arc::kAudioRootDocumentId));
-    DoUnmountEvent(ash::MountError::kNone,
-                   *Volume::CreateForMediaView(arc::kDocumentsRootDocumentId));
+    DoUnmountEvent(*Volume::CreateForMediaView(arc::kImagesRootDocumentId));
+    DoUnmountEvent(*Volume::CreateForMediaView(arc::kVideosRootDocumentId));
+    DoUnmountEvent(*Volume::CreateForMediaView(arc::kAudioRootDocumentId));
+    DoUnmountEvent(*Volume::CreateForMediaView(arc::kDocumentsRootDocumentId));
     if (!base::FeatureList::IsEnabled(arc::kEnableVirtioBlkForData))
-      DoUnmountEvent(ash::MountError::kNone,
-                     *Volume::CreateForAndroidFiles(
-                         base::FilePath(util::kAndroidFilesPath)));
+      DoUnmountEvent(*Volume::CreateForAndroidFiles(
+          base::FilePath(util::kAndroidFilesPath)));
   }
 
   documents_provider_root_manager_->SetEnabled(enabled);
@@ -1641,7 +1633,7 @@ void VolumeManager::OnRemovableStorageDetached(
 
     // Unmount the MTP storage device in files app.
     const std::string volume_id = mounted_volume->volume_id();
-    DoUnmountEvent(ash::MountError::kNone, *mounted_volume);
+    DoUnmountEvent(*mounted_volume);
 
     // Remove the MTP storage device from chrome::storage.
     const std::string fsid = GetMountPointNameForMediaStorage(info);
@@ -1662,7 +1654,7 @@ void VolumeManager::OnRemovableStorageDetached(
     // Unmount the fusebox MTP storage device in files app.
     base::WeakPtr<Volume> volume = FindVolumeById(util::kFuseBox + volume_id);
     if (volume.get())
-      DoUnmountEvent(ash::MountError::kNone, *volume.get());
+      DoUnmountEvent(*volume.get());
 
     // Remove the fusebox MTP storage device from chrome::storage.
     mount_points->RevokeFileSystem(util::kFuseBox + fsid);
@@ -1695,10 +1687,9 @@ void VolumeManager::OnDocumentsProviderRootRemoved(
     const std::string& authority,
     const std::string& root_id,
     const std::string& document_id) {
-  DoUnmountEvent(ash::MountError::kNone,
-                 *Volume::CreateForDocumentsProvider(
-                     authority, root_id, std::string(), std::string(),
-                     std::string(), GURL(), false));
+  DoUnmountEvent(*Volume::CreateForDocumentsProvider(
+      authority, root_id, std::string(), std::string(), std::string(), GURL(),
+      false));
   arc::ArcDocumentsProviderRootMap::GetForArcBrowserContext()->UnregisterRoot(
       authority, document_id);
 }
@@ -1712,8 +1703,7 @@ void VolumeManager::AddSmbFsVolume(const base::FilePath& mount_point,
 void VolumeManager::RemoveSmbFsVolume(const base::FilePath& mount_point) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  DoUnmountEvent(ash::MountError::kNone,
-                 *Volume::CreateForSmb(mount_point, ""));
+  DoUnmountEvent(*Volume::CreateForSmb(mount_point, ""));
 }
 
 void VolumeManager::OnDiskMountManagerRefreshed(bool success) {
@@ -1863,19 +1853,16 @@ void VolumeManager::DoMountEvent(ash::MountError error_code,
     observer.OnVolumeMounted(error_code, volume);
 }
 
-void VolumeManager::DoUnmountEvent(ash::MountError error_code,
-                                   const Volume& volume) {
-  const Volumes::const_iterator it = mounted_volumes_.find(volume.volume_id());
-  if (it == mounted_volumes_.end())
-    return;
-
-  DCHECK_EQ(volume.volume_id(), it->get()->volume_id());
+void VolumeManager::DoUnmountEvent(Volumes::const_iterator it,
+                                   const ash::MountError error_code) {
+  DCHECK(it != mounted_volumes_.end());
 
   // Hold a reference to the removed Volume from |mounted_volumes_|, because
   // OnVolumeMounted() will access it.
+  const Volume& volume = **it;
   Volumes::node_type node_to_delete;
   if (error_code == ash::MountError::kNone)
-    node_to_delete = mounted_volumes_.extract(it);
+    node_to_delete = mounted_volumes_.extract(std::move(it));
 
   for (auto& observer : observers_)
     observer.OnVolumeUnmounted(error_code, volume);
@@ -1894,7 +1881,6 @@ void VolumeManager::OnSshfsCrostiniUnmountCallback(
     // Remove metadata associated with the mount. It will be a no-op if it
     // wasn't mounted or unmounted out of band.
     DoUnmountEvent(
-        ash::MountError::kNone,
         *Volume::CreateForSshfsCrostini(sshfs_mount_path, base::FilePath()));
     if (callback)
       std::move(callback).Run(true);
@@ -1918,8 +1904,7 @@ void VolumeManager::OnSftpGuestOsUnmountCallback(
     // consistent, which means the mount path needs to be the same.
     // display_name, remote_mount_path and vm_type aren't needed and we don't
     // know them at unmount so leave them blank.
-    DoUnmountEvent(ash::MountError::kNone,
-                   *Volume::CreateForSftpGuestOs("", sftp_mount_path,
+    DoUnmountEvent(*Volume::CreateForSftpGuestOs("", sftp_mount_path,
                                                  base::FilePath(), vm_type));
     if (callback)
       std::move(callback).Run(true);

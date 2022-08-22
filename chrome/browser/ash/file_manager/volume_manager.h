@@ -586,7 +586,22 @@ class VolumeManager : public KeyedService,
   void DoAttachMtpStorage(const storage_monitor::StorageInfo& info,
                           device::mojom::MtpStorageInfoPtr mtp_storage_info);
   void DoMountEvent(ash::MountError error_code, std::unique_ptr<Volume> volume);
-  void DoUnmountEvent(ash::MountError error_code, const Volume& volume);
+
+  void DoUnmountEvent(Volumes::const_iterator it,
+                      ash::MountError error_code = ash::MountError::kNone);
+
+  void DoUnmountEvent(base::StringPiece volume_id,
+                      ash::MountError error_code = ash::MountError::kNone) {
+    const Volumes::const_iterator it = mounted_volumes_.find(volume_id);
+    if (it != mounted_volumes_.end())
+      DoUnmountEvent(it, error_code);
+  }
+
+  void DoUnmountEvent(const Volume& volume,
+                      ash::MountError error_code = ash::MountError::kNone) {
+    DoUnmountEvent(volume.volume_id(), error_code);
+  }
+
   void OnExternalStorageDisabledChangedUnmountCallback(
       std::vector<std::string> remaining_mount_paths,
       ash::MountError error_code);
