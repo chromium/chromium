@@ -89,7 +89,7 @@
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> ဖြင့် ရှာပါ</translation>
 <translation id="139993653570221430">Chrome ဆက်တင်များတွင် အချိန်မရွေး စိတ်အလိုကျ ပြောင်းလဲနိုင်သည်။ လက်ရှိကြော်ငြာ ပြသသည့်နည်းလမ်းနှင့်တွဲ၍ စမ်းသပ်မှုများကို ပြုလုပ်သဖြင့် ပြောင်းလဲမှုများကို ချက်ချင်းမြင်နိုင်မည်မဟုတ်ပါ။</translation>
 <translation id="1406000523432664303">'ခြေရာမခံပါနှင့်'</translation>
-<translation id="1407069428457324124">မှောင်သည့်အပြင်အဆင်</translation>
+<translation id="1407069428457324124">အမှောင်နောက်ခံ</translation>
 <translation id="1407135791313364759">အားလုံး ဖွင့်ရန်</translation>
 <translation id="1409879593029778104">ဖိုင် ရှိနှင့်နေသောကြောင့် <ph name="FILE_NAME" /> ဒေါင်းလုဒ်လုပ်မှု တားဆီးခံခဲ့ရပါသည်။</translation>
 <translation id="1414981605391750300">Google ကို ဆက်သွယ်နေပါသည်။ အချိန်တစ်မိနစ်ခန့် ကြာနိုင်သည်...</translation>
@@ -141,7 +141,7 @@
 <translation id="1672586136351118594">နောက်ထပ်မပြပါနှင့်</translation>
 <translation id="1680919990519905526">Google Lens ဖြင့်ဝယ်ရန် <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">ယခုစမ်းကြည့်ရန်</translation>
-<translation id="1702543251015153180">သင့်မှောင်သည့် အပြင်အဆင် ဆက်တင်များကို ပြောင်းမလား။</translation>
+<translation id="1702543251015153180">အမှောင်နောက်ခံ ဆက်တင်များကို ပြောင်းမလား။</translation>
 <translation id="1702907158640575240">စီမံထားသော ဘရောင်ဇာ</translation>
 <translation id="1710099199314114079">တဘ်များကို ပြောင်းပါ သို့မဟုတ် ပိတ်ပါ</translation>
 <translation id="1718835860248848330">နောက်ဆုံးတစ်နာရီ</translation>
@@ -292,7 +292,7 @@
 <translation id="2581165646603367611">၎င်းသည် Chrome က အရေးကြီးသည်ဟု မယူဆသည့် ကွတ်ကီးများ၊ ယာယီမှတ်ဉာဏ်များနှင့် ဆိုက်များ၏ အခြားဒေတာများကို ရှင်းလင်းလိုက်ပါမည်။</translation>
 <translation id="2587052924345400782">ပိုသစ်သော ဗားရှင်း ရှိပါသည်</translation>
 <translation id="2593272815202181319">Monospace</translation>
-<translation id="2604446170045642109">ဆက်တင်တွင် ဝဘ်ဆိုက်များအတွက် မှောင်သည့် အပြင်အဆင်ကို ပိတ်နိုင်သည်။</translation>
+<translation id="2604446170045642109">ဆက်တင်တွင် ဝဘ်ဆိုက်များအတွက် အမှောင်နောက်ခံကို ပိတ်နိုင်သည်။</translation>
 <translation id="2612676031748830579">ကဒ်နံပါတ်</translation>
 <translation id="2625189173221582860">စကားဝှက်ကို ကူးပြီးပါပြီ</translation>
 <translation id="2642087927315268160">လက်မှတ်ထိုးဝင်သည့် အောက်ခြေအပိုဆောင်း စာမျက်နှာ ပိတ်ထားသည်။</translation>
@@ -315,7 +315,7 @@
 <translation id="2722945394406572875">Privacy Sandbox အတည်ပြုစနစ် ပိတ်ထားသည်</translation>
 <translation id="2723001399770238859">အသံ</translation>
 <translation id="2732063072010454421">ပိုမိုကောင်းမွန်သော အသံစမ်းသပ်မှုကို ရယူပါ</translation>
-<translation id="2760989362628427051">သင့်စက်၏ မှောင်သည့်အပြင်အဆင် သို့မဟုတ် ဘက်ထရီအားထိန်းကို ဖွင့်ထားသည့်အခါ မှောင်သည့် အပြင်အဆင်ကို ဖွင့်ပါ</translation>
+<translation id="2760989362628427051">သင့်စက်၏ အမှောင်နောက်ခံ သို့မဟုတ် ဘက်ထရီအားထိန်းကို ဖွင့်ထားသည့်အခါ အမှောင်နောက်ခံကို ဖွင့်ပါ</translation>
 <translation id="2762000892062317888">ယခုလေးတင်</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> သုံး၍ ၐင်ပါ။</translation>
 <translation id="2776236159752647997">ပုဂ္ဂိုလ်ရေးဆိုင်ရာ၊ လုံခြုံရေး၊ ဒေတာစုဆောင်းမှုတို့နှင့် ဆက်စပ်နေသည့် နောက်ထပ် ဆက်တင်များအတွက် <ph name="BEGIN_LINK" />Google ဝန်ဆောင်မှုများ<ph name="END_LINK" /> ကို ကြည့်ပါ</translation>
@@ -452,7 +452,7 @@
 <translation id="3429160811076349561">အစမ်းသုံးလုပ်ဆောင်ချက်များကို ပိတ်ထားသည်</translation>
 <translation id="3435465986463792564">ဝင်းဒိုးများ ရပြီလား။ ၎င်းတို့ကို ဤနေရာမှ စီမံနိုင်ပါသည်</translation>
 <translation id="3443221991560634068">လက်ရှိစာမျက်နှာကို ပြန်ဖွင့်ရန်</translation>
-<translation id="3444179773590444986">ဝဘ်ဆိုက်များအတွက် မှောင်သည့် အပြင်အဆင်အပေါ် အကြံပြုချက်မျှဝေမလား။</translation>
+<translation id="3444179773590444986">ဝဘ်ဆိုက်များအတွက် အမှောင်နောက်ခံအကြောင်း အကြံပြုချက်မျှဝေမလား။</translation>
 <translation id="3469665409713263828">{FILE_COUNT,plural, =1{ဒေါင်းလုဒ် 1 ခု စီစဉ်ထားသည်}other{ဒေါင်းလုဒ် # ခု စီစဉ်ထားသည်}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> အဖြစ်​ ရှေ့ဆက်ရန်</translation>
 <translation id="3478363558367712427">သင်၏ ရှာဖွေရေးအင်ဂျင်ကို ရွေးနိုင်သည်</translation>
@@ -468,7 +468,7 @@
 <translation id="3524138585025253783">ဆော့ဖ်ဝဲအင်ဂျင်နီယာ UI</translation>
 <translation id="3524334353996115845">သင်ဖြစ်ကြောင်းအတည်ပြုရန် <ph name="ORIGIN" /> ကို ခွင့်ပြုပါ</translation>
 <translation id="3527085408025491307">ဖိုင်တွဲ</translation>
-<translation id="3542235761944717775"><ph name="KILOBYTES" /> ကီလိုဘိုက် (KB) သိမ်းနိုင်သည်</translation>
+<translation id="3542235761944717775"><ph name="KILOBYTES" /> KB ရနိုင်သည်</translation>
 <translation id="3549657413697417275">သင့်မှတ်တမ်းကို ရှာရန်</translation>
 <translation id="3557336313807607643">အဆက်အသွယ်များသို့ ထည့်သွင်းပါ</translation>
 <translation id="3560491354538957576">ဝဘ်ဆိုက်က စိတ်ဝင်စားမှုကို ခွဲခြားသတ်မှတ်နိုင်သည်</translation>
@@ -658,7 +658,7 @@
 <translation id="4663499661119906179">သင့်အတွက် ထိပ်တန်းဝဘ်ဆိုက်များနှင့် သတင်းဆောင်းပါးများ ကြည့်ရှုရန်</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> စာညှပ် တွေ့ရှိပါသည်</translation>
 <translation id="4668347365065281350">ကွတ်ကီးများနှင့် စက်အတွင်း သိမ်းထားသော အခြားဒေတာအပါအဝင် ဝဘ်ဆိုက်များက သိမ်းထားသည့်ဒေတာအားလုံး</translation>
-<translation id="4678082183394354975">ဝဘ်ဆိုက်များအတွက် မှောင်သည့် အပြင်အဆင်ကို Chrome တွင် ဖွင့်ထားသည်</translation>
+<translation id="4678082183394354975">ဝဘ်ဆိုက်များအတွက် အမှောင်နောက်ခံကို Chrome တွင် ဖွင့်ထားသည်</translation>
 <translation id="4684427112815847243">အားလုံး စင့်ခ်ရန်</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ခု}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ခု}}</translation>
 <translation id="4699172675775169585">ကက်ရှ်လုပ်ထားသည့် ပုံများနှင့် ဖိုင်များ</translation>
@@ -1213,7 +1213,7 @@
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> ဖိုင် ဒေါင်းလုဒ်လုပ်ပြီးပြီ}other{<ph name="FILES_DOWNLOADED_MANY" /> ဖိုင် ဒေါင်းလုဒ်လုပ်ပြီးပြီ}}</translation>
 <translation id="7581273696622423628">စစ်တမ်းကောက်ယူမှုကို ဖြေဆိုရန်</translation>
 <translation id="7583262514280211622">သင့်ဖတ်ရန်စာရင်းကို ဤနေရာတွင် ပြပါမည်</translation>
-<translation id="7588219262685291874">သင့်စက်ပစ္စည်း၏ 'ဘက်ထရီ အားထိန်း' ဖွင့်ထားလျှင် မှောင်သည့် အပြင်အဆင်ကို ဖွင့်သည်</translation>
+<translation id="7588219262685291874">သင့်စက်ပစ္စည်း၏ 'ဘက်ထရီ အားထိန်း' ဖွင့်ထားလျှင် အမှောင်နောက်ခံကို ဖွင့်သည်</translation>
 <translation id="7594687499944811403"><ph name="TOP_ORIGIN" /> တွင် သင်ဖြစ်ကြောင်းအတည်ပြုရန် <ph name="EMBEDDED_ORIGIN" /> ကို ခွင့်ပြုပါ</translation>
 <translation id="7596558890252710462">လည်ပတ်မှု စနစ်</translation>
 <translation id="7605594153474022051">စင့်ခ်လုပ်၍မရပါ</translation>
@@ -1356,7 +1356,7 @@
 <translation id="8266862848225348053">တည်နေရာ ဒေါင်းလုဒ်လုပ်ခြင်း</translation>
 <translation id="8274165955039650276">ဒေါင်းလုဒ်များကို ကြည့်ရန်</translation>
 <translation id="8281886186245836920">ကျော်ရန်</translation>
-<translation id="8282297628636750033">ဝဘ်ဆိုက်ကိုဖြစ်နိုင်ပါက မှောင်သည့် အပြင်အဆင်ပြောင်းခြင်း</translation>
+<translation id="8282297628636750033">ဝဘ်ဆိုက်ကိုဖြစ်နိုင်ပါက အမှောင်နောက်ခံပြောင်းခြင်း</translation>
 <translation id="829672787777123339">သင့်စက်ပစ္စည်းသို့ ချိတ်ဆက်နေသည်…</translation>
 <translation id="8310344678080805313">ပုံမှန် တဲဘ်များ</translation>
 <translation id="831192587911042850">သင်လိုက်ကြည့်နေသော ဝဘ်ဆိုက်များစာရင်းတွင် လက်ရှိဝဘ်ဆိုက်ကို ပေါင်းထည့်သည်။</translation>

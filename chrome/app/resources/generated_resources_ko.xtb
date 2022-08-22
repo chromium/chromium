@@ -5295,6 +5295,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6065289257230303064">인증서 대상 디렉터리 속성</translation>
 <translation id="6066794465984119824">이미지 해시가 설정되지 않았습니다.</translation>
 <translation id="6069464830445383022">Google 계정으로 Chromebook 로그인하기</translation>
+<translation id="6070311415473175157">검색할 이미지 영역을 선택하세요.</translation>
 <translation id="6071181508177083058">비밀번호 확인</translation>
 <translation id="6071576563962215370">시스템에서 기기 설치 시간 속성 잠금을 설정하지 못했습니다.</translation>
 <translation id="6072442788591997866">이 기기에서는 <ph name="APP_NAME" /> 앱이 허용되지 않습니다. 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
@@ -7125,6 +7126,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7842692330619197998">새 계정을 만들려면 g.co/ChromeEnterpriseAccount를 방문하세요.</translation>
 <translation id="78427265591841839"><ph name="VISUAL_SEARCH_PROVIDER" />로 페이지 일부 임의 검색</translation>
 <translation id="784273751836026224">Linux 제거</translation>
+<translation id="7842851769217535639">페이지에서 검색할 부분을 선택하세요.</translation>
 <translation id="7843786652787044762"><ph name="WEB_DRIVE" />에 로그인</translation>
 <translation id="7844992432319478437">diff 업데이트 중</translation>
 <translation id="7846634333498149051">키보드</translation>
@@ -7182,6 +7184,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7893008570150657497">컴퓨터에서 사진, 음악, 기타 미디어에 액세스</translation>
 <translation id="7893153962594818789">이 <ph name="DEVICE_TYPE" />에서 블루투스가 사용 중지되어 있습니다. 비밀번호를 입력하고 블루투스를 사용 설정하세요.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" />(기본)</translation>
+<translation id="7896292361319775586"><ph name="FILE" /> 파일을 저장하시겠습니까?</translation>
 <translation id="789722939441020330">사이트에서 여러 개의 파일을 자동으로 다운로드하도록 허용하지 않음</translation>
 <translation id="7897900149154324287">이후에 이동식 기기를 분리하기 전에 파일 앱에서 이동식 기기를 꺼내야 합니다. 그렇지 않으면 데이터가 손실될 수 있습니다.</translation>
 <translation id="7898725031477653577">항상 번역</translation>
@@ -8319,6 +8322,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="899403249577094719">Netscape Certificate Base URL</translation>
 <translation id="899657321862108550">어디에서나 나만의 Chrome을 사용하세요</translation>
 <translation id="899676909165543803">지문 센서는 키보드 오른쪽 하단의 키에 있습니다. 아무 손가락으로나 가볍게 터치하세요.</translation>
+<translation id="8998078711690114234">이러한 형식의 파일은 위험할 수 있습니다. <ph name="ORIGIN" />을(를) 신뢰하는 경우에만 파일을 저장하세요.</translation>
 <translation id="8999560016882908256">섹션 구문 오류: <ph name="ERROR_LINE" /></translation>
 <translation id="9003185744423389627">기기 관리 서버 연결 실패. 상태: '<ph name="STATUS_TEXT" />' 시간: <ph name="FAILURE_TIME" /></translation>
 <translation id="9003647077635673607">모든 웹사이트에서 허용</translation>
