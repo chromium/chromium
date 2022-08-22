@@ -241,7 +241,9 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       kColorToolbarButtonIcon, kColorDownloadShelfBackground, 0x3A);
   mixer[kColorDownloadShelfForeground] = {kColorToolbarText};
   mixer[kColorDownloadStartedAnimationForeground] = {ui::kColorAccent};
-  mixer[kColorDownloadToolbarButtonActive] = {ui::kColorThrobber};
+  mixer[kColorDownloadToolbarButtonActive] =
+      ui::PickGoogleColor(ui::kColorThrobber, kColorToolbar,
+                          color_utils::kMinimumVisibleContrastRatio);
   mixer[kColorDownloadToolbarButtonInactive] = {kColorToolbarButtonIcon};
   mixer[kColorDownloadToolbarButtonRingBackground] = {
       SkColorSetA(kColorDownloadToolbarButtonInactive, 0x33)};
