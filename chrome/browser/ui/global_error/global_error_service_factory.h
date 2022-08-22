@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_GLOBAL_ERROR_GLOBAL_ERROR_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class GlobalErrorService;
 class Profile;
@@ -14,7 +14,7 @@ class Profile;
 // Singleton that owns all GlobalErrorService and associates them with
 // Profiles. Listens for the Profile's destruction notification and cleans up
 // the associated GlobalErrorService.
-class GlobalErrorServiceFactory : public BrowserContextKeyedServiceFactory {
+class GlobalErrorServiceFactory : public ProfileKeyedServiceFactory {
  public:
   GlobalErrorServiceFactory(const GlobalErrorServiceFactory&) = delete;
   GlobalErrorServiceFactory& operator=(const GlobalErrorServiceFactory&) =
@@ -33,8 +33,6 @@ class GlobalErrorServiceFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
 };
 
 #endif  // CHROME_BROWSER_UI_GLOBAL_ERROR_GLOBAL_ERROR_SERVICE_FACTORY_H_

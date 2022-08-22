@@ -7,7 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -53,7 +53,7 @@ class PrefWatcher : public KeyedService {
       renderer_preference_watchers_;
 };
 
-class PrefWatcherFactory : public BrowserContextKeyedServiceFactory {
+class PrefWatcherFactory : public ProfileKeyedServiceFactory {
  public:
   static PrefWatcher* GetForProfile(Profile* profile);
   static PrefWatcherFactory* GetInstance();
@@ -67,9 +67,6 @@ class PrefWatcherFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* browser_context) const override;
-
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
 };
 
 #endif  // CHROME_BROWSER_UI_PREFS_PREF_WATCHER_H_

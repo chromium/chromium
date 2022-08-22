@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/find_bar/find_bar_state_factory.h"
 
 #include "chrome/browser/ui/find_bar/find_bar_state.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 // static
 FindBarState* FindBarStateFactory::GetForBrowserContext(
@@ -20,19 +19,14 @@ FindBarStateFactory* FindBarStateFactory::GetInstance() {
 }
 
 FindBarStateFactory::FindBarStateFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "FindBarState",
-          BrowserContextDependencyManager::GetInstance()) {}
+          // Separate instance in incognito.
+          ProfileSelections::BuildForRegularAndIncognito()) {}
 
 FindBarStateFactory::~FindBarStateFactory() = default;
 
 KeyedService* FindBarStateFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new FindBarState(context);
-}
-
-content::BrowserContext* FindBarStateFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  // Separate instance in incognito.
-  return context;
 }

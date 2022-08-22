@@ -5,14 +5,14 @@
 #ifndef CHROME_BROWSER_UI_ASH_GLOBAL_MEDIA_CONTROLS_CAST_MEDIA_NOTIFICATION_PRODUCER_KEYED_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_UI_ASH_GLOBAL_MEDIA_CONTROLS_CAST_MEDIA_NOTIFICATION_PRODUCER_KEYED_SERVICE_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace content {
 class BrowserContext;
 }
 
 class CastMediaNotificationProducerKeyedServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+    : public ProfileKeyedServiceFactory {
  public:
   CastMediaNotificationProducerKeyedServiceFactory();
   CastMediaNotificationProducerKeyedServiceFactory(

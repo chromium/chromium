@@ -21,9 +21,7 @@ UserEducationService* UserEducationServiceFactory::GetForProfile(
 }
 
 UserEducationServiceFactory::UserEducationServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "UserEducationService",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("UserEducationService") {}
 
 UserEducationServiceFactory::~UserEducationServiceFactory() = default;
 

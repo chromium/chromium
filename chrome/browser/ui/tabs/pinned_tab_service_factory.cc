@@ -6,7 +6,6 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/pinned_tab_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 // static
 PinnedTabService* PinnedTabServiceFactory::GetForProfile(
@@ -20,10 +19,7 @@ PinnedTabServiceFactory* PinnedTabServiceFactory::GetInstance() {
 }
 
 PinnedTabServiceFactory::PinnedTabServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-        "PinnedTabService",
-        BrowserContextDependencyManager::GetInstance()) {
-}
+    : ProfileKeyedServiceFactory("PinnedTabService") {}
 
 PinnedTabServiceFactory::~PinnedTabServiceFactory() {
 }

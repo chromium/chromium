@@ -6,11 +6,11 @@
 #define CHROME_BROWSER_UI_FIND_BAR_FIND_BAR_STATE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class FindBarState;
 
-class FindBarStateFactory : public BrowserContextKeyedServiceFactory {
+class FindBarStateFactory : public ProfileKeyedServiceFactory {
  public:
   FindBarStateFactory(const FindBarStateFactory&) = delete;
   FindBarStateFactory& operator=(const FindBarStateFactory&) = delete;
@@ -27,8 +27,6 @@ class FindBarStateFactory : public BrowserContextKeyedServiceFactory {
 
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

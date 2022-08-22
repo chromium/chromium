@@ -33,7 +33,6 @@
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -325,9 +324,10 @@ void LacrosFirstRunService::OpenFirstRunInternal(EntryPoint entry_point,
 // LacrosFirstRunServiceFactory ------------------------------------------------
 
 LacrosFirstRunServiceFactory::LacrosFirstRunServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "LacrosFirstRunServiceFactory",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("LacrosFirstRunServiceFactory",
+                                 ProfileSelections::Builder()
+                                     .WithGuest(ProfileSelection::kNone)
+                                     .Build()) {
   // Used for checking Sync consent level.
   DependsOn(IdentityManagerFactory::GetInstance());
 }

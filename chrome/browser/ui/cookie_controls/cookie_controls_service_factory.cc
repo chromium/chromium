@@ -4,11 +4,9 @@
 
 #include "chrome/browser/ui/cookie_controls/cookie_controls_service_factory.h"
 
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/cookie_controls/cookie_controls_service.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 // static
 CookieControlsService* CookieControlsServiceFactory::GetForProfile(
@@ -28,18 +26,13 @@ KeyedService* CookieControlsServiceFactory::BuildInstanceFor(Profile* profile) {
 }
 
 CookieControlsServiceFactory::CookieControlsServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "CookieControlsService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          // The incognito profile has its own CookieSettings. Therefore, it
+          // should get its own CookieControlsService.
+          ProfileSelections::BuildForRegularAndIncognito()) {}
 
 CookieControlsServiceFactory::~CookieControlsServiceFactory() = default;
-
-content::BrowserContext* CookieControlsServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  // The incognito profile has its own CookieSettings. Therefore, it should
-  // get its own CookieControlsService.
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
-}
 
 KeyedService* CookieControlsServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* profile) const {

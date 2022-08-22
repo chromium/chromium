@@ -13,12 +13,10 @@
 #include "base/time/default_clock.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/model_type_store_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/reading_list/core/reading_list_model.h"
@@ -71,9 +69,9 @@ ReadingListModelFactory::GetDefaultFactoryForTesting() {
 }
 
 ReadingListModelFactory::ReadingListModelFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "ReadingListModel",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildRedirectedInIncognito()) {
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());
 }
 
@@ -94,11 +92,6 @@ void ReadingListModelFactory::RegisterProfilePrefs(
       reading_list::prefs::kReadingListDesktopFirstUseExperienceShown, false,
       PrefRegistry::NO_REGISTRATION_FLAGS);
 #endif  // !BUILDFLAG(IS_ANDROID)
-}
-
-content::BrowserContext* ReadingListModelFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }
 
 bool ReadingListModelFactory::ServiceIsNULLWhileTesting() const {

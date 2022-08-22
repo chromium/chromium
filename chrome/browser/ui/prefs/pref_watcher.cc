@@ -8,12 +8,10 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_preferences_util.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/common/pref_names.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/live_caption/pref_names.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
@@ -167,20 +165,15 @@ PrefWatcherFactory* PrefWatcherFactory::GetInstance() {
 }
 
 PrefWatcherFactory::PrefWatcherFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "PrefWatcher",
-          BrowserContextDependencyManager::GetInstance()) {}
+          ProfileSelections::BuildForRegularAndIncognito()) {}
 
 PrefWatcherFactory::~PrefWatcherFactory() = default;
 
 KeyedService* PrefWatcherFactory::BuildServiceInstanceFor(
     content::BrowserContext* browser_context) const {
   return new PrefWatcher(Profile::FromBrowserContext(browser_context));
-}
-
-content::BrowserContext* PrefWatcherFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }
 
 // static

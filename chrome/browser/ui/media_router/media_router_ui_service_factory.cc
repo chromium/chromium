@@ -9,7 +9,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 using content::BrowserContext;
 
@@ -29,9 +28,9 @@ MediaRouterUIServiceFactory* MediaRouterUIServiceFactory::GetInstance() {
 }
 
 MediaRouterUIServiceFactory::MediaRouterUIServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "MediaRouterUIService",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(ChromeMediaRouterFactory::GetInstance());
   // MediaRouterUIService owns a MediaRouterActionController that depends on
   // ToolbarActionsModel.
@@ -39,11 +38,6 @@ MediaRouterUIServiceFactory::MediaRouterUIServiceFactory()
 }
 
 MediaRouterUIServiceFactory::~MediaRouterUIServiceFactory() {}
-
-BrowserContext* MediaRouterUIServiceFactory::GetBrowserContextToUse(
-    BrowserContext* context) const {
-  return context;
-}
 
 KeyedService* MediaRouterUIServiceFactory::BuildServiceInstanceFor(
     BrowserContext* context) const {

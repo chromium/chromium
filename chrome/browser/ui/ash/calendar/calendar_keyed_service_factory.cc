@@ -9,7 +9,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/calendar/calendar_keyed_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/user_manager/user.h"
 
 namespace ash {
@@ -21,9 +20,7 @@ CalendarKeyedServiceFactory* CalendarKeyedServiceFactory::GetInstance() {
 }
 
 CalendarKeyedServiceFactory::CalendarKeyedServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "CalendarKeyedService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("CalendarKeyedService") {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 

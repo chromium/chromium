@@ -6,13 +6,12 @@
 #define CHROME_BROWSER_UI_VIEWS_BUBBLE_BUBBLE_CONTENTS_WRAPPER_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class BubbleContentsWrapperService;
 class Profile;
 
-class BubbleContentsWrapperServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+class BubbleContentsWrapperServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static BubbleContentsWrapperService* GetForProfile(Profile* profile,
                                                      bool create_if_necessary);

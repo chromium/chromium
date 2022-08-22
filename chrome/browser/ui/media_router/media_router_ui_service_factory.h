@@ -8,7 +8,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/singleton.h"
 #include "build/build_config.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace content {
 class BrowserContext;
@@ -18,7 +18,7 @@ namespace media_router {
 
 class MediaRouterUIService;
 
-class MediaRouterUIServiceFactory : public BrowserContextKeyedServiceFactory {
+class MediaRouterUIServiceFactory : public ProfileKeyedServiceFactory {
  public:
   MediaRouterUIServiceFactory(const MediaRouterUIServiceFactory&) = delete;
   MediaRouterUIServiceFactory& operator=(const MediaRouterUIServiceFactory&) =
@@ -41,8 +41,6 @@ class MediaRouterUIServiceFactory : public BrowserContextKeyedServiceFactory {
   ~MediaRouterUIServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory interface.
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
 #if !BUILDFLAG(IS_ANDROID)

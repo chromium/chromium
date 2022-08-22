@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/cocoa/screentime/history_bridge.h"
 #include "chrome/browser/ui/cocoa/screentime/history_deleter_impl.h"
 #include "chrome/browser/ui/cocoa/screentime/screentime_features.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace screentime {
 
@@ -21,9 +20,7 @@ HistoryBridgeFactory* HistoryBridgeFactory::GetInstance() {
 }
 
 HistoryBridgeFactory::HistoryBridgeFactory()
-    : BrowserContextKeyedServiceFactory(
-          "screentime::HistoryBridge",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("screentime::HistoryBridge") {}
 HistoryBridgeFactory::~HistoryBridgeFactory() = default;
 
 // static

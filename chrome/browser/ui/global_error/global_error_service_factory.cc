@@ -4,10 +4,8 @@
 
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 // static
 GlobalErrorService* GlobalErrorServiceFactory::GetForProfile(Profile* profile) {
@@ -21,18 +19,13 @@ GlobalErrorServiceFactory* GlobalErrorServiceFactory::GetInstance() {
 }
 
 GlobalErrorServiceFactory::GlobalErrorServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "GlobalErrorService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          ProfileSelections::BuildRedirectedInIncognito()) {}
 
 GlobalErrorServiceFactory::~GlobalErrorServiceFactory() = default;
 
 KeyedService* GlobalErrorServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* profile) const {
   return new GlobalErrorService();
-}
-
-content::BrowserContext* GlobalErrorServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }

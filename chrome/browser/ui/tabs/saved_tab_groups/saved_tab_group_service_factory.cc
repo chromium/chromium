@@ -8,7 +8,6 @@
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 SavedTabGroupServiceFactory& SavedTabGroupServiceFactory::GetInstance() {
   static base::NoDestructor<SavedTabGroupServiceFactory> instance;
@@ -23,9 +22,7 @@ SavedTabGroupKeyedService* SavedTabGroupServiceFactory::GetForProfile(
 }
 
 SavedTabGroupServiceFactory::SavedTabGroupServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "SavedTabGroupKeyedService",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("SavedTabGroupKeyedService") {}
 
 SavedTabGroupServiceFactory::~SavedTabGroupServiceFactory() = default;
 
