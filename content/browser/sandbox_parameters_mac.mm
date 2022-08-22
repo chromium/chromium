@@ -32,7 +32,7 @@
 #include "sandbox/policy/switches.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
 #include "content/public/browser/plugin_service.h"
 #include "content/public/common/pepper_plugin_info.h"
 #endif
@@ -165,7 +165,7 @@ void SetupNetworkSandboxParameters(sandbox::SeatbeltExecClient* client) {
   }
 }
 
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
 void SetupPPAPISandboxParameters(sandbox::SeatbeltExecClient* client) {
   SetupCommonSandboxParameters(client);
 
@@ -229,7 +229,7 @@ void SetupSandboxParameters(sandbox::mojom::Sandbox sandbox_type,
     case sandbox::mojom::Sandbox::kNetwork:
       SetupNetworkSandboxParameters(client);
       break;
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
     case sandbox::mojom::Sandbox::kPpapi:
       SetupPPAPISandboxParameters(client);
       break;

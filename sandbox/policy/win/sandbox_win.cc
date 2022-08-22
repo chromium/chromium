@@ -1272,7 +1272,7 @@ std::string SandboxWin::GetSandboxTypeInEnglish(Sandbox sandbox_type) {
       return "Utility";
     case Sandbox::kGpu:
       return "GPU";
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
     case Sandbox::kPpapi:
       return "PPAPI";
 #endif

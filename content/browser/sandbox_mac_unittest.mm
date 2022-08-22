@@ -94,7 +94,7 @@ class SandboxMacTest : public base::MultiProcessTest {
         sandbox::mojom::Sandbox::kCdm,
         sandbox::mojom::Sandbox::kGpu,
         sandbox::mojom::Sandbox::kNaClLoader,
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
         sandbox::mojom::Sandbox::kPpapi,
 #endif
         sandbox::mojom::Sandbox::kPrintBackend,

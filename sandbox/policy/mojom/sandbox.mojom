@@ -64,7 +64,7 @@ enum Sandbox {
   kScreenAI,
 
   // The PPAPI plugin process.
-  [EnableIf=enable_plugins]
+  [EnableIf=enable_ppapi]
   kPpapi,
 
   // Equivalent to no sandbox on all non-Fuchsia platforms.

@@ -19,8 +19,8 @@ mojom("mojom") {
   if (enable_oop_printing) {
     enabled_features += [ "enable_oop_printing" ]
   }
-  if (enable_plugins) {
-    enabled_features += [ "enable_plugins" ]
+  if (enable_ppapi) {
+    enabled_features += [ "enable_ppapi" ]
   }
   if (is_linux || is_chromeos) {
     enabled_features += [ "has_zygote" ]

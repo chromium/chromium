@@ -71,7 +71,7 @@ std::string GetSandboxProfile(sandbox::mojom::Sandbox sandbox_type) {
     case sandbox::mojom::Sandbox::kNetwork:
       profile += kSeatbeltPolicyString_network;
       break;
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
     case sandbox::mojom::Sandbox::kPpapi:
       profile += kSeatbeltPolicyString_ppapi;
       break;
