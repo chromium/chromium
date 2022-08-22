@@ -121,7 +121,11 @@ class GaiaSigninElement extends GaiaSigninElementBase {
       },
 
       /**
-       * Whether the authenticator is currently in the |SAML| AuthFlow.
+       * Whether the authenticator is currently redirected to |SAML| flow. It is
+       * set to true early during a default redirection to address situations
+       * when an error during loading the 3P IdP occurs and no change in
+       * `authFlow` happens, but the UI for 3P IdP still should be shown.
+       * Updated on `authFlow` change.
        * @private
        */
       isSaml_: {
@@ -440,7 +444,15 @@ class GaiaSigninElement extends GaiaSigninElementBase {
     this.isDefaultSsoProvider_ = doSamlRedirect;
     this.startLoadingTimer_();
 
+    // Don't enable GAIA action buttons when doing SAML redirect.
+    this.authenticatorParams_.enableGaiaActionButtons = !doSamlRedirect;
     this.authenticatorParams_.doSamlRedirect = doSamlRedirect;
+    // Set `isSaml_` flag here to make sure we show the correct UI. If we do a
+    // redirect, but it fails due to an error, there won't be any `authFlow`
+    // change triggered by `authenticator_`, however we should still show a
+    // button to let user go to GAIA page and keep original GAIA buttons
+    // hidden.
+    this.isSaml_ = doSamlRedirect;
     this.authenticator_.load(
         cr.login.Authenticator.AuthMode.DEFAULT, this.authenticatorParams_);
   }
@@ -628,7 +640,6 @@ class GaiaSigninElement extends GaiaSigninElementBase {
         !(data.enterpriseManagedDevice || data.hasDeviceOwner);
     params.isFirstUser = !(data.enterpriseManagedDevice || data.hasDeviceOwner);
     params.obfuscatedOwnerId = data.obfuscatedOwnerId;
-    params.enableGaiaActionButtons = true;
 
     this.authenticatorParams_ = params;
 
@@ -652,8 +663,9 @@ class GaiaSigninElement extends GaiaSigninElementBase {
    * Whether the current auth flow is SAML.
    * @return {boolean}
    */
-  isSamlForTesting() {
-    return this.isSaml_;
+  isSamlAuthFlowForTesting() {
+    return this.isSaml_ &&
+        this.authFlow == cr.login.Authenticator.AuthFlow.SAML;
   }
 
   /**
@@ -686,6 +698,7 @@ class GaiaSigninElement extends GaiaSigninElementBase {
     this.authCompleted_ = false;
     // Reset webview to prevent calls from authenticator.
     this.authenticator_.resetWebview();
+    this.authenticator_.resetStates();
     // Explicitly disable video here to let `onVideoEnabledChange_()` handle
     // timer start next time when `videoEnabled_` will be set to true on SAML
     // page.

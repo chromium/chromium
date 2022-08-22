@@ -310,7 +310,7 @@ class SamlTestBase : public OobeBaseTest {
         "      $('gaia-signin').authenticator_.removeEventListener("
         "          'authFlowChange', f);"
         "      window.domAutomationController.send("
-        "          $('gaia-signin').isSamlForTesting() ?"
+        "          $('gaia-signin').isSamlAuthFlowForTesting() ?"
         "              'SamlLoaded' : 'GaiaLoaded');"
         "    });");
   }
@@ -1385,7 +1385,8 @@ void SAMLPolicyTest::ShowSAMLLoginForm() {
 void SAMLPolicyTest::MaybeWaitForSAMLToLoad() {
   // If SAML already loaded return and otherwise wait for the SamlLoaded
   // message.
-  if (test::OobeJS().GetAttributeBool("isSamlForTesting()", {"gaia-signin"}))
+  if (test::OobeJS().GetAttributeBool("isSamlAuthFlowForTesting()",
+                                      {"gaia-signin"}))
     return;
   content::DOMMessageQueue message_queue(GetLoginUI()->GetWebContents());
   SetupAuthFlowChangeListener();
@@ -1393,7 +1394,8 @@ void SAMLPolicyTest::MaybeWaitForSAMLToLoad() {
   do {
     ASSERT_TRUE(message_queue.WaitForMessage(&message));
   } while (message != "\"SamlLoaded\"");
-  test::OobeJS().ExpectAttributeEQ("isSamlForTesting()", {"gaia-signin"}, true);
+  test::OobeJS().ExpectAttributeEQ("isSamlAuthFlowForTesting()",
+                                   {"gaia-signin"}, true);
 }
 
 void SAMLPolicyTest::ClickBackOnSAMLPage() {
@@ -1624,8 +1626,8 @@ IN_PROC_BROWSER_TEST_P(SAMLPolicyTest, SAMLInterstitialChangeAccount) {
   test::OobeJS().CreateVisibilityWaiter(true, kSigninFrameDialog)->Wait();
   test::OobeJS().CreateVisibilityWaiter(false, kGaiaLoading)->Wait();
   test::OobeJS().ExpectHasNoAttribute("transparent", kSigninFrameDialog);
-  test::OobeJS().ExpectAttributeEQ("isSamlForTesting()", {"gaia-signin"},
-                                   false);
+  test::OobeJS().ExpectAttributeEQ("isSamlAuthFlowForTesting()",
+                                   {"gaia-signin"}, false);
 
   if (!GetParam())
     test::OobeJS().ExpectHiddenPath(kSamlInterstitial);
