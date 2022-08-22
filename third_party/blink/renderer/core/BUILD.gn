@@ -1351,10 +1351,6 @@ source_set("unit_tests") {
   sources += rebase_path(blink_core_tests_workers, "", "workers")
   sources += rebase_path(blink_core_tests_xml, "", "xml")
 
-  if (is_debug || dcheck_always_on) {
-    sources += [ "exported/web_disallow_transition_scope_test.cc" ]
-  }
-
   configs += [
     ":blink_core_pch",
     "//third_party/blink/renderer:config",

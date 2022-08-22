@@ -11,6 +11,7 @@ blink_core_sources_exported = [
   "web_custom_element.cc",
   "web_dev_tools_agent_impl.cc",
   "web_dev_tools_agent_impl.h",
+  "web_disallow_transition_scope.cc",
   "web_document.cc",
   "web_dom_activity_logger.cc",
   "web_dom_event.cc",
@@ -72,6 +73,7 @@ blink_core_sources_exported = [
 ]
 
 blink_core_tests_exported = [
+  "web_disallow_transition_scope_test.cc",
   "web_document_subresource_filter_test.cc",
   "web_document_test.cc",
   "web_drag_data_test.cc",

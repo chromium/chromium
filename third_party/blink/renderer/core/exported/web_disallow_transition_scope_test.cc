@@ -4,6 +4,8 @@
 
 #include "third_party/blink/public/web/web_disallow_transition_scope.h"
 
+#if DCHECK_IS_ON()
+
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
@@ -60,3 +62,5 @@ TEST_F(WebDisallowTransitionScopeTest, TestDisallowTransition) {
 #endif
 
 }  // namespace blink
+
+#endif  // DCHECK_IS_ON()

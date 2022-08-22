@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/dcheck_always_on.gni")
 import("//build/config/devtools.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/blink/public/public_features.gni")
@@ -306,6 +305,7 @@ source_set("blink_headers") {
     "web/web_crypto_normalize.h",
     "web/web_css_origin.h",
     "web/web_custom_element.h",
+    "web/web_disallow_transition_scope.h",
     "web/web_document.h",
     "web/web_document_loader.h",
     "web/web_dom_activity_logger.h",
@@ -401,10 +401,6 @@ source_set("blink_headers") {
     "web/web_widget.h",
     "web/web_window_features.h",
   ]
-
-  if (is_debug || dcheck_always_on) {
-    sources += [ "web/web_disallow_transition_scope.h" ]
-  }
 
   if (is_mac) {
     sources += [

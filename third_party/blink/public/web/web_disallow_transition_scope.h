@@ -5,6 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_DISALLOW_TRANSITION_SCOPE_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_DISALLOW_TRANSITION_SCOPE_H_
 
+#include "base/dcheck_is_on.h"
+
+#if DCHECK_IS_ON()
+
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/web/web_document.h"
 
@@ -18,7 +22,7 @@ class WebDisallowTransitionScope {
   // when updating properties in the accessible object hierarchy.
  public:
   BLINK_EXPORT explicit WebDisallowTransitionScope(WebDocument* web_document);
-  BLINK_EXPORT virtual ~WebDisallowTransitionScope();
+  BLINK_EXPORT ~WebDisallowTransitionScope();
 
  private:
   DocumentLifecycle& Lifecycle(WebDocument*) const;
@@ -27,5 +31,7 @@ class WebDisallowTransitionScope {
 };
 
 }  // namespace blink
+
+#endif  // DCHECK_IS_ON()
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_DISALLOW_TRANSITION_SCOPE_H_
