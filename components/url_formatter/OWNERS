@@ -2,7 +2,6 @@ pkasting@chromium.org
 meacer@chromium.org
 cthomp@chromium.org
 estark@chromium.org
-felt@chromium.org
 
 # Changes to FormatUrlForSecurityDisplay and FormatOriginForSecurityDisplay
 # require a security review to avoid introducing security bugs.
