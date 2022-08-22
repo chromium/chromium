@@ -200,6 +200,12 @@ void ServiceWorkerUpdateChecker::OnResourceIdAssignedForOneScriptCheck(
     const GURL& url,
     const int64_t resource_id,
     const int64_t new_resource_id) {
+  if (context_->process_manager()->IsShutdown()) {
+    // If it's being shut down, ServiceWorkerUpdateChecker is going to be
+    // destroyed after this task. We do nothing here.
+    return;
+  }
+
   // When the url matches with the main script url, we can always think that
   // it's the main script even if a main script imports itself because the
   // second load (network load for imported script) should hit the script
