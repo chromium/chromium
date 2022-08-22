@@ -775,6 +775,10 @@ class BrowserView : public BrowserWindow,
   // aligned side panels.
   void RightAlignedSidePanelWasClosed();
 
+  bool ShouldShowWindowControlsOverlayToggle() const {
+    return should_show_window_controls_overlay_toggle_;
+  }
+
  private:
   // Do not friend BrowserViewLayout. Use the BrowserViewLayoutDelegate
   // interface to keep these two classes decoupled and testable.
