@@ -1052,9 +1052,8 @@ public class LocationBarMediatorTest {
 
     @Test
     public void testLensButtonVisibility_lensEnabledWithInputText_tablet() {
-        // Do not show lens when the omnibox already has input.
         doReturn(true).when(mLensController).isLensEnabled(any());
-        verifyLensButtonVisibilityWhenFocusChanges(false, "text");
+        verifyLensButtonVisibilityWhenFocusChanges(true, "text");
     }
 
     private void verifyLensButtonVisibilityWhenFocusChanges(
