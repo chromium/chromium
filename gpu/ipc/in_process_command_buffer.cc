@@ -332,47 +332,11 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
     }
     decoder_ = std::move(webgpu_decoder);
   } else {
-    // TODO(khushalsagar): A lot of this initialization code is duplicated in
-    // GpuChannelManager. Pull it into a common util method.
-    scoped_refptr<gl::GLContext> real_context =
-        use_virtualized_gl_context_ ? gl_share_group_->shared_context()
-                                    : nullptr;
-    if (real_context &&
-        (!real_context->MakeCurrent(surface_.get()) ||
-         real_context->CheckStickyGraphicsResetStatus() != GL_NO_ERROR)) {
-      real_context = nullptr;
-    }
-    if (!real_context) {
-      real_context = gl::init::CreateGLContext(
-          gl_share_group_.get(), surface_.get(),
-          GenerateGLContextAttribs(params.attribs, context_group_.get()));
-      if (!real_context) {
-        // TODO(piman): This might not be fatal, we could recurse into
-        // CreateGLContext to get more info, tho it should be exceedingly
-        // rare and may not be recoverable anyway.
-        DestroyOnGpuThread();
-        LOG(ERROR) << "ContextResult::kFatalFailure: "
-                      "Failed to create shared context for virtualization.";
-        return gpu::ContextResult::kFatalFailure;
-      }
-      // Ensure that context creation did not lose track of the intended share
-      // group.
-      DCHECK(real_context->share_group() == gl_share_group_.get());
-      task_executor_->gpu_feature_info().ApplyToGLContext(real_context.get());
-
-      if (use_virtualized_gl_context_)
-        gl_share_group_->SetSharedContext(real_context.get());
-    }
-
-    if (!real_context->MakeCurrent(surface_.get())) {
-      LOG(ERROR)
-          << "ContextResult::kTransientFailure, failed to make context current";
-      DestroyOnGpuThread();
-      return ContextResult::kTransientFailure;
-    }
-
     if (params.attribs.enable_raster_interface &&
         !params.attribs.enable_gles2_interface) {
+      // RasterDecoder uses the shared context.
+      use_virtualized_gl_context_ = false;
+
       gr_shader_cache_ = params.gr_shader_cache;
 
       if (!context_state_ ||
@@ -396,6 +360,45 @@ gpu::ContextResult InProcessCommandBuffer::InitializeOnGpuThread(
           task_executor_->shared_image_manager(), params.image_factory,
           context_state_, true /*is_privileged*/));
     } else {
+      // TODO(khushalsagar): A lot of this initialization code is duplicated in
+      // GpuChannelManager. Pull it into a common util method.
+      scoped_refptr<gl::GLContext> real_context =
+          use_virtualized_gl_context_ ? gl_share_group_->shared_context()
+                                      : nullptr;
+      if (real_context &&
+          (!real_context->MakeCurrent(surface_.get()) ||
+           real_context->CheckStickyGraphicsResetStatus() != GL_NO_ERROR)) {
+        real_context = nullptr;
+      }
+      if (!real_context) {
+        real_context = gl::init::CreateGLContext(
+            gl_share_group_.get(), surface_.get(),
+            GenerateGLContextAttribs(params.attribs, context_group_.get()));
+        if (!real_context) {
+          // TODO(piman): This might not be fatal, we could recurse into
+          // CreateGLContext to get more info, tho it should be exceedingly
+          // rare and may not be recoverable anyway.
+          DestroyOnGpuThread();
+          LOG(ERROR) << "ContextResult::kFatalFailure: "
+                        "Failed to create shared context for virtualization.";
+          return gpu::ContextResult::kFatalFailure;
+        }
+        // Ensure that context creation did not lose track of the intended share
+        // group.
+        DCHECK(real_context->share_group() == gl_share_group_.get());
+        task_executor_->gpu_feature_info().ApplyToGLContext(real_context.get());
+
+        if (use_virtualized_gl_context_)
+          gl_share_group_->SetSharedContext(real_context.get());
+      }
+
+      if (!real_context->MakeCurrent(surface_.get())) {
+        LOG(ERROR) << "ContextResult::kTransientFailure, failed to make "
+                      "context current";
+        DestroyOnGpuThread();
+        return ContextResult::kTransientFailure;
+      }
+
       decoder_.reset(gles2::GLES2Decoder::Create(this, command_buffer_.get(),
                                                  task_executor_->outputter(),
                                                  context_group_.get()));
