@@ -36,12 +36,6 @@
     "args": ["--enable-unsafe-webgpu"]
   },
   {
-    "prefix": "isolated_world_csp",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["http/tests/security/isolatedWorld"],
-    "args": ["--enable-blink-features=IsolatedWorldCSP"]
-  },
-  {
     "prefix": "threaded",
     "platforms": ["Linux", "Mac", "Win", "Fuchsia"],
     "bases": ["compositing/visibility",
