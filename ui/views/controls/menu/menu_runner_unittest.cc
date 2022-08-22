@@ -35,8 +35,11 @@
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_utils.h"
 
-namespace views {
-namespace test {
+#if BUILDFLAG(IS_MAC)
+#include "ui/views/controls/menu/menu_cocoa_watcher_mac.h"
+#endif
+
+namespace views::test {
 
 class MenuRunnerTest : public ViewsTestBase {
  public:
@@ -74,10 +77,27 @@ class MenuRunnerTest : public ViewsTestBase {
   MenuRunner* menu_runner() { return menu_runner_.get(); }
   Widget* owner() { return owner_.get(); }
 
+#if BUILDFLAG(IS_MAC)
+  void SetUp() override {
+    ViewsTestBase::SetUp();
+
+    // Ignore app activation notifications during tests (they make the tests
+    // flaky).
+    MenuCocoaWatcherMac::SetNotificationFilterForTesting(
+        MacNotificationFilter::IgnoreWorkspaceNotifications);
+  }
+#endif
+
   // ViewsTestBase:
   void TearDown() override {
     if (owner_)
       owner_->CloseNow();
+
+#if BUILDFLAG(IS_MAC)
+    MenuCocoaWatcherMac::SetNotificationFilterForTesting(
+        MacNotificationFilter::DontIgnoreNotifications);
+#endif
+
     ViewsTestBase::TearDown();
   }
 
@@ -735,5 +755,4 @@ TEST_F(MenuRunnerImplTest, FocusOnMenuCloseDeleteAfterRun) {
   EXPECT_EQ(nullptr, menu_controller.controller());
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test
