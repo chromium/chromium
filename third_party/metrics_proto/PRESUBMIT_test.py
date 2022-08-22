@@ -44,16 +44,20 @@ class MetricsProtoCheckerTest(unittest.TestCase):
   def testExcludedPaths(self):
     input_api = MockInputApi()
     input_api.files = [
-      # Changes to this file don't require README changes.
+      # Changes to these files don't require README changes.
       MockAffectedFile(FullPath('PRESUBMIT.py'), 'some diff'),
+      MockAffectedFile(FullPath('PRESUBMIT_test.py'), 'some diff'),
+      MockAffectedFile(FullPath('OWNERS'), 'some diff'),
     ]
     self.assertEqual(0, len(PRESUBMIT.CheckChange(input_api, MockOutputApi())))
 
   def testIncludedAndExcludedPaths(self):
     input_api = MockInputApi()
     input_api.files = [
-      # Changes to this file don't require README changes.
+      # Changes to these files don't require README changes.
       MockAffectedFile(FullPath('PRESUBMIT.py'), 'some diff'),
+      MockAffectedFile(FullPath('PRESUBMIT_test.py'), 'some diff'),
+      MockAffectedFile(FullPath('OWNERS'), 'some diff'),
       # But this one does.
       MockAffectedFile(FullPath('somefile.proto'), 'some diff'),
     ]
