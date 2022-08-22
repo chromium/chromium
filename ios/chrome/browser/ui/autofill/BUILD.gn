@@ -85,6 +85,7 @@ source_set("bridges") {
     "//base",
     "//components/autofill/core/browser",
     "//components/strings",
+    "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/ui/autofill/cells",
     "//ios/chrome/browser/ui/collection_view/cells",
     "//ios/chrome/browser/ui/list_model",
@@ -95,6 +96,7 @@ source_set("bridges") {
     "//ios/third_party/material_components_ios",
     "//ios/web",
     "//ui/base",
+    "//url",
   ]
   public_deps = [
     "//ios/chrome/browser/ui/collection_view",

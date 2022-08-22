@@ -87,9 +87,8 @@ const CGFloat kErrorIconLength = 20;
   cell.textField.enabled = self.textFieldEnabled;
 
   if (self.hideIcon) {
-    cell.textField.textColor = self.textFieldEnabled
-                                   ? [UIColor colorNamed:kBlueColor]
-                                   : [UIColor colorNamed:kTextPrimaryColor];
+    cell.textField.textColor = [UIColor colorNamed:kTextPrimaryColor];
+
     [cell setIcon:TableViewTextEditItemIconTypeNone];
   } else {
     if (self.hasValidText) {

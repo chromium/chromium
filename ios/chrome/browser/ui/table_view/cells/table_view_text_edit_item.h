@@ -44,6 +44,7 @@ typedef NS_ENUM(NSInteger, TableViewTextEditItemIconType) {
 @property(nonatomic, copy) NSString* identifyingIconAccessibilityLabel;
 
 // Whether to hide or display the trailing icon.
+// Changing this value can change the text color for the text field.
 @property(nonatomic, assign) BOOL hideIcon;
 
 // Whether this field is required. If YES, an "*" is appended to the name of the

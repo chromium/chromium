@@ -357,6 +357,12 @@
     <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_EXPIRED_LOCAL_CARD" desc="Text explaining what the user should do in the card unmasking dialog to update an expired card.  Appears specifically for local cards already stored on the device.">
       Enter the expiration date and CVC for <ph name="CREDIT_CARD">$1<ex>Visa - 5679</ex></ph> to update your card details. Once you confirm, your card details will be shared with this site.
     </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_CVC_FIELD_TITLE" desc="The name of the field for credit card verification code in the card unmasking dialog. The text field where this is presented can be very narrow, so please prefer to translate this to the most common abbreviated form. [CHAR_LIMIT=4]">
+      CVC
+    </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_UPDATE_CARD_MESSAGE_LINK" desc="Text explaining the user they can update their credit card expiration date if they received a new card after the old one expired. The text also contains a link that when tapped displays the form to update the expiration date.">
+      New card? <ph name="BEGIN_LINK">BEGIN_LINK</ph>Enter Card Details<ph name="END_LINK">END_LINK</ph>
+    </message>
   </if>
   <if expr="is_ios">
     <if expr="_google_chrome">
