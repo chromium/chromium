@@ -1112,7 +1112,7 @@ class ScopedTestDebugDaemonClient : public ash::FakeDebugDaemonClient {
 };
 
 TEST_F(RlzLibTest, SetRlzPingSent) {
-  chromeos::DBusThreadManager::Initialize();
+  ash::DBusThreadManager::Initialize();
   auto debug_daemon_client = std::make_unique<ScopedTestDebugDaemonClient>();
   const char* kPingResponse =
       "stateful-events: CAF\r\n"
@@ -1133,7 +1133,7 @@ TEST_F(RlzLibTest, SetRlzPingSent) {
   EXPECT_EQ(debug_daemon_client->num_set_rlz_ping_sent(),
             1 + rlz_lib::RlzValueStoreChromeOS::kMaxRetryCount);
   debug_daemon_client.reset();
-  chromeos::DBusThreadManager::Shutdown();
+  ash::DBusThreadManager::Shutdown();
 }
 
 TEST_F(RlzLibTest, NoRecordCAFEvent) {

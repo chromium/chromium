@@ -140,7 +140,7 @@ class ProfileProviderRealCollectionTest : public testing::Test {
       const ProfileProviderRealCollectionTest&) = delete;
 
   void SetUp() override {
-    chromeos::DBusThreadManager::Initialize();
+    ash::DBusThreadManager::Initialize();
     // ProfileProvider requires chromeos::LoginState and
     // chromeos::PowerManagerClient to be initialized.
     chromeos::PowerManagerClient::InitializeFake();
@@ -186,7 +186,7 @@ class ProfileProviderRealCollectionTest : public testing::Test {
     TestingBrowserProcess::DeleteInstance();
     chromeos::LoginState::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
+    ash::DBusThreadManager::Shutdown();
     variations::testing::ClearAllVariationParams();
   }
 

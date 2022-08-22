@@ -22,7 +22,7 @@ MtpDeviceManager* g_mtp_device_manager = nullptr;
 }  // namespace
 
 MtpDeviceManager::MtpDeviceManager()
-    : bus_(chromeos::DBusThreadManager::Get()->GetSystemBus()) {
+    : bus_(ash::DBusThreadManager::Get()->GetSystemBus()) {
   // Listen for future mtpd service owner changes, in case it is not
   // available right now. There is no guarantee that mtpd is running already.
   dbus::Bus::ServiceOwnerChangeCallback mtpd_owner_changed_callback =

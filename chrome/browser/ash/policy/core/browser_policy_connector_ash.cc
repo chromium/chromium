@@ -137,7 +137,7 @@ BrowserPolicyConnectorAsh::BrowserPolicyConnectorAsh()
 
   // DBusThreadManager or DeviceSettingsService may be
   // uninitialized on unit tests.
-  if (chromeos::DBusThreadManager::IsInitialized() &&
+  if (ash::DBusThreadManager::IsInitialized() &&
       ash::DeviceSettingsService::IsInitialized()) {
     std::unique_ptr<DeviceCloudPolicyStoreAsh> device_cloud_policy_store =
         std::make_unique<DeviceCloudPolicyStoreAsh>(

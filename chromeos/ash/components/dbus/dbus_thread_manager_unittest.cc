@@ -6,7 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 TEST(DBusThreadManagerTest, Initialize) {
   DBusThreadManager::Initialize();
@@ -22,4 +22,4 @@ TEST(DBusThreadManagerTest, Initialize) {
   EXPECT_FALSE(DBusThreadManager::IsInitialized());
 }
 
-}  // namespace chromeos
+}  // namespace ash

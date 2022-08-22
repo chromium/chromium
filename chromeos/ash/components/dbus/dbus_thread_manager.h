@@ -8,11 +8,11 @@
 #include "base/component_export.h"
 #include "chromeos/dbus/init/dbus_thread_manager_base.h"
 
-namespace chromeos {
+namespace ash {
 
 // Ash implementation of DBusThreadManagerBase.
 class COMPONENT_EXPORT(ASH_DBUS) DBusThreadManager
-    : public DBusThreadManagerBase {
+    : public chromeos::DBusThreadManagerBase {
  public:
   // Sets the global instance. Must be called before any calls to Get().
   // We explicitly initialize and shut down the global object, rather than
@@ -36,11 +36,6 @@ class COMPONENT_EXPORT(ASH_DBUS) DBusThreadManager
   ~DBusThreadManager() override;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after moved to ash.
-namespace ash {
-using ::chromeos::DBusThreadManager;
-}
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DBUS_DBUS_THREAD_MANAGER_H_

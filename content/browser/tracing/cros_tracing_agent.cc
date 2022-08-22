@@ -38,7 +38,7 @@ class CrOSSystemTracingSession {
   // |true| if tracing was started and |false| otherwise.
   void StartTracing(const std::string& config, SuccessCallback callback) {
     DCHECK(!is_tracing_);
-    if (!chromeos::DBusThreadManager::IsInitialized()) {
+    if (!ash::DBusThreadManager::IsInitialized()) {
       if (callback)
         std::move(callback).Run(/*success=*/false);
       return;

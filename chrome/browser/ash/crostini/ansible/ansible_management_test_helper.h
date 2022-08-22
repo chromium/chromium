@@ -36,7 +36,7 @@ class AnsibleManagementTestHelper {
   Profile* profile_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  // Owned by chromeos::DBusThreadManager
+  // Owned by ash::DBusThreadManager
   ash::FakeCiceroneClient* fake_cicerone_client_;
 };
 

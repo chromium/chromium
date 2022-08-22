@@ -18,7 +18,7 @@ namespace extensions {
 // Handles network-related tasks for app_shell on Chrome OS.
 class ShellNetworkController : public ash::NetworkStateHandlerObserver {
  public:
-  // This class must be instantiated after chromeos::DBusThreadManager and
+  // This class must be instantiated after ash::DBusThreadManager and
   // destroyed before it.
   explicit ShellNetworkController(const std::string& preferred_network_name);
 

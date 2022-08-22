@@ -108,8 +108,8 @@ void ShellBrowserMainParts::PostCreateMainMessageLoop() {
   // Perform initialization of D-Bus objects here rather than in the below
   // helper classes so those classes' tests can initialize stub versions of the
   // D-Bus objects.
-  chromeos::DBusThreadManager::Initialize();
-  dbus::Bus* bus = chromeos::DBusThreadManager::Get()->GetSystemBus();
+  ash::DBusThreadManager::Initialize();
+  dbus::Bus* bus = ash::DBusThreadManager::Get()->GetSystemBus();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   chromeos::LacrosDBusThreadManager::Initialize();
   dbus::Bus* bus = chromeos::LacrosDBusThreadManager::Get()->GetSystemBus();
@@ -315,7 +315,7 @@ void ShellBrowserMainParts::PostDestroyThreads() {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::DBusThreadManager::Shutdown();
+  ash::DBusThreadManager::Shutdown();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   chromeos::LacrosDBusThreadManager::Shutdown();
 #endif

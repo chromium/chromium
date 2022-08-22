@@ -125,10 +125,10 @@ void InitializeDBus() {
   chromeos::SystemSaltGetter::Initialize();
 
   // Initialize DBusThreadManager for the browser.
-  chromeos::DBusThreadManager::Initialize();
+  DBusThreadManager::Initialize();
 
   // Initialize Chrome dbus clients.
-  dbus::Bus* bus = chromeos::DBusThreadManager::Get()->GetSystemBus();
+  dbus::Bus* bus = DBusThreadManager::Get()->GetSystemBus();
 
   shill_clients::Initialize(bus);
 
@@ -212,7 +212,7 @@ void InitializeDBus() {
 void InitializeFeatureListDependentDBus() {
   using chromeos::InitializeDBusClient;
 
-  dbus::Bus* bus = chromeos::DBusThreadManager::Get()->GetSystemBus();
+  dbus::Bus* bus = DBusThreadManager::Get()->GetSystemBus();
   if (floss::features::IsFlossEnabled()) {
     InitializeDBusClient<floss::FlossDBusManager>(bus);
   } else {
@@ -329,7 +329,7 @@ void ShutdownDBus() {
   AnomalyDetectorClient::Shutdown();
 
   shill_clients::Shutdown();
-  chromeos::DBusThreadManager::Shutdown();
+  DBusThreadManager::Shutdown();
   chromeos::SystemSaltGetter::Shutdown();
 }
 

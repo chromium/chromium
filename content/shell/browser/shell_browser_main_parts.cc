@@ -116,7 +116,7 @@ ShellBrowserMainParts::~ShellBrowserMainParts() = default;
 
 void ShellBrowserMainParts::PostCreateMainMessageLoop() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::DBusThreadManager::Initialize();
+  ash::DBusThreadManager::Initialize();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   chromeos::LacrosDBusThreadManager::Initialize();
 #endif
@@ -212,7 +212,7 @@ void ShellBrowserMainParts::PostDestroyThreads() {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::DBusThreadManager::Shutdown();
+  ash::DBusThreadManager::Shutdown();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   chromeos::LacrosDBusThreadManager::Shutdown();
 #endif

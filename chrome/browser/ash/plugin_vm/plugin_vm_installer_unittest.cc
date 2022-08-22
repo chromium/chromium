@@ -278,7 +278,7 @@ class PluginVmInstallerTestBase : public testing::Test {
   // A pointer to a singleton object which is valid until
   // ConciergeClient::Shutdown() is called.
   ash::FakeConciergeClient* fake_concierge_client_;
-  // Owned by chromeos::DBusThreadManager
+  // Owned by ash::DBusThreadManager
   chromeos::FakeDlcserviceClient* fake_dlcservice_client_;
 
  private:
