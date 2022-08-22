@@ -142,22 +142,6 @@ void OsIntegrationManager::Start() {
   DCHECK(file_handler_manager_);
 
   registrar_observation_.Observe(registrar_.get());
-
-#if BUILDFLAG(IS_MAC)
-  // Ensure that all installed apps are included in the AppShimRegistry when the
-  // profile is loaded. This is redundant, because apps are registered when they
-  // are installed. It is necessary, however, because app registration was added
-  // long after app installation launched. This should be removed after shipping
-  // for a few versions (whereupon it may be assumed that most applications have
-  // been registered).
-  std::vector<AppId> app_ids = registrar_->GetAppIds();
-  for (const auto& app_id : app_ids) {
-    if (!registrar_->WasInstalledByDefaultOnly(app_id)) {
-      AppShimRegistry::Get()->OnAppInstalledForProfile(app_id,
-                                                       profile_->GetPath());
-    }
-  }
-#endif
   file_handler_manager_->Start();
   if (protocol_handler_manager_)
     protocol_handler_manager_->Start();
