@@ -623,35 +623,31 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
 IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
                        HighlightsOnAutocorrectThenDismissesHighlight) {
   engine_->Enable(kEngineIdUs);
+  TextInputTestHelper helper(GetBrowserInputMethod());
   ui::DummyTextInputClient text_input_client(ui::TEXT_INPUT_TYPE_TEXT);
   SetFocus(&text_input_client);
   // Input the corrected word.
-  DispatchKeyPresses(
-      {
-          ui::VKEY_C,
-          ui::VKEY_O,
-          ui::VKEY_R,
-          ui::VKEY_R,
-          ui::VKEY_E,
-          ui::VKEY_C,
-          ui::VKEY_T,
-          ui::VKEY_E,
-          ui::VKEY_D,
-      },
-      false);
+  helper.GetTextInputClient()->InsertText(
+      u"corrected ",
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  helper.WaitForSurroundingTextChanged(u"corrected ");
 
   engine_->OnAutocorrect(u"typed", u"corrected", 0);
 
   EXPECT_FALSE(engine_->GetAutocorrectRange().is_empty());
 
-  DispatchKeyPress(ui::KeyboardCode::VKEY_A, false);
-  DispatchKeyPress(ui::KeyboardCode::VKEY_A, false);
-  DispatchKeyPress(ui::KeyboardCode::VKEY_A, false);
+  helper.GetTextInputClient()->InsertText(
+      u"aa",
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  helper.WaitForSurroundingTextChanged(u"corrected aa");
 
-  // Highlighting should only go away after 4 keypresses.
+  // Highlighting should only go away after inserting 3 characters.
   EXPECT_FALSE(engine_->GetAutocorrectRange().is_empty());
 
-  DispatchKeyPress(ui::KeyboardCode::VKEY_A, false);
+  helper.GetTextInputClient()->InsertText(
+      u"a",
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  helper.WaitForSurroundingTextChanged(u"corrected aaa");
 
   EXPECT_TRUE(engine_->GetAutocorrectRange().is_empty());
 

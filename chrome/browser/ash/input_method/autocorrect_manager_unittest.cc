@@ -234,20 +234,7 @@ TEST_F(AutocorrectManagerTest,
             gfx::Range());
 }
 
-TEST_F(AutocorrectManagerTest, FewKeyPressesDoesNotClearAutocorrectRange) {
-  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
-
-  const ui::KeyEvent key_event =
-      CreateKeyEvent(ui::DomKey::FromCharacter('a'), ui::DomCode::US_A);
-  EXPECT_FALSE(manager_.OnKeyEvent(key_event));
-  EXPECT_FALSE(manager_.OnKeyEvent(key_event));
-  EXPECT_FALSE(manager_.OnKeyEvent(key_event));
-
-  EXPECT_TRUE(
-      !mock_ime_input_context_handler_.GetAutocorrectRange().is_empty());
-}
-
-TEST_F(AutocorrectManagerTest, EnoughKeyPressesClearsAutocorrectRange) {
+TEST_F(AutocorrectManagerTest, OnKeyEventDoesNotClearAutocorrectRange) {
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
 
   const ui::KeyEvent key_event =
@@ -256,8 +243,10 @@ TEST_F(AutocorrectManagerTest, EnoughKeyPressesClearsAutocorrectRange) {
   EXPECT_FALSE(manager_.OnKeyEvent(key_event));
   EXPECT_FALSE(manager_.OnKeyEvent(key_event));
   EXPECT_FALSE(manager_.OnKeyEvent(key_event));
+  EXPECT_FALSE(manager_.OnKeyEvent(key_event));
 
-  EXPECT_TRUE(mock_ime_input_context_handler_.GetAutocorrectRange().is_empty());
+  EXPECT_EQ(mock_ime_input_context_handler_.GetAutocorrectRange(),
+            gfx::Range(0, 3));
 }
 
 TEST_F(AutocorrectManagerTest,
@@ -711,32 +700,13 @@ TEST_F(AutocorrectManagerTest,
                               /*cleared_underline=*/0);
 }
 
-TEST_F(AutocorrectManagerTest, KeyPressRecordsMetricsWhenAcceptingAutocorrect) {
+TEST_F(AutocorrectManagerTest,
+       OnKeyEventDoesNotRecordMetricsForAcceptingOrClearingAutocorrect) {
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
 
   const ui::KeyEvent key_event =
       CreateKeyEvent(ui::DomKey::FromCharacter('a'), ui::DomCode::US_A);
   manager_.OnKeyEvent(key_event);
-  manager_.OnKeyEvent(key_event);
-  manager_.OnKeyEvent(key_event);
-  manager_.OnKeyEvent(key_event);
-
-  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
-                              /*window_shown=*/0, /*underlined=*/1,
-                              /*reverted=*/0, /*accepted=*/1,
-                              /*cleared_underline=*/0);
-}
-
-TEST_F(AutocorrectManagerTest, KeyPressRecordsMetricsWhenClearingAutocorrect) {
-  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
-
-  mock_ime_input_context_handler_.SetAutocorrectRange(gfx::Range());
-
-  const ui::KeyEvent key_event =
-      CreateKeyEvent(ui::DomKey::FromCharacter('a'), ui::DomCode::US_A);
-  // TODO(b/161490813): Remove extra calls after fixing OnKeyEvent logic.
-  //  Currently, OnKeyEvent waits for four keys before updating metrics for
-  //  cleared range.
   manager_.OnKeyEvent(key_event);
   manager_.OnKeyEvent(key_event);
   manager_.OnKeyEvent(key_event);
@@ -745,15 +715,17 @@ TEST_F(AutocorrectManagerTest, KeyPressRecordsMetricsWhenClearingAutocorrect) {
   ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
                               /*window_shown=*/0, /*underlined=*/1,
                               /*reverted=*/0, /*accepted=*/0,
-                              /*cleared_underline=*/1);
+                              /*cleared_underline=*/0);
 }
 
 TEST_F(AutocorrectManagerTest,
-       KeyPressDoesNotRecordMetricsWhenAutocorrectIsStillPending) {
+       OnKeyEventDoesNotRecordMetricsAfterClearingRange) {
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+  mock_ime_input_context_handler_.SetAutocorrectRange(gfx::Range());
   const ui::KeyEvent key_event =
       CreateKeyEvent(ui::DomKey::FromCharacter('a'), ui::DomCode::US_A);
-
+  manager_.OnKeyEvent(key_event);
+  manager_.OnKeyEvent(key_event);
   manager_.OnKeyEvent(key_event);
   manager_.OnKeyEvent(key_event);
   manager_.OnKeyEvent(key_event);
@@ -870,37 +842,6 @@ TEST_F(AutocorrectManagerTest,
                               /*window_shown=*/0, /*underlined=*/1,
                               /*reverted=*/0, /*accepted=*/0,
                               /*cleared_underline=*/1);
-}
-
-TEST_F(AutocorrectManagerTest,
-       KeyPressDoesNotRecordMetricsForStaleAutocorrectRange) {
-  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
-
-  // Press enough keys to be on the boundary of accepting autocorrect
-  // with key presses.
-  const ui::KeyEvent key_event =
-      CreateKeyEvent(ui::DomKey::FromCharacter('a'), ui::DomCode::US_A);
-  manager_.OnKeyEvent(key_event);
-  manager_.OnKeyEvent(key_event);
-  manager_.OnKeyEvent(key_event);
-
-  // Accept autocorrect implicitly.
-  manager_.OnSurroundingTextChanged(u"the abc", 7, 7);
-  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
-                              /*window_shown=*/0, /*underlined=*/1,
-                              /*reverted=*/0, /*accepted=*/1,
-                              /*cleared_underline=*/0);
-
-  // Set stale autocorrect range.
-  mock_ime_input_context_handler_.SetAutocorrectRange(gfx::Range(0, 3));
-
-  // Trigger the logic for implicitly accepting autocorrect by keypress
-  // and ensure duplicate count is not happening.
-  manager_.OnKeyEvent(key_event);
-  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
-                              /*window_shown=*/0, /*underlined=*/1,
-                              /*reverted=*/0, /*accepted=*/1,
-                              /*cleared_underline=*/0);
 }
 
 TEST_F(AutocorrectManagerTest,

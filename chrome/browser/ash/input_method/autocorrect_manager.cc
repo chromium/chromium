@@ -54,7 +54,6 @@ void RecordAssistiveSuccess(AssistiveType type) {
   base::UmaHistogramEnumeration("InputMethod.Assistive.Success", type);
 }
 
-constexpr int kKeysUntilUnderlineHides = 4;
 constexpr int kDistanceUntilUnderlineHides = 3;
 
 }  // namespace
@@ -94,7 +93,6 @@ void AutocorrectManager::HandleAutocorrect(const gfx::Range autocorrect_range,
 
   ResetStateVars(); // Ensure all state variables are reset.
   autocorrect_pending_ = true;
-  key_presses_until_underline_hide_ = kKeysUntilUnderlineHides;
 
   LogAssistiveAutocorrectAction(AutocorrectActions::kUnderlined);
   RecordAssistiveCoverage(AssistiveType::kAutocorrectUnderlined);
@@ -127,35 +125,21 @@ void AutocorrectManager::LogAssistiveAutocorrectAction(
 }
 
 bool AutocorrectManager::OnKeyEvent(const ui::KeyEvent& event) {
-  if (!autocorrect_pending_ || event.type() != ui::ET_KEY_PRESSED) {
+  // OnKeyEvent is only used for interacting with the undo UI.
+  if (!autocorrect_pending_ || !window_visible_ ||
+      event.type() != ui::ET_KEY_PRESSED) {
     return false;
   }
-  if (event.code() == ui::DomCode::ARROW_UP && window_visible_) {
+
+  if (event.code() == ui::DomCode::ARROW_UP) {
     HighlightUndoButton();
     return true;
   }
-  if (event.code() == ui::DomCode::ENTER && window_visible_ &&
-      button_highlighted_) {
+  if (event.code() == ui::DomCode::ENTER && button_highlighted_) {
     UndoAutocorrect();
     return true;
   }
-  if (key_presses_until_underline_hide_ >= 0) {
-    --key_presses_until_underline_hide_;
-  }
 
-  // TODO(b/161490813): Move the logic to OnSurroundingTextChanged.
-  //   There are issues with the current logic:
-  //   1. This logic does not clear autocorrect for VK as OnKeyEvent is only
-  //      called for PK key presses.
-  //   2. It causes a difference between the behaviour of Autocorrect for VK
-  //      and PK.
-  //   3. If a user changes the autocorrect suggestion and clears it, the logic
-  //      will not count the "cleared" metric unless the user adds a few more
-  //      characters. Meanwhile, other logics such as undo or OnFocus might
-  //      process the pending autocorrect and make measurements inaccurate.
-  if (key_presses_until_underline_hide_ == 0) {
-    AcceptOrClearPendingAutocorrect();
-  }
   return false;
 }
 
@@ -220,7 +204,6 @@ void AutocorrectManager::OnSurroundingTextChanged(const std::u16string& text,
   if (cursor_pos_unsigned >= range.start() &&
       cursor_pos_unsigned <= range.end() && cursor_pos == anchor_pos) {
     ShowUndoWindow(range, text);
-    key_presses_until_underline_hide_ = kKeysUntilUnderlineHides;
   } else {
     // Ensure undo window is hidden when cursor is not inside the autocorrect
     // range.
@@ -371,7 +354,6 @@ void AutocorrectManager::ResetStateVars() {
   autocorrect_pending_ = false;
   num_inserted_chars_ = -1;
   text_length_ = -1;
-  key_presses_until_underline_hide_ = -1;
 }
 
 void AutocorrectManager::OnTextFieldContextualInfoChanged(

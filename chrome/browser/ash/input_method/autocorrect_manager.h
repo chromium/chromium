@@ -54,8 +54,7 @@ class AutocorrectManager {
                          const std::u16string& original_text,
                          const std::u16string& current_text);
 
-  // To hide the underline after enough keypresses, this class intercepts
-  // keystrokes. Returns whether the keypress has now been handled.
+  // Handles interactions with Undo UI.
   bool OnKeyEvent(const ui::KeyEvent& event);
 
   // Indicates a new text field is focused, used to save context ID.
@@ -101,7 +100,6 @@ class AutocorrectManager {
 
   SuggestionHandlerInterface* suggestion_handler_;
   int context_id_ = 0;
-  int key_presses_until_underline_hide_ = 0;
   std::u16string original_text_;
   bool window_visible_ = false;
   bool button_highlighted_ = false;
