@@ -19,7 +19,7 @@ extern NSString* const kFollowIPHHost;
 // Key used to store the date when showing the follow in-product help (IPH).
 extern NSString* const kFollowIPHDate;
 
-// Returns the Follow action state for |webState|.
+// Returns the Follow action state for `webState`.
 FollowActionState GetFollowActionState(web::WebState* webState);
 
 #pragma mark - For Follow IPH

@@ -10,8 +10,8 @@
 // Protocol defining a updater for follow menu item.
 @protocol FollowMenuUpdater
 
-// Updates the follow menu item with follow |webPage|, |followed|,
-// |domainName| and |enabled|.
+// Updates the follow menu item with follow `webPage`, `followed`,
+// `domainName` and `enabled`.
 - (void)updateFollowMenuItemWithWebPage:(WebPageURLs*)webPageURLs
                                followed:(BOOL)followed
                              domainName:(NSString*)domainName
