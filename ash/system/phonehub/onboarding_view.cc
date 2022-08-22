@@ -80,7 +80,7 @@ class OnboardingMainView : public PhoneHubInterstitialView {
                             base::Unretained(this)),
         l10n_util::GetStringUTF16(
             IDS_ASH_PHONE_HUB_ONBOARDING_DIALOG_DISMISS_BUTTON),
-        PillButton::Type::kIconlessFloating, /*icon=*/nullptr);
+        PillButton::Type::kFloatingWithoutIcon, /*icon=*/nullptr);
     dismiss->SetID(PhoneHubViewID::kOnboardingDismissButton);
     AddButton(std::move(dismiss));
 
@@ -89,7 +89,7 @@ class OnboardingMainView : public PhoneHubInterstitialView {
                             base::Unretained(this)),
         l10n_util::GetStringUTF16(
             IDS_ASH_PHONE_HUB_ONBOARDING_DIALOG_GET_STARTED_BUTTON),
-        PillButton::Type::kIconless, /*icon=*/nullptr);
+        PillButton::Type::kDefaultWithoutIcon, /*icon=*/nullptr);
     get_started->SetID(PhoneHubViewID::kOnboardingGetStartedButton);
     AddButton(std::move(get_started));
   }
@@ -141,7 +141,7 @@ class OnboardingDismissPromptView : public PhoneHubInterstitialView {
                             base::Unretained(this)),
         l10n_util::GetStringUTF16(
             IDS_ASH_PHONE_HUB_ONBOARDING_DISMISS_DIALOG_OK_BUTTON),
-        PillButton::Type::kIconless, /*icon=*/nullptr);
+        PillButton::Type::kDefaultWithoutIcon, /*icon=*/nullptr);
     ack_button->SetID(PhoneHubViewID::kOnboardingDismissAckButton);
     AddButton(std::move(ack_button));
   }

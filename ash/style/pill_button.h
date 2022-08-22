@@ -21,28 +21,109 @@ class ASH_EXPORT PillButton : public views::LabelButton {
 
   static constexpr int kPillButtonHorizontalSpacing = 16;
 
-  // Types of the PillButton.
-  enum class Type {
-    // PillButton with an icon, default text and background colors.
-    kIcon,
-    // PillButton with an icon, default text and background colors,
-    // `kPillButtonLargeHeight` as the button height.
-    kIconLarge,
-    // PillButton without an icon, default text and background colors.
-    kIconless,
-    // PillButton without an icon, `kButtonLabelColorPrimary` as the text color
-    // and `kControlBackgroundColorAlert` as the background color.
-    kIconlessAlert,
-    // PillButton without an icon, `kButtonLabelColorBlue` as the text color and
-    // default background color.
-    kIconlessAccent,
-    // PillButton without an icon, default text color and
-    // `kControlBackgroundColorActive` as the background color.
-    kIconlessProminent,
-    // `kIconless` button without background.
-    kIconlessFloating,
-    // `kIconlessAccent` button without background.
-    kIconlessAccentFloating,
+  // The PillButton style is defined with 4 features:
+  // 1. Color variant defines which background, text, and icon color scheme to
+  // be used, for example Default, Floating, Alert, etc.
+  // 2. Button size indicates whether we should use the default size 32 or a
+  // large size 36.
+  // 3. With/without an icon.
+  // 4. Icon position: leading or following.
+  // For ease of extracting features from a button type, each feature is
+  // represented by a different bit mask.
+  using TypeFlag = int;
+
+  static constexpr TypeFlag kDefault = 1;
+  static constexpr TypeFlag kDefaultElevated = 1 << 1;
+  static constexpr TypeFlag kPrimary = 1 << 2;
+  static constexpr TypeFlag kSecondary = 1 << 3;
+  static constexpr TypeFlag kFloating = 1 << 4;
+  static constexpr TypeFlag kAlert = 1 << 5;
+  // TODO(crbug.com/1355517): Get rid of `kAccent` after CrosNext is fully
+  // launched.
+  static constexpr TypeFlag kAccent = 1 << 6;
+  static constexpr TypeFlag kLarge = 1 << 7;
+  static constexpr TypeFlag kIconLeading = 1 << 8;
+
+  // Types of the PillButton. Each type is represented as the bitwise OR
+  // operation of the feature bit masks. The naming rule of the button type is
+  // k{Color Variant}{Button Size}{Icon}{Icon Position}.
+  enum Type {
+    // PillButton with default text and background colors, a leading icon.
+    kDefaultWithIconLeading = kDefault | kIconLeading,
+    // PillButton with default text and background colors, a large button size,
+    // a leading icon.
+    kDefaultLargeWithIconLeading = kDefault | kLarge | kIconLeading,
+    // PillButton with default text and background colors, no icon.
+    kDefaultWithoutIcon = kDefault,
+    // PillButton with default text and background colors, a large button size,
+    // no icon.
+    kDefaultLargeWithoutIcon = kDefault | kLarge,
+
+    // PillButton with default-elevated text and background colors, a leading
+    // icon.
+    kDefaultElevatedWithIconLeading = kDefault | kIconLeading,
+    // PillButton with default-elevated text and background colors, a large
+    // button size,
+    // a leading icon.
+    kDefaultElevatedLargeWithIconLeading = kDefault | kLarge | kIconLeading,
+    // PillButton with default-elevated text and background colors, no icon.
+    kDefaultElevatedWithoutIcon = kDefault,
+    // PillButton with default-elevated text and background colors, a large
+    // button size,
+    // no icon.
+    kDefaultElevatedLargeWithoutIcon = kDefault | kLarge,
+
+    // PillButton with primary text and background colors, a leading icon.
+    kPrimaryWithIconLeading = kPrimary | kIconLeading,
+    // PillButton with primary text and background colors, a large button size,
+    // a leading icon.
+    kPrimaryLargeWithIconLeading = kPrimary | kLarge | kIconLeading,
+    // PillButton with primary text and background colors, no icon.
+    kPrimaryWithoutIcon = kPrimary,
+    // PillButton with primary text and background colors, a large button size,
+    // no icon.
+    kPrimaryLargeWithoutIcon = kPrimary | kLarge,
+
+    // PillButton with secondary text and background colors, a leading icon.
+    kSecondaryWithIconLeading = kSecondary | kIconLeading,
+    // PillButton with secondary text and background colors, a large button
+    // size, a leading icon.
+    kSecondaryLargeWithIconLeading = kSecondary | kLarge | kIconLeading,
+    // PillButton with secondary text and background colors, no icon.
+    kSecondaryWithoutIcon = kSecondary,
+    // PillButton with secondary text and background colors, a large button
+    // size, no icon.
+    kSecondaryLargeWithoutIcon = kSecondary | kLarge,
+
+    // PillButton with floating text colors, no background, a leading icon.
+    kFloatingWithIconLeading = kFloating | kIconLeading,
+    // PillButton with floating text colors, no background, a large button size,
+    // a leading icon.
+    kFloatingLargeWithIconLeading = kFloating | kLarge | kIconLeading,
+    // PillButton with floating text colors, no background, no icon.
+    kFloatingWithoutIcon = kFloating,
+    // PillButton with floating text colors, no background, a large button size,
+    // no icon.
+    kFloatingLargeWithoutIcon = kFloating | kLarge,
+
+    // PillButton with alert text and background colors, a leading icon.
+    kAlertWithIconLeading = kAlert | kIconLeading,
+    // PillButton with alert text and background colors, a large button size, a
+    // leading icon.
+    kAlertLargeWithIconLeading = kAlert | kLarge | kIconLeading,
+    // PillButton with alert text and background colors, no icon.
+    kAlertWithoutIcon = kAlert,
+    // PillButton with alert text and background colors, a large button size, no
+    // icon.
+    kAlertLargeWithoutIcon = kAlert | kLarge,
+
+    // Old button types.
+    // TODO(crbug.com/1355517): Get rid of these types after CrosNext is fully
+    // launched.
+    // PillButton with accent text and background colors, no icon.
+    kAccentWithoutIcon = kAccent,
+    // PillButton with accent text, no background, no icon.
+    kAccentFloatingWithoutIcon = kAccent | kFloating,
   };
 
   // Keeps the button in light mode if `use_light_colors` is true.
@@ -52,7 +133,7 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   // `kNotificationsRefresh` is fully launched.
   explicit PillButton(PressedCallback callback = PressedCallback(),
                       const std::u16string& text = std::u16string(),
-                      Type type = Type::kIconless,
+                      Type type = Type::kDefaultWithoutIcon,
                       const gfx::VectorIcon* icon = nullptr,
                       int horizontal_spacing = kPillButtonHorizontalSpacing,
                       bool use_light_colors = false,

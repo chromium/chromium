@@ -110,13 +110,13 @@ void SubFeatureOptInView::InitLayout() {
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(
           IDS_ASH_PHONE_HUB_SUB_FEATURE_OPT_IN_DISMISS_BUTTON),
-      PillButton::Type::kIconlessFloating, /*icon=*/nullptr));
+      PillButton::Type::kFloatingWithoutIcon, /*icon=*/nullptr));
   dismiss_button_->SetID(kSubFeatureOptInDismissButton);
   set_up_button_ = button_container->AddChildView(std::make_unique<PillButton>(
       base::BindRepeating(&SubFeatureOptInView::SetUpButtonPressed,
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(set_up_button_string_id_),
-      PillButton::Type::kIconless, /*icon=*/nullptr));
+      PillButton::Type::kDefaultWithoutIcon, /*icon=*/nullptr));
   set_up_button_->SetID(kSubFeatureOptInConfirmButton);
 }
 

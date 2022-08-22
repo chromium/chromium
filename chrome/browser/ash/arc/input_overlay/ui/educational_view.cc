@@ -246,7 +246,7 @@ void EducationalView::Init(const gfx::Size& parent_size) {
         base::BindRepeating(&EducationalView::OnAcceptedPressed,
                             base::Unretained(this)),
         l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_EDUCATIONAL_ACCEPT_BUTTON),
-        ash::PillButton::Type::kIconless,
+        ash::PillButton::Type::kDefaultWithoutIcon,
         /*icon=*/nullptr));
     accept_button_->SetButtonTextColor(cros_styles::ResolveColor(
         cros_styles::ColorName::kButtonLabelColorPrimary, IsDarkModeEnabled()));

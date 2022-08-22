@@ -144,7 +144,8 @@ ShelfShutdownConfirmationBubble::ShelfShutdownConfirmationBubble(
   auto cancel_button = std::make_unique<PillButton>(
       base::BindRepeating(&ShelfShutdownConfirmationBubble::OnCancelled,
                           base::Unretained(this)),
-      l10n_util::GetStringUTF16(IDS_CANCEL), PillButton::Type::kIconless,
+      l10n_util::GetStringUTF16(IDS_CANCEL),
+      PillButton::Type::kDefaultWithoutIcon,
       /*icon=*/nullptr);
   cancel_button->SetID(static_cast<int>(ButtonId::kCancel));
   cancel_ = button_container->AddChildView(std::move(cancel_button));
@@ -153,7 +154,7 @@ ShelfShutdownConfirmationBubble::ShelfShutdownConfirmationBubble(
       base::BindRepeating(&ShelfShutdownConfirmationBubble::OnConfirmed,
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(IDS_ASH_SHUTDOWN_CONFIRM_BUTTON),
-      PillButton::Type::kIconless, /*icon=*/nullptr);
+      PillButton::Type::kDefaultWithoutIcon, /*icon=*/nullptr);
   confirm_button->SetID(static_cast<int>(ButtonId::kShutdown));
   confirm_ = button_container->AddChildView(std::move(confirm_button));
 

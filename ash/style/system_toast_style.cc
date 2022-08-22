@@ -133,10 +133,10 @@ SystemToastStyle::SystemToastStyle(base::RepeatingClosure dismiss_callback,
   label_->SetText(display_text);
 
   if (!dismiss_text.empty()) {
-    button_ = AddChildView(
-        std::make_unique<PillButton>(std::move(dismiss_callback), dismiss_text,
-                                     PillButton::Type::kIconlessAccentFloating,
-                                     /*icon=*/nullptr));
+    button_ = AddChildView(std::make_unique<PillButton>(
+        std::move(dismiss_callback), dismiss_text,
+        PillButton::Type::kAccentFloatingWithoutIcon,
+        /*icon=*/nullptr));
     button_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   }
 

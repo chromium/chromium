@@ -191,7 +191,7 @@ class LoginShelfButton : public PillButton {
                    const gfx::VectorIcon& icon)
       : PillButton(std::move(callback),
                    l10n_util::GetStringUTF16(text_resource_id),
-                   PillButton::Type::kIconLarge,
+                   PillButton::Type::kDefaultLargeWithIconLeading,
                    &icon,
                    PillButton::kPillButtonHorizontalSpacing),
         text_resource_id_(text_resource_id),

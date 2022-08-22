@@ -123,13 +123,13 @@ RemoveQueryConfirmationDialog::RemoveQueryConfirmationDialog(
   cancel_button_ = button_row->AddChildView(std::make_unique<ash::PillButton>(
       views::Button::PressedCallback(
           base::BindRepeating(run_callback, base::Unretained(this), false)),
-      l10n_util::GetStringUTF16(IDS_APP_CANCEL), PillButton::Type::kIconless,
-      nullptr));
+      l10n_util::GetStringUTF16(IDS_APP_CANCEL),
+      PillButton::Type::kDefaultWithoutIcon, nullptr));
   accept_button_ = button_row->AddChildView(std::make_unique<ash::PillButton>(
       views::Button::PressedCallback(
           base::BindRepeating(run_callback, base::Unretained(this), true)),
       l10n_util::GetStringUTF16(IDS_REMOVE_SUGGESTION_BUTTON_LABEL),
-      PillButton::Type::kIconlessProminent, nullptr));
+      PillButton::Type::kPrimaryWithoutIcon, nullptr));
 }
 
 RemoveQueryConfirmationDialog::~RemoveQueryConfirmationDialog() = default;

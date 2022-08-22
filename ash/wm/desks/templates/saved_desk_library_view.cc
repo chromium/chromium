@@ -301,7 +301,8 @@ SavedDeskLibraryView::SavedDeskLibraryView() {
                               base::Unretained(this)),
           l10n_util::GetStringUTF16(
               IDS_ASH_PERSISTENT_DESKS_BAR_CONTEXT_MENU_FEEDBACK),
-          PillButton::Type::kIcon, &kPersistentDesksBarFeedbackIcon));
+          PillButton::Type::kDefaultWithIconLeading,
+          &kPersistentDesksBarFeedbackIcon));
   feedback_button_->SetBorder(std::make_unique<views::HighlightBorder>(
       feedback_button_->CalculatePreferredSize().height() / 2,
       views::HighlightBorder::Type::kHighlightBorder1,

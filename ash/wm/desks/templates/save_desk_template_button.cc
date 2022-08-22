@@ -22,7 +22,10 @@ SaveDeskTemplateButton::SaveDeskTemplateButton(base::RepeatingClosure callback,
                                                const std::u16string& text,
                                                Type button_type,
                                                const gfx::VectorIcon* icon)
-    : PillButton(callback, text, PillButton::Type::kIcon, icon),
+    : PillButton(callback,
+                 text,
+                 PillButton::Type::kDefaultWithIconLeading,
+                 icon),
       callback_(callback),
       button_type_(button_type) {
   views::FocusRing* focus_ring =

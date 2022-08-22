@@ -528,7 +528,7 @@ views::Button* CalendarView::CreateInfoButton(
   auto* button =
       new PillButton(std::move(callback),
                      l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_INFO_BUTTON),
-                     PillButton::Type::kIconless, /*icon=*/nullptr);
+                     PillButton::Type::kDefaultWithoutIcon, /*icon=*/nullptr);
   button->SetAccessibleName(l10n_util::GetStringFUTF16(
       IDS_ASH_CALENDAR_INFO_BUTTON_ACCESSIBLE_DESCRIPTION,
       calendar_utils::GetMonthDayYear(base::Time::Now())));

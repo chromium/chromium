@@ -224,7 +224,8 @@ SavedDeskItemView::SavedDeskItemView(
   launch_button_ = hover_container_->AddChildView(std::make_unique<PillButton>(
       base::BindRepeating(&SavedDeskItemView::OnGridItemPressed,
                           weak_ptr_factory_.GetWeakPtr()),
-      l10n_util::GetStringUTF16(button_text_id), PillButton::Type::kIconless,
+      l10n_util::GetStringUTF16(button_text_id),
+      PillButton::Type::kDefaultWithoutIcon,
       /*icon=*/nullptr));
 
   // Users cannot delete admin templates.

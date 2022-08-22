@@ -257,7 +257,7 @@ void AppListToastView::SetButton(
   toast_button_ =
       AddChildView(std::make_unique<AppListToastView::ToastPillButton>(
           view_delegate_, button_callback, button_text,
-          PillButton::Type::kIconless,
+          PillButton::Type::kDefaultWithoutIcon,
           /*icon=*/nullptr));
   toast_button_->SetBorder(views::NullBorder());
 }

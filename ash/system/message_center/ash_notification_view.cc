@@ -1248,9 +1248,10 @@ AshNotificationView::GenerateNotificationLabelButton(
     views::Button::PressedCallback callback,
     const std::u16string& label) {
   std::unique_ptr<views::LabelButton> actions_button =
-      std::make_unique<PillButton>(
-          std::move(callback), label, PillButton::Type::kIconlessAccentFloating,
-          /*icon=*/nullptr, kNotificationPillButtonHorizontalSpacing);
+      std::make_unique<PillButton>(std::move(callback), label,
+                                   PillButton::Type::kAccentFloatingWithoutIcon,
+                                   /*icon=*/nullptr,
+                                   kNotificationPillButtonHorizontalSpacing);
   return actions_button;
 }
 

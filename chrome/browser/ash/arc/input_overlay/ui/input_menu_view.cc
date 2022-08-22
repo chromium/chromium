@@ -297,7 +297,7 @@ void InputMenuView::Init(const gfx::Size& parent_size) {
             base::BindRepeating(&InputMenuView::OnEditButtonPressed,
                                 base::Unretained(this)),
             l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_MENU_EDIT_BUTTON),
-            ash::PillButton::Type::kIconless,
+            ash::PillButton::Type::kDefaultWithoutIcon,
             /*icon=*/nullptr));
     edit_button_->SetEnabled(game_control_toggle_->GetIsOn());
     key_mapping_label->SetBorder(views::CreateEmptyBorder(CalculateInsets(

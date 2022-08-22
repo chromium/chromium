@@ -196,7 +196,7 @@ TopShortcutsView::TopShortcutsView(UnifiedSystemTrayController* controller) {
         user::GetLocalizedSignOutStringForStatus(
             Shell::Get()->session_controller()->login_status(),
             /*multiline=*/false),
-        PillButton::Type::kIconless,
+        PillButton::Type::kDefaultWithoutIcon,
         /*icon=*/nullptr);
     container_->AddSignOutButton(sign_out_button_);
   }

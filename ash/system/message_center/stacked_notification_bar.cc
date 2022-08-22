@@ -46,7 +46,7 @@ class StackingBarLabelButton : public PillButton {
       : PillButton(
             std::move(callback),
             text,
-            PillButton::Type::kIconlessAccentFloating,
+            PillButton::Type::kAccentFloatingWithoutIcon,
             /*icon=*/nullptr,
             kNotificationPillButtonHorizontalSpacing,
             /*use_light_colors=*/!features::IsNotificationsRefreshEnabled(),

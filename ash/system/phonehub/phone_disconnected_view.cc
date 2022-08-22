@@ -56,7 +56,7 @@ PhoneDisconnectedView::PhoneDisconnectedView(
               NewWindowDelegate::Disposition::kNewForegroundTab)),
       l10n_util::GetStringUTF16(
           IDS_ASH_PHONE_HUB_PHONE_DISCONNECTED_DIALOG_LEARN_MORE_BUTTON),
-      PillButton::Type::kIconlessFloating, /*icon=*/nullptr);
+      PillButton::Type::kFloatingWithoutIcon, /*icon=*/nullptr);
   learn_more->SetID(PhoneHubViewID::kDisconnectedLearnMoreButton);
   content_view_->AddButton(std::move(learn_more));
 
@@ -69,7 +69,7 @@ PhoneDisconnectedView::PhoneDisconnectedView(
               base::Unretained(connection_scheduler_))),
       l10n_util::GetStringUTF16(
           IDS_ASH_PHONE_HUB_PHONE_DISCONNECTED_DIALOG_REFRESH_BUTTON),
-      PillButton::Type::kIconless, /*icon=*/nullptr);
+      PillButton::Type::kDefaultWithoutIcon, /*icon=*/nullptr);
   refresh->SetID(PhoneHubViewID::kDisconnectedRefreshButton);
   content_view_->AddButton(std::move(refresh));
 

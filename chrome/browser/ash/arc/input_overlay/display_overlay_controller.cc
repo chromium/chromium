@@ -126,7 +126,7 @@ void DisplayOverlayController::AddNudgeView(views::Widget* overlay_widget) {
       base::BindRepeating(&DisplayOverlayController::OnNudgeDismissed,
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_SETTINGS_NUDGE_ALPHA),
-      ash::PillButton::Type::kIcon, &kTipIcon);
+      ash::PillButton::Type::kDefaultWithIconLeading, &kTipIcon);
   nudge_view->SetSize(
       gfx::Size(nudge_view->GetPreferredSize().width(), kNudgeHeight));
   nudge_view->SetButtonTextColor(cros_styles::ResolveColor(

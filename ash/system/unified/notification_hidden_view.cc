@@ -68,7 +68,7 @@ NotificationHiddenView::NotificationHiddenView()
         base::BindRepeating(&NotificationHiddenView::ChangeButtonPressed,
                             base::Unretained(this)),
         l10n_util::GetStringUTF16(IDS_ASH_MESSAGE_CENTER_LOCKSCREEN_CHANGE),
-        PillButton::Type::kIconless, /*icon=*/nullptr,
+        PillButton::Type::kDefaultWithoutIcon, /*icon=*/nullptr,
         kNotificationPillButtonHorizontalSpacing));
     change_button_->SetTooltipText(l10n_util::GetStringUTF16(
         IDS_ASH_MESSAGE_CENTER_LOCKSCREEN_CHANGE_TOOLTIP));
