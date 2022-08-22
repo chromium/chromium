@@ -375937,6 +375937,13 @@
         {}
        ]
       ],
+      "background-shorthand-serialization.html": [
+       "5212303784bc0ed9086837dd8cf5db51b1eb1db3",
+       [
+        null,
+        {}
+       ]
+      ],
       "background-size-computed.html": [
        "2c6e340edd08787d46103ac234ef1d86ac05e688",
        [
@@ -391320,6 +391327,20 @@
       ],
       "auto-005.html": [
        "2b7e03192dc701ebc675a79646cd683fe25081c6",
+       [
+        null,
+        {}
+       ]
+      ],
+      "auto-006.html": [
+       "d88f51ba5eaad0b8cef23e5e32644797b4346338",
+       [
+        null,
+        {}
+       ]
+      ],
+      "auto-007.html": [
+       "02501264c8c2fe08fc28419f3cf3f48e03330657",
        [
         null,
         {}
@@ -498088,7 +498109,7 @@
      ]
     ],
     "MediaStreamTrack-iframe-transfer.https.html": [
-     "28ff506b9e7c0d222bd7e7097191a70f344e0a28",
+     "1dfc872e5ab4241de0a87682eb5c529af413d894",
      [
       null,
       {}
