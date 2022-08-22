@@ -234,12 +234,12 @@ bool GLImageNativePixmap::Initialize(scoped_refptr<gfx::NativePixmap> pixmap) {
       attrs.push_back(EGL_NONE);
     }
 
-    did_initialize_ = true;
     if (!GLImageEGL::Initialize(EGL_NO_CONTEXT, EGL_LINUX_DMA_BUF_EXT,
                                 static_cast<EGLClientBuffer>(nullptr),
                                 &attrs[0])) {
       return false;
     }
+    did_initialize_ = true;
   }
 
   pixmap_ = pixmap;
@@ -268,9 +268,13 @@ bool GLImageNativePixmap::InitializeFromTexture(uint32_t texture_id) {
       reinterpret_cast<EGLContext>(current_context->GetHandle());
   DCHECK_NE(context_handle, EGL_NO_CONTEXT);
 
-  return GLImageEGL::Initialize(context_handle, EGL_GL_TEXTURE_2D_KHR,
-                                reinterpret_cast<EGLClientBuffer>(texture_id),
-                                nullptr);
+  if (!GLImageEGL::Initialize(context_handle, EGL_GL_TEXTURE_2D_KHR,
+                              reinterpret_cast<EGLClientBuffer>(texture_id),
+                              nullptr)) {
+    return false;
+  }
+  did_initialize_ = true;
+  return true;
 }
 
 gfx::NativePixmapHandle GLImageNativePixmap::ExportHandle() {
