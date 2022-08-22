@@ -179,17 +179,21 @@ PA_ALWAYS_INLINE uintptr_t GetDirectMapReservationStart(uintptr_t address) {
     return 0;
   uintptr_t reservation_start = ComputeReservationStart(address, offset_ptr);
 #if BUILDFLAG(PA_DCHECK_IS_ON)
-  // Make sure the reservation start is in the same pool as |address|.
-  // In the 32-bit mode, the beginning of a reservation may be excluded from the
-  // BRP pool, so shift the pointer. The other pools don't have this logic.
-  PA_DCHECK(is_in_brp_pool ==
-            IsManagedByPartitionAllocBRPPool(
-                reservation_start
+  // MSVC workaround: the preprocessor seems to choke on an `#if` embedded
+  // inside another macro (PA_DCHECK).
 #if !defined(PA_HAS_64_BITS_POINTERS)
-                + AddressPoolManagerBitmap::kBytesPer1BitOfBRPPoolBitmap *
-                      AddressPoolManagerBitmap::kGuardOffsetOfBRPPoolBitmap
+  constexpr size_t kBRPOffset =
+      AddressPoolManagerBitmap::kBytesPer1BitOfBRPPoolBitmap *
+      AddressPoolManagerBitmap::kGuardOffsetOfBRPPoolBitmap;
+#else
+  constexpr size_t kBRPOffset = 0ull;
 #endif  // !defined(PA_HAS_64_BITS_POINTERS)
-                ));
+  // Make sure the reservation start is in the same pool as |address|.
+  // In the 32-bit mode, the beginning of a reservation may be excluded
+  // from the BRP pool, so shift the pointer. The other pools don't have
+  // this logic.
+  PA_DCHECK(is_in_brp_pool ==
+            IsManagedByPartitionAllocBRPPool(reservation_start + kBRPOffset));
   PA_DCHECK(is_in_regular_pool ==
             IsManagedByPartitionAllocRegularPool(reservation_start));
   PA_DCHECK(*ReservationOffsetPointer(reservation_start) == 0);
