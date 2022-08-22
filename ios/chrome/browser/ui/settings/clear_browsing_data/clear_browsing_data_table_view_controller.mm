@@ -12,12 +12,14 @@
 #include "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_switches.h"
+#import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/browsing_data/browsing_data_features.h"
 #include "ios/chrome/browser/browsing_data/browsing_data_remove_mask.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet_coordinator.h"
@@ -48,6 +50,7 @@
 
 @interface ClearBrowsingDataTableViewController () <
     ClearBrowsingDataConsumer,
+    IdentityManagerObserverBridgeDelegate,
     SignoutActionSheetCoordinatorDelegate,
     TableViewLinkHeaderFooterItemDelegate,
     UIGestureRecognizerDelegate>
@@ -86,6 +89,8 @@
 @implementation ClearBrowsingDataTableViewController {
   // Modal alert for sign out.
   SignoutActionSheetCoordinator* _signoutCoordinator;
+  std::unique_ptr<signin::IdentityManagerObserverBridge>
+      _identityManagerObserverBridge;
 }
 @synthesize dispatcher = _dispatcher;
 @synthesize delegate = _delegate;
@@ -101,6 +106,9 @@
     _dataManager = [[ClearBrowsingDataManager alloc]
         initWithBrowserState:browser->GetBrowserState()];
     _dataManager.consumer = self;
+    _identityManagerObserverBridge.reset(
+        new signin::IdentityManagerObserverBridge(
+            IdentityManagerFactory::GetForBrowserState(_browserState), self));
   }
   return self;
 }
@@ -126,6 +134,15 @@
     _clearBrowsingDataBarButton.tintColor = [UIColor colorNamed:kRedColor];
   }
   return _clearBrowsingDataBarButton;
+}
+
+#pragma mark - IdentityManagerObserverBridgeDelegate
+
+// Update footer to take into account whether the user is signed-in or not.
+- (void)onPrimaryAccountChanged:
+    (const signin::PrimaryAccountChangeEvent&)event {
+  [self.dataManager updateModel:self.tableViewModel
+                  withTableView:self.tableView];
 }
 
 #pragma mark - UIViewController
@@ -201,6 +218,7 @@
     self.navigationController.interactivePopGestureRecognizer.delegate = nil;
     self.overlayCoordinator = nil;
   }
+  _identityManagerObserverBridge.reset();
   [self.dataManager disconnect];
 }
 

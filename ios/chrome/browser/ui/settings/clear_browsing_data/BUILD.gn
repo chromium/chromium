@@ -32,6 +32,7 @@ source_set("clear_browsing_data") {
     "//components/prefs/ios",
     "//components/search_engines",
     "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager/objc",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",

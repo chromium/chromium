@@ -91,6 +91,9 @@ enum ClearBrowsingDataItemType {
 // Fills `model` with appropriate sections and items.
 - (void)loadModel:(ListModel*)model;
 
+// Update the footer depending on whether the user signed in or out.
+- (void)updateModel:(ListModel*)model withTableView:(UITableView*)tableView;
+
 // Restarts browsing data counters, which in turn updates UI, with those data
 // types specified by `mask`.
 - (void)restartCounters:(BrowsingDataRemoveMask)mask;
