@@ -149,7 +149,7 @@ bool Position::ParseDefaultFromJson(const base::Value& value) {
   anchor_to_target_.set_x(anchor_to_target.value().x());
   anchor_to_target_.set_y(anchor_to_target.value().y());
 
-  gfx::PointF target = anchor_ + anchor_to_target_;
+  auto target = anchor_ + anchor_to_target_;
   if (!gfx::RectF(1.0, 1.0).Contains(target)) {
     LOG(ERROR)
         << "The target position is located at outside of the window. The value "
@@ -198,7 +198,7 @@ bool Position::ParseDependentFromJson(const base::Value& value) {
 
 gfx::PointF Position::CalculateDefaultPosition(
     const gfx::RectF& content_bounds) const {
-  gfx::PointF res = anchor_ + anchor_to_target_;
+  auto res = anchor_ + anchor_to_target_;
   res.Scale(content_bounds.width(), content_bounds.height());
   if (max_x_)
     res.set_x(std::min((int)res.x(), *max_x_));
@@ -209,7 +209,7 @@ gfx::PointF Position::CalculateDefaultPosition(
 
 gfx::PointF Position::CalculateDependentPosition(
     const gfx::RectF& content_bounds) const {
-  gfx::PointF res = Position::CalculateDefaultPosition(content_bounds);
+  auto res = Position::CalculateDefaultPosition(content_bounds);
   float cur_aspect_ratio =
       1. * content_bounds.width() / content_bounds.height();
   if (cur_aspect_ratio >= *aspect_ratio_) {

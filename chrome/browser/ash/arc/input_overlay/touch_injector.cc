@@ -66,10 +66,10 @@ std::vector<std::unique_ptr<Action>> ParseJsonToActions(
   std::vector<std::unique_ptr<Action>> actions;
 
   // Parse tap actions if they exist.
-  const base::Value* tap_act_list = root.FindListKey(kTapAction);
+  const auto* tap_act_list = root.FindListKey(kTapAction);
   if (tap_act_list && tap_act_list->is_list()) {
     for (const auto& val : tap_act_list->GetListDeprecated()) {
-      std::unique_ptr<Action> action = std::make_unique<ActionTap>(window);
+      auto action = std::make_unique<ActionTap>(window);
       bool succeed = action->ParseFromJson(val);
       if (succeed)
         actions.emplace_back(std::move(action));
@@ -80,7 +80,7 @@ std::vector<std::unique_ptr<Action>> ParseJsonToActions(
   const base::Value* move_act_list = root.FindListKey(kMoveAction);
   if (move_act_list && move_act_list->is_list()) {
     for (const base::Value& val : move_act_list->GetListDeprecated()) {
-      std::unique_ptr<Action> action = std::make_unique<ActionMove>(window);
+      auto action = std::make_unique<ActionMove>(window);
       bool succeed = action->ParseFromJson(val);
       if (succeed)
         actions.emplace_back(std::move(action));
@@ -603,7 +603,7 @@ std::unique_ptr<ui::TouchEvent> TouchInjector::RewriteOriginalTouch(
   }
 
   // Confirmed the input is valid.
-  gfx::PointF root_location_f = touch_event->root_location_f();
+  auto root_location_f = touch_event->root_location_f();
 
   if (touch_event->type() == ui::ET_TOUCH_PRESSED) {
     // Generate new touch id that we can manage and add to map.

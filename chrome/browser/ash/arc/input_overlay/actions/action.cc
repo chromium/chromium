@@ -79,20 +79,21 @@ std::unique_ptr<Position> ParsePosition(const base::Value& value) {
 
 void LogEvent(const ui::Event& event) {
   if (event.IsKeyEvent()) {
-    const ui::KeyEvent& key_event = static_cast<const ui::KeyEvent&>(event);
+    const auto* key_event = event.AsKeyEvent();
     VLOG(1) << "KeyEvent Received: DomKey{"
-            << ui::KeycodeConverter::DomKeyToKeyString(key_event.GetDomKey())
+            << ui::KeycodeConverter::DomKeyToKeyString(key_event->GetDomKey())
             << "}. DomCode{"
-            << ui::KeycodeConverter::DomCodeToCodeString(key_event.code())
-            << "}. Type{" << key_event.type() << "}. " << key_event.ToString();
+            << ui::KeycodeConverter::DomCodeToCodeString(key_event->code())
+            << "}. Type{" << key_event->type() << "}. "
+            << key_event->ToString();
   } else if (event.IsTouchEvent()) {
-    const ui::TouchEvent& touch_event =
-        static_cast<const ui::TouchEvent&>(event);
-    VLOG(1) << "Touch event {" << touch_event.ToString()
-            << "}. Pointer detail {" << touch_event.pointer_details().ToString()
-            << "}, TouchID {" << touch_event.pointer_details().id << "}.";
+    const auto* touch_event = event.AsTouchEvent();
+    VLOG(1) << "Touch event {" << touch_event->ToString()
+            << "}. Pointer detail {"
+            << touch_event->pointer_details().ToString() << "}, TouchID {"
+            << touch_event->pointer_details().id << "}.";
   } else if (event.IsMouseEvent()) {
-    auto* mouse_event = event.AsMouseEvent();
+    const auto* mouse_event = event.AsMouseEvent();
     VLOG(1) << "MouseEvent {" << mouse_event->ToString() << "}.";
   }
   // TODO(cuicuiruan): Add logging other events as needed.
@@ -388,24 +389,21 @@ void Action::UpdateTouchDownPositions(
   touch_down_positions_.clear();
 
   for (int i = 0; i < original_positions_.size(); i++) {
-    const gfx::PointF point =
-        original_positions_[i].CalculatePosition(content_bounds);
-
+    auto point = original_positions_[i].CalculatePosition(content_bounds);
+    const auto calculated_point = point.ToString();
+    point.Offset(content_bounds.origin().x(), content_bounds.origin().y());
+    const auto root_point = point.ToString();
     float scale = target_window_->GetHost()->device_scale_factor();
-
-    gfx::PointF root_point = gfx::PointF(point);
-    gfx::PointF origin = content_bounds.origin();
-    root_point.Offset(origin.x(), origin.y());
-
-    gfx::PointF root_location = gfx::PointF(root_point);
-    root_location.Scale(scale);
+    point.Scale(scale);
+    const auto root_point_pixel = point.ToString();
     if (rotation_transform)
-      rotation_transform->TransformPoint(&root_location);
-    touch_down_positions_.emplace_back(root_location);
+      rotation_transform->TransformPoint(&point);
+    touch_down_positions_.emplace_back(point);
+
     VLOG(1) << "Calculate touch position for location at index " << i
-            << ": local position {" << point.ToString() << "}, root location {"
-            << root_point.ToString() << "}, root location in pixels {"
-            << root_location.ToString() << "}";
+            << ": local position {" << calculated_point << "}, root location {"
+            << root_point << "}, root location in pixels {" << root_point_pixel
+            << "}";
   }
   DCHECK_EQ(touch_down_positions_.size(), original_positions_.size());
 }

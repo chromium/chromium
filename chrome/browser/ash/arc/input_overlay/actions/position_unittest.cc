@@ -260,8 +260,7 @@ class PositionTest : public testing::Test {
 TEST(PositionTest, TestParseJson) {
   // For default position
   // Parse valid Json.
-  std::unique_ptr<Position> pos =
-      std::make_unique<Position>(PositionType::kDefault);
+  auto pos = std::make_unique<Position>(PositionType::kDefault);
   auto json_value = base::JSONReader::ReadAndReturnValueWithError(kValidJson);
   EXPECT_TRUE(json_value.has_value() && json_value->is_dict());
   EXPECT_TRUE(pos->ParseFromJson(*json_value));
@@ -361,12 +360,11 @@ TEST(PositionTest, TestParseJson) {
 
 TEST(PositionTest, TestCalculateDefaultPosition) {
   // Calculate the target position in the center.
-  std::unique_ptr<Position> pos =
-      std::make_unique<Position>(PositionType::kDefault);
+  auto pos = std::make_unique<Position>(PositionType::kDefault);
   auto json_value = base::JSONReader::ReadAndReturnValueWithError(kValidJson);
   pos->ParseFromJson(*json_value);
-  gfx::RectF bounds(200, 400);
-  gfx::PointF target = pos->CalculatePosition(bounds);
+  auto bounds = gfx::RectF(200, 400);
+  auto target = pos->CalculatePosition(bounds);
   EXPECT_TRUE(target == gfx::PointF(100, 200));
   pos.reset();
 
@@ -393,8 +391,8 @@ TEST(PositionTest, TestCalculatePositionHeightDependent) {
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonHeightDependent);
   EXPECT_TRUE(json_value.has_value() && json_value->is_dict());
   pos->ParseFromJson(*json_value);
-  gfx::RectF bounds(200, 400);
-  gfx::PointF target = pos->CalculatePosition(bounds);
+  auto bounds = gfx::RectF(200, 400);
+  auto target = pos->CalculatePosition(bounds);
   EXPECT_TRUE(std::abs(target.x() - 160) < kEpsilon);
   EXPECT_TRUE(std::abs(target.y() - 200) < kEpsilon);
   // Give a height which may calculate the x value outside of the window bounds.
@@ -448,8 +446,8 @@ TEST(PositionTest, TestCalculatePositionWidthDependent) {
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonWidthDependent);
   EXPECT_TRUE(json_value.has_value() && json_value->is_dict());
   pos->ParseFromJson(*json_value);
-  gfx::RectF bounds(200, 400);
-  gfx::PointF target = pos->CalculatePosition(bounds);
+  auto bounds = gfx::RectF(200, 400);
+  auto target = pos->CalculatePosition(bounds);
   EXPECT_TRUE(std::abs(target.x() - 100) < kEpsilon);
   EXPECT_TRUE(std::abs(target.y() - 80) < kEpsilon);
   // Give a width which may calculate the y value outside of the window bounds.
@@ -502,8 +500,8 @@ TEST(PositionTest, TestCalculatePositionAspectRatioDependent) {
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonAspectRatio);
   EXPECT_TRUE(json_value.has_value() && json_value->is_dict());
   pos->ParseFromJson(*json_value);
-  gfx::RectF bounds(200, 400);
-  gfx::PointF target = pos->CalculatePosition(bounds);
+  auto bounds = gfx::RectF(200, 400);
+  auto target = pos->CalculatePosition(bounds);
   EXPECT_TRUE(std::abs(target.x() - 100) < kEpsilon);
   EXPECT_TRUE(std::abs(target.y() - 60) < kEpsilon);
   bounds.set_width(800);

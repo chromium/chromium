@@ -130,7 +130,7 @@ class ActionTap::ActionTapView : public ActionView {
 
     auto input_element =
         InputElement::CreateActionTapMouseElement(mouse_action);
-    ChangeBinding(action_, /*ActionLabel=*/nullptr, std::move(input_element));
+    ChangeBinding(action_, /*action_label=*/nullptr, std::move(input_element));
   }
 
   void OnMenuEntryPressed() override {

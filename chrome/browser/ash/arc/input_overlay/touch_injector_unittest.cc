@@ -323,7 +323,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   EXPECT_EQ(1, (int)event_capturer_.touch_events().size());
   auto* event = event_capturer_.touch_events()[0].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, event->type());
-  gfx::PointF expectA1 =
+  auto expectA1 =
       gfx::PointF(300, 100 + (400 - caption_height_) * 0.5 + caption_height_);
   EXPECT_TRUE(IsPointsEqual(expectA1, event->root_location_f()));
   EXPECT_EQ(0, event->pointer_details().id);
@@ -360,7 +360,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   EXPECT_EQ(1, (int)event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[0].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, event->type());
-  gfx::PointF expectB =
+  auto expectB =
       gfx::PointF(360, 100 + (400 - caption_height_) * 0.8 + caption_height_);
   EXPECT_TRUE(IsPointsEqual(expectB, event->root_location_f()));
   EXPECT_EQ(0, event->pointer_details().id);
@@ -370,7 +370,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   EXPECT_EQ(2, (int)event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[1].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, event->type());
-  gfx::PointF expectA2 =
+  auto expectA2 =
       gfx::PointF(260, 100 + (400 - caption_height_) * 0.3 + caption_height_);
   EXPECT_TRUE(IsPointsEqual(expectA2, event->root_location_f()));
   EXPECT_EQ(1, event->pointer_details().id);
@@ -495,7 +495,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapMouse) {
   auto* event = event_capturer_.touch_events()[0].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, event->type());
   EXPECT_EQ(0, event->pointer_details().id);
-  gfx::PointF expect_primary =
+  auto expect_primary =
       gfx::PointF(300, 100 + (400 - caption_height_) * 0.5 + caption_height_);
   EXPECT_TRUE(IsPointsEqual(expect_primary, event->root_location_f()));
   // Mouse secondary button click.
@@ -504,7 +504,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapMouse) {
   event = event_capturer_.touch_events()[1].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, event->type());
   EXPECT_EQ(1, event->pointer_details().id);
-  gfx::PointF expect_secondary = gfx::PointF(
+  auto expect_secondary = gfx::PointF(
       200 + 200 * 0.8, 100 + (400 - caption_height_) * 0.8 + caption_height_);
   EXPECT_TRUE(IsPointsEqual(expect_secondary, event->root_location_f()));
 
@@ -541,11 +541,11 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveKey) {
   // Generate touch down event.
   auto* event = event_capturer_.touch_events()[0].get();
   EXPECT_EQ(ui::EventType::ET_TOUCH_PRESSED, event->type());
-  gfx::PointF expect =
+  auto expect =
       gfx::PointF(300, 100 + (400 - caption_height_) * 0.5 + caption_height_);
   EXPECT_TRUE(IsPointsEqual(expect, event->root_location_f()));
   // Generate touch move left event.
-  gfx::PointF expectA = gfx::PointF(expect);
+  auto expectA = gfx::PointF(expect);
   auto* action_move = static_cast<ActionMove*>(action);
   int move_distance = action_move->move_distance();
   expectA.Offset(-move_distance, 0);

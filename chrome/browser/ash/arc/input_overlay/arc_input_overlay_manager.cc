@@ -123,12 +123,11 @@ void ArcInputOverlayManager::ReadData(const std::string& package_name,
 input_overlay::TouchInjector* ArcInputOverlayManager::ReadDefaultData(
     const std::string& package_name,
     aura::Window* top_level_window) {
-  absl::optional<int> resource_id = GetInputOverlayResourceId(package_name);
+  auto resource_id = GetInputOverlayResourceId(package_name);
   if (!resource_id)
     return nullptr;
-  const base::StringPiece json_file =
-      ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
-          resource_id.value());
+  auto json_file = ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
+      resource_id.value());
   if (json_file.empty()) {
     LOG(WARNING) << "No content for: " << package_name;
     return nullptr;
@@ -139,13 +138,11 @@ input_overlay::TouchInjector* ArcInputOverlayManager::ReadDefaultData(
   if (!result.has_value())
     return nullptr;
 
-  base::Value& root = *result;
-  std::unique_ptr<input_overlay::TouchInjector> injector =
-      std::make_unique<input_overlay::TouchInjector>(
-          top_level_window,
-          base::BindRepeating(&ArcInputOverlayManager::OnSaveProtoFile,
-                              weak_ptr_factory_.GetWeakPtr()));
-  injector->ParseActions(root);
+  auto injector = std::make_unique<input_overlay::TouchInjector>(
+      top_level_window,
+      base::BindRepeating(&ArcInputOverlayManager::OnSaveProtoFile,
+                          weak_ptr_factory_.GetWeakPtr()));
+  injector->ParseActions(*result);
   auto res = input_overlay_enabled_windows_.emplace(top_level_window,
                                                     std::move(injector));
   DCHECK(res.second);
