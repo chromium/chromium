@@ -40,11 +40,15 @@
       selected="[[getCurrentPref_(app)]]"
       on-selected-changed="onSupportedLinkPrefChanged_"
       disabled="[[disabled_]]">
-    <cr-radio-button id="preferred" name="preferred">
-      [[getPreferredLabel_(app)]]
+    <cr-radio-button
+        id="preferred"
+        name="preferred"
+        label="[[getPreferredLabel_(app)]]">
     </cr-radio-button>
-    <cr-radio-button id="browser" name="browser">
-      $i18n{appManagementIntentSharingOpenBrowserLabel}
+    <cr-radio-button
+        id="browser"
+        name="browser"
+        label="$i18n{appManagementIntentSharingOpenBrowserLabel}">
     </cr-radio-button>
     <template is="dom-if" if="[[showOverlappingAppsWarning_]]">
       <div id="overlap-warning">
