@@ -5,12 +5,14 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_bubble_view.h"
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "extensions/common/extension_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 
@@ -27,8 +29,11 @@ constexpr int kHoverCardTitleMaxLines = 2;
 // TODO(crbug.com/1351778): Move to a base hover card class.
 constexpr int kHorizontalMargin = 18;
 constexpr int kVerticalMargin = 10;
+constexpr int kFootnoteVerticalMargin = 8;
 constexpr auto kTitleMargins =
     gfx::Insets::VH(kVerticalMargin, kHorizontalMargin);
+constexpr auto kFootnoteMargins =
+    gfx::Insets::VH(kFootnoteVerticalMargin, kHorizontalMargin);
 
 bool CustomShadowsSupported() {
 #if BUILDFLAG(IS_WIN)
@@ -161,6 +166,43 @@ class ToolbarActionHoverCardBubbleView::FadeLabel : public views::View {
   double percent_ = 1.0;
 };
 
+class ToolbarActionHoverCardBubbleView::FootnoteView : public views::View {
+ public:
+  FootnoteView() {
+    SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kVertical));
+
+    title_label_ = AddChildView(std::make_unique<views::Label>(
+        std::u16string(), CONTEXT_TAB_HOVER_CARD_TITLE,
+        views::style::STYLE_PRIMARY));
+    description_label_ = AddChildView(std::make_unique<views::Label>(
+        std::u16string(), views::style::CONTEXT_DIALOG_BODY_TEXT,
+        views::style::STYLE_PRIMARY));
+
+    auto format_label = [](views::Label* label) {
+      label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+      label->SetMultiLine(true);
+    };
+    format_label(title_label_);
+    format_label(description_label_);
+  }
+  ~FootnoteView() override = default;
+
+  // TODO(crbug.com/1351778): Set content based on a given site access status.
+  void SetContent() {
+    // TODO(crbug.com/1351778): Set visibility based on the status.
+    SetVisible(true);
+    title_label_->SetText(u"Site access");
+    description_label_->SetText(u"Description of the extension site access");
+  }
+
+ private:
+  // TODO(crbug.com/1351778): Consider using FadeLabel after implementing
+  // content based on the extension.
+  raw_ptr<views::Label> title_label_;
+  raw_ptr<views::Label> description_label_;
+};
+
 // ToolbarActionHoverCardBubbleView:
 // ----------------------------------------------------------
 
@@ -199,9 +241,6 @@ ToolbarActionHoverCardBubbleView::ToolbarActionHoverCardBubbleView(
   // Set up content.
   title_label_ = AddChildView(std::make_unique<FadeLabel>(
       CONTEXT_TAB_HOVER_CARD_TITLE, kHoverCardTitleMaxLines));
-  // TODO(crbug.com/1351778): Use 'alert_label' for extension's site access
-  // information.
-  UpdateCardContent();
 
   // Set up layout.
   views::FlexLayout* const layout =
@@ -234,13 +273,25 @@ ToolbarActionHoverCardBubbleView::ToolbarActionHoverCardBubbleView(
   if (using_rounded_corners())
     GetBubbleFrameView()->SetCornerRadius(corner_radius_.value());
 
+  // Set up footer.
+  auto footnote_view = std::make_unique<FootnoteView>();
+  footnote_view_ = footnote_view.get();
+  footnote_view_->SetVisible(false);
+  GetBubbleFrameView()->SetFootnoteView(std::move(footnote_view));
+  GetBubbleFrameView()->SetFootnoteMargins(kFootnoteMargins);
+
   // Start in the fully "faded-in" position so that whatever text we initially
   // display is visible.
   SetTextFade(1.0);
+
+  UpdateCardContent();
 }
 
 void ToolbarActionHoverCardBubbleView::UpdateCardContent() {
   title_label_->SetText(u"Extension name", absl::nullopt);
+
+  DCHECK(GetBubbleFrameView());
+  footnote_view_->SetContent();
 }
 
 void ToolbarActionHoverCardBubbleView::SetTextFade(double percent) {

@@ -32,6 +32,7 @@ class ToolbarActionHoverCardBubbleView
 
  private:
   class FadeLabel;
+  class FootnoteView;
 
   bool using_rounded_corners() const { return corner_radius_.has_value(); }
 
@@ -39,6 +40,7 @@ class ToolbarActionHoverCardBubbleView
   void OnThemeChanged() override;
 
   raw_ptr<FadeLabel> title_label_ = nullptr;
+  raw_ptr<FootnoteView> footnote_view_ = nullptr;
 
   absl::optional<int> corner_radius_;
 };
