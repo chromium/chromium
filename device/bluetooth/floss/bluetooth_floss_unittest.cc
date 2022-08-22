@@ -11,6 +11,7 @@
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_discovery_session.h"
 #include "device/bluetooth/floss/bluetooth_adapter_floss.h"
+#include "device/bluetooth/floss/bluetooth_device_floss.h"
 #include "device/bluetooth/floss/fake_floss_adapter_client.h"
 #include "device/bluetooth/floss/fake_floss_manager_client.h"
 #include "device/bluetooth/floss/fake_floss_socket_manager.h"
@@ -334,14 +335,16 @@ TEST_F(BluetoothFlossTest, AdapterInitialDevices) {
   EnableAdapter();
 
   // After adapter is enabled, there are known devices.
-  BluetoothDevice* device1 =
-      adapter_->GetDevice(FakeFlossAdapterClient::kBondedAddress1);
-  BluetoothDevice* device2 =
-      adapter_->GetDevice(FakeFlossAdapterClient::kBondedAddress2);
+  BluetoothDeviceFloss* device1 = static_cast<BluetoothDeviceFloss*>(
+      adapter_->GetDevice(FakeFlossAdapterClient::kBondedAddress1));
+  BluetoothDeviceFloss* device2 = static_cast<BluetoothDeviceFloss*>(
+      adapter_->GetDevice(FakeFlossAdapterClient::kBondedAddress2));
   ASSERT_TRUE(device1);
   ASSERT_TRUE(device2);
   EXPECT_TRUE(device1->IsPaired());
+  EXPECT_TRUE(device1->IsBondedImpl());
   EXPECT_TRUE(device2->IsPaired());
+  EXPECT_TRUE(device2->IsBondedImpl());
   EXPECT_TRUE(device1->IsConnected());
   EXPECT_FALSE(device2->IsConnected());
   EXPECT_EQ(device1->GetBluetoothClass(),
@@ -352,6 +355,23 @@ TEST_F(BluetoothFlossTest, AdapterInitialDevices) {
             device::BluetoothTransport::BLUETOOTH_TRANSPORT_LE);
   EXPECT_EQ(device2->GetType(),
             device::BluetoothTransport::BLUETOOTH_TRANSPORT_LE);
+
+  // We should also have paired + connected devices that aren't bonded.
+  BluetoothDeviceFloss* paired1 = static_cast<BluetoothDeviceFloss*>(
+      adapter_->GetDevice(FakeFlossAdapterClient::kPairedAddressBrEdr));
+  BluetoothDeviceFloss* paired2 = static_cast<BluetoothDeviceFloss*>(
+      adapter_->GetDevice(FakeFlossAdapterClient::kPairedAddressLE));
+  ASSERT_TRUE(paired1);
+  ASSERT_TRUE(paired2);
+
+  // Should be paired and connected but not bonded.
+  EXPECT_TRUE(paired1->IsPaired());
+  EXPECT_TRUE(paired1->IsConnected());
+  EXPECT_TRUE(paired2->IsPaired());
+  EXPECT_TRUE(paired2->IsConnected());
+
+  EXPECT_FALSE(paired1->IsBondedImpl());
+  EXPECT_FALSE(paired2->IsBondedImpl());
 }
 
 TEST_F(BluetoothFlossTest, DisabledAdapterClearsDevices) {

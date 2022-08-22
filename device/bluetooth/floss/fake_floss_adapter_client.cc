@@ -23,6 +23,8 @@ FakeFlossAdapterClient::~FakeFlossAdapterClient() = default;
 
 const char FakeFlossAdapterClient::kBondedAddress1[] = "11:11:11:11:11:01";
 const char FakeFlossAdapterClient::kBondedAddress2[] = "11:11:11:11:11:02";
+const char FakeFlossAdapterClient::kPairedAddressBrEdr[] = "11:11:11:11:11:03";
+const char FakeFlossAdapterClient::kPairedAddressLE[] = "11:11:11:11:11:04";
 const char FakeFlossAdapterClient::kJustWorksAddress[] = "11:22:33:44:55:66";
 const char FakeFlossAdapterClient::kKeyboardAddress[] = "aa:aa:aa:aa:aa:aa";
 const char FakeFlossAdapterClient::kPhoneAddress[] = "bb:bb:bb:bb:bb:bb";
@@ -130,10 +132,22 @@ void FakeFlossAdapterClient::GetRemoteClass(ResponseCallback<uint32_t> callback,
 void FakeFlossAdapterClient::GetConnectionState(
     ResponseCallback<uint32_t> callback,
     const FlossDeviceId& device) {
+  FlossAdapterClient::ConnectionState conn_state =
+      FlossAdapterClient::ConnectionState::kDisconnected;
+
   // One of the bonded devices is already connected at the beginning.
-  uint32_t conn_state = (device.address == kBondedAddress1) ? 1 : 0;
+  // The Paired devices will also have paired states at the beginning.
+  if (device.address == kBondedAddress1) {
+    conn_state = FlossAdapterClient::ConnectionState::kConnectedOnly;
+  } else if (device.address == kPairedAddressBrEdr) {
+    conn_state = FlossAdapterClient::ConnectionState::kPairedBREDROnly;
+  } else if (device.address == kPairedAddressLE) {
+    conn_state = FlossAdapterClient::ConnectionState::kPairedLEOnly;
+  }
+
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), conn_state));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), static_cast<uint32_t>(conn_state)));
 }
 
 void FakeFlossAdapterClient::GetRemoteUuids(
@@ -215,6 +229,21 @@ void FakeFlossAdapterClient::GetBondedDevices() {
   for (const auto& device_id : known_devices) {
     for (auto& observer : observers_) {
       observer.AdapterFoundDevice(device_id);
+    }
+  }
+}
+
+void FakeFlossAdapterClient::GetConnectedDevices() {
+  std::vector<FlossDeviceId> connected_devices;
+  connected_devices.push_back(
+      FlossDeviceId({.address = kPairedAddressBrEdr, .name = "Paired BREDR"}));
+  connected_devices.push_back(
+      FlossDeviceId({.address = kPairedAddressLE, .name = "Paired LE"}));
+
+  for (const auto& device_id : connected_devices) {
+    for (auto& observer : observers_) {
+      observer.AdapterFoundDevice(device_id);
+      observer.AdapterDeviceConnected(device_id);
     }
   }
 }

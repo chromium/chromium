@@ -49,6 +49,7 @@ const char kSetPairingConfirmation[] = "SetPairingConfirmation";
 const char kSetPin[] = "SetPin";
 const char kSetPasskey[] = "SetPasskey";
 const char kGetBondedDevices[] = "GetBondedDevices";
+const char kGetConnectedDevices[] = "GetConnectedDevices";
 
 // TODO(abps) - Rename this to AdapterCallback in platform and here
 const char kCallbackInterface[] = "org.chromium.bluetooth.BluetoothCallback";

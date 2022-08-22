@@ -58,6 +58,14 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
     kBonded = 2,
   };
 
+  enum class ConnectionState {
+    kDisconnected = 0,
+    kConnectedOnly = 1,
+    kPairedBREDROnly = 3,
+    kPairedLEOnly = 5,
+    kPairedBoth = 7,
+  };
+
   enum class BtPropertyType {
     kBdName = 0x1,
     kBdAddr,
@@ -131,6 +139,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
 
   // Creates the instance.
   static std::unique_ptr<FlossAdapterClient> Create();
+
+  // Checks if a connection state indicates that it is paired.
+  static bool IsConnectionPaired(uint32_t connection_state);
 
   FlossAdapterClient(const FlossAdapterClient&) = delete;
   FlossAdapterClient& operator=(const FlossAdapterClient&) = delete;
@@ -229,6 +240,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   // Returns bonded devices.
   virtual void GetBondedDevices();
 
+  // Returns connected devices.
+  virtual void GetConnectedDevices();
+
   // Get the object path for this adapter.
   const dbus::ObjectPath* GetObjectPath() const { return &adapter_path_; }
 
@@ -300,8 +314,11 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
       dbus::MethodCall* method_call,
       dbus::ExportedObject::ResponseSender response_sender);
 
-  // Handle GetBondedDevices
+  // Handle GetBondedDevices.
   void OnGetBondedDevices(DBusResult<std::vector<FlossDeviceId>> ret);
+
+  // Handle GetConnectedDevices.
+  void OnGetConnectedDevices(DBusResult<std::vector<FlossDeviceId>> ret);
 
   // List of observers interested in event notifications from this client.
   base::ObserverList<Observer> observers_;

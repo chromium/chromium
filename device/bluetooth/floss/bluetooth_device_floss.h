@@ -106,9 +106,13 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   FlossDeviceId AsFlossDeviceId() const;
+  // Floss always distinguishes between IsBonded and IsPaired so provide
+  // a publicly accessible implementation.
+  bool IsBondedImpl() const;
   void SetName(const std::string& name);
   void SetBondState(FlossAdapterClient::BondState bond_state);
   void SetIsConnected(bool is_connected);
+  void SetConnectionState(uint32_t state);
   void ConnectAllEnabledProfiles();
   void ResetPairing();
   // Triggers the pending callback of Connect() method.
@@ -177,12 +181,15 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
       FlossAdapterClient::BondState::kNotBonded;
 
   // Whether the device is connected at link layer level (not profile level).
-  // Mirrors the connection state of Floss:
-  // 0 if not connected; 1 if connected and > 1 if connection is encrypted
+  // Updated via |SetIsConnected| only.
+  bool is_acl_connected_ = false;
+
+  // Similar to is_acl_connected_ but contains the full connection state
+  // (including encryption). This is updated when |SetConnectionState| is called
+  // or when |SetIsConnected| is called.
   // (https://android.googlesource.com/platform/system/bt/+/refs/heads/android10-c2f2-release/btif/src/btif_dm.cc#737),
-  // but squashing all connected states >= 1 as a single "connected" since it's
-  // not used in the Chrome layer.
-  bool is_connected_ = false;
+  // This is used for determining if the device is paired.
+  uint32_t connection_state_ = 0;
 
   // UI thread task runner and socket thread used to create sockets.
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;

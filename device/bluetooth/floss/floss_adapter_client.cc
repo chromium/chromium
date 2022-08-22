@@ -148,6 +148,13 @@ void FlossAdapterClient::GetBondedDevices() {
       adapter::kGetBondedDevices);
 }
 
+void FlossAdapterClient::GetConnectedDevices() {
+  CallAdapterMethod<std::vector<FlossDeviceId>>(
+      base::BindOnce(&FlossAdapterClient::OnGetConnectedDevices,
+                     weak_ptr_factory_.GetWeakPtr()),
+      adapter::kGetConnectedDevices);
+}
+
 void FlossAdapterClient::Init(dbus::Bus* bus,
                               const std::string& service_name,
                               const std::string& adapter_path) {
@@ -517,6 +524,23 @@ void FlossAdapterClient::OnGetBondedDevices(
   }
 }
 
+void FlossAdapterClient::OnGetConnectedDevices(
+    DBusResult<std::vector<FlossDeviceId>> ret) {
+  if (!ret.has_value()) {
+    LOG(ERROR) << "Error on GetConnectedDevices: " << ret.error();
+    return;
+  }
+
+  for (const auto& device_id : *ret) {
+    for (auto& observer : observers_) {
+      // This usually gets called at start-up. Thus, first send that it was
+      // found and then that it was connected.
+      observer.AdapterFoundDevice(device_id);
+      observer.AdapterDeviceConnected(device_id);
+    }
+  }
+}
+
 void FlossAdapterClient::OnBondStateChanged(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
@@ -601,6 +625,17 @@ void FlossAdapterClient::RemoveObserver(
 // static
 std::unique_ptr<FlossAdapterClient> FlossAdapterClient::Create() {
   return std::make_unique<FlossAdapterClient>();
+}
+
+// static
+bool FlossAdapterClient::IsConnectionPaired(uint32_t connection_state) {
+  uint32_t paired =
+      connection_state &
+      static_cast<uint32_t>(FlossAdapterClient::ConnectionState::kPairedBoth);
+
+  // Bit 0 indicates whether device is connected. Bit 1 and 2 indicate whether
+  // it is paired.
+  return (paired >> 1) != 0;
 }
 
 template <>

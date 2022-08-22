@@ -107,21 +107,18 @@ absl::optional<std::string> BluetoothDeviceFloss::GetName() const {
 }
 
 bool BluetoothDeviceFloss::IsPaired() const {
-  return bond_state_ == FlossAdapterClient::BondState::kBonded;
+  return IsBondedImpl() ||
+         FlossAdapterClient::IsConnectionPaired(connection_state_);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
 bool BluetoothDeviceFloss::IsBonded() const {
-  // TODO(b/220387308): Update the implementation to return whether the device
-  // is bonded, and not just whether it is paired.
-  NOTIMPLEMENTED();
-
-  return IsPaired();
+  return IsBondedImpl();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool BluetoothDeviceFloss::IsConnected() const {
-  return is_connected_;
+  return is_acl_connected_;
 }
 
 bool BluetoothDeviceFloss::IsGattConnected() const {
@@ -351,7 +348,25 @@ void BluetoothDeviceFloss::SetBondState(
 }
 
 void BluetoothDeviceFloss::SetIsConnected(bool is_connected) {
-  is_connected_ = is_connected;
+  is_acl_connected_ = is_connected;
+
+  // Update connection state to "ConnectedOnly" if it was previously
+  // disconnected and we are now connected. Also, update any connection state
+  // back to disconnected if acl state disconnects.
+  if (is_acl_connected_ &&
+      connection_state_ ==
+          static_cast<uint32_t>(
+              FlossAdapterClient::ConnectionState::kDisconnected)) {
+    connection_state_ = static_cast<uint32_t>(
+        FlossAdapterClient::ConnectionState::kConnectedOnly);
+  } else if (!is_acl_connected_) {
+    connection_state_ = static_cast<uint32_t>(
+        FlossAdapterClient::ConnectionState::kDisconnected);
+  }
+}
+
+void BluetoothDeviceFloss::SetConnectionState(uint32_t connection_state) {
+  connection_state_ = connection_state;
 }
 
 void BluetoothDeviceFloss::ConnectAllEnabledProfiles() {
@@ -385,6 +400,10 @@ BluetoothDeviceFloss::BluetoothDeviceFloss(
       ui_task_runner_(ui_task_runner),
       socket_thread_(socket_thread) {
   // TODO(abps): Add observers and cache data here.
+}
+
+bool BluetoothDeviceFloss::IsBondedImpl() const {
+  return bond_state_ == FlossAdapterClient::BondState::kBonded;
 }
 
 void BluetoothDeviceFloss::ConnectInternal(ConnectCallback callback) {

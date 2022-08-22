@@ -60,6 +60,7 @@ extern DEVICE_BLUETOOTH_EXPORT const char kSetPairingConfirmation[];
 extern DEVICE_BLUETOOTH_EXPORT const char kSetPin[];
 extern DEVICE_BLUETOOTH_EXPORT const char kSetPasskey[];
 extern DEVICE_BLUETOOTH_EXPORT const char kGetBondedDevices[];
+extern DEVICE_BLUETOOTH_EXPORT const char kGetConnectedDevices[];
 
 extern DEVICE_BLUETOOTH_EXPORT const char kOnAdapterPropertyChanged[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnAddressChanged[];

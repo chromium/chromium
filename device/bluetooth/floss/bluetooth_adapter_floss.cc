@@ -138,6 +138,7 @@ void BluetoothAdapterFloss::RemoveAdapter() {
 
 void BluetoothAdapterFloss::PopulateInitialDevices() {
   FlossDBusManager::Get()->GetAdapterClient()->GetBondedDevices();
+  FlossDBusManager::Get()->GetAdapterClient()->GetConnectedDevices();
 }
 
 void BluetoothAdapterFloss::ClearAllDevices() {
@@ -402,8 +403,14 @@ void BluetoothAdapterFloss::OnGetConnectionState(const FlossDeviceId& device_id,
 
   // Connected if connection state >= 1:
   // https://android.googlesource.com/platform/packages/modules/Bluetooth/+/84eff3217e552cbb3399e6deecdfce6748ae34ef/system/btif/src/btif_dm.cc#693
-  device->SetIsConnected(*ret >= 1);
-  NotifyDeviceConnectedStateChanged(device, device->IsConnected());
+  device->SetConnectionState(*ret);
+
+  // If the state is different than what is currently stored, update it.
+  if ((*ret >= 1) != device->IsConnected()) {
+    device->SetIsConnected(*ret >= 1);
+    NotifyDeviceChanged(device);
+    NotifyDeviceConnectedStateChanged(device, device->IsConnected());
+  }
 }
 
 void BluetoothAdapterFloss::OnGetBondState(const FlossDeviceId& device_id,
@@ -680,6 +687,13 @@ void BluetoothAdapterFloss::AdapterDeviceConnected(
                  << device_id.address;
     return;
   }
+
+  // TODO(b/220387308): Querying connection state after connection can be racy
+  // with pairing state. We may need a separate pairing callback from Floss.
+  FlossDBusManager::Get()->GetAdapterClient()->GetConnectionState(
+      base::BindOnce(&BluetoothAdapterFloss::OnGetConnectionState,
+                     weak_ptr_factory_.GetWeakPtr(), device_id),
+      device_id);
 
   device->SetIsConnected(true);
   NotifyDeviceChanged(device);
