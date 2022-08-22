@@ -19,7 +19,6 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 
 #include "base/android/callback_android.h"
-#include "base/android/jni_string.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
@@ -30,15 +29,12 @@
 #include "components/google/core/common/google_util.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
-#include "components/prefs/pref_service.h"
-#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/storage_partition.h"
-#include "google_apis/gaia/gaia_auth_util.h"
 
 using base::android::JavaParamRef;
 
