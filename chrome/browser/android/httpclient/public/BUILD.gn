@@ -6,7 +6,7 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
-    "src/org/chromium/chrome/browser/android/httpclient/HttpClient.java",
+    "src/org/chromium/chrome/browser/android/httpclient/ChromeHttpClient.java",
     "src/org/chromium/chrome/browser/android/httpclient/HttpResponseCallback.java",
   ]
 

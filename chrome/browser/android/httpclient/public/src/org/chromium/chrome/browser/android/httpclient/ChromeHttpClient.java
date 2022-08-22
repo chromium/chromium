@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.android.httpclient;
 import java.util.Map;
 
 /** A simple HttpClient interface. */
-public interface HttpClient {
+public interface ChromeHttpClient {
     void send(String url, String requestType, byte[] body, Map<String, String> headers,
             HttpResponseCallback responseCallback);
 }

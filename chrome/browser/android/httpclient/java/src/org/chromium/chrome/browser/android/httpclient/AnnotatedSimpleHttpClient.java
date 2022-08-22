@@ -18,7 +18,7 @@ import java.util.Map;
  * that does not know about chrome's network stack.
  *
  */
-public class AnnotatedSimpleHttpClient implements HttpClient {
+public class AnnotatedSimpleHttpClient implements ChromeHttpClient {
     private NetworkTrafficAnnotationTag mAnnotation;
 
     public AnnotatedSimpleHttpClient(NetworkTrafficAnnotationTag annotation) {
