@@ -36,8 +36,8 @@ namespace {
 // New fields must be added to BuildIndexJson().
 constexpr char kInstalledWebApps[] = "InstalledWebApps";
 constexpr char kPreinstalledWebAppConfigs[] = "PreinstalledWebAppConfigs";
-constexpr char kPreinstalledAppsUninstalledByUserConfigs[] =
-    "PreinstalledAppsUninstalledByUserConfigs";
+constexpr char kUserUninstalledPreinstalledWebAppPrefs[] =
+    "UserUninstalledPreinstalledWebAppPrefs";
 constexpr char kExternallyManagedWebAppPrefs[] = "ExternallyManagedWebAppPrefs";
 constexpr char kCommandManager[] = "CommandManager";
 constexpr char kIconErrorLog[] = "IconErrorLog";
@@ -65,7 +65,7 @@ base::Value BuildIndexJson() {
 
   index.Append(kInstalledWebApps);
   index.Append(kPreinstalledWebAppConfigs);
-  index.Append(kPreinstalledAppsUninstalledByUserConfigs);
+  index.Append(kUserUninstalledPreinstalledWebAppPrefs);
   index.Append(kExternallyManagedWebAppPrefs);
   index.Append(kCommandManager);
   index.Append(kIconErrorLog);
@@ -194,9 +194,9 @@ base::Value BuildExternallyManagedWebAppPrefsJson(Profile* profile) {
   return root;
 }
 
-base::Value BuildPreinstalledAppsUninstalledByUserJson(Profile* profile) {
+base::Value BuildUserUninstalledPreinstalledWebAppPrefsJson(Profile* profile) {
   base::Value::Dict root;
-  root.Set(kPreinstalledAppsUninstalledByUserConfigs,
+  root.Set(kUserUninstalledPreinstalledWebAppPrefs,
            profile->GetPrefs()
                ->GetValueDict(prefs::kUserUninstalledPreinstalledWebAppPref)
                .Clone());
@@ -327,8 +327,8 @@ void WebAppInternalsSource::BuildWebAppInternalsJson(
   root.Append(BuildIndexJson());
   root.Append(BuildInstalledWebAppsJson(*provider));
   root.Append(BuildPreinstalledWebAppConfigsJson(*provider));
+  root.Append(BuildUserUninstalledPreinstalledWebAppPrefsJson(profile));
   root.Append(BuildExternallyManagedWebAppPrefsJson(profile));
-  root.Append(BuildPreinstalledAppsUninstalledByUserJson(profile));
   root.Append(BuildCommandManagerJson(*provider));
   root.Append(BuildIconErrorLogJson(*provider));
   root.Append(BuildInstallProcessErrorLogJson(*provider));
