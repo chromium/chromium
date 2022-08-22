@@ -178,8 +178,13 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   class AutofillPopupViewPtr {
    public:
     AutofillPopupViewPtr() = default;
-    AutofillPopupViewPtr(nullptr_t) : ptr_(nullptr) {}
-    AutofillPopupViewPtr(AutofillPopupView* ptr) : ptr_(ptr) {}
+    AutofillPopupViewPtr(const AutofillPopupViewPtr&) = delete;
+    AutofillPopupViewPtr& operator=(const AutofillPopupViewPtr&) = delete;
+
+    AutofillPopupViewPtr& operator=(AutofillPopupView* ptr) {
+      ptr_ = ptr;
+      return *this;
+    }
 
     explicit operator bool() const { return ptr_; }
 
@@ -228,7 +233,7 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
 
   PopupControllerCommon controller_common_;
   raw_ptr<content::WebContents> web_contents_;
-  AutofillPopupViewPtr view_ = nullptr;  // Weak reference.
+  AutofillPopupViewPtr view_;
   base::WeakPtr<AutofillPopupDelegate> delegate_;
 
   // If set to true, the popup will never be hidden because of stale data or if
