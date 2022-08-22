@@ -19,7 +19,6 @@ namespace cc {
 class Animation;
 class AnimationHost;
 class AnimationTimeline;
-class PropertyTrees;
 
 // Contains an AnimationTimeline and its Animation that owns the impl
 // only scroll offset animations running on a particular CC Layer.
@@ -62,10 +61,7 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationsImpl
                                       const gfx::Vector2dF& adjustment);
 
   void ScrollAnimationAbort(bool needs_completion);
-
-  // Checks whether the animating element has been removed from property
-  // trees, and handles the case when it has.
-  void OnCommit(const PropertyTrees& property_trees);
+  void AnimatingElementRemovedByCommit();
 
   // AnimationDelegate implementation.
   void NotifyAnimationStarted(base::TimeTicks monotonic_time,
@@ -95,8 +91,6 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationsImpl
 
   void ReattachScrollOffsetAnimationIfNeeded(ElementId element_id);
 
-  void AnimatingElementRemovedByCommit();
-
   raw_ptr<AnimationHost> animation_host_;
   scoped_refptr<AnimationTimeline> scroll_offset_timeline_;
 
@@ -104,8 +98,6 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationsImpl
   // I.e. only one element can have an impl-only scroll offset animation at
   // any given time.
   scoped_refptr<Animation> scroll_offset_animation_;
-
-  bool animating_element_removed_by_commit_ = false;
 };
 
 }  // namespace cc

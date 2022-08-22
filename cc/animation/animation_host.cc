@@ -347,10 +347,6 @@ void AnimationHost::PushPropertiesTo(MutatorHost* mutator_host_impl,
     // This is redundant but used in tests.
     host_impl->needs_push_properties_.Write(*host_impl) = false;
   }
-
-  DCHECK(host_impl->scroll_offset_animations_impl_.Read(*host_impl));
-  host_impl->scroll_offset_animations_impl_.Write(*host_impl)
-      ->OnCommit(property_trees);
 }
 
 void AnimationHost::PushTimelinesToImplThread(AnimationHost* host_impl) const {
@@ -754,6 +750,11 @@ ElementId AnimationHost::ImplOnlyScrollAnimatingElement() const {
     return ElementId();
 
   return scroll_offset_animations_impl_.Read(*this)->GetElementId();
+}
+
+void AnimationHost::ImplOnlyScrollAnimatingElementRemoved() {
+  scroll_offset_animations_impl_.Write(*this)
+      ->AnimatingElementRemovedByCommit();
 }
 
 void AnimationHost::AddToTicking(scoped_refptr<Animation> animation) {
