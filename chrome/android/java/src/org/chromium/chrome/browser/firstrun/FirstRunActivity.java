@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.firstrun;
 
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -621,7 +622,8 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
     @Override
     public boolean canUseLandscapeLayout() {
-        return true;
+        return !getResources().getConfiguration().isLayoutSizeAtLeast(
+                Configuration.SCREENLAYOUT_SIZE_LARGE);
     }
 
     @VisibleForTesting
