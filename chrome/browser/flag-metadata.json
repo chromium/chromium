@@ -5877,7 +5877,7 @@
   {
     "name": "show-metered-toggle",
     "owners": [ "stevenjb", "azeemarshad", "cros-connectivity@google.com" ],
-    "expiry_milestone": 106
+    "expiry_milestone": 122
   },
   {
     "name": "show-overdraw-feedback",
