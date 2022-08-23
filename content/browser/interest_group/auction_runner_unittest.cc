@@ -1582,6 +1582,11 @@ class AuctionRunnerTest : public testing::Test,
       auction_config.per_buyer_experiment_group_ids[kv.first] = kv.second;
     }
 
+    auction_config.non_shared_params.all_buyers_group_limit =
+        all_buyers_group_limit_;
+    auction_config.non_shared_params.all_buyers_priority_signals =
+        all_buyers_priority_signals_;
+
     return auction_config;
   }
 
@@ -2038,6 +2043,10 @@ class AuctionRunnerTest : public testing::Test,
   absl::optional<uint16_t> seller_experiment_group_id_;
   absl::optional<uint16_t> all_buyer_experiment_group_id_;
   std::map<url::Origin, uint16_t> per_buyer_experiment_group_id_;
+  uint16_t all_buyers_group_limit_ = std::numeric_limits<std::uint16_t>::max();
+  absl::optional<base::flat_map<std::string, double>>
+      all_buyers_priority_signals_;
+
   const url::Origin top_frame_origin_ =
       url::Origin::Create(GURL("https://publisher1.com"));
   const url::Origin frame_origin_ =
@@ -7804,6 +7813,171 @@ TEST_F(AuctionRunnerTest, ExecutionModeGroupByOrigin) {
   ASSERT_TRUE(result_.winning_group_id);
   EXPECT_THAT(result_.report_urls,
               testing::ElementsAre(GURL("https://adplatform.com/metrics/5")));
+}
+
+// Auction with only one interest group participating. The priority calculated
+// using its priority vector is negative, so it should be filtered out, and
+// there should be no winner.
+TEST_F(AuctionRunnerTest, PriorityVectorFiltersOnlyGroup) {
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         MakeBidScriptSupportsTie());
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
+  // Priority should be 1 * -1 = -1.
+  bidders.back().interest_group.priority_vector = {
+      {{"browserSignals.one", -1}}};
+
+  RunAuctionAndWait(kSellerUrl, std::move(bidders));
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+  EXPECT_EQ(result_.winning_group_id, absl::nullopt);
+  EXPECT_EQ(result_.ad_url, absl::nullopt);
+
+  // No interest groups participated in the auction.
+  CheckHistograms(InterestGroupAuction::AuctionResult::kNoInterestGroups,
+                  /*expected_interest_groups=*/0,
+                  /*expected_owners=*/1,
+                  /*expected_sellers=*/0);
+}
+
+// Check that when the priority vector calculation results in a zero priority,
+// the interest group is not filtered.
+TEST_F(AuctionRunnerTest, PriorityVectorZeroPriorityNotFiltered) {
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         MakeBidScriptSupportsTie());
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, /*bid=*/"1", "https://ad1.com/",
+                    /*num_ad_components=*/0, kBidder1, kBidder1Name));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScript());
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
+  // Priority should be 0.
+  bidders.back().interest_group.priority_vector = {{{"browserSignals.one", 0}}};
+
+  RunAuctionAndWait(kSellerUrl, std::move(bidders));
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+  EXPECT_EQ(InterestGroupKey(kBidder1, kBidder1Name), result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
+
+  // No interest groups participated in the auction.
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
+                  /*expected_interest_groups=*/1,
+                  /*expected_owners=*/1,
+                  /*expected_sellers=*/1);
+}
+
+// Check that both empty and null priority signals vectors are ignored.
+TEST_F(AuctionRunnerTest, EmptyPriorityVector) {
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         MakeBidScriptSupportsTie());
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, /*bid=*/"1", "https://ad1.com/",
+                    /*num_ad_components=*/0, kBidder1, kBidder1Name));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScript());
+
+  for (bool use_empty_priority_signals : {false, true}) {
+    std::vector<StorageInterestGroup> bidders;
+    // A higher priority interest group that has a null / empty priority vector.
+    // The priority vector should be ignored, resulting in only this bidder
+    // participating in the auction.
+    bidders.emplace_back(MakeInterestGroup(
+        kBidder1, kBidder1Name, kBidder1Url,
+        /*trusted_bidding_signals_url=*/absl::nullopt,
+        /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
+    bidders.back().interest_group.priority = 10;
+    if (use_empty_priority_signals)
+      bidders.back().interest_group.priority_vector = {};
+
+    // A lower priority interest group with a priority greater than 0 (which
+    // is what multiplying an empty priority vector would result in).
+    const GURL kBidder1OtherUrl = GURL("https://adplatform.com/other_ad.js");
+    bidders.emplace_back(MakeInterestGroup(
+        kBidder1, "other-bidder-1-group", kBidder1OtherUrl,
+        /*trusted_bidding_signals_url=*/absl::nullopt,
+        /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com")));
+    bidders.back().interest_group.priority = 1;
+
+    all_buyers_group_limit_ = 1;
+
+    RunAuctionAndWait(kSellerUrl, std::move(bidders));
+    EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+    EXPECT_EQ(InterestGroupKey(kBidder1, kBidder1Name),
+              result_.winning_group_id);
+    EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
+    // No request should have been made for the other URL.
+    EXPECT_FALSE(url_loader_factory_.IsPending(kBidder1OtherUrl.spec()));
+
+    // The second interest group is not counted as having participated in the
+    // auction.
+    CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
+                    /*expected_interest_groups=*/1, /*expected_owners=*/1,
+                    /*expected_sellers=*/1);
+  }
+}
+
+// Run an auction where there are two interest groups with the same owner, and a
+// limit of one interest group per buyer. One group has a higher base priority,
+// but the other group has a higher priority after the priority vector is taken
+// into account, so should be the only bidder to participate in the auction.
+TEST_F(AuctionRunnerTest, PriorityVector) {
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kBidder1Url,
+                                         MakeBidScriptSupportsTie());
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, /*bid=*/"1", "https://ad1.com/",
+                    /*num_ad_components=*/0, kBidder1, kBidder1Name));
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         MakeAuctionScript());
+  std::vector<StorageInterestGroup> bidders;
+
+  // A low priority interest group with a priority vector that results in a high
+  // priority after multiplication.
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
+  // Priority should be -1 * -10 = 10.
+  bidders.back().interest_group.priority = -1;
+  bidders.back().interest_group.priority_vector = {
+      {{"browserSignals.basePriority", -10}}};
+
+  // A higher priority interest group that should end up being filtered out due
+  // to having a lower (but non-negative) priority after the vector
+  // multiplication.
+  const GURL kBidder1OtherUrl = GURL("https://adplatform.com/other_ad.js");
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, "other-bidder-1-group", kBidder1OtherUrl,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad2.com")));
+  // Priority should be 1 * 1 = 1.
+  bidders.back().interest_group.priority = 1;
+  bidders.back().interest_group.priority_vector = {
+      {{"browserSignals.basePriority", 1}}};
+
+  all_buyers_group_limit_ = 1;
+
+  RunAuctionAndWait(kSellerUrl, std::move(bidders));
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+  EXPECT_EQ(InterestGroupKey(kBidder1, kBidder1Name), result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
+  // No request should have been made for the other URL.
+  EXPECT_FALSE(url_loader_factory_.IsPending(kBidder1OtherUrl.spec()));
+
+  // The second interest group is not counted as having participated in the
+  // auction.
+  CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
+                  /*expected_interest_groups=*/1, /*expected_owners=*/1,
+                  /*expected_sellers=*/1);
 }
 
 // Enable and test forDebuggingOnly.reportAdAuctionLoss() and

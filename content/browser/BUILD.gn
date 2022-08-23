@@ -1122,6 +1122,8 @@ source_set("browser") {
     "interest_group/interest_group_permissions_cache.h",
     "interest_group/interest_group_permissions_checker.cc",
     "interest_group/interest_group_permissions_checker.h",
+    "interest_group/interest_group_priority_util.cc",
+    "interest_group/interest_group_priority_util.h",
     "interest_group/interest_group_storage.cc",
     "interest_group/interest_group_storage.h",
     "interest_group/interest_group_update.cc",

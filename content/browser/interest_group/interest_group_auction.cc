@@ -33,6 +33,7 @@
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/debuggable_auction_worklet.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
+#include "content/browser/interest_group/interest_group_priority_util.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
@@ -94,26 +95,26 @@ bool IsValidBid(double bid) {
   return !std::isnan(bid) && std::isfinite(bid) && bid > 0;
 }
 
-struct StorageInterestGroupDescByPriority {
-  bool operator()(const StorageInterestGroup& a,
-                  const StorageInterestGroup& b) {
-    return a.interest_group.priority > b.interest_group.priority;
+struct BidStatesDescByPriority {
+  bool operator()(const InterestGroupAuction::BidState& a,
+                  const InterestGroupAuction::BidState& b) {
+    return a.calculated_priority > b.calculated_priority;
   }
-  bool operator()(const StorageInterestGroup& a, double b_priority) {
-    return a.interest_group.priority > b_priority;
+  bool operator()(const InterestGroupAuction::BidState& a, double b_priority) {
+    return a.calculated_priority > b_priority;
   }
-  bool operator()(double a_priority, const StorageInterestGroup& b) {
-    return a_priority > b.interest_group.priority;
+  bool operator()(double a_priority, const InterestGroupAuction::BidState& b) {
+    return a_priority > b.calculated_priority;
   }
 };
 
-struct StorageInterestGroupDescByPriorityAndGroupByJoinOrigin {
-  bool operator()(const StorageInterestGroup& a,
-                  const StorageInterestGroup& b) {
-    return std::tie(a.interest_group.priority, a.joining_origin,
-                    a.interest_group.execution_mode) >
-           std::tie(b.interest_group.priority, b.joining_origin,
-                    b.interest_group.execution_mode);
+struct BidStatesDescByPriorityAndGroupByJoinOrigin {
+  bool operator()(const InterestGroupAuction::BidState& a,
+                  const InterestGroupAuction::BidState& b) {
+    return std::tie(a.calculated_priority, a.bidder.joining_origin,
+                    a.bidder.interest_group.execution_mode) >
+           std::tie(b.calculated_priority, b.bidder.joining_origin,
+                    b.bidder.interest_group.execution_mode);
   }
 };
 
@@ -127,6 +128,9 @@ InterestGroupAuction::BidState::~BidState() {
 }
 
 InterestGroupAuction::BidState::BidState(BidState&&) = default;
+
+InterestGroupAuction::BidState& InterestGroupAuction::BidState::operator=(
+    BidState&&) = default;
 
 void InterestGroupAuction::BidState::BeginTracing() {
   DCHECK(!trace_id.has_value());
@@ -209,6 +213,31 @@ class InterestGroupAuction::BuyerHelper
       : auction_(auction), owner_(interest_groups[0].interest_group.owner) {
     DCHECK(!interest_groups.empty());
 
+    // Move interest groups to `bid_states_` and update priorities using
+    // `priority_vector`, if present. Delete groups where the calculation
+    // results in a priority < 0.
+    for (auto& bidder : interest_groups) {
+      double priority = bidder.interest_group.priority;
+
+      if (bidder.interest_group.priority_vector &&
+          !bidder.interest_group.priority_vector->empty()) {
+        priority = CalculateInterestGroupPriority(
+            *auction_->config_, bidder.interest_group,
+            *bidder.interest_group.priority_vector);
+        // Only filter interest groups with priority < 0 if the negative
+        // priority is the result of a `priority_vector` multiplication.
+        //
+        // TODO(mmenke): If we can make this the standard behavior for the
+        // `priority` field as well, the API would be more consistent.
+        if (priority < 0)
+          continue;
+      }
+
+      bid_states_.emplace_back();
+      bid_states_.back().bidder = std::move(bidder);
+      bid_states_.back().calculated_priority = priority;
+    }
+
     size_t size_limit =
         auction_->config_->non_shared_params.all_buyers_group_limit;
     const auto limit_iter =
@@ -218,38 +247,31 @@ class InterestGroupAuction::BuyerHelper
         auction_->config_->non_shared_params.per_buyer_group_limits.cend()) {
       size_limit = static_cast<size_t>(limit_iter->second);
     }
-    size_limit = std::min(interest_groups.size(), size_limit);
-    if (size_limit == 0)
+    size_limit = std::min(bid_states_.size(), size_limit);
+    if (size_limit == 0) {
+      bid_states_.clear();
       return;
+    }
 
     // Sort by descending priority, also grouping entries within each priority
     // band to permit context reuse if the executionMode allows it.
-    std::sort(interest_groups.begin(), interest_groups.end(),
-              StorageInterestGroupDescByPriorityAndGroupByJoinOrigin());
+    std::sort(bid_states_.begin(), bid_states_.end(),
+              BidStatesDescByPriorityAndGroupByJoinOrigin());
     // Randomize order of interest groups with lowest allowed priority. This
     // effectively performs a random sample among interest groups with the same
     // priority.
-    double min_priority =
-        interest_groups[size_limit - 1].interest_group.priority;
-    auto rand_begin =
-        std::lower_bound(interest_groups.begin(), interest_groups.end(),
-                         min_priority, StorageInterestGroupDescByPriority());
-    auto rand_end =
-        std::upper_bound(rand_begin, interest_groups.end(), min_priority,
-                         StorageInterestGroupDescByPriority());
+    double min_priority = bid_states_[size_limit - 1].calculated_priority;
+    auto rand_begin = std::lower_bound(bid_states_.begin(), bid_states_.end(),
+                                       min_priority, BidStatesDescByPriority());
+    auto rand_end = std::upper_bound(rand_begin, bid_states_.end(),
+                                     min_priority, BidStatesDescByPriority());
     base::RandomShuffle(rand_begin, rand_end);
-    interest_groups.resize(size_limit);
+    bid_states_.resize(size_limit);
 
     // Restore the origin grouping within lowest priority band among the subset
     // that was kept after shuffling.
-    std::sort(rand_begin, interest_groups.end(),
-              StorageInterestGroupDescByPriorityAndGroupByJoinOrigin());
-
-    // Set up remaining interest groups to generate bids.
-    for (auto& bidder : interest_groups) {
-      bid_states_.emplace_back();
-      bid_states_.back().bidder = std::move(bidder);
-    }
+    std::sort(rand_begin, bid_states_.end(),
+              BidStatesDescByPriorityAndGroupByJoinOrigin());
   }
 
   ~BuyerHelper() override = default;

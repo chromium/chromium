@@ -154,8 +154,10 @@ class CONTENT_EXPORT InterestGroupAuction
 
   struct BidState {
     BidState();
-    BidState(BidState&&);
     ~BidState();
+
+    BidState(BidState&&);
+    BidState& operator=(BidState&&);
 
     // Disable copy and assign, since this struct owns a
     // auction_worklet::mojom::BiddingInterestGroupPtr, and mojo classes are not
@@ -172,6 +174,12 @@ class CONTENT_EXPORT InterestGroupAuction
     void EndTracing();
 
     StorageInterestGroup bidder;
+
+    // This starts off as the base priority of the interest group, but is
+    // updated by sparse vector multiplications using first the priority vector
+    // from the interest group, and then the one received from the trusted
+    // server, if appropriate.
+    double calculated_priority;
 
     // Holds a reference to the BidderWorklet, once created.
     std::unique_ptr<AuctionWorkletManager::WorkletHandle> worklet_handle;
@@ -707,7 +715,8 @@ class CONTENT_EXPORT InterestGroupAuction
   int num_owners_loaded_ = 0;
 
   // The number of buyers with InterestGroups participating in an auction.
-  // Includes buyers from nested component auctions. Double-counts buyers in
+  // Includes buyers from nested component auctions, but excludes buyers with
+  // no ads or no script URL. Double-counts buyers that participate in
   // multiple Auctions.
   int num_owners_with_interest_groups_ = 0;
 
