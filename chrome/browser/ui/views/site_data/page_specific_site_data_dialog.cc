@@ -143,18 +143,10 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
 
   void DeleteStoredObjects(const url::Origin& origin) {
     // TODO(crbug.com/1344787): Record metrics.
-    bool deleted_from_allowed = DeleteMatchingHostNodeFromModel(
-        allowed_cookies_tree_model_.get(), origin);
-    bool deleted_from_blocked = DeleteMatchingHostNodeFromModel(
-        blocked_cookies_tree_model_.get(), origin);
-    DCHECK(deleted_from_allowed || deleted_from_blocked)
-        << "The node with a matching origin should be found and deleted in one "
-           "of "
-           "the models";
-    DCHECK(deleted_from_allowed != deleted_from_blocked)
-        << "The node with a matching origin should be found and deleted in "
-           "ONLY "
-           "ONE of the models";
+    DCHECK(DeleteMatchingHostNodeFromModel(allowed_cookies_tree_model_.get(),
+                                           origin))
+        << "The node with a matching origin should be found and deleted in the "
+           "allowed model.";
   }
 
   void SetContentException(const url::Origin& origin, ContentSetting setting) {

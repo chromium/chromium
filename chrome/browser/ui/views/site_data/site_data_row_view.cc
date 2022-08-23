@@ -125,12 +125,14 @@ void SiteDataRowView::OnMenuIconClicked() {
   // TODO(crbug.com/1344787): Respect partitioned cookies state and provide
   // special options for it.
   auto builder = ui::DialogModel::Builder();
-  builder.AddMenuItem(
-      ui::ImageModel(), u"Delete",
-      base::BindRepeating(&SiteDataRowView::OnDeleteMenuItemClicked,
-                          base::Unretained(this)));
-
   if (setting_ != CONTENT_SETTING_BLOCK) {
+    // Provide delete option for the sites that aren't blocked.
+    builder.AddMenuItem(
+        ui::ImageModel(), u"Delete",
+        base::BindRepeating(&SiteDataRowView::OnDeleteMenuItemClicked,
+                            base::Unretained(this)));
+    // TODO(crbug.com/1344787): Consider clearing the data before blocking the
+    // site to have a clean slate.
     builder.AddMenuItem(
         ui::ImageModel(), u"Don't allow",
         base::BindRepeating(&SiteDataRowView::OnBlockMenuItemClicked,
@@ -163,6 +165,7 @@ void SiteDataRowView::OnDeleteMenuItemClicked(int event_flags) {
   // Hiding the view instead of trying to delete makes the lifecycle management
   // easier. All the related items to the dialog have the same lifecycle and are
   // created when dialog is shown and are deleted when the dialog is destroyed.
+  DCHECK_NE(setting_, CONTENT_SETTING_BLOCK);
   SetVisible(false);
   delete_callback_.Run(origin_);
 }

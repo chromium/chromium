@@ -174,6 +174,10 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, DeleteMenuItem) {
       GetViewByIdentifier(context, kPageSpecificSiteDataDialogRowForTesting);
   auto* row_view = static_cast<SiteDataRowView*>(view);
   EXPECT_TRUE(row_view->GetVisible());
+  // TODO(crbug.com/1344787): Remove changing state here after the actual state
+  // is shown in the UI.
+  ClickAllowMenuItem(row_view);
+  EXPECT_EQ(row_view->state_label_for_testing()->GetText(), u"Allowed");
   ClickDeleteMenuItem(row_view);
   EXPECT_FALSE(row_view->GetVisible());
   // TODO(crbug.com/1344787): Check the histograms value.
