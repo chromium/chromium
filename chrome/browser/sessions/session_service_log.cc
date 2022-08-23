@@ -20,6 +20,8 @@ constexpr char kStartEventDidLastSessionCrashKey[] = "crashed";
 constexpr char kRestoreEventWindowCountKey[] = "window_count";
 constexpr char kRestoreEventTabCountKey[] = "tab_count";
 constexpr char kRestoreEventErroredReadingKey[] = "errored_reading";
+constexpr char kRestoreInitiatedEventRestoreBrowserKey[] = "restore_browser";
+constexpr char kRestoreInitiatedEventSynchronousKey[] = "synchronous";
 constexpr char kExitEventWindowCountKey[] = "window_count";
 constexpr char kExitEventTabCountKey[] = "tab_count";
 constexpr char kExitEventIsFirstSessionServiceKey[] = "first_session_service";
@@ -30,7 +32,7 @@ constexpr char kWriteErrorEventUnrecoverableErrorCountKey[] =
 
 // This value is a balance between keeping too much in prefs, and the
 // ability to see the last few restarts.
-constexpr size_t kMaxEventCount = 12;
+constexpr size_t kMaxEventCount = 20;
 
 base::Value SerializeEvent(const SessionServiceEvent& event) {
   base::Value serialized_event(base::Value::Type::DICTIONARY);
@@ -67,6 +69,14 @@ base::Value SerializeEvent(const SessionServiceEvent& event) {
       serialized_event.SetIntKey(
           kWriteErrorEventUnrecoverableErrorCountKey,
           event.data.write_error.unrecoverable_error_count);
+      break;
+    case SessionServiceEventLogType::kRestoreCanceled:
+      break;
+    case SessionServiceEventLogType::kRestoreInitiated:
+      serialized_event.SetBoolKey(kRestoreInitiatedEventRestoreBrowserKey,
+                                  event.data.restore_initiated.restore_browser);
+      serialized_event.SetBoolKey(kRestoreInitiatedEventSynchronousKey,
+                                  event.data.restore_initiated.synchronous);
       break;
   }
   return serialized_event;
@@ -161,6 +171,18 @@ bool DeserializeEvent(const base::Value& serialized_event,
       }
       break;
     }
+    case SessionServiceEventLogType::kRestoreCanceled:
+      break;
+    case SessionServiceEventLogType::kRestoreInitiated: {
+      auto synchronous =
+          serialized_event.FindBoolKey(kRestoreInitiatedEventSynchronousKey);
+      event.data.restore_initiated.synchronous = synchronous && *synchronous;
+      auto restore_browser =
+          serialized_event.FindBoolKey(kRestoreInitiatedEventRestoreBrowserKey);
+      event.data.restore_initiated.restore_browser =
+          restore_browser && *restore_browser;
+      break;
+    }
   }
   return true;
 }
@@ -210,6 +232,17 @@ void LogSessionServiceExitEvent(Profile* profile,
   LogSessionServiceEvent(profile, event);
 }
 
+void LogSessionServiceRestoreInitiatedEvent(Profile* profile,
+                                            bool synchronous,
+                                            bool restore_browser) {
+  SessionServiceEvent event;
+  event.type = SessionServiceEventLogType::kRestoreInitiated;
+  event.time = base::Time::Now();
+  event.data.restore_initiated.synchronous = synchronous;
+  event.data.restore_initiated.restore_browser = restore_browser;
+  LogSessionServiceEvent(profile, event);
+}
+
 void LogSessionServiceRestoreEvent(Profile* profile,
                                    int window_count,
                                    int tab_count,
@@ -220,6 +253,13 @@ void LogSessionServiceRestoreEvent(Profile* profile,
   event.data.restore.window_count = window_count;
   event.data.restore.tab_count = tab_count;
   event.data.restore.encountered_error_reading = encountered_error_reading;
+  LogSessionServiceEvent(profile, event);
+}
+
+void LogSessionServiceRestoreCanceledEvent(Profile* profile) {
+  SessionServiceEvent event;
+  event.type = SessionServiceEventLogType::kRestoreCanceled;
+  event.time = base::Time::Now();
   LogSessionServiceEvent(profile, event);
 }
 

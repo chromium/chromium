@@ -55,10 +55,21 @@ std::string EventToString(const SessionServiceEvent& event) {
            base::NumberToString(event.data.exit.is_first_session_service),
            " did_schedule_command=",
            base::NumberToString(event.data.exit.did_schedule_command)});
+
     case SessionServiceEventLogType::kWriteError:
       return base::StrCat(
           {EventTimeToString(event), " write errors (",
            base::NumberToString(event.data.write_error.error_count), ")"});
+
+    case SessionServiceEventLogType::kRestoreCanceled:
+      return base::StrCat({EventTimeToString(event), " restore canceled"});
+
+    case SessionServiceEventLogType::kRestoreInitiated:
+      return base::StrCat(
+          {EventTimeToString(event), " restore initiated sync=",
+           base::NumberToString(event.data.restore_initiated.synchronous),
+           " restore_browser=",
+           base::NumberToString(event.data.restore_initiated.restore_browser)});
   }
 }
 

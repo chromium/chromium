@@ -324,8 +324,11 @@ class SessionRestoreImpl : public BrowserListObserver {
 
   // BrowserListObserver:
   void OnBrowserRemoved(Browser* browser) override {
-    if (browser == browser_)
+    if (browser == browser_) {
+      if (log_event_)
+        LogSessionServiceRestoreCanceledEvent(profile_);
       delete this;
+    }
   }
 
   Profile* profile() { return profile_; }
@@ -1059,6 +1062,9 @@ Browser* SessionRestore::RestoreSession(
   if (!profile->IsMainProfile())
     behavior &= ~RESTORE_APPS;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  LogSessionServiceRestoreInitiatedEvent(profile, (behavior & SYNCHRONOUS) != 0,
+                                         (behavior & RESTORE_BROWSER) != 0);
 
   // SessionRestoreImpl takes care of deleting itself when done.
   SessionRestoreImpl* restorer = new SessionRestoreImpl(

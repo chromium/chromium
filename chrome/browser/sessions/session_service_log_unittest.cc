@@ -109,6 +109,40 @@ TEST_F(SessionServiceLogTest, LogSessionServiceUnrecoverableWriteErrorEvent) {
   EXPECT_EQ(1, restored_event.data.write_error.unrecoverable_error_count);
 }
 
+TEST_F(SessionServiceLogTest, LogSessionServiceRestoreCanceledEvent) {
+  const base::Time start_time = base::Time::Now();
+  LogSessionServiceRestoreCanceledEvent(&testing_profile_);
+  auto events = GetSessionServiceEvents(&testing_profile_);
+  ASSERT_EQ(1u, events.size());
+  auto restored_event = *events.begin();
+  EXPECT_EQ(SessionServiceEventLogType::kRestoreCanceled, restored_event.type);
+  EXPECT_LE(start_time, restored_event.time);
+}
+
+TEST_F(SessionServiceLogTest, LogSessionServiceRestoreInitiatedEvent) {
+  const base::Time start_time = base::Time::Now();
+  LogSessionServiceRestoreInitiatedEvent(&testing_profile_,
+                                         /*synchronous=*/true,
+                                         /*restore_browser=*/false);
+  LogSessionServiceRestoreInitiatedEvent(&testing_profile_,
+                                         /*synchronous=*/false,
+                                         /*restore_browser=*/true);
+  auto events = GetSessionServiceEvents(&testing_profile_);
+  ASSERT_EQ(2u, events.size());
+  auto restored_event = *events.begin();
+  EXPECT_EQ(SessionServiceEventLogType::kRestoreInitiated, restored_event.type);
+  EXPECT_LE(start_time, restored_event.time);
+  EXPECT_TRUE(restored_event.data.restore_initiated.synchronous);
+  EXPECT_FALSE(restored_event.data.restore_initiated.restore_browser);
+
+  auto restored_event2 = *(++events.begin());
+  EXPECT_EQ(SessionServiceEventLogType::kRestoreInitiated,
+            restored_event2.type);
+  EXPECT_LE(start_time, restored_event2.time);
+  EXPECT_FALSE(restored_event2.data.restore_initiated.synchronous);
+  EXPECT_TRUE(restored_event2.data.restore_initiated.restore_browser);
+}
+
 TEST_F(SessionServiceLogTest, WriteErrorEventsCoalesce) {
   const base::Time start_time = base::Time::Now();
   LogSessionServiceWriteErrorEvent(&testing_profile_, false);
