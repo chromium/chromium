@@ -101,6 +101,11 @@ void AppPublisher::SetResizeLocked(const std::string& app_id, bool locked) {
   NOTIMPLEMENTED();
 }
 
+void AppPublisher::SetWindowMode(const std::string& app_id,
+                                 WindowMode window_mode) {
+  NOTIMPLEMENTED();
+}
+
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 void AppPublisher::Publish(AppPtr app) {
   if (!proxy_) {

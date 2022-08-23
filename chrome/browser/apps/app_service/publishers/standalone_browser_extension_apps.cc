@@ -252,6 +252,16 @@ void StandaloneBrowserExtensionApps::Uninstall(const std::string& app_id,
                          report_abuse);
 }
 
+void StandaloneBrowserExtensionApps::SetWindowMode(const std::string& app_id,
+                                                   WindowMode window_mode) {
+  // It is possible that Lacros is briefly unavailable, for example if it shuts
+  // down for an update.
+  if (!controller_.is_bound())
+    return;
+
+  controller_->SetWindowMode(app_id, window_mode);
+}
+
 void StandaloneBrowserExtensionApps::Connect(
     mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
     apps::mojom::ConnectOptionsPtr opts) {
@@ -437,13 +447,7 @@ void StandaloneBrowserExtensionApps::Uninstall(
 void StandaloneBrowserExtensionApps::SetWindowMode(
     const std::string& app_id,
     apps::mojom::WindowMode window_mode) {
-  // It is possible that Lacros is briefly unavailable, for example if it shuts
-  // down for an update.
-  if (!controller_.is_bound())
-    return;
-
-  controller_->SetWindowMode(app_id,
-                             ConvertMojomWindowModeToWindowMode(window_mode));
+  SetWindowMode(app_id, ConvertMojomWindowModeToWindowMode(window_mode));
 }
 
 void StandaloneBrowserExtensionApps::OpenNativeSettings(

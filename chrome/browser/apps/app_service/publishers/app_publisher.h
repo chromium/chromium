@@ -116,17 +116,40 @@ class AppPublisher {
                               const std::string& shortcut_id,
                               int64_t display_id) {}
 
+  // Sets |permission| for an app identified with |app_id|. Implemented if the
+  // publisher supports per-app permissions that are exposed in App Management.
   virtual void SetPermission(const std::string& app_id,
                              PermissionPtr permission);
 
+  // Directly uninstalls an app identified by |app_id| without prompting the
+  // user. |uninstall_source| indicates where the uninstallation came from.
+  // |clear_site_data| is available for web apps only. If true, any site
+  // data associated with the app will be removed.
+  // |report_abuse| is available for Chrome Apps only. If true, the app will be
+  // reported for abuse to the Chrome Web Store.
   virtual void Uninstall(const std::string& app_id,
                          UninstallSource uninstall_source,
                          bool clear_site_data,
                          bool report_abuse);
 
-  void PauseApp(const std::string& app_id);
-  void UnpauseApp(const std::string& app_id);
+  // Requests that the app identified by |app_id| is marked as paused. Paused
+  // apps cannot be launched. Implemented if the publisher supports the pausing
+  // of apps, and otherwise should do nothing.
+  //
+  // Publishers are expected to update the app icon when it is paused to apply
+  // the kPaused icon effect. Nothing should happen if an already paused app
+  // is paused again.
+  virtual void PauseApp(const std::string& app_id);
 
+  // Requests that the app identified by |app_id| is unpaused. Implemented if
+  // the publisher supports the pausing of apps, and otherwise should do
+  // nothing.
+  //
+  // Publishers are expected to update the app icon to remove the kPaused
+  // icon effect. Nothing should happen if an unpaused app is unpaused again.
+  virtual void UnpauseApp(const std::string& app_id);
+
+  // Stops all running instances of |app_id|.
   virtual void StopApp(const std::string& app_id);
 
   virtual void ExecuteContextMenuCommand(const std::string& app_id,
@@ -134,6 +157,13 @@ class AppPublisher {
                                          const std::string& shortcut_id,
                                          int64_t display_id);
 
+  // Opens the platform-specific settings page for the app identified by
+  // |app_id|, e.g. the Android Settings app for an ARC app, or the Chrome
+  // browser settings for a web app. Implemented if those settings exist and
+  // need to be accessible to users. Note this is not the same as the Chrome
+  // OS-wide App Management page, which should be used by default. This method
+  // should only be used in cases where settings must be accessed that are not
+  // available in App Management.
   virtual void OpenNativeSettings(const std::string& app_id);
 
   // Indicates that the app identified by |app_id| has been set as a preferred
@@ -155,7 +185,16 @@ class AppPublisher {
   virtual void OnSupportedLinksPreferenceChanged(const std::string& app_id,
                                                  bool open_in_app) {}
 
+  // Enables resize lock mode for the app identified by |app_id|. When |locked|
+  // is kTrue, this means the app cannot be resized and is locked to a certain
+  // set of dimensions. Implemented if the publisher supports resize locking of
+  // apps, and otherwise should do nothing.
   virtual void SetResizeLocked(const std::string& app_id, bool locked);
+
+  // Set the window display mode for the app identified by |app_id|. Implemented
+  // if the publisher supports changing the window mode of apps, and otherwise
+  // should do nothing.
+  virtual void SetWindowMode(const std::string& app_id, WindowMode window_mode);
 
  protected:
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)

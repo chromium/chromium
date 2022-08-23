@@ -187,6 +187,15 @@ void WebAppsCrosapi::Uninstall(const std::string& app_id,
                          report_abuse);
 }
 
+void WebAppsCrosapi::SetWindowMode(const std::string& app_id,
+                                   WindowMode window_mode) {
+  if (!LogIfNotConnected(FROM_HERE)) {
+    return;
+  }
+
+  controller_->SetWindowMode(app_id, window_mode);
+}
+
 void WebAppsCrosapi::Connect(
     mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
     apps::mojom::ConnectOptionsPtr opts) {
@@ -382,12 +391,7 @@ void WebAppsCrosapi::OpenNativeSettings(const std::string& app_id) {
 
 void WebAppsCrosapi::SetWindowMode(const std::string& app_id,
                                    apps::mojom::WindowMode window_mode) {
-  if (!LogIfNotConnected(FROM_HERE)) {
-    return;
-  }
-
-  controller_->SetWindowMode(app_id,
-                             ConvertMojomWindowModeToWindowMode(window_mode));
+  SetWindowMode(app_id, ConvertMojomWindowModeToWindowMode(window_mode));
 }
 
 void WebAppsCrosapi::ExecuteContextMenuCommand(const std::string& app_id,

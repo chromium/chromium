@@ -104,6 +104,8 @@ class StandaloneBrowserExtensionApps : public KeyedService,
                  UninstallSource uninstall_source,
                  bool clear_site_data,
                  bool report_abuse) override;
+  void SetWindowMode(const std::string& app_id,
+                     WindowMode window_mode) override;
 
   // apps::PublisherBase:
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,

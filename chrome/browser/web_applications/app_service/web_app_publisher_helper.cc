@@ -1184,17 +1184,17 @@ apps::WindowMode WebAppPublisherHelper::GetWindowMode(
 }
 
 void WebAppPublisherHelper::SetWindowMode(const std::string& app_id,
-                                          apps::mojom::WindowMode window_mode) {
+                                          apps::WindowMode window_mode) {
   auto user_display_mode = UserDisplayMode::kStandalone;
   switch (window_mode) {
-    case apps::mojom::WindowMode::kBrowser:
+    case apps::WindowMode::kBrowser:
       user_display_mode = UserDisplayMode::kBrowser;
       break;
-    case apps::mojom::WindowMode::kUnknown:
-    case apps::mojom::WindowMode::kWindow:
+    case apps::WindowMode::kUnknown:
+    case apps::WindowMode::kWindow:
       user_display_mode = UserDisplayMode::kStandalone;
       break;
-    case apps::mojom::WindowMode::kTabbedWindow:
+    case apps::WindowMode::kTabbedWindow:
       user_display_mode = UserDisplayMode::kTabbed;
       break;
   }

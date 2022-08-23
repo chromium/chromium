@@ -183,8 +183,7 @@ void LacrosWebAppsController::OpenNativeSettings(const std::string& app_id) {
 
 void LacrosWebAppsController::SetWindowMode(const std::string& app_id,
                                             apps::WindowMode window_mode) {
-  return publisher_helper().SetWindowMode(
-      app_id, apps::ConvertWindowModeToMojomWindowMode(window_mode));
+  return publisher_helper().SetWindowMode(app_id, window_mode);
 }
 
 void LacrosWebAppsController::GetMenuModel(const std::string& app_id,

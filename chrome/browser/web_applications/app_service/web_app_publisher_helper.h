@@ -234,8 +234,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
 
   apps::WindowMode GetWindowMode(const std::string& app_id);
 
-  void SetWindowMode(const std::string& app_id,
-                     apps::mojom::WindowMode window_mode);
+  void SetWindowMode(const std::string& app_id, apps::WindowMode window_mode);
 
   void SetRunOnOsLoginMode(const std::string& app_id,
                            apps::mojom::RunOnOsLoginMode run_on_os_login_mode);

@@ -196,6 +196,11 @@ void WebApps::Uninstall(const std::string& app_id,
 }
 #endif
 
+void WebApps::SetWindowMode(const std::string& app_id,
+                            apps::WindowMode window_mode) {
+  publisher_helper().SetWindowMode(app_id, window_mode);
+}
+
 void WebApps::Connect(
     mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
     apps::mojom::ConnectOptionsPtr opts) {
@@ -251,7 +256,8 @@ void WebApps::OpenNativeSettings(const std::string& app_id) {
 
 void WebApps::SetWindowMode(const std::string& app_id,
                             apps::mojom::WindowMode window_mode) {
-  publisher_helper().SetWindowMode(app_id, window_mode);
+  publisher_helper().SetWindowMode(
+      app_id, apps::ConvertMojomWindowModeToWindowMode(window_mode));
 }
 
 void WebApps::SetRunOnOsLoginMode(

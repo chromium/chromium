@@ -121,6 +121,9 @@ class WebApps : public apps::PublisherBase,
                  bool report_abuse) override;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+  void SetWindowMode(const std::string& app_id,
+                     apps::WindowMode window_mode) override;
+
   // apps::mojom::Publisher overrides.
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
                apps::mojom::ConnectOptionsPtr opts) override;
