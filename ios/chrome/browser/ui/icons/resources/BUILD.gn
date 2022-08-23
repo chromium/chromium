@@ -100,3 +100,10 @@ symbolset("laptopcomputer_and_phone") {
     "laptopcomputer_and_phone.symbolset/laptopcomputer.and.phone.cr.svg",
   ]
 }
+
+symbolset("language") {
+  sources = [
+    "language.symbolset/Contents.json",
+    "language.symbolset/language.cr.svg",
+  ]
+}

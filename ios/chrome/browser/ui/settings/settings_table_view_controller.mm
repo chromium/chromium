@@ -1005,6 +1005,18 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 }
 
 - (TableViewItem*)languageSettingsDetailItem {
+  if (UseSymbols()) {
+    return [self
+             detailItemWithType:SettingsItemTypeLanguageSettings
+                           text:l10n_util::GetNSString(
+                                    IDS_IOS_LANGUAGE_SETTINGS_TITLE)
+                     detailText:nil
+                     symbolView:ElevatedTableViewSymbolWithBackground(
+                                    CustomSettingsRootSymbol(kLanguageSymbol),
+                                    [UIColor colorNamed:kGrey500Color])
+        accessibilityIdentifier:kSettingsLanguagesCellId];
+  }
+
   return [self detailItemWithType:SettingsItemTypeLanguageSettings
                              text:l10n_util::GetNSString(
                                       IDS_IOS_LANGUAGE_SETTINGS_TITLE)
