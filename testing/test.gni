@@ -330,12 +330,7 @@ template("test") {
         # dependent java targets.
         deps = []
         if (defined(invoker.deps)) {
-          foreach(_dep, invoker.deps) {
-            _target_label = get_label_info(_dep, "label_no_toolchain")
-            if (filter_exclude([ _target_label ], java_target_patterns) != []) {
-              deps += [ _dep ]
-            }
-          }
+          deps = filter_exclude(invoker.deps, java_target_patterns)
         }
 
         if (_use_default_launcher) {
