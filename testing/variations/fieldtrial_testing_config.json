@@ -1790,20 +1790,11 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_All_20220418",
+                    "name": "Enabled_LazyEmbeds3000_20220809",
                     "params": {
-                        "allowed_websites": "https://www.youtube.com|/embed,https://www.google.com|/maps/embed"
-                    },
-                    "enable_features": [
-                        "AutomaticLazyFrameLoadingToAds",
-                        "AutomaticLazyFrameLoadingToEmbedUrls",
-                        "AutomaticLazyFrameLoadingToEmbeds"
-                    ]
-                },
-                {
-                    "name": "Enabled_LazyEmbeds_20220418",
-                    "params": {
-                        "allowed_websites": "https://www.youtube.com|/embed,https://www.google.com|/maps/embed"
+                        "allowed_websites": "https://www.youtube.com|/embed,https://www.google.com|/maps/embed",
+                        "strategy": "allow_list",
+                        "timeout": "3000"
                     },
                     "enable_features": [
                         "AutomaticLazyFrameLoadingToEmbedUrls",
@@ -1814,19 +1805,40 @@
                     ]
                 },
                 {
-                    "name": "Enabled_LazyAds_20220418",
+                    "name": "Enabled_LazyEmbeds0_20220809",
+                    "params": {
+                        "allowed_websites": "https://www.youtube.com|/embed,https://www.google.com|/maps/embed",
+                        "strategy": "allow_list",
+                        "timeout": "0"
+                    },
                     "enable_features": [
-                        "AutomaticLazyFrameLoadingToAds"
-                    ],
-                    "disable_features": [
                         "AutomaticLazyFrameLoadingToEmbedUrls",
                         "AutomaticLazyFrameLoadingToEmbeds"
+                    ],
+                    "disable_features": [
+                        "AutomaticLazyFrameLoadingToAds"
                     ]
                 },
                 {
-                    "name": "Control_20220418",
+                    "name": "Enabled_LazyEmbeds5000_20220809",
                     "params": {
-                        "allowed_websites": "https://www.youtube.com|/embed,https://www.google.com|/maps/embed"
+                        "allowed_websites": "https://www.youtube.com|/embed,https://www.google.com|/maps/embed",
+                        "strategy": "allow_list",
+                        "timeout": "5000"
+                    },
+                    "enable_features": [
+                        "AutomaticLazyFrameLoadingToEmbedUrls",
+                        "AutomaticLazyFrameLoadingToEmbeds"
+                    ],
+                    "disable_features": [
+                        "AutomaticLazyFrameLoadingToAds"
+                    ]
+                },
+                {
+                    "name": "Enabled_LazyEmbedUrls_20220809",
+                    "params": {
+                        "allowed_websites": "https://www.youtube.com|/embed,https://www.google.com|/maps/embed",
+                        "strategy": "allow_list"
                     },
                     "enable_features": [
                         "AutomaticLazyFrameLoadingToEmbedUrls"
