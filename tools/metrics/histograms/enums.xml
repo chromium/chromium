@@ -26157,6 +26157,11 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="13" label="FontFilePathAndTtcIndex: file count invalid"/>
 </enum>
 
+<enum name="DiscodBurstResult">
+  <int value="0" label="No transition"/>
+  <int value="1" label="WriteBooster enabled"/>
+</enum>
+
 <enum name="DisconnectResult">
   <int value="0" label="Failure"/>
   <int value="1" label="Success"/>
