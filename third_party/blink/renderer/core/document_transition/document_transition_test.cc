@@ -26,9 +26,11 @@
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/inspector/inspector_style_resolver.h"
+#include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/testing/mock_function_scope.h"
+#include "third_party/blink/renderer/core/timing/layout_shift.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
@@ -97,6 +99,10 @@ class DocumentTransitionTest : public testing::Test,
 
   LocalFrameView* GetLocalFrameView() {
     return web_view_helper_->LocalMainFrame()->GetFrameView();
+  }
+
+  LayoutShiftTracker& GetLayoutShiftTracker() {
+    return GetLocalFrameView()->GetLayoutShiftTracker();
   }
 
   PaintArtifactCompositor* paint_artifact_compositor() {
@@ -185,6 +191,69 @@ class DocumentTransitionTest : public testing::Test,
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(DocumentTransitionTest);
+
+TEST_P(DocumentTransitionTest, LayoutShift) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      .shared {
+        width: 100px;
+        height: 100px;
+        page-transition-tag: shared;
+        contain: layout;
+        background: green;
+      }
+    </style>
+    <div id=target class=shared></div>
+  )HTML");
+
+  auto* transition =
+      DocumentTransitionSupplement::EnsureDocumentTransition(GetDocument());
+  ASSERT_TRUE(transition->StartNewTransition());
+
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  ExceptionState& exception_state = v8_scope.GetExceptionState();
+
+  MockFunctionScope funcs(script_state);
+  auto* document_transition_callback =
+      V8DocumentTransitionCallback::Create(funcs.ExpectCall());
+
+  ScriptPromiseTester start_tester(
+      script_state,
+      transition->start(script_state, document_transition_callback,
+                        exception_state));
+  EXPECT_EQ(GetState(transition), State::kCapturing);
+
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+  EXPECT_EQ(GetState(transition), State::kCaptured);
+
+  // We should have a start request from the async callback passed to start()
+  // resolving.
+  test::RunPendingTasks();
+  auto start_request = transition->TakePendingRequest();
+  EXPECT_TRUE(start_request);
+  EXPECT_EQ(GetState(transition), State::kStarted);
+
+  // We should have a transition pseudo
+  auto* transition_pseudo = GetDocument().documentElement()->GetPseudoElement(
+      kPseudoIdPageTransition);
+  ASSERT_TRUE(transition_pseudo);
+  auto* container_pseudo = transition_pseudo->GetPseudoElement(
+      kPseudoIdPageTransitionContainer, "shared");
+  ASSERT_TRUE(container_pseudo);
+  auto* container_box = To<LayoutBox>(container_pseudo->GetLayoutObject());
+  EXPECT_EQ(LayoutSize(100, 100), container_box->Size());
+
+  // Shared elements should not cause a layout shift.
+  auto* target =
+      To<LayoutBox>(GetDocument().getElementById("target")->GetLayoutObject());
+  EXPECT_FLOAT_EQ(0, GetLayoutShiftTracker().Score());
+  EXPECT_EQ(LayoutSize(100, 100), target->Size());
+
+  start_request->TakeFinishedCallback().Run();
+  FinishTransition();
+  start_tester.WaitUntilSettled();
+}
 
 TEST_P(DocumentTransitionTest, TransitionObjectPersists) {
   auto* first_transition =
