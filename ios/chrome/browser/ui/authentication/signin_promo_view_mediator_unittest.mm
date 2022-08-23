@@ -212,13 +212,13 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     EXPECT_EQ(expected_default_identity_, mediator_.identity);
     OCMExpect(
         [signin_promo_view_ setMode:SigninPromoViewModeSigninWithAccount]);
-    OCMExpect([signin_promo_view_
-        setProfileImage:[OCMArg checkWithBlock:^BOOL(id value) {
-          image_view_profile_image_ = value;
-          return YES;
-        }]]);
     switch (style) {
       case SigninPromoViewStyleStandard: {
+        OCMExpect([signin_promo_view_
+            setProfileImage:[OCMArg checkWithBlock:^BOOL(id value) {
+              image_view_profile_image_ = value;
+              return YES;
+            }]]);
         NSString* name = expected_default_identity_.userGivenName.length
                              ? expected_default_identity_.userGivenName
                              : expected_default_identity_.userEmail;
@@ -251,7 +251,14 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     OCMExpect([title_label_ setHidden:(style == SigninPromoViewStyleStandard)]);
     OCMExpect([signin_promo_view_ setPromoViewStyle:style]);
     [configurator configureSigninPromoView:signin_promo_view_ withStyle:style];
-    EXPECT_NE(nil, image_view_profile_image_);
+    switch (style) {
+      case SigninPromoViewStyleStandard:
+        EXPECT_NE(nil, image_view_profile_image_);
+        break;
+      case SigninPromoViewStyleTitled:
+      case SigninPromoViewStyleTitledCompact:
+        EXPECT_EQ(nil, image_view_profile_image_);
+    }
   }
 
   // Expects the sync promo view to be configured

@@ -70,6 +70,12 @@ using l10n_util::GetNSStringF;
   switch (promoViewStyle) {
     case SigninPromoViewStyleStandard: {
       [self configureStandardSigninPromoView:signinPromoView];
+      // The profile icon should only appear for the standard signin promo view.
+      // TODO(crbug.com/1331010): Adapt other styles to accept profile image
+      // when we have UX approval.
+      if (self.signinPromoViewMode != SigninPromoViewModeNoAccounts) {
+        [self assignProfileImageToSigninPromoView:signinPromoView];
+      }
       break;
     }
     case SigninPromoViewStyleTitled: {
@@ -80,9 +86,6 @@ using l10n_util::GetNSStringF;
       [self configureTitledPromoView:signinPromoView];
       break;
     }
-  }
-  if (self.signinPromoViewMode != SigninPromoViewModeNoAccounts) {
-    [self assignProfileImageToSigninPromoView:signinPromoView];
   }
 }
 
