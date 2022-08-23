@@ -109,6 +109,30 @@ Profile* CreateAndWaitForSystemProfile() {
   return CreateAndWaitForProfile(ProfileManager::GetSystemProfilePath());
 }
 
+Profile* CreateAndWaitForGuestProfile() {
+  return CreateAndWaitForProfile(ProfileManager::GetGuestProfilePath());
+}
+
+void SetGuestProfileAsLastProfile() {
+  AppController* ac = base::mac::ObjCCast<AppController>(
+      [[NSApplication sharedApplication] delegate]);
+  ASSERT_TRUE(ac);
+
+  // Create the guest profile, and set it as the last used profile.
+  Profile* guest_profile = CreateAndWaitForGuestProfile();
+  [ac setLastProfile:guest_profile];
+
+  Profile* profile = [ac lastProfileIfLoaded];
+  ASSERT_TRUE(profile);
+  EXPECT_EQ(guest_profile->GetPath(), profile->GetPath());
+  EXPECT_TRUE(profile->IsGuestSession());
+
+  // Also set the last used profile path preference. If the profile does need to
+  // be read from disk for some reason this acts as a backstop.
+  g_browser_process->local_state()->SetString(
+      prefs::kProfileLastUsed, guest_profile->GetPath().BaseName().value());
+}
+
 // Key for ProfileDestroyedData user data.
 const char kProfileDestrictionWaiterUserDataKey = 0;
 
@@ -394,23 +418,13 @@ class AppControllerProfilePickerBrowserTest : public InProcessBrowserTest {
 // as the tests below if that happened.
 IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
                        OpenGuestProfileOnlyIfGuestModeIsEnabled) {
-  CreateAndWaitForSystemProfile();
-  base::FilePath guest_profile_path = ProfileManager::GetGuestProfilePath();
-  CreateAndWaitForProfile(guest_profile_path);
-  PrefService* local_state = g_browser_process->local_state();
-  local_state->SetString(prefs::kProfileLastUsed,
-                         guest_profile_path.BaseName().value());
-  local_state->SetBoolean(prefs::kBrowserGuestModeEnabled, false);
+  SetGuestProfileAsLastProfile();
 
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->SetBoolean(prefs::kBrowserGuestModeEnabled, false);
   AppController* ac = base::mac::ObjCCast<AppController>(
       [[NSApplication sharedApplication] delegate]);
   ASSERT_TRUE(ac);
-
-  Profile* profile = [ac lastProfileIfLoaded];
-  ASSERT_TRUE(profile);
-  EXPECT_EQ(guest_profile_path, profile->GetPath());
-  EXPECT_TRUE(profile->IsGuestSession());
-
   NSMenu* menu = [ac applicationDockMenu:NSApp];
   ASSERT_TRUE(menu);
   NSMenuItem* item = [menu itemWithTag:IDC_NEW_WINDOW];
@@ -434,28 +448,19 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
                        AboutChromeGuestDisallowed) {
-  AppController* ac = base::mac::ObjCCast<AppController>(
-      [[NSApplication sharedApplication] delegate]);
-  ASSERT_TRUE(ac);
-  // Create the guest profile, and set it as the last used profile so the
-  // app controller can use it on init.
-  CreateAndWaitForSystemProfile();
-  base::FilePath guest_profile_path = ProfileManager::GetGuestProfilePath();
+  SetGuestProfileAsLastProfile();
+
+  // Disallow guest by policy and make sure "About Chrome" is not available
+  // in the menu.
   PrefService* local_state = g_browser_process->local_state();
-  local_state->SetString(prefs::kProfileLastUsed,
-                         guest_profile_path.BaseName().value());
-  CreateAndWaitForProfile(guest_profile_path);
-  // Disallow guest by policy.
   local_state->SetBoolean(prefs::kBrowserGuestModeEnabled, false);
-  Profile* profile = [ac lastProfileIfLoaded];
-  ASSERT_TRUE(profile);
-  EXPECT_EQ(guest_profile_path, profile->GetPath());
-  EXPECT_TRUE(profile->IsGuestSession());
-  // "About Chrome" is not available in the menu.
   base::scoped_nsobject<NSMenuItem> about_menu_item(
       [[[[NSApp mainMenu] itemWithTag:IDC_CHROME_MENU] submenu]
           itemWithTag:IDC_ABOUT],
       base::scoped_policy::RETAIN);
+  AppController* ac = base::mac::ObjCCastStrict<AppController>(
+      [[NSApplication sharedApplication] delegate]);
+  ASSERT_TRUE(ac);
   EXPECT_FALSE([ac validateUserInterfaceItem:about_menu_item]);
 }
 
@@ -464,6 +469,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
                        RegularProfileReopenWithNoWindows) {
   AppController* ac = base::mac::ObjCCastStrict<AppController>(
       [[NSApplication sharedApplication] delegate]);
+  ASSERT_TRUE(ac);
 
   EXPECT_EQ(1u, active_browser_list()->size());
   BOOL result = [ac applicationShouldHandleReopen:NSApp hasVisibleWindows:NO];
@@ -483,6 +489,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
   CreateAndWaitForSystemProfile();
   AppController* ac = base::mac::ObjCCastStrict<AppController>(
       [[NSApplication sharedApplication] delegate]);
+  ASSERT_TRUE(ac);
 
   // Lock the active profile.
   Profile* profile = [ac lastProfileIfLoaded];
@@ -515,6 +522,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
   CreateAndWaitForSystemProfile();
   AppController* ac = base::mac::ObjCCastStrict<AppController>(
       [[NSApplication sharedApplication] delegate]);
+  ASSERT_TRUE(ac);
   // Lock the active profile.
   Profile* profile = [ac lastProfileIfLoaded];
   ProfileAttributesEntry* entry =
@@ -541,23 +549,12 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
 // Test that for a guest last profile, a reopen event opens the ProfilePicker.
 IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
                        GuestProfileReopenWithNoWindows) {
-  // Create the system profile. Set the guest as the last used profile so the
-  // app controller can use it on init.
-  CreateAndWaitForSystemProfile();
-  base::FilePath guest_profile_path = ProfileManager::GetGuestProfilePath();
-  CreateAndWaitForProfile(guest_profile_path);
-  g_browser_process->local_state()->SetString(
-      prefs::kProfileLastUsed, guest_profile_path.BaseName().value());
-
-  AppController* ac = base::mac::ObjCCastStrict<AppController>(
-      [[NSApplication sharedApplication] delegate]);
-
-  Profile* profile = [ac lastProfileIfLoaded];
-  ASSERT_TRUE(profile);
-  EXPECT_EQ(guest_profile_path, profile->GetPath());
-  EXPECT_TRUE(profile->IsGuestSession());
+  SetGuestProfileAsLastProfile();
 
   EXPECT_EQ(1u, active_browser_list()->size());
+  AppController* ac = base::mac::ObjCCastStrict<AppController>(
+      [[NSApplication sharedApplication] delegate]);
+  ASSERT_TRUE(ac);
   BOOL result = [ac applicationShouldHandleReopen:NSApp hasVisibleWindows:NO];
   EXPECT_FALSE(result);
 
@@ -574,6 +571,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
   CreateAndWaitForSystemProfile();
   AppController* ac = base::mac::ObjCCastStrict<AppController>(
       [[NSApplication sharedApplication] delegate]);
+  ASSERT_TRUE(ac);
 
   // Add a profile in the cache (simulate another profile on disk).
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -604,6 +602,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest, MenuCommands) {
 
   AppController* ac = base::mac::ObjCCastStrict<AppController>(
       [[NSApplication sharedApplication] delegate]);
+  ASSERT_TRUE(ac);
 
   // Unhandled menu items are disabled.
   base::scoped_nsobject<NSMenu> file_submenu(
@@ -777,6 +776,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   AppController* ac =
       base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
+  ASSERT_TRUE(ac);
 
   // Use the existing profile as profile 1.
   Profile* profile1 = browser()->profile();
@@ -839,6 +839,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
                        HistoryAndBookmarksMenusResetAfterAllProfilesDestroyed) {
   AppController* ac =
       base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
+  ASSERT_TRUE(ac);
 
   Profile* profile = browser()->profile();
 
@@ -874,6 +875,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   AppController* ac =
       base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
+  ASSERT_TRUE(ac);
 
   Profile* profile = browser()->profile();
   base::FilePath profile_path = profile->GetPath();
@@ -1018,6 +1020,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerIncognitoSwitchTest,
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
   AppController* ac =
       base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
+  ASSERT_TRUE(ac);
   [[NSNotificationCenter defaultCenter]
       postNotificationName:NSWindowDidBecomeMainNotification
                     object:browser()
