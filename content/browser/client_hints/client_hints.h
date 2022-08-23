@@ -126,7 +126,7 @@ ParseAndPersistAcceptCHForNavigation(
 // `delegate` cannot be nullptr.
 CONTENT_EXPORT void PersistAcceptCH(
     const url::Origin& origin,
-    content::RenderFrameHost* parent_rfh,
+    FrameTreeNode& frame_tree_node,
     ClientHintsControllerDelegate* delegate,
     const std::vector<network::mojom::WebClientHintsType>& hints);
 

@@ -24,9 +24,22 @@
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "url/gurl.h"
 
+namespace blink {
+class EnabledClientHints;
+}  // namespace blink
+
+namespace network::mojom {
+enum class WebClientHintsType;
+}  // namespace network::mojom
+
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace content {
 
 class FrameTree;
+class FrameTreeNode;
 class PrerenderHostRegistry;
 class PrerenderPageHolder;
 class RenderFrameHostImpl;
@@ -134,6 +147,14 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
     kMaxValue = kRequestDestination,
   };
 
+  // Returns the PrerenderHost that the given `frame_tree_node` is in, if it is
+  // being prerendered. Note that this function returns false if the prerender
+  // has been canceled.
+  // TODO(https://crbug.com/1355279): Always return a non-null ptr if the
+  // frame_tree_node is in a prerendering tree.
+  static PrerenderHost* GetPrerenderHostFromFrameTreeNode(
+      FrameTreeNode& frame_tree_node);
+
   PrerenderHost(const PrerenderAttributes& attributes,
                 WebContents& web_contents,
                 base::WeakPtr<PreloadingAttempt> attempt);
@@ -204,6 +225,18 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   // Returns true if the given `url` indicates the same destination to the
   // initial_url.
   bool IsUrlMatch(const GURL& url) const;
+
+  // Called when the prerender pages asks the client to change the Accept Client
+  // Hints. The instruction applies to the prerendering page before activation,
+  // and will be persisted to the global setting upon activation.
+  void OnAcceptClientHintChanged(
+      const url::Origin& origin,
+      const std::vector<network::mojom::WebClientHintsType>& client_hints_type);
+
+  // Updates the given `client_hints`.
+  void GetAllowedClientHintsOnPage(
+      const url::Origin& origin,
+      blink::EnabledClientHints* client_hints) const;
 
   // Returns absl::nullopt iff prerendering is initiated by the browser (not by
   // a renderer using Speculation Rules API).
@@ -288,6 +321,10 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   // for a navigation.
   blink::mojom::BeginNavigationParamsPtr begin_params_;
   blink::mojom::CommonNavigationParamsPtr common_params_;
+
+  // Stores the client hints type that applies to this page.
+  base::flat_map<url::Origin, std::vector<network::mojom::WebClientHintsType>>
+      client_hints_type_;
 
   // Holds the navigation ID for the main frame initial navigation.
   absl::optional<int64_t> initial_navigation_id_;

@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigator.h"
@@ -571,6 +572,17 @@ struct ClientHintsExtendedData {
     delegate->GetAllowedClientHintsFromSource(outermost_main_frame_origin,
                                               &hints);
 
+    // If this is a prerender tree, also capture prerender local setting. The
+    // setting was given by navigation requests on the prerendering page, and
+    // has not been used as a global setting.
+    if (frame_tree_node && frame_tree_node->frame_tree()->is_prerendering()) {
+      // If prerender host is nullptr, it means prerender has been canceled and
+      // the host will be discarded soon, so we do not need to continue.
+      if (auto* host = PrerenderHost::GetPrerenderHostFromFrameTreeNode(
+              *frame_tree_node))
+        host->GetAllowedClientHintsOnPage(outermost_main_frame_origin, &hints);
+    }
+
     // If this is not a top-level frame, then check if any of the ancestors
     // in the path that led to this request have Sec-CH-UA-Reduced set.
     // TODO(crbug.com/1258063): Remove once the UserAgentReduction Origin Trial
@@ -1073,17 +1085,41 @@ ParseAndPersistAcceptCHForNavigation(
 
   const std::vector<WebClientHintsType> persisted_hints =
       enabled_hints.GetEnabledHints();
-  PersistAcceptCH(origin, frame_tree_node->GetParentOrOuterDocument(), delegate,
-                  persisted_hints);
+  DCHECK(frame_tree_node);
+  PersistAcceptCH(origin, *frame_tree_node, delegate, persisted_hints);
   return persisted_hints;
 }
 
 void PersistAcceptCH(const url::Origin& origin,
-                     content::RenderFrameHost* parent_rfh,
+                     FrameTreeNode& frame_tree_node,
                      ClientHintsControllerDelegate* delegate,
                      const std::vector<WebClientHintsType>& hints) {
   DCHECK(delegate);
-  delegate->PersistClientHints(origin, parent_rfh, hints);
+
+  // TODO(https://crbug.com/1355279): Moving the if condition from the caller
+  // into this function after PrerenderHost becomes a FrameTreeDelegate. A
+  // clearer pattern should be to check whether it is in a prerendering tree
+  // and return a nullptr if it isn't. However, the current prerender
+  // implementation returns a nullptr in two cases: not prerendered or
+  // prerender is canceled, and the callers cannot distinguish between the two
+  // reasons and have to have another if condition.
+  if (frame_tree_node.frame_tree()->is_prerendering()) {
+    // For prerendering headers, it should not persist the client header until
+    // activation, considering user has not visited the page and allowed it to
+    // change content setting yet. The client hints should apply to navigations
+    // in the prerendering page, and propagate to the global setting upon user
+    // navigation.
+    // If host is nullptr, it means prerender has been canceled and will be
+    // deleted soon, so we do not need to persist anything.
+    if (auto* host =
+            PrerenderHost::GetPrerenderHostFromFrameTreeNode(frame_tree_node)) {
+      host->OnAcceptClientHintChanged(origin, hints);
+    }
+    return;
+  }
+
+  delegate->PersistClientHints(
+      origin, frame_tree_node.GetParentOrOuterDocument(), hints);
 }
 
 std::vector<WebClientHintsType> LookupAcceptCHForCommit(

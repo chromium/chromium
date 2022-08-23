@@ -985,8 +985,8 @@ void RemoveOriginTrialHintsFromAcceptCH(
     }
   }
   if (need_update_storage) {
-    PersistAcceptCH(url::Origin::Create(url),
-                    frame_tree_node->GetParentOrOuterDocument(), delegate,
+    DCHECK(frame_tree_node);
+    PersistAcceptCH(url::Origin::Create(url), *frame_tree_node, delegate,
                     client_hints);
   }
 }
