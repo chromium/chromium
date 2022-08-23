@@ -98,6 +98,13 @@ export class CrIconButtonElement extends PolymerElement {
      * @private {boolean}
      */
     this.spaceKeyDown_ = false;
+
+    this.addEventListener('blur', this.onBlur_.bind(this));
+    this.addEventListener('click', this.onClick_.bind(this));
+    this.addEventListener(
+        'keydown', e => this.onKeyDown_(/** @type {!KeyboardEvent} */ (e)));
+    this.addEventListener(
+        'keyup', e => this.onKeyUp_(/** @type {!KeyboardEvent} */ (e)));
   }
 
   /** @override */
@@ -110,13 +117,6 @@ export class CrIconButtonElement extends PolymerElement {
     if (!this.hasAttribute('tabindex')) {
       this.setAttribute('tabindex', '0');
     }
-
-    this.addEventListener('blur', this.onBlur_.bind(this));
-    this.addEventListener('click', this.onClick_.bind(this));
-    this.addEventListener(
-        'keydown', e => this.onKeyDown_(/** @type {!KeyboardEvent} */ (e)));
-    this.addEventListener(
-        'keyup', e => this.onKeyUp_(/** @type {!KeyboardEvent} */ (e)));
   }
 
   /** @param {string} className */

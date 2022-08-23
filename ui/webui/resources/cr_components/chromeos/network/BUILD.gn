@@ -850,7 +850,7 @@ polymer_modulizer("network_siminfo") {
   js_file = "network_siminfo.js"
   html_file = "network_siminfo.html"
   html_type = "dom-module"
-  auto_imports = cr_components_chromeos_auto_imports
+  auto_imports = cr_components_chromeos_auto_imports + [ "ui/webui/resources/cr_elements/cr_button/cr_button.html|CrButtonElement" ]
   migrated_imports = cr_components_migrated_imports
   namespace_rewrites = cr_components_chromeos_namespace_rewrites
 }

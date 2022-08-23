@@ -12,84 +12,115 @@ import '../hidden_style_css.m.js';
 import '../shared_vars_css.m.js';
 
 import {PaperRippleBehavior} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {FocusOutlineManager} from '../../js/cr/ui/focus_outline_manager.m.js';
 
-Polymer({
-  is: 'cr-button',
+/** @interface */
+class PaperRippleBehaviorInterface {
+  /** @return {Element} */
+  getRipple() {}
 
-  _template: html`{__html_template__}`,
+  ensureRipple() {}
+}
 
-  behaviors: [
-    PaperRippleBehavior,
-  ],
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {PaperRippleBehaviorInterface}
+ */
+const CrButtonElementBase =
+    mixinBehaviors([PaperRippleBehavior], PolymerElement);
 
-  properties: {
-    disabled: {
-      type: Boolean,
-      value: false,
-      reflectToAttribute: true,
-      observer: 'disabledChanged_',
-    },
+/** @polymer */
+export class CrButtonElement extends CrButtonElementBase {
+  static get is() {
+    return 'cr-button';
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      disabled: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+        observer: 'disabledChanged_',
+      },
+
+      /**
+       * Use this property in order to configure the "tabindex" attribute.
+       */
+      customTabIndex: {
+        type: Number,
+        observer: 'applyTabIndex_',
+      },
+
+      /**
+       * Flag used for formatting ripples on circle shaped cr-buttons.
+       * @private
+       */
+      circleRipple: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
+
+  constructor() {
+    super();
 
     /**
-     * Use this property in order to configure the "tabindex" attribute.
+     * It is possible to activate a tab when the space key is pressed down. When
+     * this element has focus, the keyup event for the space key should not
+     * perform a 'click'. |spaceKeyDown_| tracks when a space pressed and
+     * handled by this element. Space keyup will only result in a 'click' when
+     * |spaceKeyDown_| is true. |spaceKeyDown_| is set to false when element
+     * loses focus.
+     * @private {boolean}
      */
-    customTabIndex: {
-      type: Number,
-      observer: 'applyTabIndex_',
-    },
+    this.spaceKeyDown_ = false;
 
-    /**
-     * Flag used for formatting ripples on circle shaped cr-buttons.
-     * @private
-     */
-    circleRipple: {
-      type: Boolean,
-      value: false,
-    },
-  },
+    /** @private {Set<number>} */
+    this.timeoutIds_ = null;
 
-  hostAttributes: {
-    'aria-disabled': 'false',
-    role: 'button',
-    tabindex: 0,
-  },
-
-  listeners: {
-    blur: 'onBlur_',
-    click: 'onClick_',
-    keydown: 'onKeyDown_',
-    keyup: 'onKeyUp_',
-    pointerdown: 'onPointerDown_',
-  },
-
-  /**
-   * It is possible to activate a tab when the space key is pressed down. When
-   * this element has focus, the keyup event for the space key should not
-   * perform a 'click'. |spaceKeyDown_| tracks when a space pressed and handled
-   * by this element. Space keyup will only result in a 'click' when
-   * |spaceKeyDown_| is true. |spaceKeyDown_| is set to false when element loses
-   * focus.
-   * @private {boolean}
-   */
-  spaceKeyDown_: false,
-
-  /** @private {Set<number>} */
-  timeoutIds_: null,
+    this.addEventListener('blur', this.onBlur_.bind(this));
+    // Must be added in constructor so that stopImmediatePropagation() works as
+    // expected.
+    this.addEventListener('click', this.onClick_.bind(this));
+    this.addEventListener(
+        'keydown', e => this.onKeyDown_(/** @type {!KeyboardEvent} */ (e)));
+    this.addEventListener(
+        'keyup', e => this.onKeyUp_(/** @type {!KeyboardEvent} */ (e)));
+    this.addEventListener('pointerdown', this.onPointerDown_.bind(this));
+  }
 
   /** @override */
   ready() {
+    super.ready();
+    if (!this.hasAttribute('role')) {
+      this.setAttribute('role', 'button');
+    }
+    if (!this.hasAttribute('tabindex')) {
+      this.setAttribute('tabindex', '0');
+    }
+    if (!this.hasAttribute('aria-disabled')) {
+      this.setAttribute('aria-disabled', 'false');
+    }
+
     FocusOutlineManager.forDocument(document);
     this.timeoutIds_ = new Set();
-  },
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
     this.timeoutIds_.forEach(clearTimeout);
     this.timeoutIds_.clear();
-  },
+  }
 
   /**
    * @param {!Function} fn
@@ -105,7 +136,7 @@ Polymer({
       fn();
     }, delay);
     this.timeoutIds_.add(id);
-  },
+  }
 
   /**
    * @param {boolean} newValue
@@ -119,9 +150,9 @@ Polymer({
     if (this.disabled) {
       this.blur();
     }
-    this.setAttribute('aria-disabled', Boolean(this.disabled));
+    this.setAttribute('aria-disabled', this.disabled ? 'true' : 'false');
     this.applyTabIndex_();
-  },
+  }
 
   /**
    * Updates the tabindex HTML attribute to the actual value.
@@ -132,13 +163,13 @@ Polymer({
     if (value === undefined) {
       value = this.disabled ? -1 : 0;
     }
-    this.setAttribute('tabindex', value);
-  },
+    this.setAttribute('tabindex', value.toString());
+  }
 
   /** @private */
   onBlur_() {
     this.spaceKeyDown_ = false;
-  },
+  }
 
   /**
    * @param {!Event} e
@@ -148,7 +179,7 @@ Polymer({
     if (this.disabled) {
       e.stopImmediatePropagation();
     }
-  },
+  }
 
   /**
    * @param {!KeyboardEvent} e
@@ -163,7 +194,6 @@ Polymer({
     e.stopPropagation();
 
     if (e.repeat) {
-      this.lastKeyDownKey_ = null;
       return;
     }
 
@@ -176,7 +206,7 @@ Polymer({
     } else if (e.key === ' ') {
       this.spaceKeyDown_ = true;
     }
-  },
+  }
 
   /**
    * @param {!KeyboardEvent} e
@@ -195,12 +225,12 @@ Polymer({
       this.click();
       this.getRipple().uiUpAction();
     }
-  },
+  }
 
   /** @private */
   onPointerDown_() {
     this.ensureRipple();
-  },
+  }
 
   /**
    * Customize the element's ripple. Overriding the '_createRipple' function
@@ -208,7 +238,7 @@ Polymer({
    * @return {PaperRippleElement}
    */
   _createRipple() {
-    const ripple = PaperRippleBehavior._createRipple();
+    const ripple = super._createRipple();
 
     if (this.circleRipple) {
       ripple.setAttribute('center', '');
@@ -216,5 +246,7 @@ Polymer({
     }
 
     return ripple;
-  },
-});
+  }
+}
+
+customElements.define(CrButtonElement.is, CrButtonElement);
