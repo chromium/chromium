@@ -19362,5 +19362,25 @@
         }
       }
     ]
+  },
+  "HighEfficiencyModeEnabled": {
+    "os": [
+      "win",
+      "linux",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "HighEfficiencyModeEnabled": true
+        },
+        "prefs": {
+          "performance_tuning.high_efficiency_mode.enabled": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      }
+    ]
   }
 }

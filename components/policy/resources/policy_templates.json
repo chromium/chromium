@@ -32843,6 +32843,39 @@ This policy has no effect if the option to keep existing browsing data is not av
       If this policy is set to Enabled, the window.webkitStorageInfo API will be available.
       If this policy is set to Disabled or not set, the window.webkitStorageInfo API will be unavailable.
       ''',
+    },
+    {
+      'name': 'HighEfficiencyModeEnabled',
+      'owners': ['anthonyvd@chromium.org', 'file://components/performance_manager/OWNERS'],
+      'caption': 'Enable High Efficiency Mode',
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'future_on': ['chrome.win', 'chrome.mac', 'chrome.linux' ],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': False,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'High Efficiency Mode will be enabled.',
+        },
+        {
+          'value': False,
+          'caption': 'High Efficiency Mode will be disabled.',
+        },
+        {
+          'value': None,
+          'caption': 'The end user can enable or disable High Efficiency Mode.',
+        }
+      ],
+      'default': None,
+      'example_value': False,
+      'id': 1006,
+      'tags': [],
+      'desc': '''This policy enables or disables the High Efficiency Mode setting. This setting makes it so that tabs are discarded after some period of time in the background to reclaim memory.
+      If this policy is unset, the end user can control this setting in chrome://settings/performance.
+      ''',
     }
   ],
   'messages': {
@@ -33850,6 +33883,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 438, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 1005,
+  'highest_id_currently_used': 1006,
   'highest_atomic_group_id_currently_used': 43
 }

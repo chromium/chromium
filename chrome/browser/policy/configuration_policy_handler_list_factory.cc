@@ -79,6 +79,7 @@
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/payments/core/payment_prefs.h"
+#include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/core/browser/configuration_policy_handler_list.h"
 #include "components/policy/core/browser/configuration_policy_handler_parameters.h"
@@ -1725,6 +1726,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kPrefixedStorageInfoEnabled,
     storage::kPrefixedStorageInfoEnabled,
     base::Value::Type::BOOLEAN },
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  { key::kHighEfficiencyModeEnabled,
+    performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled,
+    base::Value::Type::BOOLEAN },
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 };
 // clang-format on
 
