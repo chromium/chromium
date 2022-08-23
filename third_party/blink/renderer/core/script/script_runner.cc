@@ -172,6 +172,24 @@ void ScriptRunner::RemoveDelayReasonFromScript(PendingScript* pending_script,
     return;
 
   if (it->value &= ~static_cast<DelayReasons>(delay_reason)) {
+    // The delay must be less than a few seconds because some scripts times out
+    // otherwise. This is only applied to milestone based delay.
+    if (delay_reason == DelayReason::kLoad &&
+        (it->value & static_cast<DelayReasons>(DelayReason::kMilestone))) {
+      // PostDelayedTask to limit the delay amount of DelayAsyncScriptExecution
+      // (see crbug/1340837). DelayReason::kMilestone is sent on
+      // loading-milestones such as LCP, first_paint, or finished_parsing.
+      // Once the script is completely loaded, even if the milestones delaying
+      // execution aren't removed, we eventually want to trigger
+      // script-execution anyway for compatibility reasons, since waiting too
+      // long for the milestones can cause compatibility issues.
+      task_runner_->PostDelayedTask(
+          FROM_HERE,
+          WTF::Bind(&ScriptRunner::RemoveDelayReasonFromScript,
+                    WrapWeakPersistent(this), WrapPersistent(pending_script),
+                    DelayReason::kMilestone),
+          features::kDelayAsyncScriptExecutionLimitParam.Get());
+    }
     // Still to be delayed.
     return;
   }

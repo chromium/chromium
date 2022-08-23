@@ -1534,6 +1534,9 @@ const base::FeatureParam<DelayAsyncScriptDelayType>
 const base::FeatureParam<bool> kDelayAsyncScriptExecutionCrossSiteOnlyParam{
     &kDelayAsyncScriptExecution, "cross_site_only", false};
 
+const base::FeatureParam<base::TimeDelta> kDelayAsyncScriptExecutionLimitParam{
+    &kDelayAsyncScriptExecution, "limit", base::Seconds(1)};
+
 const base::Feature kLowPriorityAsyncScriptExecution{
     "LowPriorityAsyncScriptExecution", base::FEATURE_DISABLED_BY_DEFAULT};
 
