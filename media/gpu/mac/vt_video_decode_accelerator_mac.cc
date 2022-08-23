@@ -1188,6 +1188,9 @@ void VTVideoDecodeAccelerator::DecodeTaskH264(
         return;
     } else {
       // Only |data| and |size| are read later, other fields are left empty.
+      // In case that their are new PPS/SPS/SPSext appears after an IDR, or
+      // videos that have multiple PPSs and we are referring to the one that
+      // is not used to create video format.
       media::H264NALU sps_nalu;
       sps_nalu.data = active_sps_.data();
       sps_nalu.size = active_sps_.size();
@@ -1210,6 +1213,12 @@ void VTVideoDecodeAccelerator::DecodeTaskH264(
       nalus.insert(nalus.begin() + first_slice_index, pps_nalu);
       data_size += kNALUHeaderLength + pps_nalu.size;
       first_slice_index += 1;
+
+      // Update the configured SPS/SPSext/PPS in case VT referrence to the wrong
+      // parameter sets.
+      configured_sps_ = active_sps_;
+      configured_spsext_ = active_spsext_;
+      configured_pps_ = active_pps_;
     }
   }
 
