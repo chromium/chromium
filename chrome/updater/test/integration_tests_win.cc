@@ -693,10 +693,9 @@ HRESULT DoLoopUntilDone(Microsoft::WRL::ComPtr<IAppBundleWeb> bundle,
                         int expected_final_state,
                         HRESULT expected_error_code) {
   bool done = false;
-  static constexpr base::TimeDelta kExpirationTimeout = base::Minutes(1);
+  static const base::TimeDelta kExpirationTimeout =
+      TestTimeouts::action_max_timeout();
   base::ElapsedTimer timer;
-
-  EXPECT_TRUE(timer.Elapsed() < kExpirationTimeout);
 
   LONG state_value = 0;
   LONG error_code = 0;
@@ -841,7 +840,9 @@ HRESULT DoLoopUntilDone(Microsoft::WRL::ComPtr<IAppBundleWeb> bundle,
     ::Sleep(100);
   }
 
-  EXPECT_TRUE(done);
+  EXPECT_TRUE(done)
+      << "The test timed out, consider increasing kExpirationTimeout which is: "
+      << kExpirationTimeout;
   EXPECT_EQ(expected_final_state, state_value);
   EXPECT_EQ(expected_error_code, error_code);
 
