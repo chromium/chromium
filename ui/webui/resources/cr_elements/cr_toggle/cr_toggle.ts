@@ -89,10 +89,7 @@ export class CrToggleElement extends CrToggleElementBase {
     }
     this.setAttribute('aria-pressed', 'false');
     this.setAttribute('aria-disabled', 'false');
-  }
 
-  override connectedCallback() {
-    super.connectedCallback();
     this.addEventListener('blur', this.hideRipple_.bind(this));
     this.addEventListener('click', this.onClick_.bind(this));
     this.addEventListener('focus', this.onFocus_.bind(this));
@@ -100,6 +97,10 @@ export class CrToggleElement extends CrToggleElementBase {
     this.addEventListener('keyup', this.onKeyUp_.bind(this));
     this.addEventListener('pointerdown', this.onPointerDown_.bind(this));
     this.addEventListener('pointerup', this.onPointerUp_.bind(this));
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
 
     const direction =
         this.matches(':host-context([dir=rtl]) cr-toggle') ? -1 : 1;
