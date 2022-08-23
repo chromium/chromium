@@ -64,16 +64,30 @@ class PLATFORM_EXPORT TransferredMediaStreamComponent final
   void SetCreationFrame(WebLocalFrame* creation_frame) override;
 
   void AddSourceObserver(MediaStreamSource::Observer* observer) override;
+  void AddSink(WebMediaStreamAudioSink* sink) override;
+  void AddSink(WebMediaStreamSink* sink,
+               const VideoCaptureDeliverFrameCB& callback,
+               MediaStreamVideoSink::IsSecure is_secure,
+               MediaStreamVideoSink::UsesAlpha uses_alpha) override;
 
   String ToString() const override;
 
   void Trace(Visitor*) const override;
 
  private:
+  struct AddSinkArgs {
+    WebMediaStreamSink* sink;
+    VideoCaptureDeliverFrameCB callback;
+    MediaStreamVideoSink::IsSecure is_secure;
+    MediaStreamVideoSink::UsesAlpha uses_alpha;
+  };
+
   Member<MediaStreamComponent> component_;
   TransferredValues data_;
 
   std::vector<MediaStreamSource::Observer*> observers_;
+  Vector<AddSinkArgs> add_video_sink_calls_;
+  Vector<WebMediaStreamAudioSink*> add_audio_sink_calls_;
 };
 
 }  // namespace blink

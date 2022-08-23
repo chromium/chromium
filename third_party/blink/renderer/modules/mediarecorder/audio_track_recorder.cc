@@ -151,10 +151,7 @@ void AudioTrackRecorder::Resume() {
 }
 
 void AudioTrackRecorder::ConnectToTrack() {
-  auto* audio_track =
-      static_cast<MediaStreamAudioTrack*>(track_->GetPlatformTrack());
-  DCHECK(audio_track);
-  audio_track->AddSink(this);
+  track_->AddSink(this);
 }
 
 void AudioTrackRecorder::DisconnectFromTrack() {

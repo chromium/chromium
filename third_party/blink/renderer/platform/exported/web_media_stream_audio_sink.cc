@@ -8,6 +8,7 @@
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_source.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 
 namespace blink {
 
@@ -15,9 +16,7 @@ void WebMediaStreamAudioSink::AddToAudioTrack(
     WebMediaStreamAudioSink* sink,
     const blink::WebMediaStreamTrack& track) {
   DCHECK(track.Source().GetType() == blink::WebMediaStreamSource::kTypeAudio);
-  MediaStreamAudioTrack* native_track = MediaStreamAudioTrack::From(track);
-  DCHECK(native_track);
-  native_track->AddSink(sink);
+  static_cast<MediaStreamComponent*>(track)->AddSink(sink);
 }
 
 void WebMediaStreamAudioSink::RemoveFromAudioTrack(

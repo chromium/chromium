@@ -47,7 +47,7 @@ class PLATFORM_EXPORT MediaStreamAudioTrack : public MediaStreamTrackPlatform {
 
   // Add a sink to the track. This function will trigger a OnSetFormat()
   // call on the |sink| before the first chunk of audio is delivered.
-  void AddSink(WebMediaStreamAudioSink* sink);
+  void AddSink(WebMediaStreamAudioSink* sink) override;
 
   // Remove a sink from the track. When this method returns, the sink's
   // OnSetFormat() and OnData() methods will not be called again on any thread.

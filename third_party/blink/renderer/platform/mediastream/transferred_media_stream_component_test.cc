@@ -51,6 +51,12 @@ class MockMediaStreamComponent
   MOCK_METHOD0(CreationFrame, WebLocalFrame*());
   MOCK_METHOD1(SetCreationFrame, void(WebLocalFrame*));
   MOCK_METHOD1(AddSourceObserver, void(MediaStreamSource::Observer*));
+  MOCK_METHOD1(AddSink, void(WebMediaStreamAudioSink*));
+  MOCK_METHOD4(AddSink,
+               void(WebMediaStreamSink*,
+                    const VideoCaptureDeliverFrameCB&,
+                    MediaStreamVideoSink::IsSecure,
+                    MediaStreamVideoSink::UsesAlpha));
   MOCK_CONST_METHOD0(ToString, String());
 };
 

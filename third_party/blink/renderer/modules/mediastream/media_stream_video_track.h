@@ -98,7 +98,7 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
   void AddSink(WebMediaStreamSink* sink,
                const VideoCaptureDeliverFrameCB& callback,
                MediaStreamVideoSink::IsSecure is_secure,
-               MediaStreamVideoSink::UsesAlpha uses_alpha);
+               MediaStreamVideoSink::UsesAlpha uses_alpha) override;
   // Sets |sink|'s dropped frame notification callback which will receive calls
   // on the IO thread. |callback| will be reset on the render thread.
   // Note: the method needs to be called after a sink has been added.

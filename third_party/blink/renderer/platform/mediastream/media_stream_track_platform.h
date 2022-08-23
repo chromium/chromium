@@ -7,11 +7,14 @@
 
 #include "base/callback.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/platform/modules/mediastream/web_media_stream_sink.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
+#include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+class WebMediaStreamAudioSink;
 
 // MediaStreamTrackPlatform is a low-level object backing a
 // WebMediaStreamTrack.
@@ -96,6 +99,21 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
 
   enum class StreamType { kAudio, kVideo };
   virtual StreamType Type() const = 0;
+
+  // Add an audio sink to the track. This function must only be called for audio
+  // tracks. It will trigger a OnSetFormat() call on the |sink| before the first
+  // chunk of audio is delivered.
+  virtual void AddSink(WebMediaStreamAudioSink* sink) { NOTREACHED(); }
+  // Add a video sink to track. This function must only be called for video
+  // tracks.  The |sink| will receive video track state changes on the main
+  // render thread and video frames in the |callback| method on the IO-thread.
+  // |callback| will be reset on the render thread.
+  virtual void AddSink(WebMediaStreamSink* sink,
+                       const VideoCaptureDeliverFrameCB& callback,
+                       MediaStreamVideoSink::IsSecure is_secure,
+                       MediaStreamVideoSink::UsesAlpha uses_alpha) {
+    NOTREACHED();
+  }
 
  private:
   const bool is_local_track_;

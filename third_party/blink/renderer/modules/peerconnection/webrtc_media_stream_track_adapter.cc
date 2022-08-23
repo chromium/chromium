@@ -172,8 +172,6 @@ void WebRtcMediaStreamTrackAdapter::InitializeLocalAudioTrack(
   SendLogMessage(base::StringPrintf("InitializeLocalAudioTrack({id=%s})",
                                     component->Id().Utf8().c_str()));
   component_ = component;
-  auto* native_track = MediaStreamAudioTrack::From(component_);
-  DCHECK(native_track);
 
   // Non-WebRtc remote sources and local sources do not provide an instance of
   // the webrtc::AudioSourceInterface, and also do not need references to the
@@ -196,7 +194,7 @@ void WebRtcMediaStreamTrackAdapter::InitializeLocalAudioTrack(
     local_track_audio_sink_->SetAudioProcessor(
         media_stream_source->GetAudioProcessor());
   }
-  native_track->AddSink(local_track_audio_sink_.get());
+  component_->AddSink(local_track_audio_sink_.get());
   webrtc_track_ = local_track_audio_sink_->webrtc_audio_track();
   DCHECK(webrtc_track_);
   is_initialized_ = true;

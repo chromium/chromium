@@ -109,6 +109,11 @@ class PLATFORM_EXPORT MediaStreamComponentImpl final
   }
 
   void AddSourceObserver(MediaStreamSource::Observer* observer) override;
+  void AddSink(WebMediaStreamAudioSink* sink) override;
+  void AddSink(WebMediaStreamSink* sink,
+               const VideoCaptureDeliverFrameCB& callback,
+               MediaStreamVideoSink::IsSecure is_secure,
+               MediaStreamVideoSink::UsesAlpha uses_alpha) override;
 
   String ToString() const override;
 

@@ -5,6 +5,7 @@
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
 
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 
 namespace blink {
 
@@ -22,9 +23,8 @@ void AddSinkToMediaStreamTrack(const WebMediaStreamTrack& track,
                                const VideoCaptureDeliverFrameCB& callback,
                                MediaStreamVideoSink::IsSecure is_secure,
                                MediaStreamVideoSink::UsesAlpha uses_alpha) {
-  MediaStreamVideoTrack* const video_track = MediaStreamVideoTrack::From(track);
-  DCHECK(video_track);
-  video_track->AddSink(sink, callback, is_secure, uses_alpha);
+  static_cast<MediaStreamComponent*>(track)->AddSink(sink, callback, is_secure,
+                                                     uses_alpha);
 }
 
 void RemoveSinkFromMediaStreamTrack(const WebMediaStreamTrack& track,

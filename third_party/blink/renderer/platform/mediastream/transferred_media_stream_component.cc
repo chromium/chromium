@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/mediastream/transferred_media_stream_component.h"
 
 #include "base/synchronization/lock.h"
+#include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
 #include "third_party/blink/public/platform/web_audio_source_provider.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 
@@ -38,6 +39,17 @@ void TransferredMediaStreamComponent::SetImplementation(
     component->AddSourceObserver(observer);
   }
   observers_.clear();
+
+  for (const auto& call : add_video_sink_calls_) {
+    component_->AddSink(call.sink, call.callback, call.is_secure,
+                        call.uses_alpha);
+  }
+  add_video_sink_calls_.clear();
+
+  for (auto* call : add_audio_sink_calls_) {
+    component_->AddSink(call);
+  }
+  add_audio_sink_calls_.clear();
 }
 
 MediaStreamComponent* TransferredMediaStreamComponent::Clone(
@@ -200,6 +212,29 @@ void TransferredMediaStreamComponent::AddSourceObserver(
   } else {
     observers_.push_back(observer);
   }
+}
+
+void TransferredMediaStreamComponent::AddSink(
+    WebMediaStreamSink* sink,
+    const VideoCaptureDeliverFrameCB& callback,
+    MediaStreamVideoSink::IsSecure is_secure,
+    MediaStreamVideoSink::UsesAlpha uses_alpha) {
+  DCHECK_EQ(MediaStreamSource::kTypeVideo, GetSourceType());
+  if (component_) {
+    component_->AddSink(sink, callback, is_secure, uses_alpha);
+    return;
+  }
+  add_video_sink_calls_.emplace_back(
+      AddSinkArgs{sink, std::move(callback), is_secure, uses_alpha});
+}
+
+void TransferredMediaStreamComponent::AddSink(WebMediaStreamAudioSink* sink) {
+  DCHECK_EQ(MediaStreamSource::kTypeAudio, GetSourceType());
+  if (component_) {
+    component_->AddSink(sink);
+    return;
+  }
+  add_audio_sink_calls_.emplace_back(sink);
 }
 
 String TransferredMediaStreamComponent::ToString() const {
