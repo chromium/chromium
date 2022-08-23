@@ -683,14 +683,6 @@
     "args": ["--disable-features=SplitCacheByNetworkIsolationKey"]
   },
   {
-    "prefix": "clipboard-custom-formats",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["clipboard/async-clipboard",
-              "external/wpt/clipboard-apis/clipboard-item.https.html"],
-    "args": ["--enable-blink-features=ClipboardCustomFormats",
-             "--enable-features=ClipboardCustomFormats"]
-  },
-  {
     "prefix": "disable-ua-client-hint",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/client-hints", "wpt_internal/client-hints"],
