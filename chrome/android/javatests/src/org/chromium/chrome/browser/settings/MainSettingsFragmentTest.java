@@ -328,6 +328,41 @@ public class MainSettingsFragmentTest {
     }
 
     @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON)
+    public void testSigninRowLaunchesSignInFlowForSignedOutAccounts() {
+        // When there are no accounts, sync promo and the signin preference shows the same text.
+        mSyncTestRule.addTestAccount();
+        launchSettingsActivity();
+
+        onView(withText(R.string.sync_promo_turn_on_sync)).perform(click());
+
+        verify(mMockSyncConsentActivityLauncher)
+                .launchActivityIfAllowed(
+                        any(Activity.class), eq(SigninAccessPoint.SETTINGS_SYNC_OFF_ROW));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.TANGIBLE_SYNC,
+            ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_SINGLE_BUTTON})
+    public void
+    testSigninRowLaunchesTangibleSignInFlowForSignedOutAccounts() {
+        // When there are no accounts, sync promo and the signin preference shows the same text.
+        mSyncTestRule.addTestAccount();
+        launchSettingsActivity();
+
+        onView(withText(R.string.sync_promo_turn_on_sync)).perform(click());
+
+        onView(withText(R.string.signin_account_picker_dialog_title))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.signin_add_account_to_device))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
     @SmallTest
     public void testSyncRowLaunchesSignInFlowForSignedInAccounts() {
         CoreAccountInfo accountInfo = mSyncTestRule.setUpAccountAndSignInForTesting();
