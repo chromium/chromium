@@ -10,6 +10,9 @@
 
 namespace ash::quick_start {
 
+class AuthenticatedConnection;
+class IncomingConnection;
+
 // TargetDeviceConnectionBroker is the entrypoint for consuming the Quick Start
 // connectivity component. Calling code is expected to get an instance of this
 // class using the TargetDeviceConnectionBrokerFactory and interact with the
@@ -27,15 +30,6 @@ class TargetDeviceConnectionBroker {
     kNotSupported,
     kSupported
   };
-
-  class Connection {};
-
-  // Represents a new incoming connection that has not yet been accepted by the
-  // source device.
-  class IncomingConnection : public Connection {};
-
-  // Represents an accepted (authenticated) connection.
-  class AcceptedConnection : public Connection {};
 
   // Clients of TargetDeviceConnectionBroker should implement this interface,
   // and provide a self-reference when calling TargetDeviceConnectionBroker::
@@ -58,12 +52,12 @@ class TargetDeviceConnectionBroker {
     // provides (QR Code or shapes/PIN matching).
     //
     // The IncomingConnection pointer may be cached, but will become invalid
-    // after either OnConnectionAccepted(), OnConnectionRejected(), or
+    // after either OnConnectionAuthenticated(), OnConnectionRejected(), or
     // OnConnectionClosed() are called.
     //
     // Use source_device_id to understand which connection
-    // OnConnectionAccepted(), OnConnectionRejected(), or OnConnectionClosed()
-    // refers to.
+    // OnConnectionAuthenticated(), OnConnectionRejected(), or
+    // OnConnectionClosed() refers to.
     virtual void OnIncomingConnectionInitiated(
         const std::string& source_device_id,
         base::WeakPtr<IncomingConnection> connection) = 0;
@@ -74,14 +68,14 @@ class TargetDeviceConnectionBroker {
     // "paused" before this target device performed a Critical Update and
     // rebooted.
     //
-    // The AcceptedConnection pointer may be cached, but will become invalid
-    // after OnConnectionClosed() is called.
+    // The AuthenticatedConnection pointer may be cached, but will become
+    // invalid after OnConnectionClosed() is called.
     //
     // Use source_device_id to understand which connection
     // OnConnectionClosed() refers to.
-    virtual void OnConnectionAccepted(
+    virtual void OnConnectionAuthenticated(
         const std::string& source_device_id,
-        base::WeakPtr<AcceptedConnection> connection) = 0;
+        base::WeakPtr<AuthenticatedConnection> connection) = 0;
 
     // Called if the source device rejected the connection.
     virtual void OnConnectionRejected(const std::string& source_device_id) = 0;
@@ -105,7 +99,7 @@ class TargetDeviceConnectionBroker {
   // |ConnectionLifecycleListener::OnIncomingConnectionInitiated()|.
   //
   // If the caller paused a connection previously, the connection to the
-  // source device will resume via OnConnectionAccepted().
+  // source device will resume via OnConnectionAuthenticated().
   // Clients should check  GetFeatureSupportStatus()  before calling
   // StartAdvertising().
   virtual void StartAdvertising(

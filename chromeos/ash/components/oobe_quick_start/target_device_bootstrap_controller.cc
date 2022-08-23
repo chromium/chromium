@@ -8,6 +8,8 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "chromeos/ash/components/oobe_quick_start/connectivity/authenticated_connection.h"
+#include "chromeos/ash/components/oobe_quick_start/connectivity/incoming_connection.h"
 #include "chromeos/ash/components/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -66,16 +68,14 @@ void TargetDeviceBootstrapController::StopAdvertising() {
 
 void TargetDeviceBootstrapController::OnIncomingConnectionInitiated(
     const std::string& source_device_id,
-    base::WeakPtr<TargetDeviceConnectionBroker::IncomingConnection>
-        connection) {
+    base::WeakPtr<IncomingConnection> connection) {
   // TODO(b/239855593): Implement
   NOTIMPLEMENTED();
 }
 
-void TargetDeviceBootstrapController::OnConnectionAccepted(
+void TargetDeviceBootstrapController::OnConnectionAuthenticated(
     const std::string& source_device_id,
-    base::WeakPtr<TargetDeviceConnectionBroker::AcceptedConnection>
-        connection) {
+    base::WeakPtr<AuthenticatedConnection> connection) {
   // TODO(b/239855593): Implement
   NOTIMPLEMENTED();
 }

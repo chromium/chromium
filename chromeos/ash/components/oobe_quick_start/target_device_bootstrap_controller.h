@@ -15,7 +15,8 @@
 
 namespace ash::quick_start {
 
-class TargetDeviceConnectionBroker;
+class AuthenticatedConnection;
+class IncomingConnection;
 
 class TargetDeviceBootstrapController
     : public TargetDeviceConnectionBroker::ConnectionLifecycleListener {
@@ -67,12 +68,10 @@ class TargetDeviceBootstrapController
   // TargetDeviceConnectionBroker::ConnectionLifecycleListener:
   void OnIncomingConnectionInitiated(
       const std::string& source_device_id,
-      base::WeakPtr<TargetDeviceConnectionBroker::IncomingConnection>
-          connection) override;
-  void OnConnectionAccepted(
+      base::WeakPtr<IncomingConnection> connection) override;
+  void OnConnectionAuthenticated(
       const std::string& source_device_id,
-      base::WeakPtr<TargetDeviceConnectionBroker::AcceptedConnection>
-          connection) override;
+      base::WeakPtr<AuthenticatedConnection> connection) override;
   void OnConnectionRejected(const std::string& source_device_id) override;
   void OnConnectionClosed(const std::string& source_device_id) override;
 
