@@ -42,7 +42,7 @@ std::unique_ptr<KeyedService> TrackerFactory::BuildServiceInstanceFor(
   return CreateFeatureEngagementTracker(context);
 }
 
-// Finds which browser state to use. If |context| is an incognito browser
+// Finds which browser state to use. If `context` is an incognito browser
 // state, it returns the non-incognito state. Thus, feature engagement events
 // are tracked even in incognito tabs.
 web::BrowserState* TrackerFactory::GetBrowserStateToUse(

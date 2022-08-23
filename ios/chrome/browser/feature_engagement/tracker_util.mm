@@ -15,18 +15,18 @@
 
 namespace feature_engagement {
 
-void NotifyNewTabEvent(ChromeBrowserState* browserState, bool isIncognito) {
+void NotifyNewTabEvent(ChromeBrowserState* browser_state, bool is_incognito) {
   const char* const event =
-      isIncognito ? feature_engagement::events::kIncognitoTabOpened
-                  : feature_engagement::events::kNewTabOpened;
-  TrackerFactory::GetForBrowserState(browserState)
+      is_incognito ? feature_engagement::events::kIncognitoTabOpened
+                   : feature_engagement::events::kNewTabOpened;
+  TrackerFactory::GetForBrowserState(browser_state)
       ->NotifyEvent(std::string(event));
 }
 
-void NotifyNewTabEventForCommand(ChromeBrowserState* browserState,
+void NotifyNewTabEventForCommand(ChromeBrowserState* browser_state,
                                  OpenNewTabCommand* command) {
   if (command.isUserInitiated) {
-    NotifyNewTabEvent(browserState, command.inIncognito);
+    NotifyNewTabEvent(browser_state, command.inIncognito);
   }
 }
 
