@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/webauthn/local_credential_management_win.h"
 #include "chrome/browser/webauthn/local_credential_management.h"
 
 #include <algorithm>
@@ -84,7 +85,7 @@ class CredentialComparator {
 };
 
 bool ContainsUserCreatedCredential(
-    const std::vector<device::DiscoverableCredentialMetadata> credentials) {
+    const std::vector<device::DiscoverableCredentialMetadata>& credentials) {
   return std::any_of(
       credentials.begin(), credentials.end(),
       [](const device::DiscoverableCredentialMetadata& cred) -> bool {
@@ -165,11 +166,22 @@ void EnumerateResultToBool(
 
 }  // namespace
 
-LocalCredentialManagement::LocalCredentialManagement(
+LocalCredentialManagementWin::LocalCredentialManagementWin(
     device::WinWebAuthnApi* api)
     : api_(api) {}
 
-void LocalCredentialManagement::HasCredentials(
+// static
+void LocalCredentialManagementWin::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterBooleanPref(kHasPlatformCredentialsPref, false);
+}
+
+std::unique_ptr<LocalCredentialManagement> LocalCredentialManagement::Create() {
+  return std::make_unique<LocalCredentialManagementWin>(
+      device::WinWebAuthnApi::GetDefault());
+}
+
+void LocalCredentialManagementWin::HasCredentials(
     Profile* profile,
     base::OnceCallback<void(bool)> callback) {
   absl::optional<bool> result;
@@ -194,7 +206,7 @@ void LocalCredentialManagement::HasCredentials(
                            std::move(cacher)));
 }
 
-void LocalCredentialManagement::Enumerate(
+void LocalCredentialManagementWin::Enumerate(
     Profile* profile,
     base::OnceCallback<void(
         absl::optional<std::vector<device::DiscoverableCredentialMetadata>>)>
@@ -212,16 +224,10 @@ void LocalCredentialManagement::Enumerate(
                            std::move(cacher)));
 }
 
-void LocalCredentialManagement::Delete(
+void LocalCredentialManagementWin::Delete(
     Profile* profile,
     base::span<const uint8_t> credential_id,
     base::OnceCallback<void(bool)> callback) {
   device::WinWebAuthnApiAuthenticator::DeletePlatformCredential(
       api_, credential_id, std::move(callback));
-}
-
-// static
-void LocalCredentialManagement::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterBooleanPref(kHasPlatformCredentialsPref, false);
 }

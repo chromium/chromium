@@ -5806,7 +5806,12 @@ static_library("browser") {
       "//chrome/browser/ui/quick_answers",
     ]
   }
-
+  if (is_mac) {
+    sources += [
+      "webauthn/local_credential_management_mac.cc",
+      "webauthn/local_credential_management_mac.h",
+    ]
+  }
   if (is_win) {
     libs += [
       "secur32.lib",
@@ -5910,6 +5915,7 @@ static_library("browser") {
       "upgrade_detector/registry_monitor.cc",
       "upgrade_detector/registry_monitor.h",
       "webauthn/local_credential_management_win.cc",
+      "webauthn/local_credential_management_win.h",
       "webshare/win/share_operation.cc",
       "webshare/win/share_operation.h",
       "webshare/win/show_share_ui_for_window_operation.cc",

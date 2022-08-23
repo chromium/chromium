@@ -157,7 +157,7 @@ function createBrowserSettingsRoutes(): Partial<SettingsRoutes> {
     r.PAYMENTS = r.AUTOFILL.createChild('/payments');
     r.ADDRESSES = r.AUTOFILL.createChild('/addresses');
 
-    // <if expr="is_win">
+    // <if expr="is_win or is_macosx">
     r.PASSKEYS = r.AUTOFILL.createChild('/passkeys');
     // </if>
   }

@@ -883,7 +883,7 @@ GEN('#if !BUILDFLAG(IS_CHROMEOS_ASH)');
 ].forEach(test => registerTest(...test));
 GEN('#endif');
 
-GEN('#if BUILDFLAG(IS_WIN)');
+GEN('#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)');
 [['PasskeysSubpage', 'passkeys_subpage_test.js'],
 ].forEach(test => registerTest(...test));
 GEN('#endif');

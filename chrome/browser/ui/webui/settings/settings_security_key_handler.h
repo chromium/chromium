@@ -270,8 +270,7 @@ class SecurityKeysPhonesHandler : public SettingsPageUIHandler {
   void DoEnumerate(const base::Value& callback_id);
 };
 
-#if BUILDFLAG(IS_WIN)
-
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 class PasskeysHandler : public SettingsPageUIHandler {
  public:
   PasskeysHandler();

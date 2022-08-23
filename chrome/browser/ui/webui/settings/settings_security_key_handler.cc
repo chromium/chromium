@@ -1109,7 +1109,7 @@ void SecurityKeysPhonesHandler::DoEnumerate(const base::Value& callback_id) {
   ResolveJavascriptCallback(callback_id, result);
 }
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 PasskeysHandler::PasskeysHandler() = default;
 PasskeysHandler::~PasskeysHandler() = default;
@@ -1136,8 +1136,8 @@ void PasskeysHandler::HandleHasPasskeys(const base::Value::List& args) {
   DCHECK_EQ(1u, args.size());
 
   AllowJavascript();
-  auto local_cred_man = std::make_unique<LocalCredentialManagement>(
-      device::WinWebAuthnApi::GetDefault());
+  std::unique_ptr<LocalCredentialManagement> local_cred_man =
+      LocalCredentialManagement::Create();
   local_cred_man->HasCredentials(
       Profile::FromBrowserContext(
           web_ui()->GetWebContents()->GetBrowserContext()),
@@ -1163,8 +1163,8 @@ void PasskeysHandler::HandleEnumerate(const base::Value::List& args) {
 }
 
 void PasskeysHandler::DoEnumerate(std::string callback_id) {
-  auto local_cred_man = std::make_unique<LocalCredentialManagement>(
-      device::WinWebAuthnApi::GetDefault());
+  std::unique_ptr<LocalCredentialManagement> local_cred_man =
+      LocalCredentialManagement::Create();
   local_cred_man->Enumerate(
       Profile::FromBrowserContext(
           web_ui()->GetWebContents()->GetBrowserContext()),
@@ -1212,8 +1212,8 @@ void PasskeysHandler::HandleDelete(const base::Value::List& args) {
   const bool ok = base::HexStringToBytes(args[1].GetString(), &credential_id);
   DCHECK(ok);
 
-  auto local_cred_man = std::make_unique<LocalCredentialManagement>(
-      device::WinWebAuthnApi::GetDefault());
+  std::unique_ptr<LocalCredentialManagement> local_cred_man =
+      LocalCredentialManagement::Create();
   local_cred_man->Delete(
       Profile::FromBrowserContext(
           web_ui()->GetWebContents()->GetBrowserContext()),

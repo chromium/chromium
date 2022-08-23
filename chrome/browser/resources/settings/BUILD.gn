@@ -275,7 +275,6 @@ build_webui("build") {
 
   if (is_win) {
     web_component_files += [
-      "autofill_page/passkeys_subpage.ts",
       "safety_check_page/safety_check_chrome_cleaner_child.ts",
       "chrome_cleanup_page/chrome_cleanup_page.ts",
       "chrome_cleanup_page/items_to_remove_list.ts",
@@ -283,7 +282,9 @@ build_webui("build") {
       "incompatible_applications_page/incompatible_applications_page.ts",
     ]
   }
-
+  if (is_win || is_mac) {
+    web_component_files += [ "autofill_page/passkeys_subpage.ts" ]
+  }
   if (is_chromeos) {
     web_component_files += [ "controls/password_prompt_dialog.ts" ]
   }
@@ -386,10 +387,12 @@ build_webui("build") {
 
   if (is_win) {
     non_web_component_files += [
-      "autofill_page/passkeys_browser_proxy.ts",
       "chrome_cleanup_page/chrome_cleanup_proxy.ts",
       "incompatible_applications_page/incompatible_applications_browser_proxy.ts",
     ]
+  }
+  if (is_win || is_mac) {
+    non_web_component_files += [ "autofill_page/passkeys_browser_proxy.ts" ]
   }
 
   # -----------------non_web_component_files end -------------------------------

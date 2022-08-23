@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/webauthn/local_credential_management.h"
+#include "chrome/browser/webauthn/local_credential_management_win.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -63,7 +64,7 @@ class LocalCredentialManagementTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   device::FakeWinWebAuthnApi api_;
-  LocalCredentialManagement local_cred_man_ = {&api_};
+  LocalCredentialManagementWin local_cred_man_{&api_};
   const base::test::ScopedFeatureList scoped_feature_list_;
 };
 

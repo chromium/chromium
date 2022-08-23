@@ -887,7 +887,7 @@
     Your passwords are encrypted on your device before they‘re saved to Google Password Manager
   </message>
 
-  <if expr="is_win">
+  <if expr="is_win or is_macosx">
     <message name="IDS_AUTOFILL_MANAGE_PASSKEYS_LABEL" desc="The label on a button that a user can click in order to see and delete passkeys saved on their computer. For consistency, the word 'passkey' is in the glossery with translations already suggested.">
       Manage passkeys
     </message>

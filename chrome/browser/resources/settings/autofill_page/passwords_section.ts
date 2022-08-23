@@ -52,7 +52,7 @@ import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
 import {MergePasswordsStoreCopiesMixin, MergePasswordsStoreCopiesMixinInterface} from './merge_passwords_store_copies_mixin.js';
-// <if expr="is_win">
+// <if expr="is_win or is_macosx">
 import {PasskeysBrowserProxy, PasskeysBrowserProxyImpl} from './passkeys_browser_proxy.js';
 // </if>
 import {PasswordCheckMixin, PasswordCheckMixinInterface} from './password_check_mixin.js';
@@ -292,7 +292,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
 
   private passwordManager_: PasswordManagerProxy =
       PasswordManagerImpl.getInstance();
-  // <if expr="is_win">
+  // <if expr="is_win or is_macosx">
   private passkeysBrowserProxy_: PasskeysBrowserProxy =
       PasskeysBrowserProxyImpl.getInstance();
   // </if>
@@ -315,7 +315,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
       // </if>
     });
 
-    // <if expr="is_win">
+    // <if expr="is_win or is_macosx">
     this.passkeysBrowserProxy_.hasPasskeys().then(hasPasskeys => {
       this.hasPasskeys_ = hasPasskeys;
     });
@@ -557,7 +557,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
       assert(toFocus);
       focusWithoutInk(toFocus);
     });
-    // <if expr="is_win">
+    // <if expr="is_win or is_macosx">
     this.focusConfig.set(routes.PASSKEYS.path, () => {
       const toFocus =
           this.shadowRoot!.querySelector<HTMLElement>('#managePasskeysIcon');
