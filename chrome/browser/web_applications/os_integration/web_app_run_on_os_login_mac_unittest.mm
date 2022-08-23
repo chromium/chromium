@@ -79,8 +79,9 @@ class WebAppRunOnOsLoginMacTest : public WebAppTest {
     WebAppTest::SetUp();
     base::mac::SetBaseBundleID(kFakeChromeBundleId);
 
-    shortcut_override_ = OverrideShortcutsForTesting();
-    destination_dir_ = shortcut_override_->chrome_apps_folder.GetPath();
+    override_registration_ = ShortcutOverrideForTesting::OverrideForTesting();
+    destination_dir_ =
+        override_registration_->shortcut_override->chrome_apps_folder.GetPath();
 
     EXPECT_TRUE(temp_user_data_dir_.CreateUniqueTempDir());
     user_data_dir_ = temp_user_data_dir_.GetPath();
@@ -114,8 +115,9 @@ class WebAppRunOnOsLoginMacTest : public WebAppTest {
     // override DCHECK fails if the directories are not empty. To bypass this in
     // this unittest, we manually delete it.
     // TODO: If these unittests leave OS hook artifacts on bots, undo that here.
-    EXPECT_TRUE(shortcut_override_->chrome_apps_folder.Delete());
-    shortcut_override_.reset();
+    EXPECT_TRUE(
+        override_registration_->shortcut_override->chrome_apps_folder.Delete());
+    override_registration_.reset();
     WebAppShortcutCreator::ResetHaveLocalizedAppDirNameForTesting();
     WebAppTest::TearDown();
   }
@@ -141,7 +143,8 @@ class WebAppRunOnOsLoginMacTest : public WebAppTest {
   std::unique_ptr<WebAppAutoLoginUtilMock> auto_login_util_mock_;
   std::unique_ptr<ShortcutInfo> info_;
   base::FilePath shim_path_;
-  std::unique_ptr<ScopedShortcutOverrideForTesting> shortcut_override_;
+  std::unique_ptr<ShortcutOverrideForTesting::BlockingRegistration>
+      override_registration_;
 };
 
 TEST_F(WebAppRunOnOsLoginMacTest, Register) {

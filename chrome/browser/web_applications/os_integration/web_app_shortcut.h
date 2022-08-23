@@ -10,9 +10,11 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/callback_helpers.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -46,12 +48,34 @@ struct LinuxFileRegistration {
 // - Accessed by the UI thread.
 // It is up to the user to ensure thread safety of this struct through
 // ordering guarantees.
-struct ScopedShortcutOverrideForTesting {
+struct ShortcutOverrideForTesting
+    : public base::RefCountedThreadSafe<ShortcutOverrideForTesting> {
  public:
-  ScopedShortcutOverrideForTesting();
-  ~ScopedShortcutOverrideForTesting();
-  ScopedShortcutOverrideForTesting(const ScopedShortcutOverrideForTesting&) =
-      delete;
+  // Destroying this class blocks the thread until all users of
+  // GetShortcutOverrideForTesting() have completed.
+  struct BlockingRegistration {
+    BlockingRegistration();
+    ~BlockingRegistration();
+
+    scoped_refptr<ShortcutOverrideForTesting> shortcut_override;
+  };
+
+  ShortcutOverrideForTesting(const ShortcutOverrideForTesting&) = delete;
+
+  // Overrides applicable directories for shortcut integration and returns an
+  // object that:
+  // 1) Contains the directories.
+  // 2) Keeps the override active until the object is destroyed.
+  // 3) DCHECK-fails on destruction if any of the shortcut directories / os
+  //    hooks are NOT cleanup by the test. This ensures that trybots don't have
+  //    old test artifacts on them that can make future tests flaky.
+  // All installs that occur during the lifetime of the
+  // ShortcutOverrideForTesting MUST be uninstalled before it is
+  // destroyed.
+  // The returned value, on destruction, will block until all usages of the
+  // GetShortcutOverrideForTesting() are destroyed.
+  static std::unique_ptr<BlockingRegistration> OverrideForTesting(
+      const base::FilePath& base_path = base::FilePath());
 
 #if BUILDFLAG(IS_WIN)
   base::ScopedTempDir desktop;
@@ -68,22 +92,23 @@ struct ScopedShortcutOverrideForTesting {
   // std::string xdg_mime_install_cmd;
   // std::string mime_types_file_contents;
 #endif
+
+ private:
+  friend class base::RefCountedThreadSafe<ShortcutOverrideForTesting>;
+
+  explicit ShortcutOverrideForTesting(const base::FilePath& base_path);
+  ~ShortcutOverrideForTesting();
+
+  // |on_destruction| has it's closure set only once (when BlockingRegistration
+  // is destroyed) and executed when ShortcutOverrideForTesting is destroyed.
+  // The destructor of BlockingRegistration explicitly sets this closure with a
+  // global lock, then destroys the object, then waits on the closure, so it is
+  // thread-compatible.
+  base::ScopedClosureRunner on_destruction;
 };
 
 // Returns an active shortcut override for testing, if there is one.
-ScopedShortcutOverrideForTesting* GetShortcutOverrideForTesting();
-
-// Overrides applicable directories for shortcut integration and returns an
-// object that:
-// 1) Contains the directories.
-// 2) Keeps the override active until the object is destroyed.
-// 3) DCHECK-fails on destruction if any of the shortcut directories / os hooks
-//    are NOT cleanup by the test. This ensures that trybots don't have old test
-//    artifacts on them that can make future tests flaky.
-// All installs that occur during the lifetime of the
-// ScopedShortcutOverrideForTesting MUST be uninstalled before it is destroyed.
-std::unique_ptr<ScopedShortcutOverrideForTesting> OverrideShortcutsForTesting(
-    const base::FilePath& base_path = base::FilePath());
+scoped_refptr<ShortcutOverrideForTesting> GetShortcutOverrideForTesting();
 
 // Represents the info required to create a shortcut for an app.
 struct ShortcutInfo {
