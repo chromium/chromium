@@ -917,9 +917,12 @@ class IDLParser(object):
                            | SEQUENCE '<' TypeWithExtendedAttributes '>' Null
                            | FROZENARRAY '<' TypeWithExtendedAttributes '>' Null
                            | OBSERVABLEARRAY '<' TypeWithExtendedAttributes '>' Null
-                           | RecordType Null"""
+                           | RecordType Null
+                           | UNDEFINED Null"""
     if len(p) == 3:
-      if type(p[1]) == str:
+      if p[1] == 'undefined':
+        typeref = self.BuildProduction('Undefined', p, 1)
+      elif type(p[1]) == str:
         typeref = self.BuildNamed('Typeref', p, 1)
       else:
         typeref = p[1]

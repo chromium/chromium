@@ -888,7 +888,7 @@ class _IRBuilder(object):
         def build_simple_type(node, extended_attributes):
             name = node.GetName()
             if name is None:
-                assert node.GetClass() == 'Any'
+                assert node.GetClass() in ('Any', 'Undefined')
                 name = node.GetClass().lower()
             if node.GetProperty('UNRESTRICTED'):
                 name = 'unrestricted {}'.format(name)
@@ -939,6 +939,7 @@ class _IRBuilder(object):
             'Sequence': build_sequence_type,
             'StringType': build_simple_type,
             'Typeref': build_reference_type,
+            'Undefined': build_simple_type,
             'UnionType': build_union_type,
         }
         return build_functions[body_node.GetClass()](

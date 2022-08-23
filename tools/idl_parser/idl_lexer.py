@@ -100,6 +100,7 @@ class IDLLexer(object):
       'stringifier': 'STRINGIFIER',
       'true': 'TRUE',
       'typedef': 'TYPEDEF',
+      'undefined': 'UNDEFINED',
       'unrestricted': 'UNRESTRICTED',
       'unsigned': 'UNSIGNED',
       'USVString': 'USVSTRING',

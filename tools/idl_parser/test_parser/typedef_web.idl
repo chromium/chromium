@@ -190,3 +190,10 @@ typedef double Date;
  *        StringType(DOMString)
  */
 typedef sequence<DOMString>? StringSequenceOrNull;
+
+/** TREE
+ *Typedef(MyUndefined)
+ *  Type()
+ *    Undefined()
+ */
+typedef undefined MyUndefined;

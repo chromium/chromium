@@ -3,4 +3,4 @@
 // found in the LICENSE file.
 
 // https://webidl.spec.whatwg.org/#VoidFunction
-callback VoidFunction = void ();
+callback VoidFunction = undefined ();
