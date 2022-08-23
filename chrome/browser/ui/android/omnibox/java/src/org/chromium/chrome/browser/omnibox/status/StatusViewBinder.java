@@ -17,7 +17,9 @@ class StatusViewBinder implements ViewBinder<PropertyModel, StatusView, Property
 
     @Override
     public void bind(PropertyModel model, StatusView view, PropertyKey propertyKey) {
-        if (StatusProperties.ANIMATIONS_ENABLED.equals(propertyKey)) {
+        if (StatusProperties.ALPHA.equals(propertyKey)) {
+            view.setAlpha(model.get(StatusProperties.ALPHA));
+        } else if (StatusProperties.ANIMATIONS_ENABLED.equals(propertyKey)) {
             view.setAnimationsEnabled(model.get(StatusProperties.ANIMATIONS_ENABLED));
         } else if (StatusProperties.INCOGNITO_BADGE_VISIBLE.equals(propertyKey)) {
             view.setIncognitoBadgeVisibility(model.get(StatusProperties.INCOGNITO_BADGE_VISIBLE));

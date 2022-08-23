@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.status;
 
+import android.animation.Animator;
 import android.content.res.Resources;
 import android.view.View;
 
@@ -28,7 +29,10 @@ import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelAnimatorFactory;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
+import java.util.List;
 
 /**
  * A component for displaying a status icon (e.g. security icon or navigation icon) and optional
@@ -309,5 +313,20 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
     /** Returns whether the status view is currently in the process of animating a change. */
     public boolean isStatusIconAnimating() {
         return mStatusView.isStatusIconAnimating();
+    }
+
+    /**
+     * Populates an animation that fades =/unfades the entire StatusView container with the given
+     * start delay and duration, adding it to the given list of animators.
+     */
+    public void populateFadeAnimation(
+            List<Animator> animators, long startDelayMs, long durationMs, float targetAlpha) {
+        if (mLocationBarDataProvider.isIncognito()) {
+            Animator animator = PropertyModelAnimatorFactory
+                                        .ofFloat(mModel, StatusProperties.ALPHA, targetAlpha)
+                                        .setDuration(durationMs);
+            animator.setStartDelay(startDelayMs);
+            animators.add(animator);
+        }
     }
 }

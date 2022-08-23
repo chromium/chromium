@@ -1811,7 +1811,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         animator.setInterpolator(BakedBezierInterpolator.TRANSFORM_CURVE);
         animators.add(animator);
 
-        mLocationBar.getPhoneCoordinator().populateFadeAnimations(
+        mLocationBar.getPhoneCoordinator().populateFadeAnimation(
                 animators, 0, URL_FOCUS_CHANGE_ANIMATION_DURATION_MS, 0);
 
         float density = getContext().getResources().getDisplayMetrics().density;
@@ -1871,7 +1871,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             animators.add(animator);
         }
 
-        mLocationBar.getPhoneCoordinator().populateFadeAnimations(
+        mLocationBar.getPhoneCoordinator().populateFadeAnimation(
                 animators, URL_FOCUS_TOOLBAR_BUTTONS_DURATION_MS, URL_CLEAR_FOCUS_MENU_DELAY_MS, 1);
 
         if (isLocationBarShownInNTP() && mNtpSearchBoxScrollFraction == 0f) return;

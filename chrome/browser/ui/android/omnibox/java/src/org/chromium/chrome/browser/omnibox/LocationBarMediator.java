@@ -927,9 +927,6 @@ class LocationBarMediator
     private void setProfile(Profile profile) {
         if (profile == null || !mNativeInitialized) return;
         mOmniboxPrerender.initializeForProfile(profile);
-
-        mLocationBarLayout.setShowIconsWhenUrlFocused(
-                mSearchEngineLogoUtils.shouldShowSearchEngineLogo(profile.isOffTheRecord()));
     }
 
     private void focusCurrentTab() {
@@ -1179,14 +1176,10 @@ class LocationBarMediator
 
         // This branch will be hit if the search engine logo should be shown.
         if (shouldShowSearchEngineLogo && mLocationBarLayout instanceof LocationBarPhone) {
-            ((LocationBarPhone) mLocationBarLayout)
-                    .setFirstVisibleFocusedView(/* toStatusView= */ true);
-
             // When the search engine icon is enabled, icons are translations into the parent view's
             // padding area. Set clip padding to false to prevent them from getting clipped.
             mLocationBarLayout.setClipToPadding(false);
         }
-        mLocationBarLayout.setShowIconsWhenUrlFocused(shouldShowSearchEngineLogo || mIsTablet);
         mStatusCoordinator.setShowIconsWhenUrlFocused(shouldShowSearchEngineLogo || mIsTablet);
     }
 

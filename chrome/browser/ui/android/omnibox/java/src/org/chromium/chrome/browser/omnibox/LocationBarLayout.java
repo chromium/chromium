@@ -168,12 +168,6 @@ public class LocationBarLayout extends FrameLayout {
     }
 
     /**
-     * Specify whether location bar should present icons when focused.
-     * @param showIcon True if we should show the icons when the url is focused.
-     */
-    protected void setShowIconsWhenUrlFocused(boolean showIcon) {}
-
-    /**
      * @return The margin to be applied to the URL bar based on the buttons currently visible next
      *         to it, used to avoid text overlapping the buttons and vice versa.
      */
