@@ -535,7 +535,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # lost.
     if not self._IsDualGPUMacLaptop():
       logging.info('Skipping test because not running on dual-GPU Mac laptop')
-      return
+      self.skipTest('Not running on dual-GPU Mac laptop')
     # Start with a browser with clean GPU process state.
     self.RestartBrowserWithArgs([])
     # Wait a few seconds for the system to dispatch any GPU switched
@@ -556,7 +556,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # renderbuffers via the WebGL 2.0 API, does not crash.
     if not self._IsDualGPUMacLaptop():
       logging.info('Skipping test because not running on dual-GPU Mac laptop')
-      return
+      self.skipTest('Not running on dual-GPU Mac laptop')
     # Start with a browser with clean GPU process state.
     self.RestartBrowserWithArgs([])
     # Wait a few seconds for the system to dispatch any GPU switched
@@ -577,7 +577,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # the context to be lost.
     if not self._IsDualGPUMacLaptop():
       logging.info('Skipping test because not running on dual-GPU Mac laptop')
-      return
+      self.skipTest('Not running on dual-GPU Mac laptop')
     # Start with a browser with clean GPU process state.
     self.RestartBrowserWithArgs([])
     # Wait a few seconds for the system to dispatch any GPU switched
@@ -625,7 +625,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # Currently the test only works on Mac dual GPU bots.
     if not self._IsDualGPUMacLaptop():
       logging.info('Skipping test because not running on dual-GPU Mac laptop')
-      return
+      self.skipTest('Not running on dual-GPU Mac laptop')
     self.RestartBrowserIfNecessaryWithArgs(
         [cba.DISABLE_DOMAIN_BLOCKING_FOR_3D_APIS])
     active_vendor_id = self._GetActiveVendorId(False)
