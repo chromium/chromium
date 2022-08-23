@@ -39,6 +39,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/pepper_plugin_info.h"
 #include "content/public/common/process_type.h"
 #include "content/public/common/webplugininfo.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -270,20 +271,22 @@ void PluginServiceImpl::GetPlugins(GetPluginsCallback callback) {
 void PluginServiceImpl::RegisterPepperPlugins() {
 #if BUILDFLAG(ENABLE_PPAPI)
   ComputePepperPluginList(&ppapi_plugins_);
+#else
+  GetContentClient()->AddPepperPlugins(&ppapi_plugins_);
+#endif  // BUILDFLAG(ENABLE_PPAPI)
   for (const auto& plugin : ppapi_plugins_)
     RegisterInternalPlugin(plugin.ToWebPluginInfo(), /*add_at_beginning=*/true);
-#endif  // BUILDFLAG(ENABLE_PPAPI)
 }
 
 // There should generally be very few plugins so a brute-force search is fine.
 const PepperPluginInfo* PluginServiceImpl::GetRegisteredPpapiPluginInfo(
     const base::FilePath& plugin_path) {
-#if BUILDFLAG(ENABLE_PPAPI)
   for (auto& plugin : ppapi_plugins_) {
     if (plugin.path == plugin_path)
       return &plugin;
   }
 
+#if BUILDFLAG(ENABLE_PPAPI)
   // We did not find the plugin in our list. But wait! the plugin can also
   // be a latecomer, as it happens with pepper flash. This information
   // can be obtained from the PluginList singleton and we can use it to

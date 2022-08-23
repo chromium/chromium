@@ -14,16 +14,21 @@
 #include "content/common/content_export.h"
 #include "content/public/common/webplugininfo.h"
 #include "ppapi/buildflags/buildflags.h"
-#include "ppapi/c/pp_module.h"
-#include "ppapi/c/ppb.h"
 
 #if !BUILDFLAG(ENABLE_PLUGINS)
 #error "Plugins should be enabled"
 #endif
 
+#if BUILDFLAG(ENABLE_PPAPI)
+#include "ppapi/c/pp_module.h"
+#include "ppapi/c/ppb.h"
+#endif  // BUILDFLAG(ENABLE_PPAPI)
+
 namespace content {
 
+// TODO(crbug.com/1344644): Rename `PepperPluginInfo`, which has non-PPAPI uses.
 struct CONTENT_EXPORT PepperPluginInfo {
+#if BUILDFLAG(ENABLE_PPAPI)
   typedef const void* (*GetInterfaceFunc)(const char*);
   typedef int (*PPP_InitializeModuleFunc)(PP_Module, PPB_GetInterface);
   typedef void (*PPP_ShutdownModuleFunc)();
@@ -32,13 +37,15 @@ struct CONTENT_EXPORT PepperPluginInfo {
     // This structure is POD, with the constructor initializing to NULL.
     CONTENT_EXPORT EntryPoints();
 
-    GetInterfaceFunc get_interface;
-    PPP_InitializeModuleFunc initialize_module;
-    PPP_ShutdownModuleFunc shutdown_module;  // Optional, may be NULL.
+    GetInterfaceFunc get_interface = nullptr;
+    PPP_InitializeModuleFunc initialize_module = nullptr;
+    PPP_ShutdownModuleFunc shutdown_module = nullptr;  // Optional, may be NULL.
   };
+#endif  // BUILDFLAG(ENABLE_PPAPI)
 
   PepperPluginInfo();
   PepperPluginInfo(const PepperPluginInfo& other);
+  PepperPluginInfo(PepperPluginInfo&& other) noexcept;
   ~PepperPluginInfo();
 
   WebPluginInfo ToWebPluginInfo() const;
@@ -47,10 +54,10 @@ struct CONTENT_EXPORT PepperPluginInfo {
   // These plugins are implemented in the Chrome binary using a separate set
   // of entry points (see internal_entry_points below).
   // Defaults to false.
-  bool is_internal;
+  bool is_internal = false;
 
   // True when this plugin should be run out of process. Defaults to false.
-  bool is_out_of_process;
+  bool is_out_of_process = false;
 
   base::FilePath path;  // Internal plugins have "internal-[name]" as path.
   std::string name;
@@ -58,17 +65,14 @@ struct CONTENT_EXPORT PepperPluginInfo {
   std::string version;
   std::vector<WebPluginMimeType> mime_types;
 
-  // True when the plugin is an external plugin i.e. not bundled with Chrome or
-  // via the component updater.
-  // Defaults to false.
-  bool is_external;
-
+#if BUILDFLAG(ENABLE_PPAPI)
   // When is_internal is set, this contains the function pointers to the
   // entry points for the internal plugins.
   EntryPoints internal_entry_points;
+#endif  // BUILDFLAG(ENABLE_PPAPI)
 
   // Permission bits from ppapi::Permission.
-  uint32_t permissions;
+  uint32_t permissions = 0;
 };
 
 }  // namespace content

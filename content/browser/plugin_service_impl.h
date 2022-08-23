@@ -128,9 +128,7 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
 
   void RegisterPepperPlugins();
 
-#if BUILDFLAG(ENABLE_PPAPI)
   std::vector<PepperPluginInfo> ppapi_plugins_;
-#endif
 
   int max_ppapi_processes_per_profile_ = kDefaultMaxPpapiProcessesPerProfile;
 

@@ -4,27 +4,21 @@
 
 #include "content/public/common/pepper_plugin_info.h"
 
+#include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/version.h"
+#include "content/public/common/webplugininfo.h"
+#include "ppapi/buildflags/buildflags.h"
 
 namespace content {
 
-PepperPluginInfo::EntryPoints::EntryPoints()
-    : get_interface(nullptr),
-      initialize_module(nullptr),
-      shutdown_module(nullptr) {}
+#if BUILDFLAG(ENABLE_PPAPI)
+PepperPluginInfo::EntryPoints::EntryPoints() = default;
+#endif  // BUILDFLAG(ENABLE_PPAPI)
 
-PepperPluginInfo::PepperPluginInfo()
-    : is_internal(false),
-      is_out_of_process(false),
-      is_external(false),
-      permissions(0) {
-}
-
+PepperPluginInfo::PepperPluginInfo() = default;
 PepperPluginInfo::PepperPluginInfo(const PepperPluginInfo& other) = default;
-
-PepperPluginInfo::~PepperPluginInfo() {
-}
+PepperPluginInfo::PepperPluginInfo(PepperPluginInfo&& other) noexcept = default;
+PepperPluginInfo::~PepperPluginInfo() = default;
 
 WebPluginInfo PepperPluginInfo::ToWebPluginInfo() const {
   WebPluginInfo info;
