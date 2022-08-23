@@ -19,16 +19,17 @@
 #include "device/bluetooth/test/mock_bluetooth_advertisement.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace ash::quick_start {
+
+namespace {
+
 using ::testing::_;
 using testing::NiceMock;
 using testing::Return;
 
-namespace {
 constexpr const char kFastPairServiceUuid[] =
     "0000fe2c-0000-1000-8000-00805f9b34fb";
 const uint8_t kFastPairModelId[] = {0x41, 0xc0, 0xd9};
-
-}  // namespace
 
 struct RegisterAdvertisementArgs {
   RegisterAdvertisementArgs(
@@ -119,7 +120,7 @@ class FakeBluetoothAdvertisement : public device::BluetoothAdvertisement {
   bool called_unregister_error_callback_ = false;
 };
 
-namespace ash::quick_start {
+}  // namespace
 
 class FastPairAdvertiserTest : public testing::Test {
  public:

@@ -17,11 +17,12 @@
 #include "device/bluetooth/test/mock_bluetooth_advertisement.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+
 using ::testing::_;
 using testing::NiceMock;
 using testing::Return;
 
-namespace {
 constexpr const char kNearbySharingFastInitiationServiceUuid[] =
     "0000fe2c-0000-1000-8000-00805f9b34fb";
 const uint8_t kNearbySharingFastPairId[] = {0xfc, 0x12, 0x8e};
@@ -33,8 +34,6 @@ const uint8_t kFastInitMetadataTypeNotify[] = {0x00, 0x42};
 // Metadata bytes translate to 0b00000100 and 0b10111110, indicating "version
 // 0", "type 1 (silent)", and "transmission power of 66".
 const uint8_t kFastInitMetadataTypeSilent[] = {0x04, 0x42};
-
-}  // namespace
 
 struct RegisterAdvertisementArgs {
   RegisterAdvertisementArgs(
@@ -94,6 +93,8 @@ class FakeBluetoothAdvertisement : public device::BluetoothAdvertisement {
  protected:
   ~FakeBluetoothAdvertisement() override = default;
 };
+
+}  // namespace
 
 class NearbySharingFastInitiationAdvertiserTest : public testing::Test {
  public:
