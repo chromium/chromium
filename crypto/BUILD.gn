@@ -4,7 +4,6 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
-import("//components/nacl/toolchain.gni")
 import("//crypto/features.gni")
 import("//testing/test.gni")
 
@@ -127,18 +126,15 @@ component("crypto") {
       "nss_util.h",
       "nss_util_internal.h",
     ]
-    deps += [
-      "//build:chromeos_buildflags",
-      "//components/nacl/common:buildflags",
-    ]
+    deps += [ "//build:chromeos_buildflags" ]
     configs += [ "//build/config/linux/nss" ]
   }
 
-  if (is_chromeos_ash && !is_minimal_toolchain) {
+  if (is_chromeos_ash) {
     sources += [ "nss_util_chromeos.cc" ]
   }
 
-  if (is_chromeos && !is_minimal_toolchain) {
+  if (is_chromeos || is_chromeos_lacros) {
     sources += [
       "chaps_support.cc",
       "chaps_support.h",
