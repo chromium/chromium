@@ -700,6 +700,7 @@ FUCHSIA_PERF_ASTRO = PerfPlatform('fuchsia-perf-ast',
                                   _FUCHSIA_PERF_ASTRO_BENCHMARK_CONFIGS,
                                   1,
                                   'fuchsia',
+                                  is_fyi=True,
                                   executables=FUCHSIA_EXEC_CONFIGS['astro'])
 FUCHSIA_PERF_SHERLOCK = PerfPlatform(
     'fuchsia-perf-shk',
@@ -707,6 +708,7 @@ FUCHSIA_PERF_SHERLOCK = PerfPlatform(
     _FUCHSIA_PERF_SHERLOCK_BENCHMARK_CONFIGS,
     1,
     'fuchsia',
+    is_fyi=True,
     executables=FUCHSIA_EXEC_CONFIGS['sherlock'])
 
 # FYI bots

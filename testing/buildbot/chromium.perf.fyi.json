@@ -177,6 +177,15 @@
       }
     ]
   },
+  "fuchsia-builder-perf-arm64": {
+    "additional_compile_targets": [
+      "web_engine_shell_pkg",
+      "cast_runner_pkg",
+      "web_runner_pkg",
+      "chromium_builder_perf",
+      "base_perftests"
+    ]
+  },
   "fuchsia-builder-perf-fyi": {
     "additional_compile_targets": [
       "web_engine_shell_pkg",
@@ -184,6 +193,64 @@
       "web_runner_pkg",
       "chromium_builder_perf",
       "base_perftests"
+    ]
+  },
+  "fuchsia-builder-perf-x64": {
+    "additional_compile_targets": [
+      "chrome_pkg",
+      "base_perftests"
+    ]
+  },
+  "fuchsia-perf-ast": {
+    "isolated_scripts": [
+      {
+        "args": [
+          "-v",
+          "--browser=web-engine-shell",
+          "--upload-results",
+          "--test-shard-map-filename=fuchsia-perf-ast_map.json",
+          "--output-format=histograms",
+          "--experimental-tbmv3-metrics",
+          "-d",
+          "--os-check=update",
+          "--system-image-dir=../../third_party/fuchsia-sdk/images-internal/astro-release/smart_display_eng_arrested"
+        ],
+        "isolate_name": "performance_web_engine_test_suite",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "performance_web_engine_test_suite",
+        "override_compile_targets": [
+          "performance_web_engine_test_suite"
+        ],
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": null,
+              "device_type": "Astro",
+              "os": "Fuchsia",
+              "pool": "chrome.tests"
+            }
+          ],
+          "expiration": 7200,
+          "hard_timeout": 21600,
+          "io_timeout": 21600,
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 1
+        },
+        "trigger_script": {
+          "args": [
+            "--multiple-dimension-script-verbose",
+            "True"
+          ],
+          "requires_simultaneous_shard_dispatch": true,
+          "script": "//testing/trigger_scripts/perf_device_trigger.py"
+        }
+      }
     ]
   },
   "fuchsia-perf-atlas-fyi": {
@@ -330,6 +397,58 @@
           "io_timeout": 21600,
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 6
+        },
+        "trigger_script": {
+          "args": [
+            "--multiple-dimension-script-verbose",
+            "True"
+          ],
+          "requires_simultaneous_shard_dispatch": true,
+          "script": "//testing/trigger_scripts/perf_device_trigger.py"
+        }
+      }
+    ]
+  },
+  "fuchsia-perf-shk": {
+    "isolated_scripts": [
+      {
+        "args": [
+          "-v",
+          "--browser=web-engine-shell",
+          "--upload-results",
+          "--test-shard-map-filename=fuchsia-perf-shk_map.json",
+          "--output-format=histograms",
+          "--experimental-tbmv3-metrics",
+          "-d",
+          "--os-check=update",
+          "--system-image-dir=../../third_party/fuchsia-sdk/images-internal/sherlock-release/smart_display_max_eng_arrested"
+        ],
+        "isolate_name": "performance_web_engine_test_suite",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "performance_web_engine_test_suite",
+        "override_compile_targets": [
+          "performance_web_engine_test_suite"
+        ],
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": null,
+              "device_type": "Sherlock",
+              "os": "Fuchsia",
+              "pool": "chrome.tests"
+            }
+          ],
+          "expiration": 7200,
+          "hard_timeout": 21600,
+          "io_timeout": 21600,
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 1
         },
         "trigger_script": {
           "args": [
