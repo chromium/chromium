@@ -486,8 +486,7 @@ class InterestGroupAuction::BuyerHelper
     //
     // This relies on AuctionWorkletManager::Handle invoking all the callbacks
     // listening for creation of the same BidderWorklet synchronously.
-    if (interest_group.trusted_bidding_signals_keys &&
-        interest_group.trusted_bidding_signals_keys->size() > 0) {
+    if (interest_group.trusted_bidding_signals_url) {
       base::SequencedTaskRunnerHandle::Get()->PostTask(
           FROM_HERE,
           base::BindOnce(&BuyerHelper::SendPendingSignalsRequestsForBidder,

@@ -219,9 +219,7 @@ void BidderWorklet::GenerateBid(
   const auto& trusted_bidding_signals_keys =
       generate_bid_task->bidder_worklet_non_shared_params
           ->trusted_bidding_signals_keys;
-  if (trusted_signals_request_manager_ &&
-      trusted_bidding_signals_keys.has_value() &&
-      !trusted_bidding_signals_keys->empty()) {
+  if (trusted_signals_request_manager_) {
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "request_bidding_signals",
                                       trace_id);
     generate_bid_task->trusted_bidding_signals_request =
@@ -595,7 +593,9 @@ void BidderWorklet::V8State::GenerateBid(
 
   v8::Local<v8::Value> trusted_signals;
   absl::optional<uint32_t> bidding_signals_data_version;
-  if (!trusted_bidding_signals_result) {
+  if (!trusted_bidding_signals_result ||
+      !bidder_worklet_non_shared_params->trusted_bidding_signals_keys ||
+      bidder_worklet_non_shared_params->trusted_bidding_signals_keys->empty()) {
     trusted_signals = v8::Null(isolate);
   } else {
     trusted_signals = trusted_bidding_signals_result->GetBiddingSignals(

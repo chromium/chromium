@@ -1549,10 +1549,15 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupTrustedBiddingSignalsUrl) {
           R"("missing")", 1, GURL("https://response.test/"),
           /*ad_components=*/absl::nullopt, base::TimeDelta()));
 
-  // Since there are no keys, this won't actually be requested, so no need to
-  // add a trusted bidding signals response.
   interest_group_trusted_bidding_signals_url_ =
       GURL("https://signals.test/foo.json");
+  // Need trusted signals response for the next test case, to prevent it from
+  // hanging.
+  AddBidderJsonResponse(
+      &url_loader_factory_,
+      GURL(interest_group_trusted_bidding_signals_url_->spec() +
+           "?hostname=top.window.test&interestGroupNames=Fred"),
+      "{}");
   RunGenerateBidWithReturnValueExpectingResult(
       kGenerateBidBody,
       mojom::BidderWorkletBid::New(R"("https://signals.test/foo.json")", 1,
@@ -2678,6 +2683,9 @@ TEST_F(BidderWorkletTest, GenerateBidPrevWins) {
 
 TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignals) {
   const GURL kBaseSignalsUrl("https://signals.test/");
+  const GURL kNoKeysSignalsUrl(
+      "https://signals.test/"
+      "?hostname=top.window.test&interestGroupNames=Fred");
   const GURL kFullSignalsUrl(
       "https://signals.test/"
       "?hostname=top.window.test&keys=key1,key2&interestGroupNames=Fred");
@@ -2691,6 +2699,8 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignals) {
     }
   )";
 
+  size_t observed_requests = 0;
+
   // Request with null TrustedBiddingSignals keys and URL. No request should be
   // made.
   RunGenerateBidWithReturnValueExpectingResult(
@@ -2698,6 +2708,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignals) {
       mojom::BidderWorkletBid::New("null", 1, GURL("https://response.test/"),
                                    /*ad_components=*/absl::nullopt,
                                    base::TimeDelta()));
+  EXPECT_EQ(observed_requests += 1, url_loader_factory_.total_requests());
 
   // Request with TrustedBiddingSignals keys and null URL. No request should be
   // made.
@@ -2708,25 +2719,32 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignals) {
       mojom::BidderWorkletBid::New("null", 1, GURL("https://response.test/"),
                                    /*ad_components=*/absl::nullopt,
                                    base::TimeDelta()));
+  EXPECT_EQ(observed_requests += 1, url_loader_factory_.total_requests());
 
-  // Request with TrustedBiddingSignals URL and null keys. No request should be
-  // made.
+  // Request with TrustedBiddingSignals URL and null keys. Request should be
+  // made without any keys, and nothing from the response passed to
+  // generateBid().
   interest_group_trusted_bidding_signals_url_ = kBaseSignalsUrl;
   interest_group_trusted_bidding_signals_keys_.reset();
+  AddBidderJsonResponse(&url_loader_factory_, kNoKeysSignalsUrl, kJson);
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: trustedBiddingSignals, bid:1, render:"https://response.test/"})",
       mojom::BidderWorkletBid::New("null", 1, GURL("https://response.test/"),
                                    /*ad_components=*/absl::nullopt,
                                    base::TimeDelta()));
+  EXPECT_EQ(observed_requests += 2, url_loader_factory_.total_requests());
 
-  // Request with TrustedBiddingSignals URL and empty keys. No request should be
-  // made.
+  // Request with TrustedBiddingSignals URL and empty keys. Request should be
+  // made without any keys, and nothing from the response passed to
+  // generateBid().
   interest_group_trusted_bidding_signals_keys_ = std::vector<std::string>();
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: trustedBiddingSignals, bid:1, render:"https://response.test/"})",
       mojom::BidderWorkletBid::New("null", 1, GURL("https://response.test/"),
                                    /*ad_components=*/absl::nullopt,
                                    base::TimeDelta()));
+  EXPECT_EQ(observed_requests += 2, url_loader_factory_.total_requests());
+  url_loader_factory_.ClearResponses();
 
   // Request with valid TrustedBiddingSignals URL and non-empty keys. Request
   // should be made. The request fails.
@@ -2744,6 +2762,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignals) {
        "https://signals.test/"
        "?hostname=top.window.test&keys=key1,key2&interestGroupNames=Fred HTTP "
        "status = 404 Not Found."});
+  EXPECT_EQ(observed_requests += 2, url_loader_factory_.total_requests());
 
   // Request with valid TrustedBiddingSignals URL and non-empty keys. Request
   // should be made. The request succeeds.
@@ -2753,6 +2772,7 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignals) {
       mojom::BidderWorkletBid::New(
           R"({"key1":1,"key2":[2]})", 1, GURL("https://response.test/"),
           /*ad_components=*/absl::nullopt, base::TimeDelta()));
+  EXPECT_EQ(observed_requests += 2, url_loader_factory_.total_requests());
 }
 
 TEST_F(BidderWorkletTest, GenerateBidDataVersion) {
