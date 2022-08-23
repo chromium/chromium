@@ -9,12 +9,30 @@ import './shortcut_customization_fonts.css.js';
 import 'chrome://resources/ash/common/navigation_view_panel.js';
 import 'chrome://resources/ash/common/page_toolbar.js';
 
+import {NavigationViewPanelElement} from 'chrome://resources/ash/common/navigation_view_panel.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {AcceleratorEditDialogElement} from './accelerator_edit_dialog.js';
+import {RequestUpdateAcceleratorEvent} from './accelerator_edit_view.js';
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
+import {ShowEditDialogEvent} from './accelerator_row.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {getTemplate} from './shortcut_customization_app.html.js';
 import {AcceleratorConfig, AcceleratorInfo, AcceleratorSource, AcceleratorState, AcceleratorType, LayoutInfoList, ShortcutProviderInterface} from './shortcut_types.js';
+
+export interface ShortcutCustomizationAppElement {
+  $: {
+    navigationPanel: NavigationViewPanelElement,
+  };
+}
+
+declare global {
+  interface HTMLElementEventMap {
+    'edit-dialog-closed': CustomEvent<void>;
+    'request-update-accelerator': RequestUpdateAcceleratorEvent;
+    'show-edit-dialog': ShowEditDialogEvent;
+  }
+}
 
 /**
  * @fileoverview
@@ -28,40 +46,31 @@ export class ShortcutCustomizationAppElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @private */
       dialogShortcutTitle_: {
         type: String,
         value: '',
       },
 
-      /**
-       * @type {!Array<!AcceleratorInfo>}
-       * @private
-       */
       dialogAccelerators_: {
         type: Array,
         value: () => {},
       },
 
-      /** @private */
       dialogAction_: {
         type: Number,
         value: 0,
       },
 
-      /** @private {!AcceleratorSource} */
       dialogSource_: {
         type: Number,
         value: 0,
       },
 
-      /** @private */
       showEditDialog_: {
         type: Boolean,
         value: false,
       },
 
-      /** @protected */
       showRestoreAllDialog_: {
         type: Boolean,
         value: false,
@@ -69,73 +78,57 @@ export class ShortcutCustomizationAppElement extends PolymerElement {
     };
   }
 
-  /** @override */
-  constructor() {
-    super();
 
-    /** @private {!ShortcutProviderInterface} */
-    this.shortcutProvider_ = getShortcutProvider();
+  protected showRestoreAllDialog_: boolean;
+  protected dialogShortcutTitle_: string;
+  protected dialogAccelerators_: AcceleratorInfo[];
+  protected dialogAction_: number;
+  protected dialogSource_: AcceleratorSource;
+  protected showEditDialog_: boolean;
+  private shortcutProvider_: ShortcutProviderInterface = getShortcutProvider();
+  private acceleratorLookupManager_: AcceleratorLookupManager =
+      AcceleratorLookupManager.getInstance();
 
-    /** @private {!AcceleratorLookupManager} */
-    this.acceleratorLookupManager_ = AcceleratorLookupManager.getInstance();
-  }
-
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.addNavigationSelectors_();
     this.fetchAccelerators_();
-
-    window.addEventListener('show-edit-dialog',
-        (e) => this.showDialog_(e.detail));
-    window.addEventListener('edit-dialog-closed', () => this.onDialogClosed_());
-    window.addEventListener(
-        'request-update-accelerator',
-        (e) => this.onRequestUpdateAccelerators_(e.detail));
+    this.addEventListener('show-edit-dialog', this.showDialog_);
+    this.addEventListener('edit-dialog-closed', this.onDialogClosed_);
+    this.addEventListener(
+        'request-update-accelerator', this.onRequestUpdateAccelerators_);
   }
 
-  /** @override */
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
-    window.removeEventListener('show-edit-dialog',
-        (e) => this.showDialog_(e.detail));
-    window.removeEventListener('edit-dialog-closed',
-        () => this.onDialogClosed_());
+    this.removeEventListener('show-edit-dialog', this.showDialog_);
+    this.removeEventListener('edit-dialog-closed', this.onDialogClosed_);
+    this.removeEventListener(
+        'request-update-accelerator', this.onRequestUpdateAccelerators_);
   }
 
-  /** @private */
-  fetchAccelerators_() {
+  private fetchAccelerators_() {
     // Kickoff fetching accelerators by first fetching the accelerator configs.
     this.shortcutProvider_.getAllAcceleratorConfig().then(
-        (/** @type {!AcceleratorConfig}*/ result) =>
+        (result: AcceleratorConfig) =>
             this.onAcceleratorConfigFetched_(result));
   }
 
-  /**
-   * @param {!AcceleratorConfig} config
-   * @private
-   */
-  onAcceleratorConfigFetched_(config) {
+  private onAcceleratorConfigFetched_(config: AcceleratorConfig) {
     this.acceleratorLookupManager_.setAcceleratorLookup(config);
     // After fetching the config infos, fetch the layout infos next.
     this.shortcutProvider_.getLayoutInfo().then(
-        (/** @type {!LayoutInfoList} */ result) =>
-            this.onLayoutInfosFetched_(result));
+        (result: LayoutInfoList) => this.onLayoutInfosFetched_(result));
   }
 
-  /**
-   * @param {!LayoutInfoList} layoutInfos
-   * @private
-   */
-  onLayoutInfosFetched_(layoutInfos) {
+  private onLayoutInfosFetched_(layoutInfos: LayoutInfoList) {
     this.acceleratorLookupManager_.setAcceleratorLayoutLookup(layoutInfos);
     // Notify pages to update their accelerators.
     this.$.navigationPanel.notifyEvent('updateAccelerators');
   }
 
-  /** @private */
-  addNavigationSelectors_() {
+  private addNavigationSelectors_() {
     const pages = [
       this.$.navigationPanel.createSelectorItem(
           'Chrome OS', 'shortcuts-page',
@@ -156,62 +149,49 @@ export class ShortcutCustomizationAppElement extends PolymerElement {
     this.$.navigationPanel.addSelectors(pages);
   }
 
-  /**
-   * @param {!{description: string, accelerators: !Array<!AcceleratorInfo>,
-   *           action: number, source: !AcceleratorSource}} e
-   * @private
-   */
-  showDialog_(e) {
-    this.dialogShortcutTitle_ = e.description;
-    this.dialogAccelerators_ =
-        /** @type {!Array<!AcceleratorInfo>}*/(e.accelerators);
-    this.dialogAction_ = e.action;
-    this.dialogSource_ = e.source;
+  private showDialog_(e: ShowEditDialogEvent) {
+    this.dialogShortcutTitle_ = e.detail.description;
+    this.dialogAccelerators_ = e.detail.accelerators;
+    this.dialogAction_ = e.detail.action;
+    this.dialogSource_ = e.detail.source;
     this.showEditDialog_ = true;
   }
 
-  /** @private */
-  onDialogClosed_() {
+  private onDialogClosed_() {
     this.showEditDialog_ = false;
     this.dialogShortcutTitle_ = '';
     this.dialogAccelerators_ = [];
   }
 
-  /**
-   * @param {!Object<number, number>} detail
-   * @private
-   */
-  onRequestUpdateAccelerators_(detail) {
+  private onRequestUpdateAccelerators_(e: RequestUpdateAcceleratorEvent) {
     this.$.navigationPanel.notifyEvent('updateSubsections');
     const updatedAccels =
         this.acceleratorLookupManager_
-            .getAccelerators(detail.source, detail.action)
-            .filter((accel) => {
+            .getAccelerators(e.detail.source, e.detail.action)
+            ?.filter((accel) => {
               // Hide accelerators that are default and disabled.
-              return !(accel.type === AcceleratorType.kDefault &&
+              return !(
+                  accel.type === AcceleratorType.kDefault &&
                   accel.state === AcceleratorState.kDisabledByUser);
             });
-    this.shadowRoot.querySelector('#editDialog')
-        .updateDialogAccelerators(updatedAccels);
+
+    this.shadowRoot!.querySelector<AcceleratorEditDialogElement>('#editDialog')!
+        .updateDialogAccelerators(updatedAccels as AcceleratorInfo[]);
   }
 
-  /** @protected */
-  onRestoreAllDefaultClicked_() {
+  protected onRestoreAllDefaultClicked_() {
     this.showRestoreAllDialog_ = true;
   }
 
-  /** @protected */
-  onCancelRestoreButtonClicked_() {
+  protected onCancelRestoreButtonClicked_() {
     this.closeRestoreAllDialog_();
   }
 
-  /** @protected */
-  onConfirmRestoreButtonClicked_() {
+  protected onConfirmRestoreButtonClicked_() {
     // TODO(jimmyxgong): Implement this function.
   }
 
-  /** @protected */
-  closeRestoreAllDialog_() {
+  protected closeRestoreAllDialog_() {
     this.showRestoreAllDialog_ = false;
   }
 

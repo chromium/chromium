@@ -17,6 +17,15 @@ import {ViewState} from './accelerator_view.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {AcceleratorConfigResult, AcceleratorInfo, AcceleratorKeys, AcceleratorSource, AcceleratorState, AcceleratorType, ShortcutProviderInterface} from './shortcut_types.js';
 
+export type RequestUpdateAcceleratorEvent =
+    CustomEvent<{action: number, source: AcceleratorSource}>;
+
+declare global {
+  interface HTMLElementEventMap {
+    'request-update-accelerator': RequestUpdateAcceleratorEvent;
+  }
+}
+
 const accelerator: AcceleratorKeys = {
   modifiers: 0,
   key: 0,

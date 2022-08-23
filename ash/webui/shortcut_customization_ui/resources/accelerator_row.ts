@@ -13,6 +13,18 @@ import {getTemplate} from './accelerator_row.html.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {AcceleratorInfo, AcceleratorSource, ShortcutProviderInterface} from './shortcut_types.js';
 
+export type ShowEditDialogEvent = CustomEvent<{
+  description: string,
+  accelerators: AcceleratorInfo[],
+  action: number,
+  source: AcceleratorSource,
+}>;
+
+declare global {
+  interface HTMLElementEventMap {
+    'show-edit-dialog': ShowEditDialogEvent;
+  }
+}
 
 /**
  * @fileoverview
@@ -32,25 +44,21 @@ export class AcceleratorRowElement extends PolymerElement {
         value: '',
       },
 
-      /** @type {!Array<!AcceleratorInfo>} */
       acceleratorInfos: {
         type: Array,
         value: () => {},
       },
 
-      /** @private */
       isLocked_: {
         type: Boolean,
         value: false,
       },
 
-      /** @type {number} */
       action: {
         type: Number,
         value: 0,
       },
 
-      /** @type {!AcceleratorSource} */
       source: {
         type: Number,
         value: 0,
@@ -59,37 +67,32 @@ export class AcceleratorRowElement extends PolymerElement {
     };
   }
 
-  constructor() {
-    super();
-    /** @private {!ShortcutProviderInterface} */
-    this.shortcutInterfaceProvider_ = getShortcutProvider();
-  }
+  description: string;
+  acceleratorInfos: AcceleratorInfo[];
+  action: number;
+  source: AcceleratorSource;
+  private isLocked_: boolean;
+  private shortcutInterfaceProvider_: ShortcutProviderInterface =
+      getShortcutProvider();
 
-  /** @override */
-  connectedCallback() {
-    super.connectedCallback();
-  }
-
-  /** @override */
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
     if (!this.isLocked_) {
       this.removeEventListener('click', () => this.showDialog_());
     }
   }
 
-  /** @protected */
-  onSourceChanged_() {
-    this.shortcutInterfaceProvider_.isMutable(this.source).then((result) => {
-      this.isLocked_ = !result;
-      if (!this.isLocked_) {
-        this.addEventListener('click', () => this.showDialog_());
-      }
-    });
+  protected onSourceChanged_() {
+    this.shortcutInterfaceProvider_.isMutable(this.source)
+        .then((result: boolean) => {
+          this.isLocked_ = !result;
+          if (!this.isLocked_) {
+            this.addEventListener('click', () => this.showDialog_());
+          }
+        });
   }
 
-  /** @private */
-  showDialog_() {
+  private showDialog_() {
     this.dispatchEvent(new CustomEvent(
         'show-edit-dialog',
         {

@@ -4,13 +4,25 @@
 
 import './accelerator_row.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {getTemplate} from './accelerator_subsection.html.js';
 import {fakeSubCategories} from './fake_data.js';
 import {AcceleratorInfo, AcceleratorState, AcceleratorType} from './shortcut_types.js';
+
+export interface Accelerator {
+  description: string;
+  action: number;
+  source: number;
+  acceleratorInfos: AcceleratorInfo[];
+}
+
+export interface AcceleratorSubsectionElement {
+  $: {
+    list: DomRepeat,
+  };
+}
 
 /**
  * @fileoverview
@@ -44,8 +56,6 @@ export class AcceleratorSubsectionElement extends PolymerElement {
        * TODO(jimmyxgong): Fetch the shortcuts and it accelerators with the
        * mojom::source_id and mojom::subsection_id. This serves as a
        * temporary way to populate a subsection.
-       * @type {Array<!Object<string, number, number,
-       *     Array<!AcceleratorInfo>>>}
        */
       acceleratorContainer: {
         type: Array,
@@ -54,13 +64,12 @@ export class AcceleratorSubsectionElement extends PolymerElement {
     };
   }
 
-  /** @override */
-  constructor() {
-    super();
-
-    /** @private {!AcceleratorLookupManager} */
-    this.lookupManager_ = AcceleratorLookupManager.getInstance();
-  }
+  override title: string;
+  category: number;
+  subcategory: number;
+  acceleratorContainer: Accelerator[];
+  private lookupManager_: AcceleratorLookupManager =
+      AcceleratorLookupManager.getInstance();
 
   updateSubsection() {
     // Force the rendered list to reset, Polymer's dom-repeat does not perform
@@ -71,8 +80,7 @@ export class AcceleratorSubsectionElement extends PolymerElement {
     this.onCategoryUpdated_();
   }
 
-  /** @protected */
-  onCategoryUpdated_() {
+  protected onCategoryUpdated_() {
     if (this.subcategory === null) {
       return;
     }
@@ -81,34 +89,32 @@ export class AcceleratorSubsectionElement extends PolymerElement {
     // subcategory.
     const layoutInfos = this.lookupManager_.getAcceleratorLayout(
         this.category, this.subcategory);
-    assert(!!layoutInfos);
 
     // TODO(jimmyxgong): Fetch real string for title once available.
-    this.title = fakeSubCategories.get(this.subcategory);
+    this.title = fakeSubCategories.get(this.subcategory) as string;
 
     // Use an atomic replacement instead of using Polymer's array manipulation
     // functions. Polymer's array manipulation functions batch all slices
     // updates as one which results in strange behaviors with updating
     // individual subsections. An atomic replacement makes ensures each
     // subsection's accelerators are kept distinct from each other.
-    const tempAccelContainer = [];
-    layoutInfos.forEach((value) => {
+    const tempAccelContainer: Accelerator[] = [];
+    layoutInfos!.forEach((value) => {
       const acceleratorInfos =
-          this.lookupManager_.getAccelerators(value.source, value.action)
-              .filter((accel) => {
-                // Hide accelerators that are default and disabled.
-                return !(accel.type === AcceleratorType.kDefault &&
-                    accel.state === AcceleratorState.kDisabledByUser);
-              });
-      const accel =
-          /**@type {!Object<string, number, number, Array<!AcceleratorInfo>>}*/
-          ({
-            description: this.lookupManager_.getAcceleratorName(
-                value.source, value.action),
-            action: value.action,
-            source: value.source,
-            acceleratorInfos: acceleratorInfos,
-          });
+          this.lookupManager_.getAccelerators(value.source, value.action);
+      acceleratorInfos!.filter((accel) => {
+        // Hide accelerators that are default and disabled.
+        return !(
+            accel.type === AcceleratorType.kDefault &&
+            accel.state === AcceleratorState.kDisabledByUser);
+      });
+      const accel: Accelerator = {
+        description:
+            this.lookupManager_.getAcceleratorName(value.source, value.action),
+        action: value.action,
+        source: value.source,
+        acceleratorInfos: acceleratorInfos!,
+      };
       tempAccelContainer.push(accel);
     });
     this.acceleratorContainer = tempAccelContainer;
@@ -119,5 +125,5 @@ export class AcceleratorSubsectionElement extends PolymerElement {
   }
 }
 
-customElements.define(AcceleratorSubsectionElement.is,
-                      AcceleratorSubsectionElement);
+customElements.define(
+    AcceleratorSubsectionElement.is, AcceleratorSubsectionElement);
