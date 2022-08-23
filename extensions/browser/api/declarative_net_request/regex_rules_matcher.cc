@@ -102,6 +102,14 @@ RegexRulesMatcher::RegexRulesMatcher(const ExtensionId& extension_id,
 
 RegexRulesMatcher::~RegexRulesMatcher() = default;
 
+bool RegexRulesMatcher::IsExtraHeadersMatcher() const {
+  return is_extra_headers_matcher_;
+}
+
+size_t RegexRulesMatcher::GetRulesCount() const {
+  return regex_list_->size();
+}
+
 std::vector<RequestAction> RegexRulesMatcher::GetModifyHeadersActions(
     const RequestParams& params,
     absl::optional<uint64_t> min_priority) const {

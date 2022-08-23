@@ -447,7 +447,7 @@ TEST_F(ProfileOAuth2TokenServiceTest, StartRequestForMultiloginDesktop) {
     MockOAuth2AccessTokenConsumer& operator=(
         const MockOAuth2AccessTokenConsumer&) = delete;
 
-    ~MockOAuth2AccessTokenConsumer() = default;
+    ~MockOAuth2AccessTokenConsumer() override = default;
 
     MOCK_METHOD2(
         OnGetTokenSuccess,

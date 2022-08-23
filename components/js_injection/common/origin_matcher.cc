@@ -36,6 +36,13 @@ inline int GetDefaultPortForSchemeIfNoPortInfo(const std::string& scheme,
 
 }  // namespace
 
+OriginMatcher::OriginMatcher() = default;
+// Allow copy and assign.
+OriginMatcher::OriginMatcher(OriginMatcher&&) = default;
+OriginMatcher& OriginMatcher::operator=(OriginMatcher&&) = default;
+
+OriginMatcher::~OriginMatcher() = default;
+
 OriginMatcher::OriginMatcher(const OriginMatcher& rhs) {
   *this = rhs;
 }

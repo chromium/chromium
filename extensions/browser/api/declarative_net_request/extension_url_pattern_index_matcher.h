@@ -37,10 +37,8 @@ class ExtensionUrlPatternIndexMatcher final : public RulesetMatcherBase {
   std::vector<RequestAction> GetModifyHeadersActions(
       const RequestParams& params,
       absl::optional<uint64_t> min_priority) const override;
-  bool IsExtraHeadersMatcher() const override {
-    return is_extra_headers_matcher_;
-  }
-  size_t GetRulesCount() const override { return rules_count_; }
+  bool IsExtraHeadersMatcher() const override;
+  size_t GetRulesCount() const override;
 
  private:
   using UrlPatternIndexMatcher = url_pattern_index::UrlPatternIndexMatcher;

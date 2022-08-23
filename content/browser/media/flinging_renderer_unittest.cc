@@ -35,7 +35,9 @@ class MockFlingingController : public media::FlingingController {
   explicit MockFlingingController(media::MediaController* media_controller)
       : media_controller_(media_controller) {}
 
-  media::MediaController* GetMediaController() { return media_controller_; }
+  media::MediaController* GetMediaController() override {
+    return media_controller_;
+  }
 
   MOCK_METHOD1(AddMediaStatusObserver, void(media::MediaStatusObserver*));
   MOCK_METHOD1(RemoveMediaStatusObserver, void(media::MediaStatusObserver*));

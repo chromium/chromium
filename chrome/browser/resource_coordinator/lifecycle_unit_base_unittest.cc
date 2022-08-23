@@ -47,7 +47,7 @@ class LifecycleUnitBaseTest : public testing::Test {
     usage_clock_ = std::make_unique<UsageClock>();
   }
 
-  ~LifecycleUnitBaseTest() {
+  ~LifecycleUnitBaseTest() override {
     usage_clock_.reset();
     metrics::DesktopSessionDurationTracker::CleanupForTesting();
   }
@@ -199,7 +199,7 @@ namespace {
 class MockLifecycleUnitSource : public LifecycleUnitSourceBase {
  public:
   MockLifecycleUnitSource() = default;
-  virtual ~MockLifecycleUnitSource() = default;
+  ~MockLifecycleUnitSource() override = default;
 
   MOCK_METHOD0(OnFirstLifecycleUnitCreated, void());
   MOCK_METHOD0(OnAllLifecycleUnitsDestroyed, void());

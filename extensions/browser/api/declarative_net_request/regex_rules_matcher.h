@@ -63,10 +63,8 @@ class RegexRulesMatcher final : public RulesetMatcherBase {
   std::vector<RequestAction> GetModifyHeadersActions(
       const RequestParams& params,
       absl::optional<uint64_t> min_priority) const override;
-  bool IsExtraHeadersMatcher() const override {
-    return is_extra_headers_matcher_;
-  }
-  size_t GetRulesCount() const override { return regex_list_->size(); }
+  bool IsExtraHeadersMatcher() const override;
+  size_t GetRulesCount() const override;
 
  private:
   // RulesetMatcherBase override:

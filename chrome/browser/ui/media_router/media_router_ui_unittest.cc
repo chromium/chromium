@@ -81,7 +81,7 @@ class MockControllerObserver : public CastDialogController::Observer {
   }
 
   MOCK_METHOD1(OnModelUpdated, void(const CastDialogModel& model));
-  void OnControllerInvalidated() {
+  void OnControllerInvalidated() override {
     controller_ = nullptr;
     OnControllerInvalidatedInternal();
   }

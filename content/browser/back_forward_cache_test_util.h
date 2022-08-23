@@ -43,6 +43,9 @@ class BackForwardCacheMetricsTestMatcher {
  protected:
   using UkmMetrics = ukm::TestUkmRecorder::HumanReadableUkmMetrics;
 
+  BackForwardCacheMetricsTestMatcher();
+  ~BackForwardCacheMetricsTestMatcher();
+
   // Disables checking metrics that are recorded regardless of the domains. By
   // default, this class' Expect* function checks the metrics both for the
   // specific domain and for all domains at the same time. In the case when the

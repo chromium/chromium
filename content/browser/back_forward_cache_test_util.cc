@@ -29,6 +29,11 @@ void AddSampleToBuckets(std::vector<base::Bucket>* buckets,
 
 }  // namespace
 
+BackForwardCacheMetricsTestMatcher::BackForwardCacheMetricsTestMatcher() =
+    default;
+BackForwardCacheMetricsTestMatcher::~BackForwardCacheMetricsTestMatcher() =
+    default;
+
 void BackForwardCacheMetricsTestMatcher::DisableCheckingMetricsForAllSites() {
   check_all_sites_ = false;
 }

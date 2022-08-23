@@ -396,7 +396,7 @@ class MdnsResponderTest : public testing::Test {
     Reset();
   }
 
-  ~MdnsResponderTest() {
+  ~MdnsResponderTest() override {
     // Goodbye messages are scheduled when the responder service |host_manager_|
     // is destroyed and can be synchronously sent if the rate limiting permits.
     // See ResponseScheduler::DispatchPendingPackets().

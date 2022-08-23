@@ -27,10 +27,10 @@ class NET_EXPORT SchemeHostPortMatcher {
   using RuleList = std::vector<std::unique_ptr<SchemeHostPortMatcherRule>>;
 
   // Note: This class is movable but not copiable.
-  SchemeHostPortMatcher() = default;
-  SchemeHostPortMatcher(SchemeHostPortMatcher&& rhs) = default;
-  SchemeHostPortMatcher& operator=(SchemeHostPortMatcher&& rhs) = default;
-  ~SchemeHostPortMatcher() = default;
+  SchemeHostPortMatcher();
+  SchemeHostPortMatcher(SchemeHostPortMatcher&& rhs);
+  SchemeHostPortMatcher& operator=(SchemeHostPortMatcher&& rhs);
+  ~SchemeHostPortMatcher();
 
   // The delimiter used by |ToString()|.
   constexpr static char kPrintRuleListDelimiter = ';';

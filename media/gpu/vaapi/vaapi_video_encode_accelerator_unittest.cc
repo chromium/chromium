@@ -133,7 +133,7 @@ MATCHER_P2(MatchesEncoderInfo,
 class MockVideoEncodeAcceleratorClient : public VideoEncodeAccelerator::Client {
  public:
   MockVideoEncodeAcceleratorClient() = default;
-  virtual ~MockVideoEncodeAcceleratorClient() = default;
+  ~MockVideoEncodeAcceleratorClient() override = default;
 
   MOCK_METHOD3(RequireBitstreamBuffers,
                void(unsigned int, const gfx::Size&, size_t));

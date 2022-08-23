@@ -42,14 +42,14 @@ class OriginMatcher {
  public:
   using RuleList = std::vector<std::unique_ptr<OriginMatcherRule>>;
 
-  OriginMatcher() = default;
+  OriginMatcher();
   // Allow copy and assign.
   OriginMatcher(const OriginMatcher& rhs);
-  OriginMatcher(OriginMatcher&&) = default;
+  OriginMatcher(OriginMatcher&&);
   OriginMatcher& operator=(const OriginMatcher& rhs);
-  OriginMatcher& operator=(OriginMatcher&&) = default;
+  OriginMatcher& operator=(OriginMatcher&&);
 
-  ~OriginMatcher() = default;
+  ~OriginMatcher();
 
   void SetRules(RuleList rules);
 

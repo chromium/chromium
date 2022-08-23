@@ -17,7 +17,7 @@ namespace test {
 class MockNotificationScheduleService : public NotificationScheduleService {
  public:
   MockNotificationScheduleService();
-  ~MockNotificationScheduleService();
+  ~MockNotificationScheduleService() override;
 
   MOCK_METHOD1(Schedule,
                void(std::unique_ptr<NotificationParams> notification_params));

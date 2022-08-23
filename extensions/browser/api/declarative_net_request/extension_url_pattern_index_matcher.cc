@@ -71,6 +71,14 @@ ExtensionUrlPatternIndexMatcher::ExtensionUrlPatternIndexMatcher(
 
 ExtensionUrlPatternIndexMatcher::~ExtensionUrlPatternIndexMatcher() = default;
 
+bool ExtensionUrlPatternIndexMatcher::IsExtraHeadersMatcher() const {
+  return is_extra_headers_matcher_;
+}
+
+size_t ExtensionUrlPatternIndexMatcher::GetRulesCount() const {
+  return rules_count_;
+}
+
 absl::optional<RequestAction>
 ExtensionUrlPatternIndexMatcher::GetAllowAllRequestsAction(
     const RequestParams& params) const {

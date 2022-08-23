@@ -26,7 +26,7 @@ namespace autofill_assistant {
 class MockClient : public Client {
  public:
   MockClient();
-  ~MockClient();
+  ~MockClient() override;
 
   MOCK_CONST_METHOD0(GetChannel, version_info::Channel());
   MOCK_CONST_METHOD0(GetLocale, std::string());

@@ -436,7 +436,7 @@ class SingleBookmarksModelMatcherChecker
   using Matcher = testing::Matcher<std::vector<const bookmarks::BookmarkNode*>>;
 
   SingleBookmarksModelMatcherChecker(int profile_index, const Matcher& matcher);
-  ~SingleBookmarksModelMatcherChecker();
+  ~SingleBookmarksModelMatcherChecker() override;
 
   // StatusChangeChecker implementation.
   bool IsExitConditionSatisfied(std::ostream* os) final;

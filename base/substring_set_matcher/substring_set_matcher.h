@@ -22,7 +22,7 @@ namespace base {
 // which string patterns occur in S.
 class BASE_EXPORT SubstringSetMatcher {
  public:
-  SubstringSetMatcher() = default;
+  SubstringSetMatcher();
   SubstringSetMatcher(const SubstringSetMatcher&) = delete;
   SubstringSetMatcher& operator=(const SubstringSetMatcher&) = delete;
 

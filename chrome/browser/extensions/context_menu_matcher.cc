@@ -55,6 +55,8 @@ ContextMenuMatcher::ContextMenuMatcher(
       filter_(filter),
       is_smart_text_selection_enabled_(false) {}
 
+ContextMenuMatcher::~ContextMenuMatcher() = default;
+
 void ContextMenuMatcher::AppendExtensionItems(
     const MenuItem::ExtensionKey& extension_key,
     const std::u16string& selection_text,

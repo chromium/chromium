@@ -23,7 +23,7 @@ class MockAutofillPopupController
       public base::SupportsWeakPtr<MockAutofillPopupController> {
  public:
   MockAutofillPopupController();
-  ~MockAutofillPopupController();
+  ~MockAutofillPopupController() override;
 
   // AutofillPopupViewDelegate
   MOCK_METHOD1(Hide, void(PopupHidingReason reason));

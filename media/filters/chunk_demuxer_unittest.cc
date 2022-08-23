@@ -202,9 +202,7 @@ class ChunkDemuxerTest : public ::testing::Test {
                                               &media_log_);
   }
 
-  virtual ~ChunkDemuxerTest() {
-    ShutdownDemuxer();
-  }
+  ~ChunkDemuxerTest() override { ShutdownDemuxer(); }
 
   void CreateInitSegment(int stream_flags,
                          bool is_audio_encrypted,

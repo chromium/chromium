@@ -102,7 +102,7 @@ class MockCapturerSource : public media::AudioCapturerSource {
   MockCapturerSource& operator=(const MockCapturerSource&) = delete;
 
   void Initialize(const media::AudioParameters& params,
-                  CaptureCallback* callback) {
+                  CaptureCallback* callback) override {
     audio_parameters_ = params;
     capture_callback_ = callback;
   }

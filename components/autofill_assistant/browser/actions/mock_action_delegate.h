@@ -50,7 +50,8 @@ class MockActionDelegate : public ActionDelegate {
   }
   void ShortWaitForElementWithSlowWarning(
       const Selector& selector,
-      base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback) {
+      base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback)
+      override {
     OnShortWaitForElement(selector, callback);
   }
   MOCK_METHOD2(

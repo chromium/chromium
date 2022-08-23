@@ -21,10 +21,7 @@ class FakeTabMatcher : public TabMatcher {
   }
 
   bool IsTabOpenWithURL(const GURL& url,
-                        const AutocompleteInput* input) const override {
-    return !substring_to_match_.empty() &&
-           url.spec().find(substring_to_match_) != std::string::npos;
-  }
+                        const AutocompleteInput* input) const override;
 
  private:
   // Substring used to match URLs for IsTabOpenWithURL().

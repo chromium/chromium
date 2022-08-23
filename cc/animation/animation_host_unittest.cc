@@ -253,7 +253,7 @@ class MockAnimation : public Animation {
   MOCK_METHOD1(Tick, void(base::TimeTicks monotonic_time));
 
  private:
-  ~MockAnimation() {}
+  ~MockAnimation() override {}
 };
 
 bool Animation1TimeEquals20(MutatorInputState* input) {

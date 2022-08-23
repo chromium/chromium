@@ -54,7 +54,7 @@ class MockTaskRunner : public openscreen::TaskRunner {
                void(Task, openscreen::Clock::duration));
   MOCK_METHOD0(IsRunningOnTaskRunner, bool());
 
-  void PostPackagedTask(Task task) {
+  void PostPackagedTask(Task task) override {
     tasks_.push(std::move(task));
     PostTask();
   }

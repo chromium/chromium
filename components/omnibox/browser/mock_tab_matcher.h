@@ -14,6 +14,8 @@ class MockTabMatcher : public TabMatcher {
  public:
   MOCK_CONST_METHOD2(IsTabOpenWithURL,
                      bool(const GURL&, const AutocompleteInput*));
+  MockTabMatcher();
+  ~MockTabMatcher() override;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_MOCK_TAB_MATCHER_H_

@@ -185,7 +185,7 @@ class MockAxTreeManager : public ui::AXTreeManager {
   MockAxTreeManager() = default;
   MockAxTreeManager(MockAxTreeManager&) = delete;
   MockAxTreeManager& operator=(MockAxTreeManager&) = delete;
-  ~MockAxTreeManager() = default;
+  ~MockAxTreeManager() override = default;
 
   MOCK_CONST_METHOD2(GetNodeFromTree,
                      ui::AXNode*(const ui::AXTreeID& tree_id,

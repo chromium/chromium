@@ -146,7 +146,7 @@ constexpr double kFakeGeolocationLongitude = 4.56;
 class PersonalDataLoadedObserverMock : public PersonalDataManagerObserver {
  public:
   PersonalDataLoadedObserverMock() = default;
-  ~PersonalDataLoadedObserverMock() = default;
+  ~PersonalDataLoadedObserverMock() override = default;
 
   MOCK_METHOD0(OnPersonalDataChanged, void());
 };

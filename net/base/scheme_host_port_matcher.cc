@@ -11,6 +11,13 @@
 
 namespace net {
 
+SchemeHostPortMatcher::SchemeHostPortMatcher() = default;
+SchemeHostPortMatcher::SchemeHostPortMatcher(SchemeHostPortMatcher&& rhs) =
+    default;
+SchemeHostPortMatcher& SchemeHostPortMatcher::operator=(
+    SchemeHostPortMatcher&& rhs) = default;
+SchemeHostPortMatcher::~SchemeHostPortMatcher() = default;
+
 // Declares SchemeHostPortMatcher::kParseRuleListDelimiterList[], not a
 // redefinition. This is needed for link.
 // static

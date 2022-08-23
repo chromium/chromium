@@ -28,7 +28,7 @@ class MockSiteDataStore : public testing::NoopSiteDataStore {
   MockSiteDataStore(const MockSiteDataStore&) = delete;
   MockSiteDataStore& operator=(const MockSiteDataStore&) = delete;
 
-  ~MockSiteDataStore() = default;
+  ~MockSiteDataStore() override = default;
 
   // Note: As move-only parameters (e.g. OnceCallback) aren't supported by mock
   // methods, add On... methods to pass a non-const reference to OnceCallback.

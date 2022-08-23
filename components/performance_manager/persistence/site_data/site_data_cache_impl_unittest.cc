@@ -32,7 +32,7 @@ class MockSiteCache : public testing::NoopSiteDataStore {
   MockSiteCache(const MockSiteCache&) = delete;
   MockSiteCache& operator=(const MockSiteCache&) = delete;
 
-  ~MockSiteCache() = default;
+  ~MockSiteCache() override = default;
 
   MOCK_METHOD1(RemoveSiteDataFromStore, void(const std::vector<url::Origin>&));
   MOCK_METHOD0(ClearStore, void());

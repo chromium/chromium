@@ -141,7 +141,7 @@ class FakeMultipartUploadRequestFactory : public MultipartUploadRequestFactory {
 class MockBinaryFCMService : public BinaryFCMService {
  public:
   MockBinaryFCMService() = default;
-  ~MockBinaryFCMService() = default;
+  ~MockBinaryFCMService() override = default;
 
   MOCK_METHOD1(GetInstanceID,
                void(BinaryFCMService::GetInstanceIDCallback callback));

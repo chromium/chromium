@@ -14,7 +14,7 @@ namespace autofill {
 class MockAutocompleteHistoryManager : public AutocompleteHistoryManager {
  public:
   MockAutocompleteHistoryManager();
-  ~MockAutocompleteHistoryManager();
+  ~MockAutocompleteHistoryManager() override;
 
   MOCK_METHOD(
       void,

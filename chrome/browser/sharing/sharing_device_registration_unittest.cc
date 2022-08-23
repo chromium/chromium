@@ -150,7 +150,7 @@ class SharingDeviceRegistrationTest : public testing::Test {
     return factory.Create(registry);
   }
 
-  void SetUp() {
+  void SetUp() override {
     ON_CALL(mock_instance_id_driver_, GetInstanceID(testing::_))
         .WillByDefault(testing::Return(&fake_instance_id_));
   }

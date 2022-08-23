@@ -76,7 +76,7 @@ class MockAudioFocusDelegate : public content::AudioFocusDelegate {
   MOCK_METHOD0(AbandonAudioFocus, void());
 
   AudioFocusDelegate::AudioFocusResult RequestAudioFocus(
-      AudioFocusType audio_focus_type) {
+      AudioFocusType audio_focus_type) override {
     if (async_mode_) {
       requests_.push_back(audio_focus_type);
       return AudioFocusDelegate::AudioFocusResult::kDelayed;
@@ -86,7 +86,7 @@ class MockAudioFocusDelegate : public content::AudioFocusDelegate {
     }
   }
 
-  absl::optional<AudioFocusType> GetCurrentFocusType() const {
+  absl::optional<AudioFocusType> GetCurrentFocusType() const override {
     return audio_focus_type_;
   }
 

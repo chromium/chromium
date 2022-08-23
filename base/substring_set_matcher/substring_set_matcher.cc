@@ -88,6 +88,7 @@ bool SubstringSetMatcher::Build(
   return true;
 }
 
+SubstringSetMatcher::SubstringSetMatcher() = default;
 SubstringSetMatcher::~SubstringSetMatcher() = default;
 
 bool SubstringSetMatcher::Match(

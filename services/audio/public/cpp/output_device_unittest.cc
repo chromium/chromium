@@ -59,7 +59,7 @@ class MockRenderCallback : public media::AudioRendererSink::RenderCallback {
                    base::TimeTicks timestamp,
                    int prior_frames_skipped,
                    media::AudioBus* dest));
-  void OnRenderError() {}
+  void OnRenderError() override {}
 };
 
 class MockStream : public media::mojom::AudioOutputStream {

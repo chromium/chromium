@@ -137,6 +137,8 @@ PasswordHashDataMatcher::PasswordHashDataMatcher(
     absl::optional<PasswordHashData> expected)
     : expected_(expected) {}
 
+PasswordHashDataMatcher::~PasswordHashDataMatcher() = default;
+
 bool PasswordHashDataMatcher::MatchAndExplain(
     absl::optional<PasswordHashData> hash_data,
     ::testing::MatchResultListener* listener) const {

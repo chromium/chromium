@@ -141,7 +141,7 @@ class MockBrowserAutofillManager : public BrowserAutofillManager {
               (override));
 
   bool ShouldShowCardsFromAccountOption(const FormData& form,
-                                        const FormFieldData& field) {
+                                        const FormFieldData& field) override {
     return should_show_cards_from_account_option_;
   }
 

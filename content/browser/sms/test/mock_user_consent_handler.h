@@ -13,7 +13,7 @@ namespace content {
 class MockUserConsentHandler : public UserConsentHandler {
  public:
   MockUserConsentHandler();
-  ~MockUserConsentHandler();
+  ~MockUserConsentHandler() override;
   MOCK_METHOD(void,
               RequestUserConsent,
               (const std::string& one_time_code,

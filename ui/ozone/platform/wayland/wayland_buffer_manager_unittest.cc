@@ -82,7 +82,7 @@ class MockSurfaceGpu : public WaylandSurfaceGpu {
   MockSurfaceGpu(const MockSurfaceGpu&) = delete;
   MockSurfaceGpu& operator=(const MockSurfaceGpu&) = delete;
 
-  ~MockSurfaceGpu() { buffer_manager_->UnregisterSurface(widget_); }
+  ~MockSurfaceGpu() override { buffer_manager_->UnregisterSurface(widget_); }
 
   MOCK_METHOD3(OnSubmission,
                void(uint32_t buffer_id,

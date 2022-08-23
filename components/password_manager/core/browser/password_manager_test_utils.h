@@ -169,7 +169,7 @@ class PasswordHashDataMatcher
   PasswordHashDataMatcher(const PasswordHashDataMatcher&) = delete;
   PasswordHashDataMatcher& operator=(const PasswordHashDataMatcher&) = delete;
 
-  ~PasswordHashDataMatcher() override = default;
+  ~PasswordHashDataMatcher() override;
 
   // ::testing::MatcherInterface overrides
   bool MatchAndExplain(absl::optional<PasswordHashData> hash_data,

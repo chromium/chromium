@@ -69,7 +69,7 @@ class DecryptingMediaResourceTest : public testing::Test {
         task_environment_.GetMainThreadTaskRunner());
   }
 
-  ~DecryptingMediaResourceTest() {
+  ~DecryptingMediaResourceTest() override {
     // Ensure that the DecryptingMediaResource is destructed before other
     // objects that it internally references but does not own.
     decrypting_media_resource_.reset();
