@@ -24,6 +24,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import urllib
 
 from update import (CDS_URL, CHROMIUM_DIR, CLANG_REVISION, LLVM_BUILD_DIR,
                     FORCE_HEAD_REVISION_FILE, PACKAGE_VERSION, RELEASE_VERSION,
@@ -168,18 +169,13 @@ def CheckoutLLVM(commit, dir):
   sys.exit(1)
 
 
-def UrlOpen(url):
-  # TODO(crbug.com/1067752): Use urllib once certificates are fixed.
-  return subprocess.check_output(['curl', '--silent', url],
-                                 universal_newlines=True)
-
-
 def GetLatestLLVMCommit():
   """Get the latest commit hash in the LLVM monorepo."""
   main = json.loads(
-      UrlOpen('https://chromium.googlesource.com/external/' +
-              'github.com/llvm/llvm-project/' +
-              '+/refs/heads/main?format=JSON').replace(")]}'", ""))
+      urllib.request.urlopen('https://chromium.googlesource.com/external/' +
+                             'github.com/llvm/llvm-project/' +
+                             '+/refs/heads/main?format=JSON').read().decode(
+                                 "utf-8").replace(")]}'", ""))
   return main['commit']
 
 
@@ -216,8 +212,7 @@ def AddCMakeToPath(args):
 
 def AddGnuWinToPath():
   """Download some GNU win tools and add them to PATH."""
-  if sys.platform != 'win32':
-    return
+  assert sys.platform == 'win32'
 
   gnuwin_dir = os.path.join(LLVM_BUILD_TOOLS_DIR, 'gnuwin')
   GNUWIN_VERSION = '14'
@@ -605,12 +600,6 @@ def main():
   else:
     sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
-  # The gnuwin package also includes curl, which is needed to interact with the
-  # github API below.
-  # TODO(crbug.com/1067752): Use urllib once certificates are fixed, and
-  # move this down to where we fetch other build tools.
-  AddGnuWinToPath()
-
 
   if args.build_dir:
     LLVM_BUILD_DIR = args.build_dir
@@ -775,6 +764,8 @@ def main():
       base_cmake_args.append('-DCMAKE_SYSROOT=' + sysroot_amd64)
 
   if sys.platform == 'win32':
+    AddGnuWinToPath()
+
     base_cmake_args.append('-DLLVM_USE_CRT_RELEASE=MT')
 
     # Require zlib compression.
