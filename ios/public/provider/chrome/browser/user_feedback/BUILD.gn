@@ -24,3 +24,23 @@ source_set("test_support") {
     "//base",
   ]
 }
+
+source_set("user_feedback_api") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "user_feedback_api.h",
+    "user_feedback_configuration.h",
+    "user_feedback_configuration.mm",
+    "user_feedback_data.h",
+    "user_feedback_data.mm",
+    "user_feedback_sender.h",
+  ]
+  deps = [
+    "//base",
+    "//ios/public/provider/chrome/browser/signin:signin_sso_api",
+  ]
+  frameworks = [
+    "Foundation.framework",
+    "UIKit.framework",
+  ]
+}
