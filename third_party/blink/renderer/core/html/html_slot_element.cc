@@ -535,6 +535,18 @@ void HTMLSlotElement::NotifySlottedNodesOfFlatTreeChange(
     return;
   probe::DidPerformSlotDistribution(this);
 
+  // https://linear.app/replay/issue/RUN-493
+  recordreplay::Assert("HTMLSlotElement::NotifySlottedNodesOfFlatTreeChange %zu %zu",
+                       old_slotted.size(), new_slotted.size());
+  for (const auto& node : old_slotted) {
+    recordreplay::Assert("HTMLSlotElement::NotifySlottedNodesOfFlatTreeChange OLD %d",
+                         recordreplay::PointerId(node));
+  }
+  for (const auto& node : new_slotted) {
+    recordreplay::Assert("HTMLSlotElement::NotifySlottedNodesOfFlatTreeChange NEW %d",
+                         recordreplay::PointerId(node));
+  }
+
   // It is very important to minimize the number of reattaching nodes in
   // |new_assigned_nodes| here. The following *works*, in terms of the
   // correctness of the rendering,

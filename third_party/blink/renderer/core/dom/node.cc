@@ -3274,6 +3274,10 @@ bool Node::HasMediaControlAncestor() const {
 }
 
 void Node::FlatTreeParentChanged() {
+  // https://linear.app/replay/issue/RUN-493
+  recordreplay::Assert("Node::FlatTreeParentChanged %d",
+                       recordreplay::PointerId(this));
+
   if (!isConnected())
     return;
   DCHECK(IsSlotable());
