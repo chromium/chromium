@@ -1676,6 +1676,17 @@ deps = {
   'src/third_party/swiftshader':
     Var('swiftshader_git') + '/SwiftShader.git' + '@' +  Var('swiftshader_revision'),
 
+  'src/third_party/swift-toolchain': {
+      'packages': [
+          {
+              'package': 'chromium/tools/swift-toolchain/mac-amd64',
+              'version': 'version:2@5.7-20220717',
+          },
+      ],
+      'condition': 'host_os == mac',
+      'dep_type': 'cipd',
+  },
+
   'src/third_party/text-fragments-polyfill/src':
     Var('chromium_git') + '/external/github.com/GoogleChromeLabs/text-fragments-polyfill.git' + '@' + 'c036420683f672d685e27415de0a5f5e85bdc23f',
 

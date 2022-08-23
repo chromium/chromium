@@ -25,6 +25,9 @@ declare_args() {
   # one object file per .swift file. If unspecified, will default to "true"
   # for official builds, and "false" for all other builds.
   swift_whole_module_optimization = -1
+
+  # if unspecified, will use the toolchain downloaded via deps.
+  swift_toolchain_path = ""
 }
 
 if (swift_whole_module_optimization == -1) {
@@ -541,6 +544,12 @@ template("apple_toolchain") {
       tool("swift") {
         _tool = rebase_path("//build/toolchain/ios/swiftc.py", root_build_dir)
 
+        if (swift_toolchain_path == "") {
+          swift_toolchain_default =
+              rebase_path("//third_party/swift-toolchain/", root_build_dir)
+          swift_toolchain_path = swift_toolchain_default
+        }
+
         depfile = "{{target_out_dir}}/{{module_name}}.d"
         depsformat = "gcc"
 
@@ -612,6 +621,7 @@ template("apple_toolchain") {
             "-depfile {{target_out_dir}}/{{module_name}}.d " +
             "-depfile-filter {{target_gen_dir}}/{{module_name}}.swiftmodule " +
             "-bridge-header {{bridge_header}} $_extra_flags " +
+            "-swift-toolchain-path $swift_toolchain_path" + " " +
             "{{swiftflags}} {{include_dirs}} {{module_dirs}} {{inputs}}"
       }
     }

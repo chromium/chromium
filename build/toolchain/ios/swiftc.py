@@ -118,10 +118,7 @@ def compile_module(module, sources, settings, extras, tmpdir):
   # /Library/Developer/Toolchains or ~/Library/Developer/Toolchains, this
   # will automatically fall back to Xcode's default.
   process = subprocess.Popen([
-      'xcrun',
-      '--toolchain',
-      'swift',
-      'swiftc',
+      settings.swift_toolchain_path + '/usr/bin/swiftc',
       '-parse-as-library',
       '-module-name',
       module,
@@ -239,6 +236,9 @@ def main(args):
                       action='store',
                       required=True,
                       help='path to the root of the repository')
+  parser.add_argument('-swift-toolchain-path',
+                      dest='swift_toolchain_path',
+                      help='path to the root of the Swift toolchain')
   parser.add_argument('-enable-cxx-interop',
                       dest='enable_cxx_interop',
                       action='store_true',
