@@ -5763,7 +5763,7 @@ TEST_P(ProjectorCaptureModeIntegrationTests,
     }
 
     StartRecordingForProjectorFromSource(capture_source);
-    WaitForSeconds(5);
+    WaitForSeconds(1);
     test_api.StopVideoRecording();
     EXPECT_FALSE(CaptureModeController::Get()->is_recording_in_progress());
 
@@ -5771,7 +5771,7 @@ TEST_P(ProjectorCaptureModeIntegrationTests,
 
     histogram_tester_.ExpectUniqueSample(
         GetCaptureModeHistogramName(kProjectorRecordTimeHistogramBase),
-        /*seconds=*/5, /*count=*/1);
+        /*seconds=*/1, /*count=*/1);
   }
 }
 
