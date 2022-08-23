@@ -22,8 +22,8 @@ struct argument_details {
   int nullable;
 };
 
-const char* get_next_argument(const char* signature,
-                              struct argument_details* details) {
+static const char* get_next_argument(const char* signature,
+                                     struct argument_details* details) {
   details->nullable = 0;
   for (; *signature; ++signature) {
     switch (*signature) {
@@ -45,10 +45,10 @@ const char* get_next_argument(const char* signature,
   return signature;
 }
 
-void wl_argument_from_va_list(const char* signature,
-                              union wl_argument* args,
-                              int count,
-                              va_list ap) {
+static void wl_argument_from_va_list(const char* signature,
+                                     union wl_argument* args,
+                                     int count,
+                                     va_list ap) {
   int i;
   const char* sig_iter;
   struct argument_details arg;
