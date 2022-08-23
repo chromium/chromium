@@ -1076,8 +1076,7 @@ PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
     }
     UpdatePasswordNotes(primary_key, form_with_encrypted_password.notes);
     list.emplace_back(PasswordStoreChange::ADD,
-                      std::move(form_with_encrypted_password),
-                      FormPrimaryKey(db_.GetLastInsertRowId()),
+                      std::move(form_with_encrypted_password), primary_key,
                       password_changed, insecure_changed);
   } else if (error) {
     if (db_error_handler.get_error_code() == 19 /*SQLITE_CONSTRAINT*/) {
