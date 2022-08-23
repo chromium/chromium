@@ -272,11 +272,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                               password_manager::features::kPasswordImport));
 
   html_source->AddBoolean(
-      "showDismissCompromisedPasswordOption",
-      base::FeatureList::IsEnabled(
-          password_manager::features::kMuteCompromisedPasswords));
-
-  html_source->AddBoolean(
       "enablePasswordViewPage",
       base::FeatureList::IsEnabled(
           password_manager::features::kPasswordViewPageInSettings) ||

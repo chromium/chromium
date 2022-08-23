@@ -296,7 +296,7 @@ export class SettingsPasswordCheckElement extends
    * @return true if there are any compromised credentials that are dismissed.
    */
   private computeShowMutedLeakedCredentials_(): boolean {
-    return this.isMutedPasswordsEnabled && !!this.mutedPasswords.length;
+    return !!this.mutedPasswords.length;
   }
 
   /**
@@ -508,20 +508,18 @@ export class SettingsPasswordCheckElement extends
   }
 
   /**
-   * @return true if muting is enabled
-   * and the password is compromised and is dismissable/mutable.
+   * @return true if the password is compromised and is dismissable/mutable.
    */
   private computeIsMutePasswordButtonEnabled_(): boolean {
-    return this.isMutedPasswordsEnabled && this.isPasswordCompromised_() &&
+    return this.isPasswordCompromised_() &&
         !this.activePassword_!.compromisedInfo!.isMuted;
   }
 
   /**
-   * @return true if unmuting is enabled
-   * and the password is compromised and is dismissed/muted.
+   * @return true if the password is compromised and is dismissed/muted.
    */
   private computeIsUnmutePasswordButtonEnabled_(): boolean {
-    return this.isMutedPasswordsEnabled && this.isPasswordCompromised_() &&
+    return this.isPasswordCompromised_() &&
         !!this.activePassword_!.compromisedInfo!.isMuted;
   }
 

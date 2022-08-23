@@ -80,14 +80,6 @@ export class PasswordCheckListItemElement extends
         type: String,
         computed: 'computeIconClass_(item.compromisedInfo)',
       },
-
-      mutingEnabled: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'showDismissCompromisedPasswordOption');
-        },
-      },
     };
   }
 
@@ -97,7 +89,6 @@ export class PasswordCheckListItemElement extends
   clickedChangePassword: boolean;
   private buttonClass_: string;
   private iconClass_: string;
-  mutingEnabled: boolean;
   private passwordManager_: PasswordManagerProxy =
       PasswordManagerImpl.getInstance();
 
@@ -109,13 +100,10 @@ export class PasswordCheckListItemElement extends
   }
 
   /**
-   * @return Whether |item| is compromised credential but not muted. When muting
-   * is not enabled all compromised items are non muted.
+   * @return Whether |item| is compromised credential but not muted.
    */
   private isNonMutedCompromisedItem_(): boolean {
-    return this.isCompromisedItem_() &&
-        (!this.mutingEnabled ||
-         (this.mutingEnabled && !this.item.compromisedInfo!.isMuted));
+    return this.isCompromisedItem_() && !this.item.compromisedInfo!.isMuted;
   }
 
   private getCompromiseType_(): string {
