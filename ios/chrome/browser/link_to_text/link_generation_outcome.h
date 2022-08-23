@@ -7,7 +7,7 @@
 
 // Enum representing the set of possible link generation outcomes from the
 // text-fragments-polyfill library. To be kept in sync with the
-// |GenerateFragmentStatus| enum in that library.
+// `GenerateFragmentStatus` enum in that library.
 enum class LinkGenerationOutcome {
   kSuccess = 0,
   kInvalidSelection = 1,

@@ -28,8 +28,8 @@ class LinkToTextTabHelper : public web::WebStateObserver,
   bool ShouldOffer();
 
   // Calls the JavaScript to generate a URL linking to the current
-  // selected text. If successful, will invoke |callback| with the returned
-  // generated payload and nil error. If unsuccessful, will invoke |callback|
+  // selected text. If successful, will invoke `callback` with the returned
+  // generated payload and nil error. If unsuccessful, will invoke `callback`
   // with a nil payload and defined error.
   void GetLinkToText(base::OnceCallback<void(LinkToTextResponse*)> callback);
 
@@ -42,7 +42,7 @@ class LinkToTextTabHelper : public web::WebStateObserver,
 
   explicit LinkToTextTabHelper(web::WebState* web_state);
 
-  // Invoked with pending GetLinkToText |callback| and the |response| from
+  // Invoked with pending GetLinkToText `callback` and the `response` from
   // the JavaScript call to generate a link to selected text.
   void OnJavaScriptResponseReceived(
       base::OnceCallback<void(LinkToTextResponse*)> callback,
@@ -55,7 +55,7 @@ class LinkToTextTabHelper : public web::WebStateObserver,
 
   // Returns the object to be used for JavaScript interactions -- either the
   // real singleton for this class, or the object passed to
-  // |SetJSFeatureForTesting|, if one has been provided.
+  // `SetJSFeatureForTesting`, if one has been provided.
   LinkToTextJavaScriptFeature* GetJSFeature();
 
   // Not copyable or moveable.
@@ -69,7 +69,7 @@ class LinkToTextTabHelper : public web::WebStateObserver,
   // WebStateDestroyed has been called.
   web::WebState* web_state_ = nullptr;
 
-  // Regex for |IsOnlyBoundaryChars|. Lazily-initialized to avoid recompiling
+  // Regex for `IsOnlyBoundaryChars`. Lazily-initialized to avoid recompiling
   // each time we check.
   NSRegularExpression* not_boundary_char_regex_ = nil;
 
