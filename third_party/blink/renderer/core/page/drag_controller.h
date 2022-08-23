@@ -128,7 +128,7 @@ class CORE_EXPORT DragController final
   void MouseMovedIntoDocument(Document*);
 
   void DoSystemDrag(DragImage*,
-                    const gfx::Point& drag_obj_location,
+                    const gfx::Rect& drag_obj_rect,
                     const gfx::Point& drag_initiation_location,
                     DataTransfer*,
                     LocalFrame*);
