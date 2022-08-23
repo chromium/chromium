@@ -28,6 +28,7 @@
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/caption_button_layout_constants.h"
@@ -656,6 +657,24 @@ class MultitaskMenuTest : public FrameSizeButtonTest {
 
   ~MultitaskMenuTest() override = default;
 
+  void ShowMultitaskMenu() {
+    DCHECK(size_button());
+
+    views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                         "MultitaskMenuBubbleWidget");
+    static_cast<FrameSizeButton*>(size_button())->ShowMultitaskMenu();
+    views::WidgetDelegate* delegate =
+        waiter.WaitIfNeededAndGet()->widget_delegate();
+    multitask_menu_ = static_cast<MultitaskMenu*>(delegate->AsDialogDelegate());
+
+    // Note that this is sync because we use `views::Widget::CloseNow()` in
+    // `MultitaskMenu.`
+    delegate->RegisterWindowClosingCallback(base::BindOnce(
+        &MultitaskMenuTest::OnMultitaskMenuClosed, base::Unretained(this)));
+  }
+
+  void OnMultitaskMenuClosed() { multitask_menu_ = nullptr; }
+
   void SetUp() override {
     // Ensure float feature is enabled.
     scoped_feature_list_.InitAndEnableFeature(
@@ -663,16 +682,10 @@ class MultitaskMenuTest : public FrameSizeButtonTest {
     FrameSizeButtonTest::SetUp();
   }
 
-  void ShowMultitaskMenu() {
-    DCHECK(size_button());
-    multitask_menu_ = static_cast<FrameSizeButton*>(size_button())
-                          ->GetMultitaskMenuForTesting();
-  }
-
   MultitaskMenu* multitask_menu() { return multitask_menu_; }
 
  private:
-  MultitaskMenu* multitask_menu_;
+  MultitaskMenu* multitask_menu_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -752,6 +765,15 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuFullFunctionality) {
                               ->full_button_for_testing()));
   generator->ClickLeftButton();
   EXPECT_TRUE(window_state()->IsFullscreen());
+}
+
+TEST_F(MultitaskMenuTest, MultitaskMenuClosesOnTabletMode) {
+  ShowMultitaskMenu();
+  ASSERT_TRUE(multitask_menu());
+  ASSERT_TRUE(multitask_menu()->GetWidget());
+
+  ash::TabletMode::Get()->SetEnabledForTest(true);
+  EXPECT_FALSE(multitask_menu());
 }
 
 }  // namespace ash

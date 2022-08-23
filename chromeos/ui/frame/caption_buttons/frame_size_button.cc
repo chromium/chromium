@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "chromeos/ui/base/display_util.h"
+#include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/wm/features.h"
@@ -19,6 +20,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/canvas.h"
@@ -127,11 +129,9 @@ class FrameSizeButton::PieAnimation : public gfx::SlideAnimation,
   ~PieAnimation() override = default;
 
   void Paint(gfx::Canvas* canvas) {
-    // Use the bounds of the inkdrop. Assert that the width and height matches
-    // so we get a nice round pie.
+    // Use the bounds of the inkdrop.
     gfx::Rect bounds = button_->GetLocalBounds();
     bounds.Inset(button_->GetInkdropInsets(bounds.size()));
-    DCHECK_EQ(bounds.width(), bounds.height());
 
     // The pie is a filled arc which starts at the top and sweeps around
     // clockwise.
@@ -225,10 +225,23 @@ FrameSizeButton::FrameSizeButton(PressedCallback callback,
                                 views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE,
                                 HTMAXBUTTON),
       delegate_(delegate),
-      set_buttons_to_snap_mode_delay_ms_(kSetButtonsToSnapModeDelayMs),
-      in_snap_mode_(false) {}
+      set_buttons_to_snap_mode_delay_ms_(kSetButtonsToSnapModeDelayMs) {
+  display_observer_.emplace(this);
+}
 
 FrameSizeButton::~FrameSizeButton() = default;
+
+void FrameSizeButton::ShowMultitaskMenu() {
+  // Show Multitask Menu if float is enabled. Note here float flag is also used
+  // to represent other relatable UI/UX changes.
+  if (chromeos::wm::features::IsFloatWindowEnabled()) {
+    // Owned by the bubble which contains this view. If there is an existing
+    // bubble, it will be deactivated and then close and destroy itself.
+    auto* multitask_menu = new MultitaskMenu(
+        /*anchor=*/this, GetWidget()->GetNativeWindow());
+    multitask_menu->ShowBubble();
+  }
+}
 
 bool FrameSizeButton::OnMousePressed(const ui::MouseEvent& event) {
   // Note that this triggers `StateChanged()`, and we want the changes to
@@ -336,7 +349,7 @@ void FrameSizeButton::StateChanged(views::Button::ButtonState old_state) {
   if (!chromeos::wm::features::IsFloatWindowEnabled())
     return;
 
-  if (GetState() == views::Button::STATE_HOVERED) {
+  if (GetState() == views::Button::STATE_HOVERED && GetWidget()->IsActive()) {
     base::OnceClosure cancel_animation = base::BindOnce(
         &FrameSizeButton::DestroyPieAnimation, base::Unretained(this));
     base::OnceClosure show_multitask_menu = base::BindOnce(
@@ -357,10 +370,11 @@ void FrameSizeButton::PaintButtonContents(gfx::Canvas* canvas) {
   views::FrameCaptionButton::PaintButtonContents(canvas);
 }
 
-const raw_ptr<MultitaskMenu> FrameSizeButton::GetMultitaskMenuForTesting() {
-  // Force creating Multitask Menu.
-  ShowMultitaskMenu();
-  return multitask_menu_;
+void FrameSizeButton::OnDisplayTabletStateChanged(display::TabletState state) {
+  if (state == display::TabletState::kEnteringTabletMode) {
+    pie_animation_.reset();
+    set_buttons_to_snap_mode_timer_.Stop();
+  }
 }
 
 void FrameSizeButton::StartSetButtonsToSnapModeTimer(
@@ -381,18 +395,6 @@ void FrameSizeButton::AnimateButtonsToSnapMode() {
   // Start observing the to-be-snapped window.
   snapping_window_observer_ = std::make_unique<SnappingWindowObserver>(
       GetWidget()->GetNativeWindow(), this);
-}
-
-void FrameSizeButton::ShowMultitaskMenu() {
-  // Show Multitask Menu if float is enabled. Note here float flag is also used
-  // to represent other relatable UI/UX changes.
-  // TODO(shidi) Move this when long hover trigger (crbug.com/1330016) is
-  // implemented.
-  if (chromeos::wm::features::IsFloatWindowEnabled()) {
-    multitask_menu_ = new MultitaskMenu(
-        /*anchor=*/this, GetWidget()->GetNativeWindow());
-    multitask_menu_->ShowBubble();
-  }
 }
 
 void FrameSizeButton::SetButtonsToSnapMode(

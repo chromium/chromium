@@ -9,6 +9,7 @@
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/display/display_observer.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace views {
@@ -22,7 +23,8 @@ namespace chromeos {
 // size button.
 class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenu
     : public views::BubbleDialogDelegateView,
-      public views::WidgetObserver {
+      public views::WidgetObserver,
+      public display::DisplayObserver {
  public:
   METADATA_HEADER(MultitaskMenu);
 
@@ -33,10 +35,11 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenu
 
   ~MultitaskMenu() override;
 
-  views::Widget* bubble_widget_for_testing() { return bubble_widget_.get(); }
-
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
+
+  // display::DisplayObserver:
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // Displays the MultitaskMenu.
   void ShowBubble();
@@ -44,6 +47,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenu
   // Hides the currently-showing MultitaskMenu.
   void HideBubble();
 
+  views::Widget* bubble_widget_for_testing() { return bubble_widget_.get(); }
   MultitaskMenuView* multitask_menu_view_for_testing() {
     return multitask_menu_view_.get();
   }
@@ -53,7 +57,9 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenu
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       bubble_widget_observer_{this};
 
-  raw_ptr<MultitaskMenuView> multitask_menu_view_;
+  raw_ptr<MultitaskMenuView> multitask_menu_view_ = nullptr;
+
+  absl::optional<display::ScopedDisplayObserver> display_observer_;
 };
 
 }  // namespace chromeos

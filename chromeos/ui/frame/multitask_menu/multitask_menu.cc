@@ -10,11 +10,13 @@
 #include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/display/tablet_state.h"
 #include "ui/views/layout/table_layout.h"
 
 namespace chromeos {
 
 namespace {
+
 constexpr int kMultitaskMenuBubbleCornerRadius = 8;
 constexpr int kRowPadding = 16;
 constexpr int KMultitaskMenuWidth = 270;
@@ -24,15 +26,17 @@ constexpr int kMultitaskMenuHeight = 248;
 
 MultitaskMenu::MultitaskMenu(views::View* anchor, aura::Window* parent_window) {
   DCHECK(parent_window);
-  SetAnchorView(anchor);
-  SetPaintToLayer();
+
   set_corner_radius(kMultitaskMenuBubbleCornerRadius);
+  set_close_on_deactivate(true);
+  set_internal_name("MultitaskMenuBubbleWidget");
+  set_parent_window(parent_window);
+
+  SetAnchorView(anchor);
   // TODO(shidi): Confirm with UX/UI for additional arrow choices when parent
   // window has no space for `MultitaskMenu` to arrow at `TOP_CENTER`.
   SetArrow(views::BubbleBorder::Arrow::TOP_CENTER);
   SetButtons(ui::DIALOG_BUTTON_NONE);
-  set_parent_window(parent_window);
-  set_close_on_deactivate(true);
   SetPreferredSize(gfx::Size(KMultitaskMenuWidth, kMultitaskMenuHeight));
   SetUseDefaultFillLayout(true);
 
@@ -56,18 +60,23 @@ MultitaskMenu::MultitaskMenu(views::View* anchor, aura::Window* parent_window) {
       .AddRows(1, views::TableLayout::kFixedSize, 0)
       .AddPaddingRow(views::TableLayout::kFixedSize, kRowPadding)
       .AddRows(1, views::TableLayout::kFixedSize, 0);
+
+  display_observer_.emplace(this);
 }
 
 MultitaskMenu::~MultitaskMenu() {
-  if (bubble_widget_)
-    HideBubble();
-  bubble_widget_ = nullptr;
+  HideBubble();
 }
 
 void MultitaskMenu::OnWidgetDestroying(views::Widget* widget) {
   DCHECK_EQ(bubble_widget_, widget);
   bubble_widget_observer_.Reset();
   bubble_widget_ = nullptr;
+}
+
+void MultitaskMenu::OnDisplayTabletStateChanged(display::TabletState state) {
+  if (state == display::TabletState::kEnteringTabletMode)
+    HideBubble();
 }
 
 void MultitaskMenu::ShowBubble() {
@@ -86,7 +95,6 @@ void MultitaskMenu::ShowBubble() {
 }
 
 void MultitaskMenu::HideBubble() {
-  DCHECK(bubble_widget_);
   // This calls into OnWidgetDestroying() so `bubble_widget_` should have been
   // reset to nullptr.
   if (bubble_widget_ && !bubble_widget_->IsClosed())
