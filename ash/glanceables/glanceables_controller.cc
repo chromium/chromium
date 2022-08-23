@@ -12,15 +12,37 @@
 #include "ash/glanceables/glanceables_view.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
+#include "ash/wm/desks/desks_util.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
+#include "ui/wm/public/activation_client.h"
 
 namespace ash {
+namespace {
 
-GlanceablesController::GlanceablesController() = default;
+// Returns true if `window` appears in any desk container on any display.
+bool IsWindowOnAnyDesk(aura::Window* window) {
+  DCHECK(window);
+  for (aura::Window* root : Shell::GetAllRootWindows()) {
+    for (aura::Window* desk : desks_util::GetDesksContainers(root)) {
+      if (desk->Contains(window)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
 
-GlanceablesController::~GlanceablesController() = default;
+}  // namespace
+
+GlanceablesController::GlanceablesController() {
+  Shell::Get()->activation_client()->AddObserver(this);
+}
+
+GlanceablesController::~GlanceablesController() {
+  Shell::Get()->activation_client()->RemoveObserver(this);
+}
 
 void GlanceablesController::Init(
     std::unique_ptr<GlanceablesDelegate> delegate) {
@@ -67,6 +89,19 @@ void GlanceablesController::DestroyUi() {
 
 void GlanceablesController::RestoreSession() {
   delegate_->RestoreSession();
+}
+
+void GlanceablesController::OnWindowActivated(
+    wm::ActivationChangeObserver::ActivationReason reason,
+    aura::Window* gained_focus,
+    aura::Window* lost_focus) {
+  if (!gained_focus)
+    return;
+
+  // Destroy the UI if the activated window appears on any desk. This includes
+  // browser windows, PWA windows, ARC windows, etc.
+  if (IsWindowOnAnyDesk(gained_focus) && IsShowing())
+    DestroyUi();
 }
 
 void GlanceablesController::FetchData() {

@@ -593,12 +593,6 @@ Shell::Shell(std::unique_ptr<ShellDelegate> shell_delegate)
       native_cursor_manager_(nullptr) {
   AccelerometerReader::GetInstance()->Initialize();
 
-  if (features::AreGlanceablesEnabled()) {
-    glanceables_controller_ = std::make_unique<GlanceablesController>();
-    glanceables_controller_->Init(shell_delegate_->CreateGlanceablesDelegate(
-        glanceables_controller_.get()));
-  }
-
   login_screen_controller_ =
       std::make_unique<LoginScreenController>(system_tray_notifier_.get());
   display_manager_ = ScreenAsh::CreateDisplayManager();
@@ -868,6 +862,7 @@ Shell::~Shell() {
   policy_recommendation_restorer_.reset();
   ime_controller_.reset();
   back_gesture_event_handler_.reset();
+  glanceables_controller_.reset();
 
   // Balances the Install() in Initialize().
   views::FocusManagerFactory::Install(nullptr);
@@ -1456,6 +1451,12 @@ void Shell::Init(
   if (features::IsDisplayAlignmentAssistanceEnabled()) {
     display_alignment_controller_ =
         std::make_unique<DisplayAlignmentController>();
+  }
+
+  if (features::AreGlanceablesEnabled()) {
+    glanceables_controller_ = std::make_unique<GlanceablesController>();
+    glanceables_controller_->Init(shell_delegate_->CreateGlanceablesDelegate(
+        glanceables_controller_.get()));
   }
 
   if (chromeos::features::IsProjectorEnabled())

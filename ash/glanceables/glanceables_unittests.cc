@@ -4,6 +4,7 @@
 
 #include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/model/ambient_weather_model.h"
+#include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/constants/ash_features.h"
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/glanceables/glanceables_restore_view.h"
@@ -13,6 +14,7 @@
 #include "ash/glanceables/glanceables_welcome_label.h"
 #include "ash/glanceables/test_glanceables_delegate.h"
 #include "ash/shell.h"
+#include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/events/test/test_event.h"
@@ -152,6 +154,29 @@ TEST_F(GlanceablesTest, ClickOnSessionRestore) {
   views::test::ButtonTestApi(restore_view).NotifyClick(ui::test::TestEvent());
 
   EXPECT_EQ(1, GetTestDelegate()->restore_session_count());
+}
+
+TEST_F(GlanceablesTest, DismissesOnlyOnAppWindowOpen) {
+  controller_->CreateUi();
+  ASSERT_TRUE(controller_->IsShowing());
+
+  // Showing the app list still shows glanceables.
+  GetAppListTestHelper()->ShowAppList();
+  EXPECT_TRUE(controller_->IsShowing());
+
+  // Showing quick settings still shows glanceables.
+  UnifiedSystemTray* tray = GetPrimaryUnifiedSystemTray();
+  tray->ShowBubble();
+  tray->ActivateBubble();
+  EXPECT_TRUE(controller_->IsShowing());
+
+  // Creating an app window hides glanceables.
+  std::unique_ptr<aura::Window> app_window = CreateAppWindow();
+  EXPECT_FALSE(controller_->IsShowing());
+
+  // Glanceables stay hidden after the app window is closed.
+  app_window.reset();
+  EXPECT_FALSE(controller_->IsShowing());
 }
 
 }  // namespace ash

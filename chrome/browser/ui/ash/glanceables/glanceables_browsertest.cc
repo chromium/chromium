@@ -16,8 +16,14 @@
 class GlanceablesBrowserTest : public InProcessBrowserTest {
  public:
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpDefaultCommandLine(command_line);
+
     // The test harness adds --no-first-run. Remove it so glanceables show up.
     command_line->RemoveSwitch(switches::kNoFirstRun);
+
+    // Don't open a browser window, because doing so would hide glanceables.
+    // Note that InProcessBrowserTest::browser() will be null.
+    command_line->AppendSwitch(switches::kNoStartupWindow);
   }
 
  protected:

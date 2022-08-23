@@ -11,6 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/notifier_catalogs.h"
+#include "ash/glanceables/glanceables_controller.h"
 #include "ash/hud_display/hud_display.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/debug_utils.h"
@@ -106,6 +107,17 @@ void HandleDumpCalendarModel() {
   accelerators::DumpCalendarModel();
 }
 
+void HandleToggleGlanceables() {
+  if (!features::AreGlanceablesEnabled())
+    return;
+  auto* controller = Shell::Get()->glanceables_controller();
+  DCHECK(controller);
+  if (controller->IsShowing())
+    controller->DestroyUi();
+  else
+    controller->CreateUi();
+}
+
 void HandleToggleKeyboardBacklight() {
   if (ash::features::IsKeyboardBacklightToggleEnabled()) {
     base::RecordAction(base::UserMetricsAction("Accel_Keyboard_Backlight"));
@@ -194,6 +206,9 @@ void PerformDebugActionIfEnabled(AcceleratorAction action) {
           ToastData::kDefaultToastDuration,
           /*visible_on_lock_screen=*/false, /*has_dismiss_button=*/true,
           /*custom_dismiss_text=*/u"Dismiss"));
+      break;
+    case DEBUG_TOGGLE_GLANCEABLES:
+      HandleToggleGlanceables();
       break;
     case DEBUG_TOGGLE_TOUCH_PAD:
       HandleToggleTouchpad();

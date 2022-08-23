@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ui/wm/public/activation_change_observer.h"
 
 namespace views {
 class Widget;
@@ -19,12 +20,12 @@ class GlanceablesDelegate;
 class GlanceablesView;
 
 // Controls the "welcome back" glanceables screen shown on login.
-class ASH_EXPORT GlanceablesController {
+class ASH_EXPORT GlanceablesController : public wm::ActivationChangeObserver {
  public:
   GlanceablesController();
   GlanceablesController(const GlanceablesController&) = delete;
   GlanceablesController& operator=(const GlanceablesController&) = delete;
-  ~GlanceablesController();
+  ~GlanceablesController() override;
 
   // Initializes the controller and sets the delegate.
   void Init(std::unique_ptr<GlanceablesDelegate> delegate);
@@ -43,6 +44,11 @@ class ASH_EXPORT GlanceablesController {
 
   // Triggers a session restore.
   void RestoreSession();
+
+  // wm::ActivationChangeObserver:
+  void OnWindowActivated(wm::ActivationChangeObserver::ActivationReason reason,
+                         aura::Window* gained_focus,
+                         aura::Window* lost_focus) override;
 
  private:
   friend class GlanceablesTest;
