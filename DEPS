@@ -340,7 +340,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling lss
   # and whatever else without interference from each other.
-  'lss_revision': '0d6435b731ef91d5182eaecff82ae96764222c48',
+  'lss_revision': 'ce877209e11aa69dcfffbd53ef90ea1d07136521',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling NaCl
   # and whatever else without interference from each other.
