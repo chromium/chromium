@@ -72,6 +72,11 @@ TaskSource::Transaction TaskSource::BeginTransaction() {
   return Transaction(this);
 }
 
+void TaskSource::ClearForTesting() {
+  auto task = Clear(nullptr);
+  std::move(task.task).Run();
+}
+
 RegisteredTaskSource::RegisteredTaskSource() = default;
 
 RegisteredTaskSource::RegisteredTaskSource(std::nullptr_t)

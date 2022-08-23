@@ -191,6 +191,8 @@ class BASE_EXPORT TaskSource : public RefCountedThreadSafe<TaskSource> {
 
   TaskSourceExecutionMode execution_mode() const { return execution_mode_; }
 
+  void ClearForTesting();
+
  protected:
   virtual ~TaskSource();
 
