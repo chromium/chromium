@@ -4518,10 +4518,8 @@ void WebContentsImpl::RecordAccessibilityEvents(
     base::ProcessId pid = base::Process::Current().Pid();
     gfx::AcceleratedWidget widget =
         ax_mgr->GetRoot()->GetTargetForNativeAccessibilityEvent();
-    DCHECK(widget);
-    ui::AXTreeSelector selector(widget);
     event_recorder_ = content::AXInspectFactory::CreatePlatformRecorder(
-        ax_mgr, pid, selector);
+        ax_mgr, pid, ui::AXTreeSelector(widget));
     event_recorder_->ListenToEvents(*callback);
   } else {
     if (event_recorder_) {
