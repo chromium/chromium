@@ -240,19 +240,13 @@ def UpdatePackage(package_name, host_os):
   if package_name == 'clang':
     stamp_file = STAMP_FILE
     package_file = 'clang'
-  elif package_name == 'clang-tidy':
-    package_file = 'clang-tidy'
-  elif package_name == 'clang-libs':
-    package_file = 'clang-libs'
-  elif package_name == 'objdump':
-    package_file = 'llvmobjdump'
-  elif package_name == 'translation_unit':
-    package_file = 'translation_unit'
   elif package_name == 'coverage_tools':
     stamp_file = os.path.join(LLVM_BUILD_DIR, 'cr_coverage_revision')
     package_file = 'llvm-code-coverage'
-  elif package_name == 'libclang':
-    package_file = 'libclang'
+  elif package_name == 'objdump':
+    package_file = 'llvmobjdump'
+  elif package_name in ['clang-libs', 'clang-tidy', 'libclang', 'translation_unit']:
+    package_file = package_name
   else:
     print('Unknown package: "%s".' % package_name)
     return 1
