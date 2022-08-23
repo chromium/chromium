@@ -671,6 +671,7 @@
 <translation id="479989351350248267">തിരയുക</translation>
 <translation id="4804818685124855865">വിച്ഛേദിക്കുക</translation>
 <translation id="4814539958450445987">ലോഗിൻ സ്‌ക്രീൻ</translation>
+<translation id="481455355267255546">അടുത്തത്</translation>
 <translation id="4831034276697007977">സ്വയമേവയുള്ള ക്ലിക്കുകൾ ഓഫാക്കണമെന്ന് നിങ്ങൾക്ക് തീർച്ചയാണോ?</translation>
 <translation id="4849058404725798627">കീബോർഡ് ഫോക്കസ് ഉപയോഗിച്ച് ഒബ്‌ജക്‌റ്റിനെ ഹൈലൈറ്റ് ചെയ്യുക</translation>
 <translation id="485592688953820832">പ്രവർത്തനമൊന്നും വേണ്ട (താൽക്കാലികമായി നിർത്തുക)</translation>
@@ -852,6 +853,7 @@
 <translation id="5860033963881614850">ഓഫാക്കുക</translation>
 <translation id="5860491529813859533">ഓൺ ചെയ്യുക</translation>
 <translation id="5867217927013474703">നെറ്റ്‍വർക്ക് വിവവരങ്ങൾ ശേഖരിക്കുന്നു</translation>
+<translation id="5867606971598166637">നിങ്ങളുടെ സിസ്റ്റം അഡ്മിൻ സ്ക്രീനുകൾ നിരീക്ഷിക്കുന്നു</translation>
 <translation id="5876666360658629066">രക്ഷാകർതൃ കോഡ് നൽകുക</translation>
 <translation id="5881540930187678962">ഫോൺ ഹബ് പിന്നീട് സജ്ജീകരിക്കുക</translation>
 <translation id="5887954372087850114"><ph name="DESK_TITLE" /> എന്നതിലേക്ക് <ph name="WINDOW_TITLE" /> വിൻഡോ അസൈൻ ചെയ്യുകയും മറ്റ് എല്ലാ ഡെസ്ക്കുകളിൽ നിന്നും അസൈൻ ചെയ്തത് മാറ്റുകയും ചെയ്തു</translation>
@@ -1013,6 +1015,7 @@
 <translation id="6757237461819837179">മീഡിയയൊന്നും പ്ലേ ചെയ്യുന്നില്ല</translation>
 <translation id="6777216307882431711">കണക്റ്റ് ചെയ്‍ത USB-C ഉപകരണങ്ങൾ ചാർജ് ചെയ്യുന്നു</translation>
 <translation id="6786750046913594791">ഫോൾഡർ അടയ്ക്കുക</translation>
+<translation id="6787595647772650851">അവസാന സെഷൻ പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="6790428901817661496">പ്ലേചെയ്യുക</translation>
 <translation id="6801878137098616817">അടുത്തിടെ എഡിറ്റ് ചെയ്തത്</translation>
 <translation id="6803622936009808957">പിന്തുണയ്‌ക്കുന്ന മിഴിവുകൾ കണ്ടെത്താത്തതിനാൽ പ്രദർശനങ്ങൾ പ്രതിഫലിപ്പിക്കാനായില്ല. പകരം വിപുലീകൃത ഡെസ്‌ക്‌ടോപ്പ് നൽകി.</translation>
@@ -1261,6 +1264,7 @@
 <translation id="8214996719228530800">Canary ചാനൽ</translation>
 <translation id="8219451629189078428">ഈ സമയത്ത്, നിങ്ങളുടെ Chromebook ഓണാക്കിയ നിലയിൽ തുടരേണ്ടതും അത് വൈദ്യുതിയിലേക്ക് കണക്‌റ്റ് ചെയ്യേണ്ടതുമുണ്ട്. നിങ്ങളുടെ Chromebook-ലും പവർ ഔട്ട്‌ലെറ്റിലും ചാർജറോ അഡാപ്‌റ്റർ കേബിളുകളോ പൂർണ്ണമായി പ്ലഗ്-ഇൻ ചെയ്‌തിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക. നിങ്ങളുടെ Chromebook ഓഫാക്കരുത്.</translation>
 <translation id="8236042855478648955">ഇടവേളയ്ക്ക് സമയമായി</translation>
+<translation id="8246282815785366524">വീണ്ടും സ്വാഗതം, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />, ഫോൺ ബാറ്ററി <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, ആപ്പ്</translation>
 <translation id="8255234195843591763">അപ്ഡേറ്റ് ചെയ്യാൻ റീസെറ്റ് ചെയ്യുക</translation>

@@ -49,6 +49,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1201402288615127009">Növbəti</translation>
 <translation id="1210557957257435379">ekranın yazılması</translation>
 <translation id="121097972571826261">Söz üzrə irəli keçin</translation>
+<translation id="1217633719248931900">Tətbiqə keçin</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Market Tətbiqi</translation>
 <translation id="1225748608451425081">Chromebook cihazınız məlum problemə görə kilidlənib. Bu müddətdən sonra daxil ola biləcəksiniz: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Seçməyi dayandırın</translation>
@@ -539,6 +540,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="4123259114412175274">Chromebook'u kiliddən çıxarmaq üçün telefonunuzda Bluetooth'un aktiv olduğuna əmin olun</translation>
 <translation id="4125970834901680537">Planşet rejimində tətbiqləri yayımlamaq mümkün deyil. Laptop rejimində yenidən cəhd edin.</translation>
 <translation id="4129129681837227511">Bildirişlərin kilid ekranında görünməsini istəyirsinizsə, ayarı dəyişmək üçün cihazı kiliddən çıxarın</translation>
+<translation id="4130035430755296270">Digər düzən seçimləri üçün mausla tuşlamağa davam edin</translation>
 <translation id="4136724716305260864">Gün çıxanadək aktiv olacaq</translation>
 <translation id="4146833061457621061">Musiqini oxudun</translation>
 <translation id="4165275524535002941">Kabel displeyləri dəstəkləməyə bilər</translation>
@@ -669,6 +671,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="479989351350248267">axtarın</translation>
 <translation id="4804818685124855865">Ayırın</translation>
 <translation id="4814539958450445987">Giriş ekranı</translation>
+<translation id="481455355267255546">Növbəti</translation>
 <translation id="4831034276697007977">Avtomatik klikləri deaktiv etmək istədiyinizə əminsiniz?</translation>
 <translation id="4849058404725798627">Obyekti klaviatura fokusu ilə vurğulayın</translation>
 <translation id="485592688953820832">Əməliyyat yoxdur (fasilə)</translation>
@@ -850,6 +853,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="5860033963881614850">Deaktiv</translation>
 <translation id="5860491529813859533">Aktiv edin</translation>
 <translation id="5867217927013474703">Şəbəkə məlumatları toplanır</translation>
+<translation id="5867606971598166637">Sistem administratorunuz ekranlarınıza nəzarət edir</translation>
 <translation id="5876666360658629066">Valideyn kodunu daxil edin</translation>
 <translation id="5881540930187678962">Telefon Mərkəzini daha sonra ayarlayın</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> pəncərəsi <ph name="DESK_TITLE" /> masasına təyin edilib və bütün digər masalardan ləğv edilib</translation>
@@ -1011,6 +1015,7 @@ Yeni quraşdırma</translation>
 <translation id="6757237461819837179">Oxudulan media yoxdur</translation>
 <translation id="6777216307882431711">Qoşulmuş USB-C cihazları qidalandırılır</translation>
 <translation id="6786750046913594791">Qovluğu qapadın</translation>
+<translation id="6787595647772650851">Son sessiyanı bərpa edin</translation>
 <translation id="6790428901817661496">Oxudun</translation>
 <translation id="6801878137098616817">Bu yaxınlarda redaktə edilib</translation>
 <translation id="6803622936009808957">Heç bir dəstəklənən həll tapılmadığı üçün displeyləri güzgüləyə bilmədi. Əvəzinə artırılmış desktop daxil edildi.</translation>
@@ -1259,6 +1264,7 @@ Yeni quraşdırma</translation>
 <translation id="8214996719228530800">Kanarya Kanalı</translation>
 <translation id="8219451629189078428">Bu müddət ərzində Chromebook cihazınız yanılı və şəbəkəyə qoşulu vəziyətdə olmalıdır. Doldurma qurğusu və ya adapter naqillərinin həm Chromebook cihazınıza, həm də elektrik yuvasına tam şəkildə taxılı olduğundan əmin olun. Chromebook cihazını söndürməyin.</translation>
 <translation id="8236042855478648955">Fasilə vaxtı</translation>
+<translation id="8246282815785366524">Təkrar xoş gəldiniz, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />, Telefonun Batareyası <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, Tətbiq</translation>
 <translation id="8255234195843591763">Güncəlləmək üçün sıfırlayın</translation>

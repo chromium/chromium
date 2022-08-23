@@ -49,6 +49,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1201402288615127009">Další</translation>
 <translation id="1210557957257435379">nahrávání obrazovky</translation>
 <translation id="121097972571826261">Dopředu o slovo</translation>
+<translation id="1217633719248931900">Přejít na aplikaci</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, aplikace z Obchodu Play</translation>
 <translation id="1225748608451425081">Chromebook je zamknut kvůli známému problému. Budete se moci přihlásit po: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Ukončit výběr</translation>
@@ -539,6 +540,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="4123259114412175274">Pokud chcete odemknout Chromebook, zkontrolujte, zda je na telefonu zapnutý Bluetooth</translation>
 <translation id="4125970834901680537">V režimu tabletu aplikace streamovat nelze. Zkuste to znovu v režimu notebooku.</translation>
 <translation id="4129129681837227511">Chcete-li zobrazovat oznámení na obrazovce uzamčení, odemkněte zařízení a změňte příslušné nastavení.</translation>
+<translation id="4130035430755296270">Umístěním kurzoru zobrazíte další možnosti rozvržení.</translation>
 <translation id="4136724716305260864">Do východu slunce zapnuto</translation>
 <translation id="4146833061457621061">Přehrát hudbu</translation>
 <translation id="4165275524535002941">Kabel možná nepodporuje displeje</translation>
@@ -669,6 +671,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">Odpojit</translation>
 <translation id="4814539958450445987">Přihlašovací obrazovka</translation>
+<translation id="481455355267255546">Další v pořadí</translation>
 <translation id="4831034276697007977">Opravdu chcete automatická kliknutí vypnout?</translation>
 <translation id="4849058404725798627">Zvýraznit objekt se zaměřením pro zadávání</translation>
 <translation id="485592688953820832">Žádná akce (pozastavit)</translation>
@@ -1011,6 +1014,7 @@ Nová instalace</translation>
 <translation id="6757237461819837179">Nepřehrává se žádný mediální obsah</translation>
 <translation id="6777216307882431711">Napájení připojených zařízení USB-C</translation>
 <translation id="6786750046913594791">Zavřít složku</translation>
+<translation id="6787595647772650851">Obnovit poslední relaci</translation>
 <translation id="6790428901817661496">Přehrát</translation>
 <translation id="6801878137098616817">Nedávno upraveno</translation>
 <translation id="6803622936009808957">Zobrazení nelze zrcadlit, protože nebyla nalezena podporovaná rozlišení. Místo toho se spustil režim rozšířené pracovní plochy.</translation>
@@ -1259,6 +1263,7 @@ Nová instalace</translation>
 <translation id="8214996719228530800">Verze Canary</translation>
 <translation id="8219451629189078428">Chromebook po tuto dobu musí zůstat zapnutý a připojený ke zdroji napájení. Kabely adaptéru nebo nabíječky musí být správně zapojeny do Chromebooku i do zásuvky. Chromebook nevypínejte.</translation>
 <translation id="8236042855478648955">Čas na přestávku</translation>
+<translation id="8246282815785366524">Vítejte zpět, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" />, baterie telefonu: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, aplikace</translation>
 <translation id="8255234195843591763">K aktualizaci zařízení resetujte</translation>

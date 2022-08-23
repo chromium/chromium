@@ -421,6 +421,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2040894699575719559">Místo bylo zablokováno</translation>
 <translation id="2042213636306070719">Přihrádka 7</translation>
 <translation id="204357726431741734">Chcete-li používat hesla uložená v účtu Google, přihlaste se</translation>
+<translation id="2048261947532620704">Překlad stránky</translation>
 <translation id="205212645995975601">Barbecue a grilování</translation>
 <translation id="2053111141626950936">Stránky v jazyce <ph name="LANGUAGE" /> se nebudou překládat.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Když je tento ovládací prvek zapnutý a stav je aktivní, Chrome určuje, které skupině lidí (neboli kohortě) se vaše nedávná aktivita prohlížení nejvíce podobá. Inzerenti mohou vybírat reklamy podle skupin a vaše historie prohlížení zůstává soukromá ve vašem zařízení. Vaše skupina se každý den aktualizuje.}=1{Když je tento ovládací prvek zapnutý a stav je aktivní, Chrome určuje, které skupině lidí (neboli kohortě) se vaše nedávná aktivita prohlížení nejvíce podobá. Inzerenti mohou vybírat reklamy podle skupin a vaše historie prohlížení zůstává soukromá ve vašem zařízení. Vaše skupina se každý den aktualizuje.}few{Když je tento ovládací prvek zapnutý a stav je aktivní, Chrome určuje, které skupině lidí (neboli kohortě) se vaše nedávná aktivita prohlížení nejvíce podobá. Inzerenti mohou vybírat reklamy podle skupin a vaše historie prohlížení zůstává soukromá ve vašem zařízení. Vaše skupina se každé {NUM_DAYS} dny aktualizuje.}many{Když je tento ovládací prvek zapnutý a stav je aktivní, Chrome určuje, které skupině lidí (neboli kohortě) se vaše nedávná aktivita prohlížení nejvíce podobá. Inzerenti mohou vybírat reklamy podle skupin a vaše historie prohlížení zůstává soukromá ve vašem zařízení. Vaše skupina se každých {NUM_DAYS} dne aktualizuje.}other{Když je tento ovládací prvek zapnutý a stav je aktivní, Chrome určuje, které skupině lidí (neboli kohortě) se vaše nedávná aktivita prohlížení nejvíce podobá. Inzerenti mohou vybírat reklamy podle skupin a vaše historie prohlížení zůstává soukromá ve vašem zařízení. Vaše skupina se každých {NUM_DAYS} dní aktualizuje.}}</translation>
@@ -908,6 +909,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3427342743765426898">&amp;Opakovat úpravy</translation>
 <translation id="342781501876943858">Pokud jste heslo použili na jiném webu, doporučujeme vám ho resetovat.</translation>
 <translation id="3428151540071562330">Některé identifikátory URI šablon serverů DnsOverHttpsTemplates jsou neplatné a nebudou použity.</translation>
+<translation id="3431216045099978607">Stisknutím tlačítka |<ph name="ACCELERATOR" />| ukončíte režim celé obrazovky a zobrazíte stažený obsah.</translation>
 <translation id="3431636764301398940">Uložit tuto kartu do zařízení</translation>
 <translation id="3432601291244612633">Zavřít stránku</translation>
 <translation id="3435738964857648380">Zabezpečení</translation>

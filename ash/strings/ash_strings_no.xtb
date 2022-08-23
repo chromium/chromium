@@ -49,6 +49,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1201402288615127009">Neste</translation>
 <translation id="1210557957257435379">skjermopptak</translation>
 <translation id="121097972571826261">Ett ord frem</translation>
+<translation id="1217633719248931900">Gå til appen</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" /> – Play Butikk-app</translation>
 <translation id="1225748608451425081">Chromebooken er låst på grunn av en kjent feil. Du kan logge på om <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Slutt å merke</translation>
@@ -539,6 +540,7 @@ Koble enheten til strøm.</translation>
 <translation id="4123259114412175274">For å låse opp Chromebooken, sørg for at Bluetooth er påslått på telefonen</translation>
 <translation id="4125970834901680537">Kan ikke strømme apper i nettbrettmodus. Prøv på nytt i laptopmodus.</translation>
 <translation id="4129129681837227511">For å se varsler på låseskjermen, lås opp for å endre innstillingen</translation>
+<translation id="4130035430755296270">Hold markøren i ro for å se flere oppsettsalternativer</translation>
 <translation id="4136724716305260864">Påslått til soloppgang</translation>
 <translation id="4146833061457621061">Spill av musikk</translation>
 <translation id="4165275524535002941">Kabelen støtter kanskje ikke skjermer</translation>
@@ -669,6 +671,7 @@ Koble enheten til strøm.</translation>
 <translation id="479989351350248267">søk</translation>
 <translation id="4804818685124855865">Koble fra</translation>
 <translation id="4814539958450445987">Påloggingsskjerm</translation>
+<translation id="481455355267255546">Neste</translation>
 <translation id="4831034276697007977">Er du sikker på at du vil slå av automatiske klikk?</translation>
 <translation id="4849058404725798627">Fremhev objektet med tastaturfokus</translation>
 <translation id="485592688953820832">Ingen handling (pause)</translation>
@@ -850,6 +853,7 @@ Koble enheten til strøm.</translation>
 <translation id="5860033963881614850">Av</translation>
 <translation id="5860491529813859533">Slå på</translation>
 <translation id="5867217927013474703">Samler inn nettverksinformasjon</translation>
+<translation id="5867606971598166637">Systemadministratoren din overvåker skjermene dine</translation>
 <translation id="5876666360658629066">Angi foreldrekoden</translation>
 <translation id="5881540930187678962">Konfigurer Telefonstyring senere</translation>
 <translation id="5887954372087850114">Vinduet <ph name="WINDOW_TITLE" /> er tilordnet <ph name="DESK_TITLE" />, og tilordningen er fjernet på alle andre skrivebord</translation>
@@ -1011,6 +1015,7 @@ Nylig installert</translation>
 <translation id="6757237461819837179">Ingen medier spilles av</translation>
 <translation id="6777216307882431711">Gir strøm til tilkoblede USB-C-enheter</translation>
 <translation id="6786750046913594791">Lukk mappen</translation>
+<translation id="6787595647772650851">Gjenopprett forrige økt</translation>
 <translation id="6790428901817661496">Spill av</translation>
 <translation id="6801878137098616817">Redigert nylig</translation>
 <translation id="6803622936009808957">Kunne ikke speile skjermene fordi ingen støttede oppløsninger ble funnet. Utvidet skrivebord ble brukt i stedet.</translation>
@@ -1259,6 +1264,7 @@ Nylig installert</translation>
 <translation id="8214996719228530800">Canary-kanal</translation>
 <translation id="8219451629189078428">Chromebooken må være påslått og koblet til strøm i denne perioden. Sørg for at lader- eller adapterkabelen er plugget helt inn i både Chromebooken og stikkontakten. Ikke slå av Chromebook.</translation>
 <translation id="8236042855478648955">På tide med en pause</translation>
+<translation id="8246282815785366524">Velkommen tilbake, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> – telefonbatterinivå <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" /> – app</translation>
 <translation id="8255234195843591763">Tilbakestill for å oppdatere</translation>

@@ -433,6 +433,7 @@
 <translation id="3290249595466894471">പുതിയ ഭീഷണികൾ കണ്ടെത്താൻ സഹായിക്കുന്നതിന് പേജുകൾ, ഡൗൺലോഡുകൾ, വിപുലീകരണ ആക്റ്റിവിറ്റി, സിസ്റ്റം വിവരങ്ങൾ എന്നിവയുടെ ഒരു ചെറിയ സാമ്പിളും അയയ്‌ക്കുന്നു</translation>
 <translation id="3297344142967351106">ശബ്ദ സഹായം</translation>
 <translation id="3303414029551471755">ഉള്ളടക്കം ഡൗൺലോഡ് ചെയ്യുന്നതിലേക്ക് തുടരണോ?</translation>
+<translation id="3305795716056605962">'കൂടുതൽ ഓപ്‌ഷനുകൾ' ബട്ടണിൽ നിന്ന്, പേജുകൾ വിവർത്തനം ചെയ്യുക</translation>
 <translation id="3334729583274622784">ഫയൽ എക്സ്റ്റൻഷൻ മാറ്റണോ?</translation>
 <translation id="3341262203274374114">പിന്തുടരുന്നത് ഒഴിവാക്കാനാകുന്നില്ല. എന്തോ കുഴപ്പമുണ്ടായി.</translation>
 <translation id="3359667936385849800">നിങ്ങളുടെ നിലവിലെ സേവന ദാതാവിനെ ഉപയോഗിക്കുക</translation>
@@ -557,6 +558,7 @@
 <translation id="4062305924942672200">നിയമ വിവരങ്ങൾ</translation>
 <translation id="4084682180776658562">ബുക്മാര്‍ക്ക്</translation>
 <translation id="4084712963632273211"><ph name="PUBLISHER_ORIGIN" />-ൽ നിന്ന് – <ph name="BEGIN_DEEMPHASIZED" />Google നൽകുന്നത്<ph name="END_DEEMPHASIZED" /></translation>
+<translation id="409109920254068737">ഈ QR കോഡ് ദൃശ്യമാക്കുന്ന ഉപകരണത്തിൽ സൈൻ ഇൻ ചെയ്യാൻ നിങ്ങൾക്ക് ഈ ടാബ്‌ലെറ്റ് ഉപയോഗിക്കാം.</translation>
 <translation id="4095146165863963773">ആപ്പ് ഡാറ്റ ഇല്ലാതാക്കണോ?</translation>
 <translation id="4096227151372679484">ബുക്ക്‌മാർക്ക് സംരക്ഷിക്കൽ ഫ്ലോ പകുതി ഉയരത്തിൽ തുറന്നു</translation>
 <translation id="4099578267706723511">Google-ലേക്ക് ഉപയോഗ വിവരക്കണക്കുകളും ക്രാഷ് റിപ്പോർട്ടുകളും അയയ്‌ക്കുന്നതിലൂടെ Chrome-നെ മികച്ചതാക്കാൻ സഹായിക്കുക.</translation>
@@ -591,6 +593,7 @@
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />എന്തൊക്കെ ഡാറ്റ ഉപയോഗിക്കുന്നു:<ph name="END_BOLD" /> ഈ ഉപകരണത്തിൽ Chrome ഉപയോഗിച്ച് നിങ്ങൾ സന്ദർശിച്ച സൈറ്റുകളുടെ റെക്കോർഡ് ആയ നിങ്ങളുടെ ബ്രൗസിംഗ് ചരിത്രം.</translation>
 <translation id="4263656433980196874">Assistant ശബ്‌ദ തിരയൽ സമ്മത UI പൂർണ്ണ ഉയരത്തിൽ തുറന്നിരിക്കുന്നു</translation>
 <translation id="4269820728363426813">ലിങ്ക് വിലാസം പകർത്തുക</translation>
+<translation id="4283102315569707115">ഡെസ്‌ക്‌ടോപ്പ് സൈറ്റുകൾ ഡിഫോൾട്ടായി അഭ്യർത്ഥിക്കണോ?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android ക്രമീകരണത്തിൽ സ്ക്രീൻ ലോക്ക് ഓണാക്കുക<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">Chrome ഉപയോഗിക്കുന്നതിലൂടെ, നിങ്ങൾ <ph name="BEGIN_TOS_LINK" />Google സേവന നിബന്ധനകളും<ph name="END_TOS_LINK" /> <ph name="BEGIN_ATOS_LINK" />Google Chrome, ChromeOS അധിക സേവന നിബന്ധനകളും<ph name="END_ATOS_LINK" /> അംഗീകരിക്കുന്നു. <ph name="BEGIN_PRIVACY_LINK" />സ്വകാര്യതാ നയവും<ph name="END_PRIVACY_LINK" /> ബാധകമാണ്.</translation>
 <translation id="4296252229500326964">പുതിയ അദൃശ്യ ടാബ്</translation>
@@ -970,6 +973,7 @@
 <translation id="6342069812937806050">ഇപ്പോള്‍‌</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> പേയ്‌മെന്റ് രീതികളും}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> പേയ്‌മെന്റ് രീതികളും}}</translation>
 <translation id="6345878117466430440">വായിച്ചതായി അടയാളപ്പെടുത്തുക</translation>
+<translation id="6357653805084533597">ഈ QR കോഡ് ദൃശ്യമാക്കുന്ന ഉപകരണത്തിൽ സൈൻ ഇൻ ചെയ്യാൻ നിങ്ങൾക്ക് ഈ ഫോൺ ഉപയോഗിക്കാം.</translation>
 <translation id="6363990818884053551">സമന്വയിപ്പിക്കാൻ തുടങ്ങുന്നതിന്, ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
 <translation id="6364438453358674297">ചരിത്രത്തിൽ നിന്ന് നിർദ്ദേശം നീക്കംചെയ്യണോ?</translation>
 <translation id="6380100320871303656">നിങ്ങൾ സന്ദർശിക്കാൻ സാധ്യതയുണ്ടെന്ന് Chrome കരുതുന്ന പേജുകൾ ഇടയ്ക്കിടെ മുൻകൂട്ടി ലോഡ് ചെയ്യുന്നു. ഈ ക്രമീകരണം ഉയർന്ന ഡാറ്റാ ഉപയോഗത്തിന് കാരണമായേക്കാം.</translation>
@@ -983,6 +987,7 @@
 <translation id="6397616442223433927">ഓൺലൈനിൽ തിരിച്ചെത്തി</translation>
 <translation id="6401458660421980302">ഈ ടാബ് മറ്റൊരു ഉപകരണത്തിലേക്ക് അയയ്‌ക്കാൻ, അതിലെ Chrome-ൽ സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" /> -ൽ <ph name="ERROR_CODE" /></translation>
+<translation id="6403371459378431832">എല്ലാ ഉപകരണങ്ങളിലും നിങ്ങളുടെ ഡാറ്റ സമന്വയിപ്പിക്കുക</translation>
 <translation id="6404511346730675251">ബുക്ക്‌മാർക്ക് എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="6406506848690869874">Sync</translation>
 <translation id="6407224748847589805">നിങ്ങളുടെ കമ്പ്യൂട്ടറിലേക്ക് കണക്റ്റ് ചെയ്യാനാകുന്നില്ല. മറ്റൊരു പരിശോധിച്ചുറപ്പിക്കൽ ഓപ്ഷൻ പരീക്ഷിക്കുക.</translation>
@@ -1264,6 +1269,7 @@
 <translation id="7853202427316060426">പ്രവർത്തനം</translation>
 <translation id="7857691613771368249">ഫയലുകൾ എപ്പോൾ സംരക്ഷിക്കണമെന്ന് ചോദിക്കുക</translation>
 <translation id="7859988229622350291">ഒരിക്കലും വിവർത്തനം ചെയ്യരുത്</translation>
+<translation id="7866213166286285359">ഇവിടെ പേജുകൾ വിവർത്തനം ചെയ്യുക</translation>
 <translation id="78707286264420418">നിങ്ങളുടെ ഉപകരണത്തിലേക്ക് കണക്റ്റ് ചെയ്യാൻ <ph name="PRODUCT_NAME" /> എന്നതിന് സമീപമുള്ള ഉപകരണങ്ങൾക്കുള്ള അനുമതി ആവശ്യമാണ്</translation>
 <translation id="7875915731392087153">ഇമെയിൽ സൃഷ്‌ടിക്കുക</translation>
 <translation id="7876243839304621966">എല്ലാം നീക്കംചെയ്യുക</translation>

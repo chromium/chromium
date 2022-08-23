@@ -433,6 +433,7 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="3290249595466894471">Ett litet urval av sidor, nedladdning, tilläggsaktivitet och systeminformation skickas även för att upptäcka nya hot</translation>
 <translation id="3297344142967351106">Rösthjälp</translation>
 <translation id="3303414029551471755">Vill du ladda ned innehållet?</translation>
+<translation id="3305795716056605962">Översätt sidor via knappen Fler alternativ</translation>
 <translation id="3334729583274622784">Vill du ändra filnamnstillägget?</translation>
 <translation id="3341262203274374114">Det gick inte att sluta följa flödet på grund av ett fel.</translation>
 <translation id="3359667936385849800">Använd den nuvarande DNS-leverantören</translation>
@@ -473,6 +474,7 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="3557336313807607643">Lägg till i kontakter</translation>
 <translation id="3560491354538957576">Webbplatsen kan definiera intressen</translation>
 <translation id="3563767357928833671">Innehållet i Urklipp visas</translation>
+<translation id="3566639033325271639">Uppdatera inställningarna</translation>
 <translation id="3566923219790363270">Chrome förbereds fortfarande för VR. Starta om Chrome senare.</translation>
 <translation id="3568688522516854065">Logga in och aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter</translation>
 <translation id="357465026686164600">Telefon som säkerhetsnyckel</translation>
@@ -557,6 +559,7 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="4062305924942672200">Juridisk information</translation>
 <translation id="4084682180776658562">Infoga bokmärke</translation>
 <translation id="4084712963632273211">Från <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />via Google<ph name="END_DEEMPHASIZED" /></translation>
+<translation id="409109920254068737">Du kan logga in med surfplattans hjälp på den enhet där den här QR-koden visas.</translation>
 <translation id="4095146165863963773">Vill du ta bort appdata?</translation>
 <translation id="4096227151372679484">Flöde för att spara bokmärken har öppnats över halva skärmen</translation>
 <translation id="4099578267706723511">Hjälp till att förbättra Chrome genom att skicka användningsstatistik och felrapporter till Google.</translation>
@@ -568,6 +571,7 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="4116038641877404294">Ladda ned sidor så att du kan använda dem offline</translation>
 <translation id="4135200667068010335">Listan över enheter som fliken kan delas med är stängd.</translation>
 <translation id="4137746084635924146">Aktuellt enhetsspråk</translation>
+<translation id="414128724510021958">Webbplatser för dator begärs som standard</translation>
 <translation id="4141536112466364990">Ta reda på mer om Chrome</translation>
 <translation id="4162867837470729563">Lista över delningsalternativ har öppnats över hela skärmen.</translation>
 <translation id="4165986682804962316">Webbplatsinställningar</translation>
@@ -590,6 +594,7 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Vilken data används:<ph name="END_BOLD" /> Webbhistoriken, där webbplatser som du besökt i Chrome på den här enheten registreras.</translation>
 <translation id="4263656433980196874">Användargränssnittet för samtycke till röstsökning med assistenten har öppnats över hela skärmen</translation>
 <translation id="4269820728363426813">Kopiera länkadress</translation>
+<translation id="4283102315569707115">Vill du begära webbplatser för dator som standard?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Aktivera skärmlåset i Android-inställningar<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">Genom att använda Chrome godkänner du <ph name="BEGIN_TOS_LINK" />Googles användarvillkor<ph name="END_TOS_LINK" /> och <ph name="BEGIN_ATOS_LINK" />de ytterligare användarvillkoren för Google Chrome och Chrome OS<ph name="END_ATOS_LINK" />. <ph name="BEGIN_PRIVACY_LINK" />Integritetspolicyn<ph name="END_PRIVACY_LINK" /> gäller också.</translation>
 <translation id="4296252229500326964">Ny inkognitoflik</translation>
@@ -969,6 +974,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6342069812937806050">Alldeles nyss</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 och <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> till}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 och <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> till}}</translation>
 <translation id="6345878117466430440">Markera som läst</translation>
+<translation id="6357653805084533597">Du kan logga in med telefonens hjälp på den enhet där den här QR-koden visas.</translation>
 <translation id="6363990818884053551">Verifiera din identitet för att starta synkroniseringen</translation>
 <translation id="6364438453358674297">Vill du ta bort förslaget från historiken?</translation>
 <translation id="6380100320871303656">Chrome läser oftare in sidor som du kanske vill besöka i förväg. Den här inställningen kan leda till ökad dataanvändning.</translation>
@@ -982,6 +988,7 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="6397616442223433927">Online igen</translation>
 <translation id="6401458660421980302">Om du vill skicka den här fliken till en annan enhet loggar du in i Chrome på den enheten</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> <ph name="VIOLATED_URL" /></translation>
+<translation id="6403371459378431832">Synkronisera din data på alla enheter</translation>
 <translation id="6404511346730675251">Redigera bokmärke</translation>
 <translation id="6406506848690869874">Synkronisera</translation>
 <translation id="6407224748847589805">Det går inte att ansluta till datorn. Försök med ett annat verifieringsalternativ.</translation>
@@ -1263,6 +1270,7 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="7853202427316060426">Aktivitet</translation>
 <translation id="7857691613771368249">Fråga när filerna ska sparas</translation>
 <translation id="7859988229622350291">Översätt aldrig</translation>
+<translation id="7866213166286285359">Översätt sidor här</translation>
 <translation id="78707286264420418"><ph name="PRODUCT_NAME" /> behöver behörigheten Enheter i närheten för att kunna ansluta till enheten</translation>
 <translation id="7875915731392087153">Skapa ett e-postmeddelande</translation>
 <translation id="7876243839304621966">Ta bort alla</translation>

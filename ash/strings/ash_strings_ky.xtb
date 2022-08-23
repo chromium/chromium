@@ -49,6 +49,7 @@
 <translation id="1201402288615127009">Кийинки</translation>
 <translation id="1210557957257435379">Экрандан видео жаздырып алуу</translation>
 <translation id="121097972571826261">Бир сөз алдыга өтүү</translation>
+<translation id="1217633719248931900">Колдонмого өтүү</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store колдонмосу</translation>
 <translation id="1225748608451425081">Белгилүү бир себептен улам сиздин Chromebook кулпуланды. Төмөнкү убакыттан кийин кире аласыз: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Тандоону токтотуу</translation>
@@ -79,7 +80,7 @@
 <translation id="1312604459020188865">Сигналдын күчү <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Ар дайым текчени көрсөтүү</translation>
 <translation id="1316811122439383437">Tote: жакында тартылган скриншоттор, жүктөп алуулар жана кадалган файлдар</translation>
-<translation id="132346741904777634">Камера жогорку сол бурчка кадалды. Тутумдун платформасына туура келген жок.</translation>
+<translation id="132346741904777634">Камера жогорку сол бурчка кадалды. Системанын платформасына туура келген жок.</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> туташты</translation>
 <translation id="1341651618736211726">Кошумча</translation>
 <translation id="1346748346194534595">Оң</translation>
@@ -539,6 +540,7 @@
 <translation id="4123259114412175274">Chromebook'тун кулпусун ачуу үчүн телефонуңуздагы Bluetooth күйүп турганын текшериңиз</translation>
 <translation id="4125970834901680537">Колдонмолорду планшет режиминде алып ойнотууга болбойт. Ноутбук режиминде кайра аракет кылыңыз.</translation>
 <translation id="4129129681837227511">Билдирмелерди кулпуланган экранда көрүү максатында өзгөртүү киргизүү үчүн, түзмөгүңүздүн кулпусун ачыңыз</translation>
+<translation id="4130035430755296270">Дагы башка калыптарды көрүү үчүн үстүнө алып келиңиз</translation>
 <translation id="4136724716305260864">Күн чыкканга чейин күйүк</translation>
 <translation id="4146833061457621061">Музыканы ойнотуу</translation>
 <translation id="4165275524535002941">Кабель дисплейлерди колдоого албашы мүмкүн</translation>
@@ -572,7 +574,7 @@
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> <ph name="FOLDER_NAME" /> папкасына жылдырылды.</translation>
 <translation id="4302592941791324970">Жеткиликсиз</translation>
 <translation id="4303223480529385476">Статус аймагын жайып көрсөтүү</translation>
-<translation id="4312840429157639164">Камера жогорку оң бурчка кадалды. Тутумдун платформасына туура келген жок.</translation>
+<translation id="4312840429157639164">Камера жогорку оң бурчка кадалды. Системанын платформасына туура келген жок.</translation>
 <translation id="4316910396681052118">БАРДЫК КОЛДОНМОЛОР</translation>
 <translation id="4321179778687042513">Ctrl</translation>
 <translation id="4321776623976362024">Жогорку контрастты колдонуу үчүн тез баскычты бастыңыз. Ал күйгүзүлсүнбү?</translation>
@@ -669,6 +671,7 @@
 <translation id="479989351350248267">издөө</translation>
 <translation id="4804818685124855865">Ажыратуу</translation>
 <translation id="4814539958450445987">Аккаунтка кирүү экраны</translation>
+<translation id="481455355267255546">Кийинки</translation>
 <translation id="4831034276697007977">Автоматтык түрдө чыкылдатууларды чын эле өчүргүңүз келеби?</translation>
 <translation id="4849058404725798627">Баскычтоп менен тандалган элементтер баса белгиленсин</translation>
 <translation id="485592688953820832">Эч кандай аракет аткарылбасын (тындыруу)</translation>
@@ -850,6 +853,7 @@
 <translation id="5860033963881614850">Өчүк</translation>
 <translation id="5860491529813859533">Күйгүзүү</translation>
 <translation id="5867217927013474703">Тармак тууралуу маалымат топтолууда</translation>
+<translation id="5867606971598166637">Тутум администратору экрандарды көзөмөлдөп жатат</translation>
 <translation id="5876666360658629066">Ата-энелик кодду киргизүү</translation>
 <translation id="5881540930187678962">Phone Hub'ды кийинчерээк жөндөө</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> терезеси <ph name="DESK_TITLE" /> иш тактасына дайындалып, башка иш такталардын баарына дайындоо жокко чыгарылды</translation>
@@ -975,7 +979,7 @@
 <translation id="6578407462441924264">Аталышы жок</translation>
 <translation id="6585808820553845416">Сессия <ph name="SESSION_TIME_REMAINING" /> кийиничинде бүтөт.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
-<translation id="6597278316891651699">Камера төмөнкү сол бурчка кадалды. Тутумдун платформасына туура келген жок.</translation>
+<translation id="6597278316891651699">Камера төмөнкү сол бурчка кадалды. Системанын платформасына туура келген жок.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />, Администраторуңуз башкарат</translation>
 <translation id="6612802754306526077">Экрандан видео жаздырып алуу режими тандалды</translation>
 <translation id="6614169507485700968">Купуялык экраны күйүк</translation>
@@ -1011,6 +1015,7 @@
 <translation id="6757237461819837179">Медиа ойнотулган жок</translation>
 <translation id="6777216307882431711">Байланышкан USB-C түзмөктөрү кубатталууда</translation>
 <translation id="6786750046913594791">Куржунду жабуу</translation>
+<translation id="6787595647772650851">Акыркы сеансты калыбына келтирүү</translation>
 <translation id="6790428901817661496">Ойнотуу</translation>
 <translation id="6801878137098616817">Жакында түзөтүлдү</translation>
 <translation id="6803622936009808957">Колдоого алынган бир дагы чечилиш табылбагандыктан, дисплейлер чагылыштырылбай калды. Анын ордуна кеңейтилген иштакта киргизилди.</translation>
@@ -1080,7 +1085,7 @@
 <translation id="7180611975245234373">Жаңылоо</translation>
 <translation id="7188494361780961876">Меню экрандын жогорку сол бурчуна жылдырылды.</translation>
 <translation id="7189412385142492784">Венера канчалык алыс жайгашкан?</translation>
-<translation id="7198435252016571249">Камера төмөнкү оң бурчка кадалды. Тутумдун платформасына туура келген жок.</translation>
+<translation id="7198435252016571249">Камера төмөнкү оң бурчка кадалды. Системанын платформасына туура келген жок.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Жаңыртууну колдонуу үчүн Chromebook'ту өчүрүп күйгүзүү керек. Бул 1 мүнөткө созулушу мүмкүн.</translation>
 <translation id="7256634071279256947">Арткы микрофон</translation>
 <translation id="7258828758145722155">Кечээ түзөтүлгөн</translation>
@@ -1259,6 +1264,7 @@
 <translation id="8214996719228530800">Canary каналы</translation>
 <translation id="8219451629189078428">Бул убакта Chromebook күйүп, электр кубатына туташып турушу керек. Кубаттагычтын же адаптердин кабелдери Chromebook'ка жана розеткага жакшы сайылып турганын текшериңиз. Chromebook'ту өчүрбөңүз.</translation>
 <translation id="8236042855478648955">Тыныгууга убакыт келди</translation>
+<translation id="8246282815785366524">Кайтып келишиңиз менен, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />, Телефондун батареясы <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, Колдонмо</translation>
 <translation id="8255234195843591763">Жаңыртуу үчүн баштапкы абалга келтириңиз</translation>
@@ -1403,7 +1409,7 @@
 <translation id="9080132581049224423">Башкы бетке өтүү үчүн экранды сүрүп коюңуз</translation>
 <translation id="9080206825613744995">Микрофон колдонулууда.</translation>
 <translation id="9084606467167974638">Менюнун абалын өчүрүү/күйгүзүү</translation>
-<translation id="9085962983642906571">Батареянын кубатынын мөөнөтүн узартуу үчүн түзмөк сайылып турганда 80% чейин кубатталат.</translation>
+<translation id="9085962983642906571">Батарея жарабай калбашы үчүн түзмөктүн кубаты 80% кармалып турат.</translation>
 <translation id="9089416786594320554">Киргизүү ыкмалары</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> дисплейи өчүрүлдү</translation>
 <translation id="9098969848082897657">Телефондун үнүн өчүрүү</translation>

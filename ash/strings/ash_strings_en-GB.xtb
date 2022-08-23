@@ -671,6 +671,7 @@ Connect your device to power.</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">Disconnect</translation>
 <translation id="4814539958450445987">Login Screen</translation>
+<translation id="481455355267255546">Up next</translation>
 <translation id="4831034276697007977">Are you sure that you want to turn off automatic clicks?</translation>
 <translation id="4849058404725798627">Highlight object with keyboard focus</translation>
 <translation id="485592688953820832">No action (pause)</translation>
@@ -852,6 +853,7 @@ Connect your device to power.</translation>
 <translation id="5860033963881614850">Off</translation>
 <translation id="5860491529813859533">Turn on</translation>
 <translation id="5867217927013474703">Collecting network information</translation>
+<translation id="5867606971598166637">Your system administrator is monitoring your screens</translation>
 <translation id="5876666360658629066">Enter parental code</translation>
 <translation id="5881540930187678962">Set up Phone Hub later</translation>
 <translation id="5887954372087850114">Window <ph name="WINDOW_TITLE" /> assigned to <ph name="DESK_TITLE" /> and unassigned from all other desks</translation>
@@ -1013,6 +1015,7 @@ New install</translation>
 <translation id="6757237461819837179">No media playing</translation>
 <translation id="6777216307882431711">Powering connected USB-C devices</translation>
 <translation id="6786750046913594791">Close folder</translation>
+<translation id="6787595647772650851">Restore last session</translation>
 <translation id="6790428901817661496">Play</translation>
 <translation id="6801878137098616817">Recently edited</translation>
 <translation id="6803622936009808957">Could not mirror displays since no supported resolutions found. Entered extended desktop instead.</translation>
@@ -1261,6 +1264,7 @@ New install</translation>
 <translation id="8214996719228530800">Canary channel</translation>
 <translation id="8219451629189078428">Your Chromebook needs to stay on and connected to power during this time. Make sure that the charger or adaptor cables are completely plugged in, both to your Chromebook and the power socket. Do not turn off your Chromebook.</translation>
 <translation id="8236042855478648955">Time for a break</translation>
+<translation id="8246282815785366524">Welcome back, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />, phone battery <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, app</translation>
 <translation id="8255234195843591763">Reset to update</translation>

@@ -433,6 +433,7 @@
 <translation id="3290249595466894471">Шинэ аюул заналыг олж илрүүлэхэд туслахын тулд хуудас, татаж авсан файл, өргөтгөлийн үйл ажиллагаа болон системийн мэдээллийн багахан хэсгийг мөн илгээнэ.</translation>
 <translation id="3297344142967351106">Дуут тусламж</translation>
 <translation id="3303414029551471755">Контентыг татаж авах үйлдлийг эхлүүлэх үү?</translation>
+<translation id="3305795716056605962">Бусад сонголт товчлуураас хуудаснуудыг орчуулна уу</translation>
 <translation id="3334729583274622784">Файлын өргөтгөлийг өөрчлөх үү?</translation>
 <translation id="3341262203274374114">Дагахаа болих боломжгүй. Алдаа гарлаа.</translation>
 <translation id="3359667936385849800">Одоогийн үйлчилгээ үзүүлэгчээ ашиглах</translation>
@@ -557,6 +558,7 @@
 <translation id="4062305924942672200">Хууль, эрх зүйн мэдээлэл</translation>
 <translation id="4084682180776658562">Хадгалах</translation>
 <translation id="4084712963632273211"><ph name="PUBLISHER_ORIGIN" />-с – <ph name="BEGIN_DEEMPHASIZED" />Google-с хүргэсэн<ph name="END_DEEMPHASIZED" /></translation>
+<translation id="409109920254068737">Та энэ QR кодыг үзүүлж буй төхөөрөмжид нэвтрэхийн тулд энэ таблетыг ашиглах боломжтой.</translation>
 <translation id="4095146165863963773">Апп-н өгөгдлийг устгах уу?</translation>
 <translation id="4096227151372679484">Хавчуурганы хадгалах урсгалыг тал өндөртэйгээр нээсэн</translation>
 <translation id="4099578267706723511">Хэрэглээний статистик мэдээ болон алдаа ослын тайланг автоматаар Google рүү илгээх замаар Google Chrome-ийг улам сайжруулахад тусална уу.</translation>
@@ -591,6 +593,7 @@
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Ямар өгөгдлийг ашигладаг вэ?:<ph name="END_BOLD" /> Таны хөтчийн түүх буюу энэ төхөөрөмж дээр Chrome-г ашиглан зочилсон сайтуудын бүртгэл.</translation>
 <translation id="4263656433980196874">Туслахын дуут хайлтын зөвшөөрлийн ui-г бүтэн өндрөөр нээсэн</translation>
 <translation id="4269820728363426813">Холбоосын хаягийг хуулах</translation>
+<translation id="4283102315569707115">Өгөгдмөлөөр компьютерын сайтын хүсэлт тавих уу?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android-н тохиргоонд дэлгэцийн түгжээг асаана уу<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">Chrome-г ашигласнаар та <ph name="BEGIN_TOS_LINK" />Google-н үйлчилгээний нөхцөл<ph name="END_TOS_LINK" /> болон <ph name="BEGIN_ATOS_LINK" />Google Chrome, ChromeOS-н нэмэлт нөхцөлийг<ph name="END_ATOS_LINK" /> зөвшөөрч байна. <ph name="BEGIN_PRIVACY_LINK" />Нууцлалын бодлого<ph name="END_PRIVACY_LINK" /> мөн хэрэгжинэ.</translation>
 <translation id="4296252229500326964">Шинэ Нууцлалтай таб</translation>
@@ -969,6 +972,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="6342069812937806050">Яг одоо</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 болон бусад <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 болон бусад <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">Уншсан гэж тэмдэглэх</translation>
+<translation id="6357653805084533597">Та энэ QR кодыг үзүүлж буй төхөөрөмжид нэвтрэхийн тулд энэ утсыг ашиглах боломжтой.</translation>
 <translation id="6363990818884053551">Синк хийж эхлэхийн тулд өөрийгөө мөн болохыг бататгана уу</translation>
 <translation id="6364438453358674297">Түүхээс зөвлөмж устгах уу?</translation>
 <translation id="6380100320871303656">Chrome таныг зочилж магадгүй гэж бодсон хуудаснуудыг илүү тогтмол урьдчилан ачаална. Энэ тохиргоо нь дата ашиглалтыг нэмэгдүүлж магадгүй.</translation>
@@ -982,6 +986,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="6397616442223433927">Буцаад онлайн боллоо</translation>
 <translation id="6401458660421980302">Энэ табыг өөр төхөөрөмж рүү илгээхийн тулд тэндээс Chrome-д нэвтэрнэ үү</translation>
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" /> дээрх <ph name="ERROR_CODE" /></translation>
+<translation id="6403371459378431832">Өгөгдлөө бүх төхөөрөмж дээр синк хийгээрэй</translation>
 <translation id="6404511346730675251">Хадгалагдсан хуудсыг засах</translation>
 <translation id="6406506848690869874">Sync</translation>
 <translation id="6407224748847589805">Таны компьютертой холбогдож чадсангүй. Баталгаажуулалтын өөр сонголтыг туршиж үзнэ үү.</translation>
@@ -1263,6 +1268,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="7853202427316060426">Үйл ажиллагаа</translation>
 <translation id="7857691613771368249">Файлуудыг хэзээ хадгалахыг асуух</translation>
 <translation id="7859988229622350291">Хэзээ ч бүү орчуул</translation>
+<translation id="7866213166286285359">Хуудаснуудыг энд орчуулна уу</translation>
 <translation id="78707286264420418">Таны төхөөрөмжтэй холбогдохын тулд <ph name="PRODUCT_NAME" />-д Ойролцоох төхөөрөмжүүдийн зөвшөөрөл шаардлагатай</translation>
 <translation id="7875915731392087153">Имэйл үүсгэх</translation>
 <translation id="7876243839304621966">Бүгдийг устгах</translation>

@@ -473,6 +473,7 @@ Apabila anda memadamkan sejarah penyemakan imbas anda — semua atau untuk laman
 <translation id="3557336313807607643">Tambahkan pada kenalan</translation>
 <translation id="3560491354538957576">Laman boleh menentukan minat</translation>
 <translation id="3563767357928833671">Kandungan papan keratan dipaparkan</translation>
+<translation id="3566639033325271639">Kemas kini tetapan</translation>
 <translation id="3566923219790363270">Chrome masih bersiap bersedia untuk VR. Mulakan semula Chrome kemudian.</translation>
 <translation id="3568688522516854065">Log masuk dan hidupkan penyegerakan untuk mendapatkan tab daripada peranti anda yang lain</translation>
 <translation id="357465026686164600">Telefon sebagai kunci keselamatan</translation>
@@ -556,6 +557,7 @@ Apabila anda memadamkan sejarah penyemakan imbas anda — semua atau untuk laman
 <translation id="4062305924942672200">Maklumat undang-undang</translation>
 <translation id="4084682180776658562">Penanda halaman</translation>
 <translation id="4084712963632273211">Daripada <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />disampaikan oleh Google<ph name="END_DEEMPHASIZED" /></translation>
+<translation id="409109920254068737">Anda boleh menggunakan tablet ini untuk log masuk pada peranti yang memaparkan kod QR ini.</translation>
 <translation id="4095146165863963773">Padam data apl?</translation>
 <translation id="4096227151372679484">Aliran penyimpanan penanda halaman dibuka pada ketinggian separuh</translation>
 <translation id="4099578267706723511">Bantu jadikan Chrome lebih baik dengan menghantar laporan perangkaan penggunaan dan ranap sistem kepada Google.</translation>
@@ -567,6 +569,7 @@ Apabila anda memadamkan sejarah penyemakan imbas anda — semua atau untuk laman
 <translation id="4116038641877404294">Muat turun halaman untuk digunakan di luar talian</translation>
 <translation id="4135200667068010335">Senarai peranti untuk berkongsi tab ditutup.</translation>
 <translation id="4137746084635924146">Bahasa peranti semasa</translation>
+<translation id="414128724510021958">Laman desktop diminta secara lalai</translation>
 <translation id="4141536112466364990">Ketahui tentang Chrome</translation>
 <translation id="4162867837470729563">Senarai pilihan perkongsian pada ketinggian penuh.</translation>
 <translation id="4165986682804962316">Tetapan tapak</translation>
@@ -589,6 +592,7 @@ Apabila anda memadamkan sejarah penyemakan imbas anda — semua atau untuk laman
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Jenis data yang digunakan:<ph name="END_BOLD" /> Sejarah penyemakan imbas anda, rekod laman yang anda lawati menggunakan Chrome pada peranti ini.</translation>
 <translation id="4263656433980196874">UI persetujuan carian suara Assistant dibuka pada ketinggian penuh</translation>
 <translation id="4269820728363426813">Salin alamat pautan</translation>
+<translation id="4283102315569707115">Minta laman desktop secara lalai?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Hidupkan kunci skrin dalam tetapan Android<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">Dengan menggunakan Chrome, anda bersetuju menerima <ph name="BEGIN_TOS_LINK" />Syarat Perkhidmatan Google<ph name="END_TOS_LINK" /> dan <ph name="BEGIN_ATOS_LINK" />Syarat Perkhidmatan Tambahan Google Chrome dan Chrome OS<ph name="END_ATOS_LINK" />. <ph name="BEGIN_PRIVACY_LINK" />Dasar Privasi<ph name="END_PRIVACY_LINK" /> juga dikenakan.</translation>
 <translation id="4296252229500326964">Tab Inkognito baharu</translation>
@@ -968,6 +972,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="6342069812937806050">Sebentar tadi</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> lagi}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> lagi}}</translation>
 <translation id="6345878117466430440">Tandai sebagai dibaca</translation>
+<translation id="6357653805084533597">Anda boleh menggunakan telefon ini untuk log masuk pada peranti yang memaparkan kod QR ini.</translation>
 <translation id="6363990818884053551">Untuk memulakan penyegerakan, sahkan orang itu ialah anda</translation>
 <translation id="6364438453358674297">Alih keluar cadangan daripada sejarah?</translation>
 <translation id="6380100320871303656">Lebih kerap mempramuat halaman yang diramal oleh Chrome akan anda lawati. Tetapan ini boleh menyebabkan penggunaan data meningkat.</translation>
@@ -981,6 +986,7 @@ Token amanah meningkatkan privasi pada web dan tidak boleh digunakan untuk menge
 <translation id="6397616442223433927">Kembali dalam talian</translation>
 <translation id="6401458660421980302">Untuk menghantar tab ini ke peranti lain, log masuk ke Chrome pada peranti tersebut</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> pada <ph name="VIOLATED_URL" /></translation>
+<translation id="6403371459378431832">Segerakkan data anda pada semua peranti</translation>
 <translation id="6404511346730675251">Edit penanda halaman</translation>
 <translation id="6406506848690869874">Segerak</translation>
 <translation id="6407224748847589805">Tidak dapat menyambung kepada komputer anda. Cuba pilihan pengesahan lain.</translation>

@@ -421,6 +421,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2040894699575719559">Localização bloqueada</translation>
 <translation id="2042213636306070719">Tabuleiro 7</translation>
 <translation id="204357726431741734">Iniciar sessão para utilizar palavras-passe guardadas na sua Conta Google</translation>
+<translation id="2048261947532620704">A traduzir a página</translation>
 <translation id="205212645995975601">Churrascos e grelhados</translation>
 <translation id="2053111141626950936">As páginas em <ph name="LANGUAGE" /> não serão traduzidas.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Quando este controlo está ativado e o estado está ativo, o Chrome determina a que grupo alargado de pessoas, ou "coorte", a sua atividade de navegação recente é mais semelhante. Os anunciantes podem selecionar anúncios para o grupo e a sua atividade de navegação permanece privada no seu dispositivo. O seu grupo é atualizado todos os dias.}=1{Quando este controlo está ativado e o estado está ativo, o Chrome determina a que grupo alargado de pessoas, ou "coorte", a sua atividade de navegação recente é mais semelhante. Os anunciantes podem selecionar anúncios para o grupo e a sua atividade de navegação permanece privada no seu dispositivo. O seu grupo é atualizado todos os dias.}other{Quando este controlo está ativado e o estado está ativo, o Chrome determina a que grupo alargado de pessoas, ou "coorte", a sua atividade de navegação recente é mais semelhante. Os anunciantes podem selecionar anúncios para o grupo e a sua atividade de navegação permanece privada no seu dispositivo. O seu grupo é atualizado a cada {NUM_DAYS} dias.}}</translation>
@@ -911,6 +912,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3427342743765426898">&amp;Refazer edição</translation>
 <translation id="342781501876943858">O Chromium recomenda a reposição da palavra-passe se a tiver reutilizado noutros sites.</translation>
 <translation id="3428151540071562330">Um ou mais URIs de modelos do servidor DnsOverHttpsTemplates são inválidos e não serão utilizados.</translation>
+<translation id="3431216045099978607">Prima |<ph name="ACCELERATOR" />| para sair do modo de ecrã inteiro e ver a transferência.</translation>
 <translation id="3431636764301398940">Guardar este cartão neste dispositivo</translation>
 <translation id="3432601291244612633">Fechar página</translation>
 <translation id="3435738964857648380">Segurança</translation>
@@ -1652,6 +1654,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="540969355065856584">Este servidor não conseguiu provar que é <ph name="DOMAIN" />; de momento, o respetivo certificado de segurança não é válido. Isto pode ser provocado por uma configuração incorreta ou por um atacante que esteja a intercetar a sua ligação.</translation>
 <translation id="5412040515238827314">Formato inválido: esperava-se uma lista de padrões.</translation>
 <translation id="5412236728747081950">Este site obtém os seus interesses do Chrome para lhe mostrar anúncios mais relevantes</translation>
+<translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Empilhador 4</translation>
 <translation id="5421136146218899937">Limpar dados de navegação...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> pretende enviar-lhe notificações.</translation>
@@ -2056,6 +2059,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6591833882275308647">O seu <ph name="DEVICE_TYPE" /> não é gerido.</translation>
 <translation id="6592952801936330159">Botão Gerir definições de sites. Prima Enter para gerir as autorizações e os dados armazenados em sites nas Definições do Chrome.</translation>
 <translation id="6596325263575161958">Opções de encriptação</translation>
+<translation id="6599642189720630047">Produtos monitorizados</translation>
 <translation id="6609880536175561541">Prc7 (Envelope)</translation>
 <translation id="6611723696964473273">Notícias de economia</translation>
 <translation id="6612010098632894193">Vídeo online</translation>
@@ -2582,6 +2586,7 @@ Detalhes adicionais:
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8009225694047762179">Gerir palavras-passe</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Este cartão e o respetivo endereço de faturação serão guardados. Pode utilizá-lo quando tiver sessão iniciada em <ph name="USER_EMAIL" />.}other{Estes cartões e os respetivos endereços de faturação serão guardados. Pode utilizá-los quando tiver sessão iniciada em <ph name="USER_EMAIL" />.}}</translation>
+<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8025119109950072390">Os utilizadores mal intencionados neste site podem enganá-lo no sentido de fazer algo perigoso como instalar software ou revelar as suas informações pessoais (por exemplo, palavras-passe, números de telefone ou cartões de crédito).</translation>
 <translation id="8026334261755873520">Limpar dados de navegação</translation>
 <translation id="8027077570865220386">Tabuleiro 15</translation>

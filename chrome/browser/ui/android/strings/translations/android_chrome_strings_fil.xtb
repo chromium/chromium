@@ -433,6 +433,7 @@ Kapag na-delete mo ang iyong history ng pag-browse — lahat o para sa isang par
 <translation id="3290249595466894471">Nagpapadala rin ng maliit na sample ng mga page, download, aktibidad ng extension, at impormasyon ng system para makatulong na tumuklas ng mga bagong banta</translation>
 <translation id="3297344142967351106">Tulong sa pamamagitan ng boses</translation>
 <translation id="3303414029551471755">Magpatuloy na i-download ang content?</translation>
+<translation id="3305795716056605962">Magsalin ng mga page mula sa button na Higit pang Opsyon</translation>
 <translation id="3334729583274622784">Baguhin ang file extension?</translation>
 <translation id="3341262203274374114">Hindi ma-unfollow. Nagkaproblema.</translation>
 <translation id="3359667936385849800">Gamitin ang iyong kasalukuyang service provider</translation>
@@ -557,6 +558,7 @@ Kapag na-delete mo ang iyong history ng pag-browse — lahat o para sa isang par
 <translation id="4062305924942672200">Impormasyong legal</translation>
 <translation id="4084682180776658562">Bookmark</translation>
 <translation id="4084712963632273211">Mula sa <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />ihinatid ng Google<ph name="END_DEEMPHASIZED" /></translation>
+<translation id="409109920254068737">Puwede mong gamitin ang tablet na ito para mag-sign in sa device na nagpapakita ng QR code na ito.</translation>
 <translation id="4095146165863963773">I-delete ang data ng app?</translation>
 <translation id="4096227151372679484">Nakabukas nang kalahati ang proseso ng pag-save ng bookmark</translation>
 <translation id="4099578267706723511">Tulungang mapahusay ang Chrome sa pamamagitan ng pagpapadala sa Google ng mga istatistika ng paggamit at ulat ng pag-crash.</translation>
@@ -591,6 +593,7 @@ Kapag na-delete mo ang iyong history ng pag-browse — lahat o para sa isang par
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Anong data ang ginagamit:<ph name="END_BOLD" /> Iyong history ng pag-browse, record ng mga site na binisita mo gamit ang Chrome sa device na ito.</translation>
 <translation id="4263656433980196874">Nakabukas ang ui ng pahintulot ng paghahanap gamit ang boses ng Assistant nang buo ang taas</translation>
 <translation id="4269820728363426813">Kopyahin ang address ng link</translation>
+<translation id="4283102315569707115">Humiling ng mga pang-desktop na site bilang default?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />I-on ang lock ng screen sa mga setting ng Android<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">Sa pamamagitan ng paggamit sa Chrome, sumasang-ayon ka sa <ph name="BEGIN_TOS_LINK" />Mga Tuntunin ng Serbisyo ng Google<ph name="END_TOS_LINK" />, at sa <ph name="BEGIN_ATOS_LINK" />Mga Karagdagang Tuntunin ng Serbisyo ng Google Chrome at ChromeOS<ph name="END_ATOS_LINK" />. Nalalapat din ang <ph name="BEGIN_PRIVACY_LINK" />Patakaran sa Privacy<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="4296252229500326964">Bagong tab na Incognito</translation>
@@ -970,6 +973,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6342069812937806050">Ngayon lang</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> iba pa}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> iba pa}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> na iba pa}}</translation>
 <translation id="6345878117466430440">Markahang nabasa na</translation>
+<translation id="6357653805084533597">Puwede mong gamitin ang teleponong ito para mag-sign in sa device na nagpapakita ng QR code na ito.</translation>
 <translation id="6363990818884053551">Para simulan ang pag-sync, i-verify na ikaw ito</translation>
 <translation id="6364438453358674297">Alisin ang suhestyon mula sa history?</translation>
 <translation id="6380100320871303656">Mas madalas na nagpi-preload ng mga page na sa palagay ng Chrome ay malamang mong bisitahin. Posibleng magresulta sa mas malakas na paggamit ng data ang setting na ito.</translation>
@@ -983,6 +987,7 @@ Pinapahusay ng mga trust token ang privacy sa web at hindi magagamit ang mga ito
 <translation id="6397616442223433927">Online ulit</translation>
 <translation id="6401458660421980302">Para ipadala ang tab na ito sa ibang device, mag-sign in sa Chrome doon</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> sa <ph name="VIOLATED_URL" /></translation>
+<translation id="6403371459378431832">I-sync ang iyong data sa lahat ng device</translation>
 <translation id="6404511346730675251">I-edit ang bookmark</translation>
 <translation id="6406506848690869874">Pag-sync</translation>
 <translation id="6407224748847589805">Hindi makakonekta sa iyong computer. Sumubok ng ibang opsyon para sa pag-verify.</translation>
@@ -1264,6 +1269,7 @@ Pinapahusay ng mga trust token ang privacy sa web at hindi magagamit ang mga ito
 <translation id="7853202427316060426">Aktibidad</translation>
 <translation id="7857691613771368249">Magtanong kung kailan magse-save ng mga file</translation>
 <translation id="7859988229622350291">Huwag isalin kailanman</translation>
+<translation id="7866213166286285359">Magsalin ng mga page dito</translation>
 <translation id="78707286264420418">Nangangailangan ang <ph name="PRODUCT_NAME" /> ng Pahintulot sa mga kalapit na device para makakonekta sa iyong device</translation>
 <translation id="7875915731392087153">Gumawa ng email</translation>
 <translation id="7876243839304621966">Alisin lahat</translation>

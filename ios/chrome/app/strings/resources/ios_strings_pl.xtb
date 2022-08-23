@@ -108,7 +108,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="1753905327828125965">Najczęstsze</translation>
 <translation id="1803264062614276815">Imię i nazwisko posiadacza karty</translation>
 <translation id="1809939268435598390">Usuń folder</translation>
-<translation id="1813414402673211292">Wyczyść historię przeglądania</translation>
+<translation id="1813414402673211292">Wyczyść dane przeglądania</translation>
 <translation id="1815941218935345331">Kod dostępu</translation>
 <translation id="1820259098641718022">Dodano do listy Do przeczytania</translation>
 <translation id="1832848789136765277">Aby zapewnić sobie stały dostęp do zsynchronizowanych danych, potwierdź swoją tożsamość</translation>
@@ -280,6 +280,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3277021493514034324">Skopiowano adres strony</translation>
 <translation id="3285962946108803577">Udostępnij stronę...</translation>
 <translation id="3290875554372353449">Wybierz konto</translation>
+<translation id="3305294846493618482">więcej</translation>
 <translation id="3311748811247479259">Wyłączono</translation>
 <translation id="3324193307694657476">Adres 2</translation>
 <translation id="3328801116991980348">Informacje o witrynie</translation>
@@ -311,7 +312,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3529024052484145543">Niezabezpieczona</translation>
 <translation id="3533202363250687977">Zamknij karty incognito</translation>
 <translation id="3533436815740441613">Nowa karta</translation>
-<translation id="3547799431091898961">Aby wylogować się z konta Google na wszystkich stronach, <ph name="BEGIN_LINK" />wyloguj się z Chrome<ph name="END_LINK" />.</translation>
 <translation id="3551320343578183772">Zamknij kartę</translation>
 <translation id="3581564640715911333">Proponuj tłumaczenie stron w innych językach</translation>
 <translation id="3588820906588687999">Otwórz grafikę w nowej karcie</translation>
@@ -596,7 +596,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6012140227487808125">Szyfruję…</translation>
 <translation id="6021332621416007159">Otwórz w...</translation>
 <translation id="6027945736510816438">Czy chodziło Ci o <ph name="WEBSITE" />?</translation>
-<translation id="6036215966221662377">Wyczyść historię przeglądania</translation>
+<translation id="6036215966221662377">Wyczyść dane przeglądania</translation>
 <translation id="6036514205982097558">Wszystkie Twoje karty w 1 przeglądarce</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Zamknij</translation>
@@ -835,7 +835,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7884694604461143138">Historia wyszukiwania (liczba wyników: <ph name="COUNT" />)</translation>
 <translation id="7887198238286927132">Aby chronić Twoją prywatność, Chrome nie będzie automatycznie wypełniać tego pola.</translation>
 <translation id="7911190106180361398">Twoja organizacja nie pozwala Ci synchronizować wszystkich danych.</translation>
-<translation id="7920949005883349320">Prywatność i zabezpieczenia</translation>
+<translation id="7920949005883349320">Prywatność i bezpieczeństwo</translation>
 <translation id="7930998711684428189">Ostrzega, jeśli wskutek naruszenia bezpieczeństwa danych doszło do ujawnienia haseł.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Eksportuj hasła…</translation>

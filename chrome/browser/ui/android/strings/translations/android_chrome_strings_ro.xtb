@@ -433,6 +433,7 @@ Când ștergi istoricul de navigare (în întregime sau pentru un anumit site), 
 <translation id="3290249595466894471">În plus, trimite un mic eșantion cu pagini, descărcări, activități ale extensiilor și informații despre sistem pentru a descoperi noi amenințări</translation>
 <translation id="3297344142967351106">Asistență vocală</translation>
 <translation id="3303414029551471755">Continui pentru descărcarea conținutului?</translation>
+<translation id="3305795716056605962">Tradu paginile de la butonul Mai multe opțiuni</translation>
 <translation id="3334729583274622784">Modifici extensia de fișier?</translation>
 <translation id="3341262203274374114">Nu se poate anula urmărirea. A apărut o eroare.</translation>
 <translation id="3359667936385849800">Folosește furnizorul de servicii actual</translation>
@@ -473,6 +474,7 @@ Când ștergi istoricul de navigare (în întregime sau pentru un anumit site), 
 <translation id="3557336313807607643">Adaugă în Agendă</translation>
 <translation id="3560491354538957576">Site-ul poate defini interese</translation>
 <translation id="3563767357928833671">Conținutul clipboardului este afișat</translation>
+<translation id="3566639033325271639">Actualizează setările</translation>
 <translation id="3566923219790363270">Chrome încă se pregătește pentru RV. Repornește Chrome mai târziu.</translation>
 <translation id="3568688522516854065">Pentru a accesa filele de pe alte dispozitive, conectează-te și activează sincronizarea</translation>
 <translation id="357465026686164600">Telefon drept cheie de securitate</translation>
@@ -556,6 +558,7 @@ Când ștergi istoricul de navigare (în întregime sau pentru un anumit site), 
 <translation id="4062305924942672200">Informații juridice</translation>
 <translation id="4084682180776658562">Marcaj</translation>
 <translation id="4084712963632273211">De la <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />livrată de Google<ph name="END_DEEMPHASIZED" /></translation>
+<translation id="409109920254068737">Poți folosi această tabletă pentru a te conecta la dispozitivul care afișează acest cod QR.</translation>
 <translation id="4095146165863963773">Ștergi datele aplicației?</translation>
 <translation id="4096227151372679484">Fluxul de salvare a marcajului deschis la jumătate din înălțime</translation>
 <translation id="4099578267706723511">Contribuie la îmbunătățirea Chrome trimițând statistici de utilizare și rapoarte de blocare la Google.</translation>
@@ -567,6 +570,7 @@ Când ștergi istoricul de navigare (în întregime sau pentru un anumit site), 
 <translation id="4116038641877404294">Descarcă paginile pentru a le folosi offline</translation>
 <translation id="4135200667068010335">Lista de dispozitive pe care să trimiți o filă este închisă.</translation>
 <translation id="4137746084635924146">Limba actuală a dispozitivului</translation>
+<translation id="414128724510021958">Versiuni ale site-ului pentru computer solicitate în mod prestabilit</translation>
 <translation id="4141536112466364990">Familiarizează-te cu Chrome</translation>
 <translation id="4162867837470729563">Lista cu opțiuni de permitere a accesului la înălțimea completă.</translation>
 <translation id="4165986682804962316">Setări pentru site-uri</translation>
@@ -589,6 +593,7 @@ Când ștergi istoricul de navigare (în întregime sau pentru un anumit site), 
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Ce date sunt folosite:<ph name="END_BOLD" /> istoricul tău de navigare, o evidență a site-urilor pe care le-ai accesat folosind Chrome pe acest dispozitiv.</translation>
 <translation id="4263656433980196874">IU pentru consimțirea la căutarea vocală cu ajutorul Asistentului, deschisă la înălțimea completă</translation>
 <translation id="4269820728363426813">Copiază adresa linkului</translation>
+<translation id="4283102315569707115">Soliciți în mod prestabilit versiunea site-urilor pentru computer?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Activează blocarea ecranului în Setările Android<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">Dacă folosești Chrome, ești de acord cu <ph name="BEGIN_TOS_LINK" />Termenii și condițiile Google<ph name="END_TOS_LINK" /> și cu <ph name="BEGIN_ATOS_LINK" />Termenii și condițiile suplimentare pentru Google Chrome și Sistemul de operare Chrome<ph name="END_ATOS_LINK" />. Se aplică și <ph name="BEGIN_PRIVACY_LINK" />Politica de confidențialitate<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="4296252229500326964">Filă incognito nouă</translation>
@@ -968,6 +973,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6342069812937806050">Adineauri</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 și încă <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}few{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 și încă <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 și încă <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">Marchează ca citit</translation>
+<translation id="6357653805084533597">Poți să folosești acest telefon pentru a te conecta la dispozitivul care afișează acest cod QR.</translation>
 <translation id="6363990818884053551">Pentru a începe sincronizarea, confirmă-ți identitatea</translation>
 <translation id="6364438453358674297">Elimini sugestia din istoric?</translation>
 <translation id="6380100320871303656">Preîncarcă mai frecvent paginile pe care Chrome consideră că le-ai putea accesa. Este posibil ca această setare să ducă la o utilizare crescută a datelor.</translation>
@@ -981,6 +987,7 @@ Trust Tokens îmbunătățește confidențialitatea pe web și nu poate fi folos
 <translation id="6397616442223433927">Din nou online</translation>
 <translation id="6401458660421980302">Pentru a trimite această filă pe alt dispozitiv, conectează-te la Chrome pe dispozitivul respectiv</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" />, <ph name="VIOLATED_URL" /></translation>
+<translation id="6403371459378431832">Sincronizează-ți datele pe toate dispozitivele</translation>
 <translation id="6404511346730675251">Modifică marcajul</translation>
 <translation id="6406506848690869874">Sincronizare</translation>
 <translation id="6407224748847589805">Nu se poate conecta la computer. Încearcă altă opțiune de confirmare.</translation>
@@ -1262,6 +1269,7 @@ Trust Tokens îmbunătățește confidențialitatea pe web și nu poate fi folos
 <translation id="7853202427316060426">Activitate</translation>
 <translation id="7857691613771368249">Întreabă când să fie salvate fișierele</translation>
 <translation id="7859988229622350291">Nu traduce niciodată</translation>
+<translation id="7866213166286285359">Dă clic aici pentru a afișa butonul Tradu paginile</translation>
 <translation id="78707286264420418"><ph name="PRODUCT_NAME" /> are nevoie de permisiunea Dispozitive din apropiere pentru a se conecta la dispozitivul tău</translation>
 <translation id="7875915731392087153">Creează un e-mail</translation>
 <translation id="7876243839304621966">Elimină tot</translation>

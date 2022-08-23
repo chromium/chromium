@@ -49,6 +49,7 @@
 <translation id="1201402288615127009">بعدی</translation>
 <translation id="1210557957257435379">ضبط صفحه‌نمایش</translation>
 <translation id="121097972571826261">جلو رفتن کلمه‌به‌کلمه</translation>
+<translation id="1217633719248931900">رفتن به برنامه</translation>
 <translation id="1218444235442067213">‏<ph name="APP_NAME" />، برنامه فروشگاه Play</translation>
 <translation id="1225748608451425081">‏Chromebook شما به‌دلیل مشکل شناخته‌شده‌ای قفل شده است. پس از <ph name="TIME_LEFT" /> می‌توانید به سیستم وارد شوید.</translation>
 <translation id="1229194443904279055">توقف انتخاب</translation>
@@ -670,6 +671,7 @@
 <translation id="479989351350248267">جستجو</translation>
 <translation id="4804818685124855865">قطع اتصال</translation>
 <translation id="4814539958450445987">صفحه ورود به سیستم</translation>
+<translation id="481455355267255546">بعدی</translation>
 <translation id="4831034276697007977">مطمئنید می‌خواهید کلیک‌های خودکار را خاموش کنید؟</translation>
 <translation id="4849058404725798627">برجسته کردن شیء با فوکوس صفحه‌کلید</translation>
 <translation id="485592688953820832">بی‌حرکت (مکث)</translation>
@@ -1012,6 +1014,7 @@
 <translation id="6757237461819837179">هیچ رسانه‌ای درحال پخش نیست</translation>
 <translation id="6777216307882431711">‏درحال تأمین برق دستگاه‌های USB-C متصل</translation>
 <translation id="6786750046913594791">بستن پوشه</translation>
+<translation id="6787595647772650851">بازیابی آخرین جلسه</translation>
 <translation id="6790428901817661496">پخش</translation>
 <translation id="6801878137098616817">اخیراً ویرایش شده است</translation>
 <translation id="6803622936009808957">نمایش یک تصویر واحد در چند صفحه نمایش ممکن نیست زیرا وضوح تصویر پشتیبانی شده‌ای وجود ندارد. بجای آن حالت نمایش دسک‌تاپ چند بخشی استفاده می‌شود.</translation>
@@ -1260,6 +1263,7 @@
 <translation id="8214996719228530800">‏کانال Canary</translation>
 <translation id="8219451629189078428">‏Chromebook باید در این مدت روشن بماند و به برق متصل باشد. مطمئن شوید سیم شارژر یا آداپتور کاملاً متصل باشد، هم به Chromebook و هم به پریز برق. Chromebook را خاموش نکنید.</translation>
 <translation id="8236042855478648955">وقت استراحت</translation>
+<translation id="8246282815785366524"><ph name="GIVEN_NAME" />، دوباره خوش آمدید</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />، باتری تلفن<ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />، برنامه</translation>
 <translation id="8255234195843591763">برای به‌روزرسانی، دستگاه را بازنشانی کنید</translation>

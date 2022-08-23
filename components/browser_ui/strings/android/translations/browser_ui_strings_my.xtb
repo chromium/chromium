@@ -59,7 +59,7 @@
 <translation id="2321958826496381788">သင်က ယင်းကို ဖတ်ရအဆင်ပြေသည့် အထိ ဆွဲတန်းကို ဆွဲယူပါ။ စာသားတွင် စာပိုဒ် တစ်ခုကို နှစ်ကြိမ် ပုတ်လိုက်သည့် နောက်မှာ ဤမျှလောက် ကြီးလျက် မြင်ရသင့်သည်။</translation>
 <translation id="2329473609445770916">သင့်ကို ကြော်ငြာပြရန် အခြားဝဘ်ဆိုက်များသုံးနိုင်သော စိတ်ဝင်စားမှုများကို ဤဝဘ်ဆိုက်က သတ်မှတ်သည်</translation>
 <translation id="2359808026110333948">ဆက်လုပ်ရန်</translation>
-<translation id="2379925928934107488">Chrome က ဝဘ်ဆိုက်များကို မှောင်သည့် အပြင်အဆင်သုံးလျှင် ဖြစ်နိုင်ပါက ၎င်းအပြင်အဆင်ကို ပြောင်းပေးသည်</translation>
+<translation id="2379925928934107488">Chrome က ဝဘ်ဆိုက်များကို အမှောင်နောက်ခံသုံးလျှင် ဖြစ်နိုင်ပါက ၎င်းအပြင်အဆင်ကို ပြောင်းပေးသည်</translation>
 <translation id="2387895666653383613">စာသား စကေး</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> မီဂါဘိုက်</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> နှင့် နောက်ထပ် <ph name="NUM_MORE" /> ခု ခွင့်ပြုထားသည်}other{<ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> နှင့် နောက်ထပ် <ph name="NUM_MORE" /> ခု ခွင့်ပြုထားသည်}}</translation>
@@ -74,7 +74,7 @@
 <translation id="2570922361219980984">ဤစက်ပစ္စည်းအတွက်လည်း တည်နေရာ အသုံးပြုခွင့်ကို ပိတ်ထားသည်။ <ph name="BEGIN_LINK" />Android ဆက်တင်များ<ph name="END_LINK" /> တွင် ၎င်းကို ဖွင့်ပါ။</translation>
 <translation id="257931822824936280">ချဲ့ထား၏ - ခေါက်သိမ်းရန် နှိပ်ပါ</translation>
 <translation id="2586657967955657006">ကလစ်ဘုတ်</translation>
-<translation id="2597457036804169544">ဝဘ်ဆိုက်များကို မှောင်သည့် အပြင်အဆင်မပြောင်းပါ</translation>
+<translation id="2597457036804169544">ဝဘ်ဆိုက်များကို အမှောင်နောက်ခံသို့ မပြောင်းပါနှင့်</translation>
 <translation id="2621115761605608342">တိကျသည့်ဆိုက်အတွက် JavaScript ကိုခွင့်ပြုပါ။</translation>
 <translation id="2653659639078652383">ပေးပို့ရန်</translation>
 <translation id="2677748264148917807">ထွက်ခွာရန်</translation>
@@ -122,7 +122,7 @@
 <translation id="3628308229821498208">အကြံပြုထားသည့် ရှာဖွေမှုများ</translation>
 <translation id="3744111561329211289">နောက်ခံတွင် စင့်ခ်လုပ်ခြင်း</translation>
 <translation id="3763247130972274048">၁၀ စက္ကန့်ကျော်ရန် ဗီဒီယိုဘယ်ဘက် သို့မဟုတ် ညာဘက်တွင် နှစ်ချက်တို့ပါ</translation>
-<translation id="3797520601150691162">ဝဘ်ဆိုက်တစ်ခုအတွက် မှောင်သည့် အပြင်အဆင်ကိုမပြောင်းပါ</translation>
+<translation id="3797520601150691162">ဝဘ်ဆိုက်တစ်ခုအတွက် အမှောင်နောက်ခံသို့ မပြောင်းပါ</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />။ <ph name="TYPE_2" />။</translation>
 <translation id="381841723434055211">ဖုန်းနံပါတ်များ</translation>
 <translation id="3826050100957962900">ပြင်ပအဖွဲ့အစည်းသို့ လက်မှတ်ထိုးဝင်ခြင်း</translation>
@@ -277,7 +277,7 @@
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 ခု ရွေးထားသည်}other{# ခု ရွေးထားသည်}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> ခု ရွေးထားသည်။ မျက်နှာပြင်၏ ထိပ်နားတွင် ရွေးချယ်စရာများ ရှိသည်</translation>
 <translation id="7141896414559753902">ပေါ့ပ်အပ်နှင့် တစ်ဆင့်ပြန်ညွှန်ချက်များကို မဖော်ပြနိုင်စေရန် ဝဘ်ဆိုက်များအား ပိတ်ပါ (အကြံပြုထားသည်)</translation>
-<translation id="7176368934862295254"><ph name="KILOBYTES" /> ကီလိုဘိုက်</translation>
+<translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">ပြန်လည်စတင်ရန်</translation>
 <translation id="7203150201908454328">တိုးချဲ့ထား</translation>
 <translation id="723171743924126238">ပုံများကို ရွေးရန်</translation>
@@ -288,7 +288,7 @@
 <translation id="7383715096023715447"><ph name="DOMAIN" /> အတွက် ဆက်တင်များ</translation>
 <translation id="7423098979219808738">အရင်မေးပါ</translation>
 <translation id="7423538860840206698">ကလစ်ဘုတ်ကို ကြည့်ရှုခွင့် ပိတ်ထားသည်</translation>
-<translation id="7425915948813553151">ဝဘ်ဆိုက်အတွက် မှောင်သည့် အပြင်အဆင်</translation>
+<translation id="7425915948813553151">ဝဘ်ဆိုက်အတွက် အမှောင်နောက်ခံ</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">ဝဘ်ဆိုက်တစ်ခုက သင့်မိုက်ကရိုဖုန်းကို အသုံးပြုနေသည်</translation>
 <translation id="7561196759112975576">အမြဲတမ်း</translation>

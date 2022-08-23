@@ -67,6 +67,7 @@
 <translation id="152892567002884378">ஒலியளவை அதிகரிக்கும்</translation>
 <translation id="1555130319947370107">நீலம்</translation>
 <translation id="155865706765934889">டச்பேட்</translation>
+<translation id="1561927818299383735">பேக்லிட் வண்ணம்</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> ஐப் புதுப்பிக்க முடியவில்லை</translation>
 <translation id="1567064801249837505">ஆல்பங்கள்</translation>
 <translation id="1572585716423026576">வால்பேப்பராக அமை</translation>
@@ -437,6 +438,7 @@
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">வழக்கங்களை மீண்டும் இயக்கு</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
+<translation id="5286263799730375393">பின்னொளி வண்ணம்</translation>
 <translation id="5294769550414936029">பதிப்பு <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">சாளரத்தை டெஸ்கிற்கு நகர்த்து</translation>
 <translation id="5304899856529773394">EVDO</translation>
@@ -497,6 +499,7 @@
 <translation id="5895138241574237353">மறுதொடக்கம்</translation>
 <translation id="5901630391730855834">மஞ்சள்</translation>
 <translation id="5903200662178656908">கீபோர்டும் மவுஸும் இணைந்ததே சாதனமாகும்.</translation>
+<translation id="5907649332524363701">கீபோர்டு வண்ணம்</translation>
 <translation id="5916084858004523819">தடைசெய்யப்பட்டது</translation>
 <translation id="5916664084637901428">இயக்கு</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{உங்கள் ஃபைல் ஸ்கேன் செய்யப்பட்டு <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ஃபைல்றையில் சேமிக்கப்பட்டது.}other{உங்கள் ஃபைல்கள்  ஸ்கேன் செய்யப்பட்டு <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ஃபைல்றையில் சேமிக்கப்பட்டன.}}</translation>
@@ -598,6 +601,7 @@
 <translation id="6760706756348334449">ஒலியளவைக் குறைக்கும்</translation>
 <translation id="6766275201586212568">DNS ரெசல்யூஷன்கள் தோல்வி அடைந்தது</translation>
 <translation id="6768237774506518020">DNS ரெசல்யூஷன் தோல்வி விகிதம் அதிகமாக உள்ளது</translation>
+<translation id="6791471867139427246">கீபோர்டு லைட் கலர்</translation>
 <translation id="680983167891198932">குறியீடு</translation>
 <translation id="6816797338148849397">நீங்கள் தேர்ந்தெடுத்தவற்றுடன் தொடர்புடைய தகவல்கள். இவற்றை அணுக மேல்நோக்கிய அம்புக்குறி விசையைப் பயன்படுத்துங்கள்.</translation>
 <translation id="6853312040151791195">சார்ஜ் இறங்கும் விகிதம்</translation>
@@ -643,6 +647,7 @@
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Chromebook உதவி மன்றத்தில் உள்ள நிபுணர்களிடம் உதவி கேட்கலாம்</translation>
+<translation id="7311368985037279727">கீபோர்டு பேக்லிட் வண்ணம்</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Searchசில் முடிவைப் பார்க்க Search + Space அழுத்தவும்.</translation>
 <translation id="7343649194310845056">நெட்வொர்க் சாதனங்கள்</translation>

@@ -671,6 +671,7 @@
 <translation id="479989351350248267">ძიება</translation>
 <translation id="4804818685124855865">გათიშვა</translation>
 <translation id="4814539958450445987">შესვლის ეკრანი</translation>
+<translation id="481455355267255546">მომავალი</translation>
 <translation id="4831034276697007977">ნამდვილად გსურთ, გამორთოთ ავტომატური დაწკაპუნებები?</translation>
 <translation id="4849058404725798627">კლავიატურის მეშვეობით არჩეული ობიექტის გამოყოფა</translation>
 <translation id="485592688953820832">ქმედების გარეშე (პაუზა)</translation>
@@ -852,6 +853,7 @@
 <translation id="5860033963881614850">გამორთვა</translation>
 <translation id="5860491529813859533">ჩართვა</translation>
 <translation id="5867217927013474703">გროვდება ინფორმაცია ქსელის შესახებ</translation>
+<translation id="5867606971598166637">თქვენი სისტემის ადმინისტრატორი ახორციელებს თქვენი ეკრანების მონიტორინგს</translation>
 <translation id="5876666360658629066">შეიყვანეთ მშობლის კოდი</translation>
 <translation id="5881540930187678962">ტელეფონის ცენტრის მოგვიანების დაყენება</translation>
 <translation id="5887954372087850114">ფანჯარა <ph name="WINDOW_TITLE" /> მიმაგრებულია სამუშაო მაგიდაზე <ph name="DESK_TITLE" />, ხოლო დანარჩენი სამუშაო მაგიდებისთვის მიმაგრება გაუქმებულია</translation>
@@ -1013,6 +1015,7 @@
 <translation id="6757237461819837179">მედიაკონტენტი არ უკრავს</translation>
 <translation id="6777216307882431711">ელკვება მიეწოდება დაკავშირებულ USB-C მოწყობილობებს</translation>
 <translation id="6786750046913594791">საქაღალდის დახურვა</translation>
+<translation id="6787595647772650851">ბოლო სესიის აღდგენა</translation>
 <translation id="6790428901817661496">დაკვრა</translation>
 <translation id="6801878137098616817">ახლახან რედაქტირებული</translation>
 <translation id="6803622936009808957">ეკრანების არეკვლა ვერ მოხერხდა, რადგან მხარდაჭერილი გარჩევადობები ვერ მოიძებნა. შეყვანილია გაშლილი სამუშაო დაფა.</translation>
@@ -1261,6 +1264,7 @@
 <translation id="8214996719228530800">Canary არხი</translation>
 <translation id="8219451629189078428">თქვენი Chromebook ამ დროის განმავლობაში ჩართული და კვების წყაროსთან მიერთებული უნდა იყოს. დარწმუნდით, რომ დამტენის ან ადაპტერის კაბელები კარგად არის შეერთებული როგორც Chromebook-ში, ისე როზეტში. არ გამორთოთ Chromebook.</translation>
 <translation id="8236042855478648955">შესვენების დროა</translation>
+<translation id="8246282815785366524">კეთილი იყოს თქვენი დაბრუნება, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />, ტელეფონის ბატარეა: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, აპი</translation>
 <translation id="8255234195843591763">გასაახლებლად საჭიროა გადაყენება</translation>

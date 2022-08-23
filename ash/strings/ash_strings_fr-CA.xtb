@@ -49,6 +49,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1201402288615127009">Suivant</translation>
 <translation id="1210557957257435379">Enregistrement de l'écran</translation>
 <translation id="121097972571826261">Avancer mot par mot</translation>
+<translation id="1217633719248931900">Ouvrir l'application</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, application Play Store</translation>
 <translation id="1225748608451425081">Votre Chromebook est verrouillé en raison d'un problème connu. Vous pourrez vous connecter dans <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Arrêter la sélection</translation>
@@ -539,6 +540,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4123259114412175274">Pour déverrouiller votre Chromebook, assurez-vous que le Bluetooth de votre téléphone est activé</translation>
 <translation id="4125970834901680537">Impossible de diffuser le contenu des applications en mode tablette. Réessayez en mode ordinateur portable.</translation>
 <translation id="4129129681837227511">Pour afficher les notifications sur l'écran de verrouillage, déverrouillez votre appareil afin de modifier ce paramètre</translation>
+<translation id="4130035430755296270">Continuez à pointer pour plus d'options de mise en page</translation>
 <translation id="4136724716305260864">Activée jusqu'à l'aube</translation>
 <translation id="4146833061457621061">Faire jouer de la musique</translation>
 <translation id="4165275524535002941">Le câble peut ne pas être compatible avec les écrans</translation>
@@ -669,6 +671,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="479989351350248267">chercher</translation>
 <translation id="4804818685124855865">Déconnecter</translation>
 <translation id="4814539958450445987">Écran de connexion</translation>
+<translation id="481455355267255546">À venir</translation>
 <translation id="4831034276697007977">Voulez-vous vraiment désactiver les clics automatiques?</translation>
 <translation id="4849058404725798627">Mettre l'élément sélectionné par le clavier en surbrillance</translation>
 <translation id="485592688953820832">Aucune action (pause)</translation>
@@ -850,6 +853,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5860033963881614850">Désactivé</translation>
 <translation id="5860491529813859533">Activer</translation>
 <translation id="5867217927013474703">Collecte de renseignements relatifs au réseau en cours…</translation>
+<translation id="5867606971598166637">Votre administrateur système surveille vos écrans</translation>
 <translation id="5876666360658629066">Entrez le code d'accès parental</translation>
 <translation id="5881540930187678962">Configurer Phone Hub plus tard</translation>
 <translation id="5887954372087850114">La fenêtre <ph name="WINDOW_TITLE" /> est attribuée au bureau <ph name="DESK_TITLE" />, et son attribution est annulée de tous les autres bureaux</translation>
@@ -1011,6 +1015,7 @@ Nouvelle installation</translation>
 <translation id="6757237461819837179">Aucun élément multimédia en cours de lecture</translation>
 <translation id="6777216307882431711">Alimente des appareils connectés par USB-C</translation>
 <translation id="6786750046913594791">Fermer le dossier</translation>
+<translation id="6787595647772650851">Restaurer la dernière session</translation>
 <translation id="6790428901817661496">Jouer</translation>
 <translation id="6801878137098616817">Modifié récemment</translation>
 <translation id="6803622936009808957">La mise en miroir n'a pas été possible faute de résolutions prises en charge. Le mode de bureau étendu a plutôt été sélectionné.</translation>
@@ -1259,6 +1264,7 @@ Nouvelle installation</translation>
 <translation id="8214996719228530800">Version Canary</translation>
 <translation id="8219451629189078428">Votre Chromebook doit rester allumé et branché sur une source d'alimentation pendant ce temps. Vérifiez que les câbles de l'adaptateur ou du chargeur sont bien branchés sur votre Chromebook et sur la prise de courant. N'éteignez pas votre Chromebook.</translation>
 <translation id="8236042855478648955">C'est le moment de prendre une pause</translation>
+<translation id="8246282815785366524">Bon retour, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" />, pile du téléphone <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, application</translation>
 <translation id="8255234195843591763">Réinitialiser pour mettre à jour</translation>

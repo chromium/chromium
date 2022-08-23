@@ -433,6 +433,7 @@ Kad izbrišete svoju povijest pregledavanja, bilo svu ili za određenu web-lokac
 <translation id="3290249595466894471">Šalje i mali uzorak stranica, preuzimanja, aktivnosti proširenja i informacija o sustavu radi lakšeg otkrivanja novih prijetnji</translation>
 <translation id="3297344142967351106">Glasovna pomoć</translation>
 <translation id="3303414029551471755">Želite li nastaviti s preuzimanjem sadržaja?</translation>
+<translation id="3305795716056605962">Prevedite stranice pomoću gumba Više opcija</translation>
 <translation id="3334729583274622784">Promijeniti datotečni nastavak?</translation>
 <translation id="3341262203274374114">Prestanak praćenja nije uspio. Došlo je do pogreške.</translation>
 <translation id="3359667936385849800">Koristi trenutačnog davatelja usluga</translation>
@@ -473,6 +474,7 @@ Kad izbrišete svoju povijest pregledavanja, bilo svu ili za određenu web-lokac
 <translation id="3557336313807607643">Dodaj u kontakte</translation>
 <translation id="3560491354538957576">Web-lokacija može definirati interese</translation>
 <translation id="3563767357928833671">Sadržaj međumemorije se prikazuje</translation>
+<translation id="3566639033325271639">Ažuriraj postavke</translation>
 <translation id="3566923219790363270">Chrome se još priprema za VR. Ponovo pokrenite Chrome kasnije.</translation>
 <translation id="3568688522516854065">Da bi se prikazale kartice s vaših ostalih uređaja, prijavite se i uključite sinkronizaciju</translation>
 <translation id="357465026686164600">Telefon kao sigurnosni ključ</translation>
@@ -556,6 +558,7 @@ Kad izbrišete svoju povijest pregledavanja, bilo svu ili za određenu web-lokac
 <translation id="4062305924942672200">Pravne informacije</translation>
 <translation id="4084682180776658562">Oznaka</translation>
 <translation id="4084712963632273211">Objavio <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />omogućio Google<ph name="END_DEEMPHASIZED" /></translation>
+<translation id="409109920254068737">Pomoću ovog tableta možete se prijaviti na uređaju na kojem se prikazuje ovaj QR kôd.</translation>
 <translation id="4095146165863963773">Želite li izbrisati podatke aplikacije?</translation>
 <translation id="4096227151372679484">Tijek spremanja oznake otvoren je na pola visine</translation>
 <translation id="4099578267706723511">Poboljšajte Chrome šaljući Googleu statistike upotrebe i izvješća o rušenju.</translation>
@@ -567,6 +570,7 @@ Kad izbrišete svoju povijest pregledavanja, bilo svu ili za određenu web-lokac
 <translation id="4116038641877404294">Preuzmite stranice za izvanmrežnu upotrebu</translation>
 <translation id="4135200667068010335">Popis za odabir uređaja s kojim će se dijeliti kartica zatvoren je.</translation>
 <translation id="4137746084635924146">Trenutačni jezik uređaja</translation>
+<translation id="414128724510021958">Web-lokacije za stolna računala zatražene prema zadanim postavkama</translation>
 <translation id="4141536112466364990">Upoznajte Chrome</translation>
 <translation id="4162867837470729563">Popis opcija za dijeljenje u punoj visini.</translation>
 <translation id="4165986682804962316">Postavke web-lokacije</translation>
@@ -589,6 +593,7 @@ Kad izbrišete svoju povijest pregledavanja, bilo svu ili za određenu web-lokac
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Koji se podaci upotrebljavaju<ph name="END_BOLD" />: vaša povijest pregledavanja, zapisnik web-lokacija koje ste posjetili u Chromeu na ovom uređaju.</translation>
 <translation id="4263656433980196874">Korisničko sučelje pristanka za glasovno pretraživanje putem Asistenta otvoreno je u punoj visini</translation>
 <translation id="4269820728363426813">Kopiraj adresu veze</translation>
+<translation id="4283102315569707115">Želite li prema zadanim postavkama tražiti web-lokacije za stolna računala?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Uključite zaključavanje zaslona u postavkama Androida<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">Korištenjem Chromea prihvaćate <ph name="BEGIN_TOS_LINK" />Googleove uvjete pružanja usluge<ph name="END_TOS_LINK" /> i <ph name="BEGIN_ATOS_LINK" />dodatne uvjete pružanja usluge za Google Chrome i Chrome OS<ph name="END_ATOS_LINK" />. Primjenjuju se i <ph name="BEGIN_PRIVACY_LINK" />pravila o privatnosti<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="4296252229500326964">Nova anonimna kartica</translation>
@@ -968,6 +973,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="6342069812937806050">Upravo sada</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}few{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">Označi kao pročitano</translation>
+<translation id="6357653805084533597">Pomoću ovog telefona možete se prijaviti na uređaju na kojem se prikazuje ovaj QR kôd.</translation>
 <translation id="6363990818884053551">Za pokretanje sinkronizacije potvrdite da ste to vi.</translation>
 <translation id="6364438453358674297">Želite li ukloniti prijedlog iz povijesti?</translation>
 <translation id="6380100320871303656">Češće predučitava stranice za koje Chrome misli da ćete ih vjerojatno posjetiti. Ta postavka može rezultirati većom potrošnjom podatkovnog prometa.</translation>
@@ -981,6 +987,7 @@ Oznake povjerenja poboljšavaju privatnost na webu i ne mogu se upotrebljavati d
 <translation id="6397616442223433927">Veza je ponovo uspostavljena</translation>
 <translation id="6401458660421980302">Da biste poslali ovu karticu na drugi uređaj, prijavite se na Chrome na tom uređaju</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> <ph name="VIOLATED_URL" /></translation>
+<translation id="6403371459378431832">Sinkronizirajte svoje podatke na svim uređajima</translation>
 <translation id="6404511346730675251">Uredi oznaku</translation>
 <translation id="6406506848690869874">Sinkronizacija</translation>
 <translation id="6407224748847589805">Povezivanje s računalom nije moguće. Pokušajte s drugom opcijom potvrde.</translation>
@@ -1262,6 +1269,7 @@ Oznake povjerenja poboljšavaju privatnost na webu i ne mogu se upotrebljavati d
 <translation id="7853202427316060426">Aktivnost</translation>
 <translation id="7857691613771368249">Prikaži upit kad spremati datoteke</translation>
 <translation id="7859988229622350291">Nikad ne prevodi</translation>
+<translation id="7866213166286285359">Prevedite stranice ovdje</translation>
 <translation id="78707286264420418"><ph name="PRODUCT_NAME" /> treba dopuštenje za uređaje u blizini radi povezivanja s vašim uređajem</translation>
 <translation id="7875915731392087153">Izradite e-poruku</translation>
 <translation id="7876243839304621966">Ukloni sve</translation>

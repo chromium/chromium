@@ -67,6 +67,7 @@
 <translation id="152892567002884378">Igo bolumena</translation>
 <translation id="1555130319947370107">Urdina</translation>
 <translation id="155865706765934889">Ukipen-teklatua</translation>
+<translation id="1561927818299383735">atzeko argiaren kolorea</translation>
 <translation id="1565038567006703504">Ezin da eguneratu <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Albumak</translation>
 <translation id="1572585716423026576">Ezarri horma-paper gisa</translation>
@@ -437,6 +438,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" /> (<ph name="CREATION_TIME" />), <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Berrabiarazi errutinak</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
+<translation id="5286263799730375393">atzeko planoko argiaren kolorea</translation>
 <translation id="5294769550414936029"><ph name="MILESTONE_VERSION" /> bertsioa</translation>
 <translation id="5300814202279832142">Eraman leihoa lan-eremura</translation>
 <translation id="5304899856529773394">EVDO</translation>
@@ -497,6 +499,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="5895138241574237353">Berrabiarazi</translation>
 <translation id="5901630391730855834">Horia</translation>
 <translation id="5903200662178656908">Gailua teklatu baten eta sagu baten konbinazio bat da.</translation>
+<translation id="5907649332524363701">teklen kolorea</translation>
 <translation id="5916084858004523819">Debekatuta</translation>
 <translation id="5916664084637901428">Aktibatuta</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Fitxategia eskaneatu da, eta <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> karpetan gorde.}other{Fitxategiak eskaneatu dira, eta <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> karpetan gorde.}}</translation>
@@ -598,6 +601,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="6760706756348334449">Jaitsi bolumena</translation>
 <translation id="6766275201586212568">huts egin dute DNS bidezko ebazpenek</translation>
 <translation id="6768237774506518020">DNS bidezko ebazpenen hutsegite-tasa altua</translation>
+<translation id="6791471867139427246">teklatuaren argiaren kolorea</translation>
 <translation id="680983167891198932">Gakoa</translation>
 <translation id="6816797338148849397">Eskuragarri dago zure hautapenari buruzko informazioa. Erabili gora egiteko gezi-tekla informazioa atzitzeko.</translation>
 <translation id="6853312040151791195">Bateriaren deskargatze-abiadura</translation>
@@ -643,6 +647,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="7302860742311162920">ICCIDa</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Galdetu Chromebook-en laguntza-foroko adituei</translation>
+<translation id="7311368985037279727">teklatuaren kolorea</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; emaitza Google Bilaketa zerbitzuan ikusteko, sakatu Bilaketa eta, gero, zuriune-barra.</translation>
 <translation id="7343649194310845056">Sareko gailuak</translation>

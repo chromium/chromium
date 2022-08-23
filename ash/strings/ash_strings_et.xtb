@@ -49,6 +49,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1201402288615127009">Järgmine</translation>
 <translation id="1210557957257435379">ekraanikuva salvestamine</translation>
 <translation id="121097972571826261">Sõna võrra edasi</translation>
+<translation id="1217633719248931900">Ava rakendus</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play poe rakendus</translation>
 <translation id="1225748608451425081">Teie Chromebook on teadaoleva probleemi tõttu lukustatud. Saate sisse logida pärast <ph name="TIME_LEFT" /> möödumist.</translation>
 <translation id="1229194443904279055">Valimise peatamine</translation>
@@ -540,6 +541,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4123259114412175274">Chromebooki avamiseks veenduge, et telefoni Bluetooth oleks sisse lülitatud</translation>
 <translation id="4125970834901680537">Ei saa rakendusi tahvelarvutirežiimis voogesitada. Proovige uuesti sülearvutirežiimis.</translation>
 <translation id="4129129681837227511">Lukustuskuval märguannete nägemiseks avage ekraan ja muutke seadet</translation>
+<translation id="4130035430755296270">Jätkake hõljutamist, et näha rohkem paigutuse valikuid</translation>
 <translation id="4136724716305260864">Päikesetõusuni sisse lülitatud</translation>
 <translation id="4146833061457621061">Esita muusikat</translation>
 <translation id="4165275524535002941">Kaabel ei pruugi ekraane toetada</translation>
@@ -1260,6 +1262,7 @@ Uus installimine</translation>
 <translation id="8214996719228530800">Canary kanal</translation>
 <translation id="8219451629189078428">Teie Chromebook peab sel ajal olema sisse lülitatud ja toiteallikaga ühendatud. Veenduge, et laadija või adapteri kaabel oleks korralikult ühendatud nii Chromebooki kui ka pistikupesaga. Ärge lülitage oma Chromebooki välja.</translation>
 <translation id="8236042855478648955">Aeg pausi pidada</translation>
+<translation id="8246282815785366524">Tere tulemast tagasi, <ph name="GIVEN_NAME" />!</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />, telefoni aku: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446">Rakendus, <ph name="APP_NAME" /></translation>
 <translation id="8255234195843591763">Värskendamiseks taaskäivitage</translation>

@@ -67,6 +67,7 @@
 <translation id="152892567002884378">Volume up</translation>
 <translation id="1555130319947370107">Blue</translation>
 <translation id="155865706765934889">Touchpad</translation>
+<translation id="1561927818299383735">backlit colour</translation>
 <translation id="1565038567006703504">Can't update <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Albums</translation>
 <translation id="1572585716423026576">Set as wallpaper</translation>
@@ -437,6 +438,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Rerun routines</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
+<translation id="5286263799730375393">backlight colour</translation>
 <translation id="5294769550414936029">Version <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Move window to desk</translation>
 <translation id="5304899856529773394">EVDO</translation>
@@ -497,6 +499,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="5895138241574237353">Restart</translation>
 <translation id="5901630391730855834">Yellow</translation>
 <translation id="5903200662178656908">Device is a keyboard and mouse combo.</translation>
+<translation id="5907649332524363701">key colour</translation>
 <translation id="5916084858004523819">Prohibited</translation>
 <translation id="5916664084637901428">On</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Your file has been successfully scanned and saved to <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Your files have been successfully scanned and saved to <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -598,6 +601,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6760706756348334449">Volume down</translation>
 <translation id="6766275201586212568">Failed DNS resolutions</translation>
 <translation id="6768237774506518020">High DNS resolution failure rate</translation>
+<translation id="6791471867139427246">keyboard light colour</translation>
 <translation id="680983167891198932">Key</translation>
 <translation id="6816797338148849397">Info related to your selection available. Use the up arrow key to access.</translation>
 <translation id="6853312040151791195">Discharging rate</translation>
@@ -643,6 +647,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Ask the experts in the Chromebook Help forum</translation>
+<translation id="7311368985037279727">keyboard colour</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; press Search plus Space to see the result in Google Search.</translation>
 <translation id="7343649194310845056">Network devices</translation>

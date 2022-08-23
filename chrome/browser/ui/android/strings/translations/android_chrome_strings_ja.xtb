@@ -473,6 +473,7 @@
 <translation id="3557336313807607643">連絡先に追加</translation>
 <translation id="3560491354538957576">サイトに基づいて興味 / 関心が定義されます</translation>
 <translation id="3563767357928833671">クリップボードの内容が表示されています</translation>
+<translation id="3566639033325271639">設定を更新</translation>
 <translation id="3566923219790363270">Chrome はまだ VR の準備中です。しばらく待ってから Chrome を再起動してください。</translation>
 <translation id="3568688522516854065">他のデバイスと同じタブを使用するには、ログインして同期を有効にします</translation>
 <translation id="357465026686164600">スマートフォンをセキュリティ キーとして使用する</translation>
@@ -556,6 +557,7 @@
 <translation id="4062305924942672200">法的情報</translation>
 <translation id="4084682180776658562">ブックマーク</translation>
 <translation id="4084712963632273211"><ph name="PUBLISHER_ORIGIN" /> のコンテンツ - <ph name="BEGIN_DEEMPHASIZED" />Google により配信<ph name="END_DEEMPHASIZED" /></translation>
+<translation id="409109920254068737">この QR コードが表示されているデバイスに、このタブレットを使用してログインできます。</translation>
 <translation id="4095146165863963773">アプリデータを削除しますか？</translation>
 <translation id="4096227151372679484">ブックマーク保存フローが画面の下半分に表示されています</translation>
 <translation id="4099578267706723511">使用統計情報と障害レポートを Google に送信して、Chrome の品質向上にご協力ください。</translation>
@@ -567,6 +569,7 @@
 <translation id="4116038641877404294">ページをダウンロードするとオフラインで使用できるようになります</translation>
 <translation id="4135200667068010335">タブを共有するデバイスのリストが閉じられました。</translation>
 <translation id="4137746084635924146">現在のデバイスの言語</translation>
+<translation id="414128724510021958">PC 版サイトをデフォルトでリクエスト</translation>
 <translation id="4141536112466364990">Chrome について学ぶ</translation>
 <translation id="4162867837470729563">共有オプションのリストが画面全体に表示されています。</translation>
 <translation id="4165986682804962316">サイトの設定</translation>
@@ -589,6 +592,7 @@
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />使用されるデータ:<ph name="END_BOLD" /> 閲覧履歴（このデバイスで Chrome を使用してアクセスしたサイトの記録）。</translation>
 <translation id="4263656433980196874">アシスタントの音声検索の同意ダイアログが画面全体に表示されています</translation>
 <translation id="4269820728363426813">リンクアドレスをコピー</translation>
+<translation id="4283102315569707115">デフォルトで PC 版サイトをリクエストしますか？</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android の設定で画面ロックをオンにする<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">Chrome を使用すると、<ph name="BEGIN_TOS_LINK" />Google 利用規約<ph name="END_TOS_LINK" />と <ph name="BEGIN_ATOS_LINK" />Google Chrome および Chrome OS 追加利用規約<ph name="END_ATOS_LINK" />に同意したものと見なされます。また、<ph name="BEGIN_PRIVACY_LINK" />プライバシー ポリシー<ph name="END_PRIVACY_LINK" />も適用されます。</translation>
 <translation id="4296252229500326964">新しいシークレット タブ</translation>
@@ -968,6 +972,7 @@
 <translation id="6342069812937806050">たった今</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 他 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 件}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 他 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 件}}</translation>
 <translation id="6345878117466430440">既読にする</translation>
+<translation id="6357653805084533597">この QR コードが表示されているデバイスに、このスマートフォンを使用してログインできます。</translation>
 <translation id="6363990818884053551">同期を開始するには、本人確認を行ってください</translation>
 <translation id="6364438453358674297">履歴から候補を削除しますか？</translation>
 <translation id="6380100320871303656">Chrome によってアクセスする可能性があると判断されたページが、より頻繁にプリロードされます。この設定によりデータの使用量が増える可能性があります。</translation>
@@ -981,6 +986,7 @@
 <translation id="6397616442223433927">オンラインに復帰</translation>
 <translation id="6401458660421980302">このタブを別のデバイスに送信するには、送信先のデバイスで Chrome にログインしてください</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" />（<ph name="VIOLATED_URL" />）</translation>
+<translation id="6403371459378431832">すべてのデバイスでデータを同期する</translation>
 <translation id="6404511346730675251">ブックマークを編集</translation>
 <translation id="6406506848690869874">同期</translation>
 <translation id="6407224748847589805">パソコンに接続できません。別の確認オプションをお試しください。</translation>

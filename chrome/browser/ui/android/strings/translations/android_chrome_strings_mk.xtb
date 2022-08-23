@@ -557,6 +557,7 @@
 <translation id="4062305924942672200">Правни информации</translation>
 <translation id="4084682180776658562">Обележувач</translation>
 <translation id="4084712963632273211">Од <ph name="PUBLISHER_ORIGIN" /> - <ph name="BEGIN_DEEMPHASIZED" />испорачано од Google<ph name="END_DEEMPHASIZED" /></translation>
+<translation id="409109920254068737">Може да го користите таблетов за да се најавите на уредот што го прикажува QR-кодов.</translation>
 <translation id="4095146165863963773">Избриши ги податоците на апликацијата?</translation>
 <translation id="4096227151372679484">Текот за зачувување обележувач е отворен на половина екран</translation>
 <translation id="4099578267706723511">Помогнете да го подобриме Google Chrome со автоматско испраќање статистика за користење и извештаи за падови до Google.</translation>
@@ -591,6 +592,7 @@
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Кои податоци се користат:<ph name="END_BOLD" /> вашата историја на прелистувањето, евиденцијата на сајтовите што сте ги посетиле со Chrome на овој уред.</translation>
 <translation id="4263656433980196874">Корисничкиот интерфејс за согласност за гласовно пребарување со „Помошникот“ е отворен на цел екран</translation>
 <translation id="4269820728363426813">Копирај ја адресата на линкот</translation>
+<translation id="4283102315569707115">Да се бараат сајтови за компјутер стандардно?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Вклучете го заклучувањето на екранот во поставките за Android<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">Ако користите Chrome, се согласувате со <ph name="BEGIN_TOS_LINK" />Условите за користење на Google<ph name="END_TOS_LINK" /> и <ph name="BEGIN_ATOS_LINK" />Дополнителните услови за користење на Google Chrome и Chrome OS<ph name="END_ATOS_LINK" />. Важи и <ph name="BEGIN_PRIVACY_LINK" />Политиката за приватност<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="4296252229500326964">Нова картичка „Инкогнито“</translation>
@@ -970,6 +972,7 @@
 <translation id="6342069812937806050">Пред малку</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">Означи како прочитано</translation>
+<translation id="6357653805084533597">Може да го користите телефонов за да се најавите на уредот што го прикажува QR-кодов.</translation>
 <translation id="6363990818884053551">За да започне синхронизацијата, потврдете дека сте вие</translation>
 <translation id="6364438453358674297">Да се отстрани предлогот од историјата?</translation>
 <translation id="6380100320871303656">Најчесто однапред ги вчитува страниците што Chrome мисли дека ќе ги посетите. Поставкава може да доведе до зголемен сообраќај на податоци.</translation>
@@ -983,6 +986,7 @@
 <translation id="6397616442223433927">Повторно сте онлајн</translation>
 <translation id="6401458660421980302">За да ја испратите картичкава на друг уред, најавете се на Chrome таму</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> на <ph name="VIOLATED_URL" /></translation>
+<translation id="6403371459378431832">Синхронизирајте ги податоците на сите уреди</translation>
 <translation id="6404511346730675251">Измени обележувач</translation>
 <translation id="6406506848690869874">Синхронизација</translation>
 <translation id="6407224748847589805">Не може да се поврзе со вашиот компјутер. Обидете се со друга опција за потврда.</translation>

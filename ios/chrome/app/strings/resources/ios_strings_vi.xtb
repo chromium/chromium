@@ -280,6 +280,7 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="3277021493514034324">Đã sao chép địa chỉ trang web</translation>
 <translation id="3285962946108803577">Chia sẻ trang...</translation>
 <translation id="3290875554372353449">Chọn một tài khoản</translation>
+<translation id="3305294846493618482">xem thêm</translation>
 <translation id="3311748811247479259">Đang tắt</translation>
 <translation id="3324193307694657476">Địa chỉ 2</translation>
 <translation id="3328801116991980348">Thông tin về trang web</translation>
@@ -311,7 +312,6 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="3529024052484145543">Không an toàn</translation>
 <translation id="3533202363250687977">Đóng tất cả các thẻ ẩn danh</translation>
 <translation id="3533436815740441613">Thẻ mới</translation>
-<translation id="3547799431091898961">Để đăng xuất khỏi Tài khoản Google trên tất cả các trang web, hãy <ph name="BEGIN_LINK" />đăng xuất khỏi Chrome<ph name="END_LINK" />.</translation>
 <translation id="3551320343578183772">Đóng Thẻ</translation>
 <translation id="3581564640715911333">Đề xuất dịch trang bằng các ngôn ngữ khác</translation>
 <translation id="3588820906588687999">Mở ảnh trong thẻ mới</translation>
@@ -453,7 +453,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="4805759445554688327">Số thẻ không hợp lệ</translation>
 <translation id="4808744395915275922">Bản cập nhật</translation>
 <translation id="4818522717893377262">Thêm ngôn ngữ...</translation>
-<translation id="481968316161811770">Cookie, Dữ liệu trang web</translation>
+<translation id="481968316161811770">Cookie, dữ liệu trang web</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} và 1 thẻ khác}other{{domain} và {count} thẻ khác}}</translation>
 <translation id="4826218269716039351">Chặn cookie của bên thứ ba</translation>
 <translation id="4826726074642088322">Chia sẻ nội dung được đánh dấu</translation>
@@ -496,6 +496,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="5118764316110575523">Đang tắt</translation>
 <translation id="5132942445612118989">Đồng bộ hóa mật khẩu, lịch sử và các thông tin khác của bạn trên tất cả các thiết bị</translation>
 <translation id="5140288047769711648">Chrome sẽ nhớ mật khẩu này cho bạn. Bạn không phải nhớ mật khẩu.</translation>
+<translation id="5149188072385105201">Thêm mật khẩu...</translation>
 <translation id="5150492518600715772">Gửi tới thiết bị của bạn</translation>
 <translation id="5168414296986405587">Thiết kế cho iPadOS</translation>
 <translation id="5173088371991956744">Tính năng đồng bộ hóa cần xác minh danh tính của bạn</translation>

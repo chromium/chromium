@@ -911,6 +911,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3427342743765426898">&amp;Rétablir la modification</translation>
 <translation id="342781501876943858">L'équipe Chromium vous recommande de réinitialiser votre mot de passe si vous l'avez réutilisé sur d'autres sites.</translation>
 <translation id="3428151540071562330">Au moins un URI de modèle de serveur DnsOverHttpsTemplates n'est pas valide et ne sera pas utilisé.</translation>
+<translation id="3431216045099978607">Appuyez sur |<ph name="ACCELERATOR" />| pour quitter le plein écran et voir le téléchargement.</translation>
 <translation id="3431636764301398940">Enregistrer cette carte sur cet appareil</translation>
 <translation id="3432601291244612633">Fermer la page</translation>
 <translation id="3435738964857648380">Sécurité</translation>
@@ -1652,6 +1653,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="540969355065856584">Impossible de vérifier que ce serveur est bien <ph name="DOMAIN" />, car son certificat de sécurité actuel n'est pas valide. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.</translation>
 <translation id="5412040515238827314">Format non valide : liste de formats attendue.</translation>
 <translation id="5412236728747081950">Ce site obtient vos centres d'intérêt via Chrome pour afficher des annonces plus pertinentes</translation>
+<translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Empileur 4</translation>
 <translation id="5421136146218899937">Effacer les données de navigation...</translation>
 <translation id="5426179911063097041">"<ph name="SITE" />" souhaite vous envoyer des notifications</translation>
@@ -2584,6 +2586,7 @@ Informations supplémentaires :
 <translation id="8004582292198964060">Navigateur</translation>
 <translation id="8009225694047762179">Gérer les mots de passe</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Cette carte et l'adresse de facturation associée seront enregistrées. Vous pourrez vous en servir lorsque vous serez connecté à <ph name="USER_EMAIL" />.}one{Cette carte et l'adresse de facturation associée seront enregistrées. Vous pourrez vous en servir lorsque vous serez connecté à <ph name="USER_EMAIL" />.}other{Ces cartes et les adresses de facturation associées seront enregistrées. Vous pourrez vous en servir lorsque vous serez connecté à <ph name="USER_EMAIL" />.}}</translation>
+<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8025119109950072390">Des individus malveillants à l'œuvre sur ce site pourraient vous inciter à effectuer des opérations dangereuses, telles que l'installation d'un logiciel ou la révélation d'informations personnelles (par exemple des mots de passe, des numéros de téléphone ou des numéros de carte de paiement).</translation>
 <translation id="8026334261755873520">Effacer les données de navigation</translation>
 <translation id="8027077570865220386">Bac 15</translation>

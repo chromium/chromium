@@ -191,6 +191,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1430915738399379752">Spausdinti</translation>
 <translation id="1432187715652018471">puslapis prašo leidimo įdiegti paslaugos doroklę.</translation>
 <translation id="1432581352905426595">Tvarkyti paieškos sistemas</translation>
+<translation id="1435940442311036198">Naudoti slaptažodį kitame įrenginyje</translation>
 <translation id="1436185428532214179">Gali būti prašoma redaguoti failus ir aplankus jūsų įrenginyje</translation>
 <translation id="1442386063175183758">Atvartas dešinėje</translation>
 <translation id="1442987760062738829">Skylių pramušimas</translation>
@@ -420,6 +421,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2040894699575719559">Vietovė užblokuota</translation>
 <translation id="2042213636306070719">7 dėklas</translation>
 <translation id="204357726431741734">Prisijunkite, kad galėtumėte naudoti „Google“ paskyroje išsaugotus slaptažodžius</translation>
+<translation id="2048261947532620704">Verčiamas puslapis</translation>
 <translation id="205212645995975601">Kepsniai ir kepimas ant grotelių</translation>
 <translation id="2053111141626950936">Puslapiai, parašyti <ph name="LANGUAGE" />, verčiami nebus.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Kai šis valdiklis įjungtas ir būsena aktyvi, „Chrome“ nustato, į kurią didelę žmonių grupę panašiausia jūsų pastaroji naršymo veikla. Reklamuotojai gali pasirinkti grupės skelbimus, o jūsų naršymo veikla saugoma privačiai jūsų įrenginyje. Grupė atnaujinama kiekvieną dieną.}=1{Kai šis valdiklis įjungtas ir būsena aktyvi, „Chrome“ nustato, į kurią didelę žmonių grupę panašiausia jūsų pastaroji naršymo veikla. Reklamuotojai gali pasirinkti grupės skelbimus, o jūsų naršymo veikla saugoma privačiai jūsų įrenginyje. Grupė atnaujinama kiekvieną dieną.}one{Kai šis valdiklis įjungtas ir būsena aktyvi, „Chrome“ nustato, į kurią didelę žmonių grupę panašiausia jūsų pastaroji naršymo veikla. Reklamuotojai gali pasirinkti grupės skelbimus, o jūsų naršymo veikla saugoma privačiai jūsų įrenginyje. Grupė atnaujinama kas {NUM_DAYS} dieną.}few{Kai šis valdiklis įjungtas ir būsena aktyvi, „Chrome“ nustato, į kurią didelę žmonių grupę panašiausia jūsų pastaroji naršymo veikla. Reklamuotojai gali pasirinkti grupės skelbimus, o jūsų naršymo veikla saugoma privačiai jūsų įrenginyje. Grupė atnaujinama kas {NUM_DAYS} dienas.}many{Kai šis valdiklis įjungtas ir būsena aktyvi, „Chrome“ nustato, į kurią didelę žmonių grupę panašiausia jūsų pastaroji naršymo veikla. Reklamuotojai gali pasirinkti grupės skelbimus, o jūsų naršymo veikla saugoma privačiai jūsų įrenginyje. Grupė atnaujinama kas {NUM_DAYS} dienos.}other{Kai šis valdiklis įjungtas ir būsena aktyvi, „Chrome“ nustato, į kurią didelę žmonių grupę panašiausia jūsų pastaroji naršymo veikla. Reklamuotojai gali pasirinkti grupės skelbimus, o jūsų naršymo veikla saugoma privačiai jūsų įrenginyje. Grupė atnaujinama kas {NUM_DAYS} dienų.}}</translation>
@@ -911,6 +913,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3427342743765426898">&amp;Redaguoti dar kartą</translation>
 <translation id="342781501876943858">„Chromium“ rekomenduoja iš naujo nustatyti slaptažodį, jei naudojate jį kitose svetainėse.</translation>
 <translation id="3428151540071562330">Vienas arba keli „DnsOverHttpsTemplates“ serverio šablono URI yra netinkami ir nebus naudojami.</translation>
+<translation id="3431216045099978607">Paspauskite „|<ph name="ACCELERATOR" />|“, jei norite išeiti iš viso ekrano režimo ir peržiūrėti atsisiuntimą.</translation>
 <translation id="3431636764301398940">Išsaugoti šią kortelę šiame įrenginyje</translation>
 <translation id="3432601291244612633">Uždaryti puslapį</translation>
 <translation id="3435738964857648380">Sauga</translation>
@@ -1408,7 +1411,9 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4798078619018708837">Jei norite atnaujinti išsamią kortelės informaciją, įveskite „<ph name="CREDIT_CARD" />“ galiojimo laiko pabaigos datą ir kortelės saugos kodą (CVC). Kai patvirtinsite, „Google“ paskyroje nurodyta išsami kortelės informacija bus bendrinama su šia svetaine.</translation>
 <translation id="4800132727771399293">Patikrinkite kortelės galiojimo pabaigos datą bei saugos kodą (CVC) ir bandykite dar kart</translation>
 <translation id="4803924862070940586"><ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
+<translation id="4806051791961048632">Naudoti „Touch ID“</translation>
 <translation id="4809079943450490359">Įrenginio administratoriaus instrukcijos:</translation>
+<translation id="4811450222531576619">Sužinokite apie jo šaltinį ir temą</translation>
 <translation id="4812751092864334025">Nešiojamosios technologijos</translation>
 <translation id="4813512666221746211">Tinklo klaida</translation>
 <translation id="4816492930507672669">Pritaikyti pagal puslapį</translation>
@@ -1650,6 +1655,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="540969355065856584">Šiam serveriui nepavyko patvirtinti, kad jis yra <ph name="DOMAIN" />; šiuo metu jo saugos sertifikatas negalioja. Tai gali būti dėl netinkamos konfigūracijos arba dėl ryšį pertraukusio užgrobėjo.</translation>
 <translation id="5412040515238827314">Netinkamas formatas: numatytas šablonų sąrašas.</translation>
 <translation id="5412236728747081950">Ši svetainė gauna informaciją apie jūsų pomėgius iš „Chrome“, kad galėtų rodyti jums aktualesnius skelbimus</translation>
+<translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">4 dėtuvė</translation>
 <translation id="5421136146218899937">Išvalyti naršymo duomenis...</translation>
 <translation id="5426179911063097041">Svetainė <ph name="SITE" /> nori siųsti jums pranešimus</translation>
@@ -1681,6 +1687,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5509780412636533143">Tvarkomos žymės</translation>
 <translation id="5510481203689988000">Šis nustatymas valdomas slapukų nustatymuose.</translation>
 <translation id="5510766032865166053">Galbūt jis perkeltas arba ištrintas.</translation>
+<translation id="5513528801833998679">Naudoti įrenginio prisijungimą</translation>
 <translation id="5518670652865028077">Menas ir pramogos</translation>
 <translation id="5519516356611866228">Su jūsų pakeitimais</translation>
 <translation id="5523118979700054094">Politikos pavadinimas</translation>
@@ -1708,6 +1715,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5571083550517324815">Negalima paimti šiuo adresu. Pasirinkite kitą adresą.</translation>
 <translation id="557886905979275351">Skutimosi peiliukai ir skustuvai</translation>
 <translation id="5580958916614886209">Patikrinkite galiojimo pabaigos mėnesį ir bandykite dar kartą</translation>
+<translation id="558420943003240152">Tvarkyti slaptažodžius…</translation>
 <translation id="5586446728396275693">Nėra išsaugotų adresų</translation>
 <translation id="5587987780934666589">Platformos naudotojas</translation>
 <translation id="5593349413089863479">Ryšys nevisiškai saugus</translation>
@@ -1772,6 +1780,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5765072501007116331">Jei norite peržiūrėti pristatymo metodus ir reikalavimus, pasirinkite adresą.</translation>
 <translation id="57689295674415555">Virtualios kortelės numeris neįvestas?</translation>
 <translation id="5776313857861697733">Prioritetas</translation>
+<translation id="5778389256418062749">Naudoti slaptažodį kitame įrenginyje</translation>
 <translation id="5781136890105823427">Eksperimentas įgalintas</translation>
 <translation id="578305955206182703">Gintaro spalva</translation>
 <translation id="57838592816432529">Nutildyti</translation>
@@ -2051,6 +2060,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6591833882275308647">Jūsų „<ph name="DEVICE_TYPE" />“ netvarkomas</translation>
 <translation id="6592952801936330159">Mygtukas „Tvarkyti svetainės nustatymus“; paspauskite „Enter“, jei norite tvarkyti leidimus ir svetainėse saugomus duomenis „Chrome“ nustatymuose</translation>
 <translation id="6596325263575161958">Šifravimo parinktys</translation>
+<translation id="6599642189720630047">Stebimi produktai</translation>
 <translation id="6609880536175561541">„Prc7“ (vokas)</translation>
 <translation id="6611723696964473273">Ekonomikos naujienos</translation>
 <translation id="6612010098632894193">Vaizdo įrašas prisijungus</translation>
@@ -2531,6 +2541,7 @@ Papildoma išsami informacija:
 <translation id="7880146494886811634">Adreso išsaugojimas</translation>
 <translation id="7882421473871500483">Ruda</translation>
 <translation id="7882995332186050355">Krovininiai sunkvežimiai ir priekabos</translation>
+<translation id="788679692472636252">Tvarkyti slaptažodžius…</translation>
 <translation id="7887683347370398519">Patikrinkite kortelės saugos kodą (CVC) ir bandykite dar kartą</translation>
 <translation id="7887885240995164102">Įeiti į vaizdo vaizde režimą</translation>
 <translation id="7888575728750733395">Spausdinimo pateikimo tikslas</translation>
@@ -2577,6 +2588,7 @@ Papildoma išsami informacija:
 <translation id="8004582292198964060">Naršyklė</translation>
 <translation id="8009225694047762179">Tvarkyti slaptažodžius</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Ši kortelė ir jos atsiskaitymo adresas bus išsaugoti. Ją galėsite naudoti prisijungę prie <ph name="USER_EMAIL" />.}one{Šios kortelės ir jų atsiskaitymo adresai bus išsaugoti. Jas galėsite naudoti prisijungę prie <ph name="USER_EMAIL" />.}few{Šios kortelės ir jų atsiskaitymo adresai bus išsaugoti. Jas galėsite naudoti prisijungę prie <ph name="USER_EMAIL" />.}many{Šios kortelės ir jų atsiskaitymo adresai bus išsaugoti. Jas galėsite naudoti prisijungę prie <ph name="USER_EMAIL" />.}other{Šios kortelės ir jų atsiskaitymo adresai bus išsaugoti. Jas galėsite naudoti prisijungę prie <ph name="USER_EMAIL" />.}}</translation>
+<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8025119109950072390">Šios svetainės užpuolėjai gali bandyti apgaulingai priversti atlikti pavojingus veiksmus, pvz., įdiegti programinę įrangą ar atskleisti asmens informaciją (pvz., slaptažodžius, telefonų numerius ar kredito kortelių informaciją).</translation>
 <translation id="8026334261755873520">Išvalyti naršymo duomenis</translation>
 <translation id="8027077570865220386">Penkioliktas dėklas</translation>

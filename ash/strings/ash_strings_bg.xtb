@@ -49,6 +49,7 @@
 <translation id="1201402288615127009">Напред</translation>
 <translation id="1210557957257435379">записване на екрана</translation>
 <translation id="121097972571826261">Придвижване напред с една дума</translation>
+<translation id="1217633719248931900">Към приложението</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, приложение Google Play Магазин</translation>
 <translation id="1225748608451425081">Вашият Chromebook е заключен поради известен проблем. Ще можете да влезете в профила си след <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Спиране на избирането</translation>
@@ -539,6 +540,7 @@
 <translation id="4123259114412175274">За да отключите своя Chromebook, функцията за Bluetooth на телефона ви трябва да е включена</translation>
 <translation id="4125970834901680537">Поточното предаване на приложения не е възможно в режим на таблет. Опитайте отново в режим на лаптоп.</translation>
 <translation id="4129129681837227511">За да виждате известия на заключения екран, отключете устройството и променете настройката</translation>
+<translation id="4130035430755296270">Продължете да задържате курсора на мишката за още опции за оформление</translation>
 <translation id="4136724716305260864">Включено до изгрев</translation>
 <translation id="4146833061457621061">„Play music“ („Пусни музика“)</translation>
 <translation id="4165275524535002941">Кабелът не поддържа видеосигнал</translation>
@@ -669,6 +671,7 @@
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">Изключване</translation>
 <translation id="4814539958450445987">Екран за вход</translation>
+<translation id="481455355267255546">Предстоящи събития</translation>
 <translation id="4831034276697007977">Наистина ли искате да изключите автоматичните кликвания?</translation>
 <translation id="4849058404725798627">Открояване на обекта, върху който е фокусът от клавиатурата</translation>
 <translation id="485592688953820832">Без действие (пауза)</translation>
@@ -1011,6 +1014,7 @@
 <translation id="6757237461819837179">Не се възпроизвежда мултимедия</translation>
 <translation id="6777216307882431711">Свързаните устройства с USB-C се захранват</translation>
 <translation id="6786750046913594791">Затваряне на папката</translation>
+<translation id="6787595647772650851">Възстановяване на последната сесия</translation>
 <translation id="6790428901817661496">Пускане</translation>
 <translation id="6801878137098616817">Редактирано наскоро</translation>
 <translation id="6803622936009808957">Дисплеите не можаха да се дублират, тъй като не бяха намерени поддържани разделителни способности. Вместо това влязохте в режима за разширен работен плот.</translation>
@@ -1259,6 +1263,7 @@
 <translation id="8214996719228530800">Канал Canary</translation>
 <translation id="8219451629189078428">През това време вашият Chromebook трябва да остане включен и свързан със захранването. Уверете се, че зарядното устройство или кабелите на адаптера са включени добре във вашия Chromebook и в електрическия контакт. Не изключвайте Chromebook.</translation>
 <translation id="8236042855478648955">Време е за почивка</translation>
+<translation id="8246282815785366524">Добре дошли отново, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />, батерия на телефона <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, приложение</translation>
 <translation id="8255234195843591763">Нулиране с цел актуализиране</translation>

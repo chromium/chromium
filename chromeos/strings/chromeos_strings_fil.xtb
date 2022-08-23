@@ -67,6 +67,7 @@
 <translation id="152892567002884378">Lakasan ang volume</translation>
 <translation id="1555130319947370107">Asul</translation>
 <translation id="155865706765934889">Touchpad</translation>
+<translation id="1561927818299383735">kulay ng backlit</translation>
 <translation id="1565038567006703504">Hindi ma-update ang <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Mga Album</translation>
 <translation id="1572585716423026576">Itakda bilang wallpaper</translation>
@@ -437,6 +438,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Patakbuhin Ulit ang Mga Routine</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
+<translation id="5286263799730375393">kulay ng backlight</translation>
 <translation id="5294769550414936029">bersyon <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Ilipat sa desk ang window</translation>
 <translation id="5304899856529773394">EVDO</translation>
@@ -497,6 +499,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="5895138241574237353">I-restart</translation>
 <translation id="5901630391730855834">Dilaw</translation>
 <translation id="5903200662178656908">Pinagsamang keyboard at mouse ang device.</translation>
+<translation id="5907649332524363701">kulay ng key</translation>
 <translation id="5916084858004523819">Ipinagbabawal</translation>
 <translation id="5916664084637901428">Naka-on</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Na-scan at na-save na ang iyong file sa <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Na-scan at na-save na ang iyong mga file sa <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Na-scan at na-save na ang iyong mga file sa <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -598,6 +601,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="6760706756348334449">Hinaan ang volume</translation>
 <translation id="6766275201586212568">May mga hindi naisagawang pagresolba sa DNS</translation>
 <translation id="6768237774506518020">Mataas na rate ng hindi naisagawang pagresolba sa DNS</translation>
+<translation id="6791471867139427246">kulay ng liwanag ng keyboard</translation>
 <translation id="680983167891198932">Key</translation>
 <translation id="6816797338148849397">Available ang impormasyong nauugnay sa iyong pinili. Gamitin ang Pataas na arrow key para ma-access.</translation>
 <translation id="6853312040151791195">Rate ng Pag-discharge</translation>
@@ -643,6 +647,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Magtanong sa mga eksperto sa forum ng tulong ng Chromebook</translation>
+<translation id="7311368985037279727">kulay ng keyboard</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Pindutin ang Search at Space para tingnan ang resulta sa Google Search.</translation>
 <translation id="7343649194310845056">Mga Device sa Network</translation>

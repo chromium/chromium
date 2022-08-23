@@ -421,6 +421,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2040894699575719559">Lokasi disekat</translation>
 <translation id="2042213636306070719">Dulang 7</translation>
 <translation id="204357726431741734">Log masuk untuk menggunakan kata laluan yang disimpan dalam Akaun Google anda</translation>
+<translation id="2048261947532620704">Menterjemah halaman</translation>
 <translation id="205212645995975601">BBQ &amp; menggril</translation>
 <translation id="2053111141626950936">Halaman dalam <ph name="LANGUAGE" /> tidak akan diterjemah.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Apabila kawalan ini dihidupkan dan status adalah aktif, Chrome akan menentukan kumpulan besar orang, atau "kohort" yang paling serupa dengan aktiviti penyemakan imbas anda baru-baru ini. Pengiklan boleh memilih iklan untuk kumpulan itu dan aktiviti penyemakan imbas anda dipastikan tertutup pada peranti anda. Kumpulan anda dikemas kini setiap hari.}=1{Apabila kawalan ini dihidupkan dan status adalah aktif, Chrome akan menentukan kumpulan besar orang, atau "kohort" yang paling serupa dengan aktiviti penyemakan imbas anda baru-baru ini. Pengiklan boleh memilih iklan untuk kumpulan itu dan aktiviti penyemakan imbas anda dipastikan tertutup pada peranti anda. Kumpulan anda dikemas kini setiap hari.}other{Apabila kawalan ini dihidupkan dan status adalah aktif, Chrome akan menentukan kumpulan besar orang, atau "kohort" yang paling serupa dengan aktiviti penyemakan imbas anda baru-baru ini. Pengiklan boleh memilih iklan untuk kumpulan itu dan aktiviti penyemakan imbas anda dipastikan tertutup pada peranti anda. Kumpulan anda dikemas kini setiap {NUM_DAYS} hari.}}</translation>
@@ -911,6 +912,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3427342743765426898">&amp;Buat Semula Edit</translation>
 <translation id="342781501876943858">Chromium mengesyorkan penetapan semula kata laluan jika anda menggunakan semula kata laluan itu di tapak lain.</translation>
 <translation id="3428151540071562330">Satu atau beberapa URI templat pelayan DnsOverHttpsTemplates URI tidak sah dan tidak akan digunakan.</translation>
+<translation id="3431216045099978607">Tekan |<ph name="ACCELERATOR" />| untuk keluar daripada skrin penuh dan melihat muat turun.</translation>
 <translation id="3431636764301398940">Simpan kad ini pada peranti ini</translation>
 <translation id="3432601291244612633">Tutup halaman</translation>
 <translation id="3435738964857648380">Keselamatan</translation>

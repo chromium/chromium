@@ -421,6 +421,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2040894699575719559">Acesso ao local bloqueado</translation>
 <translation id="2042213636306070719">Bandeja 7</translation>
 <translation id="204357726431741734">Faça login para usar as senhas salvas na sua Conta do Google</translation>
+<translation id="2048261947532620704">Traduzindo página</translation>
 <translation id="205212645995975601">Churrasco e grelhados</translation>
 <translation id="2053111141626950936">Páginas em <ph name="LANGUAGE" /> não serão traduzidas.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Quando este controle estiver ligado e o status estiver ativo, o Chrome determinará com qual grupo grande de pessoas, ou "coorte", sua atividade de navegação se parece mais. Os anunciantes podem selecionar anúncios para o grupo e sua atividade de navegação será armazenada no dispositivo de forma particular. Seu grupo é atualizado todos os dias.}=1{Quando este controle estiver ligado e o status estiver ativo, o Chrome determinará com qual grupo grande de pessoas, ou "coorte", sua atividade de navegação se parece mais. Os anunciantes podem selecionar anúncios para o grupo e sua atividade de navegação será armazenada no dispositivo de forma particular. Seu grupo é atualizado todos os dias.}one{Quando este controle estiver ligado e o status estiver ativo, o Chrome determinará com qual grupo grande de pessoas, ou "coorte", sua atividade de navegação se parece mais. Os anunciantes podem selecionar anúncios para o grupo e sua atividade de navegação será armazenada no dispositivo de forma particular. Seu grupo é atualizado a cada {NUM_DAYS} dia.}other{Quando este controle estiver ligado e o status estiver ativo, o Chrome determinará com qual grupo grande de pessoas, ou "coorte", sua atividade de navegação se parece mais. Os anunciantes podem selecionar anúncios para o grupo e sua atividade de navegação será armazenada no dispositivo de forma particular. Seu grupo é atualizado a cada {NUM_DAYS} dias.}}</translation>
@@ -911,6 +912,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3427342743765426898">&amp;Refazer editar</translation>
 <translation id="342781501876943858">O Chromium recomenda redefinir sua senha se você a reutilizou em outros sites.</translation>
 <translation id="3428151540071562330">Um ou mais dos URIs de modelo de servidor da DnsOverHttpsTemplates é inválido e não será usado.</translation>
+<translation id="3431216045099978607">Pressione |<ph name="ACCELERATOR" />| para sair da tela cheia e ver o download.</translation>
 <translation id="3431636764301398940">Salvar este cartão neste dispositivo</translation>
 <translation id="3432601291244612633">Fechar página</translation>
 <translation id="3435738964857648380">Segurança</translation>
@@ -1652,6 +1654,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="540969355065856584">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança dele não é válido no momento. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>
 <translation id="5412040515238827314">Formato inválido: é esperada uma lista de padrões.</translation>
 <translation id="5412236728747081950">Este site acessa seus interesses no Chrome para mostrar anúncios mais relevantes</translation>
+<translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Empilhador 4</translation>
 <translation id="5421136146218899937">Remover dados de navegação...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> quer enviar notificações a você</translation>
@@ -2056,6 +2059,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6591833882275308647">Seu <ph name="DEVICE_TYPE" /> não é gerenciado</translation>
 <translation id="6592952801936330159">Botão "Gerenciar configurações do site". Pressione "Enter" para gerenciar as permissões e os dados armazenados em sites nas configurações do Chrome</translation>
 <translation id="6596325263575161958">Opções de criptografia</translation>
+<translation id="6599642189720630047">Produtos monitorados</translation>
 <translation id="6609880536175561541">Prc7 (Envelope)</translation>
 <translation id="6611723696964473273">Notícias de economia</translation>
 <translation id="6612010098632894193">Vídeo on-line</translation>
@@ -2583,6 +2587,7 @@ Mais detalhes:
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8009225694047762179">Gerenciar senha</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Este cartão e o endereço de faturamento dele serão salvos. Você poderá usá-lo quando a conta <ph name="USER_EMAIL" /> estiver conectada.}one{Este cartão e o endereço de faturamento dele serão salvos. Você poderá usá-lo quando a conta <ph name="USER_EMAIL" /> estiver conectada.}other{Estes cartões e os endereços de faturamento deles serão salvos. Você poderá usá-los quando a conta <ph name="USER_EMAIL" /> estiver conectada.}}</translation>
+<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8025119109950072390">Invasores nesse site podem induzir você a fazer algo perigoso, como instalar um software ou revelar suas informações pessoais (por exemplo, senhas, números de telefone ou cartões de crédito).</translation>
 <translation id="8026334261755873520">Remover dados de navegação</translation>
 <translation id="8027077570865220386">Bandeja 15</translation>

@@ -474,6 +474,7 @@
 <translation id="3557336313807607643">إضافة إلى جهات الاتصال</translation>
 <translation id="3560491354538957576">يمكن للموقع الإلكتروني الآن تحديد اهتماماتك.</translation>
 <translation id="3563767357928833671">تم عرض محتوى الحافظة.</translation>
+<translation id="3566639033325271639">تعديل الإعدادات</translation>
 <translation id="3566923219790363270">‏لا يزال Chrome يستعد للواقع الافتراضي. يُرجى إعادة تشغيل Chrome لاحقًا.</translation>
 <translation id="3568688522516854065">للحصول على علامات التبويب من أجهزتك الأخرى، يُرجى تسجيل الدخول وتفعيل المزامنة.</translation>
 <translation id="357465026686164600">استخدام الهاتف كمفتاح أمان</translation>
@@ -557,6 +558,7 @@
 <translation id="4062305924942672200">المعلومات القانونية</translation>
 <translation id="4084682180776658562">إشارة</translation>
 <translation id="4084712963632273211">‏من <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />تعرضه Google<ph name="END_DEEMPHASIZED" /></translation>
+<translation id="409109920254068737">يمكنك استخدام هذا الجهاز اللوحي لتسجيل الدخول على الجهاز الذي يعرض رمز الاستجابة السريعة هذا.</translation>
 <translation id="4095146165863963773">هل ترغب في حذف بيانات التطبيق؟</translation>
 <translation id="4096227151372679484">تم فتح مسار حفظ الإشارات المرجعية في نصف الشاشة.</translation>
 <translation id="4099578267706723511">‏يمكنك المساعدة في تحسين Chrome عن طريق إرسال إحصاءات الاستخدام وتقارير الأعطال إلى Google.</translation>
@@ -568,6 +570,7 @@
 <translation id="4116038641877404294">تنزيل الصفحات لاستخدامها بلا اتصال بالإنترنت</translation>
 <translation id="4135200667068010335">قائمة الأجهزة التي يمكن مشاركة علامة تبويب معها مغلقة.</translation>
 <translation id="4137746084635924146">لغة الجهاز الحالية</translation>
+<translation id="414128724510021958">المواقع الإلكترونية المتوافقة مع أجهزة الكمبيوتر المكتبي يتم طلبها تلقائيًا</translation>
 <translation id="4141536112466364990">‏التعرُّف على Chrome</translation>
 <translation id="4162867837470729563">قائمة خيارات المشاركة مفتوحة بطول الشاشة.</translation>
 <translation id="4165986682804962316">إعدادات المواقع الإلكترونية</translation>
@@ -590,6 +593,7 @@
 <translation id="4262915912852657291">‏<ph name="BEGIN_BOLD" />البيانات المستخدَمة:<ph name="END_BOLD" /> سجلّ تصفُّحك، بالإضافة إلى سجلّ بالمواقع الإلكترونية التي زرتها باستخدام Chrome على هذا الجهاز</translation>
 <translation id="4263656433980196874">‏تم فتح واجهة المستخدم الخاصة بالموافقة على استخدام ميزة "البحث الصوتي" في "مساعد Google" بطول الشاشة.</translation>
 <translation id="4269820728363426813">نسخ عنوان الرابط</translation>
+<translation id="4283102315569707115">هل تريد طلب عرض النسخة المتوافقة مع أجهزة الكمبيوتر المكتبي من المواقع الإلكترونية تلقائيًا؟</translation>
 <translation id="4291407919474070700">‏<ph name="BEGIN_LINK" />تفعيل قفل الشاشة في إعدادات Android<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">‏يعني استخدامك لمتصفّح Chrome موافقتك على <ph name="BEGIN_TOS_LINK" />بنود خدمة Google<ph name="END_TOS_LINK" /> و<ph name="BEGIN_ATOS_LINK" />بنود الخدمة الإضافية لكل من متصفّح Google Chrome ونظام التشغيل Chrome<ph name="END_ATOS_LINK" />، علمًا بأنّ <ph name="BEGIN_PRIVACY_LINK" />سياسة الخصوصية<ph name="END_PRIVACY_LINK" /> تسري أيضًا.</translation>
 <translation id="4296252229500326964">علامة تبويب للتصفّح المتخفي</translation>
@@ -969,6 +973,7 @@
 <translation id="6342069812937806050">الآن</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{‏<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 وعنوان إضافي واحد (<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />)}zero{‏<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> عنوان إضافي}two{‏<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 وعنوانان إضافيان (<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />)}few{‏<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> عناوين إضافية}many{‏<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> عنوانًا إضافيًا}other{‏<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> عنوان إضافي}}</translation>
 <translation id="6345878117466430440">وضع علامة "مقروءة"</translation>
+<translation id="6357653805084533597">يمكنك استخدام هذا الهاتف لتسجيل الدخول على الجهاز الذي يعرض رمز الاستجابة السريعة هذا.</translation>
 <translation id="6363990818884053551">لبدء المزامنة، يجب إثبات هويّتك.</translation>
 <translation id="6364438453358674297">هل تريد إزالة اقتراح من السجل؟</translation>
 <translation id="6380100320871303656">‏يعمل هذا الإعداد على إجراء تحميل مُسبق وبشكل أكثر تكرارًا لصفحات الويب التي يظن Chrome أنّه من المرجّح أن تنتقل إليها. وقد يؤدي هذا الإعداد إلى زيادة استخدام البيانات.</translation>
@@ -982,6 +987,7 @@
 <translation id="6397616442223433927">تمّت استعادة الاتصال بالإنترنت.</translation>
 <translation id="6401458660421980302">‏لإرسال علامة التبويب هذه إلى جهاز آخر، عليك تسجيل الدخول إلى Chrome على ذلك الجهاز.</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> في <ph name="VIOLATED_URL" /></translation>
+<translation id="6403371459378431832">مزامنة بياناتك على جميع الأجهزة</translation>
 <translation id="6404511346730675251">تعديل الإشارة المرجعية</translation>
 <translation id="6406506848690869874">المزامنة</translation>
 <translation id="6407224748847589805">تعذّر الاتصال بجهاز الكمبيوتر. يمكنك تجربة خيار آخر لإثبات الهوية.</translation>

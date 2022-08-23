@@ -49,6 +49,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1201402288615127009">Înainte</translation>
 <translation id="1210557957257435379">înregistrarea ecranului</translation>
 <translation id="121097972571826261">Înainte cu un cuvânt</translation>
+<translation id="1217633719248931900">Accesează aplicația</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, aplicație din Magazinul Play</translation>
 <translation id="1225748608451425081">Chromebookul este blocat din cauza unei probleme cunoscute. Vei putea să te conectezi după <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Nu mai selecta</translation>
@@ -670,6 +671,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="479989351350248267">căutați</translation>
 <translation id="4804818685124855865">Deconectează-te</translation>
 <translation id="4814539958450445987">Ecranul de conectare</translation>
+<translation id="481455355267255546">Urmează</translation>
 <translation id="4831034276697007977">Sigur vrei să dezactivezi clicurile automate?</translation>
 <translation id="4849058404725798627">Evidențiază obiectul focalizat de la tastatură</translation>
 <translation id="485592688953820832">Nicio acțiune (pauză)</translation>
@@ -851,6 +853,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="5860033963881614850">Dezactivat</translation>
 <translation id="5860491529813859533">Activează</translation>
 <translation id="5867217927013474703">Se colectează informații despre rețea</translation>
+<translation id="5867606971598166637">Administratorul de sistem îți monitorizează ecranele</translation>
 <translation id="5876666360658629066">Introdu codul pentru părinte</translation>
 <translation id="5881540930187678962">Configurează mai târziu Phone Hub</translation>
 <translation id="5887954372087850114">Fereastra <ph name="WINDOW_TITLE" /> a fost atribuită către <ph name="DESK_TITLE" /> și s-a anulat atribuirea către toate celelalte desktopuri</translation>
@@ -1012,6 +1015,7 @@ Instalare nouă</translation>
 <translation id="6757237461819837179">Nu se redă conținut media</translation>
 <translation id="6777216307882431711">Se încarcă dispozitivele USB-C conectate</translation>
 <translation id="6786750046913594791">Închideți dosarul</translation>
+<translation id="6787595647772650851">Restabilește ultima sesiune</translation>
 <translation id="6790428901817661496">Redă</translation>
 <translation id="6801878137098616817">Editat recent</translation>
 <translation id="6803622936009808957">Afișajele nu au putut fi oglindite, deoarece nu au fost găsite rezoluții acceptate. Ați intrat, în schimb, în modul monitor extins.</translation>
@@ -1260,6 +1264,7 @@ Instalare nouă</translation>
 <translation id="8214996719228530800">Canalul Canary</translation>
 <translation id="8219451629189078428">În această perioadă, Chromebookul trebuie să rămână deschis și conectat la o sursă de alimentare. Asigură-te că ai conectat corect cablurile de la încărcător sau de la adaptor, atât la Chromebook, cât și la priza electrică. Nu opri Chromebookul.</translation>
 <translation id="8236042855478648955">E timpul pentru o pauză</translation>
+<translation id="8246282815785366524">Bine ai revenit, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" />, bateria telefonului: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, aplicație</translation>
 <translation id="8255234195843591763">Resetează pentru a actualiza</translation>

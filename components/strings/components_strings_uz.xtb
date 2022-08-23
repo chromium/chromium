@@ -420,6 +420,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2040894699575719559">Joylashuv bloklandi</translation>
 <translation id="2042213636306070719">Tarnov 7</translation>
 <translation id="204357726431741734">Google hisobingizda saqlangan parollardan foydalanish uchun hisobingizga kiring</translation>
+<translation id="2048261947532620704">Sahifa tarjima qilinmoqda</translation>
 <translation id="205212645995975601">Barbekyu va grilda pishirish</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" /> tilidagi sahifalar tarjima qilinmaydi</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Bu boshqaruv elementi yoniq va faol boʻlsa, Chrome brauzerdagi oxirgi harakatlaringizga eng mos katta yoki “kogort” guruh odamlarni aniqlaydi. Reklama beruvchilar eʼlonlari uchun guruh tanlaganda qurilmadagi harakatlaringiz maxfiyligi saqlanib qoladi. Guruhingiz har kuni yangilanib turadi.}=1{Bu boshqaruv elementi yoniq va faol boʻlsa, Chrome brauzerdagi oxirgi harakatlaringizga eng mos katta yoki “kogort” guruh odamlarni aniqlaydi. Reklama beruvchilar eʼlonlari uchun guruh tanlaganda qurilmadagi harakatlaringiz maxfiyligi saqlanib qoladi. Guruhingiz har kuni yangilanib turadi.}other{Bu boshqaruv elementi yoniq va faol boʻlsa, Chrome brauzerdagi oxirgi harakatlaringizga eng mos katta yoki “kogort” guruh odamlarni aniqlaydi. Reklama beruvchilar eʼlonlari uchun guruh tanlaganda qurilmadagi harakatlaringiz maxfiyligi saqlanib qoladi. Guruhingiz har {NUM_DAYS} kunda yangilanib turadi.}}</translation>
@@ -908,6 +909,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3427342743765426898">&amp;Qayta urinish</translation>
 <translation id="342781501876943858">Parolingizni tashkilot domenidan tashqaridagi saytda kiritgan bo‘lsangiz, uni zudlik bilan o‘zgartirishingizni tavsiya etamiz.</translation>
 <translation id="3428151540071562330">Bir yoki bir nechta DnsOverHttpsTemplates server andozasi URI manzillari yaroqsiz va ishlatilmaydi.</translation>
+<translation id="3431216045099978607">Butun ekran rejimidan chiqish va yuklanmani ochish uchun |<ph name="ACCELERATOR" />| tugmasini bosing.</translation>
 <translation id="3431636764301398940">Kartani bu qurilmaga saqlash</translation>
 <translation id="3432601291244612633">Sahifani yopish</translation>
 <translation id="3435738964857648380">Xavfsizlik</translation>
@@ -1647,6 +1649,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="540969355065856584">Bu <ph name="DOMAIN" /> serveri ekanligini tasdiqlab bo‘lmadi. Uning sertifikati ayni paytda yaroqsiz bo‘lishi mumkin. Balki, server noto‘g‘ri sozlangan yoki kimdir ma’lumotlaringizni o‘g‘rilashga urinayotgan bo‘lishi mumkin.</translation>
 <translation id="5412040515238827314">Xato format: namunalar roʻyxati koʻrsatilishi kerak.</translation>
 <translation id="5412236728747081950">Bu sayt mos reklamalarni chiqarish uchun qiziqishlaringiz haqidagi Chrome maʼlumotlaridan foydalanadi.</translation>
+<translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Taxlovchi 4</translation>
 <translation id="5421136146218899937">Brauzer tarixini tozalash...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> sayti bildirishnoma yuborishga ruxsat so‘ramoqda.</translation>
@@ -2050,6 +2053,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> qurilmangiz mustaqil</translation>
 <translation id="6592952801936330159">Sayt sozlamalarini boshqarish tugmasi, Chrome sozlamalari orqali ruxsatlar va saytlarda saqlanadigan maʼlumotlarni boshqarish uchun Enter tugmasini bosing</translation>
 <translation id="6596325263575161958">Shifrlash parametrlari</translation>
+<translation id="6599642189720630047">Kuzatiladigan mahsulotlar</translation>
 <translation id="6609880536175561541">Prc7 (Envelope)</translation>
 <translation id="6611723696964473273">Iqtisodiyot yangiliklari</translation>
 <translation id="6612010098632894193">Onlayn video</translation>
@@ -2577,6 +2581,7 @@ Batafsil axborot:
 <translation id="8004582292198964060">Brauzer</translation>
 <translation id="8009225694047762179">Parollarni boshqarish</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Bu karta va uning toʻlov manzillari saqlanadi. <ph name="USER_EMAIL" /> hisobi bilan kirganingizdan keyin undan foydalanishingiz mumkin.}other{Bu kartalar va uning toʻlov manzillari saqlanadi. <ph name="USER_EMAIL" /> hisobi bilan kirganingizdan keyin ulardan foydalanishingiz mumkin.}}</translation>
+<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8025119109950072390">Bu sayt dasturlarni o‘rnatish yoki shaxsiy ma’lumotlaringizni (masalan, parollar, telefon raqamlari yoki kredit kartalari kabi ma’lumotlarni) o‘g‘irlash uchun  ba’zi bir xavfli ishlarni amalga oshirish uchun sizni aldashi mumkin.</translation>
 <translation id="8026334261755873520">Brauzer tarixini tozalash</translation>
 <translation id="8027077570865220386">Tarnov 15</translation>

@@ -191,6 +191,7 @@
 <translation id="1430915738399379752">මුද්‍රණය කරන්න</translation>
 <translation id="1432187715652018471">පිටුවට සේවා හසුරුවන්නෙක් ස්ථාපනය කිරීමට අවශ්‍යයි.</translation>
 <translation id="1432581352905426595">සෙවීම් යාන්ත්‍රණ කළමණාකරණය කරන්න</translation>
+<translation id="1435940442311036198">වෙනස් උපාංගයක මුරයතුරක් භාවිතා කරන්න</translation>
 <translation id="1436185428532214179">ඔබගේ උපාංගයෙහි ගොනු සහ ෆෝල්ඩර සංස්කරණය කිරීමට ඉල්ලිය හැකිය</translation>
 <translation id="1442386063175183758">දකුණු දොරටු නැමීම</translation>
 <translation id="1442987760062738829">අනින්න</translation>
@@ -910,6 +911,7 @@
 <translation id="3427342743765426898">සංස්කරණය &amp;යළි කරන්න</translation>
 <translation id="342781501876943858">Chromium ඔබේ මුරපදය ඔබ වෙනත් අඩවිවල නැවත භාවිත කර තිබේ නම් යළි සැකසීමට නිර්දේශ කරයි.</translation>
 <translation id="3428151540071562330">DnsOverHttpsTemplates සේවාදායක අච්චු URI-වලින් එකක් හෝ වැඩි ගණනක් අවලංගු බැවින් භාවිත නොකෙරේ.</translation>
+<translation id="3431216045099978607">පූර්ණ තිරයෙන් පිටවීමට සහ බාගැනීම දැකීමට |<ph name="ACCELERATOR" />| ඔබන්න.</translation>
 <translation id="3431636764301398940">මෙම උපාංගයට මෙම කාඩ්පත සුරකින්න</translation>
 <translation id="3432601291244612633">පිටුව වසන්න</translation>
 <translation id="3435738964857648380">ආරක්ෂක</translation>
@@ -1407,7 +1409,9 @@
 <translation id="4798078619018708837">ඔබේ කාඩ්පත් විස්තර යාවත්කාලීන කිරීමට <ph name="CREDIT_CARD" /> සඳහා කල් ඉකුත් වීමේ දිනය සහ CVC ඇතුළත් කරන්න. ඔබ තහවුරු කළ පසු, ඔබේ Google ගිණුමෙන් කාඩ්පත් විස්තර මෙම අඩවිය සමඟ බෙදා ගනු ලැබේ.</translation>
 <translation id="4800132727771399293">ඔබේ කල් ඉකුත් වූ දිනය සහ CVC, පරික්ෂා කර යළි උත්සාහ කරන්න</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
+<translation id="4806051791961048632">TouchID භාවිතා කරන්න</translation>
 <translation id="4809079943450490359">ඔබේ උපාංග පරිපාලකයාගෙන් ලැබෙන උපදෙස්:</translation>
+<translation id="4811450222531576619">එහි මූලාශ්‍රය සහ මාතෘකාව පිළිබඳව දැන ගන්න</translation>
 <translation id="4812751092864334025">පළඳිය හැකි තාක්ෂණය</translation>
 <translation id="4813512666221746211">ජාල දෝෂයකි</translation>
 <translation id="4816492930507672669">පිටුව වෙත සවි කරන්න</translation>
@@ -1680,6 +1684,7 @@
 <translation id="5509780412636533143">පාලිත පොත්සලකුණු</translation>
 <translation id="5510481203689988000">මෙම සැකසීම කුකී සැකසීම් තුළ පාලන‌ කෙරේ.</translation>
 <translation id="5510766032865166053">එය ගෙන ගොස් හෝ මකා තිබීමට හැකිය.</translation>
+<translation id="5513528801833998679">උපාංග පුරනය භාවිතා කරන්න</translation>
 <translation id="5518670652865028077">කලා සහ විනෝදාස්වාදය</translation>
 <translation id="5519516356611866228">ඔබගේ වෙනස් කිරීම් සමග</translation>
 <translation id="5523118979700054094">ප්‍රතිපත්තියේ නම</translation>
@@ -1707,6 +1712,7 @@
 <translation id="5571083550517324815">මෙම ලිපිනයෙන් ලබා ගැනීමට නොහැකිය. වෙනත් ලිපිනයක් තෝරන්න.</translation>
 <translation id="557886905979275351">රේසර් සහ ෂේවර්</translation>
 <translation id="5580958916614886209">ඔබේ කල් ඉකුත් වීමේ මාසය පරික්ෂා කර නැවත උත්සාහ කරන්න</translation>
+<translation id="558420943003240152">මුරපද සහ මුරයතුරු කළමනාකරණය කරන්න…</translation>
 <translation id="5586446728396275693">සුරැකූ ලිපින නැත</translation>
 <translation id="5587987780934666589">වේදිකා පරිශීලක</translation>
 <translation id="5593349413089863479">සබැඳුම පූර්ණ වශයෙන් ආරක්ෂිත නැත</translation>
@@ -1771,6 +1777,7 @@
 <translation id="5765072501007116331">බෙදා හැරීමේ ක්‍රම සහ අවශ්‍යතා බැලීමට, ලිපිනයක් තෝරන්න</translation>
 <translation id="57689295674415555">අථත්‍ය කාඩ්පත් අංකය පුරවා නැතිද?</translation>
 <translation id="5776313857861697733">ප්‍රමුඛතාව</translation>
+<translation id="5778389256418062749">වෙනස් උපාංගයක මුරයතුරක් භාවිතා කරන්න</translation>
 <translation id="5781136890105823427">පරීක්‍ෂණය සබල කළා</translation>
 <translation id="578305955206182703">ඇම්බර්</translation>
 <translation id="57838592816432529">නිහඬ කරන්න</translation>
@@ -2530,6 +2537,7 @@
 <translation id="7880146494886811634">ලිපිනය සුරකින්න</translation>
 <translation id="7882421473871500483">දුඹුරු</translation>
 <translation id="7882995332186050355">කාගෝ ට්‍රක් සහ ට්‍රේලර</translation>
+<translation id="788679692472636252">මුරපද සහ මුරයතුරු කළමනාකරණය කරන්න…</translation>
 <translation id="7887683347370398519">ඔබේ CVC පරීක්ෂා කර නැවත උත්සාහ කරන්න</translation>
 <translation id="7887885240995164102">පින්තූරය-තුළ-පින්තූරයට ඇතුළු වන්න</translation>
 <translation id="7888575728750733395">මුද්‍රණ විදහීමේ යෙදීම</translation>

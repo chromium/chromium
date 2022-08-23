@@ -421,6 +421,7 @@
 <translation id="2040894699575719559">स्थान ब्लॉक केले</translation>
 <translation id="2042213636306070719">ट्रे ७</translation>
 <translation id="204357726431741734">तुमच्या Google खाते मध्ये सेव्ह केलेले पासवर्ड वापरण्यासाठी साइन इन करा</translation>
+<translation id="2048261947532620704">पेजचे भाषांतर करत आहे</translation>
 <translation id="205212645995975601">BBQ आणि ग्रिलिंग</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" />मधील पेज भाषांतरीत केले जाणार नाहीत.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{When this control is on and the status is active, Chrome determines which large group of people, or "cohort," your recent browsing activity is most similar to. Advertisers can select ads for the group and your browsing activity is kept private on your device. Your group is updated every day.}=1{हे नियंत्रण सुरू असते आणि त्याचे स्टेटस अ‍ॅक्टिव्ह असते तेव्हा, तुमची अलीकडील ब्राउझिंग अ‍ॅक्टिव्हिटी ही लोकांच्या कोणत्या मोठ्या गटासारखी किंवा "समूह" यासारखी आहे हे Chrome निश्चित करते. जाहिरातदार हे गटासाठी जाहिराती निवडू शकतात आणि तुमची ब्राउझिंग अ‍ॅक्टिव्हिटी तुमच्या डिव्हाइसवर खाजगी ठेवली जाते. तुमचा गट दररोज अपडेट केला जातो.}other{हे नियंत्रण सुरू असते आणि त्याचे स्टेटस अ‍ॅक्टिव्ह असते तेव्हा, तुमची अलीकडील ब्राउझिंग अ‍ॅक्टिव्हिटी ही लोकांच्या कोणत्या मोठ्या गटासारखी किंवा "समूह" यासारखी आहे हे Chrome निश्चित करते. जाहिरातदार हे गटासाठी जाहिराती निवडू शकतात आणि तुमची ब्राउझिंग अ‍ॅक्टिव्हिटी तुमच्या डिव्हाइसवर खाजगी ठेवली जाते. तुमचा गट दर {NUM_DAYS} दिवसांनी अपडेट केला जातो.}}</translation>
@@ -911,6 +912,7 @@
 <translation id="3427342743765426898">&amp;संपादित करा पुन्हा करा</translation>
 <translation id="342781501876943858">तुम्ही तुमच्या पासवर्डचा इतर साइटवर पुन्हा वापर केला असेल तर Chromium तुम्हाला तो रीसेट करण्याची शिफारस करतो.</translation>
 <translation id="3428151540071562330">DnsOverHttpsTemplates चे एकाहून अधिक सर्व्हर टेम्पलेट URI चुकीचे आहेत आणि ते वापरले जाणार नाहीत.</translation>
+<translation id="3431216045099978607">फुल स्क्रीनमधून बाहेर पडण्यासाठी आणि डाउनलोड पाहण्यासाठी |<ph name="ACCELERATOR" />| दाबा.</translation>
 <translation id="3431636764301398940">या डिव्हाइसवर हे कार्ड सेव्ह करा</translation>
 <translation id="3432601291244612633">पेज बंद करा</translation>
 <translation id="3435738964857648380">सुरक्षितता</translation>
@@ -1651,6 +1653,7 @@
 <translation id="540969355065856584">हा सर्व्हर <ph name="DOMAIN" /> असल्याचे सिद्ध करू शकला नाही; त्याचे सुरक्षितता सर्टिफिकेट यावेळी वैध नाही. हे कदाचित चुकीच्या कॉंफिगरेशनमुळे किंवा हल्लेखोर तुमचे कनेक्शन इंटरसेप्ट करत असल्‍यामुळे होऊ शकते.</translation>
 <translation id="5412040515238827314">फॉरमॅट चुकीचा आहे: सूचीचा पॅटर्न अपेक्षित आहे.</translation>
 <translation id="5412236728747081950">तुम्हाला आणखी उपयुक्त जाहिराती दाखवण्यासाठी ही साइट Chrome मधून तुमची स्वारस्ये मिळवते</translation>
+<translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">स्टॅकर ४</translation>
 <translation id="5421136146218899937">ब्राउझिंग डेटा साफ करा...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ला तुम्हाला सूचना पाठवायची आहे</translation>
@@ -2583,6 +2586,7 @@
 <translation id="8004582292198964060">ब्राउझर</translation>
 <translation id="8009225694047762179">पासवर्ड व्यवस्थापित करा</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{हे कार्ड आणि त्याचा बिलिंग पत्ता सेव्ह केला जाईल. <ph name="USER_EMAIL" /> मध्ये साइन इन केलेले असताना तुम्ही ते वापरू शकाल.}other{ही कार्डे आणि त्यांचे बिलिंग पत्ते सेव्ह केले जातील. <ph name="USER_EMAIL" /> मध्ये साइन इन केलेले असताना तुम्ही ती वापरू शकाल.}}</translation>
+<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8025119109950072390">या साइट वरील आक्रमणकर्ते सॉफ्‍टवेअर इंस्टॉल करणे किंवा तुमची वैयक्तिक माहिती (उदाहरणार्थ, पासवर्ड, फोन नंबर किंवा क्रेडिट कार्ड) उघड करणे यासारखे काहीतरी धोकादायक करण्‍यामध्‍ये तुम्हाला चलाखीने गुंतवू शकतात.</translation>
 <translation id="8026334261755873520">ब्राउझिंग डेटा साफ करा</translation>
 <translation id="8027077570865220386">ट्रे १५</translation>

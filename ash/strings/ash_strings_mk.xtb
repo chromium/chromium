@@ -672,6 +672,7 @@
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">Прекини врска</translation>
 <translation id="4814539958450445987">Екран за најавување</translation>
+<translation id="481455355267255546">Следни настани</translation>
 <translation id="4831034276697007977">Дали сигурно сакате да ги исклучите автоматските кликови?</translation>
 <translation id="4849058404725798627">Нагласи го предметот со фокус на тастатурата</translation>
 <translation id="485592688953820832">Нема дејство (пауза)</translation>
@@ -1014,6 +1015,7 @@
 <translation id="6757237461819837179">Нема пуштени аудиовизуелни содржини</translation>
 <translation id="6777216307882431711">Се напојуваат поврзани USB-C уреди</translation>
 <translation id="6786750046913594791">Затвори папка</translation>
+<translation id="6787595647772650851">Обнови ја последната сесија</translation>
 <translation id="6790428901817661496">Репродуцирај</translation>
 <translation id="6801878137098616817">Изменето неодамна</translation>
 <translation id="6803622936009808957">Не можеа да се отсликаат екрани затоа што не се пронајдени поддржани резолуции. Наместо тоа, влеговме во проширен десктоп.</translation>
@@ -1262,6 +1264,7 @@
 <translation id="8214996719228530800">Canary Channel</translation>
 <translation id="8219451629189078428">Вашиот Chromebook треба да остане вклучен и поврзан на струја во текот на ова време. Проверете дали каблите на полначот или адаптерот се целосно приклучени во вашиот Chromebook и во штекерот. Не исклучувајте го вашиот Chromebook.</translation>
 <translation id="8236042855478648955">Време за пауза</translation>
+<translation id="8246282815785366524">Добре дојдовте назад, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" />, батерија на телефонот: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, апликација</translation>
 <translation id="8255234195843591763">Ресетирајте за ажурирање</translation>

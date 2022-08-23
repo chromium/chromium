@@ -473,6 +473,7 @@
 <translation id="3557336313807607643">ወደ እውቂያዎች አክል</translation>
 <translation id="3560491354538957576">ጣቢያ ዝንባሌዎችን መግለጽ ይችላል</translation>
 <translation id="3563767357928833671">የቅንጥብ ሰሌዳ ይዘቶች ታይተዋል</translation>
+<translation id="3566639033325271639">ቅንብሮችን አዘምን</translation>
 <translation id="3566923219790363270">Chrome አሁንም ድረስ ቪአር በማዘጋጀት ላይ ነው። Chromeን በኋላ ላይ ዳግም ያስጀምሩ።</translation>
 <translation id="3568688522516854065">ትሮችዎን ከሌሎች መሣሪያዎችዎ በመለያ መግባት እና ስምረትን ማብራት ለማግኘት</translation>
 <translation id="357465026686164600">ስልክ እንደ የደህንነት ቁልፍ</translation>
@@ -556,6 +557,7 @@
 <translation id="4062305924942672200">የህግ መረጃ</translation>
 <translation id="4084682180776658562">ዕልባት</translation>
 <translation id="4084712963632273211">ከ<ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />በGoogle የተላከ<ph name="END_DEEMPHASIZED" /></translation>
+<translation id="409109920254068737">ይህን QR ኮድ በሚያሳየው መሣሪያ ላይ በመለያ ለመግባት ይህን ጡባዊ መጠቀም ይችላሉ።</translation>
 <translation id="4095146165863963773">የመተግበሪያ ውሂብ ይሰረዝ?</translation>
 <translation id="4096227151372679484">የዕልባት ማስቀመጥ ፍሰት በግማሽ ቁመት ተከፍቷል</translation>
 <translation id="4099578267706723511">የአጠቃቀም ስታቲክሶችን እና የብልሽት ሪፖርቶችን ወደ Google በመላክ Chromeን የተሻለ ለማድረግ እገዛ ያድርጉ።</translation>
@@ -567,6 +569,7 @@
 <translation id="4116038641877404294">ገጾችን ከመስመር ውጭ ለመጠቀም ያውርዷቸው</translation>
 <translation id="4135200667068010335">የተዘጋ ትር የሚጋሩ የመሣሪያዎች ዝርዝር።</translation>
 <translation id="4137746084635924146">የአሁኑ የመሣሪያ ቋንቋ</translation>
+<translation id="414128724510021958">በነባሪ የተጠየቁ የዴስክቶፕ ጣቢያዎች</translation>
 <translation id="4141536112466364990">Chromeን ይረዱ</translation>
 <translation id="4162867837470729563">በሙሉ ቁመታቸው ያሉ የማጋሪያ አማራጮች ዝርዝር።</translation>
 <translation id="4165986682804962316">የጣቢያ ቅንብሮች</translation>
@@ -589,6 +592,7 @@
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />ምን ውሂብ ጥቅም ላይ እንደሚውል፦<ph name="END_BOLD" /> የአሰሳ ታሪክዎ፣ በዚህ መሣሪያ ላይ Chromeን ተጠቅመው የጎበኟቸው የጣቢያዎች መዝገብ።</translation>
 <translation id="4263656433980196874">የረዳት ድምፅ ፍለጋ ስምምነት ዩአይ በሙሉ ቁመት ተከፍቷል</translation>
 <translation id="4269820728363426813">የአገናኝ አድራሻ ቅዳ</translation>
+<translation id="4283102315569707115">የዴስክቶፕ ጣቢያዎች በነባሪነት ይጠየቁ?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />በAndroid ቅንብሮች ውስጥ ማያ ገጽ መቆለፊያን ያብሩ<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">Chromeን በመጠቀምዎ በ<ph name="BEGIN_TOS_LINK" />Google አገልግሎት ውል<ph name="END_TOS_LINK" /> እና <ph name="BEGIN_ATOS_LINK" />የGoogle Chrome እና የChromeOS ተጨማሪ አገልግሎት ውል<ph name="END_ATOS_LINK" /> ይስማማሉ። እንዲሁም <ph name="BEGIN_PRIVACY_LINK" />የግላዊነት መመሪያው<ph name="END_PRIVACY_LINK" /> ይተገበራል።</translation>
 <translation id="4296252229500326964">አዲስ ማንነት የማያሳውቅ ትር</translation>
@@ -968,6 +972,7 @@
 <translation id="6342069812937806050">ልክ አሁን</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 እና <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ተጨማሪ}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 እና <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ተጨማሪ}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 እና <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ተጨማሪ}}</translation>
 <translation id="6345878117466430440">እንደተነበበ ምልክት አድርግ</translation>
+<translation id="6357653805084533597">ይህን QR ኮድ በሚያሳየው መሣሪያ ላይ በመለያ ለመግባት ይህን ስልክ መጠቀም ይችላሉ።</translation>
 <translation id="6363990818884053551">ማስመርን ለመጀመር እርስዎ መሆንዎን ያረጋግጡ</translation>
 <translation id="6364438453358674297">ጥቆማው ከታሪክ ይወገድ?</translation>
 <translation id="6380100320871303656">Chrome እርስዎ የመጎብኘት ዕድልዎ ከፍ ያለ ነው የሚልባቸው ገጾችን በበለጠ ተደጋጋሚነት ቅድሚያ ይጭናቸዋል። ይህ ቅንብር የጨመረ የውሂብ አጠቃቀምን ሊያስከትል ይችላል።</translation>
@@ -981,6 +986,7 @@
 <translation id="6397616442223433927">ወደ መስመር ላይ ይመለሱ</translation>
 <translation id="6401458660421980302">ይህን ትር ወደ ሌላ መሣሪያ ለመላክ እዚያ ላይ ወደ Chrome ይግቡ</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> በ<ph name="VIOLATED_URL" /> ላይ</translation>
+<translation id="6403371459378431832">ሁሉም መሣሪያዎች ላይ ውሂብዎን ያስምሩ</translation>
 <translation id="6404511346730675251">ዕልባት አርትዕ</translation>
 <translation id="6406506848690869874">አመሳስል</translation>
 <translation id="6407224748847589805">ከእርስዎ ኮምፒውተር ጋር ማገናኘት አልተቻለም። ሌላ የማረጋገጫ አማራጭ ይሞክሩ።</translation>

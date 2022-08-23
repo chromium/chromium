@@ -433,6 +433,7 @@
 <translation id="3290249595466894471">નવા જોખમો શોધવામાં સહાય કરવા માટે પેજનો નાનો નમૂનો, ડાઉનલોડ, એક્સ્ટેન્શનની પ્રવૃત્તિ અને સિસ્ટમની માહિતી પણ મોકલે છે</translation>
 <translation id="3297344142967351106">વૉઇસ સહાયતા</translation>
 <translation id="3303414029551471755">કન્ટેન્ટ ડાઉનલોડ કરવા માટે આગળ વધીએ?</translation>
+<translation id="3305795716056605962">'વધુ વિકલ્પો' બટન વડે પેજનો અનુવાદ કરો</translation>
 <translation id="3334729583274622784">ફાઇલનું એક્સ્ટેંશન બદલવું છે?</translation>
 <translation id="3341262203274374114">અનફૉલો કરી શકતા નથી. કંઈક ખોટું થયું.</translation>
 <translation id="3359667936385849800">તમારા વર્તમાન સેવા પ્રદાતાનો ઉપયોગ કરો</translation>
@@ -473,6 +474,7 @@
 <translation id="3557336313807607643">સંપર્કોમાં ઉમેરો</translation>
 <translation id="3560491354538957576">સાઇટ રુચિઓ વ્યાખ્યાયિત કરી શકે છે</translation>
 <translation id="3563767357928833671">ક્લિપબોર્ડનું કન્ટેન્ટ બતાવેલું છે</translation>
+<translation id="3566639033325271639">સેટિંગ અપડેટ કરો</translation>
 <translation id="3566923219790363270">Chrome હજી પણ VR માટે તૈયારી કરી રહ્યું છે. Chromeને પછી ફરી શરૂ કરો.</translation>
 <translation id="3568688522516854065">તમારા અન્ય ઉપકરણો પરથી તમારા ટૅબ મેળવવા માટે, સાઇન ઇન કરો અને સિંક કરવાનું ચાલુ કરો.</translation>
 <translation id="357465026686164600">સિક્યુરિટી કી તરીકે ફોન</translation>
@@ -556,6 +558,7 @@
 <translation id="4062305924942672200">કાનુની માહિતી</translation>
 <translation id="4084682180776658562">બુકમાર્ક</translation>
 <translation id="4084712963632273211"><ph name="PUBLISHER_ORIGIN" /> તરફથી - <ph name="BEGIN_DEEMPHASIZED" />Google દ્વારા વિતરિત <ph name="END_DEEMPHASIZED" /></translation>
+<translation id="409109920254068737">આ QR કોડ બતાવતા હોય એવા ડિવાઇસ પર સાઇન ઇન કરવા માટે તમે આ ટૅબ્લેટનો ઉપયોગ કરી શકો છો.</translation>
 <translation id="4095146165863963773">ઍપનો ડેટા ડિલીટ કરીએ?</translation>
 <translation id="4096227151372679484">બુકમાર્ક સાચવવાનો ફ્લો અડધી ઊંચાઈએ ખુલ્લો છે</translation>
 <translation id="4099578267706723511">ઉપયોગનાં આંકડા અને ક્રૅશ રિપોર્ટ Googleને મોકલીને Chromeને વધુ સારું બનાવવામાં મદદ કરો.</translation>
@@ -567,6 +570,7 @@
 <translation id="4116038641877404294">ઇન્ટરનેટ ન હોય ત્યારે પણ ઉપયોગમાં લેવા માટે પેજ ડાઉનલોડ કરો</translation>
 <translation id="4135200667068010335">કોઈ ટૅબ સાથે શેર કરવાના ડિવાઇસની સૂચિ બંધ છે.</translation>
 <translation id="4137746084635924146">ડિવાઇસની હાલની ભાષા</translation>
+<translation id="414128724510021958">ડિફૉલ્ટ તરીકે વિનંતી કરાયેલી ડેસ્કટૉપ સાઇટ</translation>
 <translation id="4141536112466364990">Chrome વિશે જાણો</translation>
 <translation id="4162867837470729563">શેરિંગના વિકલ્પોની સૂચિ સંપૂર્ણ ઊંચાઈએ ખોલી છે.</translation>
 <translation id="4165986682804962316">સાઇટ સેટિંગ</translation>
@@ -589,6 +593,7 @@
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />કયા ડેટાનો ઉપયોગ કરવામાં આવે છે:<ph name="END_BOLD" /> તમારો બ્રાઉઝિંગ ઇતિહાસ, જે આ ડિવાઇસ પર તમે Chrome વડે મુલાકાત લીધેલી સાઇટનો રેકોર્ડ છે.</translation>
 <translation id="4263656433980196874">Assistant વૉઇસ શોધની સંમતિ માટેનું UI સંપૂર્ણ ઊંચાઈએ ખોલ્યું</translation>
 <translation id="4269820728363426813">લિંક સરનામું કૉપિ કરો</translation>
+<translation id="4283102315569707115">ડિફૉલ્ટ તરીકે ડેસ્કટૉપ સાઇટની વિનંતી કરીએ?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android સેટિંગમાં સ્ક્રીન લૉકની સુવિધા ચાલુ કરો<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">Chromeનો ઉપયોગ કરીને, તમે <ph name="BEGIN_TOS_LINK" />Google સેવાની શરતો<ph name="END_TOS_LINK" /> અને <ph name="BEGIN_ATOS_LINK" />Google Chrome તથા ChromeOSની વધારાની સેવાની શરતો<ph name="END_ATOS_LINK" /> સાથે સંમત થાઓ છો. <ph name="BEGIN_PRIVACY_LINK" />પ્રાઇવસી પૉલિસી<ph name="END_PRIVACY_LINK" /> પણ લાગુ થાય છે.</translation>
 <translation id="4296252229500326964">નવી છૂપી ટૅબ</translation>
@@ -968,6 +973,7 @@
 <translation id="6342069812937806050">હમણાં જ</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">વાંચેલાં તરીકે માર્ક કરો</translation>
+<translation id="6357653805084533597">આ QR કોડ બતાવતા હોય એવા ડિવાઇસ પર સાઇન ઇન કરવા માટે તમે આ ફોનનો ઉપયોગ કરી શકો છો.</translation>
 <translation id="6363990818884053551">સિંક કરવાનું શરૂ કરવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="6364438453358674297">ઇતિહાસમાંથી સૂચનને દૂર કરીએ?</translation>
 <translation id="6380100320871303656">તમે મુલાકાત લઈ શકો છો એવી સંભાવના ધરાવતા પેજને Chrome વારંવાર પહેલેથી લોડ કરે છે. આ સેટિંગના પરિણામે ડેટાનો વપરાશ વધી શકે છે.</translation>
@@ -981,6 +987,7 @@
 <translation id="6397616442223433927">પાછા ઑનલાઇન થયા</translation>
 <translation id="6401458660421980302">આ ટૅબને અન્ય ડિવાઇસ પર મોકલવા માટે, એ ડિવાઇસના Chromeમાં સાઇન ઇન કરો</translation>
 <translation id="6402652558933147609"><ph name="VIOLATED_URL" /> પર <ph name="ERROR_CODE" /></translation>
+<translation id="6403371459378431832">બધા ડિવાઇસ પર તમારો ડેટા સિંક કરો</translation>
 <translation id="6404511346730675251">બુકમાર્કમાં ફેરફાર કરો</translation>
 <translation id="6406506848690869874">સમન્વયન</translation>
 <translation id="6407224748847589805">તમારા કમ્પ્યુટર સાથે કનેક્ટ કરી શકાતું નથી. ચકાસણી માટે બીજો કોઈ વિકલ્પ અજમાવો.</translation>
@@ -1262,6 +1269,7 @@
 <translation id="7853202427316060426">પ્રવૃત્તિ</translation>
 <translation id="7857691613771368249">ફાઇલો ક્યારે સાચવવી તે પૂછવામાં આવે</translation>
 <translation id="7859988229622350291">ક્યારેય અનુવાદ કરશો નહીં</translation>
+<translation id="7866213166286285359">અહીં પેજનો અનુવાદ કરો</translation>
 <translation id="78707286264420418"><ph name="PRODUCT_NAME" />ને તમારા ડિવાઇસ સાથે કનેક્ટ કરવા માટે નજીકના ડિવાઇસની પરવાનગીની જરૂર છે</translation>
 <translation id="7875915731392087153">ઇમેઇલ બનાવો</translation>
 <translation id="7876243839304621966">બધું દૂર કરો</translation>

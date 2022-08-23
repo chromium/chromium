@@ -49,6 +49,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1201402288615127009">Næste</translation>
 <translation id="1210557957257435379">skærmoptagelse</translation>
 <translation id="121097972571826261">Et ord frem</translation>
+<translation id="1217633719248931900">Gå til app</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Butik-app</translation>
 <translation id="1225748608451425081">Din Chromebook er låst på grund af et kendt problem. Du kan logge ind om: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Stop med at vælge</translation>
@@ -539,6 +540,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="4123259114412175274">Bluetooth skal aktiveres, før du kan låse din Chromebook op</translation>
 <translation id="4125970834901680537">Apps kan ikke streames i tablettilstand. Prøv igen i computertilstand.</translation>
 <translation id="4129129681837227511">Du kan se notifikationer på din låseskærm ved at låse skærmen op og ændre indstillingen</translation>
+<translation id="4130035430755296270">Bliv ved med at holde markøren over menuen for at se flere layoutmuligheder</translation>
 <translation id="4136724716305260864">Aktiveret indtil solopgang</translation>
 <translation id="4146833061457621061">Spil musik</translation>
 <translation id="4165275524535002941">Kablet understøtter muligvis ikke skærme</translation>
@@ -669,6 +671,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="479989351350248267">søg</translation>
 <translation id="4804818685124855865">Afbryd</translation>
 <translation id="4814539958450445987">Loginskærm</translation>
+<translation id="481455355267255546">Næste</translation>
 <translation id="4831034276697007977">Er du sikker på, at du vil deaktivere automatiske klik?</translation>
 <translation id="4849058404725798627">Fremhæv element med tastaturfokus</translation>
 <translation id="485592688953820832">Ingen handling (pause)</translation>
@@ -850,6 +853,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="5860033963881614850">Fra</translation>
 <translation id="5860491529813859533">Aktivér</translation>
 <translation id="5867217927013474703">Netværksoplysninger indsamles</translation>
+<translation id="5867606971598166637">Din systemadministrator overvåger dine skærme</translation>
 <translation id="5876666360658629066">Angiv forældrekode</translation>
 <translation id="5881540930187678962">Konfigurer Telefonstyring senere</translation>
 <translation id="5887954372087850114">Vinduet <ph name="WINDOW_TITLE" /> er tildelt til <ph name="DESK_TITLE" /> og er ikke tildelt nogen af alle de øvrige skriveborde</translation>
@@ -870,7 +874,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="5976112937189445008">Tryk på Enter for at optage vinduet</translation>
 <translation id="5977415296283489383">Hovedtelefon</translation>
 <translation id="5978382165065462689">Skærmdeling via Fjernsupport.</translation>
-<translation id="5980301590375426705">Afslut gæstesession</translation>
+<translation id="5980301590375426705">Afslut gæst</translation>
 <translation id="598407983968395253">Brug skabelon</translation>
 <translation id="598882571027504733">Genstart din Chromebook med det tilsluttede tastatur for at hente opdateringen.</translation>
 <translation id="5992218262414051481">Tilstanden Høj kontrast er aktiveret. Tryk på Ctrl+Søg+H igen for at deaktivere tilstanden.</translation>
@@ -1011,6 +1015,7 @@ Installeret for nylig</translation>
 <translation id="6757237461819837179">Der afspilles ingen medier</translation>
 <translation id="6777216307882431711">Leverer strøm til tilsluttede USB-C-enheder</translation>
 <translation id="6786750046913594791">Luk mappe</translation>
+<translation id="6787595647772650851">Gendan seneste session</translation>
 <translation id="6790428901817661496">Afspil</translation>
 <translation id="6801878137098616817">Redigeret for nylig</translation>
 <translation id="6803622936009808957">Skærmene kunne ikke spejles, da der ikke fandtes en understøttet opløsning. I stedet anvendes Udvidet skrivebord.</translation>
@@ -1259,6 +1264,7 @@ Installeret for nylig</translation>
 <translation id="8214996719228530800">Canary-kanal</translation>
 <translation id="8219451629189078428">Din Chromebook skal være tændt og tilsluttet strøm i dette tidsrum. Sørg for, at opladeren eller adapterkablerne er sat korrekt i, både i din Chromebook og i stikkontakten. Sluk ikke for din Chromebook.</translation>
 <translation id="8236042855478648955">Det er tid til at tage en pause</translation>
+<translation id="8246282815785366524">Velkommen tilbage, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" />, telefonbatteri <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, app</translation>
 <translation id="8255234195843591763">Nulstil for at opdatere</translation>

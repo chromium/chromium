@@ -150,7 +150,7 @@
 <translation id="2251686759395008410">မီနူး → မှတ်တမ်း</translation>
 <translation id="2256933947031277845">အကောင့်အချို့ဖြင့်သာ လက်မှတ်ထိုးဝင်ရန် သင့်အဖွဲ့အစည်းက ခွင့်ပြုထားသည်။</translation>
 <translation id="225943865679747347">အမှား ကုဒ်: <ph name="ERROR_CODE" /></translation>
-<translation id="2267753748892043616">အကောင့် ပေါင်းထည့်ပါ</translation>
+<translation id="2267753748892043616">အကောင့်ထည့်ပါ</translation>
 <translation id="2268044343513325586">ပြန်မွမ်းမံ</translation>
 <translation id="2271351792809375263">သင် Chrome တွင်သိမ်းထားသည့် စကားဝှက်များကို သင့်စက်ရှိ အခြားအက်ပ်များတွင် သုံးပါ</translation>
 <translation id="2273327106802955778">မီနူးကို ပိုပြပေးပါ</translation>
@@ -280,6 +280,7 @@
 <translation id="3277021493514034324">ဝဘ်ဆိုက်လိပ်စာကို မိတ္တူကူးယူထားသည်</translation>
 <translation id="3285962946108803577">စာမျက်နှာကို မျှဝေရန်...</translation>
 <translation id="3290875554372353449">'အကောင့်' တစ်ခု ရွေးရန်</translation>
+<translation id="3305294846493618482">နောက်ထပ်</translation>
 <translation id="3311748811247479259">ပိတ်ထားသည်</translation>
 <translation id="3324193307694657476">လိပ်စာ 2</translation>
 <translation id="3328801116991980348">ဆိုက် အချက်အလက်များ</translation>
@@ -311,7 +312,6 @@
 <translation id="3529024052484145543">လုံခြုံမှုမရှိပါ</translation>
 <translation id="3533202363250687977">ရုပ်ဖျက်တဘ်များအားလုံး ပိတ်ရန်</translation>
 <translation id="3533436815740441613">တဘ်အသစ်</translation>
-<translation id="3547799431091898961">ဝဘ်ဆိုက်အားလုံးမှ Google Account ထွက်ရန် <ph name="BEGIN_LINK" />Chrome မှ ထွက်ပါ<ph name="END_LINK" />။</translation>
 <translation id="3551320343578183772">တဘ် ပိတ်ရန်</translation>
 <translation id="3581564640715911333">စာမျက်နှာများကို အခြားဘာသာစကားများဖြင့် ပြန်ဆိုရန် ကမ်းလှမ်းသည်</translation>
 <translation id="3588820906588687999">ရုပ်ပုံကို တက်ဘ်အသစ်တွင်ဖွင့်ရန်</translation>

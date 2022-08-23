@@ -421,6 +421,7 @@
 <translation id="2040894699575719559">Accesul la locație a fost blocat</translation>
 <translation id="2042213636306070719">Tava 7</translation>
 <translation id="204357726431741734">Conectează-te pentru a folosi parolele salvate în Contul Google</translation>
+<translation id="2048261947532620704">Se traduce pagina</translation>
 <translation id="205212645995975601">Grătare</translation>
 <translation id="2053111141626950936">Paginile în <ph name="LANGUAGE" /> nu vor fi traduse.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Când opțiunea este activată și starea este Activă, Chrome stabilește un grup mare de utilizatori cu care se aseamănă cel mai mult activitatea ta de navigare recentă. Advertiserii pot selecta anunțuri pentru grup și activitatea ta de navigare este păstrată privată pe dispozitivul tău. Grupul este actualizat în fiecare zi.}=1{Când opțiunea este activată și starea este Activă, Chrome stabilește un grup mare de utilizatori cu care se aseamănă cel mai mult activitatea ta de navigare recentă. Advertiserii pot selecta anunțuri pentru grup și activitatea ta de navigare este păstrată privată pe dispozitivul tău. Grupul este actualizat în fiecare zi.}few{Când opțiunea este activată și starea este Activă, Chrome stabilește un grup mare de utilizatori cu care se aseamănă cel mai mult activitatea ta de navigare recentă. Advertiserii pot selecta anunțuri pentru grup și activitatea ta de navigare este păstrată privată pe dispozitivul tău. Grupul este actualizat o dată la {NUM_DAYS} zile.}other{Când opțiunea este activată și starea este Activă, Chrome stabilește un grup mare de utilizatori cu care se aseamănă cel mai mult activitatea ta de navigare recentă. Advertiserii pot selecta anunțuri pentru grup și activitatea ta de navigare este păstrată privată pe dispozitivul tău. Grupul este actualizat o dată la {NUM_DAYS} de zile.}}</translation>
@@ -911,6 +912,7 @@
 <translation id="3427342743765426898">&amp;Repetați editarea</translation>
 <translation id="342781501876943858">Chromium îți recomandă să resetezi parola dacă ai folosit-o și pe alte site-uri.</translation>
 <translation id="3428151540071562330">Una sau mai multe dintre adresele URI pentru șabloanele de server DnsOverHttpsTemplates este nevalidă și nu va fi folosită.</translation>
+<translation id="3431216045099978607">Apasă pe |<ph name="ACCELERATOR" />| ca să ieși din ecranul complet și să vezi descărcarea.</translation>
 <translation id="3431636764301398940">Salvează cardul pe acest dispozitiv</translation>
 <translation id="3432601291244612633">Închide pagina</translation>
 <translation id="3435738964857648380">Securitate</translation>
@@ -2056,6 +2058,7 @@
 <translation id="6591833882275308647">Dispozitivul <ph name="DEVICE_TYPE" /> nu este gestionat</translation>
 <translation id="6592952801936330159">Butonul Gestionează setările pentru site-uri, apasă pe Enter pentru a gestiona permisiunile și datele stocate pe toate site-urile din setările Chrome</translation>
 <translation id="6596325263575161958">Opțiuni de criptare</translation>
+<translation id="6599642189720630047">Produse urmărite</translation>
 <translation id="6609880536175561541">Prc7 (Plic)</translation>
 <translation id="6611723696964473273">Știri economice</translation>
 <translation id="6612010098632894193">Videoclipuri online</translation>

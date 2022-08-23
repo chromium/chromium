@@ -49,6 +49,7 @@
 <translation id="1201402288615127009">આગલું</translation>
 <translation id="1210557957257435379">સ્ક્રીન રેકોર્ડિંગ</translation>
 <translation id="121097972571826261">એક શબ્દ આગળ જાઓ</translation>
+<translation id="1217633719248931900">ઍપ પર જાઓ</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store ઍપ</translation>
 <translation id="1225748608451425081">એક જાણીતી સમસ્યાને કારણે તમારું Chromebook લૉક થઈ ગયું છે. અહીં જણાવેલા સમય પછી તમે સાઇન ઇન કરી શકશો: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">પસંદ કરવાનું બંધ કરો</translation>
@@ -539,6 +540,7 @@
 <translation id="4123259114412175274">તમારા Chromebookને અનલૉક કરવા માટે, તમારા ફોનનું બ્લૂટૂથ ચાલુ હોવાની ખાતરી કરો</translation>
 <translation id="4125970834901680537">ટૅબ્લેટ મોડમાં ઍપમાંનું કન્ટેન્ટ સ્ટ્રીમ કરી શકાતું નથી. લૅપટૉપ મોડમાં ફરી પ્રયાસ કરો.</translation>
 <translation id="4129129681837227511">તમારી લૉક સ્ક્રીન પર નોટિફિકેશન જોવા માટે, સેટિંગને બદલવા માટે અનલૉક કરો</translation>
+<translation id="4130035430755296270">લેઆઉટના વધુ વિકલ્પો માટે માઉસ ફેરવતા રહો</translation>
 <translation id="4136724716305260864">સૂર્યોદય સુધી ચાલુ રાખો</translation>
 <translation id="4146833061457621061">મ્યુઝિક વગાડો</translation>
 <translation id="4165275524535002941">કેબલ કદાચ ડિસ્પ્લેને સપોર્ટ ન આપતો હોય</translation>
@@ -669,6 +671,7 @@
 <translation id="479989351350248267">શોધ</translation>
 <translation id="4804818685124855865">ડિસ્કનેક્ટ કરો</translation>
 <translation id="4814539958450445987">લૉગ ઇન સ્ક્રીન</translation>
+<translation id="481455355267255546">આગામી ઇવેન્ટ</translation>
 <translation id="4831034276697007977">શું તમારે ખરેખર ઑટોમૅટિક ક્લિક બંધ કરવા છે?</translation>
 <translation id="4849058404725798627">કીબોર્ડ ફોકસ વડે ઑબ્જેક્ટને હાઇલાઇટ કરો</translation>
 <translation id="485592688953820832">કોઈ ક્રિયા નથી (થોભાવો)</translation>
@@ -850,6 +853,7 @@
 <translation id="5860033963881614850">બંધ</translation>
 <translation id="5860491529813859533">ચાલુ કરો</translation>
 <translation id="5867217927013474703">નેટવર્કની માહિતી ભેગી કરવામાં આવી રહી છે</translation>
+<translation id="5867606971598166637">તમારા સિસ્ટમ ઍડમિનિસ્ટ્રેટર તમારી સ્ક્રીનનું નિરીક્ષણ કરી રહ્યાં છે</translation>
 <translation id="5876666360658629066">માતાપિતાનો કોડ દાખલ કરો</translation>
 <translation id="5881540930187678962">થોડા સમય પછી ફોન હબનું સેટઅપ કરો</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> વિન્ડો <ph name="DESK_TITLE" />ને સોંપાઈ અને અન્ય બધી ડેસ્કમાંથી તેની સોંપણી રદ કરાઈ</translation>
@@ -1011,6 +1015,7 @@
 <translation id="6757237461819837179">કોઈ મીડિયા ચલાવી રહ્યાં નથી</translation>
 <translation id="6777216307882431711">કનેક્ટ કરેલા બધા USB-C ડિવાઇસને પાવર સપ્લાય આપી રહ્યાં છીએ</translation>
 <translation id="6786750046913594791">ફોલ્ડર બંધ કરો</translation>
+<translation id="6787595647772650851">છેલ્લું સત્ર મેનૂ રિસ્ટોર કરો</translation>
 <translation id="6790428901817661496">ચલાવો</translation>
 <translation id="6801878137098616817">તાજેતરમાં ફેરફાર કરવામાં આવ્યો હતો</translation>
 <translation id="6803622936009808957">કોઈ સમર્થિત રિઝોલ્યૂશન મળ્યું ન હોવાથી, પ્રદર્શનોને પ્રતિબિંબિત કરી શકાયા નથી. તેને બદલે વિસ્તૃત ડેસ્કટૉપ દાખલ કર્યું.</translation>
@@ -1259,6 +1264,7 @@
 <translation id="8214996719228530800">Canary ચૅનલ</translation>
 <translation id="8219451629189078428">આ સમય દરમ્યાન, તમારું Chromebook ચાલુ રહેવું અને પાવરથી કનેક્ટ થયેલું હોવું આવશ્યક છે. ખાતરી કરો કે ચાર્જર અથવા અડૅપ્ટર કેબલ તમારા Chromebook અને પાવર આઉટલેટ, એમ બન્નેમાં યોગ્ય રીતે પ્લગ-ઇન કરવામાં આવ્યા હોય. તમારું Chromebook બંધ કરશો નહીં.</translation>
 <translation id="8236042855478648955">વિરામ લેવાનો સમય</translation>
+<translation id="8246282815785366524">આપનું ફરી સ્વાગત છે, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />, ફોનની બૅટરી <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446">ઍપ: <ph name="APP_NAME" /></translation>
 <translation id="8255234195843591763">અપડેટ કરવા માટે રીસેટ કરો</translation>

@@ -433,6 +433,7 @@
 <translation id="3290249595466894471">Στέλνει επίσης ένα μικρό δείγμα σελίδων, λήψεων, δραστηριοτήτων επέκτασης και πληροφοριών συστήματος, για να βοηθήσει στην ανακάλυψη νέων απειλών</translation>
 <translation id="3297344142967351106">Φωνητική βοήθεια</translation>
 <translation id="3303414029551471755">Συνέχεια για λήψη του περιεχομένου;</translation>
+<translation id="3305795716056605962">Μετάφραση σελίδων από το κουμπί Περισσότερες επιλογές</translation>
 <translation id="3334729583274622784">Θέλετε να αλλάξετε την επέκταση αρχείου;</translation>
 <translation id="3341262203274374114">Δεν είναι δυνατή η κατάργηση παρακολούθησης. Παρουσιάστηκε κάποιο πρόβλημα.</translation>
 <translation id="3359667936385849800">Χρήση του τρέχοντα παρόχου υπηρεσίας σας.</translation>
@@ -473,6 +474,7 @@
 <translation id="3557336313807607643">Προσθήκη στις επαφές</translation>
 <translation id="3560491354538957576">Ο ιστότοπος μπορεί να ορίσει ενδιαφέροντα</translation>
 <translation id="3563767357928833671">Το περιεχόμενο του προχείρου εμφανίζεται</translation>
+<translation id="3566639033325271639">Ενημέρωση ρυθμίσεων</translation>
 <translation id="3566923219790363270">Το Chrome εξακολουθεί να προετοιμάζεται για VR. Επανεκκίνηση Chrome αργότερα.</translation>
 <translation id="3568688522516854065">Για να εμφανίζονται οι καρτέλες σας από τις άλλες συσκευές σας, συνδεθείτε και ενεργοποιήστε τον συγχρονισμό</translation>
 <translation id="357465026686164600">Τηλέφωνο ως κλειδί ασφαλείας</translation>
@@ -556,6 +558,7 @@
 <translation id="4062305924942672200">Νομικές πληροφορίες</translation>
 <translation id="4084682180776658562">Σελιδοδείκτης</translation>
 <translation id="4084712963632273211">Από <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />παρέχεται από την Google<ph name="END_DEEMPHASIZED" /></translation>
+<translation id="409109920254068737">Μπορείτε να χρησιμοποιήσετε αυτό το tablet για να συνδεθείτε στη συσκευή όπου εμφανίζεται αυτός ο κωδικός QR.</translation>
 <translation id="4095146165863963773">Διαγραφή δεδομένων εφαρμογών;</translation>
 <translation id="4096227151372679484">Ροή αποθήκευσης σελιδοδείκτη ανοιγμένη στο μισό ύψος</translation>
 <translation id="4099578267706723511">Συμβάλετε στη βελτίωση του Chrome, στέλνοντας στην Google στατιστικά στοιχεία χρήσης και αναφορές σφαλμάτων.</translation>
@@ -567,6 +570,7 @@
 <translation id="4116038641877404294">Κατεβάστε σελίδες για να τις χρησιμοποιήσετε εκτός σύνδεσης</translation>
 <translation id="4135200667068010335">Η λίστα συσκευών στις οποίες θα κοινοποιηθεί μια καρτέλα είναι κλειστή.</translation>
 <translation id="4137746084635924146">Τρέχουσα γλώσσα συσκευής</translation>
+<translation id="414128724510021958">Ζητούνται από προεπιλογή ιστότοποι για υπολογιστή</translation>
 <translation id="4141536112466364990">Μάθετε να χρησιμοποιείτε το Chrome</translation>
 <translation id="4162867837470729563">Η λίστα επιλογών κοινοποίησης είναι ανοικτή σε πλήρες ύψος.</translation>
 <translation id="4165986682804962316">Ρυθμίσεις ιστότοπου</translation>
@@ -589,6 +593,7 @@
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Ποια δεδομένα χρησιμοποιούνται:<ph name="END_BOLD" /> Το ιστορικό περιήγησής σας, ένα αρχείο των ιστοτόπων που έχετε επισκεφτεί χρησιμοποιώντας το Chrome σε αυτήν τη συσκευή.</translation>
 <translation id="4263656433980196874">Διεπαφή χρήστη για παροχή συναίνεσης σχετικά με τη φωνητική αναζήτηση μέσω του Βοηθού, ανοιχτή σε πλήρες ύψος</translation>
 <translation id="4269820728363426813">Αντιγρ. διεύθυνσης συνδέσμου</translation>
+<translation id="4283102315569707115">Να ζητούνται ιστότοποι για υπολογιστές από προεπιλογή;</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Ενεργοποίηση κλειδώματος οθόνης στις ρυθμίσεις Android<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">Χρησιμοποιώντας το Chrome, συμφωνείτε με τους <ph name="BEGIN_TOS_LINK" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_TOS_LINK" /> και τους <ph name="BEGIN_ATOS_LINK" />Πρόσθετους Όρους Παροχής Υπηρεσιών του Google Chrome και του Chrome OS<ph name="END_ATOS_LINK" />. Επίσης, ισχύει η <ph name="BEGIN_PRIVACY_LINK" />Πολιτική απορρήτου<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="4296252229500326964">Νέα καρτ. ανών. περιήγ.</translation>
@@ -968,6 +973,7 @@
 <translation id="6342069812937806050">Μόλις τώρα</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ακόμη}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ακόμη}}</translation>
 <translation id="6345878117466430440">Επισήμανση ως αναγνωσμένο</translation>
+<translation id="6357653805084533597">Μπορείτε να χρησιμοποιήσετε αυτό το τηλέφωνο για να συνδεθείτε στη συσκευή όπου εμφανίζεται αυτός ο κωδικός QR.</translation>
 <translation id="6363990818884053551">Για να ξεκινήσετε τον συγχρονισμό, επαληθεύστε την ταυτότητά σας.</translation>
 <translation id="6364438453358674297">Κατάργηση πρότασης από το ιστορικό;</translation>
 <translation id="6380100320871303656">Προφορτώνει συχνότερα τις σελίδες που το Chrome θεωρεί πιθανό ότι θα επισκεφτείτε. Αυτή η ρύθμιση μπορεί να οδηγήσει σε αυξημένη χρήση δεδομένων.</translation>
@@ -981,6 +987,7 @@
 <translation id="6397616442223433927">Επιστροφή στο διαδίκτυο</translation>
 <translation id="6401458660421980302">Για να στείλετε αυτήν την καρτέλα σε άλλη συσκευή, συνδεθείτε στο Chrome στη συγκεκριμένη συσκευή</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> <ph name="VIOLATED_URL" /></translation>
+<translation id="6403371459378431832">Συγχρονισμός των δεδομένων σας σε όλες τις συσκευές</translation>
 <translation id="6404511346730675251">Επεξεργασία σελιδοδείκτη</translation>
 <translation id="6406506848690869874">Συγχρονισμός</translation>
 <translation id="6407224748847589805">Δεν είναι δυνατή η σύνδεση στον υπολογιστή σας. Δοκιμάστε διαφορετική επιλογή επαλήθευσης.</translation>
@@ -1262,6 +1269,7 @@
 <translation id="7853202427316060426">Δραστηριότητα</translation>
 <translation id="7857691613771368249">Να γίνεται ερώτηση σχετικά με το πότε αποθηκεύονται αρχεία</translation>
 <translation id="7859988229622350291">Να μην γίνεται ποτέ μετάφραση από</translation>
+<translation id="7866213166286285359">Μετάφραση σελίδων εδώ</translation>
 <translation id="78707286264420418">Το <ph name="PRODUCT_NAME" /> χρειάζεται άδεια πρόσβασης στις συσκευές σε κοντινή απόσταση για να συνδεθεί στη συσκευή σας.</translation>
 <translation id="7875915731392087153">Δημιουργία μηνύματος ηλεκτρονικού ταχυδρομείου</translation>
 <translation id="7876243839304621966">Κατάργηση όλων</translation>

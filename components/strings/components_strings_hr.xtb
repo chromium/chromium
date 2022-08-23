@@ -421,6 +421,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2040894699575719559">Lokacija je blokirana</translation>
 <translation id="2042213636306070719">Ladica 7</translation>
 <translation id="204357726431741734">Prijavite se kako biste upotrebljavali zaporke spremljene na Google računu</translation>
+<translation id="2048261947532620704">Prevođenje stranice</translation>
 <translation id="205212645995975601">Roštilj</translation>
 <translation id="2053111141626950936">Neće se prevoditi <ph name="LANGUAGE" />.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Kada je ta kontrola uključena i status je aktivan, Chrome određuje kojoj je velikoj grupi ljudi, odnosno skupini, vaša nedavna aktivnost pregledavanja najsličnija. Oglašivači mogu odabrati oglase za tu grupu, a vaša aktivnost pregledavanja ostaje privatna na vašem uređaju. Vaša se grupa ažurira svaki dan.}=1{Kada je ta kontrola uključena i status je aktivan, Chrome određuje kojoj je velikoj grupi ljudi, odnosno skupini, vaša nedavna aktivnost pregledavanja najsličnija. Oglašivači mogu odabrati oglase za tu grupu, a vaša aktivnost pregledavanja ostaje privatna na vašem uređaju. Vaša se grupa ažurira svaki dan.}one{Kada je ta kontrola uključena i status je aktivan, Chrome određuje kojoj je velikoj grupi ljudi, odnosno skupini, vaša nedavna aktivnost pregledavanja najsličnija. Oglašivači mogu odabrati oglase za tu grupu, a vaša aktivnost pregledavanja ostaje privatna na vašem uređaju. Vaša se grupa ažurira svaki {NUM_DAYS} dan.}few{Kada je ta kontrola uključena i status je aktivan, Chrome određuje kojoj je velikoj grupi ljudi, odnosno skupini, vaša nedavna aktivnost pregledavanja najsličnija. Oglašivači mogu odabrati oglase za tu grupu, a vaša aktivnost pregledavanja ostaje privatna na vašem uređaju. Vaša se grupa ažurira svaka {NUM_DAYS} dana.}other{Kada je ta kontrola uključena i status je aktivan, Chrome određuje kojoj je velikoj grupi ljudi, odnosno skupini, vaša nedavna aktivnost pregledavanja najsličnija. Oglašivači mogu odabrati oglase za tu grupu, a vaša aktivnost pregledavanja ostaje privatna na vašem uređaju. Vaša se grupa ažurira svakih {NUM_DAYS} dana.}}</translation>
@@ -911,6 +912,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3427342743765426898">&amp;Ponovi uređivanje</translation>
 <translation id="342781501876943858">Chromium preporučuje poništavanje zaporke ako ste je upotrebljavali za druge web-lokacije.</translation>
 <translation id="3428151540071562330">Jedan ili više URI-ja predloška poslužitelja DnsOverHttpsTemplates nije točan i neće se koristiti.</translation>
+<translation id="3431216045099978607">Pritisnite |<ph name="ACCELERATOR" />| da biste zatvorili prikaz na cijelom zaslonu i vidjeli preuzimanje.</translation>
 <translation id="3431636764301398940">Spremi tu karticu na ovaj uređaj</translation>
 <translation id="3432601291244612633">Zatvori stranicu</translation>
 <translation id="3435738964857648380">Sigurnost</translation>
@@ -1651,6 +1653,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="540969355065856584">Poslužitelj nije uspio dokazati da je <ph name="DOMAIN" />; njegov sigurnosni certifikat trenutačno nije važeći. Uzrok tomu može biti pogrešna konfiguracija ili napadač koji je prekinuo vašu vezu.</translation>
 <translation id="5412040515238827314">Nevažeći format: očekuje se popis uzoraka.</translation>
 <translation id="5412236728747081950">Ova web-lokacija prima podatke o vašim interesima iz Chromea kako bi vam prikazivala relevantnije oglase.</translation>
+<translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Spremnik za slaganje u snopove 4</translation>
 <translation id="5421136146218899937">Izbriši podatke o pregledavanju...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> želi vam slati obavijesti</translation>
@@ -2055,6 +2058,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6591833882275308647">Uređaj <ph name="DEVICE_TYPE" /> nije upravljani uređaj</translation>
 <translation id="6592952801936330159">Gumb za upravljanje postavkama web-lokacija, pritisnite Enter da biste u postavkama Chromea upravljali dopuštenjima i podacima koji se pohranjuju na web-lokacijama</translation>
 <translation id="6596325263575161958">Opcije šifriranja</translation>
+<translation id="6599642189720630047">Praćeni proizvodi</translation>
 <translation id="6609880536175561541">Prc7 (omotnica)</translation>
 <translation id="6611723696964473273">Vijesti iz gospodarstva</translation>
 <translation id="6612010098632894193">Online videozapisi</translation>
@@ -2582,6 +2586,7 @@ Dodatne pojedinosti:
 <translation id="8004582292198964060">Preglednik</translation>
 <translation id="8009225694047762179">Upravljanje zaporkama</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Ova kartica i njezina adresa za naplatu spremit će se. Moći ćete plaćati njome kada ste prijavljeni na račun <ph name="USER_EMAIL" />.}one{Ove kartice i njihove adrese za naplatu spremit će se. Moći ćete plaćati njima kada ste prijavljeni na račun <ph name="USER_EMAIL" />.}few{Ove kartice i njihove adrese za naplatu spremit će se. Moći ćete plaćati njima kada ste prijavljeni na račun <ph name="USER_EMAIL" />.}other{Ove kartice i njihove adrese za naplatu spremit će se. Moći ćete plaćati njima kada ste prijavljeni na račun <ph name="USER_EMAIL" />.}}</translation>
+<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8025119109950072390">Napadači na ovoj web-lokaciji mogu vas na prijevaru pokušati navesti da napravite nešto opasno kao što je instaliranje softvera ili otkrivanje osobnih podataka (npr. zaporki, telefonskih brojeva ili kreditnih kartica).</translation>
 <translation id="8026334261755873520">Brisanje podataka o pregledavanju</translation>
 <translation id="8027077570865220386">Ladica 15</translation>

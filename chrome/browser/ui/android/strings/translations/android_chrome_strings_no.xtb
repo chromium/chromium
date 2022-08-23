@@ -433,6 +433,7 @@ Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for 
 <translation id="3290249595466894471">Sender også et lite utvalg av sider, nedlastinger, utvidelsesaktivitet og systeminformasjon for å bidra til å oppdage nye trusler</translation>
 <translation id="3297344142967351106">Talehjelp</translation>
 <translation id="3303414029551471755">Vil du gå videre med å laste ned innholdet?</translation>
+<translation id="3305795716056605962">Oversett sider fra Flere alternativer-knappen</translation>
 <translation id="3334729583274622784">Vil du endre filetternavnet?</translation>
 <translation id="3341262203274374114">Kan ikke slutte å følge. Noe gikk galt.</translation>
 <translation id="3359667936385849800">Bruk den nåværende tjenesteleverandøren din</translation>
@@ -473,6 +474,7 @@ Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for 
 <translation id="3557336313807607643">Legg til i kontakter</translation>
 <translation id="3560491354538957576">Nettstedet kan definere interesser</translation>
 <translation id="3563767357928833671">Innholdet på utklippstavlen vises</translation>
+<translation id="3566639033325271639">Oppdater innstillingene</translation>
 <translation id="3566923219790363270">Chrome klargjør fremdeles for VR. Start Chrome på nytt senere.</translation>
 <translation id="3568688522516854065">For å få fanene dine fra de andre enhetene du bruker, logg på og slå på synkronisering.</translation>
 <translation id="357465026686164600">Telefon som sikkerhetsnøkkel</translation>
@@ -556,6 +558,7 @@ Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for 
 <translation id="4062305924942672200">Juridisk informasjon</translation>
 <translation id="4084682180776658562">Legg til bokmerke</translation>
 <translation id="4084712963632273211">Fra <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />levert av Google<ph name="END_DEEMPHASIZED" /></translation>
+<translation id="409109920254068737">Du kan bruke dette nettbrettet til å logge på enheten som viser denne QR-koden.</translation>
 <translation id="4095146165863963773">Slette appdataene?</translation>
 <translation id="4096227151372679484">Flyt for lagring av bokmerke er åpnet i halv høyde</translation>
 <translation id="4099578267706723511">Gjør Chrome bedre ved å sende bruksstatistikk og programstopprapporter til Google.</translation>
@@ -567,6 +570,7 @@ Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for 
 <translation id="4116038641877404294">Last ned sidene for å bruke dem uten nett</translation>
 <translation id="4135200667068010335">Listen over enheter du kan dele faner med, er lukket.</translation>
 <translation id="4137746084635924146">Nåværende enhetsspråk</translation>
+<translation id="414128724510021958">Nettsteder for datamaskiner blir forespurt som standard</translation>
 <translation id="4141536112466364990">Lær deg Chrome</translation>
 <translation id="4162867837470729563">Listen over delingsalternativer er åpnet i full høyde.</translation>
 <translation id="4165986682804962316">Nettstedsinnstillinger</translation>
@@ -589,6 +593,7 @@ Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for 
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Disse dataene brukes:<ph name="END_BOLD" /> nettleserloggen din, som er en logg over nettsteder du har besøkt med Chrome på denne enheten.</translation>
 <translation id="4263656433980196874">UI for samtykke til talesøk med assistenten er åpnet i full høyde</translation>
 <translation id="4269820728363426813">Kopiér linkadressen</translation>
+<translation id="4283102315569707115">Vil du be om nettsteder for datamaskiner som standard?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Slå på skjermlås i Android-innstillingene<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">Ved å bruke Chrome samtykker du i <ph name="BEGIN_TOS_LINK" />Googles vilkår for bruk<ph name="END_TOS_LINK" /> og <ph name="BEGIN_ATOS_LINK" />tilleggsvilkårene for bruk av Google Chrome og ChromeOS<ph name="END_ATOS_LINK" />. <ph name="BEGIN_PRIVACY_LINK" />Personvernreglene<ph name="END_PRIVACY_LINK" /> gjelder også.</translation>
 <translation id="4296252229500326964">Ny inkognitofane</translation>
@@ -968,6 +973,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6342069812937806050">Akkurat nå</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> til}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> til}}</translation>
 <translation id="6345878117466430440">Merk som lest</translation>
+<translation id="6357653805084533597">Du kan bruke denne telefonen til å logge på enheten som viser denne QR-koden.</translation>
 <translation id="6363990818884053551">For å starte synkroniseringen, bekreft at det er deg</translation>
 <translation id="6364438453358674297">Vil du fjerne forslaget fra loggen?</translation>
 <translation id="6380100320871303656">Forhåndslaster oftere sider som Chrome tror du sannsynligvis kommer til å besøke. Denne innstillingen kan medføre høyere databruk.</translation>
@@ -981,6 +987,7 @@ Tillitstokener gir bedre personvern på nettet og kan ikke brukes til å finne u
 <translation id="6397616442223433927">På nettet igjen</translation>
 <translation id="6401458660421980302">For å sende denne fanen til en annen enhet, logg på Chrome der</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> på <ph name="VIOLATED_URL" /></translation>
+<translation id="6403371459378431832">Synkroniser dataene dine på alle enheter</translation>
 <translation id="6404511346730675251">Rediger bokmerket</translation>
 <translation id="6406506848690869874">Synkroniser</translation>
 <translation id="6407224748847589805">Kan ikke koble til datamaskinen din. Prøv et annet bekreftelsesalternativ.</translation>
@@ -1262,6 +1269,7 @@ Tillitstokener gir bedre personvern på nettet og kan ikke brukes til å finne u
 <translation id="7853202427316060426">Aktivitet</translation>
 <translation id="7857691613771368249">Spør når filer skal lagres</translation>
 <translation id="7859988229622350291">Oversett aldri</translation>
+<translation id="7866213166286285359">Oversett sider her</translation>
 <translation id="78707286264420418"><ph name="PRODUCT_NAME" /> trenger tillatelsen Enheter i nærheten for å kunne koble til enheten din</translation>
 <translation id="7875915731392087153">Opprett e-post</translation>
 <translation id="7876243839304621966">Fjern alle</translation>

@@ -67,6 +67,7 @@
 <translation id="152892567002884378">Volume harder</translation>
 <translation id="1555130319947370107">Blou</translation>
 <translation id="155865706765934889">Raakpaneel</translation>
+<translation id="1561927818299383735">agterligkleur</translation>
 <translation id="1565038567006703504">Kan nie <ph name="DEVICE_NAME" /> opdateer nie</translation>
 <translation id="1567064801249837505">Albums</translation>
 <translation id="1572585716423026576">Stel as muurpapier</translation>
@@ -437,6 +438,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Laat Roetines weer loop</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
+<translation id="5286263799730375393">agterligkleur</translation>
 <translation id="5294769550414936029">weergawe <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Skuif venster na lessenaar</translation>
 <translation id="5304899856529773394">EVDO</translation>
@@ -497,6 +499,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="5895138241574237353">Herbegin</translation>
 <translation id="5901630391730855834">Geel</translation>
 <translation id="5903200662178656908">Toestel is ’n sleutelbord-en-muis-kombinasie.</translation>
+<translation id="5907649332524363701">sleutelkleur</translation>
 <translation id="5916084858004523819">Verbode</translation>
 <translation id="5916664084637901428">Aan</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Jou lêer is suksesvol geskandeer en in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> gestoor.}other{Jou lêers is suksesvol geskandeer en in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> gestoor.}}</translation>
@@ -598,6 +601,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="6760706756348334449">Volume sagter</translation>
 <translation id="6766275201586212568">Mislukte DNS-resolusies</translation>
 <translation id="6768237774506518020">Hoë DNS-resolusiemislukkingkoers</translation>
+<translation id="6791471867139427246">sleutelbordligkleur</translation>
 <translation id="680983167891198932">Sleutel</translation>
 <translation id="6816797338148849397">Inligting is beskikbaar wat met jou keuse verband hou. Gebruik oppylsleutel om dit te sien.</translation>
 <translation id="6853312040151791195">Ontlaaikoers</translation>
@@ -643,6 +647,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Vra die kundiges in die Chromebook-hulpforum</translation>
+<translation id="7311368985037279727">sleutelbordkleur</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Druk Search plus spasiebalk om resultaat in Google Search te sien.</translation>
 <translation id="7343649194310845056">Netwerktoestelle</translation>

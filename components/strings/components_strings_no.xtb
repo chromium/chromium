@@ -421,6 +421,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2040894699575719559">Posisjonen er blokkert</translation>
 <translation id="2042213636306070719">Skuff 7</translation>
 <translation id="204357726431741734">Logg på for å bruke passord som er lagret i Google-kontoen din</translation>
+<translation id="2048261947532620704">Oversetter siden</translation>
 <translation id="205212645995975601">Grilling</translation>
 <translation id="2053111141626950936">Sider på <ph name="LANGUAGE" /> oversettes ikke.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Når denne kontrollen er på og statusen er aktiv, bestemmer Chrome hvilken stor gruppe mennesker, eller "kohort", den siste nettleseraktiviteten din ligner mest på. Annonsører kan velge annonser for gruppen, og nettlesingsaktiviteten din holdes privat på enheten din. Gruppen din oppdateres hver dag.}=1{Når denne kontrollen er på og statusen er aktiv, bestemmer Chrome hvilken stor gruppe mennesker, eller "kohort", den siste nettleseraktiviteten din ligner mest på. Annonsører kan velge annonser for gruppen, og nettlesingsaktiviteten din holdes privat på enheten din. Gruppen din oppdateres hver dag.}other{Når denne kontrollen er på og statusen er aktiv, bestemmer Chrome hvilken stor gruppe mennesker, eller "kohort", den siste nettleseraktiviteten din ligner mest på. Annonsører kan velge annonser for gruppen, og nettlesingsaktiviteten din holdes privat på enheten din. Gruppen oppdateres hver {NUM_DAYS}. dag.}}</translation>
@@ -911,6 +912,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3427342743765426898">&amp;Endre likevel</translation>
 <translation id="342781501876943858">Chromium anbefaler at du tilbakestiller passordet ditt hvis du også har brukt det på andre nettsteder.</translation>
 <translation id="3428151540071562330">Én eller flere av URI-ene for DnsOverHttpsTemplates-tjenermaler er ugyldige og blir ikke brukt.</translation>
+<translation id="3431216045099978607">Trykk på |<ph name="ACCELERATOR" />| for å avslutte fullskjerm og se nedlastingen.</translation>
 <translation id="3431636764301398940">Lagre dette kortet på denne enheten</translation>
 <translation id="3432601291244612633">Lukk siden</translation>
 <translation id="3435738964857648380">Sikkerhet</translation>
@@ -2056,6 +2058,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> administreres ikke</translation>
 <translation id="6592952801936330159">Knappen «Administrer nettstedsinnstillinger» – trykk på Enter for å administrere tillatelser og data som er lagret på nettsteder, i Chrome-innstillingene</translation>
 <translation id="6596325263575161958">Krypteringsalternativer</translation>
+<translation id="6599642189720630047">Sporede produkter</translation>
 <translation id="6609880536175561541">Prc7 (konvolutt)</translation>
 <translation id="6611723696964473273">Økonominyheter</translation>
 <translation id="6612010098632894193">Nettvideo</translation>

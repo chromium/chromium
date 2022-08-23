@@ -541,6 +541,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4123259114412175274">Chromebook-a desblokeatzeko, ziurtatu telefonoaren Bluetooth-a aktibatuta dagoela</translation>
 <translation id="4125970834901680537">Ezin dira zuzenean exekutatu aplikazioak tableta moduan. Saiatu berriro ordenagailu eramangarriaren modua erabilita.</translation>
 <translation id="4129129681837227511">Pantaila blokeatuan jakinarazpenak ikusteko, desblokeatu gailua eta aldatu ezarpena</translation>
+<translation id="4130035430755296270">Diseinu-aukera gehiago ikusteko, jarraitu gainetik pasatzen</translation>
 <translation id="4136724716305260864">Aktibatuta egunsentira arte</translation>
 <translation id="4146833061457621061">Erreproduzitu musika</translation>
 <translation id="4165275524535002941">Baliteke kablea pantailekin bateragarria ez izatea</translation>
@@ -671,6 +672,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="479989351350248267">bilaketa</translation>
 <translation id="4804818685124855865">Deskonektatu</translation>
 <translation id="4814539958450445987">Saioa hasteko pantaila</translation>
+<translation id="481455355267255546">Hurrengoa</translation>
 <translation id="4831034276697007977">Ziur klik automatikoak desaktibatu nahi dituzula?</translation>
 <translation id="4849058404725798627">Nabarmendu teklatuaren fokua duen objektua</translation>
 <translation id="485592688953820832">Ekintzarik ez (pausatuta)</translation>
@@ -852,6 +854,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5860033963881614850">Desaktibatuta</translation>
 <translation id="5860491529813859533">Aktibatu</translation>
 <translation id="5867217927013474703">Sareari buruzko informazioa biltzen</translation>
+<translation id="5867606971598166637">Sistemaren administratzailea pantailak kontrolatzen ari da</translation>
 <translation id="5876666360658629066">Idatzi gurasoen sarbide-kodea</translation>
 <translation id="5881540930187678962">Konfiguratu Phone Hub geroago</translation>
 <translation id="5887954372087850114"><ph name="DESK_TITLE" /> lan-eremuari esleitu zaio <ph name="WINDOW_TITLE" /> leihoa, eta beste lan-eremu guztien esleipenak kendu zaizkio</translation>
@@ -1013,6 +1016,7 @@ Berriki instalatu da</translation>
 <translation id="6757237461819837179">Ez da ari ezer erreproduzitzen</translation>
 <translation id="6777216307882431711">Konektatutako USB-C gailuei energia ematen</translation>
 <translation id="6786750046913594791">Itxi karpeta</translation>
+<translation id="6787595647772650851">Leheneratu azken saioa</translation>
 <translation id="6790428901817661496">Erreproduzitu</translation>
 <translation id="6801878137098616817">Duela gutxi editatu da</translation>
 <translation id="6803622936009808957">Ezin izan dira islatu pantailan ez delako onartutako bereizmenik aurkitu. Horren ordez, mahaigain hedatuan sartu zara.</translation>
@@ -1260,6 +1264,7 @@ Berriki instalatu da</translation>
 <translation id="8214996719228530800">Canary kanala</translation>
 <translation id="8219451629189078428">Chromebook-ak piztuta eta korrontera konektatuta egon behar du aldi horretan. Ziurtatu kargagailuaren edo egokigailuaren kableak behar bezala entxufatuta daudela, bai Chromebook-era, bai entxufera. Ez itzali Chromebook-a.</translation>
 <translation id="8236042855478648955">Atseden hartzeko garaia da</translation>
+<translation id="8246282815785366524">Ongi etorri berriro, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />. Seinalearen indarra: <ph name="SIGNAL_STRENGTH" />. Telefonoaren bateria: <ph name="BATTERY_STATUS" />.</translation>
 <translation id="8247998213073982446">Aplikazioa (<ph name="APP_NAME" />)</translation>
 <translation id="8255234195843591763">Gailua eguneratzeko, berrezar ezazu</translation>

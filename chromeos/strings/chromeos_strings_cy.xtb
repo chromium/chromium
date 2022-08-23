@@ -67,6 +67,7 @@
 <translation id="152892567002884378">Codi'r sain</translation>
 <translation id="1555130319947370107">Glas</translation>
 <translation id="155865706765934889">Pad cyffwrdd</translation>
+<translation id="1561927818299383735">lliw ôl-oleuedig</translation>
 <translation id="1565038567006703504">Methu â diweddaru <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Albymau</translation>
 <translation id="1572585716423026576">Gosod fel papur wal</translation>
@@ -437,6 +438,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Ailredeg Arferion</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
+<translation id="5286263799730375393">lliw ôl-olau</translation>
 <translation id="5294769550414936029">fersiwn <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Symud ffenestr i ddesg</translation>
 <translation id="5304899856529773394">EVDO</translation>
@@ -497,6 +499,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="5895138241574237353">Ailgychwyn</translation>
 <translation id="5901630391730855834">Melyn</translation>
 <translation id="5903200662178656908">Mae'r ddyfais yn gyfuniad bysellfwrdd a llygoden.</translation>
+<translation id="5907649332524363701">lliw bysell</translation>
 <translation id="5916084858004523819">Gwaharddedig</translation>
 <translation id="5916664084637901428">Ymlaen</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Mae eich ffeil wedi'i sganio a'i chadw i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}zero{Mae eich ffeiliau wedi'u sganio a'u cadw i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}two{Mae eich ffeiliau wedi'u sganio a'u cadw i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Mae eich ffeiliau wedi'u sganio a'u cadw i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Mae eich ffeiliau wedi'u sganio a'u cadw i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Mae eich ffeiliau wedi'u sganio a'u cadw i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -598,6 +601,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="6760706756348334449">Lleihau'r sain</translation>
 <translation id="6766275201586212568">Cydraniadau DNS wedi methu</translation>
 <translation id="6768237774506518020">Cyfradd fethiant cydraniad DNS uchel</translation>
+<translation id="6791471867139427246">lliw golau bysellfwrdd</translation>
 <translation id="680983167891198932">Allwedd</translation>
 <translation id="6816797338148849397">Mae gwybodaeth sy'n ymwneud â'ch dewis ar gael. Defnyddiwch y fysell Saeth i fyny i gael mynediad.</translation>
 <translation id="6853312040151791195">Cyfradd dadwefru</translation>
@@ -643,6 +647,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Gofyn i'r arbenigwyr yn y fforwm cymorth Chromebook</translation>
+<translation id="7311368985037279727">lliw bysellfwrdd</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Pwyswch Search a Space i weld y canlyniad yn Google Search.</translation>
 <translation id="7343649194310845056">Dyfeisiau Rhwydwaith</translation>

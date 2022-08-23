@@ -301,7 +301,7 @@
 <translation id="2650348088770008516">شرح «راهنمای حریم خصوصی» بسته شده است</translation>
 <translation id="2650751991977523696">فایل دوباره بارگیری شود؟</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# فایل صوتی}one{# فایل صوتی}other{# فایل صوتی}}</translation>
-<translation id="265156376773362237">پیش‌بارگیری استاندارد</translation>
+<translation id="265156376773362237">پیش‌بارگذاری استاندارد</translation>
 <translation id="2656405586795711023">برنامه‌های وب</translation>
 <translation id="2669454659051515572">همه افرادی که از این دستگاه استفاده می‌کنند می‌توانند فایل‌های بارگیری‌شده را ببینند</translation>
 <translation id="2702516483241149200">جدید: هم‌رسانی پیوندی که به این نوشتار پیمایش می‌کند</translation>
@@ -375,7 +375,7 @@
 <translation id="301080557829842765">راهنمای حریم خصوصی</translation>
 <translation id="3016635187733453316">مطمئن شوید این دستگاه به اینترنت متصل باشد</translation>
 <translation id="3026955690410463085">لحاظ کردن پیوند</translation>
-<translation id="3029276696788198026">گزینه پیش‌بارگیری وجود ندارد</translation>
+<translation id="3029276696788198026">گزینه پیش‌بارگذاری وجود ندارد</translation>
 <translation id="3029704984691124060">عبارت‌های عبور مطابقت ندارند</translation>
 <translation id="3031225630520268969">واسط کاربر رضایت برای جستجوی گفتاری «دستیار»</translation>
 <translation id="3034163383943672781">بارگیری <ph name="DATE" /> شروع خواهد شد.</translation>
@@ -414,7 +414,7 @@
 <translation id="3232754137068452469">برنامه وب</translation>
 <translation id="3234978181857588512">ذخیره کردن در دستگاه</translation>
 <translation id="3236059992281584593">۱ دقیقه باقی‌مانده است</translation>
-<translation id="3237087289225714896">پیش‌بارگیری استاندارد:</translation>
+<translation id="3237087289225714896">پیش‌بارگذاری استاندارد:</translation>
 <translation id="3237433641417325993">برای دیدن مقاله‌های پیشنهادی، به پایین پیمایش کنید</translation>
 <translation id="3244271242291266297">ماه</translation>
 <translation id="3245429137663807393">‏اگر گزارش‌های استفاده از Chrome را نیز هم‌رسانی کنید، این گزارش‌ها نشانی‌های وبی را که بازدید می‌کنید دربرمی‌گیرند.</translation>
@@ -473,6 +473,7 @@
 <translation id="3557336313807607643">افزودن به مخاطبین</translation>
 <translation id="3560491354538957576">سایت می‌تواند علایق را مشخص کند</translation>
 <translation id="3563767357928833671">محتوای بریده‌دان نشان داده شد</translation>
+<translation id="3566639033325271639">به‌روزرسانی تنظیمات</translation>
 <translation id="3566923219790363270">‏Chrome هنوز درحال آماده‌سازی برای VR است. Chrome بعداً بازراه‌اندازی شود.</translation>
 <translation id="3568688522516854065">برای اینکه به برگه‌های بازشده در سایر دستگاه‌ها دسترسی داشته باشید، به سیستم وارد شوید و همگام‌سازی را روشن کنید</translation>
 <translation id="357465026686164600">تلفن به‌عنوان کلید امنیتی</translation>
@@ -556,6 +557,7 @@
 <translation id="4062305924942672200">اطلاعات حقوقی</translation>
 <translation id="4084682180776658562">نشانک</translation>
 <translation id="4084712963632273211">‏از<ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />توسط Google ارائه می‌شود<ph name="END_DEEMPHASIZED" /></translation>
+<translation id="409109920254068737">بااستفاده از این رایانه لوحی می‌توانید در دستگاهی که این رمزینه پاسخ‌سریع را نمایش می‌دهد به سیستم وارد شوید.</translation>
 <translation id="4095146165863963773">داده‌های برنامه پاک شود؟</translation>
 <translation id="4096227151372679484">جریان ذخیره نشانک به‌صورت نیمه باز شده است</translation>
 <translation id="4099578267706723511">‏‫با ارسال آمار کاربرد و گزارش‌های خرابی به Google، به بهتر شدن Chrome کمک کنید.</translation>
@@ -567,6 +569,7 @@
 <translation id="4116038641877404294">برای استفاده از صفحه‌ها در حالت آفلاین، آن‌ها را بارگیری کنید</translation>
 <translation id="4135200667068010335">فهرست دستگاه‌هایی که می‌توان با آن‌ها برگه هم‌رسانی کرد، بسته است.</translation>
 <translation id="4137746084635924146">زبان کنونی دستگاه</translation>
+<translation id="414128724510021958">به‌طور پیش‌فرض سایت‌های ویژه رایانه درخواست می‌شود</translation>
 <translation id="4141536112466364990">‏آشنایی با Chrome</translation>
 <translation id="4162867837470729563">فهرست گزینه‌های هم‌رسانی به‌صورت کامل باز شده است.</translation>
 <translation id="4165986682804962316">تنظیمات سایت</translation>
@@ -577,7 +580,7 @@
 <translation id="4196597275619698563">ایجاد کارت</translation>
 <translation id="4198423547019359126">مکانی برای بارگیری دردسترس نیست</translation>
 <translation id="4209895695669353772">‏برای اینکه Google محتوای شخصی‌‏سازی‌‏شده به شما پیشنهاد دهد، همگام‌سازی را روشن کنید</translation>
-<translation id="4214315110991671325">‏اگر کوکی‌ها را مجاز کنید، ممکن است Chrome از آن‌ها برای پیش‌بارگیری استفاده کند.</translation>
+<translation id="4214315110991671325">‏اگر کوکی‌ها را مجاز کنید، ممکن است Chrome از آن‌ها برای پیش‌بارگذاری استفاده کند.</translation>
 <translation id="4225895483398857530">میان‌بر نوار ابزار</translation>
 <translation id="4227318652298512614">هر سایتی را که می‌خواهید دنبال کنید</translation>
 <translation id="4242533952199664413">باز کردن تنظیمات</translation>
@@ -589,6 +592,7 @@
 <translation id="4262915912852657291">‏<ph name="BEGIN_BOLD" />انواع داده‌ای که استفاده می‌شود:<ph name="END_BOLD" /> سابقه مرور شما، سابقه سایت‌هایی که بااستفاده از Chrome در این دستگاه از آن‌ها بازدید کرده‌اید.</translation>
 <translation id="4263656433980196874">واسط کاربر رضایت برای جستجوی گفتاری «دستیار» به‌صورت کامل باز شد</translation>
 <translation id="4269820728363426813">کپی نشانی پیوند</translation>
+<translation id="4283102315569707115">به‌طور پیش‌فرض از سایت‌های ویژه رایانه درخواست شود؟</translation>
 <translation id="4291407919474070700">‏<ph name="BEGIN_LINK" />روشن کردن قفل صفحه در تنظیمات Android<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">‏درصورت استفاده از Chrome، با <ph name="BEGIN_TOS_LINK" />شرایط خدمات Google<ph name="END_TOS_LINK" /> و <ph name="BEGIN_ATOS_LINK" />شرایط خدمات تکمیلی Google Chrome و ChromeOS<ph name="END_ATOS_LINK" /> موافقت می‌کنید. <ph name="BEGIN_PRIVACY_LINK" />خط‌مشی رازداری<ph name="END_PRIVACY_LINK" /> نیز اعمال می‌شود.</translation>
 <translation id="4296252229500326964">برگه ناشناس جدید</translation>
@@ -783,7 +787,7 @@
 <translation id="5319359161174645648">‏Google،‏ Chrome را توصیه می‌کند</translation>
 <translation id="5321849971085220133">‏Chrome به‌دنبال راه‌های جدیدی برای کاهش ردیابی و افزایش امنیت شما درحین مرور است. Chrome همچنین <ph name="BEGIN_LINK" />علایقتان را برآورد می‌کند<ph name="END_LINK" /> و به شما امکان می‌دهد آن‌ها را مدیریت کنید. سپس سایت‌هایی که بازدید می‌کنید می‌توانند برای نمایش آگهی به شما، علایقتان را از Chrome درخواست کنند.</translation>
 <translation id="5324858694974489420">تنظیمات والدین</translation>
-<translation id="5326921373682845375">‏ازآنجایی‌که صفحات پیش‌بارگیری‌شده رمزگذاری شده‌اند و سایت پیوندشده با آن صفحات یک سایت Google است، سرورهای Google هنگام پیش‌بارگیری خصوصی این صفحات اطلاعات جدیدی دریافت نمی‌کنند.</translation>
+<translation id="5326921373682845375">‏ازآنجایی‌که صفحات پیش‌بارگذاری‌شده رمزگذاری شده‌اند و سایت پیوندشده با آن صفحات یک سایت Google است، سرورهای Google هنگام پیش‌بارگذاری خصوصی این صفحات، اطلاعات جدیدی دریافت نمی‌کنند.</translation>
 <translation id="5329858041417644019">مرورگرتان مدیریت نمی‌شود</translation>
 <translation id="5339031667684712858">سایت‌هایی که برداشته‌اید</translation>
 <translation id="5342314432463739672">درخواست‌های مجوز</translation>
@@ -968,6 +972,7 @@
 <translation id="6342069812937806050">همین حالا</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{‏<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> نشانی دیگر}one{‏<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> نشانی دیگر}other{‏<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> نشانی دیگر}}</translation>
 <translation id="6345878117466430440">علامت‌گذاری به‌عنوان خوانده‌شده</translation>
+<translation id="6357653805084533597">بااستفاده از این تلفن می‌توانید در دستگاهی که این رمزینه پاسخ‌سریع را نمایش می‌دهد به سیستم وارد شوید.</translation>
 <translation id="6363990818884053551">برای شروع همگام‌سازی، هویتتان را به‌تأیید برسانید</translation>
 <translation id="6364438453358674297">پیشنهاد از سابقه حذف شود؟</translation>
 <translation id="6380100320871303656">‏صفحاتی که Chrome فکر می‌کند ممکن است بازدید کنید، دفعات بیشتری پیش‌بارگیری می‌شوند. این تنظیم ممکن است منجر به استفاده از داده بیشتر شود.</translation>
@@ -981,6 +986,7 @@
 <translation id="6397616442223433927">دوباره آنلاین شدید</translation>
 <translation id="6401458660421980302">‏برای ارسال این برگه به دستگاهی دیگر، در آنجا به سیستم Chrome وارد شوید</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> در <ph name="VIOLATED_URL" /></translation>
+<translation id="6403371459378431832">داده‌هایتان را در همه دستگاه‌ها همگام‌سازی کنید</translation>
 <translation id="6404511346730675251">ویرایش نشانک</translation>
 <translation id="6406506848690869874">همگام‌سازی</translation>
 <translation id="6407224748847589805">اتصال به رایانه ممکن نیست. گزینه تأیید دیگری را امتحان کنید.</translation>
@@ -1181,7 +1187,7 @@
 <translation id="7444811645081526538">دسته‌های بیشتر</translation>
 <translation id="7453467225369441013">‏شما را از سیستم اکثر سایت‌ها خارج می‌‌کند. از سیستم حساب Google خارج نمی‌شوید.</translation>
 <translation id="7454641608352164238">فضای کافی وجود ندارد</translation>
-<translation id="7456774706094330779">پیش‌بارگیری گسترده</translation>
+<translation id="7456774706094330779">پیش‌بارگذاری گسترده</translation>
 <translation id="7468819939926272717">انتخاب شکلک</translation>
 <translation id="7474822150871987353">بدون اینکه صفحه را ترک کنید، درباره موضوعات در وب‌سایت‌ها اطلاعاتی کسب کنید. یک یا چند کلمه را در صفحه انتخاب کنید تا جستجویشان کنید.</translation>
 <translation id="7475192538862203634">اگر این مورد را مکرراً مشاهده می‌کنید، این <ph name="BEGIN_LINK" />پیشنهادات<ph name="END_LINK" /> را امتحان کنید.</translation>
@@ -1306,7 +1312,7 @@
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> مگابایت موجود است</translation>
 <translation id="8058655154417507695">سال انقضا</translation>
 <translation id="8058746566562539958">‏باز کردن در برگه جدید Chrome</translation>
-<translation id="8062594758852531064">پیش‌بارگیری گسترده:</translation>
+<translation id="8062594758852531064">پیش‌بارگذاری گسترده:</translation>
 <translation id="8063895661287329888">نشانک اضافه نشد.</translation>
 <translation id="806745655614357130">داده‌های من مجزا باشد</translation>
 <translation id="8073388330009372546">باز کردن تصویر در برگه جدید</translation>

@@ -671,6 +671,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="479989351350248267">qidiruv</translation>
 <translation id="4804818685124855865">Uzilish</translation>
 <translation id="4814539958450445987">Kirish ekrani</translation>
+<translation id="481455355267255546">Keyingisi</translation>
 <translation id="4831034276697007977">Avtomatik kliklar bekor qilinsinmi?</translation>
 <translation id="4849058404725798627">Obyektlar klaviatura fokusi orqali ajratib ko‘rsatilsin</translation>
 <translation id="485592688953820832">Harakatsiz (pauza)</translation>
@@ -852,6 +853,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="5860033963881614850">O‘chiq</translation>
 <translation id="5860491529813859533">Yoqish</translation>
 <translation id="5867217927013474703">Tarmoq axboroti yigʻilmoqda</translation>
+<translation id="5867606971598166637">Tizim administratori ekranlarni nazorat qiladi</translation>
 <translation id="5876666360658629066">Ota-ona kodini kiriting</translation>
 <translation id="5881540930187678962">Phone Hub funksiyasini keyin sozlash</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> oynasi <ph name="DESK_TITLE" /> ish stoliga biriktirildi va barcha boshqa ish stollaridan yechildi</translation>
@@ -1013,6 +1015,7 @@ yangi oʻrnatilgan</translation>
 <translation id="6757237461819837179">Hech narsa ijro qilinmayapti</translation>
 <translation id="6777216307882431711">Ulangan USB-C qurilmalar quvvatlanmoqda</translation>
 <translation id="6786750046913594791">Jildni yopish</translation>
+<translation id="6787595647772650851">Oxirgi seansni tiklash</translation>
 <translation id="6790428901817661496">Ijro etish</translation>
 <translation id="6801878137098616817">Yaqinda tahrirlangan</translation>
 <translation id="6803622936009808957">Ekran tasvirini nusxalab bo‘lmadi, chunki ko‘rsatilgan ekran sig‘imi qo‘llab-quvvatlanmaydi. Kengaytirilgan ish stoli rejimi yoqildi.</translation>
@@ -1261,6 +1264,7 @@ yangi oʻrnatilgan</translation>
 <translation id="8214996719228530800">Canary kanali</translation>
 <translation id="8219451629189078428">Bu vaqt orasida Chromebook yoniq va quvvat manbasiga ulangan boʻlishi kerak. Quvvatlagich va kabel adapterlari Chromebook va rozetkaga ulanganini tekshiring. Chromebook qurilmasini oʻchirmang.</translation>
 <translation id="8236042855478648955">Tanaffus qilish vaqti keldi</translation>
+<translation id="8246282815785366524">Qaytganingizdan mamnunmiz, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781">Ulanish: <ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />, Telefon quvvati: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, Ilova</translation>
 <translation id="8255234195843591763">Yangilash uchun asliga qaytarish</translation>

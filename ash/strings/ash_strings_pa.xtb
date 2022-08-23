@@ -49,6 +49,7 @@
 <translation id="1201402288615127009">ਅੱਗੇ</translation>
 <translation id="1210557957257435379">ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਿੰਗ</translation>
 <translation id="121097972571826261">ਇੱਕ ਸ਼ਬਦ ਅੱਗੇ ਜਾਓ</translation>
+<translation id="1217633719248931900">ਐਪ 'ਤੇ ਜਾਓ</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store ਐਪ</translation>
 <translation id="1225748608451425081">ਕਿਸੇ ਜਾਣੂ ਸਮੱਸਿਆ ਕਰਕੇ ਤੁਹਾਡੀ Chromebook ਲਾਕ ਹੈ। ਤੁਸੀਂ ਇੰਨੇ ਸਮੇਂ ਬਾਅਦ ਸਾਈਨ-ਇਨ ਕਰ ਸਕੋਗੇ: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">ਚੋਣ ਕਰਨਾ ਬੰਦ ਕਰੋ</translation>
@@ -670,6 +671,7 @@
 <translation id="479989351350248267">ਖੋਜੋ</translation>
 <translation id="4804818685124855865">ਡਿਸਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="4814539958450445987">ਲੌਗ-ਇਨ ਸਕ੍ਰੀਨ</translation>
+<translation id="481455355267255546">ਇਸ ਤੋਂ ਬਾਅਦ</translation>
 <translation id="4831034276697007977">ਕੀ ਤੁਸੀਂ ਪੱਕਾ ਸਵੈਚਲਿਤ ਕਲਿੱਕਾਂ ਨੂੰ ਬੰਦ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="4849058404725798627">ਕੀ-ਬੋਰਡ ਫੋਕਸ ਨਾਲ ਵਸਤੂ ਨੂੰ ਉਜਾਗਰ ਕਰੋ</translation>
 <translation id="485592688953820832">ਕੋਈ ਕਾਰਵਾਈ ਨਹੀਂ (ਰੋਕੋ)</translation>
@@ -852,6 +854,7 @@
 <translation id="5860033963881614850">ਬੰਦ ਕਰੋ</translation>
 <translation id="5860491529813859533">ਚਾਲੂ ਕਰੋ</translation>
 <translation id="5867217927013474703">ਨੈੱਟਵਰਕ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਇਕੱਠੀ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
+<translation id="5867606971598166637">ਤੁਹਾਡਾ ਸਿਸਟਮ ਪ੍ਰਸ਼ਾਸਕ ਤੁਹਾਡੀਆਂ ਸਕ੍ਰੀਨਾਂ ਦੀ ਨਿਗਰਾਨੀ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="5876666360658629066">ਮਾਂ-ਪਿਓ ਕੋਡ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="5881540930187678962">ਫ਼ੋਨ ਹੱਬ ਦਾ ਬਾਅਦ ਵਿੱਚ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
 <translation id="5887954372087850114">ਵਿੰਡੋ <ph name="WINDOW_TITLE" /> ਨੂੰ <ph name="DESK_TITLE" /> ਦੇ ਜ਼ਿੰਮੇ ਲਗਾਇਆ ਗਿਆ ਅਤੇ ਹੋਰ ਸਾਰੇ ਡੈਸਕਾਂ ਦੇ ਜ਼ਿੰਮੇ ਤੋਂ ਹਟਾਇਆ ਗਿਆ</translation>
@@ -1013,6 +1016,7 @@
 <translation id="6757237461819837179">ਕੋਈ ਮੀਡੀਆ ਨਹੀਂ ਚੱਲ ਰਿਹਾ ਹੈ</translation>
 <translation id="6777216307882431711">ਕਨੈਕਟ ਕੀਤੇ USB-C ਡੀਵਾਈਸਾਂ ਨੂੰ ਪਾਵਰ ਦਿੱਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="6786750046913594791">ਫੋਲਡਰ ਬੰਦ ਕਰੋ</translation>
+<translation id="6787595647772650851">ਪਿਛਲੇ ਸੈਸ਼ਨ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰੋ</translation>
 <translation id="6790428901817661496">ਪਲੇ ਕਰੋ</translation>
 <translation id="6801878137098616817">ਹਾਲ ਹੀ ਵਿੱਚ ਸੰਪਾਦਨ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6803622936009808957">ਡਿਸਪਲੇਆਂ ਨੂੰ ਮਿਰਰ ਨਹੀਂ ਕਰ ਸਕਿਆ ਕਿਉਂਕਿ ਕੋਈ ਸਮਰਥਿਤ ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਨਹੀਂ ਮਿਲੇ। ਇਸਦੀ ਬਜਾਏ ਵਿਸਤ੍ਰਿਤ ਡੈਸਕਟਾਪ ਵਿੱਚ ਚਲਾ ਗਿਆ।</translation>
@@ -1261,6 +1265,7 @@
 <translation id="8214996719228530800">Canary ਚੈਨਲ</translation>
 <translation id="8219451629189078428">ਇਸ ਸਮੇਂ ਦੌਰਾਨ ਤੁਹਾਡੀ Chromebook ਨੂੰ ਚਾਲੂ ਰਹਿਣ ਅਤੇ ਪਾਵਰ ਨਾਲ ਕਨੈਕਟ ਰਹਿਣ ਦੀ ਲੋੜ ਹੈ। ਪੱਕਾ ਕਰੋ ਕਿ ਚਾਰਜਰ ਜਾਂ ਅਡਾਪਟਰ ਕੇਬਲਾਂ ਤੁਹਾਡੀ Chromebook ਅਤੇ ਪਾਵਰ ਸਾਕੇਟ ਦੋਵਾਂ ਵਿੱਚ ਪੂਰੀ ਤਰ੍ਹਾਂ ਲੱਗੀਆਂ ਹੋਈਆਂ ਹਨ। ਆਪਣੀ Chromebook ਨੂੰ ਬੰਦ ਨਾ ਕਰੋ।</translation>
 <translation id="8236042855478648955">ਆਰਾਮ ਕਰਨ ਦਾ ਸਮਾਂ ਹੋ ਗਿਆ ਹੈ</translation>
+<translation id="8246282815785366524">ਮੁੜ ਜੀ ਆਇਆਂ ਨੂੰ, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />, ਫ਼ੋਨ ਦੀ ਬੈਟਰੀ <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, ਐਪ</translation>
 <translation id="8255234195843591763">ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਰੀਸੈੱਟ ਕਰੋ</translation>

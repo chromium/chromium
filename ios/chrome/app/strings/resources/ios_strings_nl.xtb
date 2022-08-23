@@ -280,6 +280,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3277021493514034324">Siteadres gekopieerd</translation>
 <translation id="3285962946108803577">Pagina delen...</translation>
 <translation id="3290875554372353449">Een account selecteren</translation>
+<translation id="3305294846493618482">meer</translation>
 <translation id="3311748811247479259">Uit</translation>
 <translation id="3324193307694657476">Adres 2</translation>
 <translation id="3328801116991980348">Site-informatie</translation>
@@ -311,7 +312,6 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3529024052484145543">Niet beveiligd</translation>
 <translation id="3533202363250687977">Alle incognitotabbladen sluiten</translation>
 <translation id="3533436815740441613">Nieuw tabblad</translation>
-<translation id="3547799431091898961">Als je op alle websites wilt uitloggen van je Google-account, <ph name="BEGIN_LINK" />log je uit van Chrome<ph name="END_LINK" />.</translation>
 <translation id="3551320343578183772">Tabblad sluiten</translation>
 <translation id="3581564640715911333">Aanbieden pagina's in andere talen te vertalen</translation>
 <translation id="3588820906588687999">Afbeelding openen op nieuw tabblad</translation>
@@ -880,7 +880,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8197543752516192074">Pagina vertalen</translation>
 <translation id="8205564605687841303">Annuleren</translation>
 <translation id="8206354486702514201">Deze instelling wordt door je beheerder afgedwongen.</translation>
-<translation id="8225985093977202398">Afbeeldingen en bestanden in chachegeheugen</translation>
+<translation id="8225985093977202398">Gecachete afbeeldingen en bestanden</translation>
 <translation id="8237382152611443140">Open de instellingen voor het automatisch invullen van wachtwoorden</translation>
 <translation id="8261506727792406068">Verwijderen</translation>
 <translation id="8271720166617117963">Akkoord en inloggen</translation>

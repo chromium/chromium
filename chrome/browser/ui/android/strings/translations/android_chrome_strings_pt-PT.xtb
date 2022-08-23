@@ -433,6 +433,7 @@ Quando elimina o seu histórico de navegação, todo ou de um site específico, 
 <translation id="3290249595466894471">Envia também um pequeno exemplo de páginas, transferências, atividade de extensões e informações do sistema para ajudar a detetar novas ameaças</translation>
 <translation id="3297344142967351106">Assistente de voz</translation>
 <translation id="3303414029551471755">Pretende transferir o conteúdo?</translation>
+<translation id="3305795716056605962">Traduza páginas a partir do botão Mais opções</translation>
 <translation id="3334729583274622784">Pretende alterar a extensão de ficheiro?</translation>
 <translation id="3341262203274374114">Não é possível deixar de seguir. Algo correu mal.</translation>
 <translation id="3359667936385849800">Utilizar o seu fornecedor de serviços atual</translation>
@@ -557,6 +558,7 @@ Quando elimina o seu histórico de navegação, todo ou de um site específico, 
 <translation id="4062305924942672200">Informações legais</translation>
 <translation id="4084682180776658562">Marcar</translation>
 <translation id="4084712963632273211">De <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />fornecido pela Google<ph name="END_DEEMPHASIZED" /></translation>
+<translation id="409109920254068737">Pode usar este tablet para iniciar sessão no dispositivo que está a apresentar este código QR.</translation>
 <translation id="4095146165863963773">Eliminar os dados da aplicação?</translation>
 <translation id="4096227151372679484">Fluxo de armazenamento de marcadores aberto a meia altura</translation>
 <translation id="4099578267706723511">Ajude a melhorar o Chrome ao enviar estatísticas de utilização e relatórios de falhas para a Google.</translation>
@@ -591,6 +593,7 @@ Quando elimina o seu histórico de navegação, todo ou de um site específico, 
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Que dados são usados:<ph name="END_BOLD" /> o seu histórico de navegação, um registo dos sites que visitou através do Chrome neste dispositivo.</translation>
 <translation id="4263656433980196874">IU de consentimento da pesquisa por voz do Assistente aberta à altura total</translation>
 <translation id="4269820728363426813">Copiar endereço do link</translation>
+<translation id="4283102315569707115">Pedir sites para computador por predefinição?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Ative o bloqueio de ecrã nas definições do Android<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">Ao usar o Chrome, aceita os <ph name="BEGIN_TOS_LINK" />Termos de Utilização da Google<ph name="END_TOS_LINK" /> e os <ph name="BEGIN_ATOS_LINK" />Termos de Utilização Adicionais do Google Chrome e ChromeOS<ph name="END_ATOS_LINK" />. A <ph name="BEGIN_PRIVACY_LINK" />Política de Privacidade<ph name="END_PRIVACY_LINK" /> também se aplica.</translation>
 <translation id="4296252229500326964">Novo sep. de nav. anónima</translation>
@@ -970,6 +973,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6342069812937806050">Mesmo agora</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">Marcar como lido</translation>
+<translation id="6357653805084533597">Pode usar este telemóvel para iniciar sessão no dispositivo que está a apresentar este código QR.</translation>
 <translation id="6363990818884053551">Para iniciar a sincronização, valide a sua identidade</translation>
 <translation id="6364438453358674297">Remover a sugestão do histórico?</translation>
 <translation id="6380100320871303656">Pré-carrega mais frequentemente páginas que o Chrome pensa que provavelmente irá visitar. Esta definição pode resultar numa maior utilização de dados.</translation>
@@ -983,6 +987,7 @@ Os símbolos fidedignos melhoram a privacidade na Web e não podem ser usados pa
 <translation id="6397616442223433927">Ligação retomada</translation>
 <translation id="6401458660421980302">Para enviar este separador para outro dispositivo, inicie sessão no Chrome nesse dispositivo</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> em <ph name="VIOLATED_URL" /></translation>
+<translation id="6403371459378431832">Sincronize os seus dados em todos os dispositivos</translation>
 <translation id="6404511346730675251">Editar marcador</translation>
 <translation id="6406506848690869874">Sincronização</translation>
 <translation id="6407224748847589805">Não é possível estabelecer ligação ao seu computador. Experimente outra opção de validação.</translation>
@@ -1264,6 +1269,7 @@ Os símbolos fidedignos melhoram a privacidade na Web e não podem ser usados pa
 <translation id="7853202427316060426">Atividade</translation>
 <translation id="7857691613771368249">Perguntar quando deve guardar ficheiros</translation>
 <translation id="7859988229622350291">Nunca traduzir</translation>
+<translation id="7866213166286285359">Traduza páginas aqui</translation>
 <translation id="78707286264420418">O <ph name="PRODUCT_NAME" /> necessita da autorização Dispositivos próximos para estabelecer ligação ao seu dispositivo</translation>
 <translation id="7875915731392087153">Criar email</translation>
 <translation id="7876243839304621966">Remover tudo</translation>

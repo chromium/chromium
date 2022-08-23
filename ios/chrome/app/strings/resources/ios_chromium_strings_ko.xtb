@@ -41,6 +41,7 @@
 <translation id="2918709798697875261">조직에서 Chromium 로그아웃 상태를 유지할 것을 요청합니다.</translation>
 <translation id="2942241131342758843">Chromium을 다른 앱에서 링크를 열고, 위젯에서 검색하고, 비밀번호를 자동 완성할 기본값으로 사용합니다.</translation>
 <translation id="2977470724722393594">Chromium이 최신 버전임</translation>
+<translation id="3102849287235003384">웹사이트에 로그인되어 있는 Google 계정에서 모두 로그아웃하려면 <ph name="BEGIN_LINK" />Chromium에서 로그아웃<ph name="END_LINK" />하세요.</translation>
 <translation id="3256316712990552818">Chromium에 복사됨</translation>
 <translation id="3344973607274501920">Chromium에서 비밀번호를 확인할 수 없습니다. 인터넷 연결 상태를 확인하세요.</translation>
 <translation id="3472200483164753384">Chromium Canary에서 지원되지 않습니다.</translation>

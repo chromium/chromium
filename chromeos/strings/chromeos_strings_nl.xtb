@@ -67,6 +67,7 @@
 <translation id="152892567002884378">Volume omhoog</translation>
 <translation id="1555130319947370107">Blauw</translation>
 <translation id="155865706765934889">Touchpad</translation>
+<translation id="1561927818299383735">kleur van achtergrondverlichting</translation>
 <translation id="1565038567006703504">Kan <ph name="DEVICE_NAME" /> niet updaten</translation>
 <translation id="1567064801249837505">Albums</translation>
 <translation id="1572585716423026576">Instellen als achtergrond</translation>
@@ -437,6 +438,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Routines opnieuw uitvoeren</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
+<translation id="5286263799730375393">kleur van achtergrondverlichting</translation>
 <translation id="5294769550414936029">versie <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Venster verplaatsen naar bureau</translation>
 <translation id="5304899856529773394">EVDO</translation>
@@ -497,6 +499,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="5895138241574237353">Opnieuw starten</translation>
 <translation id="5901630391730855834">Geel</translation>
 <translation id="5903200662178656908">Apparaat is een combinatie van toetsenbord en muis.</translation>
+<translation id="5907649332524363701">toetskleur</translation>
 <translation id="5916084858004523819">Verboden</translation>
 <translation id="5916664084637901428">Aan</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Je bestand is gescand en opgeslagen in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Je bestanden zijn gescand en opgeslagen in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -598,6 +601,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="6760706756348334449">Volume omlaag</translation>
 <translation id="6766275201586212568">Mislukte DNS-omzettingen</translation>
 <translation id="6768237774506518020">Hoog percentage mislukte DNS-omzettingen</translation>
+<translation id="6791471867139427246">kleur van toetsenbordverlichting</translation>
 <translation id="680983167891198932">Sleutel</translation>
 <translation id="6816797338148849397">Er is informatie met betrekking tot je selectie beschikbaar. Gebruik de pijl-omhoog om deze te openen.</translation>
 <translation id="6853312040151791195">Ontlaadsnelheid</translation>
@@ -643,6 +647,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Vraag het aan de experts op het Helpforum van Chromebook</translation>
+<translation id="7311368985037279727">toetsenbordkleur</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; druk op de knop Zoeken en de spatiebalk om het resultaat te bekijken in Google Zoeken</translation>
 <translation id="7343649194310845056">Netwerkapparaten</translation>

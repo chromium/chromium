@@ -421,6 +421,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2040894699575719559">Lokacija je blokirana</translation>
 <translation id="2042213636306070719">7. fioka</translation>
 <translation id="204357726431741734">Prijavite se da biste koristili lozinke sačuvane na Google nalogu</translation>
+<translation id="2048261947532620704">Stranica se prevodi</translation>
 <translation id="205212645995975601">Roštilj</translation>
 <translation id="2053111141626950936">Stranice na jeziku <ph name="LANGUAGE" /> neće biti prevedene.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Kada je ova kontrola uključena i status je aktivan, Chrome određuje veliku grupu ljudi, ili kohortu, kojoj su vaše nedavne aktivnosti pregledanja najsličnije. Oglašavači mogu da biraju oglase za grupu i vaše aktivnosti pregledanja ostaju privatne na uređaju. Grupa se ažurira svakog dana.}=1{Kada je ova kontrola uključena i status je aktivan, Chrome određuje veliku grupu ljudi, ili kohortu, kojoj su vaše nedavne aktivnosti pregledanja najsličnije. Oglašavači mogu da biraju oglase za grupu i vaše aktivnosti pregledanja ostaju privatne na uređaju. Grupa se ažurira svakog dana.}one{Kada je ova kontrola uključena i status je aktivan, Chrome određuje veliku grupu ljudi, ili kohortu, kojoj su vaše nedavne aktivnosti pregledanja najsličnije. Oglašavači mogu da biraju oglase za grupu i vaše aktivnosti pregledanja ostaju privatne na uređaju. Grupa se ažurira na {NUM_DAYS} dan.}few{Kada je ova kontrola uključena i status je aktivan, Chrome određuje veliku grupu ljudi, ili kohortu, kojoj su vaše nedavne aktivnosti pregledanja najsličnije. Oglašavači mogu da biraju oglase za grupu i vaše aktivnosti pregledanja ostaju privatne na uređaju. Grupa se ažurira na {NUM_DAYS} dana.}other{Kada je ova kontrola uključena i status je aktivan, Chrome određuje veliku grupu ljudi, ili kohortu, kojoj su vaše nedavne aktivnosti pregledanja najsličnije. Oglašavači mogu da biraju oglase za grupu i vaše aktivnosti pregledanja ostaju privatne na uređaju. Grupa se ažurira na {NUM_DAYS} dana.}}</translation>
@@ -911,6 +912,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3427342743765426898">&amp;Ponovi izmenu</translation>
 <translation id="342781501876943858">Chromium vam preporučuje da resetujete lozinku ako ste je koristili na drugim sajtovima.</translation>
 <translation id="3428151540071562330">Jedan ili više URI-ja šablona DnsOverHttpsTemplates servera su nevažeći i neće se koristiti.</translation>
+<translation id="3431216045099978607">Pritisnite |<ph name="ACCELERATOR" />| da biste izašli iz režima celog ekrana i videli preuzimanje.</translation>
 <translation id="3431636764301398940">Sačuvaj ovu karticu na ovom uređaju</translation>
 <translation id="3432601291244612633">Zatvori stranicu</translation>
 <translation id="3435738964857648380">Bezbednost</translation>
@@ -1652,6 +1654,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="540969355065856584">Ovaj server ne može da dokaže da je <ph name="DOMAIN" />; njegov bezbednosni sertifikat trenutno nije važeći. Uzrok tome je možda pogrešna konfiguracija ili napadač koji je prekinuo vezu.</translation>
 <translation id="5412040515238827314">Nevažeći format: Očekivana je lista obrazaca.</translation>
 <translation id="5412236728747081950">Ovaj sajt prima podatke o vašim interesovanjima iz Chrome-a da bi vam prikazivao relevantnije oglase</translation>
+<translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" />–<ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">4. pregrada za slaganje</translation>
 <translation id="5421136146218899937">Obriši podatke pregledanja...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> želi da vam šalje obaveštenja</translation>
@@ -2582,6 +2585,7 @@ Dodatni detalji:
 <translation id="8004582292198964060">Pregledač</translation>
 <translation id="8009225694047762179">Upravljaj lozinkama</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Ta kartica i njena adresa za obračun će biti sačuvane. Moći ćete da je koristite kada ste prijavljeni na <ph name="USER_EMAIL" />.}one{Te kartice i njihove adrese za obračun će biti sačuvane. Moći ćete da ih koristite kada ste prijavljeni na <ph name="USER_EMAIL" />.}few{Te kartice i njihove adrese za obračun će biti sačuvane. Moći ćete da ih koristite kada ste prijavljeni na <ph name="USER_EMAIL" />.}other{Te kartice i njihove adrese za obračun će biti sačuvane. Moći ćete da ih koristite kada ste prijavljeni na <ph name="USER_EMAIL" />.}}</translation>
+<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8025119109950072390">Napadači na ovom sajtu mogu da vas prevare da biste uradili nešto opasno, na primer, da instalirate softver ili otkrijete lične podatke (poput lozinki, brojeva telefona ili brojeva kreditnih kartica).</translation>
 <translation id="8026334261755873520">Obrišite podatke pregledanja</translation>
 <translation id="8027077570865220386">15. fioka</translation>

@@ -541,6 +541,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4123259114412175274">Maak seker jou foon se Bluetooth is aan as jy jou Chromebook wil ontsluit</translation>
 <translation id="4125970834901680537">Kan nie programme in tabletmodus stroom nie. Probeer weer in skootrekenaarmodus.</translation>
 <translation id="4129129681837227511">Om kennisgewings op jou sluitskerm te sien, ontsluit om die instelling te verander</translation>
+<translation id="4130035430755296270">Hou oor kieslys vir nog uitlegopsies</translation>
 <translation id="4136724716305260864">Aan tot sonsopkoms</translation>
 <translation id="4146833061457621061">Speel musiek</translation>
 <translation id="4165275524535002941">Kabel steun dalk nie skerms nie</translation>
@@ -671,6 +672,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="479989351350248267">deursoek</translation>
 <translation id="4804818685124855865">Ontkoppel</translation>
 <translation id="4814539958450445987">Aanmeldskerm</translation>
+<translation id="481455355267255546">Volgende</translation>
 <translation id="4831034276697007977">Is jy seker jy wil outomatiese klikke afskakel?</translation>
 <translation id="4849058404725798627">Lig voorwerp met sleutelbordfokus uit</translation>
 <translation id="485592688953820832">Geen handeling nie (onderbreek)</translation>
@@ -852,6 +854,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5860033963881614850">Af</translation>
 <translation id="5860491529813859533">Skakel aan</translation>
 <translation id="5867217927013474703">Samel tans netwerkinligting in</translation>
+<translation id="5867606971598166637">Jou stelseladmin monitor jou skerms</translation>
 <translation id="5876666360658629066">Voer ouerkode in</translation>
 <translation id="5881540930187678962">Stel Foonsentrum later op</translation>
 <translation id="5887954372087850114">Venster <ph name="WINDOW_TITLE" /> is toegewys aan <ph name="DESK_TITLE" /> en is aan geen ander lessenaars toegewys nie.</translation>
@@ -1013,6 +1016,7 @@ Nuwe installasie</translation>
 <translation id="6757237461819837179">Geen media speel tans nie</translation>
 <translation id="6777216307882431711">Gee tans krag aan gekoppelde USB-C-toestelle</translation>
 <translation id="6786750046913594791">Maak vouer toe</translation>
+<translation id="6787595647772650851">Stel laaste sessie terug</translation>
 <translation id="6790428901817661496">Speel</translation>
 <translation id="6801878137098616817">Dit is onlangs gewysig</translation>
 <translation id="6803622936009808957">Kon nie skerms weerspieël nie, omdat daar geen gesteunde resolusies gevind kon word nie. Het eerder by uitgebreide skerm ingegaan.</translation>
@@ -1261,6 +1265,7 @@ Nuwe installasie</translation>
 <translation id="8214996719228530800">Kanarie-kanaal</translation>
 <translation id="8219451629189078428">Jou Chromebook moet in hierdie tyd aangeskakel bly en aan krag gekoppel wees. Maak seker dat die laaier of kragprop se drade behoorlik by sowel jou Chromebook as die kragpunt ingeprop is. Moenie jou Chromebook afskakel nie.</translation>
 <translation id="8236042855478648955">Tyd vir 'n blaaskans</translation>
+<translation id="8246282815785366524">Welkom terug, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" />, foonbattery <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, program</translation>
 <translation id="8255234195843591763">Stel terug na opdatering</translation>

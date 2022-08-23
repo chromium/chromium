@@ -671,6 +671,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">Putuskan koneksi</translation>
 <translation id="4814539958450445987">Layar Login</translation>
+<translation id="481455355267255546">Berikutnya</translation>
 <translation id="4831034276697007977">Yakin ingin menonaktifkan klik otomatis?</translation>
 <translation id="4849058404725798627">Sorot objek dengan fokus keyboard</translation>
 <translation id="485592688953820832">Tidak ada tindakan (jeda)</translation>
@@ -1013,6 +1014,7 @@ Baru diinstal</translation>
 <translation id="6757237461819837179">Tidak ada media yang diputar</translation>
 <translation id="6777216307882431711">Mengisi daya perangkat USB-C yang terhubung</translation>
 <translation id="6786750046913594791">Tutup folder</translation>
+<translation id="6787595647772650851">Pulihkan sesi terakhir</translation>
 <translation id="6790428901817661496">Putar</translation>
 <translation id="6801878137098616817">Diedit baru-baru ini</translation>
 <translation id="6803622936009808957">Tidak dapat menggandakan tampilan karena tidak ditemukan resolusi yang didukung. Memasuki desktop yang diperluas sebagai gantinya.</translation>
@@ -1261,6 +1263,7 @@ Baru diinstal</translation>
 <translation id="8214996719228530800">Saluran Canary</translation>
 <translation id="8219451629189078428">Chromebook harus tetap aktif dan terhubung ke daya selama jangka waktu ini. Pastikan kabel pengisi daya atau adaptor dicolokkan dengan benar ke Chromebook dan stopkontak. Jangan nonaktifkan Chromebook Anda.</translation>
 <translation id="8236042855478648955">Waktunya beristirahat</translation>
+<translation id="8246282815785366524">Selamat datang kembali, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />, Baterai Ponsel <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, Aplikasi</translation>
 <translation id="8255234195843591763">Reset untuk mengupdate</translation>

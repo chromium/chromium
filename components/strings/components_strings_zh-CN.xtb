@@ -421,6 +421,7 @@
 <translation id="2040894699575719559">无权获取位置信息</translation>
 <translation id="2042213636306070719">纸匣 7</translation>
 <translation id="204357726431741734">登录后即可使用您 Google 帐号中保存的密码</translation>
+<translation id="2048261947532620704">正在翻译网页</translation>
 <translation id="205212645995975601">烧烤</translation>
 <translation id="2053111141626950936">系统不会翻译<ph name="LANGUAGE" />网页。</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{如果此控件已开启且处于有效状态，Chrome 会确定您近期的浏览活动与哪个大型用户群组或“同类群组”最接近。广告主可为群组选择广告，您的浏览活动记录会私密地保留在您的设备上。系统会按每天 1 次的频率更新您所属的群组。}=1{如果此控件已开启且处于有效状态，Chrome 会确定您近期的浏览活动与哪个大型用户群组或“同类群组”最接近。广告主可为群组选择广告，您的浏览活动记录会私密地保留在您的设备上。系统会按每天 1 次的频率更新您所属的群组。}other{如果此控件已开启且处于有效状态，Chrome 会确定您近期的浏览活动与哪个大型用户群组或“同类群组”最接近。广告主可为群组选择广告，您的浏览活动记录会私密地保留在您的设备上。系统会按每 {NUM_DAYS} 天 1 次的频率更新您所属的群组。}}</translation>
@@ -909,6 +910,7 @@
 <translation id="3427342743765426898">恢复修改(&amp;R)</translation>
 <translation id="342781501876943858">如果您在其他网站上重复使用了您的密码，Chromium 建议您重置该密码。</translation>
 <translation id="3428151540071562330">一个或多个 DnsOverHttpsTemplates 服务器模板 URI 无效，因此不会被使用。</translation>
+<translation id="3431216045099978607">按 |<ph name="ACCELERATOR" />| 键即可退出全屏模式以查看下载内容。</translation>
 <translation id="3431636764301398940">将此卡的信息保存到该设备</translation>
 <translation id="3432601291244612633">关闭页面</translation>
 <translation id="3435738964857648380">安全</translation>

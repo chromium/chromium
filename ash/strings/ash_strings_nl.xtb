@@ -671,6 +671,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="479989351350248267">zoeken</translation>
 <translation id="4804818685124855865">Verbinding verbreken</translation>
 <translation id="4814539958450445987">Inlogscherm</translation>
+<translation id="481455355267255546">Volgende</translation>
 <translation id="4831034276697007977">Weet je zeker dat je automatische klikken wilt uitzetten?</translation>
 <translation id="4849058404725798627">Object met toetsenbordfocus markeren</translation>
 <translation id="485592688953820832">Geen actie (onderbreken)</translation>
@@ -1013,6 +1014,7 @@ Nieuwe installatie</translation>
 <translation id="6757237461819837179">Er wordt geen media afgespeeld</translation>
 <translation id="6777216307882431711">De aangesloten USB-C-apparaten worden van stroom voorzien</translation>
 <translation id="6786750046913594791">Map sluiten</translation>
+<translation id="6787595647772650851">Laatste sessie herstellen</translation>
 <translation id="6790428901817661496">Spelen</translation>
 <translation id="6801878137098616817">Recent bewerkt</translation>
 <translation id="6803622936009808957">Kan schermen niet spiegelen, omdat er geen ondersteunde resoluties zijn gevonden. Het uitgebreide bureaublad is geactiveerd.</translation>
@@ -1258,6 +1260,7 @@ Nieuwe installatie</translation>
 <translation id="8214996719228530800">Canary-kanaal</translation>
 <translation id="8219451629189078428">Je Chromebook moet ondertussen aan blijven en zijn aangesloten op een stopcontact. Zorg dat de kabels van de oplader of adapter goed zijn aangesloten, zowel op je Chromebook als op het stopcontact. Zet je Chromebook niet uit.</translation>
 <translation id="8236042855478648955">Tijd voor een pauze</translation>
+<translation id="8246282815785366524">Welkom terug, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />, telefoonbatterij <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, app</translation>
 <translation id="8255234195843591763">Reset om te updaten</translation>

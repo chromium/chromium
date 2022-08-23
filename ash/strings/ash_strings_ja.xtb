@@ -49,6 +49,7 @@
 <translation id="1201402288615127009">次へ</translation>
 <translation id="1210557957257435379">画面の録画</translation>
 <translation id="121097972571826261">1 語進む</translation>
+<translation id="1217633719248931900">アプリに移動</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />、Play ストア アプリ</translation>
 <translation id="1225748608451425081">既知の問題により、Chromebook はロックされています。<ph name="TIME_LEFT" /> 後にログインできるようになります。</translation>
 <translation id="1229194443904279055">選択を終了</translation>
@@ -669,6 +670,7 @@
 <translation id="479989351350248267">検索</translation>
 <translation id="4804818685124855865">切断</translation>
 <translation id="4814539958450445987">ログイン画面</translation>
+<translation id="481455355267255546">次の予定</translation>
 <translation id="4831034276697007977">自動クリックをオフにしてもよろしいですか？</translation>
 <translation id="4849058404725798627">キーボードのフォーカスがある項目をハイライト表示する</translation>
 <translation id="485592688953820832">なし（一時停止）</translation>
@@ -1011,6 +1013,7 @@
 <translation id="6757237461819837179">再生中のメディアはありません</translation>
 <translation id="6777216307882431711">接続された USB-C デバイスを充電中</translation>
 <translation id="6786750046913594791">フォルダを閉じる</translation>
+<translation id="6787595647772650851">最後のセッションを復元</translation>
 <translation id="6790428901817661496">再生</translation>
 <translation id="6801878137098616817">最近編集したファイル</translation>
 <translation id="6803622936009808957">サポートされている解像度が見つからなかったため、ディスプレイをミラーリングできませんでした。代わりに拡張デスクトップ モードに切り替えました。</translation>
@@ -1203,7 +1206,7 @@
 <translation id="7893503627044934815">このファイルの表示を希望しない</translation>
 <translation id="7895348134893321514">トート</translation>
 <translation id="7897375687985782769">画面回転のキーボード ショートカットを押しました。画面を回転しますか？</translation>
-<translation id="7901405293566323524">Phone Hub</translation>
+<translation id="7901405293566323524">スマートフォン ハブ</translation>
 <translation id="7902625623987030061">指紋認証センサーをタッチ</translation>
 <translation id="7904094684485781019">このアカウントの管理者がマルチログインを許可していません。</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -1260,6 +1263,7 @@
 <translation id="8214996719228530800">Canary チャンネル</translation>
 <translation id="8219451629189078428">この間は Chromebook の電源をオンにしておく必要があります。充電器またはアダプタのケーブルが、Chromebook とコンセントの両方にしっかりと接続されていることを確認してください。また、Chromebook の電源をオフにしないでください。</translation>
 <translation id="8236042855478648955">休憩の時間です</translation>
+<translation id="8246282815785366524">ようこそ、<ph name="GIVEN_NAME" /> さん</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />、電池残量 <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />、アプリ</translation>
 <translation id="8255234195843591763">リセットして更新してください</translation>

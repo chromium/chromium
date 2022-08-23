@@ -67,6 +67,7 @@
 <translation id="152892567002884378">Aumentar o volume</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="155865706765934889">Touchpad</translation>
+<translation id="1561927818299383735">cor retroiluminada</translation>
 <translation id="1565038567006703504">Não é possível atualizar o dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Álbuns</translation>
 <translation id="1572585716423026576">Definir como imagem de fundo</translation>
@@ -437,6 +438,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Executar novamente as Rotinas</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
+<translation id="5286263799730375393">cor da retroiluminação</translation>
 <translation id="5294769550414936029">versão <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Mover janela para o espaço de trabalho</translation>
 <translation id="5304899856529773394">EVDO</translation>
@@ -497,6 +499,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5901630391730855834">Amarelo</translation>
 <translation id="5903200662178656908">O dispositivo é uma combinação de teclado e rato.</translation>
+<translation id="5907649332524363701">cor das teclas</translation>
 <translation id="5916084858004523819">Proibido</translation>
 <translation id="5916664084637901428">Ativado</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{O seu ficheiro foi digitalizado com êxito e guardado em <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Os seus ficheiros foram digitalizados com êxito e guardados em <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -598,6 +601,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="6760706756348334449">Diminuir volume</translation>
 <translation id="6766275201586212568">Resoluções de DNS com falhas</translation>
 <translation id="6768237774506518020">Taxa de falhas de resolução de DNS elevada</translation>
+<translation id="6791471867139427246">cor da luz do teclado</translation>
 <translation id="680983167891198932">Chave</translation>
 <translation id="6816797338148849397">Informações disponíveis relacionadas com a sua seleção. Utilize a tecla da seta para cima para aceder.</translation>
 <translation id="6853312040151791195">Velocidade de descarregamento</translation>
@@ -643,6 +647,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Pergunte aos especialistas no Fórum de Ajuda do Chromebook</translation>
+<translation id="7311368985037279727">cor do teclado</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; prima Pesquisar e a tecla de espaço para ver o resultado na Pesquisa Google.</translation>
 <translation id="7343649194310845056">Dispositivos de rede</translation>

@@ -672,6 +672,7 @@
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">డిస్‌కనెక్ట్ చేయి</translation>
 <translation id="4814539958450445987">లాగిన్ స్క్రీన్</translation>
+<translation id="481455355267255546">తదుపరిది</translation>
 <translation id="4831034276697007977">ఆటోమేటిక్ క్లిక్‌లను మీరు ఖచ్చితంగా ఆఫ్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="4849058404725798627">కీబోర్డ్ దృష్టి కేంద్రీకరణతో అంశాన్ని హైలైట్ చేయి</translation>
 <translation id="485592688953820832">చర్య వద్దు (పాజ్ చేయి)</translation>
@@ -1014,6 +1015,7 @@
 <translation id="6757237461819837179">మీడియా ఏదీ ప్లే కావడం లేదు</translation>
 <translation id="6777216307882431711">కనెక్ట్ చేసిన USB-C పరికరాలకు పవర్ అందిస్తోంది</translation>
 <translation id="6786750046913594791">ఫోల్డర్‌ను మూసివేయండి</translation>
+<translation id="6787595647772650851">చివరి సెషన్‌ను రీస్టోర్ చేయండి</translation>
 <translation id="6790428901817661496">ప్లే చేయి</translation>
 <translation id="6801878137098616817">ఇటీవల ఎడిట్ చేశారు</translation>
 <translation id="6803622936009808957">మద్దతు ఉన్న రిజల్యూషన్‌లు కనుగొనబడనందున ప్రదర్శనలను ప్రతిబింబించడం సాధ్యపడలేదు. దానికి బదులుగా విస్తారిత డెస్క్‌టాప్‌కు మారారు.</translation>
@@ -1262,6 +1264,7 @@
 <translation id="8214996719228530800">కెనరీ ఛానెల్</translation>
 <translation id="8219451629189078428">ఈ సమయంలో మీ Chromebook ఆన్‌లో ఉండాలి, పవర్‌కు కనెక్ట్ అయ్యి ఉండాలి. మీ Chromebook, పవర్ అవుట్‌లెట్ రెండింటికీ ఛార్జర్ లేదా అడాప్టర్ కేబుల్‌లు పూర్తిగా ప్లగ్-ఇన్ అయ్యాయని నిర్ధారించుకోండి. మీ Chromebookను ఆఫ్ చేయవద్దు.</translation>
 <translation id="8236042855478648955">విరామ సమయం</translation>
+<translation id="8246282815785366524">పునఃస్వాగతం, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />, ఫోన్ బ్యాటరీ <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, యాప్</translation>
 <translation id="8255234195843591763">అప్‌డేట్ చేయడానికి రీసెట్ చేయండి</translation>

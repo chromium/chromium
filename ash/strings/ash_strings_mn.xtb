@@ -672,6 +672,7 @@
 <translation id="479989351350248267">хайлт</translation>
 <translation id="4804818685124855865">Таслах</translation>
 <translation id="4814539958450445987">Нэвтрэх дэлгэц</translation>
+<translation id="481455355267255546">Дараагийн</translation>
 <translation id="4831034276697007977">Автомат даралтыг унтраахдаа итгэлтэй байна уу?</translation>
 <translation id="4849058404725798627">Объектыг гарын фокусаар тодруулах</translation>
 <translation id="485592688953820832">Үйлдэл алга (түр зогсоох)</translation>
@@ -853,6 +854,7 @@
 <translation id="5860033963881614850">Идэвхгүй байна</translation>
 <translation id="5860491529813859533">Асаах</translation>
 <translation id="5867217927013474703">Сүлжээний мэдээлэл цуглуулж байна</translation>
+<translation id="5867606971598166637">Таны системийн администратор дэлгэцүүдийг тань хянаж байна</translation>
 <translation id="5876666360658629066">Эцэг эхийн кодыг оруулах</translation>
 <translation id="5881540930187678962">Phone Hub-г дараа тохируулах</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> цонхыг <ph name="DESK_TITLE" />-д оноосон бөгөөд бусад бүх дэлгэцэд оноохоо больсон</translation>
@@ -1014,6 +1016,7 @@
 <translation id="6757237461819837179">Медиа тоглуулаагүй байна</translation>
 <translation id="6777216307882431711">Холбогдсон USB-C төхөөрөмжүүдийг цэнэглэж байна</translation>
 <translation id="6786750046913594791">Хавтасыг хаах</translation>
+<translation id="6787595647772650851">Сүүлийн харилцан үйлдлийг сэргээх</translation>
 <translation id="6790428901817661496">Тоглуулах</translation>
 <translation id="6801878137098616817">Саяхан зассан</translation>
 <translation id="6803622936009808957">Ямар нэг холбогдох шийдэл олдоогүй учраас дэлгэцүүдийг ойлгож чадахгүй байна. Оронд нь сунгасан десктопыг орууллаа.</translation>
@@ -1262,6 +1265,7 @@
 <translation id="8214996719228530800">Канар суваг</translation>
 <translation id="8219451629189078428">Энэ хугацаанд Chromebook тань асаалттай, мөн тэжээлд залгаатай байх шаардлагатай. Цэнэглэгчийн эсвэл адаптерын утас Chromebook, цахилгааны залгуур хоёрт хоёуланд нь бүрэн залгаатай байгаа эсэхийг шалгаарай. Chromebook-ээ унтрааж болохгүй.</translation>
 <translation id="8236042855478648955">Завсарлах цаг</translation>
+<translation id="8246282815785366524">Дахин тавтай морилно уу, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />, утасны батарей <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, апп</translation>
 <translation id="8255234195843591763">Шинэчлэхийн тулд дахин эхлүүлнэ үү</translation>

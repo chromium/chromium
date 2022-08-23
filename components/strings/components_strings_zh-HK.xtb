@@ -421,6 +421,7 @@
 <translation id="2040894699575719559">位置已封鎖</translation>
 <translation id="2042213636306070719">紙匣 7</translation>
 <translation id="204357726431741734">登入即可使用儲存在 Google 帳戶中的密碼</translation>
+<translation id="2048261947532620704">正在翻譯頁面</translation>
 <translation id="205212645995975601">燒烤</translation>
 <translation id="2053111141626950936">系統將不會翻譯<ph name="LANGUAGE" />網頁。</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{如果此功能已啟用且處於有效狀態，Chrome 就會判斷您最近的瀏覽活動與哪個大型使用者群組 (又稱「組別」) 最為相似。廣告客戶可以選擇要向該群組顯示的廣告，而您的瀏覽活動會保留在裝置上，絕不會外洩。系統會每日更新您所屬的群組。}=1{如果此功能已啟用且處於有效狀態，Chrome 就會判斷您最近的瀏覽活動與哪個大型使用者群組 (又稱「組別」) 最為相似。廣告客戶可以選擇要向該群組顯示的廣告，而您的瀏覽活動會保留在裝置上，絕不會外洩。系統會每日更新您所屬的群組。}other{如果此功能已啟用且處於有效狀態，Chrome 就會判斷您最近的瀏覽活動與哪個大型使用者群組 (又稱「組別」) 最為相似。廣告客戶可以選擇要向該群組顯示的廣告，而您的瀏覽活動會保留在裝置上，絕不會外洩。系統會每隔 {NUM_DAYS} 日更新您所屬的群組。}}</translation>
@@ -911,6 +912,7 @@
 <translation id="3427342743765426898">重做編輯(&amp;R)</translation>
 <translation id="342781501876943858">如果您已在其他網站上重用密碼，Chromium 建議您重設密碼。</translation>
 <translation id="3428151540071562330">一或多個 DnsOverHttpsTemplates 伺服器範本 URI 無效，因此系統不會採用這些伺服器範本 URI。</translation>
+<translation id="3431216045099978607">按下 |<ph name="ACCELERATOR" />| 以離開全螢幕，並查看下載項目。</translation>
 <translation id="3431636764301398940">將這張信用卡儲存至此裝置</translation>
 <translation id="3432601291244612633">關閉頁面</translation>
 <translation id="3435738964857648380">安全性</translation>
@@ -1651,6 +1653,7 @@
 <translation id="540969355065856584">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證目前無效。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
 <translation id="5412040515238827314">格式無效：輸入的值需要是模式清單。</translation>
 <translation id="5412236728747081950">此網站會從 Chrome 取得您的喜好，為您顯示更相關的廣告</translation>
+<translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">堆疊器 4</translation>
 <translation id="5421136146218899937">清除瀏覽數據…</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> 要求傳送通知給您</translation>
@@ -2582,6 +2585,7 @@
 <translation id="8004582292198964060">瀏覽器</translation>
 <translation id="8009225694047762179">管理密碼</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{系統將會儲存此付款卡和帳單地址。您登入 <ph name="USER_EMAIL" /> 後便可以使用這些資料。}other{系統將會儲存這些付款卡和帳單地址。您登入 <ph name="USER_EMAIL" /> 後便可以使用這些資料。}}</translation>
+<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8025119109950072390">攻擊者可能會透過此網站誘使您採取一些危險的行動，例如安裝軟件或洩漏您的個人資料 (包括密碼、電話號碼或信用卡資料)。</translation>
 <translation id="8026334261755873520">清除瀏覽數據</translation>
 <translation id="8027077570865220386">紙匣 15</translation>

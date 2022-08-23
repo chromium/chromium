@@ -433,6 +433,7 @@ Ao excluir todo o histórico de navegação ou apenas o de um site específico, 
 <translation id="3290249595466894471">Envia também uma pequena amostra de páginas, downloads, atividades de extensões e informações do sistema para ajudar a descobrir novas ameaças</translation>
 <translation id="3297344142967351106">Assistente por voz</translation>
 <translation id="3303414029551471755">Continuar com o download do conteúdo?</translation>
+<translation id="3305795716056605962">Traduzir páginas com o botão "Mais opções"</translation>
 <translation id="3334729583274622784">Mudar extensão do arquivo?</translation>
 <translation id="3341262203274374114">Não foi possível parar de seguir. Algo deu errado.</translation>
 <translation id="3359667936385849800">Usar o provedor de serviços atual</translation>
@@ -473,6 +474,7 @@ Ao excluir todo o histórico de navegação ou apenas o de um site específico, 
 <translation id="3557336313807607643">Adicionar aos contatos</translation>
 <translation id="3560491354538957576">O site pode definir interesses</translation>
 <translation id="3563767357928833671">Conteúdo da área de transferência exibido</translation>
+<translation id="3566639033325271639">Atualizar configurações</translation>
 <translation id="3566923219790363270">O Chrome ainda está se preparando para a RV. Reinicie-o mais tarde.</translation>
 <translation id="3568688522516854065">Para ver as guias dos seus outros dispositivos, faça login e ative a sincronização</translation>
 <translation id="357465026686164600">Smartphone como chave de segurança</translation>
@@ -556,6 +558,7 @@ Ao excluir todo o histórico de navegação ou apenas o de um site específico, 
 <translation id="4062305924942672200">Informações legais</translation>
 <translation id="4084682180776658562">Favorito</translation>
 <translation id="4084712963632273211">De <ph name="PUBLISHER_ORIGIN" />: <ph name="BEGIN_DEEMPHASIZED" />veiculado pelo Google<ph name="END_DEEMPHASIZED" /></translation>
+<translation id="409109920254068737">Você pode usar o tablet para fazer login no dispositivo que está mostrando o código QR.</translation>
 <translation id="4095146165863963773">Excluir dados de apps?</translation>
 <translation id="4096227151372679484">Fluxo para adicionar aos favoritos aberto na metade da altura</translation>
 <translation id="4099578267706723511">Ajude a melhorar o Chrome. Envie estatísticas de uso e relatórios de falhas ao Google.</translation>
@@ -567,6 +570,7 @@ Ao excluir todo o histórico de navegação ou apenas o de um site específico, 
 <translation id="4116038641877404294">Faça o download de páginas e acesse off-line</translation>
 <translation id="4135200667068010335">A lista de dispositivos com os quais é possível compartilhar uma guia está fechada.</translation>
 <translation id="4137746084635924146">Idioma atual do dispositivo</translation>
+<translation id="414128724510021958">Sites para computador solicitados por padrão</translation>
 <translation id="4141536112466364990">Aprenda a usar o Chrome</translation>
 <translation id="4162867837470729563">Lista de opções de compartilhamento no tamanho máximo.</translation>
 <translation id="4165986682804962316">Configurações do site</translation>
@@ -589,6 +593,7 @@ Ao excluir todo o histórico de navegação ou apenas o de um site específico, 
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Quais dados são usados<ph name="END_BOLD" />: seu histórico de navegação, um registro de sites visitados usando o Chrome neste dispositivo.</translation>
 <translation id="4263656433980196874">IU de consentimento para a pesquisa por voz do Assistente aberta no tamanho máximo</translation>
 <translation id="4269820728363426813">Copiar endereço do link</translation>
+<translation id="4283102315569707115">Solicitar sites para computador por padrão?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Ativar o bloqueio de tela nas configurações do Android<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">Ao usar o Chrome, você concorda com os <ph name="BEGIN_TOS_LINK" />Termos de Serviço do Google<ph name="END_TOS_LINK" /> e os <ph name="BEGIN_ATOS_LINK" />Termos de Serviço adicionais do Google Chrome e do ChromeOS<ph name="END_ATOS_LINK" />. A <ph name="BEGIN_PRIVACY_LINK" />Política de Privacidade<ph name="END_PRIVACY_LINK" /> também se aplica.</translation>
 <translation id="4296252229500326964">Nova guia anônima</translation>
@@ -969,6 +974,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6342069812937806050">Neste instante</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">Marcar como lida</translation>
+<translation id="6357653805084533597">Você pode usar o smartphone para fazer login no dispositivo que está mostrando o código QR.</translation>
 <translation id="6363990818884053551">Para iniciar a sincronização, confirme sua identidade</translation>
 <translation id="6364438453358674297">Remover sugestão do histórico?</translation>
 <translation id="6380100320871303656">Pré-carrega com mais frequência páginas que o Chrome acredita serem de seu interesse. Esta configuração pode resultar em aumento no uso de dados.</translation>
@@ -982,6 +988,7 @@ Os tokens de confiança melhoram a privacidade na Web e não podem ser usados pa
 <translation id="6397616442223433927">Conectado novamente</translation>
 <translation id="6401458660421980302">Para enviar esta guia a outro dispositivo, faça login no Chrome no outro aparelho</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> em <ph name="VIOLATED_URL" /></translation>
+<translation id="6403371459378431832">Sincronize seus dados em todos os dispositivos</translation>
 <translation id="6404511346730675251">Editar favorito</translation>
 <translation id="6406506848690869874">Sincronizar</translation>
 <translation id="6407224748847589805">Não foi possível se conectar ao seu computador. Tente outra opção de verificação.</translation>
@@ -1263,6 +1270,7 @@ Os tokens de confiança melhoram a privacidade na Web e não podem ser usados pa
 <translation id="7853202427316060426">Atividade</translation>
 <translation id="7857691613771368249">Perguntar antes de salvar arquivos</translation>
 <translation id="7859988229622350291">Nunca traduzir</translation>
+<translation id="7866213166286285359">Traduzir páginas aqui</translation>
 <translation id="78707286264420418">Para se conectar ao seu dispositivo, o <ph name="PRODUCT_NAME" /> precisa da permissão de acesso a dispositivos por perto.</translation>
 <translation id="7875915731392087153">Criar e-mail</translation>
 <translation id="7876243839304621966">Remover tudo</translation>

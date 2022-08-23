@@ -473,6 +473,7 @@
 <translation id="3557336313807607643">සම්බන්ධතා වලට එක් කරන්න</translation>
 <translation id="3560491354538957576">වෙබ් අඩවියට ලැදිකම් නිර්වචනය කළ හැක</translation>
 <translation id="3563767357928833671">පසුරු පුවරු අන්තර්ගතය පෙන්වා ඇත</translation>
+<translation id="3566639033325271639">සැකසීම් යාවත්කාලීන කරන්න</translation>
 <translation id="3566923219790363270">Chrome තවමත් VR සඳහා සූදානම් වෙයි. පසුව Chrome යළි අරඹන්න.</translation>
 <translation id="3568688522516854065">ඔබගේ වෙනත් උපාංගවලින් ඔබගේ පටිති ලබා ගැනීමට, පුරනය වී සමමුහුර්තය ක්‍රියාත්මක කරන්න</translation>
 <translation id="357465026686164600">ආරක්ෂක යතුරක් ලෙස දුරකථනය</translation>
@@ -556,6 +557,7 @@
 <translation id="4062305924942672200">නෛතික තොරතුරු</translation>
 <translation id="4084682180776658562">පිටු සලකුණ</translation>
 <translation id="4084712963632273211"><ph name="PUBLISHER_ORIGIN" /> වෙතින් – <ph name="BEGIN_DEEMPHASIZED" />Google විසින් බෙදා හරින ලදි<ph name="END_DEEMPHASIZED" /></translation>
+<translation id="409109920254068737">මෙම QR කේතය සංදර්ශනය කරන උපාංගයට පිරීමට ඔබට මෙම ටැබ්ලටය භාවිතා කළ හැක.</translation>
 <translation id="4095146165863963773">යෙදුම් දත්ත මකා දමනවා ද?</translation>
 <translation id="4096227151372679484">පිටුසන් සුරැකීම් ප්‍රවාහය අර්ධ උසකදී විවෘතයි</translation>
 <translation id="4099578267706723511">Google වෙත භාවිත සංඛ්‍යාන සහ බිඳවැටීම් වාර්තා යැවීමෙන් Chrome වඩා යහපත් කිරීමට උදවු වන්න.</translation>
@@ -567,6 +569,7 @@
 <translation id="4116038641877404294">පිටු නොබැඳිව භාවිතා කිරීමට බාගන්න</translation>
 <translation id="4135200667068010335">වසා ඇති පටිත්තක් බෙදා ගැනීම සඳහා වන උපාංග ලැයිස්තුව.</translation>
 <translation id="4137746084635924146">වත්මන් උපාංග භාෂාව</translation>
+<translation id="414128724510021958">ඩෙස්ක්ටොප් අඩවි පෙරනිමියෙන් ඉල්ලා ඇත</translation>
 <translation id="4141536112466364990">Chrome දැන ගන්න</translation>
 <translation id="4162867837470729563">පූර්ණ උසකදී බෙදා ගැනීමේ විකල්ප ලැයිස්තුව.</translation>
 <translation id="4165986682804962316">අඩවි සැකසුම්</translation>
@@ -589,6 +592,7 @@
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />භාවිත කරන දත්ත මොනවාද:<ph name="END_BOLD" /> ඔබගේ බ්‍රවුස් කිරීමේ ඉතිහාසය, මෙම උපාංගයේ Chrome භාවිතයෙන් ඔබ පිවිසි අඩවිවල වාර්තාවක්.</translation>
 <translation id="4263656433980196874">පූර්ණ උසකදී සහායක හඬ සෙවීම් අනුමත ui විවෘත කරන ලදි</translation>
 <translation id="4269820728363426813">ලින්ක් ලිපිනය පිටපත් කරන්න</translation>
+<translation id="4283102315569707115">පෙරනිමියෙන් ඩෙස්ක්ටොප් අඩවි ඉල්ලන්න ද?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android සැකසීම් තුළ තිර අගුල ක්‍රියාත්මක කරන්න<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">Chrome භාවිත කිරීමෙන්, ඔබ <ph name="BEGIN_TOS_LINK" />Google සේවා නියම<ph name="END_TOS_LINK" /> සහ <ph name="BEGIN_ATOS_LINK" />Google Chrome සහ ChromeOS අතිරේක සේවා නියම<ph name="END_ATOS_LINK" /> සමග එකඟ වේ. <ph name="BEGIN_PRIVACY_LINK" />පෞද්ගලිකත්ව ප්‍රතිපත්තිය<ph name="END_PRIVACY_LINK" /> ද අදාළ වේ.</translation>
 <translation id="4296252229500326964">නව අප්‍රකට ටැබය</translation>
@@ -968,6 +972,7 @@
 <translation id="6342069812937806050">මේ දැන්</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">කියවූ ලෙස ලකුණු කරන්න</translation>
+<translation id="6357653805084533597">මෙම QR කේතය සංදර්ශනය කරන උපාංගයට පිරීමට ඔබට මෙම දුරකථනය භාවිතා කළ හැක.</translation>
 <translation id="6363990818884053551">සමමුහුර්ත කිරීම ආරම්භ කිරීමට, ඒ ඔබ බව සත්‍යාපනය කරන්න</translation>
 <translation id="6364438453358674297">යෝජනාව ඉතිහාසය වෙතින් ඉවත් කරන්නද?</translation>
 <translation id="6380100320871303656">ඔබ පිවිසීමට ඉඩ ඇතැයි Chrome සිතන පිටු වඩාත් නිතර පූර්ව පූරණය කරයි. මෙම සැකසීම දත්ත භාවිතය වැඩි වීමට හේතු විය හැකිය.</translation>
@@ -981,6 +986,7 @@
 <translation id="6397616442223433927">ආපසු සබැඳියි</translation>
 <translation id="6401458660421980302">මෙම පටිත්ත වෙනත් උපාංගයකට යැවීමට, එයින් Chrome වෙත පුරන්න</translation>
 <translation id="6402652558933147609"><ph name="ERROR_CODE" /> හි <ph name="VIOLATED_URL" /></translation>
+<translation id="6403371459378431832">සියලු උපාංගවල ඔබේ දත්ත සමමුහුර්ත කරන්න</translation>
 <translation id="6404511346730675251">පිටු සලකුණ සංස්කරණය කරන්න</translation>
 <translation id="6406506848690869874">සමමුහුව</translation>
 <translation id="6407224748847589805">ඔබගේ පරිගණකය වෙත සම්බන්ධ විය නොහැකිය. වෙනත් සත්‍යාපනය කිරීමේ විකල්පයක් උත්සාහ කරන්න.</translation>

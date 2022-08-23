@@ -49,6 +49,7 @@
 <translation id="1201402288615127009">Далі</translation>
 <translation id="1210557957257435379">запис</translation>
 <translation id="121097972571826261">Уперед на одне слово</translation>
+<translation id="1217633719248931900">Перейти в додаток</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, додаток із Play Маркету</translation>
 <translation id="1225748608451425081">Ваш пристрій Chromebook заблоковано через відому проблему. Ви зможете ввійти через <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Припинити вибір</translation>
@@ -539,6 +540,7 @@
 <translation id="4123259114412175274">Щоб розблокувати Chromebook, переконайтеся, що на телефоні ввімкнено Bluetooth</translation>
 <translation id="4125970834901680537">Не можна транслювати додатки в режимі планшета. Повторіть спробу в режимі ноутбука.</translation>
 <translation id="4129129681837227511">Щоб переглядати сповіщення на заблокованому екрані, розблокуйте його й змініть налаштування</translation>
+<translation id="4130035430755296270">Продовжуйте наводити курсор на варіанти макета</translation>
 <translation id="4136724716305260864">Увімкнено до сходу сонця</translation>
 <translation id="4146833061457621061">Увімкни музику</translation>
 <translation id="4165275524535002941">Кабель може не підтримувати дисплеї</translation>
@@ -669,6 +671,7 @@
 <translation id="479989351350248267">пошук</translation>
 <translation id="4804818685124855865">Від'єднатися</translation>
 <translation id="4814539958450445987">Екран входу</translation>
+<translation id="481455355267255546">Найближчі події</translation>
 <translation id="4831034276697007977">Вимкнути автоматичні кліки?</translation>
 <translation id="4849058404725798627">Підсвічувати об’єкт, вибраний на клавіатурі</translation>
 <translation id="485592688953820832">Нічого не робити (призупинити)</translation>
@@ -1011,6 +1014,7 @@
 <translation id="6757237461819837179">Медіаконтент не відтворюється</translation>
 <translation id="6777216307882431711">Живлення підключених пристроїв USB-C</translation>
 <translation id="6786750046913594791">Закрити папку</translation>
+<translation id="6787595647772650851">Відновити останній сеанс</translation>
 <translation id="6790428901817661496">Відтворити</translation>
 <translation id="6801878137098616817">Змінено нещодавно</translation>
 <translation id="6803622936009808957">Не вдалося дублювати зображення екранів, оскільки не знайдено підтримувані значення роздільної здатності. Натомість запущено режим розширеного робочого столу.</translation>
@@ -1259,6 +1263,7 @@
 <translation id="8214996719228530800">Версія Canary</translation>
 <translation id="8219451629189078428">Не вимикайте та не відключайте Chromebook від живлення впродовж цього часу. Переконайтеся, що кабелі зарядного пристрою або адаптера надійно під'єднано до вашого пристрою та розетки. Не вимикайте Chromebook.</translation>
 <translation id="8236042855478648955">Час зробити перерву</translation>
+<translation id="8246282815785366524">З поверненням, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />, рівень заряду акумулятора телефона – <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, додаток</translation>
 <translation id="8255234195843591763">Щоб оновити, скиньте налаштування</translation>

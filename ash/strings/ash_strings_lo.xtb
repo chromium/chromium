@@ -540,6 +540,7 @@
 <translation id="4123259114412175274">ເພື່ອປົດລັອກ Chromebook ຂອງທ່ານ, ໃຫ້ກວດສອບວ່າທ່ານເປີດ Bluetooth ຂອງໂທລະສັບທ່ານແລ້ວ</translation>
 <translation id="4125970834901680537">ບໍ່ສາມາດສະຕຣີມແອັບໃນໂໝດແທັບເລັດໄດ້. ກະລຸນາລອງໃໝ່ໃນໂໝດແລັບທັອບ.</translation>
 <translation id="4129129681837227511">ເພື່ອເບິ່ງການແຈ້ງເຕືອນໃນໜ້າຈໍລັອກຂອງທ່ານ, ກະລຸນາປົດລັອກເພື່ອປ່ຽນການຕັ້ງຄ່າ</translation>
+<translation id="4130035430755296270">ສືບຕໍ່ເລື່ອນເມົ້າສຳລັບຕົວເລືອກໂຄງຮ່າງເພີ່ມເຕີມ</translation>
 <translation id="4136724716305260864">ເປີດຈົນກວ່າຕາເວັນຂຶ້ນ</translation>
 <translation id="4146833061457621061">ຫຼິ້ນເພງ</translation>
 <translation id="4165275524535002941">ສາຍອາດບໍ່ຮອງຮັບການສະແດງຜົນ</translation>
@@ -670,6 +671,7 @@
 <translation id="479989351350248267">ຄົ້ນ​ຫາ</translation>
 <translation id="4804818685124855865">ຕັດເຊື່ອມຕໍ່</translation>
 <translation id="4814539958450445987">ໜ້າຈໍການເຂົ້າສູ່ລະບົບ</translation>
+<translation id="481455355267255546">ຕໍ່ໄປ</translation>
 <translation id="4831034276697007977">ທ່ານແນ່ໃຈບໍ່ວ່າທ່ານຕ້ອງການປິດການຄລິກອັດຕະໂນມັດ?</translation>
 <translation id="4849058404725798627">ໝາຍວັດຖຸດ້ວຍໂຟກັສແປ້ນພິມ</translation>
 <translation id="485592688953820832">ບໍ່ດຳເນີນການ (ຢຸດຊົ່ວຄາວ)</translation>
@@ -1012,6 +1014,7 @@
 <translation id="6757237461819837179">ບໍ່ມີການຫຼິ້ນມີເດຍ</translation>
 <translation id="6777216307882431711">ກຳລັງສາກອຸປະກອນ USB-C ທີ່ເຊື່ອມຕໍ່ແລ້ວ</translation>
 <translation id="6786750046913594791">ປິດໂຟລເດີ</translation>
+<translation id="6787595647772650851">ກູ້ເຊດຊັນຫຼ້າສຸດຄືນ</translation>
 <translation id="6790428901817661496">​ຫຼິ້ນ</translation>
 <translation id="6801878137098616817">ແກ້ໄຂຫຼ້າສຸດ</translation>
 <translation id="6803622936009808957">ບໍ່ສາມາດສ່ອງການສະແດງໄດ້ ເນື່ອງຈາກບໍ່ພົບການແກ້ໄຂທີ່ຮອງຮັບ. ປ້ອນເດັສທັອບຂະຫຍາຍເຂົ້າແທນແລ້ວ.</translation>
@@ -1260,6 +1263,7 @@
 <translation id="8214996719228530800">ຊ່ອງ Canary</translation>
 <translation id="8219451629189078428">ທ່ານຈຳເປັນຕ້ອງເປີດ Chromebook ຂອງທ່ານ ແລະ ສຽບປລັກໄວ້ຕະຫຼອດເວລາໃນລະຫວ່າງນີ້. ກວດໃຫ້ແນ່ໃຈວ່າໄດ້ສຽບສາຍສາກ ຫຼື ສາຍອະແດັບເຕີຄົບຖ້ວນແລ້ວ, ໃສ່ທັງ Chromebook ແລະ ເຕົ້າສຽບໄຟ. ຢ່າປິດ Chromebook ຂອງທ່ານ.</translation>
 <translation id="8236042855478648955">ເວລາພັກ</translation>
+<translation id="8246282815785366524">ຍິນດີຕ້ອນຮັບກັບມາ, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />, ແບັດເຕີຣີໂທລະສັບ <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, ແອັບ</translation>
 <translation id="8255234195843591763">ຣີເຊັດເພື່ອອັບເດດ</translation>

@@ -67,6 +67,7 @@
 <translation id="152892567002884378">Pojačajte zvuk</translation>
 <translation id="1555130319947370107">Plava</translation>
 <translation id="155865706765934889">Dodirna tabla</translation>
+<translation id="1561927818299383735">boja pozadinskog osvetljenja</translation>
 <translation id="1565038567006703504">Ažuriranje uređaja <ph name="DEVICE_NAME" /> nije uspelo</translation>
 <translation id="1567064801249837505">Albumi</translation>
 <translation id="1572585716423026576">Postavi kao pozadinu</translation>
@@ -437,6 +438,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Ponovo pokreni rutine</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
+<translation id="5286263799730375393">boja pozadinskog osvetljenja</translation>
 <translation id="5294769550414936029">verzija <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Premestite prozor na radnu površinu</translation>
 <translation id="5304899856529773394">EVDO</translation>
@@ -497,6 +499,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="5895138241574237353">Pokreni ponovo</translation>
 <translation id="5901630391730855834">Žuta</translation>
 <translation id="5903200662178656908">Uređaj je kombinacija tastature i miša.</translation>
+<translation id="5907649332524363701">boja ključa</translation>
 <translation id="5916084858004523819">Zabranjeno</translation>
 <translation id="5916664084637901428">Uključeno</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Fajl je skeniran i sačuvan u folderu <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Fajlovi su skenirani i sačuvani u folderu <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Fajlovi su skenirani i sačuvani u folderu <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Fajlovi su skenirani i sačuvani u folderu <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -598,6 +601,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="6760706756348334449">Utišajte zvuk</translation>
 <translation id="6766275201586212568">Neuspešna DNS razrešavanja</translation>
 <translation id="6768237774506518020">Velika stopa neuspeha DNS razrešavanja</translation>
+<translation id="6791471867139427246">boja osvetljenja tastature</translation>
 <translation id="680983167891198932">Ključ</translation>
 <translation id="6816797338148849397">Dostupne su informacije vezane za vaš izbor. Koristite taster sa strelicom nagore da biste im pristupili.</translation>
 <translation id="6853312040151791195">Brzina pražnjenja</translation>
@@ -643,6 +647,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Pitajte stručnjake na Chromebook forumu pomoći</translation>
+<translation id="7311368985037279727">boja tastature</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Pritisnite taster za pretragu i razmak da biste videli rezultat u Google pretrazi.</translation>
 <translation id="7343649194310845056">Mrežni uređaji</translation>

@@ -909,6 +909,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="3427342743765426898">&amp;Yenza futhi ukuhlela</translation>
 <translation id="342781501876943858">I-Chromium incoma ukusetha kabusha iphasiwedi yakho uma uphinde wayisebenzisa kwamanye amasayithi.</translation>
 <translation id="3428151540071562330">Eyodwa noma ngaphezulu yama-URL wethempulethi leseva le-DnsOverHttpsTemplates alivumelekile futhi ngeke lisetshenziswe.</translation>
+<translation id="3431216045099978607">Cindezela okuthi |<ph name="ACCELERATOR" />| ukuze uphume esikrinini esigcwele futhi ubone ukudawuniloda.</translation>
 <translation id="3431636764301398940">Londoloza leli khadi kule divayisi</translation>
 <translation id="3432601291244612633">Vala ikhasi</translation>
 <translation id="3435738964857648380">Ukuvikela</translation>
@@ -1649,6 +1650,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="540969355065856584">Le seva ayikwazanga ukubonisa ukuthi iyi-<ph name="DOMAIN" />; isitifiketi sayo sokuphepha asivumelekile ngalesi sikhathi. Lokhu kungabangelwa ukungalungiseki kahle noma umhlaseli uhlasela uxhumo lakho.</translation>
 <translation id="5412040515238827314">Ifomethi engavumelekile: Bekulindeleke uhlu lwamaphethini.</translation>
 <translation id="5412236728747081950">Leli sayithi lithola ongaba nentshisekelo kukho ku-Chrome ukuze likubonise izikhangiso ezihambisana kakhulu</translation>
+<translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Isitaki esingu-4</translation>
 <translation id="5421136146218899937">Sula idatha yokudlulisa amehlo...</translation>
 <translation id="5426179911063097041">I-<ph name="SITE" /> ifuna ukukuthumelela izaziso</translation>
@@ -2580,6 +2582,7 @@ Imininingwane engeziwe:
 <translation id="8004582292198964060">Isiphequluli</translation>
 <translation id="8009225694047762179">Phatha amaphasiwedi</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Leli khadi nekheli lalo lokukhokhisa kuzolondolozwa. Uzokwazi ukulisebenzisa uma ungene ngemvume ku-<ph name="USER_EMAIL" />.}one{Lawa makhadi namakheli okukhokhisa kuzolondolozwa. Uzokwazi ukuwasebenzisa uma ungene ngemvume ku-<ph name="USER_EMAIL" />.}other{Lawa makhadi namakheli okukhokhisa kuzolondolozwa. Uzokwazi ukuwasebenzisa uma ungene ngemvume ku-<ph name="USER_EMAIL" />.}}</translation>
+<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8025119109950072390">Abahlaseli kuleli sayithi bangakukhohlisela ekwenzeni okuthile okuyingozi njengokufaka isofthiwe noma ukubonisa ulwazi lwakho lomuntu siqu (isibonelo, amaphasiwedi, izinombolo zefoni, noma amkhadi wesikweletu).</translation>
 <translation id="8026334261755873520">Sula idatha yokudlulisa amehlo</translation>
 <translation id="8027077570865220386">Ithileyi 15</translation>
