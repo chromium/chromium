@@ -1097,7 +1097,7 @@ message DiskLifetimeEstimation {
 }
 
 // Status of the single storage device
-// Next id: 27
+// Next id: 29
 message DiskInfo {
   optional string serial = 1;
   optional string manufacturer = 2;
@@ -1130,6 +1130,7 @@ message DiskInfo {
     // https://screenshot.googleplex.com/eZWNnV8qGnc
     uint32 emmc_oemid = 15;
     uint32 other_vendor = 16;
+    uint32 jedec_manfid = 27;
   }
 
   // The manufacturer-specific product identifier.
@@ -1151,6 +1152,7 @@ message DiskInfo {
     uint64 nvme_firmware_rev = 23;
     uint64 emmc_firmware_rev = 24;
     uint32 other_firmware_rev = 25;
+    uint32 ufs_firmware_rev = 28;
   }
 
   // The purpose of the device on the system.

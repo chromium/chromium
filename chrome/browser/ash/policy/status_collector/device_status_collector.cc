@@ -914,6 +914,10 @@ class DeviceStatusCollectorState : public StatusCollectorState {
                   kUnknown:
                 LOG(ERROR) << "cros_healthd: Unknown storage vendor tag";
                 break;
+              case chromeos::cros_healthd::mojom::BlockDeviceVendor::Tag::
+                  kJedecManfid:
+                disk_info_out->set_jedec_manfid(vendor_id->get_jedec_manfid());
+                break;
             }
 
             // product_id
@@ -980,6 +984,11 @@ class DeviceStatusCollectorState : public StatusCollectorState {
               case chromeos::cros_healthd::mojom::BlockDeviceFirmware::Tag::
                   kUnknown:
                 LOG(ERROR) << "cros_healthd: Unknown storage firmware tag";
+                break;
+              case chromeos::cros_healthd::mojom::BlockDeviceFirmware::Tag::
+                  kUfsFwrev:
+                disk_info_out->set_ufs_firmware_rev(
+                    fw_version->get_ufs_fwrev());
                 break;
             }
 

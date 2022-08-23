@@ -241,13 +241,14 @@ union NonRemovableBlockDeviceResult {
 
 // The manufacturer of the block device.
 //
-// NextMinVersion: 2, NextIndex: 4
+// NextMinVersion: 3, NextIndex: 5
 [Stable, Extensible]
 union BlockDeviceVendor {
   uint32 nvme_subsystem_vendor@0;
   uint16 emmc_oemid@1;
   uint16 other@2;
   [MinVersion=1, Default] uint64 unknown@3;
+  [MinVersion=2] uint16 jedec_manfid@4;
 };
 
 // The manufacturer-specific product identifier.
@@ -274,13 +275,14 @@ union BlockDeviceRevision {
 
 // The revision of the device's firmware.
 //
-// NextMinVersion: 2, NextIndex: 4
+// NextMinVersion: 3, NextIndex: 5
 [Stable, Extensible]
 union BlockDeviceFirmware {
   uint64 nvme_firmware_rev@0;
   uint64 emmc_fwrev@1;
   uint16 other@2;
   [MinVersion=1, Default] uint64 unknown@3;
+  [MinVersion=2] uint64 ufs_fwrev@4;
 };
 
 // Purpose of the storage device.
