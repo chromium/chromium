@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "components/feedback/feedback_data.h"
@@ -41,6 +42,7 @@ using system_logs::SystemLogsResponse;
 
 namespace {
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr base::FilePath::CharType kBluetoothLogsFilePath[] =
     FILE_PATH_LITERAL("/var/log/bluetooth/log.bz2");
 constexpr base::FilePath::CharType kBluetoothLogsFilePathOld[] =
@@ -53,8 +55,26 @@ constexpr char kBluetoothLogsAttachmentNameOld[] = "bluetooth_logs.old.bz2";
 constexpr char kBluetoothQualityReportAttachmentName[] =
     "bluetooth_quality_report";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kLacrosHistogramsFilename[] = "lacros_histograms.zip";
+
+void LoadBluetoothLogs(scoped_refptr<feedback::FeedbackData> feedback_data) {
+  std::string bluetooth_logs;
+  if (base::ReadFileToString(base::FilePath(kBluetoothLogsFilePath),
+                             &bluetooth_logs)) {
+    feedback_data->AddFile(kBluetoothLogsAttachmentName,
+                           std::move(bluetooth_logs));
+  }
+  if (base::ReadFileToString(base::FilePath(kBluetoothLogsFilePathOld),
+                             &bluetooth_logs)) {
+    feedback_data->AddFile(kBluetoothLogsAttachmentNameOld,
+                           std::move(bluetooth_logs));
+  }
+  if (base::ReadFileToString(base::FilePath(kBluetoothQualityReportFilePath),
+                             &bluetooth_logs)) {
+    feedback_data->AddFile(kBluetoothQualityReportAttachmentName,
+                           std::move(bluetooth_logs));
+  }
+}
 #endif
 
 }  // namespace
@@ -219,7 +239,15 @@ void FeedbackService::OnLacrosHistogramsFetched(
     feedback_data->AddFile(kLacrosHistogramsFilename,
                            std::move(compressed_histograms));
   }
-  OnAllLogsFetched(params, feedback_data);
+  if (params.send_bluetooth_logs) {
+    base::ThreadPool::PostTaskAndReply(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(&LoadBluetoothLogs, feedback_data),
+        base::BindOnce(&FeedbackService::OnAllLogsFetched, this, params,
+                       feedback_data));
+  } else {
+    OnAllLogsFetched(params, feedback_data);
+  }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -236,25 +264,6 @@ void FeedbackService::OnAllLogsFetched(
     std::string histograms =
         base::StatisticsRecorder::ToJSON(base::JSON_VERBOSITY_LEVEL_FULL);
     feedback_data->SetAndCompressHistograms(std::move(histograms));
-  }
-
-  if (params.send_bluetooth_logs) {
-    std::string bluetooth_logs;
-    if (base::ReadFileToString(base::FilePath(kBluetoothLogsFilePath),
-                               &bluetooth_logs)) {
-      feedback_data->AddFile(kBluetoothLogsAttachmentName,
-                             std::move(bluetooth_logs));
-    }
-    if (base::ReadFileToString(base::FilePath(kBluetoothLogsFilePathOld),
-                               &bluetooth_logs)) {
-      feedback_data->AddFile(kBluetoothLogsAttachmentNameOld,
-                             std::move(bluetooth_logs));
-    }
-    if (base::ReadFileToString(base::FilePath(kBluetoothQualityReportFilePath),
-                               &bluetooth_logs)) {
-      feedback_data->AddFile(kBluetoothQualityReportAttachmentName,
-                             std::move(bluetooth_logs));
-    }
   }
 
   DCHECK(feedback_data->attached_file_uuid().empty());
