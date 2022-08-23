@@ -487,10 +487,15 @@ class WebAppFrameToolbarBrowserTest_Borderless
     )";
     EXPECT_EQ("granted", EvalJs(web_contents, permission_query_script));
 
-    // The permission subscriber doesn't get properly triggered in these tests
-    // so calling this function directly to update the borderless mode related
-    // variables.
-    helper()->browser_view()->UpdateBorderlessModeEnabled();
+    // It takes some time to udate the borderless mode state. The title is
+    // updated on a change event hooked to the window.matchMedia() function,
+    // which gets triggered when the permission is granted and the borderless
+    // mode gets enabled.
+    content::TitleWatcher title_watcher(web_contents,
+                                        u"match-media-borderless");
+    std::ignore = title_watcher.WaitAndGetTitle();
+    ASSERT_EQ("match-media-borderless",
+              EvalJs(web_contents, "document.title").ExtractString());
   }
 
  private:
@@ -500,7 +505,7 @@ class WebAppFrameToolbarBrowserTest_Borderless
 
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless,
                        AppUsesBorderlessModeAndHasWindowPlacementPermission) {
-  InstallAndLaunchWebApp(true);
+  InstallAndLaunchWebApp(/*uses_borderless=*/true);
   GrantWindowPlacementPermission();
 
   ASSERT_TRUE(helper()->browser_view()->borderless_mode_enabled_for_testing());
@@ -512,10 +517,40 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless,
       helper()->web_app_frame_toolbar()->GetAppMenuButton()->GetVisible());
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless,
+                       DisplayModeMediaCSS) {
+  InstallAndLaunchWebApp(/*uses_borderless=*/true);
+  auto* web_contents = helper()->browser_view()->GetActiveWebContents();
+
+  std::string get_background_color = R"(
+    window.getComputedStyle(document.body, null)
+      .getPropertyValue('background-color');
+  )";
+  std::string match_media_standalone =
+      "window.matchMedia('(display-mode: standalone)').matches;";
+  std::string match_media_borderless =
+      "window.matchMedia('(display-mode: borderless)').matches;";
+  std::string blue = "rgb(0, 0, 255)";
+  std::string red = "rgb(255, 0, 0)";
+
+  // Validate that before granting the permission, the display-mode matches with
+  // the default value "standalone" and the default background-color.
+  EXPECT_TRUE(EvalJs(web_contents, match_media_standalone).ExtractBool());
+  ASSERT_EQ(blue, EvalJs(web_contents, get_background_color));
+
+  GrantWindowPlacementPermission();
+  ASSERT_TRUE(helper()->browser_view()->IsBorderlessModeEnabled());
+
+  // Validate that after granting the permission the display-mode matches with
+  // "borderless" and updates the background-color accordingly.
+  EXPECT_TRUE(EvalJs(web_contents, match_media_borderless).ExtractBool());
+  ASSERT_EQ(red, EvalJs(web_contents, get_background_color));
+}
+
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_Borderless,
     AppUsesBorderlessModeAndDoesNotHaveWindowPlacementPermission) {
-  InstallAndLaunchWebApp(true);
+  InstallAndLaunchWebApp(/*uses_borderless=*/true);
   ASSERT_TRUE(helper()->browser_view()->borderless_mode_enabled_for_testing());
   ASSERT_FALSE(helper()
                    ->browser_view()
@@ -525,7 +560,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless,
                        AppDoesntUseBorderlessMode) {
-  InstallAndLaunchWebApp(false);
+  InstallAndLaunchWebApp(/*uses_borderless=*/false);
   ASSERT_FALSE(helper()->browser_view()->borderless_mode_enabled_for_testing());
   ASSERT_FALSE(helper()
                    ->browser_view()
@@ -538,7 +573,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless,
 // TODO(https://crbug.com/1277860): Flaky.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless,
                        DISABLED_DraggableRegions) {
-  InstallAndLaunchWebApp(true);
+  InstallAndLaunchWebApp(/*uses_borderless=*/true);
 
   helper()->TestDraggableRegions();
 }
