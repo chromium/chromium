@@ -480,7 +480,7 @@ vars = {
 
   # If you change this, also update the libc++ revision in
   # //buildtools/deps_revisions.gni.
-  'libcxx_revision':       'c58c612d748ed8529354453f384cc49711e812b5',
+  'libcxx_revision':       'f30089a416b02dda7b0ee0bdeaa5d608cdd3034a',
 
   # GN CIPD package version.
   'gn_version': 'git_revision:0bcd37bd2b83f1a9ee17088037ebdfe6eab6d31a',
