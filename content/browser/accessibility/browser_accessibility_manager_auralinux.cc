@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "content/browser/accessibility/browser_accessibility_auralinux.h"
+#include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/platform/ax_platform_node_auralinux.h"
 
 namespace content {

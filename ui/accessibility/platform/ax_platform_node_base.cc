@@ -23,6 +23,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_role_properties.h"
+#include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/compute_attributes.h"
@@ -1929,7 +1930,7 @@ AXPlatformNodeBase::AXPosition AXPlatformNodeBase::HypertextOffsetToEndpoint(
   return AXNodePosition::CreateNullPosition();
 }
 
-int AXPlatformNodeBase::GetSelectionAnchor(const AXTree::Selection* selection) {
+int AXPlatformNodeBase::GetSelectionAnchor(const AXSelection* selection) {
   DCHECK(selection);
   AXNodeID anchor_id = selection->anchor_object_id;
   AXPlatformNodeBase* anchor_object =
@@ -1941,7 +1942,7 @@ int AXPlatformNodeBase::GetSelectionAnchor(const AXTree::Selection* selection) {
                                         selection->anchor_offset);
 }
 
-int AXPlatformNodeBase::GetSelectionFocus(const AXTree::Selection* selection) {
+int AXPlatformNodeBase::GetSelectionFocus(const AXSelection* selection) {
   DCHECK(selection);
   AXNodeID focus_id = selection->focus_object_id;
   AXPlatformNodeBase* focus_object =
@@ -1957,7 +1958,7 @@ void AXPlatformNodeBase::GetSelectionOffsets(int* selection_start,
   GetSelectionOffsets(nullptr, selection_start, selection_end);
 }
 
-void AXPlatformNodeBase::GetSelectionOffsets(const AXTree::Selection* selection,
+void AXPlatformNodeBase::GetSelectionOffsets(const AXSelection* selection,
                                              int* selection_start,
                                              int* selection_end) {
   DCHECK(selection_start && selection_end);
@@ -1970,7 +1971,7 @@ void AXPlatformNodeBase::GetSelectionOffsets(const AXTree::Selection* selection,
   }
 
   // If the unignored selection has not been computed yet, compute it now.
-  AXTree::Selection unignored_selection;
+  AXSelection unignored_selection;
   if (!selection) {
     unignored_selection = delegate_->GetUnignoredSelection();
     selection = &unignored_selection;
@@ -1980,7 +1981,7 @@ void AXPlatformNodeBase::GetSelectionOffsets(const AXTree::Selection* selection,
 }
 
 void AXPlatformNodeBase::GetSelectionOffsetsFromTree(
-    const AXTree::Selection* selection,
+    const AXSelection* selection,
     int* selection_start,
     int* selection_end) {
   DCHECK(selection_start && selection_end);

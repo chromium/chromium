@@ -34,6 +34,7 @@
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_range.h"
 #include "ui/accessibility/ax_role_properties.h"
+#include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_utils_mac.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
@@ -239,7 +240,7 @@ AXRange GetSelectedRange(BrowserAccessibility& owner) {
   if (!manager)
     return {};
 
-  const ui::AXTree::Selection unignored_selection =
+  const ui::AXSelection unignored_selection =
       manager->ax_tree()->GetUnignoredSelection();
   int32_t anchor_id = unignored_selection.anchor_object_id;
   const BrowserAccessibility* anchor_object = manager->GetFromID(anchor_id);

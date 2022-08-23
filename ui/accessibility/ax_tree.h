@@ -33,6 +33,7 @@ class AXTableInfo;
 class AXTreeObserver;
 struct AXTreeUpdateState;
 class AXLanguageDetectionManager;
+class AXSelection;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -217,13 +218,13 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
 
   // Returns the part of the current selection that falls within this
   // accessibility tree, if any.
-  Selection GetSelection() const override;
+  AXSelection GetSelection() const override;
 
   // Returns the part of the current selection that falls within this
   // accessibility tree, if any, adjusting its endpoints to be within unignored
   // nodes. (An "ignored" node is a node that is not exposed to platform APIs:
   // See `AXNode::IsIgnored`.)
-  Selection GetUnignoredSelection() const override;
+  AXSelection GetUnignoredSelection() const override;
 
   bool GetTreeUpdateInProgressState() const override;
 

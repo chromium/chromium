@@ -32,6 +32,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_role_properties.h"
+#include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/platform/atk_util_auralinux.h"
 #include "ui/accessibility/platform/ax_platform_atk_hyperlink.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
@@ -3833,7 +3834,7 @@ void AXPlatformNodeAuraLinux::GetFullSelection(int32_t* anchor_node_id,
     return;
   }
 
-  AXTree::Selection selection = GetDelegate()->GetUnignoredSelection();
+  AXSelection selection = GetDelegate()->GetUnignoredSelection();
   *anchor_node_id = selection.anchor_object_id;
   *anchor_offset = selection.anchor_offset;
   *focus_node_id = selection.focus_object_id;
@@ -5199,8 +5200,7 @@ std::pair<int, int> AXPlatformNodeAuraLinux::GetSelectionOffsetsForAtk() {
   // no longer part of the visual selection.
   std::pair<int, int> selection;
   if (GetDelegate()->IsWebContent()) {
-    AXTree::Selection unignored_selection =
-        GetDelegate()->GetUnignoredSelection();
+    AXSelection unignored_selection = GetDelegate()->GetUnignoredSelection();
     GetSelectionOffsetsFromTree(&unignored_selection, &selection.first,
                                 &selection.second);
   } else {

@@ -20,6 +20,7 @@
 #include "third_party/blink/public/strings/grit/blink_accessibility_strings.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_role_properties.h"
+#include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/base/buildflags.h"
@@ -1196,8 +1197,7 @@ ax::mojom::DescriptionFrom BrowserAccessibility::GetDescriptionFrom() const {
   return GetData().GetDescriptionFrom();
 }
 
-const ui::AXTree::Selection BrowserAccessibility::GetUnignoredSelection()
-    const {
+const ui::AXSelection BrowserAccessibility::GetUnignoredSelection() const {
   return node()->GetUnignoredSelection();
 }
 

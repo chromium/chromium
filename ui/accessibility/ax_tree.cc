@@ -30,6 +30,7 @@
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_role_properties.h"
+#include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_table_info.h"
 #include "ui/accessibility/ax_tree_observer.h"
 #include "ui/gfx/geometry/transform.h"
@@ -2684,15 +2685,15 @@ bool ComputeUnignoredSelectionEndpoint(
 
 }  // namespace
 
-AXTree::Selection AXTree::GetSelection() const {
+AXSelection AXTree::GetSelection() const {
   return {data().sel_is_backward,     data().sel_anchor_object_id,
           data().sel_anchor_offset,   data().sel_anchor_affinity,
           data().sel_focus_object_id, data().sel_focus_offset,
           data().sel_focus_affinity};
 }
 
-AXTree::Selection AXTree::GetUnignoredSelection() const {
-  Selection unignored_selection = GetSelection();
+AXSelection AXTree::GetUnignoredSelection() const {
+  AXSelection unignored_selection = GetSelection();
 
   // If one of the selection endpoints is invalid, then the other endpoint
   // should also be unset.

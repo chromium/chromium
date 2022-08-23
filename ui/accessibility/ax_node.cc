@@ -17,6 +17,7 @@
 #include "ui/accessibility/ax_hypertext.h"
 #include "ui/accessibility/ax_language_detection.h"
 #include "ui/accessibility/ax_role_properties.h"
+#include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_table_info.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_manager.h"
@@ -770,7 +771,7 @@ AXTreeManager* AXNode::GetManager() const {
 }
 
 bool AXNode::HasVisibleCaretOrSelection() const {
-  const OwnerTree::Selection selection = GetSelection();
+  const AXSelection selection = GetSelection();
   const AXNode* focus = tree()->GetFromId(selection.focus_object_id);
   if (!focus || !focus->IsDescendantOf(this))
     return false;
@@ -786,18 +787,18 @@ bool AXNode::HasVisibleCaretOrSelection() const {
   return !selection.IsCollapsed();
 }
 
-AXNode::OwnerTree::Selection AXNode::GetSelection() const {
+AXSelection AXNode::GetSelection() const {
   DCHECK(tree()) << "Cannot retrieve the current selection if the node is not "
                     "attached to an accessibility tree.\n"
                  << *this;
   return tree()->GetSelection();
 }
 
-AXNode::OwnerTree::Selection AXNode::GetUnignoredSelection() const {
+AXSelection AXNode::GetUnignoredSelection() const {
   DCHECK(tree()) << "Cannot retrieve the current selection if the node is not "
                     "attached to an accessibility tree.\n"
                  << *this;
-  OwnerTree::Selection selection = tree()->GetUnignoredSelection();
+  AXSelection selection = tree()->GetUnignoredSelection();
 
   // "selection.anchor_offset" and "selection.focus_ofset" might need to be
   // adjusted if the anchor or the focus nodes include ignored children.

@@ -439,7 +439,7 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   bool HasTextStyle(ax::mojom::TextStyle text_style) const override;
   ax::mojom::NameFrom GetNameFrom() const override;
   ax::mojom::DescriptionFrom GetDescriptionFrom() const override;
-  const ui::AXTree::Selection GetUnignoredSelection() const override;
+  const ui::AXSelection GetUnignoredSelection() const override;
   AXPosition CreatePositionAt(
       int offset,
       ax::mojom::TextAffinity affinity =

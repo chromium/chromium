@@ -19,6 +19,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/compute_attributes.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -423,7 +424,7 @@ void AccessibilityTreeFormatterBlink::AddProperties(
   }
 
   //  Check for relevant rich text selection info in AXTreeData
-  ui::AXTree::Selection unignored_selection =
+  ui::AXSelection unignored_selection =
       node.manager()->ax_tree()->GetUnignoredSelection();
   int anchor_id = unignored_selection.anchor_object_id;
   if (id == anchor_id) {
@@ -573,8 +574,7 @@ void AccessibilityTreeFormatterBlink::AddProperties(
   }
 
   //  Check for relevant rich text selection info in AXTreeData
-  ui::AXTree::Selection unignored_selection =
-      node.tree()->GetUnignoredSelection();
+  ui::AXSelection unignored_selection = node.tree()->GetUnignoredSelection();
   int anchor_id = unignored_selection.anchor_object_id;
   if (id == anchor_id) {
     int anchor_offset = unignored_selection.anchor_offset;

@@ -24,6 +24,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/ax_node_position.h"
+#include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_tree_id.h"
 
 using Microsoft::WRL::ComPtr;
@@ -3239,7 +3240,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   EXPECT_HRESULT_SUCCEEDED(text_range_provider->Select());
 
   ASSERT_TRUE(waiter.WaitForNotification());
-  ui::AXTree::Selection selection = node->GetUnignoredSelection();
+  ui::AXSelection selection = node->GetUnignoredSelection();
   EXPECT_EQ(selection.anchor_object_id, node->GetId());
   EXPECT_EQ(selection.anchor_offset, 0);
   EXPECT_EQ(selection.focus_object_id, node->GetId());

@@ -67,7 +67,7 @@ class AutomationAXTreeWrapper : public ui::AXTreeManager {
   // document.activeElement (within the DOM).
   bool IsInFocusChain(int32_t node_id);
 
-  ui::AXTree::Selection GetUnignoredSelection();
+  ui::AXSelection GetUnignoredSelection();
 
   // Returns an AXNode from the underlying tree if it both exists and is not
   // ignored.

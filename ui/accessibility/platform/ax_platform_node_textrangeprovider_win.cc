@@ -15,6 +15,7 @@
 #include "base/win/scoped_variant.h"
 #include "base/win/variant_vector.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager.h"
 
@@ -1314,7 +1315,7 @@ void AXPlatformNodeTextRangeProviderWin::NormalizeTextRange(
   // first snap them both to be unignored positions.
   NormalizeAsUnignoredTextRange(start, end);
 
-  // When a text range or one end of AXTree::Selection is inside the atomic text
+  // When a text range or one end of AXSelection is inside the atomic text
   // field, the precise state of the TextPattern must be preserved so that the
   // UIA client can handle scenarios such as determining which characters were
   // deleted. So normalization must be bypassed.
@@ -1405,7 +1406,7 @@ void AXPlatformNodeTextRangeProviderWin::SetOwnerForTesting(
 
 AXNode* AXPlatformNodeTextRangeProviderWin::GetSelectionCommonAnchor() {
   AXPlatformNodeDelegate* delegate = GetOwner()->GetDelegate();
-  ui::AXTree::Selection unignored_selection = delegate->GetUnignoredSelection();
+  AXSelection unignored_selection = delegate->GetUnignoredSelection();
   AXPlatformNode* anchor_object =
       delegate->GetFromNodeID(unignored_selection.anchor_object_id);
   AXPlatformNode* focus_object =
@@ -1510,7 +1511,7 @@ bool AXPlatformNodeTextRangeProviderWin::
 
   // Return true when both ends of a text range are inside the atomic
   // text field (e.g. a caret perceived by the AT), or when either endpoint of
-  // the AXTree::Selection is inside the atomic text field.
+  // the AXSelection is inside the atomic text field.
   return (is_start_in_text_field && is_end_in_text_field) ||
          (is_start_in_text_field && start_delegate &&
           start_delegate->HasVisibleCaretOrSelection()) ||

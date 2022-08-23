@@ -13,6 +13,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_role_properties.h"
+#include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_serializable_tree.h"
 #include "ui/accessibility/platform/ax_android_constants.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -276,7 +277,7 @@ void WalkAXTreeDepthFirst(const AXNode* node,
   if (IsLeaf(node) && update.has_tree_data) {
     int start_selection = 0;
     int end_selection = 0;
-    AXTree::Selection unignored_selection = tree->GetUnignoredSelection();
+    AXSelection unignored_selection = tree->GetUnignoredSelection();
     if (unignored_selection.anchor_object_id == node->id()) {
       start_selection = unignored_selection.anchor_offset;
       config->should_select_leaf = true;

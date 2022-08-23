@@ -46,6 +46,7 @@
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_range.h"
 #include "ui/accessibility/ax_role_properties.h"
+#include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_text_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -754,7 +755,7 @@ void AutomationInternalCustomBindings::AddRoutes() {
       "GetSelectionStartObjectID",
       [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
          AutomationAXTreeWrapper* tree_wrapper) {
-        ui::AXTree::Selection unignored_selection =
+        ui::AXSelection unignored_selection =
             tree_wrapper->GetUnignoredSelection();
         int32_t start_object_id = unignored_selection.is_backward
                                       ? unignored_selection.focus_object_id
@@ -765,7 +766,7 @@ void AutomationInternalCustomBindings::AddRoutes() {
       "GetSelectionStartOffset",
       [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
          AutomationAXTreeWrapper* tree_wrapper) {
-        ui::AXTree::Selection unignored_selection =
+        ui::AXSelection unignored_selection =
             tree_wrapper->GetUnignoredSelection();
         int start_offset = unignored_selection.is_backward
                                ? unignored_selection.focus_offset
@@ -776,7 +777,7 @@ void AutomationInternalCustomBindings::AddRoutes() {
       "GetSelectionStartAffinity",
       [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
          AutomationAXTreeWrapper* tree_wrapper) {
-        ui::AXTree::Selection unignored_selection =
+        ui::AXSelection unignored_selection =
             tree_wrapper->GetUnignoredSelection();
         ax::mojom::TextAffinity start_affinity =
             unignored_selection.is_backward
@@ -788,7 +789,7 @@ void AutomationInternalCustomBindings::AddRoutes() {
       "GetSelectionEndObjectID",
       [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
          AutomationAXTreeWrapper* tree_wrapper) {
-        ui::AXTree::Selection unignored_selection =
+        ui::AXSelection unignored_selection =
             tree_wrapper->GetUnignoredSelection();
         int32_t end_object_id = unignored_selection.is_backward
                                     ? unignored_selection.anchor_object_id
@@ -799,7 +800,7 @@ void AutomationInternalCustomBindings::AddRoutes() {
       "GetSelectionEndOffset",
       [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
          AutomationAXTreeWrapper* tree_wrapper) {
-        ui::AXTree::Selection unignored_selection =
+        ui::AXSelection unignored_selection =
             tree_wrapper->GetUnignoredSelection();
         int end_offset = unignored_selection.is_backward
                              ? unignored_selection.anchor_offset
@@ -810,7 +811,7 @@ void AutomationInternalCustomBindings::AddRoutes() {
       "GetSelectionEndAffinity",
       [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
          AutomationAXTreeWrapper* tree_wrapper) {
-        ui::AXTree::Selection unignored_selection =
+        ui::AXSelection unignored_selection =
             tree_wrapper->GetUnignoredSelection();
         ax::mojom::TextAffinity end_affinity =
             unignored_selection.is_backward

@@ -513,8 +513,8 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
   // First they check for a local selection found on the current control, e.g.
   // when querying the selection on a textarea.
   // If not found they retrieve the global selection found on the current frame.
-  int GetSelectionAnchor(const AXTree::Selection* selection);
-  int GetSelectionFocus(const AXTree::Selection* selection);
+  int GetSelectionAnchor(const AXSelection* selection);
+  int GetSelectionFocus(const AXSelection* selection);
 
   // Retrieves the selection offsets in the way required by the IA2 APIs.
   // selection_start and selection_end are -1 when there is no selection active
@@ -522,10 +522,10 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
   // The greatest of the two offsets is one past the last character of the
   // selection.)
   void GetSelectionOffsets(int* selection_start, int* selection_end);
-  void GetSelectionOffsets(const AXTree::Selection* selection,
+  void GetSelectionOffsets(const AXSelection* selection,
                            int* selection_start,
                            int* selection_end);
-  void GetSelectionOffsetsFromTree(const AXTree::Selection* selection,
+  void GetSelectionOffsetsFromTree(const AXSelection* selection,
                                    int* selection_start,
                                    int* selection_end);
 

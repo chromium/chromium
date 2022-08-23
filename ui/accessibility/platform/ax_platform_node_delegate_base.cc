@@ -11,6 +11,7 @@
 #include "ui/accessibility/ax_constants.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_role_properties.h"
+#include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
@@ -265,10 +266,9 @@ std::u16string AXPlatformNodeDelegateBase::GetValueForControl() const {
   return value;
 }
 
-const AXTree::Selection AXPlatformNodeDelegateBase::GetUnignoredSelection()
-    const {
+const AXSelection AXPlatformNodeDelegateBase::GetUnignoredSelection() const {
   NOTIMPLEMENTED();
-  return AXTree::Selection{false, -1, -1, ax::mojom::TextAffinity::kDownstream};
+  return AXSelection{false, -1, -1, ax::mojom::TextAffinity::kDownstream};
 }
 
 AXNodePosition::AXPositionInstance AXPlatformNodeDelegateBase::CreatePositionAt(

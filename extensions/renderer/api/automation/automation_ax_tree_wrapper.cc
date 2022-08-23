@@ -13,6 +13,7 @@
 #include "extensions/renderer/api/automation/automation_internal_custom_bindings.h"
 #include "ui/accessibility/ax_language_detection.h"
 #include "ui/accessibility/ax_node_position.h"
+#include "ui/accessibility/ax_selection.h"
 
 namespace extensions {
 
@@ -250,7 +251,7 @@ bool AutomationAXTreeWrapper::IsInFocusChain(int32_t node_id) {
   return found;
 }
 
-ui::AXTree::Selection AutomationAXTreeWrapper::GetUnignoredSelection() {
+ui::AXSelection AutomationAXTreeWrapper::GetUnignoredSelection() {
   return ax_tree_->GetUnignoredSelection();
 }
 

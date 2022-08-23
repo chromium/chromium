@@ -11,6 +11,7 @@
 #include "content/browser/accessibility/web_contents_accessibility_android.h"
 #include "third_party/blink/public/mojom/render_accessibility.mojom.h"
 #include "ui/accessibility/ax_role_properties.h"
+#include "ui/accessibility/ax_selection.h"
 
 namespace content {
 

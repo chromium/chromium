@@ -19,6 +19,7 @@
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_position.h"
+#include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_serializable_tree.h"
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_id.h"
@@ -37,7 +38,7 @@
     tree_update.tree_data.sel_focus_object_id = input.focus_id;    \
     tree_update.tree_data.sel_focus_offset = input.focus_offset;   \
     EXPECT_TRUE(tree->Unserialize(tree_update));                   \
-    AXTree::Selection actual = tree->GetUnignoredSelection();      \
+    AXSelection actual = tree->GetUnignoredSelection();            \
     EXPECT_EQ(expected.anchor_id, actual.anchor_object_id);        \
     EXPECT_EQ(expected.anchor_offset, actual.anchor_offset);       \
     EXPECT_EQ(expected.focus_id, actual.focus_object_id);          \
@@ -3057,7 +3058,7 @@ TEST(AXTreeTest, UnignoredSelection) {
   tree_update.nodes[15].SetName("text");
 
   TestAXTreeManager test_ax_tree_manager(std::make_unique<AXTree>(tree_update));
-  AXTree::Selection unignored_selection =
+  AXSelection unignored_selection =
       test_ax_tree_manager.GetTree()->GetUnignoredSelection();
 
   EXPECT_EQ(kInvalidAXNodeID, unignored_selection.anchor_object_id);

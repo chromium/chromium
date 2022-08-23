@@ -22,6 +22,7 @@
 #include "ui/accessibility/ax_assistant_structure.h"
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_role_properties.h"
+#include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/platform/ax_android_constants.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/strings/grit/ax_strings.h"
@@ -1485,7 +1486,7 @@ int BrowserAccessibilityAndroid::GetSelectionStart() const {
       GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart, &sel_start)) {
     return sel_start;
   }
-  ui::AXTree::Selection unignored_selection =
+  ui::AXSelection unignored_selection =
       manager()->ax_tree()->GetUnignoredSelection();
   int32_t anchor_id = unignored_selection.anchor_object_id;
   BrowserAccessibility* anchor_object = manager()->GetFromID(anchor_id);
@@ -1508,7 +1509,7 @@ int BrowserAccessibilityAndroid::GetSelectionEnd() const {
     return sel_end;
   }
 
-  ui::AXTree::Selection unignored_selection =
+  ui::AXSelection unignored_selection =
       manager()->ax_tree()->GetUnignoredSelection();
   int32_t focus_id = unignored_selection.focus_object_id;
   BrowserAccessibility* focus_object = manager()->GetFromID(focus_id);

@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_role_properties.h"
+#include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_table_info.h"
 #include "ui/accessibility/ax_tree_observer.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -145,7 +146,7 @@ const AXTreeData& TestAXNodeWrapper::GetTreeData() const {
   return tree_->data();
 }
 
-const AXTree::Selection TestAXNodeWrapper::GetUnignoredSelection() const {
+const AXSelection TestAXNodeWrapper::GetUnignoredSelection() const {
   return tree_->GetUnignoredSelection();
 }
 
@@ -867,7 +868,7 @@ bool TestAXNodeWrapper::ShouldIgnoreHoveredStateForTesting() {
 }
 
 bool TestAXNodeWrapper::HasVisibleCaretOrSelection() const {
-  ui::AXTree::Selection unignored_selection = GetUnignoredSelection();
+  AXSelection unignored_selection = GetUnignoredSelection();
   int32_t focus_id = unignored_selection.focus_object_id;
   AXNode* focus_object = tree_->GetFromId(focus_id);
   if (!focus_object)

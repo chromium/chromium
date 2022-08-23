@@ -190,7 +190,7 @@ class AX_EXPORT AXPlatformNodeDelegate {
   virtual std::u16string GetValueForControl() const = 0;
 
   // See `AXNode::GetUnignoredSelection`.
-  virtual const AXTree::Selection GetUnignoredSelection() const = 0;
+  virtual const AXSelection GetUnignoredSelection() const = 0;
 
   // Creates a text position rooted at this object if it's a leaf node, or a
   // tree position otherwise.

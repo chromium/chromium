@@ -20,6 +20,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_range.h"
+#include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_id.h"
@@ -12385,7 +12386,7 @@ TEST_F(AXPositionTest, GetUnignoredSelectionWithLeafNodes) {
     tree->UpdateDataForTesting(data);
 
     // Should not crash.
-    AXNode::OwnerTree::Selection s = tree->GetUnignoredSelection();
+    AXSelection s = tree->GetUnignoredSelection();
     EXPECT_EQ(valid->anchor_id(), s.anchor_object_id);
     EXPECT_EQ(valid->child_index(), s.anchor_offset);
     EXPECT_EQ(valid->anchor_id(), s.focus_object_id);

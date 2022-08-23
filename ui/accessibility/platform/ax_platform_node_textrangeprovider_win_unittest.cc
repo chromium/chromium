@@ -14,6 +14,7 @@
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_safearray.h"
 #include "base/win/scoped_variant.h"
+#include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 #include "ui/accessibility/platform/ax_platform_node_textrangeprovider_win.h"
 using Microsoft::WRL::ComPtr;
@@ -5006,7 +5007,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderSelect) {
     text_range_provider->Select();
 
     // Verify selection.
-    AXTree::Selection unignored_selection = delegate->GetUnignoredSelection();
+    AXSelection unignored_selection = delegate->GetUnignoredSelection();
     EXPECT_EQ(3, unignored_selection.anchor_object_id);
     EXPECT_EQ(3, unignored_selection.focus_object_id);
     EXPECT_EQ(0, unignored_selection.anchor_offset);
@@ -5035,7 +5036,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderSelect) {
     more_text_range_provider->Select();
 
     // Verify selection
-    AXTree::Selection unignored_selection = delegate->GetUnignoredSelection();
+    AXSelection unignored_selection = delegate->GetUnignoredSelection();
     EXPECT_EQ(5, unignored_selection.anchor_object_id);
     EXPECT_EQ(5, unignored_selection.focus_object_id);
     EXPECT_EQ(0, unignored_selection.anchor_offset);
@@ -5064,7 +5065,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderSelect) {
     document_text_range_provider->Select();
 
     // Verify selection.
-    AXTree::Selection unignored_selection = delegate->GetUnignoredSelection();
+    AXSelection unignored_selection = delegate->GetUnignoredSelection();
     EXPECT_EQ(3, unignored_selection.anchor_object_id);
     EXPECT_EQ(5, unignored_selection.focus_object_id);
     EXPECT_EQ(0, unignored_selection.anchor_offset);
@@ -5096,7 +5097,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderSelect) {
     text_range_provider->Select();
 
     // Verify selection.
-    AXTree::Selection unignored_selection = delegate->GetUnignoredSelection();
+    AXSelection unignored_selection = delegate->GetUnignoredSelection();
     EXPECT_EQ(3, unignored_selection.anchor_object_id);
     EXPECT_EQ(3, unignored_selection.focus_object_id);
     EXPECT_EQ(9, unignored_selection.anchor_offset);

@@ -46,6 +46,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_role_properties.h"
+#include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
@@ -2309,8 +2310,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_selectionRanges(IA2Range** ranges,
                                                       LONG* nRanges) {
   COM_OBJECT_VALIDATE_2_ARGS(ranges, nRanges);
   AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes);
-  AXTree::Selection unignored_selection =
-      GetDelegate()->GetUnignoredSelection();
+  AXSelection unignored_selection = GetDelegate()->GetUnignoredSelection();
 
   AXNodeID anchor_id = unignored_selection.anchor_object_id;
   auto* anchor_node =
@@ -4467,8 +4467,7 @@ AXPlatformNodeWin::get_selections(IA2TextSelection** selections,
 
   COM_OBJECT_VALIDATE_2_ARGS(selections, nSelections);
 
-  AXTree::Selection unignored_selection =
-      GetDelegate()->GetUnignoredSelection();
+  AXSelection unignored_selection = GetDelegate()->GetUnignoredSelection();
 
   AXNodeID anchor_id = unignored_selection.anchor_object_id;
   AXPlatformNodeWin* anchor_node =
