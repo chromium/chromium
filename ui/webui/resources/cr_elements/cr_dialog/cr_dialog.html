@@ -2,6 +2,7 @@
       dialog {
         --scroll-border-color: var(--paper-grey-300);
         --scroll-border: 1px solid var(--scroll-border-color);
+        background-color: var(--cr-dialog-background-color, white);
         border: 0;
         border-radius: 8px;
         bottom: 50%;
@@ -20,7 +21,8 @@
       @media (prefers-color-scheme: dark) {
         dialog {
           --scroll-border-color: var(--google-grey-700);
-          background-color: var(--google-grey-900);
+          background-color: var(--cr-dialog-background-color,
+              var(--google-grey-900));
           /* Note: the colors in linear-gradient() are intentionally the same to
            * add a 4% white layer on top of the fully opaque background-color. */
           background-image: linear-gradient(rgba(255, 255, 255, .04),
