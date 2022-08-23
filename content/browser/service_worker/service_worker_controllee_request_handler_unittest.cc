@@ -262,9 +262,12 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, DisallowServiceWorker) {
       ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
   version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
   registration_->SetActiveVersion(version_);
-  context()->registry()->StoreRegistration(registration_.get(), version_.get(),
-                                           base::DoNothing());
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop loop;
+  context()->registry()->StoreRegistration(
+      registration_.get(), version_.get(),
+      base::BindLambdaForTesting(
+          [&loop](blink::ServiceWorkerStatusCode status) { loop.Quit(); }));
+  loop.Run();
 
   // Conduct a main resource load.
   ServiceWorkerRequestTestResources test_resources(
@@ -291,9 +294,12 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, InsecureContext) {
       ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
   version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
   registration_->SetActiveVersion(version_);
-  context()->registry()->StoreRegistration(registration_.get(), version_.get(),
-                                           base::DoNothing());
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop loop;
+  context()->registry()->StoreRegistration(
+      registration_.get(), version_.get(),
+      base::BindLambdaForTesting(
+          [&loop](blink::ServiceWorkerStatusCode status) { loop.Quit(); }));
+  loop.Run();
 
   // Conduct a main resource load.
   ServiceWorkerRequestTestResources test_resources(
@@ -315,9 +321,12 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, ActivateWaitingVersion) {
       ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
   version_->SetStatus(ServiceWorkerVersion::INSTALLED);
   registration_->SetWaitingVersion(version_);
-  context()->registry()->StoreRegistration(registration_.get(), version_.get(),
-                                           base::DoNothing());
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop loop;
+  context()->registry()->StoreRegistration(
+      registration_.get(), version_.get(),
+      base::BindLambdaForTesting(
+          [&loop](blink::ServiceWorkerStatusCode status) { loop.Quit(); }));
+  loop.Run();
 
   // Conduct a main resource load.
   ServiceWorkerRequestTestResources test_resources(
@@ -371,9 +380,12 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, DeletedContainerHost) {
       ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
   version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
   registration_->SetActiveVersion(version_);
-  context()->registry()->StoreRegistration(registration_.get(), version_.get(),
-                                           base::DoNothing());
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop loop;
+  context()->registry()->StoreRegistration(
+      registration_.get(), version_.get(),
+      base::BindLambdaForTesting(
+          [&loop](blink::ServiceWorkerStatusCode status) { loop.Quit(); }));
+  loop.Run();
   version_ = nullptr;
   registration_ = nullptr;
 
@@ -659,9 +671,12 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, FallbackWithOfflineHeader) {
       ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
   version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
   registration_->SetActiveVersion(version_);
-  context()->registry()->StoreRegistration(registration_.get(), version_.get(),
-                                           base::DoNothing());
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop loop;
+  context()->registry()->StoreRegistration(
+      registration_.get(), version_.get(),
+      base::BindLambdaForTesting(
+          [&loop](blink::ServiceWorkerStatusCode status) { loop.Quit(); }));
+  loop.Run();
   version_.reset();
   registration_.reset();
 
@@ -681,9 +696,12 @@ TEST_F(ServiceWorkerControlleeRequestHandlerTest, FallbackWithNoOfflineHeader) {
       ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
   version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
   registration_->SetActiveVersion(version_);
-  context()->registry()->StoreRegistration(registration_.get(), version_.get(),
-                                           base::DoNothing());
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop loop;
+  context()->registry()->StoreRegistration(
+      registration_.get(), version_.get(),
+      base::BindLambdaForTesting(
+          [&loop](blink::ServiceWorkerStatusCode status) { loop.Quit(); }));
+  loop.Run();
   version_.reset();
   registration_.reset();
 
