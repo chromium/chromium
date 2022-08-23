@@ -9,9 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
-#include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
-#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
@@ -667,7 +665,9 @@ class SelectFileDialogExtensionFlagTest
   }
 };
 
-IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionFlagTest, DialogColoredTitle) {
+IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionFlagTest,
+                       DialogColoredTitle_Light) {
+  ash::DarkLightModeController::Get()->SetDarkModeEnabledForTest(false);
   gfx::NativeWindow owning_window = browser()->window()->GetNativeWindow();
   ASSERT_NE(nullptr, owning_window);
 
@@ -677,12 +677,34 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionFlagTest, DialogColoredTitle) {
   content::RenderFrameHost* frame_host = dialog_->GetPrimaryMainFrame();
   aura::Window* dialog_window =
       frame_host->GetNativeView()->GetToplevelWindow();
-  auto* color_provider = ash::ColorProvider::Get();
-  ash::ScopedLightModeAsDefault scoped_light_mode_as_default;
+  // This is cros_tokens::kDialogTitleBarColorLight
+  SkColor dialog_title_bar_color = SkColorSetRGB(0xDF, 0xE0, 0xE1);
   EXPECT_EQ(dialog_window->GetProperty(chromeos::kFrameActiveColorKey),
-            color_provider->GetActiveDialogTitleBarColor());
+            dialog_title_bar_color);
   EXPECT_EQ(dialog_window->GetProperty(chromeos::kFrameInactiveColorKey),
-            color_provider->GetInactiveDialogTitleBarColor());
+            dialog_title_bar_color);
+
+  CloseDialog(DIALOG_BTN_CANCEL, owning_window);
+}
+
+IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionFlagTest,
+                       DialogColoredTitle_Dark) {
+  ash::DarkLightModeController::Get()->SetDarkModeEnabledForTest(true);
+  gfx::NativeWindow owning_window = browser()->window()->GetNativeWindow();
+  ASSERT_NE(nullptr, owning_window);
+
+  // Open the file dialog on the default path.
+  ASSERT_NO_FATAL_FAILURE(OpenDialog(ui::SelectFileDialog::SELECT_OPEN_FILE,
+                                     base::FilePath(), owning_window, ""));
+  content::RenderFrameHost* frame_host = dialog_->GetPrimaryMainFrame();
+  aura::Window* dialog_window =
+      frame_host->GetNativeView()->GetToplevelWindow();
+  // This is cros_tokens::kDialogTitleBarColorDark
+  SkColor dialog_title_bar_color = SkColorSetRGB(0x4D, 0x4D, 0x50);
+  EXPECT_EQ(dialog_window->GetProperty(chromeos::kFrameActiveColorKey),
+            dialog_title_bar_color);
+  EXPECT_EQ(dialog_window->GetProperty(chromeos::kFrameInactiveColorKey),
+            dialog_title_bar_color);
 
   CloseDialog(DIALOG_BTN_CANCEL, owning_window);
 }
