@@ -561,7 +561,7 @@ void GLSurfaceEGLSurfaceControl::OnTransactionAckOnGpuThread(
 
   // If we don't use OnCommit, we advance transaction queue after we received
   // OnComplete.
-  if (!using_on_commit_callback_)
+  if (!use_target_deadline_ && !using_on_commit_callback_)
     AdvanceTransactionQueue();
 }
 
