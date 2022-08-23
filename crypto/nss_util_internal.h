@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
+#include "components/nacl/common/buildflags.h"
 #include "crypto/crypto_export.h"
 #include "crypto/scoped_nss_types.h"
 
@@ -55,7 +56,7 @@ class CRYPTO_EXPORT AutoSECMODListReadLock {
   raw_ptr<SECMODListLock> lock_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_MINIMAL_TOOLCHAIN)
 // Returns path to the NSS database file in the provided profile
 // directory.
 CRYPTO_EXPORT base::FilePath GetSoftwareNSSDBPath(
@@ -140,7 +141,7 @@ CRYPTO_EXPORT void CloseChromeOSUserForTesting(
 CRYPTO_EXPORT void SetPrivateSoftwareSlotForChromeOSUserForTesting(
     ScopedPK11Slot slot);
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_MINIMAL_TOOLCHAIN)
 
 // Loads the given module for this NSS session.
 SECMODModule* LoadNSSModule(const char* name,
