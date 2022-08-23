@@ -39,10 +39,7 @@ class GPUExternalTexture : public DawnObject<WGPUExternalTexture> {
   GPUExternalTexture(const GPUExternalTexture&) = delete;
   GPUExternalTexture& operator=(const GPUExternalTexture&) = delete;
 
-  // Destroy() returns false when the GPUExternalTexture has been destroyed
-  // already. It returns true when the GPUExternalTexture has been destroyed
-  // successfully.
-  bool Destroy();
+  void Destroy();
 
   bool expired() const;
 
