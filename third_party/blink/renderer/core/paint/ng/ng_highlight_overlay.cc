@@ -173,9 +173,9 @@ String HighlightPart::ToString() const {
   result.Append(",");
   result.AppendNumber(to);
   result.Append(")");
-  for (const HighlightLayer& layer : decorations) {
+  for (const HighlightLayer& current_layer : decorations) {
     result.Append("+");
-    result.Append(layer.ToString());
+    result.Append(current_layer.ToString());
   }
   return result.ToString();
 }
@@ -202,9 +202,9 @@ Vector<HighlightLayer> NGHighlightOverlay::ComputeLayers(
   result.emplace_back(HighlightLayerType::kOriginating);
 
   for (const auto& marker : custom) {
-    auto* custom = To<CustomHighlightMarker>(marker.Get());
+    auto* custom_marker = To<CustomHighlightMarker>(marker.Get());
     HighlightLayer layer{HighlightLayerType::kCustom,
-                         custom->GetHighlightName()};
+                         custom_marker->GetHighlightName()};
     if (!result.Contains(layer))
       result.push_back(layer);
   }
@@ -275,7 +275,7 @@ Vector<HighlightEdge> NGHighlightOverlay::ComputeEdges(
     for (const auto& marker : custom) {
       if (marker->EndOffset() <= last_from || marker->StartOffset() >= first_to)
         continue;
-      auto* custom = To<CustomHighlightMarker>(marker.Get());
+      auto* custom_marker = To<CustomHighlightMarker>(marker.Get());
       unsigned content_start =
           GetTextContentOffset(*text_node, marker->StartOffset());
       unsigned content_end =
@@ -284,11 +284,11 @@ Vector<HighlightEdge> NGHighlightOverlay::ComputeEdges(
         continue;
       result.emplace_back(content_start,
                           HighlightLayer{HighlightLayerType::kCustom,
-                                         custom->GetHighlightName()},
+                                         custom_marker->GetHighlightName()},
                           HighlightEdgeType::kStart);
       result.emplace_back(content_end,
                           HighlightLayer{HighlightLayerType::kCustom,
-                                         custom->GetHighlightName()},
+                                         custom_marker->GetHighlightName()},
                           HighlightEdgeType::kEnd);
     }
 

@@ -2356,10 +2356,12 @@ TEST_P(PaintLayerTest, ScrollContainerLayerRootScroller) {
   )HTML");
 
   auto* view_layer = GetLayoutView().Layer();
-  bool is_fixed_to_view = false;
-  EXPECT_EQ(nullptr,
-            view_layer->ContainingScrollContainerLayer(&is_fixed_to_view));
-  EXPECT_TRUE(is_fixed_to_view);
+  {
+    bool is_fixed_to_view = false;
+    EXPECT_EQ(nullptr,
+              view_layer->ContainingScrollContainerLayer(&is_fixed_to_view));
+    EXPECT_TRUE(is_fixed_to_view);
+  }
 
   TEST_SCROLL_CONTAINER("sticky", view_layer, false);
   TEST_SCROLL_CONTAINER("absolute", view_layer, false);
