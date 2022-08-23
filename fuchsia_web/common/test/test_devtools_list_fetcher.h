@@ -5,8 +5,6 @@
 #ifndef FUCHSIA_WEB_COMMON_TEST_TEST_DEVTOOLS_LIST_FETCHER_H_
 #define FUCHSIA_WEB_COMMON_TEST_TEST_DEVTOOLS_LIST_FETCHER_H_
 
-#include <stdint.h>
-
 #include "base/values.h"
 
 // Returns the JSON value of the list URL for the DevTools service listening
