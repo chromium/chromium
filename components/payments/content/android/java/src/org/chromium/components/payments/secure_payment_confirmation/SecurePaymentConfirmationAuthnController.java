@@ -5,11 +5,14 @@
 package org.chromium.components.payments.secure_payment_confirmation;
 
 import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.util.Pair;
 import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -159,11 +162,23 @@ public class SecurePaymentConfirmationAuthnController {
         BottomSheetController bottomSheet = BottomSheetControllerProvider.from(windowAndroid);
         if (bottomSheet == null) return false;
 
+        // The instrument icon may be empty, if it couldn't be downloaded/decoded
+        // and iconMustBeShown was set to false. In that case, use a default icon.
+        // The actual display color is set based on the theme in OnThemeChanged.
+        boolean usingDefaultIcon = false;
+        assert paymentIcon instanceof BitmapDrawable;
+        if (((BitmapDrawable) paymentIcon).getBitmap() == null) {
+            paymentIcon = ResourcesCompat.getDrawable(
+                    context.getResources(), R.drawable.credit_card, context.getTheme());
+            usingDefaultIcon = true;
+        }
+
         PropertyModel model =
                 new PropertyModel.Builder(SecurePaymentConfirmationAuthnProperties.ALL_KEYS)
                         .with(SecurePaymentConfirmationAuthnProperties.STORE_LABEL,
                                 getStoreLabel(payeeName, payeeOrigin))
-                        .with(SecurePaymentConfirmationAuthnProperties.PAYMENT_ICON, paymentIcon)
+                        .with(SecurePaymentConfirmationAuthnProperties.PAYMENT_ICON,
+                                Pair.create(paymentIcon, usingDefaultIcon))
                         .with(SecurePaymentConfirmationAuthnProperties.PAYMENT_INSTRUMENT_LABEL,
                                 paymentInstrumentLabel)
                         .with(SecurePaymentConfirmationAuthnProperties.TOTAL,

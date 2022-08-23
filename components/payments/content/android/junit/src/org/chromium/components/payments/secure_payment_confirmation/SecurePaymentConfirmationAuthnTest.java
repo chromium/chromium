@@ -5,6 +5,9 @@
 package org.chromium.components.payments.secure_payment_confirmation;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
 import org.junit.After;
@@ -101,7 +104,10 @@ public class SecurePaymentConfirmationAuthnTest {
                 .format(Mockito.anyLong(), Mockito.any(CurrencyFormatter.class),
                         Mockito.anyString());
 
-        mDrawable = Mockito.mock(Drawable.class);
+        // Our credit card 'icon' is just a red square.
+        mDrawable = new BitmapDrawable(RuntimeEnvironment.application.getResources(),
+                Bitmap.createBitmap(new int[] {Color.RED}, 1 /* width */, 1 /* height */,
+                        Bitmap.Config.ARGB_8888));
         mTotal = new PaymentItem();
         mTotal.amount = new PaymentCurrencyAmount();
         mTotal.amount.currency = "USD";

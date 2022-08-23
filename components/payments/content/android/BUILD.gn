@@ -88,6 +88,7 @@ generate_jni("jni_headers") {
 android_resources("minimal_java_resources") {
   sources = [
     "//components/payments/content/android/minimal_java_res/drawable-night/save_card.xml",
+    "//components/payments/content/android/minimal_java_res/drawable/credit_card.xml",
     "//components/payments/content/android/minimal_java_res/drawable/google_pay.xml",
     "//components/payments/content/android/minimal_java_res/drawable/save_card.xml",
     "//components/payments/content/android/minimal_java_res/values-night/colors.xml",
@@ -214,6 +215,7 @@ android_library("full_java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_collection_collection_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//ui/android:ui_no_recycler_view_java",
     "//ui/android:ui_utils_java",

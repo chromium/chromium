@@ -5,6 +5,7 @@
 package org.chromium.components.payments.secure_payment_confirmation;
 
 import android.graphics.drawable.Drawable;
+import android.util.Pair;
 
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
@@ -18,8 +19,11 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
     /* package */ static final ReadableObjectPropertyKey<String> STORE_LABEL =
             new ReadableObjectPropertyKey<>();
 
-    /** The payment icon for the UI. */
-    /* package */ static final ReadableObjectPropertyKey<Drawable> PAYMENT_ICON =
+    /**
+     * The payment icon for the UI. The second parameter indicates whether this is the default
+     * payment icon or not.
+     */
+    /* package */ static final ReadableObjectPropertyKey<Pair<Drawable, Boolean>> PAYMENT_ICON =
             new ReadableObjectPropertyKey<>();
 
     /** The payment value of the UI. */
