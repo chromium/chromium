@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file.h"
+#include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/hash/md5.h"
 #include "base/logging.h"
@@ -37,7 +38,7 @@ constexpr char kUsageMsg[] =
     "           [--frames=<number of frames to decode>]\n"
     "           [--v=<log verbosity>]\n"
     "           [--output_path_prefix=<output files path prefix>]\n"
-    "           [--md5]\n"
+    "           [--md5=<md_log_path>]\n"
     "           [--visible]\n"
     "           [--help]\n";
 
@@ -56,10 +57,10 @@ constexpr char kHelpMsg[] =
     "        written. For example, setting <path> to \"test/test_\" would \n"
     "        result in output files of the form \"test/test_000000.yuv\",\n"
     "       \"test/test_000001.yuv\", etc.\n"
-    "    --md5\n"
+    "    --md5=<path>\n"
     "        Optional. If specified, prints the md5 of each decoded (and\n"
     "        visible, if --visible is specified) frame in I420 format to\n"
-    "        stdout.\n"
+    "        stdout. If argument specified, prints m5d to specified file\n"
     "    --visible\n"
     "        Optional. If specified, computes md5 hash values only for\n"
     "        visible frames.\n"
@@ -70,10 +71,20 @@ constexpr char kHelpMsg[] =
 
 // Computes the md5 of given I420 data |yuv_plane| and prints the md5 to stdout.
 // This functionality is needed for tast tests.
-void ComputeAndPrintMd5hash(const std::vector<char>& yuv_plane) {
+void ComputeAndPrintMD5hash(const std::vector<char>& yuv_plane, const base::FilePath md5_log_location) {
   base::MD5Digest md5_digest;
   base::MD5Sum(yuv_plane.data(), yuv_plane.size(), &md5_digest);
-  std::cout << MD5DigestToBase16(md5_digest) << std::endl;
+  std::string md5_digest_b16 = MD5DigestToBase16(md5_digest);
+
+  if (md5_log_location.empty()) {
+    std::cout << md5_digest_b16 << std::endl;
+  } else {
+    if (!PathExists(md5_log_location))
+      WriteFile(md5_log_location, md5_digest_b16 + "\n");
+    else
+      AppendToFile(md5_log_location, md5_digest_b16 + "\n");
+  }
+
 }
 
 // Creates the appropriate decoder for |stream|, which points to IVF data.
@@ -133,6 +144,13 @@ int main(int argc, char** argv) {
     return EXIT_FAILURE;
   }
 
+  const base::FilePath md5_log_location = cmd->GetSwitchValuePath("md5");
+
+  // Deletes md5 log file if it already exists.
+  if (PathExists(md5_log_location)) {
+    DeleteFile(md5_log_location);
+  }
+
   // Set up video stream.
   base::MemoryMappedFile stream;
   if (!stream.Initialize(video_path)) {
@@ -173,7 +191,7 @@ int main(int argc, char** argv) {
     yuv_plane.insert(yuv_plane.end(), v_plane.begin(), v_plane.end());
 
     if (cmd->HasSwitch("md5"))
-      ComputeAndPrintMd5hash(yuv_plane);
+      ComputeAndPrintMD5hash(yuv_plane, md5_log_location);
 
     if (!has_output_file)
       continue;
