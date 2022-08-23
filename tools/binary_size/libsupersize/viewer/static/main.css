@@ -166,7 +166,6 @@ ul {
   width: 0;
   height: 0;
 }
-
 [aria-expanded]>.node::before {
   /** Draw a 5x10 triangle */
   margin: 5px 7px 5px 8px;
@@ -177,6 +176,14 @@ ul {
 }
 [aria-expanded="true"]>.node::before {
   transform: rotate(90deg);
+}
+
+/** Tree leaves */
+:not([aria-expanded])>.node:focus {
+  background: #eef;
+}
+:not([aria-expanded])>.node:hover:focus {
+  background: #ddf;
 }
 
 /** Tree node sub items */

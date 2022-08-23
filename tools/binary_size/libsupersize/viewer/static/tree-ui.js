@@ -131,6 +131,16 @@ const newTreeElement = (() => {
   }
 
   /**
+   * Decides whether a given element is a leaf UI node in the tree view.
+   * @param {!HTMLElement} elt
+   * @return {boolean}
+   */
+  function _isLeafNode(elt) {
+    return elt.classList.contains('node') &&
+        elt.getAttribute('aria-expanded') === null;
+  }
+
+  /**
    * Tree view keydown event handler to move focus for the given element.
    * @param {KeyboardEvent} event Event passed from keydown event listener.
    */
@@ -310,6 +320,44 @@ const newTreeElement = (() => {
   }
 
   /**
+   * Mousedown handler for an already-focused leaf node, to toggle it off.
+   * @param {!Event} event
+   */
+  function _handleRefocus(event) {
+    // Prevent click that would cause another focus event.
+    event.preventDefault();
+    const node = /** @type {!HTMLElement} */ (event.currentTarget);
+    node.blur();  // focusout handler will handle cleanup.
+  }
+
+  /**
+   * Focusin handler for a node.
+   * @param {!Event} event
+   */
+  function _handleFocusIn(event) {
+    const node = /** @type {!HTMLElement} */ (event.target);
+    if (_isLeafNode(node)) {
+      node.addEventListener('mousedown', _handleRefocus);
+    }
+    displayInfocard(_uiNodeData.get(node));
+    /** @type {HTMLElement} */ (event.currentTarget)
+        .parentElement.classList.add('focused');
+  }
+
+  /**
+   * Focusout handler for a node.
+   * @param {!Event} event
+   */
+  function _handleFocusOut(event) {
+    const node = /** @type {!HTMLElement} */ (event.target);
+    if (_isLeafNode(node)) {
+      node.removeEventListener('mousedown', _handleRefocus);
+    }
+    /** @type {HTMLElement} */ (event.currentTarget)
+        .parentElement.classList.remove('focused');
+  }
+
+  /**
    * Inflates a template to create an element that represents one tree node.
    * The element will represent a tree or a leaf, depending on if the tree node
    * object has any children. Trees use a slightly different template and have
@@ -367,15 +415,9 @@ const newTreeElement = (() => {
       .addEventListener('change', _handleDynamicInputChange('.size', _setSize));
 
   _symbolTree.addEventListener('keydown', _handleKeyNavigation);
-  _symbolTree.addEventListener('focusin', event => {
-    displayInfocard(_uiNodeData.get(
-        /** @type {HTMLElement} */ (event.target)));
-    /** @type {HTMLElement} */ (event.currentTarget).parentElement
-        .classList.add('focused');
-  });
-  _symbolTree.addEventListener('focusout', event =>
-    /** @type {HTMLElement} */ (event.currentTarget).parentElement
-        .classList.remove('focused'));
+  _symbolTree.addEventListener('focusin', _handleFocusIn);
+  _symbolTree.addEventListener('focusout', _handleFocusOut);
+
   window.addEventListener('keydown', event => {
     if (event.key === '?' &&
         /** @type {HTMLElement} */ (event.target).tagName !== 'INPUT') {
