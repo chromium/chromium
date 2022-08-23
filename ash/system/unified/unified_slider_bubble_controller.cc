@@ -6,6 +6,7 @@
 
 #include "ash/bubble/bubble_constants.h"
 #include "ash/constants/ash_features.h"
+#include "ash/rgb_keyboard/rgb_keyboard_manager.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
@@ -122,7 +123,8 @@ void UnifiedSliderBubbleController::OnKeyboardBrightnessChanged(
     // User has made a brightness adjustment, or the KBL was made
     // no-longer-forced-off implicitly in response to a user adjustment.
     ShowBubble(SLIDER_TYPE_KEYBOARD_BRIGHTNESS);
-    if (features::IsRgbKeyboardEnabled()) {
+    if (features::IsRgbKeyboardEnabled() &&
+        Shell::Get()->rgb_keyboard_manager()->IsRgbKeyboardSupported()) {
       // Show the education nudge to change the keyboard backlight color if
       // applicable. |bubble_view_| is used as the anchor view.
       Shell::Get()
