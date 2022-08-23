@@ -184,7 +184,7 @@ TEST_F(AppControllerTest, DockMenu) {
   }
 }
 
-TEST_F(AppControllerTest, LastProfile) {
+TEST_F(AppControllerTest, LastProfileIfLoaded) {
   // Create a second profile.
   base::FilePath dest_path1 = profile_->GetPath();
   base::FilePath dest_path2 =
@@ -204,7 +204,7 @@ TEST_F(AppControllerTest, LastProfile) {
 
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(dest_path2, [ac lastProfile]->GetPath());
+  EXPECT_EQ(dest_path2, [ac lastProfileIfLoaded]->GetPath());
 }
 
 // Tests key equivalents for Close Window when target is a child window (like a

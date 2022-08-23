@@ -225,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, DeleteEphemeralProfile) {
   AppController* ac = base::mac::ObjCCast<AppController>(
       [[NSApplication sharedApplication] delegate]);
   ASSERT_TRUE(ac);
-  ASSERT_EQ(profile, [ac lastProfile]);
+  ASSERT_EQ(profile, [ac lastProfileIfLoaded]);
 
   // Mark the profile as ephemeral.
   profile->GetPrefs()->SetBoolean(prefs::kForceEphemeralProfiles, true);
@@ -255,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, DeleteEphemeralProfile) {
                     object:browser2->window()
                                ->GetNativeWindow()
                                .GetNativeNSWindow()];
-  ASSERT_EQ(profile2, [ac lastProfile]);
+  ASSERT_EQ(profile2, [ac lastProfileIfLoaded]);
 }
 
 class AppControllerKeepAliveBrowserTest : public InProcessBrowserTest {
@@ -396,6 +396,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
                        OpenGuestProfileOnlyIfGuestModeIsEnabled) {
   CreateAndWaitForSystemProfile();
   base::FilePath guest_profile_path = ProfileManager::GetGuestProfilePath();
+  CreateAndWaitForProfile(guest_profile_path);
   PrefService* local_state = g_browser_process->local_state();
   local_state->SetString(prefs::kProfileLastUsed,
                          guest_profile_path.BaseName().value());
@@ -405,7 +406,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
       [[NSApplication sharedApplication] delegate]);
   ASSERT_TRUE(ac);
 
-  Profile* profile = [ac lastProfile];
+  Profile* profile = [ac lastProfileIfLoaded];
   ASSERT_TRUE(profile);
   EXPECT_EQ(guest_profile_path, profile->GetPath());
   EXPECT_TRUE(profile->IsGuestSession());
@@ -443,9 +444,10 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
   PrefService* local_state = g_browser_process->local_state();
   local_state->SetString(prefs::kProfileLastUsed,
                          guest_profile_path.BaseName().value());
+  CreateAndWaitForProfile(guest_profile_path);
   // Disallow guest by policy.
   local_state->SetBoolean(prefs::kBrowserGuestModeEnabled, false);
-  Profile* profile = [ac lastProfile];
+  Profile* profile = [ac lastProfileIfLoaded];
   ASSERT_TRUE(profile);
   EXPECT_EQ(guest_profile_path, profile->GetPath());
   EXPECT_TRUE(profile->IsGuestSession());
@@ -483,7 +485,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
       [[NSApplication sharedApplication] delegate]);
 
   // Lock the active profile.
-  Profile* profile = [ac lastProfile];
+  Profile* profile = [ac lastProfileIfLoaded];
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
@@ -514,7 +516,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
   AppController* ac = base::mac::ObjCCastStrict<AppController>(
       [[NSApplication sharedApplication] delegate]);
   // Lock the active profile.
-  Profile* profile = [ac lastProfile];
+  Profile* profile = [ac lastProfileIfLoaded];
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
@@ -543,13 +545,14 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
   // app controller can use it on init.
   CreateAndWaitForSystemProfile();
   base::FilePath guest_profile_path = ProfileManager::GetGuestProfilePath();
+  CreateAndWaitForProfile(guest_profile_path);
   g_browser_process->local_state()->SetString(
       prefs::kProfileLastUsed, guest_profile_path.BaseName().value());
 
   AppController* ac = base::mac::ObjCCastStrict<AppController>(
       [[NSApplication sharedApplication] delegate]);
 
-  Profile* profile = [ac lastProfile];
+  Profile* profile = [ac lastProfileIfLoaded];
   ASSERT_TRUE(profile);
   EXPECT_EQ(guest_profile_path, profile->GetPath());
   EXPECT_TRUE(profile->IsGuestSession());

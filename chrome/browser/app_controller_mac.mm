@@ -144,6 +144,9 @@ NSMutableDictionary* GetPendingWebAuthRequests() API_AVAILABLE(macos(10.15)) {
 void OpenUrlsInBrowserWithProfile(const std::vector<GURL>& urls,
                                   Profile* profile);
 
+// Returns true if the profile requires signin before being used.
+bool IsProfileSignedOut(const base::FilePath& profile_path);
+
 // Starts a web authentication session request.
 void BeginHandlingWebAuthenticationSessionRequestWithProfile(
     ASWebAuthenticationSessionRequest* request,
@@ -193,6 +196,29 @@ Browser* ActivateOrCreateBrowser(Profile* profile) {
   return CreateBrowser(profile);
 }
 
+// Attempts restoring a previous session if there is one. Otherwise, opens
+// either the profile picker or a new browser, depending on user preferences.
+void AttemptSessionRestore(Profile* profile) {
+  DCHECK(!profile->IsGuestSession());
+  DCHECK(!IsProfileSignedOut(profile->GetPath()));
+  SessionService* sessionService =
+      SessionServiceFactory::GetForProfileForSessionRestore(profile);
+  if (sessionService &&
+      sessionService->RestoreIfNecessary(StartupTabs(),
+                                         /*restore_apps=*/false)) {
+    // Session was restored.
+    return;
+  }
+
+  // No session to restore, proceed with normal startup.
+  if (ProfilePicker::ShouldShowAtLaunch()) {
+    ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+        ProfilePicker::EntryPoint::kNewSessionOnExistingProcess));
+  } else {
+    CreateBrowser(profile);
+  }
+}
+
 CFStringRef BaseBundleID_CFString() {
   return base::mac::NSToCFCast(
       base::SysUTF8ToNSString(base::mac::BaseBundleID()));
@@ -224,11 +250,11 @@ void RecordLastRunAppBundlePath() {
       app_bundle_path_cfstring, BaseBundleID_CFString());
 }
 
-bool IsProfileSignedOut(Profile* profile) {
+bool IsProfileSignedOut(const base::FilePath& profile_path) {
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile->GetPath());
+          .GetProfileAttributesWithPath(profile_path);
   return entry && entry->IsSigninRequired();
 }
 
@@ -1393,52 +1419,44 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
     }
   }
 
+  base::FilePath lastProfilePath = GetStartupProfilePathMac();
+  DCHECK_NE(lastProfilePath, ProfileManager::GetSystemProfilePath());
+
   // If launched as a hidden login item (due to installation of a persistent app
   // or by the user, for example in System Preferences->Accounts->Login Items),
   // allow session to be restored first time the user clicks on a Dock icon.
   // Normally, it'd just open a new empty page.
-  {
-    static BOOL doneOnce = NO;
-    BOOL attemptRestore =
-        apps::AppShimTerminationManager::Get()->ShouldRestoreSession() ||
-        (!doneOnce && base::mac::WasLaunchedAsHiddenLoginItem());
-    doneOnce = YES;
-    if (attemptRestore) {
-      Profile* lastProfile = [self lastProfile];
-      if (!lastProfile || IsProfileSignedOut(lastProfile)) {
-        // There is no session to be restored without a valid profile or a
-        // profile that is locked and requires signin. Return NO to do nothing.
-        return NO;
-      }
-      SessionService* sessionService =
-          SessionServiceFactory::GetForProfileForSessionRestore(lastProfile);
-      if (sessionService &&
-          sessionService->RestoreIfNecessary(StartupTabs(),
-                                             /* restore_apps */ false))
-        return NO;
-    }
-  }
+  static BOOL doneOnce = NO;
+  BOOL attemptRestore =
+      apps::AppShimTerminationManager::Get()->ShouldRestoreSession() ||
+      (!doneOnce && base::mac::WasLaunchedAsHiddenLoginItem());
+  doneOnce = YES;
 
-  // Otherwise open a new window.
-  // If the last profile was locked, we have to open the User Manager, as the
-  // profile requires authentication. Similarly, because guest mode and system
-  // profile are implemented as forced incognito, we can't open a new guest
-  // browser either, so we have to show the User Manager as well.
-  Profile* lastProfile = [self lastProfile];
-  if (!lastProfile) {
-    // Without a profile there's nothing that can be done, but still return NO
-    // to AppKit as there's nothing that it can do either.
-    return NO;
-  }
-  if (lastProfile->IsGuestSession() || IsProfileSignedOut(lastProfile) ||
-      lastProfile->IsSystemProfile()) {
+  // If the profile is locked or was off-the-record, open the profile picker.
+  if (lastProfilePath == ProfileManager::GetGuestProfilePath() ||
+      IsProfileSignedOut(lastProfilePath)) {
     ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
         ProfilePicker::EntryPoint::kProfileLocked));
-  } else if (ProfilePicker::ShouldShowAtLaunch()) {
+    return NO;
+  }
+
+  if (attemptRestore) {
+    // Load the profile and attempt session restore.
+    app_controller_mac::RunInLastProfileSafely(
+        base::BindOnce(&AttemptSessionRestore),
+        app_controller_mac::kShowProfilePickerOnFailure);
+    return NO;
+  }
+
+  // Open the profile picker (for multi-profile users) or a new window.
+  if (ProfilePicker::ShouldShowAtLaunch()) {
     ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
         ProfilePicker::EntryPoint::kNewSessionOnExistingProcess));
   } else {
-    CreateBrowser(lastProfile);
+    // Asynchronously load profile first if needed.
+    app_controller_mac::RunInLastProfileSafely(
+        base::BindOnce(base::IgnoreResult(&CreateBrowser)),
+        app_controller_mac::kShowProfilePickerOnFailure);
   }
 
   // We've handled the reopen event, so return NO to tell AppKit not
@@ -1565,7 +1583,7 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
   if (profile->IsGuestSession() && !profiles::IsGuestModeEnabled())
     return nullptr;
 
-  if (IsProfileSignedOut(profile))
+  if (IsProfileSignedOut(profile->GetPath()))
     return nullptr;  // Profile is locked.
 
   return ProfileManager::MaybeForceOffTheRecordMode(profile);
