@@ -419,6 +419,14 @@ aura::Window* GetTopMostCapturableWindowAtPoint(
 
   if (controller->IsActive()) {
     auto* capture_session = controller->capture_mode_session();
+    DCHECK(capture_session->capture_mode_bar_widget());
+    ignore_windows.insert(
+        capture_session->capture_mode_bar_widget()->GetNativeWindow());
+
+    if (auto* capture_settings_widget =
+            capture_session->capture_mode_settings_widget()) {
+      ignore_windows.insert(capture_settings_widget->GetNativeWindow());
+    }
 
     if (auto* capture_label_widget = capture_session->capture_label_widget())
       ignore_windows.insert(capture_label_widget->GetNativeWindow());
