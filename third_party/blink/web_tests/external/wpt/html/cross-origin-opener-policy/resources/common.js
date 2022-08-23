@@ -42,6 +42,8 @@ function validate_results(callback, test, w, channelName, hasOpener, openerDOMAc
   }
 }
 
+// Note: This function is deprecated and should not be used by new tests.
+// Instead, use `dispatcher_url_test()`.
 function url_test(t, url, channelName, hasOpener, openerDOMAccess, callback) {
   if (callback === undefined) {
     callback = () => { t.done(); };
@@ -60,5 +62,25 @@ function url_test(t, url, channelName, hasOpener, openerDOMAccess, callback) {
   t.add_cleanup(() => {
     bc.postMessage("close");
   });
+}
+
+// Similar to `url_test()` above except that this uses a dispatcher instead of
+// BroadcastChannel (useful in cases where the context we are testing in is a
+// third-party iframe that doesn't share a partition with the top-level
+// site).
+async function dispatcher_url_test(t, url, responseToken, iframeToken, hasOpener, openerDOMAccess, callback) {
+
+  const w = window.open(url, responseToken);
+
+  // Close the popup once the test is complete.
+  // The browsing context might be closed hence we'll have the iframe trigger
+  // the closure by sending it a 'close' message.
+  t.add_cleanup(async () => {
+    await send(iframeToken, "close");
+  });
+
+  var payload = await receive(responseToken);
+  payload = JSON.parse(payload);
+  validate_results(callback, t, w, responseToken, hasOpener, openerDOMAccess, payload);
 }
 
