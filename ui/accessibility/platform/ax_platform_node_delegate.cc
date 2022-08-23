@@ -8,6 +8,16 @@
 
 namespace ui {
 
+AXPlatformNodeDelegate::AXPlatformNodeDelegate() = default;
+
+AXPlatformNodeDelegate::AXPlatformNodeDelegate(ui::AXNode* node) : node_(node) {
+  DCHECK(node);
+}
+
+void AXPlatformNodeDelegate::SetNode(AXNode& node) {
+  node_ = &node;
+}
+
 gfx::Rect AXPlatformNodeDelegate::GetClippedScreenBoundsRect(
     AXOffscreenResult* offscreen_result) const {
   return GetBoundsRect(AXCoordinateSystem::kScreenDIPs,
