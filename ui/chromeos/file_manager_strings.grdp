@@ -813,6 +813,9 @@
   <message name="IDS_FILE_BROWSER_RESTORE_FROM_TRASH_ERROR" desc="Message informing about error while restoring an item or items from the trash / recycle bin.">
     An error occurred. Some items may not have been restored.
   </message>
+  <message name="IDS_FILE_BROWSER_TRASH_UNEXPECTED_ERROR" desc="Message informing about error while sending an item to the trash / recycle bin.">
+    An error occurred. Some items may not have been trashed.
+  </message>
   <message name="IDS_FILE_BROWSER_OPEN_TRASHED_FILES_ERROR" desc="Message informing users they can't open files from the Trash folder">
     Cannot open trashed files. Please restore the files before opening.
   </message>

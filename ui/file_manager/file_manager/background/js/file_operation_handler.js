@@ -544,6 +544,8 @@ function getMessageFromProgressEvent_(event) {
         return str('DELETE_ERROR');
       case chrome.fileManagerPrivate.IOTaskType.RESTORE:
         return str('RESTORE_FROM_TRASH_ERROR');
+      case chrome.fileManagerPrivate.IOTaskType.TRASH:
+        return str('TRASH_UNEXPECTED_ERROR');
       default:
         console.warn(`Unexpected operation type: ${event.type}`);
         return strf('FILE_ERROR_GENERIC');
