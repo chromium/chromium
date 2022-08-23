@@ -55,15 +55,10 @@ void BackgroundTracingStateManager::Initialize(PrefService* local_state) {
     local_state_ = local_state;
 
   DCHECK(local_state_);
-  const base::Value* dict =
-      local_state_->GetDictionary(kBackgroundTracingSessionState);
+  const base::Value::Dict& dict =
+      local_state_->GetValueDict(kBackgroundTracingSessionState);
 
-  if (!dict) {
-    SaveState();
-    return;
-  }
-
-  absl::optional<int> state = dict->FindIntKey(kTracingStateKey);
+  absl::optional<int> state = dict.FindInt(kTracingStateKey);
 
   if (state) {
     if (*state >= 0 &&
@@ -74,9 +69,9 @@ void BackgroundTracingStateManager::Initialize(PrefService* local_state) {
     }
   }
 
-  const base::Value* upload_times = dict->FindListKey(kUploadTimesKey);
+  const base::Value::List* upload_times = dict.FindList(kUploadTimesKey);
   if (upload_times) {
-    for (const auto& scenario_dict : upload_times->GetListDeprecated()) {
+    for (const auto& scenario_dict : *upload_times) {
       DCHECK(scenario_dict.is_dict());
       const std::string* scenario = scenario_dict.FindStringKey(kScenarioKey);
       const base::Value* timestamp_val =
