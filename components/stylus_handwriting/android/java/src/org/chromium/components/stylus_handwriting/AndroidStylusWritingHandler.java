@@ -8,11 +8,15 @@ import android.content.Context;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.os.Build;
 import android.provider.Settings;
 import android.view.View;
 import android.view.inputmethod.CursorAnchorInfo;
+import android.view.inputmethod.EditorBoundsInfo;
 import android.view.inputmethod.InputMethodInfo;
 import android.view.inputmethod.InputMethodManager;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Log;
@@ -20,16 +24,13 @@ import org.chromium.content_public.browser.StylusWritingHandler;
 import org.chromium.content_public.browser.StylusWritingImeCallback;
 import org.chromium.content_public.browser.WebContents;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Allows stylus handwriting using the Android stylus writing APIs introduced in Android T.
  */
-// TODO(peconn): Comment out once we have that build code.
-// @RequiresApi(Build.VERSION_CODES.T)
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 public class AndroidStylusWritingHandler implements StylusWritingHandler, StylusApiOption {
     private static final String TAG = "AndroidStylus";
 
@@ -58,14 +59,7 @@ public class AndroidStylusWritingHandler implements StylusWritingHandler, Stylus
             // We can't create a boolean here and set it in a lambda, so use AtomicBoolean instead.
             AtomicBoolean result = new AtomicBoolean();
 
-            // The following reflection executes:
-            // inputMethod.supportsStylusHandwriting();
-            doReflection(() -> {
-                Method supportsStylusHandwriting =
-                        inputMethod.getClass().getMethod("supportsStylusHandwriting");
-                Boolean supports = (Boolean) supportsStylusHandwriting.invoke(inputMethod);
-                result.set(supports.booleanValue());
-            });
+            inputMethod.supportsStylusHandwriting();
 
             Log.d(TAG, "Stylus feature supported by IME: %s", result.get());
             return result.get();
@@ -87,14 +81,7 @@ public class AndroidStylusWritingHandler implements StylusWritingHandler, Stylus
         if (webContents.getViewAndroidDelegate() == null) return;
 
         View view = webContents.getViewAndroidDelegate().getContainerView();
-
-        // The following reflection executes:
-        // view.setAutoHandwritingEnabled(false);
-        doReflection(() -> {
-            Method setAutoHandwritingEnabled =
-                    view.getClass().getMethod("setAutoHandwritingEnabled", boolean.class);
-            setAutoHandwritingEnabled.invoke(view, false);
-        });
+        view.setAutoHandwritingEnabled(false);
 
         mTargetView = view;
     }
@@ -115,14 +102,7 @@ public class AndroidStylusWritingHandler implements StylusWritingHandler, Stylus
     @Override
     public boolean requestStartStylusWriting(StylusWritingImeCallback imeCallback) {
         Log.d(TAG, "Requesting Stylus Writing");
-        // The following reflection executes:
-        // mInputMethodManager.startStylusHandwriting(mTargetView);
-        doReflection(() -> {
-            Method startStylusHandwriting =
-                    mInputMethodManager.getClass().getMethod("startStylusHandwriting", View.class);
-            startStylusHandwriting.invoke(mInputMethodManager, mTargetView);
-        });
-
+        mInputMethodManager.startStylusHandwriting(mTargetView);
         return true;
     }
 
@@ -130,56 +110,10 @@ public class AndroidStylusWritingHandler implements StylusWritingHandler, Stylus
     public void onEditElementFocusedForStylusWriting(Rect focusedEditBounds, Point cursorPosition) {
         CursorAnchorInfo.Builder cursorAnchorInfoBuilder = new CursorAnchorInfo.Builder();
         RectF bounds = new RectF(focusedEditBounds);
+        EditorBoundsInfo editorBoundsInfo =
+                new EditorBoundsInfo.Builder().setHandwritingBounds(bounds).build();
 
-        // The following reflection executes:
-        // EditorBoundsInfo editorBoundsInfo = new EditorBoundsInfo.Builder()
-        //         .setHandwritingBounds(bounds)
-        //         .build();
-        // cursorAnchorInfoBuilder.setEditorBoundsInfo(editorBoundsInfo);
-        doReflection(() -> {
-            // EditorBoundsInfo.Builder editorBoundsInfoBuilder = new EditorBoundsInfo.Builder();
-            Class<?> editorBoundsInfoBuilderClass =
-                    Class.forName("android.view.inputmethod.EditorBoundsInfo$Builder");
-            Object editorBoundsInfoBuilder =
-                    editorBoundsInfoBuilderClass.getConstructor().newInstance();
-
-            // editorBoundsInfoBuilder.setHandwritingBounds(bounds)
-            Method setHandwritingBounds =
-                    editorBoundsInfoBuilderClass.getMethod("setHandwritingBounds", RectF.class);
-            setHandwritingBounds.invoke(editorBoundsInfoBuilder, bounds);
-
-            // EditorBoundsInfo editorBoundsInfo = editorBoundsInfoBuilder.build();
-            Method build = editorBoundsInfoBuilderClass.getMethod("build");
-            Object editorBoundsInfo = build.invoke(editorBoundsInfoBuilder);
-
-            // cursorAnchorInfoBuilder.setEditorBoundsInfo(editorBoundsInfo);
-            Class<?> editorBoundsInfoClass =
-                    Class.forName("android.view.inputmethod.EditorBoundsInfo");
-            Method setEditorBoundsInfo = cursorAnchorInfoBuilder.getClass().getMethod(
-                    "setEditorBoundsInfo", editorBoundsInfoClass);
-            setEditorBoundsInfo.invoke(cursorAnchorInfoBuilder, editorBoundsInfo);
-        });
-
+        cursorAnchorInfoBuilder.setEditorBoundsInfo(editorBoundsInfo);
         mInputMethodManager.updateCursorAnchorInfo(mTargetView, cursorAnchorInfoBuilder.build());
-    }
-
-    @FunctionalInterface
-    private interface ReflectionCallback {
-        void run() throws ClassNotFoundException, IllegalAccessException, InvocationTargetException,
-                          NoSuchMethodException, InstantiationException;
-    }
-
-    private static void doReflection(ReflectionCallback callback) {
-        // We aren't building against the Android T SDK yet, so we need to use reflection to use
-        // methods/classes introduced in Android T.
-        try {
-            callback.run();
-        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException
-                | InvocationTargetException | NoSuchMethodException e) {
-            // This method should *only* be called if isEnabled returns true, and that already
-            // checks that we're on Android T, so if an exception happens here, there's a bug
-            // somewhere.
-            throw new RuntimeException("Reflection failed in AndroidStylusWritingHandler", e);
-        }
     }
 }

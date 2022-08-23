@@ -8,6 +8,7 @@ import android.content.Context;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.content_public.browser.StylusWritingHandler;
 import org.chromium.content_public.browser.WebContents;
 
@@ -46,7 +47,10 @@ public class StylusWritingController {
 
             return mDirectWritingTrigger;
         }
-        if (AndroidStylusWritingHandler.isEnabled(mContext)) {
+
+        // The check for Android T is already in isEnabled but we are adding it here too to make
+        // lint happy.
+        if (BuildInfo.isAtLeastT() && AndroidStylusWritingHandler.isEnabled(mContext)) {
             if (mAndroidHandler == null) {
                 mAndroidHandler = new AndroidStylusWritingHandler(mContext);
             }
