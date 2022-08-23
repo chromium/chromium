@@ -34,8 +34,8 @@ FakeInstallAttributesClient::FakeInstallAttributesClient() {
   g_instance = this;
 
   base::FilePath cache_path;
-  locked_ = base::PathService::Get(dbus_paths::FILE_INSTALL_ATTRIBUTES,
-                                   &cache_path) &&
+  locked_ = base::PathService::Get(
+                chromeos::dbus_paths::FILE_INSTALL_ATTRIBUTES, &cache_path) &&
             base::PathExists(cache_path);
   if (locked_)
     LoadInstallAttributes();
@@ -118,7 +118,7 @@ FakeInstallAttributesClient::BlockingInstallAttributesFinalize(
   // browser is restarted. This is used for ease of development when device
   // enrollment is required.
   base::FilePath cache_path;
-  if (!base::PathService::Get(dbus_paths::FILE_INSTALL_ATTRIBUTES,
+  if (!base::PathService::Get(chromeos::dbus_paths::FILE_INSTALL_ATTRIBUTES,
                               &cache_path)) {
     reply.set_error(::user_data_auth::CryptohomeErrorCode::
                         CRYPTOHOME_ERROR_INSTALL_ATTRIBUTES_FINALIZE_FAILED);
@@ -200,7 +200,7 @@ void FakeInstallAttributesClient::ReturnProtobufMethodCallback(
 bool FakeInstallAttributesClient::LoadInstallAttributes() {
   base::FilePath cache_file;
   const bool file_exists =
-      base::PathService::Get(dbus_paths::FILE_INSTALL_ATTRIBUTES,
+      base::PathService::Get(chromeos::dbus_paths::FILE_INSTALL_ATTRIBUTES,
                              &cache_file) &&
       base::PathExists(cache_file);
   DCHECK(file_exists);

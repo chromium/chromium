@@ -49,7 +49,8 @@ class InstallAttributesTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     ASSERT_TRUE(base::PathService::OverrideAndCreateIfNeeded(
-        dbus_paths::FILE_INSTALL_ATTRIBUTES, GetTempPath(), true, false));
+        chromeos::dbus_paths::FILE_INSTALL_ATTRIBUTES, GetTempPath(), true,
+        false));
     InstallAttributesClient::InitializeFake();
     TpmManagerClient::InitializeFake();
     install_attributes_ =

@@ -73,8 +73,8 @@ void InstallAttributes::Initialize() {
 
   DCHECK(!g_install_attributes);
   g_install_attributes = new InstallAttributes(InstallAttributesClient::Get());
-  g_install_attributes->Init(
-      base::PathService::CheckedGet(dbus_paths::FILE_INSTALL_ATTRIBUTES));
+  g_install_attributes->Init(base::PathService::CheckedGet(
+      chromeos::dbus_paths::FILE_INSTALL_ATTRIBUTES));
 }
 
 // static
