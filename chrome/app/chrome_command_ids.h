@@ -123,7 +123,6 @@
 #define IDC_VIRTUAL_CARD_ENROLL         35032
 #define IDC_FOLLOW                      35033
 #define IDC_UNFOLLOW                    35034
-#define IDC_BASIC_PRINT_DEPRECATED      35035
 
 // Page-manipulation commands that target a specified tab, which may not be the
 // active one.
