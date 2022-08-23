@@ -86,7 +86,7 @@ class HibermanClientImpl : public HibermanClient {
   }
 
  private:
-  void HandleResponse(VoidDBusMethodCallback callback,
+  void HandleResponse(chromeos::VoidDBusMethodCallback callback,
                       dbus::Response* response) {
     std::move(callback).Run(response != nullptr);
   }

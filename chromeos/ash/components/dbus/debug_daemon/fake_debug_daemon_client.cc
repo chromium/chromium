@@ -40,14 +40,16 @@ FakeDebugDaemonClient::~FakeDebugDaemonClient() = default;
 
 void FakeDebugDaemonClient::Init(dbus::Bus* bus) {}
 
-void FakeDebugDaemonClient::DumpDebugLogs(bool is_compressed,
-                                          int file_descriptor,
-                                          VoidDBusMethodCallback callback) {
+void FakeDebugDaemonClient::DumpDebugLogs(
+    bool is_compressed,
+    int file_descriptor,
+    chromeos::VoidDBusMethodCallback callback) {
   std::move(callback).Run(true);
 }
 
-void FakeDebugDaemonClient::SetDebugMode(const std::string& subsystem,
-                                         VoidDBusMethodCallback callback) {
+void FakeDebugDaemonClient::SetDebugMode(
+    const std::string& subsystem,
+    chromeos::VoidDBusMethodCallback callback) {
   std::move(callback).Run(false);
 }
 
@@ -147,8 +149,9 @@ void FakeDebugDaemonClient::GetPerfOutput(
     int file_descriptor,
     chromeos::DBusMethodCallback<uint64_t> error_callback) {}
 
-void FakeDebugDaemonClient::StopPerf(uint64_t session_id,
-                                     VoidDBusMethodCallback callback) {}
+void FakeDebugDaemonClient::StopPerf(
+    uint64_t session_id,
+    chromeos::VoidDBusMethodCallback callback) {}
 
 void FakeDebugDaemonClient::GetScrubbedBigLogs(
     const cryptohome::AccountIdentifier& id,
@@ -161,7 +164,7 @@ void FakeDebugDaemonClient::GetScrubbedBigLogs(
 
 void FakeDebugDaemonClient::BackupArcBugReport(
     const cryptohome::AccountIdentifier& id,
-    VoidDBusMethodCallback callback) {
+    chromeos::VoidDBusMethodCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
@@ -319,8 +322,9 @@ void FakeDebugDaemonClient::SetSchedulerConfigurationV2(
       base::BindOnce(std::move(callback), true, /*num_cores_disabled=*/0));
 }
 
-void FakeDebugDaemonClient::SetU2fFlags(const std::set<std::string>& flags,
-                                        VoidDBusMethodCallback callback) {
+void FakeDebugDaemonClient::SetU2fFlags(
+    const std::set<std::string>& flags,
+    chromeos::VoidDBusMethodCallback callback) {
   u2f_flags_ = flags;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));

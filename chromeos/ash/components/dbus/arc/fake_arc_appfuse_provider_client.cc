@@ -26,9 +26,10 @@ void FakeArcAppfuseProviderClient::Mount(
       FROM_HERE, base::BindOnce(std::move(callback), base::ScopedFD()));
 }
 
-void FakeArcAppfuseProviderClient::Unmount(uint32_t uid,
-                                           int32_t mount_id,
-                                           VoidDBusMethodCallback callback) {
+void FakeArcAppfuseProviderClient::Unmount(
+    uint32_t uid,
+    int32_t mount_id,
+    chromeos::VoidDBusMethodCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), false));
 }

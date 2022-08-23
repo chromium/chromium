@@ -173,7 +173,7 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
   // successfully set.
   virtual void SetHotwordModel(uint64_t node_id,
                                const std::string& hotword_model,
-                               VoidDBusMethodCallback callback) = 0;
+                               chromeos::VoidDBusMethodCallback callback) = 0;
 
   // Enables or disables the usage of fixed A2DP packet size in CRAS.
   virtual void SetFixA2dpPacketSize(bool enabled) = 0;

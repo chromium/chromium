@@ -34,7 +34,7 @@ class ArcObbMounterClientImpl : public ArcObbMounterClient {
   void MountObb(const std::string& obb_file,
                 const std::string& mount_path,
                 int32_t owner_gid,
-                VoidDBusMethodCallback callback) override {
+                chromeos::VoidDBusMethodCallback callback) override {
     dbus::MethodCall method_call(arc::obb_mounter::kArcObbMounterInterface,
                                  arc::obb_mounter::kMountObbMethod);
     dbus::MessageWriter writer(&method_call);
@@ -48,7 +48,7 @@ class ArcObbMounterClientImpl : public ArcObbMounterClient {
   }
 
   void UnmountObb(const std::string& mount_path,
-                  VoidDBusMethodCallback callback) override {
+                  chromeos::VoidDBusMethodCallback callback) override {
     dbus::MethodCall method_call(arc::obb_mounter::kArcObbMounterInterface,
                                  arc::obb_mounter::kUnmountObbMethod);
     dbus::MessageWriter writer(&method_call);
@@ -68,7 +68,7 @@ class ArcObbMounterClientImpl : public ArcObbMounterClient {
 
  private:
   // Runs the callback with the method call result.
-  void OnVoidDBusMethod(VoidDBusMethodCallback callback,
+  void OnVoidDBusMethod(chromeos::VoidDBusMethodCallback callback,
                         dbus::Response* response) {
     std::move(callback).Run(response != nullptr);
   }

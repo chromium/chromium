@@ -67,7 +67,7 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   void SetActiveInputNode(uint64_t node_id) override;
   void SetHotwordModel(uint64_t node_id,
                        const std::string& hotword_model,
-                       VoidDBusMethodCallback callback) override;
+                       chromeos::VoidDBusMethodCallback callback) override;
   void SetFixA2dpPacketSize(bool enabled) override;
   void SetFlossEnabled(bool enabled) override;
   void AddActiveInputNode(uint64_t node_id) override;

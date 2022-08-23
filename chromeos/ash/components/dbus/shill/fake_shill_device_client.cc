@@ -150,9 +150,10 @@ void FakeShillDeviceClient::SetPropertyInternal(
   base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(callback));
 }
 
-void FakeShillDeviceClient::ClearProperty(const dbus::ObjectPath& device_path,
-                                          const std::string& name,
-                                          VoidDBusMethodCallback callback) {
+void FakeShillDeviceClient::ClearProperty(
+    const dbus::ObjectPath& device_path,
+    const std::string& name,
+    chromeos::VoidDBusMethodCallback callback) {
   base::Value* device_properties =
       stub_devices_.FindDictKey(device_path.value());
   if (!device_properties) {
@@ -560,8 +561,9 @@ void FakeShillDeviceClient::PassStubDeviceProperties(
 }
 
 // Posts a task to run a void callback with status code |status|.
-void FakeShillDeviceClient::PostVoidCallback(VoidDBusMethodCallback callback,
-                                             bool result) {
+void FakeShillDeviceClient::PostVoidCallback(
+    chromeos::VoidDBusMethodCallback callback,
+    bool result) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result));
 }

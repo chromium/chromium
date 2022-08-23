@@ -76,18 +76,18 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillIPConfigClient {
   virtual void SetProperty(const dbus::ObjectPath& ipconfig_path,
                            const std::string& name,
                            const base::Value& value,
-                           VoidDBusMethodCallback callback) = 0;
+                           chromeos::VoidDBusMethodCallback callback) = 0;
 
   // Calls ClearProperty method.
   // |callback| is called after the method call succeeds.
   virtual void ClearProperty(const dbus::ObjectPath& ipconfig_path,
                              const std::string& name,
-                             VoidDBusMethodCallback callback) = 0;
+                             chromeos::VoidDBusMethodCallback callback) = 0;
 
   // Calls Remove method.
   // |callback| is called after the method call succeeds.
   virtual void Remove(const dbus::ObjectPath& ipconfig_path,
-                      VoidDBusMethodCallback callback) = 0;
+                      chromeos::VoidDBusMethodCallback callback) = 0;
 
   // Returns an interface for testing (stub only), or returns null.
   virtual ShillIPConfigClient::TestInterface* GetTestInterface() = 0;

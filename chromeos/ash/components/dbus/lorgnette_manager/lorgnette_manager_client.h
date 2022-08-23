@@ -81,7 +81,7 @@ class COMPONENT_EXPORT(LORGNETTE_MANAGER) LorgnetteManagerClient
   //
   // This function makes the assumption that LorgnetteManagerClient only has one
   // scan running at a time.
-  virtual void CancelScan(VoidDBusMethodCallback cancel_callback) = 0;
+  virtual void CancelScan(chromeos::VoidDBusMethodCallback cancel_callback) = 0;
 
  protected:
   friend class LorgnetteManagerClientTest;

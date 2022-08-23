@@ -52,7 +52,7 @@ class UpstartClientImpl : public UpstartClient {
   // UpstartClient overrides:
   void StartJob(const std::string& job,
                 const std::vector<std::string>& upstart_env,
-                VoidDBusMethodCallback callback) override {
+                chromeos::VoidDBusMethodCallback callback) override {
     CallJobMethod(job, kStartMethod, upstart_env,
                   base::BindOnce(&UpstartClientImpl::OnVoidMethod,
                                  weak_ptr_factory_.GetWeakPtr(), job, "start",
@@ -71,7 +71,7 @@ class UpstartClientImpl : public UpstartClient {
 
   void StopJob(const std::string& job,
                const std::vector<std::string>& upstart_env,
-               VoidDBusMethodCallback callback) override {
+               chromeos::VoidDBusMethodCallback callback) override {
     CallJobMethod(job, kStopMethod, upstart_env,
                   base::BindOnce(&UpstartClientImpl::OnVoidMethod,
                                  weak_ptr_factory_.GetWeakPtr(), job, "stop",
@@ -95,11 +95,12 @@ class UpstartClientImpl : public UpstartClient {
   }
 
   void StartMediaAnalytics(const std::vector<std::string>& upstart_env,
-                           VoidDBusMethodCallback callback) override {
+                           chromeos::VoidDBusMethodCallback callback) override {
     StartJob(kMediaAnalyticsJob, upstart_env, std::move(callback));
   }
 
-  void RestartMediaAnalytics(VoidDBusMethodCallback callback) override {
+  void RestartMediaAnalytics(
+      chromeos::VoidDBusMethodCallback callback) override {
     CallJobMethod(
         kMediaAnalyticsJob, kRestartMethod, {},
         base::BindOnce(&UpstartClientImpl::OnVoidMethod,
@@ -113,24 +114,27 @@ class UpstartClientImpl : public UpstartClient {
     StopJob(kMediaAnalyticsJob, {}, base::DoNothing());
   }
 
-  void StopMediaAnalytics(VoidDBusMethodCallback callback) override {
+  void StopMediaAnalytics(chromeos::VoidDBusMethodCallback callback) override {
     StopJob(kMediaAnalyticsJob, {}, std::move(callback));
   }
 
-  void StartWilcoDtcService(VoidDBusMethodCallback callback) override {
+  void StartWilcoDtcService(
+      chromeos::VoidDBusMethodCallback callback) override {
     StartJob(kWilcoDtcDispatcherJob, {}, std::move(callback));
   }
 
-  void StopWilcoDtcService(VoidDBusMethodCallback callback) override {
+  void StopWilcoDtcService(chromeos::VoidDBusMethodCallback callback) override {
     StopJob(kWilcoDtcDispatcherJob, {}, std::move(callback));
   }
 
-  void StartArcDataSnapshotd(const std::vector<std::string>& upstart_env,
-                             VoidDBusMethodCallback callback) override {
+  void StartArcDataSnapshotd(
+      const std::vector<std::string>& upstart_env,
+      chromeos::VoidDBusMethodCallback callback) override {
     StartJob(kArcDataSnapshotdJob, upstart_env, std::move(callback));
   }
 
-  void StopArcDataSnapshotd(VoidDBusMethodCallback callback) override {
+  void StopArcDataSnapshotd(
+      chromeos::VoidDBusMethodCallback callback) override {
     StopJob(kArcDataSnapshotdJob, {}, std::move(callback));
   }
 
@@ -152,7 +156,7 @@ class UpstartClientImpl : public UpstartClient {
 
   void OnVoidMethod(const std::string& job_for_logging,
                     const std::string& action_for_logging,
-                    VoidDBusMethodCallback callback,
+                    chromeos::VoidDBusMethodCallback callback,
                     dbus::Response* response,
                     dbus::ErrorResponse* error_response) {
     if (!response)

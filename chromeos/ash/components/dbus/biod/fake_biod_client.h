@@ -67,16 +67,16 @@ class COMPONENT_EXPORT(BIOD_CLIENT) FakeBiodClient : public BiodClient {
                           ObjectPathCallback callback) override;
   void GetRecordsForUser(const std::string& user_id,
                          UserRecordsCallback callback) override;
-  void DestroyAllRecords(VoidDBusMethodCallback callback) override;
+  void DestroyAllRecords(chromeos::VoidDBusMethodCallback callback) override;
   void StartAuthSession(ObjectPathCallback callback) override;
   void RequestType(BiometricTypeCallback callback) override;
-  void CancelEnrollSession(VoidDBusMethodCallback callback) override;
-  void EndAuthSession(VoidDBusMethodCallback callback) override;
+  void CancelEnrollSession(chromeos::VoidDBusMethodCallback callback) override;
+  void EndAuthSession(chromeos::VoidDBusMethodCallback callback) override;
   void SetRecordLabel(const dbus::ObjectPath& record_path,
                       const std::string& label,
-                      VoidDBusMethodCallback callback) override;
+                      chromeos::VoidDBusMethodCallback callback) override;
   void RemoveRecord(const dbus::ObjectPath& record_path,
-                    VoidDBusMethodCallback callback) override;
+                    chromeos::VoidDBusMethodCallback callback) override;
   void RequestRecordLabel(const dbus::ObjectPath& record_path,
                           LabelCallback callback) override;
 

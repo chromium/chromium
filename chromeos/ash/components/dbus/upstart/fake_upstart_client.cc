@@ -36,7 +36,7 @@ FakeUpstartClient* FakeUpstartClient::Get() {
 
 void FakeUpstartClient::StartJob(const std::string& job,
                                  const std::vector<std::string>& upstart_env,
-                                 VoidDBusMethodCallback callback) {
+                                 chromeos::VoidDBusMethodCallback callback) {
   const bool result =
       start_job_cb_ ? start_job_cb_.Run(job, upstart_env) : true;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -56,7 +56,7 @@ void FakeUpstartClient::StartJobWithErrorDetails(
 
 void FakeUpstartClient::StopJob(const std::string& job,
                                 const std::vector<std::string>& upstart_env,
-                                VoidDBusMethodCallback callback) {
+                                chromeos::VoidDBusMethodCallback callback) {
   const bool result = stop_job_cb_ ? stop_job_cb_.Run(job, upstart_env) : true;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result));
@@ -77,7 +77,7 @@ void FakeUpstartClient::StartLacrosChrome(
 
 void FakeUpstartClient::StartMediaAnalytics(
     const std::vector<std::string>& /* upstart_env */,
-    VoidDBusMethodCallback callback) {
+    chromeos::VoidDBusMethodCallback callback) {
   DLOG_IF(WARNING, FakeMediaAnalyticsClient::Get()->process_running())
       << "Trying to start media analytics which is already started.";
   FakeMediaAnalyticsClient::Get()->set_process_running(true);
@@ -85,7 +85,8 @@ void FakeUpstartClient::StartMediaAnalytics(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
-void FakeUpstartClient::RestartMediaAnalytics(VoidDBusMethodCallback callback) {
+void FakeUpstartClient::RestartMediaAnalytics(
+    chromeos::VoidDBusMethodCallback callback) {
   FakeMediaAnalyticsClient::Get()->set_process_running(false);
   FakeMediaAnalyticsClient::Get()->set_process_running(true);
   FakeMediaAnalyticsClient::Get()->SetStateSuspended();
@@ -99,30 +100,34 @@ void FakeUpstartClient::StopMediaAnalytics() {
   FakeMediaAnalyticsClient::Get()->set_process_running(false);
 }
 
-void FakeUpstartClient::StopMediaAnalytics(VoidDBusMethodCallback callback) {
+void FakeUpstartClient::StopMediaAnalytics(
+    chromeos::VoidDBusMethodCallback callback) {
   FakeMediaAnalyticsClient::Get()->set_process_running(false);
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
-void FakeUpstartClient::StartWilcoDtcService(VoidDBusMethodCallback callback) {
+void FakeUpstartClient::StartWilcoDtcService(
+    chromeos::VoidDBusMethodCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
-void FakeUpstartClient::StopWilcoDtcService(VoidDBusMethodCallback callback) {
+void FakeUpstartClient::StopWilcoDtcService(
+    chromeos::VoidDBusMethodCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
 void FakeUpstartClient::StartArcDataSnapshotd(
     const std::vector<std::string>& upstart_env,
-    VoidDBusMethodCallback callback) {
+    chromeos::VoidDBusMethodCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
-void FakeUpstartClient::StopArcDataSnapshotd(VoidDBusMethodCallback callback) {
+void FakeUpstartClient::StopArcDataSnapshotd(
+    chromeos::VoidDBusMethodCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }

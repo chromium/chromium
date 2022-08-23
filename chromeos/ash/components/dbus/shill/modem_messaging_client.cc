@@ -61,7 +61,7 @@ class ModemMessagingProxy {
 
   // Calls Delete method.
   void Delete(const dbus::ObjectPath& message_path,
-              VoidDBusMethodCallback callback) {
+              chromeos::VoidDBusMethodCallback callback) {
     dbus::MethodCall method_call(modemmanager::kModemManager1MessagingInterface,
                                  modemmanager::kSMSDeleteFunction);
     dbus::MessageWriter writer(&method_call);
@@ -98,7 +98,8 @@ class ModemMessagingProxy {
   }
 
   // Handles responses of Delete method calls.
-  void OnDelete(VoidDBusMethodCallback callback, dbus::Response* response) {
+  void OnDelete(chromeos::VoidDBusMethodCallback callback,
+                dbus::Response* response) {
     std::move(callback).Run(response);
   }
 
@@ -159,7 +160,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) ModemMessagingClientImpl
   void Delete(const std::string& service_name,
               const dbus::ObjectPath& object_path,
               const dbus::ObjectPath& sms_path,
-              VoidDBusMethodCallback callback) override {
+              chromeos::VoidDBusMethodCallback callback) override {
     GetProxy(service_name, object_path)->Delete(sms_path, std::move(callback));
   }
 

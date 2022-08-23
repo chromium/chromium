@@ -64,7 +64,7 @@ void FakeLorgnetteManagerClient::StartScan(
 }
 
 void FakeLorgnetteManagerClient::CancelScan(
-    VoidDBusMethodCallback completion_callback) {
+    chromeos::VoidDBusMethodCallback completion_callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(completion_callback), true));
 }

@@ -251,9 +251,10 @@ void FakeCrasAudioClient::SetActiveInputNode(uint64_t node_id) {
     observer.ActiveInputNodeChanged(node_id);
 }
 
-void FakeCrasAudioClient::SetHotwordModel(uint64_t node_id,
-                                          const std::string& hotword_model,
-                                          VoidDBusMethodCallback callback) {}
+void FakeCrasAudioClient::SetHotwordModel(
+    uint64_t node_id,
+    const std::string& hotword_model,
+    chromeos::VoidDBusMethodCallback callback) {}
 
 void FakeCrasAudioClient::SetFixA2dpPacketSize(bool enabled) {}
 

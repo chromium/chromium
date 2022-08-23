@@ -81,8 +81,9 @@ class MediaAnalyticsClientImpl : public MediaAnalyticsClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void BootstrapMojoConnection(base::ScopedFD file_descriptor,
-                               VoidDBusMethodCallback callback) override {
+  void BootstrapMojoConnection(
+      base::ScopedFD file_descriptor,
+      chromeos::VoidDBusMethodCallback callback) override {
     dbus::MethodCall method_call(media_perception::kMediaPerceptionServiceName,
                                  media_perception::kBootstrapMojoConnection);
     dbus::MessageWriter writer(&method_call);
@@ -111,8 +112,9 @@ class MediaAnalyticsClientImpl : public MediaAnalyticsClient {
   }
 
  private:
-  void OnBootstrapMojoConnectionCallback(VoidDBusMethodCallback callback,
-                                         dbus::Response* response) {
+  void OnBootstrapMojoConnectionCallback(
+      chromeos::VoidDBusMethodCallback callback,
+      dbus::Response* response) {
     std::move(callback).Run(response != nullptr);
   }
 

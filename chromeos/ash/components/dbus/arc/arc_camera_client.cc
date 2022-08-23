@@ -36,7 +36,7 @@ class ArcCameraClientImpl : public ArcCameraClient {
   // ArcCameraClient overrides:
   void StartService(int fd,
                     const std::string& token,
-                    VoidDBusMethodCallback callback) override {
+                    chromeos::VoidDBusMethodCallback callback) override {
     dbus::MethodCall method_call(arc_camera::kArcCameraServiceInterface,
                                  "StartService");
     dbus::MessageWriter writer(&method_call);
@@ -49,7 +49,8 @@ class ArcCameraClientImpl : public ArcCameraClient {
   }
 
  private:
-  void OnVoidMethod(VoidDBusMethodCallback callback, dbus::Response* response) {
+  void OnVoidMethod(chromeos::VoidDBusMethodCallback callback,
+                    dbus::Response* response) {
     std::move(callback).Run(response);
   }
 

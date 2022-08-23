@@ -38,7 +38,7 @@ class COMPONENT_EXPORT(ASH_DBUS_ARC) ArcCameraClient {
   // token and FD.
   virtual void StartService(int fd,
                             const std::string& token,
-                            VoidDBusMethodCallback callback) = 0;
+                            chromeos::VoidDBusMethodCallback callback) = 0;
 
  protected:
   // Initialize() should be used instead.

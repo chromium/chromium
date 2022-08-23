@@ -99,7 +99,7 @@ void OnStringMethodWithErrorCallback(
 
 // Handles responses for methods without results.
 void OnVoidMethod(ShillClientHelper::RefHolder* ref_holder,
-                  VoidDBusMethodCallback callback,
+                  chromeos::VoidDBusMethodCallback callback,
                   dbus::Response* response) {
   std::move(callback).Run(response != nullptr);
 }
@@ -267,8 +267,9 @@ void ShillClientHelper::MonitorPropertyChangedInternal(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ShillClientHelper::CallVoidMethod(dbus::MethodCall* method_call,
-                                       VoidDBusMethodCallback callback) {
+void ShillClientHelper::CallVoidMethod(
+    dbus::MethodCall* method_call,
+    chromeos::VoidDBusMethodCallback callback) {
   DCHECK(!callback.is_null());
   proxy_->CallMethod(
       method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,

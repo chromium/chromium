@@ -149,7 +149,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
   // DebugDaemonClient override.
   void DumpDebugLogs(bool is_compressed,
                      int file_descriptor,
-                     VoidDBusMethodCallback callback) override {
+                     chromeos::VoidDBusMethodCallback callback) override {
     // Issue the dbus request to get debug logs.
     dbus::MethodCall method_call(debugd::kDebugdInterface,
                                  debugd::kDumpDebugLogs);
@@ -163,7 +163,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
   }
 
   void SetDebugMode(const std::string& subsystem,
-                    VoidDBusMethodCallback callback) override {
+                    chromeos::VoidDBusMethodCallback callback) override {
     dbus::MethodCall method_call(debugd::kDebugdInterface,
                                  debugd::kSetDebugMode);
     dbus::MessageWriter writer(&method_call);
@@ -241,7 +241,8 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void StopPerf(uint64_t session_id, VoidDBusMethodCallback callback) override {
+  void StopPerf(uint64_t session_id,
+                chromeos::VoidDBusMethodCallback callback) override {
     DCHECK(session_id);
     dbus::MethodCall method_call(debugd::kDebugdInterface, debugd::kStopPerf);
     dbus::MessageWriter writer(&method_call);
@@ -278,7 +279,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
   }
 
   void BackupArcBugReport(const cryptohome::AccountIdentifier& id,
-                          VoidDBusMethodCallback callback) override {
+                          chromeos::VoidDBusMethodCallback callback) override {
     dbus::MethodCall method_call(debugd::kDebugdInterface,
                                  debugd::kBackupArcBugReport);
     dbus::MessageWriter writer(&method_call);
@@ -606,7 +607,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
   }
 
   void SetU2fFlags(const std::set<std::string>& flags,
-                   VoidDBusMethodCallback callback) override {
+                   chromeos::VoidDBusMethodCallback callback) override {
     dbus::MethodCall method_call(debugd::kDebugdInterface,
                                  debugd::kSetU2fFlags);
     dbus::MessageWriter writer(&method_call);
@@ -826,7 +827,8 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
 
   // Called when D-Bus method call which does not return the result is
   // completed or on its error.
-  void OnVoidMethod(VoidDBusMethodCallback callback, dbus::Response* response) {
+  void OnVoidMethod(chromeos::VoidDBusMethodCallback callback,
+                    dbus::Response* response) {
     std::move(callback).Run(response);
   }
 

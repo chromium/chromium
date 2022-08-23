@@ -102,7 +102,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(state)));
   }
 
-  void CancelScan(VoidDBusMethodCallback cancel_callback) override {
+  void CancelScan(chromeos::VoidDBusMethodCallback cancel_callback) override {
     // Post the task to the proper sequence (since it requires access to
     // scan_job_state_).
     base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -200,7 +200,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     base::OnceCallback<void(lorgnette::ScanFailureMode)> completion_callback;
     base::RepeatingCallback<void(uint32_t, uint32_t)> progress_callback;
     base::RepeatingCallback<void(std::string, uint32_t)> page_callback;
-    VoidDBusMethodCallback cancel_callback;
+    chromeos::VoidDBusMethodCallback cancel_callback;
     std::unique_ptr<ScanDataReader> scan_data_reader;
   };
 
@@ -241,7 +241,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
   // Helper method to actually perform scan cancellation.
   // We use this method since the scan cancel logic requires that we are running
   // on the proper sequence.
-  void DoScanCancel(VoidDBusMethodCallback cancel_callback) {
+  void DoScanCancel(chromeos::VoidDBusMethodCallback cancel_callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (scan_job_state_.size() == 0) {
       LOG(ERROR) << "No active scan job to cancel.";

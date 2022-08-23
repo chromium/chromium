@@ -32,8 +32,9 @@ class COMPONENT_EXPORT(ASH_DBUS_ARC) ArcKeymasterClient : public DBusClient {
 
   // Bootstrap the Mojo connection between Chrome and the keymaster service.
   // Should pass in the child end of the Mojo pipe.
-  virtual void BootstrapMojoConnection(base::ScopedFD fd,
-                                       VoidDBusMethodCallback callback) = 0;
+  virtual void BootstrapMojoConnection(
+      base::ScopedFD fd,
+      chromeos::VoidDBusMethodCallback callback) = 0;
 
  protected:
   // Initialize() should be used instead.

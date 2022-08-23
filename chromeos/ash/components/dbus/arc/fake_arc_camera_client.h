@@ -22,7 +22,7 @@ class COMPONENT_EXPORT(ASH_DBUS_ARC) FakeArcCameraClient
   // ArcCameraClient override:
   void StartService(int fd,
                     const std::string& token,
-                    VoidDBusMethodCallback callback) override;
+                    chromeos::VoidDBusMethodCallback callback) override;
 
  protected:
   friend class ArcCameraClient;

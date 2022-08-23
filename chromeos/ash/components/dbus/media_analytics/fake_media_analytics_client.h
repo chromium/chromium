@@ -38,8 +38,9 @@ class COMPONENT_EXPORT(MEDIA_ANALYTICS_CLIENT) FakeMediaAnalyticsClient
                 chromeos::DBusMethodCallback<mri::State> callback) override;
   void GetDiagnostics(
       chromeos::DBusMethodCallback<mri::Diagnostics> callback) override;
-  void BootstrapMojoConnection(base::ScopedFD file_descriptor,
-                               VoidDBusMethodCallback callback) override;
+  void BootstrapMojoConnection(
+      base::ScopedFD file_descriptor,
+      chromeos::VoidDBusMethodCallback callback) override;
 
   // Fires a fake media perception event.
   bool FireMediaPerceptionEvent(const mri::MediaPerception& media_perception);

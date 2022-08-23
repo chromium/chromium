@@ -29,7 +29,8 @@ namespace {
 BiodClient* g_instance = nullptr;
 
 // D-Bus response handler for methods that use void callbacks.
-void OnVoidResponse(VoidDBusMethodCallback callback, dbus::Response* response) {
+void OnVoidResponse(chromeos::VoidDBusMethodCallback callback,
+                    dbus::Response* response) {
   std::move(callback).Run(response != nullptr);
 }
 
@@ -96,7 +97,7 @@ class BiodClientImpl : public BiodClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void DestroyAllRecords(VoidDBusMethodCallback callback) override {
+  void DestroyAllRecords(chromeos::VoidDBusMethodCallback callback) override {
     dbus::MethodCall method_call(
         biod::kBiometricsManagerInterface,
         biod::kBiometricsManagerDestroyAllRecordsMethod);
@@ -138,7 +139,7 @@ class BiodClientImpl : public BiodClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void CancelEnrollSession(VoidDBusMethodCallback callback) override {
+  void CancelEnrollSession(chromeos::VoidDBusMethodCallback callback) override {
     if (!current_enroll_session_path_) {
       std::move(callback).Run(true);
       return;
@@ -154,7 +155,7 @@ class BiodClientImpl : public BiodClient {
     current_enroll_session_path_.reset();
   }
 
-  void EndAuthSession(VoidDBusMethodCallback callback) override {
+  void EndAuthSession(chromeos::VoidDBusMethodCallback callback) override {
     if (!current_auth_session_path_) {
       std::move(callback).Run(true);
       return;
@@ -172,7 +173,7 @@ class BiodClientImpl : public BiodClient {
 
   void SetRecordLabel(const dbus::ObjectPath& record_path,
                       const std::string& label,
-                      VoidDBusMethodCallback callback) override {
+                      chromeos::VoidDBusMethodCallback callback) override {
     dbus::MethodCall method_call(biod::kRecordInterface,
                                  biod::kRecordSetLabelMethod);
     dbus::MessageWriter writer(&method_call);
@@ -186,7 +187,7 @@ class BiodClientImpl : public BiodClient {
   }
 
   void RemoveRecord(const dbus::ObjectPath& record_path,
-                    VoidDBusMethodCallback callback) override {
+                    chromeos::VoidDBusMethodCallback callback) override {
     dbus::MethodCall method_call(biod::kRecordInterface,
                                  biod::kRecordRemoveMethod);
 

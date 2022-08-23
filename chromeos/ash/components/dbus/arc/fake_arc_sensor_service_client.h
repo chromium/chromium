@@ -17,9 +17,10 @@ class COMPONENT_EXPORT(ASH_DBUS_ARC) FakeArcSensorServiceClient
   static FakeArcSensorServiceClient* Get();
 
   // ArcSensorServiceClient override:
-  void BootstrapMojoConnection(int fd,
-                               const std::string& token,
-                               VoidDBusMethodCallback callback) override;
+  void BootstrapMojoConnection(
+      int fd,
+      const std::string& token,
+      chromeos::VoidDBusMethodCallback callback) override;
 
  protected:
   friend class ArcSensorServiceClient;

@@ -35,9 +35,9 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
   void Init(dbus::Bus* bus) override;
   void DumpDebugLogs(bool is_compressed,
                      int file_descriptor,
-                     VoidDBusMethodCallback callback) override;
+                     chromeos::VoidDBusMethodCallback callback) override;
   void SetDebugMode(const std::string& subsystem,
-                    VoidDBusMethodCallback callback) override;
+                    chromeos::VoidDBusMethodCallback callback) override;
   std::string GetTracingAgentName() override;
   std::string GetTraceEventLabel() override;
   void SetSwapParameter(
@@ -78,11 +78,12 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
                      bool disable_cpu_idle,
                      int file_descriptor,
                      chromeos::DBusMethodCallback<uint64_t> callback) override;
-  void StopPerf(uint64_t session_id, VoidDBusMethodCallback callback) override;
+  void StopPerf(uint64_t session_id,
+                chromeos::VoidDBusMethodCallback callback) override;
   void GetScrubbedBigLogs(const cryptohome::AccountIdentifier& id,
                           GetLogsCallback callback) override;
   void BackupArcBugReport(const cryptohome::AccountIdentifier& id,
-                          VoidDBusMethodCallback callback) override;
+                          chromeos::VoidDBusMethodCallback callback) override;
   void GetAllLogs(GetLogsCallback callback) override;
   void GetLog(const std::string& log_name,
               chromeos::DBusMethodCallback<std::string> callback) override;
@@ -121,7 +122,7 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
       bool lock_policy,
       SetSchedulerConfigurationV2Callback callback) override;
   void SetU2fFlags(const std::set<std::string>& flags,
-                   VoidDBusMethodCallback callback) override;
+                   chromeos::VoidDBusMethodCallback callback) override;
   void GetU2fFlags(
       chromeos::DBusMethodCallback<std::set<std::string>> callback) override;
 

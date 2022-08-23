@@ -21,7 +21,7 @@ namespace {
 
 WilcoDtcSupportdClient* g_instance = nullptr;
 
-void OnVoidDBusMethod(VoidDBusMethodCallback callback,
+void OnVoidDBusMethod(chromeos::VoidDBusMethodCallback callback,
                       dbus::Response* response) {
   std::move(callback).Run(response != nullptr);
 }
@@ -40,8 +40,9 @@ class WilcoDtcSupportdClientImpl final : public WilcoDtcSupportdClient {
   // WilcoDtcSupportdClient overrides:
   void WaitForServiceToBeAvailable(
       WaitForServiceToBeAvailableCallback callback) override;
-  void BootstrapMojoConnection(base::ScopedFD fd,
-                               VoidDBusMethodCallback callback) override;
+  void BootstrapMojoConnection(
+      base::ScopedFD fd,
+      chromeos::VoidDBusMethodCallback callback) override;
   void Init(dbus::Bus* bus) override;
 
  private:
@@ -61,7 +62,7 @@ void WilcoDtcSupportdClientImpl::WaitForServiceToBeAvailable(
 
 void WilcoDtcSupportdClientImpl::BootstrapMojoConnection(
     base::ScopedFD fd,
-    VoidDBusMethodCallback callback) {
+    chromeos::VoidDBusMethodCallback callback) {
   dbus::MethodCall method_call(
       ::diagnostics::kWilcoDtcSupportdServiceInterface,
       ::diagnostics::kWilcoDtcSupportdBootstrapMojoConnectionMethod);

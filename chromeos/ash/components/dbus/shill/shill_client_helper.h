@@ -79,7 +79,7 @@ class ShillClientHelper {
 
   // Calls a method without results.
   void CallVoidMethod(dbus::MethodCall* method_call,
-                      VoidDBusMethodCallback callback);
+                      chromeos::VoidDBusMethodCallback callback);
 
   // Calls a method with an object path result where there is an error callback.
   void CallObjectPathMethodWithErrorCallback(dbus::MethodCall* method_call,

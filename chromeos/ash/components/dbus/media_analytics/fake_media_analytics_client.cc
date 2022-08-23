@@ -120,7 +120,7 @@ void FakeMediaAnalyticsClient::GetDiagnostics(
 
 void FakeMediaAnalyticsClient::BootstrapMojoConnection(
     base::ScopedFD file_descriptor,
-    VoidDBusMethodCallback callback) {
+    chromeos::VoidDBusMethodCallback callback) {
   // Fake that the mojo connection has been successfully established.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));

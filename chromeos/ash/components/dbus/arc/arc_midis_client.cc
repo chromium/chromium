@@ -34,8 +34,9 @@ class ArcMidisClientImpl : public ArcMidisClient {
 
   ~ArcMidisClientImpl() override = default;
 
-  void BootstrapMojoConnection(base::ScopedFD fd,
-                               VoidDBusMethodCallback callback) override {
+  void BootstrapMojoConnection(
+      base::ScopedFD fd,
+      chromeos::VoidDBusMethodCallback callback) override {
     dbus::MethodCall method_call(midis::kMidisInterfaceName,
                                  midis::kBootstrapMojoConnectionMethod);
     dbus::MessageWriter writer(&method_call);
@@ -53,7 +54,7 @@ class ArcMidisClientImpl : public ArcMidisClient {
   }
 
  private:
-  void OnVoidDBusMethod(VoidDBusMethodCallback callback,
+  void OnVoidDBusMethod(chromeos::VoidDBusMethodCallback callback,
                         dbus::Response* response) {
     std::move(callback).Run(response != nullptr);
   }

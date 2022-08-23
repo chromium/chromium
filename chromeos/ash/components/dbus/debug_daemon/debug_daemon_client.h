@@ -85,13 +85,13 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
   // waiting for the result.
   virtual void DumpDebugLogs(bool is_compressed,
                              int file_descriptor,
-                             VoidDBusMethodCallback callback) = 0;
+                             chromeos::VoidDBusMethodCallback callback) = 0;
 
   // Requests to change debug mode to given |subsystem| and calls
   // |callback| when completed. |subsystem| should be one of the
   // following: "wifi", "ethernet", "cellular" or "none".
   virtual void SetDebugMode(const std::string& subsystem,
-                            VoidDBusMethodCallback callback) = 0;
+                            chromeos::VoidDBusMethodCallback callback) = 0;
 
   // Gets information about routes.
   virtual void GetRoutes(
@@ -130,7 +130,7 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
   // profiling data right away. If the profiler session as identified by
   // |session_id| has ended, this method will silently succeed.
   virtual void StopPerf(uint64_t session_id,
-                        VoidDBusMethodCallback callback) = 0;
+                        chromeos::VoidDBusMethodCallback callback) = 0;
 
   // Callback type for GetAllLogs()
   using GetLogsCallback =
@@ -151,8 +151,9 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
   // If backup operation fails, an error is logged.
   // |id|: Cryptohome Account identifier for the user to get
   // logs for.
-  virtual void BackupArcBugReport(const cryptohome::AccountIdentifier& id,
-                                  VoidDBusMethodCallback callback) = 0;
+  virtual void BackupArcBugReport(
+      const cryptohome::AccountIdentifier& id,
+      chromeos::VoidDBusMethodCallback callback) = 0;
 
   // Gets all logs collected by debugd.
   virtual void GetAllLogs(GetLogsCallback callback) = 0;
@@ -310,7 +311,7 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
 
   // Set U2F flags.
   virtual void SetU2fFlags(const std::set<std::string>& flags,
-                           VoidDBusMethodCallback callback) = 0;
+                           chromeos::VoidDBusMethodCallback callback) = 0;
   // Get U2F flags.
   virtual void GetU2fFlags(
       chromeos::DBusMethodCallback<std::set<std::string>> callback) = 0;

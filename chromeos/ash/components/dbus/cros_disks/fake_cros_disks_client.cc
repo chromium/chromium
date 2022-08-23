@@ -73,7 +73,7 @@ void FakeCrosDisksClient::Mount(const std::string& source_path,
                                 const std::vector<std::string>& mount_options,
                                 MountAccessMode access_mode,
                                 RemountOption remount,
-                                VoidDBusMethodCallback callback) {
+                                chromeos::VoidDBusMethodCallback callback) {
   if (block_mount_) {
     return;
   }
@@ -124,7 +124,7 @@ void FakeCrosDisksClient::Mount(const std::string& source_path,
 void FakeCrosDisksClient::DidMount(const std::string& source_path,
                                    MountType type,
                                    const base::FilePath& mounted_path,
-                                   VoidDBusMethodCallback callback,
+                                   chromeos::VoidDBusMethodCallback callback,
                                    MountError mount_error) {
   // Tell the caller of Mount() that the mount request was accepted.
   // Note that even if PerformFakeMount fails, this calls with |true| to
@@ -172,7 +172,7 @@ void FakeCrosDisksClient::EnumerateMountEntries(
 void FakeCrosDisksClient::Format(const std::string& device_path,
                                  const std::string& filesystem,
                                  const std::string& label,
-                                 VoidDBusMethodCallback callback) {
+                                 chromeos::VoidDBusMethodCallback callback) {
   DCHECK(!callback.is_null());
 
   format_call_count_++;
@@ -195,7 +195,7 @@ void FakeCrosDisksClient::SinglePartitionFormat(const std::string& device_path,
 
 void FakeCrosDisksClient::Rename(const std::string& device_path,
                                  const std::string& volume_name,
-                                 VoidDBusMethodCallback callback) {
+                                 chromeos::VoidDBusMethodCallback callback) {
   DCHECK(!callback.is_null());
 
   rename_call_count_++;

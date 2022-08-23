@@ -116,7 +116,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillDeviceClient {
   // |callback| is called after the method call finishes.
   virtual void ClearProperty(const dbus::ObjectPath& device_path,
                              const std::string& name,
-                             VoidDBusMethodCallback callback) = 0;
+                             chromeos::VoidDBusMethodCallback callback) = 0;
 
   // Calls the RequirePin method.
   // |callback| is called after the method call finishes.

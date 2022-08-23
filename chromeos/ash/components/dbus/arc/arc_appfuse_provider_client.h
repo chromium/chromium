@@ -42,7 +42,7 @@ class COMPONENT_EXPORT(ASH_DBUS_ARC) ArcAppfuseProviderClient
   // Unmounts the specified appfuse file system.
   virtual void Unmount(uint32_t uid,
                        int32_t mount_id,
-                       VoidDBusMethodCallback callback) = 0;
+                       chromeos::VoidDBusMethodCallback callback) = 0;
 
   // Opens a file under the specified appfuse file system.
   virtual void OpenFile(

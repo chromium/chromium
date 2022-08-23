@@ -170,7 +170,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   virtual void RestartJob(int socket_fd,
                           const std::vector<std::string>& argv,
                           RestartJobReason reason,
-                          VoidDBusMethodCallback callback) = 0;
+                          chromeos::VoidDBusMethodCallback callback) = 0;
 
   // Sends the user's password to the session manager.
   virtual void SaveLoginPassword(const std::string& password) = 0;
@@ -238,15 +238,17 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
       const enterprise_management::SignedData& signed_command) = 0;
 
   // Set the block_demode and check_enrollment flags to 0 in the VPD.
-  virtual void ClearForcedReEnrollmentVpd(VoidDBusMethodCallback callback) = 0;
+  virtual void ClearForcedReEnrollmentVpd(
+      chromeos::VoidDBusMethodCallback callback) = 0;
 
-  virtual void UnblockDevModeForEnrollment(VoidDBusMethodCallback callback) = 0;
+  virtual void UnblockDevModeForEnrollment(
+      chromeos::VoidDBusMethodCallback callback) = 0;
 
   virtual void UnblockDevModeForInitialStateDetermination(
-      VoidDBusMethodCallback callback) = 0;
+      chromeos::VoidDBusMethodCallback callback) = 0;
 
   virtual void UnblockDevModeForCarrierLock(
-      VoidDBusMethodCallback callback) = 0;
+      chromeos::VoidDBusMethodCallback callback) = 0;
 
   // Triggers a TPM firmware update.
   virtual void StartTPMFirmwareUpdate(const std::string& update_mode) = 0;
@@ -373,7 +375,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   // Attempts to asynchronously store |policy_blob| as device policy.  Upon
   // completion of the store attempt, we will call callback.
   virtual void StoreDevicePolicy(const std::string& policy_blob,
-                                 VoidDBusMethodCallback callback) = 0;
+                                 chromeos::VoidDBusMethodCallback callback) = 0;
 
   // Attempts to asynchronously store |policy_blob| as user policy for the
   // given |cryptohome_id|. Upon completion of the store attempt, we will call
@@ -381,21 +383,21 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   virtual void StorePolicyForUser(
       const cryptohome::AccountIdentifier& cryptohome_id,
       const std::string& policy_blob,
-      VoidDBusMethodCallback callback) = 0;
+      chromeos::VoidDBusMethodCallback callback) = 0;
 
   // Sends a request to store a policy blob for the specified device-local
   // account. The result of the operation is reported through |callback|.
   virtual void StoreDeviceLocalAccountPolicy(
       const std::string& account_id,
       const std::string& policy_blob,
-      VoidDBusMethodCallback callback) = 0;
+      chromeos::VoidDBusMethodCallback callback) = 0;
 
   // Sends a request to store a |policy_blob| to Session Manager. The storage
   // location is determined by |descriptor|. The result of the operation is
   // reported through |callback|.
   virtual void StorePolicy(const login_manager::PolicyDescriptor& descriptor,
                            const std::string& policy_blob,
-                           VoidDBusMethodCallback callback) = 0;
+                           chromeos::VoidDBusMethodCallback callback) = 0;
 
   // Returns whether session manager can be used to restart Chrome in order to
   // apply per-user session flags, or start guest session.
@@ -445,7 +447,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   // processes for Chrome OS login screen.
   virtual void StartArcMiniContainer(
       const login_manager::StartArcMiniContainerRequest& request,
-      VoidDBusMethodCallback callback) = 0;
+      chromeos::VoidDBusMethodCallback callback) = 0;
 
   // UpgradeArcContainer upgrades a mini-container to a full ARC container. On
   // upgrade failure, the container will be shutdown. The container shutdown
@@ -454,7 +456,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   // ArcInstanceStopped signal is received first.
   virtual void UpgradeArcContainer(
       const login_manager::UpgradeArcContainerRequest& request,
-      VoidDBusMethodCallback callback) = 0;
+      chromeos::VoidDBusMethodCallback callback) = 0;
 
   // Asynchronously stops the ARC instance. When |should_backup_log| is set to
   // true it also initiates ARC log back up operation on debugd for the given
@@ -463,7 +465,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   // stop an instance or session manager can not be reached).
   virtual void StopArcInstance(const std::string& account_id,
                                bool should_backup_log,
-                               VoidDBusMethodCallback callback) = 0;
+                               chromeos::VoidDBusMethodCallback callback) = 0;
 
   // Adjusts the amount of CPU the ARC instance is allowed to use. When
   // |restriction_state| is CONTAINER_CPU_RESTRICTION_FOREGROUND the limit is
@@ -474,11 +476,11 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   // supported, the function asynchronously runs the |callback| with false.
   virtual void SetArcCpuRestriction(
       login_manager::ContainerCpuRestrictionState restriction_state,
-      VoidDBusMethodCallback callback) = 0;
+      chromeos::VoidDBusMethodCallback callback) = 0;
 
   // Emits the "arc-booted" upstart signal.
   virtual void EmitArcBooted(const cryptohome::AccountIdentifier& cryptohome_id,
-                             VoidDBusMethodCallback callback) = 0;
+                             chromeos::VoidDBusMethodCallback callback) = 0;
 
   // Asynchronously retrieves the timestamp which ARC instance is invoked.
   // Returns nullopt if there is no ARC instance or ARC is not available.

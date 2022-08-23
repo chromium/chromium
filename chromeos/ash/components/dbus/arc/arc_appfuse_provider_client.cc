@@ -50,7 +50,7 @@ class ArcAppfuseProviderClientImpl : public ArcAppfuseProviderClient {
 
   void Unmount(uint32_t uid,
                int32_t mount_id,
-               VoidDBusMethodCallback callback) override {
+               chromeos::VoidDBusMethodCallback callback) override {
     dbus::MethodCall method_call(arc::appfuse::kArcAppfuseProviderInterface,
                                  arc::appfuse::kUnmountMethod);
     dbus::MessageWriter writer(&method_call);
@@ -90,7 +90,7 @@ class ArcAppfuseProviderClientImpl : public ArcAppfuseProviderClient {
 
  private:
   // Runs the callback with the method call result.
-  void OnVoidDBusMethod(VoidDBusMethodCallback callback,
+  void OnVoidDBusMethod(chromeos::VoidDBusMethodCallback callback,
                         dbus::Response* response) {
     std::move(callback).Run(response != nullptr);
   }

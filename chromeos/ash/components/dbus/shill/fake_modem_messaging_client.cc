@@ -34,10 +34,11 @@ void FakeModemMessagingClient::ResetSmsReceivedHandler(
   sms_received_handlers_[object_path].Reset();
 }
 
-void FakeModemMessagingClient::Delete(const std::string& service_name,
-                                      const dbus::ObjectPath& object_path,
-                                      const dbus::ObjectPath& sms_path,
-                                      VoidDBusMethodCallback callback) {
+void FakeModemMessagingClient::Delete(
+    const std::string& service_name,
+    const dbus::ObjectPath& object_path,
+    const dbus::ObjectPath& sms_path,
+    chromeos::VoidDBusMethodCallback callback) {
   std::vector<dbus::ObjectPath> message_paths = message_paths_map_[object_path];
   auto iter = find(message_paths.begin(), message_paths.end(), sms_path);
   if (iter != message_paths.end())

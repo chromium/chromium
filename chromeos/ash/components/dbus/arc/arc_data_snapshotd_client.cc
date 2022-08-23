@@ -22,7 +22,7 @@ namespace {
 
 ArcDataSnapshotdClient* g_instance = nullptr;
 
-void OnBoolMethodCallback(VoidDBusMethodCallback callback,
+void OnBoolMethodCallback(chromeos::VoidDBusMethodCallback callback,
                           dbus::Response* response) {
   if (!response) {
     std::move(callback).Run(false /* success */);
@@ -68,7 +68,7 @@ class ArcDataSnapshotdClientImpl : public ArcDataSnapshotdClient {
   ArcDataSnapshotdClientImpl& operator=(const ArcDataSnapshotdClientImpl&) =
       delete;
 
-  void GenerateKeyPair(VoidDBusMethodCallback callback) override {
+  void GenerateKeyPair(chromeos::VoidDBusMethodCallback callback) override {
     dbus::MethodCall method_call(
         arc::data_snapshotd::kArcDataSnapshotdServiceInterface,
         arc::data_snapshotd::kGenerateKeyPairMethod);
@@ -78,7 +78,8 @@ class ArcDataSnapshotdClientImpl : public ArcDataSnapshotdClient {
         base::BindOnce(&OnBoolMethodCallback, std::move(callback)));
   }
 
-  void ClearSnapshot(bool last, VoidDBusMethodCallback callback) override {
+  void ClearSnapshot(bool last,
+                     chromeos::VoidDBusMethodCallback callback) override {
     dbus::MethodCall method_call(
         arc::data_snapshotd::kArcDataSnapshotdServiceInterface,
         arc::data_snapshotd::kClearSnapshotMethod);
@@ -90,7 +91,7 @@ class ArcDataSnapshotdClientImpl : public ArcDataSnapshotdClient {
   }
 
   void TakeSnapshot(const std::string& account_id,
-                    VoidDBusMethodCallback callback) override {
+                    chromeos::VoidDBusMethodCallback callback) override {
     dbus::MethodCall method_call(
         arc::data_snapshotd::kArcDataSnapshotdServiceInterface,
         arc::data_snapshotd::kTakeSnapshotMethod);
@@ -113,7 +114,7 @@ class ArcDataSnapshotdClientImpl : public ArcDataSnapshotdClient {
         base::BindOnce(&OnLoadSnapshotMethodCallback, std::move(callback)));
   }
 
-  void Update(int percent, VoidDBusMethodCallback callback) override {
+  void Update(int percent, chromeos::VoidDBusMethodCallback callback) override {
     dbus::MethodCall method_call(
         arc::data_snapshotd::kArcDataSnapshotdServiceInterface,
         arc::data_snapshotd::kUpdateMethod);

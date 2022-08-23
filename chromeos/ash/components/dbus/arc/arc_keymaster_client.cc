@@ -22,7 +22,7 @@ namespace {
 
 ArcKeymasterClient* g_instance = nullptr;
 
-void OnVoidDBusMethod(VoidDBusMethodCallback callback,
+void OnVoidDBusMethod(chromeos::VoidDBusMethodCallback callback,
                       dbus::Response* response) {
   std::move(callback).Run(response != nullptr);
 }
@@ -36,8 +36,9 @@ class ArcKeymasterClientImpl : public ArcKeymasterClient {
 
   ~ArcKeymasterClientImpl() override = default;
 
-  void BootstrapMojoConnection(base::ScopedFD fd,
-                               VoidDBusMethodCallback callback) override {
+  void BootstrapMojoConnection(
+      base::ScopedFD fd,
+      chromeos::VoidDBusMethodCallback callback) override {
     dbus::MethodCall method_call(
         arc::keymaster::kArcKeymasterInterfaceName,
         arc::keymaster::kBootstrapMojoConnectionMethod);

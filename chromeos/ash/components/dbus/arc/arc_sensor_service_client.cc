@@ -35,9 +35,10 @@ class ArcSensorServiceClientImpl : public ArcSensorServiceClient {
       delete;
 
   // ArcSensorServiceClient overrides:
-  void BootstrapMojoConnection(int fd,
-                               const std::string& token,
-                               VoidDBusMethodCallback callback) override {
+  void BootstrapMojoConnection(
+      int fd,
+      const std::string& token,
+      chromeos::VoidDBusMethodCallback callback) override {
     dbus::MethodCall method_call(arc::sensor::kArcSensorServiceInterface,
                                  arc::sensor::kBootstrapMojoConnectionMethod);
     dbus::MessageWriter writer(&method_call);
@@ -50,7 +51,8 @@ class ArcSensorServiceClientImpl : public ArcSensorServiceClient {
   }
 
  private:
-  void OnVoidMethod(VoidDBusMethodCallback callback, dbus::Response* response) {
+  void OnVoidMethod(chromeos::VoidDBusMethodCallback callback,
+                    dbus::Response* response) {
     std::move(callback).Run(response);
   }
 

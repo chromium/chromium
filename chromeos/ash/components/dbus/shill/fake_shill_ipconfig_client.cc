@@ -43,10 +43,11 @@ void FakeShillIPConfigClient::GetProperties(
       FROM_HERE, base::BindOnce(std::move(callback), dict->Clone()));
 }
 
-void FakeShillIPConfigClient::SetProperty(const dbus::ObjectPath& ipconfig_path,
-                                          const std::string& name,
-                                          const base::Value& value,
-                                          VoidDBusMethodCallback callback) {
+void FakeShillIPConfigClient::SetProperty(
+    const dbus::ObjectPath& ipconfig_path,
+    const std::string& name,
+    const base::Value& value,
+    chromeos::VoidDBusMethodCallback callback) {
   base::Value* dict = ipconfigs_.FindDictKey(ipconfig_path.value());
   if (!dict) {
     dict = ipconfigs_.SetKey(ipconfig_path.value(),
@@ -62,13 +63,14 @@ void FakeShillIPConfigClient::SetProperty(const dbus::ObjectPath& ipconfig_path,
 void FakeShillIPConfigClient::ClearProperty(
     const dbus::ObjectPath& ipconfig_path,
     const std::string& name,
-    VoidDBusMethodCallback callback) {
+    chromeos::VoidDBusMethodCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
-void FakeShillIPConfigClient::Remove(const dbus::ObjectPath& ipconfig_path,
-                                     VoidDBusMethodCallback callback) {
+void FakeShillIPConfigClient::Remove(
+    const dbus::ObjectPath& ipconfig_path,
+    chromeos::VoidDBusMethodCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }

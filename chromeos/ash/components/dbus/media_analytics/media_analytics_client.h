@@ -66,8 +66,9 @@ class COMPONENT_EXPORT(MEDIA_ANALYTICS_CLIENT) MediaAnalyticsClient {
   // Bootstrap the Mojo connection between Chrome and the media analytics
   // process. Should pass in the file descriptor for the child end of the Mojo
   // pipe.
-  virtual void BootstrapMojoConnection(base::ScopedFD file_descriptor,
-                                       VoidDBusMethodCallback callback) = 0;
+  virtual void BootstrapMojoConnection(
+      base::ScopedFD file_descriptor,
+      chromeos::VoidDBusMethodCallback callback) = 0;
 
   // Factory function, creates new instance and returns ownership.
   // For normal usage, access the singleton via DbusThreadManager::Get().

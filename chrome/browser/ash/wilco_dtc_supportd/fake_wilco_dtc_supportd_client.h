@@ -30,8 +30,9 @@ class FakeWilcoDtcSupportdClient final : public WilcoDtcSupportdClient {
   // WilcoDtcSupportdClient overrides:
   void WaitForServiceToBeAvailable(
       WaitForServiceToBeAvailableCallback callback) override;
-  void BootstrapMojoConnection(base::ScopedFD fd,
-                               VoidDBusMethodCallback callback) override;
+  void BootstrapMojoConnection(
+      base::ScopedFD fd,
+      chromeos::VoidDBusMethodCallback callback) override;
 
   // Whether there's a pending WaitForServiceToBeAvailable call.
   int wait_for_service_to_be_available_in_flight_call_count() const;
@@ -55,7 +56,7 @@ class FakeWilcoDtcSupportdClient final : public WilcoDtcSupportdClient {
       pending_wait_for_service_to_be_available_callbacks_;
 
   absl::optional<bool> bootstrap_mojo_connection_result_;
-  std::vector<VoidDBusMethodCallback>
+  std::vector<chromeos::VoidDBusMethodCallback>
       pending_bootstrap_mojo_connection_callbacks_;
 };
 

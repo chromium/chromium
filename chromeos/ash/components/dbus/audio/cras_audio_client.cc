@@ -345,7 +345,7 @@ class CrasAudioClientImpl : public CrasAudioClient {
 
   void SetHotwordModel(uint64_t node_id,
                        const std::string& hotword_model,
-                       VoidDBusMethodCallback callback) override {
+                       chromeos::VoidDBusMethodCallback callback) override {
     dbus::MethodCall method_call(cras::kCrasControlInterface,
                                  cras::kSetHotwordModel);
     dbus::MessageWriter writer(&method_call);
@@ -984,7 +984,7 @@ class CrasAudioClientImpl : public CrasAudioClient {
     std::move(callback).Run(deprioritize_bt_wbs_mic);
   }
 
-  void OnSetHotwordModel(VoidDBusMethodCallback callback,
+  void OnSetHotwordModel(chromeos::VoidDBusMethodCallback callback,
                          dbus::Response* response) {
     if (!response) {
       LOG(ERROR) << "Failed to call SetHotwordModel.";

@@ -30,7 +30,7 @@ class COMPONENT_EXPORT(ASH_DBUS_ARC) FakeArcAppfuseProviderClient
              chromeos::DBusMethodCallback<base::ScopedFD> callback) override;
   void Unmount(uint32_t uid,
                int32_t mount_id,
-               VoidDBusMethodCallback callback) override;
+               chromeos::VoidDBusMethodCallback callback) override;
   void OpenFile(uint32_t uid,
                 int32_t mount_id,
                 int32_t file_id,

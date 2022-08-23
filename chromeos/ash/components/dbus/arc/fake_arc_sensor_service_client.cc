@@ -37,7 +37,7 @@ FakeArcSensorServiceClient* FakeArcSensorServiceClient::Get() {
 void FakeArcSensorServiceClient::BootstrapMojoConnection(
     int fd,
     const std::string& token,
-    VoidDBusMethodCallback callback) {
+    chromeos::VoidDBusMethodCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }

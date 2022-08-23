@@ -46,7 +46,7 @@ class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) FakeCrosDisksClient
              const std::vector<std::string>& mount_options,
              MountAccessMode access_mode,
              RemountOption remount,
-             VoidDBusMethodCallback callback) override;
+             chromeos::VoidDBusMethodCallback callback) override;
 
   // Deletes the directory created in Mount().
   void Unmount(const std::string& device_path,
@@ -58,12 +58,12 @@ class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) FakeCrosDisksClient
   void Format(const std::string& device_path,
               const std::string& filesystem,
               const std::string& label,
-              VoidDBusMethodCallback callback) override;
+              chromeos::VoidDBusMethodCallback callback) override;
   void SinglePartitionFormat(const std::string& device_path,
                              PartitionCallback callback) override;
   void Rename(const std::string& device_path,
               const std::string& volume_name,
-              VoidDBusMethodCallback callback) override;
+              chromeos::VoidDBusMethodCallback callback) override;
   void GetDeviceProperties(const std::string& device_path,
                            GetDevicePropertiesCallback callback,
                            base::OnceClosure error_callback) override;
@@ -171,7 +171,7 @@ class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) FakeCrosDisksClient
   void DidMount(const std::string& source_path,
                 MountType type,
                 const base::FilePath& mounted_path,
-                VoidDBusMethodCallback callback,
+                chromeos::VoidDBusMethodCallback callback,
                 MountError mount_error);
 
   base::ObserverList<Observer> observer_list_;

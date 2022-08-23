@@ -16,7 +16,7 @@ void FakeArcMidisClient::Init(dbus::Bus* bus) {}
 
 void FakeArcMidisClient::BootstrapMojoConnection(
     base::ScopedFD fd,
-    VoidDBusMethodCallback callback) {
+    chromeos::VoidDBusMethodCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), false));
 }

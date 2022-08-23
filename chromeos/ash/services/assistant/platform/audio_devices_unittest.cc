@@ -97,7 +97,7 @@ class ScopedCrasAudioClientMock : public FakeCrasAudioClient {
               SetHotwordModel,
               (uint64_t node_id,
                const std::string& hotword_model,
-               VoidDBusMethodCallback callback));
+               chromeos::VoidDBusMethodCallback callback));
 };
 
 class ScopedCrasAudioHandler {
@@ -393,7 +393,7 @@ TEST_F(AssistantAudioDevicesTest, ShouldUseDefaultLocaleIfUserPrefIsRejected) {
   EXPECT_CALL(cras_audio_client_mock(),
               SetHotwordModel(_, "rejected_locale", _))
       .WillOnce([](uint64_t node_id, const std::string&,
-                   VoidDBusMethodCallback callback) {
+                   chromeos::VoidDBusMethodCallback callback) {
         // Report failure to change the locale
         std::move(callback).Run(/*success=*/false);
       });
@@ -418,7 +418,7 @@ TEST_F(AssistantAudioDevicesTest, ShouldDoNothingIfUserPrefIsAccepted) {
   EXPECT_CALL(cras_audio_client_mock(),
               SetHotwordModel(_, "accepted_locale", _))
       .WillOnce([](uint64_t node_id, const std::string&,
-                   VoidDBusMethodCallback callback) {
+                   chromeos::VoidDBusMethodCallback callback) {
         // Accept the change to the locale.
         std::move(callback).Run(/*success=*/true);
       });

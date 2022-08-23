@@ -21,7 +21,7 @@ namespace ash {
 // thread (UI thread) which initializes the DBusThreadManager instance.
 class COMPONENT_EXPORT(HIBERMAN_CLIENT) HibermanClient {
  public:
-  using ResumeFromHibernateCallback = VoidDBusMethodCallback;
+  using ResumeFromHibernateCallback = chromeos::VoidDBusMethodCallback;
 
   // Not copyable or movable.
   HibermanClient(const HibermanClient&) = delete;

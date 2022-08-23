@@ -288,10 +288,11 @@ void FakeSessionManagerClient::EmitLoginPromptVisible() {
 
 void FakeSessionManagerClient::EmitAshInitialized() {}
 
-void FakeSessionManagerClient::RestartJob(int socket_fd,
-                                          const std::vector<std::string>& argv,
-                                          RestartJobReason reason,
-                                          VoidDBusMethodCallback callback) {
+void FakeSessionManagerClient::RestartJob(
+    int socket_fd,
+    const std::vector<std::string>& argv,
+    RestartJobReason reason,
+    chromeos::VoidDBusMethodCallback callback) {
   DCHECK(supports_browser_restart_);
 
   restart_job_argv_ = argv;
@@ -380,25 +381,25 @@ void FakeSessionManagerClient::StartRemoteDeviceWipe(
 }
 
 void FakeSessionManagerClient::ClearForcedReEnrollmentVpd(
-    VoidDBusMethodCallback callback) {
+    chromeos::VoidDBusMethodCallback callback) {
   clear_forced_re_enrollment_vpd_call_count_++;
   PostReply(FROM_HERE, std::move(callback), true);
 }
 
 void FakeSessionManagerClient::UnblockDevModeForEnrollment(
-    VoidDBusMethodCallback callback) {
+    chromeos::VoidDBusMethodCallback callback) {
   unblock_dev_mode_enrollment_call_count_++;
   PostReply(FROM_HERE, std::move(callback), true);
 }
 
 void FakeSessionManagerClient::UnblockDevModeForInitialStateDetermination(
-    VoidDBusMethodCallback callback) {
+    chromeos::VoidDBusMethodCallback callback) {
   unblock_dev_mode_init_state_call_count_++;
   PostReply(FROM_HERE, std::move(callback), true);
 }
 
 void FakeSessionManagerClient::UnblockDevModeForCarrierLock(
-    VoidDBusMethodCallback callback) {
+    chromeos::VoidDBusMethodCallback callback) {
   unblock_dev_mode_carrier_lock_call_count_++;
   PostReply(FROM_HERE, std::move(callback), true);
 }
@@ -535,7 +536,7 @@ RetrievePolicyResponseType FakeSessionManagerClient::BlockingRetrievePolicy(
 
 void FakeSessionManagerClient::StoreDevicePolicy(
     const std::string& policy_blob,
-    VoidDBusMethodCallback callback) {
+    chromeos::VoidDBusMethodCallback callback) {
   login_manager::PolicyDescriptor descriptor = MakeChromePolicyDescriptor(
       login_manager::ACCOUNT_TYPE_DEVICE, kEmptyAccountId);
   StorePolicy(descriptor, policy_blob, std::move(callback));
@@ -544,7 +545,7 @@ void FakeSessionManagerClient::StoreDevicePolicy(
 void FakeSessionManagerClient::StorePolicyForUser(
     const cryptohome::AccountIdentifier& cryptohome_id,
     const std::string& policy_blob,
-    VoidDBusMethodCallback callback) {
+    chromeos::VoidDBusMethodCallback callback) {
   login_manager::PolicyDescriptor descriptor = MakeChromePolicyDescriptor(
       login_manager::ACCOUNT_TYPE_USER, cryptohome_id.account_id());
   StorePolicy(descriptor, policy_blob, std::move(callback));
@@ -553,7 +554,7 @@ void FakeSessionManagerClient::StorePolicyForUser(
 void FakeSessionManagerClient::StoreDeviceLocalAccountPolicy(
     const std::string& account_id,
     const std::string& policy_blob,
-    VoidDBusMethodCallback callback) {
+    chromeos::VoidDBusMethodCallback callback) {
   login_manager::PolicyDescriptor descriptor = MakeChromePolicyDescriptor(
       login_manager::ACCOUNT_TYPE_DEVICE_LOCAL_ACCOUNT, account_id);
   StorePolicy(descriptor, policy_blob, std::move(callback));
@@ -562,7 +563,7 @@ void FakeSessionManagerClient::StoreDeviceLocalAccountPolicy(
 void FakeSessionManagerClient::StorePolicy(
     const login_manager::PolicyDescriptor& descriptor,
     const std::string& policy_blob,
-    VoidDBusMethodCallback callback) {
+    chromeos::VoidDBusMethodCallback callback) {
   // Decode the blob to get the new key.
   enterprise_management::PolicyFetchResponse response;
   if (!response.ParseFromString(policy_blob)) {
@@ -685,7 +686,7 @@ void FakeSessionManagerClient::GetPsmDeviceActiveSecret(
 
 void FakeSessionManagerClient::StartArcMiniContainer(
     const login_manager::StartArcMiniContainerRequest& request,
-    VoidDBusMethodCallback callback) {
+    chromeos::VoidDBusMethodCallback callback) {
   last_start_arc_mini_container_request_ = request;
 
   if (!arc_available_) {
@@ -699,7 +700,7 @@ void FakeSessionManagerClient::StartArcMiniContainer(
 
 void FakeSessionManagerClient::UpgradeArcContainer(
     const login_manager::UpgradeArcContainerRequest& request,
-    VoidDBusMethodCallback callback) {
+    chromeos::VoidDBusMethodCallback callback) {
   last_upgrade_arc_request_ = request;
 
   PostReply(FROM_HERE, std::move(callback), !force_upgrade_failure_);
@@ -716,7 +717,7 @@ void FakeSessionManagerClient::UpgradeArcContainer(
 void FakeSessionManagerClient::StopArcInstance(
     const std::string& account_id,
     bool should_backup_log,
-    VoidDBusMethodCallback callback) {
+    chromeos::VoidDBusMethodCallback callback) {
   if (!arc_available_ || !container_running_) {
     PostReply(FROM_HERE, std::move(callback), false /* result */);
     return;
@@ -735,13 +736,13 @@ void FakeSessionManagerClient::StopArcInstance(
 
 void FakeSessionManagerClient::SetArcCpuRestriction(
     login_manager::ContainerCpuRestrictionState restriction_state,
-    VoidDBusMethodCallback callback) {
+    chromeos::VoidDBusMethodCallback callback) {
   PostReply(FROM_HERE, std::move(callback), arc_available_);
 }
 
 void FakeSessionManagerClient::EmitArcBooted(
     const cryptohome::AccountIdentifier& cryptohome_id,
-    VoidDBusMethodCallback callback) {
+    chromeos::VoidDBusMethodCallback callback) {
   PostReply(FROM_HERE, std::move(callback), arc_available_);
 }
 

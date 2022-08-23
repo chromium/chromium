@@ -48,7 +48,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillDeviceClient
                    ErrorCallback error_callback) override;
   void ClearProperty(const dbus::ObjectPath& device_path,
                      const std::string& name,
-                     VoidDBusMethodCallback callback) override;
+                     chromeos::VoidDBusMethodCallback callback) override;
   void RequirePin(const dbus::ObjectPath& device_path,
                   const std::string& pin,
                   bool require,
@@ -125,7 +125,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillDeviceClient
       chromeos::DBusMethodCallback<base::Value> callback) const;
 
   // Posts a task to run a void callback with status code |result|.
-  void PostVoidCallback(VoidDBusMethodCallback callback, bool result);
+  void PostVoidCallback(chromeos::VoidDBusMethodCallback callback, bool result);
 
   // If |notify_changed| is true, NotifyObserversPropertyChanged is called,
   // otherwise it is not (e.g. when setting up initial properties).

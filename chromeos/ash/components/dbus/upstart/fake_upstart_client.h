@@ -31,27 +31,29 @@ class COMPONENT_EXPORT(UPSTART_CLIENT) FakeUpstartClient
   // UpstartClient overrides:
   void StartJob(const std::string& job,
                 const std::vector<std::string>& upstart_env,
-                VoidDBusMethodCallback callback) override;
+                chromeos::VoidDBusMethodCallback callback) override;
   void StartJobWithErrorDetails(
       const std::string& job,
       const std::vector<std::string>& upstart_env,
       StartJobWithErrorDetailsCallback callback) override;
   void StopJob(const std::string& job,
                const std::vector<std::string>& upstart_env,
-               VoidDBusMethodCallback callback) override;
+               chromeos::VoidDBusMethodCallback callback) override;
   void StartAuthPolicyService() override;
   void RestartAuthPolicyService() override;
   void StartLacrosChrome(const std::vector<std::string>& upstart_env) override;
   void StartMediaAnalytics(const std::vector<std::string>& upstart_env,
-                           VoidDBusMethodCallback callback) override;
-  void RestartMediaAnalytics(VoidDBusMethodCallback callback) override;
+                           chromeos::VoidDBusMethodCallback callback) override;
+  void RestartMediaAnalytics(
+      chromeos::VoidDBusMethodCallback callback) override;
   void StopMediaAnalytics() override;
-  void StopMediaAnalytics(VoidDBusMethodCallback callback) override;
-  void StartWilcoDtcService(VoidDBusMethodCallback callback) override;
-  void StopWilcoDtcService(VoidDBusMethodCallback callback) override;
-  void StartArcDataSnapshotd(const std::vector<std::string>& upstart_env,
-                             VoidDBusMethodCallback callback) override;
-  void StopArcDataSnapshotd(VoidDBusMethodCallback callback) override;
+  void StopMediaAnalytics(chromeos::VoidDBusMethodCallback callback) override;
+  void StartWilcoDtcService(chromeos::VoidDBusMethodCallback callback) override;
+  void StopWilcoDtcService(chromeos::VoidDBusMethodCallback callback) override;
+  void StartArcDataSnapshotd(
+      const std::vector<std::string>& upstart_env,
+      chromeos::VoidDBusMethodCallback callback) override;
+  void StopArcDataSnapshotd(chromeos::VoidDBusMethodCallback callback) override;
 
   void set_start_job_cb(const StartStopJobCallback& cb) { start_job_cb_ = cb; }
   void set_stop_job_cb(const StartStopJobCallback& cb) { stop_job_cb_ = cb; }

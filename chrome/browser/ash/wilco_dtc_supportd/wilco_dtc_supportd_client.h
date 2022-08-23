@@ -36,8 +36,9 @@ class WilcoDtcSupportdClient : public DBusClient {
 
   // Bootstrap the Mojo connection between Chrome and the wilco_dtc_supportd
   // daemon. |fd| is the file descriptor with the child end of the Mojo pipe.
-  virtual void BootstrapMojoConnection(base::ScopedFD fd,
-                                       VoidDBusMethodCallback callback) = 0;
+  virtual void BootstrapMojoConnection(
+      base::ScopedFD fd,
+      chromeos::VoidDBusMethodCallback callback) = 0;
 
  protected:
   // Create() should be used instead.

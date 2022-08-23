@@ -32,7 +32,7 @@ void FakeWilcoDtcSupportdClient::WaitForServiceToBeAvailable(
 
 void FakeWilcoDtcSupportdClient::BootstrapMojoConnection(
     base::ScopedFD fd,
-    VoidDBusMethodCallback callback) {
+    chromeos::VoidDBusMethodCallback callback) {
   if (bootstrap_mojo_connection_result_) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
@@ -71,7 +71,7 @@ void FakeWilcoDtcSupportdClient::SetBootstrapMojoConnectionResult(
   bootstrap_mojo_connection_result_ = bootstrap_mojo_connection_result;
   if (!bootstrap_mojo_connection_result_)
     return;
-  std::vector<VoidDBusMethodCallback> callbacks;
+  std::vector<chromeos::VoidDBusMethodCallback> callbacks;
   callbacks.swap(pending_bootstrap_mojo_connection_callbacks_);
   for (auto& callback : callbacks)
     std::move(callback).Run(*bootstrap_mojo_connection_result_);

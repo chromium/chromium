@@ -389,7 +389,7 @@ class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) CrosDisksClient
                      const std::vector<std::string>& mount_options,
                      MountAccessMode access_mode,
                      RemountOption remount,
-                     VoidDBusMethodCallback callback) = 0;
+                     chromeos::VoidDBusMethodCallback callback) = 0;
 
   // Calls Unmount method.  On method call completion, |callback| is called
   // with the error code.
@@ -411,7 +411,7 @@ class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) CrosDisksClient
   virtual void Format(const std::string& device_path,
                       const std::string& filesystem,
                       const std::string& label,
-                      VoidDBusMethodCallback callback) = 0;
+                      chromeos::VoidDBusMethodCallback callback) = 0;
 
   // Calls SinglePartitionFormat async method. |callback| is called when
   // response received.
@@ -422,7 +422,7 @@ class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) CrosDisksClient
   // success, or with |false| otherwise.
   virtual void Rename(const std::string& device_path,
                       const std::string& volume_name,
-                      VoidDBusMethodCallback callback) = 0;
+                      chromeos::VoidDBusMethodCallback callback) = 0;
 
   // Calls GetDeviceProperties method.  |callback| is called after the method
   // call succeeds, otherwise, |error_callback| is called.

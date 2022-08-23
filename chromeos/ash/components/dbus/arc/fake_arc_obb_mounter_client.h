@@ -29,9 +29,9 @@ class COMPONENT_EXPORT(ASH_DBUS_ARC) FakeArcObbMounterClient
   void MountObb(const std::string& obb_file,
                 const std::string& mount_path,
                 int32_t owner_gid,
-                VoidDBusMethodCallback callback) override;
+                chromeos::VoidDBusMethodCallback callback) override;
   void UnmountObb(const std::string& mount_path,
-                  VoidDBusMethodCallback callback) override;
+                  chromeos::VoidDBusMethodCallback callback) override;
 };
 
 }  // namespace ash

@@ -207,7 +207,7 @@ class CrosDisksClientImpl : public CrosDisksClient {
              const std::vector<std::string>& mount_options,
              MountAccessMode access_mode,
              RemountOption remount,
-             VoidDBusMethodCallback callback) override {
+             chromeos::VoidDBusMethodCallback callback) override {
     dbus::MethodCall method_call(cros_disks::kCrosDisksInterface,
                                  cros_disks::kMount);
     dbus::MessageWriter writer(&method_call);
@@ -265,7 +265,7 @@ class CrosDisksClientImpl : public CrosDisksClient {
   void Format(const std::string& device_path,
               const std::string& filesystem,
               const std::string& label,
-              VoidDBusMethodCallback callback) override {
+              chromeos::VoidDBusMethodCallback callback) override {
     format_start_time_[device_path] = base::TimeTicks::Now();
     dbus::MethodCall method_call(cros_disks::kCrosDisksInterface,
                                  cros_disks::kFormat);
@@ -300,7 +300,7 @@ class CrosDisksClientImpl : public CrosDisksClient {
 
   void Rename(const std::string& device_path,
               const std::string& volume_name,
-              VoidDBusMethodCallback callback) override {
+              chromeos::VoidDBusMethodCallback callback) override {
     dbus::MethodCall method_call(cros_disks::kCrosDisksInterface,
                                  cros_disks::kRename);
     dbus::MessageWriter writer(&method_call);
@@ -388,12 +388,13 @@ class CrosDisksClientImpl : public CrosDisksClient {
   };
 
   // Handles the result of D-Bus method call with no return value.
-  void OnVoidMethod(VoidDBusMethodCallback callback, dbus::Response* response) {
+  void OnVoidMethod(chromeos::VoidDBusMethodCallback callback,
+                    dbus::Response* response) {
     std::move(callback).Run(response);
   }
 
   // Handles the result of Mount and calls |callback|.
-  void OnMount(VoidDBusMethodCallback callback,
+  void OnMount(chromeos::VoidDBusMethodCallback callback,
                base::Time start_time,
                dbus::Response* response) {
     UMA_HISTOGRAM_MEDIUM_TIMES("CrosDisksClient.MountTime",

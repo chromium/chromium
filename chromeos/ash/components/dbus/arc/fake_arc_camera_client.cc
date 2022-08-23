@@ -34,9 +34,10 @@ FakeArcCameraClient* FakeArcCameraClient::Get() {
   return g_instance;
 }
 
-void FakeArcCameraClient::StartService(int fd,
-                                       const std::string& token,
-                                       VoidDBusMethodCallback callback) {
+void FakeArcCameraClient::StartService(
+    int fd,
+    const std::string& token,
+    chromeos::VoidDBusMethodCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }

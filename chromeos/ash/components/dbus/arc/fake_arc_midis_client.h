@@ -24,8 +24,9 @@ class COMPONENT_EXPORT(ASH_DBUS_ARC) FakeArcMidisClient
   void Init(dbus::Bus* bus) override;
 
   // ArcMidisClient override:
-  void BootstrapMojoConnection(base::ScopedFD fd,
-                               VoidDBusMethodCallback callback) override;
+  void BootstrapMojoConnection(
+      base::ScopedFD fd,
+      chromeos::VoidDBusMethodCallback callback) override;
 };
 
 }  // namespace ash
