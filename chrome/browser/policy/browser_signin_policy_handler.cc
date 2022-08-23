@@ -18,6 +18,7 @@
 #include "components/signin/public/base/signin_pref_names.h"
 
 namespace policy {
+
 BrowserSigninPolicyHandler::BrowserSigninPolicyHandler(Schema chrome_schema)
     : IntRangePolicyHandler(key::kBrowserSignin,
                             prefs::kForceBrowserSignin,

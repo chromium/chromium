@@ -30799,6 +30799,13 @@ Called by update_document_policy_enum.py.-->
   <int value="2" label="Timeout on a consumer device"/>
 </enum>
 
+<enum name="EnterpriseBrowserSigninPolicy">
+  <summary>Value for BrowserSignin policy</summary>
+  <int value="0" label="Disable browser sign-in"/>
+  <int value="1" label="Enable browser sign-in"/>
+  <int value="2" label="Force users to sign-in to use the browser"/>
+</enum>
+
 <enum name="EnterpriseCheckError">
   <summary>
     Defined as DomainCheckErrors in
