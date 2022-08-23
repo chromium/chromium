@@ -661,12 +661,17 @@ bool AwContentBrowserClient::ShouldOverrideUrlLoading(
   // WebView Classic lets app override only top level about:blank navigations.
   // So we filter out non-top about:blank navigations here.
   //
+  // The uuid-in-package scheme is used for subframe navigation with WebBundles
+  // (https://github.com/WICG/webpackage/blob/main/explainers/subresource-loading-opaque-origin-iframes.md),
+  // so treat it in the same way as http(s).
+  //
   // Note: about:blank navigations are not received in this path at the moment,
   // they use the old SYNC IPC path as they are not handled by network stack.
   // However, the old path should be removed in future.
   if (!is_outermost_main_frame &&
       (gurl.SchemeIs(url::kHttpScheme) || gurl.SchemeIs(url::kHttpsScheme) ||
-       gurl.SchemeIs(url::kAboutScheme)))
+       gurl.SchemeIs(url::kAboutScheme) ||
+       gurl.SchemeIs(url::kUuidInPackageScheme)))
     return true;
 
   WebContents* web_contents =
