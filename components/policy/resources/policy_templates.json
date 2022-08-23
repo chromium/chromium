@@ -12107,6 +12107,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable device power status reporting',
+        },
+        {
+          'value': False,
+          'caption': 'Disable device power status reporting',
+        },
+      ],
       'example_value': False,
       'id': 512,
       'caption': '''Report power status''',
@@ -12158,6 +12168,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable device storage status reporting',
+        },
+        {
+          'value': False,
+          'caption': 'Disable device storage status reporting',
+        },
+      ],
       'example_value': False,
       'id': 513,
       'caption': '''Report storage status''',
@@ -12179,6 +12199,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable device board status reporting',
+        },
+        {
+          'value': False,
+          'caption': 'Disable device board status reporting',
+        },
+      ],
       'example_value': False,
       'id': 514,
       'caption': '''Report board status''',
@@ -12199,6 +12229,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable device CPU info reporting',
+        },
+        {
+          'value': False,
+          'caption': 'Disable device CPU info reporting',
+        },
+      ],
       'example_value': False,
       'id': 656,
       'caption': '''Report CPU info''',
@@ -12220,6 +12260,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable device timezone info reporting',
+        },
+        {
+          'value': False,
+          'caption': 'Disable device timezone info reporting',
+        },
+      ],
       'example_value': False,
       'id': 671,
       'caption': '''Report Timezone info''',
@@ -12241,6 +12291,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable device memory info reporting',
+        },
+        {
+          'value': False,
+          'caption': 'Disable device memory info reporting',
+        },
+      ],
       'example_value': False,
       'id': 682,
       'caption': '''Report memory info''',
@@ -12262,6 +12322,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable device backlight info reporting',
+        },
+        {
+          'value': False,
+          'caption': 'Disable device backlight info reporting',
+        },
+      ],
       'example_value': False,
       'id': 686,
       'caption': '''Report backlight info''',
@@ -12283,6 +12353,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable device app info reporting',
+        },
+        {
+          'value': False,
+          'caption': 'Disable device app info reporting',
+        },
+      ],
       'example_value': False,
       'id': 702,
       'caption': '''Report applications information''',
@@ -12304,6 +12384,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable device Bluetooth info reporting',
+        },
+        {
+          'value': False,
+          'caption': 'Disable device Bluetooth info reporting',
+        },
+      ],
       'example_value': False,
       'id': 708,
       'caption': '''Report Bluetooth info''',
@@ -12325,6 +12415,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable device fan info reporting',
+        },
+        {
+          'value': False,
+          'caption': 'Disable device fan info reporting',
+        },
+      ],
       'example_value': False,
       'id': 709,
       'caption': '''Report fan info''',
@@ -12346,6 +12446,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable device VPD info reporting',
+        },
+        {
+          'value': False,
+          'caption': 'Disable device VPD info reporting',
+        },
+      ],
       'example_value': False,
       'id': 710,
       'caption': '''Report VPD info''',
@@ -12368,6 +12478,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable device system info reporting',
+        },
+        {
+          'value': False,
+          'caption': 'Disable device system info reporting',
+        },
+      ],
       'example_value': False,
       'id': 741,
       'caption': '''Report system info''',
