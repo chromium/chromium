@@ -69,7 +69,7 @@
                    "canRequestAudioTrack": {
                      "type": "boolean",
                      "description": "True if \"audio\" is included in parameter sources, and the end user does not uncheck the \"Share audio\" checkbox. Otherwise false, and in this case, one should not ask for audio stream through getUserMedia call."
-                   } 
+                   }
                 }
               }
             ]
