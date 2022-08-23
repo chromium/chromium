@@ -4950,11 +4950,31 @@
     },
 
     'webview_trichrome_64_cts_tests': {
-      'webview_trichrome_64_cts_tests': {},
+      'webview_trichrome_64_cts_tests': {
+        'swarming': {
+          'cipd_packages': [
+            {
+              'cipd_package': 'chromium/android_webview/tools/cts_archive',
+              'location': 'android_webview/tools/cts_archive',
+              'revision': 'qF6dhyFMW7qFOzHo_Lu-bWxpbe-zRfL1KvHPQtQA3d0C',
+            }
+          ]
+        },
+      },
     },
 
     'webview_trichrome_cts_tests': {
-      'webview_trichrome_cts_tests': {},
+      'webview_trichrome_cts_tests': {
+        'swarming': {
+          'cipd_packages': [
+            {
+              'cipd_package': 'chromium/android_webview/tools/cts_archive',
+              'location': 'android_webview/tools/cts_archive',
+              'revision': 'qF6dhyFMW7qFOzHo_Lu-bWxpbe-zRfL1KvHPQtQA3d0C',
+            }
+          ]
+        },
+      },
     },
 
     'webview_ui_instrumentation_tests': {
