@@ -3091,6 +3091,51 @@
             ]
         }
     ],
+    "CombinedNavigationOptimizations2": [
+        {
+            "platforms": [
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DecodeScriptSourceOffThread",
+                        "EstablishGpuChannelAsync",
+                        "OptimizeDataUrls"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "prewarm_cursive": "false",
+                        "prewarm_fantasy": "false",
+                        "prewarm_fixed": "false",
+                        "prewarm_sans_serif": "true",
+                        "prewarm_serif": "true",
+                        "prewarm_standard": "false"
+                    },
+                    "enable_features": [
+                        "DecodeScriptSourceOffThread",
+                        "OptimizeDataUrls",
+                        "PrewarmDefaultFontFamilies"
+                    ]
+                }
+            ]
+        }
+    ],
     "CommerceHintAndroid": [
         {
             "platforms": [
@@ -3492,28 +3537,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "CCTPackageNameRecording"
-                    ]
-                }
-            ]
-        }
-    ],
-    "DecodeScriptSourceOffThread": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20220428",
-                    "enable_features": [
-                        "DecodeScriptSourceOffThread"
                     ]
                 }
             ]
@@ -4330,29 +4353,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EnableSsePathForCopyLCharsX86"
-                    ]
-                }
-            ]
-        }
-    ],
-    "EstablishGpuChannelAsync": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "AsyncEarly_20220617",
-                    "enable_features": [
-                        "EarlyEstablishGpuChannel",
-                        "EstablishGpuChannelAsync"
                     ]
                 }
             ]
@@ -6928,28 +6928,6 @@
             ]
         }
     ],
-    "OptimizeDataUrls": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OptimizeDataUrls"
-                    ]
-                }
-            ]
-        }
-    ],
     "OptimizeGeolocationHeaderGeneration": [
         {
             "platforms": [
@@ -7678,21 +7656,6 @@
                     "disable_features": [
                         "OmniboxTriggerForNoStatePrefetch",
                         "SupportSearchSuggestionForPrerender2"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PrewarmDefaultFontFamilies": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20220425",
-                    "enable_features": [
-                        "PrewarmDefaultFontFamilies"
                     ]
                 }
             ]
