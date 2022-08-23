@@ -192,6 +192,10 @@ try_.builder(
 )
 
 try_.builder(
+    name = "linux-lacros-tester-rel-reviver",
+)
+
+try_.builder(
     name = "linux-lacros-version-skew-fyi",
 )
 
