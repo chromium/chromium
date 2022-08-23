@@ -49,8 +49,8 @@ absl::optional<std::string> DeviceNameManagerImpl::GetDeviceNickname(
   }
 
   const std::string* nickname =
-      local_state_->GetDictionary(kDeviceIdToNicknameMapPrefName)
-          ->FindStringKey(device_id);
+      local_state_->GetValueDict(kDeviceIdToNicknameMapPrefName)
+          .FindString(device_id);
   if (!nickname)
     return absl::nullopt;
 
