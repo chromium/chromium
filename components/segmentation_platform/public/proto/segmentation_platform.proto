@@ -64,4 +64,7 @@ enum SegmentId {
   // New entries should start from a 1000 if OptimizationTarget does not
   // have a corresponding type.
   MAX_OPTIMIZATION_TARGET = 999;
+
+  // Determine power users of the browser app.
+  POWER_USER_SEGMENT = 1000;
 };

@@ -45,6 +45,10 @@ const char kFeedUserSegmentUmaName[] = "FeedUserSegment";
 const char kContextualPageActionsKey[] = "contextual_page_actions";
 const char kContextualPageActionsUmaName[] = "ContextualPageActions";
 
+// Determine power users of the browser app.
+const char kPowerUserKey[] = "power_user";
+const char kPowerUserUmaName[] = "PowerUser";
+
 // The key provide a list of segment IDs, separated by commas, whose ML model
 // execution results are allowed to be uploaded through UKM.
 const char kSegmentIdsAllowedForReportingKey[] =
