@@ -1708,12 +1708,15 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
 // Tests that the search suggested actions section has the right rows in the
 // recent tabs page.
-// TODO(crbug.com/1352109): Re-enable.
-- (void)DISABLED_testSearchSuggestedActionsSectionContentInRecentTabs {
+- (void)testSearchSuggestedActionsSectionContentInRecentTabs {
   [self loadTestURLsInNewTabs];
   [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
       performAction:grey_tap()];
+  // Scroll all the way to the top of the recent tabs page because a prior
+  // test may have left it partially scrolled down.
+  [[EarlGrey selectElementWithMatcher:RecentTabsTable()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeTop)];
 
   // Enter search mode and enter a search query.
   [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
@@ -1730,7 +1733,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [[self scrollDownViewMatcher:RecentTabsTable()
                toSelectMatcher:chrome_test_util::HeaderWithAccessibilityLabelId(
                                    IDS_IOS_TABS_SEARCH_SUGGESTED_ACTIONS)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+      assertWithMatcher:grey_notNil()];
   [[self scrollDownViewMatcher:RecentTabsTable()
                toSelectMatcher:SearchOnWebSuggestedAction()]
       assertWithMatcher:grey_notNil()];
@@ -1787,6 +1790,10 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
       performAction:grey_tap()];
+  // Scroll all the way to the top of the recent tabs page because a prior
+  // test may have left it partially scrolled down.
+  [[EarlGrey selectElementWithMatcher:RecentTabsTable()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeTop)];
 
   // Enter search mode.
   [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
@@ -2085,6 +2092,10 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
       performAction:grey_tap()];
+  // Scroll all the way to the top of the recent tabs page because a prior
+  // test may have left it partially scrolled down.
+  [[EarlGrey selectElementWithMatcher:RecentTabsTable()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeTop)];
 
   // Enter search mode & perform a search.
   [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
@@ -2174,6 +2185,11 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
       performAction:grey_tap()];
+  // Scroll all the way to the top of the recent tabs page because a prior
+  // test may have left it partially scrolled down.
+  [[EarlGrey selectElementWithMatcher:RecentTabsTable()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeTop)];
+
   [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
       performAction:grey_tap()];
   const std::string searchQuery("queryfromtabsearch");
@@ -2285,6 +2301,10 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
   [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
       performAction:grey_tap()];
+  // Scroll all the way to the top of the recent tabs page because a prior
+  // test may have left it partially scrolled down.
+  [[EarlGrey selectElementWithMatcher:RecentTabsTable()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeTop)];
 
   // Ensure all recently closed tab entries are present.
   [[EarlGrey selectElementWithMatcher:RecentlyClosedTabWithTitle(kTitle1)]
@@ -2329,6 +2349,10 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
   [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
       performAction:grey_tap()];
+  // Scroll all the way to the top of the recent tabs page because a prior
+  // test may have left it partially scrolled down.
+  [[EarlGrey selectElementWithMatcher:RecentTabsTable()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeTop)];
 
   // Ensure all recently closed tab entries are present.
   [[EarlGrey selectElementWithMatcher:RecentlyClosedTabWithTitle(kTitle1)]
@@ -2435,6 +2459,11 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   // Switch over to Recent Tabs.
   [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
       performAction:grey_tap()];
+
+  // Scroll all the way to the top of the recent tabs page because a prior
+  // test may have left it partially scrolled down.
+  [[EarlGrey selectElementWithMatcher:RecentTabsTable()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeTop)];
 }
 
 // Long press on the recent tab entry or the tab item in the tab grid with
