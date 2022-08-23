@@ -133,7 +133,7 @@ class FakeHttpsLatencyDelegate : public HttpsLatencySampler::Delegate {
 };
 
 TEST(HttpsLatencySamplerTest, NoProblem) {
-  base::test::SingleThreadTaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment;
 
   FakeNetworkDiagnostics diagnostics;
   int latency_ms = 100;
@@ -168,7 +168,7 @@ TEST(HttpsLatencySamplerTest, NoProblem) {
 }
 
 TEST(HttpsLatencySamplerTest, FailedRequests) {
-  base::test::SingleThreadTaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment;
 
   FakeNetworkDiagnostics diagnostics;
   diagnostics.SetResultProblem(HttpsLatencyProblemMojom::kFailedHttpsRequests);
@@ -202,7 +202,7 @@ TEST(HttpsLatencySamplerTest, FailedRequests) {
 }
 
 TEST(HttpsLatencySamplerTest, OverlappingCalls) {
-  base::test::SingleThreadTaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment;
 
   FakeNetworkDiagnostics diagnostics;
   diagnostics.SetResultProblem(HttpsLatencyProblemMojom::kFailedDnsResolutions);
@@ -259,7 +259,7 @@ TEST(HttpsLatencySamplerTest, OverlappingCalls) {
 }
 
 TEST(HttpsLatencySamplerTest, SuccessiveCalls) {
-  base::test::SingleThreadTaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment;
 
   FakeNetworkDiagnostics diagnostics;
   HttpsLatencySampler sampler(
@@ -363,7 +363,7 @@ class HttpsLatencyEventDetectorTest
     }
     base::RunLoop().RunUntilIdle();
   }
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   ::ash::NetworkHandlerTestHelper network_handler_test_helper_;
 };

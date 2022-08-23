@@ -64,7 +64,11 @@ source_set("test_callbacks_support") {
     "test_support_callbacks.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
 }
 
 source_set("disconnectable_client") {

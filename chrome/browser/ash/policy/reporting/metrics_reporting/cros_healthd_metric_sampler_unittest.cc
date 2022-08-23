@@ -186,7 +186,7 @@ class CrosHealthdMetricSamplerTest : public testing::Test {
   }
 
  protected:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 class CrosHealthdMetricSamplerTbtTest

@@ -176,7 +176,7 @@ class NetworkTelemetrySamplerTest : public ::testing::Test {
 
   std::unique_ptr<test::FakeSampler> https_latency_sampler_;
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   ::ash::NetworkHandlerTestHelper network_handler_test_helper_;
 
