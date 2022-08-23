@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink-forward.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace gfx {
 class RectF;
@@ -87,7 +88,7 @@ class CORE_EXPORT DragController final
   // event's location does NOT match the initiation location for a mouse-drag:
   // the drag is triggered by a mouse-move event but the initiation location is
   // that of a mouse-down event.
-  bool StartDrag(LocalFrame* src,
+  bool StartDrag(LocalFrame*,
                  const DragState&,
                  const WebMouseEvent& drag_event,
                  const gfx::Point& drag_initiation_location);

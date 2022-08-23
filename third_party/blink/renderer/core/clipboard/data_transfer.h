@@ -98,7 +98,10 @@ class CORE_EXPORT DataTransfer final : public ScriptWrappable,
   Vector<String> types();
   FileList* files() const;
 
+  // Returns drag location (offset) within the dragged object.  This is (0,0)
+  // unless set by setDragImage().
   gfx::Point DragLocation() const { return drag_loc_; }
+
   void setDragImage(Element*, int x, int y);
   void ClearDragImage();
   void SetDragImageResource(ImageResourceContent*, const gfx::Point&);

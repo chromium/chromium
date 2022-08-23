@@ -1192,71 +1192,71 @@ std::unique_ptr<DragImage> DragController::DragImageForSelection(
       *builder, property_tree_state);
 }
 
-bool DragController::StartDrag(LocalFrame* src,
-                               const DragState& state,
-                               const WebMouseEvent& drag_event,
-                               const gfx::Point& drag_initiation_location) {
-#if DCHECK_IS_ON()
-  DCHECK(DragTypeIsValid(state.drag_type_));
-#endif
-  DCHECK(src);
-  if (!src->View() || !src->ContentLayoutObject())
-    return false;
+namespace {
 
-  HitTestLocation location(drag_initiation_location);
-  HitTestResult hit_test_result =
-      src->GetEventHandler().HitTestResultAtLocation(location);
-  Node* hit_inner_node = hit_test_result.InnerNode();
-  if (!hit_inner_node ||
-      !state.drag_src_->IsShadowIncludingInclusiveAncestorOf(*hit_inner_node)) {
-    // The original node being dragged isn't under the drag origin anymore...
-    // maybe it was hidden or moved out from under the cursor. Regardless, we
-    // don't want to start a drag on something that's not actually under the
-    // drag origin.
-    return false;
+void SelectEnclosingAnchorIfContentEditable(LocalFrame* frame) {
+  if (frame->Selection()
+          .ComputeVisibleSelectionInDOMTreeDeprecated()
+          .IsCaret() &&
+      frame->Selection()
+          .ComputeVisibleSelectionInDOMTreeDeprecated()
+          .IsContentEditable()) {
+    // A user can initiate a drag on a link without having any text
+    // selected.  In this case, we should expand the selection to
+    // the enclosing anchor element.
+    if (Node* anchor = EnclosingAnchorElement(
+            frame->Selection()
+                .ComputeVisibleSelectionInDOMTreeDeprecated()
+                .Base())) {
+      frame->Selection().SetSelectionAndEndTyping(
+          SelectionInDOMTree::Builder().SelectAllChildren(*anchor).Build());
+    }
   }
+}
+
+std::unique_ptr<DragImage> DetermineDragImageAndRect(
+    gfx::Point& drag_obj_location,
+    gfx::Point& effective_drag_initiation_location,
+    LocalFrame* frame,
+    const DragState& state,
+    const HitTestResult& hit_test_result,
+    const gfx::Point& drag_initiation_location,
+    const gfx::Point& mouse_dragged_point) {
+  DataTransfer* data_transfer = state.drag_data_transfer_.Get();
   const KURL& link_url = hit_test_result.AbsoluteLinkURL();
-  const KURL& image_url = hit_test_result.AbsoluteImageURL();
+  float device_scale_factor =
+      frame->GetChromeClient().GetScreenInfo(*frame).device_scale_factor;
 
-  gfx::Point mouse_dragged_point = src->View()->ConvertFromRootFrame(
-      gfx::ToFlooredPoint(drag_event.PositionInRootFrame()));
-
-  gfx::Point drag_obj_location;
   gfx::Point drag_offset;
 
-  DataTransfer* data_transfer = state.drag_data_transfer_.Get();
-  float device_scale_factor =
-      src->GetChromeClient().GetScreenInfo(*src).device_scale_factor;
-
-  // We allow DHTML/JS to set the drag image, even if its a link, image or text
-  // we're dragging.  This is in the spirit of the IE API, which allows
-  // overriding of pasteboard data and DragOp.
+  // HTML DnD spec allows setting the drag image, even if it is a link, image or
+  // text we are dragging.
   std::unique_ptr<DragImage> drag_image =
-      data_transfer->CreateDragImage(drag_offset, device_scale_factor, src);
+      data_transfer->CreateDragImage(drag_offset, device_scale_factor, frame);
   if (drag_image) {
     drag_obj_location =
         DragLocationForDHTMLDrag(mouse_dragged_point, drag_initiation_location,
                                  drag_offset, !link_url.IsEmpty());
   }
 
-  Node* node = state.drag_src_.Get();
-  gfx::Point effective_drag_initiation_location = drag_initiation_location;
+  effective_drag_initiation_location = drag_initiation_location;
 
+  // If |drag_image| is not provided, try to determine a drag-source-specific
+  // image and location.
   if (state.drag_type_ == kDragSourceActionSelection) {
     if (!drag_image) {
-      drag_image = DragController::DragImageForSelection(*src, kDragImageAlpha);
-      drag_obj_location = DragLocationForSelectionDrag(*src);
+      drag_image =
+          DragController::DragImageForSelection(*frame, kDragImageAlpha);
+      drag_obj_location = DragLocationForSelectionDrag(*frame);
     }
   } else if (state.drag_type_ == kDragSourceActionImage) {
-    auto* element = DynamicTo<Element>(node);
-    if (image_url.IsEmpty() || !element || !CanDragImage(*element))
-      return false;
     if (!drag_image) {
+      auto* element = DynamicTo<Element>(state.drag_src_.Get());
       const gfx::Rect& image_rect = hit_test_result.ImageRect();
       // TODO(oshima): Remove this scaling and simply pass imageRect to
       // dragImageForImage once all platforms are migrated to use zoom for dsf.
       gfx::Size image_size_in_pixels = gfx::ScaleToFlooredSize(
-          image_rect.size(), src->GetPage()->GetVisualViewport().Scale());
+          image_rect.size(), frame->GetPage()->GetVisualViewport().Scale());
 
       // Pass the selected image size in DIP becasue dragImageForImage clips the
       // image in DIP.  The coordinates of the locations are in Viewport
@@ -1271,42 +1271,77 @@ bool DragController::StartDrag(LocalFrame* src,
           image_rect.origin(), image_size_in_pixels);
     }
   } else if (state.drag_type_ == kDragSourceActionLink) {
-    if (link_url.IsEmpty())
-      return false;
-    if (src->Selection()
-            .ComputeVisibleSelectionInDOMTreeDeprecated()
-            .IsCaret() &&
-        src->Selection()
-            .ComputeVisibleSelectionInDOMTreeDeprecated()
-            .IsContentEditable()) {
-      // a user can initiate a drag on a link without having any text
-      // selected.  In this case, we should expand the selection to
-      // the enclosing anchor element
-      if (Node* anchor = EnclosingAnchorElement(
-              src->Selection()
-                  .ComputeVisibleSelectionInDOMTreeDeprecated()
-                  .Base())) {
-        src->Selection().SetSelectionAndEndTyping(
-            SelectionInDOMTree::Builder().SelectAllChildren(*anchor).Build());
-      }
-    }
-
     if (!drag_image) {
-      DCHECK(src->GetPage());
+      DCHECK(frame->GetPage());
       drag_image = DragImageForLink(link_url, hit_test_result.TextContent(),
-                                    device_scale_factor, src->GetDocument());
+                                    device_scale_factor, frame->GetDocument());
       drag_obj_location = DragLocationForLink(
           drag_image.get(), mouse_dragged_point, device_scale_factor,
-          src->GetPage()->PageScaleFactor());
+          frame->GetPage()->PageScaleFactor());
     }
+    // Why is the initiation location different only for link-drags?
     effective_drag_initiation_location = mouse_dragged_point;
-  } else if (state.drag_type_ != kDragSourceActionDHTML) {
+  }
+
+  return drag_image;
+}
+
+}  // namespace
+
+bool DragController::StartDrag(LocalFrame* frame,
+                               const DragState& state,
+                               const WebMouseEvent& drag_event,
+                               const gfx::Point& drag_initiation_location) {
+  DCHECK(frame);
+  if (!frame->View() || !frame->ContentLayoutObject())
+    return false;
+
+  HitTestLocation location(drag_initiation_location);
+  HitTestResult hit_test_result =
+      frame->GetEventHandler().HitTestResultAtLocation(location);
+  Node* hit_inner_node = hit_test_result.InnerNode();
+  if (!hit_inner_node ||
+      !state.drag_src_->IsShadowIncludingInclusiveAncestorOf(*hit_inner_node)) {
+    // The original node being dragged isn't under the drag origin anymore...
+    // maybe it was hidden or moved out from under the cursor. Regardless, we
+    // don't want to start a drag on something that's not actually under the
+    // drag origin.
+    return false;
+  }
+
+  // Note that drag_origin is different from event position.
+  gfx::Point mouse_dragged_point = frame->View()->ConvertFromRootFrame(
+      gfx::ToFlooredPoint(drag_event.PositionInRootFrame()));
+
+  // Check early return conditions.
+  if (state.drag_type_ == kDragSourceActionImage) {
+    const KURL& image_url = hit_test_result.AbsoluteImageURL();
+    auto* element = DynamicTo<Element>(state.drag_src_.Get());
+    if (image_url.IsEmpty() || !element || !CanDragImage(*element))
+      return false;
+  } else if (state.drag_type_ == kDragSourceActionLink) {
+    const KURL& link_url = hit_test_result.AbsoluteLinkURL();
+    if (link_url.IsEmpty())
+      return false;
+  } else if (state.drag_type_ != kDragSourceActionSelection &&
+             state.drag_type_ != kDragSourceActionDHTML) {
     NOTREACHED();
     return false;
   }
 
+  if (state.drag_type_ == kDragSourceActionLink)
+    SelectEnclosingAnchorIfContentEditable(frame);
+
+  gfx::Point drag_obj_location;
+  gfx::Point effective_drag_initiation_location;
+
+  std::unique_ptr<DragImage> drag_image = DetermineDragImageAndRect(
+      drag_obj_location, effective_drag_initiation_location, frame, state,
+      hit_test_result, drag_initiation_location, mouse_dragged_point);
+
   DoSystemDrag(drag_image.get(), drag_obj_location,
-               effective_drag_initiation_location, data_transfer, src);
+               effective_drag_initiation_location,
+               state.drag_data_transfer_.Get(), frame);
   return true;
 }
 
@@ -1319,9 +1354,9 @@ void DragController::DoSystemDrag(DragImage* image,
   drag_initiator_ = frame->DomWindow();
   SetExecutionContext(frame->DomWindow());
 
-  // TODO(pdr): |drag_obj_location| and |event_pos| should be passed in as
-  // FloatPoints and we should calculate these adjusted values in floating
-  // point to avoid unnecessary rounding.
+  // TODO(pdr): |drag_obj_location| and |drag_initiation_location| should be
+  // passed in as FloatPoints and we should calculate these adjusted values in
+  // floating point to avoid unnecessary rounding.
   gfx::Point adjusted_drag_obj_location =
       frame->View()->FrameToViewport(drag_obj_location);
   gfx::Point adjusted_event_pos =
@@ -1333,7 +1368,6 @@ void DragController::DoSystemDrag(DragImage* image,
   DragOperationsMask drag_operation_mask = data_transfer->SourceOperation();
 
   SkBitmap drag_image = image ? image->Bitmap() : SkBitmap();
-
   page_->GetChromeClient().StartDragging(frame, drag_data, drag_operation_mask,
                                          std::move(drag_image), offset_point);
 }
