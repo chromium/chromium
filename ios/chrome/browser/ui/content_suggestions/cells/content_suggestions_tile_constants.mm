@@ -65,27 +65,24 @@ UIImage* ImageForCollectionShortcutType(NTPCollectionShortcutType type) {
 }
 
 UIImage* SymbolForCollectionShortcutType(NTPCollectionShortcutType type) {
-  // TODO(crbug.com/1315544): use right SF symbols.
-  NSString* imageName = nil;
   switch (type) {
     case NTPCollectionShortcutTypeBookmark:
-      imageName = kContentSuggestionsBookmarksSymbol;
-      break;
+      return DefaultSymbolTemplateWithPointSize(
+          kContentSuggestionsBookmarksSymbol,
+          kSymbolContentSuggestionsPointSize);
     case NTPCollectionShortcutTypeReadingList:
-      imageName = kContentSuggestionsBookmarksSymbol;
-      break;
+      return CustomSymbolTemplateWithPointSize(
+          kReadingListSymbol, kSymbolContentSuggestionsPointSize);
     case NTPCollectionShortcutTypeRecentTabs:
-      imageName = kContentSuggestionsBookmarksSymbol;
-      break;
+      return CustomSymbolTemplateWithPointSize(
+          kRecentTabsSymbol, kSymbolContentSuggestionsPointSize);
     case NTPCollectionShortcutTypeHistory:
-      imageName = kContentSuggestionsBookmarksSymbol;
-      break;
+      return DefaultSymbolTemplateWithPointSize(
+          kClockArrowSymbol, kSymbolContentSuggestionsPointSize);
     case NTPCollectionShortcutTypeCount:
       NOTREACHED();
-      break;
+      return nil;
   }
-  return DefaultSymbolTemplateWithPointSize(imageName,
-                                            kSymbolContentSuggestionsPointSize);
 }
 
 NSString* AccessibilityLabelForReadingListCellWithCount(int count) {

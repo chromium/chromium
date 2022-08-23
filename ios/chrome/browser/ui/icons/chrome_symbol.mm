@@ -57,6 +57,8 @@ NSString* const kPopupBadgeMinusSymbol = @"popup_badge_minus";
 NSString* const kPhotoBadgePlusSymbol = @"photo_badge_plus";
 NSString* const kPhotoBadgeMagnifyingglassSymbol =
     @"photo_badge_magnifyinggglass";
+NSString* const kReadingListSymbol = @"square_bullet_square";
+NSString* const kRecentTabsSymbol = @"laptopcomputer_and_phone";
 
 // Default symbol names.
 NSString* const kCreditCardSymbol = @"creditcard";

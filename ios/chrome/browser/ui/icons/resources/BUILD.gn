@@ -86,3 +86,17 @@ symbolset("photo_badge_magnifyingglass") {
     "photo_badge_magnifyingglass.symbolset/photo.badge.magnifyingglass.cr.svg",
   ]
 }
+
+symbolset("square_bullet_square") {
+  sources = [
+    "square_bullet_square.symbolset/Contents.json",
+    "square_bullet_square.symbolset/square.bullet.square.cr.svg",
+  ]
+}
+
+symbolset("laptopcomputer_and_phone") {
+  sources = [
+    "laptopcomputer_and_phone.symbolset/Contents.json",
+    "laptopcomputer_and_phone.symbolset/laptopcomputer.and.phone.cr.svg",
+  ]
+}
