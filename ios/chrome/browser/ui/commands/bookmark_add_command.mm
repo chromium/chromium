@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/ui/commands/bookmark_add_command.h"
 
+#import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/ui/util/url_with_title.h"
+#import "ios/web/public/web_state.h"
 #import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -31,6 +33,15 @@
     _presentFolderChooser = presentFolderChooser;
   }
   return self;
+}
+
+- (instancetype)initWithWebState:(web::WebState*)webState
+            presentFolderChooser:(BOOL)presentFolderChooser {
+  GURL URL = webState->GetLastCommittedURL();
+  NSString* title = tab_util::GetTabTitle(webState);
+  return [self initWithURL:URL
+                     title:title
+      presentFolderChooser:presentFolderChooser];
 }
 
 - (instancetype)initWithURLs:(NSArray<URLWithTitle*>*)URLs {

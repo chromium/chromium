@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/window_activities/window_activity_helpers.h"
+#import "ios/web/public/web_state.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -75,11 +76,19 @@ using base::UserMetricsAction;
       RecordAction(UserMetricsAction("MobileMenuReadLater"));
       [self.delegate readPageLater];
       break;
-    case PopupMenuActionPageBookmark:
+    case PopupMenuActionPageBookmark: {
       RecordAction(UserMetricsAction("MobileMenuAddToBookmarks"));
       LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
-      [self.bookmarksCommandsHandler bookmarkCurrentPage];
+      web::WebState* currentWebState = self.delegate.currentWebState;
+      if (!currentWebState) {
+        return;
+      }
+      BookmarkAddCommand* command =
+          [[BookmarkAddCommand alloc] initWithWebState:currentWebState
+                                  presentFolderChooser:NO];
+      [self.bookmarksCommandsHandler bookmark:command];
       break;
+    }
     case PopupMenuActionTranslate:
       base::RecordAction(UserMetricsAction("MobileMenuTranslate"));
       [self.browserCoordinatorCommandsHandler showTranslate];

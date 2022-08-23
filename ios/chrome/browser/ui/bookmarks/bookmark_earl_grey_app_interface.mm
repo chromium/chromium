@@ -253,7 +253,8 @@
   const bookmarks::BookmarkNode* bookmark =
       [self bookmarkModel] -> GetMostRecentlyAddedUserNodeForURL(
                                GURL(base::SysNSStringToUTF16(URL)));
-  if (bookmark->GetTitle().compare(base::SysNSStringToUTF16(name)) != 0) {
+  if (!bookmark ||
+      bookmark->GetTitle().compare(base::SysNSStringToUTF16(name)) != 0) {
     return testing::NSErrorWithLocalizedDescription(
         [NSString stringWithFormat:@"Could not find bookmark named %@ for %@",
                                    name, URL]);

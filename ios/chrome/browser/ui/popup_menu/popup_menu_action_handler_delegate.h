@@ -9,6 +9,9 @@
 
 @protocol PopupMenuItem;
 @class TableViewItem;
+namespace web {
+class WebState;
+}
 
 // Delegate for the PopupMenuActionHandler.
 @protocol PopupMenuActionHandlerDelegate
@@ -26,6 +29,8 @@
 // menu option has been tapped. Follows or unfollows the website according to
 // the current follow status of the website.
 - (void)toggleFollowed;
+// The current web state.
+- (web::WebState*)currentWebState;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_POPUP_MENU_POPUP_MENU_ACTION_HANDLER_DELEGATE_H_

@@ -54,6 +54,7 @@ source_set("commands") {
   ]
 
   deps = [
+    "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/ui/util:url_with_title",
     "//ios/public/provider/chrome/browser/user_feedback",
     "//ios/web",
