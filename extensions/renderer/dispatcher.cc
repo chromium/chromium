@@ -264,7 +264,7 @@ Dispatcher::PendingServiceWorker::PendingServiceWorker(
 
 Dispatcher::PendingServiceWorker::~PendingServiceWorker() = default;
 
-// Note that we can't use Blink public APIs in the constructor becase Blink
+// Note that we can't use Blink public APIs in the constructor because Blink
 // is not initialized at the point we create Dispatcher.
 Dispatcher::Dispatcher(std::unique_ptr<DispatcherDelegate> delegate)
     : delegate_(std::move(delegate)),
