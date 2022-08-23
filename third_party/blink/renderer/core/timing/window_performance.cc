@@ -703,6 +703,9 @@ void WindowPerformance::OnLargestContentfulPaintUpdated(
   if (HTMLImageElement* image_element = DynamicTo<HTMLImageElement>(element)) {
     image_element->SetIsLCPElement();
   }
+
+  if (element)
+    element->GetDocument().OnLargestContentfulPaintUpdated();
 }
 
 void WindowPerformance::OnPaintFinished() {
