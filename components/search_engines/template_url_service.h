@@ -730,6 +730,11 @@ class TemplateURLService : public WebDataServiceConsumer,
   // corresponding database entry a match. https://crbug.com/1164024
   bool MatchesDefaultSearchProvider(TemplateURL* turl) const;
 
+  // Emits the UMA Histogram for the number of search engines that are active
+  // and inactive at load time.
+  void EmitTemplateURLActiveOnStartupHistogram(
+      OwnedTemplateURLVector* template_urls);
+
   // ---------- Browser state related members ---------------------------------
   raw_ptr<PrefService> prefs_ = nullptr;
 
