@@ -330,8 +330,7 @@ void AttributionDataHostManagerImpl::NotifyNavigationForDataHost(
     // source.
     // TODO(apaseltiner): Report a DevTools/internals issue if the destinations
     // aren't matched.
-    if (source.common_info().ConversionDestination() !=
-        registrations.destination) {
+    if (source.common_info().DestinationSite() != registrations.destination) {
       continue;
     }
 
@@ -724,8 +723,8 @@ void AttributionDataHostManagerImpl::OnRedirectSourceParsed(
   // Process the registration if it was valid.
   // TODO(apaseltiner): Report a DevTools/internals issue if the destinations
   // aren't matched.
-  if (source && source->common_info().ConversionDestination() ==
-                    registrations.destination) {
+  if (source &&
+      source->common_info().DestinationSite() == registrations.destination) {
     attribution_manager_->HandleSource(std::move(*source));
   }
 

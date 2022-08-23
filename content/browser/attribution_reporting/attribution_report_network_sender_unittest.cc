@@ -304,7 +304,7 @@ TEST_F(AttributionReportNetworkSenderTest, ReportSent_RequestAttributesSet) {
   auto impression =
       SourceBuilder(base::Time())
           .SetReportingOrigin(url::Origin::Create(GURL("https://a.com")))
-          .SetConversionOrigin(url::Origin::Create(GURL("https://sub.b.com")))
+          .SetDestinationOrigin(url::Origin::Create(GURL("https://sub.b.com")))
           .BuildStored();
   AttributionReport report =
       ReportBuilder(AttributionInfoBuilder(impression).Build()).Build();

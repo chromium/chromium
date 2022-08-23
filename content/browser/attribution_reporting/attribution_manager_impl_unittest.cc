@@ -966,7 +966,7 @@ TEST_F(AttributionManagerImplTest,
   auto impression2 =
       SourceBuilder().SetReportingOrigin(session_only_origin).Build();
   auto impression3 =
-      SourceBuilder().SetConversionOrigin(session_only_origin).Build();
+      SourceBuilder().SetDestinationOrigin(session_only_origin).Build();
 
   // Create one  impression which is not session only.
   auto impression4 = SourceBuilder().Build();
@@ -1361,7 +1361,7 @@ TEST_F(AttributionManagerImplTest,
   attribution_manager_->HandleSource(
       SourceBuilder()
           .SetSourceOrigin(source_origin)
-          .SetConversionOrigin(destination_origin)
+          .SetDestinationOrigin(destination_origin)
           .SetReportingOrigin(reporting_origin)
           .SetDebugKey(123)
           .SetExpiry(kImpressionExpiry)

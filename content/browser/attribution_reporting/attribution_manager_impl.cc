@@ -302,7 +302,7 @@ bool AttributionManagerImpl::IsReportAllowed(
   return IsOperationAllowed(
       storage_partition_.get(),
       ContentBrowserClient::ConversionMeasurementOperation::kReport,
-      &common_info.source_origin(), &common_info.conversion_origin(),
+      &common_info.source_origin(), &common_info.destination_origin(),
       &common_info.reporting_origin());
 }
 

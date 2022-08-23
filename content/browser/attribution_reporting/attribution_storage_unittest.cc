@@ -217,7 +217,7 @@ TEST_F(AttributionStorageTest,
        CrossOriginSameDomainConversion_ImpressionConverted) {
   auto impression =
       SourceBuilder()
-          .SetConversionOrigin(url::Origin::Create(GURL("https://sub.a.test")))
+          .SetDestinationOrigin(url::Origin::Create(GURL("https://sub.a.test")))
           .Build();
   storage()->StoreSource(impression);
   EXPECT_EQ(
@@ -316,7 +316,7 @@ TEST_F(AttributionStorageTest,
 TEST_F(AttributionStorageTest,
        ConversionWithDifferentConversionOrigin_NoReportScheduled) {
   auto impression = SourceBuilder()
-                        .SetConversionOrigin(
+                        .SetDestinationOrigin(
                             url::Origin::Create(GURL("https://different.test")))
                         .Build();
   storage()->StoreSource(impression);
@@ -374,7 +374,7 @@ TEST_F(AttributionStorageTest,
   storage()->StoreSource(new_impression);
 
   // The first impression should be active because even though
-  // <reporting_origin, conversion_origin> matches, it has not converted yet.
+  // <reporting_origin, destination_origin> matches, it has not converted yet.
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(2));
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
@@ -382,9 +382,9 @@ TEST_F(AttributionStorageTest,
 }
 
 // This test makes sure that when a new click is received for a given
-// <reporting_origin, conversion_origin> pair, all existing impressions for that
-// origin that have converted are marked ineligible for new conversions per the
-// multi-touch model.
+// <reporting_origin, destination_origin> pair, all existing impressions for
+// that origin that have converted are marked ineligible for new conversions per
+// the multi-touch model.
 TEST_F(AttributionStorageTest,
        NewImpressionForConvertedImpression_MarkedInactive) {
   storage()->StoreSource(SourceBuilder().SetSourceEventId(0).Build());
@@ -653,7 +653,7 @@ TEST_F(AttributionStorageTest, ClearDataImpression) {
     storage()->StoreSource(impression);
     storage()->ClearData(
         now, now + base::Minutes(20),
-        GetMatcher(impression.common_info().conversion_origin()));
+        GetMatcher(impression.common_info().destination_origin()));
     EXPECT_EQ(AttributionTrigger::EventLevelResult::kNoMatchingImpressions,
               MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
   }
@@ -685,7 +685,7 @@ TEST_F(AttributionStorageTest, ClearDataNullFilter) {
                                .SetExpiry(base::Days(30))
                                .SetSourceOrigin(origin)
                                .SetReportingOrigin(origin)
-                               .SetConversionOrigin(origin)
+                               .SetDestinationOrigin(origin)
                                .Build());
     task_environment_.FastForwardBy(base::Days(1));
   }
@@ -1077,7 +1077,7 @@ TEST_F(AttributionStorageTest,
             SourceBuilder()
                 .SetSourceOrigin(url::Origin::Create(GURL(source_origin)))
                 .SetReportingOrigin(url::Origin::Create(GURL(reporting_origin)))
-                .SetConversionOrigin(
+                .SetDestinationOrigin(
                     url::Origin::Create(GURL(destination_origin)))
                 .SetExpiry(base::Days(30))
                 .Build())
@@ -1125,7 +1125,7 @@ TEST_F(AttributionStorageTest, DestinationLimitResultMetric) {
             SourceBuilder()
                 .SetSourceOrigin(url::Origin::Create(GURL(source_origin)))
                 .SetReportingOrigin(url::Origin::Create(GURL(reporting_origin)))
-                .SetConversionOrigin(
+                .SetDestinationOrigin(
                     url::Origin::Create(GURL(destination_origin)))
                 .SetExpiry(expiry)
                 .Build())
@@ -1173,11 +1173,11 @@ TEST_F(AttributionStorageTest,
   delegate()->set_max_destinations_per_source_site_reporting_origin(1);
   storage()->StoreSource(
       SourceBuilder()
-          .SetConversionOrigin(url::Origin::Create(GURL("https://a.example/")))
+          .SetDestinationOrigin(url::Origin::Create(GURL("https://a.example/")))
           .Build());
   storage()->StoreSource(
       SourceBuilder()
-          .SetConversionOrigin(url::Origin::Create(GURL("https://b.example")))
+          .SetDestinationOrigin(url::Origin::Create(GURL("https://b.example")))
           .Build());
 
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
@@ -1188,12 +1188,12 @@ TEST_F(AttributionStorageTest,
   delegate()->set_max_destinations_per_source_site_reporting_origin(1);
   storage()->StoreSource(
       SourceBuilder()
-          .SetConversionOrigin(url::Origin::Create(GURL("https://a.example/")))
+          .SetDestinationOrigin(url::Origin::Create(GURL("https://a.example/")))
           .SetSourceType(AttributionSourceType::kNavigation)
           .Build());
   storage()->StoreSource(
       SourceBuilder()
-          .SetConversionOrigin(url::Origin::Create(GURL("https://b.example")))
+          .SetDestinationOrigin(url::Origin::Create(GURL("https://b.example")))
           .SetSourceType(AttributionSourceType::kEvent)
           .Build());
 
@@ -1209,13 +1209,13 @@ TEST_F(AttributionStorageTest,
 
   storage()->StoreSource(
       SourceBuilder()
-          .SetConversionOrigin(url::Origin::Create(GURL("https://a.example/")))
+          .SetDestinationOrigin(url::Origin::Create(GURL("https://a.example/")))
           .SetSourceType(AttributionSourceType::kNavigation)
           .SetExpiry(expiry)
           .Build());
   storage()->StoreSource(
       SourceBuilder()
-          .SetConversionOrigin(url::Origin::Create(GURL("https://b.example")))
+          .SetDestinationOrigin(url::Origin::Create(GURL("https://b.example")))
           .SetSourceType(AttributionSourceType::kEvent)
           .Build());
 
@@ -1226,7 +1226,7 @@ TEST_F(AttributionStorageTest,
 
   storage()->StoreSource(
       SourceBuilder()
-          .SetConversionOrigin(url::Origin::Create(GURL("https://b.example")))
+          .SetDestinationOrigin(url::Origin::Create(GURL("https://b.example")))
           .SetSourceType(AttributionSourceType::kEvent)
           .Build());
 
@@ -1521,12 +1521,12 @@ TEST_F(AttributionStorageTest, DedupKey_Dedups) {
   storage()->StoreSource(
       SourceBuilder()
           .SetSourceEventId(1)
-          .SetConversionOrigin(url::Origin::Create(GURL("https://a.example")))
+          .SetDestinationOrigin(url::Origin::Create(GURL("https://a.example")))
           .Build());
   storage()->StoreSource(
       SourceBuilder()
           .SetSourceEventId(2)
-          .SetConversionOrigin(url::Origin::Create(GURL("https://b.example")))
+          .SetDestinationOrigin(url::Origin::Create(GURL("https://b.example")))
           .Build());
   EXPECT_THAT(storage()->GetActiveSources(),
               ElementsAre(DedupKeysAre(IsEmpty()), DedupKeysAre(IsEmpty())));
@@ -1598,7 +1598,7 @@ TEST_F(AttributionStorageTest, DedupKey_DedupsAfterConversionDeletion) {
   storage()->StoreSource(
       SourceBuilder()
           .SetSourceEventId(1)
-          .SetConversionOrigin(url::Origin::Create(GURL("https://a.example")))
+          .SetDestinationOrigin(url::Origin::Create(GURL("https://a.example")))
           .Build());
   EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
 
@@ -2343,7 +2343,7 @@ TEST_F(AttributionStorageTest, NoMatchingTriggerData_ReturnsError) {
 
   storage()->StoreSource(SourceBuilder()
                              .SetSourceType(AttributionSourceType::kNavigation)
-                             .SetConversionOrigin(origin)
+                             .SetDestinationOrigin(origin)
                              .SetReportingOrigin(origin)
                              .Build());
 
@@ -2376,7 +2376,7 @@ TEST_F(AttributionStorageTest, MatchingTriggerData_UsesCorrectData) {
   storage()->StoreSource(
       SourceBuilder()
           .SetSourceType(AttributionSourceType::kNavigation)
-          .SetConversionOrigin(origin)
+          .SetDestinationOrigin(origin)
           .SetReportingOrigin(origin)
           .SetFilterData(*AttributionFilterData::FromSourceFilterValues(
               {{"abc", {"123"}}}))
@@ -2470,7 +2470,7 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
 
   storage()->StoreSource(
       SourceBuilder()
-          .SetConversionOrigin(origin)
+          .SetDestinationOrigin(origin)
           .SetReportingOrigin(origin)
           .SetFilterData(*AttributionFilterData::FromSourceFilterValues(
               {{"abc", {"123"}}}))

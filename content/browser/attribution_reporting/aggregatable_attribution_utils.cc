@@ -151,10 +151,9 @@ absl::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
       "source_registration_time",
       SerializeTimeRoundedDownToWholeDayInSeconds(
           attribution_info.source.common_info().impression_time()));
-  additional_fields.Set("attribution_destination",
-                        attribution_info.source.common_info()
-                            .ConversionDestination()
-                            .Serialize());
+  additional_fields.Set(
+      "attribution_destination",
+      attribution_info.source.common_info().DestinationSite().Serialize());
   return AggregatableReportRequest::Create(
       AggregationServicePayloadContents(
           AggregationServicePayloadContents::Operation::kHistogram,

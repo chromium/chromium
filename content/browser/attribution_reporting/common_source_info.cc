@@ -35,7 +35,7 @@ base::Time CommonSourceInfo::GetExpiryTime(
 
 CommonSourceInfo::CommonSourceInfo(uint64_t source_event_id,
                                    url::Origin source_origin,
-                                   url::Origin conversion_origin,
+                                   url::Origin destination_origin,
                                    url::Origin reporting_origin,
                                    base::Time impression_time,
                                    base::Time expiry_time,
@@ -46,7 +46,7 @@ CommonSourceInfo::CommonSourceInfo(uint64_t source_event_id,
                                    AttributionAggregationKeys aggregation_keys)
     : source_event_id_(source_event_id),
       source_origin_(std::move(source_origin)),
-      conversion_origin_(std::move(conversion_origin)),
+      destination_origin_(std::move(destination_origin)),
       reporting_origin_(std::move(reporting_origin)),
       impression_time_(impression_time),
       expiry_time_(expiry_time),
@@ -61,7 +61,7 @@ CommonSourceInfo::CommonSourceInfo(uint64_t source_event_id,
   DCHECK_GT(expiry_time, impression_time);
   DCHECK(network::IsOriginPotentiallyTrustworthy(source_origin_));
   DCHECK(network::IsOriginPotentiallyTrustworthy(reporting_origin_));
-  DCHECK(network::IsOriginPotentiallyTrustworthy(conversion_origin_));
+  DCHECK(network::IsOriginPotentiallyTrustworthy(destination_origin_));
 }
 
 CommonSourceInfo::~CommonSourceInfo() = default;
@@ -75,8 +75,8 @@ CommonSourceInfo& CommonSourceInfo::operator=(const CommonSourceInfo&) =
 
 CommonSourceInfo& CommonSourceInfo::operator=(CommonSourceInfo&&) = default;
 
-net::SchemefulSite CommonSourceInfo::ConversionDestination() const {
-  return net::SchemefulSite(conversion_origin_);
+net::SchemefulSite CommonSourceInfo::DestinationSite() const {
+  return net::SchemefulSite(destination_origin_);
 }
 
 net::SchemefulSite CommonSourceInfo::SourceSite() const {

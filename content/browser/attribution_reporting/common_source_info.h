@@ -33,7 +33,7 @@ class CONTENT_EXPORT CommonSourceInfo {
 
   CommonSourceInfo(uint64_t source_event_id,
                    url::Origin source_origin,
-                   url::Origin conversion_origin,
+                   url::Origin destination_origin,
                    url::Origin reporting_origin,
                    base::Time impression_time,
                    base::Time expiry_time,
@@ -55,7 +55,7 @@ class CONTENT_EXPORT CommonSourceInfo {
 
   const url::Origin& source_origin() const { return source_origin_; }
 
-  const url::Origin& conversion_origin() const { return conversion_origin_; }
+  const url::Origin& destination_origin() const { return destination_origin_; }
 
   const url::Origin& reporting_origin() const { return reporting_origin_; }
 
@@ -77,11 +77,11 @@ class CONTENT_EXPORT CommonSourceInfo {
 
   void ClearDebugKey() { debug_key_ = absl::nullopt; }
 
-  // Returns the schemeful site of |conversion_origin|.
+  // Returns the schemeful site of `destination_origin_`.
   //
   // TODO(johnidel): Consider storing the SchemefulSite as a separate member so
-  // that we avoid unnecessary copies of |conversion_origin_|.
-  net::SchemefulSite ConversionDestination() const;
+  // that we avoid unnecessary copies of `destination_origin_`.
+  net::SchemefulSite DestinationSite() const;
 
   // Returns the schemeful site of |source_origin|.
   //
@@ -92,7 +92,7 @@ class CONTENT_EXPORT CommonSourceInfo {
  private:
   uint64_t source_event_id_;
   url::Origin source_origin_;
-  url::Origin conversion_origin_;
+  url::Origin destination_origin_;
   url::Origin reporting_origin_;
   base::Time impression_time_;
   base::Time expiry_time_;

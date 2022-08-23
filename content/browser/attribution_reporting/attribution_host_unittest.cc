@@ -254,25 +254,25 @@ const char kLocalHost[] = "http://localhost";
 
 struct OriginTrustworthyChecksTestCase {
   const char* source_origin;
-  const char* conversion_origin;
+  const char* destination_origin;
   bool impression_expected;
 };
 
 const OriginTrustworthyChecksTestCase kOriginTrustworthyChecksTestCases[] = {
     {.source_origin = kLocalHost,
-     .conversion_origin = kLocalHost,
+     .destination_origin = kLocalHost,
      .impression_expected = true},
     {.source_origin = "http://127.0.0.1",
-     .conversion_origin = "http://127.0.0.1",
+     .destination_origin = "http://127.0.0.1",
      .impression_expected = true},
     {.source_origin = kLocalHost,
-     .conversion_origin = "http://insecure.com",
+     .destination_origin = "http://insecure.com",
      .impression_expected = true},
     {.source_origin = "http://insecure.com",
-     .conversion_origin = kLocalHost,
+     .destination_origin = kLocalHost,
      .impression_expected = true},
     {.source_origin = "https://secure.com",
-     .conversion_origin = "https://secure.com",
+     .destination_origin = "https://secure.com",
      .impression_expected = true},
 };
 
@@ -291,7 +291,7 @@ TEST_P(AttributionHostOriginTrustworthyChecksTest,
 
   contents()->NavigateAndCommit(GURL(test_case.source_origin));
   auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
-      GURL(test_case.conversion_origin), main_rfh());
+      GURL(test_case.destination_origin), main_rfh());
 
   navigation->set_impression(blink::Impression());
   navigation->SetInitiatorFrame(main_rfh());

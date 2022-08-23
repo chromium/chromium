@@ -440,7 +440,7 @@ class SourceBuilder {
 
   SourceBuilder& SetSourceOrigin(url::Origin origin);
 
-  SourceBuilder& SetConversionOrigin(url::Origin domain);
+  SourceBuilder& SetDestinationOrigin(url::Origin origin);
 
   SourceBuilder& SetReportingOrigin(url::Origin origin);
 
@@ -478,7 +478,7 @@ class SourceBuilder {
   base::Time impression_time_;
   base::TimeDelta expiry_;
   url::Origin source_origin_;
-  url::Origin conversion_origin_;
+  url::Origin destination_origin_;
   url::Origin reporting_origin_;
   AttributionSourceType source_type_ = AttributionSourceType::kNavigation;
   int64_t priority_ = 0;
@@ -741,8 +741,8 @@ MATCHER_P(ImpressionOriginIs, matcher, "") {
                             result_listener);
 }
 
-MATCHER_P(ConversionOriginIs, matcher, "") {
-  return ExplainMatchResult(matcher, arg.common_info().conversion_origin(),
+MATCHER_P(DestinationOriginIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.common_info().destination_origin(),
                             result_listener);
 }
 

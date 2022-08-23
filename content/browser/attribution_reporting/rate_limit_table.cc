@@ -153,8 +153,8 @@ bool RateLimitTable::AddRateLimit(sql::Database* db,
   statement.BindInt64(1, *source.source_id());
   statement.BindString(2, common_info.SourceSite().Serialize());
   statement.BindString(3, SerializeOrigin(common_info.source_origin()));
-  statement.BindString(4, common_info.ConversionDestination().Serialize());
-  statement.BindString(5, SerializeOrigin(common_info.conversion_origin()));
+  statement.BindString(4, common_info.DestinationSite().Serialize());
+  statement.BindString(5, SerializeOrigin(common_info.destination_origin()));
   statement.BindString(6, SerializeOrigin(common_info.reporting_origin()));
   statement.BindTime(7, time);
   statement.BindTime(8, expiry_time);
@@ -188,7 +188,7 @@ RateLimitResult RateLimitTable::AttributionAllowedForAttributionLimit(
       "AND time>?";
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kAttributionAllowedSql));
-  statement.BindString(0, common_info.ConversionDestination().Serialize());
+  statement.BindString(0, common_info.DestinationSite().Serialize());
   statement.BindString(1, common_info.SourceSite().Serialize());
   statement.BindString(2, SerializeOrigin(common_info.reporting_origin()));
   statement.BindTime(3, min_timestamp);
@@ -237,7 +237,7 @@ RateLimitResult RateLimitTable::SourceAllowedForDestinationLimit(
   statement.BindTime(2, common_info.impression_time());
 
   const std::string serialized_destination_site =
-      common_info.ConversionDestination().Serialize();
+      common_info.DestinationSite().Serialize();
 
   const int limit = delegate_->GetMaxDestinationsPerSourceSiteReportingOrigin();
   DCHECK_GT(limit, 0);
@@ -307,7 +307,7 @@ RateLimitResult RateLimitTable::AllowedForReportingOriginLimit(
   sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSelectSql));
   statement.BindInt(0, static_cast<int>(scope));
   statement.BindString(1, common_info.SourceSite().Serialize());
-  statement.BindString(2, common_info.ConversionDestination().Serialize());
+  statement.BindString(2, common_info.DestinationSite().Serialize());
   statement.BindTime(3, min_timestamp);
 
   base::flat_set<std::string> reporting_origins;

@@ -1739,7 +1739,7 @@ TEST_F(StoragePartitionImplTest, ConversionsClearAllData) {
                       .SetExpiry(base::Days(2))
                       .SetSourceOrigin(origin)
                       .SetReportingOrigin(origin)
-                      .SetConversionOrigin(origin)
+                      .SetDestinationOrigin(origin)
                       .Build();
     attribution_manager->HandleSource(source);
   }
@@ -1769,7 +1769,7 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForFilter) {
     attribution_manager->HandleSource(SourceBuilder(now)
                                           .SetSourceOrigin(impression)
                                           .SetReportingOrigin(reporter)
-                                          .SetConversionOrigin(conv)
+                                          .SetDestinationOrigin(conv)
                                           .SetExpiry(base::Days(2))
                                           .Build());
     attribution_manager->HandleTrigger(TriggerBuilder()
