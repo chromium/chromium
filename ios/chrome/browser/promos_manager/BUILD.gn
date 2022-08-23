@@ -16,6 +16,7 @@ source_set("promos_manager") {
     "//base",
     "//components/prefs",
     "//ios/chrome/browser:pref_names",
+    "//third_party/abseil-cpp:absl",
   ]
 }
 
@@ -83,5 +84,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser:pref_names",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
   ]
 }

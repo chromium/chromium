@@ -12,6 +12,7 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/promos_manager/impression_limit.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
 
 class PromosManagerTest;
 
@@ -43,6 +44,19 @@ class PromosManager {
   NSArray<ImpressionLimit*>* PromoImpressionLimits(
       promos_manager::Promo promo) const;
 
+  // Returns the least recently shown promo given the set of currently active
+  // promo campaigns, `active_promos`. Assumes that `sorted_impressions` is
+  // sorted by day (most recent -> least recent).
+  //
+  // When `active_promos` is empty, returns absl::nullopt.
+  //
+  // When `sorted_impressions` is empty, no "least recently shown" promo
+  // exists—because no promo has ever been shown. In this case,
+  // return the first promo in `active_promos`.
+  absl::optional<promos_manager::Promo> LeastRecentlyShown(
+      const std::set<promos_manager::Promo>& active_promos,
+      const std::vector<promos_manager::Impression>& sorted_impressions) const;
+
   // Impression limits that count against all promos.
   NSArray<ImpressionLimit*>* GlobalImpressionLimits() const;
 
@@ -62,9 +76,6 @@ class PromosManager {
   int LastSeenDay(
       promos_manager::Promo promo,
       std::vector<promos_manager::Impression>& sorted_impressions) const;
-
-  // Allow unit tests to access private methods.
-  friend class PromosManagerTest;
 
   // Returns true if any impression limit from `impression_limits` is triggered,
   // and false otherwise.
@@ -139,6 +150,20 @@ class PromosManager {
                            DetectsNoImpressionLimitTriggered);
   FRIEND_TEST_ALL_PREFIXES(PromosManagerTest, DecidesCanShowPromo);
   FRIEND_TEST_ALL_PREFIXES(PromosManagerTest, DecidesCannotShowPromo);
+  FRIEND_TEST_ALL_PREFIXES(PromosManagerTest, ReturnsLeastRecentlyShown);
+  FRIEND_TEST_ALL_PREFIXES(PromosManagerTest,
+                           ReturnsLeastRecentlyShownWithSomeInactivePromos);
+  FRIEND_TEST_ALL_PREFIXES(PromosManagerTest,
+                           ReturnsLeastRecentlyShownBreakingTies);
+  FRIEND_TEST_ALL_PREFIXES(PromosManagerTest,
+                           ReturnsLeastRecentlyShownWithOnlyOnePromoActive);
+  FRIEND_TEST_ALL_PREFIXES(PromosManagerTest,
+                           ReturnsLeastRecentlyShownWithoutImpressionHistory);
+  FRIEND_TEST_ALL_PREFIXES(
+      PromosManagerTest,
+      ReturnsNulloptWhenLeastRecentlyShownHasNoActivePromoCampaigns);
+  FRIEND_TEST_ALL_PREFIXES(PromosManagerTest,
+                           ReturnsFirstUnshownPromoForLeastRecentlyShown);
 };
 
 #endif  // IOS_CHROME_BROWSER_PROMOS_MANAGER_PROMOS_MANAGER_H_

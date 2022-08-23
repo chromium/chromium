@@ -10,6 +10,7 @@
 #import <iterator>
 #import <map>
 #import <numeric>
+#import <set>
 #import <vector>
 
 #import "base/time/time.h"
@@ -19,6 +20,7 @@
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/promos_manager/features.h"
 #import "ios/chrome/browser/promos_manager/impression_limit.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -230,4 +232,44 @@ int PromosManager::TotalImpressionCount(
   std::vector<int> counts = ImpressionCounts(promo_impression_counts);
 
   return std::accumulate(counts.begin(), counts.end(), 0);
+}
+
+absl::optional<promos_manager::Promo> PromosManager::LeastRecentlyShown(
+    const std::set<promos_manager::Promo>& active_promos,
+    const std::vector<promos_manager::Impression>& sorted_impressions) const {
+  // If there are no active promos, return absl::nullopt.
+  // (This is seldom expected to happen, if ever, as Promos Manager will launch
+  // with promos_manager::Promo::DefaultBrowser continuously running.)
+  if (active_promos.empty())
+    return absl::nullopt;
+
+  // When the impression history is empty, no "least recently shown" promo
+  // exists—because no promo has ever been shown. In this case,
+  // return the first promo in `active_promos`.
+  if (sorted_impressions.empty())
+    return *active_promos.begin();
+
+  // Loop over the impression history, `sorted_impressions`, and remove promos
+  // from `shown` as they are found. Given `sorted_impressions` is sorted from
+  // most recent -> least recent, the most recently shown promos will be removed
+  // from `shown` first. When `shown` contains just one promo, it must be the
+  // least recently shown promo.
+  std::set<promos_manager::Promo> shown(active_promos);
+
+  for (promos_manager::Impression impression : sorted_impressions) {
+    if (shown.size() == 1)
+      return *shown.begin();
+
+    // Given `shown` only contains active promos, impression history for
+    // inactive promos will be ignored/skipped; impression history for
+    // inactive promos won't affect this method's execution or correctness.
+    shown.erase(impression.promo);
+  }
+
+  // At this point in method execution, there's been more than one promo that's
+  // never been shown. In this case, In this case, return the first unshown
+  // promo (a bit awkwardly, these unshown promos are still left in the variable
+  // `shown`.)
+  DCHECK(!shown.empty());
+  return *shown.begin();
 }
