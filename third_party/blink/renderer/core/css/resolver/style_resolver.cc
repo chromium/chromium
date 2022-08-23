@@ -165,10 +165,24 @@ void SetAnimationUpdateIfNeeded(const StyleRecalcContext& style_recalc_context,
     data->SetPendingUpdate(element, state.AnimationUpdate());
 }
 
+ElementAnimations* GetElementAnimations(const StyleResolverState& state) {
+  if (!state.GetAnimatingElement())
+    return nullptr;
+  return state.GetAnimatingElement()->GetElementAnimations();
+}
+
 bool HasAnimationsOrTransitions(const StyleResolverState& state) {
   return state.Style()->Animations() || state.Style()->Transitions() ||
          (state.GetAnimatingElement() &&
           state.GetAnimatingElement()->HasAnimations());
+}
+
+bool HasTimelines(const StyleResolverState& state) {
+  if (!state.Style()->ScrollTimelineName().IsEmpty())
+    return true;
+  if (ElementAnimations* element_animations = GetElementAnimations(state))
+    return element_animations->CssAnimations().HasTimelines();
+  return false;
 }
 
 bool IsAnimationStyleChange(Element& element) {
@@ -817,13 +831,6 @@ scoped_refptr<ComputedStyle> StyleResolver::StyleForViewport() {
   GetDocument().GetStyleEngine().ApplyVisionDeficiencyStyle(viewport_style);
 
   return viewport_style;
-}
-
-static ElementAnimations* GetElementAnimations(
-    const StyleResolverState& state) {
-  if (!state.GetAnimatingElement())
-    return nullptr;
-  return state.GetAnimatingElement()->GetElementAnimations();
 }
 
 static StyleBaseData* GetBaseData(const StyleResolverState& state) {
@@ -1663,6 +1670,11 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
 
   if (!animating_element)
     return false;
+
+  if (HasTimelines(state)) {
+    CSSAnimations::CalculateTimelineUpdate(state.AnimationUpdate(),
+                                           *animating_element, *state.Style());
+  }
 
   if (!HasAnimationsOrTransitions(state))
     return false;

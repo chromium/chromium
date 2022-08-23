@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_CSS_CSS_ANIMATION_UPDATE_H_
 
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
+#include "third_party/blink/renderer/core/animation/css/css_scroll_timeline.h"
 #include "third_party/blink/renderer/core/animation/effect_stack.h"
 #include "third_party/blink/renderer/core/animation/inert_effect.h"
 #include "third_party/blink/renderer/core/animation/interpolation.h"
@@ -172,6 +173,11 @@ class CORE_EXPORT CSSAnimationUpdate final {
     finished_transitions_.insert(property);
   }
 
+  void SetNewScrollTimeline(CSSScrollTimeline* timeline) {
+    new_scroll_timeline_ = timeline;
+    scroll_timeline_changed_ = true;
+  }
+
   const HeapVector<NewCSSAnimation>& NewAnimations() const {
     return new_animations_;
   }
@@ -213,6 +219,14 @@ class CORE_EXPORT CSSAnimationUpdate final {
     return finished_transitions_;
   }
 
+  // A non-nullptr value means that the scroll-timeline was replaced with a
+  // a new one, a nullptr value means the scroll-timeline was removed,
+  // and absl::nullopt means there was no change.
+  absl::optional<CSSScrollTimeline*> NewScrollTimeline() const {
+    if (!scroll_timeline_changed_)
+      return absl::nullopt;
+    return new_scroll_timeline_.Get();
+  }
   void AdoptActiveInterpolationsForAnimations(
       ActiveInterpolationsMap& new_map) {
     new_map.swap(active_interpolations_for_animations_);
@@ -241,7 +255,7 @@ class CORE_EXPORT CSSAnimationUpdate final {
            !animations_with_updates_.IsEmpty() || !new_transitions_.IsEmpty() ||
            !cancelled_transitions_.IsEmpty() ||
            !finished_transitions_.IsEmpty() ||
-           !updated_compositor_keyframes_.IsEmpty();
+           !updated_compositor_keyframes_.IsEmpty() || scroll_timeline_changed_;
   }
 
   void Trace(Visitor* visitor) const {
@@ -252,6 +266,7 @@ class CORE_EXPORT CSSAnimationUpdate final {
     visitor->Trace(updated_compositor_keyframes_);
     visitor->Trace(active_interpolations_for_animations_);
     visitor->Trace(active_interpolations_for_transitions_);
+    visitor->Trace(new_scroll_timeline_);
   }
 
  private:
@@ -274,6 +289,9 @@ class CORE_EXPORT CSSAnimationUpdate final {
   NewTransitionMap new_transitions_;
   HashSet<PropertyHandle> cancelled_transitions_;
   HashSet<PropertyHandle> finished_transitions_;
+
+  Member<CSSScrollTimeline> new_scroll_timeline_ = nullptr;
+  bool scroll_timeline_changed_ = false;
 
   ActiveInterpolationsMap active_interpolations_for_animations_;
   ActiveInterpolationsMap active_interpolations_for_transitions_;

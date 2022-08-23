@@ -73,6 +73,24 @@ ScrollTimeline::ScrollDirection ComputeScrollDirection(const CSSValue* value) {
   }
 }
 
+ScrollTimeline::ScrollDirection ComputeScrollDirection(TimelineAxis axis) {
+  using ScrollDirection = ScrollTimeline::ScrollDirection;
+
+  switch (axis) {
+    case TimelineAxis::kBlock:
+      return ScrollDirection::kBlock;
+    case TimelineAxis::kInline:
+      return ScrollDirection::kInline;
+    case TimelineAxis::kVertical:
+      return ScrollDirection::kVertical;
+    case TimelineAxis::kHorizontal:
+      return ScrollDirection::kHorizontal;
+  }
+
+  NOTREACHED();
+  return ScrollDirection::kBlock;
+}
+
 class ElementReferenceObserver : public IdTargetObserver {
  public:
   ElementReferenceObserver(Document* document,
@@ -117,36 +135,50 @@ CSSScrollTimeline::Options::Options(Document& document,
                                     StyleRuleScrollTimeline& rule)
     : source_(ComputeScrollSource(document, rule.GetSource())),
       direction_(ComputeScrollDirection(rule.GetOrientation())),
+      name_(rule.GetName()),
       rule_(&rule) {}
 
-// TODO(crbug.com/1329159): Support nearest scroll ancestor.
+CSSScrollTimeline::Options::Options(Document& document,
+                                    Element* reference_element,
+                                    const AtomicString& name,
+                                    TimelineAxis axis)
+    : source_(reference_element),
+      direction_(ComputeScrollDirection(axis)),
+      name_(name),
+      rule_(nullptr) {}
+
 CSSScrollTimeline::CSSScrollTimeline(Document* document, Options&& options)
     : ScrollTimeline(
           document,
           ReferenceType::kSource,
           options.source_.value_or(document->ScrollingElementNoLayout()),
           options.direction_),
+      name_(options.name_),
       rule_(options.rule_) {
-  DCHECK(rule_);
   SnapshotState();
 }
 
 bool CSSScrollTimeline::Matches(const Options& options) const {
   // TODO(crbug.com/1060384): Support ReferenceType::kNearestAncestor.
   return HasExplicitSource() && (SourceInternal() == options.source_) &&
-         (GetOrientation() == options.direction_) && (rule_ == options.rule_);
+         (GetOrientation() == options.direction_) && (name_ == options.name_) &&
+         (rule_ == options.rule_);
 }
 
 void CSSScrollTimeline::AnimationAttached(Animation* animation) {
-  if (!HasAnimations())
-    SetObservers(CreateElementReferenceObservers(GetDocument(), rule_, this));
+  if (rule_) {
+    if (!HasAnimations())
+      SetObservers(CreateElementReferenceObservers(GetDocument(), rule_, this));
+  }
   ScrollTimeline::AnimationAttached(animation);
 }
 
 void CSSScrollTimeline::AnimationDetached(Animation* animation) {
   ScrollTimeline::AnimationDetached(animation);
-  if (!HasAnimations())
-    SetObservers(HeapVector<Member<IdTargetObserver>>());
+  if (rule_) {
+    if (!HasAnimations())
+      SetObservers(HeapVector<Member<IdTargetObserver>>());
+  }
 }
 
 void CSSScrollTimeline::Trace(Visitor* visitor) const {

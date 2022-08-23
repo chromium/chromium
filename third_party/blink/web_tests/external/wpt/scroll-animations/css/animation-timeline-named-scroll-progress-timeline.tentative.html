@@ -5,6 +5,7 @@
 <link rel="help" src="https://github.com/w3c/csswg-drafts/issues/6674">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/web-animations/testcommon.js"></script>
 <style>
   @keyframes anim {
     from { translate: 50px; }
@@ -62,7 +63,7 @@ function createScrollerAndTarget(t, scrollerSizeClass) {
 // Test scroll-timeline-name
 // -------------------------
 
-test(t => {
+promise_test(async t => {
   let target = document.createElement('div');
   target.id = 'target';
   target.className = 'scroller';
@@ -79,6 +80,7 @@ test(t => {
   target.style.animation = "anim 10s linear timeline";
 
   target.scrollTop = 50; // 50%, in [0, 100].
+  await waitForNextFrame();
   assert_equals(getComputedStyle(target).translate, '100px');
 
   content.remove();
@@ -86,7 +88,7 @@ test(t => {
 }, 'scroll-timeline-name is referenceable in animation-timeline on the ' +
    'declaring element itself');
 
-test(t => {
+promise_test(async t => {
   let [parent, target] = createScrollerAndTarget(t, 'square-container');
 
   // <div id='parent' class='scroller'>
@@ -100,11 +102,12 @@ test(t => {
   target.style.animation = "anim 10s linear timeline";
 
   parent.scrollTop = 100; // 50%, in [0, 200].
+  await waitForNextFrame();
   assert_equals(getComputedStyle(target).translate, '100px');
 }, "scroll-timeline-name is referenceable in animation-timeline on that " +
    "element's descendants");
 
-test(t => {
+promise_test(async t => {
   let [sibling, target] = createScrollerAndTarget(t);
 
   // <div id='sibling' class='scroller'> ... </div>
@@ -116,11 +119,12 @@ test(t => {
   target.style.animation = "anim 10s linear timeline";
 
   sibling.scrollTop = 50; // 50%, in [0, 100].
+  await waitForNextFrame();
   assert_equals(getComputedStyle(target).translate, '100px');
 }, "scroll-timeline-name is referenceable in animation-timeline on that " +
    "element's following siblings");
 
-test(t => {
+promise_test(async t => {
   let [sibling, target] = createScrollerAndTarget(t);
   let parent = document.createElement('div');
 
@@ -136,6 +140,7 @@ test(t => {
   target.style.animation = "anim 10s linear timeline";
 
   sibling.scrollTop = 50; // 50%, in [0, 100].
+  await waitForNextFrame();
   assert_equals(getComputedStyle(target).translate, '100px');
 
   parent.remove();
@@ -144,7 +149,7 @@ test(t => {
 
 // FIXME: We may use global scope for scroll-timeline-name.
 // See https://github.com/w3c/csswg-drafts/issues/7047
-test(t => {
+promise_test(async t => {
   let [sibling, target] = createScrollerAndTarget(t);
 
   // <div id='target'></div>
@@ -156,12 +161,13 @@ test(t => {
   target.style.animation = "anim 10s linear timeline";
 
   sibling.scrollTop = 50; // 50%, in [0, 100].
+  await waitForNextFrame();
   assert_equals(getComputedStyle(target).translate, '50px',
     'Animation with unknown timeline name holds current time at zero');
 }, "scroll-timeline-name is not referenceable in animation-timeline on that " +
    "element's previous siblings");
 
-test(t => {
+promise_test(async t => {
   let [sibling, target] = createScrollerAndTarget(t);
   let parent = document.createElement('div');
   parent.className = 'scroller square-container';
@@ -185,6 +191,7 @@ test(t => {
 
   parent.scrollTop = 50; // 25%, in [0, 200].
   sibling.scrollTop = 50; // 50%, in [0, 100].
+  await waitForNextFrame();
   assert_equals(getComputedStyle(target).translate, '100px');
 
   content.remove();
@@ -192,7 +199,7 @@ test(t => {
 }, 'scroll-timeline-name is matched based on tree order, which considers ' +
    'siblings closer than parents');
 
-test(t => {
+promise_test(async t => {
   let sibling = document.createElement('div');
   sibling.className = 'square';
   sibling.style.overflowX = 'clip'; // This makes overflow-y be clip as well.
@@ -208,6 +215,7 @@ test(t => {
   target.style.animation = "anim 10s linear timeline";
 
   sibling.scrollTop = 50; // 50%, in [0, 100].
+  await waitForNextFrame();
   assert_equals(getComputedStyle(target).translate, 'none',
     'Animation with an unresolved current time');
 
@@ -222,7 +230,7 @@ test(t => {
 // Test scroll-timeline-axis
 // -------------------------
 
-test(t => {
+promise_test(async t => {
   let [scroller, target] = createScrollerAndTarget(t);
   scroller.style.writingMode = 'vertical-lr';
 
@@ -233,10 +241,11 @@ test(t => {
   target.style.animation = "anim 10s linear timeline";
 
   scroller.scrollLeft = 50;
+  await waitForNextFrame();
   assert_equals(getComputedStyle(target).translate, '100px');
 }, 'scroll-timeline-axis is block');
 
-test(t => {
+promise_test(async t => {
   let [scroller, target] = createScrollerAndTarget(t);
   scroller.style.writingMode = 'vertical-lr';
 
@@ -247,10 +256,11 @@ test(t => {
   target.style.animation = "anim 10s linear timeline";
 
   scroller.scrollTop = 50;
+  await waitForNextFrame();
   assert_equals(getComputedStyle(target).translate, '100px');
 }, 'scroll-timeline-axis is inline');
 
-test(t => {
+promise_test(async t => {
   let [scroller, target] = createScrollerAndTarget(t);
   scroller.style.writingMode = 'vertical-lr';
 
@@ -261,10 +271,11 @@ test(t => {
   target.style.animation = "anim 10s linear timeline";
 
   scroller.scrollLeft = 50;
+  await waitForNextFrame();
   assert_equals(getComputedStyle(target).translate, '100px');
 }, 'scroll-timeline-axis is horizontal');
 
-test(t => {
+promise_test(async t => {
   let [scroller, target] = createScrollerAndTarget(t);
   scroller.style.writingMode = 'vertical-lr';
 
@@ -275,6 +286,7 @@ test(t => {
   target.style.animation = "anim 10s linear timeline";
 
   scroller.scrollTop = 50;
+  await waitForNextFrame();
   assert_equals(getComputedStyle(target).translate, '100px');
 }, 'scroll-timeline-axis is vertical');
 

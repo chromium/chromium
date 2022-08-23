@@ -24,19 +24,26 @@ class CORE_EXPORT CSSScrollTimeline : public ScrollTimeline {
     STACK_ALLOCATED();
 
    public:
+    // TODO(crbug.com/1317765): Remove this constructor.
     Options(Document&, StyleRuleScrollTimeline&);
+
+    Options(Document&,
+            Element* reference_element,
+            const AtomicString& name,
+            TimelineAxis);
 
    private:
     friend class CSSScrollTimeline;
 
     absl::optional<Element*> source_;
     ScrollTimeline::ScrollDirection direction_;
+    AtomicString name_;
     StyleRuleScrollTimeline* rule_;
   };
 
   CSSScrollTimeline(Document*, Options&&);
 
-  const AtomicString& Name() const;
+  const AtomicString& Name() const { return name_; }
 
   StyleRuleScrollTimeline* GetRule() const { return rule_; }
 
@@ -56,6 +63,7 @@ class CORE_EXPORT CSSScrollTimeline : public ScrollTimeline {
  private:
   void SetObservers(HeapVector<Member<IdTargetObserver>>);
 
+  AtomicString name_;
   Member<StyleRuleScrollTimeline> rule_;
   HeapVector<Member<IdTargetObserver>> observers_;
 };
