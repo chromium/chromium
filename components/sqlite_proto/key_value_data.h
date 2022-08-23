@@ -108,7 +108,7 @@ class KeyValueData {
   void FlushDataToDisk();
 
   scoped_refptr<TableManager> manager_;
-  raw_ptr<KeyValueTable<T>> backend_table_;
+  raw_ptr<KeyValueTable<T>, DanglingUntriaged> backend_table_;
   std::unique_ptr<std::map<std::string, T>> data_cache_;
   std::unordered_map<std::string, DeferredOperation> deferred_updates_;
   base::RepeatingTimer flush_timer_;

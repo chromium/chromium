@@ -95,7 +95,7 @@ class AggregationServiceInternalsWebUiBrowserTest : public ContentBrowserTest {
   }
 
  protected:
-  raw_ptr<MockAggregationService> aggregation_service_;
+  raw_ptr<MockAggregationService, DanglingUntriaged> aggregation_service_;
 };
 
 IN_PROC_BROWSER_TEST_F(AggregationServiceInternalsWebUiBrowserTest,
