@@ -299,11 +299,11 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     return static_cast<NGInkOverflow::Type>(ink_overflow_type_);
   }
   bool IsInkOverflowComputed() const {
-    return InkOverflowType() != NGInkOverflow::kNotSet &&
-           InkOverflowType() != NGInkOverflow::kInvalidated;
+    return InkOverflowType() != NGInkOverflow::Type::kNotSet &&
+           InkOverflowType() != NGInkOverflow::Type::kInvalidated;
   }
   bool HasInkOverflow() const {
-    return InkOverflowType() != NGInkOverflow::kNone;
+    return InkOverflowType() != NGInkOverflow::Type::kNone;
   }
 
   // 3 types of ink overflows:
@@ -567,6 +567,9 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   }
 
   void SetInkOverflow(const PhysicalRect& self, const PhysicalRect& contents);
+  void SetInkOverflowType(NGInkOverflow::Type type) {
+    ink_overflow_type_ = static_cast<unsigned>(type);
+  }
   PhysicalRect RecalcContentsInkOverflow();
   PhysicalRect ComputeSelfInkOverflow() const;
 

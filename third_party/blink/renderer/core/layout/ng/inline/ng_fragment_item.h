@@ -552,11 +552,11 @@ class CORE_EXPORT NGFragmentItem final {
     return static_cast<NGInkOverflow::Type>(ink_overflow_type_);
   }
   bool IsInkOverflowComputed() const {
-    return InkOverflowType() != NGInkOverflow::kNotSet &&
-           InkOverflowType() != NGInkOverflow::kInvalidated;
+    return InkOverflowType() != NGInkOverflow::Type::kNotSet &&
+           InkOverflowType() != NGInkOverflow::Type::kInvalidated;
   }
   bool HasInkOverflow() const {
-    return InkOverflowType() != NGInkOverflow::kNone;
+    return InkOverflowType() != NGInkOverflow::Type::kNone;
   }
   const LayoutBox* InkOverflowOwnerBox() const;
   LayoutBox* MutableInkOverflowOwnerBox();

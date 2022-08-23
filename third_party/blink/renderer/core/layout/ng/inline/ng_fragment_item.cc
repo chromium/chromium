@@ -56,7 +56,7 @@ NGFragmentItem::NGFragmentItem(
       style_variant_(static_cast<unsigned>(inline_item.StyleVariant())),
       is_hidden_for_paint_(is_hidden_for_paint),
       text_direction_(static_cast<unsigned>(inline_item.Direction())),
-      ink_overflow_type_(NGInkOverflow::kNotSet),
+      ink_overflow_type_(static_cast<unsigned>(NGInkOverflow::Type::kNotSet)),
       is_dirty_(false),
       is_last_for_node_(true) {
 #if DCHECK_IS_ON()
@@ -87,7 +87,7 @@ NGFragmentItem::NGFragmentItem(
       style_variant_(static_cast<unsigned>(style_variant)),
       is_hidden_for_paint_(is_hidden_for_paint),
       text_direction_(static_cast<unsigned>(direction)),
-      ink_overflow_type_(NGInkOverflow::kNotSet),
+      ink_overflow_type_(static_cast<unsigned>(NGInkOverflow::Type::kNotSet)),
       is_dirty_(false),
       is_last_for_node_(true) {
   DCHECK(layout_object_);
@@ -121,7 +121,7 @@ NGFragmentItem::NGFragmentItem(const NGPhysicalLineBoxFragment& line)
       style_variant_(static_cast<unsigned>(line.StyleVariant())),
       is_hidden_for_paint_(false),
       text_direction_(static_cast<unsigned>(line.BaseDirection())),
-      ink_overflow_type_(NGInkOverflow::kNotSet),
+      ink_overflow_type_(static_cast<unsigned>(NGInkOverflow::Type::kNotSet)),
       is_dirty_(false),
       is_last_for_node_(true) {
   DCHECK(!IsFormattingContextRoot());
@@ -137,7 +137,7 @@ NGFragmentItem::NGFragmentItem(const NGPhysicalBoxFragment& box,
       style_variant_(static_cast<unsigned>(box.StyleVariant())),
       is_hidden_for_paint_(box.IsHiddenForPaint()),
       text_direction_(static_cast<unsigned>(resolved_direction)),
-      ink_overflow_type_(NGInkOverflow::kNotSet),
+      ink_overflow_type_(static_cast<unsigned>(NGInkOverflow::Type::kNotSet)),
       is_dirty_(false),
       is_last_for_node_(true) {
   DCHECK_EQ(IsFormattingContextRoot(), box.IsFormattingContextRoot());
@@ -203,7 +203,7 @@ NGFragmentItem::NGFragmentItem(const NGFragmentItem& source)
       style_variant_(source.style_variant_),
       is_hidden_for_paint_(source.is_hidden_for_paint_),
       text_direction_(source.text_direction_),
-      ink_overflow_type_(NGInkOverflow::kNotSet),
+      ink_overflow_type_(static_cast<unsigned>(NGInkOverflow::Type::kNotSet)),
       is_dirty_(source.is_dirty_),
       is_last_for_node_(source.is_last_for_node_) {
   switch (Type()) {
@@ -227,7 +227,7 @@ NGFragmentItem::NGFragmentItem(const NGFragmentItem& source)
   }
 
   if (source.IsInkOverflowComputed()) {
-    ink_overflow_type_ = source.InkOverflowType();
+    ink_overflow_type_ = static_cast<unsigned>(source.InkOverflowType());
     new (&ink_overflow_)
         NGInkOverflow(source.InkOverflowType(), source.ink_overflow_);
   }
@@ -802,7 +802,8 @@ PhysicalRect NGFragmentItem::LocalVisualRectFor(
 }
 
 void NGFragmentItem::InvalidateInkOverflow() {
-  ink_overflow_type_ = ink_overflow_.Invalidate(InkOverflowType());
+  ink_overflow_type_ =
+      static_cast<unsigned>(ink_overflow_.Invalidate(InkOverflowType()));
 }
 
 PhysicalRect NGFragmentItem::RecalcInkOverflowForCursor(
@@ -860,24 +861,27 @@ void NGFragmentItem::RecalcInkOverflow(
     NGTextFragmentPaintInfo paint_info = TextPaintInfo(cursor.Items());
     if (paint_info.shape_result) {
       if (Type() == kSvgText) {
-        ink_overflow_type_ = ink_overflow_.SetSvgTextInkOverflow(
-            InkOverflowType(), paint_info, Style(), ScaledFont(),
-            SvgFragmentData()->rect, SvgScalingFactor(),
-            SvgFragmentData()->length_adjust_scale,
-            BuildSvgTransformForBoundingBox(), self_and_contents_rect_out);
+        ink_overflow_type_ =
+            static_cast<unsigned>(ink_overflow_.SetSvgTextInkOverflow(
+                InkOverflowType(), paint_info, Style(), ScaledFont(),
+                SvgFragmentData()->rect, SvgScalingFactor(),
+                SvgFragmentData()->length_adjust_scale,
+                BuildSvgTransformForBoundingBox(), self_and_contents_rect_out));
         return;
       }
       // Create |ScopedInlineItem| here because the decoration box is not
       // supported for SVG.
       NGInlinePaintContext::ScopedInlineItem scoped_inline_item(*this,
                                                                 inline_context);
-      ink_overflow_type_ = ink_overflow_.SetTextInkOverflow(
-          InkOverflowType(), paint_info, Style(), RectInContainerFragment(),
-          inline_context, self_and_contents_rect_out);
+      ink_overflow_type_ =
+          static_cast<unsigned>(ink_overflow_.SetTextInkOverflow(
+              InkOverflowType(), paint_info, Style(), RectInContainerFragment(),
+              inline_context, self_and_contents_rect_out));
       return;
     }
 
-    ink_overflow_type_ = ink_overflow_.Reset(InkOverflowType());
+    ink_overflow_type_ =
+        static_cast<unsigned>(ink_overflow_.Reset(InkOverflowType()));
     *self_and_contents_rect_out = LocalRect();
     return;
   }
@@ -922,8 +926,8 @@ void NGFragmentItem::RecalcInkOverflow(
       contents_rect = text_combine->AdjustRectForBoundingBox(contents_rect);
     // Line boxes don't have self overflow. Compute content overflow only.
     *self_and_contents_rect_out = UnionRect(LocalRect(), contents_rect);
-    ink_overflow_type_ =
-        ink_overflow_.SetContents(InkOverflowType(), contents_rect, Size());
+    ink_overflow_type_ = static_cast<unsigned>(
+        ink_overflow_.SetContents(InkOverflowType(), contents_rect, Size()));
     return;
   }
 

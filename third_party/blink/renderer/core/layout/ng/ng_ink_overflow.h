@@ -60,7 +60,7 @@ struct NGContainerInkOverflow : NGSingleInkOverflow {
 // |Type|.
 class CORE_EXPORT NGInkOverflow {
  public:
-  enum Type {
+  enum class Type {
     kNotSet,
     kInvalidated,
     kNone,
@@ -93,9 +93,9 @@ class CORE_EXPORT NGInkOverflow {
   PhysicalRect SelfAndContents(Type type, const PhysicalSize& size) const;
 
   // Reset to |kNone|.
-  Type Reset(Type type) { return Reset(type, kNone); }
+  Type Reset(Type type) { return Reset(type, Type::kNone); }
   // Reset to |kInvalidated|.
-  Type Invalidate(Type type) { return Reset(type, kInvalidated); }
+  Type Invalidate(Type type) { return Reset(type, Type::kInvalidated); }
 
   // Set self ink overflow rect.
   // If |this| had contents ink overflow, it is cleared.

@@ -390,7 +390,7 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
     *const_cast<PhysicalRect*>(ComputeLayoutOverflowAddress()) =
         layout_overflow;
   }
-  ink_overflow_type_ = NGInkOverflow::kNotSet;
+  SetInkOverflowType(NGInkOverflow::Type::kNotSet);
   has_borders_ = has_borders;
   if (has_borders_)
     *const_cast<NGPhysicalBoxStrut*>(ComputeBordersAddress()) = borders;
@@ -505,12 +505,12 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
 NGPhysicalBoxFragment::~NGPhysicalBoxFragment() {
   // Note: This function may not always be called because the dtor of
   // NGPhysicalFragment is made non-virtual for memory efficiency.
-  ink_overflow_type_ = ink_overflow_.Reset(InkOverflowType());
+  SetInkOverflowType(ink_overflow_.Reset(InkOverflowType()));
 }
 
 void NGPhysicalBoxFragment::Dispose() {
   if (HasInkOverflow())
-    ink_overflow_type_ = ink_overflow_.Reset(InkOverflowType());
+    SetInkOverflowType(ink_overflow_.Reset(InkOverflowType()));
   if (const_has_fragment_items_)
     ComputeItemsAddress()->~NGFragmentItems();
   if (const_has_rare_data_)
@@ -1125,8 +1125,8 @@ NGPhysicalBoxFragment::InlineContainerFragmentIfOutlineOwner() const {
 
 void NGPhysicalBoxFragment::SetInkOverflow(const PhysicalRect& self,
                                            const PhysicalRect& contents) {
-  ink_overflow_type_ =
-      ink_overflow_.Set(InkOverflowType(), self, contents, Size());
+  SetInkOverflowType(
+      ink_overflow_.Set(InkOverflowType(), self, contents, Size()));
 }
 
 void NGPhysicalBoxFragment::RecalcInkOverflow(const PhysicalRect& contents) {
@@ -1278,7 +1278,7 @@ PhysicalRect NGPhysicalBoxFragment::ComputeSelfInkOverflow() const {
 
 #if DCHECK_IS_ON()
 void NGPhysicalBoxFragment::InvalidateInkOverflow() {
-  ink_overflow_type_ = ink_overflow_.Invalidate(InkOverflowType());
+  SetInkOverflowType(ink_overflow_.Invalidate(InkOverflowType()));
 }
 #endif
 

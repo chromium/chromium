@@ -104,12 +104,13 @@ TEST_F(NGFragmentItemTest, CopyMove) {
 
   // To test moving ink overflow, add an ink overflow to |move_of_line|.
   PhysicalRect not_small_ink_overflow_rect(0, 0, 5000, 100);
-  move_of_line.ink_overflow_type_ = move_of_line.ink_overflow_.SetContents(
-      move_of_line.InkOverflowType(), not_small_ink_overflow_rect,
-      line_item->Size());
-  EXPECT_EQ(move_of_line.InkOverflowType(), NGInkOverflow::kContents);
+  move_of_line.ink_overflow_type_ =
+      static_cast<int>(move_of_line.ink_overflow_.SetContents(
+          move_of_line.InkOverflowType(), not_small_ink_overflow_rect,
+          line_item->Size()));
+  EXPECT_EQ(move_of_line.InkOverflowType(), NGInkOverflow::Type::kContents);
   NGFragmentItem move_of_line2(std::move(move_of_line));
-  EXPECT_EQ(move_of_line2.InkOverflowType(), NGInkOverflow::kContents);
+  EXPECT_EQ(move_of_line2.InkOverflowType(), NGInkOverflow::Type::kContents);
   EXPECT_EQ(move_of_line2.InkOverflow(), not_small_ink_overflow_rect);
 
   // Test copying a text item.
