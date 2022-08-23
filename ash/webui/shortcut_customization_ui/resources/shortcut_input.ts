@@ -23,7 +23,7 @@ enum AllowedModifierKeyCodes {
   META_RIGHT = 92,
 }
 
-const ModifierKeyCodes: AllowedModifierKeyCodes[] = [
+export const ModifierKeyCodes: AllowedModifierKeyCodes[] = [
   AllowedModifierKeyCodes.SHIFT,
   AllowedModifierKeyCodes.ALT,
   AllowedModifierKeyCodes.CTRL,

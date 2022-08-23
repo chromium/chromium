@@ -5,42 +5,49 @@
 import './input_key.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
-import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {getTemplate} from './accelerator_view.html.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
-import {AcceleratorConfigResult, AcceleratorInfo, AcceleratorKeys, AcceleratorSource, AcceleratorState, AcceleratorType, Modifier, ShortcutProviderInterface} from './shortcut_types.js';
+import {ModifierKeyCodes} from './shortcut_input.js';
+import {AcceleratorConfigResult, AcceleratorInfo, AcceleratorKeys, AcceleratorSource, AcceleratorState, AcceleratorType, ShortcutProviderInterface} from './shortcut_types.js';
 
-const ModifierRawKeys = [
-  /*Shift=*/ 16,
-  /*Alt=*/ 17,
-  /*Ctrl=*/ 18,
-  /*MetaLeft=*/ 91,
-  /*MetaRight=*/ 92,
-];
+export interface AcceleratorViewElement {
+  $: {
+    container: HTMLDivElement,
+  };
+}
 
-const KeyState = {
-  NOT_SELECTED: 'not-selected',
-  MODIFIER: 'modifier-selected',
-  ALPHANUMERIC: 'alpha-numeric-selected',
-};
+/**
+ * Modifier values are based off of ui::Accelerator. Must be kept in sync with
+ * ui::Accelerator and ui::KeyEvent.
+ */
+export enum Modifier {
+  SHIFT = 1 << 1,
+  CONTROL = 1 << 2,
+  ALT = 1 << 3,
+  COMMAND = 1 << 4,
+}
 
-export const ViewState = {
-  VIEW: 0,
-  ADD: 1,
-  EDIT: 2,
-};
+enum KeyState {
+  NOT_SELECTED = 'not-selected',
+  MODIFIER = 'modifier-selected',
+  ALPHANUMERIC = 'alpha-numeric-selected',
+}
+
+export enum ViewState {
+  VIEW,
+  ADD,
+  EDIT,
+}
 
 /**
  * Returns the converted modifier flag as a readable string.
  * TODO(jimmyxgong): Localize, replace with icon, or update strings.
- * @param {number} modifier
- * @return {string}
  */
-function GetModifierString(modifier) {
-  switch(modifier) {
+function getModifierString(modifier: Modifier): string {
+  switch (modifier) {
     case Modifier.SHIFT:
       return 'shift';
     case Modifier.CONTROL:
@@ -50,19 +57,17 @@ function GetModifierString(modifier) {
     case Modifier.COMMAND:
       return 'meta';
     default:
-      assertNotReached();
       return '';
   }
 }
 
-/** @return {!AcceleratorInfo} */
-function CreateEmptyAcceleratorInfo() {
-  return /** @type {!AcceleratorInfo} */ ({
-    accelerator: /* @type {!AcceleratorKeys} */(
-        {modifiers: 0, key: 0, key_display: ''}),
+function createEmptyAcceleratorInfo(): AcceleratorInfo {
+  return {
+    accelerator: {modifiers: 0, key: 0, key_display: ''},
     type: AcceleratorType.kDefault,
     state: AcceleratorState.kEnabled,
-  });
+    locked: false,
+  };
 }
 
 /**
@@ -78,19 +83,16 @@ export class AcceleratorViewElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {!AcceleratorInfo} */
       acceleratorInfo: {
         type: Object,
         value: () => {},
       },
 
-      /** @type {!AcceleratorInfo} */
       pendingAcceleratorInfo_: {
         type: Object,
         value: () => {},
       },
 
-      /** @private */
       acceleratorOnHold_: {
         type: String,
         value: '',
@@ -103,16 +105,11 @@ export class AcceleratorViewElement extends PolymerElement {
         observer: 'onViewStateChanged_',
       },
 
-      /**
-       * @type{!Array<string>}
-       * @private
-       */
       modifiers_: {
         type: Array,
         computed: 'getModifiers_(acceleratorInfo.accelerator.*)',
       },
 
-      /** @private */
       isCapturing_: {
         type: Boolean,
         value: false,
@@ -135,7 +132,6 @@ export class AcceleratorViewElement extends PolymerElement {
         value: 0,
       },
 
-      /** @type {!AcceleratorSource} */
       source: {
         type: Number,
         value: 0,
@@ -143,34 +139,37 @@ export class AcceleratorViewElement extends PolymerElement {
     };
   }
 
-  /** @override */
-  constructor() {
-    super();
+  acceleratorInfo: AcceleratorInfo;
+  viewState: ViewState;
+  statusMessage: string;
+  hasError: boolean;
+  action: number;
+  source: AcceleratorSource;
+  protected pendingAcceleratorInfo_: AcceleratorInfo;
+  private modifiers_: string[];
+  private acceleratorOnHold_: string;
+  private isCapturing_: boolean;
+  private shortcutProvider_: ShortcutProviderInterface = getShortcutProvider();
+  private lookupManager_: AcceleratorLookupManager =
+      AcceleratorLookupManager.getInstance();
 
-    /** @private {!ShortcutProviderInterface} */
-    this.shortcutProvider_ = getShortcutProvider();
-
-    /** @private {!AcceleratorLookupManager} */
-    this.lookupManager_ = AcceleratorLookupManager.getInstance();
-  }
-
-  /**
-   * @return {!Array<string>}
-   * @private
-   */
-  getModifiers_() {
-    const modifiers = [];
-    for (const key in Modifier) {
-      const modifier = Modifier[key];
+  private getModifiers_(): string[] {
+    const modifiers: Modifier[] = [
+      Modifier.SHIFT,
+      Modifier.CONTROL,
+      Modifier.ALT,
+      Modifier.COMMAND,
+    ];
+    const modifierStrings: string[] = [];
+    for (const modifier of modifiers) {
       if (this.acceleratorInfo.accelerator.modifiers & modifier) {
-        modifiers.push(GetModifierString(modifier));
+        modifierStrings.push(getModifierString(modifier));
       }
     }
-    return modifiers;
+    return modifierStrings;
   }
 
-  /** @protected */
-  onViewStateChanged_() {
+  protected onViewStateChanged_() {
     if (this.viewState !== ViewState.VIEW) {
       this.registerKeyEventListeners_();
       return;
@@ -178,33 +177,30 @@ export class AcceleratorViewElement extends PolymerElement {
     this.unregisterKeyEventListeners_();
   }
 
-  /** @private */
-  registerKeyEventListeners_() {
-    this.addEventListener('keydown', this.onKeyDown_.bind(this));
-    this.addEventListener('keyup', this.onKeyUp_.bind(this));
-    this.addEventListener('focus', this.startCapture_.bind(this));
-    this.addEventListener('mouseup', this.startCapture_.bind(this));
-    this.addEventListener('blur', this.endCapture_.bind(this));
+  private registerKeyEventListeners_() {
+    this.addEventListener('keydown', (e) => this.onKeyDown_(e));
+    this.addEventListener('keyup', (e) => this.onKeyUp_(e));
+    this.addEventListener('focus', () => this.startCapture_());
+    this.addEventListener('mouseup', () => this.startCapture_());
+    this.addEventListener('blur', () => this.endCapture_());
     this.$.container.focus();
   }
 
-  /** @private */
-  unregisterKeyEventListeners_() {
-    this.removeEventListener('keydown', this.onKeyDown_.bind(this));
-    this.removeEventListener('keyup', this.onKeyUp_.bind(this));
-    this.removeEventListener('focus', this.startCapture_.bind(this));
-    this.removeEventListener('mouseup', this.startCapture_.bind(this));
-    this.removeEventListener('blur', this.endCapture_.bind(this));
+  private unregisterKeyEventListeners_() {
+    this.removeEventListener('keydown', (e) => this.onKeyDown_(e));
+    this.removeEventListener('keyup', (e) => this.onKeyUp_(e));
+    this.removeEventListener('focus', () => this.startCapture_());
+    this.removeEventListener('mouseup', () => this.startCapture_());
+    this.removeEventListener('blur', () => this.endCapture_());
   }
 
 
-  /** @private */
-  startCapture_() {
+  private startCapture_() {
     if (this.isCapturing_) {
       return;
     }
     // Disable ChromeOS accelerator handler when starting input capture.
-    this.pendingAcceleratorInfo_ = CreateEmptyAcceleratorInfo();
+    this.pendingAcceleratorInfo_ = createEmptyAcceleratorInfo();
     this.isCapturing_ = true;
 
     this.dispatchEvent(new CustomEvent('accelerator-capturing-started', {
@@ -213,8 +209,7 @@ export class AcceleratorViewElement extends PolymerElement {
     }));
   }
 
-  /** @private */
-  endCapture_() {
+  private endCapture_() {
     if (!this.isCapturing_) {
       return;
     }
@@ -223,7 +218,7 @@ export class AcceleratorViewElement extends PolymerElement {
     this.statusMessage = '';
     this.hasError = false;
     this.isCapturing_ = false;
-    this.pendingAcceleratorInfo_ = CreateEmptyAcceleratorInfo();
+    this.pendingAcceleratorInfo_ = createEmptyAcceleratorInfo();
 
     this.dispatchEvent(new CustomEvent('accelerator-capturing-ended', {
       bubbles: true,
@@ -231,29 +226,17 @@ export class AcceleratorViewElement extends PolymerElement {
     }));
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onKeyDown_(e) {
-    this.handleKey_(/** @type {!KeyboardEvent}*/ (e));
+  private onKeyDown_(e: KeyboardEvent) {
+    this.handleKey_(e);
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onKeyUp_(e) {
+  private onKeyUp_(e: KeyboardEvent) {
     e.preventDefault();
     e.stopPropagation();
     // TODO(jimmyxgong): Check for errors e.g. accelerator conflicts.
   }
 
-  /**
-   * @param {!KeyboardEvent} e
-   * @private
-   */
-  handleKey_(e) {
+  private handleKey_(e: KeyboardEvent) {
     // While capturing, we prevent all events from bubbling, to prevent
     // shortcuts from executing and interrupting the input capture.
     e.preventDefault();
@@ -262,11 +245,11 @@ export class AcceleratorViewElement extends PolymerElement {
     if (!this.hasValidModifiers_(e)) {
       // TODO(jimmyxgong): Fire events for error handling, e.g. Shift cannot be
       // the only modifier.
-      this.pendingAcceleratorInfo_ = CreateEmptyAcceleratorInfo();
+      this.pendingAcceleratorInfo_ = createEmptyAcceleratorInfo();
       return;
     }
-    this.set('pendingAcceleratorInfo_.accelerator',
-        this.keystrokeToAccelerator_(e));
+    this.set(
+        'pendingAcceleratorInfo_.accelerator', this.keystrokeToAccelerator_(e));
 
     const pendingKeys = this.pendingAcceleratorInfo_.accelerator;
     // New shortcut matches the current shortcut, end capture.
@@ -285,10 +268,8 @@ export class AcceleratorViewElement extends PolymerElement {
   /**
    * Checks that |pendingAccelerator_| is not a pre-existing shortcut. Sets the
    * error message if there is a conflict.
-   * @param {!AcceleratorKeys} pendingKeys
-   * @private
    */
-  processPendingAccelerator_(pendingKeys) {
+  private processPendingAccelerator_(pendingKeys: AcceleratorKeys) {
     // Reset status state when processing the new accelerator.
     this.statusMessage = '';
     this.hasError = false;
@@ -306,15 +287,14 @@ export class AcceleratorViewElement extends PolymerElement {
       this.acceleratorOnHold_ = '';
     }
 
-    const foundId = this.lookupManager_.getAcceleratorFromKeys(
-        JSON.stringify(pendingKeys));
+    const foundId =
+        this.lookupManager_.getAcceleratorFromKeys(JSON.stringify(pendingKeys));
 
     // Pre-existing shortcut, update the error message.
     if (foundId !== undefined) {
       // TODO(jimmyxgong): Fetch name of accelerator with real implementation.
       const uuidParams = foundId.split('-');
-      const conflictSource =
-          /** @type {!AcceleratorSource} */(parseInt(uuidParams[0], 10));
+      const conflictSource: AcceleratorSource = parseInt(uuidParams[0], 10);
       const conflictAction = parseInt(uuidParams[1], 10);
       const conflictAccelName = this.lookupManager_.getAcceleratorName(
           conflictSource, conflictAction);
@@ -348,13 +328,9 @@ export class AcceleratorViewElement extends PolymerElement {
 
   /**
    * Converts a keystroke event to an Accelerator Object.
-   * @param {!KeyboardEvent} e
-   * @return {!AcceleratorKeys} The keystroke as an Acccelerator object.
-   * @private
    */
-  keystrokeToAccelerator_(e) {
-    const output = /** @type {AcceleratorKeys} */({
-        modifiers: 0, key: 0, key_display: ''});
+  private keystrokeToAccelerator_(e: KeyboardEvent): AcceleratorKeys {
+    const output: AcceleratorKeys = {modifiers: 0, key: 0, key_display: ''};
     if (e.metaKey) {
       output.modifiers = output.modifiers | Modifier.COMMAND;
     }
@@ -379,53 +355,42 @@ export class AcceleratorViewElement extends PolymerElement {
     return output;
   }
 
-  /**
-   * @param {!KeyboardEvent} e
-   * @return {boolean}
-   * @private
-   */
-  isModifierKey_(e) {
-    return ModifierRawKeys.includes(e.keyCode);
+  private isModifierKey_(e: KeyboardEvent): boolean {
+    return ModifierKeyCodes.includes(e.keyCode);
   }
 
   /**
-   * @return {string} The specified CSS state of the modifier key element.
-   * @protected
+   * Returns the specified CSS state of the modifier key element.
    */
-  getCtrlState_() {
+  protected getCtrlState_(): string {
     return this.getModifierState_(Modifier.CONTROL);
   }
 
   /**
-   * @return {string} The specified CSS state of the modifier key element.
-   * @protected
+   * Returns the specified CSS state of the modifier key element.
    */
-  getAltState_() {
+  protected getAltState_(): string {
     return this.getModifierState_(Modifier.ALT);
   }
 
   /**
-   * @return {string} The specified CSS state of the modifier key element.
-   * @protected
+   * Returns the specified CSS state of the modifier key element.
    */
-  getShiftState_() {
+  protected getShiftState_(): string {
     return this.getModifierState_(Modifier.SHIFT);
   }
 
   /**
-   * @return {string} The specified CSS state of the modifier key element.
-   * @protected
+   * Returns the specified CSS state of the modifier key element.
    */
-  getSearchState_() {
+  protected getSearchState_(): string {
     return this.getModifierState_(Modifier.COMMAND);
   }
 
   /**
-   * @param {number} modifier
-   * @return {string} The specified CSS state of the modifier key element.
-   * @private
+   * Returns the specified CSS state of the modifier key element.
    */
-  getModifierState_(modifier) {
+  private getModifierState_(modifier: Modifier): KeyState {
     if (this.pendingAcceleratorInfo_.accelerator.modifiers & modifier) {
       return KeyState.MODIFIER;
     }
@@ -433,10 +398,9 @@ export class AcceleratorViewElement extends PolymerElement {
   }
 
   /**
-   * @return {string} The specified CSS state of the pending key element.
-   * @protected
+   * Returns the specified CSS state of the pending key element.
    */
-  getPendingKeyState_() {
+  protected getPendingKeyState_(): string {
     if (this.pendingAcceleratorInfo_.accelerator.key_display != '') {
       return KeyState.ALPHANUMERIC;
     }
@@ -444,10 +408,9 @@ export class AcceleratorViewElement extends PolymerElement {
   }
 
   /**
-   * @return {string} The specified key to display.
-   * @protected
+   * Returns the specified key to display.
    */
-  getPendingKey_() {
+  protected getPendingKey_(): string {
     if (this.pendingAcceleratorInfo_.accelerator.key_display != '') {
       return this.pendingAcceleratorInfo_.accelerator.key_display.toLowerCase();
     }
@@ -457,45 +420,29 @@ export class AcceleratorViewElement extends PolymerElement {
 
   /**
    * Returns true if the event has valid modifiers.
-   * @param {!KeyboardEvent} e The keyboard event to consider.
-   * @return {boolean} True if the event is valid.
-   * @private
    */
-  hasValidModifiers_(e) {
+  private hasValidModifiers_(e: KeyboardEvent): boolean {
     // Although Shift is a modifier, it cannot be a standalone modifier for a
     // shortcut.
     return e.ctrlKey || e.altKey || e.metaKey;
   }
 
-  /**
-   * @param {AcceleratorKeys} keys
-   * @return {boolean}
-   * @private
-   */
-  isValidDefaultAccelerator_(keys) {
+  private isValidDefaultAccelerator_(keys: AcceleratorKeys): boolean {
     // A valid default accelerator is on that has modifier(s) and a key.
     return keys.modifiers > 0 && keys.key_display !== '';
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  showEditView_() {
+  private showEditView_(): boolean {
     return this.viewState !== ViewState.VIEW;
   }
 
-  /**
-   * @param {!AcceleratorKeys} newKeys
-   * @private
-   */
-  requestUpdateAccelerator_(newKeys) {
+  private requestUpdateAccelerator_(newKeys: AcceleratorKeys) {
     if (this.viewState === ViewState.EDIT) {
       this.shortcutProvider_
           .replaceAccelerator(
               this.source, this.action, this.acceleratorInfo.accelerator,
               newKeys)
-          .then((result) => {
+          .then((result: AcceleratorConfigResult) => {
             // TODO(jimmyxgong): Handle other error cases.
             if (result === AcceleratorConfigResult.kSuccess) {
               this.lookupManager_.replaceAccelerator(
@@ -509,7 +456,7 @@ export class AcceleratorViewElement extends PolymerElement {
     if (this.viewState === ViewState.ADD) {
       this.shortcutProvider_
           .addUserAccelerator(this.source, this.action, newKeys)
-          .then((result) => {
+          .then((result: AcceleratorConfigResult) => {
             // TODO(jimmyxgong): Handle other error cases.
             if (result === AcceleratorConfigResult.kSuccess) {
               this.lookupManager_.addAccelerator(
@@ -520,8 +467,7 @@ export class AcceleratorViewElement extends PolymerElement {
     }
   }
 
-  /** @private */
-  fireUpdateEvent_() {
+  private fireUpdateEvent_() {
     this.dispatchEvent(new CustomEvent('request-update-accelerator', {
       bubbles: true,
       composed: true,
