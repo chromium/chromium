@@ -20,7 +20,7 @@
       Settings
     </message>
   </if>
-  
+
   <!-- Subtitles of the ChromeOS version of the management page -->
   <if expr="chromeos_ash">
     <message name="IDS_MANAGEMENT_SUBTITLE_MANAGED" desc="Title of chrome://management page, shows when device is managed by an unknown manager">
@@ -77,7 +77,7 @@
       </if>
     </if>
   </if>
-  
+
   <!-- ChromeOS managed status section -->
   <if expr="is_chromeos">
     <message name="IDS_MANAGEMENT_DEVICE_NOT_MANAGED" desc="Message indicating that the device and account are not managed">
@@ -286,10 +286,10 @@
       Page is visited
     </message>
     <message name="IDS_MANAGEMENT_FILE_ATTACHED_VISIBLE_DATA" desc="Description of the visible data for the file attachment scanning feature.">
-      Files you upload or attach are sent to Google Cloud or third parties for analysis. For example, they might be scanned for sensitive data or malware.
+      Files you upload or attach are sent to Google Cloud or third parties for analysis. For example, they might be scanned for sensitive data or malware and might be stored based on company policies.
     </message>
     <message name="IDS_MANAGEMENT_FILE_DOWNLOADED_VISIBLE_DATA" desc="Description of the visible data for the file download scanning feature.">
-      Files you download are sent to Google Cloud or third parties for analysis. For example, they might be scanned for sensitive data or malware.
+      Files you download are sent to Google Cloud or third parties for analysis. For example, they might be scanned for sensitive data or malware and might be stored based on company policies.
     </message>
     <message name="IDS_MANAGEMENT_TEXT_ENTERED_VISIBLE_DATA" desc="Description of the visible data for the text entry scanning feature.">
       Text you paste or attach is sent to Google Cloud or third parties for analysis. For example, it might be scanned for sensitive data.
