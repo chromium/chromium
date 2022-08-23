@@ -1985,8 +1985,8 @@
     "label": "//fuchsia_web/webengine:web_engine_browsertests",
     "type": "console_test_launcher",
   },
-  "web_engine_integration_tests": {
-    "label": "//fuchsia_web/webengine:web_engine_integration_tests",
+  "web_engine_integration_tests_cfv1": {
+    "label": "//fuchsia_web/webengine:web_engine_integration_tests_cfv1",
     "type": "console_test_launcher",
   },
   "web_engine_shell_pkg": {

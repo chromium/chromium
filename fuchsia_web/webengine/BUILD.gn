@@ -658,7 +658,7 @@ test("web_engine_unittests") {
   ]
 }
 
-test("web_engine_integration_tests") {
+test("web_engine_integration_tests_cfv1") {
   sources = [
     "test/context_provider_test_connector.cc",
     "test/context_provider_test_connector.h",
