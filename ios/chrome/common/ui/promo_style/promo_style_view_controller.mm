@@ -87,6 +87,16 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
 
 #pragma mark - Public
 
+- (instancetype)initWithNibName:(NSString*)nibNameOrNil
+                         bundle:(NSBundle*)nibBundleOrNil {
+  self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+  if (self) {
+    _titleHorizontalMargin = kTitleHorizontalMargin;
+  }
+
+  return self;
+}
+
 - (void)viewDidLoad {
   [super viewDidLoad];
 
@@ -211,7 +221,7 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
         constraintEqualToAnchor:self.scrollContentView.centerXAnchor],
     [self.titleLabel.widthAnchor
         constraintLessThanOrEqualToAnchor:self.scrollContentView.widthAnchor
-                                 constant:-2 * kTitleHorizontalMargin],
+                                 constant:-2 * self.titleHorizontalMargin],
     [self.subtitleLabel.topAnchor
         constraintEqualToAnchor:self.titleLabel.bottomAnchor
                        constant:kDefaultMargin],

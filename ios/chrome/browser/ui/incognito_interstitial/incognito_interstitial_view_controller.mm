@@ -69,6 +69,7 @@ const int kURLLabelDefaultNumberOfLines = 3;
       l10n_util::GetNSString(IDS_IOS_INCOGNITO_INTERSTITIAL_TITLE);
   self.title = title;
   self.titleText = title;
+  self.titleHorizontalMargin = 0;
   self.primaryActionString = l10n_util::GetNSString(
       IDS_IOS_INCOGNITO_INTERSTITIAL_OPEN_IN_CHROME_INCOGNITO);
   self.secondaryActionString =
@@ -88,17 +89,20 @@ const int kURLLabelDefaultNumberOfLines = 3;
   if (base::FeatureList::IsEnabled(kIncognitoNtpRevamp)) {
     RevampedIncognitoView* revampedIncognitoView =
         [[RevampedIncognitoView alloc] initWithFrame:CGRectZero
-                       showTopIncognitoImageAndTitle:NO];
+                       showTopIncognitoImageAndTitle:NO
+                           stackViewHorizontalMargin:0];
     revampedIncognitoView.URLLoaderDelegate = self.URLLoaderDelegate;
     incognitoView = revampedIncognitoView;
   } else {
     IncognitoView* revampedIncognitoView =
         [[IncognitoView alloc] initWithFrame:CGRectZero
-               showTopIncognitoImageAndTitle:NO];
+               showTopIncognitoImageAndTitle:NO
+                   stackViewHorizontalMargin:0];
     revampedIncognitoView.URLLoaderDelegate = self.URLLoaderDelegate;
     incognitoView = revampedIncognitoView;
   }
   incognitoView.translatesAutoresizingMaskIntoConstraints = NO;
+  incognitoView.bounces = NO;
 
   // The Incognito view is put inside a container because it might try
   // to put constraints on its superview.

@@ -17,11 +17,17 @@
 // Set `showTopIncognitoImageAndTitle` to `YES` to have the top Incognito
 // header (with a big icon and title) added at the top of the scroll view
 // content.
+// Value `stackViewHorizontalMargin` is used to customize horizontal margins
+// on leading and trailing ends of the main stack view.
 - (instancetype)initWithFrame:(CGRect)frame
     showTopIncognitoImageAndTitle:(BOOL)showTopIncognitoImageAndTitle
+        stackViewHorizontalMargin:(CGFloat)stackViewHorizontalMargin
     NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
+// Calls the designated initializer with `frame` as frame.
+// Sets `showTopIncognitoImageAndTitle` to `YES`
+// and `stackViewHorizontalMargin` to `kStackViewHorizontalMargin`.
+- (instancetype)initWithFrame:(CGRect)frame;
 
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
