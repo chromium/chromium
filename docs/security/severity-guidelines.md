@@ -188,3 +188,29 @@ to these guidelines.
 The [security FAQ](faq.md) covers many of the cases that we do not consider to
 be security bugs, such as [denial of service](faq.md#TOC-Are-denial-of-service-issues-considered-security-bugs-)
 and, in particular, null pointer dereferences with consistent fixed offsets.
+
+
+## "MiraclePtr" protection against use-after-free
+
+["MiraclePtr"](../../base/memory/raw_ptr.md) is a technology designed to
+deterministically prevent exploitation of use-after-free bugs. Address
+sanitizer is aware of MiraclePtr and will report on whether a given
+use-after-free bug is protected or not:
+
+```
+MiraclePtr Status: NOT PROTECTED
+No raw_ptr<T> access to this region was detected prior to the crash.
+```
+
+or
+
+```
+MiraclePtr Status: PROTECTED
+The crash occurred while a raw_ptr<T> object containing a dangling pointer was being dereferenced.
+MiraclePtr should make this crash non-exploitable in regular builds.
+```
+
+For now, ignore these messages while determining severity, because MiraclePtr
+is not yet active on all Chromium platforms. In the future, we'll use this
+protection to reduce the severity of these bugs or even (once we have a lot of
+practical experience) reclassify them as non-security bugs.
