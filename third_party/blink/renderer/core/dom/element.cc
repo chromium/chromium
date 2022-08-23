@@ -3068,14 +3068,6 @@ void Element::HandlePopupLightDismiss(const Event& event) {
           HidePopupFocusBehavior::kFocusPreviousElement,
           HidePopupForcingLevel::kHideAfterAnimations);
     }
-  } else if (event_type == event_type_names::kFocusin) {
-    // If we focus an element, hide all pop-ups outside the that element's
-    // pop-up tree, including unrelated pop-ups.
-    HideAllPopupsUntil(
-        NearestOpenAncestralPopup(*target_node, /*inclusive*/ true), document,
-        HidePopupFocusBehavior::kNone,
-        HidePopupForcingLevel::kHideAfterAnimations,
-        HidePopupIndependence::kHideUnrelated);
   }
 }
 
@@ -6179,9 +6171,23 @@ Element* Element::AdjustedFocusedElementInTreeScope() const {
 void Element::DispatchFocusEvent(Element* old_focused_element,
                                  mojom::blink::FocusType type,
                                  InputDeviceCapabilities* source_capabilities) {
-  DispatchEvent(*FocusEvent::Create(
-      event_type_names::kFocus, Event::Bubbles::kNo, GetDocument().domWindow(),
-      0, old_focused_element, source_capabilities));
+  Document& document = GetDocument();
+  if (DispatchEvent(*FocusEvent::Create(
+          event_type_names::kFocus, Event::Bubbles::kNo, document.domWindow(),
+          0, old_focused_element, source_capabilities)) !=
+      DispatchEventResult::kNotCanceled) {
+    return;
+  }
+  if (RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
+          document.GetExecutionContext()) &&
+      document.TopmostPopupAutoOrHint()) {
+    // If there's a pop-up showing, and we focus an element, hide all pop-ups
+    // outside the that element's pop-up tree, including unrelated pop-ups.
+    HideAllPopupsUntil(NearestOpenAncestralPopup(*this, /*inclusive*/ true),
+                       document, HidePopupFocusBehavior::kNone,
+                       HidePopupForcingLevel::kHideAfterAnimations,
+                       HidePopupIndependence::kHideUnrelated);
+  }
 }
 
 void Element::DispatchBlurEvent(Element* new_focused_element,

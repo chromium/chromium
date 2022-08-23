@@ -38,7 +38,7 @@ const supportedButtonTypes = ['button','reset','submit',''].map(type => {
   return   {
     name: `<button type="${type}">`,
     makeElement: makeElementWithType('button',type),
-    invokeFn: el => el.click(),
+    invokeFn: el => {el.focus(); el.click()},
     getExpectedLogic: buttonLogic,
     supported: true,
   };
@@ -47,7 +47,7 @@ const supportedInputButtonTypes = ['button','reset','submit','image'].map(type =
   return   {
     name: `<input type="${type}">`,
     makeElement: makeElementWithType('input',type),
-    invokeFn: el => el.click(),
+    invokeFn: el => {el.focus(); el.click()},
     getExpectedLogic: buttonLogic,
     supported: true,
   };
@@ -103,40 +103,46 @@ window.addEventListener('load', () => {
                 });
                 const {expectedBehavior, expectedId} = testcase.getExpectedLogic(t,s,h);
                 const otherId = expectedId !== 1 ? 1 : 2;
-                function assert_popUp(num,state,message) {
+                function assertPopUpShowing(num,state,message) {
                   assert_true(num>0,`Invalid expectedId ${num}`);
                   assert_equals((num===1 ? popUp1 : popUp2).matches(':top-layer'),state,message || "");
                 }
-                assert_popUp(expectedId,false);
-                assert_popUp(otherId,false);
+                assertPopUpShowing(expectedId,false);
+                assertPopUpShowing(otherId,false);
                 await testcase.invokeFn(invoker);
-                assert_popUp(otherId,false,'The other pop-up should never change');
+                assert_equals(document.activeElement,invoker,'Focus should end up on the invoker');
+                assertPopUpShowing(otherId,false,'The other pop-up should never change');
                 switch (expectedBehavior) {
                   case "toggle":
                   case "show":
-                    assert_popUp(expectedId,true,'Toggle or show should show the pop-up');
+                    assertPopUpShowing(expectedId,true,'Toggle or show should show the pop-up');
                     (expectedId===1 ? popUp1 : popUp2).hidePopUp(); // Hide the pop-up
                     break;
                   case "hide":
                   case "none":
-                    assert_popUp(expectedId,false,'Hide or none should leave the pop-up hidden');
+                    assertPopUpShowing(expectedId,false,'Hide or none should leave the pop-up hidden');
                     break;
                   default:
                     assert_unreached();
                 }
+                if (expectedBehavior === "none") {
+                  // If no behavior is expected, then there is nothing left to test. Even re-focusing
+                  // a control that has no expected behavior may hide an open pop-up via light dismiss.
+                  return;
+                }
                 (expectedId===1 ? popUp1 : popUp2).showPopUp(); // Show the pop-up directly
-                assert_popUp(expectedId,true);
-                assert_popUp(otherId,false);
+                assert_equals(document.activeElement,invoker,'The pop-up should not shift focus');
+                assertPopUpShowing(expectedId,true);
+                assertPopUpShowing(otherId,false);
                 await testcase.invokeFn(invoker);
-                assert_popUp(otherId,false,'The other pop-up should never change');
+                assertPopUpShowing(otherId,false,'The other pop-up should never change');
                 switch (expectedBehavior) {
                   case "toggle":
                   case "hide":
-                    assert_popUp(expectedId,false,'Toggle or hide should hide the pop-up');
+                    assertPopUpShowing(expectedId,false,'Toggle or hide should hide the pop-up');
                     break;
                   case "show":
-                  case "none":
-                    assert_popUp(expectedId,true,'Show or none should leave the pop-up showing');
+                    assertPopUpShowing(expectedId,true,'Show should leave the pop-up showing');
                     break;
                   default:
                     assert_unreached();
