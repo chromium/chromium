@@ -11,7 +11,6 @@
 #include <lib/fidl/cpp/interface_request.h>
 
 #include "base/command_line.h"
-#include "base/values.h"
 #include "fuchsia_web/webinstance_host/fuchsia_web_debug_proxy.h"
 
 // Helper class that allows web_instance Components to be launched based on
@@ -53,13 +52,6 @@ class WebInstanceHost {
   // to receive notifications of DevTools debug ports for new web instances.
   fuchsia::web::Debug* debug_api();
 
-  // Sets a set of config-data to use when launching instances, instead of any
-  // system-provided config-data. May be called at any time, and will not
-  // affect pre-existing instances.
-  void set_config_for_test(base::Value config) {
-    config_for_test_ = std::move(config);
-  }
-
   // The next created WebInstance will have access to the given directory handle
   // for temporary directory reading and writing.
   // Ownership of the directory is passed to the next created instance.
@@ -83,9 +75,6 @@ class WebInstanceHost {
   // If set, then the next created WebInstance will gain ownership of this
   // directory.
   fuchsia::io::DirectoryHandle tmp_dir_;
-
-  // Set by configuration tests.
-  base::Value config_for_test_;
 };
 
 #endif  // FUCHSIA_WEB_WEBINSTANCE_HOST_WEB_INSTANCE_HOST_H_

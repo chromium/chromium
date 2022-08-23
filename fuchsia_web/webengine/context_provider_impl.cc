@@ -39,10 +39,6 @@ void ContextProviderImpl::Create(
   }
 }
 
-void ContextProviderImpl::set_config_for_test(base::Value config) {
-  web_instance_host_.set_config_for_test(std::move(config));  // IN-TEST
-}
-
 fuchsia::web::Debug* ContextProviderImpl::debug_api() {
   return web_instance_host_.debug_api();
 }
