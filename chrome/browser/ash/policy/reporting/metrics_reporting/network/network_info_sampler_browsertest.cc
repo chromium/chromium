@@ -26,11 +26,14 @@ using ::reporting::Priority;
 using ::testing::Eq;
 using ::testing::NotNull;
 
-class NetworkInfoSamplerBrowserTest : public MetricBrowserTestBase {
+class NetworkInfoSamplerBrowserTest
+    : public policy::DevicePolicyCrosBrowserTest {
  protected:
   NetworkInfoSamplerBrowserTest() = default;
   ~NetworkInfoSamplerBrowserTest() override = default;
   ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  MetricTestInitializationHelper metric_test_initialization_helper_{
+      &device_state_};
 };
 
 IN_PROC_BROWSER_TEST_F(NetworkInfoSamplerBrowserTest,
@@ -40,7 +43,7 @@ IN_PROC_BROWSER_TEST_F(NetworkInfoSamplerBrowserTest,
       kReportDeviceNetworkInterfaces, true);
   MissiveClientTestObserver observer(Destination::INFO_METRIC);
   // Start initialization after the observer is initialized.
-  SetUpDelayedInitialization();
+  metric_test_initialization_helper_.SetUpDelayedInitialization();
 
   // Indicates at least one network interface is available.
   bool has_network_interfaces = false;
