@@ -48663,6 +48663,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="-2147167228" label="DRM_E_XB_UNKNOWN_ELEMENT_TYPE"/>
   <int value="-2147164882" label="DRM_E_* - OEM Specific (8004DD2E)"/>
   <int value="-2147164862" label="DRM_E_* - OEM Specific (8004DD42)"/>
+  <int value="-2147157503" label="media::kErrorInitializeMediaFoundation"/>
+  <int value="-2147157502" label="media::kErrorInitializeVideoWindowClass"/>
+  <int value="-2147157501" label="media::kErrorCdmProxyReceivedInInvalidState"/>
   <int value="-2147024894" label="ERROR_FILE_NOT_FOUND"/>
   <int value="-2147024893" label="ERROR_PATH_NOT_FOUND"/>
   <int value="-2147024891" label="E_ACCESSDENIED"/>

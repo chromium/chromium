@@ -30,6 +30,7 @@
 #include "media/base/media_switches.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/win/dxgi_device_manager.h"
+#include "media/base/win/hresults.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/base/win/mf_initializer.h"
 
@@ -200,7 +201,7 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
   DVLOG_FUNC(1);
 
   if (!InitializeMediaFoundation())
-    return E_FAIL;
+    return kErrorInitializeMediaFoundation;
 
   // Set `cdm_proxy_` early on so errors can be reported via the CDM for better
   // error aggregation. See `CdmDocumentServiceImpl::OnCdmEvent()`.
@@ -405,7 +406,7 @@ HRESULT MediaFoundationRenderer::InitializeDXGIDeviceManager() {
 
 HRESULT MediaFoundationRenderer::InitializeVirtualVideoWindow() {
   if (!InitializeVideoWindowClass())
-    return E_FAIL;
+    return kErrorInitializeVideoWindowClass;
 
   virtual_video_window_ =
       CreateWindowEx(WS_EX_NOPARENTNOTIFY | WS_EX_LAYERED | WS_EX_TRANSPARENT |
@@ -460,7 +461,8 @@ void MediaFoundationRenderer::OnCdmProxyReceived() {
 
   if (!waiting_for_mf_cdm_ || !content_protection_manager_) {
     OnError(PIPELINE_ERROR_INVALID_STATE,
-            ErrorReason::kCdmProxyReceivedInInvalidState);
+            ErrorReason::kCdmProxyReceivedInInvalidState,
+            kErrorCdmProxyReceivedInInvalidState);
     return;
   }
 
@@ -928,11 +930,11 @@ void MediaFoundationRenderer::OnVideoNaturalSizeChange() {
 
 void MediaFoundationRenderer::OnError(PipelineStatus status,
                                       ErrorReason reason,
-                                      absl::optional<HRESULT> hresult,
+                                      HRESULT hresult,
                                       PipelineStatusCallback status_cb) {
   const std::string error =
-      "MediaFoundationRenderer error: " + GetErrorReasonString(reason) +
-      (hresult.has_value() ? (" (" + PrintHr(hresult.value()) + ")") : "");
+      "MediaFoundationRenderer error: " + GetErrorReasonString(reason) + " (" +
+      PrintHr(hresult) + ")";
 
   DLOG(ERROR) << error;
 
@@ -947,7 +949,7 @@ void MediaFoundationRenderer::OnError(PipelineStatus status,
   // during OS sleep/resume, or moving video to different graphics adapters.
   // This is not an error, so special case it here.
   PipelineStatus new_status = status;
-  if (hresult.has_value() && hresult == static_cast<HRESULT>(0x8004CD12)) {
+  if (hresult == static_cast<HRESULT>(0x8004CD12)) {
     new_status = PIPELINE_ERROR_HARDWARE_CONTEXT_RESET;
     if (cdm_proxy_)
       cdm_proxy_->OnHardwareContextReset();
@@ -956,8 +958,7 @@ void MediaFoundationRenderer::OnError(PipelineStatus status,
   }
 
   // Attach hresult to `new_status` for logging and metrics reporting.
-  if (hresult.has_value())
-    new_status.WithData("hresult", static_cast<uint32_t>(hresult.value()));
+  new_status.WithData("hresult", static_cast<uint32_t>(hresult));
 
   if (status_cb)
     std::move(status_cb).Run(new_status);
