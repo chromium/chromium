@@ -1153,8 +1153,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/ui/IncognitoRestoreAppLaunchDrawBlockerFactory.java",
   "java/src/org/chromium/chrome/browser/ui/MediaCaptureOverlayController.java",
   "java/src/org/chromium/chrome/browser/ui/RootUiCoordinator.java",
-  "java/src/org/chromium/chrome/browser/ui/TabObscuringHandler.java",
-  "java/src/org/chromium/chrome/browser/ui/TabObscuringHandlerSupplier.java",
   "java/src/org/chromium/chrome/browser/ui/ViewDrawBlocker.java",
   "java/src/org/chromium/chrome/browser/ui/system/StatusBarColorController.java",
   "java/src/org/chromium/chrome/browser/ui/tablet/emptybackground/EmptyBackgroundViewTablet.java",

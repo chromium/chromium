@@ -17,6 +17,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.toolbar.TabObscuringHandler;
 import org.chromium.components.browser_ui.widget.ViewResourceFrameLayout;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -66,6 +67,7 @@ public class StatusIndicatorCoordinator {
      * @param resourceManager The {@link ResourceManager} for the status indicator's cc layer.
      * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} to listen to
      *                                     for the changes in controls offsets.
+     * @param tabObscuringHandler Delegate object handling obscuring views.
      * @param statusBarColorWithoutStatusIndicatorSupplier A supplier that will get the status bar
      *                                                     color without taking the status indicator
      *                                                     into account.
@@ -77,13 +79,15 @@ public class StatusIndicatorCoordinator {
      */
     public StatusIndicatorCoordinator(Activity activity, ResourceManager resourceManager,
             BrowserControlsStateProvider browserControlsStateProvider,
+            TabObscuringHandler tabObscuringHandler,
             Supplier<Integer> statusBarColorWithoutStatusIndicatorSupplier,
             Supplier<Boolean> canAnimateNativeBrowserControls, Callback<Runnable> requestRender) {
         mActivity = activity;
         mResourceManager = resourceManager;
         mRequestRender = requestRender;
+
         mSceneLayer = new StatusIndicatorSceneLayer(browserControlsStateProvider);
-        mMediator = new StatusIndicatorMediator(browserControlsStateProvider,
+        mMediator = new StatusIndicatorMediator(browserControlsStateProvider, tabObscuringHandler,
                 statusBarColorWithoutStatusIndicatorSupplier, canAnimateNativeBrowserControls);
     }
 

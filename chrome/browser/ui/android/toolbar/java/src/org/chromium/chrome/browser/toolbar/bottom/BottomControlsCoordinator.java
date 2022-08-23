@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.toolbar.TabObscuringHandler;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsViewBinder.ViewHolder;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.base.WindowAndroid;
@@ -65,7 +66,7 @@ public class BottomControlsCoordinator implements BackPressHandler {
             LayoutManager layoutManager, ResourceManager resourceManager,
             BrowserControlsSizer controlsSizer, FullscreenManager fullscreenManager,
             ScrollingBottomViewResourceFrameLayout root,
-            BottomControlsContentDelegate contentDelegate,
+            BottomControlsContentDelegate contentDelegate, TabObscuringHandler tabObscuringHandler,
             ObservableSupplier<Boolean> overlayPanelVisibilitySupplier) {
         PropertyModel model = new PropertyModel(BottomControlsProperties.ALL_KEYS);
 
@@ -80,10 +81,10 @@ public class BottomControlsCoordinator implements BackPressHandler {
         View container = root.findViewById(R.id.bottom_container_slot);
         ViewGroup.LayoutParams params = container.getLayoutParams();
         params.height = root.getResources().getDimensionPixelOffset(bottomControlsHeightId);
-        mMediator =
-                new BottomControlsMediator(windowAndroid, model, controlsSizer, fullscreenManager,
-                        root.getResources().getDimensionPixelOffset(bottomControlsHeightId),
-                        overlayPanelVisibilitySupplier);
+        mMediator = new BottomControlsMediator(windowAndroid, model, controlsSizer,
+                fullscreenManager, tabObscuringHandler,
+                root.getResources().getDimensionPixelOffset(bottomControlsHeightId),
+                overlayPanelVisibilitySupplier);
 
         resourceManager.getDynamicResourceLoader().registerResource(
                 root.getId(), root.getResourceAdapter());

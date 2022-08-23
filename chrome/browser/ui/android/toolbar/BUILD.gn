@@ -22,6 +22,8 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/toolbar/ProgressAnimationSmooth.java",
     "java/src/org/chromium/chrome/browser/toolbar/SettableThemeColorProvider.java",
     "java/src/org/chromium/chrome/browser/toolbar/TabCountProvider.java",
+    "java/src/org/chromium/chrome/browser/toolbar/TabObscuringHandler.java",
+    "java/src/org/chromium/chrome/browser/toolbar/TabObscuringHandlerSupplier.java",
     "java/src/org/chromium/chrome/browser/toolbar/TabSwitcherButtonCoordinator.java",
     "java/src/org/chromium/chrome/browser/toolbar/TabSwitcherButtonProperties.java",
     "java/src/org/chromium/chrome/browser/toolbar/TabSwitcherButtonView.java",

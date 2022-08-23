@@ -47,6 +47,10 @@ class BottomControlsViewBinder {
             final boolean showCompositedView =
                     model.get(BottomControlsProperties.COMPOSITED_VIEW_VISIBLE);
             view.sceneLayer.setIsVisible(showCompositedView);
+        } else if (BottomControlsProperties.IS_OBSCURED == propertyKey) {
+            view.root.setImportantForAccessibility(model.get(BottomControlsProperties.IS_OBSCURED)
+                            ? View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
+                            : View.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
         } else {
             assert false : "Unhandled property detected in BottomControlsViewBinder!";
         }

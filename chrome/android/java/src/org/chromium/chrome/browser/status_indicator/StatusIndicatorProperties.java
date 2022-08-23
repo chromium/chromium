@@ -49,7 +49,11 @@ class StatusIndicatorProperties {
     static final PropertyModel.WritableIntPropertyKey CURRENT_VISIBLE_HEIGHT =
             new PropertyModel.WritableIntPropertyKey();
 
+    /** Whether the view is obscured. */
+    static final PropertyModel.WritableBooleanPropertyKey IS_OBSCURED =
+            new PropertyModel.WritableBooleanPropertyKey();
+
     static final PropertyKey[] ALL_KEYS = new PropertyKey[] {STATUS_TEXT, STATUS_ICON,
             ANDROID_VIEW_VISIBILITY, COMPOSITED_VIEW_VISIBLE, BACKGROUND_COLOR, TEXT_ALPHA,
-            TEXT_COLOR, ICON_TINT, CURRENT_VISIBLE_HEIGHT};
+            TEXT_COLOR, ICON_TINT, CURRENT_VISIBLE_HEIGHT, IS_OBSCURED};
 }

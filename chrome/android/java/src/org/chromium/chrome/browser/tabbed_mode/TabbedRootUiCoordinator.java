@@ -782,6 +782,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         final BrowserControlsSizer browserControlsSizer = mBrowserControlsManager;
         mStatusIndicatorCoordinator = new StatusIndicatorCoordinator(mActivity,
                 mCompositorViewHolderSupplier.get().getResourceManager(), browserControlsSizer,
+                mTabObscuringHandlerSupplier.get(),
                 mStatusBarColorController::getStatusBarColorWithoutStatusIndicator,
                 mCanAnimateBrowserControls, layoutManager::requestUpdate);
         layoutManager.addSceneOverlay(mStatusIndicatorCoordinator.getSceneLayer());
