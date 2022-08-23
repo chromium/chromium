@@ -99,6 +99,30 @@ std::string DomainFromDot(base::StringPiece dotted_name) {
 
 enum class Transport { UDP, TCP, HTTPS };
 
+class NetLogCountingObserver : public net::NetLog::ThreadSafeObserver {
+ public:
+  NetLogCountingObserver() = default;
+
+  ~NetLogCountingObserver() override {
+    if (net_log())
+      net_log()->RemoveObserver(this);
+  }
+
+  void OnAddEntry(const NetLogEntry& entry) override {
+    ++count_;
+    if (!entry.params.is_none() && entry.params.is_dict())
+      dict_count_++;
+  }
+
+  int count() const { return count_; }
+
+  int dict_count() const { return dict_count_; }
+
+ private:
+  int count_ = 0;
+  int dict_count_ = 0;
+};
+
 // A SocketDataProvider builder.
 class DnsSocketData {
  public:
@@ -977,6 +1001,20 @@ TEST_F(DnsTransactionTest, Lookup) {
   helper0.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
                            false /* secure */, resolve_context_.get());
   helper0.RunUntilComplete();
+}
+
+TEST_F(DnsTransactionTest, LookupWithLog) {
+  AddAsyncQueryAndResponse(0 /* id */, kT0HostName, kT0Qtype,
+                           kT0ResponseDatagram, std::size(kT0ResponseDatagram));
+
+  TransactionHelper helper0(kT0RecordCount);
+  NetLogCountingObserver observer;
+  NetLog::Get()->AddObserver(&observer, NetLogCaptureMode::kEverything);
+  helper0.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
+                           false /* secure */, resolve_context_.get());
+  helper0.RunUntilComplete();
+  EXPECT_EQ(observer.count(), 6);
+  EXPECT_EQ(observer.dict_count(), 4);
 }
 
 TEST_F(DnsTransactionTest, LookupWithEDNSOption) {
@@ -2541,39 +2579,7 @@ TEST_F(DnsTransactionTest, CanLookupDohServerName) {
   helper0.RunUntilComplete();
 }
 
-class CountingObserver : public net::NetLog::ThreadSafeObserver {
- public:
-  CountingObserver() = default;
-
-  ~CountingObserver() override {
-    if (net_log())
-      net_log()->RemoveObserver(this);
-  }
-
-  void OnAddEntry(const NetLogEntry& entry) override {
-    ++count_;
-    if (!entry.params.is_none() && entry.params.is_dict())
-      dict_count_++;
-  }
-
-  int count() const { return count_; }
-
-  int dict_count() const { return dict_count_; }
-
- private:
-  int count_ = 0;
-  int dict_count_ = 0;
-};
-
-// Flaky on MSAN. https://crbug.com/1245953
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_HttpsPostLookupWithLog \
-  DISABLED_HttpsPostLookupWithLog
-#else
-#define MAYBE_HttpsPostLookupWithLog \
-  HttpsPostLookupWithLog
-#endif
-TEST_F(DnsTransactionTest, MAYBE_HttpsPostLookupWithLog) {
+TEST_F(DnsTransactionTest, HttpsPostLookupWithLog) {
   ConfigureDohServers(true /* use_post */);
   AddQueryAndResponse(0, kT0HostName, kT0Qtype, kT0ResponseDatagram,
                       std::size(kT0ResponseDatagram), SYNCHRONOUS,
@@ -2581,7 +2587,7 @@ TEST_F(DnsTransactionTest, MAYBE_HttpsPostLookupWithLog) {
                       DnsQuery::PaddingStrategy::BLOCK_LENGTH_128,
                       false /* enqueue_transaction_id */);
   TransactionHelper helper0(kT0RecordCount);
-  CountingObserver observer;
+  NetLogCountingObserver observer;
   NetLog::Get()->AddObserver(&observer, NetLogCaptureMode::kEverything);
   helper0.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
                            true /* secure */, resolve_context_.get());
@@ -3038,6 +3044,22 @@ TEST_F(DnsTransactionTest, TcpLookup_UdpRetry) {
   helper0.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
                            false /* secure */, resolve_context_.get());
   helper0.RunUntilComplete();
+}
+
+TEST_F(DnsTransactionTest, TcpLookup_UdpRetry_WithLog) {
+  AddAsyncQueryAndRcode(kT0HostName, kT0Qtype,
+                        dns_protocol::kRcodeNOERROR | dns_protocol::kFlagTC);
+  AddQueryAndResponse(0 /* id */, kT0HostName, kT0Qtype, kT0ResponseDatagram,
+                      std::size(kT0ResponseDatagram), ASYNC, Transport::TCP);
+
+  TransactionHelper helper0(kT0RecordCount);
+  NetLogCountingObserver observer;
+  NetLog::Get()->AddObserver(&observer, NetLogCaptureMode::kEverything);
+  helper0.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
+                           false /* secure */, resolve_context_.get());
+  helper0.RunUntilComplete();
+  EXPECT_EQ(observer.count(), 8);
+  EXPECT_EQ(observer.dict_count(), 6);
 }
 
 TEST_F(DnsTransactionTest, TcpLookup_LowEntropy) {
