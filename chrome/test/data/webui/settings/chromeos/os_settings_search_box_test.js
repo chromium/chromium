@@ -41,8 +41,6 @@ suite('OSSettingsSearchBox', () => {
 
     recordTime(metricName, value) {}
 
-    recordSparseHashable(metricName, value) {}
-
     recordSparseValueWithHashMetricName(metricName, value) {}
 
     recordSparseValueWithPersistentHash(metricName, value) {}
