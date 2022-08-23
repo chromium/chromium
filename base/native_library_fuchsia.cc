@@ -37,17 +37,25 @@ std::string NativeLibraryLoadError::ToString() const {
 NativeLibrary LoadNativeLibraryWithOptions(const FilePath& library_path,
                                            const NativeLibraryOptions& options,
                                            NativeLibraryLoadError* error) {
-  std::vector<base::FilePath::StringType> components =
-      library_path.GetComponents();
-  if (components.size() != 1u) {
-    NOTREACHED() << "library_path is a path, should be a filename: "
-                 << library_path.MaybeAsASCII();
-    return nullptr;
-  }
-
   FilePath computed_path;
-  base::PathService::Get(DIR_ASSETS, &computed_path);
-  computed_path = computed_path.AppendASCII("lib").Append(components[0]);
+  FilePath library_root_path =
+      base::PathService::CheckedGet(DIR_ASSETS).Append("lib");
+  if (library_path.IsAbsolute()) {
+    // See more info in fxbug.dev/105910.
+    if (!library_root_path.IsParent(library_path)) {
+      auto error_message =
+          base::StringPrintf("Absolute library paths must begin with %s",
+                             library_root_path.value().c_str());
+      DLOG(ERROR) << error_message;
+      if (error) {
+        error->message = std::move(error_message);
+      }
+      return nullptr;
+    }
+    computed_path = library_path;
+  } else {
+    computed_path = library_root_path.Append(library_path);
+  }
 
   // Use fdio_open_fd (a Fuchsia-specific API) here so we can pass the
   // appropriate FS rights flags to request executability.

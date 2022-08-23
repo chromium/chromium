@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/files/file_path.h"
 #include "base/native_library.h"
+
+#include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/test/native_library_test_utils.h"
 #include "build/build_config.h"
@@ -24,6 +25,22 @@ TEST(NativeLibraryTest, LoadFailure) {
 TEST(NativeLibraryTest, LoadFailureWithNullError) {
   EXPECT_FALSE(LoadNativeLibrary(FilePath(kDummyLibraryPath), nullptr));
 }
+
+#if BUILDFLAG(IS_FUCHSIA)
+TEST(NativeLibraryTest, LoadAbsolutePath) {
+  EXPECT_TRUE(LoadNativeLibrary(FilePath("/pkg/lib/libtest_shared_library.so"),
+                                nullptr));
+}
+
+TEST(NativeLibraryTest, LoadAbsolutePath_OutsideLibraryRoot) {
+  NativeLibraryLoadError error;
+  EXPECT_FALSE(LoadNativeLibrary(FilePath("/pkg/tmp/libtest_shared_library.so"),
+                                 &error));
+  std::string expected_error =
+      "Absolute library paths must begin with /pkg/lib";
+  EXPECT_EQ(error.ToString(), expected_error);
+}
+#endif
 
 TEST(NativeLibraryTest, GetNativeLibraryName) {
   const char kExpectedName[] =
@@ -74,7 +91,7 @@ class TestLibrary {
   TestLibrary() : TestLibrary(NativeLibraryOptions()) {}
 
   explicit TestLibrary(const NativeLibraryOptions& options)
-    : library_(nullptr) {
+      : library_(nullptr) {
     base::FilePath exe_path;
 
 #if !BUILDFLAG(IS_FUCHSIA)
@@ -89,13 +106,11 @@ class TestLibrary {
   }
   TestLibrary(const TestLibrary&) = delete;
   TestLibrary& operator=(const TestLibrary&) = delete;
-  ~TestLibrary() {
-    UnloadNativeLibrary(library_);
-  }
+  ~TestLibrary() { UnloadNativeLibrary(library_); }
 
   template <typename ReturnType, typename... Args>
   ReturnType Call(const char* function_name, Args... args) {
-    return reinterpret_cast<ReturnType(*)(Args...)>(
+    return reinterpret_cast<ReturnType (*)(Args...)>(
         GetFunctionPointerFromNativeLibrary(library_, function_name))(args...);
   }
 
