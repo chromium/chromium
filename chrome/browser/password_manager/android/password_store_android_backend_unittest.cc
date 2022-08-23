@@ -10,6 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -57,6 +58,8 @@ constexpr char kUnenrollmentHistogram[] =
     "PasswordManager.UnenrolledFromUPMDueToErrors";
 constexpr char kUPMActiveHistogram[] =
     "PasswordManager.UnifiedPasswordManager.ActiveStatus";
+constexpr char kUptimeOnAPIErrorHistogram[] =
+    "PasswordManager.PasswordStoreAndroidBackend.UptimeOnAPIError";
 constexpr AndroidBackendErrorType kExternalErrorType =
     AndroidBackendErrorType::kExternalError;
 constexpr int kInternalApiErrorCode =
@@ -895,6 +898,111 @@ TEST_F(PasswordStoreAndroidBackendTest, RecordsAliveStatusOnApiNotConnected) {
       kAliveAfterErrorMetric, kAliveAfterApiNotConnectedOnErrorStatus, 1);
   histogram_tester.ExpectBucketCount(
       kAliveAfterErrorMetric, kAliveAfterApiNotConnectedAfterDelayStatus, 1);
+}
+
+TEST_F(PasswordStoreAndroidBackendTest, RecordsUptimeOnApiNotConnected) {
+  const base::TimeDelta expected_uptime = base::Seconds(17);
+
+  base::HistogramTester histogram_tester;
+
+  backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
+                        base::RepeatingClosure(), base::DoNothing());
+  backend().OnSyncServiceInitialized(sync_service());
+
+  ASSERT_FALSE(sync_service()->GetAuthError().IsTransientError());
+  ASSERT_FALSE(sync_service()->GetAuthError().IsPersistentError());
+
+  task_environment_.FastForwardBy(expected_uptime);
+
+  const JobId kJobId{1337};
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
+  backend().GetAllLoginsAsync(mock_reply.Get());
+  EXPECT_CALL(mock_reply,
+              Run(ExpectError(PasswordStoreBackendError::kUnrecoverable)));
+  AndroidBackendError error{AndroidBackendErrorType::kExternalError};
+  // Simulate receiving API_NOT_CONNECTED code.
+  const int kApiNotConnectedErrorCode =
+      static_cast<int>(AndroidBackendAPIErrorCode::kApiNotConnected);
+  error.api_error_code = absl::optional<int>(kApiNotConnectedErrorCode);
+  consumer().OnError(kJobId, std::move(error));
+
+  RunUntilIdle();
+
+  histogram_tester.ExpectTimeBucketCount(
+      base::StrCat({kUptimeOnAPIErrorHistogram, ".ApiNotConnected"}),
+      expected_uptime, 1);
+}
+
+TEST_F(PasswordStoreAndroidBackendTest,
+       RecordsUptimeOnConnectionSuspendedDuringCall) {
+  const base::TimeDelta expected_uptime = base::Seconds(0);
+
+  base::HistogramTester histogram_tester;
+
+  backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
+                        base::RepeatingClosure(), base::DoNothing());
+  backend().OnSyncServiceInitialized(sync_service());
+
+  ASSERT_FALSE(sync_service()->GetAuthError().IsTransientError());
+  ASSERT_FALSE(sync_service()->GetAuthError().IsPersistentError());
+
+  task_environment_.FastForwardBy(expected_uptime);
+
+  const JobId kJobId{1337};
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
+  backend().GetAllLoginsAsync(mock_reply.Get());
+  EXPECT_CALL(mock_reply,
+              Run(ExpectError(PasswordStoreBackendError::kUnrecoverable)));
+  AndroidBackendError error{AndroidBackendErrorType::kExternalError};
+  // Simulate receiving CONNECTION_SUSPENDED_DURING_CALL code.
+  const int kConnectionSuspendedDuringCallErrorCode = static_cast<int>(
+      AndroidBackendAPIErrorCode::kConnectionSuspendedDuringCall);
+  error.api_error_code =
+      absl::optional<int>(kConnectionSuspendedDuringCallErrorCode);
+  consumer().OnError(kJobId, std::move(error));
+
+  RunUntilIdle();
+
+  histogram_tester.ExpectTimeBucketCount(
+      base::StrCat(
+          {kUptimeOnAPIErrorHistogram, ".ConnectionSuspendedDuringCall"}),
+      expected_uptime, 1);
+}
+
+TEST_F(PasswordStoreAndroidBackendTest, RecordsUptimeOnReconnectionTimedOut) {
+  const base::TimeDelta expected_uptime = base::Seconds(0);
+
+  base::HistogramTester histogram_tester;
+
+  backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
+                        base::RepeatingClosure(), base::DoNothing());
+  backend().OnSyncServiceInitialized(sync_service());
+
+  ASSERT_FALSE(sync_service()->GetAuthError().IsTransientError());
+  ASSERT_FALSE(sync_service()->GetAuthError().IsPersistentError());
+
+  task_environment_.FastForwardBy(expected_uptime);
+
+  const JobId kJobId{1337};
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
+  backend().GetAllLoginsAsync(mock_reply.Get());
+  EXPECT_CALL(mock_reply,
+              Run(ExpectError(PasswordStoreBackendError::kUnrecoverable)));
+  AndroidBackendError error{AndroidBackendErrorType::kExternalError};
+  // Simulate receiving RECONNECTION_TIMED_OUT code.
+  const int kReconnectionTimedOutErrorCode =
+      static_cast<int>(AndroidBackendAPIErrorCode::kReconnectionTimedOut);
+  error.api_error_code = absl::optional<int>(kReconnectionTimedOutErrorCode);
+  consumer().OnError(kJobId, std::move(error));
+
+  RunUntilIdle();
+
+  histogram_tester.ExpectTimeBucketCount(
+      base::StrCat({kUptimeOnAPIErrorHistogram, ".ReconnectionTimedOut"}),
+      expected_uptime, 1);
 }
 
 TEST_F(PasswordStoreAndroidBackendTest,

@@ -2423,6 +2423,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PasswordManager.PasswordStoreAndroidBackend.UptimeOnAPIError{ErrorCode}"
+    units="ms" expires_after="M110">
+  <owner>maxan@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Chrome uptime on recieving {ErrorCode} error from the GMS 1P API. Recorded
+    when the asynchronous job has returned with error.
+  </summary>
+  <token key="ErrorCode">
+    <variant name=".ApiNotConnected" summary="API_NOT_CONNECTED"/>
+    <variant name=".ConnectionSuspendedDuringCall"
+        summary="CONNECTTION_SUSPENDED_DURING_CALL"/>
+    <variant name=".ReconnectionTimedOut" summary="RECONNECTION_TIMED_OUT"/>
+  </token>
+</histogram>
+
+<histogram
     name="PasswordManager.PasswordStoreAndroidBackend{Function}{UnenrollmentFromUPM}.APIError"
     enum="PasswordStoreAndroidBackendAPIError" expires_after="M110">
   <owner>fhorschig@chromium.org</owner>

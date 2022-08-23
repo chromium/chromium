@@ -246,6 +246,8 @@ class PasswordStoreAndroidBackend
 
   raw_ptr<PrefService> prefs_ = nullptr;
 
+  base::Time initialized_at_ = base::Time::Now();
+
   base::WeakPtrFactory<PasswordStoreAndroidBackend> weak_ptr_factory_{this};
 };
 

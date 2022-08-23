@@ -282,6 +282,42 @@ bool IsUnenrolledFromUPM(const PrefService* prefs) {
       password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors);
 }
 
+bool ShouldRecordUptimeOnApiError(AndroidBackendAPIErrorCode api_error_code) {
+  // These error codes are included in histogram name, update histograms.xml and
+  // |GetUptimeHistogramSuffixForApiError| when changing this.
+  switch (api_error_code) {
+    case AndroidBackendAPIErrorCode::kApiNotConnected:
+    case AndroidBackendAPIErrorCode::kConnectionSuspendedDuringCall:
+    case AndroidBackendAPIErrorCode::kReconnectionTimedOut:
+      return true;
+    default:
+      return false;
+  }
+}
+
+std::string GetUptimeHistogramNameForApiError(
+    AndroidBackendAPIErrorCode api_error_code) {
+  DCHECK(ShouldRecordUptimeOnApiError(api_error_code));
+  std::string histogram_suffix;
+  switch (api_error_code) {
+    case AndroidBackendAPIErrorCode::kApiNotConnected:
+      histogram_suffix = ".ApiNotConnected";
+      break;
+    case AndroidBackendAPIErrorCode::kConnectionSuspendedDuringCall:
+      histogram_suffix = ".ConnectionSuspendedDuringCall";
+      break;
+    case AndroidBackendAPIErrorCode::kReconnectionTimedOut:
+      histogram_suffix = ".ReconnectionTimedOut";
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  return base::StrCat(
+      {"PasswordManager.PasswordStoreAndroidBackend.UptimeOnAPIError",
+       histogram_suffix});
+}
+
 }  // namespace
 
 class PasswordStoreAndroidBackend::ClearAllLocalPasswordsMetricRecorder {
@@ -711,8 +747,8 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
     // If the user is experiencing an error unresolvable by Chrome or by the
     // user, unenroll the user from the UPM experience.
     int api_error = error.api_error_code.value();
-    if (password_manager::IsUnrecoverableBackendError(
-            static_cast<AndroidBackendAPIErrorCode>(api_error))) {
+    auto api_error_code = static_cast<AndroidBackendAPIErrorCode>(api_error);
+    if (password_manager::IsUnrecoverableBackendError(api_error_code)) {
       if (!prefs_->GetBoolean(
               prefs::kUnenrolledFromGoogleMobileServicesDueToErrors)) {
         if (base::FeatureList::IsEnabled(
@@ -738,8 +774,7 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
       prefs_->SetBoolean(prefs::kSettingsMigratedToUPM, false);
     }
 
-    if (static_cast<AndroidBackendAPIErrorCode>(api_error) ==
-        AndroidBackendAPIErrorCode::kApiNotConnected) {
+    if (api_error_code == AndroidBackendAPIErrorCode::kApiNotConnected) {
       base::UmaHistogramEnumeration(
           kAliveAfterApiNotConnectedHistogram,
           AliveAfterApiNotConnectedStatus::kAliveOnError);
@@ -751,6 +786,12 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
                          kAliveAfterApiNotConnectedHistogram,
                          AliveAfterApiNotConnectedStatus::kAliveAfterDelay),
           kReportAliveAfterApiNotConnectedDelay);
+    }
+
+    if (ShouldRecordUptimeOnApiError(api_error_code)) {
+      base::UmaHistogramLongTimes(
+          GetUptimeHistogramNameForApiError(api_error_code),
+          base::Time::Now() - initialized_at_);
     }
   }
   PasswordStoreBackendError reported_error =
