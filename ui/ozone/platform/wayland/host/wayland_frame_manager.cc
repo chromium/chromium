@@ -186,6 +186,11 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
     auto* surface = subsurface->wayland_surface();
     if (empty_frame || !config.buffer_id ||
         wl_fixed_from_double(config.opacity) == 0) {
+      // If the subsurface has already been hidden, there is not point to
+      // hide that again and traverse through submitted_buffers.
+      if (!subsurface->IsVisible())
+        continue;
+
       subsurface->Hide();
       // Mutter sometimes does not call buffer.release if wl_surface role is
       // destroyed, causing graphics freeze. Manually release buffer from the
