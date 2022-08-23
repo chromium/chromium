@@ -104,18 +104,17 @@ class ExtensionManagementPrefUpdaterBase {
   void UnsetMinimumVersionRequired(const std::string& id);
 
   // Expose a read-only preference to user.
-  const base::DictionaryValue* GetPref();
+  const base::Value::Dict* GetPref();
 
  protected:
   // Set the preference with |pref|, pass the ownership of it as well.
   // This function must be called before accessing publicly exposed functions,
   // for example in constructor of subclass.
-  void SetPref(std::unique_ptr<base::DictionaryValue> pref);
+  void SetPref(base::Value::Dict pref);
 
-  // Take the preference. Caller takes ownership of it as well.
-  // This function must be called after accessing publicly exposed functions,
-  // for example in destructor of subclass.
-  std::unique_ptr<base::DictionaryValue> TakePref();
+  // Take the preference. This function must be called after accessing publicly
+  // exposed functions, for example in destructor of subclass.
+  base::Value::Dict TakePref();
 
  private:
   // Helper functions for manipulating sub properties like list of strings.
@@ -123,7 +122,7 @@ class ExtensionManagementPrefUpdaterBase {
   void AddStringToList(const std::string& path, const std::string& str);
   void RemoveStringFromList(const std::string& path, const std::string& str);
 
-  std::unique_ptr<base::DictionaryValue> pref_;
+  base::Value::Dict pref_;
 };
 
 // A helper class to manipulate the extension management preference in unit
@@ -136,13 +135,11 @@ class ExtensionManagementPrefUpdater
       : service_(service) {
     const base::Value* pref_value =
         service_->GetManagedPref(pref_names::kExtensionManagement);
-    std::unique_ptr<base::DictionaryValue> dict_value(
-        new base::DictionaryValue);
+    base::Value::Dict dict;
     if (pref_value && pref_value->is_dict()) {
-      dict_value = base::DictionaryValue::From(
-          base::Value::ToUniquePtrValue(pref_value->Clone()));
+      dict = pref_value->GetDict().Clone();
     }
-    SetPref(std::move(dict_value));
+    SetPref(std::move(dict));
   }
 
   ExtensionManagementPrefUpdater(const ExtensionManagementPrefUpdater&) =
@@ -150,8 +147,9 @@ class ExtensionManagementPrefUpdater
   ExtensionManagementPrefUpdater& operator=(
       const ExtensionManagementPrefUpdater&) = delete;
 
-  virtual ~ExtensionManagementPrefUpdater() {
-    service_->SetManagedPref(pref_names::kExtensionManagement, TakePref());
+  ~ExtensionManagementPrefUpdater() override {
+    service_->SetManagedPref(pref_names::kExtensionManagement,
+                             base::Value(TakePref()));
   }
 
  private:
