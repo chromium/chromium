@@ -1098,6 +1098,20 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
+    @EnableFeatures("RequestDesktopSiteExceptions")
+    public void testOnlyExpectedPreferencesRequestDesktopSiteDomainSettings() {
+        testExpectedPreferences(SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE,
+                BINARY_TOGGLE_WITH_EXCEPTION, BINARY_TOGGLE_WITH_EXCEPTION);
+        Assert.assertTrue(
+                "SharedPreference USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY should be updated.",
+                ContextUtils.getAppSharedPreferences().contains(
+                        SingleCategorySettings
+                                .USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
     @EnableFeatures("RequestDesktopSiteAdditions")
     public void testOnlyExpectedPreferencesRequestDesktopSiteAdditionalSettings() {
         String[] rdsDisabled = {"binary_toggle", "desktop_site_peripheral", "desktop_site_display"};
@@ -1472,6 +1486,30 @@ public class SiteSettingsTest {
         new TwoStatePermissionTestCase("RequestDesktopSite",
                 SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE,
                 ContentSettingsType.REQUEST_DESKTOP_SITE, false)
+                .run();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures("RequestDesktopSiteExceptions")
+    public void testAllowRequestDesktopSiteDomainSetting() {
+        new TwoStatePermissionTestCase("RequestDesktopSite",
+                SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE,
+                ContentSettingsType.REQUEST_DESKTOP_SITE, true)
+                .withExpectedPrefKeys(SingleCategorySettings.ADD_EXCEPTION_KEY)
+                .run();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures("RequestDesktopSiteExceptions")
+    public void testBlockRequestDesktopSiteDomainSetting() {
+        new TwoStatePermissionTestCase("RequestDesktopSite",
+                SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE,
+                ContentSettingsType.REQUEST_DESKTOP_SITE, false)
+                .withExpectedPrefKeys(SingleCategorySettings.ADD_EXCEPTION_KEY)
                 .run();
     }
 

@@ -22,6 +22,8 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.preference.Preference;
@@ -136,11 +138,11 @@ public class AddExceptionPreference
             public void onClick(DialogInterface dialog, int button) {
                 if (button == AlertDialog.BUTTON_POSITIVE) {
                     boolean isThirdPartyException = thirdPartyExceptionsBox.isChecked();
-                    String hostname = input.getText().toString().trim();
+                    String pattern = input.getText().toString().trim();
 
                     // If a user clicks the third party checkbox, set wildcard as primary
-                    String primary = isThirdPartyException ? SITE_WILDCARD : hostname;
-                    String secondary = !isThirdPartyException ? SITE_WILDCARD : hostname;
+                    String primary = isThirdPartyException ? SITE_WILDCARD : pattern;
+                    String secondary = !isThirdPartyException ? SITE_WILDCARD : pattern;
 
                     mSiteAddedCallback.onAddSite(primary, secondary);
                 } else {
@@ -179,19 +181,15 @@ public class AddExceptionPreference
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // The intent is to capture a hostname and register it as an exception using a
-                // pattern. But a pattern can be used to express things that are not supported, such
+                // The intent is to capture a url pattern and register it as an exception.
+                // But a pattern can be used to express things that are not supported, such
                 // as domains, schemes and ports. Therefore we need to filter out invalid values
                 // before passing them on to the validity checker for patterns.
-                String hostname = s.toString().trim();
-                boolean hasError = hostname.length() > 0
-                        && (hostname.contains(":") || hostname.contains(" ")
-                                || hostname.startsWith(".")
-                                || !WebsitePreferenceBridgeJni.get().isContentSettingsPatternValid(
-                                        hostname));
+                String pattern = s.toString().trim();
+                boolean isValid = isPatternValid(pattern, mCategory.getType());
 
                 // Vibrate when adding characters only, not when deleting them.
-                if (hasError && count != 0) {
+                if (!isValid && count != 0) {
                     if (Settings.System.getInt(getContext().getContentResolver(),
                                 Settings.System.HAPTIC_FEEDBACK_ENABLED, 1)
                             == 1) {
@@ -200,9 +198,27 @@ public class AddExceptionPreference
                     }
                 }
 
-                okButton.setEnabled(!hasError && hostname.length() > 0);
-                input.setTextColor(hasError ? mErrorColor : mDefaultColor);
+                okButton.setEnabled(isValid && pattern.length() > 0);
+                input.setTextColor(isValid ? mDefaultColor : mErrorColor);
             }
         });
+    }
+
+    @VisibleForTesting
+    static boolean isPatternValid(@NonNull String pattern, int type) {
+        if (pattern.length() == 0) {
+            return true;
+        }
+        if (pattern.contains(":") && !isColonAllowed(type)) {
+            return false;
+        }
+        if (pattern.contains(" ") || pattern.startsWith(".")) {
+            return false;
+        }
+        return WebsitePreferenceBridgeJni.get().isContentSettingsPatternValid(pattern);
+    }
+
+    private static boolean isColonAllowed(int type) {
+        return type == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE;
     }
 }
