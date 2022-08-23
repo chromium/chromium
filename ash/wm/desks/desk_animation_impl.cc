@@ -307,9 +307,13 @@ void DeskActivationAnimation::PrepareDeskForScreenshot(int index) {
   split_view_controller->EndSplitView(
       SplitViewController::EndReason::kDesksChange);
 
-  controller_->ActivateDeskInternal(
-      controller_->desks()[ending_desk_index_].get(),
-      update_window_activation_);
+  // Check that ending_desk_index_ is in range.
+  // See crbug.com/1346900.
+  const auto& desks = controller_->desks();
+  CHECK_LT(static_cast<size_t>(ending_desk_index_), desks.size());
+
+  controller_->ActivateDeskInternal(desks[ending_desk_index_].get(),
+                                    update_window_activation_);
 
   MaybeRestoreSplitView(/*refresh_snapped_windows=*/true);
 }
