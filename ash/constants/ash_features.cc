@@ -305,6 +305,11 @@ const base::Feature kCameraAppDocScanDlc{"CameraAppDocScanDlc",
 const base::Feature kCameraPrivacySwitchNotifications{
     "CameraPrivacySwitchNotifications", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Controls whether the capture mode demo tools feature is enabled for Capture
+// Mode.
+const base::Feature kCaptureModeDemoTools{"CaptureModeDemoTools",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, allow eSIM installation bypass the non-cellular internet
 // connectivity check.
 const base::Feature kCellularBypassESimInstallationConnectivityCheck{
@@ -1743,6 +1748,10 @@ const base::Feature kArcAndGuestOsFileTasksUseAppService{
     "ArcAndGuestOsFileTasksUseAppService", base::FEATURE_DISABLED_BY_DEFAULT};
 
 ////////////////////////////////////////////////////////////////////////////////
+
+bool AreCaptureModeDemoToolsEnabled() {
+  return base::FeatureList::IsEnabled(kCaptureModeDemoTools);
+}
 
 bool AreContextualNudgesEnabled() {
   if (!IsHideShelfControlsInTabletModeEnabled())
