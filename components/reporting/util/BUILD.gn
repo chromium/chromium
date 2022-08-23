@@ -58,6 +58,7 @@ source_set("task_runner_context") {
 }
 
 source_set("test_callbacks_support") {
+  testonly = true
   sources = [
     "test_support_callbacks.cc",
     "test_support_callbacks.h",
