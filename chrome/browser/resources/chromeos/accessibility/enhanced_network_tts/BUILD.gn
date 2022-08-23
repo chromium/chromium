@@ -78,9 +78,7 @@ js_type_check("closure_compile") {
 }
 
 js_library("enhanced_network_tts") {
-  deps = [
-    "//ash/components/enhanced_network_tts/mojom:mojom_js_library_for_compile",
-  ]
+  deps = [ "//chromeos/ash/components/enhanced_network_tts/mojom:mojom_js_library_for_compile" ]
   externs_list = [
     "mojo_bindings_externs.js",
     "$externs_path/tts.js",

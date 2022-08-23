@@ -20,7 +20,6 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/enhanced_network_tts/mojom/enhanced_network_tts.mojom.h"
 #include "ash/services/chromebox_for_meetings/public/cpp/appid_util.h"
 #include "ash/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
 #include "ash/webui/camera_app_ui/camera_app_ui.h"
@@ -31,6 +30,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chromeos/ash/components/enhanced_network_tts/mojom/enhanced_network_tts.mojom.h"
 #include "chromeos/components/remote_apps/mojom/remote_apps.mojom.h"
 #include "chromeos/language/language_packs/language_packs_impl.h"
 #include "chromeos/language/public/mojom/language_packs.mojom.h"

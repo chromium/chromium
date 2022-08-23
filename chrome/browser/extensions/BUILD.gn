@@ -1140,7 +1140,6 @@ static_library("extensions") {
     deps += [
       "//ash",
       "//ash/components/arc",
-      "//ash/components/enhanced_network_tts/mojom",
       "//ash/components/login/auth",
       "//ash/components/proximity_auth",
       "//ash/components/settings",
@@ -1171,6 +1170,7 @@ static_library("extensions") {
       "//chromeos/ash/components/dbus/image_burner",
       "//chromeos/ash/components/dbus/update_engine",
       "//chromeos/ash/components/disks",
+      "//chromeos/ash/components/enhanced_network_tts/mojom",
       "//chromeos/ash/components/network",
       "//chromeos/ash/services/assistant/public/cpp",
       "//chromeos/components/remote_apps/mojom",

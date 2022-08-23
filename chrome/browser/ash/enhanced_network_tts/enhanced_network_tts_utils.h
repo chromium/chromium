@@ -8,8 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/enhanced_network_tts/mojom/enhanced_network_tts.mojom.h"
 #include "base/values.h"
+#include "chromeos/ash/components/enhanced_network_tts/mojom/enhanced_network_tts.mojom.h"
 
 namespace ash {
 namespace enhanced_network_tts {
