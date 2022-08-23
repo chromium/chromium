@@ -112,7 +112,7 @@ void OpenInTabHelper::HandleExportableFile() {
   base::UmaHistogramEnumeration("IOS.OpenIn.MimeType", mime_type);
   base::RecordAction(base::UserMetricsAction("IOS.OpenIn.Presented"));
 
-  // Try to generate a filename by first looking at |content_disposition_|, then
+  // Try to generate a filename by first looking at `content_disposition_`, then
   // at the last component of WebState's last committed URL and if both of these
   // fail use the default filename "document".
   std::string content_disposition;

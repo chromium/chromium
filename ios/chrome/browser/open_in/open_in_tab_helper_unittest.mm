@@ -153,8 +153,8 @@ class OpenInTabHelperTest
     return OpenInTabHelper::FromWebState(&web_state_);
   }
 
-  // Simulates a navigation to |url| and set the proper response headers based
-  // on |content_type| and |content_disposition|
+  // Simulates a navigation to `url` and set the proper response headers based
+  // on `content_type` and `content_disposition`
   void NavigateTo(const GURL& url,
                   const char* content_type,
                   const char* content_disposition) {

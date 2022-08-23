@@ -82,12 +82,12 @@ class OpenInTabHelper : public web::WebStateObserver,
 
   ~OpenInTabHelper() override;
 
-  // Creates OpenInTabHelper and attaches to |web_state|. |web_state| must not
+  // Creates OpenInTabHelper and attaches to `web_state`. `web_state` must not
   // be null.
   static void CreateForWebState(web::WebState* web_state);
 
-  // Sets the OpenInTabHelper delegate. |delegate| will be in charge of enabling
-  // the openIn view. |delegate| is not retained by TabHelper.
+  // Sets the OpenInTabHelper delegate. `delegate` will be in charge of enabling
+  // the openIn view. `delegate` is not retained by TabHelper.
   void SetDelegate(id<OpenInTabHelperDelegate> delegate);
 
  private:
