@@ -42,9 +42,9 @@ class TabUsageRecorderBrowserAgent
   ~TabUsageRecorderBrowserAgent() override;
 
   // Called during startup when the tab model is created, or shortly after a
-  // post-crash launch if the tabs are restored.  |web_states| is an array
+  // post-crash launch if the tabs are restored.  `web_states` is an array
   // containing/ the tabs being restored in the current tab model.
-  // |active_web_state| is the tab currently in the foreground.
+  // `active_web_state` is the tab currently in the foreground.
   void InitialRestoredTabs(web::WebState* active_web_state,
                            const std::vector<web::WebState*>& web_states);
 
@@ -54,10 +54,10 @@ class TabUsageRecorderBrowserAgent
                          web::WebState* new_web_state);
 
   // Called when the Browser which the user is primarily interacting with has
-  // changed. The |active_web_state| is the active tab of the browser's
-  // webStateList. If the user began interacting with |active_web_state|,
-  // |primary_browser| should be true. If the user stopped interacting with
-  // |active_web_state|, |primary_browser| should be false.
+  // changed. The `active_web_state` is the active tab of the browser's
+  // webStateList. If the user began interacting with `active_web_state`,
+  // `primary_browser` should be true. If the user stopped interacting with
+  // `active_web_state`, `primary_browser` should be false.
   void RecordPrimaryBrowserChange(bool primary_browser,
                                   web::WebState* active_web_state);
 
@@ -71,9 +71,9 @@ class TabUsageRecorderBrowserAgent
   // Called when there is a user-initiated reload.
   void RecordReload(web::WebState* web_state);
 
-  // Called when WKWebView's renderer is terminated. |tab| contains the tab
-  // whose renderer was terminated, |tab_visible| indicates whether or not
-  // the tab was visible when the renderer terminated and |application_active|
+  // Called when WKWebView's renderer is terminated. `tab` contains the tab
+  // whose renderer was terminated, `tab_visible` indicates whether or not
+  // the tab was visible when the renderer terminated and `application_active`
   // indicates whether the application was in the foreground or background.
   void RendererTerminated(web::WebState* web_state,
                           bool web_state_visible,
@@ -88,7 +88,7 @@ class TabUsageRecorderBrowserAgent
   // Resets the page load count.
   void ResetPageLoads();
 
-  // Size of |evicted_web_states_|.  Used for testing.
+  // Size of `evicted_web_states_`.  Used for testing.
   int EvictedTabsMapSize();
 
   // Resets all tracked data.  Used for testing.
@@ -96,7 +96,7 @@ class TabUsageRecorderBrowserAgent
 
  private:
   // TODO(crbug.com/731724): remove this once the code has been refactored not
-  // to depends on injecting values in |termination_timestamps_|.
+  // to depends on injecting values in `termination_timestamps_`.
   friend class TabUsageRecorderBrowserAgentTest;
 
   friend class BrowserUserData<TabUsageRecorderBrowserAgent>;
@@ -117,7 +117,7 @@ class TabUsageRecorderBrowserAgent
   bool WebStateAlreadyEvicted(web::WebState* web_state);
 
   // Returns the state of the given tab.  Call only once per tab, as it removes
-  // the tab from |evicted_web_states_|.
+  // the tab from `evicted_web_states_`.
   tab_usage_recorder::TabStateWhenSelected ExtractWebStateState(
       web::WebState* web_state);
 
@@ -132,7 +132,7 @@ class TabUsageRecorderBrowserAgent
   // should be removed.
   void OnWebStateDestroyed(web::WebState* web_state);
 
-  // Returns whether |agent_type| and |other_agent_type| are different user
+  // Returns whether `agent_type` and `other_agent_type` are different user
   // agent types. If either of them is web::UserAgentType::NONE, then return
   // false.
   bool IsTransitionBetweenDesktopAndMobileUserAgent(
@@ -190,7 +190,7 @@ class TabUsageRecorderBrowserAgent
   // This is kept as a pointer value only - it should never be dereferenced.
   web::WebState* evicted_web_state_ = nullptr;
 
-  // State of |evicted_web_state_| at the time it became the current tab.
+  // State of `evicted_web_state_` at the time it became the current tab.
   tab_usage_recorder::TabStateWhenSelected evicted_web_state_state_ =
       tab_usage_recorder::IN_MEMORY;
 

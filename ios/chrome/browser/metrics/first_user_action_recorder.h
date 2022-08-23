@@ -27,7 +27,7 @@ extern const char* kFirstUserActionContinuationHistogramName[];
 extern const char* kFirstUserActionExpirationHistogramName[];
 
 // The name of the histogram to plot the type of first user action (see
-// |FirstUserActionType|).
+// `FirstUserActionType`).
 extern const char* kFirstUserActionTypeHistogramName[];
 
 // Since it logs user actions while it exists, it should only be instantiated
@@ -60,7 +60,7 @@ class FirstUserActionRecorder {
   void RecordStartOnNTP();
 
  private:
-  // Records metrics if |action_name| indicates the start of a new task or the
+  // Records metrics if `action_name` indicates the start of a new task or the
   // continuation of an existing task.
   void OnUserAction(const std::string& action_name,
                     base::TimeTicks action_time);

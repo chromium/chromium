@@ -49,7 +49,7 @@ TabUsageRecorderBrowserAgent::TabUsageRecorderBrowserAgent(Browser* browser)
     restoration_agent->AddObserver(this);
 
   // Register for backgrounding and foregrounding notifications. It is safe for
-  // the block to capture a pointer to |this| as they are unregistered in the
+  // the block to capture a pointer to `this` as they are unregistered in the
   // destructor and thus the block are not called after the end of its lifetime.
   application_backgrounding_observer_ = [[NSNotificationCenter defaultCenter]
       addObserverForName:UIApplicationDidEnterBackgroundNotification
@@ -135,7 +135,7 @@ void TabUsageRecorderBrowserAgent::RecordTabSwitched(
     web::WebState* new_web_state) {
   // If a tab was created to be selected, and is selected shortly thereafter,
   // it should not add its state to the "kSelectedTabHistogramName" metric.
-  // |web_state_created_selected_| is reset at the first tab switch seen after
+  // `web_state_created_selected_` is reset at the first tab switch seen after
   // it was created, regardless of whether or not it was the tab selected.
   const bool was_just_created = new_web_state == web_state_created_selected_;
   web_state_created_selected_ = nullptr;
@@ -152,7 +152,7 @@ void TabUsageRecorderBrowserAgent::RecordTabSwitched(
   if (!old_web_state || !new_web_state)
     return;
 
-  // Before knowledge of the previous tab, |old_web_state|, is lost, see if it
+  // Before knowledge of the previous tab, `old_web_state`, is lost, see if it
   // is a previously-evicted tab still reloading.  If it is, record that the
   // user did not wait for the evicted tab to finish reloading.
   if (old_web_state == evicted_web_state_ && old_web_state != new_web_state &&
@@ -302,7 +302,7 @@ void TabUsageRecorderBrowserAgent::RendererTerminated(
       saw_memory_warning);
 
   // Log number of live tabs after the renderer termination. This count does not
-  // include |terminated_web_state|.
+  // include `terminated_web_state`.
   int live_web_states_count = GetLiveWebStatesCount();
   UMA_HISTOGRAM_COUNTS_100(
       tab_usage_recorder::kRendererTerminationAliveRenderers,
@@ -312,8 +312,8 @@ void TabUsageRecorderBrowserAgent::RendererTerminated(
       tab_usage_recorder::kRendererTerminationTotalTabCount,
       web_state_list_->count());
 
-  // Clear |termination_timestamps_| of timestamps older than
-  // |kSecondsBeforeRendererTermination| ago.
+  // Clear `termination_timestamps_` of timestamps older than
+  // `kSecondsBeforeRendererTermination` ago.
   base::TimeDelta seconds_before =
       base::Seconds(tab_usage_recorder::kSecondsBeforeRendererTermination);
   base::TimeTicks timestamp_boundary = now - seconds_before;
@@ -322,7 +322,7 @@ void TabUsageRecorderBrowserAgent::RendererTerminated(
   }
 
   // Log number of recently alive tabs, where recently alive is defined to mean
-  // alive within the past |kSecondsBeforeRendererTermination|.
+  // alive within the past `kSecondsBeforeRendererTermination`.
   NSUInteger recently_live_web_states_count =
       live_web_states_count + termination_timestamps_.size();
   UMA_HISTOGRAM_COUNTS_100(

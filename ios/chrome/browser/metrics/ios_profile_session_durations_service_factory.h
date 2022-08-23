@@ -14,7 +14,7 @@ class IOSProfileSessionDurationsService;
 class IOSProfileSessionDurationsServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // Creates the service if it doesn't exist already for |browser_state|.
+  // Creates the service if it doesn't exist already for `browser_state`.
   static IOSProfileSessionDurationsService* GetForBrowserState(
       ChromeBrowserState* browser_state);
 

@@ -195,14 +195,14 @@ void LogStabilityIOSExperimentalCounts(
                                       type);
 }
 
-// Logs |type| in the shutdown type histogram.
+// Logs `type` in the shutdown type histogram.
 void LogShutdownType(MobileSessionShutdownType type) {
   UMA_STABILITY_HISTOGRAM_ENUMERATION("Stability.MobileSessionShutdownType",
                                       type, MOBILE_SESSION_SHUTDOWN_TYPE_COUNT);
 }
 
 // Logs the time which the application was in the background between
-// |session_end_time| and now.
+// `session_end_time` and now.
 void LogApplicationBackgroundedTime(NSDate* session_end_time) {
   NSTimeInterval background_time =
       [[NSDate date] timeIntervalSinceDate:session_end_time];
@@ -211,20 +211,20 @@ void LogApplicationBackgroundedTime(NSDate* session_end_time) {
       base::Seconds(background_time));
 }
 
-// Logs the device |battery_level| as a UTE stability metric.
+// Logs the device `battery_level` as a UTE stability metric.
 void LogBatteryCharge(float battery_level) {
   int battery_charge = static_cast<int>(battery_level * 100);
   UMA_STABILITY_HISTOGRAM_PERCENTAGE("Stability.iOS.UTE.BatteryCharge",
                                      battery_charge);
 }
 
-// Logs the device's |available_storage| as a UTE stability metric.
+// Logs the device's `available_storage` as a UTE stability metric.
 void LogAvailableStorage(NSInteger available_storage) {
   UMA_STABILITY_HISTOGRAM_CUSTOM_COUNTS("Stability.iOS.UTE.AvailableStorage",
                                         available_storage, 1, 200000, 100);
 }
 
-// Logs the OS version change between |os_version| and the current os version.
+// Logs the OS version change between `os_version` and the current os version.
 // Records whether the version is the same, if a minor version change occurred,
 // or if a major version change occurred.
 void LogOSVersionChange(std::string os_version) {

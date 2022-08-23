@@ -24,17 +24,17 @@ const NSTimeInterval kSyncUKMOperationsTimeout = 10.0;
 @interface MetricsAppInterface : NSObject
 
 // Enable/Disable the metrics in the app for test.
-// |overrideMetricsAndCrashReportingForTesting| must be called before setting
+// `overrideMetricsAndCrashReportingForTesting` must be called before setting
 // the value.
-// |stopOverridingMetricsAndCrashReportingForTesting| must be called at the end
+// `stopOverridingMetricsAndCrashReportingForTesting` must be called at the end
 // of the test for cleanup.
-// |setMetricsAndCrashReportingForTesting:| can be called to enable/disable
+// `setMetricsAndCrashReportingForTesting:` can be called to enable/disable
 // metrics. It returns whether metrics were previously enabled.
 + (void)overrideMetricsAndCrashReportingForTesting;
 + (void)stopOverridingMetricsAndCrashReportingForTesting;
 + (BOOL)setMetricsAndCrashReportingForTesting:(BOOL)enabled;
 
-// Returns whether UKM recording is |enabled|.
+// Returns whether UKM recording is `enabled`.
 + (BOOL)checkUKMRecordingEnabled:(BOOL)enabled;
 
 // Returns YES if the ReportUserNoisedUserBirthYearAndGender feature is enabled.
@@ -49,11 +49,11 @@ const NSTimeInterval kSyncUKMOperationsTimeout = 10.0;
 // Adds a new sourceID for UKM.
 + (void)UKMRecordDummySource:(int64_t)sourceID;
 
-// Updates the network time to approximately |now|.
+// Updates the network time to approximately `now`.
 + (void)updateNetworkTime:(base::Time)now;
 
 // Gets the maximum eligible birth year for reporting demographics based on
-// |now|.
+// `now`.
 + (int)maximumEligibleBirthYearForTime:(base::Time)now;
 
 // If data are available, creates a UKM Report and stores it in the
@@ -115,7 +115,7 @@ const NSTimeInterval kSyncUKMOperationsTimeout = 10.0;
                               forBucket:(int)bucket
                            forHistogram:(NSString*)histogram [[nodiscard]];
 
-// Checks the sum of all samples recorder for |histogram|.
+// Checks the sum of all samples recorder for `histogram`.
 + (NSError*)expectSum:(NSInteger)sum
          forHistogram:(NSString*)histogram [[nodiscard]];
 

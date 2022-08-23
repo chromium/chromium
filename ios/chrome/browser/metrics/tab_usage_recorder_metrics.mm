@@ -60,7 +60,7 @@ const char kRendererTerminationStateHistogram[] =
     "Tab.StateAtRendererTermination";
 
 // The recently alive renderer count metric counts all renderers that were alive
-// x seconds before a renderer termination. |kSecondsBeforeRendererTermination|
+// x seconds before a renderer termination. `kSecondsBeforeRendererTermination`
 // specifies x.
 const int kSecondsBeforeRendererTermination = 2;
 

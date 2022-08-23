@@ -98,7 +98,7 @@ const metrics::UserDemographicsProto::Gender kTestGender =
 #pragma mark - Helpers
 
 // Adds user demographics, which are ModelType::PRIORITY_PREFERENCES, to the
-// fake sync server. |rawBirthYear| is the true birth year, pre-noise, and the
+// fake sync server. `rawBirthYear` is the true birth year, pre-noise, and the
 // gender corresponds to the options in UserDemographicsProto::Gender.
 //
 // Also, verifies (A) that before adding the demographics, the server has no
@@ -181,7 +181,7 @@ const metrics::UserDemographicsProto::Gender kTestGender =
 // Corresponds to AddSyncedUserBirthYearAndGenderToProtoData in
 // //chrome/browser/metrics/ukm_browsertest.cc with features enabled.
 - (void)testUKMDemographicsReportingWithFeatureEnabled {
-  // See |appConfigurationForTestCase| for feature set-up. The kUkmFeature is
+  // See `appConfigurationForTestCase` for feature set-up. The kUkmFeature is
   // enabled by default.
   GREYAssertTrue([ChromeEarlGrey isDemographicMetricsReportingEnabled] &&
                      [MetricsAppInterface
@@ -210,7 +210,7 @@ const metrics::UserDemographicsProto::Gender kTestGender =
 // Corresponds to AddSyncedUserBirthYearAndGenderToProtoData in
 // //chrome/browser/metrics/ukm_browsertest.cc with features disabled.
 - (void)testUKMDemographicsReportingWithFeatureDisabled {
-  // See |appConfigurationForTestCase| for feature set-up. The kUkmFeature is
+  // See `appConfigurationForTestCase` for feature set-up. The kUkmFeature is
   // enabled by default.
   GREYAssertFalse([ChromeEarlGrey isDemographicMetricsReportingEnabled],
                   @"Failed to disable kDemographicMetricsReporting.");
@@ -236,7 +236,7 @@ const metrics::UserDemographicsProto::Gender kTestGender =
 // //chrome/browser/metrics/metrics_service_user_demographics_browsertest.cc
 // with features enabled.
 - (void)testUMADemographicsReportingWithFeatureEnabled {
-  // See |appConfigurationForTestCase| for feature set-up. The kUkmFeature is
+  // See `appConfigurationForTestCase` for feature set-up. The kUkmFeature is
   // enabled by default.
   GREYAssertTrue([ChromeEarlGrey isDemographicMetricsReportingEnabled],
                  @"Failed to enable kDemographicMetricsReporting.");
@@ -265,7 +265,7 @@ const metrics::UserDemographicsProto::Gender kTestGender =
 // //chrome/browser/metrics/metrics_service_user_demographics_browsertest.cc
 // with features disabled.
 - (void)testUMADemographicsReportingWithFeatureDisabled {
-  // See |appConfigurationForTestCase| for feature set-up.
+  // See `appConfigurationForTestCase` for feature set-up.
   GREYAssertFalse([ChromeEarlGrey isDemographicMetricsReportingEnabled],
                   @"Failed to disable kDemographicMetricsReporting.");
 

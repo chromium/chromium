@@ -48,8 +48,8 @@ class IOSChromeMetricsServicesManagerClient
   bool IsMetricsConsentGiven() override;
   bool IsOffTheRecordSessionActive() override;
 
-  // Static helper for |IsOffTheRecordSessionActive()|, suitable for binding
-  // into callbacks. |true| if any browser states have any incognito WebStates
+  // Static helper for `IsOffTheRecordSessionActive()`, suitable for binding
+  // into callbacks. `true` if any browser states have any incognito WebStates
   // in any Browser.
   static bool AreIncognitoTabsPresent();
 

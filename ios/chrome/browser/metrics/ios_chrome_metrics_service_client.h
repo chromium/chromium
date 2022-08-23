@@ -122,7 +122,7 @@ class IOSChromeMetricsServiceClient : public IncognitoWebStateObserver,
   // these directly.
   void CollectFinalHistograms();
 
-  // Registers |this| as an observer for notifications which indicate that a
+  // Registers `this` as an observer for notifications which indicate that a
   // user is performing work. This is useful to allow some features to sleep,
   // until the machine becomes active, such as precluding UMA uploads unless
   // there was recent activity.
@@ -147,17 +147,17 @@ class IOSChromeMetricsServiceClient : public IncognitoWebStateObserver,
   // The synthetic trial registry shared by metrics_service_ and ukm_service_.
   std::unique_ptr<variations::SyntheticTrialRegistry> synthetic_trial_registry_;
 
-  // The MetricsService that |this| is a client of.
+  // The MetricsService that `this` is a client of.
   std::unique_ptr<metrics::MetricsService> metrics_service_;
 
-  // The UkmService that |this| is a client of.
+  // The UkmService that `this` is a client of.
   std::unique_ptr<ukm::UkmService> ukm_service_;
 
   // Whether we registered all notification listeners successfully.
   bool notification_listeners_active_;
 
   // The IOSChromeStabilityMetricsProvider instance that was registered with
-  // MetricsService. Has the same lifetime as |metrics_service_|.
+  // MetricsService. Has the same lifetime as `metrics_service_`.
   IOSChromeStabilityMetricsProvider* stability_metrics_provider_;
 
   // Saved callback received from CollectFinalMetricsForLog().

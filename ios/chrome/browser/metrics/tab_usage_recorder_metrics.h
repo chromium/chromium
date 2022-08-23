@@ -59,7 +59,7 @@ extern const char kRendererTerminationRecentlyAliveRenderers[];
 extern const char kRendererTerminationStateHistogram[];
 
 // The recently alive renderer count metric counts all renderers that were alive
-// x seconds before a renderer termination. |kSecondsBeforeRendererTermination|
+// x seconds before a renderer termination. `kSecondsBeforeRendererTermination`
 // specifies x.
 extern const int kSecondsBeforeRendererTermination;
 

@@ -157,7 +157,7 @@ IOSChromeMetricsServiceClient::~IOSChromeMetricsServiceClient() {
 std::unique_ptr<IOSChromeMetricsServiceClient>
 IOSChromeMetricsServiceClient::Create(
     metrics::MetricsStateManager* state_manager) {
-  // Perform two-phase initialization so that |client->metrics_service_| only
+  // Perform two-phase initialization so that `client->metrics_service_` only
   // receives pointers to fully constructed objects.
   std::unique_ptr<IOSChromeMetricsServiceClient> client(
       new IOSChromeMetricsServiceClient(state_manager));
@@ -503,7 +503,7 @@ IOSChromeMetricsServiceClient::FilterBrowserMetricsFiles(
     return metrics::FileMetricsProvider::FILTER_PROCESS_FILE;
   if (pid == base::GetCurrentProcId())
     return metrics::FileMetricsProvider::FILTER_ACTIVE_THIS_PID;
-  // No need to test whether |pid| is a different active process. This isn't
+  // No need to test whether `pid` is a different active process. This isn't
   // applicable to iOS because there cannot be two copies of Chrome running.
   return metrics::FileMetricsProvider::FILTER_PROCESS_FILE;
 }

@@ -60,7 +60,7 @@ const CGFloat kVerySlowURLDelay = 20;
 // The delay to wait for an element to appear before tapping on it.
 const CGFloat kWaitElementTimeout = 3;
 
-// Wait until |matcher| is accessible (not nil).
+// Wait until `matcher` is accessible (not nil).
 void Wait(id<GREYMatcher> matcher, NSString* name) {
   ConditionBlock condition = ^{
     NSError* error = nil;
@@ -73,7 +73,7 @@ void Wait(id<GREYMatcher> matcher, NSString* name) {
              @"Waiting for matcher %@ failed.", name);
 }
 
-// Creates a new main tab and load |url|. Wait until |word| is visible on the
+// Creates a new main tab and load `url`. Wait until `word` is visible on the
 // page.
 void NewMainTabWithURL(const GURL& url, const std::string& word) {
   int number_of_tabs = [ChromeEarlGrey mainTabCount];
@@ -949,7 +949,7 @@ void SwitchToNormalMode() {
 
     // Close two of the three open tabs without selecting them first.
     // This should delete the tab objects, even though they're still being
-    // tracked by the tab usage recorder in its |evicted_tabs_| map.
+    // tracked by the tab usage recorder in its `evicted_tabs_` map.
     CloseTabAtIndexAndSync(1);
 
     GREYAssertEqual([ChromeEarlGrey mainTabCount], 2,
@@ -961,7 +961,7 @@ void SwitchToNormalMode() {
   }
   // The deleted tabs are purged during foregrounding and backgrounding.
   [ChromeEarlGrey simulateTabsBackgrounding];
-  // Make sure |evicted_tabs_| purged the deleted tabs.
+  // Make sure `evicted_tabs_` purged the deleted tabs.
   int evicted = [ChromeEarlGrey evictedMainTabCount];
   GREYAssertEqual(evicted, 0, @"Check number of evicted tabs");
 }

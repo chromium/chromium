@@ -13,7 +13,7 @@ IOSProfileSessionDurationsService::IOSProfileSessionDurationsService(
     signin::IdentityManager* identity_manager)
     : KeyedService() {
   if (!sync_service && !identity_manager) {
-    // |sync_service| and |identity_maanger| may be null for testing.
+    // `sync_service` and `identity_maanger` may be null for testing.
     return;
   }
 
@@ -21,7 +21,7 @@ IOSProfileSessionDurationsService::IOSProfileSessionDurationsService(
       std::make_unique<syncer::SyncSessionDurationsMetricsRecorder>(
           sync_service, identity_manager);
 
-  // |IOSProfileSessionDurationsService| is called explicitly each time a
+  // `IOSProfileSessionDurationsService` is called explicitly each time a
   // session starts or ends. So there is no need to mimic what is done on
   // Android and to start a session in the constuctor of the service.
 }

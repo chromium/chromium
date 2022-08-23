@@ -346,7 +346,7 @@ TEST_F(TabUsageRecorderBrowserAgentTest, RendererTerminated) {
 
   base::TimeTicks now = base::TimeTicks::Now();
 
-  // Add |kExpiredTimesAddedCount| expired timestamps and one recent timestamp
+  // Add `kExpiredTimesAddedCount` expired timestamps and one recent timestamp
   // to the termination timestamp list.
   for (int seconds = kExpiredTimesAddedCount; seconds > 0; seconds--) {
     int expired_time_delta =
