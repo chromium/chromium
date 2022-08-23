@@ -71,7 +71,7 @@ TEST_F(TransferredMediaStreamTrackTest, InitialProperties) {
   EXPECT_EQ(transferred_track_->GetReadyState(),
             MediaStreamSource::kReadyStateLive);
   EXPECT_EQ(transferred_track_->Ended(), false);
-  EXPECT_EQ(transferred_track_->serializable_session_id(), absl::nullopt);
+  EXPECT_EQ(transferred_track_->device(), absl::nullopt);
 }
 
 TEST_F(TransferredMediaStreamTrackTest, PropertiesInheritFromImplementation) {
@@ -87,8 +87,10 @@ TEST_F(TransferredMediaStreamTrackTest, PropertiesInheritFromImplementation) {
   const MediaStreamSource::ReadyState kReadyStateEnum =
       MediaStreamSource::kReadyStateEnded;
   const bool kEnded = true;
-  const absl::optional<base::UnguessableToken> kSerializableSessionId =
+  base::UnguessableToken kSerializableSessionId =
       base::UnguessableToken::Create();
+  MediaStreamDevice kDevice = MediaStreamDevice();
+  kDevice.set_session_id(kSerializableSessionId);
 
   Persistent<MediaTrackCapabilities> capabilities =
       MediaTrackCapabilities::Create();
@@ -111,7 +113,7 @@ TEST_F(TransferredMediaStreamTrackTest, PropertiesInheritFromImplementation) {
   mock_impl_->SetReadyState(kReadyStateEnum);
   mock_impl_->SetComponent(nullptr);
   mock_impl_->SetEnded(kEnded);
-  mock_impl_->SetSerializableSessionId(kSerializableSessionId);
+  mock_impl_->SetDevice(kDevice);
   mock_impl_->SetExecutionContext(scope.GetExecutionContext());
 
   EXPECT_CALL(*mock_impl_, AddedEventListener(_, _)).Times(4);
@@ -126,7 +128,8 @@ TEST_F(TransferredMediaStreamTrackTest, PropertiesInheritFromImplementation) {
   EXPECT_EQ(transferred_track_->readyState(), kReadyState);
   EXPECT_EQ(transferred_track_->GetReadyState(), kReadyStateEnum);
   EXPECT_EQ(transferred_track_->Ended(), kEnded);
-  EXPECT_EQ(transferred_track_->serializable_session_id(),
+  EXPECT_TRUE(transferred_track_->device().has_value());
+  EXPECT_EQ(transferred_track_->device()->serializable_session_id(),
             kSerializableSessionId);
 }
 
@@ -282,7 +285,7 @@ TEST_F(TransferredMediaStreamTrackTest, CloneInitialProperties) {
   EXPECT_EQ(clone->readyState(), "live");
   EXPECT_EQ(clone->GetReadyState(), MediaStreamSource::kReadyStateLive);
   EXPECT_EQ(clone->Ended(), false);
-  EXPECT_EQ(clone->serializable_session_id(), absl::nullopt);
+  EXPECT_EQ(clone->device(), absl::nullopt);
 }
 
 TEST_F(TransferredMediaStreamTrackTest, CloneSetImplementation) {

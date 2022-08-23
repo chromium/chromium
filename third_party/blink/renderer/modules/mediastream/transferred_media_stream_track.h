@@ -90,8 +90,7 @@ class MODULES_EXPORT TransferredMediaStreamTrack : public MediaStreamTrack {
       int context_sample_rate) override;
 
   ImageCapture* GetImageCapture() override;
-  absl::optional<base::UnguessableToken> serializable_session_id()
-      const override;
+  absl::optional<const MediaStreamDevice> device() const override;
   void BeingTransferred(const base::UnguessableToken& transfer_id) override;
 
 #if !BUILDFLAG(IS_ANDROID)

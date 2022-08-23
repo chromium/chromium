@@ -1958,22 +1958,16 @@ absl::optional<MediaStreamDevice> MediaStreamManager::CloneExistingOpenDevice(
       }
 
       MediaStreamDevice new_device = *existing_device;
-      // Device id and group_id are only hashed for MediaStreamType
-      // DEVICE_AUDIO_CAPTURE and DEVICE_VIDEO_CAPTURE.
       if (existing_device->type == MediaStreamType::DEVICE_AUDIO_CAPTURE ||
           existing_device->type == MediaStreamType::DEVICE_VIDEO_CAPTURE) {
-        // Gets the raw device id and device group_id.
-        if (!TranslateSourceIdToDeviceIdAndGroupId(
-                existing_device->type,
-                existing_request->salt_and_origin.device_id_salt,
-                existing_request->salt_and_origin.origin, existing_device->id,
-                &new_device.id, &new_device.group_id)) {
-          // Can return false if |existing_device->id| is invalid.
-          continue;
-        }
-
-        // Creates hashed device id and device group_id.
-        TranslateDeviceIdToSourceId(new_request, &new_device);
+        // TODO(https://crbug.com/1288839): Remove bad message after transfer
+        // is supported for these stream types.
+        // TODO(https://crbug.com/1288839): Hash device id and group_id for
+        // MediaStreamType DEVICE_AUDIO_CAPTURE and DEVICE_VIDEO_CAPTURE.
+        ReceivedBadMessage(
+            new_request->requesting_process_id,
+            bad_message::MSM_GET_OPEN_DEVICE_FOR_UNSUPPORTED_STREAM_TYPE);
+        return absl::nullopt;
       }
 
       new_device.set_session_id(

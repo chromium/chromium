@@ -851,14 +851,10 @@ std::unique_ptr<AudioSourceProvider> MediaStreamTrackImpl::CreateWebAudioSource(
                                                context_sample_rate));
 }
 
-absl::optional<base::UnguessableToken>
-MediaStreamTrackImpl::serializable_session_id() const {
+absl::optional<const MediaStreamDevice> MediaStreamTrackImpl::device() const {
   if (!component_->Source()->GetPlatformSource())
     return absl::nullopt;
-  return component_->Source()
-      ->GetPlatformSource()
-      ->device()
-      .serializable_session_id();
+  return component_->Source()->GetPlatformSource()->device();
 }
 
 void MediaStreamTrackImpl::BeingTransferred(
@@ -870,7 +866,7 @@ void MediaStreamTrackImpl::BeingTransferred(
       cloned_track->Component()->Source()->GetPlatformSource();
   if (platform_source) {
     platform_source->KeepDeviceAliveForTransfer(
-        serializable_session_id().value(), transfer_id,
+        device()->serializable_session_id().value(), transfer_id,
         WTF::Bind(
             [](MediaStreamTrack* cloned_track,
                ExecutionContext* execution_context, bool device_found) {

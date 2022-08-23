@@ -124,8 +124,7 @@ class MODULES_EXPORT MediaStreamTrack
       int context_sample_rate) = 0;
 
   virtual ImageCapture* GetImageCapture() = 0;
-  virtual absl::optional<base::UnguessableToken> serializable_session_id()
-      const = 0;
+  virtual absl::optional<const MediaStreamDevice> device() const = 0;
   // This function is called on the track by the serializer once it has been
   // serialized for transfer to another context.
   // Prepares the track for a potentially cross-renderer transfer. After this

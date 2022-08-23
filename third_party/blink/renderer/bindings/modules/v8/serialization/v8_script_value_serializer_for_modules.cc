@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/modules/mediasource/media_source_handle_transfer_list.h"
 #include "third_party/blink/renderer/modules/mediastream/crop_target.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_utils.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame_delegate.h"
@@ -618,7 +619,9 @@ bool V8ScriptValueSerializerForModules::WriteMediaStreamTrack(
                                       "MediaStreamTrack has ended.");
     return false;
   }
-  if (!track->serializable_session_id()) {
+  absl::optional<const MediaStreamDevice> device = track->device();
+  if (!(device && device->serializable_session_id() &&
+        MediaStreamUtils::IsMediaStreamTypeTransferrable(device->type))) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kDataCloneError,
         "MediaStreamTrack could not be serialized.");
@@ -629,7 +632,7 @@ bool V8ScriptValueSerializerForModules::WriteMediaStreamTrack(
   auto transfer_id = base::UnguessableToken::Create();
 
   WriteTag(kMediaStreamTrack);
-  WriteUnguessableToken(*track->serializable_session_id());
+  WriteUnguessableToken(*device->serializable_session_id());
   WriteUnguessableToken(transfer_id);
   WriteUTF8String(track->kind());
   WriteUTF8String(track->id());

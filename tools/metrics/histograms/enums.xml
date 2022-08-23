@@ -10742,6 +10742,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="282" label="RFHI_CREATE_FENCED_FRAME_BAD_FRAME_TOKEN"/>
   <int value="283" label="RFHI_CREATE_FENCED_FRAME_BAD_DEVTOOLS_FRAME_TOKEN"/>
   <int value="284" label="FF_FROZEN_SANDBOX_FLAGS_CHANGED"/>
+  <int value="285" label="MSM_GET_OPEN_DEVICE_FOR_UNSUPPORTED_STREAM_TYPE"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

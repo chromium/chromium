@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_STREAM_UTILS_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -23,6 +24,8 @@ class MediaStreamUtils {
 
   static MediaStreamTrack* CreateLocalAudioTrack(ExecutionContext*,
                                                  MediaStreamSource*);
+  static bool IsMediaStreamTypeTransferrable(
+      mojom::blink::MediaStreamType type);
 };
 
 }  // namespace blink

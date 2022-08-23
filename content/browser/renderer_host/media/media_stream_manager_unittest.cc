@@ -1284,18 +1284,13 @@ class MediaStreamManagerTestForTransfers : public MediaStreamManagerTest {
 };
 
 TEST_F(MediaStreamManagerTestForTransfers,
-       GetOpenDeviceForExistingDeviceReturnsDevice) {
+       GetOpenDeviceForDeviceCaptureTypeStreamFails) {
   RequestDeviceCaptureTypeAudioDevice();
-  // TODO(https://crbug.com/1288839): GetOpenDevice request for stream device
-  // of type DEVICE_CAPTURE should fail, once it is set as unsupported in the
-  // implementation.
   GetOpenDevice();
   KeepDeviceAlive();
   StopDevice();
 
-  EXPECT_EQ(result_, blink::mojom::MediaStreamRequestResult::OK);
-  EXPECT_EQ(transferred_device_.id, original_device_.id);
-  EXPECT_NE(transferred_device_.session_id(), existing_device_session_id_);
+  EXPECT_EQ(result_, blink::mojom::MediaStreamRequestResult::INVALID_STATE);
 }
 
 TEST_F(MediaStreamManagerTestForTransfers,

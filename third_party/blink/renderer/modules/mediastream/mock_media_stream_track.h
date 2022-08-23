@@ -97,14 +97,10 @@ class MockMediaStreamTrack : public blink::MediaStreamTrack {
 
   ImageCapture* GetImageCapture() override { return nullptr; }
 
-  absl::optional<base::UnguessableToken> serializable_session_id()
-      const override {
-    return serializable_session_id_;
+  absl::optional<const MediaStreamDevice> device() const override {
+    return device_;
   }
-  void SetSerializableSessionId(
-      absl::optional<base::UnguessableToken> serializable_session_id) {
-    serializable_session_id_ = serializable_session_id;
-  }
+  void SetDevice(const MediaStreamDevice& device) { device_ = device; }
 
   MOCK_METHOD1(stopTrack, void(ExecutionContext*));
   MOCK_METHOD1(clone, MediaStreamTrack*(ExecutionContext*));
@@ -150,7 +146,7 @@ class MockMediaStreamTrack : public blink::MediaStreamTrack {
   MediaStreamSource::ReadyState ready_state_enum_;
   Member<MediaStreamComponent> component_;
   bool ended_;
-  absl::optional<base::UnguessableToken> serializable_session_id_;
+  absl::optional<MediaStreamDevice> device_;
   WeakMember<ExecutionContext> context_;
 };
 

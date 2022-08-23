@@ -34,4 +34,14 @@ MediaStreamTrack* MediaStreamUtils::CreateLocalAudioTrack(
                                                     component);
 }
 
+bool MediaStreamUtils::IsMediaStreamTypeTransferrable(
+    mojom::blink::MediaStreamType type) {
+  // Check if |type| is a valid MediaStreamType.
+  if (type == mojom::blink::MediaStreamType::NO_SERVICE ||
+      type == mojom::blink::MediaStreamType::NUM_MEDIA_TYPES) {
+    return false;
+  }
+  return !IsDeviceMediaType(type);
+}
+
 }  // namespace blink

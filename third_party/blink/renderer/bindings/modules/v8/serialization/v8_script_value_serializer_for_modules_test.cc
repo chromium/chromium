@@ -1244,7 +1244,8 @@ TEST(V8ScriptValueSerializerForModulesTest, TransferMediaStreamTrack) {
       WebPlatformMediaStreamSource::ConstraintsOnceCallback(),
       /*enabled=*/true);
 
-  MediaStreamDevice device;
+  MediaStreamDevice device(mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
+                           "device_id", "device_name");
   device.set_session_id(base::UnguessableToken::Create());
   mock_source->SetDevice(device);
   MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
@@ -1292,7 +1293,8 @@ TEST(V8ScriptValueSerializerForModulesTest, TransferAudioMediaStreamTrack) {
   auto platform_track =
       std::make_unique<MediaStreamAudioTrack>(/*is_local_track=*/true);
 
-  MediaStreamDevice device;
+  MediaStreamDevice device(mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE,
+                           "device_id", "device_name");
   device.set_session_id(base::UnguessableToken::Create());
   mock_source->SetDevice(device);
   MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
@@ -1336,7 +1338,8 @@ TEST(V8ScriptValueSerializerForModulesTest,
 
   std::unique_ptr<MockMediaStreamVideoSource> mock_source(
       base::WrapUnique(new MockMediaStreamVideoSource()));
-  MediaStreamDevice device;
+  MediaStreamDevice device(mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
+                           "device_id", "device_name");
   base::UnguessableToken token = base::UnguessableToken::Create();
   device.set_session_id(token);
   mock_source->SetDevice(device);
@@ -1374,7 +1377,8 @@ TEST(V8ScriptValueSerializerForModulesTest,
 
   std::unique_ptr<MockMediaStreamVideoSource> mock_source(
       base::WrapUnique(new MockMediaStreamVideoSource()));
-  MediaStreamDevice device;
+  MediaStreamDevice device(mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
+                           "device_id", "device_name");
   base::UnguessableToken token = base::UnguessableToken::Create();
   device.set_session_id(token);
   mock_source->SetDevice(device);

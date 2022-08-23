@@ -309,6 +309,7 @@ enum BadMessageReason {
   RFHI_CREATE_FENCED_FRAME_BAD_FRAME_TOKEN = 282,
   RFHI_CREATE_FENCED_FRAME_BAD_DEVTOOLS_FRAME_TOKEN = 283,
   FF_FROZEN_SANDBOX_FLAGS_CHANGED = 284,
+  MSM_GET_OPEN_DEVICE_FOR_UNSUPPORTED_STREAM_TYPE = 285,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the

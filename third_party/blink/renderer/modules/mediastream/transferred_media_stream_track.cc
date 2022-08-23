@@ -341,10 +341,10 @@ ImageCapture* TransferredMediaStreamTrack::GetImageCapture() {
   return nullptr;
 }
 
-absl::optional<base::UnguessableToken>
-TransferredMediaStreamTrack::serializable_session_id() const {
+absl::optional<const MediaStreamDevice> TransferredMediaStreamTrack::device()
+    const {
   if (track_) {
-    return track_->serializable_session_id();
+    return track_->device();
   }
   // TODO(https://crbug.com/1288839): Return transferred data
   return absl::nullopt;

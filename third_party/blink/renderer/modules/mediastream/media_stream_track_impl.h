@@ -129,8 +129,7 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
 
   ImageCapture* GetImageCapture() override { return image_capture_; }
 
-  absl::optional<base::UnguessableToken> serializable_session_id()
-      const override;
+  absl::optional<const MediaStreamDevice> device() const override;
 
   void BeingTransferred(const base::UnguessableToken& transfer_id) override;
 

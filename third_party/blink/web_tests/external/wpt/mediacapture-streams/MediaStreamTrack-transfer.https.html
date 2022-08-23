@@ -33,7 +33,7 @@ promise_test(async () => {
   const worker = new Worker(workerUrl);
   window.URL.revokeObjectURL(workerUrl);
   await setMediaPermission("granted", ["camera"]);
-  const stream = await navigator.mediaDevices.getUserMedia({video: true});
+  const stream = await navigator.mediaDevices.getDisplayMedia({video: true});
   const track = stream.getVideoTracks()[0];
   const result = new Promise((resolve, reject) => {
     worker.onmessage = (e) => {
