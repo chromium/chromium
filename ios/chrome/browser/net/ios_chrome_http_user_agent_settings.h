@@ -11,7 +11,7 @@
 #include "ios/chrome/browser/net/accept_language_pref_watcher.h"
 #include "net/base/http_user_agent_settings.h"
 
-// An implementation of |HttpUserAgentSettings| that provides HTTP header
+// An implementation of `HttpUserAgentSettings` that provides HTTP header
 // Accept-Language value that tracks Pref settings.
 class IOSChromeHttpUserAgentSettings : public net::HttpUserAgentSettings {
  public:

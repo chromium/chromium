@@ -30,7 +30,7 @@ class IOSChromeNetworkDelegate : public net::NetworkDelegateImpl {
 
   ~IOSChromeNetworkDelegate() override;
 
-  // If |cookie_settings| is null or not set, all cookies are enabled,
+  // If `cookie_settings` is null or not set, all cookies are enabled,
   // otherwise the settings are enforced on all observed network requests.
   // Not inlined because we assign a scoped_refptr, which requires us to include
   // the header file. Here we just forward-declare it.
@@ -42,7 +42,7 @@ class IOSChromeNetworkDelegate : public net::NetworkDelegateImpl {
     enable_do_not_track_ = enable_do_not_track;
   }
 
-  // Binds the pref members to |pref_service| and moves them to the IO thread.
+  // Binds the pref members to `pref_service` and moves them to the IO thread.
   // This method should be called on the UI thread.
   static void InitializePrefsOnUIThread(BooleanPrefMember* enable_do_not_track,
                                         PrefService* pref_service);

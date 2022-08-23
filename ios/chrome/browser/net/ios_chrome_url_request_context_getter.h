@@ -23,7 +23,7 @@ class IOSChromeURLRequestContextFactory;
 // the destructor and GetURLRequestContext().
 class IOSChromeURLRequestContextGetter : public net::URLRequestContextGetter {
  public:
-  // Constructs a ChromeURLRequestContextGetter that will use |factory| to
+  // Constructs a ChromeURLRequestContextGetter that will use `factory` to
   // create the URLRequestContext.
   explicit IOSChromeURLRequestContextGetter(
       std::unique_ptr<IOSChromeURLRequestContextFactory> factory);

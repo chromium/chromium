@@ -73,8 +73,8 @@ class PrefServiceAdapter : public net::HttpServerProperties::PrefDelegate,
   scoped_refptr<JsonPrefStore> pref_store_;
   const std::string path_;
 
-  // Only non-null while waiting for initial pref load. |this| is observes the
-  // |pref_store_| exactly when non-null.
+  // Only non-null while waiting for initial pref load. `this` is observes the
+  // `pref_store_` exactly when non-null.
   base::OnceClosure on_pref_load_callback_;
 };
 
