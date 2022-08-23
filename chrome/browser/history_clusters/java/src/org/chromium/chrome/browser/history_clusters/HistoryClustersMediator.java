@@ -150,6 +150,9 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         mAccessibilityUtil = accessibilityUtil;
         mAnnounceForAccessibilityCallback = announceForAccessibilityCallback;
 
+        mSelectionDelegate.addObserver(
+                (selectedItems -> setSelectionActive(mSelectionDelegate.isSelectionEnabled())));
+
         PropertyModel toggleModel = new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
         mToggleItem = new ListItem(ItemType.TOGGLE, toggleModel);
 
@@ -331,6 +334,14 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         mDelegate.removeMarkedItems();
     }
 
+    void setSelectionActive(boolean active) {
+        boolean showDeleteButton = !active;
+        for (Map.Entry<ClusterVisit, VisitMetadata> entry : mVisitMetadataMap.entrySet()) {
+            entry.getValue().visitListItem.model.set(
+                    HistoryClustersItemProperties.END_BUTTON_VISIBLE, showDeleteButton);
+        }
+    }
+
     private void removeVisit(ClusterVisit visit) {
         VisitMetadata visitMetadata = mVisitMetadataMap.get(visit);
         if (visitMetadata == null) return;
@@ -454,6 +465,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
                                 .with(HistoryClustersItemProperties.END_BUTTON_CLICK_HANDLER,
                                         (v) -> deleteVisits(Arrays.asList(visit)))
                                 .with(HistoryClustersItemProperties.DIVIDER_VISIBLE, false)
+                                .with(HistoryClustersItemProperties.END_BUTTON_VISIBLE, true)
                                 .build();
                 if (mLargeIconBridge != null) {
                     mLargeIconBridge.getLargeIconForUrl(visit.getNormalizedUrl(), mMinFaviconSize,

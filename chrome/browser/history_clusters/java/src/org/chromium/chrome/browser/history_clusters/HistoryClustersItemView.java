@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.history_clusters;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.ImageView;
 
 import androidx.annotation.DimenRes;
@@ -72,5 +73,9 @@ class HistoryClustersItemView extends SelectableItemView<ClusterVisit> {
 
     void setDividerHeight(@DimenRes int dimenResId) {
         mDividerView.setHeightRes(dimenResId);
+    }
+
+    void setEndButtonVisibility(boolean visible) {
+        mEndButtonView.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 }

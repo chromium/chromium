@@ -29,6 +29,9 @@ class HistoryClustersViewBinder {
         } else if (key == HistoryClustersItemProperties.END_BUTTON_CLICK_HANDLER) {
             itemView.setEndButtonClickHandler(
                     model.get(HistoryClustersItemProperties.END_BUTTON_CLICK_HANDLER));
+        } else if (key == HistoryClustersItemProperties.END_BUTTON_VISIBLE) {
+            itemView.setEndButtonVisibility(
+                    model.get(HistoryClustersItemProperties.END_BUTTON_VISIBLE));
         } else if (key == HistoryClustersItemProperties.ICON_DRAWABLE) {
             itemView.setIconDrawable(model.get(HistoryClustersItemProperties.ICON_DRAWABLE));
         } else if (key == HistoryClustersItemProperties.TITLE) {

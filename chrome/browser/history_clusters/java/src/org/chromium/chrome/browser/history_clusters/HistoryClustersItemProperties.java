@@ -11,6 +11,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -47,6 +48,7 @@ class HistoryClustersItemProperties {
             new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<Drawable> END_BUTTON_DRAWABLE =
             new WritableObjectPropertyKey<>();
+    static final WritableBooleanPropertyKey END_BUTTON_VISIBLE = new WritableBooleanPropertyKey();
     static final WritableObjectPropertyKey<Drawable> ICON_DRAWABLE =
             new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<String> LABEL = new WritableObjectPropertyKey<>();
@@ -60,6 +62,6 @@ class HistoryClustersItemProperties {
 
     static final PropertyKey[] ALL_KEYS = {ACCESSIBILITY_STATE, CHIP_CLICK_HANDLER, CLICK_HANDLER,
             CLUSTER_VISIT, DIVIDER_HEIGHT_RES, DIVIDER_VISIBLE, END_BUTTON_CLICK_HANDLER,
-            END_BUTTON_DRAWABLE, ICON_DRAWABLE, LABEL, PROGRESS_BUTTON_STATE, RELATED_SEARCHES,
-            START_ICON_VISIBILITY, TITLE, URL, VISIBILITY};
+            END_BUTTON_DRAWABLE, END_BUTTON_VISIBLE, ICON_DRAWABLE, LABEL, PROGRESS_BUTTON_STATE,
+            RELATED_SEARCHES, START_ICON_VISIBILITY, TITLE, URL, VISIBILITY};
 }
