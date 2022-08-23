@@ -319,9 +319,19 @@ export class AllSitesElement extends AllSitesElementBase {
       siteGroupMap: Map<string, SiteGroup>, searchQuery: string): SiteGroup[] {
     const result = [];
     for (const [_etldPlus1, siteGroup] of siteGroupMap) {
-      if (siteGroup.origins.find(
-              originInfo => originInfo.origin.includes(searchQuery))) {
-        result.push(siteGroup);
+      if (this.filter.startsWith('related:')) {
+        const fpsOwnerFilter =
+            this.filter.substring(this.filter.indexOf(':') + 1);
+        // Checking `siteGroup.fpsOwner` to ensure that we're not matching with
+        // site entries that are not a member of a first party set.
+        if (siteGroup.fpsOwner && siteGroup.fpsOwner === fpsOwnerFilter) {
+          result.push(siteGroup);
+        }
+      } else {
+        if (siteGroup.origins.find(
+                originInfo => originInfo.origin.includes(searchQuery))) {
+          result.push(siteGroup);
+        }
       }
     }
     return this.sortSiteGroupList_(result);
@@ -464,8 +474,13 @@ export class AllSitesElement extends AllSitesElementBase {
   }
 
   private onShowRelatedSites_() {
-    // TODO(crbug.com/1349370): implement filtering by fps owner.
-    this.forceListUpdate_();
+    this.$.menu.get().close();
+    const siteGroup = this.filteredList_[this.actionMenuModel_!.index];
+    const searchParams = new URLSearchParams(
+        'searchSubpage=' +
+        encodeURIComponent('related:' + siteGroup.fpsOwner!));
+    const currentRoute = Router.getInstance().getCurrentRoute();
+    Router.getInstance().navigateTo(currentRoute, searchParams);
   }
 
   private onRemoveSite_(e: RemoveSiteEvent) {

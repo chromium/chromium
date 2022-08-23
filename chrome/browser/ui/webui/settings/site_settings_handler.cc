@@ -325,7 +325,7 @@ void ConvertSiteGroupMapToList(
           GURL(ConvertEtldToOrigin(entry.first, /*secure=*/true)));
 
       if (first_party_sets.count(site)) {
-        site_group.Set(kFpsOwner, (first_party_sets)[site].Serialize());
+        site_group.Set(kFpsOwner, (first_party_sets)[site].GetURL().host());
       }
     }
     list_value->Append(std::move(site_group));

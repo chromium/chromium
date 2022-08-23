@@ -142,7 +142,7 @@ void ValidateSitesWithFps(
     if (first_party_sets.count(schemeful_site)) {
       // Ensure that the `fpsOwner` is set correctly and aligned with
       // |first_party_sets| mapping of site group owners.
-      ASSERT_EQ(first_party_sets[schemeful_site].Serialize(),
+      ASSERT_EQ(first_party_sets[schemeful_site].GetURL().host(),
                 *site_group.GetDict().FindString("fpsOwner"));
     } else {
       // The site doesn't have `fpsOwner` set, `FindString` should return null.

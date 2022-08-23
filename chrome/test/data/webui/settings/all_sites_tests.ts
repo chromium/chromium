@@ -1398,6 +1398,31 @@ suite('AllSites_EnableFirstPartySets', function() {
     'https://login.example.com',
   ]);
 
+  /**
+   * Example site groups with one owned SiteGroup.
+   */
+  const TEST_SITE_GROUPS: SiteGroup[] = [
+    {
+      etldPlus1: 'foo.com',
+      origins: [createOriginInfo('https://foo.com')],
+      numCookies: 0,
+      fpsOwner: 'foo.com',
+      hasInstalledPWA: false,
+    },
+    {
+      etldPlus1: 'bar.com',
+      origins: [createOriginInfo('https://bar.com')],
+      numCookies: 0,
+      hasInstalledPWA: false,
+    },
+    {
+      etldPlus1: 'example.com',
+      origins: [createOriginInfo('https://example.com')],
+      numCookies: 0,
+      hasInstalledPWA: false,
+    },
+  ];
+
   let testElement: AllSitesElement;
 
   /**
@@ -1435,6 +1460,12 @@ suite('AllSites_EnableFirstPartySets', function() {
     testElement = document.createElement('all-sites');
     assertTrue(!!testElement);
     document.body.appendChild(testElement);
+  });
+
+  teardown(function() {
+    // The code being tested changes the Route. Reset so that state is not
+    // leaked across tests.
+    Router.getInstance().resetRouteForTesting();
   });
 
   function removeSiteViaOverflowMenu(buttonType: string) {
@@ -1493,7 +1524,7 @@ suite('AllSites_EnableFirstPartySets', function() {
 
   test('remove site via overflow menu', async function() {
     const siteGroup = JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP));
-    siteGroup.fpsOwner = 'htpps://google.com';
+    siteGroup.fpsOwner = 'google.com';
     testElement.siteGroupMap.set(
         siteGroup.etldPlus1, JSON.parse(JSON.stringify(siteGroup)));
     testElement.forceListUpdateForTesting();
@@ -1503,7 +1534,7 @@ suite('AllSites_EnableFirstPartySets', function() {
   test(
       'cancelling the confirm dialog on removing site works', async function() {
         const siteGroup = JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP));
-        siteGroup.fpsOwner = 'htpps://google.com';
+        siteGroup.fpsOwner = 'google.com';
         testElement.siteGroupMap.set(
             siteGroup.etldPlus1, JSON.parse(JSON.stringify(siteGroup)));
         testElement.forceListUpdateForTesting();
@@ -1531,4 +1562,58 @@ suite('AllSites_EnableFirstPartySets', function() {
         removeFirstSiteGroup();
         cancelDialog();
       });
+
+  test('filter sites by first party set owner', async function() {
+    TEST_SITE_GROUPS.forEach(siteGroup => {
+      testElement.siteGroupMap.set(
+          siteGroup.etldPlus1, JSON.parse(JSON.stringify(siteGroup)));
+    });
+    testElement.forceListUpdateForTesting();
+    flush();
+    let siteEntries =
+        testElement.$.listContainer.querySelectorAll('site-entry');
+    assertEquals(3, siteEntries.length);
+    const overflowMenuButton =
+        siteEntries[0]!.shadowRoot!.querySelector<HTMLElement>(
+            '#fpsOverflowMenuButton')!;
+    assertFalse(
+        overflowMenuButton.closest<HTMLElement>('.row-aligned')!.hidden);
+
+    // Test clicking on the overflow menu button opens the menu.
+    const overflowMenu = testElement.$.menu.get();
+    assertFalse(overflowMenu.open);
+    overflowMenuButton.click();
+    assertTrue(overflowMenu.open);
+    flush();
+    const menuItems =
+        overflowMenu.querySelectorAll<HTMLElement>('.dropdown-item');
+    assertEquals('', testElement.filter);
+    // Click show related sites.
+    menuItems[0]!.click();
+    // Check the overflow menu is now closed.
+    assertFalse(overflowMenu.open);
+    // Verify filter is applied in search query.
+    assertEquals(
+        'related:foo.com',
+        Router.getInstance().getQueryParameters().get('searchSubpage'));
+    // Filter needs to be set manually here as rerouting to all-sites with a
+    // search query doesn't change it in this test.
+    testElement.filter = 'related:foo.com';
+    flush();
+
+    siteEntries = testElement.$.listContainer.querySelectorAll('site-entry');
+    let hiddenSiteEntries = Array.from(
+        testElement.shadowRoot!.querySelectorAll('site-entry[hidden]'));
+    assertEquals(1, siteEntries.length - hiddenSiteEntries.length);
+    assertEquals('foo.com', siteEntries[0]!.siteGroup.fpsOwner);
+
+    // Clear filter and assert the list is back to 3 elements.
+    testElement.filter = '';
+    flush();
+
+    siteEntries = testElement.$.listContainer.querySelectorAll('site-entry');
+    hiddenSiteEntries = Array.from(
+        testElement.shadowRoot!.querySelectorAll('site-entry[hidden]'));
+    assertEquals(3, siteEntries.length - hiddenSiteEntries.length);
+  });
 });
