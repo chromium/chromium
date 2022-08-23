@@ -10915,8 +10915,13 @@ if (is_chromeos_ash) {
       ":browser_tests_runner",
       ":test_support_ui",
       "//base",
+      "//base/test:test_support",
+      "//chrome/browser",
+      "//chrome/browser/ash",
       "//chrome/browser/ash/crosapi",
+      "//chrome/browser/ui",
       "//chromeos/crosapi/mojom",
+      "//components/services/app_service/public/cpp:app_types",
     ]
   }
 }
