@@ -1194,15 +1194,6 @@ extern const char kOverlayStrategiesUnoccludedFullscreen[];
 extern const char kOverlayStrategiesUnoccluded[];
 extern const char kOverlayStrategiesOccludedAndUnoccluded[];
 
-extern const char kOverrideLanguagePrefsForHrefTranslateName[];
-extern const char kOverrideLanguagePrefsForHrefTranslateDescription[];
-extern const char kOverrideSitePrefsForHrefTranslateName[];
-extern const char kOverrideSitePrefsForHrefTranslateDescription[];
-extern const char kOverrideUnsupportedPageLanguageForHrefTranslateName[];
-extern const char kOverrideUnsupportedPageLanguageForHrefTranslateDescription[];
-extern const char kOverrideSimilarLanguagesForHrefTranslateName[];
-extern const char kOverrideSimilarLanguagesForHrefTranslateDescription[];
-
 extern const char kOverscrollHistoryNavigationName[];
 extern const char kOverscrollHistoryNavigationDescription[];
 
