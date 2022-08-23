@@ -14,7 +14,6 @@
 #include "components/guest_view/common/guest_view_constants.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/common/api/guest_view_internal.h"
-#include "extensions/common/permissions/permissions_data.h"
 
 using guest_view::GuestViewBase;
 using guest_view::GuestViewManager;
@@ -24,9 +23,11 @@ namespace guest_view_internal = extensions::api::guest_view_internal;
 
 namespace extensions {
 
-GuestViewInternalCreateGuestFunction::
-    GuestViewInternalCreateGuestFunction() {
-}
+GuestViewInternalCreateGuestFunction::GuestViewInternalCreateGuestFunction() =
+    default;
+
+GuestViewInternalCreateGuestFunction::~GuestViewInternalCreateGuestFunction() =
+    default;
 
 ExtensionFunction::ResponseAction GuestViewInternalCreateGuestFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(args().size() >= 2);
@@ -77,31 +78,9 @@ void GuestViewInternalCreateGuestFunction::CreateGuestCallback(
   Respond(OneArgument(base::Value(std::move(return_params))));
 }
 
-GuestViewInternalDestroyGuestFunction::
-    GuestViewInternalDestroyGuestFunction() {
-}
+GuestViewInternalSetSizeFunction::GuestViewInternalSetSizeFunction() = default;
 
-GuestViewInternalDestroyGuestFunction::
-    ~GuestViewInternalDestroyGuestFunction() {
-}
-
-ExtensionFunction::ResponseAction GuestViewInternalDestroyGuestFunction::Run() {
-  std::unique_ptr<guest_view_internal::DestroyGuest::Params> params(
-      guest_view_internal::DestroyGuest::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params.get());
-  GuestViewBase* guest =
-      GuestViewBase::From(source_process_id(), params->instance_id);
-  if (!guest)
-    return RespondNow(Error(kUnknownErrorDoNotUse));
-  guest->Destroy(true);
-  return RespondNow(NoArguments());
-}
-
-GuestViewInternalSetSizeFunction::GuestViewInternalSetSizeFunction() {
-}
-
-GuestViewInternalSetSizeFunction::~GuestViewInternalSetSizeFunction() {
-}
+GuestViewInternalSetSizeFunction::~GuestViewInternalSetSizeFunction() = default;
 
 ExtensionFunction::ResponseAction GuestViewInternalSetSizeFunction::Run() {
   std::unique_ptr<guest_view_internal::SetSize::Params> params(

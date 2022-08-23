@@ -74,21 +74,6 @@
         }
       },
       {
-        "name": "destroyGuest",
-        "type": "function",
-        "parameters": [
-          {
-            "type": "integer",
-            "name": "instanceId"
-          }
-        ],
-        "returns_async": {
-          "name": "callback",
-          "parameters": [],
-          "optional": true
-        }
-      },
-      {
         "name": "setSize",
         "type": "function",
         "parameters": [

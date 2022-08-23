@@ -21,34 +21,13 @@ class GuestViewInternalCreateGuestFunction : public ExtensionFunction {
       const GuestViewInternalCreateGuestFunction&) = delete;
 
  protected:
-  ~GuestViewInternalCreateGuestFunction() override {}
+  ~GuestViewInternalCreateGuestFunction() override;
 
   // ExtensionFunction:
   ResponseAction Run() final;
 
  private:
   void CreateGuestCallback(content::WebContents* guest_web_contents);
-};
-
-class GuestViewInternalDestroyGuestFunction : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("guestViewInternal.destroyGuest",
-                             GUESTVIEWINTERNAL_DESTROYGUEST)
-  GuestViewInternalDestroyGuestFunction();
-
-  GuestViewInternalDestroyGuestFunction(
-      const GuestViewInternalDestroyGuestFunction&) = delete;
-  GuestViewInternalDestroyGuestFunction& operator=(
-      const GuestViewInternalDestroyGuestFunction&) = delete;
-
- protected:
-  ~GuestViewInternalDestroyGuestFunction() override;
-
-  // ExtensionFunction:
-  ResponseAction Run() final;
-
- private:
-  void DestroyGuestCallback(content::WebContents* guest_web_contents);
 };
 
 class GuestViewInternalSetSizeFunction : public ExtensionFunction {
