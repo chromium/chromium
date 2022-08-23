@@ -36,6 +36,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
@@ -406,6 +407,7 @@ void ConsolidatedConsentScreen::OnAccept(bool enable_stats_usage,
 
 void ConsolidatedConsentScreen::ExitScreenWithAcceptedResult() {
   StartupUtils::MarkEulaAccepted();
+  network_portal_detector::GetInstance()->Enable();
 
   const DemoSetupController* const demo_setup_controller =
       WizardController::default_controller()->demo_setup_controller();

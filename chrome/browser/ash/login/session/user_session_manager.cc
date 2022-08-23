@@ -492,6 +492,7 @@ bool MaybeShowNewTermsAfterUpdateToFlex(Profile* profile) {
   bool is_device_managed = connector->IsDeviceEnterpriseManaged();
   if (is_device_managed) {
     StartupUtils::MarkEulaAccepted();
+    network_portal_detector::GetInstance()->Enable();
     return false;
   }
   if (!IsRevenUpdatedToFlex())
