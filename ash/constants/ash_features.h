@@ -298,7 +298,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kExoLockNotification;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kExoOrdinalMotion;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kExperimentalRgbKeyboardPatterns;
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFaceMlApp;
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFaceMLApp;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kFamilyLinkOnSchoolDevice;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFastPair;

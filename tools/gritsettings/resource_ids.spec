@@ -641,7 +641,7 @@
   "ash/webui/projector_app/resources/mock/projector_app_bundle_mock_resources.grd": {
     "includes": [3420],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/facial_ml_app_ui/resources/trusted/ash_facial_ml_app_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/face_ml_app_ui/resources/trusted/ash_face_ml_app_resources.grd": {
     "META": {"join": 2, "sizes": {"includes": [50],}},
     "includes": [3440],
   },

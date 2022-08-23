@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/web_applications/facial_ml_system_web_app_info.h"
+#include "chrome/browser/ash/web_applications/face_ml_system_web_app_info.h"
 
 #include <memory>
 
 #include "ash/constants/ash_features.h"
-#include "ash/webui/facial_ml_app_ui/url_constants.h"
-#include "ash/webui/grit/ash_facial_ml_app_resources.h"
+#include "ash/webui/face_ml_app_ui/url_constants.h"
+#include "ash/webui/grit/ash_face_ml_app_resources.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
@@ -23,18 +23,18 @@ namespace {
 constexpr gfx::Size DEFAULT_SIZE(800, 600);
 }  // namespace
 
-std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForFacialMLApp() {
+std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForFaceMLApp() {
   std::unique_ptr<WebAppInstallInfo> info =
       std::make_unique<WebAppInstallInfo>();
-  info->start_url = GURL(ash::kChromeUIFacialMLAppURL);
-  info->scope = GURL(ash::kChromeUIFacialMLAppURL);
+  info->start_url = GURL(ash::kChromeUIFaceMLAppURL);
+  info->scope = GURL(ash::kChromeUIFaceMLAppURL);
   // TODO(b/239374316): Convert the title to a localized string
-  info->title = u"Facial ML";
+  info->title = u"Face ML";
   web_app::CreateIconInfoForSystemWebApp(
       info->start_url,
       {
-          {"app_icon_192.png", 192, IDR_ASH_FACIAL_ML_APP_APP_ICON_192_PNG},
-          {"app_icon_512.png", 512, IDR_ASH_FACIAL_ML_APP_APP_ICON_512_PNG},
+          {"app_icon_192.png", 192, IDR_ASH_FACE_ML_APP_APP_ICON_192_PNG},
+          {"app_icon_512.png", 512, IDR_ASH_FACE_ML_APP_APP_ICON_512_PNG},
       },
       *info);
 
@@ -57,39 +57,39 @@ std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForFacialMLApp() {
   return info;
 }
 
-FacialMLSystemAppDelegate::FacialMLSystemAppDelegate(Profile* profile)
+FaceMLSystemAppDelegate::FaceMLSystemAppDelegate(Profile* profile)
     : ash::SystemWebAppDelegate(
-          ash::SystemWebAppType::FACIAL_ML,
-          "FacialML",
-          GURL(ash::kChromeUIFacialMLAppURL),
+          ash::SystemWebAppType::FACE_ML,
+          "FaceML",
+          GURL(ash::kChromeUIFaceMLAppURL),
           profile,
-          ash::OriginTrialsMap({{ash::GetOrigin(ash::kChromeUIFacialMLAppURL),
+          ash::OriginTrialsMap({{ash::GetOrigin(ash::kChromeUIFaceMLAppURL),
                                  {"FileHandling"}}})) {}
 
-std::unique_ptr<WebAppInstallInfo> FacialMLSystemAppDelegate::GetWebAppInfo()
+std::unique_ptr<WebAppInstallInfo> FaceMLSystemAppDelegate::GetWebAppInfo()
     const {
-  return CreateWebAppInfoForFacialMLApp();
+  return CreateWebAppInfoForFaceMLApp();
 }
 
-gfx::Rect FacialMLSystemAppDelegate::GetDefaultBounds(Browser* browser) const {
+gfx::Rect FaceMLSystemAppDelegate::GetDefaultBounds(Browser* browser) const {
   gfx::Rect bounds =
       display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
   bounds.ClampToCenteredSize(DEFAULT_SIZE);
   return bounds;
 }
 
-bool FacialMLSystemAppDelegate::IsAppEnabled() const {
-  return base::FeatureList::IsEnabled(ash::features::kFaceMlApp);
+bool FaceMLSystemAppDelegate::IsAppEnabled() const {
+  return base::FeatureList::IsEnabled(ash::features::kFaceMLApp);
 }
 
-bool FacialMLSystemAppDelegate::ShouldCaptureNavigations() const {
+bool FaceMLSystemAppDelegate::ShouldCaptureNavigations() const {
   return true;
 }
 
-bool FacialMLSystemAppDelegate::ShouldShowNewWindowMenuOption() const {
+bool FaceMLSystemAppDelegate::ShouldShowNewWindowMenuOption() const {
   return false;
 }
 
-bool FacialMLSystemAppDelegate::ShouldReuseExistingWindow() const {
+bool FaceMLSystemAppDelegate::ShouldReuseExistingWindow() const {
   return true;
 }

@@ -52,6 +52,7 @@ source_set("configs") {
     deps += [
       "//ash/constants",
       "//ash/webui/eche_app_ui",
+      "//ash/webui/face_ml_app_ui",
       "//ash/webui/file_manager:file_manager_untrusted_ui",
       "//ash/webui/help_app_ui",
       "//ash/webui/os_feedback_ui",
@@ -61,7 +62,6 @@ source_set("configs") {
     if (!is_official_build) {
       deps += [
         "//ash/webui/demo_mode_app_ui",
-        "//ash/webui/facial_ml_app_ui",
         "//ash/webui/sample_system_web_app_ui",
       ]
     }

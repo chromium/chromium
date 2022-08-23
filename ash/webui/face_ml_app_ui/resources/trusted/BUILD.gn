@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
-assert(is_chromeos_ash, "Facial ML App is ash-chrome only")
+assert(is_chromeos_ash, "Face ML App is ash-chrome only")
 
 ts_library("trusted_ts") {
   root_dir = "."
@@ -24,7 +24,7 @@ ts_library("trusted_ts") {
 }
 
 generate_grd("trusted_grd") {
-  grd_prefix = "ash_facial_ml_app"
+  grd_prefix = "ash_face_ml_app"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 
   input_files = [

@@ -223,6 +223,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/ash/webui/ash_diagnostics_app_resources.pak",
         "$root_gen_dir/ash/webui/ash_eche_app_resources.pak",
         "$root_gen_dir/ash/webui/ash_eche_bundle_resources.pak",
+        "$root_gen_dir/ash/webui/ash_face_ml_app_resources.pak",
         "$root_gen_dir/ash/webui/ash_firmware_update_app_resources.pak",
         "$root_gen_dir/ash/webui/ash_guest_os_installer_resources.pak",
         "$root_gen_dir/ash/webui/ash_help_app_resources.pak",
@@ -283,6 +284,7 @@ template("chrome_extra_paks") {
         "//ash/webui/resources:diagnostics_app_resources",
         "//ash/webui/resources:eche_app_resources",
         "//ash/webui/resources:eche_bundle_resources",
+        "//ash/webui/resources:face_ml_app_resources",
         "//ash/webui/resources:firmware_update_app_resources",
         "//ash/webui/resources:guest_os_installer_resources",
         "//ash/webui/resources:help_app_bundle_resources",
@@ -332,13 +334,11 @@ template("chrome_extra_paks") {
       if (!is_official_build) {
         sources += [
           "$root_gen_dir/ash/webui/ash_demo_mode_app_resources.pak",
-          "$root_gen_dir/ash/webui/ash_facial_ml_app_resources.pak",
           "$root_gen_dir/ash/webui/ash_sample_system_web_app_resources.pak",
           "$root_gen_dir/ash/webui/ash_sample_system_web_app_untrusted_resources.pak",
         ]
         deps += [
           "//ash/webui/resources:demo_mode_app_resources",
-          "//ash/webui/resources:facial_ml_app_resources",
           "//ash/webui/resources:sample_system_web_app_resources",
           "//ash/webui/resources:sample_system_web_app_untrusted_resources",
         ]

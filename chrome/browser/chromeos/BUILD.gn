@@ -142,6 +142,7 @@ source_set("chromeos") {
     "//ash/webui/connectivity_diagnostics",
     "//ash/webui/diagnostics_ui",
     "//ash/webui/eche_app_ui",
+    "//ash/webui/face_ml_app_ui",
     "//ash/webui/file_manager:file_manager_ui",
     "//ash/webui/file_manager:file_manager_untrusted_ui",
     "//ash/webui/file_manager/resources:file_manager_swa_resources_grit",
@@ -165,6 +166,7 @@ source_set("chromeos") {
     "//ash/webui/resources:connectivity_diagnostics_resources_grit",
     "//ash/webui/resources:diagnostics_app_resources_grit",
     "//ash/webui/resources:eche_bundle_resources_grit",
+    "//ash/webui/resources:face_ml_app_resources_grit",
     "//ash/webui/resources:firmware_update_app_resources_grit",
     "//ash/webui/resources:help_app_resources_grit",
     "//ash/webui/resources:media_app_bundle_resources_grit",
@@ -1979,6 +1981,8 @@ source_set("chromeos") {
     "../ash/web_applications/diagnostics_system_web_app_info.h",
     "../ash/web_applications/eche_app_info.cc",
     "../ash/web_applications/eche_app_info.h",
+    "../ash/web_applications/face_ml_system_web_app_info.cc",
+    "../ash/web_applications/face_ml_system_web_app_info.h",
     "../ash/web_applications/file_manager_web_app_info.cc",
     "../ash/web_applications/file_manager_web_app_info.h",
     "../ash/web_applications/firmware_update_system_web_app_info.cc",
@@ -2344,9 +2348,7 @@ source_set("chromeos") {
   if (!is_official_build) {
     deps += [
       "//ash/webui/demo_mode_app_ui",
-      "//ash/webui/facial_ml_app_ui",
       "//ash/webui/resources:demo_mode_app_resources_grit",
-      "//ash/webui/resources:facial_ml_app_resources_grit",
       "//ash/webui/resources:sample_system_web_app_resources_grit",
       "//ash/webui/resources:sample_system_web_app_untrusted_resources_grit",
       "//ash/webui/sample_system_web_app_ui",
@@ -2354,8 +2356,6 @@ source_set("chromeos") {
     sources += [
       "../ash/web_applications/demo_mode_web_app_info.cc",
       "../ash/web_applications/demo_mode_web_app_info.h",
-      "../ash/web_applications/facial_ml_system_web_app_info.cc",
-      "../ash/web_applications/facial_ml_system_web_app_info.h",
       "../ash/web_applications/sample_system_web_app_info.cc",
       "../ash/web_applications/sample_system_web_app_info.h",
     ]

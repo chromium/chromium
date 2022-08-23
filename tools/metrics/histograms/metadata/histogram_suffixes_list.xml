@@ -10376,7 +10376,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="DemoMode" label="DemoMode"/>
   <suffix name="Diagnostics" label="Diagnostics"/>
   <suffix name="Eche" label="Eche"/>
-  <suffix name="FacialML" label="Facial ML"/>
+  <suffix name="FaceML" label="Face ML"/>
   <suffix name="FirmwareUpdate" label="FirmwareUpdate"/>
   <suffix name="Help" label="Help"/>
   <suffix name="Media" label="Media"/>
