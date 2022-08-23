@@ -85086,6 +85086,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="NoWebContentsAvailable"/>
   <int value="5" label="SafeBrowsingControlledByPolicy"/>
   <int value="6" label="NoBrowserAvailable"/>
+  <int value="7" label="NoBrowserWindowAvailable"/>
 </enum>
 
 <enum name="SafeBrowsingTailoredSecurityOutcome">

@@ -90,20 +90,17 @@ void ChromeTailoredSecurityService::ShowSyncNotification(bool is_enabled) {
       }
       return;
     }
-    content::WebContents* web_contents =
-        browser->tab_strip_model()->GetActiveWebContents();
-    if (!web_contents) {
+    if (!browser->window()) {
       if (is_enabled) {
         RecordEnabledNotificationResult(
-            TailoredSecurityNotificationResult::kNoWebContentsAvailable);
+            TailoredSecurityNotificationResult::kNoBrowserWindowAvailable);
       }
-      return;
     }
     SetSafeBrowsingState(profile_->GetPrefs(),
                          is_enabled ? SafeBrowsingState::ENHANCED_PROTECTION
                                     : SafeBrowsingState::STANDARD_PROTECTION,
                          /*is_esb_enabled_in_sync=*/is_enabled);
-    DisplayDesktopDialog(browser, web_contents, is_enabled);
+    DisplayDesktopDialog(browser, is_enabled);
   } else {
     DisplayTailoredSecurityConsentedModalDesktop(profile_, is_enabled);
   }
@@ -116,12 +113,11 @@ void ChromeTailoredSecurityService::ShowSyncNotification(bool is_enabled) {
 #if !BUILDFLAG(IS_ANDROID)
 void ChromeTailoredSecurityService::DisplayDesktopDialog(
     Browser* browser,
-    content::WebContents* web_contents,
     bool show_enable_modal) {
   if (show_enable_modal) {
-    ShowEnabledDialogForWebContents(browser, web_contents);
+    ShowEnabledDialogForBrowser(browser);
   } else {
-    ShowDisabledDialogForWebContents(browser, web_contents);
+    ShowDisabledDialogForBrowser(browser);
   }
 }
 #endif

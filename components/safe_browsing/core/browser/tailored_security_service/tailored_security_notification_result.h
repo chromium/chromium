@@ -18,7 +18,8 @@ enum class TailoredSecurityNotificationResult {
   kNoWebContentsAvailable = 4,
   kSafeBrowsingControlledByPolicy = 5,
   kNoBrowserAvailable = 6,
-  kMaxValue = kNoBrowserAvailable,
+  kNoBrowserWindowAvailable = 7,
+  kMaxValue = kNoBrowserWindowAvailable,
 };
 
 #endif  // COMPONENTS_SAFE_BROWSING_CORE_BROWSER_TAILORED_SECURITY_SERVICE_TAILORED_SECURITY_NOTIFICATION_RESULT_H_

@@ -15,9 +15,6 @@
 
 class Browser;
 class Profile;
-namespace content {
-class WebContents;
-}
 
 namespace safe_browsing {
 
@@ -30,12 +27,10 @@ class ChromeTailoredSecurityService : public TailoredSecurityService {
   void ShowSyncNotification(bool is_enabled) override;
 
 #if !BUILDFLAG(IS_ANDROID)
-  // Shows a dialog on the provided `web_contents`. If `show_enable_dialog` is
+  // Shows a dialog on the provided `browser`. If `show_enable_dialog` is
   // true, display the enabled dialog; otherwise show the disabled dialog. This
   // method is virtual to support testing.
-  virtual void DisplayDesktopDialog(Browser* browser,
-                                    content::WebContents* web_contents,
-                                    bool show_enable_dialog);
+  virtual void DisplayDesktopDialog(Browser* browser, bool show_enable_dialog);
 #endif
 
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
