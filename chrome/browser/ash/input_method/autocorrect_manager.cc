@@ -147,6 +147,9 @@ bool AutocorrectManager::OnKeyEvent(const ui::KeyEvent& event) {
 void AutocorrectManager::OnSurroundingTextChanged(const std::u16string& text,
                                                   const int cursor_pos,
                                                   const int anchor_pos) {
+  if (error_on_hiding_undo_window_) {
+    HideUndoWindow();
+  }
   if (!pending_autocorrect_.has_value()) {
     return;
   }
@@ -221,13 +224,15 @@ void AutocorrectManager::OnFocus(int context_id) {
                        base::Unretained(this)));
   }
 
+  context_id_ = context_id;
+
   if (pending_autocorrect_.has_value()) {
     // TODO(b/149796494): move this to onblur()
+    HideUndoWindow();
     LogAssistiveAutocorrectAction(
         AutocorrectActions::kUserExitedTextFieldWithUnderline);
     pending_autocorrect_.reset();
   }
-  context_id_ = context_id;
 }
 
 void AutocorrectManager::UndoAutocorrect() {
@@ -295,9 +300,18 @@ void AutocorrectManager::ShowUndoWindow(
       IDS_SUGGESTION_AUTOCORRECT_UNDO_WINDOW_SHOWN,
       pending_autocorrect_->original_text,
       autocorrected_text);
-  // TODO(b/161490813): Handle error.
   suggestion_handler_->SetAssistiveWindowProperties(context_id_, properties,
                                                     &error);
+
+  if (!error.empty()) {
+    LOG(ERROR) << "Failed to show autocorrect undo window.";
+    return;
+  }
+
+  // Showing a new undo window overrides the current shown undo window. So
+  // there is no need to first trying to hide the previous one.
+  error_on_hiding_undo_window_ = false;
+
   LogAssistiveAutocorrectAction(AutocorrectActions::kWindowShown);
   RecordAssistiveCoverage(AssistiveType::kAutocorrectWindowShown);
 
@@ -306,8 +320,9 @@ void AutocorrectManager::ShowUndoWindow(
 }
 
 void AutocorrectManager::HideUndoWindow() {
-  if (!pending_autocorrect_.has_value() ||
-      !pending_autocorrect_->undo_window_visible) {
+  if (!error_on_hiding_undo_window_ &&
+      (!pending_autocorrect_.has_value() ||
+       !pending_autocorrect_->undo_window_visible)) {
     return;
   }
 
@@ -315,11 +330,21 @@ void AutocorrectManager::HideUndoWindow() {
   AssistiveWindowProperties properties;
   properties.type = ui::ime::AssistiveWindowType::kUndoWindow;
   properties.visible = false;
-  // TODO(b/161490813): Handle error.
   suggestion_handler_->SetAssistiveWindowProperties(context_id_, properties,
                                                     &error);
-  pending_autocorrect_->undo_button_highlighted = false;
-  pending_autocorrect_->undo_window_visible = false;
+
+  if (!error.empty()) {
+    LOG(ERROR) << "Failed to hide autocorrect undo window.";
+    error_on_hiding_undo_window_ = true;
+    return;
+  }
+
+  error_on_hiding_undo_window_ = false;
+
+  if (pending_autocorrect_.has_value()) {
+    pending_autocorrect_->undo_button_highlighted = false;
+    pending_autocorrect_->undo_window_visible = false;
+  }
 }
 
 void AutocorrectManager::HighlightUndoButton() {
@@ -338,6 +363,12 @@ void AutocorrectManager::HighlightUndoButton() {
       pending_autocorrect_->original_text);
   suggestion_handler_->SetButtonHighlighted(context_id_, button, true,
                                             &error);
+
+  if (!error.empty()) {
+    LOG(ERROR) << "Failed to highlight undo button.";
+    return;
+  }
+
   pending_autocorrect_->undo_button_highlighted = true;
 }
 

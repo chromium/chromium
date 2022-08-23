@@ -25,6 +25,9 @@ namespace input_method {
 namespace {
 
 using ::testing::_;
+using ::testing::SetArgPointee;
+using ::testing::DoAll;
+using ::testing::Return;
 
 constexpr char kCoverageHistogramName[] = "InputMethod.Assistive.Coverage";
 constexpr char kSuccessHistogramName[] = "InputMethod.Assistive.Success";
@@ -444,6 +447,135 @@ TEST_F(AutocorrectManagerTest, MovingCursorOutsideRangeHidesAssistiveWindow) {
                                     /*anchor_pos=*/1);
   manager_.OnSurroundingTextChanged(u"the ", /*cursor_pos=*/4,
                                     /*anchor_pos=*/4);
+}
+
+TEST_F(AutocorrectManagerTest,
+       MovingCursorRetriesPrevFailedUndoWindowHide) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u"the ", /*cursor_pos=*/4,
+                                    /*anchor_pos=*/4);
+
+  // Show undo window.
+  AssistiveWindowProperties shown_properties =
+      CreateVisibleUndoWindowProperties(u"teh", u"the");
+  EXPECT_CALL(mock_suggestion_handler_,
+              SetAssistiveWindowProperties(_, shown_properties, _));
+  manager_.OnSurroundingTextChanged(u"the ", 1, 1);
+
+  // Accept autocorrect implicitly and make the request to hide the window
+  // fail.
+  AssistiveWindowProperties hidden_properties =
+      CreateHiddenUndoWindowProperties();
+  EXPECT_CALL(mock_suggestion_handler_,
+              SetAssistiveWindowProperties(_, hidden_properties, _))
+      .WillOnce(DoAll(SetArgPointee<2>("Error"), Return(false)))
+      .RetiresOnSaturation();
+  manager_.OnSurroundingTextChanged(u"the abcd", 8, 8);
+
+  // Now moving cursor should retry hiding autocorrect range.
+  EXPECT_CALL(mock_suggestion_handler_,
+              SetAssistiveWindowProperties(_, hidden_properties, _));
+  manager_.OnSurroundingTextChanged(u"the abcd", 7, 7);
+}
+
+TEST_F(AutocorrectManagerTest,
+       MovingCursorInsideRangeRetriesPrevFailedUndoWindowHide) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u"the ", /*cursor_pos=*/4,
+                                    /*anchor_pos=*/4);
+
+  // Show undo window.
+  AssistiveWindowProperties shown_properties =
+      CreateVisibleUndoWindowProperties(u"teh", u"the");
+  EXPECT_CALL(mock_suggestion_handler_,
+              SetAssistiveWindowProperties(_, shown_properties, _));
+  manager_.OnSurroundingTextChanged(u"the ", /*cursor_pos=*/1,
+                                    /*anchor_pos=*/1);
+
+  // Make first try to hide the window fail.
+  AssistiveWindowProperties hidden_properties =
+      CreateHiddenUndoWindowProperties();
+  EXPECT_CALL(mock_suggestion_handler_,
+              SetAssistiveWindowProperties(_, hidden_properties, _))
+      .WillOnce(DoAll(SetArgPointee<2>("Error"), Return(false)));
+  manager_.OnSurroundingTextChanged(u"the ", /*cursor_pos=*/4,
+                                    /*anchor_pos=*/4);
+
+  {
+    ::testing::InSequence seq;
+
+    // Retries previously failed undo window hiding which now
+    // succeed.
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetAssistiveWindowProperties(_, hidden_properties, _));
+
+    // Showing new undo window.
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetAssistiveWindowProperties(_, shown_properties, _));
+  }
+
+  // Try hiding undo window before showing it again.
+  manager_.OnSurroundingTextChanged(u"the ", /*cursor_pos=*/1,
+                                    /*anchor_pos=*/1);
+}
+
+TEST_F(AutocorrectManagerTest,
+       ShowingNewUndoWindowStopsRetryingPrevFailedUndoWindowHide) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u"the ", /*cursor_pos=*/4,
+                                    /*anchor_pos=*/4);
+
+  // Show the undo window first time.
+  AssistiveWindowProperties shown_properties =
+      CreateVisibleUndoWindowProperties(u"teh", u"the");
+  EXPECT_CALL(mock_suggestion_handler_,
+              SetAssistiveWindowProperties(_, shown_properties, _));
+  manager_.OnSurroundingTextChanged(u"the ", /*cursor_pos=*/1,
+                                    /*anchor_pos=*/1);
+
+  // Make first two call to hide undo window to fail.
+  AssistiveWindowProperties hidden_properties =
+      CreateHiddenUndoWindowProperties();
+  EXPECT_CALL(mock_suggestion_handler_,
+              SetAssistiveWindowProperties(_, hidden_properties, _))
+      .Times(2)
+      .WillRepeatedly(DoAll(SetArgPointee<2>("Error"), Return(false)))
+      .RetiresOnSaturation();
+
+  // Handle a new range to allow triggering an undo window override.
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+
+  // Show a new undo window.
+  EXPECT_CALL(mock_suggestion_handler_,
+              SetAssistiveWindowProperties(_, shown_properties, _));
+  manager_.OnSurroundingTextChanged(u"the ", /*cursor_pos=*/1,
+                                    /*anchor_pos=*/1);
+
+  // No retry should be applied to hide undo window as it is overridden.
+  manager_.OnSurroundingTextChanged(u"the ", /*cursor_pos=*/2,
+                                    /*anchor_pos=*/2);
+}
+
+TEST_F(AutocorrectManagerTest, FocusChangeHidesUndoWindow) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u"the ", /*cursor_pos=*/4,
+                                    /*anchor_pos=*/4);
+
+  // Show a window.
+  AssistiveWindowProperties shown_properties =
+      CreateVisibleUndoWindowProperties(u"teh", u"the");
+  EXPECT_CALL(mock_suggestion_handler_,
+              SetAssistiveWindowProperties(_, shown_properties, _));
+  manager_.OnSurroundingTextChanged(u"the ", /*cursor_pos=*/1,
+                                    /*anchor_pos=*/1);
+
+  // OnFocus should try hiding the window.
+  AssistiveWindowProperties hidden_properties =
+      CreateHiddenUndoWindowProperties();
+  EXPECT_CALL(mock_suggestion_handler_,
+              SetAssistiveWindowProperties(_, hidden_properties, _));
+
+  manager_.OnFocus(1);
 }
 
 TEST_F(AutocorrectManagerTest,

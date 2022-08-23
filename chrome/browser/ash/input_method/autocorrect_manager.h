@@ -133,6 +133,10 @@ class AutocorrectManager {
   // InputContext returns stale autocorrect range.
   absl::optional<PendingAutocorrectState> pending_autocorrect_;
 
+  // Specifies if the last try for hiding undo window failed. This means
+  // undo window is possibly visible while it must not be.
+  bool error_on_hiding_undo_window_ = false;
+
   SuggestionHandlerInterface* suggestion_handler_;
   int context_id_ = 0;
 
