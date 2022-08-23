@@ -40,6 +40,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ui/base/tablet_state.h"
 #include "components/app_constants/constants.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -258,8 +259,12 @@ void AppServiceContextMenu::ExecuteCommand(int command_id, int event_flags) {
           command_id < ash::USE_LAUNCH_TYPE_COMMAND_END) {
         if (app_type_ == apps::AppType::kWeb &&
             command_id == ash::USE_LAUNCH_TYPE_TABBED_WINDOW) {
-          proxy_->SetWindowMode(app_id(),
-                                apps::mojom::WindowMode::kTabbedWindow);
+          if (base::FeatureList::IsEnabled(apps::kAppServiceWithoutMojom)) {
+            proxy_->SetWindowMode(app_id(), apps::WindowMode::kTabbedWindow);
+          } else {
+            proxy_->SetWindowMode(app_id(),
+                                  apps::mojom::WindowMode::kTabbedWindow);
+          }
           return;
         }
 
@@ -466,9 +471,13 @@ void AppServiceContextMenu::SetLaunchType(int command_id) {
       apps::WindowMode user_window_mode =
           ConvertUseLaunchTypeCommandToWindowMode(command_id);
       if (user_window_mode != apps::WindowMode::kUnknown) {
-        proxy_->SetWindowMode(
-            app_id(),
-            apps::ConvertWindowModeToMojomWindowMode(user_window_mode));
+        if (base::FeatureList::IsEnabled(apps::kAppServiceWithoutMojom)) {
+          proxy_->SetWindowMode(app_id(), user_window_mode);
+        } else {
+          proxy_->SetWindowMode(
+              app_id(),
+              apps::ConvertWindowModeToMojomWindowMode(user_window_mode));
+        }
       }
       return;
     }

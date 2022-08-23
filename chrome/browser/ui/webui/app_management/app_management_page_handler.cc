@@ -353,8 +353,14 @@ void AppManagementPageHandler::SetWindowMode(const std::string& app_id,
   if (provider->registrar().IsIsolated(app_id)) {
     NOTREACHED();
   } else {
-    apps::AppServiceProxyFactory::GetForProfile(profile_)->SetWindowMode(
-        app_id, apps::ConvertWindowModeToMojomWindowMode(window_mode));
+    if (base::FeatureList::IsEnabled(apps::kAppServiceWithoutMojom)) {
+      apps::AppServiceProxyFactory::GetForProfile(profile_)->SetWindowMode(
+          app_id, window_mode);
+
+    } else {
+      apps::AppServiceProxyFactory::GetForProfile(profile_)->SetWindowMode(
+          app_id, apps::ConvertWindowModeToMojomWindowMode(window_mode));
+    }
   }
 #endif
 }

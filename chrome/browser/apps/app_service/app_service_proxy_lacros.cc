@@ -500,6 +500,11 @@ void AppServiceProxyLacros::RemoveSupportedLinksPreference(
 }
 
 void AppServiceProxyLacros::SetWindowMode(const std::string& app_id,
+                                          WindowMode window_mode) {
+  NOTIMPLEMENTED();
+}
+
+void AppServiceProxyLacros::SetWindowMode(const std::string& app_id,
                                           apps::mojom::WindowMode window_mode) {
   NOTIMPLEMENTED();
 }

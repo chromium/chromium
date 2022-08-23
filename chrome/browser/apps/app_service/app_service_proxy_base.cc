@@ -904,6 +904,14 @@ void AppServiceProxyBase::RemoveSupportedLinksPreference(
 }
 
 void AppServiceProxyBase::SetWindowMode(const std::string& app_id,
+                                        WindowMode window_mode) {
+  auto* publisher = GetPublisher(app_registry_cache_.GetAppType(app_id));
+  if (publisher) {
+    publisher->SetWindowMode(app_id, window_mode);
+  }
+}
+
+void AppServiceProxyBase::SetWindowMode(const std::string& app_id,
                                         apps::mojom::WindowMode window_mode) {
   if (app_service_.is_connected()) {
     app_service_->SetWindowMode(
