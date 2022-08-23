@@ -14,6 +14,7 @@ source_set("webui") {
     "//ios/web/public/webui",
     "//ios/web/web_state:web_state_impl_header",
     "//mojo/public/cpp/system",
+    "//mojo/public/js:resources",
     "//net",
     "//ui/base",
     "//ui/resources",

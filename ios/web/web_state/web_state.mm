@@ -64,6 +64,11 @@ void WebState::InterfaceBinder::AddInterface(base::StringPiece interface_name,
   callbacks_.emplace(std::string(interface_name), std::move(callback));
 }
 
+void WebState::InterfaceBinder::RemoveInterface(
+    base::StringPiece interface_name) {
+  callbacks_.erase(std::string(interface_name));
+}
+
 void WebState::InterfaceBinder::BindInterface(
     mojo::GenericPendingReceiver receiver) {
   DCHECK(receiver.is_valid());

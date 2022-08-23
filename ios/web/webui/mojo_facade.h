@@ -79,7 +79,7 @@ class MojoFacade {
   // Writes a message to the message pipe endpoint given by handle. |args| is a
   // dictionary which must contain the following keys:
   //   - "handle" (a number representing MojoHandle, the endpoint to write to);
-  //   - "buffer" (a dictionary representing the message data; may be empty);
+  //   - "buffer" (a base-64 string representing the message data; may be empty);
   //   - "handles" (an array representing any handles to attach; handles are
   //     transferred and will no longer be valid; may be empty);
   // Returns MojoResult as a number.
