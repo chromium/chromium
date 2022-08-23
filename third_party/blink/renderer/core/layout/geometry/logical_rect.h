@@ -66,8 +66,8 @@ struct CORE_EXPORT LogicalRect {
     return other.offset == offset && other.size == size;
   }
 
-  LogicalRect operator+(const LogicalOffset& offset) const {
-    return {this->offset + offset, size};
+  LogicalRect operator+(const LogicalOffset& additional_offset) const {
+    return {offset + additional_offset, size};
   }
 
   void Unite(const LogicalRect&);
