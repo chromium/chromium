@@ -775,7 +775,7 @@ class BrowserView : public BrowserWindow,
   // aligned side panels.
   void RightAlignedSidePanelWasClosed();
 
-  bool ShouldShowWindowControlsOverlayToggle() const {
+  bool should_show_window_controls_overlay_toggle() const {
     return should_show_window_controls_overlay_toggle_;
   }
 

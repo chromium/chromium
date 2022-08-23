@@ -105,7 +105,7 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
     ConfigureWebAppToolbarButton(window_controls_overlay_toggle_button_,
                                  toolbar_button_provider_);
     window_controls_overlay_toggle_button_->SetVisible(
-        browser_view_->ShouldShowWindowControlsOverlayToggle());
+        browser_view_->should_show_window_controls_overlay_toggle());
   }
 
   if (app_controller->HasTitlebarContentSettings()) {
