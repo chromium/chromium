@@ -4,7 +4,7 @@
 
 #include "ash/system/time/calendar_utils.h"
 
-#include "ash/components/settings/timezone_settings.h"
+#include "ash/components/settings/scoped_timezone_settings.h"
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/system/time/date_helper.h"
 #include "ash/test/ash_test_base.h"
@@ -32,7 +32,7 @@ TEST_F(CalendarUtilsUnittest, GetTimeDifference) {
   ASSERT_TRUE(base::Time::FromString("1 Aug 2021 10:00 GMT", &date));
 
   // Sets the timezone to "America/Los_Angeles";
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"PST");
+  ash::system::ScopedTimezoneSettings timezone_settings(u"PST");
 
   // Before daylight saving the time difference is 7 hours.
   EXPECT_EQ(base::Minutes(-420), calendar_utils::GetTimeDifference(date));
@@ -45,7 +45,7 @@ TEST_F(CalendarUtilsUnittest, GetTimeDifference) {
   EXPECT_EQ(base::Minutes(-480), calendar_utils::GetTimeDifference(date2));
 
   // Set the timezone to GMT.
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
+  timezone_settings.SetTimezoneFromID(u"GMT");
 
   EXPECT_EQ(base::Minutes(0), calendar_utils::GetTimeDifference(date));
   EXPECT_EQ(base::Minutes(0), calendar_utils::GetTimeDifference(date2));
@@ -55,7 +55,7 @@ TEST_F(CalendarUtilsUnittest, DateFormatter) {
   // Create a date: Aug 1, 2021.
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("1 Aug 2021 10:00 GMT", &date));
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
+  ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
 
   // Test DateFormatter to return date in "MMMMdyyyy" format.
   EXPECT_EQ(u"August 1, 2021", calendar_utils::GetMonthDayYear(date));
@@ -80,7 +80,7 @@ TEST_F(CalendarUtilsUnittest, DateFormatter) {
 }
 
 TEST_F(CalendarUtilsUnittest, DateFormatterClockTimes) {
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
+  ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
 
   // Using "en" locale as other languages format their hours differently.
   SetDefaultLocale("en");
@@ -124,7 +124,7 @@ TEST_F(CalendarUtilsUnittest, DateFormatterClockTimes) {
 }
 
 TEST_F(CalendarUtilsUnittest, HoursAndMinutesInDifferentLocales) {
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
+  ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
 
   // Create AM time: 9:05 GMT.
   base::Time am_time;
@@ -178,7 +178,7 @@ TEST_F(CalendarUtilsUnittest, HoursAndMinutesInDifferentLocales) {
 }
 
 TEST_F(CalendarUtilsUnittest, LocalesWithUniqueNumerals) {
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
+  ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
 
   // Create time: 23:03 GMT.
   base::Time time;
@@ -212,7 +212,7 @@ TEST_F(CalendarUtilsUnittest, IntervalFormatter) {
   ASSERT_TRUE(base::Time::FromString("1 Aug 2021 11:30 GMT", &date2));
   ASSERT_TRUE(base::Time::FromString("1 Aug 2021 15:49 GMT", &date3));
 
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
+  ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
 
   EXPECT_EQ(u"10:00 – 11:30 AM",
             calendar_utils::FormatTwelveHourClockTimeInterval(date1, date2));
@@ -233,7 +233,7 @@ TEST_F(CalendarUtilsUnittest, TimezoneChanged) {
   // Create a date: Aug,1st 2021.
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("1 Aug 2021 3:00 GMT", &date));
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
+  ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
 
   // Test DateFormatter to return the time zone.
   EXPECT_EQ(u"Greenwich Mean Time", calendar_utils::GetTimeZone(date));
@@ -242,7 +242,7 @@ TEST_F(CalendarUtilsUnittest, TimezoneChanged) {
   EXPECT_EQ(u"August 1, 2021", calendar_utils::GetMonthDayYear(date));
 
   // Set timezone to Pacific Daylight Time (date changes to previous day).
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"PST");
+  timezone_settings.SetTimezoneFromID(u"PST");
 
   // Test DateFormatter to return the time zone.
   EXPECT_EQ(u"Pacific Daylight Time", calendar_utils::GetTimeZone(date));
@@ -327,7 +327,7 @@ TEST_F(CalendarUtilsUnittest, GetFetchStartEndTimes) {
   std::pair<base::Time, base::Time> fetch;
 
   // Event and timezone are both GMT, no difference.
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
+  ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
   ASSERT_TRUE(base::Time::FromString("01 Apr 2022 00:00 GMT", &date));
   ASSERT_TRUE(base::Time::FromString("01 Apr 2022 00:00 GMT", &expected_start));
   ASSERT_TRUE(base::Time::FromString("01 May 2022 00:00 GMT", &expected_end));
@@ -336,8 +336,7 @@ TEST_F(CalendarUtilsUnittest, GetFetchStartEndTimes) {
   EXPECT_EQ(fetch.second, expected_end);
 
   // Timezone "America/Los_Angeles" is GMT - 7h.
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(
-      u"America/Los_Angeles");
+  timezone_settings.SetTimezoneFromID(u"America/Los_Angeles");
   ASSERT_TRUE(base::Time::FromString("01 Apr 2022 00:00 GMT", &date));
   ASSERT_TRUE(base::Time::FromString("01 Apr 2022 07:00 GMT", &expected_start));
   ASSERT_TRUE(base::Time::FromString("01 May 2022 07:00 GMT", &expected_end));
@@ -355,8 +354,7 @@ TEST_F(CalendarUtilsUnittest, GetFetchStartEndTimes) {
   EXPECT_EQ(fetch.second, expected_end);
 
   // Timezone "Asia/Bangkok" is GMT + 7h.
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(
-      u"Asia/Bangkok");
+  timezone_settings.SetTimezoneFromID(u"Asia/Bangkok");
   ASSERT_TRUE(base::Time::FromString("01 Apr 2022 00:00 GMT", &date));
   ASSERT_TRUE(base::Time::FromString("31 Mar 2022 17:00 GMT", &expected_start));
   ASSERT_TRUE(base::Time::FromString("30 Apr 2022 17:00 GMT", &expected_end));

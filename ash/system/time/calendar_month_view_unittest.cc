@@ -6,9 +6,7 @@
 
 #include <memory>
 
-#include "ash/components/settings/timezone_settings.h"
-#include "ash/shell.h"
-#include "ash/system/model/system_tray_model.h"
+#include "ash/components/settings/scoped_timezone_settings.h"
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
@@ -69,12 +67,11 @@ class CalendarMonthViewTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
-  void CreateMonthView(base::Time date, const std::u16string& timezone) {
+  void CreateMonthView(base::Time date) {
     AccountId user_account = AccountId::FromUserEmail("user@test");
     GetSessionControllerClient()->SwitchActiveUser(user_account);
     calendar_month_view_.reset();
     controller_.reset();
-    ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(timezone);
     controller_ = std::make_unique<CalendarViewController>();
     controller_->UpdateMonth(date);
     calendar_month_view_ = std::make_unique<CalendarMonthView>(
@@ -139,7 +136,8 @@ TEST_F(CalendarMonthViewTest, Basics) {
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("1 Aug 2021 10:00 GMT", &date));
 
-  CreateMonthView(date, u"America/Los_Angeles");
+  ash::system::ScopedTimezoneSettings timezone_settings(u"America/Los_Angeles");
+  CreateMonthView(date);
 
   // Randomly checks some dates in this month view.
   EXPECT_EQ(
@@ -161,7 +159,7 @@ TEST_F(CalendarMonthViewTest, Basics) {
   base::Time jun_date;
   ASSERT_TRUE(base::Time::FromString("1 Jun 2021 10:00 GMT", &jun_date));
 
-  CreateMonthView(jun_date, u"America/Los_Angeles");
+  CreateMonthView(jun_date);
 
   // Randomly checks some dates in this month view.
   EXPECT_EQ(
@@ -189,7 +187,8 @@ TEST_F(CalendarMonthViewTest, AzoreSummerTime) {
   ASSERT_TRUE(base::Time::FromString("1 Mar 2022 10:00 GMT", &date));
 
   // Sets the timezone to "Azore Summer Time";
-  CreateMonthView(date, u"Atlantic/Azores");
+  ash::system::ScopedTimezoneSettings timezone_settings(u"Atlantic/Azores");
+  CreateMonthView(date);
 
   base::Time date_without_DST;
   ASSERT_TRUE(
@@ -233,7 +232,9 @@ TEST_F(CalendarMonthViewTest, AllTimeZone) {
 
   for (auto* timezone : kAllTimeZones) {
     // Creates a month view based on the current timezone.
-    CreateMonthView(date, base::UTF8ToUTF16(timezone));
+    ash::system::ScopedTimezoneSettings timezone_settings(
+        base::UTF8ToUTF16(timezone));
+    CreateMonthView(date);
 
     // Checks some dates in the first row and last row of this month view.
     EXPECT_EQ(u"27",
@@ -266,7 +267,8 @@ TEST_F(CalendarMonthViewTest, TodayNotInMonth) {
   base::subtle::ScopedTimeClockOverrides time_override(
       &CalendarMonthViewTest::FakeTimeNow, nullptr, nullptr);
 
-  CreateMonthView(date, u"America/Los_Angeles");
+  ash::system::ScopedTimezoneSettings timezone_settings(u"America/Los_Angeles");
+  CreateMonthView(date);
 
   // Today's row position is not updated.
   EXPECT_EQ(0, controller()->GetTodayRowTopHeight());
@@ -293,7 +295,8 @@ TEST_F(CalendarMonthViewTest, TodayInMonth) {
       &CalendarMonthViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
       /*thread_ticks_override=*/nullptr);
 
-  CreateMonthView(date, u"America/Los_Angeles");
+  ash::system::ScopedTimezoneSettings timezone_settings(u"America/Los_Angeles");
+  CreateMonthView(date);
 
   // Today's row position is updated because today is in this month.
   int top = controller()->GetTodayRowTopHeight();
@@ -318,7 +321,8 @@ TEST_F(CalendarMonthViewTest, UpdateEvents) {
       &CalendarMonthViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
       /*thread_ticks_override=*/nullptr);
 
-  CreateMonthView(date, u"America/Los_Angeles");
+  ash::system::ScopedTimezoneSettings timezone_settings(u"America/Los_Angeles");
+  CreateMonthView(date);
   // Used to fetch events and notify observers.
   base::Time month_start_midnight = calendar_utils::GetStartOfMonthUTC(today);
 
@@ -407,7 +411,8 @@ TEST_F(CalendarMonthViewTest, TimeZone) {
   base::Time month_start_midnight = calendar_utils::GetStartOfMonthUTC(today);
 
   // Sets the timezone to "America/Los_Angeles";
-  CreateMonthView(today, u"America/Los_Angeles");
+  ash::system::ScopedTimezoneSettings timezone_settings(u"America/Los_Angeles");
+  CreateMonthView(today);
   TriggerPaint();
   MockFetchEvents(month_start_midnight);
   NotifyObservers(month_start_midnight);
@@ -434,9 +439,6 @@ TEST_F(CalendarMonthViewTest, TimeZone) {
   EXPECT_EQ(u"Monday, August 9, 2021, 1 event",
             static_cast<CalendarDateCellView*>(month_view()->children()[8])
                 ->GetTooltipText());
-
-  // Set the timezone back to GMT.
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
 }
 
 TEST_F(CalendarMonthViewTest, InactiveUserSession) {
@@ -448,7 +450,8 @@ TEST_F(CalendarMonthViewTest, InactiveUserSession) {
       &CalendarMonthViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
       /*thread_ticks_override=*/nullptr);
 
-  CreateMonthView(today, u"America/Los_Angeles");
+  ash::system::ScopedTimezoneSettings timezone_settings(u"America/Los_Angeles");
+  CreateMonthView(today);
   // Used to fetch events and notify observers.
   base::Time month_start_midnight = calendar_utils::GetStartOfMonthUTC(today);
 

@@ -20,6 +20,8 @@ component("settings") {
     "cros_settings_names.h",
     "cros_settings_provider.cc",
     "cros_settings_provider.h",
+    "scoped_timezone_settings.cc",
+    "scoped_timezone_settings.h",
     "system_settings_provider.cc",
     "system_settings_provider.h",
     "timezone_settings.cc",
@@ -40,5 +42,8 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/icu",
   ]
-  sources = [ "timezone_settings_unittest.cc" ]
+  sources = [
+    "scoped_timezone_settings_unittest.cc",
+    "timezone_settings_unittest.cc",
+  ]
 }

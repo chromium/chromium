@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/file_manager/file_manager_string_util.h"
 
-#include "ash/components/settings/timezone_settings.h"
+#include "ash/components/settings/scoped_timezone_settings.h"
 #include "ash/system/time/date_helper.h"
 #include "base/i18n/rtl.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
@@ -21,11 +21,6 @@ class FileManagerStringUtilTest : public ChromeAshTestBase {
   void SetDefaultLocale(const std::string& locale) {
     base::i18n::SetICUDefaultLocale(locale);
     ash::DateHelper::GetInstance()->ResetForTesting();
-  }
-
-  void SetTimezone(const std::u16string& timezone_id) {
-    ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(
-        timezone_id);
   }
 };
 
@@ -56,7 +51,7 @@ TEST_F(FileManagerStringUtilTest, GetLocaleBasedWeekStart_Timezone) {
 
   SetDefaultLocale("en_AU");
   for (const auto& timezone_id : kTimezoneIds) {
-    SetTimezone(timezone_id);
+    ash::system::ScopedTimezoneSettings timezone_settings(timezone_id);
     // Regardless the timezone, week always starts with Monday for AU locale.
     EXPECT_EQ(GetLocaleBasedWeekStart(), 1);
   }

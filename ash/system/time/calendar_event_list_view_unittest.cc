@@ -4,22 +4,19 @@
 
 #include "ash/system/time/calendar_event_list_view.h"
 
-#include "ash/components/settings/timezone_settings.h"
+#include "ash/components/settings/scoped_timezone_settings.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_event_list_item_view.h"
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/test/ash_test_base.h"
-#include "base/metrics/histogram.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "google_apis/common/api_error_codes.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/events/event.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 
@@ -202,7 +199,7 @@ TEST_F(CalendarViewEventListViewTest, LaunchItem) {
 }
 
 TEST_F(CalendarViewEventListViewTest, CheckTimeFormat) {
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
+  ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
 
   // Date of first day which holds a normal event and a multi-day event.
   base::Time date;
@@ -241,8 +238,7 @@ TEST_F(CalendarViewEventListViewTest, CheckTimeFormat) {
 
 TEST_F(CalendarViewEventListViewTest, RefreshEvents) {
   // Sets the timezone to "America/Los_Angeles".
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(
-      u"America/Los_Angeles");
+  ash::system::ScopedTimezoneSettings timezone_settings(u"America/Los_Angeles");
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("18 Nov 2021 10:00 GMT", &date));
   CreateEventListView(date);

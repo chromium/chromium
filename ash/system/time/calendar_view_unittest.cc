@@ -4,11 +4,10 @@
 
 #include "ash/system/time/calendar_view.h"
 
-#include "ash/components/settings/timezone_settings.h"
+#include "ash/components/settings/scoped_timezone_settings.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/close_button.h"
 #include "ash/style/icon_button.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/message_center/unified_message_center_view.h"
@@ -33,7 +32,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
-#include "ui/events/event_utils.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/message_center/message_center.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
@@ -1383,8 +1382,7 @@ TEST_F(CalendarViewAnimationTest, HeaderAnimation) {
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::ACTIVE);
   // Sets the timezone to "America/Los_Angeles".
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(
-      u"America/Los_Angeles");
+  ash::system::ScopedTimezoneSettings timezone_settings(u"America/Los_Angeles");
 
   CreateCalendarView();
   // Gives it a duration to let the animation finish and pass the cool down
@@ -1685,8 +1683,7 @@ TEST_F(CalendarViewAnimationTest, LoadingBarVisibilityForOneMonthOnScreen) {
   ASSERT_TRUE(base::Time::FromString("04 May 2022 15:00 GMT", &date));
 
   // Sets the timezone to "America/Los_Angeles".
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(
-      u"America/Los_Angeles");
+  ash::system::ScopedTimezoneSettings timezone_settings(u"America/Los_Angeles");
 
   // Tests when the `CalendarView` size is small to hold only one month on
   // screen.
@@ -1726,8 +1723,7 @@ TEST_F(CalendarViewAnimationTest, LoadingBarVisibilityForTwoMonthsOnScreen) {
   ASSERT_TRUE(base::Time::FromString("04 May 2022 15:00 GMT", &date));
 
   // Sets the timezone to "America/Los_Angeles".
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(
-      u"America/Los_Angeles");
+  ash::system::ScopedTimezoneSettings timezone_settings(u"America/Los_Angeles");
 
   // Tests when the `CalendarView` has two months on screen.
   UpdateDisplay("800x600");
@@ -1776,8 +1772,7 @@ TEST_F(CalendarViewAnimationTest, LoadingBarVisibilityForThreeMonthsOnScreen) {
   ASSERT_TRUE(base::Time::FromString("04 May 2022 15:00 GMT", &date));
 
   // Sets the timezone to "America/Los_Angeles".
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(
-      u"America/Los_Angeles");
+  ash::system::ScopedTimezoneSettings timezone_settings(u"America/Los_Angeles");
 
   // Tests when the `CalendarView` has three months on screen.
   UpdateDisplay("800x1000");

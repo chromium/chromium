@@ -8,15 +8,11 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/settings/timezone_settings.h"
-#include "ash/system/time/calendar_unittest_utils.h"
+#include "ash/components/settings/scoped_timezone_settings.h"
 #include "ash/system/time/calendar_utils.h"
-#include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
-#include "google_apis/calendar/calendar_api_response_types.h"
-#include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 
@@ -104,7 +100,7 @@ TEST_F(CalendarViewControllerUnittest, GetDatesWithDaylightSaving) {
   auto controller = std::make_unique<CalendarViewController>();
 
   // Set the timezone to GMT.
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
+  ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
 
   // Set current month to 4/1/2022 00:00 PST, which is 4/1/2022 07:00 GMT.
   base::Time current_month_date;
@@ -126,7 +122,7 @@ TEST_F(CalendarViewControllerUnittest, GetDatesWithDaylightSaving) {
 
   // Set timezone to Pacific Daylight Time. Mar 13th is the daylight saving
   // starts day.
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"PST");
+  timezone_settings.SetTimezoneFromID(u"PST");
   previous_first_day = controller->GetPreviousMonthFirstDayUTC(1);
   previous_month_name = controller->GetPreviousMonthName();
   next_first_day = controller->GetNextMonthFirstDayUTC(1);
@@ -158,7 +154,7 @@ TEST_F(CalendarViewControllerUnittest, GetDatesWithDaylightSaving) {
   EXPECT_EQ(u"April", next_month_name);
 
   // Set the timezone back to GMT.
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
+  timezone_settings.SetTimezoneFromID(u"GMT");
   previous_first_day = controller->GetPreviousMonthFirstDayUTC(1);
   previous_month_name = controller->GetPreviousMonthName();
   next_first_day = controller->GetNextMonthFirstDayUTC(1);
@@ -191,7 +187,7 @@ TEST_F(CalendarViewControllerUnittest, GetDatesWithDaylightSaving) {
 
   // Set timezone to Pacific Daylight Time. Nov 6th is the daylight saving
   // ends day.
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"PST");
+  timezone_settings.SetTimezoneFromID(u"PST");
   previous_first_day = controller->GetPreviousMonthFirstDayUTC(1);
   previous_month_name = controller->GetPreviousMonthName();
   next_first_day = controller->GetNextMonthFirstDayUTC(1);
@@ -225,7 +221,7 @@ TEST_F(CalendarViewControllerUnittest, GetDatesWithDaylightSaving) {
   EXPECT_EQ(u"November", next_month_name);
 
   // Set the timezone back to GMT.
-  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
+  timezone_settings.SetTimezoneFromID(u"GMT");
   previous_first_day = controller->GetPreviousMonthFirstDayUTC(1);
   previous_month_name = controller->GetPreviousMonthName();
   next_first_day = controller->GetNextMonthFirstDayUTC(1);
