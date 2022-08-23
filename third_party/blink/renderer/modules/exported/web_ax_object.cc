@@ -171,11 +171,7 @@ bool WebAXObject::MaybeUpdateLayoutAndCheckValidity() {
     return false;
 
   // Doing a layout can cause this object to be invalid, so check again.
-  if (!CheckValidity())
-    return false;
-
-  private_->PreSerializationConsistencyCheck();
-  return true;
+  return CheckValidity();
 }
 
 // Returns true if the object is valid and can be accessed.
