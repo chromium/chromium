@@ -45,6 +45,16 @@ ProtocolPageLoadMetricsObserver::OnFencedFramesStart(
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+ProtocolPageLoadMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // This observer is interested in comparing performance among several
+  // protocols. Including prerendering cases can be another factor to
+  // differentiate performance, and it will be a noise for the original goal.
+  return STOP_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 ProtocolPageLoadMetricsObserver::OnCommit(
     content::NavigationHandle* navigation_handle) {
   protocol_ = page_load_metrics::GetNetworkProtocol(
