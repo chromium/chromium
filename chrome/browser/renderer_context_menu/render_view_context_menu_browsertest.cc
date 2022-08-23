@@ -1827,8 +1827,15 @@ class SearchByRegionBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<ContextMenuNotificationObserver> menu_observer_;
 };
 
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_LensRegionSearchWithValidRegionNewTab \
+  DISABLED_LensRegionSearchWithValidRegionNewTab
+#else
+#define MAYBE_LensRegionSearchWithValidRegionNewTab \
+  LensRegionSearchWithValidRegionNewTab
+#endif
 IN_PROC_BROWSER_TEST_F(SearchByRegionBrowserTest,
-                       LensRegionSearchWithValidRegionNewTab) {
+                       MAYBE_LensRegionSearchWithValidRegionNewTab) {
   SetupAndLoadPage("/empty.html");
   ui_test_utils::AllBrowserTabAddedWaiter add_tab;
 
@@ -1960,8 +1967,15 @@ class SearchByRegionWithSidePanelBrowserTest
   base::RepeatingClosure quit_closure_;
 };
 
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_LensRegionSearchWithValidRegionSidePanel \
+  DISABLED_LensRegionSearchWithValidRegionSidePanel
+#else
+#define MAYBE_LensRegionSearchWithValidRegionSidePanel \
+  LensRegionSearchWithValidRegionSidePanel
+#endif
 IN_PROC_BROWSER_TEST_F(SearchByRegionWithSidePanelBrowserTest,
-                       LensRegionSearchWithValidRegionSidePanel) {
+                       MAYBE_LensRegionSearchWithValidRegionSidePanel) {
   SetupAndLoadPage("/empty.html");
   // We need a base::RunLoop to ensure that our test does not finish until the
   // side panel has opened and we have verified the URL.
