@@ -1968,9 +1968,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.PolicyUpdatePeriod.Device" units="days"
-    expires_after="2022-10-01">
+    expires_after="2023-10-01">
   <owner>rbock@google.com</owner>
   <owner>igorcov@chromium.org</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Time since last device policy fetch. Emitted when policies are loaded.
   </summary>
@@ -1987,9 +1988,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.PolicyUpdatePeriod.User" units="days"
-    expires_after="2022-10-01">
+    expires_after="2023-10-01">
   <owner>rbock@google.com</owner>
   <owner>igorcov@chromium.org</owner>
+  <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Time since last user policy fetch. Emitted when policies are loaded.
   </summary>
