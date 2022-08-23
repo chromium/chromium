@@ -720,7 +720,7 @@
     {
       // https://drafts.csswg.org/css-contain-3/#style-container
       name: "CSSStyleQueries",
-      status: "test"
+      status: "experimental"
     },
     // Support for CSS Toggles, https://tabatkins.github.io/css-toggle/
     {
