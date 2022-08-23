@@ -15,6 +15,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
 
+class DevToolsBrowserContextManager;
 class Profile;
 class ProfileImpl;
 
@@ -39,9 +40,20 @@ class ProfileDestroyer : public content::RenderProcessHostObserver {
   friend class ProfileImpl;
   friend class base::RefCounted<ProfileDestroyer>;
 
+  // For custom timeout, see DestroyProfileWhenAppropriateWithTimeout.
+  friend class DevToolsBrowserContextManager;
+
   using HostSet = std::set<content::RenderProcessHost*>;
 
-  ProfileDestroyer(Profile* const profile, const HostSet& hosts);
+  // Same as DestroyProfileWhenAppropriate, but configures how long to wait
+  // for render process hosts to be destroyed. Intended for testing/automation
+  // scenarios, where default timeout is too short.
+  static void DestroyProfileWhenAppropriateWithTimeout(Profile* const profile,
+                                                       base::TimeDelta timeout);
+
+  ProfileDestroyer(Profile* const profile,
+                   const HostSet& hosts,
+                   base::TimeDelta timeout);
   ~ProfileDestroyer() override;
 
   // content::RenderProcessHostObserver override.
@@ -89,6 +101,9 @@ class ProfileDestroyer : public content::RenderProcessHostObserver {
   // The profile being destroyed. If it is set to NULL, it is a signal from
   // another instance of ProfileDestroyer that this instance is canceled.
   Profile* profile_;
+
+  // Force-destruction timeout.
+  const base::TimeDelta timeout_;
 
   // The initial value of |profile_| stored as uint64_t for traces. It is useful
   // for use in the destructor, because at the end, |profile_| is nullptr.

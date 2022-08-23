@@ -14,6 +14,12 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 
+namespace {
+
+const int64_t kDestroyProfileTimeoutSeconds = 60;
+
+}  // namespace
+
 DevToolsBrowserContextManager::DevToolsBrowserContextManager() {}
 
 DevToolsBrowserContextManager::~DevToolsBrowserContextManager() = default;
@@ -88,7 +94,8 @@ void DevToolsBrowserContextManager::DisposeBrowserContext(
   if (!has_opened_browser) {
     otr_profiles_.erase(it);
     profile->RemoveObserver(this);
-    ProfileDestroyer::DestroyProfileWhenAppropriate(profile);
+    ProfileDestroyer::DestroyProfileWhenAppropriateWithTimeout(
+        profile, base::Seconds(kDestroyProfileTimeoutSeconds));
     std::move(callback).Run(true, "");
     return;
   }
@@ -134,8 +141,10 @@ void DevToolsBrowserContextManager::OnBrowserRemoved(Browser* browser) {
   // during the browser tear-down process.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
-      base::BindOnce(&ProfileDestroyer::DestroyProfileWhenAppropriate,
-                     base::Unretained(otr_profile)));
+      base::BindOnce(
+          &ProfileDestroyer::DestroyProfileWhenAppropriateWithTimeout,
+          base::Unretained(otr_profile),
+          base::Seconds(kDestroyProfileTimeoutSeconds)));
 
   std::move(pending_disposal->second).Run(true, "");
   pending_context_disposals_.erase(pending_disposal);
