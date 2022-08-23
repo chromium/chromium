@@ -3443,6 +3443,11 @@
     "expiry_milestone": 96
   },
   {
+    "name": "feed-video-inline-playback",
+    "owners": [ "//chrome/android/feed/OWNERS", "jianli@chromium.org" ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "file-handling-api",
     "owners": [ "dmurph", "mgiuca", "cmp" ],
     "expiry_milestone": 110

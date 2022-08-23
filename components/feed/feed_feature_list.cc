@@ -152,5 +152,7 @@ const base::Feature kFeedNoViewCache{"FeedNoViewCache",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kFeedReplaceAll{"FeedReplaceAll",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kFeedVideoInlinePlayback{"FeedVideoInlinePlayback",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace feed

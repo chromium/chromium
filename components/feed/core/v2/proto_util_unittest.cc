@@ -313,5 +313,19 @@ TEST(ProtoUtilTest, TabGroupsEnabledForBoth) {
               Contains(feedwire::Capability::OPEN_IN_TAB));
 }
 
+TEST(ProtoUtilTest, InlinePlayback) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kFeedVideoInlinePlayback}, {});
+  feedwire::FeedRequest request =
+      CreateFeedQueryRefreshRequest(kForYouStream,
+                                    feedwire::FeedQuery::MANUAL_REFRESH,
+                                    /*request_metadata=*/{},
+                                    /*consistency_token=*/std::string())
+          .feed_request();
+
+  ASSERT_THAT(request.client_capability(),
+              Contains(feedwire::Capability::OPEN_VIDEO_COMMAND));
+}
+
 }  // namespace
 }  // namespace feed
