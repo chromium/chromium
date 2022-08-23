@@ -53,14 +53,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
+                android:gravity="center"
                 android:textAppearance="@style/TextAppearance.Headline.Primary"
                 app:leading="@dimen/headline_size_leading" />
 
-            <TextView
+            <org.chromium.ui.widget.TextViewWithLeading
                 android:id="@+id/sync_consent_subtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
+                android:gravity="center"
                 android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
                 app:leading="@dimen/text_size_medium_leading" />
 
@@ -83,9 +85,10 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/sync_data_type_row_space"
                         android:drawablePadding="@dimen/sync_data_type_drawable_padding"
+                        android:gravity="center"
+                        android:textAppearance="@style/TextAppearance.TextMedium.Primary"
                         app:drawableStartCompat="@drawable/btn_star"
-                        app:drawableTint="@macro/default_control_color_active"
-                        android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+                        app:drawableTint="@macro/default_control_color_active" />
 
                     <TextView
                         android:id="@+id/autofill_row"
@@ -93,16 +96,18 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/sync_data_type_row_space"
                         android:drawablePadding="@dimen/sync_data_type_drawable_padding"
-                        app:drawableStartCompat="@drawable/autofill_key"
-                        android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+                        android:gravity="center"
+                        android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+                        app:drawableStartCompat="@drawable/autofill_key" />
 
                     <TextView
                         android:id="@+id/history_row"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:drawablePadding="@dimen/sync_data_type_drawable_padding"
-                        app:drawableStartCompat="@drawable/devices_icon"
-                        android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+                        android:gravity="center"
+                        android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+                        app:drawableStartCompat="@drawable/devices_icon" />
                 </LinearLayout>
             </org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow>
 
