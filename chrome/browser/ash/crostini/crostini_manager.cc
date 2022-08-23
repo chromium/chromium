@@ -2230,16 +2230,6 @@ void CrostiniManager::RemoveCrostiniContainerPropertiesObserver(
   crostini_container_properties_observers_.RemoveObserver(observer);
 }
 
-void CrostiniManager::AddContainerStartedObserver(
-    ContainerStartedObserver* observer) {
-  container_started_observers_.AddObserver(observer);
-}
-
-void CrostiniManager::RemoveContainerStartedObserver(
-    ContainerStartedObserver* observer) {
-  container_started_observers_.RemoveObserver(observer);
-}
-
 void CrostiniManager::AddContainerShutdownObserver(
     ContainerShutdownObserver* observer) {
   container_shutdown_observers_.AddObserver(observer);
@@ -2713,9 +2703,6 @@ void CrostiniManager::OnContainerStarted(
             weak_ptr_factory_.GetWeakPtr(), std::move(profile_),
             guest_os::GuestId(kCrostiniDefaultVmType, signal.vm_name(),
                               signal.container_name())));
-  }
-  for (auto& observer : container_started_observers_) {
-    observer.OnContainerStarted(container_id);
   }
 }
 

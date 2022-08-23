@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_port_forwarder.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -34,7 +35,7 @@ class CrostiniHandler : public ::settings::SettingsPageUIHandler,
                         public crostini::CrostiniExportImport::Observer,
                         public crostini::CrostiniContainerPropertiesObserver,
                         public crostini::CrostiniPortForwarder::Observer,
-                        public crostini::ContainerStartedObserver,
+                        public guest_os::ContainerStartedObserver,
                         public crostini::ContainerShutdownObserver {
  public:
   explicit CrostiniHandler(Profile* profile);
@@ -122,7 +123,7 @@ class CrostiniHandler : public ::settings::SettingsPageUIHandler,
   void HandleGetCrostiniActivePorts(const base::Value::List& args);
   // Checks if Crostini is running.
   void HandleCheckCrostiniIsRunning(const base::Value::List& args);
-  // crostini::ContainerStartedObserver
+  // guest_os::ContainerStartedObserver
   void OnContainerStarted(const guest_os::GuestId& container_id) override;
   // crostini::ContainerShutdownObserver
   void OnContainerShutdown(const guest_os::GuestId& container_id) override;

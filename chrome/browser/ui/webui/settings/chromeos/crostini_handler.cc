@@ -187,10 +187,11 @@ void CrostiniHandler::OnJavascriptAllowed() {
   auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile_);
   crostini_manager->AddCrostiniDialogStatusObserver(this);
   crostini_manager->AddCrostiniContainerPropertiesObserver(this);
-  crostini_manager->AddContainerStartedObserver(this);
   crostini_manager->AddContainerShutdownObserver(this);
   crostini::CrostiniExportImport::GetForProfile(profile_)->AddObserver(this);
   crostini::CrostiniPortForwarder::GetForProfile(profile_)->AddObserver(this);
+  guest_os::GuestOsSessionTracker::GetForProfile(profile_)
+      ->AddContainerStartedObserver(this);
 
   // Observe ADB sideloading device policy and react to its changes
   adb_sideloading_device_policy_subscription_ =
@@ -218,11 +219,12 @@ void CrostiniHandler::OnJavascriptDisallowed() {
   auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile_);
   crostini_manager->RemoveCrostiniDialogStatusObserver(this);
   crostini_manager->RemoveCrostiniContainerPropertiesObserver(this);
-  crostini_manager->RemoveContainerStartedObserver(this);
   crostini_manager->RemoveContainerShutdownObserver(this);
   crostini::CrostiniExportImport::GetForProfile(profile_)->RemoveObserver(this);
   crostini::CrostiniPortForwarder::GetForProfile(profile_)->RemoveObserver(
       this);
+  guest_os::GuestOsSessionTracker::GetForProfile(profile_)
+      ->RemoveContainerStartedObserver(this);
 
   adb_sideloading_device_policy_subscription_ = {};
   pref_change_registrar_.RemoveAll();

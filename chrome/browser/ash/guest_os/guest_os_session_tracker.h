@@ -37,6 +37,12 @@ struct GuestInfo {
   uint32_t sftp_vsock_port;
 };
 
+class ContainerStartedObserver : public base::CheckedObserver {
+ public:
+  // Called when the container has started.
+  virtual void OnContainerStarted(const guest_os::GuestId& container_id) = 0;
+};
+
 class GuestOsSessionTracker : protected ash::ConciergeClient::VmObserver,
                               protected ash::CiceroneClient::Observer,
                               public KeyedService {
@@ -71,6 +77,9 @@ class GuestOsSessionTracker : protected ash::ConciergeClient::VmObserver,
   bool IsRunning(const GuestId& id);
 
   void AddGuestForTesting(const GuestId& id, const GuestInfo& info);
+
+  void AddContainerStartedObserver(ContainerStartedObserver* observer);
+  void RemoveContainerStartedObserver(ContainerStartedObserver* observer);
 
  protected:
   // ash::ConciergeClient::VmObserver overrides.
@@ -108,6 +117,8 @@ class GuestOsSessionTracker : protected ash::ConciergeClient::VmObserver,
       container_start_callbacks_;
   base::flat_map<GuestId, std::unique_ptr<base::OnceCallbackList<void()>>>
       container_shutdown_callbacks_;
+
+  base::ObserverList<ContainerStartedObserver> container_started_observers_;
 
   base::WeakPtrFactory<GuestOsSessionTracker> weak_ptr_factory_{this};
 };

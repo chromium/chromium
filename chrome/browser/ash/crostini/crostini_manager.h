@@ -129,12 +129,6 @@ class CrostiniContainerPropertiesObserver : public base::CheckedObserver {
       bool can_upgrade) = 0;
 };
 
-class ContainerStartedObserver : public base::CheckedObserver {
- public:
-  // Called when the container has started.
-  virtual void OnContainerStarted(const guest_os::GuestId& container_id) = 0;
-};
-
 class ContainerShutdownObserver : public base::CheckedObserver {
  public:
   // Called when the container has shutdown.
@@ -588,8 +582,6 @@ class CrostiniManager : public KeyedService,
   void RemoveCrostiniContainerPropertiesObserver(
       CrostiniContainerPropertiesObserver* observer);
 
-  void AddContainerStartedObserver(ContainerStartedObserver* observer);
-  void RemoveContainerStartedObserver(ContainerStartedObserver* observer);
   void AddContainerShutdownObserver(ContainerShutdownObserver* observer);
   void RemoveContainerShutdownObserver(ContainerShutdownObserver* observer);
 
@@ -895,7 +887,6 @@ class CrostiniManager : public KeyedService,
   base::ObserverList<CrostiniContainerPropertiesObserver>
       crostini_container_properties_observers_;
 
-  base::ObserverList<ContainerStartedObserver> container_started_observers_;
   base::ObserverList<ContainerShutdownObserver> container_shutdown_observers_;
 
   // Contains the types of crostini dialogs currently open. It is generally
