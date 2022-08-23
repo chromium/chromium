@@ -173,4 +173,18 @@ checking parsed longhand components from shorthand properties
         value : initial
     }
 ]
+[
+    [0] : {
+        name : flex-grow
+        value : 1
+    }
+    [1] : {
+        name : flex-shrink
+        value : 1
+    }
+    [2] : {
+        name : flex-basis
+        value : 0%
+    }
+]
 

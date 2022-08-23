@@ -1039,7 +1039,12 @@ String InspectorStyle::ShorthandValue(const String& shorthand_property) {
 std::unique_ptr<protocol::Array<protocol::CSS::CSSProperty>>
 InspectorStyle::LonghandProperties(
     const CSSPropertySourceData& property_entry) {
-  CSSTokenizer tokenizer(property_entry.value);
+  String property_value = property_entry.value;
+  if (property_entry.important) {
+    property_value = property_value.Substring(
+        0, property_value.length() - 10 /* length of "!important" */);
+  }
+  CSSTokenizer tokenizer(property_value);
   const auto tokens = tokenizer.TokenizeToEOF();
   CSSParserTokenRange range(tokens);
   CSSPropertyID property_id =
