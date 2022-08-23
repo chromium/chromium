@@ -213,10 +213,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.Chip.TimeToDecision.{RequestAction}" units="ms"
-    expires_after="2022-08-22">
-  <owner>bsep@chromium.org</owner>
-  <owner>engedy@chromium.org</owner>
-  <owner>olesiamarukhno@google.com</owner>
+    expires_after="2023-07-31">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     Records how long it takes for the user to make a decision about permission
     request when chip request UI is shown, from when permission prompt is shown
@@ -232,10 +231,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.Chip.TimeToInteraction" units="ms"
-    expires_after="2022-12-25">
-  <owner>bsep@chromium.org</owner>
-  <owner>engedy@chromium.org</owner>
-  <owner>olesiamarukhno@google.com</owner>
+    expires_after="2023-07-31">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     Records how long it takes for the user to click on the permission chip after
     it was shown.
@@ -245,10 +243,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Permissions.CrowdDeny.DidHoldbackQuietUi" enum="Boolean"
     expires_after="2022-12-11">
   <owner>andypaicu@chromium.org</owner>
-  <owner>engedy@chromium.org</owner>
-  <owner>hkamila@chromium.org</owner>
-  <owner>ravjit@chromium.org</owner>
-  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     Whenever a notification permission prompt is to be displayed, crowd deny
     might trigger based on site reputation which will result in a quiet
