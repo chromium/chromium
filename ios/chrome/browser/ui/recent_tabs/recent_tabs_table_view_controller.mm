@@ -48,6 +48,8 @@
 #include "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
+#import "ios/chrome/browser/ui/icons/action_icon.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_menu_provider.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_presentation_delegate.h"
@@ -364,7 +366,11 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   TableViewImageItem* historyItem =
       [[TableViewImageItem alloc] initWithType:ItemTypeShowFullHistory];
   historyItem.title = l10n_util::GetNSString(IDS_HISTORY_SHOWFULLHISTORY_LINK);
-  historyItem.image = [UIImage imageNamed:@"show_history"];
+
+  historyItem.image = UseSymbols()
+                          ? DefaultSymbolWithPointSize(kClockArrowSymbol,
+                                                       kSymbolActionPointSize)
+                          : [UIImage imageNamed:@"show_history"];
   if (self.styler.tintColor) {
     historyItem.textColor = self.styler.tintColor;
   } else {

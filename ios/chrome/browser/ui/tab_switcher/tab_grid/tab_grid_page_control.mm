@@ -515,9 +515,14 @@ UIImageView* ImageViewForSymbolNamed(NSString* symbolName) {
       break;
     }
     case TabGridPageRemoteTabs: {
-      iconSelected = ImageViewForImageNamed(kImagePageControlRemoteSelected);
-      iconNotSelected =
-          ImageViewForImageNamed(kImagePageControlRemoteNotSelected);
+      if (UseSymbols()) {
+        iconSelected = ImageViewForSymbolNamed(kRecentTabsSymbol);
+        iconNotSelected = ImageViewForSymbolNamed(kRecentTabsSymbol);
+      } else {
+        iconSelected = ImageViewForImageNamed(kImagePageControlRemoteSelected);
+        iconNotSelected =
+            ImageViewForImageNamed(kImagePageControlRemoteNotSelected);
+      }
       self.remoteSelectedIcon = iconSelected;
       self.remoteNotSelectedIcon = iconNotSelected;
       break;
