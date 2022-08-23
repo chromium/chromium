@@ -114,10 +114,12 @@ executable("cast_streaming_shell_exe") {
   deps = [
     ":remote_debugging_port",
     "//base",
+    "//base/test:test_support",
     "//components/cast/message_port:message_port",
     "//components/cast_streaming/browser:test_sender",
     "//components/openscreen_platform:openscreen_platform_using_net_sockets",
     "//fuchsia_web/cast_streaming",
+    "//fuchsia_web/common",
     "//fuchsia_web/common/test:test_support",
     "//fuchsia_web/webengine:switches",
     "//fuchsia_web/webinstance_host",
