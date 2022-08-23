@@ -314,7 +314,7 @@
     // TODO(crbug.com/1341654): Log a user action indicating that the user
     // clicked on the sign out link from the footer. Remove the action
     // indicating that this came from signin > signout.
-    [self showSignOutWithItemView:view];
+    [self showSignOutWithItemView:[view contentView]];
     return;
   }
   NSString* baseURL =
@@ -511,6 +511,8 @@
   return NO;
 }
 
+// Offer the user to sign-out near itemView
+// If they sync, they can keep or delete their data.
 - (void)showSignOutWithItemView:(UIView*)itemView {
   if (_signoutCoordinator) {
     // An action is already in progress, ignore user's request.

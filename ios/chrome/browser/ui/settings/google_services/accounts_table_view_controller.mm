@@ -593,6 +593,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
       });
 }
 
+// Offer the user to sign-out near itemView
+// If they sync, they can keep or delete their data.
 - (void)showSignOutWithItemView:(UIView*)itemView {
   DCHECK(!self.signoutCoordinator);
   if (_authenticationOperationInProgress ||
