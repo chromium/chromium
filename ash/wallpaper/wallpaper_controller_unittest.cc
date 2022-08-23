@@ -1215,6 +1215,8 @@ TEST_F(WallpaperControllerTest, SetOnlineWallpaper) {
       static_cast<int>(base::PersistentHash(
           TestWallpaperControllerClient::kDummyCollectionId)),
       1);
+  histogram_tester().ExpectBucketCount("Ash.Wallpaper.Type",
+                                       WallpaperType::kOnline, 1);
 
   // Verify that the wallpaper with |url| is available offline, and the returned
   // file name should not contain the small wallpaper suffix.
@@ -3960,52 +3962,6 @@ TEST_F(WallpaperControllerTest, UpdateWallpaperOnColorModeChanged) {
   RunAllTasksUntilIdle();
   EXPECT_EQ(2, GetWallpaperCount());
 
-  WallpaperInfo expected = WallpaperInfo(OnlineWallpaperParams(
-      account_id_1, kAssetId, GURL(kDummyUrl),
-      TestWallpaperControllerClient::kDummyCollectionId,
-      WALLPAPER_LAYOUT_CENTER_CROPPED, /*preview_mode=*/false,
-      /*from_user=*/true,
-      /*daily_refresh_enabled=*/false, kUnitId, variants));
-  WallpaperInfo actual;
-  EXPECT_TRUE(pref_manager_->GetUserWallpaperInfo(account_id_1, &actual));
-  EXPECT_EQ(expected, actual);
-}
-
-TEST_F(WallpaperControllerTest,
-       UpdateWallpaperWithMissingVariantsOnColorModeChanged) {
-  SimulateUserLogin(account_id_1);
-
-  auto run_loop = std::make_unique<base::RunLoop>();
-  ClearWallpaperCount();
-
-  const OnlineWallpaperParams& params = OnlineWallpaperParams(
-      account_id_1, kAssetId, GURL(kDummyUrl),
-      TestWallpaperControllerClient::kDummyCollectionId,
-      WALLPAPER_LAYOUT_CENTER_CROPPED,
-      /*preview_mode=*/false, /*from_user=*/true,
-      /*daily_refresh_enabled=*/false, /*unit_id=*/absl::nullopt,
-      /*variants=*/std::vector<OnlineWallpaperVariant>());
-  controller_->SetOnlineWallpaper(
-      params, base::BindLambdaForTesting([&run_loop](bool success) {
-        EXPECT_TRUE(success);
-        run_loop->Quit();
-      }));
-  run_loop->Run();
-  EXPECT_EQ(1, GetWallpaperCount());
-  EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kOnline);
-
-  pref_manager_->SetUserWallpaperInfo(account_id_1, WallpaperInfo(params));
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      prefs::kDarkModeEnabled, true);
-  controller_->OnColorModeChanged(true);
-  RunAllTasksUntilIdle();
-  EXPECT_EQ(2, GetWallpaperCount());
-
-  std::vector<OnlineWallpaperVariant> variants;
-  variants.emplace_back(kAssetId.value(), GURL(kDummyUrl),
-                        backdrop::Image::IMAGE_TYPE_DARK_MODE);
-  variants.emplace_back(kAssetId2.value(), GURL(kDummyUrl2),
-                        backdrop::Image::IMAGE_TYPE_LIGHT_MODE);
   WallpaperInfo expected = WallpaperInfo(OnlineWallpaperParams(
       account_id_1, kAssetId, GURL(kDummyUrl),
       TestWallpaperControllerClient::kDummyCollectionId,

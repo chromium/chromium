@@ -59,6 +59,7 @@ struct ColorProfile;
 namespace ash {
 
 class WallpaperColorCalculator;
+class WallpaperMetricsManager;
 class WallpaperPrefManager;
 class WallpaperResizer;
 class WallpaperWindowStateManager;
@@ -765,6 +766,8 @@ class ASH_EXPORT WallpaperControllerImpl
   WallpaperControllerClient* wallpaper_controller_client_ = nullptr;
 
   base::ObserverList<WallpaperControllerObserver>::Unchecked observers_;
+
+  std::unique_ptr<WallpaperMetricsManager> wallpaper_metrics_manager_;
 
   std::unique_ptr<WallpaperResizer> current_wallpaper_;
 

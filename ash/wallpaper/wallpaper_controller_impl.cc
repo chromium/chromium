@@ -30,6 +30,7 @@
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "ash/wallpaper/wallpaper_metrics_manager.h"
 #include "ash/wallpaper/wallpaper_pref_manager.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_color_calculator.h"
@@ -712,6 +713,7 @@ WallpaperControllerImpl::WallpaperControllerImpl(
   Shell::Get()->window_tree_host_manager()->AddObserver(this);
   Shell::Get()->AddShellObserver(this);
   theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
+  wallpaper_metrics_manager_ = std::make_unique<WallpaperMetricsManager>();
 }
 
 WallpaperControllerImpl::~WallpaperControllerImpl() {
@@ -831,7 +833,6 @@ void WallpaperControllerImpl::ShowWallpaperImage(const gfx::ImageSkia& image,
 
   if (preview_mode) {
     DVLOG(1) << __func__ << " preview_mode=true";
-    base::UmaHistogramBoolean("Ash.Wallpaper.Preview.Show", true);
     for (auto& observer : observers_)
       observer.OnWallpaperPreviewStarted();
   }
@@ -851,9 +852,6 @@ void WallpaperControllerImpl::ShowWallpaperImage(const gfx::ImageSkia& image,
     VLOG(1) << "Wallpaper is already loaded";
     return;
   }
-
-  UMA_HISTOGRAM_ENUMERATION("Ash.Wallpaper.Type", info.type,
-                            WallpaperType::kCount);
 
   // Cancel any in-flight color calculation because we have a new wallpaper.
   if (color_calculator_) {
@@ -1120,21 +1118,8 @@ void WallpaperControllerImpl::SetOnlineWallpaperIfExists(
     return;
   }
 
-  if (params.from_user) {
-    // |unit_id| is empty when set by old wallpaper picker.
-    const absl::optional<uint64_t>& unit_id = params.unit_id;
-    if (unit_id.has_value()) {
-      const int unit_id_val = unit_id.value();
-      base::UmaHistogramSparse("Ash.Wallpaper.Image", unit_id_val);
-    }
-    const std::string& collection_id = params.collection_id;
-    // |collection_id| is empty when the wallpaper is automatically refreshed
-    // by old wallpaper app.
-    if (!collection_id.empty()) {
-      const int collection_id_hash = base::PersistentHash(collection_id);
-      base::UmaHistogramSparse("Ash.Wallpaper.Collection", collection_id_hash);
-    }
-  }
+  for (auto& observer : observers_)
+    observer.OnOnlineWallpaperSet(params);
 
   if (params.variants.empty()) {
     // |params.variants| can be empty for users who use the old wallpaper
