@@ -119,6 +119,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   // Deletes `auction`.
   void OnAuctionComplete(
       RunAdAuctionCallback callback,
+      GURL urn_uuid,
       AuctionRunner* auction,
       absl::optional<blink::InterestGroupKey> winning_group_id,
       absl::optional<GURL> render_url,

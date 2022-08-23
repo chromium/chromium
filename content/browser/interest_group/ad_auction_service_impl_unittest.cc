@@ -3648,6 +3648,69 @@ function scoreAd(
             GURL("https://example.com/render"));
 }
 
+// Run ad auction when number of urn mappings has reached limit, the action
+// should fail.
+TEST_F(AdAuctionServiceImplTest,
+       RunAdAuctionExceedNumOfUrnMappingsLimitFailsAuction) {
+  constexpr char kBiddingScript[] = R"(
+function generateBid(
+    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+    browserSignals) {
+  return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
+}
+)";
+
+  constexpr char kDecisionScript[] = R"(
+function scoreAd(
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+  return bid;
+}
+)";
+
+  network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
+  network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
+
+  FencedFrameURLMapping& fenced_frame_urls_map =
+      static_cast<RenderFrameHostImpl*>(main_rfh())
+          ->GetPage()
+          .fenced_frame_urls_map();
+
+  // The map is not full initially.
+  EXPECT_FALSE(fenced_frame_urls_map.IsFull());
+
+  // Fill the map until its size reaches limit.
+  for (size_t i = 0; i < FencedFrameURLMapping::kMaxUrnMappingSize; ++i) {
+    const GURL test_url("https://" + base::NumberToString(i) + ".test");
+    absl::optional<GURL> urn_uuid =
+        fenced_frame_urls_map.AddFencedFrameURL(test_url);
+    ASSERT_TRUE(urn_uuid.has_value());
+    ASSERT_TRUE(fenced_frame_urls_map.IsMapped(urn_uuid.value()));
+  }
+
+  // Number of urn mapping has reached limit.
+  EXPECT_TRUE(fenced_frame_urls_map.IsFull());
+
+  absl::optional<GURL> auction_result =
+      RunAdAuctionAndFlush(std::move(auction_config));
+  // Auction failed because the number of urn mappings has reached limit.
+  ASSERT_EQ(auction_result, absl::nullopt);
+}
+
 // Runs an auction, and expects that the interest group that participated in
 // the auction gets updated after the auction completes.
 //

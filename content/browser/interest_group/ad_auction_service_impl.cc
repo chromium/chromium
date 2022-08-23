@@ -223,13 +223,25 @@ void AdAuctionServiceImpl::RunAdAuction(const blink::AuctionConfig& config,
     return;
   }
 
+  FencedFrameURLMapping& fenced_frame_urls_map =
+      GetFrame()->GetPage().fenced_frame_urls_map();
+  auto urn_uuid = fenced_frame_urls_map.GeneratePlaceholderURN();
+
+  // If placeholder URN cannot be generated due to number of mappings has
+  // reached limit, stop the auction.
+  if (!urn_uuid.has_value()) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
   std::unique_ptr<AuctionRunner> auction = AuctionRunner::CreateAndStart(
       &auction_worklet_manager_, &GetInterestGroupManager(), std::move(config),
       GetClientSecurityState(),
       base::BindRepeating(&AdAuctionServiceImpl::IsInterestGroupAPIAllowed,
                           base::Unretained(this)),
       base::BindOnce(&AdAuctionServiceImpl::OnAuctionComplete,
-                     base::Unretained(this), std::move(callback)));
+                     base::Unretained(this), std::move(callback),
+                     std::move(urn_uuid.value())));
   auctions_.insert(std::move(auction));
 }
 
@@ -487,6 +499,7 @@ void AdAuctionServiceImpl::SendPrivateAggregationRequests(
 
 void AdAuctionServiceImpl::OnAuctionComplete(
     RunAdAuctionCallback callback,
+    GURL urn_uuid,
     AuctionRunner* auction,
     absl::optional<blink::InterestGroupKey> winning_group_id,
     absl::optional<GURL> render_url,
@@ -540,12 +553,12 @@ void AdAuctionServiceImpl::OnAuctionComplete(
   DCHECK(blink::IsValidFencedFrameURL(*render_url));
   FencedFrameURLMapping& fenced_frame_urls_map =
       GetFrame()->GetPage().fenced_frame_urls_map();
-  render_url = fenced_frame_urls_map.AddFencedFrameURLWithInterestGroupInfo(
-      *render_url, {winning_group_id->owner, winning_group_id->name},
+  DCHECK(urn_uuid.is_valid());
+  fenced_frame_urls_map.AssignFencedFrameURLAndInterestGroupInfo(
+      urn_uuid, *render_url, {winning_group_id->owner, winning_group_id->name},
       ad_component_urls, ad_beacon_map);
-  DCHECK(render_url->is_valid());
 
-  std::move(callback).Run(render_url);
+  std::move(callback).Run(urn_uuid);
   if (auction_result_metrics) {
     auction_result_metrics->ReportAuctionResult(
         AdAuctionResultMetrics::AuctionResult::kSucceeded);

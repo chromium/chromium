@@ -67,6 +67,17 @@ constexpr char kAddIframeScript[] = R"({
     })();
   })";
 
+GURL AddAndVerifyFencedFrameURL(
+    FencedFrameURLMapping* fenced_frame_url_mapping,
+    const GURL& https_url,
+    const ReportingMetadata& reporting_metadata = ReportingMetadata()) {
+  absl::optional<GURL> urn_uuid = fenced_frame_url_mapping->AddFencedFrameURL(
+      https_url, reporting_metadata);
+  EXPECT_TRUE(urn_uuid.has_value());
+  EXPECT_TRUE(urn_uuid->is_valid());
+  return urn_uuid.value();
+}
+
 }  // namespace
 
 class FencedFrameMPArchBrowserTest : public ContentBrowserTest {
@@ -1991,8 +2002,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
       https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
   FencedFrameURLMapping& url_mapping =
       root->current_frame_host()->GetPage().fenced_frame_urls_map();
-  GURL urn_uuid = url_mapping.AddFencedFrameURL(https_url);
-  EXPECT_TRUE(urn_uuid.is_valid());
+  auto urn_uuid = AddAndVerifyFencedFrameURL(&url_mapping, https_url);
 
   std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid);
 
@@ -2332,8 +2342,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
       https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
   FencedFrameURLMapping& url_mapping =
       root_rfh->GetPage().fenced_frame_urls_map();
-  GURL urn_uuid = url_mapping.AddFencedFrameURL(https_url);
-  EXPECT_TRUE(urn_uuid.is_valid());
+  auto urn_uuid = AddAndVerifyFencedFrameURL(&url_mapping, https_url);
 
   std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid);
   NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
@@ -2414,8 +2423,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
       https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
   FencedFrameURLMapping& url_mapping =
       root_rfh->GetPage().fenced_frame_urls_map();
-  GURL urn_uuid = url_mapping.AddFencedFrameURL(https_url);
-  EXPECT_TRUE(urn_uuid.is_valid());
+  auto urn_uuid = AddAndVerifyFencedFrameURL(&url_mapping, https_url);
 
   std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid);
   NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
@@ -2755,8 +2763,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
   GURL https_url(https_server()->GetURL("a.test", "/title1.html"));
   FencedFrameURLMapping& url_mapping =
       root->current_frame_host()->GetPage().fenced_frame_urls_map();
-  GURL urn_uuid = url_mapping.AddFencedFrameURL(https_url);
-  EXPECT_TRUE(urn_uuid.is_valid());
+  auto urn_uuid = AddAndVerifyFencedFrameURL(&url_mapping, https_url);
 
   std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid);
   NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
@@ -2868,8 +2875,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
       https_server()->GetURL("a.test", "/fenced_frames/redirect.html"));
   FencedFrameURLMapping& url_mapping =
       root->current_frame_host()->GetPage().fenced_frame_urls_map();
-  GURL urn_uuid = url_mapping.AddFencedFrameURL(fenced_frame_url);
-  EXPECT_TRUE(urn_uuid.is_valid());
+  auto urn_uuid = AddAndVerifyFencedFrameURL(&url_mapping, fenced_frame_url);
 
   std::string navigate_script = JsReplace("f.src = $1;", urn_uuid.spec());
   NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
@@ -2921,8 +2927,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
       https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
   FencedFrameURLMapping& url_mapping =
       root->current_frame_host()->GetPage().fenced_frame_urls_map();
-  GURL urn_uuid = url_mapping.AddFencedFrameURL(fenced_frame_url);
-  EXPECT_TRUE(urn_uuid.is_valid());
+  auto urn_uuid = AddAndVerifyFencedFrameURL(&url_mapping, fenced_frame_url);
 
   std::string navigate_script = JsReplace("f.src = $1;", urn_uuid.spec());
   NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
@@ -3751,8 +3756,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
         https_server()->GetURL("b.test", "/fenced_frames/title1.html"));
     FencedFrameURLMapping& url_mapping =
         root->current_frame_host()->GetPage().fenced_frame_urls_map();
-    GURL urn_uuid = url_mapping.AddFencedFrameURL(https_url);
-    EXPECT_TRUE(urn_uuid.is_valid());
+    auto urn_uuid = AddAndVerifyFencedFrameURL(&url_mapping, https_url);
 
     std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid);
 
@@ -4375,9 +4379,8 @@ class FencedFrameReportEventBrowserTest
                                                  step.destination.path);
       GURL expect_url = navigate_url;
       if (step.is_opaque) {
-        GURL urn_uuid =
-            url_mapping.AddFencedFrameURL(navigate_url, fenced_frame_reporting);
-        EXPECT_TRUE(urn_uuid.is_valid());
+        auto urn_uuid = AddAndVerifyFencedFrameURL(&url_mapping, navigate_url,
+                                                   fenced_frame_reporting);
         navigate_url = urn_uuid;
       }
       FrameTreeNode* navigation_target_node = fenced_frame_root_node;
@@ -4722,9 +4725,8 @@ IN_PROC_BROWSER_TEST_P(FencedFrameReportEventBrowserTest,
       https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
   FencedFrameURLMapping& url_mapping =
       root->current_frame_host()->GetPage().fenced_frame_urls_map();
-  GURL urn_uuid =
-      url_mapping.AddFencedFrameURL(https_url, fenced_frame_reporting);
-  EXPECT_TRUE(urn_uuid.is_valid());
+  auto urn_uuid = AddAndVerifyFencedFrameURL(&url_mapping, https_url,
+                                             fenced_frame_reporting);
 
   TestFencedFrameURLMappingResultObserver mapping_observer;
   url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &mapping_observer);
@@ -4838,8 +4840,7 @@ IN_PROC_BROWSER_TEST_P(UUIDFrameTreeBrowserTest,
       https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
   FencedFrameURLMapping& url_mapping =
       root->current_frame_host()->GetPage().fenced_frame_urls_map();
-  GURL urn_uuid = url_mapping.AddFencedFrameURL(frame_url);
-  EXPECT_TRUE(urn_uuid.is_valid());
+  auto urn_uuid = AddAndVerifyFencedFrameURL(&url_mapping, frame_url);
 
   if (GetParam()) {
     // If the feature is enabled, we should navigate to the mapped page.
@@ -4907,8 +4908,7 @@ IN_PROC_BROWSER_TEST_P(UUIDFrameTreeBrowserTest,
       https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
   FencedFrameURLMapping& url_mapping =
       root->current_frame_host()->GetPage().fenced_frame_urls_map();
-  GURL urn_uuid = url_mapping.AddFencedFrameURL(frame_url);
-  EXPECT_TRUE(urn_uuid.is_valid());
+  auto urn_uuid = AddAndVerifyFencedFrameURL(&url_mapping, frame_url);
 
   // Top page navigation to a URN should fail regardless of if the feature is
   // enabled.
