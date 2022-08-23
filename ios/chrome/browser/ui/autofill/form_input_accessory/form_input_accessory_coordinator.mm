@@ -239,16 +239,7 @@ BubbleViewType BubbleTypeFromFeature() {
   [self.formInputAccessoryViewController reset];
 
   self.formInputViewController = nil;
-  if (@available(iOS 16, *)) {
-    @try {
-      [GetFirstResponder() reloadInputViews];
-    } @catch (NSException* e) {
-      // TODO(crbug.com/1334530) iOS 16 beta 5 is still throwing an
-      // NSInternalInconsistencyException.
-    }
-  } else {
-    [GetFirstResponder() reloadInputViews];
-  }
+  [GetFirstResponder() reloadInputViews];
 }
 
 #pragma mark - Presenting Children
