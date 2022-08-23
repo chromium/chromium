@@ -81,12 +81,8 @@ CourierRenderer::CourierRenderer(
       rpc_handle_,
       [runner = media_task_runner_, ptr = weak_factory_.GetWeakPtr()](
           std::unique_ptr<openscreen::cast::RpcMessage> message) {
-        if (ptr) {
-          CourierRenderer::OnMessageReceivedOnMainThread(runner, ptr,
-                                                         std::move(message));
-        } else {
-          LOG(WARNING) << "Invalid weak factory pointer.";
-        }
+        CourierRenderer::OnMessageReceivedOnMainThread(runner, ptr,
+                                                       std::move(message));
       });
 }
 
