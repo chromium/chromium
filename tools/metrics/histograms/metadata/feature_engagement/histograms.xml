@@ -323,6 +323,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="InProductHelp.Promos.Snooze.{IPHFeature}" units="SnoozeType"
     expires_after="2021-11-21">
+  <obsolete>
+    Expired since 2021-11.
+  </obsolete>
   <owner>kerenzhu@chromium.org</owner>
   <owner>collinbaker@chromium.org</owner>
   <summary>
@@ -336,6 +339,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="InProductHelp.Promos.SnoozeCountAtAcknowledge.{IPHFeature}"
     units="times" expires_after="2021-11-21">
+  <obsolete>
+    Expired since 2021-11.
+  </obsolete>
   <owner>kerenzhu@chromium.org</owner>
   <owner>collinbaker@chromium.org</owner>
   <summary>
@@ -347,6 +353,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="InProductHelp.Promos.SnoozeCountAtFollow.{IPHFeature}"
     units="times" expires_after="2021-11-21">
+  <obsolete>
+    Expired since 2021-11.
+  </obsolete>
   <owner>kerenzhu@chromium.org</owner>
   <owner>collinbaker@chromium.org</owner>
   <summary>
@@ -359,6 +368,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="InProductHelp.Promos.SnoozeCountAtTrigger.{IPHFeature}"
     units="times" expires_after="2021-11-21">
+  <obsolete>
+    Expired since 2021-11.
+  </obsolete>
   <owner>kerenzhu@chromium.org</owner>
   <owner>collinbaker@chromium.org</owner>
   <summary>

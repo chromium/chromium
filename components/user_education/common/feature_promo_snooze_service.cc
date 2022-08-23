@@ -49,11 +49,6 @@ void FeaturePromoSnoozeService::OnUserSnooze(const base::Feature& iph_feature,
   if (!snooze_data)
     snooze_data = SnoozeData();
 
-  base::UmaHistogramEnumeration(
-      "InProductHelp.Promos.Snooze." + std::string(iph_feature.name),
-      snooze_data->snooze_count == 0 ? SnoozeType::kFirstTimeSnooze
-                                     : SnoozeType::kRepeatingSnooze);
-
   snooze_data->last_snooze_time = base::Time::Now();
   snooze_data->last_snooze_duration = snooze_duration;
   snooze_data->snooze_count++;
@@ -71,13 +66,6 @@ void FeaturePromoSnoozeService::OnUserDismiss(
   snooze_data->is_dismissed = true;
 
   SaveSnoozeData(iph_feature, *snooze_data);
-
-  // Record count of previous snoozes when the IPH gets dismissed by "Got It"
-  // button.
-  base::UmaHistogramExactLinear(
-      "InProductHelp.Promos.SnoozeCountAtAcknowledge." +
-          std::string(iph_feature.name),
-      snooze_data->snooze_count, kUmaMaxSnoozeCount);
 }
 
 void FeaturePromoSnoozeService::OnPromoShown(const base::Feature& iph_feature) {

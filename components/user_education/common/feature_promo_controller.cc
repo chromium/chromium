@@ -148,15 +148,9 @@ bool FeaturePromoControllerCommon::MaybeShowPromoFromSpecification(
 
   bubble_closed_callback_ = std::move(close_callback);
 
-  // Record count of previous snoozes when an IPH triggers.
-  if (!feature_is_bypassing_tracker) {
-    int snooze_count = snooze_service_->GetSnoozeCount(*feature);
-    base::UmaHistogramExactLinear(
-        "InProductHelp.Promos.SnoozeCountAtTrigger." +
-            std::string(feature->name),
-        snooze_count, FeaturePromoSnoozeService::kUmaMaxSnoozeCount);
+  if (!feature_is_bypassing_tracker)
     snooze_service_->OnPromoShown(*feature);
-  }
+
   return true;
 }
 
