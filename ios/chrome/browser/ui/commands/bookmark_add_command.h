@@ -9,6 +9,9 @@
 
 class GURL;
 @class URLWithTitle;
+namespace web {
+class WebState;
+}
 
 // An object of this class will contain the data needed to execute any bookmark
 // command for one or more pages.
@@ -23,6 +26,14 @@ class GURL;
                       title:(NSString*)title
        presentFolderChooser:(BOOL)presentFolderChooser
     NS_DESIGNATED_INITIALIZER;
+
+// Initializes a command object with the `webState`'s URL and title.
+// If `presentFolderChooser` is true, the user will be prompted to choose
+// a destination for the bookmarks first. If false, the item will be bookmarked
+// immediately and the displayed snackbar message will allow editing to change
+// the location if desired.
+- (instancetype)initWithWebState:(web::WebState*)webState
+            presentFolderChooser:(BOOL)presentFolderChooser;
 
 // Initializes a command object with multiple pages `UrlWithTitle`.
 // This implies `presentFolderChooser` is `true` and the user will need

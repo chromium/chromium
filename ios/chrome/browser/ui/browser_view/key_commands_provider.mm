@@ -255,8 +255,19 @@
                            title:l10n_util::GetNSStringWithFixup(
                                      IDS_IOS_KEYBOARD_BOOKMARK_THIS_PAGE)
                           action:^{
-                            [weakSelf.bookmarksCommandsHandler
-                                    bookmarkCurrentPage];
+                            if (weakSelf.browser) {
+                              web::WebState* currentWebState =
+                                  weakSelf.browser->GetWebStateList()
+                                      ->GetActiveWebState();
+                              if (currentWebState) {
+                                BookmarkAddCommand* command =
+                                    [[BookmarkAddCommand alloc]
+                                            initWithWebState:currentWebState
+                                        presentFolderChooser:NO];
+                                [weakSelf.bookmarksCommandsHandler
+                                    bookmark:command];
+                              }
+                            }
                           }],
       [UIKeyCommand cr_keyCommandWithInput:@"r"
                              modifierFlags:UIKeyModifierCommand
