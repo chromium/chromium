@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.messages;
 
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
@@ -34,6 +35,8 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserv
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
+import org.chromium.chrome.features.start_surface.StartSurface;
+import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
@@ -71,6 +74,9 @@ public class ChromeMessageQueueMediatorTest {
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
     @Mock
+    private StartSurface mStartSurface;
+
+    @Mock
     private Handler mQueueHandler;
 
     private ChromeMessageQueueMediator mMediator;
@@ -86,10 +92,12 @@ public class ChromeMessageQueueMediatorTest {
                 new OneshotSupplierImpl<>();
         ObservableSupplierImpl<ModalDialogManager> modalDialogManagerSupplier =
                 new ObservableSupplierImpl<>();
+        OneshotSupplierImpl<StartSurface> mStartSurfaceSupplier = new OneshotSupplierImpl<>();
+        mStartSurfaceSupplier.set(mStartSurface);
         mMediator = new ChromeMessageQueueMediator(mBrowserControlsManager,
                 mMessageContainerCoordinator, mActivityTabProvider,
                 layoutStateProviderOneShotSupplier, modalDialogManagerSupplier,
-                mActivityLifecycleDispatcher, mMessageDispatcher);
+                mActivityLifecycleDispatcher, mStartSurfaceSupplier, mMessageDispatcher);
         layoutStateProviderOneShotSupplier.set(mLayoutStateProvider);
         modalDialogManagerSupplier.set(mModalDialogManager);
         mMediator.setQueueHandlerForTesting(mQueueHandler);
@@ -102,12 +110,15 @@ public class ChromeMessageQueueMediatorTest {
     public void testLayoutStateChange() {
         final ArgumentCaptor<LayoutStateObserver> observer =
                 ArgumentCaptor.forClass(LayoutStateObserver.class);
+        final ArgumentCaptor<StartSurface.StateObserver> stateObserver =
+                ArgumentCaptor.forClass(StartSurface.StateObserver.class);
         doNothing().when(mLayoutStateProvider).addObserver(observer.capture());
+        doNothing().when(mStartSurface).addStateChangeObserver(stateObserver.capture());
         initMediator();
-        observer.getValue().onStartedShowing(LayoutType.TAB_SWITCHER, false);
+        stateObserver.getValue().onStateChanged(StartSurfaceState.SHOWN_TABSWITCHER, false);
         verify(mMessageDispatcher).suspend();
         observer.getValue().onFinishedShowing(LayoutType.BROWSING);
-        verify(mMessageDispatcher).resume(EXPECTED_TOKEN);
+        verify(mMessageDispatcher).resume(anyInt());
     }
 
     /**
@@ -150,6 +161,7 @@ public class ChromeMessageQueueMediatorTest {
                 new OneshotSupplierImpl<>();
         ObservableSupplierImpl<ModalDialogManager> modalDialogManagerSupplier =
                 new ObservableSupplierImpl<>();
+        OneshotSupplierImpl<StartSurface> mStartSurfaceSupplier = new OneshotSupplierImpl<>();
         final ArgumentCaptor<ChromeMessageQueueMediator.BrowserControlsObserver>
                 observerArgumentCaptor = ArgumentCaptor.forClass(
                         ChromeMessageQueueMediator.BrowserControlsObserver.class);
@@ -173,7 +185,7 @@ public class ChromeMessageQueueMediatorTest {
         mMediator = new ChromeMessageQueueMediator(mBrowserControlsManager,
                 mMessageContainerCoordinator, mActivityTabProvider,
                 layoutStateProviderOneShotSupplier, modalDialogManagerSupplier,
-                mActivityLifecycleDispatcher, mMessageDispatcher);
+                mActivityLifecycleDispatcher, mStartSurfaceSupplier, mMessageDispatcher);
         ChromeMessageQueueMediator.BrowserControlsObserver observer =
                 observerArgumentCaptor.getValue();
         Runnable runnable = () -> {};
@@ -194,10 +206,11 @@ public class ChromeMessageQueueMediatorTest {
                 new OneshotSupplierImpl<>();
         ObservableSupplierImpl<ModalDialogManager> modalDialogManagerSupplier =
                 new ObservableSupplierImpl<>();
+        OneshotSupplierImpl<StartSurface> mStartSurfaceSupplier = new OneshotSupplierImpl<>();
         mMediator = new ChromeMessageQueueMediator(mBrowserControlsManager,
                 mMessageContainerCoordinator, mActivityTabProvider,
                 layoutStateProviderOneShotSupplier, modalDialogManagerSupplier,
-                mActivityLifecycleDispatcher, mMessageDispatcher);
+                mActivityLifecycleDispatcher, mStartSurfaceSupplier, mMessageDispatcher);
         layoutStateProviderOneShotSupplier.set(mLayoutStateProvider);
         // To offer a null value, we have to offer a value other than null first.
         modalDialogManagerSupplier.set(mModalDialogManager);
