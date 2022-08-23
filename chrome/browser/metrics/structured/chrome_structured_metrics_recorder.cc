@@ -8,7 +8,9 @@
 
 #include "base/no_destructor.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/metrics/structured/cros_events_processor.h"
 #include "components/metrics/structured/histogram_util.h"
+#include "components/metrics/structured/structured_metrics_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/metrics/structured/ash_structured_metrics_recorder.h"  // nogncheck
@@ -17,8 +19,8 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/metrics/structured/lacros_structured_metrics_recorder.h"  // nogncheck
 #endif
-namespace metrics {
-namespace structured {
+
+namespace metrics::structured {
 namespace {
 
 // Platforms for which the StructuredMetricsClient will be initialized for.
@@ -56,8 +58,25 @@ ChromeStructuredMetricsRecorder* ChromeStructuredMetricsRecorder::Get() {
   return chrome_recorder.get();
 }
 
+// static
+void ChromeStructuredMetricsRecorder::RegisterLocalStatePrefs(
+    PrefRegistrySimple* registry) {
+  cros_event::CrOSEventsProcessor::RegisterLocalStatePrefs(registry);
+}
+
+// static
+void ChromeStructuredMetricsRecorder::RegisterUserProfilePrefs(
+    PrefRegistrySimple* registry) {
+  cros_event::CrOSEventsProcessor::RegisterUserProfilePrefs(registry);
+}
+
 void ChromeStructuredMetricsRecorder::Initialize() {
-// TODO(jongahn): Refactor this by making Initialize() part of the interface.
+  // Adds CrOSEvents processor if feature is enabled.
+  if (base::FeatureList::IsEnabled(kCrOSEvents)) {
+    StructuredMetricsClient::Get()->AddEventsProcessor(
+        std::make_unique<cros_event::CrOSEventsProcessor>());
+  }
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* ash_recorder =
       static_cast<AshStructuredMetricsRecorder*>(delegate_.get());
@@ -85,5 +104,4 @@ bool ChromeStructuredMetricsRecorder::IsReadyToRecord() const {
   return delegate_->IsReadyToRecord();
 }
 
-}  // namespace structured
-}  // namespace metrics
+}  // namespace metrics::structured

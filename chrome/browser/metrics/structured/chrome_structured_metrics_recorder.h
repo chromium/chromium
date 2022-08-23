@@ -11,6 +11,7 @@
 #include "components/metrics/structured/event.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/structured_metrics_client.h"
+#include "components/prefs/pref_registry_simple.h"
 
 namespace metrics {
 namespace structured {
@@ -31,6 +32,10 @@ class ChromeStructuredMetricsRecorder : public RecordingDelegate {
  public:
   // Pointer to singleton.
   static ChromeStructuredMetricsRecorder* Get();
+
+  // Registers prefs.
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
+  static void RegisterUserProfilePrefs(PrefRegistrySimple* registry);
 
   ChromeStructuredMetricsRecorder(
       const ChromeStructuredMetricsRecorder& recorder) = delete;

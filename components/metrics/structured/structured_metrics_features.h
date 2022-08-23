@@ -13,6 +13,9 @@ namespace structured {
 // This can be used to disable structured metrics as a whole.
 extern const base::Feature kStructuredMetrics;
 
+// Controls whether CrOSEvents logging is enabled or not.
+extern const base::Feature kCrOSEvents;
+
 extern const base::Feature kBluetoothSessionizedMetrics;
 
 // Delays appending structured metrics events until HWID has been loaded.

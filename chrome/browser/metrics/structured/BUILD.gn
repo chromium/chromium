@@ -11,6 +11,8 @@ static_library("structured") {
   sources = [
     "chrome_structured_metrics_recorder.cc",
     "chrome_structured_metrics_recorder.h",
+    "cros_events_processor.cc",
+    "cros_events_processor.h",
   ]
 
   deps = [
@@ -19,6 +21,7 @@ static_library("structured") {
     "//chromeos/crosapi/mojom",
     "//components/metrics/structured",
     "//components/metrics/structured:structured_events",
+    "//components/prefs",
   ]
 
   if (is_chromeos_ash) {
