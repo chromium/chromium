@@ -332,7 +332,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.CBCMRealTimeReportEnqueue"
-    enum="EnterpriseCloudReportingStatusCode" expires_after="2022-10-01">
+    enum="EnterpriseCloudReportingStatusCode" expires_after="2023-10-01">
   <owner>zmin@chromium.org</owner>
   <owner>src/chrome/browser/enterprise/reporting/OWNERS</owner>
   <summary>
@@ -342,7 +342,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.CBCMRealTimeReportQueueConfigurationCreation"
-    enum="EnterpriseCloudReportingStatusCode" expires_after="2022-10-01">
+    enum="EnterpriseCloudReportingStatusCode" expires_after="2023-10-01">
   <owner>zmin@chromium.org</owner>
   <owner>src/chrome/browser/enterprise/reporting/OWNERS</owner>
   <summary>
@@ -352,7 +352,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.CBCMRealTimeReportQueueCreation"
-    enum="EnterpriseCloudReportingStatusCode" expires_after="2022-10-01">
+    enum="EnterpriseCloudReportingStatusCode" expires_after="2023-10-01">
   <owner>zmin@chromium.org</owner>
   <owner>src/chrome/browser/enterprise/reporting/OWNERS</owner>
   <summary>
@@ -362,7 +362,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.CBCMRemoteCommand.Executed"
-    enum="RemoteCommandExecutionStatus" expires_after="2023-01-15">
+    enum="RemoteCommandExecutionStatus" expires_after="2023-10-01">
   <owner>anthonyvd@chromium.org</owner>
   <owner>cbe-eng@google.com</owner>
   <summary>
@@ -373,7 +373,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.CBCMRemoteCommand.Received"
-    enum="RemoteCommandReceivedStatus" expires_after="2023-01-15">
+    enum="RemoteCommandReceivedStatus" expires_after="2023-10-01">
   <owner>anthonyvd@chromium.org</owner>
   <owner>cbe-eng@google.com</owner>
   <summary>
@@ -385,7 +385,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.CBCMRemoteCommandInvalidations"
-    enum="EnterprisePolicyInvalidations" expires_after="2023-01-15">
+    enum="EnterprisePolicyInvalidations" expires_after="2023-10-01">
   <owner>anthonyvd@chromium.org</owner>
   <owner>cbe-eng@google.com</owner>
   <summary>
@@ -397,7 +397,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.CloudExtensionRequestDialogAction"
-    enum="BooleanSent" expires_after="2023-04-01">
+    enum="BooleanSent" expires_after="2023-10-01">
   <owner>zmin@chromium.org</owner>
   <owner>hur.ims@navercorp.com</owner>
   <owner>src/chrome/browser/enterprise/reporting/OWNERS</owner>
@@ -408,7 +408,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.CloudExtensionRequestUpdated"
-    enum="EnterpriseCloudExtensionRequestListUpdate" expires_after="2022-10-01">
+    enum="EnterpriseCloudExtensionRequestListUpdate" expires_after="2023-10-01">
   <owner>zmin@chromium.org</owner>
   <owner>src/chrome/browser/enterprise/reporting/OWNERS</owner>
   <summary>
@@ -1989,7 +1989,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.PolicyUpdatePeriod.MachineLevelUser" units="days"
-    expires_after="2022-10-01">
+    expires_after="2023-10-01">
   <owner>zmin@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
