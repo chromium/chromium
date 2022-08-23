@@ -47,6 +47,7 @@ public class SearchEngineLogoUtils {
     private static String sCachedComposedBackgroundLogoUrl;
     private static int sSearchEngineLogoTargetSizePixels;
     private static int sSearchEngineLogoComposedSizePixels;
+    private Boolean mNeedToCheckForSearchEnginePromo;
 
     /** Get the singleton instance of SearchEngineLogoUtils */
     public static SearchEngineLogoUtils getInstance() {
@@ -204,19 +205,37 @@ public class SearchEngineLogoUtils {
                 R.drawable.ic_search, ThemeUtils.getThemedToolbarIconTintRes(brandedColorScheme));
     }
 
-    /** Returns whether the search engine promo is complete. */
+    /**
+     * Returns whether the search engine promo is complete. Once fetchCheckForSearchEnginePromo()
+     * returns false the first time, this method will cache that result as it's presumed we don't
+     * need to re-run the promo during the process lifetime.
+     */
     @VisibleForTesting
     boolean needToCheckForSearchEnginePromo() {
+        if (mNeedToCheckForSearchEnginePromo == null || mNeedToCheckForSearchEnginePromo) {
+            mNeedToCheckForSearchEnginePromo = fetchCheckForSearchEnginePromo();
+            // getCheckForSearchEnginePromo can fail; if it does, we'll stay in the uncached
+            // state and return false.
+            if (mNeedToCheckForSearchEnginePromo == null) return false;
+        }
+        return mNeedToCheckForSearchEnginePromo;
+    }
+
+    /**
+     * Performs a (potentially expensive) lookup of whether we need to check for a search engine
+     * promo. In rare cases this can fail; in these cases it will return null.
+     */
+    private Boolean fetchCheckForSearchEnginePromo() {
         // LocaleManager#needToCheckForSearchEnginePromo() checks several system features which
         // risk throwing exceptions. See the exception cases below for details.
         try {
             return LocaleManager.getInstance().needToCheckForSearchEnginePromo();
         } catch (SecurityException e) {
             Log.e(TAG, "Can be thrown by a failed IPC, see crbug.com/1027709\n", e);
-            return false;
+            return null;
         } catch (RuntimeException e) {
             Log.e(TAG, "Can be thrown if underlying services are dead, see crbug.com/1121602\n", e);
-            return false;
+            return null;
         }
     }
 
