@@ -170,8 +170,6 @@ struct PasswordForm {
   // This is the primary data used by the PasswordManager to decide (in longest
   // matching prefix fashion) whether or not a given PasswordForm result from
   // the database is a good fit for a particular form on a page.
-  //
-  // This should not be empty except for Android based credentials.
   GURL url;
 
   // The action target of the form; like |url|, consists of the scheme, host,
