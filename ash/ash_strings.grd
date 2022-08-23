@@ -1326,6 +1326,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_HOLDING_SPACE_PINNED_FILES_APP_CHIP_TEXT" desc="Text for chip which opens the Files app shown in the pinned files area of the holding space bubble if the user has no pinned files.">
         Open Files
       </message>
+      <message name="IDS_ASH_HOLDING_SPACE_SUGGESTIONS_TITLE" desc="Title of the suggestions area in the holding space bubble.">
+        Suggested for you
+      </message>
       <message name="IDS_ASH_HOLDING_SPACE_DOWNLOADS_TITLE" desc="Title of the downloads area in the holding space bubble.">
         Downloads
       </message>
