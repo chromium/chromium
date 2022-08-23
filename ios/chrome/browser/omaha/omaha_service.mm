@@ -2,50 +2,49 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/omaha/omaha_service.h"
+#import "ios/chrome/browser/omaha/omaha_service.h"
 
 #import <Foundation/Foundation.h>
 
-#include <memory>
-#include <utility>
+#import <memory>
+#import <utility>
 
-#include "base/bind.h"
-#include "base/i18n/time_formatting.h"
-#include "base/ios/device_util.h"
-#include "base/logging.h"
-#include "base/metrics/field_trial.h"
-#include "base/no_destructor.h"
-#include "base/rand_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/system/sys_info.h"
-#include "base/time/time.h"
-#include "base/values.h"
-#include "build/branding_buildflags.h"
-#include "components/metrics/metrics_pref_names.h"
-#include "components/prefs/pref_service.h"
-#include "components/version_info/version_info.h"
-#include "ios/chrome/app/tests_hook.h"
-#include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/arch_util.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
-#include "ios/chrome/browser/browser_state_metrics/browser_state_metrics.h"
-#include "ios/chrome/browser/install_time_util.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "base/bind.h"
+#import "base/i18n/time_formatting.h"
+#import "base/ios/device_util.h"
+#import "base/logging.h"
+#import "base/metrics/field_trial.h"
+#import "base/no_destructor.h"
+#import "base/rand_util.h"
+#import "base/strings/stringprintf.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "base/system/sys_info.h"
+#import "base/time/time.h"
+#import "base/values.h"
+#import "build/branding_buildflags.h"
+#import "components/metrics/metrics_pref_names.h"
+#import "components/prefs/pref_service.h"
+#import "components/version_info/version_info.h"
+#import "ios/chrome/app/tests_hook.h"
+#import "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/browser_state_metrics/browser_state_metrics.h"
+#import "ios/chrome/browser/install_time_util.h"
+#import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/upgrade/upgrade_constants.h"
-#include "ios/chrome/browser/upgrade/upgrade_recommended_details.h"
-#include "ios/chrome/common/channel_info.h"
-#include "ios/public/provider/chrome/browser/omaha/omaha_api.h"
-#include "ios/web/public/thread/web_task_traits.h"
-#include "ios/web/public/thread/web_thread.h"
-#include "net/base/backoff_entry.h"
-#include "net/base/load_flags.h"
-#include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/network/public/cpp/simple_url_loader.h"
-#include "third_party/libxml/chromium/xml_writer.h"
-#include "url/gurl.h"
+#import "ios/chrome/browser/upgrade/upgrade_recommended_details.h"
+#import "ios/chrome/common/channel_info.h"
+#import "ios/public/provider/chrome/browser/omaha/omaha_api.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
+#import "net/base/backoff_entry.h"
+#import "net/base/load_flags.h"
+#import "services/network/public/cpp/resource_request.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
+#import "services/network/public/cpp/simple_url_loader.h"
+#import "third_party/libxml/chromium/xml_writer.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -58,6 +57,8 @@ const int kHoursBetweenRequests = 5;
 const int kPostRetryBaseSeconds = 3600;
 // Maximal time to wait between retry requests.
 const int64_t kPostRetryMaxSeconds = 6 * kPostRetryBaseSeconds;
+
+const char kCurrentArch[] = "arm64";
 
 // Default last sent application version when none has been sent yet.
 const char kDefaultLastSentVersion[] = "0.0.0.0";
@@ -549,7 +550,7 @@ std::string OmahaService::GetPingContent(const std::string& requestId,
       os_element.AddAttribute("platform", "ios");
       os_element.AddAttribute("version",
                               base::SysInfo::OperatingSystemVersion());
-      os_element.AddAttribute("arch", arch_util::kCurrentArch);
+      os_element.AddAttribute("arch", kCurrentArch);
     }
 
     const bool is_first_install =

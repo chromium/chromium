@@ -37,8 +37,6 @@ source_set("application_context") {
 source_set("browser") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "arch_util.cc",
-    "arch_util.h",
     "browser_about_rewriter.cc",
     "browser_about_rewriter.h",
     "chrome_browser_provider_observer_bridge.h",
