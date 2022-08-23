@@ -219,6 +219,12 @@
     "args": ["--enable-blink-features=FractionalScrollOffsets"]
   },
   {
+    "prefix": "compute-pressure",
+    "platforms": ["Linux", "Mac"],
+    "bases": ["external/wpt/compute-pressure"],
+    "args": ["--enable-features=ComputePressure"]
+  },
+  {
     "prefix": "highdpi-threaded",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/css/css-backgrounds/hidpi",
