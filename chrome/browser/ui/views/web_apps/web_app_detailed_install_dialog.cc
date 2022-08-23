@@ -302,6 +302,7 @@ void ShowWebAppDetailedInstallDialog(
                             gfx::Size(kIconSize, kIconSize));
 
   auto title = install_info->title;
+  auto start_url_host = install_info->start_url.host();
   auto description = install_info->description;
 
   auto delegate =
@@ -312,8 +313,8 @@ void ShowWebAppDetailedInstallDialog(
   auto dialog_model =
       ui::DialogModel::Builder(std::move(delegate))
           .SetIcon(ui::ImageModel::FromImageSkia(icon_image))
-          .SetTitle(title)  // TODO(pbos): Add secondary-title support for
-                            // base::UTF8ToUTF16(install_info->start_url.host())
+          .SetTitle(title)
+          .SetSubtitle(base::UTF8ToUTF16(start_url_host))
           .AddBodyText(ui::DialogModelLabel(description))
           .AddOkButton(
               base::BindOnce(
