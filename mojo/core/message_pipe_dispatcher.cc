@@ -141,7 +141,7 @@ Dispatcher::Type MessagePipeDispatcher::GetType() const {
 }
 
 MojoResult MessagePipeDispatcher::Close() {
-  base::AutoLock lock(signal_lock_);
+  recordreplay::AutoLockMaybeEventsDisallowed lock(signal_lock_);
   DVLOG(2) << "Closing message pipe " << pipe_id_ << " endpoint " << endpoint_
            << " [port=" << port_.name() << "]";
   return CloseNoLock();
