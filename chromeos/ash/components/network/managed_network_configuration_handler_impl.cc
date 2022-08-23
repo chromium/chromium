@@ -797,7 +797,7 @@ void ManagedNetworkConfigurationHandlerImpl::OnPoliciesApplied(
   network_state_handler_->UpdateBlockedCellularNetworks(
       AllowOnlyPolicyCellularNetworks());
 
-  if (features::IsSimLockPolicyEnabled())
+  if (features::IsSimLockPolicyEnabled() && network_device_handler_)
     network_device_handler_->SetAllowCellularSimLock(AllowCellularSimLock());
 
   if (device_policy_applied_ && user_policy_applied_) {
