@@ -359,10 +359,8 @@ bool OmniboxFieldTrial::IsMaxURLMatchesFeatureEnabled() {
 }
 
 size_t OmniboxFieldTrial::GetMaxURLMatches() {
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   constexpr size_t kDefaultMaxURLMatches = 5;
-#elif BUILDFLAG(IS_IOS)
-  constexpr size_t kDefaultMaxURLMatches = 6;
 #else
   constexpr size_t kDefaultMaxURLMatches = 7;
 #endif
