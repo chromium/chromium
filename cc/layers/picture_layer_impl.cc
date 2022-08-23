@@ -780,6 +780,13 @@ void PictureLayerImpl::UpdateRasterSource(
   if (recording_updated)
     RegisterAnimatedImages();
 
+  // https://linear.app/replay/issue/RUN-467
+  recordreplay::Assert("PictureLayerImpl::UpdateRasterSource #5");
+  for (gfx::Rect rect : *new_invalidation) {
+    recordreplay::Assert("PictureLayerImpl::UpdateRasterSource #5.1 %d %d %d %d",
+                         rect.x(), rect.y(), rect.width(), rect.height());
+  }
+
   // The |new_invalidation| must be cleared before updating tilings since they
   // access the invalidation through the PictureLayerTilingClient interface.
   invalidation_.Clear();
@@ -1920,6 +1927,13 @@ PictureLayerImpl::InvalidateRegionForImages(
   // Note: We can use a rect here since this is only used to track damage for a
   // frame and not raster invalidation.
   UnionUpdateRect(invalidation.bounds());
+
+  // https://linear.app/replay/issue/RUN-467
+  recordreplay::Assert("PictureLayerImpl::InvalidateRegionForImages #5");
+  for (gfx::Rect rect : invalidation) {
+    recordreplay::Assert("PictureLayerImpl::InvalidateRegionForImages #5.1 %d %d %d %d",
+                         rect.x(), rect.y(), rect.width(), rect.height());
+  }
 
   invalidation_.Union(invalidation);
   tilings_->Invalidate(invalidation);
