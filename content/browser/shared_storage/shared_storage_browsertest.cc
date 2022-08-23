@@ -2201,7 +2201,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
       GetSharedStorageBudgetMetadata(GURL(urn_uuid));
   EXPECT_TRUE(metadata);
   EXPECT_EQ(metadata->origin, https_server()->GetOrigin("a.test"));
-  EXPECT_DOUBLE_EQ(metadata->budget_to_charge, 1.0);
+  EXPECT_DOUBLE_EQ(metadata->budget_to_charge, std::log2(3));
 
   EXPECT_TRUE(GetSharedStorageReportingMap(GURL(urn_uuid)).empty());
 

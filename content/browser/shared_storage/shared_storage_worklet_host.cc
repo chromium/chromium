@@ -40,7 +40,6 @@ using OperationResult = storage::SharedStorageManager::OperationResult;
 using GetResult = storage::SharedStorageManager::GetResult;
 
 SharedStorageURNMappingResult CalculateSharedStorageURNMappingResult(
-    bool script_execution_succeeded,
     const url::Origin& shared_storage_origin,
     std::vector<blink::mojom::SharedStorageUrlWithMetadataPtr>
         urls_with_metadata,
@@ -50,13 +49,8 @@ SharedStorageURNMappingResult CalculateSharedStorageURNMappingResult(
   DCHECK(!failed_due_to_no_budget);
   DCHECK_GT(urls_with_metadata.size(), 0u);
   DCHECK_LT(index, urls_with_metadata.size());
-  DCHECK(script_execution_succeeded || index == 0);
 
-  double budget_to_charge =
-      (urls_with_metadata.size() > 1u)
-          ? (script_execution_succeeded ? std::log2(urls_with_metadata.size())
-                                        : 1.0)
-          : 0.0;
+  double budget_to_charge = std::log2(urls_with_metadata.size());
 
   // If we are running out of budget, consider this mapping to be failed. Use
   // the default URL, and there's no need to further charge the budget.
@@ -113,8 +107,7 @@ SharedStorageWorkletHost::~SharedStorageWorkletHost() {
     page_->fenced_frame_urls_map().OnSharedStorageURNMappingResultDetermined(
         urn_uuid,
         CalculateSharedStorageURNMappingResult(
-            /*script_execution_succeeded=*/false, shared_storage_origin_,
-            std::move(it->second),
+            shared_storage_origin_, std::move(it->second),
             /*index=*/0, /*budget_remaining=*/0.0, failed_due_to_no_budget));
 
     it = unresolved_urns_.erase(it);
@@ -585,9 +578,8 @@ void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
     bool failed_due_to_no_budget = false;
     SharedStorageURNMappingResult mapping_result =
         CalculateSharedStorageURNMappingResult(
-            script_execution_succeeded, shared_storage_origin_,
-            std::move(urls_with_metadata), index, budget_result.bits,
-            failed_due_to_no_budget);
+            shared_storage_origin_, std::move(urls_with_metadata), index,
+            budget_result.bits, failed_due_to_no_budget);
 
     if (document_service_) {
       DCHECK(!IsInKeepAlivePhase());
