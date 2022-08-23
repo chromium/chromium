@@ -568,24 +568,10 @@ class WPTResultsProcessor(object):
         # Delete the current node if empty.
         return len(current_node) == 0
 
-    def _get_wpt_revision(self):
-        version_path = self.fs.join(self.web_tests_dir, 'external', 'Version')
-        target = 'Version:'
-        with self.fs.open_text_file_for_reading(version_path) as version_file:
-            for line in version_file:
-                if line.startswith(target):
-                    rev = line[len(target):].strip()
-                    return rev
-        return None
-
     def process_wpt_report(self, report_path):
         """Process and upload a wpt report to result sink."""
         with self.fs.open_text_file_for_reading(report_path) as report_file:
             report = json.load(report_file)
-        rev = self._get_wpt_revision()
-        # Update with upstream revision
-        if rev:
-            report['run_info']['revision'] = rev
         report_filename = self.fs.basename(report_path)
         artifact_path = self.fs.join(self.artifacts_dir, report_filename)
         with self.fs.open_text_file_for_writing(artifact_path) as report_file:

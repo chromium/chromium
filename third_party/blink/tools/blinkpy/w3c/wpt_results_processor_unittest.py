@@ -106,9 +106,6 @@ class WPTResultsProcessorTest(LoggingTestCase):
                                                    'results.html'),
             'results-viewer-body')
         self.fs.write_text_file(
-            self.fs.join(port.web_tests_dir(), 'external', 'Version'),
-            'Version: afd66ac5976672821b2788cd5f6ae57701240308\n')
-        self.fs.write_text_file(
             self.wpt_report_path,
             json.dumps({
                 'run_info': {
@@ -911,7 +908,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
         self.assertEqual(run_info['os_version'], '18.04')
         self.assertEqual(run_info['product'], 'chrome')
         self.assertEqual(run_info['revision'],
-                         'afd66ac5976672821b2788cd5f6ae57701240308')
+                         '57a5dfb2d7d6253fbb7dbd7c43e7588f9339f431')
         artifacts = self.processor.sink.invocation_level_artifacts
         artifact_path = self.fs.join(self.processor.artifacts_dir,
                                      'wpt_report.json')

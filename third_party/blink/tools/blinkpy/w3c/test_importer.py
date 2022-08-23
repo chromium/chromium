@@ -193,9 +193,6 @@ class TestImporter(object):
         if not options.auto_update:
             return 0
 
-        if not self.record_version():
-            return 1
-
         if not self.run_commit_queue_for_cl():
             return 1
 
@@ -204,17 +201,6 @@ class TestImporter(object):
             return 1
 
         return 0
-
-    def record_version(self):
-        _log.info('Update external/Version to record upstream ToT.')
-        path_to_version = self.finder.path_from_web_tests('external', 'Version')
-        with open(path_to_version, "w") as f:
-            f.write("Version: %s\n" % self.wpt_revision)
-
-        message = 'Update revision'
-        self._commit_changes(message)
-        self._upload_patchset(message)
-        return True
 
     def update_expectations_for_cl(self):
         """Performs the expectation-updating part of an auto-import job.
