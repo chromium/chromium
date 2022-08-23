@@ -1158,6 +1158,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.ExtensionTelemetry.FilePersistedAtWriteInterval"
+    enum="Boolean" expires_after="2023-01-01">
+  <owner>psarouthakis@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records if the extension telemetry service is persisting a report at a write
+    interval. True represents a persist event during a write interval, false
+    represents a persist event during Chrome shutdown. Recorded when the
+    extension telemetry service persists a telemetry report to disk.
+  </summary>
+</histogram>
+
 <histogram
     name="SafeBrowsing.ExtensionTelemetry.NetworkRequestResponseCodeOrError"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-02-12">

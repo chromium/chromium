@@ -29,6 +29,10 @@ constexpr base::TimeDelta kMaxFileAge = base::Days(3);
 constexpr int kInitialWriteIndex = 0;
 constexpr int kInitialReadIndex = -1;
 constexpr char kPersistedFileNamePrefix[] = "CRXTelemetry_";
+// `kMaxCacheSize` is based off of a 12 hour reporting interval with a 15
+// minute write interval. This value is used to size the UMA metric,
+// there are no plans for the persister to have a cache this large.
+constexpr int kMaxCacheSize = 48;
 
 void RecordWriteResult(bool success) {
   base::UmaHistogramBoolean("SafeBrowsing.ExtensionPersister.WriteResult",
@@ -46,12 +50,9 @@ void RecordPersistedFileSize(size_t size) {
 }
 
 void RecordNumberOfFilesInCacheOnStartup(int cache_size) {
-  // `max_cache_size` is based off of a 12 hour reporting interval with a 15
-  // minute write interval. Add 1 to the `max_cache_size` to account for
-  // zero files in the cache.
-  int max_cache_size = 48;
+  // Add 1 to `kMaxCacheSize` to account for zero files in the cache.
   base::UmaHistogramExactLinear("SafeBrowsing.ExtensionPersister.CacheSize",
-                                cache_size, max_cache_size + 1);
+                                cache_size, kMaxCacheSize + 1);
 }
 
 void RecordAgedFileFound(bool found) {
@@ -65,7 +66,9 @@ ExtensionTelemetryPersister::~ExtensionTelemetryPersister() = default;
 ExtensionTelemetryPersister::ExtensionTelemetryPersister(
     int max_num_files,
     base::FilePath profile_path)
-    : dir_path_(profile_path), max_num_files_(max_num_files) {}
+    : dir_path_(profile_path), max_num_files_(max_num_files) {
+  DCHECK(max_num_files <= kMaxCacheSize);
+}
 
 void ExtensionTelemetryPersister::PersisterInit() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -158,6 +161,10 @@ void ExtensionTelemetryPersister::ClearPersistedFiles() {
   write_index_ = kInitialWriteIndex;
   read_index_ = kInitialReadIndex;
   base::DeletePathRecursively(dir_path_);
+}
+
+int ExtensionTelemetryPersister::MaxFilesSupported() {
+  return kMaxCacheSize;
 }
 
 bool ExtensionTelemetryPersister::DeleteFile(const base::FilePath path) {

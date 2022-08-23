@@ -52,6 +52,9 @@ class ExtensionTelemetryPersister {
   // Deletes the CRXTelemetry directory.
   void ClearPersistedFiles();
 
+  // Returns the max size the persister cache can be.
+  static int MaxFilesSupported();
+
  private:
   // Deletes the file that the `path` variable points to.
   // Returns true if the file is deleted, false otherwise.

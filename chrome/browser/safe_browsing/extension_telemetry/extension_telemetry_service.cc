@@ -51,11 +51,13 @@ using ExtensionInfo =
 
 // Delay before the Telemetry Service checks its last upload time.
 base::TimeDelta kStartupUploadCheckDelaySeconds = base::Seconds(15);
-// The maximum number of telemetry reports stored as files on disk.
-// 35 files will accommodate a planned upload interval of 8 hours
-// with a write interval of 15 minutes with extra space for writes
-// that happen during shutdown.
-int kMaxNumFilesPersisted = 35;
+
+void RecordWhenFileWasPersisted(bool persisted_at_write_interval) {
+  base::UmaHistogramBoolean(
+      "SafeBrowsing.ExtensionTelemetry.FilePersistedAtWriteInterval",
+      persisted_at_write_interval);
+}
+
 void RecordSignalType(ExtensionSignalType signal_type) {
   base::UmaHistogramEnumeration(
       "SafeBrowsing.ExtensionTelemetry.Signals.SignalType", signal_type);
@@ -194,6 +196,18 @@ void ExtensionTelemetryService::SetEnabled(bool enable) {
         ExtensionSignalType::kRemoteHostContacted,
         std::make_unique<RemoteHostContactedSignalProcessor>());
     if (current_reporting_interval_.is_positive()) {
+      int max_files_supported =
+          ExtensionTelemetryPersister::MaxFilesSupported();
+      int writes_per_interval = std::min(
+          max_files_supported, kExtensionTelemetryWritesPerInterval.Get());
+      if (writes_per_interval < 1)
+        writes_per_interval = 1;
+      // Configure persister for the maximum number of reports to be persisted
+      // on disk. This number is the sum of reports written at every
+      // write interval plus an additional allocation (3) for files written at
+      // browser/profile shutdown.
+      int max_reports_to_persist =
+          std::min(writes_per_interval + 3, max_files_supported);
       // Instantiate persister which is used to read/write telemetry reports to
       // disk and start timer for sending periodic telemetry reports.
       if (base::FeatureList::IsEnabled(kExtensionTelemetryPersistence)) {
@@ -201,15 +215,8 @@ void ExtensionTelemetryService::SetEnabled(bool enable) {
             base::ThreadPool::CreateSequencedTaskRunner(
                 {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
                  base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}),
-            kMaxNumFilesPersisted, profile_->GetPath());
+            max_reports_to_persist, profile_->GetPath());
         persister_.AsyncCall(&ExtensionTelemetryPersister::PersisterInit);
-        int writes_per_interval = kExtensionTelemetryWritesPerInterval.Get();
-        // Ensure that the `writes_per_interval` is never larger than the
-        // persister cache or smaller than 1.
-        if (writes_per_interval < 1)
-          writes_per_interval = 1;
-        else if (writes_per_interval > kMaxNumFilesPersisted)
-          writes_per_interval = kMaxNumFilesPersisted;
         timer_.Start(FROM_HERE,
                      current_reporting_interval_ / writes_per_interval, this,
                      &ExtensionTelemetryService::PersistOrUploadData);
@@ -253,6 +260,8 @@ void ExtensionTelemetryService::Shutdown() {
     active_report_->SerializeToString(&write_string);
     persister_.AsyncCall(&ExtensionTelemetryPersister::WriteReport)
         .WithArgs(std::move(write_string));
+
+    RecordWhenFileWasPersisted(/*persisted_at_write_interval=*/false);
   }
   timer_.Stop();
   pref_change_registrar_.RemoveAll();
@@ -387,6 +396,7 @@ void ExtensionTelemetryService::PersistOrUploadData() {
     }
     persister_.AsyncCall(&ExtensionTelemetryPersister::WriteReport)
         .WithArgs(std::move(write_string));
+    RecordWhenFileWasPersisted(/*persisted_at_write_interval=*/true);
   }
 }
 
