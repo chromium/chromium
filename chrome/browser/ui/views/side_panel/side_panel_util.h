@@ -29,7 +29,8 @@ class SidePanelUtil {
     kComboboxSelected = 4,
     kTabChanged = 5,
     kSidePanelEntryDeregistered = 6,
-    kMaxValue = kSidePanelEntryDeregistered,
+    kIPHSideSearchAutoTrigger = 7,
+    kMaxValue = kIPHSideSearchAutoTrigger,
   };
 
   static void PopulateGlobalEntries(Browser* browser,

@@ -6,6 +6,8 @@
 
 #include "base/bind.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/side_search/side_search_utils.h"
@@ -13,6 +15,10 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
+#include "chrome/browser/ui/views/side_search/side_search_views_utils.h"
+#include "components/feature_engagement/public/event_constants.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_handle.h"
@@ -105,6 +111,28 @@ void UnifiedSideSearchController::DidFinishNavigation(
   }
 
   UpdateSidePanel();
+
+  if (ShouldAutomaticallyTriggerAfterNavigation(navigation_handle)) {
+    auto* tracker =
+        feature_engagement::TrackerFactory::GetForBrowserContext(GetProfile());
+    auto* browser_view = GetBrowserView();
+
+    if (!browser_view || !tracker ||
+        !tracker->ShouldTriggerHelpUI(
+            feature_engagement::kIPHSideSearchAutoTriggeringFeature)) {
+      return;
+    }
+
+    browser_view->side_panel_coordinator()->Show(
+        SidePanelEntry::Id::kSideSearch,
+        SidePanelUtil::SidePanelOpenTrigger::kIPHSideSearchAutoTrigger);
+
+    // Note that `Dismiss()` in this case does not dismiss the UI. It's telling
+    // the FE backend that the promo is done so that other promos can run. The
+    // side panel showing should not block other promos from displaying.
+    tracker->Dismissed(feature_engagement::kIPHSideSearchAutoTriggeringFeature);
+    tracker->NotifyEvent(feature_engagement::events::kSideSearchAutoTriggered);
+  }
 }
 
 void UnifiedSideSearchController::OnEntryShown(SidePanelEntry* entry) {
@@ -194,6 +222,10 @@ BrowserView* UnifiedSideSearchController::GetBrowserView() const {
   return browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;
 }
 
+Profile* UnifiedSideSearchController::GetProfile() {
+  return Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+}
+
 void UnifiedSideSearchController::UpdateSidePanel() {
   auto* tab_contents_helper =
       SideSearchTabContentsHelper::FromWebContents(web_contents());
@@ -239,6 +271,42 @@ void UnifiedSideSearchController::UpdateSidePanelRegistry(bool is_available) {
     RecordSideSearchAvailabilityChanged(
         SideSearchAvailabilityChangeType::kBecomeUnavailable);
   }
+}
+
+bool UnifiedSideSearchController::ShouldAutomaticallyTriggerAfterNavigation(
+    content::NavigationHandle* navigation_handle) {
+  // Only trigger the panel automatically if the current tab is the browser's
+  // active tab (it may not necessarily be the active tab if navigation commit
+  // happens after the user switches tabs).
+  auto* browser_view = GetBrowserView();
+  if (!browser_view || browser_view->GetActiveWebContents() != web_contents())
+    return false;
+
+  // If the side search side panel is already open we do not need to
+  // automatically retrigger the panel.
+  if (side_search::IsSideSearchToggleOpen(browser_view))
+    return false;
+
+  auto* tab_contents_helper =
+      SideSearchTabContentsHelper::FromWebContents(web_contents());
+  if (!tab_contents_helper)
+    return false;
+
+  const GURL& previously_committed_url =
+      navigation_handle->GetPreviousPrimaryMainFrameURL();
+  const bool is_renderer_initiated = navigation_handle->IsRendererInitiated();
+  const int auto_triggering_return_count =
+      features::kSideSearchAutoTriggeringReturnCount.Get();
+
+  // Trigger the side panel only if we've returned to the same SRP n times and
+  // this is the first navigation after navigating away from the Google SRP. We
+  // also check to ensure the navigation is renderer initiated to avoid showing
+  // the side panel if the user navigates the tab via the omnibox / bookmarks
+  // etc.
+  return is_renderer_initiated &&
+         tab_contents_helper->returned_to_previous_srp_count() ==
+             auto_triggering_return_count &&
+         previously_committed_url == tab_contents_helper->last_search_url();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(UnifiedSideSearchController);

@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_search/default_search_icon_source.h"
 #include "chrome/browser/ui/views/side_search/side_search_browser_controller.h"
+#include "chrome/browser/ui/views/side_search/side_search_views_utils.h"
 #include "chrome/browser/ui/views/side_search/unified_side_search_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/event_constants.h"
@@ -25,19 +26,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/view_class_properties.h"
-
-namespace {
-
-bool IsSideSearchToggleOpen(BrowserView* browser_view) {
-  if (base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
-    auto* coordinator = browser_view->side_panel_coordinator();
-    return coordinator->IsSidePanelShowing() &&
-           coordinator->GetCurrentEntryId() == SidePanelEntry::Id::kSideSearch;
-  }
-  return browser_view->side_search_controller()->GetSidePanelToggledOpen();
-}
-
-}  // namespace
 
 SideSearchIconView::SideSearchIconView(
     CommandUpdater* command_updater,
@@ -107,7 +95,7 @@ void SideSearchIconView::UpdateImpl() {
   const bool was_visible = GetVisible();
   const bool should_show =
       tab_contents_helper->CanShowSidePanelForCommittedNavigation() &&
-      !IsSideSearchToggleOpen(browser_view);
+      !side_search::IsSideSearchToggleOpen(browser_view);
   SetVisible(should_show);
 
   if (should_show && !was_visible) {
@@ -115,7 +103,7 @@ void SideSearchIconView::UpdateImpl() {
       SetPageActionLabelShown();
       should_extend_label_shown_duration_ = true;
       AnimateIn(absl::nullopt);
-    } else if (tab_contents_helper->returned_to_previous_srp()) {
+    } else if (tab_contents_helper->returned_to_previous_srp_count() > 0) {
       // If we are not animating-in the label text make a request to show the
       // IPH if we detect the user may be engaging in a pogo-sticking journey.
       browser_view->MaybeShowFeaturePromo(

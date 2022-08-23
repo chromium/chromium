@@ -144,6 +144,17 @@ const base::FeatureParam<int> kSideSearchPageActionLabelAnimationMaxCount{
 const base::Feature kClobberAllSideSearchSidePanels{
     "ClobberAllSideSearchSidePanels", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Feature that controls whether or not feature engagement configurations can be
+// used to control automatic triggering for side search.
+const base::Feature kSideSearchAutoTriggering{"SideSearchAutoTriggering",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Feature param that determines how many times a user has to return to a given
+// SRP before we automatically trigger the side search side panel for that SRP
+// on a subsequent navigation.
+const base::FeatureParam<int> kSideSearchAutoTriggeringReturnCount{
+    &kSideSearchAutoTriggering, "SideSearchAutoTriggeringReturnCount", 2};
+
 // Adds improved support for handling multiple contextual and global RHS browser
 // side panels. Designed specifically to handle the interim state before the v2
 // side panel project launches.

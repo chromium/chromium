@@ -38,7 +38,9 @@ class SideSearchBrowserTest : public InProcessBrowserTest {
   void AppendTab(Browser* browser, const GURL& url);
 
   // Navigates the browser's currently active tab to `url`.
-  void NavigateActiveTab(Browser* browser, const GURL& url);
+  void NavigateActiveTab(Browser* browser,
+                         const GURL& url,
+                         bool is_renderer_initiated = false);
 
   // Gets the browser's currently active tab contents.
   content::WebContents* GetActiveSidePanelWebContents(Browser* browser);

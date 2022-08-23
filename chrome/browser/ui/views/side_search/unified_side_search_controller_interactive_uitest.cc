@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/views/side_search/unified_side_search_controller.h"
 
+#include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/side_search/side_search_utils.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -14,8 +16,13 @@
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_search/side_search_browsertest.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/test/test_tracker.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
 // Fixture for testing side panel v2 only. Only instantiate tests for DSE
@@ -526,4 +533,116 @@ IN_PROC_BROWSER_TEST_F(
   // When swtiched to the new tab, side panel web contents should not be
   // destroyed. Otherwise a UAF will occur.
   EXPECT_NE(nullptr, tab_contents_helper->side_panel_contents_for_testing());
+}
+
+class SideSearchV2TestAutoTriggeringBrowserTest : public SideSearchBrowserTest {
+ public:
+  SideSearchV2TestAutoTriggeringBrowserTest() {
+    constexpr char kParam[] = "SideSearchAutoTriggeringReturnCount";
+    constexpr char kTriggerCount[] = "2";
+    base::FieldTrialParams params = {{kParam, kTriggerCount}};
+
+    feature_list_.InitWithFeaturesAndParameters(
+        {
+            {features::kSideSearch, {}},
+            {features::kSideSearchDSESupport, {}},
+            {features::kUnifiedSidePanel, {}},
+            {features::kSideSearchAutoTriggering, params},
+            {feature_engagement::kIPHSideSearchAutoTriggeringFeature,
+             GetFeatureEngagementParams()},
+        },
+        {});
+
+    subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating(&SideSearchV2TestAutoTriggeringBrowserTest::
+                                        RegisterTestTracker));
+  }
+
+  SidePanel* GetSidePanelFor(Browser* browser) override {
+    return BrowserViewFor(browser)->right_aligned_side_panel();
+  }
+
+  // Navigates one page backwards in navigation history and waits for the
+  // navigation to complete.
+  void GoBackInActiveTabFor(Browser* browser) {
+    auto* tab_contents = browser->tab_strip_model()->GetActiveWebContents();
+    content::TestNavigationObserver tab_observer(tab_contents);
+    tab_contents->GetController().GoBack();
+    tab_observer.Wait();
+  }
+
+  void NavigateActiveTabRendererInitiated(Browser* browser, const GURL& url) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url));
+  }
+
+ private:
+  static void RegisterTestTracker(content::BrowserContext* context) {
+    feature_engagement::TrackerFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&CreateTestTracker));
+  }
+
+  static std::unique_ptr<KeyedService> CreateTestTracker(
+      content::BrowserContext*) {
+    return feature_engagement::CreateTestTracker();
+  }
+
+  std::map<std::string, std::string> GetFeatureEngagementParams() {
+    constexpr char kEventUsedKey[] = "event_used";
+    constexpr char kEventUsedValue[] =
+        "name:used;comparator:any;window:360;storage:360";
+    constexpr char kEventTriggerKey[] = "event_trigger";
+    constexpr char kEventTriggerValue[] =
+        "name:trigger;comparator:any;window:360;storage:360";
+    return {{kEventUsedKey, kEventUsedValue},
+            {kEventTriggerKey, kEventTriggerValue}};
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+  base::CallbackListSubscription subscription_;
+};
+
+#if BUILDFLAG(IS_MAC)
+// Test is flaky on Mac.
+#define MAYBE_SidePanelAutoTriggersAfterReturningToAPreviousSRP \
+  DISABLED_SidePanelAutoTriggersAfterReturningToAPreviousSRP
+#else
+#define MAYBE_SidePanelAutoTriggersAfterReturningToAPreviousSRP \
+  SidePanelAutoTriggersAfterReturningToAPreviousSRP
+#endif
+IN_PROC_BROWSER_TEST_F(
+    SideSearchV2TestAutoTriggeringBrowserTest,
+    MAYBE_SidePanelAutoTriggersAfterReturningToAPreviousSRP) {
+  const auto srp_url = GetMatchingSearchUrl();
+  const auto non_srp_url_1 = GetNonMatchingUrl();
+  const auto non_srp_url_2 = GetNonMatchingUrl();
+  const auto non_srp_url_3 = GetNonMatchingUrl();
+  auto* coordinator = BrowserViewFor(browser())->side_panel_coordinator();
+
+  // Navigate once to a non-SRP URL.
+  NavigateActiveTab(browser(), srp_url);
+  NavigateActiveTab(browser(), non_srp_url_1);
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
+
+  // Going back will increase the returned-to-SRP count to 1.
+  GoBackInActiveTabFor(browser());
+
+  // The side panel should not automatically open when navigating to a non-SRP
+  // URL.
+  NavigateActiveTab(browser(), non_srp_url_2);
+  EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
+
+  // Going back will increase the returned-to-SRP count to 2.
+  GoBackInActiveTabFor(browser());
+
+  // Navigating to a non-SRP URL should now automatically trigger the side
+  // search side panel.
+  NavigateActiveTab(browser(), non_srp_url_3, /*is_renderer_initiated=*/true);
+  EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
+  EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
+  EXPECT_EQ(SidePanelEntry::Id::kSideSearch,
+            coordinator->GetCurrentSidePanelEntryForTesting()->id());
 }

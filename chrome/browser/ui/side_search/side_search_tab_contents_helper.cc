@@ -97,8 +97,15 @@ void SideSearchTabContentsHelper::DidFinishNavigation(
   auto* config = GetConfig();
 
   if (config->ShouldNavigateInSidePanel(url)) {
-    returned_to_previous_srp_ = navigation_handle->GetPageTransition() &
-                                ui::PAGE_TRANSITION_FORWARD_BACK;
+    // Keep track of how many times a user returned to the `last_search_url_`
+    // via back-navigation. Reset the count if navigating to a new SRP or
+    // forward through history to an existing SRP.
+    if (navigation_handle->GetNavigationEntryOffset() < 0 &&
+        url == last_search_url_) {
+      ++returned_to_previous_srp_count_;
+    } else {
+      returned_to_previous_srp_count_ = 0;
+    }
 
     // Capture the URL here in case the side contents is closed before the
     // navigation completes.
@@ -260,7 +267,7 @@ void SideSearchTabContentsHelper::ClearHelperState() {
   toggled_open_ = false;
   simple_loader_.reset();
   last_search_url_.reset();
-  returned_to_previous_srp_ = false;
+  returned_to_previous_srp_count_ = 0;
   toggled_open_ = false;
 
   // Notify the side panel after resetting the above state but before clearing
