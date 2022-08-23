@@ -76,11 +76,14 @@ MediaStreamTrack* MediaStreamTrack::FromTransferredState(
 
   MediaErrorState error_state;
   // TODO(1288839): Set media_type, options, callbacks, surface appropriately
-  UserMediaRequest* request = UserMediaRequest::Create(
+  UserMediaRequest* const request = UserMediaRequest::Create(
       window, user_media_client, UserMediaRequestType::kDisplayMedia,
       MediaStreamConstraints::Create(),
       MakeGarbageCollected<GetOpenDeviceRequestCallbacks>(), error_state,
       IdentifiableSurface());
+  if (!request) {
+      return nullptr;
+  }
 
   // TODO(1288839): Create a TransferredMediaStreamTrack implementing interfaces
   // supporting BrowserCaptureMediaStreamTrack or FocusableMediaStreamTrack
