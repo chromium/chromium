@@ -66,6 +66,8 @@ void LoadBookmarks(const base::FilePath& path,
       details->set_ids_reassigned(codec.ids_reassigned());
       details->set_guids_reassigned(codec.guids_reassigned());
       details->set_model_meta_info_map(codec.model_meta_info_map());
+      details->set_model_unsynced_meta_info_map(
+          codec.model_unsynced_meta_info_map());
 
       load_index = true;
     }
