@@ -599,6 +599,9 @@ extern const char kEnhancedNetworkVoicesDescription[];
 extern const char kAccessibilityOSSettingsVisibilityName[];
 extern const char kAccessibilityOSSettingsVisibilityDescription[];
 
+extern const char kAccessibilityServiceName[];
+extern const char kAccessibilityServiceDescription[];
+
 extern const char kPostQuantumCECPQ2Name[];
 extern const char kPostQuantumCECPQ2Description[];
 

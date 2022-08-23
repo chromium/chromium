@@ -56332,6 +56332,7 @@ from previous Chrome versions.
   <int value="-1865499199" label="SidePanelDragAndDrop:enabled"/>
   <int value="-1865155026" label="AutoFetchOnNetErrorPage:enabled"/>
   <int value="-1863962664" label="LockScreenNotifications:enabled"/>
+  <int value="-1863249844" label="AccessibilityService:disabled"/>
   <int value="-1863020461" label="PasswordChangeInSettings:enabled"/>
   <int value="-1861814223" label="MidiManagerDynamicInstantiation:enabled"/>
   <int value="-1861278695" label="BulkTabRestore:enabled"/>
@@ -62374,6 +62375,7 @@ from previous Chrome versions.
   <int value="1925213304" label="FillingAcrossAffiliatedWebsites:enabled"/>
   <int value="1925346911" label="AssistEmojiEnhanced:enabled"/>
   <int value="1925627218" label="FullscreenToolbarReveal:disabled"/>
+  <int value="1926334447" label="AccessibilityService:enabled"/>
   <int value="1926524951" label="SystemWebApps:disabled"/>
   <int value="1926548060" label="ArcRightClickLongPress:disabled"/>
   <int value="1927218315" label="ShelfNewUi:disabled"/>

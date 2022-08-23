@@ -1040,6 +1040,11 @@ const char kAccessibilityOSSettingsVisibilityName[] =
 const char kAccessibilityOSSettingsVisibilityDescription[] =
     "This option enables improvements in Accessibility OS Settings visibility.";
 
+const char kAccessibilityServiceName[] = "Experimental Accessibility Service";
+const char kAccessibilityServiceDescription[] =
+    "This option enables the experimental Accessibility Service and runs some "
+    "accessibility features in the service.";
+
 const char kPostQuantumCECPQ2Name[] = "TLS Post-Quantum Confidentiality";
 const char kPostQuantumCECPQ2Description[] =
     "This option enables a post-quantum (i.e. resistent to quantum computers) "
