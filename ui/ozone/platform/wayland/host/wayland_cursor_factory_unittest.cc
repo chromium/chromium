@@ -62,6 +62,13 @@ class WaylandCursorFactoryTest : public WaylandTest,
   void OnThemeLoaded() override {
     ASSERT_TRUE(loop_quit_closure_);
     std::move(loop_quit_closure_).Run();
+    theme_was_loaded_ = true;
+  }
+
+  bool CheckAndReset() {
+    const auto theme_was_loaded = theme_was_loaded_;
+    theme_was_loaded_ = false;
+    return theme_was_loaded;
   }
 
  protected:
@@ -74,6 +81,7 @@ class WaylandCursorFactoryTest : public WaylandTest,
 
  private:
   base::OnceClosure loop_quit_closure_;
+  bool theme_was_loaded_ = false;
 };
 
 // Tests that the factory holds the cursor theme until a buffer taken from it
@@ -85,7 +93,7 @@ TEST_P(WaylandCursorFactoryTest, RetainOldThemeUntilNewBufferIsAttached) {
 
   // The default theme should be loaded right away.  The unloaded theme should
   // not be set.
-  EXPECT_NE(cursor_factory->current_theme_, nullptr);
+  EXPECT_FALSE(cursor_factory->theme_cache_.empty());
   EXPECT_EQ(cursor_factory->unloaded_theme_, nullptr);
 
   WaitForThemeLoaded();
@@ -93,10 +101,12 @@ TEST_P(WaylandCursorFactoryTest, RetainOldThemeUntilNewBufferIsAttached) {
   // Trigger theme reload and ensure that the theme instance has changed.
   // As we didn't request any buffers, the unloaded theme should not be held.
   {
-    auto* const current_theme = cursor_factory->current_theme_.get();
+    auto* const current_theme =
+        cursor_factory->theme_cache_.begin()->second.get();
     cursor_factory->OnCursorThemeNameChanged("Theme1");
-    EXPECT_NE(cursor_factory->current_theme_, nullptr);
-    EXPECT_NE(cursor_factory->current_theme_.get(), current_theme);
+    EXPECT_FALSE(cursor_factory->theme_cache_.empty());
+    EXPECT_NE(cursor_factory->theme_cache_.begin()->second.get(),
+              current_theme);
     EXPECT_EQ(cursor_factory->unloaded_theme_, nullptr);
 
     WaitForThemeLoaded();
@@ -109,33 +119,119 @@ TEST_P(WaylandCursorFactoryTest, RetainOldThemeUntilNewBufferIsAttached) {
   // the cursor from the "unloaded" theme.  This must not trigger unloading of
   // that theme.
   {
-    auto* const current_theme = cursor_factory->current_theme_.get();
+    auto* const used_current_theme =
+        cursor_factory->theme_cache_.begin()->second.get();
     auto const cursor =
         cursor_factory->GetDefaultCursor(mojom::CursorType::kPointer);
     EXPECT_NE(cursor, nullptr);
-    EXPECT_GT(cursor_factory->current_theme_->cache.size(), 0U);
+    EXPECT_GT(used_current_theme->cache.size(), 0U);
 
-    cursor_factory->OnCursorThemeNameChanged("Theme2");
+    for (const auto* name : {"Theme2", "Theme3", "Theme2", "Theme3"}) {
+      cursor_factory->OnCursorThemeNameChanged(name);
 
-    EXPECT_EQ(cursor_factory->current_theme_->cache.size(), 0U);
-    EXPECT_NE(cursor_factory->current_theme_, nullptr);
-    EXPECT_NE(cursor_factory->current_theme_.get(), current_theme);
-    EXPECT_EQ(cursor_factory->unloaded_theme_.get(), current_theme);
+      ASSERT_EQ(cursor_factory->theme_cache_.size(), 1U);
+      auto* const new_current_theme =
+          cursor_factory->theme_cache_.begin()->second.get();
+      EXPECT_EQ(new_current_theme->cache.size(), 0U);
+      EXPECT_NE(new_current_theme, used_current_theme);
+      EXPECT_EQ(cursor_factory->unloaded_theme_.get(), used_current_theme);
 
-    WaitForThemeLoaded();
-
-    cursor_factory->OnCursorThemeNameChanged("Theme3");
-
-    EXPECT_EQ(cursor_factory->current_theme_->cache.size(), 0U);
-    EXPECT_NE(cursor_factory->current_theme_, nullptr);
-    EXPECT_NE(cursor_factory->current_theme_.get(), current_theme);
-    EXPECT_EQ(cursor_factory->unloaded_theme_.get(), current_theme);
-
-    WaitForThemeLoaded();
+      WaitForThemeLoaded();
+    }
 
     cursor_factory->OnCursorBufferAttached(static_cast<wl_cursor*>(
         BitmapCursor::FromPlatformCursor(cursor)->platform_data()));
-    EXPECT_EQ(cursor_factory->unloaded_theme_.get(), current_theme);
+    EXPECT_EQ(cursor_factory->unloaded_theme_.get(), used_current_theme);
+  }
+
+  // Finally, tell the factory that we have attached a buffer from the current
+  // theme.  This time the old theme held since a while ago should be freed.
+  {
+    auto const cursor =
+        cursor_factory->GetDefaultCursor(mojom::CursorType::kPointer);
+    EXPECT_NE(cursor, nullptr);
+
+    cursor_factory->OnCursorBufferAttached(static_cast<wl_cursor*>(
+        BitmapCursor::FromPlatformCursor(cursor)->platform_data()));
+
+    EXPECT_EQ(cursor_factory->unloaded_theme_.get(), nullptr);
+  }
+}
+
+// Tests that the factory keeps the caches when either cursor size or buffer
+// scale are changed, and only resets them when the theme is changed.
+TEST_P(WaylandCursorFactoryTest, CachesSizesUntilThemeNameIsChanged) {
+  std::unique_ptr<WaylandCursorFactory> cursor_factory =
+      std::make_unique<DryRunningWaylandCursorFactory>(connection_.get());
+  cursor_factory->AddObserver(this);
+
+  // The default theme should be loaded right away.  The unloaded theme should
+  // not be set.
+  EXPECT_FALSE(cursor_factory->theme_cache_.empty());
+  EXPECT_EQ(cursor_factory->unloaded_theme_, nullptr);
+
+  WaitForThemeLoaded();
+
+  // Trigger theme reload and ensure that the theme instance has changed.
+  // As we didn't request any buffers, the unloaded theme should not be held.
+  {
+    auto* const current_theme =
+        cursor_factory->theme_cache_.begin()->second.get();
+    cursor_factory->OnCursorThemeNameChanged("Theme1");
+    EXPECT_EQ(cursor_factory->theme_cache_.size(), 1U);
+    EXPECT_NE(cursor_factory->theme_cache_.begin()->second.get(),
+              current_theme);
+    EXPECT_EQ(cursor_factory->unloaded_theme_, nullptr);
+
+    WaitForThemeLoaded();
+    EXPECT_TRUE(CheckAndReset());
+  }
+
+  // Now request changing the buffer scale and the cursor size in a number of
+  // combinations.  Each combination of scale and size should create an entry in
+  // the cache keyed as (size * scale), so some combinations overlap, and in the
+  // end there should be 6 entries.  Setting a new size or a new scale should
+  // never trigger the theme reload.
+  EXPECT_EQ(cursor_factory->size_, 24);
+  {
+    for (const auto size : {24, 36, 48}) {
+      for (const auto scale : {1.0, 1.5, 2.0}) {
+        cursor_factory->OnCursorThemeSizeChanged(size);
+        cursor_factory->SetDeviceScaleFactor(scale);
+
+        EXPECT_EQ(
+            cursor_factory->theme_cache_.count(static_cast<int>(size * scale)),
+            1U);
+        base::RunLoop().RunUntilIdle();
+      }
+    }
+    EXPECT_EQ(cursor_factory->theme_cache_.size(), 6U);
+    EXPECT_FALSE(CheckAndReset());
+  }
+
+  // Next, "take" a cursor and then trigger the theme reload.  The factory
+  // should reset the theme cache and have only one theme held because of the
+  // cursor used currently.
+  {
+    auto const cursor =
+        cursor_factory->GetDefaultCursor(mojom::CursorType::kPointer);
+    EXPECT_NE(cursor, nullptr);
+    EXPECT_EQ(cursor_factory->theme_cache_.size(), 6U);
+
+    cursor_factory->OnCursorThemeNameChanged("Theme2");
+
+    ASSERT_EQ(cursor_factory->theme_cache_.size(), 1U);
+    auto* const new_current_theme =
+        cursor_factory->theme_cache_.begin()->second.get();
+    EXPECT_EQ(new_current_theme->cache.size(), 0U);
+    EXPECT_NE(cursor_factory->unloaded_theme_.get(), nullptr);
+
+    WaitForThemeLoaded();
+    EXPECT_TRUE(CheckAndReset());
+
+    cursor_factory->OnCursorBufferAttached(static_cast<wl_cursor*>(
+        BitmapCursor::FromPlatformCursor(cursor)->platform_data()));
+    EXPECT_NE(cursor_factory->unloaded_theme_.get(), nullptr);
   }
 
   // Finally, tell the factory that we have attached a buffer from the current

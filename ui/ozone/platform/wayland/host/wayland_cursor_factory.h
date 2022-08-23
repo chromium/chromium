@@ -51,6 +51,8 @@ class WaylandCursorFactory : public BitmapCursorFactory,
  private:
   FRIEND_TEST_ALL_PREFIXES(WaylandCursorFactoryTest,
                            RetainOldThemeUntilNewBufferIsAttached);
+  FRIEND_TEST_ALL_PREFIXES(WaylandCursorFactoryTest,
+                           CachesSizesUntilThemeNameIsChanged);
 
   struct ThemeData {
     ThemeData();
@@ -66,7 +68,15 @@ class WaylandCursorFactory : public BitmapCursorFactory,
   // WaylandCursorBufferListener:
   void OnCursorBufferAttached(wl_cursor* cursor_data) override;
 
+  // Returns the theme cached for the size and scale set currently.
+  // May return nullptr, which means that the data is not yet loaded.
+  ThemeData* GetCurrentTheme();
+  // Resets the theme cache and triggers loading the theme again, optionally
+  // keeping the existing data until the cursor changes next time.
   void ReloadThemeCursors();
+  // Loads the theme with the current size and scale.  Does nothing if data
+  // already exists.
+  void MaybeLoadThemeCursors();
   void OnThemeLoaded(const std::string& loaded_theme_name,
                      int loaded_theme_size,
                      wl_cursor_theme* loaded_theme);
@@ -83,11 +93,11 @@ class WaylandCursorFactory : public BitmapCursorFactory,
   std::string name_;
   // Current size of cursors
   int size_ = 24;
-
   // The current scale of the mouse cursor icon.
   float scale_ = 1.0f;
 
-  std::unique_ptr<ThemeData> current_theme_;
+  // Maps sizes of the cursor to the cached shapes of those sizes.
+  std::map<int, std::unique_ptr<ThemeData>> theme_cache_;
   // Holds the reference on the unloaded theme until the cursor is released.
   std::unique_ptr<ThemeData> unloaded_theme_;
 
