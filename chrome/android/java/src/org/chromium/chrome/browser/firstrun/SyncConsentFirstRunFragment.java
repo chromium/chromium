@@ -11,11 +11,15 @@ import android.view.accessibility.AccessibilityEvent;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.ui.signin.SyncConsentFragmentBase;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 import java.util.List;
@@ -32,15 +36,6 @@ public class SyncConsentFirstRunFragment
     // Do not remove. Empty fragment constructor is required for re-creating the fragment from a
     // saved state bundle. See crbug.com/1225102
     public SyncConsentFirstRunFragment() {}
-
-    /**
-     * Returns true if sync will be enabled as soon as the user clicks the "Yes, I'm in" button,
-     * and false if this will be deferred until the main activity starts.
-     */
-    public static boolean shouldEnableImmediately() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_SYNC_IMMEDIATELY_IN_FRE)
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS);
-    }
 
     @Override
     public void onAttach(Context context) {
@@ -83,25 +78,52 @@ public class SyncConsentFirstRunFragment
                     MobileFreProgress.SYNC_CONSENT_SETTINGS_LINK_CLICK);
         }
 
-        if (shouldEnableImmediately()) {
-            // Enable sync now. Leave the account pref empty in FirstRunSignInProcessor, so start()
-            // doesn't try to do it a second time. Only set the advanced setup pref later in
-            // closeAndMaybeOpenSyncSettings(), because settings shouldn't open if
-            // signinAndEnableSync() fails.
-            FirstRunSignInProcessor.setFirstRunFlowSignInAccountName(null);
-            signinAndEnableSync(accountName, settingsClicked, callback);
-        } else {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_SYNC_IMMEDIATELY_IN_FRE)) {
             // Enabling sync is deferred to FirstRunSignInProcessor.start().
             FirstRunSignInProcessor.setFirstRunFlowSignInAccountName(accountName);
             FirstRunSignInProcessor.setFirstRunFlowSignInSetup(settingsClicked);
             getPageDelegate().advanceToNextPage();
             callback.run();
+            return;
         }
+
+        // Enable sync now. Leave the account pref empty in FirstRunSignInProcessor, so start()
+        // doesn't try to do it a second time. Only set the advanced setup pref later in
+        // closeAndMaybeOpenSyncSettings(), because settings shouldn't open if
+        // signinAndEnableSync() fails.
+        FirstRunSignInProcessor.setFirstRunFlowSignInAccountName(null);
+        if (!getPageDelegate().getProperties().getBoolean(IS_CHILD_ACCOUNT, false)) {
+            signinAndEnableSync(accountName, settingsClicked, callback);
+            return;
+        }
+
+        // Special case for child accounts. In rare cases, e.g. if Terms & Conditions is clicked,
+        // SigninChecker might have been triggered before the FRE ends and started sign-in (the
+        // ConsentLevel depends on AllowSyncOffForChildAccounts). In doubt, wait.
+        Profile profile = Profile.getLastUsedRegularProfile();
+        IdentityServicesProvider.get().getSigninManager(profile).runAfterOperationInProgress(() -> {
+            CoreAccountInfo syncingAccount = IdentityServicesProvider.get()
+                                                     .getIdentityManager(profile)
+                                                     .getPrimaryAccountInfo(ConsentLevel.SYNC);
+            if (syncingAccount == null) {
+                signinAndEnableSync(accountName, settingsClicked, callback);
+                return;
+            }
+
+            if (!accountName.equals(syncingAccount.getEmail())) {
+                throw new IllegalStateException(
+                        "Child accounts should only be allowed to sync with a single account");
+            }
+
+            // SigninChecker enabled sync already. Just open settings if needed.
+            closeAndMaybeOpenSyncSettings(settingsClicked);
+            callback.run();
+        });
     }
 
     @Override
     protected void closeAndMaybeOpenSyncSettings(boolean settingsClicked) {
-        assert shouldEnableImmediately();
+        assert ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_SYNC_IMMEDIATELY_IN_FRE);
         // Now that signinAndEnableSync() succeeded, signal whether FirstRunSignInProcessor.start()
         // should open settings.
         FirstRunSignInProcessor.setFirstRunFlowSignInSetup(settingsClicked);

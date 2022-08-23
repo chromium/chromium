@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -68,7 +69,7 @@ public final class FirstRunSignInProcessor {
 
         final String accountName = getFirstRunFlowSignInAccountName();
         if (TextUtils.isEmpty(accountName) && getFirstRunFlowSignInSetup()) {
-            assert SyncConsentFirstRunFragment.shouldEnableImmediately();
+            assert ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_SYNC_IMMEDIATELY_IN_FRE);
             openAdvancedSyncSettings(activity);
             setFirstRunFlowSignInComplete(true);
             return;
