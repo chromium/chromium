@@ -777,6 +777,7 @@ void NativeInputMethodEngineObserver::OnBlur(const std::string& engine_id,
 
   if (assistive_suggester_->IsAssistiveFeatureEnabled())
     assistive_suggester_->OnBlur();
+  autocorrect_manager_->OnBlur();
 
   if (ShouldRouteToNativeMojoEngine(engine_id)) {
     if (IsInputMethodBound()) {

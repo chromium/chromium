@@ -225,10 +225,24 @@ void AutocorrectManager::OnFocus(int context_id) {
   }
 
   context_id_ = context_id;
+  ProcessTextFieldChange();
+}
+
+void AutocorrectManager::OnBlur() {
+  ProcessTextFieldChange();
+}
+
+void AutocorrectManager::ProcessTextFieldChange() {
+  ui::IMEInputContextHandlerInterface* input_context =
+    ui::IMEBridge::Get()->GetInputContextHandler();
+
+  // Clear autocorrect range if any.
+  if (input_context) {
+    HideUndoWindow();
+    input_context->SetAutocorrectRange(gfx::Range());
+  }
 
   if (pending_autocorrect_.has_value()) {
-    // TODO(b/149796494): move this to onblur()
-    HideUndoWindow();
     LogAssistiveAutocorrectAction(
         AutocorrectActions::kUserExitedTextFieldWithUnderline);
     pending_autocorrect_.reset();

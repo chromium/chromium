@@ -62,6 +62,14 @@ class AutocorrectManager {
   // Indicates a new text field is focused, used to save context ID.
   void OnFocus(int context_id);
 
+  // Handles OnBlur event and processes any pending autocorrect range.
+  void OnBlur();
+
+  // Processes the state where a user leaves or focuses a text field. At this
+  // stage any pending autocorrect range is cleared and relevant metrics are
+  // recorded.
+  void ProcessTextFieldChange();
+
   // To show the undo window when cursor is in an autocorrected word, this class
   // is notified of surrounding text changes.
   void OnSurroundingTextChanged(const std::u16string& text,

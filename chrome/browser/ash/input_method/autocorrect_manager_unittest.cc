@@ -47,7 +47,8 @@ void ExpectAutocorrectHistograms(const base::HistogramTester& histogram_tester,
                                  int underlined,
                                  int reverted,
                                  int accepted,
-                                 int cleared_underline) {
+                                 int cleared_underline,
+                                 int exited_text_field_with_underline=0) {
   // Window shown metrics.
   histogram_tester.ExpectBucketCount(kCoverageHistogramName,
                                      AssistiveType::kAutocorrectWindowShown,
@@ -102,8 +103,21 @@ void ExpectAutocorrectHistograms(const base::HistogramTester& histogram_tester,
       kAutocorrectActionHistogramName,
       AutocorrectActions::kUserActionClearedUnderline, cleared_underline);
 
+  // Exited text field with underline.
+  histogram_tester.ExpectBucketCount(
+      kAutocorrectActionHistogramName,
+      AutocorrectActions::kUserExitedTextFieldWithUnderline,
+      exited_text_field_with_underline);
+  if (visible_vk) {
+    histogram_tester.ExpectBucketCount(
+        kVKAutocorrectActionHistogramName,
+        AutocorrectActions::kUserExitedTextFieldWithUnderline,
+        exited_text_field_with_underline);
+  }
+
   const int total_actions =
-      window_shown + underlined + reverted + accepted + cleared_underline;
+      window_shown + underlined + reverted + accepted +
+      cleared_underline + exited_text_field_with_underline;
   const int total_coverage = window_shown + underlined + reverted;
 
   // Count total bucket to test side-effects and make the helper robust against
@@ -410,6 +424,24 @@ TEST_F(AutocorrectManagerTest,
             gfx::Range());
 }
 
+TEST_F(AutocorrectManagerTest,
+       OnBlurClearsAutocorrectRange) {
+  manager_.HandleAutocorrect(gfx::Range(1, 4), u"teh", u"the");
+  manager_.OnBlur();
+
+  EXPECT_EQ(mock_ime_input_context_handler_.GetAutocorrectRange(),
+            gfx::Range());
+}
+
+TEST_F(AutocorrectManagerTest,
+       OnFocusClearsAutocorrectRange) {
+  manager_.HandleAutocorrect(gfx::Range(1, 4), u"teh", u"the");
+  manager_.OnFocus(1);
+
+  EXPECT_EQ(mock_ime_input_context_handler_.GetAutocorrectRange(),
+            gfx::Range());
+}
+
 TEST_F(AutocorrectManagerTest, MovingCursorInsideRangeShowsAssistiveWindow) {
   manager_.OnSurroundingTextChanged(u"the ", /*cursor_pos=*/4,
                                     /*anchor_pos=*/4);
@@ -575,6 +607,33 @@ TEST_F(AutocorrectManagerTest, FocusChangeHidesUndoWindow) {
   EXPECT_CALL(mock_suggestion_handler_,
               SetAssistiveWindowProperties(_, hidden_properties, _));
 
+  manager_.OnFocus(1);
+}
+
+TEST_F(AutocorrectManagerTest, OnFocusRetriesHidingUndoWindow) {
+  manager_.OnSurroundingTextChanged(u"the ", /*cursor_pos=*/4,
+                                    /*anchor_pos=*/4);
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+
+  // Show undo window.
+  AssistiveWindowProperties shown_properties =
+      CreateVisibleUndoWindowProperties(u"teh", u"the");
+  EXPECT_CALL(mock_suggestion_handler_,
+              SetAssistiveWindowProperties(_, shown_properties, _));
+  manager_.OnSurroundingTextChanged(u"the ", /*cursor_pos=*/1,
+                                    /*anchor_pos=*/1);
+
+  // Make it fail to hide window for OnBlur.
+  AssistiveWindowProperties hidden_properties =
+      CreateHiddenUndoWindowProperties();
+  EXPECT_CALL(mock_suggestion_handler_,
+              SetAssistiveWindowProperties(_, hidden_properties, _))
+      .WillOnce(DoAll(SetArgPointee<2>("Error"), Return(false)));
+  manager_.OnBlur();
+
+  // OnFocus must try to hide undo window.
+  EXPECT_CALL(mock_suggestion_handler_,
+              SetAssistiveWindowProperties(_, hidden_properties, _));
   manager_.OnFocus(1);
 }
 
@@ -937,6 +996,58 @@ TEST_F(AutocorrectManagerTest,
                               /*cleared_underline=*/0);
 }
 
+TEST_F(AutocorrectManagerTest, OnBlurRecordsMetricsWhenClearingRange) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+  manager_.OnBlur();
+  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
+                              /*window_shown=*/0, /*underlined=*/1,
+                              /*reverted=*/0, /*accepted=*/0,
+                              /*cleared_underline=*/0,
+                              /*exited_text_field_with_underline=*/1);
+}
+
+TEST_F(AutocorrectManagerTest,
+       OnBlurDoesNoRecordMetricsWhenNoPendingAutocorrectExists) {
+  manager_.OnBlur();
+  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
+                              /*window_shown=*/0, /*underlined=*/0,
+                              /*reverted=*/0, /*accepted=*/0,
+                              /*cleared_underline=*/0,
+                              /*exited_text_field_with_underline=*/0);
+}
+
+TEST_F(AutocorrectManagerTest,
+       OnBlurDoesNoRecordMetricsWhenInputContextIsNull) {
+  // Make Input context null.
+  ui::IMEBridge::Get()->SetInputContextHandler(nullptr);
+  manager_.OnBlur();
+  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
+                              /*window_shown=*/0, /*underlined=*/0,
+                              /*reverted=*/0, /*accepted=*/0,
+                              /*cleared_underline=*/0,
+                              /*exited_text_field_with_underline=*/0);
+}
+
+TEST_F(AutocorrectManagerTest, OnFocusRecordsMetricsWhenClearingRange) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+  manager_.OnFocus(1);
+  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
+                              /*window_shown=*/0, /*underlined=*/1,
+                              /*reverted=*/0, /*accepted=*/0,
+                              /*cleared_underline=*/0,
+                              /*exited_text_field_with_underline=*/1);
+}
+
+TEST_F(AutocorrectManagerTest,
+       OnFocusDoesNoRecordMetricsWhenNoPendingAutocorrectExists) {
+  manager_.OnFocus(1);
+  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
+                              /*window_shown=*/0, /*underlined=*/0,
+                              /*reverted=*/0, /*accepted=*/0,
+                              /*cleared_underline=*/0,
+                              /*exited_text_field_with_underline=*/0);
+}
+
 TEST_F(AutocorrectManagerTest, HandleAutocorrectRecordsMetricsWhenVkIsVisible) {
   keyboard_client_->set_keyboard_visible_for_test(true);
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
@@ -1109,6 +1220,54 @@ TEST_F(AutocorrectManagerTest,
                               /*window_shown=*/0, /*underlined=*/2,
                               /*reverted=*/0, /*accepted=*/1,
                               /*cleared_underline=*/0);
+}
+
+TEST_F(AutocorrectManagerTest,
+       OnBlurDoesNotRecordMetricsForStaleAutocorrectRange) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+
+  // Accept autocorrect implicitly.
+  manager_.OnSurroundingTextChanged(u"the abc", 7, 7);
+  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
+                              /*window_shown=*/0, /*underlined=*/1,
+                              /*reverted=*/0, /*accepted=*/1,
+                              /*cleared_underline=*/0,
+                              /*exited_text_field_with_underline=*/0);
+
+  // Set stale autocorrect range.
+  mock_ime_input_context_handler_.SetAutocorrectRange(gfx::Range(0, 3));
+
+  // Handle a new autocorrect and ensure the metric is not increase twice.
+  manager_.OnBlur();
+  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
+                              /*window_shown=*/0, /*underlined=*/1,
+                              /*reverted=*/0, /*accepted=*/1,
+                              /*cleared_underline=*/0,
+                              /*exited_text_field_with_underline=*/0);
+}
+
+TEST_F(AutocorrectManagerTest,
+       OnFocusDoesNotRecordMetricsForStaleAutocorrectRange) {
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+
+  // Accept autocorrect implicitly.
+  manager_.OnBlur();
+  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
+                              /*window_shown=*/0, /*underlined=*/1,
+                              /*reverted=*/0, /*accepted=*/0,
+                              /*cleared_underline=*/0,
+                              /*exited_text_field_with_underline=*/1);
+
+  // Set stale autocorrect range.
+  mock_ime_input_context_handler_.SetAutocorrectRange(gfx::Range(0, 3));
+
+  // Handle a new autocorrect and ensure the metric is not increase twice.
+  manager_.OnFocus(1);
+  ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
+                              /*window_shown=*/0, /*underlined=*/1,
+                              /*reverted=*/0, /*accepted=*/0,
+                              /*cleared_underline=*/0,
+                              /*exited_text_field_with_underline=*/1);
 }
 
 }  // namespace
