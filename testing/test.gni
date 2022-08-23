@@ -274,10 +274,12 @@ template("test") {
         "use_native_activity",
       ]
 
+      _add_unwind_tables_in_apk = defined(invoker.add_unwind_tables_in_apk) &&
+                                  invoker.add_unwind_tables_in_apk
+
       # Adds the unwind tables from unstripped binary as an asset file in the
       # apk, if |add_unwind_tables_in_apk| is specified by the test.
-      if (defined(invoker.add_unwind_tables_in_apk) &&
-          invoker.add_unwind_tables_in_apk) {
+      if (_add_unwind_tables_in_apk) {
         if (use_android_unwinder_v2) {
           _unwind_table_asset_v2_name = "${target_name}_v2_unwind_assets"
           unwind_table_asset_v2(_unwind_table_asset_v2_name) {
@@ -303,6 +305,13 @@ template("test") {
         configs = []  # Prevent list overwriting warning.
         configs = invoker.configs
 
+        if (_add_unwind_tables_in_apk) {
+          # Remove -gz if present, as dump_syms does not support it.
+          # Add and then remove because "-=" removes all, but errors if none are found.
+          configs += [ "//build/config:compress_debug_sections" ]
+          configs -= [ "//build/config:compress_debug_sections" ]
+        }
+
         # Use a crate name that avoids creating a warning due to double
         # underscore (ie. `__`).
         rs_crate_name = _library_crate_name
@@ -310,7 +319,10 @@ template("test") {
         forward_variables_from(
             invoker,
             "*",
-            [ "deps" ] + _apk_specific_vars + _wrapper_script_vars +
+            [
+                  "configs",
+                  "deps",
+                ] + _apk_specific_vars + _wrapper_script_vars +
                 TESTONLY_AND_VISIBILITY)
 
         # Native targets do not need to depend on java targets. Filter them out
@@ -1105,6 +1117,13 @@ set_defaults("test") {
     configs = default_shared_library_configs
     configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
     configs += [ "//build/config/android:hide_all_but_jni" ]
+
+    # Compress sections to stay under 4gb hard limit on 32-bit current_cpu.
+    # https://crbug.com/1354616
+    if (symbol_level == 2 && !use_debug_fission &&
+        (current_cpu == "arm" || current_cpu == "x86")) {
+      configs += [ "//build/config:compress_debug_sections" ]
+    }
   } else {
     configs = default_executable_configs
     if (is_mac) {

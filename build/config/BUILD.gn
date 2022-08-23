@@ -379,3 +379,10 @@ config("precompiled_headers") {
     }
   }
 }
+
+# Add this config to link steps in order to compress debug sections. This is
+# especially useful on 32-bit architectures in order to keep file sizes under
+# 4gb.
+config("compress_debug_sections") {
+  ldflags = [ "-gz" ]
+}
