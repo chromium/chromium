@@ -4,16 +4,31 @@
 
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './shortcut_input.html.js';
 
-const ModifierKeyCodes = [
-  /*Shift=*/ 16,
-  /*Alt=*/ 17,
-  /*Ctrl=*/ 18,
-  /*MetaLeft=*/ 91,
-  /*MetaRight=*/ 92,
+export interface ShortcutInputElement {
+  $: {
+    input: CrInputElement,
+  };
+}
+
+enum AllowedModifierKeyCodes {
+  SHIFT = 16,
+  ALT = 17,
+  CTRL = 18,
+  META_LEFT = 91,
+  META_RIGHT = 92,
+}
+
+const ModifierKeyCodes: AllowedModifierKeyCodes[] = [
+  AllowedModifierKeyCodes.SHIFT,
+  AllowedModifierKeyCodes.ALT,
+  AllowedModifierKeyCodes.CTRL,
+  AllowedModifierKeyCodes.META_LEFT,
+  AllowedModifierKeyCodes.META_RIGHT,
 ];
 
 /**
@@ -32,19 +47,16 @@ export class ShortcutInputElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @private */
       shortcut_: {
         type: String,
         value: '',
       },
 
-      /** @private */
       pendingShortcut_: {
         type: String,
         value: '',
       },
 
-      /** @private */
       capturing_: {
         type: Boolean,
         value: false,
@@ -52,17 +64,20 @@ export class ShortcutInputElement extends PolymerElement {
     };
   }
 
-  ready() {
+  private shortcut_: string;
+  private pendingShortcut_: string;
+  private capturing_: boolean;
+
+  override ready() {
     super.ready();
-    this.addEventListener('keydown', this.onKeyDown_.bind(this));
-    this.addEventListener('keyup', this.onKeyUp_.bind(this));
-    this.addEventListener('focus', this.startCapture_.bind(this));
-    this.addEventListener('mouseup', this.startCapture_.bind(this));
-    this.addEventListener('blur', this.endCapture_.bind(this));
+    this.addEventListener('keydown', (e) => this.onKeyDown_(e));
+    this.addEventListener('keyup', (e) => this.onKeyUp_(e));
+    this.addEventListener('focus', () => this.startCapture_());
+    this.addEventListener('mouseup', () => this.startCapture_());
+    this.addEventListener('blur', () => this.endCapture_());
   }
 
-  /** @private */
-  startCapture_() {
+  private startCapture_() {
     if (this.capturing_) {
       return;
     }
@@ -71,8 +86,7 @@ export class ShortcutInputElement extends PolymerElement {
     this.capturing_ = true;
   }
 
-  /** @private */
-  endCapture_() {
+  private endCapture_() {
     if (!this.capturing_) {
       return;
     }
@@ -82,40 +96,24 @@ export class ShortcutInputElement extends PolymerElement {
     this.$.input.blur();
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onKeyDown_(e) {
-    this.handleKey_(/** @type {!KeyboardEvent}*/ (e));
+  private onKeyDown_(e: KeyboardEvent) {
+    this.handleKey_(e);
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onKeyUp_(e) {
+  private onKeyUp_(e: KeyboardEvent) {
     e.preventDefault();
     e.stopPropagation();
 
     this.endCapture_();
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeText_() {
+  private computeText_(): string {
     const shortcutString =
         this.capturing_ ? this.pendingShortcut_ : this.shortcut_;
     return shortcutString.split('+').join(' + ');
   }
 
-  /**
-   * @param {!KeyboardEvent} e
-   * @private
-   */
-  handleKey_(e) {
+  private handleKey_(e: KeyboardEvent) {
     // While capturing, we prevent all events from bubbling, to prevent
     // shortcuts from executing and interrupting the input capture.
     e.preventDefault();
@@ -132,12 +130,10 @@ export class ShortcutInputElement extends PolymerElement {
 
   /**
    * Converts a keystroke event to string form.
-   * @param {!KeyboardEvent} e
-   * @return {string} The keystroke as a string.
-   * @private
+   * Returns the keystroke as a string.
    */
-  keystrokeToString_(e) {
-    const output = [];
+  private keystrokeToString_(e: KeyboardEvent): string {
+    const output: string[] = [];
     if (e.metaKey) {
       output.push('Search');
     }
@@ -157,31 +153,23 @@ export class ShortcutInputElement extends PolymerElement {
       // TODO(jimmyxgong): update this to show only the DomKey.
       // Displays in the format: (DomKey)(V-Key)(DomCode), e.g.
       // ([)(219)(BracketLeft).
-      output.push('(' + e.key + ')' + '(' + e.keyCode + ')' +
+      output.push(
+          '(' + e.key + ')' +
+          '(' + e.keyCode + ')' +
           '(' + e.code + ')');
     }
 
     return output.join('+');
   }
 
-  /**
-   * Returns true if the event has valid modifiers.
-   * @param {!KeyboardEvent} e The keyboard event to consider.
-   * @return {boolean} True if the event is valid.
-   * @private
-   */
-  hasValidModifiers_(e) {
+  /** Returns true if the event has valid modifiers. */
+  private hasValidModifiers_(e: KeyboardEvent): boolean {
     // Although Shift is a modifier, it cannot be a standalone modifier for a
     // shortcut.
     return e.ctrlKey || e.altKey || e.metaKey;
   }
 
-  /**
-   * @param {!KeyboardEvent} e
-   * @return {boolean}
-   * @private
-   */
-  isModifierKey_(e) {
+  private isModifierKey_(e: KeyboardEvent): boolean {
     return ModifierKeyCodes.includes(e.keyCode);
   }
 }

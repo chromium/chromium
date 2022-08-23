@@ -6,10 +6,11 @@ import './accelerator_subsection.js';
 import './shortcut_customization_shared.css.js';
 import './shortcut_input.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
+import {AcceleratorSubsectionElement} from './accelerator_subsection.js';
 import {getTemplate} from './shortcuts_page.html.js';
 
 /**
@@ -35,10 +36,6 @@ export class ShortcutsPageElement extends PolymerElement {
         value: () => {},
       },
 
-      /**
-       * @type {!Array<number>}
-       * @private
-       */
       subcategories_: {
         type: Array,
         value: [],
@@ -46,16 +43,12 @@ export class ShortcutsPageElement extends PolymerElement {
     };
   }
 
-  /** @override */
-  constructor() {
-    super();
+  initialData: {category: number};
+  private subcategories_: number[];
+  private lookupManager_: AcceleratorLookupManager =
+      AcceleratorLookupManager.getInstance();
 
-    /** @private {!AcceleratorLookupManager} */
-    this.lookupManager_ = AcceleratorLookupManager.getInstance();
-  }
-
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
     this.updateAccelerators();
   }
@@ -67,17 +60,22 @@ export class ShortcutsPageElement extends PolymerElement {
       return;
     }
 
-    const subcategories = [];
+    const subcategories: number[] = [];
     for (const key of subcatMap.keys()) {
       subcategories.push(key);
     }
     this.subcategories_ = subcategories;
   }
 
-  updateSubsections() {
+  private getAllSubsections_(): NodeListOf<AcceleratorSubsectionElement> {
     const subsections =
-        this.shadowRoot.querySelectorAll('accelerator-subsection');
-    for (const subsection of subsections) {
+        this.shadowRoot!.querySelectorAll('accelerator-subsection');
+    assert(subsections);
+    return subsections;
+  }
+
+  updateSubsections() {
+    for (const subsection of this.getAllSubsections_()) {
       subsection.updateSubsection();
     }
   }

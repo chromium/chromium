@@ -30,8 +30,8 @@ web_component_files = [
   "accelerator_view.js",
   "input_key.ts",
   "shortcut_customization_app.ts",
-  "shortcut_input.js",
-  "shortcuts_page.js",
+  "shortcut_input.ts",
+  "shortcuts_page.ts",
 ]
 
 html_files = []

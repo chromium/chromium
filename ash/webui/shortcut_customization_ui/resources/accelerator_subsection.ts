@@ -125,5 +125,11 @@ export class AcceleratorSubsectionElement extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'accelerator-subsection': AcceleratorSubsectionElement;
+  }
+}
+
 customElements.define(
     AcceleratorSubsectionElement.is, AcceleratorSubsectionElement);
