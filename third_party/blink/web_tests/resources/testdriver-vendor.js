@@ -445,6 +445,22 @@
     return internals.deleteAllCookies();
   }
 
+  window.test_driver_internal.minimize_window = async () => {
+    window.testRunner.setMainWindowHidden(true);
+    // Wait until the new state is reflected in the document
+    while (!document.hidden) {
+      await new Promise(resolve => setTimeout(resolve, 0));
+    }
+  };
+
+  window.test_driver_internal.set_window_rect = async () => {
+    window.testRunner.setMainWindowHidden(false);
+    // Wait until the new state is reflected in the document
+    while (document.hidden) {
+      await new Promise(resolve => setTimeout(resolve, 0));
+    }
+  };
+
   // Enable automation so we don't wait for user input on unimplemented APIs
   window.test_driver_internal.in_automation = true;
 
