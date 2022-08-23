@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_METRICS_PROVIDER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/performance_manager/user_tuning/user_performance_tuning_manager.h"
+#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/prefs/pref_change_registrar.h"
 

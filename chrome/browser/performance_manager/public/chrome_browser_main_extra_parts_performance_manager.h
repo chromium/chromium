@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_CHROME_BROWSER_MAIN_EXTRA_PARTS_PERFORMANCE_MANAGER_H_
-#define CHROME_BROWSER_PERFORMANCE_MANAGER_CHROME_BROWSER_MAIN_EXTRA_PARTS_PERFORMANCE_MANAGER_H_
+#ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_PUBLIC_CHROME_BROWSER_MAIN_EXTRA_PARTS_PERFORMANCE_MANAGER_H_
+#define CHROME_BROWSER_PERFORMANCE_MANAGER_PUBLIC_CHROME_BROWSER_MAIN_EXTRA_PARTS_PERFORMANCE_MANAGER_H_
 
 #include <memory>
 
@@ -37,7 +37,7 @@ class ExtensionWatcher;
 namespace user_tuning {
 class ProfileDiscardOptOutListHelper;
 class UserPerformanceTuningManager;
-}
+}  // namespace user_tuning
 
 }  // namespace performance_manager
 
@@ -122,4 +122,4 @@ class ChromeBrowserMainExtraPartsPerformanceManager
 #endif  // !BUILDFLAG(IS_ANDROID)
 };
 
-#endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_CHROME_BROWSER_MAIN_EXTRA_PARTS_PERFORMANCE_MANAGER_H_
+#endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_PUBLIC_CHROME_BROWSER_MAIN_EXTRA_PARTS_PERFORMANCE_MANAGER_H_

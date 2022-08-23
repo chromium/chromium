@@ -498,9 +498,6 @@ include_rules = [
   "-chrome/browser/performance_manager",
   "+chrome/browser/performance_manager/public",
   "+chrome/browser/performance_manager/test_support",
-  "+chrome/browser/performance_manager/chrome_browser_main_extra_parts_performance_manager.h",
-  "+chrome/browser/performance_manager/chrome_content_browser_client_performance_manager_part.h",
-  "+chrome/browser/performance_manager/metrics/metrics_provider.h",
 
   # Explicitly disallow using SyncMessageFilter to prevent browser from
   # sending synchronous IPC messages on non-UI threads.
