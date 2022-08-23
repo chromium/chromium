@@ -512,14 +512,15 @@ GPUExternalTexture::GPUExternalTexture(
     status_ = Status::Destroyed;
 }
 
-void GPUExternalTexture::Destroy() {
+bool GPUExternalTexture::Destroy() {
   if (status_ == Status::Destroyed)
-    return;
+    return false;
 
   status_ = Status::Destroyed;
 
   DCHECK(mailbox_texture_);
   mailbox_texture_.reset();
+  return true;
 }
 
 void GPUExternalTexture::ListenToHTMLVideoElement(HTMLVideoElement* video) {
@@ -577,11 +578,9 @@ void GPUExternalTexture::ExpireExternalTextureFromVideoFrame() {
 }
 
 void GPUExternalTexture::ExpireExternalTexture() {
-  if (expired())
-    return;
-
-  device()->RemoveActiveExternalTexture(this);
-  Destroy();
+  if (Destroy()) {
+    device()->RemoveActiveExternalTexture(this);
+  }
 }
 
 void GPUExternalTexture::ListenToVideoFrame(VideoFrame* frame) {
