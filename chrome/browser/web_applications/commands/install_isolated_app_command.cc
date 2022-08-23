@@ -158,6 +158,10 @@ InstallIsolatedAppCommand::CreateInstallInfoFromManifest(
 
   info.manifest_id = *encoded_id;
 
+  if (manifest.scope != GURL{url_}.Resolve("/")) {
+    return absl::nullopt;
+  }
+
   return info;
 }
 
