@@ -16,21 +16,21 @@ namespace apps {
 namespace {
 // TODO(b/238394602): Use fake data for now. Update to generate from real data
 // when real data is ready.
-std::unique_ptr<proto::DuplicatedAppsMap> PopulateDuplicatedAppsMap() {
-  std::unique_ptr<proto::DuplicatedAppsMap> duplicated_apps_map =
-      std::make_unique<proto::DuplicatedAppsMap>();
-  auto* map = duplicated_apps_map->mutable_duplicated_apps_map();
+std::unique_ptr<proto::DuplicatedGroupList> PopulateDuplicatedGroupList() {
+  std::unique_ptr<proto::DuplicatedGroupList> duplicated_group_list =
+      std::make_unique<proto::DuplicatedGroupList>();
+  auto* add_group = duplicated_group_list->add_duplicate_group();
   proto::DuplicateGroup duplicate_group;
-  auto* arc_app = duplicate_group.add_apps();
+  auto* arc_app = duplicate_group.add_app();
   arc_app->set_app_id_for_platform("test_arc_app_id");
   arc_app->set_source_name("arc");
 
-  auto* web_app = duplicate_group.add_apps();
+  auto* web_app = duplicate_group.add_app();
   web_app->set_app_id_for_platform("test_web_app_id");
   web_app->set_source_name("web");
 
-  (*map)["test_key"] = duplicate_group;
-  return duplicated_apps_map;
+  *add_group = duplicate_group;
+  return duplicated_group_list;
 }
 
 std::unique_ptr<proto::AppWithLocaleList> PopulateAppWithLocaleList(
@@ -68,7 +68,7 @@ void AppProvisioningDataManager::PopulateFromDynamicUpdate(
   // TODO(melzhang) : Add check that version of |app_with_locale_list| is newer.
   app_with_locale_list_ = PopulateAppWithLocaleList(binary_pb);
   if (base::FeatureList::IsEnabled(features::kAppDeduplicationService)) {
-    duplicated_apps_map_ = PopulateDuplicatedAppsMap();
+    duplicated_group_list_ = PopulateDuplicatedGroupList();
   }
   data_dir_ = install_dir;
   OnAppDataUpdated();
@@ -79,7 +79,7 @@ const base::FilePath& AppProvisioningDataManager::GetDataFilePath() {
 }
 
 void AppProvisioningDataManager::OnAppDataUpdated() {
-  if (!app_with_locale_list_ && !duplicated_apps_map_) {
+  if (!app_with_locale_list_ && !duplicated_group_list_) {
     return;
   }
   for (auto& observer : observers_) {
@@ -89,7 +89,7 @@ void AppProvisioningDataManager::OnAppDataUpdated() {
 
 void AppProvisioningDataManager::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
-  if (app_with_locale_list_ || duplicated_apps_map_) {
+  if (app_with_locale_list_ || duplicated_group_list_) {
     NotifyObserver(*observer);
   }
 }
@@ -106,8 +106,8 @@ void AppProvisioningDataManager::NotifyObserver(Observer& observer) {
   }
   // TODO(b/238394602): Add version check so that only notify observer when new
   // version is available.
-  if (duplicated_apps_map_) {
-    observer.OnDuplicatedAppsMapUpdated(*duplicated_apps_map_.get());
+  if (duplicated_group_list_) {
+    observer.OnDuplicatedGroupListUpdated(*duplicated_group_list_.get());
   }
 }
 

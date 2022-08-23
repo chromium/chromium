@@ -1,14 +1,12 @@
 
-^
-SkypeU
+U
 
 com.skype.raiderJphonehub
 
 com.skype.raiderJarc
 
 http://web.skype.com/Jweb
-\
-WhatsAppP
+P
 
 com.whatsappJphonehub
 

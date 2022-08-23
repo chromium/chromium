@@ -26,8 +26,8 @@ class AppProvisioningDataManager {
    public:
     virtual void OnAppWithLocaleListUpdated(
         const proto::AppWithLocaleList& app_with_locale_list) {}
-    virtual void OnDuplicatedAppsMapUpdated(
-        const proto::DuplicatedAppsMap& duplicated_apps_map) {}
+    virtual void OnDuplicatedGroupListUpdated(
+        const proto::DuplicatedGroupList& duplicated_group_list) {}
   };
 
   static AppProvisioningDataManager* Get();
@@ -64,7 +64,7 @@ class AppProvisioningDataManager {
 
   // The latest app data. Starts out as null.
   std::unique_ptr<proto::AppWithLocaleList> app_with_locale_list_;
-  std::unique_ptr<proto::DuplicatedAppsMap> duplicated_apps_map_;
+  std::unique_ptr<proto::DuplicatedGroupList> duplicated_group_list_;
 
   base::ObserverList<Observer> observers_;
 

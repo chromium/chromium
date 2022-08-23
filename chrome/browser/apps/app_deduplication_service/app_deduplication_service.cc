@@ -27,8 +27,8 @@ std::vector<Entry> AppDeduplicationService::GetDuplicates(
   if (it == entry_to_group_map_.end()) {
     return entries;
   }
-  std::string duplication_key = it->second;
-  auto group = duplication_map_.find(duplication_key);
+  uint32_t duplication_index = it->second;
+  auto group = duplication_map_.find(duplication_index);
   if (group == duplication_map_.end()) {
     return entries;
   }
@@ -47,22 +47,26 @@ bool AppDeduplicationService::AreDuplicates(const EntryId& entry_id_1,
   if (it_1 == entry_to_group_map_.end()) {
     return false;
   }
-  const std::string& duplication_key_1 = it_1->second;
+  uint32_t duplication_index_1 = it_1->second;
 
   auto it_2 = entry_to_group_map_.find(entry_id_2);
   if (it_2 == entry_to_group_map_.end()) {
     return false;
   }
-  const std::string& duplication_key_2 = it_2->second;
+  uint32_t duplication_index_2 = it_2->second;
 
-  return duplication_key_1 == duplication_key_2;
+  return duplication_index_1 == duplication_index_2;
 }
 
-void AppDeduplicationService::OnDuplicatedAppsMapUpdated(
-    const proto::DuplicatedAppsMap& duplicated_apps_map) {
-  for (auto const& group : duplicated_apps_map.duplicated_apps_map()) {
+void AppDeduplicationService::OnDuplicatedGroupListUpdated(
+    const proto::DuplicatedGroupList& duplicated_group_list) {
+  // Use the index as the internal indexing key for fast look up. If the
+  // size of the duplicated groups goes over integer 32 limit, a new indexing
+  // key needs to be introduced.
+  uint32_t index = 1;
+  for (auto const& group : duplicated_group_list.duplicate_group()) {
     DuplicateGroup duplicate_group;
-    for (auto const& app : group.second.apps()) {
+    for (auto const& app : group.app()) {
       const std::string& app_id = app.app_id_for_platform();
       const std::string& source = app.source_name();
       EntryId entry_id;
@@ -75,12 +79,13 @@ void AppDeduplicationService::OnDuplicatedAppsMapUpdated(
         entry_id = EntryId(app_id);
       }
 
-      entry_to_group_map_[entry_id] = group.first;
+      entry_to_group_map_[entry_id] = index;
 
       Entry entry(std::move(entry_id));
       duplicate_group.entries.push_back(std::move(entry));
     }
-    duplication_map_[group.first] = std::move(duplicate_group);
+    duplication_map_[index] = std::move(duplicate_group);
+    index++;
   }
 }
 

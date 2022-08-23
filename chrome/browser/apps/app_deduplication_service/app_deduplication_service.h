@@ -33,15 +33,15 @@ class AppDeduplicationService : public KeyedService,
  private:
   friend class AppDeduplicationServiceTest;
   FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceTest,
-                           OnDuplicatedAppsMapUpdated);
+                           OnDuplicatedGroupListUpdated);
   FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceTest, ExactDuplicate);
 
   // AppProvisioningDataManager::Observer:
-  void OnDuplicatedAppsMapUpdated(
-      const proto::DuplicatedAppsMap& duplicated_apps_map) override;
+  void OnDuplicatedGroupListUpdated(
+      const proto::DuplicatedGroupList& duplicated_apps_map) override;
 
-  std::map<std::string, DuplicateGroup> duplication_map_;
-  std::map<EntryId, std::string> entry_to_group_map_;
+  std::map<uint32_t, DuplicateGroup> duplication_map_;
+  std::map<EntryId, uint32_t> entry_to_group_map_;
 
   base::ScopedObservation<AppProvisioningDataManager,
                           AppProvisioningDataManager::Observer>
