@@ -179,10 +179,12 @@ bool DelayUntilCommitIfNecessary(content::RenderFrameHost* rfh,
   if (!rfh)
     return false;
   if (rfh->GetLifecycleState() == LifecycleState::kPendingCommit) {
-    WebContentsHandler::FromWebContents(
-        content::WebContents::FromRenderFrameHost(rfh))
-        ->AddPendingCommitUpdate(rfh->GetGlobalId(),
-                                 base::BindOnce(method, args...));
+    auto* handler = WebContentsHandler::FromWebContents(
+        content::WebContents::FromRenderFrameHost(rfh));
+    if (!handler)
+      return false;
+    handler->AddPendingCommitUpdate(rfh->GetGlobalId(),
+                                    base::BindOnce(method, args...));
     return true;
   }
   return false;
