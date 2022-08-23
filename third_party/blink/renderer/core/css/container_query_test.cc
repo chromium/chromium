@@ -1185,4 +1185,30 @@ TEST_F(ContainerQueryTest, QueryViewportDependency) {
   EXPECT_TRUE(target4->ComputedStyleRef().HasDynamicViewportUnits());
 }
 
+TEST_F(ContainerQueryTest, NoStyleQueryWhenDisabled) {
+  ScopedCSSStyleQueriesForTest scope(false);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @container style(--foo: bar) {
+        span { display: block }
+      }
+      @container (width > 0px) and (not style(--no: match)) {
+        span { vertical-align: middle }
+      }
+    </style>
+    <div style="container-type: inline-size; --foo: bar">
+      <span id="span"></span>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  const ComputedStyle& style =
+      GetDocument().getElementById("span")->ComputedStyleRef();
+  EXPECT_EQ(style.Display(), EDisplay::kInline)
+      << "style() should not match when disabled";
+  EXPECT_EQ(style.VerticalAlign(), EVerticalAlign::kBaseline)
+      << "style() should be unknown when disabled";
+}
+
 }  // namespace blink
