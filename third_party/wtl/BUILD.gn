@@ -7,6 +7,9 @@ config("wtl_includes") {
 
   if (is_clang) {
     defines = [ "_WTL_NO_AUTOMATIC_NAMESPACE" ]
+
+    # See https://crbug.com/1208419.
+    cflags = [ "-Wno-null-pointer-subtraction" ]
   }
 }
 

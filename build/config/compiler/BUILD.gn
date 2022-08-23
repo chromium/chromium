@@ -1507,9 +1507,6 @@ config("default_warnings") {
         # TODO(thakis): https://crbug.com/617318
         # Currently goma can not handle case sensitiveness for windows well.
         cflags += [ "-Wno-nonportable-include-path" ]
-
-        # Warns in ATL headers; see https://crbug.com/1208419.
-        cflags += [ "-Wno-null-pointer-subtraction" ]
       }
 
       cflags += [
