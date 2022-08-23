@@ -149,6 +149,7 @@
 #include "components/metrics/clean_exit_beacon.h"
 #include "components/metrics/environment_recorder.h"
 #include "components/metrics/field_trials_provider.h"
+#include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_log_manager.h"
 #include "components/metrics/metrics_log_uploader.h"
@@ -218,12 +219,6 @@ void RecordUserLogStoreState(UserLogStoreState state) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
-
-// Determines whether the initial log should use the same logic as subsequent
-// logs when building it.
-const base::Feature kConsolidateMetricsServiceInitialLogLogic = {
-    "ConsolidateMetricsServiceInitialLogLogic",
-    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // static
 void MetricsService::RegisterPrefs(PrefRegistrySimple* registry) {
@@ -702,7 +697,7 @@ void MetricsService::FinishedInitTask() {
   state_ = INIT_TASK_DONE;
 
   if (!base::FeatureList::IsEnabled(
-          kConsolidateMetricsServiceInitialLogLogic)) {
+          features::kConsolidateMetricsServiceInitialLogLogic)) {
     // Create the initial log.
     if (!initial_metrics_log_) {
       initial_metrics_log_ = CreateLog(MetricsLog::ONGOING_LOG);
@@ -842,7 +837,8 @@ void MetricsService::StartScheduledUpload() {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(kConsolidateMetricsServiceInitialLogLogic)) {
+  if (base::FeatureList::IsEnabled(
+          features::kConsolidateMetricsServiceInitialLogLogic)) {
     // The first ongoing log should be collected prior to sending any unsent
     // logs.
     if (state_ == INIT_TASK_DONE) {
@@ -856,7 +852,8 @@ void MetricsService::StartScheduledUpload() {
   // If there are unsent logs, send the next one. If not, start the asynchronous
   // process of finalizing the current log for upload.
   bool send_unsent_logs =
-      base::FeatureList::IsEnabled(kConsolidateMetricsServiceInitialLogLogic)
+      base::FeatureList::IsEnabled(
+          features::kConsolidateMetricsServiceInitialLogLogic)
           ? has_unsent_logs()
           : state_ == SENDING_LOGS && has_unsent_logs();
   if (send_unsent_logs) {
@@ -872,7 +869,8 @@ void MetricsService::StartScheduledUpload() {
 
 void MetricsService::OnFinalLogInfoCollectionDone() {
   DVLOG(1) << "OnFinalLogInfoCollectionDone";
-  if (base::FeatureList::IsEnabled(kConsolidateMetricsServiceInitialLogLogic)) {
+  if (base::FeatureList::IsEnabled(
+          features::kConsolidateMetricsServiceInitialLogLogic)) {
     DCHECK(state_ >= INIT_TASK_DONE);
     state_ = SENDING_LOGS;
   }
@@ -884,7 +882,8 @@ void MetricsService::OnFinalLogInfoCollectionDone() {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(kConsolidateMetricsServiceInitialLogLogic)) {
+  if (base::FeatureList::IsEnabled(
+          features::kConsolidateMetricsServiceInitialLogLogic)) {
     CloseCurrentLog();
     OpenNewLog();
     // Trim and store unsent logs, including the log that was just closed, so

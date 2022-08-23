@@ -32,6 +32,7 @@
 #include "components/metrics/client_info.h"
 #include "components/metrics/environment_recorder.h"
 #include "components/metrics/log_decoder.h"
+#include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_state_manager.h"
@@ -290,10 +291,10 @@ class MetricsServiceTestWithConsolidateInitialLogLogicFeature
     MetricsServiceTest::SetUp();
     if (ShouldConsolidateInitialLogLogic()) {
       feature_list_.InitWithFeatures(
-          {kConsolidateMetricsServiceInitialLogLogic}, {});
+          {features::kConsolidateMetricsServiceInitialLogLogic}, {});
     } else {
       feature_list_.InitWithFeatures(
-          {}, {kConsolidateMetricsServiceInitialLogLogic});
+          {}, {features::kConsolidateMetricsServiceInitialLogLogic});
     }
   }
 
@@ -323,10 +324,10 @@ class MetricsServiceTestWithStartupVisibility
     MetricsServiceTest::SetUp();
     if (ShouldConsolidateInitialLogLogic()) {
       feature_list_.InitWithFeatures(
-          {kConsolidateMetricsServiceInitialLogLogic}, {});
+          {features::kConsolidateMetricsServiceInitialLogLogic}, {});
     } else {
       feature_list_.InitWithFeatures(
-          {}, {kConsolidateMetricsServiceInitialLogLogic});
+          {}, {features::kConsolidateMetricsServiceInitialLogLogic});
     }
   }
 

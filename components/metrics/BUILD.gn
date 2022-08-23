@@ -57,6 +57,8 @@ static_library("metrics") {
     "machine_id_provider.h",
     "metrics_data_validation.cc",
     "metrics_data_validation.h",
+    "metrics_features.cc",
+    "metrics_features.h",
     "metrics_log.cc",
     "metrics_log.h",
     "metrics_log_manager.cc",
@@ -203,6 +205,14 @@ static_library("metrics") {
 }
 
 if (is_android) {
+  java_cpp_features("java_features_srcjar") {
+    # External code should depend on ":foo_java" instead.
+    visibility = [ ":*" ]
+    sources = [ "//components/metrics/metrics_features.cc" ]
+    template =
+        "//components/metrics/android/java_templates/MetricsFeatures.java.tmpl"
+  }
+
   java_cpp_strings("java_switches_srcjar") {
     # External code should depend on ":metrics_java" instead.
     visibility = [ ":*" ]
@@ -222,6 +232,7 @@ if (is_android) {
     # files, they should be added here as necessary.
     srcjar_deps = [
       ":java_enum_srcjar",
+      ":java_features_srcjar",
       ":java_switches_srcjar",
     ]
     deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
