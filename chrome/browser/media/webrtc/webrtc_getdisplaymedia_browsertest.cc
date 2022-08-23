@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <vector>
 
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -106,12 +108,16 @@ void RunGetDisplayMedia(content::WebContents* tab,
                         const std::string& constraints,
                         bool is_fake_ui,
                         bool expect_success,
-                        bool is_tab_capture) {
+                        bool is_tab_capture,
+                        const std::string& expected_error = "") {
+  DCHECK(!expect_success || expected_error.empty());
+
   std::string result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
       tab->GetPrimaryMainFrame(),
-      base::StringPrintf("runGetDisplayMedia(%s, \"top-level-document\");",
-                         constraints.c_str()),
+      base::StringPrintf(
+          "runGetDisplayMedia(%s, \"top-level-document\", \"%s\");",
+          constraints.c_str(), expected_error.c_str()),
       &result));
 
 #if BUILDFLAG(IS_MAC)
@@ -122,7 +128,9 @@ void RunGetDisplayMedia(content::WebContents* tab,
   }
 #endif
 
-  EXPECT_EQ(result, expect_success ? "capture-success" : "capture-failure");
+  EXPECT_EQ(result, expect_success           ? "capture-success"
+                    : expected_error.empty() ? "capture-failure"
+                                             : "expected-error");
 }
 
 void UpdateWebContentsTitle(content::WebContents* contents,
@@ -1045,8 +1053,11 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaChangeSourceBrowserTest,
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 class GetDisplayMediaSelfBrowserSurfaceBrowserTest
     : public WebRtcTestBase,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<std::string> {
  public:
+  GetDisplayMediaSelfBrowserSurfaceBrowserTest()
+      : self_browser_surface_(GetParam()) {}
+
   void SetUpInProcessBrowserTestFixture() override {
     WebRtcTestBase::SetUpInProcessBrowserTestFixture();
 
@@ -1063,27 +1074,75 @@ class GetDisplayMediaSelfBrowserSurfaceBrowserTest
         switches::kAutoSelectTabCaptureSourceByTitle, kMainHtmlTitle);
   }
 
-  bool IsSelfBrowserSurfaceInclude() { return GetParam(); }
+  std::string GetConstraints(bool prefer_current_tab = false) const {
+    std::vector<std::string> constraints = {"video: true"};
+    if (!self_browser_surface_.empty()) {
+      constraints.push_back(base::StringPrintf("selfBrowserSurface: \"%s\"",
+                                               self_browser_surface_.c_str()));
+    }
+    if (prefer_current_tab) {
+      constraints.push_back("preferCurrentTab: true");
+    }
+    return "{" + base::JoinString(constraints, ",") + "}";
+  }
+
+  bool IsSelfBrowserSurfaceExclude() const {
+    return self_browser_surface_ == "exclude";
+  }
+
+ protected:
+  // If empty, the constraint is unused. Otherwise, the value is either
+  // "include" or "exclude"
+  const std::string self_browser_surface_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
                          GetDisplayMediaSelfBrowserSurfaceBrowserTest,
-                         testing::Bool());
+                         testing::Values("", "include", "exclude"));
 
 IN_PROC_BROWSER_TEST_P(GetDisplayMediaSelfBrowserSurfaceBrowserTest,
                        SelfBrowserSurfaceChangesCapturedTab) {
   ASSERT_TRUE(embedded_test_server()->Start());
+
+  // This test relies on |capturing_tab| appearing earlier in the media picker,
+  // and being auto-selected earlier if it is offered.
   content::WebContents* other_tab = OpenTestPageInNewTab(kMainHtmlPage);
   content::WebContents* capturing_tab = OpenTestPageInNewTab(kMainHtmlPage);
 
-  const std::string constraints =
-      base::StringPrintf("{video: true, selfBrowserSurface: \"%s\"}",
-                         IsSelfBrowserSurfaceInclude() ? "include" : "exclude");
-  RunGetDisplayMedia(capturing_tab, constraints, /*is_fake_ui=*/false,
+  // Success expected either way, with the *other* tab being captured
+  // when selfBrowserCapture is set to "exclude".
+  RunGetDisplayMedia(capturing_tab, GetConstraints(), /*is_fake_ui=*/false,
                      /*expect_success=*/true, /*is_tab_capture=*/true);
 
-  EXPECT_EQ(IsSelfBrowserSurfaceInclude(), capturing_tab->IsBeingCaptured());
-  EXPECT_EQ(!IsSelfBrowserSurfaceInclude(), other_tab->IsBeingCaptured());
+  EXPECT_EQ(!IsSelfBrowserSurfaceExclude(), capturing_tab->IsBeingCaptured());
+  EXPECT_EQ(IsSelfBrowserSurfaceExclude(), other_tab->IsBeingCaptured());
+}
+
+IN_PROC_BROWSER_TEST_P(GetDisplayMediaSelfBrowserSurfaceBrowserTest,
+                       SelfBrowserSurfaceInteractionWithPreferCurrentTab) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // This test relies on |capturing_tab| appearing earlier in the media picker,
+  // and being auto-selected earlier if it is offered.
+  content::WebContents* other_tab = OpenTestPageInNewTab(kMainHtmlPage);
+  content::WebContents* capturing_tab = OpenTestPageInNewTab(kMainHtmlPage);
+
+  // Test focal point - getDisplayMedia() rejects if preferCurrentTab
+  // and exclude-current-tab are simultaneously specified.
+  // Note that preferCurrentTab is hard-coded in this test while
+  // exclude-current-tab is parameterized.
+  const bool expect_success = (self_browser_surface_ != "exclude");
+  const std::string expected_error =
+      expect_success ? ""
+                     : "TypeError: Failed to execute 'getDisplayMedia' on "
+                       "'MediaDevices': Self-contradictory configuration "
+                       "(preferCurrentTab and selfBrowserSurface=exclude).";
+  RunGetDisplayMedia(capturing_tab, GetConstraints(/*prefer_current_tab=*/true),
+                     /*is_fake_ui=*/false, expect_success,
+                     /*is_tab_capture=*/true, expected_error);
+
+  EXPECT_EQ(!IsSelfBrowserSurfaceExclude(), capturing_tab->IsBeingCaptured());
+  EXPECT_FALSE(other_tab->IsBeingCaptured());
 }
 
 #endif

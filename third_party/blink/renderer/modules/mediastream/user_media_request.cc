@@ -420,10 +420,17 @@ UserMediaRequest* UserMediaRequest::Create(
           V8SystemAudioPreferenceEnum::Enum::kExclude);
 
   // The default is to include.
-  result->set_exclude_self_browser_surface(
+  const bool exclude_self_browser_surface =
       options->hasSelfBrowserSurface() &&
       options->selfBrowserSurface().AsEnum() ==
-          V8SelfCapturePreferenceEnum::Enum::kExclude);
+          V8SelfCapturePreferenceEnum::Enum::kExclude;
+  if (exclude_self_browser_surface && options->preferCurrentTab()) {
+    error_state.ThrowTypeError(
+        "Self-contradictory configuration (preferCurrentTab and "
+        "selfBrowserSurface=exclude).");
+    return nullptr;
+  }
+  result->set_exclude_self_browser_surface(exclude_self_browser_surface);
 
   mojom::blink::PreferredDisplaySurface preferred_display_surface =
       mojom::blink::PreferredDisplaySurface::NO_PREFERENCE;
