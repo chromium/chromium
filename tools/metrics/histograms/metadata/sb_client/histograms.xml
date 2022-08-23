@@ -107,6 +107,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SBClientDownload.DmgIterationSuccess" enum="BooleanSuccess"
     expires_after="2022-09-30">
+  <obsolete>
+    Removed 08-2022. SBClientDownload.DmgArchiveAnalysisResult provides strictly
+    more detail about our ability to unpack DMGs.
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
