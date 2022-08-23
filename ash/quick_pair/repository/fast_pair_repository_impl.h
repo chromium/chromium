@@ -81,6 +81,8 @@ class FastPairRepositoryImpl : public FastPairRepository {
   void UpdateOptInStatus(nearby::fastpair::OptInStatus opt_in_status,
                          UpdateOptInStatusCallback callback) override;
   void GetSavedDevices(GetSavedDevicesCallback callback) override;
+  void IsDeviceSavedToAccount(const std::string& mac_address,
+                              IsDeviceSavedToAccountCallback callback) override;
 
  private:
   void CheckAccountKeysImpl(const AccountKeyFilter& account_key_filter,
@@ -132,6 +134,14 @@ class FastPairRepositoryImpl : public FastPairRepository {
       bool footprints_removal_success);
   void OnGetSavedDevices(
       GetSavedDevicesCallback callback,
+      absl::optional<nearby::fastpair::UserReadDevicesResponse> user_devices);
+
+  // Iterates over the list of |user_devices| and checks if the given
+  // |mac_address| matches any by comparing the
+  // SHA256(concat (account key, mac address)).
+  void CompleteIsDeviceSavedToAccount(
+      const std::string& mac_address,
+      IsDeviceSavedToAccountCallback callback,
       absl::optional<nearby::fastpair::UserReadDevicesResponse> user_devices);
 
   // Internal method called by BluetoothAdapterFactory to provide the adapter

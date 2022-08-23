@@ -19,6 +19,7 @@
 #include "ash/services/quick_pair/public/cpp/account_key_filter.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/base64.h"
 #include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -27,7 +28,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "components/prefs/testing_pref_service.h"
+#include "crypto/sha2.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "device/bluetooth/public/cpp/bluetooth_address.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -37,12 +40,18 @@
 
 namespace {
 
+constexpr int kBluetoothAddressSize = 6;
 constexpr char kValidModelId[] = "abc";
 constexpr char kInvalidModelId[] = "666";
 constexpr char kTestModelId[] = "test_model_id";
 constexpr char kTestDeviceId[] = "test_ble_device_id";
-constexpr char kTestBLEAddress[] = "00:11:22:33:45";
-constexpr char kTestClassicAddress[] = "00:11:22:33:44";
+constexpr char kTestBLEAddress[] = "00:11:22:33:45:11";
+constexpr char kTestClassicAddress1[] = "00:11:22:33:44:55";
+constexpr char kTestClassicAddress2[] = "00:11:22:33:44:66";
+constexpr char kTestClassicAddress3[] = "04:CB:88:1E:56:19";
+constexpr char kBase64ExpectedSha256Hash[] =
+    "gVzzRtZjwYv8lO8xwWnWW2uw/stV6RdEUhv3cIN3nH4=";
+constexpr char kBase64AccountKey[] = "BAcDiEH56/Mq3hW7OKUctA==";
 const std::vector<uint8_t> kAccountKey1{0x11, 0x22, 0x33, 0x44, 0x55, 0x66,
                                         0x77, 0x88, 0x99, 0x00, 0xAA, 0xBB,
                                         0xCC, 0xDD, 0xEE, 0xFF};
@@ -54,6 +63,29 @@ const uint8_t salt = 0xC7;
 
 const char kSavedDeviceGetDevicesResultMetricName[] =
     "Bluetooth.ChromeOS.FastPair.SavedDevices.GetSavedDevices.Result";
+
+// Computes and returns the Sha256 of the concatenation of the given
+// |account_key| and |mac_address|.
+std::string GenerateSha256AccountKeyMacAddress(const std::string& account_key,
+                                               const std::string& mac_address) {
+  std::vector<uint8_t> concat_bytes(account_key.begin(), account_key.end());
+  std::vector<uint8_t> mac_address_bytes;
+  mac_address_bytes.resize(kBluetoothAddressSize);
+  device::ParseBluetoothAddress(mac_address, mac_address_bytes);
+
+  concat_bytes.insert(concat_bytes.end(), mac_address_bytes.begin(),
+                      mac_address_bytes.end());
+  std::array<uint8_t, crypto::kSHA256Length> hashed =
+      crypto::SHA256Hash(concat_bytes);
+
+  return std::string(hashed.begin(), hashed.end());
+}
+
+std::string Base64Decode(const std::string& encoded) {
+  std::string decoded;
+  base::Base64Decode(encoded, &decoded);
+  return decoded;
+}
 
 }  // namespace
 
@@ -77,7 +109,7 @@ class FastPairRepositoryImplTest : public AshTestBase {
         classic_bluetooth_device_(adapter_.get(),
                                   0,
                                   "Test classic name",
-                                  kTestClassicAddress,
+                                  kTestClassicAddress1,
                                   false,
                                   true) {
     ON_CALL(ble_bluetooth_device_, GetIdentifier)
@@ -91,7 +123,7 @@ class FastPairRepositoryImplTest : public AshTestBase {
     ON_CALL(*adapter_, GetDevices).WillByDefault(testing::Return(device_list_));
     ON_CALL(*adapter_, GetDevice(kTestBLEAddress))
         .WillByDefault(Return(&ble_bluetooth_device_));
-    ON_CALL(*adapter_, GetDevice(kTestClassicAddress))
+    ON_CALL(*adapter_, GetDevice(kTestClassicAddress1))
         .WillByDefault(Return(&classic_bluetooth_device_));
   }
 
@@ -100,7 +132,7 @@ class FastPairRepositoryImplTest : public AshTestBase {
     device::BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
     device_ = base::MakeRefCounted<Device>(kTestModelId, kTestBLEAddress,
                                            Protocol::kFastPairInitial);
-    device_->set_classic_address(kTestClassicAddress);
+    device_->set_classic_address(kTestClassicAddress1);
 
     auto http_fetcher = std::make_unique<FakeDeviceMetadataHttpFetcher>();
     metadata_http_fetcher_ = http_fetcher.get();
@@ -276,7 +308,7 @@ TEST_F(FastPairRepositoryImplTest, CheckAccountKeys_Match) {
 TEST_F(FastPairRepositoryImplTest, AssociateAccountKey_InvalidId) {
   auto device = base::MakeRefCounted<Device>(kInvalidModelId, kTestBLEAddress,
                                              Protocol::kFastPairInitial);
-  device->set_classic_address(kTestClassicAddress);
+  device->set_classic_address(kTestClassicAddress1);
   fast_pair_repository_->AssociateAccountKey(device, kAccountKey1);
   base::RunLoop().RunUntilIdle();
 
@@ -286,7 +318,7 @@ TEST_F(FastPairRepositoryImplTest, AssociateAccountKey_InvalidId) {
 TEST_F(FastPairRepositoryImplTest, AssociateAccountKey_ValidId) {
   auto device = base::MakeRefCounted<Device>(kValidModelId, kTestBLEAddress,
                                              Protocol::kFastPairInitial);
-  device->set_classic_address(kTestClassicAddress);
+  device->set_classic_address(kTestClassicAddress1);
   fast_pair_repository_->AssociateAccountKey(device, kAccountKey1);
   base::RunLoop().RunUntilIdle();
 
@@ -297,7 +329,7 @@ TEST_F(FastPairRepositoryImplTest,
        AssociateAccountKeyLocally_InvalidNoAccountKey) {
   auto device = base::MakeRefCounted<Device>(kInvalidModelId, kTestBLEAddress,
                                              Protocol::kFastPairInitial);
-  device->set_classic_address(kTestClassicAddress);
+  device->set_classic_address(kTestClassicAddress1);
   ASSERT_FALSE(fast_pair_repository_->AssociateAccountKeyLocally(device));
   base::RunLoop().RunUntilIdle();
 
@@ -308,7 +340,7 @@ TEST_F(FastPairRepositoryImplTest,
 TEST_F(FastPairRepositoryImplTest, AssociateAccountKeyLocally_ValidAccountKey) {
   auto device = base::MakeRefCounted<Device>(kInvalidModelId, kTestBLEAddress,
                                              Protocol::kFastPairInitial);
-  device->set_classic_address(kTestClassicAddress);
+  device->set_classic_address(kTestClassicAddress1);
   device->SetAdditionalData(Device::AdditionalDataType::kAccountKey,
                             kAccountKey1);
   ASSERT_TRUE(fast_pair_repository_->AssociateAccountKeyLocally(device));
@@ -325,7 +357,7 @@ TEST_F(FastPairRepositoryImplTest, DeleteAssociatedDevice_Valid) {
 
   auto device = base::MakeRefCounted<Device>(kValidModelId, kTestBLEAddress,
                                              Protocol::kFastPairInitial);
-  device->set_classic_address(kTestClassicAddress);
+  device->set_classic_address(kTestClassicAddress1);
   fast_pair_repository_->AssociateAccountKey(device, kAccountKey1);
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(footprints_fetcher_->ContainsKey(kAccountKey1));
@@ -358,7 +390,7 @@ TEST_F(FastPairRepositoryImplTest, DeleteAssociatedDeviceByAccountKey_Valid) {
 
   auto device = base::MakeRefCounted<Device>(kValidModelId, kTestBLEAddress,
                                              Protocol::kFastPairInitial);
-  device->set_classic_address(kTestClassicAddress);
+  device->set_classic_address(kTestClassicAddress1);
   fast_pair_repository_->AssociateAccountKey(device, kAccountKey1);
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(footprints_fetcher_->ContainsKey(kAccountKey1));
@@ -386,7 +418,7 @@ TEST_F(FastPairRepositoryImplTest, FetchDeviceImages) {
 
   auto device = base::MakeRefCounted<Device>(kValidModelId, kTestBLEAddress,
                                              Protocol::kFastPairInitial);
-  device->set_classic_address(kTestClassicAddress);
+  device->set_classic_address(kTestClassicAddress1);
   fast_pair_repository_->FetchDeviceImages(device);
   base::RunLoop().RunUntilIdle();
 
@@ -404,7 +436,7 @@ TEST_F(FastPairRepositoryImplTest, PersistDeviceImages) {
 
   auto device = base::MakeRefCounted<Device>(kValidModelId, kTestBLEAddress,
                                              Protocol::kFastPairInitial);
-  device->set_classic_address(kTestClassicAddress);
+  device->set_classic_address(kTestClassicAddress1);
   fast_pair_repository_->FetchDeviceImages(device);
   fast_pair_repository_->PersistDeviceImages(device);
   base::RunLoop().RunUntilIdle();
@@ -420,7 +452,7 @@ TEST_F(FastPairRepositoryImplTest, EvictDeviceImages) {
 
   auto device = base::MakeRefCounted<Device>(kValidModelId, kTestBLEAddress,
                                              Protocol::kFastPairInitial);
-  device->set_classic_address(kTestClassicAddress);
+  device->set_classic_address(kTestClassicAddress1);
   fast_pair_repository_->FetchDeviceImages(device);
   fast_pair_repository_->PersistDeviceImages(device);
   base::RunLoop().RunUntilIdle();
@@ -520,7 +552,7 @@ TEST_F(FastPairRepositoryImplTest, GetSavedDevices_OptedIn) {
 
   auto device = base::MakeRefCounted<Device>(kValidModelId, kTestBLEAddress,
                                              Protocol::kFastPairInitial);
-  device->set_classic_address(kTestClassicAddress);
+  device->set_classic_address(kTestClassicAddress1);
   fast_pair_repository_->AssociateAccountKey(device, kAccountKey1);
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(footprints_fetcher_->ContainsKey(kAccountKey1));
@@ -601,9 +633,134 @@ TEST_F(FastPairRepositoryImplTest, GetSavedDevices_MissingResponse) {
 }
 
 TEST_F(FastPairRepositoryImplTest, IsAccountKeyPairedLocally) {
-  saved_device_registry_->SaveAccountKey(kTestClassicAddress, kAccountKey1);
+  saved_device_registry_->SaveAccountKey(kTestClassicAddress1, kAccountKey1);
   EXPECT_TRUE(fast_pair_repository_->IsAccountKeyPairedLocally(kAccountKey1));
   EXPECT_FALSE(fast_pair_repository_->IsAccountKeyPairedLocally(kAccountKey2));
+}
+
+TEST_F(FastPairRepositoryImplTest, IsDeviceSavedToAccount_Match) {
+  nearby::fastpair::FastPairInfo info;
+  auto* device = info.mutable_device();
+  device->set_account_key(
+      std::string(kAccountKey1.begin(), kAccountKey1.end()));
+  device->set_sha256_account_key_public_address(
+      GenerateSha256AccountKeyMacAddress(
+          std::string(kAccountKey1.begin(), kAccountKey1.end()),
+          kTestClassicAddress1));
+  nearby::fastpair::UserReadDevicesResponse response;
+  *response.add_fast_pair_info() = info;
+  footprints_fetcher_->SetGetUserDevicesResponse(response);
+
+  base::MockCallback<base::OnceCallback<void(bool)>> callback;
+  EXPECT_CALL(callback, Run(testing::Eq(true))).Times(1);
+  fast_pair_repository_->IsDeviceSavedToAccount(kTestClassicAddress1,
+                                                callback.Get());
+
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FastPairRepositoryImplTest,
+       IsDeviceSavedToAccount_MatchKnownAndroidValues) {
+  // In this test, we use a known triple from Android to ensure this works
+  // cross-platform.
+  nearby::fastpair::FastPairInfo info;
+  auto* device = info.mutable_device();
+  device->set_account_key(Base64Decode(kBase64AccountKey));
+  device->set_sha256_account_key_public_address(
+      Base64Decode(kBase64ExpectedSha256Hash));
+  nearby::fastpair::UserReadDevicesResponse response;
+  *response.add_fast_pair_info() = info;
+  footprints_fetcher_->SetGetUserDevicesResponse(response);
+
+  base::MockCallback<base::OnceCallback<void(bool)>> callback;
+  EXPECT_CALL(callback, Run(testing::Eq(true))).Times(1);
+  fast_pair_repository_->IsDeviceSavedToAccount(kTestClassicAddress3,
+                                                callback.Get());
+
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FastPairRepositoryImplTest, IsDeviceSavedToAccount_NoMatch) {
+  nearby::fastpair::FastPairInfo info;
+  auto* device = info.mutable_device();
+  device->set_account_key(
+      std::string(kAccountKey1.begin(), kAccountKey1.end()));
+  device->set_sha256_account_key_public_address(
+      GenerateSha256AccountKeyMacAddress(
+          std::string(kAccountKey1.begin(), kAccountKey1.end()),
+          kTestClassicAddress1));
+  nearby::fastpair::UserReadDevicesResponse response;
+  *response.add_fast_pair_info() = info;
+  footprints_fetcher_->SetGetUserDevicesResponse(response);
+
+  base::MockCallback<base::OnceCallback<void(bool)>> callback;
+  EXPECT_CALL(callback, Run(testing::Eq(false))).Times(1);
+  fast_pair_repository_->IsDeviceSavedToAccount(kTestClassicAddress2,
+                                                callback.Get());
+
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FastPairRepositoryImplTest, IsDeviceSavedToAccount_MissingResponse) {
+  footprints_fetcher_->SetGetUserDevicesResponse(absl::nullopt);
+
+  base::MockCallback<base::OnceCallback<void(bool)>> callback;
+  EXPECT_CALL(callback, Run(testing::Eq(false))).Times(1);
+  fast_pair_repository_->IsDeviceSavedToAccount(kTestClassicAddress1,
+                                                callback.Get());
+
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FastPairRepositoryImplTest, IsDeviceSavedToAccount_MissingAccountKey) {
+  nearby::fastpair::FastPairInfo info;
+  auto* device = info.mutable_device();
+  device->set_sha256_account_key_public_address(
+      GenerateSha256AccountKeyMacAddress(
+          std::string(kAccountKey1.begin(), kAccountKey1.end()),
+          kTestClassicAddress1));
+  nearby::fastpair::UserReadDevicesResponse response;
+  *response.add_fast_pair_info() = info;
+  footprints_fetcher_->SetGetUserDevicesResponse(response);
+
+  base::MockCallback<base::OnceCallback<void(bool)>> callback;
+  EXPECT_CALL(callback, Run(testing::Eq(false))).Times(1);
+  fast_pair_repository_->IsDeviceSavedToAccount(kTestClassicAddress1,
+                                                callback.Get());
+
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FastPairRepositoryImplTest, IsDeviceSavedToAccount_MissingSha) {
+  nearby::fastpair::FastPairInfo info;
+  auto* device = info.mutable_device();
+  device->set_account_key(
+      std::string(kAccountKey1.begin(), kAccountKey1.end()));
+  nearby::fastpair::UserReadDevicesResponse response;
+  *response.add_fast_pair_info() = info;
+  footprints_fetcher_->SetGetUserDevicesResponse(response);
+
+  base::MockCallback<base::OnceCallback<void(bool)>> callback;
+  EXPECT_CALL(callback, Run(testing::Eq(false))).Times(1);
+  fast_pair_repository_->IsDeviceSavedToAccount(kTestClassicAddress1,
+                                                callback.Get());
+
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FastPairRepositoryImplTest,
+       IsDeviceSavedToAccount_MissingShaAccountKey) {
+  nearby::fastpair::FastPairInfo info;
+  nearby::fastpair::UserReadDevicesResponse response;
+  *response.add_fast_pair_info() = info;
+  footprints_fetcher_->SetGetUserDevicesResponse(response);
+
+  base::MockCallback<base::OnceCallback<void(bool)>> callback;
+  EXPECT_CALL(callback, Run(testing::Eq(false))).Times(1);
+  fast_pair_repository_->IsDeviceSavedToAccount(kTestClassicAddress1,
+                                                callback.Get());
+
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace quick_pair

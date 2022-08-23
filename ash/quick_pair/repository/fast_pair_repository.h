@@ -42,6 +42,7 @@ using DeleteAssociatedDeviceByAccountKeyCallback =
 using GetSavedDevicesCallback =
     base::OnceCallback<void(nearby::fastpair::OptInStatus,
                             std::vector<nearby::fastpair::FastPairDevice>)>;
+using IsDeviceSavedToAccountCallback = base::OnceCallback<void(bool)>;
 
 // The entry point for the Repository component in the Quick Pair system,
 // responsible for connecting to back-end services.
@@ -124,6 +125,13 @@ class FastPairRepository {
   // Gets a list of devices saved to the user's account and the user's opt in
   // status for saving future devices to their account.
   virtual void GetSavedDevices(GetSavedDevicesCallback callback) = 0;
+
+  // Checks if a device with an address |mac_address| is already saved to
+  // the user's account by cross referencing the |mac_address| with any
+  // associated account keys.
+  virtual void IsDeviceSavedToAccount(
+      const std::string& mac_address,
+      IsDeviceSavedToAccountCallback callback) = 0;
 
  protected:
   static void SetInstance(FastPairRepository* instance);

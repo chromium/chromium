@@ -22,9 +22,47 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "chromeos/services/bluetooth_config/public/cpp/device_image_info.h"
+#include "crypto/sha2.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_device.h"
+#include "device/bluetooth/public/cpp/bluetooth_address.h"
+
+namespace {
+
+constexpr int kBluetoothAddressSize = 6;
+
+// Computes and returns the SHA256 of the concatenation of the given
+// |account_key| and |mac_address|.
+std::string GenerateSha256AccountKeyMacAddress(const std::string& account_key,
+                                               const std::string& mac_address) {
+  std::vector<uint8_t> concat_bytes(account_key.begin(), account_key.end());
+  std::vector<uint8_t> mac_address_bytes(kBluetoothAddressSize);
+  device::ParseBluetoothAddress(mac_address, mac_address_bytes);
+
+  concat_bytes.insert(concat_bytes.end(), mac_address_bytes.begin(),
+                      mac_address_bytes.end());
+  std::array<uint8_t, crypto::kSHA256Length> hashed =
+      crypto::SHA256Hash(concat_bytes);
+
+  return std::string(hashed.begin(), hashed.end());
+}
+
+// Checks if the mac address of a FastPairDevice is the same as the given
+// |mac_address| by checking if the SHA256 from the given |device| equals to
+// SHA256(concat(account_key of |device|, |mac_address|)).
+bool IsDeviceSha256Matched(const nearby::fastpair::FastPairDevice& device,
+                           const std::string& mac_address) {
+  if (!device.has_account_key() ||
+      !device.has_sha256_account_key_public_address()) {
+    return false;
+  }
+
+  return device.sha256_account_key_public_address() ==
+         GenerateSha256AccountKeyMacAddress(device.account_key(), mac_address);
+}
+
+}  // namespace
 
 namespace ash {
 namespace quick_pair {
@@ -500,6 +538,42 @@ FastPairRepositoryImpl::GetImagesForDevice(const std::string& device_id) {
   }
 
   return device_image_store_->GetImagesForDeviceModel(hex_model_id.value());
+}
+
+void FastPairRepositoryImpl::IsDeviceSavedToAccount(
+    const std::string& mac_address,
+    IsDeviceSavedToAccountCallback callback) {
+  footprints_fetcher_->GetUserDevices(base::BindOnce(
+      &FastPairRepositoryImpl::CompleteIsDeviceSavedToAccount,
+      weak_ptr_factory_.GetWeakPtr(), mac_address, std::move(callback)));
+}
+
+void FastPairRepositoryImpl::CompleteIsDeviceSavedToAccount(
+    const std::string& mac_address,
+    IsDeviceSavedToAccountCallback callback,
+    absl::optional<nearby::fastpair::UserReadDevicesResponse> user_devices) {
+  QP_LOG(INFO) << __func__;
+
+  if (!user_devices) {
+    QP_LOG(WARNING)
+        << __func__
+        << ": Missing UserReadDevicesResponse from call to Footprints";
+    std::move(callback).Run(false);
+    return;
+  }
+
+  for (const auto& info : user_devices->fast_pair_info()) {
+    if (info.has_device() &&
+        IsDeviceSha256Matched(info.device(), mac_address)) {
+      QP_LOG(VERBOSE) << __func__
+                      << ": found a SHA256 match for device at address = "
+                      << mac_address;
+      std::move(callback).Run(true);
+      return;
+    }
+  }
+
+  std::move(callback).Run(false);
 }
 
 }  // namespace quick_pair

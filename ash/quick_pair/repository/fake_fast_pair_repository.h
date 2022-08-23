@@ -83,6 +83,8 @@ class FakeFastPairRepository : public FastPairRepository {
   void GetSavedDevices(GetSavedDevicesCallback callback) override;
   bool IsAccountKeyPairedLocally(
       const std::vector<uint8_t>& account_key) override;
+  void IsDeviceSavedToAccount(const std::string& mac_address,
+                              IsDeviceSavedToAccountCallback callback) override;
 
  private:
   static void SetInstance(FastPairRepository* instance);

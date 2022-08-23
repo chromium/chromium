@@ -162,5 +162,10 @@ void FakeFastPairRepository::GetSavedDevices(GetSavedDevicesCallback callback) {
   std::move(callback).Run(status_, devices_);
 }
 
+// Unimplemented.
+void FakeFastPairRepository::IsDeviceSavedToAccount(
+    const std::string& mac_address,
+    IsDeviceSavedToAccountCallback callback) {}
+
 }  // namespace quick_pair
 }  // namespace ash
