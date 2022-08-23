@@ -160,6 +160,7 @@ h1 {
   cursor: pointer;
   font: inherit;
   height: 40px;
+  overflow: hidden;
   padding-inline-start: var(--section-padding);
   text-align: start;
   width: 100%;
