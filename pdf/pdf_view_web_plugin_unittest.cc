@@ -254,7 +254,7 @@ class FakePdfViewWebPluginClient : public PdfViewWebPlugin::Client {
 
   MOCK_METHOD(void, ReportFindInPageMatchCount, (int, int, bool), (override));
 
-  MOCK_METHOD(void, ReportFindInPageSelection, (int, int), (override));
+  MOCK_METHOD(void, ReportFindInPageSelection, (int, int, bool), (override));
 
   MOCK_METHOD(void,
               ReportFindInPageTickmarks,

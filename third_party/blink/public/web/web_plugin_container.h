@@ -133,7 +133,9 @@ class WebPluginContainer {
   virtual void ReportFindInPageMatchCount(int identifier,
                                           int total,
                                           bool final_update) = 0;
-  virtual void ReportFindInPageSelection(int identifier, int index) = 0;
+  virtual void ReportFindInPageSelection(int identifier,
+                                         int index,
+                                         bool final_update) = 0;
 
   virtual float PageScaleFactor() = 0;
   virtual float PageZoomFactor() = 0;

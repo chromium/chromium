@@ -72,8 +72,8 @@ void PreviewModeClient::NotifyNumberOfFindResultsChanged(int total,
   NOTREACHED();
 }
 
-void PreviewModeClient::NotifySelectedFindResultChanged(
-    int current_find_index) {
+void PreviewModeClient::NotifySelectedFindResultChanged(int current_find_index,
+                                                        bool final_result) {
   NOTREACHED();
 }
 

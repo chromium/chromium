@@ -171,13 +171,16 @@ class PDFEngine {
 
     // Updates the number of find results for the current search term.  If
     // there are no matches 0 should be passed in.  Only when the plugin has
-    // finished searching should it pass in the final count with final_result
+    // finished searching should it pass in the final count with `final_result`
     // set to true.
     virtual void NotifyNumberOfFindResultsChanged(int total,
                                                   bool final_result) {}
 
-    // Updates the index of the currently selected search item.
-    virtual void NotifySelectedFindResultChanged(int current_find_index) {}
+    // Updates the index of the currently selected search item. Set
+    // `final_result` to true only when there is no subsequent
+    // `NotifyNumberOfFindResultsChanged()` call.
+    virtual void NotifySelectedFindResultChanged(int current_find_index,
+                                                 bool final_result) {}
 
     virtual void NotifyTouchSelectionOccurred() {}
 
