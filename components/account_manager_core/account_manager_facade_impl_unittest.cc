@@ -24,6 +24,7 @@
 #include "components/account_manager_core/account_manager_test_util.h"
 #include "components/account_manager_core/account_manager_util.h"
 #include "components/account_manager_core/mock_account_manager_facade.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -206,7 +207,9 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
   void ReportAuthError(
       crosapi::mojom::AccountKeyPtr account,
       crosapi::mojom::GoogleServiceAuthErrorPtr error) override {
-    NOTIMPLEMENTED();
+    for (auto& observer : observers_) {
+      observer->OnAuthErrorChanged(account->Clone(), error->Clone());
+    }
   }
 
   mojo::Remote<crosapi::mojom::AccountManager> CreateRemote() {
@@ -877,6 +880,24 @@ TEST_F(AccountManagerFacadeImplTest,
   // Expect 1 disconnection.
   EXPECT_EQ(1, histogram_tester().GetTotalSum(
                    kMojoDisconnectionsAccountManagerAccessTokenFetcherRemote));
+}
+
+TEST_F(AccountManagerFacadeImplTest, ReportAuthError) {
+  std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
+      CreateFacade();
+  testing::StrictMock<MockAccountManagerFacadeObserver> observer;
+  account_manager_facade->AddObserver(&observer);
+
+  Account account = CreateTestGaiaAccount(kTestAccountEmail);
+  GoogleServiceAuthError error =
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER);
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer, OnAuthErrorChanged(account.key, error))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+  account_manager_facade->ReportAuthError(account.key, error);
+  run_loop.Run();
 }
 
 }  // namespace account_manager

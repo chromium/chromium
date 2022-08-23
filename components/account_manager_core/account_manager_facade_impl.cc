@@ -567,7 +567,23 @@ void AccountManagerFacadeImpl::OnAccountRemoved(
 void AccountManagerFacadeImpl::OnAuthErrorChanged(
     crosapi::mojom::AccountKeyPtr account,
     crosapi::mojom::GoogleServiceAuthErrorPtr error) {
-  NOTIMPLEMENTED();
+  absl::optional<AccountKey> maybe_account_key = FromMojoAccountKey(account);
+  if (!maybe_account_key) {
+    LOG(WARNING) << "Can't unmarshal account key of type: "
+                 << account->account_type;
+    return;
+  }
+
+  absl::optional<GoogleServiceAuthError> maybe_error =
+      FromMojoGoogleServiceAuthError(error);
+  if (!maybe_error) {
+    LOG(WARNING) << "Can't unmarshal error with state: " << error->state;
+    return;
+  }
+
+  for (auto& observer : observer_list_) {
+    observer.OnAuthErrorChanged(maybe_account_key.value(), maybe_error.value());
+  }
 }
 
 void AccountManagerFacadeImpl::GetAccountsInternal(
