@@ -1314,8 +1314,9 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTestWithMobileEmulation,
 
 // Tests the behavior of cross origin redirection to a PDF with mobile emulation
 // is enabled.
+// TODO(crbug.com/1355793): Re-enable this test
 IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTestWithMobileEmulation,
-                       CrossSiteRedirectionToPDFWithMobileEmulation) {
+                       DISABLED_CrossSiteRedirectionToPDFWithMobileEmulation) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.AddDefaultHandlers(GetChromeTestDataDir());
   ASSERT_TRUE(https_server.Start());
