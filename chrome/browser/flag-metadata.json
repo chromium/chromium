@@ -4476,7 +4476,7 @@
   {
     "name": "new-mobile-identity-consistency-fre",
     "owners": [ "jlebel", "chrome-signin-team" ],
-    "expiry_milestone": 106
+    "expiry_milestone": 112
   },
   {
     "name": "new-overflow-menu",
