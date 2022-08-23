@@ -9,7 +9,8 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../settings_shared.css.js';
 
 import {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
-import {CrRadioButtonBehavior} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button_behavior.js';
+import {CrRadioButtonMixin, CrRadioButtonMixinInterface} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button_mixin.js';
+import {PaperRippleBehavior} from 'chrome://resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './collapse_radio_button.html.js';
@@ -20,8 +21,11 @@ export interface SettingsCollapseRadioButtonElement {
   };
 }
 const SettingsCollapseRadioButtonElementBase =
-    mixinBehaviors([CrRadioButtonBehavior], PolymerElement) as
-    {new (): PolymerElement & CrRadioButtonBehavior};
+    mixinBehaviors([PaperRippleBehavior], CrRadioButtonMixin(PolymerElement)) as
+    {
+      new (): PolymerElement & CrRadioButtonMixinInterface &
+          PaperRippleBehavior,
+    };
 
 export class SettingsCollapseRadioButtonElement extends
     SettingsCollapseRadioButtonElementBase {
@@ -107,6 +111,22 @@ export class SettingsCollapseRadioButtonElement extends
      * Tracks if this button was clicked but wasn't expanded.
      */
     this.pendingUpdateCollapsed_ = false;
+  }
+
+  // Overridden from CrRadioButtonMixin
+  override getPaperRipple() {
+    return this.getRipple();
+  }
+
+  // Overridden from PaperRippleBehavior
+  /* eslint-disable-next-line @typescript-eslint/naming-convention */
+  override _createRipple() {
+    this._rippleContainer = this.shadowRoot!.querySelector('.disc-wrapper');
+    const ripple = super._createRipple();
+    ripple.id = 'ink';
+    ripple.setAttribute('recenters', '');
+    ripple.classList.add('circle', 'toggle-ink');
+    return ripple;
   }
 
   /**

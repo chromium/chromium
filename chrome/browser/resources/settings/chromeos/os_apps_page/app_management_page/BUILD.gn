@@ -251,9 +251,9 @@ js_library("supported_links_item") {
     ":supported_links_overlapping_apps_dialog",
     ":util",
     "../..:metrics_recorder",
-    "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button",
     "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
   ]
+  externs_list = [ "//ui/webui/resources/cr_elements/cr_radio_button/cr_radio_button_externs.js" ]
 }
 
 js_library("util") {

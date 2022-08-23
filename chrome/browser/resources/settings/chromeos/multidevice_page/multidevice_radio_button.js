@@ -7,17 +7,31 @@ import 'chrome://resources/cr_elements/policy/cr_policy_indicator.m.js';
 import 'chrome://resources/polymer/v3_0/iron-a11y-keys-behavior/iron-a11y-keys-behavior.js';
 import '../../settings_shared.css.js';
 
-import {CrRadioButtonBehavior, CrRadioButtonBehaviorInterface} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button_behavior.js';
+import {CrRadioButtonMixin} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button_mixin.js';
+import {PaperRippleBehavior} from 'chrome://resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+class PaperRippleBehaviorInterface {
+  constructor() {
+    /**
+     * @type {?Element}
+     * @protected
+     */
+    this._rippleContainer;
+  }
+
+  /** @return {!HTMLElement} */
+  getRipple() {}
+}
 
 /**
  * @constructor
  * @extends {PolymerElement}
- * @implements {CrRadioButtonBehaviorInterface}
+ * @implements {CrRadioButtonMixinInterface}
+ * @implements {PaperRippleBehaviorInterface}
  */
 const MultideviceRadioButtonElementBase =
-    mixinBehaviors([CrRadioButtonBehavior], PolymerElement);
+    mixinBehaviors([PaperRippleBehavior], CrRadioButtonMixin(PolymerElement));
 
 /** @polymer */
 class MultideviceRadioButtonElement extends MultideviceRadioButtonElementBase {
@@ -56,6 +70,23 @@ class MultideviceRadioButtonElement extends MultideviceRadioButtonElementBase {
   ready() {
     super.ready();
     this.setAttribute('role', 'radio');
+  }
+
+  // Overridden from CrRadioButtonMixin
+  /** @override */
+  getPaperRipple() {
+    return this.getRipple();
+  }
+
+  // Overridden from PaperRippleBehavior
+  /* eslint-disable-next-line @typescript-eslint/naming-convention */
+  _createRipple() {
+    this._rippleContainer = this.shadowRoot.querySelector('.disc-wrapper');
+    const ripple = super._createRipple();
+    ripple.id = 'ink';
+    ripple.setAttribute('recenters', '');
+    ripple.classList.add('circle', 'toggle-ink');
+    return ripple;
   }
 
   getLabel_(label) {
