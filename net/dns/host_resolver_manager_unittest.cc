@@ -706,9 +706,10 @@ TEST_F(HostResolverManagerTest, AsynchronousLookupWithScheme) {
   EXPECT_EQ("host.test", proc_->GetCaptureList()[0].hostname);
 
   const std::pair<const HostCache::Key, HostCache::Entry>* cache_result =
-      GetCacheHit(HostCache::Key(
-          "host.test", DnsQueryType::UNSPECIFIED, 0 /* host_resolver_flags */,
-          HostResolverSource::ANY, NetworkIsolationKey()));
+      GetCacheHit(
+          HostCache::Key(url::SchemeHostPort(url::kHttpScheme, "host.test", 80),
+                         DnsQueryType::UNSPECIFIED, 0 /* host_resolver_flags */,
+                         HostResolverSource::ANY, NetworkIsolationKey()));
   EXPECT_TRUE(cache_result);
 }
 
@@ -5563,7 +5564,17 @@ TEST_F(HostResolverManagerDnsTest, Ipv6UnreachableOnlyDisablesAAAAQuery) {
 
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
-      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbEnableInsecure", "true"}});
+      features::kUseDnsHttpsSvcb,
+      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
+       // Disable timeouts.
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -9997,13 +10008,12 @@ TEST_F(HostResolverManagerDnsTest, HttpsQueryForHttpUpgrade) {
       url::SchemeHostPort(url::kHttpScheme, kName, 80), NetworkIsolationKey(),
       NetLogWithSource(), parameters, resolve_context_.get(),
       resolve_context_->host_cache()));
-  EXPECT_THAT(response.result_error(), IsOk());
+  EXPECT_THAT(response.result_error(), IsError(ERR_DNS_NAME_HTTPS_ONLY));
   EXPECT_FALSE(response.request()->GetAddressResults());
   EXPECT_FALSE(response.request()->GetEndpointResults());
   EXPECT_FALSE(response.request()->GetHostnameResults());
   EXPECT_FALSE(response.request()->GetTextResults());
-  EXPECT_THAT(response.request()->GetExperimentalResultsForTesting(),
-              testing::Pointee(testing::ElementsAre(true)));
+  EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
 }
 
 // Test that HTTPS requests for an http host with port 443 will result in a
@@ -10034,13 +10044,12 @@ TEST_F(HostResolverManagerDnsTest, HttpsQueryForHttpUpgradeFromHttpsPort) {
       url::SchemeHostPort(url::kHttpScheme, kName, 443), NetworkIsolationKey(),
       NetLogWithSource(), parameters, resolve_context_.get(),
       resolve_context_->host_cache()));
-  EXPECT_THAT(response.result_error(), IsOk());
+  EXPECT_THAT(response.result_error(), IsError(ERR_DNS_NAME_HTTPS_ONLY));
   EXPECT_FALSE(response.request()->GetAddressResults());
   EXPECT_FALSE(response.request()->GetEndpointResults());
   EXPECT_FALSE(response.request()->GetHostnameResults());
   EXPECT_FALSE(response.request()->GetTextResults());
-  EXPECT_THAT(response.request()->GetExperimentalResultsForTesting(),
-              testing::Pointee(testing::ElementsAre(true)));
+  EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
 }
 
 TEST_F(HostResolverManagerDnsTest,
@@ -10069,13 +10078,12 @@ TEST_F(HostResolverManagerDnsTest,
       url::SchemeHostPort(url::kHttpScheme, kName, 1111), NetworkIsolationKey(),
       NetLogWithSource(), parameters, resolve_context_.get(),
       resolve_context_->host_cache()));
-  EXPECT_THAT(response.result_error(), IsOk());
+  EXPECT_THAT(response.result_error(), IsError(ERR_DNS_NAME_HTTPS_ONLY));
   EXPECT_FALSE(response.request()->GetAddressResults());
   EXPECT_FALSE(response.request()->GetEndpointResults());
   EXPECT_FALSE(response.request()->GetHostnameResults());
   EXPECT_FALSE(response.request()->GetTextResults());
-  EXPECT_THAT(response.request()->GetExperimentalResultsForTesting(),
-              testing::Pointee(testing::ElementsAre(true)));
+  EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
 }
 
 TEST_F(HostResolverManagerDnsTest, ExperimentalHttpsQuery) {
@@ -10695,7 +10703,19 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryWithNonstandardPort) {
   const char kName[] = "name.test";
   const char kExpectedHttpsQueryName[] = "_108._https.name.test";
 
-  base::test::ScopedFeatureList features(features::kUseDnsHttpsSvcb);
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      features::kUseDnsHttpsSvcb,
+      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
+       // Disable timeouts.
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {BuildTestHttpsServiceRecord(
@@ -10748,7 +10768,19 @@ TEST_F(HostResolverManagerDnsTest,
   const char kName[] = "name.test";
   const char kExpectedHttpsQueryName[] = "_108._https.name.test";
 
-  base::test::ScopedFeatureList features(features::kUseDnsHttpsSvcb);
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      features::kUseDnsHttpsSvcb,
+      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
+       // Disable timeouts.
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {BuildTestHttpsServiceRecord(
@@ -10797,7 +10829,19 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryWithAlpnAndEch) {
   const char kName[] = "name.test";
   const uint8_t kEch[] = "ECH is neato!";
 
-  base::test::ScopedFeatureList features(features::kUseDnsHttpsSvcb);
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      features::kUseDnsHttpsSvcb,
+      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
+       // Disable timeouts.
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {BuildTestHttpsServiceRecord(
@@ -10849,7 +10893,19 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryWithAlpnAndEch) {
 TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryWithNonMatchingPort) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features(features::kUseDnsHttpsSvcb);
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      features::kUseDnsHttpsSvcb,
+      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
+       // Disable timeouts.
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -10893,7 +10949,19 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryWithNonMatchingPort) {
 TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryWithMatchingPort) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features(features::kUseDnsHttpsSvcb);
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      features::kUseDnsHttpsSvcb,
+      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
+       // Disable timeouts.
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -10943,7 +11011,19 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryWithMatchingPort) {
 TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryWithoutAddresses) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features(features::kUseDnsHttpsSvcb);
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      features::kUseDnsHttpsSvcb,
+      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
+       // Disable timeouts.
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -11004,7 +11084,19 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryWithoutAddresses) {
 TEST_F(HostResolverManagerDnsTest, HttpsQueriedInAddressQueryButNoResults) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features(features::kUseDnsHttpsSvcb);
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      features::kUseDnsHttpsSvcb,
+      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
+       // Disable timeouts.
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -11052,7 +11144,16 @@ TEST_F(HostResolverManagerDnsTest,
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbEnforceSecureResponse", "true"}});
+      {{"UseDnsHttpsSvcbEnforceSecureResponse", "true"},
+       // Disable timeouts.
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -11096,7 +11197,16 @@ TEST_F(HostResolverManagerDnsTest,
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbEnforceSecureResponse", "true"}});
+      {{"UseDnsHttpsSvcbEnforceSecureResponse", "true"},
+       // Disable timeouts.
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(kName, dns_protocol::kTypeHttps, /*secure=*/true,
@@ -11142,7 +11252,16 @@ TEST_F(HostResolverManagerDnsTest,
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbEnforceSecureResponse", "true"}});
+      {{"UseDnsHttpsSvcbEnforceSecureResponse", "true"},
+       // Disable timeouts.
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -11186,7 +11305,16 @@ TEST_F(HostResolverManagerDnsTest,
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbEnforceSecureResponse", "false"}});
+      {{"UseDnsHttpsSvcbEnforceSecureResponse", "false"},
+       // Disable timeouts.
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -11231,7 +11359,16 @@ TEST_F(
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbEnforceSecureResponse", "true"}});
+      {{"UseDnsHttpsSvcbEnforceSecureResponse", "true"},
+       // Disable timeouts.
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   // Delay HTTPS result to ensure it comes after A failure.
@@ -11283,7 +11420,17 @@ TEST_F(
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbEnforceSecureResponse", "false"}});
+      {{"UseDnsHttpsSvcbEnforceSecureResponse", "false"},
+       {"UseDnsHttpsSvcbEnableInsecure", "true"},
+       // Disable timeouts.
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   // Delay HTTPS result to ensure it is cancelled after AAAA failure.
@@ -11336,7 +11483,7 @@ TEST_F(
   EXPECT_TRUE(response.request()->GetEndpointResults());
   EXPECT_FALSE(response.request()->GetTextResults());
   EXPECT_FALSE(response.request()->GetHostnameResults());
-  EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
+  EXPECT_TRUE(response.request()->GetExperimentalResultsForTesting());
 }
 
 TEST_F(HostResolverManagerDnsTest, TimeoutHttpsInAddressRequestIsFatal) {
@@ -11345,7 +11492,16 @@ TEST_F(HostResolverManagerDnsTest, TimeoutHttpsInAddressRequestIsFatal) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbEnforceSecureResponse", "true"}});
+      {{"UseDnsHttpsSvcbEnforceSecureResponse", "true"},
+       // Disable timeouts.
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -11388,7 +11544,16 @@ TEST_F(HostResolverManagerDnsTest, ServfailHttpsInAddressRequestIsFatal) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbEnforceSecureResponse", "true"}});
+      {{"UseDnsHttpsSvcbEnforceSecureResponse", "true"},
+       // Disable timeouts.
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -11441,7 +11606,16 @@ TEST_F(HostResolverManagerDnsTest, UnparsableHttpsInAddressRequestIsFatal) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbEnforceSecureResponse", "true"}});
+      {{"UseDnsHttpsSvcbEnforceSecureResponse", "true"},
+       // Disable timeouts.
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -11486,7 +11660,16 @@ TEST_F(HostResolverManagerDnsTest, RefusedHttpsInAddressRequestIsIgnored) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbEnforceSecureResponse", "true"}});
+      {{"UseDnsHttpsSvcbEnforceSecureResponse", "true"},
+       // Disable timeouts.
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -11531,7 +11714,18 @@ TEST_F(HostResolverManagerDnsTest, RefusedHttpsInAddressRequestIsIgnored) {
 TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryForWssScheme) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features(features::kUseDnsHttpsSvcb);
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      features::kUseDnsHttpsSvcb,
+      {// Disable timeouts.
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -11580,7 +11774,18 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryForWssScheme) {
 TEST_F(HostResolverManagerDnsTest, NoHttpsInAddressQueryWithoutScheme) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features(features::kUseDnsHttpsSvcb);
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      features::kUseDnsHttpsSvcb,
+      {// Disable timeouts.
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -11619,7 +11824,18 @@ TEST_F(HostResolverManagerDnsTest, NoHttpsInAddressQueryWithoutScheme) {
 TEST_F(HostResolverManagerDnsTest, NoHttpsInAddressQueryForNonHttpScheme) {
   const char kName[] = "name.test";
 
-  base::test::ScopedFeatureList features(features::kUseDnsHttpsSvcb);
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      features::kUseDnsHttpsSvcb,
+      {// Disable timeouts.
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -11662,7 +11878,17 @@ TEST_F(HostResolverManagerDnsTest,
 
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
-      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbHttpUpgrade", "false"}});
+      features::kUseDnsHttpsSvcb,
+      {{"UseDnsHttpsSvcbHttpUpgrade", "false"},
+       // Disable timeouts.
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -11711,7 +11937,17 @@ TEST_F(HostResolverManagerDnsTest,
 
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
-      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbHttpUpgrade", "true"}});
+      features::kUseDnsHttpsSvcb,
+      {{"UseDnsHttpsSvcbHttpUpgrade", "true"},
+       // Disable timeouts.
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -11755,7 +11991,17 @@ TEST_F(HostResolverManagerDnsTest,
 
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
-      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbHttpUpgrade", "true"}});
+      features::kUseDnsHttpsSvcb,
+      {{"UseDnsHttpsSvcbHttpUpgrade", "true"},
+       // Disable timeouts.
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -11800,7 +12046,17 @@ TEST_F(
 
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
-      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbHttpUpgrade", "true"}});
+      features::kUseDnsHttpsSvcb,
+      {{"UseDnsHttpsSvcbHttpUpgrade", "true"},
+       // Disable timeouts.
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {BuildTestHttpsServiceRecord(
@@ -11852,7 +12108,17 @@ TEST_F(HostResolverManagerDnsTest,
 
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
-      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbHttpUpgrade", "true"}});
+      features::kUseDnsHttpsSvcb,
+      {{"UseDnsHttpsSvcbHttpUpgrade", "true"},
+       // Disable timeouts.
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -11895,7 +12161,17 @@ TEST_F(HostResolverManagerDnsTest, HttpsInSecureModeAddressQuery) {
 
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
-      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbEnableInsecure", "true"}});
+      features::kUseDnsHttpsSvcb,
+      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
+       // Disable timeouts.
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -11938,7 +12214,17 @@ TEST_F(HostResolverManagerDnsTest, HttpsInSecureModeAddressQueryForHttpScheme) {
 
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
-      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbHttpUpgrade", "true"}});
+      features::kUseDnsHttpsSvcb,
+      {{"UseDnsHttpsSvcbHttpUpgrade", "true"},
+       // Disable timeouts.
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -11981,7 +12267,17 @@ TEST_F(HostResolverManagerDnsTest, HttpsInInsecureAddressQuery) {
 
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
-      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbEnableInsecure", "true"}});
+      features::kUseDnsHttpsSvcb,
+      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
+       // Disable timeouts.
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -12030,8 +12326,18 @@ TEST_F(HostResolverManagerDnsTest, HttpsInInsecureAddressQueryForHttpScheme) {
 
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
-      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbHttpUpgrade", "true"},
-                                   {"UseDnsHttpsSvcbEnableInsecure", "true"}});
+      features::kUseDnsHttpsSvcb,
+      {{"UseDnsHttpsSvcbHttpUpgrade", "true"},
+       {"UseDnsHttpsSvcbEnableInsecure", "true"},
+       // Disable timeouts.
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -12071,7 +12377,17 @@ TEST_F(HostResolverManagerDnsTest, FailedHttpsInInsecureAddressRequestIgnored) {
 
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
-      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbEnableInsecure", "true"}});
+      features::kUseDnsHttpsSvcb,
+      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
+       // Disable timeouts.
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -12111,7 +12427,17 @@ TEST_F(HostResolverManagerDnsTest,
 
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
-      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbEnableInsecure", "true"}});
+      features::kUseDnsHttpsSvcb,
+      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
+       // Disable timeouts.
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -12151,7 +12477,17 @@ TEST_F(HostResolverManagerDnsTest,
 
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
-      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbEnableInsecure", "true"}});
+      features::kUseDnsHttpsSvcb,
+      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
+       // Disable timeouts.
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -12196,7 +12532,17 @@ TEST_F(HostResolverManagerDnsTest,
 
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
-      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbEnableInsecure", "true"}});
+      features::kUseDnsHttpsSvcb,
+      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
+       // Disable timeouts.
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -12238,7 +12584,17 @@ TEST_F(HostResolverManagerDnsTest,
 
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
-      features::kUseDnsHttpsSvcb, {{"UseDnsHttpsSvcbEnableInsecure", "false"}});
+      features::kUseDnsHttpsSvcb,
+      {{"UseDnsHttpsSvcbEnableInsecure", "false"},
+       // Disable timeouts.
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -12285,7 +12641,8 @@ TEST_F(HostResolverManagerDnsTest,
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+      {// Disable timeouts.
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
        {"UseDnsHttpsSvcbExtraTimePercent", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
        {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
@@ -12344,14 +12701,19 @@ TEST_F(HostResolverManagerDnsTest,
        HttpsInSecureAddressQueryWithOnlyMinTimeout) {
   const char kName[] = "name.test";
 
-  // Set an absolute timeout of 10 minutes via the "min" param.
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbSecureExtraTimeMin", "10m"},
-       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "30m"},
+       // Set a Secure absolute timeout of 10 minutes via the "min" param.
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
-       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "30m"}});
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "10m"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -12406,14 +12768,19 @@ TEST_F(HostResolverManagerDnsTest,
        HttpsInSecureAddressQueryWithOnlyMaxTimeout) {
   const char kName[] = "name.test";
 
-  // Set an absolute timeout of 10 minutes via the "max" param.
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "30m"},
+       // Set a Secure absolute timeout of 10 minutes via the "max" param.
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "10m"},
-       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "30m"}});
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -12468,14 +12835,19 @@ TEST_F(HostResolverManagerDnsTest,
        HttpsInSecureAddressQueryWithRelativeTimeout) {
   const char kName[] = "name.test";
 
-  // Set a relative timeout of 10%.
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimePercent", "10"},
+      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "30m"},
+       // Set a Secure relative timeout of 10%.
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
-       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "30m"}});
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "10"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -12538,13 +12910,19 @@ TEST_F(HostResolverManagerDnsTest,
        HttpsInSecureAddressQueryWithMaxTimeoutFirst) {
   const char kName[] = "name.test";
 
-  // Set an max timeout of 30s and a relative timeout of 100%.
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbSecureExtraTimeMin", "10s"},
+      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       // Set a Secure max timeout of 30s and a relative timeout of 100%.
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "30s"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "100"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMax", "30s"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "10s"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -12609,13 +12987,19 @@ TEST_F(HostResolverManagerDnsTest,
        HttpsInAddressQueryWithRelativeTimeoutFirst) {
   const char kName[] = "name.test";
 
-  // Set a max timeout of 20 minutes and a relative timeout of 10%.
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbSecureExtraTimeMin", "1s"},
+      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       // Set a Secure max timeout of 20 minutes and a relative timeout of 10%.
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "20m"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "10"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMax", "20m"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "1s"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -12678,13 +13062,19 @@ TEST_F(HostResolverManagerDnsTest,
        HttpsInAddressQueryWithRelativeTimeoutShorterThanMinTimeout) {
   const char kName[] = "name.test";
 
-  // Set a min timeout of 1 minute and a relative timeout of 10%.
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbSecureExtraTimeMin", "1m"},
+      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       // Set a Secure min timeout of 1 minute and a relative timeout of 10%.
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "20m"},
        {"UseDnsHttpsSvcbSecureExtraTimePercent", "10"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMax", "20m"}});
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "1m"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -12747,15 +13137,19 @@ TEST_F(HostResolverManagerDnsTest,
        HttpsInInsecureAddressQueryWithOnlyMinTimeout) {
   const char kName[] = "name.test";
 
-  // Set an absolute timeout of 10 minutes via the "min" param.
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {{"UseDnsHttpsSvcbEnableInsecure", "true"},
-       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "10m"},
-       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"},
+       // Set an Insecure absolute timeout of 10 minutes via the "min" param.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "30m"}});
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "10m"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -12807,15 +13201,19 @@ TEST_F(HostResolverManagerDnsTest,
        HttpsInInsecureAddressQueryWithOnlyMaxTimeout) {
   const char kName[] = "name.test";
 
-  // Set an absolute timeout of 10 minutes via the "max" param.
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {{"UseDnsHttpsSvcbEnableInsecure", "true"},
-       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"},
+       // Set an Insecure absolute timeout of 10 minutes via the "max" param.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "10m"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "30m"}});
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -12867,15 +13265,19 @@ TEST_F(HostResolverManagerDnsTest,
        HttpsInInsecureAddressQueryWithRelativeTimeout) {
   const char kName[] = "name.test";
 
-  // Set a relative timeout of 10%.
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {{"UseDnsHttpsSvcbEnableInsecure", "true"},
-       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
-       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "10"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"},
+       // Set an Insecure relative timeout of 10%.
        {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMin", "30m"}});
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "10"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -13010,16 +13412,19 @@ TEST_F(HostResolverManagerDnsTest,
        HttpsInSecureAddressQueryWithTimeoutOverridingLegacyTimeouts) {
   const char kName[] = "name.test";
 
-  // Set long legacy timeouts, and a single short 1m timeout using the new
-  // params.
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbSecureExtraTimeMin", "1m"},
-       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+      {// Set long legacy timeouts, and a single short 1m timeout using the new
+       // params.
        {"UseDnsHttpsSvcbExtraTimeAbsolute", "30m"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "500"}});
+       {"UseDnsHttpsSvcbExtraTimePercent", "500"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "1m"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -13069,17 +13474,20 @@ TEST_F(HostResolverManagerDnsTest,
        HttpsInInsecureAddressQueryWithTimeoutOverridingLegacyTimeouts) {
   const char kName[] = "name.test";
 
-  // Set long legacy timeouts, and a single short 1m timeout using the new
-  // params.
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
       {{"UseDnsHttpsSvcbEnableInsecure", "true"},
-       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "1m"},
-       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       // Set long legacy timeouts, and a single short 1m timeout using the new
+       // params.
        {"UseDnsHttpsSvcbExtraTimeAbsolute", "30m"},
-       {"UseDnsHttpsSvcbExtraTimePercent", "500"}});
+       {"UseDnsHttpsSvcbExtraTimePercent", "500"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "1m"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -13127,14 +13535,19 @@ TEST_F(HostResolverManagerDnsTest,
        HttpsInAddressQueryWaitsWithoutTimeoutIfFatal) {
   const char kName[] = "name.test";
 
-  // Set timeouts but also enforce secure responses.
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbSecureExtraTimeMin", "20m"},
-       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+      {// Set timeouts but also enforce secure responses.
+       {"UseDnsHttpsSvcbEnforceSecureResponse", "true"},
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
        {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
-       {"UseDnsHttpsSvcbEnforceSecureResponse", "true"}});
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "20m"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -13196,15 +13609,20 @@ TEST_F(HostResolverManagerDnsTest,
        HttpsInAddressQueryAlwaysRespectsTimeoutsForInsecure) {
   const char kName[] = "name.test";
 
-  // Set timeouts but also enforce secure responses.
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeatureWithParameters(
       features::kUseDnsHttpsSvcb,
-      {{"UseDnsHttpsSvcbInsecureExtraTimeMin", "20m"},
-       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
-       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+      {{"UseDnsHttpsSvcbEnableInsecure", "true"},
+       // Set timeouts but also enforce secure responses.
        {"UseDnsHttpsSvcbEnforceSecureResponse", "true"},
-       {"UseDnsHttpsSvcbEnableInsecure", "true"}});
+       {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+       {"UseDnsHttpsSvcbExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbInsecureExtraTimeMin", "20m"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+       {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"}});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -13254,9 +13672,11 @@ TEST_F(HostResolverManagerDnsTest, ExperimentalHttpsInAddressQuery) {
   const char kName[] = "combined.test";
 
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kDnsHttpssvc, {{"DnsHttpssvcUseHttpssvc", "true"},
-                               {"DnsHttpssvcExperimentDomains", kName}});
+  features.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kDnsHttpssvc,
+                             {{"DnsHttpssvcUseHttpssvc", "true"},
+                              {"DnsHttpssvcExperimentDomains", kName}}}},
+      /*disabled_features=*/{features::kUseDnsHttpsSvcb});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -13299,9 +13719,11 @@ TEST_F(HostResolverManagerDnsTest,
   const char kName[] = "combined.test";
 
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kDnsHttpssvc, {{"DnsHttpssvcUseHttpssvc", "true"},
-                               {"DnsHttpssvcExperimentDomains", kName}});
+  features.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kDnsHttpssvc,
+                             {{"DnsHttpssvcUseHttpssvc", "true"},
+                              {"DnsHttpssvcExperimentDomains", kName}}}},
+      /*disabled_features=*/{features::kUseDnsHttpsSvcb});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -13345,9 +13767,11 @@ TEST_F(HostResolverManagerDnsTest,
   const char kName[] = "combined.test";
 
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kDnsHttpssvc, {{"DnsHttpssvcUseHttpssvc", "true"},
-                               {"DnsHttpssvcExperimentDomains", kName}});
+  features.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kDnsHttpssvc,
+                             {{"DnsHttpssvcUseHttpssvc", "true"},
+                              {"DnsHttpssvcExperimentDomains", kName}}}},
+      /*disabled_features=*/{features::kUseDnsHttpsSvcb});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -13395,9 +13819,11 @@ TEST_F(HostResolverManagerDnsTest,
   const char kName[] = "combined.test";
 
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kDnsHttpssvc, {{"DnsHttpssvcUseHttpssvc", "true"},
-                               {"DnsHttpssvcExperimentDomains", kName}});
+  features.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kDnsHttpssvc,
+                             {{"DnsHttpssvcUseHttpssvc", "true"},
+                              {"DnsHttpssvcExperimentDomains", kName}}}},
+      /*disabled_features=*/{features::kUseDnsHttpsSvcb});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -13437,9 +13863,11 @@ TEST_F(HostResolverManagerDnsTest, ExperimentalHttpsInAddressQuery_HttpsOnly) {
   const char kName[] = "combined.test";
 
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kDnsHttpssvc, {{"DnsHttpssvcUseHttpssvc", "true"},
-                               {"DnsHttpssvcExperimentDomains", kName}});
+  features.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kDnsHttpssvc,
+                             {{"DnsHttpssvcUseHttpssvc", "true"},
+                              {"DnsHttpssvcExperimentDomains", kName}}}},
+      /*disabled_features=*/{features::kUseDnsHttpsSvcb});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -13480,9 +13908,11 @@ TEST_F(HostResolverManagerDnsTest,
   const char kName[] = "combined.test";
 
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kDnsHttpssvc, {{"DnsHttpssvcUseHttpssvc", "true"},
-                               {"DnsHttpssvcExperimentDomains", kName}});
+  features.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kDnsHttpssvc,
+                             {{"DnsHttpssvcUseHttpssvc", "true"},
+                              {"DnsHttpssvcExperimentDomains", kName}}}},
+      /*disabled_features=*/{features::kUseDnsHttpsSvcb});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -13522,9 +13952,11 @@ TEST_F(HostResolverManagerDnsTest, ExperimentalHttpsInAddressQuery_HttpsError) {
   const char kName[] = "combined.test";
 
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kDnsHttpssvc, {{"DnsHttpssvcUseHttpssvc", "true"},
-                               {"DnsHttpssvcExperimentDomains", kName}});
+  features.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kDnsHttpssvc,
+                             {{"DnsHttpssvcUseHttpssvc", "true"},
+                              {"DnsHttpssvcExperimentDomains", kName}}}},
+      /*disabled_features=*/{features::kUseDnsHttpsSvcb});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -13565,9 +13997,11 @@ TEST_F(HostResolverManagerDnsTest,
   const char kName[] = "name.test";
 
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kDnsHttpssvc, {{"DnsHttpssvcUseHttpssvc", "true"},
-                               {"DnsHttpssvcExperimentDomains", kName}});
+  features.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kDnsHttpssvc,
+                             {{"DnsHttpssvcUseHttpssvc", "true"},
+                              {"DnsHttpssvcExperimentDomains", kName}}}},
+      /*disabled_features=*/{features::kUseDnsHttpsSvcb});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -13609,9 +14043,11 @@ TEST_F(HostResolverManagerDnsTest,
   const char kName[] = "name.test";
 
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kDnsHttpssvc, {{"DnsHttpssvcUseHttpssvc", "true"},
-                               {"DnsHttpssvcExperimentDomains", kName}});
+  features.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kDnsHttpssvc,
+                             {{"DnsHttpssvcUseHttpssvc", "true"},
+                              {"DnsHttpssvcExperimentDomains", kName}}}},
+      /*disabled_features=*/{features::kUseDnsHttpsSvcb});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(kName, dns_protocol::kTypeHttps, /*secure=*/true,
@@ -13654,9 +14090,11 @@ TEST_F(HostResolverManagerDnsTest, ExperimentalHttpsInAddressQuery_NoData) {
   const char kName[] = "combined.test";
 
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kDnsHttpssvc, {{"DnsHttpssvcUseHttpssvc", "true"},
-                               {"DnsHttpssvcExperimentDomains", kName}});
+  features.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kDnsHttpssvc,
+                             {{"DnsHttpssvcUseHttpssvc", "true"},
+                              {"DnsHttpssvcExperimentDomains", kName}}}},
+      /*disabled_features=*/{features::kUseDnsHttpsSvcb});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -13694,9 +14132,11 @@ TEST_F(HostResolverManagerDnsTest, ExperimentalHttpsInAddressQuery_HttpsLast) {
   const char kName[] = "combined.test";
 
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kDnsHttpssvc, {{"DnsHttpssvcUseHttpssvc", "true"},
-                               {"DnsHttpssvcExperimentDomains", kName}});
+  features.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kDnsHttpssvc,
+                             {{"DnsHttpssvcUseHttpssvc", "true"},
+                              {"DnsHttpssvcExperimentDomains", kName}}}},
+      /*disabled_features=*/{features::kUseDnsHttpsSvcb});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -13746,9 +14186,11 @@ TEST_F(HostResolverManagerDnsTest,
   const char kName[] = "combined.test";
 
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kDnsHttpssvc, {{"DnsHttpssvcUseHttpssvc", "true"},
-                               {"DnsHttpssvcExperimentDomains", kName}});
+  features.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kDnsHttpssvc,
+                             {{"DnsHttpssvcUseHttpssvc", "true"},
+                              {"DnsHttpssvcExperimentDomains", kName}}}},
+      /*disabled_features=*/{features::kUseDnsHttpsSvcb});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -13800,11 +14242,13 @@ TEST_F(HostResolverManagerDnsTest,
   const char kName[] = "combined.test";
 
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kDnsHttpssvc,
-      {{"DnsHttpssvcUseHttpssvc", "true"},
-       {"DnsHttpssvcExperimentDomains", kName},
-       {"DnsHttpssvcEnableQueryOverInsecure", "false"}});
+  features.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kDnsHttpssvc,
+                             {{"DnsHttpssvcUseHttpssvc", "true"},
+                              {"DnsHttpssvcExperimentDomains", kName},
+                              {"DnsHttpssvcEnableQueryOverInsecure",
+                               "false"}}}},
+      /*disabled_features=*/{features::kUseDnsHttpsSvcb});
 
   MockDnsClientRuleList rules;
   // No expected HTTPS request in insecure mode.
@@ -13843,10 +14287,12 @@ TEST_F(
   const char kName[] = "combined.test";
 
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kDnsHttpssvc, {{"DnsHttpssvcUseHttpssvc", "true"},
-                               {"DnsHttpssvcExperimentDomains", kName},
-                               {"DnsHttpssvcEnableQueryOverInsecure", "true"}});
+  features.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kDnsHttpssvc,
+                             {{"DnsHttpssvcUseHttpssvc", "true"},
+                              {"DnsHttpssvcExperimentDomains", kName},
+                              {"DnsHttpssvcEnableQueryOverInsecure", "true"}}}},
+      /*disabled_features=*/{features::kUseDnsHttpsSvcb});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -13892,10 +14338,12 @@ TEST_F(
   const char kName[] = "combined.test";
 
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kDnsHttpssvc, {{"DnsHttpssvcUseHttpssvc", "true"},
-                               {"DnsHttpssvcExperimentDomains", kName},
-                               {"DnsHttpssvcEnableQueryOverInsecure", "true"}});
+  features.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kDnsHttpssvc,
+                             {{"DnsHttpssvcUseHttpssvc", "true"},
+                              {"DnsHttpssvcExperimentDomains", kName},
+                              {"DnsHttpssvcEnableQueryOverInsecure", "true"}}}},
+      /*disabled_features=*/{features::kUseDnsHttpsSvcb});
 
   MockDnsClientRuleList rules;
   // Use a delayed rule to hang if an unexpected HTTPS query is made. Allows the
@@ -13944,10 +14392,12 @@ TEST_F(HostResolverManagerDnsTest,
   const char kName[] = "combined.test";
 
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kDnsHttpssvc, {{"DnsHttpssvcUseHttpssvc", "true"},
-                               {"DnsHttpssvcExperimentDomains", kName},
-                               {"DnsHttpssvcEnableQueryOverInsecure", "true"}});
+  features.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kDnsHttpssvc,
+                             {{"DnsHttpssvcUseHttpssvc", "true"},
+                              {"DnsHttpssvcExperimentDomains", kName},
+                              {"DnsHttpssvcEnableQueryOverInsecure", "true"}}}},
+      /*disabled_features=*/{features::kUseDnsHttpsSvcb});
 
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
@@ -13996,10 +14446,12 @@ TEST_F(HostResolverManagerDnsTest,
   const char kName[] = "combined.test";
 
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kDnsHttpssvc, {{"DnsHttpssvcUseHttpssvc", "true"},
-                               {"DnsHttpssvcExperimentDomains", kName},
-                               {"DnsHttpssvcEnableQueryOverInsecure", "true"}});
+  features.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kDnsHttpssvc,
+                             {{"DnsHttpssvcUseHttpssvc", "true"},
+                              {"DnsHttpssvcExperimentDomains", kName},
+                              {"DnsHttpssvcEnableQueryOverInsecure", "true"}}}},
+      /*disabled_features=*/{features::kUseDnsHttpsSvcb});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -14061,12 +14513,14 @@ TEST_F(HostResolverManagerDnsTest,
   const base::TimeDelta kTimeout = base::Seconds(2);
 
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kDnsHttpssvc,
-      {{"DnsHttpssvcUseHttpssvc", "true"},
-       {"DnsHttpssvcExperimentDomains", kName},
-       {"DnsHttpssvcExtraTimeMs",
-        base::NumberToString(kTimeout.InMilliseconds())}});
+  features.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kDnsHttpssvc,
+                             {{"DnsHttpssvcUseHttpssvc", "true"},
+                              {"DnsHttpssvcExperimentDomains", kName},
+                              {"DnsHttpssvcExtraTimeMs",
+                               base::NumberToString(
+                                   kTimeout.InMilliseconds())}}}},
+      /*disabled_features=*/{features::kUseDnsHttpsSvcb});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -14112,10 +14566,12 @@ TEST_F(HostResolverManagerDnsTest, MultipleExperimentalQueries) {
   const char kName[] = "combined.test";
 
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kDnsHttpssvc, {{"DnsHttpssvcUseHttpssvc", "true"},
-                               {"DnsHttpssvcUseIntegrity", "true"},
-                               {"DnsHttpssvcExperimentDomains", kName}});
+  features.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kDnsHttpssvc,
+                             {{"DnsHttpssvcUseHttpssvc", "true"},
+                              {"DnsHttpssvcUseIntegrity", "true"},
+                              {"DnsHttpssvcExperimentDomains", kName}}}},
+      /*disabled_features=*/{features::kUseDnsHttpsSvcb});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -14160,13 +14616,15 @@ TEST_F(HostResolverManagerDnsTest, MultipleExperimentalQueries_Timeout) {
   const base::TimeDelta kTimeout = base::Seconds(2);
 
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeatureWithParameters(
-      features::kDnsHttpssvc,
-      {{"DnsHttpssvcUseHttpssvc", "true"},
-       {"DnsHttpssvcUseIntegrity", "true"},
-       {"DnsHttpssvcExperimentDomains", kName},
-       {"DnsHttpssvcExtraTimeMs",
-        base::NumberToString(kTimeout.InMilliseconds())}});
+  features.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kDnsHttpssvc,
+                             {{"DnsHttpssvcUseHttpssvc", "true"},
+                              {"DnsHttpssvcUseIntegrity", "true"},
+                              {"DnsHttpssvcExperimentDomains", kName},
+                              {"DnsHttpssvcExtraTimeMs",
+                               base::NumberToString(
+                                   kTimeout.InMilliseconds())}}}},
+      /*disabled_features=*/{features::kUseDnsHttpsSvcb});
 
   MockDnsClientRuleList rules;
   rules.emplace_back(
@@ -14261,8 +14719,9 @@ class HostResolverManagerDnsTestIntegrity : public HostResolverManagerDnsTest {
         {"DnsHttpssvcControlDomains", ""},
         {"DnsHttpssvcEnableQueryOverInsecure", "false"},
     };
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kDnsHttpssvc, params);
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{features::kDnsHttpssvc, params}},
+        /*disabled_features=*/{features::kUseDnsHttpsSvcb});
   }
 
  protected:
@@ -15063,7 +15522,18 @@ class HostResolverManagerBootstrapTest : public HostResolverManagerDnsTest {
   void SetUp() override {
     // The request host scheme and port are only preserved if the SVCB feature
     // is enabled.
-    features.InitAndEnableFeature(features::kUseDnsHttpsSvcb);
+    base::test::ScopedFeatureList features;
+    features.InitAndEnableFeatureWithParameters(
+        features::kUseDnsHttpsSvcb,
+        {// Disable timeouts.
+         {"UseDnsHttpsSvcbInsecureExtraTimeMax", "0"},
+         {"UseDnsHttpsSvcbInsecureExtraTimePercent", "0"},
+         {"UseDnsHttpsSvcbInsecureExtraTimeMin", "0"},
+         {"UseDnsHttpsSvcbSecureExtraTimeMax", "0"},
+         {"UseDnsHttpsSvcbSecureExtraTimePercent", "0"},
+         {"UseDnsHttpsSvcbSecureExtraTimeMin", "0"},
+         {"UseDnsHttpsSvcbExtraTimeAbsolute", "0"},
+         {"UseDnsHttpsSvcbExtraTimePercent", "0"}});
 
     HostResolverManagerDnsTest::SetUp();
 

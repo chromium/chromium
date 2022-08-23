@@ -65,36 +65,38 @@ base::TimeDelta GetExtraTimeAbsolute() {
 }  // namespace dns_httpssvc_experiment
 
 const base::Feature kUseDnsHttpsSvcb{"UseDnsHttpsSvcb",
-                                     base::FEATURE_DISABLED_BY_DEFAULT};
+                                     base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::FeatureParam<bool> kUseDnsHttpsSvcbHttpUpgrade{
-    &kUseDnsHttpsSvcb, "UseDnsHttpsSvcbHttpUpgrade", false};
+    &kUseDnsHttpsSvcb, "UseDnsHttpsSvcbHttpUpgrade", true};
 
 const base::FeatureParam<bool> kUseDnsHttpsSvcbEnforceSecureResponse{
     &kUseDnsHttpsSvcb, "UseDnsHttpsSvcbEnforceSecureResponse", false};
 
 const base::FeatureParam<bool> kUseDnsHttpsSvcbEnableInsecure{
-    &kUseDnsHttpsSvcb, "UseDnsHttpsSvcbEnableInsecure", false};
+    &kUseDnsHttpsSvcb, "UseDnsHttpsSvcbEnableInsecure", true};
 
 const base::FeatureParam<base::TimeDelta> kUseDnsHttpsSvcbInsecureExtraTimeMax{
     &kUseDnsHttpsSvcb, "UseDnsHttpsSvcbInsecureExtraTimeMax",
-    base::TimeDelta()};
+    base::Milliseconds(50)};
 
 const base::FeatureParam<int> kUseDnsHttpsSvcbInsecureExtraTimePercent{
-    &kUseDnsHttpsSvcb, "UseDnsHttpsSvcbInsecureExtraTimePercent", 0};
+    &kUseDnsHttpsSvcb, "UseDnsHttpsSvcbInsecureExtraTimePercent", 20};
 
 const base::FeatureParam<base::TimeDelta> kUseDnsHttpsSvcbInsecureExtraTimeMin{
     &kUseDnsHttpsSvcb, "UseDnsHttpsSvcbInsecureExtraTimeMin",
-    base::TimeDelta()};
+    base::Milliseconds(5)};
 
 const base::FeatureParam<base::TimeDelta> kUseDnsHttpsSvcbSecureExtraTimeMax{
-    &kUseDnsHttpsSvcb, "UseDnsHttpsSvcbSecureExtraTimeMax", base::TimeDelta()};
+    &kUseDnsHttpsSvcb, "UseDnsHttpsSvcbSecureExtraTimeMax",
+    base::Milliseconds(50)};
 
 const base::FeatureParam<int> kUseDnsHttpsSvcbSecureExtraTimePercent{
-    &kUseDnsHttpsSvcb, "UseDnsHttpsSvcbSecureExtraTimePercent", 0};
+    &kUseDnsHttpsSvcb, "UseDnsHttpsSvcbSecureExtraTimePercent", 20};
 
 const base::FeatureParam<base::TimeDelta> kUseDnsHttpsSvcbSecureExtraTimeMin{
-    &kUseDnsHttpsSvcb, "UseDnsHttpsSvcbSecureExtraTimeMin", base::TimeDelta()};
+    &kUseDnsHttpsSvcb, "UseDnsHttpsSvcbSecureExtraTimeMin",
+    base::Milliseconds(5)};
 
 const base::FeatureParam<base::TimeDelta> kUseDnsHttpsSvcbExtraTimeAbsolute{
     &kUseDnsHttpsSvcb, "UseDnsHttpsSvcbExtraTimeAbsolute", base::TimeDelta()};
