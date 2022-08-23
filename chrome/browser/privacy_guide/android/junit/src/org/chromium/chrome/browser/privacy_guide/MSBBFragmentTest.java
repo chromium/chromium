@@ -7,10 +7,10 @@ package org.chromium.chrome.browser.privacy_guide;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import android.app.Activity;
-import android.view.View;
+import android.os.Bundle;
 
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.fragment.app.testing.FragmentScenario;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -20,7 +20,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
@@ -29,10 +28,10 @@ import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridgeJni;
 
 /**
- * JUnit tests of the class {@link MSBBViewHolder}.
+ * JUnit tests of the class {@link MSBBFragment}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-public class PrivacyGuideMSBBViewHolderTest {
+public class MSBBFragmentTest {
     @Rule
     public JniMocker mocker = new JniMocker();
 
@@ -41,8 +40,7 @@ public class PrivacyGuideMSBBViewHolderTest {
     @Mock
     private UnifiedConsentServiceBridge.Natives mNativeMock;
 
-    private Activity mActivity;
-    private View mMSBBView;
+    private FragmentScenario mScenario;
     private SwitchCompat mMSBBButton;
 
     @Before
@@ -51,37 +49,35 @@ public class PrivacyGuideMSBBViewHolderTest {
 
         Profile.setLastUsedProfileForTesting(mProfile);
         mocker.mock(UnifiedConsentServiceBridgeJni.TEST_HOOKS, mNativeMock);
+    }
 
-        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
-        mMSBBView = mActivity.getLayoutInflater().inflate(R.layout.privacy_guide_msbb_step, null);
-        mActivity.setContentView(mMSBBView);
-        mMSBBButton = mMSBBView.findViewById(R.id.msbb_switch);
+    private void initFragmentWithMSBBState(boolean isMSBBOn) {
+        Mockito.when(mNativeMock.isUrlKeyedAnonymizedDataCollectionEnabled(mProfile))
+                .thenReturn(isMSBBOn);
+        mScenario = FragmentScenario.launchInContainer(
+                MSBBFragment.class, Bundle.EMPTY, R.style.Theme_MaterialComponents);
+        mScenario.onFragment(
+                fragment -> mMSBBButton = fragment.getView().findViewById(R.id.msbb_switch));
     }
 
     @Test
     @SmallTest
-    public void testSwichOffWhenMSBBOff() {
-        Mockito.when(mNativeMock.isUrlKeyedAnonymizedDataCollectionEnabled(mProfile))
-                .thenReturn(false);
-        MSBBViewHolder msbbViewHolder = new MSBBViewHolder(mMSBBView);
+    public void testIsSwitchOffWhenMSBBOff() {
+        initFragmentWithMSBBState(false);
         assertFalse(mMSBBButton.isChecked());
     }
 
     @Test
     @SmallTest
-    public void testSwitchOnWhenMSBBOn() {
-        Mockito.when(mNativeMock.isUrlKeyedAnonymizedDataCollectionEnabled(mProfile))
-                .thenReturn(true);
-        MSBBViewHolder msbbViewHolder = new MSBBViewHolder(mMSBBView);
+    public void testIsSwitchOnWhenMSBBOn() {
+        initFragmentWithMSBBState(true);
         assertTrue(mMSBBButton.isChecked());
     }
 
     @Test
     @SmallTest
     public void testTurnMSBBOn() {
-        Mockito.when(mNativeMock.isUrlKeyedAnonymizedDataCollectionEnabled(mProfile))
-                .thenReturn(false);
-        MSBBViewHolder msbbViewHolder = new MSBBViewHolder(mMSBBView);
+        initFragmentWithMSBBState(false);
         mMSBBButton.performClick();
         Mockito.verify(mNativeMock).setUrlKeyedAnonymizedDataCollectionEnabled(mProfile, true);
     }
@@ -89,9 +85,7 @@ public class PrivacyGuideMSBBViewHolderTest {
     @Test
     @SmallTest
     public void testTurnMSBBOff() {
-        Mockito.when(mNativeMock.isUrlKeyedAnonymizedDataCollectionEnabled(mProfile))
-                .thenReturn(true);
-        MSBBViewHolder msbbViewHolder = new MSBBViewHolder(mMSBBView);
+        initFragmentWithMSBBState(true);
         mMSBBButton.performClick();
         Mockito.verify(mNativeMock).setUrlKeyedAnonymizedDataCollectionEnabled(mProfile, false);
     }

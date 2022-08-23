@@ -6,12 +6,15 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/chrome/browser/privacy_guide/MSBBViewHolder.java",
+    "java/src/org/chromium/chrome/browser/privacy_guide/CookiesFragment.java",
+    "java/src/org/chromium/chrome/browser/privacy_guide/MSBBFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_guide/PrivacyGuideBottomSheetView.java",
     "java/src/org/chromium/chrome/browser/privacy_guide/PrivacyGuideExplanationHeading.java",
     "java/src/org/chromium/chrome/browser/privacy_guide/PrivacyGuideExplanationItem.java",
     "java/src/org/chromium/chrome/browser/privacy_guide/PrivacyGuideFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_guide/PrivacyGuidePagerAdapter.java",
+    "java/src/org/chromium/chrome/browser/privacy_guide/SafeBrowsingFragment.java",
+    "java/src/org/chromium/chrome/browser/privacy_guide/SyncFragment.java",
   ]
   deps = [
     ":java_resources",
@@ -27,6 +30,25 @@ android_library("java") {
     "//ui/android:ui_full_java",
   ]
   resources_package = "org.chromium.chrome.browser.privacy_guide"
+}
+
+robolectric_library("junit") {
+  sources = [
+    "junit/src/org/chromium/chrome/browser/privacy_guide/MSBBFragmentTest.java",
+  ]
+  deps = [
+    ":java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/signin/services/android:java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_fragment_fragment_testing_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+  ]
 }
 
 android_library("javatests") {
