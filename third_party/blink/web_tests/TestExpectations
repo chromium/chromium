@@ -322,6 +322,8 @@ crbug.com/1351556 [ Win ] virtual/document-transition/wpt_internal/document-tran
 crbug.com/1351556 [ Mac11 ] virtual/document-transition/wpt_internal/document-transition/nothing-captured.html [ Failure Timeout ]
 crbug.com/1351556 virtual/document-transition/document-transition/capture-callback-exception.html [ Failure ]
 crbug.com/1351556 virtual/document-transition-wide-gamut/document-transition/capture-callback-exception.html [ Failure ]
+crbug.com/1351422 virtual/document-transition/wpt_internal/document-transition/far-away-capture.html [ Failure ]
+crbug.com/1351422 virtual/document-transition-wide-gamut/wpt_internal/document-transition/far-away-capture.html [ Failure ]
 
 ########## Ref tests can't be rebaselined ##########
 crbug.com/619103 paint/invalidation/background/background-resize-width.html [ Failure Pass ]
