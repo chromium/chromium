@@ -77,6 +77,7 @@ class MediaStreamDispatcherHostTestcase
  private:
   void SetUpOnUIThread(base::OnceClosure done_closure);
 
+  void TearDownOnIOThread();
   void TearDownOnUIThread(base::OnceClosure done_closure);
 
   void AddMediaStreamDispatcherHost(uint32_t id,
@@ -184,12 +185,19 @@ void MediaStreamDispatcherHostTestcase::TearDown(
     base::OnceClosure done_closure) {
   mojolpm::GetContext()->EndTestcase();
 
-  media_stream_manager_->WillDestroyCurrentMessageLoop();
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&MediaStreamDispatcherHostTestcase::TearDownOnIOThread,
+                     base::Unretained(this)));
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&MediaStreamDispatcherHostTestcase::TearDownOnUIThread,
                      base::Unretained(this), std::move(done_closure)));
+}
+
+void MediaStreamDispatcherHostTestcase::TearDownOnIOThread() {
+  media_stream_manager_->WillDestroyCurrentMessageLoop();
 }
 
 void MediaStreamDispatcherHostTestcase::TearDownOnUIThread(
