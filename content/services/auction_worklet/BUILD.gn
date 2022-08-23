@@ -103,6 +103,10 @@ group("for_content_tests") {
   visibility = [ ":tests" ]
   if (!is_component_build) {
     public_deps = [ ":auction_worklet" ]
+  } else {
+    # Ensure //content/common:mojo_bindings is built without depending on
+    # internals.
+    public_deps = [ "//content/public/common" ]
   }
 }
 
