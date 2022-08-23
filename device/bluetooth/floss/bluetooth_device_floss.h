@@ -19,8 +19,6 @@
 namespace floss {
 
 class BluetoothAdapterFloss;
-struct Error;
-struct FlossDeviceId;
 
 // BluetoothDeviceFloss implements device::BluetoothDevice for platforms using
 // Floss (Linux front-end for Fluoride). Objects of this type should be managed
@@ -130,23 +128,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   void DisconnectGatt() override;
 
  private:
-  // Method for connecting to this device.
-  void ConnectInternal(ConnectCallback callback);
-  void OnConnect(ConnectCallback callback);
-  void OnConnectError(ConnectCallback callback, const Error& error);
-
-  // Used if a Connect() is called but requires Pairing.
-  void OnPairDuringConnect(ConnectCallback callback);
-  void OnPairDuringConnectError(ConnectCallback callback, const Error& error);
-
-  void OnDisconnect(base::OnceClosure callback);
-  void OnDisconnectError(ErrorCallback error_callback, const Error& error);
-
-  void OnPair(ConnectCallback callback);
-  void OnPairError(ConnectCallback callback, const Error& error);
-
-  void OnCancelPairingError(const Error& error);
-  void OnForgetError(ErrorCallback error_callback, const Error& error);
   void OnGetRemoteType(DBusResult<FlossAdapterClient::BluetoothDeviceType> ret);
   void OnGetRemoteClass(DBusResult<uint32_t> ret);
   void OnGetRemoteUuids(DBusResult<UUIDList> ret);
