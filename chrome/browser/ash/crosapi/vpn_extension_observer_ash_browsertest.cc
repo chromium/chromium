@@ -62,7 +62,10 @@ class ExtensionEventWaiter
   mojo::Remote<cros_network::mojom::CrosNetworkConfig> cros_network_config_;
 };
 
-IN_PROC_BROWSER_TEST_F(VpnExtensionObserverBrowserTest, LoadVpnExtension) {
+// TODO(1339457): Flakes because standalone_browser_test_controller_ is
+// sometimes not bound.
+IN_PROC_BROWSER_TEST_F(VpnExtensionObserverBrowserTest,
+                       DISABLED_LoadVpnExtension) {
   if (!HasLacrosArgument()) {
     return;
   }
