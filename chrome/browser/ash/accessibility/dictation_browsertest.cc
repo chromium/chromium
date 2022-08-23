@@ -761,6 +761,48 @@ IN_PROC_BROWSER_TEST_P(DictationTest, SmartCapitalizationWithComma) {
   WaitForRecognitionStopped();
 }
 
+class DictationWithAutoclickTest : public DictationTestBase {
+ public:
+  DictationWithAutoclickTest() = default;
+  ~DictationWithAutoclickTest() override = default;
+  DictationWithAutoclickTest(const DictationWithAutoclickTest&) = delete;
+  DictationWithAutoclickTest& operator=(const DictationWithAutoclickTest&) =
+      delete;
+
+ protected:
+  void SetUpOnMainThread() override {
+    // Setup Autoclick first, then setup Dictation. This is to ensure that
+    // Autoclick doesn't steal focus away from the textarea (either by clicking
+    // or via the presence of the Autoclick UI, which steals focus when
+    // initially shown).
+    GetActiveUserPrefs()->SetInteger(prefs::kAccessibilityAutoclickDelayMs,
+                                     90 * 1000);
+    GetActiveUserPrefs()->CommitPendingWrite();
+    GetManager()->EnableAutoclick(true);
+    EXPECT_TRUE(GetManager()->IsAutoclickEnabled());
+
+    DictationTestBase::SetUpOnMainThread();
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    Network,
+    DictationWithAutoclickTest,
+    ::testing::Values(speech::SpeechRecognitionType::kNetwork));
+
+INSTANTIATE_TEST_SUITE_P(
+    OnDevice,
+    DictationWithAutoclickTest,
+    ::testing::Values(speech::SpeechRecognitionType::kOnDevice));
+
+IN_PROC_BROWSER_TEST_P(DictationWithAutoclickTest, CanDictate) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendFinalResultAndWaitForTextAreaValue("Hello world", "Hello world");
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStopped();
+}
+
 // Tests the behavior of Dictation in Japanese.
 class DictationJaTest : public DictationTestBase {
  public:
