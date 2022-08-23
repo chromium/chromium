@@ -435,7 +435,7 @@ const base::Feature kAutofillParseAsync{"AutofillParseAsync",
 
 // If enabled, local heuristics fall back to interpreting the fields' name as an
 // autocomplete type.
-// TODO(crbug.com/TODO) Remove once launched.
+// TODO(crbug.com/1345879) Remove once launched.
 const base::Feature kAutofillParseNameAsAutocompleteType{
     "AutofillParseNameAsAutocompleteType", base::FEATURE_DISABLED_BY_DEFAULT};
 
