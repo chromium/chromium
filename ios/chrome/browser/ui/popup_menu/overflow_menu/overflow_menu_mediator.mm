@@ -1369,9 +1369,18 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 // bookmark edit screen if the current page is bookmarked.
 - (void)addOrEditBookmark {
   RecordAction(UserMetricsAction("MobileMenuAddToBookmarks"));
+  // Dismissing the menu disconnects the mediator, so save anything cleaned up
+  // there.
+  web::WebState* currentWebState = self.webState;
   [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
-  [self.bookmarksCommandsHandler bookmarkCurrentPage];
+  if (!currentWebState) {
+    return;
+  }
+  BookmarkAddCommand* command =
+      [[BookmarkAddCommand alloc] initWithWebState:currentWebState
+                              presentFolderChooser:NO];
+  [self.bookmarksCommandsHandler bookmark:command];
 }
 
 // Dismisses the menu and adds the current page to the reading list.

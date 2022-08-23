@@ -6,6 +6,7 @@
 #import <XCTest/XCTest.h>
 
 #include "base/ios/ios_util.h"
+#import "base/strings/sys_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_ui.h"
@@ -840,6 +841,31 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // When the user has no bookmarks, the root view should be an empty state.
   [BookmarkEarlGreyUI verifyEmptyState];
+}
+
+// Tests that bookmarking an incognito tab actually bookmarks the
+// expected URL. Regression test for https://crbug.com/1353114.
+- (void)testBookmarkFromIncognito {
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+
+  const GURL firstURL = self.testServer->GetURL("/pony.html");
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:firstURL];
+
+  const GURL incognitoURL = self.testServer->GetURL("/destination.html");
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey loadURL:incognitoURL];
+
+  // Add the bookmark from the UI.
+  [BookmarkEarlGrey waitForBookmarkModelLoaded:YES];
+  NSString* bookmarkTitle = @"Test Page";
+  [BookmarkEarlGreyUI bookmarkCurrentTabWithTitle:@"Test Page"];
+
+  [BookmarkEarlGrey verifyExistenceOfBookmarkWithURL:base::SysUTF8ToNSString(
+                                                         incognitoURL.spec())
+                                                name:bookmarkTitle];
+  [BookmarkEarlGrey
+      verifyAbsenceOfBookmarkWithURL:base::SysUTF8ToNSString(firstURL.spec())];
 }
 
 // TODO(crbug.com/695749): Add egtests for:

@@ -673,6 +673,10 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
   }
 }
 
+- (web::WebState*)currentWebState {
+  return self.webState;
+}
+
 #pragma mark - IOSLanguageDetectionTabHelperObserving
 
 - (void)iOSLanguageDetectionTabHelper:
