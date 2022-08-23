@@ -222,8 +222,10 @@ class StartSurfaceToolbarMediator {
 
     /** Returns whether it's on grid tab switcher surface. */
     private boolean isOnGridTabSwitcher() {
-        return mIsRefactorEnabled ? mLayoutType == LayoutType.TAB_SWITCHER
-                                  : mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER;
+        return mIsRefactorEnabled
+                ? mLayoutType == LayoutType.TAB_SWITCHER
+                : (mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER
+                        || mStartSurfaceState == StartSurfaceState.SHOWING_TABSWITCHER);
     }
 
     /**
