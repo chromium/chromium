@@ -27,6 +27,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "chromeos/ui/wm/window_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
@@ -370,7 +371,7 @@ void DefaultState::HandleTransitionEvents(WindowState* window_state,
   const WMEventType type = event->type();
   // Not all windows can be floated.
   if (type == WM_EVENT_FLOAT &&
-      !FloatController::CanFloatWindowInClamshell(window_state->window())) {
+      !chromeos::wm::CanFloatWindow(window_state->window())) {
     return;
   }
 

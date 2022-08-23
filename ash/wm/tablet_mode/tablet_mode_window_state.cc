@@ -27,6 +27,7 @@
 #include "ash/wm/wm_event.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/wm/features.h"
+#include "chromeos/ui/wm/window_util.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/compositor/layer.h"
@@ -333,7 +334,7 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
     }
     case WM_EVENT_FLOAT:
       // Not all windows can be floated.
-      if (!FloatController::CanFloatWindowInTablet(window_state->window()))
+      if (!chromeos::wm::CanFloatWindow(window_state->window()))
         return;
 
       UpdateWindow(window_state, WindowStateType::kFloated,

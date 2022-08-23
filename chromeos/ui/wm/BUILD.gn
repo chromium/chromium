@@ -12,6 +12,7 @@ source_set("wm") {
   defines = [ "IS_CHROMEOS_UI_WM_IMPL" ]
 
   sources = [
+    "constants.h",
     "desks/chromeos_desks_histogram_enums.h",
     "desks/desks_helper.h",
     "features.cc",
@@ -20,6 +21,8 @@ source_set("wm") {
     "fullscreen/keep_fullscreen_for_url_checker.h",
     "fullscreen/pref_names.cc",
     "fullscreen/pref_names.h",
+    "window_util.cc",
+    "window_util.h",
   ]
 
   deps = [

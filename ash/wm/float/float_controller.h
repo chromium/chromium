@@ -40,18 +40,8 @@ class ASH_EXPORT FloatController : public TabletModeObserver,
   FloatController& operator=(const FloatController&) = delete;
   ~FloatController() override;
 
-  // The distance from the edge of the floated window to the edge of the work
-  // area when it is floated.
-  static constexpr int kFloatWindowPaddingDp = 8;
-
   // Returns float window bounds in clamshell mode.
   static gfx::Rect GetPreferredFloatWindowClamshellBounds(aura::Window* window);
-
-  // Determines if a window can be floated in clamshell mode.
-  static bool CanFloatWindowInClamshell(aura::Window* window);
-
-  // Determines if a window can be floated in tablet mode.
-  static bool CanFloatWindowInTablet(aura::Window* window);
 
   // Gets the ideal float bounds of `floated_window` in tablet mode if it were
   // to be floated.

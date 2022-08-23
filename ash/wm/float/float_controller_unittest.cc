@@ -22,6 +22,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
+#include "chromeos/ui/wm/constants.h"
 #include "chromeos/ui/wm/features.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/base/hit_test.h"
@@ -362,7 +363,7 @@ TEST_F(TabletWindowFloatTest, DraggingMagnetism) {
   std::unique_ptr<aura::Window> window = CreateFloatedWindow();
   NonClientFrameViewAsh* frame = SetUpAndGetFrame(window.get());
 
-  const int padding = FloatController::kFloatWindowPaddingDp;
+  const int padding = chromeos::wm::kFloatedWindowPaddingDp;
   const int shelf_size = ShelfConfig::Get()->shelf_size();
 
   // The default location is in the bottom right.
