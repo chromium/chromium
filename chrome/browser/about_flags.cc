@@ -126,6 +126,7 @@
 #include "components/paint_preview/features/features.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/payments/core/features.h"
+#include "components/performance_manager/public/features.h"
 #include "components/permissions/features.h"
 #include "components/policy/core/common/features.h"
 #include "components/query_tiles/switches.h"
@@ -3248,6 +3249,28 @@ const FeatureEntry::FeatureVariation
         {"Skip Empty", kServiceWorkerSkipIgnorableFetchHandler_SkipEmpty,
          std::size(kServiceWorkerSkipIgnorableFetchHandler_SkipEmpty), nullptr},
 };
+
+#if !BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kHighEfficiencyModeAvailable5Seconds[] = {
+    {"time_before_discard", "5s"}};
+const FeatureEntry::FeatureParam kHighEfficiencyModeAvailable30Seconds[] = {
+    {"time_before_discard", "30s"}};
+const FeatureEntry::FeatureParam kHighEfficiencyModeAvailable2Minutes[] = {
+    {"time_before_discard", "2m"}};
+const FeatureEntry::FeatureParam kHighEfficiencyModeAvailable1Hour[] = {
+    {"time_before_discard", "1h"}};
+const FeatureEntry::FeatureVariation kHighEfficiencyModeAvailableVariations[] =
+    {
+        {"With 5 Second Discard", kHighEfficiencyModeAvailable5Seconds,
+         std::size(kHighEfficiencyModeAvailable5Seconds), nullptr},
+        {"With 30 Second Discard", kHighEfficiencyModeAvailable30Seconds,
+         std::size(kHighEfficiencyModeAvailable30Seconds), nullptr},
+        {"With 2 Minute Discard", kHighEfficiencyModeAvailable2Minutes,
+         std::size(kHighEfficiencyModeAvailable2Minutes), nullptr},
+        {"With 1 Hour Discard", kHighEfficiencyModeAvailable1Hour,
+         std::size(kHighEfficiencyModeAvailable1Hour), nullptr},
+};
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
@@ -9124,6 +9147,21 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDesktopPWAsAppHomePageDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kDesktopPWAsAppHomePage)},
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID)
+    {"battery-saver-mode-available",
+     flag_descriptions::kBatterySaverModeAvailableName,
+     flag_descriptions::kBatterySaverModeAvailableDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         performance_manager::features::kBatterySaverModeAvailable)},
+    {"high-efficiency-mode-available",
+     flag_descriptions::kHighEfficiencyModeAvailableName,
+     flag_descriptions::kHighEfficiencyModeAvailableDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         performance_manager::features::kHighEfficiencyModeAvailable,
+         kHighEfficiencyModeAvailableVariations,
+         "HighEfficiencyModeAvailable")},
+#endif
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

@@ -4036,6 +4036,11 @@ const char kAllowAllSitesToInitiateMirroringDescription[] =
     "via Presentation API. Requires #cast-media-route-provider to also be "
     "enabled";
 
+extern const char kBatterySaverModeAvailableName[] =
+    "Enable the battery saver mode feature in the settings";
+extern const char kBatterySaverModeAvailableDescription[] =
+    "When enabled, shows the battery section in the performance settings page";
+
 const char kBlockMigratedDefaultChromeAppSyncName[] =
     "Block migrated default Chrome app sync";
 const char kBlockMigratedDefaultChromeAppSyncDescription[] =
@@ -4075,6 +4080,12 @@ const char kGlobalMediaControlsCastStartStopName[] =
 const char kGlobalMediaControlsCastStartStopDescription[] =
     "Allows global media controls to control when a Cast session is started "
     "or stopped instead of relying on the Cast dialog.";
+
+extern const char kHighEfficiencyModeAvailableName[] =
+    "Enable the high efficiency mode feature in the settings";
+extern const char kHighEfficiencyModeAvailableDescription[] =
+    "When enabled, shows the performance section in the performance settings "
+    "page";
 
 const char kMuteNotificationSnoozeActionName[] =
     "Snooze action for mute notifications";

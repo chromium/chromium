@@ -57049,6 +57049,7 @@ from previous Chrome versions.
   <int value="-1426034869" label="NoCreditCardAbort:enabled"/>
   <int value="-1425919952" label="EnableLauncherSearchNormalization:enabled"/>
   <int value="-1425697035" label="AppProvisioningStatic:enabled"/>
+  <int value="-1425360465" label="BatterySaverModeAvailable:disabled"/>
   <int value="-1423348289" label="NupPrinting:disabled"/>
   <int value="-1423193305"
       label="AutofillRationalizeRepeatedServerPredictions:enabled"/>
@@ -58218,6 +58219,7 @@ from previous Chrome versions.
   <int value="-722474177" label="browser-side-navigation:disabled"/>
   <int value="-722172419" label="SystemChinesePhysicalTyping:disabled"/>
   <int value="-721685663" label="WebViewMixedContentAutoupgrades:enabled"/>
+  <int value="-721649087" label="HighEfficiencyModeAvailable:enabled"/>
   <int value="-721245076" label="DesktopPWAsStayInWindow:disabled"/>
   <int value="-719819631" label="TranslateUI:disabled"/>
   <int value="-719698123" label="LegacyTLSWarnings:enabled"/>
@@ -61480,6 +61482,7 @@ from previous Chrome versions.
   <int value="1333847867" label="NoScriptPreviews:enabled"/>
   <int value="1338356182" label="AutofillAssistantChromeEntry:disabled"/>
   <int value="1338510325" label="lacros-selection"/>
+  <int value="1338606926" label="BatterySaverModeAvailable:enabled"/>
   <int value="1338864675" label="EnableTouchableAppContextMenu:disabled"/>
   <int value="1339191800" label="OmniboxMaxZeroSuggestMatches:disabled"/>
   <int value="1339426771" label="TopSitesFromSiteEngagement:disabled"/>
@@ -62336,6 +62339,7 @@ from previous Chrome versions.
   <int value="1892640848" label="third-party-doodle-url"/>
   <int value="1893317228" label="WebPayments:enabled"/>
   <int value="1893463366" label="EnableHtmlBaseUsernameDetector:enabled"/>
+  <int value="1893561439" label="HighEfficiencyModeAvailable:disabled"/>
   <int value="1893693031" label="FreezeUserAgent:enabled"/>
   <int value="1896456311" label="enable-password-save-in-page-navigation"/>
   <int value="1896527497" label="ImmersiveUiMode:enabled"/>

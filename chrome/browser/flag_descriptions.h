@@ -2300,6 +2300,9 @@ extern const char kAppManagementAppDetailsDescription[];
 extern const char kAllowAllSitesToInitiateMirroringName[];
 extern const char kAllowAllSitesToInitiateMirroringDescription[];
 
+extern const char kBatterySaverModeAvailableName[];
+extern const char kBatterySaverModeAvailableDescription[];
+
 extern const char kBlockMigratedDefaultChromeAppSyncName[];
 extern const char kBlockMigratedDefaultChromeAppSyncDescription[];
 
@@ -2320,6 +2323,9 @@ extern const char kEnableWebHidOnExtensionServiceWorkerDescription[];
 
 extern const char kGlobalMediaControlsCastStartStopName[];
 extern const char kGlobalMediaControlsCastStartStopDescription[];
+
+extern const char kHighEfficiencyModeAvailableName[];
+extern const char kHighEfficiencyModeAvailableDescription[];
 
 extern const char kMuteNotificationSnoozeActionName[];
 extern const char kMuteNotificationSnoozeActionDescription[];

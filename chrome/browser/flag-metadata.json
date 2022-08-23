@@ -634,6 +634,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "battery-saver-mode-available",
+    "owners": [ "chrome-performance-ui-team@google.com" ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "binding-manager-use-not-perceptible-binding",
     "owners": ["ckitagawa", "yfriedman"],
     "expiry_milestone": 109
@@ -3752,6 +3757,11 @@
     "name": "hidpi-capture",
     "owners": [ "//content/browser/media/capture/OWNERS" ],
     "expiry_milestone": 112
+  },
+  {
+    "name": "high-efficiency-mode-available",
+    "owners": [ "chrome-performance-ui-team@google.com" ],
+    "expiry_milestone": 115
   },
   {
     "name": "history-journeys",
