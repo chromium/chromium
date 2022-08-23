@@ -155,16 +155,6 @@ MediaStreamTrackPlatform* TransferredMediaStreamComponent::GetPlatformTrack()
   return nullptr;
 }
 
-[[deprecated]] void TransferredMediaStreamComponent::SetPlatformTrack(
-    std::unique_ptr<MediaStreamTrackPlatform> platform_track) {
-  if (component_) {
-    component_->SetPlatformTrack(std::move(platform_track));
-    return;
-  }
-  // TODO(https://crbug.com/1288839): Save and forward to component_ once it's
-  // initialized.
-}
-
 void TransferredMediaStreamComponent::GetSettings(
     MediaStreamTrackPlatform::Settings& settings) {
   if (component_) {

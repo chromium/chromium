@@ -92,9 +92,11 @@ class HTMLAudioElementCapturerSourceTest : public testing::Test {
         String::FromUTF8("audio_track"), false /* remote */,
         std::move(capture_source));
     media_stream_component_ = MakeGarbageCollected<MediaStreamComponentImpl>(
-        media_stream_source_->Id(), media_stream_source_);
+        media_stream_source_->Id(), media_stream_source_,
+        std::make_unique<MediaStreamAudioTrack>(/*is_local=*/true));
 
-    ASSERT_TRUE(source()->ConnectToTrack(media_stream_component_.Get()));
+    ASSERT_TRUE(
+        source()->ConnectToInitializedTrack(media_stream_component_.Get()));
   }
 
   Persistent<MediaStreamSource> media_stream_source_;

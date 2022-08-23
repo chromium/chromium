@@ -57,8 +57,6 @@ class PLATFORM_EXPORT TransferredMediaStreamComponent final
 
   MediaStreamTrackPlatform* GetPlatformTrack() const override;
 
-  [[deprecated]] void SetPlatformTrack(
-      std::unique_ptr<MediaStreamTrackPlatform> platform_track) override;
   void GetSettings(MediaStreamTrackPlatform::Settings&) override;
   MediaStreamTrackPlatform::CaptureHandle GetCaptureHandle() override;
 

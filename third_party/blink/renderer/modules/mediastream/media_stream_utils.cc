@@ -21,48 +21,15 @@
 
 namespace blink {
 
-namespace {
-
-void CreateNativeVideoMediaStreamTrack(MediaStreamComponent* component) {
-  DCHECK(!component->GetPlatformTrack());
-  MediaStreamSource* source = component->Source();
-  DCHECK_EQ(source->GetType(), MediaStreamSource::kTypeVideo);
-  MediaStreamVideoSource* native_source =
-      MediaStreamVideoSource::GetVideoSource(source);
-  DCHECK(native_source);
-  component->SetPlatformTrack(std::make_unique<blink::MediaStreamVideoTrack>(
-      native_source, blink::MediaStreamVideoSource::ConstraintsOnceCallback(),
-      component->Enabled()));
-}
-
-}  // namespace
-
-void MediaStreamUtils::DidCreateMediaStreamTrack(
-    MediaStreamComponent* component) {
-  DCHECK(component);
-  DCHECK(!component->GetPlatformTrack());
-  DCHECK(component->Source());
-
-  switch (component->GetSourceType()) {
-    case MediaStreamSource::kTypeAudio:
-      MediaStreamAudioSource::From(component->Source())
-          ->ConnectToTrack(component);
-      break;
-    case MediaStreamSource::kTypeVideo:
-      CreateNativeVideoMediaStreamTrack(component);
-      break;
-  }
-}
-
 MediaStreamTrack* MediaStreamUtils::CreateLocalAudioTrack(
     ExecutionContext* execution_context,
     MediaStreamSource* source) {
   DCHECK_EQ(source->GetType(), MediaStreamSource::kTypeAudio);
   DCHECK(!source->Remote());
-  // TODO(crbug.com/1302689): Provide a local MediaStreamAudioTrack instance in
-  // the Component constructor.
-  auto* component = MakeGarbageCollected<MediaStreamComponentImpl>(source);
-  DidCreateMediaStreamTrack(component);
+  auto* component = MakeGarbageCollected<MediaStreamComponentImpl>(
+      source, std::make_unique<MediaStreamAudioTrack>(/*is_local=*/true));
+  MediaStreamAudioSource::From(component->Source())
+      ->ConnectToInitializedTrack(component);
   return MakeGarbageCollected<MediaStreamTrackImpl>(execution_context,
                                                     component);
 }

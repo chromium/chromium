@@ -18,6 +18,7 @@
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -266,8 +267,9 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
         String::FromUTF8("dummy_source_name"), false /* remote */,
         std::move(audio_source));
     media_stream_component_ = MakeGarbageCollected<MediaStreamComponentImpl>(
-        String::FromUTF8("audio_track"), source);
-    CHECK(MediaStreamAudioSource::From(source)->ConnectToTrack(
+        String::FromUTF8("audio_track"), source,
+        std::make_unique<MediaStreamAudioTrack>(/*is_local=*/true));
+    CHECK(MediaStreamAudioSource::From(source)->ConnectToInitializedTrack(
         media_stream_component_));
   }
 };

@@ -81,12 +81,8 @@ MediaStreamComponentImpl::MediaStreamComponentImpl(
     MediaStreamSource* source,
     std::unique_ptr<MediaStreamTrackPlatform> platform_track)
     : MediaStreamComponentImpl(id, source) {
-  // TODO(https://crbug.com/1302689): Change to a DCHECK(platform_track) once
-  // all callers provide a platform_track here, rather than using
-  // SetPlatformTrack().
-  if (platform_track) {
-    CheckSourceAndTrackSameType(source, platform_track.get());
-  }
+  DCHECK(platform_track);
+  CheckSourceAndTrackSameType(source, platform_track.get());
   platform_track_ = std::move(platform_track);
 }
 
@@ -94,12 +90,8 @@ MediaStreamComponentImpl::MediaStreamComponentImpl(
     MediaStreamSource* source,
     std::unique_ptr<MediaStreamTrackPlatform> platform_track)
     : MediaStreamComponentImpl(source) {
-  // TODO(https://crbug.com/1302689): Change to a DCHECK(platform_track) once
-  // all callers provide a platform_track here, rather than using
-  // SetPlatformTrack().
-  if (platform_track) {
-    CheckSourceAndTrackSameType(source, platform_track.get());
-  }
+  DCHECK(platform_track);
+  CheckSourceAndTrackSameType(source, platform_track.get());
   platform_track_ = std::move(platform_track);
 }
 

@@ -376,7 +376,8 @@ class RTCPeerConnectionHandlerTest : public SimTest {
     HeapVector<Member<MediaStreamComponent>> audio_components(
         static_cast<size_t>(1));
     audio_components[0] = MakeGarbageCollected<MediaStreamComponentImpl>(
-        audio_source->Id(), audio_source);
+        audio_source->Id(), audio_source,
+        std::make_unique<MediaStreamAudioTrack>(/*is_local=*/true));
     EXPECT_CALL(
         *webrtc_audio_device_platform_support_->mock_audio_capturer_source(),
         Initialize(_, _));
@@ -389,7 +390,8 @@ class RTCPeerConnectionHandlerTest : public SimTest {
     EXPECT_CALL(
         *webrtc_audio_device_platform_support_->mock_audio_capturer_source(),
         Stop());
-    CHECK(processed_audio_source_ptr->ConnectToTrack(audio_components[0]));
+    CHECK(processed_audio_source_ptr->ConnectToInitializedTrack(
+        audio_components[0]));
 
     HeapVector<Member<MediaStreamComponent>> video_components(
         static_cast<size_t>(1));

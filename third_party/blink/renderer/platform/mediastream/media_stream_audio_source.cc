@@ -76,26 +76,6 @@ MediaStreamAudioSource* MediaStreamAudioSource::From(
   return static_cast<MediaStreamAudioSource*>(source->GetPlatformSource());
 }
 
-bool MediaStreamAudioSource::ConnectToTrack(MediaStreamComponent* component) {
-  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  DCHECK(component);
-
-  // Sanity-check that there is not already a MediaStreamAudioTrack instance
-  // associated with |component|.
-  if (MediaStreamAudioTrack::From(component)) {
-    LOG(DFATAL) << "Attempting to connect another source to a "
-                   "WebMediaStreamTrack/MediaStreamComponent.";
-    return false;
-  }
-
-  // Create and initialize a new MediaStreamAudioTrack and pass ownership of it
-  // to the MediaStreamComponent.
-  component->SetPlatformTrack(
-      CreateMediaStreamAudioTrack(component->Id().Utf8()));
-
-  return ConnectToInitializedTrack(component);
-}
-
 bool MediaStreamAudioSource::ConnectToInitializedTrack(
     MediaStreamComponent* component) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());

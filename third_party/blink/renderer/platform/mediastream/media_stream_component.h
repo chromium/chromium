@@ -78,11 +78,6 @@ class PLATFORM_EXPORT MediaStreamComponent : public GarbageCollectedMixin {
 
   virtual MediaStreamTrackPlatform* GetPlatformTrack() const = 0;
 
-  // Deprecated - use the MediaStreamComponentImpl constructor which takes a
-  // MediaStreamTrackPlatform instead.
-  // TODO(crbug.com/1302689): Remove once all callers have been migrated.
-  [[deprecated]] virtual void SetPlatformTrack(
-      std::unique_ptr<MediaStreamTrackPlatform> platform_track) = 0;
   virtual void GetSettings(MediaStreamTrackPlatform::Settings&) = 0;
   virtual MediaStreamTrackPlatform::CaptureHandle GetCaptureHandle() = 0;
 
