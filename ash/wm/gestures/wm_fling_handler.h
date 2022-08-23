@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/compositor_animation_observer.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -63,6 +64,8 @@ class WmFlingHandler : public ui::CompositorAnimationObserver {
 
   StepCallback on_step_callback_;
   base::RepeatingClosure on_end_callback_;
+
+  base::WeakPtrFactory<WmFlingHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

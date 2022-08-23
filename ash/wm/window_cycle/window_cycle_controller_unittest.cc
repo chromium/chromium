@@ -54,6 +54,7 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/screen_position_client.h"
@@ -73,6 +74,7 @@
 #include "ui/events/event_handler.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/vector2d.h"
 
 namespace ash {
 
@@ -1790,6 +1792,40 @@ TEST_F(WindowCycleControllerTest, ArrowKeyBeforeCycleViewUI) {
   controller->HandleKeyboardNavigation(
       WindowCycleController::KeyboardNavDirection::kRight);
   CompleteCycling(controller);
+}
+
+// Tests the UAF issue reported in https://crbug.com/1350558. `OnFlingStep()`
+// triggers a `Layout()` which may trigger an `OnFlingEnd()` where the
+// `WmFlingHandler` is destroyed while still in the middle of its
+// `WmFlingHandler::OnAnimationStep()`. This test simulates the use case when we
+// initiate an alt + tab session, start a fling, trigger another alt + tab and
+// make sure this doesn't trigger a UAF crash in ASAN builds.
+TEST_F(WindowCycleControllerTest, SimulateFlingInAltTab) {
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  std::unique_ptr<Window> w0 = CreateTestWindow();
+  std::unique_ptr<Window> w1 = CreateTestWindow();
+  std::unique_ptr<Window> w2 = CreateTestWindow();
+  std::unique_ptr<Window> w3 = CreateTestWindow();
+
+  WindowCycleController* cycle_controller =
+      Shell::Get()->window_cycle_controller();
+  cycle_controller->StartCycling();
+  EXPECT_TRUE(cycle_controller->IsCycling());
+
+  auto preview_items = GetWindowCycleItemViews();
+  EXPECT_EQ(preview_items.size(), 4u);
+  const auto cycle_item_view_bounds = preview_items[1]->GetBoundsInScreen();
+
+  const gfx::Point start_point = cycle_item_view_bounds.CenterPoint();
+  const gfx::Point target_point = start_point + gfx::Vector2d(50, 0);
+
+  GetEventGenerator()->GestureScrollSequence(start_point, target_point,
+                                             base::Milliseconds(10), 2);
+  base::RunLoop().RunUntilIdle();
+  cycle_controller->HandleCycleWindow(
+      WindowCycleController::WindowCyclingDirection::kForward);
+  EXPECT_TRUE(cycle_controller->IsCycling());
 }
 
 class ReverseGestureWindowCycleControllerTest
