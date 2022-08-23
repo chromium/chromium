@@ -985,7 +985,6 @@ public class AppBannerManagerTest {
     @Test
     @MediumTest
     @Feature({"AppBanners"})
-    @DisabledTest(message = "crbug.com/1238320 test is flaky")
     public void testDismissBottomSheetResolvesUserChoice() throws Exception {
         triggerBottomSheet(mTabbedActivityTestRule,
                 WebappTestPage.getServiceWorkerUrlWithManifestAndAction(mTestServer,
