@@ -198,6 +198,32 @@ class YahooAnswersMobile2018Page(TopRealWorldMobilePage):
     action_runner.ScrollElement(selector='#page_scrollable')
 
 
+class GoogleDocsMobile2022Page(TopRealWorldMobilePage):
+  """ Why: productivity, top google properties; Sample doc in the link """
+  # pylint: disable=line-too-long
+  URL = 'https://docs.google.com/document/d/1X-IKNjtEnx-WW5JIKRLsyhz5sbsat3mfTpAPUSX3_s4/view'
+  BASE_NAME = 'google_docs_mobile'
+  YEAR = '2022'
+
+  def __init__(self,
+               page_set,
+               name_suffix='',
+               extra_browser_args=None,
+               shared_page_state_class=shared_page_state.SharedMobilePageState):
+    super(GoogleDocsMobile2022Page,
+          self).__init__(page_set=page_set,
+                         name_suffix=name_suffix,
+                         extra_browser_args=extra_browser_args,
+                         shared_page_state_class=shared_page_state_class)
+
+  def RunNavigateSteps(self, action_runner):
+    super(GoogleDocsMobile2022Page, self).RunNavigateSteps(action_runner)
+    # Wait for and close the pop-up window to make sure the entire doc is visible.
+    action_runner.WaitForElement(selector='.docs-ml-promotion-no-button')
+    action_runner.Wait(2)
+    action_runner.TapElement(selector='.docs-ml-promotion-no-button')
+
+
 class GoogleNewsMobile2018Page(TopRealWorldMobilePage):
   """ Why: Google News: accelerated scrolling version """
   BASE_NAME = 'google_news_mobile'
