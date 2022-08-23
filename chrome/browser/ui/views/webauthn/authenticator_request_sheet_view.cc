@@ -71,6 +71,9 @@ views::View* AuthenticatorRequestSheetView::GetInitiallyFocusedView() {
   if (should_focus_step_specific_content_ == AutoFocus::kYes) {
     return step_specific_content_;
   }
+  if (model()->ShouldFocusBackArrow()) {
+    return back_arrow_button_;
+  }
   return nullptr;
 }
 

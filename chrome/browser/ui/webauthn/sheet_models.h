@@ -244,6 +244,7 @@ class AuthenticatorBlePermissionMacSheetModel
   // AuthenticatorSheetModelBase:
   const gfx::VectorIcon& GetStepIllustration(
       ImageColorScheme color_scheme) const override;
+  bool ShouldFocusBackArrow() const override;
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
   bool IsAcceptButtonVisible() const override;

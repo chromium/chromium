@@ -4,6 +4,10 @@
 
 #include "chrome/browser/ui/webauthn/authenticator_request_sheet_model.h"
 
+bool AuthenticatorRequestSheetModel::ShouldFocusBackArrow() const {
+  return false;
+}
+
 bool AuthenticatorRequestSheetModel::IsCloseButtonVisible() const {
   return false;
 }

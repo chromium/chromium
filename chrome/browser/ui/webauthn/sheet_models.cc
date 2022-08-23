@@ -500,6 +500,10 @@ void AuthenticatorBlePowerOnAutomaticSheetModel::OnAccept() {
 // AuthenticatorBlePermissionMacSheetModel
 // ------------------------------------
 
+bool AuthenticatorBlePermissionMacSheetModel::ShouldFocusBackArrow() const {
+  return true;
+}
+
 const gfx::VectorIcon&
 AuthenticatorBlePermissionMacSheetModel::GetStepIllustration(
     ImageColorScheme color_scheme) const {
