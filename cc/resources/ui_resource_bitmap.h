@@ -52,6 +52,8 @@ class CC_EXPORT UIResourceBitmap {
   size_t SizeInBytes() const;
   size_t row_bytes() const { return pixel_ref_ ? pixel_ref_->rowBytes() : 0; }
 
+  bool IsUniquelyOwned() const { return pixel_ref_->unique(); }
+
  private:
   friend class AutoLockUIResourceBitmap;
 
