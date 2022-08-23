@@ -23,6 +23,12 @@ source_set("prefs") {
   ]
 }
 
+source_set("pref_names") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "pref_names.h" ]
+  public_deps = [ "//ios/chrome/browser:pref_names" ]
+}
+
 source_set("browser_prefs") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
