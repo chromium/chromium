@@ -153,11 +153,10 @@ void TestIconGeneration(int icon_size,
   downloaded.push_back(CreateSquareIcon(icon_size, SK_ColorRED));
 
   // Now run the resizing/generation and validation.
-  SkColor generated_icon_color = SK_ColorTRANSPARENT;
   bool is_generated_icon = true;
   auto size_map = ResizeIconsAndGenerateMissing(
       downloaded, TestSizesToGenerate(), GenerateIconLetterFromAppName(u"Test"),
-      &generated_icon_color, &is_generated_icon);
+      &is_generated_icon);
   EXPECT_FALSE(is_generated_icon);
 
   ValidateIconsGeneratedAndResizedCorrectly(
@@ -239,11 +238,10 @@ TEST_F(WebAppIconGeneratorTest, LinkedAppIconsAreNotChanged) {
   const auto& sizes = TestSizesToGenerate();
 
   // Now run the resizing and generation into a new web icons info.
-  SkColor generated_icon_color = SK_ColorTRANSPARENT;
   bool is_generated_icon = true;
   SizeToBitmap size_map = ResizeIconsAndGenerateMissing(
       downloaded, sizes, GenerateIconLetterFromAppName(u"Test"),
-      &generated_icon_color, &is_generated_icon);
+      &is_generated_icon);
   EXPECT_EQ(sizes.size(), size_map.size());
   EXPECT_FALSE(is_generated_icon);
 
@@ -264,11 +262,10 @@ TEST_F(WebAppIconGeneratorTest, IconsResizedFromOddSizes) {
       CreateSquareIcon(kIconSizeLargeBetweenMediumAndLarge, color));
 
   // Now run the resizing and generation.
-  SkColor generated_icon_color = SK_ColorTRANSPARENT;
   bool is_generated_icon = true;
   SizeToBitmap size_map = ResizeIconsAndGenerateMissing(
       downloaded, TestSizesToGenerate(), GenerateIconLetterFromAppName(u"Test"),
-      &generated_icon_color, &is_generated_icon);
+      &is_generated_icon);
   EXPECT_FALSE(is_generated_icon);
 
   // No icons should be generated. The LARGE and MEDIUM sizes should be resized.
@@ -285,11 +282,10 @@ TEST_F(WebAppIconGeneratorTest, IconsResizedFromLarger) {
   downloaded.push_back(CreateSquareIcon(icon_size::k512, SK_ColorBLACK));
 
   // Now run the resizing and generation.
-  SkColor generated_icon_color = SK_ColorTRANSPARENT;
   bool is_generated_icon = true;
   SizeToBitmap size_map = ResizeIconsAndGenerateMissing(
       downloaded, TestSizesToGenerate(), GenerateIconLetterFromAppName(u"Test"),
-      &generated_icon_color, &is_generated_icon);
+      &is_generated_icon);
   EXPECT_FALSE(is_generated_icon);
 
   // Expect icon for MEDIUM and LARGE to be resized from the gigantor icon
@@ -303,11 +299,10 @@ TEST_F(WebAppIconGeneratorTest, AllIconsGeneratedWhenNotDownloaded) {
   std::vector<SkBitmap> downloaded;
 
   // Now run the resizing and generation.
-  SkColor generated_icon_color = SK_ColorTRANSPARENT;
   bool is_generated_icon = false;
   SizeToBitmap size_map = ResizeIconsAndGenerateMissing(
       downloaded, TestSizesToGenerate(), GenerateIconLetterFromAppName(u"Test"),
-      &generated_icon_color, &is_generated_icon);
+      &is_generated_icon);
   EXPECT_TRUE(is_generated_icon);
 
   // Expect all icons to be generated.
@@ -323,11 +318,10 @@ TEST_F(WebAppIconGeneratorTest, IconResizedFromLargerAndSmaller) {
   downloaded.push_back(CreateSquareIcon(icon_size::k48, SK_ColorBLUE));
 
   // Now run the resizing and generation.
-  SkColor generated_icon_color = SK_ColorTRANSPARENT;
   bool is_generated_icon = true;
   SizeToBitmap size_map = ResizeIconsAndGenerateMissing(
       downloaded, TestSizesToGenerate(), GenerateIconLetterFromAppName(u"Test"),
-      &generated_icon_color, &is_generated_icon);
+      &is_generated_icon);
   EXPECT_FALSE(is_generated_icon);
 
   // Expect no icons to be generated, but the LARGE and SMALL icons to be
@@ -408,12 +402,11 @@ TEST_F(WebAppIconGeneratorTest, IconLetterToString) {
 
 TEST_F(WebAppIconGeneratorTest, GenerateIcons) {
   std::set<int> sizes = SizesToGenerate();
-  const SkColor bg_color = SK_ColorCYAN;
+  constexpr SkColor bg_color = SK_ColorDKGRAY;
 
   // The |+| character guarantees that there is some letter_color area at the
   // center of the generated icon.
-  const std::map<SquareSizePx, SkBitmap> icon_bitmaps =
-      GenerateIcons("+", bg_color);
+  const std::map<SquareSizePx, SkBitmap> icon_bitmaps = GenerateIcons("+");
   EXPECT_EQ(sizes.size(), icon_bitmaps.size());
 
   for (const std::pair<const SquareSizePx, SkBitmap>& icon : icon_bitmaps) {

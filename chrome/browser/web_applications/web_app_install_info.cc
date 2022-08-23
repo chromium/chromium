@@ -227,7 +227,6 @@ WebAppInstallInfo WebAppInstallInfo::CreateInstallInfoForCreateShortcut(
   create_shortcut_info.icon_bitmaps = other.icon_bitmaps;
   create_shortcut_info.other_icon_bitmaps = other.other_icon_bitmaps;
   create_shortcut_info.is_generated_icon = other.is_generated_icon;
-  create_shortcut_info.generated_icon_color = other.generated_icon_color;
   create_shortcut_info.theme_color = other.theme_color;
   create_shortcut_info.dark_mode_theme_color = other.dark_mode_theme_color;
   create_shortcut_info.background_color = other.background_color;

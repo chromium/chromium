@@ -721,7 +721,6 @@ void PopulateProductIcons(WebAppInstallInfo* web_app_info,
       web_app_info->title.empty()
           ? GenerateIconLetterFromUrl(web_app_info->start_url)
           : GenerateIconLetterFromAppName(web_app_info->title);
-  web_app_info->generated_icon_color = SK_ColorTRANSPARENT;
   // Ensure that all top-level icons that are in web_app_info with  Purpose::ANY
   // are present, by generating icons for any sizes that have failed to
   // download. This ensures that the created manifest for the web app does not
@@ -730,7 +729,7 @@ void PopulateProductIcons(WebAppInstallInfo* web_app_info,
   // not necessary and would simplify this code path to remove.
   SizeToBitmap size_to_icons = ResizeIconsAndGenerateMissing(
       square_icons_any, SizesToGenerate(), icon_letter,
-      &web_app_info->generated_icon_color, &web_app_info->is_generated_icon);
+      &web_app_info->is_generated_icon);
 
   for (auto& item : size_to_icons) {
     // Retain any bitmaps provided as input to the installation.

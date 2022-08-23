@@ -62,10 +62,8 @@ SizeToBitmap ConstrainBitmapsToSizes(const std::vector<SkBitmap>& bitmaps,
                                      const std::set<SquareSizePx>& sizes);
 
 // Generates a square container icon of |output_size| by drawing the given
-// |icon_letter| into a rounded background of |color|.
-SkBitmap GenerateBitmap(SquareSizePx output_size,
-                        SkColor color,
-                        char32_t icon_letter);
+// |icon_letter|.
+SkBitmap GenerateBitmap(SquareSizePx output_size, char32_t icon_letter);
 
 // Returns the first letter from |app_url| that will be painted on the generated
 // icon.
@@ -84,20 +82,16 @@ std::u16string IconLetterToString(char32_t cp);
 // Resize icons to the accepted sizes, and generate any that are missing.
 // Note that |icon_letter| is the first letter of app name if available
 // otherwise the first letter of app url.
-// Output: |generated_icon_color| is the color to use if an icon needs to be
-// generated for the web app. |is_generated_icon| represents whether the icons
-// were generated.
+// Output: |is_generated_icon| represents whether the icons were generated.
 SizeToBitmap ResizeIconsAndGenerateMissing(
     const std::vector<SkBitmap>& icons,
     const std::set<SquareSizePx>& sizes_to_generate,
     char32_t icon_letter,
-    SkColor* generated_icon_color,
     bool* is_generated_icon);
 
 // Generate icons for default sizes, using the first letter of the application
-// name and some background color. |app_name| is encoded as UTF8.
-SizeToBitmap GenerateIcons(const std::string& app_name,
-                           SkColor background_icon_color);
+// name. |app_name| is encoded as UTF8.
+SizeToBitmap GenerateIcons(const std::string& app_name);
 
 // Converts any image with arbitrary RGB channels to a monochrome image
 // according to the spec.

@@ -243,9 +243,6 @@ struct WebAppInstallInfo {
   // tag.
   MobileCapable mobile_capable = MOBILE_CAPABLE_UNSPECIFIED;
 
-  // The color to use if an icon needs to be generated for the web app.
-  SkColor generated_icon_color = SK_ColorTRANSPARENT;
-
   // The color to use for the web app frame.
   absl::optional<SkColor> theme_color;
 
