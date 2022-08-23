@@ -143,6 +143,9 @@ export function toVideoResoloutionOptionLabel(level: VideoResolutionLevel):
     case VideoResolutionLevel.HD:
       label = I18nString.LABEL_VIDEO_RESOLUTION_HD;
       break;
+    case VideoResolutionLevel.THREE_SIXTY_P:
+      label = I18nString.LABEL_VIDEO_RESOLUTION_360P;
+      break;
     case VideoResolutionLevel.FULL:
       label = I18nString.LABEL_FULL_RESOLUTION;
       break;

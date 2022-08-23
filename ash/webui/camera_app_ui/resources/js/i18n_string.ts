@@ -116,6 +116,7 @@ export enum I18nString {
   LABEL_TIMER_3S = 'label_timer_3s',
   LABEL_OTHER_ASPECT_RATIO = 'label_other_aspect_ratio',
   LABEL_VIDEO_RESOLUTION = 'label_video_resolution',
+  LABEL_VIDEO_RESOLUTION_360P = 'label_video_resolution_360p',
   LABEL_VIDEO_RESOLUTION_4K = 'label_video_resolution_4k',
   LABEL_VIDEO_RESOLUTION_FULL_HD = 'label_video_resolution_full_hd',
   LABEL_VIDEO_RESOLUTION_HD = 'label_video_resolution_hd',

@@ -168,6 +168,7 @@ export enum VideoResolutionLevel {
   FULL_HD = 'Full HD',
   HD = 'HD',
   UNKNOWN = 'unknown',
+  THREE_SIXTY_P = '360p',
 }
 
 export enum AspectRatioSet {
