@@ -13,6 +13,8 @@ namespace ash {
 class ASH_EXPORT FeedbackButton : public PillButton,
                                   public OverviewHighlightableView {
  public:
+  static const char kViewClassName[];
+
   FeedbackButton(base::RepeatingClosure callback,
                  const std::u16string& text,
                  Type type,
@@ -20,6 +22,9 @@ class ASH_EXPORT FeedbackButton : public PillButton,
   FeedbackButton(const FeedbackButton&) = delete;
   FeedbackButton& operator=(const FeedbackButton&) = delete;
   ~FeedbackButton() override;
+
+  // PillButton:
+  const char* GetClassName() const override;
 
   // OverviewHighlightableView:
   views::View* GetView() override;

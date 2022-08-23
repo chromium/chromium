@@ -11,6 +11,9 @@
 
 namespace ash {
 
+// static
+const char FeedbackButton::kViewClassName[] = "FeedbackButton";
+
 FeedbackButton::FeedbackButton(base::RepeatingClosure callback,
                                const std::u16string& text,
                                Type type,
@@ -25,6 +28,10 @@ FeedbackButton::FeedbackButton(base::RepeatingClosure callback,
 }
 
 FeedbackButton::~FeedbackButton() = default;
+
+const char* FeedbackButton::GetClassName() const {
+  return kViewClassName;
+}
 
 views::View* FeedbackButton::GetView() {
   return this;

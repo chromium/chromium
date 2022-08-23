@@ -63,6 +63,9 @@ constexpr int kNoItemsLabelHeight = 32;
 // Between child spacing of Library page scroll content view.
 constexpr int kLibraryPageScrollContentsBetweenChildSpacingDp = 32;
 
+// Between child spacing of group content view.
+constexpr int kGroupContentsBetweenChildSpacingDp = 20;
+
 // The size of the gradient applied to the top and bottom of the scroll view.
 constexpr int kScrollViewGradientSize = 32;
 
@@ -110,6 +113,20 @@ SavedDesks Group(const std::vector<const DeskTemplate*>& saved_desks) {
   }
 
   return grouped;
+}
+
+std::unique_ptr<views::View> GetLabelAndGridGroupContents() {
+  auto group_contents = std::make_unique<views::View>();
+  auto* group_layout =
+      group_contents->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+          kGroupContentsBetweenChildSpacingDp));
+  group_layout->set_main_axis_alignment(
+      views::BoxLayout::MainAxisAlignment::kStart);
+  group_layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+
+  return group_contents;
 }
 
 std::unique_ptr<views::Label> MakeGridLabel(int label_string_id) {
@@ -281,18 +298,24 @@ SavedDeskLibraryView::SavedDeskLibraryView() {
 
   // Create grids depending on which features are enabled.
   if (saved_desk_util::AreDesksTemplatesEnabled()) {
-    grid_labels_.push_back(scroll_contents->AddChildView(
+    auto group_contents = GetLabelAndGridGroupContents();
+    grid_labels_.push_back(group_contents->AddChildView(
         MakeGridLabel(IDS_ASH_DESKS_TEMPLATES_LIBRARY_TEMPLATES_GRID_LABEL)));
     desk_template_grid_view_ =
-        scroll_contents->AddChildView(std::make_unique<SavedDeskGridView>());
+        group_contents->AddChildView(std::make_unique<SavedDeskGridView>());
     grid_views_.push_back(desk_template_grid_view_);
+
+    scroll_contents->AddChildView(std::move(group_contents));
   }
   if (saved_desk_util::IsDeskSaveAndRecallEnabled()) {
-    grid_labels_.push_back(scroll_contents->AddChildView(MakeGridLabel(
+    auto group_contents = GetLabelAndGridGroupContents();
+    grid_labels_.push_back(group_contents->AddChildView(MakeGridLabel(
         IDS_ASH_DESKS_TEMPLATES_LIBRARY_SAVE_AND_RECALL_GRID_LABEL)));
     save_and_recall_grid_view_ =
-        scroll_contents->AddChildView(std::make_unique<SavedDeskGridView>());
+        group_contents->AddChildView(std::make_unique<SavedDeskGridView>());
     grid_views_.push_back(save_and_recall_grid_view_);
+
+    scroll_contents->AddChildView(std::move(group_contents));
   }
 
   feedback_button_ =
