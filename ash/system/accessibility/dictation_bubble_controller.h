@@ -14,6 +14,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/input_method_observer.h"
+#include "ui/views/view_observer.h"
 
 namespace ui {
 class InputMethod;
@@ -21,6 +22,7 @@ class TextInputClient;
 }  // namespace ui
 
 namespace views {
+class View;
 class Widget;
 }  // namespace views
 
@@ -32,7 +34,8 @@ class DictationBubbleView;
 
 // Manages the Dictation bubble view.
 class ASH_EXPORT DictationBubbleController : public ui::InputMethodObserver,
-                                             public ColorModeObserver {
+                                             public ColorModeObserver,
+                                             public views::ViewObserver {
  public:
   DictationBubbleController();
   DictationBubbleController(const DictationBubbleController&) = delete;
@@ -56,6 +59,9 @@ class ASH_EXPORT DictationBubbleController : public ui::InputMethodObserver,
 
   // ColorModeObserver:
   void OnColorModeChanged(bool dark_mode_enabled) override;
+
+  // views::ViewObserver:
+  void OnViewIsDeleting(views::View* observed_view) override;
 
  private:
   friend class DictationBubbleControllerTest;

@@ -11,6 +11,7 @@
 #include "ash/system/accessibility/dictation_bubble_view.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
 #include "ui/base/ime/text_input_client.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -63,11 +64,18 @@ void DictationBubbleController::OnColorModeChanged(bool dark_mode_enabled) {
   dictation_bubble_view_->OnColorModeChanged(dark_mode_enabled);
 }
 
+void DictationBubbleController::OnViewIsDeleting(views::View* observed_view) {
+  dictation_bubble_view_ = nullptr;
+  widget_ = nullptr;
+}
+
 void DictationBubbleController::MaybeInitialize() {
   if (widget_)
     return;
 
   dictation_bubble_view_ = new DictationBubbleView();
+  dictation_bubble_view_->views::View::AddObserver(this);
+
   widget_ =
       views::BubbleDialogDelegateView::CreateBubble(dictation_bubble_view_);
   widget_->SetZOrderLevel(ui::ZOrderLevel::kFloatingUIElement);
