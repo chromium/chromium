@@ -594,7 +594,10 @@
     "bases": [
       "external/wpt/css/css-values/sin-cos-tan-serialize.html",
       "external/wpt/css/css-values/sin-cos-tan-computed.html",
-      "external/wpt/css/css-values/sin-cos-tan-invalid.html"
+      "external/wpt/css/css-values/sin-cos-tan-invalid.html",
+      "external/wpt/css/css-values/acos-asin-atan-atan2-serialize.html",
+      "external/wpt/css/css-values/acos-asin-atan-atan2-computed.html",
+      "external/wpt/css/css-values/acos-asin-atan-atan2-invalid.html"
     ],
     "args": ["--disable-blink-features=CSSTrigonometricFunctions"]
   },

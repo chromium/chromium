@@ -446,14 +446,19 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateComparisonFunction(
       category, std::move(operands), op);
 }
 
-// Helper function for parsing trigonometric functions' parameter
-static double ValueAsRadian(const CSSMathExpressionNode* node, bool& error) {
-  if (node->Category() == kCalcAngle)
-    return Deg2rad(node->ComputeValueInCanonicalUnit().value());
+// Helper function for parsing number value
+static double ValueAsNumber(const CSSMathExpressionNode* node, bool& error) {
   if (node->Category() == kCalcNumber)
     return node->DoubleValue();
   error = true;
   return 0;
+}
+
+// Helper function for parsing trigonometric functions' parameter
+static double ValueAsRadian(const CSSMathExpressionNode* node, bool& error) {
+  if (node->Category() == kCalcAngle)
+    return Deg2rad(node->ComputeValueInCanonicalUnit().value());
+  return ValueAsNumber(node, error);
 }
 
 CSSMathExpressionNode*
@@ -464,21 +469,32 @@ CSSMathExpressionOperation::CreateTrigonometricFunctionSimplified(
     return nullptr;
 
   double value;
+  auto unit_type = CSSPrimitiveValue::UnitType::kUnknown;
   bool error = false;
   switch (function_id) {
     case CSSValueID::kSin: {
       DCHECK_EQ(operands.size(), 1u);
+      unit_type = CSSPrimitiveValue::UnitType::kNumber;
       value = sin(ValueAsRadian(operands[0], error));
       break;
     }
     case CSSValueID::kCos: {
       DCHECK_EQ(operands.size(), 1u);
+      unit_type = CSSPrimitiveValue::UnitType::kNumber;
       value = cos(ValueAsRadian(operands[0], error));
       break;
     }
     case CSSValueID::kTan: {
       DCHECK_EQ(operands.size(), 1u);
+      unit_type = CSSPrimitiveValue::UnitType::kNumber;
       value = tan(ValueAsRadian(operands[0], error));
+      break;
+    }
+    case CSSValueID::kAsin: {
+      DCHECK_EQ(operands.size(), 1u);
+      unit_type = CSSPrimitiveValue::UnitType::kDegrees;
+      value = Rad2deg(asin(ValueAsNumber(operands[0], error)));
+      DCHECK(value >= -90 && value <= 90 || std::isnan(value));
       break;
     }
     default:
@@ -488,8 +504,8 @@ CSSMathExpressionOperation::CreateTrigonometricFunctionSimplified(
   if (error)
     return nullptr;
 
-  return CSSMathExpressionNumericLiteral::Create(
-      value, CSSPrimitiveValue::UnitType::kNumber);
+  DCHECK_NE(unit_type, CSSPrimitiveValue::UnitType::kUnknown);
+  return CSSMathExpressionNumericLiteral::Create(value, unit_type);
 }
 
 // static
@@ -1195,6 +1211,7 @@ class CSSMathExpressionNodeParser {
       case CSSValueID::kSin:
       case CSSValueID::kCos:
       case CSSValueID::kTan:
+      case CSSValueID::kAsin:
         return RuntimeEnabledFeatures::CSSTrigonometricFunctionsEnabled();
       case CSSValueID::kAnchor:
       case CSSValueID::kAnchorSize:
@@ -1298,6 +1315,7 @@ class CSSMathExpressionNodeParser {
       case CSSValueID::kSin:
       case CSSValueID::kCos:
       case CSSValueID::kTan:
+      case CSSValueID::kAsin:
         DCHECK(RuntimeEnabledFeatures::CSSTrigonometricFunctionsEnabled());
         max_argument_count = 1;
         min_argument_count = 1;
@@ -1342,6 +1360,7 @@ class CSSMathExpressionNodeParser {
       case CSSValueID::kSin:
       case CSSValueID::kCos:
       case CSSValueID::kTan:
+      case CSSValueID::kAsin:
         DCHECK(RuntimeEnabledFeatures::CSSTrigonometricFunctionsEnabled());
         return CSSMathExpressionOperation::
             CreateTrigonometricFunctionSimplified(std::move(nodes),

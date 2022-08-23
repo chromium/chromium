@@ -1318,10 +1318,10 @@
     "sin",
     "cos",
     // "tan" - already declared for color value
+    "asin",
     // "atan",
     // "atan2",
     // "acos",
-    // "asin",
 
     //<calc-constant>
     //https://drafts.csswg.org/css-values/#calc-syntax
