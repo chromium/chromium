@@ -157,7 +157,8 @@ bool IsRestrictorOrLogicalOperator(const CSSParserToken& token) {
   return EqualIgnoringASCIICase(token.Value(), "not") ||
          EqualIgnoringASCIICase(token.Value(), "and") ||
          EqualIgnoringASCIICase(token.Value(), "or") ||
-         EqualIgnoringASCIICase(token.Value(), "only");
+         EqualIgnoringASCIICase(token.Value(), "only") ||
+         EqualIgnoringASCIICase(token.Value(), "layer");
 }
 
 bool ConsumeUntilCommaInclusive(CSSParserTokenRange& range) {

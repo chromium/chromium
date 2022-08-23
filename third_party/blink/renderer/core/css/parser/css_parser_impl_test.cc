@@ -519,7 +519,7 @@ TEST(CSSParserImplTest, LayeredImportRulesMultipleLayers) {
     ASSERT_TRUE(parsed->IsLayered());
     ASSERT_EQ(1u, parsed->GetLayerName().size());
     EXPECT_EQ(g_empty_atom, parsed->GetLayerName()[0]);
-    EXPECT_EQ("layer", parsed->MediaQueries()->MediaText());
+    EXPECT_EQ("not all", parsed->MediaQueries()->MediaText());
   }
 
   {
@@ -539,7 +539,7 @@ TEST(CSSParserImplTest, LayeredImportRulesMultipleLayers) {
     ASSERT_TRUE(parsed->IsLayered());
     ASSERT_EQ(1u, parsed->GetLayerName().size());
     EXPECT_EQ("bar", parsed->GetLayerName()[0]);
-    EXPECT_EQ("layer", parsed->MediaQueries()->MediaText());
+    EXPECT_EQ("not all", parsed->MediaQueries()->MediaText());
   }
 }
 
