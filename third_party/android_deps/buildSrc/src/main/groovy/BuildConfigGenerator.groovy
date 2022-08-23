@@ -62,6 +62,7 @@ class BuildConfigGenerator extends DefaultTask {
         // Remove androidx_window_window from being depended upon since it currently addes <uses-library>
         // to our AndroidManfest.xml, which we don't allow. http://crbug.com/1302987
         androidx_window_window: EXCLUDE_THIS_LIB,
+        org_robolectric_shadows_multidex:EXCLUDE_THIS_LIB,
     ]
 
     // Some libraries have such long names they'll create a path that exceeds the 200 char path limit, which is
@@ -908,13 +909,6 @@ class BuildConfigGenerator extends DefaultTask {
                 break
             case 'org_jetbrains_kotlinx_kotlinx_coroutines_android':
                 sb.append('requires_android = true')
-                break
-            case 'org_robolectric_shadows_multidex':
-                sb.append('\n')
-                sb.append('  # Could also be jetified, but jetification was\n')
-                sb.append('  # removed from the build system and 3pp prevents\n')
-                sb.append('  # custom modifications to uploaded packages.\n')
-                sb.append('  deps += [":com_android_support_multidex_java"]\n')
                 break
         }
     }

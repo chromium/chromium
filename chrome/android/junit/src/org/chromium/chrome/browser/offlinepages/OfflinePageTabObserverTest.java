@@ -26,7 +26,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.multidex.ShadowMultiDex;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
@@ -47,7 +46,7 @@ import java.lang.ref.WeakReference;
  * Unit tests for OfflinePageUtils.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowMultiDex.class})
+@Config(manifest = Config.NONE)
 public class OfflinePageTabObserverTest {
     // Using a null tab, as it cannot be mocked. TabHelper will help return proper mocked responses.
     private static final int TAB_ID = 77;

@@ -30,7 +30,6 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.multidex.ShadowMultiDex;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
@@ -54,7 +53,7 @@ import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link PrefetchBackgroundTask}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowMultiDex.class, ShadowDeviceConditions.class})
+@Config(manifest = Config.NONE, shadows = {ShadowDeviceConditions.class})
 public class PrefetchBackgroundTaskUnitTest {
     /**
      * Fake of BackgroundTaskScheduler system service.

@@ -39,7 +39,6 @@ if (!limit_android_deps) {
       ":org_robolectric_sandbox_java",
       ":org_robolectric_shadowapi_java",
       ":org_robolectric_shadows_framework_java",
-      ":org_robolectric_shadows_multidex_java",
       ":org_robolectric_utils_java",
       ":org_robolectric_utils_reflector_java",
     ]
@@ -1454,22 +1453,6 @@ if (!limit_android_deps) {
       "//third_party/androidx:androidx_test_monitor_java",
     ]
     is_robolectric = true
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("org_robolectric_shadows_multidex_java") {
-    jar_path =
-        "libs/org_robolectric_shadows_multidex/shadows-multidex-4.8.1.jar"
-    output_name = "org_robolectric_shadows_multidex"
-    enable_bytecode_checks = false
-    testonly = true
-    deps = [ ":org_robolectric_annotations_java" ]
-    is_robolectric = true
-
-    # Could also be jetified, but jetification was
-    # removed from the build system and 3pp prevents
-    # custom modifications to uploaded packages.
-    deps += [ ":com_android_support_multidex_java" ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.

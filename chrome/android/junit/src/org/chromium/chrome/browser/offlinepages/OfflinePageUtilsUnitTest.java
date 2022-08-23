@@ -25,7 +25,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
-import org.robolectric.shadows.multidex.ShadowMultiDex;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -46,8 +45,7 @@ import java.io.File;
  * Unit tests for OfflinePageUtils.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
-        shadows = {OfflinePageUtilsUnitTest.WrappedEnvironment.class, ShadowMultiDex.class})
+@Config(manifest = Config.NONE, shadows = {OfflinePageUtilsUnitTest.WrappedEnvironment.class})
 public class OfflinePageUtilsUnitTest {
     @Rule
     public JniMocker mocker = new JniMocker();
