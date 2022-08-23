@@ -387,6 +387,16 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // Returns true the device has dual internal microphones(front and rear).
   bool HasDualInternalMic() const;
 
+  // There are some audio devices which are not meant for simple usage. Keyboard
+  // mic is an example of a non simple device. There are cases when we need to
+  // know programmatically if there is an audio input device for simple usage
+  // available. Checking `active_input_node_id_` being non zero is not
+  // sufficient in this case. A non simple device can be the active input node
+  // during cras initialization depeneding the audio device enumeration process.
+  // This function returns true if an input device for simple usage is
+  // available.
+  bool HasActiveInputDeviceForSimpleUsage() const;
+
   // Returns true if |device| is front or rear microphone.
   bool IsFrontOrRearMic(const AudioDevice& device) const;
 

@@ -76,6 +76,7 @@ const uint64_t kMicJackId = 10010;
 const uint64_t kKeyboardMicId = 10011;
 const uint64_t kFrontMicId = 10012;
 const uint64_t kRearMicId = 10013;
+const uint64_t kOtherId = 10014;
 const uint64_t kUSBJabraSpeakerOutputId1 = 90003;
 const uint64_t kUSBJabraSpeakerOutputId2 = 90004;
 const uint64_t kUSBJabraSpeakerInputId1 = 90005;
@@ -123,6 +124,10 @@ const AudioNodeInfo kFrontMic[] = {
 
 const AudioNodeInfo kRearMic[] = {
     {true, kRearMicId, "Fake Rear Mic", "REAR_MIC", "Rear Mic"}};
+
+const AudioNodeInfo kOther[] = {
+    {false, kOtherId, "Non Simple Output Device", "OTHER", "Other"}};
+
 const AudioNodeInfo kBluetoothHeadset[] = {{false, kBluetoothHeadsetId,
                                             "Bluetooth Headset", "BLUETOOTH",
                                             "Bluetooth Headset 1"}};
@@ -4393,6 +4398,49 @@ TEST_P(CrasAudioHandlerTest, MicrophoneMuteSwitchToggledBeforeHandlerSetup) {
       /*muted=*/false);
   EXPECT_FALSE(cras_audio_handler_->IsInputMuted());
   EXPECT_EQ(1, test_observer_->input_mute_changed_count());
+}
+
+TEST_P(CrasAudioHandlerTest, HasActiveInputDeviceForSimpleUsage) {
+  using TestCaseWithDescription =
+      std::map<std::vector<const AudioNodeInfo*>, const char*>;
+
+  const TestCaseWithDescription positive_cases{
+      {{kMicJack}, "A simple input node connected."},
+      {{kMicJack, kInternalSpeaker},
+       "A simple input node and a simple output node connected."},
+      {{kKeyboardMic, kMicJack},
+       "A non simple input node and a simple input node connected."},
+      {{kInternalSpeaker, kOther, kMicJack, kKeyboardMic},
+       "All types of audio nodes connected."}};
+  const TestCaseWithDescription negative_cases{
+      {{kInternalSpeaker}, "A simple output node connected."},
+      {{kKeyboardMic}, "A non simple input node connected."},
+      {{kInternalSpeaker, kKeyboardMic},
+       "A simple output node and a non simple input node connected."},
+      {{kOther}, "A non simple output node connected."}};
+
+  ASSERT_FALSE(AudioDevice(GenerateAudioNode(kOther)).is_for_simple_usage());
+
+  // Set up audio handler with empty audio_nodes.
+  AudioNodeList audio_nodes;
+  SetUpCrasAudioHandler(audio_nodes);
+
+  EXPECT_FALSE(cras_audio_handler_->HasActiveInputDeviceForSimpleUsage())
+      << "No audio nodes connected.";
+
+  for (const auto& [audio_node_infos, description] : positive_cases) {
+    audio_nodes = GenerateAudioNodeList(audio_node_infos);
+    ChangeAudioNodes(audio_nodes);
+    EXPECT_TRUE(cras_audio_handler_->HasActiveInputDeviceForSimpleUsage())
+        << description;
+  }
+
+  for (const auto& [audio_node_infos, description] : negative_cases) {
+    audio_nodes = GenerateAudioNodeList(audio_node_infos);
+    ChangeAudioNodes(audio_nodes);
+    EXPECT_FALSE(cras_audio_handler_->HasActiveInputDeviceForSimpleUsage())
+        << description;
+  }
 }
 
 }  // namespace ash

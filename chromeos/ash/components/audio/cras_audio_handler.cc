@@ -1885,6 +1885,15 @@ bool CrasAudioHandler::HasDualInternalMic() const {
   return has_front_mic && has_rear_mic;
 }
 
+bool CrasAudioHandler::HasActiveInputDeviceForSimpleUsage() const {
+  const AudioDevice* active_input_device =
+      GetDeviceFromId(active_input_node_id_);
+  if (active_input_device) {
+    return active_input_device->is_for_simple_usage();
+  }
+  return false;
+}
+
 bool CrasAudioHandler::IsFrontOrRearMic(const AudioDevice& device) const {
   return device.is_input && (device.type == AudioDeviceType::kFrontMic ||
                              device.type == AudioDeviceType::kRearMic);
