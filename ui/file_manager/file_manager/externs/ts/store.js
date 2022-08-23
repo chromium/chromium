@@ -23,6 +23,9 @@ export class Store {
 
   /** @param {!StoreObserver} observer */
   usubscribe(observer) {}
+
+  /** @return {!State} */
+  getState() {}
 }
 
 /**

@@ -648,3 +648,38 @@ testcase.breadcrumbsDontExceedAvailableViewport = async () => {
     }
   });
 };
+
+/**
+ * Test that navigating back from a sub-folder in Google Drive> Shared With Me
+ * using the breadcrumbs.
+ * Internally Shared With Me uses some of the Drive Search code, this confused
+ * the DirectoryModel clearing the search state in the Store.
+ */
+testcase.breadcrumbNavigateBackToSharedWithMe = async () => {
+  // Open Files app on Drive containing "Shared with me" file entries.
+  const sharedSubFolderName = ENTRIES.sharedWithMeDirectory.nameText;
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.sharedWithMeDirectory, ENTRIES.hello]);
+
+  // Navigate to Shared with me.
+  await remoteCall.waitAndClickElement(
+      appId, '#directory-tree [entry-label="Shared with me"]');
+
+  // Wait until the breadcrumb path is updated.
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Shared with me');
+
+  // Navigate to the directory within Shared with me.
+  await remoteCall.waitUntilSelected(appId, sharedSubFolderName);
+  await remoteCall.fakeKeyDown(
+      appId, '#file-list', 'Enter', false, false, false);
+
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(
+      appId, `/Shared with me/${sharedSubFolderName}`);
+
+  // Navigate back using breadcrumb.
+  await remoteCall.waitAndClickElement(
+      appId, ['xf-breadcrumb', 'button[id="first"]']);
+
+  // Wait until the breadcrumb path is updated.
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Shared with me');
+};

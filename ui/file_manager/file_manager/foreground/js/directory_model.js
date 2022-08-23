@@ -1699,7 +1699,9 @@ export class DirectoryModel extends EventTarget {
       this.onSearchCompleted_ = null;
     }
 
-    this.store_.dispatch(searchAction({}));
+    if (this.store_.getState()?.search?.query) {
+      this.store_.dispatch(searchAction({}));
+    }
   }
 
   /**

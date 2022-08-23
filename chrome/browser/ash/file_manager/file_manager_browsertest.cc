@@ -2089,6 +2089,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("breadcrumbsEliderMenuItemClick").FilesSwa(),
         TestCase("breadcrumbsEliderMenuItemTabLeft"),
         TestCase("breadcrumbsEliderMenuItemTabLeft").FilesSwa(),
+        TestCase("breadcrumbNavigateBackToSharedWithMe"),
+        TestCase("breadcrumbNavigateBackToSharedWithMe").FilesSwa(),
         TestCase("breadcrumbsEliderMenuItemTabRight"),
         TestCase("breadcrumbsEliderMenuItemTabRight").FilesSwa()));
 
