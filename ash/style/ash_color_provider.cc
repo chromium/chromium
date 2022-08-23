@@ -284,7 +284,8 @@ std::pair<SkColor, float> AshColorProvider::GetInkDropBaseColorAndOpacity(
     background_color = GetBackgroundColor();
 
   const bool is_dark = color_utils::IsDark(background_color);
-  const SkColor base_color = is_dark ? SK_ColorWHITE : SK_ColorBLACK;
+  const SkColor base_color =
+      GetColorProvider()->GetColor(kColorAshInkDropOpaqueColor);
   const float opacity = is_dark ? kLightInkDropOpacity : kDarkInkDropOpacity;
   return std::make_pair(base_color, opacity);
 }
