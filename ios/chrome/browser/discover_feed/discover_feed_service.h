@@ -90,6 +90,9 @@ class DiscoverFeedService : public KeyedService {
   // Informs the service that the Following content has been seen.
   virtual void SetFollowingFeedContentSeen() = 0;
 
+  // Informs the service that Browsing History data was cleread by the user.
+  virtual void BrowsingHistoryCleared();
+
   // Methods to register or remove observers.
   void AddObserver(DiscoverFeedObserver* observer);
   void RemoveObserver(DiscoverFeedObserver* observer);

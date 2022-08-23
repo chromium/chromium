@@ -17,6 +17,8 @@
 #include "ios/chrome/browser/browsing_data/browsing_data_features.h"
 #include "ios/chrome/browser/browsing_data/browsing_data_remove_mask.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/chrome/browser/discover_feed/discover_feed_service.h"
+#import "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
@@ -424,6 +426,9 @@
     browserState->GetPrefs()->SetInt64(
         browsing_data::prefs::kLastClearBrowsingDataTime,
         base::Time::Now().ToTimeT());
+
+    DiscoverFeedServiceFactory::GetForBrowserState(browserState)
+        ->BrowsingHistoryCleared();
   }
 
   [self.dispatcher

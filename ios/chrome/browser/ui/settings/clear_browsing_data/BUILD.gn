@@ -39,6 +39,8 @@ source_set("clear_browsing_data") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/browsing_data",
     "//ios/chrome/browser/browsing_data:feature_flags",
+    "//ios/chrome/browser/discover_feed",
+    "//ios/chrome/browser/discover_feed:discover_feed_factory",
     "//ios/chrome/browser/feature_engagement",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/main:public",

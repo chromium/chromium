@@ -30,3 +30,5 @@ void DiscoverFeedService::NotifyDiscoverFeedModelRecreated() {
     observer.OnDiscoverFeedModelRecreated();
   }
 }
+
+void DiscoverFeedService::BrowsingHistoryCleared() {}
