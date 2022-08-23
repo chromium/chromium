@@ -68,6 +68,14 @@
     color: var(--search-box-placeholder, var(--google-grey-700));
   }
 
+  input:focus::placeholder {
+    /* Visually hide the placeholder on focus. The placeholder will still be
+     * read by screen readers. Using color: transparent or other ways of
+     * visually hiding the placeholder does not work well with 'Find in page...'
+     * as the placeholder text can get highlighted. */
+    visibility: hidden;
+  }
+
   input:focus,
   :host([matches-are-visible]) input {
     background-color: var(--search-box-results-bg, white);
@@ -131,7 +139,7 @@
       aria-live="[[inputAriaLive_]]" role="combobox"
       placeholder="$i18n{searchBoxHint}"
       on-copy="onInputCutCopy_" on-cut="onInputCutCopy_"
-      on-focus="onInputFocus_" on-blur="onInputBlur_" on-input="onInputInput_"
+      on-focus="onInputFocus_" on-input="onInputInput_"
       on-keydown="onInputKeydown_" on-keyup="onInputKeyup_"
       on-mousedown="onInputMouseDown_" on-paste="onInputPaste_">
   <ntp-realbox-icon id="icon" match="[[selectedMatch_]]"
