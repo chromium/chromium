@@ -60,7 +60,7 @@ js_library("activation_verification_page.m") {
   deps = [
     ":base_page.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie.m",
+    "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
   extra_deps = [ ":activation_verification_page_module" ]
@@ -141,7 +141,7 @@ js_library("setup_loading_page.m") {
   deps = [
     ":base_page.m",
     ":cellular_setup_delegate.m",
-    "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie.m",
+    "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie",
     "//ui/webui/resources/js:assert.m",
   ]
   extra_deps = [ ":setup_loading_page_module" ]
@@ -298,6 +298,7 @@ polymer_modulizer("activation_verification_page") {
   html_file = "activation_verification_page.html"
   html_type = "dom-module"
   namespace_rewrites = cr_components_chromeos_namespace_rewrites
+  migrated_imports = cr_components_migrated_imports
   auto_imports = cr_components_chromeos_auto_imports
 }
 
@@ -332,6 +333,7 @@ polymer_modulizer("setup_loading_page") {
   html_file = "setup_loading_page.html"
   html_type = "dom-module"
   namespace_rewrites = cr_components_chromeos_namespace_rewrites
+  migrated_imports = cr_components_migrated_imports
   auto_imports = cr_components_chromeos_auto_imports
 }
 

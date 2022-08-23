@@ -19,11 +19,15 @@
  * The resource url for the lottier web worker script.
  * @const {string}
  */
-/* #export */ const LOTTIE_JS_URL =
-    'chrome://resources/lottie/lottie_worker.min.js';
+export const LOTTIE_JS_URL = 'chrome://resources/lottie/lottie_worker.min.js';
+
+import {assert} from '../../js/assert.m.js';
+import {Polymer, html} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 Polymer({
   is: 'cr-lottie',
+
+  _template: html`{__html_template__}`,
 
   properties: {
     animationUrl: {
@@ -338,4 +342,3 @@ Polymer({
   },
 
 });
-/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');

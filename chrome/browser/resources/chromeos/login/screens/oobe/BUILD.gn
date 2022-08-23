@@ -294,6 +294,7 @@ polymer_modulizer("update") {
   html_file = "update.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
 
@@ -313,6 +314,7 @@ polymer_modulizer("welcome_dialog") {
   html_file = "welcome_dialog.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
 

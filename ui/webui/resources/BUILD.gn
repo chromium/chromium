@@ -168,7 +168,7 @@ checked_in_dts_files = [
   "cr_elements/cr_dialog/cr_dialog.d.ts",
   "cr_elements/cr_icon_button/cr_icon_button.d.ts",
   "cr_elements/cr_input/cr_input.d.ts",
-  "cr_elements/cr_lottie/cr_lottie.m.d.ts",
+  "cr_elements/cr_lottie/cr_lottie.d.ts",
   "cr_elements/cr_scrollable_behavior.m.d.ts",
   "cr_elements/find_shortcut_behavior.d.ts",
   "cr_elements/policy/cr_policy_indicator_behavior.m.d.ts",

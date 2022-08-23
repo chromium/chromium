@@ -8,7 +8,7 @@
  * reject the request
  */
 
-import 'chrome://resources/cr_elements/cr_lottie/cr_lottie.m.js';
+import 'chrome://resources/cr_elements/cr_lottie/cr_lottie.js';
 import '../../shared/nearby_page_template.js';
 import '../../shared/nearby_device.js';
 import '../../shared/nearby_preview.js';
