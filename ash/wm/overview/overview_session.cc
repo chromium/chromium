@@ -370,7 +370,8 @@ void OverviewSession::OnGridEmpty() {
   if (SplitViewController::Get(Shell::GetPrimaryRootWindow())
           ->InTabletSplitViewMode()) {
     UpdateNoWindowsWidgetOnEachGrid();
-  } else if (!allow_empty_desk_without_exiting_) {
+  } else if (!allow_empty_desk_without_exiting_ &&
+             !IsShowingDesksTemplatesGrid()) {
     EndOverview(OverviewEndAction::kLastWindowRemoved);
   }
 }

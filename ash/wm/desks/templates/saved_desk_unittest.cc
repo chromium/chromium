@@ -574,6 +574,8 @@ TEST_F(SavedDeskTest, NoItemsLabelOnDeletingLastSavedDesk) {
   OpenOverviewAndSaveTemplate(Shell::Get()->GetPrimaryRootWindow());
   std::vector<const DeskTemplate*> entries = GetAllEntries();
   ASSERT_EQ(1ul, desk_model()->GetEntryCount());
+  // Exit overview mode.
+  ToggleOverview();
 
   // Close the window and enter overview mode. The no windows widget should be
   // shown.
@@ -3160,11 +3162,9 @@ TEST_F(SavedDeskTest, UserTemplateCountRecordsMetricCorrectly) {
     // There are no saved template entries and one test window initially.
     auto test_window = CreateAppWindow();
 
-    // Toggle overview if there isn't currently an overview. This is needed
-    // to save a template via the UI.
-    if (!GetOverviewSession()) {
-      ToggleOverview();
-    }
+    // Enter overview. This is needed to save a template via the UI.
+    ASSERT_FALSE(GetOverviewSession());
+    ToggleOverview();
 
     // The `save_desk_as_template_button` is visible when at least one window is
     // open.
@@ -3181,6 +3181,9 @@ TEST_F(SavedDeskTest, UserTemplateCountRecordsMetricCorrectly) {
 
     // Expect that the Desk Templates grid is visible.
     EXPECT_TRUE(GetOverviewGridList()[0]->IsShowingDesksTemplatesGrid());
+
+    // Exit overview.
+    ToggleOverview();
   }
 
   OpenOverviewAndShowTemplatesGrid();

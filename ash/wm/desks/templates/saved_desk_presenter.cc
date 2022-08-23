@@ -5,6 +5,7 @@
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
 
 #include "ash/constants/notifier_catalogs.h"
+#include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/desks_templates_delegate.h"
 #include "ash/public/cpp/system/toast_data.h"
@@ -29,6 +30,7 @@
 #include "base/bind.h"
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/i18n/number_formatting.h"
+#include "base/ranges/algorithm.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -100,6 +102,15 @@ class WindowCloseObserver : public aura::WindowObserver {
     auto* desks_controller = DesksController::Get();
     desk_to_remove_ = desks_controller->active_desk();
 
+    desk_container_ = desks_controller->GetDeskContainer(
+        root_window, desks_controller->GetDeskIndex(desk_to_remove_));
+    DCHECK(desk_container_);
+    window_observer_.AddObservation(desk_container_);
+
+    // If any of the observed windows belong to an ARC app, we need to handle
+    // things a bit differently.
+    has_arc_app_ = base::ranges::any_of(windows, &IsArcWindow);
+
     // Observe the windows that we are going to close.
     for (aura::Window* window : windows)
       window_observer_.AddObservation(window);
@@ -138,6 +149,11 @@ class WindowCloseObserver : public aura::WindowObserver {
  private:
   // aura::WindowObserver:
   void OnWindowAdded(aura::Window* new_window) override {
+    if (new_window->parent() == desk_container_) {
+      if (waiting_for_resurrects_ && IsArcWindow(new_window))
+        window_observer_.AddObservation(new_window);
+    }
+
     if (new_window->parent() != system_modal_container_)
       return;
 
@@ -168,21 +184,35 @@ class WindowCloseObserver : public aura::WindowObserver {
   void OnWindowDestroyed(aura::Window* window) override {
     window_observer_.RemoveObservation(window);
 
-    // In the unexpected case that the system modal container is destroyed, we
-    // will bail.
-    if (window == system_modal_container_) {
+    // In the unexpected case that the system modal container or current desk
+    // container is destroyed, we will bail.
+    if (window == system_modal_container_ || window == desk_container_) {
       Terminate();
       return;
     }
 
     // The observer is used for the windows on the desk that we are closing, as
-    // well as the system modal container. When there's only one window left
-    // (the system modal container) in the observing set, we're done.
-    if (window_observer_.GetSourcesCount() == 1) {
-      // We're ready to transition into the saved desk library and highlight the
-      // item. After this has been done, we'll remove ourselves.
-      ShowLibrary(/*remove_desk=*/true);
-      Terminate();
+    // well as the system modal container. When there's only two windows left
+    // (the system modal container and the desk container) in the observing set,
+    // we're done.
+    if (window_observer_.GetSourcesCount() == 2) {
+      if (!has_arc_app_) {
+        // We're ready to transition into the saved desk library and highlight
+        // the item. After this has been done, we'll remove ourselves.
+        ShowLibraryAndRemoveDesk();
+        return;
+      }
+
+      // If we had an ARC app, then we're going to wait for a small amount of
+      // time in case ARC decides to spawn a new window. If, during this time, a
+      // new ARC window appears, then we will detect this, and put it into the
+      // observing set and wait for it to disappear.
+      // See crbug.com/1350297.
+      has_arc_app_ = false;
+      waiting_for_resurrects_ = true;
+      auto_transition_timer_.Start(
+          FROM_HERE, base::Milliseconds(500), this,
+          &WindowCloseObserver::ShowLibraryAndRemoveDesk);
     }
   }
 
@@ -191,9 +221,16 @@ class WindowCloseObserver : public aura::WindowObserver {
     Terminate();
   }
 
+  void ShowLibraryAndRemoveDesk() {
+    ShowLibrary(/*remove_desk=*/true);
+    Terminate();
+  }
+
   void ShowLibrary(bool remove_desk) {
     OverviewController* overview_controller =
         Shell::Get()->overview_controller();
+    window_observer_.RemoveAllObservations();
+
     OverviewSession* overview_session = overview_controller->overview_session();
     if (!overview_session) {
       if (!overview_controller->StartOverview(
@@ -240,8 +277,16 @@ class WindowCloseObserver : public aura::WindowObserver {
 
   aura::Window* system_modal_container_ = nullptr;
 
+  // Current desk container. Will be used when monitoring for new windows.
+  aura::Window* desk_container_ = nullptr;
+
   // Tracks whether a modal "confirm close" dialog has been showed.
   bool modal_dialog_showed_ = false;
+
+  // True if at least one monitored window belongs to an ARC app.
+  bool has_arc_app_ = false;
+  // True if we're in the phase of waiting for an ARC window to resurrect.
+  bool waiting_for_resurrects_ = false;
 
   // Used to automatically transition the user to the library after a modal
   // dialog has been dismissed.
