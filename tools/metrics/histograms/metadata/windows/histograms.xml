@@ -120,8 +120,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.HypervPresent" enum="BooleanEnabled"
-    expires_after="2022-10-01">
+    expires_after="2023-06-01">
   <owner>rkc@chromium.org</owner>
+  <owner>vnagarnaik@google.com</owner>
   <owner>rockot@chromium.org</owner>
   <summary>
     Whether Hyper-V is enabled on this machine. Logged shortly after startup.
@@ -333,8 +334,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.ProcessorFamily" enum="ProcessorFamily"
-    expires_after="2022-09-11">
+    expires_after="2023-06-01">
   <owner>rkc@chromium.org</owner>
+  <owner>vnagarnaik@google.com</owner>
   <owner>rockot@chromium.org</owner>
   <summary>
     The processor family type. Logged shortly after startup. The value is
@@ -345,8 +347,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.ProcessorVirtualizationFirmwareEnabled"
-    enum="BooleanEnabled" expires_after="2022-12-25">
+    enum="BooleanEnabled" expires_after="2023-06-01">
   <owner>rkc@chromium.org</owner>
+  <owner>vnagarnaik@google.com</owner>
   <owner>rockot@chromium.org</owner>
   <summary>
     Whether virtualization has been enabled in the system firmware. Logged
