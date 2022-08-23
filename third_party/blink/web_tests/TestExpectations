@@ -201,6 +201,11 @@ crbug.com/v8/12227 external/wpt/wasm/jsapi/idlharness.any.worker.html [ Failure 
 
 # --- Skia roll test suppressions
 
+crbug.com/1354678 compositing/reflections/nested-reflection-transformed.html [ Failure Pass ]
+crbug.com/1354678 compositing/reflections/nested-reflection-transformed2.html [ Failure Pass ]
+crbug.com/1354678 fast/css/transformed-mask.html [ Failure Pass ]
+crbug.com/1354678 paint/invalidation/reflection/reflection-with-rotation.html [ Failure Pass ]
+
 # --- END Skia roll test suppresions
 
 
