@@ -473,7 +473,7 @@ extern const char kOmniboxUIUnelideURLOnHoverThresholdMsParam[];
 
 // `FeatureParam`s
 
-// Autocomplete stability.
+// Autocomplete stability and related features.
 // When providers update their matches, the aggregated matches for the current
 // input are sorted, then merged with the matches from the previous input
 // (`TransferOldMatches()`), then resorted. If enabled, both sorts preserve the

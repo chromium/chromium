@@ -18,9 +18,14 @@ extern const base::Feature kImageSearchSuggestionThumbnail;
 extern const base::Feature kOmniboxRemoveSuggestionsFromClipboard;
 extern const base::Feature kAndroidAuxiliarySearch;
 
-// Flags that affect the "twiddle" step of AutocompleteResult, i.e. SortAndCull.
+// Flags that affect the "twiddle" step of AutocompleteResult, e.g.,
+// `SortAndCull()`.
 extern const base::Feature kAutocompleteStability;
+extern const base::Feature kDocumentProviderDedupingOptimization;
 extern const base::Feature kOmniboxDemoteByType;
+extern const base::Feature kPreserveDefault;
+extern const base::Feature kStrippedGurlOptimization;
+extern const base::Feature kUpdateResultDebounce;
 
 // Features below this line should be sorted alphabetically by their comments.
 
@@ -74,7 +79,6 @@ extern const base::Feature kDocumentProviderAso;
 // Suggestions UI - these affect the UI or function of the suggestions popup.
 extern const base::Feature kAdaptiveSuggestionsCount;
 extern const base::Feature kClipboardSuggestionContentHidden;
-extern const base::Feature kDocumentProviderDedupingOptimization;
 extern const base::Feature kSuggestionAnswersColorReverse;
 extern const base::Feature kMostVisitedTiles;
 extern const base::Feature kMostVisitedTilesDynamicSpacing;
@@ -89,7 +93,6 @@ extern const base::Feature kOmniboxRemoveSuggestionHeaderCapitalization;
 extern const base::Feature kOmniboxRemoveSuggestionHeaderChevron;
 extern const base::Feature kOmniboxMostVisitedTilesFadingOnTablet;
 extern const base::Feature kOmniboxMostVisitedTilesOnSrp;
-extern const base::Feature kStrippedGurlOptimization;
 
 // Omnibox UI - these affect the UI or function of the location bar (not the
 // popup).

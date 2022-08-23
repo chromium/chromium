@@ -151,7 +151,7 @@ void RecordMatchDeletion(const AutocompleteMatch& match) {
 // sync/async update. Sync updates may have a minimum input length as well.
 bool ShouldPreserveDefault(bool in_start, size_t input_length) {
   if (in_start) {
-    static const size_t min_input_length =
+    static const int min_input_length =
         OmniboxFieldTrial::
             kAutocompleteStabilityPreserveDefaultForSyncUpdatesMinInputLength
                 .Get();

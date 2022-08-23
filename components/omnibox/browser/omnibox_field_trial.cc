@@ -734,17 +734,17 @@ namespace OmniboxFieldTrial {
 
 const base::FeatureParam<bool>
     kAutocompleteStabilityPreserveDefaultAfterTransfer(
-        &omnibox::kAutocompleteStability,
+        &omnibox::kPreserveDefault,
         "AutocompleteStabilityPreserveDefaultAfterTransfer",
         false);
 const base::FeatureParam<int>
     kAutocompleteStabilityPreserveDefaultForSyncUpdatesMinInputLength(
-        &omnibox::kAutocompleteStability,
+        &omnibox::kPreserveDefault,
         "AutocompleteStabilityPreserveDefaultForSyncUpdatesMinInputLength",
         -1);
 const base::FeatureParam<bool>
     kAutocompleteStabilityPreserveDefaultForAsyncUpdates(
-        &omnibox::kAutocompleteStability,
+        &omnibox::kPreserveDefault,
         "AutocompleteStabilityPreserveDefaultForAsyncUpdates",
         true);
 const base::FeatureParam<bool> kAutocompleteStabilityDontCopyDoneProviders(
@@ -757,11 +757,11 @@ const base::FeatureParam<bool> kAutocompleteStabilityAsyncProvidersFirst(
     false);
 const base::FeatureParam<bool>
     kAutocompleteStabilityUpdateResultDebounceFromLastRun(
-        &omnibox::kAutocompleteStability,
+        &omnibox::kUpdateResultDebounce,
         "AutocompleteStabilityUpdateResultDebounceFromLastRun",
         false);
 const base::FeatureParam<int> kAutocompleteStabilityUpdateResultDebounceDelay(
-    &omnibox::kAutocompleteStability,
+    &omnibox::kUpdateResultDebounce,
     "AutocompleteStabilityUpdateResultDebounceDelay",
     0);
 

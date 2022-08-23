@@ -62,11 +62,32 @@ const base::Feature kAndroidAuxiliarySearch{"AndroidAuxiliarySearch",
 const base::Feature kAutocompleteStability{"OmniboxAutocompleteStability",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Feature to enable memoizing and filtering non-doc hosts for
+// `DocumentProvider::GetURLForDeduping()`.
+const base::Feature kDocumentProviderDedupingOptimization{
+    "OmniboxDocumentProviderDedupingOptimization",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Feature to tweak how the default suggestion is preserved. Feature params
+// control which tweaks specifically are enabled. Enabling this feature without
+// params is a no-op.
+const base::Feature kPreserveDefault{"OmniboxPreserveDefault",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Demotes the relevance scores when comparing suggestions based on the
 // suggestion's |AutocompleteMatchType| and the user's |PageClassification|.
 // This feature's main job is to contain the DemoteByType parameter.
 const base::Feature kOmniboxDemoteByType{"OmniboxDemoteByType",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Feature to enable memoizing URLs when replacing search terms in
+// `AutocompleteMatch::GURLToStrippedGURL()`.
+const base::Feature kStrippedGurlOptimization{
+    "OmniboxStrippedGurlOptimization", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Feature to debounce `AutocompleteController::UpdateResult()`.
+const base::Feature kUpdateResultDebounce{"OmniboxUpdateResultDebounce",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Feature used to cap max zero suggestions shown according to the param
 // OmniboxMaxZeroSuggestMatches. If omitted,
@@ -253,12 +274,6 @@ const base::Feature kAdaptiveSuggestionsCount{"OmniboxAdaptiveSuggestionsCount",
 const base::Feature kClipboardSuggestionContentHidden = {
     "ClipboardSuggestionContentHidden", enabled_by_default_android_only};
 
-// Feature to enable memoizing and filtering non-doc hosts for
-// `DocumentProvider::GetURLForDeduping()`.
-const base::Feature kDocumentProviderDedupingOptimization{
-    "OmniboxDocumentProviderDedupingOptimization",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 // If enabled, finance ticker answer from omnibox will reverse the color for
 // stock ticker. only colors being swapped are those that represent "growth" and
 // "loss" to represent colors red and green in a way that is appropriate for a
@@ -328,11 +343,6 @@ const base::Feature kOmniboxMostVisitedTilesFadingOnTablet{
 // a search result page that does not do search term replacement.
 const base::Feature kOmniboxMostVisitedTilesOnSrp{
     "OmniboxMostVisitedTilesOnSrp", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Feature to enable memoizing URLs when replacing search terms in
-// `AutocompleteMatch::GURLToStrippedGURL()`.
-const base::Feature kStrippedGurlOptimization{
-    "OmniboxStrippedGurlOptimization", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // When enabled, use Assistant for omnibox voice query recognition instead of
 // Android's built-in voice recognition service. Only works on Android.
