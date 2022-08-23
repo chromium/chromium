@@ -5359,7 +5359,7 @@ crbug.com/1173439 http/tests/devtools/service-workers/service-worker-manager.js 
 # V8 roll
 crbug.com/961059 fast/workers/worker-shared-asm-buffer.html [ Skip ]
 
-crbug.com/1342628 http/tests/workers/worker-invalid-context.html [ Failure Pass ]
+crbug.com/1341227 [ Mac ] http/tests/workers/worker-invalid-context.html [ Skip ]
 
 # Temporarily disabled to unblock https://crrev.com/c/2979697
 crbug.com/1222114 http/tests/devtools/console/console-dir.js [ Failure Pass ]
