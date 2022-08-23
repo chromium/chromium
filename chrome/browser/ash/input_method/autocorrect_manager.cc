@@ -326,8 +326,11 @@ void AutocorrectManager::ShowUndoWindow(
   // there is no need to first trying to hide the previous one.
   error_on_hiding_undo_window_ = false;
 
-  LogAssistiveAutocorrectAction(AutocorrectActions::kWindowShown);
-  RecordAssistiveCoverage(AssistiveType::kAutocorrectWindowShown);
+  if (!pending_autocorrect_->window_shown_logged) {
+    LogAssistiveAutocorrectAction(AutocorrectActions::kWindowShown);
+    RecordAssistiveCoverage(AssistiveType::kAutocorrectWindowShown);
+    pending_autocorrect_->window_shown_logged = true;
+  }
 
   pending_autocorrect_->undo_button_highlighted = false;
   pending_autocorrect_->undo_window_visible = true;

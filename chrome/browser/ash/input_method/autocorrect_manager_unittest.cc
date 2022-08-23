@@ -941,7 +941,7 @@ TEST_F(AutocorrectManagerTest,
 }
 
 TEST_F(AutocorrectManagerTest,
-       MovingCursorOutThenInsideRangeRecordsMetricsForShownUndoWindowTwice) {
+       MovingCursorOutThenInsideRangeDoesNotRecordsMetricsTwice) {
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
 
   // The function is called two times for show and one time for hide.
@@ -955,7 +955,7 @@ TEST_F(AutocorrectManagerTest,
   manager_.OnSurroundingTextChanged(u"the ", 4, 4);
   manager_.OnSurroundingTextChanged(u"the", 3, 3);
   ExpectAutocorrectHistograms(histogram_tester_, /*visible_vk=*/false,
-                              /*window_shown=*/2, /*underlined=*/1,
+                              /*window_shown=*/1, /*underlined=*/1,
                               /*reverted=*/0, /*accepted=*/0,
                               /*cleared_underline=*/0);
 }

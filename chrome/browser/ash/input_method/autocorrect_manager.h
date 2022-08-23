@@ -132,6 +132,10 @@ class AutocorrectManager {
     // Specifies if undo button is highlighted or not.
     bool undo_button_highlighted = false;
 
+    // Specifies if window_shown metric is already incremented for the pending
+    // autocorrect or not.
+    bool window_shown_logged = false;
+
     // The time of setting the pending range.
     base::TimeTicks start_time;
   };
