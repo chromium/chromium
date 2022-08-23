@@ -315,8 +315,13 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
   base::flat_map<int, std::vector<uint8_t>> seen_vps_;
   // VPS most recently activated by an IDR.
   std::vector<uint8_t> active_vps_;
-  // VPS the decoder is currently confgured with.
-  std::vector<uint8_t> configured_vps_;
+
+  // VPSs the decoder is currently confgured with.
+  base::flat_map<int, std::vector<uint8_t>> configured_vpss_;
+  // SPSs the decoder is currently confgured with.
+  base::flat_map<int, std::vector<uint8_t>> configured_spss_;
+  // PPSs the decoder is currently confgured with.
+  base::flat_map<int, std::vector<uint8_t>> configured_ppss_;
 
   H265POC hevc_poc_;
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)

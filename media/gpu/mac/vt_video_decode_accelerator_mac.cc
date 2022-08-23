@@ -16,6 +16,7 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/bind.h"
+#include "base/containers/span.h"
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/mac/mac_logging.h"
@@ -67,6 +68,9 @@
 namespace media {
 
 namespace {
+
+// Parameter sets vector contain all PPSs/SPSs(/VPSs)
+using ParameterSets = std::vector<base::span<const uint8_t>>;
 
 // A sequence of ids for memory tracing.
 base::AtomicSequenceNumber g_memory_dump_ids;
@@ -176,26 +180,20 @@ base::ScopedCFTypeRef<CFMutableDictionaryRef> BuildImageConfig(
 }
 
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-// Create a CMFormatDescription using the provided |pps|, |sps| and |vps|.
+// Create a CMFormatDescription using the provided |param_sets|.
 base::ScopedCFTypeRef<CMFormatDescriptionRef> CreateVideoFormatHEVC(
-    const std::vector<uint8_t>& vps,
-    const std::vector<uint8_t>& sps,
-    const std::vector<uint8_t>& pps) {
-  DCHECK(!vps.empty());
-  DCHECK(!sps.empty());
-  DCHECK(!pps.empty());
+    ParameterSets param_sets) {
+  DCHECK(!param_sets.empty());
 
   // Build the configuration records.
   std::vector<const uint8_t*> nalu_data_ptrs;
   std::vector<size_t> nalu_data_sizes;
-  nalu_data_ptrs.reserve(3);
-  nalu_data_sizes.reserve(3);
-  nalu_data_ptrs.push_back(&vps.front());
-  nalu_data_sizes.push_back(vps.size());
-  nalu_data_ptrs.push_back(&sps.front());
-  nalu_data_sizes.push_back(sps.size());
-  nalu_data_ptrs.push_back(&pps.front());
-  nalu_data_sizes.push_back(pps.size());
+  nalu_data_ptrs.reserve(param_sets.size());
+  nalu_data_sizes.reserve(param_sets.size());
+  for (auto& param : param_sets) {
+    nalu_data_ptrs.push_back(param.data());
+    nalu_data_sizes.push_back(param.size());
+  }
 
   // For some unknown reason, even if apple has claimed that this API is
   // available after macOS 10.13, however base on the result on macOS 10.15.7,
@@ -206,10 +204,10 @@ base::ScopedCFTypeRef<CMFormatDescriptionRef> CreateVideoFormatHEVC(
   if (__builtin_available(macOS 11.0, *)) {
     OSStatus status = CMVideoFormatDescriptionCreateFromHEVCParameterSets(
         kCFAllocatorDefault,
-        nalu_data_ptrs.size(),     // parameter_set_count
-        &nalu_data_ptrs.front(),   // &parameter_set_pointers
-        &nalu_data_sizes.front(),  // &parameter_set_sizes
-        kNALUHeaderLength,         // nal_unit_header_length
+        nalu_data_ptrs.size(),   // parameter_set_count
+        nalu_data_ptrs.data(),   // &parameter_set_pointers
+        nalu_data_sizes.data(),  // &parameter_set_sizes
+        kNALUHeaderLength,       // nal_unit_header_length
         NULL, format.InitializeInto());
     OSSTATUS_DLOG_IF(WARNING, status != noErr, status)
         << "CMVideoFormatDescriptionCreateFromHEVCParameterSets()";
@@ -424,8 +422,8 @@ bool InitializeVideoToolboxInternal() {
                                                     0xb4, 0x62, 0x40};
 
       if (!CreateVideoToolboxSession(
-              CreateVideoFormatHEVC(vps_hevc_normal, sps_hevc_normal,
-                                    pps_hevc_normal),
+              CreateVideoFormatHEVC(ParameterSets(
+                  {vps_hevc_normal, sps_hevc_normal, pps_hevc_normal})),
               /*require_hardware=*/true, /*is_hbd=*/false, &callback, &session,
               &configured_size)) {
         DVLOG(1) << "Hardware HEVC decoding with VideoToolbox is not supported";
@@ -453,8 +451,8 @@ bool InitializeVideoToolboxInternal() {
                                                    0xb4, 0x62, 0x40};
 
       if (!CreateVideoToolboxSession(
-              CreateVideoFormatHEVC(vps_hevc_small, sps_hevc_small,
-                                    pps_hevc_small),
+              CreateVideoFormatHEVC(ParameterSets(
+                  {vps_hevc_small, sps_hevc_small, pps_hevc_small})),
               /*require_hardware=*/false, /*is_hbd=*/false, &callback, &session,
               &configured_size)) {
         DVLOG(1) << "Software HEVC decoding with VideoToolbox is not supported";
@@ -806,9 +804,17 @@ bool VTVideoDecodeAccelerator::ConfigureDecoder() {
       format = CreateVideoFormatH264(active_sps_, active_spsext_, active_pps_);
       break;
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-    case VideoCodec::kHEVC:
-      format = CreateVideoFormatHEVC(active_vps_, active_sps_, active_pps_);
+    case VideoCodec::kHEVC: {
+      ParameterSets param_sets;
+      for (auto& it : seen_vps_)
+        param_sets.push_back(it.second);
+      for (auto& it : seen_sps_)
+        param_sets.push_back(it.second);
+      for (auto& it : seen_pps_)
+        param_sets.push_back(it.second);
+      format = CreateVideoFormatHEVC(param_sets);
       break;
+    }
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
     case VideoCodec::kVP9:
       format = CreateVideoFormatVP9(
@@ -871,7 +877,13 @@ bool VTVideoDecodeAccelerator::ConfigureDecoder() {
 
   // Record that the configuration change is complete.
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-  configured_vps_ = active_vps_;
+  // Actually seen vps/sps/pps may contain outdated parameter
+  // sets, VideoToolbox perhaps can handle this well since those
+  // outdated ones are not referenced by current pictures.
+  // Let's see what will happens in this way.
+  configured_vpss_ = seen_vps_;
+  configured_spss_ = seen_sps_;
+  configured_ppss_ = seen_pps_;
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   configured_sps_ = active_sps_;
   configured_spsext_ = active_spsext_;
@@ -1315,6 +1327,11 @@ void VTVideoDecodeAccelerator::DecodeTaskHEVC(
   // from the previous one if dependent_slice_segment_flag exists
   std::unique_ptr<H265SliceHeader> curr_slice_hdr;
   std::unique_ptr<H265SliceHeader> last_slice_hdr;
+  size_t first_slice_index = 0;
+  // ID of the VPS/SPS/PPS that most recently activated by an IDR.
+  int active_vps_id = 0;
+  int active_sps_id = 0;
+  int active_pps_id = 0;
   hevc_parser_.SetStream(buffer->data(), buffer->data_size());
   H265NALU nalu;
   while (true) {
@@ -1335,13 +1352,6 @@ void VTVideoDecodeAccelerator::DecodeTaskHEVC(
                       "Failed to parse H.265 stream");
       NotifyError(UNREADABLE_INPUT, SFT_INVALID_STREAM);
       return;
-    }
-
-    // 8.1.2 We only want nuh_layer_id of zero.
-    if (nalu.nuh_layer_id) {
-      MEDIA_LOG(INFO, media_log_)
-          << "Skipping NALU with nuh_layer_id=" << nalu.nuh_layer_id;
-      continue;
     }
 
     switch (nalu.nal_unit_type) {
@@ -1382,11 +1392,6 @@ void VTVideoDecodeAccelerator::DecodeTaskHEVC(
           return;
         }
         seen_pps_[pps_id].assign(nalu.data, nalu.data + nalu.size);
-        // Pass PPS as data to the platform decoder, it helps in cases
-        // when there are more than one PPS, Video Toolbox is smart enough
-        // to find and recognize them there.
-        nalus.push_back(nalu);
-        data_size += kNALUHeaderLength + nalu.size;
         break;
       }
 
@@ -1491,12 +1496,15 @@ void VTVideoDecodeAccelerator::DecodeTaskHEVC(
         }
 
         // Record the configuration.
-        DCHECK(seen_pps_.contains(curr_slice_hdr->slice_pic_parameter_set_id));
-        DCHECK(seen_sps_.contains(pps->pps_seq_parameter_set_id));
-        DCHECK(seen_vps_.contains(sps->sps_video_parameter_set_id));
-        active_vps_ = seen_vps_[sps->sps_video_parameter_set_id];
-        active_sps_ = seen_sps_[pps->pps_seq_parameter_set_id];
-        active_pps_ = seen_pps_[curr_slice_hdr->slice_pic_parameter_set_id];
+        active_vps_id = sps->sps_video_parameter_set_id;
+        active_sps_id = pps->pps_seq_parameter_set_id;
+        active_pps_id = curr_slice_hdr->slice_pic_parameter_set_id;
+        DCHECK(seen_vps_.contains(active_vps_id));
+        DCHECK(seen_sps_.contains(active_sps_id));
+        DCHECK(seen_pps_.contains(active_pps_id));
+        active_vps_ = seen_vps_[active_vps_id];
+        active_sps_ = seen_sps_[active_sps_id];
+        active_pps_ = seen_pps_[active_pps_id];
 
         // Compute and store frame properties. |image_size| gets filled in
         // later, since it comes from the decoder configuration.
@@ -1508,6 +1516,8 @@ void VTVideoDecodeAccelerator::DecodeTaskHEVC(
                         nalu.nal_unit_type <= H265NALU::RSV_IRAP_VCL23;
         frame->pic_order_cnt = pic_order_cnt;
         frame->reorder_window = ComputeHEVCReorderWindow(vps);
+
+        first_slice_index = nalus.size();
 
         last_slice_hdr.swap(curr_slice_hdr);
         curr_slice_hdr.reset();
@@ -1524,7 +1534,7 @@ void VTVideoDecodeAccelerator::DecodeTaskHEVC(
     waiting_for_idr_ = false;
 
   // If no IDR has been seen yet, skip decoding. Note that Flash sends
-  // configuration changes as a bitstream with only SPS/PPS; we don't print
+  // configuration changes as a bitstream with only SPS/PPS/VPS; we don't print
   // error messages for those.
   if (frame->has_slice && waiting_for_idr_) {
     if (!missing_idr_logged_) {
@@ -1547,31 +1557,64 @@ void VTVideoDecodeAccelerator::DecodeTaskHEVC(
 
   // Apply any configuration change, but only at an IDR. If there is no IDR, we
   // just hope for the best from the decoder.
-  if (frame->is_idr &&
-      (configured_vps_ != active_vps_ || configured_sps_ != active_sps_ ||
-       configured_pps_ != active_pps_)) {
-    if (active_vps_.empty()) {
-      WriteToMediaLog(MediaLogMessageLevel::kERROR,
-                      "Invalid configuration (no VPS)");
-      NotifyError(INVALID_ARGUMENT, SFT_INVALID_STREAM);
-      return;
-    }
-    if (active_sps_.empty()) {
-      WriteToMediaLog(MediaLogMessageLevel::kERROR,
-                      "Invalid configuration (no SPS)");
-      NotifyError(INVALID_ARGUMENT, SFT_INVALID_STREAM);
-      return;
-    }
-    if (active_pps_.empty()) {
-      WriteToMediaLog(MediaLogMessageLevel::kERROR,
-                      "Invalid configuration (no PPS)");
-      NotifyError(INVALID_ARGUMENT, SFT_INVALID_STREAM);
-      return;
-    }
+  if (seen_vps_ != configured_vpss_ || seen_sps_ != configured_spss_ ||
+      seen_pps_ != configured_ppss_) {
+    if (frame->is_idr) {
+      if (seen_vps_.empty()) {
+        WriteToMediaLog(MediaLogMessageLevel::kERROR,
+                        "Invalid configuration (no VPS)");
+        NotifyError(INVALID_ARGUMENT, SFT_INVALID_STREAM);
+        return;
+      }
+      if (seen_sps_.empty()) {
+        WriteToMediaLog(MediaLogMessageLevel::kERROR,
+                        "Invalid configuration (no SPS)");
+        NotifyError(INVALID_ARGUMENT, SFT_INVALID_STREAM);
+        return;
+      }
+      if (seen_pps_.empty()) {
+        WriteToMediaLog(MediaLogMessageLevel::kERROR,
+                        "Invalid configuration (no PPS)");
+        NotifyError(INVALID_ARGUMENT, SFT_INVALID_STREAM);
+        return;
+      }
 
-    // ConfigureDecoder() calls NotifyError() on failure.
-    if (!ConfigureDecoder()) {
-      return;
+      // ConfigureDecoder() calls NotifyError() on failure.
+      if (!ConfigureDecoder()) {
+        return;
+      }
+    } else {
+      // Only |data| and |size| are read later, other fields are left empty.
+      // In case that their are new VPS/SPS/PPS appears after an IDR.
+      media::H265NALU vps_nalu;
+      vps_nalu.data = active_vps_.data();
+      vps_nalu.size = active_vps_.size();
+      nalus.insert(nalus.begin() + first_slice_index, vps_nalu);
+      data_size += kNALUHeaderLength + vps_nalu.size;
+      first_slice_index += 1;
+
+      media::H265NALU sps_nalu;
+      sps_nalu.data = active_sps_.data();
+      sps_nalu.size = active_sps_.size();
+      nalus.insert(nalus.begin() + first_slice_index, sps_nalu);
+      data_size += kNALUHeaderLength + sps_nalu.size;
+      first_slice_index += 1;
+
+      media::H265NALU pps_nalu;
+      pps_nalu.data = active_pps_.data();
+      pps_nalu.size = active_pps_.size();
+      nalus.insert(nalus.begin() + first_slice_index, pps_nalu);
+      data_size += kNALUHeaderLength + pps_nalu.size;
+      first_slice_index += 1;
+
+      // Update the configured VPSs/SPSs/PPSs in case VT referrence to the wrong
+      // parameter sets.
+      configured_vpss_[active_vps_id].assign(
+          active_vps_.data(), active_vps_.data() + active_vps_.size());
+      configured_spss_[active_sps_id].assign(
+          active_sps_.data(), active_sps_.data() + active_sps_.size());
+      configured_ppss_[active_pps_id].assign(
+          active_pps_.data(), active_pps_.data() + active_pps_.size());
     }
   }
 
