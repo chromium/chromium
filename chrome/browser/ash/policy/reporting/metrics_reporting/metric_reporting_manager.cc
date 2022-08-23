@@ -6,7 +6,6 @@
 
 #include "ash/components/settings/cros_settings_names.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/audio/audio_events_observer.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/https_latency_sampler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/network_events_observer.h"
@@ -17,12 +16,9 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "chrome/browser/chromeos/reporting/network/network_bandwidth_sampler.h"
-#include "components/reporting/client/report_queue.h"
 #include "components/reporting/client/report_queue_configuration.h"
-#include "components/reporting/client/report_queue_factory.h"
 #include "components/reporting/metrics/metric_data_collector.h"
 #include "components/reporting/metrics/metric_event_observer_manager.h"
-#include "components/reporting/metrics/metric_rate_controller.h"
 #include "components/reporting/metrics/metric_report_queue.h"
 #include "components/reporting/metrics/sampler.h"
 #include "components/user_manager/user.h"
@@ -31,132 +27,17 @@ namespace em = enterprise_management;
 
 namespace reporting {
 
-bool MetricReportingManager::Delegate::IsAffiliated(Profile* profile) {
+bool MetricReportingManager::Delegate::IsAffiliated(Profile* profile) const {
   const user_manager::User* const user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
   return user && user->IsAffiliated();
 }
 
-std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>
-MetricReportingManager::Delegate::CreateReportQueue(EventType event_type,
-                                                    Destination destination) {
-  return ReportQueueFactory::CreateSpeculativeReportQueue(event_type,
-                                                          destination);
-}
-
-bool MetricReportingManager::Delegate::IsDeprovisioned() {
+bool MetricReportingManager::Delegate::IsDeprovisioned() const {
   return ::ash::DeviceSettingsService::IsInitialized() &&
          ::ash::DeviceSettingsService::Get()->policy_data() &&
          ::ash::DeviceSettingsService::Get()->policy_data()->state() ==
              em::PolicyData::DEPROVISIONED;
-}
-
-std::unique_ptr<MetricReportQueue>
-MetricReportingManager::Delegate::CreateMetricReportQueue(
-    EventType event_type,
-    Destination destination,
-    Priority priority) {
-  std::unique_ptr<MetricReportQueue> metric_report_queue;
-  auto report_queue = CreateReportQueue(event_type, destination);
-  if (report_queue) {
-    metric_report_queue =
-        std::make_unique<MetricReportQueue>(std::move(report_queue), priority);
-  } else {
-    DVLOG(1) << "Cannot create metric report queue, report queue is null";
-  }
-  return metric_report_queue;
-}
-
-std::unique_ptr<MetricReportQueue>
-MetricReportingManager::Delegate::CreatePeriodicUploadReportQueue(
-    EventType event_type,
-    Destination destination,
-    Priority priority,
-    ReportingSettings* reporting_settings,
-    const std::string& rate_setting_path,
-    base::TimeDelta default_rate,
-    int rate_unit_to_ms) {
-  std::unique_ptr<MetricReportQueue> metric_report_queue;
-  auto report_queue = CreateReportQueue(event_type, destination);
-  if (report_queue) {
-    metric_report_queue = std::make_unique<MetricReportQueue>(
-        std::move(report_queue), priority, reporting_settings,
-        rate_setting_path, default_rate, rate_unit_to_ms);
-  } else {
-    DVLOG(1)
-        << "Cannot create periodic upload report queue, report queue is null";
-  }
-  return metric_report_queue;
-}
-
-std::unique_ptr<CollectorBase>
-MetricReportingManager::Delegate::CreateOneShotCollector(
-    Sampler* sampler,
-    MetricReportQueue* metric_report_queue,
-    ReportingSettings* reporting_settings,
-    const std::string& enable_setting_path,
-    bool setting_enabled_default_value) {
-  return std::make_unique<OneShotCollector>(
-      sampler, metric_report_queue, reporting_settings, enable_setting_path,
-      setting_enabled_default_value);
-}
-
-std::unique_ptr<CollectorBase>
-MetricReportingManager::Delegate::CreatePeriodicCollector(
-    Sampler* sampler,
-    MetricReportQueue* metric_report_queue,
-    ReportingSettings* reporting_settings,
-    const std::string& enable_setting_path,
-    bool setting_enabled_default_value,
-    const std::string& rate_setting_path,
-    base::TimeDelta default_rate,
-    int rate_unit_to_ms) {
-  return std::make_unique<PeriodicCollector>(
-      sampler, metric_report_queue, reporting_settings, enable_setting_path,
-      setting_enabled_default_value, rate_setting_path, default_rate,
-      rate_unit_to_ms);
-}
-
-std::unique_ptr<CollectorBase>
-MetricReportingManager::Delegate::CreatePeriodicEventCollector(
-    Sampler* sampler,
-    std::unique_ptr<EventDetector> event_detector,
-    std::vector<Sampler*> additional_samplers,
-    MetricReportQueue* metric_report_queue,
-    ReportingSettings* reporting_settings,
-    const std::string& enable_setting_path,
-    bool setting_enabled_default_value,
-    const std::string& rate_setting_path,
-    base::TimeDelta default_rate,
-    int rate_unit_to_ms) {
-  return std::make_unique<PeriodicEventCollector>(
-      sampler, std::move(event_detector), std::move(additional_samplers),
-      metric_report_queue, reporting_settings, enable_setting_path,
-      setting_enabled_default_value, rate_setting_path, default_rate,
-      rate_unit_to_ms);
-}
-
-std::unique_ptr<MetricEventObserverManager>
-MetricReportingManager::Delegate::CreateEventObserverManager(
-    std::unique_ptr<MetricEventObserver> event_observer,
-    MetricReportQueue* metric_report_queue,
-    ReportingSettings* reporting_settings,
-    const std::string& enable_setting_path,
-    bool setting_enabled_default_value,
-    std::vector<Sampler*> additional_samplers) {
-  return std::make_unique<MetricEventObserverManager>(
-      std::move(event_observer), metric_report_queue, reporting_settings,
-      enable_setting_path, setting_enabled_default_value,
-      std::move(additional_samplers));
-}
-
-base::TimeDelta MetricReportingManager::Delegate::GetInitDelay() const {
-  return metrics::kInitDelay;
-}
-
-base::TimeDelta MetricReportingManager::Delegate::GetInitialUploadDelay()
-    const {
-  return metrics::kInitialUploadDelay;
 }
 
 // static

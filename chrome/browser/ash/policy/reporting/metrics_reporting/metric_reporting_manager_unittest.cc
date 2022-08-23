@@ -99,9 +99,9 @@ class MockDelegate : public MetricReportingManager::Delegate {
 
   ~MockDelegate() override = default;
 
-  MOCK_METHOD(bool, IsAffiliated, (Profile * profile), (override));
+  MOCK_METHOD(bool, IsAffiliated, (Profile * profile), (const, override));
 
-  MOCK_METHOD(bool, IsDeprovisioned, (), (override));
+  MOCK_METHOD(bool, IsDeprovisioned, (), (const, override));
 
   MOCK_METHOD(std::unique_ptr<MetricReportQueue>,
               CreateMetricReportQueue,
