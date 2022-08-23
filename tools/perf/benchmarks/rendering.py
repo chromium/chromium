@@ -34,9 +34,6 @@ RENDERING_BENCHMARK_UMA = [
     'Graphics.Smoothness.Jank.AllAnimations',
     'Graphics.Smoothness.Jank.AllInteractions',
     'Graphics.Smoothness.Jank.AllSequences',
-    'Graphics.Smoothness.PercentDroppedFrames2.AllAnimations',
-    'Graphics.Smoothness.PercentDroppedFrames2.AllInteractions',
-    'Graphics.Smoothness.PercentDroppedFrames2.AllSequences',
     'Graphics.Smoothness.PercentDroppedFrames3.AllAnimations',
     'Graphics.Smoothness.PercentDroppedFrames3.AllInteractions',
     'Graphics.Smoothness.PercentDroppedFrames3.AllSequences',
@@ -108,10 +105,10 @@ class _RenderingBenchmark(perf_benchmark.PerfBenchmark):
     return options
 
 
-@benchmark.Info(emails=['behdadb@chromium.org', 'jonross@chromium.org',
-                        'sadrul@chromium.org'],
-                documentation_url='https://bit.ly/rendering-benchmarks',
-                component='Internals>GPU>Metrics')
+@benchmark.Info(
+    emails=['jonross@chromium.org', 'chrome-gpu-metrics@google.com'],
+    documentation_url='https://bit.ly/rendering-benchmarks',
+    component='Internals>GPU>Metrics')
 class RenderingDesktop(_RenderingBenchmark):
   # TODO(rmhasan): Remove the SUPPORTED_PLATFORMS lists.
   # SUPPORTED_PLATFORMS is deprecated, please put system specifier tags
@@ -136,11 +133,10 @@ class RenderingDesktop(_RenderingBenchmark):
           '--use-gpu-high-thread-priority-for-perf-tests')
 
 
-@benchmark.Info(emails=[
-    'behdadb@chromium.org', 'jonross@chromium.org', 'sadrul@chromium.org'
-],
-                documentation_url='https://bit.ly/rendering-benchmarks',
-                component='Internals>GPU>Metrics')
+@benchmark.Info(
+    emails=['jonross@chromium.org', 'chrome-gpu-metrics@google.com'],
+    documentation_url='https://bit.ly/rendering-benchmarks',
+    component='Internals>GPU>Metrics')
 class RenderingDesktopNoTracing(RenderingDesktop):
   @classmethod
   def Name(cls):
@@ -157,10 +153,10 @@ class RenderingDesktopNoTracing(RenderingDesktop):
     return options
 
 
-@benchmark.Info(emails=['behdadb@chromium.org', 'jonross@chromium.org',
-                        'sadrul@chromium.org'],
-                documentation_url='https://bit.ly/rendering-benchmarks',
-                component='Internals>GPU>Metrics')
+@benchmark.Info(
+    emails=['jonross@chromium.org', 'chrome-gpu-metrics@google.com'],
+    documentation_url='https://bit.ly/rendering-benchmarks',
+    component='Internals>GPU>Metrics')
 class RenderingMobile(_RenderingBenchmark):
   # TODO(rmhasan): Remove the SUPPORTED_PLATFORMS lists.
   # SUPPORTED_PLATFORMS is deprecated, please put system specifier tags
@@ -198,11 +194,10 @@ class RenderingMobile(_RenderingBenchmark):
     return options
 
 
-@benchmark.Info(emails=[
-    'behdadb@chromium.org', 'jonross@chromium.org', 'sadrul@chromium.org'
-],
-                documentation_url='https://bit.ly/rendering-benchmarks',
-                component='Internals>GPU>Metrics')
+@benchmark.Info(
+    emails=['jonross@chromium.org', 'chrome-gpu-metrics@google.com'],
+    documentation_url='https://bit.ly/rendering-benchmarks',
+    component='Internals>GPU>Metrics')
 class RenderingMobileNoTracing(RenderingMobile):
   @classmethod
   def Name(cls):
