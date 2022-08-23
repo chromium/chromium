@@ -30,6 +30,9 @@ class TokenServiceInterface {
   // ID of the device that the tokens target to.
   virtual std::string GetDeviceID() const = 0;
 
+  // Checks if enrollment is mandatory.
+  virtual bool IsEnrollmentMandatory() const = 0;
+
   // Writes |enrollment_token| to storage.
   virtual bool StoreEnrollmentToken(const std::string& enrollment_token) = 0;
 
@@ -62,6 +65,11 @@ class DMStorage : public base::RefCountedThreadSafe<DMStorage> {
 
   // Forwards to token service to get device ID
   std::string GetDeviceID() const { return token_service_->GetDeviceID(); }
+
+  // Forwards to token service to check if enrollment is mandatory.
+  bool IsEnrollmentMandatory() const {
+    return token_service_->IsEnrollmentMandatory();
+  }
 
   // Forwards to token service to save enrollment token.
   bool StoreEnrollmentToken(const std::string& enrollment_token) {

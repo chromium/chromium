@@ -31,6 +31,8 @@ class TestTokenService : public TokenServiceInterface {
   // Overrides for TokenServiceInterface.
   std::string GetDeviceID() const override { return "TestDeviceID"; }
 
+  bool IsEnrollmentMandatory() const override { return false; }
+
   bool StoreEnrollmentToken(const std::string& enrollment_token) override {
     enrollment_token_ = enrollment_token;
     return true;

@@ -32,6 +32,7 @@ class TokenService : public TokenServiceInterface {
 
   // Overrides for TokenServiceInterface.
   std::string GetDeviceID() const override;
+  bool IsEnrollmentMandatory() const override;
   bool StoreEnrollmentToken(const std::string& enrollment_token) override;
   std::string GetEnrollmentToken() const override;
   bool StoreDmToken(const std::string& dm_token) override;
@@ -47,6 +48,17 @@ std::string TokenService::GetDeviceID() const {
     return std::string();
 
   return base::SysWideToUTF8(device_id);
+}
+
+bool TokenService::IsEnrollmentMandatory() const {
+  DWORD is_mandatory = 0;
+  base::win::RegKey key;
+  key.Open(HKEY_LOCAL_MACHINE, kRegKeyCompanyCloudManagement,
+           Wow6432(KEY_READ));
+  return (key.ReadValueDW(kRegValueEnrollmentMandatory, &is_mandatory) ==
+          ERROR_SUCCESS)
+             ? is_mandatory
+             : false;
 }
 
 bool TokenService::StoreEnrollmentToken(const std::string& token) {

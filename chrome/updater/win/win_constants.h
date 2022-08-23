@@ -68,6 +68,10 @@ extern const wchar_t kRegValueAutoRunOnOSUpgrade[];
 extern const wchar_t kRegKeyCompanyCloudManagement[];
 extern const wchar_t kRegValueEnrollmentToken[];
 
+// The name of the policy indicating that enrollment in cloud-based device
+// management is mandatory.
+constexpr wchar_t kRegValueEnrollmentMandatory[] = L"EnrollmentMandatory";
+
 // Registry for DM token.
 extern const wchar_t kRegKeyCompanyEnrollment[];
 extern const wchar_t kRegValueDmToken[];
