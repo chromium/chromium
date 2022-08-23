@@ -12,7 +12,6 @@
 #include "base/check_op.h"
 #include "base/metrics/histogram_macros.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 #import "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_gesture_recognizer.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_view.h"
@@ -21,6 +20,7 @@
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
 #include "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/voice/voice_search_notification_names.h"
+#import "ios/public/provider/chrome/browser/fullscreen/fullscreen_api.h"
 #include "ios/web/common/features.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 
@@ -578,7 +578,7 @@ NSString* const kOverscrollActionsDidEnd = @"OverscrollActionsDidStop";
 - (BOOL)viewportAdjustsContentInset {
   if (_webViewProxy.shouldUseViewContentInset)
     return YES;
-  return fullscreen::features::ShouldUseSmoothScrolling();
+  return ios::provider::IsFullscreenSmoothScrollingSupported();
 }
 
 - (void)recordMetricForTriggeredAction:(OverscrollAction)action {

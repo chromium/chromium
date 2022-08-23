@@ -15,10 +15,6 @@ namespace features {
 // viewport adjustment experiment is selected via command line switches.
 extern const base::Feature kSmoothScrollingDefault;
 
-// Convenience method for determining when to adjust the viewport by resizing
-// WKWebView or using smooth scrolling.
-bool ShouldUseSmoothScrolling();
-
 }  // namespace features
 }  // namespace fullscreen
 

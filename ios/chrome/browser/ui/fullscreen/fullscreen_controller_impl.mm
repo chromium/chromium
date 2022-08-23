@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/broadcaster/chrome_broadcast_observer_bridge.h"
 #import "ios/chrome/browser/ui/broadcaster/chrome_broadcaster.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_system_notification_observer.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

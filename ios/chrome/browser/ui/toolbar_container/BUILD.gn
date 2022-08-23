@@ -16,7 +16,6 @@ source_set("toolbar_container") {
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/fullscreen",
-    "//ios/chrome/browser/ui/fullscreen:feature_flags",
   ]
 }
 

@@ -40,10 +40,8 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ui/fullscreen",
-    "//ios/chrome/browser/ui/fullscreen:feature_flags",
     "//ios/chrome/browser/ui/ntp:logo",
     "//ios/chrome/test/app:test_support",
-    "//ios/public/provider/chrome/browser",
   ]
 }
 

@@ -67,7 +67,6 @@
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/first_run/welcome_to_chrome_view_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_element.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
@@ -134,6 +133,7 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/components/webui/web_ui_url_constants.h"
+#import "ios/public/provider/chrome/browser/fullscreen/fullscreen_api.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_controller.h"
 #import "ios/web/public/deprecated/crw_js_injection_receiver.h"
@@ -1350,7 +1350,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // change on rotation.
   [self updateToolbarState];
   // Resize horizontal viewport if Smooth Scrolling is on.
-  if (fullscreen::features::ShouldUseSmoothScrolling()) {
+  if (ios::provider::IsFullscreenSmoothScrollingSupported()) {
     self.fullscreenController->ResizeHorizontalViewport();
   }
 }
@@ -1522,7 +1522,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   _fakeStatusBarView = nil;
 
   if (self.thumbStripEnabled &&
-      !fullscreen::features::ShouldUseSmoothScrolling()) {
+      !ios::provider::IsFullscreenSmoothScrollingSupported()) {
     // A fake status bar on the browser view is not necessary when the thumb
     // strip feature is enabled because the view behind the browser view already
     // has a dark background. Adding a fake status bar would block the
@@ -1948,7 +1948,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     // Make new content visible, resizing it first as the orientation may
     // have changed from the last time it was displayed.
     CGRect webStateViewFrame = self.contentArea.bounds;
-    if (fullscreen::features::ShouldUseSmoothScrolling()) {
+    if (ios::provider::IsFullscreenSmoothScrollingSupported()) {
       // If the view was translated for the thumb strip, make sure to re-apply
       // that translation here.
       if (self.viewTranslatedForSmoothScrolling) {
@@ -1989,7 +1989,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
           [self viewForWebState:webState];
     }
     // Resize horizontal viewport if Smooth Scrolling is on.
-    if (fullscreen::features::ShouldUseSmoothScrolling()) {
+    if (ios::provider::IsFullscreenSmoothScrollingSupported()) {
       self.fullscreenController->ResizeHorizontalViewport();
     }
   }
@@ -2424,7 +2424,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     // frame must be moved down and the content inset is decreased. To prevent
     // the actual web content from jumping, the content offset must be moved up
     // by a corresponding amount.
-    if (fullscreen::features::ShouldUseSmoothScrolling()) {
+    if (ios::provider::IsFullscreenSmoothScrollingSupported()) {
       self.viewTranslatedForSmoothScrolling = YES;
       CGFloat toolbarHeight = [self expandedTopToolbarHeight];
       if (self.currentWebState) {
@@ -2532,7 +2532,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
     // See the comments in `-willAnimateViewReveal:` for the explanation of why
     // this is necessary.
-    if (fullscreen::features::ShouldUseSmoothScrolling()) {
+    if (ios::provider::IsFullscreenSmoothScrollingSupported()) {
       self.viewTranslatedForSmoothScrolling = NO;
       self.fullscreenController->FreezeToolbarHeight(false);
       CGFloat toolbarHeight = [self expandedTopToolbarHeight];
@@ -2853,7 +2853,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 - (CGFloat)initialContentOffsetForOverscrollActionsController:
     (OverscrollActionsController*)controller {
-  return (fullscreen::features::ShouldUseSmoothScrolling())
+  return ios::provider::IsFullscreenSmoothScrollingSupported()
              ? -[self headerInsetForOverscrollActionsController:controller]
              : 0;
 }
@@ -2868,7 +2868,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 - (void)updateForFullscreenProgress:(CGFloat)progress {
   [self updateHeadersForFullscreenProgress:progress];
   [self updateFootersForFullscreenProgress:progress];
-  if (!fullscreen::features::ShouldUseSmoothScrolling()) {
+  if (!ios::provider::IsFullscreenSmoothScrollingSupported()) {
     [self updateBrowserViewportForFullscreenProgress:progress];
   }
 }

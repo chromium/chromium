@@ -11,7 +11,6 @@
 #include "base/check.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 #import "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

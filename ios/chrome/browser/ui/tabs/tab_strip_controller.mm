@@ -30,7 +30,6 @@
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/commands/popup_menu_commands.h"
 #include "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
-#include "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 #include "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
@@ -57,6 +56,7 @@
 #include "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/fullscreen/fullscreen_api.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
@@ -120,7 +120,7 @@ UIColor* BackgroundColor() {
     // However, when using the fullscreen provider, the WKWebView extends behind
     // the tab strip. In this case, a clear background would lead to seeing the
     // WKWebView instead of the thumb strip.
-    return fullscreen::features::ShouldUseSmoothScrolling()
+    return ios::provider::IsFullscreenSmoothScrollingSupported()
                ? UIColor.blackColor
                : UIColor.clearColor;
   }

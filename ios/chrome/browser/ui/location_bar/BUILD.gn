@@ -62,7 +62,6 @@ source_set("location_bar") {
     "//ios/chrome/browser/ui/default_promo:utils",
     "//ios/chrome/browser/ui/elements",
     "//ios/chrome/browser/ui/fullscreen",
-    "//ios/chrome/browser/ui/fullscreen:feature_flags",
     "//ios/chrome/browser/ui/fullscreen:ui",
     "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/main:default_browser_scene_agent",
