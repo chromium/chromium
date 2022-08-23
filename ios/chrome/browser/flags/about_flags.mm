@@ -1385,7 +1385,7 @@ NSString* TestingPoliciesHash() {
 }
 }  // namespace
 
-// Add all switches from experimental flags to |command_line|.
+// Add all switches from experimental flags to `command_line`.
 void AppendSwitchesFromExperimentalSettings(base::CommandLine* command_line) {
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
 
