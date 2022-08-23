@@ -5217,7 +5217,7 @@
   {
     "name": "photo-picker-video-support",
     "owners": [ "finnur" ],
-    "expiry_milestone": 105
+    "expiry_milestone": 110
   },
   {
     "name": "post-quantum-cecpq2",
