@@ -54,13 +54,17 @@ class ObservableArrayExoticObjectHandler {
       const v8::FunctionCallbackInfo<v8::Value>& info) {
     v8::Isolate* isolate = info.GetIsolate();
     v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
-    v8::Local<v8::Array> v8_target = info[0].As<v8::Array>();
-    v8::Local<v8::Value> v8_property = info[1];
-    v8::Local<v8::Value> v8_desc_obj = info[2];
-    BackingListWrappable& backing_list = ToWrappableUnsafe(isolate, v8_target);
     ExceptionState exception_state(
-        isolate, ExceptionContext::Context::kNamedPropertyDefine,
-        backing_list.ObservableArrayNameInIDL());
+        isolate, ExceptionContext::Context::kOperationInvoke,
+        BackingListWrappable::ObservableArrayNameInIDL(), "defineProperty");
+    if (!(info[0]->IsArray() && info[1]->IsName() && info[2]->IsObject())) {
+      exception_state.ThrowTypeError("Invalid argument.");
+      return;
+    }
+    v8::Local<v8::Array> v8_target = info[0].As<v8::Array>();
+    v8::Local<v8::Name> v8_property = info[1].As<v8::Name>();
+    v8::Local<v8::Object> v8_desc_obj = info[2].As<v8::Object>();
+    BackingListWrappable& backing_list = ToWrappableOrDie(isolate, v8_target);
 
     V8PropertyDescriptorBag desc_bag;
     V8ObjectToPropertyDescriptor(isolate, v8_desc_obj, desc_bag,
@@ -112,9 +116,7 @@ class ObservableArrayExoticObjectHandler {
         desc.set_configurable(desc_bag.configurable);
       if (desc_bag.has_enumerable)
         desc.set_enumerable(desc_bag.enumerable);
-      if (!v8_target
-               ->DefineProperty(current_context, v8_property.As<v8::Name>(),
-                                desc)
+      if (!v8_target->DefineProperty(current_context, v8_property, desc)
                .To(&is_defined)) {
         return;
       }
@@ -124,9 +126,7 @@ class ObservableArrayExoticObjectHandler {
         desc.set_configurable(desc_bag.configurable);
       if (desc_bag.has_enumerable)
         desc.set_enumerable(desc_bag.enumerable);
-      if (!v8_target
-               ->DefineProperty(current_context, v8_property.As<v8::Name>(),
-                                desc)
+      if (!v8_target->DefineProperty(current_context, v8_property, desc)
                .To(&is_defined)) {
         return;
       }
@@ -139,9 +139,16 @@ class ObservableArrayExoticObjectHandler {
       const v8::FunctionCallbackInfo<v8::Value>& info) {
     v8::Isolate* isolate = info.GetIsolate();
     v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
+    if (!(info[0]->IsArray() && info[1]->IsName())) {
+      ExceptionState exception_state(
+          isolate, ExceptionContext::Context::kOperationInvoke,
+          BackingListWrappable::ObservableArrayNameInIDL(), "deleteProperty");
+      exception_state.ThrowTypeError("Invalid argument.");
+      return;
+    }
     v8::Local<v8::Array> v8_target = info[0].As<v8::Array>();
-    v8::Local<v8::Value> v8_property = info[1];
-    BackingListWrappable& backing_list = ToWrappableUnsafe(isolate, v8_target);
+    v8::Local<v8::Name> v8_property = info[1].As<v8::Name>();
+    BackingListWrappable& backing_list = ToWrappableOrDie(isolate, v8_target);
 
     if (v8_property->IsString()) {
       v8::Local<v8::Uint32> v8_index;
@@ -154,7 +161,7 @@ class ObservableArrayExoticObjectHandler {
         ScriptState* script_state = ScriptState::From(current_context);
         ExceptionState exception_state(
             isolate, ExceptionContext::Context::kIndexedPropertyDelete,
-            backing_list.ObservableArrayNameInIDL());
+            BackingListWrappable::ObservableArrayNameInIDL());
         if (!RunDeleteAlgorithm(script_state, backing_list, index,
                                 exception_state)) {
           return;
@@ -181,9 +188,16 @@ class ObservableArrayExoticObjectHandler {
   static void TrapGet(const v8::FunctionCallbackInfo<v8::Value>& info) {
     v8::Isolate* isolate = info.GetIsolate();
     v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
+    if (!(info[0]->IsArray() && info[1]->IsName())) {
+      ExceptionState exception_state(
+          isolate, ExceptionContext::Context::kOperationInvoke,
+          BackingListWrappable::ObservableArrayNameInIDL(), "get");
+      exception_state.ThrowTypeError("Invalid argument.");
+      return;
+    }
     v8::Local<v8::Array> v8_target = info[0].As<v8::Array>();
-    v8::Local<v8::Value> v8_property = info[1];
-    BackingListWrappable& backing_list = ToWrappableUnsafe(isolate, v8_target);
+    v8::Local<v8::Name> v8_property = info[1].As<v8::Name>();
+    BackingListWrappable& backing_list = ToWrappableOrDie(isolate, v8_target);
 
     if (v8_property->IsString()) {
       v8::Local<v8::Uint32> v8_index;
@@ -221,9 +235,17 @@ class ObservableArrayExoticObjectHandler {
       const v8::FunctionCallbackInfo<v8::Value>& info) {
     v8::Isolate* isolate = info.GetIsolate();
     v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
+    if (!(info[0]->IsArray() && info[1]->IsName())) {
+      ExceptionState exception_state(
+          isolate, ExceptionContext::Context::kOperationInvoke,
+          BackingListWrappable::ObservableArrayNameInIDL(),
+          "getOwnPropertyDescriptor");
+      exception_state.ThrowTypeError("Invalid argument.");
+      return;
+    }
     v8::Local<v8::Array> v8_target = info[0].As<v8::Array>();
-    v8::Local<v8::Value> v8_property = info[1];
-    BackingListWrappable& backing_list = ToWrappableUnsafe(isolate, v8_target);
+    v8::Local<v8::Name> v8_property = info[1].As<v8::Name>();
+    BackingListWrappable& backing_list = ToWrappableOrDie(isolate, v8_target);
 
     if (v8_property->IsString()) {
       v8::Local<v8::Uint32> v8_index;
@@ -258,9 +280,7 @@ class ObservableArrayExoticObjectHandler {
     }
 
     v8::Local<v8::Value> v8_value;
-    if (!v8_target
-             ->GetOwnPropertyDescriptor(current_context,
-                                        v8_property.As<v8::Name>())
+    if (!v8_target->GetOwnPropertyDescriptor(current_context, v8_property)
              .ToLocal(&v8_value)) {
       return;
     }
@@ -271,9 +291,16 @@ class ObservableArrayExoticObjectHandler {
   static void TrapHas(const v8::FunctionCallbackInfo<v8::Value>& info) {
     v8::Isolate* isolate = info.GetIsolate();
     v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
+    if (!(info[0]->IsArray() && info[1]->IsName())) {
+      ExceptionState exception_state(
+          isolate, ExceptionContext::Context::kOperationInvoke,
+          BackingListWrappable::ObservableArrayNameInIDL(), "has");
+      exception_state.ThrowTypeError("Invalid argument.");
+      return;
+    }
     v8::Local<v8::Array> v8_target = info[0].As<v8::Array>();
-    v8::Local<v8::Value> v8_property = info[1];
-    BackingListWrappable& backing_list = ToWrappableUnsafe(isolate, v8_target);
+    v8::Local<v8::Name> v8_property = info[1].As<v8::Name>();
+    BackingListWrappable& backing_list = ToWrappableOrDie(isolate, v8_target);
 
     if (v8_property->IsString()) {
       v8::Local<v8::Uint32> v8_index;
@@ -300,8 +327,15 @@ class ObservableArrayExoticObjectHandler {
   static void TrapOwnKeys(const v8::FunctionCallbackInfo<v8::Value>& info) {
     v8::Isolate* isolate = info.GetIsolate();
     v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
+    if (!info[0]->IsArray()) {
+      ExceptionState exception_state(
+          isolate, ExceptionContext::Context::kOperationInvoke,
+          BackingListWrappable::ObservableArrayNameInIDL(), "ownKeys");
+      exception_state.ThrowTypeError("Invalid argument.");
+      return;
+    }
     v8::Local<v8::Array> v8_target = info[0].As<v8::Array>();
-    BackingListWrappable& backing_list = ToWrappableUnsafe(isolate, v8_target);
+    BackingListWrappable& backing_list = ToWrappableOrDie(isolate, v8_target);
 
     // 2. Let length be handler.[[BackingList]]'s size.
     // 3. Let keys be an empty list.
@@ -357,17 +391,24 @@ class ObservableArrayExoticObjectHandler {
   static void TrapSet(const v8::FunctionCallbackInfo<v8::Value>& info) {
     v8::Isolate* isolate = info.GetIsolate();
     v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
+    if (!(info[0]->IsArray() && info[1]->IsName())) {
+      ExceptionState exception_state(
+          isolate, ExceptionContext::Context::kOperationInvoke,
+          BackingListWrappable::ObservableArrayNameInIDL(), "set");
+      exception_state.ThrowTypeError("Invalid argument.");
+      return;
+    }
     v8::Local<v8::Array> v8_target = info[0].As<v8::Array>();
-    v8::Local<v8::Value> v8_property = info[1];
+    v8::Local<v8::Name> v8_property = info[1].As<v8::Name>();
     v8::Local<v8::Value> v8_value = info[2];
-    BackingListWrappable& backing_list = ToWrappableUnsafe(isolate, v8_target);
+    BackingListWrappable& backing_list = ToWrappableOrDie(isolate, v8_target);
 
     if (v8_property->IsString()) {
       v8::Local<v8::Uint32> v8_index;
       if (v8_property->ToArrayIndex(current_context).ToLocal(&v8_index)) {
         ExceptionState exception_state(
             isolate, ExceptionContext::Context::kIndexedPropertySet,
-            backing_list.ObservableArrayNameInIDL());
+            BackingListWrappable::ObservableArrayNameInIDL());
         uint32_t index = v8_index->Value();
         bool result =
             DoSetTheIndexedValue(isolate, current_context, backing_list, index,
@@ -380,7 +421,7 @@ class ObservableArrayExoticObjectHandler {
               V8AtomicString(isolate, "length"))) {
         ExceptionState exception_state(
             isolate, ExceptionContext::Context::kAttributeSet,
-            backing_list.ObservableArrayNameInIDL(), "length");
+            BackingListWrappable::ObservableArrayNameInIDL(), "length");
         bool result = DoSetTheLength(isolate, current_context, backing_list,
                                      v8_value, exception_state);
         V8SetReturnValue(info, result);
@@ -431,11 +472,11 @@ class ObservableArrayExoticObjectHandler {
   }
 
  private:
-  static BackingListWrappable& ToWrappableUnsafe(v8::Isolate* isolate,
-                                                 v8::Local<v8::Array> target) {
+  static BackingListWrappable& ToWrappableOrDie(v8::Isolate* isolate,
+                                                v8::Local<v8::Array> target) {
     bindings::ObservableArrayBase* base =
         bindings::ObservableArrayExoticObjectImpl::
-            ProxyTargetToObservableArrayBase(isolate, target);
+            ProxyTargetToObservableArrayBaseOrDie(isolate, target);
     return *static_cast<BackingListWrappable*>(base);
   }
 
