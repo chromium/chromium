@@ -319,6 +319,25 @@ std::vector<std::string> ConnectorsManager::GetReportingServiceProviderNames(
   return {};
 }
 
+std::vector<const AnalysisConfig*> ConnectorsManager::GetAnalysisServiceConfigs(
+    AnalysisConnector connector) {
+  if (IsConnectorEnabled(connector)) {
+    if (analysis_connector_settings_.count(connector) == 0) {
+      CacheAnalysisConnectorPolicy(connector);
+    }
+
+    if (analysis_connector_settings_.count(connector) &&
+        !analysis_connector_settings_.at(connector).empty()) {
+      // There can only be one provider right now, but the system is designed to
+      // support multiples, so return a vector.
+      return {
+          analysis_connector_settings_.at(connector).at(0).GetAnalysisConfig()};
+    }
+  }
+
+  return {};
+}
+
 void ConnectorsManager::StartObservingPrefs(PrefService* pref_service) {
   pref_change_registrar_.Init(pref_service);
   StartObservingPref(AnalysisConnector::FILE_ATTACHED);

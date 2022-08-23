@@ -305,6 +305,14 @@ std::vector<std::string> ConnectorsService::GetReportingServiceProviderNames(
   return connectors_manager_->GetReportingServiceProviderNames(connector);
 }
 
+std::vector<const AnalysisConfig*> ConnectorsService::GetAnalysisServiceConfigs(
+    AnalysisConnector connector) {
+  if (!ConnectorsEnabled())
+    return {};
+
+  return connectors_manager_->GetAnalysisServiceConfigs(connector);
+}
+
 bool ConnectorsService::DelayUntilVerdict(AnalysisConnector connector) {
   if (!ConnectorsEnabled())
     return false;

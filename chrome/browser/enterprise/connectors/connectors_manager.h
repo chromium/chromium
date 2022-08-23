@@ -92,6 +92,9 @@ class ConnectorsManager {
   std::vector<std::string> GetReportingServiceProviderNames(
       ReportingConnector connector);
 
+  std::vector<const AnalysisConfig*> GetAnalysisServiceConfigs(
+      AnalysisConnector connector);
+
   // Public testing functions.
   const AnalysisConnectorsSettings& GetAnalysisConnectorsSettingsForTesting()
       const;

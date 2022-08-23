@@ -56,6 +56,8 @@ class AnalysisServiceSettings {
 
   std::string service_provider_name() const { return service_provider_name_; }
 
+  const AnalysisConfig* GetAnalysisConfig() const { return analysis_config_; }
+
  private:
   // The setting to apply when a specific URL pattern is matched.
   struct URLPatternSettings {

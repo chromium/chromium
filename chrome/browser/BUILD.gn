@@ -6293,6 +6293,8 @@ static_library("browser") {
 
   if (is_linux || is_win || is_mac) {
     sources += [
+      "enterprise/chrome_browser_main_extra_parts_enterprise.cc",
+      "enterprise/chrome_browser_main_extra_parts_enterprise.h",
       "enterprise/connectors/analysis/content_analysis_sdk_manager.cc",
       "enterprise/connectors/analysis/content_analysis_sdk_manager.h",
       "enterprise/connectors/analysis/local_binary_upload_service.cc",
