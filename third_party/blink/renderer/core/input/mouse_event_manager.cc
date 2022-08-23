@@ -862,8 +862,7 @@ WebInputEventResult MouseEventManager::HandleMouseDraggedEvent(
   mouse_down_may_start_drag_ = false;
 
   frame_->GetEventHandler().GetSelectionController().HandleMouseDraggedEvent(
-      event, mouse_down_pos_, drag_start_pos_in_root_frame_,
-      last_known_mouse_position_in_root_frame_);
+      event, mouse_down_pos_, last_known_mouse_position_in_root_frame_);
 
   // The call into HandleMouseDraggedEvent may have caused a re-layout,
   // so get the LayoutObject again.

@@ -54,7 +54,6 @@ class CORE_EXPORT SelectionController final
   bool HandleMousePressEvent(const MouseEventWithHitTestResults&);
   void HandleMouseDraggedEvent(const MouseEventWithHitTestResults&,
                                const gfx::Point&,
-                               const PhysicalOffset&,
                                const PhysicalOffset&);
   bool HandleMouseReleaseEvent(const MouseEventWithHitTestResults&,
                                const PhysicalOffset&);
@@ -64,9 +63,7 @@ class CORE_EXPORT SelectionController final
 
   void UpdateSelectionForMouseDrag(const PhysicalOffset&,
                                    const PhysicalOffset&);
-  void UpdateSelectionForMouseDrag(const HitTestResult&,
-                                   const PhysicalOffset&,
-                                   const PhysicalOffset&);
+  void UpdateSelectionForMouseDrag(const HitTestResult&, const PhysicalOffset&);
   template <typename MouseEventObject>
   void UpdateSelectionForContextMenuEvent(const MouseEventObject* mouse_event,
                                           const HitTestResult& hit_test_result,
