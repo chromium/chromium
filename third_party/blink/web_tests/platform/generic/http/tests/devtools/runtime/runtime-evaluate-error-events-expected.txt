@@ -1,6 +1,0 @@
-Tests that Runtime.evaluate triggers error handlers
-
-runtime-evaluate-error-events.js:10 onerror handler: Uncaught Error  1 7 Error
-    at <anonymous>:1:7
-runtime-evaluate-error-events.js:11 error event listener: ErrorEvent {isTrusted: true, message: 'Uncaught Error', filename: '', lineno: 1, colno: 7, …}
-

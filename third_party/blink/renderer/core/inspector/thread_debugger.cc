@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_trusted_script_url.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_window.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/events/error_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/inspector_dom_debugger_agent.h"
@@ -785,25 +784,6 @@ int64_t ThreadDebugger::generateUniqueId() {
   int64_t result;
   base::RandBytes(&result, sizeof result);
   return result;
-}
-
-void ThreadDebugger::dispatchError(v8::Local<v8::Context> context,
-                                   v8::Local<v8::Message> message,
-                                   v8::Local<v8::Value> exception) {
-  ScriptState* script_state = ScriptState::From(context);
-  ExecutionContext* execution_context = ExecutionContext::From(script_state);
-
-  // Simulate an ErrorEvent, but prevent default behavior (triggering an
-  // uncaught exception reported in DevTools).
-  ErrorEvent* event = ErrorEvent::Create(
-      ToCoreStringWithNullCheck(message->Get()),
-      SourceLocation::FromMessage(script_state->GetIsolate(), message,
-                                  execution_context),
-      ScriptValue::From(script_state, exception), &script_state->World());
-  event->preventDefault();
-
-  execution_context->DispatchErrorEvent(event,
-                                        SanitizeScriptErrors::kDoNotSanitize);
 }
 
 void ThreadDebugger::OnTimer(TimerBase* timer) {
