@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.CrashReporterCallback;
 import org.chromium.weblayer.CrashReporterController;
@@ -123,6 +124,7 @@ public class CrashReporterTest {
     @MinWebLayerVersion(88) // Fix first appeared in 88.
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1355817")
     public void testBogusCrashId() throws Exception {
         CallbackHelper callbackHelper = new CallbackHelper();
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl("about:blank");
