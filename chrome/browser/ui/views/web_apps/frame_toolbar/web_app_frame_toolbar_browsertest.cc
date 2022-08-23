@@ -1244,3 +1244,40 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
                   ->GetVisible());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
+                       DisplayModeMediaCSS) {
+  InstallAndLaunchWebApp();
+  auto* web_contents = helper()->browser_view()->GetActiveWebContents();
+
+  std::string get_background_color = R"(
+    window.getComputedStyle(document.body, null)
+      .getPropertyValue('background-color');
+  )";
+  std::string match_media_standalone =
+      "window.matchMedia('(display-mode: standalone)').matches;";
+  std::string match_media_wco =
+      "window.matchMedia('(display-mode: window-controls-overlay)').matches;";
+  std::string blue = "rgb(0, 0, 255)";
+  std::string red = "rgb(255, 0, 0)";
+
+  // Initially launches with WCO off. Validate the display-mode matches with the
+  // default value "standalone" and the default background-color.
+  EXPECT_FALSE(GetWindowControlOverlayVisibility());
+  ASSERT_TRUE(EvalJs(web_contents, match_media_standalone).ExtractBool());
+  ASSERT_EQ(blue, EvalJs(web_contents, get_background_color));
+
+  // Toggle WCO on, and validate the display-mode matches with
+  // "window-controls-overlay" and updates the background-color.
+  ToggleWindowControlsOverlayAndWait();
+  EXPECT_TRUE(GetWindowControlOverlayVisibility());
+  ASSERT_TRUE(EvalJs(web_contents, match_media_wco).ExtractBool());
+  ASSERT_EQ(red, EvalJs(web_contents, get_background_color));
+
+  // Toggle WCO back off and ensure it updates to be the same as in the
+  // beginning.
+  ToggleWindowControlsOverlayAndWait();
+  EXPECT_FALSE(GetWindowControlOverlayVisibility());
+  ASSERT_TRUE(EvalJs(web_contents, match_media_standalone).ExtractBool());
+  ASSERT_EQ(blue, EvalJs(web_contents, get_background_color));
+}
