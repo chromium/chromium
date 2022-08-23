@@ -7912,19 +7912,19 @@ grit("resources") {
     "//url/mojom:url_mojom_origin_js",
   ]
 
+  # TODO(crbug.com/1064647): Remove PluginFinder completely.
   if (enable_plugins) {
-    assert(!is_fuchsia)
-    if (is_chromeos_ash) {
-      inputs = [ "resources/plugin_metadata/plugins_chromeos.json" ]
-    }
-    if (is_linux || is_chromeos_lacros) {
-      inputs = [ "resources/plugin_metadata/plugins_linux.json" ]
+    if (is_win) {
+      inputs = [ "resources/plugin_metadata/plugins_win.json" ]
     }
     if (is_mac) {
       inputs = [ "resources/plugin_metadata/plugins_mac.json" ]
     }
-    if (is_win) {
-      inputs = [ "resources/plugin_metadata/plugins_win.json" ]
+    if (is_chromeos_ash) {
+      inputs = [ "resources/plugin_metadata/plugins_chromeos.json" ]
+    }
+    if (is_linux || is_chromeos_lacros || is_fuchsia) {
+      inputs = [ "resources/plugin_metadata/plugins_linux.json" ]
     }
   }
 

@@ -83,7 +83,7 @@ base::FilePath& GetInvalidSpecifiedUserDataDirInternal() {
 
 // Gets the path for internal plugins.
 bool GetInternalPluginsDirectory(base::FilePath* result) {
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
 #if BUILDFLAG(IS_MAC)
   // If called from Chrome, get internal plugins from a subdirectory of the
   // framework.
@@ -98,8 +98,8 @@ bool GetInternalPluginsDirectory(base::FilePath* result) {
 
   // The rest of the world expects plugins in the module directory.
   return base::PathService::Get(base::DIR_MODULE, result);
-#else  // BUILDFLAG(ENABLE_PLUGINS)
-  // Plugins are not enabled, so don't return an internal plugins path.
+#else  // BUILDFLAG(ENABLE_PPAPI)
+  // PPAPI plugins are not enabled, so don't return an internal plugins path.
   return false;
 #endif
 }

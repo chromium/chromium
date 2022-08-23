@@ -136,9 +136,7 @@ void ChromeContentClient::SetGpuInfo(const gpu::GPUInfo& gpu_info) {
 
 void ChromeContentClient::AddPepperPlugins(
     std::vector<content::PepperPluginInfo>* plugins) {
-  // TODO(crbug.com/1273277): Remove ENABLE_PLUGINS condition once Fuchsia
-  // supports enable_plugins=true. (Fuchsia already sets enable_pdf=true.)
-#if BUILDFLAG(ENABLE_PDF) && BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PDF)
   // TODO(crbug.com/1344644): Expose the PDF viewer without using
   // `PepperPluginInfo`.
   static constexpr char kPDFPluginExtension[] = "pdf";
@@ -153,7 +151,7 @@ void ChromeContentClient::AddPepperPlugins(
       pdf::kInternalPluginMimeType, kPDFPluginExtension, kPDFPluginDescription);
   pdf_info.mime_types.push_back(pdf_mime_type);
   plugins->push_back(pdf_info);
-#endif  // BUILDFLAG(ENABLE_PDF) && BUILDFLAG(ENABLE_PLUGINS)
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 #if BUILDFLAG(ENABLE_NACL)
   // Handle Native Client just like the PDF plugin. This means that it is

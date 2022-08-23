@@ -107,25 +107,27 @@
 
       <if expr="chromeos_ash">
         <include name="IDR_ORIGIN_MOJO_JS" file="${root_gen_dir}\url\mojom\origin.mojom-lite.js" use_base_dir="false" type="BINDATA"/>
-    </if>
+      </if>
       <if expr="enable_pdf">
         <include name="IDR_PDF_MANIFEST" file="resources\pdf\manifest.json" type="BINDATA" />
       </if>
-      <if expr="is_win">
-        <include name="IDR_PLUGIN_DB_JSON" file="resources\plugin_metadata\plugins_win.json" type="BINDATA" />
-      </if>
-      <if expr="is_macosx">
-        <include name="IDR_PLUGIN_DB_JSON" file="resources\plugin_metadata\plugins_mac.json" type="BINDATA" />
-      </if>
-      <if expr="chromeos_ash">
-        <include name="IDR_PLUGIN_DB_JSON" file="resources\plugin_metadata\plugins_chromeos.json" type="BINDATA" />
-      </if>
-      <if expr="is_linux or chromeos_lacros">
-        <include name="IDR_PLUGIN_DB_JSON" file="resources\plugin_metadata\plugins_linux.json" type="BINDATA" />
+      <if expr="enable_plugins">
+        <if expr="is_win">
+          <include name="IDR_PLUGIN_DB_JSON" file="resources\plugin_metadata\plugins_win.json" type="BINDATA" />
+        </if>
+        <if expr="is_macosx">
+          <include name="IDR_PLUGIN_DB_JSON" file="resources\plugin_metadata\plugins_mac.json" type="BINDATA" />
+        </if>
+        <if expr="chromeos_ash">
+          <include name="IDR_PLUGIN_DB_JSON" file="resources\plugin_metadata\plugins_chromeos.json" type="BINDATA" />
+        </if>
+        <if expr="is_linux or chromeos_lacros or is_fuchsia">
+          <include name="IDR_PLUGIN_DB_JSON" file="resources\plugin_metadata\plugins_linux.json" type="BINDATA" />
+        </if>
       </if>
       <if expr="chromeos_ash">
         <include name="IDR_URL_MOJOM_LITE_JS" file="${root_gen_dir}\url\mojom\url.mojom-lite.js" use_base_dir="false" type="BINDATA" />
-    </if>
+      </if>
       <include name="IDR_USB_ENUMERATION_OPTIONS_MOJOM_WEBUI_JS" file="${root_gen_dir}\mojom-webui\services\device\public\mojom\usb_enumeration_options.mojom-webui.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_USB_DEVICE_MANAGER_CLIENT_MOJOM_WEBUI_JS" file="${root_gen_dir}\mojom-webui\services\device\public\mojom\usb_manager_client.mojom-webui.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_WEBSTORE_MANIFEST" file="resources\webstore_app\manifest.json" type="BINDATA" />
@@ -342,7 +344,8 @@
         <include name="IDR_PARENT_ACCESS_CONTROLLER_JS" file="resources\chromeos\parent_access\parent_access_controller.js" type="BINDATA" />
         <include name="IDR_PARENT_ACCESS_UI_MOJOM_LITE_JS" file="${root_gen_dir}\chrome\browser\ui\webui\chromeos\parent_access\parent_access_ui.mojom-lite.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_PARENT_ACCESS_ILLUSTRATION_LIGHT_THEME_SVG" file="resources\chromeos\parent_access\images\parent_access_illustration_light_theme.svg" type="BINDATA" />
-        <include name="IDR_PARENT_ACCESS_ILLUSTRATION_DARK_THEME_SVG" file="resources\chromeos\parent_access\images\parent_access_illustration_dark_theme.svg" type="BINDATA" /></if>
+        <include name="IDR_PARENT_ACCESS_ILLUSTRATION_DARK_THEME_SVG" file="resources\chromeos\parent_access\images\parent_access_illustration_dark_theme.svg" type="BINDATA" />
+      </if>
       <if expr="safe_browsing_mode == 1">
         <include name="IDR_RESET_PASSWORD_HTML" file="resources\reset_password\reset_password.html" type="BINDATA" />
         <include name="IDR_RESET_PASSWORD_JS" file="${root_gen_dir}\chrome\browser\resources\reset_password\tsc\reset_password.js" use_base_dir="false" type="BINDATA" />

@@ -226,11 +226,7 @@ if (enable_pdf) {
   }
 
   static_library("pdf_view_web_plugin") {
-    # The PDF viewer relies on plugin infrastructure, which is currently tied to
-    # PPAPI support. Fuchsia does not have plugins enabled and is in a state
-    # where this code builds but does not work in Chrome.
-    # TODO(crbug.com/1306610): Remove this assert when this is no longer true.
-    assert(enable_plugins || is_fuchsia)
+    assert(enable_plugins, "The PDF viewer relies on plugin infrastructure")
 
     visibility = [
       ":*",

@@ -2437,26 +2437,17 @@ if (!is_android) {
     }
 
     if (enable_pdf) {
-      # Tests in other test .cc files have PDF-related tests depending on these
-      # so always depend on them.
+      sources += [
+        "../browser/pdf/pdf_extension_test.cc",
+        "../browser/pdf/pdf_find_request_manager_browsertest.cc",
+        "../browser/plugins/pdf_iframe_navigation_throttle_browsertest.cc",
+      ]
       deps += [
         ":pdf_extension_test_utils",
         "//components/pdf/browser",
+        "//pdf:features",
+        "//pdf/loader",
       ]
-
-      # TODO(crbug.com/1306610): Remove this condition and merge the deps once
-      # the tests can be built without PPAPI support.
-      if (enable_plugins) {
-        sources += [
-          "../browser/pdf/pdf_extension_test.cc",
-          "../browser/pdf/pdf_find_request_manager_browsertest.cc",
-          "../browser/plugins/pdf_iframe_navigation_throttle_browsertest.cc",
-        ]
-        deps += [
-          "//pdf:features",
-          "//pdf/loader",
-        ]
-      }
     }
 
     if (safe_browsing_mode != 0) {
@@ -4412,6 +4403,7 @@ if (!is_android) {
       sources += [
         "../browser/printing/pdf_nup_converter_client_browsertest.cc",
         "../browser/printing/print_browsertest.cc",
+        "../browser/printing/print_preview_dialog_controller_browsertest.cc",
         "../browser/printing/pwg_raster_converter_browsertest.cc",
         "../browser/printing/test_print_preview_dialog_cloned_observer.cc",
         "../browser/printing/test_print_preview_dialog_cloned_observer.h",
@@ -4420,15 +4412,6 @@ if (!is_android) {
         "../browser/ui/webui/print_preview/print_preview_ui_browsertest.cc",
       ]
       deps += [ "//printing:test_support" ]
-
-      if (enable_plugins) {
-        # These tests depends on the PluginService and PluginPrefs.
-        # TODO(crbug.com/1306610): Move back to the list above once they can be
-        # built without PPAPI support.
-        sources += [
-          "../browser/printing/print_preview_dialog_controller_browsertest.cc",
-        ]
-      }
     }
     if (enable_paint_preview) {
       sources += [

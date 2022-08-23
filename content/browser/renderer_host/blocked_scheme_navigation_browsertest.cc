@@ -1096,17 +1096,8 @@ IN_PROC_BROWSER_TEST_F(BlockedSchemeNavigationBrowserTest,
 //
 // Tests that a browser initiated navigation to a blocked scheme URL with PDF
 // mime type is allowed, or initiates a download on Android.
-// TODO(https://crbug.com/1273277): Enable on Fuchsia once PDF support is
-// working.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_PDF_BrowserInitiatedNavigation_Allow \
-  DISABLED_PDF_BrowserInitiatedNavigation_Allow
-#else
-#define MAYBE_PDF_BrowserInitiatedNavigation_Allow \
-  PDF_BrowserInitiatedNavigation_Allow
-#endif
 IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
-                       MAYBE_PDF_BrowserInitiatedNavigation_Allow) {
+                       PDF_BrowserInitiatedNavigation_Allow) {
   std::string pdf_base64;
   base::Base64Encode(kPDF, &pdf_base64);
   const GURL kPDFUrl(CreateURLWithBlockedScheme(
@@ -1152,15 +1143,8 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
 
 // Test that a navigation to a blocked scheme URL is blocked if the URL has a
 // mime type that will be handled by a plugin (PDF in this case).
-// TODO(https://crbug.com/1273277): Enable on Fuchsia once PDF support is
-// working.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_PDF_Navigation_Block DISABLED_PDF_Navigation_Block
-#else
-#define MAYBE_PDF_Navigation_Block PDF_Navigation_Block
-#endif
 IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
-                       MAYBE_PDF_Navigation_Block) {
+                       PDF_Navigation_Block) {
   Navigate(GetTestURL());
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1186,15 +1170,7 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
 
 // Test that a form post to a blocked scheme is blocked if the URL has a mime
 // type that will be handled by a plugin (PDF in this case).
-// TODO(https://crbug.com/1273277): Enable on Fuchsia once PDF support is
-// working.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_PDF_FormPost_Block DISABLED_PDF_FormPost_Block
-#else
-#define MAYBE_PDF_FormPost_Block PDF_FormPost_Block
-#endif
-IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
-                       MAYBE_PDF_FormPost_Block) {
+IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest, PDF_FormPost_Block) {
   Navigate(GetTestURL());
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1220,16 +1196,8 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
 
 // Tests that navigating the main frame to a blocked scheme with PDF mimetype
 // from a subframe is blocked, or is downloaded on Android.
-// TODO(https://crbug.com/1273277): Enable on Fuchsia once PDF support is
-// working.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_PDF_NavigationFromFrame_Block \
-  DISABLED_PDF_NavigationFromFrame_Block
-#else
-#define MAYBE_PDF_NavigationFromFrame_Block PDF_NavigationFromFrame_Block
-#endif
 IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
-                       MAYBE_PDF_NavigationFromFrame_Block) {
+                       PDF_NavigationFromFrame_Block) {
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/simple_page.html")));
   AddIFrame(
@@ -1300,18 +1268,8 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
 // Tests that navigating the top frame to a blocked scheme with PDF mimetype
 // from a subframe is blocked even if the top frame already has a blocked
 // scheme.
-// TODO(https://crbug.com/1273277): Enable on Fuchsia once PDF support is
-// working.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_PDF_NavigationFromFrame_TopFrameHasBlockedScheme_Block \
-  DISABLED_PDF_NavigationFromFrame_TopFrameHasBlockedScheme_Block
-#else
-#define MAYBE_PDF_NavigationFromFrame_TopFrameHasBlockedScheme_Block \
-  PDF_NavigationFromFrame_TopFrameHasBlockedScheme_Block
-#endif
-IN_PROC_BROWSER_TEST_P(
-    BlockedSchemeNavigationBrowserTest,
-    MAYBE_PDF_NavigationFromFrame_TopFrameHasBlockedScheme_Block) {
+IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
+                       PDF_NavigationFromFrame_TopFrameHasBlockedScheme_Block) {
   EXPECT_TRUE(NavigateToURL(shell(), CreateEmptyURLWithBlockedScheme()));
   AddIFrame(shell()->web_contents()->GetPrimaryMainFrame(), GetTestURL());
 
