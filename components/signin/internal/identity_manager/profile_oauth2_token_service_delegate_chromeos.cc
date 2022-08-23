@@ -465,6 +465,12 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::OnAccountRemoved(
   FireRefreshTokenRevoked(account_id);
 }
 
+void ProfileOAuth2TokenServiceDelegateChromeOS::OnAuthErrorChanged(
+    const account_manager::AccountKey& account,
+    const GoogleServiceAuthError& error) {
+  NOTIMPLEMENTED();
+}
+
 void ProfileOAuth2TokenServiceDelegateChromeOS::RevokeCredentials(
     const CoreAccountId& account_id) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

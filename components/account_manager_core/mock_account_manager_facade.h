@@ -25,6 +25,11 @@ class MockAccountManagerFacadeObserver
               OnAccountRemoved,
               (const account_manager::Account&),
               (override));
+  MOCK_METHOD(void,
+              OnAuthErrorChanged,
+              (const account_manager::AccountKey&,
+               const GoogleServiceAuthError&),
+              (override));
 };
 
 class MockAccountManagerFacade : public account_manager::AccountManagerFacade {

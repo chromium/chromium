@@ -364,6 +364,12 @@ void AccountAppsAvailability::OnAccountRemoved(
   NotifyObservers(account, /*is_available_in_arc=*/false);
 }
 
+void AccountAppsAvailability::OnAuthErrorChanged(
+    const account_manager::AccountKey& account,
+    const GoogleServiceAuthError& error) {
+  // Nothing to do.
+}
+
 bool AccountAppsAvailability::IsInitialized() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return is_initialized_;

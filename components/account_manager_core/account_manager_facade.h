@@ -14,6 +14,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_addition_result.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 
 class OAuth2AccessTokenFetcher;
 class OAuth2AccessTokenConsumer;
@@ -42,6 +43,9 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
     virtual void OnAccountUpserted(const Account& account) = 0;
     // Invoked when an account is removed.
     virtual void OnAccountRemoved(const Account& account) = 0;
+    // Invoked when the error state associated with an account changes.
+    virtual void OnAuthErrorChanged(const AccountKey& account,
+                                    const GoogleServiceAuthError& error) = 0;
   };
 
   // The source UI surface used for launching the account addition /

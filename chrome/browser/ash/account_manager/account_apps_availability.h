@@ -102,6 +102,8 @@ class AccountAppsAvailability
   // `AccountManagerFacade::Observer`:
   void OnAccountUpserted(const account_manager::Account& account) override;
   void OnAccountRemoved(const account_manager::Account& account) override;
+  void OnAuthErrorChanged(const account_manager::AccountKey& account,
+                          const GoogleServiceAuthError& error) override;
 
   // Initialize the prefs: add all Gaia accounts from Account Manager with
   // is_available_in_arc=true.

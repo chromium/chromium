@@ -152,6 +152,8 @@ class AccountProfileMapper
   // account_manager::AccountManagerFacade::Observer:
   void OnAccountUpserted(const account_manager::Account& account) override;
   void OnAccountRemoved(const account_manager::Account& account) override;
+  void OnAuthErrorChanged(const account_manager::AccountKey& account,
+                          const GoogleServiceAuthError& error) override;
 
   // ProfileAttributesStorage::Observer:
   void OnProfileWillBeRemoved(const base::FilePath& profile_path) override;

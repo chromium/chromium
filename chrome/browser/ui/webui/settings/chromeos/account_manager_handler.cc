@@ -504,6 +504,12 @@ void AccountManagerUIHandler::OnAccountRemoved(
   RefreshUI();
 }
 
+void AccountManagerUIHandler::OnAuthErrorChanged(
+    const account_manager::AccountKey& account,
+    const GoogleServiceAuthError& error) {
+  RefreshUI();
+}
+
 // |signin::IdentityManager::Observer| overrides.
 // `GetSecondaryGaiaAccounts` skips all accounts that haven't been added to
 // `IdentityManager` yet. Thus, we should trigger an updated whenever a new

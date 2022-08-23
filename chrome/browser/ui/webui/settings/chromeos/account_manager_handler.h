@@ -53,6 +53,8 @@ class AccountManagerUIHandler
   // for account information.
   void OnAccountUpserted(const ::account_manager::Account& account) override;
   void OnAccountRemoved(const ::account_manager::Account& account) override;
+  void OnAuthErrorChanged(const account_manager::AccountKey& account,
+                          const GoogleServiceAuthError& error) override;
 
   // |signin::IdentityManager::Observer| overrides.
   void OnRefreshTokenUpdatedForAccount(const CoreAccountInfo& info) override;

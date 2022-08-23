@@ -70,6 +70,8 @@ class ProfileOAuth2TokenServiceDelegateChromeOS
   // `account_manager::AccountManagerFacade::Observer` overrides.
   void OnAccountUpserted(const account_manager::Account& account) override;
   void OnAccountRemoved(const account_manager::Account& account) override;
+  void OnAuthErrorChanged(const account_manager::AccountKey& account,
+                          const GoogleServiceAuthError& error) override;
 
   // |NetworkConnectionTracker::NetworkConnectionObserver| overrides.
   void OnConnectionChanged(network::mojom::ConnectionType type) override;

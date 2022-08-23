@@ -811,6 +811,12 @@ void PeopleSection::OnAccountRemoved(
   FetchAccounts();
 }
 
+void PeopleSection::OnAuthErrorChanged(
+    const account_manager::AccountKey& account,
+    const GoogleServiceAuthError& error) {
+  // Nothing to do.
+}
+
 void PeopleSection::UpdateAccountManagerSearchTags(
     const std::vector<::account_manager::Account>& accounts) {
   DCHECK(IsAccountManagerAvailable(profile()));
