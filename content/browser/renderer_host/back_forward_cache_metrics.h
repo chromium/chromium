@@ -6,20 +6,21 @@
 #define CONTENT_BROWSER_RENDERER_HOST_BACK_FORWARD_CACHE_METRICS_H_
 
 #include <bitset>
-#include <set>
+#include <memory>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string_piece.h"
-#include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/should_swap_browsing_instance.h"
 #include "content/common/content_export.h"
-#include "content/common/navigation_client.mojom.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
-#include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom.h"
+#include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom-forward.h"
+
+namespace base {
+class TickClock;
+}
 
 namespace url {
 class Origin;
