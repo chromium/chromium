@@ -50,7 +50,6 @@ import org.chromium.chrome.browser.tab.TabUtils.LoadIfNeededCaller;
 import org.chromium.chrome.browser.tab.TabUtils.UseDesktopUserAgentCaller;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tab.state.SerializedCriticalPersistedTabData;
-import org.chromium.chrome.browser.toolbar.TabObscuringHandler;
 import org.chromium.chrome.browser.ui.native_page.FrozenNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.vr.VrModuleProvider;

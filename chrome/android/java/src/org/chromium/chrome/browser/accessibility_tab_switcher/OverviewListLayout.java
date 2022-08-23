@@ -25,10 +25,10 @@ import org.chromium.chrome.browser.compositor.layouts.eventfilter.BlackHoleEvent
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
+import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.toolbar.TabObscuringHandler;
 import org.chromium.ui.base.DeviceFormFactor;
 
 /**

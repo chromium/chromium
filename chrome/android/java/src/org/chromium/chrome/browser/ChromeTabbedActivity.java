@@ -149,6 +149,7 @@ import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tab.tab_restore.HistoricalTabModelObserver;
@@ -179,7 +180,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabManagementModuleProvi
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherBackPressHandler;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
-import org.chromium.chrome.browser.toolbar.TabObscuringHandler;
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;

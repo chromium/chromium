@@ -17,7 +17,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.toolbar.TabObscuringHandler;
+import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.components.browser_ui.widget.ViewResourceFrameLayout;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;

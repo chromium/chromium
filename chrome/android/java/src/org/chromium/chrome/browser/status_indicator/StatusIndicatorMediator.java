@@ -19,7 +19,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.toolbar.TabObscuringHandler;
+import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.ui.modelutil.PropertyModel;

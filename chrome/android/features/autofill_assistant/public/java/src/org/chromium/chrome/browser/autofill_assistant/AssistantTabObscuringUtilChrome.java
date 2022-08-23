@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.autofill_assistant;
 
-import org.chromium.chrome.browser.toolbar.TabObscuringHandler;
+import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.components.autofill_assistant.AssistantTabObscuringUtil;
 /**
  * Implementation of {@link AssistantTabObscuringUtil} for Chrome.
