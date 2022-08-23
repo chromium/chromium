@@ -60,7 +60,7 @@ class NewTabPageTabHelper : public web::WebStateObserver,
   // state.
   bool IgnoreLoadRequests() const;
 
-  // Returns true if an |url| is either chrome://newtab or about://newtab.
+  // Returns true if an `url` is either chrome://newtab or about://newtab.
   bool IsNTPURL(const GURL& url);
 
   // Returns the initially selected feed for the next NTP and then resets it to
@@ -79,7 +79,7 @@ class NewTabPageTabHelper : public web::WebStateObserver,
   // Saves the NTP state for when users navigate back to it.
   void SaveNTPState(CGFloat scroll_position, FeedType feed_type);
 
-  // Returns the saved scroll position of the NTP from |SaveNTPState|.
+  // Returns the saved scroll position of the NTP from `SaveNTPState`.
   CGFloat ScrollPositionFromSavedState();
 
  private:
@@ -99,11 +99,11 @@ class NewTabPageTabHelper : public web::WebStateObserver,
   // Enable or disable the tab helper.
   void SetActive(bool active);
 
-  // Sets the |ignore_load_requests_| flag to YES and starts the ignore load
+  // Sets the `ignore_load_requests_` flag to YES and starts the ignore load
   // timer.
   void EnableIgnoreLoadRequests();
 
-  // Sets the |ignore_load_requests_| flag to NO and stops the ignore load
+  // Sets the `ignore_load_requests_` flag to NO and stops the ignore load
   // timer.
   void DisableIgnoreLoadRequests();
 
@@ -113,14 +113,14 @@ class NewTabPageTabHelper : public web::WebStateObserver,
   // The WebState with which this object is associated.
   web::WebState* web_state_ = nullptr;
 
-  // |YES| if the current tab helper is active.
+  // `YES` if the current tab helper is active.
   BOOL active_ = NO;
 
-  // |YES| if the NTP for this WebState should be configured to show the Start
+  // `YES` if the NTP for this WebState should be configured to show the Start
   // Surface.
   BOOL show_start_surface_ = false;
 
-  // |YES| if the NTP's underlying ios/web page is still loading.
+  // `YES` if the NTP's underlying ios/web page is still loading.
   BOOL ignore_load_requests_ = NO;
 
   // The default feed type of the next NTP.
@@ -133,7 +133,7 @@ class NewTabPageTabHelper : public web::WebStateObserver,
   CGFloat saved_scroll_position_ = -CGFLOAT_MAX;
 
   // Ensure the ignore_load_requests_ flag is never set to NO for more than
-  // |kMaximumIgnoreLoadRequestsTime| seconds.
+  // `kMaximumIgnoreLoadRequestsTime` seconds.
   std::unique_ptr<base::OneShotTimer> ignore_load_requests_timer_;
 
   WEB_STATE_USER_DATA_KEY_DECL();

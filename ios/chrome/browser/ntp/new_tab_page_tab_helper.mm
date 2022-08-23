@@ -27,11 +27,11 @@
 
 namespace {
 // Internally the NTP URL is about://newtab/.  However, with
-// |url::kAboutScheme|, there's no host value, only a path.  Use this value for
+// `url::kAboutScheme`, there's no host value, only a path.  Use this value for
 // matching the NTP.
 const char kAboutNewTabPath[] = "//newtab/";
 
-// Maximum number of seconds for |ignore_load_requests_| to be set to YES.
+// Maximum number of seconds for `ignore_load_requests_` to be set to YES.
 static const size_t kMaximumIgnoreLoadRequestsTime = 10;
 
 }  // namespace
@@ -106,7 +106,7 @@ bool NewTabPageTabHelper::IgnoreLoadRequests() const {
 }
 
 bool NewTabPageTabHelper::IsNTPURL(const GURL& url) {
-  // |url| can be chrome://newtab/ or about://newtab/ depending on where |url|
+  // `url` can be chrome://newtab/ or about://newtab/ depending on where `url`
   // comes from (the VisibleURL chrome:// from a navigation item or the actual
   // webView url about://).  If the url is about://newtab/, there is no origin
   // to match, so instead check the scheme and the path.
@@ -201,7 +201,7 @@ void NewTabPageTabHelper::EnableIgnoreLoadRequests() {
 
   ignore_load_requests_ = YES;
 
-  // |ignore_load_requests_timer_| is deleted when the tab helper is deleted, so
+  // `ignore_load_requests_timer_` is deleted when the tab helper is deleted, so
   // it's safe to use Unretained here.
   ignore_load_requests_timer_.reset(new base::OneShotTimer());
   ignore_load_requests_timer_->Start(
@@ -222,7 +222,7 @@ void NewTabPageTabHelper::SetActive(bool active) {
   bool was_active = active_;
   active_ = active;
 
-  // Tell |delegate_| to show or hide the NTP, if necessary.
+  // Tell `delegate_` to show or hide the NTP, if necessary.
   if (active_ != was_active) {
     [delegate_ newTabPageHelperDidChangeVisibility:this forWebState:web_state_];
   }
