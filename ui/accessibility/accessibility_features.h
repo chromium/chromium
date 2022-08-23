@@ -166,6 +166,12 @@ AX_BASE_EXPORT extern const base::Feature kEnableAriaElementReflection;
 // Returns true if ARIA element reflection is enabled.
 AX_BASE_EXPORT bool IsAriaElementReflectionEnabled();
 
+// Experiment to increase the cost of SendPendingAccessibilityEvents.
+AX_BASE_EXPORT extern const base::Feature kAblateSendPendingAccessibilityEvents;
+
+// Returns true if |kAblateSendPendingAccessibilityEvents| is enabled.
+AX_BASE_EXPORT bool IsAblateSendPendingAccessibilityEventsEnabled();
+
 #if BUILDFLAG(IS_ANDROID)
 // Compute the AXMode based on AccessibilityServiceInfo. If disabled,
 // the AXMode is either entirely on or entirely off.

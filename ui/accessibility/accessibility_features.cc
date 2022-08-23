@@ -190,6 +190,14 @@ bool IsAriaElementReflectionEnabled() {
   return base::FeatureList::IsEnabled(::features::kEnableAriaElementReflection);
 }
 
+const base::Feature kAblateSendPendingAccessibilityEvents{
+    "AblateSendPendingAccessibilityEvents", base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsAblateSendPendingAccessibilityEventsEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAblateSendPendingAccessibilityEvents);
+}
+
 #if BUILDFLAG(IS_ANDROID)
 const base::Feature kComputeAXMode{"ComputeAXMode",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
