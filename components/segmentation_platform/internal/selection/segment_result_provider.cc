@@ -270,13 +270,24 @@ void SegmentResultProviderImpl::ExecuteModelAndGetScore(
   auto request = std::make_unique<ExecutionRequest>();
   // The pointer is kept alive by the `request_state`.
   request->segment_info = segment_info;
-  request->record_metrics_for_default = true;
+  request->record_metrics_for_default =
+      source == DefaultModelManager::SegmentSource::DEFAULT_MODEL;
   request->input_context = request_state->options->input_context;
-  request->callback =
-      base::BindOnce(&SegmentResultProviderImpl::OnModelExecuted,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(request_state),
-                     source, std::move(callback));
-  request->model_provider = provider;
+  // If the request needs to save result to database, ensure that the model is
+  // from database.
+  request->save_result_to_db =
+      (source == DefaultModelManager::SegmentSource::DATABASE &&
+       request_state->options->save_results_to_db);
+  if (request->save_result_to_db) {
+    // Drop `callback` on floor if saving results to database.
+    DCHECK(request_state->options->callback.is_null());
+  } else {
+    request->callback =
+        base::BindOnce(&SegmentResultProviderImpl::OnModelExecuted,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(request_state),
+                       source, std::move(callback));
+    request->model_provider = provider;
+  }
   execution_service_->RequestModelExecution(std::move(request));
 }
 

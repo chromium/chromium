@@ -105,6 +105,7 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
 
   proxy_ = std::make_unique<ServiceProxyImpl>(
       storage_service_->segment_info_database(),
+      storage_service_->default_model_manager(),
       storage_service_->signal_storage_config(), &configs_,
       &segment_selectors_);
   segment_score_provider_ =

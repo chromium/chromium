@@ -11,8 +11,8 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
-#include "components/leveldb_proto/public/proto_database.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
+#include "components/segmentation_platform/internal/execution/default_model_manager.h"
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/service_proxy.h"
@@ -21,9 +21,10 @@ namespace segmentation_platform {
 using proto::SegmentId;
 
 struct Config;
-class SignalStorageConfig;
 class ExecutionService;
 class SegmentSelectorImpl;
+class SegmentResultProvider;
+class SignalStorageConfig;
 
 // A helper class to expose internals of the segmentationss service to a logging
 // component and/or debug UI.
@@ -32,6 +33,7 @@ class ServiceProxyImpl : public ServiceProxy,
  public:
   ServiceProxyImpl(
       SegmentInfoDatabase* segment_db,
+      DefaultModelManager* default_manager,
       SignalStorageConfig* signal_storage_config,
       std::vector<std::unique_ptr<Config>>* configs,
       base::flat_map<std::string, std::unique_ptr<SegmentSelectorImpl>>*
@@ -67,20 +69,23 @@ class ServiceProxyImpl : public ServiceProxy,
 
   //  Called after retrieving all the segmentation info from the DB.
   void OnGetAllSegmentationInfo(
-      std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segment_info);
+      DefaultModelManager::SegmentInfoList segment_info);
 
   // ModelExecutionScheduler::Observer overrides.
   void OnModelExecutionCompleted(SegmentId segment_id) override;
 
   bool is_service_initialized_ = false;
   int service_status_flag_ = 0;
-  raw_ptr<SegmentInfoDatabase> segment_db_;
-  raw_ptr<SignalStorageConfig> signal_storage_config_;
-  raw_ptr<std::vector<std::unique_ptr<Config>>> configs_;
+  const raw_ptr<SegmentInfoDatabase> segment_db_;
+  const raw_ptr<DefaultModelManager> default_manager_;
+  const raw_ptr<SignalStorageConfig> signal_storage_config_;
+  const raw_ptr<std::vector<std::unique_ptr<Config>>> configs_;
   base::ObserverList<ServiceProxy::Observer> observers_;
-  raw_ptr<ExecutionService> execution_service{nullptr};
-  raw_ptr<base::flat_map<std::string, std::unique_ptr<SegmentSelectorImpl>>>
+  raw_ptr<ExecutionService> execution_service_{nullptr};
+  const raw_ptr<
+      base::flat_map<std::string, std::unique_ptr<SegmentSelectorImpl>>>
       segment_selectors_;
+  std::unique_ptr<SegmentResultProvider> segment_result_provider_;
 
   base::WeakPtrFactory<ServiceProxyImpl> weak_ptr_factory_{this};
 };

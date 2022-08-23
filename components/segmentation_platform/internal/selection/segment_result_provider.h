@@ -85,8 +85,15 @@ class SegmentResultProvider {
     //  * Execution of default model when score is missing.
     // When set to true, the result could be from following:
     //  * Execution of TFLite model.
-    //  * TODO(ssid): Support fallback to default when model is missing.
+    //  * Fallback to default when model is missing.
     bool ignore_db_scores = false;
+
+    // If `ignore_db_scores` is true and TFLite model is available, then write
+    // the results to database. Used when user wants to rerun the database
+    // model. `callback` should be null if set to true.
+    // TODO(ssid): Consider moving this option out as a different SaveRequest
+    // method in this class.
+    bool save_results_to_db = false;
 
     // Callback to return the segment result.
     SegmentResultCallback callback;
