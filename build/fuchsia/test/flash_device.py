@@ -13,6 +13,7 @@ from typing import Optional, Tuple
 
 from common import register_device_args, run_ffx_command
 from compatible_utils import get_sdk_hash
+from ffx_integration import ScopedFfxConfig
 
 
 def _get_system_info(target: Optional[str]) -> Tuple[str, str]:
@@ -35,7 +36,10 @@ def _get_system_info(target: Optional[str]) -> Tuple[str, str]:
     return ('', '')
 
 
-def flash(system_image_dir: str, os_check: str, target: Optional[str]) -> None:
+def flash(system_image_dir: str,
+          os_check: str,
+          target: Optional[str],
+          serial_num: Optional[str] = None) -> None:
     """Flash the device."""
 
     if os_check == 'ignore':
@@ -46,7 +50,12 @@ def flash(system_image_dir: str, os_check: str, target: Optional[str]) -> None:
             and get_sdk_hash(system_image_dir) == _get_system_info(target)):
         return
     manifest = os.path.join(system_image_dir, 'flash-manifest.manifest')
-    run_ffx_command(('target', 'flash', manifest), target)
+    if serial_num:
+        with ScopedFfxConfig('discovery.zedboot.enabled', 'true'):
+            run_ffx_command(('target', 'reboot', '-b'), target, check=False)
+        run_ffx_command(('target', 'flash', manifest), serial_num)
+    else:
+        run_ffx_command(('target', 'flash', manifest), target)
     run_ffx_command(('target', 'wait'), target)
 
 
@@ -61,6 +70,11 @@ def register_flash_args(arg_parser: argparse.ArgumentParser,
                             'Fuchsia image used to pave the device. Only '
                             'needs to be specified if "os_check" is not '
                             '"ignore".')
+    serve_args.add_argument('--serial-num',
+                            default=os.environ.get('FUCHSIA_FASTBOOT_SERNUM'),
+                            help='Serial number of the device. Should be '
+                            'specified for devices that do not have an image '
+                            'flashed.')
     serve_args.add_argument('--os-check',
                             choices=['check', 'update', 'ignore'],
                             default=default_os_check,
@@ -68,8 +82,8 @@ def register_flash_args(arg_parser: argparse.ArgumentParser,
                             '"check", then the deployment process will halt '
                             'if the target\'s version does not match. If '
                             '"update", then the target device will '
-                            'automatically be repaved. If "ignore", then the '
-                            'OS version won\'t be checked.')
+                            'be reflashed. If "ignore", then the OS version '
+                            'will not be checked.')
 
 
 def main():
@@ -78,7 +92,8 @@ def main():
     register_device_args(parser)
     register_flash_args(parser)
     args = parser.parse_args()
-    flash(args.system_image_dir, args.os_check, args.target_id)
+    flash(args.system_image_dir, args.os_check, args.target_id,
+          args.serial_num)
 
 
 if __name__ == '__main__':

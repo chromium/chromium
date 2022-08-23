@@ -5,6 +5,7 @@
 """File for testing flash_device.py."""
 
 import argparse
+import os
 import unittest
 import unittest.mock as mock
 
@@ -71,12 +72,24 @@ class FlashDeviceTest(unittest.TestCase):
         flash_device.flash(_TEST_IMAGE_DIR, 'check', None)
         self.assertEqual(self._ffx_mock.call_count, 3)
 
+    @mock.patch('flash_device.ScopedFfxConfig')
+    def test_flash_with_serial_num(self, mock_scoped_config) -> None:
+        """Test flash when |serial_num| is specified."""
+
+        context_mock = mock.Mock()
+        mock_scoped_config.return_value = context_mock
+        context_mock.__enter__ = mock.Mock(return_value=None)
+        context_mock.__exit__ = mock.Mock(return_value=None)
+        flash_device.flash(_TEST_IMAGE_DIR, 'update', None, 'test_serial')
+        self.assertEqual(self._ffx_mock.call_count, 3)
+
     def test_main(self) -> None:
         """Tests |main| function."""
 
         with mock.patch('sys.argv',
                         ['flash_device.py', '--os-check', 'ignore']):
-            flash_device.main()
+            with mock.patch.dict(os.environ, {}):
+                flash_device.main()
         self.assertEqual(self._ffx_mock.call_count, 0)
 
 

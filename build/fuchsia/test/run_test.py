@@ -73,7 +73,7 @@ def main():
         log_manager = stack.enter_context(LogManager(runner_args.logs_dir))
         if runner_args.device:
             flash(runner_args.system_image_dir, runner_args.os_check,
-                  runner_args.target_id)
+                  runner_args.target_id, runner_args.serial_num)
         else:
             runner_args.target_id = stack.enter_context(
                 create_emulator_from_args(runner_args))
