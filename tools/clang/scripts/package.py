@@ -228,6 +228,9 @@ def main():
         os.path.join(THIS_DIR, 'build.py'), '--bootstrap', '--disable-asserts',
         '--run-tests', '--pgo'
     ]
+    # MLGO is only officially supported on linux.
+    if sys.platform.startswith('linux'):
+      build_cmd.append('--with-ml-inliner-model=default')
     if args.build_mac_arm:
       build_cmd.append('--build-mac-arm')
     if sys.platform != 'darwin':
