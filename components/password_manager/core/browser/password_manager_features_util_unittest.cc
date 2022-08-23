@@ -437,9 +437,6 @@ TEST_F(PasswordManagerFeaturesUtilTest, OptOutClearsStorePreference) {
   EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
             PasswordForm::Store::kProfileStore);
 
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.AccountStorage.SignedInAccountFoundDuringOptOut", true,
-      1);
   // The change to the profile store above should have been recorded. Clearing
   // the pref does not get recorded in this histogram!
   histogram_tester.ExpectUniqueSample("PasswordManager.DefaultPasswordStoreSet",

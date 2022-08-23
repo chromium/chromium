@@ -441,7 +441,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.AccountStorage.SignedInAccountFoundDuringOptOut"
-    enum="Boolean" expires_after="2022-10-04">
+    enum="Boolean" expires_after="2022-08-24">
+  <obsolete>
+    Removed in M106.
+  </obsolete>
   <owner>treib@chromium.org</owner>
   <owner>victorvianna@google.com</owner>
   <owner>mamir@chromium.org</owner>

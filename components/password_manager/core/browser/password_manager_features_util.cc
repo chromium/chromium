@@ -284,11 +284,7 @@ void OptOutOfAccountStorageAndClearSettings(
       base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage));
 
   std::string gaia_id = sync_service->GetAccountInfo().gaia;
-  bool account_exists = !gaia_id.empty();
-  base::UmaHistogramBoolean(
-      "PasswordManager.AccountStorage.SignedInAccountFoundDuringOptOut",
-      account_exists);
-  if (!account_exists) {
+  if (gaia_id.empty()) {
     // In rare cases, it could happen that the account went away since the
     // opt-out UI was triggered.
     return;
