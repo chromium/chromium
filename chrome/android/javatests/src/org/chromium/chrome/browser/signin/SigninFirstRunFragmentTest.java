@@ -27,9 +27,7 @@ import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.accounts.AccountManager;
 import android.app.Activity;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -782,18 +780,12 @@ public class SigninFirstRunFragmentTest {
     @Test
     @MediumTest
     public void testFragmentWhenAddingAnotherAccount() {
+        mSigninTestRule.setResultForNextAddAccountFlow(Activity.RESULT_OK, TEST_EMAIL2);
         mSigninTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
         launchActivityWithFragment();
+
         onView(withText(TEST_EMAIL1)).perform(click());
         onView(withText(R.string.signin_add_account_to_device)).perform(click());
-
-        Intent data = new Intent();
-        data.putExtra(AccountManager.KEY_ACCOUNT_NAME, TEST_EMAIL2);
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> mFragment.onActivityResult(
-                                SigninFirstRunFragment.ADD_ACCOUNT_REQUEST_CODE, Activity.RESULT_OK,
-                                data));
 
         checkFragmentWithSelectedAccount(TEST_EMAIL2, /* fullName= */ null, /* givenName= */ null);
         verify(mFirstRunPageDelegateMock)
@@ -803,16 +795,10 @@ public class SigninFirstRunFragmentTest {
     @Test
     @MediumTest
     public void testFragmentWhenAddingDefaultAccount() {
+        mSigninTestRule.setResultForNextAddAccountFlow(Activity.RESULT_OK, TEST_EMAIL1);
         launchActivityWithFragment();
-        onView(withText(R.string.signin_add_account_to_device)).perform(click());
 
-        Intent data = new Intent();
-        data.putExtra(AccountManager.KEY_ACCOUNT_NAME, TEST_EMAIL1);
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> mFragment.onActivityResult(
-                                SigninFirstRunFragment.ADD_ACCOUNT_REQUEST_CODE, Activity.RESULT_OK,
-                                data));
+        onView(withText(R.string.signin_add_account_to_device)).perform(click());
 
         checkFragmentWithSelectedAccount(TEST_EMAIL1, /* fullName= */ null, /* givenName= */ null);
         verify(mFirstRunPageDelegateMock)

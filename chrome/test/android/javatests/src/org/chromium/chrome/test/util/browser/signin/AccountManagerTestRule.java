@@ -148,6 +148,15 @@ public class AccountManagerTestRule implements TestRule {
     }
 
     /**
+     * Sets the result for the next add account flow.
+     * @param result The activity result to return when the intent is launched
+     * @param newAccountName The account name to return when the intent is launched
+     */
+    public void setResultForNextAddAccountFlow(int result, @Nullable String newAccountName) {
+        mFakeAccountManagerFacade.setResultForNextAddAccountFlow(result, newAccountName);
+    }
+
+    /**
      * Removes an account with the given account email.
      */
     public void removeAccount(String accountEmail) {
