@@ -7,6 +7,6 @@
 namespace enterprise_connectors {
 
 const base::Feature kBypassJustificationEnabled{
-    "kBypassJustificationEnabled", base::FEATURE_DISABLED_BY_DEFAULT};
+    "kBypassJustificationEnabled", base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace enterprise_connectors
