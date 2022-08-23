@@ -183,8 +183,8 @@ class OptimizationGuideServiceTest : public PlatformTest {
         {optimization_guide::proto::NOSCRIPT});
   }
 
-  // Calls the |CanApplyOptimizationAsync| and expects |expected_decision| when
-  // the decision is returned. |on_decision_callback| is called when the
+  // Calls the `CanApplyOptimizationAsync` and expects `expected_decision` when
+  // the decision is returned. `on_decision_callback` is called when the
   // decision is called.
   void VerifyCanApplyOptimizationAsyncDecision(
       NavigationContextAndData* context_and_data,

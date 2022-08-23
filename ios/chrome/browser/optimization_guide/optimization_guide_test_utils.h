@@ -11,7 +11,7 @@ namespace base {
 class HistogramTester;
 }
 
-// Retries fetching |histogram_name| until it contains at least |count| samples.
+// Retries fetching `histogram_name` until it contains at least `count` samples.
 void RetryForHistogramUntilCountReached(
     const base::HistogramTester* histogram_tester,
     const std::string& histogram_name,

@@ -22,7 +22,7 @@ namespace optimization_guide {
 
 namespace {
 
-// Parses the optimization target from |custom_data|.
+// Parses the optimization target from `custom_data`.
 absl::optional<proto::OptimizationTarget> ParseOptimizationTarget(
     const download::DownloadParams::CustomData& custom_data) {
   const auto target_it =
