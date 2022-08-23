@@ -10,6 +10,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/policy_constants.h"
+#include "components/strings/grit/components_strings.h"
 
 namespace web_app {
 
@@ -47,11 +48,8 @@ bool WebAppSettingsPolicyHandler::CheckPolicySettings(
     const std::string* run_on_os_login_str = it->FindStringKey(kRunOnOsLogin);
     if (run_on_os_login_str && *run_on_os_login_str != kAllowed &&
         *run_on_os_login_str != kBlocked) {
-      errors->AddError(policy_name(),
-                       "The default configuration contains an unsupported "
-                       "value for the run_on_os_login field:" +
-                           *run_on_os_login_str,
-                       policy::PolicyErrorPath{kWildcard});
+      errors->AddError(policy_name(), IDS_POLICY_INVALID_SELECTION_ERROR,
+                       "run_on_os value", policy::PolicyErrorPath{kWildcard});
       return false;
     }
   }

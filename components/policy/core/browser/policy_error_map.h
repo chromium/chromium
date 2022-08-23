@@ -58,14 +58,6 @@ class POLICY_EXPORT PolicyErrorMap {
                 const std::string& replacement_b,
                 PolicyErrorPath error_path = {});
 
-  // Adds an entry with key |policy|, an untranslated error |message| and the
-  // error_path |error_path|.
-  // TODO(crbug.com/1313477): Should be removed in favor of translated error
-  // messages
-  void AddError(const std::string& policy,
-                const std::string& message,
-                PolicyErrorPath error_path = {});
-
   // Returns true if there is any error for |policy|.
   bool HasError(const std::string& policy);
 

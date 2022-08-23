@@ -120,12 +120,6 @@ void PolicyErrorMap::AddError(const std::string& policy,
                                           replacement_b, error_path));
 }
 
-void PolicyErrorMap::AddError(const std::string& policy,
-                              const std::string& message,
-                              PolicyErrorPath error_path) {
-  AddError(std::make_unique<PendingError>(policy, -1, message, error_path));
-}
-
 bool PolicyErrorMap::HasError(const std::string& policy) {
   if (IsReady()) {
     CheckReadyAndConvert();

@@ -310,12 +310,8 @@ void ExtensionSettingsPolicyHandler::SanitizePolicySettings(
             if (!pattern.match_all_urls()) {
               if (errors) {
                 errors->AddError(
-                    policy_name(),
-                    "The URL pattern '" + unparsed_url + "' for attribute " +
-                        key + " has a path specified. Paths are not " +
-                        "supported, please remove the path and try again. " +
-                        "e.g. *://example.com/ => *://example.com",
-                    policy::PolicyErrorPath{entry.first});
+                    policy_name(), IDS_POLICY_URL_PATH_SPECIFIED_ERROR,
+                    unparsed_url, policy::PolicyErrorPath{entry.first, key});
               }
               invalid_keys.insert(entry.first);
               break;
@@ -323,10 +319,8 @@ void ExtensionSettingsPolicyHandler::SanitizePolicySettings(
           }
           if (parse_result != URLPattern::ParseResult::kSuccess) {
             if (errors) {
-              errors->AddError(policy_name(),
-                               "Invalid URL pattern '" + unparsed_url +
-                                   "' for attribute " + key,
-                               policy::PolicyErrorPath{entry.first});
+              errors->AddError(policy_name(), IDS_POLICY_INVALID_URL_ERROR,
+                               policy::PolicyErrorPath{entry.first, key});
             }
             invalid_keys.insert(entry.first);
             break;

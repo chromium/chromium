@@ -193,6 +193,15 @@
   <message name="IDS_POLICY_INVALID_EXTENSION_ERROR" desc="The text displayed in the status column when the extension doesn't match the expected format.">
     Invalid Extension: Expected the value to be of one of the following forms: &lt;extension_id&gt; or &lt;extension_id&gt;;&lt;update_url&gt;.
   </message>
+  <message name="IDS_POLICY_URL_PATH_SPECIFIED_ERROR" desc="The text displayed in the status column when a path is specified for an URL, which is not supported">
+    The URL pattern "<ph name="URL_PATTERN">$1<ex>*://example.com/</ex></ph>" has a path specified. Paths are not supported for this key, please remove the path and try again. e.g. *://example.com/ => *://example.com",
+  </message>
+  <message name="IDS_POLICY_MISSING_VENDOR_ID_ERROR" desc="The text displayed in the status column for the policy WebUsbAllowDevicesForUrls when an entry has specified a 'product_id' without a the 'vendor_id'">
+    The attribute "vendor_id" must also be specified.
+  </message>
+  <message name="IDS_POLICY_INVALID_NUMBER_OF_URLS_ERROR" desc="The text displayed in the status column for the policy WebUsbAllowDevicesForUrls when an entry has either 0 or more than 2 URLs">
+    Each urls string entry must contain between 1 to 2 URLs.
+  </message>
   <message name="IDS_POLICY_CLOUD_SOURCE_ONLY_ERROR" desc="The text displayed in the status column when a policy that should only be set in the cloud is set from another source.">
     Ignored because the policy is not set by a cloud source.
   </message>

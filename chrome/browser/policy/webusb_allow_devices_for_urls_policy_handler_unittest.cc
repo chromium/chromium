@@ -381,8 +381,8 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
   EXPECT_EQ(1ul, errors.size());
 
   static constexpr char16_t kExpected[] =
-      u"Error at WebUsbAllowDevicesForUrls[0].devices[0]: A vendor_id must "
-      u"also be specified";
+      u"Error at WebUsbAllowDevicesForUrls[0].devices[0]: The attribute "
+      u"\"vendor_id\" must also be specified.";
   EXPECT_EQ(kExpected, errors.GetErrors(key::kWebUsbAllowDevicesForUrls));
 }
 
@@ -401,8 +401,7 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
   EXPECT_EQ(1ul, errors.size());
 
   static constexpr char16_t kExpected[] =
-      u"Error at WebUsbAllowDevicesForUrls[0].urls[0]: The urls item must "
-      u"contain valid URLs";
+      u"Error at WebUsbAllowDevicesForUrls[0].urls[0]: Invalid URL.";
   EXPECT_EQ(kExpected, errors.GetErrors(key::kWebUsbAllowDevicesForUrls));
 }
 
@@ -421,8 +420,7 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
   EXPECT_EQ(1ul, errors.size());
 
   static constexpr char16_t kExpected[] =
-      u"Error at WebUsbAllowDevicesForUrls[0].urls[0]: The urls item must "
-      u"contain valid URLs";
+      u"Error at WebUsbAllowDevicesForUrls[0].urls[0]: Invalid URL.";
   EXPECT_EQ(kExpected, errors.GetErrors(key::kWebUsbAllowDevicesForUrls));
 }
 
@@ -442,7 +440,7 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
 
   static constexpr char16_t kExpected[] =
       u"Error at WebUsbAllowDevicesForUrls[0].urls[0]: Each urls string entry "
-      u"must contain between 1 to 2 URLs";
+      u"must contain between 1 to 2 URLs.";
   EXPECT_EQ(kExpected, errors.GetErrors(key::kWebUsbAllowDevicesForUrls));
 }
 
@@ -462,7 +460,7 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
 
   static constexpr char16_t kExpected[] =
       u"Error at WebUsbAllowDevicesForUrls[0].urls[0]: Each urls string entry "
-      u"must contain between 1 to 2 URLs";
+      u"must contain between 1 to 2 URLs.";
   EXPECT_EQ(kExpected, errors.GetErrors(key::kWebUsbAllowDevicesForUrls));
 }
 
