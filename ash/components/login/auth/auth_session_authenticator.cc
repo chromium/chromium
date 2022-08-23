@@ -656,6 +656,8 @@ bool AuthSessionAuthenticator::ResolveCryptohomeError(
     case user_data_auth::CRYPTOHOME_ERROR_MOUNT_OLD_ENCRYPTION:
     case user_data_auth::CRYPTOHOME_ERROR_MOUNT_PREVIOUS_MIGRATION_INCOMPLETE:
     case user_data_auth::CRYPTOHOME_ADD_CREDENTIALS_FAILED:
+    case user_data_auth::CRYPTOHOME_REMOVE_CREDENTIALS_FAILED:
+    case user_data_auth::CRYPTOHOME_UPDATE_CREDENTIALS_FAILED:
     // Fatal errors that can not be handled gracefully:
     case user_data_auth::CRYPTOHOME_ERROR_LOCKBOX_SIGNATURE_INVALID:
     case user_data_auth::CRYPTOHOME_ERROR_LOCKBOX_CANNOT_SIGN:
