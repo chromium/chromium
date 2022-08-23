@@ -1053,6 +1053,30 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients.ServiceWorker2.PaintTiming.{Timing}.{HandlerType}"
+    units="ms" expires_after="2023-06-30">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The {Timing} time of pages with the Service Worker fetch handlers. Metrics
+    won't be recorded if pages are not controlled by service workers. The
+    metrics are broken down by {HandlerType}. {HandlerType} only explains the
+    page's handler type, and it does not mean the fetch handler is actually
+    skipped or not.
+  </summary>
+  <token key="Timing">
+    <variant name="NavigationToFirstContentfulPaint"/>
+    <variant name="NavigationToLargestContentfulPaint2"/>
+  </token>
+  <token key="HandlerType">
+    <variant name="NonSkippableFetchHandler"
+        summary="The fetch handler is recognized as not skippable."/>
+    <variant name="SkippableFetchHandler"
+        summary="The fetch handler is recognized as skippable."/>
+  </token>
+</histogram>
+
+<histogram
     name="PageLoad.Clients.SideSearch.SidePanel.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint"
     units="ms" expires_after="2022-09-11">
   <owner>tluk@chromium.org</owner>
