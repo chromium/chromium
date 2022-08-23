@@ -330,10 +330,7 @@ public class StatusMediator implements PermissionDialogController.Observer,
         setShowIconsWhenUrlFocused(shouldShowLogo);
         if (!shouldShowLogo) return;
 
-        if (mLocationBarDataProvider.isInOverviewAndShowingOmnibox()) {
-            setStatusIconShown(true);
-        } else if (mProfileSupplier.get() != null
-                && mLocationBarDataProvider.getNewTabPageDelegate().isCurrentlyVisible()) {
+        if (mProfileSupplier.get() != null && isNTPOrStartSurfaceVisible()) {
             setStatusIconShown(shouldShowLogo && (mUrlHasFocus || mUrlFocusPercent > 0));
         } else {
             setStatusIconShown(true);
@@ -351,9 +348,8 @@ public class StatusMediator implements PermissionDialogController.Observer,
 
         updateStatusVisibility();
 
-        // Only fade the animation on the new tab page.
-        if (mProfileSupplier.get() != null
-                && mLocationBarDataProvider.getNewTabPageDelegate().isCurrentlyVisible()) {
+        // Only fade the animation on the new tab page or start surface.
+        if (mProfileSupplier.get() != null && isNTPOrStartSurfaceVisible()) {
             float focusAnimationProgress = percent;
             if (!mUrlHasFocus) {
                 focusAnimationProgress = MathUtils.clamp(
@@ -459,6 +455,11 @@ public class StatusMediator implements PermissionDialogController.Observer,
         return mPageIsOffline || mPageIsPaintPreview;
     }
 
+    private boolean isNTPOrStartSurfaceVisible() {
+        return mLocationBarDataProvider.getNewTabPageDelegate().isCurrentlyVisible()
+                || mLocationBarDataProvider.isInOverviewAndShowingOmnibox();
+    }
+
     /**
      * Update selection of icon presented on the location bar.
      *
@@ -549,8 +550,7 @@ public class StatusMediator implements PermissionDialogController.Observer,
             return true;
         }
 
-        return (mUrlHasFocus || mUrlFocusPercent > 0)
-                && mLocationBarDataProvider.getNewTabPageDelegate().isCurrentlyVisible()
+        return (mUrlHasFocus || mUrlFocusPercent > 0) && isNTPOrStartSurfaceVisible()
                 && mProfileSupplier.get() != null;
     }
 
