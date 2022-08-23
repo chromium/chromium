@@ -132,8 +132,7 @@ constexpr char kEnrollmentToken[] = "enrollment_token";
 
 // Ensures that the loading screen is dismissed when registration succeeds and
 // policy fetch fails.
-// TODO(crbug.com/1352111): Re-enable
-- (void)DISABLED_testLoadingScreenDismissedByPolicyFetchError {
+- (void)testLoadingScreenDismissedByPolicyFetchError {
   _policyTestServer->ConfigureRequestError(
       policy::dm_protocol::kValueRequestPolicy, net::HTTP_METHOD_NOT_ALLOWED);
 
