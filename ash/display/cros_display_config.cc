@@ -778,7 +778,7 @@ void CrosDisplayConfig::SetDisplayProperties(
 
     display::Display::Rotation rotation =
         DisplayRotationFromRotationOptions(properties->rotation->rotation);
-    if (is_auto_rotation_allowed) {
+    if (display.id() == primary.id() && is_auto_rotation_allowed) {
       if (auto_rotate_requested) {
         if (screen_orientation_controller->user_rotation_locked())
           screen_orientation_controller->ToggleUserRotationLock();
