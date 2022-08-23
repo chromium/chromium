@@ -10,6 +10,9 @@ import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.R;
@@ -28,6 +31,10 @@ public class ScrollingBottomViewResourceFrameLayout extends ViewResourceFrameLay
     /** The height of the shadow sitting above the bottom view in px. */
     private final int mTopShadowHeightPx;
 
+    /** Snapshot tokens used to be more restrictive about when to allow captures. */
+    private @Nullable Object mCurrentSnapshotToken;
+    private @Nullable Object mLastCaptureSnapshotToken;
+
     public ScrollingBottomViewResourceFrameLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         mTopShadowHeightPx = getResources().getDimensionPixelOffset(R.dimen.toolbar_shadow_height);
@@ -42,7 +49,19 @@ public class ScrollingBottomViewResourceFrameLayout extends ViewResourceFrameLay
                             ChromeFeatureList.TOOLBAR_SCROLL_ABLATION_ANDROID)) {
                     return false;
                 }
-                return super.isDirty();
+
+                if (ChromeFeatureList.isEnabled(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)) {
+                    // Dirty rect tracking will claim changes more often than token differences due
+                    // to model changes. It is also cheaper to simply check a boolean, so do it
+                    // first.
+                    if (!super.isDirty()) {
+                        return false;
+                    }
+                    return mCurrentSnapshotToken != null
+                            && !mCurrentSnapshotToken.equals(mLastCaptureSnapshotToken);
+                } else {
+                    return super.isDirty();
+                }
             }
             @Override
             public void onCaptureStart(Canvas canvas, Rect dirtyRect) {
@@ -64,6 +83,7 @@ public class ScrollingBottomViewResourceFrameLayout extends ViewResourceFrameLay
                 }
 
                 super.onCaptureStart(canvas, dirtyRect);
+                mLastCaptureSnapshotToken = mCurrentSnapshotToken;
             }
         };
     }
@@ -73,5 +93,15 @@ public class ScrollingBottomViewResourceFrameLayout extends ViewResourceFrameLay
      */
     public int getTopShadowHeight() {
         return mTopShadowHeightPx;
+    }
+
+    /**
+     * Should be invoked any time a model change occurs that that materially impacts the way the
+     * view should be drawn such that a new capture is warranted. Should not be affected by
+     * animations.
+     * @param token Can be used to compare with object equality against previous model states.
+     */
+    public void onModelTokenChange(@NonNull Object token) {
+        mCurrentSnapshotToken = token;
     }
 }
