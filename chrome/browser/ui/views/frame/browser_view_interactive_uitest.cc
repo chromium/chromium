@@ -8,6 +8,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -63,8 +64,10 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, FullscreenClearsFocus) {
   // Focus starts in the location bar or one of its children.
   EXPECT_TRUE(location_bar_view->Contains(focus_manager->GetFocusedView()));
 
+  FullscreenNotificationObserver fullscreen_observer(browser());
   // Enter into fullscreen mode.
   chrome::ToggleFullscreenMode(browser());
+  fullscreen_observer.Wait();
   EXPECT_TRUE(browser_view->IsFullscreen());
 
   // Focus is released from the location bar.
@@ -80,8 +83,12 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, BrowserFullscreenShowTopView) {
   EXPECT_FALSE(browser_view->IsFullscreen());
   EXPECT_TRUE(browser_view->GetTabStripVisible());
 
-  // Enter into fullscreen mode.
-  chrome::ToggleFullscreenMode(browser());
+  {
+    FullscreenNotificationObserver fullscreen_observer(browser());
+    // Enter into fullscreen mode.
+    chrome::ToggleFullscreenMode(browser());
+    fullscreen_observer.Wait();
+  }
   EXPECT_TRUE(browser_view->IsFullscreen());
 
   bool top_view_in_browser_fullscreen = false;
@@ -91,14 +98,22 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, BrowserFullscreenShowTopView) {
   // The 'Always Show Bookmarks Bar' should be enabled.
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_SHOW_BOOKMARK_BAR));
 
-  // Return back to normal mode and toggle to not show the top view in full
-  // screen mode.
-  chrome::ToggleFullscreenMode(browser());
+  {
+    FullscreenNotificationObserver fullscreen_observer(browser());
+    // Return back to normal mode and toggle to not show the top view in full
+    // screen mode.
+    chrome::ToggleFullscreenMode(browser());
+    fullscreen_observer.Wait();
+  }
   EXPECT_FALSE(browser_view->IsFullscreen());
   chrome::ToggleFullscreenToolbar(browser());
 
-  // While back to fullscreen mode, the top view no longer shows up.
-  chrome::ToggleFullscreenMode(browser());
+  {
+    FullscreenNotificationObserver fullscreen_observer(browser());
+    // While back to fullscreen mode, the top view no longer shows up.
+    chrome::ToggleFullscreenMode(browser());
+    fullscreen_observer.Wait();
+  }
   EXPECT_TRUE(browser_view->IsFullscreen());
   EXPECT_FALSE(browser_view->GetTabStripVisible());
   // The 'Always Show Bookmarks Bar' should be disabled.
@@ -147,8 +162,20 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, BrowserFullscreenShowTopView) {
   EXPECT_EQ(top_view_in_browser_fullscreen,
             chrome::IsCommandEnabled(browser(), IDC_SHOW_BOOKMARK_BAR));
 
+// Adding `FullscreenNotificationObserver` will make the TESTs on Lacros fail
+// determinately, which should have been a no-op.
+// TODO(crbug.com/1351971): Repair this defect.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+  {
+    FullscreenNotificationObserver fullscreen_observer(browser());
+    // Return to regular mode.
+    chrome::ToggleFullscreenMode(browser());
+    fullscreen_observer.Wait();
+  }
+#else
   // Return to regular mode.
   chrome::ToggleFullscreenMode(browser());
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
   EXPECT_FALSE(browser_view->IsFullscreen());
   EXPECT_TRUE(browser_view->GetTabStripVisible());
 }
@@ -198,8 +225,12 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, FullscreenShowBookmarkBar) {
   EXPECT_FALSE(browser_view->IsFullscreen());
   EXPECT_TRUE(browser_view->IsBookmarkBarVisible());
 
-  // Enter into fullscreen mode.
-  chrome::ToggleFullscreenMode(browser());
+  {
+    FullscreenNotificationObserver fullscreen_observer(browser());
+    // Enter into fullscreen mode.
+    chrome::ToggleFullscreenMode(browser());
+    fullscreen_observer.Wait();
+  }
   EXPECT_TRUE(browser_view->IsFullscreen());
   if (browser_view->immersive_mode_controller()->IsEnabled())
     EXPECT_TRUE(browser_view->IsBookmarkBarVisible());
@@ -218,8 +249,20 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, FullscreenShowBookmarkBar) {
   EXPECT_FALSE(browser_view->IsBookmarkBarVisible());
 #endif
 
+// Adding `FullscreenNotificationObserver` will make the TESTs on Lacros fail
+// determinately, which should have been a no-op.
+// TODO(crbug.com/1351971): Repair this defect.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+  {
+    FullscreenNotificationObserver fullscreen_observer(browser());
+    // Exit from fullscreen mode.
+    chrome::ToggleFullscreenMode(browser());
+    fullscreen_observer.Wait();
+  }
+#else
   // Exit from fullscreen mode.
   chrome::ToggleFullscreenMode(browser());
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
   EXPECT_FALSE(browser_view->IsFullscreen());
   EXPECT_TRUE(browser_view->GetTabStripVisible());
   EXPECT_TRUE(browser_view->IsBookmarkBarVisible());

@@ -115,15 +115,18 @@ void NativeWidgetNSWindowFullscreenController::RestoreWindowedFrame() {
   DCHECK_EQ(state_, State::kWindowedRestoringOriginalFrame);
   DCHECK(restore_windowed_frame_);
   DCHECK(windowed_frame_);
+  client_->FullscreenControllerSetFrame(
+      windowed_frame_.value(),
+      /*animate=*/true,
+      base::BindOnce(
+          &NativeWidgetNSWindowFullscreenController::OnWindowedFrameRestored,
+          weak_factory_.GetWeakPtr()));
+}
 
-  client_->FullscreenControllerSetFrame(windowed_frame_.value(),
-                                        /*animate=*/true, base::DoNothing());
+void NativeWidgetNSWindowFullscreenController::OnWindowedFrameRestored() {
   restore_windowed_frame_ = false;
   windowed_frame_.reset();
 
-  // TODO(https://crbug.com/1302857): Consider not transitioning the state
-  // until `animation_time` has elapsed, and the window has been restored
-  // to its original position.
   SetStateAndCancelPostedTasks(State::kWindowed);
   HandlePendingState();
   if (!IsInFullscreenTransition()) {

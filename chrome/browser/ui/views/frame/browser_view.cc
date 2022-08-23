@@ -1876,6 +1876,8 @@ void BrowserView::FullscreenStateChanged() {
     UpdateWindowControlsOverlayEnabled();
 #endif  // BUILDFLAG(IS_MAC)
 
+  browser_->WindowFullscreenStateChanged();
+
   GetExclusiveAccessManager()
       ->fullscreen_controller()
       ->FullscreenTransititionCompleted();
@@ -4193,7 +4195,7 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
   bool swapping_screens_during_fullscreen = false;
 #if BUILDFLAG(IS_MAC)
   frame_->SetFullscreen(fullscreen, display_id);
-#else   // BUILDFLAG(IS_MAC)
+#else
   if (fullscreen && display_id != display::kInvalidDisplayId) {
     display::Screen* screen = display::Screen::GetScreen();
     display::Display display;
@@ -4270,7 +4272,6 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
     immersive_mode_controller_->SetEnabled(fullscreen);
   }
 
-  browser_->WindowFullscreenStateChanged();
 #if !BUILDFLAG(IS_MAC)
   // On Mac platforms, FullscreenStateChanged() is invoked from
   // BrowserFrameMac::OnWindowFullscreenTransitionComplete when the asynchronous
