@@ -38,8 +38,8 @@ const std::vector<InteractionsStats>& FakeFormFetcher::GetInteractionsStats()
   return stats_;
 }
 
-const std::vector<const PasswordForm*>&
-FakeFormFetcher::GetInsecureCredentials() const {
+std::vector<const PasswordForm*> FakeFormFetcher::GetInsecureCredentials()
+    const {
   return insecure_credentials_;
 }
 

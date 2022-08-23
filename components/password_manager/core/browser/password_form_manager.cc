@@ -250,8 +250,8 @@ base::span<const InteractionsStats> PasswordFormManager::GetInteractionsStats()
   return base::make_span(form_fetcher_->GetInteractionsStats());
 }
 
-const std::vector<const PasswordForm*>&
-PasswordFormManager::GetInsecureCredentials() const {
+std::vector<const PasswordForm*> PasswordFormManager::GetInsecureCredentials()
+    const {
   return form_fetcher_->GetInsecureCredentials();
 }
 
