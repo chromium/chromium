@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/input_method/input_method_engine.h"
 #include "chrome/browser/ash/input_method/suggestion_handler_interface.h"
 #include "chrome/browser/ash/input_method/text_field_contextual_info_fetcher.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace input_method {
@@ -38,6 +39,7 @@ class AutocorrectManager {
   // `suggestion_handler_` must be alive for the duration of the lifetime of
   // this instance.
   explicit AutocorrectManager(SuggestionHandlerInterface* suggestion_handler);
+  ~AutocorrectManager();
 
   AutocorrectManager(const AutocorrectManager&) = delete;
   AutocorrectManager& operator=(const AutocorrectManager&) = delete;
@@ -95,31 +97,44 @@ class AutocorrectManager {
   // Highlights undo button of undo window if it is visible.
   void HighlightUndoButton();
 
-  // Resets all state variables to their default (no pending range) situation.
-  void ResetStateVars();
+  struct PendingAutocorrectState {
+    explicit PendingAutocorrectState(const std::u16string& original_text,
+                                     const base::TimeTicks& start_time);
+    PendingAutocorrectState(const PendingAutocorrectState& other) = default;
+    ~PendingAutocorrectState();
+
+    // Original text that is now corrected by autocorrect.
+    std::u16string original_text;
+
+    // Number of characters inserted anytime after setting the pending
+    // autocorrect range. Negative means no autocorrect range is pending or a
+    // range has just been set to pending with no OnSurroundingTextChanged
+    // called yet.
+    int num_inserted_chars = -1;
+
+    // Last known text length from OnSurroundingTextChanged after setting
+    // the pending autocorrect range. Negative means no autocorrect range is
+    // pending or a range has just been set to pending with no
+    // OnSurroundingTextChanged called yet.
+    int text_length = -1;
+
+    // Specifies if undo window is visible or not.
+    bool undo_window_visible = false;
+
+    // Specifies if undo button is highlighted or not.
+    bool undo_button_highlighted = false;
+
+    // The time of setting the pending range.
+    base::TimeTicks start_time;
+  };
+
+  // State variable for pending autocorrect, nullopt means no autocorrect
+  // suggestion is pending. The state is kept to avoid issue where
+  // InputContext returns stale autocorrect range.
+  absl::optional<PendingAutocorrectState> pending_autocorrect_;
 
   SuggestionHandlerInterface* suggestion_handler_;
   int context_id_ = 0;
-  std::u16string original_text_;
-  bool window_visible_ = false;
-  bool button_highlighted_ = false;
-  base::TimeTicks autocorrect_time_;
-
-  // Stores the state where there is a pending/unprocessed autocorrect
-  // suggestion. The state is kept to avoid issue where InputContext returns
-  // stale autocorrect range.
-  bool autocorrect_pending_ = false;
-
-  // Number of characters inserted anytime after setting a pending autocorrect
-  // range. Negative means no autocorrect range is pending or a range has just
-  // been set to pending with no OnSurroundingTextChanged called yet.
-  int num_inserted_chars_ = -1;
-
-  // Last known text length from OnSurroundingTextChanged after setting
-  // a pending autocorrect range. Negative means no autocorrect range is
-  // pending or a range has just been set to pending with no
-  // OnSurroundingTextChanged called yet.
-  int text_length_ = -1;
 
   DiacriticsInsensitiveStringComparator
       diacritics_insensitive_string_comparator_;

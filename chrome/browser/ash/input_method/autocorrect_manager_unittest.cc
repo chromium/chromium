@@ -134,6 +134,17 @@ AssistiveWindowProperties CreateVisibleUndoWindowProperties(
   return window_properties;
 }
 
+// A helper to create highlighted undo button in assistive window.
+ui::ime::AssistiveWindowButton CreateHighlightedUndoButton(
+    const std::u16string& original_text) {
+  ui::ime::AssistiveWindowButton button = ui::ime::AssistiveWindowButton();
+  button.id = ui::ime::ButtonId::kUndo;
+  button.window_type = ui::ime::AssistiveWindowType::kUndoWindow;
+  button.announce_string = l10n_util::GetStringFUTF16(
+      IDS_SUGGESTION_AUTOCORRECT_UNDO_BUTTON, original_text);
+  return button;
+}
+
 // A helper for creating key event.
 ui::KeyEvent CreateKeyEvent(ui::DomKey key, ui::DomCode code) {
   return ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_UNKNOWN, code, ui::EF_NONE,
@@ -433,6 +444,64 @@ TEST_F(AutocorrectManagerTest, MovingCursorOutsideRangeHidesAssistiveWindow) {
                                     /*anchor_pos=*/1);
   manager_.OnSurroundingTextChanged(u"the ", /*cursor_pos=*/4,
                                     /*anchor_pos=*/4);
+}
+
+TEST_F(AutocorrectManagerTest,
+       PressingUpArrowKeyHighlightsUndoButtonWhenUndoWindowIsVisible) {
+  manager_.OnSurroundingTextChanged(u"the ", /*cursor_pos=*/4,
+                                    /*anchor_pos=*/4);
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+
+  {
+    ::testing::InSequence seq;
+
+    AssistiveWindowProperties shown_properties =
+        CreateVisibleUndoWindowProperties(u"teh", u"the");
+
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetAssistiveWindowProperties(_, shown_properties, _));
+
+    ui::ime::AssistiveWindowButton button =
+          CreateHighlightedUndoButton(u"teh");
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetButtonHighlighted(_, button, true, _));
+  }
+
+  manager_.OnSurroundingTextChanged(u"the ", /*cursor_pos=*/1,
+                                    /*anchor_pos=*/1);
+  manager_.OnKeyEvent(CreateKeyEvent(ui::DomKey::NONE, ui::DomCode::ARROW_UP));
+}
+
+TEST_F(AutocorrectManagerTest,
+       PressingEnterKeyHidesUndoWindowWhenButtonIsHighlighted) {
+  manager_.OnSurroundingTextChanged(u"the ", /*cursor_pos=*/4,
+                                    /*anchor_pos=*/4);
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+
+  {
+    ::testing::InSequence seq;
+
+    AssistiveWindowProperties shown_properties =
+        CreateVisibleUndoWindowProperties(u"teh", u"the");
+
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetAssistiveWindowProperties(_, shown_properties, _));
+
+    ui::ime::AssistiveWindowButton button =
+        CreateHighlightedUndoButton(u"teh");
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetButtonHighlighted(_, button, true, _));
+
+    AssistiveWindowProperties hidden_properties =
+        CreateHiddenUndoWindowProperties();
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetAssistiveWindowProperties(_, hidden_properties, _));
+  }
+
+  manager_.OnSurroundingTextChanged(u"the ", /*cursor_pos=*/1,
+                                    /*anchor_pos=*/1);
+  manager_.OnKeyEvent(CreateKeyEvent(ui::DomKey::NONE, ui::DomCode::ARROW_UP));
+  manager_.OnKeyEvent(CreateKeyEvent(ui::DomKey::NONE, ui::DomCode::ENTER));
 }
 
 TEST_F(AutocorrectManagerTest, UndoAutocorrectSingleWordInComposition) {
