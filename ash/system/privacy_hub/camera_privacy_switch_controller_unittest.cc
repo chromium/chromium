@@ -12,6 +12,7 @@
 #include "ash/shell.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -31,6 +32,10 @@ class MockSwitchAPI : public CameraPrivacySwitchAPI {
 
 class PrivacyHubCameraControllerTests : public AshTestBase {
  protected:
+  PrivacyHubCameraControllerTests() {
+    scoped_feature_list_.InitAndEnableFeature(ash::features::kCrosPrivacyHub);
+  }
+
   void SetUserPref(bool allowed) {
     Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
         prefs::kUserCameraAllowed, allowed);
@@ -50,6 +55,7 @@ class PrivacyHubCameraControllerTests : public AshTestBase {
 
   ::testing::NiceMock<MockSwitchAPI>* mock_switch_;
   CameraPrivacySwitchController* controller_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test reaction on UI action.

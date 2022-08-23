@@ -1020,7 +1020,9 @@ void Shell::Init(
 
   // These controllers call Shell::Get() in their constructors, so they cannot
   // be in the member initialization list.
-  privacy_hub_controller_ = std::make_unique<PrivacyHubController>();
+  if (features::IsCrosPrivacyHubEnabled()) {
+    privacy_hub_controller_ = std::make_unique<PrivacyHubController>();
+  }
   touch_devices_controller_ = std::make_unique<TouchDevicesController>();
   if (!ash::features::IsBluetoothRevampEnabled()) {
     bluetooth_power_controller_ =

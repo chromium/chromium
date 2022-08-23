@@ -9,6 +9,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "components/account_id/account_id.h"
 
@@ -28,7 +29,9 @@ class FakeMicrophoneMuteNotificationDelegate
 
 class MicrophonePrivacySwitchControllerTest : public AshTestBase {
  public:
-  MicrophonePrivacySwitchControllerTest() = default;
+  MicrophonePrivacySwitchControllerTest() {
+    scoped_feature_list_.InitAndEnableFeature(ash::features::kCrosPrivacyHub);
+  }
   ~MicrophonePrivacySwitchControllerTest() override = default;
 
   // AshTestBase:
@@ -55,6 +58,7 @@ class MicrophonePrivacySwitchControllerTest : public AshTestBase {
 
  private:
   std::unique_ptr<FakeMicrophoneMuteNotificationDelegate> delegate_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(MicrophonePrivacySwitchControllerTest, SetSystemMuteOnLogin) {
