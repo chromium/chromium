@@ -2363,7 +2363,6 @@ base::FilePath WebAppIntegrationTestDriver::GetShortcutPath(
     base::FilePath shortcut_dir,
     const std::string& app_name,
     const AppId& app_id) {
-  base::FilePath shortcut_path;
 #if BUILDFLAG(IS_WIN)
   std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
   base::FileEnumerator enumerator(shortcut_dir, false,
@@ -2372,33 +2371,35 @@ base::FilePath WebAppIntegrationTestDriver::GetShortcutPath(
     std::wstring shortcut_filename = enumerator.GetInfo().GetName().value();
     if (re2::RE2::FullMatch(converter.to_bytes(shortcut_filename),
                             app_name + "(.*).lnk")) {
-      shortcut_path = shortcut_dir.Append(shortcut_filename);
+      base::FilePath shortcut_path = shortcut_dir.Append(shortcut_filename);
       if (GetShortcutProfile(shortcut_path) == profile()->GetBaseName())
         return shortcut_path;
     }
   }
 #elif BUILDFLAG(IS_MAC)
   std::string shortcut_filename = app_name + ".app";
-  shortcut_path = shortcut_dir.Append(shortcut_filename);
-  AppShimRegistry* registry = AppShimRegistry::Get();
+  base::FilePath shortcut_path = shortcut_dir.Append(shortcut_filename);
   // Exits early if the app id is empty because the verification won't work.
   // TODO(crbug.com/1289865): Figure a way to find the profile that has the app
   //                          installed without using app ID.
-  if (!app_id.empty()) {
-    std::set<base::FilePath> app_installed_profiles =
-        registry->GetInstalledProfilesForApp(app_id);
-    if (app_installed_profiles.find(profile()->GetPath()) !=
-        app_installed_profiles.end())
-      return shortcut_path;
+  if (app_id.empty())
+    return shortcut_path;
+
+  AppShimRegistry* registry = AppShimRegistry::Get();
+  std::set<base::FilePath> app_installed_profiles =
+      registry->GetInstalledProfilesForApp(app_id);
+  if (app_installed_profiles.find(profile()->GetPath()) !=
+      app_installed_profiles.end()) {
+    return shortcut_path;
   }
 #elif BUILDFLAG(IS_LINUX)
   std::string shortcut_filename =
       "chrome-" + app_id + "-" + profile()->GetBaseName().value() + ".desktop";
-  shortcut_path = shortcut_dir.Append(shortcut_filename);
+  base::FilePath shortcut_path = shortcut_dir.Append(shortcut_filename);
   if (base::PathExists(shortcut_path))
     return shortcut_path;
 #endif
-  return shortcut_path;
+  return base::FilePath();
 }
 
 void WebAppIntegrationTestDriver::InstallPolicyAppInternal(
