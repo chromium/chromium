@@ -107,6 +107,18 @@ Config::Config() {
   omnibox_history_cluster_provider =
       base::FeatureList::IsEnabled(internal::kOmniboxHistoryClusterProvider);
 
+  omnibox_history_cluster_provider_score =
+      base::GetFieldTrialParamByFeatureAsInt(
+          internal::kOmniboxHistoryClusterProvider,
+          "omnibox_history_cluster_provider_score",
+          omnibox_history_cluster_provider_score);
+
+  omnibox_history_cluster_provider_shortcuts =
+      base::GetFieldTrialParamByFeatureAsBool(
+          internal::kOmniboxHistoryClusterProvider,
+          "omnibox_history_cluster_provider_shortcuts",
+          omnibox_history_cluster_provider_shortcuts);
+
   keyword_filter_on_entity_aliases = base::GetFieldTrialParamByFeatureAsBool(
       history_clusters::features::kOnDeviceClusteringKeywordFiltering,
       "keyword_filter_on_entity_aliases", keyword_filter_on_entity_aliases);

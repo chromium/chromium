@@ -15,6 +15,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -316,6 +317,22 @@ void AutocompleteResult::SortAndCull(
     if (DiscourageTopMatchFromBeingSearchEntity(&matches_))
       matches_[0].ComputeStrippedDestinationURL(input, template_url_service);
   }
+
+  // Limit history cluster suggestions to 1. This has to be done before limiting
+  // URL matches below so that a to-be-removed history cluster suggestion
+  // doesn't waste a URL slot.
+  bool history_cluster_included = false;
+  base::EraseIf(matches_, [&](const auto& match) {
+    // If not a history cluster match, don't erase it.
+    if (match.type != AutocompleteMatch::Type::HISTORY_CLUSTER)
+      return false;
+    // If not the 1st history cluster match, do erase it.
+    if (history_cluster_included)
+      return true;
+    // If the 1st history cluster match, don't erase it.
+    history_cluster_included = true;
+    return false;
+  });
 
   // Limit URL matches per OmniboxMaxURLMatches.
   size_t max_url_count = 0;

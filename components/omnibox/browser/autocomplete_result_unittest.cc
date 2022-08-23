@@ -2178,6 +2178,28 @@ TEST_F(AutocompleteResultTest,
                       AutocompleteResult::GetMaxMatches());
 }
 
+TEST_F(AutocompleteResultTest, SortAndCullMaxHistoryClusterSuggestions) {
+  // Should limit history cluster suggestions to 1, even if there are no
+  // alternative suggestions to display.
+
+  ACMatches matches;
+  const AutocompleteMatchTestData data[] = {
+      {"url_1", AutocompleteMatchType::HISTORY_CLUSTER},
+      {"url_2", AutocompleteMatchType::HISTORY_CLUSTER},
+      {"url_3", AutocompleteMatchType::HISTORY_CLUSTER},
+  };
+  PopulateAutocompleteMatchesFromTestData(data, std::size(data), &matches);
+
+  AutocompleteInput input(u"a", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  AutocompleteResult result;
+  result.AppendMatches(matches);
+  result.SortAndCull(input, template_url_service_.get());
+
+  ASSERT_EQ(result.size(), 1u);
+  EXPECT_EQ(result.match_at(0)->type, AutocompleteMatchType::HISTORY_CLUSTER);
+}
+
 TEST_F(AutocompleteResultTest, SortAndCullMaxURLMatches) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(

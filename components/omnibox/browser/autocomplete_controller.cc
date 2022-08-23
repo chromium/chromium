@@ -933,8 +933,8 @@ void AutocompleteController::UpdateResult(
     result_.AttachPedalsToMatches(input_, *provider_client_);
   }
 
-  // Need to validate before invoking CopyOldMatches as the old matches are not
-  // valid against the current input.
+  // Need to validate before invoking `TransferOldMatches()` as the old matches
+  // are not valid against the current input.
 #if DCHECK_IS_ON()
   result_.Validate();
 #endif  // DCHECK_IS_ON()

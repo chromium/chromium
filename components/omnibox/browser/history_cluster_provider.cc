@@ -120,16 +120,13 @@ AutocompleteMatch HistoryClusterProvider::CreateMatch(std::u16string text) {
   match.provider = this;
   match.type = AutocompleteMatch::Type::HISTORY_CLUSTER;
 
-  // 900 seems to work well in local tests. It's high enough to
-  // outscore search suggestions and therefore not be crowded out, but low
-  // enough to only display when there aren't too many strong navigation
-  // matches.
   // TODO(manukh): Currently, history cluster suggestions only display when the
   //  `text` is an exact match of a cluster keyword, and all cluster keywords
   //  are treated equal. Therefore, we're limited to using a static value.
   //  Ideally, relevance would depend on how many keywords matched, how
   //  significant the keywords were, how significant their clusters were etc.
-  match.relevance = 900;
+  match.relevance =
+      history_clusters::GetConfig().omnibox_history_cluster_provider_score;
 
   match.fill_into_edit = base::UTF8ToUTF16(base::StringPrintf(
       "chrome://history/journeys?q=%s", base::UTF16ToUTF8(text).c_str()));

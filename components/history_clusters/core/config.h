@@ -119,6 +119,26 @@ struct Config {
   // only have 1 enabled.
   bool omnibox_history_cluster_provider = false;
 
+  // The score the `HistoryClusterProvider` will assign to journey suggestions.
+  // Meaningless if `omnibox_history_cluster_provider` is disabled. 900 seems to
+  // work well in local tests. It's high enough to outscore search suggestions
+  // and therefore not be crowded out, but low enough to only display when there
+  // aren't too many strong navigation matches.
+  int omnibox_history_cluster_provider_score = 900;
+
+  // Whether Journey suggestions from the `HistoryClusterProvider` can be
+  // surfaced from the shortcuts' provider. They will be scored according to the
+  // shortcuts' provider's scoring, which is more aggressive than the default
+  // 900 score the `HistoryClusterProvider` assigns. Journey suggestions will
+  // still be limited to 1, and will still be locked to the last suggestion
+  // slot. More aggressive scoring won't affect ranking, but visibility. If
+  // disabled, journey suggestions will still be added to the table, but
+  // filtered out when retrieving suggesting; this is so that users in an
+  // experiment group with `omnibox_history_cluster_provider_shortcuts` enabled
+  // don't have lingering effects when they leave the group. Meaningless if
+  // `omnibox_history_cluster_provider` is disabled.
+  bool omnibox_history_cluster_provider_shortcuts = false;
+
   // If enabled, adds the keywords of aliases for detected entity names to a
   // cluster.
   bool keyword_filter_on_entity_aliases = false;
@@ -309,8 +329,7 @@ bool IsApplicationLocaleSupportedByJourneys(
 bool IsJourneysEnabledInOmnibox(HistoryClustersService* service,
                                 PrefService* prefs);
 
-// Gets the current configuration. OverrideWithFinch() must have been called
-// before GetConfig() is called.
+// Gets the current configuration.
 const Config& GetConfig();
 
 // Overrides the config returned by |GetConfig()|.

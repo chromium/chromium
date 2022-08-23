@@ -22,6 +22,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/history/core/browser/url_database.h"
+#include "components/history_clusters/core/config.h"
+#include "components/history_clusters/core/features.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
@@ -33,6 +35,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/omnibox_focus_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
 using base::ASCIIToUTF16;
@@ -42,8 +45,8 @@ namespace {
 
 // Returns up to 99,999 incrementing GUIDs of the format
 // "BD85DBA2-8C29-49F9-84AE-48E1E_____E0".
-int currentGuid = 0;
 std::string GetGuid() {
+  static int currentGuid = 0;
   currentGuid++;
   DCHECK_LE(currentGuid, 99999);
   return base::StringPrintf("BD85DBA2-8C29-49F9-84AE-48E1E%05dE0", currentGuid);
@@ -865,3 +868,72 @@ TEST_F(ShortcutsProviderTest, CalculateAggregateScore) {
   auto score_b_frequent = CalculateAggregateScore("a", {&shortcut_b_frequent});
   EXPECT_GT(score_b_frequent, score_b);
 }
+
+#if !BUILDFLAG(IS_IOS)
+TEST_F(ShortcutsProviderTest, HistoryClusterSuggestions) {
+  history_clusters::Config config;
+  config.omnibox_history_cluster_provider_shortcuts = true;
+  history_clusters::SetConfigForTesting(config);
+
+  const auto create_test_data =
+      [](std::string text, bool is_history_cluster) -> TestShortcutData {
+    return {GetGuid(), text, "fill_into_edit",
+            // Use unique URLs to avoid deduping.
+            "http://www.destination_url.com/" + text,
+            AutocompleteMatch::DocumentType::NONE, "contents", "0,0",
+            "description", "0,0", ui::PAGE_TRANSITION_TYPED,
+            is_history_cluster ? AutocompleteMatchType::HISTORY_CLUSTER
+                               : AutocompleteMatchType::HISTORY_URL,
+            /*keyword=*/"",
+            /*days_from_now=*/1,
+            /*number_of_hits=*/1};
+  };
+  // `provider_max_matches_` is 3. Create more than 3 cluster and non-cluster
+  // shortcuts.
+  TestShortcutData test_data[] = {
+      create_test_data("text_history_0", false),
+      create_test_data("text_history_1", false),
+      create_test_data("text_history_2", false),
+      create_test_data("text_history_3", false),
+      create_test_data("text_cluster_0", true),
+      create_test_data("text_cluster_1", true),
+      create_test_data("text_cluster_2", true),
+      create_test_data("text_cluster_3", true),
+  };
+  PopulateShortcutsBackendWithTestData(client_->GetShortcutsBackend(),
+                                       test_data, std::size(test_data));
+
+  AutocompleteInput input(u"tex", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  provider_->Start(input, false);
+  const auto& matches = provider_->matches();
+
+  // Expect 3 (i.e. `provider_max_matches_`) non-cluster matches, and all
+  // cluster matches.
+  ASSERT_EQ(matches.size(), 7u);
+  EXPECT_EQ(matches[0].type, AutocompleteMatchType::HISTORY_URL);
+  EXPECT_EQ(matches[1].type, AutocompleteMatchType::HISTORY_URL);
+  EXPECT_EQ(matches[2].type, AutocompleteMatchType::HISTORY_URL);
+  EXPECT_EQ(matches[3].type, AutocompleteMatchType::HISTORY_CLUSTER);
+  EXPECT_EQ(matches[4].type, AutocompleteMatchType::HISTORY_CLUSTER);
+  EXPECT_EQ(matches[5].type, AutocompleteMatchType::HISTORY_CLUSTER);
+  EXPECT_EQ(matches[6].type, AutocompleteMatchType::HISTORY_CLUSTER);
+
+  // Expect only non-cluster matches to have capped decrementing scores.
+  EXPECT_EQ(matches[1].relevance, matches[0].relevance - 1);
+  EXPECT_EQ(matches[2].relevance, matches[0].relevance - 2);
+  EXPECT_EQ(matches[3].relevance, matches[0].relevance);
+  EXPECT_EQ(matches[4].relevance, matches[0].relevance);
+  EXPECT_EQ(matches[5].relevance, matches[0].relevance);
+  EXPECT_EQ(matches[6].relevance, matches[0].relevance);
+
+  // Expect cluster matches to have grouping.
+  EXPECT_EQ(matches[0].suggestion_group_id, absl::nullopt);
+  EXPECT_EQ(matches[1].suggestion_group_id, absl::nullopt);
+  EXPECT_EQ(matches[2].suggestion_group_id, absl::nullopt);
+  EXPECT_EQ(matches[3].suggestion_group_id, SuggestionGroupId::kHistoryCluster);
+  EXPECT_EQ(matches[4].suggestion_group_id, SuggestionGroupId::kHistoryCluster);
+  EXPECT_EQ(matches[5].suggestion_group_id, SuggestionGroupId::kHistoryCluster);
+  EXPECT_EQ(matches[6].suggestion_group_id, SuggestionGroupId::kHistoryCluster);
+}
+#endif  // !BUILDFLAG(IS_IOS)
