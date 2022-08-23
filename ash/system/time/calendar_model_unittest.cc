@@ -15,9 +15,11 @@
 #include "ash/calendar/calendar_client.h"
 #include "ash/calendar/calendar_controller.h"
 #include "ash/components/settings/timezone_settings.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/public/cpp/session/user_info.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/system/time/calendar_utils.h"
@@ -202,6 +204,8 @@ class CalendarModelTest : public AshTestBase {
     calendar_client_ = std::make_unique<CalendarClientTestImpl>();
     Shell::Get()->calendar_controller()->RegisterClientForUser(
         account_id, calendar_client_.get());
+    Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+        ash::prefs::kCalendarIntegrationEnabled, true);
   }
 
   void TearDown() override {

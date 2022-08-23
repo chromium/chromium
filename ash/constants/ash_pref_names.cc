@@ -19,6 +19,11 @@ const char kAssistPersonalInfoEnabled[] =
 const char kAssistPredictiveWritingEnabled[] =
     "assistive_input.predictive_writing_enabled";
 
+// A boolean pref of whether Google Calendar Integration is enabled.
+// Disabling this pref would stop the user from getting their
+// Google Calendar events from the system tray - Calendar widget.
+const char kCalendarIntegrationEnabled[] = "ash.calendar_integration_enabled";
+
 // A boolean pref of whether emoji suggestion is enabled.
 const char kEmojiSuggestionEnabled[] =
     "assistive_input.emoji_suggestion_enabled";

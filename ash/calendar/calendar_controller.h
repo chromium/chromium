@@ -12,6 +12,8 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "components/account_id/account_id.h"
 
+class PrefRegistrySimple;
+
 namespace ash {
 
 class CalendarClient;
@@ -26,6 +28,9 @@ class ASH_EXPORT CalendarController : public SessionObserver {
   CalendarController(const CalendarController& other) = delete;
   CalendarController& operator=(const CalendarController& other) = delete;
   ~CalendarController() override;
+
+  // Registers profile prefs for Calendar client.
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Adds a client to it's corresponding user account id in a map.
   void RegisterClientForUser(const AccountId& account_id,

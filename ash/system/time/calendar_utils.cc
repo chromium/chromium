@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/components/settings/timezone_settings.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
@@ -15,6 +16,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/user_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/i18n/unicode/gregocal.h"
@@ -249,11 +251,21 @@ ASH_EXPORT base::Time GetStartOfNextMonthUTC(base::Time date) {
   return GetStartOfMonthUTC(GetStartOfMonthUTC(date) + base::Days(33));
 }
 
+ASH_EXPORT bool ShouldFetchEvents() {
+  return IsActiveUser() && !IsDisabledByAdmin();
+}
+
 ASH_EXPORT bool IsActiveUser() {
   absl::optional<user_manager::UserType> user_type =
       Shell::Get()->session_controller()->GetUserType();
   return (user_type && *user_type == user_manager::USER_TYPE_REGULAR) &&
          !Shell::Get()->session_controller()->IsUserSessionBlocked();
+}
+
+ASH_EXPORT bool IsDisabledByAdmin() {
+  auto* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  return !pref_service->GetBoolean(prefs::kCalendarIntegrationEnabled);
 }
 
 base::TimeDelta GetTimeDifference(base::Time date) {

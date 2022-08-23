@@ -4,8 +4,11 @@
 
 #include "ash/calendar/calendar_controller.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "base/check.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 
 namespace ash {
 
@@ -15,6 +18,12 @@ CalendarController::CalendarController() {
 
 CalendarController::~CalendarController() {
   SessionController::Get()->RemoveObserver(this);
+}
+
+// static
+void CalendarController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(ash::prefs::kCalendarIntegrationEnabled,
+                                /*default_value=*/true);
 }
 
 void CalendarController::RegisterClientForUser(const AccountId& account_id,

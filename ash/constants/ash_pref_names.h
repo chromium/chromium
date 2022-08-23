@@ -17,6 +17,8 @@ extern const char kAssistPersonalInfoEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAssistPredictiveWritingEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kCalendarIntegrationEnabled[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kESimRefreshedEuiccs[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kESimProfiles[];

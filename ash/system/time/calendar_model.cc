@@ -165,7 +165,7 @@ void CalendarModel::UploadLifetimeMetrics() {
 
 void CalendarModel::FetchEvents(base::Time start_of_month) {
   // Early return if it's not a valid user/user-session.
-  if (!calendar_utils::IsActiveUser())
+  if (!calendar_utils::ShouldFetchEvents())
     return;
 
   // Bail out early if there is no CalendarClient.  This will be the case in
@@ -442,7 +442,7 @@ SingleDayEventList CalendarModel::FindEvents(base::Time day) const {
 
 CalendarModel::FetchingStatus CalendarModel::FindFetchingStatus(
     base::Time start_time) const {
-  if (!calendar_utils::IsActiveUser())
+  if (!calendar_utils::ShouldFetchEvents())
     return kNa;
 
   if (pending_fetches_.count(start_time))

@@ -9,6 +9,7 @@
 #include "ash/ambient/ambient_controller.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/assistant/assistant_controller_impl.h"
+#include "ash/calendar/calendar_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/clipboard/clipboard_nudge_controller.h"
 #include "ash/constants/ash_features.h"
@@ -79,6 +80,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   AmbientController::RegisterProfilePrefs(registry);
   if (!ash::features::IsBluetoothRevampEnabled())
     BluetoothPowerController::RegisterProfilePrefs(registry);
+  CalendarController::RegisterProfilePrefs(registry);
   CapsLockNotificationController::RegisterProfilePrefs(registry, for_test);
   CaptureModeController::RegisterProfilePrefs(registry);
   CellularSetupNotifier::RegisterProfilePrefs(registry);

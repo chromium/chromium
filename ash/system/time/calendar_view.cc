@@ -997,7 +997,7 @@ void CalendarView::OnEventsFetched(
 
 void CalendarView::OpenEventList() {
   // Don't show the the `event_list_` view for unlogged in users.
-  if (!calendar_utils::IsActiveUser())
+  if (!calendar_utils::ShouldFetchEvents())
     return;
 
   // If the event list is already open or if any animation is occurring do not

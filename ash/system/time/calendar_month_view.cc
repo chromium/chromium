@@ -101,7 +101,7 @@ CalendarDateCellView::CalendarDateCellView(
 
   DisableFocus();
   if (!grayed_out_) {
-    if (calendar_utils::IsActiveUser() && is_fetched_) {
+    if (calendar_utils::ShouldFetchEvents() && is_fetched_) {
       event_number_ = calendar_view_controller_->GetEventNumber(date_);
     }
     SetTooltipAndAccessibleName();
@@ -211,7 +211,7 @@ void CalendarDateCellView::DisableFocus() {
 
 void CalendarDateCellView::SetTooltipAndAccessibleName() {
   std::u16string formatted_date = calendar_utils::GetMonthDayYearWeek(date_);
-  if (!calendar_utils::IsActiveUser()) {
+  if (!calendar_utils::ShouldFetchEvents()) {
     tool_tip_ = formatted_date;
   } else {
     if (is_fetched_) {
@@ -236,7 +236,7 @@ void CalendarDateCellView::UpdateFetchStatus(bool is_fetched) {
   if (grayed_out_)
     return;
 
-  if (!calendar_utils::IsActiveUser()) {
+  if (!calendar_utils::ShouldFetchEvents()) {
     SetTooltipAndAccessibleName();
     return;
   }
@@ -291,7 +291,7 @@ void CalendarDateCellView::PaintButtonContents(gfx::Canvas* canvas) {
 }
 
 void CalendarDateCellView::OnDateCellActivated(const ui::Event& event) {
-  if (grayed_out_ || !calendar_utils::IsActiveUser())
+  if (grayed_out_ || !calendar_utils::ShouldFetchEvents())
     return;
 
   // Explicitly request focus after being activated to ensure focus moves away
@@ -313,7 +313,7 @@ gfx::Point CalendarDateCellView::GetEventsPresentIndicatorCenterPosition() {
 void CalendarDateCellView::MaybeDrawEventsIndicator(gfx::Canvas* canvas) {
   // Not drawing the event dot if it's a grayed out cell or the user is not in
   // an active session (without a vilid user account id).
-  if (grayed_out_ || !calendar_utils::IsActiveUser())
+  if (grayed_out_ || !calendar_utils::ShouldFetchEvents())
     return;
 
   if (event_number_ == 0)

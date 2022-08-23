@@ -215,8 +215,15 @@ base::Time GetStartOfNextMonthUTC(base::Time date);
 // Returns UTC midnight of `date`'s next day without adjusting time difference.
 ASH_EXPORT base::Time GetNextDayMidnight(base::Time date);
 
+// Returns true if (1) it's a regular user; and (2) the user session is not
+// blocked; and (3) the admin has not disabled Google Calendar integration.
+bool ShouldFetchEvents();
+
 // Returns true if it's a regular user or the user session is not blocked.
 bool IsActiveUser();
+
+// Returns true if the admin has disabled Google Calendar integration.
+bool IsDisabledByAdmin();
 
 // Get the time difference to UTC time based on the time passed in and the
 // system timezone. Daylight saving is considered.
