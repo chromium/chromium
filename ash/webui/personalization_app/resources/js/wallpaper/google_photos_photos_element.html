@@ -54,7 +54,9 @@
       role="listbox">
     <template>
       <div class="row" rowindex$="[[index]]" tabindex$="[[tabIndex]]"
-          on-focus="onGridRowFocused_" on-keydown="onGridRowKeyDown_">
+          on-mousedown="onGridRowMouseDown_"
+          on-focus="onGridRowFocused_"
+          on-keydown="onGridRowKeyDown_">
         <template is="dom-if"
             if="[[isGridRowTitleVisible_(row, photosBySection_)]]">
           <p class="photo-row-info">

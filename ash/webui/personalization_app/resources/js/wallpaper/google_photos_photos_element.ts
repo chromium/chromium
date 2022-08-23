@@ -251,6 +251,13 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
     fetchGooglePhotosPhotos(this.wallpaperProvider_, this.getStore());
   }
 
+  /** Invoked on mouse down of a grid row. */
+  private onGridRowMouseDown_(e: Event) {
+    // Prevent the odd behavior of auto jumping to the focused photo when the
+    // user clicks on any grid row.
+    e.preventDefault();
+  }
+
   /** Invoked on focus of a grid row. */
   private onGridRowFocused_() {
     // If |focusedPhotoIndex_| is -1, this is the first time focus has entered
