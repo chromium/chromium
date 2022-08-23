@@ -7,8 +7,8 @@
 
 #include "base/feature_list.h"
 
-// Feature to download Calendar files.
-extern const base::Feature kDownloadCalendar;
+// Kill switch for Calendar support.
+extern const base::Feature kCalendarKillSwitch;
 
 // Kill switch for Vcard support.
 extern const base::Feature kVCardKillSwitch;

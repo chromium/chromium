@@ -200,10 +200,6 @@ extern const char kEnableDiscoverFeedTopSyncPromoDescription[];
 extern const char kDmTokenDeletionName[];
 extern const char kDmTokenDeletionDescription[];
 
-// Title and description for the flag to enable Calendar support.
-extern const char kDownloadCalendarName[];
-extern const char kDownloadCalendarDescription[];
-
 // Title and description for the flag to enable kEditPasswordsInSettings flag on
 // iOS.
 extern const char kEditPasswordsInSettingsName[];

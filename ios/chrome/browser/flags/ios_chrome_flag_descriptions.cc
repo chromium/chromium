@@ -231,10 +231,6 @@ const char kDmTokenDeletionDescription[] =
     "Delete the corresponding DMToken when a managed browser is deleted in "
     "Chrome Browser Cloud Management.";
 
-const char kDownloadCalendarName[] = "Download Calendar";
-const char kDownloadCalendarDescription[] =
-    "Allows user to download & save Calendar";
-
 const char kEditPasswordsInSettingsName[] = "Edit passwords in settings";
 const char kEditPasswordsInSettingsDescription[] =
     "Enables password editing in settings.";

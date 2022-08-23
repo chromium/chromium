@@ -75,7 +75,6 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(kDownloadCalendar);
   return config;
 }
 

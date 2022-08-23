@@ -78,7 +78,7 @@ void BrowserDownloadService::OnDownloadCreated(
     if (tab_helper)
       tab_helper->DownloadMobileConfig(std::move(task));
   } else if (task->GetMimeType() == kCalendarMimeType &&
-             base::FeatureList::IsEnabled(kDownloadCalendar) &&
+             !base::FeatureList::IsEnabled(kCalendarKillSwitch) &&
              task->GetOriginalUrl().SchemeIsHTTPOrHTTPS()) {
     // SFSafariViewController can only open http and https URLs.
     SafariDownloadTabHelper* tab_helper =

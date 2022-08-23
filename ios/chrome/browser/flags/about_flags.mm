@@ -995,9 +995,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnforceDelaysInStrikeDatabase)},
-    {"download-calendar", flag_descriptions::kDownloadCalendarName,
-     flag_descriptions::kDownloadCalendarDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kDownloadCalendar)},
     {"autofill-upstream-allow-additional-email-domains",
      flag_descriptions::kAutofillUpstreamAllowAdditionalEmailDomainsName,
      flag_descriptions::kAutofillUpstreamAllowAdditionalEmailDomainsDescription,
