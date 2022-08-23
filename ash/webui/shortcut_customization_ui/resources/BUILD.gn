@@ -15,7 +15,7 @@ assert(is_chromeos_ash)
 preprocess_folder = "preprocessed"
 
 non_web_component_files = [
-  "accelerator_lookup_manager.js",
+  "accelerator_lookup_manager.ts",
   "fake_data.js",
   "fake_shortcut_provider.js",
   "mojo_interface_provider.js",
@@ -24,7 +24,7 @@ non_web_component_files = [
 
 web_component_files = [
   "accelerator_edit_dialog.ts",
-  "accelerator_edit_view.js",
+  "accelerator_edit_view.ts",
   "accelerator_row.js",
   "accelerator_subsection.js",
   "accelerator_view.js",

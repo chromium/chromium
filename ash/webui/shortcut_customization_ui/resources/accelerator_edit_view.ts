@@ -17,6 +17,19 @@ import {ViewState} from './accelerator_view.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {AcceleratorConfigResult, AcceleratorInfo, AcceleratorKeys, AcceleratorSource, AcceleratorState, AcceleratorType, ShortcutProviderInterface} from './shortcut_types.js';
 
+const accelerator: AcceleratorKeys = {
+  modifiers: 0,
+  key: 0,
+  key_display: '',
+};
+
+const defaultAcceleratorInfoState: AcceleratorInfo = {
+  accelerator,
+  type: AcceleratorType.kDefault,
+  state: AcceleratorState.kEnabled,
+  locked: false,
+};
+
 /**
  * @fileoverview
  * 'accelerator-edit-view' is a wrapper component for one accelerator. It is
@@ -28,33 +41,20 @@ export class AcceleratorEditViewElement extends PolymerElement {
     return 'accelerator-edit-view';
   }
 
+  static get template() {
+    return getTemplate();
+  }
+
   static get properties() {
     return {
-      /** @type {!AcceleratorInfo} */
       acceleratorInfo: {
         type: Object,
-        value: /** @type {!AcceleratorInfo} */ ({
-          accelerator: /** @type {!AcceleratorKeys} */ ({
-            modifiers: 0,
-            key: 0,
-            key_display: '',
-          }),
-          type: AcceleratorType.kDefault,
-          state: AcceleratorState.kEnabled,
-          locked: false,
-        }),
+        value: defaultAcceleratorInfoState,
       },
 
       isEditView: {
         type: Boolean,
         computed: 'showEditView_(viewState)',
-        reflectToAttribute: true,
-      },
-
-      /** @private */
-      isAddView_: {
-        type: Boolean,
-        computed: 'computeIsAddView_(viewState)',
         reflectToAttribute: true,
       },
 
@@ -64,7 +64,6 @@ export class AcceleratorEditViewElement extends PolymerElement {
         notify: true,
       },
 
-      /** @protected */
       statusMessage: {
         type: String,
         value: '',
@@ -82,7 +81,6 @@ export class AcceleratorEditViewElement extends PolymerElement {
         value: 0,
       },
 
-      /** @type {!AcceleratorSource} */
       source: {
         type: Number,
         value: 0,
@@ -90,19 +88,25 @@ export class AcceleratorEditViewElement extends PolymerElement {
     };
   }
 
-  /** @override */
+  acceleratorInfo: AcceleratorInfo;
+  isEditView: boolean;
+  viewState: number;
+  hasError: boolean;
+  action: number;
+  source: AcceleratorSource;
+  protected statusMessage: string;
+  private shortcutProvider_: ShortcutProviderInterface;
+  private lookupManager_: AcceleratorLookupManager;
+
   constructor() {
     super();
 
-    /** @private {!ShortcutProviderInterface} */
     this.shortcutProvider_ = getShortcutProvider();
 
-    /** @private {!AcceleratorLookupManager} */
     this.lookupManager_ = AcceleratorLookupManager.getInstance();
   }
 
-  /** @protected */
-  onStatusMessageChanged_() {
+  protected onStatusMessageChanged_() {
     if (this.statusMessage === '') {
       // TODO(jimmyxgong): i18n this string.
       this.statusMessage =
@@ -110,17 +114,15 @@ export class AcceleratorEditViewElement extends PolymerElement {
     }
   }
 
-  /** @protected */
-  onEditButtonClicked_() {
+  protected onEditButtonClicked_() {
     this.viewState = ViewState.EDIT;
   }
 
-  /** @protected */
-  onDeleteButtonClicked_() {
+  protected onDeleteButtonClicked_() {
     this.shortcutProvider_
         .removeAccelerator(
             this.source, this.action, this.acceleratorInfo.accelerator)
-        .then((result) => {
+        .then((result: AcceleratorConfigResult) => {
           if (result === AcceleratorConfigResult.kSuccess) {
             this.lookupManager_.removeAccelerator(
                 this.source, this.action, this.acceleratorInfo.accelerator);
@@ -134,32 +136,15 @@ export class AcceleratorEditViewElement extends PolymerElement {
         });
   }
 
-  /** @protected  */
-  onCancelButtonClicked_() {
+  protected onCancelButtonClicked_() {
     this.statusMessage = '';
     this.viewState = ViewState.VIEW;
   }
 
-  /**
-   * @return {boolean}
-   * @protected
-   */
-  showEditView_() {
+  protected showEditView_(): boolean {
     return this.viewState !== ViewState.VIEW;
-  }
-
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeIsAddView_() {
-    return this.viewState === ViewState.ADD;
-  }
-
-  static get template() {
-    return getTemplate();
   }
 }
 
-customElements.define(AcceleratorEditViewElement.is,
-                      AcceleratorEditViewElement);
+customElements.define(
+    AcceleratorEditViewElement.is, AcceleratorEditViewElement);
