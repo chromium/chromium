@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_SESSIONS_SESSION_DATA_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class SessionDataService;
 class Profile;
 
-class SessionDataServiceFactory : public BrowserContextKeyedServiceFactory {
+class SessionDataServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static SessionDataService* GetForProfile(Profile* profile);
 

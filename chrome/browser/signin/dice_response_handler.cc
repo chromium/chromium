@@ -14,14 +14,13 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/about_signin_internals_factory.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/profile_helper.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/signin/core/browser/about_signin_internals.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/signin/public/base/signin_client.h"
@@ -75,7 +74,7 @@ enum DiceTokenFetchResult {
   kDiceTokenFetchResultCount
 };
 
-class DiceResponseHandlerFactory : public BrowserContextKeyedServiceFactory {
+class DiceResponseHandlerFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns an instance of the factory singleton.
   static DiceResponseHandlerFactory* GetInstance() {
@@ -91,9 +90,7 @@ class DiceResponseHandlerFactory : public BrowserContextKeyedServiceFactory {
   friend struct base::DefaultSingletonTraits<DiceResponseHandlerFactory>;
 
   DiceResponseHandlerFactory()
-      : BrowserContextKeyedServiceFactory(
-            "DiceResponseHandler",
-            BrowserContextDependencyManager::GetInstance()) {
+      : ProfileKeyedServiceFactory("DiceResponseHandler") {
     DependsOn(AboutSigninInternalsFactory::GetInstance());
     DependsOn(AccountReconcilorFactory::GetInstance());
     DependsOn(ChromeSigninClientFactory::GetInstance());
@@ -105,9 +102,6 @@ class DiceResponseHandlerFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override {
-    if (context->IsOffTheRecord())
-      return nullptr;
-
     Profile* profile = static_cast<Profile*>(context);
     return new DiceResponseHandler(
         ChromeSigninClientFactory::GetForProfile(profile),

@@ -8,7 +8,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_metrics_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "content/public/browser/browser_context.h"
 
@@ -28,9 +27,8 @@ SupervisedUserMetricsServiceFactory::GetInstance() {
 }
 
 SupervisedUserMetricsServiceFactory::SupervisedUserMetricsServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "SupervisedUserMetricsServiceFactory",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("SupervisedUserMetricsServiceFactory",
+                                 ProfileSelections::BuildForRegularProfile()) {
   // Used for tracking web filter metrics.
   DependsOn(SupervisedUserServiceFactory::GetInstance());
 }
@@ -45,10 +43,6 @@ void SupervisedUserMetricsServiceFactory::RegisterProfilePrefs(
 
 KeyedService* SupervisedUserMetricsServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  Profile* profile = Profile::FromBrowserContext(context);
-  if (profile->IsGuestSession() || profile->IsSystemProfile())
-    return nullptr;
-
   return new SupervisedUserMetricsService(context);
 }
 

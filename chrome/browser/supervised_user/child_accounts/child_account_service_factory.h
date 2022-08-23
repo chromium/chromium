@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_SUPERVISED_USER_CHILD_ACCOUNTS_CHILD_ACCOUNT_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class ChildAccountService;
 class Profile;
 
-class ChildAccountServiceFactory : public BrowserContextKeyedServiceFactory {
+class ChildAccountServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static ChildAccountService* GetForProfile(Profile* profile);
 

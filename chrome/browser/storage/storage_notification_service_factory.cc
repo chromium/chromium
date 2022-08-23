@@ -4,13 +4,10 @@
 
 #include "chrome/browser/storage/storage_notification_service_factory.h"
 
-#include "chrome/browser/profiles/incognito_helpers.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-
 StorageNotificationServiceFactory::StorageNotificationServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "StorageNotificationService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          ProfileSelections::BuildForRegularAndIncognito()) {}
 StorageNotificationServiceFactory::~StorageNotificationServiceFactory() {}
 
 // static
@@ -42,10 +39,4 @@ StorageNotificationServiceFactory::BuildInstanceFor(
 bool StorageNotificationServiceFactory::ServiceIsCreatedWithBrowserContext()
     const {
   return true;
-}
-
-content::BrowserContext*
-StorageNotificationServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }

@@ -18,7 +18,6 @@
 #include "chrome/browser/segmentation_platform/segmentation_platform_profile_observer.h"
 #include "chrome/browser/segmentation_platform/ukm_database_client.h"
 #include "chrome/common/chrome_constants.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/segmentation_platform/embedder/model_provider_factory_impl.h"
 #include "components/segmentation_platform/internal/dummy_segmentation_platform_service.h"
 #include "components/segmentation_platform/internal/segmentation_platform_service_impl.h"
@@ -66,9 +65,7 @@ SegmentationPlatformService* SegmentationPlatformServiceFactory::GetForProfile(
 }
 
 SegmentationPlatformServiceFactory::SegmentationPlatformServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "SegmentationPlatformService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("SegmentationPlatformService") {
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
 }

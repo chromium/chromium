@@ -7,7 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -34,7 +34,7 @@ class HttpsFirstModeService : public KeyedService {
 
 // Factory boilerplate for creating the `HttpsFirstModeService` for each browser
 // context (profile).
-class HttpsFirstModeServiceFactory : public BrowserContextKeyedServiceFactory {
+class HttpsFirstModeServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static HttpsFirstModeService* GetForProfile(Profile* profile);
   static HttpsFirstModeServiceFactory* GetInstance();
@@ -52,8 +52,6 @@ class HttpsFirstModeServiceFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
 };
 
 #endif  // CHROME_BROWSER_SSL_HTTPS_FIRST_MODE_SETTINGS_TRACKER_H_

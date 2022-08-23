@@ -4,11 +4,9 @@
 
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -47,9 +45,9 @@ KeyedService* SupervisedUserServiceFactory::BuildInstanceFor(Profile* profile) {
 }
 
 SupervisedUserServiceFactory::SupervisedUserServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-        "SupervisedUserService",
-        BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory(
+          "SupervisedUserService",
+          ProfileSelections::BuildRedirectedInIncognito()) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   DependsOn(
       extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
@@ -58,11 +56,6 @@ SupervisedUserServiceFactory::SupervisedUserServiceFactory()
 }
 
 SupervisedUserServiceFactory::~SupervisedUserServiceFactory() {}
-
-content::BrowserContext* SupervisedUserServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
-}
 
 KeyedService* SupervisedUserServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* profile) const {

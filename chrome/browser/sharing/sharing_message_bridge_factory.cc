@@ -7,7 +7,6 @@
 
 #include "base/memory/singleton.h"
 #include "chrome/common/channel_info.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 
@@ -16,9 +15,7 @@ constexpr char kServiceName[] = "SharingMessageBridge";
 }  // namespace
 
 SharingMessageBridgeFactory::SharingMessageBridgeFactory()
-    : BrowserContextKeyedServiceFactory(
-          kServiceName,
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory(kServiceName) {}
 
 SharingMessageBridgeFactory::~SharingMessageBridgeFactory() = default;
 

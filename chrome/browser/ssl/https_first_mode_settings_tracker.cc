@@ -9,8 +9,6 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/synthetic_trials.h"
 #include "content/public/browser/browser_context.h"
@@ -73,9 +71,12 @@ HttpsFirstModeServiceFactory* HttpsFirstModeServiceFactory::GetInstance() {
 }
 
 HttpsFirstModeServiceFactory::HttpsFirstModeServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           kHttpsFirstModeServiceName,
-          BrowserContextDependencyManager::GetInstance()) {}
+          // Don't create a service for non-regular profiles. This includes
+          // Incognito (which uses the settings of the main profile) and Guest
+          // Mode.
+          ProfileSelections::BuildForRegularProfile()) {}
 
 HttpsFirstModeServiceFactory::~HttpsFirstModeServiceFactory() = default;
 
@@ -83,25 +84,13 @@ HttpsFirstModeServiceFactory::~HttpsFirstModeServiceFactory() = default;
 KeyedService* HttpsFirstModeServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* browser_context) const {
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  return new HttpsFirstModeService(profile->GetPrefs());
-}
-
-content::BrowserContext* HttpsFirstModeServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  // Don't create a service for non-regular profiles. This includes Incognito
-  // (which uses the settings of the main profile) and Guest Mode. Also
-  // explicitly check for ChromeOS sign-in profiles (which would cause
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Explicitly check for ChromeOS sign-in profiles (which would cause
   // double-counting of at-startup metrics for ChromeOS restarts) which are not
   // covered by the `IsRegularProfile()` check.
-  Profile* const profile = Profile::FromBrowserContext(context);
-  if (!profile->IsRegularProfile()) {
-    return nullptr;
-  }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (ash::ProfileHelper::IsSigninProfile(profile)) {
     return nullptr;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  return context;
+  return new HttpsFirstModeService(profile->GetPrefs());
 }

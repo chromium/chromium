@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SHARING_SHARING_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_SHARING_SHARING_SERVICE_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace base {
 template <typename T>
@@ -19,7 +19,7 @@ class BrowserContext;
 class SharingService;
 
 // Factory for SharingService.
-class SharingServiceFactory : public BrowserContextKeyedServiceFactory {
+class SharingServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns singleton instance of SharingServiceFactory.
   static SharingServiceFactory* GetInstance();
@@ -38,8 +38,6 @@ class SharingServiceFactory : public BrowserContextKeyedServiceFactory {
 
   // BrowserContextKeyedServiceFactory overrides:
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
 };

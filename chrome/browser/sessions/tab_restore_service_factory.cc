@@ -8,7 +8,6 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/chrome_tab_restore_service_client.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/sessions/core/tab_restore_service_impl.h"
 
 namespace {
@@ -56,9 +55,7 @@ TabRestoreServiceFactory::GetDefaultFactory() {
 }
 
 TabRestoreServiceFactory::TabRestoreServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "sessions::TabRestoreService",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("sessions::TabRestoreService") {}
 
 TabRestoreServiceFactory::~TabRestoreServiceFactory() = default;
 

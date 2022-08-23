@@ -7,12 +7,9 @@
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 ClosedTabCacheServiceFactory::ClosedTabCacheServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "ClosedTabCacheService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("ClosedTabCacheService") {
   DependsOn(HostContentSettingsMapFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
 }
@@ -30,8 +27,6 @@ ClosedTabCacheServiceFactory* ClosedTabCacheServiceFactory::GetInstance() {
 
 KeyedService* ClosedTabCacheServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  if (context->IsOffTheRecord())
-    return nullptr;
   return new ClosedTabCacheService(static_cast<Profile*>(context));
 }
 

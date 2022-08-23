@@ -5,11 +5,9 @@
 #include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
 
 #include "base/no_destructor.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/cros_speech_recognition_service.h"
 #include "chrome/browser/speech/speech_recognition_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 // static
 speech::SpeechRecognitionService*
@@ -32,9 +30,11 @@ CrosSpeechRecognitionServiceFactory::GetInstance() {
 }
 
 CrosSpeechRecognitionServiceFactory::CrosSpeechRecognitionServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "SpeechRecognitionService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          // Incognito profiles should use their own instance of the browser
+          // context.
+          ProfileSelections::BuildForRegularAndIncognito()) {}
 
 CrosSpeechRecognitionServiceFactory::~CrosSpeechRecognitionServiceFactory() =
     default;
@@ -42,11 +42,4 @@ CrosSpeechRecognitionServiceFactory::~CrosSpeechRecognitionServiceFactory() =
 KeyedService* CrosSpeechRecognitionServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new speech::CrosSpeechRecognitionService(context);
-}
-
-// Incognito profiles should use their own instance of the browser context.
-content::BrowserContext*
-CrosSpeechRecognitionServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }

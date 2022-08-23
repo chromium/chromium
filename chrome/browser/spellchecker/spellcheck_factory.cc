@@ -5,10 +5,8 @@
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
 
 #include "build/build_config.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
 #include "chrome/grit/locale_settings.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/spellcheck/browser/pref_names.h"
@@ -30,9 +28,9 @@ SpellcheckServiceFactory* SpellcheckServiceFactory::GetInstance() {
 }
 
 SpellcheckServiceFactory::SpellcheckServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-        "SpellcheckService",
-        BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory(
+          "SpellcheckService",
+          ProfileSelections::BuildRedirectedInIncognito()) {
   // TODO(erg): Uncomment these as they are initialized.
   // DependsOn(RequestContextFactory::GetInstance());
 }
@@ -68,11 +66,6 @@ void SpellcheckServiceFactory::RegisterProfilePrefs(
 #endif
   user_prefs->RegisterBooleanPref(spellcheck::prefs::kSpellCheckEnable, true,
                                   flags);
-}
-
-content::BrowserContext* SpellcheckServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }
 
 bool SpellcheckServiceFactory::ServiceIsNULLWhileTesting() const {

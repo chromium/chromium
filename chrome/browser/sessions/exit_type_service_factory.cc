@@ -10,7 +10,6 @@
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/pref_names.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_service.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -30,18 +29,15 @@ ExitTypeServiceFactory* ExitTypeServiceFactory::GetInstance() {
 }
 
 ExitTypeServiceFactory::ExitTypeServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "ExitTypeServiceFactory",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("ExitTypeServiceFactory",
+                                 ProfileSelections::BuildForRegularProfile()) {}
 
 ExitTypeServiceFactory::~ExitTypeServiceFactory() = default;
 
 KeyedService* ExitTypeServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  if (!profile->IsRegularProfile())
-    return nullptr;
-    // TODO(sky): is this necessary?
+  // TODO(sky): is this necessary?
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (ash::ProfileHelper::IsSigninProfile(profile))
     return nullptr;

@@ -8,14 +8,14 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/singleton.h"
 #include "build/build_config.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class SpellcheckService;
 
 // Entry into the SpellCheck system.
 //
 // Internally, this owns all SpellcheckService objects.
-class SpellcheckServiceFactory : public BrowserContextKeyedServiceFactory {
+class SpellcheckServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the spell check host. This will create the SpellcheckService
   // if it does not already exist. This can return NULL.
@@ -37,8 +37,6 @@ class SpellcheckServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
 
   FRIEND_TEST_ALL_PREFIXES(SpellcheckServiceBrowserTest, DeleteCorruptedBDICT);

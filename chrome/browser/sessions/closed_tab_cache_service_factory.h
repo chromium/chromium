@@ -7,10 +7,10 @@
 
 #include "base/memory/singleton.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/sessions/closed_tab_cache_service.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
-class ClosedTabCacheServiceFactory : public BrowserContextKeyedServiceFactory {
+class ClosedTabCacheServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the ClosedTabCacheService for |profile|.
   static ClosedTabCacheService* GetForProfile(Profile* profile);
