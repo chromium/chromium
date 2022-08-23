@@ -42,7 +42,7 @@ _EXCLUDED_PATHS = (
     r"^v8[\\/].*",
     r".*MakeFile$",
     r".+_autogen\.h$",
-    r".+_pb2\.py$",
+    r".+_pb2(_grpc)?\.py$",
     r".+[\\/]pnacl_shim\.c$",
     r"^gpu[\\/]config[\\/].*_list_json\.cc$",
     r"tools[\\/]md_browser[\\/].*\.css$",

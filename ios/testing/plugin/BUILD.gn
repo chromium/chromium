@@ -1,0 +1,6 @@
+import("//third_party/grpc/grpc_library.gni")
+
+grpc_library("test_plugin_service") {
+  testonly = true
+  sources = [ "test_plugin_service.proto" ]
+}
