@@ -53,6 +53,8 @@ extern const char kChromeAppsEnabled[] = "extensions.chrome_apps_enabled";
 #endif
 const char kU2fSecurityKeyApiEnabled[] =
     "extensions.u2f_security_key_api_enabled";
+const char kLoadCryptoTokenExtension[] =
+    "extensions.load_cryptotoken_extension";
 
 const char kPrefPreferences[] = "preferences";
 const char kPrefIncognitoPreferences[] = "incognito_preferences";

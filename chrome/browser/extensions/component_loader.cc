@@ -42,6 +42,7 @@
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/pref_names.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
@@ -436,7 +437,7 @@ void ComponentLoader::AddDefaultComponentExtensions(
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   AddKeyboardApp();
-#else  // BUILDFLAG(IS_CHROMEOS_ASH)
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK(!skip_session_components);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -551,7 +552,9 @@ void ComponentLoader::AddDefaultComponentExtensionsWithBackgroundPages(
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   if (base::FeatureList::IsEnabled(
-          extensions_features::kLoadCryptoTokenExtension)) {
+          extensions_features::kLoadCryptoTokenExtension) ||
+      ExtensionPrefs::Get(profile_)->pref_service()->GetBoolean(
+          pref_names::kLoadCryptoTokenExtension)) {
     Add(IDR_CRYPTOTOKEN_MANIFEST,
         base::FilePath(FILE_PATH_LITERAL("cryptotoken")));
   }
