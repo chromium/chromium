@@ -175,9 +175,11 @@ ci.builder(
         build_gs_bucket = "chromium-android-archive",
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "builder_tester|x86",
+        category = "reviver",
         short_name = "P",
     ),
+    # To avoid peak hours, we run it at 1 AM, 4 AM, 7 AM, 10AM, 1 PM UTC.
+    schedule = "0 1,4,7,10,13 * * *",
     # Set to an empty list to avoid chromium-gitiles-trigger triggering new
     # builds. Also we don't set any `schedule` since this builder is for
     # reference only and should not run any new builds.
