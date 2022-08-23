@@ -265,7 +265,10 @@ SerializedScriptValue::SerializedScriptValue(DataBufferPtr data,
                                              size_t data_size)
     : data_buffer_(std::move(data)),
       data_buffer_size_(data_size),
-      has_registered_external_allocation_(false) {}
+      has_registered_external_allocation_(false) {
+  // https://linear.app/replay/issue/RUN-490
+  recordreplay::Assert("SerializedScriptValue::SerializedScriptValue %zu", data_size);
+}
 
 void SerializedScriptValue::SetImageBitmapContentsArray(
     ImageBitmapContentsArray contents) {

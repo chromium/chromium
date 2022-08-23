@@ -353,6 +353,9 @@ class CORE_EXPORT SerializedScriptValue
   static DataBufferPtr AllocateBuffer(size_t);
 
   void SetData(DataBufferPtr data, size_t size) {
+    // https://linear.app/replay/issue/RUN-490
+    recordreplay::Assert("SerializedScriptValue::SetData %zu", size);
+
     data_buffer_ = std::move(data);
     data_buffer_size_ = size;
   }
