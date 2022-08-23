@@ -17,8 +17,10 @@
 #include "chrome/browser/ui/views/passwords/views_utils.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -238,6 +240,22 @@ void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
       provider->GetDistanceMetric(DISTANCE_TOAST_LABEL_VERTICAL);
   const int kHorizontalMargin =
       provider->GetDistanceMetric(DISTANCE_UNRELATED_CONTROL_HORIZONTAL);
+
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordStrengthIndicator)) {
+    // TODO(crbug.com/1345766): Adjust according to the calculated password
+    // strength.
+    std::u16string password_strength_text =
+        l10n_util::GetStringUTF16(IDS_PASSWORD_WEAKNESS_INDICATOR);
+    auto* password_strength_label = AddChildView(std::make_unique<views::Label>(
+        password_strength_text, views::style::CONTEXT_DIALOG_BODY_TEXT,
+        views::style::STYLE_HIGHLIGHTED));
+    password_strength_label->SetMultiLine(true);
+    password_strength_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    password_strength_label->SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::TLBR(kVerticalPadding, kHorizontalMargin, kVerticalPadding,
+                          kHorizontalMargin)));
+  }
 
   password_view_ = new GeneratedPasswordBox();
   password_view_->SetBorder(views::CreateEmptyBorder(
