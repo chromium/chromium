@@ -17,9 +17,14 @@
 namespace {
 
 bool CanSendHistoryData(syncer::SyncService* sync_service) {
+  // SESSIONS and HISTORY both contain history-like data, so it's sufficient if
+  // either of them is being uploaded.
   return syncer::GetUploadToGoogleState(sync_service,
                                         syncer::ModelType::SESSIONS) ==
-         syncer::UploadState::ACTIVE;
+             syncer::UploadState::ACTIVE ||
+         syncer::GetUploadToGoogleState(sync_service,
+                                        syncer::ModelType::HISTORY) ==
+             syncer::UploadState::ACTIVE;
 }
 
 }  // namespace
