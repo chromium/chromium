@@ -69,7 +69,7 @@ public class SearchResumptionModuleView extends LinearLayout {
                             : R.string.accessibility_collapsed);
             String description = getContext().getResources().getString(
                     R.string.search_resumption_module_subtitle);
-            mHeaderView.setContentDescription(description + collapseOrExpandedText);
+            mHeaderView.setContentDescription(description + " " + collapseOrExpandedText);
         }
 
         if (mTileContainerView.isExpanded() == shouldExpand) return;
