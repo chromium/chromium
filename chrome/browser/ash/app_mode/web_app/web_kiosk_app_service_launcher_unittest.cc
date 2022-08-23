@@ -283,6 +283,9 @@ TEST_F(WebKioskAppServiceLauncherTest, NormalFlowNotInstalled) {
     launcher()->LaunchApp();
     loop.Run();
   }
+
+  EXPECT_EQ(app_data()->status(), WebKioskAppData::Status::kInstalled);
+  EXPECT_EQ(app_data()->launch_url(), kAppLaunchUrl);
 }
 
 TEST_F(WebKioskAppServiceLauncherTest, NormalFlowAlreadyInstalled) {

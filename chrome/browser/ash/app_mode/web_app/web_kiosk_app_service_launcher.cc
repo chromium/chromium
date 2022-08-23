@@ -35,6 +35,10 @@ const WebKioskAppData* WebKioskAppServiceLauncher::GetCurrentApp() const {
 void WebKioskAppServiceLauncher::Initialize() {
   DCHECK(!app_service_launcher_);
 
+  // Start observing app update from App Service early so that app updates being
+  // applied while launching can be handled.
+  WebKioskAppManager::Get()->StartObservingAppUpdate(profile_, account_id_);
+
   app_service_launcher_ = std::make_unique<KioskAppServiceLauncher>(profile_);
   app_service_launcher_->EnsureAppTypeInitialized(
       apps::AppType::kWeb,

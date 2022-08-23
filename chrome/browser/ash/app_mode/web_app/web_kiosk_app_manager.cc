@@ -5,17 +5,17 @@
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 
 #include <map>
+#include <memory>
 
 #include "ash/components/settings/cros_settings_names.h"
-#include "base/bind.h"
 #include "chrome/browser/ash/app_mode/app_session_ash.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -103,6 +103,19 @@ void WebKioskAppManager::UpdateAppByAccountId(
   NOTREACHED();
 }
 
+void WebKioskAppManager::UpdateAppByAccountId(const AccountId& account_id,
+                                              const std::string& title,
+                                              const GURL& start_url,
+                                              const IconBitmaps& icon_bitmaps) {
+  for (auto& web_app : apps_) {
+    if (web_app->account_id() == account_id) {
+      web_app->UpdateAppInfo(title, start_url, icon_bitmaps);
+      return;
+    }
+  }
+  NOTREACHED();
+}
+
 void WebKioskAppManager::AddAppForTesting(const AccountId& account_id,
                                           const GURL& install_url) {
   const std::string app_id =
@@ -180,6 +193,12 @@ void WebKioskAppManager::UpdateAppsFromPolicy() {
     old_apps_to_remove.emplace_back(entry.second.get());
   ClearRemovedApps(old_apps_to_remove);
   NotifyKioskAppsChanged();
+}
+
+void WebKioskAppManager::StartObservingAppUpdate(Profile* profile,
+                                                 const AccountId& account_id) {
+  app_update_observer_ =
+      std::make_unique<WebKioskAppUpdateObserver>(profile, account_id);
 }
 
 }  // namespace ash
