@@ -77,6 +77,39 @@ namespace media {
 
 namespace {
 
+// Return the full-range RGB component of the color space of this frame's
+// content. This will replace several color spaces (Rec601, Rec709, and
+// Apple's Rec709) with sRGB, for compatibility with existing behavior.
+gfx::ColorSpace GetVideoFrameRGBColorSpacePreferringSRGB(
+    const VideoFrame* frame) {
+  const auto rgb_color_space = frame->ColorSpace().GetAsFullRangeRGB();
+  auto primary_id = rgb_color_space.GetPrimaryID();
+  switch (primary_id) {
+    case gfx::ColorSpace::PrimaryID::CUSTOM:
+      return rgb_color_space;
+    case gfx::ColorSpace::PrimaryID::SMPTE170M:
+    case gfx::ColorSpace::PrimaryID::SMPTE240M:
+      primary_id = gfx::ColorSpace::PrimaryID::BT709;
+      break;
+    default:
+      break;
+  }
+  auto transfer_id = rgb_color_space.GetTransferID();
+  switch (transfer_id) {
+    case gfx::ColorSpace::TransferID::CUSTOM:
+    case gfx::ColorSpace::TransferID::CUSTOM_HDR:
+      return rgb_color_space;
+    case gfx::ColorSpace::TransferID::BT709_APPLE:
+    case gfx::ColorSpace::TransferID::SMPTE170M:
+    case gfx::ColorSpace::TransferID::SMPTE240M:
+      transfer_id = gfx::ColorSpace::TransferID::SRGB;
+      break;
+    default:
+      break;
+  }
+  return gfx::ColorSpace(primary_id, transfer_id);
+}
+
 // This class keeps the last image drawn.
 // We delete the temporary resource if it is not used for 3 seconds.
 const int kTemporaryResourceDeletionDelay = 3;  // Seconds;
@@ -1681,7 +1714,8 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
     }
 
     yuv_cache_.mailbox = sii->CreateSharedImage(
-        RESOURCE_FORMAT, video_frame->coded_size(), gfx::ColorSpace(),
+        RESOURCE_FORMAT, video_frame->coded_size(),
+        GetVideoFrameRGBColorSpacePreferringSRGB(video_frame.get()),
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
         gpu::kNullSurfaceHandle);
     token = sii->GenUnverifiedSyncToken();
@@ -1885,7 +1919,8 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
           flags |= gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
         }
         mailbox = sii->CreateSharedImage(
-            RESOURCE_FORMAT, video_frame->coded_size(), gfx::ColorSpace(),
+            RESOURCE_FORMAT, video_frame->coded_size(),
+            GetVideoFrameRGBColorSpacePreferringSRGB(video_frame.get()),
             kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, flags,
             gpu::kNullSurfaceHandle);
         ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
