@@ -9,6 +9,8 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/color/chrome_color_provider_utils.h"
+#include "chrome/browser/ui/color/new_tab_page_color_mixer.h"
+#include "components/search/ntp_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
@@ -164,4 +166,10 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
       GetGtkToolbarTopSeparatorColorTransform(true);
   mixer[kColorToolbarTopSeparatorFrameInactive] =
       GetGtkToolbarTopSeparatorColorTransform(false);
+
+  // Explicitly override certain colors for the NTP to those corresponding to
+  // the light theme. See crbug.com/998903. This logic will be removed once the
+  // NewTabPage comprehensive theming experiment has completed.
+  if (!base::FeatureList::IsEnabled(ntp_features::kNtpComprehensiveTheming))
+    AddWebThemeNewTabPageColors(mixer, false);
 }

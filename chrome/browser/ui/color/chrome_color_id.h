@@ -132,17 +132,38 @@
   E_CPONLY(kColorNewTabButtonInkDropFrameActive) \
   E_CPONLY(kColorNewTabButtonInkDropFrameInactive) \
   /* New Tab Page colors. */ \
+  E_CPONLY(kColorNewTabPageActionButtonBorder) \
+  E_CPONLY(kColorNewTabPageActionButtonBorderHovered) \
+  E_CPONLY(kColorNewTabPageActiveBackground) \
   E_CPONLY(kColorNewTabPageBackground) \
+  E_CPONLY(kColorNewTabPageBackgroundOverride) \
+  E_CPONLY(kColorNewTabPageBorder) \
+  E_CPONLY(kColorNewTabPageChipBackground) \
+  E_CPONLY(kColorNewTabPageChipForeground) \
+  E_CPONLY(kColorNewTabPageControlBackgroundHovered) \
+  E_CPONLY(kColorNewTabPageControlBackgroundSelected) \
+  E_CPONLY(kColorNewTabPageFocusShadow) \
   E_CPONLY(kColorNewTabPageHeader) \
+  E_CPONLY(kColorNewTabPageIconButtonBackground) \
+  E_CPONLY(kColorNewTabPageIconButtonBackgroundActive) \
   E_CPONLY(kColorNewTabPageLink) \
   E_CPONLY(kColorNewTabPageLogo) \
   E_CPONLY(kColorNewTabPageLogoUnthemedDark) \
   E_CPONLY(kColorNewTabPageLogoUnthemedLight) \
   E_CPONLY(kColorNewTabPageMostVisitedTileBackground) \
   E_CPONLY(kColorNewTabPageMostVisitedTileBackgroundUnthemed) \
+  E_CPONLY(kColorNewTabPageModuleIconContainerBackground) \
+  E_CPONLY(kColorNewTabPageModuleScrollButtonBackground) \
+  E_CPONLY(kColorNewTabPageModuleScrollButtonBackgroundHovered) \
+  E_CPONLY(kColorNewTabPagePrimaryForeground) \
+  E_CPONLY(kColorNewTabPageSecondaryForeground) \
   E_CPONLY(kColorNewTabPageSectionBorder) \
   E_CPONLY(kColorNewTabPageSearchBoxBackground) \
   E_CPONLY(kColorNewTabPageSearchBoxBackgroundHovered) \
+  E_CPONLY(kColorNewTabPageSelectedBackground) \
+  E_CPONLY(kColorNewTabPageSelectedBorder) \
+  E_CPONLY(kColorNewTabPageSelectedForeground) \
+  E_CPONLY(kColorNewTabPageTagBackground) \
   E_CPONLY(kColorNewTabPageText) \
   E_CPONLY(kColorNewTabPageTextUnthemed) \
   E_CPONLY(kColorNewTabPageTextLight) \

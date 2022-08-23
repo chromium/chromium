@@ -871,6 +871,13 @@ void PopulateChromeWebUIFrameBinders(
       NewTabPageThirdPartyUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
+      color_change_listener::mojom::PageHandler,
+#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
+      TabStripUI,
+#endif
+      NewTabPageUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<
       new_tab_page::mojom::PageHandlerFactory, NewTabPageUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
@@ -994,9 +1001,6 @@ void PopulateChromeWebUIFrameBinders(
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-  RegisterWebUIControllerInterfaceBinder<
-      color_change_listener::mojom::PageHandler, TabStripUI>(map);
-
   RegisterWebUIControllerInterfaceBinder<tab_strip::mojom::PageHandlerFactory,
                                          TabStripUI>(map);
 #endif

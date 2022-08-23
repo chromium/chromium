@@ -57,7 +57,7 @@
 
   #consentCard,
   .cart-container {
-    border: 1px solid var(--ntp-border-color);
+    border: 1px solid var(--color-new-tab-page-border);
     border-radius: 4px;
     display: inline-flex;
     flex-direction: column;
@@ -119,7 +119,7 @@
   }
 
   #consentContent {
-    color: var(--cr-primary-text-color);
+    color: var(--color-new-tab-page-primary-foreground);
     font-size: 13px;
     font-weight: 400;
     height: 40px;
@@ -159,7 +159,7 @@
   }
 
   .cart-title {
-    color: var(--cr-primary-text-color);
+    color: var(--color-new-tab-page-primary-foreground);
     display: flex;
     flex-direction: row;
     font-size: 13px;
@@ -178,7 +178,7 @@
   }
 
   .cart-title .item-count {
-    color: var(--cr-secondary-text-color);
+    color: var(--color-new-tab-page-secondary-foreground);
   }
 
   .favicon-image {
@@ -209,7 +209,7 @@
   }
 
   .thumbnail-img {
-    border: 2px solid var(--ntp-background-override-color);
+    border: 2px solid var(--color-new-tab-page-background-override);
     border-radius: 50%;
     height: 44px;
     object-fit: cover;
@@ -252,7 +252,7 @@
   }
 
   .side-scroll-shadow {
-    background-color: var(--ntp-background-override-color);
+    background-color: var(--color-new-tab-page-background-override);
     display: flex;
     height: 160px;
     opacity: 0.38;
@@ -263,12 +263,13 @@
   }
 
   .side-scroll-button {
-    --cr-icon-button-fill-color: var(--ntp-icon-button-color);
+    --cr-icon-button-fill-color:
+        var(--color-new-tab-page-icon-button-background);
     --cr-icon-button-icon-size: 16px;
     --cr-icon-button-margin-start: 0;
     --cr-icon-button-margin-end: 0;
     --cr-icon-image: url(icons/chevron.svg);
-    background-color: var(--ntp-module-scroll-button-color);
+    background-color: var(--color-new-tab-page-module-scroll-button-background);
     border-radius: 50%;
     top: 50%;
     visibility: hidden;
@@ -276,8 +277,10 @@
   }
 
   .side-scroll-button:hover {
-    --cr-icon-button-fill-color: var(--ntp-icon-button-color-active);
-    background-color: var(--ntp-module-scroll-button-hover-color);
+    --cr-icon-button-fill-color:
+        var(--color-new-tab-page-icon-button-background-active);
+    background-color:
+        var(--color-new-tab-page-module-scroll-button-background-hovered);
   }
 
   #leftScrollButton {

@@ -15,7 +15,7 @@
 
   #dialog {
     align-items: center;
-    background-color: var(--ntp-background-override-color);
+    background-color: var(--color-new-tab-page-background-override);
     border: none;
     display: flex;
     height: 100%;
@@ -30,7 +30,7 @@
   }
 
   #closeButton {
-    --cr-icon-button-fill-color: var(--cr-secondary-text-color);
+    --cr-icon-button-fill-color: var(--color-new-tab-page-secondary-foreground);
     margin: 0;
     position: absolute;
     top: 16px;
@@ -52,7 +52,7 @@
   }
 
   #texts {
-    color: var(--cr-secondary-text-color);
+    color: var(--color-new-tab-page-secondary-foreground);
     flex-grow: 1;
     font-size: 32px;
     text-align: start;
@@ -96,7 +96,7 @@
   }
 
   #finalResult {
-    color: var(--cr-primary-text-color);
+    color: var(--color-new-tab-page-primary-foreground);
   }
 
   #errors,
@@ -127,7 +127,7 @@
         var(--mic-volume-level) * (var(--mic-container-size) -
             var(--mic-button-size)));
     align-items: center;
-    background-color: var(--ntp-border-color);
+    background-color: var(--color-new-tab-page-border);
     border-radius: 50%;
     display: flex;
     height: var(--mic-volume-size);
@@ -139,7 +139,7 @@
   }
 
   #micVolumeCutout {
-    background-color: var(--ntp-background-override-color);
+    background-color: var(--color-new-tab-page-background-override);
     border-radius: 50%;
     height: var(--mic-button-size);
     width: var(--mic-button-size);
@@ -161,7 +161,7 @@
     -webkit-mask-image: url(icons/mic.svg);
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-size: 100%;
-    background-color: var(--ntp-border-color);
+    background-color: var(--color-new-tab-page-border);
     height: 80px;
     transition: background-color 200ms ease-in-out;
     width: 80px;

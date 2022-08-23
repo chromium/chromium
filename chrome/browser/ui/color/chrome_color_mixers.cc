@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/color/chrome_color_mixer.h"
 #include "chrome/browser/ui/color/native_chrome_color_mixer.h"
+#include "chrome/browser/ui/color/new_tab_page_color_mixer.h"
 #include "chrome/browser/ui/color/omnibox_color_mixer.h"
 #include "chrome/browser/ui/color/tab_strip_color_mixer.h"
 #include "ui/color/color_provider_utils.h"
@@ -56,6 +57,9 @@ void AddChromeColorMixers(ui::ColorProvider* provider,
   AddChromeColorMixer(provider, key);
   AddOmniboxColorMixer(provider, key);
   AddTabStripColorMixer(provider, key);
+  AddNewTabPageColorMixer(provider, key);
+
+  // Must be the last one in order to override other mixer colors.
   AddNativeChromeColorMixer(provider, key);
 
   if (key.custom_theme) {

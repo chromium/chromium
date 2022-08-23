@@ -70,10 +70,10 @@
   }
 
   .tag {
-    background: rgba(var(--ntp-background-override-color-rgb), .9);
+    background: var(--color-new-tab-page-tag-background);
     border-radius: 4px;
     box-sizing: border-box;
-    color: var(--cr-primary-text-color);
+    color: var(--color-new-tab-page-primary-foreground);
     font-size: 11px;
     margin: 8px;
     max-width: 149px;
@@ -89,7 +89,7 @@
   }
 
   .price {
-    color: var(--cr-primary-text-color);
+    color: var(--color-new-tab-page-primary-foreground);
     font-size: 13px;
     font-weight: bold;
     height: 14px;
@@ -98,7 +98,7 @@
   }
 
   .name {
-    color: var(--cr-primary-text-color);
+    color: var(--color-new-tab-page-primary-foreground);
     font-size: 12px;
     line-height: 20px;
     margin-bottom: 4px;
@@ -108,7 +108,7 @@
   }
 
   .secondary {
-    color: var(--cr-secondary-text-color);
+    color: var(--color-new-tab-page-secondary-foreground);
     font-size: 11px;
     height: 13px;
     text-overflow: ellipsis;
@@ -122,7 +122,7 @@
 
   .pill {
     align-items: center;
-    border: solid var(--ntp-border-color) 1px;
+    border: solid var(--color-new-tab-page-border) 1px;
     border-radius: 16px;
     box-sizing: border-box;
     display: flex;
@@ -134,11 +134,11 @@
   }
 
   .pill:hover {
-    background-color: var(--ntp-hover-background-color);
+    background-color: var(--color-new-tab-page-control-background-hovered);
   }
 
   .pill:active {
-    background-color: var(--ntp-active-background-color);
+    background-color: var(--color-new-tab-page-active-background);
   }
 
   :host-context(.focus-outline-visible) .pill:focus {
@@ -153,14 +153,14 @@
     -webkit-mask-image: url(chrome://resources/images/icon_clock.svg);
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-size: 100%;
-    background-color: var(--cr-secondary-text-color);
+    background-color: var(--color-new-tab-page-secondary-foreground);
     height: 16px;
     margin-inline-start: 12px;
     width: 16px;
   }
 
   .search-text {
-    color: var(--cr-primary-text-color);
+    color: var(--color-new-tab-page-primary-foreground);
     font-size: 13px;
     margin-inline-end: 12px;
     margin-inline-start: 8px;

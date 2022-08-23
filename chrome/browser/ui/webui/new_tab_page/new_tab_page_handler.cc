@@ -258,6 +258,8 @@ new_tab_page::mojom::ThemePtr MakeTheme(
 
   theme->most_visited = std::move(most_visited);
 
+  // TODO(crbug.com/1346392): Move search box colors logic to the chrome color
+  // mixer.
   auto search_box = realbox::mojom::SearchBoxTheme::New();
   search_box->bg = color_provider.GetColor(kColorNewTabPageSearchBoxBackground);
   search_box->bg_hovered =

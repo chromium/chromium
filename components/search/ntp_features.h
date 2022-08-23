@@ -35,6 +35,7 @@ extern const base::Feature kNtpDriveModule;
 #if !defined(OFFICIAL_BUILD)
 extern const base::Feature kNtpDummyModules;
 #endif
+extern const base::Feature kNtpComprehensiveTheming;
 extern const base::Feature kNtpLogo;
 extern const base::Feature kNtpMiddleSlotPromo;
 extern const base::Feature kNtpMiddleSlotPromoDismissal;

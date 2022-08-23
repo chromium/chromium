@@ -33,6 +33,7 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_observer.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 #include "ui/webui/resources/cr_components/customize_themes/customize_themes.mojom.h"
 #include "ui/webui/resources/cr_components/most_visited/most_visited.mojom.h"
 
@@ -47,6 +48,7 @@ class WebUI;
 }  // namespace content
 
 class ChromeCustomizeThemesHandler;
+class ColorChangeHandler;
 #if !defined(OFFICIAL_BUILD)
 class FooHandler;
 #endif
@@ -92,6 +94,12 @@ class NewTabPageUI
   // interface passing the pending receiver that will be internally bound.
   void BindInterface(
       mojo::PendingReceiver<new_tab_page::mojom::PageHandlerFactory>
+          pending_receiver);
+
+  // Instantiates the implementor of the mojom::PageHandler mojo interface
+  // passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
           pending_receiver);
 
   // Instantiates the implementor of the realbox::mojom::PageHandler mojo
@@ -210,6 +218,7 @@ class NewTabPageUI
   mojo::Receiver<new_tab_page::mojom::PageHandlerFactory>
       page_factory_receiver_;
   std::unique_ptr<ChromeCustomizeThemesHandler> customize_themes_handler_;
+  std::unique_ptr<ColorChangeHandler> color_provider_handler_;
   mojo::Receiver<customize_themes::mojom::CustomizeThemesHandlerFactory>
       customize_themes_factory_receiver_;
   std::unique_ptr<MostVisitedHandler> most_visited_page_handler_;

@@ -1,1 +1,3 @@
 file://ui/color/OWNERS
+
+per-file new_tab_page_color_mixer*=file://chrome/browser/ui/webui/new_tab_page/OWNERS

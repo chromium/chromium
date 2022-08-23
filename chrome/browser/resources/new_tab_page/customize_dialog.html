@@ -1,4 +1,15 @@
 <style include="cr-hidden-style cr-icons">
+  cr-button {
+    --border-color: var(--color-new-tab-page-action-button-border);
+    --hover-border-color:
+        var(--color-new-tab-page-action-button-border-hovered);
+    --text-color-action: var(--color-new-tab-page-background-override);
+  }
+
+  cr-dialog {
+    --cr-dialog-background-color: var(--color-new-tab-page-background-override);
+  }
+
   cr-dialog::part(dialog) {
     height: 100%;
     max-height: 520px;
@@ -15,7 +26,7 @@
 
   div[slot=title] {
     align-items: center;
-    color: var(--cr-primary-text-color);
+    color: var(--color-new-tab-page-primary-foreground);
     display: flex;
     flex-direction: row;
     height: 64px;
@@ -24,7 +35,7 @@
   }
 
   div[slot=body] {
-    color: var(--cr-primary-text-color);
+    color: var(--color-new-tab-page-primary-foreground);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -78,7 +89,7 @@
 
   div[scroll-border][show-1],
   div[scroll-border][show-2] {
-    border-bottom-color: var(--ntp-border-color);
+    border-bottom-color: var(--color-new-tab-page-border);
   }
 
   #menu {
@@ -94,7 +105,7 @@
   .menu-item {
     align-items: center;
     border-radius: 0 16px 16px 0;
-    color: var(--cr-primary-text-color);
+    color: var(--color-new-tab-page-primary-foreground);
     cursor: pointer;
     display: flex;
     flex-direction: row;
@@ -114,7 +125,7 @@
   }
 
   .menu-item:hover {
-    background-color: var(--ntp-hover-background-color);
+    background-color: var(--color-new-tab-page-control-background-hovered);
   }
 
   :host-context(.focus-outline-visible) .menu-item:focus {
@@ -122,18 +133,18 @@
   }
 
   .menu-item:active {
-    background-color: var(--ntp-active-background-color);
+    background-color: var(--color-new-tab-page-active-background);
   }
 
   .menu-item[selected] {
-    background-color: var(--ntp-selected-background-color);
-    color: var(--ntp-selected-primary-text-color);
+    background-color: var(--color-new-tab-page-selected-background);
+    color: var(--color-new-tab-page-selected-foreground);
   }
 
   .menu-item-icon {
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-size: 100%;
-    background-color: var(--cr-primary-text-color);
+    background-color: var(--color-new-tab-page-primary-foreground);
     height: 20px;
     margin-inline-end: 16px;
     margin-inline-start: 24px;
@@ -141,7 +152,7 @@
   }
 
   .menu-item[selected] .menu-item-icon {
-    background-color: var(--ntp-selected-primary-text-color);
+    background-color: var(--color-new-tab-page-selected-primary-text);
   }
 
   @media (forced-colors: active) {
@@ -178,7 +189,7 @@
   }
 
   #backButton {
-    --cr-icon-button-fill-color: var(--cr-primary-text-color);
+    --cr-icon-button-fill-color: var(--color-new-tab-page-primary-foreground);
     margin-inline-end: 4px;
     /* So that the arrow aligns with the grid. */
     margin-inline-start: -12px;
