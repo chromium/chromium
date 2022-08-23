@@ -415,7 +415,7 @@ class PrerenderBrowserTest : public ContentBrowserTest {
 
   void ExpectFinalStatusForSpeculationRule(PrerenderHost::FinalStatus status) {
     // Check FinalStatus in UMA.
-    histogram_tester_.ExpectUniqueSample(
+    histogram_tester().ExpectUniqueSample(
         "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
         status, 1);
 
@@ -436,6 +436,8 @@ class PrerenderBrowserTest : public ContentBrowserTest {
 
     EXPECT_TRUE(final_status_entry_found);
   }
+
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  protected:
   net::test_server::EmbeddedTestServer& ssl_server() { return ssl_server_; }
@@ -2494,7 +2496,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        MojoCapabilityControl_CancelMainFrame) {
   MojoCapabilityControlTestContentBrowserClient test_browser_client;
   auto* old_browser_client = SetBrowserClientForTesting(&test_browser_client);
-  base::HistogramTester histogram_tester;
 
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/page_with_iframe.html");
@@ -2520,12 +2521,12 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   ExpectFinalStatusForSpeculationRule(
       PrerenderHost::FinalStatus::kMojoBinderPolicy);
   // `TestInterfaceForCancel` doesn't have a enum value because it is not used
-  // in production, so histogram_tester should log
+  // in production, so histogram_tester_ should log
   // PrerenderCancelledInterface::kUnkown here.
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderCancelledInterface.SpeculationRule",
       PrerenderCancelledInterface::kUnknown, 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderCancelledUnknownInterface."
       "SpeculationRule",
       InterfaceNameHasher(mojom::TestInterfaceForCancel::Name_), 1);
@@ -2538,7 +2539,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        MojoCapabilityControl_CancelIframe) {
   MojoCapabilityControlTestContentBrowserClient test_browser_client;
   auto* old_browser_client = SetBrowserClientForTesting(&test_browser_client);
-  base::HistogramTester histogram_tester;
 
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/page_with_iframe.html");
@@ -2571,12 +2571,12 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   ExpectFinalStatusForSpeculationRule(
       PrerenderHost::FinalStatus::kMojoBinderPolicy);
   // `TestInterfaceForCancel` doesn't have a enum value because it is not used
-  // in production, so histogram_tester should log
+  // in production, so histogram_tester_ should log
   // PrerenderCancelledInterface::kUnkown here.
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderCancelledInterface.SpeculationRule",
       PrerenderCancelledInterface::kUnknown, 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderCancelledUnknownInterface."
       "SpeculationRule",
       InterfaceNameHasher(mojom::TestInterfaceForCancel::Name_), 1);
@@ -2919,7 +2919,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, FeatureRestriction_WindowOpen) {
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, RenderFrameHostLifecycleState) {
-  base::HistogramTester histogram_tester;
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html");
 
@@ -2956,7 +2955,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, RenderFrameHostLifecycleState) {
 
   // "Navigation.TimeToActivatePrerender.SpeculationRule" histogram should be
   // recorded on every prerender activation.
-  histogram_tester.ExpectTotalCount(
+  histogram_tester().ExpectTotalCount(
       "Navigation.TimeToActivatePrerender.SpeculationRule", 1u);
 }
 
@@ -2964,7 +2963,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, RenderFrameHostLifecycleState) {
 // (in-flight) main-frame navigation in the prerendering frame tree commits.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        SupportActivationWithOngoingMainFrameNavigation) {
-  base::HistogramTester histogram_tester;
 
   // Create a HTTP response to control prerendering main-frame navigation.
   net::test_server::ControllableHttpResponse main_document_response(
@@ -3041,7 +3039,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
   // "Navigation.Prerender.ActivationCommitDeferTime" histogram should be
   // recorded as PrerenderCommitDeferringCondition defers the navigation.
-  histogram_tester.ExpectTotalCount(
+  histogram_tester().ExpectTotalCount(
       "Navigation.Prerender.ActivationCommitDeferTime", 1u);
 }
 
@@ -3253,7 +3251,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DocumentUserData) {
 // This test cannot be a web test because web tests handles the GamepadMonitor
 // interface on the renderer side. See GamepadController::Install().
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, GamepadMonitorCancelPrerendering) {
-  base::HistogramTester histogram_tester;
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
 
@@ -3272,7 +3269,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, GamepadMonitorCancelPrerendering) {
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
   ExpectFinalStatusForSpeculationRule(
       PrerenderHost::FinalStatus::kMojoBinderPolicy);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderCancelledInterface.SpeculationRule",
       PrerenderCancelledInterface::kGamepadMonitor, 1);
 }
@@ -3351,7 +3348,6 @@ void LoadAndWaitForPrerenderDestroyed(WebContents* const web_contents,
 // viewer), as cancellation depends on the renderer attempting to bind
 // `content::mojom::PepperHost`.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PluginsCancelPrerendering) {
-  base::HistogramTester histogram_tester;
   const GURL kInitialUrl = GetUrl("/empty.html");
 
   // Navigate to an initial page.
@@ -3362,10 +3358,10 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PluginsCancelPrerendering) {
       prerender_helper());
   ExpectFinalStatusForSpeculationRule(
       PrerenderHost::FinalStatus::kMojoBinderPolicy);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderCancelledInterface.SpeculationRule",
       PrerenderCancelledInterface::kUnknown, 1);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderCancelledUnknownInterface."
       "SpeculationRule",
       InterfaceNameHasher(mojom::PepperHost::Name_), 1);
@@ -3378,13 +3374,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PluginsCancelPrerendering) {
   LoadAndWaitForPrerenderDestroyed(
       web_contents(), GetUrl("/prerender/page-with-object-plugin.html"),
       prerender_helper());
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kMojoBinderPolicy, 2);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderCancelledInterface.SpeculationRule",
       PrerenderCancelledInterface::kUnknown, 2);
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderCancelledUnknownInterface."
       "SpeculationRule",
       InterfaceNameHasher(mojom::PepperHost::Name_), 2);
@@ -5178,7 +5174,6 @@ IN_PROC_BROWSER_TEST_P(PrerenderWithBackForwardCacheBrowserTest,
 // Tests that PrerenderHostRegistry only starts prerendering for the first
 // prerender speculation rule it receives.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, AddSpeculationRulesMultipleTimes) {
-  base::HistogramTester histogram_tester;
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kFirstPrerenderingUrl = GetUrl("/empty.html?prerender1");
   const GURL kSecondPrerenderingUrl = GetUrl("/empty.html?prerender2");
@@ -5187,7 +5182,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, AddSpeculationRulesMultipleTimes) {
   // successfully.
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
   AddPrerender(kFirstPrerenderingUrl);
-  histogram_tester.ExpectBucketCount(
+  histogram_tester().ExpectBucketCount(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded, 0);
 
@@ -5242,7 +5237,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, AddSpeculationRulesMultipleTimes) {
 // Tests that PrerenderHostRegistry can hold up to two prerendering for the
 // prerender embedders it receives.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, StartByEmbeddersMultipleTimes) {
-  base::HistogramTester histogram_tester;
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kFirstPrerenderingUrl = GetUrl("/empty.html?prerender1");
   const GURL kSecondPrerenderingUrl = GetUrl("/empty.html?prerender2");
@@ -5260,7 +5254,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, StartByEmbeddersMultipleTimes) {
           nullptr);
   EXPECT_TRUE(prerender_handle1);
 
-  histogram_tester.ExpectBucketCount(
+  histogram_tester().ExpectBucketCount(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
       "EmbedderSuffixForTest",
       PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded, 0);
@@ -5276,7 +5270,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, StartByEmbeddersMultipleTimes) {
           nullptr);
   EXPECT_TRUE(prerender_handle2);
 
-  histogram_tester.ExpectBucketCount(
+  histogram_tester().ExpectBucketCount(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
       "EmbedderSuffixForTest",
       PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded, 0);
@@ -5292,7 +5286,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, StartByEmbeddersMultipleTimes) {
           nullptr);
   EXPECT_FALSE(prerender_handle3);
 
-  histogram_tester.ExpectBucketCount(
+  histogram_tester().ExpectBucketCount(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
       "EmbedderSuffixForTest",
       PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded, 1);
@@ -5302,7 +5296,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, StartByEmbeddersMultipleTimes) {
 // prerender speculation rule and prerender embedders in total.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        StartByEmbeddersAndSpeculationRulesMultipleTimes) {
-  base::HistogramTester histogram_tester;
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kSpeculationRulesPrerenderingUrl =
       GetUrl("/empty.html?prerender1");
@@ -5316,11 +5309,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
 
   // Add the first prerender speculation rule; it should trigger prerendering
   // successfully.
-  histogram_tester.ExpectBucketCount(
+  histogram_tester().ExpectBucketCount(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded, 0);
 
-  histogram_tester.ExpectBucketCount(
+  histogram_tester().ExpectBucketCount(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
       "EmbedderSuffixForTest",
       PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded, 0);
@@ -5347,7 +5340,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
           nullptr);
   EXPECT_TRUE(prerender_handle2);
 
-  histogram_tester.ExpectBucketCount(
+  histogram_tester().ExpectBucketCount(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
       "EmbedderSuffixForTest",
       PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded, 0);
@@ -5362,7 +5355,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
           nullptr);
   EXPECT_FALSE(prerender_handle3);
 
-  histogram_tester.ExpectBucketCount(
+  histogram_tester().ExpectBucketCount(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
       "EmbedderSuffixForTest",
       PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded, 1);
@@ -5471,7 +5464,6 @@ IN_PROC_BROWSER_TEST_F(MultiplePrerendersBrowserTest,
 // acceptable percent of the system memory is set to 0.
 IN_PROC_BROWSER_TEST_F(MultiplePrerendersWithLimitedMemoryBrowserTest,
                        AddSpeculationRulesMultipleTimes) {
-  base::HistogramTester histogram_tester;
   const GURL kInitialUrl = GetUrl("/empty.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
@@ -5487,12 +5479,12 @@ IN_PROC_BROWSER_TEST_F(MultiplePrerendersWithLimitedMemoryBrowserTest,
     host_observer.WaitForDestroyed();
   }
 
-  int count_of_memory_limit_exceeded = histogram_tester.GetBucketCount(
+  int count_of_memory_limit_exceeded = histogram_tester().GetBucketCount(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kMemoryLimitExceeded);
   // For an unknown reason, requesting the private memory footprint can fail.
   // This test allows the failure of getting the memory dump.
-  int count_of_no_memory_dump = histogram_tester.GetBucketCount(
+  int count_of_no_memory_dump = histogram_tester().GetBucketCount(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kFailToGetMemoryUsage);
   EXPECT_EQ(MaxNumOfRunningPrerenders(),
@@ -5572,7 +5564,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SkipCrossOriginPrerender) {
 
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        EmbedderTrigger_SameOriginRedirection) {
-  base::HistogramTester histogram_tester;
   const GURL kInitialUrl = GetUrl("/empty.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
   const GURL kRedirectedUrl = GetUrl("/empty.html?prerender");
@@ -5595,7 +5586,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
       *shell()->web_contents(), kPrerenderingUrl);
   ASSERT_EQ(2u, redirect_chain_observer.redirect_chain().size());
 
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
       "EmbedderSuffixForTest",
       PrerenderHost::FinalStatus::kEmbedderTriggeredAndSameOriginRedirected, 1);
