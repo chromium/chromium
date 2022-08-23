@@ -1449,9 +1449,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.FormEvents.CreditCard.WithOffer"
-    enum="AutofillFormEvent" expires_after="2022-10-01">
+    enum="AutofillFormEvent" expires_after="2023-09-01">
   <owner>siyua@chromium.org</owner>
-  <owner>payments-autofill-team@google.com</owner>
+  <owner>jsaul@google.com</owner>
   <summary>
     Autofill form events for credit card forms. These are recorded when the user
     interacts with a form requesting a credit card, a dropdown of suggestions is
@@ -1962,7 +1962,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.LocalCardMigrationBubbleOffer{AutofillLocalCardMigrationBubbleShow}"
-    enum="AutofillLocalCardMigrationBubbleOffer" expires_after="2022-10-01">
+    enum="AutofillLocalCardMigrationBubbleOffer" expires_after="2023-09-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -1977,7 +1977,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.LocalCardMigrationBubbleResult{AutofillLocalCardMigrationBubbleShow}"
-    enum="AutofillLocalCardMigrationBubbleResult" expires_after="2022-10-01">
+    enum="AutofillLocalCardMigrationBubbleResult" expires_after="2023-09-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -1992,14 +1992,14 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.LocalCardMigrationBubbleUserInteraction"
     enum="AutofillLocalCardMigrationBubbleUserInteraction"
-    expires_after="2023-03-01">
+    expires_after="2023-09-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>Record how bubble is closed by different user interactions.</summary>
 </histogram>
 
 <histogram name="Autofill.LocalCardMigrationDecision"
-    enum="AutofillLocalCardMigrationDecisionMetric" expires_after="2023-03-01">
+    enum="AutofillLocalCardMigrationDecisionMetric" expires_after="2023-09-01">
   <owner>sujiezhu@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
@@ -2011,7 +2011,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.LocalCardMigrationDialogActiveDuration{AutofillLocalCardMigrationDialogDurationWithCloseEvent}"
-    units="ms" expires_after="2023-03-01">
+    units="ms" expires_after="2023-09-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -2033,7 +2033,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.LocalCardMigrationDialogOffer"
-    enum="AutofillLocalCardMigrationDialogOffer" expires_after="2023-03-01">
+    enum="AutofillLocalCardMigrationDialogOffer" expires_after="2023-09-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -2043,7 +2043,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.LocalCardMigrationDialogUserInteraction"
     enum="AutofillLocalCardMigrationDialogUserInteraction"
-    expires_after="2023-03-01">
+    expires_after="2023-09-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -2052,7 +2052,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.LocalCardMigrationDialogUserSelectionPercentage"
-    units="%" expires_after="2023-03-01">
+    units="%" expires_after="2023-09-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -2062,7 +2062,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.LocalCardMigrationOrigin{AutofillLocalCardMigrationOrigin}"
-    enum="LocalCardMigrationPrompt" expires_after="2023-03-01">
+    enum="LocalCardMigrationPrompt" expires_after="2023-09-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -2197,9 +2197,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.Offer.SelectedCardHasOffer"
-    enum="AutofillCreditCardOfferSelection" expires_after="2022-10-01">
+    enum="AutofillCreditCardOfferSelection" expires_after="2023-08-01">
   <owner>siyua@chromium.org</owner>
-  <owner>payments-autofill-team@google.com</owner>
+  <owner>jsaul@google.com</owner>
   <summary>
     When at least one of the cards in the Autofill suggestions list has a linked
     offer and the user selects a suggestion, this metric records whether or not
@@ -2240,7 +2240,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Autofill.Offer.StoredOfferCount2.{OfferType}" units="offers"
     expires_after="2023-08-01">
   <owner>siyua@chromium.org</owner>
-  <owner>payments-autofill-team@google.com</owner>
+  <owner>jsaul@google.com</owner>
   <summary>
     Tracks the number of Autofill offers a user has stored (including if the
     user has zero offers), separated by offer type, and measured at Chrome
@@ -2252,7 +2252,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Autofill.Offer.StoredOfferRelatedCardCount" units="cards"
     expires_after="2023-08-01">
   <owner>siyua@chromium.org</owner>
-  <owner>payments-autofill-team@google.com</owner>
+  <owner>jsaul@google.com</owner>
   <summary>
     Tracks the number of the credit cards an autofill card linked offer data is
     related to, measured at Chrome profile launch time.
@@ -2276,7 +2276,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Autofill.Offer.StoredOfferRelatedMerchantCount.{OfferType}"
     units="merchants" expires_after="2023-08-01">
   <owner>siyua@chromium.org</owner>
-  <owner>payments-autofill-team@google.com</owner>
+  <owner>jsaul@google.com</owner>
   <summary>
     Tracks the number of the merchants an autofill offer data is related to,
     separated by offer type, and measured at Chrome profile launch time.
@@ -2285,9 +2285,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.Offer.SubmittedCardHasOffer"
-    enum="AutofillCreditCardOfferSubmission" expires_after="2022-10-01">
+    enum="AutofillCreditCardOfferSubmission" expires_after="2023-08-01">
   <owner>siyua@chromium.org</owner>
-  <owner>payments-autofill-team@google.com</owner>
+  <owner>jsaul@google.com</owner>
   <summary>
     When at least one of the cards in the Autofill suggestions list has a linked
     offer and the user submits the form, this metric records whether or not the
@@ -2297,9 +2297,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.Offer.SuggestedCardsHaveOffer"
-    enum="AutofillCreditCardOfferSuggestion" expires_after="2023-02-12">
+    enum="AutofillCreditCardOfferSuggestion" expires_after="2023-08-01">
   <owner>siyua@chromium.org</owner>
-  <owner>payments-autofill-team@google.com</owner>
+  <owner>jsaul@google.com</owner>
   <summary>
     When the user is shown the Autofill suggestions list, this metric records
     whether or not a credit card that is linked to an offer is shown as part of
@@ -2308,7 +2308,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.Offer.Suggestion.{OfferType}"
-    enum="OffersSuggestionsEvent" expires_after="2023-07-01">
+    enum="OffersSuggestionsEvent" expires_after="2023-08-01">
   <owner>vinnypersky@google.com</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -2321,7 +2321,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.Offer.SuggestionsPopupShown"
-    enum="OffersSuggestionsPopupEvent" expires_after="2023-07-01">
+    enum="OffersSuggestionsPopupEvent" expires_after="2023-08-01">
   <owner>vinnypersky@google.com</owner>
   <owner>jsaul@google.com</owner>
   <summary>
@@ -2333,9 +2333,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.Offer.SyncedOfferDataBeingValid" units="offers"
-    expires_after="2022-12-04">
+    expires_after="2023-08-01">
   <owner>siyua@chromium.org</owner>
-  <owner>payments-autofill-team@google.com</owner>
+  <owner>jsaul@google.com</owner>
   <summary>
     Tracks whether the offer data is valid or not, measured whenever offer data
     is synced down via Sync.
