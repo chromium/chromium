@@ -122,6 +122,7 @@ PageInfoHoverButton::PageInfoHoverButton(
     subtitle_->SetMultiLine(true);
     subtitle_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     subtitle_->SetAutoColorReadabilityEnabled(false);
+    subtitle_->SizeToFit(title_->GetPreferredSize().width());
     AddChildView(std::make_unique<views::View>());
     AddChildView(std::make_unique<views::View>());
   }
