@@ -92,4 +92,10 @@ public interface FirstRunPageDelegate {
      * Returns the supplier that supplies child account status.
      */
     OneshotSupplier<Boolean> getChildAccountStatusSupplier();
+
+    /**
+     * Whether FRE pages can use layouts optimized for landscape orientation. Returns false if the
+     * FRE is shown in a dialog.
+     */
+    boolean canUseLandscapeLayout();
 }

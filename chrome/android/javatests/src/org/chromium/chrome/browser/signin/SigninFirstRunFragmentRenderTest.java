@@ -144,6 +144,7 @@ public class SigninFirstRunFragmentRenderTest {
                 VariationsGroup.DEFAULT);
         when(mPolicyLoadListenerMock.get()).thenReturn(false);
         when(mFirstRunPageDelegateMock.getPolicyLoadListener()).thenReturn(mPolicyLoadListenerMock);
+        when(mFirstRunPageDelegateMock.canUseLandscapeLayout()).thenReturn(true);
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         mFragment = new CustomSigninFirstRunFragment();
         mFragment.setPageDelegate(mFirstRunPageDelegateMock);

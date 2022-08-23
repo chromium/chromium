@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.firstrun;
 
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -613,6 +614,12 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     public void showInfoPage(@StringRes int url) {
         CustomTabActivity.showInfoPage(
                 this, LocalizationUtils.substituteLocalePlaceholder(getString(url)));
+    }
+
+    @Override
+    public boolean canUseLandscapeLayout() {
+        return !getResources().getConfiguration().isLayoutSizeAtLeast(
+                Configuration.SCREENLAYOUT_SIZE_LARGE);
     }
 
     @VisibleForTesting
