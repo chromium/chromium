@@ -50,6 +50,29 @@ Example:
 ### Accessing Bots
  TODO(crbug.com/1327486): Document how to remote into bots for debugging.
 
+### Updating the Checked-In Version of the Updater
+An older version of the updater is checked in under `//third_party/updater`.
+This version of the updater is used in some integration tests. The updater is
+pulled from
+[CIPD](https://chrome-infra-packages.appspot.com/p/chromium/third_party/updater)
+based on the versions specified in `//DEPS`. A system called `3pp` periodically
+updates the packages in CIPD, based on a combination of the Chromium build
+output and what is actually released through Omaha servers. The configuration
+for 3pp can be found in `//third_party/updater/*/3pp`.
+
+To update these copies of the updaters:
+1.  Land whatever CLs need to be committed on trunk.
+2.  Wait for builds to be available in CIPD that have the needed changes.
+    *   Instead of waiting, you can instead modify the `fetch.py` scripts for
+        3pp. For Chrome builds, make sure the build has been released in Omaha
+        then update the fetch script with the desired version number. For
+        Chromium, make sure the build exists in GCS (the
+        chromium-browser-snapshots bucket), then update the min version in the
+        script. The min version usually is different per-platform, since
+        Chromium does not archive a version at every CL. After making these
+        changes, 3pp will import the new versions within a few hours.
+3.  Update //DEPS to point to the new versions.
+
 ## Building
 
 ### Cleaning the build output
