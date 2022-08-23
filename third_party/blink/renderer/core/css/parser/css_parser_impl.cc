@@ -1181,6 +1181,9 @@ void CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
         context_->GetExecutionContext(), context_->Mode());
   }
 
+  // https://linear.app/replay/issue/RUN-469
+  recordreplay::Assert("CSSParserImpl::ConsumeDeclaration #5 %d", unresolved_property);
+
   // @rules other than FontFace still handled with legacy code.
   if (important && rule_type == StyleRule::kKeyframe)
     return;

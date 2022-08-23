@@ -200,6 +200,10 @@ void UseCounterImpl::Count(CSSPropertyID property,
     return;
 
   int sample_id = static_cast<int>(GetCSSSampleId(property));
+
+  // https://linear.app/replay/issue/RUN-469
+  recordreplay::Assert("UseCounterImpl::Count %d %d", property, sample_id);
+
   switch (type) {
     case CSSPropertyType::kDefault:
       if (css_recorded_[sample_id])
