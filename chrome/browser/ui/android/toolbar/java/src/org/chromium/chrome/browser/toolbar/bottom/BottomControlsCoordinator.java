@@ -52,14 +52,16 @@ public class BottomControlsCoordinator implements BackPressHandler {
      * Build the coordinator that manages the bottom controls.
      * @param activity Activity instance to use.
      * @param windowAndroid A {@link WindowAndroid} for watching keyboard visibility events.
+     * @param layoutManager A {@link LayoutManager} to attach overlays to.
+     * @param resourceManager A {@link ResourceManager} for loading textures into the compositor.
      * @param controlsSizer A {@link BrowserControlsSizer} to update the bottom controls
      *                          height for the renderer.
      * @param fullscreenManager A {@link FullscreenManager} to listen for fullscreen changes.
-     * @param stub The bottom controls {@link ViewStub} to inflate.
+     * @param root The parent {@link ViewGroup} for the bottom controls.
      * @param contentDelegate Delegate for bottom controls UI operations.
+     * @param tabObscuringHandler Delegate object handling obscuring views.
      * @param overlayPanelVisibilitySupplier Notifies overlay panel visibility event.
-     * @param resourceManager A {@link ResourceManager} for loading textures into the compositor.
-     * @param layoutManager A {@link LayoutManagerImpl} to attach overlays to.
+     * @param constraintsSupplier Used to access current constraints of the browser controls.
      */
     @SuppressLint("CutPasteId") // Not actually cut and paste since it's View vs ViewGroup.
     public BottomControlsCoordinator(Activity activity, WindowAndroid windowAndroid,
@@ -67,7 +69,9 @@ public class BottomControlsCoordinator implements BackPressHandler {
             BrowserControlsSizer controlsSizer, FullscreenManager fullscreenManager,
             ScrollingBottomViewResourceFrameLayout root,
             BottomControlsContentDelegate contentDelegate, TabObscuringHandler tabObscuringHandler,
-            ObservableSupplier<Boolean> overlayPanelVisibilitySupplier) {
+            ObservableSupplier<Boolean> overlayPanelVisibilitySupplier,
+            ObservableSupplier<Integer> constraintsSupplier) {
+        root.setConstraintsSupplier(constraintsSupplier);
         PropertyModel model = new PropertyModel(BottomControlsProperties.ALL_KEYS);
 
         ScrollingBottomViewSceneLayer sceneLayer =

@@ -1318,11 +1318,11 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 mTabContentManager, mCompositorViewHolder,
                 mCompositorViewHolder::getDynamicResourceLoader, mTabCreatorManager,
                 mShareDelegateSupplier, mLayoutStateProviderSupplier, mSnackbarManager);
-        mBottomControlsCoordinatorSupplier.set(
-                new BottomControlsCoordinator(mActivity, mWindowAndroid, mLayoutManager,
-                        mCompositorViewHolder.getResourceManager(), mBrowserControlsSizer,
-                        mFullscreenManager, (ScrollingBottomViewResourceFrameLayout) root,
-                        mTabGroupUi, mTabObscuringHandler, mOverlayPanelVisibilitySupplier));
+        mBottomControlsCoordinatorSupplier.set(new BottomControlsCoordinator(mActivity,
+                mWindowAndroid, mLayoutManager, mCompositorViewHolder.getResourceManager(),
+                mBrowserControlsSizer, mFullscreenManager,
+                (ScrollingBottomViewResourceFrameLayout) root, mTabGroupUi, mTabObscuringHandler,
+                mOverlayPanelVisibilitySupplier, mConstraintsProxy));
     }
 
     /**

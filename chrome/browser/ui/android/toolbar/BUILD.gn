@@ -11,6 +11,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/toolbar/ButtonData.java",
     "java/src/org/chromium/chrome/browser/toolbar/ButtonDataImpl.java",
     "java/src/org/chromium/chrome/browser/toolbar/ButtonDataProvider.java",
+    "java/src/org/chromium/chrome/browser/toolbar/ConstraintsChecker.java",
     "java/src/org/chromium/chrome/browser/toolbar/ControlContainer.java",
     "java/src/org/chromium/chrome/browser/toolbar/HomeButton.java",
     "java/src/org/chromium/chrome/browser/toolbar/IncognitoToggleTabLayout.java",
@@ -279,6 +280,7 @@ android_resources("java_resources") {
 
 robolectric_library("junit") {
   sources = [
+    "java/src/org/chromium/chrome/browser/toolbar/ConstraintsCheckerTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/ToolbarProgressBarTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/VoiceToolbarButtonControllerUnitTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveButtonActionMenuCoordinatorTest.java",
