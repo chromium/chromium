@@ -360,7 +360,8 @@ class MockPeerConnectionImpl : public webrtc::PeerConnectionInterface {
   void SetRemoteDescriptionWorker(
       webrtc::SetSessionDescriptionObserver* observer,
       webrtc::SessionDescriptionInterface* desc);
-  webrtc::PeerConnectionInterface::RTCConfiguration GetConfiguration() {
+  webrtc::PeerConnectionInterface::RTCConfiguration GetConfiguration()
+      override {
     NOTIMPLEMENTED();
     return webrtc::PeerConnectionInterface::RTCConfiguration();
   }

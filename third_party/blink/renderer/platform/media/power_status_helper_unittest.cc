@@ -32,7 +32,7 @@ class PowerStatusHelperTest : public testing::Test {
     MOCK_METHOD0(DidQueryNextStatus, void());
     MOCK_METHOD0(DidDisconnect, void());
 
-    ~MockBatteryMonitor() {
+    ~MockBatteryMonitor() override {
       // Mojo gets mad if we don't finish up outstanding callbacks.
       if (callback_)
         ProvidePowerUpdate(false, 0);

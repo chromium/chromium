@@ -108,7 +108,7 @@ class MockMediaRecorder : public MediaRecorder {
                       CreateMediaStream(scope),
                       MediaRecorderOptions::Create(),
                       scope.GetExceptionState()) {}
-  virtual ~MockMediaRecorder() = default;
+  ~MockMediaRecorder() override = default;
 
   MOCK_METHOD4(WriteData, void(const char*, size_t, bool, double));
   MOCK_METHOD1(OnError, void(const String& message));

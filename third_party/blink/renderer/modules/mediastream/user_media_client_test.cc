@@ -154,7 +154,7 @@ class MockLocalMediaStreamAudioSource : public blink::MediaStreamAudioSource {
 
   MOCK_METHOD0(EnsureSourceIsStopped, void());
 
-  void ChangeSourceImpl(const blink::MediaStreamDevice& new_device) {
+  void ChangeSourceImpl(const blink::MediaStreamDevice& new_device) override {
     EnsureSourceIsStopped();
   }
 };

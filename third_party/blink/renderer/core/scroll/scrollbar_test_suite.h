@@ -101,12 +101,13 @@ class MockScrollableArea : public GarbageCollected<MockScrollableArea>,
   bool ScrollAnimatorEnabled() const override { return true; }
   int PageStep(ScrollbarOrientation) const override { return 0; }
   void ScrollControlWasSetNeedsPaintInvalidation() override {}
-  gfx::Point ConvertFromRootFrame(const gfx::Point& point_in_root_frame) const {
+  gfx::Point ConvertFromRootFrame(
+      const gfx::Point& point_in_root_frame) const override {
     return point_in_root_frame;
   }
   gfx::Point ConvertFromContainingEmbeddedContentViewToScrollbar(
       const Scrollbar& scrollbar,
-      const gfx::Point& parent_point) const {
+      const gfx::Point& parent_point) const override {
     return parent_point;
   }
 

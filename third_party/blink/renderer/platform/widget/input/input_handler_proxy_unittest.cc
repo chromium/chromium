@@ -526,7 +526,7 @@ class InputHandlerProxyEventQueueTest : public testing::Test {
     SetScrollPredictionEnabled(true);
   }
 
-  ~InputHandlerProxyEventQueueTest() = default;
+  ~InputHandlerProxyEventQueueTest() override = default;
 
   void HandleGestureEvent(WebInputEvent::Type type,
                           float delta_y_or_scale = 0,
@@ -4004,7 +4004,7 @@ class InputHandlerProxyMomentumScrollJankTest : public testing::Test {
     input_handler_proxy_.SetTickClockForTesting(&tick_clock_);
   }
 
-  ~InputHandlerProxyMomentumScrollJankTest() = default;
+  ~InputHandlerProxyMomentumScrollJankTest() override = default;
 
   void HandleScrollBegin() {
     auto gesture = std::make_unique<WebGestureEvent>(

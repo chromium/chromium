@@ -47,7 +47,7 @@ class WebAudioSourceProviderImplTest : public testing::Test,
       delete;
   WebAudioSourceProviderImplTest& operator=(
       const WebAudioSourceProviderImplTest&) = delete;
-  virtual ~WebAudioSourceProviderImplTest() = default;
+  ~WebAudioSourceProviderImplTest() override = default;
 
   void CallAllSinkMethodsAndVerify(bool verify) {
     testing::InSequence s;

@@ -470,7 +470,7 @@ class VideoTrackAdapterEncodedTest : public ::testing::Test {
     });
   }
 
-  ~VideoTrackAdapterEncodedTest() {
+  ~VideoTrackAdapterEncodedTest() override {
     web_source_.Reset();
     WebHeap::CollectAllGarbageForTesting();
   }

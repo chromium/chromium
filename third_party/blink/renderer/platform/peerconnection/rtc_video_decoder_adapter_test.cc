@@ -155,7 +155,7 @@ class RTCVideoDecoderAdapterTest : public ::testing::Test {
 #endif
   }
 
-  ~RTCVideoDecoderAdapterTest() {
+  ~RTCVideoDecoderAdapterTest() override {
     if (!rtc_video_decoder_adapter_)
       return;
 
