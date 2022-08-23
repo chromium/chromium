@@ -137,6 +137,7 @@ ts_definitions("generate_definitions") {
 }
 
 checked_in_dts_files = [
+  "fake_method_resolver.d.ts",
   "page_toolbar.d.ts",
   "navigation_view_panel.d.ts",
   "navigation_selector.d.ts",
