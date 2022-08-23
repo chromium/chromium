@@ -5,6 +5,7 @@
 #include "content/services/shared_storage_worklet/shared_storage.h"
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "content/services/shared_storage_worklet/shared_storage_iterator.h"
 #include "content/services/shared_storage_worklet/worklet_v8_helper.h"
 #include "gin/arguments.h"
@@ -34,6 +35,32 @@ bool ToIDLDOMString(v8::Isolate* isolate,
   return gin::ConvertFromV8<std::u16string>(isolate, str, &out);
 }
 
+void LogTimingHistogramForVoidOperation(
+    blink::SharedStorageVoidOperation caller,
+    base::TimeTicks start_time) {
+  base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
+  switch (caller) {
+    case blink::SharedStorageVoidOperation::kSet:
+      base::UmaHistogramMediumTimes("Storage.SharedStorage.Worklet.Timing.Set",
+                                    elapsed_time);
+      break;
+    case blink::SharedStorageVoidOperation::kAppend:
+      base::UmaHistogramMediumTimes(
+          "Storage.SharedStorage.Worklet.Timing.Append", elapsed_time);
+      break;
+    case blink::SharedStorageVoidOperation::kDelete:
+      base::UmaHistogramMediumTimes(
+          "Storage.SharedStorage.Worklet.Timing.Delete", elapsed_time);
+      break;
+    case blink::SharedStorageVoidOperation::kClear:
+      base::UmaHistogramMediumTimes(
+          "Storage.SharedStorage.Worklet.Timing.Clear", elapsed_time);
+      break;
+    default:
+      NOTREACHED();
+  }
+}
+
 }  // namespace
 
 SharedStorage::SharedStorage(mojom::SharedStorageWorkletServiceClient* client)
@@ -61,6 +88,7 @@ const char* SharedStorage::GetTypeName() {
 }
 
 v8::Local<v8::Promise> SharedStorage::Set(gin::Arguments* args) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
   v8::Isolate* isolate = args->isolate();
 
   v8::Local<v8::Promise::Resolver> resolver =
@@ -118,12 +146,14 @@ v8::Local<v8::Promise> SharedStorage::Set(gin::Arguments* args) {
       arg0_key, arg1_value, ignore_if_present,
       base::BindOnce(&SharedStorage::OnVoidOperationFinished,
                      weak_ptr_factory_.GetWeakPtr(), isolate,
-                     v8::Global<v8::Promise::Resolver>(isolate, resolver)));
+                     v8::Global<v8::Promise::Resolver>(isolate, resolver),
+                     blink::SharedStorageVoidOperation::kSet, start_time));
 
   return promise;
 }
 
 v8::Local<v8::Promise> SharedStorage::Append(gin::Arguments* args) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
   v8::Isolate* isolate = args->isolate();
 
   v8::Local<v8::Promise::Resolver> resolver =
@@ -162,12 +192,14 @@ v8::Local<v8::Promise> SharedStorage::Append(gin::Arguments* args) {
       arg0_key, arg1_value,
       base::BindOnce(&SharedStorage::OnVoidOperationFinished,
                      weak_ptr_factory_.GetWeakPtr(), isolate,
-                     v8::Global<v8::Promise::Resolver>(isolate, resolver)));
+                     v8::Global<v8::Promise::Resolver>(isolate, resolver),
+                     blink::SharedStorageVoidOperation::kAppend, start_time));
 
   return promise;
 }
 
 v8::Local<v8::Promise> SharedStorage::Delete(gin::Arguments* args) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
   v8::Isolate* isolate = args->isolate();
 
   v8::Local<v8::Promise::Resolver> resolver =
@@ -194,12 +226,14 @@ v8::Local<v8::Promise> SharedStorage::Delete(gin::Arguments* args) {
       arg0_key,
       base::BindOnce(&SharedStorage::OnVoidOperationFinished,
                      weak_ptr_factory_.GetWeakPtr(), isolate,
-                     v8::Global<v8::Promise::Resolver>(isolate, resolver)));
+                     v8::Global<v8::Promise::Resolver>(isolate, resolver),
+                     blink::SharedStorageVoidOperation::kDelete, start_time));
 
   return promise;
 }
 
 v8::Local<v8::Promise> SharedStorage::Clear(gin::Arguments* args) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
   v8::Isolate* isolate = args->isolate();
 
   v8::Local<v8::Promise::Resolver> resolver =
@@ -210,12 +244,14 @@ v8::Local<v8::Promise> SharedStorage::Clear(gin::Arguments* args) {
 
   client_->SharedStorageClear(base::BindOnce(
       &SharedStorage::OnVoidOperationFinished, weak_ptr_factory_.GetWeakPtr(),
-      isolate, v8::Global<v8::Promise::Resolver>(isolate, resolver)));
+      isolate, v8::Global<v8::Promise::Resolver>(isolate, resolver),
+      blink::SharedStorageVoidOperation::kClear, start_time));
 
   return promise;
 }
 
 v8::Local<v8::Promise> SharedStorage::Get(gin::Arguments* args) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
   v8::Isolate* isolate = args->isolate();
 
   v8::Local<v8::Promise::Resolver> resolver =
@@ -243,7 +279,8 @@ v8::Local<v8::Promise> SharedStorage::Get(gin::Arguments* args) {
       arg0_key,
       base::BindOnce(&SharedStorage::OnStringRetrievalOperationFinished,
                      weak_ptr_factory_.GetWeakPtr(), isolate,
-                     v8::Global<v8::Promise::Resolver>(isolate, resolver)));
+                     v8::Global<v8::Promise::Resolver>(isolate, resolver),
+                     start_time));
   return promise;
 }
 
@@ -261,6 +298,7 @@ v8::Local<v8::Object> SharedStorage::Entries(gin::Arguments* args) {
 }
 
 v8::Local<v8::Promise> SharedStorage::Length(gin::Arguments* args) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
   v8::Isolate* isolate = args->isolate();
 
   v8::Local<v8::Promise::Resolver> resolver =
@@ -271,7 +309,8 @@ v8::Local<v8::Promise> SharedStorage::Length(gin::Arguments* args) {
 
   client_->SharedStorageLength(base::BindOnce(
       &SharedStorage::OnLengthOperationFinished, weak_ptr_factory_.GetWeakPtr(),
-      isolate, v8::Global<v8::Promise::Resolver>(isolate, resolver)));
+      isolate, v8::Global<v8::Promise::Resolver>(isolate, resolver),
+      start_time));
 
   return promise;
 }
@@ -279,6 +318,8 @@ v8::Local<v8::Promise> SharedStorage::Length(gin::Arguments* args) {
 void SharedStorage::OnVoidOperationFinished(
     v8::Isolate* isolate,
     v8::Global<v8::Promise::Resolver> global_resolver,
+    blink::SharedStorageVoidOperation caller,
+    base::TimeTicks start_time,
     bool success,
     const std::string& error_message) {
   WorkletV8Helper::HandleScope scope(isolate);
@@ -287,6 +328,7 @@ void SharedStorage::OnVoidOperationFinished(
 
   if (success) {
     resolver->Resolve(context, v8::Undefined(isolate)).ToChecked();
+    LogTimingHistogramForVoidOperation(caller, start_time);
     return;
   }
 
@@ -297,22 +339,28 @@ void SharedStorage::OnVoidOperationFinished(
 void SharedStorage::OnStringRetrievalOperationFinished(
     v8::Isolate* isolate,
     v8::Global<v8::Promise::Resolver> global_resolver,
+    base::TimeTicks start_time,
     shared_storage_worklet::mojom::SharedStorageGetStatus status,
     const std::string& error_message,
     const std::u16string& result) {
   WorkletV8Helper::HandleScope scope(isolate);
   v8::Local<v8::Promise::Resolver> resolver = global_resolver.Get(isolate);
   v8::Local<v8::Context> context = resolver->GetCreationContextChecked();
+  base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
 
   if (status ==
       shared_storage_worklet::mojom::SharedStorageGetStatus::kSuccess) {
     resolver->Resolve(context, gin::ConvertToV8(isolate, result)).ToChecked();
+    base::UmaHistogramMediumTimes("Storage.SharedStorage.Worklet.Timing.Get",
+                                  elapsed_time);
     return;
   }
 
   if (status ==
       shared_storage_worklet::mojom::SharedStorageGetStatus::kNotFound) {
     resolver->Resolve(context, v8::Undefined(isolate)).ToChecked();
+    base::UmaHistogramMediumTimes("Storage.SharedStorage.Worklet.Timing.Get",
+                                  elapsed_time);
     return;
   }
 
@@ -323,6 +371,7 @@ void SharedStorage::OnStringRetrievalOperationFinished(
 void SharedStorage::OnLengthOperationFinished(
     v8::Isolate* isolate,
     v8::Global<v8::Promise::Resolver> global_resolver,
+    base::TimeTicks start_time,
     bool success,
     const std::string& error_message,
     uint32_t length) {
@@ -333,6 +382,8 @@ void SharedStorage::OnLengthOperationFinished(
   if (success) {
     resolver->Resolve(context, gin::Converter<uint32_t>::ToV8(isolate, length))
         .ToChecked();
+    base::UmaHistogramMediumTimes("Storage.SharedStorage.Worklet.Timing.Length",
+                                  base::TimeTicks::Now() - start_time);
     return;
   }
 

@@ -8,8 +8,10 @@
 #include <tuple>
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
@@ -82,9 +84,40 @@ bool Serialize(ScriptState* script_state,
   return true;
 }
 
+void LogTimingHistogramForVoidOperation(
+    blink::SharedStorageVoidOperation caller,
+    base::TimeTicks start_time) {
+  base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
+  switch (caller) {
+    case blink::SharedStorageVoidOperation::kRun:
+      base::UmaHistogramMediumTimes("Storage.SharedStorage.Document.Timing.Run",
+                                    elapsed_time);
+      break;
+    case blink::SharedStorageVoidOperation::kSet:
+      base::UmaHistogramMediumTimes("Storage.SharedStorage.Document.Timing.Set",
+                                    elapsed_time);
+      break;
+    case blink::SharedStorageVoidOperation::kAppend:
+      base::UmaHistogramMediumTimes(
+          "Storage.SharedStorage.Document.Timing.Append", elapsed_time);
+      break;
+    case blink::SharedStorageVoidOperation::kDelete:
+      base::UmaHistogramMediumTimes(
+          "Storage.SharedStorage.Document.Timing.Delete", elapsed_time);
+      break;
+    case blink::SharedStorageVoidOperation::kClear:
+      base::UmaHistogramMediumTimes(
+          "Storage.SharedStorage.Document.Timing.Clear", elapsed_time);
+      break;
+    default:
+      NOTREACHED();
+  }
+}
+
 void OnVoidOperationFinished(ScriptPromiseResolver* resolver,
                              SharedStorage* shared_storage,
                              blink::SharedStorageVoidOperation caller,
+                             base::TimeTicks start_time,
                              bool success,
                              const String& error_message) {
   DCHECK(resolver);
@@ -102,6 +135,7 @@ void OnVoidOperationFinished(ScriptPromiseResolver* resolver,
     return;
   }
 
+  LogTimingHistogramForVoidOperation(caller, start_time);
   resolver->Resolve();
 }
 
@@ -153,6 +187,7 @@ ScriptPromise SharedStorage::set(ScriptState* script_state,
                                  const String& value,
                                  const SharedStorageSetMethodOptions* options,
                                  ExceptionState& exception_state) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   CHECK(execution_context->IsWindow());
 
@@ -189,7 +224,7 @@ ScriptPromise SharedStorage::set(ScriptState* script_state,
           key, value, ignore_if_present,
           WTF::Bind(&OnVoidOperationFinished, WrapPersistent(resolver),
                     WrapPersistent(this),
-                    blink::SharedStorageVoidOperation::kSet));
+                    blink::SharedStorageVoidOperation::kSet, start_time));
 
   return promise;
 }
@@ -198,6 +233,7 @@ ScriptPromise SharedStorage::append(ScriptState* script_state,
                                     const String& key,
                                     const String& value,
                                     ExceptionState& exception_state) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   CHECK(execution_context->IsWindow());
 
@@ -232,7 +268,7 @@ ScriptPromise SharedStorage::append(ScriptState* script_state,
           key, value,
           WTF::Bind(&OnVoidOperationFinished, WrapPersistent(resolver),
                     WrapPersistent(this),
-                    blink::SharedStorageVoidOperation::kAppend));
+                    blink::SharedStorageVoidOperation::kAppend, start_time));
 
   return promise;
 }
@@ -240,6 +276,7 @@ ScriptPromise SharedStorage::append(ScriptState* script_state,
 ScriptPromise SharedStorage::Delete(ScriptState* script_state,
                                     const String& key,
                                     ExceptionState& exception_state) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   CHECK(execution_context->IsWindow());
 
@@ -264,15 +301,17 @@ ScriptPromise SharedStorage::Delete(ScriptState* script_state,
 
   GetSharedStorageDocumentService(execution_context)
       ->SharedStorageDelete(
-          key, WTF::Bind(&OnVoidOperationFinished, WrapPersistent(resolver),
-                         WrapPersistent(this),
-                         blink::SharedStorageVoidOperation::kDelete));
+          key,
+          WTF::Bind(&OnVoidOperationFinished, WrapPersistent(resolver),
+                    WrapPersistent(this),
+                    blink::SharedStorageVoidOperation::kDelete, start_time));
 
   return promise;
 }
 
 ScriptPromise SharedStorage::clear(ScriptState* script_state,
                                    ExceptionState& exception_state) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   CHECK(execution_context->IsWindow());
 
@@ -289,9 +328,10 @@ ScriptPromise SharedStorage::clear(ScriptState* script_state,
   }
 
   GetSharedStorageDocumentService(execution_context)
-      ->SharedStorageClear(WTF::Bind(
-          &OnVoidOperationFinished, WrapPersistent(resolver),
-          WrapPersistent(this), blink::SharedStorageVoidOperation::kClear));
+      ->SharedStorageClear(
+          WTF::Bind(&OnVoidOperationFinished, WrapPersistent(resolver),
+                    WrapPersistent(this),
+                    blink::SharedStorageVoidOperation::kClear, start_time));
 
   return promise;
 }
@@ -312,6 +352,7 @@ ScriptPromise SharedStorage::selectURL(
     HeapVector<Member<SharedStorageUrlWithMetadata>> urls,
     const SharedStorageRunOperationMethodOptions* options,
     ExceptionState& exception_state) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   CHECK(execution_context->IsWindow());
 
@@ -471,8 +512,8 @@ ScriptPromise SharedStorage::selectURL(
           name, std::move(converted_urls), std::move(serialized_data),
           WTF::Bind(
               [](ScriptPromiseResolver* resolver, SharedStorage* shared_storage,
-                 bool success, const String& error_message,
-                 const KURL& opaque_url) {
+                 base::TimeTicks start_time, bool success,
+                 const String& error_message, const KURL& opaque_url) {
                 DCHECK(resolver);
                 ScriptState* script_state = resolver->GetScriptState();
 
@@ -486,9 +527,12 @@ ScriptPromise SharedStorage::selectURL(
                   return;
                 }
 
+                base::UmaHistogramMediumTimes(
+                    "Storage.SharedStorage.Document.Timing.SelectURL",
+                    base::TimeTicks::Now() - start_time);
                 resolver->Resolve(opaque_url);
               },
-              WrapPersistent(resolver), WrapPersistent(this)));
+              WrapPersistent(resolver), WrapPersistent(this), start_time));
 
   return promise;
 }
@@ -505,6 +549,7 @@ ScriptPromise SharedStorage::run(
     const String& name,
     const SharedStorageRunOperationMethodOptions* options,
     ExceptionState& exception_state) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   CHECK(execution_context->IsWindow());
 
@@ -534,7 +579,7 @@ ScriptPromise SharedStorage::run(
           name, std::move(serialized_data),
           WTF::Bind(&OnVoidOperationFinished, WrapPersistent(resolver),
                     WrapPersistent(this),
-                    blink::SharedStorageVoidOperation::kRun));
+                    blink::SharedStorageVoidOperation::kRun, start_time));
 
   return promise;
 }

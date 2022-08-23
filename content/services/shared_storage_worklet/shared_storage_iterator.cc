@@ -59,6 +59,7 @@ v8::Local<v8::Object> SharedStorageIterator::GetThisObject(
 }
 
 v8::Local<v8::Promise> SharedStorageIterator::Next(gin::Arguments* args) {
+  next_start_times_.push(base::TimeTicks::Now());
   v8::Isolate* isolate = args->isolate();
   v8::Local<v8::Context> context = args->GetHolderCreationContext();
 
@@ -77,6 +78,11 @@ v8::Local<v8::Promise> SharedStorageIterator::NextHelper(
   if (has_error_) {
     resolver->Reject(context, gin::StringToV8(isolate, error_message_))
         .ToChecked();
+
+    // We only record timing histograms when there is no error. Discard the
+    // start time for this call.
+    DCHECK(!next_start_times_.empty());
+    next_start_times_.pop();
     return promise;
   }
 
@@ -99,6 +105,7 @@ v8::Local<v8::Promise> SharedStorageIterator::NextHelper(
       next_benchmark_for_iteration_ += kSharedStorageIteratorBenchmarkStep;
     }
 
+    LogElapsedTime();
     return promise;
   }
 
@@ -113,6 +120,7 @@ v8::Local<v8::Promise> SharedStorageIterator::NextHelper(
 
   DCHECK(pending_resolvers_.empty());
   resolver->Resolve(context, CreateIteratorResultDone(isolate)).ToChecked();
+  LogElapsedTime();
   return promise;
 }
 
@@ -219,6 +227,23 @@ bool SharedStorageIterator::MeetsBenchmark(int value, int benchmark) {
 
   DCHECK_GT(total_entries_queued_, 0);
   return (100 * value) / total_entries_queued_ >= benchmark;
+}
+
+void SharedStorageIterator::LogElapsedTime() {
+  DCHECK(!next_start_times_.empty());
+  base::TimeDelta elapsed_time =
+      base::TimeTicks::Now() - next_start_times_.front();
+  next_start_times_.pop();
+  switch (mode_) {
+    case SharedStorageIterator::Mode::kKey:
+      base::UmaHistogramMediumTimes(
+          "Storage.SharedStorage.Worklet.Timing.Keys.Next", elapsed_time);
+      break;
+    case SharedStorageIterator::Mode::kKeyValue:
+      base::UmaHistogramMediumTimes(
+          "Storage.SharedStorage.Worklet.Timing.Entries.Next", elapsed_time);
+      break;
+  }
 }
 
 }  // namespace shared_storage_worklet

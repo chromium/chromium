@@ -6,9 +6,11 @@
 #define CONTENT_SERVICES_SHARED_STORAGE_WORKLET_SHARED_STORAGE_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "content/common/shared_storage_worklet_service.mojom.h"
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"
+#include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 
 namespace gin {
 class Arguments;
@@ -41,12 +43,15 @@ class SharedStorage final : public gin::Wrappable<SharedStorage> {
   void OnVoidOperationFinished(
       v8::Isolate* isolate,
       v8::Global<v8::Promise::Resolver> global_resolver,
+      blink::SharedStorageVoidOperation caller,
+      base::TimeTicks start_time,
       bool success,
       const std::string& error_message);
 
   void OnStringRetrievalOperationFinished(
       v8::Isolate* isolate,
       v8::Global<v8::Promise::Resolver> global_resolver,
+      base::TimeTicks start_time,
       shared_storage_worklet::mojom::SharedStorageGetStatus status,
       const std::string& error_message,
       const std::u16string& result);
@@ -54,6 +59,7 @@ class SharedStorage final : public gin::Wrappable<SharedStorage> {
   void OnLengthOperationFinished(
       v8::Isolate* isolate,
       v8::Global<v8::Promise::Resolver> global_resolver,
+      base::TimeTicks start_time,
       bool success,
       const std::string& error_message,
       uint32_t length);

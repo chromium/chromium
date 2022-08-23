@@ -555,6 +555,104 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.SharedStorage.Document.Timing.AddModule" units="ms"
+    expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from start of the call to
+    `blink::SharedStorageWorklet::AddModule()` to when the callback has
+    successfully completed. Does not measure the timing of calls that end in an
+    error. Recorded in the lambda function callback for
+    `blink::SharedStorageWorklet::AddModule()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Document.Timing.Append" units="ms"
+    expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from start of the call to `blink::SharedStorage::Append()`
+    to when the callback has successfully completed. Does not measure the timing
+    of calls that end in an error. Recorded in
+    `blink::SharedStorage::OnVoidOperationFinished()` via
+    `LogTimingHistogramForVoidOperation()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Document.Timing.Clear" units="ms"
+    expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from start of the call to `blink::SharedStorage::Clear()`
+    to when the callback has successfully completed. Does not measure the timing
+    of calls that end in an error. Recorded in
+    `blink::SharedStorage::OnVoidOperationFinished()` via
+    `LogTimingHistogramForVoidOperation()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Document.Timing.Delete" units="ms"
+    expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from start of the call to `blink::SharedStorage::Delete()`
+    to when the callback has successfully completed. Does not measure the timing
+    of calls that end in an error. Recorded in
+    `blink::SharedStorage::OnVoidOperationFinished()` via
+    `LogTimingHistogramForVoidOperation()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Document.Timing.Run" units="ms"
+    expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from start of the call to `blink::SharedStorage::Run()` to
+    when the callback has successfully completed. Does not measure the timing of
+    calls that end in an error. Recorded in
+    `blink::SharedStorage::OnVoidOperationFinished()` via
+    `LogTimingHistogramForVoidOperation()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Document.Timing.SelectURL" units="ms"
+    expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from start of the call to
+    `blink::SharedStorage::SelectURL()` to when the callback has successfully
+    completed. Does not measure the timing of calls that end in an error.
+    Recorded in the lambda function callback for
+    `blink::SharedStorage::SelectURL()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Document.Timing.Set" units="ms"
+    expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from start of the call to `blink::SharedStorage::Set()` to
+    when the callback has successfully completed. Does not measure the timing of
+    calls that end in an error. Recorded in
+    `blink::SharedStorage::OnVoidOperationFinished()` via
+    `LogTimingHistogramForVoidOperation()`.
+  </summary>
+</histogram>
+
 <histogram name="Storage.SharedStorage.OnShutdown.NumSqlErrors" units="Errors"
     expires_after="2023-01-31">
   <owner>cammie@chromium.org</owner>
@@ -621,6 +719,80 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.SharedStorage.Worklet.Timing.Append" units="ms"
+    expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from start of the call to
+    `shared_storage_worklet::SharedStorage::Append()` to when the callback has
+    successfully completed. Does not measure the timing of calls that end in an
+    error. Recorded in
+    `shared_storage_worklet::SharedStorage::OnVoidOperationFinished()` via
+    `LogTimingHistogramForVoidOperation()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Worklet.Timing.Clear" units="ms"
+    expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from start of the call to
+    `shared_storage_worklet::SharedStorage::Clear()` to when the callback has
+    successfully completed. Does not measure the timing of calls that end in an
+    error. Recorded in
+    `shared_storage_worklet::SharedStorage::OnVoidOperationFinished()` via
+    `LogTimingHistogramForVoidOperation()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Worklet.Timing.Delete" units="ms"
+    expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from start of the call to
+    `shared_storage_worklet::SharedStorage::Delete()` to when the callback has
+    successfully completed. Does not measure the timing of calls that end in an
+    error. Recorded in
+    `shared_storage_worklet::SharedStorage::OnVoidOperationFinished()` via
+    `LogTimingHistogramForVoidOperation()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Worklet.Timing.Entries.Next" units="ms"
+    expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from the start of the call to
+    `shared_storage_worklet::SharedStorageiterator::Next()` to just before the
+    promise is returned, for the iterator in `Mode::kKeyValue`. Includes only
+    calls where `has_error_` is false. Recorded in
+    `shared_storage_worklet::SharedStorageIterator::NextHelper()` via
+    `LogElapsedTime()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Worklet.Timing.Get" units="ms"
+    expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from start of the call to
+    `shared_storage_worklet::SharedStorage::Get()` to when the callback has
+    successfully completed. Does not measure the timing of calls that end in an
+    error. Recorded in
+    `shared_storage_worklet::SharedStorage::OnStringRetrievalOperationFinished()`.
+  </summary>
+</histogram>
+
 <histogram
     name="Storage.SharedStorage.Worklet.Timing.KeepAliveEndedDueToOperationsFinished.KeepAliveDuration"
     units="ms" expires_after="2023-07-31">
@@ -632,6 +804,50 @@ chromium-metrics-reviews@google.com.
     `FinishKeepAlive()` for keep-alives that are terminated when operations end
     (i.e. excludes worklets whose keep-alives are terminated via timeout).
     Recorded in `SharedStorageWokletHost::FinishKeepAlive()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Worklet.Timing.Keys.Next" units="ms"
+    expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from the start of the call to
+    `shared_storage_worklet::SharedStorageiterator::Next()` to just before the
+    promise is returned, for the iterator in `Mode::kKey`. Includes only calls
+    where `has_error_` is false. Recorded in
+    `shared_storage_worklet::SharedStorageIterator::NextHelper()` via
+    `LogElapsedTime()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Worklet.Timing.Length" units="ms"
+    expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from start of the call to
+    `shared_storage_worklet::SharedStorage::Length()` to when the callback has
+    successfully completed. Does not measure the timing of calls that end in an
+    error. Recorded in
+    `shared_storage_worklet::SharedStorage::OnLengthOperationFinished()`.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Worklet.Timing.Set" units="ms"
+    expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from start of the call to
+    `shared_storage_worklet::SharedStorage::Set()` to when the callback has
+    successfully completed. Does not measure the timing of calls that end in an
+    error. Recorded in
+    `shared_storage_worklet::SharedStorage::OnVoidOperationFinished()` via
+    `LogTimingHistogramForVoidOperation()`.
   </summary>
 </histogram>
 

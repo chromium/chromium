@@ -6,8 +6,10 @@
 #define CONTENT_SERVICES_SHARED_STORAGE_WORKLET_SHARED_STORAGE_ITERATOR_H_
 
 #include <deque>
+#include <queue>
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "components/services/storage/shared_storage/public/mojom/shared_storage.mojom.h"
 #include "content/common/shared_storage_worklet_service.mojom.h"
 #include "gin/object_template_builder.h"
@@ -68,6 +70,9 @@ class SharedStorageIterator final
   // logging.
   bool MeetsBenchmark(int value, int benchmark);
 
+  // Logs the elasped time for calls to `Next()` to a histogram.
+  void LogElapsedTime();
+
   Mode mode_;
 
   // The error state can only be set once, when the first error is encountered
@@ -110,6 +115,10 @@ class SharedStorageIterator final
   // The lowest benchmark for iterated entries that is currently unmet and so
   // has not been logged.
   int next_benchmark_for_iteration_ = kSharedStorageIteratorBenchmarkStep;
+
+  // Start times of each call to `Next()`, in order of the call. Used to record
+  // a timing histogram.
+  std::queue<base::TimeTicks> next_start_times_;
 
   mojo::Receiver<mojom::SharedStorageEntriesListener> receiver_{this};
 };
