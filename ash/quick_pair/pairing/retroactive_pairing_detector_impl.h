@@ -112,6 +112,10 @@ class RetroactivePairingDetectorImpl final
   // needed for retroactive pairing, and notifies observers.
   void CheckPairingInformation(const std::string& device_address);
 
+  // FastPairRepository::IsDeviceSavedToAccount callback
+  void AttemptRetroactivePairing(const std::string& classic_address,
+                                 bool is_device_saved_to_account);
+
   // FastPairRepository::CheckOptInStatus callback
   void OnCheckOptInStatus(const std::string& model_id,
                           const std::string& ble_address,

@@ -175,6 +175,29 @@ void RetroactivePairingDetectorImpl::DevicePairedChanged(
     return;
   }
 
+  // In order to confirm that this device is a retroactive pairing, we need to
+  // first check if it has already been saved to the user's account. If it has
+  // already been saved, we don't want to prompt the user to save a device
+  // again.
+  FastPairRepository::Get()->IsDeviceSavedToAccount(
+      classic_address,
+      base::BindOnce(&RetroactivePairingDetectorImpl::AttemptRetroactivePairing,
+                     weak_ptr_factory_.GetWeakPtr(), classic_address));
+}
+
+void RetroactivePairingDetectorImpl::AttemptRetroactivePairing(
+    const std::string& classic_address,
+    bool is_device_saved_to_account) {
+  if (is_device_saved_to_account) {
+    QP_LOG(INFO) << __func__ << ": device already saved to user's account";
+    return;
+  }
+
+  // The device pairing just changed, and this means that it was just
+  // classically paired. Because we have now verified that it not saved to the
+  // user's account, we can continue verifying this device for the retroactive
+  // pairing scenario by checking if the Message Stream contains the model id
+  // and ble address.
   potential_retroactive_addresses_.insert(classic_address);
 
   // Attempt to retrieve a MessageStream instance immediately, if it was

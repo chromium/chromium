@@ -11,6 +11,7 @@
 #include "ash/quick_pair/repository/fast_pair_repository.h"
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
@@ -59,6 +60,8 @@ class FakeFastPairRepository : public FastPairRepository {
   void SetSavedDevices(nearby::fastpair::OptInStatus status,
                        std::vector<nearby::fastpair::FastPairDevice> devices);
 
+  void SaveMacAddressToAccount(const std::string& mac_address);
+
   // FastPairRepository::
   void GetDeviceMetadata(const std::string& hex_model_id,
                          DeviceMetadataCallback callback) override;
@@ -94,6 +97,7 @@ class FakeFastPairRepository : public FastPairRepository {
   std::vector<nearby::fastpair::FastPairDevice> devices_;
   bool is_network_connected_ = true;
   bool is_account_key_paired_locally_ = true;
+  base::flat_set<std::string> saved_mac_addresses_;
   base::flat_map<std::string, std::unique_ptr<DeviceMetadata>> data_;
   base::flat_map<std::string, std::vector<uint8_t>> saved_account_keys_;
   absl::optional<PairingMetadata> check_account_keys_result_;

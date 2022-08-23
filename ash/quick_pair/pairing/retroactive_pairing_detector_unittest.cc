@@ -1793,5 +1793,39 @@ TEST_F(RetroactivePairingDetectorTest,
   EXPECT_EQ(retroactive_device_->metadata_id, kModelId);
 }
 
+TEST_F(RetroactivePairingDetectorTest, DontNotifyIfAlreadySavedToAcount) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::test::ScopedFeatureList feature_list;
+  fast_pair_repository_.SaveMacAddressToAccount(kTestDeviceAddress);
+
+  // If the SavedDevices and StrictOptIn flags are disabled, we may expect to be
+  // notified when a retroactive pairing is found even if the user is opted out.
+  // However, since the device is already saved the account, we expect to not
+  // be notified.
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kFastPairSavedDevices,
+                             features::kFastPairSavedDevicesStrictOptIn});
+  fast_pair_repository_.SetOptInStatus(
+      nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
+  base::RunLoop().RunUntilIdle();
+  CreateRetroactivePairingDetector();
+
+  EXPECT_FALSE(retroactive_pair_found_);
+
+  fake_socket_->SetIOBufferFromBytes(kModelIdBleAddressBytes);
+  PairFastPairDeviceWithClassicBluetooth(
+      /*new_paired_status=*/true, kTestDeviceAddress);
+  base::RunLoop().RunUntilIdle();
+
+  NotifyMessageStreamConnected(kTestDeviceAddress);
+  base::RunLoop().RunUntilIdle();
+
+  fake_socket_->TriggerReceiveCallback();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(retroactive_pair_found_);
+}
+
 }  // namespace quick_pair
 }  // namespace ash

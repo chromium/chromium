@@ -7,6 +7,7 @@
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "base/base64.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "chromeos/services/bluetooth_config/public/cpp/device_image_info.h"
@@ -162,10 +163,21 @@ void FakeFastPairRepository::GetSavedDevices(GetSavedDevicesCallback callback) {
   std::move(callback).Run(status_, devices_);
 }
 
-// Unimplemented.
+void FakeFastPairRepository::SaveMacAddressToAccount(
+    const std::string& mac_address) {
+  saved_mac_addresses_.insert(mac_address);
+}
+
 void FakeFastPairRepository::IsDeviceSavedToAccount(
     const std::string& mac_address,
-    IsDeviceSavedToAccountCallback callback) {}
+    IsDeviceSavedToAccountCallback callback) {
+  if (base::Contains(saved_mac_addresses_, mac_address)) {
+    std::move(callback).Run(true);
+    return;
+  }
+
+  std::move(callback).Run(false);
+}
 
 }  // namespace quick_pair
 }  // namespace ash
