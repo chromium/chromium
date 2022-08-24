@@ -26,7 +26,7 @@ struct UpgradeRecommendedDetails;
 
 // This service handles the communication with the Omaha server. It also
 // handles all the scheduling necessary to contact the server regularly.
-// All methods, but the constructor, |GetInstance| and |Start| methods, must be
+// All methods, but the constructor, `GetInstance` and `Start` methods, must be
 // called from the IO thread.
 class OmahaService {
  public:
@@ -37,7 +37,7 @@ class OmahaService {
   // Called when a one-off Omaha check returns.
   using OneOffCallback = base::OnceCallback<void(UpgradeRecommendedDetails)>;
 
-  // Starts the service. Also set the |URLLoaderFactory| necessary to access the
+  // Starts the service. Also set the `URLLoaderFactory` necessary to access the
   // Omaha server. This method should only be called once.  Does nothing if
   // Omaha should not be enabled for this build variant.
   static void Start(std::unique_ptr<network::PendingSharedURLLoaderFactory>
@@ -90,7 +90,7 @@ class OmahaService {
   // For the singleton:
   friend class base::NoDestructor<OmahaService>;
 
-  // Enum for the |GetPingContent| and |GetNextPingRequestId| method.
+  // Enum for the `GetPingContent` and `GetNextPingRequestId` method.
   enum PingContent {
     INSTALL_EVENT,
     USAGE_PING,
@@ -109,7 +109,7 @@ class OmahaService {
   static bool IsEnabled();
 
   // Raw GetInstance method. Necessary for using singletons. This method must
-  // only be called if |IsEnabled()| returns true.
+  // only be called if `IsEnabled()` returns true.
   static OmahaService* GetInstance();
 
   // Private constructor, only used by the singleton.
@@ -137,7 +137,7 @@ class OmahaService {
   void PersistStates();
 
   // Returns the XML representation of the ping message to send to the Omaha
-  // server. If |sendInstallEvent| is true, the message will contain an
+  // server. If `sendInstallEvent` is true, the message will contain an
   // installation complete event.
   std::string GetPingContent(const std::string& requestId,
                              const std::string& sessionId,
@@ -150,19 +150,19 @@ class OmahaService {
   // server. Use the current state of the service to compute the right message.
   std::string GetCurrentPingContent();
 
-  // Computes debugging information and fill |result|.
+  // Computes debugging information and fill `result`.
   void GetDebugInformationOnIOThread(
       base::OnceCallback<void(base::Value::Dict)> callback);
 
   // Returns whether the next ping to send must a an install/update ping. If
-  // |true|, the next ping must use |GetInstallRetryRequestId| as identifier
+  // `true`, the next ping must use `GetInstallRetryRequestId` as identifier
   // for the request and must include a X-RequestAge header.
   bool IsNextPingInstallRetry();
 
   // Returns the request identifier to use for the next ping. If it is an
   // install/update retry, it will return the identifier used on the initial
   // request. If this is not the case, returns a random id.
-  // |send_install_event| must be true if the next ping is a install/update
+  // `send_install_event` must be true if the next ping is a install/update
   // event, in that case, the identifier will be stored so that it can be
   // reused until the ping is successful.
   std::string GetNextPingRequestId(PingContent ping_content);
@@ -196,7 +196,7 @@ class OmahaService {
   // Whether to schedule pings. This is only false for tests.
   const bool schedule_;
 
-  // The install date of the application.  This is fetched in |StartInternal| on
+  // The install date of the application.  This is fetched in `StartInternal` on
   // the main thread and cached for use on the IO thread.
   int64_t application_install_date_;
 
