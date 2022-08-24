@@ -21,6 +21,7 @@
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
@@ -49,6 +50,43 @@ const char kTestAccountsEndpoint[] = "https://idp.test/accounts_endpoint";
 const char kTestTokenEndpoint[] = "https://idp.test/token_endpoint";
 const char kTestClientMetadataEndpoint[] =
     "https://idp.test/client_metadata_endpoint";
+
+const char kSingleAccountEndpointValidJson[] = R"({
+  "accounts" : [
+    {
+      "id" : "1234",
+      "email": "ken@idp.test",
+      "name": "Ken R. Example",
+      "given_name": "Ken",
+      "picture": "https://idp.test/profile/1"
+    }
+  ]
+  })";
+
+// Replaces the first line with the passed-in JSON key in `input` with
+// `new_line`.
+std::string ReplaceFirstLineWithKeyFromJson(const std::string& key,
+                                            const std::string& new_line,
+                                            const std::string& input,
+                                            bool replace_all) {
+  std::string pattern = R"(^[ ]*")" + key + R"(".*$)";
+  std::string result = input;
+  RE2::Options options;
+  options.set_posix_syntax(true);
+  options.set_one_line(false);
+  RE2 re2(pattern, options);
+  if (replace_all)
+    RE2::GlobalReplace(&result, re2, new_line);
+  else
+    RE2::Replace(&result, re2, new_line);
+  return result;
+}
+
+// Removes all lines with the passed-in JSON key in `input`.
+std::string RemoveAllLinesWithKeyFromJson(const std::string& key,
+                                          const std::string& input) {
+  return ReplaceFirstLineWithKeyFromJson(key, "", input, /*replace_all=*/true);
+}
 
 class IdpNetworkRequestManagerTest : public ::testing::Test {
  public:
@@ -107,7 +145,7 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
   }
 
   std::tuple<FetchStatus, AccountList> SendAccountsRequestAndWaitForResponse(
-      const char* test_accounts,
+      const std::string& test_accounts,
       const char* client_id = "",
       bool send_id_and_referrer = false) {
     GURL accounts_endpoint(kTestAccountsEndpoint);
@@ -205,17 +243,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountEmpty) {
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ParseAccountSingle) {
-  const auto* test_single_account_json = R"({
-  "accounts" : [
-    {
-      "id" : "1234",
-      "email": "ken@idp.test",
-      "name": "Ken R. Example",
-      "given_name": "Ken",
-      "picture": "https://idp.test/profile/1"
-    }
-  ]
-  })";
+  const auto* test_single_account_json = kSingleAccountEndpointValidJson;
 
   FetchStatus accounts_response;
   AccountList accounts;
@@ -280,45 +308,74 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountOptionalFields) {
 
 TEST_F(IdpNetworkRequestManagerTest, ParseAccountRequiredFields) {
   {
-    const auto* test_accounts_missing_account_id_json = R"({"accounts" : [{
-      "email": "ken@idp.test",
-      "name": "Ken R. Example"
-    }]})";
+    std::string test_account_missing_account_id_json =
+        RemoveAllLinesWithKeyFromJson("id", kSingleAccountEndpointValidJson);
     FetchStatus accounts_response;
     AccountList accounts;
     std::tie(accounts_response, accounts) =
         SendAccountsRequestAndWaitForResponse(
-            test_accounts_missing_account_id_json);
+            test_account_missing_account_id_json);
 
     EXPECT_EQ(FetchStatus::kInvalidResponseError, accounts_response);
     EXPECT_TRUE(accounts.empty());
   }
   {
-    const auto* test_accounts_missing_email_json = R"({"accounts" : [{
+    std::string test_account_missing_email_json =
+        RemoveAllLinesWithKeyFromJson("email", kSingleAccountEndpointValidJson);
+    FetchStatus accounts_response;
+    AccountList accounts;
+    std::tie(accounts_response, accounts) =
+        SendAccountsRequestAndWaitForResponse(test_account_missing_email_json);
+
+    EXPECT_EQ(FetchStatus::kInvalidResponseError, accounts_response);
+    EXPECT_TRUE(accounts.empty());
+  }
+  {
+    std::string test_account_missing_name_json =
+        RemoveAllLinesWithKeyFromJson("name", kSingleAccountEndpointValidJson);
+    FetchStatus accounts_response;
+    AccountList accounts;
+    std::tie(accounts_response, accounts) =
+        SendAccountsRequestAndWaitForResponse(test_account_missing_name_json);
+
+    EXPECT_EQ(FetchStatus::kInvalidResponseError, accounts_response);
+    EXPECT_TRUE(accounts.empty());
+  }
+}
+
+// Test that parsing accounts fails if two accounts have the same account id.
+TEST_F(IdpNetworkRequestManagerTest, ParseAccountDuplicateIds) {
+  const auto* accounts_json = R"({
+  "accounts" : [
+    {
       "id" : "1234",
+      "email": "ken@idp.test",
       "name": "Ken R. Example"
-    }]})";
-    FetchStatus accounts_response;
-    AccountList accounts;
-    std::tie(accounts_response, accounts) =
-        SendAccountsRequestAndWaitForResponse(test_accounts_missing_email_json);
-
-    EXPECT_EQ(FetchStatus::kInvalidResponseError, accounts_response);
-    EXPECT_TRUE(accounts.empty());
-  }
-  {
-    const auto* test_accounts_missing_name_json = R"({"accounts" : [{
+    },
+    {
       "id" : "1234",
-      "email": "ken@idp.test"
-    }]})";
-    FetchStatus accounts_response;
-    AccountList accounts;
-    std::tie(accounts_response, accounts) =
-        SendAccountsRequestAndWaitForResponse(test_accounts_missing_name_json);
+      "email": "ken@idp.test",
+      "name": "Ken R. Example"
+    }
+  ]
+  })";
 
-    EXPECT_EQ(FetchStatus::kInvalidResponseError, accounts_response);
-    EXPECT_TRUE(accounts.empty());
-  }
+  FetchStatus accounts_response;
+  AccountList accounts;
+  std::tie(accounts_response, accounts) =
+      SendAccountsRequestAndWaitForResponse(accounts_json);
+
+  EXPECT_EQ(FetchStatus::kInvalidResponseError, accounts_response);
+  EXPECT_TRUE(accounts.empty());
+
+  // Test that JSON is valid with exception of duplicate id.
+  std::string accounts_json_different_account_ids =
+      ReplaceFirstLineWithKeyFromJson("id", R"("id": "5678",)", accounts_json,
+                                      /*replace_all=*/false);
+
+  std::tie(accounts_response, accounts) = SendAccountsRequestAndWaitForResponse(
+      accounts_json_different_account_ids);
+  EXPECT_EQ(FetchStatus::kSuccess, accounts_response);
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ParseAccountPictureUrl) {

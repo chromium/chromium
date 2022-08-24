@@ -5,6 +5,7 @@
 #include "content/browser/webid/idp_network_request_manager.h"
 
 #include "base/base64.h"
+#include "base/containers/flat_set.h"
 #include "base/json/json_writer.h"
 #include "base/strings/escape.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -223,13 +224,18 @@ bool ParseAccounts(const base::Value* accounts,
   if (!accounts->is_list())
     return false;
 
+  base::flat_set<std::string> account_ids;
   for (auto& account : accounts->GetListDeprecated()) {
     if (!account.is_dict())
       return false;
 
     auto parsed_account = ParseAccount(account, client_id);
-    if (parsed_account)
+    if (parsed_account) {
+      if (account_ids.count(parsed_account->id))
+        return false;
       account_list.push_back(parsed_account.value());
+      account_ids.insert(parsed_account->id);
+    }
   }
   return !account_list.empty();
 }
