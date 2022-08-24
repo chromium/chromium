@@ -6,6 +6,8 @@
  * @fileoverview Behavior for network config elements.
  */
 
+// #import {OncMojo} from './onc_mojo.m.js';
+
 /** @polymerBehavior */
 /* #export */ const NetworkConfigElementBehavior = {
   properties: {

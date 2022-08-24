@@ -9,6 +9,7 @@ import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.mi
 import {NetworkType, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {Network, NetworkHealthService, NetworkHealthServiceRemote, NetworkHealthState, NetworkState, UInt32Value} from 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_health.mojom-webui.js';
 
+import {assertNotReached} from '../../../js/assert.m.js';
 import {I18nBehavior} from '../../../js/i18n_behavior.m.js';
 import {OncMojo} from '../network/onc_mojo.m.js';
 
@@ -140,7 +141,10 @@ Polymer({
    * @return {string}
    */
   getPortalStateString_(state) {
-    return this.i18n('OncPortalState' + OncMojo.getPortalStateString(state));
+    return this.i18n(
+        'OncPortalState' +
+        OncMojo.getPortalStateString(
+            /** @type {chromeos.networkConfig.mojom.PortalState} */ (state)));
   },
 
   /**
@@ -150,7 +154,10 @@ Polymer({
    * @return {string}
    */
   getNetworkTypeString_(type) {
-    return this.i18n('OncType' + OncMojo.getNetworkTypeString(type));
+    return this.i18n(
+        'OncType' +
+        OncMojo.getNetworkTypeString(
+            /** @type {chromeos.networkConfig.mojom.NetworkType} */ (type)));
   },
 
   /**

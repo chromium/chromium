@@ -305,7 +305,7 @@ js_library("cr_policy_network_indicator_mojo.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/network/cr_policy_network_indicator_mojo.m.js" ]
   deps = [
     ":cr_policy_network_behavior_mojo.m",
-    ":onc_mojo",
+    ":onc_mojo.m",
     "../../../cr_elements/policy:cr_policy_indicator_behavior.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
