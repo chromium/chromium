@@ -378,17 +378,14 @@ function _makeSizeTextGetter() {
    *
    * @param {TreeNode} node Node whose size is the number of bytes to use for
    * the size text
-   * @returns {GetSizeResult} Object with hover text title and
-   * size element body. Can be consumed by `_applySizeFunc()`
+   * @returns {GetSizeResult} Object with hover text title and size element
+   * body.
    */
   function getSizeContents(node) {
     if (state.has('method_count')) {
       const {count: methodCount = 0} =
         node.childStats[_DEX_METHOD_SYMBOL_TYPE] || {};
-      const methodStr = methodCount.toLocaleString(_LOCALE, {
-        useGrouping: true,
-      });
-
+      const methodStr = formatNumber(methodCount);
       return {
         description: `${methodStr} method${methodCount === 1 ? '' : 's'}`,
         element: document.createTextNode(methodStr),
@@ -398,8 +395,7 @@ function _makeSizeTextGetter() {
     } else {
       const bytes = node.size;
 
-      const bytesGrouped = bytes.toLocaleString(_LOCALE, {useGrouping: true});
-      let description = `${bytesGrouped} bytes`;
+      let description = `${formatNumber(bytes)} bytes`;
       if (node.numAliases && node.numAliases > 1) {
         description += ` for 1 of ${node.numAliases} aliases`;
       }
@@ -407,10 +403,7 @@ function _makeSizeTextGetter() {
       const unit = state.get('byteunit') || 'KiB';
       const suffix = _BYTE_UNITS[unit];
       // Format |bytes| as a number with 2 digits after the decimal point
-      const text = (bytes / suffix).toLocaleString(_LOCALE, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
+      const text = formatNumber(bytes / suffix, 2, 2);
       const textNode = document.createTextNode(`${text} `);
       // Display the suffix with a smaller font
       const suffixElement = dom.textElement('small', unit);

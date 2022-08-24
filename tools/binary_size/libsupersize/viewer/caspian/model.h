@@ -88,10 +88,10 @@ class BaseSymbol {
  public:
   virtual ~BaseSymbol();
 
-  virtual int32_t Address() const = 0;
   virtual int32_t Size() const = 0;
-  virtual int32_t Flags() const = 0;
   virtual int32_t Padding() const = 0;
+  virtual int32_t Address() const = 0;
+  virtual int32_t Flags() const = 0;
 
   virtual std::string_view FullName() const = 0;
   // Derived from |full_name|. Generated lazily and cached.
@@ -177,10 +177,10 @@ class Symbol : public BaseSymbol {
   ~Symbol() override;
   Symbol(const Symbol& other);
 
-  int32_t Address() const override;
   int32_t Size() const override;
-  int32_t Flags() const override;
   int32_t Padding() const override;
+  int32_t Address() const override;
+  int32_t Flags() const override;
 
   std::string_view FullName() const override;
   // Derived from |full_name|. Generated lazily and cached.
@@ -236,10 +236,10 @@ class DeltaSymbol : public BaseSymbol {
  public:
   DeltaSymbol(const Symbol* before, const Symbol* after);
   ~DeltaSymbol() override;
-  int32_t Address() const override;
   int32_t Size() const override;
-  int32_t Flags() const override;
   int32_t Padding() const override;
+  int32_t Address() const override;
+  int32_t Flags() const override;
 
   std::string_view FullName() const override;
   // Derived from |full_name|. Generated lazily and cached.
@@ -372,8 +372,10 @@ struct TreeNode {
   const char* src_path = nullptr;
   const char* component = nullptr;
   float size = 0.0f;
-  NodeStats node_stats;
+  float padding = 0.0f;
+  int32_t address = 0;
   int32_t flags = 0;
+  NodeStats node_stats;
   int32_t short_name_index = 0;
 
   ArtifactType artifact_type = ArtifactType::kSymbol;

@@ -162,6 +162,8 @@ void TreeBuilder::AddFileEntry(GroupedPath grouped_path,
     symbol_node->id_path =
         GroupedPath{"", sym->IsDex() ? sym->TemplateName() : sym->FullName()};
     symbol_node->size = sym->Pss();
+    symbol_node->padding = sym->PaddingPss();
+    symbol_node->address = sym->Address();
     symbol_node->node_stats = NodeStats(*sym);
     symbol_node->symbol = sym;
     symbol_nodes.push_back(symbol_node);
@@ -227,6 +229,7 @@ void TreeBuilder::AttachToParent(TreeNode* child, TreeNode* parent) {
   TreeNode* node = child;
   while (node->parent) {
     node->parent->size += child->size;
+    node->parent->padding += child->padding;
     node->parent->node_stats += child->node_stats;
     node = node->parent;
   }

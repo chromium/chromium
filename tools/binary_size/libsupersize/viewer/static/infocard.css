@@ -70,7 +70,13 @@
 .size-info {
   margin: 0 0 2px;
 }
-.path-info {
+.address-info {
+  margin: 0 0 2px 20px;
+}
+.padding-info {
+  margin: 0 0 2px 20px;
+}
+.details-info {
   margin: 0 0 8px;
   word-break: break-word;
   color: #3c4043;

@@ -32,10 +32,14 @@ const displayInfocard = (() => {
      */
     constructor(id) {
       this._infocard = document.getElementById(id);
-      /** @type {HTMLHeadingElement} */
+      /** @type {HTMLSpanElement} */
       this._sizeInfo = this._infocard.querySelector('.size-info');
+      /** @type {HTMLSpanElement} */
+      this._addressInfo = this._infocard.querySelector('.address-info');
+      /** @type {HTMLSpanElement} */
+      this._paddingInfo = this._infocard.querySelector('.padding-info');
       /** @type {HTMLParagraphElement} */
-      this._pathInfo = this._infocard.querySelector('.path-info');
+      this._detailsInfo = this._infocard.querySelector('.details-info');
       /** @type {HTMLDivElement} */
       this._iconInfo = this._infocard.querySelector('.icon-info');
       /** @type {HTMLSpanElement} */
@@ -78,24 +82,43 @@ const displayInfocard = (() => {
     }
 
     /**
-     * Updates the size header, which normally displayed the byte size of the
-     * node followed by an abbreviated version.
+     * Updates the header, which normally displayed the byte size of the node
+     * followed by an abbreviated version.
      *
      * Example: "1,234 bytes (1.23 KiB)"
      * @param {TreeNode} node
      */
-    _updateSize(node) {
-      const {description, element, value} = getSizeContents(node);
+    _updateHeader(node) {
+      const sizeContents = getSizeContents(node);
       const sizeFragment = dom.createFragment([
-        document.createTextNode(`${description} (`),
-        element,
+        document.createTextNode(`${sizeContents.description} (`),
+        sizeContents.element,
         document.createTextNode(')'),
       ]);
 
-      // Update DOM
-      setSizeClasses(this._sizeInfo, value);
+      const addressNodes = [];
+      if ('address' in node) {
+        const span = document.createElement('span');
+        const addressHex = node.address.toString(16);
+        span.textContent = `${node.type}@0x${addressHex}`;
+        span.setAttribute('title', `${formatNumber(node.address)}`);
+        addressNodes.push(span);
+      }
+      const addressFragment = dom.createFragment(addressNodes);
 
+      const paddingNodes = [];
+      if ('padding' in node) {
+        const span = document.createElement('span');
+        span.textContent = `Padding: ${formatNumber(node.padding, 0, 2)} bytes`;
+        paddingNodes.push(span);
+      }
+      const paddingFragment = dom.createFragment(paddingNodes);
+
+      // Update DOM
+      setSizeClasses(this._sizeInfo, sizeContents.value);
       dom.replace(this._sizeInfo, sizeFragment);
+      dom.replace(this._addressInfo, addressFragment);
+      dom.replace(this._paddingInfo, paddingFragment);
     }
 
     /**
@@ -116,7 +139,8 @@ const displayInfocard = (() => {
           elements.push(div);
         };
         if (node.container !== '') add_field('Container: ', node.container);
-        add_field('Path: ', node.srcPath || '(No path)');
+        add_field('Source Path: ', node.srcPath || '(No path)');
+        add_field('Object Path: ', node.objPath || '(No path)');
         add_field('Component: ', node.component || '(No component)');
         add_field('Full Name: ', node.fullName || '');
         if (node.disassembly && node.disassembly !== '') {
@@ -139,7 +163,7 @@ const displayInfocard = (() => {
       }
 
       // Update DOM.
-      dom.replace(this._pathInfo, dom.createFragment(elements));
+      dom.replace(this._detailsInfo, dom.createFragment(elements));
     }
 
     /**
@@ -200,7 +224,7 @@ const displayInfocard = (() => {
       const type = node.type[0];
 
       // Update DOM
-      this._updateSize(node);
+      this._updateHeader(node);
       this._updateDetails(node);
       // If possible, skip making new type content.
       if (type !== this._lastType || type === _ARTIFACT_TYPES.GROUP) {
@@ -361,19 +385,9 @@ const displayInfocard = (() => {
       const removedColumn = row.querySelector('.removed');
       const changedColumn = row.querySelector('.changed');
 
-      const countString = stats.count.toLocaleString(_LOCALE, {
-        useGrouping: true,
-      });
-      const sizeString = stats.size.toLocaleString(_LOCALE, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-        useGrouping: true,
-      });
-      const percentString = percentage.toLocaleString(_LOCALE, {
-        style: 'percent',
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
+      const countString = formatNumber(stats.count);
+      const sizeString = formatNumber(stats.size, 2, 2);
+      const percentString = formatPercent(percentage, 2, 2);
 
       const diffMode = state.has('diff_mode');
       if (diffMode && stats.added !== undefined) {
@@ -382,12 +396,9 @@ const displayInfocard = (() => {
         changedColumn.removeAttribute('hidden');
         countColumn.setAttribute('hidden', '');
 
-        addedColumn.textContent =
-            stats.added.toLocaleString(_LOCALE, {useGrouping: true});
-        removedColumn.textContent =
-            stats.removed.toLocaleString(_LOCALE, {useGrouping: true});
-        changedColumn.textContent =
-            stats.changed.toLocaleString(_LOCALE, {useGrouping: true});
+        addedColumn.textContent = formatNumber(stats.added);
+        removedColumn.textContent = formatNumber(stats.removed);
+        changedColumn.textContent = formatNumber(stats.changed);
       } else {
         addedColumn.setAttribute('hidden', '');
         removedColumn.setAttribute('hidden', '');

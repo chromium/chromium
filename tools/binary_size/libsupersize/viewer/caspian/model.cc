@@ -69,17 +69,17 @@ void Symbol::DeriveNames() const {
   }
 }
 
-int32_t Symbol::Address() const {
-  return address_;
-}
 int32_t Symbol::Size() const {
   return size_;
 }
-int32_t Symbol::Flags() const {
-  return flags_;
-}
 int32_t Symbol::Padding() const {
   return padding_;
+}
+int32_t Symbol::Address() const {
+  return address_;
+}
+int32_t Symbol::Flags() const {
+  return flags_;
 }
 
 std::string_view Symbol::FullName() const {
@@ -147,13 +147,6 @@ DeltaSymbol::DeltaSymbol(const Symbol* before, const Symbol* after)
 
 DeltaSymbol::~DeltaSymbol() = default;
 
-int32_t DeltaSymbol::Address() const {
-  if (after_) {
-    return after_->Address();
-  }
-  return 0;
-}
-
 int32_t DeltaSymbol::Size() const {
   if (!after_) {
     return -before_->Size();
@@ -168,14 +161,6 @@ int32_t DeltaSymbol::Size() const {
   return after_->SizeWithoutPadding() - before_->SizeWithoutPadding();
 }
 
-int32_t DeltaSymbol::Flags() const {
-  // Compute the union of flags (|) instead of symmetric difference (^), as
-  // that is more useful when querying for symbols with flags.
-  int32_t before_flags = before_ ? before_->Flags() : 0;
-  int32_t after_flags = after_ ? after_->Flags() : 0;
-  return before_flags | after_flags;
-}
-
 int32_t DeltaSymbol::Padding() const {
   if (!after_) {
     return -before_->Padding();
@@ -188,6 +173,21 @@ int32_t DeltaSymbol::Padding() const {
     return after_->Padding() - before_->Padding();
   }
   return 0;
+}
+
+int32_t DeltaSymbol::Address() const {
+  if (after_) {
+    return after_->Address();
+  }
+  return 0;
+}
+
+int32_t DeltaSymbol::Flags() const {
+  // Compute the union of flags (|) instead of symmetric difference (^), as
+  // that is more useful when querying for symbols with flags.
+  int32_t before_flags = before_ ? before_->Flags() : 0;
+  int32_t after_flags = after_ ? after_->Flags() : 0;
+  return before_flags | after_flags;
 }
 
 std::string_view DeltaSymbol::FullName() const {
@@ -368,6 +368,9 @@ void TreeNode::WriteIntoJson(
     if (symbol->NumAliases() > 1) {
       (*out)["numAliases"] = symbol->NumAliases();
     }
+    if (symbol->ObjectPath()) {
+      (*out)["objPath"] = symbol->ObjectPath();
+    }
     if (symbol->SourcePath()) {
       (*out)["srcPath"] = symbol->SourcePath();
     }
@@ -396,6 +399,12 @@ void TreeNode::WriteIntoJson(
   type += static_cast<char>(biggest_section);
   (*out)["type"] = type;
   (*out)["size"] = size;
+  if (padding) {
+    (*out)["padding"] = padding;
+  }
+  if (address) {
+    (*out)["address"] = address;
+  }
   (*out)["flags"] = flags;
   node_stats.WriteIntoJson(method_count_mode, &(*out)["childStats"]);
 

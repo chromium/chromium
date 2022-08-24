@@ -18,6 +18,7 @@
  *     children that haven't been loaded in yet.
  * @property {?TreeNode} parent - Parent tree node, null if this is a root node.
  * @property {string} idPath - Full path to this node.
+ * @property {string} objPath - Path to the object file containing this symbol.
  * @property {string} srcPath - Path to the source containing this symbol.
  * @property {string} disassembly - The disassembly for the node.
  * @property {string} container - The container for the node.
@@ -27,10 +28,12 @@
  *     `idPath`. This index indicates where to start to slice the `idPath` to
  *     read the name.
  * @property {number} size - Byte size of this node and its children.
+ * @property {number|undefined} padding - Padding bytes used by this node.
+ * @property {number|undefined} address - Start address of this node.
+ * @property {number} flags - A bit field to store symbol properties.
  * @property {number} numAliases - Number of aliases for the symbol.
  * @property {string} type - Type of this node. If this node has children, the
  *     string may have a second character to denote the most common child.
- * @property {number} flags - A bit field to store symbol properties.
  * @property {_DIFF_STATUSES} diffStatus
  * @property {Object<string, !TreeNodeChildStats>} childStats - Stats about
  *     this node's descendants, keyed by symbol type.
@@ -211,4 +214,35 @@ function shortName(treeNode) {
  */
 function hasFlag(flag, symbolNode) {
   return (symbolNode.flags & flag) === flag;
+}
+
+/**
+ * Returns a formatted number with grouping, taking an optional range for number
+ * of digits after the decimal point (default 0, i.e., assume integer).
+ * @param {number} num
+ * @param {number=} lo
+ * @param {number=} hi
+ * @return {string}
+ */
+function formatNumber(num, lo = 0, hi = 0) {
+  return num.toLocaleString(_LOCALE, {
+    useGrouping: true,
+    minimumFractionDigits: lo,
+    maximumFractionDigits: hi
+  });
+}
+
+/**
+ * Same as formatNumber(), but returns percentage instead.
+ * @param {number} num
+ * @param {number=} lo
+ * @param {number=} hi
+ * @return {string}
+ */
+function formatPercent(num, lo = 0, hi = 0) {
+  return num.toLocaleString(_LOCALE, {
+    style: 'percent',
+    minimumFractionDigits: lo,
+    maximumFractionDigits: hi,
+  });
 }
