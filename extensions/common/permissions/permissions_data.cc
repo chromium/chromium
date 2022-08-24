@@ -522,8 +522,10 @@ bool PermissionsData::CanCaptureVisiblePage(
     // sufficient.
     if ((origin_url.SchemeIs(url::kHttpScheme) ||
          origin_url.SchemeIs(url::kHttpsScheme)) &&
-        !origin.IsSameOriginWith(
-            ExtensionsClient::Get()->GetWebstoreBaseURL())) {
+        !(origin.IsSameOriginWith(
+              ExtensionsClient::Get()->GetWebstoreBaseURL()) ||
+          origin.IsSameOriginWith(
+              ExtensionsClient::Get()->GetNewWebstoreBaseURL()))) {
       return true;
     }
   }
@@ -559,7 +561,8 @@ bool PermissionsData::CanCaptureVisiblePage(
       origin_url.SchemeIs(kExtensionScheme) ||
       // Note: The origin of a data: url is empty, so check the url itself.
       document_url.SchemeIs(url::kDataScheme) ||
-      origin.IsSameOriginWith(ExtensionsClient::Get()->GetWebstoreBaseURL());
+      origin.IsSameOriginWith(ExtensionsClient::Get()->GetWebstoreBaseURL()) ||
+      origin.IsSameOriginWith(ExtensionsClient::Get()->GetNewWebstoreBaseURL());
 
   if (!allowed_with_active_tab) {
     if (error)

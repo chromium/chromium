@@ -1530,8 +1530,11 @@ TEST_F(CaptureVisiblePageTest, URLsCapturableOnlyWithActiveTab) {
       // The NTP.
       GURL(chrome::kChromeUINewTabURL),
 
-      // The Chrome Web Store.
+      // The Chrome Web Store URL.
       ExtensionsClient::Get()->GetWebstoreBaseURL(),
+
+      // The new Chrome Web Store URL.
+      ExtensionsClient::Get()->GetNewWebstoreBaseURL(),
   };
 
   for (const GURL& url : test_urls) {
