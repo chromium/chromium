@@ -70,8 +70,9 @@ void NGLogicalAnchorQuery::Set(const AtomicString& name,
                                const NGPhysicalFragment& fragment,
                                const LogicalRect& rect) {
   DCHECK(fragment.GetLayoutObject());
-  Set(name, MakeGarbageCollected<NGLogicalAnchorReference>(
-                fragment, rect, fragment.IsPositioned()));
+  Set(name,
+      MakeGarbageCollected<NGLogicalAnchorReference>(
+          fragment, rect, /* is_invalid */ fragment.IsOutOfFlowPositioned()));
 }
 
 void NGLogicalAnchorQuery::Set(const AtomicString& name,
@@ -108,12 +109,12 @@ void NGLogicalAnchorQuery::SetFromPhysical(
     const NGPhysicalAnchorQuery& physical_query,
     const WritingModeConverter& converter,
     const LogicalOffset& additional_offset,
-    bool is_positioned) {
+    bool is_invalid) {
   for (const auto& it : physical_query.anchor_references_) {
     LogicalRect rect = converter.ToLogical(it.value->rect);
     rect.offset += additional_offset;
     Set(it.key, MakeGarbageCollected<NGLogicalAnchorReference>(
-                    *it.value->fragment, rect, is_positioned));
+                    *it.value->fragment, rect, is_invalid));
   }
 }
 

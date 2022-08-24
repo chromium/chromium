@@ -182,31 +182,38 @@ TEST_F(NGAnchorQueryTest, AnchorNameValid) {
     <div id="container" style="position: relative">
       <div id="static1">
         <div id="rel2" style="position: relative">
-          <div id="rel1" style="position: relative">
-            <div style="anchor-name: --static"></div>
-            <div style="anchor-name: --abspos; position: absolute"></div>
+          <div id="abs1" style="position: absolute">
+            <div id="rel1" style="position: relative">
+              <div style="anchor-name: --static"></div>
+              <div style="anchor-name: --abspos; position: absolute"></div>
+            </div>
           </div>
+        </div>
       </div>
     </div>
   )HTML");
   // For `rel1`, only `--static` is valid because "if el has the same containing
-  // block as the querying element, el is not positioned."
+  // block as the querying element, el is not absolutely positioned."
   EXPECT_THAT(ValidAnchorNames(*GetElementById("rel1")),
               testing::ElementsAre("--static"));
-  // For `rel2`, nothing is valid because "if el has a different containing
+  // For `abs1`, all anchors are valid because "if el has a different containing
   // block from the querying element, the last containing block in el's
   // containing block chain before reaching the querying element's containing
-  // block is not positioned." The "last containing block" is `rel1`, which is
-  // positioned (has `position: relative`.)
+  // block is not absolutely positioned." The "last containing block" is `rel1`,
+  // which is not absolutely positioned (has `position: relative`.)
+  EXPECT_THAT(ValidAnchorNames(*GetElementById("abs1")),
+              testing::ElementsAre("--abspos", "--static"));
+  // For the same reason, `rel2` has no anchors because the "last containing
+  // block" is `abs1`.
   EXPECT_THAT(ValidAnchorNames(*GetElementById("rel2")),
               testing::ElementsAre());
-  // Same for `static1`. Its last containing block is `rel2`. It's not visible
-  // to the web though, as the `static1` can't be a containing block of
-  // positioned objects. This is to test the internal propagation mechanism.
+  // The last containing block for `static1` is `rel2`. It's not visible to the
+  // web though, as the `static1` can't be a containing block of positioned
+  // objects. This is to test the internal propagation mechanism.
   EXPECT_THAT(ValidAnchorNames(*GetElementById("static1")),
-              testing::ElementsAre());
+              testing::ElementsAre("--abspos", "--static"));
   // For `container`, the last containing block is `static1`, which is not
-  // positioned, so all anchor names are valid.
+  // absolutely positioned, so all anchor names are valid.
   EXPECT_THAT(ValidAnchorNames(*GetElementById("container")),
               testing::ElementsAre("--abspos", "--static"));
 }

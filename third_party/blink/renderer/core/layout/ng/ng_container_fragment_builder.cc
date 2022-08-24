@@ -404,8 +404,9 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
 
   // Collect any anchor references.
   if (const NGPhysicalAnchorQuery* anchor_query = fragment.AnchorQuery()) {
-    anchor_query_.SetFromPhysical(*anchor_query, converter, adjusted_offset,
-                                  fragment.IsPositioned());
+    anchor_query_.SetFromPhysical(
+        *anchor_query, converter, adjusted_offset,
+        /* is_invalid */ fragment.IsOutOfFlowPositioned());
   }
 
   NGFragmentedOutOfFlowData* oof_data = fragment.FragmentedOutOfFlowData();

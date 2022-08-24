@@ -99,7 +99,7 @@ class CORE_EXPORT NGLogicalAnchorQuery {
   void SetFromPhysical(const NGPhysicalAnchorQuery& physical_query,
                        const WritingModeConverter& converter,
                        const LogicalOffset& additional_offset,
-                       bool is_positioned);
+                       bool is_invalid);
   void SetAsStitched(base::span<const NGLogicalLink> children,
                      WritingDirectionMode writing_direction);
 
