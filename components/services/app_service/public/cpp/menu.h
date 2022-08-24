@@ -84,6 +84,9 @@ struct COMPONENT_EXPORT(APP_TYPES) MenuItems {
   MenuItems& operator=(const MenuItems&) = delete;
   ~MenuItems();
 
+  MenuItems(MenuItems&&);
+  MenuItems& operator=(MenuItems&&);
+
   std::vector<MenuItemPtr> items;
 };
 
@@ -91,6 +94,30 @@ struct COMPONENT_EXPORT(APP_TYPES) MenuItems {
 // AppService.
 COMPONENT_EXPORT(APP_TYPES)
 MenuType ConvertMojomMenuTypeToMenuType(apps::mojom::MenuType mojom_menu_type);
+
+COMPONENT_EXPORT(APP_TYPES)
+MenuItemType ConvertMojomMenuItemTypeToMenuItemType(
+    apps::mojom::MenuItemType mojom_menu_item_type);
+
+COMPONENT_EXPORT(APP_TYPES)
+apps::mojom::MenuItemType ConvertMenuItemTypeToMojomMenuItemType(
+    MenuItemType menu_item_type);
+
+COMPONENT_EXPORT(APP_TYPES)
+MenuItemPtr ConvertMojomMenuItemToMenuItem(
+    const apps::mojom::MenuItemPtr& mojom_menu_item);
+
+COMPONENT_EXPORT(APP_TYPES)
+apps::mojom::MenuItemPtr ConvertMenuItemToMojomMenuItem(
+    const MenuItemPtr& menu_item);
+
+COMPONENT_EXPORT(APP_TYPES)
+MenuItems ConvertMojomMenuItemsToMenuItems(
+    const apps::mojom::MenuItemsPtr& mojom_menu_items);
+
+COMPONENT_EXPORT(APP_TYPES)
+apps::mojom::MenuItemsPtr ConvertMenuItemsToMojomMenuItems(
+    const MenuItems& menu_item);
 
 }  // namespace apps
 
