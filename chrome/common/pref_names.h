@@ -510,6 +510,7 @@ extern const char kPrintingSendUsernameAndFilenameEnabled[];
 extern const char kPrintingMaxSheetsAllowed[];
 extern const char kPrintJobHistoryExpirationPeriod[];
 extern const char kDeletePrintJobHistoryAllowed[];
+extern const char kPrintingClientNameTemplate[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 extern const char kDefaultSupervisedUserFilteringBehavior[];

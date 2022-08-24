@@ -32283,6 +32283,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1004" label="PrefixedStorageInfoEnabled"/>
   <int value="1005" label="LoadCryptoTokenExtension"/>
   <int value="1006" label="HighEfficiencyModeEnabled"/>
+  <int value="1007" label="DevicePrintingClientNameTemplate"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

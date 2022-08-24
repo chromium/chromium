@@ -2058,6 +2058,17 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
                     nullptr);
     }
   }
+
+  if (policy.has_device_printing_client_name_template()) {
+    const em::StringPolicyProto& container(
+        policy.device_printing_client_name_template());
+    if (container.has_value() && !container.value().empty()) {
+      policies->Set(key::kDevicePrintingClientNameTemplate,
+                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                    POLICY_SOURCE_CLOUD, base::Value(container.value()),
+                    nullptr);
+    }
+  }
 }
 
 }  // namespace

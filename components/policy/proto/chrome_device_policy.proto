@@ -1873,4 +1873,5 @@ message ChromeDeviceSettingsProto {
   optional SAMLUsernameProto saml_username = 135;
   optional StringListPolicyProto
       device_login_screen_context_aware_access_signals_allowlist = 136;
+  optional StringPolicyProto device_printing_client_name_template = 137;
 }

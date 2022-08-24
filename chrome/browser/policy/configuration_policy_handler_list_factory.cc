@@ -1329,6 +1329,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kDevicePowerAdaptiveChargingEnabled,
     ash::prefs::kPowerAdaptiveChargingEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kDevicePrintingClientNameTemplate,
+    prefs::kPrintingClientNameTemplate,
+    base::Value::Type::STRING },
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX)

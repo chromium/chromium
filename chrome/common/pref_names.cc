@@ -1597,6 +1597,10 @@ const char kPrintJobHistoryExpirationPeriod[] =
 // deleted.
 const char kDeletePrintJobHistoryAllowed[] =
     "printing.delete_print_job_history_allowed";
+
+// String representing a template for the 'client-name' IPP attribute
+// configured by the administrator
+const char kPrintingClientNameTemplate[] = "printing.client_name_template";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // An integer pref specifying the fallback behavior for sites outside of content
