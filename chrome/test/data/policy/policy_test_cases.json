@@ -7,7 +7,8 @@
       "mac",
       "android",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -30,7 +31,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -56,7 +58,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
@@ -78,7 +81,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
@@ -100,7 +104,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
@@ -118,7 +123,8 @@
     "os": [
       "win",
       "mac",
-      "linux"
+      "linux",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -178,7 +184,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
@@ -216,7 +223,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
@@ -260,7 +268,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -282,7 +291,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -306,7 +316,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
@@ -329,7 +340,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -404,7 +416,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -448,7 +461,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -468,7 +482,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -507,7 +522,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -552,7 +568,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -653,7 +670,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -672,7 +690,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -737,7 +756,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -756,7 +776,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -775,7 +796,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -794,7 +816,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -864,7 +887,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -936,7 +960,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -957,7 +982,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -1356,7 +1382,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
@@ -1486,7 +1513,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -1607,7 +1635,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -1641,7 +1670,8 @@
       "win",
       "mac",
       "linux",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "official_only": true,
     "can_be_recommended": true,
@@ -1665,7 +1695,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
@@ -1689,7 +1720,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
@@ -1709,7 +1741,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
@@ -1804,7 +1837,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
@@ -1836,7 +1870,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
@@ -1874,7 +1909,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
@@ -1921,7 +1957,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -1961,7 +1998,8 @@
       "mac",
       "android",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -2089,7 +2127,8 @@
     "os": [
       "win",
       "mac",
-      "linux"
+      "linux",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -2108,7 +2147,8 @@
     "os": [
       "win",
       "mac",
-      "linux"
+      "linux",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -2132,7 +2172,8 @@
       "mac",
       "linux",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "can_be_recommended": false,
     "policy_pref_mapping_tests": [
@@ -2172,7 +2213,8 @@
       "mac",
       "linux",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
@@ -2228,7 +2270,8 @@
       "mac",
       "linux",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
@@ -2271,7 +2314,8 @@
       "mac",
       "linux",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -2299,7 +2343,8 @@
       "mac",
       "linux",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -2343,7 +2388,8 @@
       "linux",
       "android",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -2367,7 +2413,8 @@
       "linux",
       "android",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -2472,7 +2519,8 @@
       "android",
       "chromeos_ash",
       "chromeos_lacros",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -2500,7 +2548,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -2520,7 +2569,8 @@
       "win",
       "linux",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -2608,7 +2658,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -2653,7 +2704,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -2684,7 +2736,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -2727,7 +2780,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -2770,7 +2824,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -2806,7 +2861,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -2831,7 +2887,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -2928,7 +2985,8 @@
       "mac",
       "linux",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -3134,7 +3192,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -3165,7 +3224,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -3205,7 +3265,8 @@
       "mac",
       "android",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -3247,7 +3308,8 @@
       "linux",
       "mac",
       "chromeos_lacros",
-      "chromeos_ash"
+      "chromeos_ash",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -3289,7 +3351,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
@@ -3519,7 +3582,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -3555,7 +3619,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -3579,7 +3644,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -3600,7 +3666,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -3627,7 +3694,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -3648,7 +3716,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -3673,7 +3742,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -3719,7 +3789,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -3738,7 +3809,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
@@ -3817,7 +3889,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -3878,7 +3951,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -3903,7 +3977,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
@@ -3975,7 +4050,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
@@ -3998,7 +4074,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
@@ -4082,7 +4159,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
@@ -4124,7 +4202,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
@@ -4156,7 +4235,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
@@ -4189,7 +4269,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
@@ -4222,7 +4303,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
@@ -4261,7 +4343,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -4283,7 +4366,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -4323,7 +4407,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -4354,7 +4439,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
@@ -4384,7 +4470,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
@@ -4427,7 +4514,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
@@ -4588,7 +4676,8 @@
       "mac",
       "android",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
@@ -4620,7 +4709,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -4659,7 +4749,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -4692,7 +4783,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -4731,7 +4823,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -4764,7 +4857,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -4803,7 +4897,8 @@
       "linux",
       "mac",
       "chromeos_lacros",
-      "chromeos_ash"
+      "chromeos_ash",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -4832,7 +4927,8 @@
       "linux",
       "mac",
       "chromeos_lacros",
-      "chromeos_ash"
+      "chromeos_ash",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -4861,7 +4957,8 @@
       "linux",
       "mac",
       "chromeos_lacros",
-      "chromeos_ash"
+      "chromeos_ash",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -4890,7 +4987,8 @@
       "linux",
       "mac",
       "chromeos_lacros",
-      "chromeos_ash"
+      "chromeos_ash",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -4920,7 +5018,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -4940,7 +5039,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -4959,7 +5059,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
@@ -4991,7 +5092,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -5022,7 +5124,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -5047,7 +5150,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -5072,7 +5176,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -5107,7 +5212,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -5173,7 +5279,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -5239,7 +5346,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
@@ -5262,7 +5370,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
@@ -5285,7 +5394,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
@@ -5308,7 +5418,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
@@ -5330,7 +5441,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
@@ -5352,7 +5464,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
@@ -5374,7 +5487,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
@@ -5396,7 +5510,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
@@ -5419,7 +5534,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
@@ -5442,7 +5558,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
@@ -5464,7 +5581,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -5502,7 +5620,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -5523,7 +5642,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -5545,7 +5665,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
@@ -5568,7 +5689,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
@@ -5603,7 +5725,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
@@ -5626,7 +5749,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
@@ -5648,7 +5772,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
@@ -5670,7 +5795,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
@@ -5693,7 +5819,8 @@
       "mac",
       "android",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
@@ -5728,7 +5855,8 @@
       "mac",
       "android",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
@@ -5763,7 +5891,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -5852,7 +5981,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
@@ -5875,7 +6005,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -5896,7 +6027,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -5917,7 +6049,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
@@ -5939,7 +6072,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -5974,7 +6108,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -6017,7 +6152,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -6058,7 +6194,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
@@ -6090,7 +6227,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
@@ -6122,7 +6260,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -6150,7 +6289,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -6167,7 +6307,8 @@
     "os": [
       "win",
       "mac",
-      "linux"
+      "linux",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -6208,7 +6349,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -6242,7 +6384,8 @@
     "os": [
       "win",
       "mac",
-      "linux"
+      "linux",
+      "fuchsia"
     ],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
@@ -6260,7 +6403,8 @@
     "os": [
       "win",
       "mac",
-      "linux"
+      "linux",
+      "fuchsia"
     ],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
@@ -6278,7 +6422,8 @@
     "os": [
       "win",
       "mac",
-      "linux"
+      "linux",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -6295,7 +6440,8 @@
     "os": [
       "win",
       "mac",
-      "linux"
+      "linux",
+      "fuchsia"
     ],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
@@ -6313,7 +6459,8 @@
     "os": [
       "win",
       "mac",
-      "linux"
+      "linux",
+      "fuchsia"
     ],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
@@ -6331,7 +6478,8 @@
     "os": [
       "win",
       "mac",
-      "linux"
+      "linux",
+      "fuchsia"
     ],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
@@ -6351,7 +6499,8 @@
       "chromeos_lacros",
       "win",
       "linux",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -6377,7 +6526,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -6414,7 +6564,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -6466,7 +6617,8 @@
     "os": [
       "win",
       "mac",
-      "linux"
+      "linux",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -6505,7 +6657,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -6522,7 +6675,8 @@
     "os": [
       "win",
       "mac",
-      "linux"
+      "linux",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -6568,7 +6722,8 @@
     "os": [
       "win",
       "mac",
-      "linux"
+      "linux",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -6600,7 +6755,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -6642,7 +6798,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
@@ -6673,7 +6830,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -6708,7 +6866,7 @@
   },
   "BuiltInDnsClientEnabled.FeatureDisabledByDefault": {
     "os": [
-      "linux"
+      "linux", "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -6773,7 +6931,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -6805,7 +6964,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -6829,7 +6989,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
@@ -6857,7 +7018,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -6874,7 +7036,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -6899,7 +7062,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -6943,7 +7107,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -6983,7 +7148,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -7004,7 +7170,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -7045,7 +7212,8 @@
       "win",
       "android",
       "mac",
-      "linux"
+      "linux",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -7103,7 +7271,8 @@
   "BrowserSignin.DesktopForce": {
     "os": [
       "win",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -7224,7 +7393,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -7246,7 +7416,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -7285,7 +7456,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -7317,7 +7489,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -7352,7 +7525,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -7387,7 +7561,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -7422,7 +7597,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -7465,7 +7641,8 @@
       "chromeos_lacros",
       "linux",
       "mac",
-      "win"
+      "win",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -7487,7 +7664,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -7517,7 +7695,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -7536,7 +7715,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -7555,7 +7735,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -7576,7 +7757,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -7610,7 +7792,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -7631,7 +7814,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -7663,7 +7847,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -7682,7 +7867,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -7705,7 +7891,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -7724,7 +7911,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -7814,7 +8002,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -7835,7 +8024,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -7873,7 +8063,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -7904,7 +8095,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -7926,7 +8118,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -7951,7 +8144,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -7970,7 +8164,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -8029,7 +8224,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -8157,7 +8353,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -8179,7 +8376,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -8200,7 +8398,8 @@
       "chromeos_lacros",
       "linux",
       "mac",
-      "win"
+      "win",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -8222,7 +8421,8 @@
       "chromeos_lacros",
       "linux",
       "mac",
-      "win"
+      "win",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -8260,7 +8460,8 @@
       "chromeos_lacros",
       "linux",
       "mac",
-      "win"
+      "win",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -9946,7 +10147,8 @@
       "android",
       "linux",
       "win",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -10028,7 +10230,8 @@
       "win",
       "linux",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -10100,7 +10303,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -10122,7 +10326,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -10141,7 +10346,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -10213,7 +10419,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -10244,7 +10451,8 @@
       "linux",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -10301,7 +10509,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -10368,7 +10577,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -10425,7 +10635,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -11197,7 +11408,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -11251,7 +11463,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -11286,7 +11499,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -11325,7 +11539,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -11359,7 +11574,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -11572,7 +11788,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -11741,7 +11958,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -11786,7 +12004,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -12645,7 +12864,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -12736,7 +12956,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -12885,7 +13106,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -12954,7 +13176,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -13015,7 +13238,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -13061,7 +13285,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -13103,7 +13328,8 @@
       "chromeos_lacros",
       "linux",
       "win",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -13439,7 +13665,8 @@
       "mac",
       "linux",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -13472,7 +13699,8 @@
       "chromeos_lacros",
       "linux",
       "win",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -13509,7 +13737,8 @@
       "chromeos_lacros",
       "linux",
       "win",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -13540,7 +13769,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -13573,7 +13803,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -13775,7 +14006,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -13817,7 +14049,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -14790,7 +15023,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -14849,7 +15083,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "note": "Policy uses default value if CloudReportingEnabled is false or unset.",
     "policy_pref_mapping_tests": [
@@ -14987,7 +15222,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -15033,7 +15269,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -15054,7 +15291,8 @@
       "linux",
       "mac",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -15129,7 +15367,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -15146,7 +15385,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -15236,7 +15476,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -15270,7 +15511,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -15330,7 +15572,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -15358,7 +15601,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -15386,7 +15630,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -15414,7 +15659,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -15442,7 +15688,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -15470,7 +15717,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -15530,7 +15778,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -15630,7 +15879,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -15725,7 +15975,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -15820,7 +16071,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -15913,7 +16165,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -16056,7 +16309,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -16079,7 +16333,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -16152,7 +16407,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -16195,7 +16451,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -16246,7 +16503,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -16306,7 +16564,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -16377,7 +16636,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -16414,7 +16674,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -16440,7 +16701,8 @@
       "mac",
       "chromeos_lacros",
       "chromeos_ash",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -16479,7 +16741,8 @@
       "mac",
       "chromeos_lacros",
       "chromeos_ash",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -16537,7 +16800,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
@@ -16558,7 +16822,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -16578,7 +16843,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -16598,7 +16864,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -16667,7 +16934,7 @@
     "reason_for_missing_test": "Policy was removed"
   },
   "LensRegionSearchEnabled": {
-    "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros"],
+    "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros", "fuchsia"],
     "policy_pref_mapping_tests": [
       {
         "policies": { "LensRegionSearchEnabled": true },
@@ -16713,7 +16980,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -16732,7 +17000,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -16751,7 +17020,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
@@ -16773,7 +17043,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
@@ -16795,7 +17066,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
@@ -16817,7 +17089,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
@@ -16941,7 +17214,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -16979,7 +17253,8 @@
       "chromeos_lacros",
       "linux",
       "mac",
-      "win"
+      "win",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -17049,7 +17324,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -17103,7 +17379,8 @@
       "win",
       "linux",
       "mac",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -17123,7 +17400,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -17145,7 +17423,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -17231,7 +17510,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -17267,7 +17547,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -17321,7 +17602,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -17379,7 +17661,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "can_be_recommended": false,
     "policy_pref_mapping_tests": [
@@ -17406,7 +17689,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "can_be_recommended": false,
     "policy_pref_mapping_tests": [
@@ -17439,7 +17723,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "can_be_recommended": false,
     "policy_pref_mapping_tests": [
@@ -17478,7 +17763,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -17609,7 +17895,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -17714,7 +18001,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -17855,7 +18143,7 @@
     ]
   },
   "ChromeAppsEnabled": {
-    "os": ["win", "linux", "mac"],
+    "os": ["win", "linux", "mac", "fuchsia"],
     "policy_pref_mapping_tests": [
       {
         "policies": { "ChromeAppsEnabled": false },
@@ -18027,7 +18315,7 @@
     ]
   },
   "PromptOnMultipleMatchingCertificates": {
-    "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros"],
+    "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros", "fuchsia"],
     "policy_pref_mapping_tests": [
       {
         "policies": {},
@@ -18056,7 +18344,7 @@
     ]
   },
   "SideSearchEnabled": {
-    "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros"],
+    "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros", "fuchsia"],
     "policy_pref_mapping_tests": [
       {
         "policies": {
@@ -18072,7 +18360,7 @@
     ]
   },
   "AccessCodeCastEnabled": {
-    "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros"],
+    "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros", "fuchsia"],
     "policy_pref_mapping_tests": [
       {
         "policies": {},
@@ -18101,7 +18389,7 @@
     ]
   },
   "AccessCodeCastDeviceDuration": {
-    "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros"],
+    "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros", "fuchsia"],
     "policy_pref_mapping_tests": [
       {
         "policies": {
@@ -18251,7 +18539,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -18291,7 +18580,8 @@
       "chromeos_lacros",
       "linux",
       "mac",
-      "win"
+      "win",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -18334,7 +18624,7 @@
   },
   "OriginAgentClusterDefaultEnabled": {
     "os": [
-      "win", "linux", "mac", "android", "chromeos_ash", "chromeos_lacros"
+      "win", "linux", "mac", "android", "chromeos_ash", "chromeos_lacros", "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -18450,7 +18740,7 @@
     "reason_for_missing_test": "Chrome OS device policy used by cryptohome only, not used in Chrome."
   },
   "ExemptDomainFileTypePairsFromFileTypeDownloadWarnings": {
-    "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros"],
+    "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros", "fuchsia"],
     "can_be_recommended": false,
     "policy_pref_mapping_tests": [
       {
@@ -18474,7 +18764,7 @@
     ]
   },
   "FirstPartySetsEnabled": {
-    "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros", "android"],
+    "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros", "android", "fuchsia"],
     "policy_pref_mapping_tests": [
       {
         "note": "Check default values (no policies set)",
@@ -18512,7 +18802,7 @@
     ]
   },
   "FirstPartySetsOverrides": {
-    "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros", "android"],
+    "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros", "android", "fuchsia"],
     "policy_pref_mapping_tests": [
       {
         "note": "Default value (no policies set)",
@@ -18620,7 +18910,8 @@
       "chromeos_lacros",
       "linux",
       "mac",
-      "win"
+      "win",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -18697,7 +18988,7 @@
     ]
   },
   "DefaultWindowPlacementSetting": {
-    "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros"],
+    "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros", "fuchsia"],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
       {
@@ -18723,7 +19014,7 @@
     ]
   },
   "WindowPlacementAllowedForUrls": {
-    "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros"],
+    "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros", "fuchsia"],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
       {
@@ -18745,7 +19036,7 @@
     ]
   },
   "WindowPlacementBlockedForUrls": {
-    "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros"],
+    "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros", "fuchsia"],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
       {
@@ -18767,7 +19058,7 @@
     ]
   },
   "DefaultLocalFontsSetting": {
-    "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros", "android"],
+    "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros", "android", "fuchsia"],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
       {
@@ -18793,7 +19084,7 @@
     ]
   },
   "LocalFontsAllowedForUrls": {
-    "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros", "android"],
+    "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros", "android", "fuchsia"],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
       {
@@ -18815,7 +19106,7 @@
     ]
   },
   "LocalFontsBlockedForUrls": {
-    "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros", "android"],
+    "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros", "android", "fuchsia"],
     "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "policy_pref_mapping_tests": [
       {
@@ -18840,7 +19131,7 @@
     "reason_for_missing_test": "Maps into CrosSettings"
   },
   "IsolatedAppsDeveloperModeAllowed": {
-    "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros"],
+    "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros", "fuchsia"],
     "policy_pref_mapping_tests": [
       {
         "policies": { "IsolatedAppsDeveloperModeAllowed": false },
@@ -18866,7 +19157,8 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "chromeos_lacros"
+      "chromeos_lacros",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -18902,7 +19194,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -18960,7 +19253,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -19071,7 +19365,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
@@ -19171,7 +19466,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -19211,7 +19507,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -19244,7 +19541,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -19327,7 +19625,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -19363,7 +19662,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {

@@ -126,10 +126,6 @@
 -ExtensionWebRequestApiTest.WebRequestPacRequestProtection
 -ExtensionWebRequestApiTest.WebSocketRequestOnWorker
 
-# TODO(crbug.com/1326970): //chrome/test/data/policy/policy_test_cases.json doesn't seem to account
-# for "fuchsia"
--PolicyPrefsTestCoverageTest.AllPoliciesHaveATestCase
-
 # TODO(crbug.com/1326971):
 # ../../chrome/browser/privacy_budget/privacy_budget_browsertest.cc:505: Failure
 # Value of: base::FeatureList::IsEnabled(features::kIdentifiabilityStudy)
