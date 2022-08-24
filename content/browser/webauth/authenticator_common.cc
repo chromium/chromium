@@ -1661,12 +1661,8 @@ AuthenticatorCommon::CreateMakeCredentialResponse(
   auto common_info = blink::mojom::CommonCredentialInfo::New();
   common_info->client_data_json.assign(client_data_json_.begin(),
                                        client_data_json_.end());
-  common_info->authenticator_data = response_data.attestation_object()
-                                        .authenticator_data()
-                                        .SerializeToByteArray();
   common_info->raw_id = response_data.attestation_object().GetCredentialId();
   common_info->id = Base64UrlEncode(common_info->raw_id);
-  response->info = std::move(common_info);
 
   response->authenticator_attachment =
       response_data.transport_used()
@@ -1783,6 +1779,10 @@ AuthenticatorCommon::CreateMakeCredentialResponse(
   }
   response->attestation_object =
       response_data.GetCBOREncodedAttestationObject();
+  common_info->authenticator_data = response_data.attestation_object()
+                                        .authenticator_data()
+                                        .SerializeToByteArray();
+  response->info = std::move(common_info);
 
   const device::PublicKey* public_key = response_data.attestation_object()
                                             .authenticator_data()

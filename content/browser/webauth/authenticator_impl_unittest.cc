@@ -4473,7 +4473,18 @@ TEST_F(AuthenticatorImplTest, GetPublicKey) {
     ASSERT_EQ(result.status, AuthenticatorStatus::SUCCESS);
     const auto& response = result.response;
     EXPECT_EQ(response->public_key_algo, static_cast<int32_t>(test.algo));
-    EXPECT_FALSE(response->info->authenticator_data.empty());
+
+    // The value of the parsed authenticator data should match what's in
+    // the attestation object.
+    absl::optional<Value> attestation_value =
+        Reader::Read(response->attestation_object);
+    CHECK(attestation_value);
+    const auto& attestation = attestation_value->GetMap();
+    const auto auth_data_it = attestation.find(Value(device::kAuthDataKey));
+    CHECK(auth_data_it != attestation.end());
+    const std::vector<uint8_t>& auth_data =
+        auth_data_it->second.GetBytestring();
+    EXPECT_EQ(auth_data, response->info->authenticator_data);
 
     ASSERT_EQ(test.evp_id.has_value(), response->public_key_der.has_value());
     if (!test.evp_id) {
