@@ -33,7 +33,7 @@ void BiometricAuthenticatorMac::Cancel(
 
 void BiometricAuthenticatorMac::AuthenticateWithMessage(
     device_reauth::BiometricAuthRequester requester,
-    const std::u16string message,
+    const std::u16string& message,
     AuthenticateCallback callback) {
   if (!NeedsToAuthenticate()) {
     DCHECK(callback_.is_null());

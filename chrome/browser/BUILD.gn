@@ -404,10 +404,6 @@ static_library("browser") {
     "data_use_measurement/chrome_data_use_measurement.h",
     "defaults.cc",
     "defaults.h",
-    "device_reauth/chrome_biometric_authenticator_common.cc",
-    "device_reauth/chrome_biometric_authenticator_common.h",
-    "device_reauth/chrome_biometric_authenticator_factory.cc",
-    "device_reauth/chrome_biometric_authenticator_factory.h",
     "dips/cookie_access_filter.cc",
     "dips/cookie_access_filter.h",
     "dips/dips_bounce_detector.cc",
@@ -5835,6 +5831,8 @@ static_library("browser") {
       "component_updater/recovery_improved_component_installer_win.cc",
       "component_updater/sw_reporter_installer_win.cc",
       "component_updater/sw_reporter_installer_win.h",
+      "device_reauth/win/biometric_authenticator_win.cc",
+      "device_reauth/win/biometric_authenticator_win.h",
       "download/download_status_updater_win.cc",
       "download/trusted_sources_manager_win.cc",
       "enterprise/signals/device_info_fetcher_win.cc",
@@ -6242,6 +6240,15 @@ static_library("browser") {
 
   if (is_win || is_linux || is_android || is_chromeos) {
     deps += [ "//chrome/browser/privacy:traffic_annotation_proto" ]
+  }
+
+  if (is_android || is_mac || is_win) {
+    sources += [
+      "device_reauth/chrome_biometric_authenticator_common.cc",
+      "device_reauth/chrome_biometric_authenticator_common.h",
+      "device_reauth/chrome_biometric_authenticator_factory.cc",
+      "device_reauth/chrome_biometric_authenticator_factory.h",
+    ]
   }
 
   if (is_mac || is_win) {

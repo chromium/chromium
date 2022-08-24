@@ -49,12 +49,15 @@
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#include "chrome/browser/device_reauth/chrome_biometric_authenticator_factory.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/password_manager/password_manager_util_win.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
-#include "chrome/browser/device_reauth/chrome_biometric_authenticator_factory.h"
 #include "chrome/browser/password_manager/password_manager_util_mac.h"
 #endif
 
@@ -436,10 +439,19 @@ void PasswordsPrivateDelegateImpl::OsReauthCall(
     password_manager::PasswordAccessAuthenticator::AuthResultCallback
         callback) {
 #if BUILDFLAG(IS_WIN)
-  DCHECK(web_contents_);
-  bool result = password_manager_util_win::AuthenticateUser(
-      web_contents_->GetTopLevelNativeWindow(), purpose);
-  std::move(callback).Run(result);
+  scoped_refptr<device_reauth::BiometricAuthenticator> biometric_authenticator =
+      ChromeBiometricAuthenticatorFactory::GetInstance()
+          ->GetOrCreateBiometricAuthenticator();
+  base::OnceCallback<void()> on_reauth_completed =
+      base::BindOnce(&PasswordsPrivateDelegateImpl::OnReauthCompleted,
+                     weak_ptr_factory_.GetWeakPtr());
+
+  biometric_authenticator->AuthenticateWithMessage(
+      device_reauth::BiometricAuthRequester::kPasswordsInSettings,
+      password_manager_util_win::GetMessageForLoginPrompt(purpose),
+      std::move(callback).Then(std::move(on_reauth_completed)));
+
+  biometric_authenticator_ = std::move(biometric_authenticator);
 #elif BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(
           password_manager::features::kBiometricAuthenticationInSettings)) {
@@ -456,11 +468,12 @@ void PasswordsPrivateDelegateImpl::OsReauthCall(
         password_manager_util_mac::GetMessageForBiometricLoginPrompt(purpose),
         std::move(callback).Then(std::move(on_reauth_completed)));
 
-    // If AuthenticateWithMessage is called again(UI isn't blocked so user might
-    // click multiple times on the button), it invalidates the old request which
-    // triggers PasswordsPrivateDelegateImpl::OnReauthCompleted which resets
-    // biometric_authenticator_. Having a local variable solves that problem as
-    // there's a second scoped_refptr for the authenticator object.
+    // If AuthenticateWithMessage is called again(UI on Mac isn't blocked so
+    // user might click multiple times on the button), it invalidates the old
+    // request which triggers PasswordsPrivateDelegateImpl::OnReauthCompleted
+    // which resets biometric_authenticator_. Having a local variable solves
+    // that problem as there's a second scoped_refptr for the authenticator
+    // object.
     biometric_authenticator_ = std::move(biometric_authenticator);
   } else {
     bool result = password_manager_util_mac::AuthenticateUser(purpose);

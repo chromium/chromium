@@ -79,7 +79,7 @@ class BiometricAuthenticator : public base::RefCounted<BiometricAuthenticator> {
   // |message| contains text that will be displayed to the end user on
   // authentication request
   virtual void AuthenticateWithMessage(BiometricAuthRequester requester,
-                                       const std::u16string message,
+                                       const std::u16string& message,
                                        AuthenticateCallback callback) = 0;
 
   // Cancels an in-progress authentication if the filling surface requesting

@@ -69,7 +69,7 @@ class BiometricAuthenticatorAndroid
   // screen lock as fallback. Displays `message` in the authentication UI.
   // Note: this only supports one authentication request at a time.
   void AuthenticateWithMessage(device_reauth::BiometricAuthRequester requester,
-                               const std::u16string message,
+                               const std::u16string& message,
                                AuthenticateCallback callback) override;
 
   // Should be called by the object using the authenticator if the purpose

@@ -11,6 +11,8 @@
 #include "chrome/browser/device_reauth/android/biometric_authenticator_bridge_impl.h"
 #elif BUILDFLAG(IS_MAC)
 #include "chrome/browser/device_reauth/mac/biometric_authenticator_mac.h"
+#elif BUILDFLAG(IS_WIN)
+#include "chrome/browser/device_reauth/win/biometric_authenticator_win.h"
 #endif
 
 // static
@@ -31,15 +33,20 @@ scoped_refptr<device_reauth::BiometricAuthenticator>
 ChromeBiometricAuthenticatorFactory::GetOrCreateBiometricAuthenticator() {
   if (!biometric_authenticator_) {
 #if BUILDFLAG(IS_ANDROID)
-    biometric_authenticator_ =
-        (new BiometricAuthenticatorAndroid(
-             std::make_unique<BiometricAuthenticatorBridgeImpl>()))
-            ->GetWeakPtr();
+    auto biometric_authenticator =
+        base::WrapRefCounted(new BiometricAuthenticatorAndroid(
+            std::make_unique<BiometricAuthenticatorBridgeImpl>()));
 #elif BUILDFLAG(IS_MAC)
-    biometric_authenticator_ = (new BiometricAuthenticatorMac())->GetWeakPtr();
+    auto biometric_authenticator =
+        base::WrapRefCounted(new BiometricAuthenticatorMac());
+#elif BUILDFLAG(IS_WIN)
+    auto biometric_authenticator = base::WrapRefCounted(
+        new BiometricAuthenticatorWin(std::make_unique<AuthenticatorWin>()));
 #else
-    NOTREACHED();
+    static_assert(false);
 #endif
+    biometric_authenticator_ = biometric_authenticator->GetWeakPtr();
+    return biometric_authenticator;
   }
 
   return base::WrapRefCounted(biometric_authenticator_.get());

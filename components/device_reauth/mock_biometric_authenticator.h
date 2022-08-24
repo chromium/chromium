@@ -24,7 +24,7 @@ class MockBiometricAuthenticator : public BiometricAuthenticator {
   MOCK_METHOD(void,
               AuthenticateWithMessage,
               (BiometricAuthRequester,
-               const std::u16string,
+               const std::u16string&,
                AuthenticateCallback),
               (override));
   MOCK_METHOD(void, Cancel, (BiometricAuthRequester), (override));

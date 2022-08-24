@@ -34,7 +34,7 @@ class FakeChromeBiometricAuthenticatorCommon
                     bool use_last_valid) override;
 
   void AuthenticateWithMessage(BiometricAuthRequester requester,
-                               const std::u16string message,
+                               const std::u16string& message,
                                AuthenticateCallback callback) override;
 
   void Cancel(BiometricAuthRequester requester) override;
@@ -68,7 +68,7 @@ void FakeChromeBiometricAuthenticatorCommon::Cancel(
 
 void FakeChromeBiometricAuthenticatorCommon::AuthenticateWithMessage(
     device_reauth::BiometricAuthRequester requester,
-    const std::u16string message,
+    const std::u16string& message,
     AuthenticateCallback callback) {
   NOTIMPLEMENTED();
 }

@@ -272,7 +272,7 @@ bool CheckBlankPassword(const WCHAR* username) {
 }  // namespace
 
 bool AuthenticateUser(gfx::NativeWindow window,
-                      password_manager::ReauthPurpose purpose) {
+                      const std::u16string& password_prompt) {
   bool retval = false;
   WCHAR cur_username[CREDUI_MAX_USERNAME_LENGTH + 1] = {};
   DWORD cur_username_length = std::size(cur_username);
@@ -291,25 +291,6 @@ bool AuthenticateUser(gfx::NativeWindow window,
   // left empty on domain joined machines, CredUIPromptForWindowsCredentials()
   // fails to run.
   std::u16string product_name = l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
-  std::u16string password_prompt;
-  switch (purpose) {
-    case password_manager::ReauthPurpose::VIEW_PASSWORD:
-      password_prompt =
-          l10n_util::GetStringUTF16(IDS_PASSWORDS_PAGE_AUTHENTICATION_PROMPT);
-      break;
-    case password_manager::ReauthPurpose::COPY_PASSWORD:
-      password_prompt = l10n_util::GetStringUTF16(
-          IDS_PASSWORDS_PAGE_COPY_AUTHENTICATION_PROMPT);
-      break;
-    case password_manager::ReauthPurpose::EDIT_PASSWORD:
-      password_prompt = l10n_util::GetStringUTF16(
-          IDS_PASSWORDS_PAGE_EDIT_AUTHENTICATION_PROMPT);
-      break;
-    case password_manager::ReauthPurpose::EXPORT:
-      password_prompt = l10n_util::GetStringUTF16(
-          IDS_PASSWORDS_PAGE_EXPORT_AUTHENTICATION_PROMPT);
-      break;
-  }
   CREDUI_INFO cui;
   cui.cbSize = sizeof(cui);
   cui.hwndParent = window->GetHost()->GetAcceleratedWidget();
@@ -352,6 +333,26 @@ bool AuthenticateUser(gfx::NativeWindow window,
   } while (!retval && tries < kMaxPasswordRetries);
 
   return retval;
+}
+
+std::u16string GetMessageForLoginPrompt(
+    password_manager::ReauthPurpose purpose) {
+  switch (purpose) {
+    case password_manager::ReauthPurpose::VIEW_PASSWORD:
+      return l10n_util::GetStringUTF16(
+          IDS_PASSWORDS_PAGE_AUTHENTICATION_PROMPT);
+    case password_manager::ReauthPurpose::COPY_PASSWORD:
+      return l10n_util::GetStringUTF16(
+          IDS_PASSWORDS_PAGE_COPY_AUTHENTICATION_PROMPT);
+
+    case password_manager::ReauthPurpose::EDIT_PASSWORD:
+      return l10n_util::GetStringUTF16(
+          IDS_PASSWORDS_PAGE_EDIT_AUTHENTICATION_PROMPT);
+
+    case password_manager::ReauthPurpose::EXPORT:
+      return l10n_util::GetStringUTF16(
+          IDS_PASSWORDS_PAGE_EXPORT_AUTHENTICATION_PROMPT);
+  }
 }
 
 }  // namespace password_manager_util_win

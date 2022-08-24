@@ -852,10 +852,13 @@ void ManagePasswordsUIController::ReopenBubbleAfterAuth(
 }
 
 bool ManagePasswordsUIController::ShowAuthenticationDialog() {
+// TODO(crbug.com/1353344): Use biometric authentication to reveal password in
+// the bubble.
 #if BUILDFLAG(IS_WIN)
   return password_manager_util_win::AuthenticateUser(
       web_contents()->GetNativeView(),
-      password_manager::ReauthPurpose::VIEW_PASSWORD);
+      password_manager_util_win::GetMessageForLoginPrompt(
+          password_manager::ReauthPurpose::VIEW_PASSWORD));
 #elif BUILDFLAG(IS_MAC)
   return password_manager_util_mac::AuthenticateUser(
       password_manager::ReauthPurpose::VIEW_PASSWORD);

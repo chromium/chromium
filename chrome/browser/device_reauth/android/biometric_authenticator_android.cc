@@ -142,7 +142,7 @@ void BiometricAuthenticatorAndroid::Authenticate(
 
 void BiometricAuthenticatorAndroid::AuthenticateWithMessage(
     device_reauth::BiometricAuthRequester requester,
-    const std::u16string message,
+    const std::u16string& message,
     AuthenticateCallback callback) {
   NOTIMPLEMENTED();
 }

@@ -5163,7 +5163,6 @@ test("unit_tests") {
     "../browser/content_settings/page_specific_content_settings_unittest.cc",
     "../browser/content_settings/sound_content_setting_observer_unittest.cc",
     "../browser/custom_handlers/chrome_protocol_handler_registry_unittest.cc",
-    "../browser/device_reauth/chrome_biometric_authenticator_common_unittest.cc",
     "../browser/download/chrome_download_manager_delegate_unittest.cc",
     "../browser/download/deferred_client_wrapper_unittest.cc",
     "../browser/download/download_history_unittest.cc",
@@ -5966,6 +5965,7 @@ test("unit_tests") {
       "../browser/chrome_browser_main_win_unittest.cc",
       "../browser/chrome_process_singleton_win_unittest.cc",
       "../browser/component_updater/sw_reporter_installer_win_unittest.cc",
+      "../browser/device_reauth/win/biometric_authenticator_win_unittest.cc",
       "../browser/install_verification/win/module_info_unittest.cc",
       "../browser/install_verification/win/module_list_unittest.cc",
       "../browser/install_verification/win/module_verification_test.cc",
@@ -6187,6 +6187,10 @@ test("unit_tests") {
 
   if (is_win || is_chromeos || is_mac) {
     deps += [ "//chrome/browser/webshare:unit_tests" ]
+  }
+
+  if (is_win || is_mac || is_android) {
+    sources += [ "../browser/device_reauth/chrome_biometric_authenticator_common_unittest.cc" ]
   }
 
   if (enable_dice_support) {

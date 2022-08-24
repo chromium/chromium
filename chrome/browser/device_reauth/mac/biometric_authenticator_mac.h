@@ -41,7 +41,7 @@ class BiometricAuthenticatorMac : public ChromeBiometricAuthenticatorCommon {
   // be displayed there) using his touchId or if it's not setUp default one with
   // password will appear.
   void AuthenticateWithMessage(device_reauth::BiometricAuthRequester requester,
-                               const std::u16string message,
+                               const std::u16string& message,
                                AuthenticateCallback callback) override;
 
   // Should be called by the object using the authenticator if the purpose
