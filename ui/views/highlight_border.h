@@ -53,6 +53,18 @@ class VIEWS_EXPORT HighlightBorder : public views::Border {
     kFullInsets,
   };
 
+  // Paints the highlight border onto `canvas` with given highlight and border
+  // border color. Note that directly using this function won't set the insets
+  // on any view so it acts like setting kNoInsets when using HighlightBorder
+  // class.
+  static void PaintBorderToCanvas(gfx::Canvas* canvas,
+                                  SkColor highlight_color,
+                                  SkColor border_color,
+                                  const gfx::Rect& bounds,
+                                  const gfx::RoundedCornersF& corner_radii,
+                                  Type type,
+                                  bool use_light_colors);
+
   // Paints the highlight border onto `canvas` for the specified `view`. The
   // color of the border will be determined using `view`'s color provider. Note
   // that directly using this function won't set the insets on any view so it
