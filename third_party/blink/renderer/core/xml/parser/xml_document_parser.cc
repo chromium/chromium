@@ -1204,9 +1204,6 @@ void XMLDocumentParser::GetProcessingInstruction(const String& target,
 
   CheckIfBlockingStyleSheetAdded();
 
-  if (!RuntimeEnabledFeatures::XSLTEnabled())
-    return;
-
   saw_xsl_transform_ = !saw_first_element_ && pi->IsXSL();
   if (saw_xsl_transform_ &&
       !DocumentXSLT::HasTransformSourceDocument(*GetDocument())) {

@@ -69,7 +69,6 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
   out->allow_scripts_to_close_windows = data.allow_scripts_to_close_windows();
   out->remote_fonts_enabled = data.remote_fonts_enabled();
   out->javascript_can_access_clipboard = data.javascript_can_access_clipboard();
-  out->xslt_enabled = data.xslt_enabled();
   out->dns_prefetching_enabled = data.dns_prefetching_enabled();
   out->data_saver_enabled = data.data_saver_enabled();
   out->local_storage_enabled = data.local_storage_enabled();

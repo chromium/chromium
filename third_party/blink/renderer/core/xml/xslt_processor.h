@@ -26,7 +26,6 @@
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/xml/xsl_style_sheet.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 
@@ -44,7 +43,6 @@ class XSLTProcessor final : public ScriptWrappable {
 
  public:
   static XSLTProcessor* Create(Document& document) {
-    DCHECK(RuntimeEnabledFeatures::XSLTEnabled());
     return MakeGarbageCollected<XSLTProcessor>(document);
   }
 

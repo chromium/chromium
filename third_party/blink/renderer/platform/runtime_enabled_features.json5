@@ -2742,10 +2742,6 @@
       status: "experimental",
     },
     {
-      name: "XSLT",
-      status: "stable",
-    },
-    {
       name: "ZeroCopyTabCapture",
     },
   ],
