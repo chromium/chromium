@@ -27,6 +27,7 @@ from py_utils import tempfile_ext
 
 from benchmarks import jetstream
 from benchmarks import jetstream2
+from benchmarks import kraken
 from benchmarks import octane
 from benchmarks import rasterize_and_record_micro
 from benchmarks import speedometer
@@ -105,6 +106,7 @@ _BLACK_LIST_TEST_MODULES = {
     jetstream,  # Take 206 seconds.
     jetstream2, # Causes CQ shard to timeout, crbug.com/992837
     v8_browsing, # Flaky on Android, crbug.com/628368.
+    kraken, # Crashes on CQ blocking LKGM, b/243415984
 }
 
 # The list of benchmark names to be excluded from our smoke tests.
