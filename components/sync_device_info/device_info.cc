@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/values.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 
@@ -159,64 +158,12 @@ DeviceInfo::paask_info() const {
   return paask_info_;
 }
 
-std::string DeviceInfo::GetOSString() const {
-  switch (device_type_) {
-    case sync_pb::SyncEnums_DeviceType_TYPE_WIN:
-      return "win";
-    case sync_pb::SyncEnums_DeviceType_TYPE_MAC:
-      return "mac";
-    case sync_pb::SyncEnums_DeviceType_TYPE_LINUX:
-      return "linux";
-    case sync_pb::SyncEnums_DeviceType_TYPE_CROS:
-      return "chrome_os";
-    case sync_pb::SyncEnums_DeviceType_TYPE_PHONE:
-    case sync_pb::SyncEnums_DeviceType_TYPE_TABLET:
-      // TODO(lipalani): crbug.com/170375. Add support for ios
-      // phones and tablets.
-      return "android";
-    case sync_pb::SyncEnums_DeviceType_TYPE_UNSET:
-    case sync_pb::SyncEnums_DeviceType_TYPE_OTHER:
-      return "unknown";
-  }
-}
-
-std::string DeviceInfo::GetDeviceTypeString() const {
-  switch (device_type_) {
-    case sync_pb::SyncEnums_DeviceType_TYPE_WIN:
-    case sync_pb::SyncEnums_DeviceType_TYPE_MAC:
-    case sync_pb::SyncEnums_DeviceType_TYPE_LINUX:
-    case sync_pb::SyncEnums_DeviceType_TYPE_CROS:
-      return "desktop_or_laptop";
-    case sync_pb::SyncEnums_DeviceType_TYPE_PHONE:
-      return "phone";
-    case sync_pb::SyncEnums_DeviceType_TYPE_TABLET:
-      return "tablet";
-    case sync_pb::SyncEnums_DeviceType_TYPE_UNSET:
-    case sync_pb::SyncEnums_DeviceType_TYPE_OTHER:
-      return "unknown";
-  }
-}
-
 const std::string& DeviceInfo::fcm_registration_token() const {
   return fcm_registration_token_;
 }
 
 const ModelTypeSet& DeviceInfo::interested_data_types() const {
   return interested_data_types_;
-}
-
-std::unique_ptr<base::DictionaryValue> DeviceInfo::ToValue() const {
-  std::unique_ptr<base::DictionaryValue> value(new base::DictionaryValue());
-  value->SetString("name", client_name_);
-  value->SetString("id", public_id_);
-  value->SetString("os", GetOSString());
-  value->SetString("type", GetDeviceTypeString());
-  value->SetString("chromeVersion", chrome_version_);
-  value->SetInteger("lastUpdatedTimestamp", last_updated_timestamp().ToTimeT());
-  value->SetBoolean("sendTabToSelfReceivingEnabled",
-                    send_tab_to_self_receiving_enabled());
-  value->SetBoolean("hasSharingInfo", sharing_info().has_value());
-  return value;
 }
 
 void DeviceInfo::set_public_id(const std::string& id) {
