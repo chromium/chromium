@@ -67,9 +67,9 @@ class PortFactory(object):
         appropriate port on this platform.
         """
         port_name = port_name or self._default_port()
-        port_options = deepcopy(options)
+        port_options = deepcopy(options) or optparse.Values()
 
-        _check_configuration_and_target(self._host.filesystem, port_options)
+        _update_configuration_and_target(self._host.filesystem, port_options)
 
         port_class, class_name = self.get_port_class(port_name)
         if port_class is None:
@@ -216,14 +216,14 @@ def _builder_options(builder_name):
     })
 
 
-def _check_configuration_and_target(host, options):
-    """Updates options.configuration based on options.target."""
-    if not options or not getattr(options, 'target', None):
-        return
+def _update_configuration_and_target(host, options):
+    """Updates options.configuration and options.target based on a best guess."""
+    if not getattr(options, 'target', None):
+        options.target = getattr(options, 'configuration', None) or 'Release'
 
     gn_configuration = _read_configuration_from_gn(host, options)
     if gn_configuration:
-        expected_configuration = getattr(options, 'configuration')
+        expected_configuration = getattr(options, 'configuration', None)
         if expected_configuration not in (None, gn_configuration):
             raise ValueError('Configuration does not match the GN build args. '
                              'Expected "%s" but got "%s".' %

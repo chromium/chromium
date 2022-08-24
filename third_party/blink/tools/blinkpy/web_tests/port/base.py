@@ -264,6 +264,8 @@ class Port(object):
         self._http_lock = None  # FIXME: Why does this live on the port object?
         self._dump_reader = None
 
+        # Configuration and target are always set by PortFactory so this is only
+        # relevant in cases where a Port is created without it (testing mostly).
         if not hasattr(options, 'configuration') or not options.configuration:
             self.set_option_default('configuration',
                                     self.default_configuration())

@@ -196,3 +196,7 @@ class FactoryTest(unittest.TestCase):
                 target='Debug',
                 configuration='Release',
                 files={'out/Debug/toolchain.ninja': ''})
+
+    def test_no_target_has_correct_config(self):
+        port = self.get_port(files={'out/Release/args.gn': 'is_debug = true'})
+        self.assertEqual(port._options.configuration, 'Debug')
