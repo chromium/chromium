@@ -69,6 +69,49 @@ void LayoutObjectTest::ExpectAnonymousInlineWrapperFor(Node* node) {
   }
 }
 
+TEST_F(LayoutObjectTest, CommonAncestor) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="container">
+      <div id="child1">
+        <div id="child1_1"></div>
+      </div>
+      <div id="child2">
+        <div id="child2_1">
+          <div id="child2_1_1"></div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+  LayoutObject* container = GetLayoutObjectByElementId("container");
+  LayoutObject* child1 = GetLayoutObjectByElementId("child1");
+  LayoutObject* child1_1 = GetLayoutObjectByElementId("child1_1");
+  LayoutObject* child2 = GetLayoutObjectByElementId("child2");
+  LayoutObject* child2_1 = GetLayoutObjectByElementId("child2_1");
+  LayoutObject* child2_1_1 = GetLayoutObjectByElementId("child2_1_1");
+
+  EXPECT_EQ(container->CommonAncestor(*container), container);
+
+  EXPECT_EQ(child1->CommonAncestor(*child2), container);
+  EXPECT_EQ(child2->CommonAncestor(*child1), container);
+  EXPECT_TRUE(child1->IsBeforeInPreOrder(*child2));
+  EXPECT_FALSE(child2->IsBeforeInPreOrder(*child1));
+
+  EXPECT_EQ(child1->CommonAncestor(*child1_1), child1);
+  EXPECT_EQ(child1_1->CommonAncestor(*child1), child1);
+  EXPECT_TRUE(child1->IsBeforeInPreOrder(*child1_1));
+  EXPECT_FALSE(child1_1->IsBeforeInPreOrder(*child1));
+
+  EXPECT_EQ(child1_1->CommonAncestor(*child2_1), container);
+  EXPECT_EQ(child2_1->CommonAncestor(*child1_1), container);
+  EXPECT_TRUE(child1_1->IsBeforeInPreOrder(*child2_1));
+  EXPECT_FALSE(child2_1->IsBeforeInPreOrder(*child1_1));
+
+  EXPECT_EQ(child1_1->CommonAncestor(*child2_1_1), container);
+  EXPECT_EQ(child2_1_1->CommonAncestor(*child1_1), container);
+  EXPECT_TRUE(child1_1->IsBeforeInPreOrder(*child2_1_1));
+  EXPECT_FALSE(child2_1_1->IsBeforeInPreOrder(*child1_1));
+}
+
 TEST_F(LayoutObjectTest, LayoutDecoratedNameCalledWithPositionedObject) {
   SetBodyInnerHTML("<div id='div' style='position: fixed'>test</div>");
   Element* div = GetDocument().getElementById(AtomicString("div"));
