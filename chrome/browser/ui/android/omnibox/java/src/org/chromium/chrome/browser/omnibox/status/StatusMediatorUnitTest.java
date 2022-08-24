@@ -293,6 +293,34 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
+    public void searchEngineLogo_intermediateUrlFocusPercent() {
+        doReturn(true).when(mNewTabPageDelegate).isCurrentlyVisible();
+        mMediator.setUrlFocusChangePercent(0f);
+
+        Assert.assertEquals(false, mModel.get(StatusProperties.SHOW_STATUS_ICON));
+
+        mMediator.setUrlFocusChangePercent(0.1f);
+        Assert.assertEquals(true, mModel.get(StatusProperties.SHOW_STATUS_ICON));
+
+        mMediator.setUrlFocusChangePercent(0.4f);
+        Assert.assertEquals(true, mModel.get(StatusProperties.SHOW_STATUS_ICON));
+
+        mMediator.setUrlFocusChangePercent(0.7f);
+        Assert.assertEquals(true, mModel.get(StatusProperties.SHOW_STATUS_ICON));
+
+        mMediator.setUrlFocusChangePercent(0.9f);
+        Assert.assertEquals(true, mModel.get(StatusProperties.SHOW_STATUS_ICON));
+
+        verify(mSearchEngineLogoUtils, times(1))
+                .getSearchEngineLogo(
+                        eq(mResources), eq(BrandedColorScheme.APP_DEFAULT), any(), any());
+
+        mMediator.setUrlFocusChangePercent(0.0f);
+        Assert.assertEquals(false, mModel.get(StatusProperties.SHOW_STATUS_ICON));
+    }
+
+    @Test
+    @SmallTest
     public void resolveUrlBarTextWithAutocomplete_urlBarTextEmpty() {
         Assert.assertEquals("Empty urlBarText should resolve to empty urlBarTextWithAutocomplete",
                 "", mMediator.resolveUrlBarTextWithAutocomplete(""));
@@ -373,7 +401,7 @@ public final class StatusMediatorUnitTest {
         mMediator.setUrlHasFocus(true);
 
         mMediator.onTemplateURLServiceChanged();
-        verify(mSearchEngineLogoUtils, times(3))
+        verify(mSearchEngineLogoUtils, times(2))
                 .getSearchEngineLogo(
                         eq(mResources), eq(BrandedColorScheme.APP_DEFAULT), any(), any());
     }
@@ -441,8 +469,7 @@ public final class StatusMediatorUnitTest {
         Assert.assertTrue(mMediator.isStoreIconShowing());
 
         // Simulate that we need to switch back to the default icon.
-        mMediator.setUrlHasFocus(true);
-        mMediator.setShowIconsWhenUrlFocused(true);
+        mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);
         Assert.assertFalse(mMediator.isStoreIconShowing());
     }
 

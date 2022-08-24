@@ -265,11 +265,6 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
         mMediator.setAnimationsEnabled(shouldAnimate);
     }
 
-    /** Specify whether URL should present icons when focused. */
-    public void setShowIconsWhenUrlFocused(boolean showIconsWithUrlFocused) {
-        mMediator.setShowIconsWhenUrlFocused(showIconsWithUrlFocused);
-    }
-
     /** Returns width of the status icon including start/end margins. */
     public int getStatusIconWidth() {
         // TODO(crbug.com/1109369): try to hide this method
