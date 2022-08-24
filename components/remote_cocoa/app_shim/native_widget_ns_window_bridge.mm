@@ -421,11 +421,11 @@ void NativeWidgetNSWindowBridge::StackAbove(uint64_t sibling_id) {
   DCHECK(sibling_bridge);
 
   NSInteger sibling = sibling_bridge->ns_window().windowNumber;
-  [window_ orderWindow:NSWindowAbove relativeTo:sibling];
+  [window_ reallyOrderWindow:NSWindowAbove relativeTo:sibling];
 }
 
 void NativeWidgetNSWindowBridge::StackAtTop() {
-  [window_ orderWindow:NSWindowAbove relativeTo:0];
+  [window_ reallyOrderWindow:NSWindowAbove relativeTo:0];
 }
 
 void NativeWidgetNSWindowBridge::ShowEmojiPanel() {
