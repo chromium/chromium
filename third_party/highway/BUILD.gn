@@ -18,6 +18,8 @@ config("libhwy_external_config") {
 source_set("libhwy") {
   sources = [
     "src/hwy/aligned_allocator.cc",
+    "src/hwy/per_target.cc",
+    "src/hwy/print.cc",
     "src/hwy/targets.cc",
   ]
 
