@@ -307,7 +307,7 @@ TEST_F(HashAffiliationFetcherTest, ChangePasswordInfoIsReturnedIfPresent) {
 
   ASSERT_EQ(1u, result->groupings.size());
   EXPECT_THAT(
-      result->groupings[0],
+      result->groupings[0].facets,
       testing::UnorderedElementsAre(
           Facet{
               .uri = FacetURI::FromCanonicalSpec(kExampleWebFacet1URI),
@@ -582,6 +582,49 @@ TEST_F(HashAffiliationFetcherTest, MetricsWhenFailed) {
       "PasswordManager.AffiliationFetcher.FetchTime.Malformed", 1);
   histogram_tester.ExpectTotalCount(
       "PasswordManager.AffiliationFetcher.ResponseSize.Malformed", 1);
+}
+
+TEST_F(HashAffiliationFetcherTest, GroupBrandingInfoIsReturnedIfPresent) {
+  affiliation_pb::LookupAffiliationResponse test_response;
+
+  affiliation_pb::FacetGroup* eq_class_1 = test_response.add_group();
+  affiliation_pb::Facet* facet_1 = eq_class_1->add_facet();
+  facet_1->set_id(kExampleAndroidFacetURI);
+  auto group_branding_info =
+      std::make_unique<affiliation_pb::GroupBrandingInfo>();
+  group_branding_info->set_name(kExampleAndroidPlayName);
+  group_branding_info->set_icon_url(kExampleAndroidIconURL);
+  eq_class_1->set_allocated_group_branding_info(group_branding_info.release());
+
+  affiliation_pb::FacetGroup* eq_class_2 = test_response.add_group();
+  affiliation_pb::Facet* facet_2 = eq_class_2->add_facet();
+  facet_2->set_id(kExampleWebFacet1URI);
+
+  AffiliationFetcherInterface::RequestInfo request_info{.branding_info = true};
+
+  std::vector<FacetURI> requested_uris = {
+      FacetURI::FromCanonicalSpec(kExampleWebFacet1URI),
+      FacetURI::FromCanonicalSpec(kExampleAndroidFacetURI)};
+
+  SetupSuccessfulResponse(test_response.SerializeAsString());
+  testing::StrictMock<MockAffiliationFetcherDelegate> mock_delegate;
+  HashAffiliationFetcher fetcher(test_shared_loader_factory(), &mock_delegate);
+  std::unique_ptr<AffiliationFetcherDelegate::Result> result;
+  EXPECT_CALL(mock_delegate, OnFetchSucceeded(&fetcher, testing::_))
+      .WillOnce(MoveArg<1>(&result));
+  fetcher.StartRequest(requested_uris, request_info);
+  WaitForResponse();
+
+  ASSERT_NO_FATAL_FAILURE(
+      VerifyRequestPayload(ComputeHashes(requested_uris), request_info));
+  ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(&mock_delegate));
+
+  ASSERT_EQ(2u, result->groupings.size());
+  EXPECT_THAT(result->groupings[0].branding_info,
+              testing::Eq(FacetBrandingInfo{kExampleAndroidPlayName,
+                                            GURL(kExampleAndroidIconURL)}));
+  EXPECT_THAT(result->groupings[1].branding_info,
+              testing::Eq(FacetBrandingInfo()));
 }
 
 }  // namespace password_manager

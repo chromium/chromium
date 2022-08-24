@@ -264,13 +264,13 @@ TEST_F(AffiliationServiceImplTest,
 
   service()->PrefetchChangePasswordURLs({origin}, base::DoNothing());
 
-  const GroupedFacets group = {
-      {.uri = FacetURI::FromPotentiallyInvalidSpec(k1ExampleURL),
-       .change_password_url = GURL(k1ExampleChangePasswordURL)},
-      {.uri = FacetURI::FromPotentiallyInvalidSpec(kM1ExampleURL),
-       .change_password_url = GURL()},
-      {.uri = FacetURI::FromPotentiallyInvalidSpec(kOneExampleURL),
-       .change_password_url = GURL(kOneExampleChangePasswordURL)}};
+  GroupedFacets group;
+  group.facets = {{.uri = FacetURI::FromPotentiallyInvalidSpec(k1ExampleURL),
+                   .change_password_url = GURL(k1ExampleChangePasswordURL)},
+                  {.uri = FacetURI::FromPotentiallyInvalidSpec(kM1ExampleURL),
+                   .change_password_url = GURL()},
+                  {.uri = FacetURI::FromPotentiallyInvalidSpec(kOneExampleURL),
+                   .change_password_url = GURL(kOneExampleChangePasswordURL)}};
   auto test_result = std::make_unique<AffiliationFetcherDelegate::Result>();
   test_result->groupings.push_back(group);
   static_cast<AffiliationFetcherDelegate*>(service())->OnFetchSucceeded(
@@ -296,11 +296,11 @@ TEST_F(AffiliationServiceImplTest,
 
   service()->PrefetchChangePasswordURLs({origin}, base::DoNothing());
 
-  const GroupedFacets group = {
-      {.uri = FacetURI::FromPotentiallyInvalidSpec(k1ExampleURL),
-       .change_password_url = GURL(k1ExampleChangePasswordURL)},
-      {.uri = FacetURI::FromPotentiallyInvalidSpec(kM1ExampleURL),
-       .change_password_url = GURL()}};
+  GroupedFacets group;
+  group.facets = {{.uri = FacetURI::FromPotentiallyInvalidSpec(k1ExampleURL),
+                   .change_password_url = GURL(k1ExampleChangePasswordURL)},
+                  {.uri = FacetURI::FromPotentiallyInvalidSpec(kM1ExampleURL),
+                   .change_password_url = GURL()}};
   auto test_result = std::make_unique<AffiliationFetcherDelegate::Result>();
   test_result->groupings.push_back(group);
   static_cast<AffiliationFetcherDelegate*>(service())->OnFetchSucceeded(
@@ -326,13 +326,13 @@ TEST_F(AffiliationServiceImplTest,
 
   service()->PrefetchChangePasswordURLs({origin}, base::DoNothing());
 
-  const GroupedFacets group = {
-      {.uri = FacetURI::FromPotentiallyInvalidSpec(k1ExampleURL),
-       .change_password_url = GURL()},
-      {.uri = FacetURI::FromPotentiallyInvalidSpec(kM1ExampleURL),
-       .change_password_url = GURL()},
-      {.uri = FacetURI::FromPotentiallyInvalidSpec(kOneExampleURL),
-       .change_password_url = GURL()}};
+  GroupedFacets group;
+  group.facets = {{.uri = FacetURI::FromPotentiallyInvalidSpec(k1ExampleURL),
+                   .change_password_url = GURL()},
+                  {.uri = FacetURI::FromPotentiallyInvalidSpec(kM1ExampleURL),
+                   .change_password_url = GURL()},
+                  {.uri = FacetURI::FromPotentiallyInvalidSpec(kOneExampleURL),
+                   .change_password_url = GURL()}};
   auto test_result = std::make_unique<AffiliationFetcherDelegate::Result>();
   test_result->groupings.push_back(group);
   static_cast<AffiliationFetcherDelegate*>(service())->OnFetchSucceeded(
@@ -452,11 +452,11 @@ TEST_F(AffiliationServiceImplTest, FoundForRequestedFacetMetric) {
 
   service()->PrefetchChangePasswordURLs({origin}, base::DoNothing());
 
-  const GroupedFacets group = {
-      {.uri = FacetURI::FromPotentiallyInvalidSpec(k1ExampleURL),
-       .change_password_url = GURL(k1ExampleChangePasswordURL)},
-      {.uri = FacetURI::FromPotentiallyInvalidSpec(kOneExampleURL),
-       .change_password_url = GURL(kOneExampleChangePasswordURL)}};
+  GroupedFacets group;
+  group.facets = {{.uri = FacetURI::FromPotentiallyInvalidSpec(k1ExampleURL),
+                   .change_password_url = GURL(k1ExampleChangePasswordURL)},
+                  {.uri = FacetURI::FromPotentiallyInvalidSpec(kOneExampleURL),
+                   .change_password_url = GURL(kOneExampleChangePasswordURL)}};
   auto test_result = std::make_unique<AffiliationFetcherDelegate::Result>();
   test_result->groupings.push_back(group);
 
@@ -483,11 +483,11 @@ TEST_F(AffiliationServiceImplTest, FoundForGroupedFacetMetric) {
 
   service()->PrefetchChangePasswordURLs({origin}, base::DoNothing());
 
-  const GroupedFacets group = {
-      {.uri = FacetURI::FromPotentiallyInvalidSpec(k1ExampleURL),
-       .change_password_url = GURL(k1ExampleChangePasswordURL)},
-      {.uri = FacetURI::FromPotentiallyInvalidSpec(kM1ExampleURL),
-       .change_password_url = GURL()}};
+  GroupedFacets group;
+  group.facets = {{.uri = FacetURI::FromPotentiallyInvalidSpec(k1ExampleURL),
+                   .change_password_url = GURL(k1ExampleChangePasswordURL)},
+                  {.uri = FacetURI::FromPotentiallyInvalidSpec(kM1ExampleURL),
+                   .change_password_url = GURL()}};
   auto test_result = std::make_unique<AffiliationFetcherDelegate::Result>();
   test_result->groupings.push_back(group);
 
@@ -545,9 +545,9 @@ TEST_F(AffiliationServiceImplTest, SupportForMultipleRequests) {
   service()->PrefetchChangePasswordURLs(origins_1, base::DoNothing());
   service()->PrefetchChangePasswordURLs(origins_2, base::DoNothing());
 
-  const GroupedFacets group1 = {
-      {.uri = FacetURI::FromPotentiallyInvalidSpec(k1ExampleURL),
-       .change_password_url = GURL(k1ExampleChangePasswordURL)}};
+  GroupedFacets group1;
+  group1.facets = {{.uri = FacetURI::FromPotentiallyInvalidSpec(k1ExampleURL),
+                    .change_password_url = GURL(k1ExampleChangePasswordURL)}};
   auto test_result1 = std::make_unique<AffiliationFetcherDelegate::Result>();
   test_result1->groupings.push_back(group1);
   static_cast<AffiliationFetcherDelegate*>(service())->OnFetchSucceeded(
@@ -555,9 +555,9 @@ TEST_F(AffiliationServiceImplTest, SupportForMultipleRequests) {
   EXPECT_EQ(GURL(k1ExampleChangePasswordURL),
             service()->GetChangePasswordURL(origin1));
 
-  const GroupedFacets group2 = {
-      {.uri = FacetURI::FromPotentiallyInvalidSpec(k2ExampleURL),
-       .change_password_url = GURL(k2ExampleChangePasswordURL)}};
+  GroupedFacets group2;
+  group2.facets = {{.uri = FacetURI::FromPotentiallyInvalidSpec(k2ExampleURL),
+                    .change_password_url = GURL(k2ExampleChangePasswordURL)}};
   auto test_result2 = std::make_unique<AffiliationFetcherDelegate::Result>();
   test_result2->groupings.push_back(group2);
   static_cast<AffiliationFetcherDelegate*>(service())->OnFetchSucceeded(

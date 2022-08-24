@@ -265,6 +265,20 @@ FacetURI::FacetURI(const std::string& canonical_spec, bool is_valid)
                         &parsed_);
 }
 
+// GroupedFacets
+
+GroupedFacets::GroupedFacets() = default;
+
+GroupedFacets::~GroupedFacets() = default;
+
+GroupedFacets::GroupedFacets(const GroupedFacets& other) = default;
+
+GroupedFacets::GroupedFacets(GroupedFacets&& other) = default;
+
+GroupedFacets& GroupedFacets::operator=(const GroupedFacets& other) = default;
+
+GroupedFacets& GroupedFacets::operator=(GroupedFacets&& other) = default;
+
 // AffiliatedFacetsWithUpdateTime ---------------------------------------------
 
 AffiliatedFacetsWithUpdateTime::AffiliatedFacetsWithUpdateTime() = default;

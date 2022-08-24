@@ -45,7 +45,7 @@ CreateFacetUriToChangePasswordUrlMap(
   for (const auto& grouped_facets : groupings) {
     std::vector<FacetURI> uris_without_urls;
     GURL fallback_url;
-    for (const auto& facet : grouped_facets) {
+    for (const auto& facet : grouped_facets.facets) {
       if (!facet.change_password_url.is_valid()) {
         uris_without_urls.push_back(facet.uri);
         continue;
