@@ -1317,12 +1317,7 @@ void MediaStreamManager::GetOpenDevice(
     DeviceRequestStateChangeCallback device_request_state_change_cb,
     DeviceCaptureHandleChangeCallback device_capture_handle_change_cb) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
-  if (!base::FeatureList::IsEnabled(features::kMediaStreamTrackTransfer)) {
-    ReceivedBadMessage(render_process_id,
-                       bad_message::MSDH_GET_OPEN_DEVICE_USE_WITHOUT_FEATURE);
-    return;
-  }
+  DCHECK(base::FeatureList::IsEnabled(features::kMediaStreamTrackTransfer));
 
   std::unique_ptr<DeviceRequest> request = CreateDeviceRequest(
       render_process_id, render_frame_id, requester_id, page_request_id,
@@ -1497,13 +1492,8 @@ void MediaStreamManager::KeepDeviceAliveForTransfer(
     const base::UnguessableToken& transfer_id,
     KeepDeviceAliveForTransferCallback keep_device_alive_cb) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK(base::FeatureList::IsEnabled(features::kMediaStreamTrackTransfer));
   DCHECK(keep_device_alive_cb);
-
-  if (!base::FeatureList::IsEnabled(features::kMediaStreamTrackTransfer)) {
-    ReceivedBadMessage(render_process_id,
-                       bad_message::MSDH_GET_OPEN_DEVICE_USE_WITHOUT_FEATURE);
-    return;
-  }
 
   for (const LabeledDeviceRequest& device_request : requests_) {
     DeviceRequest* const request = device_request.second.get();
