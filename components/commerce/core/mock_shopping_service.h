@@ -16,6 +16,8 @@ namespace commerce {
 // A mock ShoppingService that allows us to decide the response.
 class MockShoppingService : public commerce::ShoppingService {
  public:
+  static std::unique_ptr<KeyedService> Build();
+
   MockShoppingService();
   ~MockShoppingService() override;
 

@@ -6,6 +6,11 @@
 
 namespace commerce {
 
+// static
+std::unique_ptr<KeyedService> MockShoppingService::Build() {
+  return std::make_unique<MockShoppingService>();
+}
+
 MockShoppingService::MockShoppingService()
     : commerce::ShoppingService(nullptr,
                                 nullptr,

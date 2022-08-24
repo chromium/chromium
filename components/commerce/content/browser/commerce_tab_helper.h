@@ -43,6 +43,8 @@ class CommerceTabHelper
 
   void WebContentsDestroyed() override;
 
+  void SetShoppingServiceForTesting(KeyedService* service);
+
  private:
   friend class content::WebContentsUserData<CommerceTabHelper>;
 

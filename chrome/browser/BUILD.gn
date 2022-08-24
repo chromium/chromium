@@ -2061,6 +2061,7 @@ static_library("browser") {
     "//components/certificate_transparency:proto",
     "//components/client_hints/browser",
     "//components/cloud_devices/common",
+    "//components/commerce/content/browser:browser",
     "//components/commerce/core:commerce_heuristics_data",
     "//components/commerce/core:commerce_subscription_db_content_proto",
     "//components/commerce/core:feature_list",

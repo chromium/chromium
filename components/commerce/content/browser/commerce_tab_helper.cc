@@ -56,6 +56,16 @@ void CommerceTabHelper::WebContentsDestroyed() {
   web_wrapper_->ClearWebContentsPointer();
 }
 
+void CommerceTabHelper::SetShoppingServiceForTesting(KeyedService* service) {
+  auto* shopping_service = static_cast<commerce::ShoppingService*>(service);
+
+  shopping_service_ = shopping_service;
+
+  if (shopping_service_) {
+    shopping_service_->WebWrapperCreated(web_wrapper_.get());
+  }
+}
+
 WEB_CONTENTS_USER_DATA_KEY_IMPL(CommerceTabHelper);
 
 }  // namespace commerce
