@@ -4697,8 +4697,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.SupportLibrary.ClientIsCompat"
-    enum="WebViewClientTypeEnum" expires_after="2022-10-06">
-  <owner>ntfschr@chromium.org</owner>
+    enum="WebViewClientTypeEnum" expires_after="2023-08-23">
+  <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records whether the WebViewClient provided by the app is an instance of
