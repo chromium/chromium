@@ -105,7 +105,7 @@ class ASH_EXPORT ClientControlledState : public BaseState {
   void UpdateWindowForTransitionEvents(
       WindowState* window_state,
       chromeos::WindowStateType next_state_type,
-      WMEventType event_type);
+      const WMEvent* event);
 
   std::unique_ptr<Delegate> delegate_;
 

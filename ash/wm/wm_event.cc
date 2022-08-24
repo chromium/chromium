@@ -137,6 +137,20 @@ WindowSnapWMEvent::WindowSnapWMEvent(WMEventType type,
 
 WindowSnapWMEvent::~WindowSnapWMEvent() = default;
 
+float WindowSnapWMEvent::GetFloatValueForSnapRatio(
+    WindowSnapWMEvent::SnapRatio snap_ratio) {
+  switch (snap_ratio) {
+    case WindowSnapWMEvent::SnapRatio::kOneThirdSnapRatio:
+      return kOneThirdPositionRatio;
+    case WindowSnapWMEvent::SnapRatio::kDefaultSnapRatio:
+      return kDefaultPositionRatio;
+    case WindowSnapWMEvent::SnapRatio::kTwoThirdSnapRatio:
+      return kTwoThirdPositionRatio;
+    default:
+      return kDefaultPositionRatio;
+  }
+}
+
 bool WindowSnapWMEvent::IsSnapInfoAvailable() const {
   return true;
 }

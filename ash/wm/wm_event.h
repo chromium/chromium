@@ -216,6 +216,8 @@ class ASH_EXPORT WindowSnapWMEvent : public WMEvent {
 
   ~WindowSnapWMEvent() override;
 
+  static float GetFloatValueForSnapRatio(SnapRatio snap_ratio);
+
   // WMEvent:
   bool IsSnapInfoAvailable() const override;
 

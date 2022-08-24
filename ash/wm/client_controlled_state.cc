@@ -99,7 +99,7 @@ void ClientControlledState::HandleTransitionEvents(WindowState* window_state,
     case WM_EVENT_SNAP_SECONDARY: {
       WindowStateType next_state =
           GetResolvedNextWindowStateType(window_state, event);
-      UpdateWindowForTransitionEvents(window_state, next_state, event_type);
+      UpdateWindowForTransitionEvents(window_state, next_state, event);
       break;
     }
     case WM_EVENT_FLOAT:
@@ -107,7 +107,7 @@ void ClientControlledState::HandleTransitionEvents(WindowState* window_state,
       break;
     case WM_EVENT_RESTORE:
       UpdateWindowForTransitionEvents(
-          window_state, window_state->GetRestoreWindowState(), event_type);
+          window_state, window_state->GetRestoreWindowState(), event);
       break;
     case WM_EVENT_SHOW_INACTIVE:
       NOTREACHED();
@@ -316,7 +316,8 @@ WindowStateType ClientControlledState::GetResolvedNextWindowStateType(
 void ClientControlledState::UpdateWindowForTransitionEvents(
     WindowState* window_state,
     chromeos::WindowStateType next_state_type,
-    WMEventType event_type) {
+    const WMEvent* event) {
+  const WMEventType event_type = event->type();
   aura::Window* window = window_state->window();
 
   if (next_state_type == WindowStateType::kPrimarySnapped ||
@@ -335,8 +336,19 @@ void ClientControlledState::UpdateWindowForTransitionEvents(
           window_state->GetStateType(), next_state_type);
 
       // Get the desired window bounds for the snap state.
-      gfx::Rect bounds =
-          GetSnappedWindowBoundsInParent(window, next_state_type);
+      const bool is_restoring =
+          window_state->window()->GetProperty(aura::client::kIsRestoringKey) ||
+          event_type == WM_EVENT_RESTORE;
+      absl::optional<float> snap_ratio_to_restore =
+          event->IsSnapInfoAvailable()
+              ? absl::make_optional(
+                    WindowSnapWMEvent::GetFloatValueForSnapRatio(
+                        static_cast<const WindowSnapWMEvent*>(event)
+                            ->snap_ratio()))
+              : (is_restoring ? window_state->snap_ratio()
+                              : absl::make_optional(kDefaultPositionRatio));
+      gfx::Rect bounds = GetSnappedWindowBoundsInParent(
+          window, next_state_type, snap_ratio_to_restore.value());
       // We don't want Unminimize() to restore the pre-snapped state during the
       // transition. See crbug.com/1031313 for why we need this.
       // kRestoreShowStateKey property will be updated properly after the window

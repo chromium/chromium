@@ -41,19 +41,6 @@
 namespace ash {
 namespace {
 
-float GetFloatValueForSnapRatio(WindowSnapWMEvent::SnapRatio snap_ratio) {
-  switch (snap_ratio) {
-    case WindowSnapWMEvent::SnapRatio::kOneThirdSnapRatio:
-      return kOneThirdPositionRatio;
-    case WindowSnapWMEvent::SnapRatio::kDefaultSnapRatio:
-      return kDefaultPositionRatio;
-    case WindowSnapWMEvent::SnapRatio::kTwoThirdSnapRatio:
-      return kTwoThirdPositionRatio;
-    default:
-      return kDefaultPositionRatio;
-  }
-}
-
 using ::chromeos::WindowStateType;
 
 // This specifies how much percent (30%) of a window rect
@@ -379,7 +366,7 @@ void DefaultState::HandleTransitionEvents(WindowState* window_state,
     HandleWindowSnapping(window_state, type);
 
   if (next_state_type == current_state_type && window_state->IsSnapped()) {
-    float snap_ratio = GetFloatValueForSnapRatio(
+    float snap_ratio = WindowSnapWMEvent::GetFloatValueForSnapRatio(
         event->IsSnapInfoAvailable()
             ? static_cast<const WindowSnapWMEvent*>(event)->snap_ratio()
             : WindowSnapWMEvent::SnapRatio::kDefaultSnapRatio);
@@ -410,7 +397,7 @@ void DefaultState::HandleTransitionEvents(WindowState* window_state,
     EnterToNextState(
         window_state, next_state_type,
         event->IsSnapInfoAvailable()
-            ? absl::make_optional(GetFloatValueForSnapRatio(
+            ? absl::make_optional(WindowSnapWMEvent::GetFloatValueForSnapRatio(
                   static_cast<const WindowSnapWMEvent*>(event)->snap_ratio()))
             : (is_restoring ? window_state->snap_ratio()
                             : absl::make_optional(kDefaultPositionRatio)));
