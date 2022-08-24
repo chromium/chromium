@@ -15,10 +15,12 @@
 namespace {
 ui::SelectFileDialog::FileTypeInfo GetFileTypeInfo() {
   ui::SelectFileDialog::FileTypeInfo file_type_info;
-  file_type_info.extensions.resize(1);
+  file_type_info.extensions.resize(4);
 
-  // Allow Ansible playbooks (yaml) only.
-  file_type_info.extensions = {{"yaml"}};
+  // Allowed file types include:
+  // * Ansible playbooks (yaml)
+  // * Crostini backup files (tini, tar.gz, tgz)
+  file_type_info.extensions = {{"yaml", "tini", "tar.gz", "tgz"}};
 
   return file_type_info;
 }

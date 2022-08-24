@@ -137,6 +137,9 @@ class CrostiniHandler : public ::settings::SettingsPageUIHandler,
   void OnCanChangeArcAdbSideloading(bool can_change_arc_adb_sideloading);
   // Handle a request for creating a container
   void HandleCreateContainer(const base::Value::List& args);
+  // Callback of HandleCreateContainer
+  void OnContainerCreated(guest_os::GuestId container_id,
+                          crostini::CrostiniResult result);
   // Handle a request for deleting a container
   void HandleDeleteContainer(const base::Value::List& args);
   // Handle a request for the running info of all known containers

@@ -687,9 +687,11 @@ void CrostiniHandler::HandleCreateContainer(const base::Value::List& args) {
   guest_os::GuestId container_id(args[0]);
   GURL image_server_url(args[1].GetString());
   std::string image_alias(args[2].GetString());
-  base::FilePath ansible_playbook(args[3].GetString());
+  base::FilePath container_file(args[3].GetString());
 
   if (!crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_)) {
+    LOG(ERROR) << "Failed to create a new Crostini container: Multi-container "
+                  "flag not enabled.";
     return;
   }
 
@@ -699,6 +701,19 @@ void CrostiniHandler::HandleCreateContainer(const base::Value::List& args) {
     return;
   }
   VLOG(1) << "Creating container_id = " << container_id;
+
+  bool isContainerBackupFile =
+      !container_file.empty() &&
+      container_file.Extension() != FILE_PATH_LITERAL(".yaml");
+
+  if (isContainerBackupFile) {
+    VLOG(1) << "backup_file = " << container_file;
+    crostini::CrostiniExportImport::GetForProfile(profile_)->ImportContainer(
+        container_id, container_file,
+        base::BindOnce(&CrostiniHandler::OnContainerCreated,
+                       handler_weak_ptr_factory_.GetWeakPtr(), container_id));
+    return;
+  }
 
   crostini::CrostiniManager::RestartOptions options;
   options.restart_source = crostini::RestartSource::kMultiContainerCreation;
@@ -710,14 +725,27 @@ void CrostiniHandler::HandleCreateContainer(const base::Value::List& args) {
     options.image_alias = image_alias;
     VLOG(1) << "image_alias = " << image_alias;
   }
-  if (!ansible_playbook.empty()) {
-    options.ansible_playbook = ansible_playbook;
-    VLOG(1) << "ansible_playbook = " << ansible_playbook;
+  if (!container_file.empty() &&
+      container_file.Extension() == FILE_PATH_LITERAL(".yaml")) {
+    options.ansible_playbook = container_file;
+    VLOG(1) << "ansible_playbook = " << container_file;
   }
 
   crostini::CrostiniManager::GetForProfile(profile_)
-      ->RestartCrostiniWithOptions(container_id, std::move(options),
-                                   base::DoNothing());
+      ->RestartCrostiniWithOptions(
+          container_id, std::move(options),
+          base::BindOnce(&CrostiniHandler::OnContainerCreated,
+                         handler_weak_ptr_factory_.GetWeakPtr(), container_id));
+}
+
+void CrostiniHandler::OnContainerCreated(guest_os::GuestId container_id,
+                                         crostini::CrostiniResult result) {
+  if (result != crostini::CrostiniResult::SUCCESS) {
+    LOG(ERROR) << "Failed to create container: " << container_id;
+    return;
+  }
+  VLOG(1) << "Container was created successfully with ID: " << container_id;
+
   auto intent = std::make_unique<apps::Intent>(apps_util::kIntentActionView);
   intent->extras = container_id.ToMap();
 

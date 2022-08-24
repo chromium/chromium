@@ -9,7 +9,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks} from 'chrome://test/test_util.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
 import {TestCrostiniBrowserProxy} from './test_crostini_browser_proxy.js';
 
@@ -22,9 +22,6 @@ suite('CrostiniExtraContainersSubpageTests', function() {
 
   /** @type {?SettingsCrostiniSubPageElement} */
   let subpage;
-
-  /** @type {?Element} */
-  let createButton;
 
   setup(async function() {
     crostiniBrowserProxy = new TestCrostiniBrowserProxy();
@@ -74,6 +71,15 @@ suite('CrostiniExtraContainersSubpageTests', function() {
     /** @type {?Element} */
     let vmNameInput;
 
+    /** @type {?Element} */
+    let createButton;
+
+    /** @type {?Element} */
+    let advancedToggle;
+
+    /** @type {?Element} */
+    let advancedSection;
+
     setup(async function() {
       subpage.shadowRoot.querySelector('#create').click();
 
@@ -84,6 +90,8 @@ suite('CrostiniExtraContainersSubpageTests', function() {
       containerNameInput = subpage.root.querySelector('#containerNameInput');
       vmNameInput = subpage.root.querySelector('#vmNameInput');
       createButton = subpage.root.querySelector('#create');
+      advancedToggle = subpage.root.querySelector('#advancedToggle');
+      advancedSection = subpage.root.querySelector('.advanced-section');
     });
 
     /**
@@ -203,6 +211,32 @@ suite('CrostiniExtraContainersSubpageTests', function() {
 
       createButton.click();
       assertEquals(1, crostiniBrowserProxy.getCallCount('createContainer'));
+    });
+
+    test('CreateContainerAdvancedWithFile', async function() {
+      setInput(containerNameInput, 'advanced_container');
+      setInput(vmNameInput, 'termina');
+
+      assertTrue(advancedSection.hidden);
+      advancedToggle.click();
+      assertFalse(advancedSection.hidden);
+
+      const containerFileInput =
+          subpage.root.querySelector('#containerFileInput');
+      setInput(containerFileInput, 'test_backup.tini');
+      assertValidAndEnabled();
+
+      createButton.click();
+      assertEquals(1, crostiniBrowserProxy.getCallCount('createContainer'));
+      const args = crostiniBrowserProxy.getArgs('createContainer')[0];
+      assertArrayEquals(
+          [
+            {vm_name: 'termina', container_name: 'advanced_container'},
+            '',
+            '',
+            'test_backup.tini',
+          ],
+          args);
     });
   });
 

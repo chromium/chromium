@@ -235,10 +235,11 @@ export class CrostiniBrowserProxy {
    * @param {?string} imageServer url of lxd container server from which to
    *     fetch
    * @param {?string} imageAlias name of image to fetch e.g. 'debian/bullseye'
-   * @param {?string} ansiblePlaybook file location of an Ansible playbook to
-   *     preconfigure the container with
+   * @param {?string} containerFile file location of an Ansible playbook (.yaml)
+   *     or a Crostini backup file (.tini, .tar.gz, .tar) to create the
+   *     container from
    */
-  createContainer(containerId, imageServer, imageAlias, ansiblePlaybook) {}
+  createContainer(containerId, imageServer, imageAlias, containerFile) {}
 
   /**
    * @param {!GuestId} containerId id of container to delete.
@@ -424,10 +425,10 @@ export class CrostiniBrowserProxyImpl {
   }
 
   /** @override */
-  createContainer(containerId, imageServer, imageAlias, ansiblePlaybook) {
+  createContainer(containerId, imageServer, imageAlias, containerFile) {
     chrome.send(
         'createContainer',
-        [containerId, imageServer, imageAlias, ansiblePlaybook]);
+        [containerId, imageServer, imageAlias, containerFile]);
   }
 
   /** @override */

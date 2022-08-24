@@ -17,7 +17,6 @@ export class TestCrostiniBrowserProxy extends TestBrowserProxy {
       'requestCrostiniContainerUpgradeView',
       'requestCrostiniUpgraderDialogStatus',
       'requestCrostiniContainerUpgradeAvailable',
-      'addCrostiniPortForward',
       'getCrostiniDiskInfo',
       'resizeCrostiniDisk',
       'addCrostiniPortForward',
@@ -209,8 +208,9 @@ export class TestCrostiniBrowserProxy extends TestBrowserProxy {
   }
 
   /** @override */
-  createContainer(containerId, imageServer, imageAlias) {
-    this.methodCalled('createContainer');
+  createContainer(containerId, imageServer, imageAlias, containerFile) {
+    this.methodCalled(
+        'createContainer', containerId, imageServer, imageAlias, containerFile);
   }
 
   /** @override */

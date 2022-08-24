@@ -44,7 +44,7 @@ class ExtraContainersCreateDialog extends PolymerElement {
       /**
        * @private {string}
        */
-      ansiblePlaybook_: {
+      containerFile_: {
         type: String,
         value: '',
       },
@@ -178,18 +178,19 @@ class ExtraContainersCreateDialog extends PolymerElement {
       // These elements are part of a dom-if on |advancedToggleExpanded_|
       this.inputImageServer_ = this.$.imageServerInput.value;
       this.inputImageAlias_ = this.$.imageAliasInput.value;
-      this.ansiblePlaybook_ = this.$.preconfiguredContainersInput.value;
+      this.containerFile_ = this.$.containerFileInput.value;
     }
 
     this.browserProxy_.createContainer(
         {vm_name: this.inputVmName_, container_name: this.inputContainerName_},
-        this.inputImageServer_, this.inputImageAlias_, this.ansiblePlaybook_);
+        this.inputImageServer_, this.inputImageAlias_, this.containerFile_);
+
     this.$.dialog.close();
   }
 
   /** @private */
-  async onAnsiblePlaybookUploadClick_() {
-    this.$.preconfiguredContainersInput.value =
+  async onSelectContainerFileClick_() {
+    this.$.containerFileInput.value =
         await this.browserProxy_.openContainerFileSelector();
   }
 

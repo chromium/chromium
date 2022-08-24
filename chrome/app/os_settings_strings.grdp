@@ -1844,14 +1844,14 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CREATE_DIALOG_IMAGE_ALIAS" desc="Heading for the input field for entering the image alias string e.g. debian/buster when creating a new Linux container.">
     Image Alias
   </message>
-  <message name="IDS_SETTINGS_CROSTINI_PRECONFIGURED_CONTAINERS_ADD_PLAYBOOK" desc="Heading for the input field for uploading an Ansible playbook to preconfigure a Linux container.">
-    Add playbook
+  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CREATE_DIALOG_ADD_CONTAINER_LABEL" desc="Heading for the input field for uploading an Ansible playbook or Crostini backup file to set up a Linux container.">
+    Create from an Ansible Playbook or a Crostini backup file
   </message>
-  <message name="IDS_SETTINGS_CROSTINI_PRECONFIGURED_CONTAINERS_ATTACH_PLAYBOOK_BUTTON_LABEL" desc="Label for button to attach an Ansible Playbook to preconfigure a Linux container.">
-    Select playbook
+  <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CREATE_DIALOG_ADD_CONTAINER_BUTTON_LABEL" desc="Label for button to attach an Ansible Playbook or Crostini backup file to set up a Linux container.">
+    Select file
   </message>
   <message name="IDS_SETTINGS_CROSTINI_FILE_SELECTOR_DIALOG_TITLE" desc="The text used as the title for selecting a file for Crostini container creation">
-    Select an Ansible Playbook to add
+    Select an Ansible Playbook or Crostini backup file
   </message>
   <message name="IDS_SETTINGS_CROSTINI_DISK_RESIZE_SHOW_BUTTON" desc="The label of the button/link the user clicks to open the disk resizing dialogue." meaning="The label of the button/link the user clicks to open the disk resizing dialogue.">
     Change

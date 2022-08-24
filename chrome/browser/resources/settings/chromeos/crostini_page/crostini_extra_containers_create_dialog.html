@@ -34,12 +34,12 @@
     padding-inline-start: 0;
   }
 
-  #preconfiguredContainersField {
+  #containerFileField {
     display: flex;
     flex-direction: row;
   }
 
-  #preconfiguredContainersInput {
+  #containerFileInput {
     width: 100%;
   }
 
@@ -80,16 +80,16 @@
         label="$i18n{crostiniExtraContainersCreateDialogImageAlias}"
         aria-disabled="false">
       </cr-input>
-      <div id="preconfiguredContainersField">
-        <cr-input id="preconfiguredContainersInput"
-          label="$i18n{crostiniPreconfiguredContainersAddPlaybook}"
+      <div id="containerFileField">
+        <cr-input id="containerFileInput"
+          label="$i18n{crostiniExtraContainersCreateDialogAddContainerFile}"
           aria-disabled="true"
           readonly>
           <cr-button id="uploadButton"
             slot="suffix"
-            on-click="onAnsiblePlaybookUploadClick_"
-            aria-labelledby="preconfiguredContainersInput">
-            $i18n{crostiniPreconfiguredContainersAttachPlaybookButtonLabel}
+            on-click="onSelectContainerFileClick_"
+            aria-labelledby="containerFileInput">
+            $i18n{crostiniExtraContainersCreateDialogAddContainerButtonLabel}
           </cr-button>
         </cr-input>
       </div>
