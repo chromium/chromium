@@ -19,11 +19,7 @@ template("remoting_apk_tmpl") {
       if (!defined(proguard_configs)) {
         proguard_configs = []
       }
-      proguard_configs += [
-        "//remoting/android/proguard.flags",
-        "//base/android/proguard/chromium_apk.flags",
-        "//base/android/proguard/chromium_code.flags",
-      ]
+      proguard_configs += [ "//remoting/android/proguard.flags" ]
     }
 
     android_manifest = "$root_gen_dir/remoting/android/AndroidManifest.xml"

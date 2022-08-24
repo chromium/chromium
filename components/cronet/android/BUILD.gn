@@ -489,7 +489,6 @@ android_apk("cronet_sample_apk") {
     proguard_configs = [
       "$target_gen_dir/cronet_impl_native_proguard.cfg",
       "cronet_impl_common_proguard.cfg",
-      "//base/android/proguard/chromium_apk.flags",
     ]
   }
 }
@@ -1229,7 +1228,6 @@ if (!is_component_build) {
         "$target_gen_dir/cronet_impl_native_proguard.cfg",
         "cronet_impl_common_proguard.cfg",
         "test/proguard.cfg",
-        "//base/android/proguard/chromium_apk.flags",
         "//testing/android/proguard_for_test.flags",
       ]
       enable_proguard_checks = false

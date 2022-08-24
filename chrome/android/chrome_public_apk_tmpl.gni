@@ -289,11 +289,7 @@ template("chrome_public_common_apk_or_module_tmpl") {
       if (!defined(proguard_configs)) {
         proguard_configs = []
       }
-      proguard_configs += [
-        "//chrome/android/proguard/main.flags",
-        "//base/android/proguard/chromium_apk.flags",
-        "//base/android/proguard/chromium_code.flags",
-      ]
+      proguard_configs += [ "//chrome/android/proguard/main.flags" ]
     }
 
     if (use_chromium_linker) {

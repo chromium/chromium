@@ -272,11 +272,8 @@ template("system_webview_apk_or_module_tmpl") {
       if (!defined(proguard_configs)) {
         proguard_configs = []
       }
-      proguard_configs += [
-        "//android_webview/nonembedded/java/proguard.flags",
-        "//base/android/proguard/chromium_apk.flags",
-        "//base/android/proguard/chromium_code.flags",
-      ]
+      proguard_configs +=
+          [ "//android_webview/nonembedded/java/proguard.flags" ]
       png_to_webp = true
     }
 
