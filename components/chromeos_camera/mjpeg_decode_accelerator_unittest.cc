@@ -192,8 +192,8 @@ class MjpegDecodeAcceleratorTestEnvironment : public ::testing::Environment {
     return media::GetTestDataFilePath(file_path);
   }
 
-  // Creates a zero-initialized shared memory backed VideoFrame.
-  scoped_refptr<media::VideoFrame> CreateShmVideoFrame(
+  // Creates a zero-initialized memory VideoFrame.
+  scoped_refptr<media::VideoFrame> CreateMemoryVideoFrame(
       media::VideoPixelFormat format,
       const gfx::Size& coded_size,
       const gfx::Size& visible_size);
@@ -294,38 +294,13 @@ void MjpegDecodeAcceleratorTestEnvironment::TearDown() {
 }
 
 scoped_refptr<media::VideoFrame>
-MjpegDecodeAcceleratorTestEnvironment::CreateShmVideoFrame(
+MjpegDecodeAcceleratorTestEnvironment::CreateMemoryVideoFrame(
     media::VideoPixelFormat format,
     const gfx::Size& coded_size,
     const gfx::Size& visible_size) {
-  const size_t data_size =
-      media::VideoFrame::AllocationSize(format, coded_size);
-  auto mapped_region = base::ReadOnlySharedMemoryRegion::Create(data_size);
-  if (!mapped_region.IsValid()) {
-    LOG(ERROR) << "Failed to create shared memory";
-    return nullptr;
-  }
-  base::WritableSharedMemoryMapping& writable_mapping = mapped_region.mapping;
-  base::ReadOnlySharedMemoryMapping read_only_mapping =
-      mapped_region.region.Map();
-  if (!read_only_mapping.IsValid()) {
-    LOG(ERROR) << "Failed to map shared memory region";
-    return nullptr;
-  }
-  memset(writable_mapping.memory(), 0, data_size);
-
-  scoped_refptr<media::VideoFrame> frame = media::VideoFrame::WrapExternalData(
+  return media::VideoFrame::CreateZeroInitializedFrame(
       format, coded_size, gfx::Rect(visible_size), visible_size,
-      static_cast<uint8_t*>(writable_mapping.memory()), data_size,
       base::TimeDelta());
-  if (!frame) {
-    LOG(ERROR) << "Failed to create video frame";
-    return nullptr;
-  }
-  frame->BackWithOwnedSharedMemory(std::move(mapped_region.region),
-                                   std::move(read_only_mapping));
-
-  return frame;
 }
 
 scoped_refptr<media::VideoFrame>
@@ -737,19 +712,19 @@ void JpegClient::PrepareMemory(int32_t task_id) {
            task.image->data_str.size());
 
     // Only I420 output buffer is used in the shared memory path.
-    hw_out_frame_ = g_env->CreateShmVideoFrame(
+    hw_out_frame_ = g_env->CreateMemoryVideoFrame(
         media::PIXEL_FORMAT_I420, task.target_size, task.target_size);
     ASSERT_TRUE(hw_out_frame_);
   }
 
   if (task.image->visible_size != task.target_size) {
     // Needs an intermediate buffer for cropping/scaling.
-    sw_tmp_frame_ = g_env->CreateShmVideoFrame(media::PIXEL_FORMAT_I420,
-                                               task.image->coded_size,
-                                               task.image->visible_size);
+    sw_tmp_frame_ = g_env->CreateMemoryVideoFrame(media::PIXEL_FORMAT_I420,
+                                                  task.image->coded_size,
+                                                  task.image->visible_size);
     ASSERT_TRUE(sw_tmp_frame_);
   }
-  sw_out_frame_ = g_env->CreateShmVideoFrame(
+  sw_out_frame_ = g_env->CreateMemoryVideoFrame(
       media::PIXEL_FORMAT_I420, task.target_size, task.target_size);
   ASSERT_TRUE(sw_out_frame_);
 }
