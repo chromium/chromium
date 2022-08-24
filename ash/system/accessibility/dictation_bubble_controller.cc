@@ -65,6 +65,9 @@ void DictationBubbleController::OnColorModeChanged(bool dark_mode_enabled) {
 }
 
 void DictationBubbleController::OnViewIsDeleting(views::View* observed_view) {
+  if (observed_view != dictation_bubble_view_)
+    return;
+  dictation_bubble_view_->views::View::RemoveObserver(this);
   dictation_bubble_view_ = nullptr;
   widget_ = nullptr;
 }
