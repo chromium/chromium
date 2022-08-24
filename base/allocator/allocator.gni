@@ -114,7 +114,7 @@ declare_args() {
   #   dangling during their lifetime.
   put_ref_count_in_previous_slot = use_backup_ref_ptr
   enable_backup_ref_ptr_slow_checks = false
-  enable_dangling_raw_ptr_checks = false
+  enable_dangling_raw_ptr_checks = use_backup_ref_ptr
 
   # The supported platforms are supposed to match `_is_brp_supported`, but we
   # enable the feature on Linux early because it's most widely used for security
