@@ -12,11 +12,15 @@ import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
+import org.chromium.components.browser_ui.site_settings.FourStateCookieSettingsPreference;
+import org.chromium.components.browser_ui.site_settings.FourStateCookieSettingsPreference.CookieSettingsState;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.Website;
+import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
+import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAuxButton;
 
 /**
  * Util functions for testing SiteSettings functionality.
@@ -66,5 +70,12 @@ public class SiteSettingsTestUtils {
                 fragmentArgs);
         return (SettingsActivity) InstrumentationRegistry.getInstrumentation().startActivitySync(
                 intent);
+    }
+
+    public static RadioButtonWithDescriptionAndAuxButton getCookieRadioButtonFrom(
+            FourStateCookieSettingsPreference cookiePage, CookieSettingsState cookieSettingsState) {
+        RadioButtonWithDescription button = cookiePage.getButton(cookieSettingsState);
+
+        return ((RadioButtonWithDescriptionAndAuxButton) button);
     }
 }

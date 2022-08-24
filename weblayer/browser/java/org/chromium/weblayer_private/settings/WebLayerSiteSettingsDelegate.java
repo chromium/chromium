@@ -72,6 +72,11 @@ public class WebLayerSiteSettingsDelegate
     }
 
     @Override
+    public boolean isPrivacySandboxFirstPartySetsUIFeatureEnabled() {
+        return false;
+    }
+
+    @Override
     public String getChannelIdForOrigin(String origin) {
         return null;
     }

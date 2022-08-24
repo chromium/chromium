@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.site_settings;
 
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.refEq;
+
 import static org.chromium.components.browser_ui.site_settings.AutoDarkMetrics.AutoDarkSettingsChangeSource.SITE_SETTINGS_GLOBAL;
 import static org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.SITE_WILDCARD;
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
@@ -13,6 +16,7 @@ import static org.chromium.components.content_settings.PrefNames.DESKTOP_SITE_PE
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
 
 import androidx.preference.Preference;
@@ -29,6 +33,9 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -42,6 +49,7 @@ import org.chromium.chrome.browser.FederatedIdentityTestUtils;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
@@ -63,6 +71,7 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.ExpandablePreferenceGroup;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
+import org.chromium.components.browser_ui.site_settings.FPSCookieSettings;
 import org.chromium.components.browser_ui.site_settings.FourStateCookieSettingsPreference;
 import org.chromium.components.browser_ui.site_settings.FourStateCookieSettingsPreference.CookieSettingsState;
 import org.chromium.components.browser_ui.site_settings.R;
@@ -103,6 +112,7 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1", "ignore-certificate-errors"})
 @Batch(SiteSettingsTest.SITE_SETTINGS_BATCH_NAME)
+@DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI)
 public class SiteSettingsTest {
     public static final String SITE_SETTINGS_BATCH_NAME = "site_settings";
 
@@ -112,6 +122,9 @@ public class SiteSettingsTest {
     @Rule
     public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
             new BlankCTATabInitialStateRule(mPermissionRule, false);
+
+    @Mock
+    private SettingsLauncher mSettingsLauncher;
 
     private PermissionUpdateWaiter mPermissionUpdateWaiter;
 
@@ -128,6 +141,7 @@ public class SiteSettingsTest {
     public void setUp() throws TimeoutException {
         // Clean up cookies and permissions to ensure tests run in a clean environment.
         cleanUpCookiesAndPermissions();
+        MockitoAnnotations.initMocks(this);
     }
 
     @After
@@ -465,6 +479,52 @@ public class SiteSettingsTest {
         mPermissionRule.loadUrl(url);
         Assert.assertEquals(
                 "\"Foo=Bar\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+    }
+
+    /**
+     * Clicks on cookies radio buttons and verify the right FPS subpage is launched.
+     */
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI})
+    public void testCookiesFPSSubpageIsLaunched() throws Exception {
+        SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.COOKIES);
+
+        verifyFPSCookieSubpageIsLaunchedWithParams(
+                settingsActivity, CookieSettingsState.BLOCK_THIRD_PARTY);
+        verifyFPSCookieSubpageIsLaunchedWithParams(
+                settingsActivity, CookieSettingsState.BLOCK_THIRD_PARTY_INCOGNITO);
+    }
+
+    private void verifyFPSCookieSubpageIsLaunchedWithParams(
+            final SettingsActivity settingsActivity, CookieSettingsState cookieSettingsState) {
+        TestThreadUtils.runOnUiThreadBlocking(new Runnable() {
+            @Override
+            public void run() {
+                final SingleCategorySettings websitePreferences =
+                        (SingleCategorySettings) settingsActivity.getMainFragment();
+                final FourStateCookieSettingsPreference cookies =
+                        (FourStateCookieSettingsPreference) websitePreferences.findPreference(
+                                SingleCategorySettings.FOUR_STATE_COOKIE_TOGGLE_KEY);
+
+                Mockito.clearInvocations(mSettingsLauncher);
+                websitePreferences.setSettingsLauncher(mSettingsLauncher);
+
+                SiteSettingsTestUtils.getCookieRadioButtonFrom(cookies, cookieSettingsState)
+                        .getAuxButtonForTests()
+                        .performClick();
+
+                Bundle fragmentArgs = new Bundle();
+                fragmentArgs.putSerializable(
+                        FPSCookieSettings.EXTRA_COOKIE_STATE, cookieSettingsState);
+
+                Mockito.verify(mSettingsLauncher)
+                        .launchSettingsActivity(eq(websitePreferences.getContext()),
+                                eq(FPSCookieSettings.class), refEq(fragmentArgs));
+            }
+        });
     }
 
     /**
@@ -973,6 +1033,39 @@ public class SiteSettingsTest {
         checkPreferencesForCategory(SiteSettingsCategory.Type.COOKIES, cookie);
         setFourStateCookieToggle(CookieSettingsState.BLOCK);
         checkPreferencesForCategory(SiteSettingsCategory.Type.COOKIES, cookie);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_FPS_UI)
+    public void testExpectedCookieButtonsCheckedWhenFPSUiEnabled() {
+        SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.COOKIES);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            SingleCategorySettings preferences =
+                    (SingleCategorySettings) settingsActivity.getMainFragment();
+            FourStateCookieSettingsPreference fourStateCookieToggle =
+                    (FourStateCookieSettingsPreference) preferences.findPreference(
+                            SingleCategorySettings.FOUR_STATE_COOKIE_TOGGLE_KEY);
+
+            clickButtonAndVerifyItsChecked(fourStateCookieToggle, CookieSettingsState.ALLOW);
+            clickButtonAndVerifyItsChecked(
+                    fourStateCookieToggle, CookieSettingsState.BLOCK_THIRD_PARTY_INCOGNITO);
+            clickButtonAndVerifyItsChecked(
+                    fourStateCookieToggle, CookieSettingsState.BLOCK_THIRD_PARTY);
+            clickButtonAndVerifyItsChecked(fourStateCookieToggle, CookieSettingsState.BLOCK);
+        });
+
+        settingsActivity.finish();
+    }
+
+    private void clickButtonAndVerifyItsChecked(
+            FourStateCookieSettingsPreference fourStateCookieToggle, CookieSettingsState state) {
+        fourStateCookieToggle.getButton(state).performClick();
+        Assert.assertTrue(
+                "Button should be checked.", fourStateCookieToggle.getButton(state).isChecked());
     }
 
     @Test

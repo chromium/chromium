@@ -48,9 +48,11 @@ import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.ExpandablePreferenceGroup;
+import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.browser_ui.settings.SearchUtils;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.AutoDarkMetrics.AutoDarkSettingsChangeSource;
 import org.chromium.components.browser_ui.site_settings.FourStateCookieSettingsPreference.CookieSettingsState;
@@ -87,11 +89,19 @@ import java.util.Set;
 public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener,
                    AddExceptionPreference.SiteAddedCallback,
-                   PreferenceManager.OnPreferenceTreeClickListener {
+                   PreferenceManager.OnPreferenceTreeClickListener, FragmentSettingsLauncher,
+                   FourStateCookieSettingsPreference.OnCookiesDetailsRequested {
     // The key to use to pass which category this preference should display,
     // e.g. Location/Popups/All sites (if blank).
     public static final String EXTRA_CATEGORY = "category";
     public static final String EXTRA_TITLE = "title";
+
+    private SettingsLauncher mSettingsLauncher;
+
+    @Override
+    public void setSettingsLauncher(SettingsLauncher settingsLauncher) {
+        mSettingsLauncher = settingsLauncher;
+    }
 
     /**
      * If present, the list of websites will be filtered by domain using
@@ -141,6 +151,14 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
 
     @Nullable
     private Set<String> mSelectedDomains;
+
+    @Override
+    public void onCookiesDetailsRequested(CookieSettingsState cookieSettingsState) {
+        Bundle fragmentArgs = new Bundle();
+        fragmentArgs.putSerializable(FPSCookieSettings.EXTRA_COOKIE_STATE, cookieSettingsState);
+        mSettingsLauncher.launchSettingsActivity(
+                getActivity(), FPSCookieSettings.class, fragmentArgs);
+    }
 
     // Note: these values must match the SiteLayout enum in enums.xml.
     @IntDef({SiteLayout.MOBILE, SiteLayout.DESKTOP})
@@ -1052,6 +1070,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
     private void configureFourStateCookieToggle(
             FourStateCookieSettingsPreference fourStateCookieToggle) {
         fourStateCookieToggle.setOnPreferenceChangeListener(this);
+        fourStateCookieToggle.setCookiesDetailsRequestedListener(this);
         FourStateCookieSettingsPreference.Params params =
                 new FourStateCookieSettingsPreference.Params();
         params.allowCookies = WebsitePreferenceBridge.isCategoryEnabled(
@@ -1062,6 +1081,8 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         params.cookiesContentSettingEnforced = mCategory.isManaged();
         params.cookieControlsModeEnforced = prefService.isManagedPreference(COOKIE_CONTROLS_MODE);
         params.isIncognitoModeEnabled = getSiteSettingsDelegate().isIncognitoModeEnabled();
+        params.isPrivacySandboxFirstPartySetsUIEnabled =
+                getSiteSettingsDelegate().isPrivacySandboxFirstPartySetsUIFeatureEnabled();
         fourStateCookieToggle.setState(params);
     }
 

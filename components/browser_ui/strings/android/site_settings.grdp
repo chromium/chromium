@@ -376,6 +376,24 @@
   <message name="IDS_WEBSITE_SETTINGS_COOKIE_INFO" desc="Text describing cookie and third-party cookie settings.">
     Cookies are files created by websites you visit. Sites use them to remember your preferences. Third-party cookies are created by other sites. These sites own some of the content, like ads or images, that you see on the webpage you visit.
   </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_SUBPAGE_BULLET_ONE" desc="Description for the first bullet of cookie settings subpage.">
+    Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping cart
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_SUBPAGE_BULLET_TWO" desc="Description for the second bullet of cookie settings subpage.">
+    While in Incognito, sites can't use your cookies to see your browsing activity across different sites, for example, to personalize ads. Features on some sites may not work.
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_BLOCK_THIRD_PARTY_INCOGNITO_SUBTITLE" desc="Text used as subtitle for the block third-party cookies subpage in Incognito option in settings">
+    Block third-party cookies in Incognito:
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_BLOCK_THIRD_PARTY_SUBTITLE" desc="Text used as subtitle for the block third-party cookies subpage option in settings">
+    Block third-party cookies:
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_FPS_TOGGLE_TITLE" desc="First Party Sets toggle title in the cookie site settings subpage.">
+    Allow related sites to remember you across sites
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_FPS_TOGGLE_DESCRIPTION" desc="First Party Sets toggle description in the cookie site settings subpage.">
+    Related sites use cookies to help with things like keeping you signed in
+  </message>
 
   <!-- Desktop Site -->
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_DESKTOP_SITE_ALLOWED" desc="Summary text explaining that desktop view of sites will be requested by default.">

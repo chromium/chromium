@@ -61,6 +61,11 @@ public interface SiteSettingsDelegate {
     boolean isQuietNotificationPromptsFeatureEnabled();
 
     /**
+     * @return true if the PrivacySandboxFirstPartySetsUI Feature is enabled.
+     */
+    boolean isPrivacySandboxFirstPartySetsUIFeatureEnabled();
+
+    /**
      * @return The id of the notification channel associated with the given origin.
      */
     // TODO(crbug.com/1069895): Remove this once WebLayer supports notifications.
