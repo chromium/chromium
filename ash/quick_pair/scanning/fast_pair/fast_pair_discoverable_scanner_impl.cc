@@ -14,8 +14,6 @@
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/common/protocol.h"
-#include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake.h"
-#include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
 #include "ash/quick_pair/repository/fast_pair_repository.h"
 #include "ash/services/quick_pair/quick_pair_process.h"
 #include "ash/services/quick_pair/quick_pair_process_manager.h"
@@ -193,51 +191,36 @@ void FastPairDiscoverableScannerImpl::OnDeviceMetadataRetrieved(
 
   QP_LOG(INFO) << __func__ << ": Id: " << model_id;
 
-  // Anti-spoofing keys were introduced in Fast Pair v2, so if this isn't
-  // available then the device is v1.
-  if (device_metadata->GetDetails()
-          .anti_spoofing_key_pair()
-          .public_key()
-          .empty()) {
-    NotifyDeviceFound(std::move(device));
-    return;
-  }
-
-  FastPairHandshakeLookup::GetInstance()->Create(
-      adapter_, device,
-      base::BindOnce(&FastPairDiscoverableScannerImpl::OnHandshakeComplete,
-                     weak_pointer_factory_.GetWeakPtr()));
-}
-
-void FastPairDiscoverableScannerImpl::OnHandshakeComplete(
-    scoped_refptr<Device> device,
-    absl::optional<PairFailure> failure) {
-  if (failure) {
-    QP_LOG(WARNING) << __func__ << ": Handshake failed with " << device
-                    << " because: " << failure.value();
-    return;
-  }
-
   NotifyDeviceFound(std::move(device));
 }
 
 void FastPairDiscoverableScannerImpl::NotifyDeviceFound(
     scoped_refptr<Device> device) {
   device::BluetoothDevice* classic_device =
-      device->classic_address()
+      device->classic_address().has_value()
           ? adapter_->GetDevice(device->classic_address().value())
           : nullptr;
+
+  if (classic_device && classic_device->IsPaired()) {
+    QP_LOG(ERROR) << __func__
+                  << ": A discoverable advertisement "
+                     "was notified for a paired classic device.";
+    return;
+  }
 
   device::BluetoothDevice* ble_device =
       adapter_->GetDevice(device->ble_address);
 
-  bool is_already_paired = (classic_device && classic_device->IsPaired()) ||
-                           (ble_device && ble_device->IsPaired());
-
-  if (is_already_paired) {
-    QP_LOG(INFO) << __func__ << ": Already paired with " << device;
+  if (ble_device && ble_device->IsPaired()) {
+    QP_LOG(ERROR) << __func__
+                  << ": A discoverable advertisement "
+                     "was notified for a paired BLE device.";
     return;
   }
+
+  // TODO(b/242100708): We currently have no way to tell if a device in pairing
+  // mode is already paired to the Chromebook; the BLE device has no information
+  // on the pairing state of the Classic device.
 
   QP_LOG(INFO) << __func__ << ": Running found callback";
   notified_devices_[device->ble_address] = device;

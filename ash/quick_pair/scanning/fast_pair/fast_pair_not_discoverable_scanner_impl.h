@@ -83,8 +83,6 @@ class FastPairNotDiscoverableScannerImpl
       const absl::optional<NotDiscoverableAdvertisement>& advertisement);
   void OnAccountKeyFilterCheckResult(const std::string& address,
                                      absl::optional<PairingMetadata> metadata);
-  void OnHandshakeComplete(scoped_refptr<Device> device,
-                           absl::optional<PairFailure> failure);
   void NotifyDeviceFound(scoped_refptr<Device> device);
   void OnUtilityProcessStopped(
       const std::string& address,

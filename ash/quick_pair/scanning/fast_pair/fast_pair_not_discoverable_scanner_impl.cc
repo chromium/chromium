@@ -16,7 +16,6 @@
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/common/protocol.h"
-#include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
 #include "ash/quick_pair/repository/fast_pair/device_metadata.h"
 #include "ash/quick_pair/repository/fast_pair/pairing_metadata.h"
 #include "ash/quick_pair/repository/fast_pair_repository.h"
@@ -225,6 +224,8 @@ void FastPairNotDiscoverableScannerImpl::OnAccountKeyFilterCheckResult(
   if (!metadata || !metadata->device_metadata)
     return;
 
+  // A paired device still emits not discoverable advertisements, so we check
+  // here to prevent showing an incorrect notification.
   if (FastPairRepository::Get()->IsAccountKeyPairedLocally(
           metadata->account_key)) {
     QP_LOG(INFO) << __func__
@@ -245,34 +246,25 @@ void FastPairNotDiscoverableScannerImpl::OnAccountKeyFilterCheckResult(
   device->SetAdditionalData(Device::AdditionalDataType::kAccountKey,
                             metadata->account_key);
 
-  FastPairHandshakeLookup::GetInstance()->Create(
-      adapter_, std::move(device),
-      base::BindOnce(&FastPairNotDiscoverableScannerImpl::OnHandshakeComplete,
-                     weak_pointer_factory_.GetWeakPtr()));
-}
-
-void FastPairNotDiscoverableScannerImpl::OnHandshakeComplete(
-    scoped_refptr<Device> device,
-    absl::optional<PairFailure> failure) {
-  if (failure) {
-    QP_LOG(WARNING) << __func__ << ": Handshake failed with " << device
-                    << " because: " << failure.value();
-    return;
-  }
-
   device::BluetoothDevice* classic_device =
       device->classic_address()
           ? adapter_->GetDevice(device->classic_address().value())
           : nullptr;
 
+  if (classic_device && classic_device->IsPaired()) {
+    QP_LOG(ERROR) << __func__
+                  << ": A discoverable advertisement "
+                     "was notified for a paired classic device.";
+    return;
+  }
+
   device::BluetoothDevice* ble_device =
       adapter_->GetDevice(device->ble_address);
 
-  bool is_already_paired = (classic_device && classic_device->IsPaired()) ||
-                           (ble_device && ble_device->IsPaired());
-
-  if (is_already_paired) {
-    QP_LOG(INFO) << __func__ << ": Already paired with " << device;
+  if (ble_device && ble_device->IsPaired()) {
+    QP_LOG(ERROR) << __func__
+                  << ": A discoverable advertisement "
+                     "was notified for a paired BLE device.";
     return;
   }
 

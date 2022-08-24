@@ -275,7 +275,7 @@ void FastPairDataParser::ParseNotDiscoverableAdvertisement(
   }
 
   if (salt_bytes.size() > 1) {
-    QP_LOG(WARNING) << "Parsed a salt field larger than one byte: "
+    QP_LOG(WARNING) << " Parsed a salt field larger than one byte: "
                     << salt_bytes.size();
     std::move(callback).Run(absl::nullopt);
     return;

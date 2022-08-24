@@ -34,9 +34,8 @@ FakeFastPairHandshake::~FakeFastPairHandshake() = default;
 
 void FakeFastPairHandshake::InvokeCallback(
     absl::optional<PairFailure> failure) {
-  bool has_failure = failure.has_value();
-  std::move(on_complete_callback_).Run(device_, std::move(failure));
-  completed_successfully_ = !has_failure;
+  completed_successfully_ = !failure.has_value();
+  std::move(on_complete_callback_).Run(device_, failure);
 }
 
 }  // namespace quick_pair
