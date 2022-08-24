@@ -16,6 +16,9 @@ namespace enterprise_connectors {
 
 namespace {
 
+// TODO when adding this service to the login-screen: Check if the preference is
+// unmanaged, while we are in sign-in profile to address
+// security-/privacy-concerns
 const base::Value::List& GetPolicyUrlPatterns(PrefService* prefs) {
   return prefs->GetValueList(kContextAwareAccessSignalsAllowlistPref);
 }

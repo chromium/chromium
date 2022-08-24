@@ -10,10 +10,16 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key_result.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/prefs/pref_service.h"
+
+using enterprise_connectors::kContextAwareAccessSignalsAllowlistPref;
 
 namespace chromeos {
 
@@ -24,30 +30,37 @@ const char kResponseField[] = "response";
 
 const size_t kPatternsSizeWarningLevel = 500;
 
-// Checks if `url` matches one of the `patterns`.
-bool IsDeviceWebBasedAttestationEnabledForUrl(const GURL& url,
-                                              const base::ListValue* patterns) {
-  if (!patterns) {
-    return false;
-  }
-
+bool UrlMatchesPattern(const GURL& url, const base::Value::List& patterns) {
   if (!url.SchemeIs(url::kHttpsScheme)) {
     return false;
   }
 
-  if (patterns->GetListDeprecated().size() >= kPatternsSizeWarningLevel) {
-    LOG(WARNING) << "Allowed urls list size is "
-                 << patterns->GetListDeprecated().size()
+  if (patterns.size() >= kPatternsSizeWarningLevel) {
+    LOG(WARNING) << "Allowed urls list size is " << patterns.size()
                  << ". Check may be slow.";
   }
 
-  for (const base::Value& cur_pattern : patterns->GetListDeprecated()) {
+  for (const base::Value& cur_pattern : patterns) {
     if (ContentSettingsPattern::FromString(cur_pattern.GetString())
             .Matches(url)) {
       return true;
     }
   }
   return false;
+}
+
+bool AreContextAwareAccessSignalsEnabledForUrl(const GURL& url,
+                                               const Profile* profile) {
+  const PrefService* prefs = profile->GetPrefs();
+  if (!prefs || !prefs->HasPrefPath(kContextAwareAccessSignalsAllowlistPref))
+    return false;
+
+  if (!ash::ProfileHelper::IsRegularProfile(profile) &&
+      !prefs->IsManagedPreference(kContextAwareAccessSignalsAllowlistPref))
+    return false;
+
+  return UrlMatchesPattern(
+      url, prefs->GetValueList(kContextAwareAccessSignalsAllowlistPref));
 }
 }  // namespace
 
@@ -107,10 +120,19 @@ void SamlChallengeKeyHandler::BuildResponseForAllowlistedUrl(const GURL& url) {
       break;
   }
 
-  if (!IsDeviceWebBasedAttestationEnabledForUrl(url, patterns)) {
+  if (!patterns || !UrlMatchesPattern(url, patterns->GetList())) {
     ReturnResult(attestation::TpmChallengeKeyResult::MakeError(
         attestation::TpmChallengeKeyResultCode::
             kDeviceWebBasedAttestationUrlError));
+    return;
+  }
+
+  // Prioritize Context Aware Signals over VerifiedAccess if both are defined
+  // for the same endpoint, since they are both reacting to the same VA
+  // Challenge
+  if (AreContextAwareAccessSignalsEnabledForUrl(url, profile_)) {
+    ReturnResult(attestation::TpmChallengeKeyResult::MakeError(
+        attestation::TpmChallengeKeyResultCode::kDeviceTrustURLConflictError));
     return;
   }
 
