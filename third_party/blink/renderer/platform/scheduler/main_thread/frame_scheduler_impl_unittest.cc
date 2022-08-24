@@ -4086,26 +4086,10 @@ TEST_F(FrameSchedulerImplThrottleForegroundTimersEnabledTest,
                                    start + base::Milliseconds(1000)));
 }
 
-class FrameSchedulerImplDisablePrioritizedPostMessageForwarding
-    : public FrameSchedulerImplTest {
- public:
-  FrameSchedulerImplDisablePrioritizedPostMessageForwarding()
-      : FrameSchedulerImplTest({kDisablePrioritizedPostMessageForwarding}, {}) {
-  }
-};
-
-TEST_F(FrameSchedulerImplTest, PostMessageForwardingHasControlPriority) {
+TEST_F(FrameSchedulerImplTest, PostMessageForwardingHasVeryHighPriority) {
   auto task_queue = GetTaskQueue(TaskType::kInternalPostMessageForwarding);
 
   EXPECT_EQ(TaskQueue::QueuePriority::kVeryHighPriority,
-            task_queue->GetQueuePriority());
-}
-
-TEST_F(FrameSchedulerImplDisablePrioritizedPostMessageForwarding,
-       PostMessageForwardingHasNormalPriority) {
-  auto task_queue = GetTaskQueue(TaskType::kInternalPostMessageForwarding);
-
-  EXPECT_EQ(TaskQueue::QueuePriority::kNormalPriority,
             task_queue->GetQueuePriority());
 }
 
