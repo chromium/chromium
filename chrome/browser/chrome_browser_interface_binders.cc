@@ -947,7 +947,7 @@ void PopulateChromeWebUIFrameBinders(
                                            NewTabPageUI>(map);
   }
 
-  if (base::FeatureList::IsEnabled(ntp_features::kNtpDriveModule)) {
+  if (IsDriveModuleEnabled()) {
     RegisterWebUIControllerInterfaceBinder<drive::mojom::DriveHandler,
                                            NewTabPageUI>(map);
   }

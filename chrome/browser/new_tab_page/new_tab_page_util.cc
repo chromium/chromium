@@ -26,6 +26,14 @@ bool IsOsSupportedForCart() {
 #endif
 }
 
+bool IsOsSupportedForDrive() {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  return true;
+#else
+  return false;
+#endif
+}
+
 std::string GetCountryCode() {
   std::string country_code;
   auto* variations_service = g_browser_process->variations_service();
@@ -59,6 +67,15 @@ bool IsCartModuleEnabled() {
     return base::FeatureList::IsEnabled(ntp_features::kNtpChromeCartModule);
   } else {
     return IsOsSupportedForCart() && IsInUS();
+  }
+}
+
+bool IsDriveModuleEnabled() {
+  if (base::FeatureList::GetInstance()->IsFeatureOverridden(
+          ntp_features::kNtpDriveModule.name)) {
+    return base::FeatureList::IsEnabled(ntp_features::kNtpDriveModule);
+  } else {
+    return IsOsSupportedForDrive() && IsInUS();
   }
 }
 

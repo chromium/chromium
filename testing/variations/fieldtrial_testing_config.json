@@ -3634,13 +3634,10 @@
                 {
                     "name": "RecipeTasksRuleBasedDiscountDriveManagedUsersCartOptimizeRecipeTasksSAPIV2Fre_Enabled",
                     "params": {
-                        "NtpDriveModuleExperimentGroupParam": "foo:bar",
-                        "NtpDriveModuleManagedUsersOnlyParam": "true",
                         "NtpModulesLoadTimeoutMillisecondsParam": "3000",
                         "use_sapi_v2": "true"
                     },
                     "enable_features": [
-                        "NtpDriveModule",
                         "NtpModulesLoadTimeoutMilliseconds",
                         "NtpPhotosModule"
                     ],
@@ -3651,13 +3648,10 @@
                 {
                     "name": "Recipes_SAPIV2_20220415",
                     "params": {
-                        "NtpDriveModuleExperimentGroupParam": "foo:bar",
-                        "NtpDriveModuleManagedUsersOnlyParam": "true",
                         "NtpModulesLoadTimeoutMillisecondsParam": "3000",
                         "use_sapi_v2": "true"
                     },
                     "enable_features": [
-                        "NtpDriveModule",
                         "NtpModulesLoadTimeoutMilliseconds",
                         "NtpRecipeTasksModule"
                     ],
@@ -3668,12 +3662,9 @@
                 {
                     "name": "Recipes_SAPIV2_Control_20220415",
                     "params": {
-                        "NtpDriveModuleExperimentGroupParam": "foo:bar",
-                        "NtpDriveModuleManagedUsersOnlyParam": "true",
                         "NtpModulesLoadTimeoutMillisecondsParam": "3000"
                     },
                     "enable_features": [
-                        "NtpDriveModule",
                         "NtpModulesLoadTimeoutMilliseconds",
                         "NtpRecipeTasksModule"
                     ],

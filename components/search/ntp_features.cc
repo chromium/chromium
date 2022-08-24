@@ -71,7 +71,7 @@ const base::Feature kNtpDummyModules{"NtpDummyModules",
 
 // If enabled, Google Drive module will be shown.
 const base::Feature kNtpDriveModule{"NtpDriveModule",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
+                                    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // If enabled, handles navigations from the Most Visited tiles explicitly and
 // overrides the navigation's transition type to bookmark navigation before the
