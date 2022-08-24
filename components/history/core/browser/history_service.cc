@@ -316,7 +316,7 @@ base::CancelableTaskTracker::TaskId HistoryService::GetMostRecentClusters(
       backend_task_runner_.get(), FROM_HERE,
       base::BindOnce(&HistoryBackend::GetMostRecentClusters, history_backend_,
                      inclusive_min_time, exclusive_max_time, max_clusters,
-                     /*include_keywords=*/true),
+                     /*include_keywords_and_duplicates=*/true),
       std::move(callback));
 }
 

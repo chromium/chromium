@@ -1861,17 +1861,39 @@ std::vector<AnnotatedVisit> HistoryBackend::ToAnnotatedVisits(
 }
 
 std::vector<ClusterVisit> HistoryBackend::ToClusterVisits(
-    const std::vector<VisitID>& visit_ids) {
+    const std::vector<VisitID>& visit_ids,
+    bool include_duplicates) {
   auto annotated_visits = ToAnnotatedVisits(visit_ids);
   std::vector<ClusterVisit> cluster_visits;
-  base::ranges::transform(annotated_visits, std::back_inserter(cluster_visits),
-                          [&](const auto& annotated_visit) {
-                            ClusterVisit cluster_visit = db_->GetClusterVisit(
-                                annotated_visit.visit_row.visit_id);
-                            cluster_visit.annotated_visit = annotated_visit;
-                            return cluster_visit;
-                          });
+  base::ranges::transform(
+      annotated_visits, std::back_inserter(cluster_visits),
+      [&](const auto& annotated_visit) {
+        ClusterVisit cluster_visit =
+            db_->GetClusterVisit(annotated_visit.visit_row.visit_id);
+        cluster_visit.annotated_visit = annotated_visit;
+        if (include_duplicates) {
+          cluster_visit.duplicate_visits = ToDuplicateClusterVisits(
+              db_->GetDuplicateClusterVisitIdsForClusterVisit(
+                  annotated_visit.visit_row.visit_id));
+        }
+        return cluster_visit;
+      });
   return cluster_visits;
+}
+
+std::vector<DuplicateClusterVisit> HistoryBackend::ToDuplicateClusterVisits(
+    const std::vector<VisitID>& visit_ids) {
+  std::vector<DuplicateClusterVisit> duplicate_cluster_visits;
+  base::ranges::transform(
+      visit_ids, std::back_inserter(duplicate_cluster_visits),
+      [&](const auto visit_id) -> DuplicateClusterVisit {
+        VisitRow visit_row;
+        db_->GetRowForVisit(visit_id, &visit_row);
+        URLRow url_row;
+        GetURLByID(visit_row.url_id, &url_row);
+        return {visit_id, url_row.url(), visit_row.visit_time};
+      });
+  return duplicate_cluster_visits;
 }
 
 base::Time HistoryBackend::FindMostRecentClusteredTime() {
@@ -1901,28 +1923,30 @@ std::vector<Cluster> HistoryBackend::GetMostRecentClusters(
     base::Time inclusive_min_time,
     base::Time exclusive_max_time,
     int max_clusters,
-    bool include_keywords) {
+    bool include_keywords_and_duplicates) {
   TRACE_EVENT0("browser", "HistoryBackend::GetMostRecentClusters");
   if (!db_)
     return {};
   const auto cluster_ids = db_->GetMostRecentClusterIds(
       inclusive_min_time, exclusive_max_time, max_clusters);
   std::vector<Cluster> clusters;
-  base::ranges::transform(cluster_ids, std::back_inserter(clusters),
-                          [&](const auto& cluster_id) {
-                            return GetCluster(cluster_id, include_keywords);
-                          });
+  base::ranges::transform(
+      cluster_ids, std::back_inserter(clusters), [&](const auto& cluster_id) {
+        return GetCluster(cluster_id, include_keywords_and_duplicates);
+      });
   return clusters;
 }
 
-Cluster HistoryBackend::GetCluster(int64_t cluster_id, bool include_keywords) {
+Cluster HistoryBackend::GetCluster(int64_t cluster_id,
+                                   bool include_keywords_and_duplicates) {
   TRACE_EVENT0("browser", "HistoryBackend::GetCluster");
   if (!db_)
     return {};
 
   Cluster cluster = db_->GetCluster(cluster_id);
-  cluster.visits = ToClusterVisits(db_->GetVisitIdsInCluster(cluster_id));
-  if (include_keywords)
+  cluster.visits = ToClusterVisits(db_->GetVisitIdsInCluster(cluster_id),
+                                   include_keywords_and_duplicates);
+  if (include_keywords_and_duplicates)
     cluster.keyword_to_data_map = db_->GetClusterKeywords(cluster_id);
   return cluster;
 }

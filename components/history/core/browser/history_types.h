@@ -820,13 +820,13 @@ struct AnnotatedVisit {
 // duplicate's URL and visit time are needed to delete it, hence doesn't contain
 // all the information contained in e.g. `ClusterVisit`.
 struct DuplicateClusterVisit {
-  VisitID visit_id;
+  VisitID visit_id = 0;
 
   // Not persisted; derived from visit_id.
-  GURL url;
+  GURL url = {};
 
   // Not persisted; derived from visit_id.
-  base::Time visit_time;
+  base::Time visit_time = {};
 };
 
 // An `AnnotatedVisit` associated with some other metadata from clustering.

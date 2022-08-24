@@ -486,8 +486,15 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   std::vector<AnnotatedVisit> ToAnnotatedVisits(
       const std::vector<VisitID>& visit_ids);
 
-  // Utility method to Construct `ClusterVisit`s.
+  // Utility method to construct `ClusterVisit`s. Since `duplicate_visits` isn't
+  // always useful and requires extra SQL executions, it's only populated if
+  // `include_duplicates` is true.
   std::vector<ClusterVisit> ToClusterVisits(
+      const std::vector<VisitID>& visit_ids,
+      bool include_duplicates = true);
+
+  // Utility method to construct `DuplicateClusterVisit`s.
+  std::vector<DuplicateClusterVisit> ToDuplicateClusterVisits(
       const std::vector<VisitID>& visit_ids);
 
   // Returns the time of the most recent clustered visits; i.e. the boundary
@@ -499,14 +506,17 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   void ReplaceClusters(const std::vector<int64_t>& ids_to_delete,
                        const std::vector<Cluster>& clusters_to_add);
 
-  std::vector<Cluster> GetMostRecentClusters(base::Time inclusive_min_time,
-                                             base::Time exclusive_max_time,
-                                             int max_clusters,
-                                             bool include_keywords = true);
+  std::vector<Cluster> GetMostRecentClusters(
+      base::Time inclusive_min_time,
+      base::Time exclusive_max_time,
+      int max_clusters,
+      bool include_keywords_and_duplicates = true);
 
-  // Get a `Cluster`. `keyword_to_data_map` isn't always useful, and it requires
-  // an extra SQL execution. It's only populated If `include_keywords` is true.
-  Cluster GetCluster(int64_t cluster_id, bool include_keywords = true);
+  // Get a `Cluster`. Since `keyword_to_data_map` and `visits.duplicate_visits`
+  // aren't always useful and require extra SQL executions, they're only
+  // populated if `include_keywords_and_duplicates` is true.
+  Cluster GetCluster(int64_t cluster_id,
+                     bool include_keywords_and_duplicates = true);
 
   // Finds the 1st visit in the redirect chain containing `visit`.
   // Unlike `GetRedirectsToSpecificVisit()`, this only considers actual

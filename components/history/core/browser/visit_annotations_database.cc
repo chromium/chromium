@@ -273,6 +273,16 @@ bool VisitAnnotationsDatabase::InitVisitAnnotationsTables() {
     return false;
   }
 
+  // Represents the one-to-many relationship of `ClusterVisit`s and its
+  // duplicates: `DuplicateClusterVisit`s.
+  if (!GetDB().Execute("CREATE TABLE IF NOT EXISTS cluster_visit_duplicates("
+                       "visit_id INTEGER NOT NULL,"
+                       "duplicate_visit_id INTEGER NOT NULL,"
+                       "PRIMARY KEY(visit_id,duplicate_visit_id))"
+                       "WITHOUT ROWID")) {
+    return false;
+  }
+
   return true;
 }
 
@@ -282,7 +292,8 @@ bool VisitAnnotationsDatabase::DropVisitAnnotationsTables() {
          GetDB().Execute("DROP TABLE context_annotations") &&
          GetDB().Execute("DROP TABLE clusters") &&
          GetDB().Execute("DROP TABLE clusters_and_visits") &&
-         GetDB().Execute("DROP TABLE cluster_keywords");
+         GetDB().Execute("DROP TABLE cluster_keywords") &&
+         GetDB().Execute("DROP TABLE cluster_visit_duplicates");
 }
 
 void VisitAnnotationsDatabase::AddContentAnnotationsForVisit(
@@ -524,6 +535,17 @@ void VisitAnnotationsDatabase::DeleteAnnotationsForVisit(VisitID visit_id) {
              << "visit_id = " << visit_id;
   }
 
+  statement.Assign(
+      GetDB().GetCachedStatement(SQL_FROM_HERE,
+                                 "DELETE FROM cluster_visit_duplicates "
+                                 "WHERE visit_id=? OR duplicate_visit_id=?"));
+  statement.BindInt64(0, visit_id);
+  statement.BindInt64(1, visit_id);
+  if (!statement.Run()) {
+    DVLOG(0) << "Failed to execute cluster_visit_duplicates delete statement:  "
+             << "visit_id = " << visit_id;
+  }
+
   auto cluster_id = GetClusterIdContainingVisit(visit_id);
   if (cluster_id > 0 && GetVisitIdsInCluster(cluster_id).size() == 1)
     DeleteClusters({cluster_id});
@@ -558,6 +580,11 @@ void VisitAnnotationsDatabase::AddClusters(
                                  "INSERT INTO cluster_keywords"
                                  "(cluster_id,keyword,type,score,collections)"
                                  "VALUES(?,?,?,?,?)"));
+  sql::Statement cluster_visit_duplicates_statement(
+      GetDB().GetCachedStatement(SQL_FROM_HERE,
+                                 "INSERT INTO cluster_visit_duplicates"
+                                 "(visit_id,duplicate_visit_id)"
+                                 "VALUES(?,?)"));
 
   for (const auto& cluster : clusters) {
     if (cluster.visits.empty())
@@ -595,6 +622,22 @@ void VisitAnnotationsDatabase::AddClusters(
         DVLOG(0)
             << "Failed to execute 'clusters_and_visits' insert statement:  "
             << "cluster_id = " << cluster_id << ", visit_id = " << visit_id;
+      }
+
+      // Insert each `ClusterVisit`'s duplicate visits into
+      // 'cluster_visit_duplicates_statement'.
+      for (const auto& duplicate_visit : cluster_visit.duplicate_visits) {
+        cluster_visit_duplicates_statement.Reset(true);
+        cluster_visit_duplicates_statement.BindInt64(0, visit_id);
+        cluster_visit_duplicates_statement.BindInt64(1,
+                                                     duplicate_visit.visit_id);
+        if (!cluster_visit_duplicates_statement.Run()) {
+          DVLOG(0) << "Failed to execute 'cluster_visit_duplicates' insert "
+                      "statement:  "
+                   << "cluster_id = " << cluster_id
+                   << ", visit_id = " << visit_id
+                   << ", duplicate_visit_id = " << duplicate_visit.visit_id;
+        }
       }
     });
 
@@ -716,6 +759,23 @@ ClusterVisit VisitAnnotationsDatabase::GetClusterVisit(VisitID visit_id) {
   return cluster_visit;
 }
 
+std::vector<VisitID>
+VisitAnnotationsDatabase::GetDuplicateClusterVisitIdsForClusterVisit(
+    int64_t visit_id) {
+  DCHECK_GT(visit_id, 0);
+  sql::Statement statement(
+      GetDB().GetCachedStatement(SQL_FROM_HERE,
+                                 "SELECT duplicate_visit_id "
+                                 "FROM cluster_visit_duplicates "
+                                 "WHERE visit_id=?"));
+  statement.BindInt64(0, visit_id);
+
+  std::vector<VisitID> visit_ids;
+  while (statement.Step())
+    visit_ids.push_back(statement.ColumnInt64(0));
+  return visit_ids;
+}
+
 int64_t VisitAnnotationsDatabase::GetClusterIdContainingVisit(
     VisitID visit_id) {
   DCHECK_GT(visit_id, 0);
@@ -787,6 +847,12 @@ void VisitAnnotationsDatabase::DeleteClusters(
       DVLOG(0) << "Failed to execute cluster_keywords delete statement:  "
                << "cluster_id = " << cluster_id;
     }
+
+    // TODO(manukh): (Maybe) for each visit deleted from 'clusters_and_visits',
+    //  delete the visits from 'cluster_visit_duplicates'. This is a maybe
+    //  because even though we compute visit duplicates during clustering, it's
+    //  not dependent on the cluster; 2 duplicate visits are duplicates
+    //  regardless of what cluster they belong to.
   }
 }
 

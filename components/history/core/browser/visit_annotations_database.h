@@ -99,6 +99,10 @@ class VisitAnnotationsDatabase {
   // Get a `ClusterVisit`.
   ClusterVisit GetClusterVisit(VisitID visit_id);
 
+  // Get `VisitID`s for duplicate cluster visits.
+  std::vector<VisitID> GetDuplicateClusterVisitIdsForClusterVisit(
+      int64_t visit_id);
+
   // Return the ID of the cluster containing `visit_id`. Returns 0 if `visit_id`
   // is not in a cluster.`
   int64_t GetClusterIdContainingVisit(VisitID visit_id);
