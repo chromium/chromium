@@ -651,7 +651,7 @@ bool ExecuteFileTask(Profile* profile,
   if (IsFilesAppId(task.app_id) &&
       (parsed_action_id == "upload-office-to-drive")) {
     const bool opened =
-        chromeos::cloud_upload::CloudUploadDialog::Show(file_urls);
+        chromeos::cloud_upload::CloudUploadDialog::Show(profile, file_urls);
     if (done) {
       if (opened) {
         std::move(done).Run(

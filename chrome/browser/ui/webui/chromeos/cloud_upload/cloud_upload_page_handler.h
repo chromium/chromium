@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload.mojom-shared.h"
 #include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -24,6 +25,7 @@ class CloudUploadPageHandler
   using RespondAndCloseCallback =
       base::OnceCallback<void(mojom::UserAction action)>;
   explicit CloudUploadPageHandler(
+      Profile* profile,
       mojo::PendingReceiver<chromeos::cloud_upload::mojom::PageHandler>
           pending_page_handler,
       RespondAndCloseCallback callback);
@@ -38,6 +40,7 @@ class CloudUploadPageHandler
   void RespondAndClose(mojom::UserAction action) override;
 
  private:
+  Profile* profile_;
   mojo::Receiver<chromeos::cloud_upload::mojom::PageHandler> receiver_;
   RespondAndCloseCallback callback_;
 

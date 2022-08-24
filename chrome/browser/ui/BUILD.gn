@@ -2582,6 +2582,8 @@ static_library("ui") {
       "webui/chromeos/certificate_manager_dialog_ui.h",
       "webui/chromeos/cloud_upload/cloud_upload_dialog.cc",
       "webui/chromeos/cloud_upload/cloud_upload_dialog.h",
+      "webui/chromeos/cloud_upload/cloud_upload_handler.cc",
+      "webui/chromeos/cloud_upload/cloud_upload_handler.h",
       "webui/chromeos/cloud_upload/cloud_upload_page_handler.cc",
       "webui/chromeos/cloud_upload/cloud_upload_page_handler.h",
       "webui/chromeos/cloud_upload/cloud_upload_ui.cc",

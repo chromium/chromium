@@ -7,19 +7,25 @@
 #include "base/callback.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload_handler.h"
 #include "chrome/common/webui_url_constants.h"
 
 namespace chromeos::cloud_upload {
 namespace {
 
-void OnUploadActionReceived(const std::string& action) {
-  LOG(ERROR) << "ACTION: " << action;
+void OnUploadActionReceived(Profile* profile,
+                            const storage::FileSystemURL& file_url,
+                            const std::string& action) {
+  if (action == kUserActionUpload) {
+    UploadToCloud(profile, file_url);
+  }
 }
 
 }  // namespace
 
 // static
 bool CloudUploadDialog::Show(
+    Profile* profile,
     const std::vector<storage::FileSystemURL>& file_urls) {
   // Allow no more than one upload dialog at a time. In the case of multiple
   // upload requests, they should either be handled simultaneously or queued.
@@ -34,8 +40,8 @@ bool CloudUploadDialog::Show(
 
   // The pointer is managed by an instance of `views::WebDialogView` and removed
   // in `SystemWebDialogDelegate::OnDialogClosed`.
-  CloudUploadDialog* dialog =
-      new CloudUploadDialog(file_url, base::BindOnce(&OnUploadActionReceived));
+  CloudUploadDialog* dialog = new CloudUploadDialog(
+      file_url, base::BindOnce(&OnUploadActionReceived, profile, file_url));
 
   dialog->ShowSystemDialog();
   return true;

@@ -10,6 +10,8 @@
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "storage/browser/file_system/file_system_url.h"
 
+class Profile;
+
 namespace chromeos::cloud_upload {
 
 // The string conversions of chromeos::cloud_upload::mojom::UserAction.
@@ -27,7 +29,8 @@ class CloudUploadDialog : public SystemWebDialogDelegate {
 
   // Creates and shows a new dialog for the cloud upload workflow. Returns true
   // if a new dialog has been effectively created.
-  static bool Show(const std::vector<storage::FileSystemURL>& file_urls);
+  static bool Show(Profile* profile,
+                   const std::vector<storage::FileSystemURL>& file_urls);
 
   void OnDialogClosed(const std::string& json_retval) override;
 

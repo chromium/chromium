@@ -40,7 +40,7 @@ void CloudUploadUI::CreatePageHandler(
     mojo::PendingReceiver<chromeos::cloud_upload::mojom::PageHandler>
         receiver) {
   page_handler_ = std::make_unique<CloudUploadPageHandler>(
-      std::move(receiver),
+      Profile::FromWebUI(web_ui()), std::move(receiver),
       // base::Unretained() because |page_handler_| will not out-live |this|.
       base::BindOnce(&CloudUploadUI::RespondAndCloseDialog,
                      base::Unretained(this)));

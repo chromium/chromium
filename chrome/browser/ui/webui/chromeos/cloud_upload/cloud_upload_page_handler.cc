@@ -5,20 +5,23 @@
 #include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload_page_handler.h"
 
 #include "base/files/file_path.h"
+#include "chrome/browser/ui/webui/chromeos/cloud_upload/cloud_upload_handler.h"
 
 namespace chromeos::cloud_upload {
 
 CloudUploadPageHandler::CloudUploadPageHandler(
+    Profile* profile,
     mojo::PendingReceiver<chromeos::cloud_upload::mojom::PageHandler>
         pending_page_handler,
     RespondAndCloseCallback callback)
-    : receiver_{this, std::move(pending_page_handler)},
+    : profile_(profile),
+      receiver_{this, std::move(pending_page_handler)},
       callback_{std::move(callback)} {}
 
 CloudUploadPageHandler::~CloudUploadPageHandler() = default;
 
 void CloudUploadPageHandler::GetUploadPath(GetUploadPathCallback callback) {
-  std::move(callback).Run(std::move(base::FilePath("/from Chromebook")));
+  std::move(callback).Run(GenerateDestinationPath(profile_));
 }
 
 void CloudUploadPageHandler::RespondAndClose(mojom::UserAction action) {
