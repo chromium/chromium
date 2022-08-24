@@ -404,6 +404,8 @@ void ServiceWorkerSubresourceLoader::OnResponseStream(
     blink::mojom::FetchAPIResponsePtr response,
     blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream,
     blink::mojom::ServiceWorkerFetchEventTimingPtr timing) {
+  // TODO(crbug.com/1342408): remove this after we confirm the timer behavior.
+  DCHECK_LE(timing->respond_with_settled_time, base::TimeTicks::Now());
   TRACE_EVENT_WITH_FLOW0(
       "ServiceWorker", "ServiceWorkerSubresourceLoader::OnResponseStream",
       TRACE_ID_WITH_SCOPE(kServiceWorkerSubresourceLoaderScope,
