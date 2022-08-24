@@ -1115,19 +1115,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateIndividualTransform(
           state.transform_and_origin = {matrix, TransformOrigin(box, size)};
         }
 
-        // We want to track whether (a) this element is in a preserve-3d scene
-        // and (b) has a matrix that puts it into the third dimension in some
-        // way.  The test we use for (b) is stricter than
-        // !matrix.Is2dTransform() or !matrix.IsFlat(); we're interested
-        // *only* in things that cause this element to have a nonzero z
-        // position within the 3-D scene.
-        if (context_.rendering_context_id &&
-            (matrix.M13() != 0.0 || matrix.M23() != 0.0 ||
-             matrix.M43() != 0.0)) {
-          UseCounter::Count(object_.GetDocument(),
-                            WebFeature::kTransform3dScene);
-        }
-
         // TODO(trchen): transform-style should only be respected if a
         // PaintLayer is created. If a node with transform-style: preserve-3d
         // does not exist in an existing rendering context, it establishes a

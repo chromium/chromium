@@ -98,8 +98,37 @@ static CompositingReasons CompositingReasonsFor3DTransform(
   // support them.
   if (!layout_object.HasTransformRelatedProperty())
     return CompositingReason::kNoCompositingReason;
-  return CompositingReasonFinder::PotentialCompositingReasonsFor3DTransform(
-      layout_object.StyleRef());
+
+  const ComputedStyle& style = layout_object.StyleRef();
+  CompositingReasons reasons =
+      CompositingReasonFinder::PotentialCompositingReasonsFor3DTransform(style);
+  if (reasons != CompositingReason::kNoCompositingReason &&
+      layout_object.IsBox()) {
+    // In theory this should operate on fragment sizes, but using the box size
+    // is probably good enough for a use counter.
+    auto& box = To<LayoutBox>(layout_object);
+    TransformationMatrix matrix;
+    style.ApplyTransform(matrix, box.Size(),
+                         ComputedStyle::kIncludeTransformOperations,
+                         ComputedStyle::kExcludeTransformOrigin,
+                         ComputedStyle::kExcludeMotionPath,
+                         ComputedStyle::kIncludeIndependentTransformProperties);
+
+    // We want to track whether (a) this element is in a preserve-3d scene and
+    // (b) has a matrix that puts it into the third dimension in some way.
+    // The test we use for (b) is stricter than !matrix.Is2dTransform() or
+    // !matrix.IsFlat(); we're interested *only* in things that cause this
+    // element to have a nonzero z position within the 3-D scene.
+    if (matrix.M13() != 0.0 || matrix.M23() != 0.0 || matrix.M43() != 0.0) {
+      LayoutObject* parent_for_element =
+          layout_object.NearestAncestorForElement();
+      if (parent_for_element && parent_for_element->Preserves3D()) {
+        UseCounter::Count(layout_object.GetDocument(),
+                          WebFeature::kTransform3dScene);
+      }
+    }
+  }
+  return reasons;
 }
 
 static CompositingReasons CompositingReasonsFor3DSceneLeaf(
