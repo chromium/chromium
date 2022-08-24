@@ -96,6 +96,11 @@ class TestTargetConfig : public TargetConfig {
   }
   void AddRestrictingRandomSid() override {}
   void SetLockdownDefaultDacl() override {}
+  ResultCode AddKernelObjectToClose(const wchar_t* handle_type,
+                                    const wchar_t* handle_name) override {
+    return SBOX_ALL_OK;
+  }
+  ResultCode SetDisconnectCsrss() override { return SBOX_ALL_OK; }
 
   ResultCode AddAppContainerProfile(const wchar_t* package_name,
                                     bool create_profile) override {
@@ -136,13 +141,8 @@ class TestTargetPolicy : public TargetPolicy {
     return SBOX_ALL_OK;
   }
   void DestroyAlternateDesktop() override {}
-  ResultCode SetDisconnectCsrss() override { return SBOX_ALL_OK; }
   ResultCode SetStdoutHandle(HANDLE handle) override { return SBOX_ALL_OK; }
   ResultCode SetStderrHandle(HANDLE handle) override { return SBOX_ALL_OK; }
-  ResultCode AddKernelObjectToClose(const wchar_t* handle_type,
-                                    const wchar_t* handle_name) override {
-    return SBOX_ALL_OK;
-  }
   void AddHandleToShare(HANDLE handle) override {}
 
   void SetEffectiveToken(HANDLE token) override {}

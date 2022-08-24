@@ -89,10 +89,10 @@ std::string RendererSandboxedProcessLauncherDelegateWin::GetSandboxTag() {
 
 bool RendererSandboxedProcessLauncherDelegateWin::PreSpawnTarget(
     sandbox::TargetPolicy* policy) {
-  sandbox::policy::SandboxWin::AddBaseHandleClosePolicy(policy);
-
   sandbox::TargetConfig* config = policy->GetConfig();
   if (!config->IsConfigured()) {
+    sandbox::policy::SandboxWin::AddBaseHandleClosePolicy(config);
+
     ContentBrowserClient::AppContainerFlags ac_flags(
         ContentBrowserClient::AppContainerFlags::kAppContainerFlagNone);
     if (renderer_app_container_disabled_) {

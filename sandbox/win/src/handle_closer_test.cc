@@ -177,7 +177,8 @@ TEST(HandleCloserTest, CloseMarkerFiles) {
     base::win::ScopedHandle marker(GetMarkerFile(kExtension));
     CHECK(marker.IsValid());
     CHECK(GetPathFromHandle(marker.Get(), &handle_name));
-    CHECK_EQ(policy->AddKernelObjectToClose(L"File", handle_name.c_str()),
+    CHECK_EQ(policy->GetConfig()->AddKernelObjectToClose(L"File",
+                                                         handle_name.c_str()),
              SBOX_ALL_OK);
     command += (L" ");
     command += handle_name;
@@ -198,7 +199,8 @@ TEST(HandleCloserTest, CheckStuffedHandle) {
     base::win::ScopedHandle marker(GetMarkerFile(kExtension));
     CHECK(marker.IsValid());
     CHECK(GetPathFromHandle(marker.Get(), &handle_name));
-    CHECK_EQ(policy->AddKernelObjectToClose(L"File", handle_name.c_str()),
+    CHECK_EQ(policy->GetConfig()->AddKernelObjectToClose(L"File",
+                                                         handle_name.c_str()),
              SBOX_ALL_OK);
   }
 

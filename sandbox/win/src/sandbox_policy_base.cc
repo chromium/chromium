@@ -104,6 +104,7 @@ ConfigBase::ConfigBase() noexcept
       add_restricting_random_sid_(false),
       lockdown_default_dacl_(false),
       allow_no_sandbox_job_(false),
+      is_csrss_connected_(true),
       memory_limit_(0),
       ui_exceptions_(0),
       policy_maker_(nullptr),
@@ -405,6 +406,27 @@ bool ConfigBase::GetAllowNoSandboxJob() {
   return allow_no_sandbox_job_;
 }
 
+ResultCode ConfigBase::AddKernelObjectToClose(const wchar_t* handle_type,
+                                              const wchar_t* handle_name) {
+  DCHECK(!configured_);
+  if (!handle_closer_)
+    handle_closer_ = std::make_unique<HandleCloser>();
+  return handle_closer_->AddHandle(handle_type, handle_name);
+}
+
+ResultCode ConfigBase::SetDisconnectCsrss() {
+// Does not work on 32-bit, and the ASAN runtime falls over with the
+// CreateThread EAT patch used when this is enabled.
+// See https://crbug.com/783296#c27.
+#if defined(_WIN64) && !defined(ADDRESS_SANITIZER)
+  if (base::win::GetVersion() >= base::win::Version::WIN10) {
+    is_csrss_connected_ = false;
+    return AddKernelObjectToClose(L"ALPC Port", nullptr);
+  }
+#endif  // !defined(_WIN64)
+  return SBOX_ALL_OK;
+}
+
 PolicyBase::PolicyBase(base::StringPiece tag)
     : tag_(tag),
       config_(),
@@ -413,7 +435,6 @@ PolicyBase::PolicyBase(base::StringPiece tag)
       use_alternate_winstation_(false),
       stdout_handle_(INVALID_HANDLE_VALUE),
       stderr_handle_(INVALID_HANDLE_VALUE),
-      is_csrss_connected_(true),
       effective_token_(nullptr),
       job_() {
   dispatcher_ = std::make_unique<TopLevelDispatcher>(this);
@@ -564,11 +585,6 @@ ResultCode PolicyBase::SetStderrHandle(HANDLE handle) {
     return SBOX_ERROR_BAD_PARAMS;
   stderr_handle_ = handle;
   return SBOX_ALL_OK;
-}
-
-ResultCode PolicyBase::AddKernelObjectToClose(const wchar_t* handle_type,
-                                              const wchar_t* handle_name) {
-  return handle_closer_.AddHandle(handle_type, handle_name);
 }
 
 void PolicyBase::AddHandleToShare(HANDLE handle) {
@@ -764,19 +780,6 @@ bool PolicyBase::OnProcessFinished(DWORD process_id) {
   return true;
 }
 
-ResultCode PolicyBase::SetDisconnectCsrss() {
-// Does not work on 32-bit, and the ASAN runtime falls over with the
-// CreateThread EAT patch used when this is enabled.
-// See https://crbug.com/783296#c27.
-#if defined(_WIN64) && !defined(ADDRESS_SANITIZER)
-  if (base::win::GetVersion() >= base::win::Version::WIN10) {
-    is_csrss_connected_ = false;
-    return AddKernelObjectToClose(L"ALPC Port", nullptr);
-  }
-#endif  // !defined(_WIN64)
-  return SBOX_ALL_OK;
-}
-
 EvalResult PolicyBase::EvalPolicy(IpcTag service,
                                   CountedParameterSetBase* params) {
   PolicyGlobal* policy = config()->policy();
@@ -831,7 +834,7 @@ ResultCode PolicyBase::SetupAllInterceptions(TargetProcess& target) {
   for (const std::wstring& dll : config()->blocklisted_dlls())
     manager.AddToUnloadModules(dll.c_str());
 
-  if (!SetupBasicInterceptions(&manager, is_csrss_connected_))
+  if (!SetupBasicInterceptions(&manager, config()->is_csrss_connected()))
     return SBOX_ERROR_SETUP_BASIC_INTERCEPTIONS;
 
   ResultCode rc = manager.InitializeInterceptions();
@@ -846,7 +849,10 @@ ResultCode PolicyBase::SetupAllInterceptions(TargetProcess& target) {
 }
 
 bool PolicyBase::SetupHandleCloser(TargetProcess& target) {
-  return handle_closer_.InitializeTargetHandles(target);
+  auto* handle_closer = config()->handle_closer();
+  if (!handle_closer)
+    return true;
+  return handle_closer->InitializeTargetHandles(target);
 }
 
 }  // namespace sandbox

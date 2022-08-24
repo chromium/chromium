@@ -217,6 +217,16 @@ class [[clang::lto_visibility_public]] TargetConfig {
 
   // Returns true if target process launch should proceed if job creation fails.
   virtual bool GetAllowNoSandboxJob() = 0;
+
+  // Adds a handle that will be closed in the target process after lockdown.
+  // A nullptr value for handle_name indicates all handles of the specified
+  // type. An empty string for handle_name indicates the handle is unnamed.
+  virtual ResultCode AddKernelObjectToClose(const wchar_t* handle_type,
+                                            const wchar_t* handle_name) = 0;
+
+  // Disconnect the target from CSRSS when TargetServices::LowerToken() is
+  // called inside the target.
+  virtual ResultCode SetDisconnectCsrss() = 0;
 };
 
 // We need [[clang::lto_visibility_public]] because instances of this class are
@@ -245,10 +255,6 @@ class [[clang::lto_visibility_public]] TargetPolicy {
   // Destroys the desktop and windows station.
   virtual void DestroyAlternateDesktop() = 0;
 
-  // Disconnect the target from CSRSS when TargetServices::LowerToken() is
-  // called inside the target.
-  virtual ResultCode SetDisconnectCsrss() = 0;
-
   // Set the handles the target process should inherit for stdout and
   // stderr.  The handles the caller passes must remain valid for the
   // lifetime of the policy object.  This only has an effect on
@@ -256,12 +262,6 @@ class [[clang::lto_visibility_public]] TargetPolicy {
   // file handles, but not console handles.
   virtual ResultCode SetStdoutHandle(HANDLE handle) = 0;
   virtual ResultCode SetStderrHandle(HANDLE handle) = 0;
-
-  // Adds a handle that will be closed in the target process after lockdown.
-  // A nullptr value for handle_name indicates all handles of the specified
-  // type. An empty string for handle_name indicates the handle is unnamed.
-  virtual ResultCode AddKernelObjectToClose(const wchar_t* handle_type,
-                                            const wchar_t* handle_name) = 0;
 
   // Adds a handle that will be shared with the target process. Does not take
   // ownership of the handle.

@@ -207,7 +207,7 @@ int TestRunner::InternalRunTest(const wchar_t* command) {
   }
 
   if (disable_csrss_)
-    policy_->SetDisconnectCsrss();
+    policy_->GetConfig()->SetDisconnectCsrss();
 
   // Get the path to the sandboxed process.
   wchar_t prog_name[MAX_PATH];

@@ -403,28 +403,26 @@ ResultCode AddDefaultConfigForSandboxedProcess(TargetConfig* config) {
     return result;
 
   config->SetLockdownDefaultDacl();
+
+  // Win8+ adds a device DeviceApi that we don't need.
+  if (base::win::GetVersion() >= base::win::Version::WIN8)
+    result = config->AddKernelObjectToClose(L"File", L"\\Device\\DeviceApi");
+  if (result != SBOX_ALL_OK)
+    return result;
+
   return SBOX_ALL_OK;
 }
 
 ResultCode AddDefaultPolicyForSandboxedProcess(TargetPolicy* policy) {
-  ResultCode result = sandbox::SBOX_ALL_OK;
-
-  // Win8+ adds a device DeviceApi that we don't need.
-  if (base::win::GetVersion() >= base::win::Version::WIN8)
-    result = policy->AddKernelObjectToClose(L"File", L"\\Device\\DeviceApi");
-  if (result != SBOX_ALL_OK)
-    return result;
-
-  result = policy->SetAlternateDesktop(true);
+  ResultCode result = policy->SetAlternateDesktop(true);
   if (result != SBOX_ALL_OK) {
     // We ignore the result of setting the alternate desktop, however log
     // a launch warning.
     LogLaunchWarning(result, ::GetLastError());
     DLOG(WARNING) << "Failed to apply desktop security to the renderer";
-    result = SBOX_ALL_OK;
   }
 
-  return result;
+  return SBOX_ALL_OK;
 }
 
 // This code is test only, and attempts to catch unsafe uses of
@@ -945,19 +943,20 @@ ResultCode SandboxWin::SetJobLevel(Sandbox sandbox_type,
 // TODO(jschuh): Need get these restrictions applied to NaCl and Pepper.
 // Just have to figure out what needs to be warmed up first.
 // static
-ResultCode SandboxWin::AddBaseHandleClosePolicy(TargetPolicy* policy) {
+ResultCode SandboxWin::AddBaseHandleClosePolicy(TargetConfig* config) {
+  DCHECK(!config->IsConfigured());
+
   if (base::FeatureList::IsEnabled(kEnableCsrssLockdownFeature)) {
     // Close all ALPC ports.
-    ResultCode ret = policy->SetDisconnectCsrss();
-    if (ret != SBOX_ALL_OK) {
+    ResultCode ret = config->SetDisconnectCsrss();
+    if (ret != SBOX_ALL_OK)
       return ret;
-    }
   }
 
   // TODO(cpu): Add back the BaseNamedObjects policy.
   std::wstring object_path = PrependWindowsSessionPath(
       L"\\BaseNamedObjects\\windows_shell_global_counters");
-  return policy->AddKernelObjectToClose(L"Section", object_path.data());
+  return config->AddKernelObjectToClose(L"Section", object_path.data());
 }
 
 // static

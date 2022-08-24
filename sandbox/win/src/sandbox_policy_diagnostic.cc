@@ -416,9 +416,12 @@ PolicyDiagnostic::PolicyDiagnostic(PolicyBase* policy) {
       }
     }
   }
-  is_csrss_connected_ = policy->is_csrss_connected_;
-  handles_to_close_.insert(policy->handle_closer_.handles_to_close_.begin(),
-                           policy->handle_closer_.handles_to_close_.end());
+  is_csrss_connected_ = config->is_csrss_connected();
+  auto* handle_closer = config->handle_closer();
+  if (handle_closer) {
+    handles_to_close_.insert(handle_closer->handles_to_close_.begin(),
+                             handle_closer->handles_to_close_.end());
+  }
 }
 
 PolicyDiagnostic::~PolicyDiagnostic() = default;
