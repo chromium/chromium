@@ -129,34 +129,90 @@ bool TestHistoryBackendForSync::GetForeignVisit(
   return false;
 }
 
-VisitID TestHistoryBackendForSync::AddSyncedVisit(const GURL& url,
-                                                  const std::u16string& title,
-                                                  bool hidden,
-                                                  const VisitRow& visit) {
+std::vector<AnnotatedVisit> TestHistoryBackendForSync::ToAnnotatedVisits(
+    const VisitVector& visit_rows) {
+  std::vector<AnnotatedVisit> annotated_visits;
+  for (const VisitRow& visit_row : visit_rows) {
+    URLRow url_row;
+    GetURLByID(visit_row.url_id, &url_row);
+    VisitContextAnnotations context_annotations;
+    if (context_annotations_.count(visit_row.visit_id)) {
+      context_annotations = context_annotations_[visit_row.visit_id];
+    }
+    VisitContentAnnotations content_annotations;
+    if (content_annotations_.count(visit_row.visit_id)) {
+      content_annotations = content_annotations_[visit_row.visit_id];
+    }
+    annotated_visits.emplace_back(url_row, visit_row, context_annotations,
+                                  content_annotations, 0, 0, SOURCE_SYNCED);
+  }
+  return annotated_visits;
+}
+
+VisitID TestHistoryBackendForSync::AddSyncedVisit(
+    const GURL& url,
+    const std::u16string& title,
+    bool hidden,
+    const VisitRow& visit,
+    const absl::optional<VisitContextAnnotations>& context_annotations,
+    const absl::optional<VisitContentAnnotations>& content_annotations) {
   const URLRow& url_row = FindOrAddURL(url, title, hidden);
 
   VisitRow visit_to_add = visit;
   visit_to_add.url_id = url_row.id();
-  AddVisit(std::move(visit_to_add));
+  VisitID visit_id = AddVisit(std::move(visit_to_add));
 
-  return visits_.back().visit_id;
+  if (context_annotations) {
+    context_annotations_[visit_id] = *context_annotations;
+  }
+  if (content_annotations) {
+    content_annotations_[visit_id] = *content_annotations;
+  }
+
+  return visit_id;
 }
 
-VisitID TestHistoryBackendForSync::UpdateSyncedVisit(const VisitRow& visit) {
+VisitID TestHistoryBackendForSync::UpdateSyncedVisit(
+    const VisitRow& visit,
+    const absl::optional<VisitContextAnnotations>& context_annotations,
+    const absl::optional<VisitContentAnnotations>& content_annotations) {
   for (VisitRow& existing_visit : visits_) {
     if (existing_visit.originator_cache_guid == visit.originator_cache_guid &&
         existing_visit.originator_visit_id == visit.originator_visit_id) {
+      VisitID visit_id = existing_visit.visit_id;
+
       VisitRow new_visit = visit;
       // `visit_id` and `url_id` aren't set in visits coming from Sync, so
       // keep those from the existing row.
-      new_visit.visit_id = existing_visit.visit_id;
+      new_visit.visit_id = visit_id;
       new_visit.url_id = existing_visit.url_id;
       // Similarly, any `referring_visit` and `opener_visit` should be retained.
       // Note that these are the *local* versions of these IDs, not the
       // originator ones.
       new_visit.referring_visit = existing_visit.referring_visit;
       new_visit.opener_visit = existing_visit.opener_visit;
+
       existing_visit = new_visit;
+
+      // If context / content annotations are provided, update those too. Note
+      // that only parts of these are synced.
+      if (context_annotations) {
+        if (context_annotations_.count(visit_id)) {
+          // For now, only the on-visit are synced, so only overwrite those.
+          context_annotations_[visit_id].on_visit =
+              context_annotations->on_visit;
+        } else {
+          context_annotations_[visit_id] = *context_annotations;
+        }
+      }
+      if (content_annotations) {
+        // Only set the fields that are actually synced.
+        content_annotations_[visit_id].page_language =
+            content_annotations->page_language;
+        content_annotations_[visit_id].password_state =
+            content_annotations->password_state;
+      }
+
       return existing_visit.visit_id;
     }
   }

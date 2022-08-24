@@ -101,10 +101,6 @@ class HistorySyncBridge : public syncer::ModelTypeSyncBridge,
   // (because before that, the cache GUID isn't known).
   std::string GetLocalCacheGuid() const;
 
-  // For each entry in `visits`, queries the corresponding URLRow from the
-  // history backend.
-  std::vector<URLRow> QueryURLsForVisits(const std::vector<VisitRow>& visits);
-
   // A non-owning pointer to the backend, which we're syncing local changes from
   // and sync changes to. Never null.
   const raw_ptr<HistoryBackendForSync> history_backend_;

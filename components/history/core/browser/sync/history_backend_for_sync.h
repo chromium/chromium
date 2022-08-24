@@ -28,15 +28,24 @@ class HistoryBackendForSync {
                                   VisitRow* visit_row) = 0;
   virtual VisitVector GetRedirectChain(VisitRow visit) = 0;
 
+  virtual std::vector<AnnotatedVisit> ToAnnotatedVisits(
+      const VisitVector& visit_rows) = 0;
+
   virtual bool GetForeignVisit(const std::string& originator_cache_guid,
                                VisitID originator_visit_id,
                                VisitRow* visit_row) = 0;
 
-  virtual VisitID AddSyncedVisit(const GURL& url,
-                                 const std::u16string& title,
-                                 bool hidden,
-                                 const VisitRow& visit) = 0;
-  virtual VisitID UpdateSyncedVisit(const VisitRow& visit) = 0;
+  virtual VisitID AddSyncedVisit(
+      const GURL& url,
+      const std::u16string& title,
+      bool hidden,
+      const VisitRow& visit,
+      const absl::optional<VisitContextAnnotations>& context_annotations,
+      const absl::optional<VisitContentAnnotations>& content_annotations) = 0;
+  virtual VisitID UpdateSyncedVisit(
+      const VisitRow& visit,
+      const absl::optional<VisitContextAnnotations>& context_annotations,
+      const absl::optional<VisitContentAnnotations>& content_annotations) = 0;
   virtual bool UpdateVisitReferrerOpenerIDs(VisitID visit_id,
                                             VisitID referrer_id,
                                             VisitID opener_id) = 0;

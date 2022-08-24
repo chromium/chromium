@@ -479,7 +479,8 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
       bool* limited_by_max_count = nullptr);
 
   // Utility method to Construct `AnnotatedVisit`s.
-  std::vector<AnnotatedVisit> ToAnnotatedVisits(const VisitVector& visit_rows);
+  std::vector<AnnotatedVisit> ToAnnotatedVisits(
+      const VisitVector& visit_rows) override;
 
   // Like above, but will first construct `visit_rows` from each `VisitID`
   // before delegating to the overloaded `ToAnnotatedVisits()` above.
@@ -571,10 +572,14 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   // Adds a visit coming from another device. The visit's ID must be 0 (unset),
   // and its originator_cache_guid must be populated.
-  VisitID AddSyncedVisit(const GURL& url,
-                         const std::u16string& title,
-                         bool hidden,
-                         const VisitRow& visit) override;
+  VisitID AddSyncedVisit(
+      const GURL& url,
+      const std::u16string& title,
+      bool hidden,
+      const VisitRow& visit,
+      const absl::optional<VisitContextAnnotations>& context_annotations,
+      const absl::optional<VisitContentAnnotations>& content_annotations)
+      override;
 
   // Updates a visit coming from another device (typically to update its
   // duration). The visit must be the end of a redirect chain (only chain ends
@@ -583,7 +588,11 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // visit will be identified via its timestamp and originator_cache_guid
   // instead. Returns the local VisitID of the updated visit, or 0 if no
   // matching visit was found.
-  VisitID UpdateSyncedVisit(const VisitRow& visit) override;
+  VisitID UpdateSyncedVisit(
+      const VisitRow& visit,
+      const absl::optional<VisitContextAnnotations>& context_annotations,
+      const absl::optional<VisitContentAnnotations>& content_annotations)
+      override;
 
   // Updates the `referring_visit` and `opener_visit` fields for the visit with
   // the given `visit_id`. Used by Sync to re-map originator IDs to local IDs.
