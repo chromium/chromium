@@ -71,9 +71,11 @@ ServiceProxyImpl::ServiceProxyImpl(
     DefaultModelManager* default_manager,
     SignalStorageConfig* signal_storage_config,
     std::vector<std::unique_ptr<Config>>* configs,
+    const PlatformOptions& platform_options,
     base::flat_map<std::string, std::unique_ptr<SegmentSelectorImpl>>*
         segment_selectors)
-    : segment_db_(segment_db),
+    : force_refresh_results_(platform_options.force_refresh_results),
+      segment_db_(segment_db),
       default_manager_(default_manager),
       signal_storage_config_(signal_storage_config),
       configs_(configs),
@@ -205,13 +207,14 @@ void ServiceProxyImpl::OnGetAllSegmentationInfo(
       if (!segment_ids.contains(segment_id.first))
         continue;
       const auto& info = segment_ids[segment_id.first];
+      bool can_execute_segment =
+          force_refresh_results_ ||
+          (signal_storage_config_ &&
+           signal_storage_config_->MeetsSignalCollectionRequirement(
+               info.model_metadata()));
       result.back().segment_status.emplace_back(
           segment_id.first, SegmentMetadataToString(info),
-          PredictionResultToString(info),
-          signal_storage_config_
-              ? signal_storage_config_->MeetsSignalCollectionRequirement(
-                    info.model_metadata())
-              : false);
+          PredictionResultToString(info), can_execute_segment);
     }
   }
 

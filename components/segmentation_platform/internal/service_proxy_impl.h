@@ -13,6 +13,7 @@
 #include "base/observer_list.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/execution/default_model_manager.h"
+#include "components/segmentation_platform/internal/platform_options.h"
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/service_proxy.h"
@@ -36,6 +37,7 @@ class ServiceProxyImpl : public ServiceProxy,
       DefaultModelManager* default_manager,
       SignalStorageConfig* signal_storage_config,
       std::vector<std::unique_ptr<Config>>* configs,
+      const PlatformOptions& options,
       base::flat_map<std::string, std::unique_ptr<SegmentSelectorImpl>>*
           segment_selectors);
   ~ServiceProxyImpl() override;
@@ -74,6 +76,7 @@ class ServiceProxyImpl : public ServiceProxy,
   // ModelExecutionScheduler::Observer overrides.
   void OnModelExecutionCompleted(SegmentId segment_id) override;
 
+  const bool force_refresh_results_ = false;
   bool is_service_initialized_ = false;
   int service_status_flag_ = 0;
   const raw_ptr<SegmentInfoDatabase> segment_db_;

@@ -121,7 +121,7 @@ class ServiceProxyImplTest : public testing::Test,
         test_model_factory_.get(), GetAllSegmentIds(configs_));
     service_proxy_impl_ = std::make_unique<ServiceProxyImpl>(
         segment_db_.get(), default_manager_.get(), nullptr, &configs_,
-        &segment_selectors_);
+        PlatformOptions(false), &segment_selectors_);
     service_proxy_impl_->AddObserver(this);
   }
 
