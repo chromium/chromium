@@ -826,3 +826,4 @@ crbug.com/1306770 http/tests/inspector-protocol/network/interception-download.js
 crbug.com/1344358 inspector-protocol/page/frameNavigatedContext.js [ Slow ]
 
 crbug.com/1353929 editing/spelling/cold_mode_spellcheck_reenable.html [ Slow ]
+crbug.com/1356029 editing/spelling/cold_mode_no_repeated_full_testing.html [ Slow ]
