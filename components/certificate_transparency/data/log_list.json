@@ -1,6 +1,6 @@
 {
-  "version": "10.81",
-  "log_list_timestamp": "2022-08-22T12:54:45Z",
+  "version": "11.1",
+  "log_list_timestamp": "2022-08-24T12:56:41Z",
   "operators": [
     {
       "name": "Google",
@@ -41,6 +41,22 @@
           }
         },
         {
+          "description": "Google 'Argon2024' log",
+          "log_id": "7s3QZNXbGs7FXLedtM0TojKHRny87N7DUUhZRnEftZs=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEHblsqctplMVc5ramA7vSuNxUQxcomQwGAVAdnWTAWUYr3MgDHQW0LagJ95lB7QT75Ve6JgT2EVLOFGU7L3YrwA==",
+          "url": "https://ct.googleapis.com/logs/us1/argon2024/",
+          "mmd": 86400,
+          "state": {
+            "qualified": {
+              "timestamp": "2022-08-18T23:45:14Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2024-01-01T00:00:00Z",
+            "end_exclusive": "2025-01-01T00:00:00Z"
+          }
+        },
+        {
           "description": "Google 'Xenon2022' log",
           "log_id": "RqVV63X6kSAwtaKJafTzfREsQXS+/Um4havy/HD+bUc=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE+WS9FSxAYlCVEzg8xyGwOrmPonoV14nWjjETAIdZvLvukPzIWBMKv6tDNlQjpIHNrUcUt1igRPpqoKDXw2MeKw==",
@@ -70,6 +86,22 @@
           "temporal_interval": {
             "start_inclusive": "2023-01-01T00:00:00Z",
             "end_exclusive": "2024-01-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "Google 'Xenon2024' log",
+          "log_id": "dv+IPwq2+5VRwmHM9Ye6NLSkzbsp3GhCCp/mZ0xaOnQ=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEuWDgNB415GUAk0+QCb1a7ETdjA/O7RE+KllGmjG2x5n33O89zY+GwjWlPtwpurvyVOKoDIMIUQbeIW02UI44TQ==",
+          "url": "https://ct.googleapis.com/logs/eu1/xenon2024/",
+          "mmd": 86400,
+          "state": {
+            "qualified": {
+              "timestamp": "2022-08-18T23:45:14Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2024-01-01T00:00:00Z",
+            "end_exclusive": "2025-01-01T00:00:00Z"
           }
         },
         {
@@ -246,6 +278,38 @@
           }
         },
         {
+          "description": "DigiCert Yeti2024 Log",
+          "log_id": "SLDja9qmRzQP5WoC+p0w6xxSActW3SyB2bu/qznYhHM=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEV7jBbzCkfy7k8NDZYGITleN6405Tw7O4c4XBGA0jDliE0njvm7MeLBrewY+BGxlEWLcAd2AgGnLYgt6unrHGSw==",
+          "url": "https://yeti2024.ct.digicert.com/log/",
+          "mmd": 86400,
+          "state": {
+            "qualified": {
+              "timestamp": "2022-08-18T23:45:14Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2024-01-01T00:00:00Z",
+            "end_exclusive": "2025-01-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "DigiCert Yeti2025 Log",
+          "log_id": "fVkeEuF4KnscYWd8Xv340IdcFKBOlZ65Ay/ZDowuebg=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE35UAXhDBAfc34xB00f+yypDtMplfDDn+odETEazRs3OTIMITPEy1elKGhj3jlSR82JGYSDvw8N8h8bCBWlklQw==",
+          "url": "https://yeti2025.ct.digicert.com/log/",
+          "mmd": 86400,
+          "state": {
+            "qualified": {
+              "timestamp": "2022-08-18T23:45:14Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2025-01-01T00:00:00Z",
+            "end_exclusive": "2026-01-01T00:00:00Z"
+          }
+        },
+        {
           "description": "DigiCert Nessie2022 Log",
           "log_id": "UaOw9f0BeZxWbbg3eI8MpHrMGyfL956IQpoN/tSLBeU=",
           "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEJyTdaAMoy/5jvg4RR019F2ihEV1McclBKMe2okuX7MCv/C87v+nxsfz1Af+p+0lADGMkmNd5LqZVqxbGvlHYcQ==",
@@ -275,6 +339,38 @@
           "temporal_interval": {
             "start_inclusive": "2023-01-01T00:00:00Z",
             "end_exclusive": "2024-01-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "DigiCert Nessie2024 Log",
+          "log_id": "c9meiRtMlnigIH1HneayxhzQUV5xGSqMa4AQesF3crU=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAELfyieza/VpHp/j/oPfzDp+BhUuos6QWjnycXgQVwa4FhRIr4OxCAQu0DLwBQIfxBVISjVNUusnoWSyofK2YEKw==",
+          "url": "https://nessie2024.ct.digicert.com/log/",
+          "mmd": 86400,
+          "state": {
+            "qualified": {
+              "timestamp": "2022-08-18T23:45:14Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2024-01-01T00:00:00Z",
+            "end_exclusive": "2025-01-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "DigiCert Nessie2025 Log",
+          "log_id": "5tIxY0B3jMEQQQbXcbnOwdJA9paEhvu6hzId/R43jlA=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE8vDwp4uBLgk5O59C2jhEX7TM7Ta72EN/FklXhwR/pQE09+hoP7d4H2BmLWeadYC3U6eF1byrRwZV27XfiKFvOA==",
+          "url": "https://nessie2025.ct.digicert.com/log/",
+          "mmd": 86400,
+          "state": {
+            "qualified": {
+              "timestamp": "2022-08-18T23:45:14Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2025-01-01T00:00:00Z",
+            "end_exclusive": "2026-01-01T00:00:00Z"
           }
         },
         {
