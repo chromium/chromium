@@ -704,7 +704,6 @@ PA_ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::AllocNewSuperPage(
                                             std::memory_order_relaxed);
 
   root->next_super_page = super_page + kSuperPageSize;
-  // TODO(crbug.com/1307514): Add direct map support.
   uintptr_t state_bitmap =
       super_page + PartitionPageSize() +
       (is_direct_mapped()
