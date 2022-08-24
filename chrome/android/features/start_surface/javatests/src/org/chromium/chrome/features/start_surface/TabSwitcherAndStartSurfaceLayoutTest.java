@@ -200,7 +200,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         AccessibilityChecks.enable();
         mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
         // After setUp, Chrome is launched and has one NTP.
-        mActivityTestRule.startMainActivityFromLauncher();
+        mActivityTestRule.startMainActivityWithURL(NTP_URL);
 
         Layout layout = mActivityTestRule.getActivity().getLayoutManager().getOverviewLayout();
         assertTrue(layout instanceof TabSwitcherAndStartSurfaceLayout);

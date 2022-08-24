@@ -100,7 +100,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
     @Before
     public void setUp() {
         mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
-        mActivityTestRule.startMainActivityFromLauncher();
+        mActivityTestRule.startMainActivityWithURL(NTP_URL);
 
         Layout layout = mActivityTestRule.getActivity().getLayoutManager().getOverviewLayout();
         assertTrue(layout instanceof TabSwitcherAndStartSurfaceLayout);

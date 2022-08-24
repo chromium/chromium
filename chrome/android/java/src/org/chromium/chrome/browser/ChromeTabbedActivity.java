@@ -2843,7 +2843,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @Override
     public boolean isInOverviewMode() {
-        return mLayoutManager != null && mLayoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER);
+        return mLayoutManager != null
+                && (mLayoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER)
+                        || mLayoutManager.isLayoutVisible(LayoutType.START_SURFACE));
     }
 
     @Override

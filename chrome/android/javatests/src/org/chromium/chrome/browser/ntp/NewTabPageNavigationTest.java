@@ -43,7 +43,7 @@ public class NewTabPageNavigationTest {
     @Before
     public void setUp() {
         mHomepageTestRule.useChromeNTPForTest();
-        mActivityTestRule.startMainActivityWithURL(null);
+        mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
         mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
     }
 
