@@ -35,6 +35,16 @@ public interface StartSurface {
     void destroy();
 
     /**
+     * Show the Start surface homepage. Used only when refactor is enabled.
+     */
+    void show(boolean animate);
+
+    /**
+     * Hide the Start surface homepage. Used only when refactor is enabled.
+     */
+    void hide(boolean animate);
+
+    /**
      * Called when the Start surface is hidden. It hides TasksSurfaces which are created when the
      * Start surface is enabled.
      */

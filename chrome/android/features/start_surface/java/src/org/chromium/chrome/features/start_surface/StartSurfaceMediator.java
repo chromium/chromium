@@ -398,6 +398,83 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         mFeedVisibilityPrefOnStartUp = prefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE);
     }
 
+    /**
+     * Show Start Surface home view. Note: this should be called only when refactor flag is enabled.
+     * @param animate Whether to play an entry animation.
+     */
+    void show(boolean animate) {
+        assert ReturnToChromeUtil.isStartSurfaceEnabled(mContext)
+                && ReturnToChromeUtil.isTabSwitcherOnlyRefactorEnabled(mContext);
+
+        // This null check is for testing.
+        if (mPropertyModel == null) return;
+
+        // TODO(crbug.com/1347089): When entering the Start surface by tapping back button or other
+        // back gestures, we shouldn't reset the scrolling position. Maybe we could add a boolean
+        // |mResetPosition| and set it as false only when this method is called because of back
+        // actions.
+        mPropertyModel.set(RESET_TASK_SURFACE_HEADER_SCROLL_POSITION, true);
+        mPropertyModel.set(RESET_FEED_SURFACE_SCROLL_POSITION, true);
+        StartSurfaceUserData.getInstance().saveFeedInstanceState(null);
+
+        mIsIncognito = mTabModelSelector.isIncognitoSelected();
+        mPropertyModel.set(IS_INCOGNITO, mIsIncognito);
+        setMVTilesVisibility(!mIsIncognito);
+        setTabCarouselVisibility(getNormalTabCount() > 0 && !mIsIncognito);
+        setExploreSurfaceVisibility(!mIsIncognito && mExploreSurfaceCoordinatorFactory != null);
+        // TODO(qinmin): show query tiles when flag is enabled.
+        setQueryTilesVisibility(false);
+        setFakeBoxVisibility(!mIsIncognito);
+        setTopToolbarPlaceholderHeight(getPixelSize(R.dimen.control_container_height)
+                + getPixelSize(R.dimen.start_surface_fake_search_box_top_margin));
+        // Set the top margin to the top controls min height (indicator height if it's shown)
+        // since the toolbar height as extra margin is handled by top toolbar placeholder.
+        setTopMargin(mBrowserControlsStateProvider.getTopControlsMinHeight());
+        // Only pad single pane home page since tabs grid has already been padding for the
+        // bottom bar.
+        setBottomMargin(mBrowserControlsStateProvider.getBottomControlsHeight());
+        setIncognitoModeDescriptionVisibility(
+                mIsIncognito && (mTabModelSelector.getModel(true).getCount() <= 0));
+
+        // Make sure ExploreSurfaceCoordinator is built before the explore surface is showing
+        // by default.
+        if (mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE)
+                && mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR) == null
+                && !mActivityStateChecker.isFinishingOrDestroyed()
+                && mExploreSurfaceCoordinatorFactory != null) {
+            createAndSetExploreSurfaceCoordinator();
+        }
+
+        // TODO(crbug.com/1347089): Remove this property key since overview should always be visible
+        // when show() is called.
+        mPropertyModel.set(IS_SHOWING_OVERVIEW, true);
+
+        if (mNormalTabModel != null) {
+            mNormalTabModel.addObserver(mNormalTabModelObserver);
+        } else {
+            mPendingObserver = true;
+        }
+
+        mTabModelSelector.addObserver(mTabModelSelectorObserver);
+
+        if (mBrowserControlsObserver != null) {
+            mBrowserControlsStateProvider.addObserver(mBrowserControlsObserver);
+        }
+
+        if (mOmniboxStub != null) {
+            mOmniboxStub.addUrlFocusChangeListener(mUrlFocusChangeListener);
+        }
+
+        // This should only be called for single or carousel tab switcher.
+        mController.showTabSwitcherView(animate);
+
+        // TODO(crbug.com/1347089): Record
+        // mJankTracker.finishTrackingScenario(START_SURFACE_HOMEPAGE) when layout changes, maybe in
+        // LayoutManager.
+        RecordUserAction.record("StartSurface.Shown");
+        RecordUserAction.record("StartSurface.SinglePane.Home");
+    }
+
     void setSecondaryTasksSurfacePropertyModel(PropertyModel propertyModel) {
         mSecondaryTasksSurfacePropertyModel = propertyModel;
         mSecondaryTasksSurfacePropertyModel.set(IS_INCOGNITO, mIsIncognito);
@@ -741,7 +818,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
                                 || mPreviousStartSurfaceState == StartSurfaceState.NOT_SHOWN));
     }
 
-    // Implements TabSwitcher.OverviewModeObserver.
+    // Implements TabSwitcher.TabSwitcherViewObserver.
     @Override
     public void startedShowing() {
         for (TabSwitcherViewObserver observer : mObservers) {

@@ -354,6 +354,18 @@ public class StartSurfaceCoordinator implements StartSurface {
     }
 
     @Override
+    public void show(boolean animate) {
+        getCarouselOrSingleTabListDelegate().prepareTabSwitcherView();
+        mStartSurfaceMediator.show(animate);
+    }
+
+    @Override
+    public void hide(boolean animate) {
+        hideTabSwitcherView(false);
+        onHide();
+    }
+
+    @Override
     public void addHeaderOffsetChangeListener(
             AppBarLayout.OnOffsetChangedListener onOffsetChangedListener) {
         // TODO (crbug.com/1113852): Add a header offset change listener for incognito homepage.

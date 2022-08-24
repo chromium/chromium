@@ -34,12 +34,12 @@ public class StartSurfaceHomeLayout extends Layout {
     private static final String TRACE_DONE_HIDING_START_SURFACE =
             "StartSurfaceHomeLayout.DoneHiding";
 
-    private final SceneLayer mSceneLayer;
     private final StartSurface mStartSurface;
 
     private boolean mIsShown;
     private boolean mIsInitialized;
     private Animator mBackgroundTabAnimation;
+    private SceneLayer mSceneLayer;
 
     /**
      * The {@link Layout} is not usable until sizeChanged is called. This is convenient this way so
@@ -52,16 +52,22 @@ public class StartSurfaceHomeLayout extends Layout {
     public StartSurfaceHomeLayout(Context context, LayoutUpdateHost updateHost,
             LayoutRenderHost renderHost, StartSurface startSurface) {
         super(context, updateHost, renderHost);
-        mSceneLayer = new SceneLayer();
         mStartSurface = startSurface;
+        mStartSurface.setOnTabSelectingListener(this::onTabSelecting);
     }
 
     @Override
     public void onFinishNativeInitialization() {
         if (mIsInitialized) return;
-
         mIsInitialized = true;
+        ensureSceneLayerCreated();
         mStartSurface.initWithNative();
+    }
+
+    @Override
+    protected void updateLayout(long time, long dt) {
+        ensureSceneLayerCreated();
+        super.updateLayout(time, dt);
     }
 
     @Override
@@ -71,7 +77,11 @@ public class StartSurfaceHomeLayout extends Layout {
     public void show(long time, boolean animate) {
         try (TraceEvent e = TraceEvent.scoped(TRACE_SHOW_START_SURFACE)) {
             super.show(time, animate);
-            // TODO(crbug.com/1315676): Call StartSurface#show here.
+
+            // Lazy initialization if needed.
+            mStartSurface.initialize();
+            mStartSurface.show(animate);
+
             mIsShown = true;
         }
     }
@@ -80,8 +90,8 @@ public class StartSurfaceHomeLayout extends Layout {
     public void startHiding(int nextTabId, boolean hintAtTabSelection) {
         try (TraceEvent e = TraceEvent.scoped(TRACE_HIDE_START_SURFACE)) {
             super.startHiding(nextTabId, hintAtTabSelection);
-            // TODO(crbug.com/1315676): Call StartSurface#hide here.
             mIsShown = false;
+            mStartSurface.hide(false);
         }
     }
 
@@ -141,5 +151,10 @@ public class StartSurfaceHomeLayout extends Layout {
     @Override
     public int getLayoutType() {
         return LayoutType.START_SURFACE;
+    }
+
+    private void ensureSceneLayerCreated() {
+        if (mSceneLayer != null) return;
+        mSceneLayer = new SceneLayer();
     }
 }
