@@ -2142,9 +2142,17 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
 
       break;
     }
-    case OmniboxPopupSelection::KEYWORD_MODE:
-      additional_message_id = IDS_ACC_KEYWORD_MODE;
-      break;
+    case OmniboxPopupSelection::KEYWORD_MODE: {
+      // In keyword mode, the match we're interested in is actually the
+      // associated_keyword of the match we're on. Populate the a11y string
+      // with information from the keyword match, rather than the current match.
+      TemplateURL* turl = match.associated_keyword->GetTemplateURL(
+          client_->GetTemplateURLService(), false);
+      std::u16string replacement_string =
+          turl ? turl->short_name() : match.contents;
+      return l10n_util::GetStringFUTF16(IDS_ACC_KEYWORD_MODE,
+                                        replacement_string);
+    }
     case OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH:
       additional_message_id = IDS_ACC_TAB_SWITCH_BUTTON_FOCUSED_PREFIX;
       break;
