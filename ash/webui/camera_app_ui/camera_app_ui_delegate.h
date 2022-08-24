@@ -63,6 +63,9 @@ class CameraAppUIDelegate {
   virtual void MonitorFileDeletion(
       const std::string& name,
       base::OnceCallback<void(FileMonitorResult)> callback) = 0;
+
+  // Maybe triggers HaTS survey for the camera app if all the conditions match.
+  virtual void MaybeTriggerSurvey() = 0;
 };
 
 }  // namespace ash

@@ -1961,6 +1961,8 @@ source_set("chromeos") {
     "../ash/wallpaper_handlers/wallpaper_handlers_metric_utils.h",
     "../ash/web_applications/calculator_app/calculator_app_utils.cc",
     "../ash/web_applications/calculator_app/calculator_app_utils.h",
+    "../ash/web_applications/camera_app/camera_app_survey_handler.cc",
+    "../ash/web_applications/camera_app/camera_app_survey_handler.h",
     "../ash/web_applications/camera_app/camera_app_untrusted_ui_config.cc",
     "../ash/web_applications/camera_app/camera_app_untrusted_ui_config.h",
     "../ash/web_applications/camera_app/camera_system_web_app_info.cc",

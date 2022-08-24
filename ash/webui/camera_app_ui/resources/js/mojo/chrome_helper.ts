@@ -374,6 +374,13 @@ export class ChromeHelper {
   }
 
   /**
+   * Tries to trigger HaTS survey for CCA.
+   */
+  maybeTriggerSurvey(): void {
+    this.remote.maybeTriggerSurvey();
+  }
+
+  /**
    * Creates a new instance of ChromeHelper if it is not set. Returns the
    *     exist instance.
    *

@@ -382,6 +382,10 @@ void CameraAppHelperImpl::ConvertToPdf(const std::vector<uint8_t>& jpeg_data,
   std::move(callback).Run(std::move(pdf_data));
 }
 
+void CameraAppHelperImpl::MaybeTriggerSurvey() {
+  camera_app_ui_->delegate()->MaybeTriggerSurvey();
+}
+
 void CameraAppHelperImpl::OnTabletModeStarted() {
   if (tablet_mode_monitor_.is_bound())
     tablet_mode_monitor_->Update(true);

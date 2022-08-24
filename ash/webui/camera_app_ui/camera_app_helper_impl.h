@@ -92,6 +92,7 @@ class CameraAppHelperImpl : public TabletModeObserver,
                          ConvertToDocumentCallback callback) override;
   void ConvertToPdf(const std::vector<uint8_t>& jpeg_data,
                     ConvertToPdfCallback callback) override;
+  void MaybeTriggerSurvey() override;
 
  private:
   void CheckExternalScreenState();

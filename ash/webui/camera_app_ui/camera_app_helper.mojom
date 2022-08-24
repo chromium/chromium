@@ -219,4 +219,10 @@ interface CameraAppHelper {
 
   // Converts the given |jpeg_data| to PDF format.
   ConvertToPdf(array<uint8> jpeg_data) => (array<uint8> pdf_data);
+
+  // Triggers HaTS survey for the camera app if all the conditions match:
+  // 1. The camera app session is longer than 15 seconds
+  // 2. The user is chosen to take the survey
+  // 3. The user hasn't done any survey recently
+  MaybeTriggerSurvey();
 };
