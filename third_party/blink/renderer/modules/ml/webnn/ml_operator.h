@@ -20,7 +20,7 @@ class MLOperator final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  enum OperatorKind {
+  enum class OperatorKind {
     // Keep the order as the same as build methods of MLGraphBuilder.
     kClamp
   };
