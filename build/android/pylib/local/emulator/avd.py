@@ -33,6 +33,10 @@ from pylib.local.emulator.proto import avd_pb2
 COMMON_CIPD_ROOT = os.path.join(constants.DIR_SOURCE_ROOT, '.android_emulator')
 
 _ALL_PACKAGES = object()
+
+# These files are used as backing files for corresponding qcow2 images.
+_BACKING_FILES = ('system.img', 'vendor.img')
+
 _DEFAULT_AVDMANAGER_PATH = os.path.join(
     constants.ANDROID_SDK_ROOT, 'cmdline-tools', 'latest', 'bin', 'avdmanager')
 # Default to a 480dp mdpi screen (a relatively large phone).
@@ -246,6 +250,8 @@ class AvdConfig:
         COMMON_CIPD_ROOT, self._config.emulator_package.dest_path)
     self._emulator_path = os.path.join(self._emulator_sdk_root, 'emulator',
                                        'emulator')
+    self._qemu_img_path = os.path.join(self._emulator_sdk_root, 'emulator',
+                                       'qemu-img')
 
     self._initialized = False
     self._initializer_lock = threading.Lock()
@@ -265,6 +271,12 @@ class AvdConfig:
   @property
   def _avd_dir(self):
     return os.path.join(self._avd_home, '%s.avd' % self._config.avd_name)
+
+  @property
+  def _system_image_dir(self):
+    return os.path.join(COMMON_CIPD_ROOT,
+                        self._config.system_image_package.dest_path,
+                        *self._config.system_image_name.split(';'))
 
   @property
   def _config_ini_path(self):
@@ -555,6 +567,33 @@ class AvdConfig:
     self._InstallCipdPackages(packages=packages)
     self._MakeWriteable()
     self._UpdateConfigs()
+    self._RebaseQcow2Images()
+
+  def _RebaseQcow2Images(self):
+    """Rebase the paths in qcow2 images.
+
+    qcow2 files may exists in avd directory which have hard-coded paths to the
+    backing files, e.g., system.img, vendor.img. Such paths need to be rebased
+    if the avd is moved to a different directory in order to boot successfully.
+    """
+    for f in _BACKING_FILES:
+      qcow2_image_path = os.path.join(self._avd_dir, '%s.qcow2' % f)
+      if not os.path.exists(qcow2_image_path):
+        continue
+      backing_file_path = os.path.join(self._system_image_dir, f)
+      logging.info('Rebasing the qcow2 image %r with the backing file %r',
+                   qcow2_image_path, backing_file_path)
+      cmd_helper.RunCmd([
+          self._qemu_img_path,
+          'rebase',
+          '-u',
+          '-f',
+          'qcow2',
+          '-b',
+          # The path to backing file must be relative to the qcow2 image.
+          os.path.relpath(backing_file_path, os.path.dirname(qcow2_image_path)),
+          qcow2_image_path,
+      ])
 
   def _IterVersionedCipdPackages(self, packages):
     pkgs_by_dir = collections.defaultdict(list)
