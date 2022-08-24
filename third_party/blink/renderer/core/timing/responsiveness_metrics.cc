@@ -213,6 +213,10 @@ void ResponsivenessMetrics::RecordDragTapOrClickUKM(
                            pointer_info.GetTimeStamps());
 }
 
+// Event timing pointer events processing
+//
+// See also ./Pointer_interaction_state_machine.md to help understand the logic
+// below that how event timing group up pointer events as interactions.
 bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
     PerformanceEventTiming* entry,
     PointerId pointer_id,
