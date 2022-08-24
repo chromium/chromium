@@ -368,7 +368,7 @@ TEST_F(LoggingTest, DuplicateLogFile) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OFFICIAL_BUILD) && BUILDFLAG(IS_WIN)
+#if !CHECK_WILL_STREAM() && BUILDFLAG(IS_WIN)
 NOINLINE void CheckContainingFunc(int death_location) {
   CHECK(death_location != 1);
   CHECK(death_location != 2);
@@ -428,7 +428,7 @@ TEST_F(LoggingTest, CheckCausesDistinctBreakpoints) {
 // takes down the whole process, preventing the thread exception handler from
 // handling the exception. DO_CHECK here falls back on IMMEDIATE_CRASH() in
 // non-official builds, to catch regressions earlier in the CQ.
-#if defined(OFFICIAL_BUILD)
+#if !CHECK_WILL_STREAM()
 #define DO_CHECK CHECK
 #else
 #define DO_CHECK(cond) \
@@ -596,7 +596,7 @@ void CheckCrashTestSighandler(int, siginfo_t* info, void* context_ptr) {
 // official builds. Unfortunately, continuous test coverage on official builds
 // is lower. DO_CHECK here falls back on a home-brewed implementation in
 // non-official builds, to catch regressions earlier in the CQ.
-#if defined(OFFICIAL_BUILD)
+#if !CHECK_WILL_STREAM()
 #define DO_CHECK CHECK
 #else
 #define DO_CHECK(cond) \
