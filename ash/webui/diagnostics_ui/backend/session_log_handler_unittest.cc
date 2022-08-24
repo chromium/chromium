@@ -21,8 +21,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/ptr_util.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
@@ -43,8 +41,7 @@
 #include "ash/test/ash_test_suite.h"
 #include "ui/base/resource/resource_bundle.h"
 
-namespace ash {
-namespace diagnostics {
+namespace ash::diagnostics {
 namespace {
 
 constexpr char kHandlerFunctionName[] = "handlerFunctionName";
@@ -176,9 +173,7 @@ class SessionLogHandlerTest : public NoSessionAshTestBase {
   SessionLogHandlerTest()
       : NoSessionAshTestBase(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        task_runner_(new base::TestSimpleTaskRunner()),
-        web_ui_(),
-        session_log_handler_() {}
+        task_runner_(new base::TestSimpleTaskRunner()) {}
   ~SessionLogHandlerTest() override = default;
 
   void SetUp() override {
@@ -236,8 +231,10 @@ class SessionLogHandlerTest : public NoSessionAshTestBase {
   testing::NiceMock<ash::MockHoldingSpaceClient> holding_space_client_;
 };
 
-// Flaky; see crbug.com/1336726
-TEST_F(SessionLogHandlerTest, DISABLED_SaveSessionLog) {
+TEST_F(SessionLogHandlerTest, SaveSessionLog) {
+  // Run until idle to finish necessary setup.
+  task_environment()->RunUntilIdle();
+
   base::RunLoop run_loop;
   // Populate routine log
   routine_log_->LogRoutineStarted(mojom::RoutineType::kCpuStress);
@@ -447,5 +444,4 @@ TEST_F(SessionLogHandlerTest, NoUseAfterFree) {
   EXPECT_NO_FATAL_FAILURE(task_runner_->RunUntilIdle());
 }
 
-}  // namespace diagnostics
-}  // namespace ash
+}  // namespace ash::diagnostics
