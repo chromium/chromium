@@ -178,23 +178,23 @@ std::string LogEntryToString(const DeviceEventLogImpl::LogEntry& log_entry,
   return line;
 }
 
-void LogEntryToDictionary(const DeviceEventLogImpl::LogEntry& log_entry,
-                          base::DictionaryValue* output) {
-  output->SetString("timestamp", DateAndTimeWithMicroseconds(log_entry.time));
-  output->SetString("timestampshort", TimeWithSeconds(log_entry.time));
-  output->SetString("level", kLogLevelName[log_entry.log_level]);
-  output->SetString("type", GetLogTypeString(log_entry.log_type));
-  output->SetString("file", base::StringPrintf("%s:%d ", log_entry.file.c_str(),
-                                               log_entry.file_line));
-  output->SetString("event", log_entry.event);
+base::Value::Dict LogEntryToDictionary(
+    const DeviceEventLogImpl::LogEntry& log_entry) {
+  base::Value::Dict entry_dict;
+  entry_dict.Set("timestamp", DateAndTimeWithMicroseconds(log_entry.time));
+  entry_dict.Set("timestampshort", TimeWithSeconds(log_entry.time));
+  entry_dict.Set("level", kLogLevelName[log_entry.log_level]);
+  entry_dict.Set("type", GetLogTypeString(log_entry.log_type));
+  entry_dict.Set("file", base::StringPrintf("%s:%d ", log_entry.file.c_str(),
+                                            log_entry.file_line));
+  entry_dict.Set("event", log_entry.event);
+  return entry_dict;
 }
 
 std::string LogEntryAsJSON(const DeviceEventLogImpl::LogEntry& log_entry) {
-  base::DictionaryValue entry_dict;
-  LogEntryToDictionary(log_entry, &entry_dict);
   std::string json;
   JSONStringValueSerializer serializer(&json);
-  if (!serializer.Serialize(entry_dict)) {
+  if (!serializer.Serialize(LogEntryToDictionary(log_entry))) {
     LOG(ERROR) << "Failed to serialize to JSON";
   }
   return json;
