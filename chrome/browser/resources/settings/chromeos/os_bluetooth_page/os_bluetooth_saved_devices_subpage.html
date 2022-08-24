@@ -10,16 +10,15 @@
   }
 </style>
 <div id="container">
-  <template is="dom-if"
-      if="[[!shouldShowDeviceList_(savedDevices_, savedDevices_.length)]]"
-      restamp>
-    <div id="noDevices" class="settings-box-text">
+  <div hidden="[[!showSavedDevicesErrorLabel_]]" id="devicesError" class="settings-box-text">
+    [[savedDevicesErrorLabel_]]
+  </div>
+  <div hidden="[[!shouldShowNoDevicesLabel_(savedDevices_,
+      showSavedDevicesErrorLabel_)]]" id="noDevices" class="settings-box-text">
       [[noSavedDeviceslabel_]]
-    </div>
-  </template>
+  </div>
   <template is="dom-if"
-      if="[[shouldShowDeviceList_(savedDevices_,
-          savedDevices_.length)]]" restamp>
+      if="[[shouldShowDeviceList_(savedDevices_)]]" restamp>
     <div class="settings-box-text">
       [[savedDevicesSublabel_]]
     </div>

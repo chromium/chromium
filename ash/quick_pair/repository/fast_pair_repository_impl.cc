@@ -366,11 +366,16 @@ void FastPairRepositoryImpl::OnGetSavedDevices(
 
   RecordGetSavedDevicesResult(/*success=*/user_devices.has_value());
 
-  if (!user_devices) {
+  // |user_devices| will be null if we either didn't get a response from the
+  // Footprints server or if we could not parse the response. Therefore we
+  // should bubble up an error status and empty device list to the UI.
+  if (!user_devices.has_value()) {
     QP_LOG(WARNING)
         << __func__
         << ": Missing UserReadDevicesResponse from call to Footprints";
-    std::move(callback).Run(nearby::fastpair::OptInStatus::STATUS_UNKNOWN, {});
+    std::move(callback).Run(nearby::fastpair::OptInStatus::
+                                STATUS_ERROR_RETRIEVING_FROM_FOOTPRINTS_SERVER,
+                            /*saved_device_list=*/{});
     return;
   }
 

@@ -624,7 +624,9 @@ TEST_F(FastPairRepositoryImplTest, GetSavedDevices_MissingResponse) {
                      weak_ptr_factory_.GetWeakPtr()));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(nearby::fastpair::OptInStatus::STATUS_UNKNOWN, status_);
+  EXPECT_EQ(nearby::fastpair::OptInStatus::
+                STATUS_ERROR_RETRIEVING_FROM_FOOTPRINTS_SERVER,
+            status_);
   EXPECT_EQ(0u, devices_.size());
   histogram_tester().ExpectBucketCount(kSavedDeviceGetDevicesResultMetricName,
                                        /*success=*/true, 0);

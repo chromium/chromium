@@ -116,7 +116,7 @@ void FastPairSavedDevicesHandler::OnGetSavedDevices(
   // nearby::fastpair::OptInStatus enum from ash/quick_pair/proto/enums.proto
   // to properly handle this message.
   FireWebUIListener(kOptInStatusMessage, base::Value(static_cast<int>(status)));
-  QP_LOG(VERBOSE) << __func__ << ": Sending opt-in status";
+  QP_LOG(VERBOSE) << __func__ << ": Sending opt-in status of " << status;
 
   // If the device list is empty, we communicate it to the settings page to
   // stop the loading UX screen.
