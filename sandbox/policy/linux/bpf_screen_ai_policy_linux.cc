@@ -59,6 +59,9 @@ ResultExpr ScreenAIProcessPolicy::EvaluateSyscall(
       return RestrictPrlimitToGetrlimit(GetPolicyPid());
 
     case __NR_sched_getaffinity:
+    case __NR_sched_getparam:
+    case __NR_sched_getscheduler:
+    case __NR_sched_setscheduler:
       return RestrictSchedTarget(GetPolicyPid(), system_call_number);
 
     default:
