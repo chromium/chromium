@@ -7888,6 +7888,8 @@ class RenderFrameHostManagerUnloadBrowserTest
       const std::string& event_name) {
     if (event_name == "unload")
       return blink::mojom::SuddenTerminationDisablerType::kUnloadHandler;
+    if (event_name == "beforeunload")
+      return blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler;
     if (event_name == "pagehide")
       return blink::mojom::SuddenTerminationDisablerType::kPageHideHandler;
     if (event_name == "visibilitychange")
@@ -8226,6 +8228,71 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
   ASSERT_EQ(2U, root->child_count());
   EXPECT_TRUE(root->child_at(0)->current_frame_host()->IsRenderFrameLive());
   EXPECT_TRUE(root->child_at(1)->current_frame_host()->IsRenderFrameLive());
+}
+
+// RenderFrameHost should have correct sudden termination disabler
+// state after the event listeners are registered and removed.
+// Regression test for crbug.com/1341417.
+IN_PROC_BROWSER_TEST_P(
+    RenderFrameHostManagerUnloadBrowserTest,
+    AddAndRemoveEventListenersAffectingSuddenTerminationDisablerState) {
+  const std::string sudden_termination_disabler_event_names[] = {
+      "unload", "beforeunload", "pagehide", "visibilitychange"};
+
+  // Initialize the RenderFrameHost.
+  GURL first_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), first_url));
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  RenderFrameHostImpl* rfh = root->current_frame_host();
+
+  // Register a callback function so we can remove the event listener later.
+  EXPECT_TRUE(ExecuteScript(rfh, "const callback = (e) => {};\n"));
+
+  for (const std::string& event_name :
+       sudden_termination_disabler_event_names) {
+    std::vector<const std::string> event_targets = {"window"};
+    // Since the `visibilitychange` event is fired at the document and it
+    // may bubble up to the window, we should test the cases where the event
+    // listener is registered on both the document and window.
+    if (event_name == "visibilitychange")
+      event_targets.push_back("document");
+
+    for (const std::string& event_target : event_targets) {
+      // The sudden termination disabler state is initially set to false.
+      EXPECT_FALSE(rfh->GetSuddenTerminationDisablerState(
+          DisablerTypeForEvent(event_name)));
+      // Now add an event listener for the event_name.
+      EXPECT_TRUE(ExecuteScript(
+          rfh, base::StringPrintf("%s.addEventListener('%s', callback);",
+                                  event_target.c_str(), event_name.c_str())));
+      // The sudden termination disabler state should be true now.
+      EXPECT_TRUE(rfh->GetSuddenTerminationDisablerState(
+          DisablerTypeForEvent(event_name)));
+      // Remove the registered event listener.
+      EXPECT_TRUE(ExecuteScript(
+          rfh, base::StringPrintf("%s.removeEventListener('%s', callback);",
+                                  event_target.c_str(), event_name.c_str())));
+      // The sudden termination disabler state should be false now.
+      EXPECT_FALSE(rfh->GetSuddenTerminationDisablerState(
+          DisablerTypeForEvent(event_name)));
+
+      // Add the event listener back for the event_name.
+      EXPECT_TRUE(ExecuteScript(
+          rfh, base::StringPrintf("%s.addEventListener('%s', callback);",
+                                  event_target.c_str(), event_name.c_str())));
+      // The sudden termination disabler state should be true again.
+      EXPECT_TRUE(rfh->GetSuddenTerminationDisablerState(
+          DisablerTypeForEvent(event_name)));
+      // Calling `document.open()` should trigger `RemoveAllEventListeners()`
+      // in both the document DOM node and the DOM window.
+      EXPECT_TRUE(ExecuteScript(rfh, "document.open();"));
+      // The sudden termination disabler state should be false now.
+      EXPECT_FALSE(rfh->GetSuddenTerminationDisablerState(
+          DisablerTypeForEvent(event_name)));
+    }
+  }
 }
 
 namespace {

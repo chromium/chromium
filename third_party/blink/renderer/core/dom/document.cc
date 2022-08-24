@@ -3035,11 +3035,36 @@ void Document::Shutdown() {
   execution_context_ = nullptr;
 }
 
+void Document::RemovedEventListener(
+    const AtomicString& event_type,
+    const RegisteredEventListener& registered_listener) {
+  ContainerNode::RemovedEventListener(event_type, registered_listener);
+
+  // We need to track the existence of the visibilitychange event listeners to
+  // enable/disable sudden terminations.
+  if (event_type == event_type_names::kVisibilitychange) {
+    if (auto* frame = GetFrame())
+      frame->RemovedSuddenTerminationDisablerListener(*this, event_type);
+  }
+}
+
 void Document::RemoveAllEventListeners() {
+  int previous_visibility_change_handlers_count =
+      NumberOfEventListeners(event_type_names::kVisibilitychange);
+
   ContainerNode::RemoveAllEventListeners();
 
   if (LocalDOMWindow* dom_window = domWindow())
     dom_window->RemoveAllEventListeners();
+
+  // Update sudden termination disabler state if we previously have listeners
+  // for visibilitychange.
+  if (previous_visibility_change_handlers_count) {
+    if (auto* frame = GetFrame()) {
+      frame->RemovedSuddenTerminationDisablerListener(
+          *this, event_type_names::kVisibilitychange);
+    }
+  }
 }
 
 Document& Document::AXObjectCacheOwner() const {

@@ -2679,11 +2679,6 @@ void Node::RemovedEventListener(
   if (auto* frame = GetDocument().GetFrame()) {
     frame->GetEventHandlerRegistry().DidRemoveEventHandler(
         *this, event_type, registered_listener.Options());
-    // We need to track the existence of the visibilitychange event listeners to
-    // enable/disable sudden terminations.
-    if (IsDocumentNode() && event_type == event_type_names::kVisibilitychange) {
-      frame->RemovedSuddenTerminationDisablerListener(*this, event_type);
-    }
   }
   if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache())
     cache->HandleEventListenerRemoved(*this, event_type);

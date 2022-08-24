@@ -1356,6 +1356,8 @@ class CORE_EXPORT Document : public ContainerNode,
   const Vector<AnnotatedRegionValue>& AnnotatedRegions() const;
   void SetAnnotatedRegions(const Vector<AnnotatedRegionValue>&);
 
+  void RemovedEventListener(const AtomicString& event_type,
+                            const RegisteredEventListener&) final;
   void RemoveAllEventListeners() final;
 
   const SVGDocumentExtensions* SvgExtensions() const;
