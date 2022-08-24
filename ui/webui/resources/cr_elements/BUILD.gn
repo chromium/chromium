@@ -120,7 +120,6 @@ if (include_polymer) {
       "cr_dialog/cr_dialog.js",
       "cr_icon_button/cr_icon_button.js",
       "cr_icons_css.m.js",
-      "cr_input/cr_input.js",
       "cr_lottie/cr_lottie.js",
       "cr_scrollable_behavior.m.js",
       "hidden_style_css.m.js",
@@ -154,7 +153,6 @@ if (include_polymer) {
       "cr_button:closure_compile_module",
       "cr_dialog:closure_compile_module",
       "cr_icon_button:closure_compile_module",
-      "cr_input:closure_compile_module",
       "cr_lottie:closure_compile_module",
       "policy:closure_compile_module",
     ]
@@ -251,7 +249,6 @@ if (include_polymer) {
       "cr_button:web_components",
       "cr_dialog:web_components",
       "cr_icon_button:web_components",
-      "cr_input:web_components",
       "cr_lottie:web_components",
       "policy:polymer3_elements",
     ]

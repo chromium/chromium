@@ -47,8 +47,9 @@ js_library("active_directory_password_change.m") {
     "../../components/buttons:oobe_next_button.m",
     "../../components/buttons:oobe_text_button.m",
     "../../components/dialogs:oobe_modal_dialog.m",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input",
   ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js" ]
   extra_deps = [ ":active_directory_password_change_module" ]
 }
 
@@ -76,8 +77,9 @@ js_library("gaia_password_changed.m") {
     "../../components/buttons:oobe_text_button.m",
     "../../components/dialogs:oobe_adaptive_dialog.m",
     "../../components/dialogs:oobe_loading_dialog.m",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input",
   ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js" ]
   extra_deps = [ ":gaia_password_changed_module" ]
 }
 
@@ -153,9 +155,7 @@ polymer_modulizer("active_directory_password_change") {
   js_file = "active_directory_password_change.js"
   html_file = "active_directory_password_change.html"
   html_type = "dom-module"
-  auto_imports =
-      oobe_auto_imports +
-      [ "ui/webui/resources/cr_elements/cr_input/cr_input.html|CrInputElement" ]
+  auto_imports = oobe_auto_imports
   migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
@@ -164,9 +164,7 @@ polymer_modulizer("gaia_password_changed") {
   js_file = "gaia_password_changed.js"
   html_file = "gaia_password_changed.html"
   html_type = "dom-module"
-  auto_imports =
-      oobe_auto_imports +
-      [ "ui/webui/resources/cr_elements/cr_input/cr_input.html|CrInputElement" ]
+  auto_imports = oobe_auto_imports
   migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
@@ -191,10 +189,7 @@ polymer_modulizer("offline_login") {
   js_file = "offline_login.js"
   html_file = "offline_login.html"
   html_type = "dom-module"
-  auto_imports = oobe_auto_imports + [
-                   "ui/webui/resources/cr_elements/cr_dialog/cr_dialog.html|CrDialogElement",
-                   "ui/webui/resources/cr_elements/cr_input/cr_input.html|CrInputElement",
-                 ]
+  auto_imports = oobe_auto_imports + [ "ui/webui/resources/cr_elements/cr_dialog/cr_dialog.html|CrDialogElement" ]
   migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }

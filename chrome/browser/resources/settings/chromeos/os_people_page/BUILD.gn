@@ -206,6 +206,7 @@ js_library("user_list") {
   externs_list = [
     "$externs_path/settings_private.js",
     "$externs_path/users_private.js",
+    "//ui/webui/resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer_externs.js",
   ]
 }
 
@@ -216,7 +217,10 @@ js_library("users_add_user_dialog") {
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
-  externs_list = [ "$externs_path/users_private.js" ]
+  externs_list = [
+    "$externs_path/users_private.js",
+    "//ui/webui/resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer_externs.js",
+  ]
 }
 
 js_library("users_page") {

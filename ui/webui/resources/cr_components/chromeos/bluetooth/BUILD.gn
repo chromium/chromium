@@ -74,14 +74,15 @@ js_library("bluetooth_dialog") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
-  externs_list = chrome_extension_public_externs + [
-                   "$externs_path/bluetooth.js",
-                   "$externs_path/bluetooth_private.js",
-                 ]
+  externs_list =
+      chrome_extension_public_externs + [
+        "$externs_path/bluetooth.js",
+        "$externs_path/bluetooth_private.js",
+        "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js",
+      ]
   extra_sources = [
     "$interfaces_path/bluetooth_interface.js",
     "$interfaces_path/bluetooth_private_interface.js",
@@ -107,8 +108,9 @@ js_library("bluetooth_pairing_request_code_page") {
     ":bluetooth_base_page",
     "//chromeos/services/bluetooth_config/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input",
   ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js" ]
 }
 
 js_library("bluetooth_pairing_confirm_code_page") {

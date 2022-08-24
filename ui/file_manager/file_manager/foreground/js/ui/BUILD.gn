@@ -181,8 +181,9 @@ js_library("dialog_footer") {
     "//ui/file_manager/file_manager/common/js:file_type",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/foreground/js:file_list_model",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input",
   ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js" ]
 }
 
 js_library("dialogs") {

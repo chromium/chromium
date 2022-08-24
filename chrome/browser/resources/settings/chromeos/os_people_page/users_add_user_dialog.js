@@ -130,7 +130,8 @@ class SettingsUsersAddUserDialogElement extends
         return;
       }
 
-      getAnnouncerInstance().announce(this.i18n('userAddedMessage', userEmail));
+      /** @type {!CrA11yAnnouncerElement} */ (getAnnouncerInstance())
+          .announce(this.i18n('userAddedMessage', userEmail));
 
       this.$.dialog.close();
       this.usersPrivate_.addUser(

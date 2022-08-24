@@ -60,10 +60,11 @@ js_library("crostini_browser_proxy") {
   deps = [
     "../guest_os:guest_os_browser_proxy",
     "//skia/public/mojom:mojom_js_library_for_compile",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js" ]
 }
 
 js_library("crostini_confirmation_dialog") {
@@ -175,11 +176,12 @@ js_library("crostini_port_forwarding_add_port_dialog") {
     "../guest_os:guest_os_container_select",
     "//ui/webui/resources/cr_elements/cr_button:cr_button",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js" ]
 }
 
 js_library("crostini_extra_containers") {

@@ -29,9 +29,10 @@ js_library("pin_keyboard.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/quick_unlock/pin_keyboard.m.js" ]
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js" ]
   extra_deps = [ ":pin_keyboard_module" ]
 }
 
@@ -64,9 +65,7 @@ polymer_modulizer("pin_keyboard") {
   html_type = "dom-module"
   namespace_rewrites = cr_components_chromeos_namespace_rewrites
   migrated_imports = cr_components_migrated_imports
-  auto_imports =
-      cr_components_chromeos_auto_imports +
-      [ "ui/webui/resources/cr_elements/cr_input/cr_input.html|CrInputElement" ]
+  auto_imports = cr_components_chromeos_auto_imports
 }
 
 polymer_modulizer("setup_pin_keyboard") {

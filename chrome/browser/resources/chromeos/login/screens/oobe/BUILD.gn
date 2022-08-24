@@ -113,9 +113,10 @@ js_library("enterprise_enrollment.m") {
     "../../components/buttons:oobe_next_button.m",
     "../../components/buttons:oobe_text_button.m",
     "../common:offline_ad_login.m",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input",
     "//ui/webui/resources/js:cr.m",
   ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js" ]
   extra_deps = [ ":enterprise_enrollment_module" ]
 }
 
@@ -200,10 +201,12 @@ js_library("welcome.m") {
     "../../components/dialogs:oobe_adaptive_dialog.m",
     "../../components/dialogs:oobe_modal_dialog.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input",
   ]
   extra_deps = [ ":welcome_module" ]
-  externs_list = [ "$externs_path/tts.js" ]
+  externs_list = [
+    "$externs_path/tts.js",
+    "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js",
+  ]
 }
 
 js_library("welcome_dialog.m") {
@@ -240,9 +243,7 @@ polymer_modulizer("enable_debugging") {
   js_file = "enable_debugging.js"
   html_file = "enable_debugging.html"
   html_type = "dom-module"
-  auto_imports =
-      oobe_auto_imports +
-      [ "ui/webui/resources/cr_elements/cr_input/cr_input.html|CrInputElement" ]
+  auto_imports = oobe_auto_imports
   migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
@@ -302,9 +303,7 @@ polymer_modulizer("welcome") {
   js_file = "welcome.js"
   html_file = "welcome.html"
   html_type = "dom-module"
-  auto_imports =
-      oobe_auto_imports +
-      [ "ui/webui/resources/cr_elements/cr_input/cr_input.html|CrInputElement" ]
+  auto_imports = oobe_auto_imports
   migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }

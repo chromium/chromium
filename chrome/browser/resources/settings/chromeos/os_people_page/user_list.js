@@ -140,8 +140,8 @@ class SettingsUserListElement extends SettingsUserListElementBase {
    * @param {!{model: !{item: !chrome.usersPrivate.User}}} e
    */
   removeUser_(e) {
-    getAnnouncerInstance().announce(
-        this.i18n('userRemovedMessage', e.model.item.name));
+    /** @type {!CrA11yAnnouncerElement} */ (getAnnouncerInstance())
+        .announce(this.i18n('userRemovedMessage', e.model.item.name));
 
     // Focus the add user button since, after this removal, the only user left
     // will be the account owner.
