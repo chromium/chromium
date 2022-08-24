@@ -17,6 +17,7 @@
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/local_state_helper.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -48,6 +49,14 @@ absl::optional<proto::PredictionResult> GetPredictionResult() {
   proto::PredictionResult result;
   result.set_result(0.5);
   return result;
+}
+
+proto::SegmentInfo CreateTestSegmentInfo(proto::SegmentId segment_id,
+                                         bool upload_tensors) {
+  proto::SegmentInfo segment_info;
+  segment_info.set_segment_id(segment_id);
+  segment_info.mutable_model_metadata()->set_upload_tensors(upload_tensors);
+  return segment_info;
 }
 
 }  // namespace
@@ -163,24 +172,42 @@ TEST_F(SegmentationUkmHelperTest, TestTrainingDataCollectionReporting) {
                    });
 }
 
-// Tests that recording is disabled if kSegmentationStructuredMetricsFeature
-// is disabled.
+// Tests that tensor uploading is disabled if
+// kSegmentationStructuredMetricsFeature is disabled.
 TEST_F(SegmentationUkmHelperTest, TestDisabledStructuredMetrics) {
   DisableStructureMetrics();
-  std::vector<float> input_tensors = {0.1, 0.7, 0.8, 0.5};
-  SegmentationUkmHelper::GetInstance()->RecordModelExecutionResult(
-      proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 101, input_tensors, 0.6);
-  ExpectEmptyUkmMetrics(Segmentation_ModelExecution::kEntryName);
+  proto::SegmentInfo segment_info = CreateTestSegmentInfo(
+      proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, true);
+  EXPECT_FALSE(
+      SegmentationUkmHelper::GetInstance()->CanUploadTensors(segment_info));
 }
 
-// Tests that recording is disabled for segment IDs that are not in the allowed
-// list.
+// Tests that tensor uploading is disabled for segment IDs that are not in the
+// allowed list.
 TEST_F(SegmentationUkmHelperTest, TestNotAllowedSegmentId) {
   InitializeAllowedSegmentIds("7, 8");
-  std::vector<float> input_tensors = {0.1, 0.7, 0.8, 0.5};
-  SegmentationUkmHelper::GetInstance()->RecordModelExecutionResult(
-      proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 101, input_tensors, 0.6);
-  ExpectEmptyUkmMetrics(Segmentation_ModelExecution::kEntryName);
+  proto::SegmentInfo segment_info = CreateTestSegmentInfo(
+      proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, false);
+  EXPECT_FALSE(
+      SegmentationUkmHelper::GetInstance()->CanUploadTensors(segment_info));
+}
+
+// Tests that tensor uploading is enabled through finch param.
+TEST_F(SegmentationUkmHelperTest, TestUploadTensorsAllowedFromParam) {
+  InitializeAllowedSegmentIds("4, 7, 8");
+  proto::SegmentInfo segment_info = CreateTestSegmentInfo(
+      proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, false);
+  EXPECT_TRUE(
+      SegmentationUkmHelper::GetInstance()->CanUploadTensors(segment_info));
+}
+
+// Tests that tensor uploading is enabled through metadata.
+TEST_F(SegmentationUkmHelperTest, TestUploadTensorsAllowedFromMetadata) {
+  InitializeAllowedSegmentIds("7, 8");
+  proto::SegmentInfo segment_info = CreateTestSegmentInfo(
+      proto::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, true);
+  EXPECT_TRUE(
+      SegmentationUkmHelper::GetInstance()->CanUploadTensors(segment_info));
 }
 
 // Tests that float encoding works properly.

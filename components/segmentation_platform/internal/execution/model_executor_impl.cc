@@ -64,6 +64,7 @@ struct ModelExecutorImpl::ExecutionState {
   base::Time total_execution_start_time;
   base::Time model_execution_start_time;
   base::TimeDelta signal_storage_length;
+  bool upload_tensors;
 };
 
 ModelExecutorImpl::ModelExecutionTraceEvent::ModelExecutionTraceEvent(
@@ -125,6 +126,8 @@ void ModelExecutorImpl::ExecuteModel(
       segment_info.model_metadata();
   state->signal_storage_length = model_metadata.signal_storage_length() *
                                  metadata_utils::GetTimeUnit(model_metadata);
+  state->upload_tensors =
+      SegmentationUkmHelper::GetInstance()->CanUploadTensors(segment_info);
   feature_list_query_processor_->ProcessFeatureList(
       segment_info.model_metadata(), request->input_context, segment_id,
       clock_->Now(), FeatureListQueryProcessor::ProcessOption::kInputsOnly,
@@ -184,9 +187,11 @@ void ModelExecutorImpl::OnModelExecutionComplete(
     stats::RecordModelExecutionResult(state->segment_id, result.value());
     if (state->model_version && SegmentationUkmHelper::AllowedToUploadData(
                                     state->signal_storage_length, clock_)) {
-      SegmentationUkmHelper::GetInstance()->RecordModelExecutionResult(
-          state->segment_id, state->model_version, state->input_tensor,
-          result.value());
+      if (state->upload_tensors) {
+        SegmentationUkmHelper::GetInstance()->RecordModelExecutionResult(
+            state->segment_id, state->model_version, state->input_tensor,
+            result.value());
+      }
     }
     RunModelExecutionCallback(std::move(state), *result,
                               ModelExecutionStatus::kSuccess);

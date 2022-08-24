@@ -115,8 +115,9 @@ ukm::SourceId SegmentationUkmHelper::RecordModelExecutionResult(
 
   // Add inputs to ukm message.
   if (!AddInputsToUkm(&execution_result, segment_id, model_version,
-                      input_tensor))
+                      input_tensor)) {
     return ukm::kInvalidSourceId;
+  }
 
   // TODO(xingliu): Also record continuous outputs for model execution.
   execution_result.SetPredictionResult(FloatToInt64(result))
@@ -162,9 +163,6 @@ bool SegmentationUkmHelper::AddInputsToUkm(
     SegmentId segment_id,
     int64_t model_version,
     const std::vector<float>& input_tensor) {
-  if (!allowed_segment_ids_.contains(static_cast<int>(segment_id)))
-    return false;
-
   if (input_tensor.size() > ARRAY_SIZE(kSegmentationUkmInputMethods)) {
     // Don't record UKM if there are too many tensors.
     stats::RecordTooManyInputTensors(input_tensor.size());
@@ -200,6 +198,17 @@ bool SegmentationUkmHelper::AddOutputsToUkm(
   }
 
   return true;
+}
+
+bool SegmentationUkmHelper::CanUploadTensors(
+    const proto::SegmentInfo& segment_info) const {
+  if (!base::FeatureList::IsEnabled(
+          features::kSegmentationStructuredMetricsFeature)) {
+    return false;
+  }
+  return segment_info.model_metadata().upload_tensors() ||
+         allowed_segment_ids_.contains(
+             static_cast<int>(segment_info.segment_id()));
 }
 
 // static

@@ -106,15 +106,14 @@ void TrainingDataCollectorImpl::OnGetSegmentsInfoList(
   histogram_signal_handler_->AddObserver(this);
 
   DCHECK(segments);
-  const base::flat_set<SegmentId>& allowed_ids =
-      SegmentationUkmHelper::GetInstance()->allowed_segment_ids();
   for (const auto& segment : *segments) {
+    const proto::SegmentInfo& segment_info = segment.second;
+
     // Skip the segment if it is not in allowed list.
-    if (!allowed_ids.contains(static_cast<int>(segment.first))) {
+    if (!SegmentationUkmHelper::GetInstance()->CanUploadTensors(segment_info)) {
       continue;
     }
 
-    const proto::SegmentInfo& segment_info = segment.second;
     // Validate segment info.
     auto validation_result = metadata_utils::ValidateSegmentInfo(segment_info);
     if (validation_result !=
