@@ -1005,43 +1005,6 @@
             ]
         }
     ],
-    "AutofillEnableAugmentedPhoneCountryCode": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "AutofillEnableAugmentedPhoneCountryCode",
-                    "enable_features": [
-                        "AutofillEnableAugmentedPhoneCountryCode"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillEnableAugmentedPhoneCountryCodeOnWebView": [
-        {
-            "platforms": [
-                "android_webview",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableAugmentedPhoneCountryCode"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillEnableExtendedAddressFormats": [
         {
             "platforms": [
