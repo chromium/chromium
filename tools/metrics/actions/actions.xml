@@ -34108,6 +34108,8 @@ should be able to be added at any place in this file.
       label="For ReadingListEntryPoint feature."/>
   <suffix name="ReadingListMessages" label="For ReadingListMessages feature."/>
   <suffix name="ReopenTab" label="For ReopenTab feature."/>
+  <suffix name="RequestDesktopSiteAppMenu"
+      label="For the RequestDesktopSiteAppMenu feature."/>
   <suffix name="SharedHighlightingBuilder"
       label="For SharedHighlightingBuilder feature."/>
   <suffix name="SharedHighlightingReceiver"

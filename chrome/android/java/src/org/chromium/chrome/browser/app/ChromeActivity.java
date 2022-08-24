@@ -2576,6 +2576,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 RequestDesktopUtils.setRequestDesktopSiteContentSettingsForUrl(
                         profile, currentTab.getUrl(), usingDesktopUserAgent);
                 currentTab.reload();
+                RequestDesktopUtils.maybeShowUserEducationPromptForAppMenuSelection(
+                        Profile.getLastUsedRegularProfile());
             } else {
                 TabUtils.switchUserAgent(currentTab, usingDesktopUserAgent, /* forcedByUser */ true,
                         UseDesktopUserAgentCaller.ON_MENU_OR_KEYBOARD_ACTION);

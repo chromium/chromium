@@ -14,6 +14,7 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.page_info.SiteSettingsHelper;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -26,6 +27,7 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
@@ -380,6 +382,21 @@ public class RequestDesktopUtils {
         messageDispatcher.enqueueWindowScopedMessage(message, false);
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_SHOWN, true);
+        return true;
+    }
+
+    /**
+     * Show a prompt to educate the user about the update in the behavior of the desktop site app
+     * menu setting from a tab-level setting to a site-level setting.
+     * @param profile The current {@link Profile}.
+     * @return Whether the prompt was shown.
+     */
+    public static boolean maybeShowUserEducationPromptForAppMenuSelection(Profile profile) {
+        if (!TrackerFactory.getTrackerForProfile(profile).shouldTriggerHelpUI(
+                    FeatureConstants.REQUEST_DESKTOP_SITE_APP_MENU_FEATURE)) {
+            return false;
+        }
+        // TODO(crbug.com/1353597): Trigger user education dialog for behavior update.
         return true;
     }
 
