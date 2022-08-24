@@ -653,11 +653,13 @@ void ExtensionsTabbedMenuView::UpdateSiteAccessMenuItems(
     SiteAccessSection* section = nullptr;
     SiteAccessMenuItemView* item = nullptr;
     if (auto* current_item =
-            GetSiteAccessMenuItem(requests_access_.items, action_id)) {
+            GetSiteAccessMenuItem(requests_access_.items, action_id);
+        current_item) {
       section = &requests_access_;
       item = current_item;
-    } else if (auto* current_item =
-                   GetSiteAccessMenuItem(has_access_.items, action_id)) {
+    } else if (current_item =
+                   GetSiteAccessMenuItem(has_access_.items, action_id);
+               current_item) {
       section = &has_access_;
       item = current_item;
     }

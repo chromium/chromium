@@ -2549,16 +2549,18 @@ TEST_F(SiteSettingsHandlerTest, HandleClearEtldPlus1DataAndCookies) {
   auto remaining_host_nodes = GetHostNodes(GURL("https://www.example.com"));
 
   // example.com storage partitioned on other sites should still remain.
-  ASSERT_EQ(1u, remaining_host_nodes.size());
-  ASSERT_EQ(1u, remaining_host_nodes[0]->children().size());
-  const auto& storage_node = remaining_host_nodes[0]->children()[0];
-  ASSERT_EQ(CookieTreeNode::DetailedInfo::TYPE_COOKIES,
-            storage_node->GetDetailedInfo().node_type);
-  ASSERT_EQ(2u, storage_node->children().size());
-  for (const auto& cookie_node : storage_node->children()) {
-    const auto& cookie = cookie_node->GetDetailedInfo().cookie;
-    EXPECT_EQ("www.example.com", cookie->Domain());
-    EXPECT_TRUE(cookie->IsPartitioned());
+  {
+    ASSERT_EQ(1u, remaining_host_nodes.size());
+    ASSERT_EQ(1u, remaining_host_nodes[0]->children().size());
+    const auto& storage_node = remaining_host_nodes[0]->children()[0];
+    ASSERT_EQ(CookieTreeNode::DetailedInfo::TYPE_COOKIES,
+              storage_node->GetDetailedInfo().node_type);
+    ASSERT_EQ(2u, storage_node->children().size());
+    for (const auto& cookie_node : storage_node->children()) {
+      const auto& cookie = cookie_node->GetDetailedInfo().cookie;
+      EXPECT_EQ("www.example.com", cookie->Domain());
+      EXPECT_TRUE(cookie->IsPartitioned());
+    }
   }
 
   EXPECT_EQ(22u,

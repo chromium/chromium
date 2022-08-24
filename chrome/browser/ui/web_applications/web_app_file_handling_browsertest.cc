@@ -267,8 +267,8 @@ class WebAppFileHandlingBrowserTest : public WebAppFileHandlingTestBase {
           file_handler_manager().GetMatchingFileHandlerUrls(app_id, files);
       EXPECT_EQ(1u, launch_infos.size());
 
-      const auto& [url, files] = launch_infos[0];
-      params.launch_files = files;
+      const auto& [url, launch_files] = launch_infos[0];
+      params.launch_files = launch_files;
       params.override_url = url;
     }
 

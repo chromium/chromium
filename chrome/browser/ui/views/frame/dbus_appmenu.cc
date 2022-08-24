@@ -307,11 +307,11 @@ ui::SimpleMenuModel* DbusAppmenu::BuildStaticMenu(
       continue;
     }
 
-    int string_id = commands->str_id;
+    int command_str_id = commands->str_id;
     if (command_id == IDC_SHOW_BOOKMARK_BAR)
-      menu->AddCheckItemWithStringId(command_id, string_id);
+      menu->AddCheckItemWithStringId(command_id, command_str_id);
     else
-      menu->AddItemWithStringId(command_id, string_id);
+      menu->AddItemWithStringId(command_id, command_str_id);
     if (command_id < kLastChromeCommand)
       RegisterCommandObserver(command_id);
   }

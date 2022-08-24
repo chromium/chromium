@@ -68,7 +68,7 @@ class SidePanelBorder : public views::Border {
     // Undo DSF so that we can be sure to draw an integral number of pixels for
     // the border. Integral scale factors should be unaffected by this, but for
     // fractional scale factors this ensures sharp lines.
-    gfx::ScopedCanvas scoped(canvas);
+    gfx::ScopedCanvas scoped_unscale(canvas);
     float dsf = canvas->UndoDeviceScaleFactor();
 
     gfx::RectF scaled_bounds = gfx::ConvertRectToPixels(
@@ -92,7 +92,7 @@ class SidePanelBorder : public views::Border {
       // Redo device-scale factor, the theme background is drawn in DIPs. Note
       // that the clip area above is in pixels, hence the
       // UndoDeviceScaleFactor() call before this.
-      gfx::ScopedCanvas scoped(canvas);
+      gfx::ScopedCanvas scoped_rescale(canvas);
       canvas->Scale(dsf, dsf);
 
       TopContainerBackground::PaintBackground(

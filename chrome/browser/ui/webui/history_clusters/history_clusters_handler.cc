@@ -378,11 +378,13 @@ void HistoryClustersHandler::RemoveVisits(
 
   std::vector<history::BrowsingHistoryService::HistoryEntry> items_to_remove;
   for (const auto& visit : visits) {
-    history::BrowsingHistoryService::HistoryEntry entry;
-    entry.url = visit->raw_visit_data->url;
-    entry.all_timestamps.insert(
-        visit->raw_visit_data->visit_time.ToInternalValue());
-    items_to_remove.push_back(std::move(entry));
+    {
+      history::BrowsingHistoryService::HistoryEntry entry;
+      entry.url = visit->raw_visit_data->url;
+      entry.all_timestamps.insert(
+          visit->raw_visit_data->visit_time.ToInternalValue());
+      items_to_remove.push_back(std::move(entry));
+    }
     for (const auto& duplicate : visit->duplicates) {
       history::BrowsingHistoryService::HistoryEntry entry;
       entry.url = duplicate->url;

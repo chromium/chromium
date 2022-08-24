@@ -181,13 +181,11 @@ class HeaderView : public views::View {
         views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                  views::MaximumFlexSizeRule::kPreferred));
 
-    auto* simple_site_name = AddChildView(std::make_unique<views::Label>());
-    simple_site_name->SetID(static_cast<int>(
-        SideSearchBrowserController::SideSearchViewID::kSidePanelTitleLabel));
-    simple_site_name->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    simple_site_name->SetTextContext(CONTEXT_SIDE_PANEL_TITLE);
-    simple_site_name->SetTextStyle(views::style::STYLE_PRIMARY);
-    simple_site_name->SetProperty(
+    title_label_ = AddChildView(std::make_unique<views::Label>());
+    title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    title_label_->SetTextContext(CONTEXT_SIDE_PANEL_TITLE);
+    title_label_->SetTextStyle(views::style::STYLE_PRIMARY);
+    title_label_->SetProperty(
         views::kFlexBehaviorKey,
         views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                  views::MaximumFlexSizeRule::kUnbounded));
@@ -248,6 +246,8 @@ class HeaderView : public views::View {
   }
   ~HeaderView() override = default;
 
+  views::Label* get_title_label() { return title_label_; }
+
  private:
   // Updates the toolbar insets which may change as we enter / leave touch mode.
   // Icons are also updated to give them the opportunity to resize and adjust
@@ -260,6 +260,7 @@ class HeaderView : public views::View {
   }
 
   raw_ptr<DseImageView> dse_image_view_ = nullptr;
+  raw_ptr<views::Label> title_label_ = nullptr;
   raw_ptr<HeaderButton> feedback_button_ = nullptr;
   raw_ptr<HeaderButton> close_button_ = nullptr;
 
@@ -275,37 +276,6 @@ class HeaderView : public views::View {
 BEGIN_METADATA(HeaderView, views::View)
 END_METADATA
 
-views::WebView* ConfigureSidePanel(views::View* side_panel,
-                                   Profile* profile,
-                                   Browser* browser,
-                                   base::RepeatingClosure callback) {
-  auto container = std::make_unique<views::FlexLayoutView>();
-  container->SetOrientation(views::LayoutOrientation::kVertical);
-  container->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
-  container->AddChildView(
-      std::make_unique<HeaderView>(std::move(callback), browser));
-  container->AddChildView(std::make_unique<views::Separator>());
-
-  // The WebView will fill the remaining space after the header view has been
-  // laid out.
-  auto* web_view =
-      container->AddChildView(std::make_unique<views::WebView>(profile));
-  web_view->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded));
-  web_view->SetBackground(views::CreateThemedSolidBackground(kColorToolbar));
-
-  side_panel->AddChildView(std::move(container));
-
-  // The side panel should not start visible to avoid having it participate in
-  // initial layout calculations. Its visibility state will be updated later on
-  // in UpdateSidePanel().
-  side_panel->SetVisible(false);
-
-  return web_view;
-}
-
 }  // namespace
 
 SideSearchBrowserController::SideSearchBrowserController(
@@ -313,14 +283,35 @@ SideSearchBrowserController::SideSearchBrowserController(
     BrowserView* browser_view)
     : side_panel_(side_panel),
       browser_view_(browser_view),
-      web_view_(ConfigureSidePanel(
-          side_panel,
-          browser_view_->GetProfile(),
-          browser_view_->browser(),
-          base::BindRepeating(
-              &SideSearchBrowserController::SidePanelCloseButtonPressed,
-              base::Unretained(this)))),
       focus_tracker_(side_panel_, browser_view_->GetFocusManager()) {
+  auto container = std::make_unique<views::FlexLayoutView>();
+  container->SetOrientation(views::LayoutOrientation::kVertical);
+  container->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+  auto* header_view = container->AddChildView(std::make_unique<HeaderView>(
+      base::BindRepeating(
+          &SideSearchBrowserController::SidePanelCloseButtonPressed,
+          base::Unretained(this)),
+      browser_view_->browser()));
+  title_label_ = header_view->get_title_label();
+  container->AddChildView(std::make_unique<views::Separator>());
+
+  // The WebView will fill the remaining space after the header view has been
+  // laid out.
+  web_view_ = container->AddChildView(
+      std::make_unique<views::WebView>(browser_view_->GetProfile()));
+  web_view_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded));
+  web_view_->SetBackground(views::CreateThemedSolidBackground(kColorToolbar));
+
+  side_panel_->AddChildView(std::move(container));
+
+  // The side panel should not start visible to avoid having it participate in
+  // initial layout calculations. Its visibility state will be updated later on
+  // in UpdateSidePanel().
+  side_panel_->SetVisible(false);
+
   web_view_visibility_subscription_ =
       web_view_->AddVisibleChangedCallback(base::BindRepeating(
           &SideSearchBrowserController::OnWebViewVisibilityChanged,
@@ -599,10 +590,7 @@ void SideSearchBrowserController::UpdateSidePanel() {
 
   // Update the side panel header title text if necessary
   if (auto last_search_url = tab_contents_helper->last_search_url()) {
-    views::Label* title_label =
-        static_cast<views::Label*>(side_panel_->GetViewByID(
-            static_cast<int>(SideSearchViewID::kSidePanelTitleLabel)));
-    title_label->SetText(
+    title_label_->SetText(
         url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
             last_search_url.value()));
   }
