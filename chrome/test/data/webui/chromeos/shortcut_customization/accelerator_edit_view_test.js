@@ -103,7 +103,7 @@ export function acceleratorEditViewTest() {
         /*key_display=*/ ']');
 
     editViewElement.acceleratorInfo = acceleratorInfo;
-    editViewElement.source = AcceleratorSource.kAsh;
+    editViewElement.source = AcceleratorSource.ASH;
     editViewElement.action = 1;
     await flushTasks();
 

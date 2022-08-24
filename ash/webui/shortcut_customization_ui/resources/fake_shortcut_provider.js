@@ -46,7 +46,7 @@ export class FakeShortcutProvider {
    * @return {!Promise<boolean>}
    */
   isMutable(source) {
-    this.methods_.setResult('isMutable', source !== AcceleratorSource.kBrowser);
+    this.methods_.setResult('isMutable', source !== AcceleratorSource.BROWSER);
     return this.methods_.resolveMethod('isMutable');
   }
 
@@ -58,7 +58,7 @@ export class FakeShortcutProvider {
   addUserAccelerator(source, action, accelerator) {
     // Always return kSuccess in this fake.
     this.methods_.setResult(
-        'addUserAccelerator', AcceleratorConfigResult.kSuccess);
+        'addUserAccelerator', AcceleratorConfigResult.SUCCESS);
     return this.methods_.resolveMethod('addUserAccelerator');
   }
 
@@ -71,7 +71,7 @@ export class FakeShortcutProvider {
   replaceAccelerator(source, action, oldAccelerator, newAccelerator) {
     // Always return kSuccess in this fake.
     this.methods_.setResult(
-        'replaceAccelerator', AcceleratorConfigResult.kSuccess);
+        'replaceAccelerator', AcceleratorConfigResult.SUCCESS);
     return this.methods_.resolveMethod('replaceAccelerator');
   }
 
@@ -83,14 +83,14 @@ export class FakeShortcutProvider {
   removeAccelerator(source, action, accelerator) {
     // Always return kSuccess in this fake.
     this.methods_.setResult(
-        'removeAccelerator', AcceleratorConfigResult.kSuccess);
+        'removeAccelerator', AcceleratorConfigResult.SUCCESS);
     return this.methods_.resolveMethod('removeAccelerator');
   }
 
   restoreAllDefaults() {
     // Always return kSuccess in this fake.
     this.methods_.setResult(
-        'restoreAllDefaults', AcceleratorConfigResult.kSuccess);
+        'restoreAllDefaults', AcceleratorConfigResult.SUCCESS);
     return this.methods_.resolveMethod('restoreAllDefaults');
   }
 
@@ -101,7 +101,7 @@ export class FakeShortcutProvider {
   restoreActionDefaults(source, action) {
     // Always return kSuccess in this fake.
     this.methods_.setResult(
-        'restoreActionDefaults', AcceleratorConfigResult.kSuccess);
+        'restoreActionDefaults', AcceleratorConfigResult.SUCCESS);
     return this.methods_.resolveMethod('restoreActionDefaults');
   }
 

@@ -158,9 +158,9 @@ export class AcceleratorLookupManager {
     } else {
       // If the old accelerator is a default accelerator, disable it and add a
       // new accelerator.
-      if (currentAccelerator.type === AcceleratorType.kDefault) {
+      if (currentAccelerator.type === AcceleratorType.DEFAULT) {
         // The default accelerator should be disabled.
-        currentAccelerator.state = AcceleratorState.kDisabledByUser;
+        currentAccelerator.state = AcceleratorState.DISABLED_BY_USER;
 
         this.addAccelerator(source, action, newAccelerator);
       } else {
@@ -194,8 +194,8 @@ export class AcceleratorLookupManager {
       // No matching default accelerator, add the new accelerator directly.
       const newAccelInfo: AcceleratorInfo = {
         accelerator: newAccelerator,
-        type: AcceleratorType.kUserDefined,
-        state: AcceleratorState.kEnabled,
+        type: AcceleratorType.USER_DEFINED,
+        state: AcceleratorState.ENABLED,
         locked: false,
       };
       accelInfos.push(newAccelInfo);
@@ -217,8 +217,8 @@ export class AcceleratorLookupManager {
     this.reverseAcceleratorLookup_.delete(JSON.stringify(keys));
 
     // Default accelerators are only disabled, not removed.
-    if (foundAccel!.type === AcceleratorType.kDefault) {
-      foundAccel!.state = AcceleratorState.kDisabledByUser;
+    if (foundAccel!.type === AcceleratorType.DEFAULT) {
+      foundAccel!.state = AcceleratorState.DISABLED_BY_USER;
       return;
     }
 
@@ -241,7 +241,7 @@ export class AcceleratorLookupManager {
       accelInfos: AcceleratorInfo[], accelerator: AcceleratorKeys): boolean {
     // Check if `accelerator` matches a default accelerator.
     const defaultIdx = accelInfos.findIndex(accel => {
-      return accel.type === AcceleratorType.kDefault &&
+      return accel.type === AcceleratorType.DEFAULT &&
           JSON.stringify(accel.accelerator) === JSON.stringify(accelerator);
     });
 
@@ -250,7 +250,7 @@ export class AcceleratorLookupManager {
     }
 
     // Re-enable the default accelerator.
-    accelInfos[defaultIdx].state = AcceleratorState.kEnabled;
+    accelInfos[defaultIdx].state = AcceleratorState.ENABLED;
 
     return true;
   }
@@ -290,8 +290,8 @@ export class AcceleratorLookupManager {
     }
 
     // Default accelerators are only disabled, not removed.
-    if (accelerator.type === AcceleratorType.kDefault) {
-      accelerator.state = AcceleratorState.kDisabledByUser;
+    if (accelerator.type === AcceleratorType.DEFAULT) {
+      accelerator.state = AcceleratorState.DISABLED_BY_USER;
       return;
     }
 

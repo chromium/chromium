@@ -19,8 +19,8 @@ export function CreateDefaultAccelerator(
       key: keycode,
       key_display: key_display,
     }),
-    type: AcceleratorType.kDefault,
-    state: AcceleratorState.kEnabled,
+    type: AcceleratorType.DEFAULT,
+    state: AcceleratorState.ENABLED,
     locked: locked,
   });
 }
@@ -40,8 +40,8 @@ export function CreateUserAccelerator(
       key: keycode,
       key_display: key_display,
     }),
-    type: AcceleratorType.kUserDefined,
-    state: AcceleratorState.kEnabled,
+    type: AcceleratorType.USER_DEFINED,
+    state: AcceleratorState.ENABLED,
     locked: locked,
   });
 }

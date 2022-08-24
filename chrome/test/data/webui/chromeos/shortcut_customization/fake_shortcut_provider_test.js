@@ -57,11 +57,11 @@ export function fakeShortcutProviderTest() {
 
   test('IsMutableDefaultFake', () => {
     // TODO(jimmyxgong): Remove this test once real data is ready.
-    // AcceleratorSource.kAsh is a mutable source.
-    return provider.isMutable(AcceleratorSource.kAsh).then((result) => {
+    // AcceleratorSource.ASH is a mutable source.
+    return provider.isMutable(AcceleratorSource.ASH).then((result) => {
       assertTrue(result);
-      // AcceleratorSource.kBrowser is not a mutable source
-      return provider.isMutable(AcceleratorSource.kBrowser).then((result) => {
+      // AcceleratorSource.BROWSER is not a mutable source
+      return provider.isMutable(AcceleratorSource.BROWSER).then((result) => {
         assertFalse(result);
       });
     });
@@ -76,9 +76,9 @@ export function fakeShortcutProviderTest() {
     });
     return provider
         .addUserAccelerator(
-            AcceleratorSource.kAsh, /**action=*/ 0, acceleratorKeys)
+            AcceleratorSource.ASH, /**action=*/ 0, acceleratorKeys)
         .then((result) => {
-          assertEquals(AcceleratorConfigResult.kSuccess, result);
+          assertEquals(AcceleratorConfigResult.SUCCESS, result);
         });
   });
 
@@ -98,10 +98,10 @@ export function fakeShortcutProviderTest() {
 
     return provider
         .replaceAccelerator(
-            AcceleratorSource.kAsh, /**action=*/ 0, oldAcceleratorKeys,
+            AcceleratorSource.ASH, /**action=*/ 0, oldAcceleratorKeys,
             newAcceleratorKeys)
         .then((result) => {
-          assertEquals(AcceleratorConfigResult.kSuccess, result);
+          assertEquals(AcceleratorConfigResult.SUCCESS, result);
         });
   });
 
@@ -114,22 +114,22 @@ export function fakeShortcutProviderTest() {
     });
 
     return provider
-        .removeAccelerator(AcceleratorSource.kAsh, /**action=*/ 0, accel)
+        .removeAccelerator(AcceleratorSource.ASH, /**action=*/ 0, accel)
         .then((result) => {
-          assertEquals(AcceleratorConfigResult.kSuccess, result);
+          assertEquals(AcceleratorConfigResult.SUCCESS, result);
         });
   });
 
   test('RestoreAllDefaultsFake', () => {
     return provider.restoreAllDefaults().then((result) => {
-      assertEquals(AcceleratorConfigResult.kSuccess, result);
+      assertEquals(AcceleratorConfigResult.SUCCESS, result);
     });
   });
 
   test('RestoreActionDefaultsFake', () => {
-    return provider.restoreActionDefaults(AcceleratorSource.kAsh, 0)
+    return provider.restoreActionDefaults(AcceleratorSource.ASH, 0)
         .then((result) => {
-          assertEquals(AcceleratorConfigResult.kSuccess, result);
+          assertEquals(AcceleratorConfigResult.SUCCESS, result);
         });
   });
 }

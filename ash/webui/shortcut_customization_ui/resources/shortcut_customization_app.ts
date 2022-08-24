@@ -171,8 +171,8 @@ export class ShortcutCustomizationAppElement extends PolymerElement {
             ?.filter((accel) => {
               // Hide accelerators that are default and disabled.
               return !(
-                  accel.type === AcceleratorType.kDefault &&
-                  accel.state === AcceleratorState.kDisabledByUser);
+                  accel.type === AcceleratorType.DEFAULT &&
+                  accel.state === AcceleratorState.DISABLED_BY_USER);
             });
 
     this.shadowRoot!.querySelector<AcceleratorEditDialogElement>('#editDialog')!

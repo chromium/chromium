@@ -34,8 +34,8 @@ const accelerator: AcceleratorKeys = {
 
 const defaultAcceleratorInfoState: AcceleratorInfo = {
   accelerator,
-  type: AcceleratorType.kDefault,
-  state: AcceleratorState.kEnabled,
+  type: AcceleratorType.DEFAULT,
+  state: AcceleratorState.ENABLED,
   locked: false,
 };
 
@@ -132,7 +132,7 @@ export class AcceleratorEditViewElement extends PolymerElement {
         .removeAccelerator(
             this.source, this.action, this.acceleratorInfo.accelerator)
         .then((result: AcceleratorConfigResult) => {
-          if (result === AcceleratorConfigResult.kSuccess) {
+          if (result === AcceleratorConfigResult.SUCCESS) {
             this.lookupManager_.removeAccelerator(
                 this.source, this.action, this.acceleratorInfo.accelerator);
 

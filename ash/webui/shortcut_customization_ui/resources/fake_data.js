@@ -30,14 +30,14 @@ export const fakeSubCategories = new Map([
 /* @type {!AcceleratorConfig} */
 export const fakeAcceleratorConfig = new Map([
   [
-    AcceleratorSource.kAsh,
+    AcceleratorSource.ASH,
     new Map([
       // Snap Window Left
       [
         0,
         [{
-          type: AcceleratorType.kDefault,
-          state: AcceleratorState.kEnabled,
+          type: AcceleratorType.DEFAULT,
+          state: AcceleratorState.ENABLED,
           locked: true,
           accelerator: {
             modifiers: Modifier.ALT,
@@ -50,8 +50,8 @@ export const fakeAcceleratorConfig = new Map([
       [
         1,
         [{
-          type: AcceleratorType.kDefault,
-          state: AcceleratorState.kEnabled,
+          type: AcceleratorType.DEFAULT,
+          state: AcceleratorState.ENABLED,
           locked: false,
           accelerator: {
             modifiers: Modifier.ALT,
@@ -64,8 +64,8 @@ export const fakeAcceleratorConfig = new Map([
       [
         2,
         [{
-          type: AcceleratorType.kDefault,
-          state: AcceleratorState.kEnabled,
+          type: AcceleratorType.DEFAULT,
+          state: AcceleratorState.ENABLED,
           locked: false,
           accelerator: {
             modifiers: Modifier.COMMAND | Modifier.SHIFT,
@@ -78,8 +78,8 @@ export const fakeAcceleratorConfig = new Map([
       [
         3,
         [{
-          type: AcceleratorType.kDefault,
-          state: AcceleratorState.kEnabled,
+          type: AcceleratorType.DEFAULT,
+          state: AcceleratorState.ENABLED,
           locked: false,
           accelerator: {
             modifiers: Modifier.COMMAND | Modifier.SHIFT,
@@ -91,14 +91,14 @@ export const fakeAcceleratorConfig = new Map([
     ]),
   ],
   [
-    AcceleratorSource.kBrowser,
+    AcceleratorSource.BROWSER,
     new Map([
       // New Tab
       [
         1001,
         [{
-          type: AcceleratorType.kDefault,
-          state: AcceleratorState.kEnabled,
+          type: AcceleratorType.DEFAULT,
+          state: AcceleratorState.ENABLED,
           locked: true,
           accelerator: {
             modifiers: Modifier.CONTROL,
@@ -117,40 +117,40 @@ export const fakeLayoutInfo = [
     category: 0,      // Chrome OS.
     sub_category: 0,  // Window Management.
     description: 0,   // Snap Window Left.
-    layout_style: LayoutStyle.kDefault,
-    source: AcceleratorSource.kAsh,
+    layout_style: LayoutStyle.DEFAULT,
+    source: AcceleratorSource.ASH,
     action: 0,
   },
   {
     category: 0,      // Chrome OS.
     sub_category: 0,  // Window Management.
     description: 1,   // Snap Window Right.
-    layout_style: LayoutStyle.kDefault,
-    source: AcceleratorSource.kAsh,
+    layout_style: LayoutStyle.DEFAULT,
+    source: AcceleratorSource.ASH,
     action: 1,
   },
   {
     category: 0,      // Chrome OS.
     sub_category: 1,  // Virtual Desks.
     description: 2,   // Create Desk.
-    layout_style: LayoutStyle.kDefault,
-    source: AcceleratorSource.kAsh,
+    layout_style: LayoutStyle.DEFAULT,
+    source: AcceleratorSource.ASH,
     action: 2,
   },
   {
     category: 0,      // Chrome OS.
     sub_category: 1,  // Virtual Desks.
     description: 3,   // Remove Desk.
-    layout_style: LayoutStyle.kDefault,
-    source: AcceleratorSource.kAsh,
+    layout_style: LayoutStyle.DEFAULT,
+    source: AcceleratorSource.ASH,
     action: 3,
   },
   {
     category: 1,        // Browser.
     sub_category: 2,    // Tabs.
     description: 1001,  // New tab.
-    layout_style: LayoutStyle.kDefault,
-    source: AcceleratorSource.kBrowser,
+    layout_style: LayoutStyle.DEFAULT,
+    source: AcceleratorSource.BROWSER,
     action: 1001,
   },
 ];

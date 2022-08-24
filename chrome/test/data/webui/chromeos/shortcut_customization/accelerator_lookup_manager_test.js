@@ -100,7 +100,7 @@ export function acceleratorLookupManagerTest() {
 
       // Get Snap Window Right accelerator.
       const expectedAction = 1;
-      const ashMap = fakeAcceleratorConfig.get(AcceleratorSource.kAsh);
+      const ashMap = fakeAcceleratorConfig.get(AcceleratorSource.ASH);
       const snapWindowRightAccels = ashMap.get(expectedAction);
       // Modifier.Alt + key::221 (']')
       const oldAccel = snapWindowRightAccels[0].accelerator;
@@ -117,11 +117,11 @@ export function acceleratorLookupManagerTest() {
           manager.getAcceleratorFromKeys(JSON.stringify(expectedNewAccel)));
 
       replaceAndVerify(
-          AcceleratorSource.kAsh, expectedAction, oldAccel, expectedNewAccel);
+          AcceleratorSource.ASH, expectedAction, oldAccel, expectedNewAccel);
 
       // Check that the accelerator got updated in the lookup.
       let lookup =
-          manager.getAccelerators(AcceleratorSource.kAsh, expectedAction);
+          manager.getAccelerators(AcceleratorSource.ASH, expectedAction);
       // Replacing a default shortcut should not remove the default. Expect a
       // new accelerator to be added instead.
       assertEquals(2, lookup.length);
@@ -142,11 +142,11 @@ export function acceleratorLookupManagerTest() {
           manager.getAcceleratorFromKeys(
               JSON.stringify(expectedNewDefaultAccel)));
       replaceAndVerify(
-          AcceleratorSource.kAsh, expectedAction, expectedNewAccel,
+          AcceleratorSource.ASH, expectedAction, expectedNewAccel,
           expectedNewDefaultAccel);
 
       // Check that the accelerator got updated in the lookup.
-      lookup = manager.getAccelerators(AcceleratorSource.kAsh, expectedAction);
+      lookup = manager.getAccelerators(AcceleratorSource.ASH, expectedAction);
       // Expect only one accelerator since the previous accelerator has been
       // removed but the default accelerator has been re-enabled.
       assertEquals(1, lookup.length);
@@ -165,7 +165,7 @@ export function acceleratorLookupManagerTest() {
 
       // Get Snap Window Right accelerator, the action that will be overridden.
       const snapWindowRightAction = 1;
-      const ashMap = fakeAcceleratorConfig.get(AcceleratorSource.kAsh);
+      const ashMap = fakeAcceleratorConfig.get(AcceleratorSource.ASH);
       const snapWindowRightAccels = ashMap.get(snapWindowRightAction);
       // Modifier.Alt + key::221 (']')
       const overridenAccel = snapWindowRightAccels[0].accelerator;
@@ -175,12 +175,12 @@ export function acceleratorLookupManagerTest() {
       const oldNewDeskAccel = ashMap.get(newDeskAction)[0].accelerator;
 
       replaceAndVerify(
-          AcceleratorSource.kAsh, newDeskAction, oldNewDeskAccel,
+          AcceleratorSource.ASH, newDeskAction, oldNewDeskAccel,
           overridenAccel);
 
       // Verify that the New Desk shortcut now has the ALT + ']' accelerator.
       const newDeskLookup =
-          manager.getAccelerators(AcceleratorSource.kAsh, newDeskAction);
+          manager.getAccelerators(AcceleratorSource.ASH, newDeskAction);
       assertEquals(2, newDeskLookup.length);
       assertEquals(
           JSON.stringify(overridenAccel),
@@ -188,11 +188,11 @@ export function acceleratorLookupManagerTest() {
 
       // There should still be 1 accelerator for snapWindowRight, but the
       // default should be disabled.
-      const snapWindowRightLookup = manager.getAccelerators(
-          AcceleratorSource.kAsh, snapWindowRightAction);
+      const snapWindowRightLookup =
+          manager.getAccelerators(AcceleratorSource.ASH, snapWindowRightAction);
       assertEquals(1, snapWindowRightLookup.length);
       assertEquals(
-          AcceleratorState.kDisabledByUser, snapWindowRightLookup[0].state);
+          AcceleratorState.DISABLED_BY_USER, snapWindowRightLookup[0].state);
     });
   });
 
@@ -217,11 +217,11 @@ export function acceleratorLookupManagerTest() {
           undefined,
           manager.getAcceleratorFromKeys(JSON.stringify(expectedNewAccel)));
 
-      addAndVerify(AcceleratorSource.kAsh, expectedAction, expectedNewAccel);
+      addAndVerify(AcceleratorSource.ASH, expectedAction, expectedNewAccel);
 
       // Check that the accelerator got updated in the lookup.
       const lookup =
-          manager.getAccelerators(AcceleratorSource.kAsh, expectedAction);
+          manager.getAccelerators(AcceleratorSource.ASH, expectedAction);
       assertEquals(2, lookup.length);
       assertEquals(
           JSON.stringify(expectedNewAccel),
@@ -238,7 +238,7 @@ export function acceleratorLookupManagerTest() {
 
       // Get Snap Window Right accelerator, the action that will be overridden.
       const snapWindowRightAction = 1;
-      const ashMap = fakeAcceleratorConfig.get(AcceleratorSource.kAsh);
+      const ashMap = fakeAcceleratorConfig.get(AcceleratorSource.ASH);
       const snapWindowRightAccels = ashMap.get(snapWindowRightAction);
       // Modifier.Alt + key::221 (']')
       const overridenAccel = snapWindowRightAccels[0].accelerator;
@@ -246,11 +246,11 @@ export function acceleratorLookupManagerTest() {
       // Replace New Desk shortcut with Alt+']'.
       const newDeskAction = 2;
 
-      addAndVerify(AcceleratorSource.kAsh, newDeskAction, overridenAccel);
+      addAndVerify(AcceleratorSource.ASH, newDeskAction, overridenAccel);
 
       // Verify that the New Desk shortcut now has the ALT + ']' accelerator.
       const newDeskLookup =
-          manager.getAccelerators(AcceleratorSource.kAsh, newDeskAction);
+          manager.getAccelerators(AcceleratorSource.ASH, newDeskAction);
       assertEquals(2, newDeskLookup.length);
       assertEquals(
           JSON.stringify(overridenAccel),
@@ -258,11 +258,11 @@ export function acceleratorLookupManagerTest() {
 
       // Replacing a default accelerator should not remove it but rather disable
       // it.
-      const snapWindowRightLookup = manager.getAccelerators(
-          AcceleratorSource.kAsh, snapWindowRightAction);
+      const snapWindowRightLookup =
+          manager.getAccelerators(AcceleratorSource.ASH, snapWindowRightAction);
       assertEquals(1, snapWindowRightLookup.length);
       assertEquals(
-          AcceleratorState.kDisabledByUser, snapWindowRightLookup[0].state);
+          AcceleratorState.DISABLED_BY_USER, snapWindowRightLookup[0].state);
     });
   });
 
@@ -278,17 +278,17 @@ export function acceleratorLookupManagerTest() {
 
       // Initially there is only one accelerator for Snap Window Right.
       const lookup =
-          manager.getAccelerators(AcceleratorSource.kAsh, expectedAction);
+          manager.getAccelerators(AcceleratorSource.ASH, expectedAction);
       assertEquals(1, lookup.length);
 
       // Remove the accelerator.
       const removedAccelerator = lookup[0].accelerator;
       manager.removeAccelerator(
-          AcceleratorSource.kAsh, expectedAction, removedAccelerator);
+          AcceleratorSource.ASH, expectedAction, removedAccelerator);
 
       // Removing a default accelerator only disables it.
       assertEquals(1, lookup.length);
-      assertEquals(AcceleratorState.kDisabledByUser, lookup[0].state);
+      assertEquals(AcceleratorState.DISABLED_BY_USER, lookup[0].state);
 
       // Removed accelerator should not appear in the reverse lookup.
       assertEquals(
@@ -309,7 +309,7 @@ export function acceleratorLookupManagerTest() {
 
       // Initially there is only one accelerator for Snap Window Right.
       const lookup =
-          manager.getAccelerators(AcceleratorSource.kAsh, expectedAction);
+          manager.getAccelerators(AcceleratorSource.ASH, expectedAction);
       assertEquals(1, lookup.length);
 
       const expectedNewAccel = /** @type {!AcceleratorKeys} */ ({
@@ -323,7 +323,7 @@ export function acceleratorLookupManagerTest() {
           undefined,
           manager.getAcceleratorFromKeys(JSON.stringify(expectedNewAccel)));
 
-      addAndVerify(AcceleratorSource.kAsh, expectedAction, expectedNewAccel);
+      addAndVerify(AcceleratorSource.ASH, expectedAction, expectedNewAccel);
 
       // Check that the accelerator got updated in the lookup.
       assertEquals(2, lookup.length);
@@ -334,7 +334,7 @@ export function acceleratorLookupManagerTest() {
       // Remove the accelerator.
       const removedAccelerator = lookup[1].accelerator;
       manager.removeAccelerator(
-          AcceleratorSource.kAsh, expectedAction, removedAccelerator);
+          AcceleratorSource.ASH, expectedAction, removedAccelerator);
 
       // Expect only 1 accelerator.
       assertEquals(1, lookup.length);

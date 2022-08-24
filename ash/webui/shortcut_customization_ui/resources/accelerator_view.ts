@@ -64,8 +64,8 @@ function getModifierString(modifier: Modifier): string {
 function createEmptyAcceleratorInfo(): AcceleratorInfo {
   return {
     accelerator: {modifiers: 0, key: 0, key_display: ''},
-    type: AcceleratorType.kDefault,
-    state: AcceleratorState.kEnabled,
+    type: AcceleratorType.DEFAULT,
+    state: AcceleratorState.ENABLED,
     locked: false,
   };
 }
@@ -444,7 +444,7 @@ export class AcceleratorViewElement extends PolymerElement {
               newKeys)
           .then((result: AcceleratorConfigResult) => {
             // TODO(jimmyxgong): Handle other error cases.
-            if (result === AcceleratorConfigResult.kSuccess) {
+            if (result === AcceleratorConfigResult.SUCCESS) {
               this.lookupManager_.replaceAccelerator(
                   this.source, this.action, this.acceleratorInfo.accelerator,
                   newKeys);
@@ -458,7 +458,7 @@ export class AcceleratorViewElement extends PolymerElement {
           .addUserAccelerator(this.source, this.action, newKeys)
           .then((result: AcceleratorConfigResult) => {
             // TODO(jimmyxgong): Handle other error cases.
-            if (result === AcceleratorConfigResult.kSuccess) {
+            if (result === AcceleratorConfigResult.SUCCESS) {
               this.lookupManager_.addAccelerator(
                   this.source, this.action, newKeys);
               this.fireUpdateEvent_();

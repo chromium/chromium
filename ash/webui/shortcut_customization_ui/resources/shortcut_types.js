@@ -28,10 +28,10 @@ export const Modifier = {
  * @enum {number}
  */
 export const AcceleratorSource = {
-  kAsh: 0,
-  kEventRewriter: 1,
-  kBrowser: 2,
-  kAndroid: 3,
+  ASH: 0,
+  EVENT_REWRITER: 1,
+  BROWSER: 2,
+  ANDROID: 3,
 };
 
 /**
@@ -39,11 +39,11 @@ export const AcceleratorSource = {
  * @enum {number}
  */
 export const AcceleratorType = {
-  kDefault: 0,
-  kUserDefined: 1,
-  kDeprecated: 2,
-  kDeveloper: 3,
-  kDebug: 4,
+  DEFAULT: 0,
+  USER_DEFINED: 1,
+  DEPRECATED: 2,
+  DEVELOPER: 3,
+  DEBUG: 4,
 };
 
 /**
@@ -51,9 +51,9 @@ export const AcceleratorType = {
  * @enum {number}
  */
 export const AcceleratorState = {
-  kEnabled: 0,
-  kDisabledByConflict: 1,
-  kDisabledByUser: 2,
+  ENABLED: 0,
+  DISABLED_BY_CONFLICT: 1,
+  DISABLED_BY_USER: 2,
 };
 
 /**
@@ -62,12 +62,12 @@ export const AcceleratorState = {
  * @enum {number}
  */
 export const AcceleratorConfigResult = {
-  kSuccess: 0,
-  kActionLocked: 1,
-  kAcceleratorLocked: 2,
-  kConflict: 3,
-  kNotFound: 4,
-  kDuplicate: 5,
+  SUCCESS: 0,
+  ACTION_LOCKED: 1,
+  ACCELERATOR_LOCKED: 2,
+  CONFLICT: 3,
+  NOT_FOUND: 4,
+  DUPLICATE: 5,
 };
 
 /**
@@ -104,7 +104,7 @@ export let AcceleratorConfig;
  * @enum {number}
  */
 export const LayoutStyle = {
-  kDefault: 0,
+  DEFAULT: 0,
 };
 
 /**
