@@ -528,6 +528,7 @@ export class Camera extends View implements CameraViewUI {
           PerfEvent.PHOTO_CAPTURE_POST_PROCESSING, false, {hasError: true});
       throw e;
     }
+    ChromeHelper.getInstance().maybeTriggerSurvey();
   }
 
   async onPortraitCaptureDone(
@@ -583,6 +584,7 @@ export class Camera extends View implements CameraViewUI {
           PerfEvent.PORTRAIT_MODE_CAPTURE_POST_PROCESSING, false,
           {hasError, facing: this.getFacing()});
     }
+    ChromeHelper.getInstance().maybeTriggerSurvey();
   }
 
   async onDocumentCaptureDone(pendingPhotoResult: Promise<PhotoResult>):
@@ -608,6 +610,7 @@ export class Camera extends View implements CameraViewUI {
       toast.show(I18nString.ERROR_MSG_SAVE_FILE_FAILED);
       throw e;
     }
+    ChromeHelper.getInstance().maybeTriggerSurvey();
   }
 
   /**
@@ -825,6 +828,7 @@ export class Camera extends View implements CameraViewUI {
     } else {
       sendEvent(metrics.GifResultType.RETAKE);
     }
+    ChromeHelper.getInstance().maybeTriggerSurvey();
   }
 
   async onVideoCaptureDone({resolution, videoSaver, duration, everPaused}:
@@ -850,6 +854,7 @@ export class Camera extends View implements CameraViewUI {
           PerfEvent.VIDEO_CAPTURE_POST_PROCESSING, false, {hasError: true});
       throw e;
     }
+    ChromeHelper.getInstance().maybeTriggerSurvey();
   }
 
   override layout(): void {

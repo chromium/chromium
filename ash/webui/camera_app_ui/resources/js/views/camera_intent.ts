@@ -9,6 +9,7 @@ import {Intent} from '../intent.js';
 import * as metrics from '../metrics.js';
 import {FileAccessEntry} from '../models/file_system_access_entry.js';
 import {VideoSaver} from '../models/video_saver.js';
+import {ChromeHelper} from '../mojo/chrome_helper.js';
 import {PerfLogger} from '../perf.js';
 import {scaleImage} from '../thumbnailer.js';
 import {Resolution} from '../type.js';
@@ -120,6 +121,7 @@ export class CameraIntent extends Camera {
     const {blob, resolution} = await pendingPhotoResult;
     await this.review.setReviewPhoto(blob);
     await this.reviewIntentResult({resolution});
+    ChromeHelper.getInstance().maybeTriggerSurvey();
   }
 
   override async onVideoCaptureDone(videoResult: VideoResult): Promise<void> {
@@ -128,5 +130,6 @@ export class CameraIntent extends Camera {
     await this.review.setReviewVideo(this.videoResultFile);
     await this.reviewIntentResult(
         {resolution: videoResult.resolution, duration: videoResult.duration});
+    ChromeHelper.getInstance().maybeTriggerSurvey();
   }
 }

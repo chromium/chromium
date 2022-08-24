@@ -190,6 +190,9 @@ ChromeCameraAppUIDelegate::~ChromeCameraAppUIDelegate() {
   // Destroy |file_monitor_| on |file_task_runner_|.
   // TODO(wtlee): Ensure there is no lifetime issue before actually deleting it.
   file_task_runner_->DeleteSoon(FROM_HERE, std::move(file_monitor_));
+
+  // Try triggering the HaTS survey when leaving the app.
+  MaybeTriggerSurvey();
 }
 
 void ChromeCameraAppUIDelegate::SetLaunchDirectory() {
