@@ -1131,10 +1131,14 @@ void NativeWidgetAura::OnTransientParentChanged(aura::Window* new_parent) {
 
 NativeWidgetAura::~NativeWidgetAura() {
   destroying_ = true;
-  if (ownership_ == Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET)
-    delete delegate_;
-  else
+  if (ownership_ == Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET) {
+    //  Use `ClearAndDelete` here to stop referencing the underlying pointer and
+    //  free its memory. Compared to raw delete calls, this avoids the raw_ptr
+    //  to be temporarily dangling.
+    delegate_.ClearAndDelete();
+  } else {
     CloseNow();
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
