@@ -63,6 +63,53 @@ void SystemExtensionsServiceWorkerManager::UnregisterServiceWorker(
                      weak_ptr_factory_.GetWeakPtr(), system_extension_id));
 }
 
+void SystemExtensionsServiceWorkerManager::StartServiceWorker(
+    const SystemExtensionId& system_extension_id,
+    StartServiceWorkerCallback callback) {
+  auto* system_extension = registry_->GetById(system_extension_id);
+  if (!system_extension) {
+    return;
+  }
+
+  auto [callback1, callback2] = base::SplitOnceCallback(std::move(callback));
+
+  const GURL& scope = system_extension->base_url;
+  const url::Origin& origin = url::Origin::Create(system_extension->base_url);
+  blink::StorageKey key(origin);
+
+  auto* worker_context =
+      profile_->GetDefaultStoragePartition()->GetServiceWorkerContext();
+  worker_context->StartWorkerForScope(
+      scope, key,
+      base::BindOnce(
+          &SystemExtensionsServiceWorkerManager::OnStartServiceWorkerSuccess,
+          weak_ptr_factory_.GetWeakPtr(), system_extension_id,
+          std::move(callback1)),
+      base::BindOnce(
+          &SystemExtensionsServiceWorkerManager::OnStartServiceWorkerFailure,
+          weak_ptr_factory_.GetWeakPtr(), system_extension_id,
+          std::move(callback2)));
+}
+
+void SystemExtensionsServiceWorkerManager::OnStartServiceWorkerSuccess(
+    const SystemExtensionId& system_extension_id,
+    StartServiceWorkerCallback callback,
+    int64_t service_worker_version_id,
+    int service_worker_process_id,
+    int service_worker_thread_id) {
+  std::move(callback).Run(SystemExtensionsServiceWorkerInfo{
+      .system_extension_id = system_extension_id,
+      .service_worker_version_id = service_worker_version_id,
+      .service_worker_process_id = service_worker_process_id});
+}
+
+void SystemExtensionsServiceWorkerManager::OnStartServiceWorkerFailure(
+    const SystemExtensionId& system_extension_id,
+    StartServiceWorkerCallback callback,
+    blink::ServiceWorkerStatusCode service_worker_status_code) {
+  std::move(callback).Run(service_worker_status_code);
+}
+
 void SystemExtensionsServiceWorkerManager::NotifyServiceWorkerRegistered(
     const SystemExtensionId& system_extension_id,
     blink::ServiceWorkerStatusCode status_code) {

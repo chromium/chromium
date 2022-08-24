@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_install_manager.h"
+#include "chrome/browser/ash/system_extensions/system_extensions_service_worker_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/service_worker_version_base_info.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -21,6 +22,8 @@ class Profile;
 
 namespace ash {
 
+class WindowManagementImpl;
+
 // Class in charge of managing CrosWindowManagement instances and dispatching
 // events to them.
 //
@@ -28,6 +31,7 @@ namespace ash {
 // receivers and implementations for blink::mojom::CrosWindowManagement.
 class CrosWindowManagementContext
     : public KeyedService,
+      public SystemExtensionsServiceWorkerManager::Observer,
       public blink::mojom::CrosWindowManagementFactory {
  public:
   // Returns the event dispatcher associated with `profile`. Should only be
@@ -51,6 +55,11 @@ class CrosWindowManagementContext
       delete;
   ~CrosWindowManagementContext() override;
 
+  // SystemExtensionsServiceWorkerManager::Observer
+  void OnRegisterServiceWorker(
+      const SystemExtensionId& system_extension_id,
+      blink::ServiceWorkerStatusCode status_code) override;
+
   // blink::mojom::CrosWindowManagementFactory
   void Create(
       mojo::PendingAssociatedReceiver<blink::mojom::CrosWindowManagement>
@@ -60,26 +69,59 @@ class CrosWindowManagementContext
       override;
 
  private:
+  // Starts a Service Worker and gets the CrosWindowManagement for it.
+  void GetCrosWindowManagement(
+      const SystemExtensionId& system_extension_id,
+      base::OnceCallback<void(WindowManagementImpl&)> callback);
+
+  void OnServiceWorkerStarted(
+      const SystemExtensionId& system_extension_id,
+      StatusOrSystemExtensionsServiceWorkerInfo status_or_info);
+
+  void RunPendingTasks(const SystemExtensionId& system_extension_id,
+                       WindowManagementImpl& window_management_impl);
+
+  void OnCrosWindowManagementDisconnect();
+
   // This class is a BrowserContextKeyedService, so it's owned by Profile.
   const raw_ref<Profile> profile_;
 
   // Safe because this KeyedService is marked as depending on the
-  // SystemExtensionsProvider keyed service which owns
-  // SystemExtensionsRegistry.
+  // SystemExtensionsProvider keyed service which owns the classes below.
   const raw_ref<SystemExtensionsRegistry> system_extensions_registry_;
+  const raw_ref<SystemExtensionsServiceWorkerManager>
+      system_extensions_service_worker_manager_;
+
+  base::ScopedObservation<SystemExtensionsServiceWorkerManager,
+                          SystemExtensionsServiceWorkerManager::Observer>
+      service_worker_manager_observation_{this};
 
   mojo::ReceiverSet<blink::mojom::CrosWindowManagementFactory,
                     content::ServiceWorkerVersionBaseInfo>
       factory_receivers_;
 
-  // Holds WindowManagementImpl instances. These receivers are associated to
-  // factory instances in factory_receivers_ and will be destroyed whenever
-  // the corresponding factory in factory_receivers_ gets destroyed.
-  mojo::UniqueAssociatedReceiverSet<blink::mojom::CrosWindowManagement>
+  // Holds WindowManagementImpl instances and their receivers. They are
+  // associated to factory instances in CrosWindowManagementContext and will be
+  // destroyed whenever the corresponding factory gets destroyed.
+  mojo::UniqueAssociatedReceiverSet<blink::mojom::CrosWindowManagement,
+                                    SystemExtensionsServiceWorkerInfo>
       cros_window_management_instances_;
 
-  // Stores whether or not we've dispatched the 'start' event for the extension.
-  std::set<SystemExtensionId> start_dispatched_for_extension_;
+  // Maps worker info (including `SystemExtensionId`) to `WindowManagementImpl`.
+  // `WindowManagementImpl` instances are owned by
+  // `cros_window_management_instances_`.
+  std::map<SystemExtensionsServiceWorkerInfo, WindowManagementImpl*>
+      service_worker_info_to_impl_map_;
+
+  using GetCrosWindowManagementCallback =
+      base::OnceCallback<void(WindowManagementImpl&)>;
+  using GetCrosWindowManagementCallbacks =
+      std::vector<GetCrosWindowManagementCallback>;
+
+  // Map of pending GetCrosWindowManagement callbacks for the System
+  // Extension with `SystemExtensionId`.
+  std::map<SystemExtensionId, GetCrosWindowManagementCallbacks>
+      id_to_pending_callbacks_;
 
   base::WeakPtrFactory<CrosWindowManagementContext> weak_ptr_factory_{this};
 };

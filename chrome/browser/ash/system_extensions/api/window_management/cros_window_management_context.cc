@@ -39,37 +39,127 @@ void CrosWindowManagementContext::BindFactory(
 CrosWindowManagementContext::CrosWindowManagementContext(Profile* profile)
     : profile_(*profile),
       system_extensions_registry_(
-          SystemExtensionsProvider::Get(profile).registry()) {}
+          SystemExtensionsProvider::Get(profile).registry()),
+      system_extensions_service_worker_manager_(
+          SystemExtensionsProvider::Get(profile).service_worker_manager()) {
+  cros_window_management_instances_.set_disconnect_handler(base::BindRepeating(
+      &CrosWindowManagementContext::OnCrosWindowManagementDisconnect,
+      // Safe because disconnect handlers aren't dispatched
+      // after this class is destroyed.
+      base::Unretained(this)));
+
+  service_worker_manager_observation_.Observe(
+      base::to_address(system_extensions_service_worker_manager_));
+}
 
 CrosWindowManagementContext::~CrosWindowManagementContext() = default;
+
+void CrosWindowManagementContext::OnCrosWindowManagementDisconnect() {
+  const SystemExtensionsServiceWorkerInfo& info =
+      cros_window_management_instances_.current_context();
+
+  bool info_removed = service_worker_info_to_impl_map_.erase(info);
+  DCHECK(info_removed);
+
+  // No need to remove it from cros_window_management_instances_ because
+  // the ReceiverSet takes care of it.
+}
 
 void CrosWindowManagementContext::Create(
     mojo::PendingAssociatedReceiver<blink::mojom::CrosWindowManagement>
         pending_receiver,
     mojo::PendingAssociatedRemote<
         blink::mojom::CrosWindowManagementStartObserver> observer_remote) {
-  const content::ServiceWorkerVersionBaseInfo& info =
+  const content::ServiceWorkerVersionBaseInfo& service_worker_version_info =
       factory_receivers_.current_context();
 
+  // TODO(b/242264794): Change this to a DCHECK once we stop running tests
+  // without an installed System Extension.
+  const auto* system_extension =
+      system_extensions_registry_->GetByUrl(service_worker_version_info.scope);
+
+  // TODO(b/242264794): Remove the ternary operator once we stop running tests
+  // without an installed System Extension.
+  SystemExtensionsServiceWorkerInfo service_worker_info{
+      .system_extension_id =
+          system_extension ? system_extension->id : SystemExtensionId(),
+      .service_worker_version_id = service_worker_version_info.version_id,
+      .service_worker_process_id = service_worker_version_info.process_id};
+
   auto cros_window_management = std::make_unique<WindowManagementImpl>(
-      info.process_id, std::move(observer_remote));
+      service_worker_info.service_worker_process_id,
+      std::move(observer_remote));
   auto* cros_window_management_ptr = cros_window_management.get();
 
   cros_window_management_instances_.Add(std::move(cros_window_management),
-                                        std::move(pending_receiver));
+                                        std::move(pending_receiver),
+                                        service_worker_info);
 
-  auto* system_extension = system_extensions_registry_->GetByUrl(info.scope);
-  if (!system_extension)
+  auto [_, inserted] = service_worker_info_to_impl_map_.emplace(
+      service_worker_info, cros_window_management_ptr);
+  DCHECK(inserted);
+
+  // TODO(b/242264794): Remove once we stop running tests without an
+  // installed System Extension.
+  if (system_extension)
+    RunPendingTasks(system_extension->id, *cros_window_management_ptr);
+}
+
+void CrosWindowManagementContext::OnRegisterServiceWorker(
+    const SystemExtensionId& system_extension_id,
+    blink::ServiceWorkerStatusCode status_code) {
+  if (status_code != blink::ServiceWorkerStatusCode::kOk)
     return;
 
-  auto [it, did_insert] =
-      start_dispatched_for_extension_.insert(system_extension->id);
-  // If the id is already in the set 'start' has already been dispatched for
-  // the extension.
-  if (!did_insert)
+  GetCrosWindowManagement(
+      system_extension_id,
+      base::BindOnce([](WindowManagementImpl& cros_window_management) {
+        cros_window_management.DispatchStartEvent();
+      }));
+}
+
+void CrosWindowManagementContext::GetCrosWindowManagement(
+    const SystemExtensionId& system_extension_id,
+    base::OnceCallback<void(WindowManagementImpl&)> callback) {
+  auto& pending_callbacks = id_to_pending_callbacks_[system_extension_id];
+
+  const bool need_to_start_worker = pending_callbacks.empty();
+  pending_callbacks.push_back(std::move(callback));
+
+  if (!need_to_start_worker)
     return;
 
-  cros_window_management_ptr->DispatchStartEvent();
+  system_extensions_service_worker_manager_->StartServiceWorker(
+      system_extension_id,
+      base::BindOnce(&CrosWindowManagementContext::OnServiceWorkerStarted,
+                     weak_ptr_factory_.GetWeakPtr(), system_extension_id));
+}
+
+void CrosWindowManagementContext::OnServiceWorkerStarted(
+    const SystemExtensionId& system_extension_id,
+    StatusOrSystemExtensionsServiceWorkerInfo status_or_info) {
+  if (!status_or_info.ok()) {
+    id_to_pending_callbacks_.erase(system_extension_id);
+    return;
+  }
+
+  auto info_and_impl_it =
+      service_worker_info_to_impl_map_.find(status_or_info.value());
+  if (info_and_impl_it == service_worker_info_to_impl_map_.end())
+    return;
+
+  RunPendingTasks(system_extension_id, *info_and_impl_it->second);
+}
+
+void CrosWindowManagementContext::RunPendingTasks(
+    const SystemExtensionId& system_extension_id,
+    WindowManagementImpl& window_management_impl) {
+  std::vector<base::OnceCallback<void(WindowManagementImpl&)>> callbacks;
+
+  std::swap(callbacks, id_to_pending_callbacks_[system_extension_id]);
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(window_management_impl);
+  }
 }
 
 }  // namespace ash
