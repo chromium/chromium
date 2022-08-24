@@ -32,6 +32,7 @@ static const char kContentHintStringVideoText[] = "text";
 
 class AudioSourceProvider;
 class ImageCapture;
+class MediaConstraints;
 class MediaTrackCapabilities;
 class MediaTrackConstraints;
 class MediaStream;

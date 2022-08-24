@@ -41,8 +41,6 @@ class MockMediaStreamComponent
   MOCK_METHOD1(SetEnabled, void(bool));
   MOCK_METHOD0(ContentHint, WebMediaStreamTrack::ContentHintType());
   MOCK_METHOD1(SetContentHint, void(WebMediaStreamTrack::ContentHintType));
-  MOCK_CONST_METHOD0(Constraints, const MediaConstraints&());
-  MOCK_METHOD1(SetConstraints, void(const MediaConstraints&));
   MOCK_CONST_METHOD0(GetPlatformTrack, MediaStreamTrackPlatform*());
   MOCK_METHOD1(SetPlatformTrack,
                void(std::unique_ptr<MediaStreamTrackPlatform>));
