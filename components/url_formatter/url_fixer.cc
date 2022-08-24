@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/i18n/char_iterator.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
@@ -491,10 +492,13 @@ std::string SegmentURLInternal(std::string* text, url::Parsed* parts) {
 
   // We need to add a scheme in order for ParseStandardURL to be happy.
   // Find the first non-whitespace character.
-  std::string::iterator first_nonwhite = text->begin();
-  while ((first_nonwhite != text->end()) &&
-         base::IsUnicodeWhitespace(*first_nonwhite))
-    ++first_nonwhite;
+  std::string::iterator first_nonwhite = text->end();
+  for (base::i18n::UTF8CharIterator iter(*text); !iter.end(); iter.Advance()) {
+    if (!base::IsUnicodeWhitespace(iter.get())) {
+      first_nonwhite = text->begin() + iter.array_pos();
+      break;
+    }
+  }
 
   // Construct the text to parse by inserting the scheme.
   std::string inserted_text(scheme);

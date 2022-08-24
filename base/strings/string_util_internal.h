@@ -149,7 +149,7 @@ std::basic_string<CharT> CollapseWhitespaceT(
 
   size_t chars_written = 0;
   for (auto c : text) {
-    if (IsUnicodeWhitespace(c)) {
+    if (IsWhitespace(c)) {
       if (!in_whitespace) {
         // Reduce all whitespace sequences to a single space.
         in_whitespace = true;

@@ -70,7 +70,7 @@ bool GetDeclarationValue(const base::StringPiece& line,
   std::string temp(line.data() + index + prefix.length(),
                    line.length() - index - prefix.length());
 
-  if (temp.empty() || !base::IsUnicodeWhitespace(temp[0]))
+  if (temp.empty() || !base::IsAsciiWhitespace(temp[0]))
     return false;
 
   base::TrimWhitespaceASCII(temp, base::TRIM_ALL, value);

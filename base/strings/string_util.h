@@ -376,7 +376,12 @@ BASE_EXPORT bool EndsWith(
 // library versions will change based on locale).
 template <typename Char>
 inline bool IsAsciiWhitespace(Char c) {
-  return c == ' ' || c == '\r' || c == '\n' || c == '\t' || c == '\f';
+  // kWhitespaceASCII is a null-terminated string.
+  for (const char* cur = kWhitespaceASCII; *cur; ++cur) {
+    if (*cur == c)
+      return true;
+  }
+  return false;
 }
 template <typename Char>
 inline bool IsAsciiAlpha(Char c) {
@@ -421,17 +426,33 @@ inline char HexDigitToInt(char16_t c) {
   return HexDigitToInt(static_cast<char>(c));
 }
 
-// Returns true if it's a Unicode whitespace character.
-template <typename Char>
+// Returns whether `c` is a Unicode whitespace character.
+// This cannot be used on eight-bit characters, since if they are ASCII you
+// should call IsAsciiWhitespace(), and if they are from a UTF-8 string they may
+// be individual units of a multi-unit code point.  Convert to 16- or 32-bit
+// values known to hold the full code point before calling this.
+template <typename Char, typename = std::enable_if_t<(sizeof(Char) > 1)>>
 inline bool IsUnicodeWhitespace(Char c) {
-  // kWhitespaceWide is a NUL-terminated string
+  // kWhitespaceWide is a null-terminated string.
   for (const auto* cur = kWhitespaceWide; *cur; ++cur) {
     if (static_cast<typename std::make_unsigned_t<wchar_t>>(*cur) ==
         static_cast<typename std::make_unsigned_t<Char>>(c))
       return true;
   }
   return false;
-};
+}
+
+// DANGEROUS: Assumes ASCII or not base on the size of `Char`.  You should
+// probably be explicitly calling IsUnicodeWhitespace() or IsAsciiWhitespace()
+// instead!
+template <typename Char>
+inline bool IsWhitespace(Char c) {
+  if constexpr (sizeof(Char) > 1) {
+    return IsUnicodeWhitespace(c);
+  } else {
+    return IsAsciiWhitespace(c);
+  }
+}
 
 // Return a byte string in human-readable format with a unit suffix. Not
 // appropriate for use in any UI; use of FormatBytes and friends in ui/base is
