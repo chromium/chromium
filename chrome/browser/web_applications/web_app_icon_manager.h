@@ -89,15 +89,14 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
   void ReadIcons(const AppId& app_id,
                  IconPurpose purpose,
                  const SortedSizesPx& icon_sizes,
-                 ReadIconsCallback callback) const;
+                 ReadIconsCallback callback);
 
   // TODO (crbug.com/1102701): Callback with const ref instead of value.
   using ReadIconBitmapsCallback =
       base::OnceCallback<void(IconBitmaps icon_bitmaps)>;
   // Reads all icon bitmaps for an app. Returns empty |icon_bitmaps| in
   // |callback| if IO error.
-  void ReadAllIcons(const AppId& app_id,
-                    ReadIconBitmapsCallback callback) const;
+  void ReadAllIcons(const AppId& app_id, ReadIconBitmapsCallback callback);
 
   using ReadShortcutsMenuIconsCallback = base::OnceCallback<void(
       ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps)>;
@@ -106,7 +105,7 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
   // as that of its corresponding shortcut in the manifest's shortcuts vector.
   // Returns empty vector in |callback| if we hit any error.
   void ReadAllShortcutsMenuIcons(const AppId& app_id,
-                                 ReadShortcutsMenuIconsCallback callback) const;
+                                 ReadShortcutsMenuIconsCallback callback);
 
   using ReadIconWithPurposeCallback =
       base::OnceCallback<void(IconPurpose, SkBitmap)>;
@@ -116,7 +115,7 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
   void ReadSmallestIcon(const AppId& app_id,
                         const std::vector<IconPurpose>& purposes,
                         SquareSizePx min_size_in_px,
-                        ReadIconWithPurposeCallback callback) const;
+                        ReadIconWithPurposeCallback callback);
 
   using ReadCompressedIconWithPurposeCallback =
       base::OnceCallback<void(IconPurpose, std::vector<uint8_t> data)>;
@@ -127,13 +126,13 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
       const AppId& app_id,
       const std::vector<IconPurpose>& purposes,
       SquareSizePx min_size_in_px,
-      ReadCompressedIconWithPurposeCallback callback) const;
+      ReadCompressedIconWithPurposeCallback callback);
 
   using ReadIconCallback = base::OnceCallback<void(SkBitmap)>;
   // Convenience method for |ReadSmallestIcon| with IconPurpose::ANY only.
   void ReadSmallestIconAny(const AppId& app_id,
                            SquareSizePx min_icon_size,
-                           ReadIconCallback callback) const;
+                           ReadIconCallback callback);
 
   using ReadCompressedIconCallback =
       base::OnceCallback<void(std::vector<uint8_t> data)>;
@@ -141,7 +140,7 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
   // only.
   void ReadSmallestCompressedIconAny(const AppId& app_id,
                                      SquareSizePx min_icon_size,
-                                     ReadCompressedIconCallback callback) const;
+                                     ReadCompressedIconCallback callback);
 
   // Returns a square icon of gfx::kFaviconSize px, or an empty bitmap if not
   // found.
@@ -161,7 +160,7 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
   void ReadIconAndResize(const AppId& app_id,
                          IconPurpose purpose,
                          SquareSizePx desired_icon_size,
-                         ReadIconsCallback callback) const;
+                         ReadIconsCallback callback);
 
   // Reads multiple densities of the icon for each supported UI scale factor.
   // See ui/base/layout.h. Returns null image in |callback| if no icons found
@@ -179,6 +178,9 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
   // flag is enabled to be used by: chrome://web-app-internals
   const std::vector<std::string>* error_log() const { return error_log_.get(); }
   std::vector<std::string>* error_log() { return error_log_.get(); }
+
+  base::WeakPtr<const WebAppIconManager> GetWeakPtr() const;
+  base::WeakPtr<WebAppIconManager> GetWeakPtr();
 
  private:
   static void WrapReadIconWithPurposeCallback(

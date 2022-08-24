@@ -96,11 +96,10 @@ base::FilePath GetDataFilePath(const base::FilePath& relative_path,
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-void ExpectInitialManifestFieldsFromBasicWebApp(
-    const WebAppIconManager& icon_manager,
-    const WebApp* web_app,
-    const GURL& expect_start_url,
-    const GURL& expect_scope) {
+void ExpectInitialManifestFieldsFromBasicWebApp(WebAppIconManager& icon_manager,
+                                                const WebApp* web_app,
+                                                const GURL& expect_start_url,
+                                                const GURL& expect_scope) {
   // Manifest fields:
   EXPECT_EQ(web_app->untranslated_name(), "Basic web app");
   EXPECT_EQ(web_app->start_url().spec(), expect_start_url);
@@ -195,7 +194,7 @@ class PreinstalledWebAppManagerBrowserTestBase
     return WebAppProvider::GetForTest(browser()->profile())->registrar();
   }
 
-  const WebAppIconManager& icon_manager() {
+  WebAppIconManager& icon_manager() {
     return WebAppProvider::GetForTest(browser()->profile())->icon_manager();
   }
 

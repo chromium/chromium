@@ -98,7 +98,7 @@ void ExpectInitialIconInfosFromWebAppInstallInfo(
 }
 
 void ExpectInitialManifestFieldsFromWebAppInstallInfo(
-    const web_app::WebAppIconManager& icon_manager,
+    web_app::WebAppIconManager& icon_manager,
     const web_app::WebApp* web_app,
     const GURL& url) {
   // Manifest fields:
@@ -239,7 +239,7 @@ class ApkWebAppInstallerBrowserTest
     return ApkWebAppService::Get(browser()->profile());
   }
 
-  const web_app::WebAppIconManager& icon_manager() {
+  web_app::WebAppIconManager& icon_manager() {
     return web_app::WebAppProvider::GetForTest(browser()->profile())
         ->icon_manager();
   }

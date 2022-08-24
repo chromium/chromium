@@ -296,7 +296,7 @@ void IconManagerStartAndAwaitFaviconMonochrome(WebAppIconManager& icon_manager,
   run_loop.Run();
 }
 
-SkColor IconManagerReadAppIconPixel(const WebAppIconManager& icon_manager,
+SkColor IconManagerReadAppIconPixel(WebAppIconManager& icon_manager,
                                     const AppId& app_id,
                                     SquareSizePx size_px,
                                     int x,

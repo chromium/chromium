@@ -391,7 +391,7 @@ base::FilePath GetShortcutProfile(base::FilePath shortcut_path) {
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-bool IconManagerCheckIconTopLeftColor(const WebAppIconManager& icon_manager,
+bool IconManagerCheckIconTopLeftColor(WebAppIconManager& icon_manager,
                                       const AppId& app_id,
                                       std::vector<int> sizes_px,
                                       SkColor expected_icon_pixel_color) {

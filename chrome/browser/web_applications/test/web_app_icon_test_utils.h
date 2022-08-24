@@ -115,7 +115,7 @@ void IconManagerStartAndAwaitFaviconMonochrome(WebAppIconManager& icon_manager,
                                                const AppId& app_id);
 
 // Synchronous read of an app icon pixel.
-SkColor IconManagerReadAppIconPixel(const WebAppIconManager& icon_manager,
+SkColor IconManagerReadAppIconPixel(WebAppIconManager& icon_manager,
                                     const AppId& app_id,
                                     SquareSizePx size_px,
                                     int x = 0,
