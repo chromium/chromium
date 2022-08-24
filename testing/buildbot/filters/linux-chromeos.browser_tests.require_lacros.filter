@@ -47,3 +47,5 @@ VpnExtensionObserverBrowserTest*
 -ChromeVoxUserActionMonitorTest.Gestures
 # TODO(crbug.com/1339456) Disabled when switch to LacrosOnly.
 -DesksTemplatesClientLacrosTest.SystemUILaunchBrowser
+# TODO(crbug.com/1356103) Disabled when switch to LacrosOnly.
+-SwitchAccessPointScanManagerTest.PointScanRightClick
