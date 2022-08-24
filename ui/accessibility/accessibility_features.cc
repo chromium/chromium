@@ -106,15 +106,6 @@ bool IsSelectiveUIAEnablementEnabled() {
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-const base::Feature kMagnifierContinuousMouseFollowingModeSetting{
-    "MagnifierContinuousMouseFollowingModeSetting",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
-bool IsMagnifierContinuousMouseFollowingModeSettingEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kMagnifierContinuousMouseFollowingModeSetting);
-}
-
 const base::Feature kDockedMagnifierResizing{"DockedMagnifierResizing",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 

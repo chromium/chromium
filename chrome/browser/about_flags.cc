@@ -4903,13 +4903,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      SINGLE_VALUE_TYPE(
          ::switches::kEnableExperimentalAccessibilitySwitchAccessText)},
-    {"enable-magnifier-continuous-mouse-following-mode-setting",
-     flag_descriptions::kMagnifierContinuousMouseFollowingModeSettingName,
-     flag_descriptions::
-         kMagnifierContinuousMouseFollowingModeSettingDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         features::kMagnifierContinuousMouseFollowingModeSetting)},
     {"enable-docked-magnifier-resizing",
      flag_descriptions::kDockedMagnifierResizingName,
      flag_descriptions::kDockedMagnifierResizingDescription, kOsCrOS,

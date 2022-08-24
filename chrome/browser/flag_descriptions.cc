@@ -5307,13 +5307,6 @@ const char kExperimentalAccessibilitySwitchAccessTextDescription[] =
     "Enable experimental or in-progress Switch Access features for improved "
     "text input";
 
-const char kMagnifierContinuousMouseFollowingModeSettingName[] =
-    "Enable ability to choose continuous mouse following mode in Magnifier "
-    "settings";
-const char kMagnifierContinuousMouseFollowingModeSettingDescription[] =
-    "Enable feature which adds ability to choose new continuous mouse "
-    "following mode in Magnifier settings.";
-
 const char kDockedMagnifierResizingName[] =
     "Enable ability to resize Docked Magnifier";
 const char kDockedMagnifierResizingDescription[] =

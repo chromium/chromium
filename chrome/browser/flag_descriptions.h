@@ -3026,9 +3026,6 @@ extern const char kExperimentalAccessibilityGoogleTtsLanguagePacksDescription[];
 extern const char kExperimentalAccessibilitySwitchAccessTextName[];
 extern const char kExperimentalAccessibilitySwitchAccessTextDescription[];
 
-extern const char kMagnifierContinuousMouseFollowingModeSettingName[];
-extern const char kMagnifierContinuousMouseFollowingModeSettingDescription[];
-
 extern const char kDockedMagnifierResizingName[];
 extern const char kDockedMagnifierResizingDescription[];
 

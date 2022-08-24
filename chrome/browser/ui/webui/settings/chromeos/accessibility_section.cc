@@ -448,10 +448,6 @@ bool IsLiveCaptionEnabled() {
   return captions::IsLiveCaptionFeatureSupported();
 }
 
-bool IsMagnifierContinuousMouseFollowingModeSettingEnabled() {
-  return ::features::IsMagnifierContinuousMouseFollowingModeSettingEnabled();
-}
-
 bool IsAccessibilityOSSettingsVisibilityEnabled() {
   return ::features::IsAccessibilityOSSettingsVisibilityEnabled();
 }
@@ -916,10 +912,6 @@ void AccessibilitySection::AddLoadTimeData(
 
   html_source->AddString("tabletModeShelfNavigationButtonsLearnMoreUrl",
                          chrome::kTabletModeGesturesLearnMoreURL);
-
-  html_source->AddBoolean(
-      "isMagnifierContinuousMouseFollowingModeSettingEnabled",
-      IsMagnifierContinuousMouseFollowingModeSettingEnabled());
 
   html_source->AddBoolean("isAccessibilityOSSettingsVisibilityEnabled",
                           IsAccessibilityOSSettingsVisibilityEnabled());

@@ -226,15 +226,6 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
       },
 
       /** @protected */
-      isMagnifierContinuousMouseFollowingModeSettingEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'isMagnifierContinuousMouseFollowingModeSettingEnabled');
-        },
-      },
-
-      /** @protected */
       isAccessibilityOSSettingsVisibilityEnabled_: {
         type: Boolean,
         value() {

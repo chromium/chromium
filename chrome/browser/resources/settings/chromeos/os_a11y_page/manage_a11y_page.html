@@ -107,16 +107,12 @@
     <settings-radio-group id="screenMagnifierMouseFollowingModeRadioGroup"
         pref="{{prefs.settings.a11y.screen_magnifier_mouse_following_mode}}"
         class="sub-item">
-      <template
-          is="dom-if"
-          if="[[isMagnifierContinuousMouseFollowingModeSettingEnabled_]]">
-        <controlled-radio-button
-            id="screenMagnifierMouseFollowingModeContinuous"
-            name="[[screenMagnifierMouseFollowingModePrefValues_.CONTINUOUS]]"
-            pref="[[prefs.settings.a11y.screen_magnifier_mouse_following_mode]]"
-            label="$i18n{screenMagnifierMouseFollowingModeContinuous}">
-        </controlled-radio-button>
-      </template>
+      <controlled-radio-button
+          id="screenMagnifierMouseFollowingModeContinuous"
+          name="[[screenMagnifierMouseFollowingModePrefValues_.CONTINUOUS]]"
+          pref="[[prefs.settings.a11y.screen_magnifier_mouse_following_mode]]"
+          label="$i18n{screenMagnifierMouseFollowingModeContinuous}">
+      </controlled-radio-button>
       <controlled-radio-button
           id="screenMagnifierMouseFollowingModeCentered"
           name="[[screenMagnifierMouseFollowingModePrefValues_.CENTERED]]"

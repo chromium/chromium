@@ -2509,11 +2509,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-magnifier-continuous-mouse-following-mode-setting",
-    "owners": [ "josiahk", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 98
-  },
-  {
     "name": "enable-managed-configuration-web-api",
     "owners": [ "apotapchuk" ],
     "expiry_milestone": 92

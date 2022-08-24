@@ -87,15 +87,6 @@ AX_BASE_EXPORT bool IsSelectiveUIAEnablementEnabled();
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Enables ability to choose new continuous mouse following mode in Magnifier
-// settings.
-AX_BASE_EXPORT extern const base::Feature
-    kMagnifierContinuousMouseFollowingModeSetting;
-
-// Returns true if the feature to allow choosing the new continuous mouse
-// following mode in Magnifier settings is enabled.
-AX_BASE_EXPORT bool IsMagnifierContinuousMouseFollowingModeSettingEnabled();
-
 // Enables ability to resize Docked Magnifier.
 AX_BASE_EXPORT extern const base::Feature kDockedMagnifierResizing;
 

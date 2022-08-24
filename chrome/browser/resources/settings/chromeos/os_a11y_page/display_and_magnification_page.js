@@ -107,15 +107,6 @@ class SettingsDisplayAndMagnificationElement extends
         },
       },
 
-      /** @protected */
-      isMagnifierContinuousMouseFollowingModeSettingEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'isMagnifierContinuousMouseFollowingModeSettingEnabled');
-        },
-      },
-
       /**
        * Whether the user is in kiosk mode.
        * @protected
