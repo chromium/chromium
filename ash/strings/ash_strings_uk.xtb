@@ -671,6 +671,7 @@
 <translation id="479989351350248267">пошук</translation>
 <translation id="4804818685124855865">Від'єднатися</translation>
 <translation id="4814539958450445987">Екран входу</translation>
+<translation id="481455355267255546">Найближчі події</translation>
 <translation id="4831034276697007977">Вимкнути автоматичні кліки?</translation>
 <translation id="4849058404725798627">Підсвічувати об’єкт, вибраний на клавіатурі</translation>
 <translation id="485592688953820832">Нічого не робити (призупинити)</translation>
@@ -852,6 +853,7 @@
 <translation id="5860033963881614850">Вимк.</translation>
 <translation id="5860491529813859533">Увімкнути</translation>
 <translation id="5867217927013474703">Збір інформації про мережу</translation>
+<translation id="5867606971598166637">Системний адміністратор записує ваші екрани</translation>
 <translation id="5876666360658629066">Введіть батьківський код</translation>
 <translation id="5881540930187678962">Налаштуйте функцію "Керування телефоном" пізніше</translation>
 <translation id="5887954372087850114">Вікно "<ph name="WINDOW_TITLE" />" призначено робочому столу "<ph name="DESK_TITLE" />". Його призначення для всіх інших робочих столів скасовано</translation>
@@ -1013,6 +1015,7 @@
 <translation id="6757237461819837179">Медіаконтент не відтворюється</translation>
 <translation id="6777216307882431711">Живлення підключених пристроїв USB-C</translation>
 <translation id="6786750046913594791">Закрити папку</translation>
+<translation id="6787595647772650851">Відновити останній сеанс</translation>
 <translation id="6790428901817661496">Відтворити</translation>
 <translation id="6801878137098616817">Змінено нещодавно</translation>
 <translation id="6803622936009808957">Не вдалося дублювати зображення екранів, оскільки не знайдено підтримувані значення роздільної здатності. Натомість запущено режим розширеного робочого столу.</translation>
@@ -1261,6 +1264,7 @@
 <translation id="8214996719228530800">Версія Canary</translation>
 <translation id="8219451629189078428">Не вимикайте та не відключайте Chromebook від живлення впродовж цього часу. Переконайтеся, що кабелі зарядного пристрою або адаптера надійно під'єднано до вашого пристрою та розетки. Не вимикайте Chromebook.</translation>
 <translation id="8236042855478648955">Час зробити перерву</translation>
+<translation id="8246282815785366524">З поверненням, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />, рівень заряду акумулятора телефона – <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, додаток</translation>
 <translation id="8255234195843591763">Щоб оновити, скиньте налаштування</translation>

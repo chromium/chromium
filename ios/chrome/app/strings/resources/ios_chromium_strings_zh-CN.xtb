@@ -41,6 +41,7 @@
 <translation id="2918709798697875261">贵组织要求您保持已退出 Chromium 的状态。</translation>
 <translation id="2942241131342758843">默认使用 Chromium 来打开链接、在微件中执行搜索以及在其他应用中自动填充密码</translation>
 <translation id="2977470724722393594">Chromium 已是最新版本</translation>
+<translation id="3102849287235003384">若要在所有网站上退出您的 Google 帐号，请<ph name="BEGIN_LINK" />退出 Chromium<ph name="END_LINK" />。</translation>
 <translation id="3256316712990552818">已复制到 Chromium</translation>
 <translation id="3344973607274501920">Chromium 无法检查您的密码。请尝试检查您的互联网连接。</translation>
 <translation id="3472200483164753384">在 Chromium Canary 版中不受支持</translation>
@@ -66,6 +67,7 @@
 <translation id="5308226104666789935">Chromium 无法检查是否有更新</translation>
 <translation id="5396916991083608703">将 Chromium 设为默认浏览器？</translation>
 <translation id="5521125884468363740">要查看您在其他设备上用 Chromium 打开的标签页，请登录帐号并开启同步功能</translation>
+<translation id="5522297504975449419">您将无法再使用某些 Chromium 功能。</translation>
 <translation id="5573014823074921752">Chromium 提示。要查看更多的标签页选项，请轻触并按住工具栏（位于屏幕底部或顶部）中的“显示标签页”按钮。</translation>
 <translation id="5700709190537129682">Chromium 无法检查您的密码</translation>
 <translation id="5777187867430702742">Chromium 网页</translation>

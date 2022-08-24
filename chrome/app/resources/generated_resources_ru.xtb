@@ -265,7 +265,6 @@
 <translation id="1240903469550363138">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст ваше имя, адрес электронной почты и фото профиля на этот сайт. Ознакомьтесь с его <ph name="BEGIN_LINK1" />политикой конфиденциальности<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />условиями использования<ph name="END_LINK2" />.</translation>
 <translation id="1241066500170667906">Выбрать статус эксперимента "<ph name="EXPERIMENT_NAME" />"</translation>
 <translation id="124116460088058876">Другие языки</translation>
-<translation id="1241753985463165747">Просмотр и изменение всех ваших данных на текущем сайте</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> предлагает сбросить настройки</translation>
 <translation id="1243314992276662751">Загрузить</translation>
 <translation id="1243436884219965846">Проверить пароли</translation>
@@ -725,6 +724,7 @@
 <translation id="1676902103953506022">Учетные данные пользователя <ph name="USERNAME" /> в домене <ph name="DOMAIN" /></translation>
 <translation id="1677306805708094828">Невозможно добавить <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">Ещё <ph name="TIME" /></translation>
+<translation id="1678794218766467608">Блокировать при переходе в спящий режим и закрытии крышки</translation>
 <translation id="1679068421605151609">Инструменты разработчика</translation>
 <translation id="1679810534535368772">Закрыть страницу?</translation>
 <translation id="167983332380191032">От сервиса управления получен недействительный код HTTP.</translation>
@@ -2553,6 +2553,7 @@
 <translation id="3406290648907941085">Разрешить сайтам использовать устройства и данные виртуальной реальности</translation>
 <translation id="3406396172897554194">Укажите язык или способ ввода</translation>
 <translation id="3406605057700382950">Показывать панель &amp;закладок</translation>
+<translation id="3408849592677950451">{NUM_PASSWORDS,plural, =1{В Google Менеджер паролей импортирован 1 пароль для <ph name="USER_EMAIL" />.}one{В Google Менеджер паролей импортирован {NUM_PASSWORDS} пароль для <ph name="USER_EMAIL" />.}few{В Google Менеджер паролей импортировано {NUM_PASSWORDS} пароля для <ph name="USER_EMAIL" />.}many{В Google Менеджер паролей импортировано {NUM_PASSWORDS} паролей для <ph name="USER_EMAIL" />.}other{В Google Менеджер паролей импортировано {NUM_PASSWORDS} пароля для <ph name="USER_EMAIL" />.}}</translation>
 <translation id="3409785640040772790">Карты</translation>
 <translation id="3412265149091626468">Перейти к выделенному</translation>
 <translation id="3413122095806433232">Издатели центра сертификации: <ph name="LOCATION" /></translation>
@@ -3307,6 +3308,7 @@
 <translation id="4101352914005291489">Скрытое имя сети</translation>
 <translation id="4102469565336584882">Недействительный код. Запись должна быть в формате LPA: 1$&lt;smdp address&gt;$&lt;activation code&gt;.</translation>
 <translation id="4102906002417106771">Перезапустить и использовать Powerwash</translation>
+<translation id="4104163789986725820">Э&amp;кспорт...</translation>
 <translation id="4107048419833779140">Идентификация и извлечение запоминающих устройств</translation>
 <translation id="4108314971463891922">Подписаться</translation>
 <translation id="4109135793348361820">Перенести окно на рабочий стол пользователя <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -3736,6 +3738,7 @@
 <translation id="4541123282641193691">Не удалось подтвердить аккаунт. Повторите попытку или перезагрузите устройство Chromebook.</translation>
 <translation id="4541662893742891060">Не удалось подключиться к этому профилю. За технической поддержкой обратитесь к своему оператору.</translation>
 <translation id="4541706525461326392">Профиль удаляется. Это может занять несколько минут.</translation>
+<translation id="4542332958571335077">{NUM_PASSWORDS,plural, =1{В Google Менеджер паролей на этом устройстве импортирован 1 пароль.}one{В Google Менеджер паролей на этом устройстве импортирован {NUM_PASSWORDS} пароль.}few{В Google Менеджер паролей на этом устройстве импортировано {NUM_PASSWORDS} пароля.}many{В Google Менеджер паролей на этом устройстве импортировано {NUM_PASSWORDS} паролей.}other{В Google Менеджер паролей на этом устройстве импортировано {NUM_PASSWORDS} пароля.}}</translation>
 <translation id="4542520061254486227">Просмотр данных на сайтах <ph name="WEBSITE_1" /> и <ph name="WEBSITE_2" /></translation>
 <translation id="4543778593405494224">Менеджер сертификатов</translation>
 <translation id="4544174279960331769">Аватар по умолчанию (синий)</translation>
@@ -3791,6 +3794,7 @@
 <translation id="4586275095964870617">Не удалось открыть страницу <ph name="URL" /> в альтернативном браузере. Обратитесь к системному администратору.</translation>
 <translation id="4589713469967853491">Журналы записаны в каталоге "Скачанные файлы".</translation>
 <translation id="4590324241397107707">Хранилище для базы данных</translation>
+<translation id="459204634473266369">В аккаунте <ph name="PRIMARY_EMAIL" /> нет сохраненных устройств.</translation>
 <translation id="4592891116925567110">Приложение для рисования с помощью стилуса</translation>
 <translation id="4593021220803146968">&amp;Перейти по адресу <ph name="URL" /></translation>
 <translation id="4594577641390224176">Ищете информацию о системе? Перейдите на страницу</translation>
@@ -4349,6 +4353,7 @@
 <translation id="5155327081870541046">В адресной строке введите быструю команду для сайта, на котором нужно выполнить поиск, например @bookmarks. Затем нажмите нужное сочетание клавиш и добавьте поисковый запрос.</translation>
 <translation id="5156638757840305347">Выделять текстовый курсор, когда он движется или появляется</translation>
 <translation id="5157635116769074044">Прикрепить эту страницу к экрану запуска…</translation>
+<translation id="5158206172605340248">Меню диакритических знаков закрыто.</translation>
 <translation id="5159094275429367735">Настроить Crostini</translation>
 <translation id="5159419673777902220">Кто-то из твоих родителей отключил разрешения для этого расширения</translation>
 <translation id="5159643365935452998">Автоматическое удаление данных</translation>
@@ -5282,6 +5287,7 @@
 <translation id="6065289257230303064">Атрибуты каталога субъекта сертификата</translation>
 <translation id="6066794465984119824">Хеш изображения не задан.</translation>
 <translation id="6069464830445383022">Для входа в Chromebook используется ваш обычный аккаунт Google</translation>
+<translation id="6070311415473175157">Выберите область изображения для поиска</translation>
 <translation id="6071181508177083058">подтвердите пароль</translation>
 <translation id="6071576563962215370">Системе не удалось заблокировать атрибуты устройства на время установки.</translation>
 <translation id="6072442788591997866">На этом устройстве запрещено использовать <ph name="APP_NAME" />. Обратитесь к администратору. Код ошибки: <ph name="ERROR_CODE" />.</translation>
@@ -5499,7 +5505,6 @@
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6278776436938569440">Изменить местоположение</translation>
 <translation id="6279183038361895380">Чтобы показать курсор, нажмите |<ph name="ACCELERATOR" />|</translation>
-<translation id="6279595948631688299">Экспорт выбранного сертификата</translation>
 <translation id="6280215091796946657">Войти в другой аккаунт</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Превышено ограничение. Можно напечатать не более 1 листа бумаги.}one{Превышено ограничение. Можно напечатать не более {COUNT} листа бумаги.}few{Превышено ограничение. Можно напечатать не более {COUNT} листов бумаги.}many{Превышено ограничение. Можно напечатать не более {COUNT} листов бумаги.}other{Превышено ограничение. Можно напечатать не более {COUNT} листа бумаги.}}</translation>
@@ -6227,6 +6232,7 @@
 <translation id="6968288415730398122">Чтобы настроить блокировку экрана, введите пароль</translation>
 <translation id="6969047215179982698">Выключить Обмен с окружением</translation>
 <translation id="6970480684834282392">Тип запуска</translation>
+<translation id="6970543303783413625">Не удалось выполнить импорт. Максимальное число паролей, которые можно импортировать за один раз: <ph name="COUNT" />.</translation>
 <translation id="6970856801391541997">Печать выбранных страниц</translation>
 <translation id="6970861306198150268">Не забудьте сохранить текущий пароль для этого сайта.</translation>
 <translation id="6972180789171089114">Аудио/видео</translation>
@@ -6458,6 +6464,7 @@
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Закрыть страницу}one{Закрыть страницы}few{Закрыть страницы}many{Закрыть страницы}other{Закрыть страницы}}</translation>
 <translation id="7207457272187520234">Отправка данных об использовании и диагностике. Сейчас это устройство автоматически отправляет в Google диагностическую информацию, сведения об использовании приложений и самого устройства. Эти сведения помогут нам повысить стабильность приложений и внести другие улучшения. Некоторые агрегированные данные пригодятся партнерам Google, например разработчикам Android. Эта настройка принудительно применяется владельцем. Если запись дополнительной истории приложений и веб-поиска включена, эта информация может сохраняться в вашем аккаунте.</translation>
 <translation id="7207631048330366454">Поиск приложений</translation>
+<translation id="7210471695184432500">Чтобы импортировать пароли в Google Менеджер паролей на этом устройстве, загрузите их в формате CSV.</translation>
 <translation id="7210499381659830293">Принтеры, работающие через расширение</translation>
 <translation id="7211783048245131419">Переключатели не назначены.</translation>
 <translation id="7212097698621322584">Сначала введите текущий PIN-код. Если вы его не знаете, сбросьте настройки электронного ключа и установите новый PIN-код.</translation>
@@ -6482,6 +6489,7 @@
 <translation id="7235716375204803342">Загрузка действий...</translation>
 <translation id="7235737137505019098">На электронном ключе не хватает места для нового аккаунта.</translation>
 <translation id="7235873936132740888">Когда вы нажимаете на определенные типы ссылок, сайты могут выполнять специальные задачи, например создавать новое сообщение в почтовом клиенте или добавлять мероприятие в календарь.</translation>
+<translation id="7238609589076576185">Диакритический знак вставлен.</translation>
 <translation id="7239108166256782787">Передача данных с устройства "<ph name="DEVICE_NAME" />" остановлена</translation>
 <translation id="7240339475467890413">Подключиться к новой точке доступа?</translation>
 <translation id="7241389281993241388">Войдите в <ph name="TOKEN_NAME" />, чтобы импортировать сертификат клиента.</translation>
@@ -7118,6 +7126,7 @@
 <translation id="7842692330619197998">Чтобы создать аккаунт, перейдите на страницу g.co/ChromeEnterpriseAccount.</translation>
 <translation id="78427265591841839">Искать по области страницы, используя <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="784273751836026224">Удалить Linux</translation>
+<translation id="7842851769217535639">Выберите область страницы для поиска</translation>
 <translation id="7843786652787044762">Войти в сервис "<ph name="WEB_DRIVE" />"</translation>
 <translation id="7844992432319478437">Утилита diff обновляется</translation>
 <translation id="7846634333498149051">Клавиатура</translation>
@@ -7173,6 +7182,7 @@
 <translation id="7893008570150657497">Доступ к фотографиям, музыке и другим медиафайлам на вашем компьютере</translation>
 <translation id="7893153962594818789">На устройстве <ph name="DEVICE_TYPE" /> отключен Bluetooth. Введите пароль и включите Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (по умолчанию)</translation>
+<translation id="7896292361319775586">Сохранить файл "<ph name="FILE" />"?</translation>
 <translation id="789722939441020330">Запретить сайтам автоматически скачивать несколько файлов</translation>
 <translation id="7897900149154324287">В будущем, прежде чем отключать накопитель, воспользуйтесь командой "Извлечь" в приложении "Файлы", чтобы не потерять данные.</translation>
 <translation id="7898725031477653577">Всегда переводить</translation>
@@ -7321,6 +7331,7 @@
 <translation id="8030852056903932865">Одобрить</translation>
 <translation id="8032244173881942855">Невозможно транслировать вкладку</translation>
 <translation id="8032569120109842252">Вы подписаны</translation>
+<translation id="8033023935541439900">Меню диакритических знаков открыто. С помощью клавиш со стрелками влево и вправо выберите символ, а потом нажмите Ввод, чтобы вставить его.</translation>
 <translation id="8033827949643255796">Выделено.</translation>
 <translation id="8033958968890501070">Время истекло</translation>
 <translation id="8035059678007243127">Страница возвратного кеша в режиме инкогнито: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -7513,6 +7524,7 @@
 <translation id="8206859287963243715">Сотовый</translation>
 <translation id="8208216423136871611">Не сохранять</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Новое уведомление}one{# новое уведомление}few{# новых уведомления}many{# новых уведомлений}other{# нового уведомления}}</translation>
+<translation id="821119981794423735">Чтобы импортировать пароли в Google Менеджер паролей для <ph name="USER_EMAIL" />, загрузите их в формате CSV.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Выполняется скачивание}one{Выполняется скачивание}few{Выполняется скачивание}many{Выполняется скачивание}other{Выполняется скачивание}}</translation>
 <translation id="8213449224684199188">Включён режим фотосъёмки</translation>
 <translation id="8214489666383623925">Открыть файл...</translation>
@@ -8160,7 +8172,7 @@
 <translation id="8846239054091760429">Монофонический звук, автоматические субтитры, звуки при включении и не только</translation>
 <translation id="8847523528195140327">Выйти из системы, когда обложка закрыта</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8849001918648564819">Никто</translation>
+<translation id="8849001918648564819">Скрытые</translation>
 <translation id="8849219423513870962">Отменить удаление профиля eSIM с именем "<ph name="PROFILE_NAME" />"</translation>
 <translation id="8850251000316748990">Ещё...</translation>
 <translation id="885246833287407341">Аргументы функций API</translation>
@@ -8313,6 +8325,7 @@
 <translation id="899403249577094719">URL базы сертификатов Netscape</translation>
 <translation id="899657321862108550">Синхронизация Chrome на всех устройствах</translation>
 <translation id="899676909165543803">Сканер отпечатков пальцев – это клавиша в правом нижнем углу клавиатуры. Слегка коснитесь ее любым пальцем.</translation>
+<translation id="8998078711690114234">Файлы этого типа могут быть опасны. Сохраняйте файл, только если доверяете источнику <ph name="ORIGIN" /></translation>
 <translation id="8999560016882908256">Ошибка синтаксиса раздела: <ph name="ERROR_LINE" />.</translation>
 <translation id="9003185744423389627">При подключении к серверу Диспетчера устройств произошла ошибка "<ph name="STATUS_TEXT" />" (<ph name="FAILURE_TIME" />).</translation>
 <translation id="9003647077635673607">Разрешить на всех сайтах</translation>

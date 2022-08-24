@@ -264,7 +264,6 @@
 <translation id="1240903469550363138">Շարունակելու համար <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ընկերությունը կփոխանցի ձեր անունը, էլ․ հասցեն և պրոֆիլի նկարը այս կայքին։ Ծանոթացեք այս կայքի <ph name="BEGIN_LINK1" />գաղտնիության քաղաքականությանը<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />օգտագործման պայմաններին<ph name="END_LINK2" />։</translation>
 <translation id="1241066500170667906">Ընտրեք «<ph name="EXPERIMENT_NAME" />» փորձարկման կարգավիճակը</translation>
 <translation id="124116460088058876">Այլ լեզուներ</translation>
-<translation id="1241753985463165747">Կարդալ և փոխել ձեր բոլոր տվյալներն ընթացիկ կայքում, երբ այն բացվում է</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" />-ը ցանկանում է վերակայել ձեր կարգավորումները:</translation>
 <translation id="1243314992276662751">Վերբեռնել</translation>
 <translation id="1243436884219965846">Ստուգել գաղտնաբառերը</translation>
@@ -725,6 +724,7 @@
 <translation id="1676902103953506022"><ph name="USERNAME" /> օգտատիրոջ մուտքի տվյալները <ph name="DOMAIN" /> տիրույթի համար</translation>
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" />ը չի կարող ավելացվել</translation>
 <translation id="1677472565718498478">Մնացել է <ph name="TIME" /></translation>
+<translation id="1678794218766467608">Կողպել քնի ռեժիմում, կամ երբ պատյանի շապիկը փակ է</translation>
 <translation id="1679068421605151609">Ծրագրավորողի գործիքներ</translation>
 <translation id="1679810534535368772">Իսկապե՞ս ուզում եք դուրս գալ</translation>
 <translation id="167983332380191032">Կառավարման ծառայությունն ուղարկել է HTTP-ի սխալ։</translation>
@@ -3306,6 +3306,7 @@
 <translation id="4101352914005291489">Թաքցված SSID</translation>
 <translation id="4102469565336584882">Կոդն անվավեր է։ Մուտքագրումը պետք է լինի LPA ձևաչափով՝ 1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">Վերագործարկել՝ Powerwash-ը գործարկելու համար</translation>
+<translation id="4104163789986725820">Ար&amp;տահանել…</translation>
 <translation id="4107048419833779140">Գտնել և անջատել հիշասարքերը</translation>
 <translation id="4108314971463891922">Հետևել</translation>
 <translation id="4109135793348361820">Տեղափոխել պատուհանը <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -3790,6 +3791,7 @@
 <translation id="4586275095964870617">Չհաջողվեց <ph name="URL" /> կայքը բացել այլ դիտարկիչում։ Կապվեք համակարգի ադմինիստրատորի հետ:</translation>
 <translation id="4589713469967853491">Մատյանները գրվեցին «Ներբեռնումներ» գրացուցակում։</translation>
 <translation id="4590324241397107707">Տվյալների շտեմարանի պահեստ</translation>
+<translation id="459204634473266369">Ոչ մի պահված սարք չկա <ph name="PRIMARY_EMAIL" /> հաշվում</translation>
 <translation id="4592891116925567110">Ստիլուսի միջոցով նկարելու հավելված</translation>
 <translation id="4593021220803146968">&amp;Անցնել <ph name="URL" /></translation>
 <translation id="4594577641390224176">Համակարգի մասին է՞ջն եք փնտրում։ Անցեք</translation>
@@ -4348,6 +4350,7 @@
 <translation id="5155327081870541046">Հասցեագոտում մուտքագրեք այն կայքի դյուրանցումը, որում ուզում եք որոնում կատարել, օրինակ՝ @bookmarks։ Այնուհետև սեղմեք նախընտրած ստեղնային դյուրանցումը և մուտքագրեք հիմնաբառը։</translation>
 <translation id="5156638757840305347">Նշորդն ընդգծված է, երբ այն հայտնվում կամ շարժվում է</translation>
 <translation id="5157635116769074044">Ամրացնել այս էջը մեկնարկի էկրանին…</translation>
+<translation id="5158206172605340248">Շեշտի նշանների ընտրացանկը փակվեց։</translation>
 <translation id="5159094275429367735">Կարգավորել Crostini-ն</translation>
 <translation id="5159419673777902220">Ձեր ծնողն անջատել է ընդլայնումների թույլտվությունները</translation>
 <translation id="5159643365935452998">Դիտեք տվյալների ավտոմատ ջնջման պարամետրերը</translation>
@@ -5280,6 +5283,7 @@
 <translation id="6065289257230303064">Վկայագրի սուբյեկտի գրացուցակի հատկանիշներ</translation>
 <translation id="6066794465984119824">Պատկերի հեշը կարգավորված չէ</translation>
 <translation id="6069464830445383022">Մուտք գործեք Google հաշվով</translation>
+<translation id="6070311415473175157">Ընտրեք պատկերի տարածքը՝ որոնելու համար</translation>
 <translation id="6071181508177083058">հաստատեք գաղտնաբառը</translation>
 <translation id="6071576563962215370">Համակարգին չհաջողվեց կողպել սարքի հատկանիշները տեղադրման ժամանակ:</translation>
 <translation id="6072442788591997866"><ph name="APP_NAME" /> հավելվածը թույլատրված չէ այս սարքում։ Դիմեք ձեր ադմինիստրատորին։ Սխալի կոդը՝ <ph name="ERROR_CODE" />։</translation>
@@ -5497,7 +5501,6 @@
 <translation id="6278428485366576908">Թեմա</translation>
 <translation id="6278776436938569440">Փոխել վայրը</translation>
 <translation id="6279183038361895380">Նշորդը ցուցադրելու համար սեղմեք |<ph name="ACCELERATOR" />|</translation>
-<translation id="6279595948631688299">Արտահանել նշված հավաստագիրը…</translation>
 <translation id="6280215091796946657">Մուտք գործել այլ հաշվով</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Գերազանցում է 1 թերթի սահմանաչափը}one{Գերազանցում է {COUNT} թերթի սահմանաչափը}other{Գերազանցում է {COUNT} թերթի սահմանաչափը}}</translation>
@@ -6476,6 +6479,7 @@
 <translation id="7235716375204803342">Գործողությունների բեռնում...</translation>
 <translation id="7235737137505019098">Անվտանգության բանալու վրա բավարար տարածք չկա ևս մեկ հաշիվ ստեղծելու համար:</translation>
 <translation id="7235873936132740888">Կայքերը կարող են մշակել հատուկ առաջադրանքներ, երբ սեղմում եք որոշակի տեսակի հղումների վրա (օր․՝ փոստային ծրագրում նոր հաղորդագրություն ստեղծելու կամ առցանց օրացույցում նոր միջոցառումներ ավելացնելու համար)</translation>
+<translation id="7238609589076576185">Շեշտի նշանը զետեղվեց։</translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> սարքը չեղարկել է փոխանցումը</translation>
 <translation id="7240339475467890413">Միանա՞լ նոր թեժ կետին</translation>
 <translation id="7241389281993241388">Սպասառուի վկայագիրը ներմուծելու համար մուտք գործեք <ph name="TOKEN_NAME" />:</translation>
@@ -7111,6 +7115,7 @@
 <translation id="7842692330619197998">Հաշիվ ստեղծելու համար անցեք g.co/ChromeEnterpriseAccount էջ։</translation>
 <translation id="78427265591841839">Որոնել էջի ցանկացած հատվածում <ph name="VISUAL_SEARCH_PROVIDER" /> ծառայության միջոցով</translation>
 <translation id="784273751836026224">Ապատեղադրել Լինուքսը</translation>
+<translation id="7842851769217535639">Ընտրեք էջի ցանկացած մաս՝ որոնելու համար</translation>
 <translation id="7843786652787044762">Մուտք գործել <ph name="WEB_DRIVE" /></translation>
 <translation id="7844992432319478437">Diff-ի թարմացում</translation>
 <translation id="7846634333498149051">Ստեղնաշար</translation>
@@ -7166,6 +7171,7 @@
 <translation id="7893008570150657497">Օգտագործել լուսանկարները, երաժշտությունը և այլ մեդիա նյութեր ձեր համակարգչից</translation>
 <translation id="7893153962594818789">Bluetooth-ն անջատված է <ph name="DEVICE_TYPE" /> սարքում։ Մուտքագրեք ձեր գաղտնաբառը և միացրեք Bluetooth-ը։</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (կանխադրված)</translation>
+<translation id="7896292361319775586">Պահե՞լ <ph name="FILE" /> ֆայլը</translation>
 <translation id="789722939441020330">Թույլ չտալ կայքերին ավտոմատ մի քանի ֆայլ ներբեռնել</translation>
 <translation id="7897900149154324287">Հետագայում չմոռանաք՝ նախքան կրիչն անջատելը օգտագործել Ֆայլեր հավելվածի «Հանել» կոճակը: Հակառակ դեպքում տվյալները կարող են կորել:</translation>
 <translation id="7898725031477653577">Միշտ թարգմանել</translation>
@@ -7313,6 +7319,7 @@
 <translation id="8030852056903932865">Հաստատել</translation>
 <translation id="8032244173881942855">Չհաջողվեց հեռարձակել ներդիրը:</translation>
 <translation id="8032569120109842252">Հետևում եք</translation>
+<translation id="8033023935541439900">Շեշտի նշանների ընտրացանկը բացվեց։ Ձախ և աջ սլաքների օգնությամբ ընտրեք ձեր ուզած շեշտը, այնուհետև սեղմեք Enter՝ այն զետեղելու համար։</translation>
 <translation id="8033827949643255796">ընտրվեց</translation>
 <translation id="8033958968890501070">Ժամանակը սպառվել է</translation>
 <translation id="8035059678007243127">Հետադարձ քեշի էջ ինկոգնիտո ռեժիմում՝ <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -8303,6 +8310,7 @@
 <translation id="899403249577094719">Netscape-ի վկայագրերի բազայի URL</translation>
 <translation id="899657321862108550">Ձեր Chrome-ը՝ ամենուր ձեզ հետ</translation>
 <translation id="899676909165543803">Մատնահետքերի սկաները ստեղնաշարի աջ կողմի ստեղնն է (ներքևում): Որևէ մատով թեթևակի հպեք դրան։</translation>
+<translation id="8998078711690114234">Այս տեսակի ֆայլը կարող է վտանգավոր լինել։ Պահեք այն, միայն եթե վստահում եք <ph name="ORIGIN" /> կայքին</translation>
 <translation id="8999560016882908256">Բաժնի շարահյուսության սխալ՝ <ph name="ERROR_LINE" /></translation>
 <translation id="9003185744423389627">Սարքերի կառավարիչի սերվերի միացումը ձախողվեց <ph name="FAILURE_TIME" /> «<ph name="STATUS_TEXT" />» կարգավիճակով</translation>
 <translation id="9003647077635673607">Թույլ տալ բոլոր վեբկայքերում</translation>

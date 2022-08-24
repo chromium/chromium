@@ -83,6 +83,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1197088940767939838">Orange</translation>
 <translation id="1201402288615127009">Next</translation>
 <translation id="1201895884277373915">More from this site</translation>
+<translation id="1202892408424955784">Tracked products</translation>
 <translation id="1204602502194308272">Fish and aquaria</translation>
 <translation id="1206967143813997005">Bad initial signature</translation>
 <translation id="1209206284964581585">Hide for now</translation>
@@ -264,6 +265,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1592005682883173041">Local Data Access</translation>
 <translation id="1594030484168838125">Choose</translation>
 <translation id="1596296697375291157">Thriller, crime and mystery movies</translation>
+<translation id="1599199147673445968">New card? <ph name="BEGIN_LINK" />Enter card details<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Play the Dino Run game in Chrome</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611101756749861742">Second roll</translation>
@@ -464,6 +466,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2154484045852737596">Edit card</translation>
 <translation id="2161656808144014275">Text</translation>
 <translation id="2162510787844374618">Contacting your bank…</translation>
+<translation id="2162620598375156287">Now <ph name="CURRENT_PRICE" /> on <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Check if there is a typo in <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Full Admin Access</translation>
 <translation id="2166378884831602661">This site can’t provide a secure connection</translation>
@@ -651,6 +654,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2664887757054927933">{COUNT,plural, =0{None}=1{1 password (for <ph name="DOMAIN_LIST" />)}=2{2 passwords (for <ph name="DOMAIN_LIST" />)}other{# passwords (for <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Top</translation>
 <translation id="2666117266261740852">Close other tabs or apps</translation>
+<translation id="266935134738038806">Visit site</translation>
 <translation id="2672201172023654893">Your browser is not managed.</translation>
 <translation id="2673968385134502798">Games</translation>
 <translation id="2674170444375937751">Are you sure that you want to delete these pages from your history?</translation>
@@ -763,7 +767,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3002501248619246229">Check input tray media</translation>
 <translation id="3005723025932146533">Show saved copy</translation>
 <translation id="3008447029300691911">Enter the CVC for <ph name="CREDIT_CARD" />. Once you confirm, your card details will be shared with this site.</translation>
-<translation id="3010559122411665027">List entry "<ph name="ENTRY_INDEX" />": <ph name="ERROR" /></translation>
 <translation id="3013291976881901233">MIDI devices</translation>
 <translation id="301521992641321250">Automatically blocked</translation>
 <translation id="3016780570757425217">Know your location</translation>
@@ -771,9 +774,11 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3023071826883856138">You4 (Envelope)</translation>
 <translation id="3024663005179499861">Wrong policy type</translation>
 <translation id="3029752078111257850">World news</translation>
+<translation id="3037177537145227281">Tracking price</translation>
 <translation id="3037605927509011580">Aw, Snap!</translation>
 <translation id="3041612393474885105">Certificate Information</translation>
 <translation id="305162504811187366">Chrome Remote Desktop history, including timestamps, hosts and client session ids</translation>
+<translation id="3052964831964880138"><ph name="PRICE_DROP" /> price drop on <ph name="PRODUCT_NAME" /></translation>
 <translation id="3060227939791841287">C9 (Envelope)</translation>
 <translation id="3061707000357573562">Patch Service</translation>
 <translation id="306573536155379004">Game started.</translation>
@@ -906,7 +911,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3407789382767355356">third-party sign-in</translation>
 <translation id="3409896703495473338">Manage security settings</translation>
 <translation id="3414952576877147120">Size:</translation>
-<translation id="3417660076059365994">Files that you upload or attach are sent to Google Cloud or third parties for analysis. For example, they might be scanned for sensitive data or malware.</translation>
 <translation id="3422248202833853650">Try exiting other programmes to free up memory.</translation>
 <translation id="3422472998109090673"><ph name="HOST_NAME" /> is currently unreachable.</translation>
 <translation id="3423742043356668186">System specified</translation>
@@ -1003,6 +1007,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3664782872746246217">Keywords:</translation>
 <translation id="3667704023705708645">Venture capital</translation>
 <translation id="3671540257457995106">Allow resizing?</translation>
+<translation id="3672568546897166916">Error at <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">Third roll</translation>
 <translation id="3676592649209844519">Device ID:</translation>
 <translation id="3677008721441257057">Did you mean &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
@@ -1109,7 +1114,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3969052498612555048">Can't find your code? <ph name="BEGIN_LINK" />Get new code<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Calculating...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> is blocked</translation>
-<translation id="3978338123949022456">Search mode, type a query and press Enter to search with <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="398470910934384994">Birds</translation>
 <translation id="3985750352229496475">Manage Addresses…</translation>
 <translation id="3986705137476756801">Turn off Live Caption for now</translation>
@@ -1124,8 +1128,8 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4025913568718019429">Manage Google Privacy settings button, press Enter to visit your Google Account privacy settings</translation>
 <translation id="4030383055268325496">&amp;Undo add</translation>
 <translation id="4040350669425716613">Colleges and universities</translation>
+<translation id="405399507749852140">Get alerts if the price drops on any site</translation>
 <translation id="4056223980640387499">Sepia</translation>
-<translation id="4058922952496707368">Key "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4063924980214801036">Use device unlock to confirm cards faster</translation>
 <translation id="4067098466788473230">Study grants and scholarships</translation>
 <translation id="4067263367174615723">C1 (Envelope)</translation>
@@ -1664,7 +1668,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5426179911063097041"><ph name="SITE" /> wants to send you notifications</translation>
 <translation id="5428105026674456456">Spanish</translation>
 <translation id="5430298929874300616">Remove bookmark</translation>
-<translation id="5439770059721715174">Schema validation error at "<ph name="ERROR_PATH" />": <ph name="ERROR" /></translation>
 <translation id="5443468954631487277">Reverse order face up</translation>
 <translation id="5447765697759493033">This site will not be translated</translation>
 <translation id="5452270690849572955">This <ph name="HOST_NAME" /> page can’t be found</translation>
@@ -2136,6 +2139,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6810899417690483278">Customisation ID</translation>
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">serial ports</translation>
+<translation id="6820686453637990663">CVC</translation>
 <translation id="6821175457349035766">Action and adventure movies</translation>
 <translation id="6822437859461265552">Life insurance</translation>
 <translation id="6823746213313229853">Talk radio</translation>
@@ -2202,7 +2206,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6978236010531171013">Share anyway</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Mute (default)</translation>
-<translation id="6979983982287291980">Files that you download are sent to Google Cloud or third parties for analysis. For example, they might be scanned for sensitive data or malware.</translation>
 <translation id="6989763994942163495">+ Show advanced settings</translation>
 <translation id="6992499368826755835">Automotive industry</translation>
 <translation id="6993898126790112050">6x9 (Envelope)</translation>
@@ -2721,6 +2724,7 @@ Additional details:
 <translation id="8355270400102541638">Local crash context:</translation>
 <translation id="8363502534493474904">Turning off aeroplane mode</translation>
 <translation id="8364627913115013041">Not set.</translation>
+<translation id="8368001212524806591">Track price</translation>
 <translation id="8368027906805972958">Unknown or unsupported device (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play services</translation>
 <translation id="8369073279043109617">Get new code</translation>

@@ -67,6 +67,7 @@
 <translation id="152892567002884378">Збільшити гучність</translation>
 <translation id="1555130319947370107">Синій</translation>
 <translation id="155865706765934889">Сенсорна панель</translation>
+<translation id="1561927818299383735">колір підсвітки</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" />: не вдалось оновити</translation>
 <translation id="1567064801249837505">Альбоми</translation>
 <translation id="1572585716423026576">Зробити фоновим малюнком</translation>
@@ -437,6 +438,7 @@
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Повторити програми</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
+<translation id="5286263799730375393">колір підсвічування</translation>
 <translation id="5294769550414936029">версія <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Перемістити вікно на робочий стіл</translation>
 <translation id="5304899856529773394">Стандарт EvDo</translation>
@@ -497,6 +499,7 @@
 <translation id="5895138241574237353">Перезапустити</translation>
 <translation id="5901630391730855834">Жовтий</translation>
 <translation id="5903200662178656908">Пристрій – це набір із клавіатури й миші.</translation>
+<translation id="5907649332524363701">колір клавіш</translation>
 <translation id="5916084858004523819">Заборонено</translation>
 <translation id="5916664084637901428">Увімкнено</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Файл зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -598,6 +601,7 @@
 <translation id="6760706756348334449">Зменшити гучність</translation>
 <translation id="6766275201586212568">невдалі перетворення DNS</translation>
 <translation id="6768237774506518020">велика частка збоїв під час перетворення DNS</translation>
+<translation id="6791471867139427246">колір підсвічування клавіатури</translation>
 <translation id="680983167891198932">Ключ</translation>
 <translation id="6816797338148849397">Доступна інформація, пов'язана з виділеним текстом. Щоб перейти до неї, натисніть клавішу зі стрілкою вгору.</translation>
 <translation id="6853312040151791195">Швидкість розряджання</translation>
@@ -643,6 +647,7 @@
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Ставте запитання спеціалістам на довідковому форуму Chromebook</translation>
+<translation id="7311368985037279727">колір клавіатури</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />. Щоб переглянути результат у Пошуку Google, натисніть клавішу пошуку та пробіл.</translation>
 <translation id="7343649194310845056">Мережеві пристрої</translation>

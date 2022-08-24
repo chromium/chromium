@@ -67,6 +67,7 @@
 <translation id="152892567002884378">Augmenter le volume</translation>
 <translation id="1555130319947370107">Bleu</translation>
 <translation id="155865706765934889">Pavé tactile</translation>
+<translation id="1561927818299383735">couleur rétroéclairage</translation>
 <translation id="1565038567006703504">Impossible de mettre à jour <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Albums</translation>
 <translation id="1572585716423026576">Définir comme fond d'écran</translation>
@@ -437,6 +438,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Exécuter de nouveau les routines</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
+<translation id="5286263799730375393">couleur rétroéclairage</translation>
 <translation id="5294769550414936029">version <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Déplacer la fenêtre sur le bureau</translation>
 <translation id="5304899856529773394">EvDo</translation>
@@ -497,6 +499,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="5895138241574237353">Redémarrer</translation>
 <translation id="5901630391730855834">Jaune</translation>
 <translation id="5903200662178656908">L'appareil combine clavier et souris.</translation>
+<translation id="5907649332524363701">couleur touche</translation>
 <translation id="5916084858004523819">Interdit</translation>
 <translation id="5916664084637901428">Activé</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Votre fichier a été scanné et enregistré dans <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Votre fichier a été scanné et enregistré dans <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Vos fichiers ont été scannés et enregistrés dans <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -598,6 +601,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="6760706756348334449">Baisser le volume</translation>
 <translation id="6766275201586212568">Échec de résolutions DNS</translation>
 <translation id="6768237774506518020">Taux d'échec élevé des résolutions DNS</translation>
+<translation id="6791471867139427246">couleur éclairage clavier</translation>
 <translation id="680983167891198932">Clé</translation>
 <translation id="6816797338148849397">Informations sur le texte sélectionné disponibles. Pour y accéder, utilisez la flèche vers le haut.</translation>
 <translation id="6853312040151791195">Vitesse de décharge</translation>
@@ -643,6 +647,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Posez vos questions aux experts sur le forum d'aide Chromebook</translation>
+<translation id="7311368985037279727">couleur clavier</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" /> ; <ph name="RESULT_TEXT" /> ; Appuyez sur "Rechercher" et sur "Espace" pour voir le résultat dans la recherche Google.</translation>
 <translation id="7343649194310845056">Appareils sur le réseau</translation>

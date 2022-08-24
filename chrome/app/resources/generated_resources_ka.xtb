@@ -262,7 +262,6 @@
 <translation id="1240903469550363138">გასაგრძელებლად <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ამ საიტს გაუზიარებს თქვენს სახელს, ელფოსტის მისამართსა და პროფილის სურათს. გაეცანით ამ საიტის <ph name="BEGIN_LINK1" />კონფიდენციალურობის დებულებასა<ph name="END_LINK1" /> და <ph name="BEGIN_LINK2" />მომსახურების პირობებს<ph name="END_LINK2" />.</translation>
 <translation id="1241066500170667906">აირჩიეთ მდგომარეობა ექსპერიმენტისთვის „<ph name="EXPERIMENT_NAME" />“</translation>
 <translation id="124116460088058876">სხვა ენები</translation>
-<translation id="1241753985463165747">გამოძახებისას მიმდინარე ვებსაიტზე არსებული თქვენი ყველა მონაცემების წაკითხვა და შეცვლა</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" />-ს თქვენი პარამეტრების გადაყენება სურს.</translation>
 <translation id="1243314992276662751">ატვირთვა</translation>
 <translation id="1243436884219965846">პაროლების გადახედვა</translation>
@@ -1712,6 +1711,7 @@
 <translation id="2568774940984945469">საინფორმაციო ზოლის კონტეინერი</translation>
 <translation id="2571655996835834626">თქვენი პარამეტრების შეცვლა, რომლებიც მართავს ვებსაიტების წვდომას ისეთ ფუნქციებზე, როგორიცაა ქუქი-ჩანაწერები, JavaScript, დანამატები, გეოლოკაცია, მიკროფონი, კამერა და სხვა.</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" />-ზე მხოლოდ წაკითხვადი წვდომის უფლება მინიჭებულია.</translation>
+<translation id="2573276323521243649">ავატარის არჩევის გვერდიდან უკან დაბრუნება</translation>
 <translation id="2573417407488272418">ვერსიის განახლებამდე შექმენით აპებისა და ფაილების სარეზერვო ასლები აქ: ფაილები &gt; ჩემი ფაილები.</translation>
 <translation id="2573831315551295105">მიაკუთვნეთ გადამრთველი ქმედებას „<ph name="ACTION" />“</translation>
 <translation id="2575247648642144396">ეს ხატულა ხილული იქნება, როდესაც გაფართოება შეძლებს მიმდინარე გვერდზე მოქმედებას. გამოიყენეთ ეს გაფართოება ხატულაზე დაწკაპუნებით ან <ph name="EXTENSION_SHORTCUT" />-ზე დაჭერით.</translation>
@@ -3307,6 +3307,7 @@
 <translation id="4101352914005291489">დამალული SSID</translation>
 <translation id="4102469565336584882">კოდი არასწორია. თქვენი შენატანის ფორმატი უნდა იყოს LPA:1$&lt;smdp მისამართი&gt;$&lt;აქტივაციის კოდი&gt;</translation>
 <translation id="4102906002417106771">გადატვირთვა Powerwash-ისთვის</translation>
+<translation id="4104163789986725820">ე&amp;ქსპორტი…</translation>
 <translation id="4107048419833779140">მეხსიერების მოწყობილობების იდენტიფიცირება და ამოღება</translation>
 <translation id="4108314971463891922">თვალის დევნება</translation>
 <translation id="4109135793348361820">ფანჯრის გადატანა <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -5503,7 +5504,6 @@
 <translation id="6278428485366576908">თემა</translation>
 <translation id="6278776436938569440">მდებარეობის შეცვლა</translation>
 <translation id="6279183038361895380">კურსორის საჩვენებლად, დააჭირეთ კლავიშზე |<ph name="ACCELERATOR" />|</translation>
-<translation id="6279595948631688299">არჩეული სერტიფიკატის ე&amp;ქსპორტირება...</translation>
 <translation id="6280215091796946657">სისტემაში სხვა ანგარიშით შესვლა</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{გადაჭარბებულია ქაღალდის 1 ფურცლის ლიმიტი}other{გადაჭარბებულია ქაღალდის {COUNT} ფურცლის ლიმიტი}}</translation>
@@ -6405,6 +6405,7 @@
 <translation id="7138678301420049075">სხვა</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> იყენებს თქვენს მიკროფონს</translation>
 <translation id="7141105143012495934">შესვლა ვერ მოხერხდა, რადგან თქვენი ანგარიშის შესახებ დეტალების მიღება შეუძლებელია. გთხოვთ, დაუკავშირდეთ ადმინისტრატორს ან სცადოთ ხელახლა.</translation>
+<translation id="7141844554192012199">შემოწმება</translation>
 <translation id="7144878232160441200">გაიმეორეთ</translation>
 <translation id="7149839598364933473">გარდაქმენით ეს მოწყობილობა <ph name="DEVICE_OS" /> მოწყობილობად.</translation>
 <translation id="7149893636342594995">ბოლო 24 საათი</translation>

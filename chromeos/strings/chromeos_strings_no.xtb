@@ -67,6 +67,7 @@
 <translation id="152892567002884378">Volum opp</translation>
 <translation id="1555130319947370107">Blå</translation>
 <translation id="155865706765934889">Styreflate</translation>
+<translation id="1561927818299383735">bakgrunnsbelyst farge</translation>
 <translation id="1565038567006703504">Kan ikke oppdatere <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Album</translation>
 <translation id="1572585716423026576">Angi som bakgrunn</translation>
@@ -437,6 +438,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Kjør rutinene på nytt</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
+<translation id="5286263799730375393">farge på bakgrunnsbelysning</translation>
 <translation id="5294769550414936029">versjon <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Flytt vindu til skrivebord</translation>
 <translation id="5304899856529773394">EVDO</translation>
@@ -497,6 +499,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5895138241574237353">Start på nytt</translation>
 <translation id="5901630391730855834">Gul</translation>
 <translation id="5903200662178656908">Enheten er en kombinasjon av tastatur og mus.</translation>
+<translation id="5907649332524363701">tastefarge</translation>
 <translation id="5916084858004523819">Forbudt</translation>
 <translation id="5916664084637901428">På</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Filen er skannet og lagret i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Filene er skannet og lagret i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -598,6 +601,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="6760706756348334449">Volum ned</translation>
 <translation id="6766275201586212568">Mislykkede DNS-oppslag</translation>
 <translation id="6768237774506518020">Høy feilfrekvens for DNS-oppslag</translation>
+<translation id="6791471867139427246">farge på tastaturlys</translation>
 <translation id="680983167891198932">Nøkkel</translation>
 <translation id="6816797338148849397">Informasjon om det du har markert, er tilgjengelig. Bruk oppoverpilen for å se informasjonen.</translation>
 <translation id="6853312040151791195">Utladingsfrekvens</translation>
@@ -643,6 +647,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Spør ekspertene i Chromebook-hjelpeforumet</translation>
+<translation id="7311368985037279727">tastaturfarge</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Trykk på Søk + mellomrom for å se resultatet i Google Søk.</translation>
 <translation id="7343649194310845056">Nettverksenheter</translation>

@@ -671,6 +671,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="479989351350248267">cerca</translation>
 <translation id="4804818685124855865">Desconnecta</translation>
 <translation id="4814539958450445987">Pantalla d'inici de sessió</translation>
+<translation id="481455355267255546">A continuació</translation>
 <translation id="4831034276697007977">Confirmes que vols desactivar els clics automàtics?</translation>
 <translation id="4849058404725798627">Ressalta l'objecte amb el focus del teclat</translation>
 <translation id="485592688953820832">No facis res (pausa)</translation>
@@ -852,6 +853,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="5860033963881614850">Desactivat</translation>
 <translation id="5860491529813859533">Activa</translation>
 <translation id="5867217927013474703">S'està recollint informació de les xarxes</translation>
+<translation id="5867606971598166637">L'administrador del sistema està supervisant les teves pantalles</translation>
 <translation id="5876666360658629066">Introdueix el codi parental</translation>
 <translation id="5881540930187678962">Configura El meu telèfon més tard</translation>
 <translation id="5887954372087850114">La finestra <ph name="WINDOW_TITLE" /> s'ha assignat a l'escriptori <ph name="DESK_TITLE" /> i s'ha deixat d'assignar a tota la resta d'escriptoris</translation>
@@ -1013,6 +1015,7 @@ Instal·lació nova</translation>
 <translation id="6757237461819837179">No s'està reproduint res</translation>
 <translation id="6777216307882431711">S'estan alimentant els dispositius USB-C connectats</translation>
 <translation id="6786750046913594791">Tanca la carpeta</translation>
+<translation id="6787595647772650851">Restaura la darrera sessió</translation>
 <translation id="6790428901817661496">Reprodueix</translation>
 <translation id="6801878137098616817">Editat fa poc</translation>
 <translation id="6803622936009808957">No s'han pogut projectar les pantalles, perquè no s'ha trobat cap resolució compatible. S'ha entrat al mode d'escriptori ampliat.</translation>
@@ -1258,6 +1261,7 @@ Instal·lació nova</translation>
 <translation id="8214996719228530800">Canal Canary</translation>
 <translation id="8219451629189078428">El Chromebook ha d'estar encès i endollat durant aquest període de temps. Assegura't que els cables del carregador o de l'adaptador estiguin completament connectats, tant al Chromebook com a l'endoll. No apaguis el Chromebook.</translation>
 <translation id="8236042855478648955">Ara toca fer una pausa</translation>
+<translation id="8246282815785366524">Et donem la benvinguda de nou, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal, <ph name="BATTERY_STATUS" /> de bateria al telèfon</translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, aplicació</translation>
 <translation id="8255234195843591763">Restableix per actualitzar</translation>

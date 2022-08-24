@@ -67,6 +67,7 @@
 <translation id="152892567002884378">Helitugevuse suurendamine</translation>
 <translation id="1555130319947370107">Sinine</translation>
 <translation id="155865706765934889">Puuteplaat</translation>
+<translation id="1561927818299383735">tausta värv</translation>
 <translation id="1565038567006703504">Ei saa seadet <ph name="DEVICE_NAME" /> värskendada</translation>
 <translation id="1567064801249837505">Albumid</translation>
 <translation id="1572585716423026576">Taustapildiks määramine</translation>
@@ -437,6 +438,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Taaskäita rutiinid</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
+<translation id="5286263799730375393">taustavalguse värv</translation>
 <translation id="5294769550414936029">versioon <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Teisalda aken töölauale</translation>
 <translation id="5304899856529773394">EVDO</translation>
@@ -497,6 +499,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="5895138241574237353">Taaskäivitamine</translation>
 <translation id="5901630391730855834">Kollane</translation>
 <translation id="5903200662178656908">Seade on klaviatuuri ja hiire kombinatsioon.</translation>
+<translation id="5907649332524363701">klahvistiku värv</translation>
 <translation id="5916084858004523819">Keelatud</translation>
 <translation id="5916664084637901428">Sees</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Teie faili skannimine õnnestus ja see salvestati kausta <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Teie failide skannimine õnnestus ja need salvestati kausta <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -598,6 +601,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="6760706756348334449">Helitugevuse vähendamine</translation>
 <translation id="6766275201586212568">Ebaõnnestunud DNS-lahendused</translation>
 <translation id="6768237774506518020">DNS-lahenduste ebaõnnestumiste kõrge määr</translation>
+<translation id="6791471867139427246">klaviatuurivalguse värv</translation>
 <translation id="680983167891198932">Võti</translation>
 <translation id="6816797338148849397">Teie valikuga seotud teave on saadaval. Kasutage juurdepääsemiseks ülesnooleklahvi.</translation>
 <translation id="6853312040151791195">Tühjenemise kiirus</translation>
@@ -643,6 +647,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Küsige Chromebooki abifoorumis asjatundjatelt nõu</translation>
+<translation id="7311368985037279727">klaviatuuri värv</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google'i otsingus tulemuste nägemiseks vajutage korraga otsingu- ja tühikuklahvi.</translation>
 <translation id="7343649194310845056">Võrguseadmed</translation>

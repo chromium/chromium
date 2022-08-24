@@ -264,7 +264,6 @@
 <translation id="1240903469550363138">కొనసాగించడానికి, మీ పేరు, ఈమెయిల్ అడ్రస్, ప్రొఫైల్ ఫోటోను <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ఈ సైట్‌తో షేర్ చేస్తుంది. ఈ సైట్ <ph name="BEGIN_LINK1" />గోప్యతా పాలసీ<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />సర్వీస్ నియమాలను<ph name="END_LINK2" /> చూడండి.</translation>
 <translation id="1241066500170667906"><ph name="EXPERIMENT_NAME" />కు ప్రయోగ స్థితిని ఎంచుకోండి</translation>
 <translation id="124116460088058876">మరిన్ని భాషలు</translation>
-<translation id="1241753985463165747">రిక్వెస్ట్ చేసినప్పుడు ప్రస్తుత వెబ్‌సైట్‌లో మీ మొత్తం డేటాను చదవండి మరియు మార్చండి</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> మీ సెట్టింగ్‌లను రీసెట్ చేయాలనుకుంటోంది.</translation>
 <translation id="1243314992276662751">అప్‌లోడ్ చేయి</translation>
 <translation id="1243436884219965846">పాస్‌వర్డ్‌లను రివ్యూ చేయండి</translation>
@@ -1726,6 +1725,7 @@
 <translation id="2568774940984945469">సమాచారబార్ కంటైనర్</translation>
 <translation id="2571655996835834626">కుక్కీలు, JavaScript, ప్లగ్ఇన్‌లు, భౌగోళిక స్థానం, మైక్రోఫోన్, కెమెరా మొదలైన ఫీచ‌ర్‌లకు వెబ్‌సైట్‌ల యాక్సెస్‌ను నియంత్రించే మీ సెట్టింగ్‌లను మార్చండి.</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" />కి చదవడానికి మాత్రమే యాక్సెస్ మంజూరు చేయబడింది.</translation>
+<translation id="2573276323521243649">అవతార్ ఎంపిక పేజీ నుండి వెనుకకు వెళ్లండి</translation>
 <translation id="2573417407488272418">అప్‌గ్రేడ్ చేయడానికి ముందు, యాప్‌లు, ఫైల్స్‌ను Files &gt; నా ఫైల్స్ అనే సెట్టింగ్‌లో బ్యాకప్ చేయండి.</translation>
 <translation id="2573831315551295105">“<ph name="ACTION" />” కోసం ఒక స్విచ్‌ను అసైన్ చేయండి</translation>
 <translation id="2575247648642144396">ప్రస్తుత పేజీలో ఎక్స్‌టెన్ష‌న్‌ను అమలు చేయగలిగినప్పుడు ఈ చిహ్నం కనిపిస్తుంది. చిహ్నంపై క్లిక్ చేయడం ద్వారా లేదా <ph name="EXTENSION_SHORTCUT" />ను నొక్కడం ద్వారా ఈ ఎక్స్‌టెన్ష‌న్‌ను ఉపయోగించండి.</translation>
@@ -2566,6 +2566,7 @@
 <translation id="3406290648907941085">వర్చువల్ రియాలిటీ పరికరాలను, అలాగే డేటాను ఉపయోగించడానికి అనుమతించబడింది</translation>
 <translation id="3406396172897554194">భాష లేదా ఇన్‌పుట్ పేరు ఆధారంగా సెర్చ్ చేయండి</translation>
 <translation id="3406605057700382950"> &amp;బుక్‌మార్క్‌ల బార్‌ను చూపు</translation>
+<translation id="3408849592677950451">{NUM_PASSWORDS,plural, =1{<ph name="USER_EMAIL" /> కోసం Google Password Managerకు 1 పాస్‌వర్డ్ దిగుమతి చేయబడింది}other{<ph name="USER_EMAIL" /> కోసం Google Password Managerకు {NUM_PASSWORDS} పాస్‌వర్డ్‌లు దిగుమతి చేయబడ్డాయి}}</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3412265149091626468">ఎంపికకు వెళ్ళు</translation>
 <translation id="3413122095806433232">CA జారీచేసిన వారు: <ph name="LOCATION" /></translation>
@@ -3320,6 +3321,7 @@
 <translation id="4101352914005291489">దాచబడిన SSID</translation>
 <translation id="4102469565336584882">చెల్లని కోడ్. మీరు ఎంటర్ చేసేది LPA:1$&lt;smdp address&gt;$&lt;activation code&gt; ఫార్మాట్‌లో ఉండాలి</translation>
 <translation id="4102906002417106771">పవర్‌వాష్ చేయడానికి రీస్టార్ట్ చేయి</translation>
+<translation id="4104163789986725820">ఎ&amp;గుమతి...</translation>
 <translation id="4107048419833779140">నిల్వ డివైజ్‌లను గుర్తించి, తొలగించండి</translation>
 <translation id="4108314971463891922">ఫాలో అవ్వండి</translation>
 <translation id="4109135793348361820">విండోను <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)కు తరలించు</translation>
@@ -3750,6 +3752,7 @@
 <translation id="4541123282641193691">మీ ఖాతాను వెరిఫై చేయడం సాధ్యపడలేదు. దయచేసి మళ్లీ ట్రై చేయండి లేదా మీ Chromebookను రీస్టార్ట్ చేయండి.</translation>
 <translation id="4541662893742891060">ఈ ప్రొఫైల్‌కు కనెక్ట్ చేయడం సాధ్యం కాలేదు. టెక్నికల్ సపోర్ట్ కోసం, దయచేసి మీ క్యారియర్‌ను సంప్రదించండి.</translation>
 <translation id="4541706525461326392">ప్రొఫైల్‌ను తీసివేస్తోంది. దీనికి కొన్ని నిమిషాలు పట్టవచ్చు.</translation>
+<translation id="4542332958571335077">{NUM_PASSWORDS,plural, =1{ఈ పరికరంలో Google Password Managerకు 1పాస్‌వర్డ్ దిగుమతి చేయబడింది}other{ఈ పరికరంలో Google Password Managerకు {NUM_PASSWORDS} పాస్‌వర్డ్‌లు దిగుమతి చేయబడ్డాయి}}</translation>
 <translation id="4542520061254486227"><ph name="WEBSITE_1" /> మరియు <ph name="WEBSITE_2" />లోని మీ డేటాను చదవండి</translation>
 <translation id="4543778593405494224">ప్రమాణపత్ర నిర్వాహికి</translation>
 <translation id="4544174279960331769">డిఫాల్ట్ నీలం రంగు అవతార్</translation>
@@ -5516,7 +5519,6 @@
 <translation id="6278428485366576908">థీమ్</translation>
 <translation id="6278776436938569440">లొకేషన్‌ను మార్చు</translation>
 <translation id="6279183038361895380">మీ కర్సర్‌ను చూపడానికి |<ph name="ACCELERATOR" />| నొక్కండి</translation>
-<translation id="6279595948631688299">ఎంచుకున్న సర్టిఫికెట్‌ను ఎగుమతి చేయండి...</translation>
 <translation id="6280215091796946657">వేరొక ఖాతాతో సైన్ ఇన్ చేయండి</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{1 పేపర్ షీట్ పరిమితిని మించి ఉంది}other{{COUNT} పేపర్ షీట్‌ల పరిమితిని మించి ఉంది}}</translation>
@@ -6238,6 +6240,7 @@
 <translation id="6968288415730398122">స్క్రీన్ లాక్‌ను కాన్ఫిగర్ చేయడానికి మీ పాస్‌వర్డ్‌ను నమోదు చేయండి</translation>
 <translation id="6969047215179982698">సమీప షేరింగ్‌ను ఆఫ్ చేయండి</translation>
 <translation id="6970480684834282392">ప్రారంభ రకం</translation>
+<translation id="6970543303783413625">పాస్‌వర్డ్‌లను దిగుమతి చేయడం సాధ్యపడలేదు. మీరు ఒకసారికి <ph name="COUNT" /> పాస్‌వర్డ్‌లను మాత్రమే దిగుమతి చేయగలరు.</translation>
 <translation id="6970856801391541997">నిర్దిష్ట పేజీలను ప్రింట్ చేయండి</translation>
 <translation id="6970861306198150268">మీరు ఈ సైట్‌లో మీ ప్రస్తుత పాస్‌వర్డ్‌ను సేవ్ చేస్తున్నారని నిర్ధారించుకోండి</translation>
 <translation id="6972180789171089114">ఆడియో/వీడియో</translation>
@@ -6417,6 +6420,7 @@
 <translation id="7138678301420049075">ఇతర</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> మీ మైక్రోఫోన్‌ను ఉపయోగిస్తోంది</translation>
 <translation id="7141105143012495934">మీ ఖాతా వివరాలను తిరిగి పొందలేనందున సైన్-ఇన్ విఫలమైంది. దయచేసి మీ నిర్వాహకుడిని సంప్రదించండి లేదా మళ్లీ ప్రయత్నించండి.</translation>
+<translation id="7141844554192012199">చెకప్</translation>
 <translation id="7144878232160441200">మళ్ళీ ప్రయత్నించు</translation>
 <translation id="7149839598364933473">ఈ పరికరాన్ని <ph name="DEVICE_OS" /> పరికరంగా మార్చండి.</translation>
 <translation id="7149893636342594995">గత 72 గంటలు</translation>
@@ -6469,6 +6473,7 @@
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{పేజీ నుండి నిష్క్రమించండి}other{పేజీల నుండి నిష్క్రమించండి}}</translation>
 <translation id="7207457272187520234">వినియోగం &amp; విశ్లేషణల డేటాను పంపండి. ఈ పరికరం ప్రస్తుతం సమస్య విశ్లేషణ డేటాను, పరికరం డేటాను, దానితో పాటు యాప్ వినియోగ డేటాను ఆటోమేటిక్‌గా Googleకు పంపుతోంది. ఇది సిస్టమ్, యాప్ స్థిరత్వానికి, అలాగే ఇతర మెరుగుదలలకు సహాయపడుతుంది. కొంత ఏకీకృత డేటా కూడా Google యాప్‌లకు, Android డెవలపర్‌ల లాంటి భాగస్వాములకు సహాయపడుతుంది. ఈ సెట్టింగ్‌ను యజమాని సెట్ చేశారు. మీ అదనపు వెబ్ &amp; యాప్ యాక్టివిటీ సెట్టింగ్‌ను ఆన్ చేసినట్లయితే, ఈ డేటా మీ Google ఖాతాలో సేవ్ చేయబడవచ్చు.</translation>
 <translation id="7207631048330366454">యాప్‌లను వెతకండి</translation>
+<translation id="7210471695184432500">ఈ పరికరంలో Google Password Managerకు పాస్‌వర్డ్‌లను దిగుమతి చేయడానికి, CSV ఫైల్‌ను ఎంచుకోండి</translation>
 <translation id="7210499381659830293">ఎక్స్‌టెన్షన్ ప్రింటర్‌లు</translation>
 <translation id="7211783048245131419">ఇప్పటికీ ఎలాంటి స్విచ్ కేటాయించబడలేదు</translation>
 <translation id="7212097698621322584">మీ ప్రస్తుత పిన్‌ను మార్చడానికి దానిని నమోదు చేయండి. మీ పిన్ మీకు తెలియకుంటే, మీరు సెక్యూరిటీ కీని రీసెట్ చేసి, ఆపై కొత్త పిన్‌ను సృష్టించాలి.</translation>
@@ -7525,6 +7530,7 @@
 <translation id="8206859287963243715">సెల్యులార్</translation>
 <translation id="8208216423136871611">సేవ్ చేయవద్దు</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{కొత్త నోటిఫికేషన్}other{# కొత్త నోటిఫికేషన్‌లు}}</translation>
+<translation id="821119981794423735"><ph name="USER_EMAIL" /> కోసం Google Password Managerకు పాస్‌వర్డ్‌లను దిగుమతి చేయడానికి, CSV ఫైల్‌ను ఎంచుకోండి</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{డౌన్‌లోడ్ ప్రోగ్రెస్‌లో ఉంది}other{డౌన్‌లోడ్‌లు ప్రోగ్రెస్‌లో ఉన్నాయి}}</translation>
 <translation id="8213449224684199188">ఫోటో మోడ్‌లోకి ప్రవేశించింది</translation>
 <translation id="8214489666383623925">ఫైల్‌ను తెరువు...</translation>

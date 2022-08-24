@@ -671,6 +671,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="479989351350248267">sök</translation>
 <translation id="4804818685124855865">Koppla från</translation>
 <translation id="4814539958450445987">Inloggningsskärm</translation>
+<translation id="481455355267255546">Kommande</translation>
 <translation id="4831034276697007977">Vill du inaktivera automatiska klick?</translation>
 <translation id="4849058404725798627">Markera objekt med tangentbordsfokus</translation>
 <translation id="485592688953820832">Ingen åtgärd (pausa)</translation>
@@ -1014,6 +1015,7 @@ Nyligen installerad</translation>
 <translation id="6757237461819837179">Ingen media spelas upp</translation>
 <translation id="6777216307882431711">Laddar anslutna USB-C-enheter</translation>
 <translation id="6786750046913594791">Stäng mappen</translation>
+<translation id="6787595647772650851">Återställ den senaste sessionen</translation>
 <translation id="6790428901817661496">Spela</translation>
 <translation id="6801878137098616817">Redigerades nyligen</translation>
 <translation id="6803622936009808957">Det gick inte att spegla visningar eftersom inga upplösningar som stöds hittades. Utökat skrivbordsläge används i stället.</translation>
@@ -1262,6 +1264,7 @@ Nyligen installerad</translation>
 <translation id="8214996719228530800">Canary-kanal</translation>
 <translation id="8219451629189078428">Chromebook måste vara på och ansluten till en strömkälla under den tiden. Se till att kabeln på laddaren eller adaptern är ordentligt ansluten till Chromebook och eluttaget. Stäng inte av Chromebook.</translation>
 <translation id="8236042855478648955">Dags för en paus</translation>
+<translation id="8246282815785366524">Välkommen tillbaka, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" />, telefonens batterinivå <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, app</translation>
 <translation id="8255234195843591763">Återställ för att uppdatera</translation>

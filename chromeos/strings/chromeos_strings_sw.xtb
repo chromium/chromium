@@ -67,6 +67,7 @@
 <translation id="152892567002884378">Ongeza sauti</translation>
 <translation id="1555130319947370107">Samawati</translation>
 <translation id="155865706765934889">Touchpad</translation>
+<translation id="1561927818299383735">rangi ya mwangaza wa nyuma</translation>
 <translation id="1565038567006703504">Imeshindwa kusasisha <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Albamu</translation>
 <translation id="1572585716423026576">Weka kama mandhari</translation>
@@ -436,6 +437,7 @@
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Rudia Uchunguzi</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
+<translation id="5286263799730375393">rangi ya mwangaza wa nyuma</translation>
 <translation id="5294769550414936029">toleo la <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Hamishia dirisha kwenye eneokazi</translation>
 <translation id="5304899856529773394">EVDO</translation>
@@ -496,6 +498,7 @@
 <translation id="5895138241574237353">Zzima na uwashe</translation>
 <translation id="5901630391730855834">Manjano</translation>
 <translation id="5903200662178656908">Kifaa ni muunganiko wa kibodi na kipanya.</translation>
+<translation id="5907649332524363701">rangi ya kitufe</translation>
 <translation id="5916084858004523819">Marufuku</translation>
 <translation id="5916664084637901428">Imewashwa</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Faili yako imechanganuliwa na imehifadhiwa kwenye <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Faili zako zimechanganuliwa na zimehifadhiwa kwenye <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -597,6 +600,7 @@
 <translation id="6760706756348334449">Punguza sauti</translation>
 <translation id="6766275201586212568">Usuluhishaji wa DNS haukufaulu</translation>
 <translation id="6768237774506518020">Kiwango cha juu cha usuluhishaji wa DNS usiofaulu</translation>
+<translation id="6791471867139427246">rangi ya mwangaza wa kibodi</translation>
 <translation id="680983167891198932">Ufunguo</translation>
 <translation id="6816797338148849397">Maelezo yanayohusiana na chaguo lako yanapatikana. Tumia kishale cha Juu ili uyafikie.</translation>
 <translation id="6853312040151791195">Kasi ya kutumia chaji</translation>
@@ -642,6 +646,7 @@
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Waulize wataalamu katika mijadala ya usaidizi ya Chromebook</translation>
+<translation id="7311368985037279727">rangi ya kibodi</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Bonyeza kitufe cha Utafutaji pamoja na kitufe cha Nafasi ili uone matokeo katika huduma ya Tafuta na Google.</translation>
 <translation id="7343649194310845056">Vifaa vya Mtandao</translation>

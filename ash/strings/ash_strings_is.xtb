@@ -671,6 +671,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="479989351350248267">leita</translation>
 <translation id="4804818685124855865">Aftengja</translation>
 <translation id="4814539958450445987">Innskráningarskjár</translation>
+<translation id="481455355267255546">Næst á dagskrá</translation>
 <translation id="4831034276697007977">Viltu örugglega slökkva á sjálfvirkum smellum?</translation>
 <translation id="4849058404725798627">Auðkenna hlut með lyklaborðsfókus</translation>
 <translation id="485592688953820832">Engin aðgerð (hlé)</translation>
@@ -852,6 +853,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="5860033963881614850">Slökkt</translation>
 <translation id="5860491529813859533">Kveikja</translation>
 <translation id="5867217927013474703">Safnar upplýsingum um netkerfi</translation>
+<translation id="5867606971598166637">Kerfisstjórinn fylgist með skjáunum þínum</translation>
 <translation id="5876666360658629066">Sláðu inn kóða foreldris</translation>
 <translation id="5881540930187678962">Setja Símstöð upp seinna</translation>
 <translation id="5887954372087850114">Glugganum <ph name="WINDOW_TITLE" /> er úthlutað á <ph name="DESK_TITLE" /> og er ekki úthlutað á önnur skrifborð</translation>
@@ -1013,6 +1015,7 @@ Ný uppsetning</translation>
 <translation id="6757237461819837179">Ekkert efni í spilun</translation>
 <translation id="6777216307882431711">Knýr tengd USB-C tæki</translation>
 <translation id="6786750046913594791">Loka möppu</translation>
+<translation id="6787595647772650851">Endurheimta síðustu lotu</translation>
 <translation id="6790428901817661496">Spila</translation>
 <translation id="6801878137098616817">Breytt nýlega</translation>
 <translation id="6803622936009808957">Ekki var hægt að spegla skjái vegna þess að engin studd upplausn fannst. Skjáborð hefur verið framlengt í staðinn.</translation>
@@ -1261,6 +1264,7 @@ Ný uppsetning</translation>
 <translation id="8214996719228530800">Canary-rás</translation>
 <translation id="8219451629189078428">Kveikt þarf að vera á Chromebook og tækið þarf að vera í sambandi á meðan. Gakktu úr skugga um að hleðslutækið eða millistykkið sé örugglega í sambandi, bæði við Chromebook og innstunguna. Ekki slökkva á Chromebook.</translation>
 <translation id="8236042855478648955">Tími til að taka sér hlé</translation>
+<translation id="8246282815785366524">Velkomin(n) aftur, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> sendistyrkur, <ph name="BATTERY_STATUS" /> hleðsla á rafhlöðu símans</translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, forrit</translation>
 <translation id="8255234195843591763">Endurstilltu til að uppfæra</translation>

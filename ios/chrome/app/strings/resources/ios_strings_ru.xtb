@@ -280,6 +280,7 @@
 <translation id="3277021493514034324">Адрес сайта скопирован</translation>
 <translation id="3285962946108803577">Поделиться страницей</translation>
 <translation id="3290875554372353449">Выберите аккаунт</translation>
+<translation id="3305294846493618482">ещё</translation>
 <translation id="3311748811247479259">Отключено</translation>
 <translation id="3324193307694657476">Адрес, строка 2</translation>
 <translation id="3328801116991980348">Информация о сайте</translation>
@@ -946,7 +947,7 @@
 <translation id="8820817407110198400">Закладки</translation>
 <translation id="8840513115188359703">Вы останетесь в аккаунте Google.</translation>
 <translation id="8843129975935593190">Ваша организация разрешила синхронизировать только некоторые данные.</translation>
-<translation id="8849001918648564819">Никто</translation>
+<translation id="8849001918648564819">Скрытые</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} вкладка}one{{count} вкладка}few{{count} вкладки}many{{count} вкладок}other{{count} вкладки}}</translation>
 <translation id="8870413625673593573">Недавно закрытые</translation>
 <translation id="8876882697946675716">Синхронизируйте устройства</translation>

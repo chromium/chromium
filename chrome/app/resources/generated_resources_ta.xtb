@@ -264,7 +264,6 @@
 <translation id="1240903469550363138">தொடர, உங்கள் பெயர், மின்னஞ்சல் முகவரி, சுயவிவரப் படம் ஆகியவற்றை இந்தத் தளத்தில் <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> பகிரும். இந்தத் தளத்தின் <ph name="BEGIN_LINK1" />தனியுரிமைக் கொள்கை<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />சேவை விதிமுறைகள்<ph name="END_LINK2" /> ஆகியவற்றைப் பார்க்கவும்.</translation>
 <translation id="1241066500170667906"><ph name="EXPERIMENT_NAME" /> என்பதற்கான சோதனை நிலையைத் தேர்ந்தெடுக்கலாம்</translation>
 <translation id="124116460088058876">மேலும் மொழிகள்</translation>
-<translation id="1241753985463165747">அனுமதித்தால், தற்போதைய இணையதளத்தில் உங்கள் எல்லாத் தரவையும் படிக்கும், மாற்றும்</translation>
 <translation id="1242633766021457174">உங்கள் அமைப்புகளை மீட்டமைக்க <ph name="THIRD_PARTY_TOOL_NAME" /> விரும்புகிறது.</translation>
 <translation id="1243314992276662751">பதிவேற்று</translation>
 <translation id="1243436884219965846">கடவுச்சொற்களை மதிப்பாய்வு செய்வதற்கான பட்டன்</translation>
@@ -3321,6 +3320,7 @@
 <translation id="4101352914005291489">மறைக்கப்பட்ட SSID</translation>
 <translation id="4102469565336584882">தவறான குறியீடு. LPA:1$&lt;smdp முகவரி&gt;$&lt;செயல்படுத்தல் குறியீடு&gt; என்ற வடிவமைப்பில் உள்ளீடு இருக்க வேண்டும்</translation>
 <translation id="4102906002417106771">பவர்வாஷில் மீண்டும் தொடங்கு</translation>
+<translation id="4104163789986725820">ஏற்று&amp;மதி...</translation>
 <translation id="4107048419833779140">சேமிப்பகச் சாதனங்களைக் கண்டறிந்து, வெளியேற்றுதல்</translation>
 <translation id="4108314971463891922">பின்தொடர்</translation>
 <translation id="4109135793348361820"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) க்குச் சாளரத்தை நகர்த்து</translation>
@@ -5518,7 +5518,6 @@
 <translation id="6278428485366576908">தீம்</translation>
 <translation id="6278776436938569440">இருப்பிடத்தை மாற்று</translation>
 <translation id="6279183038361895380">உங்கள் சுட்டியைக் காட்ட |<ph name="ACCELERATOR" />| என்பதை அழுத்தவும்</translation>
-<translation id="6279595948631688299">தேர்ந்தெடுத்த சான்றிதழை ஏற்று...</translation>
 <translation id="6280215091796946657">வேறொரு கணக்கு மூலம் உள்நுழைக</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{தாளின் ஒரு பக்கம் என்ற வரம்பை மீறுகிறது}other{தாளின் {COUNT} பக்கங்கள் என்ற வரம்பை மீறுகிறது}}</translation>

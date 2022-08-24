@@ -671,6 +671,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="479989351350248267">haku</translation>
 <translation id="4804818685124855865">Katkaise yhteys</translation>
 <translation id="4814539958450445987">Kirjautumisnäyttö</translation>
+<translation id="481455355267255546">Seuraavaksi</translation>
 <translation id="4831034276697007977">Haluatko varmasti lopettaa automaattisen klikkaamisen?</translation>
 <translation id="4849058404725798627">Korosta tekstin syöttökohde</translation>
 <translation id="485592688953820832">Ei toimenpiteitä (keskeytä)</translation>
@@ -852,6 +853,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="5860033963881614850">Pois päältä</translation>
 <translation id="5860491529813859533">Ota käyttöön</translation>
 <translation id="5867217927013474703">Verkkotietoja kerätään</translation>
+<translation id="5867606971598166637">Järjestelmänvalvoja valvoo näyttöjäsi</translation>
 <translation id="5876666360658629066">Lisää vanhemman koodi</translation>
 <translation id="5881540930187678962">Ota puhelinhubi käyttöön myöhemmin</translation>
 <translation id="5887954372087850114">Ikkuna (<ph name="WINDOW_TITLE" />) lisätty työpöydälle <ph name="DESK_TITLE" /> mutta ei muille työpöydille</translation>
@@ -1013,6 +1015,7 @@ Uusi asennus</translation>
 <translation id="6757237461819837179">Mediaa ei toisteta</translation>
 <translation id="6777216307882431711">Toimii yhdistettyjen USB-C-laitteiden virtalähteenä</translation>
 <translation id="6786750046913594791">Sulje kansio</translation>
+<translation id="6787595647772650851">Palauta edellinen istunto</translation>
 <translation id="6790428901817661496">Toista</translation>
 <translation id="6801878137098616817">Muokattu hiljattain</translation>
 <translation id="6803622936009808957">Näyttöjen peilaaminen ei onnistunut, sillä tuettua resoluutiota ei löytynyt. Sen sijaan valittiin työpöydän laajennus.</translation>
@@ -1261,6 +1264,7 @@ Uusi asennus</translation>
 <translation id="8214996719228530800">Canary-versio</translation>
 <translation id="8219451629189078428">Chromebookin täytyy pysyä päällä ja yhdistettynä virtalähteeseen tänä aikana. Varmista, että laturin tai virtalähteen johdot on liitetty kunnolla sekä Chromebookiin että pistorasiaan. Älä sammuta Chromebookia.</translation>
 <translation id="8236042855478648955">Tauon paikka</translation>
+<translation id="8246282815785366524">Tervetuloa takaisin, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" />, puhelimen akun varaus <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, sovellus</translation>
 <translation id="8255234195843591763">Nollaa päivitystä varten</translation>

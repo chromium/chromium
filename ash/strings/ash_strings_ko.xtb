@@ -671,6 +671,7 @@
 <translation id="479989351350248267">검색</translation>
 <translation id="4804818685124855865">연결 해제</translation>
 <translation id="4814539958450445987">로그인 화면</translation>
+<translation id="481455355267255546">다음 일정</translation>
 <translation id="4831034276697007977">자동 클릭을 사용 중지하시겠습니까?</translation>
 <translation id="4849058404725798627">키보드 포커스로 개체 강조표시</translation>
 <translation id="485592688953820832">작업 없음(일시중지)</translation>
@@ -852,6 +853,7 @@
 <translation id="5860033963881614850">사용 안함</translation>
 <translation id="5860491529813859533">사용</translation>
 <translation id="5867217927013474703">네트워크 정보 수집 중</translation>
+<translation id="5867606971598166637">시스템 관리자가 화면을 모니터링하고 있습니다.</translation>
 <translation id="5876666360658629066">부모 코드 입력</translation>
 <translation id="5881540930187678962">휴대전화 허브 나중에 설정하기</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> 창이 <ph name="DESK_TITLE" />에 할당되고 다른 모든 데스크에서 할당 취소되었습니다.</translation>
@@ -1013,6 +1015,7 @@
 <translation id="6757237461819837179">재생 중인 미디어 없음</translation>
 <translation id="6777216307882431711">연결된 USB-C 기기 전원 공급 중</translation>
 <translation id="6786750046913594791">폴더 닫기</translation>
+<translation id="6787595647772650851">마지막 세션 복원</translation>
 <translation id="6790428901817661496">재생</translation>
 <translation id="6801878137098616817">최근에 수정됨</translation>
 <translation id="6803622936009808957">지원되는 해상도가 없으므로 디스플레이를 그대로 반영할 수 없습니다. 대신 확장 데스크톱을 시작했습니다.</translation>

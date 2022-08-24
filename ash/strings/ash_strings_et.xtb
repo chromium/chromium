@@ -672,6 +672,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="479989351350248267">otsing</translation>
 <translation id="4804818685124855865">Katkesta ühendus</translation>
 <translation id="4814539958450445987">Sisselogimiskuva</translation>
+<translation id="481455355267255546">Järgmisena</translation>
 <translation id="4831034276697007977">Kas soovite automaatsed klikid kindlasti välja lülitada?</translation>
 <translation id="4849058404725798627">Klaviatuuri fookusega objekti esiletõstmine</translation>
 <translation id="485592688953820832">Toiming puudub (peatamine)</translation>
@@ -853,6 +854,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5860033963881614850">Väljas</translation>
 <translation id="5860491529813859533">Lülita sisse</translation>
 <translation id="5867217927013474703">Toimub võrgu teabe kogumine</translation>
+<translation id="5867606971598166637">Teie süsteemiadministraator jälgib teie ekraanikuvasid</translation>
 <translation id="5876666360658629066">Sisestage vanema kood</translation>
 <translation id="5881540930187678962">Seadistage Phone Hub hiljem</translation>
 <translation id="5887954372087850114">Aken <ph name="WINDOW_TITLE" /> määrati töölauale <ph name="DESK_TITLE" /> ja kõigile muudele töölaudadele määramine tühistati</translation>
@@ -1014,6 +1016,7 @@ Uus installimine</translation>
 <translation id="6757237461819837179">Meediat ei esitata</translation>
 <translation id="6777216307882431711">Ühendatud USB-C-tüüpi seadmete toitega varustamine</translation>
 <translation id="6786750046913594791">Kausta sulgemine</translation>
+<translation id="6787595647772650851">Taasta eelmine seanss</translation>
 <translation id="6790428901817661496">Esita</translation>
 <translation id="6801878137098616817">Hiljuti muudetud</translation>
 <translation id="6803622936009808957">Ei saanud kuvasid peegeldada, kuna toetatud eraldusvõimeid ei leitud. Selle asemel siseneti laiendatud töölaua režiimi.</translation>
@@ -1262,6 +1265,7 @@ Uus installimine</translation>
 <translation id="8214996719228530800">Canary kanal</translation>
 <translation id="8219451629189078428">Teie Chromebook peab sel ajal olema sisse lülitatud ja toiteallikaga ühendatud. Veenduge, et laadija või adapteri kaabel oleks korralikult ühendatud nii Chromebooki kui ka pistikupesaga. Ärge lülitage oma Chromebooki välja.</translation>
 <translation id="8236042855478648955">Aeg pausi pidada</translation>
+<translation id="8246282815785366524">Tere tulemast tagasi, <ph name="GIVEN_NAME" />!</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />, telefoni aku: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446">Rakendus, <ph name="APP_NAME" /></translation>
 <translation id="8255234195843591763">Värskendamiseks taaskäivitage</translation>

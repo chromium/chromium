@@ -671,6 +671,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="479989351350248267">chwilio</translation>
 <translation id="4804818685124855865">Datgysylltu</translation>
 <translation id="4814539958450445987">Sgrîn Mewngofnodi</translation>
+<translation id="481455355267255546">Nesaf</translation>
 <translation id="4831034276697007977">Ydych chi'n siŵr eich bod am ddiffodd cliciau awtomatig?</translation>
 <translation id="4849058404725798627">Amlygu'r gwrthrych sydd â ffocws y bysellfwrdd</translation>
 <translation id="485592688953820832">Dim gweithred (seibio)</translation>
@@ -852,6 +853,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="5860033963881614850">Diffodd</translation>
 <translation id="5860491529813859533">Troi ymlaen</translation>
 <translation id="5867217927013474703">Wrthi'n casglu gwybodaeth rhwydwaith</translation>
+<translation id="5867606971598166637">Mae gweinyddwr eich system yn monitro eich sgriniau</translation>
 <translation id="5876666360658629066">Rhowch y cod rhiant</translation>
 <translation id="5881540930187678962">Gosod Phone Hub yn nes ymlaen</translation>
 <translation id="5887954372087850114">Mae'r ffenestr <ph name="WINDOW_TITLE" /> wedi'i haseinio i <ph name="DESK_TITLE" /> a'i ddadaseinio o bob tasg arall.</translation>
@@ -1013,6 +1015,7 @@ Gosodiad newydd</translation>
 <translation id="6757237461819837179">Nid oes unrhyw gyfryngau yn chwarae</translation>
 <translation id="6777216307882431711">Wrthi'n rhoi pŵer i ddyfeisiau USB-C</translation>
 <translation id="6786750046913594791">Cau'r ffolder</translation>
+<translation id="6787595647772650851">Adfer y sesiwn diwethaf</translation>
 <translation id="6790428901817661496">Chwarae</translation>
 <translation id="6801878137098616817">Golygwyd yn ddiweddar</translation>
 <translation id="6803622936009808957">Methu ag adlewyrchu'r sgriniau gan na chanfuwyd unrhyw gydraniadau a gefnogir. Dechreuwyd bwrdd gwaith estynedig yn lle.</translation>
@@ -1261,6 +1264,7 @@ Gosodiad newydd</translation>
 <translation id="8214996719228530800">Sianel Canary</translation>
 <translation id="8219451629189078428">Mae angen cadw'ch Chromebook ymlaen ac wedi'i gysylltu i'r pŵer am y cyfnod hwn. Gwnewch yn siŵr bod yr gwefrydd neu geblau'r addasydd wedi'u plygio i mewn, i'ch Chromebook yn ogystal ag i'r cyflenwad pŵer. Peidiwch â diffodd eich Chromebook.</translation>
 <translation id="8236042855478648955">Amser am egwyl</translation>
+<translation id="8246282815785366524">Croeso'n ôl, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, Cryfder y Signal <ph name="SIGNAL_STRENGTH" />, Batri'r Ffôn <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, Ap</translation>
 <translation id="8255234195843591763">Ailosod i ddiweddaru</translation>
