@@ -34,19 +34,19 @@ const int32_t kMaxFileSizeBytes = 150 * 1024;
 
 // Reads and returns a status and the contents of the file at |path| as a
 // optional string. The string will be present if the status is SUCCESS.
-base::expected<std::string, PasswordImporter::Status> ReadFileToString(
+base::expected<std::string, ImportResults::Status> ReadFileToString(
     const base::FilePath& path) {
   int64_t file_size;
 
   if (GetFileSize(path, &file_size)) {
     base::UmaHistogramCounts1M("PasswordManager.ImportFileSize", file_size);
     if (file_size > kMaxFileSizeBytes)
-      return base::unexpected(PasswordImporter::Status::LARGE_FILE);
+      return base::unexpected(ImportResults::Status::MAX_FILE_SIZE);
   }
 
   std::string contents;
   if (!base::ReadFileToString(path, &contents))
-    return base::unexpected(PasswordImporter::Status::IO_ERROR);
+    return base::unexpected(ImportResults::Status::IO_ERROR);
 
   return std::move(contents);
 }
@@ -150,11 +150,18 @@ void AddCredentialsCallback(
 
   UMA_HISTOGRAM_COUNTS_1M("PasswordManager.ImportedPasswordsPerUserInCSV",
                           import_results.number_imported);
+  for (const ImportEntry& entry : import_results.failed_imports) {
+    base::UmaHistogramEnumeration("PasswordManager.ImportEntryStatus",
+                                  entry.status);
+  }
 
   base::UmaHistogramLongTimes("PasswordManager.ImportDuration",
                               base::Time::Now() - start_time);
 
   import_results.status = password_manager::ImportResults::Status::SUCCESS;
+  base::UmaHistogramEnumeration("PasswordManager.ImportResultsStatus",
+                                import_results.status);
+
   std::move(import_results_callback).Run(std::move(import_results));
 }
 
@@ -173,19 +180,16 @@ const mojo::Remote<mojom::CSVPasswordParser>& PasswordImporter::GetParser() {
   return parser_;
 }
 
-PasswordImporter::Status PasswordImporter::GetStatus() const {
-  return status_;
-}
-
 void PasswordImporter::ParseCSVPasswordsInSandbox(
     PasswordImporter::CompletionCallback completion,
-    base::expected<std::string, PasswordImporter::Status> result) {
+    base::expected<std::string, ImportResults::Status> result) {
   // Currently, CSV is the only supported format.
   if (!result.has_value()) {
     this->status_ = result.error();
+    base::UmaHistogramEnumeration("PasswordManager.ImportResultsStatus",
+                                  this->status_);
     std::move(completion).Run(nullptr);
   } else {
-    this->status_ = PasswordImporter::Status::SUCCESS;
     GetParser()->ParseCSV(std::move(result.value()), std::move(completion));
   }
 }
@@ -211,18 +215,27 @@ void PasswordImporter::ConsumePasswords(
     std::string file_name,
     password_manager::PasswordForm::Store store,
     password_manager::mojom::CSVPasswordSequencePtr seq) {
-  password_manager::ImportResults results;
+  ImportResults results;
   results.file_name = std::move(file_name);
+  results.status = status_;
+
   if (!seq) {
-    results.status = password_manager::ImportResults::Status::BAD_FORMAT;
+    // A nullptr returned by the parser means a bad format.
+    if (results.status == ImportResults::Status::NONE) {
+      results.status = password_manager::ImportResults::Status::BAD_FORMAT;
+      base::UmaHistogramEnumeration("PasswordManager.ImportResultsStatus",
+                                    results.status);
+    }
+
     std::move(results_callback_).Run(std::move(results));
     return;
   }
   if (seq->csv_passwords.size() > MAX_PASSWORDS_PER_IMPORT) {
     results.status =
         password_manager::ImportResults::Status::NUM_PASSWORDS_EXCEEDED;
+    base::UmaHistogramEnumeration("PasswordManager.ImportResultsStatus",
+                                  results.status);
     std::move(results_callback_).Run(results);
-    // TODO(crbug/1325290): log to a histogram.
     return;
   }
 

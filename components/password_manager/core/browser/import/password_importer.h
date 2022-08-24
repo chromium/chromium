@@ -23,16 +23,6 @@ class SavedPasswordsPresenter;
 // performed using a utility SandBox process.
 class PasswordImporter {
  public:
-  enum Status {
-    NONE,
-    SUCCESS,
-    IO_ERROR,
-    SYNTAX_ERROR,
-    SEMANTIC_ERROR,
-    LARGE_FILE,
-    MAX_STATUS
-  };
-
   static constexpr size_t MAX_PASSWORDS_PER_IMPORT = 3000;
 
   // CompletionCallback is the type of the processing function for parsed
@@ -63,9 +53,6 @@ class PasswordImporter {
   void SetServiceForTesting(
       mojo::PendingRemote<mojom::CSVPasswordParser> parser);
 
-  // Returns the import status.
-  Status GetStatus() const;
-
   bool IsRunning() const { return !results_callback_.is_null(); }
 
  private:
@@ -73,7 +60,7 @@ class PasswordImporter {
   // asynchronously calls |completion| with the results.
   void ParseCSVPasswordsInSandbox(
       CompletionCallback completion,
-      base::expected<std::string, PasswordImporter::Status> result);
+      base::expected<std::string, ImportResults::Status> result);
 
   void ConsumePasswords(std::string file_name,
                         password_manager::PasswordForm::Store store,
@@ -83,7 +70,7 @@ class PasswordImporter {
 
   mojo::Remote<mojom::CSVPasswordParser> parser_;
 
-  Status status_{Status::NONE};
+  ImportResults::Status status_ = ImportResults::Status::NONE;
 
   ImportResultsCallback results_callback_;
 
