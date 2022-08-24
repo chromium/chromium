@@ -2796,18 +2796,21 @@ class SharedStoragePrivateAggregationEnabledBrowserTest
 
     a_test_origin_ = https_server()->GetOrigin("a.test");
 
-    private_aggregation_host_ = new PrivateAggregationHost(
-        /*on_report_request_received=*/mock_callback_.Get());
+    auto* storage_partition_impl =
+        static_cast<StoragePartitionImpl*>(shell()
+                                               ->web_contents()
+                                               ->GetBrowserContext()
+                                               ->GetDefaultStoragePartition());
 
-    static_cast<StoragePartitionImpl*>(shell()
-                                           ->web_contents()
-                                           ->GetBrowserContext()
-                                           ->GetDefaultStoragePartition())
-        ->OverridePrivateAggregationManagerForTesting(
-            std::make_unique<TestPrivateAggregationManagerImpl>(
-                std::make_unique<MockPrivateAggregationBudgeter>(),
-                base::WrapUnique<PrivateAggregationHost>(
-                    private_aggregation_host_)));
+    private_aggregation_host_ = new PrivateAggregationHost(
+        /*on_report_request_received=*/mock_callback_.Get(),
+        storage_partition_impl->browser_context());
+
+    storage_partition_impl->OverridePrivateAggregationManagerForTesting(
+        std::make_unique<TestPrivateAggregationManagerImpl>(
+            std::make_unique<MockPrivateAggregationBudgeter>(),
+            base::WrapUnique<PrivateAggregationHost>(
+                private_aggregation_host_)));
 
     EXPECT_TRUE(NavigateToURL(
         shell(), https_server()->GetURL("a.test", kSimplePagePath)));

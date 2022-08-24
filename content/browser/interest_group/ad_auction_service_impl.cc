@@ -467,7 +467,8 @@ void AdAuctionServiceImpl::SendPrivateAggregationRequests(
   for (auto& [origin, requests] : private_aggregation_requests) {
     mojo::Remote<mojom::PrivateAggregationHost> remote;
     if (!private_aggregation_manager_->BindNewReceiver(
-            origin, PrivateAggregationBudgetKey::Api::kFledge,
+            origin, main_frame_origin_,
+            PrivateAggregationBudgetKey::Api::kFledge,
             remote.BindNewPipeAndPassReceiver())) {
       continue;
     }

@@ -687,7 +687,7 @@ SharedStorageWorkletHost::MaybeBindPrivateAggregationHost() {
   mojo::PendingRemote<content::mojom::PrivateAggregationHost>
       pending_pa_host_remote;
   if (!private_aggregation_manager->BindNewReceiver(
-          shared_storage_origin_,
+          shared_storage_origin_, main_frame_origin_,
           PrivateAggregationBudgetKey::Api::kSharedStorage,
           pending_pa_host_remote.InitWithNewPipeAndPassReceiver())) {
     return mojo::PendingRemote<content::mojom::PrivateAggregationHost>();

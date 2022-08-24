@@ -48,6 +48,7 @@ class CONTENT_EXPORT PrivateAggregationManagerImpl
   // PrivateAggregationManager:
   [[nodiscard]] bool BindNewReceiver(
       url::Origin worklet_origin,
+      url::Origin top_frame_origin,
       PrivateAggregationBudgetKey::Api api_for_budgeting,
       mojo::PendingReceiver<mojom::PrivateAggregationHost> pending_receiver)
       override;

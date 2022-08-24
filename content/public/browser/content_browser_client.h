@@ -872,6 +872,13 @@ class CONTENT_EXPORT ContentBrowserClient {
                                       const url::Origin& top_frame_origin,
                                       const url::Origin& accessing_origin);
 
+  // Allows the embedder to control if Private Aggregation API operations can
+  // happen in a given context.
+  virtual bool IsPrivateAggregationAllowed(
+      content::BrowserContext* browser_context,
+      const url::Origin& top_frame_origin,
+      const url::Origin& reporting_origin);
+
 #if BUILDFLAG(IS_CHROMEOS)
   // Notification that a trust anchor was used by the given user.
   virtual void OnTrustAnchorUsed(BrowserContext* browser_context) {}

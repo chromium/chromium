@@ -155,6 +155,12 @@ class PrivacySandboxSettings : public KeyedService {
   bool IsSharedStorageAllowed(const url::Origin& top_frame_origin,
                               const url::Origin& accessing_origin) const;
 
+  // Determines whether the Private Aggregation API is allowable in a particular
+  // context. `top_frame_origin` is the associated top-frame origin of the
+  // calling context.
+  bool IsPrivateAggregationAllowed(const url::Origin& top_frame_origin,
+                                   const url::Origin& reporting_origin) const;
+
   // Returns whether the profile has the Privacy Sandbox enabled. This consults
   // the main preference, as well as the delegate to check whether the sandbox
   // is restricted. It does not consider any cookie settings. A return value of

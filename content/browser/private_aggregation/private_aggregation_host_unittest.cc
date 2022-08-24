@@ -18,8 +18,12 @@
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
+#include "content/browser/private_aggregation/private_aggregation_test_utils.h"
 #include "content/common/aggregatable_report.mojom.h"
 #include "content/common/private_aggregation_host.mojom.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
+#include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -42,7 +46,8 @@ class PrivateAggregationHostTest : public testing::Test {
 
   void SetUp() override {
     host_ = std::make_unique<PrivateAggregationHost>(
-        /*on_report_request_received=*/mock_callback_.Get());
+        /*on_report_request_received=*/mock_callback_.Get(),
+        /*browser_context=*/&test_browser_context_);
   }
 
   void TearDown() override { host_.reset(); }
@@ -54,8 +59,9 @@ class PrivateAggregationHostTest : public testing::Test {
   std::unique_ptr<PrivateAggregationHost> host_;
 
  private:
-  base::test::TaskEnvironment task_environment_{
+  BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  TestBrowserContext test_browser_context_;
 };
 
 }  // namespace
@@ -64,9 +70,11 @@ TEST_F(PrivateAggregationHostTest,
        SendHistogramReport_ReportRequestHasCorrectMembers) {
   const url::Origin kExampleOrigin =
       url::Origin::Create(GURL("https://example.com"));
+  const url::Origin kMainFrameOrigin =
+      url::Origin::Create(GURL("https://main_frame.com"));
 
   mojo::Remote<mojom::PrivateAggregationHost> remote;
-  EXPECT_TRUE(host_->BindNewReceiver(kExampleOrigin,
+  EXPECT_TRUE(host_->BindNewReceiver(kExampleOrigin, kMainFrameOrigin,
                                      PrivateAggregationBudgetKey::Api::kFledge,
                                      remote.BindNewPipeAndPassReceiver()));
 
@@ -122,6 +130,8 @@ TEST_F(PrivateAggregationHostTest,
 TEST_F(PrivateAggregationHostTest, ReportingPath) {
   const url::Origin kExampleOrigin =
       url::Origin::Create(GURL("https://example.com"));
+  const url::Origin kMainFrameOrigin =
+      url::Origin::Create(GURL("https://main_frame.com"));
 
   const PrivateAggregationBudgetKey::Api apis[] = {
       PrivateAggregationBudgetKey::Api::kFledge,
@@ -132,8 +142,9 @@ TEST_F(PrivateAggregationHostTest, ReportingPath) {
       /*n=*/2};
 
   for (int i = 0; i < 2; i++) {
-    EXPECT_TRUE(host_->BindNewReceiver(
-        kExampleOrigin, apis[i], remotes[i].BindNewPipeAndPassReceiver()));
+    EXPECT_TRUE(
+        host_->BindNewReceiver(kExampleOrigin, kMainFrameOrigin, apis[i],
+                               remotes[i].BindNewPipeAndPassReceiver()));
     EXPECT_CALL(mock_callback_,
                 Run(_, Property(&PrivateAggregationBudgetKey::api, apis[i])))
         .WillOnce(MoveArg<0>(&validated_requests[i]));
@@ -163,21 +174,25 @@ TEST_F(PrivateAggregationHostTest,
       url::Origin::Create(GURL("https://a.example"));
   const url::Origin kExampleOriginB =
       url::Origin::Create(GURL("https://b.example"));
+  const url::Origin kMainFrameOrigin =
+      url::Origin::Create(GURL("https://main_frame.com"));
 
   std::vector<mojo::Remote<mojom::PrivateAggregationHost>> remotes(/*n=*/4);
 
-  EXPECT_TRUE(host_->BindNewReceiver(kExampleOriginA,
+  EXPECT_TRUE(host_->BindNewReceiver(kExampleOriginA, kMainFrameOrigin,
                                      PrivateAggregationBudgetKey::Api::kFledge,
                                      remotes[0].BindNewPipeAndPassReceiver()));
-  EXPECT_TRUE(host_->BindNewReceiver(kExampleOriginB,
+  EXPECT_TRUE(host_->BindNewReceiver(kExampleOriginB, kMainFrameOrigin,
                                      PrivateAggregationBudgetKey::Api::kFledge,
                                      remotes[1].BindNewPipeAndPassReceiver()));
-  EXPECT_TRUE(host_->BindNewReceiver(
-      kExampleOriginA, PrivateAggregationBudgetKey::Api::kSharedStorage,
-      remotes[2].BindNewPipeAndPassReceiver()));
-  EXPECT_TRUE(host_->BindNewReceiver(
-      kExampleOriginB, PrivateAggregationBudgetKey::Api::kSharedStorage,
-      remotes[3].BindNewPipeAndPassReceiver()));
+  EXPECT_TRUE(
+      host_->BindNewReceiver(kExampleOriginA, kMainFrameOrigin,
+                             PrivateAggregationBudgetKey::Api::kSharedStorage,
+                             remotes[2].BindNewPipeAndPassReceiver()));
+  EXPECT_TRUE(
+      host_->BindNewReceiver(kExampleOriginB, kMainFrameOrigin,
+                             PrivateAggregationBudgetKey::Api::kSharedStorage,
+                             remotes[3].BindNewPipeAndPassReceiver()));
 
   // Use the bucket as a sentinel to ensure that calls were routed correctly.
   EXPECT_CALL(mock_callback_,
@@ -233,14 +248,16 @@ TEST_F(PrivateAggregationHostTest, BindUntrustworthyOriginReceiver_Fails) {
   const url::Origin kInsecureOrigin =
       url::Origin::Create(GURL("http://example.com"));
   const url::Origin kOpaqueOrigin;
+  const url::Origin kMainFrameOrigin =
+      url::Origin::Create(GURL("https://main_frame.com"));
 
   mojo::Remote<mojom::PrivateAggregationHost> remote_1;
-  EXPECT_FALSE(host_->BindNewReceiver(kInsecureOrigin,
+  EXPECT_FALSE(host_->BindNewReceiver(kInsecureOrigin, kMainFrameOrigin,
                                       PrivateAggregationBudgetKey::Api::kFledge,
                                       remote_1.BindNewPipeAndPassReceiver()));
 
   mojo::Remote<mojom::PrivateAggregationHost> remote_2;
-  EXPECT_FALSE(host_->BindNewReceiver(kOpaqueOrigin,
+  EXPECT_FALSE(host_->BindNewReceiver(kOpaqueOrigin, kMainFrameOrigin,
                                       PrivateAggregationBudgetKey::Api::kFledge,
                                       remote_2.BindNewPipeAndPassReceiver()));
 
@@ -264,9 +281,11 @@ TEST_F(PrivateAggregationHostTest, BindUntrustworthyOriginReceiver_Fails) {
 TEST_F(PrivateAggregationHostTest, InvalidRequest_Rejected) {
   const url::Origin kExampleOrigin =
       url::Origin::Create(GURL("https://example.com"));
+  const url::Origin kMainFrameOrigin =
+      url::Origin::Create(GURL("https://main_frame.com"));
 
   mojo::Remote<mojom::PrivateAggregationHost> remote;
-  EXPECT_TRUE(host_->BindNewReceiver(kExampleOrigin,
+  EXPECT_TRUE(host_->BindNewReceiver(kExampleOrigin, kMainFrameOrigin,
                                      PrivateAggregationBudgetKey::Api::kFledge,
                                      remote.BindNewPipeAndPassReceiver()));
 
@@ -292,6 +311,66 @@ TEST_F(PrivateAggregationHostTest, InvalidRequest_Rejected) {
   remote->SendHistogramReport(std::move(too_many_contributions),
                               mojom::AggregationServiceMode::kDefault);
   remote.FlushForTesting();
+}
+
+TEST_F(PrivateAggregationHostTest, PrivateAggregationAllowed_RequestSucceeds) {
+  MockPrivateAggregationContentBrowserClient browser_client;
+  ScopedContentBrowserClientSetting setting(&browser_client);
+
+  const url::Origin kExampleOrigin =
+      url::Origin::Create(GURL("https://example.com"));
+  const url::Origin kMainFrameOrigin =
+      url::Origin::Create(GURL("https://main_frame.com"));
+
+  mojo::Remote<mojom::PrivateAggregationHost> remote;
+  EXPECT_TRUE(host_->BindNewReceiver(kExampleOrigin, kMainFrameOrigin,
+                                     PrivateAggregationBudgetKey::Api::kFledge,
+                                     remote.BindNewPipeAndPassReceiver()));
+
+  // If the API is enabled, the call should succeed.
+  EXPECT_CALL(browser_client,
+              IsPrivateAggregationAllowed(_, kMainFrameOrigin, kExampleOrigin))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(mock_callback_, Run);
+
+  std::vector<mojom::AggregatableReportHistogramContributionPtr> contributions;
+  contributions.push_back(mojom::AggregatableReportHistogramContribution::New(
+      /*bucket=*/123, /*value=*/456));
+  remote->SendHistogramReport(std::move(contributions),
+                              mojom::AggregationServiceMode::kDefault);
+
+  remote.FlushForTesting();
+  EXPECT_TRUE(remote.is_connected());
+}
+
+TEST_F(PrivateAggregationHostTest, PrivateAggregationDisallowed_RequestFails) {
+  MockPrivateAggregationContentBrowserClient browser_client;
+  ScopedContentBrowserClientSetting setting(&browser_client);
+
+  const url::Origin kExampleOrigin =
+      url::Origin::Create(GURL("https://example.com"));
+  const url::Origin kMainFrameOrigin =
+      url::Origin::Create(GURL("https://main_frame.com"));
+
+  mojo::Remote<mojom::PrivateAggregationHost> remote;
+  EXPECT_TRUE(host_->BindNewReceiver(kExampleOrigin, kMainFrameOrigin,
+                                     PrivateAggregationBudgetKey::Api::kFledge,
+                                     remote.BindNewPipeAndPassReceiver()));
+
+  // If the API is enabled, the call should succeed.
+  EXPECT_CALL(browser_client,
+              IsPrivateAggregationAllowed(_, kMainFrameOrigin, kExampleOrigin))
+      .WillOnce(testing::Return(false));
+  EXPECT_CALL(mock_callback_, Run).Times(0);
+
+  std::vector<mojom::AggregatableReportHistogramContributionPtr> contributions;
+  contributions.push_back(mojom::AggregatableReportHistogramContribution::New(
+      /*bucket=*/123, /*value=*/456));
+  remote->SendHistogramReport(std::move(contributions),
+                              mojom::AggregationServiceMode::kDefault);
+
+  remote.FlushForTesting();
+  EXPECT_TRUE(remote.is_connected());
 }
 
 }  // namespace content
