@@ -323,6 +323,7 @@ CONTENT_EXPORT extern const base::Feature kRequestDesktopSiteExceptions;
 CONTENT_EXPORT extern const base::Feature kUserMediaScreenCapturing;
 CONTENT_EXPORT extern const base::Feature kWarmUpNetworkProcess;
 CONTENT_EXPORT extern const base::Feature kWebNfc;
+CONTENT_EXPORT extern const base::Feature kWebViewThrottleBackgroundBeginFrame;
 
 extern const char kDragAndDropMovementThresholdDipParam[];
 

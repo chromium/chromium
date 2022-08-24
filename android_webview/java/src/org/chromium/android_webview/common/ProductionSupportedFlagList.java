@@ -366,6 +366,8 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(MetricsFeatures.CONSOLIDATE_METRICS_SERVICE_INITIAL_LOG_LOGIC,
                     "Controls whether the logic to build the initial UMA log is the same as"
                             + " other logs."),
+            Flag.baseFeature(ContentFeatures.WEBVIEW_THROTTLE_BACKGROUND_BEGIN_FRAME,
+                    "Enable to throttle begin frames when webview is not being drawn"),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

@@ -207,6 +207,9 @@ class CONTENT_EXPORT SynchronousCompositorHost
   // issued. Used to control action dispatch at the next |OnBeginFrame()| call.
   uint32_t outstanding_begin_frame_requests_ = 0;
 
+  uint32_t num_invalidates_since_last_draw_ = 0u;
+  uint32_t num_begin_frames_to_skip_ = 0u;
+
   // The begin frame source being observed.  Null if none.
   raw_ptr<viz::BeginFrameSource> begin_frame_source_ = nullptr;
   viz::BeginFrameArgs last_begin_frame_args_;

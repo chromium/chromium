@@ -1247,6 +1247,10 @@ const base::Feature kWarmUpNetworkProcess{"WarmUpNetworkProcess",
 // https://w3c.github.io/web-nfc/
 const base::Feature kWebNfc{"WebNFC", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Throttle begin frame if Android WebView isn't getting draws.
+const base::Feature kWebViewThrottleBackgroundBeginFrame{
+    "WebViewThrottleBackgroundBeginFrame", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When the context menu is triggered, the browser allows motion in a small
 // region around the initial touch location menu to allow for finger jittering.
 // This param holds the movement threshold in DIPs to consider drag an
