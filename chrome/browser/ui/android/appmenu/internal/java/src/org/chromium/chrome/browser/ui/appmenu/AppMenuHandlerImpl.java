@@ -20,7 +20,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
@@ -200,14 +199,7 @@ class AppMenuHandlerImpl
         registerViewBinders(customViewBinders, customViewTypeOffsetMap, adapter,
                 mDelegate.shouldShowIconBeforeItem());
 
-        Rect appRect;
-        if (ChromeFeatureList.sCctResizableWindowAboveNavbar.isEnabled()) {
-            // Get the height and width of the display.
-            appRect = new Rect();
-            mDecorView.getWindowVisibleDisplayFrame(appRect);
-        } else {
-            appRect = mAppRect.get();
-        }
+        Rect appRect = mAppRect.get();
 
         // Use full size of window for abnormal appRect.
         if (appRect.left < 0 && appRect.top < 0) {

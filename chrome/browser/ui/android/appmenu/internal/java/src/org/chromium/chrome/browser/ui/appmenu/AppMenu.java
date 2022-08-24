@@ -42,7 +42,6 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.appmenu.internal.R;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
@@ -300,8 +299,7 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
                 popupHeight, anchorView.getRootView().getLayoutDirection());
         mPopup.setContentView(contentView);
 
-        if (!ChromeFeatureList.sCctResizableWindowAboveNavbar.isEnabled()
-                && popupHeight + popupPosition[1] > visibleDisplayFrame.bottom) {
+        if (popupHeight + popupPosition[1] > visibleDisplayFrame.bottom) {
             mPopup.setHeight(visibleDisplayFrame.height());
         }
 

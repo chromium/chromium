@@ -272,8 +272,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     @Override
     protected Rect getAppRectInWindow() {
         // This is necessary if app handler cannot rely on the popup window that ensures the menu
-        // will not be clipped off the screen, which can happen if Window#FLAGS_LAYOUT_NO_LIMITS
-        // is set to allow the app to be drawn outside the screen in partial CCT.
+        // will not be clipped off the screen, which can happen in partial CCT.
         if (mIntentDataProvider.get().isPartialHeightCustomTab()) {
             View coord = mActivity.findViewById(R.id.coordinator);
             int[] location = new int[2];
