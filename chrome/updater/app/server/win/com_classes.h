@@ -47,6 +47,8 @@ class UpdateStateImpl
   IFACEMETHODIMP get_errorCategory(LONG* error_category) override;
   IFACEMETHODIMP get_errorCode(LONG* error_code) override;
   IFACEMETHODIMP get_extraCode1(LONG* extra_code1) override;
+  IFACEMETHODIMP get_installerText(BSTR* installer_text) override;
+  IFACEMETHODIMP get_installerCommandLine(BSTR* installer_cmd_line) override;
 
  private:
   ~UpdateStateImpl() override = default;

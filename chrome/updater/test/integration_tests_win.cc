@@ -1245,60 +1245,75 @@ void UninstallApp(UpdaterScope scope, const std::string& app_id) {
 }
 
 void RunOfflineInstall(UpdaterScope scope) {
-  constexpr wchar_t kTestRegKey[] = L"software\\updater\\test";
-  constexpr wchar_t kTestRegValue[] = L"install_result";
+  constexpr wchar_t kTestAppID[] = L"{CDABE316-39CD-43BA-8440-6D1E0547AEE6}";
   constexpr char kManifestFormat[] =
-      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-      "<response protocol=\"3.0\">"
-      "  <app appid=\"{CDABE316-39CD-43BA-8440-6D1E0547AEE6}\" status=\"ok\">"
-      "    <updatecheck status=\"ok\">"
-      "      <manifest version=\"1.2.3.4\">"
-      "        <packages>"
-      "          <package hash_sha256=\"sha256hash_foobar\""
-      "            name=\"reg.exe\" required=\"true\" size=\"%lld\"/>"
-      "        </packages>"
-      "        <actions>"
-      "          <action event=\"install\" needsadmin=\"false\""
-      "            run=\"reg.exe\""
-      "            arguments=\"ADD %s\\%ls /t REG_DWORD /v %ls /d 123 /f\"/>"
-      "        </actions>"
-      "      </manifest>"
-      "    </updatecheck>"
-      "    <data index=\"verboselogging\" name=\"install\" status=\"ok\">"
-      "      {\"distribution\": { \"verbose_logging\": true}}"
-      "    </data>"
-      "  </app>"
-      "</response>";
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+      "<response protocol=\"3.0\">\n"
+      "  <app appid=\"%ls\" status=\"ok\">\n"
+      "    <updatecheck status=\"ok\">\n"
+      "      <manifest version=\"1.2.3.4\">\n"
+      "        <packages>\n"
+      "          <package hash_sha256=\"sha256hash_foobar\"\n"
+      "            name=\"reg.exe\" required=\"true\" size=\"%lld\"/>\n"
+      "        </packages>\n"
+      "        <actions>\n"
+      "          <action event=\"install\"\n"
+      "            run=\"reg.exe\"\n"
+      "            arguments=\"IMPORT %s /REG:32\"/>\n"
+      "        </actions>\n"
+      "      </manifest>\n"
+      "    </updatecheck>\n"
+      "    <data index=\"verboselogging\" name=\"install\" status=\"ok\">\n"
+      "      {\"distribution\": { \"verbose_logging\": true}}\n"
+      "    </data>\n"
+      "  </app>\n"
+      "</response>\n";
 
-  HKEY key_hive =
-      scope == UpdaterScope::kSystem ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
+  const HKEY root = UpdaterScopeToHKeyRoot(scope);
+  const std::wstring app_client_state_key = GetAppClientStateKey(kTestAppID);
 
-  DeleteRegKey(key_hive, kTestRegKey);
+  EXPECT_TRUE(DeleteRegKey(root, app_client_state_key));
 
-  wchar_t reg_exe_path[MAX_PATH] = {0};
-  DWORD size = ExpandEnvironmentStrings(L"%SystemRoot%\\System32\\reg.exe",
-                                        reg_exe_path, std::size(reg_exe_path));
-  ASSERT_TRUE(size > 0 && size < MAX_PATH);
-  const base::FilePath exe_path(reg_exe_path);
-  ASSERT_TRUE(base::PathExists(exe_path));
+  base::FilePath reg_exe_path;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SYSTEM, &reg_exe_path));
+  reg_exe_path = reg_exe_path.Append(L"reg.exe");
+  ASSERT_TRUE(base::PathExists(reg_exe_path));
 
   base::ScopedTempDir temp_dir;
   EXPECT_TRUE(temp_dir.CreateUniqueTempDir());
   const base::FilePath& offline_dir = temp_dir.GetPath();
 
+  // Create installer result reg file. These are 32-bit registry values and
+  // must be imported with flag `/REG:32`.
+  constexpr char kRegFileName[] = "InstallerResult.reg";
+  constexpr char kInstallerResultRegFileFormat[] =
+      "Windows Registry Editor Version 5.00\n"
+      "\n"
+      "[%s\\%ls]\n"
+      "\"InstallerResult\"=dword:00000000\n"
+      "\"InstallerError\"=dword:00000000\n"
+      "\"InstallerExtraCode1\"=dword:00000000\n"
+      "\"InstallerResultUIString\"=\"CoolApp\"\n"
+      "\"InstallerSuccessLaunchCmdLine\"=\"\"\n";
+  base::FilePath installer_result_path = offline_dir.AppendASCII(kRegFileName);
+  EXPECT_TRUE(base::WriteFile(
+      installer_result_path,
+      base::StringPrintf(kInstallerResultRegFileFormat,
+                         scope == UpdaterScope::kSystem ? "HKEY_LOCAL_MACHINE"
+                                                        : "HKEY_CURRENT_USER",
+                         app_client_state_key.c_str())));
+
   // Create manifest file.
   base::FilePath manifest_path =
       offline_dir.Append(FILE_PATH_LITERAL("OfflineManifest.gup"));
   int64_t exe_size = 0;
-  EXPECT_TRUE(base::GetFileSize(exe_path, &exe_size));
+  EXPECT_TRUE(base::GetFileSize(reg_exe_path, &exe_size));
   const std::string manifest =
-      base::StringPrintf(kManifestFormat, exe_size,
-                         scope == UpdaterScope::kSystem ? "HKLM" : "HKCU",
-                         kTestRegKey, kTestRegValue);
+      base::StringPrintf(kManifestFormat, kTestAppID, exe_size, kRegFileName);
   EXPECT_TRUE(base::WriteFile(manifest_path, manifest));
 
   // Copy app installer.
-  ASSERT_TRUE(base::CopyFile(exe_path,
+  ASSERT_TRUE(base::CopyFile(reg_exe_path,
                              offline_dir.Append(FILE_PATH_LITERAL("reg.exe"))));
 
   // Trigger offline install.
@@ -1313,9 +1328,9 @@ void RunOfflineInstall(UpdaterScope scope) {
   if (scope == UpdaterScope::kSystem)
     offline_install_cmd.AppendSwitch(kSystemSwitch);
 
-  offline_install_cmd.AppendSwitchASCII(
+  offline_install_cmd.AppendSwitchNative(
       updater::kHandoffSwitch,
-      "appguid={CDABE316-39CD-43BA-8440-6D1E0547AEE6}&lang=en");
+      base::StrCat({L"appguid=", kTestAppID, L"&lang=en"}));
   offline_install_cmd.AppendSwitchASCII(
       updater::kSessionIdSwitch, "{E85204C6-6F2F-40BF-9E6C-4952208BB977}");
   offline_install_cmd.AppendSwitchNative(updater::kOfflineDirSwitch,
@@ -1326,7 +1341,7 @@ void RunOfflineInstall(UpdaterScope scope) {
 
   // Dismiss the installation completion dialog, then wait for the process exit.
   EXPECT_TRUE(WaitFor(base::BindRepeating(
-      [](HKEY key_hive, const wchar_t* test_key_name,
+      [](HKEY root, const wchar_t* test_key_name,
          const wchar_t* test_value_name) {
         // Enumerate the top-level dialogs to find the setup dialog.
         WindowEnumerator(
@@ -1358,17 +1373,17 @@ void RunOfflineInstall(UpdaterScope scope) {
         if (IsUpdaterRunning())
           return false;
 
-        // Wait for the app installer writes the expected reg value.
+        // Wait for the app installer to write the expected reg value.
         base::win::RegKey key;
-        DWORD value = 0;
-        return (ERROR_SUCCESS ==
-                    key.Open(key_hive, test_key_name, KEY_QUERY_VALUE) &&
-                ERROR_SUCCESS == key.ReadValueDW(test_value_name, &value) &&
-                value == 123);
+        std::wstring value;
+        return ERROR_SUCCESS ==
+                   key.Open(root, test_key_name, Wow6432(KEY_QUERY_VALUE)) &&
+               ERROR_SUCCESS == key.ReadValue(test_value_name, &value) &&
+               value == L"CoolApp";
       },
-      key_hive, kTestRegKey, kTestRegValue)));
+      root, app_client_state_key.c_str(), kRegValueInstallerResultUIString)));
 
-  DeleteRegKey(key_hive, kTestRegKey);
+  EXPECT_TRUE(DeleteRegKey(root, app_client_state_key));
 }
 
 }  // namespace updater::test

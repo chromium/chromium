@@ -26,6 +26,8 @@ interface IUpdateState : IUnknown {
   [propget] HRESULT errorCategory([out, retval] LONG*);
   [propget] HRESULT errorCode([out, retval] LONG*);
   [propget] HRESULT extraCode1([out, retval] LONG*);
+  [propget] HRESULT installerText([out, retval] BSTR*);
+  [propget] HRESULT installerCommandLine([out, retval] BSTR*);
 };
 
 [

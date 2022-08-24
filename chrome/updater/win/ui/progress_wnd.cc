@@ -518,6 +518,9 @@ void ProgressWnd::OnComplete(const ObserverCompletionInfo& observer_info) {
 
   bool launch_commands_succeeded = LaunchCmdLines(observer_info);
 
+  // TODO(crbug.com/1353148): Figure out how to display app-specific
+  // installation result in addition to `observer_info.completion_text`.
+
   CompletionCodes overall_completion_code =
       GetBundleOverallCompletionCode(observer_info);
   switch (overall_completion_code) {
