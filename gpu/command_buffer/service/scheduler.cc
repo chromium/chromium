@@ -320,8 +320,8 @@ void Scheduler::Sequence::PropagatePriority(SchedulingPriority priority) {
 }
 
 void Scheduler::Sequence::AddWaitingPriority(SchedulingPriority priority) {
-  TRACE_EVENT2("gpu", "Scheduler::Sequence::RemoveWaitingPriority",
-               "sequence_id", sequence_id_.GetUnsafeValue(), "new_priority",
+  TRACE_EVENT2("gpu", "Scheduler::Sequence::AddWaitingPriority", "sequence_id",
+               sequence_id_.GetUnsafeValue(), "new_priority",
                SchedulingPriorityToString(priority));
 
   waiting_priority_counts_[static_cast<int>(priority)]++;
