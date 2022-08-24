@@ -23,6 +23,10 @@
 #include "components/enterprise/browser/device_trust/device_trust_key_manager.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace enterprise_connectors {
 
 // static
@@ -48,7 +52,9 @@ bool DeviceTrustConnectorServiceFactory::ServiceIsCreatedWithBrowserContext()
 }
 
 DeviceTrustConnectorServiceFactory::DeviceTrustConnectorServiceFactory()
-    : ProfileKeyedServiceFactory("DeviceTrustConnectorService") {}
+    : ProfileKeyedServiceFactory(
+          "DeviceTrustConnectorService",
+          ProfileSelections::BuildForRegularAndIncognitoNonExperimental()) {}
 
 DeviceTrustConnectorServiceFactory::~DeviceTrustConnectorServiceFactory() =
     default;
@@ -56,6 +62,16 @@ DeviceTrustConnectorServiceFactory::~DeviceTrustConnectorServiceFactory() =
 KeyedService* DeviceTrustConnectorServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   auto* profile = Profile::FromBrowserContext(context);
+  // Disallow service for Incognito except for the sign-in profile of ChromeOS
+  // (on the login screen).
+  if (context->IsOffTheRecord()) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (!ash::ProfileHelper::IsSigninProfile(profile))
+      return nullptr;
+#else
+    return nullptr;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  }
 
   DeviceTrustConnectorService* service = nullptr;
 

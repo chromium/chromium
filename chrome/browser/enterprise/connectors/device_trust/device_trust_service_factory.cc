@@ -48,7 +48,9 @@ DeviceTrustService* DeviceTrustServiceFactory::GetForProfile(Profile* profile) {
 }
 
 DeviceTrustServiceFactory::DeviceTrustServiceFactory()
-    : ProfileKeyedServiceFactory("DeviceTrustService") {
+    : ProfileKeyedServiceFactory(
+          "DeviceTrustService",
+          ProfileSelections::BuildForRegularAndIncognitoNonExperimental()) {
   DependsOn(DeviceTrustConnectorServiceFactory::GetInstance());
   DependsOn(PolicyBlocklistFactory::GetInstance());
   DependsOn(policy::ManagementServiceFactory::GetInstance());
@@ -102,6 +104,10 @@ KeyedService* DeviceTrustServiceFactory::BuildServiceInstanceFor(
   auto* dt_connector_service =
       DeviceTrustConnectorServiceFactory::GetForProfile(profile);
 
+  // If `profile` is a OTR profile but not the login profile on ChromeOS login
+  // screen. Then `dt_connector_service` will be null. Hence a
+  // DeviceTrustService won't be created for OTR profiles besides the one
+  // mentioned before.
   if (!dt_connector_service) {
     return nullptr;
   }

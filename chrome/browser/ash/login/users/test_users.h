@@ -17,6 +17,7 @@ extern const char kSecondUserCorpExampleComEmail[];
 extern const char kThirdUserCorpExampleComEmail[];
 extern const char kFourthUserCorpExampleTestEmail[];
 extern const char kFifthUserExampleTestEmail[];
+extern const char kSixthUserCorpExampleTestEmail[];
 
 }  // namespace saml_test_users
 }  // namespace ash

@@ -12,6 +12,7 @@ const char kSecondUserCorpExampleComEmail[] = "bob@corp.example.com";
 const char kThirdUserCorpExampleComEmail[] = "carol@corp.example.com";
 const char kFourthUserCorpExampleTestEmail[] = "dan@corp.example.test";
 const char kFifthUserExampleTestEmail[] = "eve@example.test";
+const char kSixthUserCorpExampleTestEmail[] = "fatima@example.test";
 
 }  // namespace saml_test_users
 }  // namespace ash

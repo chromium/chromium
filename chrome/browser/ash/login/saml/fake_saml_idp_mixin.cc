@@ -40,8 +40,12 @@ constexpr char kSamlLoginPath[] = "SAML";
 constexpr char kSamlLoginAuthPath[] = "SAMLAuth";
 constexpr char kSamlLoginWithDeviceAttestationPath[] =
     "SAML-with-device-attestation";
+constexpr char kSamlLoginWithDeviceTrustPath[] = "SAML-with-device-trust";
 constexpr char kSamlLoginCheckDeviceAnswerPath[] = "SAML-check-device-answer";
 
+// Must be equal to SAML_VERIFIED_ACCESS_RESPONSE_HEADER from
+// chrome/browser/enterprise/connectors/device_trust/navigation_throttle.cc.
+constexpr char kDeviceTrustHeader[] = "x-device-trust";
 // Must be equal to SAML_VERIFIED_ACCESS_CHALLENGE_HEADER from saml_handler.js.
 constexpr char kSamlVerifiedAccessChallengeHeader[] =
     "x-verified-access-challenge";
@@ -162,6 +166,10 @@ void FakeSamlIdpMixin::SetSamlResponseFile(const std::string& xml_file) {
   base::Base64Encode(saml_response_, &saml_response_);
 }
 
+bool FakeSamlIdpMixin::DeviceTrustHeaderRecieved() const {
+  return device_trust_header_recieved_;
+}
+
 bool FakeSamlIdpMixin::IsLastChallengeResponseExists() const {
   return challenge_response_.has_value();
 }
@@ -189,6 +197,11 @@ GURL FakeSamlIdpMixin::GetHttpSamlPageUrl() const {
 GURL FakeSamlIdpMixin::GetSamlWithDeviceAttestationUrl() const {
   return saml_server_.GetURL(
       kIdPHost, std::string("/") + kSamlLoginWithDeviceAttestationPath);
+}
+
+GURL FakeSamlIdpMixin::GetSamlWithDeviceTrustUrl() const {
+  return saml_server_.GetURL(kIdPHost,
+                             std::string("/") + kSamlLoginWithDeviceTrustPath);
 }
 
 GURL FakeSamlIdpMixin::GetSamlAuthPageUrl() const {
@@ -230,6 +243,8 @@ std::unique_ptr<net::test_server::HttpResponse> FakeSamlIdpMixin::HandleRequest(
       return BuildResponseForLoginAuth(request, request_url);
     case RequestType::kLoginWithDeviceAttestation:
       return BuildResponseForLoginWithDeviceAttestation(request, request_url);
+    case RequestType::kLoginWithDeviceTrust:
+      return BuildResponseForLoginWithDeviceTrust(request, request_url);
     case RequestType::kLoginCheckDeviceAnswer:
       return BuildResponseForCheckDeviceAnswer(request, request_url);
     case RequestType::kUnknown:
@@ -248,6 +263,8 @@ FakeSamlIdpMixin::RequestType FakeSamlIdpMixin::ParseRequestTypeFromRequestPath(
     return RequestType::kLoginAuth;
   if (request_path == GetSamlWithDeviceAttestationUrl().path())
     return RequestType::kLoginWithDeviceAttestation;
+  if (request_path == GetSamlWithDeviceTrustUrl().path())
+    return RequestType::kLoginWithDeviceTrust;
   if (request_path == GetSamlWithCheckDeviceAnswerUrl().path())
     return RequestType::kLoginCheckDeviceAnswer;
 
@@ -302,6 +319,24 @@ FakeSamlIdpMixin::BuildResponseForLoginWithDeviceAttestation(
   http_response->AddCustomHeader(kSamlVerifiedAccessChallengeHeader,
                                  GetTpmChallengeBase64());
 
+  return http_response;
+}
+
+std::unique_ptr<HttpResponse>
+FakeSamlIdpMixin::BuildResponseForLoginWithDeviceTrust(
+    const HttpRequest& request,
+    const GURL& request_url) {
+  std::string relay_state = GetRelayState(request);
+
+  device_trust_header_recieved_ =
+      base::Contains(request.headers, kDeviceTrustHeader);
+
+  GURL redirect_url =
+      net::AppendQueryParameter(GetSamlPageUrl(), kRelayState, relay_state);
+
+  auto http_response = std::make_unique<BasicHttpResponse>();
+  http_response->set_code(net::HTTP_TEMPORARY_REDIRECT);
+  http_response->AddCustomHeader("Location", redirect_url.spec());
   return http_response;
 }
 
