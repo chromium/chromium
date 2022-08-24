@@ -2752,6 +2752,9 @@ void AXTree::RecordError(const AXTreeUpdateState& update_state,
 
   LOG(ERROR) << new_error;
 
+  if (disallow_fail_fast_)
+    return;
+
   static auto* const ax_tree_error_key = base::debug::AllocateCrashKeyString(
       "ax_tree_error", base::debug::CrashKeySize::Size256);
   static auto* const ax_tree_update_key = base::debug::AllocateCrashKeyString(

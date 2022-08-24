@@ -200,6 +200,8 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
   // for testing and debugging.
   const std::string& error() const { return error_; }
 
+  void DisallowFailFastForFuzzing() { disallow_fail_fast_ = true; }
+
   int size() { return static_cast<int>(id_map_.size()); }
 
   // Return a negative number that's suitable to use for a node ID for
@@ -403,6 +405,7 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
   base::ObserverList<AXTreeObserver> observers_;
   raw_ptr<AXNode> root_ = nullptr;
   std::string error_;
+  bool disallow_fail_fast_ = false;
   AXTreeData data_;
   base::flat_map<AXNodeID, std::unique_ptr<AXNode>> id_map_;
 
