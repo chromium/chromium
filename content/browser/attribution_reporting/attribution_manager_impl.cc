@@ -248,12 +248,12 @@ std::unique_ptr<AttributionStorageDelegate> MakeStorageDelegate() {
 
 bool IsOperationAllowed(
     StoragePartitionImpl* storage_partition,
-    ContentBrowserClient::ConversionMeasurementOperation operation,
+    ContentBrowserClient::AttributionReportingOperation operation,
     const url::Origin* source_origin,
     const url::Origin* destination_origin,
     const url::Origin* reporting_origin) {
   DCHECK(storage_partition);
-  return GetContentClient()->browser()->IsConversionMeasurementOperationAllowed(
+  return GetContentClient()->browser()->IsAttributionReportingOperationAllowed(
       storage_partition->browser_context(), operation, source_origin,
       destination_origin, reporting_origin);
 }
@@ -301,7 +301,7 @@ bool AttributionManagerImpl::IsReportAllowed(
       report.attribution_info().source.common_info();
   return IsOperationAllowed(
       storage_partition_.get(),
-      ContentBrowserClient::ConversionMeasurementOperation::kReport,
+      ContentBrowserClient::AttributionReportingOperation::kReport,
       &common_info.source_origin(), &common_info.destination_origin(),
       &common_info.reporting_origin());
 }
@@ -509,7 +509,7 @@ void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
 
       bool allowed = IsOperationAllowed(
           manager->storage_partition_.get(),
-          ContentBrowserClient::ConversionMeasurementOperation::kImpression,
+          ContentBrowserClient::AttributionReportingOperation::kSource,
           &common_info.source_origin(),
           /*destination_origin=*/nullptr, &common_info.reporting_origin());
       RecordRegisterImpressionAllowed(allowed);
@@ -530,7 +530,7 @@ void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
     void operator()(AttributionTrigger trigger) {
       bool allowed = IsOperationAllowed(
           manager->storage_partition_.get(),
-          ContentBrowserClient::ConversionMeasurementOperation::kConversion,
+          ContentBrowserClient::AttributionReportingOperation::kTrigger,
           /*source_origin=*/nullptr, &trigger.destination_origin(),
           &trigger.reporting_origin());
       RecordRegisterConversionAllowed(allowed);

@@ -103,20 +103,19 @@ class PrivacySandboxSettings : public KeyedService {
   // future, in which case no history is eligible.
   base::Time TopicsDataAccessibleSince() const;
 
-  // Determines whether Conversion Measurement is allowable in a particular
-  // context. Should be called at both impression & conversion. At each of these
-  // points |top_frame_origin| is the same as either the impression origin or
-  // the conversion origin respectively.
-  bool IsConversionMeasurementAllowed(
-      const url::Origin& top_frame_origin,
-      const url::Origin& reporting_origin) const;
+  // Determines whether Attribution Reporting is allowable in a particular
+  // context. Should be called at both source and trigger registration. At each
+  // of these points |top_frame_origin| is the same as either the source origin
+  // or the destination origin respectively.
+  bool IsAttributionReportingAllowed(const url::Origin& top_frame_origin,
+                                     const url::Origin& reporting_origin) const;
 
-  // Called before sending the associated conversion report to
+  // Called before sending the associated attribution report to
   // |reporting_origin|. Re-checks that |reporting_origin| is allowable as a 3P
-  // on both |impression_origin| and |conversion_origin|.
-  bool ShouldSendConversionReport(const url::Origin& impression_origin,
-                                  const url::Origin& conversion_origin,
-                                  const url::Origin& reporting_origin) const;
+  // on both |source_origin| and |destination_origin|.
+  bool MaySendAttributionReport(const url::Origin& source_origin,
+                                const url::Origin& destination_origin,
+                                const url::Origin& reporting_origin) const;
 
   // Sets the ability for |top_frame_etld_plus1| to join the profile to interest
   // groups to |allowed|. This information is stored in preferences, and is made

@@ -1220,8 +1220,8 @@ TEST_F(AttributionManagerImplTest,
   MockAttributionReportingContentBrowserClient browser_client;
   EXPECT_CALL(
       browser_client,
-      IsConversionMeasurementOperationAllowed(
-          _, ContentBrowserClient::ConversionMeasurementOperation::kImpression,
+      IsAttributionReportingOperationAllowed(
+          _, ContentBrowserClient::AttributionReportingOperation::kSource,
           Pointee(url::Origin::Create(GURL("https://impression.test/"))),
           IsNull(), Pointee(url::Origin::Create(GURL("https://report.test/")))))
       .WillOnce(Return(false));
@@ -1258,14 +1258,14 @@ TEST_F(AttributionManagerImplTest,
   MockAttributionReportingContentBrowserClient browser_client;
   EXPECT_CALL(
       browser_client,
-      IsConversionMeasurementOperationAllowed(
-          _, ContentBrowserClient::ConversionMeasurementOperation::kImpression,
-          _, _, _))
+      IsAttributionReportingOperationAllowed(
+          _, ContentBrowserClient::AttributionReportingOperation::kSource, _, _,
+          _))
       .WillRepeatedly(Return(true));
   EXPECT_CALL(
       browser_client,
-      IsConversionMeasurementOperationAllowed(
-          _, ContentBrowserClient::ConversionMeasurementOperation::kConversion,
+      IsAttributionReportingOperationAllowed(
+          _, ContentBrowserClient::AttributionReportingOperation::kTrigger,
           IsNull(),
           Pointee(url::Origin::Create(GURL("https://sub.conversion.test/"))),
           Pointee(url::Origin::Create(GURL("https://report.test/")))))
@@ -1287,18 +1287,16 @@ TEST_F(AttributionManagerImplTest, EmbedderDisallowsReporting_ReportNotSent) {
   MockAttributionReportingContentBrowserClient browser_client;
   EXPECT_CALL(
       browser_client,
-      IsConversionMeasurementOperationAllowed(
+      IsAttributionReportingOperationAllowed(
           _,
-          AnyOf(
-              ContentBrowserClient::ConversionMeasurementOperation::kImpression,
-              ContentBrowserClient::ConversionMeasurementOperation::
-                  kConversion),
+          AnyOf(ContentBrowserClient::AttributionReportingOperation::kSource,
+                ContentBrowserClient::AttributionReportingOperation::kTrigger),
           _, _, _))
       .WillRepeatedly(Return(true));
   EXPECT_CALL(
       browser_client,
-      IsConversionMeasurementOperationAllowed(
-          _, ContentBrowserClient::ConversionMeasurementOperation::kReport,
+      IsAttributionReportingOperationAllowed(
+          _, ContentBrowserClient::AttributionReportingOperation::kReport,
           Pointee(url::Origin::Create(GURL("https://impression.test/"))),
           Pointee(url::Origin::Create(GURL("https://sub.conversion.test/"))),
           Pointee(url::Origin::Create(GURL("https://report.test/")))))
@@ -1341,18 +1339,16 @@ TEST_F(AttributionManagerImplTest,
   MockAttributionReportingContentBrowserClient browser_client;
   EXPECT_CALL(
       browser_client,
-      IsConversionMeasurementOperationAllowed(
+      IsAttributionReportingOperationAllowed(
           _,
-          AnyOf(
-              ContentBrowserClient::ConversionMeasurementOperation::kImpression,
-              ContentBrowserClient::ConversionMeasurementOperation::
-                  kConversion),
+          AnyOf(ContentBrowserClient::AttributionReportingOperation::kSource,
+                ContentBrowserClient::AttributionReportingOperation::kTrigger),
           _, _, _))
       .WillRepeatedly(Return(true));
   EXPECT_CALL(
       browser_client,
-      IsConversionMeasurementOperationAllowed(
-          _, ContentBrowserClient::ConversionMeasurementOperation::kReport,
+      IsAttributionReportingOperationAllowed(
+          _, ContentBrowserClient::AttributionReportingOperation::kReport,
           Pointee(source_origin), Pointee(destination_origin),
           Pointee(reporting_origin)))
       .WillOnce(Return(false));

@@ -189,8 +189,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        DisabledByEmbedder_MeasurementConsideredDisabled) {
   MockAttributionReportingContentBrowserClient browser_client;
   EXPECT_CALL(browser_client,
-              IsConversionMeasurementOperationAllowed(
-                  _, ContentBrowserClient::ConversionMeasurementOperation::kAny,
+              IsAttributionReportingOperationAllowed(
+                  _, ContentBrowserClient::AttributionReportingOperation::kAny,
                   IsNull(), IsNull(), IsNull()))
       .WillRepeatedly(Return(false));
   ScopedContentBrowserClientSetting setting(&browser_client);

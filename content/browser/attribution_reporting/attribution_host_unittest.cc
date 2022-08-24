@@ -14,7 +14,6 @@
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/public/common/content_client.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/navigation_simulator_impl.h"
@@ -44,11 +43,7 @@ class AttributionHostTestPeer {
 
 namespace {
 
-using ConversionMeasurementOperation =
-    ::content::ContentBrowserClient::ConversionMeasurementOperation;
-
 using testing::_;
-using testing::Mock;
 using testing::Return;
 
 const char kConversionUrl[] = "https://b.com";

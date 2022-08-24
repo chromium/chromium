@@ -494,11 +494,11 @@ bool ContentBrowserClient::IsInterestGroupAPIAllowed(
   return false;
 }
 
-bool ContentBrowserClient::IsConversionMeasurementOperationAllowed(
+bool ContentBrowserClient::IsAttributionReportingOperationAllowed(
     content::BrowserContext* browser_context,
-    ConversionMeasurementOperation operation,
-    const url::Origin* impression_origin,
-    const url::Origin* conversion_origin,
+    AttributionReportingOperation operation,
+    const url::Origin* source_origin,
+    const url::Origin* destination_origin,
     const url::Origin* reporting_origin) {
   return true;
 }

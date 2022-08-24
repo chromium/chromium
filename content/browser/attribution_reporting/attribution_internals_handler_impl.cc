@@ -186,10 +186,10 @@ void AttributionInternalsHandlerImpl::IsAttributionReportingEnabled(
   content::WebContents* contents = web_ui_->GetWebContents();
   bool attribution_reporting_enabled =
       AttributionManager::FromWebContents(contents) &&
-      GetContentClient()->browser()->IsConversionMeasurementOperationAllowed(
+      GetContentClient()->browser()->IsAttributionReportingOperationAllowed(
           contents->GetBrowserContext(),
-          ContentBrowserClient::ConversionMeasurementOperation::kAny,
-          /*impression_origin=*/nullptr, /*conversion_origin=*/nullptr,
+          ContentBrowserClient::AttributionReportingOperation::kAny,
+          /*source_origin=*/nullptr, /*destination_origin=*/nullptr,
           /*reporting_origin=*/nullptr);
   bool debug_mode = base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kAttributionReportingDebugMode);

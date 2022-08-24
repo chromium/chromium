@@ -842,29 +842,29 @@ class CONTENT_EXPORT ContentBrowserClient {
       const url::Origin& top_frame_origin,
       const url::Origin& api_origin);
 
-  enum class ConversionMeasurementOperation {
-    kImpression,
-    kConversion,
+  enum class AttributionReportingOperation {
+    kSource,
+    kTrigger,
     kReport,
     kAny,
   };
 
-  // Allows the embedder to control if conversion measurement API operations can
+  // Allows the embedder to control if Attribution Reporting API operations can
   // happen in a given context. Origins must be provided for a given operation
   // as follows:
-  //   - `kImpression` must provide a non-null `impression_origin` and
+  //   - `kSource` must provide a non-null `source_origin` and
   //   `reporting_origin`
-  //   - `kConversion` must provide a non-null `conversion_origin` and
+  //   - `kTrigger` must provide a non-null `destination_origin` and
   //   `reporting_origin`
   //   - `kReport` must provide all non-null origins
   //   - `kAny` may provide all null origins. It checks whether conversion
   //   measurement is allowed anywhere in `browser_context`, returning false if
-  //   conversion measurement is not allowed by default on any origin.
-  virtual bool IsConversionMeasurementOperationAllowed(
+  //   Attribution Reporting is not allowed by default on any origin.
+  virtual bool IsAttributionReportingOperationAllowed(
       content::BrowserContext* browser_context,
-      ConversionMeasurementOperation operation,
-      const url::Origin* impression_origin,
-      const url::Origin* conversion_origin,
+      AttributionReportingOperation operation,
+      const url::Origin* source_origin,
+      const url::Origin* destination_origin,
       const url::Origin* reporting_origin);
 
   // Allows the embedder to control if Shared Storage API operations can happen
