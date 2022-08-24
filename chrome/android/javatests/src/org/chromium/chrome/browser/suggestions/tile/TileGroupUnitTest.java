@@ -32,9 +32,7 @@ import androidx.test.filters.SmallTest;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -51,7 +49,6 @@ import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig.TileStyle;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSites;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
@@ -70,9 +67,6 @@ public class TileGroupUnitTest {
     private static final int MAX_TILES_TO_FETCH = 4;
     private static final int TILE_TITLE_LINES = 1;
     private static final String[] URLS = {"https://www.google.com/", "https://tellmedadjokes.com/"};
-
-    @Rule
-    public TestRule mFeaturesProcessor = new Features.JUnitProcessor();
 
     @Mock
     private TileGroup.Observer mTileGroupObserver;

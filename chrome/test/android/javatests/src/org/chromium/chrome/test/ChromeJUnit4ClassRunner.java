@@ -15,6 +15,7 @@ import org.junit.runners.model.InitializationError;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.RestrictionSkipCheck;
 import org.chromium.base.test.util.SkipCheck;
 import org.chromium.chrome.test.util.ChromeRestriction;
@@ -57,8 +58,14 @@ public class ChromeJUnit4ClassRunner extends ContentJUnit4ClassRunner {
 
     @Override
     protected List<TestRule> getDefaultTestRules() {
-        return addToList(super.getDefaultTestRules(), new Features.InstrumentationProcessor(),
-                new DisableAnimationsTestRule());
+        List<TestRule> rules = super.getDefaultTestRules();
+        Class<?> clazz = getTestClass().getJavaClass();
+        if (!clazz.isAnnotationPresent(Batch.class)
+                || !clazz.getAnnotation(Batch.class).value().equals(Batch.UNIT_TESTS)) {
+            rules = addToList(rules, new Features.InstrumentationProcessor());
+        }
+
+        return addToList(rules, new DisableAnimationsTestRule());
     }
 
     private static class ChromeRestrictionSkipCheck extends RestrictionSkipCheck {

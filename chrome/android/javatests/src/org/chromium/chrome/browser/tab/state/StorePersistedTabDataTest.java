@@ -17,7 +17,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -35,7 +34,6 @@ import org.chromium.chrome.browser.endpoint_fetcher.EndpointResponse;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.nio.ByteBuffer;
@@ -50,9 +48,6 @@ import java.util.concurrent.TimeoutException;
 public class StorePersistedTabDataTest {
     @Rule
     public JniMocker mMocker = new JniMocker();
-
-    @Rule
-    public TestRule mProcessor = new Features.InstrumentationProcessor();
 
     @Mock
     protected EndpointFetcher.Natives mEndpointFetcherJniMock;

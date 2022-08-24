@@ -22,9 +22,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.supplier.ObservableSupplier;
@@ -34,7 +32,6 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator.State;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -50,9 +47,6 @@ public class LoadingModalDialogIntegrationTest {
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
-
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
 
     private static BlankUiTestActivity sActivity;
 
