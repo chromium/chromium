@@ -1842,8 +1842,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.NeedsHWCAP2Workaround" enum="BooleanBroken"
-    expires_after="2022-10-04">
+    expires_after="2023-08-22">
   <owner>davidben@chromium.org</owner>
+  <owner>src/third_party/boringssl/OWNERS</owner>
   <summary>
     Records, on startup, for ARM devices running Android, whether the kernel is
     missing AT_HWCAP2 from the ELF auxv and /proc/cpuinfo reports support for
