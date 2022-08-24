@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_XDG_ACTIVATION_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_XDG_ACTIVATION_H_
 
+#include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
@@ -31,8 +32,10 @@ class XdgActivation : public wl::GlobalObjectRegistrar<XdgActivation> {
   // Requests activation of the `surface`.
   // The actual activation happens asynchronously, after a round trip to the
   // server.
-  // Does nothing if no other window is currently active, or if there is already
-  // an unfinished activation request.
+  // If there is another unfinished activation request, the method chains the
+  // new request in the `activation_queue_` and handles it after the current
+  // request is completed.
+  // Does nothing if no other window is currently active.
   void Activate(wl_surface* surface) const;
 
  private:
@@ -44,6 +47,8 @@ class XdgActivation : public wl::GlobalObjectRegistrar<XdgActivation> {
   wl::Object<xdg_activation_v1> xdg_activation_v1_;
   // The actual activation token.
   mutable std::unique_ptr<Token> token_;
+  // Surfaces to activate next.
+  mutable base::queue<raw_ptr<wl_surface>> activation_queue_;
 
   const raw_ptr<WaylandConnection> connection_;
 

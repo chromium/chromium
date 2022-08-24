@@ -87,9 +87,9 @@ void XdgActivation::Activate(wl_surface* surface) const {
   }
 
   if (token_.get() != nullptr) {
-    // TODO(crbug.com/1175327): chain the incoming request and try to serve it
-    // after the current one is done.
-    LOG(WARNING) << "Another activation request is in progress!";
+    // If the earlier activation request is still being served, store the
+    // incoming request and try to serve it after the current one is done.
+    activation_queue_.emplace(surface);
     return;
   }
 
@@ -114,6 +114,10 @@ void XdgActivation::Activate(wl_surface* surface) const {
 void XdgActivation::OnActivateDone(wl_surface* surface, std::string token) {
   xdg_activation_v1_activate(xdg_activation_v1_.get(), token.c_str(), surface);
   token_.reset();
+  if (!activation_queue_.empty()) {
+    Activate(activation_queue_.front());
+    activation_queue_.pop();
+  }
 }
 
 XdgActivation::Token::Token(wl::Object<xdg_activation_token_v1> token,
