@@ -46,7 +46,6 @@ import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
-import org.chromium.components.power_bookmarks.PowerBookmarkType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -161,7 +160,7 @@ public class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkLis
     private void filterForPriceTrackingCategory(List<BookmarkId> bookmarks) {
         for (int i = bookmarks.size() - 1; i >= 0; i--) {
             PowerBookmarkMeta meta = mDelegate.getModel().getPowerBookmarkMeta(bookmarks.get(i));
-            if (meta == null || meta.getType() != PowerBookmarkType.SHOPPING
+            if (meta == null || !meta.hasShoppingSpecifics()
                     || !meta.getShoppingSpecifics().getIsPriceTracked()) {
                 bookmarks.remove(i);
                 continue;

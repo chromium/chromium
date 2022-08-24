@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
-import org.chromium.components.power_bookmarks.PowerBookmarkType;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Controls the bookmarks save-flow. */
@@ -125,7 +124,7 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver {
             BookmarkId bookmarkId, @Nullable PowerBookmarkMeta meta, boolean fromExplicitTrackUi) {
         if (meta == null) return;
 
-        if (meta.getType() == PowerBookmarkType.SHOPPING) {
+        if (meta.hasShoppingSpecifics()) {
             setPriceTrackingNotificationUiEnabled(true);
             setPriceTrackingIconForEnabledState(false);
             mPropertyModel.set(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_VISIBLE, true);

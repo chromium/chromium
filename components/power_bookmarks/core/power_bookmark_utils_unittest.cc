@@ -324,21 +324,20 @@ TEST_F(PowerBookmarkUtilsTest, GetBookmarksMatchingPropertiesTypeSearch) {
       model()->other_node(), 0, u"foo bar", GURL("http://www.google.com"));
   std::unique_ptr<PowerBookmarkMeta> meta1 =
       std::make_unique<PowerBookmarkMeta>();
-  meta1->set_type(PowerBookmarkType::SHOPPING);
+  meta1->mutable_shopping_specifics()->set_title("Example Title");
   SetNodePowerBookmarkMeta(model(), node1, std::move(meta1));
 
   const bookmarks::BookmarkNode* node2 = model()->AddURL(
       model()->other_node(), 0, u"baz buz", GURL("http://www.cnn.com"));
   std::unique_ptr<PowerBookmarkMeta> meta2 =
       std::make_unique<PowerBookmarkMeta>();
-  meta2->set_type(PowerBookmarkType::SHOPPING);
+  meta2->mutable_shopping_specifics()->set_title("Example Title");
   SetNodePowerBookmarkMeta(model(), node2, std::move(meta2));
 
   const bookmarks::BookmarkNode* node3 = model()->AddURL(
       model()->other_node(), 0, u"chromium", GURL("http://www.chromium.org"));
   std::unique_ptr<PowerBookmarkMeta> meta3 =
       std::make_unique<PowerBookmarkMeta>();
-  meta3->set_type(PowerBookmarkType::UNSPECIFIED);
   SetNodePowerBookmarkMeta(model(), node3, std::move(meta3));
 
   const bookmarks::BookmarkNode* normal_node =
@@ -360,18 +359,10 @@ TEST_F(PowerBookmarkUtilsTest, GetBookmarksMatchingPropertiesTypeSearch) {
   EXPECT_FALSE(ListContainsNode(nodes, normal_node));
   EXPECT_FALSE(ListContainsNode(nodes, node3));
   nodes.clear();
-
-  // Test that a query for the UNSPECIFIED type returns the correct results.
-  query.type = PowerBookmarkType::UNSPECIFIED;
-  GetBookmarksMatchingProperties(model(), query, 100, &nodes);
-  ASSERT_EQ(3U, nodes.size());
-  EXPECT_FALSE(ListContainsNode(nodes, normal_node));
-  nodes.clear();
 }
 
 TEST_F(PowerBookmarkUtilsTest, EncodeAndDecodeForPersistence) {
   PowerBookmarkMeta meta;
-  meta.set_type(PowerBookmarkType::SHOPPING);
   meta.mutable_shopping_specifics()->set_title("Example Title");
 
   std::string encoded_data;
@@ -380,7 +371,7 @@ TEST_F(PowerBookmarkUtilsTest, EncodeAndDecodeForPersistence) {
   PowerBookmarkMeta out_meta;
   EXPECT_TRUE(DecodeMetaFromStorage(encoded_data, &out_meta));
 
-  ASSERT_EQ(meta.type(), out_meta.type());
+  ASSERT_EQ(meta.has_shopping_specifics(), out_meta.has_shopping_specifics());
   ASSERT_EQ(meta.shopping_specifics().title(),
             out_meta.shopping_specifics().title());
 }

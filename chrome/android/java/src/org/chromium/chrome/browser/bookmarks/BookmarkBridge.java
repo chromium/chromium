@@ -693,7 +693,7 @@ public class BookmarkBridge {
         // IDs.
         for (BookmarkId product : products) {
             PowerBookmarkMeta meta = getPowerBookmarkMeta(product);
-            if (meta.getType() != PowerBookmarkType.SHOPPING) continue;
+            if (!meta.hasShoppingSpecifics()) continue;
 
             ShoppingSpecifics specifics = meta.getShoppingSpecifics();
             if (offerIdMap.contains(specifics.getOfferId())

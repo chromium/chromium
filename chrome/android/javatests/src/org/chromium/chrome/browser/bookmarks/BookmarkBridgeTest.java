@@ -31,7 +31,6 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
-import org.chromium.components.power_bookmarks.PowerBookmarkType;
 import org.chromium.components.power_bookmarks.ShoppingSpecifics;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
@@ -386,10 +385,8 @@ public class BookmarkBridgeTest {
         long offerId = 12345L;
         ShoppingSpecifics specifics =
                 ShoppingSpecifics.newBuilder().setIsPriceTracked(true).setOfferId(offerId).build();
-        PowerBookmarkMeta meta = PowerBookmarkMeta.newBuilder()
-                                         .setType(PowerBookmarkType.SHOPPING)
-                                         .setShoppingSpecifics(specifics)
-                                         .build();
+        PowerBookmarkMeta meta =
+                PowerBookmarkMeta.newBuilder().setShoppingSpecifics(specifics).build();
         mBookmarkBridge.setPowerBookmarkMeta(bookmark, meta);
 
         // Check that the price is tracked prior to sending an unsubscribe event.

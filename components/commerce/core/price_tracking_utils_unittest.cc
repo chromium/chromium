@@ -37,7 +37,6 @@ class PriceTrackingUtilsTest : public testing::Test {
         bookmark_model_->AddURL(bookmark_model_->other_node(), 0, title, url);
     std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
         std::make_unique<power_bookmarks::PowerBookmarkMeta>();
-    meta->set_type(power_bookmarks::PowerBookmarkType::SHOPPING);
     power_bookmarks::ShoppingSpecifics* specifics =
         meta->mutable_shopping_specifics();
     specifics->set_product_cluster_id(cluster_id);

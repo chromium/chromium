@@ -115,7 +115,6 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectableListT
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.ViewType;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
-import org.chromium.components.power_bookmarks.PowerBookmarkType;
 import org.chromium.components.power_bookmarks.ShoppingSpecifics;
 import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -2226,11 +2225,8 @@ public class BookmarkTest {
     public void testShoppingDataPresentButFeatureDisabled()
             throws InterruptedException, ExecutionException {
         BookmarkId id = addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestPage);
-        PowerBookmarkMeta.Builder meta =
-                PowerBookmarkMeta.newBuilder()
-                        .setType(PowerBookmarkType.SHOPPING)
-                        .setShoppingSpecifics(
-                                ShoppingSpecifics.newBuilder().setProductClusterId(1234L).build());
+        PowerBookmarkMeta.Builder meta = PowerBookmarkMeta.newBuilder().setShoppingSpecifics(
+                ShoppingSpecifics.newBuilder().setProductClusterId(1234L).build());
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mBookmarkModel.setPowerBookmarkMeta(id, meta.build()); });
         BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);

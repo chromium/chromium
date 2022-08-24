@@ -949,7 +949,6 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::AddBookmark(
     if (info.has_value()) {
       std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
           std::make_unique<power_bookmarks::PowerBookmarkMeta>();
-      meta->set_type(power_bookmarks::SHOPPING);
       meta->mutable_lead_image()->set_url(info->image_url.spec());
 
       power_bookmarks::ShoppingSpecifics* specifics =

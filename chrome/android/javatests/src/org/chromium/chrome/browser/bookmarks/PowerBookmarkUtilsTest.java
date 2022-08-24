@@ -204,10 +204,8 @@ public class PowerBookmarkUtilsTest {
                         .setCountryCode("us")
                         .setCurrentPrice(ProductPrice.newBuilder().setAmountMicros(100).build())
                         .build();
-        PowerBookmarkMeta meta = PowerBookmarkMeta.newBuilder()
-                                         .setType(PowerBookmarkType.SHOPPING)
-                                         .setShoppingSpecifics(specifics)
-                                         .build();
+        PowerBookmarkMeta meta =
+                PowerBookmarkMeta.newBuilder().setShoppingSpecifics(specifics).build();
         CommerceSubscription subscription =
                 PowerBookmarkUtils.createCommerceSubscriptionForPowerBookmarkMeta(meta);
 
@@ -242,10 +240,7 @@ public class PowerBookmarkUtilsTest {
                         .setIsPriceTracked(isPriceTracked)
                         .setProductClusterId(UnsignedLongs.parseUnsignedLong(clusterId))
                         .build();
-        return PowerBookmarkMeta.newBuilder()
-                .setType(PowerBookmarkType.SHOPPING)
-                .setShoppingSpecifics(specifics)
-                .build();
+        return PowerBookmarkMeta.newBuilder().setShoppingSpecifics(specifics).build();
     }
 
     /**

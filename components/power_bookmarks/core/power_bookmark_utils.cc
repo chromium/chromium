@@ -10,6 +10,7 @@
 #include "base/base64.h"
 #include "base/guid.h"
 #include "base/i18n/string_search.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -21,6 +22,21 @@
 #include "url/gurl.h"
 
 namespace power_bookmarks {
+
+namespace {
+
+// Backfill old shopping_specifics field to the new one. This is necessary
+// as we're transitioning from oneof powers to allowing multiple.
+// TODO(crbug.com/1349651): Also invoke this in meta updates once available.
+void BackfillShoppingSpecifics(PowerBookmarkMeta* meta) {
+  if (meta->has_old_shopping_specifics() && !meta->has_shopping_specifics()) {
+    meta->mutable_shopping_specifics()->CopyFrom(
+        meta->old_shopping_specifics());
+    meta->clear_old_shopping_specifics();
+  }
+}
+
+}  // namespace
 
 const char kPowerBookmarkMetaKey[] = "power_bookmark_meta";
 
@@ -44,6 +60,8 @@ std::unique_ptr<PowerBookmarkMeta> GetNodePowerBookmarkMeta(
     DeleteNodePowerBookmarkMeta(model, node);
   }
 
+  BackfillShoppingSpecifics(meta.get());
+
   return meta;
 }
 
@@ -54,6 +72,8 @@ void SetNodePowerBookmarkMeta(bookmarks::BookmarkModel* model,
     return;
 
   CHECK(meta);
+
+  BackfillShoppingSpecifics(meta.get());
 
   std::string data;
   EncodeMetaForStorage(*meta.get(), &data);
@@ -110,11 +130,22 @@ void GetBookmarksMatchingPropertiesImpl(
     bool tags_match_query =
         query_words.empty() || DoBookmarkTagsContainWords(meta, query_words);
 
+    // Add vertical-specific support by adding a case below.
     if (query.type.has_value()) {
-      if (!meta || (meta->type() != query.type.value() &&
-                    query.type.value() != PowerBookmarkType::UNSPECIFIED)) {
+      if (!meta)
         continue;
+
+      bool type_present = false;
+      switch (query.type.value()) {
+        case PowerBookmarkType::SHOPPING:
+          type_present = meta->has_shopping_specifics();
+          break;
+        default:
+          NOTREACHED();
       }
+
+      if (!type_present)
+        continue;
     }
 
     if (!title_or_url_match_query && !tags_match_query)
