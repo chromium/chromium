@@ -593,9 +593,6 @@ Things to consider:
       <message name="IDS_IOS_PASSWORD_SUGGESTIONS_TIP_VOICEOVER" desc="The VoiceOver announcement when the tip explaining to the user they can select Autofill password suggestions." meaning="The VoiceOver announcement when the tip explaining to the user they can select Autofill password suggestions.">
         Chromium tip. Sign in faster by selecting your saved password at the top of the keyboard.
       </message>
-      <message name="IDS_IOS_OVERFLOW_MENU_TIP" desc="The text of the tip explaining to the user that the Overflow Menu has new items">
-        Get to know the new Chromium menu
-      </message>
     </messages>
   </release>
 </grit>

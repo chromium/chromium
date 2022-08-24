@@ -34,9 +34,6 @@
 // Returns whether this coordinator is showing a popup menu.
 - (BOOL)isShowingPopupMenu;
 
-// Starts the popup menu's child help coordinator.
-- (void)startPopupMenuHelpCoordinator;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_POPUP_MENU_POPUP_MENU_COORDINATOR_H_

@@ -26,8 +26,7 @@ struct OverflowMenuView: View {
       spacing: 0
     ) {
       OverflowMenuDestinationList(
-        destinations: model.destinations, metricsHandler: metricsHandler,
-        uiConfiguration: uiConfiguration
+        destinations: model.destinations, metricsHandler: metricsHandler
       ).onPreferenceChange(
         DestinationVisibilityPreferenceKey.self
       ) {
