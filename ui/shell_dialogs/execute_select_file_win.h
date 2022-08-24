@@ -20,18 +20,6 @@ class FilePath;
 
 namespace ui {
 
-// Implementation detail exported for unit tests.
-SHELL_DIALOGS_EXPORT std::wstring AppendExtensionIfNeeded(
-    const std::wstring& filename,
-    const std::wstring& filter_selected,
-    const std::wstring& suggested_ext);
-
-// Given a file name, return the sanitized version by removing substrings that
-// are embedded in double '%' characters as those are reserved for environment
-// variables. Implementation detail exported for unit tests.
-SHELL_DIALOGS_EXPORT base::FilePath GetSanitizedFileName(
-    const base::FilePath& file_name);
-
 // Describes a filter for a file dialog.
 struct FileFilterSpec {
   // A human readable description of this filter. E.g. "HTML Files."
