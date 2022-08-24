@@ -21,5 +21,6 @@ const char kCdmDataQuotaBytes[] = "cdm-data-quota-bytes";
 const char kDataQuotaBytes[] = "data-quota-bytes";
 const char kGoogleApiKey[] = "google-api-key";
 const char kContextProvider[] = "context-provider";
+const char kEnableCfv2[] = "enable-cfv2";
 
 }  // namespace switches

@@ -497,6 +497,7 @@ zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgs(
 
   // Remove this argument, if it's provided.
   launch_args.RemoveSwitch(switches::kContextProvider);
+  launch_args.RemoveSwitch(switches::kEnableCfv2);
 
   fuchsia::sys::LaunchInfo launch_info;
   // TODO(1010222): Make kWebInstanceComponentUrl a relative component URL, and

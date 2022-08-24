@@ -328,6 +328,7 @@ source_set("context_provider") {
     "context_provider_main.h",
   ]
   deps = [
+    ":switches",
     ":web_engine_export_from_implementation",
     "//base",
     "//components/fuchsia_component_support",

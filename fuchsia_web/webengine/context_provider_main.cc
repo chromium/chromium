@@ -19,6 +19,7 @@
 #include "components/fuchsia_component_support/inspect.h"
 #include "fuchsia_web/common/init_logging.h"
 #include "fuchsia_web/webengine/context_provider_impl.h"
+#include "fuchsia_web/webengine/switches.h"
 
 namespace {
 
@@ -31,9 +32,6 @@ constexpr char kComponentUrl[] =
 constexpr char kComponentUrlCfv1[] =
     "fuchsia-pkg://fuchsia.com/web_engine#meta/context_provider.cmx";
 
-// Use to select which component URL to register with the Crash service.
-const char kEnableCfv2[] = "enable-cfv2";
-
 }  // namespace
 
 int ContextProviderMain() {
@@ -42,7 +40,7 @@ int ContextProviderMain() {
   // Register with crash reporting, under the appropriate component URL.
   const base::CommandLine* const command_line =
       base::CommandLine::ForCurrentProcess();
-  const bool enable_cfv2 = command_line->HasSwitch(kEnableCfv2);
+  const bool enable_cfv2 = command_line->HasSwitch(switches::kEnableCfv2);
   fuchsia_component_support::RegisterProductDataForCrashReporting(
       enable_cfv2 ? kComponentUrl : kComponentUrlCfv1, kCrashProductName);
 
