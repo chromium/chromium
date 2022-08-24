@@ -949,6 +949,7 @@ static_library("headless_shell_lib") {
   deps = [
     "//build:branding_buildflags",
     "//components/embedder_support",
+    "//components/policy/content",
     "//components/security_state/content",
     "//content",
     "//content/public/app",
