@@ -55,6 +55,15 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
 
   ~NetworkPortalDetectorImpl() override;
 
+  // NetworkPortalDetector implementation:
+  void AddObserver(Observer* observer) override;
+  void AddAndFireObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
+  CaptivePortalStatus GetCaptivePortalStatus() override;
+  bool IsEnabled() override;
+  void Enable() override;
+  void StartPortalDetection() override;
+
  private:
   friend class NetworkPortalDetectorImplTest;
   friend class NetworkPortalDetectorImplBrowserTest;
@@ -91,15 +100,6 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
   void OnAttemptCompleted(
       const captive_portal::CaptivePortalDetector::Results& results);
 
-  // NetworkPortalDetector implementation:
-  void AddObserver(Observer* observer) override;
-  void AddAndFireObserver(Observer* observer) override;
-  void RemoveObserver(Observer* observer) override;
-  CaptivePortalStatus GetCaptivePortalStatus() override;
-  bool IsEnabled() override;
-  void Enable() override;
-  void StartPortalDetection() override;
-
   // NetworkStateHandlerObserver implementation:
   void OnShuttingDown() override;
   void PortalStateChanged(const NetworkState* default_network,
@@ -113,7 +113,7 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
   void DetectionCompleted(const NetworkState* network,
                           const CaptivePortalStatus& results);
 
-  void ResetCounters();
+  void ResetCountersAndSendMetrics();
 
   // Returns true if attempt timeout callback isn't fired or
   // cancelled.
@@ -129,8 +129,8 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
     return state_ == STATE_CHECKING_FOR_PORTAL;
   }
 
-  int no_response_result_count_for_testing() const {
-    return no_response_result_count_;
+  int captive_portal_detector_run_count_for_testing() const {
+    return captive_portal_detector_run_count_;
   }
 
   void set_attempt_delay_for_testing(base::TimeDelta delay) {
@@ -188,8 +188,8 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
   // Number of detection attempts with same result in a row.
   int same_detection_result_count_ = 0;
 
-  // Number of detection attempts in a row with NO RESPONSE result.
-  int no_response_result_count_ = 0;
+  // Number of detection attempts.
+  int captive_portal_detector_run_count_ = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
