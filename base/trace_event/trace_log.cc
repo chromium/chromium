@@ -1043,6 +1043,12 @@ void TraceLog::SetEnabled(const TraceConfig& trace_config,
 }
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+perfetto::DataSourceConfig TraceLog::GetCurrentTrackEventDataSourceConfig()
+    const {
+  AutoLock lock(lock_);
+  return track_event_config_;
+}
+
 void TraceLog::InitializePerfettoIfNeeded() {
   // When we're using the Perfetto client library, only tests should be
   // recording traces directly through TraceLog. Production code should instead
@@ -2327,7 +2333,10 @@ tracing::PerfettoPlatform* TraceLog::GetOrCreatePerfettoPlatform() {
   return perfetto_platform_.get();
 }
 
-void TraceLog::OnSetup(const perfetto::DataSourceBase::SetupArgs&) {}
+void TraceLog::OnSetup(const perfetto::DataSourceBase::SetupArgs& args) {
+  AutoLock lock(lock_);
+  track_event_config_ = *args.config;
+}
 
 void TraceLog::OnStart(const perfetto::DataSourceBase::StartArgs&) {
   AutoLock lock(observers_lock_);
