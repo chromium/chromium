@@ -183,11 +183,14 @@ NSAttributedString* FormatHTMLForLearnMoreSection() {
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
-  return [self initWithFrame:frame showTopIncognitoImageAndTitle:YES];
+  return [self initWithFrame:frame
+      showTopIncognitoImageAndTitle:YES
+          stackViewHorizontalMargin:kStackViewHorizontalMargin];
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
-    showTopIncognitoImageAndTitle:(BOOL)showTopIncognitoImageAndTitle {
+    showTopIncognitoImageAndTitle:(BOOL)showTopIncognitoImageAndTitle
+        stackViewHorizontalMargin:(CGFloat)stackViewHorizontalMargin {
   self = [super initWithFrame:frame];
   if (self) {
     _dragDropHandler = [[URLDragDropHandler alloc] init];
@@ -264,10 +267,10 @@ NSAttributedString* FormatHTMLForLearnMoreSection() {
       // Center the stackview horizontally with a minimum margin.
       [self.stackView.leadingAnchor
           constraintGreaterThanOrEqualToAnchor:self.containerView.leadingAnchor
-                                      constant:kStackViewHorizontalMargin],
+                                      constant:stackViewHorizontalMargin],
       [self.stackView.trailingAnchor
           constraintLessThanOrEqualToAnchor:self.containerView.trailingAnchor
-                                   constant:-kStackViewHorizontalMargin],
+                                   constant:-stackViewHorizontalMargin],
       [self.stackView.centerXAnchor
           constraintEqualToAnchor:self.containerView.centerXAnchor],
 

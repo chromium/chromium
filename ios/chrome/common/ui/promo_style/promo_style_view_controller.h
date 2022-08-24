@@ -13,6 +13,12 @@
 // Style screens.
 @interface PromoStyleViewController : UIViewController <UITextViewDelegate>
 
+- (instancetype)initWithNibName:(NSString*)nibNameOrNil
+                         bundle:(NSBundle*)nibBundleOrNil
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
+
 // The name of the banner image. Must be set before the view is loaded.
 @property(nonatomic, strong) NSString* bannerName;
 
@@ -37,6 +43,10 @@
 
 // The headline below the image. Must be set before the view is loaded.
 @property(nonatomic, copy) NSString* titleText;
+
+// The margin on leading and trailing ends of the title label.
+// Must be set before the view is loaded. Defaults to `kTitleHorizontalMargin`.
+@property(nonatomic, assign) CGFloat titleHorizontalMargin;
 
 // The subtitle below the title. Must be set before the view is loaded.
 @property(nonatomic, copy) NSString* subtitleText;

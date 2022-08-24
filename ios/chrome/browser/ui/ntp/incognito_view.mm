@@ -149,11 +149,14 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
-  return [self initWithFrame:frame showTopIncognitoImageAndTitle:YES];
+  return [self initWithFrame:frame
+      showTopIncognitoImageAndTitle:YES
+          stackViewHorizontalMargin:kStackViewHorizontalMargin];
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
-    showTopIncognitoImageAndTitle:(BOOL)showTopIncognitoImageAndTitle {
+    showTopIncognitoImageAndTitle:(BOOL)showTopIncognitoImageAndTitle
+        stackViewHorizontalMargin:(CGFloat)stackViewHorizontalMargin {
   self = [super initWithFrame:frame];
   if (self) {
     _dragDropHandler = [[URLDragDropHandler alloc] init];
@@ -248,10 +251,10 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
       // Center the stackview horizontally with a minimum margin.
       [_stackView.leadingAnchor
           constraintGreaterThanOrEqualToAnchor:_containerView.leadingAnchor
-                                      constant:kStackViewHorizontalMargin],
+                                      constant:stackViewHorizontalMargin],
       [_stackView.trailingAnchor
           constraintLessThanOrEqualToAnchor:_containerView.trailingAnchor
-                                   constant:-kStackViewHorizontalMargin],
+                                   constant:-stackViewHorizontalMargin],
       [_stackView.centerXAnchor
           constraintEqualToAnchor:_containerView.centerXAnchor],
 

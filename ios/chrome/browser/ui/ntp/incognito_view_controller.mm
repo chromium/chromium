@@ -51,13 +51,12 @@
 
   if (base::FeatureList::IsEnabled(kIncognitoNtpRevamp)) {
     RevampedIncognitoView* view =
-        [[RevampedIncognitoView alloc] initWithFrame:self.view.bounds
-                       showTopIncognitoImageAndTitle:YES];
+        [[RevampedIncognitoView alloc] initWithFrame:self.view.bounds];
     view.URLLoaderDelegate = self;
     self.incognitoView = view;
   } else {
-    IncognitoView* view = [[IncognitoView alloc] initWithFrame:self.view.bounds
-                                 showTopIncognitoImageAndTitle:YES];
+    IncognitoView* view =
+        [[IncognitoView alloc] initWithFrame:self.view.bounds];
     view.URLLoaderDelegate = self;
     self.incognitoView = view;
   }
