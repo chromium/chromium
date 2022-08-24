@@ -502,7 +502,7 @@ def _RunCompiler(changes,
           # Reuse old .info file.
           save_info_file = False
 
-          build_utils.ExtractAll(jar_path, classes_dir)
+          build_utils.ExtractAll(jar_path, classes_dir, pattern='*.class')
 
     if save_info_file:
       info_file_context = _InfoFileContext(options.chromium_code,
