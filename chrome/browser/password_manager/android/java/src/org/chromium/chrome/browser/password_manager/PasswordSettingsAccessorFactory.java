@@ -8,6 +8,8 @@ import static org.chromium.base.ThreadUtils.assertOnUiThread;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.password_manager.PasswordStoreAndroidBackend.BackendException;
+
 /**
  * This factory returns an implementation for the password settings accessor. The factory itself is
  * also implemented downstream.
@@ -42,6 +44,18 @@ public abstract class PasswordSettingsAccessorFactory {
 
     public boolean canCreateAccessor() {
         return false;
+    }
+
+    /**
+     * Creates and returns new instance of the downstream implementation provided by subclasses.
+     *
+     * Downstream should override this method with actual implementation.
+     *
+     * @return An implementation of the {@link PasswordSettingsAccessor} if one exists.
+     */
+    protected PasswordSettingsAccessor doCreateAccessor() throws BackendException {
+        throw new BackendException("Downstream implementation is not present.",
+                AndroidBackendErrorType.BACKEND_NOT_AVAILABLE);
     }
 
     @VisibleForTesting

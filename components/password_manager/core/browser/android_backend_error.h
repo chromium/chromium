@@ -9,6 +9,8 @@
 
 namespace password_manager {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused." before the enum and update enums.xml
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.password_manager
 enum class AndroidBackendErrorType {
   kUncategorized = 0,
@@ -28,7 +30,9 @@ enum class AndroidBackendErrorType {
   kExternalError = 7,
   // Task was cleaned-up without a proper response.
   kCleanedUpWithoutResponse = 8,
-  kMaxValue = kCleanedUpWithoutResponse,
+  // Backend downstream implementation is not available.
+  kBackendNotAvailable = 9,
+  kMaxValue = kBackendNotAvailable,
 };
 
 struct AndroidBackendError {

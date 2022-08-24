@@ -204,6 +204,7 @@ SuccessStatus GetSuccessStatusFromError(
     case AndroidBackendErrorType::kPassphraseNotSupported:
     case AndroidBackendErrorType::kGMSVersionNotSupported:
     case AndroidBackendErrorType::kExternalError:
+    case AndroidBackendErrorType::kBackendNotAvailable:
       return SuccessStatus::kError;
   }
   NOTREACHED();
