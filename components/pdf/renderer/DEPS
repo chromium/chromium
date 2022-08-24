@@ -2,6 +2,7 @@ include_rules = [
   "+content/public/renderer",
   "+content/public/test",
   "+components/printing/renderer/print_render_frame_helper.h",
+  "+components/services/screen_ai",
   "+components/strings/grit/components_strings.h",
   "+mojo/public/cpp/bindings",
   "+net",

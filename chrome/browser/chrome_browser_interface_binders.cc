@@ -639,10 +639,24 @@ void BindMediaFoundationRendererNotifierHandler(
 #endif  // BUILDFLAG(ENABLE_SPEECH_SERVICE)
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+void BindScreenAIAnnotator(
+    content::RenderFrameHost* frame_host,
+    mojo::PendingReceiver<screen_ai::mojom::ScreenAIAnnotator> receiver) {
+  // TODO(https://crbug.com/1278249): After user settings are added, add extra
+  // checking here to ensure the service is bound only when user has explicitly
+  // requested it.
+  ScreenAIServiceRouterFactory::GetForBrowserContext(
+      frame_host->GetProcess()->GetBrowserContext())
+      ->BindScreenAIAnnotator(std::move(receiver));
+}
+
 void BindScreen2xMainContentExtractor(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<screen_ai::mojom::Screen2xMainContentExtractor>
         receiver) {
+  // TODO(https://crbug.com/1278249): After user settings are added, add extra
+  // checking here to ensure the service is bound only when user has explicitly
+  // requested it.
   ScreenAIServiceRouterFactory::GetForBrowserContext(
       frame_host->GetProcess()->GetBrowserContext())
       ->BindMainContentExtractor(std::move(receiver));
@@ -800,6 +814,11 @@ void PopulateChromeFrameBinders(
 #endif
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  if (features::IsPdfOcrEnabled()) {
+    map->Add<screen_ai::mojom::ScreenAIAnnotator>(
+        base::BindRepeating(&BindScreenAIAnnotator));
+  }
+
   if (features::IsReadAnythingWithScreen2xEnabled()) {
     map->Add<screen_ai::mojom::Screen2xMainContentExtractor>(
         base::BindRepeating(&BindScreen2xMainContentExtractor));

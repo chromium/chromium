@@ -168,6 +168,11 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
   ui::AXTreeData tree_data_;
   ui::AXTree tree_;
 
+  // ‌PdfAccessibilityTree belongs to the PDF plugin which is created by the
+  // renderer. `render_frame_` is reset when renderer sends OnDestruct() to its
+  // observers.
+  content::RenderFrame* render_frame_;
+
   // Unowned. Must outlive `this`.
   chrome_pdf::PdfAccessibilityActionHandler* const action_handler_;
 
