@@ -62,14 +62,36 @@ void PromosManager::Init() {
 
   const base::Value::List& stored_active_promos =
       local_state_->GetValueList(prefs::kIosPromosManagerActivePromos);
-  const base::Value::List& stored_impression_history =
-      local_state_->GetValueList(prefs::kIosPromosManagerImpressions);
 
   active_promos_ = stored_active_promos.Clone();
-  impression_history_ = stored_impression_history.Clone();
+  impression_history_ = ImpressionHistory(
+      local_state_->GetValueList(prefs::kIosPromosManagerImpressions));
 }
 
 #pragma mark - Private
+
+std::vector<promos_manager::Impression> PromosManager::ImpressionHistory(
+    const base::Value::List& stored_impression_history) {
+  std::vector<promos_manager::Impression> impression_history;
+
+  for (size_t i = 0; i < stored_impression_history.size(); ++i) {
+    const base::Value::Dict& stored_impression =
+        stored_impression_history[i].GetDict();
+    const std::string* stored_promo =
+        stored_impression.FindString(promos_manager::kImpressionPromoKey);
+    absl::optional<int> stored_day =
+        stored_impression.FindInt(promos_manager::kImpressionDayKey);
+
+    // Skip malformed impression history. (This should almost never happen.)
+    if (!stored_promo || !stored_day.has_value())
+      continue;
+
+    impression_history.push_back(promos_manager::Impression(
+        promos_manager::PromoForName(*stored_promo), stored_day.value()));
+  }
+
+  return impression_history;
+}
 
 NSArray<ImpressionLimit*>* PromosManager::PromoImpressionLimits(
     promos_manager::Promo promo) const {

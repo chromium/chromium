@@ -35,8 +35,8 @@ class PromosManager {
   // base::Value::List of active promos.
   base::Value::List active_promos_;
 
-  // base::Value::List of the promo impression history.
-  base::Value::List impression_history_;
+  // The impression history sorted by `day` (most recent -> least recent).
+  std::vector<promos_manager::Impression> impression_history_;
 
   // `promo`-specific impression limits, if defined. May return an empty
   // NSArray, indicating no promo-specific impression limits were defined for
@@ -62,6 +62,11 @@ class PromosManager {
 
   // Impression limits that count against any given promo.
   NSArray<ImpressionLimit*>* GlobalPerPromoImpressionLimits() const;
+
+  // Loops over the stored impression history (base::Value::List) and returns
+  // corresponding a std::vector<promos_manager::Impression>.
+  std::vector<promos_manager::Impression> ImpressionHistory(
+      const base::Value::List& stored_impression_history);
 
   // Returns the most recent day (int) that `promo` was seen by the user.
   //
@@ -164,6 +169,11 @@ class PromosManager {
       ReturnsNulloptWhenLeastRecentlyShownHasNoActivePromoCampaigns);
   FRIEND_TEST_ALL_PREFIXES(PromosManagerTest,
                            ReturnsFirstUnshownPromoForLeastRecentlyShown);
+  FRIEND_TEST_ALL_PREFIXES(PromosManagerTest, ReturnsImpressionHistory);
+  FRIEND_TEST_ALL_PREFIXES(PromosManagerTest,
+                           ReturnsBlankImpressionHistoryForBlankPrefs);
+  FRIEND_TEST_ALL_PREFIXES(PromosManagerTest,
+                           ReturnsImpressionHistoryBySkippingMalformedEntries);
 };
 
 #endif  // IOS_CHROME_BROWSER_PROMOS_MANAGER_PROMOS_MANAGER_H_

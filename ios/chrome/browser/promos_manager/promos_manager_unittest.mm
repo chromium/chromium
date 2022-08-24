@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/promos_manager/promos_manager_unittest.h"
 
 #import <Foundation/Foundation.h>
+#import <vector>
 
 #import "base/test/scoped_feature_list.h"
 #import "components/prefs/pref_registry_simple.h"
@@ -479,4 +480,87 @@ TEST_F(PromosManagerTest, ReturnsFirstUnshownPromoForLeastRecentlyShown) {
 
   EXPECT_EQ(promos_manager_->LeastRecentlyShown(active_promos, impressions),
             promos_manager::Promo::AppStoreRating);
+}
+
+// Tests PromosManager::ImpressionHistory() correctly ingests impression history
+// (base::Value::List) and returns corresponding
+// std::vector<promos_manager::Impression>.
+TEST_F(PromosManagerTest, ReturnsImpressionHistory) {
+  int today = TodaysDay();
+
+  base::Value::Dict first_impression;
+  first_impression.Set(
+      promos_manager::kImpressionPromoKey,
+      promos_manager::NameForPromo(promos_manager::Promo::DefaultBrowser));
+  first_impression.Set(promos_manager::kImpressionDayKey, today);
+
+  base::Value::Dict second_impression;
+  second_impression.Set(
+      promos_manager::kImpressionPromoKey,
+      promos_manager::NameForPromo(promos_manager::Promo::AppStoreRating));
+  second_impression.Set(promos_manager::kImpressionDayKey, today - 7);
+
+  base::Value::List impressions;
+  impressions.Append(first_impression.Clone());
+  impressions.Append(second_impression.Clone());
+
+  std::vector<promos_manager::Impression> expected = {
+      promos_manager::Impression(promos_manager::Promo::DefaultBrowser, today),
+      promos_manager::Impression(promos_manager::Promo::AppStoreRating,
+                                 today - 7),
+  };
+
+  std::vector<promos_manager::Impression> result =
+      promos_manager_->ImpressionHistory(impressions);
+
+  EXPECT_EQ(expected.size(), result.size());
+  EXPECT_EQ(expected[0].promo, result[0].promo);
+  EXPECT_EQ(expected[0].day, result[0].day);
+  EXPECT_EQ(expected[1].promo, result[1].promo);
+  EXPECT_EQ(expected[1].day, result[1].day);
+}
+
+// Tests PromosManager::ImpressionHistory() correctly ingests empty impression
+// history (base::Value::List) and returns empty
+// std::vector<promos_manager::Impression>.
+TEST_F(PromosManagerTest, ReturnsBlankImpressionHistoryForBlankPrefs) {
+  base::Value::List impressions;
+
+  std::vector<promos_manager::Impression> result =
+      promos_manager_->ImpressionHistory(impressions);
+
+  EXPECT_TRUE(result.empty());
+}
+
+// Tests PromosManager::ImpressionHistory() correctly ingests impression history
+// with malformed data (base::Value::List) and returns corresponding
+// std::vector<promos_manager::Impression> without malformed entries.
+TEST_F(PromosManagerTest, ReturnsImpressionHistoryBySkippingMalformedEntries) {
+  int today = TodaysDay();
+
+  base::Value::Dict first_impression;
+  first_impression.Set(
+      promos_manager::kImpressionPromoKey,
+      promos_manager::NameForPromo(promos_manager::Promo::DefaultBrowser));
+  first_impression.Set(promos_manager::kImpressionDayKey, today);
+
+  base::Value::Dict second_impression;
+  second_impression.Set("foobar", promos_manager::NameForPromo(
+                                      promos_manager::Promo::AppStoreRating));
+  second_impression.Set(promos_manager::kImpressionDayKey, today - 7);
+
+  base::Value::List impressions;
+  impressions.Append(first_impression.Clone());
+  impressions.Append(second_impression.Clone());
+
+  std::vector<promos_manager::Impression> expected = {
+      promos_manager::Impression(promos_manager::Promo::DefaultBrowser, today),
+  };
+
+  std::vector<promos_manager::Impression> result =
+      promos_manager_->ImpressionHistory(impressions);
+
+  EXPECT_EQ(expected.size(), result.size());
+  EXPECT_EQ(expected[0].promo, result[0].promo);
+  EXPECT_EQ(expected[0].day, result[0].day);
 }

@@ -8,6 +8,8 @@
 
 namespace promos_manager {
 
+const std::string kImpressionPromoKey = "promo";
+const std::string kImpressionDayKey = "day";
 const int kLastSeenDayPromoNotFound = -1;
 const int kNumDaysImpressionHistoryStored = 365;
 

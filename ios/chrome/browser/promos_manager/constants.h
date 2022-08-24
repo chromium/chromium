@@ -9,6 +9,12 @@
 
 namespace promos_manager {
 
+// Dictionary key for `promo` identifier in stored impression (base::Value).
+extern const std::string kImpressionPromoKey;
+
+// Dictionary key for `day` in stored impression (base::Value).
+extern const std::string kImpressionDayKey;
+
 // Sentinel value returned from PromosManager::LastSeenDay() if the
 // promos_manager::Promo `promo` isn't found in the impressions list.
 extern const int kLastSeenDayPromoNotFound;
