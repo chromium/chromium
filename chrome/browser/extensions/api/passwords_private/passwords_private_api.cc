@@ -494,4 +494,9 @@ ResponseAction PasswordsPrivateAddPasswordFunction::Run() {
   return RespondNow(NoArguments());
 }
 
+// PasswordsPrivateExtendAuthValidityFunction
+ResponseAction PasswordsPrivateExtendAuthValidityFunction::Run() {
+  GetDelegate(browser_context())->ExtendAuthValidity();
+  return RespondNow(NoArguments());
+}
 }  // namespace extensions

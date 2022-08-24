@@ -116,6 +116,7 @@ class PasswordsPrivateDelegateImpl
       StartAutomatedPasswordChangeCallback callback) override;
   password_manager::InsecureCredentialsManager* GetInsecureCredentialsManager()
       override;
+  void ExtendAuthValidity() override;
 
   // KeyedService overrides:
   void Shutdown() override;

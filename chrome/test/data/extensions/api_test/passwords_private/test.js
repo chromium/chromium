@@ -685,7 +685,14 @@ var availableTests = [
   function movePasswordsToAccount() {
     chrome.passwordsPrivate.movePasswordsToAccount([42]);
     chrome.test.succeed();
-  }
+  },
+
+  function extendAuthValidity() {
+    chrome.passwordsPrivate.extendAuthValidity(() => {
+      chrome.test.assertNoLastError();
+      chrome.test.succeed();
+    });
+  },
 ];
 
 var testToRun = window.location.search.substring(1);

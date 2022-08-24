@@ -234,6 +234,9 @@ class PasswordsPrivateDelegate : public KeyedService {
   // disk, since BulkLeakCheckService does not know about that step.
   virtual password_manager::InsecureCredentialsManager*
   GetInsecureCredentialsManager() = 0;
+
+  // Restarts the authentication timer if it is running.
+  virtual void ExtendAuthValidity() = 0;
 };
 
 }  // namespace extensions

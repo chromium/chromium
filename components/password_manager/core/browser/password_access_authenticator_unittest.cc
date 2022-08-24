@@ -227,6 +227,35 @@ TEST_P(PasswordAccessAuthenticatorTest, AuthenticationTimeMetric) {
       "PasswordManager.Settings.AuthenticationTime", base::Seconds(10), 2);
 }
 
+TEST_P(PasswordAccessAuthenticatorTest, ExtendAuthentication) {
+  // Timeout callback will not be run because the user is not authenticated.
+  EXPECT_CALL(timeout_callback(), Run).Times(0);
+  authenticator().ExtendAuthValidity();
+
+  // Timeout callback will not be run because the user is not authenticated.
+  task_environment().FastForwardBy(GetAuthValidityPeriod() + base::Seconds(1));
+  EXPECT_CALL(timeout_callback(), Run).Times(0);
+  authenticator().ExtendAuthValidity();
+
+  authenticator().start_auth_timer(timeout_callback().Get());
+
+  // Timeout callback will not be run because not enough time has passed.
+  task_environment().FastForwardBy(GetAuthValidityPeriod() - base::Seconds(1));
+  EXPECT_CALL(timeout_callback(), Run).Times(0);
+  authenticator().ExtendAuthValidity();
+
+  // Timeout callback will not be run because ExtendAuthentication is just
+  // called.
+  task_environment().FastForwardBy(base::Seconds(2));
+  EXPECT_CALL(timeout_callback(), Run).Times(0);
+  authenticator().ExtendAuthValidity();
+
+  // Timeout callback will be run because ExtendAuthentication called too
+  // late.
+  EXPECT_CALL(timeout_callback(), Run).Times(1);
+  task_environment().FastForwardBy(GetAuthValidityPeriod() + base::Seconds(2));
+}
+
 INSTANTIATE_TEST_SUITE_P(
     ,
     PasswordAccessAuthenticatorTest,

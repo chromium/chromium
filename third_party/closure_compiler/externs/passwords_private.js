@@ -430,6 +430,13 @@ chrome.passwordsPrivate.getUrlCollection = function(url, callback) {};
 chrome.passwordsPrivate.addPassword = function(options, callback) {};
 
 /**
+ * Restarts the authentication timeout timer if the user is authenticated.
+ * @param {function(): void=} callback The callback that gets invoked on
+ *     success.
+ */
+chrome.passwordsPrivate.extendAuthValidity = function(callback) {};
+
+/**
  * Fired when the saved passwords list has changed, meaning that an entry has
  * been added or removed.
  * @type {!ChromeEvent}

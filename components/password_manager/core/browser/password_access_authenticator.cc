@@ -51,6 +51,12 @@ void PasswordAccessAuthenticator::ForceUserReauthentication(
                          "PasswordManager.Settings.AuthenticationTime")));
 }
 
+void PasswordAccessAuthenticator::ExtendAuthValidity() {
+  if (auth_timer_.IsRunning()) {
+    auth_timer_.Reset();
+  }
+}
+
 void PasswordAccessAuthenticator::OnUserReauthenticationResult(
     AuthResultCallback callback,
     bool authenticated) {

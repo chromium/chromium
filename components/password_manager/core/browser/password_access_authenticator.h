@@ -62,10 +62,21 @@ class PasswordAccessAuthenticator {
   void ForceUserReauthentication(ReauthPurpose purpose,
                                  AuthResultCallback callback);
 
+  // Restarts the |auth_timer_| if it is already running. Has no effect if
+  // |auth_timer_| is not running.
+  void ExtendAuthValidity();
+
 #if defined(UNIT_TEST)
   // Use this in tests to mock the OS-level reauthentication.
   void set_os_reauth_call(ReauthCallback os_reauth_call) {
     os_reauth_call_ = std::move(os_reauth_call);
+  }
+
+  // Use it in tests to mock starting |auth_timer_|.
+  void start_auth_timer(TimeoutCallback timeout_call) {
+    timeout_call_ = timeout_call;
+    auth_timer_.Start(FROM_HERE, GetAuthValidityPeriod(),
+                      base::BindRepeating(timeout_call_));
   }
 #endif  // defined(UNIT_TEST)
 

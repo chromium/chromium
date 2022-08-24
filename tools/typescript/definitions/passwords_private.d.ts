@@ -195,6 +195,7 @@ declare global {
           url: string, callback: (urlCollection: UrlCollection) => void): void;
       export function addPassword(
           options: AddPasswordOptions, callback?: () => void): void;
+      export function extendAuthValidity(callback?: () => void): void;
 
       export const onSavedPasswordsListChanged:
           ChromeEvent<(entries: Array<PasswordUiEntry>) => void>;

@@ -707,6 +707,10 @@ PasswordsPrivateDelegateImpl::GetInsecureCredentialsManager() {
   return password_check_delegate_.GetInsecureCredentialsManager();
 }
 
+void PasswordsPrivateDelegateImpl::ExtendAuthValidity() {
+  password_access_authenticator_.ExtendAuthValidity();
+}
+
 void PasswordsPrivateDelegateImpl::OnPasswordsExportProgress(
     password_manager::ExportProgressStatus status,
     const std::string& folder_name) {

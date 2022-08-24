@@ -316,6 +316,10 @@ TestPasswordsPrivateDelegate::GetInsecureCredentialsManager() {
   return nullptr;
 }
 
+void TestPasswordsPrivateDelegate::ExtendAuthValidity() {
+  authenticator_interacted_ = true;
+}
+
 void TestPasswordsPrivateDelegate::SetProfile(Profile* profile) {
   profile_ = profile;
 }

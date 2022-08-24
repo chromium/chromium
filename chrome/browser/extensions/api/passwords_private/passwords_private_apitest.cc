@@ -118,6 +118,10 @@ class PasswordsPrivateApiTest : public ExtensionApiTest {
     return s_test_delegate_->last_moved_passwords();
   }
 
+  bool get_authenticator_interaction_status() const {
+    return s_test_delegate_->get_authenticator_interaction_status();
+  }
+
  private:
   raw_ptr<TestPasswordsPrivateDelegate> s_test_delegate_ = nullptr;
 };
@@ -349,4 +353,9 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, MovePasswordsToAccount) {
   EXPECT_EQ(42, last_moved_passwords()[0]);
 }
 
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, ExtendAuthValidity) {
+  EXPECT_FALSE(get_authenticator_interaction_status());
+  EXPECT_TRUE(RunPasswordsSubtest("extendAuthValidity")) << message_;
+  EXPECT_TRUE(get_authenticator_interaction_status());
+}
 }  // namespace extensions

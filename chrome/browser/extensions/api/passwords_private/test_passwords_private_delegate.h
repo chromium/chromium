@@ -99,6 +99,7 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
       StartAutomatedPasswordChangeCallback callback) override;
   password_manager::InsecureCredentialsManager* GetInsecureCredentialsManager()
       override;
+  void ExtendAuthValidity() override;
 
   void SetProfile(Profile* profile);
   void SetOptedInForAccountStorage(bool opted_in);
@@ -127,6 +128,10 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
 
   const std::vector<int>& last_moved_passwords() const {
     return last_moved_passwords_;
+  }
+
+  bool get_authenticator_interaction_status() const {
+    return authenticator_interacted_;
   }
 
  private:
@@ -175,6 +180,9 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
 
   // Records the ids of the passwords that were last moved.
   std::vector<int> last_moved_passwords_;
+
+  // Used to track whether user interacted with the ExtendAuthValidity API.
+  bool authenticator_interacted_ = false;
 };
 }  // namespace extensions
 
