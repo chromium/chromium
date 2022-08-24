@@ -210,6 +210,7 @@ class ImeButtonsView : public views::View {
     const int kImeKeysetUmaBoundary = 4;
     UMA_HISTOGRAM_ENUMERATION("InputMethod.ImeMenu.EmojiHandwritingVoiceButton",
                               keyset, kImeKeysetUmaBoundary);
+
     // The |keyset| will be used for drawing input view keyset in IME
     // extensions. ImeMenuTray::ShowKeyboardWithKeyset() will deal with
     // the |keyset| string to generate the right input view url.
@@ -232,8 +233,10 @@ class ImeButtonsView : public views::View {
 
     if (show_emoji) {
       emoji_button_ = new SystemMenuButton(
-          base::BindRepeating(&ui::ShowEmojiPanel), kImeMenuEmoticonIcon,
-          IDS_ASH_STATUS_TRAY_IME_EMOJI);
+          base::BindRepeating(&ImeButtonsView::KeysetButtonPressed,
+                              base::Unretained(this),
+                              input_method::ImeKeyset::kEmoji),
+          kImeMenuEmoticonIcon, IDS_ASH_STATUS_TRAY_IME_EMOJI);
       emoji_button_->SetID(kEmojiButtonId);
       AddChildView(emoji_button_);
     }
@@ -396,10 +399,16 @@ void ImeMenuTray::ShowImeMenuBubbleInternal() {
 void ImeMenuTray::ShowKeyboardWithKeyset(input_method::ImeKeyset keyset) {
   CloseBubble();
 
-  Shell::Get()
-      ->keyboard_controller()
-      ->virtual_keyboard_controller()
-      ->ForceShowKeyboardWithKeyset(keyset);
+  // Show emoji in the same way as other means of opening and showing emoji
+  // for laptop and tablet mode.
+  if (keyset == input_method::ImeKeyset::kEmoji) {
+    ui::ShowEmojiPanel();
+  } else {
+    Shell::Get()
+        ->keyboard_controller()
+        ->virtual_keyboard_controller()
+        ->ForceShowKeyboardWithKeyset(keyset);
+  }
 }
 
 bool ImeMenuTray::ShouldShowBottomButtons() {

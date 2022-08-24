@@ -381,6 +381,9 @@ TEST_F(ImeMenuTrayTest, TapEmojiButton) {
   ASSERT_TRUE(emoji_button);
   emoji_button->OnGestureEvent(&tap);
 
+  // The menu should be hidden.
+  EXPECT_FALSE(IsBubbleShown());
+
   // The callback should have been called.
   EXPECT_EQ(callCount, 1);
 
