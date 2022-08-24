@@ -1516,7 +1516,9 @@ const base::FeatureParam<DelayAsyncScriptDelayType>::Option
         {DelayAsyncScriptDelayType::kFinishedParsing, "finished_parsing"},
         {DelayAsyncScriptDelayType::kFirstPaintOrFinishedParsing,
          "first_paint_or_finished_parsing"},
-        {DelayAsyncScriptDelayType::kEachLcpCandidate, "each_lcp_candidate"}};
+        {DelayAsyncScriptDelayType::kEachLcpCandidate, "each_lcp_candidate"},
+        {DelayAsyncScriptDelayType::kEachPaint, "each_paint"},
+};
 
 const base::FeatureParam<DelayAsyncScriptDelayType>
     kDelayAsyncScriptExecutionDelayParam{
