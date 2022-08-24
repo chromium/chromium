@@ -33,6 +33,7 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_source.h"
 #include "content/public/browser/notification_types.h"
+#include "content/public/browser/render_process_host_priority_client.h"
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
@@ -180,12 +181,14 @@ void MockRenderProcessHost::ShutdownForBadMessage(
   shutdown_requested_ = true;
 }
 
-void MockRenderProcessHost::UpdateClientPriority(PriorityClient* client) {}
+void MockRenderProcessHost::UpdateClientPriority(
+    RenderProcessHostPriorityClient* client) {}
 
 int MockRenderProcessHost::VisibleClientCount() {
   int count = 0;
   for (auto* client : priority_clients_) {
-    const Priority priority = client->GetPriority();
+    const RenderProcessHostPriorityClient::Priority priority =
+        client->GetPriority();
     if (!priority.is_hidden) {
       count++;
     }
@@ -329,12 +332,13 @@ void MockRenderProcessHost::AddPendingView() {
 void MockRenderProcessHost::RemovePendingView() {
 }
 
-void MockRenderProcessHost::AddPriorityClient(PriorityClient* priority_client) {
+void MockRenderProcessHost::AddPriorityClient(
+    RenderProcessHostPriorityClient* priority_client) {
   priority_clients_.insert(priority_client);
 }
 
 void MockRenderProcessHost::RemovePriorityClient(
-    PriorityClient* priority_client) {
+    RenderProcessHostPriorityClient* priority_client) {
   priority_clients_.erase(priority_client);
 }
 

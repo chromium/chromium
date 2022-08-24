@@ -317,6 +317,7 @@ source_set("browser_sources") {
     "render_process_host_factory.h",
     "render_process_host_observer.cc",
     "render_process_host_observer.h",
+    "render_process_host_priority_client.h",
     "render_view_host.h",
     "render_widget_host.h",
     "render_widget_host_iterator.h",

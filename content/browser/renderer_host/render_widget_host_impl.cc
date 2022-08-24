@@ -96,6 +96,7 @@
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/peak_gpu_memory_tracker.h"
 #include "content/public/browser/render_frame_metadata_provider.h"
+#include "content/public/browser/render_process_host_priority_client.h"
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/storage_partition.h"
@@ -2100,8 +2101,8 @@ void RenderWidgetHostImpl::InsertVisualStateCallback(
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), false)));
 }
 
-RenderProcessHost::Priority RenderWidgetHostImpl::GetPriority() {
-  RenderProcessHost::Priority priority = {
+RenderProcessHostPriorityClient::Priority RenderWidgetHostImpl::GetPriority() {
+  RenderProcessHostPriorityClient::Priority priority = {
     is_hidden_,
     frame_depth_,
     intersects_viewport_,
