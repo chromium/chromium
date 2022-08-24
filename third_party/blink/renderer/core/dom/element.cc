@@ -4450,20 +4450,22 @@ StyleRecalcChange Element::RecalcOwnStyle(
       } else if (evaluator) {
         DCHECK(old_style);
         evaluator->MarkFontDirtyIfNeeded(*old_style, *new_style);
-        if (diff != ComputedStyle::Difference::kEqual &&
-            (!base::ValuesEquivalent(old_style->InheritedVariables(),
-                                     new_style->InheritedVariables()) ||
-             !base::ValuesEquivalent(old_style->NonInheritedVariables(),
-                                     new_style->NonInheritedVariables()))) {
-          switch (evaluator->StyleContainerChanged(*this)) {
-            case ContainerQueryEvaluator::Change::kNone:
-              break;
-            case ContainerQueryEvaluator::Change::kNearestContainer:
-              child_change = change.ForceRecalcStyleContainerChildren();
-              break;
-            case ContainerQueryEvaluator::Change::kDescendantContainers:
-              child_change = change.ForceRecalcStyleContainerDescendants();
-              break;
+        if (RuntimeEnabledFeatures::CSSStyleQueriesEnabled()) {
+          if (diff != ComputedStyle::Difference::kEqual &&
+              (!base::ValuesEquivalent(old_style->InheritedVariables(),
+                                       new_style->InheritedVariables()) ||
+               !base::ValuesEquivalent(old_style->NonInheritedVariables(),
+                                       new_style->NonInheritedVariables()))) {
+            switch (evaluator->StyleContainerChanged(*this)) {
+              case ContainerQueryEvaluator::Change::kNone:
+                break;
+              case ContainerQueryEvaluator::Change::kNearestContainer:
+                child_change = change.ForceRecalcStyleContainerChildren();
+                break;
+              case ContainerQueryEvaluator::Change::kDescendantContainers:
+                child_change = change.ForceRecalcStyleContainerDescendants();
+                break;
+            }
           }
         }
       }
