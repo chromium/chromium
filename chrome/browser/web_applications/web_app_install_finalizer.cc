@@ -54,6 +54,46 @@
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace web_app {
+namespace {
+
+// Overwrite the user display mode if the install source indicates a
+// user-initiated installation
+bool ShouldInstallOverwriteUserDisplayMode(
+    webapps::WebappInstallSource source) {
+  using InstallSource = webapps::WebappInstallSource;
+  switch (source) {
+    case InstallSource::MENU_BROWSER_TAB:
+    case InstallSource::MENU_CUSTOM_TAB:
+    case InstallSource::AUTOMATIC_PROMPT_BROWSER_TAB:
+    case InstallSource::AUTOMATIC_PROMPT_CUSTOM_TAB:
+    case InstallSource::API_BROWSER_TAB:
+    case InstallSource::API_CUSTOM_TAB:
+    case InstallSource::AMBIENT_BADGE_BROWSER_TAB:
+    case InstallSource::AMBIENT_BADGE_CUSTOM_TAB:
+    case InstallSource::RICH_INSTALL_UI_WEBLAYER:
+    case InstallSource::ARC:
+    case InstallSource::CHROME_SERVICE:
+    case InstallSource::OMNIBOX_INSTALL_ICON:
+    case InstallSource::MENU_CREATE_SHORTCUT:
+      return true;
+    case InstallSource::DEVTOOLS:
+    case InstallSource::MANAGEMENT_API:
+    case InstallSource::INTERNAL_DEFAULT:
+    case InstallSource::ISOLATED_APP_DEV_INSTALL:
+    case InstallSource::EXTERNAL_DEFAULT:
+    case InstallSource::EXTERNAL_POLICY:
+    case InstallSource::SYSTEM_DEFAULT:
+    case InstallSource::SYNC:
+    case InstallSource::SUB_APP:
+    case InstallSource::KIOSK:
+      return false;
+    case InstallSource::COUNT:
+      NOTREACHED();
+      return false;
+  }
+}
+
+}  // namespace
 
 WebAppInstallFinalizer::FinalizeOptions::FinalizeOptions(
     webapps::WebappInstallSource install_surface)
@@ -138,8 +178,7 @@ void WebAppInstallFinalizer::FinalizeInstall(
 
   // Set |user_display_mode| and any user-controllable fields here if this
   // install is user initiated or it's a new app.
-  if (webapps::InstallableMetrics::IsUserInitiatedInstallSource(
-          options.install_surface) ||
+  if (ShouldInstallOverwriteUserDisplayMode(options.install_surface) ||
       !existing_web_app) {
     DCHECK(web_app_info.user_display_mode.has_value());
     web_app->SetUserDisplayMode(*web_app_info.user_display_mode);
