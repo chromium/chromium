@@ -245,6 +245,7 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnStart(
   UpdateMainFrameRequestHadCookie(
       navigation_handle->GetWebContents()->GetBrowserContext(),
       navigation_handle->GetURL());
+  was_discarded_ = navigation_handle->ExistingDocumentWasDiscarded();
 
   return CONTINUE_OBSERVING;
 }
@@ -862,6 +863,9 @@ void UkmPageLoadMetricsObserver::RecordPageLoadMetrics(
   }
   if (GetDelegate().DidCommit() && was_cached_) {
     builder.SetWasCached(1);
+  }
+  if (GetDelegate().DidCommit() && was_discarded_) {
+    builder.SetWasDiscarded(true);
   }
   if (GetDelegate().DidCommit() && navigation_is_cross_process_) {
     builder.SetIsCrossProcessNavigation(navigation_is_cross_process_);

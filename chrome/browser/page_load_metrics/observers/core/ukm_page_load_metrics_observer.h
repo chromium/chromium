@@ -254,6 +254,9 @@ class UkmPageLoadMetricsObserver
   // True if the page main resource was served from disk cache.
   bool was_cached_ = false;
 
+  // True if the navigation is a reload after the page has been discarded.
+  bool was_discarded_ = false;
+
   // Whether the first URL in the redirect chain matches the default search
   // engine template.
   bool start_url_is_default_search_ = false;

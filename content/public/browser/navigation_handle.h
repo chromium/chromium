@@ -578,6 +578,11 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // navigation from committing, or nullptr if the navigation isn't currently
   // blocked on a CommitDeferringCondition.
   virtual CommitDeferringCondition* GetCommitDeferringConditionForTesting() = 0;
+
+  // Returns true if the navigation is a reload due to the existing document
+  // represented by the FrameTreeNode being previously discarded by the browser.
+  // This can be used as soon as the navigation begins.
+  virtual bool ExistingDocumentWasDiscarded() const = 0;
 };
 
 }  // namespace content

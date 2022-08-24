@@ -15275,6 +15275,13 @@ be describing additional metrics about the same event.
       Set to 1 if the main resource was served from cache.
     </summary>
   </metric>
+  <metric name="WasDiscarded" enum="Boolean">
+    <summary>
+      Records whether the Page Load is the result of the page having previously
+      been discarded because of performance interventions or critical memory
+      pressure.
+    </summary>
+  </metric>
 </event>
 
 <event name="PageLoad.FromGoogleSearch" singular="True">

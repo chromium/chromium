@@ -2867,6 +2867,10 @@ base::SafeRef<NavigationHandle> NavigationRequest::GetSafeRef() {
   return weak_factory_.GetSafeRef();
 }
 
+bool NavigationRequest::ExistingDocumentWasDiscarded() const {
+  return commit_params_->was_discarded;
+}
+
 void NavigationRequest::CheckForIsolationOptIn(const GURL& url) {
   // Check whether an origin-keyed agent cluster is explicitly requested, either
   // opting in or out, before attempting to isolate it. If an explicit request
