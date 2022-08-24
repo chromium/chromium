@@ -5448,7 +5448,7 @@
       name: "-webkit-text-combine",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       inherited: true,
-      name_for_methods: "TextCombine",
+      surrogate_for: "text-combine-upright",
     },
     {
       name: "text-emphasis-color",
