@@ -2187,6 +2187,31 @@ TEST_P(MultipleRulesetsTest,
   VerifyGetEnabledRulesetsFunction(*extension, {kId2, kId3});
 }
 
+// Tests attempting to disable rulesets when there are no rulesets active.
+// Regression test for https://crbug.com/1354385.
+TEST_P(MultipleRulesetsTest,
+       UpdateAndGetEnabledRulesets_DisableRulesetsWhenEmptyEnabledRulesets) {
+  AddRuleset(CreateRuleset(kId1, 90, 0, false));
+  AddRuleset(CreateRuleset(kId2, 60, 0, false));
+  AddRuleset(CreateRuleset(kId3, 150, 0, false));
+
+  RulesetManagerObserver ruleset_waiter(manager());
+
+  DeclarativeNetRequestUnittest::LoadAndExpectSuccess(
+      300, 0, false /* expect_rulesets_indexed */);
+
+  ruleset_waiter.WaitForExtensionsWithRulesetsCount(0);
+
+  // Even though rulesets kId2 and kId3 are already disabled, the service
+  // can't know about that right away because there could be pending calls to
+  // complete. This means the service will still (appropriately) try and
+  // disable these rulesets.
+  RunUpdateEnabledRulesetsFunction(*extension(), {kId2, kId3}, {},
+                                   absl::nullopt /* expected_error */);
+  ASSERT_FALSE(manager()->GetMatcherForExtension(extension()->id()));
+  VerifyGetEnabledRulesetsFunction(*extension(), {});
+}
+
 // Test that getAvailableStaticRuleCount returns the correct number of rules an
 // extension can still enable.
 TEST_P(MultipleRulesetsTest, GetAvailableStaticRuleCount) {
