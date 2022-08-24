@@ -46,10 +46,10 @@ CredentialUIEntry::CredentialUIEntry(const PasswordForm& form)
 
 CredentialUIEntry::CredentialUIEntry(const CSVPassword& csv_password,
                                      PasswordForm::Store to_store)
-    : signon_realm(IsValidAndroidFacetURI(csv_password.GetURL().spec())
-                       ? csv_password.GetURL().spec()
-                       : GetSignonRealm(csv_password.GetURL())),
-      url(csv_password.GetURL()),
+    : signon_realm(IsValidAndroidFacetURI(csv_password.GetURL().value().spec())
+                       ? csv_password.GetURL().value().spec()
+                       : GetSignonRealm(csv_password.GetURL().value())),
+      url(csv_password.GetURL().value()),
       username(base::UTF8ToUTF16(csv_password.GetUsername())),
       password(base::UTF8ToUTF16(csv_password.GetPassword())) {
   DCHECK_EQ(csv_password.GetParseStatus(), CSVPassword::Status::kOK);

@@ -122,8 +122,10 @@ TEST_F(CSVPasswordParserImplTest, ParseFileMissingFields) {
                                     sequence->csv_passwords[0].GetUsername());
                           EXPECT_EQ("132",
                                     sequence->csv_passwords[0].GetPassword());
-                          EXPECT_EQ(GURL(""),
-                                    sequence->csv_passwords[0].GetURL());
+                          ASSERT_FALSE(
+                              sequence->csv_passwords[0].GetURL().has_value());
+                          EXPECT_EQ(
+                              "", sequence->csv_passwords[0].GetURL().error());
                         }));
 }
 

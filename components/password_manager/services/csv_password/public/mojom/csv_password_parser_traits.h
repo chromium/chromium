@@ -5,17 +5,29 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_SERVICES_CSV_PASSWORD_PUBLIC_MOJOM_CSV_PASSWORD_PARSER_TRAITS_H_
 #define COMPONENTS_PASSWORD_MANAGER_SERVICES_CSV_PASSWORD_PUBLIC_MOJOM_CSV_PASSWORD_PARSER_TRAITS_H_
 
+#include "base/types/expected.h"
 #include "components/password_manager/core/browser/import/csv_password.h"
 #include "components/password_manager/services/csv_password/public/mojom/csv_password_parser.mojom.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 
 template <>
 struct StructTraits<password_manager::mojom::CSVPasswordDataView,
                     password_manager::CSVPassword> {
-  static const GURL& url(const password_manager::CSVPassword& r) {
-    return r.GetURL();
+  static const GURL url(const password_manager::CSVPassword& r) {
+    base::expected<GURL, std::string> expected_url = r.GetURL();
+    if (expected_url.has_value())
+      return expected_url.value();
+    return GURL();
+  }
+  static absl::optional<std::string> invalid_url(
+      const password_manager::CSVPassword& r) {
+    base::expected<GURL, std::string> expected_url = r.GetURL();
+    if (!expected_url.has_value())
+      return expected_url.error();
+    return absl::optional<std::string>();
   }
   static const std::string& username(const password_manager::CSVPassword& r) {
     return r.GetUsername();

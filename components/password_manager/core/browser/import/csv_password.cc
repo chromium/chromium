@@ -32,8 +32,17 @@ std::string ConvertUTF8(base::StringPiece str) {
 }  // namespace
 
 CSVPassword::CSVPassword() : status_(Status::kSemanticError) {}
+
 CSVPassword::CSVPassword(GURL url, std::string username, std::string password)
     : url_(std::move(url)),
+      username_(std::move(username)),
+      password_(std::move(password)),
+      status_(Status::kOK) {}
+
+CSVPassword::CSVPassword(std::string invalid_url,
+                         std::string username,
+                         std::string password)
+    : url_(base::unexpected(std::move(invalid_url))),
       username_(std::move(username)),
       password_(std::move(password)),
       status_(Status::kOK) {}
@@ -58,9 +67,15 @@ CSVPassword::CSVPassword(const ColumnMap& map, base::StringPiece row) {
     if (meaning_it == map.end())
       continue;
     switch (meaning_it->second) {
-      case Label::kOrigin:
-        url_ = GURL(field);
+      case Label::kOrigin: {
+        GURL gurl = GURL(field);
+        if (!gurl.is_valid() || !base::IsStringASCII(field)) {
+          url_ = base::unexpected(ConvertUTF8(field));
+        } else {
+          url_ = gurl;
+        }
         break;
+      }
       case Label::kUsername:
         username_ = ConvertUTF8(field);
         break;
@@ -75,6 +90,7 @@ CSVPassword::CSVPassword(const CSVPassword&) = default;
 CSVPassword::CSVPassword(CSVPassword&&) = default;
 CSVPassword& CSVPassword::operator=(const CSVPassword&) = default;
 CSVPassword& CSVPassword::operator=(CSVPassword&&) = default;
+CSVPassword::~CSVPassword() = default;
 
 bool operator==(const CSVPassword& lhs, const CSVPassword& rhs) {
   return lhs.GetParseStatus() == rhs.GetParseStatus() &&
@@ -94,7 +110,7 @@ const std::string& CSVPassword::GetUsername() const {
   return username_;
 }
 
-const GURL& CSVPassword::GetURL() const {
+const base::expected<GURL, std::string>& CSVPassword::GetURL() const {
   return url_;
 }
 

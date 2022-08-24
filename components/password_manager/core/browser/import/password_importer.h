@@ -75,7 +75,9 @@ class PasswordImporter {
       CompletionCallback completion,
       base::expected<std::string, PasswordImporter::Status> result);
 
-  void ConsumePasswords(password_manager::mojom::CSVPasswordSequencePtr seq);
+  void ConsumePasswords(std::string file_name,
+                        password_manager::PasswordForm::Store store,
+                        password_manager::mojom::CSVPasswordSequencePtr seq);
 
   const mojo::Remote<mojom::CSVPasswordParser>& GetParser();
 
@@ -84,8 +86,6 @@ class PasswordImporter {
   Status status_{Status::NONE};
 
   ImportResultsCallback results_callback_;
-  password_manager::PasswordForm::Store to_store_;
-  std::string selected_file_name_;
 
   const raw_ptr<SavedPasswordsPresenter> presenter_;
 
