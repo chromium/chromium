@@ -182,7 +182,7 @@ class WebTestRunner(object):
 
     def _worker_factory(self, worker_connection):
         return Worker(worker_connection, self._results_directory,
-                      self._options)
+                      self._options, self._port.child_kwargs())
 
     def _mark_interrupted_tests_as_skipped(self, test_run_results):
         for test_input in self._test_inputs:
@@ -265,7 +265,7 @@ class WebTestRunner(object):
 
 
 class Worker(object):
-    def __init__(self, caller, results_directory, options):
+    def __init__(self, caller, results_directory, options, port_kwargs):
         self._caller = caller
         self._worker_number = caller.worker_number
         self._name = caller.name
@@ -274,6 +274,7 @@ class Worker(object):
         # in the workers (this also prevents race conditions among workers).
         self._options = copy.copy(options)
         self._options.manifest_update = False
+        self._port_kwargs = port_kwargs
 
         # The remaining fields are initialized in start()
         self._host = None
@@ -294,7 +295,8 @@ class Worker(object):
         self._host = self._caller.host
         self._filesystem = self._host.filesystem
         self._port = self._host.port_factory.get(self._options.platform,
-                                                 self._options)
+                                                 self._options,
+                                                 **self._port_kwargs)
         self._driver = self._port.create_driver(self._worker_number)
         self._batch_count = 0
 

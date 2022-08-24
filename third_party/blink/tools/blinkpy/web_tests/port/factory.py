@@ -31,6 +31,7 @@ import fnmatch
 import optparse
 import re
 import sys
+from copy import deepcopy
 
 from blinkpy.common.path_finder import PathFinder
 
@@ -66,19 +67,20 @@ class PortFactory(object):
         appropriate port on this platform.
         """
         port_name = port_name or self._default_port()
+        port_options = deepcopy(options)
 
-        _check_configuration_and_target(self._host.filesystem, options)
+        _check_configuration_and_target(self._host.filesystem, port_options)
 
         port_class, class_name = self.get_port_class(port_name)
         if port_class is None:
             raise NotImplementedError('unsupported platform: "%s"' % port_name)
 
         full_port_name = port_class.determine_full_port_name(
-            self._host, options,
+            self._host, port_options,
             class_name if 'browser_test' in port_name else port_name)
         return port_class(self._host,
                           full_port_name,
-                          options=options,
+                          options=port_options,
                           **kwargs)
 
     @classmethod

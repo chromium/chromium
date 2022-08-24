@@ -193,7 +193,7 @@ class FuchsiaPort(base.Port):
         ['fuchsia'] + linux.LinuxPort.latest_platform_fallback_path()
     }
 
-    def __init__(self, host, port_name, **kwargs):
+    def __init__(self, host, port_name, target_host=None, **kwargs):
         super(FuchsiaPort, self).__init__(host, port_name, **kwargs)
 
         self._operating_system = 'fuchsia'
@@ -208,7 +208,7 @@ class FuchsiaPort(base.Port):
         # Used to implement methods that depend on the host platform.
         self._host_port = factory.PortFactory(host).get(**kwargs)
 
-        self._target_host = self.get_option('fuchsia_target')
+        self._target_host = target_host
         self._zircon_logger = None
         _import_fuchsia_runner()
 
@@ -259,10 +259,6 @@ class FuchsiaPort(base.Port):
                 self._zircon_logger = SubprocessOutputLogger(symbolized_klog_proc,
                     'Zircon')
 
-            # Save fuchsia_target in _options, so it can be shared with other
-            # workers.
-            self._options.fuchsia_target = self._target_host
-
         except fuchsia_target.FuchsiaTargetException as e:
             _log.error('Failed to start qemu: %s.', str(e))
             return exit_codes.NO_DEVICES_EXIT_STATUS
@@ -271,6 +267,9 @@ class FuchsiaPort(base.Port):
         if self._target_host:
             self._target_host.cleanup()
             self._target_host = None
+
+    def child_kwargs(self):
+        return {"target_host": self._target_host}
 
     def num_workers(self, requested_num_workers):
         # Allow for multi-process / multi-threading overhead in the browser

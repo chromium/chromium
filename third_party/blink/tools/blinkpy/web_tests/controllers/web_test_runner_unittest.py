@@ -408,6 +408,6 @@ class WorkerTests(unittest.TestCase):
         # pylint: disable=protected-access
         options = run_web_tests.parse_args(['--platform',
                                             'test-mac-mac10.11'])[0]
-        worker = Worker(self.DummyCaller(), '/results', options)
+        worker = Worker(self.DummyCaller(), '/results', options, {})
         self.assertTrue(options.manifest_update)
         self.assertFalse(worker._options.manifest_update)

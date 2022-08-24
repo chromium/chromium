@@ -723,7 +723,10 @@ def _set_up_derived_options(port, options, args):
                                   str(port.default_max_locked_shards())))
 
     if not options.configuration:
-        options.configuration = port.default_configuration()
+        options.configuration = port.get_option('configuration')
+
+    if not options.target:
+        options.target = port.get_option('target')
 
     if not options.timeout_ms:
         options.timeout_ms = str(port.timeout_ms())

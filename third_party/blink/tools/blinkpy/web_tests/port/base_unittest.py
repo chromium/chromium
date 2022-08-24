@@ -95,6 +95,11 @@ class PortTest(LoggingTestCase):
         port = self.make_port(options=options)
         self.assertEqual(port.get_option('foo'), 'bar')
 
+    def test_options_unchanged(self):
+        options = optparse.Values()
+        self.make_port(options=options)
+        self.assertEqual(options, optparse.Values())
+
     def test_get_option__unset(self):
         port = self.make_port()
         self.assertIsNone(port.get_option('foo'))

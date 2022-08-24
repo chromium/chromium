@@ -306,13 +306,21 @@ class AndroidPort(base.Port):
 
     BUILD_REQUIREMENTS_URL = 'https://www.chromium.org/developers/how-tos/android-build-instructions'
 
-    def __init__(self, host, port_name='', apk='', product='', options=None, **kwargs):
+    def __init__(self,
+                 host,
+                 port_name='',
+                 apk='',
+                 product='',
+                 options=None,
+                 prepared_devices=[],
+                 **kwargs):
         super(AndroidPort, self).__init__(
             host, port_name, options=options, **kwargs)
         self._operating_system = 'android'
         self._version = 'pie'
         fs = host.filesystem
         self._local_port = factory.PortFactory(host).get(**kwargs)
+        self._prepared_devices = prepared_devices
         if apk or product:
             self._driver_details = DriverDetails(apk)
             browser_type = fs.splitext(fs.basename(apk))[0].lower()
@@ -351,8 +359,7 @@ class AndroidPort(base.Port):
                 logging.DEBUG if self._debug_logging
                 and self.get_option('debug_rwt_logging') else logging.WARNING)
 
-            prepared_devices = self.get_option('prepared_devices', [])
-            for serial in prepared_devices:
+            for serial in self._prepared_devices:
                 self._devices.set_device_prepared(serial)
 
     def bot_expectations(self):
@@ -544,16 +551,19 @@ class AndroidPort(base.Port):
         # By setting this on the options object, we can propagate the list
         # of prepared devices to the workers (it is read in __init__()).
         if self._devices._prepared_devices:
-            self._options.prepared_devices = self._devices.prepared_devices()
+            self._prepared_devices = self._devices.prepared_devices()
         else:
             # We were called with --no-build, so assume the devices are up to date.
-            self._options.prepared_devices = [
+            self._prepared_devices = [
                 d.get_serial()
                 for d in self._devices.usable_devices(self.host.executive)
             ]
 
+    def child_kwargs(self):
+        return {"prepared_devices": self._prepared_devices}
+
     def num_workers(self, requested_num_workers):
-        return min(len(self._options.prepared_devices), requested_num_workers)
+        return min(len(self._prepared_devices), requested_num_workers)
 
     def check_sys_deps(self):
         # _get_font_files() will throw if any of the required fonts is missing.

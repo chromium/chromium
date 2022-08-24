@@ -113,7 +113,8 @@ class Printer(object):
         fallback_path = [fs.split(x)[1] for x in port.baseline_search_path()]
         self._print_default(
             'Baseline search path: %s -> generic' % ' -> '.join(fallback_path))
-        self._print_default('Using %s build' % self._options.configuration)
+        self._print_default('Using %s build' %
+                            port.get_option('configuration'))
         self._print_default(
             'Regular timeout: %s, slow test timeout: %s' %
             (self._options.timeout_ms, self._options.slow_timeout_ms))
