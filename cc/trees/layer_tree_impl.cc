@@ -2551,7 +2551,7 @@ LayerTreeImpl::FindAllLayersUpToAndIncludingFirstScrollable(
     if (!layer->HitTestable())
       continue;
 
-    if (first_hit &&
+    if (first_hit && layer->Is3dSorted() &&
         layer->GetSortingContextId() != first_hit->GetSortingContextId())
       continue;
 
@@ -2570,7 +2570,7 @@ LayerTreeImpl::FindAllLayersUpToAndIncludingFirstScrollable(
     if (!first_hit)
       first_hit = layer;
 
-    if (first_hit->Is3dSorted()) {
+    if (first_hit->Is3dSorted() && layer->Is3dSorted()) {
       layers_3d.emplace_back(
           std::pair<const LayerImpl*, float>(layer, distance_to_intersection));
     } else {
@@ -2587,7 +2587,7 @@ LayerTreeImpl::FindAllLayersUpToAndIncludingFirstScrollable(
   }
 
   if (first_hit->Is3dSorted()) {
-    DCHECK(layers.empty());
+    std::vector<const LayerImpl*> result;
     DCHECK(!layers_3d.empty());
 
     // Since we hit a layer in a rendering context, we need to sort the layers
@@ -2602,10 +2602,13 @@ LayerTreeImpl::FindAllLayersUpToAndIncludingFirstScrollable(
     for (const auto& pair : layers_3d) {
       const LayerImpl* layer = pair.first;
 
-      layers.push_back(layer);
+      result.push_back(layer);
       if (layer->IsScrollerOrScrollbar())
-        break;
+        return result;
     }
+    // Append 2D layers if none of the 3D layers were scrollable.
+    result.insert(result.end(), layers.begin(), layers.end());
+    return result;
   } else {
     DCHECK(!layers.empty());
     DCHECK(layers_3d.empty());
