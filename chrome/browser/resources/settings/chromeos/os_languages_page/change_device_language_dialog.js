@@ -25,6 +25,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 import {LifetimeBrowserProxyImpl} from '../../lifetime_browser_proxy.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 
+import {getTemplate} from './change_device_language_dialog.html.js';
 import {LanguagesMetricsProxy, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from './languages_metrics_proxy.js';
 import {LanguageHelper, LanguagesModel} from './languages_types.js';
 
@@ -45,7 +46,7 @@ class OsSettingsChangeDeviceLanguageDialogElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

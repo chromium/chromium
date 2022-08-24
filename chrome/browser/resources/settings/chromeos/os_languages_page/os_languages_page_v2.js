@@ -25,7 +25,7 @@ import '../../settings_shared.css.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
@@ -38,6 +38,7 @@ import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_ob
 
 import {LanguagesMetricsProxy, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from './languages_metrics_proxy.js';
 import {LanguageHelper, LanguagesModel, LanguageState} from './languages_types.js';
+import {getTemplate} from './os_languages_page_v2.html.js';
 
 /**
  * @type {number} Millisecond delay that can be used when closing an action
@@ -65,7 +66,7 @@ class OsSettingsLanguagesPageV2Element extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

@@ -21,13 +21,14 @@ import '../../settings_shared.css.js';
 import '../../settings_vars.css.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 import {Router} from '../../router.js';
 import {routes} from '../os_route.js';
 
 import {LanguageHelper, LanguagesModel} from './languages_types.js';
+import {getTemplate} from './os_languages_section.html.js';
 
 
 // The IME ID for the Accessibility Common extension used by Dictation.
@@ -51,7 +52,7 @@ class OsSettingsLanguagesSectionElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

@@ -9,10 +9,11 @@
 
 import './add_items_dialog.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Item} from './add_items_dialog.js';
 import {LanguageHelper, LanguagesModel} from './languages_types.js';
+import {getTemplate} from './os_add_languages_dialog.html.js';
 
 /** @polymer */
 class OsSettingsAddLanguagesDialogElement extends PolymerElement {
@@ -21,7 +22,7 @@ class OsSettingsAddLanguagesDialogElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

@@ -16,7 +16,7 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '../../settings_shared.css.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Route} from '../../router.js';
 import {GlobalScrollTargetBehavior, GlobalScrollTargetBehaviorInterface} from '../global_scroll_target_behavior.js';
@@ -24,6 +24,7 @@ import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
 
 import {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from './languages_browser_proxy.js';
+import {getTemplate} from './os_edit_dictionary_page.html.js';
 
 // Max valid word size, keep in sync with kMaxCustomDictionaryWordBytes in
 // //components/spellcheck/common/spellcheck_common.h
@@ -54,7 +55,7 @@ class OsSettingsEditDictionaryPageElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

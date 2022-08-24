@@ -237,21 +237,10 @@ js_library("smart_inputs_page") {
   ]
 }
 
-html_to_js("web_components") {
+# TODO(crbug.com/1322682): Migrate this to css_to_wrapper().
+html_to_js("css_wrapper_files") {
   js_files = [
-    "add_items_dialog.js",
-    "add_input_methods_dialog.js",
-    "add_spellcheck_languages_dialog.js",
-    "change_device_language_dialog.js",
-    "cr_checkbox_with_policy.js",
-    "input_method_options_page.js",
-    "input_page.js",
-    "os_add_languages_dialog.js",
-    "os_edit_dictionary_page.js",
-    "os_languages_page_v2.js",
-    "os_languages_section.js",
     "shared_style.js",
     "shared_vars.js",
-    "smart_inputs_page.js",
   ]
 }

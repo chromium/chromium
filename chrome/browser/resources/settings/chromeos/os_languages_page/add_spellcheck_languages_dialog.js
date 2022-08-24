@@ -9,12 +9,13 @@
 
 import './add_items_dialog.js';
 
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {recordSettingChange} from '../metrics_recorder.js';
 import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
 
 import {Item} from './add_items_dialog.js';
+import {getTemplate} from './add_spellcheck_languages_dialog.html.js';
 import {LanguageHelper, LanguagesModel} from './languages_types.js';
 
 /**
@@ -33,7 +34,7 @@ class OsSettingsAddSpellcheckLanguagesDialogElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

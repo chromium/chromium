@@ -18,7 +18,9 @@ import '../../settings_shared.css.js';
 
 import {CrScrollableBehavior, CrScrollableBehaviorInterface} from 'chrome://resources/cr_elements/cr_scrollable_behavior.m.js';
 import {FindShortcutBehavior, FindShortcutBehaviorInterface} from 'chrome://resources/cr_elements/find_shortcut_behavior.js';
-import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getTemplate} from './add_items_dialog.html.js';
 
 /**
  * `id` must unique.
@@ -49,7 +51,7 @@ class OsSettingsAddItemsDialogElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

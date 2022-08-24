@@ -425,7 +425,10 @@ group("generate_web_components") {
     "os_apps_page/app_notifications_page:web_components",
     "os_bluetooth_page:web_components",
     "os_files_page:web_components",
-    "os_languages_page:web_components",
+
+    # TODO(crbug.com/1322682): Migrate os_languages_page's CSS files to
+    # css_to_wrapper().
+    "os_languages_page:css_wrapper_files",
     "os_people_page:web_components",
     "os_printing_page:web_components",
     "os_privacy_page:web_components",
