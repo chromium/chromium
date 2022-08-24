@@ -365,8 +365,16 @@ responds with a device-specific device management token, which is used in
 future requests to fetch device-specific policies from the device management
 server.
 
+By default, if enrollment fails, for example if the enrollment token is invalid
+or revoked, the updater will start in an unmanaged state. Instead, if you want
+to prevent the updater from starting if enrollment fails, set
+`EnrollmentMandatory` to `1`.
+
 #### Windows
-The enrollment token is read from
+The `EnrollmentToken` REG_SZ value is read from
+`HKLM\Software\Policies\{COMPANY_SHORTNAME}\CloudManagement`.
+
+The `EnrollmentMandatory` REG_DWORD value is also read from
 `HKLM\Software\Policies\{COMPANY_SHORTNAME}\CloudManagement`.
 
 #### macOS
@@ -376,8 +384,9 @@ The enrollment token is searched in the order:
 * File
  `/Library/{COMPANY_SHORTNAME}/{BROWSER_NAME}/CloudManagementEnrollmentToken`.
 
-TODO(crbug.com/1339451): Document timing of enterprise enrollment and policy
-fetches.
+CBCM enterprise enrollment and policy fetches are done every time an install or
+or update happens, as well as when the updater periodic background task
+`--wake` runs.
 
 ### Enterprise Policies
 Enterprise policies can prevent the installation of applications:
@@ -393,8 +402,8 @@ preferences on macOS), or by communication with the device management server.
 
 For device management, the enterprise policies for Google applications are
 downloaded from the device management server periodically and stored at a fixed
-secure location. The path on Windows is 
-`%ProgramFiles(x86)%\Google\Policies` and on macOS is 
+secure location. The path on Windows is
+`%ProgramFiles(x86)%\Google\Policies` and on macOS is
 `/Library/Google/GoogleSoftwareUpdate/DeviceManagement`.
 
 The policy service searches all active policy providers in pre-determined order
