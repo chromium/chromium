@@ -72,15 +72,6 @@ class ExtensionTabUtil {
     std::unique_ptr<int> bookmark_id;
   };
 
-  // Platform specific delegate.
-  class Delegate {
-   public:
-    virtual ~Delegate() {}
-    // Platform specific scrubbing of tab info for |extension|.
-    virtual ExtensionTabUtil::ScrubTabBehaviorType GetScrubTabBehavior(
-        const Extension* extension) = 0;
-  };
-
   // Opens a new tab given an extension function |function| and creation
   // parameters |params|. Returns a Tab object if successful, or NULL and
   // optionally sets |error| if an error occurs.
@@ -153,10 +144,6 @@ class ExtensionTabUtil {
   // with information about the mute state of a browser tab.
   static std::unique_ptr<api::tabs::MutedInfo> CreateMutedInfo(
       content::WebContents* contents);
-
-  // Platform specific logic moved to delegate. This should be set during
-  // startup.
-  static void SetPlatformDelegate(std::unique_ptr<Delegate> delegate);
 
   // Gets the level of scrubbing of tab data that needs to happen for a given
   // extension and web contents. This is the preferred way to get

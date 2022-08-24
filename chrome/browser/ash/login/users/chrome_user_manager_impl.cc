@@ -67,7 +67,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/chromeos/extensions/extension_tab_util_delegate_chromeos.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/permissions_updater.h"
 #include "chrome/browser/policy/networking/policy_cert_service_factory.h"
@@ -168,15 +167,6 @@ bool GetUserLockAttributes(const user_manager::User* user,
         prefs->GetString(::prefs::kMultiProfileUserBehavior);
   }
   return true;
-}
-
-// Sets the necessary delegates in Public Session. They will be active for the
-// whole user-session and they will go away together with the browser process
-// during logout (the browser process is destroyed during logout), ie. they are
-// not freed and they leak but that is fine.
-void SetPublicAccountDelegates() {
-  extensions::ExtensionTabUtil::SetPlatformDelegate(
-      std::make_unique<extensions::ExtensionTabUtilDelegateChromeOS>());
 }
 
 policy::MinimumVersionPolicyHandler* GetMinimumVersionPolicyHandler() {
@@ -281,11 +271,6 @@ void ChromeUserManagerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
 std::unique_ptr<ChromeUserManager>
 ChromeUserManagerImpl::CreateChromeUserManager() {
   return std::unique_ptr<ChromeUserManager>(new ChromeUserManagerImpl());
-}
-
-// static
-void ChromeUserManagerImpl::ResetPublicAccountDelegatesForTesting() {
-  extensions::ExtensionTabUtil::SetPlatformDelegate(nullptr);
 }
 
 ChromeUserManagerImpl::ChromeUserManagerImpl()
@@ -864,8 +849,6 @@ void ChromeUserManagerImpl::PublicAccountUserLoggedIn(
   // controlled wallpaper was fetched/cleared but not updated in the login
   // screen, we need to update the wallpaper after the public user logged in.
   WallpaperControllerClientImpl::Get()->ShowUserWallpaper(user->GetAccountId());
-
-  SetPublicAccountDelegates();
 }
 
 void ChromeUserManagerImpl::KioskAppLoggedIn(user_manager::User* user) {

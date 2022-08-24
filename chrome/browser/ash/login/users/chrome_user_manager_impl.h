@@ -72,9 +72,6 @@ class ChromeUserManagerImpl
   // Registers user manager preferences.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-  // Resets platform specific delegates that were set for public accounts.
-  static void ResetPublicAccountDelegatesForTesting();
-
   // UserManagerInterface implementation:
   MultiProfileUserController* GetMultiProfileUserController() override;
   UserImageManager* GetUserImageManager(const AccountId& account_id) override;

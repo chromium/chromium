@@ -103,17 +103,6 @@ int GetTabIdForExtensions(const WebContents* web_contents) {
   return sessions::SessionTabHelper::IdForTab(web_contents).id();
 }
 
-std::unique_ptr<ExtensionTabUtil::Delegate>&
-GetExtensionTabUtilDelegateWrapper() {
-  static base::NoDestructor<std::unique_ptr<ExtensionTabUtil::Delegate>>
-      delegate_wrapper;
-  return *delegate_wrapper;
-}
-
-ExtensionTabUtil::Delegate* GetExtensionTabUtilDelegate() {
-  return GetExtensionTabUtilDelegateWrapper().get();
-}
-
 ExtensionTabUtil::ScrubTabBehaviorType GetScrubTabBehaviorImpl(
     const Extension* extension,
     Feature::Context context,
@@ -147,10 +136,6 @@ ExtensionTabUtil::ScrubTabBehaviorType GetScrubTabBehaviorImpl(
 
   if (!has_permission) {
     return ExtensionTabUtil::kScrubTabFully;
-  }
-
-  if (GetExtensionTabUtilDelegate()) {
-    return GetExtensionTabUtilDelegate()->GetScrubTabBehavior(extension);
   }
 
   return ExtensionTabUtil::kDontScrubTab;
@@ -596,11 +581,6 @@ std::unique_ptr<api::tabs::MutedInfo> ExtensionTabUtil::CreateMutedInfo(
       break;
   }
   return info;
-}
-
-// static
-void ExtensionTabUtil::SetPlatformDelegate(std::unique_ptr<Delegate> delegate) {
-  GetExtensionTabUtilDelegateWrapper() = std::move(delegate);
 }
 
 // static

@@ -11,50 +11,6 @@
 
 namespace extensions {
 
-namespace {
-
-class ExtensionTabUtilTestDelegate : public ExtensionTabUtil::Delegate {
- public:
-  ExtensionTabUtilTestDelegate() {}
-
-  ExtensionTabUtilTestDelegate(const ExtensionTabUtilTestDelegate&) = delete;
-  ExtensionTabUtilTestDelegate& operator=(const ExtensionTabUtilTestDelegate&) =
-      delete;
-
-  ~ExtensionTabUtilTestDelegate() override {}
-
-  // ExtensionTabUtil::Delegate
-  ExtensionTabUtil::ScrubTabBehaviorType GetScrubTabBehavior(
-      const Extension* extension) override {
-    return ExtensionTabUtil::kScrubTabUrlToOrigin;
-  }
-};
-
-}  // namespace
-
-// Test that the custom GetScrubTabBehavior delegate works - in this test it
-// always returns kScrubTabUrlToOrigin
-TEST(ExtensionTabUtilTest, Delegate) {
-  ExtensionTabUtil::SetPlatformDelegate(
-      std::make_unique<ExtensionTabUtilTestDelegate>());
-
-  // Build an extension that passes the permission checks for the generic
-  // GetScrubTabBehavior
-  auto extension = ExtensionBuilder("test").AddPermission("tabs").Build();
-
-  ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
-      ExtensionTabUtil::GetScrubTabBehavior(
-          extension.get(), Feature::Context::UNSPECIFIED_CONTEXT,
-          GURL("http://www.google.com"));
-  EXPECT_EQ(ExtensionTabUtil::kScrubTabUrlToOrigin,
-            scrub_tab_behavior.committed_info);
-  EXPECT_EQ(ExtensionTabUtil::kScrubTabUrlToOrigin,
-            scrub_tab_behavior.pending_info);
-
-  // Unset the delegate.
-  ExtensionTabUtil::SetPlatformDelegate(nullptr);
-}
-
 TEST(ExtensionTabUtilTest, ScrubTabBehaviorForTabsPermission) {
   auto extension = ExtensionBuilder("Extension with tabs permission")
                        .AddPermission("tabs")

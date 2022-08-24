@@ -11,7 +11,6 @@
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -29,11 +28,6 @@
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/extensions/extension_tab_util_delegate_chromeos.h"
-#include "chromeos/login/login_state/scoped_test_public_session_login_state.h"
-#endif
 
 namespace extensions {
 namespace {
@@ -93,29 +87,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionActiveTabTest, ActiveTab) {
         ->RunAction(extension, true);
     EXPECT_TRUE(catcher.GetNextResult()) << message_;
   }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // For the third pass grant the activeTab permission and do it in a public
-  // session. URL should be scrubbed down to origin.
-  {
-    // Setup state.
-    chromeos::ScopedTestPublicSessionLoginState login_state;
-    ExtensionTabUtil::SetPlatformDelegate(
-        std::make_unique<ExtensionTabUtilDelegateChromeOS>());
-
-    ExtensionTestMessageListener listener;
-    ResultCatcher catcher;
-    ExtensionActionRunner::GetForWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents())
-        ->RunAction(extension, true);
-    EXPECT_TRUE(catcher.GetNextResult()) << message_;
-    EXPECT_EQ(GURL(listener.message()).DeprecatedGetOriginAsURL().spec(),
-              listener.message());
-
-    // Clean up.
-    ExtensionTabUtil::SetPlatformDelegate(nullptr);
-  }
-#endif
 
   // Navigating to a different page on the same origin should revoke extension's
   // access to the tab, unless the runtime host permissions feature is enabled.
