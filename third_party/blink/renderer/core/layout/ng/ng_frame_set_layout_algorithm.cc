@@ -34,6 +34,13 @@ LayoutUnit AdjustSizeToRemainingSize(LayoutUnit current,
   return LayoutUnit(base::checked_cast<int>(temp_product.ValueOrDie()));
 }
 
+void ClearNeedsLayoutOnHiddenFrames(LayoutObject* object) {
+  for (; object; object = object->NextSibling()) {
+    object->ClearNeedsLayout();
+    ClearNeedsLayoutOnHiddenFrames(object->SlowFirstChild());
+  }
+}
+
 }  // namespace
 
 NGFrameSetLayoutAlgorithm::NGFrameSetLayoutAlgorithm(
@@ -293,7 +300,7 @@ void NGFrameSetLayoutAlgorithm::LayoutChildren(
     position.top += row_size + layout_data.border_thickness;
   }
 
-  // TODO(crbug.com/1346221): Clear NeedsLayout flag of the remaining children.
+  ClearNeedsLayoutOnHiddenFrames(child.GetLayoutBox());
 }
 
 }  // namespace blink
