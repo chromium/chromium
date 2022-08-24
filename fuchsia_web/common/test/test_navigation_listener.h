@@ -6,10 +6,14 @@
 #define FUCHSIA_WEB_COMMON_TEST_TEST_NAVIGATION_LISTENER_H_
 
 #include <fuchsia/web/cpp/fidl.h>
+
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
-#include "url/gurl.h"
+#include "base/strings/string_piece.h"
+
+class GURL;
 
 // Observes navigation events and enables test code to block until a desired
 // navigational state is observed.

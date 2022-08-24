@@ -9,11 +9,14 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
-#include "base/fuchsia/fuchsia_logging.h"
+#include "base/callback.h"
+#include "base/check.h"
+#include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "url/gurl.h"
 
 namespace {
 

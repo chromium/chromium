@@ -4,12 +4,11 @@
 
 #include "fuchsia_web/common/test/test_devtools_list_fetcher.h"
 
-#include "base/callback.h"
+#include <memory>
+#include <string>
+
 #include "base/json/json_reader.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_context.h"

@@ -22,12 +22,17 @@ source_set("test_support") {
   ]
   public_deps = [
     "//base",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
+    "//third_party/fuchsia-sdk/sdk/pkg/fit",
+  ]
+  deps = [
     "//fuchsia_web/common",
     "//net",
     "//net:test_support",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.modular",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
+    "//net/traffic_annotation:test_support",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     "//url",
   ]
 }
