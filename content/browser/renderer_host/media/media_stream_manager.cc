@@ -2775,8 +2775,8 @@ void MediaStreamManager::FinalizeChangeDevice(const std::string& label,
     request->device_changed_cb.Run(label, old_device, new_device);
   }
 
-  for (const auto& old_devices : old_devices_by_type)
-    for (const auto& old_device : old_devices)
+  for (const auto& old_media_stream_devices : old_devices_by_type)
+    for (const auto& old_device : old_media_stream_devices)
       request->device_changed_cb.Run(label, old_device, MediaStreamDevice());
 
   MaybeUpdateTrackedCaptureHandleConfigs(

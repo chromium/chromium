@@ -61,8 +61,8 @@ void KeySystemSupportImpl::AddObserver(
   // If `key_system_support_` is already available, notify the new observer
   // immediately. All observers will be notified if there are updates later.
   if (key_system_capabilities_.has_value()) {
-    auto* observer = observer_remotes_.Get(id);
-    observer->OnKeySystemSupportUpdated(CloneKeySystemCapabilities());
+    observer_remotes_.Get(id)->OnKeySystemSupportUpdated(
+        CloneKeySystemCapabilities());
     return;
   }
 

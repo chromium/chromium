@@ -311,8 +311,6 @@ BackForwardCacheCanStoreDocumentResult::GetStringReasons() const {
 
 std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
     BackForwardCacheMetrics::NotRestoredReason reason) const {
-  using Reason = BackForwardCacheMetrics::NotRestoredReason;
-
   switch (reason) {
     case Reason::kNotPrimaryMainFrame:
       return "not a main frame";
@@ -436,8 +434,6 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
 std::string
 BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToReportString(
     BackForwardCacheMetrics::NotRestoredReason reason) const {
-  using Reason = BackForwardCacheMetrics::NotRestoredReason;
-
   switch (reason) {
     // TODO(crbug.com/1349223): Add string to all reasons. Be sure to mask
     // extension related reasons so that its presence would not be visible to
