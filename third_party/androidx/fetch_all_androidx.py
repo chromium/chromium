@@ -197,7 +197,7 @@ def _process_build_gradle(dependency_version_map, androidx_repository_url):
             out.write(replacement)
 
 
-def _write_cipd_yaml(libs_dir, version, cipd_yaml_path):
+def _write_cipd_yaml(libs_dir, version, cipd_yaml_path, experimental=False):
     """Writes cipd.yaml file at the passed-in path."""
 
     lib_dirs = os.listdir(libs_dir)
@@ -222,12 +222,16 @@ def _write_cipd_yaml(libs_dir, version, cipd_yaml_path):
                 continue
             data_files.append(os.path.join(androidx_rel_lib_dir, lib_file))
 
+    if experimental:
+        package = 'experimental/google.com/' + os.getlogin() + '/androidx'
+    else:
+        package = 'chromium/third_party/androidx'
     contents = [
         '# Copyright 2021 The Chromium Authors. All rights reserved.',
         '# Use of this source code is governed by a BSD-style license that can be',
         '# found in the LICENSE file.',
         '# version: ' + version,
-        'package: chromium/third_party/androidx',
+        'package: ' + package,
         'description: androidx',
         'data:',
     ]
@@ -276,6 +280,9 @@ def main():
         dir_list, version = _download_and_parse_build_info()
         androidx_snapshot_repository_url = _build_snapshot_repository_url(
             version)
+        # Prepend '0' to version to avoid conflicts with previous version format.
+        version = 'cr-0' + version
+
     dependency_version_map = _parse_dir_list(dir_list)
     _process_build_gradle(dependency_version_map,
                           androidx_snapshot_repository_url)
@@ -284,20 +291,20 @@ def main():
         _FETCH_ALL_PATH, '--android-deps-dir', _ANDROIDX_PATH,
         '--ignore-vulnerabilities'
     ]
-    for subpath, url in _OVERRIDES:
-        fetch_all_cmd += ['--override-artifact', f'{subpath}:{url}']
+    # Overrides do not work with local snapshots since the repository_url is
+    # different.
+    if not args.local_repo:
+        for subpath, url in _OVERRIDES:
+            fetch_all_cmd += ['--override-artifact', f'{subpath}:{url}']
     subprocess.run(fetch_all_cmd, check=True)
 
-    if not args.local_repo:
-        # Prepend '0' to version to avoid conflicts with previous version format.
-        version = 'cr-0' + version
+    version_txt_path = os.path.join(_ANDROIDX_PATH, 'VERSION.txt')
+    with open(version_txt_path, 'w') as f:
+        f.write(version)
 
-        version_txt_path = os.path.join(_ANDROIDX_PATH, 'VERSION.txt')
-        with open(version_txt_path, 'w') as f:
-            f.write(version)
-
-        yaml_path = os.path.join(_ANDROIDX_PATH, 'cipd.yaml')
-        _write_cipd_yaml(libs_dir, version, yaml_path)
+    yaml_path = os.path.join(_ANDROIDX_PATH, 'cipd.yaml')
+    _write_cipd_yaml(libs_dir, version, yaml_path,
+                     experimental=bool(args.local_repo))
 
 
 if __name__ == '__main__':

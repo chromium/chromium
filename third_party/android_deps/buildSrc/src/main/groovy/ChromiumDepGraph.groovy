@@ -696,6 +696,13 @@ class ChromiumDepGraph {
     }
 
     private void checkDownloadable(String url) {
+        // file: URLs happen when using fetch_all_androidx.py --local-repo.
+        if (url.startsWith('file:')) {
+            if (!new File(new URI(url).getPath()).exists()) {
+                throw new RuntimeException("File not found: " + url)
+            }
+            return
+        }
         // Use a background thread to avoid slowing down main thread.
         // Saves about 80 seconds currently.
         new Thread().start(() -> {
