@@ -568,8 +568,9 @@ void SidePanelCoordinator::OnTabStripModelChanged(
   }
   // Handle removing the previous tab's contextual registry if one exists and
   // update the combobox.
-  if (auto* old_contextual_registry =
-          SidePanelRegistry::Get(selection.old_contents)) {
+  auto* old_contextual_registry =
+      SidePanelRegistry::Get(selection.old_contents);
+  if (old_contextual_registry) {
     old_contextual_registry->RemoveObserver(this);
     combobox_model_->RemoveItems(old_contextual_registry->entries());
   }
@@ -587,6 +588,18 @@ void SidePanelCoordinator::OnTabStripModelChanged(
     if ((!new_contextual_registry ||
          !new_contextual_registry->active_entry().has_value()) &&
         !global_registry_->active_entry().has_value()) {
+      // Cache the view of the old contextual registry if it was active.
+      if (old_contextual_registry && old_contextual_registry->active_entry() &&
+          *old_contextual_registry->active_entry() == current_entry_.get()) {
+        auto* content_wrapper =
+            GetContentView()->GetViewByID(kSidePanelContentWrapperViewId);
+        DCHECK(content_wrapper);
+        DCHECK(content_wrapper->children().size() == 1);
+        auto current_entry_view = content_wrapper->RemoveChildViewT(
+            content_wrapper->children().front());
+        auto* active_entry = old_contextual_registry->active_entry().value();
+        active_entry->CacheView(std::move(current_entry_view));
+      }
       Close();
     } else {
       Show(GetLastActiveEntryId().value_or(kDefaultEntry),
