@@ -10,7 +10,6 @@
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/protocol.h"
-#include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
 #include "ash/quick_pair/message_stream/message_stream.h"
 #include "ash/quick_pair/repository/fast_pair_repository.h"
 #include "ash/session/session_controller_impl.h"
@@ -385,23 +384,6 @@ void RetroactivePairingDetectorImpl::VerifyDeviceFound(
   device->set_classic_address(classic_address);
   QP_LOG(INFO) << __func__ << ": Found device for Retroactive Pairing "
                << device;
-
-  FastPairHandshakeLookup::GetInstance()->Create(
-      adapter_, std::move(device),
-      base::BindOnce(&RetroactivePairingDetectorImpl::OnHandshakeComplete,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void RetroactivePairingDetectorImpl::OnHandshakeComplete(
-    scoped_refptr<Device> device,
-    absl::optional<PairFailure> failure) {
-  QP_LOG(INFO) << __func__;
-
-  if (failure) {
-    QP_LOG(WARNING) << __func__ << ": Handshake failed with " << device
-                    << " because: " << failure.value();
-    return;
-  }
 
   for (auto& observer : observers_)
     observer.OnRetroactivePairFound(device);

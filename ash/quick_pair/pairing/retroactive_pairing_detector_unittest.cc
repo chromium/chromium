@@ -12,10 +12,6 @@
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/common/protocol.h"
-#include "ash/quick_pair/fast_pair_handshake/fake_fast_pair_handshake.h"
-#include "ash/quick_pair/fast_pair_handshake/fast_pair_data_encryptor.h"
-#include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client.h"
-#include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
 #include "ash/quick_pair/message_stream/fake_bluetooth_socket.h"
 #include "ash/quick_pair/message_stream/fake_message_stream_lookup.h"
 #include "ash/quick_pair/message_stream/message_stream.h"
@@ -154,10 +150,6 @@ class RetroactivePairingDetectorTest
               QuickPairProcessManagerImpl::ProcessReferenceImpl>(
               data_parser_remote_, base::DoNothing());
         });
-
-    FastPairHandshakeLookup::SetCreateFunctionForTesting(
-        base::BindRepeating(&RetroactivePairingDetectorTest::CreateHandshake,
-                            base::Unretained(this)));
   }
 
   void TearDown() override {
@@ -221,17 +213,6 @@ class RetroactivePairingDetectorTest
     SimulateUserLogin(kUserEmail, user_type);
   }
 
-  std::unique_ptr<FastPairHandshake> CreateHandshake(
-      scoped_refptr<Device> device,
-      FastPairHandshake::OnCompleteCallback callback) {
-    auto fake = std::make_unique<FakeFastPairHandshake>(
-        adapter_, std::move(device), std::move(callback));
-
-    fake_fast_pair_handshake_ = fake.get();
-
-    return fake;
-  }
-
  protected:
   bool retroactive_pair_found_ = false;
   scoped_refptr<Device> retroactive_device_;
@@ -239,7 +220,6 @@ class RetroactivePairingDetectorTest
   scoped_refptr<RetroactivePairingDetectorFakeBluetoothAdapter> adapter_;
   std::unique_ptr<PairerBroker> pairer_broker_;
   MockPairerBroker* mock_pairer_broker_ = nullptr;
-  FakeFastPairHandshake* fake_fast_pair_handshake_ = nullptr;
 
   scoped_refptr<FakeBluetoothSocket> fake_socket_ =
       base::MakeRefCounted<FakeBluetoothSocket>();
@@ -464,9 +444,6 @@ TEST_F(RetroactivePairingDetectorTest, MessageStream_Ble_ModelId_FlagEnabled) {
   NotifyMessageStreamConnected(kTestDeviceAddress);
   base::RunLoop().RunUntilIdle();
 
-  fake_fast_pair_handshake_->InvokeCallback();
-  base::RunLoop().RunUntilIdle();
-
   EXPECT_TRUE(retroactive_pair_found_);
   EXPECT_EQ(retroactive_device_->ble_address, kBleAddress);
   EXPECT_EQ(retroactive_device_->metadata_id, kModelId);
@@ -499,9 +476,6 @@ TEST_F(RetroactivePairingDetectorTest, MessageStream_Ble_ModelId_FlagDisabled) {
   fake_socket_->TriggerReceiveCallback();
   base::RunLoop().RunUntilIdle();
   NotifyMessageStreamConnected(kTestDeviceAddress);
-  base::RunLoop().RunUntilIdle();
-
-  fake_fast_pair_handshake_->InvokeCallback();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(retroactive_pair_found_);
@@ -538,9 +512,6 @@ TEST_F(RetroactivePairingDetectorTest,
   NotifyMessageStreamConnected(kTestDeviceAddress);
   base::RunLoop().RunUntilIdle();
 
-  fake_fast_pair_handshake_->InvokeCallback();
-  base::RunLoop().RunUntilIdle();
-
   EXPECT_TRUE(retroactive_pair_found_);
   EXPECT_EQ(retroactive_device_->ble_address, kBleAddress);
   EXPECT_EQ(retroactive_device_->metadata_id, kModelId);
@@ -573,9 +544,6 @@ TEST_F(RetroactivePairingDetectorTest,
   fake_socket_->TriggerReceiveCallback();
   base::RunLoop().RunUntilIdle();
   NotifyMessageStreamConnected(kTestDeviceAddress);
-  base::RunLoop().RunUntilIdle();
-
-  fake_fast_pair_handshake_->InvokeCallback();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(retroactive_pair_found_);
@@ -654,8 +622,6 @@ TEST_F(RetroactivePairingDetectorTest,
       /*new_paired_status=*/true, kTestDeviceAddress);
   fake_socket_->TriggerReceiveCallback();
   base::RunLoop().RunUntilIdle();
-  fake_fast_pair_handshake_->InvokeCallback();
-  base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(retroactive_pair_found_);
   EXPECT_EQ(retroactive_device_->ble_address, kBleAddress);
@@ -686,8 +652,6 @@ TEST_F(RetroactivePairingDetectorTest,
       /*new_paired_status=*/true, kTestDeviceAddress);
   fake_socket_->TriggerReceiveCallback();
   base::RunLoop().RunUntilIdle();
-  fake_fast_pair_handshake_->InvokeCallback();
-  base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(retroactive_pair_found_);
   EXPECT_EQ(retroactive_device_->ble_address, kBleAddress);
@@ -716,8 +680,6 @@ TEST_F(RetroactivePairingDetectorTest,
   PairFastPairDeviceWithClassicBluetooth(
       /*new_paired_status=*/true, kTestDeviceAddress);
   fake_socket_->TriggerReceiveCallback();
-  base::RunLoop().RunUntilIdle();
-  fake_fast_pair_handshake_->InvokeCallback();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(retroactive_pair_found_);
@@ -748,8 +710,6 @@ TEST_F(RetroactivePairingDetectorTest,
       /*new_paired_status=*/true, kTestDeviceAddress);
   fake_socket_->TriggerReceiveCallback();
   base::RunLoop().RunUntilIdle();
-  fake_fast_pair_handshake_->InvokeCallback();
-  base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(retroactive_pair_found_);
   EXPECT_EQ(retroactive_device_->ble_address, kBleAddress);
@@ -776,8 +736,6 @@ TEST_F(RetroactivePairingDetectorTest,
   PairFastPairDeviceWithClassicBluetooth(
       /*new_paired_status=*/true, kTestDeviceAddress);
   fake_socket_->TriggerReceiveCallback();
-  base::RunLoop().RunUntilIdle();
-  fake_fast_pair_handshake_->InvokeCallback();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(retroactive_pair_found_);
@@ -806,8 +764,6 @@ TEST_F(RetroactivePairingDetectorTest,
       /*new_paired_status=*/true, kTestDeviceAddress);
   fake_socket_->TriggerReceiveCallback();
   base::RunLoop().RunUntilIdle();
-  fake_fast_pair_handshake_->InvokeCallback();
-  base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(retroactive_pair_found_);
   EXPECT_EQ(retroactive_device_->ble_address, kBleAddress);
@@ -834,8 +790,6 @@ TEST_F(RetroactivePairingDetectorTest,
       /*new_paired_status=*/true, kTestDeviceAddress);
   fake_socket_->TriggerReceiveCallback();
   base::RunLoop().RunUntilIdle();
-  fake_fast_pair_handshake_->InvokeCallback();
-  base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(retroactive_pair_found_);
   EXPECT_EQ(retroactive_device_->ble_address, kBleAddress);
@@ -861,8 +815,6 @@ TEST_F(RetroactivePairingDetectorTest,
   PairFastPairDeviceWithClassicBluetooth(
       /*new_paired_status=*/true, kTestDeviceAddress);
   fake_socket_->TriggerReceiveCallback();
-  base::RunLoop().RunUntilIdle();
-  fake_fast_pair_handshake_->InvokeCallback();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(retroactive_pair_found_);
@@ -1048,9 +1000,6 @@ TEST_F(RetroactivePairingDetectorTest,
   base::RunLoop().RunUntilIdle();
 
   fake_socket_->TriggerReceiveCallback();
-  base::RunLoop().RunUntilIdle();
-
-  fake_fast_pair_handshake_->InvokeCallback();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(retroactive_pair_found_);
@@ -1567,9 +1516,6 @@ TEST_F(RetroactivePairingDetectorTest, Notify_OptedOut_FlagDisabled) {
   fake_socket_->TriggerReceiveCallback();
   base::RunLoop().RunUntilIdle();
 
-  fake_fast_pair_handshake_->InvokeCallback();
-  base::RunLoop().RunUntilIdle();
-
   EXPECT_TRUE(retroactive_pair_found_);
 }
 
@@ -1599,9 +1545,6 @@ TEST_F(RetroactivePairingDetectorTest, Notify_OptedOut_StrictFlagDisabled) {
   base::RunLoop().RunUntilIdle();
 
   fake_socket_->TriggerReceiveCallback();
-  base::RunLoop().RunUntilIdle();
-
-  fake_fast_pair_handshake_->InvokeCallback();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(retroactive_pair_found_);
@@ -1635,9 +1578,6 @@ TEST_F(RetroactivePairingDetectorTest, Notify_OptedOut_SavedFlagDisabled) {
   fake_socket_->TriggerReceiveCallback();
   base::RunLoop().RunUntilIdle();
 
-  fake_fast_pair_handshake_->InvokeCallback();
-  base::RunLoop().RunUntilIdle();
-
   EXPECT_TRUE(retroactive_pair_found_);
 }
 
@@ -1664,9 +1604,6 @@ TEST_F(RetroactivePairingDetectorTest, Notify_OptedIn_FlagDisabled) {
   base::RunLoop().RunUntilIdle();
 
   fake_socket_->TriggerReceiveCallback();
-  base::RunLoop().RunUntilIdle();
-
-  fake_fast_pair_handshake_->InvokeCallback();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(retroactive_pair_found_);
@@ -1699,9 +1636,6 @@ TEST_F(RetroactivePairingDetectorTest, Notify_OptedIn_StrictFlagDisabled) {
   fake_socket_->TriggerReceiveCallback();
   base::RunLoop().RunUntilIdle();
 
-  fake_fast_pair_handshake_->InvokeCallback();
-  base::RunLoop().RunUntilIdle();
-
   EXPECT_TRUE(retroactive_pair_found_);
 }
 
@@ -1730,9 +1664,6 @@ TEST_F(RetroactivePairingDetectorTest, Notify_OptedIn_SavedFlagDisabled) {
   base::RunLoop().RunUntilIdle();
 
   fake_socket_->TriggerReceiveCallback();
-  base::RunLoop().RunUntilIdle();
-
-  fake_fast_pair_handshake_->InvokeCallback();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(retroactive_pair_found_);
@@ -1783,9 +1714,6 @@ TEST_F(RetroactivePairingDetectorTest,
   base::RunLoop().RunUntilIdle();
 
   fake_socket_->TriggerReceiveCallback();
-  base::RunLoop().RunUntilIdle();
-
-  fake_fast_pair_handshake_->InvokeCallback();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(retroactive_pair_found_);
