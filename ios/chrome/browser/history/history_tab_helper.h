@@ -19,7 +19,6 @@ class HistoryService;
 
 namespace web {
 class NavigationItem;
-class NavigationContext;
 }  // namespace web
 
 // HistoryTabHelper updates the history database based on navigation events from
@@ -33,14 +32,12 @@ class HistoryTabHelper : public history::Context,
 
   ~HistoryTabHelper() override;
 
-  // Sends the page title to the history service. Public for testing.
-  void UpdateHistoryPageTitle(const web::NavigationItem& item);
+  // Updates history with the specified navigation.
+  void UpdateHistoryForNavigation(
+      const history::HistoryAddPageArgs& add_page_args);
 
-  // Returns the history::HistoryAddPageArgs to use for adding a page to
-  // history. Public for testing.
-  history::HistoryAddPageArgs CreateHistoryAddPageArgs(
-      web::NavigationItem* last_committed_item,
-      web::NavigationContext* navigation_context);
+  // Sends the page title to the history service.
+  void UpdateHistoryPageTitle(const web::NavigationItem& item);
 
   // Sets whether the navigation should be send to the HistoryService or saved
   // for later (this will generally be set to true while the WebState is used

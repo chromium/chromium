@@ -16,7 +16,6 @@
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
 #include "ios/web/public/navigation/navigation_item.h"
-#import "ios/web/public/test/fakes/fake_navigation_context.h"
 #include "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -224,33 +223,4 @@ TEST_F(HistoryTabHelperTest, TestFileNotAdded) {
   AddVisitForURL(file_url);
   QueryURL(file_url);
   EXPECT_NE(file_url, latest_row_result_.url());
-}
-
-TEST_F(HistoryTabHelperTest,
-       CreateAddPageArgsPopulatesOnVisitContextAnnotations) {
-  std::unique_ptr<web::NavigationItem> item = web::NavigationItem::Create();
-  GURL test_url("https://www.google.com/");
-  item->SetVirtualURL(test_url);
-
-  web::FakeNavigationContext context;
-  context.SetUrl(test_url);
-  context.SetHasCommitted(true);
-
-  std::string raw_response_headers = "HTTP/1.1 234 OK\r\n\r\n";
-  scoped_refptr<net::HttpResponseHeaders> response_headers =
-      net::HttpResponseHeaders::TryToCreate(raw_response_headers);
-  DCHECK(response_headers);
-  context.SetResponseHeaders(response_headers);
-
-  HistoryTabHelper* helper = HistoryTabHelper::FromWebState(&web_state_);
-  history::HistoryAddPageArgs args =
-      helper->CreateHistoryAddPageArgs(item.get(), &context);
-
-  // Make sure the `context_annotations` are populated.
-  ASSERT_TRUE(args.context_annotations.has_value());
-  // Most of the actual fields can't be verified here, because the corresponding
-  // data sources don't exist in this unit test (e.g. there's no Browser, no
-  // other TabHelpers, etc). At least check the response code that was set up
-  // above.
-  EXPECT_EQ(args.context_annotations->response_code, 234);
 }
