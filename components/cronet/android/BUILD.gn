@@ -503,6 +503,7 @@ action("cronet_combine_proguard_flags") {
   script = "//components/cronet/tools/generate_proguard_file.py"
   sources = [
     "//base/android/proguard/chromium_code.flags",
+    "//build/android/chromium_annotations.flags",
 
     # Massage the proguard to avoid incompatibilities when building internally.
     "//components/cronet/android/cronet_impl_native_proguard.cfg",

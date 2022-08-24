@@ -121,10 +121,13 @@ android_library("weblayer_private_java_tests") {
     "//third_party/junit:junit",
     "//ui/android:ui_java_test_support",
     "//weblayer/browser/java:test_interfaces_java",
+    "//weblayer/browser/java:upstream_java",
     "//weblayer/public/java",
     "//weblayer/public/javatestutil:test_java",
     "//weblayer/shell/android:weblayer_shell_java",
   ]
+
+  srcjar_deps = [ "//weblayer/browser/java:weblayer_product_config" ]
 }
 
 android_library("weblayer_java_test_support") {
