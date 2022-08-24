@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/clipboard/clipboard_sequence_number_token.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 
@@ -44,13 +45,18 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardData {
   static std::vector<uint8_t> EncodeBitmapData(const SkBitmap& bitmap);
 
   ClipboardData();
-  explicit ClipboardData(const ClipboardData&);
+  ClipboardData(const ClipboardData&);
   ClipboardData(ClipboardData&&);
   ClipboardData& operator=(const ClipboardData&) = delete;
+  ClipboardData& operator=(ClipboardData&&);
   ~ClipboardData();
 
   bool operator==(const ClipboardData& that) const;
   bool operator!=(const ClipboardData& that) const;
+
+  const ClipboardSequenceNumberToken& sequence_number_token() const {
+    return sequence_number_token_;
+  }
 
   // Bitmask of ClipboardInternalFormat types.
   int format() const { return format_; }
@@ -165,6 +171,9 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardData {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
+  // Unique identifier for the clipboard state at the time of data creation.
+  ClipboardSequenceNumberToken sequence_number_token_;
+
   // Plain text in UTF8 format.
   std::string text_;
 

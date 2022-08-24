@@ -8,13 +8,11 @@
 #include <ostream>
 #include <vector>
 
-#include "base/notreached.h"
 #include "base/threading/thread_restrictions.h"
-#include "skia/ext/skia_utils_base.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/clipboard/clipboard_sequence_number_token.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/gfx/codec/png_codec.h"
-#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/skia_util.h"
 
 namespace ui {
@@ -33,6 +31,7 @@ std::vector<uint8_t> ClipboardData::EncodeBitmapData(const SkBitmap& bitmap) {
 ClipboardData::ClipboardData() = default;
 
 ClipboardData::ClipboardData(const ClipboardData& other) {
+  sequence_number_token_ = other.sequence_number_token_;
   format_ = other.format_;
   text_ = other.text_;
   markup_data_ = other.markup_data_;
@@ -54,11 +53,19 @@ ClipboardData::ClipboardData(const ClipboardData& other) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-ClipboardData::~ClipboardData() = default;
-
 ClipboardData::ClipboardData(ClipboardData&&) = default;
 
+ClipboardData& ClipboardData::operator=(ClipboardData&& rhs) = default;
+
+ClipboardData::~ClipboardData() = default;
+
 bool ClipboardData::operator==(const ClipboardData& that) const {
+  // Two `ClipboardData` instances are equal if they have the same contents.
+  // Their sequence number tokens need not be the same, but if they are, we
+  // can be sure the data contents will be the same as well.
+  if (sequence_number_token_ == that.sequence_number_token_)
+    return true;
+
   bool equal_except_images =
       format_ == that.format() && text_ == that.text() &&
       markup_data_ == that.markup_data() && url_ == that.url() &&

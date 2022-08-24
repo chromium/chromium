@@ -15,7 +15,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "ash/shell.h"
-#include "base/bind.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -37,10 +36,11 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "ui/aura/client/capture_client_observer.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_non_backed.h"
+#include "ui/base/clipboard/clipboard_sequence_number_token.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
@@ -748,7 +748,7 @@ class ClipboardHistoryPasteTypeBrowserTest
     auto paste_list_value = result.ExtractList();
     EXPECT_TRUE(paste_list_value.is_list());
     return std::move(paste_list_value.GetList());
-  };
+  }
 
   content::WebContents* web_contents_ = nullptr;
   int paste_num_ = 1;
@@ -956,7 +956,7 @@ IN_PROC_BROWSER_TEST_P(ClipboardHistoryReorderBrowserTest, OnCopy) {
   }
   ui::ClipboardData clipboard_data_a(*clipboard->GetClipboardData(&data_dst));
   ASSERT_EQ(clipboard_history_items.size(), 1);
-  ASSERT_EQ(clipboard_history_items.front().data(), clipboard_data_a);
+  EXPECT_EQ(clipboard_history_items.front().data(), clipboard_data_a);
   histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.ReorderType",
                                     /*count=*/0);
 
@@ -969,7 +969,7 @@ IN_PROC_BROWSER_TEST_P(ClipboardHistoryReorderBrowserTest, OnCopy) {
   }
   ui::ClipboardData clipboard_data_b(*clipboard->GetClipboardData(&data_dst));
   ASSERT_EQ(clipboard_history_items.size(), 2);
-  ASSERT_EQ(clipboard_history_items.front().data(), clipboard_data_b);
+  EXPECT_EQ(clipboard_history_items.front().data(), clipboard_data_b);
   histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.ReorderType",
                                     /*count=*/0);
 
@@ -982,11 +982,19 @@ IN_PROC_BROWSER_TEST_P(ClipboardHistoryReorderBrowserTest, OnCopy) {
     SetClipboardTextAndHtml("A", "<span>A</span>");
   }
   ASSERT_EQ(clipboard_history_items.size(), 2);
-  ASSERT_EQ(clipboard_history_items.front().data(), clipboard_data_a);
+  EXPECT_EQ(clipboard_history_items.front().data(), clipboard_data_a);
   histogram_tester.ExpectBucketCount(
       "Ash.ClipboardHistory.ReorderType",
       /*sample=*/ash::ClipboardHistoryReorderType::kOnCopy,
       /*expected_count=*/1);
+
+  // Verify that after the original data is written to the clipboard again, the
+  // corresponding clipboard history item's data is updated to have the same
+  // sequence number as the new clipboard.
+  EXPECT_EQ(clipboard_history_items.front().data().sequence_number_token(),
+            clipboard->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste));
+  EXPECT_NE(clipboard_history_items.front().data().sequence_number_token(),
+            clipboard_data_a.sequence_number_token());
 }
 
 IN_PROC_BROWSER_TEST_P(ClipboardHistoryReorderBrowserTest, OnPaste) {
@@ -1074,7 +1082,7 @@ IN_PROC_BROWSER_TEST_P(ClipboardHistoryReorderBrowserTest, OnPaste) {
 
   const auto& clipboard_history_items = GetClipboardItems();
   ASSERT_EQ(clipboard_history_items.size(), 2);
-  ASSERT_EQ(clipboard_history_items.front().data(), *expected_clipboard_data);
+  EXPECT_EQ(clipboard_history_items.front().data(), *expected_clipboard_data);
 
   SetClipboardTextAndHtml("C", "<span>C</span>");
   histogram_tester.ExpectBucketCount("Ash.ClipboardHistory.ConsecutivePastes",

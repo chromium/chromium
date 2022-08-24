@@ -18,4 +18,14 @@ ClipboardHistoryItem::ClipboardHistoryItem(ClipboardHistoryItem&&) = default;
 
 ClipboardHistoryItem::~ClipboardHistoryItem() = default;
 
+ui::ClipboardData ClipboardHistoryItem::ReplaceEquivalentData(
+    ui::ClipboardData&& new_data) {
+  DCHECK(data_ == new_data);
+  // If work has already been done to encode an image belonging to both data
+  // instances, make sure it is not lost.
+  if (data_.maybe_png() && !new_data.maybe_png())
+    new_data.SetPngDataAfterEncoding(*data_.maybe_png());
+  return std::exchange(data_, std::move(new_data));
+}
+
 }  // namespace ash

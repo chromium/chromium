@@ -212,14 +212,16 @@ void ClipboardHistory::MaybeCommitData(ui::ClipboardData data,
   if (!ClipboardHistoryUtil::IsSupported(data))
     return;
 
-  auto iter =
-      std::find_if(history_list_.cbegin(), history_list_.cend(),
-                   [&data](const auto& item) { return item.data() == data; });
+  auto iter = std::find_if(history_list_.begin(), history_list_.end(),
+                           [&data](auto& item) { return item.data() == data; });
   bool is_duplicate = iter != history_list_.cend();
   if (is_duplicate) {
-    // If `data` already exists in `history_list_` then move it to the front
-    // instead of creating a new one because creating a new one will result in a
-    // new unique identifier.
+    // If `data` already exists in `history_list_` then move its corresponding
+    // item to the front of the list instead of creating a new item, because
+    // creating a new item will result in a new unique identifier. Replace the
+    // item's underlying clipboard data for consistency with the clipboard's
+    // current state.
+    iter->ReplaceEquivalentData(std::move(data));
     history_list_.splice(history_list_.begin(), history_list_, iter);
     base::UmaHistogramEnumeration("Ash.ClipboardHistory.ReorderType",
                                   is_reorder_on_paste

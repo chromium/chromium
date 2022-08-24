@@ -439,6 +439,47 @@ TEST_F(ClipboardHistoryTest, DuplicateBitmap) {
   WriteAndEnsureBitmapHistory(input_bitmaps, expected_bitmaps);
 }
 
+// Tests that when a duplicate bitmap is written to clipboard history and the
+// first bitmap has been encoded to a PNG, the encoded PNG is still set on the
+// clipboard history item's data after deduplication.
+TEST_F(ClipboardHistoryTest, DuplicateBitmapEncodingPreserved) {
+  SkBitmap test_bitmap_1 = gfx::test::CreateBitmap(3, 2);
+  SkBitmap test_bitmap_2 = gfx::test::CreateBitmap(4, 3);
+
+  // Write image data to clipboard.
+  std::vector<SkBitmap> input_bitmaps{test_bitmap_1, test_bitmap_2};
+  std::vector<SkBitmap> expected_bitmaps{test_bitmap_2, test_bitmap_1};
+  WriteAndEnsureBitmapHistory(input_bitmaps, expected_bitmaps);
+
+  // Encode the image belonging to the data that will be written again.
+  const std::list<ClipboardHistoryItem>& items = GetClipboardHistoryItems();
+  ASSERT_EQ(items.size(), 2u);
+  const auto& data_to_duplicate = items.back().data();
+  const auto original_sequence_number_token =
+      data_to_duplicate.sequence_number_token();
+  EXPECT_FALSE(data_to_duplicate.maybe_png());
+  auto png = ui::ClipboardData::EncodeBitmapData(test_bitmap_1);
+  data_to_duplicate.SetPngDataAfterEncoding(png);
+  EXPECT_TRUE(data_to_duplicate.maybe_png());
+
+  // Write first image to clipboard again.
+  {
+    ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+    scw.WriteImage(test_bitmap_1);
+  }
+  base::RunLoop().RunUntilIdle();
+
+  // Verify that the encoded image data was preserved while deduplicating data
+  // and reordering items in clipboard history.
+  ASSERT_EQ(items.size(), 2u);
+  const auto& duplicated_data = items.front().data();
+  EXPECT_EQ(duplicated_data, data_to_duplicate);
+  EXPECT_NE(duplicated_data.sequence_number_token(),
+            original_sequence_number_token);
+  ASSERT_TRUE(duplicated_data.maybe_png());
+  EXPECT_EQ(*duplicated_data.maybe_png(), png);
+}
+
 // Tests that unrecognized custom data is omitted from clipboard history.
 TEST_F(ClipboardHistoryTest, BasicCustomData) {
   const std::unordered_map<std::u16string, std::u16string> input_data = {
