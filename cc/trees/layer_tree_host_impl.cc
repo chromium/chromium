@@ -639,6 +639,14 @@ void LayerTreeHostImpl::FinishCommit(
   TRACE_EVENT0("cc,benchmark", "LayerTreeHostImpl::FinishCommit");
   LayerTreeImpl* tree = sync_tree();
   tree->PullPropertiesFrom(state, unsafe_state);
+
+  // Check whether the impl scroll animating node was removed by the commit.
+  if (ElementId impl_only_scrolling_element =
+          mutator_host()->ImplOnlyScrollAnimatingElement()) {
+    if (!tree->property_trees()->HasElement(impl_only_scrolling_element)) {
+      mutator_host()->ImplOnlyScrollAnimatingElementRemoved();
+    }
+  }
   PullLayerTreeHostPropertiesFrom(state);
 
   // Transfer image decode requests to the impl thread.

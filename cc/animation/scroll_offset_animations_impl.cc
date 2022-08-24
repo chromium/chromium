@@ -14,7 +14,6 @@
 #include "cc/animation/animation_timeline.h"
 #include "cc/animation/element_animations.h"
 #include "cc/animation/scroll_offset_animation_curve_factory.h"
-#include "cc/trees/property_tree.h"
 #include "ui/gfx/animation/keyframe/timing_function.h"
 
 namespace cc {
@@ -89,9 +88,6 @@ void ScrollOffsetAnimationsImpl::ScrollAnimationCreateInternal(
 
   ReattachScrollOffsetAnimationIfNeeded(element_id);
   scroll_offset_animation_->AddKeyframeModel(std::move(keyframe_model));
-  // Call AnimatingElementRemovedByCommit() again if it was called before.
-  if (animating_element_removed_by_commit_)
-    AnimatingElementRemovedByCommit();
 }
 
 bool ScrollOffsetAnimationsImpl::ScrollAnimationUpdateTarget(
@@ -201,20 +197,9 @@ void ScrollOffsetAnimationsImpl::ScrollAnimationAbort(bool needs_completion) {
                        "needs_completion", needs_completion);
 }
 
-void ScrollOffsetAnimationsImpl::OnCommit(const PropertyTrees& property_trees) {
-  ElementId scroll_animating_element_id = GetElementId();
-  if (scroll_animating_element_id &&
-      !property_trees.HasElement(scroll_animating_element_id)) {
-    AnimatingElementRemovedByCommit();
-  }
-}
-
 void ScrollOffsetAnimationsImpl::AnimatingElementRemovedByCommit() {
-  if (IsAnimating()) {
-    scroll_offset_animation_->GetKeyframeModel(TargetProperty::SCROLL_OFFSET)
-        ->set_affects_pending_elements(false);
-  }
-  animating_element_removed_by_commit_ = true;
+  scroll_offset_animation_->GetKeyframeModel(TargetProperty::SCROLL_OFFSET)
+      ->set_affects_pending_elements(false);
 }
 
 void ScrollOffsetAnimationsImpl::NotifyAnimationFinished(
@@ -263,7 +248,6 @@ void ScrollOffsetAnimationsImpl::ReattachScrollOffsetAnimationIfNeeded(
                            TRACE_EVENT_SCOPE_THREAD);
       scroll_offset_animation_->DetachElement();
     }
-    animating_element_removed_by_commit_ = false;
     if (element_id) {
       TRACE_EVENT_INSTANT0("cc", "scroll offset animation attached element",
                            TRACE_EVENT_SCOPE_THREAD);
