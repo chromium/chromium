@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
 
-import {FeedbackAppExitPath, FeedbackAppPostSubmitAction, FeedbackAppPreSubmitAction, FeedbackContext, FeedbackServiceProviderInterface, Report, SendReportStatus} from './feedback_types.js';
+import {FeedbackAppExitPath, FeedbackAppHelpContentOutcome, FeedbackAppPostSubmitAction, FeedbackAppPreSubmitAction, FeedbackContext, FeedbackServiceProviderInterface, Report, SendReportStatus} from './feedback_types.js';
 
 /**
  * @fileoverview
@@ -53,6 +54,9 @@ export class FakeFeedbackServiceProvider {
 
     /** @type {?FeedbackAppExitPath} */
     this.exitPath_ = null;
+
+    /** @type {?FeedbackAppHelpContentOutcome} */
+    this.helpContentOutcome_ = null;
 
     /** @type {Map<FeedbackAppPreSubmitAction, number>} */
     this.preSubmitActionMap_ = new Map();
@@ -252,5 +256,21 @@ export class FakeFeedbackServiceProvider {
   recordPreSubmitAction(action) {
     this.preSubmitActionMap_.set(
         action, this.preSubmitActionMap_.get(action) + 1 || 1);
+  }
+
+  /**
+   * @param {?FeedbackAppHelpContentOutcome} outcome
+   * @return {boolean}
+   */
+  isHelpContentOutcomeMetricEmitted(outcome) {
+    return this.helpContentOutcome_ === outcome;
+  }
+
+  /**
+   * @param {?FeedbackAppHelpContentOutcome} outcome
+   */
+  recordHelpContentOutcome(outcome) {
+    assert(this.helpContentOutcome_ === null);
+    this.helpContentOutcome_ = outcome;
   }
 }

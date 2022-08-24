@@ -41390,6 +41390,15 @@ Called by update_permissions_policy_enum.py.-->
   <int value="6" label="kSuccessNoHelpContentClicked"/>
 </enum>
 
+<enum name="FeedbackAppHelpContentOutcome">
+  <int value="0" label="kContinueHelpContentClicked"/>
+  <int value="1" label="kContinueNoHelpContentClicked"/>
+  <int value="2" label="kContinueNoResultFound"/>
+  <int value="3" label="kQuitHelpContentClicked"/>
+  <int value="4" label="kQuitNoHelpContentClicked"/>
+  <int value="5" label="kQuitNoResultFound"/>
+</enum>
+
 <enum name="FeedbackAppPostSubmitAction">
   <int value="0" label="kSendNewReport"/>
   <int value="1" label="kClickDoneButton"/>

@@ -72,4 +72,9 @@ void EmitFeedbackAppExitPath(mojom::FeedbackAppExitPath exit_path) {
   base::UmaHistogramEnumeration(kFeedbackAppExitPath, exit_path);
 }
 
+void EmitFeedbackAppHelpContentOutcome(
+    mojom::FeedbackAppHelpContentOutcome outcome) {
+  base::UmaHistogramEnumeration(kFeedbackAppHelpContentOutcome, outcome);
+}
+
 }  // namespace ash::os_feedback_ui::metrics

@@ -5769,6 +5769,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Feedback.ChromeOSApp.HelpContentOutcome"
+    enum="FeedbackAppHelpContentOutcome" expires_after="2023-07-27">
+  <owner>longbowei@google.com</owner>
+  <owner>xiangdongkong@google.com</owner>
+  <owner>cros-feedback-app@google.com</owner>
+  <summary>
+    Record the outcome of checking help contents. Fires when user leaves the
+    search page by clicking continue or by clicking x on top right to close the
+    app.
+  </summary>
+</histogram>
+
 <histogram name="Feedback.ChromeOSApp.IncludedEmail" units="boolean"
     expires_after="2023-07-27">
   <owner>longbowei@google.com</owner>

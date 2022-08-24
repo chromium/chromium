@@ -11,7 +11,7 @@ import './strings.m.js';
 import {stringToMojoString16} from 'chrome://resources/ash/common/mojo_utils.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {FeedbackAppExitPath, FeedbackAppPreSubmitAction, FeedbackContext, FeedbackServiceProviderInterface, Report, SendReportStatus} from './feedback_types.js';
+import {FeedbackAppExitPath, FeedbackAppHelpContentOutcome, FeedbackAppPreSubmitAction, FeedbackContext, FeedbackServiceProviderInterface, Report, SendReportStatus} from './feedback_types.js';
 import {getFeedbackServiceProvider} from './mojo_interface_provider.js';
 
 /**
@@ -114,6 +114,13 @@ export class FeedbackFlowElement extends PolymerElement {
      * @private
      */
     this.helpContentClicked_ = false;
+
+    /**
+     * To avoid helpContentOutcome metric emit more than one time.
+     * @type {boolean}
+     * @private
+     */
+    this.helpContentOutcomeMetricEmitted_ = false;
   }
 
   ready() {
@@ -146,6 +153,12 @@ export class FeedbackFlowElement extends PolymerElement {
           this.recordExitPath_(
               FeedbackAppExitPath.kQuitSearchPageHelpContentClicked,
               FeedbackAppExitPath.kQuitSearchPageNoHelpContentClicked);
+          if (!this.helpContentOutcomeMetricEmitted_) {
+            this.recordHelpContentOutcome_(
+                FeedbackAppHelpContentOutcome.kQuitHelpContentClicked,
+                FeedbackAppHelpContentOutcome.kQuitNoHelpContentClicked);
+            this.helpContentOutcomeMetricEmitted_ = true;
+          }
           break;
         case FeedbackFlowState.SHARE_DATA:
           this.recordExitPath_(
@@ -208,6 +221,13 @@ export class FeedbackFlowElement extends PolymerElement {
         this.currentState_ = FeedbackFlowState.SHARE_DATA;
         this.description_ = event.detail.description;
         this.fetchScreenshot_();
+        // TODO(longbowei): Handle NoResultFound case.
+        if (!this.helpContentOutcomeMetricEmitted_) {
+          this.recordHelpContentOutcome_(
+              FeedbackAppHelpContentOutcome.kContinueHelpContentClicked,
+              FeedbackAppHelpContentOutcome.kContinueNoHelpContentClicked);
+          this.helpContentOutcomeMetricEmitted_ = true;
+        }
         break;
       case FeedbackFlowState.SHARE_DATA:
         /** @type {!Report} */
@@ -255,6 +275,20 @@ export class FeedbackFlowElement extends PolymerElement {
   navigateToSearchPage_() {
     this.currentState_ = FeedbackFlowState.SEARCH;
     this.shadowRoot.querySelector('search-page').focusInputElement();
+  }
+
+  /**
+   * @param {!FeedbackAppHelpContentOutcome} outcomeHelpContentClicked
+   * @param {!FeedbackAppHelpContentOutcome} outcomeNoHelpContentClicked
+   * @private
+   */
+  recordHelpContentOutcome_(
+      outcomeHelpContentClicked, outcomeNoHelpContentClicked) {
+    this.helpContentClicked_ ?
+        this.feedbackServiceProvider_.recordHelpContentOutcome(
+            outcomeHelpContentClicked) :
+        this.feedbackServiceProvider_.recordHelpContentOutcome(
+            outcomeNoHelpContentClicked);
   }
 
   /**

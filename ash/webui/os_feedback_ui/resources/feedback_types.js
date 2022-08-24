@@ -99,6 +99,13 @@ export const FeedbackAppPostSubmitAction =
 export const FeedbackAppExitPath = ash.osFeedbackUi.mojom.FeedbackAppExitPath;
 
 /**
+ * Type alias for FeedbackAppHelpContentOutcome.
+ * @typedef {ash.osFeedbackUi.mojom.FeedbackAppHelpContentOutcome}
+ */
+export const FeedbackAppHelpContentOutcome =
+    ash.osFeedbackUi.mojom.FeedbackAppHelpContentOutcome;
+
+/**
  * Type alias for SendReportStatus.
  * @typedef {ash.osFeedbackUi.mojom.SendReportStatus}
  */
