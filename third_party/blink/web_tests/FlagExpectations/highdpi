@@ -1367,17 +1367,15 @@ crbug.com/1117211 css3/filters/composited-layer-promotion-after-outset-overlap-c
 
 # ref tests that fail in highdpi
 crbug.com/1179572 animations/cross-fade-webkit-mask-box-image.html [ Failure ]
-crbug.com/1295280 virtual/document-transition/wpt_internal/document-transition/css-tags-paint-order-with-entry.html [ Failure ]
-crbug.com/1295280 virtual/document-transition/wpt_internal/document-transition/old-content-captures-opacity.html [ Failure ]
-crbug.com/1295281 virtual/document-transition/wpt_internal/document-transition/new-content-captures-different-size.html [ Failure ]
-crbug.com/1295281 virtual/document-transition/wpt_internal/document-transition/old-content-captures-different-size.html [ Failure ]
-crbug.com/1311421 virtual/document-transition/wpt_internal/document-transition/content-with-clip-max-texture-size.html [ Failure ]
-crbug.com/1295281 virtual/document-transition/wpt_internal/document-transition/old-content-object-fit-fill.html [ Failure ]
-crbug.com/1295281 virtual/document-transition/wpt_internal/document-transition/new-content-object-fit-fill.html [ Failure ]
-crbug.com/1329180 virtual/document-transition/wpt_internal/document-transition/new-and-old-sizes-match.html [ Failure ]
-crbug.com/1295280 virtual/document-transition/wpt_internal/document-transition/old-content-with-overflow-zoomed.html [ Failure ]
-crbug.com/1295280 virtual/document-transition/wpt_internal/document-transition/new-content-with-overflow-zoomed.html [ Failure ]
+
+crbug.com/1353771 virtual/document-transition/wpt_internal/document-transition/content-with-clip-max-texture-size.html [ Failure ]
+crbug.com/1353771 virtual/document-transition/wpt_internal/document-transition/new-content-with-overflow-zoomed.html [ Failure ]
+crbug.com/1353771 virtual/document-transition/wpt_internal/document-transition/old-content-with-overflow-zoomed.html [ Failure ]
+crbug.com/1353771 virtual/document-transition-wide-gamut/wpt_internal/document-transition/content-with-clip-max-texture-size.html [ Failure ]
+crbug.com/1353771 virtual/document-transition-wide-gamut/wpt_internal/document-transition/new-content-with-overflow-zoomed.html [ Failure ]
+crbug.com/1353771 virtual/document-transition-wide-gamut/wpt_internal/document-transition/old-content-with-overflow-zoomed.html [ Failure ]
 crbug.com/1351422 virtual/document-transition/wpt_internal/document-transition/content-visibility-auto-shared-element.html [ Failure ]
+crbug.com/1351422 virtual/document-transition-wide-gamut/wpt_internal/document-transition/content-visibility-auto-shared-element.html [ Failure ]
 
 crbug.com/1314903 external/wpt/css/css-sizing/contain-intrinsic-size/animation/contain-intrinsic-size-interpolation.html [ Failure ]
 
@@ -1837,15 +1835,6 @@ crbug.com/1324618 external/wpt/css/css-images/object-view-box-fit-fill* [ Pass ]
 # crbug.com/1339051: some ref tests generate output with minor differences.
 crbug.com/1339051 compositing/text-on-scaled-layer.html [ Failure ]
 crbug.com/1339051 fast/forms/suggestion-picker/month-suggestion-picker-appearance-rtl.html [ Failure ]
-crbug.com/1339051 virtual/document-transition/wpt_internal/document-transition/content-with-clip.html [ Failure ]
-crbug.com/1339051 virtual/document-transition/wpt_internal/document-transition/content-with-transform-new-image.html [ Failure ]
-crbug.com/1339051 virtual/document-transition/wpt_internal/document-transition/content-with-transform-old-image.html [ Failure ]
-crbug.com/1339051 virtual/document-transition/wpt_internal/document-transition/new-content-scaling.html [ Failure ]
-crbug.com/1339051 virtual/document-transition/wpt_internal/document-transition/object-view-box-old-image.html [ Failure ]
-crbug.com/1339051 virtual/document-transition/wpt_internal/document-transition/old-content-captures-root.html [ Failure ]
-crbug.com/1339051 virtual/document-transition/wpt_internal/document-transition/old-content-object-view-box-clip-path-reference.html [ Failure ]
-crbug.com/1339051 virtual/document-transition/wpt_internal/document-transition/root-captured-as-different-tag.html [ Failure ]
-crbug.com/1339051 virtual/document-transition/wpt_internal/document-transition/web-animations-api.html [ Failure ]
 
 # Flaky
 crbug.com/1355662 external/wpt/compute-pressure/compute_pressure_detached_iframe.tentative.https.html [ Failure ]

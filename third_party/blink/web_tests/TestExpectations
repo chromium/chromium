@@ -303,18 +303,6 @@ crbug.com/1276999 wpt_internal/document-transition/* [ Skip ]
 crbug.com/1276999 virtual/document-transition/* [ Pass ]
 crbug.com/1276999 virtual/document-transition-wide-gamut/* [ Pass ]
 
-crbug.com/1295280 virtual/document-transition/wpt_internal/document-transition/old-content-captures-opacity.html [ Failure ]
-crbug.com/1295281 virtual/document-transition/wpt_internal/document-transition/new-content-captures-different-size.html [ Failure ]
-crbug.com/1295281 virtual/document-transition/wpt_internal/document-transition/old-content-captures-different-size.html [ Failure ]
-
-crbug.com/1311705 virtual/document-transition-wide-gamut/wpt_internal/document-transition/new-content-captures-clip-path.html [ Failure ]
-crbug.com/1311705 virtual/document-transition-wide-gamut/wpt_internal/document-transition/content-with-transform-new-image.html [ Failure ]
-crbug.com/1311705 virtual/document-transition-wide-gamut/wpt_internal/document-transition/content-with-transform-old-image.html [ Failure ]
-crbug.com/1311705 virtual/document-transition-wide-gamut/wpt_internal/document-transition/new-content-captures-different-size.html [ Failure ]
-crbug.com/1311705 virtual/document-transition-wide-gamut/wpt_internal/document-transition/object-view-box-old-image.html [ Failure ]
-crbug.com/1311705 virtual/document-transition-wide-gamut/wpt_internal/document-transition/old-content-captures-different-size.html [ Failure ]
-crbug.com/1311705 virtual/document-transition-wide-gamut/wpt_internal/document-transition/old-content-captures-opacity.html [ Failure ]
-
 crbug.com/1351556 virtual/document-transition-wide-gamut/wpt_internal/document-transition/commit-timeout-crash.html [ Failure Timeout ]
 crbug.com/1351556 [ Win ] virtual/document-transition-wide-gamut/wpt_internal/document-transition/nothing-captured.html [ Failure Timeout ]
 crbug.com/1351556 [ Mac11 ] virtual/document-transition-wide-gamut/wpt_internal/document-transition/nothing-captured.html [ Failure Timeout ]
