@@ -1224,6 +1224,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.PortalSuspectedToOnlineTime" units="ms"
+    expires_after="2023-09-18">
+  <owner>stevenjb@chromium.org</owner>
+  <owner>cros-network-health@google.com</owner>
+  <summary>
+    Captive portal time from a portal-suspected state to an online state on
+    ChromeOS.
+  </summary>
+</histogram>
+
 <histogram name="Network.Radio.PossibleWakeupTrigger.RadioUtilsOverhead"
     units="ms" expires_after="2023-02-05">
   <owner>bashi@chromium.org</owner>
@@ -1306,6 +1316,16 @@ chromium-metrics-reviews@google.com.
     Records the time between a SimpleURLLoader request is made to the request
     actually starts. Recorded only when the request is throttled due to the
     default network state (e.g. in low power state).
+  </summary>
+</histogram>
+
+<histogram name="Network.RedirectFoundToOnlineTime" units="ms"
+    expires_after="2023-09-18">
+  <owner>stevenjb@chromium.org</owner>
+  <owner>cros-network-health@google.com</owner>
+  <summary>
+    Captive portal time from a redirect-found state to an online state on
+    ChromeOS.
   </summary>
 </histogram>
 

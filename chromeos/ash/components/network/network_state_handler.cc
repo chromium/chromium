@@ -18,7 +18,7 @@
 #include "base/guid.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -1772,9 +1772,9 @@ void NetworkStateHandler::UpdateNetworkStats() {
         ++shared;
     }
   }
-  UMA_HISTOGRAM_COUNTS_100("Networks.Visible", visible);
-  UMA_HISTOGRAM_COUNTS_100("Networks.RememberedShared", shared);
-  UMA_HISTOGRAM_COUNTS_100("Networks.RememberedUnshared", unshared);
+  base::UmaHistogramCounts100("Networks.Visible", visible);
+  base::UmaHistogramCounts100("Networks.RememberedShared", shared);
+  base::UmaHistogramCounts100("Networks.RememberedUnshared", unshared);
 }
 
 void NetworkStateHandler::DefaultNetworkServiceChanged(
@@ -2073,28 +2073,92 @@ void NetworkStateHandler::NotifyDefaultNetworkChanged(
   notifying_network_observers_ = true;
   for (auto& observer : observers_)
     observer.DefaultNetworkChanged(default_network);
+  notifying_network_observers_ = false;
 
+  UpdatePortalStateAndNotify(default_network);
+}
+
+void NetworkStateHandler::UpdatePortalStateAndNotify(
+    const NetworkState* default_network) {
+  NetworkState::PortalState new_portal_state;
+  std::string new_default_network_path;
   if (default_network &&
       (default_network->shill_portal_state() != default_network_portal_state_ ||
        default_network->proxy_config() != default_network_proxy_config_)) {
-    default_network_portal_state_ = default_network->shill_portal_state();
+    new_portal_state = default_network->shill_portal_state();
+    new_default_network_path = default_network->path();
     default_network_proxy_config_ = default_network->proxy_config().Clone();
-    NET_LOG(EVENT) << "NOTIFY: PortalStateChanged: "
-                   << default_network_portal_state_;
-    for (auto& observer : observers_) {
-      observer.PortalStateChanged(default_network,
-                                  default_network_portal_state_);
-    }
   } else if (!default_network && (default_network_portal_state_ !=
                                       NetworkState::PortalState::kUnknown ||
                                   !default_network_proxy_config_.is_none())) {
-    default_network_portal_state_ = NetworkState::PortalState::kUnknown;
+    new_portal_state = NetworkState::PortalState::kUnknown;
     default_network_proxy_config_ = base::Value();
-    NET_LOG(EVENT) << "NOTIFY: PortalStateChanged: Unknown (no network)";
-    for (auto& observer : observers_)
-      observer.PortalStateChanged(nullptr, NetworkState::PortalState::kUnknown);
+  } else {
+    // No portal state changes.
+    return;
   }
-  notifying_network_observers_ = false;
+
+  // Update metrics.
+  if (new_default_network_path != default_network_path_) {
+    // When the default network changes, update time histograms with a 0 result
+    // to indicate a failure to transition to online.
+    if (time_in_portal_) {
+      SendPortalHistogramTimes(base::TimeDelta());
+      time_in_portal_.reset();
+    }
+  } else {
+    switch (new_portal_state) {
+      case NetworkState::PortalState::kUnknown:
+        // If we transition to an unknown state, update time histograms with a 0
+        // result to indicate a failure to transition to online.
+        if (time_in_portal_) {
+          SendPortalHistogramTimes(base::TimeDelta());
+          time_in_portal_.reset();
+        }
+        break;
+      case NetworkState::PortalState::kOnline:
+        if (time_in_portal_) {
+          SendPortalHistogramTimes(time_in_portal_->Elapsed());
+          time_in_portal_.reset();
+        }
+        break;
+      case NetworkState::PortalState::kPortalSuspected:
+        [[fallthrough]];
+      case NetworkState::PortalState::kPortal:
+        time_in_portal_ = base::ElapsedTimer();
+        break;
+      case NetworkState::PortalState::kProxyAuthRequired:
+        [[fallthrough]];
+      case NetworkState::PortalState::kNoInternet:
+        // We don't track these states, reset the timer.
+        time_in_portal_.reset();
+        break;
+    }
+  }
+
+  // Update the portal state after sending histograms.
+  default_network_portal_state_ = new_portal_state;
+
+  // Notify observers.
+  NET_LOG(EVENT) << "NOTIFY: PortalStateChanged: "
+                 << GetLogName(default_network) << ": "
+                 << default_network_portal_state_;
+  for (auto& observer : observers_)
+    observer.PortalStateChanged(default_network, default_network_portal_state_);
+}
+
+void NetworkStateHandler::SendPortalHistogramTimes(base::TimeDelta elapsed) {
+  switch (default_network_portal_state_) {
+    case NetworkState::PortalState::kPortal:
+      base::UmaHistogramTimes("Network.RedirectFoundToOnlineTime", elapsed);
+      break;
+    case NetworkState::PortalState::kPortalSuspected:
+      base::UmaHistogramTimes("Network.PortalSuspectedToOnlineTime", elapsed);
+      break;
+    default:
+      // Previous state was not portalled, no times to report.
+      break;
+  }
 }
 
 bool NetworkStateHandler::ActiveNetworksChanged(
@@ -2239,6 +2303,9 @@ std::vector<std::string> NetworkStateHandler::GetTechnologiesForType(
 
 void NetworkStateHandler::SetDefaultNetworkValues(const std::string& path,
                                                   bool metered) {
+  // If the default network changes, ensure that the portal state is updated.
+  if (!path.empty())
+    UpdatePortalStateAndNotify(GetNetworkState(path));
   default_network_path_ = path;
   default_network_is_metered_ = metered;
 }
