@@ -1164,7 +1164,7 @@ void VideoFrame::BackWithOwnedSharedMemory(
   DCHECK(!owned_shm_region_.IsValid());
   // We should be backing a frame created with WrapExternal*. We cannot be
   // wrapping an existing STORAGE_SHMEM, as the region is unowned in that case.
-  DCHECK(storage_type_ == STORAGE_SHMEM);
+  DCHECK(storage_type_ == STORAGE_UNOWNED_MEMORY);
   storage_type_ = STORAGE_SHMEM;
   owned_shm_region_ = std::move(region);
   shm_region_ = &owned_shm_region_;
