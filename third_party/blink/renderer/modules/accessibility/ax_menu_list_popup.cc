@@ -157,9 +157,10 @@ void AXMenuListPopup::DidUpdateActiveOption(int option_index,
   }
 
   if (option_index >= 0 && option_index < static_cast<int>(children_.size())) {
-    cache.PostNotification(this, ax::mojom::Event::kActiveDescendantChanged);
     AXObject* child = children_[option_index].Get();
     cache.MarkAXObjectDirtyWithCleanLayout(child);
+    cache.PostNotification(this,
+                           ax::mojom::blink::Event::kActiveDescendantChanged);
   }
 }
 
