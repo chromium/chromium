@@ -17,8 +17,10 @@
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/scoped_key_rotation_command_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/scoped_key_persistence_delegate_factory.h"
+#include "chrome/browser/enterprise/connectors/device_trust/navigation_throttle.h"
 #include "chrome/browser/enterprise/signals/device_info_fetcher.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/dm_token_utils.h"
@@ -34,6 +36,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/mock_navigation_handle.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -166,15 +169,16 @@ class DeviceTrustBrowserTest
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
-  void PopulatePref(bool as_empty_list = false) {
+  void PopulatePref(bool as_empty_list = false,
+                    Browser* active_browser = nullptr) {
     base::Value list_value(base::Value::Type::LIST);
 
     if (!as_empty_list) {
       list_value.Append(kAllowedHost);
     }
 
-    prefs()->Set(kContextAwareAccessSignalsAllowlistPref,
-                 std::move(list_value));
+    prefs(active_browser)
+        ->Set(kContextAwareAccessSignalsAllowlistPref, std::move(list_value));
   }
 
   void NavigateToUrl(const GURL& url) {
@@ -230,14 +234,20 @@ class DeviceTrustBrowserTest
     return nullptr;
   }
 
-  content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents(Browser* active_browser = nullptr) {
+    if (!active_browser)
+      active_browser = browser();
+    return active_browser->tab_strip_model()->GetActiveWebContents();
   }
 
   bool is_enabled() { return std::get<0>(GetParam()); }
   bool use_v2_header() { return std::get<1>(GetParam()); }
 
-  PrefService* prefs() { return browser()->profile()->GetPrefs(); }
+  PrefService* prefs(Browser* active_browser = nullptr) {
+    if (!active_browser)
+      active_browser = browser();
+    return active_browser->profile()->GetPrefs();
+  }
 
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -385,6 +395,23 @@ IN_PROC_BROWSER_TEST_P(DeviceTrustBrowserTest, AttestationPrefNotSet) {
   histogram_tester_.ExpectTotalCount(kResultHistogramName, 0);
   histogram_tester_.ExpectTotalCount(kLatencySuccessHistogramName, 0);
   histogram_tester_.ExpectTotalCount(kLatencyFailureHistogramName, 0);
+}
+
+// Tests that the device trust navigation throttle does not get created for a
+// navigation handle in incognito mode.
+IN_PROC_BROWSER_TEST_P(DeviceTrustBrowserTest,
+                       CreateNavigationThrottleIncognitoMode) {
+  // Add incognito browser for the mock navigation handle.
+  auto* incognito_browser = CreateIncognitoBrowser(browser()->profile());
+  content::MockNavigationHandle mock_nav_handle(
+      web_contents(incognito_browser));
+
+  // Add allowed domain to Prefs.
+  PopulatePref(true, incognito_browser);
+
+  // Try to create the device trust navigation throttle.
+  EXPECT_TRUE(enterprise_connectors::DeviceTrustNavigationThrottle::
+                  MaybeCreateThrottleFor(&mock_nav_handle) == nullptr);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
