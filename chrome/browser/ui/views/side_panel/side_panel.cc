@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -242,7 +243,10 @@ void SidePanel::OnResize(int resize_amount, bool done_resizing) {
     starting_width_on_resize_ = width();
   }
   int proposed_width = starting_width_on_resize_ +
-                       (IsRightAligned() ? -resize_amount : resize_amount);
+                       ((IsRightAligned() && !base::i18n::IsRTL()) ||
+                                (!IsRightAligned() && base::i18n::IsRTL())
+                            ? -resize_amount
+                            : resize_amount);
   if (done_resizing) {
     starting_width_on_resize_ = -1;
   }
