@@ -50368,6 +50368,16 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="5" label="Download message dismissed due to an internal error"/>
 </enum>
 
+<enum name="IncognitoReauthPromoActionType">
+  <int value="0" label="Promo accepted"/>
+  <int value="1" label="No thanks"/>
+</enum>
+
+<enum name="IncognitoReauthToggleValueType">
+  <int value="0" label="Toggled off"/>
+  <int value="1" label="Toggled on"/>
+</enum>
+
 <enum name="Inconsistencies">
   <int value="1" label="RangeChecksum"/>
   <int value="2" label="BucketOrder"/>

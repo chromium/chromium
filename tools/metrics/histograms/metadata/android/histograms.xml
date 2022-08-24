@@ -1780,6 +1780,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.IncognitoReauth.PrefToggledFromSettingPage"
+    enum="IncognitoReauthToggleValueType" expires_after="M110">
+  <owner>roagarwal@chromium.org</owner>
+  <owner>chrome-incognito@google.com</owner>
+  <summary>
+    Records the count when the Incognito lock setting was either turned
+    &quot;on&quot; or &quot;off&quot; from the Chrome Settings &gt; Privacy and
+    Security &gt; Lock Incognito tabs when you leave Chrome, option. This
+    setting can be in disabled state if the Android screen lock is not set-up,
+    in which case we don't record this metric. This is recorded only when the
+    toggle is not in disabled state and if the re-authentication checks succeeds
+    which follows after the user changes the toggle. This covers only the
+    interactions done from the above mentioned Incognito lock Setting page. See
+    also the metric &quot;Android.IncognitoReauth.PromoActionType&quot; which
+    records the opt-in made exclusively from promo card.
+  </summary>
+</histogram>
+
+<histogram name="Android.IncognitoReauth.PromoActionType"
+    enum="IncognitoReauthPromoActionType" expires_after="M110">
+  <owner>roagarwal@chromium.org</owner>
+  <owner>chrome-incognito@google.com</owner>
+  <summary>
+    Records the action type the user makes on the Incognito re-auth promo card
+    which is shown inside the Incognito tab grid view. There's only two possible
+    interactions possible which is either to turn on the Incognito lock or
+    dismiss the promo. A &quot;Promo accepted&quot; entry is emitted when user
+    clicks on &quot;Turn on Incognito lock&quot; (gated on successful
+    re-authentication) and a &quot;No thanks&quot; value is emitted when the
+    user clicks on &quot;No thanks&quot;.
+  </summary>
+</histogram>
+
 <histogram name="Android.InstantApps.ApiCallDurationWithApp" units="ms"
     expires_after="M81">
   <owner>sbirch@google.com</owner>

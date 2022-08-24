@@ -10,10 +10,12 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.INCOG
 import android.content.Context;
 import android.os.Build;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthSettingUtils;
@@ -26,6 +28,9 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.user_prefs.UserPrefs;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Message service class to show the Incognito re-auth promo inside the incognito
@@ -98,6 +103,20 @@ public class IncognitoReauthPromoMessageService
      * the Android level settings are on again. See #onResumeWithNative method.
      */
     private boolean mShouldTriggerPrepareMessage;
+
+    /**
+     * Represents the action type on the re-auth promo card.
+     * DO NOT reorder items in this interface, because it's mirrored to UMA
+     * (as IncognitoReauthPromoActionType).
+     */
+    @IntDef({IncognitoReauthPromoActionType.PROMO_ACCEPTED,
+            IncognitoReauthPromoActionType.NO_THANKS, IncognitoReauthPromoActionType.NUM_ENTRIES})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface IncognitoReauthPromoActionType {
+        int PROMO_ACCEPTED = 0;
+        int NO_THANKS = 1;
+        int NUM_ENTRIES = 2;
+    }
 
     /**
      * @param mMessageType The type of the message.
@@ -317,6 +336,11 @@ public class IncognitoReauthPromoMessageService
     private void onAfterReviewActionSuccessful() {
         UserPrefs.get(Profile.getLastUsedRegularProfile())
                 .setBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID, true);
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.IncognitoReauth.PromoAcceptedOrDismissed",
+                IncognitoReauthPromoActionType.PROMO_ACCEPTED,
+                IncognitoReauthPromoActionType.NUM_ENTRIES);
+
         dismiss();
         prepareSnackBarAndShow();
     }

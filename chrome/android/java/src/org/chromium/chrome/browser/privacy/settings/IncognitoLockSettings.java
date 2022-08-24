@@ -6,14 +6,19 @@ package org.chromium.chrome.browser.privacy.settings;
 
 import android.app.Activity;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthSettingSwitchPreference;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthSettingUtils;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.user_prefs.UserPrefs;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * A class to manage the Incognito lock setting shown in Privacy and Security page.
@@ -25,6 +30,22 @@ public class IncognitoLockSettings {
 
     @Nullable
     private IncognitoReauthManager mIncognitoReauthManager;
+
+    /**
+     * Represents the state of the Incognito lock setting that gets changed by the user.
+     * DO NOT reorder items in this interface, because it's mirrored to UMA
+     * (as IncognitoReauthToggleValueType).
+     */
+    @IntDef({IncognitoReauthToggleValueType.SETTING_DISABLED,
+            IncognitoReauthToggleValueType.SETTING_ENABLED,
+            IncognitoReauthToggleValueType.NUM_ENTRIES})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface IncognitoReauthToggleValueType {
+        int SETTING_DISABLED = 0;
+        int SETTING_ENABLED = 1;
+
+        int NUM_ENTRIES = 2;
+    }
 
     public IncognitoLockSettings(IncognitoReauthSettingSwitchPreference incognitoReauthPreference) {
         mIncognitoReauthPreference = incognitoReauthPreference;
@@ -102,6 +123,11 @@ public class IncognitoLockSettings {
                     public void onIncognitoReauthSuccess() {
                         UserPrefs.get(Profile.getLastUsedRegularProfile())
                                 .setBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID, newValue);
+                        RecordHistogram.recordEnumeratedHistogram(
+                                "Android.IncognitoReauth.PrefToggledFromSettingPage",
+                                newValue ? IncognitoReauthToggleValueType.SETTING_ENABLED
+                                         : IncognitoReauthToggleValueType.SETTING_DISABLED,
+                                IncognitoReauthToggleValueType.NUM_ENTRIES);
                     }
 
                     @Override
