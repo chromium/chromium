@@ -41,7 +41,7 @@ void TestDebugListener::RunUntilNumberOfPortsIs(size_t size) {
           run_loop.Quit();
       }));
   run_loop.Run();
-  EXPECT_EQ(debug_ports_.size(), size);
+  ASSERT_EQ(debug_ports_.size(), size);
 }
 
 TestDebugListener::TestPerContextListener::TestPerContextListener(

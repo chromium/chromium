@@ -168,7 +168,7 @@ TEST_F(WebEngineDebugIntegrationTest, DebugService) {
   ASSERT_TRUE(frame_data.context);
 
   // Test the debug information is correct.
-  dev_tools_listener_.RunUntilNumberOfPortsIs(1u);
+  ASSERT_NO_FATAL_FAILURE(dev_tools_listener_.RunUntilNumberOfPortsIs(1u));
 
   base::Value devtools_list =
       GetDevToolsListFromPort(*dev_tools_listener_.debug_ports().begin());
@@ -188,7 +188,7 @@ TEST_F(WebEngineDebugIntegrationTest, DebugService) {
   // Unbind the context and wait for the listener to no longer have any active
   // DevTools port.
   frame_data.context.Unbind();
-  dev_tools_listener_.RunUntilNumberOfPortsIs(0);
+  ASSERT_NO_FATAL_FAILURE(dev_tools_listener_.RunUntilNumberOfPortsIs(0));
 }
 
 TEST_F(WebEngineDebugIntegrationTest, MultipleDebugClients) {
@@ -198,7 +198,7 @@ TEST_F(WebEngineDebugIntegrationTest, MultipleDebugClients) {
   ASSERT_TRUE(frame_data1.context);
 
   // Test the debug information is correct.
-  dev_tools_listener_.RunUntilNumberOfPortsIs(1u);
+  ASSERT_NO_FATAL_FAILURE(dev_tools_listener_.RunUntilNumberOfPortsIs(1u));
   uint16_t port1 = *dev_tools_listener_.debug_ports().begin();
 
   base::Value devtools_list1 = GetDevToolsListFromPort(port1);
@@ -230,8 +230,8 @@ TEST_F(WebEngineDebugIntegrationTest, MultipleDebugClients) {
   ASSERT_TRUE(frame_data2.context);
 
   // Ensure each DevTools listener has the right information.
-  dev_tools_listener_.RunUntilNumberOfPortsIs(2u);
-  dev_tools_listener2.RunUntilNumberOfPortsIs(1u);
+  ASSERT_NO_FATAL_FAILURE(dev_tools_listener_.RunUntilNumberOfPortsIs(2u));
+  ASSERT_NO_FATAL_FAILURE(dev_tools_listener2.RunUntilNumberOfPortsIs(1u));
 
   uint16_t port2 = *dev_tools_listener2.debug_ports().begin();
   ASSERT_NE(port1, port2);
@@ -254,13 +254,13 @@ TEST_F(WebEngineDebugIntegrationTest, MultipleDebugClients) {
 
   // Unbind the first Context, each listener should still have one open port.
   frame_data1.context.Unbind();
-  dev_tools_listener_.RunUntilNumberOfPortsIs(1u);
-  dev_tools_listener2.RunUntilNumberOfPortsIs(1u);
+  ASSERT_NO_FATAL_FAILURE(dev_tools_listener_.RunUntilNumberOfPortsIs(1u));
+  ASSERT_NO_FATAL_FAILURE(dev_tools_listener2.RunUntilNumberOfPortsIs(1u));
 
   // Unbind the second Context, no listener should have any open port.
   frame_data2.context.Unbind();
-  dev_tools_listener_.RunUntilNumberOfPortsIs(0);
-  dev_tools_listener2.RunUntilNumberOfPortsIs(0);
+  ASSERT_NO_FATAL_FAILURE(dev_tools_listener_.RunUntilNumberOfPortsIs(0));
+  ASSERT_NO_FATAL_FAILURE(dev_tools_listener2.RunUntilNumberOfPortsIs(0));
 }
 
 // Test the Debug service is accessible when the User service is requested.
@@ -270,7 +270,7 @@ TEST_F(WebEngineDebugIntegrationTest, DebugAndUserService) {
                                  UserModeDebugging::kEnabled, url);
   ASSERT_TRUE(frame_data.context);
 
-  dev_tools_listener_.RunUntilNumberOfPortsIs(1u);
+  ASSERT_NO_FATAL_FAILURE(dev_tools_listener_.RunUntilNumberOfPortsIs(1u));
 
   // Check we are getting the same port on both the debug and user APIs.
   base::test::TestFuture<fuchsia::web::Context_GetRemoteDebuggingPort_Result>
@@ -301,5 +301,5 @@ TEST_F(WebEngineDebugIntegrationTest, DebugAndUserService) {
   // Unbind the context and wait for the listener to no longer have any active
   // DevTools port.
   frame_data.context.Unbind();
-  dev_tools_listener_.RunUntilNumberOfPortsIs(0);
+  ASSERT_NO_FATAL_FAILURE(dev_tools_listener_.RunUntilNumberOfPortsIs(0));
 }
