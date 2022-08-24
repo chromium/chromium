@@ -17,17 +17,52 @@ for (const dataType in BeaconDataType) {
 
   postBeaconSendDataTest(
       dataType, generatePayload(SMALL_SIZE),
-      `PendingPostBeacon[${dataType}]: cross-origin`, {
+      `PendingPostBeacon[${dataType}]: cross-origin, ` +
+          `CORS-safelisted Content-Type`,
+      {
         urlOptions: {
           host: HTTPS_NOTSAMESITE_ORIGIN,
           expectOrigin: HTTPS_ORIGIN,
         }
       });
+
+  postBeaconSendDataTest(
+      dataType, generatePayload(SMALL_SIZE),
+      `PendingPostBeacon[${dataType}]: cross-origin, ` +
+          'CORS-safelisted Content-Type => ' +
+          'non-CORS response (from redirect handler) ' +
+          'should be rejected by browser',
+      {
+        expectCount: 0,
+        urlOptions: {
+          useRedirectHandler: true,
+          host: HTTPS_NOTSAMESITE_ORIGIN,
+        }
+      });
+
+  postBeaconSendDataTest(
+      dataType, generatePayload(SMALL_SIZE),
+      `PendingPostBeacon[${dataType}]: cross-origin, ` +
+          'CORS-safelisted Content-Type => no cookie expected',
+      {
+        setCookie: 'test_beacon_cookie',
+        urlOptions: {
+          host: HTTPS_NOTSAMESITE_ORIGIN,
+          expectOrigin: HTTPS_ORIGIN,
+          expectCredentials: false,
+        }
+      });
 }
 
-// TODO(crbug.com/1293679): Support preflight request for non CORS-safelisted
-// Content-Type.
-// TODO(crbug.com/1293679): Test that the browser rejects handling responses
-// without appropriate CORS headers. You can test this with redirects.
-// TODO(crbug.com/1293679): Test that the browser doesn't attach cookies to
-// cross-origin requests.
+postBeaconSendDataTest(
+    BeaconDataType.Blob, generatePayload(SMALL_SIZE),
+    'PendingPostBeacon[Blob]: cross-origin, non-CORS-safelisted Content-Type' +
+        ' => preflight expected',
+    {
+      urlOptions: {
+        host: HTTPS_NOTSAMESITE_ORIGIN,
+        contentType: 'application/octet-stream',
+        expectOrigin: HTTPS_ORIGIN,
+        expectPreflight: true,
+      }
+    });
