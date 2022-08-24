@@ -53,12 +53,12 @@ suite('OsSavedDevicesListTest', function() {
     const device2 = {name: 'dev2', imageUrl: '', accountKey: '2'};
     const device3 = {name: 'dev3', imageUrl: '', accountKey: '3'};
 
-    assertEquals(savedDevicesList.devices_.length, 0);
+    assertEquals(savedDevicesList.devices.length, 0);
 
-    savedDevicesList.devices_ = [device0, device1, device2, device3];
+    savedDevicesList.devices = [device0, device1, device2, device3];
     await flushAsync();
 
-    assertEquals(savedDevicesList.devices_.length, 4);
+    assertEquals(savedDevicesList.devices.length, 4);
 
     const ironResizePromise = eventToPromise('iron-resize', savedDevicesList);
 
@@ -72,10 +72,10 @@ suite('OsSavedDevicesListTest', function() {
     await ironResizePromise;
     await flushAsync();
 
-    assertEquals(savedDevicesList.devices_[0].accountKey, '0');
-    assertEquals(savedDevicesList.devices_[1].accountKey, '2');
-    assertEquals(savedDevicesList.devices_[2].accountKey, '3');
-    assertEquals(savedDevicesList.devices_.length, 3);
+    assertEquals(savedDevicesList.devices[0].accountKey, '0');
+    assertEquals(savedDevicesList.devices[1].accountKey, '2');
+    assertEquals(savedDevicesList.devices[2].accountKey, '3');
+    assertEquals(savedDevicesList.devices.length, 3);
   });
 
   test('Device list change renders items correctly', async function() {
@@ -83,13 +83,13 @@ suite('OsSavedDevicesListTest', function() {
     const device1 = {name: 'dev1'};
     const device2 = {name: 'dev2'};
 
-    savedDevicesList.devices_ = [device0, device1, device2];
+    savedDevicesList.devices = [device0, device1, device2];
     await flushAsync();
 
     assertEquals(getListItems().length, 3);
 
     const ironResizePromise = eventToPromise('iron-resize', savedDevicesList);
-    savedDevicesList.devices_ = [device0, device1, device2, device1, device2];
+    savedDevicesList.devices = [device0, device1, device2, device1, device2];
 
     await ironResizePromise;
     await flushAsync();
@@ -104,12 +104,12 @@ suite('OsSavedDevicesListTest', function() {
       return savedDevicesList.shadowRoot.querySelectorAll(
           'os-settings-saved-devices-list-item');
     };
-    assertEquals(savedDevicesList.devices_.length, 0);
+    assertEquals(savedDevicesList.devices.length, 0);
 
-    savedDevicesList.devices_ = [device0, device1, device2];
+    savedDevicesList.devices = [device0, device1, device2];
     await flushAsync();
 
-    assertEquals(savedDevicesList.devices_.length, 3);
+    assertEquals(savedDevicesList.devices.length, 3);
 
     const ironResizePromise = eventToPromise('iron-resize', savedDevicesList);
 

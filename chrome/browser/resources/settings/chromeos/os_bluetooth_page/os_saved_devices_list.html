@@ -9,7 +9,7 @@
 </style>
 <div id="container" class="layout vertical flex" scrollable
     no-bottom-scroll-border>
-  <iron-list id="savedDevicesList" items="[[devices_]]"
+  <iron-list id="savedDevicesList" items="[[devices]]"
       scroll-target="container" preserve-focus>
     <template>
       <os-settings-saved-devices-list-item
@@ -18,7 +18,7 @@
         item-index="[[index]]"
         last-focused="{{lastFocused_}}"
         iron-list-tab-index="[[tabIndex]]"
-        list-size="[[devices_.length]]">
+        list-size="[[devices.length]]">
       </os-settings-saved-devices-list-item>
     </template>
   </iron-list>

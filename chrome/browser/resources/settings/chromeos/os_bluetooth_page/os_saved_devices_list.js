@@ -44,9 +44,9 @@ class SettingsSavedDevicesListElement extends
   static get properties() {
     return {
       /**
-       * @protected {Array<!FastPairSavedDevice>}
+       * @public {Array<!FastPairSavedDevice>}
        */
-      devices_: {
+      devices: {
         type: Array,
         observer: 'onDevicesChanged_',
         value: [],
@@ -74,9 +74,9 @@ class SettingsSavedDevicesListElement extends
    */
   removeSavedDevice_(/** @type {CustomEvent} */ event) {
     this.browserProxy_.deleteFastPairSavedDevice(event.detail.key);
-    for (let i = 0; i < this.devices_.length; i++) {
-      if (this.devices_[i].accountKey === event.detail.key) {
-        this.devices_.splice(i, 1);
+    for (let i = 0; i < this.devices.length; i++) {
+      if (this.devices[i].accountKey === event.detail.key) {
+        this.devices.splice(i, 1);
         break;
       }
     }
