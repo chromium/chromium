@@ -17,7 +17,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 class FastCheckoutCoordinator implements FastCheckoutComponent {
     private FastCheckoutMediator mMediator = new FastCheckoutMediator();
-    private PropertyModel mModel = FastCheckoutModel.createDefaultModel();
+    private PropertyModel mModel = FastCheckoutProperties.createDefaultModel();
     private FastCheckoutSheetContent mContent;
 
     @Override
@@ -35,13 +35,13 @@ class FastCheckoutCoordinator implements FastCheckoutComponent {
         // TODO(crbug.com/1334642): Create remaining 2 screens.
 
         mModel.addObserver((source, propertyKey) -> {
-            if (FastCheckoutModel.CURRENT_SCREEN == propertyKey) {
-                rootView.setDisplayedChild(mModel.get(FastCheckoutModel.CURRENT_SCREEN));
-            } else if (FastCheckoutModel.VISIBLE == propertyKey) {
+            if (FastCheckoutProperties.CURRENT_SCREEN == propertyKey) {
+                rootView.setDisplayedChild(mModel.get(FastCheckoutProperties.CURRENT_SCREEN));
+            } else if (FastCheckoutProperties.VISIBLE == propertyKey) {
                 // Dismiss the sheet if it can't be immediately shown.
                 boolean visibilityChangeSuccessful =
-                        mMediator.setVisible(mModel.get(FastCheckoutModel.VISIBLE), mContent);
-                if (!visibilityChangeSuccessful && mModel.get(FastCheckoutModel.VISIBLE)) {
+                        mMediator.setVisible(mModel.get(FastCheckoutProperties.VISIBLE), mContent);
+                if (!visibilityChangeSuccessful && mModel.get(FastCheckoutProperties.VISIBLE)) {
                     mMediator.dismiss(BottomSheetController.StateChangeReason.NONE);
                 }
             }

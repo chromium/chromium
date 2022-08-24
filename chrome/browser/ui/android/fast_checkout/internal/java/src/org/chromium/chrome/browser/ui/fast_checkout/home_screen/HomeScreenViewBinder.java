@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.ui.fast_checkout.home_screen;
 
-import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutModel.HOME_SCREEN_DELEGATE;
-import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutModel.SELECTED_CREDIT_CARD;
-import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutModel.SELECTED_PROFILE;
+import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.HOME_SCREEN_DELEGATE;
+import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.SELECTED_CREDIT_CARD;
+import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.SELECTED_PROFILE;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -27,7 +27,7 @@ import org.chromium.ui.widget.ButtonCompat;
 
 /**
  * This class is responsible for pushing updates to the Fast Checkout home screen view. These
- * updates are pulled from the {@link FastCheckoutModel} when a notification of an update is
+ * updates are pulled from the {@link FastCheckoutProperties} when a notification of an update is
  * received.
  */
 public class HomeScreenViewBinder {

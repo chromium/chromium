@@ -1092,7 +1092,7 @@ robolectric_binary("chrome_junit_tests") {
     "//chrome/browser/ui/android/autofill/internal:junit",
     "//chrome/browser/ui/android/default_browser_promo:java",
     "//chrome/browser/ui/android/default_browser_promo:junit",
-    "//chrome/browser/ui/android/fast_checkout:junit",
+    "//chrome/browser/ui/android/fast_checkout/internal:junit",
     "//chrome/browser/ui/android/favicon:java",
     "//chrome/browser/ui/android/layouts:java",
     "//chrome/browser/ui/android/layouts:junit",

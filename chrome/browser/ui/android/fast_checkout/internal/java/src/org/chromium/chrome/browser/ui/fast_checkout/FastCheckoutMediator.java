@@ -9,6 +9,7 @@ import android.view.View;
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.ui.fast_checkout.autofill_profile_screen.AutofillProfileItemProperties;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillProfile;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutCreditCard;
 import org.chromium.chrome.browser.ui.fast_checkout.home_screen.HomeScreenCoordinator;
@@ -18,6 +19,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.ui.modelutil.ListModel;
+import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -41,7 +44,7 @@ public class FastCheckoutMediator {
             @Override
             public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {
                 if (newContent == null) {
-                    mModel.set(FastCheckoutModel.VISIBLE, true);
+                    mModel.set(FastCheckoutProperties.VISIBLE, true);
                     mBottomSheetController.removeObserver(mBottomSheetClosedObserver);
                 }
             }
@@ -56,40 +59,41 @@ public class FastCheckoutMediator {
             }
         };
 
-        mModel.set(FastCheckoutModel.HOME_SCREEN_DELEGATE, new HomeScreenCoordinator.Delegate() {
-            @Override
-            public void onOptionsAccepted() {
-                if (!mModel.get(FastCheckoutModel.VISIBLE)) {
-                    return; // Dismiss only if not dismissed yet.
-                }
-                FastCheckoutAutofillProfile profile =
-                        mModel.get(FastCheckoutModel.SELECTED_PROFILE);
-                FastCheckoutCreditCard creditCard =
-                        mModel.get(FastCheckoutModel.SELECTED_CREDIT_CARD);
-                assert profile != null && creditCard != null;
-                mModel.set(FastCheckoutModel.VISIBLE, false);
-                mDelegate.onOptionsSelected(profile, creditCard);
-            };
+        mModel.set(
+                FastCheckoutProperties.HOME_SCREEN_DELEGATE, new HomeScreenCoordinator.Delegate() {
+                    @Override
+                    public void onOptionsAccepted() {
+                        if (!mModel.get(FastCheckoutProperties.VISIBLE)) {
+                            return; // Dismiss only if not dismissed yet.
+                        }
+                        FastCheckoutAutofillProfile profile =
+                                mModel.get(FastCheckoutProperties.SELECTED_PROFILE);
+                        FastCheckoutCreditCard creditCard =
+                                mModel.get(FastCheckoutProperties.SELECTED_CREDIT_CARD);
+                        assert profile != null && creditCard != null;
+                        mModel.set(FastCheckoutProperties.VISIBLE, false);
+                        mDelegate.onOptionsSelected(profile, creditCard);
+                    };
 
-            @Override
-            public void onDismiss() {
-                if (!mModel.get(FastCheckoutModel.VISIBLE)) {
-                    return; // Dismiss only if not dismissed yet.
-                }
-                mModel.set(FastCheckoutModel.VISIBLE, false);
-                mDelegate.onDismissed();
-            }
+                    @Override
+                    public void onDismiss() {
+                        if (!mModel.get(FastCheckoutProperties.VISIBLE)) {
+                            return; // Dismiss only if not dismissed yet.
+                        }
+                        mModel.set(FastCheckoutProperties.VISIBLE, false);
+                        mDelegate.onDismissed();
+                    }
 
-            @Override
-            public void onShowAddressesList() {
-                // TODO(crbug.com/1334642): Show addresses list screen.
-            }
+                    @Override
+                    public void onShowAddressesList() {
+                        // TODO(crbug.com/1334642): Show addresses list screen.
+                    }
 
-            @Override
-            public void onShowCreditCardList() {
-                // TODO(crbug.com/1334642): Show credit cards list screen.
-            }
-        });
+                    @Override
+                    public void onShowCreditCardList() {
+                        // TODO(crbug.com/1334642): Show credit cards list screen.
+                    }
+                });
     }
 
     public void showOptions(
@@ -105,7 +109,7 @@ public class FastCheckoutMediator {
             mBottomSheetController.hideContent(
                     mBottomSheetController.getCurrentSheetContent(), /* animate= */ true);
         } else {
-            mModel.set(FastCheckoutModel.VISIBLE, true);
+            mModel.set(FastCheckoutProperties.VISIBLE, true);
         }
     }
 
@@ -132,9 +136,11 @@ public class FastCheckoutMediator {
      * Dismisses the current bottom sheet.
      */
     public void dismiss(@StateChangeReason int reason) {
-        if (!mModel.get(FastCheckoutModel.VISIBLE)) return; // Dismiss only if not dismissed yet.
+        if (!mModel.get(FastCheckoutProperties.VISIBLE)) {
+            return; // Dismiss only if not dismissed yet.
+        }
         // TODO(crbug.com/1334642): Record dismissal metrics.
-        mModel.set(FastCheckoutModel.VISIBLE, false);
+        mModel.set(FastCheckoutProperties.VISIBLE, false);
         mDelegate.onDismissed();
     }
 
@@ -150,18 +156,73 @@ public class FastCheckoutMediator {
                         AutofillAssistantPublicTags.AUTOFILL_ASSISTANT_BOTTOM_SHEET_CONTENT_TAG);
     }
 
+    /**
+     * Sets the Autofill profile items and creates the corresponding models for the
+     * profile item entries on the Autofill profiles page.
+     * @param profiles The array of FastCheckoutAutofillProfile to set as Autofill profiles.
+     */
     public void setAutofillProfileItems(FastCheckoutAutofillProfile[] profiles) {
+        assert profiles != null && profiles.length != 0;
+
+        // Populate all model entries.
+        ListModel<MVCListAdapter.ListItem> profileItems =
+                mModel.get(FastCheckoutProperties.PROFILE_MODEL_LIST);
+        profileItems.clear();
+        for (FastCheckoutAutofillProfile profile : profiles) {
+            PropertyModel model = AutofillProfileItemProperties.create(
+                    /*profile=*/profile, /*isSelected=*/false, /*onClickListener=*/() -> {
+                        setSelectedAutofillProfile(profile);
+                        setCurrentScreen(FastCheckoutProperties.ScreenType.HOME_SCREEN);
+                    });
+            MVCListAdapter.ListItem item = new MVCListAdapter.ListItem(
+                    AutofillProfileItemProperties.DEFAULT_ITEM_TYPE, model);
+            profileItems.add(item);
+        }
+
         // TODO(crbug.com/1334642): Keep proper track of selected profile and list of available
         // profile items. For now setting the first element of the list as default.
-        assert profiles.length != 0;
-        mModel.set(FastCheckoutModel.SELECTED_PROFILE, profiles[0]);
+        setSelectedAutofillProfile(profiles[0]);
+    }
+
+    /**
+     * Sets the Autofill profile items and updates the IS_SELECTED entry in the models
+     * of the profile item entries on the Autofill profiles page.
+     * @param selectedProfile The profile that is to be selected.
+     */
+    public void setSelectedAutofillProfile(FastCheckoutAutofillProfile selectedProfile) {
+        assert selectedProfile != null;
+        mModel.set(FastCheckoutProperties.SELECTED_PROFILE, selectedProfile);
+
+        int foundProfiles = 0;
+        ListModel<MVCListAdapter.ListItem> allItems =
+                mModel.get(FastCheckoutProperties.PROFILE_MODEL_LIST);
+        for (MVCListAdapter.ListItem item : allItems) {
+            boolean isSelected = selectedProfile.equals(
+                    item.model.get(AutofillProfileItemProperties.AUTOFILL_PROFILE));
+            item.model.set(AutofillProfileItemProperties.IS_SELECTED, isSelected);
+            if (isSelected) {
+                ++foundProfiles;
+            }
+        }
+
+        // Exactly one of the models must contain the selected profile.
+        assert foundProfiles == 1;
     }
 
     public void setCreditCardItems(FastCheckoutCreditCard[] creditCards) {
         // TODO(crbug.com/1334642): Keep proper track of the selected credit card and list of
         // available credit card items. For now setting the first element of the list as default.
         assert creditCards.length != 0;
-        mModel.set(FastCheckoutModel.SELECTED_CREDIT_CARD, creditCards[0]);
+        mModel.set(FastCheckoutProperties.SELECTED_CREDIT_CARD, creditCards[0]);
+    }
+
+    /**
+     * Selects the currently shown screen on the bottomsheet.
+     * @param screenType A {@link FastCheckoutProperties.ScreenType} that defines the screen to be
+     *         shown.
+     */
+    public void setCurrentScreen(int screenType) {
+        mModel.set(FastCheckoutProperties.CURRENT_SCREEN, screenType);
     }
 
     /**
