@@ -46,8 +46,8 @@ class FakeLargeIconService : public favicon::LargeIconServiceImpl {
             favicon_base::IconType::kTouchIcon,
             /*google_server_client_param=*/"test_chrome") {}
 
-  // Returns LargeIconResult with valid bitmap if |page_url| is
-  // |kTestFaviconURL|, or LargeIconResult with fallback style.
+  // Returns LargeIconResult with valid bitmap if `page_url` is
+  // `kTestFaviconURL`, or LargeIconResult with fallback style.
   base::CancelableTaskTracker::TaskId
   GetLargeIconRawBitmapOrFallbackStyleForPageUrl(
       const GURL& page_url,
@@ -79,7 +79,7 @@ class FakeLargeIconService : public favicon::LargeIconServiceImpl {
     return 1;
   }
 
-  // Returns the same as |GetLargeIconRawBitmapOrFallbackStyleForPageUrl|.
+  // Returns the same as `GetLargeIconRawBitmapOrFallbackStyleForPageUrl`.
   base::CancelableTaskTracker::TaskId
   GetLargeIconRawBitmapOrFallbackStyleForIconUrl(
       const GURL& icon_url,

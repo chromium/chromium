@@ -23,7 +23,7 @@ favicon_base::FaviconRawBitmapResult CreateTestBitmap(int w,
   favicon_base::FaviconRawBitmapResult result;
   result.expired = false;
 
-  // Create bitmap and fill with |color|.
+  // Create bitmap and fill with `color`.
   scoped_refptr<base::RefCountedBytes> data(new base::RefCountedBytes());
   SkBitmap bitmap;
   bitmap.allocN32Pixels(w, h);

@@ -34,7 +34,7 @@ class LargeIconCache : public KeyedService {
 
   ~LargeIconCache() override;
 
-  // |LargeIconService| does everything on callbacks, and iOS needs to load the
+  // `LargeIconService` does everything on callbacks, and iOS needs to load the
   // icons immediately on page load. This caches the LargeIconResult so we can
   // immediately load.
   void SetCachedResult(const GURL& url, const favicon_base::LargeIconResult&);

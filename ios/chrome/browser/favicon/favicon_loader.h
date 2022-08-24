@@ -31,48 +31,50 @@ class FaviconLoader : public KeyedService {
 
   ~FaviconLoader() override;
 
-  // Tries to find a FaviconAttributes in |favicon_cache_| with |page_url|:
-  // If found, invokes |faviconBlockHandler| and exits.
-  // If not found, invokes |faviconBlockHandler| with a default placeholder
+  // Tries to find a FaviconAttributes in `favicon_cache_` with `page_url`:
+  // If found, invokes `favicon_block_handler` and exits.
+  // If not found, invokes `favicon_block_handler` with a default placeholder
   // then invokes it again asynchronously with the favicon fetched by trying
   // following methods:
-  //   1. Use |large_icon_service_| to fetch from local DB managed by
+  //   1. Use `large_icon_service_` to fetch from local DB managed by
   //      HistoryService;
-  //   2. Use |large_icon_service_| to fetch from Google Favicon server if
-  //      |fallback_to_google_server|=YES (|size_in_points| is ignored when
+  //   2. Use `large_icon_service_` to fetch from Google Favicon server if
+  //      `fallback_to_google_server=true` (`size_in_points` is ignored when
   //      fetching from the Google server);
-  //   3. Create a favicon base on the fallback style from |large_icon_service|.
-  void FaviconForPageUrl(const GURL& page_url,
-                         float size_in_points,
-                         float min_size_in_points,
-                         bool fallback_to_google_server,
-                         FaviconAttributesCompletionBlock faviconBlockHandler);
+  //   3. Create a favicon base on the fallback style from `large_icon_service`.
+  void FaviconForPageUrl(
+      const GURL& page_url,
+      float size_in_points,
+      float min_size_in_points,
+      bool fallback_to_google_server,
+      FaviconAttributesCompletionBlock favicon_block_handler);
 
-  // Tries to find a FaviconAttributes in |favicon_cache_| with |page_url|:
-  // If found, invokes |faviconBlockHandler| and exits.
-  // If not found, invokes |faviconBlockHandler| with a default placeholder
+  // Tries to find a FaviconAttributes in `favicon_cache_` with `page_url`:
+  // If found, invokes `favicon_block_handler` and exits.
+  // If not found, invokes `favicon_block_handler` with a default placeholder
   // then invokes it again asynchronously with the favicon fetched by trying
   // following methods:
-  //   1. Use |large_icon_service_| to fetch from local DB managed by
+  //   1. Use `large_icon_service_` to fetch from local DB managed by
   //      HistoryService;
-  //   2. Create a favicon base on the fallback style from |large_icon_service|.
+  //   2. Create a favicon base on the fallback style from `large_icon_service`.
   void FaviconForPageUrlOrHost(
       const GURL& page_url,
       float size_in_points,
       FaviconAttributesCompletionBlock favicon_block_handler);
 
-  // Tries to find a FaviconAttributes in |favicon_cache_| with |icon_url|:
-  // If found, invokes |faviconBlockHandler| and exits.
-  // If not found, invokes |faviconBlockHandler| with a default placeholder
+  // Tries to find a FaviconAttributes in `favicon_cache_` with `icon_url`:
+  // If found, invokes `favicon_block_handler` and exits.
+  // If not found, invokes `favicon_block_handler` with a default placeholder
   // then invokes it again asynchronously with the favicon fetched by trying
   // following methods:
-  //   1. Use |large_icon_service_| to fetch from local DB managed by
+  //   1. Use `large_icon_service_` to fetch from local DB managed by
   //      HistoryService;
-  //   2. Create a favicon base on the fallback style from |large_icon_service|.
-  void FaviconForIconUrl(const GURL& icon_url,
-                         float size_in_points,
-                         float min_size_in_points,
-                         FaviconAttributesCompletionBlock faviconBlockHandler);
+  //   2. Create a favicon base on the fallback style from `large_icon_service`.
+  void FaviconForIconUrl(
+      const GURL& icon_url,
+      float size_in_points,
+      float min_size_in_points,
+      FaviconAttributesCompletionBlock favicon_block_handler);
 
   // Cancel all incomplete requests.
   void CancellAllRequests();
@@ -87,7 +89,7 @@ class FaviconLoader : public KeyedService {
   // Tracks tasks sent to FaviconService.
   base::CancelableTaskTracker cancelable_task_tracker_;
   // Holds cached favicons. This NSCache is populated as favicons or fallback
-  // attributes are retrieved from |large_icon_service_|. Contents will be
+  // attributes are retrieved from `large_icon_service_`. Contents will be
   // removed during low-memory conditions based on its inherent LRU removal
   // algorithm. Keyed by NSString of URL (page URL or icon URL) spec.
   NSCache<NSString*, FaviconAttributes*>* favicon_cache_;

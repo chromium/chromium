@@ -62,14 +62,14 @@ void FaviconLoader::FaviconForPageUrl(
     bool fallback_to_google_server,  // retrieve favicon from Google Server if
                                      // GetLargeIconOrFallbackStyle() doesn't
                                      // return valid favicon.
-    FaviconAttributesCompletionBlock faviconBlockHandler) {
-  DCHECK(faviconBlockHandler);
+    FaviconAttributesCompletionBlock favicon_block_handler) {
+  DCHECK(favicon_block_handler);
   NSString* key =
       [NSString stringWithFormat:@"%d %@", (int)round(size_in_points),
                                  base::SysUTF8ToNSString(page_url.spec())];
   FaviconAttributes* value = [favicon_cache_ objectForKey:key];
   if (value) {
-    faviconBlockHandler(value);
+    favicon_block_handler(value);
     return;
   }
 
@@ -91,7 +91,7 @@ void FaviconLoader::FaviconForPageUrl(
 
       DCHECK(favicon.size.width <= size_in_points &&
              favicon.size.height <= size_in_points);
-      faviconBlockHandler(attributes);
+      favicon_block_handler(attributes);
       return;
     } else if (fallback_to_google_server) {
       void (^favicon_loaded_from_server_block)(
@@ -106,7 +106,7 @@ void FaviconLoader::FaviconForPageUrl(
             // fallback style will be used.
             FaviconForPageUrl(
                 block_page_url, size_in_points, min_size_in_points,
-                /*continueToGoogleServer=*/false, faviconBlockHandler);
+                /*continueToGoogleServer=*/false, favicon_block_handler);
           };
 
       large_icon_service_
@@ -130,11 +130,11 @@ void FaviconLoader::FaviconForPageUrl(
                                is_default_background_color];
 
     [favicon_cache_ setObject:attributes forKey:key];
-    faviconBlockHandler(attributes);
+    favicon_block_handler(attributes);
   };
 
   // First, synchronously return a fallback image.
-  faviconBlockHandler([FaviconAttributes attributesWithDefaultImage]);
+  favicon_block_handler([FaviconAttributes attributesWithDefaultImage]);
 
   // Now fetch the image synchronously.
   DCHECK(large_icon_service_);
@@ -208,14 +208,14 @@ void FaviconLoader::FaviconForIconUrl(
     const GURL& icon_url,
     float size_in_points,
     float min_size_in_points,
-    FaviconAttributesCompletionBlock faviconBlockHandler) {
-  DCHECK(faviconBlockHandler);
+    FaviconAttributesCompletionBlock favicon_block_handler) {
+  DCHECK(favicon_block_handler);
   NSString* key =
       [NSString stringWithFormat:@"%d %@", (int)round(size_in_points),
                                  base::SysUTF8ToNSString(icon_url.spec())];
   FaviconAttributes* value = [favicon_cache_ objectForKey:key];
   if (value) {
-    faviconBlockHandler(value);
+    favicon_block_handler(value);
     return;
   }
 
@@ -236,7 +236,7 @@ void FaviconLoader::FaviconForIconUrl(
       FaviconAttributes* attributes =
           [FaviconAttributes attributesWithImage:favicon];
       [favicon_cache_ setObject:attributes forKey:key];
-      faviconBlockHandler(attributes);
+      favicon_block_handler(attributes);
       return;
     }
     // Did not get valid favicon back and are not attempting to retrieve one
@@ -251,11 +251,11 @@ void FaviconLoader::FaviconForIconUrl(
                                is_default_background_color];
 
     [favicon_cache_ setObject:attributes forKey:key];
-    faviconBlockHandler(attributes);
+    favicon_block_handler(attributes);
   };
 
   // First, return a fallback synchronously.
-  faviconBlockHandler([FaviconAttributes
+  favicon_block_handler([FaviconAttributes
       attributesWithImage:[UIImage imageNamed:@"default_world_favicon"]]);
 
   // Now call the service for a better async icon.
