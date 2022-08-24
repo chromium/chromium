@@ -466,6 +466,21 @@ public final class StatusMediatorUnitTest {
         verify(mPageInfoIPHController, times(0)).showStoreIconIPH(anyInt(), eq(0));
     }
 
+    @Test
+    @SmallTest
+    public void searchEngineLogo_startSurface() {
+        doReturn(false).when(mNewTabPageDelegate).isCurrentlyVisible();
+        doReturn(true).when(mLocationBarDataProvider).isInOverviewAndShowingOmnibox();
+
+        mMediator.setUrlHasFocus(false);
+        mMediator.setShowIconsWhenUrlFocused(true);
+        Assert.assertTrue(mModel.get(StatusProperties.SHOW_STATUS_ICON));
+        Assert.assertFalse(mMediator.shouldDisplaySearchEngineIcon());
+
+        mMediator.setUrlFocusChangePercent(0.5f);
+        Assert.assertTrue(mMediator.shouldDisplaySearchEngineIcon());
+    }
+
     /**
      * @param currentUrl Url of current page.
      * @param isIncognito Whether the current page is in an incognito mode.
