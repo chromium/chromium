@@ -185,6 +185,10 @@ crbug.com/1340081 [ linux release intel ] ContextLost_WebGLContextLostFromSelect
 crbug.com/1340081 [ linux release intel ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ RetryOnFailure ]
 crbug.com/1340081 [ linux release intel-0x5912 ] ContextLost_MacWebGLMultisamplingHighPowerSwitchDoesNotCrash [ RetryOnFailure ]
 
+# GPU process hanging inside Gallium driver
+crbug.com/1355622 [ chromeos chromeos-board-amd64-generic no-passthrough ] ContextLost_WorkerRAFAfterGPUCrash [ Failure ]
+crbug.com/1355622 [ chromeos chromeos-board-amd64-generic no-passthrough ] GpuCrash_GPUProcessCrashesExactlyOncePerVisitToAboutGpuCrash [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################

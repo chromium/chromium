@@ -446,6 +446,11 @@ crbug.com/1353189 [ linux release amd-0x7340 ] Pixel_VideoStreamFromWebGLAlphaCa
 # Crash on Linux FYI Release (NVIDIA) using SkiaRenderer/Vulkan
 crbug.com/1353189 [ linux renderer-skia-vulkan nvidia-0x2184 ] Pixel_VideoStreamFromWebGLAlphaCanvas_TwoCopy_CpuReadback [ Failure ]
 
+# GPU process hanging inside Gallium driver
+crbug.com/1355622 [ chromeos chromeos-board-amd64-generic no-passthrough ] Pixel_Video_Context_Loss_MP4 [ Failure ]
+crbug.com/1355622 [ chromeos chromeos-board-amd64-generic no-passthrough ] Pixel_Video_Context_Loss_VP9 [ Failure ]
+crbug.com/1355622 [ chromeos chromeos-board-amd64-generic no-passthrough ] Pixel_WebGLSadCanvas [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
