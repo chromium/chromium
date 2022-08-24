@@ -168,12 +168,6 @@ AccountId AccountId::FromUserEmail(const std::string& email) {
 }
 
 // static
-AccountId AccountId::FromGaiaId(const std::string& gaia_id) {
-  DCHECK(!gaia_id.empty());
-  return AccountId(gaia_id, std::string() /* email */, AccountType::GOOGLE);
-}
-
-// static
 AccountId AccountId::FromUserEmailGaiaId(const std::string& email,
                                          const std::string& gaia_id) {
   DCHECK(!(email.empty() && gaia_id.empty()));

@@ -425,10 +425,6 @@ AccountId KnownUser::GetAccountId(const std::string& user_email,
 
   switch (account_type) {
     case AccountType::GOOGLE:
-      if (const std::string* stored_email =
-              FindStringPath(AccountId::FromGaiaId(id), kCanonicalEmail)) {
-        return AccountId::FromUserEmailGaiaId(*stored_email, id);
-      }
       return AccountId::FromUserEmailGaiaId(sanitized_email, id);
     case AccountType::ACTIVE_DIRECTORY:
       return AccountId::AdFromUserEmailObjGuid(sanitized_email, id);

@@ -144,9 +144,6 @@ TEST_F(KnownUserTest, FindPrefsMatchForGaiaAccountWithEmail) {
   // TODO(https://crbug.com/1190902): This should likely be EXPECT_FALSE going
   // forward.
   EXPECT_TRUE(FindPrefs(AccountId::FromUserEmailGaiaId(kEmailA, kGaiaIdB)));
-  // Finding by just gaia id without any e-mail doesn't work (because the
-  // resulting AccountId is not considered valid).
-  EXPECT_FALSE(FindPrefs(AccountId::FromGaiaId(kGaiaIdA)));
 
   // An unrelated gaia AccountId with the same Account Type doesn't find
   // anything.

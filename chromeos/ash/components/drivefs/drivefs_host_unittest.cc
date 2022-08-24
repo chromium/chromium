@@ -463,7 +463,6 @@ TEST_F(DriveFsHostTest, MountWhileAlreadyMounted) {
 TEST_F(DriveFsHostTest, UnsupportedAccountTypes) {
   EXPECT_CALL(*disk_manager_, MountPath(_, _, _, _, _, _, _)).Times(0);
   const AccountId unsupported_accounts[] = {
-      AccountId::FromGaiaId("ID"),
       AccountId::FromUserEmail("test2@example.com"),
   };
   for (auto& account : unsupported_accounts) {
