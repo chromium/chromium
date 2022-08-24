@@ -854,6 +854,14 @@ void CalendarView::MaybeResetContentViewFocusBehavior() {
 }
 
 void CalendarView::OnViewBoundsChanged(views::View* observed_view) {
+  // When in the tablet mode and the display rotates and the `event_list_view_`
+  // is shown, `event_list_view_` should update its height to fill out the
+  // remaining space.
+  if (observed_view == this && event_list_view_) {
+    SetEventListViewBounds();
+    return;
+  }
+
   if (observed_view != scroll_view_)
     return;
 
@@ -1025,17 +1033,7 @@ void CalendarView::OpenEventList() {
   event_list_view_->SetProperty(views::kViewIgnoredByLayoutKey, true);
   event_list_view_->SetFocusBehavior(FocusBehavior::NEVER);
 
-  // Set the bounds of the EventListView to be flush with the bottom of the
-  // scroll view. Only the position will be animated, so give the view its final
-  // bounds.
-  event_list_view_->SetBounds(
-      scroll_view_->x() + kEventListViewHorizontalOffset,
-      scroll_view_->y() + calendar_view_controller_->row_height(),
-      scroll_view_->GetVisibleRect().width() -
-          kEventListViewHorizontalOffset * 2,
-      scroll_view_->GetVisibleRect().height() -
-          calendar_view_controller_->row_height() +
-          kEventListViewVerticalPadding);
+  SetEventListViewBounds();
 
   set_should_months_animate(false);
   gfx::Vector2dF moving_up_location = gfx::Vector2dF(
@@ -1787,6 +1785,17 @@ int CalendarView::CalculateFirstFullyVisibleRow() {
     }
   }
   return row_index;
+}
+
+void CalendarView::SetEventListViewBounds() {
+  event_list_view_->SetBounds(
+      scroll_view_->x() + kEventListViewHorizontalOffset,
+      scroll_view_->y() + calendar_view_controller_->row_height(),
+      scroll_view_->GetVisibleRect().width() -
+          kEventListViewHorizontalOffset * 2,
+      GetBoundsInScreen().bottom() - scroll_view_->GetBoundsInScreen().y() -
+          calendar_view_controller_->row_height() +
+          kEventListViewVerticalPadding);
 }
 
 BEGIN_METADATA(CalendarView, views::View)

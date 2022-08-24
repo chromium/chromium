@@ -322,6 +322,11 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   // shown in `scroll_view_`'s visible window.
   int CalculateFirstFullyVisibleRow();
 
+  // Set the bounds of the EventListView to be flush with the bottom of the
+  // scroll view. Only the position will be animated, so give the view its final
+  // bounds.
+  void SetEventListViewBounds();
+
   // Setters for animation flags.
   void set_should_header_animate(bool should_animate) {
     should_header_animate_ = should_animate;
