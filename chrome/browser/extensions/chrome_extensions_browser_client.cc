@@ -43,6 +43,7 @@
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_factory.h"
@@ -92,6 +93,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/browser_params_proxy.h"
 #endif
 
 namespace extensions {
@@ -324,8 +329,10 @@ void ChromeExtensionsBrowserClient::PermitExternalProtocolHandler() {
 
 bool ChromeExtensionsBrowserClient::IsInDemoMode() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  const auto* const demo_session = ash::DemoSession::Get();
-  return demo_session && demo_session->started();
+  return ash::DemoSession::IsDeviceInDemoMode();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  return chromeos::BrowserParamsProxy::Get()->DeviceMode() ==
+         crosapi::mojom::DeviceMode::kDemo;
 #else
   return false;
 #endif
@@ -350,11 +357,7 @@ bool ChromeExtensionsBrowserClient::IsAppModeForcedForApp(
 }
 
 bool ChromeExtensionsBrowserClient::IsLoggedInAsPublicAccount() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return user_manager::UserManager::Get()->IsLoggedInAsPublicAccount();
-#else
-  return false;
-#endif
+  return profiles::IsPublicSession();
 }
 
 ExtensionSystemProvider*
