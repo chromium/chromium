@@ -459,6 +459,27 @@ TEST_F(AutocompleteHistoryManagerTest,
                               /*is_off_the_record=*/false);
 }
 
+// Make sure suggestions are not returned if the field should not autocomplete.
+TEST_F(AutocompleteHistoryManagerTest,
+       OnGetSingleFieldSuggestions_FieldShouldNotAutocomplete) {
+  test_field_.should_autocomplete = false;
+
+  auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
+  int test_query_id = 2;
+
+  // Setting up mock to verify that call to the handler's OnSuggestionsReturned
+  // is not triggered.
+  EXPECT_CALL(*suggestions_handler, OnSuggestionsReturned).Times(0);
+
+  EXPECT_CALL(*web_data_service_, GetFormValuesForElementName).Times(0);
+
+  // Simulate request for suggestions.
+  EXPECT_FALSE(autocomplete_manager_->OnGetSingleFieldSuggestions(
+      test_query_id, /*is_autocomplete_enabled=*/true,
+      /*autoselect_first_suggestion=*/false, test_field_,
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
+}
+
 // Make sure our handler is called at the right time.
 TEST_F(AutocompleteHistoryManagerTest,
        SuggestionsReturned_InvokeHandler_Empty) {
@@ -478,10 +499,10 @@ TEST_F(AutocompleteHistoryManagerTest,
       .WillOnce(Return(mocked_db_query_id));
 
   // Simulate request for suggestions.
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_field_,
-      suggestions_handler->GetWeakPtr(), SuggestionsContext());
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
 
   // Setting up mock to verify that DB response triggers a call to the handler's
   // OnSuggestionsReturned
@@ -511,10 +532,10 @@ TEST_F(AutocompleteHistoryManagerTest,
       .Times(0);
 
   // Simulate request for suggestions.
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_field_,
-      suggestions_handler->GetWeakPtr(), SuggestionsContext());
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
 
   // Setting up mock to verify that DB response does not trigger a call to the
   // handler's OnSuggestionsReturned.
@@ -540,10 +561,10 @@ TEST_F(AutocompleteHistoryManagerTest,
       .Times(0);
 
   // Simulate request for suggestions.
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_field_,
-      suggestions_handler->GetWeakPtr(), SuggestionsContext());
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
 
   // Setting up mock to verify that DB response does not trigger a call to the
   // handler's OnSuggestionsReturned.
@@ -575,10 +596,10 @@ TEST_F(AutocompleteHistoryManagerTest,
       .WillOnce(Return(mocked_db_query_id));
 
   // Simulate request for suggestions.
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_field_,
-      suggestions_handler->GetWeakPtr(), SuggestionsContext());
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
 
   // Setting up mock to verify that DB response triggers a call to the handler's
   EXPECT_CALL(*suggestions_handler.get(),
@@ -610,10 +631,10 @@ TEST_F(AutocompleteHistoryManagerTest,
       .WillOnce(Return(mocked_db_query_id));
 
   // Simulate request for suggestions.
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_field_,
-      suggestions_handler->GetWeakPtr(), SuggestionsContext());
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
 
   // Setting up mock to verify that DB response triggers a call to the handler's
   EXPECT_CALL(*suggestions_handler.get(),
@@ -643,10 +664,10 @@ TEST_F(AutocompleteHistoryManagerTest,
       .WillOnce(Return(mocked_db_query_id));
 
   // Simulate request for suggestions.
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_field_,
-      suggestions_handler->GetWeakPtr(), SuggestionsContext());
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
 
   // Setting up mock to verify that DB response triggers a call to the handler's
   EXPECT_CALL(*suggestions_handler.get(),
@@ -683,10 +704,10 @@ TEST_F(AutocompleteHistoryManagerTest,
       .WillOnce(Return(mocked_db_query_id));
 
   // Simulate request for suggestions.
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/true, test_field_,
-      suggestions_handler->GetWeakPtr(), SuggestionsContext());
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
 
   // Setting up mock to verify that DB response triggers a call to the handler's
   EXPECT_CALL(*suggestions_handler.get(),
@@ -723,10 +744,10 @@ TEST_F(AutocompleteHistoryManagerTest,
       .WillOnce(Return(mocked_db_query_id));
 
   // Simulate request for suggestions.
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_field_,
-      suggestions_handler->GetWeakPtr(), SuggestionsContext());
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
 
   // Setting up mock to verify that DB response triggers a call to the handler's
   EXPECT_CALL(*suggestions_handler.get(),
@@ -760,10 +781,10 @@ TEST_F(AutocompleteHistoryManagerTest,
       .WillOnce(Return(mocked_db_query_id));
 
   // Simulate request for suggestions.
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_field_,
-      suggestions_handler->GetWeakPtr(), SuggestionsContext());
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
 
   // Setting up mock to verify that DB response triggers a call to the handler's
   EXPECT_CALL(*suggestions_handler.get(),
@@ -810,10 +831,10 @@ TEST_F(AutocompleteHistoryManagerTest,
   EXPECT_CALL(*suggestions_handler.get(), OnSuggestionsReturned);
 
   // Simulate request for suggestions.
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_field_,
-      suggestions_handler->GetWeakPtr(), SuggestionsContext());
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
 
   // Simulate response from DB.
   autocomplete_manager_->OnWebDataServiceRequestDone(mocked_db_query_id,
@@ -858,19 +879,19 @@ TEST_F(AutocompleteHistoryManagerTest,
       .WillOnce(Return(mocked_db_query_id_second));
 
   // Simulate request for the first suggestions.
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id_first, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_field_,
-      suggestions_handler->GetWeakPtr(), SuggestionsContext());
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
 
   // Simulate request for the second suggestions (this will cancel the first
   // one).
   EXPECT_CALL(*web_data_service_, CancelRequest(mocked_db_query_id_first))
       .Times(1);
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id_second, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_field_,
-      suggestions_handler->GetWeakPtr(), SuggestionsContext());
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
 
   // Setting up mock to verify that we can get the second response first.
   EXPECT_CALL(*suggestions_handler.get(),
@@ -926,16 +947,16 @@ TEST_F(AutocompleteHistoryManagerTest,
       .WillOnce(Return(mocked_db_query_id_second));
 
   // Simulate request for the first suggestions.
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id_first, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_field_,
-      suggestions_handler_first->GetWeakPtr(), SuggestionsContext());
+      suggestions_handler_first->GetWeakPtr(), SuggestionsContext()));
 
   // Simulate request for the second suggestions.
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id_second, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_field_,
-      suggestions_handler_second->GetWeakPtr(), SuggestionsContext());
+      suggestions_handler_second->GetWeakPtr(), SuggestionsContext()));
 
   // Setting up mock to verify that we get the second response first.
   EXPECT_CALL(*suggestions_handler_second.get(),
@@ -992,16 +1013,16 @@ TEST_F(AutocompleteHistoryManagerTest,
       .WillOnce(Return(mocked_db_query_id_one))
       .WillOnce(Return(mocked_db_query_id_two));
 
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id_one, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_field_,
-      suggestions_handler_one->GetWeakPtr(), SuggestionsContext());
+      suggestions_handler_one->GetWeakPtr(), SuggestionsContext()));
 
   // Simlate second handler request for autocomplete suggestions.
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id_two, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_field_,
-      suggestions_handler_two->GetWeakPtr(), SuggestionsContext());
+      suggestions_handler_two->GetWeakPtr(), SuggestionsContext()));
 
   // Simlate first handler cancelling its request.
   EXPECT_CALL(*web_data_service_, CancelRequest(mocked_db_query_id_one))
@@ -1046,10 +1067,10 @@ TEST_F(AutocompleteHistoryManagerTest, NoAutocompleteSuggestionsForTextarea) {
 
   base::HistogramTester histogram_tester;
 
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       0, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, field,
-      suggestions_handler->GetWeakPtr(), SuggestionsContext());
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
 
   histogram_tester.ExpectBucketCount("Autofill.AutocompleteQuery", 0, 1);
   histogram_tester.ExpectBucketCount("Autofill.AutocompleteQuery", 1, 0);
@@ -1075,10 +1096,10 @@ TEST_F(AutocompleteHistoryManagerTest, AutocompleteUMAQueryCreated) {
   EXPECT_CALL(*suggestions_handler.get(),
               OnSuggestionsReturned(0, /*autoselect_first_suggestion=*/false,
                                     testing::Truly(IsEmptySuggestionVector)));
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       0, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, field,
-      suggestions_handler->GetWeakPtr(), SuggestionsContext());
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
   histogram_tester.ExpectBucketCount("Autofill.AutocompleteQuery", 1, 1);
   histogram_tester.ExpectBucketCount("Autofill.AutocompleteQuery", 0, 0);
 
@@ -1105,10 +1126,10 @@ TEST_F(AutocompleteHistoryManagerTest, AutocompleteUMAQueryCreated) {
   EXPECT_CALL(*suggestions_handler.get(),
               OnSuggestionsReturned(0, /*autoselect_first_suggestion=*/false,
                                     testing::Truly(NonEmptySuggestionVector)));
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       0, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, field,
-      suggestions_handler->GetWeakPtr(), SuggestionsContext());
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
   histogram_tester.ExpectBucketCount("Autofill.AutocompleteQuery", 1, 2);
   histogram_tester.ExpectBucketCount("Autofill.AutocompleteQuery", 0, 0);
 
@@ -1139,16 +1160,16 @@ TEST_F(AutocompleteHistoryManagerTest, DestructorCancelsRequests) {
       .WillOnce(Return(mocked_db_query_id_second));
 
   // Simulate request for the first suggestions.
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id_first, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_field_,
-      suggestions_handler_first->GetWeakPtr(), SuggestionsContext());
+      suggestions_handler_first->GetWeakPtr(), SuggestionsContext()));
 
   // Simulate request for the second suggestions.
-  autocomplete_manager_->OnGetSingleFieldSuggestions(
+  EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       test_query_id_second, /*is_autocomplete_enabled=*/true,
       /*autoselect_first_suggestion=*/false, test_field_,
-      suggestions_handler_second->GetWeakPtr(), SuggestionsContext());
+      suggestions_handler_second->GetWeakPtr(), SuggestionsContext()));
 
   // Expect cancel calls for both requests.
   EXPECT_CALL(*web_data_service_, CancelRequest(mocked_db_query_id_first))

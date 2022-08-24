@@ -20,7 +20,7 @@ IBANManager::IBANManager(PersonalDataManager* personal_data_manager,
 
 IBANManager::~IBANManager() = default;
 
-void IBANManager::OnGetSingleFieldSuggestions(
+bool IBANManager::OnGetSingleFieldSuggestions(
     int query_id,
     bool is_autocomplete_enabled,
     bool autoselect_first_suggestion,
@@ -39,8 +39,10 @@ void IBANManager::OnGetSingleFieldSuggestions(
       SendIBANSuggestions(ibans,
                           QueryHandler(query_id, autoselect_first_suggestion,
                                        field.value, handler));
+      return true;
     }
   }
+  return false;
 }
 
 base::WeakPtr<IBANManager> IBANManager::GetWeakPtr() {
@@ -60,8 +62,14 @@ void IBANManager::SendIBANSuggestions(const std::vector<IBAN*>& ibans,
   // the value with the full IBAN value. However, once we land
   // MASKED_SERVER_IBANs and Chrome doesn't know the whole value, we'll have
   // check 'prefix'(E.g., the first ~5 characters).
-  if (base::Contains(ibans, query_handler.prefix_, &IBAN::value))
+  if (base::Contains(ibans, query_handler.prefix_, &IBAN::value)) {
+    // Return empty suggestions to query handler. This will result in no
+    // suggestions being displayed.
+    query_handler.handler_->OnSuggestionsReturned(
+        query_handler.client_query_id_,
+        query_handler.autoselect_first_suggestion_, {});
     return;
+  }
 
   // Return suggestions to query handler.
   query_handler.handler_->OnSuggestionsReturned(

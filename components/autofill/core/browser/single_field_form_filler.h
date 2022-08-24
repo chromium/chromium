@@ -47,7 +47,14 @@ class SingleFieldFormFiller {
   // pending query per |handler|, hence this function will cancel the previous
   // pending query if it hadn't already been resolved, at which point no method
   // of the handler will be called.
-  virtual void OnGetSingleFieldSuggestions(
+  // The boolean return value denotes whether a SingleFieldFormFiller claims the
+  // opportunity to fill this field. By returning true, the
+  // SingleFieldFormFiller does not promise at this point to have a value
+  // available for filling. It just promises to call back the handler and voids
+  // the opportunity for other SingleFieldFormFillers to offer filling the
+  // field. The callback can happen synchronously even before
+  // OnGetSingleFieldSuggestions returns true.
+  [[nodiscard]] virtual bool OnGetSingleFieldSuggestions(
       int query_id,
       bool is_autocomplete_enabled,
       bool autoselect_first_suggestion,

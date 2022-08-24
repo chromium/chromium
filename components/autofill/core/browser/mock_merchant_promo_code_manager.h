@@ -17,7 +17,7 @@ class MockMerchantPromoCodeManager : public MerchantPromoCodeManager {
   ~MockMerchantPromoCodeManager() override;
 
   MOCK_METHOD(
-      void,
+      bool,
       OnGetSingleFieldSuggestions,
       (int query_id,
        bool is_autocomplete_enabled,

@@ -33,12 +33,13 @@ class MerchantPromoCodeManager : public SingleFieldFormFiller,
   ~MerchantPromoCodeManager() override;
 
   // SingleFieldFormFiller overrides:
-  void OnGetSingleFieldSuggestions(int query_id,
-                                   bool is_autocomplete_enabled,
-                                   bool autoselect_first_suggestion,
-                                   const FormFieldData& field,
-                                   base::WeakPtr<SuggestionsHandler> handler,
-                                   const SuggestionsContext& context) override;
+  [[nodiscard]] bool OnGetSingleFieldSuggestions(
+      int query_id,
+      bool is_autocomplete_enabled,
+      bool autoselect_first_suggestion,
+      const FormFieldData& field,
+      base::WeakPtr<SuggestionsHandler> handler,
+      const SuggestionsContext& context) override;
   void OnWillSubmitFormWithFields(const std::vector<FormFieldData>& fields,
                                   bool is_autocomplete_enabled) override;
   void CancelPendingQueries(const SuggestionsHandler* handler) override;
@@ -78,7 +79,7 @@ class MerchantPromoCodeManager : public SingleFieldFormFiller,
 
     void OnOffersSuggestionsShown(
         const std::u16string& name,
-        std::vector<const AutofillOfferData*>& offers);
+        const std::vector<const AutofillOfferData*>& offers);
     void OnOfferSuggestionSelected(int frontend_id);
 
    private:
