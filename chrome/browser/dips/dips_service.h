@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/threading/sequence_bound.h"
 #include "chrome/browser/dips/dips_storage.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -24,7 +25,8 @@ class DIPSService : public KeyedService {
 
   static DIPSService* Get(content::BrowserContext* context);
 
-  DIPSStorage* storage() { return &storage_; }
+  base::SequenceBound<DIPSStorage>* storage() { return &storage_; }
+
   bool ShouldBlockThirdPartyCookies() const;
 
  private:
@@ -33,9 +35,11 @@ class DIPSService : public KeyedService {
   explicit DIPSService(content::BrowserContext* context);
   void Shutdown() override;
 
+  scoped_refptr<base::SequencedTaskRunner> CreateTaskRunner();
+
   raw_ptr<content::BrowserContext> browser_context_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
-  DIPSStorage storage_;
+  base::SequenceBound<DIPSStorage> storage_;
 };
 
 #endif  // CHROME_BROWSER_DIPS_DIPS_SERVICE_H_

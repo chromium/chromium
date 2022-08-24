@@ -24,14 +24,17 @@ class DIPSTabHelper : public content::WebContentsObserver,
   DIPSTabHelper(const DIPSTabHelper&) = delete;
   DIPSTabHelper& operator=(const DIPSTabHelper&) = delete;
 
-  // Record that |url| wrote to storage, if it was the first such time (we
-  // currently don't care about later writes to storage.)
-  void MaybeRecordStorage(const GURL& url);
+  // Record that |url| wrote to storage.
+  void RecordStorage(const GURL& url);
   // Record that the user interacted on |url| .
   void RecordInteraction(const GURL& url);
 
-  DIPSState StateForURL(const GURL& url);
+  // Posts a blank task to the DIPSStorage SequenceBound, then executes
+  // `flushed` after the task finishes.
+  void FlushForTesting(base::OnceClosure flushed);
 
+  using StateForURLCallback = base::OnceCallback<void(const DIPSState&)>;
+  void StateForURLForTesting(const GURL& url, StateForURLCallback callback);
   static base::Clock* SetClockForTesting(base::Clock* clock);
 
  private:

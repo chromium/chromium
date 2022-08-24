@@ -8,6 +8,8 @@
 #include <ostream>
 
 #include "base/strings/string_piece_forward.h"
+#include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TimeDelta;
@@ -49,6 +51,12 @@ enum class DIPSRedirectType { kClient, kServer };
 base::StringPiece GetHistogramPiece(DIPSRedirectType type);
 const char* DIPSRedirectTypeToString(DIPSRedirectType type);
 std::ostream& operator<<(std::ostream& os, DIPSRedirectType type);
+
+// StateValue:
+struct StateValue {
+  absl::optional<base::Time> site_storage_time;
+  absl::optional<base::Time> user_interaction_time;
+};
 
 // Return the number of seconds in `td`, clamped to [0, 10].
 // i.e. 11 linearly-sized buckets.

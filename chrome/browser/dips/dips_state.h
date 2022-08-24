@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/dips/dips_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class DIPSStorage;
@@ -34,7 +35,10 @@ class DirtyBit {
 // DIPSState represents the state recorded by DIPSService itself.
 class DIPSState {
  public:
-  DIPSState(DIPSStorage* storage, std::string site, bool was_loaded);
+  DIPSState(DIPSStorage* storage, std::string site);
+  // For loaded DIPSState.
+  DIPSState(DIPSStorage* storage, std::string site, const StateValue& state);
+
   DIPSState(DIPSState&&);
   // Flushes changes to storage_.
   ~DIPSState();
@@ -53,6 +57,10 @@ class DIPSState {
     return user_interaction_time_;
   }
   void set_user_interaction_time(absl::optional<base::Time> time);
+
+  StateValue ToStateValue() const {
+    return {site_storage_time_, user_interaction_time_};
+  }
 
  private:
   raw_ptr<DIPSStorage> storage_;
