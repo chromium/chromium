@@ -1628,5 +1628,8 @@ const base::Feature kWebRtcThreadsUseResourceEfficientType{
 const base::Feature kThrottleIntersectionObserverUMA{
     "ThrottleIntersectionObserverUMA", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kWebRtcMetronome{"WebRtcMetronome",
+                                     base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

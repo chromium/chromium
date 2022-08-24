@@ -882,6 +882,8 @@ BLINK_COMMON_EXPORT extern const base::Feature
 // collected on 10% of animation frames.
 BLINK_COMMON_EXPORT extern const base::Feature kThrottleIntersectionObserverUMA;
 
+BLINK_COMMON_EXPORT extern const base::Feature kWebRtcMetronome;
+
 }  // namespace features
 }  // namespace blink
 
