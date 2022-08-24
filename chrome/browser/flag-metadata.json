@@ -816,7 +816,7 @@
   {
     "name": "canvas-2d-layers",
     "owners": [ "fserb", "jpgravel", "juanmihd", "yiyix" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 114
   },
   {
     "name": "canvas-oop-rasterization",
