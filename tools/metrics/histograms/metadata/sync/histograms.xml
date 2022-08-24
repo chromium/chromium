@@ -887,6 +887,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.PendingInvalidationStatus"
+    enum="PendingInvalidationStatus" expires_after="2023-02-23">
+  <owner>shabdan@google.com</owner>
+  <owner>rushans@google.com</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Number of acknowledged and dropped invalidations broken down by reason.
+    Recorded during browser shutdown, after a sync cycle or on incoming
+    invalidation.
+  </summary>
+</histogram>
+
 <histogram name="Sync.PostedClientToServerMessage"
     enum="SyncClientToServerMessageContents" expires_after="2022-12-25">
   <owner>mastiz@chromium.org</owner>

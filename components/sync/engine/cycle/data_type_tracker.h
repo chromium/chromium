@@ -45,6 +45,16 @@ struct WaitInterval {
   base::TimeDelta length;
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PendingInvalidationStatus {
+  kAcknowledged = 0,
+  kLost = 1,
+  kInvalidationsOverflow = 2,
+  kSameVersion = 3,
+  kMaxValue = kSameVersion,
+};
+
 // A class to track the per-type scheduling data.
 class DataTypeTracker {
  public:

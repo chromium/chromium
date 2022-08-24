@@ -160,6 +160,10 @@ bool CanGetCommitsFromExtensions(ModelType model_type) {
   }
 }
 
+void LogPendingInvalidationStatus(PendingInvalidationStatus status) {
+  base::UmaHistogramEnumeration("Sync.PendingInvalidationStatus", status);
+}
+
 }  // namespace
 
 WaitInterval::WaitInterval() : mode(BlockingMode::kUnknown) {}
@@ -188,7 +192,11 @@ DataTypeTracker::DataTypeTracker(ModelType type)
   }
 }
 
-DataTypeTracker::~DataTypeTracker() = default;
+DataTypeTracker::~DataTypeTracker() {
+  for (size_t i = 0; i < pending_invalidations_.size(); ++i) {
+    LogPendingInvalidationStatus(PendingInvalidationStatus::kLost);
+  }
+}
 
 void DataTypeTracker::RecordLocalChange() {
   local_nudge_count_++;
@@ -201,7 +209,6 @@ void DataTypeTracker::RecordLocalRefreshRequest() {
 void DataTypeTracker::RecordRemoteInvalidation(
     std::unique_ptr<SyncInvalidation> incoming) {
   DCHECK(incoming);
-
   // Merge the incoming invalidation into our list of pending invalidations.
   //
   // We won't use STL algorithms here because our concept of equality doesn't
@@ -239,6 +246,7 @@ void DataTypeTracker::RecordRemoteInvalidation(
     // Increment that iterator to the old one, then acknowledge and remove it.
     ++it2;
     (*it2)->Acknowledge();
+    LogPendingInvalidationStatus(PendingInvalidationStatus::kSameVersion);
     pending_invalidations_.erase(it2);
   } else {
     // The incoming has a version not in the pending_invalidations_ list.
@@ -251,6 +259,8 @@ void DataTypeTracker::RecordRemoteInvalidation(
   while (pending_invalidations_.size() > payload_buffer_size_) {
     last_dropped_invalidation_ = std::move(pending_invalidations_.front());
     last_dropped_invalidation_->Drop();
+    LogPendingInvalidationStatus(
+        PendingInvalidationStatus::kInvalidationsOverflow);
     pending_invalidations_.erase(pending_invalidations_.begin());
   }
 }
@@ -294,6 +304,7 @@ void DataTypeTracker::RecordSuccessfulSyncCycle() {
   // state.  See crbug.com/324996.
   for (const std::unique_ptr<SyncInvalidation>& pending_invalidation :
        pending_invalidations_) {
+    LogPendingInvalidationStatus(PendingInvalidationStatus::kAcknowledged);
     pending_invalidation->Acknowledge();
   }
   pending_invalidations_.clear();
