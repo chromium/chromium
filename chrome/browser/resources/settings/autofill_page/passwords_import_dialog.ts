@@ -161,11 +161,13 @@ export class PasswordsImportDialogElement extends
     this.results_ =
         await this.passwordManager_.importPasswords(destinationStore);
     this.inProgress_ = false;
+    // TODO(crbug/1325290): set appropriate string for MAX_FILE_SIZE.
     switch (this.results_.status) {
       case chrome.passwordsPrivate.ImportResultsStatus.SUCCESS:
         this.handleSuccess_();
         break;
       case chrome.passwordsPrivate.ImportResultsStatus.IO_ERROR:
+      case chrome.passwordsPrivate.ImportResultsStatus.MAX_FILE_SIZE:
       case chrome.passwordsPrivate.ImportResultsStatus.UNKNOWN_ERROR:
         this.descriptionText_ = this.i18n('importPasswordsUnknownError');
         this.dialogState = ImportDialogState.ERROR;
