@@ -132,6 +132,7 @@ class CORE_EXPORT DocumentTransition
 
  private:
   friend class DocumentTransitionTest;
+  friend class AXDocumentTransitionTest;
 
   enum class State { kIdle, kCapturing, kCaptured, kStarted };
 

@@ -1249,8 +1249,10 @@ bool AXObjectCacheImpl::IsRelevantPseudoElement(const Node& node) {
   }
 
   // The remaining possible pseudo element types are not relevant.
-  if (node.IsBackdropPseudoElement())
+  if (node.IsBackdropPseudoElement() ||
+      node.IsDocumentTransitionPseudoElement()) {
     return false;
+  }
 
   // If this is reached, then a new pseudo element type was added and is not
   // yet handled by accessibility. See  PseudoElementTagName() in
