@@ -134,24 +134,6 @@ class WPTResultsProcessorTest(LoggingTestCase):
         """Loads the json output after post-processing."""
         return json.loads(self.fs.read_text_file(filename))
 
-    def _open_mock(self, filename, mode='r', **_kwargs):
-        """A mock for Python's built-in `open` backed by a Blink FS."""
-        mode_match = re.match(r'([rwa])(b?)', mode).groups()
-        open_func_map = {
-            ('r', ''): self.fs.open_text_file_for_reading,
-            ('w', ''): self.fs.open_text_file_for_writing,
-            ('r', 'b'): self.fs.open_binary_file_for_reading,
-            ('w', 'b'): self.fs.open_binary_file_for_writing,
-        }
-        return open_func_map[mode_match](filename)
-
-    @contextlib.contextmanager
-    def _mock_filesystem_builtins(self):
-        with contextlib.ExitStack() as stack:
-            stack.enter_context(patch('builtins.open', self._open_mock))
-            stack.enter_context(patch('os.path.join', self.fs.join))
-            yield
-
     def test_result_sink_for_test_expected_result(self):
         json_dict = {
             'tests': {
@@ -652,7 +634,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
             self.fs.join(self.processor.web_tests_dir, 'external', 'wpt',
                          'test.html.ini'), checked_in_metadata)
 
-        with self._mock_filesystem_builtins():
+        with self.fs.patch_builtins():
             self.processor.process_wpt_results(OUTPUT_JSON_FILENAME)
         artifacts_subdir = self.fs.join(self.processor.artifacts_dir,
                                         'external', 'wpt')
@@ -735,7 +717,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
                   [bracket is not matched
                 """))
 
-        with self._mock_filesystem_builtins():
+        with self.fs.patch_builtins():
             self.processor.process_wpt_results(OUTPUT_JSON_FILENAME)
 
         path_from_out_dir_base = self.fs.join('layout-test-results',
@@ -786,7 +768,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
                 [variant.html?foo=baz]
                   expected: TIMEOUT
                 """))
-        with self._mock_filesystem_builtins():
+        with self.fs.patch_builtins():
             self.processor.process_wpt_results(OUTPUT_JSON_FILENAME)
         variant_metadata = textwrap.dedent("""\
             [variant.html?foo=bar/abc]
@@ -860,7 +842,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
                   expected: FAIL
                 """))
 
-        with self._mock_filesystem_builtins():
+        with self.fs.patch_builtins():
             self.processor.process_wpt_results(OUTPUT_JSON_FILENAME)
         artifacts_subdir = self.fs.join(self.processor.artifacts_dir,
                                         'external', 'wpt')

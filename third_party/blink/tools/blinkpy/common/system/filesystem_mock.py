@@ -26,16 +26,18 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import contextlib
 import errno
 import hashlib
 import io
 import os
 import re
 import unittest
+from unittest.mock import patch
+
+import six
 
 from blinkpy.common.system.filesystem import _remove_contents, _sanitize_filename
-
-from six import ensure_binary
 
 _TEXT_ENCODING = 'utf-8'
 
@@ -44,7 +46,7 @@ def _ensure_binary_contents(file_contents):
     # Iterate over a copy while the underlying mapping is mutated.
     for path, contents in list(file_contents.items()):
         if contents is not None:
-            contents = ensure_binary(contents, _TEXT_ENCODING)
+            contents = six.ensure_binary(contents, _TEXT_ENCODING)
         file_contents[path] = contents
 
 
@@ -210,6 +212,13 @@ class MockFileSystem(object):
         return re.sub(re.escape(os.path.sep), self.sep, os.path.join(*comps))
 
     def join(self, *comps):
+        # The real `os.path.join` accepts both strings and bytes:
+        #   (*bytes) -> bytes
+        #   (*str) -> str
+        # Record what type the caller originally passed, perform the join with
+        # text strings, then coerce the return value to the original argument
+        # type.
+        binary_mode = all(isinstance(comp, bytes) for comp in comps)
         # This function is called a lot, so we optimize it; there are
         # unit tests to check that we match _slow_but_correct_join(), above.
         path = ''
@@ -217,16 +226,17 @@ class MockFileSystem(object):
         for comp in comps:
             if not comp:
                 continue
+            comp = six.ensure_text(comp)
             if comp[0] == sep:
                 path = comp
                 continue
             if path:
                 path += sep
             path += comp
-        if comps[-1] == '' and path:
+        if six.ensure_text(comps[-1]) == '' and path:
             path += '/'
         path = path.replace(sep + sep, sep)
-        return path
+        return path.encode() if binary_mode else path
 
     def listdir(self, path):
         _, directories, files = list(self.walk(path))[0]
@@ -474,6 +484,26 @@ class MockFileSystem(object):
 
     def sanitize_filename(self, filename, replacement='_'):
         return _sanitize_filename(filename, replacement)
+
+    def _open_mock(self, filename, mode='r', **_kwargs):
+        """A mock for Python's built-in `open` backed by this Blink FS."""
+        mode_match = re.match(r'([rwa])(b?)', mode)
+        open_func_map = {
+            ('r', ''): self.open_text_file_for_reading,
+            ('w', ''): self.open_text_file_for_writing,
+            ('r', 'b'): self.open_binary_file_for_reading,
+            ('w', 'b'): self.open_binary_file_for_writing,
+        }
+        return open_func_map[mode_match.groups()](filename)
+
+    @contextlib.contextmanager
+    def patch_builtins(self):
+        with contextlib.ExitStack() as stack:
+            stack.enter_context(patch('builtins.open', self._open_mock))
+            stack.enter_context(patch('os.path.join', self.join))
+            stack.enter_context(patch('os.path.isfile', self.isfile))
+            stack.enter_context(patch('os.path.isdir', self.isdir))
+            yield
 
 
 class BufferedReader(io.BufferedReader):

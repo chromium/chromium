@@ -27,26 +27,35 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import collections
+import contextlib
+import io
 import logging
 import os
+from unittest.mock import Mock, patch
+
 import six
 
 from blinkpy.common.system.executive import ScriptError
-
-from six import StringIO
 
 _log = logging.getLogger(__name__)
 
 
 class MockProcess(object):
-    def __init__(self, stdout='MOCK STDOUT\n', stderr='', returncode=0):
+    def __init__(self, args, stdout='MOCK STDOUT\n', stderr='', returncode=0):
+        self.args = args
         self.pid = 42
-        self.stdout = StringIO(stdout)
-        self.stderr = StringIO(stderr)
-        self.stdin = StringIO()
+        self.stdout = io.StringIO(stdout)
+        self.stderr = io.StringIO(stderr)
+        self.stdin = io.StringIO()
         self.returncode = returncode
 
-    def wait(self):
+    def __enter__(self):
+        return self
+
+    def __exit__(self, _exc_type, _exc, _traceback):
+        pass
+
+    def wait(self, timeout=None):
         return
 
     def poll(self):
@@ -56,8 +65,11 @@ class MockProcess(object):
             return None
         return self.returncode
 
-    def communicate(self, *_):
+    def communicate(self, input=None, timeout=None):
         return (self.stdout.getvalue(), self.stderr.getvalue())
+
+    def send_signal(self, signal):
+        pass
 
     def kill(self):
         return
@@ -115,7 +127,7 @@ class MockExecutive(object):
         return running_pids
 
     def command_for_printing(self, args):
-        string_args = list(map(six.text_type, args))
+        string_args = list(map(six.ensure_text, args))
         return ' '.join(string_args)
 
     # The argument list should match Executive.run_command, even if
@@ -170,8 +182,8 @@ class MockExecutive(object):
         output = self._output
         if return_stderr:
             output += self._stderr
-        if decode_output and not isinstance(output, six.text_type):
-            output = output.decode('utf-8')
+        if decode_output:
+            output = six.ensure_text(output)
 
         return output
 
@@ -196,10 +208,10 @@ class MockExecutive(object):
                 env_string = ', env=%s' % env
             _log.info('MOCK popen: %s%s%s', args, cwd_string, env_string)
         if not self._proc:
-            self._proc = MockProcess(
-                stdout=self._output,
-                stderr=self._stderr,
-                returncode=self._exit_code)
+            self._proc = MockProcess(args,
+                                     stdout=self._output,
+                                     stderr=self._stderr,
+                                     returncode=self._exit_code)
         return self._proc
 
     def call(self, args, **_):
@@ -240,6 +252,21 @@ class MockExecutive(object):
                     'Unknown full_calls type: %s' % (type(v).__name__, ))
 
         return get_args(self.full_calls)
+
+    def _run_mock(self, args, **_options):
+        self._append_call(args)
+        completed_process = Mock()
+        completed_process.args = ['echo']
+        completed_process.returncode = 0
+        completed_process.stdout = completed_process.stderr = b''
+        return completed_process
+
+    @contextlib.contextmanager
+    def patch_builtins(self):
+        with contextlib.ExitStack() as stack:
+            stack.enter_context(patch('subprocess.run', self._run_mock))
+            stack.enter_context(patch('subprocess.Popen', self.popen))
+            yield
 
 
 def mock_git_commands(vals, strict=False):

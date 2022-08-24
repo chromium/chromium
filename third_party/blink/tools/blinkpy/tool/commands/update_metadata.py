@@ -1,26 +1,33 @@
 # Copyright 2022 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
 """Update WPT metadata from builder results."""
 
 from concurrent.futures import Executor, ThreadPoolExecutor
 import contextlib
+import io
 import json
 import logging
+import pathlib
 import optparse
 import re
-from typing import Iterator, List, Optional
+from typing import Iterator, List, Mapping, Optional
 
+from blinkpy.common import path_finder
 from blinkpy.common.host import Host
 from blinkpy.common.net.git_cl import BuildStatuses, GitCL
 from blinkpy.common.net.rpc import Build, RPCError
-from blinkpy.tool import grammar
 from blinkpy.tool.commands.build_resolver import (
     BuildResolver,
     UnresolvedBuildException,
 )
 from blinkpy.tool.commands.command import Command
 from blinkpy.tool.commands.rebaseline_cl import RebaselineCL
+from blinkpy.web_tests.port.base import Port
+
+path_finder.bootstrap_wpt_imports()
+from wptrunner import metadata, testloader
 
 _log = logging.getLogger(__name__)
 
@@ -76,6 +83,9 @@ class UpdateMetadata(Command):
             optparse.make_option('--keep-statuses',
                                  action='store_true',
                                  help='Keep all existing statuses.'),
+            # TODO(crbug.com/1299650): Support nargs='*' after migrating to
+            # argparse to allow usage with shell glob expansion. Example:
+            #   --report out/*/wpt_reports*android*.json
             optparse.make_option(
                 '--report',
                 dest='reports',
@@ -113,6 +123,9 @@ class UpdateMetadata(Command):
             self._tool.builders,
             self.git_cl,
             can_trigger_jobs=(options.trigger_jobs and not options.dry_run))
+        updater = MetadataUpdater.from_path_finder(
+            path_finder.PathFinder(self._tool.filesystem),
+            self._explicit_include_patterns(options, args))
         try:
             build_statuses = build_resolver.resolve_builds(
                 self._select_builds(options), options.patchset)
@@ -121,23 +134,12 @@ class UpdateMetadata(Command):
                 stack.enter_context(self._io_pool)
                 for report in self.gather_reports(build_statuses,
                                                   options.reports or []):
-                    results, run_info = report['results'], report['run_info']
-                    _log.info(
-                        '%s (product: %s, os: %s, os_version: %s, '
-                        'cpu: %s-%s, flag_specific: %s)',
-                        grammar.pluralize('test', len(results)),
-                        run_info.get('product', '?'), run_info.get('os', '?'),
-                        run_info.get('version', '?'),
-                        run_info.get('processor', '?'),
-                        str(run_info.get('bits', '?')),
-                        run_info.get('flag_specific', '-'))
+                    updater.collect_results(report)
+                updater.update()
         except RPCError as error:
             _log.error('%s', error)
             _log.error('Request payload: %s',
                        json.dumps(error.request_body, indent=2))
-            return 1
-        except json.JSONDecodeError as error:
-            _log.error('Unable to parse wptreport: %s', str(error))
             return 1
         except (UnresolvedBuildException, OSError) as error:
             _log.error('%s', error)
@@ -153,9 +155,17 @@ class UpdateMetadata(Command):
         builders = self._tool.builders.all_try_builder_names()
         return [Build(builder) for builder in builders]
 
+    def _explicit_include_patterns(self, options: optparse.Values,
+                                   args: List[str]) -> List[str]:
+        patterns = list(args)
+        if options.test_name_file:
+            patterns.extend(
+                testloader.read_include_from_file(options.test_name_file))
+        return patterns
+
     def gather_reports(self, build_statuses: BuildStatuses,
                        report_paths: List[str]):
-        """Lazily fetches and parses wptreports.
+        """Lazily fetches wptreports.
 
         Arguments:
             build_statuses: Builds to fetch wptreport artifacts from. Builds
@@ -163,12 +173,13 @@ class UpdateMetadata(Command):
             report_paths: Paths to wptreport files on disk.
 
         Yields:
-            JSON objects corresponding to wptrunner suite runs. The objects are
-            not ordered in any particular way.
+            Seekable text buffers whose format is understood by the wptrunner
+            metadata updater (e.g., newline-delimited JSON objects, each
+            corresponding to a suite run). The buffers are not yielded in any
+            particular order.
 
         Raises:
             OSError: If a local wptreport is not readable.
-            json.JSONDecodeError: If any wptreport line is not valid JSON.
         """
         build_ids = [
             build.build_id for build, (_, status) in build_statuses.items()
@@ -184,18 +195,20 @@ class UpdateMetadata(Command):
                 self._fetch_report_contents(urls, report_paths)):
             _log.info('Processing wptrunner report (%d/%d)', i + 1,
                       total_reports)
-            yield from _parse_report_contents(contents)
+            yield contents
 
-    def _fetch_report_contents(self, urls: List[str],
-                               report_paths: List[str]) -> Iterator[str]:
+    def _fetch_report_contents(self, urls: List[str], report_paths: List[str]
+                               ) -> Iterator[io.TextIOBase]:
+        fs = self._tool.filesystem
         for path in report_paths:
-            yield self._tool.filesystem.read_text_file(path)
+            with fs.open_text_file_for_reading(path) as file_handle:
+                yield file_handle
             _log.debug('Read report from %r', path)
         responses = self._io_pool.map(self._tool.web.get_binary, urls)
         for url, response in zip(urls, responses):
             _log.debug('Fetched report from %r (size: %d bytes)', url,
                        len(response))
-            yield response.decode()
+            yield io.StringIO(response.decode())
 
     @contextlib.contextmanager
     def _trace(self, message: str, *args) -> Iterator[None]:
@@ -224,12 +237,80 @@ class UpdateMetadata(Command):
         setattr(parser.values, option.dest, reports)
 
 
-def _parse_report_contents(contents: str):
-    try:
-        yield from map(json.loads, contents.splitlines())
-    except json.JSONDecodeError:
-        # Allow a single object written across multiple lines.
-        yield json.loads(contents)
+TestFileMap = Mapping[str, metadata.TestFileData]
+
+
+class MetadataUpdater:
+    def __init__(self, test_files: TestFileMap):
+        self._test_files = test_files
+        self._updater = metadata.ExpectedUpdater(self._test_files)
+
+    @classmethod
+    def from_path_finder(cls,
+                         finder: path_finder.PathFinder,
+                         include: Optional[List[str]] = None
+                         ) -> 'MetadataUpdater':
+        """Construct a metadata updater from a path finder.
+
+        Arguments:
+            finder: Path finder. Each WPT root is used as both the test and
+                metadata root. The manifest is read from `MANIFEST.json` at the
+                WPT root.
+            include: A list of test patterns that are resolved into test IDs to
+                update. The resolution works the same way as `wpt run`:
+                  * Directories are expanded to include all children (e.g.,
+                    `a/` includes `a/b.html?c`).
+                  * Test files are expanded to include all variants (e.g.,
+                    `a.html` includes `a.html?b` and `a.html?c`).
+        """
+        # See: https://github.com/web-platform-tests/wpt/blob/merge_pr_35574/tools/wptrunner/wptrunner/testloader.py#L171-L199
+        test_paths = {}
+        for rel_path_to_wpt_root, url_base in Port.WPT_DIRS.items():
+            wpt_root = finder.path_from_web_tests(rel_path_to_wpt_root)
+            test_paths[url_base] = {
+                'tests_path':
+                wpt_root,
+                'metadata_path':
+                wpt_root,
+                'manifest_path':
+                finder.path_from_web_tests(rel_path_to_wpt_root,
+                                           'MANIFEST.json'),
+            }
+        manifests = testloader.ManifestLoader(test_paths).load()
+        # TODO(crbug.com/1299650): Validate the include list instead of silently
+        # ignoring the bad test pattern.
+        test_filter = testloader.TestFilter(manifests, include=include)
+        test_files = {}
+        for manifest, paths in manifests.items():
+            # Unfortunately, test filtering is tightly coupled to the
+            # `testloader.TestLoader` API. Monkey-patching here is the cleanest
+            # way to filter tests to be updated without loading more tests than
+            # are necessary.
+            manifest.itertypes = _compose(test_filter, manifest.itertypes)
+            test_files.update(
+                metadata.create_test_tree(paths['metadata_path'], manifest))
+        return MetadataUpdater(test_files)
+
+    def collect_results(self, report: io.TextIOBase):
+        """Parse and record test results."""
+        self._updater.update_from_log(report)
+
+    def update(self):
+        """Update the AST of each metadata file and serialize them to disk."""
+        test_files_to_update = {
+            test_file
+            for test_file in self._test_files.values()
+            if not test_file.test_path.endswith('__dir__')
+        }
+        for i, test_file in enumerate(
+                sorted(test_files_to_update, key=lambda f: f.test_path)):
+            _log.info("Updating '%s' (%d/%d)",
+                      pathlib.Path(test_file.test_path).as_posix(), i + 1,
+                      len(test_files_to_update))
+
+
+def _compose(f, g):
+    return lambda *args, **kwargs: f(g(*args, **kwargs))
 
 
 def _parse_build_specifiers(option: optparse.Option, _opt_str: str, value: str,

@@ -276,7 +276,7 @@ class LinuxPortTest(port_testcase.PortTestCase, LoggingTestCase):
         # Xvfb is started via Executive.popen, which returns an object for the
         # process. Here we set up a fake process object that acts as if it has
         # exited with return code 1 immediately.
-        proc = MockProcess(stdout='', stderr='', returncode=3)
+        proc = MockProcess(['Xvfb'], stdout='', stderr='', returncode=3)
         port.host.executive = MockExecutive(
             run_command_fn=run_command_fake, proc=proc)
         self.set_logging_level(logging.DEBUG)
