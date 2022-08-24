@@ -42,29 +42,48 @@ if (topLevelDocument) {
   // of various iFrames
 
   // Create a test with a single-child same-origin iframe.
-  RunTestsInIFrame("resources/requestStorageAccess-iframe.html?testCase=same-origin-frame&rootdocument=false");
+  let sameOriginFramePromise = RunTestsInIFrame(
+      'resources/requestStorageAccess-iframe.html?testCase=same-origin-frame&rootdocument=false');
 
   // Create a test with a single-child cross-origin iframe.
-  RunTestsInIFrame("http://{{domains[www]}}:{{ports[http][0]}}/storage-access-api/resources/requestStorageAccess-iframe.html?testCase=cross-origin-frame&rootdocument=false");
+  let crossOriginFramePromise = RunTestsInIFrame(
+      'http://{{domains[www]}}:{{ports[http][0]}}/storage-access-api/resources/requestStorageAccess-iframe.html?testCase=cross-origin-frame&rootdocument=false');
 
-  // Validate the nested-iframe scenario where the same-origin frame containing
-  // the tests is not the first child.
-  RunTestsInNestedIFrame("resources/requestStorageAccess-iframe.html?testCase=nested-same-origin-frame&rootdocument=false");
+  // Validate the nested-iframe scenario where the same-origin frame
+  // containing the tests is not the first child.
+  let nestedSameOriginFramePromise = RunTestsInNestedIFrame(
+      'resources/requestStorageAccess-iframe.html?testCase=nested-same-origin-frame&rootdocument=false');
 
-  // Validate the nested-iframe scenario where the cross-origin frame containing
-  //  the tests is not the first child.
-  RunTestsInNestedIFrame("http://{{domains[www]}}:{{ports[http][0]}}/storage-access-api/resources/requestStorageAccess-iframe.html?testCase=nested-cross-origin-frame&rootdocument=false");
+  // Validate the nested-iframe scenario where the cross-origin frame
+  // containing the tests is not the first child.
+  let nestedCrossOriginFramePromise = RunTestsInNestedIFrame(
+      'http://{{domains[www]}}:{{ports[http][0]}}/storage-access-api/resources/requestStorageAccess-iframe.html?testCase=nested-cross-origin-frame&rootdocument=false')
 
-  promise_test(async t => {
-    await test_driver.set_permission({ name: 'storage-access' }, 'granted');
+  // Because the iframe tests expect no user activation, and because they
+  // load asynchronously, we want to first run those tests before simulating
+  // clicks on the page.
+  Promise
+      .all([
+        sameOriginFramePromise,
+        crossOriginFramePromise,
+        nestedSameOriginFramePromise,
+        nestedCrossOriginFramePromise,
+      ])
+      .then(x => {
+        promise_test(
+            async t => {
+              await test_driver.set_permission(
+                  {name: 'storage-access'}, 'granted');
 
-    var access_promise;
-    let testMethod = function() {
-      access_promise = document.requestStorageAccess();
-    };
-    await ClickButtonWithGesture(testMethod);
+              var access_promise;
+              let testMethod = function() {
+                access_promise = document.requestStorageAccess();
+              };
+              await ClickButtonWithGesture(testMethod);
 
-    return access_promise;
-  }, "[" + testPrefix + "] document.requestStorageAccess() should be resolved when called properly with a user gesture");
-
+              return access_promise;
+            },
+            '[' + testPrefix +
+                '] document.requestStorageAccess() should be resolved when called properly with a user gesture');
+      });
 }

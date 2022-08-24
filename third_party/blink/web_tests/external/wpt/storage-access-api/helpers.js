@@ -3,13 +3,22 @@
 function RunTestsInIFrame(sourceURL) {
   let frame = document.createElement('iframe');
   frame.src = sourceURL;
+  let result = new Promise((resolve, reject) => {
+    frame.onload = resolve;
+    frame.onerror = reject;
+  });
   document.body.appendChild(frame);
   fetch_tests_from_window(frame.contentWindow);
+  return result;
 }
 
 function RunTestsInNestedIFrame(sourceURL) {
   let nestedFrame = document.createElement('iframe');
   document.body.appendChild(nestedFrame);
+  let result = new Promise((resolve, reject) => {
+    nestedFrame.onload = resolve;
+    nestedFrame.onerror = reject;
+  });
   let content = `
     <script src="/resources/testharness.js"></script>
     <script src="helpers.js"></script>
@@ -22,6 +31,7 @@ function RunTestsInNestedIFrame(sourceURL) {
     nestedFrame.contentDocument.write(content);
     nestedFrame.contentDocument.close();
     fetch_tests_from_window(nestedFrame.contentWindow);
+    return result;
 }
 
 let g_clickID = 0;

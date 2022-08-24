@@ -4902,11 +4902,6 @@ crbug.com/1080997 fast/scrolling/events/scrollend-event-fired-to-scrolled-elemen
 # reference is laid out by LayoutNG.
 crbug.com/829028 [ Mac ] editing/caret/in-multicol-child.html [ Failure ]
 
-# Flaky tests blocking WPT import
-crbug.com/1054577 [ Linux ] virtual/storage-access-api/external/wpt/storage-access-api/requestStorageAccess.sub.window.html [ Failure Pass ]
-crbug.com/1054577 [ Win ] virtual/storage-access-api/external/wpt/storage-access-api/requestStorageAccess.sub.window.html [ Failure Pass ]
-crbug.com/1054577 [ Mac ] external/wpt/storage-access-api/requestStorageAccess.sub.window.html [ Failure Pass ]
-
 # Failing tests because of enabling scroll unification flag
 crbug.com/476553 virtual/scroll-unification/external/wpt/dom/events/scrolling/overscroll-event-fired-to-scrolled-element.html [ Crash Failure Pass Timeout ]
 crbug.com/476553 virtual/scroll-unification/external/wpt/dom/events/scrolling/scrollend-event-for-user-scroll.html [ Crash Failure Pass Timeout ]
@@ -6745,10 +6740,6 @@ crbug.com/1273409 [ Mac11 ] fast/canvas/OffscreenCanvas-2d-drawImage.html [ Fail
 crbug.com/1273409 [ Mac11-arm64 ] fast/canvas/OffscreenCanvas-2d-drawImage.html [ Failure Pass ]
 crbug.com/1273409 [ Linux ] fast/canvas/OffscreenCanvas-2d-drawImage.html [ Failure Pass ]
 crbug.com/1273409 [ Win10.20h2 ] fast/canvas/OffscreenCanvas-2d-drawImage.html [ Failure Pass ]
-
-# Sheriff 2022-06-08
-crbug.com/1229084 [ Linux ] external/wpt/storage-access-api/requestStorageAccess.sub.window.html [ Failure Pass ]
-crbug.com/1229084 [ Win ] external/wpt/storage-access-api/requestStorageAccess.sub.window.html [ Failure Pass ]
 
 # Flaky on multiple platforms
 crbug.com/1277696 fast/loader/reload-zero-byte-plugin.html [ Failure Pass ]
