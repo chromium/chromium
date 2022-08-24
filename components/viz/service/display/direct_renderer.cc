@@ -810,14 +810,12 @@ gfx::Rect DirectRenderer::ComputeScissorRectForRenderPass(
             const auto* rpdq = AggregatedRenderPassDrawQuad::MaterialCast(quad);
 
             // For render pass with pixel moving backdrop filters.
-            if (!backdrop_filter_output_rects_.empty()) {
-              auto iter =
-                  backdrop_filter_output_rects_.find(rpdq->render_pass_id);
-              if (iter != backdrop_filter_output_rects_.end()) {
-                gfx::Rect this_output_rect = iter->second;
-                if (root_damage_rect.Intersects(this_output_rect))
-                  root_damage_rect.Union(this_output_rect);
-              }
+            if (auto iter =
+                    backdrop_filter_output_rects_.find(rpdq->render_pass_id);
+                iter != backdrop_filter_output_rects_.end()) {
+              gfx::Rect this_output_rect = iter->second;
+              if (root_damage_rect.Intersects(this_output_rect))
+                root_damage_rect.Union(this_output_rect);
             }
 
             // For render pass with pixel moving foreground filters.
