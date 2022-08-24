@@ -3253,11 +3253,16 @@ bool RenderViewContextMenu::IsRegionSearchEnabled() const {
   if (!service)
     return false;
 
+#if BUILDFLAG(IS_CHROMEOS)
+  if (IsFrameInPdfViewer(GetRenderFrameHost()))
+    return false;
+#else
   if (!base::FeatureList::IsEnabled(
           lens::features::kEnableRegionSearchOnPdfViewer) &&
       IsFrameInPdfViewer(GetRenderFrameHost())) {
     return false;
   }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   const TemplateURL* provider = service->GetDefaultSearchProvider();
   const bool provider_supports_image_search =
@@ -3271,7 +3276,7 @@ bool RenderViewContextMenu::IsRegionSearchEnabled() const {
              ->GetBoolean(prefs::kLensRegionSearchEnabled);
 #else
   return false;
-#endif
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 bool RenderViewContextMenu::IsAddANoteEnabled() const {
@@ -3606,12 +3611,14 @@ void RenderViewContextMenu::ExecRegionSearch(
   if (!lens_region_search_controller_) {
     Browser* browser = GetBrowser();
     WebContents* web_contents = source_web_contents_;
+#if !BUILDFLAG(IS_CHROMEOS)
     if (base::FeatureList::IsEnabled(
             lens::features::kEnableRegionSearchOnPdfViewer)) {
       // We don't use `source_web_contents_` here because it doesn't work with
       // the PDF reader.
       web_contents = browser->tab_strip_model()->GetActiveWebContents();
     }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
     lens_region_search_controller_ =
         std::make_unique<lens::LensRegionSearchController>(web_contents,
                                                            browser);
@@ -3623,7 +3630,7 @@ void RenderViewContextMenu::ExecRegionSearch(
       lens::features::IsLensFullscreenSearchEnabled();
   lens_region_search_controller_->Start(use_fullscreen_capture,
                                         is_google_default_search_provider);
-#endif
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
