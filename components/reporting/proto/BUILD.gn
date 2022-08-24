@@ -73,3 +73,10 @@ proto_library("metric_data_proto") {
 
   sources = [ "synced/metric_data.proto" ]
 }
+
+# Security XDR events definitions.
+proto_library("security_xdr_events_proto") {
+  proto_in_dir = "//"
+
+  sources = [ "synced/security_xdr_events.proto" ]
+}
