@@ -306,6 +306,8 @@ TEST_F(GameModeControllerForArcTest, SwitchToNonGameArcAppTurnsOffGameMode) {
   fake_resourced_client_->set_set_game_mode_response(
       ash::ResourcedClient::GameMode::ARC);
 
+  arc_app_test_.app_instance()->set_app_category_of_pkg(
+        "net.recipes.search", arc::mojom::AppCategory::kProductivity);
   arc_app_test_.app_instance()->SetTaskInfo(9999, "net.recipes.search",
                                             "activity");
 
@@ -377,6 +379,20 @@ TEST_F(GameModeControllerForArcTest, SwitchToBorealisWindowAndBack) {
   game_widget->Show();
   EXPECT_EQ(2, fake_resourced_client_->get_exit_game_mode_count());
   EXPECT_EQ(3, fake_resourced_client_->get_enter_game_mode_count());
+}
+
+TEST_F(GameModeControllerForArcTest, IdentifyGameWithGetAppCategory) {
+  arc_app_test_.app_instance()->set_app_category_of_pkg(
+      "org.an_awesome.game", arc::mojom::AppCategory::kGame);
+  arc_app_test_.app_instance()->SetTaskInfo(
+      9882, "org.an_awesome.game", "activity");
+
+  auto game_widget = CreateArcTaskWidget(9882);
+  game_widget->Show();
+  fake_resourced_client_->set_set_game_mode_response(
+      ash::ResourcedClient::GameMode::OFF);
+  game_widget->SetFullscreen(true);
+  EXPECT_EQ(1, fake_resourced_client_->get_enter_game_mode_count());
 }
 
 }  // namespace

@@ -505,6 +505,15 @@ void FakeAppInstance::IsInstallable(const std::string& package_name,
   std::move(callback).Run(is_installable_);
 }
 
+void FakeAppInstance::GetAppCategory(const std::string& package_name,
+                                     GetAppCategoryCallback callback) {
+  auto itr = pkg_name_to_app_category_.find(package_name);
+  auto category = mojom::AppCategory::kUndefined;
+
+  if (itr != pkg_name_to_app_category_.end()) category = itr->second;
+  std::move(callback).Run(category);
+}
+
 void FakeAppInstance::LaunchIntentWithWindowInfo(
     const std::string& intent_uri,
     arc::mojom::WindowInfoPtr window_info) {

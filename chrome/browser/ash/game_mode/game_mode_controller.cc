@@ -6,6 +6,7 @@
 
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/components/arc/session/connection_holder.h"
 #include "ash/shell.h"
 #include "base/time/time.h"
@@ -43,9 +44,8 @@ class ArcGameModeCriteria : public GameModeController::GameModeCriteria {
     if (!base::FeatureList::IsEnabled(arc::kGameModeFeature))
       return;
 
-    auto* app_instance = ARC_GET_INSTANCE_FOR_METHOD(
-                ArcAppListPrefs::Get(profile)->app_connection_holder(),
-                GetTaskInfo);
+    connection_ = ArcAppListPrefs::Get(profile)->app_connection_holder();
+    auto* app_instance = ARC_GET_INSTANCE_FOR_METHOD(connection_, GetTaskInfo);
     if (!app_instance) {
       LOG(ERROR) << "GetTaskInfo method for ARC is not available";
       return;
@@ -59,17 +59,37 @@ class ArcGameModeCriteria : public GameModeController::GameModeCriteria {
 
   void OnReceiveTaskInfo(const std::string& pkg_name,
                          const std::string& activity) {
-    bool is_game = g_arc_game_pkg_names->count(pkg_name);
-    VLOG(2) << "ARC task package " << pkg_name << " is game? " << is_game;
-    if (is_game) {
-      enabler_ = std::make_unique<GameModeController::GameModeEnabler>(
-          GameMode::ARC);
+    bool is_known_game = g_arc_game_pkg_names->count(pkg_name);
+    VLOG(2) << "ARC task package " << pkg_name << " is game? " << is_known_game;
+    if (is_known_game) {
+      enabler_ =
+          std::make_unique<GameModeController::GameModeEnabler>(GameMode::ARC);
+    } else if (auto* app_instance =
+                   ARC_GET_INSTANCE_FOR_METHOD(connection_, GetAppCategory);
+               app_instance) {
+      VLOG(2) << "Fetch app category of package: " << pkg_name;
+      app_instance->GetAppCategory(
+          pkg_name, base::BindOnce(&ArcGameModeCriteria::OnReceiveAppCategory,
+                                   weak_ptr_factory_.GetWeakPtr()));
+    } else {
+      LOG(ERROR) << "Failed to call GetAppCategory";
+    }
+  }
+
+  void OnReceiveAppCategory(arc::mojom::AppCategory category) {
+    VLOG(2) << "ARC app category is: " << category;
+    if (category == arc::mojom::AppCategory::kGame) {
+      enabler_ =
+          std::make_unique<GameModeController::GameModeEnabler>(GameMode::ARC);
     }
   }
 
   GameMode mode() const override { return GameMode::ARC; }
 
  private:
+  arc::ConnectionHolder<arc::mojom::AppInstance, arc::mojom::AppHost>*
+      connection_;
+
   std::unique_ptr<GameModeController::GameModeEnabler> enabler_;
 
   // This must come last to make sure weak pointers are invalidated first.
