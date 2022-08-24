@@ -8,7 +8,7 @@ of their two days working on bug triage/investigation.
 ## 1. Review untriaged bugs
 
 Look through [this list of untriaged
-bugs](https://bugs.chromium.org/p/chromium/issues/list?sort=pri%20-stars%20-opened&q=status%3Aunconfirmed%2Cuntriaged%20-Needs%3DFeedback%20-Label%3ANetwork-Triaged%20-has%3ANextAction%20component%3DInternals%3ENetwork%2CInternals%3ENetwork%3ECache%2CInternals%3ENetwork%3ESSL%2CInternals%3ENetwork%3EQUIC%2CInternals%3ENetwork%3EAuth%2CInternals%3ENetwork%3EHTTP2%2CInternals%3ENetwork%3EProxy%2CInternals%3ENetwork%3ELibrary%2CInternals%3ENetwork%3ELogging%2CInternals%3ENetwork%3EConnectivity%2CInternals%3ENetwork%3EDomainSecurityPolicy%2CInternals%3ENetwork%3EFTP%2CInternals%3ENetwork%3EDNS).
+bugs](https://bugs.chromium.org/p/chromium/issues/list?sort=pri%20-stars%20-opened&q=status%3Aunconfirmed%2Cuntriaged%20-Needs%3DFeedback%20-Label%3ANetwork-Triaged%20-has%3ANextAction%20component%3DInternals%3ENetwork%3EReportingAndNEL%2CInternals%3ENetwork%3ECache%3ESimple%2CInternals%3ENetwork%2CInternals%3ENetwork%3ECache%2CInternals%3ENetwork%3ESSL%2CInternals%3ENetwork%3EQUIC%2CInternals%3ENetwork%3EAuth%2CInternals%3ENetwork%3EHTTP2%2CInternals%3ENetwork%3EProxy%2CInternals%3ENetwork%3ELibrary%2CInternals%3ENetwork%3ELogging%2CInternals%3ENetwork%3EConnectivity%2CInternals%3ENetwork%3EDomainSecurityPolicy%2CInternals%3ENetwork%3EFTP%2CInternals%3ENetwork%3EDNS).
 
 The goal is for this query to be empty. Bugs can be removed from the triage queue
 by doing any of the following:
@@ -72,7 +72,7 @@ crashers](https://goto.google.com/network_triage_internal#investigating-crashers
 ## 2. Follow-up on issues with the Needs-Feedback label
 
 Look through [this list of Needs=Feedback
-bugs](https://bugs.chromium.org/p/chromium/issues/list?sort=-modified%20-modified&q=Needs%3DFeedback%20component%3DInternals%3ENetwork%2CInternals%3ENetwork%3ECache%2CInternals%3ENetwork%3ESSL%2CInternals%3ENetwork%3EQUIC%2CInternals%3ENetwork%3EAuth%2CInternals%3ENetwork%3EHTTP2%2CInternals%3ENetwork%3EProxy%2CInternals%3ENetwork%3ELibrary%2CInternals%3ENetwork%3ELogging%2CInternals%3ENetwork%3EConnectivity%2CInternals%3ENetwork%3EDomainSecurityPolicy%2CInternals%3ENetwork%3EFTP%2CInternals%3ENetwork%3EDNS).
+bugs](https://bugs.chromium.org/p/chromium/issues/list?sort=-modified%20-modified&q=Needs%3DFeedback%20component%3DInternals%3ENetwork%3EReportingAndNEL%2CInternals%3ENetwork%3ECache%3ESimple%2CInternals%3ENetwork%2CInternals%3ENetwork%3ECache%2CInternals%3ENetwork%3ESSL%2CInternals%3ENetwork%3EQUIC%2CInternals%3ENetwork%3EAuth%2CInternals%3ENetwork%3EHTTP2%2CInternals%3ENetwork%3EProxy%2CInternals%3ENetwork%3ELibrary%2CInternals%3ENetwork%3ELogging%2CInternals%3ENetwork%3EConnectivity%2CInternals%3ENetwork%3EDomainSecurityPolicy%2CInternals%3ENetwork%3EFTP%2CInternals%3ENetwork%3EDNS).
 
 * If the requested feedback was provided, review the new information and repeat
   the same steps as (1) to re-triage based on the new information.
@@ -82,7 +82,7 @@ bugs](https://bugs.chromium.org/p/chromium/issues/list?sort=-modified%20-modifie
 ## 3. Ensure P0 and P1 bugs have an owner
 
 Look through [the list of unowned high priority
-bugs](https://bugs.chromium.org/p/chromium/issues/list?sort=pri%20-stars%20-opened&q=Pri%3A0%2C1%20-has%3Aowner%20-label%3ANetwork-Triaged%20component%3DInternals%3ENetwork%2CInternals%3ENetwork%3ECache%2CInternals%3ENetwork%3ESSL%2CInternals%3ENetwork%3EQUIC%2CInternals%3ENetwork%3EAuth%2CInternals%3ENetwork%3EHTTP2%2CInternals%3ENetwork%3EProxy%2CInternals%3ENetwork%3ELibrary%2CInternals%3ENetwork%3ELogging%2CInternals%3ENetwork%3EConnectivity%2CInternals%3ENetwork%3EDomainSecurityPolicy%2CInternals%3ENetwork%3EFTP%2CInternals%3ENetwork%3EDNS).
+bugs](https://bugs.chromium.org/p/chromium/issues/list?sort=pri%20-stars%20-opened&q=Pri%3A0%2C1%20-has%3Aowner%20-label%3ANetwork-Triaged%20component%3DInternals%3ENetwork%3EReportingAndNEL%2CInternals%3ENetwork%3ECache%3ESimple%2CInternals%3ENetwork%2CInternals%3ENetwork%3ECache%2CInternals%3ENetwork%3ESSL%2CInternals%3ENetwork%3EQUIC%2CInternals%3ENetwork%3EAuth%2CInternals%3ENetwork%3EHTTP2%2CInternals%3ENetwork%3EProxy%2CInternals%3ENetwork%3ELibrary%2CInternals%3ENetwork%3ELogging%2CInternals%3ENetwork%3EConnectivity%2CInternals%3ENetwork%3EDomainSecurityPolicy%2CInternals%3ENetwork%3EFTP%2CInternals%3ENetwork%3EDNS).
 These bugs should either have an owner, or be downgraded to a lower priority.
 
 ## 4. (Optional) Look through crash reports
@@ -109,6 +109,7 @@ The ones that are included are:
 Internals>Network
 Internals>Network>Auth
 Internals>Network>Cache
+Internals>Network>Cache>Simple
 Internals>Network>DNS
 Internals>Network>Connectivity
 Internals>Network>DomainSecurityPolicy
@@ -118,6 +119,7 @@ Internals>Network>Library
 Internals>Network>Logging
 Internals>Network>Proxy
 Internals>Network>QUIC
+Internals>Network>ReportingAndNEL
 Internals>Network>SSL
 ```
 
@@ -134,7 +136,6 @@ Internals>Network>DoH
 Internals>Network>EV
 Internals>Network>NetInfo
 Internals>Network>NetworkQuality
-Internals>Network>ReportingAndNEL
 Internals>Network>TrustTokens
 Internals>Network>VPN
 ```
@@ -155,7 +156,11 @@ generating and modifying shifts
   Dashboard](https://chromiumdash.appspot.com/components/Internals/Network?project=Chromium)
 
 * There is also an [internal dashboard with bug trends for Web
-  Platform](https://goto.google.com/vufyq) that includes network issues.
+  Platform](https://goto.google.com/blink-untriaged-by-team) that includes network issues.
+
+* And another [internal dashboard breaking down the bug trends for the
+  networking stack by components]
+  (https://goto.google.com/chrome-network-untriaged-by-component)
 
 * The issue tracker doesn't track any official mappings between components and
   OWNERS. This [internal document](https://goto.google.com/kojfj) enumerates
