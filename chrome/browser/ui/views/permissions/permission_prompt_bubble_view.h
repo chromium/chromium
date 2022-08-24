@@ -15,17 +15,8 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace permissions {
-enum class RequestType;
 enum class PermissionAction;
 }  // namespace permissions
-
-namespace view {
-class Widget;
-}
-
-namespace view {
-class Widget;
-}
 
 class Browser;
 
