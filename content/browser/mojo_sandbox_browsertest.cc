@@ -54,7 +54,7 @@ class MojoSandboxTest : public ContentBrowserTest {
 
   mojo::Remote<mojom::TestService> BindTestService() {
     mojo::Remote<mojom::TestService> test_service;
-    host_->GetChildProcess()->BindReceiver(
+    host_->GetChildProcess()->BindServiceInterface(
         test_service.BindNewPipeAndPassReceiver());
     return test_service;
   }

@@ -77,7 +77,7 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
 #endif
     EXPECT_TRUE(host->Start());
 
-    host->GetChildProcess()->BindReceiver(
+    host->GetChildProcess()->BindServiceInterface(
         service_.BindNewPipeAndPassReceiver());
     if (crash) {
       service_->DoCrashImmediately(
