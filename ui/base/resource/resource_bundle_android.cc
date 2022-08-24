@@ -46,7 +46,8 @@ bool LoadFromApkOrFile(const char* apk_path,
   }
   // For unit tests, the file exists on disk.
   if (*out_fd < 0 && disk_path != nullptr) {
-    int flags = base::File::FLAG_OPEN | base::File::FLAG_READ;
+    auto flags =
+        static_cast<uint32_t>(base::File::FLAG_OPEN | base::File::FLAG_READ);
     *out_fd = base::File(*disk_path, flags).TakePlatformFile();
     *out_region = base::MemoryMappedFile::Region::kWholeFile;
   }
@@ -183,7 +184,8 @@ std::string ResourceBundle::LoadLocaleResources(const std::string& pref_locale,
         LOG(WARNING) << "locale_file_path.empty() for locale " << app_locale;
         return std::string();
       }
-      int flags = base::File::FLAG_OPEN | base::File::FLAG_READ;
+      auto flags =
+          static_cast<uint32_t>(base::File::FLAG_OPEN | base::File::FLAG_READ);
       g_locale_pack_fd = base::File(locale_file_path, flags).TakePlatformFile();
       g_locale_pack_region = base::MemoryMappedFile::Region::kWholeFile;
     }

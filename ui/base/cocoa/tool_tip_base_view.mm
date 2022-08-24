@@ -120,7 +120,7 @@ const NSTrackingRectTag kTrackingRectTag = 0xBADFACE;
 // Override of (apparently) a private NSView method(!)
 - (void)_removeTrackingRects:(NSTrackingRectTag *)tags count:(int)count {
   for (int i = 0; i < count; ++i) {
-    int tag = tags[i];
+    NSTrackingRectTag tag = tags[i];
     if (tag == 0)
       continue;
     DCHECK(tag == kTrackingRectTag);
@@ -132,7 +132,7 @@ const NSTrackingRectTag kTrackingRectTag = 0xBADFACE;
 // tracking rect.
 - (void)_sendToolTipMouseExited {
   // Nothing matters except window, trackingNumber, and userData.
-  int windowNumber = [[self window] windowNumber];
+  NSInteger windowNumber = [[self window] windowNumber];
   NSTimeInterval eventTime = [[NSApp currentEvent] timestamp];
   NSEvent* fakeEvent = [NSEvent enterExitEventWithType:NSEventTypeMouseExited
                                               location:NSZeroPoint
@@ -149,7 +149,7 @@ const NSTrackingRectTag kTrackingRectTag = 0xBADFACE;
 // Sends a fake NSEventTypeMouseEntered event to the view for its current
 // tracking rect.
 - (void)_sendToolTipMouseEntered {
-  int windowNumber = [[self window] windowNumber];
+  NSInteger windowNumber = [[self window] windowNumber];
 
   // Only send a fake mouse enter if the mouse is actually over the window,
   // versus over a window which overlaps it (see http://crbug.com/883269).

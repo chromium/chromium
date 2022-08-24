@@ -249,8 +249,9 @@ void ShortcutsDatabase::LoadShortcuts(GuidToShortcutMap* shortcuts) {
       continue;
 
     const int page_transition_integer = s.ColumnInt(9);
-    if (!ui::PageTransitionIsValidType(page_transition_integer))
+    if (!ui::IsValidPageTransitionType(page_transition_integer)) {
       continue;
+    }
     ui::PageTransition transition =
         ui::PageTransitionFromInt(page_transition_integer);
 

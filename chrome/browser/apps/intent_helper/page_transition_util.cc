@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/intent_helper/page_transition_util.h"
 
 #include "base/check_op.h"
+#include "base/stl_util.h"
 
 namespace apps {
 
@@ -35,7 +36,8 @@ bool ShouldIgnoreNavigation(ui::PageTransition page_transition,
     return true;
   }
 
-  if (ui::PageTransitionGetQualifier(page_transition) != 0) {
+  if (base::to_underlying(ui::PageTransitionGetQualifier(page_transition)) !=
+      0) {
     // Qualifiers indicate that this navigation was the result of a click on a
     // forward/back button, or typing in the URL bar. Don't handle any of those
     // types of navigations.

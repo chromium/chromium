@@ -676,8 +676,9 @@ OfflinePageRequestHandler::GetAccessEntryPoint() const {
   ui::PageTransition transition =
       static_cast<ui::PageTransition>(delegate_->GetPageTransition());
   if (ui::PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_LINK)) {
-    return PageTransitionGetQualifier(transition) ==
-                   static_cast<int>(ui::PAGE_TRANSITION_FROM_API)
+    return ui::PageTransitionTypeIncludingQualifiersIs(
+               PageTransitionGetQualifier(transition),
+               ui::PAGE_TRANSITION_FROM_API)
                ? AccessEntryPoint::CCT
                : AccessEntryPoint::LINK;
   } else if (ui::PageTransitionCoreTypeIs(transition,

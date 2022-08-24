@@ -174,7 +174,7 @@ bool PageTransitionTypeIncludingQualifiersIs(PageTransition lhs,
 COMPONENT_EXPORT(UI_BASE)
 PageTransition PageTransitionStripQualifier(PageTransition type);
 
-COMPONENT_EXPORT(UI_BASE) bool PageTransitionIsValidType(int32_t type);
+COMPONENT_EXPORT(UI_BASE) bool IsValidPageTransitionType(int32_t type);
 
 COMPONENT_EXPORT(UI_BASE) PageTransition PageTransitionFromInt(int32_t type);
 
@@ -192,7 +192,7 @@ bool PageTransitionIsNewNavigation(PageTransition type);
 
 // Return the qualifier
 COMPONENT_EXPORT(UI_BASE)
-int32_t PageTransitionGetQualifier(PageTransition type);
+PageTransition PageTransitionGetQualifier(PageTransition type);
 
 // Returns true if the transition can be triggered by the web instead of
 // through UI or similar.
