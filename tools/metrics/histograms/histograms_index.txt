@@ -62,6 +62,7 @@ tools/metrics/histograms/metadata/interstitial/histograms.xml
 tools/metrics/histograms/metadata/invalidation/histograms.xml
 tools/metrics/histograms/metadata/ios/histograms.xml
 tools/metrics/histograms/metadata/kerberos/histograms.xml
+tools/metrics/histograms/metadata/kiosk/histograms.xml
 tools/metrics/histograms/metadata/language/histograms.xml
 tools/metrics/histograms/metadata/leveldb_proto/histograms.xml
 tools/metrics/histograms/metadata/local/histograms.xml
