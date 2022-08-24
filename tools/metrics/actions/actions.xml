@@ -30522,13 +30522,21 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="StatusArea_Audio_SwitchInputDevice">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>judyhsiao@google.com</owner>
+  <owner>aaronyu@google.com</owner>
+  <owner>chromeos-audio-sw@google.com</owner>
+  <description>
+    User selected an audio input device from the SystemTray.
+  </description>
 </action>
 
 <action name="StatusArea_Audio_SwitchOutputDevice">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <owner>judyhsiao@google.com</owner>
+  <owner>aaronyu@google.com</owner>
+  <owner>chromeos-audio-sw@google.com</owner>
+  <description>
+    User selected an audio output device from the SystemTray.
+  </description>
 </action>
 
 <action name="StatusArea_Audio_Unmuted">

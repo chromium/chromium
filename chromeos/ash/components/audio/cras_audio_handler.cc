@@ -720,6 +720,15 @@ void CrasAudioHandler::SetInputMute(bool mute_on) {
 void CrasAudioHandler::SetActiveDevice(const AudioDevice& active_device,
                                        bool notify,
                                        DeviceActivateType activate_by) {
+  if (activate_by == ACTIVATE_BY_USER) {
+    if (active_device.is_input) {
+      base::RecordAction(
+          base::UserMetricsAction("StatusArea_Audio_SwitchInputDevice"));
+    } else {
+      base::RecordAction(
+          base::UserMetricsAction("StatusArea_Audio_SwitchOutputDevice"));
+    }
+  }
   if (active_device.is_input)
     CrasAudioClient::Get()->SetActiveInputNode(active_device.id);
   else

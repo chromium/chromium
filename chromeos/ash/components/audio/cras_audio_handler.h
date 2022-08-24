@@ -16,6 +16,7 @@
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/user_metrics.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/audio/audio_device.h"
