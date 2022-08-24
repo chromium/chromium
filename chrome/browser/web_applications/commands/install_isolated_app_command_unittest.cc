@@ -275,10 +275,15 @@ TEST_F(InstallIsolatedAppCommandTest,
                              std::move(fake_data_retriever)),
               IsInstallationOk());
 
-  EXPECT_THAT(install_finalizer().finalize_options_list(),
-              ElementsAre(Field(
-                  &WebAppInstallFinalizer::FinalizeOptions::install_surface,
-                  Eq(webapps::WebappInstallSource::MANAGEMENT_API))));
+  using FinalizeOptions = WebAppInstallFinalizer::FinalizeOptions;
+  using InstallSource = webapps::WebappInstallSource;
+
+  EXPECT_THAT(
+      install_finalizer().finalize_options_list(),
+      ElementsAre(AllOf(Field(&FinalizeOptions::install_surface,
+                              Eq(InstallSource::ISOLATED_APP_DEV_INSTALL)),
+                        Field(&FinalizeOptions::source,
+                              Eq(WebAppManagement::Type::kCommandLine)))));
 }
 
 TEST_F(InstallIsolatedAppCommandTest,

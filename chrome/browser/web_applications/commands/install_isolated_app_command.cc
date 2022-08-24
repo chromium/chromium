@@ -209,10 +209,9 @@ void InstallIsolatedAppCommand::OnCheckInstallabilityAndRetrieveManifest(
 void InstallIsolatedAppCommand::FinalizeInstall(const WebAppInstallInfo& info) {
   install_finalizer_.FinalizeInstall(
       info,
-      // TODO(kuragin): Add Isolated app specific install source
-      // `WebappInstallSource::ISOLATED_APP_DEV_INSTALL`.
       WebAppInstallFinalizer::FinalizeOptions{
-          /*install_surface=*/webapps::WebappInstallSource::MANAGEMENT_API,
+          /*install_surface=*/webapps::WebappInstallSource::
+              ISOLATED_APP_DEV_INSTALL,
       },
       base::BindOnce([](const AppId& unused_app_id,
                         webapps::InstallResultCode unused_install_result_code,
