@@ -193,6 +193,21 @@ void {{interface.name}}AsyncWaiter::{{method.name}}(
 {%-   endfor %}));
   loop.Run();
 }
+
+{%   if method.response_parameters|length == 1 -%}
+{%-     set response_type = method.response_parameters[0].kind|cpp_wrapper_call_type -%}
+{{response_type}} {{interface.name}}AsyncWaiter::{{method.name}}(
+    {{interface_macros.declare_params("", method.parameters)}}) {
+  {{response_type}} async_wait_result;
+  {{method.name}}(
+{%-   for param in method.parameters -%}
+        std::move({{param.name}}),
+{%-   endfor -%}
+        &async_wait_result);
+  return async_wait_result;
+}
+{%-   endif %}
+
 {% endfor %}
 
 {% endfor %}
