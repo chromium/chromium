@@ -6187,13 +6187,23 @@ ScriptPromise Document::requestStorageAccessForSite(ScriptState* script_state,
 }
 
 ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
-  DCHECK(GetFrame());
   ScriptPromiseResolver* resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
   // Access the promise first to ensure it is created so that the proper state
   // can be changed when it is resolved or rejected.
   ScriptPromise promise = resolver->Promise();
+
+  if (!GetFrame()) {
+    FireRequestStorageAccessHistogram(RequestStorageResult::REJECTED_NO_ORIGIN);
+
+    // Note that in detached frames, resolvers are not able to return a promise.
+    return ScriptPromise::RejectWithDOMException(
+        script_state, MakeGarbageCollected<DOMException>(
+                          DOMExceptionCode::kSecurityError,
+                          "requestStorageAccess Cannot be used unless the "
+                          "document is fully active."));
+  }
 
   const bool has_user_gesture =
       LocalFrame::HasTransientUserActivation(GetFrame());
@@ -6204,18 +6214,6 @@ ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
         "requestStorageAccess: Must be handling a user gesture to use."));
     FireRequestStorageAccessHistogram(
         RequestStorageResult::REJECTED_NO_USER_GESTURE);
-
-    resolver->Reject();
-    return promise;
-  }
-
-  if (!TopFrameOrigin()) {
-    AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kSecurity,
-        mojom::blink::ConsoleMessageLevel::kError,
-        "requestStorageAccess: Cannot execute in documents lacking top-frame "
-        "origins."));
-    FireRequestStorageAccessHistogram(RequestStorageResult::REJECTED_NO_ORIGIN);
 
     resolver->Reject();
     return promise;

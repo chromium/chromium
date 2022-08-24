@@ -34,6 +34,20 @@ function RunTestsInNestedIFrame(sourceURL) {
     return result;
 }
 
+function RunRequestStorageAccessInDetachedFrame() {
+  let nestedFrame = document.createElement('iframe');
+  document.body.append(nestedFrame);
+  const inner_doc = nestedFrame.contentDocument;
+  nestedFrame.remove();
+  return inner_doc.requestStorageAccess();
+}
+
+function RunRequestStorageAccessViaDomParser() {
+  let parser = new DOMParser();
+  let doc = parser.parseFromString('<html></html>', 'text/html');
+  return doc.requestStorageAccess();
+}
+
 let g_clickID = 0;
 function ClickButtonWithGesture(onClickMethod) {
   // Append some formatting and information so non WebDriver instances can complete this test too.
