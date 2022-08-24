@@ -81,6 +81,14 @@ suite('cr-toggle', function() {
     toggle.click();
   }
 
+  // Check if setting checked in HTML works, has to use a separate element to
+  // ensure that we are testing brand new state.
+  test('initiallyCheckedWorks', function() {
+    document.body.innerHTML = ` <cr-toggle checked></cr-toggle> `;
+    toggle = (document.querySelector('cr-toggle'))!;
+    assertChecked();
+  });
+
   // Test that the control is toggled when the |checked| attribute is
   // programmatically changed.
   test('ToggleByAttribute', function() {

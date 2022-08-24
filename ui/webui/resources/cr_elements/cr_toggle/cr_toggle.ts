@@ -87,8 +87,8 @@ export class CrToggleElement extends CrToggleElementBase {
     if (!this.hasAttribute('tabindex')) {
       this.setAttribute('tabindex', '0');
     }
-    this.setAttribute('aria-pressed', 'false');
-    this.setAttribute('aria-disabled', 'false');
+    this.setAttribute('aria-pressed', this.checked ? 'true' : 'false');
+    this.setAttribute('aria-disabled', this.disabled ? 'true' : 'false');
 
     this.addEventListener('blur', this.hideRipple_.bind(this));
     this.addEventListener('click', this.onClick_.bind(this));
