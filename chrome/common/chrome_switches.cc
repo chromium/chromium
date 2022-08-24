@@ -629,10 +629,6 @@ const char kAuthAndroidNegotiateAccountType[] = "auth-spnego-account-type";
 const char kEnableAccessibilityTabSwitcher[] =
     "enable-accessibility-tab-switcher";
 
-// Enables a hung renderer InfoBar allowing the user to close or wait on
-// unresponsive web content.
-const char kEnableHungRendererInfoBar[] = "enable-hung-renderer-infobar";
-
 // Forces the device to report being owned by an enterprise. This mimics the
 // presence of an app signaling device ownerhsip.
 const char kForceDeviceOwnership[] = "force-device-ownership";

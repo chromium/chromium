@@ -31,7 +31,6 @@ LINK_RESOURCE_ID(0, 0)
 LINK_RESOURCE_ID(IDR_INFOBAR_AUTOFILL_CC, R.drawable.infobar_autofill_cc)
 
 // Android only infobars.
-DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_FROZEN_TAB, R.drawable.infobar_restore)
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_LITE_MODE, R.drawable.preview_pin_round)
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_NOTIFICATIONS_OFF,
                     R.drawable.permission_push_notification_off)

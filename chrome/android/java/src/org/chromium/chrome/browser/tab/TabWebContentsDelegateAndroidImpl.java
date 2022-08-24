@@ -249,9 +249,6 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
 
     @Override
     public void rendererResponsive() {
-        if (mTab.getWebContents() != null) {
-            TabWebContentsDelegateAndroidImplJni.get().onRendererResponsive(mTab.getWebContents());
-        }
         mTab.handleRendererResponsiveStateChanged(true);
         mDelegate.rendererResponsive();
     }
@@ -390,7 +387,6 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     @NativeMethods
     interface Natives {
         void onRendererUnresponsive(WebContents webContents);
-        void onRendererResponsive(WebContents webContents);
         void showFramebustBlockInfoBar(WebContents webContents, String url);
     }
 }

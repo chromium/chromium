@@ -50436,7 +50436,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="5" label="DOWNLOAD_REQUEST_INFOBAR_DELEGATE_ANDROID (Obsolete)"/>
   <int value="6" label="FULLSCREEN_INFOBAR_DELEGATE (Obsolete)"/>
   <int value="7" label="HUNG_PLUGIN_INFOBAR_DELEGATE"/>
-  <int value="8" label="HUNG_RENDERER_INFOBAR_DELEGATE_ANDROID"/>
+  <int value="8" label="HUNG_RENDERER_INFOBAR_DELEGATE_ANDROID (Obsolete)"/>
   <int value="9" label="MEDIA_STREAM_INFOBAR_DELEGATE_ANDROID (Obsolete)"/>
   <int value="10" label="MEDIA_THROTTLE_INFOBAR_DELEGATE (Obsolete)"/>
   <int value="11" label="REQUEST_QUOTA_INFOBAR_DELEGATE (Obsolete)"/>
@@ -66471,14 +66471,6 @@ Called by update_use_counter_css.py.-->
   <int value="2" label="Accept default account"/>
   <int value="3" label="Accept another account"/>
   <int value="4" label="No thanks"/>
-</enum>
-
-<enum name="MobileHungRendererInfoBarEvent">
-  <int value="0" label="Clicked the 'Wait' button"/>
-  <int value="1" label="Clicked the 'Kill' button"/>
-  <int value="2" label="Clicked the 'X' (close) button)"/>
-  <int value="3" label="Infobar dismissed after renderer became responsive"/>
-  <int value="4" label="Infobar dismissed after tab closed"/>
 </enum>
 
 <enum name="MobileMessagesBadgeState">

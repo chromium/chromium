@@ -94,10 +94,6 @@ ConfirmInfoBarDelegate* InfoBarDelegate::AsConfirmInfoBarDelegate() {
   return nullptr;
 }
 
-HungRendererInfoBarDelegate* InfoBarDelegate::AsHungRendererInfoBarDelegate() {
-  return nullptr;
-}
-
 blocked_content::PopupBlockedInfoBarDelegate*
 InfoBarDelegate::AsPopupBlockedInfoBarDelegate() {
   return nullptr;

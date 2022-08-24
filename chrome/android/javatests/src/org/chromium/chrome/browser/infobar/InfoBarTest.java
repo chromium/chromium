@@ -9,7 +9,6 @@ import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.MediumTest;
 
-import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -18,13 +17,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
@@ -34,7 +31,6 @@ import org.chromium.chrome.browser.WebContentsFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.tab.TabWebContentsDelegateAndroid;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -42,7 +38,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.InfoBarTestAnimationListener;
 import org.chromium.chrome.test.util.InfoBarUtil;
-import org.chromium.chrome.test.util.InfoBarUtil.InfoBarMatcher;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.components.infobars.InfoBar;
@@ -280,83 +275,6 @@ public class InfoBarTest {
         });
         InfoBarUtil.waitUntilNoInfoBarsExist(sActivityTestRule.getInfoBars());
         mListener.removeInfoBarAnimationFinished("InfoBar not removed.");
-    }
-
-    /**
-     * Verifies the unresponsive renderer notification creates an InfoBar.
-     */
-    @Test
-    @MediumTest
-    @Feature({"Browser", "Main"})
-    public void testInfoBarForHungRenderer() throws TimeoutException {
-        sActivityTestRule.loadUrl(HELLO_WORLD_URL);
-
-        // Fake an unresponsive renderer signal.
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
-            CommandLine.getInstance().appendSwitch(ChromeSwitches.ENABLE_HUNG_RENDERER_INFOBAR);
-            getTabWebContentsDelegate().rendererUnresponsive();
-        });
-        mListener.addInfoBarAnimationFinished("InfoBar not added");
-
-        CriteriaHelper.pollUiThread(() -> {
-            final List<InfoBar> infoBars = sActivityTestRule.getInfoBars();
-            InfoBarMatcher matcher =
-                    new InfoBarMatcher(InfoBarIdentifier.HUNG_RENDERER_INFOBAR_DELEGATE_ANDROID);
-            Criteria.checkThat(infoBars, Matchers.hasItem(matcher));
-
-            // Make sure it has Kill/Wait buttons.
-            Assert.assertTrue(InfoBarUtil.hasPrimaryButton(matcher.mLastMatch));
-            Assert.assertTrue(InfoBarUtil.hasSecondaryButton(matcher.mLastMatch));
-        });
-
-        // Fake a responsive renderer signal.
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
-                () -> { getTabWebContentsDelegate().rendererResponsive(); });
-        mListener.removeInfoBarAnimationFinished("InfoBar not removed.");
-
-        CriteriaHelper.pollUiThread(() -> {
-            final List<InfoBar> infoBars = sActivityTestRule.getInfoBars();
-            InfoBarMatcher matcher =
-                    new InfoBarMatcher(InfoBarIdentifier.HUNG_RENDERER_INFOBAR_DELEGATE_ANDROID);
-            Criteria.checkThat(infoBars, Matchers.not(Matchers.hasItem(matcher)));
-        });
-    }
-
-    /**
-     * Verifies the hung renderer InfoBar can kill the hung renderer.
-     */
-    @Test
-    @MediumTest
-    @Feature({"Browser", "Main"})
-    public void testInfoBarForHungRendererCanKillRenderer() throws TimeoutException {
-        sActivityTestRule.loadUrl(HELLO_WORLD_URL);
-
-        // Fake an unresponsive renderer signal.
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
-            CommandLine.getInstance().appendSwitch(ChromeSwitches.ENABLE_HUNG_RENDERER_INFOBAR);
-            getTabWebContentsDelegate().rendererUnresponsive();
-        });
-        mListener.addInfoBarAnimationFinished("InfoBar not added");
-
-        CriteriaHelper.pollUiThread(() -> {
-            final List<InfoBar> infoBars = sActivityTestRule.getInfoBars();
-            InfoBarMatcher matcher =
-                    new InfoBarMatcher(InfoBarIdentifier.HUNG_RENDERER_INFOBAR_DELEGATE_ANDROID);
-            Criteria.checkThat(infoBars, Matchers.hasItem(matcher));
-
-            // Make sure it has Kill/Wait buttons.
-            Assert.assertTrue(InfoBarUtil.hasPrimaryButton(matcher.mLastMatch));
-            Assert.assertTrue(InfoBarUtil.hasSecondaryButton(matcher.mLastMatch));
-
-            // Activate the Kill button.
-            InfoBarUtil.clickPrimaryButton(matcher.mLastMatch);
-        });
-
-        // The renderer should have been killed and the InfoBar removed.
-        mListener.removeInfoBarAnimationFinished("InfoBar not removed.");
-        CriteriaHelper.pollUiThread(() -> {
-            return SadTab.isShowing(sActivityTestRule.getActivity().getActivityTab());
-        }, MAX_TIMEOUT, CHECK_INTERVAL);
     }
 
     /**

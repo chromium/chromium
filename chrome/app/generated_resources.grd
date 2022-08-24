@@ -7522,14 +7522,8 @@ Keep your key file in a safe place. You will need it to create new versions of y
         =1 {You can wait for it to become responsive or exit the page.}
         other {You can wait for them to become responsive or exit the pages.}}
       </message>
-      <message name="IDS_BROWSER_HANGMONITOR_RENDERER_INFOBAR" desc="The text of the infobar notifying the user that the renderer is unresponsive.">
-        The page has become unresponsive. You can wait for it to become responsive or close it.
-      </message>
       <message name="IDS_BROWSER_HANGMONITOR_IFRAME_TITLE" desc="The text of a row of the 'Hung Page' dialog when a page is not hung but contains an iframe that is hung.">
         <ph name="HUNG_IFRAME_URL">$1<ex>google.com</ex></ph>, in <ph name="PAGE_TITLE">$2<ex>YouTube</ex></ph>.
-      </message>
-      <message name="IDS_BROWSER_HANGMONITOR_RENDERER_INFOBAR_END" desc="The label of the 'close' button for the hung renderer infobar">
-        Close
       </message>
       <message name="IDS_BROWSER_HANGMONITOR_RENDERER_WAIT" desc="The label of the 'wait' button, which exits the dialog without doing anything and continues to wait for the page to become responsive.">
         Wait

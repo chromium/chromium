@@ -14,7 +14,6 @@
 #include "url/gurl.h"
 
 class ConfirmInfoBarDelegate;
-class HungRendererInfoBarDelegate;
 class ThemeInstalledInfoBarDelegate;
 
 namespace blocked_content {
@@ -77,7 +76,7 @@ class InfoBarDelegate {
     // Removed: DOWNLOAD_REQUEST_INFOBAR_DELEGATE_ANDROID = 5,
     // Removed: FULLSCREEN_INFOBAR_DELEGATE = 6,
     HUNG_PLUGIN_INFOBAR_DELEGATE = 7,
-    HUNG_RENDERER_INFOBAR_DELEGATE_ANDROID = 8,
+    // Removed: HUNG_RENDERER_INFOBAR_DELEGATE_ANDROID = 8,
     // Removed: MEDIA_STREAM_INFOBAR_DELEGATE_ANDROID = 9,
     // Removed: MEDIA_THROTTLE_INFOBAR_DELEGATE = 10,
     // Removed: REQUEST_QUOTA_INFOBAR_DELEGATE = 11,
@@ -274,7 +273,6 @@ class InfoBarDelegate {
 
   // Type-checking downcast routines:
   virtual ConfirmInfoBarDelegate* AsConfirmInfoBarDelegate();
-  virtual HungRendererInfoBarDelegate* AsHungRendererInfoBarDelegate();
   virtual blocked_content::PopupBlockedInfoBarDelegate*
   AsPopupBlockedInfoBarDelegate();
   virtual ThemeInstalledInfoBarDelegate* AsThemePreviewInfobarDelegate();
