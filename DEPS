@@ -144,6 +144,9 @@ vars = {
   # tools/clang/OWNERS before depending on it.
   'checkout_clang_libs': 'use_rust',
 
+  # Fetch clangd into the same bin/ directory as our clang binary.
+  'checkout_clangd': False,
+
   # Fetch prebuilt and prepackaged Bazel binary/executable. Bazel is currently
   # only needed by `chromium/src/tools/rust/build_crubit.py` and therefore
   # shouldn't be used outside of Chromium Rust Experiments project.
@@ -3899,6 +3902,15 @@ hooks = [
     'condition': 'checkout_clang_libs',
     'action': ['python3', 'src/tools/clang/scripts/update.py',
                '--package=clang-libs'],
+  },
+  {
+    # This is also supposed to support the same set of platforms as 'clang'
+    # above. LLVM ToT support isn't provided at the moment.
+    'name': 'clangd',
+    'pattern': '.',
+    'condition': 'checkout_clangd',
+    'action': ['python3', 'src/tools/clang/scripts/update.py',
+               '--package=clangd'],
   },
   {
     # Build experimental in-tree Rust toolchain. Must run after clang_libs or
