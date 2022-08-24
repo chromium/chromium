@@ -407,8 +407,7 @@ def run_checks(host, options):
     failures += f
     warnings += w
     failures.extend(check_virtual_test_suites(host, options))
-    # Disabled until crbug.com/1322981 is fixed.
-    #failures.extend(check_smoke_tests(host, options))
+    failures.extend(check_smoke_tests(host, options))
 
     if options.json:
         with open(options.json, 'w') as f:
