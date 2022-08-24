@@ -1372,11 +1372,7 @@ TEST_F(AdAuctionServiceImplTest, UpdatePrioritySignalsOverrides) {
 TEST_F(AdAuctionServiceImplTest, UpdateMultipleInterestGroups) {
   constexpr char kGroupName1[] = "group1";
   constexpr char kGroupName2[] = "group2";
-  constexpr char kDailyUpdateUrlPath1[] =
-      "/interest_group/daily_update_partial1.json";
-  constexpr char kDailyUpdateUrlPath2[] =
-      "/interest_group/daily_update_partial2.json";
-  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath1, R"({
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath, R"({
 "ads": [{"renderUrl": "https://example.com/new_render1"}]
 })");
   network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath2, R"({
@@ -1385,7 +1381,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateMultipleInterestGroups) {
 
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.name = kGroupName1;
-  interest_group.daily_update_url = kUrlA.Resolve(kDailyUpdateUrlPath1);
+  interest_group.daily_update_url = kUrlA.Resolve(kDailyUpdateUrlPath);
   interest_group.bidding_url = kBiddingLogicUrlA;
   interest_group.trusted_bidding_signals_url = kTrustedBiddingSignalsUrlA;
   interest_group.trusted_bidding_signals_keys.emplace();

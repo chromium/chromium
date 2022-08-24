@@ -2668,21 +2668,21 @@ TEST_F(AuctionRunnerTest, BasicDebug) {
     if (debug_url == kBidder2Url) {
       task_environment_.RunUntilIdle();
       found = false;
-      mojo::AssociatedRemote<blink::mojom::DevToolsAgent> agent;
+      mojo::AssociatedRemote<blink::mojom::DevToolsAgent> agent2;
       for (DebuggableAuctionWorklet* debuggable :
            DebuggableAuctionWorkletTracker::GetInstance()->GetAll()) {
         if (debuggable->url() == debug_url) {
           found = true;
           debuggable->ConnectDevToolsAgent(
-              agent.BindNewEndpointAndPassReceiver());
+              agent2.BindNewEndpointAndPassReceiver());
         }
       }
       ASSERT_TRUE(found);
 
-      TestDevToolsAgentClient debug(std::move(agent), "S1",
-                                    /*use_binary_protocol=*/true);
+      TestDevToolsAgentClient debug2(std::move(agent2), "S2",
+                                     /*use_binary_protocol=*/true);
 
-      debug.RunCommandAndWaitForResult(
+      debug2.RunCommandAndWaitForResult(
           TestDevToolsAgentClient::Channel::kMain, 1,
           "Runtime.runIfWaitingForDebugger",
           R"({"id":1,"method":"Runtime.runIfWaitingForDebugger","params":{}})");
