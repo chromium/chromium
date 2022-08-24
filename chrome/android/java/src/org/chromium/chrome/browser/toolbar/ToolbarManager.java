@@ -334,8 +334,10 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     mTabObscuringHandler.unobscure(oldToken);
                 }
             } else {
-                mTabObscuringHandler.unobscure(mTabObscuringToken);
-                mTabObscuringToken = null;
+                if (mTabObscuringToken != null) {
+                    mTabObscuringHandler.unobscure(mTabObscuringToken);
+                    mTabObscuringToken = null;
+                }
             }
         }
     }
