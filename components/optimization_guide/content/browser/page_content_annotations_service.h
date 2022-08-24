@@ -144,6 +144,10 @@ class PageContentAnnotationsService : public KeyedService,
   // test_page_content_annotator.h for an implementation designed for testing.
   void OverridePageContentAnnotatorForTesting(PageContentAnnotator* annotator);
 
+  OptimizationGuideLogger* optimization_guide_logger() const {
+    return optimization_guide_logger_;
+  }
+
  private:
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // Callback invoked when a single |visit| has been annotated.

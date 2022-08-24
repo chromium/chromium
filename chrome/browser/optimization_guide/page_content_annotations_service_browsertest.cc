@@ -611,6 +611,55 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
+                       OgImagePresent) {
+  base::HistogramTester histogram_tester;
+
+  GURL url(embedded_test_server()->GetURL("a.com", "/og_image.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  RetryForHistogramUntilCountReached(
+      &histogram_tester,
+      "OptimizationGuide.PageContentAnnotations.SalientImageAvailability", 1);
+
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.PageContentAnnotations.SalientImageAvailability", 3,
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
+                       OgImagePresentButMalformed) {
+  base::HistogramTester histogram_tester;
+
+  GURL url(embedded_test_server()->GetURL("a.com", "/og_image_malformed.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  RetryForHistogramUntilCountReached(
+      &histogram_tester,
+      "OptimizationGuide.PageContentAnnotations.SalientImageAvailability", 1);
+
+  // Malformed URL is also reported as og image unavailable.
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.PageContentAnnotations.SalientImageAvailability", 1,
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
+                       OgImageNotPresent) {
+  base::HistogramTester histogram_tester;
+
+  GURL url(embedded_test_server()->GetURL("a.com", "/no_og_image.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  RetryForHistogramUntilCountReached(
+      &histogram_tester,
+      "OptimizationGuide.PageContentAnnotations.SalientImageAvailability", 1);
+
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.PageContentAnnotations.SalientImageAvailability", 1,
+      1);
+}
+
 class PageContentAnnotationsServiceRemotePageEntitiesBrowserTest
     : public PageContentAnnotationsServiceBrowserTest {
  public:

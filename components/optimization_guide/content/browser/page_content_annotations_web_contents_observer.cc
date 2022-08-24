@@ -13,12 +13,14 @@
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/page_entities_metadata.pb.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page_user_data.h"
+#include "third_party/blink/public/mojom/opengraph/metadata.mojom.h"
 
 namespace optimization_guide {
 
@@ -125,6 +127,8 @@ PageContentAnnotationsWebContentsObserver::
       content::WebContentsUserData<PageContentAnnotationsWebContentsObserver>(
           *web_contents),
       page_content_annotations_service_(page_content_annotations_service),
+      salient_image_retriever_(
+          page_content_annotations_service_->optimization_guide_logger()),
       template_url_service_(template_url_service),
       optimization_guide_decider_(optimization_guide_decider),
       no_state_prefetch_manager_(no_state_prefetch_manager) {
@@ -138,6 +142,10 @@ PageContentAnnotationsWebContentsObserver::
 
 PageContentAnnotationsWebContentsObserver::
     ~PageContentAnnotationsWebContentsObserver() = default;
+
+void PageContentAnnotationsWebContentsObserver::DidStopLoading() {
+  salient_image_retriever_.GetOgImage(web_contents());
+}
 
 void PageContentAnnotationsWebContentsObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {

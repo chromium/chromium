@@ -73498,6 +73498,13 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Base64 decoding error"/>
 </enum>
 
+<enum name="OptimizationGuideSalientImageAvailability">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Salient image not Available"/>
+  <int value="2" label="Og image tag available but not parseable"/>
+  <int value="3" label="Salient image available from og image"/>
+</enum>
+
 <enum name="OptimizationType">
   <int value="0" label="TYPE_UNSPECIFIED"/>
   <int value="1" label="NOSCRIPT"/>
