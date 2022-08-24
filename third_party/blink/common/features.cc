@@ -730,14 +730,6 @@ const base::Feature kLowLatencyCanvas2dImageChromium {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
-// Enables the use of shared image swap chains for low latency 2d canvas.
-const base::Feature kLowLatencyCanvas2dSwapChain{
-    "LowLatencyCanvas2dSwapChain", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Enables the use of shared image swap chains for low latency webgl canvas.
-const base::Feature kLowLatencyWebGLSwapChain{"LowLatencyWebGLSwapChain",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables Dawn-accelerated 2D canvas.
 const base::Feature kDawn2dCanvas{"Dawn2dCanvas",
                                   base::FEATURE_DISABLED_BY_DEFAULT};

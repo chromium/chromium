@@ -278,8 +278,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
 BLINK_COMMON_EXPORT extern const base::Feature kDispatchBeforeUnloadOnFreeze;
 
 BLINK_COMMON_EXPORT extern const base::Feature kLowLatencyCanvas2dImageChromium;
-BLINK_COMMON_EXPORT extern const base::Feature kLowLatencyCanvas2dSwapChain;
-BLINK_COMMON_EXPORT extern const base::Feature kLowLatencyWebGLSwapChain;
 
 BLINK_COMMON_EXPORT extern const base::Feature kDawn2dCanvas;
 

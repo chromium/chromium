@@ -1600,9 +1600,7 @@ class CanvasRenderingContext2DTestSwapChain
     : public CanvasRenderingContext2DTestAccelerated {
  protected:
   CanvasRenderingContext2DTestSwapChain()
-      : CanvasRenderingContext2DTestAccelerated() {
-    feature_list_.InitAndEnableFeature(features::kLowLatencyCanvas2dSwapChain);
-  }
+      : CanvasRenderingContext2DTestAccelerated() {}
 
   scoped_refptr<viz::TestContextProvider> CreateContextProvider() override {
     auto context_provider = viz::TestContextProvider::Create();

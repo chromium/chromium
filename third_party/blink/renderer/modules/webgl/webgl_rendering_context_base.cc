@@ -1142,7 +1142,6 @@ scoped_refptr<DrawingBuffer> WebGLRenderingContextBase::CreateDrawingBuffer(
                                   : DrawingBuffer::kAllowChromiumImage;
 
   bool using_swap_chain =
-      base::FeatureList::IsEnabled(features::kLowLatencyWebGLSwapChain) &&
       context_provider->GetCapabilities().shared_image_swap_chain &&
       attrs.desynchronized;
 

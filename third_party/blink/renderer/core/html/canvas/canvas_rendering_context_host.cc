@@ -244,13 +244,11 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
   if (use_gpu && LowLatencyEnabled()) {
     // If we can use the gpu and low latency is enabled, we will try to use a
     // SwapChain if possible.
-    if (base::FeatureList::IsEnabled(features::kLowLatencyCanvas2dSwapChain)) {
-      provider = CanvasResourceProvider::CreateSwapChainProvider(
-          resource_info, FilterQuality(),
-          CanvasResourceProvider::ShouldInitialize::kCallClear,
-          SharedGpuContext::ContextProviderWrapper(), dispatcher,
-          is_origin_top_left);
-    }
+    provider = CanvasResourceProvider::CreateSwapChainProvider(
+        resource_info, FilterQuality(),
+        CanvasResourceProvider::ShouldInitialize::kCallClear,
+        SharedGpuContext::ContextProviderWrapper(), dispatcher,
+        is_origin_top_left);
     // If SwapChain failed or it was not possible, we will try a SharedImage
     // with a set of flags trying to add Usage Display and Usage Scanout and
     // Concurrent Read and Write if possible.
