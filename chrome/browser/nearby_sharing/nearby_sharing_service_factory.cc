@@ -31,6 +31,7 @@
 namespace {
 
 constexpr char kServiceName[] = "NearbySharingService";
+constexpr char kServiceId[] = "NearbySharing";
 
 absl::optional<bool>& IsSupportedTesting() {
   static absl::optional<bool> is_supported;
@@ -109,7 +110,8 @@ KeyedService* NearbySharingServiceFactory::BuildServiceInstanceFor(
       NotificationDisplayServiceFactory::GetForProfile(profile);
 
   auto nearby_connections_manager =
-      std::make_unique<NearbyConnectionsManagerImpl>(process_manager);
+      std::make_unique<NearbyConnectionsManagerImpl>(process_manager,
+                                                     kServiceId);
 
   NS_LOG(VERBOSE) << __func__
                   << ": creating NearbySharingService for primary profile";

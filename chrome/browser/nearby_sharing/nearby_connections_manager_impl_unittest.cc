@@ -408,7 +408,7 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
   testing::NiceMock<ash::nearby::MockNearbyProcessManager>
       nearby_process_manager_;
   NearbyConnectionsManagerImpl nearby_connections_manager_{
-      &nearby_process_manager_};
+      &nearby_process_manager_, kServiceId};
 };
 
 TEST_F(NearbyConnectionsManagerImplTest, DiscoveryFlow) {

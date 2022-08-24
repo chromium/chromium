@@ -27,8 +27,9 @@ class NearbyConnectionsManagerImpl
       public location::nearby::connections::mojom::ConnectionLifecycleListener,
       public location::nearby::connections::mojom::PayloadListener {
  public:
-  explicit NearbyConnectionsManagerImpl(
-      ash::nearby::NearbyProcessManager* process_manager);
+  NearbyConnectionsManagerImpl(
+      ash::nearby::NearbyProcessManager* process_manager,
+      const std::string& service_id);
   ~NearbyConnectionsManagerImpl() override;
   NearbyConnectionsManagerImpl(const NearbyConnectionsManagerImpl&) = delete;
   NearbyConnectionsManagerImpl& operator=(const NearbyConnectionsManagerImpl&) =
@@ -164,6 +165,8 @@ class NearbyConnectionsManagerImpl
   base::flat_set<std::string> requested_bwu_endpoint_ids_;
   // For metrics. A map of endpoint_id to current upgraded medium.
   base::flat_map<std::string, Medium> current_upgraded_mediums_;
+
+  const std::string service_id_;
 
   mojo::Receiver<EndpointDiscoveryListener> endpoint_discovery_listener_{this};
   mojo::ReceiverSet<ConnectionLifecycleListener>
