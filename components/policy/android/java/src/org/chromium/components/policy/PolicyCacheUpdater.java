@@ -12,10 +12,7 @@ import org.chromium.base.annotations.JNINamespace;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Helper class to allow native libirary to update policy cache with {@link PolicyCache}
- */
-
+/** Helper class to allow native library to update policy cache with {@link PolicyCache} */
 @JNINamespace("policy::android")
 public class PolicyCacheUpdater {
     // A list of policies that will be cached. Note that policy won't be cached in case of any error
@@ -27,7 +24,9 @@ public class PolicyCacheUpdater {
             Arrays.asList(Pair.create("BrowserSignin", PolicyCache.Type.Integer),
                     Pair.create("CloudManagementEnrollmentToken", PolicyCache.Type.String),
                     Pair.create("URLAllowlist", PolicyCache.Type.List),
-                    Pair.create("URLBlocklist", PolicyCache.Type.List));
+                    Pair.create("URLBlocklist", PolicyCache.Type.List),
+                    Pair.create("FirstPartySetsEnabled", PolicyCache.Type.Boolean),
+                    Pair.create("FirstPartySetsOverrides", PolicyCache.Type.Dict));
 
     @CalledByNative
     public static void cachePolicies(PolicyMap policyMap) {
