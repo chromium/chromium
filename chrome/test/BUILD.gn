@@ -3455,6 +3455,7 @@ if (!is_android) {
       }
       deps += [
         ":test_support_ui",
+        "//components/commerce/core:shopping_service_test_support",
         "//components/page_info/core:proto",
         "//components/send_tab_to_self",
         "//components/send_tab_to_self:test_support",
@@ -8558,6 +8559,7 @@ test("unit_tests") {
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/ui/views",
       "//components/app_constants",
+      "//components/commerce/core:shopping_service_test_support",
       "//components/constrained_window",
       "//components/global_media_controls",
       "//components/media_message_center",

@@ -26,6 +26,8 @@ class MockShoppingService : public commerce::ShoppingService {
                             commerce::ProductInfoCallback callback) override;
   void GetMerchantInfoForUrl(const GURL& url,
                              MerchantInfoCallback callback) override;
+  absl::optional<ProductInfo> GetAvailableProductInfoForUrl(
+      const GURL& url) override;
   void Subscribe(
       std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
       base::OnceCallback<void(bool)> callback) override;

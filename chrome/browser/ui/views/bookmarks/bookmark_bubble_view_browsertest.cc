@@ -6,9 +6,11 @@
 
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -18,17 +20,31 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/mock_shopping_service.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 class BookmarkBubbleViewBrowserTest : public DialogBrowserTest {
  public:
-  BookmarkBubbleViewBrowserTest() {}
+  BookmarkBubbleViewBrowserTest() {
+    test_features_.InitAndEnableFeature(commerce::kShoppingList);
+  }
 
   BookmarkBubbleViewBrowserTest(const BookmarkBubbleViewBrowserTest&) = delete;
   BookmarkBubbleViewBrowserTest& operator=(
       const BookmarkBubbleViewBrowserTest&) = delete;
+
+  void SetUpOnMainThread() override {
+    mock_shopping_service_ = static_cast<commerce::MockShoppingService*>(
+        commerce::ShoppingServiceFactory::GetInstance()
+            ->SetTestingFactoryAndUse(
+                browser()->profile(),
+                base::BindRepeating([](content::BrowserContext* context) {
+                  return commerce::MockShoppingService::Build();
+                })));
+  }
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
@@ -44,6 +60,11 @@ class BookmarkBubbleViewBrowserTest : public DialogBrowserTest {
                                         consent_level);
 #endif
 
+    if (name == "bookmark_details_on_trackable_product") {
+      mock_shopping_service_->SetResponseForGetProductInfoForUrl(
+          commerce::ProductInfo());
+    }
+
     const GURL url = GURL("https://www.google.com");
     const std::u16string title = u"Title";
     bookmarks::BookmarkModel* bookmark_model =
@@ -52,9 +73,14 @@ class BookmarkBubbleViewBrowserTest : public DialogBrowserTest {
     bookmarks::AddIfNotBookmarked(bookmark_model, url, title);
     browser()->window()->ShowBookmarkBubble(url, true);
 
-    if (name == "ios_promotion")
+    if (name == "ios_promotion") {
       BookmarkBubbleView::bookmark_bubble()->AcceptDialog();
+    }
   }
+
+ private:
+  commerce::MockShoppingService* mock_shopping_service_;
+  base::test::ScopedFeatureList test_features_;
 };
 
 // Ash always has sync ON
@@ -67,5 +93,10 @@ IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewBrowserTest,
                        InvokeUi_bookmark_details_synced_on) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(BookmarkBubbleViewBrowserTest,
+                       InvokeUi_bookmark_details_on_trackable_product) {
   ShowAndVerifyUi();
 }

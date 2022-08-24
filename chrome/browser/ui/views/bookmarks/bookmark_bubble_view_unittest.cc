@@ -12,15 +12,22 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/sync/bubble_sync_promo_delegate.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/views/chrome_test_widget.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/mock_shopping_service.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
@@ -38,7 +45,9 @@ class BookmarkBubbleViewTest : public BrowserWithTestWindowTest {
   // and IO tasks on separate threads.
   BookmarkBubbleViewTest()
       : BrowserWithTestWindowTest(
-            content::BrowserTaskEnvironment::REAL_IO_THREAD) {}
+            content::BrowserTaskEnvironment::REAL_IO_THREAD) {
+    test_features_.InitAndEnableFeature(commerce::kShoppingList);
+  }
 
   BookmarkBubbleViewTest(const BookmarkBubbleViewTest&) = delete;
   BookmarkBubbleViewTest& operator=(const BookmarkBubbleViewTest&) = delete;
@@ -76,7 +85,11 @@ class BookmarkBubbleViewTest : public BrowserWithTestWindowTest {
   TestingProfile::TestingFactories GetTestingFactories() override {
     TestingProfile::TestingFactories factories = {
         {BookmarkModelFactory::GetInstance(),
-         BookmarkModelFactory::GetDefaultFactory()}};
+         BookmarkModelFactory::GetDefaultFactory()},
+        {commerce::ShoppingServiceFactory::GetInstance(),
+         base::BindRepeating([](content::BrowserContext* context) {
+           return commerce::MockShoppingService::Build();
+         })}};
     IdentityTestEnvironmentProfileAdaptor::
         AppendIdentityTestEnvironmentFactories(&factories);
     return factories;
@@ -93,6 +106,7 @@ class BookmarkBubbleViewTest : public BrowserWithTestWindowTest {
 
  private:
   views::UniqueWidgetPtr anchor_widget_;
+  base::test::ScopedFeatureList test_features_;
 };
 
 // Verifies that the sync promo is not displayed for a signed in user.
@@ -115,4 +129,33 @@ TEST_F(BookmarkBubbleViewTest, SyncPromoNotSignedIn) {
 #else  // !BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_TRUE(footnote);
 #endif
+}
+
+// Verifies that the price tracking view is displayed for trackable product.
+TEST_F(BookmarkBubbleViewTest, PriceTrackingViewIsVisible) {
+  commerce::MockShoppingService* mock_shopping_service =
+      static_cast<commerce::MockShoppingService*>(
+          commerce::ShoppingServiceFactory::GetForBrowserContext(profile()));
+  mock_shopping_service->SetResponseForGetProductInfoForUrl(
+      commerce::ProductInfo());
+  CreateBubbleView();
+  // Verify the view is displayed
+  const ui::ElementContext context =
+      views::ElementTrackerViews::GetContextForView(
+          BookmarkBubbleView::bookmark_bubble()->GetAnchorView());
+  EXPECT_TRUE(views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+      kPriceTrackingBookmarkViewElementId, context));
+}
+
+TEST_F(BookmarkBubbleViewTest, PriceTrackingViewIsHidden) {
+  commerce::MockShoppingService* mock_shopping_service =
+      static_cast<commerce::MockShoppingService*>(
+          commerce::ShoppingServiceFactory::GetForBrowserContext(profile()));
+  mock_shopping_service->SetResponseForGetProductInfoForUrl(absl::nullopt);
+  CreateBubbleView();
+  const ui::ElementContext context =
+      views::ElementTrackerViews::GetContextForView(
+          BookmarkBubbleView::bookmark_bubble()->GetAnchorView());
+  EXPECT_FALSE(views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+      kPriceTrackingBookmarkViewElementId, context));
 }

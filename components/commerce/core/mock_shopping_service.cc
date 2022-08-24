@@ -27,6 +27,11 @@ void MockShoppingService::GetProductInfoForUrl(
   std::move(callback).Run(url, product_info_);
 }
 
+absl::optional<ProductInfo> MockShoppingService::GetAvailableProductInfoForUrl(
+    const GURL& url) {
+  return product_info_;
+}
+
 void MockShoppingService::SetResponseForGetProductInfoForUrl(
     absl::optional<commerce::ProductInfo> product_info) {
   product_info_ = product_info;
