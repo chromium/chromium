@@ -4,6 +4,7 @@
     --banner-height: 244px;
     --banner-size: auto;
     --footer-margin: 40px;
+    --content-container-margin-inline: auto;
     --content-container-margin-bottom: calc(48px + var(--footer-margin));
     --content-container-margin-top: 104px;
     --info-box-margin-inline: auto;
@@ -18,9 +19,15 @@
     --avatar-size: 76px;
     --banner-height: 128px;
     --banner-size: 90% 90%;
+    --content-container-margin-inline: 32px;
     --content-container-margin-bottom: 0;
-    --content-container-margin-top: 96px;
+    --content-container-margin-top: 72px;
+<if expr="chromeos_lacros">
     --info-box-margin-inline: 32px;
+</if>
+<if expr="not chromeos_lacros">
+    --info-box-margin-inline: 0;
+</if>
     --info-box-margin-top: 28px;
     --info-box-width: auto;
     --footer-margin: 16px;
@@ -156,7 +163,7 @@
     font-size: var(--content-container-font-size);
     line-height: var(--content-container-line-height);
     margin-bottom: var(--content-container-margin-bottom);
-    margin-inline: auto;
+    margin-inline: var(--content-container-margin-inline);
     margin-top: var(--content-container-margin-top);
     text-align: center;
     width: var(--content-container-width);
@@ -220,7 +227,7 @@
   }
 
   #linkData {
-    margin: 16px;
+    margin: 16px 32px;
   }
 
   @media (prefers-color-scheme: dark) {

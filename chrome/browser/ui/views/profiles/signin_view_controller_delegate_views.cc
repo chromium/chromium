@@ -49,6 +49,11 @@
 namespace {
 
 const int kModalDialogWidth = 448;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
+const int kEnterpriseConfirmationDialogWidth = 512;
+const int kEnterpriseConfirmationDialogHeight = 576;
+#endif
 const int kSyncConfirmationDialogWidth = 512;
 const int kSyncConfirmationDialogHeight = 487;
 const int kSigninErrorDialogHeight = 164;
@@ -172,7 +177,7 @@ SigninViewControllerDelegateViews::CreateEnterpriseConfirmationWebView(
     signin::SigninChoiceCallback callback) {
   std::unique_ptr<views::WebView> web_view = CreateDialogWebView(
       browser, GURL(chrome::kChromeUIEnterpriseProfileWelcomeURL),
-      kSyncConfirmationDialogHeight, kSyncConfirmationDialogWidth,
+      kEnterpriseConfirmationDialogHeight, kEnterpriseConfirmationDialogWidth,
       InitializeSigninWebDialogUI(false));
 
   EnterpriseProfileWelcomeUI* web_dialog_ui =
