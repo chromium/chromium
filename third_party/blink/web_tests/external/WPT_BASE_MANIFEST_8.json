@@ -2187,6 +2187,13 @@
         {}
        ]
       ],
+      "repeated-table-footer-in-caption-nested-multicol.html": [
+       "d630abe8bbb1e752d3a7c559e4c49864233c44f9",
+       [
+        null,
+        {}
+       ]
+      ],
       "scrollable-spanner-in-nested.html": [
        "b904aaddd29c77e41800d63a93f04a2e70dda310",
        [
@@ -325828,11 +325835,11 @@
       []
      ],
      "pending_beacon-helper.js": [
-      "e3982898f8f2cdba927d51fedfc9186fd61f85a5",
+      "36f9c3bb3b4eb91c4da81413504bb78046b1938f",
       []
      ],
      "set_beacon.py": [
-      "41618adc54ed5e7ddf1a1bfaf81f76b11febf8fc",
+      "996299e2532c069723ca57a404a1c7477d8a8110",
       []
      ]
     }
@@ -343044,7 +343051,7 @@
       ]
      ],
      "url-with-fetch.any.js": [
-      "9bd8d383df4e1e1ea8ab3a59771a8b78e3a9b2c6",
+      "7f6ebed44b81080044b41259e58674e10dd87fde",
       [
        "FileAPI/url/url-with-fetch.any.html",
        {
@@ -377918,6 +377925,13 @@
       ],
       "custom-property-style-queries.html": [
        "35110daea7de7a16e165e36c6a49b3065dd98857",
+       [
+        null,
+        {}
+       ]
+      ],
+      "custom-property-style-query-change.html": [
+       "add85c4d9e267f4a106cf93787fb91f913da8515",
        [
         null,
         {}
@@ -506830,7 +506844,7 @@
    },
    "pending_beacon": {
     "pending_beacon-basic.tentative.window.js": [
-     "82ec58a6bf3b978231358c597aff7c343a1fe0e8",
+     "08369c886a0b8738f9be1167e749da50efee42e0",
      [
       "pending_beacon/pending_beacon-basic.tentative.window.html",
       {
@@ -506842,13 +506856,17 @@
         [
          "script",
          "/resources/testharnessreport.js"
+        ],
+        [
+         "script",
+         "./resources/pending_beacon-helper.js"
         ]
        ]
       }
      ]
     ],
     "pending_beacon-deactivate.tentative.window.js": [
-     "4d8fb6be5aa4ea081f78e03f8de8aa0acb12efa2",
+     "c499d32b98b272c3362561d68671f4d8d6a8f797",
      [
       "pending_beacon/pending_beacon-deactivate.tentative.window.html",
       {
@@ -506860,6 +506878,10 @@
         [
          "script",
          "/resources/testharnessreport.js"
+        ],
+        [
+         "script",
+         "./resources/pending_beacon-helper.js"
         ]
        ]
       }
@@ -506917,6 +506939,36 @@
       }
      ]
     ],
+    "pending_get_beacon-cors.tentative.https.window.js": [
+     "4e711bb7fcc3433cddf3b51fdfd0a9f18e57a456",
+     [
+      "pending_beacon/pending_get_beacon-cors.tentative.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/testharness.js"
+        ],
+        [
+         "script",
+         "/resources/testharnessreport.js"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "./resources/pending_beacon-helper.js"
+        ]
+       ]
+      }
+     ]
+    ],
     "pending_get_beacon-send.tentative.window.js": [
      "7f52c082800cea4a4cac2dc57c0c99f727bbe98e",
      [
@@ -506930,6 +506982,36 @@
         [
          "script",
          "/resources/testharnessreport.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "./resources/pending_beacon-helper.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "pending_post_beacon-cors.tentative.https.window.js": [
+     "9545101f1362cb40a150d19c22a95818d19a8d95",
+     [
+      "pending_beacon/pending_post_beacon-cors.tentative.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/testharness.js"
+        ],
+        [
+         "script",
+         "/resources/testharnessreport.js"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
         ],
         [
          "script",
