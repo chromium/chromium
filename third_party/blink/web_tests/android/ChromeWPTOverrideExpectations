@@ -540,7 +540,6 @@ crbug.com/1050754 external/wpt/compression/compression-including-empty-chunk.ten
 crbug.com/1050754 external/wpt/compression/compression-multiple-chunks.tentative.any.sharedworker.html [ Failure ]
 crbug.com/1050754 external/wpt/compression/compression-output-length.tentative.any.sharedworker.html [ Failure ]
 crbug.com/1050754 external/wpt/compression/compression-stream.tentative.any.sharedworker.html [ Failure ]
-crbug.com/1050754 external/wpt/compression/decompression-bad-chunks.tentative.any.sharedworker.html [ Failure ]
 crbug.com/1050754 external/wpt/compression/decompression-buffersource.tentative.any.sharedworker.html [ Failure ]
 crbug.com/1050754 external/wpt/compression/decompression-constructor-error.tentative.any.sharedworker.html [ Failure ]
 crbug.com/1050754 external/wpt/compression/decompression-correct-input.tentative.any.sharedworker.html [ Failure ]

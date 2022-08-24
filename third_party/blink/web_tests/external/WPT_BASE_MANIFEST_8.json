@@ -4588,6 +4588,13 @@
        {}
       ]
      ],
+     "mtd-as-multicol.html": [
+      "f00fa488154ff42e8c3ecfa5cc48ceb2aca4f131",
+      [
+       null,
+       {}
+      ]
+     ],
      "multicol-inside-ms.html": [
       "b7d481e1fb73c8af4f8fb74250b02cd82e3f7496",
       [
@@ -137912,6 +137919,19 @@
         {}
        ]
       ],
+      "clip-path-round-zero-size.html": [
+       "d42ee6f5360f2df18ac5ae3aa79511a6201b0eda",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/clip-path/clip-path-round-zero-size-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "clip-path-scaled-video.html": [
        "c92702d8e78c0ef5f35fff7ebb8d4c16a752b261",
        [
@@ -164898,6 +164918,19 @@
        [
         [
          "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "baseline-vertical.html": [
+      "45672ab6f3dbe693b6fa35a42aa23ff3b908476d",
+      [
+       null,
+       [
+        [
+         "/css/css-tables/baseline-vertical-ref.html",
          "=="
         ]
        ],
@@ -237619,7 +237652,7 @@
         ]
        ],
        "cross-domain-iframe-in-multicol.sub.html": [
-        "7fb11f1e4cb326defb7376896b33c756897de3ae",
+        "e39e2bc7646ae17c6851e681b2ce312c567d0362",
         [
          null,
          [
@@ -237632,7 +237665,7 @@
         ]
        ],
        "cross-domain-iframe.sub.html": [
-        "b6c7f7b0dafc7b78e1c31dad11728ce33bf7e8cd",
+        "8d9b8cd5b4ef42e0b117764c79789bb9da4f7c49",
         [
          null,
          [
@@ -237658,7 +237691,7 @@
         ]
        ],
        "tall-cross-domain-iframe-in-scrolled.sub.html": [
-        "43b9d7ae32c7eb0856867d70b33bd2bc77afa03e",
+        "865be7c883cdf0506a64ec82a121a91188e72fa0",
         [
          null,
          [
@@ -281614,6 +281647,10 @@
        "ddbf0e9812cf432486f22a22cb2680343d5be298",
        []
       ],
+      "clip-path-round-zero-size-ref.html": [
+       "a5e44e7398dc962ccb93408247b119c84a46ba28",
+       []
+      ],
       "clip-path-scaled-video-ref.html": [
        "43ebcc8dc7c54aeed5e892d07c40eabed88d5229",
        []
@@ -287273,6 +287310,10 @@
      ],
      "anonymous-table-ws-001-ref.html": [
       "4429239d965d4a2adcb683e9426b94a73be8280f",
+      []
+     ],
+     "baseline-vertical-ref.html": [
+      "da592cba2ea292b350e059fca2e735da7b316013",
       []
      ],
      "border-collapse-double-border-notref.html": [
@@ -306580,6 +306621,14 @@
         }
        }
       },
+      "read-media": {
+       "resources": {
+        "iframe-document.sub.html": [
+         "69523efa7abc75c3746a4e3c37e3aee8ad834a16",
+         []
+        ]
+       }
+      },
       "remote-context-helper": {
        "resources": {
         "executor-common.js": [
@@ -310207,11 +310256,11 @@
        []
       ],
       "common.js": [
-       "c898207fd9593fb3e566bd24bf4dbf0baec1bbf6",
+       "a005cb8a2050221ced86932c7b2e9bc9d11a9631",
        []
       ],
       "coop-coep.py": [
-       "22b77c8ebed3da53e518053bf6f1f1f597f4dd6e",
+       "d8e3bf0d4234b0f63e6da7cb909b4bb83d4a30ec",
        []
       ],
       "coop-same-origin-repeated.asis": [
@@ -310235,7 +310284,7 @@
        []
       ],
       "postback.html": [
-       "5955e2d7593a51fa112fe82bb97b79add54f3ba0",
+       "35b3be5c930abe38fe018e342a5001c988e16f95",
        []
       ],
       "postback.html.headers": [
@@ -314886,7 +314935,7 @@
         []
        ],
        "cross-domain-iframe-in-multicol.sub-ref.html": [
-        "2b2def5735ae0c7966dd83dd2bc5487b0707e847",
+        "2645ed459fe952afd676f67dd4fa8492e1aac761",
         []
        ],
        "cross-domain-iframe.sub-ref.html": [
@@ -337921,11 +337970,11 @@
      []
     ],
     "eventTestHarness.js": [
-     "f39dfdaa422935899c0ddb2f1f7fcedffca8495e",
+     "0a98546ace10667343aee2f591856445a945ab6c",
      []
     ],
     "event_basic.js": [
-     "9f0c11b8347e47bb78b2baec9c0dd924324c3e24",
+     "09f5f1bfb998c93d7112683521e7e833927c86e5",
      []
     ],
     "event_body_attribute.js": [
@@ -337933,7 +337982,7 @@
      []
     ],
     "event_case_sensitive.js": [
-     "2729a3bed3c467482f82306ad49780b8a9d36d2b",
+     "9c9397fd5ac079f548975d9bf0cf011979c793fa",
      []
     ],
     "event_setattribute.js": [
@@ -337941,6 +337990,10 @@
      []
     ],
     "resources": {
+     "event_basic.html": [
+      "5933b40eeb0ae5663813d4d2b13d42110d73ee21",
+      []
+     ],
      "event_body_handler.html": [
       "11d8ec944759ef8a2f1fbdd0b951e274667bfa9a",
       []
@@ -364362,7 +364415,7 @@
      ]
     ],
     "decompression-bad-chunks.tentative.any.js": [
-     "6aca6b46e76671af76d167d3b10fc00d853a4379",
+     "0a1312a5a111b8cc2690e9541ba4b7b778f86cf7",
      [
       "compression/decompression-bad-chunks.tentative.any.html",
       {
@@ -377693,6 +377746,13 @@
         {}
        ]
       ],
+      "container-inside-multicol-with-table.html": [
+       "8688159da3c3c332167c5fb1578ee12dc8dee0c3",
+       [
+        null,
+        {}
+       ]
+      ],
       "container-longhand-animation-type.html": [
        "aded2a3ec8bae1203e458667bf6ff1f616aca91a",
        [
@@ -389922,7 +389982,7 @@
       ]
      ],
      "snap-on-focus.html": [
-      "b8763992055fd700a21a743b562acf4bff858227",
+      "3189f587b8806206980cd80445261f40da716408",
       [
        null,
        {}
@@ -441565,6 +441625,36 @@
        }
       ]
      ],
+     "local-storage-initial-empty-document.tentative.https.window.js": [
+      "985699e25f79c8f6345020da503ea187d668ded0",
+      [
+       "html/anonymous-iframe/local-storage-initial-empty-document.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/html/cross-origin-embedder-policy/credentialless/resources/common.js"
+         ],
+         [
+          "script",
+          "./resources/common.js"
+         ]
+        ]
+       }
+      ]
+     ],
      "local-storage.tentative.https.window.js": [
       "2734f12d9e683943aa782aeedff8bbab1b59da0b",
       [
@@ -443076,6 +443166,13 @@
        }
       },
       "read-media": {
+       "cross-origin-video.html": [
+        "b99658facb29b59964c29e910e1435d201321fb4",
+        [
+         null,
+         {}
+        ]
+       ],
        "pageload-image-in-popup.html": [
         "e9284824f44f2daf663a4155ebf7c203a7e39290",
         [
@@ -468168,7 +468265,7 @@
       ]
      ],
      "popup-redirect-cache.https.html": [
-      "acaef785b6e8590ddbd66cefd0ba4f18f8ac4dcd",
+      "e56e1d551345bcecab3d89a34fd98424583898e0",
       [
        "html/cross-origin-opener-policy/popup-redirect-cache.https.html?0-1",
        {
@@ -481250,7 +481347,7 @@
        ]
       ],
       "popup-invoking-attribute.tentative.html": [
-       "10a8cc82beadb75776c620016db7b6f046bd0714",
+       "bdfa0fe1a12a35ca9e20939bf69c076f43f7f141",
        [
         null,
         {
@@ -498126,7 +498223,7 @@
      ]
     ],
     "MediaStreamTrack-transfer.https.html": [
-     "0024aea0978103e47f5637111ab2a87333072ebb",
+     "e110b4b3722e4f96abc63d1e87e2cf85e9af71a8",
      [
       null,
       {
@@ -526071,7 +526168,7 @@
       ]
      ],
      "animation-timeline-named-scroll-progress-timeline.tentative.html": [
-      "dd0b7eb32847ec24ff65cd1cae629f21c1acc929",
+      "61e8522bf6cef020c31b51911184f45e660a69da",
       [
        null,
        {}
@@ -526190,7 +526287,7 @@
       ]
      ],
      "progress-based-animation-timeline.html": [
-      "96339db2ed5c3b1ec886fce5bf4ab0d37a41bf86",
+      "2e910cbe51efbf4bdcd73eca85c9bed1c39d09e6",
       [
        null,
        {}
@@ -572026,7 +572123,7 @@
      ]
     ],
     "event_no_duplicates.html": [
-     "149e201c7dd7ae548fd4a74177781e793c9b9af0",
+     "8fbea2bef90b8b6a063d77b94987a98cb895f417",
      [
       null,
       {}

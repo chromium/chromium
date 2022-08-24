@@ -49,7 +49,9 @@ div {
 <script>
 test(t => {
   document.querySelector(".no-snap").focus();
-  assert_equals(scroller.scrollTop, 1200);
+  window.requestAnimationFrame(t.step_func_done(() => {
+      assert_equals(scroller.scrollTop, 1200);
+  }));
 }, "scroll snap should happens on Element.focus()");
 
 </script>
