@@ -62,7 +62,6 @@ struct JsonKeyValue {
   CompareOp op;
 };
 
-const int kThreadId = 42;
 const int kAsyncId = 5;
 const char kAsyncIdStr[] = "0x5";
 const int kAsyncId2 = 6;
@@ -437,26 +436,12 @@ void TraceWithAllMacroVariants(WaitableEvent* task_complete_event) {
     TRACE_COUNTER_ID2("test_all", "TRACE_COUNTER_ID2 call", 0x319009, "a",
                       30000, "b", 1415);
 
-    TRACE_EVENT_COPY_BEGIN_WITH_ID_TID_AND_TIMESTAMP0(
-        "test_all", "TRACE_EVENT_COPY_BEGIN_WITH_ID_TID_AND_TIMESTAMP0 call",
-        kAsyncId, kThreadId, TimeTicks::FromInternalValue(12345));
-    TRACE_EVENT_COPY_END_WITH_ID_TID_AND_TIMESTAMP0(
-        "test_all", "TRACE_EVENT_COPY_BEGIN_WITH_ID_TID_AND_TIMESTAMP0 call",
-        kAsyncId, kThreadId, TimeTicks::FromInternalValue(23456));
-
-    TRACE_EVENT_BEGIN_WITH_ID_TID_AND_TIMESTAMP0(
-        "test_all", "TRACE_EVENT_BEGIN_WITH_ID_TID_AND_TIMESTAMP0 call",
-        kAsyncId2, kThreadId, TimeTicks::FromInternalValue(34567));
     TRACE_EVENT_ASYNC_STEP_PAST0("test_all",
                                  "TRACE_EVENT_ASYNC_STEP_PAST0 call", kAsyncId2,
                                  "step_end1");
     TRACE_EVENT_ASYNC_STEP_PAST1("test_all",
                                  "TRACE_EVENT_ASYNC_STEP_PAST1 call", kAsyncId2,
                                  "step_end2", "name1", "value1");
-
-    TRACE_EVENT_END_WITH_ID_TID_AND_TIMESTAMP0(
-        "test_all", "TRACE_EVENT_END_WITH_ID_TID_AND_TIMESTAMP0 call",
-        kAsyncId2, kThreadId, TimeTicks::FromInternalValue(45678));
 
     TRACE_EVENT_OBJECT_CREATED_WITH_ID("test_all", "tracked object 1", 0x42);
     TRACE_EVENT_OBJECT_SNAPSHOT_WITH_ID("test_all", "tracked object 1", 0x42,
@@ -646,24 +631,6 @@ void ValidateAllTraceMacrosCreatedData(const Value& trace_parsed) {
     EXPECT_EQ(*item->FindIntPath("args.b"), 1415);
   }
 
-  EXPECT_FIND_("TRACE_EVENT_COPY_BEGIN_WITH_ID_TID_AND_TIMESTAMP0 call");
-  {
-    EXPECT_EQ(*item->FindIntKey("ts"), 12345);
-
-    EXPECT_EQ(*item->FindIntKey("tid"), kThreadId);
-
-    EXPECT_EQ(*item->FindStringKey("id"), kAsyncIdStr);
-  }
-
-  EXPECT_FIND_("TRACE_EVENT_BEGIN_WITH_ID_TID_AND_TIMESTAMP0 call");
-  {
-    EXPECT_EQ(*item->FindIntKey("ts"), 34567);
-
-    EXPECT_EQ(*item->FindIntKey("tid"), kThreadId);
-
-    EXPECT_EQ(*item->FindStringKey("id"), kAsyncId2Str);
-  }
-
   EXPECT_FIND_("TRACE_EVENT_ASYNC_STEP_PAST0 call");
   {
     EXPECT_SUB_FIND_("id");
@@ -676,18 +643,6 @@ void ValidateAllTraceMacrosCreatedData(const Value& trace_parsed) {
     EXPECT_SUB_FIND_("name1");
     EXPECT_SUB_FIND_("value1");
   }
-
-  // Perfetto doesn't have separate begin and end events.
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  EXPECT_FIND_("TRACE_EVENT_END_WITH_ID_TID_AND_TIMESTAMP0 call");
-  {
-    EXPECT_EQ(*item->FindIntKey("ts"), 45678);
-
-    EXPECT_EQ(*item->FindIntKey("tid"), kThreadId);
-
-    EXPECT_EQ(*item->FindStringKey("id"), kAsyncId2Str);
-  }
-#endif
 
   EXPECT_FIND_("tracked object 1");
   {

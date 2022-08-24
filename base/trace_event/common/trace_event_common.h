@@ -404,6 +404,10 @@ struct BASE_EXPORT TraceTimestampTraits<::base::TimeTicks> {
 // - |timestamp| must be non-null or it crashes. Use DCHECK(timestamp) before
 //   calling this to detect an invalid timestamp even when tracing is not
 //   enabled, as the commit queue doesn't run all tests with tracing enabled.
+// Note: This legacy macro is deprecated. It should not be used in new code.
+//       If thread_id is different from current thread id, it will result into
+//       DCHECK failure. This note is also applicable to `_COPY` and `_END`
+//       variant of this macro.
 #define TRACE_EVENT_BEGIN_WITH_ID_TID_AND_TIMESTAMP0(category_group, name, id, \
                                                      thread_id, timestamp)     \
   INTERNAL_TRACE_EVENT_ADD_WITH_ID_TID_AND_TIMESTAMP(                          \
