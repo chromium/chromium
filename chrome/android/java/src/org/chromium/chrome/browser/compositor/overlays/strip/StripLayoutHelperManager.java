@@ -196,6 +196,11 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
             updateScrimVisibility(false);
         }
 
+        @Override
+        public void onTabSelectionHinted(int tabId) {
+            LayoutStateObserver.super.onTabSelectionHinted(tabId);
+        }
+
         private void updateScrimVisibility(boolean visibility) {
             // Handled by separate scrim over entire browser in the polished version.
             if (isGridTabSwitcherPolishEnabled()) {

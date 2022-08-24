@@ -879,9 +879,19 @@ public class TabGroupModelFilter extends TabModelFilter {
         return mCurrentGroupIndex;
     }
 
+    /**
+     * @return count of @{@link TabGroup}s in model.
+     */
     @Override
     public int getCount() {
         return mGroupIdToGroupMap.size();
+    }
+
+    /**
+     * @return tab count across all @{@link TabGroup}s.
+     */
+    public int getTotalTabCount() {
+        return getTabModel().getCount();
     }
 
     @Override
