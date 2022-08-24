@@ -242,12 +242,11 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   std::string GetString(const std::string& path) const;
   base::FilePath GetFilePath(const std::string& path) const;
 
-  // DEPRECATED: Prefer GetValue(), GetValueDict(), and GetValueList().
+  // DEPRECATED: Prefer GetValueDict(), and GetValueList().
   // Returns the branch if it exists, or the registered default value otherwise.
   // Note that |path| must point to a registered preference. In that case, these
   // functions will never return NULL.
   // TODO(https://crbug.com/1334665): Remove these methods.
-  const base::Value* Get(const std::string& path) const;
   const base::Value* GetDictionary(const std::string& path) const;
   const base::Value* GetList(const std::string& path) const;
 
