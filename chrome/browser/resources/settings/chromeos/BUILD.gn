@@ -415,7 +415,6 @@ group("generate_web_components") {
     "guest_os:web_components",
     "internet_page:web_components",
     "kerberos_page:web_components",
-    "keyboard_shortcut_banner:web_components",
     "multidevice_page:web_components",
     "nearby_share_page:web_components",
     "os_a11y_page:web_components",

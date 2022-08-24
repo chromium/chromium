@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/html_to_js.gni")
 import("../os_settings.gni")
 
 js_type_check("closure_compile_module") {
@@ -19,8 +18,4 @@ js_library("keyboard_shortcut_banner") {
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
   externs_list = [ "//ui/webui/resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer_externs.js" ]
-}
-
-html_to_js("web_components") {
-  js_files = [ "keyboard_shortcut_banner.js" ]
 }
