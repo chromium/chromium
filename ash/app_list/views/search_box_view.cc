@@ -876,15 +876,8 @@ bool SearchBoxView::IsValidAutocompleteText(
 }
 
 void SearchBoxView::UpdateTextColor() {
-  if (is_app_list_bubble_) {
-    // Bubble launcher uses standard text colors (light-on-dark by default).
-    search_box()->SetTextColor(
-        GetColorProvider()->GetColor(cros_tokens::kTextColorPrimary));
-  } else {
-    // Fullscreen launcher uses dark-on-light text by default.
-    search_box()->SetTextColor(
-        GetColorProvider()->GetColor(cros_tokens::kColorPrimaryInverted));
-  }
+  search_box()->SetTextColor(
+      GetColorProvider()->GetColor(cros_tokens::kTextColorPrimary));
 }
 
 void SearchBoxView::UpdatePlaceholderTextAndAccessibleName() {
