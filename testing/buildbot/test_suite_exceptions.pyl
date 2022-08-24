@@ -367,6 +367,12 @@
           'shards': 8,
         },
       },
+      'WebKit Win10': {
+        'args': [
+	  '--exit-after-n-crashes-or-timeouts',
+	  '150',
+        ],
+      },
       'Win10 Tests x64': {
         'args': [
           '--target',
