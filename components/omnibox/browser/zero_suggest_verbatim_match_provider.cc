@@ -48,8 +48,8 @@ void ZeroSuggestVerbatimMatchProvider::Start(const AutocompleteInput& input,
 
   // Only offer verbatim match after the user just focused the Omnibox,
   // or if the input field is empty.
-  if (input.focus_type() == OmniboxFocusType::DEFAULT ||
-      input.focus_type() == OmniboxFocusType::DELETED_PERMANENT_TEXT)
+  if (input.focus_type() == metrics::OmniboxFocusType::INTERACTION_DEFAULT ||
+      input.focus_type() == metrics::OmniboxFocusType::INTERACTION_CLOBBER)
     return;
 
   // For consistency with other zero-prefix providers.

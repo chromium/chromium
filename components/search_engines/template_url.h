@@ -14,12 +14,12 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "components/search_engines/omnibox_focus_type.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_id.h"
 #include "third_party/metrics_proto/chrome_searchbox_stats.pb.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
@@ -192,7 +192,8 @@ class TemplateURLRef {
     metrics::OmniboxInputType input_type = metrics::OmniboxInputType::EMPTY;
 
     // Specifies how the user last interacted with the searchbox UI element.
-    OmniboxFocusType focus_type = OmniboxFocusType::DEFAULT;
+    metrics::OmniboxFocusType focus_type =
+        metrics::OmniboxFocusType::INTERACTION_DEFAULT;
 
     // The optional assisted query stats, aka AQS, used for logging purposes.
     // This string contains impressions of all autocomplete matches shown

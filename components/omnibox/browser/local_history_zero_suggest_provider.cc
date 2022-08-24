@@ -36,8 +36,8 @@
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/zero_suggest_provider.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "components/search_engines/omnibox_focus_type.h"
 #include "components/search_engines/template_url_service.h"
+#include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "url/gurl.h"
 
 using metrics::OmniboxInputType;
@@ -83,7 +83,7 @@ bool AllowLocalHistoryZeroSuggestSuggestions(AutocompleteProviderClient* client,
 
   // Allow local history query suggestions only when the omnibox is empty and is
   // focused from the NTP.
-  return input.focus_type() == OmniboxFocusType::ON_FOCUS &&
+  return input.focus_type() == metrics::OmniboxFocusType::INTERACTION_FOCUS &&
          input.type() == OmniboxInputType::EMPTY &&
          BaseSearchProvider::IsNTPPage(input.current_page_classification());
 }

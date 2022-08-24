@@ -52,7 +52,6 @@
 #include "components/omnibox/browser/verbatim_match.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
-#include "components/search_engines/omnibox_focus_type.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
@@ -61,6 +60,7 @@
 #include "net/cookies/cookie_util.h"
 #include "third_party/icu/source/common/unicode/ubidi.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect.h"
@@ -898,8 +898,8 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
   // dropdown is closed or the user used a paste-and-go action.  (In most
   // cases when this happens, the user never modified the omnibox.)
   const bool popup_open = PopupIsOpen();
-  if (input_.focus_type() != OmniboxFocusType::DEFAULT || !popup_open ||
-      !pasted_text.empty()) {
+  if (input_.focus_type() != metrics::OmniboxFocusType::INTERACTION_DEFAULT ||
+      !popup_open || !pasted_text.empty()) {
     const base::TimeDelta default_time_delta = base::Milliseconds(-1);
     elapsed_time_since_user_first_modified_omnibox = default_time_delta;
     elapsed_time_since_last_change_to_default_match = default_time_delta;
@@ -920,8 +920,9 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
   fake_single_entry_result.AppendMatches(fake_single_entry_matches);
 
   OmniboxLog log(
-      input_.focus_type() != OmniboxFocusType::DEFAULT ? std::u16string()
-                                                       : input_text,
+      input_.focus_type() != metrics::OmniboxFocusType::INTERACTION_DEFAULT
+          ? std::u16string()
+          : input_text,
       just_deleted_text_, input_.type(), is_keyword_selected(),
       keyword_mode_entry_method_, popup_open, dropdown_ignored ? 0 : index,
       disposition, !pasted_text.empty(),
@@ -1282,8 +1283,8 @@ void OmniboxEditModel::StartZeroSuggestRequest(
   input_.set_current_url(client_->GetURL());
   input_.set_current_title(client_->GetTitle());
   input_.set_focus_type(user_clobbered_permanent_text
-                            ? OmniboxFocusType::DELETED_PERMANENT_TEXT
-                            : OmniboxFocusType::ON_FOCUS);
+                            ? metrics::OmniboxFocusType::INTERACTION_CLOBBER
+                            : metrics::OmniboxFocusType::INTERACTION_FOCUS);
   autocomplete_controller()->Start(input_);
 }
 

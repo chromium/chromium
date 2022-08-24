@@ -78,10 +78,12 @@ void StartPrefetch(content::WebContents* web_contents, const GURL& page_url) {
 
   AutocompleteInput autocomplete_input(
       u"", page_classification, ChromeAutocompleteSchemeClassifier(profile));
-  autocomplete_input.set_focus_type(OmniboxFocusType::ON_FOCUS);
+  autocomplete_input.set_focus_type(
+      metrics::OmniboxFocusType::INTERACTION_FOCUS);
   // Construct proper on-clobber input for ZPS prefetch requests on SRP/Web.
   if (page_classification != OEP::NTP_ZPS_PREFETCH) {
-    autocomplete_input.set_focus_type(OmniboxFocusType::DELETED_PERMANENT_TEXT);
+    autocomplete_input.set_focus_type(
+        metrics::OmniboxFocusType::INTERACTION_CLOBBER);
     autocomplete_input.set_current_url(page_url);
   }
   omnibox_view->StartPrefetch(autocomplete_input);

@@ -56,7 +56,6 @@
 #include "components/omnibox/browser/zero_suggest_prefetcher.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
-#include "components/search_engines/omnibox_focus_type.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -67,6 +66,7 @@
 #include "content/public/common/url_constants.h"
 #include "net/cookies/cookie_util.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/android/gurl_android.h"
@@ -172,7 +172,8 @@ void AutocompleteControllerAndroid::StartPrefetch(JNIEnv* env) {
   AutocompleteInput ntp_prefetch_input(
       u"", metrics::OmniboxEventProto::NTP_ZPS_PREFETCH,
       ChromeAutocompleteSchemeClassifier(profile_));
-  ntp_prefetch_input.set_focus_type(OmniboxFocusType::ON_FOCUS);
+  ntp_prefetch_input.set_focus_type(
+      metrics::OmniboxFocusType::INTERACTION_FOCUS);
 
   if (OmniboxFieldTrial::UseSharedInstanceForZeroSuggestPrefetching()) {
     autocomplete_controller_->StartPrefetch(ntp_prefetch_input);
@@ -252,7 +253,7 @@ void AutocompleteControllerAndroid::OnOmniboxFocused(
                              ChromeAutocompleteSchemeClassifier(profile_));
   input_.set_current_url(current_url);
   input_.set_current_title(current_title);
-  input_.set_focus_type(OmniboxFocusType::ON_FOCUS);
+  input_.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
   autocomplete_controller_->Start(input_);
 }
 
@@ -308,8 +309,9 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
   OmniboxLog log(
       // For zero suggest, record an empty input string instead of the
       // current URL.
-      input_.focus_type() != OmniboxFocusType::DEFAULT ? std::u16string()
-                                                       : input_.text(),
+      input_.focus_type() != metrics::OmniboxFocusType::INTERACTION_DEFAULT
+          ? std::u16string()
+          : input_.text(),
       false,                /* don't know */
       input_.type(), false, /* not keyword mode */
       OmniboxEventProto::INVALID, true, match_index,

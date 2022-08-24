@@ -197,7 +197,7 @@ bool MostVisitedSitesProvider::AllowMostVisitedSitesSuggestions(
   const auto page_class = input.current_page_classification();
   const auto input_type = input.type();
 
-  if (input.focus_type() == OmniboxFocusType::DEFAULT)
+  if (input.focus_type() == metrics::OmniboxFocusType::INTERACTION_DEFAULT)
     return false;
 
   if (client_->IsOffTheRecord())

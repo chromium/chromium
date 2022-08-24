@@ -25,7 +25,6 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/search_engines/omnibox_focus_type.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/variations/entropy_provider.h"
@@ -35,6 +34,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 
 namespace {
 
@@ -111,7 +111,7 @@ class ZeroSuggestProviderTest : public testing::TestWithParam<std::string>,
 
   GURL GetSuggestURL(
       metrics::OmniboxEventProto::PageClassification page_classification,
-      OmniboxFocusType focus_type,
+      metrics::OmniboxFocusType focus_type,
       const std::string& page_url) {
     TemplateURLRef::SearchTermsArgs search_terms_args;
     search_terms_args.page_classification = page_classification;
@@ -124,21 +124,21 @@ class ZeroSuggestProviderTest : public testing::TestWithParam<std::string>,
   AutocompleteInput OnFocusInputForNTP() {
     AutocompleteInput input(u"", metrics::OmniboxEventProto::NTP_REALBOX,
                             TestSchemeClassifier());
-    input.set_focus_type(OmniboxFocusType::ON_FOCUS);
+    input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
     return input;
   }
 
   AutocompleteInput PrefetchingInputForNTP() {
     AutocompleteInput input(u"", metrics::OmniboxEventProto::NTP_ZPS_PREFETCH,
                             TestSchemeClassifier());
-    input.set_focus_type(OmniboxFocusType::ON_FOCUS);
+    input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
     return input;
   }
 
   AutocompleteInput PrefixInputForNTP() {
     AutocompleteInput input(u"foobar", metrics::OmniboxEventProto::NTP_REALBOX,
                             TestSchemeClassifier());
-    input.set_focus_type(OmniboxFocusType::DEFAULT);
+    input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_DEFAULT);
     return input;
   }
 
@@ -148,7 +148,7 @@ class ZeroSuggestProviderTest : public testing::TestWithParam<std::string>,
                             metrics::OmniboxEventProto::OTHER,
                             TestSchemeClassifier());
     input.set_current_url(GURL(input_url));
-    input.set_focus_type(OmniboxFocusType::ON_FOCUS);
+    input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
     return input;
   }
 
@@ -156,7 +156,7 @@ class ZeroSuggestProviderTest : public testing::TestWithParam<std::string>,
     AutocompleteInput input(u"", metrics::OmniboxEventProto::OTHER,
                             TestSchemeClassifier());
     input.set_current_url(GURL("https://example.com/"));
-    input.set_focus_type(OmniboxFocusType::DELETED_PERMANENT_TEXT);
+    input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_CLOBBER);
     return input;
   }
 
@@ -164,7 +164,7 @@ class ZeroSuggestProviderTest : public testing::TestWithParam<std::string>,
     AutocompleteInput input(u"", metrics::OmniboxEventProto::OTHER_ZPS_PREFETCH,
                             TestSchemeClassifier());
     input.set_current_url(GURL("https://example.com/"));
-    input.set_focus_type(OmniboxFocusType::DELETED_PERMANENT_TEXT);
+    input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_CLOBBER);
     return input;
   }
 
@@ -172,7 +172,7 @@ class ZeroSuggestProviderTest : public testing::TestWithParam<std::string>,
     AutocompleteInput input(u"foobar", metrics::OmniboxEventProto::OTHER,
                             TestSchemeClassifier());
     input.set_current_url(GURL("https://example.com/"));
-    input.set_focus_type(OmniboxFocusType::DEFAULT);
+    input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_DEFAULT);
     return input;
   }
 
@@ -183,7 +183,7 @@ class ZeroSuggestProviderTest : public testing::TestWithParam<std::string>,
                                 SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
                             TestSchemeClassifier());
     input.set_current_url(GURL(input_url));
-    input.set_focus_type(OmniboxFocusType::ON_FOCUS);
+    input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
     return input;
   }
 
@@ -193,7 +193,7 @@ class ZeroSuggestProviderTest : public testing::TestWithParam<std::string>,
                                 SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
                             TestSchemeClassifier());
     input.set_current_url(GURL("https://google.com/search?q=omnibox"));
-    input.set_focus_type(OmniboxFocusType::DELETED_PERMANENT_TEXT);
+    input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_CLOBBER);
     return input;
   }
 
@@ -201,7 +201,7 @@ class ZeroSuggestProviderTest : public testing::TestWithParam<std::string>,
     AutocompleteInput input(u"", metrics::OmniboxEventProto::SRP_ZPS_PREFETCH,
                             TestSchemeClassifier());
     input.set_current_url(GURL("https://google.com/search?q=omnibox"));
-    input.set_focus_type(OmniboxFocusType::DELETED_PERMANENT_TEXT);
+    input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_CLOBBER);
     return input;
   }
 
@@ -211,7 +211,7 @@ class ZeroSuggestProviderTest : public testing::TestWithParam<std::string>,
                                 SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
                             TestSchemeClassifier());
     input.set_current_url(GURL("https://google.com/search?q=omnibox"));
-    input.set_focus_type(OmniboxFocusType::DEFAULT);
+    input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_DEFAULT);
     return input;
   }
 
@@ -594,8 +594,9 @@ TEST_F(ZeroSuggestProviderTest, StartStopNTP) {
   PrefService* prefs = client_->GetPrefs();
   prefs->SetString(omnibox::kZeroSuggestCachedResults, json_response);
 
-  GURL suggest_url = GetSuggestURL(metrics::OmniboxEventProto::NTP_REALBOX,
-                                   OmniboxFocusType::ON_FOCUS, "");
+  GURL suggest_url =
+      GetSuggestURL(metrics::OmniboxEventProto::NTP_REALBOX,
+                    metrics::OmniboxFocusType::INTERACTION_FOCUS, "");
 
   // Make sure valid input starts the provider.
   AutocompleteInput input = OnFocusInputForNTP();
@@ -661,7 +662,8 @@ TEST_F(ZeroSuggestProviderTest, StartStopSRP) {
 
   GURL suggest_url = GetSuggestURL(
       metrics::OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
-      OmniboxFocusType::DELETED_PERMANENT_TEXT, input.current_url().spec());
+      metrics::OmniboxFocusType::INTERACTION_CLOBBER,
+      input.current_url().spec());
 
   // Make sure valid input starts the provider.
   provider_->Start(input, false);
@@ -725,9 +727,10 @@ TEST_F(ZeroSuggestProviderTest, StartStopWeb) {
   omnibox::SetUserPreferenceForZeroSuggestCachedResponse(
       prefs, input.current_url().spec(), json_response);
 
-  GURL suggest_url = GetSuggestURL(metrics::OmniboxEventProto::OTHER,
-                                   OmniboxFocusType::DELETED_PERMANENT_TEXT,
-                                   input.current_url().spec());
+  GURL suggest_url =
+      GetSuggestURL(metrics::OmniboxEventProto::OTHER,
+                    metrics::OmniboxFocusType::INTERACTION_CLOBBER,
+                    input.current_url().spec());
 
   // Make sure valid input starts the provider.
   provider_->Start(input, false);
@@ -785,8 +788,9 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestCachingFirstRunNTP) {
 
   EXPECT_TRUE(provider_->matches().empty());
 
-  GURL suggest_url = GetSuggestURL(metrics::OmniboxEventProto::NTP_REALBOX,
-                                   OmniboxFocusType::ON_FOCUS, "");
+  GURL suggest_url =
+      GetSuggestURL(metrics::OmniboxEventProto::NTP_REALBOX,
+                    metrics::OmniboxFocusType::INTERACTION_FOCUS, "");
   EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
 
   std::string json_response(
@@ -847,7 +851,8 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestCachingFirstRunSRP) {
 
   GURL suggest_url = GetSuggestURL(
       metrics::OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
-      OmniboxFocusType::DELETED_PERMANENT_TEXT, input.current_url().spec());
+      metrics::OmniboxFocusType::INTERACTION_CLOBBER,
+      input.current_url().spec());
   EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
 
   std::string json_response(
@@ -909,9 +914,10 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestCachingFirstRunWeb) {
 
   EXPECT_TRUE(provider_->matches().empty());
 
-  GURL suggest_url = GetSuggestURL(metrics::OmniboxEventProto::OTHER,
-                                   OmniboxFocusType::DELETED_PERMANENT_TEXT,
-                                   input.current_url().spec());
+  GURL suggest_url =
+      GetSuggestURL(metrics::OmniboxEventProto::OTHER,
+                    metrics::OmniboxFocusType::INTERACTION_CLOBBER,
+                    input.current_url().spec());
   EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
 
   std::string json_response(
@@ -963,8 +969,9 @@ TEST_F(ZeroSuggestProviderTest,
   AutocompleteInput input = OnFocusInputForNTP();
   input.set_omit_asynchronous_matches(true);
 
-  GURL suggest_url = GetSuggestURL(metrics::OmniboxEventProto::NTP_REALBOX,
-                                   OmniboxFocusType::ON_FOCUS, "");
+  GURL suggest_url =
+      GetSuggestURL(metrics::OmniboxEventProto::NTP_REALBOX,
+                    metrics::OmniboxFocusType::INTERACTION_FOCUS, "");
 
   // Ensure the cache is empty.
   PrefService* prefs = client_->GetPrefs();
@@ -1001,7 +1008,8 @@ TEST_F(ZeroSuggestProviderTest,
 
   GURL suggest_url = GetSuggestURL(
       metrics::OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
-      OmniboxFocusType::DELETED_PERMANENT_TEXT, input.current_url().spec());
+      metrics::OmniboxFocusType::INTERACTION_CLOBBER,
+      input.current_url().spec());
 
   // Ensure the cache is empty.
   PrefService* prefs = client_->GetPrefs();
@@ -1037,9 +1045,10 @@ TEST_F(ZeroSuggestProviderTest,
   AutocompleteInput input = OnClobberInputForWeb();
   input.set_omit_asynchronous_matches(true);
 
-  GURL suggest_url = GetSuggestURL(metrics::OmniboxEventProto::OTHER,
-                                   OmniboxFocusType::DELETED_PERMANENT_TEXT,
-                                   input.current_url().spec());
+  GURL suggest_url =
+      GetSuggestURL(metrics::OmniboxEventProto::OTHER,
+                    metrics::OmniboxFocusType::INTERACTION_CLOBBER,
+                    input.current_url().spec());
 
   // Ensure the cache is empty.
   PrefService* prefs = client_->GetPrefs();
@@ -1087,8 +1096,9 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResultsNTP) {
   EXPECT_EQ(u"search2", provider_->matches()[1].contents);
   EXPECT_EQ(u"search3", provider_->matches()[2].contents);
 
-  GURL suggest_url = GetSuggestURL(metrics::OmniboxEventProto::NTP_REALBOX,
-                                   OmniboxFocusType::ON_FOCUS, "");
+  GURL suggest_url =
+      GetSuggestURL(metrics::OmniboxEventProto::NTP_REALBOX,
+                    metrics::OmniboxFocusType::INTERACTION_FOCUS, "");
   EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
   std::string json_response2(
       R"(["",["search4", "search5", "search6"],)"
@@ -1167,7 +1177,8 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResultsSRP) {
 
   GURL suggest_url = GetSuggestURL(
       metrics::OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
-      OmniboxFocusType::DELETED_PERMANENT_TEXT, input.current_url().spec());
+      metrics::OmniboxFocusType::INTERACTION_CLOBBER,
+      input.current_url().spec());
   EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
   std::string json_response2(
       R"(["",["search4", "search5", "search6"],)"
@@ -1247,9 +1258,10 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResultsWeb) {
   EXPECT_EQ(u"search2", provider_->matches()[1].contents);
   EXPECT_EQ(u"search3", provider_->matches()[2].contents);
 
-  GURL suggest_url = GetSuggestURL(metrics::OmniboxEventProto::OTHER,
-                                   OmniboxFocusType::DELETED_PERMANENT_TEXT,
-                                   input.current_url().spec());
+  GURL suggest_url =
+      GetSuggestURL(metrics::OmniboxEventProto::OTHER,
+                    metrics::OmniboxFocusType::INTERACTION_CLOBBER,
+                    input.current_url().spec());
   EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
   std::string json_response2(
       R"(["",["search4", "search5", "search6"],)"
@@ -1324,8 +1336,9 @@ TEST_F(ZeroSuggestProviderTest,
   EXPECT_EQ(u"search2", provider_->matches()[1].contents);
   EXPECT_EQ(u"search3", provider_->matches()[2].contents);
 
-  GURL suggest_url = GetSuggestURL(metrics::OmniboxEventProto::NTP_REALBOX,
-                                   OmniboxFocusType::ON_FOCUS, "");
+  GURL suggest_url =
+      GetSuggestURL(metrics::OmniboxEventProto::NTP_REALBOX,
+                    metrics::OmniboxFocusType::INTERACTION_FOCUS, "");
   EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
   std::string empty_response(R"(["",[],[],[],{}])");
   test_loader_factory()->AddResponse(suggest_url.spec(), empty_response);
@@ -1401,7 +1414,8 @@ TEST_F(ZeroSuggestProviderTest,
 
   GURL suggest_url = GetSuggestURL(
       metrics::OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
-      OmniboxFocusType::DELETED_PERMANENT_TEXT, input.current_url().spec());
+      metrics::OmniboxFocusType::INTERACTION_CLOBBER,
+      input.current_url().spec());
   EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
   std::string empty_response(R"(["",[],[],[],{}])");
   test_loader_factory()->AddResponse(suggest_url.spec(), empty_response);
@@ -1478,9 +1492,10 @@ TEST_F(ZeroSuggestProviderTest,
   EXPECT_EQ(u"search2", provider_->matches()[1].contents);
   EXPECT_EQ(u"search3", provider_->matches()[2].contents);
 
-  GURL suggest_url = GetSuggestURL(metrics::OmniboxEventProto::OTHER,
-                                   OmniboxFocusType::DELETED_PERMANENT_TEXT,
-                                   input.current_url().spec());
+  GURL suggest_url =
+      GetSuggestURL(metrics::OmniboxEventProto::OTHER,
+                    metrics::OmniboxFocusType::INTERACTION_CLOBBER,
+                    input.current_url().spec());
   EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
   std::string empty_response(R"(["",[],[],[],{}])");
   test_loader_factory()->AddResponse(suggest_url.spec(), empty_response);
@@ -1550,7 +1565,7 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestPrefetchThenNTPOnFocus) {
 
     GURL suggest_url =
         GetSuggestURL(metrics::OmniboxEventProto::NTP_ZPS_PREFETCH,
-                      OmniboxFocusType::ON_FOCUS, "");
+                      metrics::OmniboxFocusType::INTERACTION_FOCUS, "");
     EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
     std::string json_response2(
         R"(["",["search4", "search5", "search6"],)"
@@ -1606,8 +1621,9 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestPrefetchThenNTPOnFocus) {
     EXPECT_EQ(u"search5", provider_->matches()[1].contents);
     EXPECT_EQ(u"search6", provider_->matches()[2].contents);
 
-    GURL suggest_url = GetSuggestURL(metrics::OmniboxEventProto::NTP_REALBOX,
-                                     OmniboxFocusType::ON_FOCUS, "");
+    GURL suggest_url =
+        GetSuggestURL(metrics::OmniboxEventProto::NTP_REALBOX,
+                      metrics::OmniboxFocusType::INTERACTION_FOCUS, "");
     EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
     std::string json_response3(
         R"(["",["search7", "search8", "search9"],)"
@@ -1684,9 +1700,10 @@ TEST_F(ZeroSuggestProviderTest,
     // Expect the results to be empty.
     ASSERT_EQ(0U, provider_->matches().size());
 
-    GURL suggest_url = GetSuggestURL(
-        metrics::OmniboxEventProto::SRP_ZPS_PREFETCH,
-        OmniboxFocusType::DELETED_PERMANENT_TEXT, input.current_url().spec());
+    GURL suggest_url =
+        GetSuggestURL(metrics::OmniboxEventProto::SRP_ZPS_PREFETCH,
+                      metrics::OmniboxFocusType::INTERACTION_CLOBBER,
+                      input.current_url().spec());
     EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
     std::string json_response2(
         R"(["",["search4", "search5", "search6"],)"
@@ -1743,10 +1760,11 @@ TEST_F(ZeroSuggestProviderTest,
     EXPECT_EQ(u"search5", provider_->matches()[1].contents);
     EXPECT_EQ(u"search6", provider_->matches()[2].contents);
 
-    GURL suggest_url = GetSuggestURL(
-        metrics::OmniboxEventProto::
-            SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
-        OmniboxFocusType::DELETED_PERMANENT_TEXT, input.current_url().spec());
+    GURL suggest_url =
+        GetSuggestURL(metrics::OmniboxEventProto::
+                          SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
+                      metrics::OmniboxFocusType::INTERACTION_CLOBBER,
+                      input.current_url().spec());
     EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
     std::string json_response3(
         R"(["",["search7", "search8", "search9"],)"
@@ -1826,9 +1844,10 @@ TEST_F(ZeroSuggestProviderTest,
     // Expect the results to be empty.
     ASSERT_EQ(0U, provider_->matches().size());
 
-    GURL suggest_url = GetSuggestURL(
-        metrics::OmniboxEventProto::OTHER_ZPS_PREFETCH,
-        OmniboxFocusType::DELETED_PERMANENT_TEXT, input.current_url().spec());
+    GURL suggest_url =
+        GetSuggestURL(metrics::OmniboxEventProto::OTHER_ZPS_PREFETCH,
+                      metrics::OmniboxFocusType::INTERACTION_CLOBBER,
+                      input.current_url().spec());
     EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
     std::string json_response2(
         R"(["",["search4", "search5", "search6"],)"
@@ -1885,9 +1904,10 @@ TEST_F(ZeroSuggestProviderTest,
     EXPECT_EQ(u"search5", provider_->matches()[1].contents);
     EXPECT_EQ(u"search6", provider_->matches()[2].contents);
 
-    GURL suggest_url = GetSuggestURL(metrics::OmniboxEventProto::OTHER,
-                                     OmniboxFocusType::DELETED_PERMANENT_TEXT,
-                                     input.current_url().spec());
+    GURL suggest_url =
+        GetSuggestURL(metrics::OmniboxEventProto::OTHER,
+                      metrics::OmniboxFocusType::INTERACTION_CLOBBER,
+                      input.current_url().spec());
     EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
     std::string json_response3(
         R"(["",["search7", "search8", "search9"],)"

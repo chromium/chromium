@@ -63,7 +63,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
   AutocompleteInput input(base::ASCIIToUTF16(query), GetParam(),
                           TestSchemeClassifier());
   input.set_current_url(GURL(url));
-  input.set_focus_type(OmniboxFocusType::DEFAULT);
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_DEFAULT);
   provider_->Start(input, false);
 
   // Clobber state should never generate a verbatim match.
@@ -77,7 +77,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
   AutocompleteInput input(base::ASCIIToUTF16(query), GetParam(),
                           TestSchemeClassifier());
   input.set_current_url(GURL(url));
-  input.set_focus_type(OmniboxFocusType::DEFAULT);
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_DEFAULT);
   ON_CALL(mock_client_, IsOffTheRecord()).WillByDefault([] { return true; });
   provider_->Start(input, false);
 
@@ -90,7 +90,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest, OffersVerbatimMatchOnFocus) {
   AutocompleteInput input(base::ASCIIToUTF16(url), GetParam(),
                           TestSchemeClassifier());
   input.set_current_url(GURL(url));
-  input.set_focus_type(OmniboxFocusType::ON_FOCUS);
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
   provider_->Start(input, false);
   ASSERT_EQ(IsVerbatimMatchEligible(), provider_->matches().size() > 0);
   // Note: we intentionally do not validate the match content here.
@@ -105,7 +105,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
   AutocompleteInput input(base::ASCIIToUTF16(url), GetParam(),
                           TestSchemeClassifier());
   input.set_current_url(GURL(url));
-  input.set_focus_type(OmniboxFocusType::ON_FOCUS);
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
   ON_CALL(mock_client_, IsOffTheRecord()).WillByDefault([] { return true; });
   provider_->Start(input, false);
   ASSERT_EQ(IsVerbatimMatchEligible(), provider_->matches().size() > 0);
@@ -120,7 +120,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest, NoVerbatimMatchWithEmptyInput) {
   AutocompleteInput input(std::u16string(),  // Note: empty input.
                           GetParam(), TestSchemeClassifier());
   input.set_current_url(GURL(url));
-  input.set_focus_type(OmniboxFocusType::DEFAULT);
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_DEFAULT);
   provider_->Start(input, false);
   ASSERT_TRUE(provider_->matches().empty());
   // Note: we intentionally do not validate the match content here.
@@ -135,7 +135,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
   AutocompleteInput input(std::u16string(),  // Note: empty input.
                           GetParam(), TestSchemeClassifier());
   input.set_current_url(GURL(url));
-  input.set_focus_type(OmniboxFocusType::DEFAULT);
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_DEFAULT);
   ON_CALL(mock_client_, IsOffTheRecord()).WillByDefault([] { return true; });
   provider_->Start(input, false);
   ASSERT_TRUE(provider_->matches().empty());
@@ -150,7 +150,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest, NoVerbatimMatchOnClearInput) {
   AutocompleteInput input(std::u16string(),  // Note: empty input.
                           GetParam(), TestSchemeClassifier());
   input.set_current_url(GURL(url));
-  input.set_focus_type(OmniboxFocusType::DELETED_PERMANENT_TEXT);
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_CLOBBER);
   provider_->Start(input, false);
   ASSERT_TRUE(provider_->matches().empty());
   // Note: we intentionally do not validate the match content here.
@@ -165,7 +165,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
   AutocompleteInput input(std::u16string(),  // Note: empty input.
                           GetParam(), TestSchemeClassifier());
   input.set_current_url(GURL(url));
-  input.set_focus_type(OmniboxFocusType::DELETED_PERMANENT_TEXT);
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_CLOBBER);
   ON_CALL(mock_client_, IsOffTheRecord()).WillByDefault([] { return true; });
   provider_->Start(input, false);
   ASSERT_TRUE(provider_->matches().empty());

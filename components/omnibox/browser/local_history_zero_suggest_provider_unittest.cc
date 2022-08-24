@@ -29,12 +29,12 @@
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/in_memory_url_index_test_util.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "components/search_engines/omnibox_focus_type.h"
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 
 using base::Time;
 using metrics::OmniboxEventProto;
@@ -136,7 +136,7 @@ class LocalHistoryZeroSuggestProviderTest
 
   // Creates an input using the provided information and queries the provider.
   void StartProviderAndWaitUntilDone(const std::string& text,
-                                     OmniboxFocusType focus_type,
+                                     metrics::OmniboxFocusType focus_type,
                                      PageClassification page_classification,
                                      const std::string& current_url);
 
@@ -199,7 +199,8 @@ void LocalHistoryZeroSuggestProviderTest::WaitForHistoryService() {
 
 void LocalHistoryZeroSuggestProviderTest::StartProviderAndWaitUntilDone(
     const std::string& text = "",
-    OmniboxFocusType focus_type = OmniboxFocusType::ON_FOCUS,
+    metrics::OmniboxFocusType focus_type =
+        metrics::OmniboxFocusType::INTERACTION_FOCUS,
     PageClassification page_classification = OmniboxEventProto::NTP_REALBOX,
     const std::string& current_url = "") {
   AutocompleteInput input(base::ASCIIToUTF16(text), page_classification,
@@ -266,7 +267,8 @@ TEST_P(LocalHistoryZeroSuggestProviderTest, Input) {
   histogram_tester.ExpectTotalCount(
       "Omnibox.LocalHistoryZeroSuggest.SearchTermsExtractionTime", 0);
 
-  StartProviderAndWaitUntilDone(/*text=*/"", OmniboxFocusType::DEFAULT);
+  StartProviderAndWaitUntilDone(/*text=*/"",
+                                metrics::OmniboxFocusType::INTERACTION_DEFAULT);
   ExpectMatches({});
 
   // Following histograms should not be logged if zero-prefix suggestions are
@@ -337,7 +339,8 @@ TEST_P(LocalHistoryZeroSuggestProviderTest, EntryPoint) {
         /*enabled_features=*/{omnibox::kFocusTriggersSRPZeroSuggest},
         /*disabled_features=*/{omnibox::kLocalHistoryZeroSuggestBeyondNTP});
     StartProviderAndWaitUntilDone(
-        /*text=*/"https://example.com/", OmniboxFocusType::ON_FOCUS,
+        /*text=*/"https://example.com/",
+        metrics::OmniboxFocusType::INTERACTION_FOCUS,
         OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
         /*current_url=*/"https://example.com/");
 
@@ -356,7 +359,8 @@ TEST_P(LocalHistoryZeroSuggestProviderTest, EntryPoint) {
         },
         /*disabled_features=*/{});
     StartProviderAndWaitUntilDone(
-        /*text=*/"https://example.com/", OmniboxFocusType::ON_FOCUS,
+        /*text=*/"https://example.com/",
+        metrics::OmniboxFocusType::INTERACTION_FOCUS,
         OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
         /*current_url=*/"https://example.com/");
 
@@ -372,7 +376,8 @@ TEST_P(LocalHistoryZeroSuggestProviderTest, EntryPoint) {
         /*enabled_features=*/{omnibox::kLocalHistoryZeroSuggestBeyondNTP},
         /*disabled_features=*/{omnibox::kFocusTriggersSRPZeroSuggest});
     StartProviderAndWaitUntilDone(
-        /*text=*/"https://example.com/", OmniboxFocusType::ON_FOCUS,
+        /*text=*/"https://example.com/",
+        metrics::OmniboxFocusType::INTERACTION_FOCUS,
         OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
         /*current_url=*/"https://example.com/");
 

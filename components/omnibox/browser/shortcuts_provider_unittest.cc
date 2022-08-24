@@ -33,10 +33,10 @@
 #include "components/omnibox/browser/shortcuts_backend.h"
 #include "components/omnibox/browser/shortcuts_provider_test_util.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "components/search_engines/omnibox_focus_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 
 using base::ASCIIToUTF16;
 using ExpectedURLs = std::vector<ExpectedURLAndAllowedToBeDefault>;
@@ -754,7 +754,7 @@ TEST_F(ShortcutsProviderTest, DeleteMatch) {
 TEST_F(ShortcutsProviderTest, DoesNotProvideOnFocus) {
   AutocompleteInput input(u"about:o", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
-  input.set_focus_type(OmniboxFocusType::ON_FOCUS);
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
   provider_->Start(input, false);
   EXPECT_TRUE(provider_->matches().empty());
 }

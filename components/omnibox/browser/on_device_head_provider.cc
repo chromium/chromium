@@ -25,9 +25,9 @@
 #include "components/omnibox/browser/on_device_head_provider.h"
 #include "components/omnibox/browser/on_device_model_update_listener.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "components/search_engines/omnibox_focus_type.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
 
 namespace {
@@ -129,7 +129,7 @@ bool OnDeviceHeadProvider::IsOnDeviceHeadProviderAllowed(
     return false;
 
   // Reject on focus request.
-  if (input.focus_type() != OmniboxFocusType::DEFAULT)
+  if (input.focus_type() != metrics::OmniboxFocusType::INTERACTION_DEFAULT)
     return false;
 
   // Do not proceed if default search provider is not Google.

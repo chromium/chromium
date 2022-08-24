@@ -1200,7 +1200,7 @@ TEST_F(AutocompleteResultTest, SortAndCullAllowsNonMatchingZeroSuggestions) {
   AutocompleteInput input(u"https://secure-prefix",
                           metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
-  input.set_focus_type(OmniboxFocusType::ON_FOCUS);
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
 
   AutocompleteResult result;
   result.AppendMatches(matches);
@@ -1903,7 +1903,8 @@ TEST_F(AutocompleteResultTest, SortAndCull_DemoteSuggestionGroups_ExceedLimit) {
   {
     AutocompleteInput zero_prefix_input(u"", metrics::OmniboxEventProto::NTP,
                                         TestSchemeClassifier());
-    zero_prefix_input.set_focus_type(OmniboxFocusType::ON_FOCUS);
+    zero_prefix_input.set_focus_type(
+        metrics::OmniboxFocusType::INTERACTION_FOCUS);
     AutocompleteResult result;
     result.MergeSuggestionGroupsMap(suggestion_groups_map);
     result.AppendMatches(matches);
@@ -1957,7 +1958,8 @@ TEST_F(AutocompleteResultTest, SortAndCull_DemoteSuggestionGroups_ExceedLimit) {
   {
     AutocompleteInput zero_prefix_input(u"", metrics::OmniboxEventProto::NTP,
                                         TestSchemeClassifier());
-    zero_prefix_input.set_focus_type(OmniboxFocusType::ON_FOCUS);
+    zero_prefix_input.set_focus_type(
+        metrics::OmniboxFocusType::INTERACTION_FOCUS);
     AutocompleteResult result;
     result.MergeSuggestionGroupsMap(suggestion_groups_map);
     result.AppendMatches(matches);
@@ -2033,7 +2035,8 @@ TEST_F(AutocompleteResultTest,
   {
     AutocompleteInput zero_prefix_input(u"", metrics::OmniboxEventProto::NTP,
                                         TestSchemeClassifier());
-    zero_prefix_input.set_focus_type(OmniboxFocusType::ON_FOCUS);
+    zero_prefix_input.set_focus_type(
+        metrics::OmniboxFocusType::INTERACTION_FOCUS);
     AutocompleteResult result;
 
     result.MergeSuggestionGroupsMap(suggestion_groups_map);
@@ -2114,7 +2117,8 @@ TEST_F(AutocompleteResultTest,
   {
     AutocompleteInput zero_prefix_input(u"", metrics::OmniboxEventProto::NTP,
                                         TestSchemeClassifier());
-    zero_prefix_input.set_focus_type(OmniboxFocusType::ON_FOCUS);
+    zero_prefix_input.set_focus_type(
+        metrics::OmniboxFocusType::INTERACTION_FOCUS);
     AutocompleteResult result;
 
     result.MergeSuggestionGroupsMap(suggestion_groups_map);

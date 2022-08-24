@@ -91,7 +91,7 @@ void SearchControllerLacros::Search(const std::u16string& query,
       AutocompleteInput(query, metrics::OmniboxEventProto::CHROMEOS_APP_LIST,
                         ChromeAutocompleteSchemeClassifier(profile_));
   if (input.text().empty())
-    input.set_focus_type(OmniboxFocusType::ON_FOCUS);
+    input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
 
   query_ = query;
   input_ = input;

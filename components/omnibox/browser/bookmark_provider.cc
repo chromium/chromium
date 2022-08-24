@@ -23,7 +23,7 @@
 #include "components/omnibox/browser/titled_url_match_utils.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
-#include "components/search_engines/omnibox_focus_type.h"
+#include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
 #include "url/url_constants.h"
 
@@ -40,7 +40,8 @@ void BookmarkProvider::Start(const AutocompleteInput& input,
   TRACE_EVENT0("omnibox", "BookmarkProvider::Start");
   matches_.clear();
 
-  if (input.focus_type() != OmniboxFocusType::DEFAULT || input.text().empty())
+  if (input.focus_type() != metrics::OmniboxFocusType::INTERACTION_DEFAULT ||
+      input.text().empty())
     return;
 
   // Remove the keyword from input if we're in keyword mode for a starter pack

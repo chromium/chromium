@@ -31,18 +31,18 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/search_engines/omnibox_focus_type.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/url_formatter/url_formatter.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
 #include "url/gurl.h"
 
 using OEP = metrics::OmniboxEventProto;
-using OFT = OmniboxFocusType;
+using OFT = metrics::OmniboxFocusType;
 using OIT = metrics::OmniboxInputType;
 
 namespace {
@@ -288,14 +288,16 @@ ZeroSuggestProvider::ResultType ZeroSuggestProvider::ResultTypeToRun(
 
   // Android Search Widget.
   if (page_class == OEP::ANDROID_SHORTCUTS_WIDGET) {
-    if (focus_type_input_type == std::make_pair(OFT::ON_FOCUS, OIT::URL)) {
+    if (focus_type_input_type ==
+        std::make_pair(OFT::INTERACTION_FOCUS, OIT::URL)) {
       return ResultType::kRemoteNoURL;
     }
   }
 
   // New Tab Page.
   if (BaseSearchProvider::IsNTPPage(page_class)) {
-    if (focus_type_input_type == std::make_pair(OFT::ON_FOCUS, OIT::EMPTY)) {
+    if (focus_type_input_type ==
+        std::make_pair(OFT::INTERACTION_FOCUS, OIT::EMPTY)) {
       return ResultType::kRemoteNoURL;
     }
   }
@@ -309,13 +311,14 @@ ZeroSuggestProvider::ResultType ZeroSuggestProvider::ResultTypeToRun(
 
   // Open Web - does NOT include Search Results Page.
   if (BaseSearchProvider::IsOtherWebPage(page_class)) {
-    if (focus_type_input_type == std::make_pair(OFT::ON_FOCUS, OIT::URL) &&
+    if (focus_type_input_type ==
+            std::make_pair(OFT::INTERACTION_FOCUS, OIT::URL) &&
         base::FeatureList::IsEnabled(
             omnibox::kFocusTriggersContextualWebZeroSuggest)) {
       return ResultType::kRemoteSendURL;
     }
     if (focus_type_input_type ==
-            std::make_pair(OFT::DELETED_PERMANENT_TEXT, OIT::EMPTY) &&
+            std::make_pair(OFT::INTERACTION_CLOBBER, OIT::EMPTY) &&
         base::FeatureList::IsEnabled(
             omnibox::kClobberTriggersContextualWebZeroSuggest)) {
       return ResultType::kRemoteSendURL;
@@ -324,12 +327,13 @@ ZeroSuggestProvider::ResultType ZeroSuggestProvider::ResultTypeToRun(
 
   // Search Results Page.
   if (BaseSearchProvider::IsSearchResultsPage(page_class)) {
-    if (focus_type_input_type == std::make_pair(OFT::ON_FOCUS, OIT::URL) &&
+    if (focus_type_input_type ==
+            std::make_pair(OFT::INTERACTION_FOCUS, OIT::URL) &&
         base::FeatureList::IsEnabled(omnibox::kFocusTriggersSRPZeroSuggest)) {
       return ResultType::kRemoteSendURL;
     }
     if (focus_type_input_type ==
-            std::make_pair(OFT::DELETED_PERMANENT_TEXT, OIT::EMPTY) &&
+            std::make_pair(OFT::INTERACTION_CLOBBER, OIT::EMPTY) &&
         base::FeatureList::IsEnabled(omnibox::kClobberTriggersSRPZeroSuggest)) {
       return ResultType::kRemoteSendURL;
     }

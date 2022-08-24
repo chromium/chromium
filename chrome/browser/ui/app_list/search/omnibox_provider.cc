@@ -32,8 +32,8 @@
 #include "components/favicon/core/favicon_service.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_input.h"
-#include "components/search_engines/omnibox_focus_type.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "url/gurl.h"
 
 namespace app_list {
@@ -122,7 +122,7 @@ void OmniboxProvider::Start(const std::u16string& query) {
   // Sets the |from_omnibox_focus| flag to enable ZeroSuggestProvider to process
   // the requests from app_list.
   if (input_.text().empty()) {
-    input_.set_focus_type(OmniboxFocusType::ON_FOCUS);
+    input_.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
     is_zero_state_input_ = true;
   } else {
     is_zero_state_input_ = false;

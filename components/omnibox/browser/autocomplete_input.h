@@ -10,9 +10,9 @@
 #include <string>
 #include <vector>
 
-#include "components/search_engines/omnibox_focus_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "url/gurl.h"
@@ -246,12 +246,15 @@ class AutocompleteInput {
   }
 
   // Returns the type of UI interaction that started this autocomplete query.
-  OmniboxFocusType focus_type() const { return focus_type_; }
+  metrics::OmniboxFocusType focus_type() const { return focus_type_; }
   // |focus_type| should specify the UI interaction that started autocomplete.
-  // Generally, this should be left alone as DEFAULT. Most providers only
-  // provide results for DEFAULT focus type. Providers (like ZeroSuggest) that
-  // only want to display matches on-focus or on-clobber will look at this flag.
-  void set_focus_type(OmniboxFocusType focus_type) { focus_type_ = focus_type; }
+  // Generally, this should be left alone as INTERACTION_DEFAULT. Most providers
+  // only provide results for the INTERACTION_DEFAULT focus type. Providers like
+  // ZeroSuggestProvider that only want to display matches on-focus or
+  // on-clobber will look at this flag.
+  void set_focus_type(metrics::OmniboxFocusType focus_type) {
+    focus_type_ = focus_type;
+  }
 
   // Returns the terms in |text_| that start with http:// or https:// plus
   // at least one more character, stored without the scheme.  Used in
@@ -319,7 +322,8 @@ class AutocompleteInput {
   bool allow_exact_keyword_match_;
   metrics::OmniboxEventProto::KeywordModeEntryMethod keyword_mode_entry_method_;
   bool omit_asynchronous_matches_;
-  OmniboxFocusType focus_type_ = OmniboxFocusType::DEFAULT;
+  metrics::OmniboxFocusType focus_type_ =
+      metrics::OmniboxFocusType::INTERACTION_DEFAULT;
   std::vector<std::u16string> terms_prefixed_by_http_or_https_;
   absl::optional<std::string> query_tile_id_;
 

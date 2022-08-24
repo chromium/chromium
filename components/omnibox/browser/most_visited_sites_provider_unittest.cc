@@ -20,10 +20,10 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "components/search_engines/omnibox_focus_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 
 namespace {
 class FakeTopSites : public history::TopSites {
@@ -101,7 +101,7 @@ class MostVisitedSitesProviderTest : public testing::Test,
       const std::u16string& input_url,
       const std::u16string& current_url,
       metrics::OmniboxEventProto::PageClassification page_class,
-      OmniboxFocusType focus_type) {
+      metrics::OmniboxFocusType focus_type) {
     AutocompleteInput input(input_url, page_class, TestSchemeClassifier());
     input.set_focus_type(focus_type);
     input.set_current_url(GURL(current_url));
@@ -113,7 +113,7 @@ class MostVisitedSitesProviderTest : public testing::Test,
   AutocompleteInput BuildAutocompleteInputForWebOnFocus() {
     return BuildAutocompleteInput(WEB_URL, WEB_URL,
                                   metrics::OmniboxEventProto::OTHER,
-                                  OmniboxFocusType::ON_FOCUS);
+                                  metrics::OmniboxFocusType::INTERACTION_FOCUS);
   }
 
   // Iterate over all matches offered by the Provider and verify these against
@@ -305,7 +305,7 @@ TEST_F(MostVisitedSitesProviderWithMatchesTest,
   auto srp_input = BuildAutocompleteInput(
       SRP_URL, SRP_URL,
       metrics::OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
-      OmniboxFocusType::ON_FOCUS);
+      metrics::OmniboxFocusType::INTERACTION_FOCUS);
 
   controller_->Start(srp_input);
   EXPECT_EQ(0u, NumMostVisitedMatches());
@@ -347,31 +347,34 @@ INSTANTIATE_TEST_SUITE_P(All,
 TEST_P(ParameterizedMostVisitedSitesProviderTest,
        AllowMostVisitedSitesSuggestions) {
   using OEP = metrics::OmniboxEventProto;
-  using OFT = OmniboxFocusType;
+  using OFT = metrics::OmniboxFocusType;
 
   // MostVisited should never deal with prefix suggestions.
-  EXPECT_FALSE(provider_->AllowMostVisitedSitesSuggestions(
-      BuildAutocompleteInput(WEB_URL, WEB_URL, OEP::OTHER, OFT::DEFAULT)));
+  EXPECT_FALSE(
+      provider_->AllowMostVisitedSitesSuggestions(BuildAutocompleteInput(
+          WEB_URL, WEB_URL, OEP::OTHER, OFT::INTERACTION_DEFAULT)));
 
   // This should always be true, as otherwise we will break MostVisited.
-  EXPECT_TRUE(provider_->AllowMostVisitedSitesSuggestions(
-      BuildAutocompleteInput(WEB_URL, WEB_URL, OEP::OTHER, OFT::ON_FOCUS)));
+  EXPECT_TRUE(
+      provider_->AllowMostVisitedSitesSuggestions(BuildAutocompleteInput(
+          WEB_URL, WEB_URL, OEP::OTHER, OFT::INTERACTION_FOCUS)));
 
   // Verifies that non-permitted schemes are rejected.
-  EXPECT_FALSE(provider_->AllowMostVisitedSitesSuggestions(
-      BuildAutocompleteInput(FTP_URL, FTP_URL, OEP::OTHER, OFT::ON_FOCUS)));
+  EXPECT_FALSE(
+      provider_->AllowMostVisitedSitesSuggestions(BuildAutocompleteInput(
+          FTP_URL, FTP_URL, OEP::OTHER, OFT::INTERACTION_FOCUS)));
 
   // Offer MV sites when the User is visiting a website and deletes text.
   EXPECT_TRUE(
       provider_->AllowMostVisitedSitesSuggestions(BuildAutocompleteInput(
-          WEB_URL, WEB_URL, OEP::OTHER, OFT::DELETED_PERMANENT_TEXT)));
+          WEB_URL, WEB_URL, OEP::OTHER, OFT::INTERACTION_CLOBBER)));
 
   // Offer MV sites when the User searched for a query and focus on omnibox.
   EXPECT_EQ(
       GetParam(),
       provider_->AllowMostVisitedSitesSuggestions(BuildAutocompleteInput(
           WEB_URL, WEB_URL, OEP::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
-          OFT::ON_FOCUS)));
+          OFT::INTERACTION_FOCUS)));
 }
 
 TEST_P(ParameterizedMostVisitedSitesProviderTest, TestCreateMostVisitedMatch) {
@@ -398,7 +401,7 @@ TEST_P(ParameterizedMostVisitedSitesProviderTest,
   // Assume that top sites list has not been loaded yet from the DB.
   ASSERT_FALSE(top_sites_->loaded());
   auto input = BuildAutocompleteInputForWebOnFocus();
-  input.set_focus_type(OmniboxFocusType::DEFAULT);
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_DEFAULT);
   input.set_omit_asynchronous_matches(true);
   controller_->Start(input);
   EXPECT_TRUE(provider_->done());

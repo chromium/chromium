@@ -79,7 +79,8 @@ OpenTabProvider::~OpenTabProvider() = default;
 void OpenTabProvider::Start(const AutocompleteInput& input,
                             bool minimal_changes) {
   matches_.clear();
-  if (input.focus_type() != OmniboxFocusType::DEFAULT || input.text().empty()) {
+  if (input.focus_type() != metrics::OmniboxFocusType::INTERACTION_DEFAULT ||
+      input.text().empty()) {
     return;
   }
 

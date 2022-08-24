@@ -34,11 +34,11 @@
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/tab_matcher.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "components/search_engines/omnibox_focus_type.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_fixer.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -336,7 +336,8 @@ void AutocompleteResult::SortAndCull(
 
   // Limit URL matches per OmniboxMaxURLMatches.
   size_t max_url_count = 0;
-  bool is_zero_suggest = input.focus_type() != OmniboxFocusType::DEFAULT;
+  bool is_zero_suggest =
+      input.focus_type() != metrics::OmniboxFocusType::INTERACTION_DEFAULT;
   if (OmniboxFieldTrial::IsMaxURLMatchesFeatureEnabled() &&
       (max_url_count = OmniboxFieldTrial::GetMaxURLMatches()) != 0)
     LimitNumberOfURLsShown(GetMaxMatches(is_zero_suggest), max_url_count,
@@ -391,7 +392,7 @@ void AutocompleteResult::SortAndCull(
   //    modes, there is no explicit user input so these checks don't make sense.
   auto* default_match = this->default_match();
   if (default_match && default_match->destination_url.is_valid() &&
-      input.focus_type() == OmniboxFocusType::DEFAULT) {
+      input.focus_type() == metrics::OmniboxFocusType::INTERACTION_DEFAULT) {
     const std::u16string debug_info =
         u"fill_into_edit=" + default_match->fill_into_edit + u", provider=" +
         ((default_match->provider != nullptr)

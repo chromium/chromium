@@ -850,17 +850,17 @@ TEST_F(TemplateURLTest, ReplaceInputType) {
 TEST_F(TemplateURLTest, ReplaceOmniboxFocusType) {
   struct TestData {
     const std::u16string search_term;
-    OmniboxFocusType focus_type;
+    metrics::OmniboxFocusType focus_type;
     const std::string url;
     const std::string expected_result;
   } test_data[] = {
-      {u"foo", OmniboxFocusType::DEFAULT,
+      {u"foo", metrics::OmniboxFocusType::INTERACTION_DEFAULT,
        "{google:baseURL}?{searchTerms}&{google:omniboxFocusType}",
        "http://www.google.com/?foo&"},
-      {u"foo", OmniboxFocusType::ON_FOCUS,
+      {u"foo", metrics::OmniboxFocusType::INTERACTION_FOCUS,
        "{google:baseURL}?{searchTerms}&{google:omniboxFocusType}",
        "http://www.google.com/?foo&oft=1&"},
-      {u"foo", OmniboxFocusType::DELETED_PERMANENT_TEXT,
+      {u"foo", metrics::OmniboxFocusType::INTERACTION_CLOBBER,
        "{google:baseURL}?{searchTerms}&{google:omniboxFocusType}",
        "http://www.google.com/?foo&oft=2&"},
   };

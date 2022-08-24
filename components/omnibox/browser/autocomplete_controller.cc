@@ -54,13 +54,13 @@
 #include "components/omnibox/browser/zero_suggest_provider.h"
 #include "components/omnibox/browser/zero_suggest_verbatim_match_provider.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
-#include "components/search_engines/omnibox_focus_type.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/chrome_searchbox_stats.pb.h"
+#include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -515,10 +515,10 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
                base::UTF16ToUTF8(input.text()));
 
   // Providers assume synchronous inputs (`omit_asynchronous_matches() ==
-  // true`) have default focus type (`focus_type() == DEFAULT`). See
+  // true`) have default focus type (`focus_type() == INTERACTION_DEFAULT`). See
   // crbug.com/1339425.
   DCHECK(!input.omit_asynchronous_matches() ||
-         input.focus_type() == OmniboxFocusType::DEFAULT);
+         input.focus_type() == metrics::OmniboxFocusType::INTERACTION_DEFAULT);
 
   // When input.omit_asynchronous_matches() is true, the AutocompleteController
   // is being used for text classification, which should not notify observers.
@@ -545,7 +545,7 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
   const std::u16string old_input_text(input_.text());
   const bool old_allow_exact_keyword_match = input_.allow_exact_keyword_match();
   const bool old_omit_asynchronous_matches = input_.omit_asynchronous_matches();
-  const OmniboxFocusType old_focus_type = input_.focus_type();
+  const metrics::OmniboxFocusType old_focus_type = input_.focus_type();
   input_ = input;
 
   // See if we can avoid rerunning autocomplete when the query hasn't changed
@@ -927,7 +927,7 @@ void AutocompleteController::UpdateResult(
   result_.SortAndCull(input_, template_url_service_, preserve_default_match);
 
   // Only produce Pedals for the default focus case (not on focus or on delete).
-  if (input_.focus_type() == OmniboxFocusType::DEFAULT) {
+  if (input_.focus_type() == metrics::OmniboxFocusType::INTERACTION_DEFAULT) {
     // TODO(tommycli): It sure seems like this should be moved down below
     // `TransferOldMatches()` along with all the other annotation code.
     result_.AttachPedalsToMatches(input_, *provider_client_);

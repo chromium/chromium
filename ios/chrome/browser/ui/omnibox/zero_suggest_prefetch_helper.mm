@@ -88,7 +88,8 @@ using web::WebStateObserverBridge;
   AutocompleteInput autocomplete_input(
       u"", metrics::OmniboxEventProto::NTP_ZPS_PREFETCH,
       AutocompleteSchemeClassifierImpl());
-  autocomplete_input.set_focus_type(OmniboxFocusType::ON_FOCUS);
+  autocomplete_input.set_focus_type(
+      metrics::OmniboxFocusType::INTERACTION_FOCUS);
   self.autocompleteController->StartPrefetch(autocomplete_input);
 }
 
