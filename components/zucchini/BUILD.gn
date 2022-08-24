@@ -141,7 +141,10 @@ executable("zucchini") {
   ]
 
   if (is_win) {
-    deps += [ ":zucchini_exe_version" ]
+    deps += [
+      ":zucchini_exe_version",
+      "//build/win:default_exe_manifest",
+    ]
   }
 }
 
