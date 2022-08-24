@@ -402,6 +402,30 @@ TEST_F(PageSchedulerImplTest, RepeatingTimers_OneBackgroundOneForeground) {
   EXPECT_EQ(1, run_count2);
 }
 
+TEST_F(PageSchedulerImplTest, IsLoadingTest) {
+  // 1st Page is loaded.
+  EXPECT_FALSE(page_scheduler_->IsLoading());
+
+  std::unique_ptr<PageSchedulerImpl> page_scheduler2 =
+      CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);
+  std::unique_ptr<FrameSchedulerImpl> frame_scheduler2 =
+      CreateFrameScheduler(page_scheduler2.get(), nullptr,
+                           /*is_in_embedded_frame_tree=*/false,
+                           FrameScheduler::FrameType::kMainFrame);
+
+  // 1st Page is loaded. 2nd page is loading.
+  EXPECT_FALSE(page_scheduler_->IsLoading());
+  EXPECT_TRUE(page_scheduler2->IsLoading());
+
+  // 2nd page finishes loading.
+  frame_scheduler2->OnFirstContentfulPaintInMainFrame();
+  frame_scheduler2->OnFirstMeaningfulPaint();
+
+  // Both pages are loaded.
+  EXPECT_FALSE(page_scheduler_->IsLoading());
+  EXPECT_FALSE(page_scheduler2->IsLoading());
+}
+
 namespace {
 
 void RunVirtualTimeRecorderTask(const base::TickClock* clock,
