@@ -100,8 +100,8 @@ std::unique_ptr<ProcessMetrics> ProcessMetrics::CreateCurrentProcessMetrics() {
 }
 
 #if !BUILDFLAG(IS_FREEBSD) || !BUILDFLAG(IS_POSIX)
-double ProcessMetrics::GetPlatformIndependentCPUUsage() {
-  TimeDelta cumulative_cpu = GetCumulativeCPUUsage();
+double ProcessMetrics::GetPlatformIndependentCPUUsage(
+    TimeDelta cumulative_cpu) {
   TimeTicks time = TimeTicks::Now();
 
   if (last_cumulative_cpu_.is_zero()) {
@@ -122,11 +122,14 @@ double ProcessMetrics::GetPlatformIndependentCPUUsage() {
 
   return 100.0 * cpu_time_delta / time_delta;
 }
+
+double ProcessMetrics::GetPlatformIndependentCPUUsage() {
+  return GetPlatformIndependentCPUUsage(GetCumulativeCPUUsage());
+}
 #endif
 
 #if BUILDFLAG(IS_WIN)
-double ProcessMetrics::GetPreciseCPUUsage() {
-  TimeDelta cumulative_cpu = GetPreciseCumulativeCPUUsage();
+double ProcessMetrics::GetPreciseCPUUsage(TimeDelta cumulative_cpu) {
   TimeTicks time = TimeTicks::Now();
 
   if (last_precise_cumulative_cpu_.is_zero()) {
@@ -146,6 +149,10 @@ double ProcessMetrics::GetPreciseCPUUsage() {
   last_cpu_time_for_precise_cpu_usage_ = time;
 
   return 100.0 * cpu_time_delta / time_delta;
+}
+
+double ProcessMetrics::GetPreciseCPUUsage() {
+  return GetPreciseCPUUsage(GetPreciseCumulativeCPUUsage());
 }
 #endif  // BUILDFLAG(IS_WIN)
 

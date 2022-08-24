@@ -114,17 +114,22 @@ class BASE_EXPORT ProcessMetrics {
 #endif
 
   // Returns the percentage of time spent executing, across all threads of the
-  // process, in the interval since the last time the method was called. Since
-  // this considers the total execution time across all threads in a process,
-  // the result can easily exceed 100% in multi-thread processes running on
-  // multi-core systems. In general the result is therefore a value in the
-  // range 0% to SysInfo::NumberOfProcessors() * 100%.
+  // process, in the interval since the last time the method was called, using
+  // the current |cumulative_cpu|. Since this considers the total execution time
+  // across all threads in a process, the result can easily exceed 100% in
+  // multi-thread processes running on multi-core systems. In general the result
+  // is therefore a value in the range 0% to
+  // SysInfo::NumberOfProcessors() * 100%.
   //
   // To obtain the percentage of total available CPU resources consumed by this
   // process over the interval, the caller must divide by NumberOfProcessors().
   //
   // Since this API measures usage over an interval, it will return zero on the
   // first call, and an actual value only on the second and subsequent calls.
+  [[nodiscard]] double GetPlatformIndependentCPUUsage(TimeDelta cumulative_cpu);
+
+  // Same as the above, but automatically calls GetCumulativeCPUUsage() to
+  // determine the current cumulative CPU.
   [[nodiscard]] double GetPlatformIndependentCPUUsage();
 
   // Returns the cumulative CPU usage across all threads of the process since
@@ -139,10 +144,15 @@ class BASE_EXPORT ProcessMetrics {
   // and that they can replace the old implementation.
 
   // Returns the percentage of time spent executing, across all threads of the
-  // process, in the interval since the last time the method was called.
+  // process, in the interval since the last time the method was called, using
+  // the current |cumulative_cpu|.
   //
   // Same as GetPlatformIndependentCPUUSage() but implemented using
   // `QueryProcessCycleTime` for higher precision.
+  [[nodiscard]] double GetPreciseCPUUsage(TimeDelta cumulative_cpu);
+
+  // Same as the above, but automatically calls GetPreciseCumulativeCPUUsage()
+  // to determine the current cumulative CPU.
   [[nodiscard]] double GetPreciseCPUUsage();
 
   // Returns the cumulative CPU usage across all threads of the process since

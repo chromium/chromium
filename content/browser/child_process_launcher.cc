@@ -27,6 +27,33 @@
 
 namespace content {
 
+namespace {
+
+#if !BUILDFLAG(IS_ANDROID)
+// Returns the cumulative CPU usage for the specified process.
+base::TimeDelta GetCPUUsage(base::ProcessHandle process_handle) {
+#if BUILDFLAG(IS_MAC)
+  std::unique_ptr<base::ProcessMetrics> process_metrics =
+      base::ProcessMetrics::CreateProcessMetrics(
+          process_handle, ChildProcessTaskPortProvider::GetInstance());
+#else
+  std::unique_ptr<base::ProcessMetrics> process_metrics =
+      base::ProcessMetrics::CreateProcessMetrics(process_handle);
+#endif
+
+#if BUILDFLAG(IS_WIN)
+  // Use the precise version which is Windows specific.
+  // TODO(pmonette): Clean up this code when the precise version becomes the
+  //                 default.
+  return process_metrics->GetPreciseCumulativeCPUUsage();
+#else
+  return process_metrics->GetCumulativeCPUUsage();
+#endif
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+}  // namespace
+
 using internal::ChildProcessLauncherHelper;
 
 void ChildProcessLauncherPriority::WriteIntoTrace(
@@ -160,7 +187,18 @@ ChildProcessTerminationInfo ChildProcessLauncher::GetChildTerminationInfo(
     return termination_info_;
   }
 
+#if !BUILDFLAG(IS_ANDROID)
+  auto cpu_usage = GetCPUUsage(process_.process.Handle());
+#endif
+
   termination_info_ = helper_->GetTerminationInfo(process_, known_dead);
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Get the cumulative CPU usage. This needs to be done before closing the
+  // process handle (on Windows) or reaping the zombie process (on MacOS, Linux,
+  // ChromeOS).
+  termination_info_.cpu_usage = cpu_usage;
+#endif
 
   // POSIX: If the process crashed, then the kernel closed the socket for it and
   // so the child has already died by the time we get here. Since

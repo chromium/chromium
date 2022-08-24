@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_METRICS_POWER_PROCESS_MONITOR_H_
 #define CHROME_BROWSER_METRICS_POWER_PROCESS_MONITOR_H_
 
+#include <array>
 #include <map>
 #include <memory>
 
@@ -140,6 +141,10 @@ class ProcessMonitor : public content::BrowserChildProcessObserver,
   std::map<content::RenderProcessHost*, ProcessInfo> render_process_infos_;
 
   std::map<int, ProcessInfo> browser_child_process_infos_;
+
+  // The metrics for the processes that exited during the last interval. Added
+  // to the current interval's sample and then reset to zero.
+  std::array<Metrics, MonitoredProcessType::kCount> exited_processes_metrics_;
 };
 
 #endif  // CHROME_BROWSER_METRICS_POWER_PROCESS_MONITOR_H_

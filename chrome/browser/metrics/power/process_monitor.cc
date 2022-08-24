@@ -91,6 +91,23 @@ void ScaleMetrics(ProcessMonitor::Metrics* metrics, double factor) {
 #endif
 }
 
+ProcessMonitor::Metrics GetLastIntervalMetrics(
+    base::ProcessMetrics& process_metrics,
+    base::TimeDelta cumulative_cpu_usage) {
+  ProcessMonitor::Metrics metrics;
+
+#if BUILDFLAG(IS_WIN)
+  metrics.cpu_usage = process_metrics.GetPreciseCPUUsage(cumulative_cpu_usage);
+#else
+  metrics.cpu_usage =
+      process_metrics.GetPlatformIndependentCPUUsage(cumulative_cpu_usage);
+#endif
+
+  // TODO: Add other values in ProcessMonitor::Metrics.
+
+  return metrics;
+}
+
 MonitoredProcessType GetMonitoredProcessTypeForRenderProcess(
     content::RenderProcessHost* host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -224,6 +241,11 @@ void ProcessMonitor::SampleAllProcesses(Observer* observer) {
   }
 
   for (int i = 0; i < MonitoredProcessType::kCount; i++) {
+    // Add the metrics for the processes that exited during this interval and
+    // zero out.
+    per_type_metrics[i] += exited_processes_metrics_[i];
+    exited_processes_metrics_[i] = Metrics();
+
     observer->OnMetricsSampled(static_cast<MonitoredProcessType>(i),
                                per_type_metrics[i]);
   }
@@ -269,6 +291,12 @@ void ProcessMonitor::RenderProcessExited(
     // This process was never ready.
     return;
   }
+
+  // Remember the metrics from when the process exited.
+  const ProcessInfo& process_info = it->second;
+  exited_processes_metrics_[process_info.type] +=
+      GetLastIntervalMetrics(*process_info.process_metrics, info.cpu_usage);
+
   render_process_infos_.erase(it);
 }
 

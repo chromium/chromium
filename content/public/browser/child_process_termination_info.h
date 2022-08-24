@@ -67,6 +67,11 @@ struct CONTENT_EXPORT ChildProcessTerminationInfo {
   // The LastError if there was a failure to launch the process.
   DWORD last_error;
 #endif
+
+#if !BUILDFLAG(IS_ANDROID)
+  // The cumulative CPU usage of this process.
+  base::TimeDelta cpu_usage;
+#endif
 };
 
 }  // namespace content
