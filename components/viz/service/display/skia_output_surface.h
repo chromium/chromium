@@ -141,9 +141,13 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
   // |return_release_fence_cb| callback to be called after all commands are
   // submitted. The callback will return the release fence which will be
   // signaled once the submitted commands are processed.
-  virtual void EndPaint(base::OnceClosure on_finished,
-                        base::OnceCallback<void(gfx::GpuFenceHandle)>
-                            return_release_fence_cb) = 0;
+  // When finishing painting of a render pass that will be presented as an
+  // overlay, |is_overlay| should be true so the GPU thread knows to keep the
+  // ScopedWriteAccess open long enough.
+  virtual void EndPaint(
+      base::OnceClosure on_finished,
+      base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb,
+      bool is_overlay) = 0;
 
   // Make a promise SkImage from a render pass id. The render pass has been
   // painted with BeginPaintRenderPass and FinishPaintRenderPass. The format
@@ -162,10 +166,9 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
   virtual void RemoveRenderPassResource(
       std::vector<AggregatedRenderPassId> ids) = 0;
 
-  // Copy the output of the current frame if the |id| is zero, otherwise copy
-  // the output of a cached SkSurface for the given |id|.
-  virtual void CopyOutput(AggregatedRenderPassId id,
-                          const copy_output::RenderPassGeometry& geometry,
+  // Copy the output of the current frame if the |mailbox| is zero, otherwise
+  // create an SkSurface for the given |mailbox| and copy the output.
+  virtual void CopyOutput(const copy_output::RenderPassGeometry& geometry,
                           const gfx::ColorSpace& color_space,
                           std::unique_ptr<CopyOutputRequest> request,
                           const gpu::Mailbox& mailbox) = 0;
@@ -207,6 +210,19 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
   // 0 < n <= capabilities_.number_of_buffers.
   // Return true if new buffers are allocated.
   virtual bool EnsureMinNumberOfBuffers(int n) = 0;
+
+  // Enqueue a GPU taks to create a shared image with the specified params and
+  // returns the mailbox.
+  // Note: |kTopLeft_GrSurfaceOrigin| and |kPremul_SkAlphaType| params are used
+  // for all images.
+  virtual gpu::Mailbox CreateSharedImage(ResourceFormat format,
+                                         const gfx::Size& size,
+                                         const gfx::ColorSpace& color_space,
+                                         uint32_t usage,
+                                         gpu::SurfaceHandle surface_handle) = 0;
+
+  // Enqueue a GPU taks to delete the specified shared image.
+  virtual void DestroySharedImage(const gpu::Mailbox& mailbox) = 0;
 };
 
 }  // namespace viz

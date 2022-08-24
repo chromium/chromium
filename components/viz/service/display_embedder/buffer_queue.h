@@ -22,11 +22,9 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace gpu {
-class SharedImageInterface;
-}  // namespace gpu
-
 namespace viz {
+
+class SkiaOutputSurface;
 
 // Encapsulates a queue of buffers for compositing backed by SharedImages.
 // Double/triple/N-buffering is configured by specifying |number_of_buffers| at
@@ -38,7 +36,7 @@ class VIZ_SERVICE_EXPORT BufferQueue {
   // specifies the number of buffers that will be allocated, and can be
   // increased by calling EnsureMinNumberOfBuffers() when
   // |supports_dynamic_frame_buffer_allocation| capability is true.
-  BufferQueue(gpu::SharedImageInterface* sii,
+  BufferQueue(SkiaOutputSurface* skia_output_surface,
               gpu::SurfaceHandle surface_handle,
               size_t number_of_buffers);
 
@@ -122,7 +120,7 @@ class VIZ_SERVICE_EXPORT BufferQueue {
   std::unique_ptr<AllocatedBuffer> GetNextBuffer();
 
   // Used to create and destroy shared images.
-  const raw_ptr<gpu::SharedImageInterface> sii_;
+  const raw_ptr<SkiaOutputSurface> skia_output_surface_;
   // Used when creating shared images.
   gpu::SurfaceHandle surface_handle_;
   // The number of buffers that should be allocated when Reshape() is called.

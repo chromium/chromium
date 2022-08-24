@@ -170,6 +170,8 @@ class SkiaOutputSurfaceImplOnGpu
   void SwapBuffersSkipped();
   void EnsureBackbuffer();
   void DiscardBackbuffer();
+  // If is |is_overlay| is true, the ScopedWriteAccess will be saved and kept
+  // open until PostSubmit().
   void FinishPaintRenderPass(
       const gpu::Mailbox& mailbox,
       sk_sp<SkDeferredDisplayList> ddl,
@@ -177,14 +179,14 @@ class SkiaOutputSurfaceImplOnGpu
       std::vector<ImageContextImpl*> image_contexts,
       std::vector<gpu::SyncToken> sync_tokens,
       base::OnceClosure on_finished,
-      base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb);
+      base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb,
+      bool is_overlay);
   // Deletes resources for RenderPasses in |ids|. Also takes ownership of
   // |images_contexts| and destroys them on GPU thread.
   void RemoveRenderPassResource(
       std::vector<AggregatedRenderPassId> ids,
       std::vector<std::unique_ptr<ImageContextImpl>> image_contexts);
-  void CopyOutput(AggregatedRenderPassId id,
-                  const copy_output::RenderPassGeometry& geometry,
+  void CopyOutput(const copy_output::RenderPassGeometry& geometry,
                   const gfx::ColorSpace& color_space,
                   std::unique_ptr<CopyOutputRequest> request,
                   const gpu::Mailbox& mailbox);
@@ -253,6 +255,14 @@ class SkiaOutputSurfaceImplOnGpu
 
   void AddAsyncReadResultHelperWithLock(AsyncReadResultHelper* helper);
   void RemoveAsyncReadResultHelperWithLock(AsyncReadResultHelper* helper);
+
+  void CreateSharedImage(gpu::Mailbox mailbox,
+                         ResourceFormat format,
+                         const gfx::Size& size,
+                         const gfx::ColorSpace& color_space,
+                         uint32_t usage,
+                         gpu::SurfaceHandle surface_handle);
+  void DestroySharedImage(gpu::Mailbox mailbox);
 
  private:
   class DisplayContext;
@@ -405,6 +415,10 @@ class SkiaOutputSurfaceImplOnGpu
   void DrawOverdraw(sk_sp<SkDeferredDisplayList> overdraw_ddl,
                     SkCanvas& canvas);
 
+  // Gets the cached SkiaImageRepresentation for this mailbox if it exists, or
+  // returns a newly produced one and caches it.
+  gpu::SkiaImageRepresentation* GetSkiaRepresentation(gpu::Mailbox mailbox);
+
   class ReleaseCurrent {
    public:
     ReleaseCurrent(scoped_refptr<gl::GLSurface> gl_surface,
@@ -491,6 +505,22 @@ class SkiaOutputSurfaceImplOnGpu
 
   std::unique_ptr<SkiaOutputDevice> output_device_;
   std::unique_ptr<SkiaOutputDevice::ScopedPaint> scoped_output_device_paint_;
+
+  // Cache of SkiaImageRepresentations for each render pass mailbox so we don't
+  // need to recreate them if they are reused on future frames. Entries are
+  // initialized to nullptr CreateSharedImage() and updated in
+  // GetSkiaRepresentation(). They will be erased when calling
+  // DestroySharedImage().
+  base::flat_map<gpu::Mailbox, std::unique_ptr<gpu::SkiaImageRepresentation>>
+      skia_representations_;
+
+  // Overlayed render passes need to keep their write access open until after
+  // submit. These will be set in FinishPaintRenderPass() if |is_overlay| is
+  // true and destroyed in PostSubmit().
+  base::flat_map<
+      gpu::Mailbox,
+      std::unique_ptr<gpu::SkiaImageRepresentation::ScopedWriteAccess>>
+      overlay_pass_accesses_;
 
   absl::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>
       output_surface_plane_;

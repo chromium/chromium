@@ -7,16 +7,16 @@
 #include <utility>
 
 #include "components/viz/common/resources/resource_format_utils.h"
-#include "gpu/command_buffer/client/shared_image_interface.h"
+#include "components/viz/service/display/skia_output_surface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
 
 namespace viz {
 
-BufferQueue::BufferQueue(gpu::SharedImageInterface* sii,
+BufferQueue::BufferQueue(SkiaOutputSurface* skia_output_surface,
                          gpu::SurfaceHandle surface_handle,
                          size_t number_of_buffers)
-    : sii_(sii),
+    : skia_output_surface_(skia_output_surface),
       surface_handle_(surface_handle),
       number_of_buffers_(number_of_buffers) {}
 
@@ -128,7 +128,7 @@ void BufferQueue::FreeBuffer(std::unique_ptr<AllocatedBuffer> buffer) {
     return;
   }
   DCHECK(!buffer->mailbox.IsZero());
-  sii_->DestroySharedImage(gpu::SyncToken(), buffer->mailbox);
+  skia_output_surface_->DestroySharedImage(buffer->mailbox);
 }
 
 void BufferQueue::AllocateBuffers(size_t n) {
@@ -137,9 +137,8 @@ void BufferQueue::AllocateBuffers(size_t n) {
 
   available_buffers_.reserve(available_buffers_.size() + n);
   for (size_t i = 0; i < n; ++i) {
-    const gpu::Mailbox mailbox = sii_->CreateSharedImage(
-        format, size_, color_space_, kTopLeft_GrSurfaceOrigin,
-        kPremul_SkAlphaType,
+    const gpu::Mailbox mailbox = skia_output_surface_->CreateSharedImage(
+        format, size_, color_space_,
         gpu::SHARED_IMAGE_USAGE_SCANOUT | gpu::SHARED_IMAGE_USAGE_DISPLAY,
         surface_handle_);
     DCHECK(!mailbox.IsZero());

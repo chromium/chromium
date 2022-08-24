@@ -11,13 +11,10 @@
 #include <set>
 #include <utility>
 
-#include "base/memory/ptr_util.h"
 #include "build/build_config.h"
-#include "components/viz/test/test_context_provider.h"
-#include "gpu/command_buffer/client/shared_image_interface.h"
+#include "components/viz/test/fake_skia_output_surface.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/command_buffer/common/sync_token.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -48,11 +45,9 @@ class BufferQueueTest : public ::testing::Test {
   BufferQueueTest() = default;
 
   void SetUp() override {
-    context_provider_ = TestContextProvider::Create(
-        std::make_unique<TestSharedImageInterface>());
-    context_provider_->BindToCurrentThread();
-    buffer_queue_ = std::make_unique<BufferQueue>(
-        context_provider_->SharedImageInterface(), kFakeSurfaceHandle, 3);
+    skia_output_surface_ = FakeSkiaOutputSurface::Create3d();
+    buffer_queue_ = std::make_unique<BufferQueue>(skia_output_surface_.get(),
+                                                  kFakeSurfaceHandle, 3);
   }
 
   void TearDown() override { buffer_queue_.reset(); }
@@ -130,7 +125,7 @@ class BufferQueueTest : public ::testing::Test {
     return true;
   }
 
-  scoped_refptr<TestContextProvider> context_provider_;
+  std::unique_ptr<FakeSkiaOutputSurface> skia_output_surface_;
   std::unique_ptr<BufferQueue> buffer_queue_;
 };
 
@@ -140,68 +135,34 @@ const gfx::Rect small_damage = gfx::Rect(gfx::Size(10, 10));
 const gfx::Rect large_damage = gfx::Rect(gfx::Size(20, 20));
 const gfx::Rect overlapping_damage = gfx::Rect(gfx::Size(5, 20));
 
-class MockedSharedImageInterface : public TestSharedImageInterface {
+class MockedSkiaOutputSurface : public FakeSkiaOutputSurface {
  public:
-  MockedSharedImageInterface() {
-    ON_CALL(*this, CreateSharedImage(_, _, _, _, _, _, _))
-        .WillByDefault(Return(gpu::Mailbox()));
-    // this, &MockedSharedImageInterface::TestCreateSharedImage));
-  }
-  MOCK_METHOD7(CreateSharedImage,
+  MockedSkiaOutputSurface() : FakeSkiaOutputSurface(nullptr) {}
+  MOCK_METHOD5(CreateSharedImage,
                gpu::Mailbox(ResourceFormat format,
                             const gfx::Size& size,
                             const gfx::ColorSpace& color_space,
-                            GrSurfaceOrigin surface_origin,
-                            SkAlphaType alpha_type,
                             uint32_t usage,
                             gpu::SurfaceHandle surface_handle));
-  MOCK_METHOD2(UpdateSharedImage,
-               void(const gpu::SyncToken& sync_token,
-                    const gpu::Mailbox& mailbox));
-  MOCK_METHOD2(DestroySharedImage,
-               void(const gpu::SyncToken& sync_token,
-                    const gpu::Mailbox& mailbox));
-  // Use this to call CreateSharedImage() defined in TestSharedImageInterface.
-  gpu::Mailbox TestCreateSharedImage(ResourceFormat format,
-                                     const gfx::Size& size,
-                                     const gfx::ColorSpace& color_space,
-                                     GrSurfaceOrigin surface_origin,
-                                     SkAlphaType alpha_type,
-                                     uint32_t usage,
-                                     gpu::SurfaceHandle surface_handle) {
-    return TestSharedImageInterface::CreateSharedImage(
-        format, size, color_space, surface_origin, alpha_type, usage,
-        surface_handle);
-  }
+  MOCK_METHOD1(DestroySharedImage, void(const gpu::Mailbox& mailbox));
 };
 
-scoped_refptr<TestContextProvider> CreateMockedSharedImageInterfaceProvider(
-    MockedSharedImageInterface** sii) {
-  std::unique_ptr<MockedSharedImageInterface> owned_sii(
-      new MockedSharedImageInterface);
-  *sii = owned_sii.get();
-  scoped_refptr<TestContextProvider> context_provider =
-      TestContextProvider::Create(std::move(owned_sii));
-  context_provider->BindToCurrentThread();
-  return context_provider;
-}
-
 TEST(BufferQueueStandaloneTest, BufferCreationAndDestruction) {
-  MockedSharedImageInterface* sii;
-  scoped_refptr<TestContextProvider> context_provider =
-      CreateMockedSharedImageInterfaceProvider(&sii);
+  auto mock_skia_output_surface = std::make_unique<MockedSkiaOutputSurface>();
   std::unique_ptr<BufferQueue> buffer_queue = std::make_unique<BufferQueue>(
-      context_provider->SharedImageInterface(), kFakeSurfaceHandle, 1);
+      mock_skia_output_surface.get(), kFakeSurfaceHandle, 1);
 
   const gpu::Mailbox expected_mailbox = gpu::Mailbox::GenerateForSharedImage();
   {
     testing::InSequence dummy;
-    EXPECT_CALL(*sii, CreateSharedImage(_, _, _, _, _,
-                                        gpu::SHARED_IMAGE_USAGE_SCANOUT |
-                                            gpu::SHARED_IMAGE_USAGE_DISPLAY,
-                                        _))
+    EXPECT_CALL(*mock_skia_output_surface,
+                CreateSharedImage(_, _, _,
+                                  gpu::SHARED_IMAGE_USAGE_SCANOUT |
+                                      gpu::SHARED_IMAGE_USAGE_DISPLAY,
+                                  _))
         .WillOnce(Return(expected_mailbox));
-    EXPECT_CALL(*sii, DestroySharedImage(_, expected_mailbox));
+    EXPECT_CALL(*mock_skia_output_surface,
+                DestroySharedImage(expected_mailbox));
   }
 
   EXPECT_TRUE(buffer_queue->Reshape(screen_size, kBufferQueueColorSpace,
@@ -286,8 +247,8 @@ TEST_F(BufferQueueTest, CheckDoubleBuffering) {
   // Check buffer flow through double buffering path.
 
   // Create a BufferQueue with only 2 buffers.
-  buffer_queue_ = std::make_unique<BufferQueue>(
-      context_provider_->SharedImageInterface(), kFakeSurfaceHandle, 2);
+  buffer_queue_ = std::make_unique<BufferQueue>(skia_output_surface_.get(),
+                                                kFakeSurfaceHandle, 2);
 
   EXPECT_EQ(0, CountBuffers());
   EXPECT_TRUE(buffer_queue_->Reshape(screen_size, kBufferQueueColorSpace,

@@ -17,7 +17,9 @@
 #include "cc/cc_export.h"
 #include "components/viz/service/display/direct_renderer.h"
 #include "components/viz/service/display/display_resource_provider_skia.h"
+#include "components/viz/service/display_embedder/buffer_queue.h"
 #include "components/viz/service/viz_service_export.h"
+#include "gpu/command_buffer/common/mailbox.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/color_conversion_sk_filter_cache.h"
 #include "ui/gfx/geometry/mask_filter_info.h"
@@ -70,6 +72,9 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
       bool create_if_necessary) override;
   void SetDelegatedInkMetadata(
       std::unique_ptr<gfx::DelegatedInkMetadata> metadata) override;
+  gfx::Rect GetCurrentFramebufferDamage() const override;
+  void Reshape(const OutputSurface::ReshapeParams& reshape_params) override;
+  void EnsureMinNumberOfBuffers(int n) override;
 
  protected:
   bool CanPartialSwap() override;
@@ -281,6 +286,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
     gfx::ColorSpace color_space;
     ResourceFormat format;
     gpu::Mailbox mailbox;
+    bool is_root;
   };
   base::flat_map<AggregatedRenderPassId, RenderPassBacking>
       render_pass_backings_;
@@ -426,6 +432,10 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   bool UsingSkiaForDelegatedInk() const;
   uint32_t debug_tint_modulate_count_ = 0;
   bool use_real_color_space_for_stream_video_ = false;
+
+  // Used to get mailboxes for the root render pass when
+  // capabilities().renderer_allocates_images = true.
+  std::unique_ptr<BufferQueue> buffer_queue_;
 };
 
 }  // namespace viz
