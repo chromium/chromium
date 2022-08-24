@@ -1043,10 +1043,13 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
   // look for repeatable headers and footers. This is especially important for
   // footers, since we need to reserve space for it after any preceding
   // non-repeated sections (typically tbody). We'll only repeat headers /
-  // footers if we're not already inside repeatable content, though.
-  // See crbug.com/1352931
+  // footers if we're not already inside repeatable content, though. See
+  // crbug.com/1352931 for more details. Furthermore, we cannot repeat content
+  // if side-effects are disabled, as that machinery depends on updating and
+  // reading the physical fragments vector of the LayoutBox.
   if (ConstraintSpace().HasKnownFragmentainerBlockSize() &&
       !ConstraintSpace().IsInsideRepeatableContent() &&
+      !NGDisableSideEffectsScope::IsDisabled() &&
       (grouped_children.header || grouped_children.footer)) {
     LayoutUnit max_section_block_size =
         ConstraintSpace().FragmentainerBlockSize() / 4;
