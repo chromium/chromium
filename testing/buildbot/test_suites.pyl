@@ -4810,11 +4810,6 @@
           '--test-launcher-bot-mode',
           '--test-launcher-print-test-stdio=always',
         ],
-        'annotate': 'graphing',
-        'perf_config': {
-          'a_default_rev': 'r_webrtc_git',
-          'r_webrtc_git': '${webrtc_got_rev}'
-        },
       },
       # Run capture unittests as well since our bots have real webcams.
       'capture_unittests': {

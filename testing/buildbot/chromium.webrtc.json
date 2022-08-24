@@ -111,7 +111,6 @@
   "WebRTC Chromium Linux Tester": {
     "gtest_tests": [
       {
-        "annotate": "graphing",
         "args": [
           "--gtest_filter=WebRtcStatsPerfBrowserTest.*:WebRtcVideoDisplayPerfBrowserTests*:WebRtcVideoQualityBrowserTests*:WebRtcVideoHighBitrateBrowserTest*:WebRtcWebcamBrowserTests*",
           "--run-manual",
@@ -124,11 +123,6 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "perf_builder_name_alias": "chromium-webrtc-rel-linux",
-        "perf_config": {
-          "a_default_rev": "r_webrtc_git",
-          "r_webrtc_git": "${webrtc_got_rev}"
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -153,7 +147,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "browser_tests_functional",
-        "perf_builder_name_alias": "chromium-webrtc-rel-linux",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -176,7 +169,6 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "perf_builder_name_alias": "chromium-webrtc-rel-linux",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -200,7 +192,6 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "perf_builder_name_alias": "chromium-webrtc-rel-linux",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -222,7 +213,6 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "perf_builder_name_alias": "chromium-webrtc-rel-linux",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -246,7 +236,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "content_browsertests_sequential",
-        "perf_builder_name_alias": "chromium-webrtc-rel-linux",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -271,7 +260,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "content_browsertests_stress",
-        "perf_builder_name_alias": "chromium-webrtc-rel-linux",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -292,7 +280,6 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "perf_builder_name_alias": "chromium-webrtc-rel-linux",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -313,7 +300,6 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "perf_builder_name_alias": "chromium-webrtc-rel-linux",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -336,7 +322,6 @@
   "WebRTC Chromium Mac Tester": {
     "gtest_tests": [
       {
-        "annotate": "graphing",
         "args": [
           "--gtest_filter=WebRtcStatsPerfBrowserTest.*:WebRtcVideoDisplayPerfBrowserTests*:WebRtcVideoQualityBrowserTests*:WebRtcVideoHighBitrateBrowserTest*:WebRtcWebcamBrowserTests*",
           "--run-manual",
@@ -349,11 +334,6 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "perf_builder_name_alias": "chromium-webrtc-rel-mac",
-        "perf_config": {
-          "a_default_rev": "r_webrtc_git",
-          "r_webrtc_git": "${webrtc_got_rev}"
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -379,7 +359,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "browser_tests_functional",
-        "perf_builder_name_alias": "chromium-webrtc-rel-mac",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -403,7 +382,6 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "perf_builder_name_alias": "chromium-webrtc-rel-mac",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -428,7 +406,6 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "perf_builder_name_alias": "chromium-webrtc-rel-mac",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -451,7 +428,6 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "perf_builder_name_alias": "chromium-webrtc-rel-mac",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -476,7 +452,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "content_browsertests_sequential",
-        "perf_builder_name_alias": "chromium-webrtc-rel-mac",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -502,7 +477,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "content_browsertests_stress",
-        "perf_builder_name_alias": "chromium-webrtc-rel-mac",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -524,7 +498,6 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "perf_builder_name_alias": "chromium-webrtc-rel-mac",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -546,7 +519,6 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "perf_builder_name_alias": "chromium-webrtc-rel-mac",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -570,7 +542,6 @@
   "WebRTC Chromium Win10 Tester": {
     "gtest_tests": [
       {
-        "annotate": "graphing",
         "args": [
           "--gtest_filter=WebRtcStatsPerfBrowserTest.*:WebRtcVideoDisplayPerfBrowserTests*:WebRtcVideoQualityBrowserTests*:WebRtcVideoHighBitrateBrowserTest*:WebRtcWebcamBrowserTests*",
           "--run-manual",
@@ -583,11 +554,6 @@
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "perf_builder_name_alias": "chromium-webrtc-rel-win10",
-        "perf_config": {
-          "a_default_rev": "r_webrtc_git",
-          "r_webrtc_git": "${webrtc_got_rev}"
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
@@ -612,7 +578,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "browser_tests_functional",
-        "perf_builder_name_alias": "chromium-webrtc-rel-win10",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -635,7 +600,6 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "perf_builder_name_alias": "chromium-webrtc-rel-win10",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -659,7 +623,6 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "perf_builder_name_alias": "chromium-webrtc-rel-win10",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -681,7 +644,6 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "perf_builder_name_alias": "chromium-webrtc-rel-win10",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -705,7 +667,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "content_browsertests_sequential",
-        "perf_builder_name_alias": "chromium-webrtc-rel-win10",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -730,7 +691,6 @@
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
         "name": "content_browsertests_stress",
-        "perf_builder_name_alias": "chromium-webrtc-rel-win10",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -751,7 +711,6 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "perf_builder_name_alias": "chromium-webrtc-rel-win10",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -772,7 +731,6 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "perf_builder_name_alias": "chromium-webrtc-rel-win10",
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [

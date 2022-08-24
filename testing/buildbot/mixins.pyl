@@ -379,15 +379,6 @@
       'service_account': 'chromium-tester@chops-service-accounts.iam.gserviceaccount.com',
     },
   },
-  'chromium-webrtc-rel-linux': {
-    'perf_builder_name_alias': 'chromium-webrtc-rel-linux',
-  },
-  'chromium-webrtc-rel-mac': {
-    'perf_builder_name_alias': 'chromium-webrtc-rel-mac',
-  },
-  'chromium-webrtc-rel-win10': {
-    'perf_builder_name_alias': 'chromium-webrtc-rel-win10',
-  },
   # Used for invert CQ tests selection. Adding ci_only: False to
   # test_suite_exceptions.pyl to select tests that are allowed on CQ builders.
   'ci_only': {
