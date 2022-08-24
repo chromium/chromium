@@ -73,9 +73,9 @@ SuggestionVectorMainTextsAre(const EltsAreMatcher& elts_are_matcher) {
 template <class EltsAreMatcher>
 inline testing::Matcher<const std::vector<Suggestion>&>
 SuggestionVectorLabelsAre(const EltsAreMatcher& elts_are_matcher) {
-  return testing::MakeMatcher(
-      new SuggestionVectorMembersAreMatcher<std::u16string>(
-          elts_are_matcher, &Suggestion::label));
+  return testing::MakeMatcher(new SuggestionVectorMembersAreMatcher<
+                              std::vector<std::vector<Suggestion::Text>>>(
+      elts_are_matcher, &Suggestion::labels));
 }
 
 // Like SuggestionVectorIdsAre above, but tests the icons.

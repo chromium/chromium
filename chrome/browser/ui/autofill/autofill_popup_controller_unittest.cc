@@ -160,7 +160,7 @@ class TestAutofillPopupController : public AutofillPopupControllerImpl {
   using AutofillPopupControllerImpl::GetLineCount;
   using AutofillPopupControllerImpl::GetRootAXPlatformNodeForWebContents;
   using AutofillPopupControllerImpl::GetSuggestionAt;
-  using AutofillPopupControllerImpl::GetSuggestionLabelAt;
+  using AutofillPopupControllerImpl::GetSuggestionLabelsAt;
   using AutofillPopupControllerImpl::GetSuggestionMainTextAt;
   using AutofillPopupControllerImpl::GetWeakPtr;
   using AutofillPopupControllerImpl::RemoveSelectedLine;
@@ -539,20 +539,23 @@ TEST_F(AutofillPopupControllerUnitTest, UpdateDataListValues) {
   Suggestion result0 = autofill_popup_controller_->GetSuggestionAt(0);
   EXPECT_EQ(value1, result0.main_text.value);
   EXPECT_EQ(value1, autofill_popup_controller_->GetSuggestionMainTextAt(0));
-  EXPECT_EQ(label1, result0.label);
+  ASSERT_EQ(1u, result0.labels.size());
+  ASSERT_EQ(1u, result0.labels[0].size());
+  EXPECT_EQ(label1, result0.labels[0][0].value);
   EXPECT_EQ(std::u16string(), result0.additional_label);
-  EXPECT_EQ(label1, autofill_popup_controller_->GetSuggestionLabelAt(0));
+  EXPECT_EQ(label1,
+            autofill_popup_controller_->GetSuggestionLabelsAt(0)[0][0].value);
   EXPECT_EQ(POPUP_ITEM_ID_DATALIST_ENTRY, result0.frontend_id);
 
   Suggestion result1 = autofill_popup_controller_->GetSuggestionAt(1);
   EXPECT_EQ(std::u16string(), result1.main_text.value);
-  EXPECT_EQ(std::u16string(), result1.label);
+  EXPECT_TRUE(result1.labels.empty());
   EXPECT_EQ(std::u16string(), result1.additional_label);
   EXPECT_EQ(POPUP_ITEM_ID_SEPARATOR, result1.frontend_id);
 
   Suggestion result2 = autofill_popup_controller_->GetSuggestionAt(2);
   EXPECT_EQ(std::u16string(), result2.main_text.value);
-  EXPECT_EQ(std::u16string(), result2.label);
+  EXPECT_TRUE(result2.labels.empty());
   EXPECT_EQ(std::u16string(), result2.additional_label);
   EXPECT_EQ(1, result2.frontend_id);
 
@@ -570,13 +573,21 @@ TEST_F(AutofillPopupControllerUnitTest, UpdateDataListValues) {
   EXPECT_EQ(value1,
             autofill_popup_controller_->GetSuggestionAt(0).main_text.value);
   EXPECT_EQ(value1, autofill_popup_controller_->GetSuggestionMainTextAt(0));
-  EXPECT_EQ(label1, autofill_popup_controller_->GetSuggestionAt(0).label);
+  ASSERT_EQ(1u, autofill_popup_controller_->GetSuggestionAt(0).labels.size());
+  ASSERT_EQ(1u,
+            autofill_popup_controller_->GetSuggestionAt(0).labels[0].size());
+  EXPECT_EQ(label1,
+            autofill_popup_controller_->GetSuggestionAt(0).labels[0][0].value);
   EXPECT_EQ(std::u16string(),
             autofill_popup_controller_->GetSuggestionAt(0).additional_label);
   EXPECT_EQ(value2,
             autofill_popup_controller_->GetSuggestionAt(1).main_text.value);
   EXPECT_EQ(value2, autofill_popup_controller_->GetSuggestionMainTextAt(1));
-  EXPECT_EQ(label2, autofill_popup_controller_->GetSuggestionAt(1).label);
+  ASSERT_EQ(1u, autofill_popup_controller_->GetSuggestionAt(1).labels.size());
+  ASSERT_EQ(1u,
+            autofill_popup_controller_->GetSuggestionAt(1).labels[0].size());
+  EXPECT_EQ(label2,
+            autofill_popup_controller_->GetSuggestionAt(1).labels[0][0].value);
   EXPECT_EQ(std::u16string(),
             autofill_popup_controller_->GetSuggestionAt(1).additional_label);
   EXPECT_EQ(POPUP_ITEM_ID_SEPARATOR,
@@ -611,7 +622,11 @@ TEST_F(AutofillPopupControllerUnitTest, PopupsWithOnlyDataLists) {
   ASSERT_EQ(1, autofill_popup_controller_->GetLineCount());
   EXPECT_EQ(value1,
             autofill_popup_controller_->GetSuggestionAt(0).main_text.value);
-  EXPECT_EQ(label1, autofill_popup_controller_->GetSuggestionAt(0).label);
+  ASSERT_EQ(1u, autofill_popup_controller_->GetSuggestionAt(0).labels.size());
+  ASSERT_EQ(1u,
+            autofill_popup_controller_->GetSuggestionAt(0).labels[0].size());
+  EXPECT_EQ(label1,
+            autofill_popup_controller_->GetSuggestionAt(0).labels[0][0].value);
   EXPECT_EQ(std::u16string(),
             autofill_popup_controller_->GetSuggestionAt(0).additional_label);
   EXPECT_EQ(POPUP_ITEM_ID_DATALIST_ENTRY,

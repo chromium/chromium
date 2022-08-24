@@ -121,8 +121,12 @@ void ChromeWebAuthnCredentialsDelegate::OnCredentialsReceived(
       name = l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_EMPTY_LOGIN);
     }
     autofill::Suggestion suggestion(std::move(name));
-    suggestion.label = l10n_util::GetStringUTF16(
+
+    std::u16string label = l10n_util::GetStringUTF16(
         password_manager::GetPlatformAuthenticatorLabel());
+    if (!label.empty()) {
+      suggestion.labels = {{autofill::Suggestion::Text(label)}};
+    }
     suggestion.icon = "globeIcon";
     suggestion.frontend_id = autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL;
     suggestion.payload =

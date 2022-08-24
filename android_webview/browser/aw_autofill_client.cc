@@ -374,7 +374,11 @@ void AwAutofillClient::ShowAutofillPopupImpl(
     ScopedJavaLocalRef<jstring> name =
         ConvertUTF16ToJavaString(env, suggestions[i].main_text.value);
     ScopedJavaLocalRef<jstring> label =
-        ConvertUTF16ToJavaString(env, suggestions[i].label);
+        base::android::ConvertUTF8ToJavaString(env, std::string());
+    // For Android, we only show the primary/first label in the matrix.
+    if (!suggestions[i].labels.empty())
+      label = ConvertUTF16ToJavaString(env, suggestions[i].labels[0][0].value);
+
     Java_AwAutofillClient_addToAutofillSuggestionArray(
         env, data_array, i, name, label, suggestions[i].frontend_id);
   }

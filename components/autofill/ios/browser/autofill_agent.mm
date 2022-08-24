@@ -582,7 +582,12 @@ void GetFormField(autofill::FormFieldData* field,
       // displayDescription will contain a summary of the data to be filled in
       // the other elements.
       value = SysUTF16ToNSString(popup_suggestion.main_text.value);
-      displayDescription = SysUTF16ToNSString(popup_suggestion.label);
+      if (!popup_suggestion.labels.empty()) {
+        DCHECK_EQ(popup_suggestion.labels.size(), 1U);
+        DCHECK_EQ(popup_suggestion.labels[0].size(), 1U);
+        displayDescription =
+            SysUTF16ToNSString(popup_suggestion.labels[0][0].value);
+      }
     } else if (popup_suggestion.frontend_id ==
                autofill::POPUP_ITEM_ID_CLEAR_FORM) {
       // Show the "clear form" button.

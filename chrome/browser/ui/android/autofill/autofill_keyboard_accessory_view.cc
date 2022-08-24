@@ -79,7 +79,12 @@ void AutofillKeyboardAccessoryView::Show() {
     std::u16string label;
     if (controller_->GetSuggestionMinorTextAt(i).empty()) {
       value = controller_->GetSuggestionMainTextAt(i);
-      label = controller_->GetSuggestionLabelAt(i);
+      std::vector<std::vector<autofill::Suggestion::Text>> suggestion_labels =
+          controller_->GetSuggestionLabelsAt(i);
+      if (!suggestion_labels.empty()) {
+        DCHECK_EQ(suggestion_labels[0].size(), 1U);
+        label = std::move(suggestion_labels[0][0].value);
+      }
     } else {
       value = controller_->GetSuggestionMainTextAt(i);
       label = controller_->GetSuggestionMinorTextAt(i);

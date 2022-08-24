@@ -85,8 +85,16 @@ void AutofillPopupViewAndroid::OnSuggestionsChanged() {
                             controller_->GetSuggestionMinorTextAt(i)});
     ScopedJavaLocalRef<jstring> value =
         base::android::ConvertUTF16ToJavaString(env, value_text);
-    ScopedJavaLocalRef<jstring> label = base::android::ConvertUTF16ToJavaString(
-        env, controller_->GetSuggestionLabelAt(i));
+    ScopedJavaLocalRef<jstring> label =
+        base::android::ConvertUTF8ToJavaString(env, std::string());
+    std::vector<std::vector<autofill::Suggestion::Text>> suggestion_labels =
+        controller_->GetSuggestionLabelsAt(i);
+    if (!suggestion_labels.empty()) {
+      DCHECK_EQ(suggestion_labels.size(), 1U);
+      DCHECK_EQ(suggestion_labels[0].size(), 1U);
+      label = base::android::ConvertUTF16ToJavaString(
+          env, std::move(suggestion_labels[0][0].value));
+    }
     int android_icon_id = 0;
 
     const Suggestion& suggestion = controller_->GetSuggestionAt(i);

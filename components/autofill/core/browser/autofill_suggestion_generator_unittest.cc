@@ -375,18 +375,24 @@ TEST_F(AutofillSuggestionGeneratorTest,
 
 #if BUILDFLAG(IS_ANDROID)
   // For Android, the label is "Network ....1234".
-  EXPECT_EQ(virtual_card_name_field_suggestion.label,
+  ASSERT_EQ(virtual_card_name_field_suggestion.labels.size(), 1U);
+  ASSERT_EQ(virtual_card_name_field_suggestion.labels[0].size(), 1U);
+  EXPECT_EQ(virtual_card_name_field_suggestion.labels[0][0].value,
             base::StrCat({u"Visa  ", internal::GetObfuscatedStringForCardDigits(
                                          u"1111", 4)}));
 #elif BUILDFLAG(IS_IOS)
   // For IOS, the label is "....1234".
-  EXPECT_EQ(virtual_card_name_field_suggestion.label,
+  ASSERT_EQ(virtual_card_name_field_suggestion.labels.size(), 1U);
+  ASSERT_EQ(virtual_card_name_field_suggestion.labels[0].size(), 1U);
+  EXPECT_EQ(virtual_card_name_field_suggestion.labels[0][0].value,
             internal::GetObfuscatedStringForCardDigits(u"1111", 4));
 #else
   // For Desktop, the label is the descriptive expiration date formatted as
   // "Network ....1234, expires on mm/yy".
+  ASSERT_EQ(virtual_card_name_field_suggestion.labels.size(), 1U);
+  ASSERT_EQ(virtual_card_name_field_suggestion.labels[0].size(), 1U);
   EXPECT_EQ(
-      virtual_card_name_field_suggestion.label,
+      virtual_card_name_field_suggestion.labels[0][0].value,
       base::StrCat({u"Visa  ",
                     internal::GetObfuscatedStringForCardDigits(u"1111", 4),
                     u", expires on 04/",
@@ -423,7 +429,10 @@ TEST_F(AutofillSuggestionGeneratorTest,
   EXPECT_EQ(virtual_card_number_field_suggestion.minor_text.value, u"");
 
   // "Virtual card" is the label.
-  EXPECT_EQ(virtual_card_number_field_suggestion.label, u"Virtual card");
+  ASSERT_EQ(virtual_card_number_field_suggestion.labels.size(), 1U);
+  ASSERT_EQ(virtual_card_number_field_suggestion.labels[0].size(), 1U);
+  EXPECT_EQ(virtual_card_number_field_suggestion.labels[0][0].value,
+            u"Virtual card");
 }
 
 // Credit card name field suggestion with metadata for non-virtual cards in
@@ -454,18 +463,24 @@ TEST_F(AutofillSuggestionGeneratorTest,
 
 #if BUILDFLAG(IS_ANDROID)
   // For Android, the label is "Network ....1234".
-  EXPECT_EQ(real_card_name_field_suggestion.label,
+  ASSERT_EQ(real_card_name_field_suggestion.labels.size(), 1U);
+  ASSERT_EQ(real_card_name_field_suggestion.labels[0].size(), 1U);
+  EXPECT_EQ(real_card_name_field_suggestion.labels[0][0].value,
             base::StrCat({u"Visa  ", internal::GetObfuscatedStringForCardDigits(
                                          u"1111", 4)}));
 #elif BUILDFLAG(IS_IOS)
   // For IOS, the label is "....1234".
-  EXPECT_EQ(real_card_name_field_suggestion.label,
+  ASSERT_EQ(real_card_name_field_suggestion.labels.size(), 1U);
+  ASSERT_EQ(real_card_name_field_suggestion.labels[0].size(), 1U);
+  EXPECT_EQ(real_card_name_field_suggestion.labels[0][0].value,
             internal::GetObfuscatedStringForCardDigits(u"1111", 4));
 #else
   // For Desktop, the label is the descriptive expiration date formatted as
   // "Network ....1234, expires on mm/yy".
+  ASSERT_EQ(real_card_name_field_suggestion.labels.size(), 1U);
+  ASSERT_EQ(real_card_name_field_suggestion.labels[0].size(), 1U);
   EXPECT_EQ(
-      real_card_name_field_suggestion.label,
+      real_card_name_field_suggestion.labels[0][0].value,
       base::StrCat({u"Visa  ",
                     internal::GetObfuscatedStringForCardDigits(u"1111", 4),
                     u", expires on 04/",
@@ -503,13 +518,17 @@ TEST_F(AutofillSuggestionGeneratorTest,
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // For mobile devices, the label is the expiration date formatted as mm/yy.
+  ASSERT_EQ(real_card_number_field_suggestion.labels.size(), 1U);
+  ASSERT_EQ(real_card_number_field_suggestion.labels[0].size(), 1U);
   EXPECT_EQ(
-      real_card_number_field_suggestion.label,
+      real_card_number_field_suggestion.labels[0][0].value,
       base::StrCat({u"04/", base::UTF8ToUTF16(test::NextYear().substr(2))}));
 #else
   // For Desktop, the label is the descriptive expiration date formatted as
   // "Expires on mm/yy".
-  EXPECT_EQ(real_card_number_field_suggestion.label,
+  ASSERT_EQ(real_card_number_field_suggestion.labels.size(), 1U);
+  ASSERT_EQ(real_card_number_field_suggestion.labels[0].size(), 1U);
+  EXPECT_EQ(real_card_number_field_suggestion.labels[0][0].value,
             base::StrCat({u"Expires on 04/",
                           base::UTF8ToUTF16(test::NextYear().substr(2))}));
 #endif
@@ -594,22 +613,28 @@ TEST_F(AutofillSuggestionGeneratorTest, GetIBANSuggestions) {
 
   EXPECT_EQ(iban_suggestions[0].main_text.value,
             iban0.GetIdentifierStringForAutofillDisplay());
-  EXPECT_EQ(iban_suggestions[0].label, u"My doctor's IBAN");
+  ASSERT_EQ(iban_suggestions[0].labels.size(), 1u);
+  ASSERT_EQ(iban_suggestions[0].labels[0].size(), 1u);
+  EXPECT_EQ(iban_suggestions[0].labels[0][0].value, u"My doctor's IBAN");
   EXPECT_EQ(iban_suggestions[0].frontend_id, POPUP_ITEM_ID_IBAN_ENTRY);
 
   EXPECT_EQ(iban_suggestions[1].main_text.value,
             iban1.GetIdentifierStringForAutofillDisplay());
-  EXPECT_EQ(iban_suggestions[1].label, u"My brother's IBAN");
+  ASSERT_EQ(iban_suggestions[1].labels.size(), 1u);
+  ASSERT_EQ(iban_suggestions[1].labels[0].size(), 1u);
+  EXPECT_EQ(iban_suggestions[1].labels[0][0].value, u"My brother's IBAN");
   EXPECT_EQ(iban_suggestions[1].frontend_id, POPUP_ITEM_ID_IBAN_ENTRY);
 
   EXPECT_EQ(iban_suggestions[2].main_text.value,
             iban2.GetIdentifierStringForAutofillDisplay());
-  EXPECT_EQ(iban_suggestions[2].label, u"My teacher's IBAN");
+  ASSERT_EQ(iban_suggestions[2].labels.size(), 1u);
+  ASSERT_EQ(iban_suggestions[2].labels[0].size(), 1u);
+  EXPECT_EQ(iban_suggestions[2].labels[0][0].value, u"My teacher's IBAN");
   EXPECT_EQ(iban_suggestions[2].frontend_id, POPUP_ITEM_ID_IBAN_ENTRY);
 
   EXPECT_EQ(iban_suggestions[3].main_text.value,
             iban3.GetIdentifierStringForAutofillDisplay());
-  EXPECT_EQ(iban_suggestions[3].label, u"");
+  EXPECT_EQ(iban_suggestions[3].labels.size(), 0u);
   EXPECT_EQ(iban_suggestions[3].frontend_id, POPUP_ITEM_ID_IBAN_ENTRY);
 }
 
@@ -645,14 +670,24 @@ TEST_F(AutofillSuggestionGeneratorTest,
   EXPECT_TRUE(promo_code_suggestions.size() == 4);
 
   EXPECT_EQ(promo_code_suggestions[0].main_text.value, u"test_promo_code_1");
-  EXPECT_EQ(promo_code_suggestions[0].label, u"test_value_prop_text_1");
+  EXPECT_EQ(promo_code_suggestions[0].GetPayload<Suggestion::BackendId>(),
+            Suggestion::BackendId("1"));
+  ASSERT_EQ(promo_code_suggestions[0].labels.size(), 1U);
+  ASSERT_EQ(promo_code_suggestions[0].labels[0].size(), 1U);
+  EXPECT_EQ(promo_code_suggestions[0].labels[0][0].value,
+            u"test_value_prop_text_1");
   EXPECT_EQ(promo_code_suggestions[0].GetPayload<Suggestion::BackendId>(),
             Suggestion::BackendId("1"));
   EXPECT_EQ(promo_code_suggestions[0].frontend_id,
             POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY);
 
   EXPECT_EQ(promo_code_suggestions[1].main_text.value, u"test_promo_code_2");
-  EXPECT_EQ(promo_code_suggestions[1].label, u"test_value_prop_text_2");
+  EXPECT_EQ(promo_code_suggestions[1].GetPayload<Suggestion::BackendId>(),
+            Suggestion::BackendId("2"));
+  ASSERT_EQ(promo_code_suggestions[1].labels.size(), 1U);
+  ASSERT_EQ(promo_code_suggestions[1].labels[0].size(), 1U);
+  EXPECT_EQ(promo_code_suggestions[1].labels[0][0].value,
+            u"test_value_prop_text_2");
   EXPECT_EQ(promo_code_suggestions[1].GetPayload<Suggestion::BackendId>(),
             Suggestion::BackendId("2"));
   EXPECT_EQ(promo_code_suggestions[1].frontend_id,
@@ -685,7 +720,10 @@ TEST_F(AutofillSuggestionGeneratorTest,
   EXPECT_TRUE(promo_code_suggestions.size() == 1);
 
   EXPECT_EQ(promo_code_suggestions[0].main_text.value, u"test_promo_code_1");
-  EXPECT_EQ(promo_code_suggestions[0].label, u"test_value_prop_text_1");
+  ASSERT_EQ(promo_code_suggestions[0].labels.size(), 1U);
+  ASSERT_EQ(promo_code_suggestions[0].labels[0].size(), 1U);
+  EXPECT_EQ(promo_code_suggestions[0].labels[0][0].value,
+            u"test_value_prop_text_1");
   EXPECT_FALSE(
       absl::holds_alternative<GURL>(promo_code_suggestions[0].payload));
   EXPECT_EQ(promo_code_suggestions[0].frontend_id,

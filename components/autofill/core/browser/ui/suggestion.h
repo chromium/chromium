@@ -113,8 +113,11 @@ struct Suggestion {
   Text main_text;
   Text minor_text;
 
-  // The text displayed on the second line in a suggestion.
-  std::u16string label;
+  // The secondary texts displayed in a suggestion. The labels are presented as
+  // a N*M matrix, and the position of the text in the matrix decides where the
+  // text will be shown on the UI. (e.g. The text labels[1][2] will be shown on
+  // the second line, third column in the grid view of label).
+  std::vector<std::vector<Text>> labels;
 
   // A label to be shown beneath |label| that will display information about any
   // credit card offers or rewards.

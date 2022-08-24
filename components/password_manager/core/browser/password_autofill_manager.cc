@@ -118,16 +118,19 @@ void AppendSuggestionIfMatching(
         ReplaceEmptyUsername(field_suggestion, &replaced_username));
     suggestion.main_text.is_primary =
         autofill::Suggestion::Text::IsPrimary(!replaced_username);
-    suggestion.label = GetHumanReadableRealm(signon_realm);
+    suggestion.labels = {
+        {autofill::Suggestion::Text(GetHumanReadableRealm(signon_realm))}};
     suggestion.additional_label =
         std::u16string(password_length, kPasswordReplacementChar);
     suggestion.voice_over = l10n_util::GetStringFUTF16(
         IDS_PASSWORD_MANAGER_PASSWORD_FOR_ACCOUNT, suggestion.main_text.value);
-    if (!suggestion.label.empty()) {
+    if (!suggestion.labels.empty()) {
       // The domainname is only shown for passwords with a common eTLD+1
       // but different subdomain.
+      DCHECK_EQ(suggestion.labels.size(), 1U);
+      DCHECK_EQ(suggestion.labels[0].size(), 1U);
       *suggestion.voice_over += u", ";
-      *suggestion.voice_over += suggestion.label;
+      *suggestion.voice_over += suggestion.labels[0][0].value;
     }
     if (from_account_store) {
       suggestion.frontend_id =

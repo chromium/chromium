@@ -191,7 +191,7 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForIBANs(
     suggestion.payload = Suggestion::BackendId(iban->guid());
     suggestion.main_text.value = iban->GetIdentifierStringForAutofillDisplay();
     if (!iban->nickname().empty())
-      suggestion.label = iban->nickname();
+      suggestion.labels = {{Suggestion::Text(iban->nickname())}};
   }
   return suggestions;
 }
@@ -207,8 +207,10 @@ AutofillSuggestionGenerator::GetPromoCodeSuggestionsFromPromoCodeOffers(
     suggestions.emplace_back(
         base::ASCIIToUTF16(promo_code_offer->GetPromoCode()));
     Suggestion& suggestion = suggestions.back();
-    suggestion.label = base::ASCIIToUTF16(
-        promo_code_offer->GetDisplayStrings().value_prop_text);
+    if (!promo_code_offer->GetDisplayStrings().value_prop_text.empty()) {
+      suggestion.labels = {{Suggestion::Text(base::ASCIIToUTF16(
+          promo_code_offer->GetDisplayStrings().value_prop_text))}};
+    }
     suggestion.payload = Suggestion::BackendId(
         base::NumberToString(promo_code_offer->GetOfferId()));
     suggestion.frontend_id = POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY;
@@ -355,6 +357,8 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
   int obfuscation_length =
       base::FeatureList::IsEnabled(features::kAutofillKeyboardAccessory) ? 2
                                                                          : 4;
+
+  std::u16string suggestion_label;
   // If the value is the card number, the label is the expiration date.
   // Otherwise the label is the card number, or if that is empty the cardholder
   // name. The label should never repeat the value.
@@ -367,19 +371,19 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
     if (!base::FeatureList::IsEnabled(
             features::kAutofillRemoveCardExpiryFromDownstreamSuggestion)) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-      suggestion.label = credit_card.GetInfo(
+      suggestion_label = credit_card.GetInfo(
           AutofillType(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR), app_locale);
 #else
-      suggestion.label = credit_card.DescriptiveExpiration(app_locale);
+      suggestion_label = credit_card.DescriptiveExpiration(app_locale);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     }
 
   } else if (credit_card.number().empty()) {
     DCHECK_EQ(credit_card.record_type(), CreditCard::LOCAL_CARD);
     if (credit_card.HasNonEmptyValidNickname()) {
-      suggestion.label = credit_card.nickname();
+      suggestion_label = credit_card.nickname();
     } else if (type.GetStorableType() != CREDIT_CARD_NAME_FULL) {
-      suggestion.label =
+      suggestion_label =
           credit_card.GetInfo(AutofillType(CREDIT_CARD_NAME_FULL), app_locale);
     }
   } else {
@@ -387,20 +391,23 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
     // On Android devices, the label is formatted as
     // "Nickname/Network  ••••1234" when the keyboard accessory experiment
     // is disabled and as "••1234" when it's enabled.
-    suggestion.label =
+    suggestion_label =
         base::FeatureList::IsEnabled(features::kAutofillKeyboardAccessory)
             ? credit_card.ObfuscatedLastFourDigits(obfuscation_length)
             : credit_card.CardIdentifierStringForAutofillDisplay(
                   suggestion_nickname);
 #elif BUILDFLAG(IS_IOS)
     // E.g. "••••1234"".
-    suggestion.label = credit_card.ObfuscatedLastFourDigits();
+    suggestion_label = credit_card.ObfuscatedLastFourDigits();
 #else
     // E.g. "Nickname/Network  ••••1234, expires on 01/25".
-    suggestion.label =
+    suggestion_label =
         credit_card.CardIdentifierStringAndDescriptiveExpiration(app_locale);
 #endif
   }
+
+  if (!suggestion_label.empty())
+    suggestion.labels = {{Suggestion::Text(suggestion_label)}};
 
   // For virtual cards, use issuer's card art icon instead of network icon.
   if (virtual_card_option) {
@@ -424,15 +431,15 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
     // For virtual cards, prefix "Virtual card" label to field suggestions. For
     // card number field in a dropdown, show the "Virtual card" label below the
     // card number for Metadata experiment.
-    if (!base::FeatureList::IsEnabled(
-            features::kAutofillEnableVirtualCardMetadata) ||
-        type.GetStorableType() != CREDIT_CARD_NUMBER ||
-        base::FeatureList::IsEnabled(features::kAutofillKeyboardAccessory)) {
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillEnableVirtualCardMetadata) &&
+        type.GetStorableType() == CREDIT_CARD_NUMBER &&
+        !base::FeatureList::IsEnabled(features::kAutofillKeyboardAccessory)) {
+      suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE))}};
+    } else {
       suggestion.minor_text.value = suggestion.main_text.value;
       suggestion.main_text.value = l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE);
-    } else {
-      suggestion.label = l10n_util::GetStringUTF16(
           IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE);
     }
 

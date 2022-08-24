@@ -80,7 +80,8 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
   const autofill::Suggestion& GetSuggestionAt(int row) const override;
   std::u16string GetSuggestionMainTextAt(int row) const override;
   std::u16string GetSuggestionMinorTextAt(int row) const override;
-  const std::u16string& GetSuggestionLabelAt(int row) const override;
+  std::vector<std::vector<Suggestion::Text>> GetSuggestionLabelsAt(
+      int row) const override;
   bool GetRemovalConfirmationText(int index,
                                   std::u16string* title,
                                   std::u16string* body) override;

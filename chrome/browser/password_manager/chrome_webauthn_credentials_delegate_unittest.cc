@@ -171,11 +171,15 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest, RetrieveCredentials) {
   task_environment()->RunUntilIdle();
 
   auto suggestions = credentials_delegate_->GetWebAuthnSuggestions();
-  EXPECT_EQ(suggestions.size(), 2u);
+  ASSERT_EQ(suggestions.size(), 2u);
+  ASSERT_EQ(suggestions[0].labels.size(), 1u);
+  ASSERT_EQ(suggestions[1].labels.size(), 1u);
+  ASSERT_EQ(suggestions[0].labels[0].size(), 1u);
+  ASSERT_EQ(suggestions[1].labels[0].size(), 1u);
   EXPECT_EQ(suggestions[0].main_text.value, base::UTF8ToUTF16(UserName1()));
-  EXPECT_EQ(suggestions[0].label, kPlatformAuthenticatorLabel);
+  EXPECT_EQ(suggestions[0].labels[0][0].value, kPlatformAuthenticatorLabel);
   EXPECT_EQ(suggestions[1].main_text.value, base::UTF8ToUTF16(UserName2()));
-  EXPECT_EQ(suggestions[1].label, kPlatformAuthenticatorLabel);
+  EXPECT_EQ(suggestions[1].labels[0][0].value, kPlatformAuthenticatorLabel);
 }
 
 // Testing retrieving suggestions when there are no public key credentials
@@ -209,7 +213,9 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest,
   auto suggestions = credentials_delegate_->GetWebAuthnSuggestions();
   EXPECT_EQ(suggestions.size(), 1u);
   EXPECT_EQ(suggestions[0].main_text.value, kErrorLabel);
-  EXPECT_EQ(suggestions[0].label, kPlatformAuthenticatorLabel);
+  ASSERT_EQ(suggestions[0].labels.size(), 1u);
+  ASSERT_EQ(suggestions[0].labels[0].size(), 1u);
+  EXPECT_EQ(suggestions[0].labels[0][0].value, kPlatformAuthenticatorLabel);
 }
 
 // Testing selection of a credential.

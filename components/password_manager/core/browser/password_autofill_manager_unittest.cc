@@ -974,9 +974,13 @@ TEST_F(PasswordAutofillManagerTest, ExtractSuggestions) {
           Suggestion::Text(GetManagePasswordsTitle(),
                            Suggestion::Text::IsPrimary(true)))));
   EXPECT_THAT(open_args.suggestions,
-              SuggestionVectorLabelsAre(testing::Contains(u"foo.com")));
+              SuggestionVectorLabelsAre(
+                  testing::Contains(std::vector<std::vector<Suggestion::Text>>{
+                      {Suggestion::Text(u"foo.com")}})));
   EXPECT_THAT(open_args.suggestions,
-              SuggestionVectorLabelsAre(testing::Contains(u"foobarrealm.org")));
+              SuggestionVectorLabelsAre(
+                  testing::Contains(std::vector<std::vector<Suggestion::Text>>{
+                      {Suggestion::Text(u"foobarrealm.org")}})));
 
   // Now simulate displaying suggestions matching "John".
   EXPECT_CALL(autofill_client, ShowAutofillPopup)
@@ -1032,12 +1036,16 @@ TEST_F(PasswordAutofillManagerTest, PrettifiedAndroidRealmsAreShownAsLabels) {
   password_autofill_manager_->OnShowPasswordSuggestions(
       base::i18n::RIGHT_TO_LEFT, std::u16string(),
       autofill::ShowPasswordSuggestionsOptions(), gfx::RectF());
-  EXPECT_THAT(open_args.suggestions,
-              SuggestionVectorLabelsAre(
-                  testing::Contains(u"android://com.example2.android/")));
-  EXPECT_THAT(open_args.suggestions,
-              SuggestionVectorLabelsAre(
-                  testing::Contains(u"android://com.example1.android/")));
+  EXPECT_THAT(
+      open_args.suggestions,
+      SuggestionVectorLabelsAre(
+          testing::Contains(std::vector<std::vector<Suggestion::Text>>{
+              {Suggestion::Text(u"android://com.example2.android/")}})));
+  EXPECT_THAT(
+      open_args.suggestions,
+      SuggestionVectorLabelsAre(
+          testing::Contains(std::vector<std::vector<Suggestion::Text>>{
+              {Suggestion::Text(u"android://com.example1.android/")}})));
   EXPECT_FALSE(open_args.autoselect_first_suggestion);
   EXPECT_EQ(open_args.popup_type, PopupType::kPasswords);
 }
@@ -1848,7 +1856,8 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
   autofill::Suggestion webauthn_credential(kName);
   webauthn_credential.frontend_id = autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL;
   webauthn_credential.payload = Suggestion::BackendId(kId);
-  webauthn_credential.label = kAuthenticator;
+  ;
+  webauthn_credential.labels = {{Suggestion::Text(kAuthenticator)}};
   ON_CALL(webauthn_credentials_delegate, IsWebAuthnAutofillEnabled)
       .WillByDefault(Return(true));
   EXPECT_CALL(client, GetWebAuthnCredentialsDelegate)
@@ -1880,7 +1889,9 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
   EXPECT_EQ(open_args.suggestions[0].frontend_id,
             autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL);
   EXPECT_EQ(open_args.suggestions[0].main_text.value, kName);
-  EXPECT_EQ(open_args.suggestions[0].label, kAuthenticator);
+  ASSERT_EQ(open_args.suggestions[0].labels.size(), 1U);
+  ASSERT_EQ(open_args.suggestions[0].labels[0].size(), 1U);
+  EXPECT_EQ(open_args.suggestions[0].labels[0][0].value, kAuthenticator);
   testing::Mock::VerifyAndClearExpectations(client.mock_driver());
 
   // Check that preview of the "username" (i.e. the credential name) works.

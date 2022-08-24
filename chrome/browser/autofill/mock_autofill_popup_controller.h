@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_AUTOFILL_MOCK_AUTOFILL_POPUP_CONTROLLER_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
@@ -62,8 +63,9 @@ class MockAutofillPopupController
     return std::u16string();
   }
 
-  const std::u16string& GetSuggestionLabelAt(int row) const override {
-    return suggestions_[row].label;
+  std::vector<std::vector<Suggestion::Text>> GetSuggestionLabelsAt(
+      int row) const override {
+    return suggestions_[row].labels;
   }
 
   base::WeakPtr<MockAutofillPopupController> GetWeakPtr() {

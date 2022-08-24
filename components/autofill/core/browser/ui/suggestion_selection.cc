@@ -311,8 +311,10 @@ void PrepareSuggestions(const std::vector<std::u16string>& labels,
       // produced for it may both be a zip code.
       if (!comparator.Compare(
               (*suggestions)[index_to_add_suggestion].main_text.value,
-              labels[i])) {
-        (*suggestions)[index_to_add_suggestion].label = labels[i];
+              labels[i]) &&
+          !labels[i].empty()) {
+        (*suggestions)[index_to_add_suggestion].labels = {
+            {Suggestion::Text(labels[i])}};
       }
       ++index_to_add_suggestion;
     }

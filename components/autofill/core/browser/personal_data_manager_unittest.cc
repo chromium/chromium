@@ -122,6 +122,31 @@ void ExpectSameElements(const std::vector<T*>& expectations,
             results_copy.end());
 }
 
+class ScopedFeatureListWrapper {
+ public:
+  explicit ScopedFeatureListWrapper(
+      const std::vector<base::Feature>& default_enabled_features,
+      const std::vector<base::Feature>& additional_enabled_features) {
+    std::vector<base::Feature> all_enabled_features(default_enabled_features);
+    std::copy(additional_enabled_features.begin(),
+              additional_enabled_features.end(),
+              std::back_inserter(all_enabled_features));
+    scoped_features_.InitWithFeatures(all_enabled_features,
+                                      /*disabled_features=*/{});
+  }
+  ~ScopedFeatureListWrapper() = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_features_;
+};
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+std::vector<std::vector<Suggestion::Text>> ConstructLabelLineMatrix(
+    const std::vector<std::u16string>& parts) {
+  return {{Suggestion::Text(ConstructLabelLine(parts))}};
+}
+#endif
+
 }  // anonymous namespace
 
 class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
@@ -2013,8 +2038,12 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_HideSubsets) {
   std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
       AutofillType(ADDRESS_HOME_STREET_ADDRESS), u"123", false, types);
   ASSERT_EQ(2U, suggestions.size());
-  EXPECT_EQ(u"Hollywood, CA", suggestions[0].label);
-  EXPECT_EQ(u"Hollywood, TX", suggestions[1].label);
+  ASSERT_EQ(1U, suggestions[0].labels.size());
+  ASSERT_EQ(1U, suggestions[0].labels[0].size());
+  EXPECT_EQ(u"Hollywood, CA", suggestions[0].labels[0][0].value);
+  ASSERT_EQ(1U, suggestions[1].labels.size());
+  ASSERT_EQ(1U, suggestions[1].labels.size());
+  EXPECT_EQ(u"Hollywood, TX", suggestions[1].labels[0][0].value);
 }
 
 TEST_F(PersonalDataManagerTest, GetProfileSuggestions_SuggestionsLimit) {
@@ -2380,9 +2409,9 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_ForContactForm) {
           std::vector<ServerFieldType>{NAME_FIRST, NAME_LAST, EMAIL_ADDRESS,
                                        PHONE_HOME_WHOLE_NUMBER}),
       ElementsAre(AllOf(
-          testing::Field(
-              &Suggestion::label,
-              ConstructLabelLine({u"(978) 674-4120", u"hoa.pham@comcast.net"})),
+          testing::Field(&Suggestion::labels,
+                         ConstructLabelLineMatrix(
+                             {u"(978) 674-4120", u"hoa.pham@comcast.net"})),
           testing::Field(&Suggestion::icon, ""))));
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -2399,15 +2428,16 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_AddressForm) {
   scoped_features.InitAndEnableFeature(
       features::kAutofillUseImprovedLabelDisambiguation);
 
-  EXPECT_THAT(
-      personal_data_->GetProfileSuggestions(
-          AutofillType(NAME_FULL), std::u16string(), false,
-          std::vector<ServerFieldType>{NAME_FULL, ADDRESS_HOME_STREET_ADDRESS,
-                                       ADDRESS_HOME_CITY, ADDRESS_HOME_STATE,
-                                       ADDRESS_HOME_ZIP}),
-      ElementsAre(AllOf(testing::Field(&Suggestion::label,
-                                       u"401 Merrimack St, Lowell, MA 01852"),
-                        testing::Field(&Suggestion::icon, ""))));
+  EXPECT_THAT(personal_data_->GetProfileSuggestions(
+                  AutofillType(NAME_FULL), std::u16string(), false,
+                  std::vector<ServerFieldType>{
+                      NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY,
+                      ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP}),
+              ElementsAre(AllOf(
+                  testing::Field(&Suggestion::labels,
+                                 ConstructLabelLineMatrix(
+                                     {u"401 Merrimack St, Lowell, MA 01852"})),
+                  testing::Field(&Suggestion::icon, ""))));
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -2428,11 +2458,11 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_AddressPhoneForm) {
           AutofillType(NAME_FULL), std::u16string(), false,
           std::vector<ServerFieldType>{NAME_FULL, ADDRESS_HOME_STREET_ADDRESS,
                                        PHONE_HOME_WHOLE_NUMBER}),
-      ElementsAre(AllOf(
-          testing::Field(
-              &Suggestion::label,
-              ConstructLabelLine({u"(978) 674-4120", u"401 Merrimack St"})),
-          testing::Field(&Suggestion::icon, ""))));
+      ElementsAre(
+          AllOf(testing::Field(&Suggestion::labels,
+                               ConstructLabelLineMatrix(
+                                   {u"(978) 674-4120", u"401 Merrimack St"})),
+                testing::Field(&Suggestion::icon, ""))));
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -2448,15 +2478,16 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_AddressEmailForm) {
   scoped_features.InitAndEnableFeature(
       features::kAutofillUseImprovedLabelDisambiguation);
 
-  EXPECT_THAT(personal_data_->GetProfileSuggestions(
-                  AutofillType(NAME_FULL), std::u16string(), false,
-                  std::vector<ServerFieldType>{
-                      NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, EMAIL_ADDRESS}),
-              ElementsAre(AllOf(
-                  testing::Field(&Suggestion::label,
-                                 ConstructLabelLine({u"401 Merrimack St",
-                                                     u"hoa.pham@comcast.net"})),
-                  testing::Field(&Suggestion::icon, ""))));
+  EXPECT_THAT(
+      personal_data_->GetProfileSuggestions(
+          AutofillType(NAME_FULL), std::u16string(), false,
+          std::vector<ServerFieldType>{NAME_FULL, ADDRESS_HOME_STREET_ADDRESS,
+                                       EMAIL_ADDRESS}),
+      ElementsAre(AllOf(
+          testing::Field(&Suggestion::labels,
+                         ConstructLabelLineMatrix(
+                             {u"401 Merrimack St", u"hoa.pham@comcast.net"})),
+          testing::Field(&Suggestion::icon, ""))));
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -2478,8 +2509,8 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_FormWithOneProfile) {
           std::vector<ServerFieldType>{NAME_FULL, ADDRESS_HOME_STREET_ADDRESS,
                                        EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER}),
       ElementsAre(
-          AllOf(testing::Field(&Suggestion::label,
-                               ConstructLabelLine({u"401 Merrimack St"})),
+          AllOf(testing::Field(&Suggestion::labels,
+                               ConstructLabelLineMatrix({u"401 Merrimack St"})),
                 testing::Field(&Suggestion::icon, ""))));
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -2524,15 +2555,15 @@ TEST_F(PersonalDataManagerTest,
           std::vector<ServerFieldType>{NAME_FULL, ADDRESS_HOME_STREET_ADDRESS,
                                        EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER}),
       ElementsAre(
-          AllOf(testing::Field(
-                    &Suggestion::label,
-                    ConstructLabelLine({u"401 Merrimack St", u"(978) 674-4120",
-                                        u"hoa.pham@comcast.net"})),
+          AllOf(testing::Field(&Suggestion::labels,
+                               ConstructLabelLineMatrix(
+                                   {u"401 Merrimack St", u"(978) 674-4120",
+                                    u"hoa.pham@comcast.net"})),
                 testing::Field(&Suggestion::icon, "")),
-          AllOf(testing::Field(
-                    &Suggestion::label,
-                    ConstructLabelLine({u"216 Broadway St", u"(978) 452-3366",
-                                        u"hp@aol.com"})),
+          AllOf(testing::Field(&Suggestion::labels,
+                               ConstructLabelLineMatrix({u"216 Broadway St",
+                                                         u"(978) 452-3366",
+                                                         u"hp@aol.com"})),
                 testing::Field(&Suggestion::icon, ""))));
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -2574,10 +2605,15 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_MobileShowOne) {
           AutofillType(EMAIL_ADDRESS), std::u16string(), false,
           std::vector<ServerFieldType>{NAME_FIRST, NAME_LAST, EMAIL_ADDRESS,
                                        PHONE_HOME_WHOLE_NUMBER}),
-      ElementsAre(AllOf(testing::Field(&Suggestion::label, u"(978) 674-4120"),
-                        testing::Field(&Suggestion::icon, "")),
-                  AllOf(testing::Field(&Suggestion::label, u"(617) 268-6862"),
-                        testing::Field(&Suggestion::icon, ""))));
+      ElementsAre(
+          AllOf(testing::Field(&Suggestion::labels,
+                               std::vector<std::vector<Suggestion::Text>>{
+                                   {Suggestion::Text(u"(978) 674-4120")}}),
+                testing::Field(&Suggestion::icon, "")),
+          AllOf(testing::Field(&Suggestion::labels,
+                               std::vector<std::vector<Suggestion::Text>>{
+                                   {Suggestion::Text(u"(617) 268-6862")}}),
+                testing::Field(&Suggestion::icon, ""))));
 
   // Tests a form with name, address, phone number, and email address fields.
   EXPECT_THAT(
@@ -2586,10 +2622,15 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_MobileShowOne) {
           std::vector<ServerFieldType>{NAME_FULL, ADDRESS_HOME_STREET_ADDRESS,
                                        ADDRESS_HOME_CITY, EMAIL_ADDRESS,
                                        PHONE_HOME_WHOLE_NUMBER}),
-      ElementsAre(AllOf(testing::Field(&Suggestion::label, u"401 Merrimack St"),
-                        testing::Field(&Suggestion::icon, "")),
-                  AllOf(testing::Field(&Suggestion::label, u"11 Elkins St"),
-                        testing::Field(&Suggestion::icon, ""))));
+      ElementsAre(
+          AllOf(testing::Field(&Suggestion::labels,
+                               std::vector<std::vector<Suggestion::Text>>{
+                                   {Suggestion::Text(u"401 Merrimack St")}}),
+                testing::Field(&Suggestion::icon, "")),
+          AllOf(testing::Field(&Suggestion::labels,
+                               std::vector<std::vector<Suggestion::Text>>{
+                                   {Suggestion::Text(u"11 Elkins St")}}),
+                testing::Field(&Suggestion::icon, ""))));
 }
 #endif  // if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
@@ -2630,31 +2671,39 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_MobileShowAll) {
           AutofillType(EMAIL_ADDRESS), std::u16string(), false,
           std::vector<ServerFieldType>{NAME_FIRST, NAME_LAST, EMAIL_ADDRESS,
                                        PHONE_HOME_WHOLE_NUMBER}),
-      ElementsAre(AllOf(testing::Field(&Suggestion::label,
-                                       ConstructMobileLabelLine(
-                                           {u"Hoa", u"(978) 674-4120"})),
-                        testing::Field(&Suggestion::icon, "")),
-                  AllOf(testing::Field(&Suggestion::label,
-                                       ConstructMobileLabelLine(
-                                           {u"María", u"(617) 268-6862"})),
-                        testing::Field(&Suggestion::icon, ""))));
+      ElementsAre(
+          AllOf(testing::Field(&Suggestion::labels,
+                               std::vector<std::vector<Suggestion::Text>>{
+                                   {Suggestion::Text(ConstructMobileLabelLine(
+                                       {u"Hoa", u"(978) 674-4120"}))}}),
+                testing::Field(&Suggestion::icon, "")),
+          AllOf(testing::Field(&Suggestion::labels,
+                               std::vector<std::vector<Suggestion::Text>>{
+                                   {Suggestion::Text(ConstructMobileLabelLine(
+                                       {u"María", u"(617) 268-6862"}))}}),
+                testing::Field(&Suggestion::icon, ""))));
 
   // Tests a form with name, address, phone number, and email address fields.
-  EXPECT_THAT(personal_data_->GetProfileSuggestions(
-                  AutofillType(EMAIL_ADDRESS), std::u16string(), false,
-                  std::vector<ServerFieldType>{
-                      NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY,
-                      EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER}),
-              ElementsAre(AllOf(testing::Field(&Suggestion::label,
-                                               ConstructMobileLabelLine(
-                                                   {u"Hoa", u"401 Merrimack St",
-                                                    u"(978) 674-4120"})),
-                                testing::Field(&Suggestion::icon, "")),
-                          AllOf(testing::Field(&Suggestion::label,
-                                               ConstructMobileLabelLine(
-                                                   {u"María", u"11 Elkins St",
-                                                    u"(617) 268-6862"})),
-                                testing::Field(&Suggestion::icon, ""))));
+  EXPECT_THAT(
+      personal_data_->GetProfileSuggestions(
+          AutofillType(EMAIL_ADDRESS), std::u16string(), false,
+          std::vector<ServerFieldType>{NAME_FULL, ADDRESS_HOME_STREET_ADDRESS,
+                                       ADDRESS_HOME_CITY, EMAIL_ADDRESS,
+                                       PHONE_HOME_WHOLE_NUMBER}),
+      ElementsAre(
+          AllOf(
+              testing::Field(
+                  &Suggestion::labels,
+                  std::vector<std::vector<Suggestion::Text>>{
+                      {Suggestion::Text(ConstructMobileLabelLine(
+                          {u"Hoa", u"401 Merrimack St", u"(978) 674-4120"}))}}),
+              testing::Field(&Suggestion::icon, "")),
+          AllOf(testing::Field(
+                    &Suggestion::labels,
+                    std::vector<std::vector<Suggestion::Text>>{
+                        {Suggestion::Text(ConstructMobileLabelLine(
+                            {u"María", u"11 Elkins St", u"(617) 268-6862"}))}}),
+                testing::Field(&Suggestion::icon, ""))));
 }
 #endif  // if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 

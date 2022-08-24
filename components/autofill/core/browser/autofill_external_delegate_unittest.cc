@@ -490,7 +490,7 @@ TEST_F(AutofillExternalDelegateUnitTest, DuplicateAutofillDatalistValues) {
   autofill_item.emplace_back();
   autofill_item[0].main_text =
       Suggestion::Text(u"Rick", Suggestion::Text::IsPrimary(true));
-  autofill_item[0].label = u"Deckard";
+  autofill_item[0].labels = {{Suggestion::Text(u"Deckard")}};
   autofill_item[0].frontend_id = kAutofillProfileId;
   external_delegate_->OnSuggestionsReturned(
       kRecentQueryId, autofill_item, /*autoselect_first_suggestion=*/false);
@@ -637,7 +637,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   suggestions.emplace_back();
   std::u16string promo_code_value = u"PROMOCODE1234";
   suggestions[0].main_text.value = promo_code_value;
-  suggestions[0].label = u"12.34% off your purchase!";
+  suggestions[0].labels = {{Suggestion::Text(u"12.34% off your purchase!")}};
   suggestions[0].frontend_id = POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY;
   external_delegate_->OnSuggestionsReturned(
       kRecentQueryId, suggestions, /*autoselect_first_suggestion=*/false);

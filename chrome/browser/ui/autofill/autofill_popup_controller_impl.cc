@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
 
 #include <algorithm>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
@@ -192,7 +193,7 @@ void AutofillPopupControllerImpl::UpdateDataListValues(
   for (size_t i = 0; i < values.size(); i++) {
     suggestions_[i].main_text =
         Suggestion::Text(values[i], Suggestion::Text::IsPrimary(true));
-    suggestions_[i].label = labels[i];
+    suggestions_[i].labels = {{Suggestion::Text(labels[i])}};
     suggestions_[i].frontend_id = POPUP_ITEM_ID_DATALIST_ENTRY;
   }
 
@@ -375,9 +376,9 @@ std::u16string AutofillPopupControllerImpl::GetSuggestionMinorTextAt(
   return suggestions_[row].minor_text.value;
 }
 
-const std::u16string& AutofillPopupControllerImpl::GetSuggestionLabelAt(
-    int row) const {
-  return suggestions_[row].label;
+std::vector<std::vector<Suggestion::Text>>
+AutofillPopupControllerImpl::GetSuggestionLabelsAt(int row) const {
+  return suggestions_[row].labels;
 }
 
 bool AutofillPopupControllerImpl::GetRemovalConfirmationText(

@@ -49,7 +49,6 @@ class MockAccessoryView
                void(const std::u16string&,
                     const std::u16string&,
                     base::OnceClosure));
-
 };
 
 Suggestion createPasswordEntry(std::string password,
@@ -77,6 +76,25 @@ std::vector<Suggestion> createSuggestions(int clearItemOffset) {
   return suggestions;
 }
 
+// Convert the Suggestion::labels into one string of format "[[a, b],[c]]".
+std::string SuggestionLabelsToString(
+    const std::vector<std::vector<Suggestion::Text>>& labels) {
+  std::string result;
+  for (const std::vector<Suggestion::Text>& texts : labels) {
+    if (!result.empty())
+      result.append(",");
+
+    std::string row;
+    for (const Suggestion::Text& text : texts) {
+      if (!row.empty())
+        row.append(",");
+      row.append(base::UTF16ToUTF8(text.value));
+    }
+    result.append("[" + row + "]");
+  }
+  return "[" + result + "]";
+}
+
 // Matcher returning true if suggestions have equal members.
 MATCHER_P(equalsSuggestion, other, "") {
   if (arg.frontend_id != other.frontend_id) {
@@ -87,8 +105,8 @@ MATCHER_P(equalsSuggestion, other, "") {
     *result_listener << "has main_text " << arg.main_text.value;
     return false;
   }
-  if (arg.label != other.label) {
-    *result_listener << "has label " << arg.label;
+  if (arg.labels != other.labels) {
+    *result_listener << "has labels " << SuggestionLabelsToString(arg.labels);
     return false;
   }
   if (arg.icon != other.icon) {
@@ -102,8 +120,9 @@ MATCHER_P(equalsSuggestion, other, "") {
 
 // Automagically used to pretty-print Suggestion. Must be in same namespace.
 void PrintTo(const Suggestion& suggestion, std::ostream* os) {
-  *os << "(main_text: \"" << suggestion.main_text.value << "\", label: \""
-      << suggestion.label << "\", frontend_id: " << suggestion.frontend_id
+  *os << "(main_text: \"" << suggestion.main_text.value << "\", labels: \""
+      << SuggestionLabelsToString(suggestion.labels)
+      << "\", frontend_id: " << suggestion.frontend_id
       << ", additional_label: \"" << suggestion.additional_label << "\")";
 }
 
@@ -183,17 +202,28 @@ TEST_F(AutofillKeyboardAccessoryAdapterTest, UseAdditionalLabelForElidedLabel) {
 
   // The 1st item is usually not visible (something like clear form) and has an
   // empty label. But it needs to be handled since UI might ask for it anyway.
-  EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelAt(0), std::u16string());
+  ASSERT_EQ(adapter_as_controller()->GetSuggestionLabelsAt(0).size(), 1U);
+  ASSERT_EQ(adapter_as_controller()->GetSuggestionLabelsAt(0)[0].size(), 1U);
+  EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelsAt(0)[0][0].value,
+            std::u16string());
 
   // If there is a label, use it but cap at 8 bullets.
-  EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelAt(1), u"********");
+  ASSERT_EQ(adapter_as_controller()->GetSuggestionLabelsAt(1).size(), 1U);
+  ASSERT_EQ(adapter_as_controller()->GetSuggestionLabelsAt(1)[0].size(), 1U);
+  EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelsAt(1)[0][0].value,
+            u"********");
 
   // If the label is empty, use the additional label:
-  EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelAt(2),
+  ASSERT_EQ(adapter_as_controller()->GetSuggestionLabelsAt(2).size(), 1U);
+  ASSERT_EQ(adapter_as_controller()->GetSuggestionLabelsAt(2)[0].size(), 1U);
+  EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelsAt(2)[0][0].value,
             u"psl.origin.eg ********");
 
   // If the password has less than 8 bullets, show the exact amount.
-  EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelAt(3), u"***");
+  ASSERT_EQ(adapter_as_controller()->GetSuggestionLabelsAt(3).size(), 1U);
+  ASSERT_EQ(adapter_as_controller()->GetSuggestionLabelsAt(3)[0].size(), 1U);
+  EXPECT_EQ(adapter_as_controller()->GetSuggestionLabelsAt(3)[0][0].value,
+            u"***");
 }
 
 TEST_F(AutofillKeyboardAccessoryAdapterTest, ProvideReorderedSuggestions) {

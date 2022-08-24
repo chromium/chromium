@@ -484,7 +484,7 @@ void AutofillExternalDelegate::InsertDataListValues(
   for (size_t i = 0; i < data_list_values_.size(); i++) {
     (*suggestions)[i].main_text = Suggestion::Text(
         data_list_values_[i], Suggestion::Text::IsPrimary(true));
-    (*suggestions)[i].label = data_list_labels_[i];
+    (*suggestions)[i].labels = {{Suggestion::Text(data_list_labels_[i])}};
     (*suggestions)[i].frontend_id = POPUP_ITEM_ID_DATALIST_ENTRY;
   }
 }

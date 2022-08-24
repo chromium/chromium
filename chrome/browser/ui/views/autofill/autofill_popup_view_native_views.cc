@@ -948,13 +948,17 @@ std::u16string AutofillPopupItemView::GetVoiceOverString() {
   if (!minor_text.empty())
     text.push_back(minor_text);
 
-  auto label_text = controller->GetSuggestionLabelAt(GetLineNumber());
-  if (!label_text.empty()) {
-    // |label| is not populated for footers or autocomplete entries.
-    text.push_back(label_text);
+  std::vector<std::vector<Suggestion::Text>> labels =
+      controller->GetSuggestionLabelsAt(GetLineNumber());
+  for (std::vector<Suggestion::Text>& row : labels) {
+    for (Suggestion::Text label : row) {
+      // |label_text| is not populated for footers or autocomplete entries.
+      if (!label.value.empty())
+        text.push_back(std::move(label.value));
+    }
   }
 
-  // TODO(siyua): GetSuggestionLabelAt should return a vector of strings.
+  // TODO(siyua): Merge other labels to Suggestion::labels.
   if (!suggestion.offer_label.empty()) {
     // |offer_label| is only populated for credit card suggestions.
     text.push_back(suggestion.offer_label);
@@ -1015,30 +1019,38 @@ AutofillPopupSuggestionView::CreateMainTextView() {
 
 std::vector<std::unique_ptr<views::View>>
 AutofillPopupSuggestionView::CreateSubtextViews() {
-  const std::u16string& second_row_label =
-      popup_view()->controller()->GetSuggestionLabelAt(GetLineNumber());
+  std::u16string second_row_label;
+  std::vector<std::vector<Suggestion::Text>> labels =
+      popup_view()->controller()->GetSuggestionLabelsAt(GetLineNumber());
+  if (!labels.empty()) {
+    DCHECK_EQ(labels.size(), 1U);
+    DCHECK_EQ(labels[0].size(), 1U);
+    second_row_label = std::move(labels[0][0].value);
+  }
+
   const std::u16string& third_row_label =
       popup_view()->controller()->GetSuggestionAt(GetLineNumber()).offer_label;
 
-  std::vector<std::unique_ptr<views::View>> labels;
+  std::vector<std::unique_ptr<views::View>> subtext_view;
   for (const std::u16string& text : {second_row_label, third_row_label}) {
     // If a row is missing, do not include any further rows.
     if (text.empty())
-      return labels;
+      return subtext_view;
 
-    auto label = CreateLabelWithStyleAndContext(
+    auto label_view = CreateLabelWithStyleAndContext(
         text, ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
         views::style::STYLE_SECONDARY);
-    KeepLabel(label.get());
+    KeepLabel(label_view.get());
     if (popup_type_ == PopupType::kAddresses &&
         base::FeatureList::IsEnabled(
             features::kAutofillTypeSpecificPopupWidth)) {
-      label->SetMaximumWidthSingleLine(kAutofillPopupAddressProfileMaxWidth);
+      label_view->SetMaximumWidthSingleLine(
+          kAutofillPopupAddressProfileMaxWidth);
     }
-    labels.emplace_back(std::move(label));
+    subtext_view.emplace_back(std::move(label_view));
   }
 
-  return labels;
+  return subtext_view;
 }
 
 /************** PasswordPopupSuggestionView **************/
@@ -1101,7 +1113,14 @@ PasswordPopupSuggestionView::PasswordPopupSuggestionView(
                                   line_number,
                                   frontend_id,
                                   PopupType::kPasswords) {
-  origin_ = popup_view->controller()->GetSuggestionLabelAt(line_number);
+  std::vector<std::vector<Suggestion::Text>> labels =
+      popup_view->controller()->GetSuggestionLabelsAt(line_number);
+  if (!labels.empty()) {
+    DCHECK_EQ(labels.size(), 1U);
+    DCHECK_EQ(labels[0].size(), 1U);
+    origin_ = std::move(labels[0][0].value);
+  }
+
   masked_password_ =
       popup_view->controller()->GetSuggestionAt(line_number).additional_label;
 }
