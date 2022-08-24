@@ -11,7 +11,9 @@
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
+#include "chrome/grit/gaia_auth_host_resources_map.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/oobe_unconditional_resources_map.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -40,6 +42,7 @@ LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
   source->DisableTrustedTypesCSP();
 
   source->EnableReplaceI18nInJS();
+  source->UseStringsJs();
 
   source->AddString("lockScreenReauthSubtitile",
                     l10n_util::GetStringFUTF16(IDS_LOCK_SCREEN_REAUTH_SUBTITLE,
@@ -98,13 +101,24 @@ LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
       "passwordChangedOldPasswordHint",
       l10n_util::GetStringUTF16(IDS_LOCK_PASSWORD_CHANGED_OLD_PASSWORD_HINT));
 
-  source->SetDefaultResource(IDR_LOCK_SCREEN_REAUTH_HTML);
+  source->SetDefaultResource(IDR_LOCK_SCREEN_REAUTH_APP_HTML);
 
-  source->AddResourcePath("authenticator.js", IDR_GAIA_AUTH_AUTHENTICATOR_JS);
   source->AddResourcePath("webview_saml_injected.js",
                           IDR_GAIA_AUTH_WEBVIEW_SAML_INJECTED_JS);
 
+  // Add Gaia Authenticator resources
+  source->AddResourcePaths(
+      base::make_span(kGaiaAuthHostResources, kGaiaAuthHostResourcesSize));
+
+  // Add OOBE resources
+  source->AddResourcePaths(base::make_span(kOobeUnconditionalResources,
+                                           kOobeUnconditionalResourcesSize));
+
+  source->AddResourcePath("lock_screen_reauth.html",
+                          IDR_LOCK_SCREEN_REAUTH_HTML);
   source->AddResourcePath("lock_screen_reauth.js", IDR_LOCK_SCREEN_REAUTH_JS);
+  source->AddResourcePath("lock_screen_reauth_app.js",
+                          IDR_LOCK_SCREEN_REAUTH_APP_JS);
 
   content::WebUIDataSource::Add(profile, source);
 }

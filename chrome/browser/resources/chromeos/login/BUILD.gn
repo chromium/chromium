@@ -131,6 +131,8 @@ generate_grd("build_oobe_grd") {
     "images/2x/thumbnail-theme-dark-2x.png",
     "images/1x/thumbnail-theme-auto-1x.png",
     "images/2x/thumbnail-theme-auto-2x.png",
+    "images/1x/verify-account.svg",
+    "images/2x/verify-account.svg",
     "images/blazey_dark.svg",
     "images/blazey_light.svg",
   ]

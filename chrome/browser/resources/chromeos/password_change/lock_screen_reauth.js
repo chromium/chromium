@@ -7,15 +7,19 @@
  * the lock screen.
  */
 
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import 'chrome://resources/js/cr.m.js';
+import 'chrome://resources/js/cr/event_target.m.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
+import {Authenticator, AuthMode, AuthParams, SUPPORTED_PARAMS} from './gaia_auth_host/authenticator.m.js';
+import './components/oobe_icons.m.js';
 
 const clearDataType = {
   appcache: true,
@@ -27,9 +31,21 @@ Polymer({
   is: 'lock-reauth',
   behaviors: [I18nBehavior],
 
+  _template: html`{__html_template__}`,
+
   properties: {
     // User non-canonicalized email for display
     email_: String,
+
+
+    /**
+     * SAML notice which changes when the authDomain property is changed on the
+     * authenticator.
+     */
+    authDomainNotice_: {
+      type: String,
+      value: '',
+    },
 
     /**
      * Whether the ‘verify user’ screen is shown.
@@ -100,7 +116,7 @@ Polymer({
 
   /**
    * The UI component that hosts IdP pages.
-   * @type {!cr.login.Authenticator|undefined}
+   * @type {!Authenticator|undefined}
    */
   authenticator_: undefined,
 
@@ -114,7 +130,7 @@ Polymer({
   /** @override */
   ready() {
     this.signinFrame_ = this.getSigninFrame_();
-    this.authenticator_ = new cr.login.Authenticator(this.signinFrame_);
+    this.authenticator_ = new Authenticator(this.signinFrame_);
     this.authenticator_.addEventListener(
         'authDomainChange', () => void this.onAuthDomainChange_());
     this.authenticator_.addEventListener(
@@ -133,6 +149,7 @@ Polymer({
     this.isManualInput_ = false;
     this.isPasswordChanged_ = false;
     this.showSamlNoticeMessage_ = false;
+    this.authDomainNotice_ = '';
   },
 
   /**
@@ -162,26 +179,23 @@ Polymer({
    * @private
    */
   onAuthDomainChange_() {
-    // <!--_html_template_start_-->
-    this.$.samlNoticeMessage.textContent =
-      loadTimeData.substituteString('$i18nPolymer{samlNotice}',
-        this.authenticator_.authDomain);
-    // <!--_html_template_end_-->
+    this.authDomainNotice_ =
+        this.i18n('samlNotice', this.authenticator_.authDomain);
   },
 
   /**
    * Loads the authentication parameter into the iframe.
-   * @param {!Object} data authenticator parameters bag.
+   * @param {!AuthParams} data authenticator parameters bag.
    */
   loadAuthenticator(data) {
     this.authenticator_.setWebviewPartition(data.webviewPartitionName);
     const params = {};
-    for (const i in cr.login.Authenticator.SUPPORTED_PARAMS) {
-      const name = cr.login.Authenticator.SUPPORTED_PARAMS[i];
-      if (data[name]) {
+    SUPPORTED_PARAMS.forEach(name => {
+      if (data.hasOwnProperty(name)) {
         params[name] = data[name];
       }
-    }
+    });
+
     this.authenticatorParams_ = params;
     this.email_ = data.email;
     if (!data['doSamlRedirect']) {
@@ -295,8 +309,7 @@ Polymer({
 
   /** @private */
   onVerify_() {
-    this.authenticator_.load(
-      cr.login.Authenticator.AuthMode.DEFAULT, this.authenticatorParams_);
+    this.authenticator_.load(AuthMode.DEFAULT, this.authenticatorParams_);
     this.resetState_();
     /**
      * These statements override resetStates_ calls.
@@ -313,7 +326,8 @@ Polymer({
     }
     if (this.isManualInput_) {
       // When using manual password entry, both passwords must match.
-      const confirmPasswordInput = this.$$('#confirmPasswordInput');
+      const confirmPasswordInput =
+          this.shadowRoot.querySelector('#confirmPasswordInput');
       if (!confirmPasswordInput.validate()) {
         return;
       }
@@ -352,8 +366,7 @@ Polymer({
 
   /** @private */
   doGaiaRedirect_() {
-    this.authenticator_.load(
-        cr.login.Authenticator.AuthMode.DEFAULT, this.authenticatorParams_);
+    this.authenticator_.load(AuthMode.DEFAULT, this.authenticatorParams_);
     this.resetState_();
     /**
      * These statements override resetStates_ calls.
@@ -364,20 +377,15 @@ Polymer({
 
   /** @private */
   passwordPlaceholder_(locale, isManualInput_) {
-    // <!--_html_template_start_-->
-    return isManualInput_ ?
-      '$i18n{manualPasswordInputLabel}' :
-      '$i18n{confirmPasswordLabel}';
-    // <!--_html_template_end_-->
+    return this.i18n(
+        isManualInput_ ? 'manualPasswordInputLabel' : 'confirmPasswordLabel');
   },
 
   /** @private */
   passwordErrorText_(locale, isManualInput_) {
-    // <!--_html_template_start_-->
-    return isManualInput_ ?
-      '$i18n{manualPasswordMismatch}' :
-      '$i18n{passwordChangedIncorrectOldPassword}';
-    // <!--_html_template_end_-->
+    return this.i18n(
+        isManualInput_ ? 'manualPasswordMismatch' :
+                         'passwordChangedIncorrectOldPassword');
   },
 
 });
