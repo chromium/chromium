@@ -115,6 +115,7 @@ bool IsSvcSupported(IMFActivate* activate) {
   // More info: https://crbug.com/1253748
   return false;
 #else
+  TRACE_EVENT0("gpu", "IsSvcSupported");
   Microsoft::WRL::ComPtr<IMFTransform> encoder;
   Microsoft::WRL::ComPtr<ICodecAPI> codec_api;
   HRESULT hr = activate->ActivateObject(IID_PPV_ARGS(&encoder));
