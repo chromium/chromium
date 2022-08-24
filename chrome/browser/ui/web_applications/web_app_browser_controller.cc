@@ -32,13 +32,11 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
-#include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/native_theme/native_theme.h"
@@ -387,9 +385,6 @@ std::u16string WebAppBrowserController::GetTitle() const {
   }
 
   std::u16string raw_title = AppBrowserController::GetTitle();
-
-  if (!base::FeatureList::IsEnabled(features::kPrefixWebAppWindowsWithAppName))
-    return raw_title;
 
   std::u16string app_name =
       base::UTF8ToUTF16(provider_.registrar().GetAppShortName(app_id()));

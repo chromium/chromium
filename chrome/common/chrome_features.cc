@@ -763,9 +763,6 @@ const base::Feature kPredictivePrefetchingAllowedOnAllConnectionTypes{
     "PredictivePrefetchingAllowedOnAllConnectionTypes",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kPrefixWebAppWindowsWithAppName{
-    "PrefixWebAppWindowsWithAppName", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Allows Chrome to do preconnect when prerender fails.
 const base::Feature kPrerenderFallbackToPreconnect{
     "PrerenderFallbackToPreconnect", base::FEATURE_ENABLED_BY_DEFAULT};

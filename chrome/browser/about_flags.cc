@@ -4323,10 +4323,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          web_app::kAllowDefaultWebAppMigrationForChromeOsManagedUsers)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
-    {"enable-desktop-pwas-prefix-app-name-in-window-title",
-     flag_descriptions::kDesktopPWAsPrefixAppNameInWindowTitleName,
-     flag_descriptions::kDesktopPWAsPrefixAppNameInWindowTitleDescription,
-     kOsDesktop, FEATURE_VALUE_TYPE(features::kPrefixWebAppWindowsWithAppName)},
     {"enable-desktop-pwas-remove-status-bar",
      flag_descriptions::kDesktopPWAsRemoveStatusBarName,
      flag_descriptions::kDesktopPWAsRemoveStatusBarDescription, kOsDesktop,

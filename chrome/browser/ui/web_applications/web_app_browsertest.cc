@@ -1534,29 +1534,11 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, PermissionBubble) {
       "navigator.geolocation.getCurrentPosition(function(){});"));
 }
 
-class WebAppBrowserTest_PrefixInTitle
-    : public WebAppBrowserTest,
-      public testing::WithParamInterface<bool> {
- public:
-  WebAppBrowserTest_PrefixInTitle() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kPrefixWebAppWindowsWithAppName);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kPrefixWebAppWindowsWithAppName);
-    }
-  }
-
-  bool ExpectPrefixInTitle() { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using WebAppBrowserTest_PrefixInTitle = WebAppBrowserTest;
 
 // Ensure that web app windows don't duplicate the app name in the title, when
 // the page's title already starts with the app name.
-IN_PROC_BROWSER_TEST_P(WebAppBrowserTest_PrefixInTitle, PrefixExistsInTitle) {
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_PrefixInTitle, PrefixExistsInTitle) {
   const GURL app_url =
       https_server()->GetURL("app.com", "/web_apps/title_appname_prefix.html");
   const std::u16string app_title = u"A Web App";
@@ -1579,7 +1561,7 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest_PrefixInTitle, PrefixExistsInTitle) {
 
 // Ensure that web app windows with blank titles don't display the URL as a
 // default window title.
-IN_PROC_BROWSER_TEST_P(WebAppBrowserTest_PrefixInTitle,
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_PrefixInTitle,
                        WebAppWindowTitleForEmptyAndSimpleWebContentTitles) {
   // Ensure web app windows show the expected title when the contents have an
   // empty or simple title.
@@ -1594,25 +1576,15 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest_PrefixInTitle,
   content::WebContents* const web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
-  if (ExpectPrefixInTitle()) {
-    EXPECT_EQ(app_title, app_browser->GetWindowTitleForCurrentTab(false));
-  } else {
-    EXPECT_EQ(std::u16string(),
-              app_browser->GetWindowTitleForCurrentTab(false));
-  }
+  EXPECT_EQ(app_title, app_browser->GetWindowTitleForCurrentTab(false));
   NavigateToURLAndWait(app_browser,
                        https_server()->GetURL("app.site.test", "/simple.html"));
-  if (ExpectPrefixInTitle()) {
-    EXPECT_EQ(u"A Web App - OK",
-              app_browser->GetWindowTitleForCurrentTab(false));
-  } else {
-    EXPECT_EQ(u"OK", app_browser->GetWindowTitleForCurrentTab(false));
-  }
+  EXPECT_EQ(u"A Web App - OK", app_browser->GetWindowTitleForCurrentTab(false));
 }
 
 // Ensure that web app windows display the app title instead of the page
 // title when off scope.
-IN_PROC_BROWSER_TEST_P(WebAppBrowserTest_PrefixInTitle,
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_PrefixInTitle,
                        OffScopeUrlsDisplayAppTitle) {
   const GURL app_url = GetSecureAppURL();
   const std::u16string app_title = u"A Web App";
@@ -1629,22 +1601,14 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest_PrefixInTitle,
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 
   // When we are within scope, show the page title.
-  if (ExpectPrefixInTitle()) {
-    EXPECT_EQ(u"A Web App - Google",
-              app_browser->GetWindowTitleForCurrentTab(false));
-  } else {
-    EXPECT_EQ(u"Google", app_browser->GetWindowTitleForCurrentTab(false));
-  }
+  EXPECT_EQ(u"A Web App - Google",
+            app_browser->GetWindowTitleForCurrentTab(false));
   NavigateToURLAndWait(app_browser,
                        https_server()->GetURL("app.site.test", "/simple.html"));
 
   // When we are off scope, show the app title.
   EXPECT_EQ(app_title, app_browser->GetWindowTitleForCurrentTab(false));
 }
-
-INSTANTIATE_TEST_SUITE_P(WebAppBrowserTestTitlePrefix,
-                         WebAppBrowserTest_PrefixInTitle,
-                         ::testing::Values(true, false));
 
 // Ensure that web app windows display the app title instead of the page
 // title when using http.

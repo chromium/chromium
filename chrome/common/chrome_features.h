@@ -535,9 +535,6 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kPredictivePrefetchingAllowedOnAllConnectionTypes;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kPrefixWebAppWindowsWithAppName;
-
-COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kPrerenderFallbackToPreconnect;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
