@@ -113,7 +113,8 @@ bool AppLaunchInfo::LoadLaunchURL(Extension* extension, std::u16string* error) {
   // Launch URL can be either local (to chrome-extension:// root) or an absolute
   // web URL.
   if (const base::Value* temp =
-          extension->manifest()->FindPath(keys::kLaunchLocalPath)) {
+          extension->manifest()->FindPath(keys::kLaunchLocalPath);
+      temp) {
     if (extension->manifest()->FindPath(keys::kLaunchWebURL)) {
       *error = errors::kLaunchPathAndURLAreExclusive;
       return false;
@@ -143,8 +144,8 @@ bool AppLaunchInfo::LoadLaunchURL(Extension* extension, std::u16string* error) {
     }
 
     launch_local_path_ = launch_path;
-  } else if (const base::Value* temp =
-                 extension->manifest()->FindPath(keys::kLaunchWebURL)) {
+  } else if (temp = extension->manifest()->FindPath(keys::kLaunchWebURL);
+             temp) {
     if (!temp->is_string()) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
           errors::kInvalidLaunchValue,

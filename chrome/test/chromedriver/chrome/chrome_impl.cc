@@ -269,7 +269,7 @@ Status ChromeImpl::CloseFrontends(const std::string& for_client_id) {
   for (std::list<std::string>::const_iterator it = docked_frontend_ids.begin();
        it != docked_frontend_ids.end(); ++it) {
     std::unique_ptr<DevToolsClientImpl> client;
-    Status status = CreateClient(*it, &client);
+    status = CreateClient(*it, &client);
     if (status.IsError())
       return status;
     std::unique_ptr<WebViewImpl> web_view(new WebViewImpl(
@@ -611,9 +611,9 @@ Status ChromeImpl::GetWebViewsInfo(WebViewsInfo* views_info) {
     if (!info.GetString("url", &url))
       return Status(kUnknownError, "DevTools did not include url");
     WebViewInfo::Type type;
-    Status status = ParseType(type_as_string, &type);
-    if (status.IsError())
-      return status;
+    Status parse_status = ParseType(type_as_string, &type);
+    if (parse_status.IsError())
+      return parse_status;
     temp_views_info.emplace_back(id, std::string(), url, type);
   }
   *views_info = WebViewsInfo(temp_views_info);

@@ -517,7 +517,7 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
   int read_fd;
 
   if (capabilities.switches.HasSwitch("remote-debugging-pipe")) {
-    Status status = PipeSetUp(&options, &write_fd, &read_fd);
+    PipeSetUp(&options, &write_fd, &read_fd);
   }
 
   base::ScopedFD devnull;

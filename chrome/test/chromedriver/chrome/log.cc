@@ -42,12 +42,12 @@ base::Value SmartDeepCopy(const base::Value* value) {
   const size_t kMaxChildren = 20;
   if (value->is_dict()) {
     base::Value::Dict dict_copy;
-    for (auto [key, value] : value->GetDict()) {
+    for (auto [dict_key, dict_value] : value->GetDict()) {
       if (dict_copy.size() >= kMaxChildren - 1) {
         dict_copy.Set("~~~", "...");
         break;
       }
-      dict_copy.Set(key, SmartDeepCopy(&value));
+      dict_copy.Set(dict_key, SmartDeepCopy(&dict_value));
     }
     return base::Value(std::move(dict_copy));
   } else if (value->is_list()) {
