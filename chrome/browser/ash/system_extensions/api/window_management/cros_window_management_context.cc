@@ -50,9 +50,68 @@ CrosWindowManagementContext::CrosWindowManagementContext(Profile* profile)
 
   service_worker_manager_observation_.Observe(
       base::to_address(system_extensions_service_worker_manager_));
+
+  // Let CrosWindowManagementContext be a PreTargetHandler on aura::Env to
+  // ensure that it receives KeyEvents.
+  aura::Env::GetInstance()->AddPreTargetHandler(
+      this, ui::EventTarget::Priority::kAccessibility);
 }
 
-CrosWindowManagementContext::~CrosWindowManagementContext() = default;
+CrosWindowManagementContext::~CrosWindowManagementContext() {
+  aura::Env::GetInstance()->RemovePreTargetHandler(this);
+}
+
+void CrosWindowManagementContext::OnKeyEvent(ui::KeyEvent* event) {
+  DCHECK(event->type() == ui::EventType::ET_KEY_PRESSED ||
+         event->type() == ui::EventType::ET_KEY_RELEASED);
+  // TODO(b/238578914): Eventually we will allow System Extensions to register
+  // their accelerators. For prototyping, the accelerator name is a string
+  // consisting of the modifiers pressed (Alt and/or Control) and the DOM key
+  // that was pressed. We skip any events without modifiers. For example:
+  // +--------------------+------------------------------------------------+
+  // |    Keys pressed    |               Accelerator Name                 |
+  // +--------------------+------------------------------------------------+
+  // | `Ctrl + a`         | `"Control a"`                                  |
+  // | `Ctrl + Alt + b`   | `"Control AltLeft b"`                          |
+  // | `Ctrl + Shift + a` | `"Control A"`                                  |
+  // | `Shift + a`        | Skipped (Neither Control nor Alt were pressed) |
+  // +--------------------+------------------------------------------------+
+  std::vector<std::string> keys;
+  if (event->IsControlDown()) {
+    keys.push_back(
+        ui::KeycodeConverter::DomKeyToKeyString(ui::DomKey::CONTROL));
+  }
+  if (event->IsAltDown()) {
+    keys.push_back(ui::KeycodeConverter::DomKeyToKeyString(ui::DomKey::ALT));
+  }
+
+  // No modifiers pressed.
+  if (keys.size() == 0)
+    return;
+
+  // Only modifiers pressed.
+  const std::string key =
+      ui::KeycodeConverter::DomKeyToKeyString(event->GetDomKey());
+  if (base::Contains(keys, key)) {
+    return;
+  }
+  keys.push_back(key);
+
+  blink::mojom::AcceleratorEventPtr event_ptr =
+      blink::mojom::AcceleratorEvent::New();
+  event_ptr->type = event->type() == ui::EventType::ET_KEY_PRESSED
+                        ? blink::mojom::AcceleratorEvent::Type::kDown
+                        : blink::mojom::AcceleratorEvent::Type::kUp;
+  event_ptr->accelerator_name = base::JoinString(keys, " ");
+  event_ptr->repeat = event->is_repeat();
+
+  GetCrosWindowManagementInstances(base::BindRepeating(
+      [](const blink::mojom::AcceleratorEventPtr& event_ptr,
+         WindowManagementImpl& window_management_impl) {
+        window_management_impl.DispatchAcceleratorEvent(event_ptr.Clone());
+      },
+      std::move(event_ptr)));
+}
 
 void CrosWindowManagementContext::OnCrosWindowManagementDisconnect() {
   const SystemExtensionsServiceWorkerInfo& info =
@@ -116,6 +175,22 @@ void CrosWindowManagementContext::OnRegisterServiceWorker(
       base::BindOnce([](WindowManagementImpl& cros_window_management) {
         cros_window_management.DispatchStartEvent();
       }));
+}
+
+void CrosWindowManagementContext::GetCrosWindowManagementInstances(
+    base::RepeatingCallback<void(WindowManagementImpl&)> callback) {
+  const std::vector<SystemExtensionId> ids =
+      system_extensions_registry_->GetIds();
+  for (const auto& id : ids) {
+    auto* system_extension = system_extensions_registry_->GetById(id);
+    DCHECK(system_extension);
+
+    // TODO(b/243092948): Change to kWindowManagement when it's added.
+    if (system_extension->type != SystemExtensionType::kEcho)
+      continue;
+
+    GetCrosWindowManagement(system_extension->id, callback);
+  }
 }
 
 void CrosWindowManagementContext::GetCrosWindowManagement(

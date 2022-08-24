@@ -17,6 +17,12 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/unique_associated_receiver_set.h"
 #include "third_party/blink/public/mojom/chromeos/system_extensions/window_management/cros_window_management.mojom.h"
+#include "ui/aura/env.h"
+#include "ui/events/event.h"
+#include "ui/events/event_handler.h"
+#include "ui/events/keycodes/dom/dom_key.h"
+#include "ui/events/keycodes/dom/keycode_converter.h"
+#include "ui/events/types/event_type.h"
 
 class Profile;
 
@@ -31,6 +37,7 @@ class WindowManagementImpl;
 // receivers and implementations for blink::mojom::CrosWindowManagement.
 class CrosWindowManagementContext
     : public KeyedService,
+      public ui::EventHandler,
       public SystemExtensionsServiceWorkerManager::Observer,
       public blink::mojom::CrosWindowManagementFactory {
  public:
@@ -55,6 +62,9 @@ class CrosWindowManagementContext
       delete;
   ~CrosWindowManagementContext() override;
 
+  // ui::EventHandler
+  void OnKeyEvent(ui::KeyEvent* event) override;
+
   // SystemExtensionsServiceWorkerManager::Observer
   void OnRegisterServiceWorker(
       const SystemExtensionId& system_extension_id,
@@ -73,6 +83,11 @@ class CrosWindowManagementContext
   void GetCrosWindowManagement(
       const SystemExtensionId& system_extension_id,
       base::OnceCallback<void(WindowManagementImpl&)> callback);
+  // Starts the Service Worker for all Window Management System Extensions
+  // and runs `callback` with the CrosWindowManagement corresponding to the
+  // Service Workers.
+  void GetCrosWindowManagementInstances(
+      base::RepeatingCallback<void(WindowManagementImpl&)> callback);
 
   void OnServiceWorkerStarted(
       const SystemExtensionId& system_extension_id,

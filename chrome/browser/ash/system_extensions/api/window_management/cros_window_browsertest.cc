@@ -931,4 +931,31 @@ IN_PROC_BROWSER_TEST_F(CrosWindowExtensionBrowserTest,
   EXPECT_FALSE(*dict.FindBool("repeat"));
 }
 
+IN_PROC_BROWSER_TEST_F(CrosWindowExtensionBrowserTest,
+                       AcceleratorEvent_WakeUpWorker) {
+  InstallAndStartExtension();
+
+  // Stop the Service Worker.
+  auto* worker_context = browser()
+                             ->profile()
+                             ->GetDefaultStoragePartition()
+                             ->GetServiceWorkerContext();
+  base::RunLoop run_loop;
+  worker_context->StopAllServiceWorkers(run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Dispatch event. The Service Worker should wake up and fire an event.
+  auto observer = GetConsoleObserver();
+  ui::test::EventGenerator generator(ash::Shell::Get()->GetPrimaryRootWindow());
+  generator.PressKey(ui::KeyboardCode::VKEY_A,
+                     ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN);
+
+  base::Value result = observer.WaitAndGetNextConsoleMessageAsValue();
+  const auto& dict = result.GetDict();
+
+  EXPECT_EQ("acceleratordown", *dict.FindString("type"));
+  EXPECT_EQ("Control Alt a", *dict.FindString("name"));
+  EXPECT_FALSE(*dict.FindBool("repeat"));
+}
+
 }  //  namespace ash
