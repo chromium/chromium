@@ -1827,15 +1827,8 @@ class SearchByRegionBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<ContextMenuNotificationObserver> menu_observer_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_LensRegionSearchWithValidRegionNewTab \
-  DISABLED_LensRegionSearchWithValidRegionNewTab
-#else
-#define MAYBE_LensRegionSearchWithValidRegionNewTab \
-  LensRegionSearchWithValidRegionNewTab
-#endif
 IN_PROC_BROWSER_TEST_F(SearchByRegionBrowserTest,
-                       MAYBE_LensRegionSearchWithValidRegionNewTab) {
+                       LensRegionSearchWithValidRegionNewTab) {
   SetupAndLoadPage("/empty.html");
   ui_test_utils::AllBrowserTabAddedWaiter add_tab;
 
@@ -1851,7 +1844,7 @@ IN_PROC_BROWSER_TEST_F(SearchByRegionBrowserTest,
   // Match the query parameters, without the value of start_time.
   EXPECT_THAT(new_tab_content, testing::MatchesRegex(
                                    expected_content.substr(0, query_start_pos) +
-                                   ".*ep=crs&re=df&s=&st=\\d+&lm.+="));
+                                   ".*ep=crs&re=df&s=&st=\\d+"));
 }
 
 IN_PROC_BROWSER_TEST_F(SearchByRegionBrowserTest,
@@ -1948,7 +1941,7 @@ class SearchByRegionWithSidePanelBrowserTest
     EXPECT_THAT(
         side_panel_content,
         testing::MatchesRegex(expected_content.substr(0, query_start_pos) +
-                              ".*ep=crs&re=df&s=&st=\\d+&lm.+="));
+                              ".*ep=crs&re=dcsp&s=csp&st=\\d+"));
     quit_closure_.Run();
   }
 
@@ -2025,7 +2018,7 @@ class SearchByRegionWithUnifiedSidePanelBrowserTest
     EXPECT_THAT(
         side_panel_content,
         testing::MatchesRegex(expected_content.substr(0, query_start_pos) +
-                              ".*ep=crs&re=df&s=&st=\\d+&lm.+="));
+                              ".*ep=crs&re=dcsp&s=csp&st=\\d+"));
     quit_closure_.Run();
   }
 
@@ -2044,13 +2037,8 @@ class SearchByRegionWithUnifiedSidePanelBrowserTest
   base::RepeatingClosure quit_closure_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_LensRegionSearchWithValidRegionUnifiedSidePanel DISABLED_LensRegionSearchWithValidRegionUnifiedSidePanel
-#else
-#define MAYBE_LensRegionSearchWithValidRegionUnifiedSidePanel LensRegionSearchWithValidRegionUnifiedSidePanel
-#endif
 IN_PROC_BROWSER_TEST_F(SearchByRegionWithUnifiedSidePanelBrowserTest,
-                       MAYBE_LensRegionSearchWithValidRegionUnifiedSidePanel) {
+                       LensRegionSearchWithValidRegionUnifiedSidePanel) {
   lens::CreateLensUnifiedSidePanelEntryForTesting(browser());
   SetupAndLoadPage("/empty.html");
   // We need a base::RunLoop to ensure that our test does not finish until the
