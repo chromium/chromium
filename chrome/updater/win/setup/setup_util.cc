@@ -407,9 +407,29 @@ void CheckComInterfaceTypeLib(UpdaterScope scope, bool is_internal) {
     }
 
     const HKEY root = UpdaterScopeToHKeyRoot(scope);
+    const std::wstring iid_reg_path = GetComIidRegistryPath(iid);
     const std::wstring typelib_reg_path = GetComTypeLibRegistryPath(iid);
+    const std::wstring iid_string = base::win::WStringFromGUID(iid);
 
     std::wstring val;
+    {
+      const auto& path = iid_reg_path + L"\\ProxyStubClsid32";
+      CHECK_EQ(
+          base::win::RegKey(root, path.c_str(), KEY_READ).ReadValue(L"", &val),
+          ERROR_SUCCESS)
+          << ": " << root << ": " << path << ": " << iid_string;
+      CHECK_EQ(val, L"{00020424-0000-0000-C000-000000000046}");
+    }
+
+    {
+      const auto& path = iid_reg_path + L"\\TypeLib";
+      CHECK_EQ(
+          base::win::RegKey(root, path.c_str(), KEY_READ).ReadValue(L"", &val),
+          ERROR_SUCCESS)
+          << ": " << root << ": " << path << ": " << iid_string;
+      CHECK_EQ(val, iid_string);
+    }
+
     const std::wstring typelib_reg_path_win32 =
         typelib_reg_path + L"\\1.0\\0\\win32";
     const std::wstring typelib_reg_path_win64 =
@@ -419,10 +439,8 @@ void CheckComInterfaceTypeLib(UpdaterScope scope, bool is_internal) {
       CHECK_EQ(
           base::win::RegKey(root, path.c_str(), KEY_READ).ReadValue(L"", &val),
           ERROR_SUCCESS)
-          << ": " << root << ": " << path << ": "
-          << base::win::WStringFromGUID(iid);
-      VLOG(1) << __func__ << ": " << path << ": " << val << ": "
-              << base::win::WStringFromGUID(iid);
+          << ": " << root << ": " << path << ": " << iid_string;
+      VLOG(1) << __func__ << ": " << path << ": " << val << ": " << iid_string;
     }
   }
 }
