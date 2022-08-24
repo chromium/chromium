@@ -12339,6 +12339,9 @@
   "ReportDeviceAudioStatusCheckingRateMs": {
     "reason_for_missing_test": "Maps into CrosSettings"
   },
+  "ReportDeviceSignalStrengthEventDrivenTelemetry": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
   "DeviceAllowNewUsers": {
     "reason_for_missing_test": "Maps into CrosSettings"
   },

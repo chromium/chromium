@@ -775,6 +775,25 @@ TEST_F(DeviceSettingsProviderTest, DecodeReportingSettings) {
   VerifyReportingSettings(false, status_frequency);
 }
 
+TEST_F(DeviceSettingsProviderTest,
+       DecodeReportingSignalStrengthEventDrivenTelemetrySetting) {
+  em::DeviceReportingProto* proto =
+      device_policy_->payload().mutable_device_reporting();
+  proto->mutable_report_signal_strength_event_driven_telemetry()->add_entries(
+      "https_latency");
+  proto->mutable_report_signal_strength_event_driven_telemetry()->add_entries(
+      "network_telemetry");
+
+  BuildAndInstallDevicePolicy();
+
+  base::ListValue signal_strength_telemetry_list;
+  signal_strength_telemetry_list.Append("https_latency");
+  signal_strength_telemetry_list.Append("network_telemetry");
+
+  VerifyPolicyValue(kReportDeviceSignalStrengthEventDrivenTelemetry,
+                    &signal_strength_telemetry_list);
+}
+
 TEST_F(DeviceSettingsProviderTest, DecodeHeartbeatSettings) {
   // Turn on heartbeats and verify that the heartbeat settings have been
   // decoded correctly.

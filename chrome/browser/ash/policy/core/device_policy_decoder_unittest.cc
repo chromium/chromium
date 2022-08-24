@@ -357,6 +357,28 @@ TEST_F(DevicePolicyDecoderTest, kReportDeviceOsUpdateStatus) {
                                std::move(report_os_update_status_value));
 }
 
+TEST_F(DevicePolicyDecoderTest,
+       ReportDeviceSignalStrengthEventDrivenTelemetry) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  DecodeUnsetDevicePolicyTestHelper(
+      device_policy, key::kReportDeviceSignalStrengthEventDrivenTelemetry);
+
+  base::ListValue signal_strength_telemetry_list;
+  signal_strength_telemetry_list.Append("network_telemetry");
+  signal_strength_telemetry_list.Append("https_latency");
+  device_policy.mutable_device_reporting()
+      ->mutable_report_signal_strength_event_driven_telemetry()
+      ->add_entries("network_telemetry");
+  device_policy.mutable_device_reporting()
+      ->mutable_report_signal_strength_event_driven_telemetry()
+      ->add_entries("https_latency");
+
+  DecodeDevicePolicyTestHelper(
+      device_policy, key::kReportDeviceSignalStrengthEventDrivenTelemetry,
+      std::move(signal_strength_telemetry_list));
+}
+
 TEST_F(DevicePolicyDecoderTest, DecodeServiceUUIDListSuccess) {
   std::string error;
   absl::optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(

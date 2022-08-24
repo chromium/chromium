@@ -1003,6 +1003,7 @@
         'ReportDeviceNetworkTelemetryCollectionRateMs',
         'ReportDeviceNetworkTelemetryEventCheckingRateMs',
         'ReportDeviceAudioStatusCheckingRateMs',
+        'ReportDeviceSignalStrengthEventDrivenTelemetry',
       ],
     },
     {
@@ -12700,6 +12701,52 @@
       'desc': '''If <ph name="LINUX_OS_NAME">Linux</ph> app support is on, setting the policy to Enabled sends information about <ph name="LINUX_OS_NAME">Linux</ph> apps usage back to the server.
 
       Setting the policy to Disabled or leaving it unset means no usage information is reported.''',
+    },
+    {
+      'name': 'ReportDeviceSignalStrengthEventDrivenTelemetry',
+      'owners': ['anasr@google.com', 'cros-reporting-team@google.com'],
+      'type': 'string-enum-list',
+      'schema': {
+        'type': 'array',
+        'items': {
+          'type': 'string',
+          'enum': [
+            'network_telemetry',
+            'https_latency',
+          ]
+        },
+      },
+      'items': [
+        {
+          'name': 'network_telemetry',
+          'value': 'network_telemetry',
+          'caption': '''Network Telemetry''',
+        },
+        {
+          'name': 'https_latency',
+          'value': 'https_latency',
+          'caption': '''Https Latency''',
+        },
+      ],
+      'future_on': ['chrome_os'],
+      'supported_chrome_os_management': ['google_cloud'],
+      'device_only': True,
+      'features': {
+        'cloud_only': True,
+        'dynamic_refresh': True,
+        'unlisted': True,
+      },
+      'example_value': ['https_latency'],
+      'id': 1008,
+      'caption': '''Telemetry data to report on signal strength event.''',
+      'tags': ['admin-sharing'],
+      'desc': '''List of telemetry data to be reported on signal strength change events.
+
+      Each telemetry data specified will only be reported if it was not disabled by its controlling policy.
+      Controlling policy for https_latency and network_telemetry is ReportDeviceNetworkStatus.
+
+      If not set, no additional telemetry data will be reported on signal strength change events.''',
+      'arc_support': 'This policy has no effect on the logging done by Android.',
     },
     {
       'name': 'HeartbeatEnabled',
@@ -33424,6 +33471,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     'ReportDeviceNetworkTelemetryCollectionRateMs': 'device_reporting.report_network_telemetry_collection_rate_ms',
     'ReportDeviceNetworkTelemetryEventCheckingRateMs': 'device_reporting.report_network_telemetry_event_checking_rate_ms',
     'ReportDeviceAudioStatusCheckingRateMs': 'device_reporting.report_device_audio_status_checking_rate_ms',
+    'ReportDeviceSignalStrengthEventDrivenTelemetry': 'device_reporting.report_signal_strength_event_driven_telemetry.entries',
     'ReportUploadFrequency': 'device_reporting.device_status_frequency',
     'DeviceLoginScreenPowerManagement': 'login_screen_power_management.login_screen_power_management',
     'DeviceChromeVariations': 'device_chrome_variations_type.value',
@@ -34033,6 +34081,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 438, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 1007,
+  'highest_id_currently_used': 1008,
   'highest_atomic_group_id_currently_used': 43
 }

@@ -142,6 +142,8 @@ COMPONENT_EXPORT(ASH_SETTINGS)
 extern const char kReportDeviceNetworkTelemetryEventCheckingRateMs[];
 COMPONENT_EXPORT(ASH_SETTINGS)
 extern const char kReportDeviceAudioStatusCheckingRateMs[];
+COMPONENT_EXPORT(ASH_SETTINGS)
+extern const char kReportDeviceSignalStrengthEventDrivenTelemetry[];
 
 COMPONENT_EXPORT(ASH_SETTINGS) extern const char kHeartbeatEnabled[];
 COMPONENT_EXPORT(ASH_SETTINGS) extern const char kHeartbeatFrequency[];
