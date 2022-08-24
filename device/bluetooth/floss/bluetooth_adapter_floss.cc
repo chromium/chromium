@@ -605,8 +605,8 @@ void BluetoothAdapterFloss::AdapterClearedDevice(
     BluetoothDeviceFloss* found_ptr = static_cast<BluetoothDeviceFloss*>(
         GetDevice(device_floss->GetAddress()));
 
-    // Only remove devices from devices_ that are not paired
-    if (!found_ptr || !found_ptr->IsPaired()) {
+    // Only remove devices from devices_ that are not paired or connected.
+    if (!found_ptr || (!found_ptr->IsPaired() && !found_ptr->IsConnected())) {
       devices_.erase(canonical_address);
     }
 
@@ -696,6 +696,11 @@ void BluetoothAdapterFloss::DeviceBondStateChanged(
     LOG(ERROR) << "Received BondStateChanged with error status = " << status;
     // TODO(b/192289534): Record status in UMA.
     device->TriggerConnectCallback(BtifStatusToConnectErrorCode(status));
+
+    // Since we're no longer bonded, also remove this from found list.
+    if (bond_state == FlossAdapterClient::BondState::kNotBonded) {
+      AdapterClearedDevice(remote_device);
+    }
     return;
   }
 
@@ -703,8 +708,13 @@ void BluetoothAdapterFloss::DeviceBondStateChanged(
   NotifyDeviceChanged(device);
   NotifyDevicePairedChanged(device, device->IsPaired());
 
-  if (bond_state == FlossAdapterClient::BondState::kBonded)
+  if (bond_state == FlossAdapterClient::BondState::kBonded) {
     device->ConnectAllEnabledProfiles();
+  } else if (bond_state == FlossAdapterClient::BondState::kNotBonded) {
+    // If we're no longer bonded (or paired/connected), we should clear the
+    // device so it doesn't show up in found devices list.
+    AdapterClearedDevice(remote_device);
+  }
 }
 
 void BluetoothAdapterFloss::AdapterDeviceConnected(

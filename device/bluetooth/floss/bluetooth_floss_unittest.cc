@@ -240,6 +240,9 @@ TEST_F(BluetoothFlossTest, RemoveBonding) {
   InitializeAdapter();
   DiscoverDevices();
 
+  // Simulate adapter enabled event.
+  EnableAdapter();
+
   BluetoothDevice* device =
       adapter_->GetDevice(FakeFlossAdapterClient::kJustWorksAddress);
   ASSERT_TRUE(device);
@@ -266,7 +269,29 @@ TEST_F(BluetoothFlossTest, RemoveBonding) {
                  base::BindLambdaForTesting([]() { FAIL(); }));
   run_loop2.Run();
 
-  EXPECT_FALSE(device->IsPaired());
+  device = adapter_->GetDevice(FakeFlossAdapterClient::kJustWorksAddress);
+  EXPECT_FALSE(device);
+
+  // Now check with bonded and connected device.
+  BluetoothDevice* paired_device =
+      adapter_->GetDevice(FakeFlossAdapterClient::kBondedAddress1);
+
+  ASSERT_TRUE(paired_device);
+  ASSERT_TRUE(paired_device->IsPaired());
+  ASSERT_TRUE(paired_device->IsConnected());
+
+  {
+    base::RunLoop loop;
+    paired_device->Forget(base::BindLambdaForTesting([&loop]() {
+                            SUCCEED();
+                            loop.Quit();
+                          }),
+                          base::BindLambdaForTesting([]() { FAIL(); }));
+    loop.Run();
+  }
+
+  paired_device = adapter_->GetDevice(FakeFlossAdapterClient::kBondedAddress1);
+  ASSERT_TRUE(paired_device);
 }
 
 TEST_F(BluetoothFlossTest, Disconnect) {
