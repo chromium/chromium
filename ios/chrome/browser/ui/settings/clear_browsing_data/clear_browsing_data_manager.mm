@@ -246,6 +246,27 @@ static NSDictionary* imageNamesByItemTypes = @{
   [self addSyncProfileItemsToModel:model];
 }
 
+- (void)updateModel:(ListModel*)model withTableView:(UITableView*)tableView {
+  if (!base::FeatureList::IsEnabled(switches::kEnableCbdSignOut)) {
+    // Footer update are only needed in the Enabled Cbd Signout experiment.
+    return;
+  }
+  const BOOL hasSectionSavedSiteData =
+      [model hasSectionForSectionIdentifier:SectionIdentifierSavedSiteData];
+  if (hasSectionSavedSiteData && [self loggedIn]) {
+    // Nothing to do. We have data iff we are logged-in
+    return;
+  }
+  if (hasSectionSavedSiteData) {
+    // User signed-out, no need for footer anymore.
+    [model removeSectionWithIdentifier:SectionIdentifierSavedSiteData];
+  } else if (!hasSectionSavedSiteData) {
+    // User signed-in, we need to add footer
+    [self addSavedSiteDataSectionWithModel:model];
+  }
+  [tableView reloadData];
+}
+
 - (void)prepare {
   _prefObserverBridge->ObserveChangesForPreference(
       browsing_data::prefs::kDeleteTimePeriod, &_prefChangeRegistrar);
@@ -391,11 +412,7 @@ static NSDictionary* imageNamesByItemTypes = @{
 // Add footers about user's account data.
 - (void)addSyncProfileItemsToModel:(ListModel*)model {
   // Google Account footer.
-  signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForBrowserState(self.browserState);
-
-  const BOOL loggedIn =
-      identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+  const BOOL loggedIn = [self loggedIn];
   const TemplateURLService* templateURLService =
       ios::TemplateURLServiceFactory::GetForBrowserState(_browserState);
   const TemplateURL* defaultSearchEngine =
@@ -418,25 +435,11 @@ static NSDictionary* imageNamesByItemTypes = @{
         forSectionWithIdentifier:SectionIdentifierGoogleAccount];
   }
 
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(self.browserState);
-  if (!base::FeatureList::IsEnabled(switches::kEnableCbdSignOut)) {
-    [model addSectionWithIdentifier:SectionIdentifierSavedSiteData];
-    if (syncService && syncService->IsSyncFeatureActive()) {
-      [model setFooter:[self footerClearSyncAndSavedSiteDataItem]
-          forSectionWithIdentifier:SectionIdentifierSavedSiteData];
-    } else {
-      [model setFooter:[self footerSavedSiteDataItem]
-          forSectionWithIdentifier:SectionIdentifierSavedSiteData];
-    }
-  } else if (loggedIn) {
-    [model addSectionWithIdentifier:SectionIdentifierSavedSiteData];
-    [model setFooter:[self signOutFooterItem]
-        forSectionWithIdentifier:SectionIdentifierSavedSiteData];
-  }
+  syncer::SyncService* syncService = [self syncService];
+  [self addSavedSiteDataSectionWithModel:model];
 
   // If not syncing, no need to continue with profile syncing.
-  if (!identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+  if (![self identityManager]->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     return;
   }
 
@@ -679,11 +682,45 @@ static NSDictionary* imageNamesByItemTypes = @{
 
 #pragma mark - Private Methods
 
+// An identity manager
+- (signin::IdentityManager*)identityManager {
+  return IdentityManagerFactory::GetForBrowserState(self.browserState);
+}
+
+// Whether user is currently logged-in.
+- (BOOL)loggedIn {
+  return
+      [self identityManager]->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+}
+
+// A sync service
+- (syncer::SyncService*)syncService {
+  return SyncServiceFactory::GetForBrowserState(self.browserState);
+}
+
+// Add at the end of the list model the elements related to signing-out.
+- (void)addSavedSiteDataSectionWithModel:(ListModel*)model {
+  syncer::SyncService* syncService = [self syncService];
+  if (!base::FeatureList::IsEnabled(switches::kEnableCbdSignOut)) {
+    [model addSectionWithIdentifier:SectionIdentifierSavedSiteData];
+    if (syncService && syncService->IsSyncFeatureActive()) {
+      [model setFooter:[self footerClearSyncAndSavedSiteDataItem]
+          forSectionWithIdentifier:SectionIdentifierSavedSiteData];
+    } else {
+      [model setFooter:[self footerSavedSiteDataItem]
+          forSectionWithIdentifier:SectionIdentifierSavedSiteData];
+    }
+  } else if ([self loggedIn]) {
+    [model addSectionWithIdentifier:SectionIdentifierSavedSiteData];
+    [model setFooter:[self signOutFooterItem]
+        forSectionWithIdentifier:SectionIdentifierSavedSiteData];
+  }
+}
+
 // Signs the user out of Chrome if the sign-in state is `ConsentLevel::kSignin`.
 - (void)signOutIfNotSyncing {
   DCHECK(self.browserState);
-  signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForBrowserState(self.browserState);
+  signin::IdentityManager* identityManager = [self identityManager];
   DCHECK(identityManager);
   if (!identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     AuthenticationService* authenticationService =
@@ -753,14 +790,18 @@ static NSDictionary* imageNamesByItemTypes = @{
       "History.ClearBrowsingData.HistoryNoticeShownInFooterWhenUpdated",
       _shouldShowNoticeAboutOtherFormsOfBrowsingHistory);
 
-  signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForBrowserState(_browserState);
-  if (!identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+  if (![self identityManager]->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     return;
   }
 
   [model setFooter:[self footerForGoogleAccountSectionItem]
       forSectionWithIdentifier:SectionIdentifierGoogleAccount];
+}
+
+#pragma mark - IdentityManagerObserverBridgeDelegate
+
+- (void)onPrimaryAccountChanged:
+    (const signin::PrimaryAccountChangeEvent&)event {
 }
 
 #pragma mark - PrefObserverDelegate
