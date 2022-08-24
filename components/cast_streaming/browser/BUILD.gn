@@ -133,54 +133,6 @@ if (!is_win) {
       "test/cast_streaming_test_sender.h",
     ]
   }
-
-  # TODO(crbug.com/1207715): Move to /tests directory.
-  source_set("test_receiver") {
-    testonly = true
-    deps = [
-      ":streaming_session",
-      "//base",
-      "//components/cast_streaming/public",
-      "//components/cast_streaming/public:config_conversions",
-
-      # Partial implementation of the platform API used by
-      # //third_party/openscreen/src/*.
-      "//components/openscreen_platform:openscreen_platform_without_sockets",
-      "//media",
-      "//media/mojo/common",
-      "//mojo/public/cpp/system",
-      "//third_party/openscreen/src/cast/common:public",
-      "//third_party/openscreen/src/cast/streaming:receiver",
-      "//third_party/openscreen/src/platform:api",
-    ]
-    visibility = [ ":*" ]
-    sources = [
-      "test/cast_streaming_test_receiver.cc",
-      "test/cast_streaming_test_receiver.h",
-    ]
-  }
-
-  # TODO(crbug.com/1207715): Move to /tests directory.
-  test("e2e_tests") {
-    deps = [
-      ":core",
-      ":streaming_session",
-      ":test_receiver",
-      ":test_sender",
-      "//base/test:test_support",
-
-      # Complete implementation of //third_party/openscreen/src/platform:api.
-      "//components/openscreen_platform:openscreen_platform_using_net_sockets",
-      "//media",
-      "//mojo/core/embedder",
-      "//testing/gtest",
-      "//third_party/openscreen/src/platform:api",
-    ]
-    sources = [
-      "cast_streaming_session_unittest.cc",
-      "test/run_all_unittests.cc",
-    ]
-  }
 }
 
 source_set("demuxer_stream_data_provider") {
