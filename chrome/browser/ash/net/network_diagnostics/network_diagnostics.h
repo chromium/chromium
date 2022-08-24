@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_routine.h"
+#include "chromeos/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -22,7 +23,8 @@ class DebugDaemonClient;
 namespace network_diagnostics {
 
 class NetworkDiagnostics
-    : public chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines {
+    : public chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines,
+      public chromeos::mojo_service_manager::mojom::ServiceProvider {
  public:
   explicit NetworkDiagnostics(DebugDaemonClient* debug_daemon_client);
   NetworkDiagnostics(const NetworkDiagnostics&) = delete;
@@ -58,6 +60,11 @@ class NetworkDiagnostics
   void RunArcPing(RunArcPingCallback callback) override;
 
  private:
+  // chromeos::mojo_service_manager::mojom::ServiceProvider overrides.
+  void Request(
+      chromeos::mojo_service_manager::mojom::ProcessIdentityPtr identity,
+      mojo::ScopedMessagePipeHandle receiver) override;
+
   void RunRoutine(std::unique_ptr<NetworkDiagnosticsRoutine> routine,
                   RoutineResultCallback callback);
   void HandleResult(
@@ -66,6 +73,9 @@ class NetworkDiagnostics
       chromeos::network_diagnostics::mojom::RoutineResultPtr result);
   // An unowned pointer to the DebugDaemonClient instance.
   DebugDaemonClient* debug_daemon_client_;
+  // Receiver for mojo service manager service provider.
+  mojo::Receiver<chromeos::mojo_service_manager::mojom::ServiceProvider>
+      provider_receiver_{this};
   // Receivers for external requests (WebUI, Feedback, CrosHealthdClient).
   mojo::ReceiverSet<
       chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>

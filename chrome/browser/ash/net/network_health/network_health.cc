@@ -13,10 +13,12 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/net/network_health/network_health_constants.h"
 #include "chromeos/ash/components/network/network_event_log.h"
+#include "chromeos/components/mojo_service_manager/connection.h"
 #include "chromeos/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
+#include "third_party/cros_system_api/mojo/service_constants.h"
 
 namespace ash {
 namespace network_health {
@@ -106,6 +108,11 @@ NetworkHealth::NetworkHealth() {
   SetTimer(std::make_unique<base::RepeatingTimer>());
   tracked_guids_timer_.Start(FROM_HERE, kUpdateTrackedGuidsInterval, this,
                              &NetworkHealth::UpdateTrackedGuids);
+  if (chromeos::mojo_service_manager::IsServiceManagerBound()) {
+    chromeos::mojo_service_manager::GetServiceManagerProxy()->Register(
+        chromeos::mojo_services::kChromiumNetworkHealth,
+        provider_receiver_.BindNewPipeAndPassRemote());
+  }
 }
 
 void NetworkHealth::SetTimer(std::unique_ptr<base::RepeatingTimer> timer) {
@@ -119,6 +126,13 @@ NetworkHealth::~NetworkHealth() = default;
 void NetworkHealth::BindReceiver(
     mojo::PendingReceiver<mojom::NetworkHealthService> receiver) {
   receivers_.Add(this, std::move(receiver));
+}
+
+void NetworkHealth::Request(
+    chromeos::mojo_service_manager::mojom::ProcessIdentityPtr identity,
+    mojo::ScopedMessagePipeHandle receiver) {
+  BindReceiver(
+      mojo::PendingReceiver<mojom::NetworkHealthService>(std::move(receiver)));
 }
 
 const mojom::NetworkHealthState& NetworkHealth::GetNetworkHealthState() {

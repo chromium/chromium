@@ -1872,6 +1872,7 @@ source_set("ash") {
     "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_browser",
     "//chromeos/components/disks:prefs",
     "//chromeos/components/mojo_bootstrap",
+    "//chromeos/components/mojo_service_manager",
     "//chromeos/components/sensors",
     "//chromeos/constants",
     "//chromeos/dbus/dlcservice:dlcservice_proto",
@@ -2027,6 +2028,8 @@ source_set("ash") {
     "//ui/wm",
   ]
 
+  data_deps = [ ":mojo_service_manager_policy" ]
+
   if (is_cfm) {
     deps += [
       "//chromeos/ash/components/chromebox_for_meetings",
@@ -2037,6 +2040,11 @@ source_set("ash") {
   if (enable_hibernate) {
     deps += [ "//chromeos/ash/components/dbus/hiberman" ]
   }
+}
+
+copy("mojo_service_manager_policy") {
+  sources = [ "net/network_health/network_health_service_policy.json" ]
+  outputs = [ "$root_out_dir/mojo_service_manager/{{source_file_part}}" ]
 }
 
 static_library("arc_test_support") {

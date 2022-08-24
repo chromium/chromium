@@ -11,6 +11,7 @@
 
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/net/network_health/signal_strength_tracker.h"
+#include "chromeos/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -24,7 +25,8 @@ namespace network_health {
 
 class NetworkHealth
     : public chromeos::network_health::mojom::NetworkHealthService,
-      public chromeos::network_config::CrosNetworkConfigObserver {
+      public chromeos::network_config::CrosNetworkConfigObserver,
+      public chromeos::mojo_service_manager::mojom::ServiceProvider {
  public:
   NetworkHealth();
 
@@ -71,6 +73,11 @@ class NetworkHealth
   void SetTimer(std::unique_ptr<base::RepeatingTimer> timer);
 
  private:
+  // chromeos::mojo_service_manager::mojom::ServiceProvider overrides.
+  void Request(
+      chromeos::mojo_service_manager::mojom::ProcessIdentityPtr identity,
+      mojo::ScopedMessagePipeHandle receiver) override;
+
   // Handler for receiving the network state list.
   void OnNetworkStateListReceived(
       std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>);
@@ -139,6 +146,9 @@ class NetworkHealth
   // Updates the timestamp for active networks.
   void UpdateTrackedGuids();
 
+  // Receiver for mojo service manager service provider.
+  mojo::Receiver<chromeos::mojo_service_manager::mojom::ServiceProvider>
+      provider_receiver_{this};
   // Remotes for tracking observers that will be notified of network events in
   // the mojom::NetworkEventsObserver interface.
   mojo::RemoteSet<chromeos::network_health::mojom::NetworkEventsObserver>
