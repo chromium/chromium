@@ -294,7 +294,7 @@ AXPlatformNode* AXPlatformNodeWinTest::AXPlatformNodeFromNode(AXNode* node) {
 
 template <typename T>
 ComPtr<T> AXPlatformNodeWinTest::QueryInterfaceFromNodeId(AXNodeID id) {
-  return QueryInterfaceFromNode<T>(GetNodeFromTree(id));
+  return QueryInterfaceFromNode<T>(GetNode(id));
 }
 
 template <typename T>

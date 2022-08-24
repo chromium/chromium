@@ -554,12 +554,7 @@ ui::AXNode* AutomationAXTreeWrapper::GetNodeFromTree(
     const ui::AXNodeID node_id) const {
   AutomationAXTreeWrapper* tree_wrapper =
       owner_->GetAutomationAXTreeWrapperFromTreeID(tree_id);
-  return tree_wrapper ? tree_wrapper->GetNodeFromTree(node_id) : nullptr;
-}
-
-ui::AXNode* AutomationAXTreeWrapper::GetNodeFromTree(
-    const ui::AXNodeID node_id) const {
-  return ax_tree_->GetFromId(node_id);
+  return tree_wrapper ? tree_wrapper->GetNode(node_id) : nullptr;
 }
 
 ui::AXTreeID AutomationAXTreeWrapper::GetParentTreeID() const {

@@ -1679,12 +1679,7 @@ ui::AXNode* BrowserAccessibilityManager::GetNodeFromTree(
     const ui::AXNodeID node_id) const {
   auto* manager = BrowserAccessibilityManager::FromID(tree_id);
   CHECK(manager);
-  return manager->GetNodeFromTree(node_id);
-}
-
-ui::AXNode* BrowserAccessibilityManager::GetNodeFromTree(
-    const ui::AXNodeID node_id) const {
-  return ax_tree()->GetFromId(node_id);
+  return manager->GetNode(node_id);
 }
 
 ui::AXPlatformNode* BrowserAccessibilityManager::GetPlatformNodeFromTree(
@@ -1721,7 +1716,7 @@ ui::AXNode* BrowserAccessibilityManager::GetParentNodeFromParentTreeAsAXNode()
       << "Multiple nodes cannot claim the same child tree ID.";
 
   ui::AXNode* parent_node =
-      parent_manager->GetNodeFromTree(*(host_node_ids.begin()));
+      parent_manager->GetNode(*(host_node_ids.begin()));
   DCHECK(parent_node);
   DCHECK_EQ(ax_tree_id_,
             ui::AXTreeID::FromString(parent_node->GetStringAttribute(

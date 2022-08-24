@@ -69,7 +69,7 @@ class TestAXRangeScreenRectDelegate : public AXRangeRectDelegate {
     if (tree_manager_->GetTreeID() != tree_id)
       return gfx::Rect();
 
-    AXNode* node = tree_manager_->GetNodeFromTree(node_id);
+    AXNode* node = tree_manager_->GetNode(node_id);
     if (!node)
       return gfx::Rect();
 
@@ -86,7 +86,7 @@ class TestAXRangeScreenRectDelegate : public AXRangeRectDelegate {
     if (tree_manager_->GetTreeID() != tree_id)
       return gfx::Rect();
 
-    AXNode* node = tree_manager_->GetNodeFromTree(node_id);
+    AXNode* node = tree_manager_->GetNode(node_id);
     if (!node)
       return gfx::Rect();
 
@@ -419,16 +419,16 @@ void AXRangeTest::SetUp() {
 }  // namespace
 
 TEST_F(AXRangeTest, RangeOfContents) {
-  const AXNode* root = GetNodeFromTree(ROOT_ID);
+  const AXNode* root = GetNode(ROOT_ID);
   const TestPositionRange root_range =
       TestPositionRange::RangeOfContents(*root);
-  const AXNode* text_field = GetNodeFromTree(TEXT_FIELD_ID);
+  const AXNode* text_field = GetNode(TEXT_FIELD_ID);
   const TestPositionRange text_field_range =
       TestPositionRange::RangeOfContents(*text_field);
-  const AXNode* static_text = GetNodeFromTree(STATIC_TEXT1_ID);
+  const AXNode* static_text = GetNode(STATIC_TEXT1_ID);
   const TestPositionRange static_text_range =
       TestPositionRange::RangeOfContents(*static_text);
-  const AXNode* inline_box = GetNodeFromTree(INLINE_BOX1_ID);
+  const AXNode* inline_box = GetNode(INLINE_BOX1_ID);
   const TestPositionRange inline_box_range =
       TestPositionRange::RangeOfContents(*inline_box);
 

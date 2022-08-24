@@ -65,10 +65,6 @@ AXNode* TestAXTreeManager::GetNodeFromTree(const AXTreeID& tree_id,
                                               : nullptr;
 }
 
-AXNode* TestAXTreeManager::GetNodeFromTree(const AXNodeID node_id) const {
-  return ax_tree_ ? ax_tree_->GetFromId(node_id) : nullptr;
-}
-
 AXNode* TestAXTreeManager::GetParentNodeFromParentTreeAsAXNode() const {
   AXTreeID parent_tree_id = GetParentTreeID();
   TestAXTreeManager* parent_manager =

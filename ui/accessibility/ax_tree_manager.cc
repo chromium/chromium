@@ -67,6 +67,10 @@ AXTreeManager::AXTreeManager(const AXTreeID& tree_id,
     tree_observation_.Observe(ax_tree());
 }
 
+AXNode* AXTreeManager::GetNode(const AXNodeID node_id) const {
+  return ax_tree_ ? ax_tree_->GetFromId(node_id) : nullptr;
+}
+
 AXTreeID AXTreeManager::GetTreeID() const {
   return ax_tree_ ? ax_tree_->data().tree_id : AXTreeIDUnknown();
 }

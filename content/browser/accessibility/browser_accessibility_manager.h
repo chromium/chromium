@@ -485,7 +485,6 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   // AXTreeManager overrides.
   ui::AXNode* GetNodeFromTree(const ui::AXTreeID& tree_id,
                               ui::AXNodeID node_id) const override;
-  ui::AXNode* GetNodeFromTree(ui::AXNodeID node_id) const override;
   ui::AXPlatformNode* GetPlatformNodeFromTree(
       const ui::AXNodeID node_id) const override;
   ui::AXPlatformNode* GetPlatformNodeFromTree(const ui::AXNode&) const override;

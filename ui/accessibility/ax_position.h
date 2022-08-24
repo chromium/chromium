@@ -418,7 +418,7 @@ class AXPosition {
 
     const AXTreeManager* manager = GetManager();
     if (manager)
-      return manager->GetNodeFromTree(anchor_id());
+      return manager->GetNode(anchor_id());
 
     return nullptr;
   }

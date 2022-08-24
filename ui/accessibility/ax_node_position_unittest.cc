@@ -4420,7 +4420,7 @@ TEST_F(AXPositionTest, AsUnignoredPosition) {
 
   // TODO(nektar): AXTree has a bug whereby it doesn't update the unignored
   // cached values when the ignored state is flipped on the root.
-  GetNodeFromTree(root_data.id)->UpdateUnignoredCachedValues();
+  GetNode(root_data.id)->UpdateUnignoredCachedValues();
 
   text_position = AXNodePosition::CreateTextPosition(
       GetTreeID(), root_data.id, 0 /* text_offset */,

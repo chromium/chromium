@@ -64,10 +64,10 @@ ui::AXNode* ViewsAXTreeManager::GetNodeFromTree(
     return nullptr;
 
   const ui::AXTreeManager* manager = ui::AXTreeManager::FromID(tree_id);
-  return manager ? manager->GetNodeFromTree(node_id) : nullptr;
+  return manager ? manager->GetNode(node_id) : nullptr;
 }
 
-ui::AXNode* ViewsAXTreeManager::GetNodeFromTree(
+ui::AXNode* ViewsAXTreeManager::GetNode(
     const ui::AXNodeID node_id) const {
   if (!widget_ || !widget_->GetRootView() || !ax_tree_)
     return nullptr;

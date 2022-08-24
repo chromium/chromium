@@ -559,7 +559,7 @@ void AccessibilityTreeFormatterBlink::AddProperties(
         if (ui::IsNodeIdIntListAttribute(attr)) {
           ui::AXTreeID tree_id = node.tree()->GetAXTreeID();
           ui::AXNode* target =
-              ui::AXTreeManager::FromID(tree_id)->GetNodeFromTree(node.id());
+              ui::AXTreeManager::FromID(tree_id)->GetNode(node.id());
 
           if (target)
             value_list.Append(ui::ToString(target->GetRole()));
