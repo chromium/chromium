@@ -19,7 +19,7 @@ class ShellPluginServiceFilter : public PluginServiceFilter {
   ~ShellPluginServiceFilter() override;
 
   // PluginServiceFilter implementation.
-  bool IsPluginAvailable(int render_process_id,
+  bool IsPluginAvailable(content::BrowserContext* browser_context,
                          const WebPluginInfo& plugin) override;
 
   bool CanLoadPlugin(int render_process_id,

@@ -48,7 +48,7 @@ class ChromePluginServiceFilter : public content::PluginServiceFilter,
                            const std::string& identifier);
 
   // PluginServiceFilter implementation.
-  bool IsPluginAvailable(int render_process_id,
+  bool IsPluginAvailable(content::BrowserContext* browser_context,
                          const content::WebPluginInfo& plugin) override;
 
   // CanLoadPlugin always grants permission to the browser

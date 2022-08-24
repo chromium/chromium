@@ -893,12 +893,8 @@ void NavigationURLLoaderImpl::CheckPluginAndContinueOnReceiveResponse(
     const std::vector<WebPluginInfo>& plugins) {
   bool stale;
   WebPluginInfo plugin;
-  FrameTreeNode* frame_tree_node =
-      FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
-  int render_process_id =
-      frame_tree_node->current_frame_host()->GetProcess()->GetID();
   bool has_plugin = PluginService::GetInstance()->GetPluginInfo(
-      render_process_id, resource_request_->url, head->mime_type,
+      browser_context_, resource_request_->url, head->mime_type,
       /*allow_wildcard=*/false, &stale, &plugin, nullptr);
 
   if (stale) {

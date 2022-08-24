@@ -42,6 +42,7 @@
 #include "content/public/browser/plugin_service.h"
 #include "content/public/browser/plugin_service_filter.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_constants.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -320,10 +321,14 @@ bool PluginInfoHostImpl::Context::FindEnabledPlugin(
 
   content::PluginServiceFilter* filter =
       PluginService::GetInstance()->GetFilter();
+  content::RenderProcessHost* rph =
+      content::RenderProcessHost::FromID(render_process_id_);
+  content::BrowserContext* browser_context =
+      rph ? rph->GetBrowserContext() : nullptr;
   size_t i = 0;
   for (; i < matching_plugins.size(); ++i) {
     if (!filter ||
-        filter->IsPluginAvailable(render_process_id_, matching_plugins[i])) {
+        filter->IsPluginAvailable(browser_context, matching_plugins[i])) {
       break;
     }
   }

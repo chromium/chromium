@@ -68,10 +68,10 @@ class CONTENT_EXPORT PluginService {
       std::vector<std::string>* actual_mime_types) = 0;
 
   // Gets plugin info for an individual plugin and filters the plugins using
-  // the |context| and renderer IDs. This will report whether the data is stale
-  // via |is_stale| and returns whether or not the plugin can be found.
-  // This must be called from the UI thread.
-  virtual bool GetPluginInfo(int render_process_id,
+  // the |browser_context|. This will report whether the data is stale via
+  // |is_stale| and returns whether or not the plugin can be found. This must be
+  // called from the UI thread.
+  virtual bool GetPluginInfo(content::BrowserContext* browser_context,
                              const GURL& url,
                              const std::string& mime_type,
                              bool allow_wildcard,

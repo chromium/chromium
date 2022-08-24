@@ -119,17 +119,12 @@ void ChromePluginServiceFilter::AuthorizeAllPlugins(
 }
 
 bool ChromePluginServiceFilter::IsPluginAvailable(
-    int render_process_id,
+    content::BrowserContext* browser_context,
     const content::WebPluginInfo& plugin) {
   base::AutoLock auto_lock(lock_);
 
-  content::RenderProcessHost* rph =
-      content::RenderProcessHost::FromID(render_process_id);
-  if (!rph)
-    return false;
-
   // Check whether the plugin is disabled.
-  auto context_info_it = browser_context_map_.find(rph->GetBrowserContext());
+  auto context_info_it = browser_context_map_.find(browser_context);
   // The context might not be found because RenderFrameMessageFilter might
   // outlive the Profile (the context is unregistered during the Profile
   // destructor).
