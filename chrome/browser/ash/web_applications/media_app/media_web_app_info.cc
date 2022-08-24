@@ -246,40 +246,19 @@ std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForMediaWebApp() {
 
   info->title = l10n_util::GetStringUTF16(IDS_MEDIA_APP_APP_NAME);
 
-  bool app_icons_added = false;
-  if (base::FeatureList::IsEnabled(chromeos::features::kMediaAppHandlesPdf)) {
-#if BUILDFLAG(ENABLE_CROS_MEDIA_APP)
-    web_app::CreateIconInfoForSystemWebApp(
-        info->start_url,
-        {
-            {"app_icon_16.png", 16, IDR_MEDIA_APP_APP_ICON_16_PNG},
-            {"app_icon_32.png", 32, IDR_MEDIA_APP_APP_ICON_32_PNG},
-            {"app_icon_48.png", 48, IDR_MEDIA_APP_APP_ICON_48_PNG},
-            {"app_icon_64.png", 64, IDR_MEDIA_APP_APP_ICON_64_PNG},
-            {"app_icon_96.png", 96, IDR_MEDIA_APP_APP_ICON_96_PNG},
-            {"app_icon_128.png", 128, IDR_MEDIA_APP_APP_ICON_128_PNG},
-            {"app_icon_192.png", 192, IDR_MEDIA_APP_APP_ICON_192_PNG},
-            {"app_icon_256.png", 256, IDR_MEDIA_APP_APP_ICON_256_PNG},
-        },
-        *info);
-    app_icons_added = true;
-#endif  // BUILDFLAG(ENABLE_CROS_MEDIA_APP)
-  }
-  if (!app_icons_added) {
-    web_app::CreateIconInfoForSystemWebApp(
-        info->start_url,
-        {
-            {"app_icon_16.png", 16, IDR_MEDIA_APP_GALLERY_ICON_16_PNG},
-            {"app_icon_32.png", 32, IDR_MEDIA_APP_GALLERY_ICON_32_PNG},
-            {"app_icon_48.png", 48, IDR_MEDIA_APP_GALLERY_ICON_48_PNG},
-            {"app_icon_64.png", 64, IDR_MEDIA_APP_GALLERY_ICON_64_PNG},
-            {"app_icon_96.png", 96, IDR_MEDIA_APP_GALLERY_ICON_96_PNG},
-            {"app_icon_128.png", 128, IDR_MEDIA_APP_GALLERY_ICON_128_PNG},
-            {"app_icon_192.png", 192, IDR_MEDIA_APP_GALLERY_ICON_192_PNG},
-            {"app_icon_256.png", 256, IDR_MEDIA_APP_GALLERY_ICON_256_PNG},
-        },
-        *info);
-  }
+  web_app::CreateIconInfoForSystemWebApp(
+      info->start_url,
+      {
+          {"app_icon_16.png", 16, IDR_MEDIA_APP_APP_ICON_16_PNG},
+          {"app_icon_32.png", 32, IDR_MEDIA_APP_APP_ICON_32_PNG},
+          {"app_icon_48.png", 48, IDR_MEDIA_APP_APP_ICON_48_PNG},
+          {"app_icon_64.png", 64, IDR_MEDIA_APP_APP_ICON_64_PNG},
+          {"app_icon_96.png", 96, IDR_MEDIA_APP_APP_ICON_96_PNG},
+          {"app_icon_128.png", 128, IDR_MEDIA_APP_APP_ICON_128_PNG},
+          {"app_icon_192.png", 192, IDR_MEDIA_APP_APP_ICON_192_PNG},
+          {"app_icon_256.png", 256, IDR_MEDIA_APP_APP_ICON_256_PNG},
+      },
+      *info);
 
   if (chromeos::features::IsDarkLightModeEnabled()) {
     info->theme_color = cros_styles::ResolveColor(
@@ -367,7 +346,7 @@ base::FilePath MediaSystemAppDelegate::GetLaunchDirectory(
 }
 
 bool MediaSystemAppDelegate::ShouldShowInLauncher() const {
-  return base::FeatureList::IsEnabled(chromeos::features::kMediaAppHandlesPdf);
+  return true;
 }
 
 bool MediaSystemAppDelegate::ShouldCaptureNavigations() const {

@@ -18,9 +18,18 @@
           file="js/mock_module.js"
           compress="brotli"
           type="BINDATA" />
-      <!-- Use a placeholder icon when enable_cros_media_app = false. -->
-      <include name="IDR_MEDIA_APP_APP_ICON_256_PNG"
-          file="../assets/icon256.png" type="BINDATA" />
+
+      <!-- Use placeholder icons when enable_cros_media_app = false. -->
+      <include name="IDR_MEDIA_APP_APP_ICON_16_PNG" file="../assets/icon16.png" type="BINDATA" />
+      <include name="IDR_MEDIA_APP_APP_ICON_32_PNG" file="../assets/icon32.png" type="BINDATA" />
+      <include name="IDR_MEDIA_APP_APP_ICON_48_PNG" file="../assets/icon48.png" type="BINDATA" />
+      <include name="IDR_MEDIA_APP_APP_ICON_64_PNG" file="../assets/icon64.png" type="BINDATA" />
+      <include name="IDR_MEDIA_APP_APP_ICON_96_PNG" file="../assets/icon96.png" type="BINDATA" />
+      <include name="IDR_MEDIA_APP_APP_ICON_128_PNG" file="../assets/icon128.png" type="BINDATA" />
+      <include name="IDR_MEDIA_APP_APP_ICON_192_PNG" file="../assets/icon192.png" type="BINDATA" />
+      <include name="IDR_MEDIA_APP_APP_ICON_256_PNG" file="../assets/icon256.png" type="BINDATA" />
+      <include name="IDR_MEDIA_APP_APP_ICON_192_SVG" file="../assets/app_icon.svg" type="BINDATA" />
+
     </includes>
   </release>
 </grit>

@@ -59,50 +59,24 @@ content::WebUIDataSource* CreateHostDataSource() {
 
   // Redirects "system_assets/*" (from manifest.json) to the icons for the
   // gallery app.
-  bool app_icons_added = false;
-  if (base::FeatureList::IsEnabled(chromeos::features::kMediaAppHandlesPdf)) {
-#if BUILDFLAG(ENABLE_CROS_MEDIA_APP)
-    source->AddResourcePath("system_assets/app_icon_16.png",
-                            IDR_MEDIA_APP_APP_ICON_16_PNG);
-    source->AddResourcePath("system_assets/app_icon_32.png",
-                            IDR_MEDIA_APP_APP_ICON_32_PNG);
-    source->AddResourcePath("system_assets/app_icon_48.png",
-                            IDR_MEDIA_APP_APP_ICON_48_PNG);
-    source->AddResourcePath("system_assets/app_icon_64.png",
-                            IDR_MEDIA_APP_APP_ICON_64_PNG);
-    source->AddResourcePath("system_assets/app_icon_96.png",
-                            IDR_MEDIA_APP_APP_ICON_96_PNG);
-    source->AddResourcePath("system_assets/app_icon_128.png",
-                            IDR_MEDIA_APP_APP_ICON_128_PNG);
-    source->AddResourcePath("system_assets/app_icon_192.png",
-                            IDR_MEDIA_APP_APP_ICON_192_PNG);
-    source->AddResourcePath("system_assets/app_icon_256.png",
-                            IDR_MEDIA_APP_APP_ICON_256_PNG);
-    source->AddResourcePath("system_assets/app_icon.svg",
-                            IDR_MEDIA_APP_APP_ICON_192_SVG);  // App favicon.
-    app_icons_added = true;
-#endif  // BUILDFLAG(ENABLE_CROS_MEDIA_APP)
-  }
-  if (!app_icons_added) {
-    source->AddResourcePath("system_assets/app_icon_16.png",
-                            IDR_MEDIA_APP_GALLERY_ICON_16_PNG);
-    source->AddResourcePath("system_assets/app_icon_32.png",
-                            IDR_MEDIA_APP_GALLERY_ICON_32_PNG);
-    source->AddResourcePath("system_assets/app_icon_48.png",
-                            IDR_MEDIA_APP_GALLERY_ICON_48_PNG);
-    source->AddResourcePath("system_assets/app_icon_64.png",
-                            IDR_MEDIA_APP_GALLERY_ICON_64_PNG);
-    source->AddResourcePath("system_assets/app_icon_96.png",
-                            IDR_MEDIA_APP_GALLERY_ICON_96_PNG);
-    source->AddResourcePath("system_assets/app_icon_128.png",
-                            IDR_MEDIA_APP_GALLERY_ICON_128_PNG);
-    source->AddResourcePath("system_assets/app_icon_192.png",
-                            IDR_MEDIA_APP_GALLERY_ICON_192_PNG);
-    source->AddResourcePath("system_assets/app_icon_256.png",
-                            IDR_MEDIA_APP_GALLERY_ICON_256_PNG);
-    source->AddResourcePath("system_assets/app_icon.svg",
-                            IDR_MEDIA_APP_APP_ICON_SVG);  // App favicon.
-  }
+  source->AddResourcePath("system_assets/app_icon_16.png",
+                          IDR_MEDIA_APP_APP_ICON_16_PNG);
+  source->AddResourcePath("system_assets/app_icon_32.png",
+                          IDR_MEDIA_APP_APP_ICON_32_PNG);
+  source->AddResourcePath("system_assets/app_icon_48.png",
+                          IDR_MEDIA_APP_APP_ICON_48_PNG);
+  source->AddResourcePath("system_assets/app_icon_64.png",
+                          IDR_MEDIA_APP_APP_ICON_64_PNG);
+  source->AddResourcePath("system_assets/app_icon_96.png",
+                          IDR_MEDIA_APP_APP_ICON_96_PNG);
+  source->AddResourcePath("system_assets/app_icon_128.png",
+                          IDR_MEDIA_APP_APP_ICON_128_PNG);
+  source->AddResourcePath("system_assets/app_icon_192.png",
+                          IDR_MEDIA_APP_APP_ICON_192_PNG);
+  source->AddResourcePath("system_assets/app_icon_256.png",
+                          IDR_MEDIA_APP_APP_ICON_256_PNG);
+  source->AddResourcePath("system_assets/app_icon.svg",
+                          IDR_MEDIA_APP_APP_ICON_192_SVG);  // App favicon.
 
   // File-type favicons.
   source->AddResourcePath("system_assets/pdf_icon.svg",

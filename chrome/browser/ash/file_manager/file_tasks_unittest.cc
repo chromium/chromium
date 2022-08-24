@@ -392,8 +392,6 @@ TEST_F(FileManagerFileTaskPreferencesTest,
 // Test that for changes of default app for PDF files, a metric is recorded.
 TEST_F(FileManagerFileTaskPreferencesTest,
        UpdateDefaultTask_RecordsPdfDefaultAppChanges) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      ash::features::kMediaAppHandlesPdf};
   base::UserActionTester user_action_tester;
 
   // Non-PDF file types are not recorded.

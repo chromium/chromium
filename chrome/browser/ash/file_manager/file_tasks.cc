@@ -547,10 +547,8 @@ void UpdateDefaultTask(Profile* profile,
     }
   }
 
-  if (base::FeatureList::IsEnabled(chromeos::features::kMediaAppHandlesPdf)) {
-    RecordChangesInDefaultPdfApp(task_descriptor.app_id, mime_types,
-                                 lowercase_suffixes);
-  }
+  RecordChangesInDefaultPdfApp(task_descriptor.app_id, mime_types,
+                               lowercase_suffixes);
 }
 
 bool GetDefaultTaskFromPrefs(const PrefService& pref_service,

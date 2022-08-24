@@ -127,9 +127,7 @@ bool ExtractBoolInGlobalScope(content::WebContents* web_ui,
 
 class MediaAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
  public:
-  MediaAppIntegrationTest() {
-    feature_list_.InitAndEnableFeature(ash::features::kMediaAppHandlesPdf);
-  }
+  MediaAppIntegrationTest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     SystemWebAppIntegrationTest::SetUpCommandLine(command_line);
@@ -368,18 +366,6 @@ class MediaAppIntegrationPhotosIntegrationVideoDisabledTest
   MediaAppIntegrationPhotosIntegrationVideoDisabledTest() {
     feature_list_.InitAndDisableFeature(
         chromeos::features::kMediaAppPhotosIntegrationVideo);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-class MediaAppIntegrationPdfDisabledTest : public MediaAppIntegrationTest {
- public:
-  MediaAppIntegrationPdfDisabledTest() {
-    // This reverts the "default"-enabled state of the feature set in the
-    // base class test harness.
-    feature_list_.InitAndDisableFeature(ash::features::kMediaAppHandlesPdf);
   }
 
  private:
@@ -1150,16 +1136,6 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAllProfilesTest,
   EXPECT_TRUE(system_app->ShouldShowInSearch());
 }
 
-// Test for the old behaviour with fewer permutations. Can be removed along with
-// features::MediaAppHandlesPdf.
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationPdfDisabledTest,
-                       HiddenInLauncherAndSearch) {
-  // Check system_web_app_manager has the correct attributes for Media App.
-  auto* system_app = GetManager().GetSystemApp(ash::SystemWebAppType::MEDIA);
-  EXPECT_FALSE(system_app->ShouldShowInLauncher());
-  EXPECT_FALSE(system_app->ShouldShowInSearch());
-}
-
 // Note: Error reporting tests are limited to one per test instance otherwise we
 // run into "Too many calls to this API" error.
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
@@ -1884,9 +1860,6 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, GuestCanReadLocalFonts) {
   content::WebContents* web_ui = LaunchWithNoFiles();
   EXPECT_EQ("success", ExtractStringInGlobalScope(web_ui, script));
 }
-
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
-    MediaAppIntegrationPdfDisabledTest);
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     MediaAppIntegrationDarkLightModeEnabledTest);

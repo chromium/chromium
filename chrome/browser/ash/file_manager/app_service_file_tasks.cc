@@ -15,6 +15,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
@@ -148,15 +149,10 @@ void FindAppServiceTasks(Profile* profile,
   // present. "System" Web Apps are an exception: we have more control over what
   // they can do, so tasks provided by System Web Apps are the only ones
   // permitted at present. See https://crbug.com/1079065.
-  bool has_non_native_file = false;
-  bool has_pdf_file = false;
-  for (const auto& entry : entries) {
-    if (!has_non_native_file &&
-        util::IsUnderNonNativeLocalPath(profile, entry.path))
-      has_non_native_file = true;
-    if (!has_pdf_file && entry.path.MatchesExtension(".pdf"))
-      has_pdf_file = true;
-  }
+  const bool has_non_native_file =
+      base::ranges::any_of(entries, [profile](const auto& entry) {
+        return util::IsUnderNonNativeLocalPath(profile, entry.path);
+      });
 
   // App Service doesn't exist in Incognito mode but we still want to find
   // handlers to open a download from its notification from Incognito mode. Use
@@ -208,13 +204,6 @@ void FindAppServiceTasks(Profile* profile,
           !web_app::IsSystemAppIdWithFileHandlers(launch_entry.app_id)) {
         continue;
       }
-
-      // "Hide" the media app task (i.e. skip the rest of this loop which would
-      // add it as a handler) when the flag to handle PDF is off.
-      if (launch_entry.app_id == web_app::kMediaAppId &&
-          ((!base::FeatureList::IsEnabled(ash::features::kMediaAppHandlesPdf) &&
-            has_pdf_file)))
-        continue;
 
       // Check the origin trial and feature flag for file handling in web apps.
       // TODO(1240018): Remove when this feature is fully launched. This check

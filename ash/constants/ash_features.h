@@ -440,7 +440,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kMacAddressRandomization;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kManagedDeviceUIRedesign;
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kMediaAppHandlesPdf;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kMediaAppPhotosIntegrationImage;
 COMPONENT_EXPORT(ASH_CONSTANTS)

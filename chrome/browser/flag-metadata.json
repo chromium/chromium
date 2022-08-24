@@ -4229,11 +4229,6 @@
     "expiry_milestone": 111
   },
   {
-    "name": "media-app-handles-pdf",
-    "owners": [ "//ash/webui/media_app_ui/OWNERS" ],
-    "expiry_milestone": 106
-  },
-  {
     "name": "media-app-photos-integration-image",
     "owners": [ "//ash/webui/media_app_ui/OWNERS" ],
     "expiry_milestone": 107

@@ -1081,10 +1081,6 @@ const base::Feature kMacAddressRandomization{"MacAddressRandomization",
 const base::Feature kManagedDeviceUIRedesign{"ManagedDeviceUIRedesign",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Whether PDF files are opened by default in the ChromeOS media app.
-const base::Feature kMediaAppHandlesPdf{"MediaAppHandlesPdf",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Within the ChromeOS media app, reveals the button to edit the current image
 // in Photos.
 const base::Feature kMediaAppPhotosIntegrationImage{
