@@ -3363,8 +3363,8 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_ASH_SETTINGS_LOCK_SCREEN_NOTIFICATION_HIDE_SENSITIVE" desc="One of options of the lock screen notification mode to hide sensitive contents and show the others on the lock screen.">
     Hide sensitive content
   </message>
-  <message name="IDS_SETTINGS_PEOPLE_ENABLE_SCREENLOCK" desc="The text on the checkbox to enable screenlocker for current user.">
-    Lock in sleep mode or when cover is closed
+  <message name="IDS_SETTINGS_PEOPLE_ENABLE_SCREENLOCK" desc="The text on the checkbox to enable screenlocker for current user.  Lock will happen in the device goes into sleep mode from being idle, or when laptop lid or detachable cover is closed">
+    Lock when sleeping or when lid is closed
   </message>
   <message name="IDS_SETTINGS_PEOPLE_SCREEN_LOCK_ENABLE_TITLE" desc="The title on the toggle to enable screen lock for current user.">
     Screen lock
@@ -3673,14 +3673,14 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_POWER_IDLE_STOP_SESSION" desc="In Device Settings > Power, menu item for idle behavior that stops the session when idle.">
     Sign out
   </message>
-  <message name="IDS_SETTINGS_POWER_LID_CLOSED_SLEEP_LABEL" desc="In Device Settings > Power, label for suspending when cover is closed.">
-    Sleep when cover is closed
+  <message name="IDS_SETTINGS_POWER_LID_CLOSED_SLEEP_LABEL" desc="In Device Settings > Power, label for suspending when laptop lid, or detachable cover is closed.">
+    Sleep when lid is closed
   </message>
-  <message name="IDS_SETTINGS_POWER_LID_CLOSED_SIGN_OUT_LABEL" desc="In Device Settings > Power, label for signing out when cover is closed.">
-    Sign out when cover is closed
+  <message name="IDS_SETTINGS_POWER_LID_CLOSED_SIGN_OUT_LABEL" desc="In Device Settings > Power, label for signing out when laptop lid, or detachable cover is closed.">
+    Sign out when lid is closed
   </message>
-  <message name="IDS_SETTINGS_POWER_LID_CLOSED_SHUT_DOWN_LABEL" desc="In Device Settings > Power, label for shutting down when cover is closed.">
-    Shut down when cover is closed
+  <message name="IDS_SETTINGS_POWER_LID_CLOSED_SHUT_DOWN_LABEL" desc="In Device Settings > Power, label for shutting down when laptop lid, or detachable cover is closed.">
+    Shut down when lid is closed
   </message>
   <message name="IDS_SETTINGS_BATTERY_STATUS" desc="In Device Settings > Power, the battery status while the battery is discharging, showing the battery power as a percentage and the time left until the battery is empty.">
     <ph name="percentage">$1<ex>56</ex></ph>% - <ph name="time">$2<ex>2 hours and 20 minutes</ex></ph> left
