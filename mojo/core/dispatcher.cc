@@ -109,7 +109,8 @@ MojoResult Dispatcher::WriteData(const void* elements,
 }
 
 MojoResult Dispatcher::BeginWriteData(void** buffer,
-                                      uint32_t* buffer_num_bytes) {
+                                      uint32_t* buffer_num_bytes,
+                                      MojoBeginWriteDataFlags flags) {
   return MOJO_RESULT_INVALID_ARGUMENT;
 }
 

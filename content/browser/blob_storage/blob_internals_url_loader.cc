@@ -36,9 +36,9 @@ void StartBlobInternalsURLLoader(
   void* buffer = nullptr;
   uint32_t num_bytes = output.size();
   MojoResult result = producer_handle->BeginWriteData(
-      &buffer, &num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
+      &buffer, &num_bytes, MOJO_BEGIN_WRITE_DATA_FLAG_ALL_OR_NONE);
   CHECK_EQ(result, MOJO_RESULT_OK);
-  CHECK_EQ(num_bytes, output.size());
+  CHECK_GE(num_bytes, output.size());
 
   memcpy(buffer, output.c_str(), output.size());
   result = producer_handle->EndWriteData(num_bytes);

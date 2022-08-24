@@ -74,6 +74,11 @@ typedef uint32_t MojoBeginWriteDataFlags;
 // No flags. Default behavior.
 #define MOJO_BEGIN_WRITE_DATA_FLAG_NONE ((uint32_t)0)
 
+// Indicates that the size hint provided to MojoBeginWriteData() must be treated
+// as a minimum requirement, and that the operation must fail if sufficient
+// capacity cannot be allocated.
+#define MOJO_BEGIN_WRITE_DATA_FLAG_ALL_OR_NONE ((uint32_t)1 << 0)
+
 // Options passed to |MojoBeginWriteData()|.
 struct MOJO_ALIGNAS(8) MojoBeginWriteDataOptions {
   // The size of this structure, used for versioning.
@@ -248,6 +253,17 @@ MojoWriteData(MojoHandle data_pipe_producer_handle,
 // Begins a two-phase write to the data pipe producer given by
 // |data_pipe_producer_handle|. On success |*buffer| will be a pointer to which
 // the caller can write up to |*buffer_num_bytes| bytes of data.
+//
+// `*buffer_num_bytes` must be initialized on input. If non-zero it provides a
+// hint about the number of data bytes the producer is readily able to supply if
+// if the operation succeeds. If zero, no such hint is assumed and the value is
+// ignored.
+//
+// If MOJO_RESULT_BEGIN_WRITE_DATA_FLAG_ALL_OR_NONE is provided in
+// `options->flags`, then this hint is a minimum requirement for the operation
+// to succeed, and on success the output value of `*buffer_num_bytes` will be
+// at least as large as the input value. The flag is invalid to specify if the
+// input value of `*buffer_num_bytes` is zero.
 //
 // During a two-phase write, |data_pipe_producer_handle| is *not* writable.
 // If another caller tries to write to it by calling |MojoWriteData()| or

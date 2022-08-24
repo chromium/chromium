@@ -1127,8 +1127,8 @@ MojoResult WebSocketChannelImpl::ProduceData(
     uint64_t* consumed_buffered_amount) {
   MojoResult begin_result = MOJO_RESULT_OK;
   void* buffer;
-  uint32_t writable_size = 0;
-  while (data->size() > 0 &&
+  uint32_t writable_size;
+  while ((writable_size = static_cast<uint32_t>(data->size())) > 0 &&
          (begin_result = writable_->BeginWriteData(
               &buffer, &writable_size, MOJO_WRITE_DATA_FLAG_NONE)) ==
              MOJO_RESULT_OK) {

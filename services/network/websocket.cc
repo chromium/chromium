@@ -697,8 +697,8 @@ void WebSocket::SendDataFrame(base::span<const char>* payload) {
   DCHECK_GT(payload->size(), 0u);
   MojoResult begin_result;
   void* buffer;
-  uint32_t writable_size = 0;
-  while (payload->size() > 0 &&
+  uint32_t writable_size;
+  while ((writable_size = static_cast<uint32_t>(payload->size())) > 0 &&
          (begin_result = writable_->BeginWriteData(
               &buffer, &writable_size, MOJO_WRITE_DATA_FLAG_NONE)) ==
              MOJO_RESULT_OK) {

@@ -157,7 +157,8 @@ class ReadWriteWaiter {
       DCHECK(send_stream_.is_valid());
       DCHECK_LT(bytes_sent_, required_send_bytes_);
       void* buffer = nullptr;
-      uint32_t num_bytes = 0;
+      uint32_t num_bytes =
+          static_cast<uint32_t>(required_send_bytes_ - bytes_sent_);
       MojoResult mojo_result = send_stream_->BeginWriteData(
           &buffer, &num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
       if (mojo_result == MOJO_RESULT_SHOULD_WAIT) {

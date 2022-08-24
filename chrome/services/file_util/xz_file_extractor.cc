@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/lzma_sdk/C/7zCrc.h"
 #include "third_party/lzma_sdk/C/Xz.h"
 #include "third_party/lzma_sdk/C/XzCrc64.h"
@@ -86,7 +87,7 @@ class XzState {
     // CODER_STATUS_NOT_FINISHED.
     while (status == CODER_STATUS_NOT_FINISHED) {
       uint8_t* data = nullptr;
-      uint32_t size = 0;
+      uint32_t size = base::checked_cast<uint32_t>(buffer_size_);
       result = producer_->BeginWriteData(reinterpret_cast<void**>(&data), &size,
                                          MOJO_WRITE_DATA_FLAG_NONE);
       if (result == MOJO_RESULT_SHOULD_WAIT) {

@@ -27,16 +27,16 @@ MojoResult NetToMojoPendingBuffer::BeginWrite(
     mojo::ScopedDataPipeProducerHandle* handle,
     scoped_refptr<NetToMojoPendingBuffer>* pending,
     uint32_t* num_bytes) {
+  uint32_t max_bytes = kMaxBufSize;
+  if (base::FeatureList::IsEnabled(net::features::kOptimizeNetworkBuffers)) {
+    max_bytes = net::features::kOptimizeNetworkBuffersBytesReadLimit.Get();
+  }
+
   void* buf = nullptr;
-  *num_bytes = 0;
+  *num_bytes = max_bytes;
   MojoResult result =
       (*handle)->BeginWriteData(&buf, num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
   if (result == MOJO_RESULT_OK) {
-    uint32_t max_bytes = kMaxBufSize;
-    if (base::FeatureList::IsEnabled(net::features::kOptimizeNetworkBuffers)) {
-      max_bytes = net::features::kOptimizeNetworkBuffersBytesReadLimit.Get();
-    }
-
     if (*num_bytes > max_bytes)
       *num_bytes = max_bytes;
 

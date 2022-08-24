@@ -112,7 +112,10 @@ class DataPipeProducer::SequenceState
       // Lock as much of the pipe as we can.
       void* pipe_buffer;
       uint32_t size = kDefaultMaxReadSize;
-      uint64_t max_data_size = data_source_->GetLength();
+
+      DCHECK_LE(bytes_transferred_, data_source_->GetLength());
+      const uint64_t max_data_size =
+          data_source_->GetLength() - bytes_transferred_;
       if (static_cast<uint64_t>(size) > max_data_size)
         size = static_cast<uint32_t>(max_data_size);
 

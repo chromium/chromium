@@ -17,6 +17,7 @@
 #include "mojo/core/handle_signals_state.h"
 #include "mojo/core/system_impl_export.h"
 #include "mojo/core/watch.h"
+#include "mojo/public/c/system/data_pipe.h"
 #include "mojo/public/c/system/quota.h"
 #include "mojo/public/c/system/trap.h"
 #include "mojo/public/c/system/types.h"
@@ -194,7 +195,9 @@ class MOJO_SYSTEM_IMPL_EXPORT Dispatcher
   // Supports the the |MojoBeginWriteData()| API if implemented by this
   // Dispatcher. Arguments correspond to the ones given to the original API
   // call. See |MojoBeginWriteData()| documentation.
-  virtual MojoResult BeginWriteData(void** buffer, uint32_t* buffer_num_bytes);
+  virtual MojoResult BeginWriteData(void** buffer,
+                                    uint32_t* buffer_num_bytes,
+                                    MojoBeginWriteDataFlags flags);
 
   // Supports the the |MojoEndWriteData()| API if implemented by this
   // Dispatcher. Arguments correspond to the ones given to the original API

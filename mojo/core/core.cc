@@ -755,13 +755,14 @@ MojoResult Core::BeginWriteData(MojoHandle data_pipe_producer_handle,
       GetDispatcher(data_pipe_producer_handle));
   if (!dispatcher)
     return MOJO_RESULT_INVALID_ARGUMENT;
+  MojoBeginWriteDataFlags flags = MOJO_BEGIN_WRITE_DATA_FLAG_NONE;
   if (options) {
-    if (options->struct_size < sizeof(*options))
+    if (options->struct_size < sizeof(*options)) {
       return MOJO_RESULT_INVALID_ARGUMENT;
-    if (options->flags != MOJO_BEGIN_WRITE_DATA_FLAG_NONE)
-      return MOJO_RESULT_UNIMPLEMENTED;
+    }
+    flags = options->flags;
   }
-  return dispatcher->BeginWriteData(buffer, buffer_num_bytes);
+  return dispatcher->BeginWriteData(buffer, buffer_num_bytes, flags);
 }
 
 MojoResult Core::EndWriteData(MojoHandle data_pipe_producer_handle,

@@ -63,7 +63,8 @@ class MockDispatcher : public Dispatcher {
   }
 
   MojoResult BeginWriteData(void** buffer,
-                            uint32_t* buffer_num_bytes) override {
+                            uint32_t* buffer_num_bytes,
+                            MojoBeginWriteDataFlags flags) override {
     info_->IncrementBeginWriteDataCallCount();
     return MOJO_RESULT_UNIMPLEMENTED;
   }
