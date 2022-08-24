@@ -164,11 +164,16 @@ void LayoutThemeDefault::SetSelectionColors(Color active_background_color,
                                             Color active_foreground_color,
                                             Color inactive_background_color,
                                             Color inactive_foreground_color) {
-  active_selection_background_color_ = active_background_color;
-  active_selection_foreground_color_ = active_foreground_color;
-  inactive_selection_background_color_ = inactive_background_color;
-  inactive_selection_foreground_color_ = inactive_foreground_color;
-  PlatformColorsDidChange();
+  if (active_selection_background_color_ != active_background_color ||
+      active_selection_foreground_color_ != active_foreground_color ||
+      inactive_selection_background_color_ != inactive_background_color ||
+      inactive_selection_foreground_color_ != inactive_foreground_color) {
+    active_selection_background_color_ = active_background_color;
+    active_selection_foreground_color_ = active_foreground_color;
+    inactive_selection_background_color_ = inactive_background_color;
+    inactive_selection_foreground_color_ = inactive_foreground_color;
+    PlatformColorsDidChange();
+  }
 }
 
 void LayoutThemeDefault::AdjustInnerSpinButtonStyle(
