@@ -300,30 +300,29 @@ bool TraceStartupConfig::EnableFromBackgroundTracing() {
 
 bool TraceStartupConfig::ParseTraceConfigFileContent(
     const std::string& content) {
-  std::unique_ptr<base::Value> value(base::JSONReader::ReadDeprecated(content));
+  absl::optional<base::Value> value(base::JSONReader::Read(content));
   if (!value || !value->is_dict())
     return false;
 
-  std::unique_ptr<base::DictionaryValue> dict(
-      static_cast<base::DictionaryValue*>(value.release()));
+  auto& dict = value->GetDict();
 
-  base::DictionaryValue* trace_config_dict = nullptr;
-  if (!dict->GetDictionary(kTraceConfigParam, &trace_config_dict))
+  auto* trace_config_dict = dict.FindDict(kTraceConfigParam);
+  if (!trace_config_dict)
     return false;
 
-  trace_config_ = base::trace_event::TraceConfig(*trace_config_dict);
+  trace_config_ = base::trace_event::TraceConfig(
+      base::Value(std::move(*trace_config_dict)));
 
   startup_duration_in_seconds_ =
-      dict->FindIntKey(kStartupDurationParam).value_or(0);
+      dict.FindInt(kStartupDurationParam).value_or(0);
 
   if (startup_duration_in_seconds_ < 0)
     startup_duration_in_seconds_ = 0;
 
-  std::string result_file_or_dir_str;
-  if (dict->GetString(kResultFileParam, &result_file_or_dir_str)) {
-    result_file_ = base::FilePath::FromUTF8Unsafe(result_file_or_dir_str);
-  } else if (dict->GetString(kResultDirectoryParam, &result_file_or_dir_str)) {
-    result_file_ = base::FilePath::FromUTF8Unsafe(result_file_or_dir_str);
+  if (auto* result_file = dict.FindString(kResultFileParam)) {
+    result_file_ = base::FilePath::FromUTF8Unsafe(*result_file);
+  } else if (auto* result_dir = dict.FindString(kResultDirectoryParam)) {
+    result_file_ = base::FilePath::FromUTF8Unsafe(*result_dir);
     // Java time to get an int instead of a double.
     result_file_ = result_file_.AppendASCII(
         base::NumberToString(base::Time::Now().ToJavaTime()) +
