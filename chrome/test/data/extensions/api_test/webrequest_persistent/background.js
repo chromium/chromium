@@ -39,3 +39,5 @@ function beforeRequestListener() {
 chrome.webRequest.onBeforeRequest.addListener(
     beforeRequestListener,
     {urls: ["*://example.com/*"], types: ['main_frame']});
+
+chrome.test.sendMessage('ready');

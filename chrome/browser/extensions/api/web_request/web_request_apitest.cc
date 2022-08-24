@@ -5209,12 +5209,35 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiPrerenderingTest, Load) {
       << message_;
 }
 
-class WebRequestApiTestWithContextType
-    : public ExtensionWebRequestApiTest,
-      public testing::WithParamInterface<ContextType> {
+// A clunky test suite class to allow for waiting for a message to be sent from
+// the extension's background context when it starts up. We need this because
+// we don't currently have a good way of waiting for a service worker context to
+// be fully initialized.
+class WebRequestPersistentListenersTest
+    : public ExtensionWebRequestApiTestWithContextType {
  public:
-  WebRequestApiTestWithContextType() = default;
-  ~WebRequestApiTestWithContextType() override = default;
+  WebRequestPersistentListenersTest() = default;
+  ~WebRequestPersistentListenersTest() override = default;
+
+  void SetUpOnMainThread() override {
+    // Note: Set the listener before triggering the parent SetUpOnMainThread
+    // to ensure it happens before extensions start loading.
+    test_listener_ = std::make_unique<ExtensionTestMessageListener>("ready");
+
+    ExtensionWebRequestApiTestWithContextType::SetUpOnMainThread();
+  }
+
+  void TearDownOnMainThread() override {
+    test_listener_.reset();
+    ExtensionWebRequestApiTestWithContextType::TearDownOnMainThread();
+  }
+
+  void WaitForReadyMessage() {
+    EXPECT_TRUE(test_listener_->WaitUntilSatisfied());
+  }
+
+ private:
+  std::unique_ptr<ExtensionTestMessageListener> test_listener_;
 };
 
 namespace {
@@ -5233,7 +5256,7 @@ constexpr char kGetNumRequests[] =
 }  // namespace
 
 // Tests that webRequest listeners are persistent across browser restarts.
-IN_PROC_BROWSER_TEST_P(WebRequestApiTestWithContextType,
+IN_PROC_BROWSER_TEST_P(WebRequestPersistentListenersTest,
                        PRE_TestListenersArePersistent) {
   // Load an extension that listens for webRequest events.
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -5254,7 +5277,7 @@ IN_PROC_BROWSER_TEST_P(WebRequestApiTestWithContextType,
   EXPECT_EQ(1, request_count.GetInt());
 }
 
-IN_PROC_BROWSER_TEST_P(WebRequestApiTestWithContextType,
+IN_PROC_BROWSER_TEST_P(WebRequestPersistentListenersTest,
                        TestListenersArePersistent) {
   // Find the installed extension and wait for it to fully load.
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -5267,6 +5290,7 @@ IN_PROC_BROWSER_TEST_P(WebRequestApiTestWithContextType,
   }
   ASSERT_TRUE(extension);
   WaitForExtensionViewsToLoad();
+  WaitForReadyMessage();
 
   // Navigate once more to example.com.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -5283,10 +5307,10 @@ IN_PROC_BROWSER_TEST_P(WebRequestApiTestWithContextType,
 }
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
-                         WebRequestApiTestWithContextType,
+                         WebRequestPersistentListenersTest,
                          ::testing::Values(ContextType::kPersistentBackground));
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         WebRequestApiTestWithContextType,
+                         WebRequestPersistentListenersTest,
                          ::testing::Values(ContextType::kServiceWorker));
 
 class ManifestV3WebRequestApiTest : public ExtensionWebRequestApiTest {
