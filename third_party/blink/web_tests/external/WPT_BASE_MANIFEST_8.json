@@ -117675,32 +117675,6 @@
        {}
       ]
      ],
-     "font-variant-05.xht": [
-      "7ea3cd9091c4ea491349f1b536a60171ccdee22b",
-      [
-       null,
-       [
-        [
-         "/css/css-fonts/font-variant-05-ref.xht",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "font-variant-06.xht": [
-      "69749e7417ae63f27ca2d87f7e6ac9083ac29b1a",
-      [
-       null,
-       [
-        [
-         "/css/css-fonts/font-variant-06-ref.xht",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
      "font-variant-alternates-01.html": [
       "82c465fed55712260abf113d27a6f4cf9fc9dcfd",
       [
@@ -118033,19 +118007,6 @@
        [
         [
          "/css/css-fonts/font-variant-caps-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "font-variant-descriptor-01.html": [
-      "f854ca1feeb18a74f4c35db3179bc32c8b032d54",
-      [
-       null,
-       [
-        [
-         "/css/css-fonts/font-variant-descriptor-01-ref.html",
          "=="
         ]
        ],
@@ -240396,7 +240357,7 @@
        ]
       ],
       "popup-hidden-display.tentative.html": [
-       "45c1f91ed43d405fdc016098e30a9f344ee53df3",
+       "b3845f8270785e8ed9de588a8fc4e823b66b62e9",
        [
         null,
         [
@@ -271574,14 +271535,6 @@
       "12810edc4726d188ca9cd97844c02d5223b601b8",
       []
      ],
-     "font-variant-05-ref.xht": [
-      "f3c2d5f9fc9fd1576c5912bde130042800df6add",
-      []
-     ],
-     "font-variant-06-ref.xht": [
-      "a85f80aa6ea694c2fe53ff5b099ce91d7905607c",
-      []
-     ],
      "font-variant-alternates-01-ref.html": [
       "0ded6cd76cc63bb7e44a87df1b207cea20766b8a",
       []
@@ -271688,10 +271641,6 @@
      ],
      "font-variant-debug.html": [
       "827557ad6648f92ce0a24009ca13aa8f9986e8b1",
-      []
-     ],
-     "font-variant-descriptor-01-ref.html": [
-      "6a152db8cb40793fcfe2f64f516dd5e0116d0d0f",
       []
      ],
      "font-variant-east-asian-01-ref.html": [
@@ -306614,6 +306563,10 @@
           "d2ecb9d9bc21ad85f62c8341d084c6485a5d43cf",
           []
          ],
+         "nav-cancelation-2-helper.html": [
+          "a0b4acda2ea17322b85d1e46c2675de374be8889",
+          []
+         ],
          "slow.py": [
           "5ee32a60baea5edb5d1560ef282789e5d22555c8",
           []
@@ -317208,7 +317161,7 @@
        []
       ],
       "popup-hidden-display-ref.tentative.html": [
-       "adfcfbf204e21e541180370fc4d9043f0fbb8cca",
+       "b44f3a77b197d2b12782d83670df32c9bf09630f",
        []
       ],
       "popup-inside-display-none-ref.tentative.html": [
@@ -317229,7 +317182,7 @@
       ],
       "resources": {
        "popup-styles.css": [
-        "e1d3e43dccc251cbe172d5d4f78a93c139a160c2",
+        "a52ebc218d1ed0458a4a39b3abf377670cc800fd",
         []
        ],
        "popup-utils.js": [
@@ -399573,7 +399526,7 @@
       ]
      ],
      "acos-asin-atan-atan2-serialize.html": [
-      "963450cd5b23cb430b0e97bd198fb8254e91638c",
+      "54f6ee56685fcabec858092ece278fdff871ec42",
       [
        null,
        {}
@@ -400093,21 +400046,21 @@
       ]
      ],
      "sin-cos-tan-computed.html": [
-      "7f85727bdbad130c9dae323e4e0c9b249c5132aa",
+      "b804280a3081bad23e99dee8bbd16040f0a95ead",
       [
        null,
        {}
       ]
      ],
      "sin-cos-tan-invalid.html": [
-      "b504e6d6020810fcf49758d25ba0a8fdb26e9b15",
+      "54887bf46cb4070977681af6aa446ff77be06c1a",
       [
        null,
        {}
       ]
      ],
      "sin-cos-tan-serialize.html": [
-      "e5d57c133fb95f67e7073dba12b547287d2a17cc",
+      "365145d9b13dc305d86d3db72dfa8be2235293c3",
       [
        null,
        {}
@@ -443079,6 +443032,20 @@
         ],
         "forward-to-pruned-entry.html": [
          "f5f9a2c804f962d3b4f42f3cc22cfd8ebeea3224",
+         [
+          null,
+          {}
+         ]
+        ],
+        "nav-cancelation-1.html": [
+         "b52fa0497714f356b505fde388dc543c108121a1",
+         [
+          null,
+          {}
+         ]
+        ],
+        "nav-cancelation-2.sub.html": [
+         "62f824fdce192b57ca1d785a2e066c4f6508aeea",
          [
           null,
           {}
