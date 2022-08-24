@@ -104,26 +104,22 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewMacBrowserTestTitlePrefixed,
     chrome::ToggleFullscreenMode(browser);
     EXPECT_TRUE(browser_view->GetWidget()->IsFullscreen());
     TextChangeWaiter waiter(title);
-    std::u16string expected_title =
-        base::StrCat({u"A Web App - ", expected_title});
     ASSERT_TRUE(content::ExecJs(
         web_contents,
         "document.querySelector('title').textContent = 'Full Screen'"));
     waiter.Wait();
-    EXPECT_EQ(expected_title, title->GetText());
+    EXPECT_EQ(u"A Web App - Full Screen", title->GetText());
   }
 
   {
     chrome::ToggleFullscreenMode(browser);
     EXPECT_FALSE(browser_view->GetWidget()->IsFullscreen());
     TextChangeWaiter waiter(title);
-    std::u16string expected_title =
-        base::StrCat({u"A Web App - ", expected_title});
     ASSERT_TRUE(content::ExecJs(
         web_contents,
         "document.querySelector('title').textContent = 'Not Full Screen'"));
     waiter.Wait();
-    EXPECT_EQ(expected_title, title->GetText());
+    EXPECT_EQ(u"A Web App - Not Full Screen", title->GetText());
   }
 }
 
