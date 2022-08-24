@@ -158,14 +158,6 @@ function createOSSettingsRoutes() {
     r.PERSONALIZATION = createSection(
         r.BASIC, routesMojomWebui.PERSONALIZATION_SECTION_PATH,
         Section.kPersonalization);
-    // Top level PERSONALIZATION section only contains a link to personalization
-    // hub if hub is enabled. The subpages should only be accessible if hub is
-    // off.
-    if (!loadTimeData.getBoolean('isPersonalizationHubEnabled')) {
-      r.CHANGE_PICTURE = createSubpage(
-          r.PERSONALIZATION, routesMojomWebui.CHANGE_PICTURE_SUBPAGE_PATH,
-          Subpage.kChangePicture);
-    }
   }
 
   // Search and Assistant section.

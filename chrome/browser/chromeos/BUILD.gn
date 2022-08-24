@@ -3555,7 +3555,6 @@ source_set("unit_tests") {
     "../ui/webui/settings/ash/search/search_handler_unittest.cc",
     "../ui/webui/settings/ash/search/search_tag_registry_unittest.cc",
     "../ui/webui/settings/chromeos/bluetooth_handler_unittest.cc",
-    "../ui/webui/settings/chromeos/change_picture_handler_unittest.cc",
     "../ui/webui/settings/chromeos/device_keyboard_handler_unittest.cc",
     "../ui/webui/settings/chromeos/device_name_handler_unittest.cc",
     "../ui/webui/settings/chromeos/device_storage_handler_unittest.cc",

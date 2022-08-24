@@ -144,7 +144,7 @@ enum Setting {
   kOpenWallpaper = 500,
   // 501 was used for kAmbientModeOnOff. Do not reuse.
   // 502 was used for kAmbientModeSource. Do not reuse.
-  kChangeDeviceAccountImage = 503,
+  // 503 was used for kChangeDeviceAccountImage. Do not reuse.
   // Note: Values 504, 505, and 506 were for deprecated
   // kAmbientModeUpdatePhotosContainers, kDarkModeOnOff and
   // kDarkModeThemed respectively.

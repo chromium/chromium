@@ -2916,8 +2916,6 @@ static_library("ui") {
       "webui/settings/chromeos/bluetooth_handler.h",
       "webui/settings/chromeos/bluetooth_section.cc",
       "webui/settings/chromeos/bluetooth_section.h",
-      "webui/settings/chromeos/change_picture_handler.cc",
-      "webui/settings/chromeos/change_picture_handler.h",
       "webui/settings/chromeos/constants/constants_util.cc",
       "webui/settings/chromeos/constants/constants_util.h",
       "webui/settings/chromeos/constants/routes_util.cc",
