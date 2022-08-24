@@ -159,9 +159,47 @@ class ProductivityLauncherSearchViewTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// An extension of ProductivityLauncherSearchViewTest to test launcher image
+// search.
+class SearchResultImageViewTest : public ProductivityLauncherSearchViewTest {
+ public:
+  SearchResultImageViewTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kProductivityLauncherImageSearch);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 INSTANTIATE_TEST_SUITE_P(Tablet,
                          ProductivityLauncherSearchViewTest,
                          testing::Bool());
+
+INSTANTIATE_TEST_SUITE_P(Tablet, SearchResultImageViewTest, testing::Bool());
+
+TEST_P(SearchResultImageViewTest, ImageListViewVisible) {
+  GetAppListTestHelper()->ShowAppList();
+
+  // Press a key to start a search.
+  PressAndReleaseKey(ui::VKEY_A);
+  // Populate answer card result.
+  auto* test_helper = GetAppListTestHelper();
+  SearchModel::SearchResults* results = test_helper->GetSearchResults();
+  SetUpAnswerCardResult(results, 1, 1);
+  GetProductivityLauncherSearchView()->OnSearchResultContainerResultsChanged();
+
+  // Check result container visibility.
+  std::vector<SearchResultContainerView*> result_containers =
+      GetProductivityLauncherSearchView()->result_container_views_for_test();
+  ASSERT_EQ(static_cast<int>(result_containers.size()), kResultContainersCount);
+  // Answer card container should be visible.
+  EXPECT_TRUE(result_containers[0]->GetVisible());
+  // Best Match container should be visible.
+  EXPECT_FALSE(result_containers[1]->GetVisible());
+  // SearchResultImageListView container should be visible.
+  EXPECT_TRUE(result_containers[2]->GetVisible());
+}
 
 TEST_P(ProductivityLauncherSearchViewTest, AnimateSearchResultView) {
   // Enable animations.

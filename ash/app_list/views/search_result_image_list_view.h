@@ -1,0 +1,58 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ASH_APP_LIST_VIEWS_SEARCH_RESULT_IMAGE_LIST_VIEW_H_
+#define ASH_APP_LIST_VIEWS_SEARCH_RESULT_IMAGE_LIST_VIEW_H_
+
+#include <vector>
+
+#include "ash/app_list/views/search_result_container_view.h"
+#include "ash/app_list/views/search_result_image_view.h"
+#include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+
+namespace views {
+class BoxLayoutView;
+class Label;
+}  // namespace views
+
+namespace ash {
+
+// SearchResultImageListView displays a horizontal strip of
+// SearchResultImageViews inside the ProductivityLauncherSearchView.
+class ASH_EXPORT SearchResultImageListView : public SearchResultContainerView {
+ public:
+  METADATA_HEADER(SearchResultImageListView);
+  explicit SearchResultImageListView(AppListViewDelegate* view_delegate);
+  SearchResultImageListView(const SearchResultImageListView&) = delete;
+  SearchResultImageListView& operator=(const SearchResultImageListView&) =
+      delete;
+  ~SearchResultImageListView() override;
+
+  // Overridden from SearchResultContainerView:
+  SearchResultImageView* GetResultViewAt(size_t index) override;
+  bool HasAnimatingChildView() override;
+  void AppendShownResultMetadata(
+      std::vector<SearchResultAimationMetadata>* result_metadata_) override;
+  absl::optional<ResultsAnimationInfo> ScheduleResultAnimations(
+      const ResultsAnimationInfo& aggregate_animation_info) override;
+
+ private:
+  // Overridden from views::View:
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void OnThemeChanged() override;
+
+  // Overridden from SearchResultContainerView:
+  void OnSelectedResultChanged() override;
+  int DoUpdate() override;
+
+  // Owned by views hierarchy.
+  base::raw_ptr<views::Label> title_label_ = nullptr;
+  base::raw_ptr<views::BoxLayoutView> image_view_container_ = nullptr;
+  std::vector<SearchResultImageView*> image_views_;
+};
+
+}  // namespace ash
+
+#endif  // ASH_APP_LIST_VIEWS_SEARCH_RESULT_INLINE_ICON_VIEW_H_

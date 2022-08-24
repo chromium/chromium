@@ -15,6 +15,7 @@
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/views/result_selection_controller.h"
 #include "ash/app_list/views/search_box_view.h"
+#include "ash/app_list/views/search_result_image_list_view.h"
 #include "ash/app_list/views/search_result_list_view.h"
 #include "ash/app_list/views/search_result_view.h"
 #include "ash/constants/ash_features.h"
@@ -97,7 +98,7 @@ ProductivityLauncherSearchView::ProductivityLauncherSearchView(
   search_box_view_->SetResultSelectionController(
       result_selection_controller_.get());
 
-  auto add_result_container = [&](SearchResultListView* new_container) {
+  auto add_result_container = [&](SearchResultContainerView* new_container) {
     new_container->SetResults(
         AppListModelProvider::Get()->search_model()->results());
     new_container->set_delegate(this);
@@ -123,6 +124,13 @@ ProductivityLauncherSearchView::ProductivityLauncherSearchView(
   best_match_container->SetListType(
       SearchResultListView::SearchResultListType::kBestMatch);
   add_result_container(best_match_container);
+
+  // Launcher image search container is always the third view shown.
+  if (features::IsProductivityLauncherImageSearchEnabled()) {
+    auto* image_search_container = scroll_contents->AddChildView(
+        std::make_unique<SearchResultImageListView>(view_delegate));
+    add_result_container(image_search_container);
+  }
 
   // SearchResultListViews are aware of their relative position in the
   // Productivity launcher search view. SearchResultListViews with mutable
@@ -216,13 +224,15 @@ void ProductivityLauncherSearchView::OnSearchResultContainerResultsChanged() {
     for (SearchResultContainerView* view : result_container_views_) {
       absl::optional<AnimationInfo> container_animation_info =
           view->ScheduleResultAnimations(aggregate_animation_info);
-      DCHECK(container_animation_info);
-      aggregate_animation_info.total_views +=
-          container_animation_info->total_views;
-      aggregate_animation_info.total_result_views +=
-          container_animation_info->total_result_views;
-      aggregate_animation_info.animating_views +=
-          container_animation_info->animating_views;
+      if (container_animation_info) {
+        aggregate_animation_info.total_views +=
+            container_animation_info->total_views;
+        aggregate_animation_info.total_result_views +=
+            container_animation_info->total_result_views;
+        aggregate_animation_info.animating_views +=
+            container_animation_info->animating_views;
+      }
+
       // Fetch the first visible search result view for search box autocomplete.
       if (!first_result_view && view->GetFirstResultView()) {
         first_result_view = view->GetFirstResultView();
