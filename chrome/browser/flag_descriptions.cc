@@ -5856,6 +5856,13 @@ const char kQuickSettingsNetworkRevampDescription[] =
     "Enables the Quick Settings Network revamp, which updates Network Quick "
     "Settings UI and related infrastructure. See https://crbug.com/1169479.";
 
+const char kCaptivePortalUI2022Name[] =
+    "Enables the Captive Portal UI 2022 changes.";
+const char kCaptivePortalUI2022Description[] =
+    "Enables the Captive Portal UI 2022 changes, which includes updates to "
+    "notifications, network details page, quick settings, and portal signin "
+    "UI.";
+
 const char kTerminalAlternativeEmulatorName[] = "Terminal alternative emulator";
 const char kTerminalAlternativeEmulatorDescription[] =
     "Enable the alternative emulator for the Terminal app. You will also get "

@@ -824,6 +824,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "captive-portal-ui-2022",
+    "owners": [ "michaelrygiel", "stevenjb", "cros-network-health@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "cct-brand-transparency",
     "owners": [ "wenyufu" ],
     "expiry_milestone": 110

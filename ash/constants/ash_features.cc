@@ -438,6 +438,11 @@ const base::Feature kBruschetta{"Bruschetta",
 const base::Feature kBruschettaAlphaMigrate{"BruschettaAlphaMigrate",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the Captive Portal UI 2022 changes, which includes updates to
+// notifications, network details page, quick settings, and portal signin UI.
+const base::Feature kCaptivePortalUI2022{"CaptivePortalUI2022",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables always using device-activity-status data to filter
 // eligible host phones.
 const base::Feature kCryptAuthV2AlwaysUseActiveEligibleHosts{
@@ -1873,6 +1878,10 @@ bool IsCalendarViewEnabled() {
 
 bool IsCalendarModelDebugModeEnabled() {
   return base::FeatureList::IsEnabled(kCalendarModelDebugMode);
+}
+
+bool IsCaptivePortalUI2022Enabled() {
+  return base::FeatureList::IsEnabled(kCaptivePortalUI2022);
 }
 
 bool IsCheckPasswordsAgainstCryptohomeHelperEnabled() {

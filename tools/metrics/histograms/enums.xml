@@ -58806,6 +58806,7 @@ from previous Chrome versions.
   <int value="-362821234" label="ExperimentalUi:enabled"/>
   <int value="-362022976" label="disable-quirks-client"/>
   <int value="-361948582" label="material-security-verbose"/>
+  <int value="-361053631" label="CaptivePortalUI2022:disabled"/>
   <int value="-360453785" label="LeftToRightUrls:disabled"/>
   <int value="-360038744" label="invert-viewport-scroll-order"/>
   <int value="-357464687" label="SharingPreferVapid:enabled"/>
@@ -61212,6 +61213,7 @@ from previous Chrome versions.
   <int value="1153454438"
       label="AutofillCreditCardLastUsedDateDisplay:disabled"/>
   <int value="1153658720" label="ChromeOSZramWriteback:disabled"/>
+  <int value="1153667038" label="CaptivePortalUI2022:enabled"/>
   <int value="1154722867" label="TranslateAssistContent:disabled"/>
   <int value="1154790184" label="ScanAppMultiPageScan:enabled"/>
   <int value="1155905651" label="DrawVerticallyEdgeToEdge:disabled"/>

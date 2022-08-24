@@ -3650,6 +3650,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"calendar-view-debug-mode", flag_descriptions::kCalendarModelDebugModeName,
      flag_descriptions::kCalendarModelDebugModeDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kCalendarModelDebugMode)},
+    {"captive-portal-ui-2022", flag_descriptions::kCaptivePortalUI2022Name,
+     flag_descriptions::kCaptivePortalUI2022Description, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kCaptivePortalUI2022)},
     {"cellular-bypass-esim-installation-connectivity-check",
      flag_descriptions::kCellularBypassESimInstallationConnectivityCheckName,
      flag_descriptions::
