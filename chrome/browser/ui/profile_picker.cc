@@ -148,6 +148,10 @@ GURL ProfilePicker::Params::GetInitialURL() const {
 
 bool ProfilePicker::Params::CanReusePickerWindow(const Params& other) const {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+  LOG(WARNING) << "Checking window reusability from entry point "
+               << static_cast<int>(entry_point_) << " to "
+               << static_cast<int>(other.entry_point());
+
   // Some entry points have specific UIs that cannot be reused for other entry
   // points.
   base::flat_set<EntryPoint> exclusive_entry_points = {
