@@ -21,6 +21,7 @@
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/window_state.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/events/test/test_event.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -204,6 +205,60 @@ TEST_F(GlanceablesTest, ShowFromOverview) {
   // Glanceables are showing and overview mode is closed.
   EXPECT_TRUE(controller_->IsShowing());
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+}
+
+TEST_F(GlanceablesTest, ShowFromOverviewHidesAppWindows) {
+  // Create windows, back to front.
+  std::unique_ptr<aura::Window> back_window = CreateAppWindow();
+  std::unique_ptr<aura::Window> middle_window = CreateAppWindow();
+  std::unique_ptr<aura::Window> minimized_window = CreateAppWindow();
+  WindowState::Get(minimized_window.get())->Minimize();
+  std::unique_ptr<aura::Window> front_window = CreateAppWindow();
+
+  controller_->ShowFromOverview();
+
+  // All windows are minimized.
+  EXPECT_TRUE(WindowState::Get(back_window.get())->IsMinimized());
+  EXPECT_TRUE(WindowState::Get(middle_window.get())->IsMinimized());
+  EXPECT_TRUE(WindowState::Get(minimized_window.get())->IsMinimized());
+  EXPECT_TRUE(WindowState::Get(front_window.get())->IsMinimized());
+
+  // Destroy the middle window.
+  middle_window.reset();
+
+  // Hide glanceables.
+  controller_->DestroyUi();
+
+  // Front and back windows are restored.
+  EXPECT_TRUE(WindowState::Get(back_window.get())->IsNormalStateType());
+  EXPECT_TRUE(WindowState::Get(front_window.get())->IsNormalStateType());
+
+  // The originally minimized window is still minimized.
+  EXPECT_TRUE(WindowState::Get(minimized_window.get())->IsMinimized());
+
+  // The front window is still frontmost (at the end of the child list).
+  EXPECT_EQ(front_window->parent()->children().back(), front_window.get());
+}
+
+TEST_F(GlanceablesTest, UnminimizingOneWindowRestoresAllWindows) {
+  std::unique_ptr<aura::Window> back_window = CreateAppWindow();
+  std::unique_ptr<aura::Window> front_window = CreateAppWindow();
+
+  controller_->ShowFromOverview();
+
+  EXPECT_TRUE(WindowState::Get(back_window.get())->IsMinimized());
+  EXPECT_TRUE(WindowState::Get(front_window.get())->IsMinimized());
+
+  // Restore and activate the front window.
+  WindowState::Get(front_window.get())->Unminimize();
+  WindowState::Get(front_window.get())->Activate();
+
+  // Window activation closed glanceables.
+  EXPECT_FALSE(controller_->IsShowing());
+
+  // Both windows are restored.
+  EXPECT_TRUE(WindowState::Get(back_window.get())->IsNormalStateType());
+  EXPECT_TRUE(WindowState::Get(front_window.get())->IsNormalStateType());
 }
 
 }  // namespace ash

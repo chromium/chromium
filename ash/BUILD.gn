@@ -536,6 +536,8 @@ component("ash") {
     "glanceables/glanceables_weather_view.h",
     "glanceables/glanceables_welcome_label.cc",
     "glanceables/glanceables_welcome_label.h",
+    "glanceables/glanceables_window_hider.cc",
+    "glanceables/glanceables_window_hider.h",
     "high_contrast/high_contrast_controller.cc",
     "high_contrast/high_contrast_controller.h",
     "highlighter/highlighter_controller.cc",

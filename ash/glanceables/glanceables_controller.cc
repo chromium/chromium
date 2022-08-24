@@ -10,6 +10,7 @@
 #include "ash/ambient/ambient_weather_controller.h"
 #include "ash/glanceables/glanceables_delegate.h"
 #include "ash/glanceables/glanceables_view.h"
+#include "ash/glanceables/glanceables_window_hider.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
@@ -56,7 +57,8 @@ void GlanceablesController::ShowOnLogin() {
 }
 
 void GlanceablesController::ShowFromOverview() {
-  // TODO(crbug.com/1353119): Hide or minimize all open windows.
+  // Hide any open windows.
+  window_hider_ = std::make_unique<GlanceablesWindowHider>();
   CreateUi();
   FetchData();
 }
@@ -91,6 +93,7 @@ void GlanceablesController::CreateUi() {
 void GlanceablesController::DestroyUi() {
   widget_.reset();
   view_ = nullptr;
+  window_hider_.reset();  // Show hidden windows.
 }
 
 void GlanceablesController::RestoreSession() {
