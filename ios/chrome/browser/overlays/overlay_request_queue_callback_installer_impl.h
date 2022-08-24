@@ -26,7 +26,7 @@ class OverlayRequestQueueCallbackInstallerImpl
     RequestAddedObserver(web::WebState* web_state, OverlayModality modality);
     ~RequestAddedObserver() override;
 
-    // Adds |installer| to be executed for every request added to the queue.
+    // Adds `installer` to be executed for every request added to the queue.
     void AddInstaller(
         std::unique_ptr<OverlayRequestCallbackInstaller> installer);
 

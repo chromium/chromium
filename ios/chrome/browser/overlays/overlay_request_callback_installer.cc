@@ -15,7 +15,7 @@ OverlayRequestCallbackInstaller::~OverlayRequestCallbackInstaller() = default;
 
 void OverlayRequestCallbackInstaller::InstallCallbacks(
     OverlayRequest* request) {
-  // Early return if |request| is unsupported or if callbacks have already been
+  // Early return if `request` is unsupported or if callbacks have already been
   // installed.
   if (!GetRequestSupport()->IsRequestSupported(request) ||
       requests_.find(request) != requests_.end()) {
@@ -23,7 +23,7 @@ void OverlayRequestCallbackInstaller::InstallCallbacks(
   }
   requests_.insert(request);
 
-  // Add the completion callback to remove the request from |requests_|.
+  // Add the completion callback to remove the request from `requests_`.
   request->GetCallbackManager()->AddCompletionCallback(
       base::BindOnce(&OverlayRequestCallbackInstaller::OverlayCompleted,
                      weak_factory_.GetWeakPtr(), request));

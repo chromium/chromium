@@ -15,7 +15,7 @@ class OverlayRequestCancelHandler {
   virtual ~OverlayRequestCancelHandler() = default;
 
  protected:
-  // Constructor for a cancellation handler that cancels |request| from |queue|.
+  // Constructor for a cancellation handler that cancels `request` from `queue`.
   OverlayRequestCancelHandler(OverlayRequest* request,
                               OverlayRequestQueue* queue);
 

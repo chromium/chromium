@@ -98,12 +98,12 @@ class OverlayBrowserAgentBaseTest : public PlatformTest {
         ->mock_callback_receiver();
   }
 
-  // Returns |web_state_|'s request queue.
+  // Returns `web_state_`'s request queue.
   OverlayRequestQueue* queue() {
     return OverlayRequestQueue::FromWebState(web_state_, kModality);
   }
 
-  // Cancels all requests in |web_state_|'s queue.
+  // Cancels all requests in `web_state_`'s queue.
   void CancelRequests() { queue()->CancelAllRequests(); }
 
  protected:

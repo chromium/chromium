@@ -18,8 +18,8 @@ class OverlayPresenter {
  public:
   virtual ~OverlayPresenter() = default;
 
-  // Retrieves the OverlayPresenter for |browser| that manages overlays at
-  // |modality|, creating one if necessary.
+  // Retrieves the OverlayPresenter for `browser` that manages overlays at
+  // `modality`, creating one if necessary.
   static OverlayPresenter* FromBrowser(Browser* browser,
                                        OverlayModality modality);
 

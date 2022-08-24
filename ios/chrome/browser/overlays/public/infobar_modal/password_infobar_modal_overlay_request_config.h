@@ -52,7 +52,7 @@ class PasswordInfobarModalOverlayRequestConfig
 
   // The InfoBar causing this modal.
   InfoBarIOS* infobar_ = nullptr;
-  // Configuration data extracted from |infobar_|'s save passwords delegate.
+  // Configuration data extracted from `infobar_`'s save passwords delegate.
   password_modal::PasswordAction action_;
   NSString* title_ = nil;
   NSString* username_ = nil;

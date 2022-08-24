@@ -45,7 +45,7 @@ namespace alert_overlays {
 //     std::unique_ptr<OverlayResponse> response) {
 //   AlertResponse* alert_response = response->GetInfo<AlertResponse>();
 //   return OverlayResponse::CreateWithInfo<FooResponse>(
-//       /* ... parse |alert_response| to create a FooResponse ... */);
+//       /* ... parse `alert_response` to create a FooResponse ... */);
 // }
 //
 // void FooRequest::CreateAuxiliaryData(base::SupportsUserData* user_data) {
@@ -56,7 +56,7 @@ namespace alert_overlays {
 
 // Callback that converts an OverlayResponse created with an AlertResponse
 // to one exposing its feature-specific logic.  For example, a feature asking
-// for the email of a user with an alert can convert |alert_response| to an
+// for the email of a user with an alert can convert `alert_response` to an
 // OverlayResponse created with an OverlayResponseInfo that exposes the email
 // typed into a text field in the alert, rather than requiring the overlay
 // requester to parse the AlertResponse's text field values.
@@ -66,11 +66,11 @@ typedef base::RepeatingCallback<std::unique_ptr<OverlayResponse>(
 
 // Config struct used to set up buttons shown in overlay UI for an AlertRequest.
 struct ButtonConfig {
-  // Creates a ButtonConfig with |title| and |style|.
+  // Creates a ButtonConfig with `title` and `style`.
   explicit ButtonConfig(NSString* title,
                         UIAlertActionStyle style = UIAlertActionStyleDefault);
-  // Creates a ButtonConfig with |title| and |style|. UMA User Action with
-  // |user_action_name| will be recorded when this button is tapped.
+  // Creates a ButtonConfig with `title` and `style`. UMA User Action with
+  // `user_action_name` will be recorded when this button is tapped.
   ButtonConfig(NSString* title,
                base::StringPiece user_action_name,
                UIAlertActionStyle style = UIAlertActionStyleDefault);
@@ -122,9 +122,9 @@ class AlertRequest : public OverlayRequestConfig<AlertRequest> {
   OVERLAY_USER_DATA_SETUP(AlertRequest);
 
   // Constructor called by CreateForUserData().  All arguments are copied to the
-  // ivars below.  |title|, |message|, or both must be non-empty strings.
-  // |button_configs| must contain at least one ButtonConfig.
-  // |response_converter| must be non-null.
+  // ivars below.  `title`, `message`, or both must be non-empty strings.
+  // `button_configs` must contain at least one ButtonConfig.
+  // `response_converter` must be non-null.
   AlertRequest(NSString* title,
                NSString* message,
                NSString* accessibility_identifier,

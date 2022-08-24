@@ -41,8 +41,8 @@ class FakeOverlayPresentationContext : public OverlayPresentationContext {
   void SetDismissalCallbacksEnabled(bool enabled);
   bool AreDismissalCallbacksEnabled() const;
 
-  // Simulates the dismissal of overlay UI for |reason|.  If dismissal callbacks
-  // are enabled, triggers execution of |request|'s OverlayDismissalCallback.
+  // Simulates the dismissal of overlay UI for `reason`.  If dismissal callbacks
+  // are enabled, triggers execution of `request`'s OverlayDismissalCallback.
   void SimulateDismissalForRequest(OverlayRequest* request,
                                    OverlayDismissalReason reason);
 

@@ -42,7 +42,7 @@ class TranslateBannerRequestConfig
 
   // The InfoBar causing this banner.
   infobars::InfoBar* const infobar_;
-  // Configuration data extracted from |infobar_|'s translate delegate.
+  // Configuration data extracted from `infobar_`'s translate delegate.
   std::u16string source_language_;
   std::u16string target_language_;
   translate::TranslateStep translate_step_;

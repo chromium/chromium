@@ -30,11 +30,11 @@ void OverlayBrowserAgentBase::AddInstaller(
   CallbackInstallerStorage& storage = installer_storages_[modality];
   storage.installers.push_back(std::move(installer));
   // Reset the storage's request support to nullptr.  This will cause the
-  // aggregate support for all callback installers added for |modality| to be
+  // aggregate support for all callback installers added for `modality` to be
   // regenerated the next time GetRequestSupport() is called.
   storage.request_support = nullptr;
   // Notify the installation driver if this is the first installer added for
-  // |modality|.
+  // `modality`.
   if (storage.installers.size() == 1U)
     installation_driver_.StartInstallingCallbacks(modality);
 }

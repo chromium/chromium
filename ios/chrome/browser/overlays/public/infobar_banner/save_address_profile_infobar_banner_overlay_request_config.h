@@ -49,7 +49,7 @@ class SaveAddressProfileBannerRequestConfig
 
   // The InfoBar causing this banner.
   infobars::InfoBar* infobar_ = nullptr;
-  // Configuration data extracted from |infobar_|'s save address profile
+  // Configuration data extracted from `infobar_`'s save address profile
   // delegate.
   std::u16string message_text_;
   std::u16string description_;

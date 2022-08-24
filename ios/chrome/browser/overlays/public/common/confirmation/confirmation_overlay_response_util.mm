@@ -16,9 +16,9 @@ using alert_overlays::AlertResponse;
 using alert_overlays::ResponseConverter;
 
 namespace {
-// Parses the AlertResponse from |response| and produces a
+// Parses the AlertResponse from `response` and produces a
 // ConfirmationOverlayResponse if the alert response's tapped button is
-// |confirm_button_index|.
+// `confirm_button_index`.
 std::unique_ptr<OverlayResponse> CreateConfirmResponse(
     size_t confirm_button_index,
     std::unique_ptr<OverlayResponse> response) {

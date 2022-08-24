@@ -51,7 +51,7 @@ class ConfirmBannerRequestConfig
 
   // The InfoBar causing this banner.
   infobars::InfoBar* infobar_ = nullptr;
-  // Configuration data extracted from |infobar_|'s confirm delegate.
+  // Configuration data extracted from `infobar_`'s confirm delegate.
   std::u16string title_text_;
   std::u16string message_text_;
   std::u16string button_label_text_;

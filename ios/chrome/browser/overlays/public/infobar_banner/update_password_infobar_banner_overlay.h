@@ -44,7 +44,7 @@ class UpdatePasswordInfobarBannerOverlayRequestConfig
 
   // The InfoBar causing this banner.
   infobars::InfoBar* infobar_ = nullptr;
-  // Configuration data extracted from |infobar_|'s update passwords delegate.
+  // Configuration data extracted from `infobar_`'s update passwords delegate.
   NSString* message_ = nil;
   NSString* username_ = nil;
   NSString* button_text_ = nil;

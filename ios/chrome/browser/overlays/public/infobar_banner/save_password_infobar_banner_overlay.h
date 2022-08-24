@@ -44,7 +44,7 @@ class SavePasswordInfobarBannerOverlayRequestConfig
 
   // The InfoBar causing this banner.
   infobars::InfoBar* infobar_ = nullptr;
-  // Configuration data extracted from |infobar_|'s save passwords delegate.
+  // Configuration data extracted from `infobar_`'s save passwords delegate.
   NSString* message_ = nil;
   NSString* username_ = nil;
   NSString* button_text_ = nil;

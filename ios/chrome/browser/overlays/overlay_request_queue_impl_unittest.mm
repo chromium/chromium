@@ -36,12 +36,12 @@ class FakeOverlayRequestQueueImplDelegate
   void OverlayRequestQueueWillReplaceDelegate(
       OverlayRequestQueueImpl* queue) override {}
 
-  // Whether |request| was removed from the queue.
+  // Whether `request` was removed from the queue.
   bool WasRequestRemoved(OverlayRequest* request) {
     return GetRemovedRequestStorage(request) != nullptr;
   }
 
-  // Whether |request| was removed from the queue for cancellation.
+  // Whether `request` was removed from the queue for cancellation.
   bool WasRequestCancelled(OverlayRequest* request) {
     const RemovedRequestStorage* storage = GetRemovedRequestStorage(request);
     return storage && storage->cancelled;
@@ -61,7 +61,7 @@ class FakeOverlayRequestQueueImplDelegate
     bool cancelled;
   };
 
-  // Returns the request storage for |request|.
+  // Returns the request storage for `request`.
   const RemovedRequestStorage* GetRemovedRequestStorage(
       OverlayRequest* request) {
     for (auto& storage : removed_requests_) {

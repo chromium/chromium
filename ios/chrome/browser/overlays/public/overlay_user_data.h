@@ -43,10 +43,10 @@
 template <class DataType>
 class OverlayUserData : public base::SupportsUserData::Data {
  public:
-  // Creates an OverlayUserData of type DataType and adds it to |user_data|
+  // Creates an OverlayUserData of type DataType and adds it to `user_data`
   // under its key.  The DataType instance is constructed using the arguments
   // passed after the key to this function.  If a DataType instance already
-  // exists in |user_data|, no new object is created.  For example, if the
+  // exists in `user_data`, no new object is created.  For example, if the
   // constructor for an OverlayUserData of type StringData takes a string, one
   // can be created using:
   //
@@ -76,9 +76,9 @@ class OverlayUserData : public base::SupportsUserData::Data {
   static const void* UserDataKey() { return &DataType::kUserDataKey; }
 
  protected:
-  // Adds auxilliary OverlayUserData to |data|.  Used to allow multiple
+  // Adds auxilliary OverlayUserData to `data`.  Used to allow multiple
   // OverlayUserData templates to share common functionality in a separate data
-  // stored in |user_data|.
+  // stored in `user_data`.
   virtual void CreateAuxiliaryData(base::SupportsUserData* user_data) {}
 };
 

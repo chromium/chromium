@@ -23,7 +23,7 @@ using OverlayCallbackManagerImplTest = PlatformTest;
 TEST_F(OverlayCallbackManagerImplTest, CompletionCallbacks) {
   OverlayCallbackManagerImpl manager;
   void* kResponseData = &kResponseData;
-  // Add two completion callbacks that increment |callback_execution_count|.
+  // Add two completion callbacks that increment `callback_execution_count`.
   __block size_t callback_execution_count = 0;
   void (^callback_block)(OverlayResponse* response) =
       ^(OverlayResponse* response) {

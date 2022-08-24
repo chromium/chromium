@@ -34,7 +34,7 @@ using OverlayRequestQueueUtilTest = PlatformTest;
 
 // Tests that the expected indices for matching configs returned.
 TEST_F(OverlayRequestQueueUtilTest, MatchingConfigs) {
-  // Add requests to |web_state|'s queue.
+  // Add requests to `web_state`'s queue.
   web::FakeWebState web_state;
   OverlayRequestQueue* queue =
       OverlayRequestQueue::FromWebState(&web_state, OverlayModality::kTesting);

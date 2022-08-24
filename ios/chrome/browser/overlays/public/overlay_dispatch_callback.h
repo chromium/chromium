@@ -14,8 +14,8 @@ class OverlayResponse;
 // occurring in an ongoing overlay.
 class OverlayDispatchCallback {
  public:
-  // Constructor for a dispatch callback that executes |callback| with
-  // OverlayResponses that are supported by |support|.  |callback| and |support|
+  // Constructor for a dispatch callback that executes `callback` with
+  // OverlayResponses that are supported by `support`.  `callback` and `support`
   // must be non-null.
   OverlayDispatchCallback(
       base::RepeatingCallback<void(OverlayResponse* response)> callback,
@@ -23,8 +23,8 @@ class OverlayDispatchCallback {
   OverlayDispatchCallback(OverlayDispatchCallback&& other);
   ~OverlayDispatchCallback();
 
-  // Runs |callback_| with |response| iff the response is supported by
-  // |request_support_|.
+  // Runs `callback_` with `response` iff the response is supported by
+  // `request_support_`.
   void Run(OverlayResponse* response);
 
  private:

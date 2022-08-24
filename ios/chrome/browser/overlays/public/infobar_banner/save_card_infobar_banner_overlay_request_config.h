@@ -57,7 +57,7 @@ class SaveCardBannerRequestConfig
 
   // The InfoBar causing this banner.
   infobars::InfoBar* infobar_ = nullptr;
-  // Configuration data extracted from |infobar_|'s save card delegate.
+  // Configuration data extracted from `infobar_`'s save card delegate.
   std::u16string message_text_;
   std::u16string card_label_;
   std::u16string cardholder_name_;

@@ -28,13 +28,13 @@ namespace {
 // The index of the OK button in the alert button array.
 const size_t kButtonIndexOk = 0;
 
-// Whether a cancel button should be added for an overlay with |type|.
+// Whether a cancel button should be added for an overlay with `type`.
 bool DialogsWithTypeUseCancelButtons(web::JavaScriptDialogType type) {
   return type != web::JAVASCRIPT_DIALOG_TYPE_ALERT;
 }
 
 // Whether the dialog blocking button should be added for an overlay from
-// |source|.
+// `source`.
 bool ShouldAddBlockDialogsButton(web::WebState* web_state) {
   if (!web_state)
     return false;
@@ -43,12 +43,12 @@ bool ShouldAddBlockDialogsButton(web::WebState* web_state) {
   return blocking_state && blocking_state->show_blocking_option();
 }
 
-// The index of the dialog blocking button for a dialog with |type|.
+// The index of the dialog blocking button for a dialog with `type`.
 size_t GetBlockingOptionIndex(web::JavaScriptDialogType type) {
   return DialogsWithTypeUseCancelButtons(type) ? 2 : 1;
 }
 
-// Creates an JavaScript dialog response for a dialog with |type| from a
+// Creates an JavaScript dialog response for a dialog with `type` from a
 // response created with an AlertResponse.
 std::unique_ptr<OverlayResponse> CreateJavaScriptDialogResponse(
     web::JavaScriptDialogType type,

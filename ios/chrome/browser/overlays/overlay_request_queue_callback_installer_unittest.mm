@@ -58,7 +58,7 @@ TEST_F(OverlayRequestQueueCallbackInstallerTest, InstallForSupportedRequest) {
   OverlayRequest* request = added_request.get();
   queue()->AddRequest(std::move(added_request));
 
-  // Dispatch a response through |request|, expecting the dispatch callback to
+  // Dispatch a response through `request`, expecting the dispatch callback to
   // be executed on the mock receiver.
   EXPECT_CALL(callback_receiver_,
               DispatchCallback(request, DispatchInfo::ResponseSupport()));
