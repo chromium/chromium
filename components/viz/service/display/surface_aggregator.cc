@@ -1495,7 +1495,8 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
     resolved_pass.aggregation().in_pixel_moving_filter_pass = true;
   }
 
-  if (render_pass.has_damage_from_contributing_content) {
+  if (render_pass.has_damage_from_contributing_content &&
+      !resolved_frame.IsSameFrameAsLastAggregation()) {
     resolved_pass.aggregation().has_damage_from_contributing_content = true;
   }
 

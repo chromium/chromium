@@ -284,6 +284,7 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
     gfx::Rect output_rect;
     gfx::Rect damage_rect;
     bool has_transparent_background = true;
+    bool has_damage_from_contributing_content = false;
   };
 
   // |referenced_surfaces| refers to the SurfaceRanges of all the
@@ -328,6 +329,8 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
           pass_list, pass.id, pass.output_rect, pass.damage_rect,
           root_transform, cc::FilterOperations());
       test_pass->has_transparent_background = pass.has_transparent_background;
+      test_pass->has_damage_from_contributing_content =
+          pass.has_damage_from_contributing_content;
       for (const auto& quad : pass.quads)
         AddQuadInPass(quad, test_pass, referenced_surfaces);
     }
@@ -6562,6 +6565,8 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, HasDamageFromRenderPassQuads) {
   root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
                                     std::move(root_frame));
 
+  // Both CompositorRenderPass are built with
+  // has_damage_from_contributing_content set to false.
   {
     auto aggregated_frame = AggregateFrame(root_surface_id_);
 
@@ -6590,11 +6595,48 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, HasDamageFromRenderPassQuads) {
                                        std::move(child_frame));
 
     auto aggregated_frame = AggregateFrame(root_surface_id_);
+
     // True for new child_frame.
+    EXPECT_TRUE(aggregated_frame.render_pass_list[0]
+                    ->has_damage_from_contributing_content);
+    // The damage from the child frame will propagate to the root surface.
+    EXPECT_TRUE(aggregated_frame.render_pass_list[1]
+                    ->has_damage_from_contributing_content);
+  }
+
+  // Both CompositorRenderPass are built with
+  // has_damage_from_contributing_content set to true.
+  {
+    CompositorFrame root_frame = MakeEmptyCompositorFrame();
+    root_passes[0].has_damage_from_contributing_content = true;
+    AddPasses(&root_frame.render_pass_list, root_passes,
+              &root_frame.metadata.referenced_surfaces);
+
+    root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
+                                      std::move(root_frame));
+
+    CompositorFrame child_frame = MakeEmptyCompositorFrame();
+    child_passes[0].has_damage_from_contributing_content = true;
+    AddPasses(&child_frame.render_pass_list, child_passes,
+              &child_frame.metadata.referenced_surfaces);
+    child_sink_->SubmitCompositorFrame(child_surface_id.local_surface_id(),
+                                       std::move(child_frame));
+
+    auto aggregated_frame = AggregateFrame(root_surface_id_);
+
     EXPECT_TRUE(aggregated_frame.render_pass_list[0]
                     ->has_damage_from_contributing_content);
     EXPECT_TRUE(aggregated_frame.render_pass_list[1]
                     ->has_damage_from_contributing_content);
+  }
+  // No Surface changed, so no damage should be given even if
+  // has_damage_from_contributing_content is true from CompositorRenderPass.
+  {
+    auto aggregated_frame = AggregateFrame(root_surface_id_);
+    EXPECT_FALSE(aggregated_frame.render_pass_list[0]
+                     ->has_damage_from_contributing_content);
+    EXPECT_FALSE(aggregated_frame.render_pass_list[1]
+                     ->has_damage_from_contributing_content);
   }
 }
 
