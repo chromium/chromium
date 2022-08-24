@@ -512,6 +512,7 @@ CSSScrollTimeline* CSSAnimations::FindPreviousSiblingAncestorTimeline(
   if (CSSScrollTimeline* timeline = FindTimelineForNode(name, node, update))
     return timeline;
 
+  // TODO(crbug.com/1356098): Use flat-tree siblings.
   for (Node* prev = node->previousSibling(); prev;
        prev = prev->previousSibling()) {
     if (CSSScrollTimeline* timeline =

@@ -264,6 +264,15 @@ static bool DiffAffectsContainerQueries(const ComputedStyle& old_style,
   return false;
 }
 
+static bool DiffAffectsScrollAnimations(const ComputedStyle& old_style,
+                                        const ComputedStyle& new_style) {
+  if ((old_style.ScrollTimelineName() != new_style.ScrollTimelineName()) ||
+      (old_style.ScrollTimelineAxis() != new_style.ScrollTimelineAxis())) {
+    return true;
+  }
+  return false;
+}
+
 bool ComputedStyle::NeedsReattachLayoutTree(const Element& element,
                                             const ComputedStyle* old_style,
                                             const ComputedStyle* new_style) {
@@ -363,6 +372,8 @@ ComputedStyle::ComputeDifferenceIgnoringInheritedFirstLineStyle(
     const ComputedStyle& old_style,
     const ComputedStyle& new_style) {
   DCHECK_NE(&old_style, &new_style);
+  if (DiffAffectsScrollAnimations(old_style, new_style))
+    return Difference::kSiblingDescendantAffecting;
   if (old_style.Display() != new_style.Display() &&
       old_style.BlockifiesChildren() != new_style.BlockifiesChildren())
     return Difference::kDescendantAffecting;

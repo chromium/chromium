@@ -650,7 +650,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   const ComputedStyle* ParentComputedStyle() const;
 
-  void RecalcStyle(const StyleRecalcChange, const StyleRecalcContext&);
+  // Returns a StyleRecalcChange to be combined with the outer
+  // StyleRecalcChange. This is used to recalculate the style of subsequent
+  // siblings.
+  StyleRecalcChange RecalcStyle(const StyleRecalcChange,
+                                const StyleRecalcContext&);
   void RecalcStyleForTraversalRootAncestor();
   void RebuildLayoutTreeForTraversalRootAncestor() {
     RebuildFirstLetterLayoutTree();

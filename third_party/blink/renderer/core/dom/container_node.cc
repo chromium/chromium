@@ -1374,14 +1374,32 @@ void ContainerNode::RecalcDescendantStyles(
   DCHECK(GetDocument().InStyleRecalc());
   DCHECK(!NeedsStyleRecalc());
 
+  StyleRecalcChange local_change = change;
   for (Node* child = firstChild(); child; child = child->nextSibling()) {
-    if (!change.TraverseChild(*child))
+    if (!local_change.TraverseChild(*child))
       continue;
     if (auto* child_text_node = DynamicTo<Text>(child))
-      child_text_node->RecalcTextStyle(change);
+      child_text_node->RecalcTextStyle(local_change);
 
-    if (auto* child_element = DynamicTo<Element>(child))
-      child_element->RecalcStyle(change, style_recalc_context);
+    if (auto* child_element = DynamicTo<Element>(child)) {
+      local_change = local_change.Combine(
+          child_element->RecalcStyle(local_change, style_recalc_context));
+    }
+  }
+}
+
+void ContainerNode::RecalcSubsequentSiblingStyles(
+    const StyleRecalcChange change,
+    const StyleRecalcContext& style_recalc_context) {
+  DCHECK(GetDocument().InStyleRecalc());
+  DCHECK(!NeedsStyleRecalc());
+
+  // TODO(crbug.com/1356098): Use flat-tree siblings.
+  for (Node* sibling = nextSibling(); sibling;
+       sibling = sibling->nextSibling()) {
+    if (auto* sibling_element = DynamicTo<Element>(sibling)) {
+      sibling_element->RecalcStyle(change, style_recalc_context);
+    }
   }
 }
 

@@ -569,8 +569,8 @@ void DisplayLockContext::Unlock() {
     // can mark the dirty bits from the descendant top layer node up to this
     // display lock on the ancestor chain while we're in the middle of style
     // recalc. It seems plausible, but we have to be careful.
-    blocked_child_recalc_change_ =
-        blocked_child_recalc_change_.ForceRecalcDescendants();
+    blocked_child_recalc_change_ = blocked_child_recalc_change_.EnsureAtLeast(
+        StyleRecalcChange::kRecalcDescendants);
   }
 
   // We also need to notify the AX cache (if it exists) to update the childrens

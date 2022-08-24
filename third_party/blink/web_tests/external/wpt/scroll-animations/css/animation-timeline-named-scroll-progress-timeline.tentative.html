@@ -223,6 +223,34 @@ promise_test(async t => {
   sibling.remove();
 }, 'scroll-timeline-name on an element which is not a scroll-container');
 
+promise_test(async t => {
+  let [sibling, target] = createScrollerAndTarget(t);
+  let main = document.createElement('div');
+  main.id = 'name';
+
+  // <div id='main'>
+  //   <div id='sibling' class='scroller'> ... </div>
+  //   <div id='target'></div>
+  // </div>
+  document.body.appendChild(main);
+  main.appendChild(sibling);
+  main.appendChild(target);
+
+  target.style.animation = 'anim 10s linear timeline';
+  sibling.scrollTop = 50; // 50%, in [50, 150].
+  await waitForNextFrame();
+
+  // Unknown animation-timeline, current time held at zero.
+  assert_equals(getComputedStyle(target).translate, '50px');
+
+  // Ensure that #main (an ancestor of the scroller) needs style recalc.
+  main.style.background = 'lightgray';
+  sibling.style.scrollTimelineName = 'timeline';
+  assert_equals(getComputedStyle(target).translate, '100px');
+
+  main.remove();
+}, 'scroll-timeline-name affects subsequent siblings when changed');
+
 // TODO: Add more tests which change scroll-timeline-name property.
 // Those animations which use this timeline should be restyled propertly.
 
