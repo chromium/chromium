@@ -150,7 +150,7 @@ class ResponsivenessMetrics : public GarbageCollected<ResponsivenessMetrics> {
   // for a click to occur.
   void FlushPointerMap();
 
-  void MaybeNotifyPointerdown(PerformanceEventTiming* entry) const;
+  void NotifyPointerdown(PerformanceEventTiming* entry) const;
 
   Member<WindowPerformance> window_performance_;
 

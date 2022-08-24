@@ -223,7 +223,7 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
                            : nullptr;
   LocalDOMWindow* window = window_performance_->DomWindow();
   if (event_type == event_type_names::kPointercancel && pointer_info) {
-    MaybeNotifyPointerdown(pointer_info->GetEntry());
+    NotifyPointerdown(pointer_info->GetEntry());
     // The pointer id of the pointerdown is no longer needed.
     pointer_id_entry_map_.erase(pointer_id);
     last_pointer_id_ = absl::nullopt;
@@ -231,7 +231,7 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
     if (pointer_info) {
       // Flush the existing entry. We are starting a new interaction.
       RecordDragTapOrClickUKM(window, *pointer_info);
-      MaybeNotifyPointerdown(pointer_info->GetEntry());
+      NotifyPointerdown(pointer_info->GetEntry());
       pointer_id_entry_map_.erase(pointer_id);
     }
     // Any existing entry in the map cannot fire a click.
@@ -254,7 +254,7 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
       // Set interaction id and notify the pointer down entry.
       PerformanceEventTiming* pointer_down_entry = pointer_info->GetEntry();
       pointer_down_entry->SetInteractionId(GetCurrentInteractionId());
-      MaybeNotifyPointerdown(pointer_down_entry);
+      NotifyPointerdown(pointer_down_entry);
       pointer_info->GetTimeStamps().push_back(event_timestamps);
     } else {
       // There is no matching pointerdown: Set the map using pointerup, in
@@ -343,7 +343,7 @@ bool ResponsivenessMetrics::SetKeyIdAndRecordLatency(
         RecordKeyboardUKM(window_performance_->DomWindow(),
                           {previous_entry->GetTimeStamps()});
       }
-      window_performance_->MaybeNotifyInteractionAndAddEventTimingBuffer(
+      window_performance_->NotifyAndAddEventTimingBuffer(
           previous_entry->GetEntry());
     }
     key_code_entry_map_.Set(
@@ -360,7 +360,7 @@ bool ResponsivenessMetrics::SetKeyIdAndRecordLatency(
     // Generate a new interaction id for the keydown-keyup pair.
     UpdateInteractionId();
     previous_entry->GetEntry()->SetInteractionId(GetCurrentInteractionId());
-    window_performance_->MaybeNotifyInteractionAndAddEventTimingBuffer(
+    window_performance_->NotifyAndAddEventTimingBuffer(
         previous_entry->GetEntry());
     entry->SetInteractionId(GetCurrentInteractionId());
     RecordKeyboardUKM(window_performance_->DomWindow(),
@@ -369,8 +369,7 @@ bool ResponsivenessMetrics::SetKeyIdAndRecordLatency(
   } else if (event_type == event_type_names::kCompositionstart) {
     composition_started_ = true;
     for (auto key_entry : key_code_entry_map_.Values()) {
-      window_performance_->MaybeNotifyInteractionAndAddEventTimingBuffer(
-          key_entry->GetEntry());
+      window_performance_->NotifyAndAddEventTimingBuffer(key_entry->GetEntry());
     }
     key_code_entry_map_.clear();
   } else if (event_type == event_type_names::kCompositionend) {
@@ -427,7 +426,7 @@ void ResponsivenessMetrics::FlushPointerMap() {
     // event for this |item|, which means we have pointerdown and pointerup.
     if (entry->name() == event_type_names::kPointerup ||
         item.value->GetTimeStamps().size() > 1u) {
-      MaybeNotifyPointerdown(entry);
+      NotifyPointerdown(entry);
       RecordDragTapOrClickUKM(window, *item.value);
       pointer_ids_to_remove.push_back(item.key);
     }
@@ -435,12 +434,12 @@ void ResponsivenessMetrics::FlushPointerMap() {
   pointer_id_entry_map_.RemoveAll(pointer_ids_to_remove);
 }
 
-void ResponsivenessMetrics::MaybeNotifyPointerdown(
+void ResponsivenessMetrics::NotifyPointerdown(
     PerformanceEventTiming* entry) const {
   // We only delay dispatching entries when they are pointerdown.
   if (entry->name() != event_type_names::kPointerdown)
     return;
-  window_performance_->MaybeNotifyInteractionAndAddEventTimingBuffer(entry);
+  window_performance_->NotifyAndAddEventTimingBuffer(entry);
 }
 
 void ResponsivenessMetrics::KeyboardEntryAndTimestamps::Trace(

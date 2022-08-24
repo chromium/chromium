@@ -203,10 +203,6 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // timing buffer if needed.
   void NotifyAndAddEventTimingBuffer(PerformanceEventTiming* entry);
 
-  // NotifyAndAddEventTimingBuffer() when interactionId feature is enabled.
-  void MaybeNotifyInteractionAndAddEventTimingBuffer(
-      PerformanceEventTiming* entry);
-
   // The last time the page visibility was changed.
   base::TimeTicks last_visibility_change_timestamp_;
 

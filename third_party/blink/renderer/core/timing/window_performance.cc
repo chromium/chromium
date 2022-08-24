@@ -575,11 +575,6 @@ void WindowPerformance::NotifyAndAddEventTimingBuffer(
   }
 }
 
-void WindowPerformance::MaybeNotifyInteractionAndAddEventTimingBuffer(
-    PerformanceEventTiming* entry) {
-  NotifyAndAddEventTimingBuffer(entry);
-}
-
 bool WindowPerformance::SetInteractionIdAndRecordLatency(
     PerformanceEventTiming* entry,
     absl::optional<int> key_code,
