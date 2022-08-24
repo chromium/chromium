@@ -165,15 +165,16 @@ void ZXDGToplevelV6WrapperImpl::ConfigureTopLevel(
   auto* surface = static_cast<ZXDGToplevelV6WrapperImpl*>(data);
   DCHECK(surface);
 
-  bool is_maximized =
-      CheckIfWlArrayHasValue(states, ZXDG_TOPLEVEL_V6_STATE_MAXIMIZED);
-  bool is_fullscreen =
-      CheckIfWlArrayHasValue(states, ZXDG_TOPLEVEL_V6_STATE_FULLSCREEN);
-  bool is_activated =
-      CheckIfWlArrayHasValue(states, ZXDG_TOPLEVEL_V6_STATE_ACTIVATED);
-
   surface->wayland_window_->HandleToplevelConfigure(
-      width, height, is_maximized, is_fullscreen, is_activated);
+      width, height,
+      {
+          .is_maximized =
+              CheckIfWlArrayHasValue(states, ZXDG_TOPLEVEL_V6_STATE_MAXIMIZED),
+          .is_fullscreen =
+              CheckIfWlArrayHasValue(states, ZXDG_TOPLEVEL_V6_STATE_FULLSCREEN),
+          .is_activated =
+              CheckIfWlArrayHasValue(states, ZXDG_TOPLEVEL_V6_STATE_ACTIVATED),
+      });
 }
 
 // static

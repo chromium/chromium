@@ -356,17 +356,11 @@ void WaylandToplevelWindow::UpdateWindowScale(bool update_bounds) {
   SizeConstraintsChanged();
 }
 
-void WaylandToplevelWindow::HandleToplevelConfigure(int32_t width_dip,
-                                                    int32_t height_dip,
-                                                    bool is_maximized,
-                                                    bool is_fullscreen,
-                                                    bool is_activated) {
-  HandleAuraToplevelConfigure(0, 0, width_dip, height_dip,
-                              {
-                                  .is_maximized = is_maximized,
-                                  .is_fullscreen = is_fullscreen,
-                                  .is_activated = is_activated,
-                              });
+void WaylandToplevelWindow::HandleToplevelConfigure(
+    int32_t width_dip,
+    int32_t height_dip,
+    const WindowStates& window_states) {
+  HandleAuraToplevelConfigure(0, 0, width_dip, height_dip, window_states);
 }
 
 void WaylandToplevelWindow::HandleAuraToplevelConfigure(

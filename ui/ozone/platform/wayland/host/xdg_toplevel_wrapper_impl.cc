@@ -247,15 +247,29 @@ void XDGToplevelWrapperImpl::ConfigureTopLevel(
   auto* surface = static_cast<XDGToplevelWrapperImpl*>(data);
   DCHECK(surface);
 
-  bool is_maximized =
-      CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_MAXIMIZED);
-  bool is_fullscreen =
-      CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_FULLSCREEN);
-  bool is_activated =
-      CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_ACTIVATED);
+  WaylandWindow::WindowStates window_states{
+      .is_maximized =
+          CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_MAXIMIZED),
+      .is_fullscreen =
+          CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_FULLSCREEN),
+      .is_activated =
+          CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_ACTIVATED),
+  };
 
-  surface->wayland_window_->HandleToplevelConfigure(
-      width, height, is_maximized, is_fullscreen, is_activated);
+  if (xdg_toplevel_get_version(xdg_toplevel) >=
+      XDG_TOPLEVEL_STATE_TILED_LEFT_SINCE_VERSION) {
+    // All four tiled states have the same since version, so it is enough to
+    // check only one.
+    window_states.tiled_edges = {
+        .left = CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_TILED_LEFT),
+        .right = CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_TILED_RIGHT),
+        .top = CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_TILED_TOP),
+        .bottom =
+            CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_TILED_BOTTOM)};
+  }
+
+  surface->wayland_window_->HandleToplevelConfigure(width, height,
+                                                    window_states);
 }
 
 // static

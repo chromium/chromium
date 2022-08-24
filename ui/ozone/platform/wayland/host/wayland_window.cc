@@ -523,9 +523,7 @@ void WaylandWindow::HandleSurfaceConfigure(uint32_t serial) {
 
 void WaylandWindow::HandleToplevelConfigure(int32_t widht,
                                             int32_t height,
-                                            bool is_maximized,
-                                            bool is_fullscreen,
-                                            bool is_activated) {
+                                            const WindowStates& window_states) {
   NOTREACHED()
       << "Only shell toplevels must receive HandleToplevelConfigure calls.";
 }

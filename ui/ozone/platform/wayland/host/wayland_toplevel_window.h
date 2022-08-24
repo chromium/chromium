@@ -95,9 +95,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   void UpdateWindowScale(bool update_bounds) override;
   void HandleToplevelConfigure(int32_t width,
                                int32_t height,
-                               bool is_maximized,
-                               bool is_fullscreen,
-                               bool is_activated) override;
+                               const WindowStates& window_states) override;
   void HandleAuraToplevelConfigure(int32_t x,
                                    int32_t y,
                                    int32_t width,
