@@ -6234,7 +6234,7 @@
   {
     "name": "touch-to-fill-password-submission",
     "owners": [ "kolos", "fhorschig" ],
-    "expiry_milestone": 106
+    "expiry_milestone": 109
   },
   {
     "name": "traffic-counters",
