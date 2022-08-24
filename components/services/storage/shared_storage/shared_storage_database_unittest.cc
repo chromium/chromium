@@ -16,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
@@ -52,6 +53,25 @@ const int kMaxEntriesPerOrigin = 5;
 const int kMaxEntriesPerOriginForIteratorTest = 1000;
 const int kMaxStringLength = 100;
 const int kMaxBatchSizeForIteratorTest = 25;
+
+constexpr char kFileSizeKBHistogram[] =
+    "Storage.SharedStorage.Database.FileBacked.FileSize.KB";
+constexpr char kNumEntriesMaxHistogram[] =
+    "Storage.SharedStorage.Database.FileBacked.NumEntries.PerOrigin.Max";
+constexpr char kNumEntriesMinHistogram[] =
+    "Storage.SharedStorage.Database.FileBacked.NumEntries.PerOrigin.Min";
+constexpr char kNumEntriesMedianHistogram[] =
+    "Storage.SharedStorage.Database.FileBacked.NumEntries.PerOrigin.Median";
+constexpr char kNumEntriesQ1Histogram[] =
+    "Storage.SharedStorage.Database.FileBacked.NumEntries.PerOrigin.Q1";
+constexpr char kNumEntriesQ3Histogram[] =
+    "Storage.SharedStorage.Database.FileBacked.NumEntries.PerOrigin.Q3";
+constexpr char kNumEntriesTotalHistogram[] =
+    "Storage.SharedStorage.Database.FileBacked.NumEntries.Total";
+constexpr char kNumOriginsHistogram[] =
+    "Storage.SharedStorage.Database.FileBacked.NumOrigins";
+constexpr char kIsFileBackedHistogram[] =
+    "Storage.SharedStorage.Database.IsFileBacked";
 
 }  // namespace
 
@@ -110,12 +130,14 @@ class SharedStorageDatabaseTest : public testing::Test {
   scoped_refptr<storage::MockSpecialStoragePolicy> special_storage_policy_;
   std::unique_ptr<SharedStorageDatabase> db_;
   base::SimpleTestClock clock_;
+  base::HistogramTester histogram_tester_;
 };
 
 // Test loading version 1 database.
 TEST_F(SharedStorageDatabaseTest, Version1_LoadFromFile) {
   db_ = LoadFromFile("shared_storage.v1.sql");
   ASSERT_TRUE(db_);
+  ASSERT_TRUE(db_->is_filebacked());
 
   // Override the clock and set to the last time in the file that is used to
   // make a budget withdrawal.
@@ -229,6 +251,16 @@ TEST_F(SharedStorageDatabaseTest, Version1_LoadFromFile) {
   EXPECT_EQ(OperationResult::kNotFound, result.result);
   EXPECT_EQ(base::Time(), result.time);
 
+  histogram_tester_.ExpectUniqueSample(kIsFileBackedHistogram, true, 1);
+  histogram_tester_.ExpectUniqueSample(kFileSizeKBHistogram, 40, 1);
+  histogram_tester_.ExpectUniqueSample(kNumOriginsHistogram, 9, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesTotalHistogram, 18, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesMinHistogram, 1, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesQ1Histogram, 1, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesMedianHistogram, 2, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesQ3Histogram, 3, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesMaxHistogram, 4, 1);
+
   EXPECT_TRUE(db_->Destroy());
 }
 
@@ -236,6 +268,7 @@ TEST_F(SharedStorageDatabaseTest, Version1_LoadFromFile) {
 TEST_F(SharedStorageDatabaseTest, Version1_LoadFromFileNoBudgetTables) {
   db_ = LoadFromFile("shared_storage.v1.no_budget_table.sql");
   ASSERT_TRUE(db_);
+  ASSERT_TRUE(db_->is_filebacked());
 
   url::Origin google_com = url::Origin::Create(GURL("http://google.com/"));
   EXPECT_EQ(db_->Get(google_com, u"key1").data, u"value1");
@@ -328,6 +361,16 @@ TEST_F(SharedStorageDatabaseTest, Version1_LoadFromFileNoBudgetTables) {
   EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(withgoogle_com).bits);
   EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(youtube_com).bits);
 
+  histogram_tester_.ExpectUniqueSample(kIsFileBackedHistogram, true, 1);
+  histogram_tester_.ExpectUniqueSample(kFileSizeKBHistogram, 40, 1);
+  histogram_tester_.ExpectUniqueSample(kNumOriginsHistogram, 9, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesTotalHistogram, 18, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesMinHistogram, 1, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesQ1Histogram, 1, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesMedianHistogram, 2, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesQ3Histogram, 3, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesMaxHistogram, 4, 1);
+
   EXPECT_TRUE(db_->Destroy());
 }
 
@@ -336,6 +379,7 @@ TEST_F(SharedStorageDatabaseTest, Version1_DestroyTooNew) {
   // is too high.
   db_ = LoadFromFile("shared_storage.v1.init_too_new.sql");
   ASSERT_TRUE(db_);
+  ASSERT_TRUE(db_->is_filebacked());
   ASSERT_TRUE(SqlDB());
 
   // Call an operation so that the database will attempt to be lazy-initialized.
@@ -367,6 +411,7 @@ TEST_F(SharedStorageDatabaseTest, Version0_DestroyTooOld) {
   // is too low and we're forcing there not to be a retry attempt.
   db_ = LoadFromFile("shared_storage.v0.init_too_old.sql");
   ASSERT_TRUE(db_);
+  ASSERT_TRUE(db_->is_filebacked());
   ASSERT_TRUE(SqlDB());
 
   // Call an operation so that the database will attempt to be lazy-initialized.
@@ -393,6 +438,13 @@ class SharedStorageDatabaseParamTest
     db_ = std::make_unique<SharedStorageDatabase>(
         db_path, special_storage_policy_, std::move(options));
     db_->OverrideClockForTesting(&clock_);
+
+    ASSERT_EQ(GetParam().in_memory_only, !db_->is_filebacked());
+  }
+
+  void TearDown() override {
+    CheckInitHistograms();
+    SharedStorageDatabaseTest::TearDown();
   }
 
   void InitSharedStorageFeature() override {
@@ -407,6 +459,16 @@ class SharedStorageDatabaseParamTest
           TimeDeltaToString(base::Hours(kBudgetIntervalHours))},
          {"SharedStorageOriginStalenessThreshold",
           TimeDeltaToString(base::Days(kOriginStalenessThresholdDays))}});
+  }
+
+  void CheckInitHistograms() {
+    histogram_tester_.ExpectUniqueSample(kIsFileBackedHistogram,
+                                         db_->is_filebacked(), 1);
+    if (db_->is_filebacked()) {
+      histogram_tester_.ExpectUniqueSample(kFileSizeKBHistogram, 29, 1);
+      histogram_tester_.ExpectUniqueSample(kNumOriginsHistogram, 0, 1);
+      histogram_tester_.ExpectUniqueSample(kNumEntriesTotalHistogram, 0, 1);
+    }
   }
 };
 
@@ -1329,6 +1391,7 @@ class SharedStorageDatabaseIteratorTest : public SharedStorageDatabaseTest {
 TEST_F(SharedStorageDatabaseIteratorTest, Keys) {
   db_ = LoadFromFile("shared_storage.v1.iterator.sql");
   ASSERT_TRUE(db_);
+  ASSERT_TRUE(db_->is_filebacked());
 
   url::Origin google_com = url::Origin::Create(GURL("http://google.com/"));
   TestSharedStorageEntriesListenerUtility utility(
@@ -1354,11 +1417,22 @@ TEST_F(SharedStorageDatabaseIteratorTest, Keys) {
   // Batch size is 25 for this test.
   EXPECT_EQ(2U, utility.BatchCountForId(id2));
   utility.VerifyNoErrorForId(id2);
+
+  histogram_tester_.ExpectUniqueSample(kIsFileBackedHistogram, true, 1);
+  histogram_tester_.ExpectUniqueSample(kFileSizeKBHistogram, 40, 1);
+  histogram_tester_.ExpectUniqueSample(kNumOriginsHistogram, 2, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesTotalHistogram, 227, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesMinHistogram, 26, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesQ1Histogram, 26, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesMedianHistogram, 113.5, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesQ3Histogram, 201, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesMaxHistogram, 201, 1);
 }
 
 TEST_F(SharedStorageDatabaseIteratorTest, Entries) {
   db_ = LoadFromFile("shared_storage.v1.iterator.sql");
   ASSERT_TRUE(db_);
+  ASSERT_TRUE(db_->is_filebacked());
 
   url::Origin google_com = url::Origin::Create(GURL("http://google.com/"));
   TestSharedStorageEntriesListenerUtility utility(
@@ -1385,6 +1459,171 @@ TEST_F(SharedStorageDatabaseIteratorTest, Entries) {
   // Batch size is 25 for this test.
   EXPECT_EQ(2U, utility.BatchCountForId(id2));
   utility.VerifyNoErrorForId(id2);
+
+  histogram_tester_.ExpectUniqueSample(kIsFileBackedHistogram, true, 1);
+  histogram_tester_.ExpectUniqueSample(kFileSizeKBHistogram, 40, 1);
+  histogram_tester_.ExpectUniqueSample(kNumOriginsHistogram, 2, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesTotalHistogram, 227, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesMinHistogram, 26, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesQ1Histogram, 26, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesMedianHistogram, 113.5, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesQ3Histogram, 201, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesMaxHistogram, 201, 1);
+}
+
+// Tests correct calculation of five-number summary when there is only one
+// origin.
+TEST_F(SharedStorageDatabaseTest, SingleOrigin) {
+  db_ = LoadFromFile("shared_storage.v1.single_origin.sql");
+  ASSERT_TRUE(db_);
+  ASSERT_TRUE(db_->is_filebacked());
+
+  url::Origin google_com = url::Origin::Create(GURL("http://google.com/"));
+
+  std::vector<url::Origin> origins;
+  for (const auto& info : db_->FetchOrigins())
+    origins.push_back(info->origin);
+  EXPECT_THAT(origins, ElementsAre(google_com));
+
+  histogram_tester_.ExpectUniqueSample(kIsFileBackedHistogram, true, 1);
+  histogram_tester_.ExpectUniqueSample(kFileSizeKBHistogram, 29, 1);
+  histogram_tester_.ExpectUniqueSample(kNumOriginsHistogram, 1, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesTotalHistogram, 10, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesMinHistogram, 10, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesQ1Histogram, 10, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesMedianHistogram, 10, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesQ3Histogram, 10, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesMaxHistogram, 10, 1);
+}
+
+// Tests correct calculation of five-number summary when number of origins is
+// greater than one and has remainder 1 modulo 4.
+TEST_F(SharedStorageDatabaseTest, FiveOrigins) {
+  db_ = LoadFromFile("shared_storage.v1.empty_values_mapping.5origins.sql");
+  ASSERT_TRUE(db_);
+  ASSERT_TRUE(db_->is_filebacked());
+
+  url::Origin abc_xyz = url::Origin::Create(GURL("http://abc.xyz"));
+  url::Origin chromium_org = url::Origin::Create(GURL("http://chromium.org/"));
+  url::Origin google_com = url::Origin::Create(GURL("http://google.com/"));
+  url::Origin google_org = url::Origin::Create(GURL("http://google.org/"));
+  url::Origin gv_com = url::Origin::Create(GURL("http://gv.com"));
+
+  std::vector<url::Origin> origins;
+  for (const auto& info : db_->FetchOrigins())
+    origins.push_back(info->origin);
+  EXPECT_THAT(origins, ElementsAre(abc_xyz, chromium_org, google_com,
+                                   google_org, gv_com));
+
+  histogram_tester_.ExpectUniqueSample(kIsFileBackedHistogram, true, 1);
+  histogram_tester_.ExpectUniqueSample(kFileSizeKBHistogram, 29, 1);
+  histogram_tester_.ExpectUniqueSample(kNumOriginsHistogram, 5, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesTotalHistogram, 0, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesMinHistogram, 10, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesQ1Histogram, 12.5, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesMedianHistogram, 20, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesQ3Histogram, 145, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesMaxHistogram, 250, 1);
+}
+
+// Tests correct calculation of five-number summary when number of origins has
+// remainder 2 modulo 4.
+TEST_F(SharedStorageDatabaseTest, SixOrigins) {
+  db_ = LoadFromFile("shared_storage.v1.empty_values_mapping.6origins.sql");
+  ASSERT_TRUE(db_);
+  ASSERT_TRUE(db_->is_filebacked());
+
+  url::Origin abc_xyz = url::Origin::Create(GURL("http://abc.xyz"));
+  url::Origin chromium_org = url::Origin::Create(GURL("http://chromium.org/"));
+  url::Origin google_com = url::Origin::Create(GURL("http://google.com/"));
+  url::Origin google_org = url::Origin::Create(GURL("http://google.org/"));
+  url::Origin gv_com = url::Origin::Create(GURL("http://gv.com"));
+  url::Origin waymo_com = url::Origin::Create(GURL("http://waymo.com"));
+
+  std::vector<url::Origin> origins;
+  for (const auto& info : db_->FetchOrigins())
+    origins.push_back(info->origin);
+  EXPECT_THAT(origins, ElementsAre(abc_xyz, chromium_org, google_com,
+                                   google_org, gv_com, waymo_com));
+
+  histogram_tester_.ExpectUniqueSample(kIsFileBackedHistogram, true, 1);
+  histogram_tester_.ExpectUniqueSample(kFileSizeKBHistogram, 29, 1);
+  histogram_tester_.ExpectUniqueSample(kNumOriginsHistogram, 6, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesTotalHistogram, 0, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesMinHistogram, 10, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesQ1Histogram, 15, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesMedianHistogram, 30, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesQ3Histogram, 250, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesMaxHistogram, 1599, 1);
+}
+
+// Tests correct calculation of five-number summary when number of origins has
+// remainder 3 modulo 4.
+TEST_F(SharedStorageDatabaseTest, SevenOrigins) {
+  db_ = LoadFromFile("shared_storage.v1.empty_values_mapping.7origins.sql");
+  ASSERT_TRUE(db_);
+  ASSERT_TRUE(db_->is_filebacked());
+
+  url::Origin abc_xyz = url::Origin::Create(GURL("http://abc.xyz"));
+  url::Origin chromium_org = url::Origin::Create(GURL("http://chromium.org/"));
+  url::Origin google_com = url::Origin::Create(GURL("http://google.com/"));
+  url::Origin google_org = url::Origin::Create(GURL("http://google.org/"));
+  url::Origin gv_com = url::Origin::Create(GURL("http://gv.com"));
+  url::Origin waymo_com = url::Origin::Create(GURL("http://waymo.com"));
+  url::Origin with_google_com =
+      url::Origin::Create(GURL("http://withgoogle.com"));
+
+  std::vector<url::Origin> origins;
+  for (const auto& info : db_->FetchOrigins())
+    origins.push_back(info->origin);
+  EXPECT_THAT(origins,
+              ElementsAre(abc_xyz, chromium_org, google_com, google_org, gv_com,
+                          waymo_com, with_google_com));
+
+  histogram_tester_.ExpectUniqueSample(kIsFileBackedHistogram, true, 1);
+  histogram_tester_.ExpectUniqueSample(kFileSizeKBHistogram, 29, 1);
+  histogram_tester_.ExpectUniqueSample(kNumOriginsHistogram, 7, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesTotalHistogram, 0, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesMinHistogram, 10, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesQ1Histogram, 15, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesMedianHistogram, 40, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesQ3Histogram, 1001, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesMaxHistogram, 1599, 1);
+}
+
+// Tests correct calculation of five-number summary when number of origins has
+// remainder 0 modulo 4.
+TEST_F(SharedStorageDatabaseTest, EightOrigins) {
+  db_ = LoadFromFile("shared_storage.v1.empty_values_mapping.8origins.sql");
+  ASSERT_TRUE(db_);
+  ASSERT_TRUE(db_->is_filebacked());
+
+  url::Origin abc_xyz = url::Origin::Create(GURL("http://abc.xyz"));
+  url::Origin chromium_org = url::Origin::Create(GURL("http://chromium.org/"));
+  url::Origin google_com = url::Origin::Create(GURL("http://google.com/"));
+  url::Origin google_org = url::Origin::Create(GURL("http://google.org/"));
+  url::Origin gv_com = url::Origin::Create(GURL("http://gv.com"));
+  url::Origin waymo_com = url::Origin::Create(GURL("http://waymo.com"));
+  url::Origin with_google_com =
+      url::Origin::Create(GURL("http://withgoogle.com"));
+  url::Origin youtube_com = url::Origin::Create(GURL("http://youtube.com/"));
+
+  std::vector<url::Origin> origins;
+  for (const auto& info : db_->FetchOrigins())
+    origins.push_back(info->origin);
+  EXPECT_THAT(origins,
+              ElementsAre(abc_xyz, chromium_org, google_com, google_org, gv_com,
+                          waymo_com, with_google_com, youtube_com));
+
+  histogram_tester_.ExpectUniqueSample(kIsFileBackedHistogram, true, 1);
+  histogram_tester_.ExpectUniqueSample(kFileSizeKBHistogram, 29, 1);
+  histogram_tester_.ExpectUniqueSample(kNumOriginsHistogram, 8, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesTotalHistogram, 0, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesMinHistogram, 10, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesQ1Histogram, 17.5, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesMedianHistogram, 70, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesQ3Histogram, 625.5, 1);
+  histogram_tester_.ExpectUniqueSample(kNumEntriesMaxHistogram, 1599, 1);
 }
 
 }  // namespace storage

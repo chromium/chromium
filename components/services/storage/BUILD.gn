@@ -163,9 +163,14 @@ bundle_data("tests_bundle_data") {
   testonly = true
   sources = [
     "//components/test/data/storage/shared_storage.v0.init_too_old.sql",
+    "//components/test/data/storage/shared_storage.v1.empty_values_mapping.5origins.sql",
+    "//components/test/data/storage/shared_storage.v1.empty_values_mapping.6origins.sql",
+    "//components/test/data/storage/shared_storage.v1.empty_values_mapping.7origins.sql",
+    "//components/test/data/storage/shared_storage.v1.empty_values_mapping.8origins.sql",
     "//components/test/data/storage/shared_storage.v1.init_too_new.sql",
     "//components/test/data/storage/shared_storage.v1.iterator.sql",
     "//components/test/data/storage/shared_storage.v1.no_budget_table.sql",
+    "//components/test/data/storage/shared_storage.v1.single_origin.sql",
     "//components/test/data/storage/shared_storage.v1.sql",
   ]
   outputs = [ "{{bundle_resources_dir}}/" +

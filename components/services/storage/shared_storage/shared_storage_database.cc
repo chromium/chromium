@@ -160,9 +160,9 @@ SharedStorageDatabase::SharedStorageDatabase(
       budget_interval_(options->budget_interval),
       origin_staleness_threshold_(options->origin_staleness_threshold),
       clock_(base::DefaultClock::GetInstance()) {
-  DCHECK(db_path_.empty() || db_path_.IsAbsolute());
-  db_file_status_ = db_path_.empty() ? DBFileStatus::kNoPreexistingFile
-                                     : DBFileStatus::kNotChecked;
+  DCHECK(!is_filebacked() || db_path_.IsAbsolute());
+  db_file_status_ = is_filebacked() ? DBFileStatus::kNotChecked
+                                    : DBFileStatus::kNoPreexistingFile;
 }
 
 SharedStorageDatabase::~SharedStorageDatabase() {
@@ -175,7 +175,7 @@ bool SharedStorageDatabase::Destroy() {
     return false;
 
   // The file already doesn't exist.
-  if (db_path_.empty())
+  if (!is_filebacked())
     return true;
 
   return base::DeleteFile(db_path_);
@@ -1028,7 +1028,7 @@ bool SharedStorageDatabase::DBExists() {
     return false;
 
   // The in-memory case is included in `DBFileStatus::kNoPreexistingFile`.
-  DCHECK(!db_path_.empty());
+  DCHECK(is_filebacked());
 
   // We do not expect `DBExists()` to be called in the case where
   // `db_file_status_ == DBFileStatus::kPreexistingFile`, as then
@@ -1070,7 +1070,7 @@ bool SharedStorageDatabase::OpenDatabase() {
   db_.set_error_callback(base::BindRepeating(
       &SharedStorageDatabase::DatabaseErrorCallback, base::Unretained(this)));
 
-  if (!db_path_.empty()) {
+  if (is_filebacked()) {
     if (!db_.is_open() && !db_.Open(db_path_))
       return false;
 
@@ -1144,6 +1144,7 @@ SharedStorageDatabase::InitStatus SharedStorageDatabase::InitImpl() {
     return InitStatus::kError;
   }
 
+  LogInitHistograms();
   return InitStatus::kSuccess;
 }
 
@@ -1352,6 +1353,128 @@ bool SharedStorageDatabase::DeleteThenMaybeInsertIntoPerOriginMapping(
 
 bool SharedStorageDatabase::HasCapacity(const std::string& context_origin) {
   return NumEntries(context_origin) < max_entries_per_origin_;
+}
+
+void SharedStorageDatabase::LogInitHistograms() {
+  base::UmaHistogramBoolean("Storage.SharedStorage.Database.IsFileBacked",
+                            is_filebacked());
+
+  if (is_filebacked()) {
+    int64_t file_size = 0L;
+    if (GetFileSize(db_path_, &file_size)) {
+      int64_t file_size_kb = file_size / 1024;
+      base::UmaHistogramCounts10M(
+          "Storage.SharedStorage.Database.FileBacked.FileSize.KB",
+          file_size_kb);
+
+      int64_t file_size_gb = file_size_kb / (1024 * 1024);
+      if (file_size_gb) {
+        base::UmaHistogramCounts1000(
+            "Storage.SharedStorage.Database.FileBacked.FileSize.GB",
+            file_size_gb);
+      }
+    }
+
+    static constexpr char kOriginCountSql[] =
+        "SELECT COUNT(*) FROM per_origin_mapping";
+
+    sql::Statement origin_count_statement(
+        db_.GetCachedStatement(SQL_FROM_HERE, kOriginCountSql));
+
+    if (origin_count_statement.Step()) {
+      int64_t origin_count = origin_count_statement.ColumnInt64(0);
+      base::UmaHistogramCounts100000(
+          "Storage.SharedStorage.Database.FileBacked.NumOrigins", origin_count);
+
+      static constexpr char kQuartileSql[] =
+          "SELECT AVG(length) FROM "
+          "(SELECT length FROM per_origin_mapping "
+          "ORDER BY length LIMIT ? OFFSET ?)";
+
+      sql::Statement median_statement(
+          db_.GetCachedStatement(SQL_FROM_HERE, kQuartileSql));
+      median_statement.BindInt64(0, 2 - (origin_count % 2));
+      median_statement.BindInt64(1, (origin_count - 1) / 2);
+
+      if (median_statement.Step()) {
+        base::UmaHistogramCounts100000(
+            "Storage.SharedStorage.Database.FileBacked.NumEntries.PerOrigin."
+            "Median",
+            median_statement.ColumnInt64(0));
+      }
+
+      // We use Method 1 from https://en.wikipedia.org/wiki/Quartile to
+      // calculate upper and lower quartiles.
+      int64_t quartile_limit = 2 - (origin_count % 4) / 2;
+      int64_t quartile_offset = (origin_count > 1) ? (origin_count - 2) / 4 : 0;
+      sql::Statement q1_statement(
+          db_.GetCachedStatement(SQL_FROM_HERE, kQuartileSql));
+      q1_statement.BindInt64(0, quartile_limit);
+      q1_statement.BindInt64(1, quartile_offset);
+
+      if (q1_statement.Step()) {
+        base::UmaHistogramCounts100000(
+            "Storage.SharedStorage.Database.FileBacked.NumEntries.PerOrigin.Q1",
+            q1_statement.ColumnInt64(0));
+      }
+
+      // We use Method 1 from https://en.wikipedia.org/wiki/Quartile to
+      // calculate upper and lower quartiles.
+      static constexpr char kUpperQuartileSql[] =
+          "SELECT AVG(length) FROM "
+          "(SELECT length FROM per_origin_mapping "
+          "ORDER BY length DESC LIMIT ? OFFSET ?)";
+
+      sql::Statement q3_statement(
+          db_.GetCachedStatement(SQL_FROM_HERE, kUpperQuartileSql));
+      q3_statement.BindInt64(0, quartile_limit);
+      q3_statement.BindInt64(1, quartile_offset);
+
+      if (q3_statement.Step()) {
+        base::UmaHistogramCounts100000(
+            "Storage.SharedStorage.Database.FileBacked.NumEntries.PerOrigin.Q3",
+            q3_statement.ColumnInt64(0));
+      }
+
+      static constexpr char kMinSql[] =
+          "SELECT MIN(length) FROM per_origin_mapping";
+
+      sql::Statement min_statement(
+          db_.GetCachedStatement(SQL_FROM_HERE, kMinSql));
+
+      if (min_statement.Step()) {
+        base::UmaHistogramCounts100000(
+            "Storage.SharedStorage.Database.FileBacked.NumEntries.PerOrigin."
+            "Min",
+            min_statement.ColumnInt64(0));
+      }
+
+      static constexpr char kMaxSql[] =
+          "SELECT MAX(length) FROM per_origin_mapping";
+
+      sql::Statement max_statement(
+          db_.GetCachedStatement(SQL_FROM_HERE, kMaxSql));
+
+      if (max_statement.Step()) {
+        base::UmaHistogramCounts100000(
+            "Storage.SharedStorage.Database.FileBacked.NumEntries.PerOrigin."
+            "Max",
+            max_statement.ColumnInt64(0));
+      }
+    }
+
+    static constexpr char kValueCountSql[] =
+        "SELECT COUNT(*) FROM values_mapping";
+
+    sql::Statement value_count_statement(
+        db_.GetCachedStatement(SQL_FROM_HERE, kValueCountSql));
+
+    if (value_count_statement.Step()) {
+      base::UmaHistogramCounts10M(
+          "Storage.SharedStorage.Database.FileBacked.NumEntries.Total",
+          value_count_statement.ColumnInt64(0));
+    }
+  }
 }
 
 }  // namespace storage

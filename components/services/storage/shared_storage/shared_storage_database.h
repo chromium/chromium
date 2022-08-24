@@ -180,6 +180,12 @@ class SharedStorageDatabase {
     return &db_;
   }
 
+  // Returns whether or not the database is file-backed (rather than in-memory).
+  [[nodiscard]] bool is_filebacked() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return !db_path_.empty();
+  }
+
   // Releases all non-essential memory associated with this database connection.
   void TrimMemory();
 
@@ -454,6 +460,11 @@ class SharedStorageDatabase {
   // `max_entries_per_origin_`.
   [[nodiscard]] bool HasCapacity(const std::string& context_origin)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  // Logs following initialization various histograms, including e.g. the number
+  // of origins currently in `per_origin_mapping`, as well as each of the
+  // lengths listed in `per_origin_mapping`.
+  void LogInitHistograms() VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Database containing the actual data.
   sql::Database db_ GUARDED_BY_CONTEXT(sequence_checker_);

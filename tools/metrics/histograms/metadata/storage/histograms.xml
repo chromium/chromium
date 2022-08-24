@@ -555,6 +555,142 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.SharedStorage.Database.FileBacked.FileSize.GB"
+    units="GB" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    The size in gigabytes of the SQL database file backing
+    `SharedStorageDatabase`. Measured only for file-backed databases of size at
+    least one gigabyte. Recorded in `SharedStorageDatabase::InitImpl()` via
+    `LogInitHistograms()` when initialization is successful.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Database.FileBacked.FileSize.KB"
+    units="KB" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    The size in kilobytes of the SQL database file backing
+    `SharedStorageDatabase`. Measured for file-backed databases only. Recorded
+    in `SharedStorageDatabase::InitImpl()` via `LogInitHistograms()` when
+    initialization is successful.
+  </summary>
+</histogram>
+
+<histogram
+    name="Storage.SharedStorage.Database.FileBacked.NumEntries.PerOrigin.Max"
+    units="Entries" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Maximum origin length, according to the `per_origin_mapping` of
+    `SharedStorageDatabase`. Measured for file-backed databases only. Recorded
+    in `SharedStorageDatabase::InitImpl()` via `LogInitHistograms()` when
+    initialization is successful.
+  </summary>
+</histogram>
+
+<histogram
+    name="Storage.SharedStorage.Database.FileBacked.NumEntries.PerOrigin.Median"
+    units="Entries" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Median origin length, according to the `per_origin_mapping` of
+    `SharedStorageDatabase`. Measured for file-backed databases only. Recorded
+    in `SharedStorageDatabase::InitImpl()` via `LogInitHistograms()` when
+    initialization is successful.
+  </summary>
+</histogram>
+
+<histogram
+    name="Storage.SharedStorage.Database.FileBacked.NumEntries.PerOrigin.Min"
+    units="Entries" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Minimum origin length, according to the `per_origin_mapping` of
+    `SharedStorageDatabase`. Measured for file-backed databases only. Recorded
+    in `SharedStorageDatabase::InitImpl()` via `LogInitHistograms()` when
+    initialization is successful.
+  </summary>
+</histogram>
+
+<histogram
+    name="Storage.SharedStorage.Database.FileBacked.NumEntries.PerOrigin.Q1"
+    units="Entries" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Lower quartile of the origin lengths, as listed in the `per_origin_mapping`
+    of `SharedStorageDatabase` (calculated through Method 1 from
+    https://en.wikipedia.org/wiki/Quartile). Measured for file-backed databases
+    only. Recorded in `SharedStorageDatabase::InitImpl()` via
+    `LogInitHistograms()` when initialization is successful.
+  </summary>
+</histogram>
+
+<histogram
+    name="Storage.SharedStorage.Database.FileBacked.NumEntries.PerOrigin.Q3"
+    units="Entries" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Upper quartile of the origin lengths, as listed in the `per_origin_mapping`
+    of `SharedStorageDatabase` (calculated through Method 1 from
+    https://en.wikipedia.org/wiki/Quartile). Measured for file-backed databases
+    only. Recorded in `SharedStorageDatabase::InitImpl()` via
+    `LogInitHistograms()` when initialization is successful.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Database.FileBacked.NumEntries.Total"
+    units="Entries" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    The total count of entries in the `values_mapping` of
+    `SharedStorageDatabase`. Measured for file-backed databases only. Recorded
+    in `SharedStorageDatabase::InitImpl()` via `LogInitHistograms()` when
+    initialization is successful.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Database.FileBacked.NumOrigins"
+    units="Origins" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Number of origins in the `per_origin_mapping` of `SharedStorageDatabase`.
+    Measured for file-backed databases only. Recorded in
+    `SharedStorageDatabase::InitImpl()` via `LogInitHistograms()` when
+    initialization is successful.
+  </summary>
+</histogram>
+
+<histogram name="Storage.SharedStorage.Database.IsFileBacked"
+    units="BooleanIsFileBacked" expires_after="2023-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Whether or not the database is file-backed. Recorded in
+    `SharedStorageDatabase::InitImpl()` via `LogInitHistograms()` when
+    initialization is successful.
+  </summary>
+</histogram>
+
 <histogram name="Storage.SharedStorage.Document.Timing.AddModule" units="ms"
     expires_after="2023-07-31">
   <owner>cammie@chromium.org</owner>
