@@ -11,23 +11,12 @@ import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {getTemplate} from './accelerator_view.html.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {ModifierKeyCodes} from './shortcut_input.js';
-import {AcceleratorConfigResult, AcceleratorInfo, AcceleratorKeys, AcceleratorSource, AcceleratorState, AcceleratorType, ShortcutProviderInterface} from './shortcut_types.js';
+import {AcceleratorConfigResult, AcceleratorInfo, AcceleratorKeys, AcceleratorSource, AcceleratorState, AcceleratorType, Modifier, ShortcutProviderInterface} from './shortcut_types.js';
 
 export interface AcceleratorViewElement {
   $: {
     container: HTMLDivElement,
   };
-}
-
-/**
- * Modifier values are based off of ui::Accelerator. Must be kept in sync with
- * ui::Accelerator and ui::KeyEvent.
- */
-export enum Modifier {
-  SHIFT = 1 << 1,
-  CONTROL = 1 << 2,
-  ALT = 1 << 3,
-  COMMAND = 1 << 4,
 }
 
 enum KeyState {

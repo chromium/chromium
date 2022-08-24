@@ -4,15 +4,16 @@
 
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
 
-import {AcceleratorConfig, AcceleratorConfigResult, AcceleratorKeys, AcceleratorSource, LayoutInfoList, ShortcutProviderInterface} from './shortcut_types.js';
+import {AcceleratorConfig, AcceleratorConfigResult, AcceleratorSource, LayoutInfoList, ShortcutProviderInterface} from './shortcut_types.js';
 
 /**
  * @fileoverview
  * Implements a fake version of the FakeShortcutProvider mojo interface.
  */
 
-/** @implements {ShortcutProviderInterface} */
-export class FakeShortcutProvider {
+export class FakeShortcutProvider implements ShortcutProviderInterface {
+  private methods_: FakeMethodResolver;
+
   constructor() {
     this.methods_ = new FakeMethodResolver();
 
@@ -27,78 +28,48 @@ export class FakeShortcutProvider {
     this.methods_.register('restoreActionDefaults');
   }
 
-  /**
-   * @return {!Promise<!AcceleratorConfig>}
-   */
-  getAllAcceleratorConfig() {
+  getAllAcceleratorConfig(): Promise<AcceleratorConfig> {
     return this.methods_.resolveMethod('getAllAcceleratorConfig');
   }
 
-  /**
-   * @return {!Promise<!LayoutInfoList>}
-   */
-  getLayoutInfo() {
+  getLayoutInfo(): Promise<LayoutInfoList> {
     return this.methods_.resolveMethod('getLayoutInfo');
   }
 
-  /**
-   * @param {!AcceleratorSource} source
-   * @return {!Promise<boolean>}
-   */
-  isMutable(source) {
+  isMutable(source: AcceleratorSource): Promise<boolean> {
     this.methods_.setResult('isMutable', source !== AcceleratorSource.BROWSER);
     return this.methods_.resolveMethod('isMutable');
   }
 
-  /**
-   * @param {AcceleratorSource} source
-   * @param {number} action
-   * @param {!AcceleratorKeys} accelerator
-   */
-  addUserAccelerator(source, action, accelerator) {
+  addUserAccelerator(): Promise<AcceleratorConfigResult> {
     // Always return kSuccess in this fake.
     this.methods_.setResult(
         'addUserAccelerator', AcceleratorConfigResult.SUCCESS);
     return this.methods_.resolveMethod('addUserAccelerator');
   }
 
-  /**
-   * @param {AcceleratorSource} source
-   * @param {number} action
-   * @param {!AcceleratorKeys} oldAccelerator
-   * @param {!AcceleratorKeys} newAccelerator
-   */
-  replaceAccelerator(source, action, oldAccelerator, newAccelerator) {
+  replaceAccelerator(): Promise<AcceleratorConfigResult> {
     // Always return kSuccess in this fake.
     this.methods_.setResult(
         'replaceAccelerator', AcceleratorConfigResult.SUCCESS);
     return this.methods_.resolveMethod('replaceAccelerator');
   }
 
-  /**
-   * @param {!AcceleratorSource} source
-   * @param {number} action
-   * @param {!AcceleratorKeys} accelerator
-   */
-  removeAccelerator(source, action, accelerator) {
+  removeAccelerator(): Promise<AcceleratorConfigResult> {
     // Always return kSuccess in this fake.
     this.methods_.setResult(
         'removeAccelerator', AcceleratorConfigResult.SUCCESS);
     return this.methods_.resolveMethod('removeAccelerator');
   }
 
-  restoreAllDefaults() {
+  restoreAllDefaults(): Promise<AcceleratorConfigResult> {
     // Always return kSuccess in this fake.
     this.methods_.setResult(
         'restoreAllDefaults', AcceleratorConfigResult.SUCCESS);
     return this.methods_.resolveMethod('restoreAllDefaults');
   }
 
-  /**
-   * @param {!AcceleratorSource} source
-   * @param {number} action
-   */
-  restoreActionDefaults(source, action) {
+  restoreActionDefaults(): Promise<AcceleratorConfigResult> {
     // Always return kSuccess in this fake.
     this.methods_.setResult(
         'restoreActionDefaults', AcceleratorConfigResult.SUCCESS);
@@ -108,18 +79,16 @@ export class FakeShortcutProvider {
   /**
    * Sets the value that will be returned when calling
    * getAllAcceleratorConfig().
-   * @param {!AcceleratorConfig} config
    */
-  setFakeAcceleratorConfig(config) {
+  setFakeAcceleratorConfig(config: AcceleratorConfig) {
     this.methods_.setResult('getAllAcceleratorConfig', config);
   }
 
   /**
    * Sets the value that will be returned when calling
    * getLayoutInfo().
-   * @param {!LayoutInfoList} layout
    */
-  setFakeLayoutInfo(layout) {
+  setFakeLayoutInfo(layout: LayoutInfoList) {
     this.methods_.setResult('getLayoutInfo', layout);
   }
 }

@@ -7,7 +7,7 @@ import {AcceleratorSubsectionElement} from 'chrome://shortcut-customization/acce
 import {fakeAcceleratorConfig, fakeLayoutInfo, fakeSubCategories} from 'chrome://shortcut-customization/fake_data.js';
 import {getShortcutProvider, setShortcutProviderForTesting} from 'chrome://shortcut-customization/mojo_interface_provider.js';
 import {ShortcutCustomizationAppElement} from 'chrome://shortcut-customization/shortcut_customization_app.js';
-import {AcceleratorInfo, Modifier, ShortcutProviderInterface} from 'chrome://shortcut-customization/shortcut_types.js';
+import {Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';

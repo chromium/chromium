@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+
 import {fakeAcceleratorConfig, fakeLayoutInfo} from './fake_data.js';
 import {FakeShortcutProvider} from './fake_shortcut_provider.js';
 import {ShortcutProviderInterface} from './shortcut_types.js';
@@ -13,15 +14,10 @@ import {ShortcutProviderInterface} from './shortcut_types.js';
  * to override them with test/fake implementations.
  */
 
-/**
- * @type {?ShortcutProviderInterface}
- */
-let shortcutProvider = null;
+let shortcutProvider: ShortcutProviderInterface|null = null;
 
-/**
- * @param {!ShortcutProviderInterface} testProvider
- */
-export function setShortcutProviderForTesting(testProvider) {
+export function setShortcutProviderForTesting(
+    testProvider: ShortcutProviderInterface) {
   shortcutProvider = testProvider;
 }
 
@@ -43,10 +39,7 @@ function setupFakeShortcutProvider() {
   setShortcutProviderForTesting(provider);
 }
 
-/**
- * @return {!ShortcutProviderInterface}
- */
-export function getShortcutProvider() {
+export function getShortcutProvider(): ShortcutProviderInterface {
   if (!shortcutProvider) {
     // TODO(zentaro): Instantiate a real mojo interface here.
     setupFakeShortcutProvider();

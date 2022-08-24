@@ -5,7 +5,7 @@
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/accelerator_lookup_manager.js';
 import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/fake_data.js';
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/fake_shortcut_provider.js';
-import {AcceleratorConfig, AcceleratorInfo, AcceleratorKeys, AcceleratorSource, AcceleratorState, LayoutInfoList, Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
+import {AcceleratorSource, AcceleratorState, Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
 
 import {assertDeepEquals, assertEquals} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';

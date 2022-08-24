@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Modifier} from './accelerator_view.js';
-import {AcceleratorConfig, AcceleratorInfo, AcceleratorKeys, AcceleratorSource, AcceleratorState, AcceleratorType, LayoutInfoList, LayoutStyle} from './shortcut_types.js';
+import {AcceleratorConfig, AcceleratorSource, AcceleratorState, AcceleratorType, LayoutInfoList, LayoutStyle, Modifier} from './shortcut_types.js';
 
-/* @type {!Map<number, string>} */
-export const fakeActionNames = new Map([
+export const fakeActionNames: Map<number, string> = new Map([
   [0, 'Snap Window Left'],
   [1, 'Snap Window Right'],
   [2, 'New Desk'],
@@ -14,21 +12,18 @@ export const fakeActionNames = new Map([
   [1001, 'New Tab'],
 ]);
 
-/* @type {!Map<number, string>} */
-export const fakeCategories = new Map([
+export const fakeCategories: Map<number, string> = new Map([
   [0, 'Chrome OS'],
   [1, 'Browser'],
 ]);
 
-/* @type {!Map<number, string>} */
-export const fakeSubCategories = new Map([
+export const fakeSubCategories: Map<number, string> = new Map([
   [0, 'Window Management'],
   [1, 'Virtual Desks'],
   [2, 'Tabs'],
 ]);
 
-/* @type {!AcceleratorConfig} */
-export const fakeAcceleratorConfig = new Map([
+export const fakeAcceleratorConfig: AcceleratorConfig = new Map([
   [
     AcceleratorSource.ASH,
     new Map([
@@ -111,8 +106,7 @@ export const fakeAcceleratorConfig = new Map([
   ],
 ]);
 
-/* @type {!LayoutInfoList} */
-export const fakeLayoutInfo = [
+export const fakeLayoutInfo: LayoutInfoList = [
   {
     category: 0,      // Chrome OS.
     sub_category: 0,  // Window Management.

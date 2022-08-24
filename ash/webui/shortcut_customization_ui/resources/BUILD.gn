@@ -16,10 +16,10 @@ preprocess_folder = "preprocessed"
 
 non_web_component_files = [
   "accelerator_lookup_manager.ts",
-  "fake_data.js",
-  "fake_shortcut_provider.js",
-  "mojo_interface_provider.js",
-  "shortcut_types.js",
+  "fake_data.ts",
+  "fake_shortcut_provider.ts",
+  "mojo_interface_provider.ts",
+  "shortcut_types.ts",
 ]
 
 web_component_files = [
