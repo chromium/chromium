@@ -2870,7 +2870,6 @@ crbug.com/1050754 external/wpt/html/semantics/forms/the-form-element/form-indexe
 crbug.com/1050754 external/wpt/html/semantics/forms/the-form-element/form-nameditem.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/html/semantics/forms/the-input-element/datetime-local.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/html/semantics/forms/the-input-element/hidden-charset-case-sensitive.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/html/semantics/forms/the-input-element/range.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/html/semantics/forms/the-input-element/time-focus-dynamic-value-change.html [ Failure ]
 crbug.com/1050754 external/wpt/html/semantics/forms/the-input-element/type-change-state.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/html/semantics/forms/the-label-element/forward-focus-to-associated-element.html [ Timeout ]

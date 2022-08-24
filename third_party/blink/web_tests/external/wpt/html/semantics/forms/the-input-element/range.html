@@ -222,8 +222,8 @@
       test(
         function() {
           var e = document.getElementById('should_skip_whitespace');
-          assert_equals(e.value, "123")
-        }, "Skip ASCII whitespace within input"
+          assert_equals(e.value, "50")
+        }, "Input should be reset to the default value when value attribute has whitespace"
       );
 
       test(
