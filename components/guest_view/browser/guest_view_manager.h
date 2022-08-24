@@ -100,7 +100,7 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
                    const base::Value::Dict& create_params,
                    WebContentsCreatedCallback callback);
 
-  content::WebContents* CreateGuestWithWebContentsParams(
+  std::unique_ptr<content::WebContents> CreateGuestWithWebContentsParams(
       const std::string& view_type,
       content::WebContents* owner_web_contents,
       const content::WebContents::CreateParams& create_params);

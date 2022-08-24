@@ -166,7 +166,8 @@ void GuestViewManager::CreateGuest(const std::string& view_type,
   guest->Init(create_params, std::move(callback));
 }
 
-content::WebContents* GuestViewManager::CreateGuestWithWebContentsParams(
+std::unique_ptr<content::WebContents>
+GuestViewManager::CreateGuestWithWebContentsParams(
     const std::string& view_type,
     content::WebContents* owner_web_contents,
     const content::WebContents::CreateParams& create_params) {
@@ -176,12 +177,12 @@ content::WebContents* GuestViewManager::CreateGuestWithWebContentsParams(
   content::WebContents::CreateParams guest_create_params(create_params);
   guest_create_params.guest_delegate = guest;
 
-  // TODO(erikchen): Fix ownership semantics for this class.
-  // https://crbug.com/832879.
   std::unique_ptr<content::WebContents> guest_web_contents =
       WebContents::Create(guest_create_params);
   guest->InitWithWebContents(base::Value::Dict(), guest_web_contents.get());
-  return guest_web_contents.release();
+  // Ownership of the guest WebContents goes to the content layer until we get
+  // it back in AddNewContents.
+  return guest_web_contents;
 }
 
 SiteInstance* GuestViewManager::GetGuestSiteInstance(

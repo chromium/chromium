@@ -18,7 +18,7 @@ class CONTENT_EXPORT BrowserPluginGuestDelegate {
  public:
   virtual ~BrowserPluginGuestDelegate() {}
 
-  virtual WebContents* CreateNewGuestWindow(
+  virtual std::unique_ptr<WebContents> CreateNewGuestWindow(
       const WebContents::CreateParams& create_params);
 
   // Returns the WebContents that currently owns this guest.

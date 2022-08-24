@@ -371,7 +371,7 @@ GuestViewManager* GuestViewBase::GetGuestViewManager() {
   return GuestViewManager::FromBrowserContext(browser_context());
 }
 
-WebContents* GuestViewBase::CreateNewGuestWindow(
+std::unique_ptr<WebContents> GuestViewBase::CreateNewGuestWindow(
     const WebContents::CreateParams& create_params) {
   return GetGuestViewManager()->CreateGuestWithWebContentsParams(
       GetViewType(), owner_web_contents(), create_params);

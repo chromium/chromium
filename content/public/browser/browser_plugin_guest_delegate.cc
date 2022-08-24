@@ -6,7 +6,7 @@
 
 namespace content {
 
-WebContents* BrowserPluginGuestDelegate::CreateNewGuestWindow(
+std::unique_ptr<WebContents> BrowserPluginGuestDelegate::CreateNewGuestWindow(
     const WebContents::CreateParams& create_params) {
   NOTREACHED();
   return nullptr;

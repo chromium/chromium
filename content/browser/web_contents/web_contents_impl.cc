@@ -4007,8 +4007,7 @@ FrameTree* WebContentsImpl::CreateNewWindow(
     create_params.context = view_->GetNativeView();
     new_contents = WebContentsImpl::Create(create_params);
   } else {
-    new_contents = base::WrapUnique(static_cast<WebContentsImpl*>(
-        GetBrowserPluginGuest()->CreateNewGuestWindow(create_params)));
+    new_contents = GetBrowserPluginGuest()->CreateNewGuestWindow(create_params);
   }
   auto* new_contents_impl = new_contents.get();
 

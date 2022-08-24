@@ -332,7 +332,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
                   base::OnceClosure completion_callback);
 
   // BrowserPluginGuestDelegate implementation.
-  content::WebContents* CreateNewGuestWindow(
+  std::unique_ptr<content::WebContents> CreateNewGuestWindow(
       const content::WebContents::CreateParams& create_params) final;
   content::WebContents* GetOwnerWebContents() final;
   void SetGuestHost(content::GuestHost* guest_host) final;

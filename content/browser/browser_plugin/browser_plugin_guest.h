@@ -84,7 +84,7 @@ class BrowserPluginGuest : public GuestHost, public WebContentsObserver {
 
   // Creates a new guest WebContentsImpl with the provided |params| with |this|
   // as the |opener|.
-  WebContentsImpl* CreateNewGuestWindow(
+  std::unique_ptr<WebContentsImpl> CreateNewGuestWindow(
       const WebContents::CreateParams& params);
 
   // WebContentsObserver implementation.

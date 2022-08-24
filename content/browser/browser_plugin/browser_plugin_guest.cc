@@ -60,12 +60,13 @@ void BrowserPluginGuest::Init() {
   InitInternal(owner_web_contents);
 }
 
-WebContentsImpl* BrowserPluginGuest::CreateNewGuestWindow(
+std::unique_ptr<WebContentsImpl> BrowserPluginGuest::CreateNewGuestWindow(
     const WebContents::CreateParams& params) {
-  WebContentsImpl* new_contents =
-      static_cast<WebContentsImpl*>(delegate_->CreateNewGuestWindow(params));
+  std::unique_ptr<WebContents> new_contents =
+      delegate_->CreateNewGuestWindow(params);
   DCHECK(new_contents);
-  return new_contents;
+  return base::WrapUnique(
+      static_cast<WebContentsImpl*>(new_contents.release()));
 }
 
 void BrowserPluginGuest::InitInternal(WebContentsImpl* owner_web_contents) {

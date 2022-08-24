@@ -1322,10 +1322,11 @@ void WebViewGuest::AddNewContents(WebContents* source,
                                   const gfx::Rect& initial_rect,
                                   bool user_gesture,
                                   bool* was_blocked) {
-  // TODO(erikchen): Fix ownership semantics for WebContents inside this class.
-  // https://crbug.com/832879.
   if (was_blocked)
     *was_blocked = false;
+  // This is the guest we created during CreateNewGuestWindow, which we now own.
+  // TODO(erikchen): Fix ownership semantics for WebContents inside this class.
+  // https://crbug.com/832879.
   RequestNewWindowPermission(disposition, initial_rect, new_contents.release());
 }
 
@@ -1400,6 +1401,7 @@ void WebViewGuest::WebContentsCreated(WebContents* source_contents,
                                       const std::string& frame_name,
                                       const GURL& target_url,
                                       WebContents* new_contents) {
+  // The `new_contents` is the one we just created in CreateNewGuestWindow.
   auto* guest = WebViewGuest::FromWebContents(new_contents);
   CHECK(guest);
   guest->SetOpener(this);
