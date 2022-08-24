@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/debug/debugging_buildflags.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -19,8 +20,13 @@
 // dcheck builds as DCHECKs are intended to catch things that should never
 // happen and as such executing the statement results in undefined behavior
 // (|statement| is compiled in unsupported configurations nonetheless).
+// DCHECK_IS_CONFIGURABLE is excluded from DCHECK_DEATH because it's non-FATAL
+// by default and there are no known tests that configure a FATAL level. If this
+// gets used from FATAL contexts under DCHECK_IS_CONFIGURABLE this may need to
+// be updated to look at LOGGING_DCHECK's current severity level.
 // Death tests misbehave on Android.
-#if DCHECK_IS_ON() && defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
+#if DCHECK_IS_ON() && defined(GTEST_HAS_DEATH_TEST) && \
+    !BUILDFLAG(DCHECK_IS_CONFIGURABLE) && !BUILDFLAG(IS_ANDROID)
 
 // EXPECT/ASSERT_DCHECK_DEATH tests verify that a DCHECK is hit ("Check failed"
 // is part of the error message). Optionally you may specify part of the message
@@ -31,7 +37,6 @@
 #define ASSERT_DCHECK_DEATH_WITH(statement, msg) ASSERT_DEATH(statement, msg)
 
 #else
-// DCHECK_IS_ON() && defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 
 #define EXPECT_DCHECK_DEATH(statement) \
   GTEST_UNSUPPORTED_DEATH_TEST(statement, "Check failed", )
@@ -42,8 +47,8 @@
 #define ASSERT_DCHECK_DEATH_WITH(statement, msg) \
   GTEST_UNSUPPORTED_DEATH_TEST(statement, msg, return )
 
-#endif
-// DCHECK_IS_ON() && defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
+#endif  // DCHECK_IS_ON() && defined(GTEST_HAS_DEATH_TEST) &&
+        // !BUILDFLAG(DCHECK_IS_CONFIGURABLE) && !BUILDFLAG(IS_ANDROID)
 
 // As above, but for CHECK().
 #if defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
