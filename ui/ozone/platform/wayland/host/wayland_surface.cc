@@ -687,7 +687,8 @@ WaylandSurface::State::State() = default;
 WaylandSurface::State::~State() = default;
 
 WaylandSurface::State& WaylandSurface::State::operator=(
-    WaylandSurface::State& other) {
+    const WaylandSurface::State& other) {
+  damage_px = other.damage_px;
   opaque_region_px = other.opaque_region_px;
   input_region_px = other.input_region_px;
   buffer_id = other.buffer_id;
@@ -698,8 +699,8 @@ WaylandSurface::State& WaylandSurface::State::operator=(
   crop = other.crop;
   viewport_px = other.viewport_px;
   opacity = other.opacity;
-  rounded_clip_bounds = other.rounded_clip_bounds;
   use_blending = other.use_blending;
+  rounded_clip_bounds = other.rounded_clip_bounds;
   priority_hint = other.priority_hint;
   background_color = other.background_color;
   return *this;

@@ -203,7 +203,7 @@ class WaylandSurface {
   struct State {
     State();
     State(const State& other) = delete;
-    State& operator=(State& other);
+    State& operator=(const State& other);
     ~State();
 
     std::vector<gfx::Rect> damage_px;
