@@ -184,8 +184,6 @@ class CSSStyleSheetResource::CSSTokenizerWorker final {
         response_body_loader_client->DidCancelLoadingBody();
         break;
       case MOJO_RESULT_FAILED_PRECONDITION:
-        DCHECK(info);
-        DCHECK(!decoded_sheet_text.IsNull());
         response_body_loader_client->DidReceiveDecodedData(decoded_sheet_text,
                                                            std::move(info));
         response_body_loader_client->DidFinishLoadingBody();
@@ -369,7 +367,7 @@ void CSSStyleSheetResource::NotifyFinished() {
         // already be set.
         DCHECK(!decoded_sheet_text_.IsNull());
       } else {
-        DCHECK(decoded_sheet_text_.IsNull());
+        DCHECK(LoadFailedOrCanceled() || decoded_sheet_text_.IsNull());
       }
       break;
     case LoadingState::kLoading:
