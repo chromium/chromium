@@ -9,6 +9,7 @@
 
 @class ChromeIdentity;
 @protocol SingleSignOnService;
+enum class LensEntrypoint;
 
 // Configuration object used by the LensProvider.
 @interface LensConfiguration : NSObject
@@ -21,6 +22,9 @@
 
 // The SingleSignOnService instance to use by LensProvider.
 @property(nonatomic, strong) id<SingleSignOnService> ssoService;
+
+// The entry point from which Lens was entered.
+@property(nonatomic, assign) LensEntrypoint entrypoint;
 
 @end
 
