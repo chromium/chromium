@@ -178,6 +178,7 @@ ci.builder(
         category = "reviver",
         short_name = "P",
     ),
+    execution_timeout = 5 * time.hour,
     # To avoid peak hours, we run it at 1 AM, 4 AM, 7 AM, 10AM, 1 PM UTC.
     schedule = "0 1,4,7,10,13 * * *",
     # Set to an empty list to avoid chromium-gitiles-trigger triggering new
