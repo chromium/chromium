@@ -17,8 +17,22 @@
 
 namespace segmentation_platform::processing {
 
+namespace {
+
+proto::UMAFeature GetAsUMA(const Data& data) {
+  DCHECK(data.input_feature.has_value() || data.output_feature.has_value());
+
+  if (data.input_feature.has_value()) {
+    return data.input_feature->uma_feature();
+  }
+
+  return data.output_feature->uma_output().uma_feature();
+}
+
+}  // namespace
+
 UmaFeatureProcessor::UmaFeatureProcessor(
-    base::flat_map<FeatureIndex, proto::UMAFeature>&& uma_features,
+    base::flat_map<FeatureIndex, Data>&& uma_features,
     SignalDatabase* signal_database,
     FeatureAggregator* feature_aggregator,
     const base::Time prediction_time,
@@ -42,24 +56,8 @@ void UmaFeatureProcessor::Process(
 }
 
 void UmaFeatureProcessor::ProcessNextUmaFeature() {
-  // Process the feature list.
-  absl::optional<proto::UMAFeature> next_feature;
-  FeatureIndex index;
-  while (!uma_features_.empty()) {
-    auto it = uma_features_.begin();
-    if (it->second.bucket_count() == 0) {
-      // Skip collection-only features.
-      uma_features_.erase(it);
-    } else {
-      next_feature = std::move(it->second);
-      index = it->first;
-      uma_features_.erase(it);
-      break;
-    }
-  }
-
   // Processing of the feature list has completed.
-  if (!next_feature.has_value() || feature_processor_state_->error()) {
+  if (uma_features_.empty() || feature_processor_state_->error()) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback_),
                                   std::move(feature_processor_state_),
@@ -67,8 +65,14 @@ void UmaFeatureProcessor::ProcessNextUmaFeature() {
     return;
   }
 
+  // Process the feature list.
+  const auto& it = uma_features_.begin();
+  const proto::UMAFeature& next_feature = GetAsUMA(it->second);
+  FeatureIndex index = it->first;
+  uma_features_.erase(it);
+
   // Validate the proto::UMAFeature metadata.
-  if (metadata_utils::ValidateMetadataUmaFeature(next_feature.value()) !=
+  if (metadata_utils::ValidateMetadataUmaFeature(next_feature) !=
       metadata_utils::ValidationResult::kValidationSuccess) {
     feature_processor_state_->SetError(
         stats::FeatureProcessingError::kUmaValidationError);
@@ -76,7 +80,7 @@ void UmaFeatureProcessor::ProcessNextUmaFeature() {
     return;
   }
 
-  ProcessSingleUmaFeature(index, next_feature.value());
+  ProcessSingleUmaFeature(index, next_feature);
 }
 
 void UmaFeatureProcessor::ProcessSingleUmaFeature(

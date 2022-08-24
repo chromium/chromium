@@ -23,31 +23,13 @@ class CustomInputProcessor : public QueryProcessor {
  public:
   CustomInputProcessor(const base::Time prediction_time,
                        InputDelegateHolder* input_delegate_holder);
-  CustomInputProcessor(
-      base::flat_map<FeatureIndex, proto::CustomInput>&& custom_inputs,
-      const base::Time prediction_time,
-      InputDelegateHolder* input_delegate_holder);
+  CustomInputProcessor(base::flat_map<FeatureIndex, Data>&& data,
+                       const base::Time prediction_time,
+                       InputDelegateHolder* input_delegate_holder);
   ~CustomInputProcessor() override;
 
   using FeatureListQueryProcessorCallback =
       base::OnceCallback<void(std::unique_ptr<FeatureProcessorState>)>;
-
-  // Function for processing a single CustomInput type of input for ML model.
-  // When the processing is successful, the feature processor state's input
-  // tensor is updated accordingly, else if an error occurred, the feature
-  // processor state's error flag is set.
-  // TODO(haileywang): Clean up this class and delete this method.
-  void ProcessCustomInput(
-      const proto::CustomInput& custom_input,
-      std::unique_ptr<FeatureProcessorState> feature_processor_state,
-      FeatureListQueryProcessorCallback callback);
-
-  // Called when the processing has finished to insert the result in the state
-  // object and notify the feature list processor.
-  void OnFinishProcessing(
-      FeatureListQueryProcessorCallback callback,
-      std::unique_ptr<FeatureProcessorState> feature_processor_state,
-      IndexedTensors result);
 
   // QueryProcessor implementation.
   void Process(std::unique_ptr<FeatureProcessorState> feature_processor_state,

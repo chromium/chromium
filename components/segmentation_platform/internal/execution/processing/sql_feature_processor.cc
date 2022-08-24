@@ -36,7 +36,9 @@ void SqlFeatureProcessor::Process(
   // Prepare the sql queries for indexed custom inputs processing.
   base::flat_map<SqlFeatureAndBindValueIndices, proto::CustomInput> bind_values;
   for (const auto& query : queries_) {
-    const proto::SqlFeature& feature = query.second;
+    DCHECK(query.second.input_feature->has_sql_feature());
+    const proto::SqlFeature& feature =
+        query.second.input_feature->sql_feature();
     FeatureIndex sql_feature_index = query.first;
 
     // Validate the proto::SqlFeature metadata.
@@ -81,7 +83,8 @@ void SqlFeatureProcessor::OnCustomInputProcessed(
   // Validate the total number of bind values needed.
   size_t total_bind_values = 0;
   for (const auto& query : queries_) {
-    const proto::SqlFeature& feature = query.second;
+    const proto::SqlFeature& feature =
+        query.second.input_feature->sql_feature();
     total_bind_values += feature.bind_values_size();
   }
 
@@ -97,7 +100,8 @@ void SqlFeatureProcessor::OnCustomInputProcessed(
 
   // Assemble the sql queries and the corresponding bind values.
   for (const auto& query : queries_) {
-    const proto::SqlFeature& feature = query.second;
+    const proto::SqlFeature& feature =
+        query.second.input_feature->sql_feature();
     FeatureIndex sql_feature_index = query.first;
     UkmDatabase::CustomSqlQuery& current =
         processed_queries_[sql_feature_index];

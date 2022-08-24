@@ -24,7 +24,7 @@ class InputDelegateHolder;
 // ML model.
 class SqlFeatureProcessor : public QueryProcessor {
  public:
-  using QueryList = base::flat_map<FeatureIndex, proto::SqlFeature>;
+  using QueryList = base::flat_map<FeatureIndex, Data>;
 
   SqlFeatureProcessor(QueryList&& queries,
                       base::Time prediction_time,

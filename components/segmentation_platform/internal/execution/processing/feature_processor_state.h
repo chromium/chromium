@@ -27,26 +27,11 @@ using proto::SegmentId;
 // the processing of a model's metadata.
 class FeatureProcessorState {
  public:
-  // Wrapper class that either contains an input or output.
-  struct Data {
-    explicit Data(proto::InputFeature input);
-    explicit Data(proto::TrainingOutput output);
-    Data(Data&&);
-    Data(const Data&) = delete;
-    Data& operator=(const Data&) = delete;
-    ~Data();
-
-    bool IsInput() const;
-    absl::optional<proto::InputFeature> input_feature;
-    absl::optional<proto::TrainingOutput> output_feature;
-  };
-
   FeatureProcessorState();
   FeatureProcessorState(
       base::Time prediction_time,
       base::TimeDelta bucket_duration,
       SegmentId segment_id,
-      std::deque<Data> data,
       scoped_refptr<InputContext> input_context,
       FeatureListQueryProcessor::FeatureProcessorCallback callback);
   virtual ~FeatureProcessorState();
@@ -68,22 +53,24 @@ class FeatureProcessorState {
     return input_context_;
   }
 
-  // Returns and pops the next input feature or output feature, wrapped inside
-  // `Data` structure. Return an empty struct if no input and output are
-  // available.
-  Data PopNextData();
+  // Returns and pops the next feature processor.
+  absl::optional<std::pair<std::unique_ptr<QueryProcessor>, bool>>
+  PopNextProcessor();
+
+  // Add a processor to the list of processors waiting for processing.
+  // TODO(haileywang): Send Data::DataType instead of bool.
+  void AppendProcessor(std::unique_ptr<QueryProcessor> processor,
+                       bool is_input);
+
+  // Temporarily store indexed tensor results.
+  void AppendIndexedTensors(const QueryProcessor::IndexedTensors& result,
+                            bool is_input);
+
+  // Format tensors and run callback.
+  void OnFinishProcessing();
 
   // Sets an error to the current feature processor state.
   void SetError(stats::FeatureProcessingError error);
-
-  // Returns whether the input feature list is empty.
-  bool IsFeatureListEmpty() const;
-
-  // Run the callback stored in the current feature processor state.
-  void RunCallback();
-
-  // Update the input tensor vector.
-  void AppendTensor(const std::vector<ProcessedValue>& data, bool is_input);
 
   // For testing only.
   void set_input_context_for_testing(
@@ -92,15 +79,19 @@ class FeatureProcessorState {
   }
 
  private:
+  // Format all indexed tensor results into final ordered tensor vector.
+  std::vector<float> MergeTensors(const QueryProcessor::IndexedTensors& tensor);
+
   const base::Time prediction_time_;
   const base::TimeDelta bucket_duration_;
   const SegmentId segment_id_;
-  std::deque<Data> data_;
   scoped_refptr<InputContext> input_context_;
+  std::deque<std::unique_ptr<QueryProcessor>> in_processors_;
+  std::deque<std::unique_ptr<QueryProcessor>> out_processors_;
 
   // Feature processing results.
-  std::vector<float> input_tensor_;
-  std::vector<float> output_tensor_;
+  QueryProcessor::IndexedTensors input_tensor_;
+  QueryProcessor::IndexedTensors output_tensor_;
   bool error_{false};
 
   // Callback to return feature processing results to model execution manager.

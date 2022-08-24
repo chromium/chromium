@@ -5,28 +5,11 @@
 #include "components/segmentation_platform/internal/execution/processing/feature_processor_state.h"
 
 #include "base/time/time.h"
+#include "components/segmentation_platform/internal/database/ukm_types.h"
+#include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/public/config.h"
 
 namespace segmentation_platform::processing {
-
-FeatureProcessorState::Data::Data(proto::InputFeature input)
-    : input_feature(std::move(input)) {}
-
-FeatureProcessorState::Data::Data(proto::TrainingOutput output)
-    : output_feature(std::move(output)) {}
-
-FeatureProcessorState::Data::Data(Data&& other)
-    : input_feature(std::move(other.input_feature)),
-      output_feature(std::move(other.output_feature)) {}
-
-FeatureProcessorState::Data::~Data() = default;
-
-bool FeatureProcessorState::Data::IsInput() const {
-  DCHECK(!input_feature.has_value() || !output_feature.has_value());
-  DCHECK(input_feature.has_value() || output_feature.has_value());
-
-  return input_feature.has_value();
-}
 
 FeatureProcessorState::FeatureProcessorState()
     : prediction_time_(base::Time::Now()),
@@ -37,17 +20,17 @@ FeatureProcessorState::FeatureProcessorState(
     base::Time prediction_time,
     base::TimeDelta bucket_duration,
     SegmentId segment_id,
-    std::deque<Data> data,
     scoped_refptr<InputContext> input_context,
     FeatureListQueryProcessor::FeatureProcessorCallback callback)
     : prediction_time_(prediction_time),
       bucket_duration_(bucket_duration),
       segment_id_(segment_id),
-      data_(std::move(data)),
       input_context_(std::move(input_context)),
       callback_(std::move(callback)) {}
 
-FeatureProcessorState::~FeatureProcessorState() = default;
+FeatureProcessorState::~FeatureProcessorState() {
+  DCHECK(callback_.is_null());
+};
 
 void FeatureProcessorState::SetError(stats::FeatureProcessingError error) {
   stats::RecordFeatureProcessingError(segment_id_, error);
@@ -58,42 +41,82 @@ void FeatureProcessorState::SetError(stats::FeatureProcessingError error) {
   input_tensor_.clear();
 }
 
-FeatureProcessorState::Data FeatureProcessorState::PopNextData() {
-  Data data = std::move(data_.front());
-  data_.pop_front();
-  return data;
+absl::optional<std::pair<std::unique_ptr<QueryProcessor>, bool>>
+FeatureProcessorState::PopNextProcessor() {
+  absl::optional<std::pair<std::unique_ptr<QueryProcessor>, bool>>
+      next_processor;
+  if (!out_processors_.empty()) {
+    std::unique_ptr<QueryProcessor> processor =
+        std::move(out_processors_.front());
+    out_processors_.pop_front();
+    next_processor = std::make_pair(std::move(processor), false);
+  } else if (!in_processors_.empty()) {
+    std::unique_ptr<QueryProcessor> processor =
+        std::move(in_processors_.front());
+    in_processors_.pop_front();
+    next_processor = std::make_pair(std::move(processor), true);
+  }
+  return next_processor;
 }
 
-bool FeatureProcessorState::IsFeatureListEmpty() const {
-  return data_.empty();
-}
-
-void FeatureProcessorState::RunCallback() {
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback_), error_, input_tensor_,
-                                output_tensor_));
-}
-
-void FeatureProcessorState::AppendTensor(
-    const std::vector<ProcessedValue>& data,
+void FeatureProcessorState::AppendProcessor(
+    std::unique_ptr<QueryProcessor> processor,
     bool is_input) {
-  std::vector<float> tensor_result;
-  for (auto& value : data) {
-    if (value.type == ProcessedValue::Type::FLOAT) {
-      tensor_result.push_back(value.float_val);
-    } else {
-      SetError(stats::FeatureProcessingError::kResultTensorError);
-      return;
+  if (is_input) {
+    in_processors_.emplace_back(std::move(processor));
+  } else {
+    out_processors_.emplace_back(std::move(processor));
+  }
+}
+
+void FeatureProcessorState::AppendIndexedTensors(
+    const QueryProcessor::IndexedTensors& result,
+    bool is_input) {
+  if (is_input) {
+    for (const auto& item : result) {
+      input_tensor_[item.first] = item.second;
+    }
+  } else {
+    for (const auto& item : result) {
+      output_tensor_[item.first] = item.second;
     }
   }
+}
 
-  if (is_input) {
-    input_tensor_.insert(input_tensor_.end(), tensor_result.begin(),
-                         tensor_result.end());
-  } else {
-    output_tensor_.insert(output_tensor_.end(), tensor_result.begin(),
-                          tensor_result.end());
+void FeatureProcessorState::OnFinishProcessing() {
+  std::vector<float> input;
+  std::vector<float> output;
+  if (!error_) {
+    input = MergeTensors(std::move(input_tensor_));
+    output = MergeTensors(std::move(output_tensor_));
   }
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback_), error_, std::move(input),
+                                std::move(output)));
+}
+
+std::vector<float> FeatureProcessorState::MergeTensors(
+    const QueryProcessor::IndexedTensors& tensor) {
+  std::vector<float> result;
+  if (metadata_utils::ValidateIndexedTensors(tensor, tensor.size()) !=
+      metadata_utils::ValidationResult::kValidationSuccess) {
+    // Note that since the state does not know the expected size, if a tensor is
+    // missing from the end of the indexed tensor, this validation will not
+    // fail.
+    SetError(stats::FeatureProcessingError::kResultTensorError);
+  } else {
+    for (size_t i = 0; i < tensor.size(); ++i) {
+      for (auto& value : tensor.at(i)) {
+        if (value.type == ProcessedValue::Type::FLOAT) {
+          result.push_back(value.float_val);
+        } else {
+          SetError(stats::FeatureProcessingError::kResultTensorError);
+          return result;
+        }
+      }
+    }
+  }
+  return result;
 }
 
 }  // namespace segmentation_platform::processing

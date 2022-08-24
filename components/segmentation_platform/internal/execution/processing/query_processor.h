@@ -14,6 +14,7 @@
 
 namespace segmentation_platform::processing {
 class FeatureProcessorState;
+struct Data;
 
 // Interface that converts aribitrary data to a list of tensor in asynchronous
 // callback, which can be fed into machine learning model as training data or

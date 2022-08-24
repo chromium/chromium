@@ -50,18 +50,18 @@ class SqlFeatureProcessorTest : public testing::Test {
     return custom_input;
   }
 
-  proto::SqlFeature CreateSqlFeature(
-      const std::string& sql,
-      const std::vector<proto::CustomInput>& custom_inputs) {
-    proto::SqlFeature sql_feature;
-    sql_feature.set_sql(sql);
+  Data CreateSqlFeature(const std::string& sql,
+                        const std::vector<proto::CustomInput>& custom_inputs) {
+    proto::InputFeature input;
+    proto::SqlFeature* sql_feature = input.mutable_sql_feature();
+    sql_feature->set_sql(sql);
     for (const proto::CustomInput& custom_input : custom_inputs) {
-      auto* bind_value = sql_feature.add_bind_values();
+      auto* bind_value = sql_feature->add_bind_values();
       auto* value = bind_value->mutable_value();
       bind_value->set_param_type(proto::SqlFeature::BindValue::BOOL);
       *value = custom_input;
     }
-    return sql_feature;
+    return Data(input);
   }
 
   void ExpectQueryResult(
@@ -118,7 +118,7 @@ TEST_F(SqlFeatureProcessorTest, EmptyBindValues) {
   // Set up a single empty sql feature.
   SqlFeatureProcessor::QueryList data;
   constexpr char kSqlQuery[] = "some sql query";
-  data[0] = CreateSqlFeature(kSqlQuery, {});
+  data.emplace(0, CreateSqlFeature(kSqlQuery, {}));
 
   // Construct the expected processed bind values based on the given data.
   base::flat_map<SqlFeatureProcessor::FeatureIndex, CustomSqlQuery>
@@ -138,11 +138,13 @@ TEST_F(SqlFeatureProcessorTest, SingleSqlFeatureWithBindValues) {
   SqlFeatureProcessor::QueryList data;
   constexpr char kSqlQuery[] = "some sql query with three bind value ? ? ?";
   std::vector<float> custom_default_values = {1, 2, 3};
-  data[0] = CreateSqlFeature(
-      kSqlQuery,
-      {CreateCustomInput(1, proto::CustomInput::FILL_PREDICTION_TIME, {}),
-       CreateCustomInput(2, proto::CustomInput::UNKNOWN_FILL_POLICY,
-                         custom_default_values)});
+  data.emplace(
+      0,
+      CreateSqlFeature(
+          kSqlQuery,
+          {CreateCustomInput(1, proto::CustomInput::FILL_PREDICTION_TIME, {}),
+           CreateCustomInput(2, proto::CustomInput::UNKNOWN_FILL_POLICY,
+                             custom_default_values)}));
 
   // Construct the expected processed bind values based on the given data.
   base::flat_map<SqlFeatureProcessor::FeatureIndex, CustomSqlQuery>
@@ -167,13 +169,15 @@ TEST_F(SqlFeatureProcessorTest, MultipleSqlFeatures) {
   constexpr char kSqlQueryWithBindValue[] =
       "some sql query with one bind value ?";
   std::vector<float> custom_default_values = {1, 2, 3};
-  data[0] = CreateSqlFeature(
-      kSqlQueryWithBindValue,
-      {CreateCustomInput(1, proto::CustomInput::FILL_PREDICTION_TIME, {})});
-  data[1] = CreateSqlFeature(kSqlQuery, {});
-  data[2] = CreateSqlFeature(
-      kSqlQueryWithBindValue,
-      {CreateCustomInput(1, proto::CustomInput::FILL_PREDICTION_TIME, {})});
+  data.emplace(0, CreateSqlFeature(
+                      kSqlQueryWithBindValue,
+                      {CreateCustomInput(
+                          1, proto::CustomInput::FILL_PREDICTION_TIME, {})}));
+  data.emplace(1, CreateSqlFeature(kSqlQuery, {}));
+  data.emplace(2, CreateSqlFeature(
+                      kSqlQueryWithBindValue,
+                      {CreateCustomInput(
+                          1, proto::CustomInput::FILL_PREDICTION_TIME, {})}));
 
   // Construct the expected processed bind values based on the given data.
   base::flat_map<SqlFeatureProcessor::FeatureIndex, CustomSqlQuery>

@@ -29,6 +29,24 @@ class InputDelegateHolder;
 
 using proto::SegmentId;
 
+// Wrapper class that either contains an input or output.
+struct Data {
+  explicit Data(proto::InputFeature input);
+  explicit Data(proto::TrainingOutput output);
+  Data(Data&&);
+  Data& operator=(Data&&) = default;
+  ~Data();
+
+  Data(const Data&) = delete;
+  Data& operator=(const Data&) = delete;
+
+  bool IsInput() const;
+  enum DataType { INPUT_UMA, OUTPUT_UMA, INPUT_UKM, INPUT_CUSTOM };
+  DataType type;
+  absl::optional<proto::InputFeature> input_feature;
+  absl::optional<proto::TrainingOutput> output_feature;
+};
+
 // FeatureListQueryProcessor takes a segmentation model's metadata, processes
 // each feature in the metadata's feature list in order and computes an input
 // tensor to use when executing the ML model.
@@ -68,17 +86,24 @@ class FeatureListQueryProcessor {
       FeatureProcessorCallback callback);
 
  private:
-  // Called by ProcessFeatureList to process the next input feature in the list.
-  // It then delegates the processing to the correct feature processor class
-  // until the feature list is empty.
-  void ProcessNext(
-      std::unique_ptr<FeatureProcessorState> feature_processor_state);
+  // Called by ProcessFeatureList to initialize the list of processors needed to
+  // process the feature list. It then delegates the processing to the |Process|
+  // function.
+  void CreateProcessors(
+      std::unique_ptr<FeatureProcessorState> feature_processor_state,
+      std::map<Data::DataType,
+               base::flat_map<QueryProcessor::FeatureIndex, Data>>&&
+          data_to_process);
 
-  // Callback called after a feature has been processed, indicating that we can
-  // safely discard the feature processor that handled the processing. Continue
-  // with the rest of the input features by calling ProcessNextInputFeature.
+  // Called by ProcessBatch to initialize the processing after input features
+  // are ready to be batch processed.
+  void Process(std::unique_ptr<FeatureProcessorState> feature_processor_state);
+
+  // Callback called after a processor has finished processing, indicating that
+  // we can safely discard the feature processor that handled the processing.
+  // Continue with the rest of the feature processors by calling Process.
   // `is_input' indicates whether the feature is for input tensors.
-  void OnFeatureProcessed(
+  void OnFeatureBatchProcessed(
       std::unique_ptr<QueryProcessor> feature_processor,
       bool is_input,
       std::unique_ptr<FeatureProcessorState> feature_processor_state,
@@ -86,7 +111,7 @@ class FeatureListQueryProcessor {
 
   // Gets a UMA feature processor for a
   std::unique_ptr<UmaFeatureProcessor> GetUmaFeatureProcessor(
-      base::flat_map<FeatureIndex, proto::UMAFeature>&& uma_features,
+      base::flat_map<FeatureIndex, Data>&& uma_features,
       FeatureProcessorState* feature_processor_state);
 
   // Storage service which provides signals to process.
