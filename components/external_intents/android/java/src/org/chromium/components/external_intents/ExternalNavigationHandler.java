@@ -150,6 +150,40 @@ public class ExternalNavigationHandler {
         int NUM_ENTRIES = 3;
     }
 
+    /**
+     * Histogram for the result of an intent scheme navigation.
+     * This enum is used in UMA, do not reorder values.
+     */
+    @IntDef({IntentUriNavigationResult.WITH_FALLBACK_LAUNCHED_INTENT,
+            IntentUriNavigationResult.WITH_FALLBACK_USED_FALLBACK,
+            IntentUriNavigationResult.WITH_FALLBACK_NO_OVERRIDE,
+            IntentUriNavigationResult.WITH_FALLBACK_ASYNC_RESULT,
+            IntentUriNavigationResult.NO_FALLBACK_LAUNCHED_INTENT,
+            IntentUriNavigationResult.NO_FALLBACK_NO_OVERRIDE,
+            IntentUriNavigationResult.NO_FALLBACK_ASYNC_RESULT,
+            IntentUriNavigationResult.NUM_ENTRIES})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface IntentUriNavigationResult {
+        /* Intent with an unused fallback URL was launched. */
+        int WITH_FALLBACK_LAUNCHED_INTENT = 0;
+        /* Intent fallback URL was used. */
+        int WITH_FALLBACK_USED_FALLBACK = 1;
+        /* Intent with an unused fallback URL was blocked. */
+        int WITH_FALLBACK_NO_OVERRIDE = 2;
+        /* Intent with a fallback URL prompted the user. */
+        int WITH_FALLBACK_ASYNC_RESULT = 3;
+        /* Intent without a fallback URL was launched. */
+        int NO_FALLBACK_LAUNCHED_INTENT = 4;
+        /* Intent without a fallback URL was blocked. */
+        int NO_FALLBACK_NO_OVERRIDE = 5;
+        /* Intent without a fallback URL prompted the user. */
+        int NO_FALLBACK_ASYNC_RESULT = 6;
+
+        int NUM_ENTRIES = 7;
+    }
+
+    private static final String INTENT_URI_RESULT_NAME = "Android.Intent.IntentUriNavigationResult";
+
     // Helper class to return a boolean by reference.
     private static class MutableBoolean {
         private Boolean mValue;
@@ -308,12 +342,15 @@ public class ExternalNavigationHandler {
         @OverrideUrlLoadingAsyncActionType
         int mAsyncActionType;
 
+        boolean mWasExternalFallbackUrlLaunch;
+
         private OverrideUrlLoadingResult(@OverrideUrlLoadingResultType int resultType) {
-            this(resultType, OverrideUrlLoadingAsyncActionType.NO_ASYNC_ACTION);
+            this(resultType, OverrideUrlLoadingAsyncActionType.NO_ASYNC_ACTION, false);
         }
 
         private OverrideUrlLoadingResult(@OverrideUrlLoadingResultType int resultType,
-                @OverrideUrlLoadingAsyncActionType int asyncActionType) {
+                @OverrideUrlLoadingAsyncActionType int asyncActionType,
+                boolean wasExternalFallbackUrlLaunch) {
             // The async action type should be set only for async actions...
             assert (asyncActionType == OverrideUrlLoadingAsyncActionType.NO_ASYNC_ACTION
                     || resultType == OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION);
@@ -322,8 +359,12 @@ public class ExternalNavigationHandler {
             assert (!(asyncActionType == OverrideUrlLoadingAsyncActionType.NO_ASYNC_ACTION
                     && resultType == OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION));
 
+            assert (!wasExternalFallbackUrlLaunch
+                    || resultType == OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT);
+
             mResultType = resultType;
             mAsyncActionType = asyncActionType;
+            mWasExternalFallbackUrlLaunch = wasExternalFallbackUrlLaunch;
         }
 
         public @OverrideUrlLoadingResultType int getResultType() {
@@ -334,6 +375,10 @@ public class ExternalNavigationHandler {
             return mAsyncActionType;
         }
 
+        public boolean wasExternalFallbackUrlLaunch() {
+            return mWasExternalFallbackUrlLaunch;
+        }
+
         /**
          * Use this result when an asynchronous action needs to be carried out before deciding
          * whether to block the external navigation.
@@ -341,7 +386,8 @@ public class ExternalNavigationHandler {
         public static OverrideUrlLoadingResult forAsyncAction(
                 @OverrideUrlLoadingAsyncActionType int asyncActionType) {
             return new OverrideUrlLoadingResult(
-                    OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION, asyncActionType);
+                    OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION, asyncActionType,
+                    false);
         }
 
         /**
@@ -369,6 +415,16 @@ public class ExternalNavigationHandler {
             return new OverrideUrlLoadingResult(
                     OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT);
         }
+
+        /**
+         * Use this result when an external app has been launched as a result of using the fallback
+         * URL for an intent scheme navigation.
+         */
+        public static OverrideUrlLoadingResult forExternalFallbackUrl() {
+            return new OverrideUrlLoadingResult(
+                    OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
+                    OverrideUrlLoadingAsyncActionType.NO_ASYNC_ACTION, true);
+        }
     }
 
     /**
@@ -392,8 +448,9 @@ public class ExternalNavigationHandler {
     public OverrideUrlLoadingResult shouldOverrideUrlLoading(ExternalNavigationParams params) {
         if (debug()) Log.i(TAG, "shouldOverrideUrlLoading called on " + params.getUrl().getSpec());
         Intent targetIntent;
+        boolean isIntentUrl = UrlUtilities.hasIntentScheme(params.getUrl());
         // Perform generic parsing of the URI to turn it into an Intent.
-        if (UrlUtilities.hasIntentScheme(params.getUrl())) {
+        if (isIntentUrl) {
             try {
                 targetIntent = Intent.parseUri(params.getUrl().getSpec(), Intent.URI_INTENT_SCHEME);
             } catch (Exception ex) {
@@ -439,6 +496,8 @@ public class ExternalNavigationHandler {
                     canLaunchExternalFallbackResult.get());
         }
         if (debug()) printDebugShouldOverrideUrlLoadingResultType(result);
+        if (isIntentUrl) captureIntentSchemeMetrics(result, browserFallbackUrl);
+
         return result;
     }
 
@@ -471,7 +530,7 @@ public class ExternalNavigationHandler {
                             new QueryIntentActivitiesSupplier(intent);
                     if (!isAlreadyInTargetWebApk(supplier, params)
                             && launchWebApkIfSoleIntentHandler(supplier, intent, params)) {
-                        return OverrideUrlLoadingResult.forExternalIntent();
+                        return OverrideUrlLoadingResult.forExternalFallbackUrl();
                     }
                 } catch (Exception e) {
                     if (debug()) Log.i(TAG, "Could not parse fallback url as intent");
@@ -485,8 +544,13 @@ public class ExternalNavigationHandler {
                 String marketReferrer = TextUtils.isEmpty(appInfo.second)
                         ? ContextUtils.getApplicationContext().getPackageName()
                         : appInfo.second;
-                return sendIntentToMarket(
+                OverrideUrlLoadingResult result = sendIntentToMarket(
                         appInfo.first, marketReferrer, params, browserFallbackUrl);
+                if (result.getResultType()
+                        == OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT) {
+                    result = OverrideUrlLoadingResult.forExternalFallbackUrl();
+                }
+                return result;
             }
         }
 
@@ -530,6 +594,58 @@ public class ExternalNavigationHandler {
                 break;
         }
         Log.i(TAG, "shouldOverrideUrlLoading result: " + resultString);
+    }
+
+    private void captureIntentSchemeMetrics(
+            OverrideUrlLoadingResult result, GURL browserFallbackUrl) {
+        @IntentUriNavigationResult
+        int value = IntentUriNavigationResult.NO_FALLBACK_NO_OVERRIDE;
+        if (browserFallbackUrl.isEmpty()) {
+            switch (result.getResultType()) {
+                case OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT:
+                    value = IntentUriNavigationResult.NO_FALLBACK_LAUNCHED_INTENT;
+                    break;
+                case OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION:
+                    value = IntentUriNavigationResult.NO_FALLBACK_ASYNC_RESULT;
+                    break;
+                case OverrideUrlLoadingResultType.NO_OVERRIDE:
+                    value = IntentUriNavigationResult.NO_FALLBACK_NO_OVERRIDE;
+                    break;
+                case OverrideUrlLoadingResultType.OVERRIDE_WITH_CLOBBERING_TAB:
+                    // Quirk of incognito intent scheme URLs synchronously clobbering the tab with
+                    // the target URL when the dialog can't be shown.
+                    value = IntentUriNavigationResult.NO_FALLBACK_NO_OVERRIDE;
+                    break;
+                default:
+                    assert false;
+                    break;
+            }
+        } else {
+            switch (result.getResultType()) {
+                case OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT:
+                    if (result.wasExternalFallbackUrlLaunch()) {
+                        value = IntentUriNavigationResult.WITH_FALLBACK_USED_FALLBACK;
+                    } else {
+                        value = IntentUriNavigationResult.WITH_FALLBACK_LAUNCHED_INTENT;
+                    }
+                    break;
+                case OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION:
+                    value = IntentUriNavigationResult.WITH_FALLBACK_ASYNC_RESULT;
+                    break;
+                case OverrideUrlLoadingResultType.NO_OVERRIDE:
+                    value = IntentUriNavigationResult.WITH_FALLBACK_NO_OVERRIDE;
+                    break;
+                case OverrideUrlLoadingResultType.OVERRIDE_WITH_CLOBBERING_TAB:
+                    value = IntentUriNavigationResult.WITH_FALLBACK_USED_FALLBACK;
+                    break;
+                default:
+                    assert false;
+                    break;
+            }
+        }
+
+        RecordHistogram.recordEnumeratedHistogram(
+                INTENT_URI_RESULT_NAME, value, IntentUriNavigationResult.NUM_ENTRIES);
     }
 
     private boolean resolversSubsetOf(List<ResolveInfo> infos, List<ResolveInfo> container) {

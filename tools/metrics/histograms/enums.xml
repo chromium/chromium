@@ -51417,6 +51417,16 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="2" label="Intent picker dialog shown automatically"/>
 </enum>
 
+<enum name="IntentUriNavigationResult">
+  <int value="0" label="Intent with an unused fallback URL was launched"/>
+  <int value="1" label="Intent fallback URL was used"/>
+  <int value="2" label="Intent with an unused fallback URL was blocked"/>
+  <int value="3" label="Intent with a fallback URL prompted the user"/>
+  <int value="4" label="Intent without a fallback URL was launched"/>
+  <int value="5" label="Intent without a fallback URL was blocked"/>
+  <int value="6" label="Intent without a fallback URL prompted the user"/>
+</enum>
+
 <enum name="InterceptionType">
   <int value="0" label="Not intercepted"/>
   <int value="1" label="Other"/>
