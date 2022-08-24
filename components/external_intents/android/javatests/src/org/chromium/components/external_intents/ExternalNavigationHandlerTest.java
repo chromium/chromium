@@ -34,6 +34,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
@@ -48,6 +49,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.components.external_intents.ExternalNavigationDelegate.IntentToAutofillAllowingAppResult;
@@ -76,6 +78,7 @@ import java.util.regex.Pattern;
 @RunWith(BaseJUnit4ClassRunner.class)
 // clang-format off
 @Batch(Batch.UNIT_TESTS)
+@Features.DisableFeatures(ExternalIntentsFeatures.EXTERNAL_NAVIGATION_DEBUG_LOGS_NAME)
 public class ExternalNavigationHandlerTest {
     // clang-format on
     // Expectations
@@ -180,6 +183,9 @@ public class ExternalNavigationHandlerTest {
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
+    @Rule
+    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     @Mock
     AlertDialog mAlertDialog;

@@ -3450,6 +3450,12 @@ const char kExploreSitesName[] = "Explore websites";
 const char kExploreSitesDescription[] =
     "Enables portal from new tab page to explore websites.";
 
+const char kExternalNavigationDebugLogsName[] =
+    "External Navigation Debug Logs";
+const char kExternalNavigationDebugLogsDescription[] =
+    "Enables detailed logging to logcat about why Chrome is making decisions "
+    "about whether to allow or block navigation to other apps";
+
 const char kFeatureNotificationGuideName[] = "Feature notification guide";
 const char kFeatureNotificationGuideDescription[] =
     "Enables notifications about chrome features.";

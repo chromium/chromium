@@ -70,6 +70,7 @@
   "enable-webgpu-developer-features",
   "enable-zero-copy",
   "extensions-on-chrome-urls",
+  "external-navigation-debug-logs",
   "force-color-profile",
   "force-effective-connection-type",
   "force-show-update-menu-badge",

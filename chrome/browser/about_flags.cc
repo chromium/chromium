@@ -91,6 +91,7 @@
 #include "components/dom_distiller/core/dom_distiller_switches.h"
 #include "components/download/public/common/download_features.h"
 #include "components/error_page/common/error_page_switches.h"
+#include "components/external_intents/android/external_intents_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feed/feed_feature_list.h"
@@ -9147,6 +9148,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDesktopPWAsAppHomePageDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kDesktopPWAsAppHomePage)},
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+    {"external-navigation-debug-logs",
+     flag_descriptions::kExternalNavigationDebugLogsName,
+     flag_descriptions::kExternalNavigationDebugLogsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(external_intents::kExternalNavigationDebugLogs)},
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
     {"battery-saver-mode-available",

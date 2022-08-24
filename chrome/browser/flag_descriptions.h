@@ -1940,6 +1940,9 @@ extern const char kEnableOskResizesVisualViewportDescription[];
 extern const char kExploreSitesName[];
 extern const char kExploreSitesDescription[];
 
+extern const char kExternalNavigationDebugLogsName[];
+extern const char kExternalNavigationDebugLogsDescription[];
+
 extern const char kFeatureNotificationGuideName[];
 extern const char kFeatureNotificationGuideDescription[];
 

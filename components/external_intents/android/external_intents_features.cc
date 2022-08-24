@@ -19,7 +19,7 @@ namespace {
 // Array of features exposed through the Java ExternalIntentsFeatures API.
 const base::Feature* kFeaturesExposedToJava[] = {
     &kAutofillAssistantGoogleInitiatorOriginCheck,
-    &kScaryExternalNavigationRefactoring};
+    &kExternalNavigationDebugLogs, &kScaryExternalNavigationRefactoring};
 
 }  // namespace
 
@@ -30,6 +30,9 @@ const base::Feature* kFeaturesExposedToJava[] = {
 const base::Feature kAutofillAssistantGoogleInitiatorOriginCheck{
     "AutofillAssistantGoogleInitiatorOriginCheck",
     base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kExternalNavigationDebugLogs{
+    "ExternalNavigationDebugLogs", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kScaryExternalNavigationRefactoring{
     "ScaryExternalNavigationRefactoring", base::FEATURE_ENABLED_BY_DEFAULT};
