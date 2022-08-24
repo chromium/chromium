@@ -25,6 +25,11 @@ namespace {
 // Maximum number of lines that labels can occupy.
 constexpr int kHoverCardTitleMaxLines = 2;
 
+// Hover card fixed width. Toolbar actions are not visible when window is too
+// small to display them, therefore hover cards wouldn't be displayed if the
+// window is not big enough.
+constexpr int kHoverCardWidth = 240;
+
 // Hover card margins.
 // TODO(crbug.com/1351778): Move to a base hover card class.
 constexpr int kHorizontalMargin = 18;
@@ -237,6 +242,8 @@ ToolbarActionHoverCardBubbleView::ToolbarActionHoverCardBubbleView(
   // Set so that the toolbar action hover card is not focus traversable when
   // keyboard navigating through the tab strip.
   set_focus_traversable_from_anchor_view(false);
+
+  set_fixed_width(kHoverCardWidth);
 
   // Set up content.
   title_label_ = AddChildView(std::make_unique<FadeLabel>(
