@@ -10,6 +10,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/functional/overloaded.h"
 #include "base/notreached.h"
 #include "content/public/android/content_jni_headers/MessagePayloadJni_jni.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -18,33 +19,22 @@
 
 namespace content::android {
 
-namespace {
-using base::android::ScopedJavaLocalRef;
-
-// Helper methods to convert `blink::WebMessagePayload` to Java
-// `org.chromium.content_public.browser.MessagePayload`.
-struct PayloadToJavaVisitor {
-  ScopedJavaLocalRef<jobject> operator()(const std::u16string& str) {
-    return Java_MessagePayloadJni_createFromString(
-        env_, base::android::ConvertUTF16ToJavaString(env_, str));
-  }
-  ScopedJavaLocalRef<jobject> operator()(
-      const std::vector<uint8_t>& array_buffer) {
-    return Java_MessagePayloadJni_createFromArrayBuffer(
-        env_, base::android::ToJavaByteArray(env_, array_buffer.data(),
-                                             array_buffer.size()));
-  }
-
-  explicit PayloadToJavaVisitor(JNIEnv* env) : env_(env){};
-  JNIEnv* env_;
-};
-
-};  // namespace
-
 base::android::ScopedJavaLocalRef<jobject> ConvertWebMessagePayloadToJava(
     const blink::WebMessagePayload& payload) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  return absl::visit(PayloadToJavaVisitor(env), payload);
+  return absl::visit(
+      base::Overloaded{
+          [env](const std::u16string& str) {
+            return Java_MessagePayloadJni_createFromString(
+                env, base::android::ConvertUTF16ToJavaString(env, str));
+          },
+          [env](const std::vector<uint8_t>& array_buffer) {
+            return Java_MessagePayloadJni_createFromArrayBuffer(
+                env, base::android::ToJavaByteArray(env, array_buffer.data(),
+                                                    array_buffer.size()));
+          },
+      },
+      payload);
 }
 
 blink::WebMessagePayload ConvertToWebMessagePayloadFromJava(
