@@ -325,9 +325,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFTextStore
   // composed text.
   void GetStyle(const TF_DISPLAYATTRIBUTE& attribute, ImeTextSpan* span);
 
-  // Clear all of the pending supported attributes values and count.
-  void ClearSupportedAttributes();
-
   // The reference count of this instance.
   volatile LONG ref_count_ = 0;
 
