@@ -15,6 +15,11 @@
 
 namespace game_mode {
 
+using GameMode = ash::ResourcedClient::GameMode;
+
+void AddArcPkgNameForTesting(const std::string& pkg_name);
+void ClearArcPkgNamesForTesting();
+
 // When a borealis window enters full screen, game mode is enabled.
 // The controller works as follows:
 //
@@ -41,28 +46,42 @@ class GameModeController : public aura::client::FocusChangeObserver {
   void OnWindowFocused(aura::Window* gained_focus,
                        aura::Window* lost_focus) override;
 
-  class GameModeEnabler {
+  // Represents game mode trigger criteria which, when destroyed, cause game
+  // mode to be turned off.
+  class GameModeCriteria {
    public:
-    explicit GameModeEnabler(ash::ResourcedClient::GameMode mode);
-    ~GameModeEnabler();
+    virtual ~GameModeCriteria() = default;
+
+    virtual GameMode mode() const = 0;
+  };
+
+  // Maintains GameMode in an ON state until destroyed. This is a special case
+  // of GameModeCriteria which is always true.
+  class GameModeEnabler : public GameModeCriteria {
+   public:
+    explicit GameModeEnabler(GameMode mode);
+    ~GameModeEnabler() override;
+
+    GameMode mode() const override;
 
    private:
     static void OnSetGameMode(
-        absl::optional<ash::ResourcedClient::GameMode> refresh_of,
-        absl::optional<ash::ResourcedClient::GameMode> previous);
+        absl::optional<GameMode> refresh_of, absl::optional<GameMode> previous);
     void RefreshGameMode();
 
     // Used to determine if it's the first instance of game mode failing.
     static bool should_record_failure;
     base::RepeatingTimer timer_;
-    const ash::ResourcedClient::GameMode mode_;
+    const GameMode mode_;
   };
+
+  static GameMode ModeOfWindow(aura::Window* window);
 
   class WindowTracker : public ash::WindowStateObserver,
                         public aura::WindowObserver {
    public:
     WindowTracker(ash::WindowState* window_state,
-                  std::unique_ptr<WindowTracker> previous_focus);
+                  std::unique_ptr<WindowTracker> previous_focused);
     ~WindowTracker() override;
 
     // Overridden from WindowObserver
@@ -80,7 +99,7 @@ class GameModeController : public aura::client::FocusChangeObserver {
         window_state_observer_{this};
     base::ScopedObservation<aura::Window, aura::WindowObserver>
         window_observer_{this};
-    std::unique_ptr<GameModeController::GameModeEnabler> game_mode_;
+    std::unique_ptr<GameModeCriteria> game_mode_criteria_;
   };
 
  private:
