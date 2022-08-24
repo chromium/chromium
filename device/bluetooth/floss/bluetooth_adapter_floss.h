@@ -29,8 +29,6 @@
 
 namespace floss {
 
-class BluetoothDeviceFloss;
-
 // The BluetoothAdapterFloss class implements BluetoothAdapter for platforms
 // that use Floss, a dbus front-end for the Fluoride Bluetooth stack.
 //
@@ -165,10 +163,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
   void DiscoveringChanged(bool discovering);
   void PresentChanged(bool present);
   void NotifyAdapterPoweredChanged(bool powered);
-
-  // Announce to observers that |device| has changed its connected state.
-  void NotifyDeviceConnectedStateChanged(BluetoothDeviceFloss* device,
-                                         bool is_now_connected);
 
   // Observers
   // floss::FlossManagerClient::Observer override.
