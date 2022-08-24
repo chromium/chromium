@@ -39,12 +39,6 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowMacTest, MenuCommandsAfterDestroy) {
           itemWithTag:IDC_BOOKMARK_THIS_TAB],
       base::scoped_policy::RETAIN);
 
-  // The mainMenu item doesn't have an action associated while the browser
-  // window isn't focused, which we can't do in a browser test. So associate one
-  // manually.
-  EXPECT_EQ([bookmark_menu_item action], nullptr);
-  [bookmark_menu_item setAction:@selector(commandDispatch:)];
-
   EXPECT_TRUE(window.get());
   EXPECT_TRUE(bookmark_menu_item.get());
 

@@ -74,19 +74,24 @@ class AppShimMenuControllerBrowserTest
   }
 
   void CheckHasAppMenus(const extensions::Extension* app) const {
-    const int kExtraTopLevelItems = 4;
     NSArray* item_array = [[NSApp mainMenu] itemArray];
-    ASSERT_EQ(initial_menu_item_count_ + kExtraTopLevelItems,
-              [item_array count]);
-    for (NSUInteger i = 0; i < initial_menu_item_count_; ++i)
+    ASSERT_EQ(initial_menu_item_count_, [item_array count]);
+
+    // The extra app menus are added from the start when NSApp has an activation
+    // policy.
+    const int kExtraTopLevelItems = 4;
+    for (NSUInteger i = 0; i < initial_menu_item_count_ - kExtraTopLevelItems;
+         ++i) {
       EXPECT_TRUE([item_array[i] isHidden]);
-    NSMenuItem* app_menu = item_array[initial_menu_item_count_];
+    }
+
+    NSMenuItem* app_menu =
+        item_array[initial_menu_item_count_ - kExtraTopLevelItems];
     EXPECT_EQ(app->id(), base::SysNSStringToUTF8([app_menu title]));
     EXPECT_EQ(app->name(),
               base::SysNSStringToUTF8([[app_menu submenu] title]));
-    for (NSUInteger i = initial_menu_item_count_;
-         i < initial_menu_item_count_ + kExtraTopLevelItems;
-         ++i) {
+    for (NSUInteger i = initial_menu_item_count_ - kExtraTopLevelItems;
+         i < initial_menu_item_count_; ++i) {
       NSMenuItem* menu = item_array[i];
       EXPECT_GT([[menu submenu] numberOfItems], 0);
       EXPECT_FALSE([menu isHidden]);
@@ -94,10 +99,14 @@ class AppShimMenuControllerBrowserTest
   }
 
   void CheckNoAppMenus() const {
+    const int kExtraTopLevelItems = 4;
     NSArray* item_array = [[NSApp mainMenu] itemArray];
-    EXPECT_EQ(initial_menu_item_count_, [item_array count]);
-    for (NSUInteger i = 0; i < initial_menu_item_count_; ++i)
+    EXPECT_EQ(initial_menu_item_count_ - kExtraTopLevelItems,
+              [item_array count]);
+    for (NSUInteger i = 0; i < initial_menu_item_count_ - kExtraTopLevelItems;
+         ++i) {
       EXPECT_FALSE([item_array[i] isHidden]);
+    }
   }
 
   void CheckEditMenu(const extensions::Extension* app) const {

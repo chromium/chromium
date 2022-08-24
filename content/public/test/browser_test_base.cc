@@ -276,6 +276,7 @@ BrowserTestBase::BrowserTestBase() {
 #elif BUILDFLAG(IS_MAC)
   ui::test::EventGeneratorDelegate::SetFactoryFunction(
       base::BindRepeating(&views::test::CreateEventGeneratorDelegateMac));
+  EnableNativeWindowActivation();
 #endif
 }
 
