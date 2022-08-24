@@ -7,7 +7,7 @@
 
 namespace base {
 
-// absl::visit needs to be called with a functor object, such as
+// absl::visit() needs to be called with a functor object, such as
 //
 //  struct Visitor {
 //    std::string operator()(const PackageA& source) {
@@ -19,20 +19,20 @@ namespace base {
 //    }
 //  };
 //
-//  return absl::visit(Visitor(), event.first);
-//
-// The following file enables the above code to be written as shown below:
-//
 //  absl::variant<PackageA, PackageB> var = PackageA();
+//  return absl::visit(Visitor(), var);
+//
+// `Overloaded` enables the above code to be written as:
+//
 //  absl::visit(
 //     Overloaded{
-//         [](PackageA& pack) { return "PackageA"; },
-//         [](PackageB& pack) { return "PackageB"; }
+//         [](const PackageA& pack) { return "PackageA"; },
+//         [](const PackageB& pack) { return "PackageB"; },
 //     }, var);
 //
-// Note: Lambdas should be implemented for all the variant options. Otherwise, there
-// will be compilation error.
-
+// Note: Overloads must be implemented for all the variant options. Otherwise,
+// there will be a compilation error.
+//
 // This struct inherits operator() method from all its base classes.
 // Introduces operator() method from all its base classes into its definition.
 template <typename... Callables>
@@ -40,9 +40,9 @@ struct Overloaded : Callables... {
   using Callables::operator()...;
 };
 
-// Uses template argument deduction so that the struct |Overloaded| can be used
+// Uses template argument deduction so that the `Overloaded` struct can be used
 // without specifying its template argument. This allows anonymous lambdas
-// passed into |Overloaded| constructor.
+// passed into the `Overloaded` constructor.
 template <typename... Callables>
 Overloaded(Callables...) -> Overloaded<Callables...>;
 
