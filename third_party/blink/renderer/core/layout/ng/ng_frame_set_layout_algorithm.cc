@@ -60,7 +60,7 @@ const NGLayoutResult* NGFrameSetLayoutAlgorithm::Layout() {
       LayoutAxis(col_count, frame_set.ColLengths(), frame_set.ColDeltas(),
                  size.width - (col_count - 1) * layout_data->border_thickness);
 
-  // TODO(crbug.com/1346221): Layout children.
+  LayoutChildren(*layout_data, size);
 
   container_builder_.TransferFrameSetLayoutData(std::move(layout_data));
   return container_builder_.ToBoxFragment();
@@ -254,6 +254,46 @@ Vector<LayoutUnit> NGFrameSetLayoutAlgorithm::LayoutAxis(
   }
 
   return sizes;
+}
+
+void NGFrameSetLayoutAlgorithm::LayoutChildren(
+    const FrameSetLayoutData& layout_data,
+    const PhysicalSize& frameset_size) {
+  PhysicalOffset position;
+  NGLayoutInputNode child = Node().FirstChild();
+  if (!child)
+    return;
+  for (wtf_size_t row = 0; row < layout_data.row_sizes.size(); ++row) {
+    position.left = LayoutUnit();
+    const LayoutUnit row_size = layout_data.row_sizes[row];
+    for (wtf_size_t col = 0; col < layout_data.col_sizes.size(); ++col) {
+      const LayoutUnit col_size = layout_data.col_sizes[col];
+      const bool kNewFormattingContext = true;
+      NGConstraintSpaceBuilder space_builder(
+          Style().GetWritingMode(), child.Style().GetWritingDirection(),
+          kNewFormattingContext);
+      space_builder.SetAvailableSize(
+          IsHorizontalWritingMode(child.Style().GetWritingMode())
+              ? LogicalSize(col_size, row_size)
+              : LogicalSize(row_size, col_size));
+      space_builder.SetIsFixedInlineSize(true);
+      space_builder.SetIsFixedBlockSize(true);
+      const NGLayoutResult* result =
+          To<NGBlockNode>(child).Layout(space_builder.ToConstraintSpace());
+      container_builder_.AddResult(
+          *result,
+          position.ConvertToLogical(Style().GetWritingDirection(),
+                                    frameset_size, {col_size, row_size}));
+
+      child = child.NextSibling();
+      if (!child)
+        return;
+      position.left += col_size + layout_data.border_thickness;
+    }
+    position.top += row_size + layout_data.border_thickness;
+  }
+
+  // TODO(crbug.com/1346221): Clear NeedsLayout flag of the remaining children.
 }
 
 }  // namespace blink
