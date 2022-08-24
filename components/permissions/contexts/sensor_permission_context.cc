@@ -38,11 +38,7 @@ void SensorPermissionContext::UpdateTabContext(const PermissionRequestID& id,
 }
 
 bool SensorPermissionContext::IsRestrictedToSecureOrigins() const {
-  // This is to allow non-secure origins that use DeviceMotion and
-  // DeviceOrientation Event to be able to access sensors that are provided
-  // by generic_sensor. The Generic Sensor API is not allowed in non-secure
-  // origins and this is enforced by the renderer.
-  return false;
+  return true;
 }
 
 }  // namespace permissions
