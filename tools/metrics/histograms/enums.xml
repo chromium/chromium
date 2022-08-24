@@ -59812,6 +59812,7 @@ from previous Chrome versions.
   <int value="332960119" label="PdfXfaSupport:disabled"/>
   <int value="333032941" label="CellularCustomAPNProfiles:enabled"/>
   <int value="334802038" label="OfflinePreviews:disabled"/>
+  <int value="335976368" label="LoadCryptoTokenExtension:disabled"/>
   <int value="335976733" label="NotificationStackingBarRedesign:enabled"/>
   <int value="336429189" label="DisallowUnsafeHttpDownloads:disabled"/>
   <int value="336830575" label="DeviceForceScheduledReboot:enabled"/>
@@ -61002,6 +61003,7 @@ from previous Chrome versions.
   <int value="1082840061" label="LinkDoctorDeprecationAndroid:disabled"/>
   <int value="1083020187" label="FractionalScrollOffsets:enabled"/>
   <int value="1083201516" label="PersistentWindowBounds:enabled"/>
+  <int value="1083575298" label="LoadCryptoTokenExtension:enabled"/>
   <int value="1084365949" label="ReleaseNotesNotification:disabled"/>
   <int value="1084484359" label="ContextualTriggersSelectionSize:disabled"/>
   <int value="1084972292" label="WebXRAnchors:enabled"/>

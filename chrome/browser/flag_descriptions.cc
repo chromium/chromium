@@ -235,6 +235,14 @@ const char kU2FSecurityKeyAPIDescription[] =
     "information, refer to the deprecation announcement at "
     "https://groups.google.com/a/chromium.org/g/blink-dev/c/xHC3AtU_65A";
 
+const char kLoadCryptoTokenExtensionName[] =
+    "Load the CryptoToken component extension ";
+const char kLoadCryptoTokenExtensionDescription[] =
+    "Enable this flag to temporarily work around issues with `chrome.runtime` "
+    "being undefined as a side effect of U2F API removal. This workaround "
+    "will go away with Chrome 107. Websites should not depend on "
+    "`chrome.runtime` or `chrome.app` being defined unconditionally.";
+
 const char kUpcomingSharingFeaturesName[] = "Enable upcoming sharing features.";
 const char kUpcomingSharingFeaturesDescription[] =
     "This flag enables all upcoming sharing features, in the experiment "
