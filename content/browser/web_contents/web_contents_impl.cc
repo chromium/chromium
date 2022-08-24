@@ -1048,9 +1048,21 @@ WebContentsImpl::~WebContentsImpl() {
     outermost->SetAsFocusedWebContentsIfNecessary();
   }
 
-  if (mouse_lock_widget_)
+  if (mouse_lock_widget_) {
     mouse_lock_widget_->RejectMouseLockOrUnlockIfNecessary(
         blink::mojom::PointerLockResult::kElementDestroyed);
+
+    // Normally, the call above clears mouse_lock_widget_ pointers on the
+    // entire WebContents chain, since it results in calling LostMouseLock()
+    // when the mouse lock is already active. However, this doesn't work for
+    // <webview> guests if the mouse lock request is still pending while the
+    // <webview> is destroyed. Hence, ensure that all mouse lock widget
+    // pointers are cleared. See https://crbug.com/1346245.
+    for (WebContentsImpl* current = this; current;
+         current = current->GetOuterWebContents()) {
+      current->mouse_lock_widget_ = nullptr;
+    }
+  }
 
   for (RenderWidgetHostImpl* widget : created_widgets_)
     widget->DetachDelegate();

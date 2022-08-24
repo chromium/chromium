@@ -1313,6 +1313,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool CancelPrerendering(FrameTreeNode* frame_tree_node,
                           PrerenderHost::FinalStatus final_status);
 
+  RenderWidgetHost* mouse_lock_widget_for_testing() {
+    return mouse_lock_widget_;
+  }
+
  private:
   using FrameTreeIterationCallback = base::RepeatingCallback<void(FrameTree*)>;
   using RenderViewHostIterationCallback =
