@@ -939,7 +939,7 @@
 <translation id="8820817407110198400">Закладки</translation>
 <translation id="8840513115188359703">Вы останетесь в аккаунте Google.</translation>
 <translation id="8843129975935593190">Ваша организация разрешила синхронизировать только некоторые данные.</translation>
-<translation id="8849001918648564819">Никто</translation>
+<translation id="8849001918648564819">Скрытые</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} вкладка}one{{count} вкладка}few{{count} вкладки}many{{count} вкладок}other{{count} вкладки}}</translation>
 <translation id="8870413625673593573">Недавно закрытые</translation>
 <translation id="8876882697946675716">Синхронизируйте устройства</translation>
