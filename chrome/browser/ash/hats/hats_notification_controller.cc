@@ -27,9 +27,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
-#include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -122,8 +120,8 @@ HatsNotificationController::~HatsNotificationController() {
 
   base::UmaHistogramEnumeration("Browser.ChromeOS.HatsStatus", state_);
 
-  if (NetworkHandler::IsInitialized())
-    NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
+  if (network_portal_detector::IsInitialized())
+    network_portal_detector::GetInstance()->RemoveObserver(this);
 }
 
 void HatsNotificationController::Initialize(bool is_new_device) {
@@ -138,19 +136,9 @@ void HatsNotificationController::Initialize(bool is_new_device) {
     return;
   }
 
-  if (NetworkHandler::IsInitialized()) {
-    // Observe NetworkStateHandler to be notified when an internet connection
-    // is available.
-    NetworkStateHandler* handler =
-        ash::NetworkHandler::Get()->network_state_handler();
-    handler->AddObserver(this);
-    // Create an immediate update for the current default network.
-    const NetworkState* default_network = handler->DefaultNetwork();
-    NetworkState::PortalState portal_state =
-        default_network ? default_network->GetPortalState()
-                        : NetworkState::PortalState::kUnknown;
-    PortalStateChanged(default_network, portal_state);
-  }
+  // Add self as an observer to be notified when an internet connection is
+  // available.
+  network_portal_detector::GetInstance()->AddAndFireObserver(this);
 }
 
 // static
@@ -223,7 +211,7 @@ void HatsNotificationController::Click(
   state_ = HatsState::kNotificationClicked;
 
   // Remove the notification.
-  ash::NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
+  network_portal_detector::GetInstance()->RemoveObserver(this);
   notification_.reset(nullptr);
   NotificationDisplayService::GetForProfile(profile_)->Close(
       NotificationHandler::Type::TRANSIENT, kNotificationId);
@@ -235,22 +223,21 @@ void HatsNotificationController::Close(bool by_user) {
 
   if (by_user) {
     UpdateLastInteractionTime();
-    ash::NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
+    network_portal_detector::GetInstance()->RemoveObserver(this);
     notification_.reset(nullptr);
     state_ = HatsState::kNotificationDismissed;
   }
 }
 
-// NetworkStateHandlerObserver override:
-void HatsNotificationController::PortalStateChanged(
-    const ash::NetworkState* default_network,
-    ash::NetworkState::PortalState portal_state) {
+// NetworkPortalDetector::Observer override:
+void HatsNotificationController::OnPortalDetectionCompleted(
+    const NetworkState* network,
+    const NetworkPortalDetector::CaptivePortalStatus status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   VLOG(1) << "HatsController::OnPortalDetectionCompleted(): "
-          << "default_network="
-          << (default_network ? default_network->path() : "") << ", "
-          << "portal state=" << portal_state;
-  if (portal_state == NetworkState::PortalState::kOnline) {
+          << "network=" << (network ? network->path() : "") << ", "
+          << "status=" << status;
+  if (status == NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE) {
     // Create and display the notification for the user.
     if (!notification_) {
       notification_ = CreateSystemNotification(
@@ -276,10 +263,6 @@ void HatsNotificationController::PortalStateChanged(
     NotificationDisplayService::GetForProfile(profile_)->Close(
         NotificationHandler::Type::TRANSIENT, kNotificationId);
   }
-}
-
-void HatsNotificationController::OnShuttingDown() {
-  NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
 }
 
 void HatsNotificationController::UpdateLastInteractionTime() {

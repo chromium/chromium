@@ -8,7 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/ash/components/network/network_state_handler_observer.h"
+#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -27,7 +27,7 @@ class HatsDialog;
 // managing the HaTS notification that is displayed to the user.
 // This class lives on the UI thread.
 class HatsNotificationController : public message_center::NotificationDelegate,
-                                   public NetworkStateHandlerObserver {
+                                   public NetworkPortalDetector::Observer {
  public:
   static const char kNotificationId[];
 
@@ -79,17 +79,16 @@ class HatsNotificationController : public message_center::NotificationDelegate,
     kMaxValue = kNotificationClicked
   };
 
-  void Initialize(bool is_new_device);
-
   // NotificationDelegate overrides:
+  void Initialize(bool is_new_device);
   void Close(bool by_user) override;
   void Click(const absl::optional<int>& button_index,
              const absl::optional<std::u16string>& reply) override;
 
-  // NetworkStateHandlerObserver override:
-  void PortalStateChanged(const ash::NetworkState* default_network,
-                          ash::NetworkState::PortalState portal_state) override;
-  void OnShuttingDown() override;
+  // NetworkPortalDetector::Observer override:
+  void OnPortalDetectionCompleted(
+      const NetworkState* network,
+      const NetworkPortalDetector::CaptivePortalStatus status) override;
 
   void UpdateLastInteractionTime();
 
