@@ -667,6 +667,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             AccessibilityNodeInfoCompat cachedNode =
                     AccessibilityNodeInfoCompat.obtain(mNodeInfoCache.get(virtualViewId));
 
+            // Always update the source node id to prevent potential infinite loop in framework.
+            cachedNode.setSource(mView, virtualViewId);
+
             if (WebContentsAccessibilityImplJni.get().updateCachedAccessibilityNodeInfo(
                         mNativeObj, cachedNode, virtualViewId)) {
                 // After successfully re-populating this cached node, update the accessibility
