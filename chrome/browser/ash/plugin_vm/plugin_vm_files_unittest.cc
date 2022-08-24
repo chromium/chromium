@@ -42,7 +42,7 @@ class MockAppWindowBase : public AppWindowBase {
  public:
   MockAppWindowBase(const ash::ShelfID& shelf_id, views::Widget* widget)
       : AppWindowBase(shelf_id, widget) {}
-  ~MockAppWindowBase() = default;
+  ~MockAppWindowBase() override = default;
   MockAppWindowBase(const MockAppWindowBase&) = delete;
   MockAppWindowBase& operator=(const MockAppWindowBase&) = delete;
 

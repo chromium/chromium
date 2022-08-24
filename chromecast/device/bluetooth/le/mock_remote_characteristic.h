@@ -73,7 +73,7 @@ class MockRemoteCharacteristic : public RemoteCharacteristic {
  private:
   friend testing::StrictMock<MockRemoteCharacteristic>;
 
-  ~MockRemoteCharacteristic();
+  ~MockRemoteCharacteristic() override;
 };
 
 }  // namespace bluetooth

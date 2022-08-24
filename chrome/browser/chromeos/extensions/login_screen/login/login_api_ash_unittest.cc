@@ -1275,7 +1275,7 @@ class LoginApiExternalLogoutRequestUnittest : public ExtensionApiUnittest {
     explicit MockExternalLogoutRequestEventHandler(
         content::BrowserContext* context)
         : ExternalLogoutRequestEventHandler(context) {}
-    ~MockExternalLogoutRequestEventHandler() = default;
+    ~MockExternalLogoutRequestEventHandler() override = default;
     MOCK_METHOD0(OnRequestExternalLogout, void());
   };
 
@@ -1318,7 +1318,7 @@ class LoginApiExternalLogoutDoneUnittest : public ExtensionApiUnittest {
     explicit MockExternalLogoutDoneEventHandler(
         content::BrowserContext* context)
         : ExternalLogoutDoneEventHandler(context) {}
-    ~MockExternalLogoutDoneEventHandler() = default;
+    ~MockExternalLogoutDoneEventHandler() override = default;
     MOCK_METHOD0(OnExternalLogoutDone, void());
   };
 

@@ -54,7 +54,7 @@ class MockGamingSeatDelegate : public GamingSeatDelegate {
   MOCK_METHOD(void, GamepadAdded, (Gamepad & gamepad), (override));
   MOCK_METHOD(void, Die, (), ());
   void OnGamingSeatDestroying(GamingSeat*) override { delete this; }
-  ~MockGamingSeatDelegate() { Die(); }
+  ~MockGamingSeatDelegate() override { Die(); }
 };
 
 class GamingSeatTest : public test::ExoTestBase {

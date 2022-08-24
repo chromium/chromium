@@ -22,24 +22,24 @@ namespace unittest_internal {
 class MockVendorTagOps : public cros::mojom::VendorTagOps {
  public:
   MockVendorTagOps();
-  ~MockVendorTagOps();
+  ~MockVendorTagOps() override;
 
   void Bind(mojo::PendingReceiver<cros::mojom::VendorTagOps> receiver);
 
   MOCK_METHOD0(DoGetTagCount, int32_t());
-  void GetTagCount(GetTagCountCallback callback);
+  void GetTagCount(GetTagCountCallback callback) override;
 
   MOCK_METHOD0(DoGetAllTags, std::vector<uint32_t>());
-  void GetAllTags(GetAllTagsCallback callback);
+  void GetAllTags(GetAllTagsCallback callback) override;
 
   MOCK_METHOD1(DoGetSectionName, absl::optional<std::string>(uint32_t tag));
-  void GetSectionName(uint32_t tag, GetSectionNameCallback callback);
+  void GetSectionName(uint32_t tag, GetSectionNameCallback callback) override;
 
   MOCK_METHOD1(DoGetTagName, absl::optional<std::string>(uint32_t tag));
-  void GetTagName(uint32_t tag, GetTagNameCallback callback);
+  void GetTagName(uint32_t tag, GetTagNameCallback callback) override;
 
   MOCK_METHOD1(DoGetTagType, int32_t(uint32_t tag));
-  void GetTagType(uint32_t tag, GetTagTypeCallback callback) {
+  void GetTagType(uint32_t tag, GetTagTypeCallback callback) override {
     std::move(callback).Run(DoGetTagType(tag));
   }
 

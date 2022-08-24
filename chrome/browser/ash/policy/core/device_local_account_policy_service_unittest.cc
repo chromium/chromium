@@ -135,7 +135,7 @@ class DeviceLocalAccountPolicyServiceTest
 
  protected:
   DeviceLocalAccountPolicyServiceTest();
-  ~DeviceLocalAccountPolicyServiceTest();
+  ~DeviceLocalAccountPolicyServiceTest() override;
 
   void InstallDevicePolicy() override;
 

@@ -15,7 +15,7 @@ namespace test {
 class MockPluginVmManager : public PluginVmManager {
  public:
   MockPluginVmManager();
-  ~MockPluginVmManager();
+  ~MockPluginVmManager() override;
   MockPluginVmManager(const MockPluginVmManager&) = delete;
   MockPluginVmManager& operator=(const MockPluginVmManager&) = delete;
 

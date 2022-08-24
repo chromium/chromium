@@ -123,7 +123,7 @@ class MockPasswordGenerationDialogView
   MockPasswordGenerationDialogView& operator=(
       const MockPasswordGenerationDialogView&) = delete;
 
-  virtual ~MockPasswordGenerationDialogView() { Destroy(); }
+  ~MockPasswordGenerationDialogView() override { Destroy(); }
 };
 
 PasswordGenerationUIData GetTestGenerationUIData1() {

@@ -35,7 +35,7 @@ class AudioDeviceListenerMacTest : public testing::Test {
   AudioDeviceListenerMacTest& operator=(const AudioDeviceListenerMacTest&) =
       delete;
 
-  virtual ~AudioDeviceListenerMacTest() {
+  ~AudioDeviceListenerMacTest() override {
     // It's important to destroy the device listener from the message loop in
     // order to ensure we don't end up with unbalanced TaskObserver calls.
     task_environment_.GetMainThreadTaskRunner()->PostTask(

@@ -50,7 +50,7 @@ class MockAudioSocketBroker : public mojom::AudioSocketBroker {
       : receiver_(this, std::move(pending_receiver)) {}
   MockAudioSocketBroker(const MockAudioSocketBroker&) = delete;
   MockAudioSocketBroker& operator=(const MockAudioSocketBroker&) = delete;
-  ~MockAudioSocketBroker() = default;
+  ~MockAudioSocketBroker() override = default;
 
   MOCK_METHOD(void,
               GetSocketDescriptor,

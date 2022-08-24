@@ -23,7 +23,7 @@ class FakeSupervisedUserManager;
 class MockUserManager : public ChromeUserManager {
  public:
   MockUserManager();
-  virtual ~MockUserManager();
+  ~MockUserManager() override;
 
   MOCK_METHOD0(Shutdown, void(void));
   MOCK_CONST_METHOD0(GetUsersAllowedForMultiProfile,

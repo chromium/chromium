@@ -95,7 +95,7 @@ class MockPointerDelegate : public PointerDelegate {
 class MockRelativePointerDelegate : public RelativePointerDelegate {
  public:
   MockRelativePointerDelegate() = default;
-  ~MockRelativePointerDelegate() = default;
+  ~MockRelativePointerDelegate() override = default;
 
   // Overridden from RelativePointerDelegate:
   MOCK_METHOD1(OnPointerDestroying, void(Pointer*));
@@ -115,7 +115,7 @@ class MockPointerConstraintDelegate : public PointerConstraintDelegate {
       broken_count++;
     });
   }
-  ~MockPointerConstraintDelegate() = default;
+  ~MockPointerConstraintDelegate() override = default;
 
   // Overridden from PointerConstraintDelegate:
   MOCK_METHOD0(OnConstraintActivated, void());

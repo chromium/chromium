@@ -28,6 +28,7 @@ class PrefixMatcher {
   typedef std::vector<gfx::Range> Hits;
 
   PrefixMatcher(const TokenizedString& query, const TokenizedString& text);
+  ~PrefixMatcher();
 
   PrefixMatcher(const PrefixMatcher&) = delete;
   PrefixMatcher& operator=(const PrefixMatcher&) = delete;

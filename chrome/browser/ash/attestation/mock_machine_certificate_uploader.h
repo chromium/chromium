@@ -20,7 +20,7 @@ class MockMachineCertificateUploader : public MachineCertificateUploader {
   MockMachineCertificateUploader& operator=(
       const MockMachineCertificateUploader&) = delete;
 
-  ~MockMachineCertificateUploader();
+  ~MockMachineCertificateUploader() override;
 
   MOCK_METHOD1(UploadCertificateIfNeeded, void(UploadCallback));
   MOCK_METHOD1(RefreshAndUploadCertificate, void(UploadCallback));

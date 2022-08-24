@@ -47,7 +47,7 @@ class MockSmsFetcher : public SmsFetcher {
   MockSmsFetcher(const MockSmsFetcher&) = delete;
   MockSmsFetcher& operator=(const MockSmsFetcher&) = delete;
 
-  ~MockSmsFetcher() = default;
+  ~MockSmsFetcher() override = default;
 
   MOCK_METHOD2(Subscribe,
                void(const content::OriginList& origin_list,
@@ -66,7 +66,7 @@ class MockSmsFetchRequestHandler : public SmsFetchRequestHandler {
  public:
   explicit MockSmsFetchRequestHandler(content::SmsFetcher* fetcher)
       : SmsFetchRequestHandler(&device_source_, fetcher) {}
-  ~MockSmsFetchRequestHandler() = default;
+  ~MockSmsFetchRequestHandler() override = default;
 
   MOCK_METHOD3(AskUserPermission,
                void(const content::OriginList&,

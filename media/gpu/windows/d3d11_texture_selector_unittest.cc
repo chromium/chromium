@@ -25,7 +25,7 @@ class D3D11TextureSelectorUnittest : public ::testing::Test {
   class MockFormatSupportChecker : public FormatSupportChecker {
    public:
     MockFormatSupportChecker() : FormatSupportChecker(nullptr) {}
-    ~MockFormatSupportChecker() = default;
+    ~MockFormatSupportChecker() override = default;
     bool Initialize() override { return true; }
 
     MOCK_CONST_METHOD1(CheckOutputFormatSupport, bool(DXGI_FORMAT));

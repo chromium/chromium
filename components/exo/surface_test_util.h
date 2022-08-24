@@ -15,7 +15,7 @@ class SurfaceObserverForTest : public SurfaceObserver {
   SurfaceObserverForTest();
   SurfaceObserverForTest(const SurfaceObserverForTest&) = delete;
   SurfaceObserverForTest& operator=(const SurfaceObserverForTest&) = delete;
-  virtual ~SurfaceObserverForTest();
+  ~SurfaceObserverForTest() override;
 
   // SurfaceObserver overrides
   void OnSurfaceDestroying(Surface* surface) override {}

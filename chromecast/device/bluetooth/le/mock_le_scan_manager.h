@@ -25,7 +25,7 @@ class MockLeScanManager : public LeScanManager {
   };
 
   MockLeScanManager();
-  ~MockLeScanManager();
+  ~MockLeScanManager() override;
 
   void AddObserver(Observer* o) override {
     DCHECK(o && !observer_);

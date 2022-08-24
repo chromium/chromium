@@ -26,7 +26,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockNetworkDeviceHandler
   MockNetworkDeviceHandler(const MockNetworkDeviceHandler&) = delete;
   MockNetworkDeviceHandler& operator=(const MockNetworkDeviceHandler&) = delete;
 
-  virtual ~MockNetworkDeviceHandler();
+  ~MockNetworkDeviceHandler() override;
 
   MOCK_CONST_METHOD2(GetDeviceProperties,
                      void(const std::string& device_path,

@@ -81,7 +81,7 @@ class MockExternalPolicyProviderVisitor
   MockExternalPolicyProviderVisitor& operator=(
       const MockExternalPolicyProviderVisitor&) = delete;
 
-  virtual ~MockExternalPolicyProviderVisitor();
+  ~MockExternalPolicyProviderVisitor() override;
 
   MOCK_METHOD1(OnExternalExtensionFileFound,
                bool(const ExternalInstallInfoFile&));

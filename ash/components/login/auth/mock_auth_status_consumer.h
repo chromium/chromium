@@ -18,7 +18,7 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) MockAuthStatusConsumer
     : public AuthStatusConsumer {
  public:
   explicit MockAuthStatusConsumer(base::OnceClosure quit_closure);
-  virtual ~MockAuthStatusConsumer();
+  ~MockAuthStatusConsumer() override;
 
   MOCK_METHOD1(OnAuthFailure, void(const AuthFailure& error));
   MOCK_METHOD1(OnRetailModeAuthSuccess, void(const UserContext& user_context));

@@ -27,7 +27,7 @@ constexpr base::TimeDelta kDisplayPowerOffDelay = base::Milliseconds(85);
 class MockScreenPowerControllerDelegate
     : public ScreenPowerController::Delegate {
  public:
-  virtual ~MockScreenPowerControllerDelegate() = default;
+  ~MockScreenPowerControllerDelegate() override = default;
 
   // ScreenPowerController::Delegate implementation:
   MOCK_METHOD(void, SetScreenPowerOn, (PowerToggleCallback callback), (override));

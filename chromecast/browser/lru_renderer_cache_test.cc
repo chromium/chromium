@@ -39,7 +39,7 @@ class MockPrelauncher : public RendererPrelauncher {
                   const GURL& page_url)
       : RendererPrelauncher(browser_context,
                             page_url) {}
-  virtual ~MockPrelauncher() { Destroy(); }
+  ~MockPrelauncher() override { Destroy(); }
 
   MOCK_METHOD0(Prelaunch, void());
   MOCK_METHOD0(Destroy, void());

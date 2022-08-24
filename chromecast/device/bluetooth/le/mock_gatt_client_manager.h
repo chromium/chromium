@@ -42,7 +42,7 @@ class MockGattClientManager : public GattClientManager {
   MOCK_METHOD(std::vector<scoped_refptr<RemoteDevice>>,
               GetConnectedDevices,
               ());
-  void GetConnectedDevices(GetConnectDevicesCallback cb) {
+  void GetConnectedDevices(GetConnectDevicesCallback cb) override {
     std::move(cb).Run(GetConnectedDevices());
   }
 

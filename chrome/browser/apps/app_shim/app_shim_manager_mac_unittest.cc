@@ -47,7 +47,7 @@ using ::testing::WithArgs;
 
 class MockDelegate : public AppShimManager::Delegate {
  public:
-  virtual ~MockDelegate() {}
+  ~MockDelegate() override {}
 
   MOCK_METHOD2(ShowAppWindows, bool(Profile*, const std::string&));
   MOCK_METHOD2(CloseAppWindows, void(Profile*, const std::string&));
@@ -111,7 +111,7 @@ class TestingAppShimManager : public AppShimManager {
       : AppShimManager(std::move(delegate)) {}
   TestingAppShimManager(const TestingAppShimManager&) = delete;
   TestingAppShimManager& operator=(const TestingAppShimManager&) = delete;
-  virtual ~TestingAppShimManager() { DCHECK(load_profile_callbacks_.empty()); }
+  ~TestingAppShimManager() override { DCHECK(load_profile_callbacks_.empty()); }
 
   MOCK_METHOD1(OnShimFocus, void(AppShimHost* host));
 

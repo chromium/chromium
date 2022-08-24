@@ -46,7 +46,7 @@ class MockRdpClientEventHandler : public RdpClient::EventHandler {
   MockRdpClientEventHandler& operator=(const MockRdpClientEventHandler&) =
       delete;
 
-  virtual ~MockRdpClientEventHandler() {}
+  ~MockRdpClientEventHandler() override {}
 
   MOCK_METHOD0(OnRdpConnected, void());
   MOCK_METHOD0(OnRdpClosed, void());

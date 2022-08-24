@@ -96,7 +96,7 @@ constexpr char kTypeConversionTestSchema[] = R"({
 class MockComponentActiveDirectoryPolicyDelegate
     : public ComponentActiveDirectoryPolicyService::Delegate {
  public:
-  virtual ~MockComponentActiveDirectoryPolicyDelegate() {}
+  ~MockComponentActiveDirectoryPolicyDelegate() override {}
 
   MOCK_METHOD0(OnComponentActiveDirectoryPolicyUpdated, void());
 };

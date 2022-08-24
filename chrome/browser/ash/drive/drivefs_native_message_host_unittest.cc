@@ -65,7 +65,7 @@ class DriveFsNativeMessageHostTest
   void CreateNativeHostSession(
       drivefs::mojom::ExtensionConnectionParamsPtr params,
       mojo::PendingReceiver<drivefs::mojom::NativeMessagingHost> session,
-      mojo::PendingRemote<drivefs::mojom::NativeMessagingPort> port) {
+      mojo::PendingRemote<drivefs::mojom::NativeMessagingPort> port) override {
     params_ = std::move(params);
     extension_port_.Bind(std::move(port));
     receiver_.Bind(std::move(session));

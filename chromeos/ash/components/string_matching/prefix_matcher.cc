@@ -55,6 +55,7 @@ PrefixMatcher::PrefixMatcher(const TokenizedString& query,
       text_iter_(text),
       current_match_(gfx::Range::InvalidRange()),
       current_relevance_(constants::kNoMatchScore) {}
+PrefixMatcher::~PrefixMatcher() = default;
 
 bool PrefixMatcher::Match() {
   while (!RunMatch()) {

@@ -51,6 +51,8 @@ SequenceMatcher::SequenceMatcher(const std::u16string& first_string,
   use_edit_distance_ = use_edit_distance;
 }
 
+SequenceMatcher::~SequenceMatcher() = default;
+
 // Compute the longest common substring, with optimisations for:
 //
 // 1) Time: By pre-computing some letter positions (stored in

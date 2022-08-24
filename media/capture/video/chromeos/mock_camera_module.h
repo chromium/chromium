@@ -29,7 +29,7 @@ class MockCameraModule : public cros::mojom::CameraModule {
   MockCameraModule(const MockCameraModule&) = delete;
   MockCameraModule& operator=(const MockCameraModule&) = delete;
 
-  ~MockCameraModule();
+  ~MockCameraModule() override;
 
   void OpenDevice(
       int32_t camera_id,

@@ -508,7 +508,7 @@ class DeviceSyncCryptAuthDeviceManagerImplTest
     devices_in_response_.push_back(unlockable_device);
   }
 
-  ~DeviceSyncCryptAuthDeviceManagerImplTest() {
+  ~DeviceSyncCryptAuthDeviceManagerImplTest() override {
     client_factory_->RemoveObserver(this);
   }
 

@@ -11,6 +11,7 @@
 namespace arc {
 
 ArcTracingEventMatcher::ArcTracingEventMatcher() = default;
+ArcTracingEventMatcher::~ArcTracingEventMatcher() = default;
 
 ArcTracingEventMatcher::ArcTracingEventMatcher(const std::string& data) {
   std::string::size_type position = data.find(':');

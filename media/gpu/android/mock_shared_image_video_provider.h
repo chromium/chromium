@@ -16,9 +16,9 @@ namespace media {
 class MockSharedImageVideoProvider : public SharedImageVideoProvider {
  public:
   MockSharedImageVideoProvider();
-  ~MockSharedImageVideoProvider();
+  ~MockSharedImageVideoProvider() override;
 
-  void Initialize(GpuInitCB gpu_init_cb) {
+  void Initialize(GpuInitCB gpu_init_cb) override {
     Initialize_(gpu_init_cb);
     gpu_init_cb_ = std::move(gpu_init_cb);
   }

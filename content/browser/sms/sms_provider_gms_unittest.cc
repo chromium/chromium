@@ -60,9 +60,9 @@ class SmsProviderGmsBaseTest : public RenderViewHostTestHarness {
 
  protected:
   SmsProviderGmsBaseTest() = default;
-  virtual ~SmsProviderGmsBaseTest() override = default;
+  ~SmsProviderGmsBaseTest() override = default;
 
-  void SetUp() {
+  void SetUp() override {
     RenderViewHostTestHarness::SetUp();
 
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
@@ -81,7 +81,7 @@ class SmsProviderGmsBaseTest : public RenderViewHostTestHarness {
     provider_->AddObserver(&observer_);
   }
 
-  void TearDown() { RenderViewHostTestHarness::TearDown(); }
+  void TearDown() override { RenderViewHostTestHarness::TearDown(); }
 
   void TriggerSms(const std::string& sms) {
     if (GetSwitch() == switches::kWebOtpBackendUserConsent) {

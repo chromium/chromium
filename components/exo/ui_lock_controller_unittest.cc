@@ -86,7 +86,7 @@ class MockPointerConstraintDelegate : public PointerConstraintDelegate {
     });
   }
 
-  ~MockPointerConstraintDelegate() {
+  ~MockPointerConstraintDelegate() override {
     // Notifying destruction here removes some boilerplate from tests.
     pointer_->OnPointerConstraintDelegateDestroying(this);
   }

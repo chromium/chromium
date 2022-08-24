@@ -32,7 +32,7 @@ class MockErrorScreen : public ErrorScreen {
 class MockErrorScreenView : public ErrorScreenView {
  public:
   MockErrorScreenView();
-  virtual ~MockErrorScreenView();
+  ~MockErrorScreenView() override;
 
   MOCK_METHOD0(Show, void());
   MOCK_METHOD0(Hide, void());

@@ -32,7 +32,7 @@ using MockGetAccountInformationCallback = base::MockOnceCallback<void(
 class MockIdentityManagerLacros : public IdentityManagerLacros {
  public:
   MockIdentityManagerLacros() = default;
-  ~MockIdentityManagerLacros() = default;
+  ~MockIdentityManagerLacros() override = default;
 
   MOCK_METHOD(
       void,

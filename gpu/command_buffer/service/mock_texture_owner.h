@@ -54,7 +54,7 @@ class MockTextureOwner : public TextureOwner {
   int get_a_hardware_buffer_count = 0;
 
  protected:
-  ~MockTextureOwner();
+  ~MockTextureOwner() override;
 };
 
 }  // namespace gpu

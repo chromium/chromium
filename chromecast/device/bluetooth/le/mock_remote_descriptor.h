@@ -30,7 +30,7 @@ class MockRemoteDescriptor : public RemoteDescriptor {
   MOCK_CONST_METHOD0(permissions, bluetooth_v2_shlib::Gatt::Permissions());
 
  private:
-  ~MockRemoteDescriptor();
+  ~MockRemoteDescriptor() override;
 };
 
 }  // namespace bluetooth

@@ -61,7 +61,7 @@ class MockEngineClient : public EngineClient {
                uint32_t(const std::vector<UwSId>& enabled_uws,
                         DoneCallback* done_callback));
   uint32_t StartCleanup(const std::vector<UwSId>& enabled_uws,
-                        DoneCallback done_callback) {
+                        DoneCallback done_callback) override {
     return MockedStartCleanup(enabled_uws, &done_callback);
   }
 

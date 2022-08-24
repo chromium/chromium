@@ -723,7 +723,7 @@ class MockDXGIDeviceManager : public DXGIDeviceManager {
     });
   }
 
-  virtual HRESULT ResetDevice(
+  HRESULT ResetDevice(
       Microsoft::WRL::ComPtr<ID3D11Device>& d3d_device) override {
     return DoResetDevice(&d3d_device);
   }

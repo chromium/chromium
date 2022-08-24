@@ -28,7 +28,7 @@ class MockLoginDisplayHost : public LoginDisplayHost {
   MockLoginDisplayHost(const MockLoginDisplayHost&) = delete;
   MockLoginDisplayHost& operator=(const MockLoginDisplayHost&) = delete;
 
-  virtual ~MockLoginDisplayHost();
+  ~MockLoginDisplayHost() override;
 
   MOCK_METHOD(LoginDisplay*, GetLoginDisplay, (), (override));
   MOCK_METHOD(ExistingUserController*,
@@ -57,7 +57,7 @@ class MockLoginDisplayHost : public LoginDisplayHost {
 
   // Workaround for move-only args in GMock.
   MOCK_METHOD(void, MockStartUserAdding, (base::OnceClosure*));
-  void StartUserAdding(base::OnceClosure completion_callback) {
+  void StartUserAdding(base::OnceClosure completion_callback) override {
     MockStartUserAdding(&completion_callback);
   }
 

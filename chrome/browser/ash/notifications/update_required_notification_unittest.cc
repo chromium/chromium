@@ -60,8 +60,8 @@ class UpdateRequiredNotificationTest
   void TearDown() override;
 
   // MinimumVersionPolicyHandler::Delegate:
-  base::Version GetCurrentVersion() const;
-  bool IsUserEnterpriseManaged() const;
+  base::Version GetCurrentVersion() const override;
+  bool IsUserEnterpriseManaged() const override;
   MOCK_METHOD0(ShowUpdateRequiredScreen, void());
   MOCK_METHOD0(RestartToLoginScreen, void());
   MOCK_METHOD0(HideUpdateRequiredScreenIfShown, void());

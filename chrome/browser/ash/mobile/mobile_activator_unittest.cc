@@ -48,7 +48,7 @@ class TestMobileActivator : public MobileActivator {
   TestMobileActivator(const TestMobileActivator&) = delete;
   TestMobileActivator& operator=(const TestMobileActivator&) = delete;
 
-  virtual ~TestMobileActivator() {}
+  ~TestMobileActivator() override {}
 
   MOCK_METHOD3(ChangeState,
                void(const NetworkState*,
@@ -61,7 +61,8 @@ class TestMobileActivator : public MobileActivator {
   MOCK_CONST_METHOD0(HasRecentCellularPlanPayment, bool(void));
   MOCK_METHOD1(ConnectNetwork, void(const NetworkState*));
 
-  virtual const NetworkState* GetNetworkState(const std::string& service_path) {
+  const NetworkState* GetNetworkState(
+      const std::string& service_path) override {
     return cellular_network_;
   }
 

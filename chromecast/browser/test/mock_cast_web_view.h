@@ -16,7 +16,7 @@ namespace chromecast {
 class MockCastWebContents : public CastWebContents {
  public:
   MockCastWebContents();
-  ~MockCastWebContents();
+  ~MockCastWebContents() override;
 
   // CastWebContents implementation
   MOCK_METHOD(int, tab_id, (), (const, override));

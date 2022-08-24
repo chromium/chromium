@@ -19,7 +19,7 @@ namespace ios {
 class FakeChromeIdentityService : public ChromeIdentityService {
  public:
   FakeChromeIdentityService();
-  virtual ~FakeChromeIdentityService();
+  ~FakeChromeIdentityService() override;
 
   // Convenience method that returns the instance of
   // |FakeChromeIdentityService| from the ChromeBrowserProvider.
@@ -91,7 +91,7 @@ class FakeChromeIdentityService : public ChromeIdentityService {
   void FetchCapabilities(
       NSArray* capabilities,
       ChromeIdentity* identity,
-      ChromeIdentityCapabilitiesFetchCompletionBlock completion);
+      ChromeIdentityCapabilitiesFetchCompletionBlock completion) override;
 
  private:
   NSMutableArray<ChromeIdentity*>* identities_;

@@ -26,7 +26,7 @@ class NTPJsonFetcherTest : public testing::Test {
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
         https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
-  void SetUp() {
+  void SetUp() override {
     controllable_http_response_ =
         std::make_unique<net::test_server::ControllableHttpResponse>(
             &https_server_, "/ntp.json");

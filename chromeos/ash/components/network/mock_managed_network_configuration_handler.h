@@ -25,7 +25,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockManagedNetworkConfigurationHandler
   MockManagedNetworkConfigurationHandler& operator=(
       const MockManagedNetworkConfigurationHandler&) = delete;
 
-  virtual ~MockManagedNetworkConfigurationHandler();
+  ~MockManagedNetworkConfigurationHandler() override;
 
   // ManagedNetworkConfigurationHandler overrides
   MOCK_METHOD1(AddObserver, void(NetworkPolicyObserver* observer));

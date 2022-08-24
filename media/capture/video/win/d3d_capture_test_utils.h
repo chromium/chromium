@@ -676,7 +676,7 @@ class MockD3D11Device final : public MockInterface<ID3D11Device1> {
   Microsoft::WRL::ComPtr<MockD3D11DeviceContext> mock_immediate_context_;
 
  private:
-  ~MockD3D11Device();
+  ~MockD3D11Device() override;
 };
 
 class MockDXGIResource final

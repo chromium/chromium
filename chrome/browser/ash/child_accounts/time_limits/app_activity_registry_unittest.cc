@@ -48,7 +48,7 @@ class AppTimeNotificationDelegateMock : public AppTimeNotificationDelegate {
   AppTimeNotificationDelegateMock& operator=(
       const AppTimeNotificationDelegateMock&) = delete;
 
-  ~AppTimeNotificationDelegateMock() = default;
+  ~AppTimeNotificationDelegateMock() override = default;
 
   MOCK_METHOD3(ShowAppTimeLimitNotification,
                void(const AppId&,
@@ -62,7 +62,7 @@ class AppStateObserverMock : public AppActivityRegistry::AppStateObserver {
   AppStateObserverMock(const AppStateObserverMock&) = delete;
   AppStateObserverMock& operator=(const AppStateObserverMock&) = delete;
 
-  ~AppStateObserverMock() = default;
+  ~AppStateObserverMock() override = default;
 
   MOCK_METHOD3(OnAppLimitReached, void(const AppId&, base::TimeDelta, bool));
   MOCK_METHOD1(OnAppLimitRemoved, void(const AppId&));

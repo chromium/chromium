@@ -50,7 +50,7 @@ class MockMessengerObserver : public MessengerObserver {
   MOCK_METHOD1(OnUnlockResponse, void(bool success));
   MOCK_METHOD0(OnDisconnected, void());
 
-  virtual void OnDecryptResponse(const std::string& decrypted_bytes) {
+  void OnDecryptResponse(const std::string& decrypted_bytes) override {
     OnDecryptResponseProxy(decrypted_bytes);
   }
 

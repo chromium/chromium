@@ -18,7 +18,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockNetworkStateHandler
   MockNetworkStateHandler(const MockNetworkStateHandler&) = delete;
   MockNetworkStateHandler& operator=(const MockNetworkStateHandler&) = delete;
 
-  virtual ~MockNetworkStateHandler();
+  ~MockNetworkStateHandler() override;
 
   // Constructs and initializes an instance for testing.
   static std::unique_ptr<MockNetworkStateHandler> InitializeForTest();

@@ -17,7 +17,7 @@ namespace ash {
 class MockUserImageManager : public UserImageManager {
  public:
   explicit MockUserImageManager(const AccountId& account_id);
-  virtual ~MockUserImageManager();
+  ~MockUserImageManager() override;
 
   MOCK_METHOD(void, LoadUserImage, (), (override));
   MOCK_METHOD(void,

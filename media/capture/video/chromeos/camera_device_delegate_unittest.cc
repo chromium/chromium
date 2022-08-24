@@ -50,7 +50,7 @@ class MockCameraDevice : public cros::mojom::Camera3DeviceOps {
   MockCameraDevice(const MockCameraDevice&) = delete;
   MockCameraDevice& operator=(const MockCameraDevice&) = delete;
 
-  ~MockCameraDevice() = default;
+  ~MockCameraDevice() override = default;
 
   void Initialize(
       mojo::PendingRemote<cros::mojom::Camera3CallbackOps> callback_ops,

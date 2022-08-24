@@ -258,7 +258,7 @@ class ReporterRunnerTest
   bool WaitForReporterExit(
       [[maybe_unused]] const base::Process& reporter_process,
       base::TimeDelta timeout,
-      int* exit_code) {
+      int* exit_code) override {
     if (reporter_wait_count_++ < 2 * reporter_launch_count_) {
       // Simulate a timeout to test the path where ReporterRunner waits more
       // than once.

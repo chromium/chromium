@@ -31,7 +31,7 @@ class MockCodecBufferWaitCoordinator : public CodecBufferWaitCoordinator {
   bool expecting_frame_available;
 
  protected:
-  ~MockCodecBufferWaitCoordinator();
+  ~MockCodecBufferWaitCoordinator() override;
 };
 
 }  // namespace media

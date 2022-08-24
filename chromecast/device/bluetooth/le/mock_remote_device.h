@@ -93,7 +93,7 @@ class MockRemoteDevice : public RemoteDevice {
  private:
   friend testing::StrictMock<MockRemoteDevice>;
 
-  ~MockRemoteDevice();
+  ~MockRemoteDevice() override;
 };
 
 }  // namespace bluetooth

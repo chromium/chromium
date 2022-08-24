@@ -73,7 +73,7 @@ class PlatformVerificationFlowTest : public ::testing::Test {
   }
   ~PlatformVerificationFlowTest() override { AttestationClient::Shutdown(); }
 
-  void SetUp() {
+  void SetUp() override {
     // Create a verifier for tests to call.
     verifier_ = new PlatformVerificationFlow(
         &mock_attestation_flow_, AttestationClient::Get(), &fake_delegate_);

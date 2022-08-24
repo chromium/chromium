@@ -135,7 +135,7 @@ class HeartbeatSchedulerTest : public testing::Test {
                    kFakeDeviceId,
                    task_runner_) {}
 
-  void SetUp() {
+  void SetUp() override {
     auto policy_data = std::make_unique<enterprise_management::PolicyData>();
     policy_data->set_obfuscated_customer_id(kFakeCustomerId);
     cloud_policy_store_.set_policy_data_for_testing(std::move(policy_data));

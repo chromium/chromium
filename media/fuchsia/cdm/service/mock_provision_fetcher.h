@@ -19,7 +19,7 @@ namespace testing {
 class MockProvisionFetcher : public ProvisionFetcher {
  public:
   MockProvisionFetcher();
-  ~MockProvisionFetcher();
+  ~MockProvisionFetcher() override;
 
   // Disallow copy and assign
   MockProvisionFetcher(const MockProvisionFetcher&) = delete;

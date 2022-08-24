@@ -29,7 +29,7 @@ class MockVirtualKeyboardControllerObserver
   MockVirtualKeyboardControllerObserver& operator=(
       const MockVirtualKeyboardControllerObserver&) = delete;
 
-  virtual ~MockVirtualKeyboardControllerObserver() = default;
+  ~MockVirtualKeyboardControllerObserver() override = default;
 
   MOCK_METHOD1(OnKeyboardVisible, void(const gfx::Rect&));
   MOCK_METHOD0(OnKeyboardHidden, void());

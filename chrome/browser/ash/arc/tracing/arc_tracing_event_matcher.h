@@ -20,6 +20,7 @@ class ArcTracingEvent;
 class ArcTracingEventMatcher {
  public:
   ArcTracingEventMatcher();
+  ~ArcTracingEventMatcher();
 
   ArcTracingEventMatcher(const ArcTracingEventMatcher&) = delete;
   ArcTracingEventMatcher& operator=(const ArcTracingEventMatcher&) = delete;

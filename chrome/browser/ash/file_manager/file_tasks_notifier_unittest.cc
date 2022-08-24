@@ -86,7 +86,7 @@ class MockFileTasksObserver : public file_tasks::FileTasksObserver {
   MOCK_METHOD2(OnFilesOpenedImpl,
                void(const base::FilePath& path, OpenType open_type));
 
-  void OnFilesOpened(const std::vector<FileOpenEvent>& opens) {
+  void OnFilesOpened(const std::vector<FileOpenEvent>& opens) override {
     ASSERT_TRUE(!opens.empty());
     for (auto& open : opens) {
       OnFilesOpenedImpl(open.path, open.open_type);

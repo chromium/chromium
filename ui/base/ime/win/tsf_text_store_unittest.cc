@@ -33,7 +33,7 @@ namespace {
 
 class MockTextInputClient : public TextInputClient {
  public:
-  ~MockTextInputClient() {}
+  ~MockTextInputClient() override {}
   MOCK_METHOD1(SetCompositionText, void(const ui::CompositionText&));
   MOCK_METHOD1(ConfirmCompositionText, size_t(bool));
   MOCK_METHOD0(ClearCompositionText, void());
@@ -80,7 +80,7 @@ class MockTextInputClient : public TextInputClient {
 
 class MockImeKeyEventDispatcher : public ImeKeyEventDispatcher {
  public:
-  ~MockImeKeyEventDispatcher() {}
+  ~MockImeKeyEventDispatcher() override {}
   MOCK_METHOD1(DispatchKeyEventPostIME, EventDispatchDetails(KeyEvent*));
 };
 

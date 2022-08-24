@@ -121,7 +121,7 @@ class SecureChannelBluetoothLowEnergyCharacteristicFinderTest
         .WillByDefault(Return(std::vector<BluetoothRemoteGattService*>()));
   }
 
-  void SetUp() {
+  void SetUp() override {
     EXPECT_CALL(*adapter_, AddObserver(_)).Times(AtLeast(1));
     EXPECT_CALL(*adapter_, RemoveObserver(_)).Times(AtLeast(1));
 

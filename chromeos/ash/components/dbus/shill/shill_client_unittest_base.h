@@ -44,6 +44,7 @@ namespace ash {
 class ValueMatcher : public MatcherInterface<const base::Value&> {
  public:
   explicit ValueMatcher(const base::Value& value);
+  ~ValueMatcher();
 
   // MatcherInterface overrides.
   bool MatchAndExplain(const base::Value& value,
@@ -66,7 +67,7 @@ class ShillClientUnittestBase : public testing::Test {
   class MockPropertyChangeObserver : public ShillPropertyChangedObserver {
    public:
     MockPropertyChangeObserver();
-    ~MockPropertyChangeObserver();
+    ~MockPropertyChangeObserver() override;
     MOCK_METHOD2(OnPropertyChanged,
                  void(const std::string& name, const base::Value& value));
   };

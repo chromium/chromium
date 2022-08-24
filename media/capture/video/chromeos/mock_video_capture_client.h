@@ -29,7 +29,7 @@ class MockVideoCaptureClient : public VideoCaptureDevice::Client {
 
   explicit MockVideoCaptureClient();
 
-  ~MockVideoCaptureClient();
+  ~MockVideoCaptureClient() override;
 
   void SetFrameCb(base::OnceClosure frame_cb);
 

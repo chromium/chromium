@@ -77,7 +77,7 @@ class StreamingReceiverSessionClientTest : public testing::Test {
             this, &StreamingReceiverSessionClientTest::CreateReceiverSession));
   }
 
-  ~StreamingReceiverSessionClientTest() {
+  ~StreamingReceiverSessionClientTest() override {
     ResetMessagePort();
     task_environment_.FastForwardBy(
         StreamingReceiverSessionClient::kMaxAVSettingsWaitTime);

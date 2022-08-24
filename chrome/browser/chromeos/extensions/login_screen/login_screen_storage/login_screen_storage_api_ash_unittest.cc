@@ -63,7 +63,7 @@ void LoginScreenStorageRetrieveError(
 class MockSessionManagerClient : public chromeos::FakeSessionManagerClient {
  public:
   MockSessionManagerClient() = default;
-  ~MockSessionManagerClient() = default;
+  ~MockSessionManagerClient() override = default;
 
   MOCK_METHOD4(LoginScreenStorageStore,
                void(const std::string& key,

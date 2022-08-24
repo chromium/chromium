@@ -66,7 +66,7 @@ class TestIPAddressObserver : public NetworkChangeNotifier::IPAddressObserver {
   TestIPAddressObserver(const TestIPAddressObserver&) = delete;
   TestIPAddressObserver& operator=(const TestIPAddressObserver&) = delete;
 
-  ~TestIPAddressObserver() {
+  ~TestIPAddressObserver() override {
     NetworkChangeNotifier::RemoveIPAddressObserver(this);
   }
 

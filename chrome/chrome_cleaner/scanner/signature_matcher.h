@@ -12,7 +12,7 @@ namespace chrome_cleaner {
 class SignatureMatcher : public SignatureMatcherAPI {
  public:
   SignatureMatcher() = default;
-  virtual ~SignatureMatcher() = default;
+  ~SignatureMatcher() override = default;
 
   // SignatureMatcherAPI implementation.
   bool MatchFileDigestInfo(const base::FilePath& path,

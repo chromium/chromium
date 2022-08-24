@@ -13,7 +13,7 @@ class MockGesturePropertiesService
     : public ui::ozone::mojom::GesturePropertiesService {
  public:
   MockGesturePropertiesService();
-  ~MockGesturePropertiesService();
+  ~MockGesturePropertiesService() override;
 
   MOCK_METHOD1(ListDevices, void(ListDevicesCallback));
   MOCK_METHOD2(ListProperties, void(int32_t, ListPropertiesCallback));

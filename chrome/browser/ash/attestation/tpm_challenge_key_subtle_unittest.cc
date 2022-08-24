@@ -165,7 +165,7 @@ enum class TestProfileChoice {
 class TpmChallengeKeySubtleTestBase : public ::testing::Test {
  public:
   explicit TpmChallengeKeySubtleTestBase(TestProfileChoice test_profile_choice);
-  ~TpmChallengeKeySubtleTestBase();
+  ~TpmChallengeKeySubtleTestBase() override;
 
  protected:
   // ::testing::Test:

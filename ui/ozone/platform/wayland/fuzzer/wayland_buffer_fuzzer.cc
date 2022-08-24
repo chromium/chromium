@@ -53,7 +53,7 @@ class MockPlatformWindowDelegate : public ui::PlatformWindowDelegate {
   MockPlatformWindowDelegate& operator=(const MockPlatformWindowDelegate&) =
       delete;
 
-  ~MockPlatformWindowDelegate() = default;
+  ~MockPlatformWindowDelegate() override = default;
 
   MOCK_METHOD1(OnBoundsChanged, void(const BoundsChange& change));
   MOCK_METHOD1(OnDamageRect, void(const gfx::Rect& damaged_region));

@@ -241,7 +241,7 @@ class WindowObserverHookChecker : public aura::WindowObserver {
     DCHECK(!surface_window_->GetRootWindow());
     surface_window_->AddObserver(this);
   }
-  ~WindowObserverHookChecker() {
+  ~WindowObserverHookChecker() override {
     DCHECK(dragged_window_);
     dragged_window_->RemoveObserver(this);
   }
@@ -276,7 +276,9 @@ class WindowObserverHookChecker2 : public aura::WindowObserver {
       : surface_window_(surface_window) {
     surface_window_->AddObserver(this);
   }
-  ~WindowObserverHookChecker2() { surface_window_->RemoveObserver(this); }
+  ~WindowObserverHookChecker2() override {
+    surface_window_->RemoveObserver(this);
+  }
   MOCK_METHOD(void,
               OnWindowPropertyChanged,
               (aura::Window*, const void*, intptr_t),

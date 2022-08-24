@@ -69,7 +69,7 @@ class MockMediaProtectionPMPServer
           IMediaProtectionPMPServer> {
  public:
   MockMediaProtectionPMPServer() = default;
-  virtual ~MockMediaProtectionPMPServer() = default;
+  ~MockMediaProtectionPMPServer() override = default;
 
   static HRESULT MakeMockMediaProtectionPMPServer(
       IMediaProtectionPMPServer** pmp_server) {

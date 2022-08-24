@@ -84,7 +84,7 @@ class MockCryptAuthApiCallFlow : public CryptAuthApiCallFlow {
   MockCryptAuthApiCallFlow(const MockCryptAuthApiCallFlow&) = delete;
   MockCryptAuthApiCallFlow& operator=(const MockCryptAuthApiCallFlow&) = delete;
 
-  virtual ~MockCryptAuthApiCallFlow() {}
+  ~MockCryptAuthApiCallFlow() override {}
 
   void StartPostRequest(
       const GURL& request_url,

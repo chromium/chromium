@@ -29,7 +29,7 @@ using CallbackFactory =
 class BorealisInstallerMock : public BorealisInstaller {
  public:
   BorealisInstallerMock() = default;
-  ~BorealisInstallerMock() = default;
+  ~BorealisInstallerMock() override = default;
   MOCK_METHOD(bool, IsProcessing, (), ());
   MOCK_METHOD(void, Start, (), ());
   MOCK_METHOD(void, Cancel, (), ());
@@ -44,7 +44,7 @@ class BorealisInstallerMock : public BorealisInstaller {
 class BorealisLauncherMock : public BorealisAppLauncher {
  public:
   BorealisLauncherMock() = default;
-  ~BorealisLauncherMock() = default;
+  ~BorealisLauncherMock() override = default;
   MOCK_METHOD(void,
               Launch,
               (std::string app_id,

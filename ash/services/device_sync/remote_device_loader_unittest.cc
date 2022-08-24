@@ -67,7 +67,7 @@ class DeviceSyncRemoteDeviceLoaderTest : public testing::Test {
   DeviceSyncRemoteDeviceLoaderTest& operator=(
       const DeviceSyncRemoteDeviceLoaderTest&) = delete;
 
-  ~DeviceSyncRemoteDeviceLoaderTest() {}
+  ~DeviceSyncRemoteDeviceLoaderTest() override {}
 
   void OnRemoteDevicesLoaded(
       const multidevice::RemoteDeviceList& remote_devices) {

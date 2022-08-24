@@ -36,7 +36,7 @@ class MockConnection : public Connection {
   MockConnection(const MockConnection&) = delete;
   MockConnection& operator=(const MockConnection&) = delete;
 
-  ~MockConnection() {}
+  ~MockConnection() override {}
 
   MOCK_METHOD1(SetPaused, void(bool paused));
   MOCK_METHOD0(Connect, void());
@@ -77,7 +77,7 @@ class MockConnectionObserver : public ConnectionObserver {
   MockConnectionObserver(const MockConnectionObserver&) = delete;
   MockConnectionObserver& operator=(const MockConnectionObserver&) = delete;
 
-  virtual ~MockConnectionObserver() {}
+  ~MockConnectionObserver() override {}
 
   MOCK_METHOD3(OnConnectionStatusChanged,
                void(Connection* connection,

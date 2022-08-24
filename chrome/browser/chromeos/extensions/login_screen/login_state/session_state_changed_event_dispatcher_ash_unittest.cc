@@ -81,7 +81,7 @@ class SessionStateChangedEventDispatcherAshUnittest : public testing::Test {
     explicit MockSessionStateChangedEventDispatcher(
         content::BrowserContext* context)
         : SessionStateChangedEventDispatcher(context) {}
-    ~MockSessionStateChangedEventDispatcher() = default;
+    ~MockSessionStateChangedEventDispatcher() override = default;
     MOCK_METHOD1(OnSessionStateChanged,
                  void(crosapi::mojom::SessionState state));
   };

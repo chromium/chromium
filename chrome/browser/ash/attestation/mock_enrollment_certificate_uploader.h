@@ -20,7 +20,7 @@ class MockEnrollmentCertificateUploader : public EnrollmentCertificateUploader {
   MockEnrollmentCertificateUploader& operator=(
       const MockEnrollmentCertificateUploader&) = delete;
 
-  ~MockEnrollmentCertificateUploader();
+  ~MockEnrollmentCertificateUploader() override;
 
   MOCK_METHOD1(ObtainAndUploadCertificate, void(UploadCallback));
   MOCK_METHOD2(ObtainAndUploadCertificateWithRsuDeviceId,

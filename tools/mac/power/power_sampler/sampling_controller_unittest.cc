@@ -49,7 +49,7 @@ class TestSampler : public Sampler {
 class LenientMockMonitor : public Monitor {
  public:
   LenientMockMonitor() = default;
-  ~LenientMockMonitor() = default;
+  ~LenientMockMonitor() override = default;
 
   MOCK_METHOD(void,
               OnStartSession,

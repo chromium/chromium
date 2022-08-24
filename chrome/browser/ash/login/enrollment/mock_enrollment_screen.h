@@ -29,7 +29,7 @@ class MockEnrollmentScreen : public EnrollmentScreen {
 class MockEnrollmentScreenView : public EnrollmentScreenView {
  public:
   MockEnrollmentScreenView();
-  virtual ~MockEnrollmentScreenView();
+  ~MockEnrollmentScreenView() override;
 
   void Bind(EnrollmentScreen* screen) override;
   void Unbind() override;

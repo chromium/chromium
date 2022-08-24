@@ -25,7 +25,7 @@ const base::TimeDelta kThreeFourthIdleDuration =
 class MockDetectorObserver : public ChromeVoxHintDetector::Observer {
  public:
   MockDetectorObserver() = default;
-  virtual ~MockDetectorObserver() = default;
+  ~MockDetectorObserver() override = default;
 
   MOCK_METHOD(void, OnShouldGiveChromeVoxHint, (), (override));
 };

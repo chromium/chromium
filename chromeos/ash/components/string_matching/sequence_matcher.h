@@ -55,7 +55,7 @@ class SequenceMatcher {
   SequenceMatcher(const SequenceMatcher&) = delete;
   SequenceMatcher& operator=(const SequenceMatcher&) = delete;
 
-  ~SequenceMatcher() = default;
+  ~SequenceMatcher();
 
   // Calculates similarity ratio of `first_string_` and `second_string_`.
   double Ratio();

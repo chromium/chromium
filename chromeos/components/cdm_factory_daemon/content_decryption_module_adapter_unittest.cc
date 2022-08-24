@@ -59,7 +59,7 @@ class MockDaemonCdm : public cdm::mojom::ContentDecryptionModule {
                     pending_receiver) {
     receiver_.Bind(std::move(pending_receiver));
   }
-  ~MockDaemonCdm() = default;
+  ~MockDaemonCdm() override = default;
 
   MOCK_METHOD(void,
               SetServerCertificate,
