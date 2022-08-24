@@ -114,11 +114,7 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoProducer {
   // TODO(crbug.com/839071): Find a good compromise between performance and
   // data granularity (mainly relevant to running with small buffer sizes
   // when we use background tracing) on Android.
-#if BUILDFLAG(IS_ANDROID)
   static constexpr size_t kSMBPageSizeBytes = 4 * 1024;
-#else
-  static constexpr size_t kSMBPageSizeBytes = 32 * 1024;
-#endif
 
   // TODO(crbug.com/839071): Figure out a good buffer size.
   static constexpr size_t kDefaultSMBSizeBytes = 4 * 1024 * 1024;
