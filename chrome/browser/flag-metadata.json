@@ -5053,6 +5053,16 @@
     "expiry_milestone": 110
   },
   {
+    "name": "page-info-about-this-page-description-placeholder",
+    "owners": [ "dullweber", "olesiamarukhno@google.com" ],
+    "expiry_milestone": 109
+  },
+  {
+    "name": "page-info-about-this-page-persistent-side-panel-entry",
+    "owners": [ "dullweber", "olesiamarukhno@google.com" ],
+    "expiry_milestone": 109
+  },
+  {
     "name": "page-info-about-this-site",
     "owners": [ "eokoyomon", "dullweber", "olesiamarukhno@google.com" ],
     "expiry_milestone": 102

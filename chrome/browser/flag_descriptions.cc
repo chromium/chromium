@@ -2162,6 +2162,18 @@ const char kPageInfoAboutThisSiteName[] =
 const char kPageInfoAboutThisSiteDescription[] =
     "Enable the 'About this site' section in the page info.";
 
+const char kPageInfoboutThisPageDescriptionPlaceholderName[] =
+    "AboutThisPage description placeholder";
+const char kPageInfoboutThisPageDescriptionPlaceholderDescription[] =
+    "Shows a placeholder when no description is availble instead of not "
+    "showing an entry at all";
+
+const char kPageInfoboutThisPagePersistentEntryName[] =
+    "AboutThisPage persistent SidePanel entry";
+const char kPageInfoboutThisPagePersistentEntryDescription[] =
+    "Registers a SidePanel entry on pageload if 'AboutThisPage' info is "
+    "available";
+
 const char kPageInfoMoreAboutThisPageName[] =
     "'More about this page' link in page info";
 const char kPageInfoMoreAboutThisPageDescription[] =

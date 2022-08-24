@@ -56605,6 +56605,8 @@ from previous Chrome versions.
   <int value="-1696619241" label="OmniboxWrapPopupPosition:disabled"/>
   <int value="-1696366449" label="disable-permissions-bubbles"/>
   <int value="-1695774453" label="skip-extra-ash-window-positioning"/>
+  <int value="-1695608731"
+      label="PageInfoAboutThisSiteDescriptionPlaceholder:disabled"/>
   <int value="-1694900665" label="HandwritingGestureEditing:enabled"/>
   <int value="-1693498375" label="CdmFactoryDaemon:enabled"/>
   <int value="-1693140558" label="FiltersInRecentsV2:disabled"/>
@@ -60888,6 +60890,8 @@ from previous Chrome versions.
   <int value="948521531" label="StylusHandwriting:disabled"/>
   <int value="951111587" label="MediaAppPhotosIntegrationVideo:disabled"/>
   <int value="952558794" label="enable-remote-assistance"/>
+  <int value="952625847"
+      label="AboutThisSitePersistentSidePanelEntry:disabled"/>
   <int value="955340765" label="ChromeHomeOptOutSnackbar:enabled"/>
   <int value="955425932" label="EnterpriseReportingInChromeOS:enabled"/>
   <int value="955901619" label="EmojiSuggestAddition:disabled"/>
@@ -61677,7 +61681,11 @@ from previous Chrome versions.
   <int value="1442798825" label="enable-quic"/>
   <int value="1442830837" label="MemoryAblation:disabled"/>
   <int value="1443830588" label="VerticalSnap:disabled"/>
+  <int value="1443836294"
+      label="AboutThisSitePersistentSidePanelEntry:enabled"/>
   <int value="1444066555" label="MessagesForAndroidSyncError:disabled"/>
+  <int value="1444347795"
+      label="PageInfoAboutThisSiteDescriptionPlaceholder:enabled"/>
   <int value="1444719196"
       label="CellularBypassESimInstallationConnectivityCheck:enabled"/>
   <int value="1446066818" label="WebRtcAnalogAgcClippingControl:enabled"/>

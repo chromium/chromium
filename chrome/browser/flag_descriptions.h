@@ -1209,6 +1209,12 @@ extern const char kPageEntitiesPageContentAnnotationsDescription[];
 extern const char kPageInfoAboutThisSiteName[];
 extern const char kPageInfoAboutThisSiteDescription[];
 
+extern const char kPageInfoboutThisPageDescriptionPlaceholderName[];
+extern const char kPageInfoboutThisPageDescriptionPlaceholderDescription[];
+
+extern const char kPageInfoboutThisPagePersistentEntryName[];
+extern const char kPageInfoboutThisPagePersistentEntryDescription[];
+
 extern const char kPageInfoMoreAboutThisPageName[];
 extern const char kPageInfoMoreAboutThisPageDescription[];
 

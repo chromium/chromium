@@ -7214,6 +7214,19 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(page_info::kPageInfoAboutThisSiteMoreInfo)},
 
+    {"page-info-about-this-page-description-placeholder",
+     flag_descriptions::kPageInfoboutThisPageDescriptionPlaceholderName,
+     flag_descriptions::kPageInfoboutThisPageDescriptionPlaceholderDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         page_info::kPageInfoAboutThisSiteDescriptionPlaceholder)},
+
+    {"page-info-about-this-page-persistent-side-panel-entry",
+     flag_descriptions::kPageInfoboutThisPagePersistentEntryName,
+     flag_descriptions::kPageInfoboutThisPagePersistentEntryDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(page_info::kAboutThisSitePersistentSidePanelEntry)},
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {kClipboardHistoryReorderInternalName,
      flag_descriptions::kClipboardHistoryReorderName,
