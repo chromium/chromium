@@ -22,6 +22,8 @@
 #include "chrome/browser/ash/crostini/crostini_shelf_utils.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_mime_types_service.h"
+#include "chrome/browser/ash/guest_os/guest_os_mime_types_service_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/profiles/profile.h"
@@ -65,21 +67,31 @@ bool ShouldShowDisplayDensityMenuItem(const std::string& app_id,
 
 // Create a file intent filter with mime type conditions for App Service.
 apps::IntentFilters CreateIntentFilterForCrostini(
-    const std::set<std::string>& mime_types) {
-  apps::IntentFilters intent_filters;
-
-  if (mime_types.empty()) {
-    return intent_filters;
+    const guest_os::GuestOsMimeTypesService* mime_types_service,
+    const guest_os::GuestOsRegistryService::Registration& registration) {
+  const std::set<std::string> mime_types_set = registration.MimeTypes();
+  if (mime_types_set.empty()) {
+    return {};
   }
+  std::vector<std::string> mime_types(mime_types_set.begin(),
+                                      mime_types_set.end());
 
-  std::vector<std::string> mime_types_vector(mime_types.begin(),
-                                             mime_types.end());
-  apps::IntentFilterPtr intent_filter = apps_util::CreateFileFilter(
-      {apps_util::kIntentActionView}, mime_types_vector, {},
+  // When a file has a mime type that Files App can't recognise but Crostini can
+  // (e.g. a proprietary file type), we should look at the file extensions that
+  // the app can support. We find these extension types by checking what
+  // extensions correspond to the app's supported mime types.
+  std::vector<std::string> extension_types;
+  if (ash::features::ShouldArcAndGuestOsFileTasksUseAppService()) {
+    extension_types = mime_types_service->GetExtensionTypesFromMimeTypes(
+        mime_types_set, registration.VmName(), registration.ContainerName());
+  }
+  apps::IntentFilters intent_filters;
+  intent_filters.push_back(apps_util::CreateFileFilter(
+      {apps_util::kIntentActionView}, mime_types, extension_types,
       // TODO(crbug/1349974): Remove activity_name when default file handling
       // preferences for Files App are migrated.
-      /*activity_name=*/apps_util::kGuestOsActivityName);
-  intent_filters.push_back(std::move(intent_filter));
+      /*activity_name=*/apps_util::kGuestOsActivityName));
+
   return intent_filters;
 }
 
@@ -392,8 +404,13 @@ AppPtr CrostiniApps::CreateApp(
   app->allow_uninstall =
       crostini::IsUninstallable(profile_, registration.app_id());
 
-  app->handles_intents = show;
-  app->intent_filters = CreateIntentFilterForCrostini(registration.MimeTypes());
+  app->handles_intents = true;
+
+  const guest_os::GuestOsMimeTypesService* mime_types_service =
+      guest_os::GuestOsMimeTypesServiceFactory::GetForProfile(profile_);
+
+  app->intent_filters =
+      CreateIntentFilterForCrostini(mime_types_service, registration);
 
   // TODO(crbug.com/1253250): Add other fields for the App struct.
   return app;
@@ -440,9 +457,13 @@ apps::mojom::AppPtr CrostiniApps::Convert(
           ? apps::mojom::OptionalBool::kTrue
           : apps::mojom::OptionalBool::kFalse;
 
-  app->handles_intents = show;
+  app->handles_intents = apps::mojom::OptionalBool::kTrue;
+
+  const guest_os::GuestOsMimeTypesService* mime_types_service =
+      guest_os::GuestOsMimeTypesServiceFactory::GetForProfile(profile_);
+
   app->intent_filters = ConvertIntentFiltersToMojomIntentFilters(
-      CreateIntentFilterForCrostini(registration.MimeTypes()));
+      CreateIntentFilterForCrostini(mime_types_service, registration));
 
   return app;
 }

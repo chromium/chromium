@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
@@ -58,6 +59,34 @@ std::string GuestOsMimeTypesService::GetMimeType(
     }
   }
   return "";
+}
+
+std::vector<std::string>
+GuestOsMimeTypesService::GetExtensionTypesFromMimeTypes(
+    const std::set<std::string>& supported_mime_types,
+    const std::string& vm_name,
+    const std::string& container_name) const {
+  const base::Value::Dict* vm =
+      prefs_->GetValueDict(prefs::kGuestOsMimeTypes).FindDict(vm_name);
+  if (!vm) {
+    return {};
+  }
+  const base::Value::Dict* container = vm->FindDict(container_name);
+  if (!container) {
+    return {};
+  }
+  const base::Value::Dict* extension_to_mime = vm->FindDict(container_name);
+  if (!extension_to_mime) {
+    return {};
+  }
+
+  std::vector<std::string> extension_types;
+  for (auto entry : *extension_to_mime) {
+    if (base::Contains(supported_mime_types, entry.second.GetString())) {
+      extension_types.push_back(entry.first);
+    }
+  }
+  return extension_types;
 }
 
 void GuestOsMimeTypesService::ClearMimeTypes(

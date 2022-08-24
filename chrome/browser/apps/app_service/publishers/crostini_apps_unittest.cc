@@ -6,9 +6,13 @@
 
 #include <vector>
 
+#include "ash/constants/ash_features.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
+#include "chrome/browser/ash/guest_os/guest_os_mime_types_service.h"
+#include "chrome/browser/ash/guest_os/guest_os_mime_types_service_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
@@ -25,6 +29,7 @@
 
 namespace apps {
 
+// ENABLE ash::features::ShouldArcAndGuestOsFileTasksUseAppService
 class CrostiniAppsTest : public testing::Test {
  public:
   CrostiniAppsTest()
@@ -36,6 +41,10 @@ class CrostiniAppsTest : public testing::Test {
 
   TestingProfile* profile() { return profile_.get(); }
 
+  guest_os::GuestOsMimeTypesService* mime_types_service() {
+    return mime_types_service_;
+  }
+
   void SetUp() override {
     ash::CiceroneClient::InitializeFake();
     profile_ = std::make_unique<TestingProfile>();
@@ -44,6 +53,8 @@ class CrostiniAppsTest : public testing::Test {
     test_helper_ =
         std::make_unique<crostini::CrostiniTestHelper>(profile_.get());
     test_helper()->ReInitializeAppServiceIntegration();
+    mime_types_service_ =
+        guest_os::GuestOsMimeTypesServiceFactory::GetForProfile(profile());
   }
 
   void TearDown() override {
@@ -57,6 +68,7 @@ class CrostiniAppsTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<crostini::CrostiniTestHelper> test_helper_;
   AppServiceProxy* app_service_proxy_ = nullptr;
+  guest_os::GuestOsMimeTypesService* mime_types_service_;
 };
 
 TEST_F(CrostiniAppsTest, AppServiceHasCrostiniIntentFilters) {
@@ -103,7 +115,9 @@ TEST_F(CrostiniAppsTest, AppServiceHasCrostiniIntentFilters) {
               apps_util::kIntentActionView);
   }
 
-  // Check that the filter has all our mime types.
+  // Check that the filter has all our mime types. Realistically, the filter
+  // would also have the extension equivalents of the mime types too if there
+  // were mime/ extension mappings in prefs.
   {
     const Condition* condition = intent_filter->conditions[1].get();
     ASSERT_EQ(condition->condition_type, ConditionType::kFile);
@@ -148,6 +162,74 @@ TEST_F(CrostiniAppsTest, AppReadinessUpdatesWhenCrostiniDisabled) {
         readiness_after = update.Readiness();
       });
   ASSERT_EQ(readiness_after, Readiness::kUninstalledByUser);
+}
+
+TEST_F(CrostiniAppsTest, CrostiniIntentFilterHasExtensionsFromPrefs) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      ash::features::kArcAndGuestOsFileTasksUseAppService};
+
+  std::string mime_type = "test/mime1";
+  std::string extension = "test_extension";
+
+  // Update dictionary to map the extension to mime type.
+  vm_tools::apps::MimeTypes mime_types_list;
+  mime_types_list.set_vm_name("termina");
+  mime_types_list.set_container_name("penguin");
+  (*mime_types_list.mutable_mime_type_mappings())[extension] = mime_type;
+  mime_types_service()->UpdateMimeTypes(mime_types_list);
+
+  // Create Crostini app.
+  vm_tools::apps::App app;
+  app.add_mime_types(mime_type);
+  app.set_desktop_file_id("app_id");
+  vm_tools::apps::App::LocaleString::Entry* entry =
+      app.mutable_name()->add_values();
+  entry->set_locale(std::string());
+  entry->set_value("app_name");
+
+  // Get the app ID so that we can find the Crostini app in App Service later.
+  test_helper()->AddApp(app);
+  std::string app_service_id = crostini::CrostiniTestHelper::GenerateAppId(
+      app.desktop_file_id(), crostini::kCrostiniDefaultVmName,
+      crostini::kCrostiniDefaultContainerName);
+
+  // Retrieve the registered intent filter for the app in App Service.
+  std::vector<std::unique_ptr<IntentFilter>> intent_filters;
+  app_service_proxy()->AppRegistryCache().ForOneApp(
+      app_service_id, [&intent_filters](const AppUpdate& update) {
+        for (auto& intent_filter : update.IntentFilters()) {
+          intent_filters.push_back(std::move(intent_filter));
+        }
+      });
+
+  EXPECT_EQ(intent_filters.size(), 1U);
+  std::unique_ptr<IntentFilter> intent_filter = std::move(intent_filters[0]);
+  EXPECT_EQ(intent_filter->conditions.size(), 2U);
+
+  // Check that the filter has the correct action type.
+  {
+    const Condition* condition = intent_filter->conditions[0].get();
+    ASSERT_EQ(condition->condition_type, ConditionType::kAction);
+    EXPECT_EQ(condition->condition_values.size(), 1U);
+    ASSERT_EQ(condition->condition_values[0]->match_type,
+              PatternMatchType::kLiteral);
+    ASSERT_EQ(condition->condition_values[0]->value,
+              apps_util::kIntentActionView);
+  }
+
+  // Check that the filter has both mime type and its extension equivalent based
+  // on what is recorded in prefs for GuestOS mime types.
+  {
+    const Condition* condition = intent_filter->conditions[1].get();
+    ASSERT_EQ(condition->condition_type, ConditionType::kFile);
+    EXPECT_EQ(condition->condition_values.size(), 2U);
+    ASSERT_EQ(condition->condition_values[0]->value, mime_type);
+    ASSERT_EQ(condition->condition_values[0]->match_type,
+              PatternMatchType::kMimeType);
+    ASSERT_EQ(condition->condition_values[1]->value, extension);
+    ASSERT_EQ(condition->condition_values[1]->match_type,
+              PatternMatchType::kFileExtension);
+  }
 }
 
 }  // namespace apps

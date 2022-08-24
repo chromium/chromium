@@ -766,5 +766,25 @@ TEST_F(AppServiceFileTasksTestEnabled, FindMultipleAppServiceCrostiniApps) {
   EXPECT_FALSE(tasks[1].is_file_extension_match);
 }
 
+// When we encounter a file with an unknown mime-type (i.e.
+// application/octet-stream), we rely on matching with the extension type. Check
+// whether extension matching works for Crostini.
+TEST_F(AppServiceFileTasksTestEnabled, FindAppServiceCrostiniAppWithExtension) {
+  std::string extension = "randomExtension";
+  std::string mime_type = "test/randomMimeType";
+  std::string file_name = "foo." + extension;
+  std::string app_id = "App";
+
+  auto intent_filter =
+      apps_util::CreateFileFilter({apps_util::kIntentActionView}, {mime_type},
+                                  {extension}, "open-with", false);
+  AddCrostiniAppWithIntentFilter(app_id, std::move(intent_filter));
+
+  std::vector<FullTaskDescriptor> tasks =
+      FindAppServiceTasks({{file_name, "application/octet-stream"}});
+  ASSERT_EQ(1U, tasks.size());
+  EXPECT_EQ(app_id, tasks[0].task_descriptor.app_id);
+}
+
 }  // namespace file_tasks
 }  // namespace file_manager.

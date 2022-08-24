@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_mime_types_service.h"
 
 #include <stddef.h>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
@@ -59,6 +60,12 @@ class GuestOsMimeTypesServiceTest : public testing::Test {
   std::string GetMimeType(const std::string& filename) {
     return service_->GetMimeType(base::FilePath(filename), kTestVmName,
                                  kTestContainerName);
+  }
+
+  std::vector<std::string> GetExtensionTypesFromMimeTypes(
+      std::set<std::string> supported_mime_types) {
+    return service_->GetExtensionTypesFromMimeTypes(
+        supported_mime_types, kTestVmName, kTestContainerName);
   }
 
  private:
@@ -157,6 +164,32 @@ TEST_F(GuestOsMimeTypesServiceTest, ClearMimeTypes) {
                                                "vm 1", "container 2"));
   EXPECT_EQ("", service()->GetMimeType(base::FilePath("test.foobar"), "vm 2",
                                        "container 1"));
+}
+
+TEST_F(GuestOsMimeTypesServiceTest, SetMimeTypesAndGetExtensionTypes) {
+  std::vector<std::string> mime_types = {"x/foo", "x/bar", "x/abcdef",
+                                         "x/abcdef"};
+  std::vector<std::string> file_extensions = {"foo", "bar", "abc", "def"};
+
+  // Mime/ extension types not registered yet.
+  std::vector<std::string> result = GetExtensionTypesFromMimeTypes({"x/foo"});
+  EXPECT_EQ(0, result.size());
+
+  service()->UpdateMimeTypes(CreateMimeTypesProto(
+      file_extensions, mime_types, kTestVmName, kTestContainerName));
+  result = GetExtensionTypesFromMimeTypes({"x/foo"});
+  EXPECT_EQ(1, result.size());
+  EXPECT_EQ("foo", result[0]);
+
+  result = GetExtensionTypesFromMimeTypes({"x/bar"});
+  EXPECT_EQ(1, result.size());
+  EXPECT_EQ("bar", result[0]);
+
+  // We should have 2 possible extensions for this mime type case.
+  result = GetExtensionTypesFromMimeTypes({"x/abcdef"});
+  EXPECT_EQ(2, result.size());
+  EXPECT_TRUE(base::Contains(result, "abc"));
+  EXPECT_TRUE(base::Contains(result, "def"));
 }
 
 }  // namespace guest_os
