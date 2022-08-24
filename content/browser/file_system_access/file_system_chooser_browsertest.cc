@@ -1620,6 +1620,12 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, SuggestedName) {
                         true, "dangerous_extension.scf.png", true});
   name_infos.push_back({"dangerous_extension.url.png", ListValueOf(".png"),
                         true, "dangerous_extension.url.png", true});
+  // Extensions longer than 16 characters should be stripped.
+  name_infos.push_back({"long_extension.len10plus123456",
+                        ListValueOf(".len10plus123456"), true,
+                        "long_extension.len10plus123456", true});
+  name_infos.push_back({"long_extension.len10plus1234567", ListValueOf(".nope"),
+                        true, "long_extension", false});
   // Invalid characters should be sanitized.
   name_infos.push_back({R"(inv*l:d\\ch%rבאמת!a<ters🤓.txt)",
                         ListValueOf(".txt"), true,
