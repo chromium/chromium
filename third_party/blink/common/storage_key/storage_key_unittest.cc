@@ -98,8 +98,10 @@ TEST(StorageKeyTest, Equivalence) {
        StorageKey::CreateWithNonce(origin2, nonce2), false},
       // When storage partitioning is disabled, the top-level site isn't taken
       // into account for equivalence.
-      {StorageKey(origin1, origin2), StorageKey(origin1), true},
-      {StorageKey(origin2, origin1), StorageKey(origin2), true},
+      {StorageKey::CreateForTesting(origin1, origin2), StorageKey(origin1),
+       true},
+      {StorageKey::CreateForTesting(origin2, origin1), StorageKey(origin2),
+       true},
   };
   for (const auto& test_case : kTestCases) {
     ASSERT_EQ(test_case.storage_key1 == test_case.storage_key2,
@@ -125,16 +127,21 @@ TEST(StorageKeyTest, EquivalencePartitioned) {
   StorageKey OneArgKey_origin1 = StorageKey(origin1);
   StorageKey OneArgKey_origin2 = StorageKey(origin2);
 
-  StorageKey TwoArgKey_origin1_origin1 = StorageKey(origin1, origin1);
-  StorageKey TwoArgKey_origin2_origin2 = StorageKey(origin2, origin2);
+  StorageKey TwoArgKey_origin1_origin1 =
+      StorageKey::CreateForTesting(origin1, origin1);
+  StorageKey TwoArgKey_origin2_origin2 =
+      StorageKey::CreateForTesting(origin2, origin2);
 
   EXPECT_EQ(OneArgKey_origin1, TwoArgKey_origin1_origin1);
   EXPECT_EQ(OneArgKey_origin2, TwoArgKey_origin2_origin2);
 
   // And when the two argument constructor gets different values
-  StorageKey TwoArgKey1_origin1_origin2 = StorageKey(origin1, origin2);
-  StorageKey TwoArgKey2_origin1_origin2 = StorageKey(origin1, origin2);
-  StorageKey TwoArgKey_origin2_origin1 = StorageKey(origin2, origin1);
+  StorageKey TwoArgKey1_origin1_origin2 =
+      StorageKey::CreateForTesting(origin1, origin2);
+  StorageKey TwoArgKey2_origin1_origin2 =
+      StorageKey::CreateForTesting(origin1, origin2);
+  StorageKey TwoArgKey_origin2_origin1 =
+      StorageKey::CreateForTesting(origin2, origin1);
 
   EXPECT_EQ(TwoArgKey1_origin1_origin2, TwoArgKey2_origin1_origin2);
 
@@ -234,7 +241,7 @@ TEST(StorageKeyTest, SerializePartitioned) {
     const url::Origin origin =
         url::Origin::Create(GURL(test.origin_and_top_level_site.first));
     const net::SchemefulSite& site = test.origin_and_top_level_site.second;
-    StorageKey key(origin, site);
+    StorageKey key = StorageKey::CreateForTesting(origin, site);
     EXPECT_EQ(test.expected_serialization, key.Serialize());
     EXPECT_EQ(test.expected_serialization, key.SerializeForLocalStorage());
   }
@@ -405,7 +412,7 @@ TEST(StorageKeyTest, SerializeDeserializePartitioned) {
     url::Origin origin = url::Origin::Create(GURL(test.origin));
     const net::SchemefulSite& site = test.site;
 
-    StorageKey key(origin, site);
+    StorageKey key = StorageKey::CreateForTesting(origin, site);
     std::string key_string = key.Serialize();
     std::string key_string_for_local_storage = key.SerializeForLocalStorage();
     absl::optional<StorageKey> key_deserialized =
@@ -420,12 +427,14 @@ TEST(StorageKeyTest, SerializeDeserializePartitioned) {
       EXPECT_EQ(key, *key_deserialized_from_local_storage);
     } else {
       // file origins are all collapsed to file:// by serialization.
-      EXPECT_EQ(StorageKey(url::Origin::Create(GURL("file://")),
-                           net::SchemefulSite(GURL("file://"))),
-                *key_deserialized);
-      EXPECT_EQ(StorageKey(url::Origin::Create(GURL("file://")),
-                           net::SchemefulSite(GURL("file://"))),
-                *key_deserialized_from_local_storage);
+      EXPECT_EQ(
+          StorageKey::CreateForTesting(url::Origin::Create(GURL("file://")),
+                                       net::SchemefulSite(GURL("file://"))),
+          *key_deserialized);
+      EXPECT_EQ(
+          StorageKey::CreateForTesting(url::Origin::Create(GURL("file://")),
+                                       net::SchemefulSite(GURL("file://"))),
+          *key_deserialized_from_local_storage);
     }
   }
 }
@@ -482,8 +491,8 @@ TEST(StorageKeyTest, TopLevelSiteGetter) {
   url::Origin origin2 = url::Origin::Create(GURL("https://test.example"));
 
   StorageKey key_origin1 = StorageKey(origin1);
-  StorageKey key_origin1_site1 = StorageKey(origin1, origin1);
-  StorageKey key_origin1_site2 = StorageKey(origin1, origin2);
+  StorageKey key_origin1_site1 = StorageKey::CreateForTesting(origin1, origin1);
+  StorageKey key_origin1_site2 = StorageKey::CreateForTesting(origin1, origin2);
 
   EXPECT_EQ(net::SchemefulSite(origin1), key_origin1.top_level_site());
   EXPECT_EQ(net::SchemefulSite(origin1), key_origin1_site1.top_level_site());
@@ -501,8 +510,8 @@ TEST(StorageKeyTest, TopLevelSiteGetterWithPartitioningEnabled) {
   url::Origin origin2 = url::Origin::Create(GURL("https://test.example"));
 
   StorageKey key_origin1 = StorageKey(origin1);
-  StorageKey key_origin1_site1 = StorageKey(origin1, origin1);
-  StorageKey key_origin1_site2 = StorageKey(origin1, origin2);
+  StorageKey key_origin1_site1 = StorageKey::CreateForTesting(origin1, origin1);
+  StorageKey key_origin1_site2 = StorageKey::CreateForTesting(origin1, origin2);
 
   EXPECT_EQ(net::SchemefulSite(origin1), key_origin1.top_level_site());
   EXPECT_EQ(net::SchemefulSite(origin1), key_origin1_site1.top_level_site());
@@ -585,11 +594,13 @@ TEST(StorageKeyTest, IsThirdPartyContext) {
       EXPECT_NE(key.IsThirdPartyContext(), key.IsFirstPartyContext());
       continue;
     }
-    StorageKey key(test_case.origin, test_case.top_level_origin);
+    StorageKey key = StorageKey::CreateForTesting(test_case.origin,
+                                                  test_case.top_level_origin);
     EXPECT_EQ(test_case.expected, key.IsThirdPartyContext());
     EXPECT_NE(key.IsThirdPartyContext(), key.IsFirstPartyContext());
     // IsThirdPartyContext should not depend on the order of the arguments.
-    key = StorageKey(test_case.top_level_origin, test_case.origin);
+    key = StorageKey::CreateForTesting(test_case.top_level_origin,
+                                       test_case.origin);
     EXPECT_EQ(test_case.expected, key.IsThirdPartyContext());
     EXPECT_NE(key.IsThirdPartyContext(), key.IsFirstPartyContext());
   }

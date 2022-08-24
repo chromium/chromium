@@ -178,8 +178,8 @@ TEST(BlinkStorageKey, TopLevelSiteGetter) {
   url::Origin origin2 = url::Origin::Create(GURL("https://test.example"));
 
   StorageKey key_origin1 = StorageKey(origin1);
-  StorageKey key_origin1_site1 = StorageKey(origin1, origin1);
-  StorageKey key_origin1_site2 = StorageKey(origin1, origin2);
+  StorageKey key_origin1_site1 = StorageKey::CreateForTesting(origin1, origin1);
+  StorageKey key_origin1_site2 = StorageKey::CreateForTesting(origin1, origin2);
 
   EXPECT_EQ(net::SchemefulSite(origin1), key_origin1.top_level_site());
   EXPECT_EQ(net::SchemefulSite(origin1), key_origin1_site1.top_level_site());

@@ -442,7 +442,8 @@ TEST(ServiceWorkerDatabaseTest, GetStorageKeysWithRegistrations) {
 
   GURL origin5 = GURL("https://example.org");
   net::SchemefulSite top_level_site1(GURL("https://toplevel.com"));
-  blink::StorageKey key5(url::Origin::Create(origin5), top_level_site1);
+  blink::StorageKey key5 = blink::StorageKey::CreateForTesting(
+      url::Origin::Create(origin5), top_level_site1);
   RegistrationData data5;
   data5.registration_id = 567;
   data5.scope = URL(origin5, "/hoge");
@@ -457,7 +458,8 @@ TEST(ServiceWorkerDatabaseTest, GetStorageKeysWithRegistrations) {
 
   GURL origin6 = GURL("https://example.org");
   net::SchemefulSite top_level_site2(GURL("https://toplevel2.com"));
-  blink::StorageKey key6(url::Origin::Create(origin6), top_level_site2);
+  blink::StorageKey key6 = blink::StorageKey::CreateForTesting(
+      url::Origin::Create(origin6), top_level_site2);
   RegistrationData data6;
   data6.registration_id = 678;
   data6.scope = URL(origin6, "/hoge");
@@ -750,8 +752,8 @@ TEST(ServiceWorkerDatabaseTest, GetAllRegistrations) {
   RegistrationData data5;
   data5.registration_id = 500;
   data5.scope = URL(origin5, "/hoge");
-  data5.key =
-      blink::StorageKey(url::Origin::Create(data5.scope), top_level_site1);
+  data5.key = blink::StorageKey::CreateForTesting(
+      url::Origin::Create(data5.scope), top_level_site1);
   data5.script = URL(origin5, "/script5.js");
   data5.version_id = 5000;
   data5.resources_total_size_bytes = 500;
@@ -767,8 +769,8 @@ TEST(ServiceWorkerDatabaseTest, GetAllRegistrations) {
   RegistrationData data6;
   data6.registration_id = 600;
   data6.scope = URL(origin6, "/hoge");
-  data6.key =
-      blink::StorageKey(url::Origin::Create(data6.scope), top_level_site2);
+  data6.key = blink::StorageKey::CreateForTesting(
+      url::Origin::Create(data6.scope), top_level_site2);
   data6.script = URL(origin6, "/script6.js");
   data6.version_id = 6000;
   data6.resources_total_size_bytes = 600;

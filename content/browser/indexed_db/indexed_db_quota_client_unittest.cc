@@ -66,11 +66,11 @@ class IndexedDBQuotaClientTest : public testing::Test,
     // This cannot be created above as the kThirdPartyStoragePartitioning must
     // be set.
     kStorageKeyThirdPartyA =
-        StorageKey(url::Origin::Create(GURL("http://host")),
-                   url::Origin::Create(GURL("http://other")));
-    kStorageKeyThirdPartyB =
-        StorageKey(url::Origin::Create(GURL("http://host:8000")),
-                   url::Origin::Create(GURL("http://other")));
+        StorageKey::CreateForTesting(url::Origin::Create(GURL("http://host")),
+                                     url::Origin::Create(GURL("http://other")));
+    kStorageKeyThirdPartyB = StorageKey::CreateForTesting(
+        url::Origin::Create(GURL("http://host:8000")),
+        url::Origin::Create(GURL("http://other")));
     CreateTempDir();
     quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
         /*in_memory=*/false, temp_dir_.GetPath(),

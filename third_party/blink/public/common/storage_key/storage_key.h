@@ -33,46 +33,22 @@ class BLINK_COMMON_EXPORT StorageKey {
   // their origin's nonce will be different).
   StorageKey() = default;
 
-  // The following three constructors all create a StorageKey without a nonce;
-  // the first of which creates a StorageKey with an implicit top-level site
-  // matching the origin. These are currently kept as constructors, rather than
-  // as static creation method(s), because of the large number of usages of
-  // StorageKey without a top-level site specified. Eventually these will all
-  // merge into a static function(s) that will require the caller to explicitly
-  // specify that they do not want a top-level site.
-  // TODO(https://crbug.com/1271615): Remove or mark as test-only most of these
-  // constructors and factory methods.
-
+  // StorageKeys with identical origins and top-level sites are first-party and
+  // always kSameSite.
   explicit StorageKey(const url::Origin& origin)
       : StorageKey(origin,
                    net::SchemefulSite(origin),
                    nullptr,
                    blink::mojom::AncestorChainBit::kSameSite) {}
 
-  // TODO(https://crbug.com/1287130): Correctly infer the actual ancestor chain
-  // bit value, add a parameter, or use this only in testing environments.
-  StorageKey(const url::Origin& origin, const url::Origin& top_level_site)
-      : StorageKey(origin,
-                   net::SchemefulSite(top_level_site),
-                   nullptr,
-                   blink::mojom::AncestorChainBit::kSameSite) {}
-
-  // TODO(https://crbug.com/1287130): Correctly infer the actual ancestor chain
-  // bit value, add a parameter, or use this only in testing environments.
-  StorageKey(const url::Origin& origin,
-             const net::SchemefulSite& top_level_site)
-      : StorageKey(origin,
-                   top_level_site,
-                   nullptr,
-                   blink::mojom::AncestorChainBit::kSameSite) {}
-
   // This function does not take a top-level site as the nonce makes it globally
   // unique anyway. Implementation wise however, the top-level site is set to
-  // the `origin`'s site and the ancestor-chain bit is set to kCrossSite.
+  // the `origin`'s site. The AncestorChainBit is not applicable to StorageKeys
+  // with a non-empty nonce so they are initialized to kSameSite.
   static StorageKey CreateWithNonce(const url::Origin& origin,
                                     const base::UnguessableToken& nonce);
 
-  // Same to the above, but this method does take a top-level site.
+  // Callers may specify an optional nonce by passing nullptr.
   static StorageKey CreateWithOptionalNonce(
       const url::Origin& origin,
       const net::SchemefulSite& top_level_site,
@@ -114,6 +90,18 @@ class BLINK_COMMON_EXPORT StorageKey {
   // if not). Currently calls Deserialize, but this may change in future.
   // For use in tests only.
   static StorageKey CreateFromStringForTesting(const std::string& origin);
+
+  // Takes in two url::Origin types representing origin and top-level site and
+  // returns a StorageKey with a nullptr nonce and a kSameSite AncestorChainBit.
+  // NOTE: For use in tests only.
+  static StorageKey CreateForTesting(const url::Origin& origin,
+                                     const url::Origin& top_level_site);
+
+  // Takes in a url::Origin type and a net::SchemefulSite type and returns a
+  // StorageKey with a nullptr nonce and a kSameSite AncestorChainBit. NOTE: For
+  // use in tests only.
+  static StorageKey CreateForTesting(const url::Origin& origin,
+                                     const net::SchemefulSite& top_level_site);
 
   // Returns true if ThirdPartyStoragePartitioning feature flag is enabled.
   static bool IsThirdPartyStoragePartitioningEnabled();

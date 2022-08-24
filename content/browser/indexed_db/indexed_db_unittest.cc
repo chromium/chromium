@@ -129,26 +129,27 @@ class IndexedDBTest : public testing::Test,
     InitBucket(kSessionOnlyFirstPartyStorageKey,
                &kSessionOnlyFirstPartyBucketLocator);
 
-    kNormalThirdPartyStorageKey =
-        blink::StorageKey(url::Origin::Create(GURL("http://normal/")),
-                          url::Origin::Create(GURL("http://rando/")));
+    kNormalThirdPartyStorageKey = blink::StorageKey::CreateForTesting(
+        url::Origin::Create(GURL("http://normal/")),
+        url::Origin::Create(GURL("http://rando/")));
     InitBucket(kNormalThirdPartyStorageKey, &kNormalThirdPartyBucketLocator);
 
-    kSessionOnlyThirdPartyStorageKey =
-        blink::StorageKey(url::Origin::Create(GURL("http://session-only/")),
-                          url::Origin::Create(GURL("http://rando/")));
+    kSessionOnlyThirdPartyStorageKey = blink::StorageKey::CreateForTesting(
+        url::Origin::Create(GURL("http://session-only/")),
+        url::Origin::Create(GURL("http://rando/")));
     InitBucket(kSessionOnlyThirdPartyStorageKey,
                &kSessionOnlyThirdPartyBucketLocator);
 
-    kInvertedNormalThirdPartyStorageKey =
-        blink::StorageKey(url::Origin::Create(GURL("http://rando/")),
-                          url::Origin::Create(GURL("http://normal/")));
+    kInvertedNormalThirdPartyStorageKey = blink::StorageKey::CreateForTesting(
+        url::Origin::Create(GURL("http://rando/")),
+        url::Origin::Create(GURL("http://normal/")));
     InitBucket(kInvertedNormalThirdPartyStorageKey,
                &kInvertedNormalThirdPartyBucketLocator);
 
     kInvertedSessionOnlyThirdPartyStorageKey =
-        blink::StorageKey(url::Origin::Create(GURL("http://rando/")),
-                          url::Origin::Create(GURL("http://session-only/")));
+        blink::StorageKey::CreateForTesting(
+            url::Origin::Create(GURL("http://rando/")),
+            url::Origin::Create(GURL("http://session-only/")));
     InitBucket(kInvertedSessionOnlyThirdPartyStorageKey,
                &kInvertedSessionOnlyThirdPartyBucketLocator);
 
@@ -436,9 +437,9 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnDeleteFirstParty) {
 }
 
 TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnDeleteThirdParty) {
-  const blink::StorageKey kTestStorageKey =
-      blink::StorageKey(url::Origin::Create(GURL("http://test/")),
-                        url::Origin::Create(GURL("http://rando/")));
+  const blink::StorageKey kTestStorageKey = blink::StorageKey::CreateForTesting(
+      url::Origin::Create(GURL("http://test/")),
+      url::Origin::Create(GURL("http://rando/")));
   storage::BucketLocator bucket_locator;
   InitBucket(kTestStorageKey, &bucket_locator);
 
@@ -523,9 +524,9 @@ TEST_P(IndexedDBTest, DeleteFailsIfDirectoryLockedFirstParty) {
 }
 
 TEST_P(IndexedDBTest, DeleteFailsIfDirectoryLockedThirdParty) {
-  const blink::StorageKey kTestStorageKey =
-      blink::StorageKey(url::Origin::Create(GURL("http://test/")),
-                        url::Origin::Create(GURL("http://rando/")));
+  const blink::StorageKey kTestStorageKey = blink::StorageKey::CreateForTesting(
+      url::Origin::Create(GURL("http://test/")),
+      url::Origin::Create(GURL("http://rando/")));
   auto bucket_locator = storage::BucketLocator();
   bucket_locator.id = storage::BucketId::FromUnsafeValue(5);
   bucket_locator.storage_key = kTestStorageKey;
@@ -591,9 +592,9 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnCommitFailureFirstParty) {
 }
 
 TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnCommitFailureThirdParty) {
-  const blink::StorageKey kTestStorageKey =
-      blink::StorageKey(url::Origin::Create(GURL("http://test/")),
-                        url::Origin::Create(GURL("http://rando/")));
+  const blink::StorageKey kTestStorageKey = blink::StorageKey::CreateForTesting(
+      url::Origin::Create(GURL("http://test/")),
+      url::Origin::Create(GURL("http://rando/")));
   auto bucket_locator = storage::BucketLocator();
   bucket_locator.id = storage::BucketId::FromUnsafeValue(5);
   bucket_locator.storage_key = kTestStorageKey;

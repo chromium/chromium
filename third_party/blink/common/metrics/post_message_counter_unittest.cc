@@ -244,8 +244,9 @@ TEST_F(PostMessageCounterTest,
   // Check storage key counter state
   frame_counter_.RecordMessage(
       1, blink::StorageKey(url::Origin::Create(GURL("https://foo.com/"))), 2,
-      blink::StorageKey(url::Origin::Create(GURL("https://qux.com/")),
-                        url::Origin::Create(GURL("https://bar.com/"))),
+      blink::StorageKey::CreateForTesting(
+          url::Origin::Create(GURL("https://qux.com/")),
+          url::Origin::Create(GURL("https://bar.com/"))),
       &recorder_);
   EXPECT_EQ(recorder_.entries_count(), 2u);
   EXPECT_EQ(recorder_
@@ -268,8 +269,9 @@ TEST_F(PostMessageCounterTest,
   // Check storage key counter state
   frame_counter_.RecordMessage(
       1, blink::StorageKey(url::Origin::Create(GURL("https://foo.com/"))), 2,
-      blink::StorageKey(url::Origin::Create(GURL("https://foo.com/")),
-                        url::Origin::Create(GURL("https://qux.com/"))),
+      blink::StorageKey::CreateForTesting(
+          url::Origin::Create(GURL("https://foo.com/")),
+          url::Origin::Create(GURL("https://qux.com/"))),
       &recorder_);
   EXPECT_EQ(recorder_.entries_count(), 2u);
   EXPECT_EQ(recorder_
@@ -292,8 +294,9 @@ TEST_F(PostMessageCounterTest,
   // Check storage key counter state
   frame_counter_.RecordMessage(
       1,
-      blink::StorageKey(url::Origin::Create(GURL("https://qux.com/")),
-                        url::Origin::Create(GURL("https://bar.com/"))),
+      blink::StorageKey::CreateForTesting(
+          url::Origin::Create(GURL("https://qux.com/")),
+          url::Origin::Create(GURL("https://bar.com/"))),
       2, blink::StorageKey(url::Origin::Create(GURL("https://foo.com/"))),
       &recorder_);
   EXPECT_EQ(recorder_.entries_count(), 2u);
@@ -317,8 +320,9 @@ TEST_F(PostMessageCounterTest,
   // Check storage key counter state
   frame_counter_.RecordMessage(
       1,
-      blink::StorageKey(url::Origin::Create(GURL("https://foo.com/")),
-                        url::Origin::Create(GURL("https://qux.com/"))),
+      blink::StorageKey::CreateForTesting(
+          url::Origin::Create(GURL("https://foo.com/")),
+          url::Origin::Create(GURL("https://qux.com/"))),
       2, blink::StorageKey(url::Origin::Create(GURL("https://foo.com/"))),
       &recorder_);
   EXPECT_EQ(recorder_.entries_count(), 2u);
@@ -342,11 +346,13 @@ TEST_F(PostMessageCounterTest,
   // Check storage key counter state
   frame_counter_.RecordMessage(
       1,
-      blink::StorageKey(url::Origin::Create(GURL("https://foo.com/")),
-                        url::Origin::Create(GURL("https://qux.com/"))),
+      blink::StorageKey::CreateForTesting(
+          url::Origin::Create(GURL("https://foo.com/")),
+          url::Origin::Create(GURL("https://qux.com/"))),
       2,
-      blink::StorageKey(url::Origin::Create(GURL("https://bar.com/")),
-                        url::Origin::Create(GURL("https://qux.com/"))),
+      blink::StorageKey::CreateForTesting(
+          url::Origin::Create(GURL("https://bar.com/")),
+          url::Origin::Create(GURL("https://qux.com/"))),
       &recorder_);
   EXPECT_EQ(recorder_.entries_count(), 2u);
   EXPECT_EQ(recorder_
@@ -369,11 +375,13 @@ TEST_F(PostMessageCounterTest,
   // Check storage key counter state
   frame_counter_.RecordMessage(
       1,
-      blink::StorageKey(url::Origin::Create(GURL("https://foo.com/")),
-                        url::Origin::Create(GURL("https://qux.com/"))),
+      blink::StorageKey::CreateForTesting(
+          url::Origin::Create(GURL("https://foo.com/")),
+          url::Origin::Create(GURL("https://qux.com/"))),
       2,
-      blink::StorageKey(url::Origin::Create(GURL("https://foo.com/")),
-                        url::Origin::Create(GURL("https://bar.com/"))),
+      blink::StorageKey::CreateForTesting(
+          url::Origin::Create(GURL("https://foo.com/")),
+          url::Origin::Create(GURL("https://bar.com/"))),
       &recorder_);
   EXPECT_EQ(recorder_.entries_count(), 2u);
   EXPECT_EQ(recorder_
@@ -395,11 +403,13 @@ TEST_F(PostMessageCounterTest, ThirdPartyToThirdPartySameBucket) {
   // Check storage key counter state
   frame_counter_.RecordMessage(
       1,
-      blink::StorageKey(url::Origin::Create(GURL("https://foo.com/")),
-                        url::Origin::Create(GURL("https://bar.com/"))),
+      blink::StorageKey::CreateForTesting(
+          url::Origin::Create(GURL("https://foo.com/")),
+          url::Origin::Create(GURL("https://bar.com/"))),
       2,
-      blink::StorageKey(url::Origin::Create(GURL("https://foo.com/")),
-                        url::Origin::Create(GURL("https://bar.com/"))),
+      blink::StorageKey::CreateForTesting(
+          url::Origin::Create(GURL("https://foo.com/")),
+          url::Origin::Create(GURL("https://bar.com/"))),
       &recorder_);
   EXPECT_EQ(recorder_.entries_count(), 2u);
   EXPECT_EQ(recorder_

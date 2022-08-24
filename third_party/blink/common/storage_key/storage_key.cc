@@ -209,6 +209,21 @@ StorageKey StorageKey::CreateFromStringForTesting(const std::string& origin) {
 }
 
 // static
+StorageKey StorageKey::CreateForTesting(const url::Origin& origin,
+                                        const url::Origin& top_level_site) {
+  return StorageKey(origin, net::SchemefulSite(top_level_site), nullptr,
+                    blink::mojom::AncestorChainBit::kSameSite);
+}
+
+// static
+StorageKey StorageKey::CreateForTesting(
+    const url::Origin& origin,
+    const net::SchemefulSite& top_level_site) {
+  return StorageKey(origin, top_level_site, nullptr,
+                    blink::mojom::AncestorChainBit::kSameSite);
+}
+
+// static
 bool StorageKey::IsThirdPartyStoragePartitioningEnabled() {
   return base::FeatureList::IsEnabled(
       net::features::kThirdPartyStoragePartitioning);
