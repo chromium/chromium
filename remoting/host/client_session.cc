@@ -742,8 +742,11 @@ void ClientSession::DisconnectSession(protocol::ErrorCode error) {
 void ClientSession::OnLocalKeyPressed(uint32_t usb_keycode) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool is_local = remote_input_filter_.LocalKeyPressed(usb_keycode);
-  if (is_local && desktop_environment_options_.terminate_upon_input())
+  if (is_local && desktop_environment_options_.terminate_upon_input()) {
+    LOG(WARNING)
+        << "Disconnecting CRD session because local input was detected.";
     DisconnectSession(protocol::OK);
+  }
 }
 
 void ClientSession::OnLocalPointerMoved(const webrtc::DesktopVector& position,
@@ -751,10 +754,13 @@ void ClientSession::OnLocalPointerMoved(const webrtc::DesktopVector& position,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool is_local = remote_input_filter_.LocalPointerMoved(position, type);
   if (is_local) {
-    if (desktop_environment_options_.terminate_upon_input())
+    if (desktop_environment_options_.terminate_upon_input()) {
+      LOG(WARNING)
+          << "Disconnecting CRD session because local input was detected.";
       DisconnectSession(protocol::OK);
-    else
+    } else {
       desktop_and_cursor_composer_notifier_.OnLocalInput();
+    }
   }
 }
 
