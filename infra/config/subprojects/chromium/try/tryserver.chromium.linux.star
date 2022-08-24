@@ -19,6 +19,8 @@ try_.defaults.set(
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     goma_backend = goma.backend.RBE_PROD,
     compilator_goma_jobs = goma.jobs.J150,
+    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
+    compilator_reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     os = os.LINUX_DEFAULT,
     pool = try_.DEFAULT_POOL,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
