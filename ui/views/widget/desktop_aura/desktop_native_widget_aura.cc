@@ -310,10 +310,14 @@ DesktopNativeWidgetAura::DesktopNativeWidgetAura(
 }
 
 DesktopNativeWidgetAura::~DesktopNativeWidgetAura() {
-  if (ownership_ == Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET)
-    delete native_widget_delegate_;
-  else
+  if (ownership_ == Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET) {
+    //  Use `ClearAndDelete` here to stop referencing the underlying pointer and
+    //  free its memory. Compared to raw delete calls, this avoids the raw_ptr
+    //  to be temporarily dangling.
+    native_widget_delegate_.ClearAndDelete();
+  } else {
     CloseNow();
+  }
 }
 
 // static
