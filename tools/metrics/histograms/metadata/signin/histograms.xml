@@ -197,6 +197,16 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.AddAccountState" enum="SigninAndroidAddAccountState"
+    expires_after="2023-08-18">
+  <owner>triploblastic@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    This histogram records states in the add account process launched from
+    Chrome on Android.
+  </summary>
+</histogram>
+
 <histogram name="Signin.AndroidAccountInfoFetchTime" units="ms"
     expires_after="2023-01-01">
   <owner>aliceywang@chromium.org</owner>
