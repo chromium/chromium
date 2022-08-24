@@ -315,7 +315,7 @@ void ShowWebAppDetailedInstallDialog(
           .SetIcon(ui::ImageModel::FromImageSkia(icon_image))
           .SetTitle(title)
           .SetSubtitle(base::UTF8ToUTF16(start_url_host))
-          .AddBodyText(ui::DialogModelLabel(description))
+          .AddParagraph(ui::DialogModelLabel(description))
           .AddOkButton(
               base::BindOnce(
                   &web_app::WebAppDetailedInstallDialogDelegate::OnAccept,

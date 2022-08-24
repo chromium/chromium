@@ -125,7 +125,7 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
   void OnWindowClosing();
 
   void AddInitialFields();
-  void AddOrUpdateBodyText(ui::DialogModelBodyText* model_field);
+  void AddOrUpdateParagraph(ui::DialogModelParagraph* model_field);
   void AddOrUpdateCheckbox(ui::DialogModelCheckbox* model_field);
   void AddOrUpdateCombobox(ui::DialogModelCombobox* model_field);
   void AddOrUpdateMenuItem(ui::DialogModelMenuItem* model_field);
@@ -147,6 +147,9 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
       const ui::DialogModelLabel& dialog_label);
   std::unique_ptr<Label> CreateLabelForDialogModelLabel(
       const ui::DialogModelLabel& dialog_label);
+  std::unique_ptr<View> CreateViewForParagraphWithHeader(
+      const ui::DialogModelLabel& dialog_label,
+      const std::u16string header);
 
   void AddDialogModelHostField(std::unique_ptr<View> view,
                                const DialogModelHostField& field_view_info);

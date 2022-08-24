@@ -78,7 +78,7 @@ void ShowSettingsOverriddenDialog(
       ui::DialogModel::Builder(std::move(dialog_delegate_unique));
   dialog_builder.SetInternalName(kExtensionSettingsOverridenDialogName)
       .SetTitle(show_params.dialog_title)
-      .AddBodyText(ui::DialogModelLabel(show_params.message))
+      .AddParagraph(ui::DialogModelLabel(show_params.message))
       .AddOkButton(
           base::BindOnce(&SettingsOverriddenDialogDelegate::OnDialogAccepted,
                          base::Unretained(dialog_delegate)),

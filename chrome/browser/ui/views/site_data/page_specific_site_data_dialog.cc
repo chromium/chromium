@@ -215,8 +215,9 @@ views::Widget* ShowPageSpecificSiteDataDialog(
       GetSections(delegate->GetAllOrigins(),
                   url::Origin::Create(web_contents->GetVisibleURL()));
   for (const auto& section : sections) {
-    builder.AddBodyText(ui::DialogModelLabel(section.title));
-    builder.AddBodyText(ui::DialogModelLabel(section.subtitle));
+    builder.AddParagraph(
+        ui::DialogModelLabel(section.subtitle).set_is_secondary(),
+        section.title);
     for (const auto& origin : section.origins) {
       // TODO(crbug.com/1344787): Get the actual state based on the cookie
       // setting.

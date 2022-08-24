@@ -45,7 +45,7 @@ BubbleDialogModelHost::FieldType GetFieldTypeForField(
   switch (field->type(pass_key)) {
     case ui::DialogModelField::kButton:
       return BubbleDialogModelHost::FieldType::kControl;
-    case ui::DialogModelField::kBodyText:
+    case ui::DialogModelField::kParagraph:
       return BubbleDialogModelHost::FieldType::kText;
     case ui::DialogModelField::kCheckbox:
       return BubbleDialogModelHost::FieldType::kControl;
@@ -514,8 +514,8 @@ void BubbleDialogModelHost::OnFieldAdded(ui::DialogModelField* field) {
       // TODO(pbos): Add support for buttons that are part of content area.
       NOTREACHED();
       return;
-    case ui::DialogModelField::kBodyText:
-      AddOrUpdateBodyText(field->AsBodyText(GetPassKey()));
+    case ui::DialogModelField::kParagraph:
+      AddOrUpdateParagraph(field->AsParagraph(GetPassKey()));
       break;
     case ui::DialogModelField::kCheckbox:
       AddOrUpdateCheckbox(field->AsCheckbox(GetPassKey()));
@@ -606,11 +606,14 @@ void BubbleDialogModelHost::OnWindowClosing() {
   // TODO(pbos): Do we need to reset `model_` and destroy contents? See Close().
 }
 
-void BubbleDialogModelHost::AddOrUpdateBodyText(
-    ui::DialogModelBodyText* model_field) {
+void BubbleDialogModelHost::AddOrUpdateParagraph(
+    ui::DialogModelParagraph* model_field) {
   // TODO(pbos): Handle updating existing field.
   std::unique_ptr<View> view =
-      CreateViewForLabel(model_field->label(GetPassKey()));
+      model_field->header(GetPassKey()).empty()
+          ? CreateViewForLabel(model_field->label(GetPassKey()))
+          : CreateViewForParagraphWithHeader(model_field->label(GetPassKey()),
+                                             model_field->header(GetPassKey()));
   DialogModelHostField info{model_field, view.get(), nullptr};
   view->SetProperty(kElementIdentifierKey, model_field->id(GetPassKey()));
   AddDialogModelHostField(std::move(view), info);
@@ -895,6 +898,20 @@ std::unique_ptr<Label> BubbleDialogModelHost::CreateLabelForDialogModelLabel(
   text_label->SetMultiLine(true);
   text_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   return text_label;
+}
+
+std::unique_ptr<View> BubbleDialogModelHost::CreateViewForParagraphWithHeader(
+    const ui::DialogModelLabel& dialog_label,
+    const std::u16string header) {
+  auto view = std::make_unique<BoxLayoutView>();
+  view->SetOrientation(BoxLayout::Orientation::kVertical);
+
+  auto* header_label = view->AddChildView(std::make_unique<Label>(
+      header, style::CONTEXT_DIALOG_BODY_TEXT, style::STYLE_PRIMARY));
+  header_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+  view->AddChildView(CreateViewForLabel(dialog_label));
+  return view;
 }
 
 bool BubbleDialogModelHost::IsModalDialog() const {

@@ -22,7 +22,7 @@ namespace ui {
 
 class DialogModel;
 class DialogModelButton;
-class DialogModelBodyText;
+class DialogModelParagraph;
 class DialogModelCheckbox;
 class DialogModelCombobox;
 class DialogModelCustomField;
@@ -34,8 +34,8 @@ class Event;
 // TODO(pbos): Move this to separate header.
 // DialogModelLabel is an exception to below classes. This is not a
 // DialogModelField but rather represents a text label and styling. This is used
-// with DialogModelBodyText and DialogModelCheckbox for instance and has support
-// for showing a link.
+// with DialogModelParagraph and DialogModelCheckbox for instance and has
+// support for showing a link.
 class COMPONENT_EXPORT(UI_BASE) DialogModelLabel {
  public:
   struct COMPONENT_EXPORT(UI_BASE) Link {
@@ -117,7 +117,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelField {
  public:
   enum Type {
     kButton,
-    kBodyText,
+    kParagraph,
     kCheckbox,
     kCombobox,
     kCustom,
@@ -139,7 +139,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelField {
   }
   ElementIdentifier id(base::PassKey<DialogModelHost>) const { return id_; }
   DialogModelButton* AsButton(base::PassKey<DialogModelHost>);
-  DialogModelBodyText* AsBodyText(base::PassKey<DialogModelHost>);
+  DialogModelParagraph* AsParagraph(base::PassKey<DialogModelHost>);
   DialogModelCheckbox* AsCheckbox(base::PassKey<DialogModelHost>);
   DialogModelCombobox* AsCombobox(base::PassKey<DialogModelHost>);
   DialogModelMenuItem* AsMenuItem(base::PassKey<DialogModelHost>);
@@ -157,7 +157,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelField {
                    base::flat_set<Accelerator> accelerators);
 
   DialogModelButton* AsButton();
-  DialogModelBodyText* AsBodyText();
+  DialogModelParagraph* AsParagraph();
   DialogModelCheckbox* AsCheckbox();
   DialogModelCombobox* AsCombobox();
   const DialogModelMenuItem* AsMenuItem() const;
@@ -224,25 +224,31 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelButton : public DialogModelField {
   base::RepeatingCallback<void(const Event&)> callback_;
 };
 
-// Field class representing body text.
-class COMPONENT_EXPORT(UI_BASE) DialogModelBodyText : public DialogModelField {
+// Field class representing a paragraph.
+class COMPONENT_EXPORT(UI_BASE) DialogModelParagraph : public DialogModelField {
  public:
   // Note that this is constructed through a DialogModel which adds it to model
   // fields.
-  DialogModelBodyText(base::PassKey<DialogModel> pass_key,
-                      DialogModel* model,
-                      const DialogModelLabel& label,
-                      ElementIdentifier id);
-  DialogModelBodyText(const DialogModelBodyText&) = delete;
-  DialogModelBodyText& operator=(const DialogModelBodyText&) = delete;
-  ~DialogModelBodyText() override;
+  DialogModelParagraph(base::PassKey<DialogModel> pass_key,
+                       DialogModel* model,
+                       const DialogModelLabel& label,
+                       std::u16string header,
+                       ElementIdentifier id);
+  DialogModelParagraph(const DialogModelParagraph&) = delete;
+  DialogModelParagraph& operator=(const DialogModelParagraph&) = delete;
+  ~DialogModelParagraph() override;
 
   const DialogModelLabel& label(base::PassKey<DialogModelHost>) const {
     return label_;
   }
 
+  const std::u16string header(base::PassKey<DialogModelHost>) const {
+    return header_;
+  }
+
  private:
   const DialogModelLabel label_;
+  const std::u16string header_;
 };
 
 // Field class representing a checkbox with descriptive text.

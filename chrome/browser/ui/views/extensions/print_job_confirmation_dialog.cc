@@ -64,7 +64,7 @@ void ShowPrintJobConfirmationDialog(gfx::NativeWindow parent,
                   base::Unretained(bubble_delegate)),
               l10n_util::GetStringUTF16(
                   IDS_EXTENSIONS_PRINTING_API_PRINT_REQUEST_DENY))
-          .AddBodyText(
+          .AddParagraph(
               ui::DialogModelLabel(
                   l10n_util::GetStringFUTF16(
                       IDS_EXTENSIONS_PRINTING_API_PRINT_REQUEST_BUBBLE_HEADING,

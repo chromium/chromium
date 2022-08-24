@@ -42,11 +42,11 @@ void ExtensionsRequestAccessButtonHoverCard::ShowBubble(
   const std::u16string url = GetCurrentHost(web_contents);
   if (actions.size() == 1) {
     dialog_builder.SetIcon(GetIcon(actions[0], web_contents))
-        .AddBodyText(ui::DialogModelLabel(l10n_util::GetStringFUTF16(
+        .AddParagraph(ui::DialogModelLabel(l10n_util::GetStringFUTF16(
             IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_TOOLTIP_SINGLE_EXTENSION,
             actions[0]->GetActionName(), url)));
   } else {
-    dialog_builder.AddBodyText(ui::DialogModelLabel(l10n_util::GetStringFUTF16(
+    dialog_builder.AddParagraph(ui::DialogModelLabel(l10n_util::GetStringFUTF16(
         IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_TOOLTIP_MULTIPLE_EXTENSIONS,
         url)));
     for (auto* action : actions) {

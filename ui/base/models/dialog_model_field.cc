@@ -74,9 +74,9 @@ DialogModelButton* DialogModelField::AsButton(base::PassKey<DialogModelHost>) {
   return AsButton();
 }
 
-DialogModelBodyText* DialogModelField::AsBodyText(
+DialogModelParagraph* DialogModelField::AsParagraph(
     base::PassKey<DialogModelHost>) {
-  return AsBodyText();
+  return AsParagraph();
 }
 
 DialogModelCheckbox* DialogModelField::AsCheckbox(
@@ -114,9 +114,9 @@ DialogModelButton* DialogModelField::AsButton() {
   return static_cast<DialogModelButton*>(this);
 }
 
-DialogModelBodyText* DialogModelField::AsBodyText() {
-  DCHECK_EQ(type_, kBodyText);
-  return static_cast<DialogModelBodyText*>(this);
+DialogModelParagraph* DialogModelField::AsParagraph() {
+  DCHECK_EQ(type_, kParagraph);
+  return static_cast<DialogModelParagraph*>(this);
 }
 
 DialogModelCheckbox* DialogModelField::AsCheckbox() {
@@ -184,13 +184,16 @@ void DialogModelButton::OnPressed(base::PassKey<DialogModelHost>,
   callback_.Run(event);
 }
 
-DialogModelBodyText::DialogModelBodyText(base::PassKey<DialogModel> pass_key,
-                                         DialogModel* model,
-                                         const DialogModelLabel& label,
-                                         ElementIdentifier id)
-    : DialogModelField(pass_key, model, kBodyText, id, {}), label_(label) {}
+DialogModelParagraph::DialogModelParagraph(base::PassKey<DialogModel> pass_key,
+                                           DialogModel* model,
+                                           const DialogModelLabel& label,
+                                           std::u16string header,
+                                           ElementIdentifier id)
+    : DialogModelField(pass_key, model, kParagraph, id, {}),
+      label_(label),
+      header_(header) {}
 
-DialogModelBodyText::~DialogModelBodyText() = default;
+DialogModelParagraph::~DialogModelParagraph() = default;
 
 DialogModelCheckbox::DialogModelCheckbox(
     base::PassKey<DialogModel> pass_key,

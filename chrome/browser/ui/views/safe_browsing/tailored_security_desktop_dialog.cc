@@ -89,7 +89,7 @@ void ShowEnabledDialogForBrowser(Browser* browser) {
           .SetInternalName(kTailoredSecurityNoticeDialog)
           .SetBannerImage(std::move(banner_image_light),
                           std::move(banner_image_dark))
-          .AddBodyText(body_text, kBodyText)
+          .AddParagraph(body_text, std::u16string(), kBodyText)
           .AddOkButton(
               base::BindOnce(&EnabledDialogModelDelegate::OnDialogAccepted,
                              base::Unretained(model_delegate_ptr)))
@@ -121,7 +121,7 @@ void ShowDisabledDialogForBrowser(Browser* browser) {
           .SetTitle(l10n_util::GetStringUTF16(
               IDS_TAILORED_SECURITY_DISABLED_DIALOG_TITLE))
           .SetInternalName(kTailoredSecurityNoticeDialog)
-          .AddBodyText(body_text, kBodyText)
+          .AddParagraph(body_text, std::u16string(), kBodyText)
           .AddOkButton(
               base::BindOnce(&DisabledDialogModelDelegate::OnDialogAccepted,
                              base::Unretained(model_delegate_ptr)),

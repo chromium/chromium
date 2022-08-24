@@ -89,7 +89,7 @@ void ExtensionUninstallDialogViews::Show() {
           base::OnceClosure() /* Cancel is covered by WindowClosingCallback */);
 
   if (triggering_extension()) {
-    dialog_builder.AddBodyText(
+    dialog_builder.AddParagraph(
         ui::DialogModelLabel(
             l10n_util::GetStringFUTF16(
                 IDS_EXTENSION_PROMPT_UNINSTALL_TRIGGERED_BY_EXTENSION,

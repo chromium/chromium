@@ -48,7 +48,7 @@ void DeferredUpdateDialog::CreateDialog(Action callback_action,
               base::BindOnce(&DeferredUpdateDialog::OnContinueWithoutUpdate,
                              base::Unretained(dialog_)),
               l10n_util::GetStringUTF16(cancel_text))
-          .AddBodyText(ui::DialogModelLabel(
+          .AddParagraph(ui::DialogModelLabel(
               l10n_util::GetStringUTF16(IDS_DEFERRED_UPDATE_DIALOG_TEXT)))
           .AddCheckbox(kAutoUpdateCheckboxId,
                        ui::DialogModelLabel(l10n_util::GetStringUTF16(
