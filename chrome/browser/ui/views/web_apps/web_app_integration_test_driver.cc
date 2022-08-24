@@ -17,6 +17,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/path_service.h"
 #include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -39,6 +40,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
+#include "chrome/browser/ui/startup/web_app_startup_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -47,6 +49,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/web_apps/file_handler_launch_dialog_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
@@ -78,6 +81,7 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -109,6 +113,7 @@
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/test/dialog_test.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom-forward.h"
 
@@ -161,6 +166,8 @@ Site InstallableSiteToSite(InstallableSite site) {
       return Site::kWco;
     case InstallableSite::kIsolated:
       return Site::kIsolated;
+    case InstallableSite::kFileHandler:
+      return Site::kFileHandler;
   }
 }
 
@@ -256,7 +263,15 @@ base::flat_map<Site, SiteConfig> g_site_configs = {
       .relative_manifest_id = "basic.html",
       .app_name = "Isolated App",
       .wco_not_enabled_title = u"Isolated App",
-      .icon_color = SK_ColorGREEN}}};
+      .icon_color = SK_ColorGREEN}},
+    {Site::kFileHandler,
+     {.relative_scope_url = "/web_apps/file_handler/",
+      .relative_start_url = "/web_apps/file_handler/basic.html",
+      .relative_manifest_id = "web_apps/file_handler/basic.html",
+      .app_name = "File Handler",
+      .wco_not_enabled_title = u"File Handler",
+      .icon_color = SK_ColorBLACK}},
+};
 
 struct DisplayConfig {
   std::string manifest_url_param;
@@ -1221,6 +1236,50 @@ void WebAppIntegrationTestDriver::CheckAppSettingsAppState(
 #endif
 }
 
+base::FilePath WebAppIntegrationTestDriver::GetResourceFile(
+    base::FilePath::StringPieceType relative_path) {
+  base::FilePath base_dir;
+  if (!base::PathService::Get(chrome::DIR_TEST_DATA, &base_dir))
+    return base::FilePath();
+  base::FilePath full_path = base_dir.Append(relative_path);
+  {
+    base::ScopedAllowBlockingForTesting scoped_allow_blocking;
+    if (!PathExists(full_path))
+      return base::FilePath();
+  }
+  return full_path;
+}
+
+std::vector<base::FilePath> WebAppIntegrationTestDriver::GetTestFilePaths(
+    FilesOptions files_options) {
+  std::vector<base::FilePath> file_paths;
+  base::FilePath txt_file_path = GetResourceFile(
+      FILE_PATH_LITERAL("web_apps/files/file_handler_test.txt"));
+  base::FilePath png_file_path = GetResourceFile(
+      FILE_PATH_LITERAL("web_apps/files/file_handler_test.png"));
+  switch (files_options) {
+    case FilesOptions::kOneTextFile:
+      file_paths.push_back(txt_file_path);
+      break;
+    case FilesOptions::kMultipleTextFiles:
+      file_paths.push_back(txt_file_path);
+      file_paths.push_back(txt_file_path);
+      break;
+    case FilesOptions::kOnePngFile:
+      file_paths.push_back(png_file_path);
+      break;
+    case FilesOptions::kMultiplePngFiles:
+      file_paths.push_back(png_file_path);
+      file_paths.push_back(png_file_path);
+      break;
+    case FilesOptions::kAllTextAndPngFiles:
+      file_paths.push_back(txt_file_path);
+      file_paths.push_back(png_file_path);
+      break;
+  }
+  return file_paths;
+}
+
 void WebAppIntegrationTestDriver::NavigateBrowser(Site site) {
   if (!BeforeStateChangeAction(__FUNCTION__))
     return;
@@ -1448,6 +1507,7 @@ void WebAppIntegrationTestDriver::UninstallFromList(Site site) {
 #endif
 
   observer.Wait();
+  site_remember_deny_open_file.erase(site);
 
   AfterStateChangeAction();
 }
@@ -1481,6 +1541,8 @@ void WebAppIntegrationTestDriver::UninstallFromAppSettings(Site site) {
 
   // Wait for app settings page to be closed.
   destroyed_watcher.Wait();
+
+  site_remember_deny_open_file.erase(site);
 
   AfterStateChangeAction();
 #else
@@ -1519,6 +1581,7 @@ void WebAppIntegrationTestDriver::UninstallFromMenu(Site site) {
   // the app_browser.
   app_menu_model.reset();
   observer.Wait();
+  site_remember_deny_open_file.erase(site);
   AfterStateChangeAction();
 }
 
@@ -1555,6 +1618,7 @@ void WebAppIntegrationTestDriver::UninstallPolicyApp(Site site) {
     ASSERT_GT(removed_count, 0U);
   }
   run_loop.Run();
+  site_remember_deny_open_file.erase(site);
   AfterStateChangeAction();
 }
 
@@ -1579,6 +1643,7 @@ void WebAppIntegrationTestDriver::UninstallFromOs(Site site) {
       {profile()->GetPath(), StartupProfileMode::kBrowserWindow});
 
   observer.Wait();
+  site_remember_deny_open_file.erase(site);
   AfterStateChangeAction();
 #else
   NOTREACHED() << "Not supported on non-Windows platforms";
@@ -1779,6 +1844,86 @@ void WebAppIntegrationTestDriver::CheckAppTitle(Site site, Title title) {
   }
   EXPECT_EQ(app_state->name, expected);
   AfterStateCheckAction();
+}
+
+void WebAppIntegrationTestDriver::LaunchFileExpectDialog(
+    Site site,
+    FilesOptions files_options,
+    AllowDenyOptions allow_deny,
+    AskAgainOptions ask_again) {
+  BeforeStateChangeAction(__FUNCTION__);
+  AppId app_id = GetAppIdBySiteMode(site);
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "FileHandlerLaunchDialogView");
+  FileHandlerLaunchDialogView::SetDefaultRememberSelectionForTesting(
+      ask_again == AskAgainOptions::kRemember);
+  std::vector<base::FilePath> file_paths = GetTestFilePaths(files_options);
+
+  StartupBrowserCreator browser_creator;
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitchASCII(switches::kAppId, app_id);
+  for (auto file_path : file_paths) {
+    command_line.AppendArgPath(file_path);
+  }
+  browser_creator.Start(command_line, profile()->GetPath(),
+                        {profile(), StartupProfileMode::kBrowserWindow}, {});
+  BrowserAddedWaiter browser_added_waiter;
+
+  // Check the file handling dialog shows up.
+  views::Widget* widget = waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(widget != nullptr);
+
+  views::test::WidgetDestroyedWaiter destroyed_waiter(widget);
+  views::Widget::ClosedReason close_reason;
+  if (allow_deny == AllowDenyOptions::kDeny) {
+    close_reason = views::Widget::ClosedReason::kCancelButtonClicked;
+    if (ask_again == AskAgainOptions::kRemember) {
+      site_remember_deny_open_file.emplace(site);
+    }
+  } else {
+    close_reason = views::Widget::ClosedReason::kAcceptButtonClicked;
+  }
+  // File handling dialog should be destroyed after choosing the action.
+  widget->CloseWithReason(close_reason);
+  destroyed_waiter.Wait();
+
+  if (allow_deny == AllowDenyOptions::kAllow) {
+    browser_added_waiter.Wait();
+    app_browser_ = browser_added_waiter.browser_added();
+    ActivateBrowserAndWait(app_browser_);
+    EXPECT_EQ(app_browser()->app_controller()->app_id(), app_id);
+  }
+  AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::LaunchFileExpectNoDialog(
+    Site site,
+    FilesOptions files_options) {
+  BeforeStateChangeAction(__FUNCTION__);
+  AppId app_id = GetAppIdBySiteMode(site);
+  std::vector<base::FilePath> file_paths = GetTestFilePaths(files_options);
+  BrowserAddedWaiter browser_added_waiter;
+  base::RunLoop run_loop;
+
+  web_app::startup::SetStartupDoneCallbackForTesting(run_loop.QuitClosure());
+  StartupBrowserCreator browser_creator;
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitchASCII(switches::kAppId, app_id);
+  for (auto file_path : file_paths) {
+    command_line.AppendArgPath(file_path);
+  }
+  browser_creator.Start(command_line, profile()->GetPath(),
+                        {profile(), StartupProfileMode::kBrowserWindow}, {});
+  run_loop.Run();
+
+  // if the web app doesn't deny to open the file, wait for the app window.
+  if (!base::Contains(site_remember_deny_open_file, site)) {
+    app_browser_ = browser_added_waiter.browser_added();
+    ActivateBrowserAndWait(app_browser_);
+    EXPECT_EQ(app_browser()->app_controller()->app_id(), app_id);
+  }
+
+  AfterStateChangeAction();
 }
 
 void WebAppIntegrationTestDriver::CheckWindowModeIsNotVisibleInAppSettings(

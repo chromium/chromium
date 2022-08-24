@@ -73,6 +73,29 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckSiteNotHandlesFile) {
   helper_.CheckSiteNotHandlesFile(Site::kStandalone, "quux");
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckLaunchFileExpectDialog) {
+  helper_.InstallOmniboxIcon(InstallableSite::kFileHandler);
+  helper_.ClosePwa();
+  helper_.LaunchFileExpectDialog(Site::kFileHandler, FilesOptions::kOneTextFile,
+                                 AllowDenyOptions::kAllow,
+                                 AskAgainOptions::kAskAgain);
+  helper_.CheckWindowCreated();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckLaunchFileExpectNoDialog) {
+  helper_.InstallOmniboxIcon(InstallableSite::kFileHandler);
+  helper_.ClosePwa();
+  // Open the file and set AskAgainOption to kRemember.
+  helper_.LaunchFileExpectDialog(Site::kFileHandler, FilesOptions::kOneTextFile,
+                                 AllowDenyOptions::kAllow,
+                                 AskAgainOptions::kRemember);
+  helper_.ClosePwa();
+  // Open the file again.
+  helper_.LaunchFileExpectNoDialog(Site::kFileHandler,
+                                   FilesOptions::kOneTextFile);
+  helper_.CheckWindowCreated();
+}
+
 // Generated tests:
 
 IN_PROC_BROWSER_TEST_F(

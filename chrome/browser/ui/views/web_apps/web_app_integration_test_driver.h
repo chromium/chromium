@@ -49,6 +49,7 @@ enum class Site {
   kNotPromotable,
   kWco,
   kIsolated,
+  kFileHandler,
 };
 
 enum class InstallableSite {
@@ -57,7 +58,8 @@ enum class InstallableSite {
   kStandaloneNestedB,
   kMinimalUi,
   kWco,
-  kIsolated
+  kIsolated,
+  kFileHandler,
 };
 
 enum class Title { kStandaloneOriginal, kStandaloneUpdated };
@@ -77,6 +79,20 @@ enum class Display { kBrowser, kStandalone, kMinimalUi, kWco };
 enum class WindowOptions { kWindowed, kBrowser };
 
 enum class ShortcutOptions { kWithShortcut, kNoShortcut };
+
+enum class AllowDenyOptions { kAllow, kDeny };
+
+enum class AskAgainOptions { kAskAgain, kRemember };
+
+enum class FileExtension { kTxt, kPng };
+
+enum class FilesOptions {
+  kOneTextFile,
+  kMultipleTextFiles,
+  kOnePngFile,
+  kMultiplePngFiles,
+  kAllTextAndPngFiles
+};
 
 // These structs are used to store the current state of the world before & after
 // each state-change action.
@@ -251,6 +267,11 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CheckAppNotInList(Site site);
   void CheckAppIcon(Site site, Color color);
   void CheckAppTitle(Site site, Title title);
+  void LaunchFileExpectDialog(Site site,
+                              FilesOptions files_options,
+                              AllowDenyOptions allow_deny,
+                              AskAgainOptions ask_again);
+  void LaunchFileExpectNoDialog(Site site, FilesOptions files_options);
   void CheckWindowModeIsNotVisibleInAppSettings(Site site);
   void CheckInstallable();
   void CheckInstallIconShown();
@@ -347,6 +368,10 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
 
   void CheckAppSettingsAppState(Profile* profile, const AppState& app_state);
 
+  base::FilePath GetResourceFile(base::FilePath::StringPieceType relative_path);
+
+  std::vector<base::FilePath> GetTestFilePaths(FilesOptions file_options);
+
   Browser* browser();
   Profile* profile() {
     if (!active_profile_) {
@@ -405,6 +430,8 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   std::unique_ptr<net::EmbeddedTestServer> isolated_app_test_server_ = nullptr;
   std::unique_ptr<base::RunLoop> window_controls_overlay_callback_for_testing_ =
       nullptr;
+
+  base::flat_set<Site> site_remember_deny_open_file;
 };
 
 // Simple base browsertest class usable by all non-sync web app integration
