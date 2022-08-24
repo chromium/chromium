@@ -9,12 +9,14 @@
 #include "ash/constants/ash_features.h"
 #include "ash/webui/grit/ash_os_feedback_resources.h"
 #include "ash/webui/os_feedback_ui/url_constants.h"
+#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/ash/os_feedback/os_feedback_screenshot_manager.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -123,6 +125,13 @@ Browser* OSFeedbackAppDelegate::LaunchAndNavigateSystemWebApp(
         base::BindOnce(&OSFeedbackAppDelegate::OnScreenshotTaken,
                        weak_ptr_factory_.GetWeakPtr(), profile, provider, url,
                        std::move(app_params)));
+
+    // Record an UMA histogram when feedback app is open from Launcher.
+    if (params.launch_source != apps::LaunchSource::kFromChromeInternal) {
+      UMA_HISTOGRAM_ENUMERATION("Feedback.RequestSource",
+                                chrome::kFeedbackSourceLauncher,
+                                chrome::kFeedbackSourceCount);
+    }
   }
   // Return nullptr to tell the rest of the code SWA aborted the launch so that
   // the Feedback can use a customized launch process, i.e., take a screenshot
