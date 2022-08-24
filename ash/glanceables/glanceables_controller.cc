@@ -55,6 +55,12 @@ void GlanceablesController::ShowOnLogin() {
   FetchData();
 }
 
+void GlanceablesController::ShowFromOverview() {
+  // TODO(crbug.com/1353119): Hide or minimize all open windows.
+  CreateUi();
+  FetchData();
+}
+
 bool GlanceablesController::IsShowing() const {
   return !!widget_;
 }

@@ -74473,6 +74473,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="18" label="Shutting down"/>
   <int value="19" label="Exiting overview through dev tools"/>
   <int value="20" label="Exiting overview in tests"/>
+  <int value="21" label="Showing glanceables"/>
 </enum>
 
 <enum name="OverviewStartAction">

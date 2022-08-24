@@ -6,6 +6,7 @@
 #define ASH_AMBIENT_AMBIENT_CONTROLLER_H_
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "ash/ambient/ambient_access_token_controller.h"
@@ -147,6 +148,11 @@ class ASH_EXPORT AmbientController
 
   AmbientViewDelegate* ambient_view_delegate() { return &delegate_; }
 
+  void set_backend_controller_for_testing(
+      std::unique_ptr<AmbientBackendController> backend_controller) {
+    ambient_backend_controller_ = std::move(backend_controller);
+  }
+
  private:
   friend class AmbientAshTestBase;
   friend class AmbientControllerTest;
@@ -172,9 +178,6 @@ class ASH_EXPORT AmbientController
   // Invoked when the auto-show timer in |InactivityMonitor| gets fired after
   // device being inactive for a specific amount of time.
   void OnAutoShowTimeOut();
-
-  void set_backend_controller_for_testing(
-      std::unique_ptr<AmbientBackendController> photo_client);
 
   // Creates (if not created) and acquires |wake_lock_|. Unbalanced call
   // without subsequently |ReleaseWakeLock| will have no effect.

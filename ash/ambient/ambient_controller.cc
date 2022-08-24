@@ -909,9 +909,4 @@ AmbientAnimationTheme AmbientController::GetCurrentTheme() const {
   return current_theme;
 }
 
-void AmbientController::set_backend_controller_for_testing(
-    std::unique_ptr<AmbientBackendController> backend_controller) {
-  ambient_backend_controller_ = std::move(backend_controller);
-}
-
 }  // namespace ash

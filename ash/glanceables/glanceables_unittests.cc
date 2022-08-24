@@ -13,9 +13,14 @@
 #include "ash/glanceables/glanceables_weather_view.h"
 #include "ash/glanceables/glanceables_welcome_label.h"
 #include "ash/glanceables/test_glanceables_delegate.h"
+#include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/style/pill_button.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/desks/desks_bar_view.h"
+#include "ash/wm/desks/desks_test_util.h"
+#include "ash/wm/overview/overview_controller.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/events/test/test_event.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -43,6 +48,13 @@ class GlanceablesTest : public AshTestBase {
     AshTestBase::SetUp();
     controller_ = Shell::Get()->glanceables_controller();
     DCHECK(controller_);
+
+    // Fake out the ambient backend controller so weather fetches won't crash.
+    auto* ambient_controller = Shell::Get()->ambient_controller();
+    // The controller must be null before a new instance can be created.
+    ambient_controller->set_backend_controller_for_testing(nullptr);
+    ambient_controller->set_backend_controller_for_testing(
+        std::make_unique<FakeAmbientBackendControllerImpl>());
   }
 
   TestGlanceablesDelegate* GetTestDelegate() {
@@ -177,6 +189,21 @@ TEST_F(GlanceablesTest, DismissesOnlyOnAppWindowOpen) {
   // Glanceables stay hidden after the app window is closed.
   app_window.reset();
   EXPECT_FALSE(controller_->IsShowing());
+}
+
+TEST_F(GlanceablesTest, ShowFromOverview) {
+  ASSERT_FALSE(controller_->IsShowing());
+
+  EnterOverview();
+  const DesksBarView* desks_bar_view = GetPrimaryRootDesksBarView();
+  auto* up_next_button = desks_bar_view->up_next_button();
+  ASSERT_TRUE(up_next_button);
+
+  LeftClickOn(up_next_button);
+
+  // Glanceables are showing and overview mode is closed.
+  EXPECT_TRUE(controller_->IsShowing());
+  EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
 }
 
 }  // namespace ash

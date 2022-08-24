@@ -26,6 +26,7 @@ class GradientLayerDelegate;
 class NewDeskButton;
 class OverviewGrid;
 class PersistentDesksBarVerticalDotsButton;
+class PillButton;
 class ScrollArrowButton;
 class ZeroStateDefaultDeskButton;
 class ZeroStateIconButton;
@@ -58,6 +59,8 @@ class ASH_EXPORT DesksBarView : public views::View,
   void set_is_bounds_animation_on_going(bool value) {
     is_bounds_animation_on_going_ = value;
   }
+
+  PillButton* up_next_button() const { return up_next_button_; }
 
   ZeroStateDefaultDeskButton* zero_state_default_desk_button() const {
     return zero_state_default_desk_button_;
@@ -298,6 +301,9 @@ class ASH_EXPORT DesksBarView : public views::View,
   // will be called lots of times during the bounds changes animation. This is
   // done to eliminate the unnecessary `Layout` calls during the animation.
   bool is_bounds_animation_on_going_ = false;
+
+  // Button to return to the glanceables screen.
+  PillButton* up_next_button_ = nullptr;
 
   ZeroStateDefaultDeskButton* zero_state_default_desk_button_ = nullptr;
   ZeroStateIconButton* zero_state_new_desk_button_ = nullptr;

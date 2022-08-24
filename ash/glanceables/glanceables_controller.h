@@ -33,6 +33,9 @@ class ASH_EXPORT GlanceablesController : public wm::ActivationChangeObserver {
   // Creates the UI and starts fetching data.
   void ShowOnLogin();
 
+  // Shows from the UI affordance in overview mode / desks bar.
+  void ShowFromOverview();
+
   // Returns true if the glanceables screen is showing.
   bool IsShowing() const;
 
