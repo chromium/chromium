@@ -383,6 +383,15 @@
           'Debug_x64',
         ],
       },
+      'Win10 Tests x64 (py2 less)': {
+        'args': [
+          '--target',
+          'Release_x64',
+        ],
+        'swarming': {
+          "shards": 12
+        },
+      },
       'Win11 Tests x64': {
         'args': [
           '--target',
@@ -677,6 +686,15 @@
           '--target',
           'Debug_x64',
         ],
+      },
+      'Win10 Tests x64 (py2 less)': {
+        'args': [
+          '--target',
+          'Release_x64',
+        ],
+        'swarming': {
+          "shards": 18
+        },
       },
       'Win11 Tests x64': {
         'args': [
