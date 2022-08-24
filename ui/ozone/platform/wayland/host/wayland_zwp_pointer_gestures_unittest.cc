@@ -10,6 +10,7 @@
 #include "ui/events/platform/platform_event_observer.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_zwp_pointer_gestures.h"
+#include "ui/ozone/platform/wayland/test/mock_pointer.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
 
@@ -75,14 +76,6 @@ class WaylandPointerGesturesTest : public WaylandTest {
   }
 };
 
-// TODO(crbug.com/1298099): Reenable test when exo has been fixed and the
-// libinput behavior has been restored.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE(x) DISABLED_##x
-#else
-#define MAYBE(x) x
-#endif
-
 // Tests that scale in pinch zoom events is fixed to the progression expected by
 // the compositor.
 //
@@ -94,20 +87,20 @@ class WaylandPointerGesturesTest : public WaylandTest {
 // WaylandZwpPointerGestures methods.
 //
 // See https://crbug.com/1283652
-TEST_P(WaylandPointerGesturesTest, MAYBE(PinchZoomScale)) {
-  // TODO(1353670): is this needed?
-#if DCHECK_IS_ON()
-  window_->disable_null_target_dcheck_for_testing();
-#endif
-
+TEST_P(WaylandPointerGesturesTest, PinchZoomScale) {
   auto* const mock_surface = server_.GetObject<wl::MockSurface>(
       window_->root_surface()->GetSurfaceId());
+
+  uint32_t serial = 0;
+  auto* pointer = server_.seat()->pointer();
+  wl_pointer_send_enter(pointer->resource(), ++serial, mock_surface->resource(),
+                        wl_fixed_from_int(50), wl_fixed_from_int(50));
+  wl_pointer_send_frame(pointer->resource());
 
   PinchEventScaleRecorder observer;
 
   auto* pinch_resource = server_.wp_pointer_gestures().pinch()->resource();
-  zwp_pointer_gesture_pinch_v1_send_begin(pinch_resource,
-                                          /* serial */ 0,
+  zwp_pointer_gesture_pinch_v1_send_begin(pinch_resource, ++serial,
                                           /* time */ 0,
                                           mock_surface->resource(),
                                           /* fingers */ 2);
@@ -116,18 +109,13 @@ TEST_P(WaylandPointerGesturesTest, MAYBE(PinchZoomScale)) {
   constexpr double kScales[] = {1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.4,
                                 1.3, 1.2, 1.1, 1.0, 0.9, 0.8, 0.7,
                                 0.6, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0};
-  auto previous_scale = kScales[0];
   for (auto scale : kScales) {
     zwp_pointer_gesture_pinch_v1_send_update(
         pinch_resource, /* time */ 0, /* dx */ 0, /* dy */ 0,
         wl_fixed_from_double(scale), /* rotation */ 0);
     Sync();
-    // The conversion from double to fixed and back is necessary because it
-    // happens during the roundtrip, and it creates significant error.
-    EXPECT_FLOAT_EQ(
-        observer.latest_scale_update(),
-        wl_fixed_to_double(wl_fixed_from_double(scale)) / previous_scale);
-    previous_scale = wl_fixed_to_double(wl_fixed_from_double(scale));
+    EXPECT_FLOAT_EQ(observer.latest_scale_update(),
+                    wl_fixed_to_double(wl_fixed_from_double(scale)));
   }
 }
 

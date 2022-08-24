@@ -44,8 +44,11 @@ bool DispatchEventFromNativeUiEvent(
     std::move(callback).Run(&scroll_event);
     handled = scroll_event.handled();
   } else if (event->IsGestureEvent()) {
-    std::move(callback).Run(event);
-    handled = event->handled();
+    // TODO(https://crbug.com/1355835: Missing ui::GestureEvent(const
+    // PlatformEvent&) ctor).
+    auto gesture_event = *(event->AsGestureEvent());
+    std::move(callback).Run(&gesture_event);
+    handled = gesture_event.handled();
     // TODO(mohsen): Use the same pattern for scroll/touch/wheel events.
     // Apparently, there is no need for them to wrap the |event|.
   } else {

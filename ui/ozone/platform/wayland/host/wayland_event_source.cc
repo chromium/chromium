@@ -602,7 +602,13 @@ void WaylandEventSource::OnPinchEvent(EventType event_type,
   GestureEvent event(location.x(), location.y(), 0 /* flags */, timestamp,
                      details);
   event.set_source_device_id(device_id);
-  DispatchEvent(&event);
+
+  auto* target = window_manager_->GetCurrentPointerFocusedWindow();
+  // A window may be deleted when the event arrived from the server.
+  if (!target)
+    return;
+
+  SetTargetAndDispatchEvent(&event, target);
 }
 
 void WaylandEventSource::SetRelativePointerMotionEnabled(bool enabled) {
