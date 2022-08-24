@@ -82,17 +82,16 @@ ValidateAndConvertToTtsVoiceVector(const extensions::Extension* extension,
   auto tts_voices = std::make_unique<std::vector<extensions::TtsVoice>>();
   for (size_t i = 0; i < voices_data.size(); i++) {
     extensions::TtsVoice voice;
-    const base::DictionaryValue* voice_data = nullptr;
-    voices_data[i].GetAsDictionary(&voice_data);
+    const base::Value::Dict& voice_data = voices_data[i].GetDict();
 
     // Note partial validation of these attributes occurs based on tts engine's
     // json schema (e.g. for data type matching). The missing checks follow
     // similar checks in manifest parsing.
     if (const std::string* voice_name =
-            voice_data->FindStringKey(constants::kVoiceNameKey)) {
+            voice_data.FindString(constants::kVoiceNameKey)) {
       voice.voice_name = *voice_name;
     }
-    if (const base::Value* lang = voice_data->FindKey(constants::kLangKey)) {
+    if (const base::Value* lang = voice_data.Find(constants::kLangKey)) {
       voice.lang = lang->is_string() ? lang->GetString() : std::string();
       if (!l10n_util::IsValidLocaleSyntax(voice.lang)) {
         *error = constants::kErrorInvalidLang;
@@ -104,11 +103,11 @@ ValidateAndConvertToTtsVoiceVector(const extensions::Extension* extension,
       }
     }
     if (absl::optional<bool> remote =
-            voice_data->FindBoolKey(constants::kRemoteKey)) {
+            voice_data.FindBool(constants::kRemoteKey)) {
       voice.remote = remote.value();
     }
     if (const base::Value* extension_id_val =
-            voice_data->FindKey(constants::kExtensionIdKey)) {
+            voice_data.Find(constants::kExtensionIdKey)) {
       // Allow this for clients who might have used |chrome.tts.getVoices| to
       // update existing voices. However, trying to update the voice of another
       // extension should trigger an error.
@@ -124,16 +123,14 @@ ValidateAndConvertToTtsVoiceVector(const extensions::Extension* extension,
         continue;
       }
     }
-    const base::Value* event_types =
-        voice_data->FindListKey(constants::kEventTypesKey);
+    const base::Value::List* event_types =
+        voice_data.FindList(constants::kEventTypesKey);
 
     if (event_types) {
-      const base::Value::ConstListView event_types_list =
-          event_types->GetListDeprecated();
-      for (size_t j = 0; j < event_types_list.size(); j++) {
+      for (const auto& type : *event_types) {
         std::string event_type;
-        if (event_types_list[j].is_string())
-          event_type = event_types_list[j].GetString();
+        if (type.is_string())
+          event_type = type.GetString();
         voice.event_types.insert(event_type);
       }
     }
