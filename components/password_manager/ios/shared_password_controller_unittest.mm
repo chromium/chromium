@@ -35,8 +35,21 @@
 #error "This file requires ARC support."
 #endif
 
+using autofill::FormData;
+using autofill::PasswordFormFillData;
+using base::SysUTF16ToNSString;
 using ::testing::_;
 using ::testing::Return;
+
+@interface SharedPasswordController (Testing)
+
+// Provides access for testing.
+
+- (void)didFinishPasswordFormExtraction:(const std::vector<FormData>&)forms
+                        withMaxUniqueID:(uint32_t)maxID
+                  triggeredByFormChange:(BOOL)triggeredByFormChange;
+
+@end
 
 namespace password_manager {
 
@@ -654,6 +667,186 @@ TEST_F(SharedPasswordControllerTest,
   [suggestion_helper_ verify];
   [form_helper_ verify];
 }
+
+class SharedPasswordControllerTestWithRealSuggestionHelper
+    : public PlatformTest {
+ public:
+  SharedPasswordControllerTestWithRealSuggestionHelper() : PlatformTest() {
+    suggestion_helper_ = [[PasswordSuggestionHelper alloc] init];
+
+    form_helper_ = OCMStrictClassMock([PasswordFormHelper class]);
+    OCMExpect([form_helper_ setDelegate:[OCMArg any]]);
+
+    controller_ =
+        [[SharedPasswordController alloc] initWithWebState:&web_state_
+                                                   manager:&password_manager_
+                                                formHelper:form_helper_
+                                          suggestionHelper:suggestion_helper_];
+    [form_helper_ verify];
+
+    UniqueIDDataTabHelper::CreateForWebState(&web_state_);
+
+    auto web_frames_manager = std::make_unique<web::FakeWebFramesManager>();
+    web_frames_manager_ = web_frames_manager.get();
+    web_state_.SetWebFramesManager(std::move(web_frames_manager));
+  }
+
+ protected:
+  web::FakeWebState web_state_;
+  web::FakeWebFramesManager* web_frames_manager_;
+  testing::StrictMock<MockPasswordManager> password_manager_;
+  PasswordSuggestionHelper* suggestion_helper_;
+  id form_helper_;
+  password_manager::StubPasswordManagerClient password_manager_client_;
+  SharedPasswordController* controller_;
+};
+
+// Tests the completion handler for suggestions availability is not called
+// until password manager replies with suggestions.
+TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
+       WaitForPasswordmanagerResponseToShowSuggestions) {
+  // Simulate that the form is parsed and sent to PasswordManager.
+  FormData form = test_helpers::MakeSimpleFormData();
+
+  auto web_frame =
+      web::FakeWebFrame::Create(base::SysNSStringToUTF8(kTestFrameID),
+                                /*is_main_frame=*/true, GURL(kTestURL));
+  web::WebFrame* frame = web_frame.get();
+  web_frames_manager_->AddWebFrame(std::move(web_frame));
+
+  EXPECT_CALL(password_manager_, OnPasswordFormsParsed);
+  EXPECT_CALL(password_manager_, OnPasswordFormsRendered);
+  [controller_ didFinishPasswordFormExtraction:{form}
+                               withMaxUniqueID:5
+                         triggeredByFormChange:false];
+
+  // Simulate user focusing the field in a form before the password store
+  // response is received.
+  FormSuggestionProviderQuery* form_query = [[FormSuggestionProviderQuery alloc]
+      initWithFormName:SysUTF16ToNSString(form.name)
+          uniqueFormID:form.unique_renderer_id
+       fieldIdentifier:SysUTF16ToNSString(form.fields[0].name)
+         uniqueFieldID:form.fields[0].unique_renderer_id
+             fieldType:@"text"
+                  type:@"focus"
+            typedValue:@""
+               frameID:kTestFrameID];
+
+  __block BOOL completion_was_called = NO;
+
+  [controller_ checkIfSuggestionsAvailableForForm:form_query
+                                      isMainFrame:YES
+                                   hasUserGesture:NO
+                                         webState:&web_state_
+                                completionHandler:^(BOOL suggestionsAvailable) {
+                                  completion_was_called = YES;
+                                }];
+
+  // Check that completion handler wasn't called.
+  EXPECT_FALSE(completion_was_called);
+
+  // Receive suggestions from PasswordManager.
+  PasswordFormFillData form_fill_data;
+  test_helpers::SetPasswordFormFillData(
+      form.url.spec(), "", form.unique_renderer_id.value(), "",
+      form.fields[0].unique_renderer_id.value(), "john.doe@gmail.com", "",
+      form.fields[1].unique_renderer_id.value(), "super!secret", nullptr,
+      nullptr, false, &form_fill_data);
+  OCMExpect([form_helper_ fillPasswordForm:form_fill_data
+                                   inFrame:frame
+                         completionHandler:nil]);
+  [controller_ fillPasswordForm:form_fill_data completionHandler:nil];
+  // Check that completion handler was called.
+  EXPECT_TRUE(completion_was_called);
+}
+
+// Tests the completion handler for suggestions availability is not called
+// until password manager replies with suggestions.
+TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
+       WaitForPasswordmanagerResponseToShowSuggestionsTwoFields) {
+  // Simulate that the form is parsed and sent to PasswordManager.
+  FormData form = test_helpers::MakeSimpleFormData();
+
+  auto web_frame =
+      web::FakeWebFrame::Create(base::SysNSStringToUTF8(kTestFrameID),
+                                /*is_main_frame=*/true, GURL(kTestURL));
+  web::WebFrame* frame = web_frame.get();
+  web_frames_manager_->AddWebFrame(std::move(web_frame));
+
+  EXPECT_CALL(password_manager_, OnPasswordFormsParsed);
+  EXPECT_CALL(password_manager_, OnPasswordFormsRendered);
+  [controller_ didFinishPasswordFormExtraction:{form}
+                               withMaxUniqueID:5
+                         triggeredByFormChange:false];
+
+  // Simulate user focusing the field in a form before the password store
+  // response is received.
+  FormSuggestionProviderQuery* form_query1 =
+      [[FormSuggestionProviderQuery alloc]
+          initWithFormName:SysUTF16ToNSString(form.name)
+              uniqueFormID:form.unique_renderer_id
+           fieldIdentifier:SysUTF16ToNSString(form.fields[0].name)
+             uniqueFieldID:form.fields[0].unique_renderer_id
+                 fieldType:@"text"
+                      type:@"focus"
+                typedValue:@""
+                   frameID:kTestFrameID];
+
+  __block BOOL completion_was_called1 = NO;
+  [controller_ checkIfSuggestionsAvailableForForm:form_query1
+                                      isMainFrame:YES
+                                   hasUserGesture:NO
+                                         webState:&web_state_
+                                completionHandler:^(BOOL suggestionsAvailable) {
+                                  completion_was_called1 = YES;
+                                }];
+
+  // Check that completion handler wasn't called.
+  EXPECT_FALSE(completion_was_called1);
+
+  // Simulate user focusing another field in a form before the password store
+  // response is received.
+  FormSuggestionProviderQuery* form_query2 =
+      [[FormSuggestionProviderQuery alloc]
+          initWithFormName:SysUTF16ToNSString(form.name)
+              uniqueFormID:form.unique_renderer_id
+           fieldIdentifier:SysUTF16ToNSString(form.fields[1].name)
+             uniqueFieldID:form.fields[1].unique_renderer_id
+                 fieldType:@"password"
+                      type:@"focus"
+                typedValue:@""
+                   frameID:kTestFrameID];
+
+  __block BOOL completion_was_called2 = NO;
+  [controller_ checkIfSuggestionsAvailableForForm:form_query2
+                                      isMainFrame:YES
+                                   hasUserGesture:NO
+                                         webState:&web_state_
+                                completionHandler:^(BOOL suggestionsAvailable) {
+                                  completion_was_called2 = YES;
+                                }];
+
+  // Check that completion handler wasn't called.
+  EXPECT_FALSE(completion_was_called2);
+
+  // Receive suggestions from PasswordManager.
+  PasswordFormFillData form_fill_data;
+  test_helpers::SetPasswordFormFillData(
+      form.url.spec(), "", form.unique_renderer_id.value(), "",
+      form.fields[0].unique_renderer_id.value(), "john.doe@gmail.com", "",
+      form.fields[1].unique_renderer_id.value(), "super!secret", nullptr,
+      nullptr, false, &form_fill_data);
+
+  OCMExpect([form_helper_ fillPasswordForm:form_fill_data
+                                   inFrame:frame
+                         completionHandler:nil]);
+  [controller_ fillPasswordForm:form_fill_data completionHandler:nil];
+
+  // Check that completion handler was called for the second form query.
+  EXPECT_FALSE(completion_was_called1);
+  EXPECT_TRUE(completion_was_called2);
+}
+
 // TODO(crbug.com/1097353): Finish unit testing the rest of the public API.
 
 }  // namespace password_manager
