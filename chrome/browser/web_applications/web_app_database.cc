@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/contains.h"
+#include "base/functional/overloaded.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
@@ -734,26 +735,22 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
       web_app.always_show_toolbar_in_fullscreen());
 
   if (web_app.isolation_data().has_value()) {
-    struct ContentVisitor {
-      void operator()(const WebApp::IsolationData::InstalledBundle& bundle) {
-        mutable_isolation_data->mutable_installed_bundle()->set_path(
-            bundle.path);
-      }
-
-      void operator()(const WebApp::IsolationData::DevModeBundle& bundle) {
-        mutable_isolation_data->mutable_dev_mode_bundle()->set_path(
-            bundle.path);
-      }
-
-      void operator()(const WebApp::IsolationData::DevModeProxy& proxy) {
-        mutable_isolation_data->mutable_dev_mode_proxy()->set_proxy_url(
-            proxy.proxy_url);
-      }
-
-      IsolationData* mutable_isolation_data;
-    };
-    absl::visit(ContentVisitor{local_data->mutable_isolation_data()},
-                web_app.isolation_data().value().content);
+    using IsolationData = WebApp::IsolationData;
+    auto* mutable_data = local_data->mutable_isolation_data();
+    absl::visit(
+        base::Overloaded{
+            [&mutable_data](const IsolationData::InstalledBundle& bundle) {
+              mutable_data->mutable_installed_bundle()->set_path(bundle.path);
+            },
+            [&mutable_data](const IsolationData::DevModeBundle& bundle) {
+              mutable_data->mutable_dev_mode_bundle()->set_path(bundle.path);
+            },
+            [&mutable_data](const IsolationData::DevModeProxy& proxy) {
+              mutable_data->mutable_dev_mode_proxy()->set_proxy_url(
+                  proxy.proxy_url);
+            },
+        },
+        web_app.isolation_data().value().content);
   }
 
   return local_data;

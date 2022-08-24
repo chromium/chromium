@@ -10,6 +10,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/functional/overloaded.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -555,31 +556,29 @@ bool WebApp::IsolationData::DevModeProxy::operator!=(
   return !(*this == other);
 }
 base::Value WebApp::IsolationData::AsDebugValue() const {
-  struct ContentVisitor {
-    base::Value::Dict operator()(
-        const WebApp::IsolationData::InstalledBundle& bundle) {
-      base::Value::Dict content;
-      content.SetByDottedPath("installed_bundle.path", bundle.path);
-      return content;
-    }
-
-    base::Value::Dict operator()(
-        const WebApp::IsolationData::DevModeBundle& bundle) {
-      base::Value::Dict content;
-      content.SetByDottedPath("dev_mode_bundle.path", bundle.path);
-      return content;
-    }
-
-    base::Value::Dict operator()(
-        const WebApp::IsolationData::DevModeProxy& proxy) {
-      base::Value::Dict content;
-      content.SetByDottedPath("dev_mode_proxy.proxy_url", proxy.proxy_url);
-      return content;
-    }
-  };
-
   base::Value::Dict value;
-  value.Set("content", absl::visit(ContentVisitor(), content));
+  value.Set(
+      "content",
+      absl::visit(
+          base::Overloaded{
+              [](const WebApp::IsolationData::InstalledBundle& bundle) {
+                base::Value::Dict content;
+                content.SetByDottedPath("installed_bundle.path", bundle.path);
+                return content;
+              },
+              [](const WebApp::IsolationData::DevModeBundle& bundle) {
+                base::Value::Dict content;
+                content.SetByDottedPath("dev_mode_bundle.path", bundle.path);
+                return content;
+              },
+              [](const WebApp::IsolationData::DevModeProxy& proxy) {
+                base::Value::Dict content;
+                content.SetByDottedPath("dev_mode_proxy.proxy_url",
+                                        proxy.proxy_url);
+                return content;
+              },
+          },
+          content));
   return base::Value(std::move(value));
 }
 
