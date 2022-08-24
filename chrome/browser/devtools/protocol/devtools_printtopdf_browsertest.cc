@@ -39,7 +39,7 @@ class PrintToPdfProtocolTest : public DevToolsProtocolTest,
   static constexpr int kColorChannels = 4;
   static constexpr int kDpi = 300;
 
-  bool headless() const { return GetParam(); };
+  bool headless() const { return GetParam(); }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     DevToolsProtocolTest::SetUpCommandLine(command_line);

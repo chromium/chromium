@@ -67,4 +67,4 @@ PermissionRequestQueue::iterator PermissionRequestQueue::end() {
   return queued_requests_.end();
 }
 
-};  // namespace permissions
+}  // namespace permissions

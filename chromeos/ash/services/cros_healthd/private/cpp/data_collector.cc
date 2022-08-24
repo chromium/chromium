@@ -124,7 +124,7 @@ void GetTouchscreenDevicesOnUIThread(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(results)));
 }
 
-};  // namespace
+}  // namespace
 
 DataCollector::DataCollector() : DataCollector(GetDataCollectorDelegate()) {
   if (chromeos::mojo_service_manager::IsServiceManagerBound()) {

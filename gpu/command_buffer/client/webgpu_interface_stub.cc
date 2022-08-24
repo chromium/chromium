@@ -14,7 +14,7 @@ class APIChannelStub : public APIChannel {
   APIChannelStub() = default;
 
   const DawnProcTable& GetProcs() const override { return procs_; }
-  WGPUInstance GetWGPUInstance() const override { return nullptr; };
+  WGPUInstance GetWGPUInstance() const override { return nullptr; }
   void Disconnect() override {}
 
   DawnProcTable* procs() { return &procs_; }

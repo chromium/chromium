@@ -15,7 +15,7 @@ struct CrossThreadCopier<blink::ExceptionContext> {
   static blink::ExceptionContext Copy(
       blink::ExceptionContext exception_context) {
     return exception_context;
-  };
+  }
 };
 
 }  // namespace WTF

@@ -87,9 +87,9 @@ class FakeDeviceInformationCustomPairingWinrt
 
   ABI::Windows::Devices::Enumeration::DevicePairingKinds pairing_kind() const {
     return pairing_kind_;
-  };
+  }
 
-  const std::string& pin() const { return display_pin_; };
+  const std::string& pin() const { return display_pin_; }
 
   void SetConfirmed() { confirmed_ = true; }
 

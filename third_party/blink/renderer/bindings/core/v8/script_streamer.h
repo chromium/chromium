@@ -283,7 +283,7 @@ class CORE_EXPORT BackgroundInlineScriptStreamer final
   void Cancel() { cancelled_.Set(); }
 
   // This may return false if V8 failed to create a background streaming task.
-  bool CanStream() const { return task_.get(); };
+  bool CanStream() const { return task_.get(); }
 
   v8::ScriptCompiler::StreamedSource* Source(v8::ScriptType expected_type);
 

@@ -166,7 +166,7 @@ IN_PROC_BROWSER_TEST_P(ChunkedPolicyPrefsTest, PolicyToPrefsMapping) {
   VerifyPolicyToPrefMappings(GetTestCasePath(), local_state, user_prefs,
                              /* signin_profile_prefs= */ nullptr,
                              GetMockPolicyProvider(), &chunk_info_);
-};
+}
 
 INSTANTIATE_TEST_SUITE_P(Chunked,
                          ChunkedPolicyPrefsTest,

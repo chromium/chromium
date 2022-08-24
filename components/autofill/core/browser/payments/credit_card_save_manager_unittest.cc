@@ -130,7 +130,7 @@ class MockAutofillClient : public TestAutofillClient {
   explicit MockAutofillClient(
       std::unique_ptr<TestPersonalDataManager> pdm = nullptr)
       : TestAutofillClient(pdm ? std::move(pdm)
-                               : std::make_unique<TestPersonalDataManager>()){};
+                               : std::make_unique<TestPersonalDataManager>()) {}
   ~MockAutofillClient() override = default;
   MOCK_METHOD(VirtualCardEnrollmentManager*,
               GetVirtualCardEnrollmentManager,
@@ -147,7 +147,7 @@ class MockVirtualCardEnrollmentManager
       TestAutofillClient* autofill_client)
       : TestVirtualCardEnrollmentManager(personal_data_manager,
                                          payments_client,
-                                         autofill_client){};
+                                         autofill_client) {}
   MOCK_METHOD(
       void,
       InitVirtualCardEnroll,

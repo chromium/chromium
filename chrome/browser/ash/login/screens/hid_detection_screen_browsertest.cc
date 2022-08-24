@@ -506,7 +506,7 @@ IN_PROC_BROWSER_TEST_P(HIDDetectionScreenChromeboxTest, MouseKeyboardStates) {
   }
 
   ForceStopHidDetectionIfRevamp();
-};
+}
 
 IN_PROC_BROWSER_TEST_P(HIDDetectionScreenChromeboxTest,
                        BluetoothPairingDialog) {

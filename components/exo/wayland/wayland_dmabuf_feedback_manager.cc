@@ -192,12 +192,12 @@ class WaylandDmabufFeedback {
 
     scanout_tranche_ = std::make_unique<WaylandDmabufFeedbackTranche>(
         main_device_id_, TrancheFlags::kScanout, scanout_formats_and_modifiers);
-  };
+  }
 
   void ClearScanoutTranche() {
     DCHECK(scanout_tranche_);
     scanout_tranche_ = nullptr;
-  };
+  }
 
  private:
   const dev_t main_device_id_;

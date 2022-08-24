@@ -25,8 +25,8 @@ class CORE_EXPORT BackForwardCacheRestoration : public PerformanceEntry {
 
   DOMHighResTimeStamp pageshowEventStart() const {
     return pageshow_event_start_;
-  };
-  DOMHighResTimeStamp pageshowEventEnd() const { return pageshow_event_end_; };
+  }
+  DOMHighResTimeStamp pageshowEventEnd() const { return pageshow_event_end_; }
 
   void Trace(Visitor*) const override;
 

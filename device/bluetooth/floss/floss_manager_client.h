@@ -62,12 +62,12 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
       if (cb_) {
         std::move(cb_).Run(base::unexpected(Error(kErrorNoResponse, "")));
       }
-    };
+    }
     void RunNoError() {
       if (cb_) {
         std::move(cb_).Run(Void{});
       }
-    };
+    }
 
    private:
     void PostDelayedError();

@@ -110,7 +110,7 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
     UpdateWindowBoundsForTablet(floated_window_);
   }
 
-  void MaybeUntuckWindow() { scoped_window_tucker_.reset(); };
+  void MaybeUntuckWindow() { scoped_window_tucker_.reset(); }
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override {

@@ -630,7 +630,6 @@ TEST_F(ComboSquattingTest, IsComboSquatting) {
     const char* domain;
     const char* expected_suggested_domain;
     const ComboSquattingType expected_type;
-    ;
   } kTestCases[] = {
       // Not Combo Squatting (CSQ).
       {"google.com", "", ComboSquattingType::kNone},

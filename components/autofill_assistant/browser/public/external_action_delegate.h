@@ -32,11 +32,11 @@ class ExternalActionDelegate {
           end_action_callback) = 0;
 
   // Called before starting the execution of an interrupt.
-  virtual void OnInterruptStarted(){};
+  virtual void OnInterruptStarted() {}
 
   // Called after finishing to execute an interrupt, before resuming the
   // execution of the main script.
-  virtual void OnInterruptFinished(){};
+  virtual void OnInterruptFinished() {}
 
   // Called to notify a change in the configuration of the touchable area.
   //
@@ -55,7 +55,7 @@ class ExternalActionDelegate {
   virtual void OnTouchableAreaChanged(
       const RectF& visual_viewport,
       const std::vector<RectF>& touchable_areas,
-      const std::vector<RectF>& restricted_areas){};
+      const std::vector<RectF>& restricted_areas) {}
 };
 
 }  // namespace autofill_assistant

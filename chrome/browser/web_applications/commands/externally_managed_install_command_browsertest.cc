@@ -208,4 +208,4 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
   run_loop.Run();
 }
 
-};  // namespace web_app
+}  // namespace web_app

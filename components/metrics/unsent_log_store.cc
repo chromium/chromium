@@ -57,7 +57,7 @@ class LogsPrefWriter {
       : list_value_(list_value) {
     DCHECK(list_value);
     list_value->clear();
-  };
+  }
 
   LogsPrefWriter(const LogsPrefWriter&) = delete;
   LogsPrefWriter& operator=(const LogsPrefWriter&) = delete;

@@ -48,7 +48,7 @@ const char* BackingTypeToString(SharedImageBackingType type) {
       return "CompoundImageBacking";
   }
   NOTREACHED();
-};
+}
 
 }  // namespace
 

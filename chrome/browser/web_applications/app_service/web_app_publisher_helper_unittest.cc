@@ -48,12 +48,12 @@ namespace {
 
 class NoOpWebAppPublisherDelegate : public WebAppPublisherHelper::Delegate {
   // WebAppPublisherHelper::Delegate:
-  void PublishWebApps(std::vector<apps::AppPtr> apps) override{};
-  void PublishWebApp(apps::AppPtr app) override{};
+  void PublishWebApps(std::vector<apps::AppPtr> apps) override {}
+  void PublishWebApp(apps::AppPtr app) override {}
   void ModifyWebAppCapabilityAccess(
       const std::string& app_id,
       absl::optional<bool> accessing_camera,
-      absl::optional<bool> accessing_microphone) override{};
+      absl::optional<bool> accessing_microphone) override {}
 };
 
 std::string ToString(const apps::AppPtr& app) {

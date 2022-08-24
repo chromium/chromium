@@ -166,7 +166,7 @@ FormDataImporter::FormDataImporter(AutofillClient* client,
 FormDataImporter::~FormDataImporter() {
   if (personal_data_manager_)
     personal_data_manager_->RemoveObserver(this);
-};
+}
 
 void FormDataImporter::ImportFormData(const FormStructure& submitted_form,
                                       bool profile_autofill_enabled,

@@ -42,7 +42,7 @@ CreateStubAssociatedInterfaceProviderReceiver() {
   return TestRenderFrameHost::CreateStubAssociatedInterfaceProviderReceiver();
 }
 
-};  // namespace
+}  // namespace
 
 class AcceptLanguageUtilsTests : public RenderViewHostImplTestHarness {
  public:

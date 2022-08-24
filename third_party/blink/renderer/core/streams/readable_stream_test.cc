@@ -726,7 +726,7 @@ TEST_F(ReadableByteStreamTest, CancelIsCalled) {
 
   Mock::VerifyAndClear(mock);
   Mock::AllowLeak(mock);
-};
+}
 
 bool IsTypeError(ScriptState* script_state,
                  ScriptValue value,

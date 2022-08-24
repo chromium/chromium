@@ -59,6 +59,6 @@ void CloudUploadUI::RespondAndCloseDialog(mojom::UserAction action) {
   ui::MojoWebDialogUI::CloseDialog(args);
 }
 
-WEB_UI_CONTROLLER_TYPE_IMPL(CloudUploadUI);
+WEB_UI_CONTROLLER_TYPE_IMPL(CloudUploadUI)
 
 }  // namespace chromeos::cloud_upload

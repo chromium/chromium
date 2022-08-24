@@ -307,7 +307,7 @@ const PolicyMap::Entry& PolicyMap::EntryConflict::entry() const {
 }
 
 PolicyMap::PolicyMap()
-    : details_callback_{base::BindRepeating(&GetChromePolicyDetails)} {};
+    : details_callback_{base::BindRepeating(&GetChromePolicyDetails)} {}
 PolicyMap::PolicyMap(PolicyMap&&) noexcept = default;
 PolicyMap& PolicyMap::operator=(PolicyMap&&) noexcept = default;
 PolicyMap::~PolicyMap() = default;

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
 
-DEFINE_UI_CLASS_PROPERTY_TYPE(SidePanelContentProxy*);
+DEFINE_UI_CLASS_PROPERTY_TYPE(SidePanelContentProxy*)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(SidePanelContentProxy,
                                    kSidePanelContentProxyKey,
                                    nullptr)

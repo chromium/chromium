@@ -75,7 +75,7 @@ scoped_refptr<QuotesData> GetQuotesDataForLanguage(const char* locale) {
   ulocdata_close(uld);
 
   return QuotesData::Create(open1[0], close1[0], open2[0], close2[0]);
-};
+}
 
 }  // namespace
 

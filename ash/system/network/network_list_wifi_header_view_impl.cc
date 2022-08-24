@@ -48,7 +48,7 @@ void NetworkListWifiHeaderViewImpl::AddExtraButtons() {
   join_wifi_button_ = join_wifi_button.get();
   container()->AddViewAt(TriView::Container::END, join_wifi_button.release(),
                          /*index=*/0);
-};
+}
 
 void NetworkListWifiHeaderViewImpl::SetToggleState(bool enabled,
                                                    bool is_on,

@@ -49,7 +49,6 @@ const char kSecureConnectApiGetSecondaryGoogleAccountUsageURL[] =
     "https://secureconnect-pa.clients6.google.com/"
     "v1:getManagedAccountsSigninRestriction?policy_name="
     "SecondaryGoogleAccountUsage";
-;
 
 // Fake responses for the URL requests that are part of the sign-in flow.
 const char kOnClientOAuthSuccessBody[] =

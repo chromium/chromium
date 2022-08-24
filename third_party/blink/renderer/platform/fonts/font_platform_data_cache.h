@@ -120,7 +120,6 @@ class FontPlatformDataCache final {
   mutable LockForParallelTextShaping lock_;
   HashMap<FontCacheKey, scoped_refptr<SizedFontPlatformDataSet>> map_
       GUARDED_BY(lock_);
-  ;
 
   // A maximum float value to which we limit incoming font sizes. This is the
   // smallest float so that multiplying it by

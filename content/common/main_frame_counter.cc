@@ -27,4 +27,4 @@ void MainFrameCounter::DecrementCount() {
   main_frame_count_--;
 }
 
-};  // namespace content
+}  // namespace content

@@ -80,7 +80,7 @@ class HistoryClustersProviderTest : public testing::Test,
     provider_ = new HistoryClusterProvider(
         autocomplete_provider_client_.get(), this, search_provider_.get(),
         history_url_provider_.get(), history_quick_provider_.get());
-  };
+  }
 
   ~HistoryClustersProviderTest() override {
     // The provider will kick off an async task to refresh the keyword cache.
@@ -93,7 +93,7 @@ class HistoryClustersProviderTest : public testing::Test,
   void OnProviderUpdate(bool updated_matches,
                         const AutocompleteProvider* provider) override {
     on_provider_update_calls_.push_back(updated_matches);
-  };
+  }
 
   // Tracks `OnProviderUpdate()` invocations.
   std::vector<bool> on_provider_update_calls_;

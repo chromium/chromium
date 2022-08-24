@@ -19,9 +19,9 @@ SavedDeskBuilder::SavedDeskBuilder()
       restore_data_(std::make_unique<app_restore::RestoreData>()) {
   desk_uuid_ = base::GUID::GenerateRandomV4();
   created_time_ = base::Time::Now();
-};
+}
 
-SavedDeskBuilder::~SavedDeskBuilder(){};
+SavedDeskBuilder::~SavedDeskBuilder() {}
 
 std::unique_ptr<ash::DeskTemplate> SavedDeskBuilder::Build() {
   auto desk_template = std::make_unique<ash::DeskTemplate>(

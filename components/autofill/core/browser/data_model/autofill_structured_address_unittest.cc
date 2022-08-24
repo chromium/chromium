@@ -728,7 +728,7 @@ TEST_P(MergeStatesWithCanonicalNamesTest, MergeTest) {
 
   older_address.MergeWithComponent(newer_address);
   EXPECT_TRUE(older_address.SameAs(expectation_address));
-};
+}
 
 INSTANTIATE_TEST_SUITE_P(
     AutofillStructuredAddress,

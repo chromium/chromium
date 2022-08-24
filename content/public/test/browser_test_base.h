@@ -78,7 +78,7 @@ class BrowserTestBase : public ::testing::Test {
   virtual bool UseProductionQuotaSettings();
 
   // This is invoked if the test receives SIGTERM or SIGSEGV.
-  virtual void SignalRunTestOnMainThread(int signal){};
+  virtual void SignalRunTestOnMainThread(int signal) {}
 
   // Crash the Network Service process. Should only be called when
   // out-of-process Network Service is enabled. Re-applies any added host

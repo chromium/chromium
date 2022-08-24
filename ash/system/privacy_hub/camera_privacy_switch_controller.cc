@@ -83,7 +83,7 @@ CameraPrivacySwitchController::GetUserSwitchPreference() {
 
   return allowed ? CameraSWPrivacySwitchSetting::kEnabled
                  : CameraSWPrivacySwitchSetting::kDisabled;
-};
+}
 
 void CameraPrivacySwitchController::SetCameraPrivacySwitchAPIForTest(
     std::unique_ptr<CameraPrivacySwitchAPI> switch_api) {

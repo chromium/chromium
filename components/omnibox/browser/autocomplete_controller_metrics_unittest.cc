@@ -34,7 +34,7 @@ class AutocompleteControllerMetricsTest : public testing::Test {
  public:
   AutocompleteControllerMetricsTest()
       : metrics_(controller_.metrics_),
-        histogram_tester_(std::make_unique<base::HistogramTester>()){};
+        histogram_tester_(std::make_unique<base::HistogramTester>()) {}
 
   // By default, the controller wants async matches. `SetInputSync()` will
   // explicitly set this behavior.

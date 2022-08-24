@@ -10,4 +10,4 @@ MockInSessionAuthTokenProvider::MockInSessionAuthTokenProvider() = default;
 
 MockInSessionAuthTokenProvider::~MockInSessionAuthTokenProvider() = default;
 
-};  // namespace ash
+}  // namespace ash

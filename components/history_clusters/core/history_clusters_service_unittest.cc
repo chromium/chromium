@@ -44,7 +44,7 @@ namespace {
 
 base::Time DaysAgo(int days) {
   return base::Time::Now() - base::Days(days);
-};
+}
 
 // Trivial backend to allow us to specifically test just the service behavior.
 class TestClusteringBackend : public ClusteringBackend {
@@ -275,7 +275,7 @@ class HistoryClustersServiceTestBase : public testing::Test {
     return {clusters, expect_clustering_backend_call
                           ? test_clustering_backend_->LastClusteredVisits()
                           : std::vector<history::AnnotatedVisit>{}};
-  };
+  }
 
   // Helper to repeatedly schedule a `GetAnnotatedVisitsToCluster` and return
   // the clusters and visits it returns.
@@ -323,7 +323,7 @@ class HistoryClustersServiceTestBase : public testing::Test {
     // exhaust persisted cluster requests.
     history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
     history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
-  };
+  }
 
  protected:
   // ScopedFeatureList needs to be declared before TaskEnvironment, so that it

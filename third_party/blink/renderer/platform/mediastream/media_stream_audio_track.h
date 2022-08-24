@@ -103,7 +103,7 @@ class PLATFORM_EXPORT MediaStreamAudioTrack : public MediaStreamTrackPlatform {
 
   MediaStreamTrackPlatform::StreamType Type() const override {
     return MediaStreamTrackPlatform::StreamType::kAudio;
-  };
+  }
 
  private:
   // In debug builds, check that all methods that could cause object graph

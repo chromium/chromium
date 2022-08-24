@@ -45,7 +45,7 @@ class HeadlessModeBrowserTestWithStartWindowMode
 
   void SetUpCommandLine(base::CommandLine* command_line) override;
 
-  StartWindowMode start_window_mode() const { return GetParam(); };
+  StartWindowMode start_window_mode() const { return GetParam(); }
 };
 
 // Toggles browser fullscreen mode synchronously.

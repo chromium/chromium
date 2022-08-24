@@ -66,18 +66,18 @@ class FakeNetworkDetailedNetworkViewDelegate
       const NetworkStatePropertiesPtr& network) override {
     network_list_item_selected_count_++;
     last_network_list_item_selected_ = mojo::Clone(network);
-  };
+  }
 
   // NetworkDetailedNetworkView::Delegate:
   void OnWifiToggleClicked(bool new_state) override {
     on_wifi_toggle_clicked_count_++;
     last_wifi_toggle_state_ = new_state;
-  };
+  }
 
   void OnMobileToggleClicked(bool new_state) override {
     on_mobile_toggle_clicked_count_++;
     last_mobile_toggle_state_ = new_state;
-  };
+  }
 
   const NetworkStatePropertiesPtr& last_network_list_item_selected() const {
     return last_network_list_item_selected_;

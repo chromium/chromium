@@ -165,17 +165,17 @@ class WebAuthnConditionalUITest : public WebAuthnBrowserTest {
     // ChromeAuthenticatorRequestDelegate::TestObserver:
     void Created(ChromeAuthenticatorRequestDelegate* delegate) override {
       delegate_ = delegate;
-    };
+    }
 
     std::vector<std::unique_ptr<device::cablev2::Pairing>>
     GetCablePairingsFromSyncedDevices() override {
       return {};
-    };
+    }
 
     void OnTransportAvailabilityEnumerated(
         ChromeAuthenticatorRequestDelegate* delegate,
         device::FidoRequestHandlerBase::TransportAvailabilityInfo* tai)
-        override{};
+        override {}
 
     void UIShown(ChromeAuthenticatorRequestDelegate* delegate) override {
       if (state_ == kWaitingForUI) {
@@ -187,7 +187,7 @@ class WebAuthnConditionalUITest : public WebAuthnBrowserTest {
         run_loop_.QuitWhenIdle();
       }
       state_ = kShowedUI;
-    };
+    }
 
     void CableV2ExtensionSeen(
         base::span<const uint8_t> server_link_data,
@@ -369,19 +369,19 @@ class WebAuthnCableExtension : public WebAuthnBrowserTest {
   class ExtensionObserver
       : public ChromeAuthenticatorRequestDelegate::TestObserver {
    public:
-    void Created(ChromeAuthenticatorRequestDelegate* delegate) override{};
+    void Created(ChromeAuthenticatorRequestDelegate* delegate) override {}
 
     std::vector<std::unique_ptr<device::cablev2::Pairing>>
     GetCablePairingsFromSyncedDevices() override {
       return {};
-    };
+    }
 
     void OnTransportAvailabilityEnumerated(
         ChromeAuthenticatorRequestDelegate* delegate,
         device::FidoRequestHandlerBase::TransportAvailabilityInfo* tai)
-        override{};
+        override {}
 
-    void UIShown(ChromeAuthenticatorRequestDelegate* delegate) override{};
+    void UIShown(ChromeAuthenticatorRequestDelegate* delegate) override {}
 
     void CableV2ExtensionSeen(
         base::span<const uint8_t> server_link_data,

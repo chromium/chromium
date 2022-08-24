@@ -96,9 +96,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossSocketManager : public FlossDBusClient {
     FlossSocket(FlossSocket&&);
     FlossSocket& operator=(FlossSocket&&) = default;
 
-    bool is_valid() const {
-      return id != FlossSocketManager::kInvalidSocketId;
-    };
+    bool is_valid() const { return id != FlossSocketManager::kInvalidSocketId; }
   };
 
   // Represents a result from any socket api call.

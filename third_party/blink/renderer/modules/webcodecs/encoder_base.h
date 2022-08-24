@@ -55,7 +55,7 @@ class MODULES_EXPORT EncoderBase
   // *_encoder.idl implementation.
   uint32_t encodeQueueSize() { return requested_encodes_; }
 
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(dequeue, kDequeue);
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(dequeue, kDequeue)
 
   void configure(const ConfigType*, ExceptionState&);
 

@@ -56,7 +56,7 @@ class ASH_EXPORT KeyboardBacklightColorController
   KeyboardBacklightColorNudgeController*
   keyboard_backlight_color_nudge_controller() {
     return keyboard_backlight_color_nudge_controller_.get();
-  };
+  }
 
  private:
   friend class KeyboardBacklightColorControllerTest;

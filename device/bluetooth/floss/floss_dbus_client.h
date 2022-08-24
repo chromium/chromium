@@ -402,7 +402,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusClient {
       for (auto const& kv : fields) {
         fields_.insert(kv);
       }
-    };
+    }
 
     bool ReadDBusParam(dbus::MessageReader* reader, T* data) {
       // Keep track of parsed fields to detect missing and duplicate fields.

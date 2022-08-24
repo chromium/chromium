@@ -62,7 +62,7 @@ namespace {
 // From browser_controls_offset_manager.cc.
 const int64_t kShowHideMaxDurationMs = 200;
 
-};  // namespace
+}  // namespace
 
 // These tests cover interactions between scrolling and browser controls, with a
 // focus on Blink-observable side effects. Scrolling happens in the compositor,

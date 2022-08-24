@@ -134,7 +134,7 @@ std::vector<uint8_t> WebBundleSigner::SignBundle(
 WebBundleSigner::KeyPair::KeyPair(base::span<const uint8_t> public_key,
                                   base::span<const uint8_t> private_key)
     : public_key(public_key.begin(), public_key.end()),
-      private_key(private_key.begin(), private_key.end()){};
+      private_key(private_key.begin(), private_key.end()) {}
 
 WebBundleSigner::KeyPair::KeyPair(const WebBundleSigner::KeyPair& other) =
     default;

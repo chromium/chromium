@@ -434,7 +434,7 @@ class MockVirtualCardEnrollmentManager
       TestAutofillClient* autofill_client)
       : TestVirtualCardEnrollmentManager(personal_data_manager,
                                          payments_client,
-                                         autofill_client){};
+                                         autofill_client) {}
   MOCK_METHOD(
       void,
       InitVirtualCardEnroll,

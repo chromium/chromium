@@ -41,7 +41,7 @@ bool PasswordFeatureManagerImpl::
     case SyncState::kSyncingNormalEncryption:
       return true;
   }
-};
+}
 
 bool PasswordFeatureManagerImpl::IsOptedInForAccountStorage() const {
   return features_util::IsOptedInForAccountStorage(pref_service_,

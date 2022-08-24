@@ -125,11 +125,11 @@ class TestUkmRecorderObserver : public ukm::UkmRecorderObserver {
   void OnEntryAdded(ukm::mojom::UkmEntryPtr entry) override {}
 
   void OnUpdateSourceURL(ukm::SourceId source_id,
-                         const std::vector<GURL>& urls) override{};
+                         const std::vector<GURL>& urls) override {}
 
   void OnPurgeRecordingsWithUrlScheme(const std::string& url_scheme) override {}
 
-  void OnPurge() override{};
+  void OnPurge() override {}
 
   void ExpectAllowedStateChanged(bool expected_allowed) {
     expected_allowed_ = expected_allowed;

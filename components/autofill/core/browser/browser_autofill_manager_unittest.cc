@@ -9199,7 +9199,7 @@ class BrowserAutofillManagerTestPageLanguageDetection
         features::kAutofillPageLanguageDetection);
   }
 
-  bool is_in_active_frame() const { return GetParam(); };
+  bool is_in_active_frame() const { return GetParam(); }
 
  private:
   base::test::ScopedFeatureList scoped_features_;

@@ -273,7 +273,7 @@ ShortcutsProviderTest::ShortcutsProviderTest() {
   RichAutocompletionParams::ClearParamsForTesting();
   scoped_feature_list_.InitWithFeatures({omnibox::kShortcutExpanding},
                                         {omnibox::kRichAutocompletion});
-};
+}
 
 void ShortcutsProviderTest::SetUp() {
   client_ = std::make_unique<FakeAutocompleteProviderClient>();

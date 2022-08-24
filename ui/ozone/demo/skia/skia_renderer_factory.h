@@ -13,7 +13,7 @@
 
 namespace gl {
 class GLDisplay;
-};
+}
 
 namespace ui {
 

@@ -156,7 +156,7 @@ TEST_F(CustomInputProcessorTest, IntPairTypeIndex) {
   expected_result[index] = {ProcessedValue(clock_.Now())};
   ExpectProcessedCustomInputsForSql<IndexType>(data, /*expected_error=*/false,
                                                expected_result);
-};
+}
 
 TEST_F(CustomInputProcessorTest, DefaultValueCustomInput) {
   // Create custom inputs data.

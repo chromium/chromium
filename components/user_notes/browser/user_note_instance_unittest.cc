@@ -38,7 +38,7 @@ class MockUserNoteInstance : public UserNoteInstance {
       : UserNoteInstance(model_ref, manager),
         attach_rect_(simulate_attach_rect) {}
 
-  const gfx::Rect& attach_rect() { return attach_rect_; };
+  const gfx::Rect& attach_rect() { return attach_rect_; }
 
   MOCK_METHOD(void, InitializeHighlightInternal, (), (override));
 

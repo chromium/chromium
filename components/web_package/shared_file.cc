@@ -82,7 +82,7 @@ SharedFile::SharedFileDataSource::SharedFileDataSource(
       (std::numeric_limits<int64_t>::max() < max_offset)) {
     error_ = MOJO_RESULT_INVALID_ARGUMENT;
   }
-};
+}
 
 SharedFile::SharedFileDataSource::~SharedFileDataSource() = default;
 

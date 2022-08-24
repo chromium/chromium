@@ -60,7 +60,7 @@ class MODULES_EXPORT DecoderTemplate
   ~DecoderTemplate() override;
 
   uint32_t decodeQueueSize();
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(dequeue, kDequeue);
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(dequeue, kDequeue)
   void configure(const ConfigType*, ExceptionState&);
   void decode(const InputType*, ExceptionState&);
   ScriptPromise flush(ExceptionState&);

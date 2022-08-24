@@ -132,3 +132,10 @@ Description of the patches:
 
   Imports https://critique.corp.google.com/cl/466986872.
 
+- 0034-change-macro-to-avoid-pedantic-warning.patch
+
+  Avoid hitting -Wextra-semi.
+
+  Imports (rebased):
+  https://github.com/protocolbuffers/protobuf/commit/def602dd07b7eae1cac6823705975317b5607fc3
+

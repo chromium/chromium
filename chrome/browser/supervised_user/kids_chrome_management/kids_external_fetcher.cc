@@ -131,7 +131,7 @@ class FetcherImpl final : public Fetcher<Request, Response> {
         url_loader_factory_.get(),
         base::BindOnce(&FetcherImpl::OnSimpleUrlLoaderComplete,
                        weak_ptr_factory_.GetSafeRef()));
-  };
+  }
 
   // Not copyable
   FetcherImpl(const FetcherImpl&) = delete;

@@ -13,7 +13,7 @@
 
 namespace extensions {
 class AudioDeviceIdCalculator;
-};  // namespace extensions
+}  // namespace extensions
 
 class Profile;
 

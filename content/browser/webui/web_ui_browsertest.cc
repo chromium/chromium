@@ -488,7 +488,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest,
         ~Controller() override { web_contents.reset(); }
       };
       return std::make_unique<Controller>(web_ui);
-    };
+    }
   };
 
   content::WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(

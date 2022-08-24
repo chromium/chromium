@@ -67,4 +67,4 @@ void ContentProtectionKeyManager::SetKeyIfRequired(
   std::move(on_key_set).Run();
 }
 
-};  // namespace display
+}  // namespace display

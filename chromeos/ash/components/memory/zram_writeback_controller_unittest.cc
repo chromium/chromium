@@ -99,7 +99,7 @@ class ZramWritebackControllerTest : public testing::Test {
   MockZramWritebackPolicy* policy() { return policy_; }
   MockZramWritebackBackend* backend() { return backend_; }
   ZramWritebackController* controller() { return controller_.get(); }
-  base::test::TaskEnvironment* task_env() { return &task_environment_; };
+  base::test::TaskEnvironment* task_env() { return &task_environment_; }
 
  private:
   // Capture only for the mock.

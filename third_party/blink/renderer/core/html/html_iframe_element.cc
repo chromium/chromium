@@ -78,7 +78,7 @@ bool AnonymousIframeEnabled(const FeatureContext* context) {
           base::FeatureList::IsEnabled(features::kAnonymousIframeOriginTrial));
 }
 
-};  // namespace
+}  // namespace
 
 HTMLIFrameElement::HTMLIFrameElement(Document& document)
     : HTMLFrameElementBase(html_names::kIFrameTag, document),

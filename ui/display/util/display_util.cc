@@ -23,7 +23,7 @@ namespace {
 base::flat_set<int64_t>* internal_display_ids() {
   static base::NoDestructor<base::flat_set<int64_t>> display_ids;
   return display_ids.get();
-};
+}
 
 // A list of bogus sizes in mm that should be ignored.
 // See crbug.com/136533. The first element maintains the minimum

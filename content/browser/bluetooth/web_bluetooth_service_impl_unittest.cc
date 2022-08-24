@@ -299,7 +299,7 @@ class TestBluetoothDelegate : public BluetoothDelegate {
       PairingKind pairing_kind,
       const absl::optional<std::u16string>& pin) override {
     std::move(callback).Run(PairPromptResult(PairPromptStatus::kCancelled));
-  };
+  }
 
   blink::WebBluetoothDeviceId GetWebBluetoothDeviceId(
       RenderFrameHost* frame,

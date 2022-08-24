@@ -58,7 +58,7 @@ size_t CalculateRequiredBufferSize(
 namespace media {
 
 SharedMemoryBufferTracker::SharedMemoryBufferTracker(bool strict_pixel_format)
-    : strict_pixel_format_(strict_pixel_format){};
+    : strict_pixel_format_(strict_pixel_format) {}
 
 SharedMemoryBufferTracker::~SharedMemoryBufferTracker() = default;
 

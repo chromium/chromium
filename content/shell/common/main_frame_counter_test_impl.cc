@@ -27,4 +27,4 @@ void MainFrameCounterTestImpl::HasMainFrame(HasMainFrameCallback callback) {
   std::move(callback).Run(MainFrameCounter::has_main_frame());
 }
 
-};  // namespace content
+}  // namespace content

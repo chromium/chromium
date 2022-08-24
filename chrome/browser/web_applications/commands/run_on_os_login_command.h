@@ -59,7 +59,7 @@ class RunOnOsLoginCommand : public WebAppCommand {
   Lock& lock() const override;
 
   void Start() override;
-  void OnSyncSourceRemoved() override{};
+  void OnSyncSourceRemoved() override {}
   void OnShutdown() override;
   base::Value ToDebugValue() const override;
 

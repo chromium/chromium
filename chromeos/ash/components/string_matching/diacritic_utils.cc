@@ -29,7 +29,7 @@ DiacriticUtils::DiacriticUtils() {
       conversion_map_[diacritic] = mapping_pair.second;
     }
   }
-};
+}
 
 DiacriticUtils::~DiacriticUtils() = default;
 
@@ -45,6 +45,6 @@ const std::u16string DiacriticUtils::RemoveDiacritics(
     }
   }
   return result;
-};
+}
 
 }  // namespace ash::string_matching

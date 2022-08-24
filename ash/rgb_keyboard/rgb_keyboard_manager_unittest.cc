@@ -46,7 +46,7 @@ class RgbKeyboardManagerTest : public testing::Test {
     manager_.reset();
     RgbkbdClient::Shutdown();
     ime_controller_.reset();
-  };
+  }
 
  protected:
   void InitializeManagerWithCapability(

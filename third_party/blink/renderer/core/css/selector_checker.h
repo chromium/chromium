@@ -342,8 +342,8 @@ class CORE_EXPORT SelectorChecker {
 }  // namespace blink
 
 WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(
-    blink::SelectorChecker::StyleScopeActivation);
+    blink::SelectorChecker::StyleScopeActivation)
 WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(
-    blink::SelectorChecker::StyleScopeFrame);
+    blink::SelectorChecker::StyleScopeFrame)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_SELECTOR_CHECKER_H_

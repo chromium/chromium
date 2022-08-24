@@ -72,7 +72,7 @@ class FirstPartySetsPolicyInitializationTest : public LoginManagerTest {
     policy_provider_.UpdateChromePolicy(policy_);
   }
 
-  AccountId test_account_id() { return test_account_id_; };
+  AccountId test_account_id() { return test_account_id_; }
 
  private:
   ash::LoginManagerMixin login_mixin_{&mixin_host_};

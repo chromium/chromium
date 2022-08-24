@@ -50,7 +50,7 @@ class Recorder {
     virtual void OnReportingStateChanged(bool enabled) = 0;
     // Called when full hardware class has been loaded.
     virtual void OnHardwareClassInitialized(
-        const std::string& full_hardware_class){};
+        const std::string& full_hardware_class) {}
     // Called on a call to LastKeyRotation.
     virtual absl::optional<int> LastKeyRotation(uint64_t project_name_hash) = 0;
   };

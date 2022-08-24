@@ -38,7 +38,7 @@ constexpr wchar_t kCmdLineCreateHardcodedFile[] =
     L"cmd.exe /c \"echo HardcodedFile > HardcodedFile && exit 0\"";
 constexpr char kLastOSVersion[] = "last_os_version";
 
-};  // namespace
+}  // namespace
 
 class AutoRunOnOsUpgradeTaskTest : public testing::Test {
  protected:

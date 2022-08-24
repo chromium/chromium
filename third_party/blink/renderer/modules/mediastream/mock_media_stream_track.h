@@ -85,8 +85,8 @@ class MockMediaStreamTrack : public blink::MediaStreamTrack {
 
   const AtomicString& InterfaceName() const override;
 
-  ExecutionContext* GetExecutionContext() const override { return context_; };
-  void SetExecutionContext(ExecutionContext* context) { context_ = context; };
+  ExecutionContext* GetExecutionContext() const override { return context_; }
+  void SetExecutionContext(ExecutionContext* context) { context_ = context; }
 
   bool HasPendingActivity() const override { return false; }
 

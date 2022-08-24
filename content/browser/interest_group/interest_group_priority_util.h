@@ -14,7 +14,7 @@
 namespace blink {
 struct AuctionConfig;
 struct InterestGroup;
-};  // namespace blink
+}  // namespace blink
 
 namespace content {
 

@@ -153,7 +153,7 @@ TEST_F(H265POCTest, PicOrderCnt) {
   slice_hdr_.slice_pic_order_cnt_lsb = 15;
   ComputePOC();
   ASSERT_EQ(15, poc_);
-};
+}
 
 TEST_F(H265POCTest, PicOrderCntInOrder) {
   sps_.log2_max_pic_order_cnt_lsb_minus4 = 12;
@@ -389,5 +389,5 @@ TEST_F(H265POCTest, PicOrderCntInOrder) {
   slice_hdr_.slice_pic_order_cnt_lsb = 2;
   ComputePOC();
   ASSERT_EQ(2, poc_);
-};
+}
 }  // namespace media

@@ -194,7 +194,7 @@ class MODULES_EXPORT MediaStreamVideoTrack : public MediaStreamTrackPlatform {
 
   MediaStreamTrackPlatform::StreamType Type() const override {
     return MediaStreamTrackPlatform::StreamType::kVideo;
-  };
+  }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(MediaStreamRemoteVideoSourceTest, StartTrack);

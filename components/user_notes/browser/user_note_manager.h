@@ -38,7 +38,7 @@ class UserNoteManager : public content::PageUserData<UserNoteManager> {
 
   mojo::Remote<blink::mojom::AnnotationAgentContainer>& note_agent_container() {
     return note_agent_container_;
-  };
+  }
 
   // Returns the note instance for the given ID, or nullptr if this page does
   // not have an instance of that note.

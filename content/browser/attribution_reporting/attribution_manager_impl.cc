@@ -104,8 +104,8 @@ class AttributionReportScheduler : public ReportSchedulerTimer::Delegate {
     attribution_storage_.AsyncCall(&AttributionStorage::GetNextReportTime)
         .WithArgs(now)
         .Then(std::move(callback));
-  };
-  void OnReportingTimeReached(base::Time now) override { send_reports_.Run(); };
+  }
+  void OnReportingTimeReached(base::Time now) override { send_reports_.Run(); }
   void AdjustOfflineReportTimes(
       base::OnceCallback<void(absl::optional<base::Time>)> maybe_set_timer_cb)
       override {
@@ -116,7 +116,7 @@ class AttributionReportScheduler : public ReportSchedulerTimer::Delegate {
     attribution_storage_
         .AsyncCall(&AttributionStorage::AdjustOfflineReportTimes)
         .Then(std::move(maybe_set_timer_cb));
-  };
+  }
 
   base::RepeatingClosure send_reports_;
   base::SequenceBound<AttributionStorage>& attribution_storage_;

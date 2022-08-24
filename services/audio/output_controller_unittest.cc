@@ -883,7 +883,7 @@ class MockAudioOutputStreamForMixing : public AudioOutputStream {
   void Start(AudioSourceCallback* callback) override {
     callback_ = callback;
     DidStart();
-  };
+  }
 
   void SimulateOnMoreDataCalled(const AudioParameters& params, bool is_mixing) {
     DCHECK(callback_);

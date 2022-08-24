@@ -86,7 +86,7 @@ void NetworkListMobileHeaderViewImpl::AddExtraButtons() {
   add_esim_button_ = add_esim_button.get();
   container()->AddViewAt(TriView::Container::END, add_esim_button.release(),
                          /*index=*/0);
-};
+}
 
 void NetworkListMobileHeaderViewImpl::OnToggleToggled(bool is_on) {
   delegate()->OnMobileToggleClicked(is_on);

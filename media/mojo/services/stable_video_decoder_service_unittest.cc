@@ -82,7 +82,7 @@ class MockVideoDecoder : public mojom::VideoDecoder {
   }
   std::unique_ptr<MojoDecoderBufferReader> TakeMojoDecoderBufferReader() {
     return std::move(mojo_decoder_buffer_reader_);
-  };
+  }
 
   // mojom::VideoDecoder implementation.
   MOCK_METHOD1(GetSupportedConfigs, void(GetSupportedConfigsCallback callback));

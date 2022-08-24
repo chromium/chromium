@@ -21,13 +21,13 @@ void FakeNetworkListWifiHeaderView::SetToggleState(bool enabled,
   is_toggle_enabled_ = enabled;
   is_toggle_on_ = is_on;
   set_toggle_state_count_++;
-};
+}
 
 void FakeNetworkListWifiHeaderView::SetJoinWifiButtonState(bool enabled,
                                                            bool visible) {
   is_join_wifi_enabled_ = enabled;
   is_join_wifi_visible_ = visible;
   set_join_wifi_button_state_count_++;
-};
+}
 
 }  // namespace ash

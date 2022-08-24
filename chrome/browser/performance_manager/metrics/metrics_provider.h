@@ -56,12 +56,12 @@ class MetricsProvider : public ::metrics::MetricsProvider,
 
   // UserPerformanceTuningManager::Observer:
   void OnBatterySaverModeChanged(bool is_active) override;
-  void OnExternalPowerConnectedChanged(
-      bool external_power_connected) override{};
-  void OnBatteryThresholdReached() override{};
-  void OnMemoryThresholdReached() override{};
-  void OnTabCountThresholdReached() override{};
-  void OnJankThresholdReached() override{};
+  void OnExternalPowerConnectedChanged(bool external_power_connected) override {
+  }
+  void OnBatteryThresholdReached() override {}
+  void OnMemoryThresholdReached() override {}
+  void OnTabCountThresholdReached() override {}
+  void OnJankThresholdReached() override {}
 
   void OnTuningModesChanged();
   EfficiencyMode ComputeCurrentMode() const;
@@ -71,7 +71,6 @@ class MetricsProvider : public ::metrics::MetricsProvider,
   EfficiencyMode current_mode_ = EfficiencyMode::kNormal;
 
   bool initialized_ = false;
-  ;
 };
 
 }  // namespace performance_manager

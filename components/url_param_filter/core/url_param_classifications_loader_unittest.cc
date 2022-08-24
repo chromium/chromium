@@ -145,7 +145,7 @@ TEST_F(UrlParamClassificationsLoaderTest,
       histogram_tester.GetTotalSum(kApplicableClassificationsDestinationMetric),
       1);
   histogram_tester.ExpectTotalCount(kApplicableClassificationsInvalidMetric, 0);
-};
+}
 
 TEST_F(UrlParamClassificationsLoaderTest,
        ReadClassifications_MatchTypeKeyCollision_NonExperimentalTagApplied) {
@@ -202,7 +202,7 @@ TEST_F(UrlParamClassificationsLoaderTest,
       histogram_tester.GetTotalSum(kApplicableClassificationsDestinationMetric),
       0);
   histogram_tester.ExpectTotalCount(kApplicableClassificationsInvalidMetric, 0);
-};
+}
 
 TEST_F(
     UrlParamClassificationsLoaderTest,
@@ -345,7 +345,7 @@ TEST_F(UrlParamClassificationsLoaderTest,
       histogram_tester.GetTotalSum(kApplicableClassificationsDestinationMetric),
       1);
   histogram_tester.ExpectTotalCount(kApplicableClassificationsInvalidMetric, 0);
-};
+}
 
 TEST_F(UrlParamClassificationsLoaderTest, ReadClassifications_OnlySources) {
   base::HistogramTester histogram_tester;

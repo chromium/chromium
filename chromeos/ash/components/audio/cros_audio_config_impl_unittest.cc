@@ -63,7 +63,7 @@ class FakeAudioSystemPropertiesObserver
       mojom::AudioSystemPropertiesPtr properties) override {
     last_audio_system_properties_ = std::move(properties);
     ++num_properties_updated_calls_;
-  };
+  }
 
   absl::optional<mojom::AudioSystemPropertiesPtr> last_audio_system_properties_;
   size_t num_properties_updated_calls_ = 0u;

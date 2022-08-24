@@ -12,7 +12,7 @@ namespace ash {
 
 namespace feature_discovery {
 enum class TrackableFeature;
-};  // namespace feature_discovery
+}  // namespace feature_discovery
 
 // A singleton class that records feature discovery duration when the following
 // conditions are met:

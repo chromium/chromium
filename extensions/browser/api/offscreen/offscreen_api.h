@@ -17,7 +17,7 @@ class OffscreenCreateDocumentFunction : public ExtensionFunction,
                                         public ExtensionHostObserver {
  public:
   DECLARE_EXTENSION_FUNCTION("offscreen.createDocument",
-                             OFFSCREEN_CREATEDOCUMENT);
+                             OFFSCREEN_CREATEDOCUMENT)
 
   OffscreenCreateDocumentFunction();
   OffscreenCreateDocumentFunction(const OffscreenCreateDocumentFunction&) =
@@ -49,8 +49,7 @@ class OffscreenCreateDocumentFunction : public ExtensionFunction,
 class OffscreenCloseDocumentFunction : public ExtensionFunction,
                                        public ExtensionHostObserver {
  public:
-  DECLARE_EXTENSION_FUNCTION("offscreen.closeDocument",
-                             OFFSCREEN_CLOSEDOCUMENT);
+  DECLARE_EXTENSION_FUNCTION("offscreen.closeDocument", OFFSCREEN_CLOSEDOCUMENT)
 
   OffscreenCloseDocumentFunction();
   OffscreenCloseDocumentFunction(const OffscreenCloseDocumentFunction&) =
@@ -83,7 +82,7 @@ class OffscreenHasDocumentFunction : public ExtensionFunction,
  public:
   // Note: We use `UNKNOWN` as the histogram value here because we are unlikely
   // to ship this API to stable.
-  DECLARE_EXTENSION_FUNCTION("offscreen.hasDocument", UNKNOWN);
+  DECLARE_EXTENSION_FUNCTION("offscreen.hasDocument", UNKNOWN)
 
   OffscreenHasDocumentFunction();
   OffscreenHasDocumentFunction(const OffscreenHasDocumentFunction&) = delete;

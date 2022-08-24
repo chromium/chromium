@@ -42,7 +42,7 @@ class BLINK_COMMON_EXPORT IdentifiabilityStudySettingsProvider {
   // Returns the list of font families which should be actively sampled.
   virtual std::vector<std::string> FontFamiliesToActivelySample() const {
     return std::vector<std::string>();
-  };
+  }
 };
 
 }  // namespace blink

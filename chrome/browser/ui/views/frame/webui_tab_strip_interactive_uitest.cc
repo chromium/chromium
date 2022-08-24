@@ -64,7 +64,7 @@ class WebUITabStripInteractiveTest : public InProcessBrowserTest {
     ASSERT_NE(nullptr, target);
     ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(target,
                                                                   event_type);
-  };
+  }
 
  protected:
   using WeakPtr = base::WeakPtr<WebUITabStripInteractiveTest>;
@@ -103,7 +103,7 @@ class WebUITabStripInteractiveTest : public InProcessBrowserTest {
                       test, end, target_id)));
             },
             weak_ptr_factory_.GetWeakPtr(), end, target_id)));
-  };
+  }
 
   WeakPtr GetWeakPtr() { return weak_ptr_factory_.GetWeakPtr(); }
 

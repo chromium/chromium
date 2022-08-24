@@ -22,6 +22,6 @@ class MainFrameCounterTestImpl final : public mojom::MainFrameCounterTest {
   mojo::Receiver<mojom::MainFrameCounterTest> receiver_{this};
 };
 
-};  // namespace content
+}  // namespace content
 
 #endif  // CONTENT_SHELL_COMMON_MAIN_FRAME_COUNTER_TEST_IMPL_H_

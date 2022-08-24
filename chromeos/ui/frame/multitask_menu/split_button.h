@@ -32,7 +32,7 @@ class SplitButton : public views::Button {
   SplitButton& operator=(const SplitButton&) = delete;
   ~SplitButton() override;
 
-  void set_button_color(SkColor color) { button_color_ = color; };
+  void set_button_color(SkColor color) { button_color_ = color; }
 
   // views::Button:
   void OnPaintBackground(gfx::Canvas* canvas) override;

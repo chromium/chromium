@@ -22,7 +22,7 @@ AnnotatorMessageHandler::AnnotatorMessageHandler() {
 
 AnnotatorMessageHandler::~AnnotatorMessageHandler() {
   ProjectorAppClient::Get()->ResetAnnotatorMessageHandler(this);
-};
+}
 
 void AnnotatorMessageHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(

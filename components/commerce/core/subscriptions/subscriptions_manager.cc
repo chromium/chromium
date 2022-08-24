@@ -146,7 +146,7 @@ void SubscriptionsManager::OnRequestCompletion() {
 void SubscriptionsManager::ProcessInitRequest(Request request) {
   GetRemoteSubscriptionsAndUpdateStorage(request.type,
                                          std::move(request.callback));
-};
+}
 
 void SubscriptionsManager::ProcessSubscribeRequest(Request request) {
   if (!init_succeeded_) {

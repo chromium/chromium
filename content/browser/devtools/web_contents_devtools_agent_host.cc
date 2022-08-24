@@ -132,7 +132,7 @@ std::string WebContentsDevToolsAgentHost::GetOpenerId() {
   if (DevToolsAgentHost* host = GetPrimaryFrameAgent())
     return host->GetOpenerId();
   return "";
-};
+}
 
 std::string WebContentsDevToolsAgentHost::GetOpenerFrameId() {
   if (DevToolsAgentHost* host = GetPrimaryFrameAgent())

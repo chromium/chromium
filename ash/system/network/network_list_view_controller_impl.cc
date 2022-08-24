@@ -149,7 +149,7 @@ void NetworkListViewControllerImpl::NetworkListChanged() {
 
 void NetworkListViewControllerImpl::GlobalPolicyChanged() {
   UpdateMobileSection();
-};
+}
 
 void NetworkListViewControllerImpl::OnPropertiesUpdated(
     BluetoothSystemPropertiesPtr properties) {

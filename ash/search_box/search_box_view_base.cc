@@ -249,7 +249,7 @@ class SearchBoxTextfield : public views::Textfield {
     size.Enlarge(insets.width(), insets.height());
     size.SetToMax(gfx::Size(0, 0));
     return size;
-  };
+  }
 
   void OnFocus() override {
     search_box_view_->OnSearchBoxFocusedChanged();

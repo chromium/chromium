@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(BrowserDataMigratorCopyMigrateOnSignIn,
   // Migration should be triggered in copy mode and not move mode.
   EXPECT_FALSE(FakeSessionManagerClient::Get()
                    ->request_browser_data_migration_for_move_called());
-};
+}
 
 class BrowserDataMigratorMoveMigrateOnSignInByPolicy
     : public BrowserDataMigratorOnSignIn {
@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(BrowserDataMigratorMoveMigrateOnSignInByPolicy,
       FakeSessionManagerClient::Get()->request_browser_data_migration_called());
   EXPECT_TRUE(FakeSessionManagerClient::Get()
                   ->request_browser_data_migration_for_move_called());
-};
+}
 
 class BrowserDataMigratorMoveMigrateOnSignInByFeature
     : public BrowserDataMigratorOnSignIn {
@@ -203,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(BrowserDataMigratorMoveMigrateOnSignInByFeature,
       FakeSessionManagerClient::Get()->request_browser_data_migration_called());
   EXPECT_TRUE(FakeSessionManagerClient::Get()
                   ->request_browser_data_migration_for_move_called());
-};
+}
 
 class BrowserDataMigratorResumeOnSignIn : public BrowserDataMigratorOnSignIn,
                                           public LocalStateMixin::Delegate {

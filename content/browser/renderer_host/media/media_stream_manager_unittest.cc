@@ -173,7 +173,7 @@ class MockMediaObserver : public MediaObserver {
 class ScreenEnumeratorMock : public media::ScreenEnumerator {
  public:
   explicit ScreenEnumeratorMock(const size_t* screen_count)
-      : screen_count_(screen_count){};
+      : screen_count_(screen_count) {}
   ~ScreenEnumeratorMock() override = default;
 
   void EnumerateScreens(
