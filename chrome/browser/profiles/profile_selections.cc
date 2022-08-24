@@ -8,6 +8,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/profile_metrics/browser_profile_type.h"
 
+const base::Feature kSystemProfileSelectionDefaultNone{
+    "SystemProfileSlectionDefaultNone",
+    base::FeatureState::FEATURE_DISABLED_BY_DEFAULT};
+
 ProfileSelections::Builder::Builder()
     : selections_(base::WrapUnique(new ProfileSelections())) {}
 
@@ -160,11 +164,20 @@ ProfileSelection ProfileSelections::GetProfileSelection(
   }
 
   if (profile->IsSystemProfile()) {
-    // If the default value for SystemProfile is overridden, use it.
-    // otherwise, redirect to the old behavior (same as regular profile).
+    // Default value depends on the experiment
+    // `kSystemProfileSelectionDefaultNone`. If experiment is active default
+    // value is ProfileSelection::kNone, otherwise the behavior is redirected to
+    // the `regular_profile_selection_` value (old default behavior).
+    ProfileSelection system_profile_default =
+        base::FeatureList::IsEnabled(kSystemProfileSelectionDefaultNone)
+            ? ProfileSelection::kNone
+            : regular_profile_selection_;
+
+    // If the value for SystemProfileSelection is set, use it.
+    // Otherwise, use the default value set above.
     // This is used for both original system profile (not user visible) and for
     // the off-the-record system profile (used in the Profile Picker).
-    return system_profile_selection_.value_or(regular_profile_selection_);
+    return system_profile_selection_.value_or(system_profile_default);
   }
 
   NOTREACHED();
