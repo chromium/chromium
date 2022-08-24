@@ -100,14 +100,6 @@ AboutThisSiteStatus ValidateSiteInfo(const proto::SiteInfo& site_info) {
   return status;
 }
 
-AboutThisSiteStatus ValidateBannerInfo(const proto::BannerInfo& banner_info) {
-  if (!banner_info.has_label())
-    return AboutThisSiteStatus::kMissingDescription;
-  if (!banner_info.has_url())
-    return AboutThisSiteStatus::kIncompleteSource;
-  return ValidateSource(banner_info.url());
-}
-
 AboutThisSiteStatus ValidateMetadata(
     const absl::optional<proto::AboutThisSiteMetadata>& metadata) {
   if (!metadata)

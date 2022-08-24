@@ -865,8 +865,6 @@ static_library("ui") {
       "fast_checkout/fast_checkout_view.h",
       "javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_android.cc",
       "javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_android.h",
-      "page_info/about_this_site_message_delegate_android.cc",
-      "page_info/about_this_site_message_delegate_android.h",
       "page_info/chrome_page_info_client.cc",
       "page_info/chrome_page_info_client.h",
       "screen_capture_notification_ui_stub.cc",

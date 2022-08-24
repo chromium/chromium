@@ -48,8 +48,6 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
 #include "chrome/browser/optimization_guide/page_content_annotations_service_factory.h"
-#include "chrome/browser/page_info/about_this_site_service_factory.h"
-#include "chrome/browser/page_info/about_this_site_tab_helper.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/performance_hints/performance_hints_features.h"
@@ -182,6 +180,8 @@
 #endif
 
 #if defined(TOOLKIT_VIEWS)
+#include "chrome/browser/page_info/about_this_site_service_factory.h"
+#include "chrome/browser/page_info/about_this_site_tab_helper.h"
 #include "chrome/browser/ui/side_search/side_search_tab_contents_helper.h"
 #include "chrome/browser/ui/side_search/side_search_utils.h"
 #endif
@@ -298,7 +298,9 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
   // --- Section 1: Common tab helpers ---
-  if (base::FeatureList::IsEnabled(page_info::kAboutThisSiteBanner)) {
+#if defined(TOOLKIT_VIEWS)
+  if (base::FeatureList::IsEnabled(
+          page_info::kAboutThisSitePersistentSidePanelEntry)) {
     auto* optimization_guide_decider =
         OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
     auto* about_this_site_service =
@@ -307,6 +309,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
       AboutThisSiteTabHelper::CreateForWebContents(
           web_contents, optimization_guide_decider, about_this_site_service);
   }
+#endif
   autofill::ChromeAutofillClient::CreateForWebContents(web_contents);
   autofill::ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
       web_contents,

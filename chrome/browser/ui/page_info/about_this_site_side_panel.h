@@ -15,5 +15,6 @@ class WebContents;
 // Implemented by about_this_site_side_panel_coordinator.cc in ui/views.
 void ShowAboutThisSiteSidePanel(content::WebContents* web_contents,
                                 const content::OpenURLParams& params);
-
+void RegisterAboutThisSiteSidePanel(content::WebContents* web_contents,
+                                    const content::OpenURLParams& params);
 #endif

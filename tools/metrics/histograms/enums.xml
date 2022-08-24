@@ -50,25 +50,13 @@ uploading your change for review.  These are checked by presubmit scripts.
       label="LoadEventEnd+LoadEventStart+FinishAllLoads+FinishDoc missing"/>
 </enum>
 
-<enum name="AboutThisSiteBannerInteraction">
-  <int value="0" label="kUrlOpened"/>
-  <int value="1" label="kDismissed"/>
-</enum>
-
-<enum name="AboutThisSiteBannerStatus">
-  <int value="0" label="kNoHints"/>
-  <int value="1" label="kShown"/>
-  <int value="2" label="kInvalidOrMissingBannerInfo"/>
-  <int value="3" label="kNavigatedAway"/>
-  <int value="4" label="kNotAllowedToShow"/>
-</enum>
-
 <enum name="AboutThisSiteInteraction">
   <int value="0" label="kNotShown"/>
   <int value="1" label="kShownWithDescription"/>
   <int value="2" label="kShownWithoutDescription"/>
   <int value="3" label="kClickedWithDescription"/>
   <int value="4" label="kClickedWithoutDescription"/>
+  <int value="5" label="kOpenedDirectlyFromSidePanel"/>
 </enum>
 
 <enum name="AboutThisSiteStatus">

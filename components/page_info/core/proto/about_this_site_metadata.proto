@@ -84,23 +84,10 @@ message SiteInfo {
   optional MoreAbout more_about = 3;
 }
 
-// Info for a site-specific banner.
-message BannerInfo {
-  // Optional title of a banner.
-  optional string title = 1;
-  // Label of a banner.
-  optional string label = 2;
-  // Source URL of the banner.
-  optional Hyperlink url = 3;
-}
-
 // Optimization metadata associated with SiteInfo.
 //
 // This is only populated for the ABOUT_THIS_SITE optimization type.
 message AboutThisSiteMetadata {
   // A SiteInfo hint that will be shown in PageInfo.
   optional SiteInfo site_info = 1;
-
-  // Info for a site-specific banner.
-  optional BannerInfo banner_info = 2;
 }

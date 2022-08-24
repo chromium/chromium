@@ -33,6 +33,9 @@ class AboutThisSideSidePanelCoordinator
       const AboutThisSideSidePanelCoordinator&) = delete;
   ~AboutThisSideSidePanelCoordinator() override;
 
+  // Registers ATS entry in the side panel but does not show it.
+  void RegisterEntry(const content::OpenURLParams& params);
+
   // Registers ATS entry in the side panel and shows side panel with ATS
   // selected if its not shown.
   void RegisterEntryAndShow(const content::OpenURLParams& params);
@@ -42,13 +45,21 @@ class AboutThisSideSidePanelCoordinator
 
   BrowserView* GetBrowserView() const;
 
+  // Called when SidePanel is opened.
   std::unique_ptr<views::View> CreateAboutThisSiteWebView();
 
   // content::WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
+  // Stores the URL open params that were last requested. Used to
+  // open a SidePanel to the right URL in case it got destroyed and needs to
+  // be recreated.
   absl::optional<content::OpenURLParams> last_url_params_;
+  // Stores whether a SidePanel entry has been shown yet or is just registered
+  // at pageload. Used to differentiate SidePanels previously opened or opened
+  // from PageInfo from panels opened directly through the SidePanel dropdown.
+  bool registered_but_not_shown_ = false;
 
   base::WeakPtr<AboutThisSiteSidePanelView> about_this_site_side_panel_view_;
 

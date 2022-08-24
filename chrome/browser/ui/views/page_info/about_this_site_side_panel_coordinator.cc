@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/views/page_info/about_this_site_side_panel_coordinator.h"
 
 #include "base/callback.h"
+#include "base/metrics/histogram_functions.h"
+#include "chrome/browser/page_info/about_this_site_service_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/page_info/about_this_site_side_panel.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -13,6 +15,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
+#include "components/page_info/core/about_this_site_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_handle.h"
@@ -28,6 +31,14 @@ void ShowAboutThisSiteSidePanel(content::WebContents* web_contents,
       ->RegisterEntryAndShow(params);
 }
 
+void RegisterAboutThisSiteSidePanel(content::WebContents* web_contents,
+                                    const content::OpenURLParams& params) {
+  // Create PanelCoordinator if it doesn't exist yet.
+  AboutThisSideSidePanelCoordinator::CreateForWebContents(web_contents);
+  AboutThisSideSidePanelCoordinator::FromWebContents(web_contents)
+      ->RegisterEntry(params);
+}
+
 AboutThisSideSidePanelCoordinator::AboutThisSideSidePanelCoordinator(
     content::WebContents* web_contents)
     : content::WebContentsUserData<AboutThisSideSidePanelCoordinator>(
@@ -37,16 +48,15 @@ AboutThisSideSidePanelCoordinator::AboutThisSideSidePanelCoordinator(
 AboutThisSideSidePanelCoordinator::~AboutThisSideSidePanelCoordinator() =
     default;
 
-void AboutThisSideSidePanelCoordinator::RegisterEntryAndShow(
+void AboutThisSideSidePanelCoordinator::RegisterEntry(
     const content::OpenURLParams& params) {
   auto* browser_view = GetBrowserView();
   if (!browser_view)
     return;
 
-  auto* side_panel_coordinator = browser_view->side_panel_coordinator();
   auto* registry = SidePanelRegistry::Get(web_contents());
-
   last_url_params_ = params;
+  registered_but_not_shown_ = true;
 
   // Check if the view is already registered.
   if (!registry->GetEntryForId(SidePanelEntry::Id::kAboutThisSite)) {
@@ -62,12 +72,23 @@ void AboutThisSideSidePanelCoordinator::RegisterEntryAndShow(
             base::Unretained(this)));
     registry->Register(std::move(entry));
   }
+}
+
+void AboutThisSideSidePanelCoordinator::RegisterEntryAndShow(
+    const content::OpenURLParams& params) {
+  auto* browser_view = GetBrowserView();
+  if (!browser_view)
+    return;
+
+  RegisterEntry(params);
+  registered_but_not_shown_ = false;
 
   if (about_this_site_side_panel_view_) {
     // Load params in view if view still exists.
     about_this_site_side_panel_view_->OpenUrl(params);
   }
 
+  auto* side_panel_coordinator = browser_view->side_panel_coordinator();
   if (side_panel_coordinator->GetCurrentEntryId() !=
       SidePanelEntry::Id::kAboutThisSite) {
     side_panel_coordinator->Show(SidePanelEntry::Id::kAboutThisSite);
@@ -92,6 +113,11 @@ std::unique_ptr<views::View>
 AboutThisSideSidePanelCoordinator::CreateAboutThisSiteWebView() {
   DCHECK(GetBrowserView());
   DCHECK(last_url_params_);
+  if (registered_but_not_shown_) {
+    page_info::AboutThisSiteService::OnOpenedDirectlyFromSidePanel();
+    registered_but_not_shown_ = false;
+  }
+
   auto side_panel_view_ =
       std::make_unique<AboutThisSiteSidePanelView>(GetBrowserView());
   side_panel_view_->OpenUrl(*last_url_params_);

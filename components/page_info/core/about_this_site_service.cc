@@ -29,9 +29,6 @@ void RecordAboutThisSiteInteraction(AboutThisSiteInteraction interaction) {
 
 }  // namespace
 
-const char kBannerInteractionHistogram[] =
-    "Privacy.AboutThisSite.BannerInteraction";
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // Keep in sync with AboutThisSiteBannerInteraction in enums.xml.
@@ -119,28 +116,17 @@ absl::optional<proto::SiteInfo> AboutThisSiteService::GetAboutThisSiteInfo(
   return absl::nullopt;
 }
 
-bool AboutThisSiteService::CanShowBanner(GURL url) {
-  return !dismissed_banners_.contains(url::Origin::Create(url));
-}
-
-void AboutThisSiteService::OnBannerDismissed(GURL url,
-                                             ukm::SourceId source_id) {
-  base::UmaHistogramEnumeration(kBannerInteractionHistogram,
-                                BannerInteraction::kDismissed);
-  dismissed_banners_.insert(url::Origin::Create(url));
-}
-
-void AboutThisSiteService::OnBannerURLOpened(GURL url,
-                                             ukm::SourceId source_id) {
-  base::UmaHistogramEnumeration(kBannerInteractionHistogram,
-                                BannerInteraction::kUrlOpened);
-}
-
 // static
 void AboutThisSiteService::OnAboutThisSiteRowClicked(bool with_description) {
   RecordAboutThisSiteInteraction(
       with_description ? AboutThisSiteInteraction::kClickedWithDescription
                        : AboutThisSiteInteraction::kClickedWithoutDescription);
+}
+
+// static
+void AboutThisSiteService::OnOpenedDirectlyFromSidePanel() {
+  RecordAboutThisSiteInteraction(
+      AboutThisSiteInteraction::kOpenedDirectlyFromSidePanel);
 }
 
 base::WeakPtr<AboutThisSiteService> AboutThisSiteService::GetWeakPtr() {

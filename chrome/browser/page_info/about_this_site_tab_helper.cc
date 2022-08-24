@@ -7,6 +7,7 @@
 #include "base/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/buildflag.h"
+#include "chrome/browser/ui/page_info/about_this_site_side_panel.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
@@ -16,16 +17,14 @@
 #include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
+#include "net/base/url_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/page_info/about_this_site_message_delegate_android.h"
-#endif
-
 using page_info::about_this_site_validation::AboutThisSiteStatus;
-using page_info::about_this_site_validation::ValidateBannerInfo;
+using page_info::about_this_site_validation::ValidateMetadata;
+using page_info::proto::AboutThisSiteMetadata;
 
 namespace {
 
@@ -43,27 +42,6 @@ bool ShouldConsultOptimizationGuide(
     return false;
   return true;
 }
-
-std::pair<AboutThisSiteStatus, absl::optional<page_info::proto::BannerInfo>>
-GetBannerInfo(const optimization_guide::OptimizationMetadata& metadata) {
-  auto parsed =
-      metadata.ParsedMetadata<page_info::proto::AboutThisSiteMetadata>();
-
-  if (!parsed) {
-    return {AboutThisSiteStatus::kNoResult, absl::nullopt};
-  }
-  if (!parsed->has_banner_info()) {
-    return {AboutThisSiteStatus::kMissingBannerInfo, absl::nullopt};
-  }
-
-  auto status = ValidateBannerInfo(parsed->banner_info());
-  return {status, parsed->banner_info()};
-}
-
-bool IsExampleUrl(const GURL& url) {
-  return url.DomainIs("example.com") && url.ref_piece() == "banner";
-}
-
 }  // namespace
 
 AboutThisSiteTabHelper::AboutThisSiteTabHelper(
@@ -99,71 +77,32 @@ void AboutThisSiteTabHelper::OnOptimizationGuideDecision(
     const GURL& main_frame_url,
     optimization_guide::OptimizationGuideDecision decision,
     const optimization_guide::OptimizationMetadata& metadata) {
-  BannerStatus status =
-      HandleOptimizationGuideDecision(main_frame_url, decision, metadata);
-  base::UmaHistogramEnumeration("Privacy.AboutThisSite.BannerStatus", status);
-}
-
-AboutThisSiteTabHelper::BannerStatus
-AboutThisSiteTabHelper::HandleOptimizationGuideDecision(
-    const GURL& main_frame_url,
-    optimization_guide::OptimizationGuideDecision decision,
-    const optimization_guide::OptimizationMetadata& metadata) {
-  if (IsExampleUrl(main_frame_url)) {
-    // Always provide a response for https://example.com/#banner.
-    decision = optimization_guide::OptimizationGuideDecision::kTrue;
-  }
+  // Navigated away.
+  if (web_contents()->GetLastCommittedURL() != main_frame_url)
+    return;
 
   if (decision != optimization_guide::OptimizationGuideDecision::kTrue) {
-    return BannerStatus::kNoHints;
+    return;
   }
 
-  auto [status, banner_info] = GetBannerInfo(metadata);
+  absl::optional<AboutThisSiteMetadata> about_this_site_metadata =
+      metadata.ParsedMetadata<AboutThisSiteMetadata>();
 
-  if (status != AboutThisSiteStatus::kValid && IsExampleUrl(main_frame_url)) {
-    status = AboutThisSiteStatus::kValid;
-    banner_info = page_info::proto::BannerInfo();
-    banner_info->set_title("A Sample Note");
-    banner_info->set_label("This is an example website");
-    banner_info->mutable_url()->set_label("Example URL");
-    banner_info->mutable_url()->set_url("https://example.com");
-  }
+  auto status = ValidateMetadata(about_this_site_metadata);
 
-  base::UmaHistogramEnumeration("Privacy.AboutThisSite.BannerValidation",
+  base::UmaHistogramEnumeration("Privacy.AboutThisSite.PageLoadValidation",
                                 status);
-  if (status != AboutThisSiteStatus::kValid) {
-    return BannerStatus::kInvalidOrMissingBannerInfo;
-  }
+  if (status != AboutThisSiteStatus::kValid)
+    return;
 
-  if (!about_this_site_service_->CanShowBanner(main_frame_url)) {
-    return BannerStatus::kNotAllowedToShow;
-  }
-
-  if (web_contents()->GetLastCommittedURL() != main_frame_url) {
-    return BannerStatus::kNavigatedAway;
-  }
-  ShowBanner(std::move(*banner_info));
-  return BannerStatus::kShown;
-}
-
-void AboutThisSiteTabHelper::ShowBanner(
-    page_info::proto::BannerInfo banner_info) {
-  ukm::SourceId source_id =
-      web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
-  GURL url = web_contents()->GetLastCommittedURL();
-  base::OnceClosure on_dimiss =
-      base::BindOnce(&page_info::AboutThisSiteService::OnBannerDismissed,
-                     about_this_site_service_->GetWeakPtr(), url, source_id);
-  base::OnceClosure on_url_opened =
-      base::BindOnce(&page_info::AboutThisSiteService::OnBannerURLOpened,
-                     about_this_site_service_->GetWeakPtr(), url, source_id);
-
-#if BUILDFLAG(IS_ANDROID)
-  AboutThisSiteMessageDelegateAndroid::Create(
-      web_contents(), std::move(banner_info), std::move(on_dimiss),
-      std::move(on_url_opened));
-#endif
-  // TODO(crbug.com/1307295): Implement desktop UI.
+  content::OpenURLParams url_params(
+      net::AppendOrReplaceQueryParameter(
+          GURL(about_this_site_metadata->site_info().more_about().url()),
+          page_info::AboutThisSiteRenderModeParameterName,
+          page_info::AboutThisSiteRenderModeParameterValue),
+      content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false);
+  RegisterAboutThisSiteSidePanel(web_contents(), url_params);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AboutThisSiteTabHelper);

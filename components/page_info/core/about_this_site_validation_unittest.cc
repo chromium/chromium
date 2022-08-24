@@ -41,14 +41,6 @@ proto::MoreAbout GetSampleMoreAbout() {
   return more_about;
 }
 
-proto::BannerInfo GetBannerInfo() {
-  proto::BannerInfo banner_info;
-  banner_info.set_title("Title");
-  banner_info.set_label("Example description");
-  *banner_info.mutable_url() = GetSampleSource();
-  return banner_info;
-}
-
 proto::AboutThisSiteMetadata GetSampleMetaData() {
   proto::AboutThisSiteMetadata metadata;
   auto* site_info = metadata.mutable_site_info();
@@ -66,16 +58,6 @@ TEST(AboutThisSiteValidation, ValidateProtos) {
   // The proto should still be valid without a timestamp.
   metadata.mutable_site_info()->clear_first_seen();
   EXPECT_EQ(ValidateMetadata(metadata), AboutThisSiteStatus::kValid);
-}
-
-// Tests that correct proto messages are accepted.
-TEST(AboutThisSiteValidation, ValidateBanner) {
-  auto banner = GetBannerInfo();
-  EXPECT_EQ(ValidateBannerInfo(banner), AboutThisSiteStatus::kValid);
-
-  // The proto should still be valid without a title.
-  banner.clear_title();
-  EXPECT_EQ(ValidateBannerInfo(banner), AboutThisSiteStatus::kValid);
 }
 
 TEST(AboutThisSiteValidation, InvalidSiteInfoProto) {

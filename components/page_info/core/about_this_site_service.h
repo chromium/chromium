@@ -51,8 +51,9 @@ class AboutThisSiteService : public KeyedService {
     kShownWithoutDescription = 2,
     kClickedWithDescription = 3,
     kClickedWithoutDescription = 4,
+    kOpenedDirectlyFromSidePanel = 5,
 
-    kMaxValue = kClickedWithoutDescription
+    kMaxValue = kOpenedDirectlyFromSidePanel
   };
 
   explicit AboutThisSiteService(std::unique_ptr<Client> client);
@@ -66,11 +67,8 @@ class AboutThisSiteService : public KeyedService {
       const GURL& url,
       ukm::SourceId source_id) const;
 
-  bool CanShowBanner(GURL url);
-  void OnBannerDismissed(GURL url, ukm::SourceId source_id);
-  void OnBannerURLOpened(GURL url, ukm::SourceId source_id);
-
   static void OnAboutThisSiteRowClicked(bool with_description);
+  static void OnOpenedDirectlyFromSidePanel();
 
   base::WeakPtr<AboutThisSiteService> GetWeakPtr();
 

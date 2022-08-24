@@ -16,14 +16,11 @@ class OptimizationMetadata;
 }  // namespace optimization_guide
 
 namespace page_info {
-namespace proto {
-class BannerInfo;
-}  // namespace proto
 class AboutThisSiteService;
 }  // namespace page_info
 
 // This WebContentsObserver fetches AboutThisSite hints from OptimizationGuide
-// and displays a banner if there is a BannerInfo message.
+// and registers a SidePanel entry.
 class AboutThisSiteTabHelper
     : public content::WebContentsObserver,
       public content::WebContentsUserData<AboutThisSiteTabHelper> {
@@ -37,33 +34,13 @@ class AboutThisSiteTabHelper
       content::NavigationHandle* navigation_handle) override;
 
  private:
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  // Keep in sync with AboutThisSiteBannerStatus in enums.xml
-  enum class BannerStatus {
-    kNoHints = 0,
-    kShown = 1,
-    kInvalidOrMissingBannerInfo = 2,
-    kNavigatedAway = 3,
-    kNotAllowedToShow = 4,
-
-    kMaxValue = kNotAllowedToShow
-  };
-
   explicit AboutThisSiteTabHelper(
       content::WebContents* web_contents,
       optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
       page_info::AboutThisSiteService* about_this_site_service);
   friend class content::WebContentsUserData<AboutThisSiteTabHelper>;
 
-  void ShowBanner(page_info::proto::BannerInfo banner_info);
-
   void OnOptimizationGuideDecision(
-      const GURL& main_frame_url,
-      optimization_guide::OptimizationGuideDecision decision,
-      const optimization_guide::OptimizationMetadata& metadata);
-
-  BannerStatus HandleOptimizationGuideDecision(
       const GURL& main_frame_url,
       optimization_guide::OptimizationGuideDecision decision,
       const optimization_guide::OptimizationMetadata& metadata);
