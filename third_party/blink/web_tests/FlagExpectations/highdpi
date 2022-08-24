@@ -188,7 +188,6 @@ external/wpt/close-watcher/basic.html [ Pass ]
 external/wpt/common/blank.html [ Pass ]
 external/wpt/common/dispatcher/executor.html [ Pass ]
 external/wpt/compat/webkit-radial-gradient-radii.html [ Pass ]
-external/wpt/compute-pressure/compute_pressure_detached_iframe.tentative.https.html [ Pass ]
 external/wpt/content-dpr/image-with-content-dpr-and-explicit-dimensions.html [ Pass ]
 external/wpt/contenteditable/plaintext-only.html [ Pass ]
 external/wpt/cors/image-tainting-in-cross-origin-iframe.sub.html [ Pass ]
@@ -1847,3 +1846,6 @@ crbug.com/1339051 virtual/document-transition/wpt_internal/document-transition/o
 crbug.com/1339051 virtual/document-transition/wpt_internal/document-transition/old-content-object-view-box-clip-path-reference.html [ Failure ]
 crbug.com/1339051 virtual/document-transition/wpt_internal/document-transition/root-captured-as-different-tag.html [ Failure ]
 crbug.com/1339051 virtual/document-transition/wpt_internal/document-transition/web-animations-api.html [ Failure ]
+
+# Flaky
+crbug.com/1355662 external/wpt/compute-pressure/compute_pressure_detached_iframe.tentative.https.html [ Failure ]
