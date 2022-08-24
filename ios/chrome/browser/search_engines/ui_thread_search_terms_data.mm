@@ -11,7 +11,7 @@
 #include "components/google/core/common/google_util.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/version_info/version_info.h"
-#include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #include "ios/chrome/browser/google/google_brand.h"
 #include "ios/chrome/browser/system_flags.h"
 #include "ios/chrome/common/channel_info.h"

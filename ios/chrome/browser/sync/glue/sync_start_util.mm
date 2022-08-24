@@ -8,7 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "components/sync/driver/sync_service.h"
-#include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
 #include "ios/chrome/browser/sync/sync_service_factory.h"

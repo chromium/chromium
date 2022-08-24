@@ -35,7 +35,7 @@
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/signin/ios/browser/account_consistency_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #include "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #include "ios/chrome/browser/autofill/strike_database_factory.h"
 #include "ios/chrome/browser/bookmarks/bookmark_remover_helper.h"

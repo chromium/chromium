@@ -3,6 +3,68 @@
 # found in the LICENSE file.
 
 source_set("application_context") {
-  sources = [ "application_context.h" ]
-  public_deps = [ "//ios/chrome/browser:application_context" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "application_context.h",
+    "application_context.mm",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("application_context_impl") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "application_context_impl.h",
+    "application_context_impl.mm",
+  ]
+  deps = [
+    ":application_context",
+    "//base",
+    "//components/breadcrumbs/core",
+    "//components/breadcrumbs/core:feature_flags",
+    "//components/component_updater",
+    "//components/gcm_driver",
+    "//components/history/core/browser",
+    "//components/keyed_service/core",
+    "//components/metrics",
+    "//components/metrics_services_manager",
+    "//components/net_log",
+    "//components/network_time",
+    "//components/prefs",
+    "//components/sessions",
+    "//components/translate/core/browser",
+    "//components/ukm",
+    "//components/update_client",
+    "//components/variations/service",
+    "//components/version_info",
+    "//ios/chrome/app:tests_hook",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser:chrome_paths",
+    "//ios/chrome/browser:pref_names",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/browser_state:browser_state_impl",
+    "//ios/chrome/browser/component_updater",
+    "//ios/chrome/browser/crash_report/breadcrumbs",
+    "//ios/chrome/browser/crash_report/breadcrumbs:application_breadcrumbs_logger",
+    "//ios/chrome/browser/gcm",
+    "//ios/chrome/browser/history",
+    "//ios/chrome/browser/metrics",
+    "//ios/chrome/browser/policy",
+    "//ios/chrome/browser/prefs",
+    "//ios/chrome/browser/prefs:browser_prefs",
+    "//ios/chrome/browser/promos_manager",
+    "//ios/chrome/browser/promos_manager:features",
+    "//ios/chrome/browser/push_notification:push_notification_service",
+    "//ios/chrome/browser/segmentation_platform",
+    "//ios/chrome/browser/update_client",
+    "//ios/chrome/common",
+    "//ios/components/security_interstitials/safe_browsing",
+    "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",
+    "//ios/public/provider/chrome/browser/push_notification:push_notification_api",
+    "//ios/public/provider/chrome/browser/signin:signin_sso_api",
+    "//ios/web",
+    "//net",
+    "//services/network:network_service",
+    "//ui/base",
+  ]
 }

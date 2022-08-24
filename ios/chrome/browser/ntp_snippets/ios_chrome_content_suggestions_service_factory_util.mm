@@ -36,7 +36,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/version_info/version_info.h"
 #include "google_apis/google_api_keys.h"
-#include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
 #include "ios/chrome/browser/history/history_service_factory.h"

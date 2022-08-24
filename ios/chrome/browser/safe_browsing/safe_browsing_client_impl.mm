@@ -8,7 +8,7 @@
 #import "base/memory/weak_ptr.h"
 #import "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
 #import "components/security_interstitials/core/unsafe_resource.h"
-#import "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/web/public/web_state.h"
 

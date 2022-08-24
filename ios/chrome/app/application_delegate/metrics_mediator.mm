@@ -24,7 +24,7 @@
 #import "ios/chrome/app/application_delegate/metric_kit_subscriber.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #include "ios/chrome/app/startup/ios_enable_sandbox_dump_buildflags.h"
-#include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/crash_report/crash_helper.h"
 #include "ios/chrome/browser/main/browser.h"

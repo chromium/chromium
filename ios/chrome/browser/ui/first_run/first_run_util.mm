@@ -13,7 +13,7 @@
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/app/tests_hook.h"
-#import "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/crash_report/crash_helper.h"
 #include "ios/chrome/browser/first_run/first_run.h"

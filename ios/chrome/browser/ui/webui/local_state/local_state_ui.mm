@@ -11,7 +11,7 @@
 #include "components/grit/dev_ui_components_resources.h"
 #include "components/local_state/local_state_utils.h"
 #include "components/prefs/pref_service.h"
-#include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/web/public/webui/web_ui_ios.h"

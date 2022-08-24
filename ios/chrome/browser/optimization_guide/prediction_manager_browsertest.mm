@@ -17,7 +17,7 @@
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/variations/hashing.h"
 #include "components/variations/scoped_variations_ids_provider.h"
-#include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
 #include "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"

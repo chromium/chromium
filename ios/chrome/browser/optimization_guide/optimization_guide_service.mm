@@ -25,7 +25,7 @@
 #import "components/optimization_guide/core/top_host_provider.h"
 #import "components/prefs/pref_service.h"
 #import "components/variations/synthetic_trials.h"
-#import "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_paths.h"
 #import "ios/chrome/browser/metrics/ios_chrome_metrics_service_accessor.h"

@@ -7,7 +7,7 @@
 #import "components/metrics/metrics_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "components/web_resource/web_resource_pref_names.h"
-#import "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/first_run/welcome/welcome_screen_consumer.h"
 

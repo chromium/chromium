@@ -10,7 +10,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
-#import "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/commerce/price_alert_util.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"

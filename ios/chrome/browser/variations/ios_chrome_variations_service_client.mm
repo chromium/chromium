@@ -6,7 +6,7 @@
 
 #include "base/version.h"
 #include "components/version_info/version_info.h"
-#include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #include "ios/chrome/common/channel_info.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 

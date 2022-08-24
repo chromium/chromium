@@ -177,7 +177,7 @@ source_set("trusted_vault_factory") {
     ":trusted_vault",
     "//base",
     "//components/keyed_service/ios",
-    "//ios/chrome/browser:application_context",
+    "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/browser_state",
     "//ios/public/provider/chrome/browser/signin:trusted_vault_api",
   ]

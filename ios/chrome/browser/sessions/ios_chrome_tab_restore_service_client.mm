@@ -8,7 +8,7 @@
 #include "base/callback.h"
 #include "components/sessions/ios/ios_live_tab.h"
 #include "components/tab_groups/tab_group_id.h"
-#include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
 #include "ios/chrome/browser/chrome_url_constants.h"

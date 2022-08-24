@@ -21,7 +21,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safety_check/safety_check.h"
 #include "components/version_info/version_info.h"
-#include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/omaha/omaha_service.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"

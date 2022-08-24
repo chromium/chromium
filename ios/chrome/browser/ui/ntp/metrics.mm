@@ -9,7 +9,7 @@
 #include "components/ntp_tiles/metrics.h"
 #include "components/ntp_tiles/ntp_tile_impression.h"
 #include "components/ntp_tiles/tile_visual_type.h"
-#include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/ui/favicon/favicon_attributes_with_payload.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

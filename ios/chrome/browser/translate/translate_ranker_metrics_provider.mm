@@ -5,7 +5,7 @@
 #include "ios/chrome/browser/translate/translate_ranker_metrics_provider.h"
 
 #include "components/translate/core/browser/translate_ranker.h"
-#include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
 #include "ios/chrome/browser/translate/translate_ranker_factory.h"

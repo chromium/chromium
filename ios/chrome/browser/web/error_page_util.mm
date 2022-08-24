@@ -14,7 +14,7 @@
 #include "components/error_page/common/error.h"
 #include "components/error_page/common/localized_error.h"
 #include "components/grit/components_resources.h"
-#include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/net/protocol_handler_util.h"
 #include "net/base/net_errors.h"
 #include "ui/base/resource/resource_bundle.h"

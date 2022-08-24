@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_APPLICATION_CONTEXT_IMPL_H_
-#define IOS_CHROME_BROWSER_APPLICATION_CONTEXT_IMPL_H_
+#ifndef IOS_CHROME_BROWSER_APPLICATION_CONTEXT_APPLICATION_CONTEXT_IMPL_H_
+#define IOS_CHROME_BROWSER_APPLICATION_CONTEXT_APPLICATION_CONTEXT_IMPL_H_
 
 #include <memory>
 #include <string>
 
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
-#include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 
 namespace base {
 class CommandLine;
 class SequencedTaskRunner;
-}
+}  // namespace base
 
 namespace breadcrumbs {
 class BreadcrumbPersistentStorageManager;
@@ -140,4 +140,4 @@ class ApplicationContextImpl : public ApplicationContext {
   std::unique_ptr<PushNotificationService> push_notification_service_;
 };
 
-#endif  // IOS_CHROME_BROWSER_APPLICATION_CONTEXT_IMPL_H_
+#endif  // IOS_CHROME_BROWSER_APPLICATION_CONTEXT_APPLICATION_CONTEXT_IMPL_H_

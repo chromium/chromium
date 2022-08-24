@@ -4,7 +4,7 @@
 
 #include "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
 
-#include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
 #include "ios/chrome/test/testing_application_context.h"
 

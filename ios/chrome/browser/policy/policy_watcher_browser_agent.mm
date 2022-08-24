@@ -16,7 +16,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/pref_names.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
-#include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/policy/policy_watcher_browser_agent_observer.h"
 #include "ios/chrome/browser/pref_names.h"

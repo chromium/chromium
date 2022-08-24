@@ -16,7 +16,7 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/unified_consent/pref_names.h"
-#include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/commerce/price_alert_util.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/pref_names.h"

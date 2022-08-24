@@ -26,7 +26,7 @@
 #include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_ids_provider.h"
 #import "ios/chrome/app/main_controller.h"
-#include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #include "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"

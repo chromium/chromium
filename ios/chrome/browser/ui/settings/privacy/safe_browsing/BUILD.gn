@@ -34,7 +34,7 @@ source_set("safe_browsing") {
     "//components/signin/public/identity_manager/objc",
     "//components/strings:components_strings_grit",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser:application_context",
+    "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/net:crurl",

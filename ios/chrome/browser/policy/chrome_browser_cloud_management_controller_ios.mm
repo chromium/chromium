@@ -12,7 +12,7 @@
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/features.h"
-#include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #include "ios/chrome/browser/chrome_paths.h"
 #include "ios/chrome/browser/policy/browser_dm_token_storage_ios.h"
 #include "ios/chrome/browser/policy/browser_policy_connector_ios.h"

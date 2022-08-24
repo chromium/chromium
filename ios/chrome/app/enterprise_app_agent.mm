@@ -12,7 +12,7 @@
 #include "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/enterprise_loading_screen_view_controller.h"
 #import "ios/chrome/app/tests_hook.h"
-#include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #include "ios/chrome/browser/policy/chrome_browser_cloud_management_controller_ios.h"
 #import "ios/chrome/browser/policy/chrome_browser_cloud_management_controller_observer_bridge.h"

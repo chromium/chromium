@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "components/ntp_tiles/popular_sites_impl.h"
-#include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #include "ios/web/public/thread/web_thread.h"

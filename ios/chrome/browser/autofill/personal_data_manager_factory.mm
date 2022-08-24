@@ -14,7 +14,7 @@
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/variations/service/variations_service.h"
-#include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #include "ios/chrome/browser/autofill/strike_database_factory.h"
 #include "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"

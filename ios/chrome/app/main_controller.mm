@@ -57,7 +57,7 @@
 #import "ios/chrome/app/startup_tasks.h"
 #include "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/accessibility/window_accessibility_change_notifier_app_agent.h"
-#include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state_removal_controller.h"

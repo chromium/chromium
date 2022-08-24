@@ -29,7 +29,7 @@ source_set("accessor") {
     "//components/metrics",
     "//components/prefs",
     "//components/variations",
-    "//ios/chrome/browser:application_context",
+    "//ios/chrome/browser/application_context",
   ]
 }
 source_set("metrics") {

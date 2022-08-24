@@ -25,15 +25,6 @@ source_set("chrome_paths") {
   ]
 }
 
-source_set("application_context") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "application_context.h",
-    "application_context.mm",
-  ]
-  deps = [ "//base" ]
-}
-
 source_set("browser") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -121,11 +112,11 @@ source_set("browser") {
     "//url",
   ]
   public_deps = [
-    ":application_context",
     ":chrome_paths",
     ":chrome_url_constants",
     ":pref_names",
     ":utils",
+    "//ios/chrome/browser/application_context",
   ]
   allow_circular_includes_from = [
     "//ios/chrome/browser/sync/glue",
@@ -182,8 +173,6 @@ source_set("pref_names") {
 source_set("browser_impl") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "application_context_impl.h",
-    "application_context_impl.mm",
     "ios_chrome_main_parts.h",
     "ios_chrome_main_parts.mm",
     "ios_thread_profiler.cc",
@@ -224,6 +213,7 @@ source_set("browser_impl") {
     "//components/variations/service",
     "//components/version_info",
     "//ios/chrome/app:tests_hook",
+    "//ios/chrome/browser/application_context:application_context_impl",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/browser_state:browser_state_impl",
     "//ios/chrome/browser/component_updater",

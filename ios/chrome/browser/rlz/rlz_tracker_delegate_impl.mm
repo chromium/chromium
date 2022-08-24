@@ -12,7 +12,7 @@
 #include "components/omnibox/browser/omnibox_log.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
-#include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/google/google_brand.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"

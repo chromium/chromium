@@ -10,7 +10,7 @@
 #import "ios/chrome/app/main_controller.h"
 #include "ios/chrome/app/main_controller.h"
 #import "ios/chrome/app/main_controller_private.h"
-#include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #include "ios/chrome/browser/ui/first_run/welcome_to_chrome_view_controller.h"

@@ -20,7 +20,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/ios/browser/active_state_manager.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #include "ios/chrome/browser/browser_state/browser_state_info_cache.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state_impl.h"
 #include "ios/chrome/browser/browser_state/off_the_record_chrome_browser_state_impl.h"

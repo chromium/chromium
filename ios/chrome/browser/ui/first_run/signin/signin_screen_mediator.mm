@@ -10,7 +10,7 @@
 #import "components/metrics/metrics_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "components/web_resource/web_resource_pref_names.h"
-#import "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/first_run/first_run_metrics.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"

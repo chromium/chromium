@@ -15,7 +15,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/omnibox/browser/autocomplete_input.h"
-#include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #include "ios/chrome/browser/autocomplete/autocomplete_scheme_classifier_impl.h"
 #include "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"

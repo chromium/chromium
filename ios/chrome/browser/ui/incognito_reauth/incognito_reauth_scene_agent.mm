@@ -13,7 +13,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
-#include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/main/browser.h"
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_util.h"

@@ -10,7 +10,7 @@
 #include "base/ios/ns_range.h"
 #include "base/notreached.h"
 #include "components/google/core/common/google_util.h"
-#include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_constants.h"

@@ -15,7 +15,7 @@
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/signin/public/webdata/token_web_data.h"
 #include "components/webdata_services/web_data_service_wrapper.h"
-#include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #include "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/web/public/thread/web_task_traits.h"

@@ -7,7 +7,7 @@
 #include "base/check.h"
 #include "base/values.h"
 #include "components/policy/core/browser/policy_conversions_client.h"
-#include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #include "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/policy/browser_policy_connector_ios.h"

@@ -6,7 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
-#include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #include "ios/chrome/browser/autofill/validation_rules_storage_factory.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/libaddressinput/chromium/chrome_metadata_source.h"

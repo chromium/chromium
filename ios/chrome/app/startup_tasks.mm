@@ -10,7 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/thread_pool.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
-#include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/ios_chrome_io_thread.h"
 #import "ios/chrome/browser/omaha/omaha_service.h"

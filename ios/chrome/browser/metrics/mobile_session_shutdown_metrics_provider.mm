@@ -19,7 +19,7 @@
 #include "components/metrics/metrics_service.h"
 #import "components/previous_session_info/previous_session_info.h"
 #include "components/version_info/version_info.h"
-#include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #include "ios/chrome/browser/crash_report/crash_helper.h"
 #include "ios/chrome/browser/crash_report/features.h"
 #include "ios/chrome/browser/crash_report/main_thread_freeze_detector.h"

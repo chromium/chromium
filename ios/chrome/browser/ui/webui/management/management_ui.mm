@@ -14,7 +14,7 @@
 #import "components/policy/proto/device_management_backend.pb.h"
 #import "components/strings/grit/components_strings.h"
 #include "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/policy/browser_policy_connector_ios.h"

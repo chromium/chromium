@@ -30,7 +30,7 @@
 #import "components/policy/core/common/policy_namespace.h"
 #import "components/policy/core/common/policy_types.h"
 #import "components/policy/policy_constants.h"
-#import "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/chrome_paths.h"

@@ -7,7 +7,7 @@
 #import "base/check.h"
 #import "base/path_service.h"
 #import "components/metrics/persistent_histograms.h"
-#import "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/chrome_paths.h"
 #import "ios/chrome/browser/ui/first_run/fre_field_trial.h"
 #import "ios/chrome/browser/ui/first_run/trending_queries_field_trial.h"

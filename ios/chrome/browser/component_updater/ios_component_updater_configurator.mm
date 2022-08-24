@@ -25,7 +25,7 @@
 #include "components/update_client/unzip/unzip_impl.h"
 #include "components/update_client/unzipper.h"
 #include "components/update_client/update_query_params.h"
-#include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #include "ios/chrome/common/channel_info.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
