@@ -462,7 +462,10 @@ void KerberosCredentialsManager::OnAddAccountRunnerDone(
   auto it = std::find_if(
       add_account_runners_.begin(), add_account_runners_.end(),
       [runner](const auto& runner_ptr) { return runner_ptr.get() == runner; });
-  DCHECK(it != add_account_runners_.end());
+
+  // Semantically, this `CHECK()` should never trigger. However, it protects
+  // the `erase()` call from semantically incorrect changes to this class.
+  CHECK(it != add_account_runners_.end());
   add_account_runners_.erase(it);
 
   LogError("AddAccountAndAuthenticate", error);
