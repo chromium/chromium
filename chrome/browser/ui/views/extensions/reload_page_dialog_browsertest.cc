@@ -7,7 +7,7 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension.h"
 
-class ReloadPageDialogViewBrowserTest : public ExtensionsDialogBrowserTest {
+class ReloadPageDialogBrowserTest : public ExtensionsDialogBrowserTest {
  public:
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
@@ -17,6 +17,6 @@ class ReloadPageDialogViewBrowserTest : public ExtensionsDialogBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(ReloadPageDialogViewBrowserTest, InvokeUi) {
+IN_PROC_BROWSER_TEST_F(ReloadPageDialogBrowserTest, InvokeUi) {
   ShowAndVerifyUi();
 }
