@@ -174,10 +174,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 }
 
 // Tests that the switch to open tab button isn't displayed for the current tab.
-// TODO(crbug.com/1128463): Test is flaky on simulators.
-// TODO(crbug.com/1339419): Test fails on device.
-// TODO(crbug.com/1067817): Test won't pass on iPad devices.
-- (void)DISABLED_testNotSwitchButtonOnCurrentTab {
+- (void)testNotSwitchButtonOnCurrentTab {
   GURL URL2 = self.testServer->GetURL(kPage2URL);
 
   // Open the first page.
@@ -211,9 +208,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 }
 
 // Tests that the incognito tabs aren't displayed as "opened" tab in the
-// non-incognito suggestions and vice-versa. TODO(crbug.com/1059464): Test is
-// flaky.
-- (void)DISABLED_testIncognitoSeparation {
+// non-incognito suggestions and vice-versa.
+- (void)testIncognitoSeparation {
   GURL URL1 = self.testServer->GetURL(kPage1URL);
   GURL URL2 = self.testServer->GetURL(kPage2URL);
   GURL URL3 = self.testServer->GetURL(kPage3URL);
@@ -283,17 +279,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 }
 
 - (void)testCloseNTPWhenSwitching {
-  // TODO(crbug.com/1156054): Test won't pass on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad.");
-  }
-
-  if (@available(iOS 15, *)) {
-    // Run the test.
-  } else {
-    EARL_GREY_TEST_SKIPPED(@"SwiftUI is too hard to test before iOS 15.")
-  }
-
   // Open the first page.
   GURL URL1 = self.testServer->GetURL(kPage1URL);
   [ChromeEarlGrey loadURL:URL1];
@@ -318,15 +303,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey waitForMainTabCount:1];
 }
 
-// TODO(crbug.com/1128463): Test is flaky on simulators and device.
-- (void)DISABLED_testDontCloseNTPWhenSwitchingWithForwardHistory {
-// TODO(crbug.com/1067817): Test won't pass on iPad devices.
-#if !TARGET_IPHONE_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad device.");
-  }
-#endif
-
+- (void)testDontCloseNTPWhenSwitchingWithForwardHistory {
   // Open the first page.
   GURL URL1 = self.testServer->GetURL(kPage1URL);
   [ChromeEarlGrey loadURL:URL1];
@@ -361,8 +338,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests that switching to closed tab opens the tab in foreground, except if it
 // is from NTP without history.
-// TODO(crbug.com/1067817): Test broken in many configurations.
-- (void)DISABLED_testSwitchToClosedTab {
+- (void)testSwitchToClosedTab {
   GURL URL1 = self.testServer->GetURL(kPage1URL);
 
   // Open the first page.
@@ -396,15 +372,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 }
 
 // Tests that having multiple suggestions with corresponding opened tabs display
-// multiple buttons. TODO(crbug.com/1059464): Test is flaky.
-- (void)DISABLED_testMultiplePageOpened {
-// TODO(crbug.com/1067817): Test won't pass on iPad devices.
-#if !TARGET_IPHONE_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad device.");
-  }
-#endif
-
+// multiple buttons.
+- (void)testMultiplePageOpened {
   // Open the first page.
   GURL URL1 = self.testServer->GetURL(kPage1URL);
   [ChromeEarlGrey loadURL:URL1];
@@ -442,8 +411,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Test that on iPhones, when the popup is scrolled, the keyboard is dismissed
 // but the omnibox is still expanded and the suggestions are visible.
 // Test with flag kEnableSuggestionsScrollingOnIPad disabled.
-// TODO(crbug.com/1327755): Test is flaky
-- (void)DISABLED_testScrollingDismissesKeyboardOnPhones {
+- (void)testScrollingDismissesKeyboardOnPhones {
   [[AppLaunchManager sharedManager]
       ensureAppLaunchedWithFeaturesEnabled:{}
                                   disabled:{kEnableSuggestionsScrollingOnIPad}
@@ -494,8 +462,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Test when the popup is scrolled, the keyboard is dismissed
 // but the omnibox is still expanded and the suggestions are visible.
 // Test with flag kEnableSuggestionsScrollingOnIPad enabled.
-// TODO(crbug.com/1327755): Test is flaky.
-- (void)DISABLED_testScrollingDismissesKeyboard {
+- (void)testScrollingDismissesKeyboard {
   [[AppLaunchManager sharedManager]
       ensureAppLaunchedWithFeaturesEnabled:{kEnableSuggestionsScrollingOnIPad}
                                   disabled:{}
