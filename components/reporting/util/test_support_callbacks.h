@@ -27,14 +27,13 @@ namespace test {
 // Usage (in tests only):
 //
 //   TestEvent<ResType> e;
+//
 //   ... Do some async work passing e.cb() as a completion callback of
 //   base::OnceCallback<void(ResType res)> type which also may perform some
 //   other action specified by |done| callback provided by the caller.
-//   ... = e.result();  // Will wait for e.cb() to be called and return the
-//   collected result.
+//   Now wait for e.cb() to be called and return the collected result.
 //
-//   This class follows base::BarrierCallback in using mutex Lock.
-//   It can only be done in tests, never in production code.
+//   ... = e.result();
 //
 template <typename ResType>
 class TestEvent : base::test::RepeatingTestFuture<ResType> {
@@ -43,8 +42,21 @@ class TestEvent : base::test::RepeatingTestFuture<ResType> {
   ~TestEvent() = default;
   TestEvent(const TestEvent& other) = delete;
   TestEvent& operator=(const TestEvent& other) = delete;
-  ResType result() {
-    auto res = base::test::RepeatingTestFuture<ResType>::Take();
+
+  template <std::enable_if_t<std::is_move_constructible<ResType>::value, bool> =
+                false>
+  [[nodiscard]] const ResType& ref_result() {
+    auto res = base::test::RepeatingTestFuture<ResType>::Get();
+    EXPECT_TRUE(base::test::RepeatingTestFuture<ResType>::IsEmpty())
+        << "Event callback invoked more than once";
+    return res;
+  }
+
+  template <
+      std::enable_if_t<std::is_move_constructible<ResType>::value, bool> = true>
+  [[nodiscard]] ResType result() {
+    auto res =
+        std::forward<ResType>(base::test::RepeatingTestFuture<ResType>::Take());
     EXPECT_TRUE(base::test::RepeatingTestFuture<ResType>::IsEmpty())
         << "Event callback invoked more than once";
     return res;
@@ -65,14 +77,13 @@ class TestEvent : base::test::RepeatingTestFuture<ResType> {
 // Usage (in tests only):
 //
 //   TestMultiEvent<ResType1, Restype2, ...> e;
+//
 //   ... Do some async work passing e.cb() as a completion callback of
 //   base::OnceCallback<void(ResType1, Restype2, ...)> type which also may
 //   perform some other action specified by |done| callback provided by the
-//   caller. std::tie(res1, res2, ...) = e.result();  // Will wait for e.cb() to
-//   be called and return the collected results.
+//   caller. Now wait for e.cb() to be called and return the collected results.
 //
-//   This class follows base::BarrierCallback in using mutex Lock.
-//   It can only be done in tests, never in production code.
+//   std::tie(res1, res2, ...) = e.result();
 //
 template <typename... ResType>
 class TestMultiEvent : base::test::RepeatingTestFuture<ResType...> {
@@ -81,7 +92,22 @@ class TestMultiEvent : base::test::RepeatingTestFuture<ResType...> {
   ~TestMultiEvent() = default;
   TestMultiEvent(const TestMultiEvent& other) = delete;
   TestMultiEvent& operator=(const TestMultiEvent& other) = delete;
-  std::tuple<ResType...> result() {
+
+  template <std::enable_if_t<
+                std::is_move_constructible<std::tuple<ResType...>>::value,
+                bool> = false>
+  [[nodiscard]] const std::tuple<ResType...>& ref_result() {
+    auto res = std::forward<std::tuple<ResType...>>(
+        base::test::RepeatingTestFuture<ResType...>::Get());
+    EXPECT_TRUE(base::test::RepeatingTestFuture<ResType...>::IsEmpty())
+        << "Event callback invoked more than once";
+    return res;
+  }
+
+  template <std::enable_if_t<
+                std::is_move_constructible<std::tuple<ResType...>>::value,
+                bool> = true>
+  [[nodiscard]] std::tuple<ResType...> result() {
     auto res = std::forward<std::tuple<ResType...>>(
         base::test::RepeatingTestFuture<ResType...>::Take());
     EXPECT_TRUE(base::test::RepeatingTestFuture<ResType...>::IsEmpty())
@@ -90,7 +116,7 @@ class TestMultiEvent : base::test::RepeatingTestFuture<ResType...> {
   }
 
   // Completion callback to hand over to the processing method.
-  base::RepeatingCallback<void(ResType... res)> cb() {
+  [[nodiscard]] base::RepeatingCallback<void(ResType... res)> cb() {
     return base::BindPostTask(
         base::SequencedTaskRunnerHandle::Get(),
         base::test::RepeatingTestFuture<ResType...>::GetCallback());
