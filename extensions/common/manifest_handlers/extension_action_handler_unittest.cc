@@ -75,6 +75,19 @@ TEST(ExtensionActionHandlerTest, LoadInvisiblePageActionIconUnpacked) {
       error);
 }
 
+// Tests that an action is always validated in manifest V3.
+TEST(ExtensionActionHandlerTest, InvalidActionIcon_ManifestV3) {
+  base::FilePath extension_dir =
+      GetTestDataDir().AppendASCII("action_invalid_icon");
+  std::string error;
+  scoped_refptr<Extension> extension(file_util::LoadExtension(
+      extension_dir, mojom::ManifestLocation::kUnpacked, Extension::NO_FLAGS,
+      &error));
+  EXPECT_FALSE(extension);
+  EXPECT_EQ("Could not load icon 'nonexistent_icon.png' specified in 'action'.",
+            error);
+}
+
 using ExtensionActionHandlerManifestTest = ManifestTest;
 
 TEST_F(ExtensionActionHandlerManifestTest, NoActionSpecified_ManifestV2) {

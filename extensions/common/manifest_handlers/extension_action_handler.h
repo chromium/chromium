@@ -28,6 +28,7 @@ class ExtensionActionHandler : public ManifestHandler {
 
  private:
   bool AlwaysParseForType(Manifest::Type type) const override;
+  bool AlwaysValidateForType(Manifest::Type type) const override;
   base::span<const char* const> Keys() const override;
 };
 

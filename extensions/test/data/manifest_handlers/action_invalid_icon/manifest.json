@@ -1,0 +1,10 @@
+{
+  "name": "My extension with a nonexistent icon",
+  "version": "1.0",
+  "action": {
+    "default_icon": {
+      "16": "nonexistent_icon.png"
+    }
+  },
+  "manifest_version": 3
+}
