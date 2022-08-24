@@ -4486,11 +4486,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "new-canvas-2d-api",
-    "owners": [ "aaronhk", "fserb", "juanmihd", "yiyix" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "new-content-suggestions-feed",
     "owners": [ "adamta@google.com", "sczs", "gogerald", "bling-flags@google.com" ],
     "expiry_milestone": 93
