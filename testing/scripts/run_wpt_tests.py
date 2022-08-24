@@ -531,8 +531,10 @@ class Product:
         return self._options.webdriver_binary
 
 
-class Chrome(Product):
-    name = 'chrome'
+class ChromeBase(Product):
+    @property
+    def binary(self):
+        raise NotImplementedError
 
     @property
     def wpt_args(self):
@@ -564,6 +566,10 @@ class Chrome(Product):
             self._path_finder.path_from_web_tests('WPTOverrideExpectations'))
         return expectations
 
+
+class Chrome(ChromeBase):
+    name = 'chrome'
+
     @property
     def binary(self):
         binary_path = 'chrome'
@@ -584,6 +590,23 @@ class Chrome(Product):
             default_binary += '.exe'
         return (super().webdriver_binary
                 or self._path_from_target(default_binary))
+
+
+class ContentShell(ChromeBase):
+    name = 'content_shell'
+
+    @property
+    def binary(self):
+        binary_path = 'content_shell'
+        if self._host.platform.is_win():
+            binary_path += '.exe'
+        elif self._host.platform.is_mac():
+            binary_path = self._host.filesystem.join(
+                'Content Shell.app',
+                'Contents',
+                'MacOS',
+                'Content Shell')
+        return self._path_from_target(binary_path)
 
 
 class ChromeiOS(Product):
@@ -863,7 +886,7 @@ def _make_product_registry():
     respective classes.
     """
     product_registry = {}
-    product_classes = [Chrome, ChromeiOS]
+    product_classes = [Chrome, ContentShell, ChromeiOS]
     if _ANDROID_ENABLED:
         product_classes.extend([ChromeAndroid, WebView, WebLayer])
     for product_cls in product_classes:
