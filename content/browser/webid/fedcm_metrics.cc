@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/types/pass_key.h"
+#include "content/browser/webid/flags.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "url/gurl.h"
 
@@ -14,14 +15,18 @@ namespace content {
 
 FedCmMetrics::FedCmMetrics(const GURL& provider,
                            ukm::SourceId page_source_id,
-                           int session_id)
+                           int session_id,
+                           bool is_disabled)
     : page_source_id_(page_source_id),
       provider_source_id_(ukm::UkmRecorder::GetSourceIdForWebIdentityFromScope(
           base::PassKey<FedCmMetrics>(),
           provider)),
-      session_id_(session_id) {}
+      session_id_(session_id),
+      is_disabled_(is_disabled) {}
 
 void FedCmMetrics::RecordShowAccountsDialogTime(base::TimeDelta duration) {
+  if (is_disabled_)
+    return;
   auto RecordUkm = [&](auto& ukm_builder) {
     ukm_builder.SetTiming_ShowAccountsDialog(
         ukm::GetExponentialBucketMinForUserTiming(duration.InMilliseconds()));
@@ -37,6 +42,8 @@ void FedCmMetrics::RecordShowAccountsDialogTime(base::TimeDelta duration) {
 }
 
 void FedCmMetrics::RecordContinueOnDialogTime(base::TimeDelta duration) {
+  if (is_disabled_)
+    return;
   auto RecordUkm = [&](auto& ukm_builder) {
     ukm_builder.SetTiming_ContinueOnDialog(
         ukm::GetExponentialBucketMinForUserTiming(duration.InMilliseconds()));
@@ -53,6 +60,8 @@ void FedCmMetrics::RecordContinueOnDialogTime(base::TimeDelta duration) {
 }
 
 void FedCmMetrics::RecordCancelOnDialogTime(base::TimeDelta duration) {
+  if (is_disabled_)
+    return;
   auto RecordUkm = [&](auto& ukm_builder) {
     ukm_builder.SetTiming_CancelOnDialog(
         ukm::GetExponentialBucketMinForUserTiming(duration.InMilliseconds()));
@@ -70,6 +79,8 @@ void FedCmMetrics::RecordCancelOnDialogTime(base::TimeDelta duration) {
 
 void FedCmMetrics::RecordCancelReason(
     IdentityRequestDialogController::DismissReason dismiss_reason) {
+  if (is_disabled_)
+    return;
   UMA_HISTOGRAM_ENUMERATION(
       "Blink.FedCm.CancelReason", dismiss_reason,
       IdentityRequestDialogController::DismissReason::COUNT);
@@ -78,6 +89,8 @@ void FedCmMetrics::RecordCancelReason(
 void FedCmMetrics::RecordTokenResponseAndTurnaroundTime(
     base::TimeDelta token_response_time,
     base::TimeDelta turnaround_time) {
+  if (is_disabled_)
+    return;
   auto RecordUkm = [&](auto& ukm_builder) {
     ukm_builder
         .SetTiming_IdTokenResponse(ukm::GetExponentialBucketMinForUserTiming(
@@ -100,6 +113,8 @@ void FedCmMetrics::RecordTokenResponseAndTurnaroundTime(
 }
 
 void FedCmMetrics::RecordRequestTokenStatus(FedCmRequestIdTokenStatus status) {
+  if (is_disabled_)
+    return;
   // If the request has failed but we have not yet rejected the promise,
   // e.g. when the user has declined the permission or the API is disabled
   // etc., we have already recorded a RequestTokenStatus. i.e.
@@ -126,6 +141,8 @@ void FedCmMetrics::RecordRequestTokenStatus(FedCmRequestIdTokenStatus status) {
 
 void FedCmMetrics::RecordSignInStateMatchStatus(
     FedCmSignInStateMatchStatus status) {
+  if (is_disabled_)
+    return;
   auto RecordUkm = [&](auto& ukm_builder) {
     ukm_builder.SetStatus_SignInStateMatch(static_cast<int>(status));
     ukm_builder.SetFedCmSessionID(session_id_);
@@ -137,20 +154,29 @@ void FedCmMetrics::RecordSignInStateMatchStatus(
   UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.Status.SignInStateMatch", status);
 }
 
-void RecordIsSignInUser(bool is_sign_in) {
+void FedCmMetrics::RecordIsSignInUser(bool is_sign_in) {
+  if (is_disabled_)
+    return;
   UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.IsSignInUser", is_sign_in);
 }
 
-void RecordWebContentsVisibilityUponReadyToShowDialog(bool is_visible) {
+void FedCmMetrics::RecordWebContentsVisibilityUponReadyToShowDialog(
+    bool is_visible) {
+  if (is_disabled_)
+    return;
   UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.WebContentsVisible", is_visible);
 }
 
 void RecordApprovedClientsExistence(bool has_approved_clients) {
+  if (IsFedCmMultipleIdentityProvidersEnabled())
+    return;
   UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.ApprovedClientsExistence",
                         has_approved_clients);
 }
 
 void RecordApprovedClientsSize(int size) {
+  if (IsFedCmMultipleIdentityProvidersEnabled())
+    return;
   UMA_HISTOGRAM_COUNTS_10000("Blink.FedCm.ApprovedClientsSize", size);
 }
 

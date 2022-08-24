@@ -315,7 +315,8 @@ void FederatedAuthRequestImpl::RequestToken(
   // TODO(crbug.com/1307709): Handle FedCmMetrics for multiple IDPs.
   fedcm_metrics_ = std::make_unique<FedCmMetrics>(
       identity_provider_ptr->config_url,
-      render_frame_host().GetPageUkmSourceId(), uniform_dist(rng));
+      render_frame_host().GetPageUkmSourceId(), uniform_dist(rng),
+      /*is_disabled=*/identity_provider_ptrs.size() > 1);
   prefer_auto_sign_in_ = prefer_auto_sign_in && IsFedCmAutoSigninEnabled();
   start_time_ = base::TimeTicks::Now();
 
@@ -698,7 +699,8 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
       bool is_visible = (render_frame_host().IsActive() &&
                          render_frame_host().GetVisibilityState() ==
                              content::PageVisibilityState::kVisible);
-      RecordWebContentsVisibilityUponReadyToShowDialog(is_visible);
+      fedcm_metrics_->RecordWebContentsVisibilityUponReadyToShowDialog(
+          is_visible);
       // Does not show the dialog if the user has left the page. e.g. they may
       // open a new tab before browser is ready to show the dialog.
       if (!is_visible) {
@@ -816,7 +818,7 @@ void FederatedAuthRequestImpl::OnAccountSelected(
     return;
   }
 
-  RecordIsSignInUser(is_sign_in);
+  fedcm_metrics_->RecordIsSignInUser(is_sign_in);
 
   api_permission_delegate_->RemoveEmbargoAndResetCounts(GetEmbeddingOrigin());
 

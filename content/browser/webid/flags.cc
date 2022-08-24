@@ -25,4 +25,9 @@ bool IsFedCmManifestValidationEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmManifestValidation);
 }
 
+bool IsFedCmMultipleIdentityProvidersEnabled() {
+  return base::FeatureList::IsEnabled(
+      features::kFedCmMultipleIdentityProviders);
+}
+
 }  // namespace content
