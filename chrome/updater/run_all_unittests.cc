@@ -21,6 +21,10 @@
 
 #include <memory>
 
+#include "base/base_paths.h"
+#include "base/files/file_path.h"
+#include "base/path_service.h"
+#include "base/win/registry.h"
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/installer/util/scoped_token_privilege.h"
 #include "chrome/updater/win/win_util.h"
@@ -61,6 +65,74 @@ void MaybeIncreaseTestTimeouts(int argc, char** argv) {
   }
 }
 
+// Sets the _NT_ALT_SYMBOL_PATH for the system or the user, if it is not set
+// already. Resets it on destruction. The environment variable is set in the
+// corresponding registry hive. _NT_ALT_SYMBOL_PATH is used to avoid symbol
+// path collision because its usage is less common than _NT_SYMBOL_PATH. The
+// environment variable points to the directory where this unit test binary is.
+// The symbol files for the updater targets are expected to be present in this
+// directory.
+class ScopedSymbolPath {
+ public:
+  explicit ScopedSymbolPath(bool is_system)
+      : is_system_(is_system),
+        rootkey_(is_system ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER),
+        subkey_(is_system ? L"SYSTEM\\CurrentControlSet\\Control\\Session "
+                            L"Manager\\Environment"
+                          : L"Environment") {
+    base::win::RegKey reg_key(rootkey_, subkey_.c_str(), KEY_READ | KEY_WRITE);
+    if (reg_key.Valid() && !reg_key.HasValue(kNtSymbolPathEnVar)) {
+      base::FilePath this_executable_path;
+      base::PathService::Get(base::FILE_EXE, &this_executable_path);
+      const std::wstring symbol_path = this_executable_path.DirName().value();
+      is_owned = reg_key.WriteValue(kNtSymbolPathEnVar, symbol_path.c_str()) ==
+                 ERROR_SUCCESS;
+      if (!is_owned)
+        return;
+
+      // For an unknown reason, symbolized stacks for code running as user
+      // requires setting up the environment variable for this unit test process
+      // as well.
+      ::SetEnvironmentVariable(kNtSymbolPathEnVar, symbol_path.c_str());
+      BroadcastEnvironmentChange();
+      std::wcerr << "Symbol path for " << (is_system_ ? "system" : "user")
+                 << " set to: " << symbol_path << std::endl;
+    }
+  }
+
+  ~ScopedSymbolPath() {
+    if (!is_owned)
+      return;
+    ::SetEnvironmentVariable(kNtSymbolPathEnVar, nullptr);
+    base::win::RegKey reg_key(rootkey_, subkey_.c_str(), KEY_WRITE);
+    if (reg_key.Valid()) {
+      reg_key.DeleteValue(kNtSymbolPathEnVar);
+      BroadcastEnvironmentChange();
+    }
+  }
+
+ private:
+  // Notifies the processes that the environment has been changed to reload it.
+  static void BroadcastEnvironmentChange() {
+    constexpr int kTimeOutMilliSeconds = 100;
+    DWORD_PTR result = 0;
+    ::SendMessageTimeout(HWND_BROADCAST, WM_SETTINGCHANGE, 0,
+                         reinterpret_cast<LPARAM>(L"Environment"), SMTO_NORMAL,
+                         kTimeOutMilliSeconds, &result);
+  }
+
+  // The name of the environment variable to create under the registry key.
+  static constexpr wchar_t kNtSymbolPathEnVar[] = L"_NT_ALT_SYMBOL_PATH";
+
+  const bool is_system_ = false;
+  const HKEY rootkey_ = nullptr;
+  const std::wstring subkey_;
+
+  // True if the registry value is owned by this instance and it must be
+  // cleaned up on destruction.
+  bool is_owned = false;
+};
+
 }  // namespace
 
 #endif  // BUILDFLAG(IS_WIN)
@@ -99,6 +171,9 @@ int main(int argc, char** argv) {
               << std::endl;
   }
 
+  // Set up the _NT_ALT_SYMBOL_PATH to get symbolized stack traces in logs.
+  ScopedSymbolPath scoped_symbol_path_system(/*is_system=*/true);
+  ScopedSymbolPath scoped_symbol_path_user(/*is_system=*/false);
 #endif
 
   base::TestSuite test_suite(argc, argv);
