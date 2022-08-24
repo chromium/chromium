@@ -43,6 +43,7 @@ source_set("test_support") {
 
   sources = [
     "fake_power_manager_client_unittest.cc",
+    "native_timer_unittest.cc",
     "power_manager_client_unittest.cc",
     "power_policy_controller_unittest.cc",
   ]

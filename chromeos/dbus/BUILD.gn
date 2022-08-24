@@ -26,9 +26,8 @@ source_set("unit_tests") {
     "//third_party/icu",
   ]
   sources = [
-    "blocking_method_caller_unittest.cc",
-    "native_timer_unittest.cc",
-    "pipe_reader_unittest.cc",
+    "common/blocking_method_caller_unittest.cc",
+    "common/pipe_reader_unittest.cc",
     "tpm_manager/tpm_manager_client_unittest.cc",
   ]
 }
