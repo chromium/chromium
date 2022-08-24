@@ -12,7 +12,7 @@
 #include "chrome/browser/enterprise/connectors/analysis/fake_files_request_handler.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
-#include "content/public/browser/browser_thread.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_connectors {
 
@@ -173,7 +173,9 @@ FakeContentAnalysisDelegate::MalwareAndDlpResponse(
 
 void FakeContentAnalysisDelegate::Response(
     base::FilePath path,
-    std::unique_ptr<safe_browsing::BinaryUploadService::Request> request) {
+    std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
+    absl::optional<FakeFilesRequestHandler::FakeFileRequestCallback>
+        file_request_callback) {
   auto response =
       (status_callback_.is_null() ||
        result_ != safe_browsing::BinaryUploadService::Result::SUCCESS)
@@ -190,9 +192,8 @@ void FakeContentAnalysisDelegate::Response(
       break;
     case AnalysisConnector::FILE_ATTACHED:
     case AnalysisConnector::FILE_DOWNLOADED:
-      DCHECK(GetFilesRequestHandlerForTesting());
-      GetFilesRequestHandlerForTesting()->FileRequestCallbackForTesting(
-          path, result_, response);
+      DCHECK(file_request_callback.has_value());
+      std::move(file_request_callback.value()).Run(path, result_, response);
       break;
     case AnalysisConnector::PRINT:
       PageRequestCallback(result_, response);
@@ -212,14 +213,15 @@ void FakeContentAnalysisDelegate::UploadTextForDeepScanning(
       FROM_HERE,
       base::BindOnce(&FakeContentAnalysisDelegate::Response,
                      weakptr_factory_.GetWeakPtr(), base::FilePath(),
-                     std::move(request)),
+                     std::move(request), absl::nullopt),
       response_delay);
 }
 
 void FakeContentAnalysisDelegate::FakeUploadFileForDeepScanning(
     safe_browsing::BinaryUploadService::Result result,
     const base::FilePath& path,
-    std::unique_ptr<safe_browsing::BinaryUploadService::Request> request) {
+    std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
+    FakeFilesRequestHandler::FakeFileRequestCallback callback) {
   DCHECK(!path.empty());
   if (GetDataForTesting()
           .settings.cloud_or_local_settings.is_cloud_analysis()) {
@@ -230,7 +232,8 @@ void FakeContentAnalysisDelegate::FakeUploadFileForDeepScanning(
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&FakeContentAnalysisDelegate::Response,
-                     weakptr_factory_.GetWeakPtr(), path, std::move(request)),
+                     weakptr_factory_.GetWeakPtr(), path, std::move(request),
+                     std::move(callback)),
       response_delay);
 }
 
@@ -243,7 +246,7 @@ void FakeContentAnalysisDelegate::UploadPageForDeepScanning(
       FROM_HERE,
       base::BindOnce(&FakeContentAnalysisDelegate::Response,
                      weakptr_factory_.GetWeakPtr(), base::FilePath(),
-                     std::move(request)),
+                     std::move(request), absl::nullopt),
       response_delay);
 }
 

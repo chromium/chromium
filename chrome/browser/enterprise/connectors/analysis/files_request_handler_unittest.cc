@@ -303,7 +303,8 @@ class FilesRequestHandlerTest : public BaseTest {
       bool is_cloud_analysis,
       safe_browsing::BinaryUploadService::Result result,
       const base::FilePath& path,
-      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request) {
+      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
+      FakeFilesRequestHandler::FakeFileRequestCallback callback) {
     EXPECT_FALSE(path.empty());
     if (is_cloud_analysis)
       EXPECT_EQ(request->device_token(), kDmToken);
@@ -311,8 +312,7 @@ class FilesRequestHandlerTest : public BaseTest {
     // Simulate a response.
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&FilesRequestHandler::FileRequestCallbackForTesting,
-                       fake_files_request_handler_->GetWeakPtr(), path,
+        base::BindOnce(std::move(callback), path,
                        safe_browsing::BinaryUploadService::Result::SUCCESS,
                        ConnectorStatusCallback(path)),
         kResponseDelay);

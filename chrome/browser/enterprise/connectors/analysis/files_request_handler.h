@@ -83,11 +83,6 @@ class FilesRequestHandler : public RequestHandlerBase {
   void ReportWarningBypass(
       absl::optional<std::u16string> user_justification) override;
 
-  void FileRequestCallbackForTesting(
-      base::FilePath path,
-      safe_browsing::BinaryUploadService::Result result,
-      enterprise_connectors::ContentAnalysisResponse response);
-
  protected:
   FilesRequestHandler(
       safe_browsing::BinaryUploadService* upload_service,
@@ -99,6 +94,11 @@ class FilesRequestHandler : public RequestHandlerBase {
       CompletionCallback callback);
 
   bool UploadDataImpl() override;
+
+  void FileRequestCallbackForTesting(
+      base::FilePath path,
+      safe_browsing::BinaryUploadService::Result result,
+      enterprise_connectors::ContentAnalysisResponse response);
 
  private:
   // Prepares an upload request for the file at `path`.  If the file

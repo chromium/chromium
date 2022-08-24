@@ -692,18 +692,16 @@ class FileTransferAnalysisDelegateAuditOnlyTest : public BaseTest {
   void FakeFileUploadCallback(
       safe_browsing::BinaryUploadService::Result result,
       const base::FilePath& path,
-      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request) {
+      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
+      FakeFilesRequestHandler::FakeFileRequestCallback callback) {
     EXPECT_FALSE(path.empty());
     EXPECT_EQ(request->device_token(), kDmToken);
     // Simulate a response.
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(
-            &FilesRequestHandler::FileRequestCallbackForTesting,
-            base::Unretained(file_transfer_analysis_delegate_
-                                 ->GetFilesRequestHandlerForTesting()),
-            path, safe_browsing::BinaryUploadService::Result::SUCCESS,
-            ConnectorStatusCallback(path)),
+        base::BindOnce(std::move(callback), path,
+                       safe_browsing::BinaryUploadService::Result::SUCCESS,
+                       ConnectorStatusCallback(path)),
         kResponseDelay);
   }
 

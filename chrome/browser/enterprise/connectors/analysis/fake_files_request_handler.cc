@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/enterprise/connectors/analysis/fake_files_request_handler.h"
+#include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 
 namespace enterprise_connectors {
@@ -47,7 +48,10 @@ void FakeFilesRequestHandler::UploadFileForDeepScanning(
     safe_browsing::BinaryUploadService::Result result,
     const base::FilePath& path,
     std::unique_ptr<safe_browsing::BinaryUploadService::Request> request) {
-  fake_file_upload_callback_.Run(result, path, std::move(request));
+  fake_file_upload_callback_.Run(
+      result, path, std::move(request),
+      base::BindOnce(&FakeFilesRequestHandler::FileRequestCallbackForTesting,
+                     GetWeakPtr()));
 }
 
 base::WeakPtr<FakeFilesRequestHandler> FakeFilesRequestHandler::GetWeakPtr() {

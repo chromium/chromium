@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_FAKE_FILES_REQUEST_HANDLER_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_FAKE_FILES_REQUEST_HANDLER_H_
 
+#include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/enterprise/connectors/analysis/files_request_handler.h"
 
@@ -12,10 +13,16 @@ namespace enterprise_connectors {
 
 class FakeFilesRequestHandler : public FilesRequestHandler {
  public:
+  using FakeFileRequestCallback = base::OnceCallback<void(
+      base::FilePath path,
+      safe_browsing::BinaryUploadService::Result result,
+      enterprise_connectors::ContentAnalysisResponse response)>;
+
   using FakeFileUploadCallback = base::RepeatingCallback<void(
       safe_browsing::BinaryUploadService::Result result,
       const base::FilePath& path,
-      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request)>;
+      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
+      FakeFileRequestCallback callback)>;
 
   FakeFilesRequestHandler(
       FakeFileUploadCallback fake_file_upload_callback,
