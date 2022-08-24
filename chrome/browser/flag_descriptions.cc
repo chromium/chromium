@@ -394,6 +394,14 @@ const char kAutofillEnableManualFallbackForVirtualCardsDescription[] =
     "When enabled, manual fallback will be enabled for virtual cards on "
     "Android.";
 
+const char kAutofillEnableMerchantOptOutErrorDialogName[] =
+    "Enable merchant opt-out error dialog";
+const char kAutofillEnableMerchantOptOutErrorDialogDescription[] =
+    "When enabled, if the user attempts to use a virtual card on a website "
+    "where the merchant has opted out of virtual cards, a descriptive error "
+    "message will appear letting the user know that the merchant has opted "
+    "out.";
+
 const char kAutofillEnableCardProductNameName[] =
     "Enable showing card product name";
 const char kAutofillEnableCardProductNameDescription[] =

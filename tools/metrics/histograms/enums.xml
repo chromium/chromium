@@ -58507,6 +58507,8 @@ from previous Chrome versions.
   <int value="-547301855" label="SyncPseudoUSSSupervisedUsers:enabled"/>
   <int value="-547179727" label="AutofillEnableFIDOProgressDialog:enabled"/>
   <int value="-546188357" label="InitialNavigationEntry:enabled"/>
+  <int value="-545624357"
+      label="AutofillEnableMerchantOptOutErrorDialog:disabled"/>
   <int value="-545419529" label="LauncherAppSort:disabled"/>
   <int value="-544685871" label="NewOsSettingsSearch:enabled"/>
   <int value="-544629557" label="CSSBackdropFilter:enabled"/>
@@ -60247,6 +60249,8 @@ from previous Chrome versions.
       label="ContextualSearchThinWebViewImplementation:disabled"/>
   <int value="558873715" label="SiteDetails:disabled"/>
   <int value="559695461" label="UseChimeAndroidSdk:enabled"/>
+  <int value="559903013"
+      label="AutofillEnableMerchantOptOutErrorDialog:enabled"/>
   <int value="561374433" label="SCTAuditing:disabled"/>
   <int value="561951500" label="GlobalMediaControlsCastStartStop:enabled"/>
   <int value="562111126" label="SidePanelBorder:enabled"/>

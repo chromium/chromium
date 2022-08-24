@@ -221,6 +221,9 @@ extern const char kAutofillEnableFIDOProgressDialogDescription[];
 extern const char kAutofillEnableManualFallbackForVirtualCardsName[];
 extern const char kAutofillEnableManualFallbackForVirtualCardsDescription[];
 
+extern const char kAutofillEnableMerchantOptOutErrorDialogName[];
+extern const char kAutofillEnableMerchantOptOutErrorDialogDescription[];
+
 extern const char kAutofillEnableCardProductNameName[];
 extern const char kAutofillEnableCardProductNameDescription[];
 

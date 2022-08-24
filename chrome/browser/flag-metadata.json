@@ -446,6 +446,11 @@
     "expiry_milestone": 112
   },
   {
+    "name": "autofill-enable-merchant-opt-out-error-dialog",
+    "owners": [ "vinnypersky@google.com" ],
+    "expiry_milestone": 112
+  },
+  {
       "name": "autofill-enable-new-card-unmask-prompt-view",
       "owners": [ "eic", "bling-flags@google.com" ],
       "expiry_milestone": 109

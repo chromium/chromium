@@ -9164,6 +9164,13 @@ const FeatureEntry kFeatureEntries[] = {
          "HighEfficiencyModeAvailable")},
 #endif
 
+    {"autofill-enable-merchant-opt-out-error-dialog",
+     flag_descriptions::kAutofillEnableMerchantOptOutErrorDialogName,
+     flag_descriptions::kAutofillEnableMerchantOptOutErrorDialogDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableMerchantOptOutErrorDialog)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
