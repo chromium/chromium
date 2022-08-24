@@ -64,8 +64,7 @@ RasterDecoderTestBase::RasterDecoderTestBase()
       shared_memory_address_(nullptr),
       shared_memory_base_(nullptr),
       ignore_cached_state_for_test_(GetParam()),
-      memory_tracker_(nullptr),
-      copy_texture_manager_(nullptr) {
+      memory_tracker_(nullptr) {
   memset(immediate_buffer_, 0xEE, sizeof(immediate_buffer_));
 }
 
@@ -162,9 +161,6 @@ void RasterDecoderTestBase::InitDecoder(const InitState& init) {
   decoder_->DisableFlushWorkaroundForTest();
   decoder_->GetLogger()->set_log_synthesized_gl_errors(false);
 
-  copy_texture_manager_ = new gles2::MockCopyTextureResourceManager();
-  decoder_->SetCopyTextureResourceManagerForTest(copy_texture_manager_);
-
   ContextCreationAttribs attribs;
   attribs.lose_context_when_out_of_memory =
       init.lose_context_when_out_of_memory;
@@ -204,13 +200,6 @@ void RasterDecoderTestBase::ResetDecoder() {
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 
   decoder_->EndDecoding();
-
-  if (!decoder_->WasContextLost()) {
-    EXPECT_CALL(*copy_texture_manager_, Destroy())
-        .Times(1)
-        .RetiresOnSaturation();
-    copy_texture_manager_ = nullptr;
-  }
 
   decoder_->Destroy(!decoder_->WasContextLost());
   decoder_.reset();

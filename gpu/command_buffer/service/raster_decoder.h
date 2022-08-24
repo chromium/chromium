@@ -22,7 +22,6 @@ class SharedContextState;
 class SharedImageManager;
 
 namespace gles2 {
-class CopyTextureCHROMIUMResourceManager;
 class GLES2Util;
 class Logger;
 class Outputter;
@@ -82,10 +81,6 @@ class GPU_GLES2_EXPORT RasterDecoder : public DecoderContext,
   void SetLogCommands(bool log_commands) override;
   gles2::Outputter* outputter() const override;
   bool log_commands() const { return log_commands_; }
-
-  virtual void SetCopyTextureResourceManagerForTest(
-      gles2::CopyTextureCHROMIUMResourceManager*
-          copy_texture_resource_manager) = 0;
 
   virtual int DecoderIdForTest() = 0;
   virtual ServiceTransferCache* GetTransferCacheForTest() = 0;

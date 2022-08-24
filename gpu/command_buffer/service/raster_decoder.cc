@@ -44,8 +44,6 @@
 #include "gpu/command_buffer/service/error_state.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/gl_utils.h"
-#include "gpu/command_buffer/service/gles2_cmd_copy_tex_image.h"
-#include "gpu/command_buffer/service/gles2_cmd_copy_texture_chromium.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
 #include "gpu/command_buffer/service/image_factory.h"
 #include "gpu/command_buffer/service/logger.h"
@@ -136,65 +134,6 @@ class ScopedGLErrorSuppressor {
  private:
   const char* function_name_;
   raw_ptr<gles2::ErrorState> error_state_;
-};
-
-// Temporarily changes a decoder's bound texture and restore it when this
-// object goes out of scope. Also temporarily switches to using active texture
-// unit zero in case the client has changed that to something invalid.
-class ScopedTextureBinder {
- public:
-  ScopedTextureBinder(gles2::ContextState* state,
-                      GLenum target,
-                      GLuint texture,
-                      GrDirectContext* gr_context)
-      : state_(state), target_(target) {
-    auto* api = state->api();
-    api->glActiveTextureFn(GL_TEXTURE0);
-    api->glBindTextureFn(target_, texture);
-    if (gr_context)
-      gr_context->resetContext(kTextureBinding_GrGLBackendState);
-  }
-
-  ScopedTextureBinder(const ScopedTextureBinder&) = delete;
-  ScopedTextureBinder& operator=(const ScopedTextureBinder&) = delete;
-
-  ~ScopedTextureBinder() { state_->api()->glBindTextureFn(target_, 0); }
-
- private:
-  raw_ptr<gles2::ContextState> state_;
-  GLenum target_;
-};
-
-// Temporarily changes a decoder's PIXEL_UNPACK_BUFFER to 0 and set pixel
-// unpack params to default, and restore them when this object goes out of
-// scope.
-class ScopedPixelUnpackState {
- public:
-  explicit ScopedPixelUnpackState(gles2::ContextState* state,
-                                  GrDirectContext* gr_context,
-                                  const gles2::FeatureInfo* feature_info) {
-    DCHECK(state);
-    auto* api = state->api();
-    api->glPixelStoreiFn(GL_UNPACK_ALIGNMENT, 4);
-    if (feature_info->gl_version_info().is_es3 ||
-        feature_info->gl_version_info().is_desktop_core_profile ||
-        feature_info->feature_flags().ext_pixel_buffer_object)
-      api->glBindBufferFn(GL_PIXEL_UNPACK_BUFFER, 0);
-
-    if (feature_info->gl_version_info().is_es3 ||
-        feature_info->gl_version_info().is_desktop_core_profile ||
-        feature_info->feature_flags().ext_unpack_subimage)
-      api->glPixelStoreiFn(GL_UNPACK_ROW_LENGTH, 0);
-    if (gr_context) {
-      gr_context->resetContext(kMisc_GrGLBackendState |
-                               kPixelStore_GrGLBackendState);
-    }
-  }
-
-  ScopedPixelUnpackState(const ScopedPixelUnpackState&) = delete;
-  ScopedPixelUnpackState& operator=(const ScopedPixelUnpackState&) = delete;
-
-  ~ScopedPixelUnpackState() = default;
 };
 
 // Commands that are explicitly listed as OK to occur between
@@ -593,10 +532,6 @@ class RasterDecoderImpl final : public RasterDecoder,
 
   void SetIgnoreCachedStateForTest(bool ignore) override;
 
-  void SetCopyTextureResourceManagerForTest(
-      gles2::CopyTextureCHROMIUMResourceManager* copy_texture_resource_manager)
-      override;
-
   // ServiceFontManager::Client implementation.
   scoped_refptr<Buffer> GetShmBuffer(uint32_t shm_id) override;
   void ReportProgress() override;
@@ -676,8 +611,6 @@ class RasterDecoderImpl final : public RasterDecoder,
   void DoFlush();
   void DoGetIntegerv(GLenum pname, GLint* params, GLsizei params_size);
   void DoTraceEndCHROMIUM();
-  bool InitializeCopyTexImageBlitter();
-  bool InitializeCopyTextureCHROMIUM();
   void DoCopySubTextureINTERNAL(GLint xoffset,
                                 GLint yoffset,
                                 GLint x,
@@ -924,10 +857,6 @@ class RasterDecoderImpl final : public RasterDecoder,
   // An optional behaviour to lose the context when OOM.
   bool lose_context_when_out_of_memory_ = false;
 
-  std::unique_ptr<gles2::CopyTexImageResourceManager> copy_tex_image_blit_;
-  std::unique_ptr<gles2::CopyTextureCHROMIUMResourceManager>
-      copy_texture_chromium_;
-
   std::unique_ptr<gles2::GPUTracer> gpu_tracer_;
   const unsigned char* gpu_decoder_category_;
   static constexpr int gpu_trace_level_ = 2;
@@ -1171,16 +1100,6 @@ void RasterDecoderImpl::Destroy(bool have_context) {
       transfer_cache()->DeleteAllEntriesForDecoder(raster_decoder_id_);
     }
 
-    if (copy_tex_image_blit_) {
-      copy_tex_image_blit_->Destroy();
-      copy_tex_image_blit_.reset();
-    }
-
-    if (copy_texture_chromium_) {
-      copy_texture_chromium_->Destroy();
-      copy_texture_chromium_.reset();
-    }
-
     // Make sure we flush any pending skia work on this context.
     if (sk_surface_) {
       GrFlushInfo flush_info = {
@@ -1203,9 +1122,6 @@ void RasterDecoderImpl::Destroy(bool have_context) {
     sk_surface_for_testing_.reset();
     paint_op_shared_image_provider_.reset();
   }
-
-  copy_tex_image_blit_.reset();
-  copy_texture_chromium_.reset();
 
   if (query_manager_) {
     query_manager_->Destroy(have_context);
@@ -1504,11 +1420,6 @@ void RasterDecoderImpl::SetIgnoreCachedStateForTest(bool ignore) {
   state()->SetIgnoreCachedStateForTest(ignore);
 }
 
-void RasterDecoderImpl::SetCopyTextureResourceManagerForTest(
-    gles2::CopyTextureCHROMIUMResourceManager* copy_texture_resource_manager) {
-  copy_texture_chromium_.reset(copy_texture_resource_manager);
-}
-
 void RasterDecoderImpl::BeginDecoding() {
   gpu_tracer_->BeginDecoding();
   gpu_trace_commands_ = gpu_tracer_->IsTracing() && *gpu_decoder_category_;
@@ -1704,69 +1615,7 @@ bool RasterDecoderImpl::ClearLevel(gles2::Texture* texture,
                                    int yoffset,
                                    int width,
                                    int height) {
-  DCHECK(target != GL_TEXTURE_3D && target != GL_TEXTURE_2D_ARRAY &&
-         target != GL_TEXTURE_EXTERNAL_OES);
-  uint32_t channels = gles2::GLES2Util::GetChannelsForFormat(format);
-  if (channels & gles2::GLES2Util::kDepth) {
-    DCHECK(false) << "depth not supported";
-    return false;
-  }
-
-  static constexpr uint32_t kMaxZeroSize = 1024 * 1024 * 4;
-
-  uint32_t size;
-  uint32_t padded_row_size;
-  constexpr GLint unpack_alignment = 4;
-  if (!gles2::GLES2Util::ComputeImageDataSizes(width, height, 1, format, type,
-                                               unpack_alignment, &size, nullptr,
-                                               &padded_row_size)) {
-    return false;
-  }
-
-  TRACE_EVENT1("gpu", "RasterDecoderImpl::ClearLevel", "size", size);
-
-  int tile_height;
-
-  if (size > kMaxZeroSize) {
-    if (kMaxZeroSize < padded_row_size) {
-      // That'd be an awfully large texture.
-      return false;
-    }
-    // We should never have a large total size with a zero row size.
-    DCHECK_GT(padded_row_size, 0U);
-    tile_height = kMaxZeroSize / padded_row_size;
-    if (!gles2::GLES2Util::ComputeImageDataSizes(width, tile_height, 1, format,
-                                                 type, unpack_alignment, &size,
-                                                 nullptr, nullptr)) {
-      return false;
-    }
-  } else {
-    tile_height = height;
-  }
-
-  {
-    ScopedTextureBinder binder(state(), texture->target(),
-                               texture->service_id(), gr_context());
-    absl::optional<ScopedPixelUnpackState> pixel_unpack_state;
-    if (shared_context_state_->need_context_state_reset()) {
-      pixel_unpack_state.emplace(state(), gr_context(), feature_info());
-    }
-    // Add extra scope to destroy zero and the object it owns right
-    // after its usage.
-    // Assumes the size has already been checked.
-    std::unique_ptr<char[]> zero(new char[size]);
-    memset(zero.get(), 0, size);
-    GLint y = 0;
-    while (y < height) {
-      GLint h = y + tile_height > height ? height - y : tile_height;
-      api()->glTexSubImage2DFn(
-          target, level, xoffset, yoffset + y, width, h,
-          gles2::TextureManager::AdjustTexFormat(feature_info(), format), type,
-          zero.get());
-      y += tile_height;
-    }
-  }
-  DCHECK(glGetError() == GL_NO_ERROR);
+  NOTREACHED();
   return true;
 }
 
@@ -2069,41 +1918,6 @@ error::Error RasterDecoderImpl::HandleSetActiveURLCHROMIUM(
   GURL url(base::StringPiece(url_str, size));
   client()->SetActiveURL(std::move(url));
   return error::kNoError;
-}
-
-bool RasterDecoderImpl::InitializeCopyTexImageBlitter() {
-  if (!copy_tex_image_blit_.get()) {
-    LOCAL_COPY_REAL_GL_ERRORS_TO_WRAPPER("glCopySubTexture");
-    copy_tex_image_blit_ =
-        std::make_unique<gles2::CopyTexImageResourceManager>(feature_info());
-    copy_tex_image_blit_->Initialize(this);
-    if (LOCAL_PEEK_GL_ERROR("glCopySubTexture") != GL_NO_ERROR)
-      return false;
-  }
-  return true;
-}
-
-bool RasterDecoderImpl::InitializeCopyTextureCHROMIUM() {
-  // Defer initializing the CopyTextureCHROMIUMResourceManager until it is
-  // needed because it takes 10s of milliseconds to initialize.
-  if (!copy_texture_chromium_.get()) {
-    LOCAL_COPY_REAL_GL_ERRORS_TO_WRAPPER("glCopySubTexture");
-    copy_texture_chromium_.reset(
-        gles2::CopyTextureCHROMIUMResourceManager::Create());
-    copy_texture_chromium_->Initialize(this, features());
-    if (LOCAL_PEEK_GL_ERROR("glCopySubTexture") != GL_NO_ERROR)
-      return false;
-
-    // On the desktop core profile this also needs emulation of
-    // CopyTex{Sub}Image2D for luminance, alpha, and luminance_alpha
-    // textures.
-    if (gles2::CopyTexImageResourceManager::CopyTexImageRequiresBlit(
-            feature_info(), GL_LUMINANCE)) {
-      if (!InitializeCopyTexImageBlitter())
-        return false;
-    }
-  }
-  return true;
 }
 
 void RasterDecoderImpl::DoCopySubTextureINTERNAL(

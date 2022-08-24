@@ -35,13 +35,7 @@
 #include "ui/gl/gl_surface_stub.h"
 #include "ui/gl/gl_version_info.h"
 
-namespace gpu {
-
-namespace gles2 {
-class MockCopyTextureResourceManager;
-}  // namespace gles2
-
-namespace raster {
+namespace gpu::raster {
 
 class RasterDecoderTestBase : public ::testing::TestWithParam<bool>,
                               public DecoderClient {
@@ -194,8 +188,6 @@ class RasterDecoderTestBase : public ::testing::TestWithParam<bool>,
   SharedImageManager shared_image_manager_;
   MemoryTypeTracker memory_tracker_;
   base::test::SingleThreadTaskEnvironment task_environment_;
-  raw_ptr<gles2::MockCopyTextureResourceManager>
-      copy_texture_manager_;  // not owned
   raw_ptr<gl::GLDisplay> display_ = nullptr;
 };
 
@@ -207,7 +199,6 @@ class RasterDecoderManualInitTest : public RasterDecoderTestBase {
   void SetUp() override {}
 };
 
-}  // namespace raster
-}  // namespace gpu
+}  // namespace gpu::raster
 
 #endif  // GPU_COMMAND_BUFFER_SERVICE_RASTER_DECODER_UNITTEST_BASE_H_
