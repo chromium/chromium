@@ -290,8 +290,7 @@ TEST_F(LocalFileSyncServiceTest, RemoteSyncStepsSimple) {
             file_system_->DirectoryExists(kDir));
 }
 
-// TODO(https://crbug.com/1344927): Flaky.
-TEST_F(LocalFileSyncServiceTest, DISABLED_LocalChangeObserver) {
+TEST_F(LocalFileSyncServiceTest, LocalChangeObserver) {
   const FileSystemURL kFile(file_system_->URL("file"));
   const FileSystemURL kDir(file_system_->URL("dir"));
   const char kTestFileData[] = "0123456789";
