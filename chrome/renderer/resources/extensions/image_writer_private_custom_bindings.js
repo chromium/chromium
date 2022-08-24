@@ -8,7 +8,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   var apiFunctions = bindingsAPI.apiFunctions;
 
   apiFunctions.setUpdateArgumentsPostValidate(
-      'writeFromFile', function(device, fileEntry, options, callback) {
+      'writeFromFile', function(device, fileEntry, callback) {
     var fileSystemName = fileEntry.filesystem.name;
     var relativePath = $String.slice(fileEntry.fullPath, 1);
     return [device, fileSystemName, relativePath, callback];
