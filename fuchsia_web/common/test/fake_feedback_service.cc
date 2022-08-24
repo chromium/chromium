@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia_web/runners/cast/test/fake_feedback_service.h"
+#include "fuchsia_web/common/test/fake_feedback_service.h"
 
 #include <lib/fidl/cpp/interface_request.h>
 #include <lib/sys/cpp/outgoing_directory.h>

@@ -14,17 +14,13 @@ source_set("integration") {
     "cast_runner_features.h",
     "cast_runner_launcher_v2.h",
   ]
-  sources = [
-    "cast_runner_launcher_v2.cc",
-    "fake_feedback_service.cc",
-    "fake_feedback_service.h",
-  ]
+  sources = [ "cast_runner_launcher_v2.cc" ]
   public_deps = [
+    "//fuchsia_web/common/test:test_support",
     "//media/fuchsia/audio:test_support_components",
     "//third_party/abseil-cpp:absl",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.feedback",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys",
-    "//third_party/fuchsia-sdk/sdk/pkg/fidl_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_component_cpp_testing",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
   ]

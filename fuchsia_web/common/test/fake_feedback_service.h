@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef FUCHSIA_WEB_RUNNERS_CAST_TEST_FAKE_FEEDBACK_SERVICE_H_
-#define FUCHSIA_WEB_RUNNERS_CAST_TEST_FAKE_FEEDBACK_SERVICE_H_
+#ifndef FUCHSIA_WEB_COMMON_TEST_FAKE_FEEDBACK_SERVICE_H_
+#define FUCHSIA_WEB_COMMON_TEST_FAKE_FEEDBACK_SERVICE_H_
 
 #include <fuchsia/feedback/cpp/fidl.h>
 #include <lib/fidl/cpp/binding_set.h>
@@ -51,4 +51,4 @@ class FakeFeedbackService
 
 }  // namespace test
 
-#endif  // FUCHSIA_WEB_RUNNERS_CAST_TEST_FAKE_FEEDBACK_SERVICE_H_
+#endif  // FUCHSIA_WEB_COMMON_TEST_FAKE_FEEDBACK_SERVICE_H_
