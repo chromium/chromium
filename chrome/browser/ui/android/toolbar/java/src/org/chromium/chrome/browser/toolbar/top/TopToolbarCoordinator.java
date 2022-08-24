@@ -170,9 +170,10 @@ public class TopToolbarCoordinator implements Toolbar {
             mStartSurfaceToolbarCoordinator = new StartSurfaceToolbarCoordinator(toolbarStub,
                     userEducationHelper, identityDiscStateSupplier, overviewThemeColorProvider,
                     overviewModeMenuButtonCoordinator, identityDiscButtonSupplier,
-                    isGridTabSwitcherEnabled, isTabGroupsAndroidContinuationEnabled,
-                    isIncognitoModeEnabledSupplier, profileSupplier,
-                    startSurfaceLogoClickedCallback, mIsStartSurfaceRefactorEnabled);
+                    isGridTabSwitcherEnabled, isTabToGtsAnimationEnabled,
+                    isTabGroupsAndroidContinuationEnabled, isIncognitoModeEnabledSupplier,
+                    profileSupplier, startSurfaceLogoClickedCallback,
+                    mIsStartSurfaceRefactorEnabled);
         } else if (mToolbarLayout instanceof ToolbarPhone || isTabletGridTabSwitcherEnabled()) {
             mTabSwitcherModeCoordinator = new TabSwitcherModeTTCoordinator(toolbarStub,
                     fullscreenToolbarStub, overviewModeMenuButtonCoordinator,
