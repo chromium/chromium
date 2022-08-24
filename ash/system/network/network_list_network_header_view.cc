@@ -34,10 +34,18 @@ NetworkListNetworkHeaderView::NetworkListNetworkHeaderView(Delegate* delegate,
 
 NetworkListNetworkHeaderView::~NetworkListNetworkHeaderView() = default;
 
-void NetworkListNetworkHeaderView::SetToggleState(bool enabled, bool is_on) {
+void NetworkListNetworkHeaderView::SetToggleState(bool enabled,
+                                                  bool is_on,
+                                                  bool animate_toggle) {
   toggle_->SetEnabled(enabled);
   toggle_->SetAcceptsEvents(enabled);
-  toggle_->AnimateIsOn(is_on);
+
+  if (animate_toggle) {
+    toggle_->AnimateIsOn(is_on);
+    return;
+  }
+
+  toggle_->SetIsOn(is_on);
 }
 
 void NetworkListNetworkHeaderView::AddExtraButtons() {}

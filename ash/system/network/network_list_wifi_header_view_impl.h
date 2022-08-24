@@ -34,7 +34,7 @@ class ASH_EXPORT NetworkListWifiHeaderViewImpl
 
   // NetworkListNetworkHeaderView:
   void AddExtraButtons() override;
-  void SetToggleState(bool enabled, bool is_on) override;
+  void SetToggleState(bool enabled, bool is_on, bool animate_toggle) override;
   void OnToggleToggled(bool is_on) override;
 
   // NetworkListWifiHeaderView:

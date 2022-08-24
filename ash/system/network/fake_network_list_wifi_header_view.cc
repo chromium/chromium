@@ -15,7 +15,9 @@ FakeNetworkListWifiHeaderView::FakeNetworkListWifiHeaderView(
 
 FakeNetworkListWifiHeaderView::~FakeNetworkListWifiHeaderView() = default;
 
-void FakeNetworkListWifiHeaderView::SetToggleState(bool enabled, bool is_on) {
+void FakeNetworkListWifiHeaderView::SetToggleState(bool enabled,
+                                                   bool is_on,
+                                                   bool animate_toggle) {
   is_toggle_enabled_ = enabled;
   is_toggle_on_ = is_on;
   set_toggle_state_count_++;

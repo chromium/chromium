@@ -40,7 +40,7 @@ class ASH_EXPORT FakeNetworkListWifiHeaderView
 
  private:
   // NetworkListNetworkHeaderView:
-  void SetToggleState(bool enabled, bool visible) override;
+  void SetToggleState(bool enabled, bool visible, bool animate_toggle) override;
 
   // NetworkListWifiHeaderView:
   void SetJoinWifiButtonState(bool enabled, bool visible) override;

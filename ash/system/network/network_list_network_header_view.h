@@ -37,7 +37,7 @@ class ASH_EXPORT NetworkListNetworkHeaderView : public NetworkListHeaderView {
       delete;
   ~NetworkListNetworkHeaderView() override;
 
-  virtual void SetToggleState(bool enabled, bool is_on);
+  virtual void SetToggleState(bool enabled, bool is_on, bool animate_toggle);
 
   void SetToggleVisibility(bool visible);
 

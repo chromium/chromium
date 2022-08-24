@@ -50,9 +50,11 @@ void NetworkListWifiHeaderViewImpl::AddExtraButtons() {
                          /*index=*/0);
 };
 
-void NetworkListWifiHeaderViewImpl::SetToggleState(bool enabled, bool is_on) {
+void NetworkListWifiHeaderViewImpl::SetToggleState(bool enabled,
+                                                   bool is_on,
+                                                   bool animate_toggle) {
   join_wifi_button_->SetEnabled(enabled && is_on);
-  NetworkListNetworkHeaderView::SetToggleState(enabled, is_on);
+  NetworkListNetworkHeaderView::SetToggleState(enabled, is_on, animate_toggle);
 }
 
 void NetworkListWifiHeaderViewImpl::OnToggleToggled(bool is_on) {

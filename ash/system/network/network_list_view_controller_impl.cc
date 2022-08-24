@@ -206,6 +206,13 @@ void NetworkListViewControllerImpl::OnGetNetworkStateList(
       RecordDetailedViewSection(DetailedViewSection::kMobileSection);
       mobile_header_view_ =
           network_detailed_network_view()->AddMobileSectionHeader();
+
+      // Mobile toggle state is set here to avoid toggle animating on/off when
+      // detailed view is opened for the first time. Enabled state will be
+      // updated in subsequent calls.
+      mobile_header_view_->SetToggleState(
+          /*enabled=*/false,
+          /*is_on=*/is_mobile_network_enabled_, /*animate_toggle=*/false);
       mobile_header_view_->SetID(static_cast<int>(
           NetworkListViewControllerViewChildId::kMobileSectionHeader));
     }
@@ -391,6 +398,13 @@ void NetworkListViewControllerImpl::UpdateWifiSection() {
   if (!wifi_header_view_) {
     RecordDetailedViewSection(DetailedViewSection::kWifiSection);
     wifi_header_view_ = network_detailed_network_view()->AddWifiSectionHeader();
+
+    // WiFi toggle state is set here to avoid toggle animating on/off when
+    // detailed view is opened for the first time. Enabled state will be
+    // updated in subsequent calls.
+    wifi_header_view_->SetToggleState(/*enabled=*/false,
+                                      /*is_on=*/is_wifi_enabled_,
+                                      /*animate_toggle=*/false);
     wifi_header_view_->SetID(static_cast<int>(
         NetworkListViewControllerViewChildId::kWifiSectionHeader));
   }
@@ -399,7 +413,8 @@ void NetworkListViewControllerImpl::UpdateWifiSection() {
                                             /*visible=*/true);
   wifi_header_view_->SetToggleVisibility(/*visible=*/true);
   wifi_header_view_->SetToggleState(/*enabled=*/true,
-                                    /*is_on=*/is_wifi_enabled_);
+                                    /*is_on=*/is_wifi_enabled_,
+                                    /*animate_toggle=*/true);
 
   if (!is_wifi_enabled_) {
     CreateInfoLabelIfMissingAndUpdate(IDS_ASH_STATUS_TRAY_NETWORK_WIFI_DISABLED,
@@ -427,7 +442,8 @@ void NetworkListViewControllerImpl::UpdateMobileToggleAndSetStatusMessage() {
     CreateInfoLabelIfMissingAndUpdate(IDS_ASH_STATUS_TRAY_INITIALIZING_CELLULAR,
                                       &mobile_status_message_);
     mobile_header_view_->SetToggleState(/*enabled=*/false,
-                                        /*is_on=*/false);
+                                        /*is_on=*/false,
+                                        /*animate_toggle=*/true);
     return;
   }
 
@@ -439,7 +455,8 @@ void NetworkListViewControllerImpl::UpdateMobileToggleAndSetStatusMessage() {
       // becomes uninhibited.
       mobile_header_view_->SetToggleVisibility(/*visible=*/true);
       mobile_header_view_->SetToggleState(/*enabled=*/false,
-                                          /*is_on=*/true);
+                                          /*is_on=*/true,
+                                          /*animate_toggle=*/true);
       RemoveAndResetViewIfExists(&mobile_status_message_);
       return;
     }
@@ -462,7 +479,8 @@ void NetworkListViewControllerImpl::UpdateMobileToggleAndSetStatusMessage() {
 
     mobile_header_view_->SetToggleVisibility(/*visibility=*/true);
     mobile_header_view_->SetToggleState(/*enabled=*/toggle_enabled,
-                                        /*is_on=*/cellular_enabled);
+                                        /*is_on=*/cellular_enabled,
+                                        /*animate_toggle=*/true);
 
     if (cellular_state == DeviceStateType::kDisabling) {
       CreateInfoLabelIfMissingAndUpdate(
@@ -493,14 +511,16 @@ void NetworkListViewControllerImpl::UpdateMobileToggleAndSetStatusMessage() {
   // Otherwise, toggle state and status message reflect Tether.
   if (tether_state == DeviceStateType::kUninitialized) {
     if (bluetooth_system_state_ == BluetoothSystemState::kEnabling) {
-      mobile_header_view_->SetToggleState(/*toggle_enabled=*/false,
-                                          /*is_on=*/true);
+      mobile_header_view_->SetToggleState(/*enabled=*/false,
+                                          /*is_on=*/true,
+                                          /*animate_toggle=*/true);
       CreateInfoLabelIfMissingAndUpdate(
           IDS_ASH_STATUS_TRAY_INITIALIZING_CELLULAR, &mobile_status_message_);
       return;
     }
     mobile_header_view_->SetToggleState(
-        /*toggle_enabled=*/!is_secondary_user, /*is_on=*/false);
+        /*enabled=*/!is_secondary_user, /*is_on=*/false,
+        /*animate_toggle=*/true);
     CreateInfoLabelIfMissingAndUpdate(
         IDS_ASH_STATUS_TRAY_ENABLING_MOBILE_ENABLES_BLUETOOTH,
         &mobile_status_message_);
@@ -510,8 +530,9 @@ void NetworkListViewControllerImpl::UpdateMobileToggleAndSetStatusMessage() {
   const bool tether_enabled = tether_state == DeviceStateType::kEnabled;
 
   // Ensure that the toggle state and status message match the tether state.
-  mobile_header_view_->SetToggleState(/*toggle_enabled=*/!is_secondary_user,
-                                      /*is_on=*/tether_enabled);
+  mobile_header_view_->SetToggleState(/*enabled=*/!is_secondary_user,
+                                      /*is_on=*/tether_enabled,
+                                      /*animate_toggle=*/true);
   if (tether_enabled && !has_mobile_networks_) {
     CreateInfoLabelIfMissingAndUpdate(
         IDS_ASH_STATUS_TRAY_NO_MOBILE_DEVICES_FOUND, &mobile_status_message_);

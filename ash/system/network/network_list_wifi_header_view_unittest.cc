@@ -58,7 +58,8 @@ class NetworkListWifiHeaderViewTest : public AshTestBase {
   }
 
   void SetToggleState(bool enabled, bool is_on) {
-    network_list_wifi_header_view()->SetToggleState(enabled, is_on);
+    network_list_wifi_header_view()->SetToggleState(enabled, is_on,
+                                                    /*animate_toggle=*/true);
   }
 
   NetworkStateTestHelper* network_state_helper() {

@@ -80,7 +80,8 @@ TEST_F(NetworkListNetworkHeaderViewTest, ToggleStates) {
   EXPECT_FALSE(toggle_button->GetIsOn());
 
   network_list_network_header_view()->SetToggleState(/*enabled=*/false,
-                                                     /*is_on=*/true);
+                                                     /*is_on=*/true,
+                                                     /*animate_toggle=*/false);
   EXPECT_FALSE(toggle_button->GetAcceptsEvents());
   EXPECT_TRUE(toggle_button->GetIsOn());
 
