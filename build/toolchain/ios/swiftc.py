@@ -113,6 +113,14 @@ def compile_module(module, sources, settings, extras, tmpdir):
         '-enable-cxx-interop',
     ])
 
+  if settings.module_cache_path:
+    if not os.path.exists(settings.module_cache_path):
+      os.makedirs(settings.module_cache_path)
+    extra_args.extend([
+        '-module-cache-path',
+        os.path.abspath(settings.module_cache_path),
+    ])
+
   # Allow an alternative Swift toolchain (such as ToT or a newer version)
   # by utilizing `xcrun`. If an alternative is not present in either
   # /Library/Developer/Toolchains or ~/Library/Developer/Toolchains, this
@@ -209,6 +217,8 @@ def main(args):
   parser.add_argument('-pch-output-dir',
                       help='path to directory where .pch files are saved')
   parser.add_argument('-module-path', help='path to the generated module file')
+  parser.add_argument('-module-cache-path',
+                      help='path to the clang module cache')
   parser.add_argument('-header-path', help='path to the generated header file')
   parser.add_argument('-bridge-header',
                       help='path to the Objective-C bridge header')
