@@ -41,7 +41,8 @@ APP_ENUM_TO_STRING(InstallReason,
                    kSync,
                    kUser,
                    kSubApp,
-                   kKiosk)
+                   kKiosk,
+                   kCommandLine)
 APP_ENUM_TO_STRING(InstallSource,
                    kUnknown,
                    kSystem,
@@ -244,6 +245,8 @@ InstallReason ConvertMojomInstallReasonToInstallReason(
       return InstallReason::kSubApp;
     case apps::mojom::InstallReason::kKiosk:
       return InstallReason::kKiosk;
+    case apps::mojom::InstallReason::kCommandLine:
+      return InstallReason::kCommandLine;
   }
 }
 
@@ -268,6 +271,8 @@ apps::mojom::InstallReason ConvertInstallReasonToMojomInstallReason(
       return apps::mojom::InstallReason::kSubApp;
     case InstallReason::kKiosk:
       return apps::mojom::InstallReason::kKiosk;
+    case InstallReason::kCommandLine:
+      return apps::mojom::InstallReason::kCommandLine;
   }
 }
 

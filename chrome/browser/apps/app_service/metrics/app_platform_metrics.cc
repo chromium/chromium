@@ -55,6 +55,7 @@ constexpr char kInstallReasonSyncHistogram[] = "Sync";
 constexpr char kInstallReasonUserHistogram[] = "User";
 constexpr char kInstallReasonSubAppHistogram[] = "SubApp";
 constexpr char kInstallReasonKioskHistogram[] = "Kiosk";
+constexpr char kInstallReasonCommandLineHistogram[] = "CommandLine";
 
 constexpr base::TimeDelta kMaxDuration = base::Days(1);
 
@@ -101,6 +102,8 @@ std::string GetInstallReason(apps::InstallReason install_reason) {
       return kInstallReasonSubAppHistogram;
     case apps::InstallReason::kKiosk:
       return kInstallReasonKioskHistogram;
+    case apps::InstallReason::kCommandLine:
+      return kInstallReasonCommandLineHistogram;
   }
 }
 

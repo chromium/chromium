@@ -53,7 +53,8 @@ namespace autotestPrivate {
     Sync,
     User,
     SubApp,
-    Kiosk
+    Kiosk,
+    CommandLine
   };
 
   // A mapping of apps::mojom::Readiness

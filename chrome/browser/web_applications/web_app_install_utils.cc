@@ -874,6 +874,9 @@ WebAppManagement::Type ConvertInstallSurfaceToWebAppSource(
     case webapps::WebappInstallSource::CHROME_SERVICE:
       return WebAppManagement::kSync;
 
+    case webapps::WebappInstallSource::ISOLATED_APP_DEV_INSTALL:
+      return WebAppManagement::kCommandLine;
+
     case webapps::WebappInstallSource::INTERNAL_DEFAULT:
     case webapps::WebappInstallSource::EXTERNAL_DEFAULT:
       return WebAppManagement::kDefault;

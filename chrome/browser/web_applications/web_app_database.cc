@@ -248,6 +248,8 @@ WebAppManagement::Type ProtoToWebAppManagement(WebAppManagementProto type) {
       return WebAppManagement::Type::kSync;
     case WebAppManagementProto::DEFAULT:
       return WebAppManagement::Type::kDefault;
+    case WebAppManagementProto::COMMAND_LINE:
+      return WebAppManagement::Type::kCommandLine;
   }
 }
 
@@ -267,6 +269,8 @@ WebAppManagementProto WebAppManagementToProto(WebAppManagement::Type type) {
       return WebAppManagementProto::SYNC;
     case WebAppManagement::Type::kDefault:
       return WebAppManagementProto::DEFAULT;
+    case WebAppManagement::Type::kCommandLine:
+      return WebAppManagementProto::COMMAND_LINE;
   }
 }
 
@@ -380,6 +384,8 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
       web_app.sources_[WebAppManagement::kSubApp]);
   local_data->mutable_sources()->set_kiosk(
       web_app.sources_[WebAppManagement::kKiosk]);
+  local_data->mutable_sources()->set_command_line(
+      web_app.sources_[WebAppManagement::kCommandLine]);
 
   local_data->set_is_locally_installed(web_app.is_locally_installed());
 
@@ -800,6 +806,10 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   }
   if (local_data.sources().has_kiosk()) {
     sources[WebAppManagement::kKiosk] = local_data.sources().kiosk();
+  }
+  if (local_data.sources().has_command_line()) {
+    sources[WebAppManagement::kCommandLine] =
+        local_data.sources().command_line();
   }
   if (!sources.any() && !local_data.is_uninstalling()) {
     DLOG(ERROR) << "WebApp proto parse error: no any source in sources field, "

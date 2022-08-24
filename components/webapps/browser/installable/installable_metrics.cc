@@ -45,6 +45,7 @@ bool InstallableMetrics::IsReportableInstallSource(WebappInstallSource source) {
     case WebappInstallSource::SYSTEM_DEFAULT:
     case WebappInstallSource::KIOSK:
       return true;
+    case WebappInstallSource::ISOLATED_APP_DEV_INSTALL:
     case WebappInstallSource::MANAGEMENT_API:
     case WebappInstallSource::SUB_APP:
     case WebappInstallSource::SYNC:
@@ -76,6 +77,7 @@ bool InstallableMetrics::IsUserInitiatedInstallSource(
     case WebappInstallSource::DEVTOOLS:
     case WebappInstallSource::MANAGEMENT_API:
     case WebappInstallSource::INTERNAL_DEFAULT:
+    case WebappInstallSource::ISOLATED_APP_DEV_INSTALL:
     case WebappInstallSource::EXTERNAL_DEFAULT:
     case WebappInstallSource::EXTERNAL_POLICY:
     case WebappInstallSource::SYSTEM_DEFAULT:

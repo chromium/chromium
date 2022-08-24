@@ -432,6 +432,8 @@ EnumTraits<crosapi::mojom::InstallReason, apps::InstallReason>::ToMojom(
       return crosapi::mojom::InstallReason::kUser;
     case apps::InstallReason::kKiosk:
       return crosapi::mojom::InstallReason::kKiosk;
+    case apps::InstallReason::kCommandLine:
+      return crosapi::mojom::InstallReason::kCommandLine;
   }
 
   NOTREACHED();
@@ -467,6 +469,9 @@ bool EnumTraits<crosapi::mojom::InstallReason, apps::InstallReason>::FromMojom(
       return true;
     case crosapi::mojom::InstallReason::kKiosk:
       *output = apps::InstallReason::kKiosk;
+      return true;
+    case crosapi::mojom::InstallReason::kCommandLine:
+      *output = apps::InstallReason::kCommandLine;
       return true;
   }
 

@@ -108,6 +108,9 @@ enum class WebappInstallSource {
   // Installed by Kiosk on Chrome OS.
   KIOSK = 21,
 
+  // Isolated app installation for development.
+  ISOLATED_APP_DEV_INSTALL = 22,
+
   // Add any new values above this one.
   COUNT,
 };

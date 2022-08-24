@@ -406,6 +406,7 @@ bool AppUpdate::InstalledInternally() const {
     case apps::InstallReason::kSync:
     case apps::InstallReason::kUser:
     case apps::InstallReason::kSubApp:
+    case apps::InstallReason::kCommandLine:
       return false;
   }
 }

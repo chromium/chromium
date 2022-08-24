@@ -51093,6 +51093,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="6" label="Installed by user action"/>
   <int value="7" label="Installed by SubApp API"/>
   <int value="8" label="Installed by Kiosk on Chrome OS"/>
+  <int value="9" label="Installed by a command line argument"/>
 </enum>
 
 <enum name="InstallSource">

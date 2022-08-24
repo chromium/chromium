@@ -705,6 +705,8 @@ base::Value WebApp::AsDebugValue() const {
             return "Sync";
           case WebAppManagement::Type::kDefault:
             return "Default";
+          case WebAppManagement::Type::kCommandLine:
+            return "CommandLine";
         }
       };
 

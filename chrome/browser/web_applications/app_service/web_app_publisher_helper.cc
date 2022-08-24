@@ -212,6 +212,8 @@ apps::mojom::InstallReason GetHighestPriorityInstallReason(
       return apps::mojom::InstallReason::kSync;
     case WebAppManagement::kDefault:
       return apps::mojom::InstallReason::kDefault;
+    case WebAppManagement::kCommandLine:
+      return apps::mojom::InstallReason::kCommandLine;
   }
 }
 
@@ -229,6 +231,7 @@ apps::mojom::InstallSource ConvertInstallSourceToMojom(
     case webapps::WebappInstallSource::API_CUSTOM_TAB:
     case webapps::WebappInstallSource::DEVTOOLS:
     case webapps::WebappInstallSource::MANAGEMENT_API:
+    case webapps::WebappInstallSource::ISOLATED_APP_DEV_INSTALL:
     case webapps::WebappInstallSource::AMBIENT_BADGE_BROWSER_TAB:
     case webapps::WebappInstallSource::AMBIENT_BADGE_CUSTOM_TAB:
     case webapps::WebappInstallSource::RICH_INSTALL_UI_WEBLAYER:

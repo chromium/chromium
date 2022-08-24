@@ -63,6 +63,7 @@ message SourcesProto {
   required bool default = 5;
   optional bool sub_app = 6;
   optional bool kiosk = 7;
+  optional bool command_line = 8;
 }
 
 // Properties for integrating with Chrome OS UI surfaces.
@@ -114,6 +115,7 @@ enum WebAppManagementProto {
   SYNC = 5;
   DEFAULT = 6;
   KIOSK = 7;
+  COMMAND_LINE = 8;
 }
 
 message ManagementToExternalConfigInfo {

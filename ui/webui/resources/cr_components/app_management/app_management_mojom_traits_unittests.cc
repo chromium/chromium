@@ -139,7 +139,7 @@ TEST(AppManagementMojomTraitsTest, RoundTripInstallReason) {
       apps::InstallReason::kPolicy,  apps::InstallReason::kOem,
       apps::InstallReason::kDefault, apps::InstallReason::kSync,
       apps::InstallReason::kUser,    apps::InstallReason::kSubApp,
-      apps::InstallReason::kKiosk};
+      apps::InstallReason::kKiosk,   apps::InstallReason::kCommandLine};
 
   for (auto install_reason_in : kTestInstallReason) {
     apps::InstallReason install_reason_out;
