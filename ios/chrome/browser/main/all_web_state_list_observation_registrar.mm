@@ -23,7 +23,7 @@ AllWebStateListObservationRegistrar::AllWebStateListObservationRegistrar(
       mode_(mode) {
   browser_list_->AddObserver(this);
 
-  // There may already be browsers in |browser_list| when this object is
+  // There may already be browsers in `browser_list` when this object is
   // created. Register as an observer for (mode permitting) both the regular and
   // incognito browsers' WebStateLists.
   if (mode_ & Mode::REGULAR) {
@@ -47,7 +47,7 @@ AllWebStateListObservationRegistrar::AllWebStateListObservationRegistrar(
                                           Mode::ALL) {}
 
 AllWebStateListObservationRegistrar::~AllWebStateListObservationRegistrar() {
-  // If the browser state has already shut down, |browser_list_| should be
+  // If the browser state has already shut down, `browser_list_` should be
   // nullptr; otherwise, stop observing it.
   if (browser_list_)
     browser_list_->RemoveObserver(this);
@@ -96,7 +96,7 @@ void AllWebStateListObservationRegistrar::OnBrowserListShutdown(
       scoped_observations_.RemoveObservation(browser->GetWebStateList());
     }
   }
-  // Stop observimg the browser list, and clear |browser_list_|.
+  // Stop observimg the browser list, and clear `browser_list_`.
   browser_list_->RemoveObserver(this);
   browser_list_ = nullptr;
 }

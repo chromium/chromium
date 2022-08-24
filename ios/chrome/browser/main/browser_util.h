@@ -9,7 +9,7 @@
 
 class Browser;
 
-// Moves the tab to the |destination_tab_index| in |destination_browser|. It is
+// Moves the tab to the `destination_tab_index` in `destination_browser`. It is
 // an error to try to move a tab across profiles (incognito <-> regular).
 void MoveTabToBrowser(NSString* tab_id,
                       Browser* destination_browser,

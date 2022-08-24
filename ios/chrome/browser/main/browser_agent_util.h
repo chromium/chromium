@@ -7,7 +7,7 @@
 
 class Browser;
 
-// Attaches browser agents to |browser|.
+// Attaches browser agents to `browser`.
 void AttachBrowserAgents(Browser* browser);
 
 #endif  // IOS_CHROME_BROWSER_MAIN_BROWSER_AGENT_UTIL_H_

@@ -12,7 +12,7 @@ class Browser;
 // Fake browser observer.
 class FakeBrowserObserver : public BrowserObserver {
  public:
-  // Constructor for a fake observer that observes |browser| upon construction
+  // Constructor for a fake observer that observes `browser` upon construction
   // until the BrowserDestroyed() signal is received.
   explicit FakeBrowserObserver(Browser* browser);
   ~FakeBrowserObserver() override;

@@ -52,7 +52,7 @@ class OverscrollActionsTabHelperTest : public PlatformTest {
     return overscroll_delegate_.headerView.subviews.firstObject;
   }
 
-  // Simulates scroll on the |scroll_view_proxy_| view, which should trigger
+  // Simulates scroll on the `scroll_view_proxy_` view, which should trigger
   // page refresh action.
   void SimulatePullForRefreshAction() {
     [ui_scroll_view_.delegate scrollViewWillBeginDragging:ui_scroll_view_];

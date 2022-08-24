@@ -49,7 +49,7 @@ void BrowserListFactory::BrowserStateShutdown(web::BrowserState* context) {
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
   // Because there's a single service instance of the BrowserList for both
-  // regular and OTR browser states, |BrowserStateShutdown| will be called when
+  // regular and OTR browser states, `BrowserStateShutdown` will be called when
   // OTR browser states are destroyed. Since this happens each time the last
   // incognito tab is closed, avoid a shutdown of the browser list when an OTR
   // browser state shuts down. Removing this early return will cause all browser

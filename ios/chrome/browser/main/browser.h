@@ -21,7 +21,7 @@ class WebStateList;
 // See src/docs/ios/objects.md for more information.
 class Browser : public base::SupportsUserData {
  public:
-  // Creates a new Browser attached to |browser_state|.
+  // Creates a new Browser attached to `browser_state`.
   static std::unique_ptr<Browser> Create(ChromeBrowserState* browser_state);
 
   Browser(const Browser&) = delete;

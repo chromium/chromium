@@ -23,7 +23,7 @@ class WebStateListDelegate;
 // See src/docs/ios/objects.md for more information.
 class BrowserImpl : public Browser {
  public:
-  // Constructs a BrowserImpl attached to |browser_state|.
+  // Constructs a BrowserImpl attached to `browser_state`.
   BrowserImpl(ChromeBrowserState* browser_state);
 
   BrowserImpl(const BrowserImpl&) = delete;

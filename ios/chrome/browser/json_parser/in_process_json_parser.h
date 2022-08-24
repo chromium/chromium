@@ -27,7 +27,7 @@ class InProcessJsonParser {
   using SuccessCallback = base::OnceCallback<void(base::Value)>;
   using ErrorCallback = base::OnceCallback<void(const std::string&)>;
 
-  // As with SafeJsonParser, runs either |success_callback| or |error_callback|
+  // As with SafeJsonParser, runs either `success_callback` or `error_callback`
   // on the calling thread, but not before the call returns.
   static void Parse(const std::string& unsafe_json,
                     SuccessCallback success_callback,

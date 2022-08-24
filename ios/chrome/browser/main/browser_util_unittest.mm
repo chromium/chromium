@@ -55,7 +55,7 @@ class BrowserUtilTest : public PlatformTest {
     AppendNewWebState(incognito_browser_.get());
   }
 
-  // Appends a new web state in the web state list of |browser|.
+  // Appends a new web state in the web state list of `browser`.
   web::FakeWebState* AppendNewWebState(Browser* browser) {
     auto fake_web_state = std::make_unique<web::FakeWebState>();
     web::FakeWebState* inserted_web_state = fake_web_state.get();
@@ -67,7 +67,7 @@ class BrowserUtilTest : public PlatformTest {
     return inserted_web_state;
   }
 
-  // Returns the tab ID for the web state at |index| in |browser|.
+  // Returns the tab ID for the web state at `index` in `browser`.
   NSString* GetTabIDForWebStateAt(int index, Browser* browser) {
     web::WebState* web_state = browser->GetWebStateList()->GetWebStateAt(index);
     return web_state->GetStableIdentifier();
