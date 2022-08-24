@@ -9,6 +9,7 @@
 #include <tuple>
 
 #include "base/allocator/partition_allocator/address_pool_manager.h"
+#include "base/allocator/partition_allocator/freeslot_bitmap.h"
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
@@ -704,8 +705,11 @@ PA_ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::AllocNewSuperPage(
 
   root->next_super_page = super_page + kSuperPageSize;
   // TODO(crbug.com/1307514): Add direct map support.
-  uintptr_t state_bitmap = super_page + PartitionPageSize() +
-                           (is_direct_mapped() ? 0 : ReservedTagBitmapSize());
+  uintptr_t state_bitmap =
+      super_page + PartitionPageSize() +
+      (is_direct_mapped()
+           ? 0
+           : ReservedTagBitmapSize() + ReservedFreeSlotBitmapSize());
   PA_DCHECK(SuperPageStateBitmapAddr(super_page) == state_bitmap);
   const size_t state_bitmap_reservation_size =
       root->IsQuarantineAllowed() ? ReservedStateBitmapSize() : 0;

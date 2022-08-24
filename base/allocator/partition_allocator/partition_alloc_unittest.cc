@@ -20,6 +20,7 @@
 #include "base/allocator/partition_allocator/address_space_randomization.h"
 #include "base/allocator/partition_allocator/chromecast_buildflags.h"
 #include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
+#include "base/allocator/partition_allocator/freeslot_bitmap.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
@@ -573,6 +574,7 @@ TEST_P(PartitionAllocTest, Basic) {
   // Check that the offset appears to include a guard page.
   EXPECT_EQ(PartitionPageSize() +
                 partition_alloc::internal::ReservedTagBitmapSize() +
+                partition_alloc::internal::ReservedFreeSlotBitmapSize() +
                 kPointerOffset,
             UntagPtr(ptr) & kSuperPageOffsetMask);
 
@@ -844,7 +846,8 @@ TEST_P(PartitionAllocTest, MultiPageAllocs) {
   // 1 super page has 2 guard partition pages and a tag bitmap.
   size_t num_slot_spans_needed =
       (NumPartitionPagesPerSuperPage() - 2 -
-       partition_alloc::internal::NumPartitionPagesPerTagBitmap()) /
+       partition_alloc::internal::NumPartitionPagesPerTagBitmap() -
+       partition_alloc::internal::NumPartitionPagesPerFreeSlotBitmap()) /
       num_pages_per_slot_span;
 
   // We need one more slot span in order to cross super page boundary.
@@ -867,7 +870,8 @@ TEST_P(PartitionAllocTest, MultiPageAllocs) {
       // Check that we allocated a guard page and the reserved tag bitmap for
       // the second page.
       EXPECT_EQ(PartitionPageSize() +
-                    partition_alloc::internal::ReservedTagBitmapSize(),
+                    partition_alloc::internal::ReservedTagBitmapSize() +
+                    partition_alloc::internal::ReservedFreeSlotBitmapSize(),
                 second_super_page_offset);
     }
   }
@@ -1824,7 +1828,8 @@ TEST_P(PartitionAllocTest, MappingCollision) {
   // guard pages. We also discount the partition pages used for the tag bitmap.
   size_t num_slot_span_needed =
       (NumPartitionPagesPerSuperPage() - 2 -
-       partition_alloc::internal::NumPartitionPagesPerTagBitmap()) /
+       partition_alloc::internal::NumPartitionPagesPerTagBitmap() -
+       partition_alloc::internal::NumPartitionPagesPerFreeSlotBitmap()) /
       num_pages_per_slot_span;
   size_t num_partition_pages_needed =
       num_slot_span_needed * num_pages_per_slot_span;
@@ -1840,11 +1845,14 @@ TEST_P(PartitionAllocTest, MappingCollision) {
 
   uintptr_t slot_spart_start =
       SlotSpan::ToSlotSpanStart(first_super_page_pages[0]);
-  EXPECT_EQ(
-      PartitionPageSize() + partition_alloc::internal::ReservedTagBitmapSize(),
-      slot_spart_start & kSuperPageOffsetMask);
-  uintptr_t super_page = slot_spart_start - PartitionPageSize() -
-                         partition_alloc::internal::ReservedTagBitmapSize();
+  EXPECT_EQ(PartitionPageSize() +
+                partition_alloc::internal::ReservedTagBitmapSize() +
+                partition_alloc::internal::ReservedFreeSlotBitmapSize(),
+            slot_spart_start & kSuperPageOffsetMask);
+  uintptr_t super_page =
+      slot_spart_start - PartitionPageSize() -
+      partition_alloc::internal::ReservedTagBitmapSize() -
+      partition_alloc::internal::ReservedFreeSlotBitmapSize();
   // Map a single system page either side of the mapping for our allocations,
   // with the goal of tripping up alignment of the next mapping.
   uintptr_t map1 = AllocPages(
@@ -1865,11 +1873,13 @@ TEST_P(PartitionAllocTest, MappingCollision) {
   FreePages(map2, PageAllocationGranularity());
 
   super_page = SlotSpan::ToSlotSpanStart(second_super_page_pages[0]);
-  EXPECT_EQ(
-      PartitionPageSize() + partition_alloc::internal::ReservedTagBitmapSize(),
-      super_page & kSuperPageOffsetMask);
-  super_page -=
-      PartitionPageSize() - partition_alloc::internal::ReservedTagBitmapSize();
+  EXPECT_EQ(PartitionPageSize() +
+                partition_alloc::internal::ReservedTagBitmapSize() +
+                partition_alloc::internal::ReservedFreeSlotBitmapSize(),
+            super_page & kSuperPageOffsetMask);
+  super_page -= PartitionPageSize() +
+                partition_alloc::internal::ReservedTagBitmapSize() +
+                partition_alloc::internal::ReservedFreeSlotBitmapSize();
   // Map a single system page either side of the mapping for our allocations,
   // with the goal of tripping up alignment of the next mapping.
   map1 = AllocPages(super_page - PageAllocationGranularity(),

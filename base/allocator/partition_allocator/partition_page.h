@@ -12,6 +12,7 @@
 
 #include "base/allocator/partition_allocator/address_pool_manager.h"
 #include "base/allocator/partition_allocator/address_pool_manager_types.h"
+#include "base/allocator/partition_allocator/freeslot_bitmap.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
@@ -457,8 +458,11 @@ CommittedStateBitmapSize() {
 PA_ALWAYS_INLINE uintptr_t SuperPageStateBitmapAddr(uintptr_t super_page) {
   PA_DCHECK(!(super_page % kSuperPageAlignment));
   return super_page + PartitionPageSize() +
-         (IsManagedByNormalBuckets(super_page) ? ReservedTagBitmapSize() : 0);
+         (IsManagedByNormalBuckets(super_page)
+              ? ReservedTagBitmapSize() + ReservedFreeSlotBitmapSize()
+              : 0);
 }
+
 PA_ALWAYS_INLINE AllocationStateMap* SuperPageStateBitmap(
     uintptr_t super_page) {
   return reinterpret_cast<AllocationStateMap*>(
@@ -473,11 +477,21 @@ PA_ALWAYS_INLINE uintptr_t SuperPageTagBitmapAddr(uintptr_t super_page) {
   return super_page + PartitionPageSize();
 }
 
+#if BUILDFLAG(USE_FREESLOT_BITMAP)
+PA_ALWAYS_INLINE uintptr_t SuperPageFreeSlotBitmapAddr(uintptr_t super_page) {
+  PA_DCHECK(!(super_page % kSuperPageAlignment));
+  return super_page + PartitionPageSize() +
+         (IsManagedByNormalBuckets(super_page) ? ReservedTagBitmapSize() : 0);
+}
+#endif
+
 PA_ALWAYS_INLINE uintptr_t SuperPagePayloadBegin(uintptr_t super_page,
                                                  bool with_quarantine) {
   PA_DCHECK(!(super_page % kSuperPageAlignment));
   return super_page + PartitionPageSize() +
-         (IsManagedByNormalBuckets(super_page) ? ReservedTagBitmapSize() : 0) +
+         (IsManagedByNormalBuckets(super_page)
+              ? ReservedTagBitmapSize() + ReservedFreeSlotBitmapSize()
+              : 0) +
          (with_quarantine ? ReservedStateBitmapSize() : 0);
 }
 

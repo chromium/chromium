@@ -65,6 +65,7 @@ target(partition_alloc_target_type, "partition_alloc") {
     "allocation_guard.h",
     "dangling_raw_ptr_checks.cc",
     "dangling_raw_ptr_checks.h",
+    "freeslot_bitmap.h",
     "memory_reclaimer.cc",
     "memory_reclaimer.h",
     "oom.cc",
