@@ -614,8 +614,8 @@ bool SearchSuggestionParser::ParseSuggestResults(
           if (base::StringToInt(it.first, &suggestion_group_id)) {
             parsed_suggestion_groups_map[suggestion_group_id]
                 .original_group_id = suggestion_group_id;
-            parsed_suggestion_groups_map[suggestion_group_id].header =
-                base::UTF8ToUTF16(it.second.GetString());
+            parsed_suggestion_groups_map[suggestion_group_id]
+                .group_config_info.set_header_text(it.second.GetString());
           }
         }
       }
@@ -624,7 +624,9 @@ bool SearchSuggestionParser::ParseSuggestResults(
       if (hidden_group_ids) {
         for (const auto& value : hidden_group_ids->GetListDeprecated()) {
           if (value.is_int()) {
-            parsed_suggestion_groups_map[value.GetInt()].hidden = true;
+            parsed_suggestion_groups_map[value.GetInt()]
+                .group_config_info.set_visibility(
+                    omnibox::GroupConfigInfo_Visibility_HIDDEN);
           }
         }
       }

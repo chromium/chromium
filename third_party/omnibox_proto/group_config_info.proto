@@ -8,7 +8,7 @@ option optimize_for = LITE_RUNTIME;
 option java_package = 'org.chromium.components.omnibox';
 option java_outer_classname = 'GroupConfigInfoProto';
 
-package omnibox_proto;
+package omnibox;
 
 // Suggestion group configurations supported by the Chrome Omnibox.
 message GroupConfigInfo {

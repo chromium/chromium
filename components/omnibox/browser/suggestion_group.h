@@ -9,6 +9,7 @@
 #include <unordered_map>
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/omnibox_proto/group_config_info.pb.h"
 
 // Determines the order in which suggestion groups appear in the final displayed
 // list relative to one another. A higher numeric value places a given group
@@ -79,7 +80,8 @@ struct SuggestionGroup {
   SuggestionGroup(const SuggestionGroup&) = delete;
   SuggestionGroup& operator=(const SuggestionGroup&) = delete;
 
-  void MergeFrom(const SuggestionGroup& suggestion_group);
+  // Merges the fields from |from|, if specified in |from|.
+  void MergeFrom(const SuggestionGroup& other);
   void Clear();
 
   // Determines how this group is placed in the final list of suggestions with
@@ -88,10 +90,8 @@ struct SuggestionGroup {
   SuggestionGroupPriority priority{SuggestionGroupPriority::kDefault};
   // The original group ID provided by the server, if applicable.
   absl::optional<int> original_group_id;
-  // Group header provided by the server, if applicable.
-  std::u16string header{u""};
-  // Default visibility provided by the server, if applicable.
-  bool hidden{false};
+  // The Suggestion group configurations.
+  omnibox::GroupConfigInfo group_config_info;
 };
 
 // A map of SuggestionGroupId to SuggestionGroup.

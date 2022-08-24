@@ -254,6 +254,7 @@ static_library("browser") {
     "//components/omnibox/resources:omnibox_resources",
     "//components/security_state/core",
     "//third_party/metrics_proto",
+    "//third_party/omnibox_proto",
     "//url",
   ]
   deps = [

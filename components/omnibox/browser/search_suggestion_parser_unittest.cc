@@ -376,10 +376,10 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo) {
     ASSERT_EQ(2U, results.suggestion_groups_map.size());
 
     ASSERT_EQ(
-        u"Recent Searches",
+        "Recent Searches",
         results
             .suggestion_groups_map[SuggestionGroupId::kPersonalizedZeroSuggest]
-            .header);
+            .group_config_info.header_text());
     ASSERT_EQ(
         40000,
         results
@@ -390,24 +390,26 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo) {
         results
             .suggestion_groups_map[SuggestionGroupId::kPersonalizedZeroSuggest]
             .priority);
-    ASSERT_TRUE(
+    ASSERT_EQ(
+        omnibox::GroupConfigInfo_Visibility_HIDDEN,
         results
             .suggestion_groups_map[SuggestionGroupId::kPersonalizedZeroSuggest]
-            .hidden);
+            .group_config_info.visibility());
 
-    ASSERT_EQ(u"Recommended for you",
+    ASSERT_EQ("Recommended for you",
               results
                   .suggestion_groups_map
                       [SuggestionGroupId::kNonPersonalizedZeroSuggest2]
-                  .header);
+                  .group_config_info.header_text());
     ASSERT_EQ(40008, results
                          .suggestion_groups_map
                              [SuggestionGroupId::kNonPersonalizedZeroSuggest2]
                          .original_group_id.value());
-    ASSERT_FALSE(results
-                     .suggestion_groups_map
-                         [SuggestionGroupId::kNonPersonalizedZeroSuggest2]
-                     .hidden);
+    ASSERT_EQ(omnibox::GroupConfigInfo_Visibility_DEFAULT_VISIBLE,
+              results
+                  .suggestion_groups_map
+                      [SuggestionGroupId::kNonPersonalizedZeroSuggest2]
+                  .group_config_info.visibility());
     ASSERT_EQ(SuggestionGroupPriority::kRemoteZeroSuggest2,
               results
                   .suggestion_groups_map
@@ -478,19 +480,20 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo) {
     // visibilities are correctly parsed and populated.
     ASSERT_EQ(2U, results.suggestion_groups_map.size());
 
-    ASSERT_EQ(u"Recommended for you",
+    ASSERT_EQ("Recommended for you",
               results
                   .suggestion_groups_map
                       [SuggestionGroupId::kNonPersonalizedZeroSuggest1]
-                  .header);
+                  .group_config_info.header_text());
     ASSERT_EQ(40008, results
                          .suggestion_groups_map
                              [SuggestionGroupId::kNonPersonalizedZeroSuggest1]
                          .original_group_id.value());
-    ASSERT_FALSE(results
-                     .suggestion_groups_map
-                         [SuggestionGroupId::kNonPersonalizedZeroSuggest1]
-                     .hidden);
+    ASSERT_EQ(omnibox::GroupConfigInfo_Visibility_DEFAULT_VISIBLE,
+              results
+                  .suggestion_groups_map
+                      [SuggestionGroupId::kNonPersonalizedZeroSuggest1]
+                  .group_config_info.visibility());
     ASSERT_EQ(SuggestionGroupPriority::kRemoteZeroSuggest1,
               results
                   .suggestion_groups_map
@@ -498,10 +501,10 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo) {
                   .priority);
 
     ASSERT_EQ(
-        u"Recent Searches",
+        "Recent Searches",
         results
             .suggestion_groups_map[SuggestionGroupId::kPersonalizedZeroSuggest]
-            .header);
+            .group_config_info.header_text());
     ASSERT_EQ(
         40000,
         results
@@ -512,10 +515,11 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo) {
         results
             .suggestion_groups_map[SuggestionGroupId::kPersonalizedZeroSuggest]
             .priority);
-    ASSERT_TRUE(
+    ASSERT_EQ(
+        omnibox::GroupConfigInfo_Visibility_HIDDEN,
         results
             .suggestion_groups_map[SuggestionGroupId::kPersonalizedZeroSuggest]
-            .hidden);
+            .group_config_info.visibility());
 
     ASSERT_EQ(u"los angeles", results.suggest_results[0].suggestion());
     ASSERT_EQ(SuggestionGroupId::kNonPersonalizedZeroSuggest1,
@@ -581,11 +585,11 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo) {
     // visibilities are correctly parsed and populated.
     ASSERT_EQ(3U, results.suggestion_groups_map.size());
 
-    ASSERT_EQ(u"Recommended for you",
+    ASSERT_EQ("Recommended for you",
               results
                   .suggestion_groups_map
                       [SuggestionGroupId::kNonPersonalizedZeroSuggest1]
-                  .header);
+                  .group_config_info.header_text());
     ASSERT_EQ(40008, results
                          .suggestion_groups_map
                              [SuggestionGroupId::kNonPersonalizedZeroSuggest1]
@@ -595,43 +599,46 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo) {
                   .suggestion_groups_map
                       [SuggestionGroupId::kNonPersonalizedZeroSuggest1]
                   .priority);
-    ASSERT_FALSE(results
-                     .suggestion_groups_map
-                         [SuggestionGroupId::kNonPersonalizedZeroSuggest1]
-                     .hidden);
+    ASSERT_EQ(omnibox::GroupConfigInfo_Visibility_DEFAULT_VISIBLE,
+              results
+                  .suggestion_groups_map
+                      [SuggestionGroupId::kNonPersonalizedZeroSuggest1]
+                  .group_config_info.visibility());
 
-    ASSERT_EQ(u"Related Searches",
+    ASSERT_EQ("Related Searches",
               results
                   .suggestion_groups_map
                       [SuggestionGroupId::kNonPersonalizedZeroSuggest2]
-                  .header);
+                  .group_config_info.header_text());
     ASSERT_EQ(40007, results
                          .suggestion_groups_map
                              [SuggestionGroupId::kNonPersonalizedZeroSuggest2]
                          .original_group_id.value());
-    ASSERT_TRUE(results
-                    .suggestion_groups_map
-                        [SuggestionGroupId::kNonPersonalizedZeroSuggest2]
-                    .hidden);
+    ASSERT_EQ(omnibox::GroupConfigInfo_Visibility_HIDDEN,
+              results
+                  .suggestion_groups_map
+                      [SuggestionGroupId::kNonPersonalizedZeroSuggest2]
+                  .group_config_info.visibility());
     ASSERT_EQ(SuggestionGroupPriority::kRemoteZeroSuggest2,
               results
                   .suggestion_groups_map
                       [SuggestionGroupId::kNonPersonalizedZeroSuggest2]
                   .priority);
 
-    ASSERT_EQ(u"NOT RECOMMENDED FOR YOU",
+    ASSERT_EQ("NOT RECOMMENDED FOR YOU",
               results
                   .suggestion_groups_map
                       [SuggestionGroupId::kNonPersonalizedZeroSuggest3]
-                  .header);
+                  .group_config_info.header_text());
     ASSERT_EQ(40009, results
                          .suggestion_groups_map
                              [SuggestionGroupId::kNonPersonalizedZeroSuggest3]
                          .original_group_id.value());
-    ASSERT_FALSE(results
-                     .suggestion_groups_map
-                         [SuggestionGroupId::kNonPersonalizedZeroSuggest3]
-                     .hidden);
+    ASSERT_EQ(omnibox::GroupConfigInfo_Visibility_DEFAULT_VISIBLE,
+              results
+                  .suggestion_groups_map
+                      [SuggestionGroupId::kNonPersonalizedZeroSuggest3]
+                  .group_config_info.visibility());
     ASSERT_EQ(SuggestionGroupPriority::kRemoteZeroSuggest3,
               results
                   .suggestion_groups_map

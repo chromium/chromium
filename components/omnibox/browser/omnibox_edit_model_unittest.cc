@@ -750,8 +750,10 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
   result->AppendMatches(matches);
 
   SuggestionGroupsMap suggestion_groups_map;
-  suggestion_groups_map[kNewGroupId].header = u"header";
-  suggestion_groups_map[SuggestionGroupId::kHistoryCluster].header = u"";
+  suggestion_groups_map[kNewGroupId].group_config_info.set_header_text(
+      "header");
+  suggestion_groups_map[SuggestionGroupId::kHistoryCluster]
+      .group_config_info.set_header_text("");
 
   // Do not set the original_group_id on purpose to test that default visibility
   // can be safely queried via AutocompleteResult::IsSuggestionGroupHidden().
@@ -842,7 +844,8 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelectionWithHiddenGroupIds) {
   result->AppendMatches(matches);
 
   SuggestionGroupsMap suggestion_groups_map;
-  suggestion_groups_map[kNewGroupId].header = u"header";
+  suggestion_groups_map[kNewGroupId].group_config_info.set_header_text(
+      "header");
   suggestion_groups_map[kNewGroupId].original_group_id = 12345;
   // Setting the original_group_id allows the default visibility to be set via
   // AutocompleteResult::SetSuggestionGroupHidden().
@@ -918,7 +921,8 @@ TEST_F(OmniboxEditModelPopupTest, PopupInlineAutocompleteAndTemporaryText) {
   result->AppendMatches(matches);
 
   SuggestionGroupsMap suggestion_groups_map;
-  suggestion_groups_map[kNewGroupId].header = u"header";
+  suggestion_groups_map[kNewGroupId].group_config_info.set_header_text(
+      "header");
   // Do not set the original_group_id on purpose to test that default visibility
   // can be safely queried via AutocompleteResult::IsSuggestionGroupHidden().
   result->MergeSuggestionGroupsMap(suggestion_groups_map);
