@@ -53,6 +53,14 @@ class ConfigBase final : public TargetConfig {
 
   bool IsConfigured() const override;
 
+  ResultCode SetTokenLevel(TokenLevel initial, TokenLevel lockdown) override;
+  TokenLevel GetInitialTokenLevel() const override;
+  TokenLevel GetLockdownTokenLevel() const override;
+  ResultCode SetJobLevel(JobLevel job_level, uint32_t ui_exceptions) override;
+  JobLevel GetJobLevel() const override;
+  ResultCode SetJobMemoryLimit(size_t memory_limit) override;
+  void SetAllowNoSandboxJob() override;
+  bool GetAllowNoSandboxJob() override;
   ResultCode AddRule(SubSystem subsystem,
                      Semantics semantics,
                      const wchar_t* pattern) override;
@@ -106,13 +114,21 @@ class ConfigBase final : public TargetConfig {
   IntegrityLevel delayed_integrity_level() { return delayed_integrity_level_; }
   bool add_restricting_random_sid() { return add_restricting_random_sid_; }
   bool lockdown_default_dacl() { return lockdown_default_dacl_; }
+  size_t memory_limit() { return memory_limit_; }
+  uint32_t ui_exceptions() { return ui_exceptions_; }
 
+  TokenLevel lockdown_level_;
+  TokenLevel initial_level_;
+  JobLevel job_level_;
   IntegrityLevel integrity_level_;
   IntegrityLevel delayed_integrity_level_;
   MitigationFlags mitigations_;
   MitigationFlags delayed_mitigations_;
   bool add_restricting_random_sid_;
   bool lockdown_default_dacl_;
+  bool allow_no_sandbox_job_;
+  size_t memory_limit_;
+  uint32_t ui_exceptions_;
 
   // Object in charge of generating the low level policy. Will be reset() when
   // Freeze() is called.
@@ -135,12 +151,6 @@ class PolicyBase final : public TargetPolicy {
 
   // TargetPolicy:
   TargetConfig* GetConfig() override;
-  ResultCode SetTokenLevel(TokenLevel initial, TokenLevel lockdown) override;
-  TokenLevel GetInitialTokenLevel() const override;
-  TokenLevel GetLockdownTokenLevel() const override;
-  ResultCode SetJobLevel(JobLevel job_level, uint32_t ui_exceptions) override;
-  JobLevel GetJobLevel() const override;
-  ResultCode SetJobMemoryLimit(size_t memory_limit) override;
   ResultCode SetAlternateDesktop(bool alternate_winstation) override;
   std::wstring GetAlternateDesktop() const override;
   ResultCode CreateAlternateDesktop(bool alternate_winstation) override;
@@ -152,8 +162,6 @@ class PolicyBase final : public TargetPolicy {
                                     const wchar_t* handle_name) override;
   void AddHandleToShare(HANDLE handle) override;
   void SetEffectiveToken(HANDLE token) override;
-  void SetAllowNoSandboxJob() override;
-  bool GetAllowNoSandboxJob() override;
 
   // Creates a Job object with the level specified in a previous call to
   // SetJobLevel().
@@ -227,11 +235,6 @@ class PolicyBase final : public TargetPolicy {
   // The policy takes ownership of a target as it is applied to it.
   std::unique_ptr<TargetProcess> target_;
   // The user-defined global policy settings.
-  TokenLevel lockdown_level_;
-  TokenLevel initial_level_;
-  JobLevel job_level_;
-  uint32_t ui_exceptions_;
-  size_t memory_limit_;
   bool use_alternate_desktop_;
   bool use_alternate_winstation_;
   HANDLE stdout_handle_;
@@ -256,7 +259,6 @@ class PolicyBase final : public TargetPolicy {
   base::HandlesToInheritVector handles_to_share_;
 
   HANDLE effective_token_;
-  bool allow_no_sandbox_job_;
   Job job_;
 };
 

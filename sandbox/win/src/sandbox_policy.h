@@ -64,6 +64,78 @@ class [[clang::lto_visibility_public]] TargetConfig {
   // this policy object.
   virtual bool IsConfigured() const = 0;
 
+  // Sets the security level for the target process' two tokens.
+  // This setting is permanent and cannot be changed once the target process is
+  // spawned.
+  // initial: the security level for the initial token. This is the token that
+  //   is used by the process from the creation of the process until the moment
+  //   the process calls TargetServices::LowerToken() or the process calls
+  //   win32's RevertToSelf(). Once this happens the initial token is no longer
+  //   available and the lockdown token is in effect. Using an initial token is
+  //   not compatible with AppContainer, see SetAppContainer.
+  // lockdown: the security level for the token that comes into force after the
+  //   process calls TargetServices::LowerToken() or the process calls
+  //   RevertToSelf(). See the explanation of each level in the TokenLevel
+  //   definition.
+  // Return value: SBOX_ALL_OK if the setting succeeds and false otherwise.
+  //   Returns false if the lockdown value is more permissive than the initial
+  //   value.
+  //
+  // Important: most of the sandbox-provided security relies on this single
+  // setting. The caller should strive to set the lockdown level as restricted
+  // as possible.
+  virtual ResultCode SetTokenLevel(TokenLevel initial, TokenLevel lockdown) = 0;
+
+  // Returns the initial token level.
+  virtual TokenLevel GetInitialTokenLevel() const = 0;
+
+  // Returns the lockdown token level.
+  virtual TokenLevel GetLockdownTokenLevel() const = 0;
+
+  // Sets the security level of the Job Object to which the target process will
+  // belong. This setting is permanent and cannot be changed once the target
+  // process is spawned. The job controls the global security settings which
+  // can not be specified in the token security profile.
+  // job_level: the security level for the job. See the explanation of each
+  //   level in the JobLevel definition.
+  // ui_exceptions: specify what specific rights that are disabled in the
+  //   chosen job_level that need to be granted. Use this parameter to avoid
+  //   selecting the next permissive job level unless you need all the rights
+  //   that are granted in such level.
+  //   The exceptions can be specified as a combination of the following
+  //   constants:
+  // JOB_OBJECT_UILIMIT_HANDLES : grant access to all user-mode handles. These
+  //   include windows, icons, menus and various GDI objects. In addition the
+  //   target process can set hooks, and broadcast messages to other processes
+  //   that belong to the same desktop.
+  // JOB_OBJECT_UILIMIT_READCLIPBOARD : grant read-only access to the clipboard.
+  // JOB_OBJECT_UILIMIT_WRITECLIPBOARD : grant write access to the clipboard.
+  // JOB_OBJECT_UILIMIT_SYSTEMPARAMETERS : allow changes to the system-wide
+  //   parameters as defined by the Win32 call SystemParametersInfo().
+  // JOB_OBJECT_UILIMIT_DISPLAYSETTINGS : allow programmatic changes to the
+  //  display settings.
+  // JOB_OBJECT_UILIMIT_GLOBALATOMS : allow access to the global atoms table.
+  // JOB_OBJECT_UILIMIT_DESKTOP : allow the creation of new desktops.
+  // JOB_OBJECT_UILIMIT_EXITWINDOWS : allow the call to ExitWindows().
+  //
+  // Return value: SBOX_ALL_OK if the setting succeeds and false otherwise.
+  //
+  // Note: JOB_OBJECT_XXXX constants are defined in winnt.h and documented at
+  // length in:
+  //   http://msdn2.microsoft.com/en-us/library/ms684152.aspx
+  //
+  // Note: the recommended level is JobLevel::kLockdown.
+  virtual ResultCode SetJobLevel(JobLevel job_level,
+                                 uint32_t ui_exceptions) = 0;
+
+  // Returns the job level.
+  virtual JobLevel GetJobLevel() const = 0;
+
+  // Sets a hard limit on the size of the commit set for the sandboxed process.
+  // If the limit is reached, the process will be terminated with
+  // SBOX_FATAL_MEMORY_EXCEEDED (7012).
+  virtual ResultCode SetJobMemoryLimit(size_t memory_limit) = 0;
+
   // Adds a policy rule effective for processes spawned using this policy.
   // subsystem: One of the above enumerated windows subsystems.
   // semantics: One of the above enumerated FileSemantics.
@@ -138,6 +210,13 @@ class [[clang::lto_visibility_public]] TargetConfig {
 
   // Get the configured AppContainer.
   virtual scoped_refptr<AppContainer> GetAppContainer() = 0;
+
+  // Allows the launch of the the target process to proceed even if no job can
+  // be created.
+  virtual void SetAllowNoSandboxJob() = 0;
+
+  // Returns true if target process launch should proceed if job creation fails.
+  virtual bool GetAllowNoSandboxJob() = 0;
 };
 
 // We need [[clang::lto_visibility_public]] because instances of this class are
@@ -149,78 +228,6 @@ class [[clang::lto_visibility_public]] TargetPolicy {
 
   // Fetches the backing TargetConfig for this policy.
   virtual TargetConfig* GetConfig() = 0;
-
-  // Sets the security level for the target process' two tokens.
-  // This setting is permanent and cannot be changed once the target process is
-  // spawned.
-  // initial: the security level for the initial token. This is the token that
-  //   is used by the process from the creation of the process until the moment
-  //   the process calls TargetServices::LowerToken() or the process calls
-  //   win32's RevertToSelf(). Once this happens the initial token is no longer
-  //   available and the lockdown token is in effect. Using an initial token is
-  //   not compatible with AppContainer, see SetAppContainer.
-  // lockdown: the security level for the token that comes into force after the
-  //   process calls TargetServices::LowerToken() or the process calls
-  //   RevertToSelf(). See the explanation of each level in the TokenLevel
-  //   definition.
-  // Return value: SBOX_ALL_OK if the setting succeeds and false otherwise.
-  //   Returns false if the lockdown value is more permissive than the initial
-  //   value.
-  //
-  // Important: most of the sandbox-provided security relies on this single
-  // setting. The caller should strive to set the lockdown level as restricted
-  // as possible.
-  virtual ResultCode SetTokenLevel(TokenLevel initial, TokenLevel lockdown) = 0;
-
-  // Returns the initial token level.
-  virtual TokenLevel GetInitialTokenLevel() const = 0;
-
-  // Returns the lockdown token level.
-  virtual TokenLevel GetLockdownTokenLevel() const = 0;
-
-  // Sets the security level of the Job Object to which the target process will
-  // belong. This setting is permanent and cannot be changed once the target
-  // process is spawned. The job controls the global security settings which
-  // can not be specified in the token security profile.
-  // job_level: the security level for the job. See the explanation of each
-  //   level in the JobLevel definition.
-  // ui_exceptions: specify what specific rights that are disabled in the
-  //   chosen job_level that need to be granted. Use this parameter to avoid
-  //   selecting the next permissive job level unless you need all the rights
-  //   that are granted in such level.
-  //   The exceptions can be specified as a combination of the following
-  //   constants:
-  // JOB_OBJECT_UILIMIT_HANDLES : grant access to all user-mode handles. These
-  //   include windows, icons, menus and various GDI objects. In addition the
-  //   target process can set hooks, and broadcast messages to other processes
-  //   that belong to the same desktop.
-  // JOB_OBJECT_UILIMIT_READCLIPBOARD : grant read-only access to the clipboard.
-  // JOB_OBJECT_UILIMIT_WRITECLIPBOARD : grant write access to the clipboard.
-  // JOB_OBJECT_UILIMIT_SYSTEMPARAMETERS : allow changes to the system-wide
-  //   parameters as defined by the Win32 call SystemParametersInfo().
-  // JOB_OBJECT_UILIMIT_DISPLAYSETTINGS : allow programmatic changes to the
-  //  display settings.
-  // JOB_OBJECT_UILIMIT_GLOBALATOMS : allow access to the global atoms table.
-  // JOB_OBJECT_UILIMIT_DESKTOP : allow the creation of new desktops.
-  // JOB_OBJECT_UILIMIT_EXITWINDOWS : allow the call to ExitWindows().
-  //
-  // Return value: SBOX_ALL_OK if the setting succeeds and false otherwise.
-  //
-  // Note: JOB_OBJECT_XXXX constants are defined in winnt.h and documented at
-  // length in:
-  //   http://msdn2.microsoft.com/en-us/library/ms684152.aspx
-  //
-  // Note: the recommended level is JobLevel::kLockdown.
-  virtual ResultCode SetJobLevel(JobLevel job_level,
-                                 uint32_t ui_exceptions) = 0;
-
-  // Returns the job level.
-  virtual JobLevel GetJobLevel() const = 0;
-
-  // Sets a hard limit on the size of the commit set for the sandboxed process.
-  // If the limit is reached, the process will be terminated with
-  // SBOX_FATAL_MEMORY_EXCEEDED (7012).
-  virtual ResultCode SetJobMemoryLimit(size_t memory_limit) = 0;
 
   // Specifies the desktop on which the application is going to run. If the
   // desktop does not exist, it will be created. If alternate_winstation is
@@ -264,13 +271,6 @@ class [[clang::lto_visibility_public]] TargetPolicy {
   // lockdown tokens. The token the caller passes must remain valid for the
   // lifetime of the policy object.
   virtual void SetEffectiveToken(HANDLE token) = 0;
-
-  // Allows the launch of the the target process to proceed even if no job can
-  // be created.
-  virtual void SetAllowNoSandboxJob() = 0;
-
-  // Returns true if target process launch should proceed if job creation fails.
-  virtual bool GetAllowNoSandboxJob() = 0;
 };
 
 }  // namespace sandbox

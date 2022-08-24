@@ -280,7 +280,7 @@ TEST(PolicyTargetTest, InheritedDesktopPolicy) {
 
   auto policy = broker->CreatePolicy();
   policy->SetAlternateDesktop(false);
-  policy->SetTokenLevel(USER_INTERACTIVE, USER_LOCKDOWN);
+  policy->GetConfig()->SetTokenLevel(USER_INTERACTIVE, USER_LOCKDOWN);
   PROCESS_INFORMATION temp_process_info = {};
   result =
       broker->SpawnTarget(prog_name, arguments.c_str(), std::move(policy),
@@ -334,7 +334,7 @@ TEST(PolicyTargetTest, DesktopPolicy) {
 
   auto policy = broker->CreatePolicy();
   policy->SetAlternateDesktop(false);
-  policy->SetTokenLevel(USER_INTERACTIVE, USER_LOCKDOWN);
+  policy->GetConfig()->SetTokenLevel(USER_INTERACTIVE, USER_LOCKDOWN);
   PROCESS_INFORMATION temp_process_info = {};
   // Keep the desktop name to test against later.
   std::wstring desktop_name = policy->GetAlternateDesktop();
@@ -396,7 +396,7 @@ TEST(PolicyTargetTest, WinstaPolicy) {
 
   auto policy = broker->CreatePolicy();
   policy->SetAlternateDesktop(true);
-  policy->SetTokenLevel(USER_INTERACTIVE, USER_LOCKDOWN);
+  policy->GetConfig()->SetTokenLevel(USER_INTERACTIVE, USER_LOCKDOWN);
   PROCESS_INFORMATION temp_process_info = {};
   DWORD last_error = ERROR_SUCCESS;
   // Keep the desktop name for later.
@@ -505,7 +505,7 @@ TEST(PolicyTargetTest, ShareHandleTest) {
   ResultCode warning_result = SBOX_ALL_OK;
   base::win::ScopedProcessInformation target;
 
-  policy->SetTokenLevel(USER_INTERACTIVE, USER_LOCKDOWN);
+  policy->GetConfig()->SetTokenLevel(USER_INTERACTIVE, USER_LOCKDOWN);
   PROCESS_INFORMATION temp_process_info = {};
   DWORD last_error = ERROR_SUCCESS;
   result =

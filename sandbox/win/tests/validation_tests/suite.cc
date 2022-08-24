@@ -248,8 +248,8 @@ TEST(ValidationSuite, TestProcessDenyLockdown) {
 std::unique_ptr<TestRunner> ProcessDenyLowIntegrityRunner() {
   auto runner = std::make_unique<TestRunner>();
   runner->GetPolicy()->GetConfig()->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
-  runner->GetPolicy()->SetTokenLevel(USER_RESTRICTED_SAME_ACCESS,
-                                     USER_INTERACTIVE);
+  runner->GetPolicy()->GetConfig()->SetTokenLevel(USER_RESTRICTED_SAME_ACCESS,
+                                                  USER_INTERACTIVE);
   return runner;
 }
 
@@ -270,8 +270,8 @@ std::unique_ptr<TestRunner> ProcessDenyBelowLowIntegrityRunner() {
   auto runner = std::make_unique<TestRunner>();
   runner->GetPolicy()->GetConfig()->SetDelayedIntegrityLevel(
       INTEGRITY_LEVEL_UNTRUSTED);
-  runner->GetPolicy()->SetTokenLevel(USER_RESTRICTED_SAME_ACCESS,
-                                     USER_INTERACTIVE);
+  runner->GetPolicy()->GetConfig()->SetTokenLevel(USER_RESTRICTED_SAME_ACCESS,
+                                                  USER_INTERACTIVE);
   return runner;
 }
 
@@ -280,8 +280,8 @@ TEST(ValidationSuite, TestProcessDenyBelowLowIntegrity) {
   TestRunner target;
   target.SetAsynchronous(true);
   target.GetPolicy()->GetConfig()->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
-  target.GetPolicy()->SetTokenLevel(USER_RESTRICTED_SAME_ACCESS,
-                                    USER_INTERACTIVE);
+  target.GetPolicy()->GetConfig()->SetTokenLevel(USER_RESTRICTED_SAME_ACCESS,
+                                                 USER_INTERACTIVE);
 
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, target.RunTest(L"SleepCmd 30000"));
 
@@ -304,7 +304,7 @@ TEST(ValidationSuite, TestMemoryLimit) {
   const int kAllocationSize = 256 * 1024 * 1024;
 
   wsprintf(command, L"AllocateCmd %d", kAllocationSize);
-  runner.GetPolicy()->SetJobMemoryLimit(kAllocationSize);
+  runner.GetPolicy()->GetConfig()->SetJobMemoryLimit(kAllocationSize);
   EXPECT_EQ(SBOX_FATAL_MEMORY_EXCEEDED, runner.RunTest(command));
 }
 

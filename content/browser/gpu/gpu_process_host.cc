@@ -400,15 +400,19 @@ class GpuSandboxedProcessLauncherDelegate
   // backend. Note that the GPU process is connected to the interactive
   // desktop.
   bool PreSpawnTarget(sandbox::TargetPolicy* policy) override {
+    sandbox::TargetConfig* config = policy->GetConfig();
+    if (config->IsConfigured())
+      return true;
+
     if (UseOpenGLRenderer()) {
       // Open GL path.
-      policy->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS,
+      config->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS,
                             sandbox::USER_LIMITED);
       sandbox::policy::SandboxWin::SetJobLevel(sandbox::mojom::Sandbox::kGpu,
                                                sandbox::JobLevel::kUnprotected,
-                                               0, policy);
+                                               0, config);
     } else {
-      policy->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS,
+      config->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS,
                             sandbox::USER_LIMITED);
 
       // UI restrictions break when we access Windows from outside our job.
@@ -422,12 +426,8 @@ class GpuSandboxedProcessLauncherDelegate
           JOB_OBJECT_UILIMIT_SYSTEMPARAMETERS | JOB_OBJECT_UILIMIT_DESKTOP |
               JOB_OBJECT_UILIMIT_EXITWINDOWS |
               JOB_OBJECT_UILIMIT_DISPLAYSETTINGS,
-          policy);
+          config);
     }
-
-    sandbox::TargetConfig* config = policy->GetConfig();
-    if (config->IsConfigured())
-      return true;
 
     // Check if we are running on the winlogon desktop and set a delayed
     // integrity in this case. This is needed because a low integrity gpu

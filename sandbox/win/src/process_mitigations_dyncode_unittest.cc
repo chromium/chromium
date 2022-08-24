@@ -304,7 +304,7 @@ void DynamicCodeTestHarness(sandbox::MitigationFlags which_mitigation,
   // Need token level >= USER_LIMITED to be able to successfully run test 3.
   runner = enable_mitigation ? RunnerWithMitigation(which_mitigation)
                              : std::make_unique<sandbox::TestRunner>();
-  runner->GetPolicy()->SetTokenLevel(
+  runner->GetPolicy()->GetConfig()->SetTokenLevel(
       sandbox::TokenLevel::USER_RESTRICTED_SAME_ACCESS,
       sandbox::TokenLevel::USER_LIMITED);
 

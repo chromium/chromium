@@ -46,7 +46,7 @@ class SandboxFeatureTest
   virtual AppContainerType GetExpectedAppContainerType();
   virtual std::vector<base::win::Sid> GetExpectedCapabilities();
 
-  void ValidateSecurityLevels(TargetPolicy* policy);
+  void ValidateSecurityLevels(TargetConfig* config);
   void ValidatePolicyFlagSettings(TargetConfig* config);
   void ValidateAppContainerSettings(TargetConfig* config);
 

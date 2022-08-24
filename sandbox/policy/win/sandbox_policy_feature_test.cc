@@ -74,11 +74,10 @@ std::vector<base::win::Sid> SandboxFeatureTest::GetExpectedCapabilities() {
   return {};
 }
 
-void SandboxFeatureTest::ValidateSecurityLevels(TargetPolicy* policy) {
-  EXPECT_EQ(policy->GetConfig()->GetIntegrityLevel(),
-            GetExpectedIntegrityLevel());
-  EXPECT_EQ(policy->GetLockdownTokenLevel(), GetExpectedLockdownTokenLevel());
-  EXPECT_EQ(policy->GetInitialTokenLevel(), GetExpectedInitialTokenLevel());
+void SandboxFeatureTest::ValidateSecurityLevels(TargetConfig* config) {
+  EXPECT_EQ(config->GetIntegrityLevel(), GetExpectedIntegrityLevel());
+  EXPECT_EQ(config->GetLockdownTokenLevel(), GetExpectedLockdownTokenLevel());
+  EXPECT_EQ(config->GetInitialTokenLevel(), GetExpectedInitialTokenLevel());
 }
 
 void SandboxFeatureTest::ValidatePolicyFlagSettings(TargetConfig* config) {

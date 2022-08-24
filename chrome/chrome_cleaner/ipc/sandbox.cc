@@ -57,13 +57,6 @@ std::unique_ptr<sandbox::TargetPolicy> GetSandboxPolicy(
     sandbox::BrokerServices* sandbox_broker_services) {
   auto policy = sandbox_broker_services->CreatePolicy();
 
-  sandbox::ResultCode sandbox_result = policy->SetTokenLevel(
-      sandbox::USER_RESTRICTED_SAME_ACCESS, sandbox::USER_LOCKDOWN);
-  CHECK_EQ(sandbox::SBOX_ALL_OK, sandbox_result);
-
-  sandbox_result = policy->SetJobLevel(sandbox::JobLevel::kLockdown, 0);
-  CHECK_EQ(sandbox::SBOX_ALL_OK, sandbox_result);
-
 #ifdef NDEBUG
   // Chromium ignores failures on this function but logs a warning. Do the same
   // here.
@@ -79,6 +72,13 @@ std::unique_ptr<sandbox::TargetPolicy> GetSandboxPolicy(
   sandbox::TargetConfig* config = policy->GetConfig();
   if (config->IsConfigured())
     return policy;
+
+  sandbox::ResultCode sandbox_result = config->SetTokenLevel(
+      sandbox::USER_RESTRICTED_SAME_ACCESS, sandbox::USER_LOCKDOWN);
+  CHECK_EQ(sandbox::SBOX_ALL_OK, sandbox_result);
+
+  sandbox_result = config->SetJobLevel(sandbox::JobLevel::kLockdown, 0);
+  CHECK_EQ(sandbox::SBOX_ALL_OK, sandbox_result);
 
   sandbox_result =
       config->SetDelayedIntegrityLevel(sandbox::INTEGRITY_LEVEL_UNTRUSTED);

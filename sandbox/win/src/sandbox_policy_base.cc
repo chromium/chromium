@@ -94,12 +94,18 @@ ConfigBase::ConfigBase() noexcept
       creating_thread_id_(GetCurrentThreadId()),
 #endif  // DCHECK_IS_ON()
       configured_(false),
+      lockdown_level_(USER_LOCKDOWN),
+      initial_level_(USER_LOCKDOWN),
+      job_level_(JobLevel::kLockdown),
       integrity_level_(INTEGRITY_LEVEL_LAST),
       delayed_integrity_level_(INTEGRITY_LEVEL_LAST),
       mitigations_(0),
       delayed_mitigations_(0),
       add_restricting_random_sid_(false),
       lockdown_default_dacl_(false),
+      allow_no_sandbox_job_(false),
+      memory_limit_(0),
+      ui_exceptions_(0),
       policy_maker_(nullptr),
       policy_(nullptr) {
 }
@@ -356,22 +362,59 @@ scoped_refptr<AppContainer> ConfigBase::GetAppContainer() {
   return app_container_;
 }
 
+ResultCode ConfigBase::SetTokenLevel(TokenLevel initial, TokenLevel lockdown) {
+  if (initial < lockdown) {
+    return SBOX_ERROR_BAD_PARAMS;
+  }
+  initial_level_ = initial;
+  lockdown_level_ = lockdown;
+  return SBOX_ALL_OK;
+}
+
+TokenLevel ConfigBase::GetInitialTokenLevel() const {
+  return initial_level_;
+}
+
+TokenLevel ConfigBase::GetLockdownTokenLevel() const {
+  return lockdown_level_;
+}
+
+ResultCode ConfigBase::SetJobLevel(JobLevel job_level, uint32_t ui_exceptions) {
+  if (memory_limit_ && job_level == JobLevel::kNone) {
+    return SBOX_ERROR_BAD_PARAMS;
+  }
+  job_level_ = job_level;
+  ui_exceptions_ = ui_exceptions;
+  return SBOX_ALL_OK;
+}
+
+JobLevel ConfigBase::GetJobLevel() const {
+  return job_level_;
+}
+
+ResultCode ConfigBase::SetJobMemoryLimit(size_t memory_limit) {
+  memory_limit_ = memory_limit;
+  return SBOX_ALL_OK;
+}
+
+void ConfigBase::SetAllowNoSandboxJob() {
+  allow_no_sandbox_job_ = true;
+}
+
+bool ConfigBase::GetAllowNoSandboxJob() {
+  return allow_no_sandbox_job_;
+}
+
 PolicyBase::PolicyBase(base::StringPiece tag)
     : tag_(tag),
       config_(),
       config_ptr_(nullptr),
-      lockdown_level_(USER_LOCKDOWN),
-      initial_level_(USER_LOCKDOWN),
-      job_level_(JobLevel::kLockdown),
-      ui_exceptions_(0),
-      memory_limit_(0),
       use_alternate_desktop_(false),
       use_alternate_winstation_(false),
       stdout_handle_(INVALID_HANDLE_VALUE),
       stderr_handle_(INVALID_HANDLE_VALUE),
       is_csrss_connected_(true),
       effective_token_(nullptr),
-      allow_no_sandbox_job_(false),
       job_() {
   dispatcher_ = std::make_unique<TopLevelDispatcher>(this);
 }
@@ -407,44 +450,6 @@ bool PolicyBase::SetConfig(TargetConfig* config) {
   DCHECK(!tag_.empty());
   config_ptr_ = static_cast<ConfigBase*>(config);
   return true;
-}
-
-ResultCode PolicyBase::SetTokenLevel(TokenLevel initial, TokenLevel lockdown) {
-  if (initial < lockdown) {
-    return SBOX_ERROR_BAD_PARAMS;
-  }
-  initial_level_ = initial;
-  lockdown_level_ = lockdown;
-  return SBOX_ALL_OK;
-}
-
-TokenLevel PolicyBase::GetInitialTokenLevel() const {
-  return initial_level_;
-}
-
-TokenLevel PolicyBase::GetLockdownTokenLevel() const {
-  return lockdown_level_;
-}
-
-ResultCode PolicyBase::SetJobLevel(JobLevel job_level, uint32_t ui_exceptions) {
-  // Cannot set this after the job has been initialized.
-  if (job_.IsValid())
-    return SBOX_ERROR_BAD_PARAMS;
-  if (memory_limit_ && job_level == JobLevel::kNone) {
-    return SBOX_ERROR_BAD_PARAMS;
-  }
-  job_level_ = job_level;
-  ui_exceptions_ = ui_exceptions;
-  return SBOX_ALL_OK;
-}
-
-JobLevel PolicyBase::GetJobLevel() const {
-  return job_level_;
-}
-
-ResultCode PolicyBase::SetJobMemoryLimit(size_t memory_limit) {
-  memory_limit_ = memory_limit;
-  return SBOX_ALL_OK;
 }
 
 ResultCode PolicyBase::SetAlternateDesktop(bool alternate_winstation) {
@@ -586,11 +591,12 @@ ResultCode PolicyBase::InitJob() {
   if (job_.IsValid())
     return SBOX_ERROR_BAD_PARAMS;
 
-  if (job_level_ == JobLevel::kNone)
+  if (config()->GetJobLevel() == JobLevel::kNone)
     return SBOX_ALL_OK;
 
   // Create the Windows job object.
-  DWORD result = job_.Init(job_level_, nullptr, ui_exceptions_, memory_limit_);
+  DWORD result = job_.Init(config()->GetJobLevel(), nullptr,
+                           config()->ui_exceptions(), config()->memory_limit());
   if (ERROR_SUCCESS != result)
     return SBOX_ERROR_CANNOT_INIT_JOB;
 
@@ -609,7 +615,7 @@ ResultCode PolicyBase::DropActiveProcessLimit() {
   if (!job_.IsValid())
     return SBOX_ERROR_BAD_PARAMS;
 
-  if (job_level_ >= JobLevel::kInteractive)
+  if (config()->GetJobLevel() >= JobLevel::kInteractive)
     return SBOX_ALL_OK;
 
   if (ERROR_SUCCESS != job_.SetActiveProcessLimit(0))
@@ -633,8 +639,8 @@ ResultCode PolicyBase::MakeTokens(base::win::ScopedHandle* initial,
   // Create the 'naked' token. This will be the permanent token associated
   // with the process and therefore with any thread that is not impersonating.
   DWORD result = CreateRestrictedToken(
-      effective_token_, lockdown_level_, integrity_level, PRIMARY,
-      lockdown_default_dacl, random_sid, lockdown);
+      effective_token_, config()->GetLockdownTokenLevel(), integrity_level,
+      PRIMARY, lockdown_default_dacl, random_sid, lockdown);
   if (ERROR_SUCCESS != result)
     return SBOX_ERROR_CANNOT_CREATE_RESTRICTED_TOKEN;
 
@@ -683,9 +689,9 @@ ResultCode PolicyBase::MakeTokens(base::win::ScopedHandle* initial,
   // Create the 'better' token. We use this token as the one that the main
   // thread uses when booting up the process. It should contain most of
   // what we need (before reaching main( ))
-  result = CreateRestrictedToken(effective_token_, initial_level_,
-                                 integrity_level, IMPERSONATION,
-                                 lockdown_default_dacl, random_sid, initial);
+  result = CreateRestrictedToken(
+      effective_token_, config()->GetInitialTokenLevel(), integrity_level,
+      IMPERSONATION, lockdown_default_dacl, random_sid, initial);
   if (ERROR_SUCCESS != result)
     return SBOX_ERROR_CANNOT_CREATE_RESTRICTED_IMP_TOKEN;
 
@@ -841,14 +847,6 @@ ResultCode PolicyBase::SetupAllInterceptions(TargetProcess& target) {
 
 bool PolicyBase::SetupHandleCloser(TargetProcess& target) {
   return handle_closer_.InitializeTargetHandles(target);
-}
-
-void PolicyBase::SetAllowNoSandboxJob() {
-  allow_no_sandbox_job_ = true;
-}
-
-bool PolicyBase::GetAllowNoSandboxJob() {
-  return allow_no_sandbox_job_;
 }
 
 }  // namespace sandbox

@@ -526,7 +526,7 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
   startup_info->SetMitigations(config_base->GetProcessMitigations());
 
   if (base::win::GetVersion() >= base::win::Version::WIN10_TH2 &&
-      policy_base->GetJobLevel() <= JobLevel::kLimitedUser) {
+      config_base->GetJobLevel() <= JobLevel::kLimitedUser) {
     startup_info->SetRestrictChildProcessCreation(true);
   }
 
@@ -574,7 +574,7 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
   }
 
   if (policy_base->HasJob() &&
-      policy_base->GetJobLevel() <= JobLevel::kLimitedUser) {
+      config_base->GetJobLevel() <= JobLevel::kLimitedUser) {
     // Restrict the job from containing any processes. Job restrictions
     // are only applied at process creation, so the target process is
     // unaffected.

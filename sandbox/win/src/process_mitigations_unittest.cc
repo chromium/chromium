@@ -1035,11 +1035,11 @@ TEST(ProcessMitigationsTest, CheckWin10MsSigned_MsSuccess) {
 // not set.
 TEST(ProcessMitigationsTest, CheckChildProcessSuccess) {
   TestRunner runner;
-  sandbox::TargetPolicy* policy = runner.GetPolicy();
+  sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
 
   // Set a policy that would normally allow for process creation.
-  policy->SetJobLevel(JobLevel::kInteractive, 0);
-  policy->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
+  config->SetJobLevel(JobLevel::kInteractive, 0);
+  config->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
   runner.SetDisableCsrss(false);
 
   base::FilePath cmd;
@@ -1058,12 +1058,12 @@ TEST(ProcessMitigationsTest, CheckChildProcessSuccess) {
 // the spawning of child processes.
 TEST(ProcessMitigationsTest, CheckChildProcessFailure) {
   TestRunner runner;
-  sandbox::TargetPolicy* policy = runner.GetPolicy();
+  sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
 
   // Now set the job level to be <= JobLevel::kLimitedUser
   // and ensure we can no longer create a child process.
-  policy->SetJobLevel(JobLevel::kLimitedUser, 0);
-  policy->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
+  config->SetJobLevel(JobLevel::kLimitedUser, 0);
+  config->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
   runner.SetDisableCsrss(false);
 
   base::FilePath cmd;
@@ -1085,11 +1085,11 @@ TEST(ProcessMitigationsTest, CheckChildProcessFailure) {
 // than elsewhere closer to the other Job tests.
 TEST(ProcessMitigationsTest, CheckChildProcessAbnormalExit) {
   TestRunner runner;
-  sandbox::TargetPolicy* policy = runner.GetPolicy();
+  sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
 
   // Set a policy that would normally allow for process creation.
-  policy->SetJobLevel(JobLevel::kInteractive, 0);
-  policy->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
+  config->SetJobLevel(JobLevel::kInteractive, 0);
+  config->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
   runner.SetDisableCsrss(false);
 
   base::FilePath cmd;

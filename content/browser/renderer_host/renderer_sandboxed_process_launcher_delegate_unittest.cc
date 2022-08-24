@@ -73,7 +73,7 @@ TEST_P(RendererFeatureSandboxWinTest, RendererGeneratedPolicyTest) {
           handles_to_inherit, &test_renderer_delegate, policy.get());
   ASSERT_EQ(::sandbox::ResultCode::SBOX_ALL_OK, result);
 
-  ValidateSecurityLevels(policy.get());
+  ValidateSecurityLevels(policy->GetConfig());
   ValidatePolicyFlagSettings(policy->GetConfig());
   ValidateAppContainerSettings(policy->GetConfig());
 }

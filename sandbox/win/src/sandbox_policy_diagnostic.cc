@@ -371,10 +371,10 @@ base::Value::Dict GetHandlesToClose(const HandleMap& handle_map) {
 PolicyDiagnostic::PolicyDiagnostic(PolicyBase* policy) {
   DCHECK(policy);
   ConfigBase* config = policy->config();
-  // TODO(crbug/997273) Add more fields once webui plumbing is complete.
+
   process_id_ = base::strict_cast<uint32_t>(policy->target_->ProcessId());
-  lockdown_level_ = policy->lockdown_level_;
-  job_level_ = policy->job_level_;
+  lockdown_level_ = config->lockdown_level_;
+  job_level_ = config->job_level_;
   tag_ = policy->tag_;
 
   // Select the final integrity level.

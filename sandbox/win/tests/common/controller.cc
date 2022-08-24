@@ -120,8 +120,8 @@ TestRunner::TestRunner(JobLevel job_level,
   if (!policy_)
     return;
 
-  policy_->SetJobLevel(job_level, 0);
-  policy_->SetTokenLevel(startup_token, main_token);
+  policy_->GetConfig()->SetJobLevel(job_level, 0);
+  policy_->GetConfig()->SetTokenLevel(startup_token, main_token);
 
   is_init_ = true;
 }

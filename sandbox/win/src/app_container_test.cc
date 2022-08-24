@@ -179,7 +179,7 @@ ResultCode AddNetworkAppContainerPolicy(TargetPolicy* policy) {
       policy->GetConfig()->AddAppContainerProfile(profile_name.c_str(), true);
   if (SBOX_ALL_OK != ret)
     return ret;
-  ret = policy->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
+  ret = policy->GetConfig()->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
   if (SBOX_ALL_OK != ret)
     return ret;
   scoped_refptr<AppContainer> app_container =
@@ -520,8 +520,8 @@ TEST_F(AppContainerTest, NoCapabilities) {
   if (!container_)
     return;
 
-  policy_->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
-  policy_->SetJobLevel(JobLevel::kNone, 0);
+  policy_->GetConfig()->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
+  policy_->GetConfig()->SetJobLevel(JobLevel::kNone, 0);
 
   CreateProcess();
   auto security_capabilities = container_->GetSecurityCapabilities();
@@ -536,8 +536,9 @@ TEST_F(AppContainerTest, NoCapabilitiesRestricted) {
   if (!container_)
     return;
 
-  policy_->SetTokenLevel(USER_LOCKDOWN, USER_RESTRICTED_SAME_ACCESS);
-  policy_->SetJobLevel(JobLevel::kNone, 0);
+  policy_->GetConfig()->SetTokenLevel(USER_LOCKDOWN,
+                                      USER_RESTRICTED_SAME_ACCESS);
+  policy_->GetConfig()->SetJobLevel(JobLevel::kNone, 0);
 
   CreateProcess();
   auto security_capabilities = container_->GetSecurityCapabilities();
@@ -555,8 +556,8 @@ TEST_F(AppContainerTest, WithCapabilities) {
   container_->AddCapability(base::win::WellKnownCapability::kInternetClient);
   container_->AddCapability(
       base::win::WellKnownCapability::kInternetClientServer);
-  policy_->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
-  policy_->SetJobLevel(JobLevel::kNone, 0);
+  policy_->GetConfig()->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
+  policy_->GetConfig()->SetJobLevel(JobLevel::kNone, 0);
 
   CreateProcess();
   auto security_capabilities = container_->GetSecurityCapabilities();
@@ -574,8 +575,9 @@ TEST_F(AppContainerTest, WithCapabilitiesRestricted) {
   container_->AddCapability(base::win::WellKnownCapability::kInternetClient);
   container_->AddCapability(
       base::win::WellKnownCapability::kInternetClientServer);
-  policy_->SetTokenLevel(USER_LOCKDOWN, USER_RESTRICTED_SAME_ACCESS);
-  policy_->SetJobLevel(JobLevel::kNone, 0);
+  policy_->GetConfig()->SetTokenLevel(USER_LOCKDOWN,
+                                      USER_RESTRICTED_SAME_ACCESS);
+  policy_->GetConfig()->SetJobLevel(JobLevel::kNone, 0);
 
   CreateProcess();
   auto security_capabilities = container_->GetSecurityCapabilities();
@@ -597,8 +599,8 @@ TEST_F(AppContainerTest, WithImpersonationCapabilities) {
       base::win::WellKnownCapability::kPrivateNetworkClientServer);
   container_->AddImpersonationCapability(
       base::win::WellKnownCapability::kPicturesLibrary);
-  policy_->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
-  policy_->SetJobLevel(JobLevel::kNone, 0);
+  policy_->GetConfig()->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
+  policy_->GetConfig()->SetJobLevel(JobLevel::kNone, 0);
 
   CreateProcess();
   auto security_capabilities = container_->GetSecurityCapabilities();
@@ -616,8 +618,8 @@ TEST_F(AppContainerTest, NoCapabilitiesLPAC) {
     return;
 
   container_->SetEnableLowPrivilegeAppContainer(true);
-  policy_->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
-  policy_->SetJobLevel(JobLevel::kNone, 0);
+  policy_->GetConfig()->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
+  policy_->GetConfig()->SetJobLevel(JobLevel::kNone, 0);
 
   CreateProcess();
   auto security_capabilities = container_->GetSecurityCapabilities();
@@ -964,7 +966,8 @@ class SocketBrokerTest
       AddNetworkAppContainerPolicy(runner_.GetPolicy());
     } else {
       TargetPolicy* policy = runner_.GetPolicy();
-      policy->SetTokenLevel(USER_RESTRICTED_SAME_ACCESS, USER_LIMITED);
+      policy->GetConfig()->SetTokenLevel(USER_RESTRICTED_SAME_ACCESS,
+                                         USER_LIMITED);
     }
     if (ShouldBrokerRuleBeAdded()) {
       TargetPolicy* policy = runner_.GetPolicy();
