@@ -43,9 +43,6 @@ extern const base::Feature kRecordSnapshotSize;
 // WKWebView is set as NSURLRequestAttributionUser on iOS 15.
 extern const base::Feature kSetRequestAttribution;
 
-// Disables the screenshots of non-HTML pages on iOS15.
-extern const base::Feature kDisableNonHTMLScreenshotOnIOS15;
-
 // Feature flag that enable Shared Highlighting color change in iOS.
 extern const base::Feature kIOSSharedHighlightingColorChange;
 
@@ -71,9 +68,6 @@ extern const base::Feature kUseLoadSimulatedRequestForOfflinePage;
 
 // Feature flag that enable web page detected intents annotations.
 extern const base::Feature kEnableWebPageAnnotations;
-
-// When true, screenshots of non-HTML (e.g. PDF) pages should be taken.
-bool ShouldTakeScreenshotOnNonHTMLContent();
 
 // When true, user control for camera and/or microphone access should be
 // enabled.
