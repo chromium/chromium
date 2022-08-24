@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -667,13 +666,13 @@ void NetworkState::UpdateCaptivePortalState(const base::Value& properties) {
     shill_portal_state_ = PortalState::kUnknown;
   }
 
-  UMA_HISTOGRAM_ENUMERATION("CaptivePortal.NetworkStateResult",
-                            shill_portal_state_);
+  base::UmaHistogramEnumeration("Network.CaptivePortalResult",
+                                shill_portal_state_);
   if (shill_portal_state_ != PortalState::kOnline) {
     NET_LOG(EVENT) << "Shill captive portal state for: " << NetworkId(this)
                    << " = " << shill_portal_state_
                    << " ,status_code=" << status_code;
-    base::UmaHistogramSparse("CaptivePortal.NetworkStateStatusCode",
+    base::UmaHistogramSparse("Network.CaptivePortalStatusCode",
                              std::abs(status_code));
   }
 }
