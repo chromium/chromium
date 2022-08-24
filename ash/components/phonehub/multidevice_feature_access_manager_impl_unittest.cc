@@ -10,6 +10,7 @@
 #include "ash/components/phonehub/fake_connection_scheduler.h"
 #include "ash/components/phonehub/fake_feature_status_provider.h"
 #include "ash/components/phonehub/fake_message_sender.h"
+#include "ash/components/phonehub/feature_setup_connection_operation.h"
 #include "ash/components/phonehub/notification_access_setup_operation.h"
 #include "ash/components/phonehub/pref_names.h"
 #include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
@@ -89,6 +90,24 @@ class FakeCombinedAccessSetupOperationDelegate
       CombinedAccessSetupOperation::Status::kConnecting;
 };
 
+class FakeFeatureSetupConnectionOperationDelegate
+    : public FeatureSetupConnectionOperation::Delegate {
+ public:
+  FakeFeatureSetupConnectionOperationDelegate() = default;
+  ~FakeFeatureSetupConnectionOperationDelegate() override = default;
+
+  FeatureSetupConnectionOperation::Status status() const { return status_; }
+
+  void OnFeatureSetupConnectionStatusChange(
+      FeatureSetupConnectionOperation::Status new_status) override {
+    status_ = new_status;
+  }
+
+ private:
+  FeatureSetupConnectionOperation::Status status_ =
+      FeatureSetupConnectionOperation::Status::kConnecting;
+};
+
 }  // namespace
 
 class MultideviceFeatureAccessManagerImplTest : public testing::Test {
@@ -153,6 +172,11 @@ class MultideviceFeatureAccessManagerImplTest : public testing::Test {
     return fake_combined_delegate_.status();
   }
 
+  FeatureSetupConnectionOperation::Status
+  GetFeatureSetupConnectionOperationStatus() {
+    return fake_connection_delegate_.status();
+  }
+
   void VerifyNotificationAccessGrantedState(AccessStatus expected_status) {
     VerifyNotificationAccessGrantedState(expected_status,
                                          AccessProhibitedReason::kUnknown);
@@ -206,6 +230,10 @@ class MultideviceFeatureAccessManagerImplTest : public testing::Test {
     return manager_->AttemptCombinedFeatureSetup(camera_roll, notifications,
                                                  &fake_combined_delegate_);
   }
+  std::unique_ptr<FeatureSetupConnectionOperation>
+  StartFeatureSetupConnectionOperation() {
+    return manager_->AttemptFeatureSetupConnection(&fake_connection_delegate_);
+  }
 
   bool IsNotificationSetupOperationInProgress() {
     return manager_->IsNotificationSetupOperationInProgress();
@@ -225,6 +253,7 @@ class MultideviceFeatureAccessManagerImplTest : public testing::Test {
   }
 
   void SetFeatureStatus(FeatureStatus status) {
+    PA_LOG(INFO) << "status changed to " << status;
     fake_feature_status_provider_->SetStatus(status);
   }
 
@@ -260,12 +289,17 @@ class MultideviceFeatureAccessManagerImplTest : public testing::Test {
     return manager_->IsAccessRequestAllowed(feature);
   }
 
+  void UpdatedFeatureSetupConnectionStatusIfNeeded() {
+    manager_->UpdatedFeatureSetupConnectionStatusIfNeeded();
+  }
+
  private:
   TestingPrefServiceSimple pref_service_;
 
   FakeObserver fake_observer_;
   FakeNotificationAccessSetupOperationDelegate fake_notification_delegate_;
   FakeCombinedAccessSetupOperationDelegate fake_combined_delegate_;
+  FakeFeatureSetupConnectionOperationDelegate fake_connection_delegate_;
   std::unique_ptr<multidevice_setup::FakeMultiDeviceSetupClient>
       fake_multidevice_setup_client_;
   std::unique_ptr<FakeFeatureStatusProvider> fake_feature_status_provider_;
@@ -320,6 +354,82 @@ TEST_F(MultideviceFeatureAccessManagerImplTest, ShouldShowSetupRequiredUi) {
   InitializeAccessStatus(AccessStatus::kAccessGranted,
                          AccessStatus::kAccessGranted);
   EXPECT_TRUE(HasMultideviceFeatureSetupUiBeenDismissed());
+}
+
+TEST_F(MultideviceFeatureAccessManagerImplTest,
+       StartSetupConnectionFromDisconnected) {
+  SetFeatureStatus(FeatureStatus::kEnabledButDisconnected);
+
+  InitializeAccessStatus(AccessStatus::kAvailableButNotGranted,
+                         AccessStatus::kAvailableButNotGranted);
+
+  // Initial operation status should be connecting
+  auto operation = StartFeatureSetupConnectionOperation();
+  EXPECT_TRUE(operation);
+
+  SetFeatureStatus(FeatureStatus::kEnabledAndConnecting);
+  SetFeatureStatus(FeatureStatus::kEnabledButDisconnected);
+  EXPECT_EQ(FeatureSetupConnectionOperation::Status::kTimedOutConnecting,
+            GetFeatureSetupConnectionOperationStatus());
+}
+
+TEST_F(MultideviceFeatureAccessManagerImplTest,
+       StartSetupConnectionFromBluetoothDisabled) {
+  SetFeatureStatus(FeatureStatus::kUnavailableBluetoothOff);
+
+  InitializeAccessStatus(AccessStatus::kAvailableButNotGranted,
+                         AccessStatus::kAvailableButNotGranted);
+
+  // Initial operation status should be connecting.
+  auto operation = StartFeatureSetupConnectionOperation();
+  EXPECT_TRUE(operation);
+
+  SetFeatureStatus(FeatureStatus::kEnabledAndConnecting);
+  SetFeatureStatus(FeatureStatus::kEnabledAndConnected);
+  UpdatedFeatureSetupConnectionStatusIfNeeded();
+  EXPECT_EQ(FeatureSetupConnectionOperation::Status::kConnected,
+            GetFeatureSetupConnectionOperationStatus());
+}
+
+TEST_F(MultideviceFeatureAccessManagerImplTest,
+       StartSetupConnectionResultConnected) {
+  SetFeatureStatus(FeatureStatus::kEnabledButDisconnected);
+
+  InitializeAccessStatus(AccessStatus::kAvailableButNotGranted,
+                         AccessStatus::kAvailableButNotGranted);
+
+  // Initial operation status should be connecting
+  auto operation = StartFeatureSetupConnectionOperation();
+  EXPECT_TRUE(operation);
+
+  SetFeatureStatus(FeatureStatus::kEnabledAndConnecting);
+  // Should remain connecting until PhoneStatusSnapshot is received
+  SetFeatureStatus(FeatureStatus::kEnabledAndConnected);
+  UpdatedFeatureSetupConnectionStatusIfNeeded();
+  EXPECT_EQ(FeatureSetupConnectionOperation::Status::kConnected,
+            GetFeatureSetupConnectionOperationStatus());
+}
+
+TEST_F(MultideviceFeatureAccessManagerImplTest,
+       StartSetupConnectionFromConnected) {
+  InitializeAccessStatus(AccessStatus::kAvailableButNotGranted,
+                         AccessStatus::kAvailableButNotGranted);
+
+  // Start connecting
+  SetFeatureStatus(FeatureStatus::kEnabledAndConnected);
+  EXPECT_EQ(FeatureSetupConnectionOperation::Status::kConnecting,
+            GetFeatureSetupConnectionOperationStatus());
+
+  // Initial operation status should be connecting
+  auto operation = StartFeatureSetupConnectionOperation();
+  EXPECT_TRUE(operation);
+  EXPECT_EQ(FeatureSetupConnectionOperation::Status::kConnected,
+            GetFeatureSetupConnectionOperationStatus());
+
+  // Should remain connecting until PhoneStatusSnapshot is received
+  SetFeatureStatus(FeatureStatus::kEnabledButDisconnected);
+  EXPECT_EQ(FeatureSetupConnectionOperation::Status::kConnectionLost,
+            GetFeatureSetupConnectionOperationStatus());
 }
 
 TEST_F(MultideviceFeatureAccessManagerImplTest, AllAccessInitiallyGranted) {

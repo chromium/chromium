@@ -297,8 +297,34 @@ void MultideviceFeatureAccessManagerImpl::OnCombinedSetupRequested(
   }
 }
 
+void MultideviceFeatureAccessManagerImpl::OnFeatureSetupConnectionRequested() {
+  PA_LOG(INFO) << "Connection for feature setup started";
+
+  switch (feature_status_provider_->GetStatus()) {
+    case FeatureStatus::kEnabledAndConnected:
+      SetFeatureSetupConnectionOperationStatus(
+          FeatureSetupConnectionOperation::Status::kConnected);
+      break;
+    case FeatureStatus::kEnabledAndConnecting:
+      SetFeatureSetupConnectionOperationStatus(
+          FeatureSetupConnectionOperation::Status::kConnecting);
+      break;
+    case FeatureStatus::kEnabledButDisconnected:
+    case FeatureStatus::kUnavailableBluetoothOff:
+      SetFeatureSetupConnectionOperationStatus(
+          FeatureSetupConnectionOperation::Status::kConnecting);
+      connection_scheduler_->ScheduleConnectionNow();
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+}
+
 void MultideviceFeatureAccessManagerImpl::OnFeatureStatusChanged() {
-  if (IsNotificationSetupOperationInProgress()) {
+  if (IsFeatureSetupConnectionOperationInProgress()) {
+    FeatureStatusChangedFeatureSetupConnection();
+  } else if (IsNotificationSetupOperationInProgress()) {
     FeatureStatusChangedNotificationAccessSetup();
   } else if (IsCombinedSetupOperationInProgress()) {
     FeatureStatusChangedCombinedAccessSetup();
@@ -375,6 +401,49 @@ void MultideviceFeatureAccessManagerImpl::
     SendShowCombinedAccessSetupRequest();
     return;
   }
+}
+
+void MultideviceFeatureAccessManagerImpl::
+    FeatureStatusChangedFeatureSetupConnection() {
+  const FeatureStatus previous_feature_status = current_feature_status_;
+  current_feature_status_ = feature_status_provider_->GetStatus();
+
+  PA_LOG(VERBOSE) << __func__
+                  << ": previous feature status = " << previous_feature_status
+                  << ", current feature status = " << current_feature_status_;
+
+  if (previous_feature_status == current_feature_status_)
+    return;
+
+  // If we were previously connecting and could not establish a connection,
+  // send a timeout state.
+  if (previous_feature_status == FeatureStatus::kEnabledAndConnecting &&
+      current_feature_status_ != FeatureStatus::kEnabledAndConnected) {
+    SetFeatureSetupConnectionOperationStatus(
+        FeatureSetupConnectionOperation::Status::kTimedOutConnecting);
+    return;
+  }
+
+  if (previous_feature_status == FeatureStatus::kEnabledAndConnected &&
+      current_feature_status_ != FeatureStatus::kEnabledAndConnected) {
+    SetFeatureSetupConnectionOperationStatus(
+        FeatureSetupConnectionOperation::Status::kConnectionLost);
+    return;
+  }
+
+  if (current_feature_status_ == FeatureStatus::kEnabledAndConnected) {
+    feature_setup_connection_update_pending_ = true;
+    return;
+  }
+}
+
+void MultideviceFeatureAccessManagerImpl::
+    UpdatedFeatureSetupConnectionStatusIfNeeded() {
+  if (feature_setup_connection_update_pending_) {
+    SetFeatureSetupConnectionOperationStatus(
+        FeatureSetupConnectionOperation::Status::kConnected);
+  }
+  feature_setup_connection_update_pending_ = false;
 }
 
 void MultideviceFeatureAccessManagerImpl::

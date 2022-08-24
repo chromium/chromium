@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "ash/components/phonehub/multidevice_feature_access_manager.h"
+#include <memory>
 
 #include "ash/components/multidevice/logging/logging.h"
+#include "ash/components/phonehub/feature_setup_connection_operation.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 
@@ -68,6 +70,22 @@ MultideviceFeatureAccessManager::AttemptCombinedFeatureSetup(
   id_to_combined_operation_map_.emplace(operation_id, operation.get());
 
   OnCombinedSetupRequested(camera_roll, notifications);
+  return operation;
+}
+
+std::unique_ptr<FeatureSetupConnectionOperation>
+MultideviceFeatureAccessManager::AttemptFeatureSetupConnection(
+    FeatureSetupConnectionOperation::Delegate* delegate) {
+  int operation_id = next_operation_id_;
+  ++next_operation_id_;
+
+  auto operation = base::WrapUnique(new FeatureSetupConnectionOperation(
+      delegate, base::BindOnce(&MultideviceFeatureAccessManager::
+                                   OnFeatureSetupConnectionOperationDeleted,
+                               weak_ptr_factory_.GetWeakPtr(), operation_id)));
+  id_to_connection_operation_map_.emplace(operation_id, operation.get());
+
+  OnFeatureSetupConnectionRequested();
   return operation;
 }
 
@@ -143,9 +161,28 @@ void MultideviceFeatureAccessManager::SetCombinedSetupOperationStatus(
     id_to_combined_operation_map_.clear();
 }
 
+void MultideviceFeatureAccessManager::SetFeatureSetupConnectionOperationStatus(
+    FeatureSetupConnectionOperation::Status new_status) {
+  DCHECK(IsFeatureSetupConnectionOperationInProgress());
+
+  PA_LOG(INFO) << "Feature setup connection status - new status: "
+               << new_status;
+
+  for (auto& it : id_to_connection_operation_map_)
+    it.second->NotifyFeatureSetupConnectionStatusChanged(new_status);
+
+  if (FeatureSetupConnectionOperation::IsFinalStatus(new_status))
+    id_to_connection_operation_map_.clear();
+}
+
 bool MultideviceFeatureAccessManager::IsCombinedSetupOperationInProgress()
     const {
   return !id_to_combined_operation_map_.empty();
+}
+
+bool MultideviceFeatureAccessManager::
+    IsFeatureSetupConnectionOperationInProgress() const {
+  return !id_to_connection_operation_map_.empty();
 }
 
 void MultideviceFeatureAccessManager::OnNotificationSetupRequested() {}
@@ -153,6 +190,11 @@ void MultideviceFeatureAccessManager::OnNotificationSetupRequested() {}
 void MultideviceFeatureAccessManager::OnCombinedSetupRequested(
     bool camera_roll,
     bool notifications) {}
+
+void MultideviceFeatureAccessManager::OnFeatureSetupConnectionRequested() {}
+
+void MultideviceFeatureAccessManager::
+    UpdatedFeatureSetupConnectionStatusIfNeeded() {}
 
 void MultideviceFeatureAccessManager::OnCombinedSetupOperationDeleted(
     int operation_id) {
@@ -164,6 +206,18 @@ void MultideviceFeatureAccessManager::OnCombinedSetupOperationDeleted(
 
   if (id_to_combined_operation_map_.empty())
     PA_LOG(INFO) << "Combined access setup operation has ended.";
+}
+
+void MultideviceFeatureAccessManager::OnFeatureSetupConnectionOperationDeleted(
+    int operation_id) {
+  auto it = id_to_connection_operation_map_.find(operation_id);
+  if (it == id_to_connection_operation_map_.end())
+    return;
+
+  id_to_connection_operation_map_.erase(it);
+
+  if (id_to_connection_operation_map_.empty())
+    PA_LOG(INFO) << "Feature setup connection operation has ended.";
 }
 
 void MultideviceFeatureAccessManager::Observer::OnNotificationAccessChanged() {

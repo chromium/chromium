@@ -60,6 +60,8 @@ export class TestMultideviceBrowserProxy extends TestBrowserProxy {
       'cancelAppsSetup',
       'attemptCombinedFeatureSetup',
       'cancelCombinedFeatureSetup',
+      'attemptFeatureSetupConnection',
+      'cancelFeatureSetupConnection',
       'logPhoneHubPermissionSetUpScreenAction',
     ]);
     this.data = createFakePageContentData(MultiDeviceSettingsMode.NO_HOST_SET);
@@ -147,6 +149,16 @@ export class TestMultideviceBrowserProxy extends TestBrowserProxy {
   /** @override */
   cancelCombinedFeatureSetup() {
     this.methodCalled('cancelCombinedFeatureSetup');
+  }
+
+  /** @override */
+  attemptFeatureSetupConnection() {
+    this.methodCalled('attemptFeatureSetupConnection');
+  }
+
+  /** @override */
+  cancelFeatureSetupConnection() {
+    this.methodCalled('cancelFeatureSetupConnection');
   }
 
   /**

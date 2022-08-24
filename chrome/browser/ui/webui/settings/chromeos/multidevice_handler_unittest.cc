@@ -9,6 +9,7 @@
 #include "ash/components/multidevice/remote_device_test_util.h"
 #include "ash/components/phonehub/fake_camera_roll_manager.h"
 #include "ash/components/phonehub/fake_multidevice_feature_access_manager.h"
+#include "ash/components/phonehub/feature_setup_connection_operation.h"
 #include "ash/components/phonehub/multidevice_feature_access_manager.h"
 #include "ash/components/phonehub/pref_names.h"
 #include "ash/components/phonehub/screen_lock_manager.h"
@@ -442,6 +443,18 @@ class MultideviceHandlerTest : public testing::Test {
                                          empty_args);
   }
 
+  void CalAttempFeatureSetupConnection() {
+    base::Value::List empty_args;
+    test_web_ui()->HandleReceivedMessage("attemptFeatureSetupConnection",
+                                         empty_args);
+  }
+
+  void CallCancelFeatureSetupConnection() {
+    base::Value::List empty_args;
+    test_web_ui()->HandleReceivedMessage("cancelFeatureSetupConnection",
+                                         empty_args);
+  }
+
   void SimulateHostStatusUpdate(
       multidevice_setup::mojom::HostStatus host_status,
       const absl::optional<multidevice::RemoteDeviceRef>& host_device) {
@@ -750,6 +763,25 @@ class MultideviceHandlerTest : public testing::Test {
     EXPECT_EQ(call_data.arg2()->GetInt(), static_cast<int32_t>(status));
   }
 
+  void SimulateFeatureSetupConnectionStatusChange(
+      phonehub::FeatureSetupConnectionOperation::Status status) {
+    size_t call_data_count_before_call = test_web_ui()->call_data().size();
+    fake_multidevice_feature_access_manager()
+        ->SetFeatureSetupConnectionOperationStatus(status);
+
+    const content::TestWebUI::CallData& call_data =
+        CallDataAtIndex(call_data_count_before_call);
+    EXPECT_EQ("cr.webUIListenerCallback", call_data.function_name());
+    EXPECT_EQ("settings.onFeatureSetupConnectionStatusChanged",
+              call_data.arg1()->GetString());
+    EXPECT_EQ(call_data.arg2()->GetInt(), static_cast<int32_t>(status));
+  }
+
+  bool IsFeatureSetupConnectionOperationInProgress() {
+    return fake_multidevice_feature_access_manager()
+        ->IsFeatureSetupConnectionOperationInProgress();
+  }
+
   void SimulateEnableScreenLockChanged() {
     size_t call_data_count_before_call = test_web_ui()->call_data().size();
 
@@ -841,6 +873,49 @@ TEST_F(MultideviceHandlerTest, PageContentDataRequestedWithNullManagers) {
   base::Value::List args;
   args.Append("handlerFunctionName");
   test_web_ui()->HandleReceivedMessage("getPageContentData", args);
+}
+
+TEST_F(MultideviceHandlerTest, FeatureSetupConnectionFlow) {
+  using Status = phonehub::FeatureSetupConnectionOperation::Status;
+
+  CalAttempFeatureSetupConnection();
+  EXPECT_TRUE(IsFeatureSetupConnectionOperationInProgress());
+
+  SimulateFeatureSetupConnectionStatusChange(Status::kConnecting);
+  EXPECT_TRUE(IsFeatureSetupConnectionOperationInProgress());
+
+  SimulateFeatureSetupConnectionStatusChange(Status::kConnected);
+  EXPECT_TRUE(IsFeatureSetupConnectionOperationInProgress());
+
+  SimulateFeatureSetupConnectionStatusChange(Status::kCompletedSuccessfully);
+  EXPECT_FALSE(IsFeatureSetupConnectionOperationInProgress());
+
+  CalAttempFeatureSetupConnection();
+  EXPECT_TRUE(IsFeatureSetupConnectionOperationInProgress());
+
+  CallCancelFeatureSetupConnection();
+  EXPECT_FALSE(IsFeatureSetupConnectionOperationInProgress());
+
+  CalAttempFeatureSetupConnection();
+  EXPECT_TRUE(IsFeatureSetupConnectionOperationInProgress());
+
+  SimulateFeatureSetupConnectionStatusChange(Status::kConnecting);
+  EXPECT_TRUE(IsFeatureSetupConnectionOperationInProgress());
+
+  SimulateFeatureSetupConnectionStatusChange(Status::kTimedOutConnecting);
+  EXPECT_FALSE(IsFeatureSetupConnectionOperationInProgress());
+
+  CalAttempFeatureSetupConnection();
+  EXPECT_TRUE(IsFeatureSetupConnectionOperationInProgress());
+
+  SimulateFeatureSetupConnectionStatusChange(Status::kConnecting);
+  EXPECT_TRUE(IsFeatureSetupConnectionOperationInProgress());
+
+  SimulateFeatureSetupConnectionStatusChange(Status::kConnected);
+  EXPECT_TRUE(IsFeatureSetupConnectionOperationInProgress());
+
+  SimulateFeatureSetupConnectionStatusChange(Status::kConnectionLost);
+  EXPECT_FALSE(IsFeatureSetupConnectionOperationInProgress());
 }
 
 TEST_F(MultideviceHandlerTest, NotificationSetupFlow) {

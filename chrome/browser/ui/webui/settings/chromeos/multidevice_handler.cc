@@ -183,6 +183,16 @@ void MultideviceHandler::RegisterMessages() {
       base::BindRepeating(&MultideviceHandler::HandleCancelCombinedFeatureSetup,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
+      "attemptFeatureSetupConnection",
+      base::BindRepeating(
+          &MultideviceHandler::HandleAttemptFeatureSetupConnection,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "cancelFeatureSetupConnection",
+      base::BindRepeating(
+          &MultideviceHandler::HandleCancelFeatureSetupConnection,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
       "logPhoneHubPermissionSetUpScreenAction",
       base::BindRepeating(
           &MultideviceHandler::LogPhoneHubPermissionSetUpScreenAction,
@@ -610,6 +620,24 @@ void MultideviceHandler::HandleCancelCombinedFeatureSetup(
   combined_access_operation_.reset();
 }
 
+void MultideviceHandler::HandleAttemptFeatureSetupConnection(
+    const base::Value::List& args) {
+  DCHECK(features::IsPhoneHubEnabled());
+  DCHECK(!feature_setup_connection_operation_);
+
+  feature_setup_connection_operation_ =
+      multidevice_feature_access_manager_->AttemptFeatureSetupConnection(this);
+  DCHECK(feature_setup_connection_operation_);
+}
+
+void MultideviceHandler::HandleCancelFeatureSetupConnection(
+    const base::Value::List& args) {
+  DCHECK(features::IsPhoneHubEnabled());
+  DCHECK(feature_setup_connection_operation_);
+
+  feature_setup_connection_operation_.reset();
+}
+
 void MultideviceHandler::LogPhoneHubPermissionSetUpScreenAction(
     const base::Value::List& args) {
   int setup_screen_int = args[0].GetInt();
@@ -651,6 +679,16 @@ void MultideviceHandler::OnCombinedStatusChange(
 
   if (phonehub::CombinedAccessSetupOperation::IsFinalStatus(new_status))
     combined_access_operation_.reset();
+}
+
+void MultideviceHandler::OnFeatureSetupConnectionStatusChange(
+    phonehub::FeatureSetupConnectionOperation::Status new_status) {
+  FireWebUIListener("settings.onFeatureSetupConnectionStatusChanged",
+                    base::Value(static_cast<int32_t>(new_status)));
+
+  if (phonehub::FeatureSetupConnectionOperation::IsFinalStatus(new_status)) {
+    feature_setup_connection_operation_.reset();
+  }
 }
 
 void MultideviceHandler::OnSetFeatureStateEnabledResult(

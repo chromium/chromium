@@ -5,9 +5,11 @@
 #ifndef ASH_COMPONENTS_PHONEHUB_MULTIDEVICE_FEATURE_ACCESS_MANAGER_H_
 #define ASH_COMPONENTS_PHONEHUB_MULTIDEVICE_FEATURE_ACCESS_MANAGER_H_
 
+#include <memory>
 #include <ostream>
 
 #include "ash/components/phonehub/combined_access_setup_operation.h"
+#include "ash/components/phonehub/feature_setup_connection_operation.h"
 #include "ash/components/phonehub/feature_setup_response_processor.h"
 #include "ash/components/phonehub/notification_access_setup_operation.h"
 #include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
@@ -148,6 +150,10 @@ class MultideviceFeatureAccessManager {
       bool notifications,
       CombinedAccessSetupOperation::Delegate* delegate);
 
+  std::unique_ptr<FeatureSetupConnectionOperation>
+  AttemptFeatureSetupConnection(
+      FeatureSetupConnectionOperation::Delegate* delegate);
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
@@ -162,12 +168,16 @@ class MultideviceFeatureAccessManager {
       NotificationAccessSetupOperation::Status new_status);
   void SetCombinedSetupOperationStatus(
       CombinedAccessSetupOperation::Status new_status);
+  void SetFeatureSetupConnectionOperationStatus(
+      FeatureSetupConnectionOperation::Status new_status);
 
   bool IsNotificationSetupOperationInProgress() const;
   bool IsCombinedSetupOperationInProgress() const;
+  bool IsFeatureSetupConnectionOperationInProgress() const;
 
   virtual void OnNotificationSetupRequested();
   virtual void OnCombinedSetupRequested(bool camera_roll, bool notifications);
+  virtual void OnFeatureSetupConnectionRequested();
 
  private:
   friend class MultideviceFeatureAccessManagerImplTest;
@@ -187,14 +197,19 @@ class MultideviceFeatureAccessManager {
   // supported by connected phone.
   virtual void SetFeatureSetupRequestSupportedInternal(bool supported) = 0;
 
+  virtual void UpdatedFeatureSetupConnectionStatusIfNeeded();
+
   void OnNotificationSetupOperationDeleted(int operation_id);
   void OnCombinedSetupOperationDeleted(int operation_id);
+  void OnFeatureSetupConnectionOperationDeleted(int operation_id);
 
   int next_operation_id_ = 0;
   base::flat_map<int, NotificationAccessSetupOperation*>
       id_to_notification_operation_map_;
   base::flat_map<int, CombinedAccessSetupOperation*>
       id_to_combined_operation_map_;
+  base::flat_map<int, FeatureSetupConnectionOperation*>
+      id_to_connection_operation_map_;
   base::ObserverList<Observer> observer_list_;
   base::WeakPtrFactory<MultideviceFeatureAccessManager> weak_ptr_factory_{this};
 };

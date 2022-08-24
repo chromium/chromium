@@ -37,6 +37,8 @@ static_library("phonehub") {
     "do_not_disturb_controller.h",
     "do_not_disturb_controller_impl.cc",
     "do_not_disturb_controller_impl.h",
+    "feature_setup_connection_operation.cc",
+    "feature_setup_connection_operation.h",
     "feature_setup_response_processor.cc",
     "feature_setup_response_processor.h",
     "feature_status.cc",

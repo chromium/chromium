@@ -28,6 +28,11 @@ FeatureSetupResponseProcessor::~FeatureSetupResponseProcessor() {
 
 void FeatureSetupResponseProcessor::OnFeatureSetupResponseReceived(
     proto::FeatureSetupResponse response) {
+  if (!multidevice_feature_access_manager_
+           ->IsCombinedSetupOperationInProgress()) {
+    return;
+  }
+
   if (response.camera_roll_setup_result() ==
           proto::FeatureSetupResult::RESULT_ERROR_ACTION_CANCELED ||
       response.notification_setup_result() ==

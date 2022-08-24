@@ -320,6 +320,8 @@ void PhoneStatusProcessor::OnPhoneStatusSnapshotReceived(
   if (features::IsEcheSWAEnabled()) {
     SetStreamableApps(phone_status_snapshot.streamable_apps());
   }
+  multidevice_feature_access_manager_
+      ->UpdatedFeatureSetupConnectionStatusIfNeeded();
 }
 
 void PhoneStatusProcessor::OnPhoneStatusUpdateReceived(

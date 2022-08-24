@@ -56,6 +56,7 @@ class MultideviceFeatureAccessManagerImpl
   void SetFeatureSetupRequestSupportedInternal(bool supported) override;
   void OnNotificationSetupRequested() override;
   void OnCombinedSetupRequested(bool camera_roll, bool notifications) override;
+  void OnFeatureSetupConnectionRequested() override;
 
   bool HasMultideviceFeatureSetupUiBeenDismissed() const override;
   void DismissSetupRequiredUi() override;
@@ -65,6 +66,9 @@ class MultideviceFeatureAccessManagerImpl
 
   void FeatureStatusChangedNotificationAccessSetup();
   void FeatureStatusChangedCombinedAccessSetup();
+  void FeatureStatusChangedFeatureSetupConnection();
+
+  void UpdatedFeatureSetupConnectionStatusIfNeeded() override;
 
   void SendShowNotificationAccessSetupRequest();
   void SendShowCombinedAccessSetupRequest();
@@ -84,6 +88,7 @@ class MultideviceFeatureAccessManagerImpl
 
   bool combined_setup_notifications_pending_ = false;
   bool combined_setup_camera_roll_pending_ = false;
+  bool feature_setup_connection_update_pending_ = false;
 };
 
 }  // namespace phonehub

@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "ash/components/phonehub/feature_setup_connection_operation.h"
 #include "ash/components/phonehub/multidevice_feature_access_manager.h"
 #include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 
@@ -32,6 +33,8 @@ class FakeMultideviceFeatureAccessManager
   ~FakeMultideviceFeatureAccessManager() override;
 
   using MultideviceFeatureAccessManager::IsCombinedSetupOperationInProgress;
+  using MultideviceFeatureAccessManager::
+      IsFeatureSetupConnectionOperationInProgress;
   using MultideviceFeatureAccessManager::IsNotificationSetupOperationInProgress;
 
   void SetNotificationAccessStatusInternal(
@@ -61,6 +64,9 @@ class FakeMultideviceFeatureAccessManager
 
   void SetFeatureSetupRequestSupportedInternal(bool supported) override;
   bool GetFeatureSetupRequestSupported() const override;
+
+  void SetFeatureSetupConnectionOperationStatus(
+      FeatureSetupConnectionOperation::Status new_status);
 
  private:
   friend class MultideviceSetupStateUpdaterTest;

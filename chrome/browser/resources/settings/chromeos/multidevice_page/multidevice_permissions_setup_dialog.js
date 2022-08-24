@@ -49,6 +49,7 @@ export const PermissionsSetupStatus = {
   FAILED_OR_CANCELLED: 8,
   CAMERA_ROLL_GRANTED_NOTIFICATION_REJECTED: 9,
   CAMERA_ROLL_REJECTED_NOTIFICATION_GRANTED: 10,
+  CONNECTION_ESTABLISHED: 11,
 };
 
 /**
@@ -61,6 +62,7 @@ export const SetupFlowStatus = {
   WAIT_FOR_PHONE_NOTIFICATION: 2,
   WAIT_FOR_PHONE_APPS: 3,
   WAIT_FOR_PHONE_COMBINED: 4,
+  WAIT_FOR_CONNECTION: 5,
 };
 
 /**
@@ -323,6 +325,9 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
     this.addWebUIListener(
         'settings.onCombinedAccessSetupStatusChanged',
         this.onCombinedSetupStateChanged_.bind(this));
+    this.addWebUIListener(
+        'settings.onFeatureSetupConnectionStatusChanged',
+        this.onFeatureSetupConnectionStatusChanged_.bind(this));
     this.$.dialog.showModal();
   }
 
@@ -454,6 +459,34 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
   }
 
   /**
+   * @param {!PermissionsSetupStatus} connectionResult
+   * @private
+   */
+  onFeatureSetupConnectionStatusChanged_(connectionResult) {
+    if (this.flowState_ !== SetupFlowStatus.WAIT_FOR_CONNECTION) {
+      return;
+    }
+
+    switch (connectionResult) {
+      case PermissionsSetupStatus.TIMED_OUT_CONNECTING:
+      case PermissionsSetupStatus.CONNECTION_DISCONNECTED:
+        this.setupState_ = connectionResult;
+      case PermissionsSetupStatus.COMPLETED_SUCCESSFULLY:
+        return;
+      case PermissionsSetupStatus.CONNECTION_ESTABLISHED:
+        // Make sure FeatureSetupConnectionOperation ends properly.
+        this.browserProxy_.cancelFeatureSetupConnection();
+        if (this.isScreenLockRequired_()) {
+          this.flowState_ = SetupFlowStatus.SET_LOCKSCREEN;
+          return;
+        }
+        this.startSetupProcess_();
+      default:
+        return;
+    }
+  }
+
+  /**
    * @param {!PermissionsSetupStatus} combinedSetupResult
    * @return {boolean}
    * @private
@@ -566,24 +599,13 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
   nextPage_() {
     this.browserProxy_.logPhoneHubPermissionSetUpScreenAction(
         this.setupScreen_, PhoneHubPermissionsSetupAction.NEXT_OR_TRY_AGAIN);
-    const isScreenLockRequired =
-        this.isScreenLockRequired_();
     switch (this.flowState_) {
       case SetupFlowStatus.INTRO:
-        if (this.showCameraRoll) {
-          this.setupMode_ |= CAMERA_ROLL_FEATURE;
-        }
-        if (this.showNotifications) {
-          this.setupMode_ |= NOTIFICATION_FEATURE;
-        }
-        if (this.showAppStreaming) {
-          this.setupMode_ |= APPS_FEATURE;
-        }
-        if (isScreenLockRequired) {
-          this.flowState_ = SetupFlowStatus.SET_LOCKSCREEN;
-          return;
-        }
-        break;
+        this.flowState_ = SetupFlowStatus.WAIT_FOR_CONNECTION;
+      case SetupFlowStatus.WAIT_FOR_CONNECTION:
+        this.browserProxy_.attemptFeatureSetupConnection();
+        this.setupState_ = PermissionsSetupStatus.CONNECTION_REQUESTED;
+        return;
       case SetupFlowStatus.SET_LOCKSCREEN:
         if (!this.isScreenLockEnabled_) {
           return;
@@ -600,6 +622,20 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
         break;
     }
 
+    this.startSetupProcess_();
+  }
+
+  /** @private */
+  startSetupProcess_() {
+    if (this.showCameraRoll) {
+      this.setupMode_ |= CAMERA_ROLL_FEATURE;
+    }
+    if (this.showNotifications) {
+      this.setupMode_ |= NOTIFICATION_FEATURE;
+    }
+    if (this.showAppStreaming) {
+      this.setupMode_ |= APPS_FEATURE;
+    }
     if ((this.showCameraRoll || this.showNotifications) &&
         this.combinedSetupSupported) {
       this.browserProxy_.attemptCombinedFeatureSetup(
@@ -625,6 +661,8 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
       this.browserProxy_.cancelAppsSetup();
     } else if (this.flowState_ === SetupFlowStatus.WAIT_FOR_PHONE_COMBINED) {
       this.browserProxy_.cancelCombinedFeatureSetup();
+    } else if (this.flowState_ === SetupFlowStatus.WAIT_FOR_CONNECTION) {
+      this.browserProxy_.cancelFeatureSetupConnection();
     }
     this.browserProxy_.logPhoneHubPermissionSetUpScreenAction(
         this.setupScreen_, PhoneHubPermissionsSetupAction.CANCEL);

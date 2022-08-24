@@ -104,6 +104,16 @@ export class MultiDeviceBrowserProxy {
   cancelCombinedFeatureSetup() {}
 
   /**
+   * Attempts to connect to the phone before setup.
+   */
+  attemptFeatureSetupConnection() {}
+
+  /**
+   * Cancel the connection flow.
+   */
+  cancelFeatureSetupConnection() {}
+
+  /**
    * Log [Cancel] button click event in phone hub combined feature access setup
    * flow.
    *  @param {!PhoneHubPermissionsSetupFlowScreens} screen
@@ -214,6 +224,16 @@ export class MultiDeviceBrowserProxyImpl {
   /** @override */
   cancelCombinedFeatureSetup() {
     chrome.send('cancelCombinedFeatureSetup');
+  }
+
+  /** @override */
+  attemptFeatureSetupConnection() {
+    chrome.send('attemptFeatureSetupConnection');
+  }
+
+  /** @override */
+  cancelFeatureSetupConnection() {
+    chrome.send('cancelFeatureSetupConnection');
   }
 
   /** @override */

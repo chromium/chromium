@@ -79,6 +79,23 @@ class FeatureSetupResponseProcessorTest : public testing::Test {
       feature_setup_response_processor_;
   FakeCombinedAccessSetupOperationDelegate fake_combined_delegate_;
 };
+TEST_F(FeatureSetupResponseProcessorTest, ResponseReceived_Not_In_Setup) {
+  CreateFeatureSetupResponseProcessor();
+  proto::FeatureSetupResponse setupResponse;
+  setupResponse.set_camera_roll_setup_result(
+      proto::FeatureSetupResult::RESULT_ERROR_USER_REJECT);
+  setupResponse.set_notification_setup_result(
+      proto::FeatureSetupResult::RESULT_ERROR_USER_REJECT);
+
+  EXPECT_FALSE(fake_multidevice_feature_access_manager_
+                   ->IsCombinedSetupOperationInProgress());
+
+  fake_message_receiver_->NotifyFeatureSetupResponseReceived(setupResponse);
+
+  // Should not be updated.
+  EXPECT_EQ(CombinedAccessSetupOperation::Status::kConnecting,
+            GetCombinedSetupOperationStatus());
+}
 
 TEST_F(FeatureSetupResponseProcessorTest, ResponseReceived_All_Access_Granted) {
   auto operation =

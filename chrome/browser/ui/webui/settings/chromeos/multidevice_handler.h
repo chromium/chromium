@@ -8,6 +8,7 @@
 #include "ash/components/multidevice/remote_device_ref.h"
 #include "ash/components/phonehub/camera_roll_manager.h"
 #include "ash/components/phonehub/combined_access_setup_operation.h"
+#include "ash/components/phonehub/feature_setup_connection_operation.h"
 #include "ash/components/phonehub/multidevice_feature_access_manager.h"
 #include "ash/components/phonehub/notification_access_setup_operation.h"
 #include "ash/components/phonehub/util/histogram_util.h"
@@ -37,7 +38,8 @@ class MultideviceHandler
       public ash::eche_app::AppsAccessManager::Observer,
       public ash::eche_app::AppsAccessSetupOperation::Delegate,
       public ash::phonehub::CameraRollManager::Observer,
-      public phonehub::CombinedAccessSetupOperation::Delegate {
+      public phonehub::CombinedAccessSetupOperation::Delegate,
+      public phonehub::FeatureSetupConnectionOperation::Delegate {
  public:
   MultideviceHandler(
       PrefService* prefs,
@@ -87,6 +89,10 @@ class MultideviceHandler
   void OnCombinedStatusChange(
       phonehub::CombinedAccessSetupOperation::Status new_status) override;
 
+  // FeatureSetupConnectionOperation::Delegate:
+  void OnFeatureSetupConnectionStatusChange(
+      phonehub::FeatureSetupConnectionOperation::Status new_status) override;
+
   // phonehub::MultideviceFeatureAccessManager::Observer:
   void OnNotificationAccessChanged() override;
   void OnCameraRollAccessChanged() override;
@@ -133,6 +139,9 @@ class MultideviceHandler
   void HandleCancelAppsSetup(const base::Value::List& args);
   void HandleAttemptCombinedFeatureSetup(const base::Value::List& args);
   void HandleCancelCombinedFeatureSetup(const base::Value::List& args);
+  void HandleAttemptFeatureSetupConnection(const base::Value::List& args);
+  void HandleCancelFeatureSetupConnection(const base::Value::List& args);
+  void HandleFinishFeatureSetupConnection(const base::Value::List& args);
 
   void OnSetFeatureStateEnabledResult(const std::string& js_callback_id,
                                       bool success);
@@ -172,6 +181,8 @@ class MultideviceHandler
       notification_access_operation_;
   std::unique_ptr<phonehub::CombinedAccessSetupOperation>
       combined_access_operation_;
+  std::unique_ptr<phonehub::FeatureSetupConnectionOperation>
+      feature_setup_connection_operation_;
 
   multidevice_setup::AndroidSmsPairingStateTracker*
       android_sms_pairing_state_tracker_;

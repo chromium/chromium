@@ -28,7 +28,7 @@ namespace phonehub {
 class CombinedAccessSetupOperation {
  public:
   // Note: Numerical values should not be changed because they must stay in
-  // sync with multidevice_permissions_access_setup_dialog.js, with the
+  // sync with multidevice_permissions_setup_dialog.js, with the
   // exception of NOT_STARTED, which has a value of 0. Also, these values are
   // persisted to logs. Entries should not be renumbered and numeric values
   // should never be reused. If entries are added, kMaxValue should be updated.
