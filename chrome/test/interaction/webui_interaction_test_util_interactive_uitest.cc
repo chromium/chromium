@@ -306,8 +306,14 @@ IN_PROC_BROWSER_TEST_F(WebUIInteractionTestUtilInteractiveUiTest,
 }
 
 // This test checks that we can attach to a WebUI that is embedded in a tab.
+#if BUILDFLAG(IS_WIN)
+// Consistently fails on the Win11 bot. https://crbug.com/1355948
+#define MAYBE_CompareScreenshot_TabWebUI DISABLED_CompareScreenshot_TabWebUI
+#else
+#define MAYBE_CompareScreenshot_TabWebUI CompareScreenshot_TabWebUI
+#endif
 IN_PROC_BROWSER_TEST_F(WebUIInteractionTestUtilInteractiveUiTest,
-                       CompareScreenshot_TabWebUI) {
+                       MAYBE_CompareScreenshot_TabWebUI) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
