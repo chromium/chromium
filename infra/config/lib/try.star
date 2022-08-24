@@ -58,6 +58,7 @@ defaults = args.defaults(
     # to the standard default.
     compilator_cores = args.DEFAULT,
     compilator_goma_jobs = args.DEFAULT,
+    compilator_reclient_jobs = args.DEFAULT,
     orchestrator_cores = args.DEFAULT,
 )
 
@@ -300,6 +301,7 @@ def _orchestrator_builder(
     kwargs.setdefault("executable", "recipe:chromium/orchestrator")
 
     kwargs.setdefault("goma_backend", None)
+    kwargs.setdefault("reclient_instance", None)
     kwargs.setdefault("os", os.LINUX_DEFAULT)
     kwargs.setdefault("service_account", "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com")
     kwargs.setdefault("ssd", None)
@@ -334,6 +336,7 @@ def _compilator_builder(*, name, **kwargs):
         * builderless: True on branches, False on main
         * cores: The compilator_cores module-level default.
         * goma_jobs: The compilator_goma_jobs module-level default.
+        * reclient_jobs: The compilator_reclient_jobs module-level default.
         * executable: "recipe:chromium/compilator"
         * ssd: True
     """
@@ -345,6 +348,7 @@ def _compilator_builder(*, name, **kwargs):
     kwargs.setdefault("cores", defaults.compilator_cores.get())
     kwargs.setdefault("executable", "recipe:chromium/compilator")
     kwargs.setdefault("goma_jobs", defaults.compilator_goma_jobs.get())
+    kwargs.setdefault("reclient_jobs", defaults.compilator_reclient_jobs.get())
     kwargs.setdefault("ssd", True)
 
     ret = try_.builder(name = name, **kwargs)
