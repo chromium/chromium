@@ -205,8 +205,6 @@ class WaylandEventSource : public PlatformEventSource,
   // Computes initial velocity of fling scroll based on recent frames.
   gfx::Vector2dF ComputeFlingVelocity();
 
-  bool SurfaceSubmissionInPixelCoordinates() const;
-
   // For pointer events.
   PointerDetails PointerDetailsForDispatching() const;
 

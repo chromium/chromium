@@ -701,10 +701,6 @@ gfx::Vector2dF WaylandEventSource::ComputeFlingVelocity() {
                       : gfx::Vector2dF(dx * dt_inv, dy * dt_inv);
 }
 
-bool WaylandEventSource::SurfaceSubmissionInPixelCoordinates() const {
-  return connection_->surface_submission_in_pixel_coordinates();
-}
-
 PointerDetails WaylandEventSource::PointerDetailsForDispatching() const {
   if (!last_pointer_stylus_tool_)
     return PointerDetails(EventPointerType::kMouse);
