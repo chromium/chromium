@@ -265,7 +265,24 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   // be sent to GPU scheduler.
   void FlushOutputSurface();
 
+  // A map from RenderPass id to the texture used to draw the RenderPass from.
+  struct RenderPassBacking {
+    gfx::Size size;
+    bool generate_mipmap;
+    gfx::ColorSpace color_space;
+    ResourceFormat format;
+    gpu::Mailbox mailbox;
+    bool is_root;
+  };
+
 #if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
+  RenderPassBacking& GetOrCreateRenderPassOverlayBacking(
+      AggregatedRenderPassId render_pass_id,
+      const AggregatedRenderPassDrawQuad* rpdq,
+      ResourceFormat buffer_format,
+      gfx::ColorSpace color_space,
+      gfx::Size buffer_size);
+
   void PrepareRenderPassOverlay(
       OverlayProcessorInterface::PlatformOverlayCandidate* overlay);
 #endif
@@ -279,15 +296,6 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
     return static_cast<DisplayResourceProviderSkia*>(resource_provider_);
   }
 
-  // A map from RenderPass id to the texture used to draw the RenderPass from.
-  struct RenderPassBacking {
-    gfx::Size size;
-    bool generate_mipmap;
-    gfx::ColorSpace color_space;
-    ResourceFormat format;
-    gpu::Mailbox mailbox;
-    bool is_root;
-  };
   base::flat_map<AggregatedRenderPassId, RenderPassBacking>
       render_pass_backings_;
   sk_sp<SkColorSpace> RenderPassBackingSkColorSpace(

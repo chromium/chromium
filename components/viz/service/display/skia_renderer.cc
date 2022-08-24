@@ -3147,6 +3147,44 @@ void SkiaRenderer::FlushOutputSurface() {
 }
 
 #if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
+SkiaRenderer::RenderPassBacking&
+SkiaRenderer::GetOrCreateRenderPassOverlayBacking(
+    AggregatedRenderPassId render_pass_id,
+    const AggregatedRenderPassDrawQuad* rpdq,
+    ResourceFormat buffer_format,
+    gfx::ColorSpace color_space,
+    gfx::Size buffer_size) {
+  auto it = std::find_if(available_render_pass_overlay_backings_.begin(),
+                         available_render_pass_overlay_backings_.end(),
+                         [&buffer_format, &buffer_size,
+                          &color_space](const RenderPassBacking& backing) {
+                           return backing.format == buffer_format &&
+                                  backing.size == buffer_size &&
+                                  backing.color_space == color_space;
+                         });
+
+  gpu::Mailbox mailbox;
+  if (it == available_render_pass_overlay_backings_.end()) {
+    // Allocate the image for render pass overlay if there is no existing
+    // available one.
+    constexpr auto kOverlayUsage = gpu::SHARED_IMAGE_USAGE_SCANOUT |
+                                   gpu::SHARED_IMAGE_USAGE_DISPLAY |
+                                   gpu::SHARED_IMAGE_USAGE_RASTER;
+    mailbox = skia_output_surface_->CreateSharedImage(
+        buffer_format, buffer_size, color_space, kOverlayUsage,
+        gpu::kNullSurfaceHandle);
+    in_flight_render_pass_overlay_backings_.push_back(
+        RenderPassBacking{buffer_size, /*generate_mipmap=*/false, color_space,
+                          buffer_format, mailbox, /*is_root=*/false});
+  } else {
+    mailbox = it->mailbox;
+    in_flight_render_pass_overlay_backings_.push_back(std::move(*it));
+    available_render_pass_overlay_backings_.erase(it);
+  }
+
+  return in_flight_render_pass_overlay_backings_.back();
+}
+
 void SkiaRenderer::PrepareRenderPassOverlay(
     OverlayProcessorInterface::PlatformOverlayCandidate* overlay) {
   DCHECK(!current_canvas_);
@@ -3289,41 +3327,17 @@ void SkiaRenderer::PrepareRenderPassOverlay(
       cc::MathUtil::CheckedRoundUp(filter_bounds.width(), kBufferMultiple),
       cc::MathUtil::CheckedRoundUp(filter_bounds.height(), kBufferMultiple));
 
-  auto it = std::find_if(available_render_pass_overlay_backings_.begin(),
-                         available_render_pass_overlay_backings_.end(),
-                         [&buffer_format, &buffer_size,
-                          &color_space](const RenderPassBacking& backing) {
-                           return backing.format == buffer_format &&
-                                  backing.size == buffer_size &&
-                                  backing.color_space == color_space;
-                         });
-
-  if (it == available_render_pass_overlay_backings_.end()) {
-    // Allocate the image for render pass overlay if there is no existing
-    // available one.
-    constexpr auto kOverlayUsage = gpu::SHARED_IMAGE_USAGE_SCANOUT |
-                                   gpu::SHARED_IMAGE_USAGE_DISPLAY |
-                                   gpu::SHARED_IMAGE_USAGE_RASTER;
-    auto mailbox = skia_output_surface_->CreateSharedImage(
-        buffer_format, buffer_size, color_space, kOverlayUsage,
-        gpu::kNullSurfaceHandle);
-    in_flight_render_pass_overlay_backings_.push_back(
-        RenderPassBacking{buffer_size, /*generate_mipmap=*/false, color_space,
-                          buffer_format, mailbox, /*is_root=*/false});
-    overlay->mailbox = std::move(mailbox);
-  } else {
-    overlay->mailbox = std::move(it->mailbox);
-    in_flight_render_pass_overlay_backings_.push_back(std::move(*it));
-    available_render_pass_overlay_backings_.erase(it);
-  }
   const RenderPassBacking& dst_overlay_backing =
-      in_flight_render_pass_overlay_backings_.back();
+      GetOrCreateRenderPassOverlayBacking(
+          quad->render_pass_id, quad, buffer_format, color_space, buffer_size);
+
+  overlay->mailbox = dst_overlay_backing.mailbox;
 
   current_canvas_ = skia_output_surface_->BeginPaintRenderPass(
       quad->render_pass_id, dst_overlay_backing.size,
       dst_overlay_backing.format, /*mipmap=*/false,
-      RenderPassBackingSkColorSpace(dst_overlay_backing), /*is_overlay=*/true,
-      overlay->mailbox);
+      RenderPassBackingSkColorSpace(dst_overlay_backing),
+      /*is_overlay=*/true, overlay->mailbox);
   if (!current_canvas_) {
     DLOG(ERROR)
         << "BeginPaintRenderPass() in PrepareRenderPassOverlay() failed.";
@@ -3366,9 +3380,10 @@ void SkiaRenderer::PrepareRenderPassOverlay(
       return;
     }
 
-    if (src_quad_backing->generate_mipmap)
+    if (src_quad_backing->generate_mipmap) {
       params.sampling =
           SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kLinear);
+    }
 
     params.vis_tex_coords = cc::MathUtil::ScaleRectProportional(
         quad->tex_coord_rect, gfx::RectF(quad->rect), params.visible_rect);
@@ -3379,7 +3394,6 @@ void SkiaRenderer::PrepareRenderPassOverlay(
     DrawSingleImage(content_image.get(), valid_texel_bounds, &rpdq_params,
                     &paint, &params);
   }
-
   current_canvas_ = nullptr;
 
   EndPaint(/*failed=*/false);
