@@ -56,7 +56,7 @@ AlphaNum::AlphaNum(Dec dec) {
     *--writer = '0' + (value % 10);
     value /= 10;
   }
-  *--writer = '0' + value;
+  *--writer = '0' + static_cast<char>(value);
   if (neg) *--writer = '-';
 
   ptrdiff_t fillers = writer - minfill;
@@ -73,7 +73,7 @@ AlphaNum::AlphaNum(Dec dec) {
     if (add_sign_again) *--writer = '-';
   }
 
-  piece_ = absl::string_view(writer, end - writer);
+  piece_ = absl::string_view(writer, static_cast<size_t>(end - writer));
 }
 
 // ----------------------------------------------------------------------

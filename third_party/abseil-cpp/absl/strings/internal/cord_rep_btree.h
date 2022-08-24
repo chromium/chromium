@@ -95,8 +95,9 @@ class CordRepBtree : public CordRep {
   // local stack variable compared to Cord's current near 400 bytes stack use.
   // The maximum `height` value of a node is then `kMaxDepth - 1` as node height
   // values start with a value of 0 for leaf nodes.
-  static constexpr int kMaxDepth = 12;
-  static constexpr int kMaxHeight = kMaxDepth - 1;
+  static constexpr size_t kMaxDepth = 12;
+  // See comments on height() for why this is an int and not a size_t.
+  static constexpr int kMaxHeight = static_cast<int>(kMaxDepth - 1);
 
   // `Action` defines the action for unwinding changes done at the btree's leaf
   // level that need to be propagated up to the parent node(s). Each operation

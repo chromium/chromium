@@ -351,3 +351,27 @@ VN	+1045+10640	Asia/Ho_Chi_Minh	Vietnam (south)
 VU	-1740+16825	Pacific/Efate
 WS	-1350-17144	Pacific/Apia
 ZA,LS,SZ	-2615+02800	Africa/Johannesburg
+#
+# The next section contains experimental tab-separated comments for
+# use by user agents like tzselect that identify continents and oceans.
+#
+# For example, the comment "#@AQ<tab>Antarctica/" means the country code
+# AQ is in the continent Antarctica regardless of the Zone name,
+# so Pacific/Auckland should be listed under Antarctica as well as
+# under the Pacific because its line's country codes include AQ.
+#
+# If more than one country code is affected each is listed separated
+# by commas, e.g., #@IS,SH<tab>Atlantic/".  If a country code is in
+# more than one continent or ocean, each is listed separated by
+# commas, e.g., the second column of "#@CY,TR<tab>Asia/,Europe/".
+#
+# These experimental comments are present only for country codes where
+# the continent or ocean is not already obvious from the Zone name.
+# For example, there is no such comment for RU since it already
+# corresponds to Zone names starting with both "Europe/" and "Asia/".
+#
+#@AQ	Antarctica/
+#@IS,SH	Atlantic/
+#@CY,TR	Asia/,Europe/
+#@SJ	Arctic/
+#@CC,CX,KM,MG,YT	Indian/

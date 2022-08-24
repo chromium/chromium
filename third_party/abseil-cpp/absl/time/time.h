@@ -495,7 +495,7 @@ ABSL_ATTRIBUTE_PURE_FUNCTION int64_t ToInt64Seconds(Duration d);
 ABSL_ATTRIBUTE_PURE_FUNCTION int64_t ToInt64Minutes(Duration d);
 ABSL_ATTRIBUTE_PURE_FUNCTION int64_t ToInt64Hours(Duration d);
 
-// ToDoubleNanoSeconds()
+// ToDoubleNanoseconds()
 // ToDoubleMicroseconds()
 // ToDoubleMilliseconds()
 // ToDoubleSeconds()

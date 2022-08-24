@@ -196,7 +196,7 @@ class ABSL_LOCKABLE CordzInfo : public CordzHandle {
     std::atomic<CordzInfo*> head ABSL_GUARDED_BY(mutex){nullptr};
   };
 
-  static constexpr int kMaxStackDepth = 64;
+  static constexpr size_t kMaxStackDepth = 64;
 
   explicit CordzInfo(CordRep* rep, const CordzInfo* src,
                      MethodIdentifier method);
@@ -216,7 +216,7 @@ class ABSL_LOCKABLE CordzInfo : public CordzHandle {
   // `stack_` depending on `parent_stack_` being empty, returning the size of
   // the parent stack.
   // Returns 0 if `src` is null.
-  static int FillParentStack(const CordzInfo* src, void** stack);
+  static size_t FillParentStack(const CordzInfo* src, void** stack);
 
   void ODRCheck() const {
 #ifndef NDEBUG
@@ -244,8 +244,8 @@ class ABSL_LOCKABLE CordzInfo : public CordzHandle {
 
   void* stack_[kMaxStackDepth];
   void* parent_stack_[kMaxStackDepth];
-  const int stack_depth_;
-  const int parent_stack_depth_;
+  const size_t stack_depth_;
+  const size_t parent_stack_depth_;
   const MethodIdentifier method_;
   const MethodIdentifier parent_method_;
   CordzUpdateTracker update_tracker_;

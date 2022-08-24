@@ -396,7 +396,7 @@ EXPORTS
     ?Fill@?$RandenPool@G@random_internal@absl@@SAXV?$Span@G@3@@Z
     ?Fill@?$RandenPool@I@random_internal@absl@@SAXV?$Span@I@3@@Z
     ?Fill@?$RandenPool@_K@random_internal@absl@@SAXV?$Span@_K@3@@Z
-    ?FillParentStack@CordzInfo@cord_internal@absl@@CAHPBV123@PAPAX@Z
+    ?FillParentStack@CordzInfo@cord_internal@absl@@CAIPBV123@PAPAX@Z
     ?Find@ByAnyChar@absl@@QBE?AVstring_view@2@V32@I@Z
     ?Find@ByChar@absl@@QBE?AVstring_view@2@V32@I@Z
     ?Find@ByLength@absl@@QBE?AVstring_view@2@V32@I@Z

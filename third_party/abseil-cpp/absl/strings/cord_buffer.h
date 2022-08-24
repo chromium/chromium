@@ -411,8 +411,12 @@ class CordBuffer {
 
   // Power2 functions
   static bool IsPow2(size_t size) { return absl::has_single_bit(size); }
-  static size_t Log2Floor(size_t size) { return absl::bit_width(size) - 1; }
-  static size_t Log2Ceil(size_t size) { return absl::bit_width(size - 1); }
+  static size_t Log2Floor(size_t size) {
+    return static_cast<size_t>(absl::bit_width(size) - 1);
+  }
+  static size_t Log2Ceil(size_t size) {
+    return static_cast<size_t>(absl::bit_width(size - 1));
+  }
 
   // Implementation of `CreateWithCustomLimit()`.
   // This implementation allows for future memory allocation hints to

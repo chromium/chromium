@@ -65,6 +65,8 @@ struct FloatTraits;
 
 template <>
 struct FloatTraits<double> {
+  using mantissa_t = uint64_t;
+
   // The number of mantissa bits in the given float type.  This includes the
   // implied high bit.
   static constexpr int kTargetMantissaBits = 53;
@@ -103,7 +105,7 @@ struct FloatTraits<double> {
   // a normal value is made, or it must be less narrow than that, in which case
   // `exponent` must be exactly kMinNormalExponent, and a subnormal value is
   // made.
-  static double Make(uint64_t mantissa, int exponent, bool sign) {
+  static double Make(mantissa_t mantissa, int exponent, bool sign) {
 #ifndef ABSL_BIT_PACK_FLOATS
     // Support ldexp no matter which namespace it's in.  Some platforms
     // incorrectly don't put it in namespace std.
@@ -116,8 +118,10 @@ struct FloatTraits<double> {
     if (mantissa > kMantissaMask) {
       // Normal value.
       // Adjust by 1023 for the exponent representation bias, and an additional
-      // 52 due to the implied decimal point in the IEEE mantissa represenation.
-      dbl += uint64_t{exponent + 1023u + kTargetMantissaBits - 1} << 52;
+      // 52 due to the implied decimal point in the IEEE mantissa
+      // representation.
+      dbl += static_cast<uint64_t>(exponent + 1023 + kTargetMantissaBits - 1)
+             << 52;
       mantissa &= kMantissaMask;
     } else {
       // subnormal value
@@ -134,16 +138,20 @@ struct FloatTraits<double> {
 // members and methods.
 template <>
 struct FloatTraits<float> {
+  using mantissa_t = uint32_t;
+
   static constexpr int kTargetMantissaBits = 24;
   static constexpr int kMaxExponent = 104;
   static constexpr int kMinNormalExponent = -149;
+
   static float MakeNan(const char* tagp) {
     // Support nanf no matter which namespace it's in.  Some platforms
     // incorrectly don't put it in namespace std.
     using namespace std;  // NOLINT
     return nanf(tagp);
   }
-  static float Make(uint32_t mantissa, int exponent, bool sign) {
+
+  static float Make(mantissa_t mantissa, int exponent, bool sign) {
 #ifndef ABSL_BIT_PACK_FLOATS
     // Support ldexpf no matter which namespace it's in.  Some platforms
     // incorrectly don't put it in namespace std.
@@ -157,7 +165,8 @@ struct FloatTraits<float> {
       // Normal value.
       // Adjust by 127 for the exponent representation bias, and an additional
       // 23 due to the implied decimal point in the IEEE mantissa represenation.
-      flt += uint32_t{exponent + 127u + kTargetMantissaBits - 1} << 23;
+      flt += static_cast<uint32_t>(exponent + 127 + kTargetMantissaBits - 1)
+             << 23;
       mantissa &= kMantissaMask;
     } else {
       // subnormal value
@@ -242,9 +251,9 @@ struct CalculatedFloat {
 
 // Returns the bit width of the given uint128.  (Equivalently, returns 128
 // minus the number of leading zero bits.)
-unsigned BitWidth(uint128 value) {
+int BitWidth(uint128 value) {
   if (Uint128High64(value) == 0) {
-    return static_cast<unsigned>(bit_width(Uint128Low64(value)));
+    return bit_width(Uint128Low64(value));
   }
   return 128 - countl_zero(Uint128High64(value));
 }
@@ -337,8 +346,10 @@ void EncodeResult(const CalculatedFloat& calculated, bool negative,
     *value = negative ? -0.0 : 0.0;
     return;
   }
-  *value = FloatTraits<FloatType>::Make(calculated.mantissa,
-                                        calculated.exponent, negative);
+  *value = FloatTraits<FloatType>::Make(
+      static_cast<typename FloatTraits<FloatType>::mantissa_t>(
+          calculated.mantissa),
+      calculated.exponent, negative);
 }
 
 // Returns the given uint128 shifted to the right by `shift` bits, and rounds
@@ -519,7 +530,7 @@ CalculatedFloat CalculateFromParsedHexadecimal(
     const strings_internal::ParsedFloat& parsed_hex) {
   uint64_t mantissa = parsed_hex.mantissa;
   int exponent = parsed_hex.exponent;
-  auto mantissa_width = static_cast<unsigned>(bit_width(mantissa));
+  int mantissa_width = bit_width(mantissa);
   const int shift = NormalizedShiftSize<FloatType>(mantissa_width, exponent);
   bool result_exact;
   exponent += shift;

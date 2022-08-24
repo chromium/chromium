@@ -129,8 +129,9 @@ class RefcountAndFlags {
   }
 
   // Returns the current reference count using acquire semantics.
-  inline int32_t Get() const {
-    return count_.load(std::memory_order_acquire) >> kNumFlags;
+  inline size_t Get() const {
+    return static_cast<size_t>(count_.load(std::memory_order_acquire) >>
+                               kNumFlags);
   }
 
   // Returns whether the atomic integer is 1.

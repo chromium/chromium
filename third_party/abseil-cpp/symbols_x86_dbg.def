@@ -622,8 +622,8 @@ EXPORTS
     ??$assign@V?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@@?$optional_data_base@V?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@@optional_internal@absl@@IAEX$$QAV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@@Z
     ??$bit_cast@_J_K$0A@@absl@@YA_JAB_K@Z
     ??$bit_cast@_K_J$0A@@absl@@YA_KAB_J@Z
-    ??$bit_width@I@absl@@YAII@Z
-    ??$bit_width@_K@absl@@YA_K_K@Z
+    ??$bit_width@I@absl@@YAHI@Z
+    ??$bit_width@_K@absl@@YAH_K@Z
     ??$call_once@A6AXXZ$$V@absl@@YAXAAVonce_flag@0@A6AXXZ@Z
     ??$construct@PAPBVImpl@time_zone@cctz@time_internal@absl@@ABQAPBV12345@@?$allocator@PAPBVImpl@time_zone@cctz@time_internal@absl@@@Cr@std@@QAEXPAPAPBVImpl@time_zone@cctz@time_internal@absl@@ABQAPBV34567@@Z
     ??$construct@PAPBVImpl@time_zone@cctz@time_internal@absl@@ABQAPBV12345@X@?$allocator_traits@V?$allocator@PAPBVImpl@time_zone@cctz@time_internal@absl@@@Cr@std@@@Cr@std@@SAXAAV?$allocator@PAPBVImpl@time_zone@cctz@time_internal@absl@@@12@PAPAPBVImpl@time_zone@cctz@time_internal@absl@@ABQAPBV45678@@Z
@@ -1304,8 +1304,10 @@ EXPORTS
     ??BCord@absl@@QBE?AV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@XZ
     ??BCordRepBtreeReader@cord_internal@absl@@QBE_NXZ
     ??BTimeZone@absl@@QBE?AVtime_zone@cctz@time_internal@1@XZ
-    ??Bint128@absl@@QBEEXZ
+    ??Bint128@absl@@QBEDXZ
     ??Bint128@absl@@QBENXZ
+    ??Bint128@absl@@QBE_JXZ
+    ??Buint128@absl@@QBEDXZ
     ??Buint128@absl@@QBEEXZ
     ??Buint128@absl@@QBEIXZ
     ??Buint128@absl@@QBENXZ
@@ -1760,7 +1762,7 @@ EXPORTS
     ?Fill@?$RandenPool@G@random_internal@absl@@SAXV?$Span@G@3@@Z
     ?Fill@?$RandenPool@I@random_internal@absl@@SAXV?$Span@I@3@@Z
     ?Fill@?$RandenPool@_K@random_internal@absl@@SAXV?$Span@_K@3@@Z
-    ?FillParentStack@CordzInfo@cord_internal@absl@@CAHPBV123@PAPAX@Z
+    ?FillParentStack@CordzInfo@cord_internal@absl@@CAIPBV123@PAPAX@Z
     ?Find@ByAnyChar@absl@@QBE?AVstring_view@2@V32@I@Z
     ?Find@ByChar@absl@@QBE?AVstring_view@2@V32@I@Z
     ?Find@ByLength@absl@@QBE?AVstring_view@2@V32@I@Z
@@ -1846,7 +1848,7 @@ EXPORTS
     ?Generate@Randen@random_internal@absl@@QBEXPAX@Z
     ?Generate@RandenHwAes@random_internal@absl@@SAXPBXPAX@Z
     ?Generate@RandenSlow@random_internal@absl@@SAXPBXPAX@Z
-    ?Get@RefcountAndFlags@cord_internal@absl@@QBEHXZ
+    ?Get@RefcountAndFlags@cord_internal@absl@@QBEIXZ
     ?GetAllocatedCapacity@?$Storage@H$0CP@V?$allocator@H@Cr@std@@@inlined_vector_internal@absl@@QBEIXZ
     ?GetAllocatedCapacity@?$Storage@PAUCordRep@cord_internal@absl@@$01V?$allocator@PAUCordRep@cord_internal@absl@@@Cr@std@@@inlined_vector_internal@absl@@QBEIXZ
     ?GetAllocatedCapacity@?$Storage@PAUCordRep@cord_internal@absl@@$0CP@V?$allocator@PAUCordRep@cord_internal@absl@@@Cr@std@@@inlined_vector_internal@absl@@QBEIXZ
