@@ -75,7 +75,8 @@ no_check_targets = [
 
   # //v8, https://crbug.com/v8/7330
   "//v8/src/inspector:inspector",  # 20 errors
-  "//v8/test/cctest:cctest_sources",  # 2 errors
+  "//v8/test/cctest:cctest_sources",  # 15 errors
+  "//v8/test/unittests:inspector_unittests_sources",  # 2 errors
   "//v8:cppgc_base",  # 1 error
   "//v8:v8_internal_headers",  # 11 errors
   "//v8:v8_libplatform",  # 2 errors
