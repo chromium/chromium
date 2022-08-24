@@ -213,8 +213,6 @@ void NetworkListViewControllerImpl::OnGetNetworkStateList(
       mobile_header_view_->SetToggleState(
           /*enabled=*/false,
           /*is_on=*/is_mobile_network_enabled_, /*animate_toggle=*/false);
-      mobile_header_view_->SetID(static_cast<int>(
-          NetworkListViewControllerViewChildId::kMobileSectionHeader));
     }
 
     UpdateMobileSection();
@@ -405,8 +403,6 @@ void NetworkListViewControllerImpl::UpdateWifiSection() {
     wifi_header_view_->SetToggleState(/*enabled=*/false,
                                       /*is_on=*/is_wifi_enabled_,
                                       /*animate_toggle=*/false);
-    wifi_header_view_->SetID(static_cast<int>(
-        NetworkListViewControllerViewChildId::kWifiSectionHeader));
   }
 
   wifi_header_view_->SetJoinWifiButtonState(/*enabled=*/is_wifi_enabled_,
