@@ -56,6 +56,8 @@ component("app_types") {
     "intent_filter.cc",
     "intent_filter.h",
     "macros.h",
+    "menu.cc",
+    "menu.h",
     "permission.cc",
     "permission.h",
     "shortcut.cc",

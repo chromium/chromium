@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/apps/app_service/app_shortcut_item.h"
+#include "components/services/app_service/public/cpp/menu.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -62,13 +63,13 @@ void CreateOpenNewSubmenu(uint32_t string_id,
 // Returns true if the open menu item can be added, when |menu_type| is Shelf,
 // and the app identified by |app_id| is not running, otherwise returns false.
 bool ShouldAddOpenItem(const std::string& app_id,
-                       apps::mojom::MenuType menu_type,
+                       MenuType menu_type,
                        Profile* profile);
 
 // Returns true if the close menu item can be added, when |menu_type| is Shelf,
 // and the app identified by |app_id| is running, otherwise returns false.
 bool ShouldAddCloseItem(const std::string& app_id,
-                        apps::mojom::MenuType menu_type,
+                        MenuType menu_type,
                         Profile* profile);
 
 // Populates the LAUNCH_NEW menu item to a simple menu model |model| from mojo
@@ -87,11 +88,11 @@ void PopulateItemFromMojoMenuItems(apps::mojom::MenuItemPtr menu_item,
                                    apps::AppShortcutItems* arc_shortcut_items);
 
 // Convert |menu_type| to string. Useful to pass |menu_type| enum as string id.
-base::StringPiece MenuTypeToString(apps::mojom::MenuType menu_type);
+base::StringPiece MenuTypeToString(MenuType menu_type);
 
 // Convert |menu_type| string to enum. Useful to pass |menu_type| enum as string
 // id.
-apps::mojom::MenuType MenuTypeFromString(base::StringPiece menu_type);
+MenuType MenuTypeFromString(base::StringPiece menu_type);
 
 // Returns the browser menu items for the given |menu_type|.
 mojom::MenuItemsPtr CreateBrowserMenuItems(const Profile* profile);

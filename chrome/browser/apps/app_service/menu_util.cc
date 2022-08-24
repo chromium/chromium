@@ -109,9 +109,9 @@ void CreateOpenNewSubmenu(uint32_t string_id,
 }
 
 bool ShouldAddOpenItem(const std::string& app_id,
-                       apps::mojom::MenuType menu_type,
+                       MenuType menu_type,
                        Profile* profile) {
-  if (menu_type != apps::mojom::MenuType::kShelf) {
+  if (menu_type != MenuType::kShelf) {
     return false;
   }
 
@@ -121,9 +121,9 @@ bool ShouldAddOpenItem(const std::string& app_id,
 }
 
 bool ShouldAddCloseItem(const std::string& app_id,
-                        apps::mojom::MenuType menu_type,
+                        MenuType menu_type,
                         Profile* profile) {
-  if (menu_type != apps::mojom::MenuType::kShelf) {
+  if (menu_type != MenuType::kShelf) {
     return false;
   }
 
@@ -210,21 +210,21 @@ void PopulateItemFromMojoMenuItems(apps::mojom::MenuItemPtr item,
   }
 }
 
-base::StringPiece MenuTypeToString(apps::mojom::MenuType menu_type) {
+base::StringPiece MenuTypeToString(MenuType menu_type) {
   switch (menu_type) {
-    case apps::mojom::MenuType::kShelf:
+    case MenuType::kShelf:
       return "shelf";
-    case apps::mojom::MenuType::kAppList:
+    case MenuType::kAppList:
       return "applist";
   }
 }
 
-apps::mojom::MenuType MenuTypeFromString(base::StringPiece menu_type) {
+MenuType MenuTypeFromString(base::StringPiece menu_type) {
   if (base::EqualsCaseInsensitiveASCII(menu_type, "shelf"))
-    return apps::mojom::MenuType::kShelf;
+    return MenuType::kShelf;
   if (base::EqualsCaseInsensitiveASCII(menu_type, "applist"))
-    return apps::mojom::MenuType::kAppList;
-  return apps::mojom::MenuType::kShelf;
+    return MenuType::kAppList;
+  return MenuType::kShelf;
 }
 
 mojom::MenuItemsPtr CreateBrowserMenuItems(const Profile* profile) {

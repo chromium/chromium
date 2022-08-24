@@ -31,6 +31,7 @@
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/services/app_service/public/cpp/menu.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -280,12 +281,14 @@ void CrostiniApps::GetMenuModel(const std::string& app_id,
     AddCommandItem(ash::UNINSTALL, IDS_APP_LIST_UNINSTALL_ITEM, &menu_items);
   }
 
-  if (ShouldAddOpenItem(app_id, menu_type, profile_)) {
+  if (ShouldAddOpenItem(app_id, ConvertMojomMenuTypeToMenuType(menu_type),
+                        profile_)) {
     AddCommandItem(ash::LAUNCH_NEW, IDS_APP_CONTEXT_MENU_ACTIVATE_ARC,
                    &menu_items);
   }
 
-  if (ShouldAddCloseItem(app_id, menu_type, profile_)) {
+  if (ShouldAddCloseItem(app_id, ConvertMojomMenuTypeToMenuType(menu_type),
+                         profile_)) {
     AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE, &menu_items);
   }
 

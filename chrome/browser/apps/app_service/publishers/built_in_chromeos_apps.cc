@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/menu.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -203,12 +204,14 @@ void BuiltInChromeOsApps::GetMenuModel(const std::string& app_id,
                                        GetMenuModelCallback callback) {
   apps::mojom::MenuItemsPtr menu_items = apps::mojom::MenuItems::New();
 
-  if (ShouldAddOpenItem(app_id, menu_type, profile_)) {
+  if (ShouldAddOpenItem(app_id, ConvertMojomMenuTypeToMenuType(menu_type),
+                        profile_)) {
     AddCommandItem(ash::LAUNCH_NEW, IDS_APP_CONTEXT_MENU_ACTIVATE_ARC,
                    &menu_items);
   }
 
-  if (ShouldAddCloseItem(app_id, menu_type, profile_)) {
+  if (ShouldAddCloseItem(app_id, ConvertMojomMenuTypeToMenuType(menu_type),
+                         profile_)) {
     AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE, &menu_items);
   }
 
