@@ -33,7 +33,7 @@ class GEOMETRY_SKIA_EXPORT LinearGradient {
   };
   static LinearGradient& GetEmpty();
 
-  static constexpr size_t kMaxStepSize = 6;
+  static constexpr size_t kMaxStepSize = 8;
   using StepArray = std::array<Step, kMaxStepSize>;
 
   LinearGradient();
