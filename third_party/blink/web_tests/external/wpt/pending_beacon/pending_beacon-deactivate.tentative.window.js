@@ -1,12 +1,8 @@
 // META: script=/resources/testharness.js
 // META: script=/resources/testharnessreport.js
+// META: script=./resources/pending_beacon-helper.js
 
 'use strict';
-
-const BeaconTypes = [
-  {type: PendingPostBeacon, name: 'PendingPostBeacon', expectedMethod: 'POST'},
-  {type: PendingGetBeacon, name: 'PendingGetBeacon', expectedMethod: 'GET'},
-];
 
 for (const beaconType of BeaconTypes) {
   test(() => {

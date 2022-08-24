@@ -243,9 +243,14 @@ class SimpleURLLoaderImpl : public SimpleURLLoader,
   void SetAllowHttpErrorResults(bool allow_http_error_results) override;
   void AttachStringForUpload(const std::string& upload_data,
                              const std::string& upload_content_type) override;
+  void AttachStringForUpload(const std::string& upload_data) override;
   void AttachFileForUpload(
       const base::FilePath& upload_file_path,
       const std::string& upload_content_type,
+      uint64_t offset = 0,
+      uint64_t length = std::numeric_limits<uint64_t>::max()) override;
+  void AttachFileForUpload(
+      const base::FilePath& upload_file_path,
       uint64_t offset = 0,
       uint64_t length = std::numeric_limits<uint64_t>::max()) override;
   void SetRetryOptions(int max_retries, int retry_mode) override;
@@ -313,6 +318,14 @@ class SimpleURLLoaderImpl : public SimpleURLLoader,
 
     absl::optional<URLLoaderCompletionStatus> completion_status;
   };
+
+  void AttachStringForUpload(const std::string& upload_data,
+                             const std::string* const upload_content_type);
+  void AttachFileForUpload(
+      const base::FilePath& upload_file_path,
+      const std::string* const upload_content_type,
+      uint64_t offset = 0,
+      uint64_t length = std::numeric_limits<uint64_t>::max());
 
   // Prepares internal state to start a request, and then calls StartRequest().
   // Only used for the initial request (Not retries).
@@ -1362,7 +1375,7 @@ void SimpleURLLoaderImpl::SetAllowHttpErrorResults(
 
 void SimpleURLLoaderImpl::AttachStringForUpload(
     const std::string& upload_data,
-    const std::string& upload_content_type) {
+    const std::string* const upload_content_type) {
   // Currently only allow a single string to be attached.
   DCHECK(!resource_request_->request_body);
   DCHECK(resource_request_->method != net::HttpRequestHeaders::kGetMethod &&
@@ -1383,13 +1396,26 @@ void SimpleURLLoaderImpl::AttachStringForUpload(
                                                      created_from_);
   }
 
-  resource_request_->headers.SetHeader(net::HttpRequestHeaders::kContentType,
-                                       upload_content_type);
+  if (upload_content_type) {
+    resource_request_->headers.SetHeader(net::HttpRequestHeaders::kContentType,
+                                         *upload_content_type);
+  }
+}
+
+void SimpleURLLoaderImpl::AttachStringForUpload(
+    const std::string& upload_data,
+    const std::string& upload_content_type) {
+  AttachStringForUpload(upload_data, &upload_content_type);
+}
+
+void SimpleURLLoaderImpl::AttachStringForUpload(
+    const std::string& upload_data) {
+  AttachStringForUpload(upload_data, nullptr);
 }
 
 void SimpleURLLoaderImpl::AttachFileForUpload(
     const base::FilePath& upload_file_path,
-    const std::string& upload_content_type,
+    const std::string* const upload_content_type,
     uint64_t offset,
     uint64_t length) {
   DCHECK(!upload_file_path.empty());
@@ -1407,8 +1433,25 @@ void SimpleURLLoaderImpl::AttachFileForUpload(
   resource_request_->request_body->AppendFileRange(upload_file_path, offset,
                                                    length, base::Time());
 
-  resource_request_->headers.SetHeader(net::HttpRequestHeaders::kContentType,
-                                       upload_content_type);
+  if (upload_content_type) {
+    resource_request_->headers.SetHeader(net::HttpRequestHeaders::kContentType,
+                                         *upload_content_type);
+  }
+}
+
+void SimpleURLLoaderImpl::AttachFileForUpload(
+    const base::FilePath& upload_file_path,
+    const std::string& upload_content_type,
+    uint64_t offset,
+    uint64_t length) {
+  AttachFileForUpload(upload_file_path, &upload_content_type, offset, length);
+}
+
+void SimpleURLLoaderImpl::AttachFileForUpload(
+    const base::FilePath& upload_file_path,
+    uint64_t offset,
+    uint64_t length) {
+  AttachFileForUpload(upload_file_path, nullptr, offset, length);
 }
 
 void SimpleURLLoaderImpl::SetRetryOptions(int max_retries, int retry_mode) {

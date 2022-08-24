@@ -74,14 +74,25 @@ void PendingBeaconService::SendBeacons(
                                          kPendingBeaconNetworkTag);
 
     if (element.has_value()) {
+      const auto& content_type = beacon->content_type();
       if (element->type() == network::DataElement::Tag::kBytes) {
         const auto& bytes = element->As<network::DataElementBytes>();
-        simple_url_loader->AttachStringForUpload(
-            std::string(bytes.AsStringPiece()), beacon->content_type());
+        if (content_type.empty()) {
+          simple_url_loader->AttachStringForUpload(
+              std::string(bytes.AsStringPiece()));
+        } else {
+          simple_url_loader->AttachStringForUpload(
+              std::string(bytes.AsStringPiece()), content_type);
+        }
       } else if (element->type() == network::DataElement::Tag::kFile) {
         const auto& file = element->As<network::DataElementFile>();
-        simple_url_loader->AttachFileForUpload(
-            file.path(), beacon->content_type(), file.offset(), file.length());
+        if (content_type.empty()) {
+          simple_url_loader->AttachFileForUpload(file.path(), file.offset(),
+                                                 file.length());
+        } else {
+          simple_url_loader->AttachFileForUpload(file.path(), content_type,
+                                                 file.offset(), file.length());
+        }
       } else {
         NOTREACHED();
       }
