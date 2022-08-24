@@ -6,7 +6,7 @@
       "src": "screenshot1-portrait.jpeg",
       "type": "image/jpeg",
       "sizes": "409x728",
-      "platform": "narrow"
+      "form_factor": "narrow"
     }
   ],
   "icons": [

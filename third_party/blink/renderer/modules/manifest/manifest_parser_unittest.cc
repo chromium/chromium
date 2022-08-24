@@ -1168,17 +1168,17 @@ TEST_F(ManifestParserTest, ScreenshotsParseRules) {
   }
 }
 
-TEST_F(ManifestParserTest, ScreenshotPlatformParseRules) {
+TEST_F(ManifestParserTest, ScreenshotFormFactorParseRules) {
   // Smoke test.
   {
     auto& manifest = ParseManifest(
-        R"({ "screenshots": [{ "src": "foo.jpg", "platform": "narrow" }] })");
+        R"({ "screenshots": [{ "src": "foo.jpg", "form_factor": "narrow" }] })");
     EXPECT_FALSE(manifest->screenshots.IsEmpty());
 
     auto& screenshots = manifest->screenshots;
     EXPECT_EQ(screenshots.size(), 1u);
-    EXPECT_EQ(screenshots[0]->platform,
-              mojom::blink::ManifestScreenshot::Platform::kNarrow);
+    EXPECT_EQ(screenshots[0]->form_factor,
+              mojom::blink::ManifestScreenshot::FormFactor::kNarrow);
     EXPECT_FALSE(IsManifestEmpty(manifest));
     EXPECT_EQ(0u, GetErrorCount());
   }
@@ -1191,8 +1191,8 @@ TEST_F(ManifestParserTest, ScreenshotPlatformParseRules) {
 
     auto& screenshots = manifest->screenshots;
     EXPECT_EQ(screenshots.size(), 1u);
-    EXPECT_EQ(screenshots[0]->platform,
-              mojom::blink::ManifestScreenshot::Platform::kUnknown);
+    EXPECT_EQ(screenshots[0]->form_factor,
+              mojom::blink::ManifestScreenshot::FormFactor::kUnknown);
     EXPECT_FALSE(IsManifestEmpty(manifest));
     EXPECT_EQ(0u, GetErrorCount());
   }
@@ -1200,13 +1200,13 @@ TEST_F(ManifestParserTest, ScreenshotPlatformParseRules) {
   // Invalid type.
   {
     auto& manifest = ParseManifest(
-        R"({ "screenshots": [{ "src": "foo.jpg", "platform": 1}] })");
+        R"({ "screenshots": [{ "src": "foo.jpg", "form_factor": 1}] })");
     EXPECT_FALSE(manifest->screenshots.IsEmpty());
 
     auto& screenshots = manifest->screenshots;
     EXPECT_EQ(screenshots.size(), 1u);
-    EXPECT_EQ(screenshots[0]->platform,
-              mojom::blink::ManifestScreenshot::Platform::kUnknown);
+    EXPECT_EQ(screenshots[0]->form_factor,
+              mojom::blink::ManifestScreenshot::FormFactor::kUnknown);
     EXPECT_FALSE(IsManifestEmpty(manifest));
     EXPECT_EQ(1u, GetErrorCount());
   }
@@ -1214,13 +1214,13 @@ TEST_F(ManifestParserTest, ScreenshotPlatformParseRules) {
   // Unrecognized string.
   {
     auto& manifest = ParseManifest(
-        R"({ "screenshots": [{ "src": "foo.jpg", "platform": "windows"}] })");
+        R"({ "screenshots": [{ "src": "foo.jpg", "form_factor": "windows"}] })");
     EXPECT_FALSE(manifest->screenshots.IsEmpty());
 
     auto& screenshots = manifest->screenshots;
     EXPECT_EQ(screenshots.size(), 1u);
-    EXPECT_EQ(screenshots[0]->platform,
-              mojom::blink::ManifestScreenshot::Platform::kUnknown);
+    EXPECT_EQ(screenshots[0]->form_factor,
+              mojom::blink::ManifestScreenshot::FormFactor::kUnknown);
     EXPECT_FALSE(IsManifestEmpty(manifest));
     EXPECT_EQ(1u, GetErrorCount());
   }

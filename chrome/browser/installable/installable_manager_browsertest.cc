@@ -1955,8 +1955,8 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckScreenshots) {
 
   EXPECT_FALSE(tester->valid_manifest());
   EXPECT_EQ(1u, tester->screenshots().size());
-  // Corresponding platform should filter out the screenshot with mismatched
-  // platform.
+  // Corresponding form_factor should filter out the screenshot with mismatched
+  // form_factor.
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_LT(tester->screenshots()[0].width(),
             tester->screenshots()[0].height());
@@ -1976,8 +1976,8 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
   InstallableParams params = GetManifestParams();
   params.fetch_screenshots = true;
 
-  // Check if only screenshots with mismatched platform are available, they are
-  // still used.
+  // Check if only screenshots with mismatched form_factor are available, they
+  // are still used.
 #if BUILDFLAG(IS_ANDROID)
   NavigateAndRunInstallableManager(
       browser(), tester.get(), params,

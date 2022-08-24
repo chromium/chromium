@@ -176,7 +176,7 @@ struct ManifestImageResource {
 // https://www.w3.org/TR/manifest-app-info/#screenshots-member. This includes
 // a ImageResource with some additional members.
 struct ManifestScreenshot {
-  enum Platform {
+  enum FormFactor {
     kUnknown = 0,
     kWide,
     kNarrow,
@@ -184,8 +184,8 @@ struct ManifestScreenshot {
 
   ManifestImageResource image;
 
-  // The distribution platform for which a given screenshot applies.
-  Platform platform;
+  // The form factor for which a given screenshot applies.
+  FormFactor form_factor;
 };
 
 // Structure representing a share target file.

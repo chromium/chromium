@@ -608,7 +608,7 @@ void InstallableManager::WorkOnTask() {
             webapps::features::kDesktopPWAsDetailedInstallDialog)) {
       CheckAndFetchScreenshots();
     } else {
-      CheckAndFetchScreenshots(/*check_platform=*/false);
+      CheckAndFetchScreenshots(/*check_form_factor=*/false);
     }
   } else if (params.has_worker && !worker_->fetched) {
     CheckServiceWorker();
@@ -894,7 +894,7 @@ void InstallableManager::OnIconFetched(const GURL icon_url,
   WorkOnTask();
 }
 
-void InstallableManager::CheckAndFetchScreenshots(bool check_platform) {
+void InstallableManager::CheckAndFetchScreenshots(bool check_form_factor) {
   DCHECK(!blink::IsEmptyManifest(manifest()));
   DCHECK(!is_screenshots_fetch_complete_);
 
@@ -904,11 +904,13 @@ void InstallableManager::CheckAndFetchScreenshots(bool check_platform) {
 
   for (const auto& url : manifest().screenshots) {
 #if BUILDFLAG(IS_ANDROID)
-    auto reject_platform = blink::mojom::ManifestScreenshot::Platform::kWide;
+    auto reject_form_factor =
+        blink::mojom::ManifestScreenshot::FormFactor::kWide;
 #else
-    auto reject_platform = blink::mojom::ManifestScreenshot::Platform::kNarrow;
+    auto reject_form_factor =
+        blink::mojom::ManifestScreenshot::FormFactor::kNarrow;
 #endif  // BUILDFLAG(IS_ANDROID)
-    if (check_platform && url->platform == reject_platform)
+    if (check_form_factor && url->form_factor == reject_form_factor)
       continue;
 
     if (++num_of_screenshots > kMaximumNumOfScreenshots)
@@ -939,10 +941,10 @@ void InstallableManager::CheckAndFetchScreenshots(bool check_platform) {
 
   if (!screenshots_downloading_) {
     // If there is no screenshot that matches all the criteria, populate again
-    // without checking platform to fallback to screenshots with mismatching
-    // platform instead of showing nothing.
-    if (screenshots_.size() == 0 && check_platform) {
-      CheckAndFetchScreenshots(/*check_platform=*/false);
+    // without checking form_factor to fallback to screenshots with mismatching
+    // form_factor instead of showing nothing.
+    if (screenshots_.size() == 0 && check_form_factor) {
+      CheckAndFetchScreenshots(/*check_form_factor=*/false);
     } else {
       is_screenshots_fetch_complete_ = true;
       WorkOnTask();

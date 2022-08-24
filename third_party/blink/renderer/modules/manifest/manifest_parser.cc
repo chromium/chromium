@@ -663,27 +663,28 @@ ManifestParser::ParseIconPurpose(const JSONObject* icon) {
   return purposes;
 }
 
-mojom::blink::ManifestScreenshot::Platform
-ManifestParser::ParseScreenshotPlatform(const JSONObject* screenshot) {
-  absl::optional<String> platform_str =
-      ParseString(screenshot, "platform", Trim(false));
+mojom::blink::ManifestScreenshot::FormFactor
+ManifestParser::ParseScreenshotFormFactor(const JSONObject* screenshot) {
+  absl::optional<String> form_factor_str =
+      ParseString(screenshot, "form_factor", Trim(false));
 
-  if (!platform_str.has_value()) {
-    return mojom::blink::ManifestScreenshot::Platform::kUnknown;
+  if (!form_factor_str.has_value()) {
+    return mojom::blink::ManifestScreenshot::FormFactor::kUnknown;
   }
 
-  String platform = platform_str.value();
+  String form_factor = form_factor_str.value();
 
-  if (EqualIgnoringASCIICase(platform, "wide")) {
-    return mojom::blink::ManifestScreenshot::Platform::kWide;
-  } else if (EqualIgnoringASCIICase(platform, "narrow")) {
-    return mojom::blink::ManifestScreenshot::Platform::kNarrow;
+  if (EqualIgnoringASCIICase(form_factor, "wide")) {
+    return mojom::blink::ManifestScreenshot::FormFactor::kWide;
+  } else if (EqualIgnoringASCIICase(form_factor, "narrow")) {
+    return mojom::blink::ManifestScreenshot::FormFactor::kNarrow;
   }
 
   AddErrorInfo(
-      "property 'platform' on screenshots has an invalid value, ignoring it.");
+      "property 'form_factor' on screenshots has an invalid value, ignoring "
+      "it.");
 
-  return mojom::blink::ManifestScreenshot::Platform::kUnknown;
+  return mojom::blink::ManifestScreenshot::FormFactor::kUnknown;
 }
 
 Vector<mojom::blink::ManifestImageResourcePtr> ManifestParser::ParseIcons(
@@ -715,7 +716,7 @@ Vector<mojom::blink::ManifestScreenshotPtr> ManifestParser::ParseScreenshots(
       continue;
 
     screenshot->image = std::move(*image);
-    screenshot->platform = ParseScreenshotPlatform(screenshot_object);
+    screenshot->form_factor = ParseScreenshotFormFactor(screenshot_object);
 
     screenshots.push_back(std::move(screenshot));
   }

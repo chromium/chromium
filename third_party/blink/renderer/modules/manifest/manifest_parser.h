@@ -223,9 +223,9 @@ class MODULES_EXPORT ManifestParser {
   Vector<mojom::blink::ManifestScreenshotPtr> ParseScreenshots(
       const JSONObject* object);
 
-  // Parse the 'platform' field of 'screenshots' as defined in:
-  // https://www.w3.org/TR/manifest-app-info/#platform-member
-  mojom::blink::ManifestScreenshot::Platform ParseScreenshotPlatform(
+  // Parse the 'form_factor' field of 'screenshots' as defined in:
+  // https://www.w3.org/TR/manifest-app-info/#form_factor-member
+  mojom::blink::ManifestScreenshot::FormFactor ParseScreenshotFormFactor(
       const JSONObject* screenshot);
 
   // A helper function for parsing ImageResources under |key| in the manifest.

@@ -6,7 +6,7 @@
       "src": "screenshot1.jpeg",
       "type": "image/jpeg",
       "sizes": "728x409",
-      "platform": "wide"
+      "form_factor": "wide"
     }
   ],
   "icons": [
