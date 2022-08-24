@@ -160,7 +160,7 @@ public class HistoryClustersMediatorTest {
     private HistoryClustersMediator mMediator;
     private boolean mIsSeparateActivity;
     private HistoryClustersDelegate mHistoryClustersDelegate;
-    private SelectionDelegate mSelectionDelegate = new SelectionDelegate();
+    private SelectionDelegate<ClusterVisit> mSelectionDelegate = new SelectionDelegate<>();
     private final ObservableSupplierImpl<Boolean> mShouldShowPrivacyDisclaimerSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mShouldShowClearBrowsingDataSupplier =
@@ -795,6 +795,27 @@ public class HistoryClustersMediatorTest {
 
     @Test
     public void testDividers() {
+        Promise<HistoryClustersResult> promise = new Promise<>();
+        doReturn(promise).when(mBridge).queryClusters("query");
+
+        mMediator.setQueryState(QueryState.forQuery("query", ""));
+        mMediator.startQuery("query");
+        fulfillPromise(promise, mHistoryClustersResultWithQuery);
+
+        assertEquals(mModelList.get(1).type, ItemType.VISIT);
+        assertEquals(mModelList.get(2).type, ItemType.VISIT);
+        assertTrue(mModelList.get(1).model.get(HistoryClustersItemProperties.END_BUTTON_VISIBLE));
+        assertTrue(mModelList.get(2).model.get(HistoryClustersItemProperties.END_BUTTON_VISIBLE));
+
+        mSelectionDelegate.toggleSelectionForItem(mVisit1);
+
+        assertEquals(mModelList.get(1).type, ItemType.VISIT);
+        assertEquals(mModelList.get(2).type, ItemType.VISIT);
+        assertFalse(mModelList.get(1).model.get(HistoryClustersItemProperties.END_BUTTON_VISIBLE));
+        assertFalse(mModelList.get(2).model.get(HistoryClustersItemProperties.END_BUTTON_VISIBLE));
+    }
+    @Test
+    public void testHideDeleteButtonWhenSelectionToggled() {
         Promise<HistoryClustersResult> promise = new Promise<>();
         doReturn(promise).when(mBridge).queryClusters("query");
 
