@@ -98,7 +98,7 @@ PrivateNetworkAccessCheckResult PrivateNetworkAccessChecker::Check(
   return result;
 }
 
-void PrivateNetworkAccessChecker::ResetForRedirect() {
+void PrivateNetworkAccessChecker::Reset() {
   // The target IP address space is no longer relevant, it only applied to the
   // URL before the first redirect. Consider the following scenario:
   //

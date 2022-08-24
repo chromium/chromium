@@ -567,13 +567,13 @@ TEST(PrivateNetworkAccessCheckerTest, ResetForRedirectTargetAddressSpace) {
   PrivateNetworkAccessChecker checker(request, &factory_params,
                                       mojom::kURLLoadOptionNone);
 
-  checker.ResetForRedirect();
+  checker.Reset();
 
   // The target address space has been cleared.
   EXPECT_EQ(checker.TargetAddressSpace(), mojom::IPAddressSpace::kUnknown);
 
   // This succeeds even though the IP address space does not match the target
-  // passed at construction time, thanks to `ResetForRedirect()`.
+  // passed at construction time, thanks to `Reset()`.
   EXPECT_EQ(checker.Check(DirectTransport(PrivateEndpoint())),
             Result::kAllowedNoLessPublic);
 }
@@ -586,7 +586,7 @@ TEST(PrivateNetworkAccessCheckerTest, ResetForRedirectResponseAddressSpace) {
 
   checker.Check(DirectTransport(PrivateEndpoint()));
 
-  checker.ResetForRedirect();
+  checker.Reset();
 
   EXPECT_EQ(checker.ResponseAddressSpace(), absl::nullopt);
 
@@ -643,7 +643,7 @@ TEST(PrivateNetworkAccessCheckerTest,
                                         mojom::kURLLoadOptionNone);
 
     checker.Check(DirectTransport(PublicEndpoint()));
-    checker.ResetForRedirect();
+    checker.Reset();
     checker.Check(DirectTransport(PrivateEndpoint()));
   }
 

@@ -2024,9 +2024,16 @@ TEST_P(URLLoaderFakeTransportInfoTest, PrivateNetworkRequestLoadsCorrectly) {
   // Despite its name, IsError(OK) asserts that the matched value is OK.
   EXPECT_THAT(Load(url), IsError(params.expected_result));
   if (params.expected_result != net::OK) {
-    EXPECT_THAT(client()->completion_status().cors_error_status,
-                Optional(InsecurePrivateNetworkCorsErrorStatus(
-                    params.endpoint_address_space)));
+    if (params.expected_result !=
+        net::
+            ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_POLICY) {
+      // CORS error status shouldn't be set when the cache entry was blocked by
+      // private network access policy because we'll retry fetching from the
+      // network.
+      EXPECT_THAT(client()->completion_status().cors_error_status,
+                  Optional(InsecurePrivateNetworkCorsErrorStatus(
+                      params.endpoint_address_space)));
+    }
     return;
   }
 
@@ -2196,19 +2203,22 @@ constexpr URLLoaderFakeTransportInfoTestParams
             mojom::IPAddressSpace::kUnknown,
             mojom::IPAddressSpace::kLocal,
             net::TransportType::kCached,
-            net::ERR_FAILED,
+            net::
+                ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_POLICY,
         },
         {
             mojom::IPAddressSpace::kPublic,
             mojom::IPAddressSpace::kLocal,
             net::TransportType::kCached,
-            net::ERR_FAILED,
+            net::
+                ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_POLICY,
         },
         {
             mojom::IPAddressSpace::kPrivate,
             mojom::IPAddressSpace::kLocal,
             net::TransportType::kCached,
-            net::ERR_FAILED,
+            net::
+                ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_POLICY,
         },
         {
             mojom::IPAddressSpace::kLocal,
