@@ -55,6 +55,8 @@ AXTreeManager::AXTreeManager(std::unique_ptr<AXTree> tree)
       ax_tree_(std::move(tree)),
       event_generator_(ax_tree()) {
   GetMap().AddTreeManager(ax_tree_id_, this);
+  if (ax_tree())
+    tree_observation_.Observe(ax_tree());
 }
 
 AXTreeManager::AXTreeManager(const AXTreeID& tree_id,
