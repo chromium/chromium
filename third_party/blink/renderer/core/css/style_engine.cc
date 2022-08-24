@@ -2688,7 +2688,7 @@ void StyleEngine::RecalcStyleForContainer(Element& container,
 
   // If the container itself depends on an outer container, then its
   // DependsOnSizeContainerQueries flag will be set, and we would recalc its
-  // style (due to ForceRecalcContainer/ForceRecalcDescendantContainers).
+  // style (due to ForceRecalcContainer/ForceRecalcDescendantSizeContainers).
   // This is not necessary, hence we suppress recalc for this element.
   change = change.SuppressRecalc();
 
@@ -2756,8 +2756,10 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
   auto* evaluator = cq_data->GetContainerQueryEvaluator();
   DCHECK(evaluator);
 
-  ContainerQueryEvaluator::Change query_change = evaluator->ContainerChanged(
-      GetDocument(), container, physical_size, physical_axes);
+  ContainerQueryEvaluator::Change query_change =
+      evaluator->SizeContainerChanged(GetDocument(), container, physical_size,
+                                      physical_axes);
+
   switch (query_change) {
     case ContainerQueryEvaluator::Change::kNone:
       if (!cq_data->SkippedStyleRecalc())
@@ -2765,7 +2767,7 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
       break;
     case ContainerQueryEvaluator::Change::kNearestContainer:
       if (!IsShadowHost(container)) {
-        change = change.ForceRecalcContainer();
+        change = change.ForceRecalcSizeContainer();
         break;
       }
       // Since the nearest container is found in shadow-including ancestors and
@@ -2778,7 +2780,7 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
       // a shadow host.
       [[fallthrough]];
     case ContainerQueryEvaluator::Change::kDescendantContainers:
-      change = change.ForceRecalcDescendantContainers();
+      change = change.ForceRecalcDescendantSizeContainers();
       break;
   }
 

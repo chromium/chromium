@@ -153,6 +153,12 @@ class CORE_EXPORT MatchResult {
   bool DependsOnSizeContainerQueries() const {
     return depends_on_size_container_queries_;
   }
+  void SetDependsOnStyleContainerQueries() {
+    depends_on_size_container_queries_ = true;
+  }
+  bool DependsOnStyleContainerQueries() const {
+    return depends_on_size_container_queries_;
+  }
   void SetDependsOnStaticViewportUnits() {
     depends_on_static_viewport_units_ = true;
   }

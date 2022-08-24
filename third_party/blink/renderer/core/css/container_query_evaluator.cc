@@ -73,28 +73,28 @@ bool ContainerQueryEvaluator::EvalAndAdd(const Element& matching_element,
                                          const ContainerQuery& query,
                                          MatchResult& match_result) {
   const ContainerSelector& selector = query.Selector();
+  bool selects_size = selector.SelectsSizeContainers();
+  bool selects_style = selector.SelectsStyleContainers();
+  if (!selects_size && !selects_style)
+    return false;
+
   Element* starting_element =
-      selector.SelectsSizeContainers()
-          ? context.container
-          : matching_element.ParentOrShadowHostElement();
+      selects_size ? context.container
+                   : matching_element.ParentOrShadowHostElement();
   Element* container = FindContainer(starting_element, selector);
   if (!container)
     return false;
+
   ContainerQueryEvaluator* evaluator = container->GetContainerQueryEvaluator();
   if (!evaluator) {
-    if (selector.SelectsSizeContainers() ||
-        !selector.SelectsStyleContainers()) {
+    if (selects_size || !selects_style)
       return false;
-    }
     evaluator = &container->EnsureContainerQueryEvaluator();
     evaluator->SetData(container->GetDocument(), *container, PhysicalSize(),
                        kPhysicalAxisNone);
   }
-  // TODO(crbug.com/1302630): style() queries should not compare with
-  // context.container.
-  Change change = (context.container == container)
-                      ? Change::kNearestContainer
-                      : Change::kDescendantContainers;
+  Change change = starting_element == container ? Change::kNearestContainer
+                                                : Change::kDescendantContainers;
   return evaluator->EvalAndAdd(query, change, match_result);
 }
 
@@ -137,10 +137,12 @@ bool ContainerQueryEvaluator::EvalAndAdd(const ContainerQuery& query,
     match_result.SetDependsOnRemContainerQueries();
   results_.Set(&query, Result{result, unit_flags, change});
   unit_flags_ |= unit_flags;
+  if (!depends_on_style_)
+    depends_on_style_ = query.Selector().SelectsStyleContainers();
   return result;
 }
 
-ContainerQueryEvaluator::Change ContainerQueryEvaluator::ContainerChanged(
+ContainerQueryEvaluator::Change ContainerQueryEvaluator::SizeContainerChanged(
     Document& document,
     Element& container,
     PhysicalSize size,
@@ -151,10 +153,24 @@ ContainerQueryEvaluator::Change ContainerQueryEvaluator::ContainerChanged(
   SetData(document, container, size, contained_axes);
   font_dirty_ = false;
 
-  Change change = ComputeChange();
+  Change change = ComputeSizeChange();
 
   if (change != Change::kNone)
-    ClearResults(change);
+    ClearResults(change, kSizeContainer);
+
+  return change;
+}
+
+ContainerQueryEvaluator::Change ContainerQueryEvaluator::StyleContainerChanged(
+    Element& container) {
+  SetData(container.GetDocument(), container, size_, contained_axes_);
+  if (!depends_on_style_)
+    return Change::kNone;
+
+  Change change = ComputeStyleChange();
+
+  if (change != Change::kNone)
+    ClearResults(change, kStyleContainer);
 
   return change;
 }
@@ -197,50 +213,63 @@ void ContainerQueryEvaluator::SetData(Document& document,
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }
 
-void ContainerQueryEvaluator::ClearResults(Change change) {
-  switch (change) {
-    case Change::kNone:
-      NOTREACHED();
-      break;
-    case Change::kNearestContainer: {
-      DCHECK(!referenced_by_unit_);
-      // We are going to recalculate the style of all descendants which depend
-      // on this container, *excluding* those that exist within nested
-      // containers. Therefore all entries with `change` greater than
-      // kNearestContainer need to remain.
-      unit_flags_ = 0;
-      HeapHashMap<Member<const ContainerQuery>, Result> new_results;
-      for (const auto& pair : results_) {
-        if (pair.value.change > change) {
-          new_results.Set(pair.key, pair.value);
-          unit_flags_ |= pair.value.unit_flags;
-        }
-      }
-      std::swap(new_results, results_);
-      break;
-    }
-    case Change::kDescendantContainers: {
-      // We are going to recalculate the style of all descendants which
-      // depend on this container, *including* those that exist within nested
-      // containers. Therefore all results will be repopulated, and we can clear
-      // everything.
-      results_.clear();
+void ContainerQueryEvaluator::ClearResults(Change change,
+                                           ContainerType container_type) {
+  if (change == Change::kNone)
+    return;
+  if (change == Change::kDescendantContainers) {
+    if (container_type == kSizeContainer)
       referenced_by_unit_ = false;
-      unit_flags_ = 0;
-      break;
-    }
+    else
+      depends_on_style_ = false;
   }
+  unit_flags_ = 0;
+
+  HeapHashMap<Member<const ContainerQuery>, Result> new_results;
+  for (const auto& pair : results_) {
+    if (pair.value.change <= change &&
+        ((container_type == kSizeContainer &&
+          pair.key->Selector().SelectsSizeContainers()) ||
+         (container_type == kStyleContainer &&
+          pair.key->Selector().SelectsStyleContainers()))) {
+      continue;
+    }
+    new_results.Set(pair.key, pair.value);
+    unit_flags_ |= pair.value.unit_flags;
+  }
+
+  std::swap(new_results, results_);
 }
 
-ContainerQueryEvaluator::Change ContainerQueryEvaluator::ComputeChange() const {
-  Change change = Change::kNone;
-
+ContainerQueryEvaluator::Change ContainerQueryEvaluator::ComputeSizeChange()
+    const {
   if (referenced_by_unit_)
     return Change::kDescendantContainers;
 
+  Change change = Change::kNone;
+
   for (const auto& result : results_) {
-    if (Eval(*result.key) != result.value.value)
-      change = std::max(change, result.value.change);
+    const ContainerQuery& query = *result.key;
+    if (!query.Selector().SelectsSizeContainers())
+      continue;
+    if (Eval(query) != result.value.value)
+      change = std::max(result.value.change, change);
+  }
+
+  return change;
+}
+
+ContainerQueryEvaluator::Change ContainerQueryEvaluator::ComputeStyleChange()
+    const {
+  Change change = Change::kNone;
+
+  for (const auto& result : results_) {
+    const ContainerQuery& query = *result.key;
+    if (!query.Selector().SelectsStyleContainers())
+      continue;
+    if (Eval(query) == result.value.value)
+      continue;
+    change = std::max(result.value.change, change);
   }
 
   return change;

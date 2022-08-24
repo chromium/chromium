@@ -4128,13 +4128,16 @@ static ContainerQueryEvaluator* ComputeContainerQueryEvaluator(
     Element& element,
     const ComputedStyle* old_style,
     const ComputedStyle& new_style) {
-  if (!new_style.IsContainerForSizeContainerQueries())
-    return nullptr;
-  if (LayoutObject* layout_object = element.GetLayoutObject()) {
-    if (layout_object->ForceLegacyLayout()) {
-      element.GetDocument()
-          .GetStyleEngine()
-          .ReportUseOfLegacyLayoutWithContainerQueries();
+  ContainerQueryEvaluator* evaluator = element.GetContainerQueryEvaluator();
+  if (!evaluator || !evaluator->DependsOnStyle()) {
+    if (!new_style.IsContainerForSizeContainerQueries())
+      return nullptr;
+    if (LayoutObject* layout_object = element.GetLayoutObject()) {
+      if (layout_object->ForceLegacyLayout()) {
+        element.GetDocument()
+            .GetStyleEngine()
+            .ReportUseOfLegacyLayoutWithContainerQueries();
+      }
     }
   }
   if (!RuntimeEnabledFeatures::LayoutNGPrintingEnabled() &&
@@ -4150,9 +4153,9 @@ static ContainerQueryEvaluator* ComputeContainerQueryEvaluator(
     return MakeGarbageCollected<ContainerQueryEvaluator>();
   }
   // Otherwise, the existing ContainerQueryEvaluator can be used, if any.
-  if (auto* evaluator = element.GetContainerQueryEvaluator())
-    return evaluator;
-  return MakeGarbageCollected<ContainerQueryEvaluator>();
+  if (!evaluator)
+    evaluator = MakeGarbageCollected<ContainerQueryEvaluator>();
+  return evaluator;
 }
 
 static const StyleRecalcChange ApplyComputedStyleDiff(
@@ -4434,6 +4437,22 @@ StyleRecalcChange Element::RecalcOwnStyle(
       } else if (evaluator) {
         DCHECK(old_style);
         evaluator->MarkFontDirtyIfNeeded(*old_style, *new_style);
+        if (diff != ComputedStyle::Difference::kEqual &&
+            (!base::ValuesEquivalent(old_style->InheritedVariables(),
+                                     new_style->InheritedVariables()) ||
+             !base::ValuesEquivalent(old_style->NonInheritedVariables(),
+                                     new_style->NonInheritedVariables()))) {
+          switch (evaluator->StyleContainerChanged(*this)) {
+            case ContainerQueryEvaluator::Change::kNone:
+              break;
+            case ContainerQueryEvaluator::Change::kNearestContainer:
+              child_change = change.ForceRecalcStyleContainerChildren();
+              break;
+            case ContainerQueryEvaluator::Change::kDescendantContainers:
+              child_change = change.ForceRecalcStyleContainerDescendants();
+              break;
+          }
+        }
       }
     }
   }

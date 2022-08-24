@@ -1270,6 +1270,8 @@ void StyleResolver::ApplyBaseStyleNoCache(
 
   if (collector.MatchedResult().DependsOnSizeContainerQueries())
     state.Style()->SetDependsOnSizeContainerQueries(true);
+  if (collector.MatchedResult().DependsOnStyleContainerQueries())
+    state.Style()->SetDependsOnStyleContainerQueries(true);
   if (collector.MatchedResult().DependsOnStaticViewportUnits())
     state.Style()->SetHasStaticViewportUnits();
   if (collector.MatchedResult().DependsOnDynamicViewportUnits())

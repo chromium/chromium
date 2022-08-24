@@ -1,0 +1,45 @@
+<!doctype html>
+<title>CSS Container Queries Test: custom property style query changes</title>
+<link rel="help" href="https://drafts.csswg.org/css-contain-3/#style-container">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support/cq-testcommon.js"></script>
+<style>
+  #container { container-name: my-container; }
+  #child, #grandchild { color: red; }
+  @container style(--target: child) {
+    #child { color: green; }
+  }
+  @container my-container style(--target: grandchild) {
+    #grandchild { color: green; }
+  }
+</style>
+<div id="container">
+  <div id="child"></div>
+  <div>
+    <div id="grandchild"></div>
+  </div>
+</div>
+<script>
+  setup(() => assert_implements_container_queries());
+
+  const green = "rgb(0, 128, 0)";
+  const red = "rgb(255, 0, 0)";
+
+  test(() => {
+    assert_equals(getComputedStyle(child).color, red);
+    assert_equals(getComputedStyle(grandchild).color, red);
+  }, "Initially no queries match.");
+
+  test(() => {
+    container.style.setProperty("--target", "child");
+    assert_equals(getComputedStyle(child).color, green);
+    assert_equals(getComputedStyle(grandchild).color, red);
+  }, "Target child");
+
+  test(() => {
+    container.style.setProperty("--target", "grandchild");
+    assert_equals(getComputedStyle(child).color, red);
+    assert_equals(getComputedStyle(grandchild).color, green);
+  }, "Target grandchild");
+</script>

@@ -406,8 +406,10 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
     const ContainerQuery* container_query =
         container_query_seeker.Seek(rule_data.GetPosition());
     if (container_query) {
-      // TODO(crbug.com/1302630): May depend on style() queries.
-      result_.SetDependsOnSizeContainerQueries();
+      if (container_query->Selector().SelectsSizeContainers())
+        result_.SetDependsOnSizeContainerQueries();
+      if (container_query->Selector().SelectsStyleContainers())
+        result_.SetDependsOnStyleContainerQueries();
 
       // If we are matching pseudo elements like a ::before rule when computing
       // the styles of the originating element, we don't know whether the
