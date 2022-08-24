@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/bind.h"
+#include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model_impl.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_ui_action_logger.h"
 #include "chrome/browser/ui/translate/translate_bubble_model_impl.h"
@@ -92,6 +94,58 @@ views::Widget* TranslateBubbleController::ShowTranslateBubble(
   return bubble_widget;
 }
 
+void TranslateBubbleController::StartPartialTranslate(
+    views::View* anchor_view,
+    views::Button* highlighted_button,
+    const std::string& source_language,
+    const std::string& target_language,
+    const std::u16string& text_selection) {
+  // TODO(crbug/1314825): When PartialTranslateManager is completed this
+  // function will be updated to show the Partial Translate bubble as soon as
+  // the translate response is received. If response time is <=500ms the bubble
+  // will be shown directly with the translation. If response time is >500ms the
+  // bubble will be shown in a loading state until the translation is ready.
+  // Current implementation is only for UI purposes and simulates the latter
+  // case.
+  partial_translate_timer_.Start(
+      FROM_HERE, base::Milliseconds(500),
+      base::BindOnce(&TranslateBubbleController::OnPartialTranslateWaitExpired,
+                     weak_ptr_factory_.GetWeakPtr(), anchor_view,
+                     highlighted_button, source_language, target_language,
+                     text_selection));
+}
+
+void TranslateBubbleController::OnPartialTranslateWaitExpired(
+    views::View* anchor_view,
+    views::Button* highlighted_button,
+    const std::string& source_language,
+    const std::string& target_language,
+    const std::u16string& text_selection) {
+  // TODO(crbug/1314825): When PartialTranslateManager is completed this
+  // callback will be updated to handle two cases depending on the response. If
+  // the response is quick, the bubble will be shown in the translated state
+  // with the translated text. If there's a longer response time, the bubble
+  // will be shown in an intermediate loading state.
+  ShowPartialTranslateBubble(anchor_view, highlighted_button,
+                             PartialTranslateBubbleModel::VIEW_STATE_WAITING,
+                             source_language, target_language, text_selection,
+                             translate::TranslateErrors::NONE);
+
+  // TODO(crbug/1314825): When PartialTranslateManager is completed, this
+  // duration will be updated to depend on the backend response time. For now, a
+  // 2 second timer is used to mimic this delay.
+  throbber_timer_.Start(
+      FROM_HERE, base::Milliseconds(2000),
+      base::BindOnce(
+          [](base::WeakPtr<TranslateBubbleController> controller) {
+            controller->partial_translate_bubble_view_->SetViewState(
+                PartialTranslateBubbleModel::ViewState::
+                    VIEW_STATE_AFTER_TRANSLATE,
+                translate::TranslateErrors::Type::NONE);
+          },
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
 views::Widget* TranslateBubbleController::ShowPartialTranslateBubble(
     views::View* anchor_view,
     views::Button* highlighted_button,
@@ -138,14 +192,11 @@ views::Widget* TranslateBubbleController::ShowPartialTranslateBubble(
           anchor_view, std::move(model), error_type, web_contents,
           text_selection, GetOnPartialTranslateBubbleClosedCallback());
   partial_translate_bubble_view_ = partial_translate_bubble_view.get();
-
   if (highlighted_button)
     partial_translate_bubble_view_->SetHighlightedButton(highlighted_button);
   views::Widget* bubble_widget = views::BubbleDialogDelegateView::CreateBubble(
       std::move(partial_translate_bubble_view));
-
   partial_translate_bubble_view_->SetViewState(view_state, error_type);
-
   partial_translate_bubble_view_->ShowForReason(
       LocationBarBubbleDelegateView::USER_GESTURE);
   translate::ReportPartialTranslateBubbleUiAction(

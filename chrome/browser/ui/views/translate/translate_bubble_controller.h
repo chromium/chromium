@@ -35,6 +35,14 @@ class TranslateBubbleController
       translate::TranslateErrors::Type error_type,
       LocationBarBubbleDelegateView::DisplayReason reason);
 
+  // Initiates the Partial Translate request, showing the bubble after a delay
+  // dependent on the Partial Translate response.
+  void StartPartialTranslate(views::View* anchor_view,
+                             views::Button* highlighted_button,
+                             const std::string& source_language,
+                             const std::string& target_language,
+                             const std::u16string& text_selection);
+
   // Shows the Partial Translate bubble. Returns the newly created bubble's
   // Widget or nullptr in cases when the bubble already exists or when the
   // bubble is not created.
@@ -91,6 +99,21 @@ class TranslateBubbleController
   // Handlers for when Translate bubbles are closed.
   void OnTranslateBubbleClosed();
   void OnPartialTranslateBubbleClosed();
+
+  // Callback for handling how the bubble should be shown, depending on the
+  // Partial Translate response.
+  void OnPartialTranslateWaitExpired(views::View* anchor_view,
+                                     views::Button* highlighted_button,
+                                     const std::string& source_language,
+                                     const std::string& target_language,
+                                     const std::u16string& text_selection);
+
+  // Timer used for handling the delay before showing Partial Translate bubble.
+  base::OneShotTimer partial_translate_timer_;
+
+  // Timer used for mimicking wait time for Partial Translate response. This
+  // will be removed with the completion of PartialTranslateManager.
+  base::OneShotTimer throbber_timer_;
 
   friend class content::WebContentsUserData<TranslateBubbleController>;
   friend class TranslateBubbleControllerTest;

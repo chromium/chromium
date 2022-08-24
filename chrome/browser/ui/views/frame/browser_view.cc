@@ -2646,12 +2646,9 @@ ShowTranslateBubbleResult BrowserView::ShowTranslateBubble(
   return ShowTranslateBubbleResult::SUCCESS;
 }
 
-void BrowserView::ShowPartialTranslateBubble(
-    PartialTranslateBubbleModel::ViewState view_state,
-    const std::string& source_language,
-    const std::string& target_language,
-    const std::u16string& text_selection,
-    translate::TranslateErrors::Type error_type) {
+void BrowserView::StartPartialTranslate(const std::string& source_language,
+                                        const std::string& target_language,
+                                        const std::u16string& text_selection) {
   // Show the Translate icon and enabled the associated command to show the
   // Translate UI.
   ChromeTranslateClient::FromWebContents(GetActiveWebContents())
@@ -2660,13 +2657,11 @@ void BrowserView::ShowPartialTranslateBubble(
       ->SetTranslateEnabled(true);
 
   TranslateBubbleController::GetOrCreate(GetActiveWebContents())
-      ->ShowPartialTranslateBubble(
-          toolbar_button_provider()->GetAnchorView(
-              PageActionIconType::kTranslate),
-          toolbar_button_provider()->GetPageActionIconView(
-              PageActionIconType::kTranslate),
-          view_state, source_language, target_language, text_selection,
-          error_type);
+      ->StartPartialTranslate(toolbar_button_provider()->GetAnchorView(
+                                  PageActionIconType::kTranslate),
+                              toolbar_button_provider()->GetPageActionIconView(
+                                  PageActionIconType::kTranslate),
+                              source_language, target_language, text_selection);
 }
 
 void BrowserView::ShowOneClickSigninConfirmation(

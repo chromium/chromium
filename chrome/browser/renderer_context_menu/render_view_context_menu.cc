@@ -3771,11 +3771,12 @@ void RenderViewContextMenu::ExecTranslate() {
 }
 
 void RenderViewContextMenu::ExecPartialTranslate() {
-  // TODO(crbug/1314825): When the PartialTranslateManager is added update this
-  // call to use language information from the page.
-  GetBrowser()->window()->ShowPartialTranslateBubble(
-      PartialTranslateBubbleModel::ViewState::VIEW_STATE_BEFORE_TRANSLATE, "fr",
-      "en", params_.selection_text, translate::TranslateErrors::Type::NONE);
+  // TODO(crbug/1314825): When the PartialTranslateManager is added this call
+  // will be updated to use language information from the page. The view state
+  // will also depend on the Partial Translate response, rather than being
+  // hardcoded to 'waiting'.
+  GetBrowser()->window()->StartPartialTranslate("fr", "en",
+                                                params_.selection_text);
 }
 
 void RenderViewContextMenu::ExecLanguageSettings(int event_flags) {

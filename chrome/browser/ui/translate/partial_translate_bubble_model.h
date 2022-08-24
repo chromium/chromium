@@ -20,6 +20,9 @@
 class PartialTranslateBubbleModel : public TranslateLanguageListModel {
  public:
   enum ViewState {
+    // The view state while waiting for translation.
+    VIEW_STATE_WAITING,
+
     // The view state before translating.
     VIEW_STATE_BEFORE_TRANSLATE,
 

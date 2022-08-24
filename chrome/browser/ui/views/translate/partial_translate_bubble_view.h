@@ -27,6 +27,7 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane_listener.h"
+#include "ui/views/controls/throbber.h"
 #include "ui/views/window/non_client_view.h"
 
 namespace views {
@@ -147,6 +148,9 @@ class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
   std::unique_ptr<views::View> CreateViewErrorNoTitle(
       std::unique_ptr<views::Button> advanced_button);
 
+  // Creates the 'waiting' view that shows an empty bubble with a throbber.
+  std::unique_ptr<views::View> CreateViewWaiting();
+
   // Creates source language label and combobox for Tab UI advanced view. Caller
   // takes ownership of the returned view.
   std::unique_ptr<views::View> CreateViewAdvancedSource();
@@ -218,10 +222,13 @@ class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
 
   static PartialTranslateBubbleView* partial_translate_bubble_view_;
 
+  raw_ptr<views::View> translate_view_waiting_ = nullptr;
   raw_ptr<views::View> translate_view_ = nullptr;
   raw_ptr<views::View> error_view_ = nullptr;
   raw_ptr<views::View> advanced_view_source_ = nullptr;
   raw_ptr<views::View> advanced_view_target_ = nullptr;
+
+  views::Throbber* throbber_;
 
   raw_ptr<views::Combobox> source_language_combobox_ = nullptr;
   raw_ptr<views::Combobox> target_language_combobox_ = nullptr;

@@ -466,12 +466,9 @@ class BrowserWindow : public ui::BaseWindow {
       bool is_user_gesture) = 0;
 
   // Shows the Partial Translate bubble.
-  virtual void ShowPartialTranslateBubble(
-      PartialTranslateBubbleModel::ViewState view_state,
-      const std::string& source_language,
-      const std::string& target_language,
-      const std::u16string& text_selection,
-      translate::TranslateErrors::Type error_type) = 0;
+  virtual void StartPartialTranslate(const std::string& source_language,
+                                     const std::string& target_language,
+                                     const std::u16string& text_selection) = 0;
 
   // Shows the one-click sign in confirmation UI. |email| holds the full email
   // address of the account that has signed in.
