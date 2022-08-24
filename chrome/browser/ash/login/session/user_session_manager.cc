@@ -480,12 +480,19 @@ bool MaybeShowNewTermsAfterUpdateToFlex(Profile* profile) {
   // Check if the device has been recently updated from CloudReady to show new
   // license agreement and data collection consent. This applies only for
   // existing users of not managed reven boards.
+  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
+  if (!switches::IsRevenBranding() || user_manager->IsCurrentUserNew()) {
+    return false;
+  }
+  // Reven devices can be updated from non-branded versions to Flex. Make sure
+  // that the EULA is marked as accepted when reven device is managed. For
+  // managed devices all the terms are accepted by the admin so we can simply
+  // mark it here.
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
-  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   bool is_device_managed = connector->IsDeviceEnterpriseManaged();
-  if (!switches::IsRevenBranding() || user_manager->IsCurrentUserNew() ||
-      is_device_managed) {
+  if (is_device_managed) {
+    StartupUtils::MarkEulaAccepted();
     return false;
   }
   if (!IsRevenUpdatedToFlex())
