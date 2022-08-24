@@ -126,7 +126,7 @@ void VEAEncoder::RequireBitstreamBuffers(unsigned int /*input_count*/,
 
   vea_requested_input_coded_size_ = input_coded_size;
   output_buffers_.clear();
-  base::queue<std::unique_ptr<InputBuffer>>().swap(input_buffers_);
+  input_buffers_.clear();
 
   for (int i = 0; i < kVEAEncoderOutputBufferCount; ++i) {
     auto output_buffer = std::make_unique<OutputBuffer>();
@@ -191,10 +191,11 @@ void VEAEncoder::UseOutputBitstreamBufferId(int32_t bitstream_buffer_id) {
       output_buffers_[bitstream_buffer_id]->region.GetSize()));
 }
 
-void VEAEncoder::FrameFinished(std::unique_ptr<InputBuffer> shm) {
+void VEAEncoder::FrameFinished(
+    std::unique_ptr<base::MappedReadOnlyRegion> shm) {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoding_sequence_checker_);
-  input_buffers_.push(std::move(shm));
+  input_buffers_.push_back(std::move(shm));
 }
 
 void VEAEncoder::EncodeOnEncodingTaskRunner(scoped_refptr<VideoFrame> frame,
@@ -254,16 +255,17 @@ void VEAEncoder::EncodeOnEncodingTaskRunner(scoped_refptr<VideoFrame> frame,
     // instances will be shared with GPU process.
     const size_t desired_mapped_size = media::VideoFrame::AllocationSize(
         media::PIXEL_FORMAT_I420, vea_requested_input_coded_size_);
-    auto input_buffer = std::make_unique<InputBuffer>();
-    if (input_buffers_.empty()) {
-      input_buffer->region =
-          gpu_factories_->CreateSharedMemoryRegion(desired_mapped_size);
-      input_buffer->mapping = input_buffer->region.Map();
+    std::unique_ptr<base::MappedReadOnlyRegion> input_buffer;
+    if (input_buffers_.IsEmpty()) {
+      input_buffer = std::make_unique<base::MappedReadOnlyRegion>(
+          base::ReadOnlySharedMemoryRegion::Create(desired_mapped_size));
+      if (!input_buffer->IsValid())
+        return;
     } else {
       do {
-        input_buffer = std::move(input_buffers_.front());
-        input_buffers_.pop();
-      } while (!input_buffers_.empty() &&
+        input_buffer = std::move(input_buffers_.back());
+        input_buffers_.pop_back();
+      } while (!input_buffers_.IsEmpty() &&
                input_buffer->mapping.size() < desired_mapped_size);
       if (!input_buffer || input_buffer->mapping.size() < desired_mapped_size)
         return;
@@ -278,10 +280,6 @@ void VEAEncoder::EncodeOnEncodingTaskRunner(scoped_refptr<VideoFrame> frame,
       NotifyError(media::VideoEncodeAccelerator::kPlatformFailureError);
       return;
     }
-    video_frame->BackWithSharedMemory(&input_buffer->region);
-    video_frame->AddDestructionObserver(media::BindToCurrentLoop(
-        WTF::Bind(&VEAEncoder::FrameFinished, WrapRefCounted(this),
-                  std::move(input_buffer))));
     libyuv::I420Copy(frame->visible_data(media::VideoFrame::kYPlane),
                      frame->stride(media::VideoFrame::kYPlane),
                      frame->visible_data(media::VideoFrame::kUPlane),
@@ -295,6 +293,10 @@ void VEAEncoder::EncodeOnEncodingTaskRunner(scoped_refptr<VideoFrame> frame,
                      video_frame->visible_data(media::VideoFrame::kVPlane),
                      video_frame->stride(media::VideoFrame::kVPlane),
                      input_visible_size_.width(), input_visible_size_.height());
+    video_frame->BackWithSharedMemory(&input_buffer->region);
+    video_frame->AddDestructionObserver(media::BindToCurrentLoop(
+        WTF::Bind(&VEAEncoder::FrameFinished, WrapRefCounted(this),
+                  std::move(input_buffer))));
   }
   frames_in_encode_.push(std::make_pair(
       media::WebmMuxer::VideoParameters(frame), capture_timestamp));

@@ -144,6 +144,60 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
 
 }  // namespace
 
+class VideoEncodeAcceleratorAdapter::ReadOnlyRegionPool
+    : public base::RefCountedThreadSafe<ReadOnlyRegionPool> {
+ public:
+  struct Handle {
+    Handle() = default;
+    ~Handle() {
+      if (recycle_cb)
+        std::move(recycle_cb).Run();
+    }
+    bool IsValid() { return region && mapping; }
+    base::ReadOnlySharedMemoryRegion* region = nullptr;
+    base::WritableSharedMemoryMapping* mapping = nullptr;
+    base::OnceClosure recycle_cb;
+  };
+
+  explicit ReadOnlyRegionPool(size_t buffer_size) : buffer_size_(buffer_size) {}
+
+  Handle MaybeAllocateBuffer() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (available_buffer_indices_.empty()) {
+      buffers_.push_back(
+          base::ReadOnlySharedMemoryRegion::Create(buffer_size_));
+      if (!buffers_.back().IsValid()) {
+        buffers_.pop_back();
+        return Handle();
+      }
+      available_buffer_indices_.push_back(buffers_.size() - 1);
+    }
+    const size_t index = available_buffer_indices_.back();
+    available_buffer_indices_.pop_back();
+    auto& mapped_region = buffers_[index];
+    DCHECK(mapped_region.IsValid());
+    base::OnceClosure recycle_cb = BindToCurrentLoop(
+        base::BindOnce(&ReadOnlyRegionPool::ReuseBuffer, this, index));
+    return Handle{&mapped_region.region, &mapped_region.mapping,
+                  std::move(recycle_cb)};
+  }
+
+ private:
+  friend class RefCountedThreadSafe<ReadOnlyRegionPool>;
+  ~ReadOnlyRegionPool() = default;
+
+  void ReuseBuffer(size_t index) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    available_buffer_indices_.push_back(index);
+  }
+
+  const size_t buffer_size_;
+  std::vector<base::MappedReadOnlyRegion> buffers_;
+  std::vector<size_t> available_buffer_indices_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+};
+
 VideoEncodeAcceleratorAdapter::PendingOp::PendingOp() = default;
 VideoEncodeAcceleratorAdapter::PendingOp::~PendingOp() = default;
 
@@ -152,7 +206,6 @@ VideoEncodeAcceleratorAdapter::VideoEncodeAcceleratorAdapter(
     std::unique_ptr<MediaLog> media_log,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner)
     : output_pool_(base::MakeRefCounted<base::UnsafeSharedMemoryPool>()),
-      input_pool_(base::MakeRefCounted<base::UnsafeSharedMemoryPool>()),
       gpu_factories_(gpu_factories),
       media_log_(std::move(media_log)),
       accelerator_task_runner_(gpu_factories_->GetTaskRunner()),
@@ -162,7 +215,6 @@ VideoEncodeAcceleratorAdapter::VideoEncodeAcceleratorAdapter(
 
 VideoEncodeAcceleratorAdapter::~VideoEncodeAcceleratorAdapter() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
-  input_pool_->Shutdown();
   output_pool_->Shutdown();
 }
 
@@ -521,9 +573,9 @@ void VideoEncodeAcceleratorAdapter::RequireBitstreamBuffers(
   DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
 
   input_coded_size_ = input_coded_size;
-  input_buffer_size_ =
+  size_t input_buffer_size =
       VideoFrame::AllocationSize(PIXEL_FORMAT_I420, input_coded_size);
-
+  input_pool_ = base::MakeRefCounted<ReadOnlyRegionPool>(input_buffer_size);
   output_handle_holder_ = output_pool_->MaybeAllocateBuffer(output_buffer_size);
 
   if (!output_handle_holder_) {
@@ -735,36 +787,30 @@ VideoEncodeAcceleratorAdapter::PrepareCpuFrame(
     const gfx::Size& size,
     scoped_refptr<VideoFrame> src_frame) {
   TRACE_EVENT0("media", "VideoEncodeAcceleratorAdapter::PrepareCpuFrame");
-  auto handle = input_pool_->MaybeAllocateBuffer(input_buffer_size_);
-  if (!handle)
+  ReadOnlyRegionPool::Handle handle = input_pool_->MaybeAllocateBuffer();
+  if (!handle.IsValid())
     return EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode);
 
-  const base::UnsafeSharedMemoryRegion& region = handle->GetRegion();
-  const base::WritableSharedMemoryMapping& mapping = handle->GetMapping();
-
+  base::WritableSharedMemoryMapping* mapping = handle.mapping;
   auto mapped_src_frame = src_frame->HasGpuMemoryBuffer()
                               ? ConvertToMemoryMappedFrame(src_frame)
                               : src_frame;
   auto shared_frame = VideoFrame::WrapExternalData(
       PIXEL_FORMAT_I420, size, gfx::Rect(size), size,
-      mapping.GetMemoryAsSpan<uint8_t>().data(), mapping.size(),
+      static_cast<uint8_t*>(mapping->memory()), mapping->size(),
       src_frame->timestamp());
 
   if (!shared_frame || !mapped_src_frame)
     return EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode);
 
-  shared_frame->BackWithSharedMemory(&region);
-  // Keep the SharedMemoryHolder until the frame is destroyed so that the
-  // memory is not freed prematurely.
-  shared_frame->AddDestructionObserver(BindToCurrentLoop(base::BindOnce(
-      [](std::unique_ptr<base::UnsafeSharedMemoryPool::Handle>) {},
-      std::move(handle))));
   auto status =
       ConvertAndScaleFrame(*mapped_src_frame, *shared_frame, resize_buf_);
   if (!status.is_ok())
     return EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode)
         .AddCause(std::move(status));
 
+  shared_frame->BackWithSharedMemory(handle.region);
+  shared_frame->AddDestructionObserver(std::move(handle.recycle_cb));
   return shared_frame;
 }
 

@@ -1144,12 +1144,12 @@ void VideoFrame::HashFrameForTesting(base::MD5Context* context,
 }
 
 void VideoFrame::BackWithSharedMemory(
-    const base::UnsafeSharedMemoryRegion* region) {
+    const base::ReadOnlySharedMemoryRegion* region) {
   DCHECK(!shm_region_);
   DCHECK(!owned_shm_region_.IsValid());
   // Either we should be backing a frame created with WrapExternal*, or we are
-  // wrapping an existing STORAGE_SHMEM, in which case the storage
-  // type has already been set to STORAGE_SHMEM.
+  // wrapping an existing STORAGE_SHMEM, in which case the storage type has
+  // already been set to STORAGE_SHMEM.
   DCHECK(storage_type_ == STORAGE_UNOWNED_MEMORY ||
          storage_type_ == STORAGE_SHMEM);
   DCHECK(region && region->IsValid());
@@ -1158,13 +1158,13 @@ void VideoFrame::BackWithSharedMemory(
 }
 
 void VideoFrame::BackWithOwnedSharedMemory(
-    base::UnsafeSharedMemoryRegion region,
-    base::WritableSharedMemoryMapping mapping) {
+    base::ReadOnlySharedMemoryRegion region,
+    base::ReadOnlySharedMemoryMapping mapping) {
   DCHECK(!shm_region_);
   DCHECK(!owned_shm_region_.IsValid());
   // We should be backing a frame created with WrapExternal*. We cannot be
   // wrapping an existing STORAGE_SHMEM, as the region is unowned in that case.
-  DCHECK(storage_type_ == STORAGE_UNOWNED_MEMORY);
+  DCHECK(storage_type_ == STORAGE_SHMEM);
   storage_type_ = STORAGE_SHMEM;
   owned_shm_region_ = std::move(region);
   shm_region_ = &owned_shm_region_;

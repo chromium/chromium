@@ -82,6 +82,7 @@ _CONFIG = [
             "base::i18n::ToUCharPtr",
             'base::Location',
             'base::MakeRefCounted',
+            'base::MappedReadOnlyRegion',
             'base::MatcherStringPattern',
             'base::Microseconds',
             'base::Milliseconds',

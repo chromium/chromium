@@ -13,7 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/format_macros.h"
 #include "base/memory/aligned_memory.h"
-#include "base/memory/unsafe_shared_memory_region.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
@@ -441,20 +441,21 @@ TEST(VideoFrame, WrapExternalData) {
 // Create a frame that wraps read-only shared memory.
 TEST(VideoFrame, WrapSharedMemory) {
   const size_t kDataSize = 2 * 256 * 256;
-  base::UnsafeSharedMemoryRegion region =
-      base::UnsafeSharedMemoryRegion::Create(kDataSize);
-  ASSERT_TRUE(region.IsValid());
-  base::WritableSharedMemoryMapping mapping = region.Map();
-  ASSERT_TRUE(mapping.IsValid());
+  base::MappedReadOnlyRegion mapped_region =
+      base::ReadOnlySharedMemoryRegion::Create(kDataSize);
+  ASSERT_TRUE(mapped_region.IsValid());
   gfx::Size coded_size(256, 256);
   gfx::Rect visible_rect(coded_size);
-  CreateTestY16Frame(coded_size, visible_rect, mapping.memory());
+  CreateTestY16Frame(coded_size, visible_rect, mapped_region.mapping.memory());
   auto timestamp = base::Milliseconds(1);
   auto frame = VideoFrame::WrapExternalData(
       PIXEL_FORMAT_Y16, coded_size, visible_rect, visible_rect.size(),
-      mapping.GetMemoryAsSpan<uint8_t>().data(), kDataSize, timestamp);
-  frame->BackWithSharedMemory(&region);
+      mapped_region.mapping.GetMemoryAsSpan<uint8_t>().data(), kDataSize,
+      timestamp);
+  EXPECT_EQ(frame->storage_type(), VideoFrame::STORAGE_UNOWNED_MEMORY);
 
+  frame->BackWithSharedMemory(&mapped_region.region);
+  EXPECT_EQ(frame->storage_type(), VideoFrame::STORAGE_SHMEM);
   EXPECT_EQ(frame->coded_size(), coded_size);
   EXPECT_EQ(frame->visible_rect(), visible_rect);
   EXPECT_EQ(frame->timestamp(), timestamp);

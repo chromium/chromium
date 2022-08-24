@@ -452,24 +452,6 @@ void RecordEncoderShutdownReasonUMA(RTCVideoEncoderShutdownReason reason,
                                     reason);
   }
 }
-
-std::unique_ptr<std::pair<base::UnsafeSharedMemoryRegion,
-                          base::WritableSharedMemoryMapping>>
-CreateInputBuffer(const gfx::Size& input_coded_size) {
-  base::UnsafeSharedMemoryRegion shm =
-      base::UnsafeSharedMemoryRegion::Create(media::VideoFrame::AllocationSize(
-          media::PIXEL_FORMAT_I420, input_coded_size));
-  if (!shm.IsValid()) {
-    return nullptr;
-  }
-  base::WritableSharedMemoryMapping mapping = shm.Map();
-  if (!mapping.IsValid()) {
-    return nullptr;
-  }
-  return std::make_unique<std::pair<base::UnsafeSharedMemoryRegion,
-                                    base::WritableSharedMemoryMapping>>(
-      std::move(shm), std::move(mapping));
-}
 }  // namespace
 
 namespace features {
@@ -637,12 +619,9 @@ class RTCVideoEncoder::Impl
   gfx::Size input_frame_coded_size_;
   gfx::Size input_visible_size_;
 
-  // Shared memory buffers for input/output with the VEA. The input buffers may
-  // be referred to by a VideoFrame, so they are wrapped in a unique_ptr to have
-  // a stable memory location. That is not necessary for the output buffers.
-  Vector<std::unique_ptr<std::pair<base::UnsafeSharedMemoryRegion,
-                                   base::WritableSharedMemoryMapping>>>
-      input_buffers_;
+  // Shared memory buffers for input/output with the VEA.
+  Vector<std::unique_ptr<base::MappedReadOnlyRegion>> input_buffers_;
+
   Vector<std::pair<base::UnsafeSharedMemoryRegion,
                    base::WritableSharedMemoryMapping>>
       output_buffers_;
@@ -1400,7 +1379,11 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
       }
     } else {
       if (!input_buffers_[index]) {
-        input_buffers_[index] = CreateInputBuffer(input_frame_coded_size_);
+        const size_t input_frame_buffer_size =
+            media::VideoFrame::AllocationSize(media::PIXEL_FORMAT_I420,
+                                              input_frame_coded_size_);
+        input_buffers_[index] = std::make_unique<base::MappedReadOnlyRegion>(
+            base::ReadOnlySharedMemoryRegion::Create(input_frame_buffer_size));
         if (!input_buffers_[index]) {
           LogAndNotifyError(
               FROM_HERE, "Failed to create input buffer",
@@ -1409,20 +1392,21 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
         }
       }
 
-      const auto& [shm_region, shm_mapping] = *input_buffers_[index];
+      auto& region = input_buffers_[index]->region;
+      auto& mapping = input_buffers_[index]->mapping;
       frame = media::VideoFrame::WrapExternalData(
           media::PIXEL_FORMAT_I420, input_frame_coded_size_,
           gfx::Rect(input_visible_size_), input_visible_size_,
-          shm_mapping.GetMemoryAsSpan<uint8_t>().data(), shm_mapping.size(),
-          timestamp);
-      if (!frame.get()) {
+          static_cast<uint8_t*>(mapping.memory()), mapping.size(), timestamp);
+      if (!frame) {
         LogAndNotifyError(FROM_HERE, "failed to create frame",
                           media::VideoEncodeAccelerator::kPlatformFailureError);
         async_encode_event_.SetAndReset(WEBRTC_VIDEO_CODEC_ERROR);
         return;
       }
-      frame->BackWithSharedMemory(&shm_region);
 
+      // |frame| is STORAGE_UNOWNED_MEMORY at this point. Writing the data is
+      // allowed.
       // Do a strided copy and scale (if necessary) the input frame to match
       // the input requirements for the encoder.
       // TODO(magjed): Downscale with an image pyramid instead.
@@ -1446,6 +1430,10 @@ void RTCVideoEncoder::Impl::EncodeOneFrame() {
         async_encode_event_.SetAndReset(WEBRTC_VIDEO_CODEC_ERROR);
         return;
       }
+
+      // |frame| becomes STORAGE_SHMEM. Writing the buffer is not permitted
+      // after here.
+      frame->BackWithSharedMemory(&region);
     }
   }
   frame->AddDestructionObserver(media::BindToCurrentLoop(

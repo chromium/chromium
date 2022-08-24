@@ -215,8 +215,13 @@ void MojoMjpegDecodeAcceleratorService::Decode(
         ::chromeos_camera::MjpegDecodeAccelerator::Error::PLATFORM_FAILURE);
     return;
   }
-  frame->BackWithOwnedSharedMemory(std::move(output_region),
-                                   std::move(mapping));
+  // BackWithOwnedSharedMemory() is not executed because
+  // MjpegDecodeAccelerator doesn't use shared memory region of the frame.
+  // Just attach the video frame so that the mapped memory is valid until the
+  // VideoFrame is alive.
+  frame->AddDestructionObserver(base::BindOnce(
+      [](base::UnsafeSharedMemoryRegion, base::WritableSharedMemoryMapping) {},
+      std::move(output_region), std::move(mapping)));
 
   if (!accelerator_initialized_) {
     NotifyDecodeStatus(

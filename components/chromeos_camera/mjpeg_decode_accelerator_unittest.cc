@@ -23,6 +23,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/numerics/safe_conversions.h"
@@ -299,28 +300,30 @@ MjpegDecodeAcceleratorTestEnvironment::CreateShmVideoFrame(
     const gfx::Size& visible_size) {
   const size_t data_size =
       media::VideoFrame::AllocationSize(format, coded_size);
-  auto shm_region = base::UnsafeSharedMemoryRegion::Create(data_size);
-  if (!shm_region.IsValid()) {
+  auto mapped_region = base::ReadOnlySharedMemoryRegion::Create(data_size);
+  if (!mapped_region.IsValid()) {
     LOG(ERROR) << "Failed to create shared memory";
     return nullptr;
   }
-  base::WritableSharedMemoryMapping shm_mapping = shm_region.Map();
-  if (!shm_mapping.IsValid()) {
+  base::WritableSharedMemoryMapping& writable_mapping = mapped_region.mapping;
+  base::ReadOnlySharedMemoryMapping read_only_mapping =
+      mapped_region.region.Map();
+  if (!read_only_mapping.IsValid()) {
     LOG(ERROR) << "Failed to map shared memory region";
     return nullptr;
   }
-  memset(shm_mapping.memory(), 0, data_size);
+  memset(writable_mapping.memory(), 0, data_size);
 
   scoped_refptr<media::VideoFrame> frame = media::VideoFrame::WrapExternalData(
       format, coded_size, gfx::Rect(visible_size), visible_size,
-      shm_mapping.GetMemoryAsSpan<uint8_t>().data(), data_size,
+      static_cast<uint8_t*>(writable_mapping.memory()), data_size,
       base::TimeDelta());
   if (!frame) {
     LOG(ERROR) << "Failed to create video frame";
     return nullptr;
   }
-  frame->BackWithOwnedSharedMemory(std::move(shm_region),
-                                   std::move(shm_mapping));
+  frame->BackWithOwnedSharedMemory(std::move(mapped_region.region),
+                                   std::move(read_only_mapping));
 
   return frame;
 }

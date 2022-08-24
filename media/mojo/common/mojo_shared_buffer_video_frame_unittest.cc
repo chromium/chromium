@@ -307,18 +307,17 @@ TEST(MojoSharedBufferVideoFrameTest, I420SharedMemoryFrameToMojoFrame) {
   const auto size = gfx::Size(1, 1);
   const int32_t stride = 3;
   const size_t kAllocationSize = 12;
-  auto region = base::UnsafeSharedMemoryRegion::Create(kAllocationSize);
-  ASSERT_TRUE(region.IsValid());
-  auto mapping = region.Map();
-  ASSERT_TRUE(mapping.IsValid());
-  uint8_t* data = static_cast<uint8_t*>(mapping.memory());
+  auto mapped_region =
+      base::ReadOnlySharedMemoryRegion::Create(kAllocationSize);
+  ASSERT_TRUE(mapped_region.IsValid());
+  uint8_t* data = static_cast<uint8_t*>(mapped_region.mapping.memory());
   // The YUV frame only has 1 pixel. But each plane are not in consecutive
   // memory block, also stride is 3 bytes that contains 1 byte image data and 2
   // bytes padding.
   scoped_refptr<VideoFrame> frame = VideoFrame::WrapExternalYuvData(
       pixel_format, size, gfx::Rect(1, 1), size, stride, stride, stride, data,
       data + 4, data + 8, base::TimeDelta());
-  frame->BackWithSharedMemory(&region);
+  frame->BackWithSharedMemory(&mapped_region.region);
 
   auto mojo_frame = MojoSharedBufferVideoFrame::CreateFromYUVFrame(*frame);
   EXPECT_TRUE(mojo_frame);

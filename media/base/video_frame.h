@@ -18,8 +18,8 @@
 #include "base/hash/md5.h"
 #include "base/memory/free_deleter.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
@@ -81,7 +81,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
     STORAGE_OPAQUE = 1,  // We don't know how VideoFrame's pixels are stored.
     STORAGE_UNOWNED_MEMORY = 2,  // External, non owned data pointers.
     STORAGE_OWNED_MEMORY = 3,  // VideoFrame has allocated its own data buffer.
-    STORAGE_SHMEM = 4,         // Backed by unsafe (writable) shared memory.
+    STORAGE_SHMEM = 4,         // Backed by read-only shared memory.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     // TODO(mcasas): Consider turning this type into STORAGE_NATIVE
     // based on the idea of using this same enum value for both DMA
@@ -417,23 +417,23 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // Returns a human readable string of StorageType.
   static std::string StorageTypeToString(VideoFrame::StorageType storage_type);
 
-  // A video frame wrapping external data may be backed by an unsafe shared
+  // A video frame wrapping external data may be backed by a read-only shared
   // memory region. These methods are used to appropriately transform a
   // VideoFrame created with WrapExternalData, WrapExternalYuvaData, etc. The
-  // storage type of the Video Frame will be changed to STORAGE_SHM. Once the
-  // backing of a VideoFrame is set, it cannot be changed.
+  // storage type of the Video Frame will be changed to STORAGE_READ_ONLY_SHMEM.
+  // Once the backing of a VideoFrame is set, it cannot be changed.
   //
   // The region is NOT owned by the video frame. Both the region and its
   // associated mapping must outlive this instance.
-  void BackWithSharedMemory(const base::UnsafeSharedMemoryRegion* region);
+  void BackWithSharedMemory(const base::ReadOnlySharedMemoryRegion* region);
 
   // As above, but the VideoFrame owns the shared memory region as well as the
   // mapping. They will be destroyed with their VideoFrame.
-  void BackWithOwnedSharedMemory(base::UnsafeSharedMemoryRegion region,
-                                 base::WritableSharedMemoryMapping mapping);
+  void BackWithOwnedSharedMemory(base::ReadOnlySharedMemoryRegion region,
+                                 base::ReadOnlySharedMemoryMapping mapping);
 
   // Valid for shared memory backed VideoFrames.
-  const base::UnsafeSharedMemoryRegion* shm_region() {
+  const base::ReadOnlySharedMemoryRegion* shm_region() {
     DCHECK(IsValidSharedMemoryFrame());
     DCHECK(storage_type_ == STORAGE_SHMEM);
     return shm_region_;
@@ -733,12 +733,12 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
 
   // Shared memory handle, if this frame is STORAGE_SHMEM.  The region pointed
   // to is unowned.
-  raw_ptr<const base::UnsafeSharedMemoryRegion> shm_region_ = nullptr;
+  raw_ptr<const base::ReadOnlySharedMemoryRegion> shm_region_ = nullptr;
 
-  // Used if this is a STORAGE_SHMEM frame with owned shared memory. In that
-  // case, shm_region_ will refer to this region.
-  base::UnsafeSharedMemoryRegion owned_shm_region_;
-  base::WritableSharedMemoryMapping owned_shm_mapping_;
+  // Used if this is a STORAGE_SHMEM frame with owned shared memory.
+  // In that case, shm_region_ will refer to this region.
+  base::ReadOnlySharedMemoryRegion owned_shm_region_;
+  base::ReadOnlySharedMemoryMapping owned_shm_mapping_;
 
   // GPU memory buffer, if this frame is STORAGE_GPU_MEMORY_BUFFER.
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;

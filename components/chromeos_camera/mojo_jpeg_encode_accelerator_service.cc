@@ -16,7 +16,9 @@
 #include "base/logging.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/memory/writable_shared_memory_region.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "components/chromeos_camera/common/dmabuf.mojom.h"
@@ -205,13 +207,16 @@ void MojoJpegEncodeAcceleratorService::EncodeWithFD(
         ::chromeos_camera::JpegEncodeAccelerator::Status::PLATFORM_FAILURE);
     return;
   }
-
-  base::UnsafeSharedMemoryRegion input_region =
-      base::UnsafeSharedMemoryRegion::Deserialize(
+  // TODO(b/3832599): Make |input_region| read-only.
+  base::WritableSharedMemoryRegion writable_input_region =
+      base::WritableSharedMemoryRegion::Deserialize(
           base::subtle::PlatformSharedMemoryRegion::Take(
               std::move(input_fd),
-              base::subtle::PlatformSharedMemoryRegion::Mode::kUnsafe,
+              base::subtle::PlatformSharedMemoryRegion::Mode::kWritable,
               input_buffer_size, base::UnguessableToken::Create()));
+  base::ReadOnlySharedMemoryRegion input_region =
+      base::WritableSharedMemoryRegion::ConvertToReadOnly(
+          std::move(writable_input_region));
 
   base::UnsafeSharedMemoryRegion output_shm_region =
       base::UnsafeSharedMemoryRegion::Deserialize(
@@ -248,7 +253,7 @@ void MojoJpegEncodeAcceleratorService::EncodeWithFD(
       task_id, std::move(callback));
   encode_cb_map_.emplace(task_id, std::move(wrapped_callback));
 
-  base::WritableSharedMemoryMapping input_mapping = input_region.Map();
+  base::ReadOnlySharedMemoryMapping input_mapping = input_region.Map();
   if (!input_mapping.IsValid()) {
     DLOG(ERROR) << "Could not map input shared memory for buffer id "
                 << task_id;
@@ -258,15 +263,16 @@ void MojoJpegEncodeAcceleratorService::EncodeWithFD(
     return;
   }
 
-  uint8_t* input_shm_memory = input_mapping.GetMemoryAsSpan<uint8_t>().data();
+  const uint8_t* input_shm_memory =
+      input_mapping.GetMemoryAsSpan<uint8_t>().data();
   scoped_refptr<media::VideoFrame> frame = media::VideoFrame::WrapExternalData(
-      media::PIXEL_FORMAT_I420,  // format
-      coded_size,                // coded_size
-      gfx::Rect(coded_size),     // visible_rect
-      coded_size,                // natural_size
-      input_shm_memory,          // data
-      input_buffer_size,         // data_size
-      base::TimeDelta());        // timestamp
+      media::PIXEL_FORMAT_I420,                // format
+      coded_size,                              // coded_size
+      gfx::Rect(coded_size),                   // visible_rect
+      coded_size,                              // natural_size
+      const_cast<uint8_t*>(input_shm_memory),  // data
+      input_buffer_size,                       // data_size
+      base::TimeDelta());                      // timestamp
   if (!frame.get()) {
     LOG(ERROR) << "Could not create VideoFrame for buffer id " << task_id;
     NotifyEncodeStatus(

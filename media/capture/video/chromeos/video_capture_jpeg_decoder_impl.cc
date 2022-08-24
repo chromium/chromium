@@ -110,33 +110,19 @@ void VideoCaptureJpegDecoderImpl::DecodeCapturedData(
   // Mask against 30 bits, to avoid (undefined) wraparound on signed integer.
   next_task_id_ = (next_task_id_ + 1) & 0x3FFFFFFF;
 
-  // The API of |decoder_| requires us to wrap the |out_buffer| in a VideoFrame.
   const gfx::Size dimensions = frame_format.frame_size;
+  if (!VideoFrame::IsValidConfig(PIXEL_FORMAT_I420,
+                                 VideoFrame::STORAGE_UNOWNED_MEMORY, dimensions,
+                                 gfx::Rect(dimensions), dimensions)) {
+    base::AutoLock lock(lock_);
+    decoder_status_ = FAILED;
+    LOG(ERROR) << "DecodeCapturedData: VideoFrame::IsValidConfig() failed";
+    return;
+  }
+
   base::UnsafeSharedMemoryRegion out_region =
       out_buffer.handle_provider->DuplicateAsUnsafeRegion();
   DCHECK(out_region.IsValid());
-  base::WritableSharedMemoryMapping out_mapping = out_region.Map();
-  DCHECK(out_mapping.IsValid());
-  scoped_refptr<media::VideoFrame> out_frame =
-      media::VideoFrame::WrapExternalData(
-          media::PIXEL_FORMAT_I420,                       // format
-          dimensions,                                     // coded_size
-          gfx::Rect(dimensions),                          // visible_rect
-          dimensions,                                     // natural_size
-          out_mapping.GetMemoryAsSpan<uint8_t>().data(),  // data
-          out_mapping.size(),                             // data_size
-          timestamp);                                     // timestamp
-  if (!out_frame) {
-    base::AutoLock lock(lock_);
-    decoder_status_ = FAILED;
-    LOG(ERROR) << "DecodeCapturedData: WrapExternalSharedMemory failed";
-    return;
-  }
-  out_frame->BackWithOwnedSharedMemory(std::move(out_region),
-                                       std::move(out_mapping));
-
-  out_frame->metadata().frame_rate = frame_format.frame_rate;
-  out_frame->metadata().reference_time = reference_time;
 
   media::mojom::VideoFrameInfoPtr out_frame_info =
       media::mojom::VideoFrameInfo::New();
@@ -144,8 +130,10 @@ void VideoCaptureJpegDecoderImpl::DecodeCapturedData(
   out_frame_info->pixel_format = media::PIXEL_FORMAT_I420;
   out_frame_info->coded_size = dimensions;
   out_frame_info->visible_rect = gfx::Rect(dimensions);
-  out_frame_info->metadata = out_frame->metadata();
-  out_frame_info->color_space = out_frame->ColorSpace();
+  out_frame_info->metadata = VideoFrameMetadata();
+  out_frame_info->metadata.frame_rate = frame_format.frame_rate;
+  out_frame_info->metadata.reference_time = reference_time;
+  out_frame_info->color_space = gfx::ColorSpace();
 
   {
     base::AutoLock lock(lock_);
@@ -162,12 +150,14 @@ void VideoCaptureJpegDecoderImpl::DecodeCapturedData(
   decoder_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](chromeos_camera::MjpegDecodeAccelerator* decoder,
-             BitstreamBuffer in_buffer, scoped_refptr<VideoFrame> out_frame) {
-            decoder->Decode(std::move(in_buffer), std::move(out_frame));
+          [](chromeos_camera::MojoMjpegDecodeAccelerator* decoder,
+             BitstreamBuffer in_buffer, VideoPixelFormat format,
+             gfx::Size coded_size, base::UnsafeSharedMemoryRegion out_region) {
+            decoder->Decode(std::move(in_buffer), format, coded_size,
+                            std::move(out_region));
           },
           base::Unretained(decoder_.get()), std::move(in_buffer),
-          std::move(out_frame)));
+          media::PIXEL_FORMAT_I420, dimensions, std::move(out_region)));
 }
 
 void VideoCaptureJpegDecoderImpl::VideoFrameReady(int32_t task_id) {

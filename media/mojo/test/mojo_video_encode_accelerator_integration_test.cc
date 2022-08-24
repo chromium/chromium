@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
@@ -252,18 +253,14 @@ TEST_F(MojoVideoEncodeAcceleratorIntegrationTest, EncodeOneFrame) {
   }
 
   {
-    base::UnsafeSharedMemoryRegion shmem =
-        base::UnsafeSharedMemoryRegion::Create(
-            VideoFrame::AllocationSize(PIXEL_FORMAT_I420, kInputVisibleSize) *
-            2);
+    base::MappedReadOnlyRegion shmem = base::ReadOnlySharedMemoryRegion::Create(
+        VideoFrame::AllocationSize(PIXEL_FORMAT_I420, kInputVisibleSize) * 2);
     ASSERT_TRUE(shmem.IsValid());
-    base::WritableSharedMemoryMapping mapping = shmem.Map();
-    ASSERT_TRUE(mapping.IsValid());
     const scoped_refptr<VideoFrame> video_frame = VideoFrame::WrapExternalData(
         PIXEL_FORMAT_I420, kInputVisibleSize, gfx::Rect(kInputVisibleSize),
-        kInputVisibleSize, mapping.GetMemoryAsSpan<uint8_t>().data(),
-        mapping.size(), base::TimeDelta());
-    video_frame->BackWithSharedMemory(&shmem);
+        kInputVisibleSize, static_cast<uint8_t*>(shmem.mapping.memory()),
+        shmem.mapping.size(), base::TimeDelta());
+    video_frame->BackWithSharedMemory(&shmem.region);
     const bool is_keyframe = true;
 
     EXPECT_CALL(*mock_vea_client, BitstreamBufferReady(kBistreamBufferId, _))
@@ -298,20 +295,17 @@ TEST_F(MojoVideoEncodeAcceleratorIntegrationTest,
     const gfx::Size kInvalidInputVisibleSize(kInputVisibleSize.width() * 2,
                                              kInputVisibleSize.height());
 
-    base::UnsafeSharedMemoryRegion shmem =
-        base::UnsafeSharedMemoryRegion::Create(
-            VideoFrame::AllocationSize(PIXEL_FORMAT_I420,
-                                       kInvalidInputVisibleSize) *
-            2);
+    base::MappedReadOnlyRegion shmem = base::ReadOnlySharedMemoryRegion::Create(
+        VideoFrame::AllocationSize(PIXEL_FORMAT_I420,
+                                   kInvalidInputVisibleSize) *
+        2);
     ASSERT_TRUE(shmem.IsValid());
-    base::WritableSharedMemoryMapping mapping = shmem.Map();
-    ASSERT_TRUE(mapping.IsValid());
     const scoped_refptr<VideoFrame> video_frame = VideoFrame::WrapExternalData(
         PIXEL_FORMAT_I420, kInvalidInputVisibleSize,
         gfx::Rect(kInvalidInputVisibleSize), kInvalidInputVisibleSize,
-        mapping.GetMemoryAsSpan<uint8_t>().data(), mapping.size(),
+        static_cast<uint8_t*>(shmem.mapping.memory()), shmem.mapping.size(),
         base::TimeDelta());
-    video_frame->BackWithSharedMemory(&shmem);
+    video_frame->BackWithSharedMemory(&shmem.region);
     const bool is_keyframe = true;
 
     EXPECT_CALL(*mock_vea_client,
