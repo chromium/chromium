@@ -112,6 +112,8 @@ ts_library("build_ts") {
     "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/bluetooth.d.ts",
     "//tools/typescript/definitions/bluetooth_private.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
+    "types/dom_api.d.ts",
   ]
   root_dir = "$target_gen_dir/$preprocessed_ts_folder"
   in_files = src_ts_files + gen_ts_files + mojom_webui_files
@@ -372,7 +374,6 @@ preprocess_if_expr("preprocess_browser_settings_tsc") {
     "controls/settings_boolean_control_mixin.js",
     "extension_control_browser_proxy.js",
     "icons.html.js",
-    "open_window_proxy.js",
     "people_page/profile_info_browser_proxy.js",
     "people_page/sync_browser_proxy.js",
     "prefs/prefs_mixin.js",
@@ -431,7 +432,6 @@ group("generate_web_components") {
     "os_privacy_page:web_components",
     "os_reset_page:web_components",
     "os_search_page:web_components",
-    "os_settings_search_box:web_components",
     "parental_controls_page:web_components",
     "personalization_page:web_components",
     "settings_scheduler_slider:web_components",
@@ -468,7 +468,6 @@ group("closure_compile_module") {
     "os_reset_page:closure_compile_module",
     "os_search_page:closure_compile_module",
     "os_settings_page:closure_compile_module",
-    "os_settings_search_box:closure_compile_module",
     "parental_controls_page:closure_compile_module",
     "personalization_page:closure_compile_module",
     "settings_scheduler_slider:closure_compile_module",

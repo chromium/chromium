@@ -10,32 +10,34 @@ import '../os_icons.js';
 import '../../settings_shared.css.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {FocusRowBehavior, FocusRowBehaviorInterface} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SearchResult as PersonalizationSearchResult} from '../../mojom-webui/personalization/search.mojom-webui.js';
-import {SearchResultType} from '../../mojom-webui/search/search.mojom-webui.js';
+import {SearchResult as SettingsSearchResult, SearchResultIdentifier, SearchResultType} from '../../mojom-webui/search/search.mojom-webui.js';
 import {SearchResultIcon} from '../../mojom-webui/search/search_result_icon.mojom-webui.js';
 import {OpenWindowProxyImpl} from '../../open_window_proxy.js';
 import {Router} from '../../router.js';
 import {SearchResult} from '../combined_search_handler.js';
 
+import {getTemplate} from './os_search_result_row.html.js';
+
 /**
  * This solution uses DP and has the complexity of O(M*N), where M and N are
  * the lengths of |string1| and |string2| respectively.
  *
- * @param {string} string1 The first case sensitive string to be compared.
- * @param {string} string2 The second case sensitive string to be compared.
- * @return {!Array<string>} An array of the longest common substrings starting
+ * @param string1 The first case sensitive string to be compared.
+ * @param string2 The second case sensitive string to be compared.
+ * @return An array of the longest common substrings starting
  *     from the earliest to latest match, all of which have the same length.
  *     Returns empty array if there are none.
  */
-function longestCommonSubstrings(string1, string2) {
+function longestCommonSubstrings(string1: string, string2: string): string[] {
   let maxLength = 0;
-  let string1StartingIndices = [];
+  let string1StartingIndices: number[] = [];
   const dp = Array(string1.length + 1)
                  .fill([])
                  .map(() => Array(string2.length + 1).fill(0));
@@ -61,20 +63,17 @@ function longestCommonSubstrings(string1, string2) {
   });
 }
 
-/**
- * @param {SearchResult} result
- * @return {boolean}
- */
-function isPersonalizationSearchResult(result) {
-  return !!result && typeof result.relativeUrl === 'string';
+function isPersonalizationSearchResult(result: SearchResult):
+    result is PersonalizationSearchResult {
+  return !!result &&
+      typeof (result as PersonalizationSearchResult).relativeUrl === 'string';
 }
 
 /**
  * Used to locate matches such that the query text omits a hyphen when the
  * matching result text contains a hyphen.
- * @type {string}
  */
-const DELOCALIZED_HYPHEN = '-';
+const DELOCALIZED_HYPHEN: string = '-';
 
 /**
  * A list of hyphens in all languages that will be ignored during the
@@ -84,31 +83,28 @@ const DELOCALIZED_HYPHEN = '-';
  * U+2011(‑), U+2012(‒), U+2013(–), U+2014(—), U+2015(―), U+2053(⁓),
  * U+207B(⁻), U+208B(₋), U+2212(−), U+2E3A(⸺ ), U+2E3B(⸻  ), U+301C(〜),
  * U+3030(〰), U+30A0(゠), U+FE58(﹘), U+FE63(﹣), U+FF0D(－).
- * @type {!Array<string>}
  */
-const HYPHENS = [
-  '-', '~', '֊', '־', '᠆', '‐',  '‑',  '‒',  '–',  '—',  '―', '⁓',
+const HYPHENS: string[] = [
+  '-', '~', '֊', '־', '᠆', '‐',  '‑',  '‒',  '–',  '—',  '―',  '⁓',
   '⁻', '₋', '−', '⸺', '⸻', '〜', '〰', '゠', '﹘', '﹣', '－',
 ];
 
 /**
  * String form of the regexp expressing hyphen chars.
- * @type {string}
  */
-const HYPHENS_REGEX_STR = `[${HYPHENS.join('')}]`;
+const HYPHENS_REGEX_STR: string = `[${HYPHENS.join('')}]`;
 
 /**
  * Regexp expressing hyphen chars.
- * @type {!RegExp}
  */
 const HYPHENS_REGEX = new RegExp(HYPHENS_REGEX_STR, 'g');
 
 /**
- * @param {string} sourceString The string to be modified.
- * @return {string} The sourceString lowercased with accents in the range
+ * @param sourceString The string to be modified.
+ * @return The sourceString lowercased with accents in the range
  *     \u0300 - \u036f removed.
  */
-function removeAccents(sourceString) {
+function removeAccents(sourceString: string): string {
   return sourceString.toLocaleLowerCase().normalize('NFD').replace(
       /[\u0300-\u036f]/g, '');
 }
@@ -117,11 +113,11 @@ function removeAccents(sourceString) {
  * Used to convert the query and result into the same format without hyphens
  * and accents so that easy string comparisons can be performed. e.g.
  * |sourceString| = 'BRÛLÉE' returns "brulee"
- * @param {string} sourceString The string to be normalized.
- * @return {string} The sourceString lowercased with accents in the range
+ * @param sourceString The string to be normalized.
+ * @return The sourceString lowercased with accents in the range
  *     \u0300 - \u036f removed, and with hyphens removed.
  */
-function normalizeString(sourceString) {
+function normalizeString(sourceString: string): string {
   return removeAccents(sourceString).replace(HYPHENS_REGEX, '');
 }
 
@@ -131,14 +127,15 @@ function normalizeString(sourceString) {
  *     e.g. |sourceString| = "Turn on Wi-Fi"
  *          |substringsToBold| = ['o', 'wi-f', 'ur']
  *          returns 'T<b>ur</b>n <b>o</b>n <b>Wi-F</b>i'
- * @param {string} sourceString The case sensitive string to be bolded.
- * @param {?Array<string>} substringsToBold The case-insensitive substrings
+ * @param sourceString The case sensitive string to be bolded.
+ * @param substringsToBold The case-insensitive substrings
  *     that will be bolded in the |sourceString|, if they are html substrings
  *     of the |sourceString|.
- * @return {string} An innerHTML string of |sourceString| with any
+ * @return An innerHTML string of |sourceString| with any
  *     |substringsToBold| regardless of case bolded.
  */
-function boldSubStrings(sourceString, substringsToBold) {
+function boldSubStrings(
+    sourceString: string, substringsToBold: string[]): string {
   if (!substringsToBold || !substringsToBold.length) {
     return sourceString;
   }
@@ -147,23 +144,18 @@ function boldSubStrings(sourceString, substringsToBold) {
   return sourceString.replace(subStrRegex, (match) => match.bold());
 }
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {FocusRowBehaviorInterface}
- */
 const OsSearchResultRowElementBase =
-    mixinBehaviors([I18nBehavior, FocusRowBehavior], PolymerElement);
+    mixinBehaviors([FocusRowBehavior], I18nMixin(PolymerElement)) as {
+      new (): PolymerElement & I18nMixinInterface & FocusRowBehavior,
+    };
 
-/** @polymer */
 export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
   static get is() {
     return 'os-search-result-row';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -185,13 +177,11 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       /** The query used to fetch this result. */
       searchQuery: String,
 
-      /** @type {!SearchResult} */
       searchResult: Object,
 
       /** Number of rows in the list this row is part of. */
       listLength: Number,
 
-      /** @private */
       resultText_: {
         type: String,
         computed: 'computeResultText_(searchResult)',
@@ -199,8 +189,14 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
     };
   }
 
-  /** @private */
-  makeA11yAnnouncementIfSelectedAndUnfocused_() {
+  selected: boolean;
+  override ariaLabel: string;
+  searchQuery: string;
+  searchResult: SearchResult;
+  listLength: number;
+  private resultText_: string;
+
+  private makeA11yAnnouncementIfSelectedAndUnfocused_() {
     if (!this.selected || this.lastFocused) {
       // Do not alert the user if the result is not selected, or
       // the list is focused, defer to aria tags instead.
@@ -212,11 +208,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
     getAnnouncerInstance().announce(this.ariaLabel);
   }
 
-  /**
-   * @return {string} The result string.
-   * @private
-   */
-  computeResultText_() {
+  private computeResultText_(): string {
     // The C++ layer stores the text result as an array of 16 bit char codes,
     // so it must be converted to a JS String.
     return String.fromCharCode.apply(null, this.searchResult.text.data);
@@ -230,29 +222,29 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
    *     e.g |this.resultText_| = "一二三四"
    *         |this.searchQuery| = "三一"
    *         returns "<b>一</b>二<b>三</b>四"
-   * @return {string} An innerHTML string of |this.resultText_| with any
+   * @return An innerHTML string of |this.resultText_| with any
    *     character that is in |this.searchQuery| bolded.
-   * @private
    */
-  getMatchingIndividualCharsBolded_() {
+  private getMatchingIndividualCharsBolded_(): string {
     return boldSubStrings(
         /*sourceString=*/ this.resultText_,
         /*substringsToBold=*/ this.searchQuery.split(''));
   }
 
   /**
-   * @param {string} innerHtmlToken A case sensitive segment of the result
+   * @param innerHtmlToken A case sensitive segment of the result
    *     text which may or may not contain hyphens or accents on
    *     characters, and does not contain blank spaces.
-   * @param {string} normalizedQuery A lowercased query which does not contain
+   * @param normalizedQuery A lowercased query which does not contain
    *     hyphens.
-   * @param {!Array<string>} queryTokens See generateQueryTokens_().
-   * @return {string} The innerHtmlToken with <b> tags around segments that
+   * @param queryTokens See generateQueryTokens_().
+   * @return The innerHtmlToken with <b> tags around segments that
    *     match queryTokens, but also includes hyphens and accents
    *     on characters.
-   * @private
    */
-  getModifiedInnerHtmlToken_(innerHtmlToken, normalizedQuery, queryTokens) {
+  private getModifiedInnerHtmlToken_(
+      innerHtmlToken: string, normalizedQuery: string,
+      queryTokens: string[]): string {
     // For comparison purposes with query tokens, lowercase the html token to
     // be displayed, remove hyphens, and remove accents. The resulting
     // |normalizedToken| will not be the displayed token.
@@ -266,7 +258,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
 
     // Filters out query tokens that are not substrings of the currently
     // processing text token to be displayed.
-    const queryTokenFilter = (queryToken) => {
+    const queryTokenFilter = (queryToken: string) => {
       return !!queryToken && normalizedToken.includes(queryToken);
     };
 
@@ -276,14 +268,14 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
     // 'Wi-Fi-no-blankspsc-WiFi', (i.e. |normalizedToken| =
     // 'WiFinoblankspcWiFi') and |queryTokenLowerCaseNoSpecial| = 'wif', the
     // resulting mapping would be ['Wi-F', 'WiF'].
-    const queryTokenToSegment = (queryToken) => {
+    const queryTokenToSegment = (queryToken: string) => {
       const regExpStr = queryToken.split('').join(`${HYPHENS_REGEX_STR}*`);
 
       // Since |queryToken| does not contain accents and |innerHtmlToken| may
       // have accents matches must be made without accents on characters.
       const innerHtmlTokenNoAccents = removeAccents(innerHtmlToken);
-      const matchesNoAccents =
-          innerHtmlTokenNoAccents.match(new RegExp(regExpStr, 'g'));
+      const matchesNoAccents: string[] =
+          innerHtmlTokenNoAccents.match(new RegExp(regExpStr, 'g')) || [];
 
       // Return matches with original accents restored.
       return matchesNoAccents.map(
@@ -322,22 +314,21 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
    * longest query token(s) for each query segment are extracted. In the event
    * that query segments are more than one character long, query tokens that
    * are only one character long are ignored.
-   * @param {string} normalizedQuery A lowercased query which does not contain
+   * @param normalizedQuery A lowercased query which does not contain
    *     hyphens or accents.
-   * @return {!Array<string>} QueryTokens that do not contain
+   * @return QueryTokens that do not contain
    *     blankspaces and are substrings of the normalized result text
-   * @private
    */
-  generateQueryTokens_(normalizedQuery) {
+  private generateQueryTokens_(normalizedQuery: string): string[] {
     const normalizedResultText = normalizeString(this.resultText_);
 
-    const segmentToTokenMap = new Map();
+    const segmentToTokenMap = new Map<string, string[]>();
     normalizedQuery.split(/\s/).forEach(querySegment => {
       const queryTokens =
           longestCommonSubstrings(querySegment, normalizedResultText);
       if (segmentToTokenMap.has(querySegment)) {
         const segmentTokens =
-            segmentToTokenMap.get(querySegment).concat(queryTokens);
+            segmentToTokenMap.get(querySegment)!.concat(queryTokens);
         segmentToTokenMap.set(querySegment, segmentTokens);
         return;
       }
@@ -350,40 +341,42 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
     // (longest common substring for "Assistant") and "an" (longest common
     // substring for "and"). Only the queryToken "ssistan" should be kept
     // since it's the longest queryToken.
-    const getLongestTokensPerSegment = ([querySegment, queryTokens]) => {
-      // If there are no queryTokens, return none.
-      // Example: |normalizedResultText| = "search and assistant"
-      //          |normalizedQuery| = "hi goog"
-      //          |querySegment| = "goog"
-      //          |queryTokens| = []
-      // Since |querySegment| does not share any substrings with
-      // |normalizedResultText|, no queryTokens available.
-      if (!queryTokens.length) {
-        return [];
-      }
+    const getLongestTokensPerSegment =
+        ([querySegment, queryTokens]: [string, string[]]) => {
+          // If there are no queryTokens, return none.
+          // Example: |normalizedResultText| = "search and assistant"
+          //          |normalizedQuery| = "hi goog"
+          //          |querySegment| = "goog"
+          //          |queryTokens| = []
+          // Since |querySegment| does not share any substrings with
+          // |normalizedResultText|, no queryTokens available.
+          if (!queryTokens.length) {
+            return [];
+          }
 
-      const maxLengthQueryToken =
-          Math.max(...queryTokens.map(queryToken => queryToken.length));
+          const maxLengthQueryToken =
+              Math.max(...queryTokens.map(queryToken => queryToken.length));
 
-      // If the |querySegment| is more than one character long and the longest
-      // queryToken(s) are one character long, discard all queryToken(s). This
-      // prevents random single characters in in the result text from bolding.
-      // Example: |normalizedResultText| = "search and assistant"
-      //          |normalizedQuery| = "hi goog"
-      //          |querySegment| = "hi"
-      //          |queryTokens| = ["h", "i"]
-      // Here, |querySegment| "hi" shares a common substring "h" with
-      // |normalizedResultText|'s "search" and "i" with
-      // |normalizedResultText|'s "assistant". Since the queryTokens for
-      // the length two querySegment are only one character long, discard
-      // the queryTokens.
-      if (maxLengthQueryToken === 1 && querySegment.length > 1) {
-        return [];
-      }
+          // If the |querySegment| is more than one character long and the
+          // longest queryToken(s) are one character long, discard all
+          // queryToken(s). This prevents random single characters in in the
+          // result text from bolding. Example: |normalizedResultText| = "search
+          // and assistant"
+          //          |normalizedQuery| = "hi goog"
+          //          |querySegment| = "hi"
+          //          |queryTokens| = ["h", "i"]
+          // Here, |querySegment| "hi" shares a common substring "h" with
+          // |normalizedResultText|'s "search" and "i" with
+          // |normalizedResultText|'s "assistant". Since the queryTokens for
+          // the length two querySegment are only one character long, discard
+          // the queryTokens.
+          if (maxLengthQueryToken === 1 && querySegment.length > 1) {
+            return [];
+          }
 
-      return queryTokens.filter(
-          queryToken => queryToken.length === maxLengthQueryToken);
-    };
+          return queryTokens.filter(
+              queryToken => queryToken.length === maxLengthQueryToken);
+        };
 
     // A 2D array such that each array contains queryTokens of a querySegment.
     // Note that the order of key value pairs is maintained in the
@@ -420,17 +413,17 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
    * Possibly merges costituent queryTokens in |inOrderQueryTokens| to form
    * new, longer, valid queryTokens that match with normalized compounded
    * words in |this.resultText|.
-   * @param {!Array<string>} inOrderQueryTokens An array of valid queryTokens
+   * @param inOrderQueryTokens An array of valid queryTokens
    *     that do not contain dups.
-   * @return {!Array<string>} An array of queryTokens of equal or lesser size
+   * @return An array of queryTokens of equal or lesser size
    *     than |inOrderQueryTokens|, each of which do not contain blankspaces
    *     and are substrings of the normalized result text.
-   * @private
    */
-  mergeValidTokensToCompounded_(inOrderQueryTokens) {
+  private mergeValidTokensToCompounded_(inOrderQueryTokens: string[]):
+      string[] {
     // If |this.resultToken| does not contain any hyphens, this will be
     // be the same as |inOrderQueryTokens|.
-    const longestCompoundWordTokens = [];
+    const longestCompoundWordTokens: string[] = [];
 
     // Instead of stripping all hyphen as would be the case if the result
     // text were normalized, convert all hyphens to |DELOCALIZED_HYPHEN|. This
@@ -487,10 +480,9 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
    * queried, a result text of "Turn on Wi-Fi" should have "on" and "Wi-F"
    * bolded. e.g. Larger query block: If "onwifi" is queried, a result text of
    * "Turn on Wi-Fi" should have "Wi-Fi" bolded.
-   * @return {string} Result string with <b> tags around query sub string.
-   * @private
+   * @return Result string with <b> tags around query sub string.
    */
-  getTokenizeMatchedBoldTagged_() {
+  private getTokenizeMatchedBoldTagged_(): string {
     // Lowercase, remove hyphens, and remove accents from the query.
     const normalizedQuery = normalizeString(this.searchQuery);
 
@@ -522,11 +514,11 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
   }
 
   /**
-   * @return {string} The result string with <span> tags around keywords.
-   * @private
+   * @return The result string with <span> tags around keywords.
    */
-  getResultInnerHtml_() {
-    if (!this.searchResult.wasGeneratedFromTextMatch) {
+  private getResultInnerHtml_(): string {
+    if (!(this.searchResult as SettingsSearchResult)
+             .wasGeneratedFromTextMatch) {
       return this.resultText_;
     }
 
@@ -549,10 +541,10 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
   }
 
   /**
-   * @return {string} Aria label string for ChromeVox to verbalize.
-   * @private
+   * @return Aria label string for ChromeVox to verbalize.
    */
-  computeAriaLabel_() {
+  private computeAriaLabel_(): string {
+    assert(typeof this.focusRowIndex === 'number');
     return this.i18n(
         'searchResultSelected', this.focusRowIndex + 1, this.listLength,
         this.computeResultText_());
@@ -561,23 +553,19 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
   /**
    * Only relevant when the focus-row-control is focus()ed. This keypress
    * handler specifies that pressing 'Enter' should cause a route change.
-   * @param {!KeyboardEvent} e
-   * @private
    */
-  onKeyPress_(e) {
+  private onKeyPress_(e: KeyboardEvent) {
     if (e.key === 'Enter') {
       e.stopPropagation();
       this.onSearchResultSelected();
     }
   }
 
-  /** @private */
-  recordSearchResultMetrics_() {
+  private recordSearchResultMetrics_() {
     if (isPersonalizationSearchResult(this.searchResult)) {
       chrome.metricsPrivate.recordSparseValue(
           'ChromeOS.Settings.SearchResultPersonalizationSelected',
-          /** @type {!PersonalizationSearchResult} */
-          (this.searchResult).searchConceptId);
+          this.searchResult.searchConceptId);
       // Record entry point metric to Personalization Hub through Settings
       // search.
       chrome.metricsPrivate.recordEnumerationValue(
@@ -587,11 +575,12 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       return;
     }
 
+    const settingsSearchResult = this.searchResult as SettingsSearchResult;
     chrome.metricsPrivate.recordEnumerationValue(
-        'ChromeOS.Settings.SearchResultTypeSelected', this.searchResult.type,
+        'ChromeOS.Settings.SearchResultTypeSelected', settingsSearchResult.type,
         SearchResultType.MAX_VALUE);
 
-    const metricArgs = (type, id) => {
+    const metricArgs = (type: number, id: SearchResultIdentifier) => {
       switch (type) {
         case SearchResultType.kSection:
           return {
@@ -610,12 +599,14 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
           };
         default:
           assertNotReached('Search Result Type not specified.');
-          return null;
       }
     };
 
-    const args = metricArgs(this.searchResult.type, this.searchResult.id);
-    chrome.metricsPrivate.recordSparseValue(args.metricName, args.value);
+    const args =
+        metricArgs(settingsSearchResult.type, settingsSearchResult.id)!;
+    if (args.value) {
+      chrome.metricsPrivate.recordSparseValue(args.metricName, args.value);
+    }
   }
 
   /**
@@ -630,18 +621,23 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
           this.searchResult.relativeUrl);
       return;
     }
-    assert(this.searchResult.urlPathWithParameters, 'Url path is empty.');
+
+    const settingsSearchResult = this.searchResult as SettingsSearchResult;
+    assert(settingsSearchResult.urlPathWithParameters, 'Url path is empty.');
     this.recordSearchResultMetrics_();
 
     // |this.searchResult.urlPathWithParameters| separates the path and params
     // by a '?' char.
-    const pathAndOptParams = this.searchResult.urlPathWithParameters.split('?');
+    const pathAndOptParams =
+        settingsSearchResult.urlPathWithParameters.split('?');
 
     // There should be at most 2 items in the array (the path and the params).
     assert(pathAndOptParams.length <= 2, 'Path and params format error.');
 
-    const route = assert(
-        Router.getInstance().getRouteForPath('/' + pathAndOptParams[0]),
+    const route =
+        Router.getInstance().getRouteForPath('/' + pathAndOptParams[0]);
+    assert(
+        route,
         'Supplied path does not map to an existing route: ' +
             pathAndOptParams[0]);
 
@@ -656,14 +652,15 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
   }
 
   /**
-   * @return {string} The name of the icon to use.
-   * @private
+   * @return The name of the icon to use.
    */
-  getResultIcon_() {
+  private getResultIcon_(): string {
     if (isPersonalizationSearchResult(this.searchResult)) {
       return 'os-settings:paint-brush';
     }
-    switch (this.searchResult.icon) {
+
+    const settingsSearchResult = this.searchResult as SettingsSearchResult;
+    switch (settingsSearchResult.icon) {
       case SearchResultIcon.kA11y:
         return 'os-settings:accessibility';
       case SearchResultIcon.kAndroid:
@@ -769,14 +766,16 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
     }
   }
 
-  /**
-   * @return {string} The name of the icon to use.
-   * @private
-   */
-  getActionTypeIcon_() {
+  private getActionTypeIcon_(): string {
     return isPersonalizationSearchResult(this.searchResult) ?
         'cr:open-in-new' :
         'cr:arrow-forward';
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'os-search-result-row': OsSearchResultRowElement;
   }
 }
 
