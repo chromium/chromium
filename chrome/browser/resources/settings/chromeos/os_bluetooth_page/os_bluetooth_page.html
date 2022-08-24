@@ -38,8 +38,11 @@
       </os-settings-bluetooth-device-detail-subpage>
     </settings-subpage>
   </template>
-  <settings-subpage route-path="/bluetoothSavedDevices">
-    <os-settings-bluetooth-saved-devices-subpage>
+  <settings-subpage route-path="/bluetoothSavedDevices"
+      show-spinner="[[showSavedDevicesLoadingIndicators_]]">
+    <os-settings-bluetooth-saved-devices-subpage
+        show-saved-devices-loading-label=
+        "{{showSavedDevicesLoadingIndicators_}}">
     </os-settings-bluetooth-saved-devices-subpage>
   </settings-subpage>
 </settings-animated-pages>

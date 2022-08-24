@@ -2240,6 +2240,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_BLUETOOTH_SAVED_DEVICES_ERROR_LABEL" desc="Label in Saved Devices sub-page when device list returns an error.">
     Can’t load devices saved to <ph name="PRIMARY_EMAIL">$1<ex>example@google.com</ex></ph>. Check your internet connection and try again.
   </message>
+  <message name="IDS_BLUETOOTH_SAVED_DEVICES_LOADING_LABEL" desc="Label in Saved Devices sub-page while loading the devices list.">
+    Looking for Fast Pair devices saved to <ph name="PRIMARY_EMAIL">$1<ex>example@google.com</ex></ph>
+  </message>
   <message name="IDS_SAVED_DEVICE_ITEM_A11Y_LABEL" desc="Accessibility label for paired Bluetooth device list item with a device type of computer.">
     Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>
   </message>

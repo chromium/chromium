@@ -57,6 +57,13 @@ class SettingsBluetoothPageElement extends SettingsBluetoothPageElementBase {
         type: Boolean,
         value: false,
       },
+
+      /**
+       * Set by Saved Devices subpage. Controls spinner and loading label
+       * visibility in the subpage.
+       * @private
+       */
+      showSavedDevicesLoadingIndicators_: Boolean,
     };
   }
 

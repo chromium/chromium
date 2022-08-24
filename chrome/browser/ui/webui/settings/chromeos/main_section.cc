@@ -266,6 +266,10 @@ void MainSection::AddChromeOSUserStrings(
       l10n_util::GetStringFUTF16(IDS_BLUETOOTH_NO_SAVED_DEVICES_LABEL,
                                  base::ASCIIToUTF16(primary_user_email)));
   html_source->AddString(
+      "loadingDevicesWithEmail",
+      l10n_util::GetStringFUTF16(IDS_BLUETOOTH_SAVED_DEVICES_LOADING_LABEL,
+                                 base::ASCIIToUTF16(primary_user_email)));
+  html_source->AddString(
       "savedDevicesErrorWithEmail",
       l10n_util::GetStringFUTF16(IDS_BLUETOOTH_SAVED_DEVICES_ERROR_LABEL,
                                  base::ASCIIToUTF16(primary_user_email)));

@@ -86,9 +86,24 @@ class SettingsBluetoothSavedDevicesSubpageElement extends
       },
 
       /** @protected */
+      loadingSavedDevicesLabel_: {
+        type: String,
+        value() {
+          return loadTimeData.getString('loadingDevicesWithEmail');
+        },
+      },
+
+      /** @protected */
       showSavedDevicesErrorLabel_: {
         type: Boolean,
         value: false,
+      },
+
+      /** @protected */
+      showSavedDevicesLoadingLabel: {
+        type: Boolean,
+        notify: true,
+        value: true,
       },
     };
   }
@@ -134,6 +149,7 @@ class SettingsBluetoothSavedDevicesSubpageElement extends
             .STATUS_ERROR_RETRIEVING_FROM_FOOTPRINTS_SERVER) {
       this.showSavedDevicesErrorLabel_ = true;
     }
+    this.showSavedDevicesLoadingLabel = false;
   }
 
   /**
@@ -145,6 +161,7 @@ class SettingsBluetoothSavedDevicesSubpageElement extends
     // If we're navigating to the Saved Devices page, fetch the devices.
     if (route === routes.BLUETOOTH_SAVED_DEVICES) {
       this.showSavedDevicesErrorLabel_ = false;
+      this.showSavedDevicesLoadingLabel = true;
       this.parentNode.pageTitle =
           loadTimeData.getString('savedDevicesPageName');
       this.browserProxy_.requestFastPairSavedDevices();
@@ -156,8 +173,8 @@ class SettingsBluetoothSavedDevicesSubpageElement extends
    * @return boolean
    * @private
    */
-  shouldShowDeviceList_(devices) {
-    return devices.length > 0;
+  shouldShowDeviceList_(devices, showLoadingLabel) {
+    return !showLoadingLabel && devices.length > 0;
   }
 
   /**
@@ -166,8 +183,8 @@ class SettingsBluetoothSavedDevicesSubpageElement extends
    * @return boolean
    * @private
    */
-  shouldShowNoDevicesLabel_(devices, showErrorLabel) {
-    return !showErrorLabel && devices.length === 0;
+  shouldShowNoDevicesLabel_(devices, showLoadingLabel, showErrorLabel) {
+    return !showLoadingLabel && !showErrorLabel && devices.length === 0;
   }
 }
 
