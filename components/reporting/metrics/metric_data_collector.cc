@@ -110,9 +110,9 @@ PeriodicCollector::PeriodicCollector(Sampler* sampler,
           reporting_settings,
           enable_setting_path,
           setting_enabled_default_value,
-          base::BindRepeating(&PeriodicEventCollector::StartPeriodicCollection,
+          base::BindRepeating(&PeriodicCollector::StartPeriodicCollection,
                               base::Unretained(this)),
-          base::BindRepeating(&PeriodicEventCollector::StopPeriodicCollection,
+          base::BindRepeating(&PeriodicCollector::StopPeriodicCollection,
                               base::Unretained(this)))) {}
 
 PeriodicCollector::~PeriodicCollector() = default;
