@@ -5383,8 +5383,6 @@ static_library("browser") {
       "chromeos/extensions/login_screen/login/cleanup/cleanup_manager_lacros.h",
       "chromeos/extensions/login_screen/login/cleanup/cleanup_manager_lacros_factory.cc",
       "chromeos/extensions/login_screen/login/cleanup/cleanup_manager_lacros_factory.h",
-      "chromeos/extensions/public_session_permission_helper.cc",
-      "chromeos/extensions/public_session_permission_helper.h",
       "chromeos/extensions/wallpaper_api.cc",
       "chromeos/extensions/wallpaper_api.h",
       "chromeos/policy/dlp/clipboard_bubble.cc",
