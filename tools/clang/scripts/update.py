@@ -36,7 +36,7 @@ import zlib
 # Reverting problematic clang rolls is safe, though.
 # This is the output of `git describe` and is usable as a commit-ish.
 CLANG_REVISION = 'llvmorg-16-init-907-g8b740747'
-CLANG_SUB_REVISION = 3
+CLANG_SUB_REVISION = 4
 
 PACKAGE_VERSION = '%s-%s' % (CLANG_REVISION, CLANG_SUB_REVISION)
 RELEASE_VERSION = '16.0.0'
@@ -245,7 +245,8 @@ def UpdatePackage(package_name, host_os):
     package_file = 'llvm-code-coverage'
   elif package_name == 'objdump':
     package_file = 'llvmobjdump'
-  elif package_name in ['clang-libs', 'clang-tidy', 'libclang', 'translation_unit']:
+  elif package_name in ['clang-libs', 'clang-tidy', 'clangd', 'libclang',
+                        'translation_unit']:
     package_file = package_name
   else:
     print('Unknown package: "%s".' % package_name)

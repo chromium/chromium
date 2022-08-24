@@ -595,6 +595,15 @@ def main():
   PackageInArchive(clang_tidy_dir, clang_tidy_dir)
   MaybeUpload(args.upload, clang_tidy_dir + '.t*z', gcs_platform)
 
+  # Zip up clangd for users who opt into it.
+  clangd_dir = 'clangd-' + stamp
+  shutil.rmtree(clangd_dir, ignore_errors=True)
+  os.makedirs(os.path.join(clangd_dir, 'bin'))
+  shutil.copy(os.path.join(LLVM_RELEASE_DIR, 'bin', 'clangd' + exe_ext),
+              os.path.join(clangd_dir, 'bin'))
+  PackageInArchive(clangd_dir, clangd_dir)
+  MaybeUpload(args.upload, clangd_dir + '.t*z', gcs_platform)
+
   # Zip up clang-format so we can update it (separately from the clang roll).
   clang_format_dir = 'clang-format-' + stamp
   shutil.rmtree(clang_format_dir, ignore_errors=True)
