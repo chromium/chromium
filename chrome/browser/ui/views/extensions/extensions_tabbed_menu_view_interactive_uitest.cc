@@ -381,16 +381,7 @@ IN_PROC_BROWSER_TEST_F(
     DISABLED_SiteAccessTab_ExtensionInCorrectSectionAfterContextMenuChangesPermissions) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  extensions::TestExtensionDir test_dir;
-  test_dir.WriteManifest(R"({
-           "name": "All Urls Extension",
-           "manifest_version": 3,
-           "version": "0.1",
-           "host_permissions": ["<all_urls>"]
-         })");
-  AppendExtension(
-      extensions::ChromeTestExtensionLoader(profile()).LoadExtension(
-          test_dir.UnpackedPath()));
+  InstallExtensionWithHostPermissions("All Urls Extension", "<all_urls>");
   ASSERT_EQ(1u, extensions().size());
 
   GURL url = embedded_test_server()->GetURL("example.com", "/title1.html");

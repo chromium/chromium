@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_paths.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
@@ -44,6 +45,44 @@ ExtensionsToolbarUITest::LoadTestExtension(const std::string& path,
   auto* container = GetExtensionsToolbarContainer();
   container->GetWidget()->LayoutRootViewIfNecessary();
 
+  return extension;
+}
+
+scoped_refptr<const extensions::Extension>
+ExtensionsToolbarUITest::InstallExtensionWithHostPermissions(
+    const std::string& name,
+    const std::string& host_permission,
+    const std::string& content_script_run_location) {
+  extensions::TestExtensionDir extension_dir;
+  std::string content_script_entry;
+  if (!content_script_run_location.empty()) {
+    content_script_entry = base::StringPrintf(
+        R"(
+          "content_scripts": [{
+            "matches": ["%s"],
+            "js": ["script.js"],
+            "run_at": "%s"
+          }], )",
+        host_permission.c_str(), content_script_run_location.c_str());
+
+    extension_dir.WriteFile(FILE_PATH_LITERAL("script.js"),
+                            base::StringPrintf("chrome.test.sendMessage('%s');",
+                                               "injection succeeded"));
+  }
+
+  extension_dir.WriteManifest(base::StringPrintf(
+      R"({
+            "name": "%s",
+            "manifest_version": 3,
+            "version": "0.1",
+            %s
+            "host_permissions": ["%s"]
+          })",
+      name.c_str(), content_script_entry.c_str(), host_permission.c_str()));
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ChromeTestExtensionLoader(profile()).LoadExtension(
+          extension_dir.UnpackedPath());
+  AppendExtension(extension);
   return extension;
 }
 

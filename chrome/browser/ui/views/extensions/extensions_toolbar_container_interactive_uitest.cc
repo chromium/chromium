@@ -900,48 +900,6 @@ class ExtensionsToolbarContainerFeatureUITest
     web_contents_ = browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  // TODO(emiliapaz): Other interactive_uitests have similar functionality. Move
-  // this method to `ExtensionsToolbarUITest` test base class, and migrate
-  // tests.
-  scoped_refptr<const extensions::Extension>
-  InstallExtensionWithHostPermissions(
-      const std::string& name,
-      const std::string& host_permission,
-      const std::string& content_script_run_location = "") {
-    extensions::TestExtensionDir extension_dir;
-    std::string content_script_entry;
-    if (!content_script_run_location.empty()) {
-      content_script_entry = base::StringPrintf(
-          R"(
-            "content_scripts": [{
-               "matches": ["%s"],
-               "js": ["script.js"],
-               "run_at": "%s"
-            }], )",
-          host_permission.c_str(), content_script_run_location.c_str());
-
-      extension_dir.WriteFile(
-          FILE_PATH_LITERAL("script.js"),
-          base::StringPrintf("chrome.test.sendMessage('%s');",
-                             kInjectionSucceededMessage));
-    }
-
-    extension_dir.WriteManifest(base::StringPrintf(
-        R"({
-              "name": "%s",
-              "manifest_version": 3,
-              "version": "0.1",
-              %s
-              "host_permissions": ["%s"]
-            })",
-        name.c_str(), content_script_entry.c_str(), host_permission.c_str()));
-    scoped_refptr<const extensions::Extension> extension =
-        extensions::ChromeTestExtensionLoader(profile()).LoadExtension(
-            extension_dir.UnpackedPath());
-    AppendExtension(extension);
-    return extension;
-  }
-
   void NavigateToUrl(const GURL& url) {
     content::TestNavigationObserver observer(web_contents_);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
