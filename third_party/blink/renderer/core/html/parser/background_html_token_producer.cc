@@ -246,6 +246,8 @@ BackgroundHTMLTokenProducer::ApplyDataFromMainThread() {
 
   if (end_of_file) {
     input_.Append(SegmentedString(String(&kEndOfFileMarker, 1)));
+    if (in_progress_token_data_.has_value())
+      ++in_progress_token_data_->string_length_at_start_of_token;
     input_.Close();
   }
   return result;

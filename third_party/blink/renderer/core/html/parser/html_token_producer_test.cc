@@ -53,6 +53,26 @@ TEST_F(HTMLTokenProducerTest, Basic) {
   EXPECT_TRUE(producer.IsUsingBackgroundProducer());
 }
 
+TEST_F(HTMLTokenProducerTest, TagSplitAcrossSegmentReachesEnd) {
+  HTMLInputStream input_stream;
+  HTMLTokenProducer producer(input_stream, HTMLParserOptions(), true,
+                             HTMLTokenizer::kDataState);
+  String string("<bo");
+  input_stream.AppendToEnd(SegmentedString(string));
+  producer.AppendToEnd(string);
+  ASSERT_FALSE(producer.ParseNextToken());
+
+  input_stream.AppendToEnd(SegmentedString("dy>"));
+  producer.AppendToEnd(String("dy>"));
+  input_stream.MarkEndOfFile();
+  producer.MarkEndOfFile();
+  // Read all the remaining tokens.
+  while (producer.ParseNextToken())
+    ;
+  // Should be at the end of input.
+  EXPECT_EQ(0u, input_stream.length());
+}
+
 TEST_F(HTMLTokenProducerTest, TagSplitAcrossSegments) {
   HTMLInputStream input_stream;
   HTMLTokenProducer producer(input_stream, HTMLParserOptions(), true,
