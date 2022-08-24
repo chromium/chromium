@@ -57,7 +57,10 @@ class FeedbackServiceProvider
       this};
   // Timestamp of when the app was opened. Used to calculate a duration for
   // metrics.
-  base::Time open_timestamp_;
+  base::Time app_open_timestamp_;
+  base::Time share_data_page_open_timestamp_;
+  base::Time share_data_page_close_timestamp_;
+  bool feedback_sent;
   base::WeakPtrFactory<FeedbackServiceProvider> weak_ptr_factory_{this};
 };
 

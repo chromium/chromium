@@ -264,6 +264,9 @@ export class FeedbackFlowElement extends PolymerElement {
         const shareDataPage = this.shadowRoot.querySelector('share-data-page');
         shareDataPage.reEnableSendReportButton();
 
+        // Re-enable helpContentOutcomeMetric to be emitted in search page.
+        this.helpContentOutcomeMetricEmitted_ = false;
+
         this.navigateToSearchPage_();
         break;
       default:

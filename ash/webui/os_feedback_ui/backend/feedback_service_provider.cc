@@ -22,15 +22,43 @@ using ::ash::os_feedback_ui::mojom::FeedbackContextPtr;
 using ::ash::os_feedback_ui::mojom::ReportPtr;
 using ::ash::os_feedback_ui::mojom::SendReportStatus;
 
+void EmitTimeOnEachPageMetrics(
+    bool feedback_sent,
+    const base::Time app_open_timestamp_,
+    const base::Time share_data_page_open_timestamp_,
+    const base::Time share_data_page_close_timestamp_) {
+  if (feedback_sent) {
+    const base::TimeDelta search_page_open_duration =
+        share_data_page_open_timestamp_ - app_open_timestamp_;
+    const base::TimeDelta share_data_page_open_duration =
+        share_data_page_close_timestamp_ - share_data_page_open_timestamp_;
+    const base::TimeDelta confirmation_page_open_duration =
+        base::Time::Now() - share_data_page_close_timestamp_;
+
+    os_feedback_ui::metrics::EmitFeedbackAppTimeOnSearchPage(
+        search_page_open_duration);
+    os_feedback_ui::metrics::EmitFeedbackAppTimeOnShareDataPage(
+        share_data_page_open_duration);
+    os_feedback_ui::metrics::EmitFeedbackAppTimeOnConfirmationPage(
+        confirmation_page_open_duration);
+  }
+}
+
 FeedbackServiceProvider::FeedbackServiceProvider(
     std::unique_ptr<OsFeedbackDelegate> feedback_delegate)
     : feedback_delegate_(std::move(feedback_delegate)) {
-  open_timestamp_ = base::Time::Now();
+  app_open_timestamp_ = base::Time::Now();
+  feedback_sent = false;
 }
 
 FeedbackServiceProvider::~FeedbackServiceProvider() {
-  const base::TimeDelta time_open = base::Time::Now() - open_timestamp_;
-  ash::os_feedback_ui::metrics::EmitFeedbackAppOpenDuration(time_open);
+  const base::TimeDelta app_open_duration =
+      base::Time::Now() - app_open_timestamp_;
+  os_feedback_ui::metrics::EmitFeedbackAppOpenDuration(app_open_duration);
+
+  EmitTimeOnEachPageMetrics(feedback_sent, app_open_timestamp_,
+                            share_data_page_open_timestamp_,
+                            share_data_page_close_timestamp_);
 }
 
 void FeedbackServiceProvider::GetFeedbackContext(
@@ -50,6 +78,8 @@ void FeedbackServiceProvider::GetScreenshotPng(
 void FeedbackServiceProvider::SendReport(ReportPtr report,
                                          SendReportCallback callback) {
   feedback_delegate_->SendReport(std::move(report), std::move(callback));
+  share_data_page_close_timestamp_ = base::Time::Now();
+  feedback_sent = true;
 }
 
 void FeedbackServiceProvider::OpenDiagnosticsApp() {
@@ -74,6 +104,14 @@ void FeedbackServiceProvider::OpenBluetoothLogsInfoDialog() {
 
 void FeedbackServiceProvider::RecordPostSubmitAction(
     os_feedback_ui::mojom::FeedbackAppPostSubmitAction action) {
+  if (action ==
+      os_feedback_ui::mojom::FeedbackAppPostSubmitAction::kSendNewReport) {
+    EmitTimeOnEachPageMetrics(feedback_sent, app_open_timestamp_,
+                              share_data_page_open_timestamp_,
+                              share_data_page_close_timestamp_);
+    feedback_sent = false;
+    app_open_timestamp_ = base::Time::Now();
+  }
   os_feedback_ui::metrics::EmitFeedbackAppPostSubmitAction(action);
 }
 
@@ -89,6 +127,12 @@ void FeedbackServiceProvider::RecordExitPath(
 
 void FeedbackServiceProvider::RecordHelpContentOutcome(
     os_feedback_ui::mojom::FeedbackAppHelpContentOutcome outcome) {
+  if (outcome == os_feedback_ui::mojom::FeedbackAppHelpContentOutcome::
+                     kContinueHelpContentClicked ||
+      outcome == os_feedback_ui::mojom::FeedbackAppHelpContentOutcome::
+                     kContinueNoHelpContentClicked) {
+    share_data_page_open_timestamp_ = base::Time::Now();
+  }
   os_feedback_ui::metrics::EmitFeedbackAppHelpContentOutcome(outcome);
 }
 

@@ -5859,6 +5859,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Feedback.ChromeOSApp.TimeOnPage.{FeedbackAppPage}" units="s"
+    expires_after="2023-07-27">
+  <owner>longbowei@google.com</owner>
+  <owner>xiangdongkong@google.com</owner>
+  <owner>cros-feedback-app@google.com</owner>
+  <summary>
+    Records the duration that the Feedback App is open on {FeedbackAppPage}
+    page. Fires when the user closes the app or starts new report after feedback
+    report has been sent.
+  </summary>
+  <token key="FeedbackAppPage">
+    <variant name="ConfirmationPage"/>
+    <variant name="SearchPage"/>
+    <variant name="ShareDataPage"/>
+  </token>
+</histogram>
+
 <histogram name="Feedback.ChromeOSApp.ViewedHelpContent" units="boolean"
     expires_after="2023-07-27">
   <owner>longbowei@google.com</owner>

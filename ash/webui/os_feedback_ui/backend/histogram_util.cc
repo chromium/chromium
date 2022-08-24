@@ -11,6 +11,22 @@ void EmitFeedbackAppOpenDuration(const base::TimeDelta& time_elapsed) {
   base::UmaHistogramLongTimes100(kFeedbackAppOpenDuration, time_elapsed);
 }
 
+void EmitFeedbackAppTimeOnSearchPage(const base::TimeDelta& time_elapsed) {
+  base::UmaHistogramLongTimes100(kFeedbackAppTimeOnPageSearchPage,
+                                 time_elapsed);
+}
+
+void EmitFeedbackAppTimeOnShareDataPage(const base::TimeDelta& time_elapsed) {
+  base::UmaHistogramLongTimes100(kFeedbackAppTimeOnPageShareDataPage,
+                                 time_elapsed);
+}
+
+void EmitFeedbackAppTimeOnConfirmationPage(
+    const base::TimeDelta& time_elapsed) {
+  base::UmaHistogramLongTimes100(kFeedbackAppTimeOnPageConfirmationPage,
+                                 time_elapsed);
+}
+
 void EmitFeedbackAppPostSubmitAction(
     mojom::FeedbackAppPostSubmitAction action) {
   base::UmaHistogramEnumeration(kFeedbackAppPostSubmitAction, action);
