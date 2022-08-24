@@ -10748,6 +10748,20 @@
             ]
         }
     ],
+    "WebRTC-Aec3DelayEstimatorDetectPreEcho": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled"
+                }
+            ]
+        }
+    ],
     "WebRTC-Aec3TransparentModeHmm": [
         {
             "platforms": [
