@@ -182,8 +182,8 @@ class HeaderView : public views::View {
                                  views::MaximumFlexSizeRule::kPreferred));
 
     auto* simple_site_name = AddChildView(std::make_unique<views::Label>());
-    simple_site_name->SetID(SideSearchBrowserController::SideSearchViewID::
-                                VIEW_ID_SIDE_PANEL_TITLE_LABEL);
+    simple_site_name->SetID(static_cast<int>(
+        SideSearchBrowserController::SideSearchViewID::kSidePanelTitleLabel));
     simple_site_name->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     simple_site_name->SetTextContext(CONTEXT_SIDE_PANEL_TITLE);
     simple_site_name->SetTextStyle(views::style::STYLE_PRIMARY);
@@ -601,7 +601,7 @@ void SideSearchBrowserController::UpdateSidePanel() {
   if (auto last_search_url = tab_contents_helper->last_search_url()) {
     views::Label* title_label =
         static_cast<views::Label*>(side_panel_->GetViewByID(
-            static_cast<int>(VIEW_ID_SIDE_PANEL_TITLE_LABEL)));
+            static_cast<int>(SideSearchViewID::kSidePanelTitleLabel)));
     title_label->SetText(
         url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
             last_search_url.value()));

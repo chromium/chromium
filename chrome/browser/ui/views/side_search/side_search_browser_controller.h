@@ -32,9 +32,9 @@ class SideSearchBrowserController
       public content::WebContentsObserver,
       public views::ViewObserver {
  public:
-  enum SideSearchViewID {
-    VIEW_ID_NONE = 0,
-    VIEW_ID_SIDE_PANEL_TITLE_LABEL,
+  enum class SideSearchViewID {
+    kNone = 0,
+    kSidePanelTitleLabel,
   };
 
   SideSearchBrowserController(SidePanel* side_panel, BrowserView* browser_view);
