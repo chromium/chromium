@@ -300,7 +300,7 @@ NavigationEarlyHintsManager::PreloadedResource::operator=(
 NavigationEarlyHintsManager::InflightPreload::InflightPreload(
     std::unique_ptr<blink::ThrottlingURLLoader> loader,
     std::unique_ptr<PreloadURLLoaderClient> client)
-    : loader(std::move(loader)), client(std::move(client)) {}
+    : client(std::move(client)), loader(std::move(loader)) {}
 
 NavigationEarlyHintsManager::InflightPreload::~InflightPreload() = default;
 

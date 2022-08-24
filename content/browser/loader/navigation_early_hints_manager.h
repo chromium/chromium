@@ -167,8 +167,10 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
     InflightPreload(InflightPreload&&) = delete;
     InflightPreload& operator=(InflightPreload&&) = delete;
 
-    std::unique_ptr<blink::ThrottlingURLLoader> loader;
+    // `loader` holds a raw_ptr on `client`, so it needs to be declared last to
+    // avoid holding a dangling reference to `client` at destruction.
     std::unique_ptr<PreloadURLLoaderClient> client;
+    std::unique_ptr<blink::ThrottlingURLLoader> loader;
   };
   // Using flat_map because the number of preloads are expected to be small.
   // Early Hints preloads should be requested for critical subresources such as

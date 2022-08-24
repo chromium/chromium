@@ -208,7 +208,6 @@ class CONTENT_EXPORT ServiceWorkerSingleScriptUpdateChecker
   bool network_accessed_ = false;
   network::CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
 
-  std::unique_ptr<blink::ThrottlingURLLoader> network_loader_;
   // The endpoint called by `network_loader_`. That needs to be alive while
   // `network_loader_` is alive.
   mojo::Remote<network::mojom::URLLoaderClient> network_client_remote_;
@@ -216,6 +215,11 @@ class CONTENT_EXPORT ServiceWorkerSingleScriptUpdateChecker
       this};
   mojo::ScopedDataPipeConsumerHandle network_consumer_;
   mojo::SimpleWatcher network_watcher_;
+
+  // `network_loader_` needs to be declared after `network_client_remote_`
+  // because the former holds a `raw_ptr` on the latter, and thus it needs to
+  // be destroyed first to avoid holding a dangling pointer.
+  std::unique_ptr<blink::ThrottlingURLLoader> network_loader_;
 
   std::unique_ptr<ServiceWorkerCacheWriter> cache_writer_;
   ResultCallback callback_;
