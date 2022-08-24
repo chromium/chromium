@@ -77,6 +77,10 @@ bool IsMinimizedWindowStateType(WindowStateType type);
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 bool IsNormalWindowStateType(WindowStateType type);
 
+// Returns true if `type` is either kPrimarySnapped or kSecondarySnapped.
+COMPONENT_EXPORT(CHROMEOS_UI_BASE)
+bool IsSnappedWindowStateType(WindowStateType type);
+
 }  // namespace chromeos
 
 #endif  // CHROMEOS_UI_BASE_WINDOW_STATE_TYPE_H_

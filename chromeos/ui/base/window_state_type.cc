@@ -108,4 +108,9 @@ bool IsNormalWindowStateType(WindowStateType type) {
   return type == WindowStateType::kNormal || type == WindowStateType::kDefault;
 }
 
+bool IsSnappedWindowStateType(WindowStateType type) {
+  return type == WindowStateType::kPrimarySnapped ||
+         type == WindowStateType::kSecondarySnapped;
+}
+
 }  // namespace chromeos

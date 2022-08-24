@@ -13,6 +13,7 @@
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/splitview/split_view_metrics_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -458,6 +459,71 @@ TEST_F(TabletWindowFloatTest, TuckedWindow) {
   EXPECT_TRUE(WindowState::Get(window.get())->IsFloated());
   EXPECT_TRUE(screen_util::GetDisplayBoundsInParent(window.get())
                   .Contains(window->bounds()));
+}
+
+using TabletWindowFloatSplitviewTest = TabletWindowFloatTest;
+
+// Tests the expected behaviour when a window is floated when there are snapped
+// windows on each side.
+TEST_F(TabletWindowFloatSplitviewTest, BothSnappedToFloat) {
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+
+  // Create two windows and snap one on each side.
+  auto left_window = CreateAppWindow();
+  const WindowSnapWMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
+  WindowState::Get(left_window.get())->OnWMEvent(&snap_left);
+
+  auto right_window = CreateAppWindow();
+  const WindowSnapWMEvent snap_right(WM_EVENT_SNAP_SECONDARY);
+  WindowState::Get(right_window.get())->OnWMEvent(&snap_right);
+
+  auto* split_view_controller =
+      SplitViewController::Get(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(split_view_controller->BothSnapped());
+
+  // Float the left window. Verify that it is floated, the right window becomes
+  // maximized and that we are no longer in splitview.
+  wm::ActivateWindow(left_window.get());
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_TRUE(WindowState::Get(left_window.get())->IsFloated());
+  EXPECT_TRUE(WindowState::Get(right_window.get())->IsMaximized());
+  EXPECT_FALSE(split_view_controller->InSplitViewMode());
+}
+
+// Tests the expected behaviour when a window is floated then snapped.
+TEST_F(TabletWindowFloatSplitviewTest, FloatToSnapped) {
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+
+  std::unique_ptr<aura::Window> window = CreateFloatedWindow();
+
+  auto* split_view_controller =
+      SplitViewController::Get(Shell::GetPrimaryRootWindow());
+
+  // If there are no other windows, expect to enter overview. The hotseat will
+  // extended and users can pick a second app from there.
+  const WindowSnapWMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
+  WindowState::Get(window.get())->OnWMEvent(&snap_left);
+  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  ASSERT_TRUE(split_view_controller->InSplitViewMode());
+
+  // Float the window so we can snap it again. Assert that we are still in
+  // overview, but no longer in splitview.
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(WindowState::Get(window.get())->IsFloated());
+  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  ASSERT_FALSE(split_view_controller->InSplitViewMode());
+
+  // Create a second window.
+  auto other_window = CreateAppWindow();
+  wm::ActivateWindow(window.get());
+
+  // Tests that when we snap `window` now, `other_window` will get snapped to
+  // the opposite side.
+  WindowState::Get(window.get())->OnWMEvent(&snap_left);
+  EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(split_view_controller->BothSnapped());
+  EXPECT_EQ(split_view_controller->left_window(), window.get());
+  EXPECT_EQ(split_view_controller->right_window(), other_window.get());
 }
 
 }  // namespace ash

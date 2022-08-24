@@ -11,6 +11,7 @@
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/scoped_observation.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -88,12 +89,15 @@ class ASH_EXPORT FloatController : public TabletModeObserver,
   friend class TabletModeWindowState;
   friend class WindowFloatTest;
 
-  // Floats/Unfloats `window`.
-  // Only one floating window is allowed per desk, floating a new window on the
-  // same desk or moving a floated window to that desk will unfloat the other
-  // floated window (if any).
-  void Float(aura::Window* window);
-  void Unfloat(aura::Window* window);
+  // Calls `FloatImpl()` and additionally updates the magnetism if needed.
+  void FloatForTablet(aura::Window* window,
+                      chromeos::WindowStateType old_state_type);
+
+  // Floats/Unfloats `window`. Only one floating window is allowed per desk,
+  // floating a new window on the same desk or moving a floated window to that
+  // desk will unfloat the other floated window (if any).
+  void FloatImpl(aura::Window* window);
+  void UnfloatImpl(aura::Window* window);
 
   // Unfloats `floated_window` from the desk it belongs to.
   void ResetFloatedWindow(aura::Window* floated_window);

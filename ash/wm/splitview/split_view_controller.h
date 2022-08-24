@@ -388,6 +388,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
     kWindowMinimized,
     kWindowDestroyed,
     kWindowDragged,
+    kWindowFloated,
   };
 
   // These functions return |left_window_| and |right_window_|, swapped in
@@ -459,8 +460,12 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
 
   // Called after a to-be-snapped window |window| got snapped. It updates the
   // split view states and notifies observers about the change. It also restore
-  // the snapped window's transform if it's not identity and activate it.
-  void OnWindowSnapped(aura::Window* window);
+  // the snapped window's transform if it's not identity and activate it. If
+  // `previous_state` is given and it is a floated window, attempt to snap the
+  // next MRU window if possible.
+  void OnWindowSnapped(
+      aura::Window* window,
+      absl::optional<chromeos::WindowStateType> previous_state);
 
   // If there are two snapped windows, closing/minimizing/tab-dragging one of
   // them will open overview window grid on the closed/minimized/tab-dragged

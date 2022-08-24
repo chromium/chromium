@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
@@ -360,7 +361,40 @@ void FloatController::ToggleFloat(aura::Window* window) {
   window_state->OnWMEvent(&toggle_event);
 }
 
-void FloatController::Float(aura::Window* window) {
+void FloatController::FloatForTablet(aura::Window* window,
+                                     chromeos::WindowStateType old_state_type) {
+  DCHECK(Shell::Get()->tablet_mode_controller()->InTabletMode());
+
+  FloatImpl(window);
+
+  if (!chromeos::IsSnappedWindowStateType(old_state_type))
+    return;
+
+  // TODO(sammiequon): Verify that this works for all orientations.
+  // Update magnetism so that the float window is roughly in the same location
+  // as it was when it was snapped.
+  const bool left_or_top =
+      old_state_type == chromeos::WindowStateType::kPrimarySnapped;
+  const bool landscape = IsCurrentScreenOrientationLandscape();
+  MagnetismCorner magnetism_corner;
+  if (!left_or_top) {
+    // Bottom or right snapped.
+    magnetism_corner = MagnetismCorner::kBottomRight;
+  } else if (landscape) {
+    // Left snapped.
+    magnetism_corner = MagnetismCorner::kBottomLeft;
+  } else {
+    DCHECK(left_or_top && !landscape);
+    // Top snapped.
+    magnetism_corner = MagnetismCorner::kTopRight;
+  }
+
+  auto* floated_window_info = MaybeGetFloatedWindowInfo(window);
+  DCHECK(floated_window_info);
+  floated_window_info->set_magnetism_corner(magnetism_corner);
+}
+
+void FloatController::FloatImpl(aura::Window* window) {
   if (floated_window_info_map_.contains(window))
     return;
 
@@ -380,7 +414,7 @@ void FloatController::Float(aura::Window* window) {
     display_observer_.emplace(this);
 }
 
-void FloatController::Unfloat(aura::Window* window) {
+void FloatController::UnfloatImpl(aura::Window* window) {
   auto* floated_window_info = MaybeGetFloatedWindowInfo(window);
   if (!floated_window_info)
     return;

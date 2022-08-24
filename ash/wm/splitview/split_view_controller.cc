@@ -647,7 +647,8 @@ class SplitViewController::ToBeSnappedWindowsObserver
     if (WindowState::Get(window)->GetStateType() ==
         GetStateTypeFromSnapPosition(snap_position)) {
       split_view_controller_->AttachSnappingWindow(window, snap_position);
-      split_view_controller_->OnWindowSnapped(window);
+      split_view_controller_->OnWindowSnapped(window,
+                                              /*previous_state=*/absl::nullopt);
     } else {
       to_be_snapped_windows_[snap_position] = window;
       WindowState::Get(window)->AddObserver(this);
@@ -1676,7 +1677,7 @@ void SplitViewController::OnPostWindowStateTypeChange(
     if (state_ == State::kNoSnap &&
         split_view_type_ == SplitViewType::kTabletType &&
         old_type != WindowStateType::kMinimized &&
-        !window_state->window()->transform().IsIdentity()) {
+        !window->transform().IsIdentity()) {
       // For the divider spawn animation, at the end of the delay, the divider
       // shall be visually aligned with an edge of |window|. This effect will
       // be more easily achieved after |window| has been snapped and the
@@ -1684,7 +1685,7 @@ void SplitViewController::OnPostWindowStateTypeChange(
       // flag to indicate that the divider spawn animation should be done.
       do_divider_spawn_animation = true;
     }
-    OnWindowSnapped(window_state->window());
+    OnWindowSnapped(window, old_type);
     if (do_divider_spawn_animation)
       DoSplitDividerSpawnAnimation(window);
   } else if (window_state->IsNormalStateType() || window_state->IsMaximized() ||
@@ -1697,9 +1698,12 @@ void SplitViewController::OnPostWindowStateTypeChange(
     EndSplitView();
     Shell::Get()->overview_controller()->EndOverview(
         OverviewEndAction::kSplitView);
+  } else if (window_state->IsFloated()) {
+    OnSnappedWindowDetached(window, WindowDetachedReason::kWindowFloated);
+
+    // TODO(crbug.com/1351562): Consider ending overview here.
   } else if (window_state->IsMinimized()) {
-    OnSnappedWindowDetached(window_state->window(),
-                            WindowDetachedReason::kWindowMinimized);
+    OnSnappedWindowDetached(window, WindowDetachedReason::kWindowMinimized);
 
     if (!InSplitViewMode()) {
       // We have different behaviors for a minimized window: in tablet splitview
@@ -1708,7 +1712,7 @@ void SplitViewController::OnPostWindowStateTypeChange(
       // clamshell splitview mode, we respect the minimization of the window
       // and end overview instead.
       if (split_view_type_ == SplitViewType::kTabletType) {
-        InsertWindowToOverview(window_state->window());
+        InsertWindowToOverview(window);
       } else {
         Shell::Get()->overview_controller()->EndOverview(
             OverviewEndAction::kSplitView);
@@ -2354,7 +2358,9 @@ int SplitViewController::GetDividerEndPosition() const {
                                           : work_area_bounds.height();
 }
 
-void SplitViewController::OnWindowSnapped(aura::Window* window) {
+void SplitViewController::OnWindowSnapped(
+    aura::Window* window,
+    absl::optional<chromeos::WindowStateType> previous_state) {
   RestoreTransformIfApplicable(window);
   UpdateStateAndNotifyObservers();
   UpdateWindowStackingAfterSnap(window);
@@ -2365,6 +2371,30 @@ void SplitViewController::OnWindowSnapped(aura::Window* window) {
   if (to_be_activated_window_ == window) {
     to_be_activated_window_ = nullptr;
     wm::ActivateWindow(window);
+  }
+
+  // In tablet mode, if the window was previously floated, and there is another
+  // non-minimized window, do not enter overview but instead snap that window to
+  // the opposite side.
+  if (previous_state &&
+      *previous_state == chromeos::WindowStateType::kFloated &&
+      Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+    auto mru_windows =
+        Shell::Get()->mru_window_tracker()->BuildWindowForCycleList(
+            kActiveDesk);
+    for (aura::Window* mru_window : mru_windows) {
+      auto* window_state = WindowState::Get(mru_window);
+      if (mru_window != window && !window_state->IsMinimized() &&
+          window_state->CanSnap()) {
+        const SnapPosition snap_position =
+            GetPositionOfSnappedWindow(window) == LEFT ? RIGHT : LEFT;
+        WindowSnapWMEvent event(snap_position == LEFT
+                                    ? WM_EVENT_SNAP_PRIMARY
+                                    : WM_EVENT_SNAP_SECONDARY);
+        WindowState::Get(mru_window)->OnWMEvent(&event);
+        return;
+      }
+    }
   }
 
   // If in tablet split view, make sure overview is opened on the other side of
@@ -2382,13 +2412,16 @@ void SplitViewController::OnSnappedWindowDetached(aura::Window* window,
                                                   WindowDetachedReason reason) {
   const bool is_window_destroyed =
       reason == WindowDetachedReason::kWindowDestroyed;
+  const SnapPosition position_of_snapped_window =
+      GetPositionOfSnappedWindow(window);
+
   // Detach it from splitview first if the window is to be destroyed to prevent
   // unnecessary bounds/state update to it when ending splitview resizing. For
   // the window that is not going to be destroyed, we still need its bounds and
   // state to be updated to match the updated divider position before detaching
   // it from splitview.
   if (is_window_destroyed)
-    StopObserving(GetPositionOfSnappedWindow(window));
+    StopObserving(position_of_snapped_window);
 
   // Stop resizing if one of the snapped window is detached from split
   // view.
@@ -2401,7 +2434,7 @@ void SplitViewController::OnSnappedWindowDetached(aura::Window* window,
   }
 
   if (!is_window_destroyed)
-    StopObserving(GetPositionOfSnappedWindow(window));
+    StopObserving(position_of_snapped_window);
 
   if (!left_window_ && !right_window_) {
     // If there is no snapped window at this moment, ends split view mode. Note
@@ -2410,8 +2443,22 @@ void SplitViewController::OnSnappedWindowDetached(aura::Window* window,
     EndSplitView(reason == WindowDetachedReason::kWindowDragged
                      ? EndReason::kWindowDragStarted
                      : EndReason::kNormal);
+
+    // TODO(crbug.com/1351562): Consider not allowing one snapped window to be
+    // floated. Then this should be a DCHECK.
   } else {
     DCHECK_EQ(split_view_type_, SplitViewType::kTabletType);
+
+    if (reason == WindowDetachedReason::kWindowFloated &&
+        Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+      // Maximize the other window, which will end split view.
+      aura::Window* other_window =
+          GetSnappedWindow(position_of_snapped_window == LEFT ? RIGHT : LEFT);
+      WMEvent event(WM_EVENT_MAXIMIZE);
+      WindowState::Get(other_window)->OnWMEvent(&event);
+      return;
+    }
+
     // If there is still one snapped window after minimizing/closing one snapped
     // window, update its snap state and open overview window grid.
     default_snap_position_ = left_window_ ? LEFT : RIGHT;

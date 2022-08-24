@@ -470,13 +470,13 @@ void DefaultState::EnterToNextState(WindowState* window_state,
   if (state_type_ == WindowStateType::kFloated) {
     DCHECK_EQ(next_state_type, WindowStateType::kFloated);
     // Add window to float container.
-    float_controller->Float(window);
+    float_controller->FloatImpl(window);
   }
 
   // Unfloat floated window when exiting float state to another state.
   if (previous_state_type == WindowStateType::kFloated) {
     // Remove float window from float container.
-    float_controller->Unfloat(window);
+    float_controller->UnfloatImpl(window);
   }
 
   // Don't update the window if the window is detached from parent.
