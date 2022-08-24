@@ -66,6 +66,10 @@ const char kImei[] = "imei";
 // the device.
 const char kInstalledHotfixes[] = "hotfixes";
 
+// Name of the signal for getting information about the ip address on the
+// device.
+const char kIpAddress[] = "ipAddress";
+
 // Name of the signal for getting information about whether the disk
 // on the device is encrypted.
 const char kIsDiskEncrypted[] = "isDiskEncrypted";

@@ -26,6 +26,7 @@ extern const char kFileSystemInfo[];
 extern const char kFirewallOn[];
 extern const char kImei[];
 extern const char kInstalledHotfixes[];
+extern const char kIpAddress[];
 extern const char kIsDiskEncrypted[];
 extern const char kIsJailbroken[];
 extern const char kIsPasswordProtected[];

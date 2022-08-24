@@ -3115,6 +3115,17 @@ if (!is_android) {
         ]
       }
 
+      if (is_chromeos_ash) {
+        sources += [ "../browser/enterprise/connectors/device_trust/signals/decorators/ash/ash_signals_decorator_browsertest.cc" ]
+
+        deps += [
+          "//chrome/browser/enterprise/connectors/device_trust:features",
+          "//chrome/browser/enterprise/connectors/device_trust/common",
+          "//components/device_signals/core/common",
+          "//components/device_signals/core/common:features",
+        ]
+      }
+
       if (is_win) {
         sources += [
           "../browser/safe_browsing/chrome_cleaner/chrome_cleaner_dialog_controller_impl_browsertest_win.cc",

@@ -7,6 +7,9 @@
 #include "base/check.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/networking_attributes_ash.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_decorator.h"
@@ -42,6 +45,51 @@ void AshSignalsDecorator::Decorate(base::Value::Dict& signals,
               browser_policy_connector_->GetObfuscatedCustomerID());
   signals.Set(device_signals::names::kEnrollmentDomain,
               browser_policy_connector_->GetEnterpriseDomainManager());
+
+  if (!crosapi::CrosapiManager::Get() ||
+      !crosapi::CrosapiManager::Get()->crosapi_ash() ||
+      !crosapi::CrosapiManager::Get()
+           ->crosapi_ash()
+           ->networking_attributes_ash()) {
+    LogSignalsCollectionLatency(kLatencyHistogramVariant, start_time);
+
+    std::move(done_closure).Run();
+    return;
+  }
+
+  auto callback =
+      base::BindOnce(&AshSignalsDecorator::OnNetworkInfoRetrieved,
+                     weak_ptr_factory_.GetWeakPtr(), std::ref(signals),
+                     start_time, std::move(done_closure));
+
+  crosapi::CrosapiManager::Get()
+      ->crosapi_ash()
+      ->networking_attributes_ash()
+      ->GetNetworkDetails(std::move(callback));
+}
+
+void AshSignalsDecorator::OnNetworkInfoRetrieved(
+    base::Value::Dict& signals,
+    base::TimeTicks start_time,
+    base::OnceClosure done_closure,
+    crosapi::mojom::GetNetworkDetailsResultPtr result) {
+  using Result = crosapi::mojom::GetNetworkDetailsResult;
+  switch (result->which()) {
+    case Result::Tag::kErrorMessage:
+      break;
+    case Result::Tag::kNetworkDetails:
+      absl::optional<net::IPAddress> ipv4_address =
+          result->get_network_details()->ipv4_address;
+      absl::optional<net::IPAddress> ipv6_address =
+          result->get_network_details()->ipv6_address;
+      if (ipv6_address.has_value()) {
+        signals.Set(device_signals::names::kIpAddress,
+                    ipv6_address.value().ToString());
+      } else if (ipv4_address.has_value()) {
+        signals.Set(device_signals::names::kIpAddress,
+                    ipv4_address.value().ToString());
+      }
+  }
 
   LogSignalsCollectionLatency(kLatencyHistogramVariant, start_time);
 
