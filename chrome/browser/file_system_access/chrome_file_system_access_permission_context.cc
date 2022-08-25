@@ -1438,6 +1438,53 @@ ChromeFileSystemAccessPermissionContext::GetPermissionGrants(
   PermissionGrantImpl::CollectGrants(it->second.write_grants,
                                      &grants.directory_write_grants,
                                      &grants.file_write_grants);
+
+  // Add valid (not expired) persisted permissions which do not have an
+  // associated active grant to the associated members of `grants`.
+  if (base::FeatureList::IsEnabled(
+          features::kFileSystemAccessPersistentPermissions)) {
+    std::vector<std::unique_ptr<Object>> persisted_grant_objects =
+        GetGrantedObjects(origin);
+
+    for (auto& persisted_grant_object : persisted_grant_objects) {
+      const base::FilePath persisted_path =
+          base::ValueToFilePath(
+              persisted_grant_object->value.FindKey(kPermissionPathKey))
+              .value();
+      HandleType handle_type =
+          persisted_grant_object->value.FindBoolKey(kPermissionIsDirectoryKey)
+                  .value()
+              ? HandleType::kDirectory
+              : HandleType::kFile;
+      bool is_write_grant =
+          persisted_grant_object->value.FindBoolKey(kPermissionWritableKey)
+              .value_or(false);
+      bool is_read_grant =
+          persisted_grant_object->value.FindBoolKey(kPermissionReadableKey)
+              .value_or(false);
+
+      if (handle_type == HandleType::kDirectory) {
+        if (is_write_grant &&
+            !base::Contains(grants.directory_write_grants, persisted_path)) {
+          grants.directory_write_grants.push_back(persisted_path);
+        }
+        if (is_read_grant &&
+            !base::Contains(grants.directory_read_grants, persisted_path)) {
+          grants.directory_read_grants.push_back(persisted_path);
+        }
+      }
+      if (handle_type == HandleType::kFile) {
+        if (is_write_grant &&
+            !base::Contains(grants.file_write_grants, persisted_path)) {
+          grants.file_write_grants.push_back(persisted_path);
+        }
+        if (is_read_grant &&
+            !base::Contains(grants.file_read_grants, persisted_path)) {
+          grants.file_read_grants.push_back(persisted_path);
+        }
+      }
+    }
+  }
   return grants;
 }
 
@@ -1460,6 +1507,17 @@ void ChromeFileSystemAccessPermissionContext::RevokeGrants(
 bool ChromeFileSystemAccessPermissionContext::OriginHasReadAccess(
     const url::Origin& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Check if an origin has read access granted via persisted permissions.
+  if (base::FeatureList::IsEnabled(
+          features::kFileSystemAccessPersistentPermissions)) {
+    std::vector<std::unique_ptr<Object>> persisted_grant_objects =
+        GetGrantedObjects(origin);
+    return base::ranges::any_of(
+        persisted_grant_objects, [&](const auto& grant) {
+          return grant->value.FindBoolKey(kPermissionReadableKey)
+              .value_or(false);
+        });
+  }
   auto it = origins_.find(origin);
   if (it == origins_.end())
     return false;
@@ -1475,6 +1533,17 @@ bool ChromeFileSystemAccessPermissionContext::OriginHasReadAccess(
 bool ChromeFileSystemAccessPermissionContext::OriginHasWriteAccess(
     const url::Origin& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Check if an origin has write access granted via persisted permissions.
+  if (base::FeatureList::IsEnabled(
+          features::kFileSystemAccessPersistentPermissions)) {
+    std::vector<std::unique_ptr<Object>> persisted_grant_objects =
+        GetGrantedObjects(origin);
+    return base::ranges::any_of(
+        persisted_grant_objects, [&](const auto& grant) {
+          return grant->value.FindBoolKey(kPermissionWritableKey)
+              .value_or(false);
+        });
+  }
   auto it = origins_.find(origin);
   if (it == origins_.end())
     return false;

@@ -877,6 +877,34 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       GetPermissionGrants_GrantsAreRetainedViaPersistedPermissions) {
+  auto kTestPath2 = kTestPath.AppendASCII("baz");
+  auto file_write_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
+  auto file_read_grant = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
+  auto file_read_only_grant = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, kTestPath2, HandleType::kFile, UserAction::kSave);
+
+  // `GetPermissionGrants` returns `grants` as expected.
+  auto grants = permission_context()->GetPermissionGrants(kTestOrigin);
+  std::vector<base::FilePath> expected_file_write_grants = {kTestPath};
+  std::vector<base::FilePath> expected_file_read_grants = {kTestPath,
+                                                           kTestPath2};
+
+  EXPECT_EQ(grants.file_write_grants, expected_file_write_grants);
+  EXPECT_EQ(grants.file_read_grants, expected_file_read_grants);
+
+  // Persisted permissions are retained after resetting the active grants.
+  file_write_grant.reset();
+  file_read_grant.reset();
+  file_read_only_grant.reset();
+  grants = permission_context()->GetPermissionGrants(kTestOrigin);
+  EXPECT_EQ(grants.file_write_grants, expected_file_write_grants);
+  EXPECT_EQ(grants.file_read_grants, expected_file_read_grants);
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
        GetWritePermissionGrant_InitialState_OpenAction_GlobalGuardBlocked) {
   SetDefaultContentSettingValue(ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
                                 CONTENT_SETTING_BLOCK);
@@ -980,6 +1008,9 @@ TEST_F(
   grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kOpen);
   EXPECT_EQ(PermissionStatus::ASK, grant->GetStatus());
+
+  auto grants = permission_context()->GetPermissionGrants(kTestOrigin);
+  EXPECT_TRUE(grants.file_write_grants.empty());
 
   SetDefaultContentSettingValue(ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
                                 CONTENT_SETTING_BLOCK);
@@ -1287,6 +1318,11 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_EQ(PermissionStatus::ASK, grant->GetStatus());
   EXPECT_TRUE(permission_context()->HasPersistedPermissionForTesting(
       kTestOrigin, kTestPath, HandleType::kFile, GrantType::kWrite));
+
+  ChromeFileSystemAccessPermissionContext::Grants grants =
+      permission_context()->GetPermissionGrants(kTestOrigin);
+  std::vector<base::FilePath> expected_res = {kTestPath};
+  EXPECT_EQ(grants.file_write_grants, expected_res);
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,

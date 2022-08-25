@@ -122,7 +122,8 @@ class ChromeFileSystemAccessPermissionContext
     kUpdatePersistedPermission,
   };
 
-  // Returns a snapshot of the currently granted active permissions.
+  // Returns a snapshot of both the currently granted active and persisted
+  // permissions.
   struct Grants {
     Grants();
     ~Grants();

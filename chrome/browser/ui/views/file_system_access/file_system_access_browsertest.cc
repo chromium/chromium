@@ -94,8 +94,8 @@ class FileSystemAccessBrowserTest : public InProcessBrowserTest {
     return result;
   }
 
-  bool IsUsageIndicatorVisible() {
-    auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  bool IsUsageIndicatorVisible(Browser* browser) {
+    auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
     auto* icon_view =
         browser_view->toolbar_button_provider()->GetPageActionIconView(
             PageActionIconType::kFileSystemAccess);
@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest, SaveFile) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  EXPECT_FALSE(IsUsageIndicatorVisible());
+  EXPECT_FALSE(IsUsageIndicatorVisible(browser()));
 
   EXPECT_EQ(test_file.BaseName().AsUTF8Unsafe(),
             content::EvalJs(web_contents,
@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest, SaveFile) {
                             "  self.entry = e;"
                             "  return e.name; })()"));
 
-  EXPECT_TRUE(IsUsageIndicatorVisible())
+  EXPECT_TRUE(IsUsageIndicatorVisible(browser()))
       << "A save file dialog implicitly grants write access, so usage "
          "indicator should be visible.";
 
@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest, OpenFile) {
   FileSystemAccessPermissionRequestManager::FromWebContents(web_contents)
       ->set_auto_response_for_test(permissions::PermissionAction::GRANTED);
 
-  EXPECT_FALSE(IsUsageIndicatorVisible());
+  EXPECT_FALSE(IsUsageIndicatorVisible(browser()));
 
   EXPECT_EQ(test_file.BaseName().AsUTF8Unsafe(),
             content::EvalJs(web_contents,
@@ -173,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest, OpenFile) {
                             "  return e.name; })()"));
 
   // Even read-only access should show a usage indicator.
-  EXPECT_TRUE(IsUsageIndicatorVisible());
+  EXPECT_TRUE(IsUsageIndicatorVisible(browser()));
 
   EXPECT_EQ(
       static_cast<int>(file_contents.size()),
@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest, OpenFile) {
 
   // Should have prompted for and received write access, so usage indicator
   // should still be visible.
-  EXPECT_TRUE(IsUsageIndicatorVisible());
+  EXPECT_TRUE(IsUsageIndicatorVisible(browser()));
 
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
@@ -308,7 +308,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserSlowLoadTest, WaitUntilLoaded) {
 
   load_observer.WaitForNavigationFinished();
 
-  EXPECT_FALSE(IsUsageIndicatorVisible());
+  EXPECT_FALSE(IsUsageIndicatorVisible(browser()));
 
   EXPECT_EQ(test_file.BaseName().AsUTF8Unsafe(),
             content::EvalJs(web_contents,
@@ -318,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserSlowLoadTest, WaitUntilLoaded) {
                             "  return e.name; })()"));
 
   // Even read-only access should show a usage indicator.
-  EXPECT_TRUE(IsUsageIndicatorVisible());
+  EXPECT_TRUE(IsUsageIndicatorVisible(browser()));
 
   EXPECT_EQ("done",
             content::EvalJs(
@@ -352,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserSlowLoadTest, WaitUntilLoaded) {
                              file_contents)));
 
   // The usage indicator should still be visible.
-  EXPECT_TRUE(IsUsageIndicatorVisible());
+  EXPECT_TRUE(IsUsageIndicatorVisible(browser()));
 }
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
@@ -776,6 +776,106 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
                             "self.entry.queryPermission({mode: 'read'})"));
 }
 
+class PersistedPermissionsFileSystemAccessBrowserTest
+    : public FileSystemAccessBrowserTest {
+ public:
+  PersistedPermissionsFileSystemAccessBrowserTest() {
+    // Enable Persisted Permissions.
+    feature_list_.InitAndEnableFeature(
+        features::kFileSystemAccessPersistentPermissions);
+  }
+
+  void SetUpOnMainThread() override {
+    FileSystemAccessBrowserTest::SetUpOnMainThread();
+  }
+
+  ~PersistedPermissionsFileSystemAccessBrowserTest() override = default;
+
+  PersistedPermissionsFileSystemAccessBrowserTest(
+      const PersistedPermissionsFileSystemAccessBrowserTest&) = delete;
+  PersistedPermissionsFileSystemAccessBrowserTest& operator=(
+      const PersistedPermissionsFileSystemAccessBrowserTest&) = delete;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PersistedPermissionsFileSystemAccessBrowserTest,
+                       UsageIndicatorVisibleWithPersistedPermissionsEnabled) {
+  const GURL test_url = embedded_test_server()->GetURL("/title1.html");
+  auto kTestOrigin = url::Origin::Create(test_url);
+  const base::FilePath test_file = CreateTestFile("");
+  const std::string file_contents = "file contents to write";
+  std::unique_ptr<ChromeFileSystemAccessPermissionContext> permission_context =
+      std::make_unique<ChromeFileSystemAccessPermissionContext>(
+          browser()->profile());
+
+  ui::SelectFileDialog::SetFactory(
+      new SelectPredeterminedFileDialogFactory({test_file}));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  // The usage indicator is not initially visible.
+  EXPECT_FALSE(IsUsageIndicatorVisible(browser()));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  FileSystemAccessPermissionRequestManager::FromWebContents(web_contents)
+      ->set_auto_response_for_test(permissions::PermissionAction::GRANTED);
+
+  auto grant = permission_context->GetWritePermissionGrant(
+      kTestOrigin, test_file,
+      content::FileSystemAccessPermissionContext::HandleType::kFile,
+      content::FileSystemAccessPermissionContext::UserAction::kSave);
+
+  EXPECT_TRUE(permission_context->HasPersistedPermissionForTesting(
+      kTestOrigin, test_file,
+      content::FileSystemAccessPermissionContext::HandleType::kFile,
+      ChromeFileSystemAccessPermissionContext::GrantType::kWrite));
+  EXPECT_EQ(content::FileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
+            grant->GetStatus());
+
+  EXPECT_EQ(test_file.BaseName().AsUTF8Unsafe(),
+            content::EvalJs(web_contents,
+                            "(async () => {"
+                            "  let [e] = await self.showOpenFilePicker();"
+                            "  self.entry = e;"
+                            "  return e.name; })()"));
+  EXPECT_EQ(
+      static_cast<int>(file_contents.size()),
+      content::EvalJs(
+          web_contents,
+          content::JsReplace("(async () => {"
+                             "  const w = await self.entry.createWritable();"
+                             "  await w.write(new Blob([$1]));"
+                             "  await w.close();"
+                             "  return (await self.entry.getFile()).size; })()",
+                             file_contents)));
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    std::string read_contents;
+    EXPECT_TRUE(base::ReadFileToString(test_file, &read_contents));
+    EXPECT_EQ(file_contents, read_contents);
+  }
+
+  // The usage indicator is visible after opening and writing to a file.
+  EXPECT_TRUE(IsUsageIndicatorVisible(browser()));
+
+  // Navigate to another page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("a.com", "/title2.html")));
+
+  // The usage indicator is not visible after navigating to another page.
+  EXPECT_FALSE(IsUsageIndicatorVisible(browser()));
+
+  // Navigate back to the original page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  // With Persisted Permissions enabled, the usage indicator should be visible
+  // on the original page.
+  EXPECT_TRUE(IsUsageIndicatorVisible(browser()));
+}
+
 class BackForwardCacheFileSystemAccessBrowserTest
     : public FileSystemAccessBrowserTest {
  public:
@@ -819,7 +919,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheFileSystemAccessBrowserTest,
 
   content::RenderFrameDeletedObserver deleted_observer(initial_rfh);
 
-  // Navigate to another page. The initial page goes to the back forward cache.
+  // Navigate to another page. The initial page goes to the back forward
+  // cache.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("b.com", "/title2.html")));
   EXPECT_FALSE(deleted_observer.deleted());
@@ -964,8 +1065,9 @@ class FencedFrameFileSystemAccessBrowserTest
     if (fenced_frame_helper_)
       return fenced_frame_helper_->CreateFencedFrame(fenced_frame_parent, url);
 
-    // FencedFrameTestHelper only supports the MPArch version of fenced frames.
-    // So need to maually create a fenced frame for the ShadowDOM version.
+    // FencedFrameTestHelper only supports the MPArch version of fenced
+    // frames. So need to maually create a fenced frame for the ShadowDOM
+    // version.
     content::TestNavigationManager navigation(
         browser()->tab_strip_model()->GetActiveWebContents(), url);
     constexpr char kAddFencedFrameScript[] = R"({
@@ -1009,7 +1111,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameFileSystemAccessBrowserTest,
   FileSystemAccessPermissionRequestManager::FromWebContents(web_contents)
       ->set_auto_response_for_test(permissions::PermissionAction::GRANTED);
 
-  EXPECT_FALSE(IsUsageIndicatorVisible());
+  EXPECT_FALSE(IsUsageIndicatorVisible(browser()));
 
   // Load a fenced frame.
   GURL fenced_frame_url = https_server().GetURL("/fenced_frames/title1.html");
@@ -1025,7 +1127,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameFileSystemAccessBrowserTest,
                                "  return e.name; })()"));
 
   // Even read-only access should show a usage indicator.
-  EXPECT_FALSE(IsUsageIndicatorVisible());
+  EXPECT_FALSE(IsUsageIndicatorVisible(browser()));
 
   auto grant = permission_context->GetWritePermissionGrant(
       url::Origin::Create(fenced_frame_url), test_file,
@@ -1099,8 +1201,8 @@ class FileSystemAccessBrowserTestForWebUI : public InProcessBrowserTest {
     }
 
     // Write permissions are granted to the test WebUI with WebUIAllowlist in
-    // SetUpAndNavigateToTestWebUI. Users should not get permission prompts. We
-    // auto-deny them if they show up.
+    // SetUpAndNavigateToTestWebUI. Users should not get permission prompts.
+    // We auto-deny them if they show up.
     FileSystemAccessPermissionRequestManager::FromWebContents(web_contents)
         ->set_auto_response_for_test(permissions::PermissionAction::DENIED);
 
@@ -1132,8 +1234,8 @@ class FileSystemAccessBrowserTestForWebUI : public InProcessBrowserTest {
   void TestDirectoryPermission(content::WebContents* web_contents,
                                const base::FilePath& dir_path) {
     // Write permissions are granted to the test WebUI with WebUIAllowlist in
-    // SetUpAndNavigateToTestWebUI. Users should not get permission prompts. We
-    // auto-deny them if they show up.
+    // SetUpAndNavigateToTestWebUI. Users should not get permission prompts.
+    // We auto-deny them if they show up.
     FileSystemAccessPermissionRequestManager::FromWebContents(web_contents)
         ->set_auto_response_for_test(permissions::PermissionAction::DENIED);
 
@@ -1180,9 +1282,10 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTestForWebUI,
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTestForWebUI,
                        OpenFilePicker_FileInSensitivePath) {
-  base::ScopedPathOverride downloads_override(
-      chrome::DIR_DEFAULT_DOWNLOADS, temp_dir_.GetPath(), /*is_absolute*/ true,
-      /*create*/ false);
+  base::ScopedPathOverride downloads_override(chrome::DIR_DEFAULT_DOWNLOADS,
+                                              temp_dir_.GetPath(),
+                                              /*is_absolute*/ true,
+                                              /*create*/ false);
 
   content::WebContents* web_contents = SetUpAndNavigateToTestWebUI();
   TestFilePermissionInDirectory(web_contents, temp_dir_.GetPath());
@@ -1196,9 +1299,10 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTestForWebUI,
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTestForWebUI,
                        OpenDirectoryPicker_DirectoryInSensitivePath) {
-  base::ScopedPathOverride downloads_override(
-      chrome::DIR_DEFAULT_DOWNLOADS, temp_dir_.GetPath(), /*is_absolute*/ true,
-      /*create*/ false);
+  base::ScopedPathOverride downloads_override(chrome::DIR_DEFAULT_DOWNLOADS,
+                                              temp_dir_.GetPath(),
+                                              /*is_absolute*/ true,
+                                              /*create*/ false);
 
   base::FilePath test_dir_path = temp_dir_.GetPath().AppendASCII("folder");
   {
