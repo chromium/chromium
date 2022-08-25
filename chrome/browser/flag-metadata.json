@@ -1576,7 +1576,7 @@
   {
     "name": "eche-swa",
     "owners": [ "dhnishi" ],
-    "expiry_milestone": 107
+    "expiry_milestone": 110
   },
   {
     "name": "eche-swa-debug-mode",
