@@ -9,7 +9,8 @@ import androidx.annotation.IntDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-@IntDef({TabHidingType.CHANGED_TABS, TabHidingType.ACTIVITY_HIDDEN, TabHidingType.REPARENTED})
+@IntDef({TabHidingType.CHANGED_TABS, TabHidingType.ACTIVITY_HIDDEN, TabHidingType.REPARENTED,
+        TabHidingType.OVERVIEW_SHOWN})
 @Retention(RetentionPolicy.SOURCE)
 public @interface TabHidingType {
     /** A tab was hidden due to other tab getting foreground. */
@@ -20,4 +21,10 @@ public @interface TabHidingType {
 
     /** A tab was hidden while being reparented to a new activity. */
     int REPARENTED = 2;
+
+    /**
+     * A tab was hidden due to overview page (start surface or tab switcher surface) getting
+     * foreground.
+     */
+    int OVERVIEW_SHOWN = 3;
 }

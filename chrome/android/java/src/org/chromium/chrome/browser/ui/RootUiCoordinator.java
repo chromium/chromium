@@ -109,6 +109,7 @@ import org.chromium.chrome.browser.tab.AccessibilityVisibilityHandler;
 import org.chromium.chrome.browser.tab.AutofillSessionLifetimeController;
 import org.chromium.chrome.browser.tab.RequestDesktopUtils;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabUtils.LoadIfNeededCaller;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -1227,10 +1228,17 @@ public class RootUiCoordinator
                     }
                 }
 
-                if (layoutType == LayoutType.TAB_SWITCHER) {
+                if (layoutType == LayoutType.TAB_SWITCHER
+                        || layoutType == LayoutType.START_SURFACE) {
                     // Hide find toolbar and app menu.
                     if (mFindToolbarManager != null) mFindToolbarManager.hideToolbar();
                     hideAppMenu();
+
+                    // Hide current tab
+                    Tab currentTab = mTabModelSelectorSupplier.get().getCurrentTab();
+                    if (currentTab != null) {
+                        currentTab.hide(TabHidingType.OVERVIEW_SHOWN);
+                    }
                 }
             }
 
