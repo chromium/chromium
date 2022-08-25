@@ -271,6 +271,26 @@ TEST_F(StandaloneTrustedVaultBackendTest,
               DegradedRecoverabilityStateEq(degraded_recoverability_state));
 }
 
+TEST_F(StandaloneTrustedVaultBackendTest, ShouldFindTheRecoverabilityDegraded) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling);
+  // The TaskEnvironment is needed because this test initializes the handler,
+  // which works with time.
+  base::test::SingleThreadTaskEnvironment environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
+  sync_pb::LocalTrustedVaultDegradedRecoverabilityState
+      degraded_recoverability_state;
+  degraded_recoverability_state.set_is_recoverability_degraded(true);
+  backend()->WriteDegradedRecoverabilityState(degraded_recoverability_state);
+  base::MockCallback<base::OnceCallback<void(bool)>> cb;
+  EXPECT_CALL(cb, Run(true));
+  backend()->GetIsRecoverabilityDegraded(account_info, cb.Get());
+}
+
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchEmptyKeys) {
   const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
   // Callback should be called immediately.

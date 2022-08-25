@@ -245,6 +245,12 @@ class StandaloneTrustedVaultBackend
   // be overridden in tests.
   raw_ptr<base::Clock> clock_;
 
+  // Used to take care of polling the degraded recoverability state from the
+  // server for the |primary_account|. Instance changes whenever
+  // |primary_account| changes.
+  std::unique_ptr<TrustedVaultDegradedRecoverabilityHandler>
+      degraded_recoverability_handler_;
+
   std::vector<uint8_t> last_added_recovery_method_public_key_for_testing_;
 
   bool device_registration_state_recorded_to_uma_ = false;

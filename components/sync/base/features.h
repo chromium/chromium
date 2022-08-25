@@ -103,6 +103,12 @@ inline constexpr base::Feature kSyncChromeOSAppsToggleSharing{
     "SyncChromeOSAppsToggleSharing", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+// Whether the periodic degraded recoverability polling is enabled.
+inline constexpr base::Feature
+    kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling{
+        "SyncTrustedVaultDegradedRecoverabilityHandler",
+        base::FEATURE_DISABLED_BY_DEFAULT};
+
 #if BUILDFLAG(IS_IOS)
 // Whether RPC is enabled.
 inline constexpr base::Feature kSyncTrustedVaultPassphraseiOSRPC{

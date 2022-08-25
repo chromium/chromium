@@ -363,6 +363,7 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
   }
   primary_account_ = primary_account;
   AbandonConnectionRequest();
+  degraded_recoverability_handler_ = nullptr;
   ongoing_get_recoverability_request_.reset();
   ongoing_add_recovery_method_request_.reset();
   RemoveNonPrimaryAccountKeysIfMarkedForDeletion();
@@ -370,7 +371,12 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
     DCHECK(!pending_trusted_recovery_method_.has_value());
     return;
   }
-
+  if (base::FeatureList::IsEnabled(
+          kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling)) {
+    degraded_recoverability_handler_ =
+        std::make_unique<TrustedVaultDegradedRecoverabilityHandler>(
+            connection_.get(), this, primary_account_.value());
+  }
   sync_pb::LocalTrustedVaultPerUser* per_user_vault =
       FindUserVault(primary_account->gaia);
   if (!per_user_vault) {
@@ -472,8 +478,22 @@ bool StandaloneTrustedVaultBackend::MarkLocalKeysAsStale(
 void StandaloneTrustedVaultBackend::GetIsRecoverabilityDegraded(
     const CoreAccountInfo& account_info,
     base::OnceCallback<void(bool)> cb) {
-  // TODO(crbug.com/1201659): Improve this logic properly and add test coverage,
-  // including throttling and periodic polling.
+  if (base::FeatureList::IsEnabled(
+          kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling)) {
+    sync_pb::LocalTrustedVaultPerUser* per_user_vault =
+        FindUserVault(account_info.gaia);
+    if (!per_user_vault) {
+      // If the account does not exist, then the recoverability state is
+      // unknown.
+      // TODO(crbug.com/1247990): Pass optional value with nullopt indicating
+      // that value is not yet known.
+      std::move(cb).Run(false);
+      return;
+    }
+    std::move(cb).Run(per_user_vault->degraded_recoverability_state()
+                          .is_recoverability_degraded());
+    return;
+  }
   ongoing_get_recoverability_request_ =
       connection_->DownloadIsRecoverabilityDegraded(
           account_info,
