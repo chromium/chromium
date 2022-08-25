@@ -118,9 +118,7 @@ void CastStreamingSession::ReceiverSessionClient::OnInitializationTimeout() {
 absl::optional<mojo::ScopedDataPipeConsumerHandle>
 CastStreamingSession::ReceiverSessionClient::InitializeAudioConsumer(
     const StreamingInitializationInfo& initialization_info) {
-  if (!initialization_info.audio_stream_info) {
-    return absl::nullopt;
-  }
+  DCHECK(initialization_info.audio_stream_info);
 
   // Create the audio data pipe.
   mojo::ScopedDataPipeProducerHandle data_pipe_producer;
@@ -134,7 +132,6 @@ CastStreamingSession::ReceiverSessionClient::InitializeAudioConsumer(
   // this object and |client_| is guaranteed to outlive this object. Here,
   // the duration is set to kNoTimestamp so the audio renderer does not block.
   // Audio frames duration is not known ahead of time in mirroring.
-  DCHECK(!audio_consumer_);
   audio_consumer_ = std::make_unique<StreamConsumer>(
       initialization_info.audio_stream_info->receiver, media::kNoTimestamp,
       std::move(data_pipe_producer),
@@ -149,9 +146,7 @@ CastStreamingSession::ReceiverSessionClient::InitializeAudioConsumer(
 absl::optional<mojo::ScopedDataPipeConsumerHandle>
 CastStreamingSession::ReceiverSessionClient::InitializeVideoConsumer(
     const StreamingInitializationInfo& initialization_info) {
-  if (!initialization_info.video_stream_info) {
-    return absl::nullopt;
-  }
+  DCHECK(initialization_info.video_stream_info);
 
   // Create the video data pipe.
   mojo::ScopedDataPipeProducerHandle data_pipe_producer;
@@ -169,7 +164,6 @@ CastStreamingSession::ReceiverSessionClient::InitializeVideoConsumer(
   // senders do not send data for a long period of time. We end up with
   // overlapping video frames but this is fine since the media pipeline mostly
   // considers the playout time when deciding which frame to present or play
-  DCHECK(!video_consumer_);
   video_consumer_ = std::make_unique<StreamConsumer>(
       initialization_info.video_stream_info->receiver, base::Minutes(10),
       std::move(data_pipe_producer),
@@ -290,14 +284,12 @@ void CastStreamingSession::ReceiverSessionClient::OnReceiversDestroying(
     playback_command_dispatcher_->OnRemotingSessionEnded();
   }
 
-  audio_consumer_.reset();
-  video_consumer_.reset();
-
   switch (reason) {
     case ReceiversDestroyingReason::kEndOfSession:
       client_->OnSessionEnded();
       break;
     case ReceiversDestroyingReason::kRenegotiated:
+      client_->OnSessionReinitializationPending();
       break;
   }
 }
@@ -316,11 +308,13 @@ void CastStreamingSession::ReceiverSessionClient::OnError(
 void CastStreamingSession::ReceiverSessionClient::OnDataTimeout() {
   DLOG(ERROR) << __func__ << ": Session ended due to timeout";
   receiver_session_.reset();
+  client_->OnSessionEnded();
 }
 
 void CastStreamingSession::ReceiverSessionClient::OnCastChannelClosed() {
   DLOG(ERROR) << __func__ << ": Session ended due to cast channel closure";
   receiver_session_.reset();
+  client_->OnSessionEnded();
 }
 
 base::WeakPtr<CastStreamingSession::ReceiverSessionClient>

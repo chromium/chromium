@@ -143,6 +143,15 @@ void ReceiverSessionImpl::OnVideoBufferReceived(
   video_demuxer_stream_data_provider_->ProvideBuffer(std::move(buffer));
 }
 
+void ReceiverSessionImpl::OnSessionReinitializationPending() {
+  if (audio_demuxer_stream_data_provider_) {
+    audio_demuxer_stream_data_provider_->WaitForNewStreamInfo();
+  }
+  if (video_demuxer_stream_data_provider_) {
+    video_demuxer_stream_data_provider_->WaitForNewStreamInfo();
+  }
+}
+
 void ReceiverSessionImpl::OnSessionReinitialization(
     StreamingInitializationInfo initialization_info,
     absl::optional<mojo::ScopedDataPipeConsumerHandle> audio_pipe_consumer,

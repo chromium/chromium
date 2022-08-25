@@ -84,6 +84,7 @@ class ReceiverSessionImpl final
       override;
   void OnAudioBufferReceived(media::mojom::DecoderBufferPtr buffer) override;
   void OnVideoBufferReceived(media::mojom::DecoderBufferPtr buffer) override;
+  void OnSessionReinitializationPending() override;
   void OnSessionReinitialization(
       StreamingInitializationInfo initialization_info,
       absl::optional<mojo::ScopedDataPipeConsumerHandle> audio_pipe_consumer,

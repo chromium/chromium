@@ -58,6 +58,10 @@ class CastStreamingSession {
     virtual void OnVideoBufferReceived(
         media::mojom::DecoderBufferPtr buffer) = 0;
 
+    // Called when a session is being renegotiated but has not yet completed
+    // configuration.
+    virtual void OnSessionReinitializationPending() = 0;
+
     // Called on receiver session reinitialization. It is guaranteed that at
     // least one of |audio_stream_info| or |video_stream_info| will be set.
     virtual void OnSessionReinitialization(

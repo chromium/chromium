@@ -70,6 +70,7 @@ class DemuxerStreamDataProvider : public DemuxerStreamTraits<TMojoReceiverType>,
   void OnNewStreamInfo(ConfigType config,
                        mojo::ScopedDataPipeConsumerHandle handle) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    is_new_stream_info_pending_ = false;
     config_ = std::move(config);
     next_stream_info_ =
         StreamInfoType::element_type::New(config_, std::move(handle));
@@ -78,6 +79,13 @@ class DemuxerStreamDataProvider : public DemuxerStreamTraits<TMojoReceiverType>,
           .Run(GetBufferResponseType::element_type::NewStreamInfo(
               std::move(next_stream_info_)));
     }
+  }
+
+  // Stops reading frames until a new StreamInfo has been applied by a call to
+  // OnNewStreamInfo().
+  void WaitForNewStreamInfo() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    is_new_stream_info_pending_ = true;
   }
 
   // Sets the buffer to be passed to the renderer process as part of the
@@ -126,14 +134,18 @@ class DemuxerStreamDataProvider : public DemuxerStreamTraits<TMojoReceiverType>,
       return;
     }
 
+    current_callback_ = std::move(callback);
+    if (is_new_stream_info_pending_) {
+      return;
+    }
+
     if (next_stream_info_) {
-      std::move(callback).Run(
-          GetBufferResponseType::element_type::NewStreamInfo(
+      std::move(current_callback_)
+          .Run(GetBufferResponseType::element_type::NewStreamInfo(
               std::move(next_stream_info_)));
       return;
     }
 
-    current_callback_ = std::move(callback);
     request_buffer_.Run(
         base::BindOnce(&DemuxerStreamClient::OnNoBuffersAvailable, client_));
   }
@@ -148,6 +160,10 @@ class DemuxerStreamDataProvider : public DemuxerStreamTraits<TMojoReceiverType>,
           << "EnableBitstreamConverter() called when no client was available";
     }
   }
+
+  // Set by WaitForNewStreamInfo() to signify that a new StreamInfo is expected
+  // and all GetBuffer() calls prior to this change should be blocked.
+  bool is_new_stream_info_pending_ = false;
 
   // The most recently set config.
   ConfigType config_;

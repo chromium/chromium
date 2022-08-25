@@ -47,9 +47,9 @@ StreamConsumer::StreamConsumer(StreamConsumer&& other,
   }
 }
 
-StreamConsumer::~StreamConsumer() {
-  receiver_->SetConsumer(nullptr);
-}
+// NOTE: Do NOT call into |receiver_| methods here, as the object may no longer
+// be valid at time of this object's destruction.
+StreamConsumer::~StreamConsumer() = default;
 
 void StreamConsumer::ReadFrame(base::OnceClosure no_frames_available_cb) {
   DCHECK(!is_read_pending_);
@@ -61,7 +61,6 @@ void StreamConsumer::ReadFrame(base::OnceClosure no_frames_available_cb) {
 
 void StreamConsumer::CloseDataPipeOnError() {
   DLOG(WARNING) << "[ssrc:" << receiver_->ssrc() << "] Data pipe closed.";
-  receiver_->SetConsumer(nullptr);
   pipe_watcher_.Cancel();
   data_pipe_.reset();
 }
