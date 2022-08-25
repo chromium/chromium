@@ -62,6 +62,7 @@ class TestHistoryBackendForSync : public HistoryBackendForSync {
   bool UpdateVisitReferrerOpenerIDs(VisitID visit_id,
                                     VisitID referrer_id,
                                     VisitID opener_id) override;
+  std::vector<GURL> GetFaviconURLsForURL(const GURL& page_url) override;
   void AddObserver(HistoryBackendObserver* observer) override;
   void RemoveObserver(HistoryBackendObserver* observer) override;
 

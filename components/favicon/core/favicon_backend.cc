@@ -444,6 +444,16 @@ std::set<GURL> FaviconBackend::CloneFaviconMappingsForPages(
   return changed_page_urls;
 }
 
+std::vector<GURL> FaviconBackend::GetFaviconUrlsForUrl(const GURL& page_url) {
+  std::vector<IconMapping> icon_mappings;
+  db_->GetIconMappingsForPageURL(page_url, &icon_mappings);
+  std::vector<GURL> urls;
+  for (const IconMapping& icon_mapping : icon_mappings) {
+    urls.push_back(icon_mapping.icon_url);
+  }
+  return urls;
+}
+
 bool FaviconBackend::CanSetOnDemandFavicons(const GURL& page_url,
                                             favicon_base::IconType icon_type) {
   // We allow writing an on demand favicon of type |icon_type| only if there is

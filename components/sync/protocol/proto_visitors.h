@@ -793,6 +793,7 @@ VISIT_PROTO_FIELDS(const sync_pb::HistorySpecifics& proto) {
   VISIT(http_response_code);
   VISIT(page_language);
   VISIT_ENUM(password_state);
+  VISIT(favicon_url);
 }
 
 VISIT_PROTO_FIELDS(

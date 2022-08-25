@@ -100,4 +100,7 @@ message HistorySpecifics {
 
   // Whether a password field was found on the page.
   optional SyncEnums.PasswordState password_state = 16;
+
+  // URL of the favicon for this page.
+  optional string favicon_url = 17;
 }

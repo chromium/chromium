@@ -116,6 +116,10 @@ class FaviconBackend {
       const favicon_base::IconTypeSet& icon_types,
       const base::flat_set<GURL>& page_urls_to_write);
 
+  // Returns all icon URLs associated with the given `page_url`. In case there
+  // are multiple, they're ordered in descending order of IconType.
+  std::vector<GURL> GetFaviconUrlsForUrl(const GURL& page_url);
+
   // See function of same name in HistoryService for details.
   SetFaviconsResult SetOnDemandFavicons(const GURL& page_url,
                                         favicon_base::IconType icon_type,

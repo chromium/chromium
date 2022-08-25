@@ -29,6 +29,13 @@ namespace {
 
 constexpr base::TimeDelta kMaxWriteToTheFuture = base::Days(2);
 
+// Some pages embed the favicon image itself in the URL, using the data: scheme.
+// These cases, or more generally any favicon URL that is unreasonably large,
+// should simply be ignored, because it otherwise runs into the risk that the
+// whole entity may fail to sync due to max size limits imposed by the sync
+// server. And after all, the favicon is somewhat optional.
+constexpr int kMaxFaviconUrlSizeToSync = 2048;
+
 std::string GetStorageKeyFromVisitRow(const VisitRow& row) {
   DCHECK(!row.visit_time.is_null());
   return HistorySyncMetadataDatabase::StorageKeyFromVisitTime(row.visit_time);
@@ -235,7 +242,8 @@ absl::optional<VisitContentAnnotations> MakeContentAnnotations(
 
 std::unique_ptr<syncer::EntityData> MakeEntityData(
     const std::string& local_cache_guid,
-    const std::vector<AnnotatedVisit>& redirect_visits) {
+    const std::vector<AnnotatedVisit>& redirect_visits,
+    const std::vector<GURL>& favicon_urls) {
   DCHECK(!local_cache_guid.empty());
   DCHECK(!redirect_visits.empty());
 
@@ -325,6 +333,16 @@ std::unique_ptr<syncer::EntityData> MakeEntityData(
   history->set_page_language(content_annotations.page_language);
   history->set_password_state(
       PasswordStateToProto(content_annotations.password_state));
+
+  if (!favicon_urls.empty()) {
+    // If there are multiple favicon URLs (which should be rare), they're
+    // returned in roughly best-to-worst order (see
+    // FaviconDatabase::GetIconMappingsForPageURL), so just take the first.
+    const GURL& url = favicon_urls.front();
+    if (url.is_valid() && url.spec().size() <= kMaxFaviconUrlSizeToSync) {
+      history->set_favicon_url(url.spec());
+    }
+  }
 
   // The entity name is used for debugging purposes; choose something that's a
   // decent tradeoff between "unique" and "readable".
@@ -533,9 +551,14 @@ void HistorySyncBridge::GetData(StorageKeyList storage_keys,
     }
     DCHECK_EQ(redirect_visits.back().visit_id, final_visit.visit_id);
 
+    std::vector<AnnotatedVisit> annotated_visits =
+        history_backend_->ToAnnotatedVisits(redirect_visits);
+
+    std::vector<GURL> favicon_urls = history_backend_->GetFaviconURLsForURL(
+        annotated_visits.back().url_row.url());
+
     std::unique_ptr<syncer::EntityData> entity_data =
-        MakeEntityData(GetLocalCacheGuid(),
-                       history_backend_->ToAnnotatedVisits(redirect_visits));
+        MakeEntityData(GetLocalCacheGuid(), annotated_visits, favicon_urls);
 
     batch->Put(key, std::move(entity_data));
   }
@@ -608,9 +631,14 @@ void HistorySyncBridge::OnURLVisited(HistoryBackend* history_backend,
   }
   DCHECK_EQ(redirect_visits.back().visit_id, visit_row.visit_id);
 
+  std::vector<AnnotatedVisit> annotated_visits =
+      history_backend_->ToAnnotatedVisits(redirect_visits);
+
+  std::vector<GURL> favicon_urls = history_backend_->GetFaviconURLsForURL(
+      annotated_visits.back().url_row.url());
+
   std::unique_ptr<syncer::EntityData> entity_data =
-      MakeEntityData(GetLocalCacheGuid(),
-                     history_backend_->ToAnnotatedVisits(redirect_visits));
+      MakeEntityData(GetLocalCacheGuid(), annotated_visits, favicon_urls);
 
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
       CreateMetadataChangeList();
@@ -702,9 +730,14 @@ void HistorySyncBridge::OnVisitUpdated(const VisitRow& visit_row) {
   }
   DCHECK_EQ(redirect_visits.back().visit_id, visit_row.visit_id);
 
+  std::vector<AnnotatedVisit> annotated_visits =
+      history_backend_->ToAnnotatedVisits(redirect_visits);
+
+  std::vector<GURL> favicon_urls = history_backend_->GetFaviconURLsForURL(
+      annotated_visits.back().url_row.url());
+
   std::unique_ptr<syncer::EntityData> entity_data =
-      MakeEntityData(GetLocalCacheGuid(),
-                     history_backend_->ToAnnotatedVisits(redirect_visits));
+      MakeEntityData(GetLocalCacheGuid(), annotated_visits, favicon_urls);
 
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
       CreateMetadataChangeList();

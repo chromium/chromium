@@ -399,6 +399,8 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
       favicon_base::FaviconID favicon_id,
       int desired_size);
 
+  std::vector<GURL> GetFaviconURLsForURL(const GURL& page_url) override;
+
   std::vector<favicon_base::FaviconRawBitmapResult>
   UpdateFaviconMappingsAndFetch(const base::flat_set<GURL>& page_urls,
                                 const GURL& icon_url,

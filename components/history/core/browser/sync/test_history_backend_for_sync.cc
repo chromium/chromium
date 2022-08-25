@@ -233,6 +233,12 @@ bool TestHistoryBackendForSync::UpdateVisitReferrerOpenerIDs(
   return false;
 }
 
+std::vector<GURL> TestHistoryBackendForSync::GetFaviconURLsForURL(
+    const GURL& page_url) {
+  // For the unit tests based on this class, favicon URLs aren't required.
+  return {};
+}
+
 void TestHistoryBackendForSync::AddObserver(HistoryBackendObserver* observer) {
   observers_.AddObserver(observer);
 }

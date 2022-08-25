@@ -2381,6 +2381,12 @@ HistoryBackend::GetFaviconForID(favicon_base::FaviconID favicon_id,
   return favicon_backend_->GetFaviconForId(favicon_id, desired_size);
 }
 
+std::vector<GURL> HistoryBackend::GetFaviconURLsForURL(const GURL& page_url) {
+  if (!favicon_backend_)
+    return {};
+  return favicon_backend_->GetFaviconUrlsForUrl(page_url);
+}
+
 std::vector<favicon_base::FaviconRawBitmapResult>
 HistoryBackend::UpdateFaviconMappingsAndFetch(
     const base::flat_set<GURL>& page_urls,
