@@ -7,6 +7,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shelf/shelf.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
 #include "ui/aura/window.h"
@@ -37,7 +38,6 @@ ContextualNudge::ContextualNudge(views::View* anchor,
                                  Position position,
                                  const gfx::Insets& margins,
                                  const std::u16string& text,
-                                 SkColor text_color,
                                  const base::RepeatingClosure& tap_callback)
     : views::BubbleDialogDelegateView(anchor,
                                       GetArrowForPosition(position),
@@ -68,7 +68,6 @@ ContextualNudge::ContextualNudge(views::View* anchor,
   label_->SetPaintToLayer();
   label_->layer()->SetFillsBoundsOpaquely(false);
   label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  label_->SetEnabledColor(text_color);
   label_->SetBackgroundColor(SK_ColorTRANSPARENT);
   label_->SetBorder(views::CreateEmptyBorder(margins));
 
@@ -115,6 +114,12 @@ void ContextualNudge::OnGestureEvent(ui::GestureEvent* event) {
     event->StopPropagation();
   else
     views::BubbleDialogDelegateView::OnGestureEvent(event);
+}
+
+void ContextualNudge::OnThemeChanged() {
+  views::BubbleDialogDelegateView::OnThemeChanged();
+  label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary));
 }
 
 }  // namespace ash

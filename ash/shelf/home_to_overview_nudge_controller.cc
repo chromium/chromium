@@ -203,8 +203,6 @@ void HomeToOverviewNudgeController::ShowNudge() {
       nullptr, hotseat_widget_->GetNativeWindow()->parent(),
       ContextualNudge::Position::kBottom, gfx::Insets(kNudgeMargins),
       l10n_util::GetStringUTF16(IDS_ASH_HOME_TO_OVERVIEW_CONTEXTUAL_NUDGE),
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kTextColorPrimary),
       base::BindRepeating(&HomeToOverviewNudgeController::HandleNudgeTap,
                           weak_factory_.GetWeakPtr()));
 

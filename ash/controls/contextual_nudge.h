@@ -31,14 +31,12 @@ class ASH_EXPORT ContextualNudge : public views::BubbleDialogDelegateView {
   // |position| - The nudge position relative to the anchor rectangle.
   // |margins| - The margins added to the nudge bubble.
   // |text| - The nudge text.
-  // |text_color| - The nudge text label foreground color.
-  // |tap_callback| - If set, the callback called when the user taps the nuge.
+  // |tap_callback| - If set, the callback called when the user taps the nudge.
   ContextualNudge(views::View* anchor,
                   aura::Window* parent_window,
                   Position position,
                   const gfx::Insets& margins,
                   const std::u16string& text,
-                  SkColor text_color,
                   const base::RepeatingClosure& tap_callback);
   ~ContextualNudge() override;
 
@@ -54,6 +52,7 @@ class ASH_EXPORT ContextualNudge : public views::BubbleDialogDelegateView {
   // BubbleDialogDelegateView:
   ui::LayerType GetLayerType() const override;
   void OnGestureEvent(ui::GestureEvent* event) override;
+  void OnThemeChanged() override;
 
  private:
   base::RepeatingClosure tap_callback_;

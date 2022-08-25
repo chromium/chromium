@@ -78,8 +78,6 @@ void KeyboardBacklightColorNudgeController::MaybeShowEducationNudge(
           IDS_ASH_KEYBOARD_BACKLIGHT_COLOR_EDUCATION_NUDGE_TEXT,
           l10n_util::GetStringUTF16(
               IDS_PERSONALIZATION_APP_PERSONALIZATION_HUB_TITLE)),
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kTextColorPrimary),
       base::BindRepeating(
           &KeyboardBacklightColorNudgeController::CloseEducationNudge,
           weak_factory_.GetWeakPtr()));
