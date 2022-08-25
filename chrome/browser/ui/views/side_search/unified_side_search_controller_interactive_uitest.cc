@@ -339,19 +339,19 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test, SwitchSidePanelInSingleTab) {
   NotifyButtonClick(browser());
   EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
   EXPECT_EQ(SidePanelEntry::Id::kSideSearch,
-            coordinator->GetCurrentSidePanelEntryForTesting()->key().id());
+            coordinator->GetCurrentSidePanelEntryForTesting()->id());
 
   // Switch to reading list side panel.
   coordinator->Show(SidePanelEntry::Id::kReadingList);
   EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
   EXPECT_EQ(SidePanelEntry::Id::kReadingList,
-            coordinator->GetCurrentSidePanelEntryForTesting()->key().id());
+            coordinator->GetCurrentSidePanelEntryForTesting()->id());
 
   // Switch back to side search side panel.
   coordinator->Show(SidePanelEntry::Id::kSideSearch);
   EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
   EXPECT_EQ(SidePanelEntry::Id::kSideSearch,
-            coordinator->GetCurrentSidePanelEntryForTesting()->key().id());
+            coordinator->GetCurrentSidePanelEntryForTesting()->id());
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -371,7 +371,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test, MAYBE_SwitchTabsWithGlobalSidePanel) {
   EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
   coordinator->Show(SidePanelEntry::Id::kReadingList);
   EXPECT_EQ(SidePanelEntry::Id::kReadingList,
-            coordinator->GetCurrentSidePanelEntryForTesting()->key().id());
+            coordinator->GetCurrentSidePanelEntryForTesting()->id());
 
   // Tab 1 with side search available and open.
   AppendTab(browser(), GetMatchingSearchUrl());
@@ -379,7 +379,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test, MAYBE_SwitchTabsWithGlobalSidePanel) {
   EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
   NotifyButtonClick(browser());
   EXPECT_EQ(SidePanelEntry::Id::kSideSearch,
-            coordinator->GetCurrentSidePanelEntryForTesting()->key().id());
+            coordinator->GetCurrentSidePanelEntryForTesting()->id());
 
   // Tab 2 with side search available and open.
   AppendTab(browser(), GetMatchingSearchUrl());
@@ -387,34 +387,34 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test, MAYBE_SwitchTabsWithGlobalSidePanel) {
   EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
   NotifyButtonClick(browser());
   EXPECT_EQ(SidePanelEntry::Id::kSideSearch,
-            coordinator->GetCurrentSidePanelEntryForTesting()->key().id());
+            coordinator->GetCurrentSidePanelEntryForTesting()->id());
 
   // Tab 3 with side search available but not open.
   AppendTab(browser(), GetMatchingSearchUrl());
   NavigateActiveTab(browser(), GetNonMatchingUrl());
   EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
   EXPECT_EQ(SidePanelEntry::Id::kReadingList,
-            coordinator->GetCurrentSidePanelEntryForTesting()->key().id());
+            coordinator->GetCurrentSidePanelEntryForTesting()->id());
 
   // Switch to tab 0, side panel is open with reading list.
   ActivateTabAt(browser(), 0);
   EXPECT_EQ(SidePanelEntry::Id::kReadingList,
-            coordinator->GetCurrentSidePanelEntryForTesting()->key().id());
+            coordinator->GetCurrentSidePanelEntryForTesting()->id());
 
   // Switch to tab 1, side panel is open with side search.
   ActivateTabAt(browser(), 1);
   EXPECT_EQ(SidePanelEntry::Id::kSideSearch,
-            coordinator->GetCurrentSidePanelEntryForTesting()->key().id());
+            coordinator->GetCurrentSidePanelEntryForTesting()->id());
 
   // Switch to tab 2, side panel is open with side search.
   ActivateTabAt(browser(), 2);
   EXPECT_EQ(SidePanelEntry::Id::kSideSearch,
-            coordinator->GetCurrentSidePanelEntryForTesting()->key().id());
+            coordinator->GetCurrentSidePanelEntryForTesting()->id());
 
   // Switch to tab 3, side panel is open with reading list.
   ActivateTabAt(browser(), 3);
   EXPECT_EQ(SidePanelEntry::Id::kReadingList,
-            coordinator->GetCurrentSidePanelEntryForTesting()->key().id());
+            coordinator->GetCurrentSidePanelEntryForTesting()->id());
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -440,7 +440,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
   EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
   NotifyButtonClick(browser());
   EXPECT_EQ(SidePanelEntry::Id::kSideSearch,
-            coordinator->GetCurrentSidePanelEntryForTesting()->key().id());
+            coordinator->GetCurrentSidePanelEntryForTesting()->id());
 
   // Tab 2 with side search available and open.
   AppendTab(browser(), GetMatchingSearchUrl());
@@ -448,7 +448,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
   EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
   NotifyButtonClick(browser());
   EXPECT_EQ(SidePanelEntry::Id::kSideSearch,
-            coordinator->GetCurrentSidePanelEntryForTesting()->key().id());
+            coordinator->GetCurrentSidePanelEntryForTesting()->id());
 
   // Tab 3 with side search available but not open.
   AppendTab(browser(), GetMatchingSearchUrl());
@@ -463,12 +463,12 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
   // Switch to tab 1, side panel is open with side search.
   ActivateTabAt(browser(), 1);
   EXPECT_EQ(SidePanelEntry::Id::kSideSearch,
-            coordinator->GetCurrentSidePanelEntryForTesting()->key().id());
+            coordinator->GetCurrentSidePanelEntryForTesting()->id());
 
   // Switch to tab 2, side panel is open with side search.
   ActivateTabAt(browser(), 2);
   EXPECT_EQ(SidePanelEntry::Id::kSideSearch,
-            coordinator->GetCurrentSidePanelEntryForTesting()->key().id());
+            coordinator->GetCurrentSidePanelEntryForTesting()->id());
 
   // Switch to tab 3, side panel is closed.
   ActivateTabAt(browser(), 3);
@@ -491,8 +491,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test, MAYBE_CloseSidePanelShouldClearCache) {
   EXPECT_EQ(SidePanelEntry::Id::kSideSearch,
             browser_view->side_panel_coordinator()
                 ->GetCurrentSidePanelEntryForTesting()
-                ->key()
-                .id());
+                ->id());
 
   // When side panel is open,  side panel web contents is present.
   auto* tab_contents_helper = SideSearchTabContentsHelper::FromWebContents(
@@ -525,8 +524,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(SidePanelEntry::Id::kSideSearch,
             browser_view->side_panel_coordinator()
                 ->GetCurrentSidePanelEntryForTesting()
-                ->key()
-                .id());
+                ->id());
 
   // When side panel is open,  side panel web contents is present.
   auto* tab_contents_helper = SideSearchTabContentsHelper::FromWebContents(
@@ -654,5 +652,5 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(GetSidePanelButtonFor(browser())->GetVisible());
   EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
   EXPECT_EQ(SidePanelEntry::Id::kSideSearch,
-            coordinator->GetCurrentSidePanelEntryForTesting()->key().id());
+            coordinator->GetCurrentSidePanelEntryForTesting()->id());
 }

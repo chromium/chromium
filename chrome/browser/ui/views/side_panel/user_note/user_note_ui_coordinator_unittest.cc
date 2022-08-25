@@ -119,7 +119,7 @@ class UserNoteUICoordinatorTest : public TestWithBrowserView {
     SidePanelRegistry* contextual_registry =
         SidePanelRegistry::Get(active_contents);
     EXPECT_EQ(contextual_registry->entries().size(), 1u);
-    EXPECT_EQ(contextual_registry->entries()[0]->key().id(),
+    EXPECT_EQ(contextual_registry->entries()[0]->id(),
               SidePanelEntry::Id::kUserNote);
   }
 
@@ -170,8 +170,7 @@ TEST_F(UserNoteUICoordinatorTest, ShowEmptyUserNoteSidePanel) {
 
   coordinator_->Show(SidePanelEntry::Id::kUserNote);
 
-  SidePanelEntry::Id entry_id =
-      coordinator_->GetLastActiveEntryKey().value().id();
+  SidePanelEntry::Id entry_id = coordinator_->GetLastActiveEntryId().value();
   EXPECT_EQ(entry_id, SidePanelEntry::Id::kUserNote);
 
   auto* scroll_view = GetUserNoteScrollView();

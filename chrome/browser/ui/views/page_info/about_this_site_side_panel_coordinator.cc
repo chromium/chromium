@@ -59,8 +59,7 @@ void AboutThisSideSidePanelCoordinator::RegisterEntry(
   registered_but_not_shown_ = true;
 
   // Check if the view is already registered.
-  if (!registry->GetEntryForKey(
-          SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite))) {
+  if (!registry->GetEntryForId(SidePanelEntry::Id::kAboutThisSite)) {
     const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
         ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE);
     auto entry = std::make_unique<SidePanelEntry>(
@@ -105,7 +104,7 @@ void AboutThisSideSidePanelCoordinator::DidFinishNavigation(
   }
   // Remove SidePanel entry when user navigates to a different page.
   SidePanelRegistry::Get(web_contents())
-      ->Deregister(SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite));
+      ->Deregister(SidePanelEntry::Id::kAboutThisSite);
   about_this_site_side_panel_view_ = nullptr;
   last_url_params_.reset();
 }
