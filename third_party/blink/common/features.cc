@@ -473,11 +473,13 @@ const base::Feature kWebRtcUseMinMaxVEADimensions {
 const base::Feature kBlinkHeapCompaction{"BlinkHeapCompaction",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 // Enables concurrently marking Blink's heap.
+// Disabled as non-deterministic runnables can't be posted when recording/replaying.
 const base::Feature kBlinkHeapConcurrentMarking{
-    "BlinkHeapConcurrentMarking", base::FEATURE_ENABLED_BY_DEFAULT};
+    "BlinkHeapConcurrentMarking", base::FEATURE_DISABLED_BY_DEFAULT};
 // Enables concurrently sweeping Blink's heap.
+// Disabled as non-deterministic runnables can't be posted when recording/replaying.
 const base::Feature kBlinkHeapConcurrentSweeping{
-    "BlinkHeapConcurrentSweeping", base::FEATURE_ENABLED_BY_DEFAULT};
+    "BlinkHeapConcurrentSweeping", base::FEATURE_DISABLED_BY_DEFAULT};
 // Enables incrementally marking Blink's heap.
 const base::Feature kBlinkHeapIncrementalMarking{
     "BlinkHeapIncrementalMarking", base::FEATURE_ENABLED_BY_DEFAULT};
