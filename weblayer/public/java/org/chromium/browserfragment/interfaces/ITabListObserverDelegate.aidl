@@ -6,8 +6,9 @@ package org.chromium.browserfragment.interfaces;
 
 import org.chromium.browserfragment.interfaces.ITabParams;
 
-oneway interface ITabObserverDelegate {
-    void notifyTitleUpdated(String title) = 1;
-    void notifyVisibleUriChanged(String uri) = 2;
-    void notifyRenderProcessGone() = 3;
+oneway interface ITabListObserverDelegate {
+    void notifyActiveTabChanged(in ITabParams tabParams) = 1;
+    void notifyTabAdded(in ITabParams tabParams) = 2;
+    void notifyTabRemoved(in ITabParams tabParams) = 3;
+    void notifyWillDestroyBrowserAndAllTabs() = 4;
 }

@@ -55,6 +55,10 @@ public class Tab {
     private NewTabCallback mNewTabCallback;
     private final ObserverList<ScrollOffsetCallback> mScrollOffsetCallbacks;
     private @Nullable ActionModeCallback mActionModeCallback;
+
+    private TabProxy mTabProxy;
+    private TabNavigationControllerProxy mTabNavigationControllerProxy;
+
     // Id from the remote side.
     private final int mId;
     // Guid from the remote side.
@@ -70,6 +74,8 @@ public class Tab {
         mScrollOffsetCallbacks = null;
         mId = 0;
         mGuid = "";
+        mTabProxy = null;
+        mTabNavigationControllerProxy = null;
     }
 
     Tab(ITab impl, Browser browser) {
@@ -88,6 +94,10 @@ public class Tab {
         mNavigationController = NavigationController.create(mImpl);
         mFindInPageController = new FindInPageController(mImpl);
         mMediaCaptureController = new MediaCaptureController(mImpl);
+
+        mTabProxy = new TabProxy(this);
+        mTabNavigationControllerProxy = new TabNavigationControllerProxy(mNavigationController);
+
         registerTab(this);
     }
 
@@ -418,6 +428,16 @@ public class Tab {
     @NonNull
     public String getGuid() {
         return mGuid;
+    }
+
+    @NonNull
+    TabNavigationControllerProxy getTabNavigationControllerProxy() {
+        return mTabNavigationControllerProxy;
+    }
+
+    @NonNull
+    TabProxy getTabProxy() {
+        return mTabProxy;
     }
 
     /**

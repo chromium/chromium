@@ -9,6 +9,7 @@ import android.os.Looper;
 import android.os.RemoteException;
 
 import org.chromium.browserfragment.interfaces.IStringCallback;
+import org.chromium.browserfragment.interfaces.ITabObserverDelegate;
 import org.chromium.browserfragment.interfaces.ITabProxy;
 import org.chromium.browserfragment.interfaces.IWebMessageCallback;
 
@@ -17,6 +18,7 @@ import java.util.List;
 /**
  * This class acts as a proxy between a Tab object in the embedding app
  * and the Tab implementation in WebLayer.
+ * A (@link TabProxy} is owned by the {@link Tab}.
  */
 class TabProxy extends ITabProxy.Stub {
     private final Handler mHandler = new Handler(Looper.getMainLooper());
@@ -24,14 +26,23 @@ class TabProxy extends ITabProxy.Stub {
     private int mTabId;
     private String mGuid;
 
+    private BrowserFragmentTabDelegate mTabObserverDelegate = new BrowserFragmentTabDelegate();
+    private BrowserFragmentNavigationDelegate mNavigationObserverDelegate =
+            new BrowserFragmentNavigationDelegate();
+
     TabProxy(Tab tab) {
         mTabId = tab.getId();
         mGuid = tab.getGuid();
+
+        tab.registerTabCallback(mTabObserverDelegate);
     }
 
     void invalidate() {
         mTabId = -1;
         mGuid = null;
+
+        mTabObserverDelegate = null;
+        mNavigationObserverDelegate = null;
     }
 
     boolean isValid() {
@@ -115,5 +126,10 @@ class TabProxy extends ITabProxy.Stub {
     @Override
     public void unregisterWebMessageCallback(String jsObjectName) {
         mHandler.post(() -> { getTab().unregisterWebMessageCallback(jsObjectName); });
+    }
+
+    @Override
+    public void setTabObserverDelegate(ITabObserverDelegate tabObserverDelegate) {
+        mTabObserverDelegate.setObserver(tabObserverDelegate);
     }
 }

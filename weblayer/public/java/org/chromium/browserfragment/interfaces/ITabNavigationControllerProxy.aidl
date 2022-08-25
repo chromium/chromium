@@ -5,6 +5,7 @@
 package org.chromium.browserfragment.interfaces;
 
 import org.chromium.browserfragment.interfaces.IBooleanCallback;
+import org.chromium.browserfragment.interfaces.INavigationObserverDelegate;
 
 oneway interface ITabNavigationControllerProxy {
     void navigate(in String uri) = 1;
@@ -13,4 +14,5 @@ oneway interface ITabNavigationControllerProxy {
     void canGoBack(IBooleanCallback callback) = 4;
     void canGoForward(IBooleanCallback callback) = 5;
 
+    void setNavigationObserverDelegate(INavigationObserverDelegate tabNavigationDelegate) = 6;
 }

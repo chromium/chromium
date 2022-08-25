@@ -20,6 +20,9 @@ import org.chromium.browserfragment.interfaces.ITabNavigationControllerProxy;
 public class TabNavigationController {
     private final ITabNavigationControllerProxy mTabNavigationControllerProxy;
 
+    private NavigationObserverDelegate mNavigationObserverDelegate =
+            new NavigationObserverDelegate();
+
     private final class RequestNavigationCallback extends IBooleanCallback.Stub {
         private CallbackToFutureAdapter.Completer<Boolean> mCompleter;
 
@@ -35,6 +38,11 @@ public class TabNavigationController {
 
     TabNavigationController(ITabNavigationControllerProxy tabNavigationControllerProxy) {
         mTabNavigationControllerProxy = tabNavigationControllerProxy;
+        try {
+            mTabNavigationControllerProxy.setNavigationObserverDelegate(
+                    mNavigationObserverDelegate);
+        } catch (RemoteException e) {
+        }
     }
 
     /**
@@ -99,5 +107,27 @@ public class TabNavigationController {
             // Debug string.
             return "Can navigate forward Future";
         });
+    }
+
+    /**
+     * Registers a {@link NavigationObserver} and returns if successful.
+     *
+     * @param navigationObserver The {@link NavigationObserver}.
+     *
+     * @return true if observer was added to the list of observers.
+     */
+    public boolean registerNavigationObserver(@NonNull NavigationObserver navigationObserver) {
+        return mNavigationObserverDelegate.registerObserver(navigationObserver);
+    }
+
+    /**
+     * Unregisters a {@link NavigationObserver} and returns if successful.
+     *
+     * @param navigationObserver The TabObserver to remove.
+     *
+     * @return true if observer was removed from the list of observers.
+     */
+    public boolean unregisterNavigationObserver(@NonNull NavigationObserver navigationObserver) {
+        return mNavigationObserverDelegate.unregisterObserver(navigationObserver);
     }
 }

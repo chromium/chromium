@@ -5,39 +5,29 @@
 package org.chromium.browserfragment;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 /**
- * An interface for observing changes to the set of tabs in a BrowserFragment.
+ * An interface for observing changes to a Tab.
  */
 public abstract class TabObserver {
     /**
-     * The active tab has changed.
+     * The Uri that can be displayed in the location-bar has updated.
      *
-     * @param activeTab The newly active tab, null if no tab is active.
+     * @param uri The new user-visible uri.
      */
-    public void onActiveTabChanged(@Nullable Tab activeTab) {}
+    public void onVisibleUriChanged(@NonNull String uri) {}
 
     /**
-     * A tab was added to the BrowserFragment.
+     * Called when the title of this tab changes. Note before the page sets a title, the title may
+     * be a portion of the Uri.
      *
-     * @param tab The tab that was added.
+     * @param title New title of this tab.
      */
-    public void onTabAdded(@NonNull Tab tab) {}
+    public void onTitleUpdated(@NonNull String title) {}
 
     /**
-     * A tab was removed from the BrowserFragment.
-     *
-     * WARNING: this is *not* called when the  BrowserFragment is destroyed. See {@link
-     * #onWillDestroyBrowserAndAllTabs} for more.
-     *
-     * @param tab The tab that was removed.
+     * Triggered when the render process dies, either due to crash or killed by the system to
+     * reclaim memory.
      */
-    public void onTabRemoved(@NonNull Tab tab) {}
-
-    /**
-     * Called when the BrowserFragment is about to be destroyed. After this
-     * call the BrowserFragment with all Tabs are destroyed and can not be used.
-     */
-    public void onWillDestroyBrowserAndAllTabs() {}
+    public void onRenderProcessGone() {}
 }

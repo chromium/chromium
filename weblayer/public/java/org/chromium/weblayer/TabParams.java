@@ -14,10 +14,9 @@ import org.chromium.browserfragment.interfaces.ITabParams;
 class TabParams {
     static ITabParams buildParcelable(@NonNull Tab tab) {
         ITabParams parcel = new ITabParams();
-        parcel.tabProxy = new TabProxy(tab);
+        parcel.tabProxy = tab.getTabProxy();
         parcel.tabGuid = tab.getGuid();
-        parcel.navigationControllerProxy =
-                new TabNavigationControllerProxy(tab.getNavigationController());
+        parcel.navigationControllerProxy = tab.getTabNavigationControllerProxy();
 
         return parcel;
     }

@@ -40,7 +40,7 @@ public class BrowserFragment extends Fragment {
     private SurfaceView mSurfaceView;
     private Browser mBrowser;
     private IBrowserFragmentDelegate mDelegate;
-    private final TabObserverDelegate mTabObserverDelegate = new TabObserverDelegate();
+    private final TabListObserverDelegate mTabListObserverDelegate = new TabListObserverDelegate();
     private ListenableFuture<TabManager> mFutureTabManager;
     private CallbackToFutureAdapter.Completer<TabManager> mTabManagerCompleter;
     private Bundle mInstanceState = new Bundle();
@@ -127,7 +127,7 @@ public class BrowserFragment extends Fragment {
 
         try {
             mDelegate.setClient(mClient);
-            mDelegate.setTabObserverDelegate(mTabObserverDelegate);
+            mDelegate.setTabListObserverDelegate(mTabListObserverDelegate);
             mDelegate.onAttach();
         } catch (RemoteException e) {
         }
@@ -239,25 +239,25 @@ public class BrowserFragment extends Fragment {
     }
 
     /**
-     * Register a tab observer and returns if successful.
+     * Registers a browser observer and returns if successful.
      *
-     * @param tabObserver The TabObserver.
+     * @param tabListObserver The TabListObserver.
      *
      * @return true if observer was added to the list of observers.
      */
-    public boolean registerTabObserver(@NonNull TabObserver tabObserver) {
-        return mTabObserverDelegate.registerObserver(tabObserver);
+    public boolean registerTabListObserver(@NonNull TabListObserver tabListObserver) {
+        return mTabListObserverDelegate.registerObserver(tabListObserver);
     }
 
     /**
-     * Unregister a tab observer and returns if successful.
+     * Unregisters a browser observer and returns if successful.
      *
-     * @param tabObserver The TabObserver to remove.
+     * @param tabListObserver The TabListObserver to remove.
      *
      * @return true if observer was removed from the list of observers.
      */
-    public boolean unregisterTabObserver(@NonNull TabObserver tabObserver) {
-        return mTabObserverDelegate.unregisterObserver(tabObserver);
+    public boolean unregisterTabListObserver(@NonNull TabListObserver tabListObserver) {
+        return mTabListObserverDelegate.unregisterObserver(tabListObserver);
     }
 
     private BrowserViewModel getViewModel() {

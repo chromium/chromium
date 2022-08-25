@@ -25,7 +25,7 @@ import java.util.List;
 public class Tab {
     private ITabProxy mTabProxy;
     private TabNavigationController mTabNavigationController;
-
+    private TabObserverDelegate mTabObserverDelegate = new TabObserverDelegate();
     private String mGuid;
 
     Tab(@NonNull ITabParams tabParams) {
@@ -36,6 +36,11 @@ public class Tab {
         mTabProxy = tabParams.tabProxy;
         mGuid = tabParams.tabGuid;
         mTabNavigationController = new TabNavigationController(tabParams.navigationControllerProxy);
+
+        try {
+            mTabProxy.setTabObserverDelegate(mTabObserverDelegate);
+        } catch (RemoteException e) {
+        }
     }
 
     public String getGuid() {
@@ -136,6 +141,27 @@ public class Tab {
             mTabProxy.unregisterWebMessageCallback(jsObjectName);
         } catch (RemoteException e) {
         }
+    }
+    /**
+     * Registers a {@link TabObserver} and returns if successful.
+     *
+     * @param tabObserver The TabObserver.
+     *
+     * @return true if observer was added to the list of observers.
+     */
+    public boolean registerTabObserver(@NonNull TabObserver tabObserver) {
+        return mTabObserverDelegate.registerObserver(tabObserver);
+    }
+
+    /**
+     * Unregisters a {@link Tabobserver} and returns if successful.
+     *
+     * @param tabObserver The TabObserver to remove.
+     *
+     * @return true if observer was removed from the list of observers.
+     */
+    public boolean unregisterTabObserver(@NonNull TabObserver tabObserver) {
+        return mTabObserverDelegate.unregisterObserver(tabObserver);
     }
 
     @Override

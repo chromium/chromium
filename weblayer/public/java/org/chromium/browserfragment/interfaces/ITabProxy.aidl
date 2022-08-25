@@ -8,6 +8,7 @@ import org.chromium.browserfragment.interfaces.IStringCallback;
 import org.chromium.browserfragment.interfaces.IWebMessageCallback;
 
 import java.util.List;
+import org.chromium.browserfragment.interfaces.ITabObserverDelegate;
 
 oneway interface ITabProxy {
   void setActive() = 1;
@@ -16,4 +17,6 @@ oneway interface ITabProxy {
 
   void registerWebMessageCallback(in IWebMessageCallback callback, in String jsObjectName, in List<String> allowedOrigins) = 4;
   void unregisterWebMessageCallback(in String jsObjectName) = 5;
+
+  void setTabObserverDelegate(ITabObserverDelegate tabObserverDelegate) = 6;
 }

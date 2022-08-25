@@ -18,7 +18,7 @@ import org.chromium.browserfragment.interfaces.ITabCallback;
 import org.chromium.browserfragment.interfaces.ITabParams;
 
 /**
- * Class for interaction with Browser Tabs.
+ * Class for interaction with BrowserFragment Tabs.
  * Calls into BrowserFragmentDelegate which runs on the Binder thread, and requires
  * finished initialization from onCreate on UIThread.
  * Access only via ListenableFuture through BrowserFragment.
@@ -49,7 +49,7 @@ public class TabManager {
         @Override
         public void onResult(@Nullable ITabParams tabParams) {
             if (tabParams != null) {
-                mCompleter.set(new Tab(tabParams));
+                mCompleter.set(TabRegistry.getInstance().getOrCreateTab(tabParams));
                 return;
             }
             mCompleter.set(null);

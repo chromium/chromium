@@ -10,15 +10,20 @@ import android.os.Looper;
 import android.os.RemoteException;
 
 import org.chromium.browserfragment.interfaces.IBooleanCallback;
+import org.chromium.browserfragment.interfaces.INavigationObserverDelegate;
 import org.chromium.browserfragment.interfaces.ITabNavigationControllerProxy;
 
 class TabNavigationControllerProxy extends ITabNavigationControllerProxy.Stub {
     private final Handler mHandler = new Handler(Looper.getMainLooper());
 
+    private BrowserFragmentNavigationDelegate mNavigationObserverDelegate =
+            new BrowserFragmentNavigationDelegate();
     private final NavigationController mNavigationController;
 
     TabNavigationControllerProxy(NavigationController navigationController) {
         mNavigationController = navigationController;
+
+        mNavigationController.registerNavigationCallback(mNavigationObserverDelegate);
     }
 
     @Override
@@ -58,5 +63,10 @@ class TabNavigationControllerProxy extends ITabNavigationControllerProxy.Stub {
             } catch (RemoteException e) {
             }
         });
+    }
+
+    @Override
+    public void setNavigationObserverDelegate(INavigationObserverDelegate navigationDelegate) {
+        mNavigationObserverDelegate.setObserver(navigationDelegate);
     }
 }

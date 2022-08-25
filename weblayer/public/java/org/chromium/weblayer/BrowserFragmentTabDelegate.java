@@ -4,71 +4,37 @@
 
 package org.chromium.weblayer;
 
+import android.net.Uri;
 import android.os.RemoteException;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.browserfragment.interfaces.ITabObserverDelegate;
-import org.chromium.browserfragment.interfaces.ITabParams;
 
 /**
  * This class acts as a proxy between the Tab events happening in
- * weblayer and the TabManager in browserfragment.
+ * weblayer and the TabObserverDelegate in browserfragment.
  */
-class BrowserFragmentTabDelegate extends TabListCallback {
+class BrowserFragmentTabDelegate extends TabCallback {
     private ITabObserverDelegate mTabObserver;
-
-    private final NewTabCallback mNewTabCallback = new NewTabCallback() {
-        @Override
-        public void onNewTab(@NonNull Tab tab, @NewTabType int type) {
-            // Set foreground tabs and tabs in new windows by default to active.
-            switch (type) {
-                case NewTabType.FOREGROUND_TAB:
-                case NewTabType.NEW_WINDOW:
-                    tab.getBrowser().setActiveTab(tab);
-                    break;
-            }
-        }
-    };
 
     void setObserver(ITabObserverDelegate observer) {
         mTabObserver = observer;
     }
 
     @Override
-    public void onActiveTabChanged(@Nullable Tab tab) {
-        maybeRunOnTabObserver(observer -> {
-            ITabParams tabParams = null;
-            if (tab != null) {
-                tabParams = TabParams.buildParcelable(tab);
-            }
-            observer.notifyActiveTabChanged(tabParams);
-        });
+    public void onVisibleUriChanged(@NonNull Uri uri) {
+        maybeRunOnTabObserver(observer -> { observer.notifyVisibleUriChanged(uri.toString()); });
     }
 
     @Override
-    public void onTabAdded(@NonNull Tab tab) {
-        // This is a requirement to open new tabs.
-        tab.setNewTabCallback(mNewTabCallback);
-
-        maybeRunOnTabObserver(observer -> {
-            ITabParams tabParams = TabParams.buildParcelable(tab);
-            observer.notifyTabAdded(tabParams);
-        });
+    public void onRenderProcessGone() {
+        maybeRunOnTabObserver(observer -> { observer.notifyRenderProcessGone(); });
     }
 
     @Override
-    public void onTabRemoved(@NonNull Tab tab) {
-        maybeRunOnTabObserver(observer -> {
-            ITabParams tabParams = TabParams.buildParcelable(tab);
-            observer.notifyTabRemoved(tabParams);
-        });
-    }
-
-    @Override
-    public void onWillDestroyBrowserAndAllTabs() {
-        maybeRunOnTabObserver(observer -> observer.notifyWillDestroyBrowserAndAllTabs());
+    public void onTitleUpdated(@NonNull String title) {
+        maybeRunOnTabObserver(observer -> { observer.notifyTitleUpdated(title); });
     }
 
     private interface OnTabObserverCallback {

@@ -18,7 +18,7 @@ import org.chromium.browserfragment.interfaces.IBrowserFragmentDelegate;
 import org.chromium.browserfragment.interfaces.IBrowserFragmentDelegateClient;
 import org.chromium.browserfragment.interfaces.IFragmentParams;
 import org.chromium.browserfragment.interfaces.ITabCallback;
-import org.chromium.browserfragment.interfaces.ITabObserverDelegate;
+import org.chromium.browserfragment.interfaces.ITabListObserverDelegate;
 import org.chromium.browserfragment.interfaces.ITabParams;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 
@@ -35,7 +35,7 @@ class BrowserFragmentDelegate extends IBrowserFragmentDelegate.Stub {
     // TODO(rayankans): Create an event handler instead of using the weblayer fragment directly.
     private BrowserFragment mFragment;
 
-    private BrowserFragmentTabDelegate mTabDelegate;
+    private BrowserFragmentTabListDelegate mBrowserDelegate;
 
     private IBrowserFragmentDelegateClient mClient;
     private SurfaceControlViewHost mSurfaceControlViewHost;
@@ -43,7 +43,7 @@ class BrowserFragmentDelegate extends IBrowserFragmentDelegate.Stub {
     BrowserFragmentDelegate(Context context, WebLayer webLayer, IFragmentParams params) {
         mContext = context;
         mWebLayer = webLayer;
-        mTabDelegate = new BrowserFragmentTabDelegate();
+        mBrowserDelegate = new BrowserFragmentTabListDelegate();
 
         BrowserFragmentCreateParams createParams = (new BrowserFragmentCreateParams.Builder())
                                                            .setProfileName(params.profileName)
@@ -123,7 +123,7 @@ class BrowserFragmentDelegate extends IBrowserFragmentDelegate.Stub {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        mHandler.post(() -> mFragment.onCreate(savedInstanceState, mTabDelegate));
+        mHandler.post(() -> mFragment.onCreate(savedInstanceState, mBrowserDelegate));
     }
 
     @Override
@@ -174,8 +174,8 @@ class BrowserFragmentDelegate extends IBrowserFragmentDelegate.Stub {
     }
 
     @Override
-    public void setTabObserverDelegate(ITabObserverDelegate tabObserverDelegate) {
-        mTabDelegate.setObserver(tabObserverDelegate);
+    public void setTabListObserverDelegate(ITabListObserverDelegate browserObserverDelegate) {
+        mBrowserDelegate.setObserver(browserObserverDelegate);
     }
 
     @Override
