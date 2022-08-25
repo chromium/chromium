@@ -45,6 +45,9 @@ class COMPONENT_EXPORT(DBUS_POWER) NativeTimer {
              base::OnceClosure timer_expiration_callback,
              OnStartNativeTimerCallback result_callback);
 
+  // Simulates timer creation failure in tests
+  static void SimulateTimerCreationFailureForTesting();
+
  private:
   struct StartTimerParams;
 
@@ -91,6 +94,9 @@ class COMPONENT_EXPORT(DBUS_POWER) NativeTimer {
   // Watches |expiration_fd_| for an event.
   std::unique_ptr<base::FileDescriptorWatcher::Controller>
       expiration_fd_watcher_;
+
+  // Indicating if the timer creation should fail. Only set by tests.
+  static bool simulate_timer_creation_failure_for_testing_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
