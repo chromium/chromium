@@ -59,6 +59,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void RequestToken(
       std::vector<blink::mojom::IdentityProviderPtr> identity_provider_ptrs,
       bool prefer_auto_sign_in,
+      bool show_iframe_requester,
       RequestTokenCallback) override;
   void CancelTokenRequest() override;
   void LogoutRps(std::vector<blink::mojom::LogoutRpsRequestPtr> logout_requests,

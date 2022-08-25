@@ -1230,10 +1230,13 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
     }
 
     bool prefer_auto_sign_in = options->identity()->preferAutoSignIn();
+    bool show_iframe_requester =
+        (options->identity()->showRequester() == "both");
     auto* auth_request =
         CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
     auth_request->RequestToken(
         std::move(identity_provider_ptrs), prefer_auto_sign_in,
+        show_iframe_requester,
         WTF::Bind(&OnRequestToken, WrapPersistent(resolver),
                   WrapPersistent(options)));
 

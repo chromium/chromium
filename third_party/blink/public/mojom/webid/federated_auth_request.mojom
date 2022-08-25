@@ -59,7 +59,7 @@ interface FederatedAuthRequest {
   // Requests a token to be generated, given an array of IdentityProviders.
   // Returns the raw content of the token.
   RequestToken(array<IdentityProvider> identity_providers,
-                 bool prefer_auto_sign_in) =>
+               bool prefer_auto_sign_in, bool show_iframe_requester) =>
       (RequestTokenStatus status, string? token);
 
   // Cancels the pending token request, if any.

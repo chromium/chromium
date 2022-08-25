@@ -294,6 +294,7 @@ FederatedAuthRequestImpl& FederatedAuthRequestImpl::CreateForTesting(
 void FederatedAuthRequestImpl::RequestToken(
     std::vector<IdentityProviderPtr> identity_provider_ptrs,
     bool prefer_auto_sign_in,
+    bool show_iframe_requester,
     RequestTokenCallback callback) {
   // TODO(crbug.com/1348262): Temporarily support only the first IDP, extend to
   // support multiple IDPs.
