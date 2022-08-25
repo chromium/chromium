@@ -925,14 +925,28 @@ TEST(AttributionResponseParsingTest, ParseEventTriggerData) {
       {
           "missing_trigger_data",
           ParseJSON(R"json([{}])json"),
-          false,
-          {},
+          true,
+          VectorBuilder<mojom::blink::EventTriggerDataPtr>()
+              .Add(mojom::blink::EventTriggerData::New(
+                  /*data=*/0,
+                  /*priority=*/0,
+                  /*dedup_key=*/nullptr,
+                  /*filters=*/AttributionFilterDataBuilder().Build(),
+                  /*not_filters=*/AttributionFilterDataBuilder().Build()))
+              .Build(),
       },
       {
           "trigger_data_not_string",
           ParseJSON(R"json([{"trigger_data": 1}])json"),
-          false,
-          {},
+          true,
+          VectorBuilder<mojom::blink::EventTriggerDataPtr>()
+              .Add(mojom::blink::EventTriggerData::New(
+                  /*data=*/0,
+                  /*priority=*/0,
+                  /*dedup_key=*/nullptr,
+                  /*filters=*/AttributionFilterDataBuilder().Build(),
+                  /*not_filters=*/AttributionFilterDataBuilder().Build()))
+              .Build(),
       },
       {
           "invalid_trigger_data",

@@ -19,7 +19,7 @@ const debug_key_promise_test = (testCase, forSource) =>
     });
 
     await registerAttributionSrc(t, {trigger: {
-      event_trigger_data: [{trigger_data: '0'}],
+      event_trigger_data: [{}],
       debug_key: forSource ? undefined : testCase.debugKey,
     }});
 
