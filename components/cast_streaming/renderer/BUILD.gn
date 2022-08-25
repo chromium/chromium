@@ -131,10 +131,18 @@ source_set("buffer_requester") {
 }
 
 source_set("web_codecs") {
-  sources = [ "web_codecs/delegating_decoder_buffer_provider.h" ]
+  sources = [
+    "web_codecs/delegating_decoder_buffer_provider.h",
+    "web_codecs/stream_control_channel.cc",
+    "web_codecs/stream_control_channel.h",
+  ]
   public_deps = [
+    ":buffer_requester",
     ":decoder_buffer_provider",
     "//base",
+    "//components/cast_streaming/public/mojom",
+    "//media/mojo/common",
+    "//media/mojo/mojom",
   ]
   visibility = [ ":*" ]
 }

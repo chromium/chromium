@@ -10,10 +10,20 @@
 #include "base/memory/weak_ptr.h"
 
 namespace media {
+class AudioDecoderConfig;
 class DecoderBuffer;
+class VideoDecoderConfig;
 }
 
 namespace cast_streaming {
+
+template <typename TConfigType>
+class DecoderBufferProvider;
+
+using AudioDecoderBufferProvider =
+    DecoderBufferProvider<media::AudioDecoderConfig>;
+using VideoDecoderBufferProvider =
+    DecoderBufferProvider<media::VideoDecoderConfig>;
 
 // This class provides a way for a caller to asynchronously request a new
 // buffer, as well as provide information associated with the buffers which it
