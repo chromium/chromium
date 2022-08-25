@@ -10,6 +10,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/webui/eche_app_ui/untrusted_eche_app_ui.h"
+#include "ash/webui/face_ml_app_ui/face_ml_app_untrusted_ui.h"
 #include "ash/webui/file_manager/file_manager_untrusted_ui.h"
 #include "ash/webui/help_app_ui/help_app_kids_magazine_untrusted_ui.h"
 #include "ash/webui/os_feedback_ui/os_feedback_untrusted_ui.h"
@@ -56,6 +57,10 @@ void RegisterAshChromeUntrustedWebUIConfigs() {
   if (base::FeatureList::IsEnabled(ash::features::kOsFeedback)) {
     map.AddUntrustedWebUIConfig(
         std::make_unique<ash::feedback::OsFeedbackUntrustedUIConfig>());
+  }
+  if (base::FeatureList::IsEnabled(ash::features::kFaceMLApp)) {
+    map.AddUntrustedWebUIConfig(
+        std::make_unique<ash::FaceMLAppUntrustedUIConfig>());
   }
 #if !defined(OFFICIAL_BUILD)
   map.AddUntrustedWebUIConfig(

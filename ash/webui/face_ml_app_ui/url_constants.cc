@@ -8,5 +8,6 @@ namespace ash {
 
 const char kChromeUIFaceMLAppHost[] = "face-ml";
 const char kChromeUIFaceMLAppURL[] = "chrome://face-ml";
+const char kChromeUIFaceMLAppUntrustedURL[] = "chrome-untrusted://face-ml/";
 
 }  // namespace ash

@@ -58,13 +58,10 @@ std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForFaceMLApp() {
 }
 
 FaceMLSystemAppDelegate::FaceMLSystemAppDelegate(Profile* profile)
-    : ash::SystemWebAppDelegate(
-          ash::SystemWebAppType::FACE_ML,
-          "FaceML",
-          GURL(ash::kChromeUIFaceMLAppURL),
-          profile,
-          ash::OriginTrialsMap({{ash::GetOrigin(ash::kChromeUIFaceMLAppURL),
-                                 {"FileHandling"}}})) {}
+    : ash::SystemWebAppDelegate(ash::SystemWebAppType::FACE_ML,
+                                "FaceML",
+                                GURL(ash::kChromeUIFaceMLAppURL),
+                                profile) {}
 
 std::unique_ptr<WebAppInstallInfo> FaceMLSystemAppDelegate::GetWebAppInfo()
     const {

@@ -33,17 +33,25 @@ FaceMLAppUI::FaceMLAppUI(content::WebUI* web_ui)
   trusted_source->SetDefaultResource(IDR_ASH_FACE_ML_APP_INDEX_HTML);
 #endif  // !DCHECK_IS_ON()
 
-  // Register common permissions for chrome://face_ml pages.
+  // We need a CSP override to use the chrome-untrusted:// scheme in the host.
+  trusted_source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::FrameSrc,
+      std::string("frame-src ") + kChromeUIFaceMLAppUntrustedURL + ";");
+
+  // Add ability to request "chrome-untrusted" URLs.
+  web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
+
+  // Register common permissions for chrome-untrusted://face-ml pages.
   auto* webui_allowlist = WebUIAllowlist::GetOrCreate(browser_context);
-  const url::Origin app_origin =
-      url::Origin::Create(GURL(kChromeUIFaceMLAppURL));
+  const url::Origin untrusted_origin =
+      url::Origin::Create(GURL(kChromeUIFaceMLAppUntrustedURL));
   webui_allowlist->RegisterAutoGrantedPermissions(
-      app_origin, {
-                      ContentSettingsType::COOKIES,
-                      ContentSettingsType::JAVASCRIPT,
-                      ContentSettingsType::IMAGES,
-                      ContentSettingsType::SOUND,
-                  });
+      untrusted_origin, {
+                            ContentSettingsType::COOKIES,
+                            ContentSettingsType::JAVASCRIPT,
+                            ContentSettingsType::IMAGES,
+                            ContentSettingsType::SOUND,
+                        });
 }
 
 FaceMLAppUI::~FaceMLAppUI() = default;

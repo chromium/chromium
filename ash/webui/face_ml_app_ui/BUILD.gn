@@ -11,12 +11,16 @@ static_library("face_ml_app_ui") {
   sources = [
     "face_ml_app_ui.cc",
     "face_ml_app_ui.h",
+    "face_ml_app_untrusted_ui.cc",
+    "face_ml_app_untrusted_ui.h",
     "url_constants.cc",
     "url_constants.h",
   ]
 
   deps = [
+    "//ash/webui/resources:face_ml_app_bundle_resources",
     "//ash/webui/resources:face_ml_app_resources",
+    "//ash/webui/resources:face_ml_app_untrusted_resources",
     "//ash/webui/system_apps/public:system_web_app_config",
     "//content/public/browser",
     "//ui/webui",

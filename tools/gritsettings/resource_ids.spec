@@ -645,6 +645,20 @@
     "META": {"join": 2, "sizes": {"includes": [50],}},
     "includes": [3440],
   },
+  # Both face_ml_app_bundle_resources.grd and face_ml_app_bundle_mock_resources.grd
+  # start with the same id because only one of them is built depending on if
+  # src_internal is available.
+  "ash/webui/face_ml_app_ui/resources/prod/face_ml_app_bundle_resources.grd": {
+    "META": {"sizes": {"includes": [120],}},  # Relies on src-internal.
+    "includes": [3460],
+  },
+  "ash/webui/face_ml_app_ui/resources/mock/face_ml_app_bundle_mock_resources.grd": {
+    "includes": [3460],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/face_ml_app_ui/resources/untrusted/ash_face_ml_app_untrusted_resources.grd": {
+    "META": {"join": 2, "sizes": {"includes": [50],}},
+    "includes": [3480],
+  },
   # END chromeos/ section.
 
   # START components/ section.
