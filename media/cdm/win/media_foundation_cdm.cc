@@ -219,11 +219,11 @@ class CdmProxyImpl : public MediaFoundationCdmProxy {
   }
 
   void OnSignificantPlayback() override {
-    cdm_event_cb_.Run(CdmEvent::kSignificantPlayback);
+    cdm_event_cb_.Run(CdmEvent::kSignificantPlayback, S_OK);
   }
 
-  void OnPlaybackError() override {
-    cdm_event_cb_.Run(CdmEvent::kPlaybackError);
+  void OnPlaybackError(HRESULT hresult) override {
+    cdm_event_cb_.Run(CdmEvent::kPlaybackError, hresult);
   }
 
  private:
@@ -314,7 +314,7 @@ HRESULT MediaFoundationCdm::Initialize() {
     // Only report CdmEvent::kCdmError here as this is where most failures
     // happen, and other errors can be easily triggered by sites, e.g. a bad
     // server certificate or a bad license.
-    OnCdmEvent(CdmEvent::kCdmError);
+    OnCdmEvent(CdmEvent::kCdmError, hresult);
     return hresult;
   }
 
@@ -618,9 +618,9 @@ void MediaFoundationCdm::OnHardwareContextReset() {
   }
 }
 
-void MediaFoundationCdm::OnCdmEvent(CdmEvent event) {
+void MediaFoundationCdm::OnCdmEvent(CdmEvent event, HRESULT hresult) {
   DVLOG_FUNC(1);
-  cdm_event_cb_.Run(event);
+  cdm_event_cb_.Run(event, hresult);
 }
 
 void MediaFoundationCdm::OnIsTypeSupportedResult(

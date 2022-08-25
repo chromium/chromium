@@ -954,7 +954,7 @@ void MediaFoundationRenderer::OnError(PipelineStatus status,
     if (cdm_proxy_)
       cdm_proxy_->OnHardwareContextReset();
   } else if (cdm_proxy_) {
-    cdm_proxy_->OnPlaybackError();
+    cdm_proxy_->OnPlaybackError(hresult);
   }
 
   // Attach hresult to `new_status` for logging and metrics reporting.

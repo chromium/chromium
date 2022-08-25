@@ -64,9 +64,9 @@ void MojoCdmHelper::SetCdmClientToken(
   cdm_document_service_->SetCdmClientToken(client_token);
 }
 
-void MojoCdmHelper::OnCdmEvent(CdmEvent event) {
+void MojoCdmHelper::OnCdmEvent(CdmEvent event, HRESULT hresult) {
   ConnectToCdmDocumentService();
-  cdm_document_service_->OnCdmEvent(event);
+  cdm_document_service_->OnCdmEvent(event, hresult);
 }
 #endif  // BUILDFLAG(IS_WIN)
 

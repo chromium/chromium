@@ -48,7 +48,7 @@ class MediaFoundationServiceMonitor final
   // Called when a significant playback or error happened when using
   // MediaFoundationCdm.
   void OnSignificantPlayback();
-  void OnPlaybackOrCdmError();
+  void OnPlaybackOrCdmError(HRESULT hr);
 
  private:
   // Make constructor/destructor private since this is a singleton.

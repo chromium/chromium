@@ -64,7 +64,7 @@ class MediaFoundationCdmProxy
   virtual void OnSignificantPlayback() = 0;
 
   // Notify the CDM that playback error happened.
-  virtual void OnPlaybackError() = 0;
+  virtual void OnPlaybackError(HRESULT hresult) = 0;
 
  protected:
   friend base::RefCountedThreadSafe<MediaFoundationCdmProxy>;

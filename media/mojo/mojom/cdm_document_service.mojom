@@ -73,7 +73,8 @@ interface CdmDocumentService {
   SetCdmClientToken(array<uint8> client_token);
 
   // Reports a CDM event, which can facilitate metrics reporting or fallback
-  // logic.
+  // logic.  For error events, the `hresult` provides more details about the
+  // error.
   [EnableIf=is_win]
-  OnCdmEvent(CdmEvent event);
+  OnCdmEvent(CdmEvent event, uint32 hresult);
 };
