@@ -1174,7 +1174,10 @@ paint/invalidation/multicol/column-rules-fixed-height.html [ Pass ]
 paint/invalidation/outline/focus-layers.html [ Pass ]
 paint/invalidation/overflow/composited-overflow-with-borderbox-background.html [ Pass ]
 paint/invalidation/position/absolute-position-changed.html [ Pass ]
-paint/invalidation/reflection/reflection-with-rotation.html [ Pass ]
+
+# TODO(michaelludwig): Suppressed for Skia roll, see crbug.com/1354678
+paint/invalidation/reflection/reflection-with-rotation.html [ Pass Failure ]
+
 paint/invalidation/scroll/destroy-composited-scrollbar.html [ Pass ]
 paint/invalidation/selection/selection-within-composited-scroller.html [ Pass ]
 paint/invalidation/svg/animate-path-morphing.svg [ Pass ]
