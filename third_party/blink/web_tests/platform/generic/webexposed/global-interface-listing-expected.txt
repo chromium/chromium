@@ -3133,6 +3133,7 @@ interface HTMLCanvasElement : HTMLElement
     getter height
     getter width
     method captureStream
+    method configureHighDynamicRange
     method constructor
     method convertToBlob
     method getContext

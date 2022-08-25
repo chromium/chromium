@@ -437,6 +437,13 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContextInternal(
   return context_.Get();
 }
 
+void HTMLCanvasElement::configureHighDynamicRange(
+    const CanvasHighDynamicRangeOptions* options,
+    ExceptionState& exception_state) {
+  // TODO(https://crbug.com/1274220): Implement this.
+  NOTIMPLEMENTED();
+}
+
 ScriptPromise HTMLCanvasElement::convertToBlob(
     ScriptState* script_state,
     const ImageEncodeOptions* options,
