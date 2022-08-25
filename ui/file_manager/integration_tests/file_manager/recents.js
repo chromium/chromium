@@ -1115,6 +1115,7 @@ testcase.recentsRespondToTimezoneChangeForListView = async () => {
   // Set timezone to Brisbane (GMT+10).
   await sendTestMessage({name: 'setTimezone', timezone: 'Australia/Brisbane'});
   const testFile = prepareFileFor1AMToday('Australia/Brisbane');
+  const isEarlierThan2AM = (new Date()).getHours() < 2;
 
   // Open Files app and go to Recent tab.
   const appId =
@@ -1138,6 +1139,15 @@ testcase.recentsRespondToTimezoneChangeForListView = async () => {
   // Set timezone to Perth (GMT+8).
   await sendTestMessage({name: 'setTimezone', timezone: 'Australia/Perth'});
 
+  // If the OS time before timezone change is earlier than 2am, then after
+  // timezone change the current date will move to a day before, the OS and
+  // date and modification date changes at the same time, so it will be "today".
+  // For example:
+  // before timezone change: os time 1:30am file modification time: today 1am
+  // move by -2 hours: os time 11:30pm file modification time: today 11pm
+  const targetDate = isEarlierThan2AM ? 'Today' : 'Yesterday';
+  const targetTime = '11:00 PM';
+
   // Check date modified column.
   const caller = getCaller();
   await repeatUntil(async () => {
@@ -1145,20 +1155,20 @@ testcase.recentsRespondToTimezoneChangeForListView = async () => {
         await remoteCall.callRemoteTestUtil('getFileList', appId, []);
     // We need to assert the exact time here, so the timezones before/after
     // should not involve daylight savings.
-    if (filesAfter[0][3] === 'Yesterday 11:00 PM') {
+    if (filesAfter[0][3] === `${targetDate} ${targetTime}`) {
       return;
     }
 
     return pending(
         caller,
-        `Expected modified date to be Yesterday 11pm", got "${
+        `Expected modified date to be "${targetDate} ${targetTime}", got "${
             filesAfter[0][3]}"`);
   });
 
   // Check group heading.
   const groupHeadingAfter =
       await remoteCall.waitForElement(appId, ['.group-heading']);
-  chrome.test.assertEq('Yesterday', groupHeadingAfter.text);
+  chrome.test.assertEq(targetDate, groupHeadingAfter.text);
 };
 
 
@@ -1167,9 +1177,10 @@ testcase.recentsRespondToTimezoneChangeForListView = async () => {
  * timezone changes.
  */
 testcase.recentsRespondToTimezoneChangeForGridView = async () => {
-  // Set timezone to Auckland (GMT+12/+13).
-  await sendTestMessage({name: 'setTimezone', timezone: 'Pacific/Auckland'});
-  const testFile = prepareFileFor1AMToday('Pacific/Auckland');
+  // Set timezone to Brisbane (GMT+10).
+  await sendTestMessage({name: 'setTimezone', timezone: 'Australia/Brisbane'});
+  const testFile = prepareFileFor1AMToday('Australia/Brisbane');
+  const isEarlierThan2AM = (new Date()).getHours() < 2;
 
   // Open Files app and go to Recent tab.
   const appId =
@@ -1191,18 +1202,20 @@ testcase.recentsRespondToTimezoneChangeForGridView = async () => {
   // Set timezone to Perth (GMT+8).
   await sendTestMessage({name: 'setTimezone', timezone: 'Australia/Perth'});
 
+  const targetDate = isEarlierThan2AM ? 'Today' : 'Yesterday';
+
   // Check group heading.
   const caller = getCaller();
   await repeatUntil(async () => {
     const groupHeadingAfter =
         await remoteCall.waitForElement(appId, ['.grid-title']);
-    if (groupHeadingAfter.text === 'Yesterday') {
+    if (groupHeadingAfter.text === targetDate) {
       return;
     }
 
     return pending(
         caller,
-        `Expected group heading to be Yesterday", got "${
+        `Expected group heading to be "${targetDate}", got "${
             groupHeadingAfter.text}"`);
   });
 };
