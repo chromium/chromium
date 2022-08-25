@@ -30,4 +30,10 @@ void LogAttestationResponseLatency(base::TimeTicks start_time, bool success) {
                           base::TimeTicks::Now() - start_time);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void LogOrigin(DTOrigin origin) {
+  base::UmaHistogramEnumeration("Enterprise.DeviceTrust.Origin", origin);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 }  // namespace enterprise_connectors

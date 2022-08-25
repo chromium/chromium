@@ -28830,6 +28830,11 @@ Called by update_document_policy_enum.py.-->
   <int value="1" label="Unknown error"/>
 </enum>
 
+<enum name="DTOrigin">
+  <int value="0" label="In session"/>
+  <int value="1" label="On login screen"/>
+</enum>
+
 <enum name="DumpOutcome">
   <int value="0" label="Success"/>
   <int value="1" label="Failure"/>

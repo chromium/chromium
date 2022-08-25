@@ -769,6 +769,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Enterprise.DeviceTrust.Origin" enum="DTOrigin"
+    expires_after="2023-08-01">
+  <owner>lmasopust@google.com</owner>
+  <owner>rodmartin@google.com</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Recorded when a device starts the device trust attestation flow with a
+    partner website. This captures if the attestation flow was triggered inside
+    of a session or on the login screen.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.DeviceTrust.RotateSigningKey.Tries" units="tries"
     expires_after="2023-07-01">
   <owner>hmare@google.com</owner>

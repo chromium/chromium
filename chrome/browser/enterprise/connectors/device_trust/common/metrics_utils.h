@@ -38,11 +38,26 @@ enum class DTAttestationResult {
   kMaxValue = kSuccess,
 };
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Possible origins of the Device Trust connector attestation flow on ChromeOS.
+// These values are persisted to logs and should not be renumbered. Please
+// update the DTOrigins enum in enums.xml when adding a new step here.
+enum class DTOrigin {
+  kInSession = 0,
+  kLoginScreen = 1,
+  kMaxValue = kLoginScreen,
+};
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 void LogAttestationFunnelStep(DTAttestationFunnelStep step);
 
 void LogAttestationResult(DTAttestationResult result);
 
 void LogAttestationResponseLatency(base::TimeTicks start_time, bool success);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void LogOrigin(DTOrigin origin);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace enterprise_connectors
 
