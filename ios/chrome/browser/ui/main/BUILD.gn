@@ -210,7 +210,7 @@ source_set("scene") {
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/signin",
     "//ios/public/provider/chrome/browser/ui_utils:ui_utils_api",
-    "//ios/public/provider/chrome/browser/user_feedback",
+    "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
     "//ios/third_party/material_components_ios",
     "//ui/base:base",
   ]

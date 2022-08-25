@@ -28,8 +28,7 @@ source_set("settings_root") {
     "//ios/chrome/browser/ui/table_view/cells",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
-    "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/user_feedback",
+    "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
     "//ui/base",
   ]
 }
@@ -203,7 +202,7 @@ source_set("settings") {
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/signin",
     "//ios/public/provider/chrome/browser/signin:signin_resources_api",
-    "//ios/public/provider/chrome/browser/user_feedback",
+    "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
     "//ios/web/common:features",
     "//net",
     "//ui/base",

@@ -56,7 +56,7 @@
 #include "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
-#import "ios/public/provider/chrome/browser/user_feedback/user_feedback_provider.h"
+#import "ios/public/provider/chrome/browser/user_feedback/user_feedback_api.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "net/url_request/url_request_context.h"
@@ -359,7 +359,8 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   [metricsMediator updateMetricsStateBasedOnPrefsUserTriggered:NO];
 
   // Send any feedback that might be still on temporary storage.
-  ios::GetChromeBrowserProvider().GetUserFeedbackProvider()->Synchronize();
+  if (ios::provider::IsUserFeedbackSupported())
+    ios::provider::UploadAllPendingUserFeedback();
 
   GetApplicationContext()->OnAppEnterForeground();
 

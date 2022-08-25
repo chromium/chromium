@@ -15,7 +15,7 @@ class Browser;
 @protocol BrowsingDataCommands;
 @protocol ImportDataControllerDelegate;
 @protocol SnackbarCommands;
-@protocol UserFeedbackDataSource;
+@class UserFeedbackData;
 
 // The accessibility identifier for the settings' "Done" button.
 extern NSString* const kSettingsDoneButtonId;
@@ -114,8 +114,7 @@ extern NSString* const kSettingsDoneButtonId;
     userFeedbackControllerForBrowser:(Browser*)browser
                             delegate:(id<SettingsNavigationControllerDelegate>)
                                          delegate
-                  feedbackDataSource:(id<UserFeedbackDataSource>)dataSource
-                              sender:(UserFeedbackSender)sender
+                    userFeedbackData:(UserFeedbackData*)userFeedbackData
                              handler:(id<ApplicationCommands>)handler;
 
 // Creates and displays a new ImportDataTableViewController. `browserState`

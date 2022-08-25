@@ -139,7 +139,7 @@
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 #import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
-#import "ios/public/provider/chrome/browser/user_feedback/user_feedback_provider.h"
+#import "ios/public/provider/chrome/browser/user_feedback/user_feedback_data.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
@@ -203,7 +203,6 @@ bool IsSigninForcedByPolicy() {
                                SceneUIProvider,
                                SceneURLLoadingServiceDelegate,
                                TabGridCoordinatorDelegate,
-                               UserFeedbackDataSource,
                                WebStateListObserving,
                                IncognitoInterstitialCoordinatorDelegate> {
   std::unique_ptr<WebStateListObserverBridge> _webStateListForwardingObserver;
@@ -265,11 +264,6 @@ bool IsSigninForcedByPolicy() {
 // time it is accessed. Use -[startSigninCoordinatorWithCompletion:] to start
 // the coordinator.
 @property(nonatomic, strong) SigninCoordinator* signinCoordinator;
-
-// Additional product specific data used by UserFeedbackDataSource.
-// TODO(crbug.com/1117041): Move this into a UserFeedback config object.
-@property(nonatomic, strong)
-    NSDictionary<NSString*, NSString*>* specificProductData;
 
 // YES if the process of dismissing the sign-in prompt is from an external
 // trigger and is currently ongoing. An external trigger isn't done from the
@@ -1514,26 +1508,88 @@ bool IsSigninForcedByPolicy() {
                     specificProductData:(NSDictionary<NSString*, NSString*>*)
                                             specificProductData {
   DCHECK(baseViewController);
-  self.specificProductData = specificProductData;
   // This dispatch is necessary to give enough time for the tools menu to
   // disappear before taking a screenshot.
+  __weak SceneController* weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
-    DCHECK(!self.signinCoordinator)
-        << "self.signinCoordinator: "
-        << base::SysNSStringToUTF8([self.signinCoordinator description]);
-    if (self.settingsNavigationController)
-      return;
-    Browser* browser = self.mainInterface.browser;
-    self.settingsNavigationController =
-        [SettingsNavigationController userFeedbackControllerForBrowser:browser
-                                                              delegate:self
-                                                    feedbackDataSource:self
-                                                                sender:sender
-                                                               handler:self];
-    [baseViewController presentViewController:self.settingsNavigationController
-                                     animated:YES
-                                   completion:nil];
+    [weakSelf presentReportAnIssueViewController:baseViewController
+                                          sender:sender
+                             specificProductData:specificProductData];
   });
+}
+
+- (void)presentReportAnIssueViewController:(UIViewController*)baseViewController
+                                    sender:(UserFeedbackSender)sender
+                       specificProductData:(NSDictionary<NSString*, NSString*>*)
+                                               specificProductData {
+  DCHECK(!self.signinCoordinator)
+      << "self.signinCoordinator: "
+      << base::SysNSStringToUTF8([self.signinCoordinator description]);
+  if (self.settingsNavigationController)
+    return;
+
+  UserFeedbackData* data =
+      [self createUserFeedbackDataForSender:sender
+                        specificProductData:specificProductData];
+
+  Browser* browser = self.mainInterface.browser;
+  id<ApplicationCommands> handler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
+  self.settingsNavigationController =
+      [SettingsNavigationController userFeedbackControllerForBrowser:browser
+                                                            delegate:self
+                                                    userFeedbackData:data
+                                                             handler:handler];
+  [baseViewController presentViewController:self.settingsNavigationController
+                                   animated:YES
+                                 completion:nil];
+}
+
+- (UserFeedbackData*)createUserFeedbackDataForSender:(UserFeedbackSender)sender
+                                 specificProductData:
+                                     (NSDictionary<NSString*, NSString*>*)
+                                         specificProductData {
+  UserFeedbackData* data = [[UserFeedbackData alloc] init];
+  data.origin = sender;
+  data.currentPageIsIncognito = self.currentInterface.incognito;
+
+  CGFloat scale = 0.0;
+  if (!self.mainCoordinator.isTabGridActive) {
+    web::WebState* webState =
+        self.currentInterface.browser->GetWebStateList()->GetActiveWebState();
+    if (webState) {
+      // Record URL of browser tab that is currently showing
+      GURL url = webState->GetVisibleURL();
+      std::u16string urlText = url_formatter::FormatUrl(url);
+      data.currentPageDisplayURL = base::SysUTF16ToNSString(urlText);
+    }
+  } else {
+    // For screenshots of the tab switcher we need to use a scale of 1.0 to
+    // avoid spending too much time since the tab switcher can have lots of
+    // subviews.
+    scale = 1.0;
+  }
+
+  UIView* lastView = self.mainCoordinator.activeViewController.view;
+  DCHECK(lastView);
+  data.currentPageScreenshot = CaptureView(lastView, scale);
+
+  ChromeBrowserState* browserState = self.currentInterface.browserState;
+  if (browserState->IsOffTheRecord()) {
+    data.currentPageIsIncognito = YES;
+  } else {
+    data.currentPageIsIncognito = NO;
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForBrowserState(browserState);
+    std::string username =
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+            .email;
+    if (!username.empty())
+      data.currentPageSyncedUserName = base::SysUTF8ToNSString(username);
+  }
+
+  data.productSpecificData = specificProductData;
+  return data;
 }
 
 - (void)openURLInNewTab:(OpenNewTabCommand*)command {
@@ -2043,52 +2099,6 @@ bool IsSigninForcedByPolicy() {
   [baseViewController presentViewController:self.settingsNavigationController
                                    animated:YES
                                  completion:nil];
-}
-
-#pragma mark - UserFeedbackDataSource
-
-- (BOOL)currentPageIsIncognito {
-  return self.currentInterface.incognito;
-}
-
-- (NSString*)currentPageDisplayURL {
-  if (self.mainCoordinator.isTabGridActive)
-    return nil;
-  web::WebState* webState =
-      self.currentInterface.browser->GetWebStateList()->GetActiveWebState();
-  if (!webState)
-    return nil;
-  // Returns URL of browser tab that is currently showing.
-  GURL url = webState->GetVisibleURL();
-  std::u16string urlText = url_formatter::FormatUrl(url);
-  return base::SysUTF16ToNSString(urlText);
-}
-
-- (UIImage*)currentPageScreenshot {
-  UIView* lastView = self.mainCoordinator.activeViewController.view;
-  DCHECK(lastView);
-  CGFloat scale = 0.0;
-  // For screenshots of the tab switcher we need to use a scale of 1.0 to avoid
-  // spending too much time since the tab switcher can have lots of subviews.
-  if (self.mainCoordinator.isTabGridActive)
-    scale = 1.0;
-  return CaptureView(lastView, scale);
-}
-
-- (NSString*)currentPageSyncedUserName {
-  ChromeBrowserState* browserState = self.currentInterface.browserState;
-  if (browserState->IsOffTheRecord())
-    return nil;
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForBrowserState(browserState);
-  std::string username =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-          .email;
-  return username.empty() ? nil : base::SysUTF8ToNSString(username);
-}
-
-- (NSDictionary<NSString*, NSString*>*)specificProductData {
-  return _specificProductData;
 }
 
 #pragma mark - SettingsNavigationControllerDelegate

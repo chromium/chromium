@@ -126,10 +126,9 @@
 #include "ios/net/cookies/cookie_store_ios.h"
 #import "ios/net/empty_nsurlcache.h"
 #include "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/overrides/overrides_api.h"
 #import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
-#import "ios/public/provider/chrome/browser/user_feedback/user_feedback_provider.h"
+#import "ios/public/provider/chrome/browser/user_feedback/user_feedback_api.h"
 #import "ios/web/common/features.h"
 #include "ios/web/public/webui/web_ui_ios_controller_factory.h"
 #import "net/base/mac/url_conversions.h"
@@ -834,13 +833,13 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 }
 
 - (void)sendQueuedFeedback {
-  [[DeferredInitializationRunner sharedInstance]
-      enqueueBlockNamed:kSendQueuedFeedback
-                  block:^{
-                    ios::GetChromeBrowserProvider()
-                        .GetUserFeedbackProvider()
-                        ->Synchronize();
-                  }];
+  if (ios::provider::IsUserFeedbackSupported()) {
+    [[DeferredInitializationRunner sharedInstance]
+        enqueueBlockNamed:kSendQueuedFeedback
+                    block:^{
+                      ios::provider::UploadAllPendingUserFeedback();
+                    }];
+  }
 }
 
 - (void)orientationDidChange:(NSNotification*)notification {

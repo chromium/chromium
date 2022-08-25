@@ -7,6 +7,7 @@
 #include "base/ios/ios_util.h"
 #include "base/mac/foundation_util.h"
 #include "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/main/browser.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
@@ -35,8 +36,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/user_feedback/user_feedback_provider.h"
+#import "ios/public/provider/chrome/browser/user_feedback/user_feedback_api.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -235,17 +235,20 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
     userFeedbackControllerForBrowser:(Browser*)browser
                             delegate:(id<SettingsNavigationControllerDelegate>)
                                          delegate
-                  feedbackDataSource:(id<UserFeedbackDataSource>)dataSource
-                              sender:(UserFeedbackSender)sender
+                    userFeedbackData:(UserFeedbackData*)userFeedbackData
                              handler:(id<ApplicationCommands>)handler {
   DCHECK(browser);
-  DCHECK(ios::GetChromeBrowserProvider()
-             .GetUserFeedbackProvider()
-             ->IsUserFeedbackEnabled());
+  DCHECK(ios::provider::IsUserFeedbackSupported());
+
+  UserFeedbackConfiguration* configuration =
+      [[UserFeedbackConfiguration alloc] init];
+  configuration.data = userFeedbackData;
+  configuration.handler = handler;
+  configuration.singleSignOnService = GetApplicationContext()->GetSSOService();
+
   UIViewController* controller =
-      ios::GetChromeBrowserProvider()
-          .GetUserFeedbackProvider()
-          ->CreateViewController(dataSource, handler, sender);
+      ios::provider::CreateUserFeedbackViewController(configuration);
+
   DCHECK(controller);
   SettingsNavigationController* nc = [[SettingsNavigationController alloc]
       initWithRootViewController:controller

@@ -52,7 +52,6 @@
 #import "ios/chrome/test/scoped_key_window.h"
 #include "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
 #include "ios/public/provider/chrome/browser/test_chrome_browser_provider.h"
-#include "ios/public/provider/chrome/browser/user_feedback/test_user_feedback_provider.h"
 #import "ios/testing/ocmock_complex_type_helper.h"
 #import "ios/testing/scoped_block_swizzler.h"
 #include "ios/web/public/test/web_task_environment.h"
@@ -719,10 +718,6 @@ TEST_F(AppStateTest, applicationWillEnterForeground) {
   [[[getStartupInformationMock() stub] andReturnValue:@YES] isFirstRun];
 
   // Setup.
-  ios::TestChromeBrowserProvider::GetTestProvider()
-      .GetUserFeedbackProvider()
-      ->ResetSynchronizeCalled();
-
   id application = [OCMockObject mockForClass:[UIApplication class]];
   id metricsMediator = [OCMockObject mockForClass:[MetricsMediator class]];
   id memoryHelper = [OCMockObject mockForClass:[MemoryWarningHelper class]];
@@ -770,9 +765,6 @@ TEST_F(AppStateTest, applicationWillEnterForeground) {
   EXPECT_OCMOCK_VERIFY(metricsMediator);
   EXPECT_OCMOCK_VERIFY(memoryHelper);
   EXPECT_OCMOCK_VERIFY(getStartupInformationMock());
-  EXPECT_TRUE(ios::TestChromeBrowserProvider::GetTestProvider()
-                  .GetUserFeedbackProvider()
-                  ->SynchronizeCalled());
 }
 
 // Tests that -applicationWillEnterForeground starts the browser if the
