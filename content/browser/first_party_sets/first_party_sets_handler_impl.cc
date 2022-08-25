@@ -163,22 +163,6 @@ std::vector<SingleSet> NormalizeAdditionSets(
   return normalized_additions;
 }
 
-// TODO(https://crbug.com/1349487): Since this is basically the same as
-// FirstPartySetsManager::FindOwnerInternal(), move the common algorithm into
-// //net to be reused in both here and FirstPartySetsManager.
-absl::optional<net::FirstPartySetEntry> FindOwner(
-    const net::SchemefulSite& site,
-    const FlattenedSets& sets,
-    const FirstPartySetsHandlerImpl::PolicyCustomization& policy_sets) {
-  absl::optional<net::FirstPartySetEntry> owner;
-  if (const auto it = policy_sets.find(site); it != policy_sets.end()) {
-    owner = it->second;
-  } else if (const auto it = sets.find(site); it != sets.end()) {
-    owner = it->second;
-  }
-  return owner;
-}
-
 }  // namespace
 
 bool FirstPartySetsHandler::PolicyParsingError::operator==(
@@ -497,49 +481,6 @@ network::mojom::PublicFirstPartySetsPtr FirstPartySetsHandlerImpl::GetSetsSync()
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!public_sets_.is_null());
   return public_sets_->Clone();
-}
-
-// static
-base::flat_set<net::SchemefulSite> FirstPartySetsHandlerImpl::ComputeSetsDiff(
-    const FlattenedSets& old_sets,
-    const PolicyCustomization& old_policy,
-    const FlattenedSets& current_sets,
-    const PolicyCustomization& current_policy) {
-  // TODO(https://crbug.com/1219656): For now we don't clear site data if FPSs
-  // is disabled. This may change with future feature ruquest.
-  if ((old_sets.empty() && old_policy.empty()) ||
-      (current_sets.empty() && current_policy.empty()))
-    return {};
-
-  std::vector<net::SchemefulSite> result;
-  for (const auto& old_pair : old_sets) {
-    const net::SchemefulSite& old_member = old_pair.first;
-    const net::FirstPartySetEntry& old_entry = old_pair.second;
-
-    if (base::Contains(old_policy, old_member))
-      continue;
-
-    absl::optional<net::FirstPartySetEntry> current_entry =
-        FindOwner(old_member, current_sets, current_policy);
-    // Look for the removed sites and the ones have owner changed.
-    if (!current_entry.has_value() ||
-        current_entry.value().primary() != old_entry.primary()) {
-      result.push_back(old_member);
-    }
-  }
-
-  for (const auto& old_pair : old_policy) {
-    const net::SchemefulSite& old_member = old_pair.first;
-    const absl::optional<net::FirstPartySetEntry>& old_entry = old_pair.second;
-
-    const absl::optional<net::FirstPartySetEntry> current_entry =
-        FindOwner(old_member, current_sets, current_policy);
-    // Look for the ones have owner changed.
-    if (old_entry.has_value() && current_entry != old_entry) {
-      result.push_back(old_member);
-    }
-  }
-  return result;
 }
 
 void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSets() const {

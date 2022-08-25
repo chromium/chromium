@@ -950,6 +950,8 @@ source_set("browser") {
     "first_party_sets/database/first_party_sets_database.h",
     "first_party_sets/first_party_set_parser.cc",
     "first_party_sets/first_party_set_parser.h",
+    "first_party_sets/first_party_sets_handler_database_helper.cc",
+    "first_party_sets/first_party_sets_handler_database_helper.h",
     "first_party_sets/first_party_sets_handler_impl.cc",
     "first_party_sets/first_party_sets_handler_impl.h",
     "first_party_sets/first_party_sets_loader.cc",
