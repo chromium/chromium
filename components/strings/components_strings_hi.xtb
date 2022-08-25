@@ -649,6 +649,7 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग में अपना ब्राउज़िंग इतिहास, कुकी, कैश मेमोरी वगैरह मिटाने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="2650446666397867134">फ़ाइल को एक्सेस नहीं दिया गया था</translation>
 <translation id="2653659639078652383">सबमिट करें</translation>
+<translation id="2657637947725373811">{0,plural, =1{क्या आपको गोपनीय फ़ाइल ट्रांसफ़र करनी है?}one{क्या आपको गोपनीय फ़ाइल ट्रांसफ़र करनी है?}other{क्या आपको गोपनीय फ़ाइलें ट्रांसफ़र करनी हैं?}}</translation>
 <translation id="2660779039299703961">इवेंट</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{कोई पासवर्ड नहीं है}=1{(<ph name="DOMAIN_LIST" /> के लिए) 1 पासवर्ड}=2{(<ph name="DOMAIN_LIST" /> के लिए) 2 पासवर्ड}one{(<ph name="DOMAIN_LIST" /> के लिए) # पासवर्ड}other{(<ph name="DOMAIN_LIST" /> के लिए) # पासवर्ड}}</translation>
 <translation id="2666092431469916601">शीर्ष</translation>
@@ -795,6 +796,7 @@
 <translation id="3108943290502734357">बीच की ट्रे</translation>
 <translation id="3109728660330352905">आपके पास इस पेज को देखने की अनुमति नहीं है.</translation>
 <translation id="3113284927548439113">तीसरी शिफ़्ट</translation>
+<translation id="3115363211799416195">{0,plural, =1{क्या आपको गोपनीय फ़ाइल डाउनलोड करनी है?}one{क्या आपको गोपनीय फ़ाइल डाउनलोड करनी है?}other{क्या आपको गोपनीय फ़ाइलें डाउनलोड करनी हैं?}}</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> के लिए ज़रूरी है कि आप अपने डेटा का बैक अप लें और इस <ph name="DEVICE_TYPE" /> को लौटा दें.</translation>
 <translation id="3116158981186517402">लैमनेट</translation>
 <translation id="3120730422813725195">Elo</translation>
@@ -983,6 +985,7 @@
 <translation id="3615877443314183785">खत्म होने की मान्य तारीख डालें</translation>
 <translation id="36224234498066874">ब्राउज़िंग डेटा मिटाएं...</translation>
 <translation id="362276910939193118">पूरा इतिहास दिखाएं</translation>
+<translation id="3628905806504633297">{0,plural, =1{एडमिन नीति, इस फ़ाइल को <ph name="DESTINATION_NAME" /> पर ट्रांसफ़र करने का सुझाव नहीं देती है}one{एडमिन नीति, इस फ़ाइल को <ph name="DESTINATION_NAME" /> पर ट्रांसफ़र करने का सुझाव नहीं देती है}other{एडमिन नीति, इन फ़ाइलों को <ph name="DESTINATION_NAME" /> पर ट्रांसफ़र करने का सुझाव नहीं देती है}}</translation>
 <translation id="3630155396527302611">अगर वह नेटवर्क एक्सेस करने की अनुमति पाए हुए प्रोग्राम के रूप में पहले से ही सूची में शामिल है, तो
       उसे सूची से हटाने और फिर से जोड़ने की कोशिश करें.</translation>
 <translation id="3630699740441428070">इस डिवाइस के एडमिन ने आपके नेटवर्क कनेक्शन को कॉन्फ़िगर किया है. ऐसे में, उन्हें आपके नेटवर्क का ट्रैफ़िक दिख सकता है. इस ट्रैफ़िक में ऐसी वेबसाइटें शामिल हैं जिन पर आप जाते हैं.</translation>
@@ -1341,6 +1344,7 @@
 <translation id="4607603470419975064">Chrome की सलाह देखने के लिए बटन, Chrome की सुविधाओं के बारे में जानने के लिए Enter दबाएं</translation>
 <translation id="4607608436550361748">Chrome की सलाह देखें</translation>
 <translation id="4617273035598175554">ग्राफ़िक और ऐनिमेशन के लिए सॉफ़्टवेयर</translation>
+<translation id="4622292761762557753">फिर भी ट्रांसफ़र करें</translation>
 <translation id="4627675673814409125">इस नीति को Chrome के प्रोफ़ाइल लेवल पर सेट नहीं किया जा सकता और इसे नज़रअंदाज़ कर दिया जाएगा.</translation>
 <translation id="4628948037717959914">फ़ोटो</translation>
 <translation id="4631649115723685955">पैसे चुकाने पर कैशबैक मिलेगा</translation>
@@ -1656,6 +1660,7 @@
 <translation id="540969355065856584">यह सर्वर यह प्रमाणित नहीं कर सका कि यह <ph name="DOMAIN" /> है; इसका सुरक्षा प्रमाण पत्र इस समय मान्य नहीं है. ऐसा गलत कॉन्फ़िगरेशन या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन में अवरोध डालने के कारण हो सकता है.</translation>
 <translation id="5412040515238827314">अमान्य फ़ॉर्मैट: पैटर्न की सूची होनी चाहिए.</translation>
 <translation id="5412236728747081950">यह साइट आपकी दिलचस्पी के बारे में Chrome से पता करती है, ताकि आपको ज़्यादा काम के विज्ञापन दिखा सके</translation>
+<translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">स्टैकर 4</translation>
 <translation id="5421136146218899937">ब्राउज़िंग डेटा मिटाएं...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> वेबसाइट आपको सूचनाएं भेजना चाहती है</translation>
@@ -2060,6 +2065,7 @@
 <translation id="6591833882275308647">आपका <ph name="DEVICE_TYPE" /> प्रबंधित नहीं किया जाता</translation>
 <translation id="6592952801936330159">साइट की सेटिंग का बटन मैनेज करें, Chrome की सेटिंग में अलग-अलग साइटों पर सेव डेटा और अनुमतियां मैनेज करने के लिए, Enter दबाएं</translation>
 <translation id="6596325263575161958">सुरक्षित करने के तरीकों के विकल्प</translation>
+<translation id="6599642189720630047">ट्रैक किए गए प्रॉडक्ट</translation>
 <translation id="6609880536175561541">पीआरसी7 (एन्वेलप)</translation>
 <translation id="6611723696964473273">आर्थिक मामलों से जुड़ी खबरें</translation>
 <translation id="6612010098632894193">ऑनलाइन वीडियो</translation>
@@ -2587,6 +2593,7 @@
 <translation id="8004582292198964060">ब्राउज़र</translation>
 <translation id="8009225694047762179">पासवर्ड संभालें</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{इस कार्ड और इसके बिलिंग पते को सेव किया जाएगा. <ph name="USER_EMAIL" /> में साइन इन रहने पर आप इसका इस्तेमाल कर पाएंगे.}one{ये कार्ड और इनके बिलिंग पते सेव किए जाएंगे. <ph name="USER_EMAIL" /> में साइन इन रहने पर आप उनका इस्तेमाल कर पाएंगे.}other{ये कार्ड और इनके बिलिंग पते सेव किए जाएंगे. <ph name="USER_EMAIL" /> में साइन इन रहने पर आप उनका इस्तेमाल कर पाएंगे.}}</translation>
+<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8025119109950072390">इस साइट पर मौजूद हमलावर आपको धोखा देकर आपसे कुछ जोखिम वाला काम करा सकते हैं, जैसे सॉफ़्टवेयर इंस्टॉल करना या आपकी व्यक्तिगत जानकारी (उदाहरण के लिए, पासवर्ड, फ़ोन नंबर या क्रेडिट कार्ड) के बारे में बताना.</translation>
 <translation id="8026334261755873520">ब्राउज़िंग डेटा मिटाएं</translation>
 <translation id="8027077570865220386">ट्रे 15</translation>
@@ -2638,6 +2645,7 @@
 <translation id="8148608574971654810">पीडीएफ़ का वर्शन:</translation>
 <translation id="8149426793427495338">आपका कंप्यूटर निष्क्रिय हो गया है.</translation>
 <translation id="8150722005171944719"><ph name="URL" /> पर मौजूद फ़ाइल पढ़ने के लायक नहीं है.  हो सकता है कि इसे हटा दिया गया हो, कहीं ले जाया गया हो, या फ़ाइल की अनुमतियां एक्सेस को रोक रही हों.</translation>
+<translation id="8153865548451212769">{0,plural, =1{एडमिन नीति, इस फ़ाइल को <ph name="DESTINATION_NAME" /> पर डाउनलोड करने का सुझाव नहीं देती है}one{एडमिन नीति, इस फ़ाइल को <ph name="DESTINATION_NAME" /> पर डाउनलोड करने का सुझाव नहीं देती है}other{एडमिन नीति, इन फ़ाइलों को <ph name="DESTINATION_NAME" /> पर डाउनलोड करने का सुझाव नहीं देती है}}</translation>
 <translation id="8157295877370077682">साइट छोड़ें</translation>
 <translation id="8163866351304776260">बाईं ओर क्वाड पंच</translation>
 <translation id="8175796834047840627">आपके साइन इन किए होने की वजह से Chrome आपको Google खाते में कार्ड सेव करने की सुविधा देता है. आप सेटिंग में जाकर इसे बदल सकते हैं.</translation>

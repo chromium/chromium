@@ -563,7 +563,6 @@
 <translation id="1536754031901697553">연결을 해제하는 중...</translation>
 <translation id="1537254971476575106">전체화면 돋보기</translation>
 <translation id="15373452373711364">큰 마우스 커서</translation>
-<translation id="1539630663098418038"><ph name="EXTENSIONS_REQUESTING_ACCESS" />에서 <ph name="ORIGIN" /> 사이트를 읽고 변경할 수 있도록 요청합니다.</translation>
 <translation id="1540605929960647700">데모 모드 사용</translation>
 <translation id="1541346352678737112">네트워크 없음</translation>
 <translation id="1542137295869176367">로그인 데이터를 업데이트할 수 없습니다.</translation>
@@ -725,7 +724,6 @@
 <translation id="1676902103953506022"><ph name="DOMAIN" />의 <ph name="USERNAME" /> 관련 자세한 사용자 인증 정보</translation>
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" />을(를) 추가할 수 없습니다.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> 남음</translation>
-<translation id="1678794218766467608">절전 모드에서 또는 커버가 닫혀 있을 때 잠금</translation>
 <translation id="1679068421605151609">개발자 도구</translation>
 <translation id="1679810534535368772">종료하시겠습니까?</translation>
 <translation id="167983332380191032">관리 서비스에서 HTTP 오류를 전송했습니다.</translation>
@@ -861,7 +859,6 @@
 <translation id="1794051631868188691"><ph name="MERCHANT" /> 표시 안함</translation>
 <translation id="1794791083288629568">이 문제를 해결하는 데 도움이 되도록 의견 전송</translation>
 <translation id="1795214765651529549">기본 테마 사용</translation>
-<translation id="1796105431091975902">추가할 Ansible Playbook 선택</translation>
 <translation id="1796588414813960292">소리가 필요한 기능이 작동하지 않습니다</translation>
 <translation id="1797117170091578105">Chromebook 키보드를 사용하여 플레이합니다. 특정 작업에 맞게 키를 맞춤설정할 수 있습니다.</translation>
 <translation id="1800502858278951817"><ph name="SITE_NAME" /> 사이트를 읽고 변경하도록 요청한 확장 프로그램이 없음</translation>
@@ -926,6 +923,7 @@
 <translation id="1842766183094193446">데모 모드를 사용하도록 설정하시겠습니까?</translation>
 <translation id="1845727111305721124">소리 재생이 허용됨</translation>
 <translation id="1846308012215045257"><ph name="PLUGIN_NAME" />을(를) 실행하려면 Control 키를 누르고 클릭합니다.</translation>
+<translation id="1848219224579402567">덮개가 닫히면 로그아웃</translation>
 <translation id="184862733444771842">기능 요청</translation>
 <translation id="1849016657376805933">모든 HID 기기</translation>
 <translation id="1849186935225320012">이 페이지는 MIDI 기기를 완전히 제어할 수 있습니다.</translation>
@@ -1034,7 +1032,6 @@
 <translation id="1941553344801134989">버전: <ph name="APP_VERSION" /></translation>
 <translation id="1941995177877935582">키 매핑 표시</translation>
 <translation id="1942128823046546853">모든 웹사이트의 전체 데이터 읽기 및 변경</translation>
-<translation id="1942600407708803723">커버를 닫으면 종료</translation>
 <translation id="1944528062465413897">블루투스 페어링 코드:</translation>
 <translation id="1944921356641260203">사용 가능한 업데이트 있음</translation>
 <translation id="1947136734041527201">가지고 있는 ID 서비스 계정으로 웹사이트에 로그인할 수 있습니다.</translation>
@@ -1727,6 +1724,7 @@
 <translation id="2568774940984945469">정보 표시줄 컨테이너</translation>
 <translation id="2571655996835834626">쿠키, 자바스크립트, 플러그인, 위치정보, 마이크, 카메라 등의 기능에 대한 웹사이트의 액세스 권한을 관리하는 설정을 변경합니다.</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" />에 대한 읽기 전용 액세스가 허용되었습니다.</translation>
+<translation id="2573276323521243649">아바타 선택 페이지에서 이전 페이지로 돌아가기</translation>
 <translation id="2573417407488272418">앱과 파일을 파일 &gt; 내 파일에 백업한 후 업그레이드합니다.</translation>
 <translation id="2573831315551295105">'<ph name="ACTION" />'에 스위치 할당</translation>
 <translation id="2575247648642144396">현재 페이지에서 확장 프로그램을 실행할 수 있으면 아이콘이 표시됩니다. 아이콘을 클릭하거나 <ph name="EXTENSION_SHORTCUT" />을(를) 눌러 확장 프로그램을 사용합니다.</translation>
@@ -3101,7 +3099,6 @@
 <translation id="389901847090970821">키보드 선택</translation>
 <translation id="3900966090527141178">비밀번호 내보내기</translation>
 <translation id="3903187154317825986">내장 키보드</translation>
-<translation id="3903191712482985591">Playbook 추가</translation>
 <translation id="3904326018476041253">위치 서비스</translation>
 <translation id="3904849010307028014">사이트에서는 나와 사이트의 상호작용(예: 정기적인 계정 로그인)을 기반으로 브라우저에 신뢰 토큰을 발행할 수 있습니다. 나중에 방문하는 다른 사이트에서 유효한 신뢰 토큰이 있는지 확인하여 토큰을 찾으면 이 사이트에서도 나를 봇이 아닌 사람으로 여길 가능성이 큽니다.</translation>
 <translation id="3905761538810670789">앱 복구</translation>
@@ -5045,7 +5042,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5827733057563115968">다음 예상 단어</translation>
 <translation id="5828545842856466741">프로필 추가...</translation>
 <translation id="5828633471261496623">인쇄 중...</translation>
-<translation id="5828797982387013521">플레이북 선택</translation>
 <translation id="5830205393314753525"><ph name="APP_NAME" /> 앱을 열 수 없습니다</translation>
 <translation id="5830720307094128296">페이지를 다른 이름으로 저장(&amp;A)...</translation>
 <translation id="5832813618714645810">프로필</translation>
@@ -5937,7 +5933,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6686665106869989887">오른쪽으로 탭을 이동함</translation>
 <translation id="6686817083349815241">비밀번호 저장</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> 숨기기</translation>
-<translation id="6688391094668641513"><ph name="ORIGIN" /> 사이트 읽기 및 변경 요청:</translation>
 <translation id="6689714331348768690"><ph name="SUPERVISED_USER_NAME" />님을 컴퓨터 앞으로 부르세요. 화면에 표시되는 몇 개의 구문을 읽으면 음성 모델이 생성됩니다.
     <ph name="BR" />
     <ph name="SUPERVISED_USER_NAME" />님이 읽는 데 도움이 필요하다면 먼저 읽어준 후 따라 하라고 하세요. 마이크 멀리서 작게 이야기하여 어시스턴트가 부모님이 아닌 자녀의 음성을 학습하게 하세요.</translation>
@@ -6419,6 +6414,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7138678301420049075">기타</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" />에서 마이크를 사용 중입니다.</translation>
 <translation id="7141105143012495934">계정 세부정보를 가져올 수 없어 로그인할 수 없습니다. 관리자에게 문의하거나 다시 시도해 주세요.</translation>
+<translation id="7141844554192012199">진단</translation>
 <translation id="7144878232160441200">다시 시도</translation>
 <translation id="7149839598364933473">이 기기를 <ph name="DEVICE_OS" /> 기기로 전환합니다</translation>
 <translation id="7149893636342594995">지난 24시간</translation>
@@ -7197,7 +7193,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7898725031477653577">항상 번역</translation>
 <translation id="7901405293566323524">휴대전화 허브</translation>
 <translation id="7903290522161827520">브라우저 구성요소를 찾는다면 다음으로 이동하세요.</translation>
-<translation id="7903345046358933331">페이지에서 응답이 없습니다. 페이지가 응답할 때까지 기다리거나 페이지를 닫으세요.</translation>
 <translation id="7903429136755645827">클릭하여 게임 컨트롤 맞춤설정</translation>
 <translation id="7903742244674067440">다음 인증기관을 식별하는 인증서가 등록되어 있습니다.</translation>
 <translation id="7903925330883316394">유틸리티: <ph name="UTILITY_TYPE" /></translation>
@@ -8112,6 +8107,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8780123805589053431">Google에서 이미지 설명 가져오기</translation>
 <translation id="8780443667474968681">음성 검색이 사용 중지되었습니다.</translation>
 <translation id="8781834595282316166">그룹에 새 탭 추가</translation>
+<translation id="8781980678064919987">덮개가 닫히면 종료</translation>
 <translation id="8782565991310229362">키오스크 애플리케이션 실행이 취소되었습니다.</translation>
 <translation id="8783834180813871000">블루투스 페어링 코드를 입력하고 Return 또는 Enter 키를 누르세요.</translation>
 <translation id="8784626084144195648">비닝 평균</translation>
@@ -8176,7 +8172,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8846132060409673887">이 컴퓨터의 제조업체 및 모델을 읽습니다.</translation>
 <translation id="8846163936679269230">eSIM 프로필 재설정</translation>
 <translation id="8846239054091760429">모노 오디오, 시작, 실시간 자막 등</translation>
-<translation id="8847523528195140327">커버를 닫으면 로그아웃</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">숨김</translation>
 <translation id="8849219423513870962">이름이 <ph name="PROFILE_NAME" />인 eSIM 프로필 삭제 취소</translation>

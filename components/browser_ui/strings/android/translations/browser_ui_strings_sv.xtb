@@ -101,6 +101,7 @@
 <translation id="3115898365077584848">Visa info</translation>
 <translation id="3123473560110926937">Blockeras på vissa webbplatser</translation>
 <translation id="3143754809889689516">Spela upp från början</translation>
+<translation id="3162899666601560689">Webbplatser får förbättra surfupplevelsen med hjälp av cookies, till exempel genom att låta dig förbli inloggad eller spara vad du har lagt till i kundvagnen</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> sparad data</translation>
 <translation id="3203366800380907218">Från webben</translation>
 <translation id="321187648315454507">Om du vill få aviseringar från <ph name="APP_NAME" /> måste du även aktivera aviseringar i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
@@ -331,6 +332,7 @@
 <translation id="8284326494547611709">Textning</translation>
 <translation id="8300705686683892304">Hanteras av app</translation>
 <translation id="8324158725704657629">Fråga inte igen</translation>
+<translation id="834785183489258869">I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplatser med hjälp av cookies, för att till exempel anpassa annonser. Vissa webbplatsers funktioner kanske inte fungerar.</translation>
 <translation id="8372893542064058268">Tillåt bakgrundssynkronisering för en specifik webbplats.</translation>
 <translation id="8376384591331888629">Inkludera cookies från tredje part på den här webbplatsen</translation>
 <translation id="83792324527827022">En webbplats använder kameran och mikrofonen</translation>

@@ -277,6 +277,7 @@
 <translation id="125220115284141797">डीफॉल्ट</translation>
 <translation id="1252987234827889034">प्रोफाइल एरर आली</translation>
 <translation id="1254593899333212300">थेट इंटरनेट कनेक्शन</translation>
+<translation id="1257336506558170607">निवडलेले सर्टिफिकेट एक्सपोर्ट करा</translation>
 <translation id="1258491128795710625">नवीन काय आहे</translation>
 <translation id="1259152067760398571">सुरक्षा तपासणी काल रन केली गेली</translation>
 <translation id="1260451001046713751"><ph name="HOST" /> कडील पॉप-अप आणि रीडिरेक्टना नेहमी अनुमती द्या</translation>
@@ -563,7 +564,6 @@
 <translation id="1536754031901697553">डिस्कनेक्ट करत आहे...</translation>
 <translation id="1537254971476575106">क्षेत्रे भिंग</translation>
 <translation id="15373452373711364">मोठा माउस कर्सर</translation>
-<translation id="1539630663098418038"><ph name="EXTENSIONS_REQUESTING_ACCESS" /> हे <ph name="ORIGIN" /> वाचण्याची आणि बदलण्याची विनंती करत आहे</translation>
 <translation id="1540605929960647700">डेमो मोड सुरू करा</translation>
 <translation id="1541346352678737112">कोणतेही नेटवर्क आढळले नाही</translation>
 <translation id="1542137295869176367">तुमचा साइन इन डेटा अपडेट केला जाऊ शकला नाही</translation>
@@ -724,7 +724,6 @@
 <translation id="1676902103953506022"><ph name="DOMAIN" /> वरील <ph name="USERNAME" /> साठी क्रेडेंशियल तपशील</translation>
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" /> जोडू शकत नाही</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> शिल्लक</translation>
-<translation id="1678794218766467608">स्लीप मोडमध्ये किंवा कव्हर बंद असताना लॉक करा</translation>
 <translation id="1679068421605151609">डेव्हलपर टूल</translation>
 <translation id="1679810534535368772">तुम्हाला नक्की बाहेर पडायचे आहे का?</translation>
 <translation id="167983332380191032">व्यवस्थापन सेवेने HTTP एरर पाठवली.</translation>
@@ -860,7 +859,6 @@
 <translation id="1794051631868188691"><ph name="MERCHANT" /> कधीही दाखवू नका</translation>
 <translation id="1794791083288629568">या समस्येचे निराकरण करण्यात आम्हाला मदत करण्यासाठी अभिप्राय पाठवा.</translation>
 <translation id="1795214765651529549">क्लासिक वापरा</translation>
-<translation id="1796105431091975902">जोडण्यासाठी Ansible प्लेबुक निवडा</translation>
 <translation id="1796588414813960292">साउंडची आवश्यकता असलेली वैशिष्ट्ये काम करणार नाहीत</translation>
 <translation id="1797117170091578105">तुमच्या Chromebook चा कीबोर्ड वापरून प्ले करा. तुम्ही विशिष्ट कृतींसाठी की कस्टमाइझ करू शकता.</translation>
 <translation id="1800502858278951817">कोणत्याही एक्स्टेंशनने <ph name="SITE_NAME" /> ला वाचण्यासाठी आणि बदलण्यासाठी विनंती केलेली नाही</translation>
@@ -925,6 +923,7 @@
 <translation id="1842766183094193446">तुम्हाला खरंच डेमो मोड सुरू करायचा आहे का?</translation>
 <translation id="1845727111305721124">आवाज प्ले करण्याची अनुमती आहे</translation>
 <translation id="1846308012215045257"><ph name="PLUGIN_NAME" /> चालवण्‍यासाठी Control-क्लिक करा</translation>
+<translation id="1848219224579402567">लिड बंद असताना साइन आउट करा</translation>
 <translation id="184862733444771842">वैशिष्ट्याबद्दल विनंती</translation>
 <translation id="1849016657376805933">कोणतेही HID डिव्हाइस</translation>
 <translation id="1849186935225320012">या पृष्ठास MIDI डिव्हाइसचे पूर्ण नियंत्रण आहे.</translation>
@@ -1033,7 +1032,6 @@
 <translation id="1941553344801134989">आवृत्ती: <ph name="APP_VERSION" /></translation>
 <translation id="1941995177877935582">की मॅपिंग दाखवा</translation>
 <translation id="1942128823046546853">सर्व वेबसाइटवरील तुमचा सर्व डेटा वाचू आणि बदलू शकते</translation>
-<translation id="1942600407708803723">कव्हर बंद केल्यावर शट डाउन करा</translation>
 <translation id="1944528062465413897">ब्लूटूथ पेअरिंग कोड:</translation>
 <translation id="1944921356641260203">अपडेट आढळले</translation>
 <translation id="1947136734041527201">ओळखीच्या सेवेसह तुमच्याकडे असलेले खाते वापरून तुम्हाला वेबसाइटवर साइन इन करू देते</translation>
@@ -1725,6 +1723,7 @@
 <translation id="2568774940984945469">इंफोबार कंटेनर</translation>
 <translation id="2571655996835834626">कुकी, JavaScript, प्लग-इन, भौगोलिक स्थान, मायक्रोफोन, कॅमेरा इ. सारख्या वैशिष्ट्यांवरील वेबसाइटचे अ‍ॅक्सेस नियंत्रित करणार्‍या तुमच्या सेटिंग्ज बदला.</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" /> साठी रीड-ओन्ली ॲक्सेस मंजूर केला गेला आहे.</translation>
+<translation id="2573276323521243649">अवतार निवड पेजवरून मागे जा</translation>
 <translation id="2573417407488272418">अपग्रेड करण्याआधी अ‍ॅप्स आणि फाइल यांचा फाइल &gt; माझ्या फाइल यामध्ये बॅकअप घ्या.</translation>
 <translation id="2573831315551295105">“<ph name="ACTION" />” साठी स्विच असाइन करा</translation>
 <translation id="2575247648642144396">एक्स्टेंशन वर्तमान पेजवर ॲक्शन करु शकत असेल तेव्हा हे आयकन दृश्यमान होईल. आयकनवर क्लिक करुन किंवा <ph name="EXTENSION_SHORTCUT" /> दाबून हे एक्स्टेंशन वापरा.</translation>
@@ -3099,7 +3098,6 @@
 <translation id="389901847090970821">कीबोर्ड निवडा</translation>
 <translation id="3900966090527141178">पासवर्ड एक्सपोर्ट करा</translation>
 <translation id="3903187154317825986">बिल्ट-इन कीबोर्ड</translation>
-<translation id="3903191712482985591">प्लेबुक जोडा</translation>
 <translation id="3904326018476041253">स्‍थान सेवा</translation>
 <translation id="3904849010307028014">नियमितपणे खात्यामध्ये साइन इन करणे यासारख्या एखाद्या साइटसोबतच्या तुमच्या संवादाच्या आधारे, ती साइट तुमच्या ब्राउझरला ट्रस्ट टोकन जारी करू शकते. त्यानंतर, तुम्ही इतर साइटना भेट दिल्यास आणि त्या साइटना वैध ट्रस्ट टोकन सापडल्यास, त्या तुम्हाला बॉट नव्हे तर एखादी व्यक्ती समजण्याची जास्त शक्यता आहे.</translation>
 <translation id="3905761538810670789">अ‍ॅप दुरुस्त करा</translation>
@@ -5043,7 +5041,6 @@
 <translation id="5827733057563115968">पुढील शब्दांचा अंदाज</translation>
 <translation id="5828545842856466741">प्रोफाइल जोडा…</translation>
 <translation id="5828633471261496623">प्रिंट करत आहे...</translation>
-<translation id="5828797982387013521">प्लेबुक निवडा</translation>
 <translation id="5830205393314753525"><ph name="APP_NAME" /> उघडू शकत नाही</translation>
 <translation id="5830720307094128296">पेज या फॉरमॅटमध्ये सेव्ह करा...</translation>
 <translation id="5832813618714645810">प्रोफाइल</translation>
@@ -5936,7 +5933,6 @@
 <translation id="6686665106869989887">टॅब उजवीकडे हलवला आहे</translation>
 <translation id="6686817083349815241">तुमचा पासवर्ड सेव्ह करा</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> लपवा</translation>
-<translation id="6688391094668641513"><ph name="ORIGIN" /> वाचण्याची आणि बदलण्याची विनंती करत आहे:</translation>
 <translation id="6689714331348768690"><ph name="SUPERVISED_USER_NAME" /> ला कॉंप्युटरजवळ बोलवा. तुमचे लहान मूल त्यांचे व्हॉइस मॉडेल तयार करण्यासाठी या स्क्रीनवरील काही वाक्ये वाचेल.
     <ph name="BR" />
     <ph name="SUPERVISED_USER_NAME" /> ला वाचताना मदत हवी असल्यास, तुमच्या लहान मुलाला तुमच्या पाठोपाठ म्हणायला सांगा. माइकपासून लांब हळू आवाजात बोला जेणेकरून, Assistant हे तुमच्या लहान मुलाचा आवाज ओळखायला शिकेल, तुमचा नाही.</translation>
@@ -6418,6 +6414,7 @@
 <translation id="7138678301420049075">इतर</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> तुमचा मायक्रोफोन वापरत आहे</translation>
 <translation id="7141105143012495934">तुमचे खाते तपशील प्राप्त करणे शक्य झाले नसल्याने साइन-इन अयशस्वी झाले. कृपया तुमच्या ॲडमिनिस्ट्रेटरशी संपर्क साधा किंवा पुन्हा प्रयत्न करा.</translation>
+<translation id="7141844554192012199">तपासणी</translation>
 <translation id="7144878232160441200">पुन्हा प्रयत्न करा</translation>
 <translation id="7149839598364933473">हे डिव्हाइस <ph name="DEVICE_OS" /> डिव्हाइसमध्ये रूपांतरित करा.</translation>
 <translation id="7149893636342594995">शेवटच्या 72 तासांमधील</translation>
@@ -7193,7 +7190,6 @@
 <translation id="7898725031477653577">नेहमी भाषांतर करा</translation>
 <translation id="7901405293566323524">फोन हब</translation>
 <translation id="7903290522161827520">ब्राउझरचे घटक शोधत आहात का? भेट द्या</translation>
-<translation id="7903345046358933331">पृष्ठ असंवादी झाले आहे. तुम्ही ते संवादी होईपर्यंत प्रतीक्षा करू शकता किंवा ते बंद करू शकता.</translation>
 <translation id="7903429136755645827">तुमची गेम नियंत्रणे कस्टमाइझ करण्यासाठी क्लिक करा</translation>
 <translation id="7903742244674067440">तुमच्याकडे फाइलवर अशी सर्टिफिकेट आहेत जी या सर्टिफिकेट अधिकार्‍यांची ओळख पटवतात</translation>
 <translation id="7903925330883316394">उयुक्तता: <ph name="UTILITY_TYPE" /></translation>
@@ -8108,6 +8104,7 @@
 <translation id="8780123805589053431">Google कडून इमेज वर्णन मिळवा</translation>
 <translation id="8780443667474968681">व्हॉइस शोध बंद केले गेले आहे.</translation>
 <translation id="8781834595282316166">गटामधील नवीन टॅब</translation>
+<translation id="8781980678064919987">झाकण बंद असताना बंद करा</translation>
 <translation id="8782565991310229362">कियोस्क ॲप्लिकेशन लाँच रद्द झाले.</translation>
 <translation id="8783834180813871000">ब्लूटूथ पेअरिंग कोड टाइप करा, नंतर Return किंवा Enter दाबा.</translation>
 <translation id="8784626084144195648">बिन केलेली सरासरी</translation>
@@ -8173,7 +8170,6 @@
 <translation id="8846132060409673887">या कॉंप्युटरची उत्पादक आणि मॉडेल माहिती वाचा</translation>
 <translation id="8846163936679269230">eSIM प्रोफाइल रीसेट करा</translation>
 <translation id="8846239054091760429">मोनो ऑडिओ, स्टार्टअप, लाइव्ह कॅप्शन आणि बरेच काही</translation>
-<translation id="8847523528195140327">कव्हर बंद केल्यावर साइन आउट करा</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">लपवलेली</translation>
 <translation id="8849219423513870962"><ph name="PROFILE_NAME" /> हे नाव असलेली eSIM प्रोफाइल काढून टाकणे रद्द करा</translation>

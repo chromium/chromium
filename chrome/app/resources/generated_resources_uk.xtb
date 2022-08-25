@@ -566,7 +566,6 @@
 <translation id="1536754031901697553">Від’єднання…</translation>
 <translation id="1537254971476575106">Лупа для всього екрана</translation>
 <translation id="15373452373711364">Великий курсор миші</translation>
-<translation id="1539630663098418038"><ph name="EXTENSIONS_REQUESTING_ACCESS" /> подає запит на читання й зміну сайту <ph name="ORIGIN" /></translation>
 <translation id="1540605929960647700">Увімкніть демонстраційний режим</translation>
 <translation id="1541346352678737112">Мережу не знайдено</translation>
 <translation id="1542137295869176367">Не вдалось оновити дані для входу</translation>
@@ -728,7 +727,6 @@
 <translation id="1676902103953506022">Облікові дані користувача <ph name="USERNAME" /> у домені <ph name="DOMAIN" /></translation>
 <translation id="1677306805708094828">Не вдається додати <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">Залишилося <ph name="TIME" /></translation>
-<translation id="1678794218766467608">Блокувати під час переходу в режим сну або закриття кришки</translation>
 <translation id="1679068421605151609">Інструменти для розробників</translation>
 <translation id="1679810534535368772">Вийти?</translation>
 <translation id="167983332380191032">Сервіс керування надіслав помилку HTTP.</translation>
@@ -864,7 +862,6 @@
 <translation id="1794051631868188691">Ніколи не показувати продавця <ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">Надіслати відгук, щоб допомогти нам вирішити цю проблему.</translation>
 <translation id="1795214765651529549">Вибрати класичну тему</translation>
-<translation id="1796105431091975902">Вибрати посібник правил Ansible, який потрібно додати</translation>
 <translation id="1796588414813960292">Функції, яким потрібен звук, не працюватимуть</translation>
 <translation id="1797117170091578105">Грайте за допомогою клавіатури Chromebook. Ви можете налаштувати клавіші для певних дій.</translation>
 <translation id="1800502858278951817">Жодне розширення не подавало запит на читання й зміну сайту <ph name="SITE_NAME" /></translation>
@@ -929,6 +926,7 @@
 <translation id="1842766183094193446">Увімкнути демонстраційний режим?</translation>
 <translation id="1845727111305721124">Дозволено відтворювати звуки</translation>
 <translation id="1846308012215045257">Натисніть клавішу Control, щоб запустити плагін <ph name="PLUGIN_NAME" /></translation>
+<translation id="1848219224579402567">Виходити з облікового запису, коли кришка закрита</translation>
 <translation id="184862733444771842">Запит на додавання функції</translation>
 <translation id="1849016657376805933">Усі пристрої HID</translation>
 <translation id="1849186935225320012">Ця сторінка повністю контролює пристрої MIDI.</translation>
@@ -1037,7 +1035,6 @@
 <translation id="1941553344801134989">Версія: <ph name="APP_VERSION" /></translation>
 <translation id="1941995177877935582">Показати прив’язку клавіш</translation>
 <translation id="1942128823046546853">Читати та змінювати всі ваші дані на всіх веб-сайтах</translation>
-<translation id="1942600407708803723">Завершувати роботу, коли кришка закрита</translation>
 <translation id="1944528062465413897">Код підключення через Bluetooth:</translation>
 <translation id="1944921356641260203">Знайдено оновлення</translation>
 <translation id="1947136734041527201">Дає змогу входити на веб-сайти, використовуючи обліковий запис сервісу ідентифікації</translation>
@@ -3103,7 +3100,6 @@
 <translation id="389901847090970821">Виберіть клавіатуру</translation>
 <translation id="3900966090527141178">Експортувати паролі</translation>
 <translation id="3903187154317825986">Вбудована клавіатура</translation>
-<translation id="3903191712482985591">Додати посібник</translation>
 <translation id="3904326018476041253">Геолокація</translation>
 <translation id="3904849010307028014">На основі ваших дій, зокрема регулярного входу в обліковий запис, сайт може призначити вашому веб-переглядачу маркер довіри. Після цього інші відвідувані вами сайти, які знаходитимуть дійсний маркер довіри, з більшою ймовірністю розпізнаватимуть вас як людину, а не бота.</translation>
 <translation id="3905761538810670789">Відновити додаток</translation>
@@ -5047,7 +5043,6 @@
 <translation id="5827733057563115968">Передбачення наступного слова</translation>
 <translation id="5828545842856466741">Додати профіль…</translation>
 <translation id="5828633471261496623">Друк...</translation>
-<translation id="5828797982387013521">Вибрати посібник правил</translation>
 <translation id="5830205393314753525">Не вдалося відкрити додаток <ph name="APP_NAME" /></translation>
 <translation id="5830720307094128296">Зберегти сторінку &amp;як...</translation>
 <translation id="5832813618714645810">Профілі</translation>
@@ -5944,7 +5939,6 @@
 <translation id="6686665106869989887">Вкладку переміщено праворуч</translation>
 <translation id="6686817083349815241">Зберегти пароль</translation>
 <translation id="6687079240787935001">Сховати <ph name="MODULE_TITLE" /></translation>
-<translation id="6688391094668641513">Запит на читання та зміну сайту <ph name="ORIGIN" />:</translation>
 <translation id="6689714331348768690">Нехай <ph name="SUPERVISED_USER_NAME" /> підійде до комп’ютера. Ваша дитина зачитає декілька фраз на екрані, щоб створити зразок голосу.
     <ph name="BR" />
     Якщо <ph name="SUPERVISED_USER_NAME" /> ще не дуже добре читає, нехай повторює за вами. Шепочіть фрази не в мікрофон, щоб Асистент запам’ятав голос дитини, а не ваш.</translation>
@@ -7203,7 +7197,6 @@
 <translation id="7898725031477653577">Завжди перекладати</translation>
 <translation id="7901405293566323524">Телефонний центр</translation>
 <translation id="7903290522161827520">Шукаєте компоненти веб-переглядача? Перейдіть на сторінку</translation>
-<translation id="7903345046358933331">Сторінка перестала відповідати. Зачекайте, доки вона почне відповідати, або закрийте її.</translation>
 <translation id="7903429136755645827">Натисніть, щоб налаштувати елементи керування іграми</translation>
 <translation id="7903742244674067440">У вас є сертифікати, які ідентифікують ці центри сертифікації</translation>
 <translation id="7903925330883316394">Службовий додаток: <ph name="UTILITY_TYPE" /></translation>
@@ -8121,6 +8114,7 @@
 <translation id="8780123805589053431">Отримати описи зображень від Google</translation>
 <translation id="8780443667474968681">Голосовий пошук вимкнено.</translation>
 <translation id="8781834595282316166">Нова вкладка в групі</translation>
+<translation id="8781980678064919987">Завершувати роботу, коли кришка закрита</translation>
 <translation id="8782565991310229362">Скасовано запуск програми для терміналів.</translation>
 <translation id="8783834180813871000">Введіть код підключення через Bluetooth і натисніть Return або Enter.</translation>
 <translation id="8784626084144195648">Сукупне середнє значення</translation>
@@ -8185,7 +8179,6 @@
 <translation id="8846132060409673887">Показувати виробника й модель цього комп’ютера</translation>
 <translation id="8846163936679269230">Скинути профілі eSIM-карти</translation>
 <translation id="8846239054091760429">Монофонічне аудіо, звуки під час запуску й субтитри</translation>
-<translation id="8847523528195140327">Виходити з облікового запису, коли кришка закрита</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Приховано</translation>
 <translation id="8849219423513870962">Скасувати видалення профілю eSIM-карти під назвою "<ph name="PROFILE_NAME" />"</translation>

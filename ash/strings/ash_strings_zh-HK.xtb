@@ -852,7 +852,7 @@
 <translation id="5860033963881614850">關閉</translation>
 <translation id="5860491529813859533">開啟</translation>
 <translation id="5867217927013474703">正在收集網絡資料</translation>
-<translation id="5867606971598166637">系統管理員正在監控你的畫面</translation>
+<translation id="5867606971598166637">系統管理員正在監控您的畫面</translation>
 <translation id="5876666360658629066">輸入家長存取碼</translation>
 <translation id="5881540930187678962">稍後再設定 Phone Hub</translation>
 <translation id="5887954372087850114">「<ph name="WINDOW_TITLE" />」視窗已指派給「<ph name="DESK_TITLE" />」，並取消指派給所有其他桌面</translation>
@@ -1431,6 +1431,7 @@
 <translation id="9211490828691860325">所有桌面</translation>
 <translation id="9211681782751733685">電池仲有 <ph name="TIME_REMAINING" />就差滿電。</translation>
 <translation id="9215934040295798075">設定桌布</translation>
+<translation id="9219103736887031265">圖片</translation>
 <translation id="921989828232331238">您的家長今天已鎖定此裝置</translation>
 <translation id="9220525904950070496">移除帳戶</translation>
 <translation id="923686485342484400">按兩下 Ctrl+Shift+Q 鍵即可登出。</translation>

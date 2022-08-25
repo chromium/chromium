@@ -278,6 +278,7 @@
 <translation id="125220115284141797">ಡಿಫಾಲ್ಟ್</translation>
 <translation id="1252987234827889034">ಪ್ರೊಫೈಲ್ ದೋಷ ಸಂಭವಿಸಿದೆ</translation>
 <translation id="1254593899333212300">ನೇರ ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕ</translation>
+<translation id="1257336506558170607">ಆಯ್ಕೆಮಾಡಿದ ಪ್ರಮಾಣಪತ್ರವನ್ನು ರಫ್ತು ಮಾಡಿ</translation>
 <translation id="1258491128795710625">ಹೊಸತೇನಿದೆ</translation>
 <translation id="1259152067760398571">ಸುರಕ್ಷತಾ ಪರಿಶೀಲನೆಯನ್ನು ನಿನ್ನೆಯ ದಿನ ನಡೆಸಲಾಗಿದೆ</translation>
 <translation id="1260451001046713751"><ph name="HOST" /> ನಿಂದ ಪಾಪ್-ಅಪ್‍ಗಳು ಮತ್ತು ಮರುನಿರ್ದೇಶನಗಳನ್ನು ಯಾವಾಗಲೂ ಅನುಮತಿಸಿ</translation>
@@ -565,7 +566,6 @@
 <translation id="1536754031901697553">ಸಂಪರ್ಕ ಕಡಿತಗೊಳಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="1537254971476575106">ಪೂರ್ಣಪರದೆ ವರ್ಧಕ</translation>
 <translation id="15373452373711364">ದೊಡ್ಡ ಮೌಸ್ ಕರ್ಸರ್</translation>
-<translation id="1539630663098418038"><ph name="ORIGIN" /> ಅನ್ನು ಓದಲು ಮತ್ತು ಬದಲಾಯಿಸಲು <ph name="EXTENSIONS_REQUESTING_ACCESS" /> ವಿನಂತಿಸುತ್ತಿದೆ</translation>
 <translation id="1540605929960647700">ಡೆಮೊ ಮೋಡ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="1541346352678737112">ಯಾವುದೇ ನೆಟ್‌ವರ್ಕ್ ಕಂಡುಬಂದಿಲ್ಲ</translation>
 <translation id="1542137295869176367">ನಿಮ್ಮ ಸೈನ್-ಇನ್ ಡೇಟಾವನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
@@ -727,7 +727,6 @@
 <translation id="1676902103953506022"><ph name="DOMAIN" /> ನಲ್ಲಿ <ph name="USERNAME" /> ನ ರುಜುವಾತುಗಳು</translation>
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" /> ಅನ್ನು ಸೇರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ಬಾಕಿ ಉಳಿದಿದೆ</translation>
-<translation id="1678794218766467608">ಸ್ಲೀಪ್ ಮೋಡ್‌ನಲ್ಲಿರುವಾಗ ಅಥವಾ ಕವರ್ ಮುಚ್ಚಿದಾಗ ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="1679068421605151609">ಡೆವಲಪರ್ ಟೂಲ್ಸ್</translation>
 <translation id="1679810534535368772">ನೀವು ಖಚಿತವಾಗಿಯೂ ನಿರ್ಗಮಿಸಲು ಬಯಸುವಿರಾ?</translation>
 <translation id="167983332380191032">ನಿರ್ವಹಣಾ ಸೇವೆಯು HTTP ದೋಷ ಸಂದೇಶವನ್ನು ಕಳುಹಿಸಿದೆ.</translation>
@@ -855,7 +854,6 @@
 <translation id="1794051631868188691"><ph name="MERCHANT" /> ಅನ್ನು ಎಂದಿಗೂ ತೋರಿಸಬೇಡಿ</translation>
 <translation id="1794791083288629568">ಈ ಸಮಸ್ಯೆಯನ್ನು ಸರಿಪಡಿಸಲು ನಮಗೆ ಸಹಾಯ ಮಾಡುವುದಕ್ಕಾಗಿ ಪ್ರತಿಕ್ರಿಯೆ ಕಳುಹಿಸಿ.</translation>
 <translation id="1795214765651529549">ಕ್ಲಾಸಿಕ್ ಬಳಸಿ</translation>
-<translation id="1796105431091975902">ಸೇರಿಸಲು Ansible ಪ್ಲೇಬುಕ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="1796588414813960292">ಧ್ವನಿಯ ಅಗತ್ಯವಿರುವ ಫೀಚರ್‌ಗಳು ಕಾರ್ಯನಿರ್ವಹಿಸುವುದಿಲ್ಲ</translation>
 <translation id="1797117170091578105">ನಿಮ್ಮ Chromebook ಕೀಬೋರ್ಡ್ ಬಳಸಿ ಗೇಮ್ ಅನ್ನು ಆಡಿ. ನಿರ್ದಿಷ್ಟ ಕ್ರಿಯೆಗಳಿಗಾಗಿ ನೀವು ಕೀಗಳನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಬಹುದು.</translation>
 <translation id="1800502858278951817"><ph name="SITE_NAME" /> ಅನ್ನು ಓದಲು ಮತ್ತು ಬದಲಾಯಿಸಲು ಯಾವುದೇ ವಿಸ್ತರಣೆಗಳನ್ನು ವಿನಂತಿಸಲಾಗಿಲ್ಲ</translation>
@@ -920,6 +918,7 @@
 <translation id="1842766183094193446">ನೀವು ಖಚಿತವಾಗಿಯೂ ಡೆಮೊ ಮೋಡ್ ಸಕ್ರಿಯಗೊಳಿಸಲು ಬಯಸುತ್ತೀರಾ?</translation>
 <translation id="1845727111305721124">ಧ್ವನಿಯನ್ನು ಪ್ಲೇ ಮಾಡಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="1846308012215045257"><ph name="PLUGIN_NAME" /> ಅನ್ನು ರನ್ ಮಾಡಲು ಕಂಟ್ರೋಲ್-ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
+<translation id="1848219224579402567">ಲಿಡ್‌ ಅನ್ನು ಮುಚ್ಚಿದಾಗ ಸೈನ್‌ ಔಟ್‌ ಮಾಡಿ</translation>
 <translation id="184862733444771842">ಫೀಚರ್‌ ವಿನಂತಿ</translation>
 <translation id="1849016657376805933">ಯಾವುದೇ HID ಸಾಧನ</translation>
 <translation id="1849186935225320012">ಈ ಪುಟಕ್ಕೆ MIDI ಸಾಧನಗಳ ಸಂಪೂರ್ಣ ನಿಯಂತ್ರಣವಿದೆ.</translation>
@@ -1027,7 +1026,6 @@
 <translation id="1941553344801134989">ಆವೃತ್ತಿ: <ph name="APP_VERSION" /></translation>
 <translation id="1941995177877935582">ಕೀ ಮ್ಯಾಪಿಂಗ್ ಅನ್ನು ತೋರಿಸಿ</translation>
 <translation id="1942128823046546853">ಎಲ್ಲಾ ವೆಬ್‌ಸೈಟ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಎಲ್ಲಾ ಡೇಟಾವನ್ನು ಓದಿ ಮತ್ತು ಬದಲಾಯಿಸಿ</translation>
-<translation id="1942600407708803723">ಕವರ್ ಮುಚ್ಚಿದ ನಂತರ ಸ್ಥಗಿತಗೊಳಿಸಿ</translation>
 <translation id="1944528062465413897">ಬ್ಲೂಟೂತ್ ಜೋಡಿಸುವ ಕೋಡ್:</translation>
 <translation id="1944921356641260203">ಅಪ್‌ಡೇಟ್‌‌ ಕಂಡುಬಂದಿದೆ</translation>
 <translation id="1947136734041527201">ಗುರುತಿನ ಸೇವೆಯ ಜೊತೆಗೆ ನೀವು ಹೊಂದಿರುವ ಖಾತೆಯನ್ನು ಬಳಸಿಕೊಂಡು ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ನಿಮಗೆ ಅನುಮತಿಸುತ್ತದೆ</translation>
@@ -3094,7 +3092,6 @@
 <translation id="389901847090970821">ಕೀಬೋರ್ಡ್ ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="3900966090527141178">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಎಕ್ಸ್‌ಪೋರ್ಟ್ ಮಾಡಿ</translation>
 <translation id="3903187154317825986">ಅಂತರ್ನಿರ್ಮಿತ ಕೀಬೋರ್ಡ್</translation>
-<translation id="3903191712482985591">ಪ್ಲೇಬುಕ್ ಅನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="3904326018476041253">ಸ್ಥಳ ಸೇವೆಗಳು</translation>
 <translation id="3904849010307028014">ಖಾತೆಯೊಂದಕ್ಕೆ ಸೈನ್ ಇನ್ ಮಾಡುವಂತಹ ಸೈಟ್ ಒಂದರ ಜೊತೆಗೆ ನೀವು ನಡೆಸುವ ಸಂವಹನವನ್ನು ಆಧರಿಸಿ, ಆ ಸೈಟ್ ನಿಮ್ಮ ಬ್ರೌಸರ್‌ಗೆ ಟ್ರಸ್ಟ್ ಟೋಕನ್ ವಿತರಿಸಬಹುದು. ನಂತರ, ನೀವು ಭೇಟಿ ನೀಡುವ ಇತರ ಸೈಟ್‌ಗಳು ಮಾನ್ಯವಾದ ಟ್ರಸ್ಟ್ ಟೋಕನ್ ಅನ್ನು ಹುಡುಕಿದರೆ ಮತ್ತು ಅದನ್ನು ಪಡೆದುಕೊಂಡರೆ, ಅವು ನಿಮ್ಮನ್ನು ಬಾಟ್‌ನಂತೆ ನಡೆಸಿಕೊಳ್ಳುವ ಬದಲು ಒಬ್ಬ ವ್ಯಕ್ತಿಯಂತೆ ನಡೆಸಿಕೊಳ್ಳುವ ಸಾಧ್ಯತೆ ಹೆಚ್ಚಿರುತ್ತದೆ.</translation>
 <translation id="3905761538810670789">ಅಪ್ಲಿಕೇಶನ್ ಸರಿಪಡಿಸು</translation>
@@ -5041,7 +5038,6 @@
 <translation id="5827733057563115968">ಮುಂದಿನ ಪದದ ಮುನ್ನೋಟಗಳು</translation>
 <translation id="5828545842856466741">ಪ್ರೊಫೈಲ್ ಸೇರಿಸಿ...</translation>
 <translation id="5828633471261496623">ಮುದ್ರಿಸಲಾಗುತ್ತಿದೆ...</translation>
-<translation id="5828797982387013521">ಪ್ಲೇಬುಕ್ ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="5830205393314753525"><ph name="APP_NAME" /> ತೆರೆಯಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="5830720307094128296">&amp;ಇದರಂತೆ ಪುಟವನ್ನು ಉಳಿಸಿ...</translation>
 <translation id="5832813618714645810">ಪ್ರೊಫೈಲ್‌ಗಳು</translation>
@@ -5935,7 +5931,6 @@
 <translation id="6686665106869989887">ಟ್ಯಾಬ್ ಅನ್ನು ಬಲಕ್ಕೆ ಸರಿಸಲಾಗಿದೆ</translation>
 <translation id="6686817083349815241">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ ಉಳಿಸಿ</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> ಅನ್ನು ಮರೆಮಾಡಿ</translation>
-<translation id="6688391094668641513"><ph name="ORIGIN" /> ಅನ್ನು ಓದಲು ಮತ್ತು ಬದಲಾಯಿಸಲು ವಿನಂತಿಸಲಾಗುತ್ತಿದೆ:</translation>
 <translation id="6689714331348768690">ಕಂಪ್ಯೂಟರ್‌ಗೆ ಬರಲು <ph name="SUPERVISED_USER_NAME" /> ಅವರಿಗೆ ಕೇಳಿ. ನಿಮ್ಮ ಮಗು ಅವರ ವಾಯ್ಸ್ ಮಾಡೆಲ್ ಅನ್ನು ರಚಿಸಲು ಈ ಸ್ಕ್ರೀನ್‌ನಲ್ಲಿ ಕೆಲವು ನುಡಿಗಟ್ಟುಗಳನ್ನು ಓದುತ್ತದೆ.
     <ph name="BR" />
     ಓದುವುದಕ್ಕೆ <ph name="SUPERVISED_USER_NAME" /> ಅವರಿಗೆ ಸಹಾಯದ ಅಗತ್ಯವಿದ್ದರೆ, ನಿಮ್ಮ ನಂತರ ನಿಮ್ಮ ಮಗು ಪುನಾರವರ್ತಿಸಲು ಹೇಳಿ. ಮೈಕ್‌ನಿಂದ ದೂರದಲ್ಲಿ ಪಿಸು ಮಾತಾಡಿ, ಇದರಿಂದಾಗಿ Assistant ನಿಮ್ಮ ಮಗುವಿನ ಧ್ವನಿಯನ್ನು ಕಲಿಯುತ್ತಾರೆ.</translation>
@@ -7194,7 +7189,6 @@
 <translation id="7898725031477653577">ಯಾವಾಗಲೂ ಅನುವಾದಿಸು</translation>
 <translation id="7901405293566323524">ಫೋನ್ ಹಬ್</translation>
 <translation id="7903290522161827520">ಬ್ರೌಸರ್ ಕಾಂಪೊನೆಂಟ್‌ಗಳಿಗಾಗಿ ಹುಡುಕುತ್ತಿರುವಿರಾ? ಭೇಟಿ ನೀಡಿ</translation>
-<translation id="7903345046358933331">ಪುಟವು ಸ್ಪಂದಿಸುತ್ತಿಲ್ಲ. ಅದು ಸ್ಪಂದಿಸುವ ತನಕ ನೀವು ಕಾಯಬಹುದು ಅಥವಾ ಅದನ್ನು ಮುಚ್ಚಬಹುದು.</translation>
 <translation id="7903429136755645827">ನಿಮ್ಮ ಗೇಮ್ ನಿಯಂತ್ರಣಗಳನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="7903742244674067440">ಈ ಪ್ರಮಾಣಪತ್ರದ ಪ್ರಾಧಿಕಾರಗಳ ಗುರುತಿಸುವ ಪ್ರಮಾಣಪತ್ರಗಳನ್ನು ನೀವು ಫೈಲ್‌ನಲ್ಲಿ ಹೊಂದಿದ್ದೀರಿ</translation>
 <translation id="7903925330883316394">ಉಪಯುಕ್ತತೆ: <ph name="UTILITY_TYPE" /></translation>
@@ -8107,6 +8101,7 @@
 <translation id="8780123805589053431">Google ನಿಂದ ಚಿತ್ರದ ವಿವರಣೆಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="8780443667474968681">ಧ್ವನಿ ಹುಡುಕಾಟವನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="8781834595282316166">ಗುಂಪಿನಲ್ಲಿ ಹೊಸ ಟ್ಯಾಬ್</translation>
+<translation id="8781980678064919987">ಲಿಡ್‌ ಅನ್ನು ಮುಚ್ಚಿದಾಗ ಸಾಧನದ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಸ್ಥಗಿತಗೊಳಿಸಿ</translation>
 <translation id="8782565991310229362">ಕಿಯೋಸ್ಕ್ ಅಪ್ಲಿಕೇಶನ್ ಬಿಡುಗಡೆಯನ್ನು ರದ್ದು ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="8783834180813871000">ಬ್ಲೂಟೂತ್ ಜೋಡಣೆ ಕೋಡ್‌ ಟೈಪ್‌ ಮಾಡಿ ನಂತರ Return ಅಥವಾ Enter ಒತ್ತಿ.</translation>
 <translation id="8784626084144195648">ಶೇಖರಿಸಿದ ಸರಾಸರಿ</translation>
@@ -8171,7 +8166,6 @@
 <translation id="8846132060409673887">ಈ ಕಂಪ್ಯೂಟರ್‌ನ ತಯಾರಕರು ಮತ್ತು ಮಾದರಿಯನ್ನು ಓದಿ</translation>
 <translation id="8846163936679269230">eSIM ಪ್ರೊಫೈಲ್‌ಗಳನ್ನು ರೀಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="8846239054091760429">ಮೊನೊ ಆಡಿಯೊ, ಸ್ಟಾರ್ಟ್‌ಅಪ್, ಲೈವ್ ಶೀರ್ಷಿಕೆ ಮತ್ತು ಇನ್ನಷ್ಟು</translation>
-<translation id="8847523528195140327">ಕವರ್ ಮುಚ್ಚಿದ ನಂತರ ಸೈನ್ ಔಟ್ ಆಗಿ</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">ಮರೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8849219423513870962"><ph name="PROFILE_NAME" /> ಹೆಸರಿನ eSIM ಪ್ರೊಫೈಲ್ ತೆಗೆದುಹಾಕುವುದನ್ನು ರದ್ದುಗೊಳಿಸಿ</translation>

@@ -559,7 +559,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1536754031901697553">Desconectando…</translation>
 <translation id="1537254971476575106">Lupa de pantalla completa</translation>
 <translation id="15373452373711364">Cursor do rato grande</translation>
-<translation id="1539630663098418038"><ph name="EXTENSIONS_REQUESTING_ACCESS" /> está solicitando ler e modificar <ph name="ORIGIN" /></translation>
 <translation id="1540605929960647700">Activar o modo de demostración</translation>
 <translation id="1541346352678737112">Non se atopou ningunha rede</translation>
 <translation id="1542137295869176367">Non se puideron actualizar os teus datos de inicio de sesión</translation>
@@ -721,7 +720,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1676902103953506022">Detalles das credenciais de <ph name="USERNAME" /> en <ph name="DOMAIN" /></translation>
 <translation id="1677306805708094828">Non se puido engadir a <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">Tempo restante: <ph name="TIME" /></translation>
-<translation id="1678794218766467608">Bloquear ao activar o modo de suspensión ou ao pechar a tapa</translation>
 <translation id="1679068421605151609">Ferramentas para programadores</translation>
 <translation id="1679810534535368772">Seguro que queres saír?</translation>
 <translation id="167983332380191032">O servizo de xestión enviou un erro de HTTP.</translation>
@@ -849,7 +847,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1794051631868188691">Non mostrar nunca <ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">Enviar comentarios para axudar a solucionar este problema.</translation>
 <translation id="1795214765651529549">Usar tema clásico</translation>
-<translation id="1796105431091975902">Selecciona unha guía de Ansible para engadila</translation>
 <translation id="1796588414813960292">As funcións que necesiten reproducir sons non estarán dispoñibles</translation>
 <translation id="1797117170091578105">Xoga usando o teclado do teu Chromebook. Podes personalizar as teclas para realizar accións específicas.</translation>
 <translation id="1800502858278951817">Ningunha extensión solicitou ler nin cambiar o sitio <ph name="SITE_NAME" /></translation>
@@ -914,6 +911,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1842766183094193446">Seguro que queres activar o modo de demostración?</translation>
 <translation id="1845727111305721124">Sitios que poden reproducir son</translation>
 <translation id="1846308012215045257">Fai clic mentres mantés premida a tecla Control para executar <ph name="PLUGIN_NAME" />.</translation>
+<translation id="1848219224579402567">Pechar sesión cando a tapa está pechada</translation>
 <translation id="184862733444771842">Solicitude de función</translation>
 <translation id="1849016657376805933">Calquera dispositivo HID</translation>
 <translation id="1849186935225320012">Esta páxina ten control total sobre os dispositivos MIDI.</translation>
@@ -1021,7 +1019,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1941553344801134989">Versión: <ph name="APP_VERSION" /></translation>
 <translation id="1941995177877935582">Mostrar asignación de teclas</translation>
 <translation id="1942128823046546853">Ler e cambiar todos os teus datos en todos os sitios web</translation>
-<translation id="1942600407708803723">Apagar dispositivo cando se peche a tapa</translation>
 <translation id="1944528062465413897">Código de sincronización por Bluetooth:</translation>
 <translation id="1944921356641260203">Encontrouse unha actualización</translation>
 <translation id="1947136734041527201">Permíteche iniciar sesión en sitios web coa conta que teñas cun servizo de identidade</translation>
@@ -2550,6 +2547,7 @@ Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="3406290648907941085">Sitios que poden usar datos e dispositivos de realidade virtual</translation>
 <translation id="3406396172897554194">Busca un idioma ou o nome dun método de introdución de texto</translation>
 <translation id="3406605057700382950">&amp;Mostrar a barra de marcadores</translation>
+<translation id="3408849592677950451">{NUM_PASSWORDS,plural, =1{Importouse 1 contrasinal ao xestor de contrasinais de Google de <ph name="USER_EMAIL" />}other{Importáronse {NUM_PASSWORDS} contrasinais ao xestor de contrasinais de Google de <ph name="USER_EMAIL" />}}</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3412265149091626468">Saltar á selección</translation>
 <translation id="3413122095806433232">Emisores de CA: <ph name="LOCATION" /></translation>
@@ -3083,7 +3081,6 @@ Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="389901847090970821">Selecciona un teclado</translation>
 <translation id="3900966090527141178">Exportar contrasinais</translation>
 <translation id="3903187154317825986">Teclado integrado</translation>
-<translation id="3903191712482985591">Engadir guía</translation>
 <translation id="3904326018476041253">Servizos de localización</translation>
 <translation id="3904849010307028014">Os sitios poden enviar un token de confianza ao teu navegador en función de como interactúes con eles (por exemplo, ao iniciares sesión nunha conta de forma periódica). Máis tarde, se outros sitios que visites consultan e atopan un token de confianza válido, será máis probable que te traten como unha persoa, e non como un bot.</translation>
 <translation id="3905761538810670789">Reparar aplicación</translation>
@@ -3734,6 +3731,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4541123282641193691">Non se puido verificar a túa conta. Téntao de novo ou reinicia o Chromebook.</translation>
 <translation id="4541662893742891060">Non se puido establecer conexión con este perfil. Para obter asistencia técnica, ponte en contacto co teu operador.</translation>
 <translation id="4541706525461326392">Quitando perfil. Esta acción pode tardar uns minutos.</translation>
+<translation id="4542332958571335077">{NUM_PASSWORDS,plural, =1{Importouse 1 contrasinal ao xestor de contrasinais de Google neste dispositivo}other{Importáronse {NUM_PASSWORDS} contrasinais ao xestor de contrasinais de Google neste dispositivo}}</translation>
 <translation id="4542520061254486227">Ler os teus datos de <ph name="WEBSITE_1" /> e <ph name="WEBSITE_2" /></translation>
 <translation id="4543778593405494224">Xestor de certificados</translation>
 <translation id="4544174279960331769">Avatar azul predeterminado</translation>
@@ -5025,7 +5023,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5827733057563115968">Predición da seguinte palabra</translation>
 <translation id="5828545842856466741">Engadir perfil…</translation>
 <translation id="5828633471261496623">Imprimindo...</translation>
-<translation id="5828797982387013521">Seleccionar guía</translation>
 <translation id="5830205393314753525">Non se puido abrir a aplicación <ph name="APP_NAME" /></translation>
 <translation id="5830720307094128296">Gardar páxina &amp;como...</translation>
 <translation id="5832813618714645810">Perfís</translation>
@@ -5916,7 +5913,6 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6686665106869989887">A pestana moveuse á dereita</translation>
 <translation id="6686817083349815241">Gardar o teu contrasinal</translation>
 <translation id="6687079240787935001">Ocultar <ph name="MODULE_TITLE" /></translation>
-<translation id="6688391094668641513">Solicitando ler e modificar <ph name="ORIGIN" />:</translation>
 <translation id="6689714331348768690">Pídelle a <ph name="SUPERVISED_USER_NAME" /> que veña ao ordenador. O teu fillo ou filla vai ler unhas frases na pantalla para crear o seu modelo de voz.
     <ph name="BR" />
 Se <ph name="SUPERVISED_USER_NAME" /> precisa axuda para ler, dille que repita o que ti digas. Bisba as frases lonxe do micrófono para que o Asistente aprenda a voz do teu fillo ou filla en vez da túa.</translation>
@@ -6218,6 +6214,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6968288415730398122">Introduce o contrasinal para configurar o bloqueo da pantalla</translation>
 <translation id="6969047215179982698">Desactivar Compartir por Nearby</translation>
 <translation id="6970480684834282392">Tipo de inicio</translation>
+<translation id="6970543303783413625">Non se puideron importar os contrasinais. Podes importar ata <ph name="COUNT" /> á vez.</translation>
 <translation id="6970856801391541997">Imprimir páxinas específicas</translation>
 <translation id="6970861306198150268">Asegúrate de gardar o teu contrasinal actual deste sitio</translation>
 <translation id="6972180789171089114">Audio/Vídeo</translation>
@@ -6449,6 +6446,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Páxina de saída}other{Páxinas de saída}}</translation>
 <translation id="7207457272187520234">Enviar datos de uso e diagnóstico. Este dispositivo envía automaticamente datos de diagnóstico e de uso do dispositivo e das aplicacións a Google. Esta información permitirá aumentar a estabilidade do sistema e das aplicacións, e realizar outras melloras. Algúns datos agregados tamén serán útiles para as aplicacións e os socios de Google, como os programadores de Android. Esta opción de configuración contrólaa o propietario. Se está activada a opción Actividade web e das aplicacións adicional, estes datos pódense gardar na túa Conta de Google.</translation>
 <translation id="7207631048330366454">Buscar aplicacións</translation>
+<translation id="7210471695184432500">Para importar contrasinais ao xestor de contrasinais de Google neste dispositivo, selecciona un ficheiro CSV</translation>
 <translation id="7210499381659830293">Impresoras da extensión</translation>
 <translation id="7211783048245131419">Aínda non se asignou ningún interruptor</translation>
 <translation id="7212097698621322584">Introduce o teu PIN actual para cambialo. Se non sabes cal é, deberás restablecer a chave de seguranza e, despois, crear un novo.</translation>
@@ -7172,7 +7170,6 @@ Podes xestionar a configuración desta tarxeta desde o menú correspondente ou v
 <translation id="7898725031477653577">Traducir sempre</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Buscas os compoñentes do navegador? Visita</translation>
-<translation id="7903345046358933331">A páxina deixou de responder. Podes esperar a que volva responder ou ben podes pechala.</translation>
 <translation id="7903429136755645827">Fai clic para personalizar os controis de xogo</translation>
 <translation id="7903742244674067440">Tes certificados arquivados que identifican estas entidades de certificación</translation>
 <translation id="7903925330883316394">Utilidade: <ph name="UTILITY_TYPE" /></translation>
@@ -7507,6 +7504,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8206859287963243715">Móbil</translation>
 <translation id="8208216423136871611">Non gardar</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{1 notificación nova}other{# notificacións novas}}</translation>
+<translation id="821119981794423735">Para importar contrasinais ao xestor de contrasinais de Google de <ph name="USER_EMAIL" />, selecciona un ficheiro CSV</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{A descarga está en curso}other{As descargas están en curso}}</translation>
 <translation id="8213449224684199188">Iniciouse o modo de foto</translation>
 <translation id="8214489666383623925">Abrir ficheiro...</translation>
@@ -8085,6 +8083,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8780123805589053431">Obter descricións de Google para as imaxes</translation>
 <translation id="8780443667474968681">Desactivouse a busca por voz.</translation>
 <translation id="8781834595282316166">Nova pestana no grupo</translation>
+<translation id="8781980678064919987">Apagar cando a tapa estea pechada</translation>
 <translation id="8782565991310229362">Cancelouse o inicio da aplicación de quiosco.</translation>
 <translation id="8783834180813871000">Escribe o código de sincronización por Bluetooth e, a continuación, preme Intro.</translation>
 <translation id="8784626084144195648">Media agrupada</translation>
@@ -8149,7 +8148,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8846132060409673887">Consultar o fabricante e o modelo deste ordenador</translation>
 <translation id="8846163936679269230">Restablecer perfís de eSIM</translation>
 <translation id="8846239054091760429">Audio en mono, inicio, Subtítulos instantáneos e moito máis</translation>
-<translation id="8847523528195140327">Pechar sesión cando se peche a tapa</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Oculto</translation>
 <translation id="8849219423513870962">Cancelar eliminación do perfil de eSIM chamado "<ph name="PROFILE_NAME" />"</translation>

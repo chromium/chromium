@@ -555,7 +555,6 @@
 <translation id="1536754031901697553">正在断开连接…</translation>
 <translation id="1537254971476575106">全屏放大镜</translation>
 <translation id="15373452373711364">大号鼠标光标</translation>
-<translation id="1539630663098418038">“<ph name="EXTENSIONS_REQUESTING_ACCESS" />”正在请求读取和更改 <ph name="ORIGIN" /></translation>
 <translation id="1540605929960647700">启用演示模式</translation>
 <translation id="1541346352678737112">找不到网络</translation>
 <translation id="1542137295869176367">无法更新您的登录数据</translation>
@@ -717,7 +716,6 @@
 <translation id="1676902103953506022"><ph name="USERNAME" /> 在 <ph name="DOMAIN" /> 上的凭据详情</translation>
 <translation id="1677306805708094828">无法添加<ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">电量尚余 <ph name="TIME" /></translation>
-<translation id="1678794218766467608">在睡眠模式下或合盖后锁定</translation>
 <translation id="1679068421605151609">开发者工具</translation>
 <translation id="1679810534535368772">确定要退出吗？</translation>
 <translation id="167983332380191032">管理服务向您发送了一项 HTTP 错误。</translation>
@@ -845,7 +843,6 @@
 <translation id="1794051631868188691">永不显示<ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">发送反馈，以协助我们解决此问题。</translation>
 <translation id="1795214765651529549">使用经典主题背景</translation>
-<translation id="1796105431091975902">选择要添加的 Ansible Playbook</translation>
 <translation id="1796588414813960292">所有需要使用声音的功能都将无法正常运行</translation>
 <translation id="1797117170091578105">使用 Chromebook 键盘玩游戏。您可以为特定操作自定义按键。</translation>
 <translation id="1800502858278951817">没有任何扩展程序曾请求读取和更改 <ph name="SITE_NAME" /> 数据</translation>
@@ -910,6 +907,7 @@
 <translation id="1842766183094193446">确定要启用演示模式吗？</translation>
 <translation id="1845727111305721124">允许播放声音</translation>
 <translation id="1846308012215045257">按住 Ctrl 键的同时点击即可运行 <ph name="PLUGIN_NAME" /></translation>
+<translation id="1848219224579402567">在盖被合上之后退出</translation>
 <translation id="184862733444771842">功能请求</translation>
 <translation id="1849016657376805933">任何 HID 设备</translation>
 <translation id="1849186935225320012">此页面可以完全控制 MIDI 设备。</translation>
@@ -1015,7 +1013,6 @@
 <translation id="1941553344801134989">版本：<ph name="APP_VERSION" /></translation>
 <translation id="1941995177877935582">显示按键映射</translation>
 <translation id="1942128823046546853">读取和更改您在所有网站上的数据</translation>
-<translation id="1942600407708803723">合盖后关机</translation>
 <translation id="1944528062465413897">蓝牙配对码：</translation>
 <translation id="1944921356641260203">发现更新</translation>
 <translation id="1947136734041527201">允许您使用您在身份服务中注册的帐号登录网站</translation>
@@ -1703,6 +1700,7 @@
 <translation id="2568774940984945469">信息栏容器</translation>
 <translation id="2571655996835834626">更改您用于控制以下权限的设置：网站对 Cookie、JavaScript、插件、地理位置信息、麦克风、摄像头等功能的使用权限。</translation>
 <translation id="2572032849266859634">已授予对 <ph name="VOLUME_NAME" />的只读权限。</translation>
+<translation id="2573276323521243649">从头像选择页面返回</translation>
 <translation id="2573417407488272418">在升级之前，将应用和文件备份到“文件”&gt;“我的文件”。</translation>
 <translation id="2573831315551295105">为“<ph name="ACTION" />”操作分配开关</translation>
 <translation id="2575247648642144396">仅当此扩展程序能够对当前网页采取操作时，该图标才会显示。要使用此扩展程序，请点击该图标或按 <ph name="EXTENSION_SHORTCUT" />。</translation>
@@ -3077,7 +3075,6 @@
 <translation id="389901847090970821">选择键盘</translation>
 <translation id="3900966090527141178">导出密码</translation>
 <translation id="3903187154317825986">内置键盘</translation>
-<translation id="3903191712482985591">添加 Playbook</translation>
 <translation id="3904326018476041253">位置信息服务</translation>
 <translation id="3904849010307028014">网站可以根据您与其进行的互动（例如定期登录帐号）向您的浏览器颁发信任令牌。之后，如果您访问的其他网站检查并找到有效的信任令牌，就更有可能将您视为真人而非机器人。</translation>
 <translation id="3905761538810670789">修复应用</translation>
@@ -5017,7 +5014,6 @@
 <translation id="5827733057563115968">下一字词预测</translation>
 <translation id="5828545842856466741">添加个人资料…</translation>
 <translation id="5828633471261496623">正在打印...</translation>
-<translation id="5828797982387013521">选择 playbook</translation>
 <translation id="5830205393314753525">无法打开<ph name="APP_NAME" /></translation>
 <translation id="5830720307094128296">将页面存储为(&amp;A)...</translation>
 <translation id="5832813618714645810">个人资料</translation>
@@ -5908,7 +5904,6 @@
 <translation id="6686665106869989887">此标签页已移至右侧</translation>
 <translation id="6686817083349815241">保存您的密码</translation>
 <translation id="6687079240787935001">隐藏<ph name="MODULE_TITLE" /></translation>
-<translation id="6688391094668641513">正在请求读取和更改 <ph name="ORIGIN" />：</translation>
 <translation id="6689714331348768690">请让<ph name="SUPERVISED_USER_NAME" />面对计算机。您的孩子将会读出此屏幕上的一些短语以创建其语音模型。
     <ph name="BR" />
     如果<ph name="SUPERVISED_USER_NAME" />有阅读障碍，请让孩子跟着您读。记得要远离麦克风轻声耳语，以便 Google 助理能够了解您孩子（而非您）的语音。</translation>
@@ -6390,6 +6385,7 @@
 <translation id="7138678301420049075">其他</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> 正在使用您的麦克风</translation>
 <translation id="7141105143012495934">由于无法获取您的帐号详情，因此登录失败了。请与管理员联系或重试。</translation>
+<translation id="7141844554192012199">检查</translation>
 <translation id="7144878232160441200">重试</translation>
 <translation id="7149839598364933473">将此设备转换成一部 <ph name="DEVICE_OS" /> 设备。</translation>
 <translation id="7149893636342594995">过去 24 小时</translation>
@@ -7166,7 +7162,6 @@
 <translation id="7898725031477653577">一律翻译</translation>
 <translation id="7901405293566323524">手机中心</translation>
 <translation id="7903290522161827520">想要查看浏览器组件？请访问</translation>
-<translation id="7903345046358933331">该页面已停止响应。您可以等待该页面恢复响应，也可以将其关闭。</translation>
 <translation id="7903429136755645827">点击即可自定义您的游戏控件</translation>
 <translation id="7903742244674067440">您有证书可标识以下证书授权中心</translation>
 <translation id="7903925330883316394">实用程序：<ph name="UTILITY_TYPE" /></translation>
@@ -8081,6 +8076,7 @@
 <translation id="8780123805589053431">从 Google 获取图片说明</translation>
 <translation id="8780443667474968681">已关闭语音搜索功能。</translation>
 <translation id="8781834595282316166">在组内添加新标签页</translation>
+<translation id="8781980678064919987">在盖被合上之后关闭</translation>
 <translation id="8782565991310229362">已取消启动自助服务终端应用。</translation>
 <translation id="8783834180813871000">输入蓝牙配对码，然后按回车键。</translation>
 <translation id="8784626084144195648">按区段计算的平均值</translation>
@@ -8145,7 +8141,6 @@
 <translation id="8846132060409673887">查看此计算机的制造商和型号</translation>
 <translation id="8846163936679269230">重置 eSIM 卡配置文件</translation>
 <translation id="8846239054091760429">单声道音频、启动、实时字幕等</translation>
-<translation id="8847523528195140327">合盖后退出帐号</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">已隐藏</translation>
 <translation id="8849219423513870962">取消移除名为“<ph name="PROFILE_NAME" />”的 eSIM 卡配置文件</translation>

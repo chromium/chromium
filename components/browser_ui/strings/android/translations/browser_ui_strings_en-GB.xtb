@@ -48,6 +48,7 @@
 <translation id="2107397443965016585">Ask before allowing sites to play protected content (recommended)</translation>
 <translation id="2146738493024040262">Open Instant App</translation>
 <translation id="2148716181193084225">Today</translation>
+<translation id="2155988908301433309">Always view mobile site</translation>
 <translation id="2182457891543959921">Ask before allowing sites to create a 3D map of your surroundings or track camera position (recommended)</translation>
 <translation id="2212565012507486665">Allow cookies</translation>
 <translation id="2228071138934252756">To let <ph name="APP_NAME" /> access your camera, also turn on camera in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
@@ -79,6 +80,7 @@
 <translation id="2653659639078652383">Submit</translation>
 <translation id="2677748264148917807">Leave</translation>
 <translation id="2687403674020088961">Block all cookies (not recommended)</translation>
+<translation id="2692299144678073135">Allow related sites to remember you across sites</translation>
 <translation id="2704606927547763573">Copied</translation>
 <translation id="2713106313042589954">Turn off camera</translation>
 <translation id="2717722538473713889">Email addresses</translation>
@@ -101,6 +103,7 @@
 <translation id="3115898365077584848">Show info</translation>
 <translation id="3123473560110926937">Blocked on some sites</translation>
 <translation id="3143754809889689516">Play from the beginning</translation>
+<translation id="3162899666601560689">Sites can use cookies to improve your browsing experience, for example to keep you signed in or to remember items in your shopping basket</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> stored data</translation>
 <translation id="3203366800380907218">From the web</translation>
 <translation id="321187648315454507">To let <ph name="APP_NAME" /> send you notifications, also turn on notifications in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
@@ -138,6 +141,7 @@
 <translation id="4002066346123236978">Title</translation>
 <translation id="4008040567710660924">Allow cookies for a specific site.</translation>
 <translation id="4046123991198612571">Next track</translation>
+<translation id="4048876521107516222">Related sites use cookies to help with things like keeping you signed in</translation>
 <translation id="4149994727733219643">Simplified view for web pages</translation>
 <translation id="4165986682804962316">Site settings</translation>
 <translation id="4169549551965910670">Connected to a USB device</translation>
@@ -203,6 +207,7 @@
 <translation id="5505264765875738116">Sites can't ask to send notifications</translation>
 <translation id="5516455585884385570">Open notification settings</translation>
 <translation id="5527111080432883924">Ask before allowing sites to read text and images from the clipboard (recommended)</translation>
+<translation id="5553273073880784901">Always view desktop site</translation>
 <translation id="5553374991681107062">Latest</translation>
 <translation id="5556459405103347317">Reload</translation>
 <translation id="5596627076506792578">More options</translation>
@@ -219,6 +224,7 @@
 <translation id="5887687176710214216">Last visited yesterday</translation>
 <translation id="5916664084637901428">On</translation>
 <translation id="5922853908706496913">Sharing your screen</translation>
+<translation id="5922967540311291836">Block third-party cookies:</translation>
 <translation id="5939518447894949180">Reset</translation>
 <translation id="5975083100439434680">Zoom out</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
@@ -309,6 +315,7 @@
 <translation id="7846076177841592234">Cancel selection</translation>
 <translation id="7846621471902887024">You'll be signed out of all sites.</translation>
 <translation id="7882806643839505685">Allow sound for a specific site.</translation>
+<translation id="789180354981963912">Block third-party cookies in Incognito:</translation>
 <translation id="7940722705963108451">Remind me</translation>
 <translation id="7986741934819883144">Select a contact</translation>
 <translation id="7999064672810608036">Are you sure that you want to clear all local data, including cookies, and reset all permissions for this website?</translation>
@@ -331,6 +338,7 @@
 <translation id="8284326494547611709">Captions</translation>
 <translation id="8300705686683892304">Managed by app</translation>
 <translation id="8324158725704657629">Don't ask again</translation>
+<translation id="834785183489258869">While in Incognito, sites can't use your cookies to see your browsing activity across different sites; for example, to personalise ads. Features on some sites may not work.</translation>
 <translation id="8372893542064058268">Allow Background Sync for a specific site.</translation>
 <translation id="8376384591331888629">Including third-party cookies on this site</translation>
 <translation id="83792324527827022">A site is using your camera and microphone</translation>

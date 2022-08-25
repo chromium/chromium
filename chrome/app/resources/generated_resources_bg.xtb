@@ -560,7 +560,6 @@
 <translation id="1536754031901697553">Връзката се прекратява...</translation>
 <translation id="1537254971476575106">Лупа за увеличаване на целия екран</translation>
 <translation id="15373452373711364">Голям курсор на мишката</translation>
-<translation id="1539630663098418038"><ph name="EXTENSIONS_REQUESTING_ACCESS" /> иска да чете и променя <ph name="ORIGIN" /></translation>
 <translation id="1540605929960647700">Активиране на демонстрационния режим</translation>
 <translation id="1541346352678737112">Няма намерена мрежа</translation>
 <translation id="1542137295869176367">Данните ви за вход не бяха актуализирани</translation>
@@ -722,7 +721,6 @@
 <translation id="1676902103953506022">Подробности за идентификационните данни за <ph name="USERNAME" /> в домейна <ph name="DOMAIN" /></translation>
 <translation id="1677306805708094828">Не може да се добави <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">Оставащо време: <ph name="TIME" /></translation>
-<translation id="1678794218766467608">Заключване в спящ режим или при затваряне на капака</translation>
 <translation id="1679068421605151609">Инструменти за програмисти</translation>
 <translation id="1679810534535368772">Наистина ли искате да излезете?</translation>
 <translation id="167983332380191032">Услугата за управление изпрати HTTP грешка.</translation>
@@ -857,7 +855,6 @@
 <translation id="1794051631868188691">Без показване на <ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">Изпращане на отзиви, за да ни помогнете да отстраним този проблем.</translation>
 <translation id="1795214765651529549">Използване на класическата тема</translation>
-<translation id="1796105431091975902">Изберете наръчник за Ansible, който да добавите</translation>
 <translation id="1796588414813960292">Функциите, за които е нужен звук, няма да работят</translation>
 <translation id="1797117170091578105">Играйте с клавиатурата на своя Chromebook. Можете да персонализирате клавишите за конкретни действия.</translation>
 <translation id="1800502858278951817">Нито едно разширение не е поискало да чете и променя <ph name="SITE_NAME" /></translation>
@@ -922,6 +919,7 @@
 <translation id="1842766183094193446">Наистина ли искате да активирате демонстрационния режим?</translation>
 <translation id="1845727111305721124">Сайтове с разрешение за възпроизвеждане на звук</translation>
 <translation id="1846308012215045257">Задръжте „Ctrl“ и кликнете, за да стартирате <ph name="PLUGIN_NAME" /></translation>
+<translation id="1848219224579402567">Излизане от профила при затваряне на капака</translation>
 <translation id="184862733444771842">Заявка за функция</translation>
 <translation id="1849016657376805933">Всякакви HID устройства</translation>
 <translation id="1849186935225320012">Тази страница има пълен контрол над MIDI устройствата.</translation>
@@ -1030,7 +1028,6 @@
 <translation id="1941553344801134989">Версия: <ph name="APP_VERSION" /></translation>
 <translation id="1941995177877935582">Показване на съпоставянето на клавишите</translation>
 <translation id="1942128823046546853">да чете и променя всичките ви данни в уебсайтовете</translation>
-<translation id="1942600407708803723">Изключване при затваряне на капака</translation>
 <translation id="1944528062465413897">Код за сдвояване през Bluetooth:</translation>
 <translation id="1944921356641260203">Намерена е актуализация</translation>
 <translation id="1947136734041527201">Позволява ви да влизате в уебсайтове посредством профила си в услуга за идентифициране</translation>
@@ -1722,6 +1719,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2568774940984945469">Контейнер на инфолента</translation>
 <translation id="2571655996835834626">Промяна на настройките, които контролират достъпа на уебсайтовете до функции като „бисквитки“, JavaScript, приставки, геолокация, микрофон, камера и др.</translation>
 <translation id="2572032849266859634">Предоставен е достъп само за четене до „<ph name="VOLUME_NAME" />“.</translation>
+<translation id="2573276323521243649">Връщане от страницата за избор на аватар</translation>
 <translation id="2573417407488272418">Преди надстройването създайте резервно копие на приложенията и файловете във „Файлове &gt; Моите файлове“.</translation>
 <translation id="2573831315551295105">Задаване на превключвател за „<ph name="ACTION" />“</translation>
 <translation id="2575247648642144396">Тази икона ще бъде видима, когато разширението може да изпълнява действия върху текущата страница. Използвайте го, като кликнете върху иконата или натиснете „<ph name="EXTENSION_SHORTCUT" />“.</translation>
@@ -3097,7 +3095,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="389901847090970821">Изберете клавиатура</translation>
 <translation id="3900966090527141178">Експортиране на паролите</translation>
 <translation id="3903187154317825986">Вградена клавиатура</translation>
-<translation id="3903191712482985591">Добавяне на наръчник</translation>
 <translation id="3904326018476041253">Услуги за местоположение</translation>
 <translation id="3904849010307028014">Въз основа на взаимодействието ви с даден сайт, като например редовно влизане в профил, той може да изпрати означение за доверие до браузъра ви. Ако след време други посещавани от вас сайтове потърсят и открият валидно означение за доверие, има по-голяма вероятност да ви третират като човек, а не като робот.</translation>
 <translation id="3905761538810670789">Поправяне на приложението</translation>
@@ -5044,7 +5041,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5827733057563115968">Предвиждане на следващата дума</translation>
 <translation id="5828545842856466741">Добавяне на потребителски профил...</translation>
 <translation id="5828633471261496623">Отпечатва се...</translation>
-<translation id="5828797982387013521">Избиране на наръчник</translation>
 <translation id="5830205393314753525"><ph name="APP_NAME" /> не може да се отвори</translation>
 <translation id="5830720307094128296">Запазване на страницата &amp;като...</translation>
 <translation id="5832813618714645810">Потребителски профили</translation>
@@ -5936,7 +5932,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6686665106869989887">Разделът бе преместен надясно</translation>
 <translation id="6686817083349815241">Запазване на паролата ви</translation>
 <translation id="6687079240787935001">Скриване на <ph name="MODULE_TITLE" /></translation>
-<translation id="6688391094668641513">Заявява се четене и промяна на <ph name="ORIGIN" />:</translation>
 <translation id="6689714331348768690">Помолете <ph name="SUPERVISED_USER_NAME" /> да дойде до компютъра. Детето ви ще прочете няколко фрази на този екран, за да бъде създаден гласовият му модел.
     <ph name="BR" />
     Ако <ph name="SUPERVISED_USER_NAME" /> се нуждае от помощ с четенето, може да повтаря след вас. Шепнете далеч от микрофона, така че Асистент да научи гласа на детето ви вместо вашия.</translation>
@@ -6418,6 +6413,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7138678301420049075">Друго</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> използва микрофона ви</translation>
 <translation id="7141105143012495934">Влизането не бе успешно, тъй като данните за профила ви не можаха да се извлекат. Моля, свържете се с администратора си или опитайте отново.</translation>
+<translation id="7141844554192012199">Проверка</translation>
 <translation id="7144878232160441200">Повторен опит</translation>
 <translation id="7149839598364933473">Преобразуване на това устройство в такова с <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">Последните 24 часа</translation>
@@ -7195,7 +7191,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7898725031477653577">Винаги да се превежда</translation>
 <translation id="7901405293566323524">Център за телефоните</translation>
 <translation id="7903290522161827520">Търсите компонентите на браузъра? Посетете</translation>
-<translation id="7903345046358933331">Страницата е блокирала. Можете да изчакате да се възстанови или да я затворите.</translation>
 <translation id="7903429136755645827">Кликнете, за да персонализирате контролите си за игри</translation>
 <translation id="7903742244674067440">Разполагате със сертификати, които идентифицират тези сертифициращи органи</translation>
 <translation id="7903925330883316394">Помощен процес: <ph name="UTILITY_TYPE" /></translation>
@@ -8110,6 +8105,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8780123805589053431">Изтегляне от Google на описания за изображенията</translation>
 <translation id="8780443667474968681">Функцията за гласово търсене е изключена.</translation>
 <translation id="8781834595282316166">Нов раздел в групата</translation>
+<translation id="8781980678064919987">Изключване при затваряне на капака</translation>
 <translation id="8782565991310229362">Стартирането на павилионното приложение е анулирано.</translation>
 <translation id="8783834180813871000">Въведете кода за сдвояване през Bluetooth, след което натиснете Return или Enter.</translation>
 <translation id="8784626084144195648">Средна стойност при групирани данни</translation>
@@ -8174,7 +8170,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8846132060409673887">Четене на производителя и модела на този компютър</translation>
 <translation id="8846163936679269230">Нулиране на потребителските профили на електронната SIM карта</translation>
 <translation id="8846239054091760429">Монозвук, стартиране, „Надписи на живо“ и др.</translation>
-<translation id="8847523528195140327">Излизане от профила при затваряне на капака</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Скрито</translation>
 <translation id="8849219423513870962">Анулиране на премахването на потребителския профил (<ph name="PROFILE_NAME" />) на електронната SIM карта</translation>

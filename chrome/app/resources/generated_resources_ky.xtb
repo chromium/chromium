@@ -563,7 +563,6 @@
 <translation id="1536754031901697553">Ажыратылууда…</translation>
 <translation id="1537254971476575106">Толук экран лупасы</translation>
 <translation id="15373452373711364">Чоң чычкан курсору</translation>
-<translation id="1539630663098418038"><ph name="EXTENSIONS_REQUESTING_ACCESS" /> төмөнкүнү окуу жана өзгөртүүнү суранууда: <ph name="ORIGIN" /></translation>
 <translation id="1540605929960647700">Демо режимин иштетүү</translation>
 <translation id="1541346352678737112">Тармак табылган жок</translation>
 <translation id="1542137295869176367">Аккаунтка кирүү дайындарыңыз жаңырган жок</translation>
@@ -725,7 +724,6 @@
 <translation id="1676902103953506022"><ph name="DOMAIN" /> домениндеги колдонуучунун (<ph name="USERNAME" />) эсептик дайындары</translation>
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" /> кеңейтүүсүн кошуу мүмкүн болбой жатат</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> калды</translation>
-<translation id="1678794218766467608">Көшүү режиминде жана жапкычы жабылып турганда кулпулоо</translation>
 <translation id="1679068421605151609">Иштеп чыгуучунун куралдары</translation>
 <translation id="1679810534535368772">Чын эле чыгасызбы?</translation>
 <translation id="167983332380191032">Башкаруучу кызматтан туура эмес HTTP коду келди.</translation>
@@ -861,7 +859,6 @@
 <translation id="1794051631868188691"><ph name="MERCHANT" /> эч качан көрүнбөсүн</translation>
 <translation id="1794791083288629568">Бул көйгөйдү оңдоого жардам берүү үчүн пикириңизди билдириңиз.</translation>
 <translation id="1795214765651529549">Классикалык теманы колдонуу</translation>
-<translation id="1796105431091975902">Кошуу үчүн Ansible окуу куралын тандаңыз</translation>
 <translation id="1796588414813960292">Добушту колдонгон функциялар иштебей калат</translation>
 <translation id="1797117170091578105">Chromebook баскычтобун колдонуп ойноңуз. Баскычтарды белгилүү бир аракеттерге ыңгайлаштыра аласыз.</translation>
 <translation id="1800502858278951817"><ph name="SITE_NAME" /> сайтын окуу же өзгөртүү үчүн бир да кеңейтүү уруксат сураган жок</translation>
@@ -926,6 +923,7 @@
 <translation id="1842766183094193446">Демо режимди чын эле иштетесизби?</translation>
 <translation id="1845727111305721124">Үн чыгара алат</translation>
 <translation id="1846308012215045257"><ph name="PLUGIN_NAME" /> иштетүү үчүн Control баскычын басып туруп, чычкандын баскычын басыңыз</translation>
+<translation id="1848219224579402567">Капкагы жабык болгондо чыгуу</translation>
 <translation id="184862733444771842">Функция кошуу сурамы</translation>
 <translation id="1849016657376805933">HID түзмөгү</translation>
 <translation id="1849186935225320012">Бул бет MIDI түзмөктөрүн толугу менен көзөмөлдөйт.</translation>
@@ -1034,7 +1032,6 @@
 <translation id="1941553344801134989">Версиясы: <ph name="APP_VERSION" /></translation>
 <translation id="1941995177877935582">Дайындалган баскычтарды көрүү</translation>
 <translation id="1942128823046546853">Бардык вебсайттардагы дайын-даректериңизди окуу жана өзгөртүү</translation>
-<translation id="1942600407708803723">Капкагы жабылып турганда өчүрүлсүн</translation>
 <translation id="1944528062465413897">Bluetooth байланышуу коду:</translation>
 <translation id="1944921356641260203">Жаңыртуу табылды</translation>
 <translation id="1947136734041527201">Аныктыгын текшерүү кызматында катталган аккаунтуңуз менен вебсайттарга кирүүгө мүмкүнчүлүк берет</translation>
@@ -3101,7 +3098,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="389901847090970821">Баскычтопту тандоо</translation>
 <translation id="3900966090527141178">Сырсөздөрдү экспорттоо</translation>
 <translation id="3903187154317825986">Кыстарылган баскычтоп</translation>
-<translation id="3903191712482985591">Окуу куралын кошуу</translation>
 <translation id="3904326018476041253">Жайгашкан жерди аныктоо кызматтары</translation>
 <translation id="3904849010307028014">Сайт менен иштөөңүз, мисалы, аккаунтуңузга ар дайым кирүү сыяктуу аракетиңиздин негизинде ал сайт серепчиңизге ишеним токенин бере алат. Кийинчерээк, баш баккан сайттарыңыз ишеним токенин текшерип, аны жарактуу деп тапса, сизди көбүнчө бот катары эмес, адам катары кабыл алат.</translation>
 <translation id="3905761538810670789">Колдонмону оңдоо</translation>
@@ -5047,7 +5043,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5827733057563115968">Кийинки сөздү божомолдоо</translation>
 <translation id="5828545842856466741">Профиль кошуу...</translation>
 <translation id="5828633471261496623">Басып чыгарууда…</translation>
-<translation id="5828797982387013521">Оку куралын тандоо</translation>
 <translation id="5830205393314753525"><ph name="APP_NAME" /> колдонмосу ачылбай жатат</translation>
 <translation id="5830720307094128296">Бетти &amp;төмөнкүдөй сактоо…</translation>
 <translation id="5832813618714645810">Профилдер</translation>
@@ -5939,7 +5934,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6686665106869989887">Өтмөк оңго жылды</translation>
 <translation id="6686817083349815241">Сырсөзүңүздү сактаңыз</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> жашыруу</translation>
-<translation id="6688391094668641513"><ph name="ORIGIN" /> окуу жана өзгөртүүнү суранууда:</translation>
 <translation id="6689714331348768690"><ph name="SUPERVISED_USER_NAME" /> балаңызды компьютерге жакын чакырыңыз. Ал үнүнүн үлгүсүн түзүү үчүн бул экрандагы бир нече фразаларды окуйт.
     <ph name="BR" />
     Эгер <ph name="SUPERVISED_USER_NAME" /> өзү окуй албаса, сизди кайталатып окутуңуз. Жардамчы балаңыз эмес сиздин үнүңүздү жаздырып албасы үчүн микрофондон алыс туруп шыбырап окуңуз.</translation>
@@ -7199,7 +7193,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7898725031477653577">Ар дайым которуу</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Cерепчинин компоненттерин издеп жатасызбы? Төмөнкүгө өтүңүз:</translation>
-<translation id="7903345046358933331">Бул барак жооп бербей калды. Ал жооп бергиче күтө турсаңыз же жаап салсаңыз болот.</translation>
 <translation id="7903429136755645827">Оюндун башкаруу элементтерин ыңгайлаштыруу үчүн басыңыз</translation>
 <translation id="7903742244674067440">Тастыктоо бийлигин аныктаган файлда бир нече тастыктамаларыңыз бар</translation>
 <translation id="7903925330883316394">Утилита: <ph name="UTILITY_TYPE" /></translation>
@@ -8113,6 +8106,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8780123805589053431">Google'дан сүрөттөрдүн түшүндүрмөлөрүн алуу</translation>
 <translation id="8780443667474968681">Айтып издөө функциясы өчүрүлгөн.</translation>
 <translation id="8781834595282316166">Топтогу жаңы өтмөк</translation>
+<translation id="8781980678064919987">Капкагы жабык болгондо өчүрүлсүн</translation>
 <translation id="8782565991310229362">Киоск колдонмосун ишке киргизүү аракети жокко чыгарылды.</translation>
 <translation id="8783834180813871000">Bluetooth'дун жупташтыруу кодун терип, андан соң "Артка" же "Киргизүү" баскычын басыңыз.</translation>
 <translation id="8784626084144195648">Топтолгон ортоломо</translation>
@@ -8177,7 +8171,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8846132060409673887">Компьютердин өндүрүүчүсүн жана үлгүсүн окуу</translation>
 <translation id="8846163936679269230">eSIM-карта профилдерин баштапкы абалга келтирүү</translation>
 <translation id="8846239054091760429">Моно аудио, баштоо, Ыкчам коштомо жазуулар жана башкалар</translation>
-<translation id="8847523528195140327">Капкагы жабылып турганда аккаунттан чыгарылсын</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Жашырылды</translation>
 <translation id="8849219423513870962"><ph name="PROFILE_NAME" /> деп аталган eSIM-картанын профилинин өчүрүүнү жокко чыгаруу</translation>

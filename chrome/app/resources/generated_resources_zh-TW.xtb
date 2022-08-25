@@ -560,7 +560,6 @@
 <translation id="1536754031901697553">正在中斷連線…</translation>
 <translation id="1537254971476575106">全螢幕放大鏡</translation>
 <translation id="15373452373711364">大型滑鼠游標</translation>
-<translation id="1539630663098418038">「<ph name="EXTENSIONS_REQUESTING_ACCESS" />」正在要求讀取及變更 <ph name="ORIGIN" /></translation>
 <translation id="1540605929960647700">啟用示範模式</translation>
 <translation id="1541346352678737112">找不到網路</translation>
 <translation id="1542137295869176367">無法更新你的登入資料</translation>
@@ -722,7 +721,6 @@
 <translation id="1676902103953506022">在 <ph name="DOMAIN" /> 上顯示 <ph name="USERNAME" /> 的憑證詳細資料</translation>
 <translation id="1677306805708094828">無法新增<ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478"><ph name="TIME" /> 後用盡</translation>
-<translation id="1678794218766467608">進入休眠模式或蓋上保護蓋時鎖定</translation>
 <translation id="1679068421605151609">開發人員工具</translation>
 <translation id="1679810534535368772">確定要離開嗎？</translation>
 <translation id="167983332380191032">管理服務傳回了 HTTP 錯誤。</translation>
@@ -850,7 +848,6 @@
 <translation id="1794051631868188691">永不顯示「<ph name="MERCHANT" />」</translation>
 <translation id="1794791083288629568">提供意見，協助我們修正這個問題。</translation>
 <translation id="1795214765651529549">使用傳統版</translation>
-<translation id="1796105431091975902">選取要新增的 Ansible Playbook</translation>
 <translation id="1796588414813960292">需要使用音訊的功能將無法運作</translation>
 <translation id="1797117170091578105">使用 Chromebook 鍵盤玩遊戲。你可以為特定動作自訂按鍵。</translation>
 <translation id="1800502858278951817">沒有任何擴充功能要求讀取及變更 <ph name="SITE_NAME" /> 的權限</translation>
@@ -915,6 +912,7 @@
 <translation id="1842766183094193446">確定要啟用示範模式嗎？</translation>
 <translation id="1845727111305721124">可以播放音效</translation>
 <translation id="1846308012215045257">按下 Ctrl 鍵並點選即可執行「<ph name="PLUGIN_NAME" />」</translation>
+<translation id="1848219224579402567">蓋上機蓋時登出帳戶</translation>
 <translation id="184862733444771842">功能要求</translation>
 <translation id="1849016657376805933">任何 HID 裝置</translation>
 <translation id="1849186935225320012">這個網頁可完整控制 MIDI 裝置。</translation>
@@ -1022,7 +1020,6 @@
 <translation id="1941553344801134989">版本：<ph name="APP_VERSION" /></translation>
 <translation id="1941995177877935582">顯示機碼對應</translation>
 <translation id="1942128823046546853">讀取及變更你在所有網站上的所有資料</translation>
-<translation id="1942600407708803723">蓋上機蓋時關機</translation>
 <translation id="1944528062465413897">藍牙配對碼：</translation>
 <translation id="1944921356641260203">找到更新</translation>
 <translation id="1947136734041527201">讓你透過身分識別服務使用你擁有的帳戶登入網站</translation>
@@ -1711,6 +1708,7 @@
 <translation id="2568774940984945469">資訊列容器</translation>
 <translation id="2571655996835834626">變更設定來管理網站對 Cookie、JavaScript、外掛程式、地理位置、麥克風、相機等功能的存取權。</translation>
 <translation id="2572032849266859634">已授予 <ph name="VOLUME_NAME" /> 的唯讀權限。</translation>
+<translation id="2573276323521243649">離開顯示圖片選項頁面</translation>
 <translation id="2573417407488272418">升級前將應用程式和檔案備份至「檔案」&gt;「我的檔案」。</translation>
 <translation id="2573831315551295105">指派代表「<ph name="ACTION" />」的外接切換裝置</translation>
 <translation id="2575247648642144396">畫面上顯示這個圖示時，表示擴充功能可在目前網頁上運作。如要啟用這項擴充功能，請按一下圖示或按下 <ph name="EXTENSION_SHORTCUT" />。</translation>
@@ -3085,7 +3083,6 @@
 <translation id="389901847090970821">選取鍵盤</translation>
 <translation id="3900966090527141178">匯出密碼</translation>
 <translation id="3903187154317825986">內建鍵盤</translation>
-<translation id="3903191712482985591">新增 Playbook</translation>
 <translation id="3904326018476041253">定位服務</translation>
 <translation id="3904849010307028014">網站可根據你與網站的互動 (例如定期登入帳戶) 情形，核發信任權杖給你的瀏覽器。在此之後，假如你造訪的其他網站查看並找到有效的信任權杖，這些網站就較有可能會判斷你是真人，而非機器人。</translation>
 <translation id="3905761538810670789">修復應用程式</translation>
@@ -5027,7 +5024,6 @@
 <translation id="5827733057563115968">下一個字詞預測</translation>
 <translation id="5828545842856466741">新增設定檔...</translation>
 <translation id="5828633471261496623">列印中...</translation>
-<translation id="5828797982387013521">選取 Playbook</translation>
 <translation id="5830205393314753525">無法開啟「<ph name="APP_NAME" />」</translation>
 <translation id="5830720307094128296">另存網頁(&amp;A)...</translation>
 <translation id="5832813618714645810">設定檔</translation>
@@ -5918,7 +5914,6 @@
 <translation id="6686665106869989887">分頁已移動到右側</translation>
 <translation id="6686817083349815241">儲存你的密碼</translation>
 <translation id="6687079240787935001">隱藏「<ph name="MODULE_TITLE" />」</translation>
-<translation id="6688391094668641513">正在要求讀取及變更 <ph name="ORIGIN" />：</translation>
 <translation id="6689714331348768690">請<ph name="SUPERVISED_USER_NAME" />坐到電腦前。你的孩子將朗讀螢幕畫面上的一些短句，藉此建立他們的語音模型。
     <ph name="BR" />
     如果<ph name="SUPERVISED_USER_NAME" />在朗讀過程中需要協助，請讓孩子跟著你朗讀。你必須遠離麥克風並降低音量，這樣 Google 助理才能學習辨識你孩子的聲音，而非你的聲音。</translation>
@@ -6400,6 +6395,7 @@
 <translation id="7138678301420049075">其他</translation>
 <translation id="7139627972753429585">「<ph name="APP_NAME" />」正在使用麥克風</translation>
 <translation id="7141105143012495934">無法擷取您的帳戶詳細資料，導致登入失敗。請與您的管理員聯絡或再試一次。</translation>
+<translation id="7141844554192012199">安全檢查</translation>
 <translation id="7144878232160441200">重試</translation>
 <translation id="7149839598364933473">在這部裝置上安裝 <ph name="DEVICE_OS" />。</translation>
 <translation id="7149893636342594995">過去 24 小時</translation>
@@ -7177,7 +7173,6 @@
 <translation id="7898725031477653577">一律翻譯</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">要查看瀏覽器元件嗎？請前往</translation>
-<translation id="7903345046358933331">網頁無回應。您可以等待網頁回應，或是直接關閉網頁。</translation>
 <translation id="7903429136755645827">按一下即可自訂遊戲控制項</translation>
 <translation id="7903742244674067440">您儲存了這些憑證授權單位的識別憑證</translation>
 <translation id="7903925330883316394">公用程式：<ph name="UTILITY_TYPE" /></translation>
@@ -8092,6 +8087,7 @@
 <translation id="8780123805589053431">從 Google 取得圖片說明</translation>
 <translation id="8780443667474968681">語音搜尋功能已停用。</translation>
 <translation id="8781834595282316166">在群組中新增分頁</translation>
+<translation id="8781980678064919987">蓋上機蓋時關機</translation>
 <translation id="8782565991310229362">Kiosk 應用程式已取消執行。</translation>
 <translation id="8783834180813871000">輸入藍牙配對碼，然後按下返回鍵或 Enter 鍵。</translation>
 <translation id="8784626084144195648">二進位化平均</translation>
@@ -8156,7 +8152,6 @@
 <translation id="8846132060409673887">閱讀這部電腦的製造商和型號資訊</translation>
 <translation id="8846163936679269230">重設 eSIM 卡設定檔</translation>
 <translation id="8846239054091760429">單聲道音訊、啟動、即時字幕等</translation>
-<translation id="8847523528195140327">蓋上機蓋時登出帳戶</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">隱藏</translation>
 <translation id="8849219423513870962">取消移除名為「<ph name="PROFILE_NAME" />」的 eSIM 卡設定檔</translation>

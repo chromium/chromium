@@ -759,6 +759,12 @@ Seja qual for o valor, o usuário vai poder decidir se quer ou não manter os da
 
 Esta política não vai ter efeito se a opção de manter os dados de navegação existentes não estiver disponível. Isso acontece quando a separação de perfil corporativo é aplicada de forma rigorosa ou quando os dados são de um perfil já gerenciado.
 </translation>
+<translation id="1795105105645381965">
+      Se a política for ativada (verdadeira), o <ph name="PRODUCT_NAME" /> vai pedir o consentimento de acesso aos usuários gerenciados antes de compartilhar indicadores em dispositivos não gerenciados.
+
+      Se a política for desativada (falsa) ou deixada sem definição, o <ph name="PRODUCT_NAME" /> não vai coletar indicadores do dispositivo.
+
+      Exemplos de indicadores incluem, entre outros, informações do SO, registro e presença de arquivos.</translation>
 <translation id="179694024208061102">Se a política for definida como ativada, o <ph name="PRODUCT_NAME" /> tentará abrir alguns URLs em um navegador alternativo, como o <ph name="IE_PRODUCT_NAME" />. Esse recurso é configurado por meio das políticas no grupo do <ph name="LEGACY_BROWSER_SUPPORT_POLICY_GROUP" />.
 
       Se a política for definida como desativada ou não for definida, o <ph name="PRODUCT_NAME" /> não tentará abrir URLs designados em um navegador alternativo.</translation>
@@ -1394,6 +1400,19 @@ Web e PWAs. No momento, com suporte apenas no
 <translation id="2384233438419344179">Se a política for definida como "Ativada", os cookies não poderão ser definidos por elementos de página da Web que não sejam do domínio que está na barra de endereço do navegador. Se a política for definida como "Desativada", os cookies poderão ser definidos por esses elementos e os usuários serão impedidos de mudar essa configuração.
 
       Se ela não for definida, os cookies de terceiros serão ativados, mas os usuários poderão mudar essa configuração.</translation>
+<translation id="2384553027681594203">Ative o <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> para ver uma lista de URLs nas telas de login e bloqueio.
+
+      Se esta política for definida, ela vai especificar quais URLs têm permissão para fazer parte do fluxo de atestado e receber o conjunto de indicadores da máquina.
+
+      Se ela não for definida ou se for deixada em branco, nenhum endpoint poderá iniciar o fluxo de atestado ou receber sinais da máquina.
+
+      Os URLs precisam ter um esquema HTTPS, como "https://example.com".
+
+      Observação: caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.
+
+      Esta política vai afetar apenas o fluxo de atestado nas telas de login e bloqueio. Para mudar o fluxo de atestado na sessão, use a política <ph name="CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" />.
+
+      Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="2386362615870139244">Permitir bloqueios de ativação da tela</translation>
 <translation id="2387469539700985783">Esta política não tem nenhum efeito sobre o relatório feito pelo Android.</translation>
 <translation id="238885588439957890">Horário em que o dispositivo usará corrente alternada para carregar a bateria, interpretado no fuso horário local do dispositivo.</translation>
@@ -2087,6 +2106,27 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
       Se a política for definida como "Desativada", os controles de mídia não serão exibidos na tela de bloqueio.</translation>
 <translation id="3072847235228302527">Definir os Termos de Serviço para uma conta local do dispositivo</translation>
+<translation id="3077650998740742747">
+Comportamento padrão (política não definida)
+Quando uma conta é adicionada à área de conteúdo, uma pequena caixa de diálogo pode aparecer pedindo para o usuário criar um novo perfil. Essa caixa de diálogo pode ser dispensada.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />
+Se um usuário fizer login em um serviço do Google pela primeira vez no navegador <ph name="PRODUCT_NAME" />, uma caixa de diálogo vai aparecer pedindo que ele crie um perfil para a conta corporativa. O usuário pode clicar em "Cancelar" e sair da conta ou em "Continuar" para criar um perfil. Os dados de navegação atuais não vão ser adicionados ao novo perfil. O perfil recém-criado pode ter contas secundárias. Por exemplo, o usuário pode fazer login em outra conta na área de conteúdo.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />
+Esse comportamento é igual ao da <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />, mas o perfil recém-criado não pode ter contas secundárias.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />
+Esse comportamento é igual ao da <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />, mas uma caixa de seleção é adicionada para que o usuário possa manter os dados de navegação locais.
+Se o usuário marcar essa caixa, os dados de perfil atuais vão ser associados à conta gerenciada.
+- Todos os dados de navegação atuais vão estar no novo perfil.
+- Esses dados incluem favoritos, histórico, senha, dados de preenchimento automático, guias abertas, cookies, cache, armazenamento na Web, extensões etc.
+Se o usuário não marcar a caixa:
+- O perfil antigo vai continuar existindo e nenhum dado será perdido.
+- Um novo perfil vai ser criado.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />
+Esse comportamento é igual ao da <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />, mas o perfil recém-criado não pode ter contas secundárias.</translation>
 <translation id="3083259245974004342">Proteção por senha</translation>
 <translation id="3086995894968271156">Configura a política Cast Receiver no <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3087346703976541109">Especifica se o SharedArrayBuffers pode ser usado em um contexto não isolado de origem cruzada</translation>
@@ -3840,6 +3880,12 @@ da versão do ChromeOS ou do dispositivo) serão sempre exibidas ou ocultas na t
 <translation id="5085647276663819155">Desativar visualização da impressão</translation>
 <translation id="5090791951240382356">Permitir a mescla de políticas de dicionário de diferentes fontes</translation>
 <translation id="5091315650312105069">Permitir autenticação <ph name="BASIC_AUTH" /> para conexões HTTP</translation>
+<translation id="5099239365323299669">Da versão M106 em diante, não vai mais haver suporte para a cota persistente. Esta política vai reativar a funcionalidade de cota persistente até a versão M107.
+
+      Se a política for ativada, o webkitRequestFileSystem com tipo persistente vai funcionar com essa cota.
+
+      Se ela for desativada ou deixada sem definição, o webkitRequestFileSystem com tipo persistente vai operar com uma cota temporária.
+      </translation>
 <translation id="5103112931744164177">Esta política controla qual pilha de software é usada para se comunicar com o servidor DNS: o cliente DNS do sistema operacional ou o cliente DNS integrado do <ph name="PRODUCT_NAME" />. Esta política não afeta qual servidor DNS será usado. Se, por exemplo, o sistema operacional estiver configurado para usar um servidor DNS empresarial, o mesmo servidor será usado pelo cliente DNS integrado. Ela também não controla como o DNS sobre HTTPS é usado. O <ph name="PRODUCT_NAME" /> sempre usará o resolvedor integrado para solicitações DNS sobre HTTPS. Consulte a política <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> para ver informações sobre como controlar o DNS sobre HTTPS.
 
       Se a política for definida como "Ativada", o cliente DNS integrado será usado, se disponível.

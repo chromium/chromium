@@ -558,7 +558,6 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1536754031901697553">Uzilmoqda…</translation>
 <translation id="1537254971476575106">Butun ekran rejimidagi lupa</translation>
 <translation id="15373452373711364">Sichqonchaning katta kursori</translation>
-<translation id="1539630663098418038"><ph name="EXTENSIONS_REQUESTING_ACCESS" /> kengaytmasi <ph name="ORIGIN" /> sayti maʼlumotlarini oʻqish va oʻzgartirish uchun ruxsat soʻramoqda</translation>
 <translation id="1540605929960647700">Demo rejimni yoqish</translation>
 <translation id="1541346352678737112">Hech qanday tarmoq topilmadi</translation>
 <translation id="1542137295869176367">Kirish maʼlumotlaringiz yangilanmadi</translation>
@@ -720,7 +719,6 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1676902103953506022"><ph name="DOMAIN" /> domenidagi <ph name="USERNAME" /> hisobi paroli</translation>
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" /> kiritilmadi</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> qoldi</translation>
-<translation id="1678794218766467608">Kutish rejimida yoki muqovasi yopilganda qulflang</translation>
 <translation id="1679068421605151609">Dasturchi vositalari</translation>
 <translation id="1679810534535368772">Haqiqatan ham chiqmoqchimisiz?</translation>
 <translation id="167983332380191032">Boshqaruv xizmatidan yaroqsiz HTTP kod qabul qilindi.</translation>
@@ -848,7 +846,6 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1794051631868188691"><ph name="MERCHANT" /> hech qachon chiqarilmasin</translation>
 <translation id="1794791083288629568">Muammoni bartaraf etishga yordam beruvchi fikrlar yuborish.</translation>
 <translation id="1795214765651529549">Klassik mavzu ishlatilsin</translation>
-<translation id="1796105431091975902">Kiritiladigan Ansible Pleybukni tanlang</translation>
 <translation id="1796588414813960292">Ovozdan foydalanadigan funksiyalar ishlamaydi</translation>
 <translation id="1797117170091578105">Chromebook klaviaturasi bilan oʻynang. Muayyan amallar uchun tugmalarni moslashtirishingiz mumkin.</translation>
 <translation id="1800502858278951817">Hech qaysi kengaytma <ph name="SITE_NAME" /> saytini oʻqish va oʻzgartirishga ruxsat olishga urinmagan</translation>
@@ -913,6 +910,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1842766183094193446">Demo rejim yoqilsinmi?</translation>
 <translation id="1845727111305721124">Ovoz ijro etishga ruxsat berilgan</translation>
 <translation id="1846308012215045257"><ph name="PLUGIN_NAME" /> plaginini ishga tushirish uchun CTRL tugmasini bosib turgan holda sichqoncha tugmasini bosing</translation>
+<translation id="1848219224579402567">Qurilma yopilganda tizimdan chiqilsin</translation>
 <translation id="184862733444771842">Yangi funksiya talabi</translation>
 <translation id="1849016657376805933">Istalgan HID qurilma</translation>
 <translation id="1849186935225320012">Bu sahifa MIDI qurilmalarini to‘liq boshqaradi.</translation>
@@ -1021,7 +1019,6 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1941553344801134989">Versiya: <ph name="APP_VERSION" /></translation>
 <translation id="1941995177877935582">Tugmalarning tayinlanishini chiqarish</translation>
 <translation id="1942128823046546853">Barcha saytlardagi maʼlumotlaringizni oʻqish va oʻzgartirish</translation>
-<translation id="1942600407708803723">Muqova yopilganda ishni yakunlash</translation>
 <translation id="1944528062465413897">Bluetooth orqali ulanish kodi:</translation>
 <translation id="1944921356641260203">Yangilanish topildi</translation>
 <translation id="1947136734041527201">Saytlarda hisobga mavjud shaxsni tasdiqlash usuli bilan kirish imkonini beradi</translation>
@@ -3088,7 +3085,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="389901847090970821">Klaviaturani tanlang</translation>
 <translation id="3900966090527141178">Parollarni eksport qilish</translation>
 <translation id="3903187154317825986">Ichki klaviatura</translation>
-<translation id="3903191712482985591">Pleybukni kiritish</translation>
 <translation id="3904326018476041253">Joylashuvni aniqlash xizmatlari</translation>
 <translation id="3904849010307028014">Doim hisobga kirish kabi saytdagi harakatlaringiz asosida sayt brauzerga ishonch tokenini taqdim qilishi mumkin. Keyinroq siz ochadigan boshqa saytlar ishonch tokeni yaroqliligini tekshirish orqali sizning bot emas shaxs ekanligingizni aniqlay oladi.</translation>
 <translation id="3905761538810670789">Ilovani ta’mirlash</translation>
@@ -5034,7 +5030,6 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5827733057563115968">Keyingi soʻzni taklif qilish</translation>
 <translation id="5828545842856466741">Profil kiritish...</translation>
 <translation id="5828633471261496623">Chop etilmoqda...</translation>
-<translation id="5828797982387013521">Pleybukni tanlash</translation>
 <translation id="5830205393314753525"><ph name="APP_NAME" /> ochilmadi</translation>
 <translation id="5830720307094128296">Sahifani &amp;saqlab olish...</translation>
 <translation id="5832813618714645810">Profillar</translation>
@@ -5926,7 +5921,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6686665106869989887">Varaq oʻngga olindi</translation>
 <translation id="6686817083349815241">Parolni saqlash</translation>
 <translation id="6687079240787935001">Berkitish: <ph name="MODULE_TITLE" /></translation>
-<translation id="6688391094668641513"><ph name="ORIGIN" /> sayt maʼlumotlarini oʻqish va oʻzgartirish soʻrovi:</translation>
 <translation id="6689714331348768690"><ph name="SUPERVISED_USER_NAME" /> kompyuter oldiga kelsin. Farzandingiz uchun ovoz modelini yaratish uchun u ekrandagi bir nechta iborani oʻqishi kerak.
     <ph name="BR" />
     Agar <ph name="SUPERVISED_USER_NAME" /> hali oʻqiy olmasa, iboralarni ortingizdan qaytarsin. Mikrofondan uzoqroq gapiring vs Assistent farzandingiz ovozini siznikidan ajrata oladi.</translation>
@@ -7185,7 +7179,6 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="7898725031477653577">Har doim tarjima qilinsin</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Brauzer komponentlarini qidiryapsizmi? Bu sahifaga kiring</translation>
-<translation id="7903345046358933331">Quyidagi sahifa javob bermayapti. Uning javob berishini kutishingiz yoki uni majburan yopishingiz mumkin.</translation>
 <translation id="7903429136755645827">Oʻyin boshqaruvlarini moslashtirish uchun bosing</translation>
 <translation id="7903742244674067440">Sizda quyidagi sertifikatlash markazlari haqiqiyligini tasdiqlovchi sertifikatlar bor</translation>
 <translation id="7903925330883316394">Vosita: <ph name="UTILITY_TYPE" /></translation>
@@ -8099,6 +8092,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8780123805589053431">Rasmlarni tavsiflash (Google orqali)</translation>
 <translation id="8780443667474968681">Ovozli qidiruv o‘chiq.</translation>
 <translation id="8781834595282316166">Joriy guruhda yangi varaq ochish</translation>
+<translation id="8781980678064919987">Qurilma yopilganda ishni yakunlash</translation>
 <translation id="8782565991310229362">Kiosk ilovasi ishga tushirilishi bekor qilindi.</translation>
 <translation id="8783834180813871000">Bluetooth ulanish kodini kiriting va keyin Return yoki Enter tugmasini bosing.</translation>
 <translation id="8784626084144195648">Guruhlar bo‘yicha o‘rtachasi</translation>
@@ -8163,7 +8157,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8846132060409673887">Kompyuter ishlab chiqaruvchisi va modeli haqidagi axborotni olish</translation>
 <translation id="8846163936679269230">eSIM profillarini asliga qaytarish</translation>
 <translation id="8846239054091760429">Mono audio, boshlanishi, Jonli izoh va boshqalar</translation>
-<translation id="8847523528195140327">Muqova yopilganda hisobdan chiqish</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Yashirin</translation>
 <translation id="8849219423513870962"><ph name="PROFILE_NAME" /> nomli eSIM profilini olib tashlashni bekor qilish</translation>

@@ -565,7 +565,6 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1536754031901697553">Prekidanje veze…</translation>
 <translation id="1537254971476575106">Povećalo za cijeli ekran</translation>
 <translation id="15373452373711364">Veliki kursor miša</translation>
-<translation id="1539630663098418038">Ekstenzija <ph name="EXTENSIONS_REQUESTING_ACCESS" /> zahtijeva čitanje i izmjenu za: <ph name="ORIGIN" /></translation>
 <translation id="1540605929960647700">Omogućite demo-način</translation>
 <translation id="1541346352678737112">Nije pronađena nijedna mreža</translation>
 <translation id="1542137295869176367">Ažuriranje vaših podataka za prijavu nije uspjelo</translation>
@@ -727,7 +726,6 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1676902103953506022">Detalji o akreditivima za korisnika <ph name="USERNAME" /> na domeni <ph name="DOMAIN" /></translation>
 <translation id="1677306805708094828">Nije moguće dodati stavku <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">Još <ph name="TIME" /></translation>
-<translation id="1678794218766467608">Zaključaj u načinu rada mirovanja ili kada je poklopac zatvoren</translation>
 <translation id="1679068421605151609">Programerski alati</translation>
 <translation id="1679810534535368772">Jeste li sigurni da želite izaći?</translation>
 <translation id="167983332380191032">Usluga upravljanja je poslala HTTP grešku.</translation>
@@ -860,7 +858,6 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1794051631868188691">Nikad ne prikazuj <ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">Šaljite nam povratne informacije kako bismo riješili ovaj problem.</translation>
 <translation id="1795214765651529549">Koristi klasičnu</translation>
-<translation id="1796105431091975902">Odaberite vodič Ansible da dodate</translation>
 <translation id="1796588414813960292">Funkcije za koje je potreban zvuk neće funkcionirati</translation>
 <translation id="1797117170091578105">Igrajte pomoću Chromebookove tastature. Tipke možete prilagoditi određenim radnjama.</translation>
 <translation id="1800502858278951817">Nijedna ekstenzija nije zatražila da čita i mijenja <ph name="SITE_NAME" /></translation>
@@ -925,6 +922,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1842766183094193446">Jeste li sigurni da želite omogućiti demo-način?</translation>
 <translation id="1845727111305721124">Dozvoljeno je reproduciranje zvuka</translation>
 <translation id="1846308012215045257">Ctrl + klik da pokrenete dodatak <ph name="PLUGIN_NAME" /></translation>
+<translation id="1848219224579402567">Odjavi me kada se poklopac zatvori</translation>
 <translation id="184862733444771842">Zahtjev za funkcijom</translation>
 <translation id="1849016657376805933">Bilo koji HID uređaj</translation>
 <translation id="1849186935225320012">Ova stranica ima punu kontrolu nad MIDI uređajima.</translation>
@@ -1033,7 +1031,6 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1941553344801134989">Verzija: <ph name="APP_VERSION" /></translation>
 <translation id="1941995177877935582">Prikaži mapiranje tipki</translation>
 <translation id="1942128823046546853">čitati i promijeniti sve vaše podatke na svim web lokacijama</translation>
-<translation id="1942600407708803723">Isključi kada se zatvori poklopac</translation>
 <translation id="1944528062465413897">Kôd za uparivanje putem Bluetootha:</translation>
 <translation id="1944921356641260203">Ažuriranje je dostupno.</translation>
 <translation id="1947136734041527201">Omogućava vam prijavu na web lokacije pomoću računa koji imate na usluzi za potvrdu identiteta</translation>
@@ -1725,7 +1722,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2568774940984945469">Spremnik trake s informacijama</translation>
 <translation id="2571655996835834626">Mijenja postavke koje upravljaju pristupom web-lokacija značajkama kao što su kolačići, JavaScript, priključci, geolokacija, mikrofon, fotoaparat itd.</translation>
 <translation id="2572032849266859634">Jedinici <ph name="VOLUME_NAME" /> je dodijeljen pristup samo za čitanje.</translation>
-<translation id="2573276323521243649">Natrag sa stranice za odabir avatara</translation>
+<translation id="2573276323521243649">Nazad sa stranice za odabir avatara</translation>
 <translation id="2573417407488272418">Prije ove nadogradnje napravite sigurnosnu kopiju u Fajlovima &gt; Moji fajlovi.</translation>
 <translation id="2573831315551295105">Dodijelite prekidač za radnju "<ph name="ACTION" />"</translation>
 <translation id="2575247648642144396">Ikona će se vidjeti kada ekstenzija može djelovati na trenutnoj stranici. Da koristite ovu ekstenziju kliknite na ikonu ili pritisnite tipke prečice <ph name="EXTENSION_SHORTCUT" />.</translation>
@@ -3100,7 +3097,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="389901847090970821">Odaberite tastaturu</translation>
 <translation id="3900966090527141178">Izvezite lozinke</translation>
 <translation id="3903187154317825986">Ugrađena tastatura</translation>
-<translation id="3903191712482985591">Dodajte vodič</translation>
 <translation id="3904326018476041253">Usluge lokacije</translation>
 <translation id="3904849010307028014">Na osnovu vaše interakcije s web lokacijom, kao što je redovna prijava na račun, ta web lokacija može izdati token povjerenja vašem pregledniku. Kasnije, ako druga web lokacija koju ste posjetili provjeri i pronađe važeći token povjerenja, veća je vjerovatnoća da će vas tretirati kao stvarnu osobu, a ne kao bota.</translation>
 <translation id="3905761538810670789">Popravi aplikaciju</translation>
@@ -5046,7 +5042,6 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5827733057563115968">Predviđanje sljedeće riječi</translation>
 <translation id="5828545842856466741">Dodaj profil…</translation>
 <translation id="5828633471261496623">Štampanje...</translation>
-<translation id="5828797982387013521">Odaberite vodič</translation>
 <translation id="5830205393314753525"><ph name="APP_NAME" /> se ne može otvoriti</translation>
 <translation id="5830720307094128296">Sačuvaj stranicu &amp;kao...</translation>
 <translation id="5832813618714645810">Profili</translation>
@@ -5942,7 +5937,6 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="6686665106869989887">Kartica je pomjerena udesno</translation>
 <translation id="6686817083349815241">Sačuvajte svoju lozinku</translation>
 <translation id="6687079240787935001">Sakrij: <ph name="MODULE_TITLE" /></translation>
-<translation id="6688391094668641513">Zahtijevanje čitanja i promjene web lokacije <ph name="ORIGIN" />:</translation>
 <translation id="6689714331348768690">Zamolite dijete (<ph name="SUPERVISED_USER_NAME" />) da dođe do računara. Dijete će pročitati nekoliko fraza s ovog ekrana da kreira svoj model glasa.
     <ph name="BR" />
     Ako <ph name="SUPERVISED_USER_NAME" /> treba pomoć s čitanjem, neka ponavlja tekst za vama. Šapćite tekst dalje od mikrofona tako da Asistent uči glas vašeg djeteta, a ne vaš.</translation>
@@ -7202,7 +7196,6 @@ Pritisnite dodijeljeni prekidač ili tipku da uklonite dodjeljivanje.</translati
 <translation id="7898725031477653577">Uvijek prevodi</translation>
 <translation id="7901405293566323524">Hub telefona</translation>
 <translation id="7903290522161827520">Tražite komponente preglednika? Posjetite</translation>
-<translation id="7903345046358933331">Stranica ne reagira. Možete sačekati da počne reagirati ili je zatvoriti.</translation>
 <translation id="7903429136755645827">Kliknite za prilagodbu kontrola igre</translation>
 <translation id="7903742244674067440">Imate potvrde o fajlu kojim se utvrđuje identitet ovih tijela za izdavanje potvrda</translation>
 <translation id="7903925330883316394">Uslužni proces: <ph name="UTILITY_TYPE" /></translation>
@@ -8119,6 +8112,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="8780123805589053431">Preuzimanje opisa slika s Googlea</translation>
 <translation id="8780443667474968681">Glasovno pretraživanje je isključeno.</translation>
 <translation id="8781834595282316166">Nova kartica u grupi</translation>
+<translation id="8781980678064919987">Isključi računalo kada se zatvori poklopac</translation>
 <translation id="8782565991310229362">Pokretanje aplikacije za kiosk je otkazano.</translation>
 <translation id="8783834180813871000">Upišite kôd za uparivanje putem Bluetootha, a zatim pritisnite Return ili Enter.</translation>
 <translation id="8784626084144195648">Zbirni prosjek</translation>
@@ -8183,7 +8177,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="8846132060409673887">Čitanje proizvođača i modela računara</translation>
 <translation id="8846163936679269230">Vrati eSIM profile na zadano</translation>
 <translation id="8846239054091760429">Mono zvuk, pokretanje, Automatski titlovi i još mnogo toga</translation>
-<translation id="8847523528195140327">Odjavi se kada se poklopac zatvori</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Skriveno</translation>
 <translation id="8849219423513870962">Otkazivanje uklanjanja profila eSIM-a pod nazivom <ph name="PROFILE_NAME" /></translation>

@@ -756,6 +756,12 @@
 
 如果用于保留现有浏览数据的选项不可用，此政策不会产生任何影响，这种情况会发生于系统严格执行企业资料分隔或者数据来自一份已受管理的资料时。
 </translation>
+<translation id="1795105105645381965">
+      如果此政策已启用 (True)，<ph name="PRODUCT_NAME" /> 会先征得受管用户的同意以获得使用权限，然后才在非受管设备上共享设备信号。
+
+      如果此政策已停用 (False) 或未设置，<ph name="PRODUCT_NAME" /> 将无法收集设备信号。
+
+      设备信号的示例包括（但不限于）OS 信息、注册数据库和文件存在状态。</translation>
 <translation id="179694024208061102">如果此政策已启用，<ph name="PRODUCT_NAME" /> 将会尝试在备用浏览器（例如 <ph name="IE_PRODUCT_NAME" />）中打开某些网址。此功能是使用<ph name="LEGACY_BROWSER_SUPPORT_POLICY_GROUP" />组中的政策设置的。
 
       如果此政策已停用或未设置，<ph name="PRODUCT_NAME" /> 将不会尝试在备用浏览器中打开指定的网址。</translation>
@@ -1357,6 +1363,19 @@
 <translation id="2384233438419344179">如果此政策已启用，系统会阻止来自浏览器地址栏所含网域之外的网页元素设置 Cookie。如果此政策已停用，系统会允许这些元素设置 Cookie，并会阻止用户更改此设置。
 
       如果此政策未设置，系统会开启第三方 Cookie，但用户可以更改此设置。</translation>
+<translation id="2384553027681594203">旨在为登录屏幕和锁定的屏幕上的网址列表启用 <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" />。
+
+      通过设置此政策，您可以指定应允许哪些网址参与认证流程，以便接收来自计算机的一系列信号。
+
+      如果您未设置此政策或将其留空，任何端点都将无法启动认证流程，也无法接收来自计算机的信号。
+
+      网址必须采用 HTTPS 架构，例如：“https://example.com”。
+
+      注意：允许使用通配符 <ph name="WILDCARD_VALUE" />。
+
+      此政策只会影响登录屏幕和锁定的屏幕上的认证流程。如需更改会话期间认证流程，请使用 <ph name="CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" /> 政策。
+
+      如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
 <translation id="2386362615870139244">允许使用屏幕唤醒锁定</translation>
 <translation id="2387469539700985783">此政策对 Android 完成的报告没有任何影响。</translation>
 <translation id="238885588439957890">设备将于何时（以设备的本地时区表示）使用交流电为电池充电。</translation>
@@ -2049,6 +2068,27 @@
 
       如果此政策已停用，系统会关闭锁定屏幕上的媒体控件。</translation>
 <translation id="3072847235228302527">为设备本地帐号设置服务条款</translation>
+<translation id="3077650998740742747">
+默认行为（未设置政策）
+在内容区域中添加帐号后，系统可能会显示一个小对话框，从中要求用户创建一份新的个人资料。此对话框是可关闭的。
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />
+如果用户在 <ph name="PRODUCT_NAME" /> 浏览器中首次登录 Google 服务，系统会显示一个对话框，从中要求用户为其企业帐号创建一份新的个人资料。用户可点击“取消”并退出登录，或点击“继续”以创建一份新的个人资料。所有现有浏览数据都不会添加到这份新的个人资料中。新创建的个人资料可以设有辅助帐号，例如用户可以登录内容区域中的另一个帐号。
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />
+这与 <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> 的行为相同，但新创建的个人资料不得设有辅助帐号。
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />
+这与 <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> 的行为相同，但系统会在对话框中添加一个复选框以允许用户保留本地浏览数据。
+如果用户勾选该复选框，现有个人资料数据会与受管理的帐号关联。
+-  所有现有浏览数据都会显示在新创建的个人资料中。
+-  这些数据包括书签、历史记录、密码、自动填充数据、打开的标签页、Cookie、缓存的数据、网络存储空间中的数据、扩展程序等等。
+如果用户未勾选该复选框：
+-  旧个人资料将继续存在，而且不会丢失任何数据。
+-  系统将会创建一份新的个人资料。
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />
+这与 <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" /> 的行为相同，但新创建的个人资料不得设有辅助帐号。</translation>
 <translation id="3083259245974004342">密码保护</translation>
 <translation id="3086995894968271156">在 <ph name="PRODUCT_NAME" />中配置 Cast 接收器。</translation>
 <translation id="3087346703976541109">指定 SharedArrayBuffers 可否用在未进行跨域隔离的情境中</translation>
@@ -3781,6 +3821,12 @@
 <translation id="5085647276663819155">停用打印预览</translation>
 <translation id="5090791951240382356">允许合并来自多个不同来源的字典政策</translation>
 <translation id="5091315650312105069">允许通过 HTTP 进行<ph name="BASIC_AUTH" />身份验证</translation>
+<translation id="5099239365323299669">从 M106 开始，永久配额将不再受支持。此政策用于重新启用永久配额功能，直至 M107。
+
+      如果此政策已启用，设有“永久”类型的 webkitRequestFileSystem 将使用永久配额运行。
+
+      如果此政策未设置或已停用，设有“永久”类型的 webkitRequestFileSystem 将使用临时配额运行。
+      </translation>
 <translation id="5103112931744164177">此政策用于控制使用哪个软件堆栈与 DNS 服务器通信：操作系统 DNS 客户端或 <ph name="PRODUCT_NAME" /> 的内置 DNS 客户端。此政策不会影响使用哪些 DNS 服务器：例如，如果操作系统已配置为使用一台企业 DNS 服务器，内置 DNS 客户端也会使用这台服务器。此政策也不会控制是否使用 DNS-over-HTTPS；<ph name="PRODUCT_NAME" /> 将始终使用内置的解析器发送 DNS-over-HTTPS 请求。如需了解如何控制 DNS-over-HTTPS，请参阅 <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> 政策。
 
       如果此政策已启用，系统将会使用内置 DNS 客户端（如果可用）。

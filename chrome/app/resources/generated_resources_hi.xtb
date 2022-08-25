@@ -564,7 +564,6 @@
 <translation id="1536754031901697553">डिसकनेक्ट हो रहा है...</translation>
 <translation id="1537254971476575106">फ़ुलस्क्रीन मैग्निफ़ायर</translation>
 <translation id="15373452373711364">बड़ा माउस कर्सर</translation>
-<translation id="1539630663098418038"><ph name="EXTENSIONS_REQUESTING_ACCESS" />, <ph name="ORIGIN" /> को पढ़ने और उसमें बदलाव करने का अनुरोध कर रहा है</translation>
 <translation id="1540605929960647700">'डेमो मोड' चालू करें</translation>
 <translation id="1541346352678737112">कोई भी नेटवर्क नहीं मिला</translation>
 <translation id="1542137295869176367">आपका साइन इन करने के लिए डेटा अपडेट नहीं किया जा सका</translation>
@@ -726,7 +725,6 @@
 <translation id="1676902103953506022"><ph name="DOMAIN" /> पर, <ph name="USERNAME" /> के क्रेडेंशियल</translation>
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" /> को जोड़ा नहीं जा सकता</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> बाकी</translation>
-<translation id="1678794218766467608">स्लीप मोड या कवर बंद होने पर लॉक करें</translation>
 <translation id="1679068421605151609">डेवलपर टूल</translation>
 <translation id="1679810534535368772">क्या आप वाकई बाहर निकलना चाहते हैं?</translation>
 <translation id="167983332380191032">मैनेजर सेवा ने एचटीटीपी गड़बड़ी भेजी है.</translation>
@@ -862,7 +860,6 @@
 <translation id="1794051631868188691"><ph name="MERCHANT" /> कभी न दिखाएं</translation>
 <translation id="1794791083288629568">इस समस्या को ठीक करने में हमारी सहायता करने के लिए फ़ीडबैक भेजें.</translation>
 <translation id="1795214765651529549">क्लासिक का उपयोग करें</translation>
-<translation id="1796105431091975902">जोड़ने के लिए किसी Ansible प्लेबुक को चुनें</translation>
 <translation id="1796588414813960292">वे सुविधाएं काम नहीं करेंगी जिन्हें आवाज़ की ज़रूरत है</translation>
 <translation id="1797117170091578105">अपने Chromebook के कीबोर्ड की मदद से चलाएं. कीबोर्ड की कुंजियों को अपनी पसंद के मुताबिक, खास कार्रवाइयों के लिए सेट किया जा सकता है.</translation>
 <translation id="1800502858278951817">किसी भी एक्सटेंशन ने, <ph name="SITE_NAME" /> को पढ़ने और उसे बदलने की अनुमति नहीं मांगी है</translation>
@@ -927,6 +924,7 @@
 <translation id="1842766183094193446">क्या आप वाकई 'डेमो मोड' चालू करना चाहते हैं?</translation>
 <translation id="1845727111305721124">आवाज़ चलाने की अनुमति है</translation>
 <translation id="1846308012215045257"><ph name="PLUGIN_NAME" /> को चलाने के लिए कंट्रोल दबाए रखते हुए क्लिक करें</translation>
+<translation id="1848219224579402567">लिड बंद होने पर साइन आउट करें</translation>
 <translation id="184862733444771842">सुविधा का अनुरोध</translation>
 <translation id="1849016657376805933">कोई भी एचआईडी डिवाइस</translation>
 <translation id="1849186935225320012">इस पेज के पास MIDI डिवाइस का पूरा नियंत्रण है.</translation>
@@ -1034,7 +1032,6 @@
 <translation id="1941553344801134989">वर्शन: <ph name="APP_VERSION" /></translation>
 <translation id="1941995177877935582">की-मैपिंग दिखाएं</translation>
 <translation id="1942128823046546853">यह एक्सटेंशन, सभी वेबसाइटों पर आपका डेटा पढ़ और बदल सकेगा</translation>
-<translation id="1942600407708803723">कवर बंद होने पर शट डाउन करें</translation>
 <translation id="1944528062465413897">ब्लूटूथ इस्तेमाल करके डिवाइस जोड़ने का कोड</translation>
 <translation id="1944921356641260203">अपडेट मिला</translation>
 <translation id="1947136734041527201">इसकी मदद से, पहचान करने वाली सेवा के लिए बनाए गए अपने खाते के ज़रिए, वेबसाइटों में साइन इन किया जा सकता है</translation>
@@ -2564,6 +2561,7 @@
 <translation id="3406290648907941085">वर्चुअल रियलिटी डिवाइस और डेटा इस्तेमाल करने की अनुमति है</translation>
 <translation id="3406396172897554194">भाषा या इनपुट के नाम से खोजें</translation>
 <translation id="3406605057700382950">बुकमार्क बार &amp;दिखाएं</translation>
+<translation id="3408849592677950451">{NUM_PASSWORDS,plural, =1{<ph name="USER_EMAIL" /> के लिए, Google Password Manager में 1 पासवर्ड इंपोर्ट किया गया}one{<ph name="USER_EMAIL" /> के लिए, Google Password Manager में {NUM_PASSWORDS} पासवर्ड इंपोर्ट किया गया}other{<ph name="USER_EMAIL" /> के लिए, Google Password Manager में {NUM_PASSWORDS} पासवर्ड इंपोर्ट किए गए}}</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3412265149091626468">चुनें पर जाएं</translation>
 <translation id="3413122095806433232">CA जारीकर्ता: <ph name="LOCATION" /></translation>
@@ -3097,7 +3095,6 @@
 <translation id="389901847090970821">कीबोर्ड चुनें</translation>
 <translation id="3900966090527141178">पासवर्ड निर्यात करें</translation>
 <translation id="3903187154317825986">पहले से मौजूद कीबोर्ड</translation>
-<translation id="3903191712482985591">प्लेबुक जोड़ें</translation>
 <translation id="3904326018476041253">जगह की जानकारी</translation>
 <translation id="3904849010307028014">किसी साइट के साथ हुए आपके इंटरैक्शन के आधार पर, वह साइट आपके ब्राउज़र को ट्रस्ट टोकन जारी कर सकती है. इस इंटरैक्शन में किसी खाते में नियमित रूप से साइन इन करने जैसी गतिविधियां शामिल होती हैं. इसके बाद, दूसरी साइटों पर जाने पर, अगर वे साइटें आपको जारी एक मान्य ट्रस्ट टोकन का पता लगा लेती हैं, तो इस बात की ज़्यादा उम्मीद होती है कि आपको एक व्यक्ति माना जाएगा, न कि बॉट.</translation>
 <translation id="3905761538810670789">ऐप्लिकेशन को ठीक करें</translation>
@@ -3748,6 +3745,7 @@
 <translation id="4541123282641193691">आपके खाते की पुष्टि नहीं हो सकी. कृपया फिर से कोशिश करें या अपना Chromebook रीस्टार्ट करें.</translation>
 <translation id="4541662893742891060">इस प्रोफ़ाइल से कनेक्ट नहीं किया जा सकता. तकनीकी सहायता के लिए, कृपया मोबाइल और इंटरनेट सेवा देने वाली अपनी कंपनी से संपर्क करें.</translation>
 <translation id="4541706525461326392">प्रोफ़ाइल हटाई जा रही है. इसमें कुछ मिनट लग सकते हैं.</translation>
+<translation id="4542332958571335077">{NUM_PASSWORDS,plural, =1{इस डिवाइस पर, Google Password Manager में 1 पासवर्ड इंपोर्ट किया गया}one{इस डिवाइस पर, Google Password Manager में {NUM_PASSWORDS} पासवर्ड इंपोर्ट किया गया}other{इस डिवाइस पर, Google Password Manager में {NUM_PASSWORDS} पासवर्ड इंपोर्ट किए गए}}</translation>
 <translation id="4542520061254486227"><ph name="WEBSITE_1" /> और <ph name="WEBSITE_2" /> पर अपना डेटा पढ़ें</translation>
 <translation id="4543778593405494224">प्रमाणपत्र मैनेजर</translation>
 <translation id="4544174279960331769">डिफ़ॉल्ट नीला अवतार</translation>
@@ -5040,7 +5038,6 @@
 <translation id="5827733057563115968">अगले शब्द का अनुमान</translation>
 <translation id="5828545842856466741">प्रोफ़ाइल जोड़ें...</translation>
 <translation id="5828633471261496623">प्रिंट हो रहा है...</translation>
-<translation id="5828797982387013521">प्लेबुक चुनें</translation>
 <translation id="5830205393314753525"><ph name="APP_NAME" /> को खोला नहीं जा सकता</translation>
 <translation id="5830720307094128296">पेज को इस रूप में सेव करें...</translation>
 <translation id="5832813618714645810">प्रोफ़ाइलें</translation>
@@ -5931,7 +5928,6 @@
 <translation id="6686665106869989887">टैब को दाईं ओर ले जाया गया</translation>
 <translation id="6686817083349815241">अपना पासवर्ड सेव करें</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> छिपाएं</translation>
-<translation id="6688391094668641513"><ph name="ORIGIN" /> को पढ़ने और उसमें बदलाव करने का अनुरोध किया जा रहा है:</translation>
 <translation id="6689714331348768690"><ph name="SUPERVISED_USER_NAME" /> को कंप्यूटर पर आने के लिए कहें. अपनी आवाज़ का नमूना बनाने के लिए, आपका बच्चा इस स्क्रीन पर कुछ वाक्यांश पढ़ेगा.
     <ph name="BR" />
     अगर <ph name="SUPERVISED_USER_NAME" /> को पढ़ने में मदद चाहिए, तो उन्हें अपने बाद वाक्यांश दोहराने को कहें. माइक से दूर होकर धीरे बोलें, ताकि Assistant आपके बजाय आपके बच्चे की आवाज़ जानें.</translation>
@@ -6231,6 +6227,7 @@
 <translation id="6968288415730398122">स्क्रीन लॉक कॉन्फ़िगर करने के लिए अपना पासवर्ड डालें</translation>
 <translation id="6969047215179982698">आस-पास शेयर करने की सुविधा बंद करें</translation>
 <translation id="6970480684834282392">स्टार्टअप प्रकार</translation>
+<translation id="6970543303783413625">पासवर्ड इंपोर्ट नहीं किए जा सके. एक बार में सिर्फ़ <ph name="COUNT" /> पासवर्ड इंपोर्ट किए जा सकते हैं.</translation>
 <translation id="6970856801391541997">विशेष पेज प्रिंट करें</translation>
 <translation id="6970861306198150268">पक्का करें कि आप इस साइट के लिए अपना मौजूदा पासवर्ड सेव कर रहे हैं</translation>
 <translation id="6972180789171089114">ऑडियो/वीडियो</translation>
@@ -6462,6 +6459,7 @@
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{पेज से बाहर निकलें}one{पेज से बाहर निकलें}other{पेज से बाहर निकलें}}</translation>
 <translation id="7207457272187520234">इस्तेमाल और गड़बड़ी की जानकारी से जुड़ा डेटा भेजें. यह डिवाइस फ़िलहाल Google को गड़बड़ी की जानकारी, डिवाइस, और ऐप्लिकेशन के इस्तेमाल से जुड़ा डेटा अपने-आप भेज रहा है. यह सिस्टम और ऐप्लिकेशन की स्थिरता बढ़ाने और दूसरे सुधार करने में मदद करेगा. इकट्ठा किया गया कुछ डेटा, Google ऐप्लिकेशन और पार्टनर की भी मदद करेगा. जैसे, Android डेवलपर. यह सेटिंग, डिवाइस के मालिक ने लागू की है. अगर आपकी दूसरी 'वेब और ऐप्लिकेशन गतिविधि' सेटिंग चालू है, तो यह डेटा आपके Google खाते में सेव किया जा सकता है.</translation>
 <translation id="7207631048330366454">ऐप्लिकेशन खोजें</translation>
+<translation id="7210471695184432500">इस डिवाइस पर, Google Password Manager में पासवर्ड इंपोर्ट करने के लिए, कोई CSV फ़ाइल चुनें</translation>
 <translation id="7210499381659830293">एक्सटेंशन प्रिंटर</translation>
 <translation id="7211783048245131419">अभी तक कोई भी स्विच असाइन नहीं किया गया</translation>
 <translation id="7212097698621322584">अपना मौजूदा पिन डालकर उसे बदलें. अगर आप पिन नहीं जानते हैं, तो आपको सुरक्षा कुंजी रीसेट करनी होगी, फिर एक नया पिन बनाना होगा.</translation>
@@ -7182,7 +7180,6 @@
 <translation id="7898725031477653577">हमेशा अनुवाद करें</translation>
 <translation id="7901405293566323524">फ़ोन हब</translation>
 <translation id="7903290522161827520">ब्राउज़र कॉम्पोनेंट वाला पेज चाहिए? यहां जाएं</translation>
-<translation id="7903345046358933331">पेज कोई प्रतिसाद नहीं दे रहा है. आप उसके प्रतिसाद देने तक प्रतीक्षा कर सकते हैं या उसे बंद कर सकते हैं.</translation>
 <translation id="7903429136755645827">गेम के कंट्रोल को पसंद के मुताबिक बनाने के लिए क्लिक करें</translation>
 <translation id="7903742244674067440">इन प्रमाणपत्र प्राधिकारियों की पहचान करने वाले प्रमाणपत्र आपके रिकॉर्ड में हैं</translation>
 <translation id="7903925330883316394">उपयोगिता: <ph name="UTILITY_TYPE" /></translation>
@@ -7518,6 +7515,7 @@
 <translation id="8206859287963243715">सेलुलर</translation>
 <translation id="8208216423136871611">न सेव करें</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{नई सूचना}one{# नई सूचना}other{# नई सूचनाएं}}</translation>
+<translation id="821119981794423735"><ph name="USER_EMAIL" /> के लिए, Google Password Manager में पासवर्ड इंपोर्ट करने के लिए, कोई CSV फ़ाइल चुनें</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{डाउनलोड जारी है}one{डाउनलोड जारी हैं}other{डाउनलोड जारी हैं}}</translation>
 <translation id="8213449224684199188">आप फ़ोटो मोड में हैं</translation>
 <translation id="8214489666383623925">फ़ाइल खोलें...</translation>
@@ -8097,6 +8095,7 @@
 <translation id="8780123805589053431">Google से इमेज के बारे में जानकारी पाएं</translation>
 <translation id="8780443667474968681">बोलकर खोजने की सेवा बंद कर दी गई है.</translation>
 <translation id="8781834595282316166">ग्रुप में नया टैब जोड़ें</translation>
+<translation id="8781980678064919987">लिड बंद होने पर शट डाउन करें</translation>
 <translation id="8782565991310229362">कियोस्क ऐप्स  लॉन्च रद्द किया गया.</translation>
 <translation id="8783834180813871000">ब्लूटूथ इस्तेमाल करके दूसरे डिवाइस से जोड़ने का कोड लिखें. इसके बाद, Return या Enter दबाएं.</translation>
 <translation id="8784626084144195648">बिन औसत</translation>
@@ -8161,7 +8160,6 @@
 <translation id="8846132060409673887">इस कंप्यूटर का निर्माता और मॉडल पढ़ें</translation>
 <translation id="8846163936679269230">ई-सिम प्रोफ़ाइलों को रीसेट करें</translation>
 <translation id="8846239054091760429">मोनो ऑडियो, स्टार्टअप, और लाइव कैप्शन वगैरह</translation>
-<translation id="8847523528195140327">कवर बंद होने पर साइन आउट करें</translation>
 <translation id="8847988622838149491">यूएसबी</translation>
 <translation id="8849001918648564819">छिपा हुआ</translation>
 <translation id="8849219423513870962"><ph name="PROFILE_NAME" /> नाम की ई-सिम प्रोफ़ाइल को हटाने की प्रक्रिया रद्द करें</translation>

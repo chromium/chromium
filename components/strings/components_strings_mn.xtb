@@ -265,6 +265,7 @@
 <translation id="1592005682883173041">Суурин өгөгдлийн хандалт</translation>
 <translation id="1594030484168838125">Сонгох</translation>
 <translation id="1596296697375291157">Онц сонирхолтой, гэмт хэргийн болон нууцлаг кино</translation>
+<translation id="1599199147673445968">Шинэ карт уу? <ph name="BEGIN_LINK" />Картын дэлгэрэнгүйг оруулна уу<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Chrome-д Dino Run тоглоомыг тоглох</translation>
 <translation id="161042844686301425">Шар хөх өнгө</translation>
 <translation id="1611101756749861742">Хоёр дахь хуйлмал</translation>
@@ -1007,6 +1008,7 @@
 <translation id="3664782872746246217">Түлхүүр үг:</translation>
 <translation id="3667704023705708645">Эрсдэлт хөрөнгө</translation>
 <translation id="3671540257457995106">Хэмжээг өөрчлөхийг зөвшөөрөх үү?</translation>
+<translation id="3672568546897166916"><ph name="ERROR_PATH" />-д алдаа гарлаа: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">Гурав дахь хуйлмал</translation>
 <translation id="3676592649209844519">Төхөөрөмжийн ID:</translation>
 <translation id="3677008721441257057">Та &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; руу очихыг хүссэн үү?</translation>

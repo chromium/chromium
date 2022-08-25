@@ -559,7 +559,6 @@
 <translation id="1536754031901697553">Веза се прекида...</translation>
 <translation id="1537254971476575106">Лупа за цео екран</translation>
 <translation id="15373452373711364">Велики курсор</translation>
-<translation id="1539630663098418038"><ph name="EXTENSIONS_REQUESTING_ACCESS" /> тражи да чита и мења сајт <ph name="ORIGIN" /></translation>
 <translation id="1540605929960647700">Омогућите режим демонстрације</translation>
 <translation id="1541346352678737112">Није пронађена ниједна мрежа</translation>
 <translation id="1542137295869176367">Ажурирање података за пријављивање није успело</translation>
@@ -721,7 +720,6 @@
 <translation id="1676902103953506022">Детаљи акредитива за корисника <ph name="USERNAME" /> на <ph name="DOMAIN" /></translation>
 <translation id="1677306805708094828">Нисмо успели да додамо: <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478"><ph name="TIME" /> је преостало</translation>
-<translation id="1678794218766467608">Закључај у режиму спавања или када је поклопац затворен</translation>
 <translation id="1679068421605151609">Алатке за програмере</translation>
 <translation id="1679810534535368772">Желите ли стварно да изађете?</translation>
 <translation id="167983332380191032">Услуга управљања је послала HTTP грешку.</translation>
@@ -849,7 +847,6 @@
 <translation id="1794051631868188691">Никада не приказуј корпу продавца <ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">Шаљи повратне информације као помоћ за решавање овог проблема.</translation>
 <translation id="1795214765651529549">Користи класичну</translation>
-<translation id="1796105431091975902">Изаберите Ansible водич за додавање</translation>
 <translation id="1796588414813960292">Функције којима треба звук неће радити</translation>
 <translation id="1797117170091578105">Играјте помоћу Chromebook тастатуре. Можете да прилагодите тастере одређеним радњама.</translation>
 <translation id="1800502858278951817">Ниједан додатак није затражио да чита и мења <ph name="SITE_NAME" /></translation>
@@ -914,6 +911,7 @@
 <translation id="1842766183094193446">Желите ли стварно да омогућите режим демонстрације?</translation>
 <translation id="1845727111305721124">Дозвољено им је да пуштају звук</translation>
 <translation id="1846308012215045257">Кликните и задржите тастер Control да бисте покренули <ph name="PLUGIN_NAME" /></translation>
+<translation id="1848219224579402567">Одјави ме кад се поклопац затвори</translation>
 <translation id="184862733444771842">Захтев за функцију</translation>
 <translation id="1849016657376805933">Било који HID уређај</translation>
 <translation id="1849186935225320012">Ова страница у потпуности контролише MIDI уређаје.</translation>
@@ -1021,7 +1019,6 @@
 <translation id="1941553344801134989">Верзија: <ph name="APP_VERSION" /></translation>
 <translation id="1941995177877935582">Прикажи мапирање тастера</translation>
 <translation id="1942128823046546853">да чита и мења све ваше податке на свим веб-сајтовима</translation>
-<translation id="1942600407708803723">Искључи се када се поклопац затвори</translation>
 <translation id="1944528062465413897">Кôд за упаривање са Bluetooth уређајем:</translation>
 <translation id="1944921356641260203">Ажурирање је пронађено</translation>
 <translation id="1947136734041527201">Омогућава вам да се пријављујете на веб-сајтове помоћу налога који имате у услузи за идентитет</translation>
@@ -1710,6 +1707,7 @@
 <translation id="2568774940984945469">Контејнер траке са информацијама</translation>
 <translation id="2571655996835834626">Промените подешавања која контролишу приступ веб-сајтова функцијама као што су колачићи, JavaScript, додатне компоненте, геолоцирање, микрофон, камера итд.</translation>
 <translation id="2572032849266859634">Одобрен је приступ за <ph name="VOLUME_NAME" /> само за читање.</translation>
+<translation id="2573276323521243649">Вратите се са странице за избор аватара</translation>
 <translation id="2573417407488272418">Направите резервну копију апликација и фајлова у одељку Фајлови &gt; Моји фајлови пре него што надоградите.</translation>
 <translation id="2573831315551295105">Доделите прекидач за радњу <ph name="ACTION" /></translation>
 <translation id="2575247648642144396">Ова икона ће бити видљива када додатак буде могао да функционише на тренутној страници. Користите овај додатак кликом на икону или притиском на <ph name="EXTENSION_SHORTCUT" />.</translation>
@@ -3084,7 +3082,6 @@
 <translation id="389901847090970821">Изаберите тастатуру</translation>
 <translation id="3900966090527141178">Извезите лозинке</translation>
 <translation id="3903187154317825986">Уграђена тастатура</translation>
-<translation id="3903191712482985591">Додајте водич</translation>
 <translation id="3904326018476041253">Услуге локације</translation>
 <translation id="3904849010307028014">Тај сајт може да изда поуздан токен за прегледач на основу ваше интеракције са сајтом, попут редовног пријављивања на налог. Ако други сајтови које посећујете касније потраже и пронађу важећи поуздани токен, већа је вероватноћа да ће вас третирати као особу, а не као робота.</translation>
 <translation id="3905761538810670789">Поправи апликацију</translation>
@@ -5029,7 +5026,6 @@
 <translation id="5827733057563115968">Предвиђање следеће речи</translation>
 <translation id="5828545842856466741">Додај профил…</translation>
 <translation id="5828633471261496623">Штампање...</translation>
-<translation id="5828797982387013521">Изаберите водич</translation>
 <translation id="5830205393314753525"><ph name="APP_NAME" />: отварање није успело</translation>
 <translation id="5830720307094128296">Сачувај страницу &amp;као...</translation>
 <translation id="5832813618714645810">Профили</translation>
@@ -5925,7 +5921,6 @@
 <translation id="6686665106869989887">Картица је премештена надесно</translation>
 <translation id="6686817083349815241">Сачувајте лозинку</translation>
 <translation id="6687079240787935001">Сакриј <ph name="MODULE_TITLE" /></translation>
-<translation id="6688391094668641513">Захтев за читање и мењање за <ph name="ORIGIN" />:</translation>
 <translation id="6689714331348768690">Позовите дете <ph name="SUPERVISED_USER_NAME" /> да дође до рачунара. Дете ће прочитати неколико фраза на овом екрану да бисмо направили гласовни модел.
     <ph name="BR" />
     Ако је детету <ph name="SUPERVISED_USER_NAME" /> потребна помоћ са читањем, нека понавља за вама. Шапућите даље од микрофона да би Помоћник научио дететов, а не ваш глас.</translation>
@@ -6407,6 +6402,7 @@
 <translation id="7138678301420049075">Друго</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> користи микрофон</translation>
 <translation id="7141105143012495934">Пријављивање није успело јер нисмо успели да преузмемо детаље о налогу. Контактирајте администратора или покушајте поново.</translation>
+<translation id="7141844554192012199">Провери</translation>
 <translation id="7144878232160441200">Пробај поново</translation>
 <translation id="7149839598364933473">Претворите овај уређај у <ph name="DEVICE_OS" /> уређај.</translation>
 <translation id="7149893636342594995">Последња 24 сата</translation>
@@ -7183,7 +7179,6 @@
 <translation id="7898725031477653577">Увек преводи</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Тражите компоненте прегледача? Посетите</translation>
-<translation id="7903345046358933331">Страница је престала да се одазива. Можете да сачекате да почне да се одазива или да је затворите.</translation>
 <translation id="7903429136755645827">Кликните да бисте прилагодили контроле за игре</translation>
 <translation id="7903742244674067440">Имате сачуване сертификате који идентификују ове ауторитете за издавање сертификата</translation>
 <translation id="7903925330883316394">Помоћни процес: <ph name="UTILITY_TYPE" /></translation>
@@ -8100,6 +8095,7 @@
 <translation id="8780123805589053431">Преузимај описе слика са Google-а</translation>
 <translation id="8780443667474968681">Гласовна претрага је искључена.</translation>
 <translation id="8781834595282316166">Нова картица у групи</translation>
+<translation id="8781980678064919987">Искључи се кад се поклопац затвори</translation>
 <translation id="8782565991310229362">Покретање киоск апликације је отказано.</translation>
 <translation id="8783834180813871000">Унесите кôд за упаривање за Bluetooth, па притисните Return или Enter.</translation>
 <translation id="8784626084144195648">Просек агрегације</translation>
@@ -8164,7 +8160,6 @@
 <translation id="8846132060409673887">Прочитајте произвођача и модел овог рачунара</translation>
 <translation id="8846163936679269230">Ресетујте eSIM профиле</translation>
 <translation id="8846239054091760429">Моно звук, покретање, титл уживо и друго</translation>
-<translation id="8847523528195140327">Одјави ме када се поклопац затвори</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Скривено</translation>
 <translation id="8849219423513870962">Откажите уклањање eSIM профила <ph name="PROFILE_NAME" /></translation>

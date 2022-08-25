@@ -278,6 +278,7 @@
 <translation id="125220115284141797">ডিফল্ট</translation>
 <translation id="1252987234827889034">প্রোফাইল ত্রুটি ঘটেছে</translation>
 <translation id="1254593899333212300">সরাসরি ইন্টারনেট সংযোগ</translation>
+<translation id="1257336506558170607">বেছে নেওয়া সার্টিফিকেট এক্সপোর্ট করুন</translation>
 <translation id="1258491128795710625">নতুন কী আছে</translation>
 <translation id="1259152067760398571">গতকাল নিরাপত্তা সংক্রান্ত পরীক্ষা চালানো হয়েছে</translation>
 <translation id="1260451001046713751"><ph name="HOST" /> থেকে সবসময় পপ-আপ এবং রিডাইরেক্টের অনুমতি দিন</translation>
@@ -564,7 +565,6 @@
 <translation id="1536754031901697553">ডিসকানেক্ট করা হচ্ছে...</translation>
 <translation id="1537254971476575106">ফুলস্ক্রিন ম্যাগনিফায়ার</translation>
 <translation id="15373452373711364">বড় মাউস কার্সার</translation>
-<translation id="1539630663098418038"><ph name="EXTENSIONS_REQUESTING_ACCESS" /> <ph name="ORIGIN" /> পড়ার এবং পরিবর্তন করার অনুরোধ করছে</translation>
 <translation id="1540605929960647700">ডেমো মোড চালু করুন</translation>
 <translation id="1541346352678737112">কোনও নেটওয়ার্ক পাওয়া যায়নি</translation>
 <translation id="1542137295869176367">আপনার সাইন-ইন ডেটা আপডেট করা যায়নি</translation>
@@ -726,7 +726,6 @@
 <translation id="1676902103953506022"><ph name="DOMAIN" />-এ <ph name="USERNAME" />-এর জন্য ক্রেডেনশিয়াল সংক্রান্ত বিবরণ</translation>
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" /> যোগ করা যায়নি</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> বাকি আছে</translation>
-<translation id="1678794218766467608">স্লিপ মোডে বা কভার বন্ধ হয়ে গেলে লক করুন</translation>
 <translation id="1679068421605151609">ডেভেলপার টুল</translation>
 <translation id="1679810534535368772">আপনি কি বেরিয়ে আসতে চান?</translation>
 <translation id="167983332380191032">ম্যানেজমেন্ট পরিষেবা HTTP সমস্যা পাঠিয়েছে।</translation>
@@ -862,7 +861,6 @@
 <translation id="1794051631868188691"><ph name="MERCHANT" /> কখনও দেখতে চাই না</translation>
 <translation id="1794791083288629568">এই সমস্যা সমাধানে আমাদের সাহায্য করতে প্রতিবার্তা পাঠান।</translation>
 <translation id="1795214765651529549">ক্লাসিক ব্যবহার করুন</translation>
-<translation id="1796105431091975902">যোগ করার জন্য কোনও একটি Ansible প্লেবুক বেছে নিন</translation>
 <translation id="1796588414813960292">যেসব ফিচার ব্যবহার করার জন্য সাউন্ড প্রয়োজন সেগুলি কাজ করবে না</translation>
 <translation id="1797117170091578105">আপনার Chromebook কীবোর্ডের সাহায্যে খেলুন। নির্দিষ্ট অ্যাকশনের জন্য আপনি 'কী' কাস্টমাইজ করতে পারবেন।</translation>
 <translation id="1800502858278951817">কোনও এক্সটেনশন পড়ার এবং <ph name="SITE_NAME" />-এ পরিবর্তন করার অনুরোধ করা হয়নি</translation>
@@ -927,6 +925,7 @@
 <translation id="1842766183094193446">আপনি কি ডেমো মোড চালু করতে চান?</translation>
 <translation id="1845727111305721124">সাউন্ড চালানোর অনুমতি দেওয়া হয়েছে</translation>
 <translation id="1846308012215045257"><ph name="PLUGIN_NAME" /> চালানোর জন্য Control-ক্লিক করুন</translation>
+<translation id="1848219224579402567">লিড বন্ধ থাকা আবস্থায় সাইন-আউট করুন</translation>
 <translation id="184862733444771842">ফিচারের জন্য অনুরোধ</translation>
 <translation id="1849016657376805933">যেকোনও HID ডিভাইস</translation>
 <translation id="1849186935225320012">এই পৃষ্ঠাটির MIDI ডিভাইসগুলির উপর সম্পূর্ণ নিয়ন্ত্রণ আছে৷</translation>
@@ -1035,7 +1034,6 @@
 <translation id="1941553344801134989">ভার্সন: <ph name="APP_VERSION" /></translation>
 <translation id="1941995177877935582">'কী ম্যাপিং' দেখান</translation>
 <translation id="1942128823046546853">সমস্ত ওয়েবসাইটে আপনার ডেটা পড়তে ও পরিবর্তন করতে পারে</translation>
-<translation id="1942600407708803723">ডিভাইসের কভার বন্ধ করলে শাট ডাউন হয়ে যাবে</translation>
 <translation id="1944528062465413897">ব্লুটুথের সাথে পেয়ার করার জন্য কোড:</translation>
 <translation id="1944921356641260203">আপডেট পাওয়া গেছে</translation>
 <translation id="1947136734041527201">কোনও পরিচিতি পরিষেবার সাথে যুক্ত আপনারই কোনও অ্য়াকাউন্ট ব্যবহার করে আপনাকে ওয়েবসাইটগুলিতে সাইন-ইন করতে দেয়</translation>
@@ -3102,7 +3100,6 @@
 <translation id="389901847090970821">কীবোর্ড বেছে নিন</translation>
 <translation id="3900966090527141178">পাসওয়ার্ড এক্সপোর্ট করুন</translation>
 <translation id="3903187154317825986">আগে থেকেই তৈরি করা কীবোর্ড</translation>
-<translation id="3903191712482985591">প্লেবুক যোগ করুন</translation>
 <translation id="3904326018476041253">লোকেশন ভিত্তিক পরিষেবা</translation>
 <translation id="3904849010307028014">একটি সাইটের সাথে আপনার ইন্টার‌্যাকশনের উপর ভিত্তি করে, যেমন একটি অ্যাকাউন্টে নিয়মিত সাইন-ইন করা ইত্যাদি, সেই সাইটটি আপনার ব্রাউজারে একটি ট্রাস্ট টোকেন ইস্যু করতে পারে। পরবর্তীকালে আপনার ভিজিট করা অন্য়ান্য সাইট কোনও ট্রাস্ট টোকেন খুঁজে পেলে, তারা আপনাকে মানুষই ভাববে, কোনও বট নয়।</translation>
 <translation id="3905761538810670789">অ্যাপ্লিকেশান মেরামত করুন</translation>
@@ -5050,7 +5047,6 @@
 <translation id="5827733057563115968">পরবর্তী শব্দ সনাক্তকরণ</translation>
 <translation id="5828545842856466741">প্রোফাইল যোগ করুন...</translation>
 <translation id="5828633471261496623">মুদ্রন হচ্ছে...</translation>
-<translation id="5828797982387013521">প্লেবুক বেছে নিন</translation>
 <translation id="5830205393314753525"><ph name="APP_NAME" /> খোলা যাচ্ছে না</translation>
 <translation id="5830720307094128296">&amp;পৃষ্ঠা সেভ করুন...</translation>
 <translation id="5832813618714645810">প্রোফাইল</translation>
@@ -5945,7 +5941,6 @@
 <translation id="6686665106869989887">ট্যাব ডানদিকে সরে গেছে</translation>
 <translation id="6686817083349815241">আপনার পাসওয়ার্ড সেভ করুন</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> লুকান</translation>
-<translation id="6688391094668641513"><ph name="ORIGIN" /> পড়ার এবং পরিবর্তন করার জন্য অনুরোধ করা হচ্ছে:</translation>
 <translation id="6689714331348768690"><ph name="SUPERVISED_USER_NAME" />-কে কম্পিউটারের কাছে আসতে বলুন। ভয়েস মডেল তৈরি করতে আপনার সন্তান স্ক্রিনে দেখতে পাওয়া কয়েকটি বাক্যাংশ পড়বে।
     <ph name="BR" />
     পড়ার সময় <ph name="SUPERVISED_USER_NAME" />-এর সাহায্যের প্রয়োজন হলে, আপনি প্রথমে রিডিং পড়ুন এবং সেটি শুনে তারপর তাকে বলতে বলুন। আপনি মাইকের সামনে পড়বেন না, যাতে Assistant আপনার সন্তানের ভয়েস শুনে সেভ করে রাখতে পারে, আপনারটা নয়।</translation>
@@ -7204,7 +7199,6 @@
 <translation id="7898725031477653577">সর্বদা অনুবাদ করুন</translation>
 <translation id="7901405293566323524">ফোন হাব</translation>
 <translation id="7903290522161827520">ব্রাউজার কম্পোনেন্ট খুঁজছেন? দেখুন</translation>
-<translation id="7903345046358933331">পৃষ্ঠাটি প্রতিক্রিয়াবিহীন হয়েছে। আপনি এটি প্রতিক্রিয়াযুক্ত হওয়ার জন্য অপেক্ষা করতে পারেন বা এটি বন্ধ করতে পারেন।</translation>
 <translation id="7903429136755645827">গেমের কন্ট্রোল কাস্টমাইজ করতে ক্লিক করুন</translation>
 <translation id="7903742244674067440">এই সার্টিফিকেটের কর্তৃপক্ষদের শনাক্ত করে এমন ফাইলের সার্টিফিকেটগুলি আপনার কাছে রয়েছে</translation>
 <translation id="7903925330883316394">উপযোগিতা: <ph name="UTILITY_TYPE" /></translation>
@@ -8120,6 +8114,7 @@
 <translation id="8780123805589053431">Google থেকে ছবির বিবরণ পান</translation>
 <translation id="8780443667474968681">ভয়েস সার্চ বন্ধ করা হয়েছে।</translation>
 <translation id="8781834595282316166">গ্রুপে নতুন ট্যাব যোগ করুন</translation>
+<translation id="8781980678064919987">যখন ঢাকনাটি বন্ধ থাকবে তখন বন্ধ করুন</translation>
 <translation id="8782565991310229362">Kiosk অ্যাপ্লিকেশন লঞ্চ বাতিল হয়েছে৷</translation>
 <translation id="8783834180813871000">ব্লুটুথ পেয়ার করার কোড টাইপ করুন, তারপরে 'ফিরে আসুন' বা 'এন্টার করুন' বোতামে প্রেস করুন।</translation>
 <translation id="8784626084144195648">হাজার প্রতি গড়</translation>
@@ -8184,7 +8179,6 @@
 <translation id="8846132060409673887">এই কম্পিউটারের প্রস্তুতকারক এবং মডেলটি পড়ুন</translation>
 <translation id="8846163936679269230">eSIM প্রোফাইল রিসেট করুন</translation>
 <translation id="8846239054091760429">মোনো অডিও, স্টার্টআপ, 'লাইভ ক্যাপশন' ও আরও অনেক কিছু</translation>
-<translation id="8847523528195140327">ডিভাইসের কভার বন্ধ করলে সাইন-আউট হয়ে যাবে</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">লুকানো আছে</translation>
 <translation id="8849219423513870962"><ph name="PROFILE_NAME" /> নামের ই-সিম প্রোফাইল সরানোর কাজটি বাতিল করুন</translation>

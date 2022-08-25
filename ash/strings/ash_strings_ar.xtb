@@ -855,6 +855,7 @@
 <translation id="5860033963881614850">غير مفعّل</translation>
 <translation id="5860491529813859533">تفعيل</translation>
 <translation id="5867217927013474703">جارٍ جمع معلومات الشبكة</translation>
+<translation id="5867606971598166637">يراقب مشرف النظام الشاشات المعروضة على جهازك.</translation>
 <translation id="5876666360658629066">إدخال رمز أحد الوالدَين</translation>
 <translation id="5881540930187678962">إعداد "مركز التحكم بالهاتف" لاحقًا</translation>
 <translation id="5887954372087850114">تم تخصيص النافذة <ph name="WINDOW_TITLE" /> لسطح المكتب <ph name="DESK_TITLE" /> وإلغاء تخصيصها من جميع أسطح المكتب الأخرى.</translation>
@@ -1434,6 +1435,7 @@
 <translation id="9211490828691860325">جميع أسطح المكتب</translation>
 <translation id="9211681782751733685">الوقت المتبقي حتى يتم شحن البطارية بالكامل<ph name="TIME_REMAINING" />.</translation>
 <translation id="9215934040295798075">ضبط الخلفية</translation>
+<translation id="9219103736887031265">الصور</translation>
 <translation id="921989828232331238">قفّل أحد الوالدين جهازك لليوم</translation>
 <translation id="9220525904950070496">إزالة الحساب</translation>
 <translation id="923686485342484400">‏للخروج اضغط على Ctrl Shift Q مرتين.</translation>

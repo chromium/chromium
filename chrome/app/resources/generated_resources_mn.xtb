@@ -560,7 +560,6 @@
 <translation id="1536754031901697553">Салгаж байна...</translation>
 <translation id="1537254971476575106">Бүтэн дэлгэцийг томруулагч</translation>
 <translation id="15373452373711364">Том хулганын курсор</translation>
-<translation id="1539630663098418038"><ph name="EXTENSIONS_REQUESTING_ACCESS" /> <ph name="ORIGIN" />-г уншиж, өөрчлөх хүсэлт тавьж байна</translation>
 <translation id="1540605929960647700">Туршилтын горимыг идэвхжүүлэх</translation>
 <translation id="1541346352678737112">Сүлжээ олдсонгүй</translation>
 <translation id="1542137295869176367">Таны нэвтрэх өгөгдлийг шинэчилж чадсангүй</translation>
@@ -721,7 +720,6 @@
 <translation id="1676902103953506022"><ph name="DOMAIN" /> дээрх <ph name="USERNAME" />-н мандат үнэмлэхийн дэлгэрэнгүй</translation>
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" />-г нэмэх боломжгүй байна</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> үлдсэн</translation>
-<translation id="1678794218766467608">Амраах горимд байгаа эсвэл таг хаалттай үед түгжих</translation>
 <translation id="1679068421605151609">Хөгжүүлэгч багаж</translation>
 <translation id="1679810534535368772">Та эндээс гарахдаа итгэлтэй байна уу?</translation>
 <translation id="167983332380191032">Менежментийн үйлчилгээ HTTP-н алдааг илгээсэн.</translation>
@@ -857,7 +855,6 @@
 <translation id="1794051631868188691"><ph name="MERCHANT" />-г хэзээ ч бүү харуул</translation>
 <translation id="1794791083288629568">Энэ алдааг засахад бидэнд туслан, санал хүсэлтээ илгээнэ үү.</translation>
 <translation id="1795214765651529549">Сонгодог загварыг ашиглах</translation>
-<translation id="1796105431091975902">Нэмэх Ansible гарын авлагыг сонгоно уу</translation>
 <translation id="1796588414813960292">Дуу чимээ шаардлагатай онцлогууд ажиллахгүй</translation>
 <translation id="1797117170091578105">Chromebook-н гараа ашиглан тоглоно уу. Та тодорхой үйлдлүүдийн товчийг өөрчлөх боломжтой.</translation>
 <translation id="1800502858278951817">Ямар ч өргөтгөл <ph name="SITE_NAME" />-г унших болон өөрчлөх хүсэлт тавиагүй</translation>
@@ -922,6 +919,7 @@
 <translation id="1842766183094193446">Та туршилтын горимыг идэвхжүүлэх үү?</translation>
 <translation id="1845727111305721124">Дуу тоглуулахыг зөвшөөрсөн</translation>
 <translation id="1846308012215045257"><ph name="PLUGIN_NAME" />-г ажиллуулахын тулд control товчлуурыг дарна уу</translation>
+<translation id="1848219224579402567">Бүрхүүл хаалттай үед гарах</translation>
 <translation id="184862733444771842">Онцлогийн хүсэлт</translation>
 <translation id="1849016657376805933">Дурын HID төхөөрөмж</translation>
 <translation id="1849186935225320012">Энэ хуудас нь MIDI төхөөрөмжүүдийг бүрэн хянаж байна.</translation>
@@ -1030,7 +1028,6 @@
 <translation id="1941553344801134989">Хувилбар: <ph name="APP_VERSION" /></translation>
 <translation id="1941995177877935582">Товч харгалзуулалтыг харуулах</translation>
 <translation id="1942128823046546853">Таны бүх вебсайт дээрх өгөгдлийг унших болон өөрчлөх</translation>
-<translation id="1942600407708803723">Хавтас хаалттай үед унтраах</translation>
 <translation id="1944528062465413897">Bluetooth хослуулах код:</translation>
 <translation id="1944921356641260203">Шинэчлэлт хийх тухай мэдээлэл олдлоо</translation>
 <translation id="1947136734041527201">Таныг таниулбарын үйлчилгээтэй бүртгэлээ ашиглан вебсайтуудад нэвтрэх боломжийг олгоно</translation>
@@ -1722,6 +1719,7 @@
 <translation id="2568774940984945469">Мэдээллийн цонх агуулагч</translation>
 <translation id="2571655996835834626">Таны веб сайтын күүки, JavaScript, залгаас, геолокаци, микрофон, камер зэрэг онцлогийн хандалтыг хянадаг тохиргоог өөрчилдөг.</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" /> руу зөвхөн унших горимоор нэвтрэх зөвшөөрлийг олгосон байна.</translation>
+<translation id="2573276323521243649">Аватар сонгох хуудаснаас буцах</translation>
 <translation id="2573417407488272418">Сайжруулахаас өмнө аппууд болон файлуудыг Файлс &gt; Миний файлуудад хуулбарлана уу.</translation>
 <translation id="2573831315551295105">“<ph name="ACTION" />”-д сэлгүүр онооно уу</translation>
 <translation id="2575247648642144396">Өргөтгөл нь тухайн хуудсанд ажиллахад тэмдэглэгээ харагдана. Энэхүү тэмдэглэгээн дээр дарж эсвэл <ph name="EXTENSION_SHORTCUT" /> дээр дарснаар өргөлтгөлийг ашиглах боломжтой.</translation>
@@ -3096,7 +3094,6 @@
 <translation id="389901847090970821">Гар сонгох</translation>
 <translation id="3900966090527141178">Нууц үгийг экспортлох</translation>
 <translation id="3903187154317825986">Суурилагдсан гар</translation>
-<translation id="3903191712482985591">Гарын авлага нэмэх</translation>
 <translation id="3904326018476041253">Байршлын үйлчилгээ</translation>
 <translation id="3904849010307028014">Бүртгэлд тогтмол нэвтрэх зэрэг таны сайттай хийсэн харилцан үйлдэл тулгуурлан тухайн сайт таны хөтчид итгэмжлэгдсэн токен олгох боломжтой. Дараа нь хэрэв таны зочилсон бусад сайт хүчинтэй итгэмжлэгдсэн токен шалгасан, мөн олсон бол тэдгээр сайт тантай бот бус харин хүн шиг хандах магадлал өндөр болно.</translation>
 <translation id="3905761538810670789">Апп засах</translation>
@@ -5042,7 +5039,6 @@
 <translation id="5827733057563115968">Дараагийн үг тааварлалт</translation>
 <translation id="5828545842856466741">Профайл нэмэх...</translation>
 <translation id="5828633471261496623">Хэвлэж байна...</translation>
-<translation id="5828797982387013521">Гарын авлага сонгох</translation>
 <translation id="5830205393314753525"><ph name="APP_NAME" />-г нээх боломжгүй</translation>
 <translation id="5830720307094128296">Хуудсыг  ... гэх хадгалах</translation>
 <translation id="5832813618714645810">Профайлууд</translation>
@@ -5933,7 +5929,6 @@
 <translation id="6686665106869989887">Табыг баруун тийш зөөсөн</translation>
 <translation id="6686817083349815241">Нууц үгээ хадгална уу</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" />-г нуух</translation>
-<translation id="6688391094668641513"><ph name="ORIGIN" />-г уншиж, өөрчлөх хүсэлт тавьж байна:</translation>
 <translation id="6689714331348768690"><ph name="SUPERVISED_USER_NAME" />-г компьютерын урд ирэхийг хүснэ үү. Таны хүүхэд дуу хоолойн загвараа үүсгэхийн тулд энэ дэлгэц дээр цөөн хэллэг унших шаардлагатай.
     <ph name="BR" />
     Хэрэв <ph name="SUPERVISED_USER_NAME" />-д уншихад нь тусламж хэрэгтэй бол түүнийг өөрийнхөө араас давтуулж хэлүүлээрэй. Микрофоноосоо зайтай шивнэснээр Туслах таны оронд хүүхдийн тань дуу хоолойг сурна.</translation>
@@ -6415,6 +6410,7 @@
 <translation id="7138678301420049075">Бусад</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> таны микрофоныг ашиглаж байна</translation>
 <translation id="7141105143012495934">Таны бүртгэлийн мэдээллийг татаж чадсангүй тул нэвтрэх үйлдэл амжилтгүй боллоо. Та админтайгаа холбогдох, эсвэл дахин оролдох хэрэгтэй.</translation>
+<translation id="7141844554192012199">Хяналт</translation>
 <translation id="7144878232160441200">Дахин оролдох</translation>
 <translation id="7149839598364933473">Энэ төхөөрөмжийг <ph name="DEVICE_OS" /> төхөөрөмж болгож хөрвүүлээрэй.</translation>
 <translation id="7149893636342594995">Сүүлийн 24 цаг</translation>
@@ -7191,7 +7187,6 @@
 <translation id="7898725031477653577">Үргэлж хөрвүүлэх</translation>
 <translation id="7901405293566323524">Утасны Hub</translation>
 <translation id="7903290522161827520">Хөтчийн бүрэлдэхүүн хэсгүүдийг хайж байна уу? Зочлох</translation>
-<translation id="7903345046358933331">Энэ хуудас хариу мэдэгдэхгүй байна. Та энэ хуудсыг хариу мэдэгдтэл хүлээх, эсвэл хаах боломжтой.</translation>
 <translation id="7903429136755645827">Тоглоомын тохиргоогоо өөрчлөхийн тулд товшино уу</translation>
 <translation id="7903742244674067440">Танд эдгээр сертификатын эрхийг тодорхойлох файлын сертификат байна</translation>
 <translation id="7903925330883316394">Хэрэгсэл: <ph name="UTILITY_TYPE" /></translation>
@@ -8102,6 +8097,7 @@
 <translation id="8780123805589053431">Google-с зургийн тайлбар авах</translation>
 <translation id="8780443667474968681">Дуут хайлтыг унтраасан байна.</translation>
 <translation id="8781834595282316166">Бүлэг доторх шинэ таб</translation>
+<translation id="8781980678064919987">Бүрхүүл хаагдсан үед унтраах</translation>
 <translation id="8782565991310229362">Kiosk программыг эхлүүлэх явц цуцлагдсан.</translation>
 <translation id="8783834180813871000">Bluetooth хослуулах кодыг оруулаад Return эсвэл Enter дарна уу.</translation>
 <translation id="8784626084144195648">Хэмжигдсэн дундаж утга</translation>
@@ -8166,7 +8162,6 @@
 <translation id="8846132060409673887">Энэ компьютерийн үйлдвэрлэгч болон загварыг унших</translation>
 <translation id="8846163936679269230">eSIM профайлуудыг шинэчлэх</translation>
 <translation id="8846239054091760429">Моно аудио, эхлэл, Шууд тайлбар болон бусад</translation>
-<translation id="8847523528195140327">Хавтас хаалттай үед гарах</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Нуусан</translation>
 <translation id="8849219423513870962"><ph name="PROFILE_NAME" /> нэртэй eSIM профайлыг хасах үйлдлийг цуцлах</translation>

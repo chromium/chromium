@@ -758,6 +758,12 @@
 
 如果系統沒有提供保留現有瀏覽資料的選項，這項政策就不會產生任何作用；要是強制執行企業設定檔區隔功能，或是資料來自受管理的設定檔，就會發生這種情況。
 </translation>
+<translation id="1795105105645381965">
+      如果將這項政策設為啟用 (True)，非受管裝置上的 <ph name="PRODUCT_NAME" /> 就會先徵求受管理使用者的同意，才分享裝置信號，以取得存取權。
+
+      如果將這項政策設為停用 (False) 或不設定，<ph name="PRODUCT_NAME" /> 就無法收集裝置信號。
+
+      裝置信號的範例包括但不限於 OS 資訊、註冊資料庫、以及檔案是否存在。</translation>
 <translation id="179694024208061102">如果將這項政策設為啟用，<ph name="PRODUCT_NAME" /> 會嘗試在替代瀏覽器中 (例如 <ph name="IE_PRODUCT_NAME" />) 開啟部分網址。系統會使用「<ph name="LEGACY_BROWSER_SUPPORT_POLICY_GROUP" />」群組中的政策設定這項功能。
 
 
@@ -1362,6 +1368,19 @@
 <translation id="2384233438419344179">如果將這項政策設為啟用，網頁元素只要不屬於瀏覽器網址列中的網域，就無法設定 Cookie。如果將這項政策設為停用，這類元素將可設定 Cookie，且使用者無法變更這項設定。
 
       如果不設定，系統會啟用第三方 Cookie，但使用者可以變更這項設定。</translation>
+<translation id="2384553027681594203">在登入畫面和螢幕鎖定畫面上針對清單中的網址啟用 <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" />。
+
+      你可以透過這項政策指定要讓哪些網址加入認證流程，接收裝置傳送的信號。
+
+      如果不設定這項政策或留空，就表示沒有端點能啟動認證流程，以及接收裝置傳送的信號。
+
+      網址必須採用 HTTPS 架構，例如「https://example.com」。
+
+      附註：可以使用萬用字元 <ph name="WILDCARD_VALUE" />。
+
+      這項政策只會影響登入畫面和螢幕鎖定畫面上的認證流程。如要變更工作階段中認證流程，請使用 <ph name="CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" /> 政策。
+
+      如果想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
 <translation id="2386362615870139244">允許使用螢幕喚醒鎖</translation>
 <translation id="2387469539700985783">這項政策對 Android 應用程式製作的報表沒有影響。</translation>
 <translation id="238885588439957890">裝置使用交流電源為電池充電的時間 (根據裝置當地時區)。</translation>
@@ -2054,6 +2073,27 @@
 
       如果將這項政策設為停用，系統會關閉螢幕鎖定畫面上的媒體控制項。</translation>
 <translation id="3072847235228302527">為裝置本機帳戶設定《服務條款》</translation>
+<translation id="3077650998740742747">
+預設行為 (未設定政策)
+在內容區域中新增帳戶時，系統可能會顯示一個小型對話方塊，要求使用者建立新的設定檔。你可以關閉這個對話方塊。
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />
+當使用者第一次在 <ph name="PRODUCT_NAME" /> 瀏覽器中登入 Google 服務，系統會顯示對話方塊，要求使用者為公司帳戶建立新的設定檔。使用者可以按一下「取消」並登出，或按一下「繼續」建立新的設定檔。現有的瀏覽資料不會加進新的設定檔中。新建立的設定檔可以有次要帳戶，舉例來說，使用者可以在內容區域登入其他帳戶。
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />
+這個行為與 <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> 相同，差別只在於新建立的設定檔不允許有次要帳戶。
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />
+這個行為與 <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> 相同，差別只在於系統會在對話方塊中加入核取方塊，讓使用者可以保留本機瀏覽資料。
+如果使用者勾選方塊，現有的設定檔資料就會與受管理帳戶建立關聯。
+- 現有瀏覽資料全都會出現在新設定檔中。
+- 瀏覽資料包括書籤、歷史記錄、密碼、自動填入資料、開啟的分頁、Cookie、快取、網路儲存空間、擴充功能等。
+如果使用者未勾選方塊：
+- 舊設定檔仍會留存，資料不會遺失。
+-  系統會建立新的設定檔。
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />
+這個行為與 <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" /> 相同，差別只在於新建立的設定檔不允許有次要帳戶。</translation>
 <translation id="3083259245974004342">密碼保護功能</translation>
 <translation id="3086995894968271156">設定「<ph name="PRODUCT_NAME" />」的 Cast 接收器</translation>
 <translation id="3087346703976541109">指定 SharedArrayBuffers 是否可用於非跨來源隔離內容</translation>
@@ -3777,6 +3817,12 @@
 <translation id="5085647276663819155">停用列印預覽</translation>
 <translation id="5090791951240382356">允許合併不同來源的字典政策</translation>
 <translation id="5091315650312105069">允許透過 HTTP 使用<ph name="BASIC_AUTH" />驗證</translation>
+<translation id="5099239365323299669">自版本 M106 起，系統不再支援永久配額功能。這項政策會重新啟用永久配額功能，直到 M107 推出為止。
+
+      如果將這項政策設為啟用，永久類型的 webkitRequestFileSystem 將採用永久配額運作。
+
+      如果不設定或停用這項政策，永久類型的 webkitRequestFileSystem 將採用暫時配額運作。
+      </translation>
 <translation id="5103112931744164177">你可以透過這項政策指定要使用哪一個軟體堆疊與 DNS 伺服器進行通訊，選項包括作業系統 DNS 用戶端，以及 <ph name="PRODUCT_NAME" /> 的內建 DNS 用戶端。這項政策不會影響所用的 DNS 伺服器；比方說，如果作業系統設定使用企業的 DNS 伺服器，內建 DNS 用戶端同樣會使用該伺服器。這項政策也不會限制是否使用 DNS-over-HTTPS；<ph name="PRODUCT_NAME" /> 一律會使用內建的解析器來處理 DNS-over-HTTPS 要求。想瞭解如何控管 DNS-over-HTTPS，請參閱 <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> 政策。
 
       如果將這項政策設為啟用，系統將使用內建的 DNS 用戶端 (如果有的話)。

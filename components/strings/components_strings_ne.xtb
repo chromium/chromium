@@ -265,6 +265,7 @@
 <translation id="1592005682883173041">स्थानीय डेटा पहुँच</translation>
 <translation id="1594030484168838125">छनौट गर्नुहोस्</translation>
 <translation id="1596296697375291157">थ्रिलर, अपराध तथा रहस्यमयी कथा भएका चलचित्रहरू</translation>
+<translation id="1599199147673445968">नयाँ कार्ड हो? <ph name="BEGIN_LINK" />कार्डसम्बन्धी विवरण हाल्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Chrome मा Dino Run गेम खेल्नुहोस्</translation>
 <translation id="161042844686301425">सायन</translation>
 <translation id="1611101756749861742">दोस्रो रोल</translation>
@@ -1003,6 +1004,7 @@
 <translation id="3664782872746246217">किवर्डहरू:</translation>
 <translation id="3667704023705708645">उद्यम पुँजी</translation>
 <translation id="3671540257457995106">आकार बदल्न दिने हो?</translation>
+<translation id="3672568546897166916"><ph name="ERROR_PATH" /> मा त्रुटि भयो: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">तेस्रो रोल</translation>
 <translation id="3676592649209844519">यन्त्रको ID:</translation>
 <translation id="3677008721441257057">तपाईंले &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; भन्न खोज्नुभएको हो?</translation>

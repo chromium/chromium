@@ -101,6 +101,7 @@
 <translation id="3115898365077584848">정보 표시</translation>
 <translation id="3123473560110926937">일부 사이트에서 차단됨</translation>
 <translation id="3143754809889689516">처음부터 재생</translation>
+<translation id="3162899666601560689">사이트에서 사용자의 로그인 상태를 유지하거나 장바구니에 담긴 상품을 기억하는 등 탐색 환경을 개선하기 위해 쿠키를 사용할 수 있습니다.</translation>
 <translation id="3198916472715691905">저장 데이터 <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="3203366800380907218">웹에서 찾은 정보</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" />에서 알림을 전송하도록 허용하려면 <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서도 알림을 사용 설정하세요.</translation>
@@ -331,6 +332,7 @@
 <translation id="8284326494547611709">자막</translation>
 <translation id="8300705686683892304">앱에서 관리함</translation>
 <translation id="8324158725704657629">다시 묻지 않음</translation>
+<translation id="834785183489258869">시크릿 모드에 있는 동안에는 사이트에서 사용자의 다양한 사이트 탐색 활동 정보를 이용해 광고 맞춤설정 등의 작업을 하는 데 쿠키를 사용할 수 없습니다. 일부 사이트에서는 기능이 작동하지 않을 수 있습니다.</translation>
 <translation id="8372893542064058268">특정 사이트에서 백그라운드 동기화를 허용합니다.</translation>
 <translation id="8376384591331888629">이 사이트의 타사 쿠키 포함</translation>
 <translation id="83792324527827022">사이트에서 카메라와 마이크를 사용 중입니다.</translation>

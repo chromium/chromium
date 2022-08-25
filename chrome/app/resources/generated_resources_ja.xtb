@@ -560,7 +560,6 @@
 <translation id="1536754031901697553">切断しています...</translation>
 <translation id="1537254971476575106">全画面拡大鏡</translation>
 <translation id="15373452373711364">大きいマウスカーソル</translation>
-<translation id="1539630663098418038"><ph name="EXTENSIONS_REQUESTING_ACCESS" /> は <ph name="ORIGIN" /> の読み取りと変更をリクエストしています</translation>
 <translation id="1540605929960647700">デモモードの有効化</translation>
 <translation id="1541346352678737112">ネットワークが見つかりません</translation>
 <translation id="1542137295869176367">ログインデータを更新できませんでした</translation>
@@ -721,7 +720,6 @@
 <translation id="1676902103953506022"><ph name="DOMAIN" /> での <ph name="USERNAME" /> の認証情報</translation>
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" /> を追加できません</translation>
 <translation id="1677472565718498478">残り <ph name="TIME" /></translation>
-<translation id="1678794218766467608">スリープモードの場合やディスプレイを閉じたときにロックする</translation>
 <translation id="1679068421605151609">デベロッパー ツール</translation>
 <translation id="1679810534535368772">終了してもよろしいですか？</translation>
 <translation id="167983332380191032">管理サービスから HTTP エラーが送信されました。</translation>
@@ -849,7 +847,6 @@
 <translation id="1794051631868188691"><ph name="MERCHANT" /> を今後表示しない</translation>
 <translation id="1794791083288629568">フィードバックを送信して問題解決に協力する。</translation>
 <translation id="1795214765651529549">クラシックを使用</translation>
-<translation id="1796105431091975902">追加する Ansible Playbook を選択してください</translation>
 <translation id="1796588414813960292">音を使用する機能は動作しなくなります</translation>
 <translation id="1797117170091578105">Chromebook のキーボードを使ってプレイしましょう。特定の操作を行うキーをカスタマイズできます。</translation>
 <translation id="1800502858278951817"><ph name="SITE_NAME" /> の読み取りと変更を要求している拡張機能はありません</translation>
@@ -914,6 +911,7 @@
 <translation id="1842766183094193446">デモモードを有効にしてもよろしいですか？</translation>
 <translation id="1845727111305721124">音声の再生を許可するサイト</translation>
 <translation id="1846308012215045257"><ph name="PLUGIN_NAME" /> を実行するには Control キーを押しながらクリックします</translation>
+<translation id="1848219224579402567">ディスプレイを閉じたときにログアウトする</translation>
 <translation id="184862733444771842">機能リクエスト</translation>
 <translation id="1849016657376805933">すべての HID デバイス</translation>
 <translation id="1849186935225320012">このページは MIDI デバイスのフル コントロールが許可されています。</translation>
@@ -1019,7 +1017,6 @@
 <translation id="1941553344801134989">バージョン: <ph name="APP_VERSION" /></translation>
 <translation id="1941995177877935582">キーのマッピングを表示</translation>
 <translation id="1942128823046546853">すべてのウェブサイト上にある自分の全データの読み取りと変更</translation>
-<translation id="1942600407708803723">ディスプレイを閉じたときにシャットダウンする</translation>
 <translation id="1944528062465413897">Bluetooth ペア設定コード:</translation>
 <translation id="1944921356641260203">アップデートが見つかりました</translation>
 <translation id="1947136734041527201">ID サービスで使用しているアカウントでウェブサイトにログインできます</translation>
@@ -3077,7 +3074,6 @@
 <translation id="389901847090970821">キーボードを選択</translation>
 <translation id="3900966090527141178">パスワードのエクスポート</translation>
 <translation id="3903187154317825986">デバイス内蔵キーボード</translation>
-<translation id="3903191712482985591">Playbook を追加</translation>
 <translation id="3904326018476041253">位置情報サービス</translation>
 <translation id="3904849010307028014">アカウントへの定期的なログインなど、そのサイトとのやり取りに基づき、サイトはブラウザにトラスト トークンを発行できます。その後、アクセスした他のサイトが有効なトラスト トークンを確認して検出した場合、そのサイトはユーザーを bot ではなく人間と同じように扱う可能性が高くなります。</translation>
 <translation id="3905761538810670789">アプリを修復</translation>
@@ -5014,7 +5010,6 @@
 <translation id="5827733057563115968">次の入力候補を予測</translation>
 <translation id="5828545842856466741">プロファイルを追加...</translation>
 <translation id="5828633471261496623">印刷中...</translation>
-<translation id="5828797982387013521">Playbook を選択</translation>
 <translation id="5830205393314753525"><ph name="APP_NAME" /> を開けません</translation>
 <translation id="5830720307094128296">ページを別名で保存(&amp;A)...</translation>
 <translation id="5832813618714645810">プロファイル</translation>
@@ -5902,7 +5897,6 @@
 <translation id="6686665106869989887">タブを右に移動しました</translation>
 <translation id="6686817083349815241">パスワードを保存</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> を非表示にする</translation>
-<translation id="6688391094668641513"><ph name="ORIGIN" /> の読み取りと変更をリクエストしています:</translation>
 <translation id="6689714331348768690"><ph name="SUPERVISED_USER_NAME" /> さんにパソコンの前に来てもらってください。お子様の音声モデルを作成するには、この画面上のフレーズをいくつか声に出して読んでもらいます。
     <ph name="BR" />
     <ph name="SUPERVISED_USER_NAME" /> さんが声を出して読む際にサポートが必要な場合は、あなたが読んだ後に繰り返してもらうようにします。その際、マイクから離れて小声で読むようにすると、アシスタントがあなたではなくお子様の声を認識できるようになります。</translation>
@@ -7155,7 +7149,6 @@
 <translation id="7898725031477653577">常に翻訳する</translation>
 <translation id="7901405293566323524">スマートフォン ハブ</translation>
 <translation id="7903290522161827520">ブラウザ コンポーネントをお探しですか？次にアクセスしてください</translation>
-<translation id="7903345046358933331">ページが応答していません。応答があるまで待つか、終了することができます。</translation>
 <translation id="7903429136755645827">クリックすると、ゲーム操作キーをカスタマイズできます</translation>
 <translation id="7903742244674067440">これらの認証局を識別する証明書がファイルに格納されています</translation>
 <translation id="7903925330883316394">ユーティリティ: <ph name="UTILITY_TYPE" /></translation>
@@ -8069,6 +8062,7 @@
 <translation id="8780123805589053431">Google から画像の説明を取得</translation>
 <translation id="8780443667474968681">音声検索がオフになっています。</translation>
 <translation id="8781834595282316166">グループにタブを追加</translation>
+<translation id="8781980678064919987">ディスプレイを閉じたときにシャットダウンする</translation>
 <translation id="8782565991310229362">キオスク アプリケーションの起動がキャンセルされました。</translation>
 <translation id="8783834180813871000">Bluetooth のペア設定コードを入力してから、Return キーまたは Enter キーを押してください。</translation>
 <translation id="8784626084144195648">ビニング平均</translation>
@@ -8133,7 +8127,6 @@
 <translation id="8846132060409673887">このパソコンのメーカーと機種の情報を取得する</translation>
 <translation id="8846163936679269230">eSIM プロファイルをリセット</translation>
 <translation id="8846239054091760429">モノラル音声、起動、自動字幕起こしなど</translation>
-<translation id="8847523528195140327">ディスプレイを閉じたときにログアウトする</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">非表示</translation>
 <translation id="8849219423513870962"><ph name="PROFILE_NAME" /> という名前の eSIM プロファイルの削除をキャンセルします</translation>

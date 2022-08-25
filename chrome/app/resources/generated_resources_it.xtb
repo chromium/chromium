@@ -560,7 +560,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1536754031901697553">Disconnessione…</translation>
 <translation id="1537254971476575106">Lente d'ingrandimento a schermo intero</translation>
 <translation id="15373452373711364">Puntatore del mouse grande</translation>
-<translation id="1539630663098418038"><ph name="EXTENSIONS_REQUESTING_ACCESS" /> richiede di leggere e modificare il sito <ph name="ORIGIN" /></translation>
 <translation id="1540605929960647700">Attiva modalità demo</translation>
 <translation id="1541346352678737112">Nessuna rete trovata</translation>
 <translation id="1542137295869176367">Impossibile aggiornare i dati di accesso</translation>
@@ -722,7 +721,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1676902103953506022">Credenziali per <ph name="USERNAME" /> su <ph name="DOMAIN" /></translation>
 <translation id="1677306805708094828">Impossibile aggiungere <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478"><ph name="TIME" /> rimanenti</translation>
-<translation id="1678794218766467608">Blocca in modalità di sospensione o quando il coperchio è chiuso</translation>
 <translation id="1679068421605151609">Strumenti per sviluppatori</translation>
 <translation id="1679810534535368772">Vuoi uscire?</translation>
 <translation id="167983332380191032">Il servizio di gestione ha inviato un errore HTTP.</translation>
@@ -850,7 +848,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1794051631868188691">Non mostrare mai <ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">Invia feedback per aiutarci a risolvere questo problema.</translation>
 <translation id="1795214765651529549">Usa classico</translation>
-<translation id="1796105431091975902">Seleziona un playbook Ansible da aggiungere</translation>
 <translation id="1796588414813960292">Le funzionalità che richiedono l'audio non funzioneranno</translation>
 <translation id="1797117170091578105">Gioca usando la tastiera di Chromebook. Puoi personalizzare i tasti assegnando loro azioni specifiche.</translation>
 <translation id="1800502858278951817">Nessuna estensione ha chiesto di leggere e modificare il sito <ph name="SITE_NAME" /></translation>
@@ -915,6 +912,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1842766183094193446">Vuoi attivare questa modalità demo?</translation>
 <translation id="1845727111305721124">Possono riprodurre suoni</translation>
 <translation id="1846308012215045257">Premi CTRL e fai clic per eseguire <ph name="PLUGIN_NAME" /></translation>
+<translation id="1848219224579402567">Esci alla chiusura del coperchio</translation>
 <translation id="184862733444771842">Richiesta di funzionalità</translation>
 <translation id="1849016657376805933">Qualsiasi dispositivo HID</translation>
 <translation id="1849186935225320012">Questa pagina ha il controllo totale dei dispositivi MIDI.</translation>
@@ -1022,7 +1020,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1941553344801134989">Versione: <ph name="APP_VERSION" /></translation>
 <translation id="1941995177877935582">Mostra la mappatura dei tasti</translation>
 <translation id="1942128823046546853">Leggere e modificare tutti i tuoi dati su tutti i siti web</translation>
-<translation id="1942600407708803723">Spegni alla chiusura del coperchio</translation>
 <translation id="1944528062465413897">Codice di accoppiamento Bluetooth:</translation>
 <translation id="1944921356641260203">Aggiornamento trovato</translation>
 <translation id="1947136734041527201">Ti consente di accedere ai siti web utilizzando l'account che hai creato con un servizio di identità</translation>
@@ -3084,7 +3081,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="389901847090970821">Seleziona la tastiera</translation>
 <translation id="3900966090527141178">Esportazione delle password</translation>
 <translation id="3903187154317825986">Tastiera incorporata</translation>
-<translation id="3903191712482985591">Aggiungi playbook</translation>
 <translation id="3904326018476041253">Servizi di geolocalizzazione</translation>
 <translation id="3904849010307028014">In base alla tua interazione con un sito, ad esempio l'accesso regolare a un account, il sito in questione può emettere un token attendibile per il browser in uso. Dopodiché, se altri siti che visiti cercano e trovano un token attendibile valido, è più probabile che ti considerino una persona e non un bot.</translation>
 <translation id="3905761538810670789">Ripara app</translation>
@@ -5026,7 +5022,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5827733057563115968">Previsione della parola seguente</translation>
 <translation id="5828545842856466741">Aggiungi profilo…</translation>
 <translation id="5828633471261496623">Stampa in corso...</translation>
-<translation id="5828797982387013521">Seleziona playbook</translation>
 <translation id="5830205393314753525">Impossibile aprire <ph name="APP_NAME" /></translation>
 <translation id="5830720307094128296">S&amp;alva pagina con nome...</translation>
 <translation id="5832813618714645810">Profili</translation>
@@ -5917,7 +5912,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6686665106869989887">Scheda spostata a destra</translation>
 <translation id="6686817083349815241">Salva la password</translation>
 <translation id="6687079240787935001">Nascondi <ph name="MODULE_TITLE" /></translation>
-<translation id="6688391094668641513">Richiesta di lettura e modifica del sito <ph name="ORIGIN" />:</translation>
 <translation id="6689714331348768690">Fai venire al computer <ph name="SUPERVISED_USER_NAME" />. Tuo figlio leggerà alcune frasi sullo schermo per creare il suo modello vocale.
     <ph name="BR" />
     Se <ph name="SUPERVISED_USER_NAME" /> ha bisogno di aiuto nella lettura, chiedi di ripetere quello che leggi tu. Rimani a una certa distanza dal microfono, in modo che l'assistente possa identificare la voce di tuo figlio e non la tua.</translation>
@@ -7174,7 +7168,6 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7898725031477653577">Traduci sempre</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Stai cercando i componenti del browser? Visita la pagina</translation>
-<translation id="7903345046358933331">La pagina non risponde. Puoi aspettare che risponda oppure chiuderla.</translation>
 <translation id="7903429136755645827">Fai clic per personalizzare i controlli del gioco</translation>
 <translation id="7903742244674067440">Hai dei certificati su file che identificano queste autorità di certificazione</translation>
 <translation id="7903925330883316394">Utility: <ph name="UTILITY_TYPE" /></translation>
@@ -8088,6 +8081,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8780123805589053431">Scarica le descrizioni delle immagini da Google</translation>
 <translation id="8780443667474968681">La ricerca vocale è stata disattivata.</translation>
 <translation id="8781834595282316166">Nuova scheda nel gruppo</translation>
+<translation id="8781980678064919987">Spegni alla chiusura del coperchio</translation>
 <translation id="8782565991310229362">Avvio dell'applicazione kiosk annullato.</translation>
 <translation id="8783834180813871000">Digita il codice di accoppiamento Bluetooth e premi Invio</translation>
 <translation id="8784626084144195648">Media raccolta</translation>
@@ -8152,7 +8146,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8846132060409673887">Lettura del produttore e del modello di questo computer</translation>
 <translation id="8846163936679269230">Reimposta i profili eSIM</translation>
 <translation id="8846239054091760429">Audio in formato mono, avvio, Sottotitoli in tempo reale e altro ancora</translation>
-<translation id="8847523528195140327">Esci alla chiusura del coperchio</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Nascosto</translation>
 <translation id="8849219423513870962">Annulla la rimozione del profilo eSIM chiamato <ph name="PROFILE_NAME" /></translation>

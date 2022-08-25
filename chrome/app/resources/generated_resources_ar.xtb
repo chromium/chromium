@@ -563,7 +563,6 @@
 <translation id="1536754031901697553">جارٍ قطع الاتصال…</translation>
 <translation id="1537254971476575106">مكبّر بملء الشاشة</translation>
 <translation id="15373452373711364">مؤشر الماوس الكبير</translation>
-<translation id="1539630663098418038">الإضافة <ph name="EXTENSIONS_REQUESTING_ACCESS" /> تطلب إذن الاطّلاع على محتوى <ph name="ORIGIN" /> وتعديله.</translation>
 <translation id="1540605929960647700">تفعيل الوضع التجريبي</translation>
 <translation id="1541346352678737112">لم يتم العثور على شبكة</translation>
 <translation id="1542137295869176367">تعذّر تعديل بيانات تسجيل الدخول.</translation>
@@ -725,7 +724,6 @@
 <translation id="1676902103953506022">تفاصيل بيانات اعتماد المستخدم <ph name="USERNAME" /> على النطاق <ph name="DOMAIN" /></translation>
 <translation id="1677306805708094828">يتعذّر تثبيت <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">الوقت المتبقي <ph name="TIME" /></translation>
-<translation id="1678794218766467608">قفل الشاشة في وضع السكون أو عند إغلاق الغطاء</translation>
 <translation id="1679068421605151609">أدوات مطوّري البرامج</translation>
 <translation id="1679810534535368772">هل تريد فعلاً الخروج؟</translation>
 <translation id="167983332380191032">‏أرسلت خدمة الإدارة خطأ HTTP.</translation>
@@ -853,7 +851,6 @@
 <translation id="1794051631868188691">عدم عرض <ph name="MERCHANT" /> مرة أخرى</translation>
 <translation id="1794791083288629568">يمكنك إرسال تعليقات لمساعدتنا في إصلاح هذه المشكلة.</translation>
 <translation id="1795214765651529549">استخدام المظهر الكلاسيكي</translation>
-<translation id="1796105431091975902">‏اختيار دليل Ansible إرشادي لإضافته</translation>
 <translation id="1796588414813960292">لن تعمل الميزات التي تحتاج إلى استخدام الصوت.</translation>
 <translation id="1797117170091578105">‏يمكنك اللعب باستخدام لوحة مفاتيح Chromebook. ويمكنك تخصيص مفاتيح لتنفيذ إجراءات محدَّدة.</translation>
 <translation id="1800502858278951817">لم تطلب أي إضافات قراءة اسم الموقع الإلكتروني <ph name="SITE_NAME" /> وتغييره</translation>
@@ -918,6 +915,7 @@
 <translation id="1842766183094193446">هل تريد حقًا تفعيل الوضع التجريبي؟</translation>
 <translation id="1845727111305721124">المواقع الإلكترونية التي يُسمح لها بتشغيل الصوت</translation>
 <translation id="1846308012215045257">‏انقر بالماوس مع الضغط على مفتاح Ctrl لتشغيل <ph name="PLUGIN_NAME" /></translation>
+<translation id="1848219224579402567">تسجيل الخروج عند إغلاق الغطاء</translation>
 <translation id="184862733444771842">طلب ميزة</translation>
 <translation id="1849016657376805933">‏كل أجهزة HID</translation>
 <translation id="1849186935225320012">‏تتضمن هذه الصفحة إمكانية تحكم شامل في أجهزة MIDI.</translation>
@@ -1025,7 +1023,6 @@
 <translation id="1941553344801134989">الإصدار: <ph name="APP_VERSION" /></translation>
 <translation id="1941995177877935582">عرض خريطة المفاتيح</translation>
 <translation id="1942128823046546853">الاطّلاع على جميع بياناتك وتغييرها على جميع المواقع الإلكترونية</translation>
-<translation id="1942600407708803723">إيقاف التشغيل عند غلق الغلاف</translation>
 <translation id="1944528062465413897">رمز إقران البلوتوث:</translation>
 <translation id="1944921356641260203">تم العثور على التحديث</translation>
 <translation id="1947136734041527201">بإمكانك تسجيل الدخول إلى المواقع الإلكترونية باستخدام حسابك من خلال خدمة تقديم الهويات.</translation>
@@ -1714,6 +1711,7 @@
 <translation id="2568774940984945469">حاوية شريط المعلومات</translation>
 <translation id="2571655996835834626">يمكنك تغيير الإعدادات التي تتحكَّم في وصول المواقع الإلكترونية إلى ميزات مثل ملفات تعريف الارتباط وجافا سكريبت والمكوّنات الإضافية والمواقع الجغرافية والميكروفون والكاميرا وغيرها.</translation>
 <translation id="2572032849266859634">تم منح إذن دخول للقراءة فقط إلى <ph name="VOLUME_NAME" />.</translation>
+<translation id="2573276323521243649">الرجوع من صفحة اختيار الصورة الرمزية</translation>
 <translation id="2573417407488272418">احتفظ بنسخة احتياطية من التطبيقات والملفات في الملفات &gt; ملفاتي قبل الترقية.</translation>
 <translation id="2573831315551295105">تخصيص مفتاح تحكّم للإجراء "<ph name="ACTION" />"</translation>
 <translation id="2575247648642144396">سيكون هذا الرمز مرئيًا عندما تتمكن الإضافة من تنفيذ الإجراءات على الصفحة الحالية. يمكنك استخدام هذه الإضافة بالنقر على الرمز أو بالضغط على <ph name="EXTENSION_SHORTCUT" />.</translation>
@@ -2556,6 +2554,7 @@
 <translation id="3406290648907941085">المواقع الإلكترونية التي يُسمح لها باستخدام أجهزة الواقع الافتراضي وبياناتها</translation>
 <translation id="3406396172897554194">البحث حسب اللغة أو اسم أسلوب الإدخال</translation>
 <translation id="3406605057700382950">&amp;عرض شريط الإشارات</translation>
+<translation id="3408849592677950451">{NUM_PASSWORDS,plural, =1{‏تم استيراد كلمة مرور واحدة إلى "مدير كلمات المرور في Google" للحساب <ph name="USER_EMAIL" />.}zero{‏تم استيراد {NUM_PASSWORDS} كلمة مرور إلى "مدير كلمات المرور في Google" للحساب <ph name="USER_EMAIL" />.}two{‏تم استيراد كلمتَي مرور ({NUM_PASSWORDS}) إلى "مدير كلمات المرور في Google" للحساب <ph name="USER_EMAIL" />.}few{‏تم استيراد {NUM_PASSWORDS} كلمات مرور إلى "مدير كلمات المرور في Google" للحساب <ph name="USER_EMAIL" />.}many{‏تم استيراد {NUM_PASSWORDS} كلمة مرور إلى "مدير كلمات المرور في Google" للحساب <ph name="USER_EMAIL" />.}other{‏تم استيراد {NUM_PASSWORDS} كلمة مرور إلى "مدير كلمات المرور في Google" للحساب <ph name="USER_EMAIL" />.}}</translation>
 <translation id="3409785640040772790">‏خرائط Google</translation>
 <translation id="3412265149091626468">انتقال سريع إلى التحديد</translation>
 <translation id="3413122095806433232">‏جهات إصدار المرجع المصدق (CA): <ph name="LOCATION" /></translation>
@@ -3090,7 +3089,6 @@
 <translation id="389901847090970821">تحديد لوحة مفاتيح</translation>
 <translation id="3900966090527141178">تصدير كلمات المرور</translation>
 <translation id="3903187154317825986">لوحة المفاتيح المضمّنة</translation>
-<translation id="3903191712482985591">إضافة دليل إرشادي</translation>
 <translation id="3904326018476041253">خدمات الموقع الجغرافي</translation>
 <translation id="3904849010307028014">‏بناءً على تفاعلك مع موقع إلكتروني معيَّن، مثل تسجيل الدخول بانتظام إلى حساب معيَّن، يمكن لهذا الموقع الإلكتروني إصدار رمز Trust Token لمتصفّحك. وبعد ذلك، إذا كانت المواقع الإلكترونية الأخرى التي تزورها تتحقّق من توفّر رمز مميّز صالح للثقة وتبحث عنه، من المرجّح أن تُعاملك بصفتك شخصًا وليس برنامج تتبُّع.</translation>
 <translation id="3905761538810670789">إصلاح التطبيق</translation>
@@ -3738,6 +3736,7 @@
 <translation id="4541123282641193691">‏تعذّر التحقق من حسابك. يُرجى المحاولة مرة أخرى أو إعادة تشغيل Chromebook.</translation>
 <translation id="4541662893742891060">تعذّر الربط بهذا الملف الشخصي. للحصول على الدعم الفني، يُرجى التواصل مع مشغّل شبكة الجوّال.</translation>
 <translation id="4541706525461326392">جارٍ إزالة الملف الشخصي. قد تستغرق هذه العملية بضع دقائق.</translation>
+<translation id="4542332958571335077">{NUM_PASSWORDS,plural, =1{‏تم استيراد كلمة مرور واحدة إلى "مدير كلمات المرور في Google" على هذا الجهاز.}zero{‏تم استيراد {NUM_PASSWORDS} كلمة مرور إلى "مدير كلمات المرور في Google" على هذا الجهاز.}two{‏تم استيراد كلمتَي مرور ({NUM_PASSWORDS}) إلى "مدير كلمات المرور في Google" على هذا الجهاز.}few{‏تم استيراد {NUM_PASSWORDS} كلمات مرور إلى "مدير كلمات المرور في Google" على هذا الجهاز.}many{‏تم استيراد {NUM_PASSWORDS} كلمة مرور إلى "مدير كلمات المرور في Google" على هذا الجهاز.}other{‏تم استيراد {NUM_PASSWORDS} كلمة مرور إلى "مدير كلمات المرور في Google" على هذا الجهاز.}}</translation>
 <translation id="4542520061254486227">قراءة بياناتك على <ph name="WEBSITE_1" /> و<ph name="WEBSITE_2" /></translation>
 <translation id="4543778593405494224">إدارة الشهادات</translation>
 <translation id="4544174279960331769">الصورة الرمزية التلقائية الزرقاء</translation>
@@ -5031,7 +5030,6 @@
 <translation id="5827733057563115968">توقُّع الكلمة التالية</translation>
 <translation id="5828545842856466741">إضافة ملف شخصي...</translation>
 <translation id="5828633471261496623">الطباعة جارية...</translation>
-<translation id="5828797982387013521">اختيار دليل إرشادي</translation>
 <translation id="5830205393314753525">يتعذّر فتح <ph name="APP_NAME" /></translation>
 <translation id="5830720307094128296">حفظ &amp;صفحة باسم...</translation>
 <translation id="5832813618714645810">الملفات الشخصية</translation>
@@ -5931,7 +5929,6 @@
 <translation id="6686665106869989887">تم نقل علامة التبويب إلى اليمين.</translation>
 <translation id="6686817083349815241">حفظ كلمة المرور</translation>
 <translation id="6687079240787935001">إخفاء <ph name="MODULE_TITLE" /></translation>
-<translation id="6688391094668641513">الإضافات التي تطلب إذن الاطّلاع على محتوى <ph name="ORIGIN" /> وتعديله:</translation>
 <translation id="6689714331348768690">‏اطلب من <ph name="SUPERVISED_USER_NAME" /> الجلوس أمام جهاز الكمبيوتر. وسيقرأ طفلك بعض العبارات على هذه الشاشة لإنشاء نموذج صوتي له.
     <ph name="BR" />
     في حال احتياج <ph name="SUPERVISED_USER_NAME" /> إلى المساعدة في عملية القراءة، يمكنك أن تقرأ بنفسك وتجعل طفلك يكرّر بصوته ما تقرأه. احرِص على أن تهمس لطفلك بعيدًا عن الميكروفون حتى تتعرّف خدمة "مساعد Google" على صوت طفلك وليس صوتك.</translation>
@@ -6233,6 +6230,7 @@
 <translation id="6968288415730398122">أدخل كلمة المرور لإعداد قفل الشاشة</translation>
 <translation id="6969047215179982698">إيقاف ميزة "المشاركة عن قرب"</translation>
 <translation id="6970480684834282392">نوع التشغيل</translation>
+<translation id="6970543303783413625">يتعذّر استيراد كلمات المرور. يمكنك استيراد ما يصل إلى <ph name="COUNT" /> كلمة مرور فقط في كل مرة.</translation>
 <translation id="6970856801391541997">طباعة صفحات محددة</translation>
 <translation id="6970861306198150268">احرص على حفظ كلمة المرور الحالية لهذا الموقع الإلكتروني.</translation>
 <translation id="6972180789171089114">صوت/فيديو</translation>
@@ -6413,6 +6411,7 @@
 <translation id="7138678301420049075">أخرى</translation>
 <translation id="7139627972753429585">يستخدم تطبيق <ph name="APP_NAME" /> الميكروفون.</translation>
 <translation id="7141105143012495934">فشل تسجيل الدخول، نظرًا لعدم القدرة على استرداد تفاصيل حسابك، يُرجى الاتصال بالمسؤول أو إعادة المحاولة.</translation>
+<translation id="7141844554192012199">عمليات التحقّق من كلمات المرور</translation>
 <translation id="7144878232160441200">إعادة المحاولة</translation>
 <translation id="7149839598364933473">تحويل هذا الجهاز إلى جهاز متوافق مع نظام التشغيل <ph name="DEVICE_OS" /></translation>
 <translation id="7149893636342594995">آخر 24 ساعة</translation>
@@ -6465,6 +6464,7 @@
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{الخروج من الصفجة}zero{الخروج من صفحة}two{الخروج من الصفحتين}few{الخروج من صفحات}many{الخروج من صفحة}other{الخروج من صفحة}}</translation>
 <translation id="7207457272187520234">‏يمكنك إرسال بيانات الاستخدام والتشخيص. ويُرسل هذا الجهاز حاليًا بيانات استخدام التطبيق وبيانات التشخيص وبيانات الجهاز تلقائيًا إلى Google. وسيساعد ذلك في تعزيز استقرار النظام والتطبيقات وإجراء المزيد من التحسينات. وسيستفيد أيضًا مطوّرو التطبيقات والشركاء في Google، مثل مطوّري البرامج المتوافقة مع Android، من بعض البيانات المجمّعة. ويفرض المالك هذا الإعداد. في حال تفعيل إعداد "النشاط الإضافي على الويب وفي التطبيقات"، قد يتم حفظ هذه البيانات في حسابك على Google.</translation>
 <translation id="7207631048330366454">البحث في التطبيقات</translation>
+<translation id="7210471695184432500">‏لاستيراد كلمات المرور إلى "مدير كلمات المرور في Google" على هذا الجهاز، يُرجى اختيار ملف CSV.</translation>
 <translation id="7210499381659830293">طابعات مُوصّلة</translation>
 <translation id="7211783048245131419">لم يتم تخصيص مفتاح تبديل بعد</translation>
 <translation id="7212097698621322584">يُرجى إدخال رقم التعريف الشخصي الحالي لتغييره. في حال كنت لا تعرف رقم التعريف الشخصي، عليك إعادة ضبط مفتاح الأمان، ثم إنشاء رقم تعريف شخصي جديد.</translation>
@@ -7189,7 +7189,6 @@
 <translation id="7898725031477653577">ترجمة اللغة دومًا</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">هل تبحث عن مكوِّنات المتصفِّح؟ انتقِل إلى</translation>
-<translation id="7903345046358933331">أصبحت الصفحة غير مستجيبة. يمكنك الانتظار حتى تصبح مستجيبة أو إغلاقها.</translation>
 <translation id="7903429136755645827">انقر هنا لتخصيص عناصر التحكُّم في الألعاب.</translation>
 <translation id="7903742244674067440">لديك شهادات في الملف تحدد صلاحيات الشهادة هذه</translation>
 <translation id="7903925330883316394">الأداة: <ph name="UTILITY_TYPE" /></translation>
@@ -7526,6 +7525,7 @@
 <translation id="8206859287963243715">خلوي</translation>
 <translation id="8208216423136871611">عدم الحفظ</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{إشعار واحد جديد}zero{# إشعار جديد}two{إشعاران جديدان}few{# إشعارات جديدة}many{# إشعارًا جديدًا}other{# إشعار جديد}}</translation>
+<translation id="821119981794423735">‏لاستيراد كلمات المرور إلى "مدير كلمات المرور في Google" للحساب <ph name="USER_EMAIL" />، يُرجى اختيار ملف CSV.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{جارٍ تنزيل عنصر واحد}zero{جارٍ تنزيل عدّة عناصر}two{جارِ تنزيل عنصرين}few{جارٍ تنزيل عدّة عناصر}many{جارٍ تنزيل عدّة عناصر}other{جارٍ تنزيل عدّة عناصر}}</translation>
 <translation id="8213449224684199188">تم الدخول إلى وضع الصور</translation>
 <translation id="8214489666383623925">فتح ملف...</translation>
@@ -8108,6 +8108,7 @@
 <translation id="8780123805589053431">‏الحصول على أوصاف الصور من Google</translation>
 <translation id="8780443667474968681">تم إيقاف ميزة البحث الصوتي.</translation>
 <translation id="8781834595282316166">علامة تبويب جديدة في مجموعة</translation>
+<translation id="8781980678064919987">إيقاف التشغيل عند إغلاق الغطاء</translation>
 <translation id="8782565991310229362">‏تم إلغاء تشغيل تطبيق Kiosk.</translation>
 <translation id="8783834180813871000">اكتب رمز إقران البلوتوث، ثم اضغط على "رجوع" أو "إدخال".</translation>
 <translation id="8784626084144195648">تم تثبيت المعدل</translation>
@@ -8172,7 +8173,6 @@
 <translation id="8846132060409673887">قراءة نموذج هذا الكمبيوتر والشركة المصنِّعة</translation>
 <translation id="8846163936679269230">‏إعادة ضبط الملفات الشخصية لبطاقة eSIM</translation>
 <translation id="8846239054091760429">ميزة "الصوت الأحادي" وأصوات بدء التشغيل وميزة "النسخ النصي التلقائي" وغيرها</translation>
-<translation id="8847523528195140327">تسجيل الخروج عند غلق الغلاف</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">مخفي</translation>
 <translation id="8849219423513870962">‏إلغاء عملية إزالة الملف التعريفي لشريحة eSIM التي تحمل الاسم <ph name="PROFILE_NAME" /></translation>

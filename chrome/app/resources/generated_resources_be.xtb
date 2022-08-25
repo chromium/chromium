@@ -563,7 +563,6 @@
 <translation id="1536754031901697553">Адключэнне...</translation>
 <translation id="1537254971476575106">Лупа для поўнаэкраннага рэжыму</translation>
 <translation id="15373452373711364">Вялікі курсор мышы</translation>
-<translation id="1539630663098418038"><ph name="EXTENSIONS_REQUESTING_ACCESS" /> запытвае дазвол чытаць і змяняць сайт <ph name="ORIGIN" /></translation>
 <translation id="1540605929960647700">Уключыць дэманстрацыйны рэжым</translation>
 <translation id="1541346352678737112">Сетак не знойдзена</translation>
 <translation id="1542137295869176367">Не ўдалося абнавіць даныя для ўваходу</translation>
@@ -725,7 +724,6 @@
 <translation id="1676902103953506022">Звесткі пра ўліковыя даныя карыстальніка <ph name="USERNAME" /> (дамен: <ph name="DOMAIN" />)</translation>
 <translation id="1677306805708094828">Не ўдаецца дадаць наступны элемент: <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">Засталося <ph name="TIME" /></translation>
-<translation id="1678794218766467608">Блакіраваць у рэжыме сну і пры закрытым вечку</translation>
 <translation id="1679068421605151609">Інструменты распрацоўшчыка</translation>
 <translation id="1679810534535368772">Сапраўды хочаце выйсці?</translation>
 <translation id="167983332380191032">Сэрвіс кіравання адправіў памылку HTTP.</translation>
@@ -853,7 +851,6 @@
 <translation id="1794051631868188691">Ніколі не паказваць: <ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">Адправіць водгук, каб дапамагчы нам вырашыць гэту праблему.</translation>
 <translation id="1795214765651529549">Выкарыстоўваць класічную тэму</translation>
-<translation id="1796105431091975902">Выберыце дапаможнік Ansible, які трэба дадаць</translation>
 <translation id="1796588414813960292">Функцыі, для якіх патрэбны гук, не будуць працаваць</translation>
 <translation id="1797117170091578105">Гуляйце, выкарыстоўваючы клавіятуру Chromebook. Клавішы можна наладзіць такім чынам, каб яны выконвалі канкрэтныя дзеянні.</translation>
 <translation id="1800502858278951817">Ні адно пашырэнне не запытвала дазвол чытаць і змяняць сайт <ph name="SITE_NAME" /></translation>
@@ -918,6 +915,7 @@
 <translation id="1842766183094193446">Сапраўды ўключыць дэманстрацыйны рэжым?</translation>
 <translation id="1845727111305721124">Дазволена прайграваць гук</translation>
 <translation id="1846308012215045257">Каб запусціць <ph name="PLUGIN_NAME" />, націсніце камбінацыю Ctrl + Левая клавіша мышы</translation>
+<translation id="1848219224579402567">Выходзіць з сістэмы, калі вечка закрываецца</translation>
 <translation id="184862733444771842">Запыт функцыі</translation>
 <translation id="1849016657376805933">Усе прылады HID</translation>
 <translation id="1849186935225320012">Гэта старонка мае поўны кантроль над прыладамі MIDI.</translation>
@@ -1025,7 +1023,6 @@
 <translation id="1941553344801134989">Версія: <ph name="APP_VERSION" /></translation>
 <translation id="1941995177877935582">Паказаць вызначэнне клавіш</translation>
 <translation id="1942128823046546853">Праглядаць і змяняць усе вашы даныя на ўсіх вэб-сайтах</translation>
-<translation id="1942600407708803723">Пры закрыцці вечка выключаць прыладу</translation>
 <translation id="1944528062465413897">Код спалучэння па Bluetooth</translation>
 <translation id="1944921356641260203">Знойдзена абнаўленне</translation>
 <translation id="1947136734041527201">Дазваляе ўваходзіць на вэб-сайты праз уліковы запіс сэрвісу ідэнтыфікацыі</translation>
@@ -3089,7 +3086,6 @@
 <translation id="389901847090970821">Выбар клавіятуры</translation>
 <translation id="3900966090527141178">Экспарт пароляў</translation>
 <translation id="3903187154317825986">Убудаваная клавіятура</translation>
-<translation id="3903191712482985591">Дадайце дапаможнік Ansible</translation>
 <translation id="3904326018476041253">Службы геалакацыі</translation>
 <translation id="3904849010307028014">У залежнасці ад характару вашага ўзаемадзеяння з сайтам (напрыклад, пры рэгулярным уваходзе ва ўліковы запіс), ён можа выдаць вашаму браўзеру токен даверу. Пазней, калі іншыя сайты, якія вы наведваеце, будуць знаходзіць сапраўдны токен даверу, яны з большай імавернасцю распазнаюць вас як чалавека, а не бота.</translation>
 <translation id="3905761538810670789">Выправіць праграму</translation>
@@ -5034,7 +5030,6 @@
 <translation id="5827733057563115968">Прагназаванне наступнага слова</translation>
 <translation id="5828545842856466741">Дадаць профіль...</translation>
 <translation id="5828633471261496623">Ідзе друк...</translation>
-<translation id="5828797982387013521">Выбраць дапаможнік</translation>
 <translation id="5830205393314753525">Не ўдалося адкрыць праграму "<ph name="APP_NAME" />"</translation>
 <translation id="5830720307094128296">Захаваць старонку &amp;як...</translation>
 <translation id="5832813618714645810">Профілі</translation>
@@ -5932,7 +5927,6 @@
 <translation id="6686665106869989887">Укладка перамешчана ўправа</translation>
 <translation id="6686817083349815241">Захаваць пароль</translation>
 <translation id="6687079240787935001">Схаваць: <ph name="MODULE_TITLE" /></translation>
-<translation id="6688391094668641513">Адпраўляецца запыт на чытанне і змяненне сайта <ph name="ORIGIN" />:</translation>
 <translation id="6689714331348768690">Папрасіце карыстальніка <ph name="SUPERVISED_USER_NAME" /> падысці да камп'ютара. Ваша дзіця павінна прачытаць некалькі фраз на экране, каб стварыць узор голасу.
     <ph name="BR" />
 Калі <ph name="SUPERVISED_USER_NAME" /> не ўмее чытаць, няхай паўторыць за вамі. Прашапчыце фразы дзіцяці аддаліўшыся ад мікрафона, каб Памочнік запомніў голас вашага дзіцяці, а не ваш.</translation>
@@ -7191,7 +7185,6 @@
 <translation id="7898725031477653577">Заўсёды перакладаць</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Шукаеце кампаненты браўзера? Наведайце старонку</translation>
-<translation id="7903345046358933331">Старонка перастала адказваць на запыты. Можна пачакаць, пакуль яна пачне адказваць, або закрыць яе.</translation>
 <translation id="7903429136755645827">Націсніце, каб наладзіць кіраванне гульнёй</translation>
 <translation id="7903742244674067440">У вас захоўваюцца сертыфікаты, якія ідэнтыфікуюць гэтыя цэнтры сертыфікацыі</translation>
 <translation id="7903925330883316394">Утыліта: <ph name="UTILITY_TYPE" /></translation>
@@ -8108,6 +8101,7 @@
 <translation id="8780123805589053431">Атрымліваць апісанні відарысаў ад Google</translation>
 <translation id="8780443667474968681">Галасавы пошук выключаны.</translation>
 <translation id="8781834595282316166">Стварыць у групе новую ўкладку</translation>
+<translation id="8781980678064919987">Выключаць прыладу, калі вечка закрываецца</translation>
 <translation id="8782565991310229362">Запуск праграмы-кіёска скасаваны.</translation>
 <translation id="8783834180813871000">Увядзіце код спалучэння Bluetooth, затым націсніце "Назад" або "Увод".</translation>
 <translation id="8784626084144195648">Сярэдняе па аб'яднаных даных</translation>
@@ -8172,7 +8166,6 @@
 <translation id="8846132060409673887">Чытаць даныя пра вытворцу і мадэль гэтага камп'ютара</translation>
 <translation id="8846163936679269230">Скід профіляў eSIM-карты</translation>
 <translation id="8846239054091760429">Монафанічны гук, запуск, функцыя "Імгненныя субцітры" і не толькі</translation>
-<translation id="8847523528195140327">Пры закрыцці вечка выходзіць з сістэмы</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Схавана</translation>
 <translation id="8849219423513870962">Скасаваць выдаленне профілю eSIM-карты "<ph name="PROFILE_NAME" />"</translation>

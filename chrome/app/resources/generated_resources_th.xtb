@@ -560,7 +560,6 @@
 <translation id="1536754031901697553">กำลังยกเลิกการเชื่อมต่อ...</translation>
 <translation id="1537254971476575106">แว่นขยายทั้งหน้าจอ</translation>
 <translation id="15373452373711364">เคอร์เซอร์เมาส์ขนาดใหญ่</translation>
-<translation id="1539630663098418038"><ph name="EXTENSIONS_REQUESTING_ACCESS" /> กำลังขออ่านและเปลี่ยนแปลง <ph name="ORIGIN" /></translation>
 <translation id="1540605929960647700">เปิดใช้โหมดสาธิต</translation>
 <translation id="1541346352678737112">ไม่พบเครือข่าย</translation>
 <translation id="1542137295869176367">อัปเดตข้อมูลการลงชื่อเข้าใช้ไม่ได้</translation>
@@ -722,7 +721,6 @@
 <translation id="1676902103953506022">รายละเอียดข้อมูลเข้าสู่ระบบสำหรับ <ph name="USERNAME" /> ใน <ph name="DOMAIN" /></translation>
 <translation id="1677306805708094828">เพิ่ม<ph name="EXTENSION_TYPE_PARAMETER" />ไม่ได้</translation>
 <translation id="1677472565718498478">ใช้ได้อีก <ph name="TIME" /></translation>
-<translation id="1678794218766467608">ล็อกในโหมดสลีปหรือเมื่อปิดฝา</translation>
 <translation id="1679068421605151609">เครื่องมือสำหรับนักพัฒนาซอฟต์แวร์</translation>
 <translation id="1679810534535368772">คุณแน่ใจไหมว่าต้องการออก</translation>
 <translation id="167983332380191032">บริการการจัดการแสดงข้อผิดพลาด HTTP</translation>
@@ -850,7 +848,6 @@
 <translation id="1794051631868188691">ไม่ต้องแสดง <ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">ส่งความคิดเห็นเพื่อช่วยเราแก้ไขปัญหานี้</translation>
 <translation id="1795214765651529549">ใช้แบบคลาสสิก</translation>
-<translation id="1796105431091975902">เลือก Ansible Playbook ที่จะเพิ่ม</translation>
 <translation id="1796588414813960292">ฟีเจอร์ที่ต้องใช้เสียงจะไม่ทำงาน</translation>
 <translation id="1797117170091578105">เล่นโดยใช้แป้นพิมพ์ Chromebook คุณปรับแต่งแป้นให้กับการทำงานที่เจาะจงได้</translation>
 <translation id="1800502858278951817">ไม่มีส่วนขยายที่ขออ่านและเปลี่ยนแปลง <ph name="SITE_NAME" /></translation>
@@ -915,6 +912,7 @@
 <translation id="1842766183094193446">คุณแน่ใจไหมว่าต้องการเปิดใช้โหมดสาธิต</translation>
 <translation id="1845727111305721124">ได้รับอนุญาตให้เล่นเสียง</translation>
 <translation id="1846308012215045257">กด Control และคลิกเพื่อเรียกใช้ <ph name="PLUGIN_NAME" /></translation>
+<translation id="1848219224579402567">ออกจากระบบเมื่อปิดฝา</translation>
 <translation id="184862733444771842">คำขอฟีเจอร์</translation>
 <translation id="1849016657376805933">อุปกรณ์ HID ทั้งหมด</translation>
 <translation id="1849186935225320012">หน้านี้มีสิทธิ์ควบคุมอุปกรณ์ MIDI เต็มรูปแบบ</translation>
@@ -1022,7 +1020,6 @@
 <translation id="1941553344801134989">เวอร์ชัน: <ph name="APP_VERSION" /></translation>
 <translation id="1941995177877935582">แสดงการแมปคีย์</translation>
 <translation id="1942128823046546853">อ่านและเปลี่ยนแปลงข้อมูลทั้งหมดของคุณในทุกเว็บไซต์</translation>
-<translation id="1942600407708803723">ปิดเครื่องเมื่อปิดเคส</translation>
 <translation id="1944528062465413897">รหัสการจับคู่บลูทูธ</translation>
 <translation id="1944921356641260203">พบการอัปเดต</translation>
 <translation id="1947136734041527201">ช่วยให้ลงชื่อเข้าใช้เว็บไซต์ได้ผ่านบัญชีที่คุณมีด้วยบริการระบุตัวตน</translation>
@@ -3086,7 +3083,6 @@
 <translation id="389901847090970821">เลือกแป้นพิมพ์</translation>
 <translation id="3900966090527141178">ส่งออกรหัสผ่าน</translation>
 <translation id="3903187154317825986">แป้นพิมพ์ในตัว</translation>
-<translation id="3903191712482985591">เพิ่ม Playbook</translation>
 <translation id="3904326018476041253">บริการตำแหน่ง</translation>
 <translation id="3904849010307028014">เว็บไซต์จะออกโทเค็นความน่าเชื่อถือให้กับเบราว์เซอร์โดยพิจารณาจากการโต้ตอบของคุณกับเว็บไซต์ เช่น การลงชื่อเข้าใช้บัญชีตามปกติ ภายหลัง เมื่อเว็บไซต์อื่นที่คุณเข้าชมตรวจพบโทเค็นความน่าเชื่อถือที่ถูกต้อง เว็บไซต์นั้นจะถือว่าคุณเป็นมนุษย์ไม่ใช่บ็อต</translation>
 <translation id="3905761538810670789">ซ่อมแอป</translation>
@@ -5029,7 +5025,6 @@
 <translation id="5827733057563115968">การคาดคะเนคำถัดไป</translation>
 <translation id="5828545842856466741">เพิ่มโปรไฟล์...</translation>
 <translation id="5828633471261496623">กำลังพิมพ์...</translation>
-<translation id="5828797982387013521">เลือก Playbook</translation>
 <translation id="5830205393314753525">เปิด <ph name="APP_NAME" /> ไม่ได้</translation>
 <translation id="5830720307094128296">บันทึกหน้าเ&amp;ป็น...</translation>
 <translation id="5832813618714645810">โปรไฟล์</translation>
@@ -5920,7 +5915,6 @@
 <translation id="6686665106869989887">แท็บถูกย้ายไปทางขวา</translation>
 <translation id="6686817083349815241">บันทึกรหัสผ่าน</translation>
 <translation id="6687079240787935001">ซ่อน<ph name="MODULE_TITLE" /></translation>
-<translation id="6688391094668641513">กำลังขออ่านและเปลี่ยนแปลง <ph name="ORIGIN" />:</translation>
 <translation id="6689714331348768690">ขอให้ <ph name="SUPERVISED_USER_NAME" /> มาที่คอมพิวเตอร์ บุตรหลานจะได้อ่านข้อความ 2-3 วลีบนหน้าจอนี้เพื่อสร้างรูปแบบเสียงของตน
     <ph name="BR" />
     หาก <ph name="SUPERVISED_USER_NAME" /> ยังอ่านหนังสือไม่คล่อง ให้บุตรหลานอ่านตามคุณ ให้คุณอ่านเบาๆ และห่างจากไมค์ เพื่อให้ Assistant จดจำเสียงของบุตรหลานไม่ใช่เสียงของคุณ</translation>
@@ -7179,7 +7173,6 @@
 <translation id="7898725031477653577">แปลทุกครั้ง</translation>
 <translation id="7901405293566323524">ฮับโทรศัพท์</translation>
 <translation id="7903290522161827520">หากต้องการดูคอมโพเนนต์ของเบราว์เซอร์ โปรดไปที่</translation>
-<translation id="7903345046358933331">หน้าไม่ตอบสนอง คุณสามารถรอจนกระทั่งหน้าตอบสนอง หรือปิดหน้านั้น</translation>
 <translation id="7903429136755645827">คลิกเพื่อปรับแต่งการควบคุมเกม</translation>
 <translation id="7903742244674067440">คุณมีใบรับรองของไฟล์ซึ่งระบุตัวตนของผู้ออกใบรับรองเหล่านี้</translation>
 <translation id="7903925330883316394">ยูทิลิตี: <ph name="UTILITY_TYPE" /></translation>
@@ -8094,6 +8087,7 @@
 <translation id="8780123805589053431">รับคำอธิบายรูปภาพจาก Google</translation>
 <translation id="8780443667474968681">ปิดการค้นหาด้วยเสียงแล้ว</translation>
 <translation id="8781834595282316166">แท็บใหม่ในกลุ่ม</translation>
+<translation id="8781980678064919987">ปิดเครื่องเมื่อปิดฝา</translation>
 <translation id="8782565991310229362">การเรียกใช้แอปพลิเคชันคีออสก์ถูกยกเลิก</translation>
 <translation id="8783834180813871000">พิมพ์รหัสการจับคู่บลูทูธแล้วกด Return หรือ Enter</translation>
 <translation id="8784626084144195648">เฉลี่ยรวม</translation>
@@ -8158,7 +8152,6 @@
 <translation id="8846132060409673887">ดูผู้ผลิตและรุ่นของคอมพิวเตอร์เครื่องนี้</translation>
 <translation id="8846163936679269230">รีเซ็ตโปรไฟล์ eSIM</translation>
 <translation id="8846239054091760429">เสียงโมโน, เสียงเมื่อเริ่มต้นระบบ, คำบรรยายสด และอื่นๆ</translation>
-<translation id="8847523528195140327">ออกจากระบบเมื่อปิดเคส</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">ซ่อน</translation>
 <translation id="8849219423513870962">ยกเลิกการลบโปรไฟล์ eSIM ที่มีชื่อว่า <ph name="PROFILE_NAME" /></translation>

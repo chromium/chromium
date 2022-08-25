@@ -560,7 +560,6 @@
 <translation id="1536754031901697553">მიმდინარეობს კავშირის გაწყვეტა…</translation>
 <translation id="1537254971476575106">სრულეკრანიანი ლუპა</translation>
 <translation id="15373452373711364">დიდი მაუსის კურსორი</translation>
-<translation id="1539630663098418038"><ph name="EXTENSIONS_REQUESTING_ACCESS" /> ითხოვს, წაიკითხოს და შეცვალოს <ph name="ORIGIN" /></translation>
 <translation id="1540605929960647700">დემო-რეჟიმის ჩართვა</translation>
 <translation id="1541346352678737112">ქსელი ვერ მოიძებნა</translation>
 <translation id="1542137295869176367">თქვენი სისტემაში შესვლის მონაცემების განახლება ვერ მოხერხდა</translation>
@@ -722,7 +721,6 @@
 <translation id="1676902103953506022"><ph name="USERNAME" />-ის ავტორიზაციის მონაცემების დეტალები <ph name="DOMAIN" />-ზე</translation>
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" /> ვერ დაემატება</translation>
 <translation id="1677472565718498478">დარჩენილია <ph name="TIME" /></translation>
-<translation id="1678794218766467608">ჩაკეტვა ძილის რეჟიმში ან თავსახურის დაფარვისას</translation>
 <translation id="1679068421605151609">დეველოპერის ხელსაწყოები</translation>
 <translation id="1679810534535368772">ნამდვილად გსურთ გასვლა?</translation>
 <translation id="167983332380191032">მართვის სერვისმა გამოაგზავნა შეტყობინება HTTP შეცდომის შესახებ.</translation>
@@ -850,7 +848,6 @@
 <translation id="1794051631868188691">აღარასოდეს გამოჩნდეს <ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">გამოხმაურება ამ პრობლემის მოგვარების ხელშესაწყობად.</translation>
 <translation id="1795214765651529549">კლასიკურის გამოყენება</translation>
-<translation id="1796105431091975902">დასამატებლად აირჩიეთ Ansible ინსტრუქცია</translation>
 <translation id="1796588414813960292">ფუნქციები, რომლებიც ხმას საჭიროებს, არ იმუშავებს</translation>
 <translation id="1797117170091578105">ითამაშეთ თქვენი Chromebook კლავიატურის მეშვეობით. სურვილისამებრ, კლავიშების მორგებაც შეგიძლიათ, კონკრეტული მოქმედებები რომ შეასრულოთ.</translation>
 <translation id="1800502858278951817"><ph name="SITE_NAME" />-ის წაკითხვა და შეცვლა არცერთ გაფართოებას არ მოუთხოვია</translation>
@@ -915,6 +912,7 @@
 <translation id="1842766183094193446">ნამდვილად გსურთ დემო-რეჟიმის ჩართვა?</translation>
 <translation id="1845727111305721124">ხმის დაკვრა დაშვებულია</translation>
 <translation id="1846308012215045257">დააწკაპუნეთ კლავიშზე Control დაჭერით, რათა გაუშვათ <ph name="PLUGIN_NAME" /></translation>
+<translation id="1848219224579402567">სისტემიდან გამოსვლა თავსახურის დახურვისას</translation>
 <translation id="184862733444771842">ფუნქციის მოთხოვნა</translation>
 <translation id="1849016657376805933">ნებისმიერი HID მოწყობილობა</translation>
 <translation id="1849186935225320012">ეს გვერდი სრულად აკონტროლებს MIDI მოწყობილობებს.</translation>
@@ -1022,7 +1020,6 @@
 <translation id="1941553344801134989">ვერსია: <ph name="APP_VERSION" /></translation>
 <translation id="1941995177877935582">კლავიშების განლაგების ჩვენება</translation>
 <translation id="1942128823046546853">თქვენი ყველა მონაცემის წაკითხვა და შეცვლა ყველა ვებსაიტზე</translation>
-<translation id="1942600407708803723">გამორთვა თავსახურის დახურვისას</translation>
 <translation id="1944528062465413897">Bluetooth-დაწყვილების კოდი:</translation>
 <translation id="1944921356641260203">ნაპოვნია განახლება</translation>
 <translation id="1947136734041527201">საშუალებას გაძლევთ, შეხვიდეთ ვებსაიტებში პირადობის მონაცემების სერვისში არსებული ანგარიშით</translation>
@@ -3086,7 +3083,6 @@
 <translation id="389901847090970821">აირჩიეთ კლავიატურა</translation>
 <translation id="3900966090527141178">პაროლების ექსპორტი</translation>
 <translation id="3903187154317825986">ჩაშენებული კლავიატურა</translation>
-<translation id="3903191712482985591">ინსტრუქციის დამატება</translation>
 <translation id="3904326018476041253">მდებარეობის სერვისები</translation>
 <translation id="3904849010307028014">ამა თუ იმ საიტთან თქვენი ინტერაქციის (მაგალითად, თქვენს ანგარიშში რეგულარულად შესვლის) მიხედვით, შესაბამის საიტს შეეძლება ნდობის ჟეტონის გაცემა თქვენი ბრაუზერისთვის. თუ მოგვიანებით თქვენ მიერ მონახულებული სხვა საიტები შეამოწმებს ნდობის მართებულ ჟეტონების არსებობას და იპოვის მათი, ისინი უფრო დიდი ალბათობით ჩათვლიან, რომ ადამიანი ხართ და არა ბოტი.</translation>
 <translation id="3905761538810670789">აპის აღდგენა</translation>
@@ -5031,7 +5027,6 @@
 <translation id="5827733057563115968">შემდეგი სიტყვის ამოცნობა</translation>
 <translation id="5828545842856466741">პროფილის დამატება…</translation>
 <translation id="5828633471261496623">ბეჭდვა…</translation>
-<translation id="5828797982387013521">ინსტრუქციის არჩევა</translation>
 <translation id="5830205393314753525"><ph name="APP_NAME" /> არ იხსნება</translation>
 <translation id="5830720307094128296">&amp;შეინახეთ გვერდი როგორც…</translation>
 <translation id="5832813618714645810">პროფილები</translation>
@@ -5923,7 +5918,6 @@
 <translation id="6686665106869989887">ჩანართი გადატანილია მარჯვნივ</translation>
 <translation id="6686817083349815241">შეინახეთ თქვენი პაროლი</translation>
 <translation id="6687079240787935001">დამალოს <ph name="MODULE_TITLE" /></translation>
-<translation id="6688391094668641513">ითხოვს, წაიკითხოს და შეცვალოს <ph name="ORIGIN" />:</translation>
 <translation id="6689714331348768690">სთხოვეთ <ph name="SUPERVISED_USER_NAME" />-ს, მოვიდეს კომპიუტერთან. თქვენმა ბავშვმა ამ ეკრანიდან რამდენიმე ფრაზა უნდა წაიკითხოს, თავისი ხმის მოდელი რომ შექმნას.
     <ph name="BR" />
     თუ <ph name="SUPERVISED_USER_NAME" /> კითხვაში დახმარებას საჭიროებს, სთხოვეთ, თქვენ მიერ წარმოთქმული გაიმეოროს. ჩაუჩურჩულეთ მას მიკროფონისგან მოშორებით, რომ ასისტენტმა თქვენი შვილის ხმის ამოცნობა ისწავლოს და არა თქვენი.</translation>
@@ -7182,7 +7176,6 @@
 <translation id="7898725031477653577">ყოველთვის თარგმნე</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">ბრაუზერის კომპონენტებს ეძებთ? მოინახულეთ</translation>
-<translation id="7903345046358933331">გვერდი აღარ რეაგირებს. შეგიძლიათ დაელოდოთ მისგან პასუხს ან დახუროთ იგი.</translation>
 <translation id="7903429136755645827">დააწკაპუნეთ თამაშის მართვის საშუალებების მოსარგებად</translation>
 <translation id="7903742244674067440">თქვენ შენახული გაქვთ სერტიფიკატები, რომლებიც ქვემოთ ჩამოთვლილი სერტიფიკატთა ცენტრების ამოცნობას ახორციელებს</translation>
 <translation id="7903925330883316394">უტილიტა: <ph name="UTILITY_TYPE" /></translation>
@@ -8096,6 +8089,7 @@
 <translation id="8780123805589053431">სურათების აღწერილობების მიღება Google-ისგან</translation>
 <translation id="8780443667474968681">ხმოვანი ძიება გამოირთო.</translation>
 <translation id="8781834595282316166">ახალი ჩანართი ჯგუფში</translation>
+<translation id="8781980678064919987">გამორთვა თავსახურის დახურვისას</translation>
 <translation id="8782565991310229362">კიოსკის განაცხადის გაშვება გაუქმდა.</translation>
 <translation id="8783834180813871000">აკრიფეთ Bluetooth-დაწყვილების კოდი და დააჭირეთ Return-ს ან Enter-ს.</translation>
 <translation id="8784626084144195648">დაჯგუფებული საშუალო</translation>
@@ -8160,7 +8154,6 @@
 <translation id="8846132060409673887">ამ კომპიუტერის მწარმოებლისა და მოდელის შესახებ ინფორმაციის წაკითხვა</translation>
 <translation id="8846163936679269230">eSIM პროფილების გადაყენება</translation>
 <translation id="8846239054091760429">მონოაუდიო, გაშვება, ავტოსუბტიტრები და სხვა</translation>
-<translation id="8847523528195140327">სისტემიდან გამოსვლა თავსახურის დახურვისას</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">დამალული</translation>
 <translation id="8849219423513870962">აღარ ამოიშალოს eSIM პროფილი სახელად <ph name="PROFILE_NAME" /></translation>

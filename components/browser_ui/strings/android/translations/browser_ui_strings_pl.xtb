@@ -101,6 +101,7 @@
 <translation id="3115898365077584848">Pokaż informacje</translation>
 <translation id="3123473560110926937">Blokowane na niektórych stronach</translation>
 <translation id="3143754809889689516">Odtwórz od początku</translation>
+<translation id="3162899666601560689">Strony mogą używać plików cookie dla Twojej wygody, by na przykład zapamiętać Twoje logowanie lub zawartość koszyka</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> zapisanych danych</translation>
 <translation id="3203366800380907218">Z sieci</translation>
 <translation id="321187648315454507">Aby zezwolić aplikacji <ph name="APP_NAME" /> na wysyłanie do Ciebie powiadomień, musisz je też włączyć w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
@@ -331,6 +332,7 @@
 <translation id="8284326494547611709">Napisy</translation>
 <translation id="8300705686683892304">Zarządzane przez aplikację</translation>
 <translation id="8324158725704657629">Nie pytaj ponownie</translation>
+<translation id="834785183489258869">W trybie incognito strony nie mogą używać plików cookie do śledzenia Twojej aktywności związanej z przeglądaniem różnych stron, na przykład w celu personalizowania reklam. W niektórych witrynach mogą nie działać funkcje.</translation>
 <translation id="8372893542064058268">Zezwalaj na synchronizowanie w tle z określoną stroną.</translation>
 <translation id="8376384591331888629">Również pliki cookie innych firm na tej stronie</translation>
 <translation id="83792324527827022">Strona używa kamery i mikrofonu</translation>

@@ -560,7 +560,6 @@
 <translation id="1536754031901697553">منقطع کیا جا رہا ہے...</translation>
 <translation id="1537254971476575106">پوری اسکرین مکبّر</translation>
 <translation id="15373452373711364">بڑا ماؤس کرسر</translation>
-<translation id="1539630663098418038"><ph name="EXTENSIONS_REQUESTING_ACCESS" /> <ph name="ORIGIN" /> کو پڑھنے اور تبدیل کرنے کی درخواست کر رہا ہے</translation>
 <translation id="1540605929960647700">ڈیمو موڈ فعال کریں</translation>
 <translation id="1541346352678737112">کوئی نیٹ ورک نہیں ملا</translation>
 <translation id="1542137295869176367">آپ کا سائن ان ڈیٹا اپ ڈیٹ نہیں ہو سکا</translation>
@@ -722,7 +721,6 @@
 <translation id="1676902103953506022"><ph name="DOMAIN" /> پر <ph name="USERNAME" /> کیلئے اسناد کی تفصیلات</translation>
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" /> شامل نہیں کی جا سکتی</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> باقی</translation>
-<translation id="1678794218766467608">سلیپ وضع میں یا کور بند ہونے پر مقفل کریں</translation>
 <translation id="1679068421605151609">ڈویلپر ٹولز</translation>
 <translation id="1679810534535368772">کیا آپ واقعی باہر نکلنا چاہتے ہیں؟</translation>
 <translation id="167983332380191032">‏مینیجمنٹ سروس نے HTTP خرابی بھیجی۔</translation>
@@ -850,7 +848,6 @@
 <translation id="1794051631868188691"><ph name="MERCHANT" /> کبھی نہ دکھائیں</translation>
 <translation id="1794791083288629568">اس مسئلے کو حل کرنے میں ہماری مدد کیلئے تاثرات بھیجیں۔</translation>
 <translation id="1795214765651529549">کلاسک استعمال کریں</translation>
-<translation id="1796105431091975902">‏شامل کرنے کے لیے ایک Ansible پلے بُک منتخب کریں</translation>
 <translation id="1796588414813960292">وہ خصوصیات کام نہیں کریں گی جن کیلئے آواز کی ضرورت ہوتی ہے</translation>
 <translation id="1797117170091578105">‏اپنا Chromebook کی بورڈ استعمال کر کے کھیلیں۔ آپ مخصوص کاروائیوں کے لیے کلیدوں کو حسب ضرورت بنا سکتے ہیں۔</translation>
 <translation id="1800502858278951817">کسی بھی ایکسٹینشن نے <ph name="SITE_NAME" /> کو پڑھنے اور تبدیل کرنے کی درخواست نہیں کی ہے</translation>
@@ -915,6 +912,7 @@
 <translation id="1842766183094193446">کیا آپ واقعی ڈیمو موڈ فعال کرنا چاہتے ہیں؟</translation>
 <translation id="1845727111305721124">آواز چلانے کی اجازت ہے</translation>
 <translation id="1846308012215045257"><ph name="PLUGIN_NAME" /> چلانے کیلئے کنٹرول دبا کر کلک کریں</translation>
+<translation id="1848219224579402567">لِڈ بند ہونے پر سائن آؤٹ کریں</translation>
 <translation id="184862733444771842">خصوصیت کی درخواست</translation>
 <translation id="1849016657376805933">‏کوئی بھی HID آلہ</translation>
 <translation id="1849186935225320012">‏اس صفحہ کو MIDI آلات پر مکمل کنٹرول ہے۔</translation>
@@ -1022,7 +1020,6 @@
 <translation id="1941553344801134989">ورژن: <ph name="APP_VERSION" /></translation>
 <translation id="1941995177877935582">کلید کی نقشہ سازی دکھائیں</translation>
 <translation id="1942128823046546853">سبھی ویب سائٹس پر اپنا سبھی ڈیٹا پڑھیں اور تبدیل کریں</translation>
-<translation id="1942600407708803723">کوَر بند ہونے پر شٹ ڈاؤن کریں</translation>
 <translation id="1944528062465413897">بلوٹوتھ جوڑا بنانے کا کوڈ:</translation>
 <translation id="1944921356641260203">اپ ڈیٹ ملا</translation>
 <translation id="1947136734041527201">آپ کو اس اکاؤنٹ کا استعمال کرتے ہوئے ویب سائٹس میں سائن ان کرنے دیتا ہے جن کی شناختی سروس آپ کے پاس ہے</translation>
@@ -3088,7 +3085,6 @@
 <translation id="389901847090970821">کی بورڈ منتخب کریں</translation>
 <translation id="3900966090527141178">پاس ورڈز برآمد کریں</translation>
 <translation id="3903187154317825986">پہلے سے شامل کی بورڈ</translation>
-<translation id="3903191712482985591">پلے بُک شامل کریں</translation>
 <translation id="3904326018476041253">مقام کی سروسز</translation>
 <translation id="3904849010307028014">کسی سائٹ کے ساتھ آپ کے تعامل کی بنیاد پر، جیسے کہ کسی اکاؤنٹ میں باقاعدگی سے سائن ان کرنے سے وہ سائٹ آپ کے براؤزر کے لیے ٹرسٹ ٹوکن جاری کر سکتی ہے۔ بعد میں، اگر آپ دیگر سائٹس کو ملاحظہ کرتے ہیں تو وہ ایک درست ٹرسٹ ٹوکن چیک کرتی ہیں اور اس کے حاصل ہونے پر ان کا آپ کے ساتھ ایک شخص کی طرح سلوک کرنے کا زیادہ امکان ہوتا ہے نہ کہ بوٹ کی طرح۔</translation>
 <translation id="3905761538810670789">ایپ کو درست کریں</translation>
@@ -5032,7 +5028,6 @@
 <translation id="5827733057563115968">اگلے لفظ کی پیشن گوئی</translation>
 <translation id="5828545842856466741">پروفائل شامل کریں...</translation>
 <translation id="5828633471261496623">پرنٹ کیا جا رہا ہے…</translation>
-<translation id="5828797982387013521">پلے بُک منتخب کریں</translation>
 <translation id="5830205393314753525"><ph name="APP_NAME" /> نہیں کھل سکتی</translation>
 <translation id="5830720307094128296">صفحہ محفوظ کریں &amp;بطور…</translation>
 <translation id="5832813618714645810">پروفائلز</translation>
@@ -5924,7 +5919,6 @@
 <translation id="6686665106869989887">ٹیب دائیں طرف منتقل کیا گیا</translation>
 <translation id="6686817083349815241">اپنا پاس ورڈ محفوظ کریں</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> چھپائیں</translation>
-<translation id="6688391094668641513"><ph name="ORIGIN" /> پڑھنے اور تبدیل کرنے کی درخواست کی جا رہی ہے:</translation>
 <translation id="6689714331348768690"><ph name="SUPERVISED_USER_NAME" /> کو کمپیوٹر پر آنے کیلئے کہیں۔ آپ کا بچہ اپنا صوتی ماڈل تخلیق کرنے کیلئے اس اسکرین پر کچھ فقرے پڑھے گا۔
     <ph name="BR" />
     اگر <ph name="SUPERVISED_USER_NAME" /> کو پڑھنے میں مدد کی ضرورت ہو تو بچے کو اپنے بعد فقرے دہرانے کو کہیں۔ مائیک سے دور آہستہ سے بولیں، تاکہ اسسٹنٹ آپ کے بجائے آپ کے بچے کی آواز سن سکے۔</translation>
@@ -7183,7 +7177,6 @@
 <translation id="7898725031477653577">ہمیشہ ترجمہ کریں</translation>
 <translation id="7901405293566323524">فون کا ہب</translation>
 <translation id="7903290522161827520">براؤزر کے اجزاء تلاش کر رہے ہیں؟ ملاحظہ کریں</translation>
-<translation id="7903345046358933331">صفحہ جواب نہیں دے رہا ہے۔ آپ اس کے جواب دینے کا انتظار کر سکتے ہیں یا اسے بند کر سکتے ہیں۔</translation>
 <translation id="7903429136755645827">اپنے گیم کنٹرولز کو حسب ضرورت بنانے کے لیے کلک کریں</translation>
 <translation id="7903742244674067440">آپ کے پاس ان سرٹیفیکیٹ اتھارٹی کی شناخت کرنے والی فائل پر سرٹیفیکیٹس ہیں</translation>
 <translation id="7903925330883316394">یوٹیلٹی: <ph name="UTILITY_TYPE" /></translation>
@@ -8097,6 +8090,7 @@
 <translation id="8780123805589053431">‏Google سے تصویر کی تفصیلات حاصل کریں</translation>
 <translation id="8780443667474968681">صوتی تلاش بند کر دی گئی ہے۔</translation>
 <translation id="8781834595282316166">گروپ میں نیا ٹیب</translation>
+<translation id="8781980678064919987">لِڈ بند ہونے پر بند کریں</translation>
 <translation id="8782565991310229362">کیوسک ایپلیکیشن کی شروعات منسوخ ہو گئی۔</translation>
 <translation id="8783834180813871000">‏بلوٹوتھ جوڑا بنانے کا کوڈ ٹائپ کریں پھر Return یا Enter دبائیں۔</translation>
 <translation id="8784626084144195648">بنڈ اوسط</translation>
@@ -8161,7 +8155,6 @@
 <translation id="8846132060409673887">اس کمپیوٹر کے مینوفیکچرر اور ماڈل کو پڑھیں</translation>
 <translation id="8846163936679269230">‏eSIM پروفائلز کو ری سیٹ کریں</translation>
 <translation id="8846239054091760429">مونو آڈیو، اسٹارٹ اپ، لائیو کیپشن، اور بہت کچھ</translation>
-<translation id="8847523528195140327">کوَر بند ہونے پر سائن آؤٹ کریں</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">پوشیدہ</translation>
 <translation id="8849219423513870962">‏<ph name="PROFILE_NAME" /> نام والی eSIM پروفائل کو ہٹانا منسوخ کریں</translation>

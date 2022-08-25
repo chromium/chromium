@@ -563,7 +563,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1536754031901697553">Kopplar från …</translation>
 <translation id="1537254971476575106">Helskärmsförstorare</translation>
 <translation id="15373452373711364">Stor muspekare</translation>
-<translation id="1539630663098418038"><ph name="EXTENSIONS_REQUESTING_ACCESS" /> begär att få läsa och ändra <ph name="ORIGIN" /></translation>
 <translation id="1540605929960647700">Aktivera demoläge</translation>
 <translation id="1541346352678737112">Inga nätverk hittades</translation>
 <translation id="1542137295869176367">Det gick inte att uppdatera inloggningsuppgifterna</translation>
@@ -725,7 +724,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1676902103953506022">Användaruppgifter för <ph name="USERNAME" /> på <ph name="DOMAIN" /></translation>
 <translation id="1677306805708094828">Det går inte att lägga till <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478"><ph name="TIME" /> kvar</translation>
-<translation id="1678794218766467608">Lås i viloläge eller när locket stängs</translation>
 <translation id="1679068421605151609">Verktyg för utvecklare</translation>
 <translation id="1679810534535368772">Vill du avsluta?</translation>
 <translation id="167983332380191032">Hanteringstjänsten skickade ett HTTP-fel.</translation>
@@ -861,7 +859,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1794051631868188691">Visa aldrig <ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">Skicka feedback som hjälper oss att åtgärda problemet.</translation>
 <translation id="1795214765651529549">Använd klassiskt</translation>
-<translation id="1796105431091975902">Välj en Ansible Playbook att lägga till</translation>
 <translation id="1796588414813960292">Funktioner som kräver ljud slutar fungera</translation>
 <translation id="1797117170091578105">Spela med tangentbordet på Chromebook. Du kan tilldela tangenter specifika funktioner.</translation>
 <translation id="1800502858278951817">Inga tillägg har begärt behörighet att läsa och ändra <ph name="SITE_NAME" /></translation>
@@ -926,6 +923,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1842766183094193446">Vill du aktivera demoläget?</translation>
 <translation id="1845727111305721124">Får spela upp ljud</translation>
 <translation id="1846308012215045257">Kontroll-klicka för att köra <ph name="PLUGIN_NAME" /></translation>
+<translation id="1848219224579402567">Logga ut när locket stängs</translation>
 <translation id="184862733444771842">Förslag till ny funktion</translation>
 <translation id="1849016657376805933">Alla HID-enheter</translation>
 <translation id="1849186935225320012">Den här sidan har fullständig kontroll över MIDI-enheter.</translation>
@@ -1034,7 +1032,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1941553344801134989">Version <ph name="APP_VERSION" /></translation>
 <translation id="1941995177877935582">Visa tangentmappning</translation>
 <translation id="1942128823046546853">Läsa och ändra all din data på alla webbplatser</translation>
-<translation id="1942600407708803723">Stäng av när fodralet stängs</translation>
 <translation id="1944528062465413897">Kopplingskod för Bluetooth:</translation>
 <translation id="1944921356641260203">En uppdatering hittades</translation>
 <translation id="1947136734041527201">Låter dig logga in på webbplatser med kontot du har hos en identitetstjänst</translation>
@@ -1726,6 +1723,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2568774940984945469">Infobar-behållare</translation>
 <translation id="2571655996835834626">Ändra inställningar som styr webbplatsers tillgång till funktioner som cookies, JavaScript, pluginprogram, geografisk plats, mikrofon, kamera osv.</translation>
 <translation id="2572032849266859634">Skrivskyddad åtkomst till <ph name="VOLUME_NAME" /> har beviljats.</translation>
+<translation id="2573276323521243649">Tillbaka från sidan för val av avatar</translation>
 <translation id="2573417407488272418">Säkerhetskopiera appar och filer till Filer &gt; Mina filer före uppgraderingen.</translation>
 <translation id="2573831315551295105">Tilldela brytare för <ph name="ACTION" /></translation>
 <translation id="2575247648642144396">Den här ikonen visas när tillägget kan aktiveras för den aktuella sidan. Använd tillägget genom att klicka på ikonen eller genom att trycka på <ph name="EXTENSION_SHORTCUT" />.</translation>
@@ -3100,7 +3098,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="389901847090970821">Välj tangentbord</translation>
 <translation id="3900966090527141178">Exportera lösenord</translation>
 <translation id="3903187154317825986">Inbyggt tangentbord</translation>
-<translation id="3903191712482985591">Lägg till Playbook</translation>
 <translation id="3904326018476041253">Platstjänster</translation>
 <translation id="3904849010307028014">En webbplats kan utfärda en förtroendetoken till din webbläsare utifrån dina interaktioner med webbplatsen, till exempel att du regelbundet loggar in på ett konto. Om andra webbplatser du besöker sedan söker efter och hittar en giltig förtroendetoken så ökar sannolikheten att du behandlas som en person och inte som en bot.</translation>
 <translation id="3905761538810670789">Reparera appen</translation>
@@ -5046,7 +5043,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5827733057563115968">Förslag på nästa ord</translation>
 <translation id="5828545842856466741">Lägg till profil …</translation>
 <translation id="5828633471261496623">Skriver ut...</translation>
-<translation id="5828797982387013521">Välj handbok</translation>
 <translation id="5830205393314753525">Det går inte att öppna <ph name="APP_NAME" /></translation>
 <translation id="5830720307094128296">Spara &amp;sida som...</translation>
 <translation id="5832813618714645810">Profiler</translation>
@@ -5938,7 +5934,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6686665106869989887">Fliken flyttades åt höger</translation>
 <translation id="6686817083349815241">Spara lösenordet</translation>
 <translation id="6687079240787935001">Dölj <ph name="MODULE_TITLE" /></translation>
-<translation id="6688391094668641513">Begär att få läsa och ändra <ph name="ORIGIN" />:</translation>
 <translation id="6689714331348768690">Be <ph name="SUPERVISED_USER_NAME" /> att komma till datorn. Röstmodellen skapas genom att barnet läser upp några fraser på skärmen.
     <ph name="BR" />
     Om <ph name="SUPERVISED_USER_NAME" /> behöver hjälp med att läsa låter du honom elle henne upprepa det du säger. Vänd dig bort från mikrofonen och viska så att assistenten lär sig barnets röst i stället för din.</translation>
@@ -6420,6 +6415,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7138678301420049075">Övrigt</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> använder mikrofonen</translation>
 <translation id="7141105143012495934">Inloggningen misslyckades eftersom det inte gick att hämta dina kontouppgifter. Kontakta administratören eller försök igen.</translation>
+<translation id="7141844554192012199">Kontroll</translation>
 <translation id="7144878232160441200">Försök igen</translation>
 <translation id="7149839598364933473">Konvertera den här enheten till en <ph name="DEVICE_OS" />-enhet.</translation>
 <translation id="7149893636342594995">Senaste 24 timmarna</translation>
@@ -7197,7 +7193,6 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7898725031477653577">Översätt alltid</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Letar du efter webbläsarens komponenter? Besök</translation>
-<translation id="7903345046358933331">Sidan har slutat svara. Du kan vänta tills den svarar eller stänga den.</translation>
 <translation id="7903429136755645827">Klicka för att anpassa dina spelkontroller</translation>
 <translation id="7903742244674067440">Du har sparade certifikat som identifierar dessa certifikatutfärdare</translation>
 <translation id="7903925330883316394">Verktyg: <ph name="UTILITY_TYPE" /></translation>
@@ -8112,6 +8107,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8780123805589053431">Hämta bildbeskrivningar från Google</translation>
 <translation id="8780443667474968681">Röstsökning har inaktiverats.</translation>
 <translation id="8781834595282316166">Ny flik i grupp</translation>
+<translation id="8781980678064919987">Stäng av när locket stängs</translation>
 <translation id="8782565991310229362">Starten av kioskappen avbröts.</translation>
 <translation id="8783834180813871000">Ange kopplingskoden för Bluetooth och tryck på Retur.</translation>
 <translation id="8784626084144195648">Fackmedelvärde</translation>
@@ -8176,7 +8172,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8846132060409673887">Läsa information om datorns tillverkare och modell</translation>
 <translation id="8846163936679269230">Återställ eSIM-profiler</translation>
 <translation id="8846239054091760429">Monoljud, start, Live Caption med mera</translation>
-<translation id="8847523528195140327">Logga ut när fodralet stängs</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Dold</translation>
 <translation id="8849219423513870962">Avbryt borttagning av eSIM-profilen som heter <ph name="PROFILE_NAME" /></translation>

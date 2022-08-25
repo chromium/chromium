@@ -312,6 +312,7 @@
 <translation id="3689865792480713551">Откажете <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Деактивирана, <ph name="CONNECTION_STATUS" />, Јачина на сигналот <ph name="SIGNAL_STRENGTH" /> %, Детали</translation>
 <translation id="3691184985318546178">синхалски</translation>
+<translation id="3722341589402358578">Се појави грешка. Некои ставки можеби се во корпата.</translation>
 <translation id="3726463242007121105">Уредот не може да се отвори затоа што не го поддржува системот со датотеки.</translation>
 <translation id="3727148787322499904">Менувањето на оваа поставка ќе влијае на сите споделени мрежи</translation>
 <translation id="3737576078404241332">Отстрани од странична лента</translation>

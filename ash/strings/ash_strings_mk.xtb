@@ -854,6 +854,7 @@
 <translation id="5860033963881614850">Исклучено</translation>
 <translation id="5860491529813859533">Вклучи</translation>
 <translation id="5867217927013474703">Се прибираат податоци за мрежата</translation>
+<translation id="5867606971598166637">Администраторот на системот ги надгледува вашите екрани</translation>
 <translation id="5876666360658629066">Внесете го кодот на родител</translation>
 <translation id="5881540930187678962">Поставете ја Phone Hub подоцна</translation>
 <translation id="5887954372087850114">Прозорецот <ph name="WINDOW_TITLE" /> е доделен на <ph name="DESK_TITLE" /> и отстранет од сите други работни површини</translation>
@@ -1254,6 +1255,7 @@
 <translation id="8152264887680882389"><ph name="TEXT" />, автоматско довршување</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> Администраторот управува со поставкава.</translation>
 <translation id="8155628902202578800">Отвори го дијалогот со податоци за <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="8157728322324420120">Препорачано за вас</translation>
 <translation id="8167567890448493835">Се користи <ph name="LOCALE_NAME" /></translation>
 <translation id="8183592608247778598">Прегледувајте ги неодамнешните фотографии, аудиовизуелни содржини, известувања и апликации од телефонот на вашиот <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8192202700944119416">Известувањата се скриени.</translation>
@@ -1433,6 +1435,7 @@
 <translation id="9211490828691860325">Сите работни површини</translation>
 <translation id="9211681782751733685">Уште <ph name="TIME_REMAINING" /> до целосно полнење на батеријата.</translation>
 <translation id="9215934040295798075">Постави тапет</translation>
+<translation id="9219103736887031265">Слики</translation>
 <translation id="921989828232331238">Вашиот родител го заклучи уредот за денес</translation>
 <translation id="9220525904950070496">Отстрани сметка</translation>
 <translation id="923686485342484400">Притиснете Control Shift Q двапати за да се одјавите.</translation>

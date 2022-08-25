@@ -265,6 +265,7 @@
 <translation id="1592005682883173041">本地数据访问权限</translation>
 <translation id="1594030484168838125">选择</translation>
 <translation id="1596296697375291157">惊悚片、犯罪片与悬疑片</translation>
+<translation id="1599199147673445968">想使用新卡？<ph name="BEGIN_LINK" />输入信用卡详情<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">在 Chrome 中玩《Dino Run》游戏</translation>
 <translation id="161042844686301425">青色</translation>
 <translation id="1611101756749861742">第 2 卷</translation>
@@ -1002,6 +1003,7 @@
 <translation id="3664782872746246217">关键字：</translation>
 <translation id="3667704023705708645">风险投资</translation>
 <translation id="3671540257457995106">允许调整大小？</translation>
+<translation id="3672568546897166916"><ph name="ERROR_PATH" /> 出错了：<ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">第 3 卷</translation>
 <translation id="3676592649209844519">设备 ID：</translation>
 <translation id="3677008721441257057">您是想访问 &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; 吧？</translation>

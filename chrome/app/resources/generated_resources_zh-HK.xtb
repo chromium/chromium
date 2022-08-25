@@ -563,7 +563,6 @@
 <translation id="1536754031901697553">正在解除連結…</translation>
 <translation id="1537254971476575106">全螢幕放大鏡</translation>
 <translation id="15373452373711364">大型滑鼠游標</translation>
-<translation id="1539630663098418038">「<ph name="EXTENSIONS_REQUESTING_ACCESS" />」正在要求讀取並變更 <ph name="ORIGIN" /></translation>
 <translation id="1540605929960647700">啟用示範模式</translation>
 <translation id="1541346352678737112">找不到網絡</translation>
 <translation id="1542137295869176367">無法更新您的登入資料</translation>
@@ -725,7 +724,6 @@
 <translation id="1676902103953506022">喺 <ph name="DOMAIN" />上面顯示 <ph name="USERNAME" /> 嘅憑證詳情</translation>
 <translation id="1677306805708094828">無法新增<ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">電量尚餘 <ph name="TIME" /></translation>
-<translation id="1678794218766467608">進入休眠模式或蓋上保護蓋時鎖定</translation>
 <translation id="1679068421605151609">開發人員工具</translation>
 <translation id="1679810534535368772">確定要離開嗎？</translation>
 <translation id="167983332380191032">裝置管理服務已傳送 HTTP 錯誤。</translation>
@@ -860,7 +858,6 @@
 <translation id="1794051631868188691">永不顯示 <ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">請提供寶貴意見，協助我們修正此問題。</translation>
 <translation id="1795214765651529549">使用經典主題</translation>
-<translation id="1796105431091975902">選取 Ansible 腳本以新增</translation>
 <translation id="1796588414813960292">需要使用音訊的功能將無法運作</translation>
 <translation id="1797117170091578105">使用 Chromebook 鍵盤玩遊戲。您可為特定動作自訂按鍵。</translation>
 <translation id="1800502858278951817">沒有擴充程式要求讀取和變更 <ph name="SITE_NAME" /></translation>
@@ -925,6 +922,7 @@
 <translation id="1842766183094193446">您確定要啟用示範模式嗎？</translation>
 <translation id="1845727111305721124">已允許播放音效</translation>
 <translation id="1846308012215045257">按住 Ctrl 鍵並按一下即可執行 <ph name="PLUGIN_NAME" /></translation>
+<translation id="1848219224579402567">蓋上螢幕時登出帳戶</translation>
 <translation id="184862733444771842">功能要求</translation>
 <translation id="1849016657376805933">任何 HID 裝置</translation>
 <translation id="1849186935225320012">這個網頁可全權控制 MIDI 裝置。</translation>
@@ -1034,7 +1032,6 @@
 <translation id="1941553344801134989">版本：<ph name="APP_VERSION" /></translation>
 <translation id="1941995177877935582">顯示對應鍵</translation>
 <translation id="1942128823046546853">讀取及變更您在所有網站上的所有資料</translation>
-<translation id="1942600407708803723">蓋上機蓋時關機</translation>
 <translation id="1944528062465413897">藍牙配對碼：</translation>
 <translation id="1944921356641260203">找到更新</translation>
 <translation id="1947136734041527201">讓您使用具有身分服務的帳戶來登入網站</translation>
@@ -2567,7 +2564,7 @@
 <translation id="3406290648907941085">已允許使用虛擬實境﻿裝置和資料</translation>
 <translation id="3406396172897554194">按語言或輸入方法名稱搜尋</translation>
 <translation id="3406605057700382950">顯示書籤列(&amp;S)</translation>
-<translation id="3408849592677950451">{NUM_PASSWORDS,plural, =1{已將 1 個密碼匯入 <ph name="USER_EMAIL" /> 的 Google 密碼管理工具}other{已將 {NUM_PASSWORDS} 個密碼匯入 <ph name="USER_EMAIL" /> 的 Google 密碼管理工具}}</translation>
+<translation id="3408849592677950451">{NUM_PASSWORDS,plural, =1{已將 1 個密碼匯入 <ph name="USER_EMAIL" /> 的「Google 密碼管理工具」}other{已將 {NUM_PASSWORDS} 個密碼匯入 <ph name="USER_EMAIL" /> 的「Google 密碼管理工具」}}</translation>
 <translation id="3409785640040772790">地圖</translation>
 <translation id="3412265149091626468">跳至所選範圍</translation>
 <translation id="3413122095806433232">CA 發行者：<ph name="LOCATION" /></translation>
@@ -3101,7 +3098,6 @@
 <translation id="389901847090970821">選取鍵盤</translation>
 <translation id="3900966090527141178">匯出密碼</translation>
 <translation id="3903187154317825986">內置鍵盤</translation>
-<translation id="3903191712482985591">新增腳本</translation>
 <translation id="3904326018476041253">定位服務</translation>
 <translation id="3904849010307028014">網站可根據您與網站的互動 (例如定期登入網站)，向您的瀏覽器發出信任憑證。日後，如果您瀏覽的其他網站檢查並找到有效的信任憑證，則這些網站更有可能將您視為真人，而不是機器人。</translation>
 <translation id="3905761538810670789">修復應用程式</translation>
@@ -3753,7 +3749,7 @@
 <translation id="4541123282641193691">無法驗證您的帳戶，請再試一次，或重新啟動 Chromebook。</translation>
 <translation id="4541662893742891060">無法連線至此設定檔。如需技術支援，請聯絡您的流動網絡供應商。</translation>
 <translation id="4541706525461326392">正在移除設定檔。這項操作可能需時數分鐘。</translation>
-<translation id="4542332958571335077">{NUM_PASSWORDS,plural, =1{已將 1 個密碼匯入到這部裝置的 Google 密碼管理工具}other{已將 {NUM_PASSWORDS} 個密碼匯入到這部裝置的 Google 密碼管理工具}}</translation>
+<translation id="4542332958571335077">{NUM_PASSWORDS,plural, =1{已將 1 個密碼匯入此裝置的「Google 密碼管理工具」}other{已將 {NUM_PASSWORDS} 個密碼匯入此裝置的「Google 密碼管理工具」}}</translation>
 <translation id="4542520061254486227">讀取您在 <ph name="WEBSITE_1" /> 和 <ph name="WEBSITE_2" /> 上的資料</translation>
 <translation id="4543778593405494224">憑證管理員</translation>
 <translation id="4544174279960331769">預設藍色圖片</translation>
@@ -5045,7 +5041,6 @@
 <translation id="5827733057563115968">下一字預測</translation>
 <translation id="5828545842856466741">新增設定檔…</translation>
 <translation id="5828633471261496623">列印中…</translation>
-<translation id="5828797982387013521">選取 Playbook</translation>
 <translation id="5830205393314753525">無法開啟「<ph name="APP_NAME" />」</translation>
 <translation id="5830720307094128296">另存網頁(&amp;A)…</translation>
 <translation id="5832813618714645810">設定檔</translation>
@@ -5937,7 +5932,6 @@
 <translation id="6686665106869989887">分頁移咗去右邊</translation>
 <translation id="6686817083349815241">儲存您的密碼</translation>
 <translation id="6687079240787935001">隱藏<ph name="MODULE_TITLE" /></translation>
-<translation id="6688391094668641513">正在要求讀取並變更 <ph name="ORIGIN" />：</translation>
 <translation id="6689714331348768690">請<ph name="SUPERVISED_USER_NAME" />坐在電腦前。您的子女將朗讀此螢幕上的一些短句，藉此建立他們的語音模型。
     <ph name="BR" />
     如果<ph name="SUPERVISED_USER_NAME" />在朗讀過程中需要協助，請讓子女跟著您朗讀。您需要遠離麥克風並降低音量，這樣「Google 助理」才能學習辨識您子女的聲音，而非您的聲音。</translation>
@@ -6472,7 +6466,7 @@
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{離開網頁}other{離開網頁}}</translation>
 <translation id="7207457272187520234">傳送使用情況和診斷資料。此裝置目前會自動將診斷、裝置及應用程式的使用情況資料傳送至 Google。這可協助改善系統及應用程式的穩定性及其他功能。部分彙整資料也會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。擁有者可強制執行此設定。如果已開啟其他「網絡及應用程式活動記錄」設定，系統可能會將此資料儲存至您的 Google 帳戶。</translation>
 <translation id="7207631048330366454">搜尋應用程式</translation>
-<translation id="7210471695184432500">如要將密碼匯入這部裝置的 Google 密碼管理工具，請選取 CSV 檔案</translation>
+<translation id="7210471695184432500">如要將密碼匯入此裝置的「Google 密碼管理工具」，請選取 CSV 檔案</translation>
 <translation id="7210499381659830293">擴充程式打印機</translation>
 <translation id="7211783048245131419">未指派任何按鈕</translation>
 <translation id="7212097698621322584">請輸入目前的 PIN 以進行變更。如果您不知道自己的 PIN，請重設安全密鑰，然後建立新的 PIN。</translation>
@@ -7197,7 +7191,6 @@
 <translation id="7898725031477653577">永遠翻譯</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">要查看瀏覽器組件嗎？請前往</translation>
-<translation id="7903345046358933331">網頁沒有回應。您可以等待網頁回應或關閉網頁。</translation>
 <translation id="7903429136755645827">按一下即可自訂遊戲控制項</translation>
 <translation id="7903742244674067440">您的檔案具備可以識別這些憑證授權的憑證</translation>
 <translation id="7903925330883316394">程式：<ph name="UTILITY_TYPE" /></translation>
@@ -7533,7 +7526,7 @@
 <translation id="8206859287963243715">蜂窩</translation>
 <translation id="8208216423136871611">不要儲存</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{新通知}other{# 則新通知}}</translation>
-<translation id="821119981794423735">如要將密碼匯入到 <ph name="USER_EMAIL" /> 的 Google 密碼管理工具，請選取 CSV 檔案</translation>
+<translation id="821119981794423735">如要將密碼匯入 <ph name="USER_EMAIL" /> 的「Google 密碼管理工具」，請選取 CSV 檔案</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{正在進行一項下載}other{正在進行多項下載}}</translation>
 <translation id="8213449224684199188">進入咗相片模式</translation>
 <translation id="8214489666383623925">開啟檔案…</translation>
@@ -8112,6 +8105,7 @@
 <translation id="8780123805589053431">從 Google 取得圖片說明</translation>
 <translation id="8780443667474968681">語音搜尋功能已關閉。</translation>
 <translation id="8781834595282316166">在群組中新增分頁</translation>
+<translation id="8781980678064919987">蓋上螢幕時關機</translation>
 <translation id="8782565991310229362">Kiosk 應用程式已取消執行。</translation>
 <translation id="8783834180813871000">輸入藍牙配對碼，然後按返回鍵或 Enter 鍵。</translation>
 <translation id="8784626084144195648">二進位化平均</translation>
@@ -8176,7 +8170,6 @@
 <translation id="8846132060409673887">閱讀此電腦的生產商和型號資訊</translation>
 <translation id="8846163936679269230">重設 eSIM 設定檔</translation>
 <translation id="8846239054091760429">單聲道音效、啟動、即時字幕等等</translation>
-<translation id="8847523528195140327">蓋上機蓋時登出帳戶</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">隱藏</translation>
 <translation id="8849219423513870962">取消移除叫做「<ph name="PROFILE_NAME" />」嘅 eSIM 卡設定檔</translation>
