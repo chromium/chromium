@@ -31,6 +31,9 @@ std::string Screen2xSnapshotToViewHierarchy(const ui::AXTreeUpdate& snapshot);
 const std::map<std::string, ax::mojom::Role>&
 GetScreen2xToChromeRoleConversionMapForTesting();
 
+// Resets the node id generator to start from 1 again.
+void ResetNodeIDForTesting();
+
 }  // namespace screen_ai
 
 #endif  // COMPONENTS_SERVICES_SCREEN_AI_PROTO_PROTO_CONVERTOR_H_

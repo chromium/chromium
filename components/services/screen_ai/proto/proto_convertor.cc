@@ -27,6 +27,7 @@
 #include "components/services/screen_ai/proto/view_hierarchy.pb.h"
 #include "components/services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -39,10 +40,11 @@ namespace ranges = base::ranges;
 
 namespace {
 
+ui::AXNodeID next_node_id{1};
+
 // Returns the next valid ID that can be used for identifying `AXNode`s in the
 // accessibility tree.
 ui::AXNodeID GetNextNodeID() {
-  static ui::AXNodeID next_node_id{1};
   return next_node_id++;
 }
 
@@ -564,6 +566,10 @@ void AddAttribute(const std::string& name,
 
 namespace screen_ai {
 
+void ResetNodeIDForTesting() {
+  next_node_id = 1;
+}
+
 // TODO(nektar): Change return value to `std::vector<ui::AXNodeData>` as other
 // fields in `AXTreeUpdate` are unused.
 ui::AXTreeUpdate ScreenAIVisualAnnotationToAXTreeUpdate(
@@ -575,6 +581,12 @@ ui::AXTreeUpdate ScreenAIVisualAnnotationToAXTreeUpdate(
   if (!visual_annotation.ParseFromString(serialized_proto)) {
     NOTREACHED() << "Could not parse Screen AI library output.";
     return update;
+  }
+
+  if (features::IsScreenAIUseLayoutExtractionEnabled()) {
+    visual_annotation.clear_lines();
+  } else {
+    visual_annotation.clear_ui_component();
   }
 
   // TODO(https://crbug.com/1278249): Create an AXTreeSource and create the

@@ -233,6 +233,13 @@ bool IsScreenAIDebugModeEnabled() {
   return base::FeatureList::IsEnabled(::features::kScreenAIDebugMode);
 }
 
+const base::Feature kScreenAIUseLayoutExtraction{
+    "ScreenAIUseLayoutExtraction", base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsScreenAIUseLayoutExtractionEnabled() {
+  return base::FeatureList::IsEnabled(::features::kScreenAIUseLayoutExtraction);
+}
+
 const base::Feature kPdfOcr{"PdfOcr", base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool IsPdfOcrEnabled() {

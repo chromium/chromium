@@ -81,6 +81,7 @@ source_set("unit_tests") {
   deps = [
     ":screen_ai",
     ":test_support",
+    "//base/test:test_support",
     "//components/services/screen_ai/proto",
     "//testing/gtest",
     "//ui/accessibility:test_support",

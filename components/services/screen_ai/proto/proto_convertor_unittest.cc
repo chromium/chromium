@@ -14,12 +14,14 @@
 #include "base/path_service.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/services/screen_ai/proto/chrome_screen_ai.pb.h"
 #include "components/services/screen_ai/proto/test_proto_loader.h"
 #include "components/services/screen_ai/proto/view_hierarchy.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/accessibility/test_ax_tree_update_json_reader.h"
@@ -235,9 +237,16 @@ namespace screen_ai {
 
 using ProtoConvertorTest = testing::Test;
 
-TEST_F(ProtoConvertorTest, ScreenAIVisualAnnotationToAXTreeUpdate) {
+TEST_F(ProtoConvertorTest,
+       ScreenAIVisualAnnotationToAXTreeUpdate_LayoutExtractionResults) {
   chrome_screen_ai::VisualAnnotation annotation;
   gfx::Rect snapshot_bounds(800, 900);
+
+  screen_ai::ResetNodeIDForTesting();
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kScreenAIUseLayoutExtraction},
+      /*disabled_features=*/{});
 
   {
     chrome_screen_ai::UIComponent* component_0 = annotation.add_ui_component();
@@ -280,6 +289,16 @@ TEST_F(ProtoConvertorTest, ScreenAIVisualAnnotationToAXTreeUpdate) {
         "role_description=Signature\n");
     EXPECT_EQ(expected_update, update.ToString());
   }
+}
+
+TEST_F(ProtoConvertorTest, ScreenAIVisualAnnotationToAXTreeUpdate_OcrResults) {
+  chrome_screen_ai::VisualAnnotation annotation;
+  gfx::Rect snapshot_bounds(800, 900);
+
+  screen_ai::ResetNodeIDForTesting();
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(/*enabled_features=*/{}, /*disabled_features=*/{
+                                    features::kScreenAIUseLayoutExtraction});
 
   {
     chrome_screen_ai::LineBox* line_0 = annotation.add_lines();
@@ -331,22 +350,12 @@ TEST_F(ProtoConvertorTest, ScreenAIVisualAnnotationToAXTreeUpdate) {
         serialized_annotation, snapshot_bounds);
 
     const std::string expected_update(
-        "id=4 dialog (0, 0)-(800, 900) child_ids=5,6\n"
-        "  id=5 button offset_container_id=4 (0, 1)-(2, 3) transform=[ "
-        "+0.0000 "
-        "-1.0000 +0.0000 +0.0000  \n"
-        "  +1.0000 +0.0000 +0.0000 +0.0000  \n"
-        "  +0.0000 +0.0000 +1.0000 +0.0000  \n"
-        "  +0.0000 +0.0000 +0.0000 +1.0000 ]\n"
-        "\n"
-        "  id=6 genericContainer offset_container_id=4 (0, 0)-(5, 5) "
-        "role_description=Signature\n"
-        "id=7 region (0, 0)-(800, 900) is_page_breaking_object=true "
-        "child_ids=8\n"
-        "  id=8 staticText offset_container_id=7 (100, 100)-(500, 20) "
+        "id=1 region (0, 0)-(800, 900) is_page_breaking_object=true "
+        "child_ids=2\n"
+        "  id=2 staticText offset_container_id=1 (100, 100)-(500, 20) "
         "name_from=contents text_direction=rtl name=Hello world language=en "
-        "child_ids=9\n"
-        "    id=9 inlineTextBox (100, 100)-(500, 20) name_from=contents "
+        "child_ids=3\n"
+        "    id=3 inlineTextBox (100, 100)-(500, 20) name_from=contents "
         "background_color=&C350 color=&61A8 text_direction=rtl language=en "
         "name=Hello world word_starts=0,6 word_ends=6,11\n");
     EXPECT_EQ(expected_update, update.ToString());

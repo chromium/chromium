@@ -200,6 +200,14 @@ AX_BASE_EXPORT bool IsScreenAIServiceNeeded();
 // If enabled, ScreenAI library writes some debug data in /tmp.
 AX_BASE_EXPORT bool IsScreenAIDebugModeEnabled();
 
+// If enabled, ScreenAI library uses Layout Extraction output, and if disabled,
+// uses OCR output.
+// TODO(https://crbug.com/1278249): Remove this flag after the two outputs are
+// merged in the library.
+AX_BASE_EXPORT extern const base::Feature kScreenAIUseLayoutExtraction;
+
+AX_BASE_EXPORT bool IsScreenAIUseLayoutExtractionEnabled();
+
 // Enables a feature whereby inaccessible (i.e. untagged) PDFs are made
 // accessible using an optical character recognition service. Due to the size of
 // the OCR component, this feature targets desktop versions of Chrome for now.
