@@ -108,9 +108,9 @@ void VerifyReport(
 
         ASSERT_EQ(data_array.size(),
                   expected_payload_contents.contributions.size());
-        for (size_t i = 0; i < data_array.size(); ++i) {
-          ASSERT_TRUE(data_array[i].is_map());
-          const cbor::Value::MapValue& data_map = data_array[i].GetMap();
+        for (size_t j = 0; j < data_array.size(); ++j) {
+          ASSERT_TRUE(data_array[j].is_map());
+          const cbor::Value::MapValue& data_map = data_array[j].GetMap();
 
           ASSERT_TRUE(CborMapContainsKeyAndType(
               data_map, "bucket", cbor::Value::Type::BYTE_STRING));
@@ -123,7 +123,7 @@ void VerifyReport(
           absl::uint128 bucket;
           base::HexStringToUInt128(base::HexEncode(bucket_byte_string),
                                    &bucket);
-          EXPECT_EQ(bucket, expected_payload_contents.contributions[i].bucket);
+          EXPECT_EQ(bucket, expected_payload_contents.contributions[j].bucket);
 
           ASSERT_TRUE(CborMapContainsKeyAndType(
               data_map, "value", cbor::Value::Type::BYTE_STRING));
@@ -136,7 +136,7 @@ void VerifyReport(
           uint32_t value;
           base::HexStringToUInt(base::HexEncode(value_byte_string), &value);
           EXPECT_EQ(static_cast<int64_t>(value),
-                    expected_payload_contents.contributions[i].value);
+                    expected_payload_contents.contributions[j].value);
         }
 
         EXPECT_FALSE(payload_map.contains(cbor::Value("dpf_key")));

@@ -23,6 +23,7 @@
 #include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -2387,9 +2388,8 @@ TEST_F(AuthenticatorContentBrowserClientTest, ChromeExtensions) {
 
 TEST_F(AuthenticatorContentBrowserClientTest, ChromeExtensionBadRpIds) {
   // Permit WebAuthn in extensions.
-  constexpr char kExtensionScheme[] = "chrome-extension";
   static const std::string kExtensionOrigin =
-      std::string(kExtensionScheme) + "://abcdefg";
+      base::StrCat({kExtensionScheme, "://abcdefg"});
   test_client_.GetTestWebAuthenticationDelegate()->permit_extensions = true;
 
   // Extensions are not permitted to assert RP IDs different from their

@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/web_package/web_bundle_builder.h"
@@ -424,15 +425,13 @@ IN_PROC_BROWSER_TEST_F(WebBundleElementBrowserTest,
       {"/web_bundle/uuid-in-package.wbn", "loaded"},
       {"/server-redirect?/web_bundle/uuid-in-package.wbn", "failed"}};
 
-  for (const auto& pair : test_cases) {
-    const char* url = pair.first;
-    std::string expected_message = pair.second;
-    ExecuteScriptAsync(shell(), GetScriptForWebBundle(url));
+  for (const auto& [input_url, expected_message] : test_cases) {
+    ExecuteScriptAsync(shell(), GetScriptForWebBundle(input_url));
     std::string message;
     EXPECT_TRUE(dom_message_queue.WaitForMessage(&message));
-    EXPECT_EQ("\"" + expected_message + "\"", message);
+    EXPECT_EQ(base::StrCat({"\"", expected_message, "\""}), message);
 
-    if (expected_message == "failed")
+    if (std::string(expected_message) == "failed")
       console_observer.Wait();
   }
 }

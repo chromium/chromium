@@ -2009,23 +2009,25 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, SetAndGetCookies) {
   ASSERT_TRUE(cookies);
   EXPECT_EQ(1u, cookies->size());
 
-  const base::Value& cookie_value = cookies->front();
-  EXPECT_TRUE(cookie_value.is_dict());
-  const base::DictionaryValue& cookie =
-      base::Value::AsDictionaryValue(cookie_value);
   std::string name;
   std::string value;
-  EXPECT_TRUE(cookie.GetString("name", &name));
-  EXPECT_TRUE(cookie.GetString("value", &value));
-  EXPECT_EQ("cookie_for_this_url", name);
-  EXPECT_EQ("mendacious", value);
+  {
+    const base::Value& cookie_value = cookies->front();
+    EXPECT_TRUE(cookie_value.is_dict());
+    const base::DictionaryValue& cookie =
+        base::Value::AsDictionaryValue(cookie_value);
+    EXPECT_TRUE(cookie.GetString("name", &name));
+    EXPECT_TRUE(cookie.GetString("value", &value));
+    EXPECT_EQ("cookie_for_this_url", name);
+    EXPECT_EQ("mendacious", value);
 
-  // Then get all the cookies in the cookie jar.
-  SendCommandSync("Network.getAllCookies");
+    // Then get all the cookies in the cookie jar.
+    SendCommandSync("Network.getAllCookies");
 
-  cookies = result()->FindList("cookies");
-  ASSERT_TRUE(cookies);
-  EXPECT_EQ(2u, cookies->size());
+    cookies = result()->FindList("cookies");
+    ASSERT_TRUE(cookies);
+    EXPECT_EQ(2u, cookies->size());
+  }
 
   // Note: the cookies will be returned in unspecified order.
   size_t found = 0;

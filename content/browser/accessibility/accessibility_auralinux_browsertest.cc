@@ -2066,11 +2066,13 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   AtkObject* document = GetRendererAccessible();
   ASSERT_TRUE(ATK_IS_COMPONENT(document));
 
-  auto* node = static_cast<ui::AXPlatformNodeAuraLinux*>(
-      ui::AXPlatformNode::FromNativeViewAccessible(document));
-  std::pair<int, int> offsets = node->GetSelectionOffsetsForAtk();
-  EXPECT_EQ(0, offsets.first);
-  EXPECT_EQ(3, offsets.second);
+  {
+    auto* node = static_cast<ui::AXPlatformNodeAuraLinux*>(
+        ui::AXPlatformNode::FromNativeViewAccessible(document));
+    std::pair<int, int> offsets = node->GetSelectionOffsetsForAtk();
+    EXPECT_EQ(0, offsets.first);
+    EXPECT_EQ(3, offsets.second);
+  }
 
   std::vector<int> expected = {12, 18, 14};  // text length of each child
   int number_of_children = atk_object_get_n_accessible_children(document);
