@@ -14,10 +14,6 @@
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_service_data_creator.h"
 #include "ash/quick_pair/common/pair_failure.h"
-#include "ash/quick_pair/fast_pair_handshake/fake_fast_pair_handshake.h"
-#include "ash/quick_pair/fast_pair_handshake/fast_pair_data_encryptor.h"
-#include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client.h"
-#include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "ash/quick_pair/repository/fake_fast_pair_repository.h"
 #include "ash/quick_pair/repository/fast_pair/device_metadata.h"
@@ -84,10 +80,6 @@ class FastPairNotDiscoverableScannerImplTest : public testing::Test {
 
     adapter_ =
         base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
-
-    FastPairHandshakeLookup::SetCreateFunctionForTesting(base::BindRepeating(
-        &FastPairNotDiscoverableScannerImplTest::CreateHandshake,
-        base::Unretained(this)));
 
     not_discoverable_scanner_ =
         std::make_unique<FastPairNotDiscoverableScannerImpl>(
@@ -184,17 +176,6 @@ class FastPairNotDiscoverableScannerImplTest : public testing::Test {
     return device_ptr;
   }
 
-  std::unique_ptr<FastPairHandshake> CreateHandshake(
-      scoped_refptr<Device> device,
-      FastPairHandshake::OnCompleteCallback callback) {
-    auto fake = std::make_unique<FakeFastPairHandshake>(
-        adapter_, std::move(device), std::move(callback));
-
-    fake_fast_pair_handshake_ = fake.get();
-
-    return fake;
-  }
-
   base::test::SingleThreadTaskEnvironment task_enviornment_;
   scoped_refptr<FakeFastPairScanner> scanner_;
   std::unique_ptr<FakeFastPairRepository> repository_;
@@ -206,7 +187,6 @@ class FastPairNotDiscoverableScannerImplTest : public testing::Test {
   std::unique_ptr<FastPairDataParser> data_parser_;
   base::MockCallback<DeviceCallback> found_device_callback_;
   base::MockCallback<DeviceCallback> lost_device_callback_;
-  FakeFastPairHandshake* fake_fast_pair_handshake_ = nullptr;
 };
 
 // TODO(crbug.com/1298377) flaky on ASan + LSan bots
@@ -457,10 +437,6 @@ TEST_F(FastPairNotDiscoverableScannerImplTest, InvokesLostCallbackAfterFound) {
 
   base::RunLoop().RunUntilIdle();
 
-  fake_fast_pair_handshake_->InvokeCallback();
-
-  base::RunLoop().RunUntilIdle();
-
   EXPECT_CALL(lost_device_callback_, Run).Times(1);
   scanner_->NotifyDeviceLost(device);
 
@@ -526,9 +502,6 @@ TEST_F(FastPairNotDiscoverableScannerImplTest, FactoryCreate) {
   device::BluetoothDevice* device = GetDevice(GetAdvBatteryServicedata());
   scanner_->NotifyDeviceFound(device);
   base::RunLoop().RunUntilIdle();
-
-  fake_fast_pair_handshake_->InvokeCallback();
-  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(FastPairNotDiscoverableScannerImplTest,
@@ -572,9 +545,6 @@ TEST_F(FastPairNotDiscoverableScannerImplTest, SetBatteryInfo) {
   scanner_->NotifyDeviceFound(device);
   base::RunLoop().RunUntilIdle();
 
-  fake_fast_pair_handshake_->InvokeCallback();
-  base::RunLoop().RunUntilIdle();
-
   EXPECT_EQ(absl::nullopt, device->GetBatteryInfo(
                                device::BluetoothDevice::BatteryType::kDefault));
   EXPECT_NE(absl::nullopt,
@@ -612,9 +582,6 @@ TEST_F(FastPairNotDiscoverableScannerImplTest, SetUnknownBatteryInfo) {
   device::BluetoothDevice* device =
       GetDevice(GetAdvUnknownBatteryServicedata());
   scanner_->NotifyDeviceFound(device);
-  base::RunLoop().RunUntilIdle();
-
-  fake_fast_pair_handshake_->InvokeCallback();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(absl::nullopt, device->GetBatteryInfo(
@@ -656,9 +623,6 @@ TEST_F(FastPairNotDiscoverableScannerImplTest, SetInvalidPercentBatteryInfo) {
   scanner_->NotifyDeviceFound(device);
   base::RunLoop().RunUntilIdle();
 
-  fake_fast_pair_handshake_->InvokeCallback();
-  base::RunLoop().RunUntilIdle();
-
   EXPECT_EQ(absl::nullopt, device->GetBatteryInfo(
                                device::BluetoothDevice::BatteryType::kDefault));
   EXPECT_NE(absl::nullopt,
@@ -672,41 +636,7 @@ TEST_F(FastPairNotDiscoverableScannerImplTest, SetInvalidPercentBatteryInfo) {
                 device::BluetoothDevice::BatteryType::kCaseTrueWireless));
 }
 
-TEST_F(FastPairNotDiscoverableScannerImplTest, HandshakeFailed) {
-  device::BluetoothDevice* device = GetDevice(GetAdvServicedata());
-
-  nearby::fastpair::GetObservedDeviceResponse response;
-  response.mutable_device()->set_id(kModelIdLong);
-  response.mutable_device()->set_trigger_distance(2);
-
-  auto device_metadata =
-      std::make_unique<DeviceMetadata>(std::move(response), gfx::Image());
-  PairingMetadata pairing_metadata(device_metadata.get(),
-                                   std::vector<uint8_t>());
-  repository_->SetCheckAccountKeysResult(pairing_metadata);
-  repository_->set_is_account_key_paired_locally(false);
-  EXPECT_CALL(*process_manager_, GetProcessReference)
-      .WillRepeatedly(
-          [&](QuickPairProcessManager::ProcessStoppedCallback callback) {
-            return std::make_unique<
-                QuickPairProcessManagerImpl::ProcessReferenceImpl>(
-                data_parser_remote_, base::DoNothing());
-          });
-
-  EXPECT_CALL(found_device_callback_, Run).Times(0);
-  scanner_->NotifyDeviceFound(device);
-  base::RunLoop().RunUntilIdle();
-
-  fake_fast_pair_handshake_->InvokeCallback(PairFailure::kCreateGattConnection);
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_CALL(lost_device_callback_, Run).Times(0);
-  scanner_->NotifyDeviceLost(device);
-
-  base::RunLoop().RunUntilIdle();
-}
-
-TEST_F(FastPairNotDiscoverableScannerImplTest, AlreadyPaired) {
+TEST_F(FastPairNotDiscoverableScannerImplTest, AlreadyInitialPaired) {
   device::BluetoothDevice* device =
       GetDevice(GetAdvServicedata(), /*is_paired=*/true);
 
@@ -719,7 +649,8 @@ TEST_F(FastPairNotDiscoverableScannerImplTest, AlreadyPaired) {
   PairingMetadata pairing_metadata(device_metadata.get(),
                                    std::vector<uint8_t>());
   repository_->SetCheckAccountKeysResult(pairing_metadata);
-  repository_->set_is_account_key_paired_locally(false);
+  // After initial pairing, we'll save the account key locally.
+  repository_->set_is_account_key_paired_locally(true);
   EXPECT_CALL(*process_manager_, GetProcessReference)
       .WillRepeatedly(
           [&](QuickPairProcessManager::ProcessStoppedCallback callback) {
@@ -732,7 +663,38 @@ TEST_F(FastPairNotDiscoverableScannerImplTest, AlreadyPaired) {
   scanner_->NotifyDeviceFound(device);
   base::RunLoop().RunUntilIdle();
 
-  fake_fast_pair_handshake_->InvokeCallback();
+  EXPECT_CALL(lost_device_callback_, Run).Times(0);
+  scanner_->NotifyDeviceLost(device);
+
+  base::RunLoop().RunUntilIdle();
+}
+
+// TODO(b/242891006): Re-enable this test after the bug is fixed.
+TEST_F(FastPairNotDiscoverableScannerImplTest, DISABLED_AlreadyClassicPaired) {
+  device::BluetoothDevice* device =
+      GetDevice(GetAdvServicedata(), /*is_paired=*/true);
+
+  nearby::fastpair::GetObservedDeviceResponse response;
+  response.mutable_device()->set_id(kModelIdLong);
+  response.mutable_device()->set_trigger_distance(2);
+
+  auto device_metadata =
+      std::make_unique<DeviceMetadata>(std::move(response), gfx::Image());
+  PairingMetadata pairing_metadata(device_metadata.get(),
+                                   std::vector<uint8_t>());
+  repository_->SetCheckAccountKeysResult(pairing_metadata);
+  // When classic pairing, the user elects to not save their account key.
+  repository_->set_is_account_key_paired_locally(false);
+  EXPECT_CALL(*process_manager_, GetProcessReference)
+      .WillRepeatedly(
+          [&](QuickPairProcessManager::ProcessStoppedCallback callback) {
+            return std::make_unique<
+                QuickPairProcessManagerImpl::ProcessReferenceImpl>(
+                data_parser_remote_, base::DoNothing());
+          });
+
+  EXPECT_CALL(found_device_callback_, Run).Times(0);
+  scanner_->NotifyDeviceFound(device);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_CALL(lost_device_callback_, Run).Times(0);

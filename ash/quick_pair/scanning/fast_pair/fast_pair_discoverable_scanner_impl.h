@@ -80,8 +80,6 @@ class FastPairDiscoverableScannerImpl : public FastPairDiscoverableScanner,
                                  const std::string model_id,
                                  DeviceMetadata* device_metadata,
                                  bool has_retryable_error);
-  void OnHandshakeComplete(scoped_refptr<Device> device,
-                           absl::optional<PairFailure> failure);
   void NotifyDeviceFound(scoped_refptr<Device> device);
   void OnUtilityProcessStopped(
       const std::string& address,

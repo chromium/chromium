@@ -161,25 +161,52 @@ FastPairPairerImpl::FastPairPairerImpl(
 
   fast_pair_handshake_ = FastPairHandshakeLookup::GetInstance()->Get(device_);
 
-  if (!fast_pair_handshake_) {
-    QP_LOG(INFO) << __func__
-                 << ": Failed to find handshake. This is only valid if we "
-                    "lost the device before this class executed.";
+  if (fast_pair_handshake_) {
+    // Handle cases where we are retrying pair after a non-handshake related
+    // error occurs.
+    if (fast_pair_handshake_->completed_successfully()) {
+      QP_LOG(VERBOSE) << __func__
+                      << ": Reusing handshake for retried pair attempt.";
+      OnHandshakeComplete(device_, /*failure=*/absl::nullopt);
+      return;
+    }
+
+    // Handles cases where we are retrying pair after an error occurred when
+    // creating the handshake.
+    QP_LOG(VERBOSE) << __func__
+                    << ": Clearing failed handshake for retried pair attempt.";
+    FastPairHandshakeLookup::GetInstance()->Erase(device_);
+    fast_pair_handshake_ = nullptr;
+  }
+
+  QP_LOG(VERBOSE) << __func__ << ": Creating new handshake for pair attempt.";
+  FastPairHandshakeLookup::GetInstance()->Create(
+      adapter_, device_,
+      base::BindOnce(&FastPairPairerImpl::OnHandshakeComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FastPairPairerImpl::OnHandshakeComplete(
+    scoped_refptr<Device> device,
+    absl::optional<PairFailure> failure) {
+  if (failure.has_value()) {
+    QP_LOG(WARNING) << __func__ << ": Handshake failed with " << device
+                    << " because: " << failure.value();
+    std::move(pair_failed_callback_).Run(device_, failure.value());
+    return;
+  }
+
+  // During handshake, the device address can be set to null.
+  if (!device_->classic_address()) {
+    QP_LOG(WARNING) << __func__ << ": Device lost during handshake.";
     std::move(pair_failed_callback_)
         .Run(device_, PairFailure::kPairingDeviceLost);
     return;
   }
 
-  device::BluetoothDevice* bt_device =
-      adapter_->GetDevice(device_->ble_address);
+  fast_pair_handshake_ = FastPairHandshakeLookup::GetInstance()->Get(device_);
 
-  if (!bt_device) {
-    QP_LOG(WARNING) << __func__ << ": Could not find Bluetooth device.";
-    std::move(pair_failed_callback_)
-        .Run(device_, PairFailure::kPairingDeviceLost);
-    return;
-  }
-
+  DCHECK(fast_pair_handshake_);
   DCHECK(fast_pair_handshake_->completed_successfully());
 
   fast_pair_gatt_service_client_ =

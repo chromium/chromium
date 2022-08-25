@@ -113,6 +113,10 @@ class FastPairPairerImpl : public FastPairPairer,
   void OnConnectDevice(device::BluetoothDevice* device);
   void OnConnectError();
 
+  //  FastPairHandshakeLookup::Create callback
+  void OnHandshakeComplete(scoped_refptr<Device> device,
+                           absl::optional<PairFailure> failure);
+
   // FastPairGattServiceClient::WritePasskey callback
   void OnPasskeyResponse(std::vector<uint8_t> response_bytes,
                          absl::optional<PairFailure> failure);
