@@ -113,7 +113,7 @@ ExtensionFunction::ResponseAction SocketsUdpCreateFunction::Work() {
 
   ResumableUDPSocket* socket = new ResumableUDPSocket(
       std::move(udp_socket), std::move(socket_listener_receiver),
-      extension_->id());
+      GetOriginId());
 
   sockets_udp::SocketProperties* properties = params->properties.get();
   if (properties) {
@@ -169,8 +169,7 @@ ExtensionFunction::ResponseAction SocketsUdpSetPausedFunction::Work() {
   if (socket->paused() != params->paused) {
     socket->set_paused(params->paused);
     if (socket->IsConnected() && !params->paused) {
-      socket_event_dispatcher->OnSocketResume(extension_->id(),
-                                              params->socket_id);
+      socket_event_dispatcher->OnSocketResume(GetOriginId(), params->socket_id);
     }
   }
 
@@ -214,8 +213,7 @@ void SocketsUdpBindFunction::OnCompleted(int net_result) {
     return;
   }
   if (net_result == net::OK) {
-    socket_event_dispatcher_->OnSocketBind(extension_->id(),
-                                           params_->socket_id);
+    socket_event_dispatcher_->OnSocketBind(GetOriginId(), params_->socket_id);
   } else {
     Respond(ErrorWithCode(net_result, net::ErrorToString(net_result)));
     return;

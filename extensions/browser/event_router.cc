@@ -794,13 +794,19 @@ const DictionaryValue* EventRouter::GetFilteredEvents(
 }
 
 void EventRouter::BroadcastEvent(std::unique_ptr<Event> event) {
-  DispatchEventImpl(std::string(), std::move(event));
+  DispatchEventImpl(std::string(), GURL(), std::move(event));
 }
 
 void EventRouter::DispatchEventToExtension(const std::string& extension_id,
                                            std::unique_ptr<Event> event) {
   DCHECK(!extension_id.empty());
-  DispatchEventImpl(extension_id, std::move(event));
+  DispatchEventImpl(extension_id, GURL(), std::move(event));
+}
+
+void EventRouter::DispatchEventToURL(const GURL& url,
+                                     std::unique_ptr<Event> event) {
+  DCHECK(!url.is_empty());
+  DispatchEventImpl(std::string(), url, std::move(event));
 }
 
 void EventRouter::DispatchEventWithLazyListener(const std::string& extension_id,
@@ -840,6 +846,7 @@ void EventRouter::DispatchEventWithLazyListener(const std::string& extension_id,
 }
 
 void EventRouter::DispatchEventImpl(const std::string& restrict_to_extension_id,
+                                    const GURL& restrict_to_url,
                                     std::unique_ptr<Event> event) {
   DCHECK(event);
   // We don't expect to get events from a completely different browser context.
@@ -872,6 +879,10 @@ void EventRouter::DispatchEventImpl(const std::string& restrict_to_extension_id,
         restrict_to_extension_id != listener->extension_id()) {
       continue;
     }
+    if (!restrict_to_url.is_empty() &&
+        !url::IsSameOriginWith(restrict_to_url, listener->listener_url())) {
+      continue;
+    }
     if (!listener->IsLazy())
       continue;
 
@@ -883,6 +894,10 @@ void EventRouter::DispatchEventImpl(const std::string& restrict_to_extension_id,
   for (const EventListener* listener : listeners) {
     if (!restrict_to_extension_id.empty() &&
         restrict_to_extension_id != listener->extension_id()) {
+      continue;
+    }
+    if (!restrict_to_url.is_empty() &&
+        !url::IsSameOriginWith(restrict_to_url, listener->listener_url())) {
       continue;
     }
     if (listener->IsLazy())

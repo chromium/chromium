@@ -88,8 +88,7 @@ ExtensionFunction::ResponseAction SocketsTcpServerCreateFunction::Work() {
       sockets_tcp_server::Create::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
-  auto* socket =
-      new ResumableTCPServerSocket(browser_context(), extension_->id());
+  auto* socket = new ResumableTCPServerSocket(browser_context(), GetOriginId());
 
   sockets_tcp_server::SocketProperties* properties = params->properties.get();
   if (properties) {
@@ -146,7 +145,7 @@ ExtensionFunction::ResponseAction SocketsTcpServerSetPausedFunction::Work() {
   if (socket->paused() != params->paused) {
     socket->set_paused(params->paused);
     if (socket->IsConnected() && !params->paused) {
-      socket_event_dispatcher->OnServerSocketResume(extension_->id(),
+      socket_event_dispatcher->OnServerSocketResume(GetOriginId(),
                                                     params->socket_id);
     }
   }
@@ -199,7 +198,7 @@ void SocketsTcpServerListenFunction::OnCompleted(
     return;
   }
   if (net_result == net::OK) {
-    socket_event_dispatcher_->OnServerSocketListen(extension_->id(),
+    socket_event_dispatcher_->OnServerSocketListen(GetOriginId(),
                                                    params_->socket_id);
   } else {
     Respond(ErrorWithCode(net_result, net::ErrorToString(net_result)));

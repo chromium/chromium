@@ -13,7 +13,6 @@
 #include "base/containers/span.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/network_service_instance.h"
@@ -42,6 +41,10 @@ using extensions::mojom::APIPermissionID;
 
 namespace extensions {
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kCrOSTerminal[] = "chrome-untrusted://terminal";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace {
 
 const char kAddressKey[] = "address";
@@ -66,7 +69,6 @@ const uint16_t kWildcardPort = 0;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kFirewallFailure[] = "Failed to open firewall port";
-const char kCrOSTerminal[] = "chrome-untrusted://terminal";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 bool IsPortValid(int port) {

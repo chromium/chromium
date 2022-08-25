@@ -290,6 +290,10 @@ class EventRouter : public KeyedService,
   virtual void DispatchEventToExtension(const std::string& extension_id,
                                         std::unique_ptr<Event> event);
 
+  // Dispatches an event to the given url.
+  virtual void DispatchEventToURL(const GURL& owner_url,
+                                  std::unique_ptr<Event> event);
+
   // Dispatches |event| to the given extension as if the extension has a lazy
   // listener for it. NOTE: This should be used rarely, for dispatching events
   // to extensions that haven't had a chance to add their own listeners yet, eg:
@@ -337,6 +341,7 @@ class EventRouter : public KeyedService,
   friend class DownloadExtensionTest;
   friend class SystemInfoAPITest;
   FRIEND_TEST_ALL_PREFIXES(EventRouterTest, MultipleEventRouterObserver);
+  FRIEND_TEST_ALL_PREFIXES(EventRouterDispatchTest, TestDispatch);
   FRIEND_TEST_ALL_PREFIXES(
       DeveloperPrivateApiUnitTest,
       UpdateHostAccess_UnrequestedHostsDispatchUpdateEvents);
@@ -404,10 +409,11 @@ class EventRouter : public KeyedService,
   void RemoveLazyEventListenerImpl(std::unique_ptr<EventListener> listener,
                                    RegisteredEventType type);
 
-  // Shared by all event dispatch methods. If |restrict_to_extension_id| is
-  // empty, the event is broadcast.  An event that just came off the pending
-  // list may not be delayed again.
+  // Shared by all event dispatch methods. If |restrict_to_extension_id|  and
+  // |restrict_to_url| is empty, the event is broadcast.  An event that just
+  // came off the pending list may not be delayed again.
   void DispatchEventImpl(const std::string& restrict_to_extension_id,
+                         const GURL& restrict_to_url,
                          std::unique_ptr<Event> event);
 
   // Dispatches the event to the specified extension or URL running in

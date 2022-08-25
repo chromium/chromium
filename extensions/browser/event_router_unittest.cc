@@ -16,8 +16,12 @@
 #include "content/public/test/mock_render_process_host.h"
 #include "extensions/browser/event_listener_map.h"
 #include "extensions/browser/extensions_test.h"
+#include "extensions/browser/test_event_router_observer.h"
+#include "extensions/common/extension_api.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_messages.h"
+#include "extensions/common/features/feature_provider.h"
+#include "extensions/common/features/simple_feature.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::DictionaryValue;
@@ -196,7 +200,7 @@ class EventRouterTest : public ExtensionsTest {
 class EventRouterFilterTest : public ExtensionsTest,
                               public testing::WithParamInterface<bool> {
  public:
-  EventRouterFilterTest() {}
+  EventRouterFilterTest() = default;
 
   EventRouterFilterTest(const EventRouterFilterTest&) = delete;
   EventRouterFilterTest& operator=(const EventRouterFilterTest&) = delete;
@@ -514,5 +518,92 @@ INSTANTIATE_TEST_SUITE_P(Lazy, EventRouterFilterTest, testing::Values(false));
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          EventRouterFilterTest,
                          testing::Values(true));
+
+class EventRouterDispatchTest : public ExtensionsTest {
+ public:
+  EventRouterDispatchTest() = default;
+  EventRouterDispatchTest(const EventRouterDispatchTest&) = delete;
+  EventRouterDispatchTest& operator=(const EventRouterDispatchTest&) = delete;
+
+  void SetUp() override {
+    ExtensionsTest::SetUp();
+    render_process_host_ =
+        std::make_unique<content::MockRenderProcessHost>(browser_context());
+    ASSERT_TRUE(event_router());  // constructs EventRouter
+  }
+
+  void TearDown() override {
+    render_process_host_.reset();
+    ExtensionsTest::TearDown();
+  }
+
+  content::RenderProcessHost* process() const {
+    return render_process_host_.get();
+  }
+  EventRouter* event_router() { return EventRouter::Get(browser_context()); }
+
+ private:
+  std::unique_ptr<content::RenderProcessHost> render_process_host_;
+};
+
+TEST_F(EventRouterDispatchTest, TestDispatch) {
+  std::string ext1 = "ext1";
+  std::string ext2 = "ext2";
+  GURL webui1("chrome-untrusted://one");
+  GURL webui2("chrome-untrusted://two");
+  std::string event_name = "testapi.onEvent";
+  FeatureProvider provider;
+  auto feature = std::make_unique<SimpleFeature>();
+  feature->set_name("test feature");
+  feature->set_matches({webui1.spec().c_str(), webui2.spec().c_str()});
+  provider.AddFeature(event_name, std::move(feature));
+  ExtensionAPI::GetSharedInstance()->RegisterDependencyProvider("api",
+                                                                &provider);
+  TestEventRouterObserver observer(event_router());
+  auto add_extension = [&](const std::string& id) {
+    scoped_refptr<const Extension> extension =
+        ExtensionBuilder()
+            .SetID(id)
+            .SetManifest(DictionaryBuilder()
+                             .Set("name", "Test app")
+                             .Set("version", "1.0")
+                             .Set("manifest_version", 2)
+                             .Build())
+            .Build();
+    ExtensionRegistry::Get(browser_context())->AddEnabled(extension);
+  };
+  add_extension(ext1);
+  add_extension(ext2);
+  auto event = [](std::string name) {
+    return std::make_unique<extensions::Event>(extensions::events::FOR_TEST,
+                                               name, base::Value::List());
+  };
+
+  // Register both extensions and both URLs for event.
+  event_router()->AddEventListener(event_name, process(), ext1);
+  event_router()->AddEventListener(event_name, process(), ext2);
+  event_router()->AddEventListenerForURL(event_name, process(), webui1);
+  event_router()->AddEventListenerForURL(event_name, process(), webui2);
+
+  // Should only dispatch to the single specified extension or url.
+  event_router()->DispatchEventToExtension(ext1, event(event_name));
+  EXPECT_EQ(1u, observer.dispatched_events().size());
+  observer.ClearEvents();
+  event_router()->DispatchEventToExtension(ext2, event(event_name));
+  EXPECT_EQ(1u, observer.dispatched_events().size());
+  observer.ClearEvents();
+  event_router()->DispatchEventToURL(webui1, event(event_name));
+  EXPECT_EQ(1u, observer.dispatched_events().size());
+  observer.ClearEvents();
+  event_router()->DispatchEventToURL(webui2, event(event_name));
+  EXPECT_EQ(1u, observer.dispatched_events().size());
+  observer.ClearEvents();
+
+  // No listeners registered for 'api.other' event.
+  event_router()->DispatchEventToExtension(ext1, event("api.other"));
+  EXPECT_EQ(0u, observer.dispatched_events().size());
+  event_router()->DispatchEventToURL(webui1, event("api.other"));
+  EXPECT_EQ(0u, observer.dispatched_events().size());
+}
 
 }  // namespace extensions
