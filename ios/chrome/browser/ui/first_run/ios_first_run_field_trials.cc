@@ -4,6 +4,8 @@
 
 #include "ios/chrome/browser/ui/first_run/ios_first_run_field_trials.h"
 
+#import "ios/chrome/app/tests_hook.h"
+
 // FirstRunFieldTrialGroup
 FirstRunFieldTrialGroup::FirstRunFieldTrialGroup(
     const std::string& name,
@@ -24,6 +26,7 @@ scoped_refptr<base::FieldTrial>
 FirstRunFieldTrialConfig::CreateOneTimeRandomizedTrial(
     const std::string& default_group_name,
     const base::FieldTrial::EntropyProvider& low_entropy_provider) {
+  DCHECK(!tests_hook::DisableClientSideFieldTrials());
   DCHECK_LE(GetTotalProbability(), 100);
   scoped_refptr<base::FieldTrial> trial =
       base::FieldTrialList::FactoryGetFieldTrialWithRandomizationSeed(

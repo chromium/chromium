@@ -14,6 +14,10 @@ bool DisableAppGroupAccess() {
   return true;
 }
 
+bool DisableClientSideFieldTrials() {
+  return true;
+}
+
 bool DisableContentSuggestions() {
   return true;
 }

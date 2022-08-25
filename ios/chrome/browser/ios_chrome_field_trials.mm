@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "base/path_service.h"
 #import "components/metrics/persistent_histograms.h"
+#import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/chrome_paths.h"
 #import "ios/chrome/browser/ui/first_run/fre_field_trial.h"
@@ -28,10 +29,18 @@ void IOSChromeFieldTrials::SetUpFeatureControllingFieldTrials(
     bool has_seed,
     const base::FieldTrial::EntropyProvider* low_entropy_provider,
     base::FeatureList* feature_list) {
-  // Add code here to enable field trials that are active at first run.
-  // See http://crrev/c/1128269 for an example.
   // Note: On iOS, the |low_entropy_provider| is guaranteed to be non-null.
   DCHECK(low_entropy_provider);
+
+  // Disable trials when testing to remove sources of nondeterminism.
+  // WARNING: Do not add any field trials until after this check, or
+  // else they will be incorrectly randomized during EG testing.
+  if (tests_hook::DisableClientSideFieldTrials()) {
+    return;
+  }
+
+  // Add code here to enable field trials that are active at first run.
+  // See http://crrev/c/1128269 for an example.
   fre_field_trial::Create(*low_entropy_provider, feature_list,
                           GetApplicationContext()->GetLocalState());
   trending_queries_field_trial::Create(

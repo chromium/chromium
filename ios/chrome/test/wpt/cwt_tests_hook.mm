@@ -17,6 +17,9 @@ namespace tests_hook {
 bool DisableAppGroupAccess() {
   return true;
 }
+bool DisableClientSideFieldTrials() {
+  return true;
+}
 bool DisableContentSuggestions() {
   return true;
 }

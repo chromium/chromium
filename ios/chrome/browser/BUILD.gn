@@ -86,6 +86,7 @@ source_set("browser") {
     "//components/version_info",
     "//components/webdata_services",
     "//google_apis",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/complex_tasks",

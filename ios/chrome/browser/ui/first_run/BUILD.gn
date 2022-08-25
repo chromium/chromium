@@ -19,6 +19,7 @@ source_set("field_trial") {
     "//components/signin/ios/browser:features",
     "//components/variations",
     "//components/version_info",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/first_run",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/content_suggestions:feature_flags",
