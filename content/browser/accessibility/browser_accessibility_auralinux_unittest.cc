@@ -11,13 +11,14 @@
 
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/test_browser_accessibility_delegate.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/platform/ax_platform_node_auralinux.h"
 
 namespace content {
 
-class BrowserAccessibilityAuraLinuxTest : public testing::Test {
+class BrowserAccessibilityAuraLinuxTest : public ::testing::Test {
  public:
   BrowserAccessibilityAuraLinuxTest();
 
@@ -36,7 +37,7 @@ class BrowserAccessibilityAuraLinuxTest : public testing::Test {
   void SetUp() override;
 
   content::BrowserTaskEnvironment task_environment_;
-  ui::testing::ScopedAxModeSetter ax_mode_setter_;
+  content::testing::ScopedContentAXModeSetter ax_mode_setter_;
 };
 
 BrowserAccessibilityAuraLinuxTest::BrowserAccessibilityAuraLinuxTest()

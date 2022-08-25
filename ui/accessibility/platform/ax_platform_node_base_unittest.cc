@@ -45,7 +45,7 @@ TEST_F(AXPlatformNodeTest, GetHypertext) {
 
   // Set an AXMode on the AXPlatformNode as some platforms (auralinux) use it to
   // determine if it should enable accessibility.
-  testing::ScopedAxModeSetter ax_mode_setter(kAXModeComplete);
+  ScopedAXModeSetter ax_mode_setter(kAXModeComplete);
 
   AXPlatformNodeBase* root = static_cast<AXPlatformNodeBase*>(
       TestAXNodeWrapper::GetOrCreate(tree, tree->root())->ax_platform_node());
@@ -81,7 +81,7 @@ TEST_F(AXPlatformNodeTest, GetHypertextIgnoredContainerSiblings) {
 
   // Set an AXMode on the AXPlatformNode as some platforms (auralinux) use it to
   // determine if it should enable accessibility.
-  ui::testing::ScopedAxModeSetter ax_mode_setter(kAXModeComplete);
+  ScopedAXModeSetter ax_mode_setter(kAXModeComplete);
 
   AXPlatformNodeBase* root = static_cast<AXPlatformNodeBase*>(
       TestAXNodeWrapper::GetOrCreate(tree, tree->root())->ax_platform_node());
@@ -118,7 +118,7 @@ TEST_F(AXPlatformNodeTest, GetTextContentIgnoresInvisibleAndIgnored) {
 
   // Set an AXMode on the AXPlatformNode as some platforms (auralinux) use it to
   // determine if it should enable accessibility.
-  ui::testing::ScopedAxModeSetter ax_mode_setter(kAXModeComplete);
+  ScopedAXModeSetter ax_mode_setter(kAXModeComplete);
 
   EXPECT_EQ(root->GetTextContentUTF16(), u"abde");
 
@@ -150,7 +150,7 @@ TEST_F(AXPlatformNodeTest, GetTextContentIgnoresInvisibleAndIgnored) {
 }
 
 TEST_F(AXPlatformNodeTest, TestMenuSelectedItems) {
-  ui::testing::ScopedAxModeSetter ax_mode_setter(kAXModeComplete);
+  ScopedAXModeSetter ax_mode_setter(kAXModeComplete);
 
   AXNodeData root_data;
   root_data.id = 1;
@@ -186,7 +186,7 @@ TEST_F(AXPlatformNodeTest, TestMenuSelectedItems) {
 }
 
 TEST_F(AXPlatformNodeTest, TestSelectedChildren) {
-  ui::testing::ScopedAxModeSetter ax_mode_setter(kAXModeComplete);
+  ScopedAXModeSetter ax_mode_setter(kAXModeComplete);
 
   AXNodeData root_data;
   root_data.id = 1;
@@ -222,7 +222,7 @@ TEST_F(AXPlatformNodeTest, TestSelectedChildren) {
 }
 
 TEST_F(AXPlatformNodeTest, TestSelectedChildrenWithGroup) {
-  ui::testing::ScopedAxModeSetter ax_mode_setter(kAXModeComplete);
+  ScopedAXModeSetter ax_mode_setter(kAXModeComplete);
 
   AXNodeData root_data;
   root_data.id = 1;
@@ -289,7 +289,7 @@ TEST_F(AXPlatformNodeTest, TestSelectedChildrenWithGroup) {
 }
 
 TEST_F(AXPlatformNodeTest, TestSelectedChildrenMixed) {
-  ui::testing::ScopedAxModeSetter ax_mode_setter(kAXModeComplete);
+  ScopedAXModeSetter ax_mode_setter(kAXModeComplete);
 
   // Build the below tree which is mixed with listBoxOption and group.
   // id=1 listBox FOCUSABLE MULTISELECTABLE (0, 0)-(0, 0) child_ids=2,3,4,9
@@ -398,7 +398,7 @@ TEST_F(AXPlatformNodeTest, CompareTo) {
   // n4  n5  n6       n10
   //         /
   //        n7
-  ui::testing::ScopedAxModeSetter ax_mode_setter(kAXModeComplete);
+  ScopedAXModeSetter ax_mode_setter(kAXModeComplete);
   AXNodeData node1;
   node1.id = 1;
   node1.role = ax::mojom::Role::kRootWebArea;
@@ -535,7 +535,7 @@ TEST_F(AXPlatformNodeTest, HypertextOffsetFromEndpoint) {
 
   // Set an AXMode on the AXPlatformNode as some platforms (auralinux) use it to
   // determine if it should enable accessibility.
-  ui::testing::ScopedAxModeSetter ax_mode_setter(kAXModeComplete);
+  ScopedAXModeSetter ax_mode_setter(kAXModeComplete);
 
   auto* paragraph = static_cast<AXPlatformNodeBase*>(
       AXPlatformNode::FromNativeViewAccessible(root->ChildAtIndex(0)));

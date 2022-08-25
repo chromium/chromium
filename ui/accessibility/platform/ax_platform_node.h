@@ -67,12 +67,8 @@ class AX_EXPORT AXPlatformNode {
 
   // Helper static function to update the AXMode. This is called when flags
   // are removed. It doesn't currently notify global observers.
+  // *** Do not use! Use BrowserAccessibilityStateImpl instead. ***
   static void SetAXMode(AXMode new_mode);
-
-  // Since |ax_mode_| is a static, calling NotifyAddAXModeFlags in a test can
-  // cause downstream tests to be flaky. This helper function puts |ax_mode_|
-  // in the default state.
-  static void ResetAxModeForTesting();
 
   // Return the focused object in any UI popup overlaying content, or null.
   static gfx::NativeViewAccessible GetPopupFocusOverride();
@@ -153,18 +149,6 @@ class AX_EXPORT AXPlatformNode {
 
   bool is_primary_web_contents_for_window_ = false;
 };
-
-namespace testing {
-
-class ScopedAxModeSetter {
- public:
-  explicit ScopedAxModeSetter(AXMode new_mode) {
-    AXPlatformNode::SetAXMode(new_mode);
-  }
-  ~ScopedAxModeSetter() { AXPlatformNode::ResetAxModeForTesting(); }
-};
-
-}  // namespace testing
 
 }  // namespace ui
 

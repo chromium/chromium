@@ -81,9 +81,10 @@ class ChromeUnitTestSuiteInitializer : public testing::EmptyTestEventListener {
     TestingBrowserProcess::DeleteInstance();
     // Some tests cause ChildThreadImpl to initialize a PowerMonitor.
     base::PowerMonitor::ShutdownForTesting();
-    DCHECK(ui::AXPlatformNode::GetAccessibilityMode() == 0)
-        << "Please use ScopedAxModeSetter, or add a call to "
-           "AXPlatformNode::ResetAxModeForTesting() at the end of your test.";
+    DCHECK(ui::AXPlatformNode::GetAccessibilityMode() == ui::AXMode::kNone)
+        << "Please use ScopedAXModeSetter, or add a call to "
+           "AXPlatformNode::SetAXMode(ui::AXMode::kNone) at the end of your "
+           "test.";
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     arc::ClearArcAllowedCheckForTesting();
     crypto::ResetTokenManagerForTesting();

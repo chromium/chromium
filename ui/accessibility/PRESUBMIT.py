@@ -231,7 +231,7 @@ def GetConstexprFromFile(fullpath):
     if m:
       value = m.group(1)
       # Skip first/last sentinels
-      if value == 'kFirstModeFlag' or value == 'kLastModeFlag':
+      if (value in ['kNone', 'kFirstModeFlag', 'kLastModeFlag']):
         continue
       values.append(value)
 

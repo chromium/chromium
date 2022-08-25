@@ -101,7 +101,7 @@ class AXPlatformNodeAuraLinuxTest : public AXPlatformNodeTest {
   }
 
  private:
-  ui::testing::ScopedAxModeSetter ax_mode_setter_;
+  ScopedAXModeSetter ax_mode_setter_;
 };
 
 static void EnsureAtkObjectHasAttributeWithValue(

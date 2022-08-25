@@ -22,7 +22,7 @@ class ViewAXPlatformNodeDelegateAuraLinuxTest : public ViewsTestBase {
   ~ViewAXPlatformNodeDelegateAuraLinuxTest() override = default;
 
  private:
-  ui::testing::ScopedAxModeSetter ax_mode_setter_;
+  ScopedAXModeSetter ax_mode_setter_;
 };
 
 TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest, TextfieldAccessibility) {

@@ -234,6 +234,11 @@ void BrowserAccessibilityStateImpl::OnAXModeAdded(ui::AXMode mode) {
 }
 
 ui::AXMode BrowserAccessibilityStateImpl::GetAccessibilityMode() {
+  // TODO(accessibility) Combine this with the AXMode we store in AXPlatformNode
+  // into a single global AXMode tracker in ui/accessibility. The current
+  // situation of storing in two places could lead to misalignment.
+  DCHECK_EQ(accessibility_mode_, ui::AXPlatformNode::GetAccessibilityMode())
+      << "Accessibility modes in content and UI are misaligned.";
   return accessibility_mode_;
 }
 
