@@ -2784,6 +2784,8 @@ constexpr char kBorealisDiskManagementInternalName[] =
     "borealis-disk-management";
 constexpr char kBorealisForceBetaClientInternalName[] =
     "borealis-force-beta-client";
+constexpr char kBorealisForceDoubleScaleInternalName[] =
+    "borealis-force-double-scale";
 constexpr char kBorealisLinuxModeInternalName[] = "borealis-linux-mode";
 // This differs slightly from its symbol's name since "enabled" is used
 // internally to refer to whether borealis is installed or not.
@@ -8283,6 +8285,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBorealisForceBetaClientName,
      flag_descriptions::kBorealisForceBetaClientDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kBorealisForceBetaClient)},
+    {kBorealisForceDoubleScaleInternalName,
+     flag_descriptions::kBorealisForceDoubleScaleName,
+     flag_descriptions::kBorealisForceDoubleScaleDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kBorealisForceDoubleScale)},
     {kBorealisLinuxModeInternalName, flag_descriptions::kBorealisLinuxModeName,
      flag_descriptions::kBorealisLinuxModeDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kBorealisLinuxMode)},
@@ -9283,6 +9289,10 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   }
 
   if (!strcmp(kBorealisForceBetaClientInternalName, entry.internal_name)) {
+    return !base::FeatureList::IsEnabled(features::kBorealis);
+  }
+
+  if (!strcmp(kBorealisForceDoubleScaleInternalName, entry.internal_name)) {
     return !base::FeatureList::IsEnabled(features::kBorealis);
   }
 

@@ -58493,6 +58493,7 @@ from previous Chrome versions.
   <int value="-577982497" label="CupsPrintersUiOverhaul:enabled"/>
   <int value="-577503348" label="GridTabSwitcherForTablets:disabled"/>
   <int value="-576759065" label="HoldingSpaceInProgressAnimationV2:disabled"/>
+  <int value="-576475188" label="BorealisForceDoubleScale:disabled"/>
   <int value="-575081438"
       label="OmniboxMostVisitedTilesFadingOnTablet:disabled"/>
   <int value="-574965003" label="LauncherLacrosIntegration:disabled"/>
@@ -60675,6 +60676,7 @@ from previous Chrome versions.
   <int value="793816915" label="MessagesForAndroidPopupBlocked:disabled"/>
   <int value="797344274" label="OmniboxTriggerForPrerender2:disabled"/>
   <int value="797924041" label="DeferredShaping:enabled"/>
+  <int value="798414711" label="BorealisForceDoubleScale:enabled"/>
   <int value="798696013" label="ImeInputLogicMozc:enabled"/>
   <int value="798803191" label="ShareToGoogleCollections:disabled"/>
   <int value="799680074" label="ContextualSearchTranslationModel:enabled"/>

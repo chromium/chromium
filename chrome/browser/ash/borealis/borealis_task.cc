@@ -329,6 +329,7 @@ std::string SendFlagsToVm(const std::string& owner_id,
                                    "update_chrome_flags"};
   PushFlag(chromeos::features::kBorealisLinuxMode, command);
   PushFlag(chromeos::features::kBorealisForceBetaClient, command);
+  PushFlag(chromeos::features::kBorealisForceDoubleScale, command);
 
   std::string output;
   if (!base::GetAppOutput(command, &output)) {

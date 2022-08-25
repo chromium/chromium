@@ -649,6 +649,10 @@ const char kBorealisForceBetaClientName[] = "Borealis Force Beta Client";
 const char kBorealisForceBetaClientDescription[] =
     "Force the client to run its beta version.";
 
+const char kBorealisForceDoubleScaleName[] = "Borealis Force Double Scale";
+const char kBorealisForceDoubleScaleDescription[] =
+    "Force the client to run in 2x visual zoom.";
+
 const char kBorealisLinuxModeName[] = "Borealis Linux Mode";
 const char kBorealisLinuxModeDescription[] =
     "Do not run ChromeOS-specific code in the client.";

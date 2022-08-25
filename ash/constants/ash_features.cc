@@ -267,12 +267,17 @@ const base::Feature kBorealisDiskManagement{"BorealisDiskManagement",
 const base::Feature kBorealisPermitted{"BorealisPermitted",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Force the client to be on its beta version. If not set, the client will be on
-// its stable version.
+// Force the steam client to be on its beta version. If not set, the client will
+// be on its stable version.
 const base::Feature kBorealisForceBetaClient{"BorealisForceBetaClient",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Prevent Borealis' client from exercising ChromeOS integrations, in this mode
+// Force the steam client to render in 2x size (using GDK_SCALE as discussed in
+// b/171935238#comment4).
+const base::Feature kBorealisForceDoubleScale{
+    "BorealisForceDoubleScale", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Prevent the steam client from exercising ChromeOS integrations, in this mode
 // it functions more like the linux client.
 const base::Feature kBorealisLinuxMode{"BorealisLinuxMode",
                                        base::FEATURE_DISABLED_BY_DEFAULT};

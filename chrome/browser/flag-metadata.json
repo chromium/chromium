@@ -754,6 +754,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "borealis-force-double-scale",
+    "owners": [ "hollingum" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "borealis-linux-mode",
     "owners": [ "hollingum" ],
     "expiry_milestone": 110

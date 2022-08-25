@@ -350,6 +350,9 @@ extern const char kBorealisDiskManagementDescription[];
 extern const char kBorealisForceBetaClientName[];
 extern const char kBorealisForceBetaClientDescription[];
 
+extern const char kBorealisForceDoubleScaleName[];
+extern const char kBorealisForceDoubleScaleDescription[];
+
 extern const char kBorealisLinuxModeName[];
 extern const char kBorealisLinuxModeDescription[];
 
