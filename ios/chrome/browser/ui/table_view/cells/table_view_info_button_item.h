@@ -17,6 +17,9 @@
 // The UIImage for the leading image. If nil, no image will be shown.
 @property(nonatomic, strong) UIImage* image;
 
+// The symbol leading icon. If empty, no icon will be shown.
+@property(nonatomic, strong) UIView* symbolView;
+
 // Tint color for the icon.
 @property(nonatomic, strong) UIColor* tintColor;
 

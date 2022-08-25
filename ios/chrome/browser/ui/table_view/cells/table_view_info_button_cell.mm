@@ -26,10 +26,12 @@ const CGFloat kCellLabelsWidthProportion = 0.2f;
 
 @interface TableViewInfoButtonCell ()
 
-// The image view for the leading icon.
+// Views for the leading icon.
+@property(nonatomic, readonly, strong) UIView* iconContainerView;
+@property(nonatomic, readonly, strong) UIView* symbolView;
 @property(nonatomic, readonly, strong) UIImageView* iconImageView;
 
-// Constraints that are used when the iconImageView is visible and hidden.
+// Constraints that are used when the iconContainerView is visible and hidden.
 @property(nonatomic, strong) NSLayoutConstraint* iconVisibleConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* iconHiddenConstraint;
 
@@ -63,11 +65,18 @@ const CGFloat kCellLabelsWidthProportion = 0.2f;
     self.isAccessibilityElement = YES;
     _isButtonSelectedForVoiceOver = YES;
 
+    _iconContainerView = [[UIView alloc] init];
+    _iconContainerView.hidden = YES;
+    _iconContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+    _iconContainerView.autoresizesSubviews = YES;
+    _iconContainerView.clipsToBounds = YES;
+    [self.contentView addSubview:_iconContainerView];
+
     _iconImageView = [[UIImageView alloc] init];
-    _iconImageView.translatesAutoresizingMaskIntoConstraints = NO;
-    _iconImageView.hidden = YES;
-    _iconImageView.contentMode = UIViewContentModeCenter;
-    [self.contentView addSubview:_iconImageView];
+    _iconImageView.translatesAutoresizingMaskIntoConstraints = YES;
+    _iconImageView.autoresizingMask =
+        UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [_iconContainerView addSubview:_iconImageView];
 
     UILayoutGuide* textLayoutGuide = [[UILayoutGuide alloc] init];
     [self.contentView addLayoutGuide:textLayoutGuide];
@@ -121,7 +130,7 @@ const CGFloat kCellLabelsWidthProportion = 0.2f;
 
     // Set up the constraints assuming that the icon image is hidden.
     _iconVisibleConstraint = [textLayoutGuide.leadingAnchor
-        constraintEqualToAnchor:_iconImageView.trailingAnchor
+        constraintEqualToAnchor:_iconContainerView.trailingAnchor
                        constant:kTableViewImagePadding];
     _iconHiddenConstraint = [textLayoutGuide.leadingAnchor
         constraintEqualToAnchor:self.contentView.leadingAnchor
@@ -201,15 +210,15 @@ const CGFloat kCellLabelsWidthProportion = 0.2f;
                                         kTableViewOneLabelCellVerticalSpacing];
 
     [NSLayoutConstraint activateConstraints:@[
-      [_iconImageView.leadingAnchor
+      [_iconContainerView.leadingAnchor
           constraintEqualToAnchor:self.contentView.leadingAnchor
                          constant:kTableViewHorizontalSpacing],
-      [_iconImageView.widthAnchor
+      [_iconContainerView.widthAnchor
           constraintEqualToConstant:kTableViewIconImageSize],
-      [_iconImageView.heightAnchor
-          constraintEqualToAnchor:_iconImageView.widthAnchor],
+      [_iconContainerView.heightAnchor
+          constraintEqualToAnchor:_iconContainerView.widthAnchor],
 
-      [_iconImageView.centerYAnchor
+      [_iconContainerView.centerYAnchor
           constraintEqualToAnchor:textLayoutGuide.centerYAnchor],
 
       _iconHiddenConstraint,
@@ -253,6 +262,27 @@ const CGFloat kCellLabelsWidthProportion = 0.2f;
   }
 }
 
+- (void)setSymbolView:(UIView*)symbolView {
+  [_symbolView removeFromSuperview];
+  _symbolView = nil;
+
+  _symbolView = symbolView;
+  _symbolView.autoresizingMask =
+      UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+  _symbolView.frame = _iconContainerView.bounds;
+  [_iconContainerView addSubview:_symbolView];
+
+  BOOL hidden = (symbolView == nil);
+  _iconContainerView.hidden = hidden;
+  if (hidden) {
+    _iconVisibleConstraint.active = NO;
+    _iconHiddenConstraint.active = YES;
+  } else {
+    _iconHiddenConstraint.active = NO;
+    _iconVisibleConstraint.active = YES;
+  }
+}
+
 - (void)setIconImage:(UIImage*)image withTintColor:(UIColor*)color {
   if (color) {
     self.iconImageView.tintColor = color;
@@ -262,11 +292,8 @@ const CGFloat kCellLabelsWidthProportion = 0.2f;
     self.iconImageView.image = image;
   }
 
-  BOOL hidden = !image;
-  if (hidden == self.iconImageView.hidden)
-    return;
-
-  self.iconImageView.hidden = hidden;
+  BOOL hidden = (image == nil);
+  self.iconContainerView.hidden = hidden;
   if (hidden) {
     self.iconVisibleConstraint.active = NO;
     self.iconHiddenConstraint.active = YES;
@@ -317,6 +344,7 @@ const CGFloat kCellLabelsWidthProportion = 0.2f;
   self.detailTextLabel.text = nil;
   self.statusTextLabel.text = nil;
   self.trailingButton.tag = 0;
+  [self setSymbolView:nil];
   [self setIconImage:nil withTintColor:nil];
   [_trailingButton removeTarget:nil
                          action:nil

@@ -48,6 +48,10 @@
 // remaining content will expand to fill the full width of the cell.
 - (void)setIconImage:(UIImage*)image withTintColor:(UIColor*)color;
 
+// Sets the leading `symbolImageView` icon. If set to nil, the icon will be
+// hidden and the text labels will expand to fill the full width of the cell.
+- (void)setSymbolView:(UIView*)symbolImageView;
+
 // Updates the padding constraints based on how many vertical text labels are
 // shown. The padding will be updated only if `hasDetailText` is YES.
 - (void)updatePaddingForDetailText:(BOOL)hasDetailText;
