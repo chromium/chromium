@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_SCREEN_SECURITY_SCREEN_CAPTURE_OBSERVER_H_
-#define ASH_SYSTEM_SCREEN_SECURITY_SCREEN_CAPTURE_OBSERVER_H_
+#ifndef ASH_SYSTEM_PRIVACY_SCREEN_CAPTURE_OBSERVER_H_
+#define ASH_SYSTEM_PRIVACY_SCREEN_CAPTURE_OBSERVER_H_
 
 #include <string>
 
@@ -32,4 +32,4 @@ class ScreenCaptureObserver {
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_SCREEN_SECURITY_SCREEN_CAPTURE_OBSERVER_H_
+#endif  // ASH_SYSTEM_PRIVACY_SCREEN_CAPTURE_OBSERVER_H_

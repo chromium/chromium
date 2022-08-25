@@ -7,8 +7,8 @@
 #include "ash/public/cpp/system_tray_observer.h"
 #include "ash/system/ime/ime_observer.h"
 #include "ash/system/network/network_observer.h"
-#include "ash/system/screen_security/screen_capture_observer.h"
-#include "ash/system/screen_security/screen_share_observer.h"
+#include "ash/system/privacy/screen_capture_observer.h"
+#include "ash/system/privacy/screen_share_observer.h"
 #include "ash/system/virtual_keyboard/virtual_keyboard_observer.h"
 
 namespace ash {

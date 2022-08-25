@@ -20,7 +20,7 @@
 #include "ash/session/teleport_warning_dialog.h"
 #include "ash/shell.h"
 #include "ash/system/power/power_event_observer.h"
-#include "ash/system/screen_security/screen_switch_check_controller.h"
+#include "ash/system/privacy/screen_switch_check_controller.h"
 #include "ash/wm/lock_state_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/window_util.h"

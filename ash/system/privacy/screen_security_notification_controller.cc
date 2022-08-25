@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/screen_security/screen_security_notification_controller.h"
+#include "ash/system/privacy/screen_security_notification_controller.h"
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"

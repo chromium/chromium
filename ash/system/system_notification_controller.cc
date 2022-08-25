@@ -14,7 +14,7 @@
 #include "ash/system/network/managed_sim_lock_notifier.h"
 #include "ash/system/network/wifi_toggle_notification_controller.h"
 #include "ash/system/power/power_notification_controller.h"
-#include "ash/system/screen_security/screen_security_notification_controller.h"
+#include "ash/system/privacy/screen_security_notification_controller.h"
 #include "ash/system/session/session_limit_notification_controller.h"
 #include "ash/system/tracing_notification_controller.h"
 #include "ash/system/update/update_notification_controller.h"
