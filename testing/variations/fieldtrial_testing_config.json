@@ -9591,6 +9591,26 @@
             ]
         }
     ],
+    "ThreadedHtmlTokenizer": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "ThreadedHtmlTokenizer",
+                    "enable_features": [
+                        "ThreadedHtmlTokenizer"
+                    ]
+                }
+            ]
+        }
+    ],
     "ThreadedPreloadScanner": [
         {
             "platforms": [
