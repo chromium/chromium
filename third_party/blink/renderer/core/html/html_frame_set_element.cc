@@ -77,8 +77,7 @@ HTMLFrameSetElement::HTMLFrameSetElement(Document& document)
       border_set_(false),
       border_color_set_(false),
       frameborder_(true),
-      frameborder_set_(false),
-      noresize_(false) {
+      frameborder_set_(false) {
   SetHasCustomStyleCallbacks();
   UseCounter::Count(document, WebFeature::kHTMLFrameSetElement);
 }
@@ -138,7 +137,6 @@ void HTMLFrameSetElement::ParseAttribute(
     }
     DirtyEdgeInfoAndFullPaintInvalidation();
   } else if (name == html_names::kNoresizeAttr) {
-    noresize_ = true;
     DirtyEdgeInfo();
   } else if (name == html_names::kBorderAttr) {
     if (!value.IsNull()) {
@@ -266,6 +264,14 @@ void HTMLFrameSetElement::ParseAttribute(
   } else {
     HTMLElement::ParseAttribute(params);
   }
+}
+
+bool HTMLFrameSetElement::NoResize() const {
+  if (FastHasAttribute(html_names::kNoresizeAttr))
+    return true;
+  if (const auto* frame_set = DynamicTo<HTMLFrameSetElement>(parentNode()))
+    return frame_set->NoResize();
+  return false;
 }
 
 int HTMLFrameSetElement::Border(const ComputedStyle& style) const {
@@ -398,8 +404,6 @@ void HTMLFrameSetElement::AttachLayoutTree(AttachContext& context) {
       if (!border_color_set_)
         border_color_set_ = frameset->HasBorderColor();
     }
-    if (!noresize_)
-      noresize_ = frameset->NoResize();
   }
 
   HTMLElement::AttachLayoutTree(context);
@@ -409,7 +413,7 @@ void HTMLFrameSetElement::AttachLayoutTree(AttachContext& context) {
 
 void HTMLFrameSetElement::DefaultEventHandler(Event& evt) {
   auto* mouse_event = DynamicTo<MouseEvent>(evt);
-  if (mouse_event && !noresize_ && GetLayoutObject() &&
+  if (mouse_event && !NoResize() && GetLayoutObject() &&
       GetLayoutObject()->IsFrameSetIncludingNG()) {
     if (UserResize(*mouse_event)) {
       evt.SetDefaultHandled();

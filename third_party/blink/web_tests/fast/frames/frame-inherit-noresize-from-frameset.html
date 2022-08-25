@@ -18,6 +18,8 @@ function runTests()
     description("This tests that a frame inherits the noresize attribute of its parent frameset by default. Note, this behavior doesn't seem to conform to any W3C spec or MSDN documentation. See WebKit Bug 57604.");
     setTestFrameById("testFrame");
     shouldDisallowFrameResize();
+    document.body.removeAttribute("noresize");
+    shouldAllowFrameResize();
 }
 </script>
 </head>

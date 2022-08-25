@@ -44,7 +44,7 @@ class HTMLFrameSetElement final : public HTMLElement {
   bool IsHTMLFrameSetElement() const override { return true; }
 
   bool HasFrameBorder() const { return frameborder_; }
-  bool NoResize() const { return noresize_; }
+  bool NoResize() const;
 
   wtf_size_t TotalRows() const {
     return std::max<wtf_size_t>(1, row_lengths_.size());
@@ -150,7 +150,6 @@ class HTMLFrameSetElement final : public HTMLElement {
 
   bool frameborder_;
   bool frameborder_set_;
-  bool noresize_;
   bool is_edge_info_dirty_ = true;
   bool is_resizing_ = false;
 };
