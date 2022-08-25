@@ -511,9 +511,13 @@ void SystemDataProvider::OnBatteryChargeStatusUpdated(
 
   if (!DoesDeviceHaveBattery(*info_ptr) ||
       !DoesDeviceHaveBattery(*power_supply_properties)) {
-    DCHECK_EQ(DoesDeviceHaveBattery(*info_ptr),
-              DoesDeviceHaveBattery(*power_supply_properties))
-        << "Sources should not disagree about whether there is a battery.";
+    if (DoesDeviceHaveBattery(*info_ptr) !=
+        DoesDeviceHaveBattery(*power_supply_properties)) {
+      LOG(ERROR)
+          << "Sources should not disagree about whether there is a battery.";
+      // TODO(wenyu): Add metrics to track the occurrence of battery info
+      // inconsistency.
+    }
     NotifyBatteryChargeStatusObservers(battery_charge_status);
     return;
   }
