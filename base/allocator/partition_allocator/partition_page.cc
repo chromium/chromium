@@ -300,8 +300,8 @@ void UnmapNow(uintptr_t reservation_start,
               pool_handle pool) {
   PA_DCHECK(reservation_start && reservation_size > 0);
 #if BUILDFLAG(PA_DCHECK_IS_ON)
-  // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
+  // When ENABLE_BACKUP_REF_PTR_SUPPORT is off, BRP pool isn't used.
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   if (pool == GetBRPPool()) {
     // In 32-bit mode, the beginning of a reservation may be excluded from the
     // BRP pool, so shift the pointer. Other pools don't have this logic.
@@ -315,7 +315,7 @@ void UnmapNow(uintptr_t reservation_start,
 #endif
         ));
   } else
-#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   {
     PA_DCHECK(pool == GetRegularPool() ||
               (IsConfigurablePoolAvailable() && pool == GetConfigurablePool()));

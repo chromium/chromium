@@ -26,7 +26,7 @@
 
 namespace partition_alloc::internal {
 
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
 namespace {
 
@@ -418,12 +418,12 @@ PA_ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(
 static_assert(sizeof(PartitionRefCount) <= kInSlotRefCountBufferSize,
               "PartitionRefCount should fit into the in-slot buffer.");
 
-#else  // BUILDFLAG(USE_BACKUP_REF_PTR)
+#else  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
 static constexpr size_t kInSlotRefCountBufferSize = 0;
 constexpr size_t kPartitionRefCountOffsetAdjustment = 0;
 
-#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
 constexpr size_t kPartitionRefCountSizeAdjustment = kInSlotRefCountBufferSize;
 

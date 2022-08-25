@@ -17,6 +17,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/tagging.h"
 #include "build/build_config.h"
@@ -168,8 +169,8 @@ PA_ALWAYS_INLINE uintptr_t GetDirectMapReservationStart(uintptr_t address) {
 #if BUILDFLAG(PA_DCHECK_IS_ON)
   bool is_in_brp_pool = IsManagedByPartitionAllocBRPPool(address);
   bool is_in_regular_pool = IsManagedByPartitionAllocRegularPool(address);
-  // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
-#if !BUILDFLAG(USE_BACKUP_REF_PTR)
+  // When ENABLE_BACKUP_REF_PTR_SUPPORT is off, BRP pool isn't used.
+#if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   PA_DCHECK(!is_in_brp_pool);
 #endif
 #endif  // BUILDFLAG(PA_DCHECK_IS_ON)

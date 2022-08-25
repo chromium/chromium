@@ -9,11 +9,12 @@
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 
 namespace partition_alloc::internal {
 
-#if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+#if defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
 namespace tag_bitmap {
 // kPartitionTagSize should be equal to sizeof(PartitionTag).
@@ -142,7 +143,7 @@ constexpr PA_ALWAYS_INLINE size_t ReservedTagBitmapSize() {
   return 0;
 }
 
-#endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+#endif  // defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
 }  // namespace partition_alloc::internal
 

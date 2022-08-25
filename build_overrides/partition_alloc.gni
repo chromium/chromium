@@ -1,0 +1,82 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This defines PartitionAlloc's default build configuration for chromium.
+# If building PartitionAlloc as a part of chromium,
+# //build_overrides/partition_alloc.gni points out this file.
+# //base/allocator/partition_allocator/partition_alloc.gni will import
+# this file and will use the defined values as default build configuration.
+#
+# partition_alloc.gni declares the following variables:
+# - enable_backup_ref_ptr_support
+# - enable_mte_checked_ptr_support
+# - enable_partition_alloc_as_malloc_support
+# - put_ref_count_in_previous_slot
+# - enable_backup_ref_ptr_slow_checks
+# - enable_dangling_raw_ptr_checks
+#
+# Temporarily defines use_allocator_shim here. After deciding what
+# allocator_shim should be (e.g. a part of PartitionAlloc, a new component:
+# allocator_shim, and so on), move use_allocator_shim_default to the place.
+# - use_allocator_shim
+#
+# {variable}_default works as the default value of {variable}.
+
+import("//build/config/chromecast_build.gni")
+import("//build/config/sanitizers/sanitizers.gni")
+if (is_ios) {
+  import("//build/config/ios/ios_sdk.gni")
+}
+
+# Sanitizers replace the allocator, don't use our own.
+_is_using_sanitizers = is_asan || is_hwasan || is_lsan || is_tsan || is_msan
+
+# - Component build support is disabled on all platforms. It is known to cause
+#   issues on some (e.g. Windows with shims, Android with non-universal symbol
+#   wrapping), and has not been validated on others.
+# - Windows: debug CRT is not compatible, see below.
+_disable_partition_alloc = is_component_build || (is_win && is_debug)
+
+# - NaCl: No plans to support it.
+# - iOS: not done yet.
+_is_partition_alloc_platform = !is_nacl && !is_ios
+
+# Under Windows debug build, the allocator shim is not compatible with CRT.
+#     NaCl in particular does seem to link some binaries statically
+#     against the debug CRT with "is_nacl=false".
+# Under Fuchsia, the allocator shim is only required for PA-E.
+# For all other platforms & configurations, the shim is required, to replace
+#     the default system allocators, e.g. with Partition Alloc.
+if ((is_linux || is_chromeos || is_android || is_apple ||
+     (is_fuchsia && !_disable_partition_alloc) ||
+     (is_win && !is_component_build && !is_debug)) && !_is_using_sanitizers) {
+  _default_use_allocator_shim = true
+} else {
+  _default_use_allocator_shim = false
+}
+
+if (_default_use_allocator_shim && _is_partition_alloc_platform &&
+    !_disable_partition_alloc) {
+  _default_allocator = "partition"
+} else {
+  _default_allocator = "none"
+}
+
+use_partition_alloc_as_malloc_default = _default_allocator == "partition"
+use_allocator_shim_default = _default_use_allocator_shim
+
+_is_brp_supported = (is_win || is_android || is_linux || is_mac ||
+                     is_chromeos) && use_partition_alloc_as_malloc_default
+
+_is_mcp_supported = is_win && use_partition_alloc_as_malloc_default
+
+enable_backup_ref_ptr_support_default = _is_brp_supported
+
+# We jam MTECheckedPtr off by default, but can set it to
+# `_is_mcp_supported` to activate it.
+enable_mte_checked_ptr_support_default = false
+
+put_ref_count_in_previous_slot_default = enable_backup_ref_ptr_support_default
+enable_backup_ref_ptr_slow_checks_default = false
+enable_dangling_raw_ptr_checks_default = false

@@ -59,7 +59,8 @@ template <bool thread_safe>
   PA_IMMEDIATE_CRASH();  // Not required, kept as documentation.
 }
 
-#if !defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(USE_BACKUP_REF_PTR)
+#if !defined(PA_HAS_64_BITS_POINTERS) && \
+    BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 // |start| has to be aligned to kSuperPageSize, but |end| doesn't. This means
 // that a partial super page is allowed at the end. Since the block list uses
 // kSuperPageSize granularity, a partial super page is considered blocked if
@@ -78,7 +79,8 @@ bool AreAllowedSuperPagesForBRPPool(uintptr_t start, uintptr_t end) {
   }
   return true;
 }
-#endif  // !defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(USE_BACKUP_REF_PTR)
+#endif  // !defined(PA_HAS_64_BITS_POINTERS) &&
+        // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
 // Reserves |requested_size| worth of super pages from the specified pool of the
 // GigaCage. If BRP pool is requested this function will honor BRP block list.
@@ -107,7 +109,8 @@ uintptr_t ReserveMemoryFromGigaCage(pool_handle pool,
 
   // In 32-bit mode, when allocating from BRP pool, verify that the requested
   // allocation honors the block list. Find a better address otherwise.
-#if !defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(USE_BACKUP_REF_PTR)
+#if !defined(PA_HAS_64_BITS_POINTERS) && \
+    BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   if (pool == GetBRPPool()) {
     constexpr int kMaxRandomAddressTries = 10;
     for (int i = 0; i < kMaxRandomAddressTries; ++i) {
@@ -154,7 +157,8 @@ uintptr_t ReserveMemoryFromGigaCage(pool_handle pool,
       reserved_address = 0;
     }
   }
-#endif  // !defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(USE_BACKUP_REF_PTR)
+#endif  // !defined(PA_HAS_64_BITS_POINTERS) &&
+        // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
 #if !defined(PA_HAS_64_BITS_POINTERS)
   // Only mark the region as belonging to the pool after it has passed the
@@ -651,7 +655,7 @@ PartitionBucket<thread_safe>::AllocNewSlotSpan(PartitionRoot<thread_safe>* root,
   // span.
   PA_DCHECK(root->next_partition_page <= root->next_partition_page_end);
 
-#if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+#if defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
   PA_DCHECK(root->next_tag_bitmap_page);
   uintptr_t next_tag_bitmap_page =
       base::bits::AlignUp(reinterpret_cast<uintptr_t>(
@@ -670,7 +674,7 @@ PartitionBucket<thread_safe>::AllocNewSlotSpan(PartitionRoot<thread_safe>* root,
                          PageAccessibilityConfiguration::kReadWrite);
     root->next_tag_bitmap_page = next_tag_bitmap_page;
   }
-#endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+#endif  // defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
   return slot_span;
 }
@@ -787,7 +791,7 @@ PA_ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::AllocNewSuperPage(
               payload < SuperPagesEndFromExtent(current_extent));
   }
 
-#if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+#if defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
   // `root->next_partition_page` currently points at the start of the
   // super page payload. We point `root->next_tag_bitmap_page` to the
   // corresponding point in the tag bitmap and let the caller
@@ -798,7 +802,7 @@ PA_ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::AllocNewSuperPage(
                             SystemPageSize());
   PA_DCHECK(root->next_tag_bitmap_page >= super_page + PartitionPageSize())
       << "tag bitmap can never intrude on metadata partition page";
-#endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
+#endif  // defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
   // If PCScan is used, commit the state bitmap. Otherwise, leave it uncommitted
   // and let PartitionRoot::RegisterScannableRoot() commit it when needed. Make
