@@ -62,7 +62,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   static PA_ALWAYS_INLINE std::pair<pool_handle, uintptr_t> GetPoolAndOffset(
       uintptr_t address) {
     // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
-#if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if !BUILDFLAG(USE_BACKUP_REF_PTR)
     PA_DCHECK(!IsInBRPPool(address));
 #endif
     pool_handle pool = 0;
@@ -70,11 +70,11 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
     if (IsInRegularPool(address)) {
       pool = GetRegularPool();
       base = setup_.regular_pool_base_address_;
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
     } else if (IsInBRPPool(address)) {
       pool = GetBRPPool();
       base = setup_.brp_pool_base_address_;
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
     } else if (IsInConfigurablePool(address)) {
       pool = GetConfigurablePool();
       base = setup_.configurable_pool_base_address_;
@@ -314,12 +314,12 @@ PA_ALWAYS_INLINE uintptr_t OffsetInBRPPool(uintptr_t address) {
 
 // Returns false for nullptr.
 PA_ALWAYS_INLINE bool IsManagedByPartitionAlloc(uintptr_t address) {
-  // When ENABLE_BACKUP_REF_PTR_SUPPORT is off, BRP pool isn't used.
-#if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+  // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
+#if !BUILDFLAG(USE_BACKUP_REF_PTR)
   PA_DCHECK(!internal::PartitionAddressSpace::IsInBRPPool(address));
 #endif
   return internal::PartitionAddressSpace::IsInRegularPool(address)
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
          || internal::PartitionAddressSpace::IsInBRPPool(address)
 #endif
          || internal::PartitionAddressSpace::IsInConfigurablePool(address);

@@ -9,11 +9,11 @@
 #include <map>
 #include <string>
 
+#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/allocation_guard.h"
 #include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
 #include "base/allocator/partition_allocator/memory_reclaimer.h"
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
@@ -235,7 +235,7 @@ void StartMemoryReclaimer(scoped_refptr<SequencedTaskRunner> task_runner) {
 std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
   std::map<std::string, std::string> trials;
 
-#if BUILDFLAG(ENABLE_PARTITION_ALLOC_AS_MALLOC_SUPPORT)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   // BackupRefPtr_Effective and PCScan_Effective record whether or not
   // BackupRefPtr and/or PCScan are enabled. The experiments aren't independent,
   // so having a synthetic Finch will help look only at cases where one isn't
@@ -253,7 +253,7 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
   // e.g. disabled-but-3-way-split, do something (hence can't be considered the
   // default behavior), but don't enable BRP protection.
   [[maybe_unused]] bool brp_truly_enabled = false;
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
   if (FeatureList::IsEnabled(features::kPartitionAllocBackupRefPtr))
     brp_finch_enabled = true;
   if (brp_finch_enabled && features::kBackupRefPtrModeParam.Get() !=
@@ -262,7 +262,7 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
   if (brp_finch_enabled && features::kBackupRefPtrModeParam.Get() ==
                                features::BackupRefPtrMode::kEnabled)
     brp_truly_enabled = true;
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   [[maybe_unused]] bool pcscan_enabled =
 #if defined(PA_ALLOW_PCSCAN)
       FeatureList::IsEnabled(features::kPartitionAllocPCScanBrowserOnly);
@@ -271,7 +271,7 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
 #endif
 
   std::string brp_group_name = "Unavailable";
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
   if (pcscan_enabled) {
     // If PCScan is enabled, just ignore the population.
     brp_group_name = "Ignore_PCScanIsOn";
@@ -329,7 +329,7 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
       brp_group_name += ("_" + process_selector);
     }
   }
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   trials.emplace("BackupRefPtr_Effective", brp_group_name);
 
   // On 32-bit architectures, PCScan is not supported and permanently disabled.
@@ -357,7 +357,7 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
 #endif  // defined(PA_ALLOW_PCSCAN)
   trials.emplace("PCScan_Effective", pcscan_group_name);
   trials.emplace("PCScan_Effective_Fallback", pcscan_group_name_fallback);
-#endif  // BUILDFLAG(ENABLE_PARTITION_ALLOC_AS_MALLOC_SUPPORT)
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
   return trials;
 }

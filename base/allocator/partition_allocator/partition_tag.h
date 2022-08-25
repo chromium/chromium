@@ -12,7 +12,6 @@
 
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
-#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_alloc_notreached.h"
@@ -26,7 +25,7 @@
 
 namespace partition_alloc {
 
-#if defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
 
 static_assert(
     sizeof(PartitionTag) == internal::tag_bitmap::kPartitionTagSize,
@@ -137,7 +136,7 @@ PA_ALWAYS_INLINE void PartitionTagIncrementValue(uintptr_t slot_start,
 
 }  // namespace internal
 
-#endif  // defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
+#endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
 
 }  // namespace partition_alloc
 

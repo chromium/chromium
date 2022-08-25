@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//base/allocator/allocator.gni")
 import("//base/allocator/partition_allocator/partition_alloc.gni")
 import("//build/buildflag_header.gni")
 import("//build/config/chromecast_build.gni")
@@ -321,18 +322,22 @@ component("partition_alloc") {
 buildflag_header("partition_alloc_buildflags") {
   header = "partition_alloc_buildflags.h"
 
+  _use_partition_alloc_as_malloc = use_allocator == "partition"
+  assert(use_allocator_shim || !_use_partition_alloc_as_malloc,
+         "Partition alloc requires the allocator shim")
+
   # BackupRefPtr(BRP) build flags.
-  _enable_backup_ref_ptr_support = enable_backup_ref_ptr_support && !is_nacl
+  _use_backup_ref_ptr = use_backup_ref_ptr && use_partition_alloc && !is_nacl
   _put_ref_count_in_previous_slot =
-      put_ref_count_in_previous_slot && _enable_backup_ref_ptr_support
+      put_ref_count_in_previous_slot && _use_backup_ref_ptr
   _enable_backup_ref_ptr_slow_checks =
-      enable_backup_ref_ptr_slow_checks && _enable_backup_ref_ptr_support
+      enable_backup_ref_ptr_slow_checks && _use_backup_ref_ptr
   _enable_dangling_raw_ptr_checks =
-      enable_dangling_raw_ptr_checks && _enable_backup_ref_ptr_support
+      enable_dangling_raw_ptr_checks && _use_backup_ref_ptr
 
   # MTECheckedPtr is exclusive against BRP (asserted at declaration).
   # MTECheckedPtr requires 64-bit pointers (not available in NaCl).
-  _enable_mte_checked_ptr_support = enable_mte_checked_ptr_support && !is_nacl
+  _use_mte_checked_ptr = use_mte_checked_ptr && !is_nacl
 
   _record_alloc_info = false
 
@@ -343,14 +348,14 @@ buildflag_header("partition_alloc_buildflags") {
   # defines and partition alloc includes the header file. For chrome,
   # gen/base/allocator/buildflags.h defines and chrome includes.
   flags = [
-    "ENABLE_PARTITION_ALLOC_AS_MALLOC_SUPPORT=$enable_partition_alloc_as_malloc_support",
+    "USE_PARTITION_ALLOC_AS_MALLOC=$_use_partition_alloc_as_malloc",
 
-    "ENABLE_BACKUP_REF_PTR_SUPPORT=$_enable_backup_ref_ptr_support",
+    "USE_BACKUP_REF_PTR=$_use_backup_ref_ptr",
     "ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=$_enable_backup_ref_ptr_slow_checks",
     "ENABLE_DANGLING_RAW_PTR_CHECKS=$_enable_dangling_raw_ptr_checks",
     "PUT_REF_COUNT_IN_PREVIOUS_SLOT=$_put_ref_count_in_previous_slot",
 
-    "ENABLE_MTE_CHECKED_PTR_SUPPORT=$_enable_mte_checked_ptr_support",
+    "USE_MTE_CHECKED_PTR=$_use_mte_checked_ptr",
 
     "RECORD_ALLOC_INFO=$_record_alloc_info",
     "USE_FREESLOT_BITMAP=$use_freeslot_bitmap",

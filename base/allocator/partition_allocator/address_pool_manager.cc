@@ -290,9 +290,9 @@ void AddressPoolManager::GetPoolStats(const pool_handle handle,
 bool AddressPoolManager::GetStats(AddressSpaceStats* stats) {
   // Get 64-bit pool stats.
   GetPoolStats(GetRegularPool(), &stats->regular_pool_stats);
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
   GetPoolStats(GetBRPPool(), &stats->brp_pool_stats);
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   if (IsConfigurablePoolAvailable()) {
     GetPoolStats(GetConfigurablePool(), &stats->configurable_pool_stats);
   }
@@ -363,8 +363,8 @@ void AddressPoolManager::MarkUsed(pool_handle handle,
                                   uintptr_t address,
                                   size_t length) {
   ScopedGuard scoped_lock(AddressPoolManagerBitmap::GetLock());
-  // When ENABLE_BACKUP_REF_PTR_SUPPORT is off, BRP pool isn't used.
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+  // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
   if (handle == kBRPPoolHandle) {
     PA_DCHECK(
         (length % AddressPoolManagerBitmap::kBytesPer1BitOfBRPPoolBitmap) == 0);
@@ -396,7 +396,7 @@ void AddressPoolManager::MarkUsed(pool_handle handle,
               (length >> AddressPoolManagerBitmap::kBitShiftOfBRPPoolBitmap) -
                   AddressPoolManagerBitmap::kGuardBitsOfBRPPoolBitmap);
   } else
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   {
     PA_DCHECK(handle == kRegularPoolHandle);
     PA_DCHECK(
@@ -417,8 +417,8 @@ void AddressPoolManager::MarkUnused(pool_handle handle,
   // small allocations.
 
   ScopedGuard scoped_lock(AddressPoolManagerBitmap::GetLock());
-  // When ENABLE_BACKUP_REF_PTR_SUPPORT is off, BRP pool isn't used.
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+  // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
   if (handle == kBRPPoolHandle) {
     PA_DCHECK(
         (length % AddressPoolManagerBitmap::kBytesPer1BitOfBRPPoolBitmap) == 0);
@@ -433,7 +433,7 @@ void AddressPoolManager::MarkUnused(pool_handle handle,
         (length >> AddressPoolManagerBitmap::kBitShiftOfBRPPoolBitmap) -
             AddressPoolManagerBitmap::kGuardBitsOfBRPPoolBitmap);
   } else
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   {
     PA_DCHECK(handle == kRegularPoolHandle);
     PA_DCHECK(
@@ -504,7 +504,7 @@ bool AddressPoolManager::GetStats(AddressSpaceStats* stats) {
   // Get 32-bit pool usage.
   stats->regular_pool_stats.usage =
       CountUsedSuperPages(regular_pool_bits, kRegularPoolBitsPerSuperPage);
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
   static_assert(
       kSuperPageSize % AddressPoolManagerBitmap::kBytesPer1BitOfBRPPoolBitmap ==
           0,
@@ -525,7 +525,7 @@ bool AddressPoolManager::GetStats(AddressSpaceStats* stats) {
   stats->blocklist_hit_count =
       AddressPoolManagerBitmap::blocklist_hit_count_.load(
           std::memory_order_relaxed);
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   return true;
 }
 

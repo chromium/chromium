@@ -99,13 +99,13 @@ void PartitionAllocGlobalInit(OomFunction on_out_of_memory) {
 
 void PartitionAllocGlobalUninitForTesting() {
   internal::PCScan::UninitForTesting();  // IN-TEST
-#if !BUILDFLAG(ENABLE_PARTITION_ALLOC_AS_MALLOC_SUPPORT)
+#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #if defined(PA_HAS_64_BITS_POINTERS)
   internal::PartitionAddressSpace::UninitForTesting();
 #else
   internal::AddressPoolManager::GetInstance().ResetForTesting();
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
-#endif  // !BUILDFLAG(ENABLE_PARTITION_ALLOC_AS_MALLOC_SUPPORT)
+#endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   internal::g_oom_handling_function = nullptr;
 }
 
@@ -118,7 +118,7 @@ PartitionAllocator<thread_safe>::~PartitionAllocator() {
 
 template <bool thread_safe>
 void PartitionAllocator<thread_safe>::init(PartitionOptions opts) {
-#if BUILDFLAG(ENABLE_PARTITION_ALLOC_AS_MALLOC_SUPPORT)
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   PA_CHECK(opts.thread_cache == PartitionOptions::ThreadCache::kDisabled)
       << "Cannot use a thread cache when PartitionAlloc is malloc().";
 #endif
@@ -131,7 +131,7 @@ template void PartitionAllocator<internal::ThreadSafe>::init(PartitionOptions);
 
 #if (BUILDFLAG(PA_DCHECK_IS_ON) ||                    \
      BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)) && \
-    BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+    BUILDFLAG(USE_BACKUP_REF_PTR)
 void CheckThatSlotOffsetIsZero(uintptr_t address) {
   // Add kPartitionPastAllocationAdjustment, because
   // PartitionAllocGetSlotStartInBRPPool will subtract it.

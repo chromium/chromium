@@ -9,7 +9,6 @@
 #include "base/allocator/partition_allocator/address_space_stats.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
-#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,11 +27,9 @@ class AddressSpaceStatsDumperForTesting final : public AddressSpaceStatsDumper {
     regular_pool_largest_reservation_ =
         address_space_stats->regular_pool_stats.largest_available_reservation;
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
-#if !defined(PA_HAS_64_BITS_POINTERS) && \
-    BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if !defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(USE_BACKUP_REF_PTR)
     blocklist_size_ = address_space_stats->blocklist_size;
-#endif  // !defined(PA_HAS_64_BITS_POINTERS) &&
-        // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#endif  // !defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(USE_BACKUP_REF_PTR)
   }
 
   size_t regular_pool_usage_ = 0;
@@ -320,7 +317,7 @@ TEST(PartitionAllocAddressPoolManagerTest, IsManagedByRegularPool) {
   }
 }
 
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
 TEST(PartitionAllocAddressPoolManagerTest, IsManagedByBRPPool) {
   constexpr size_t kAllocCount = 4;
   // Totally (1+3+7+11) * 2MB = 44MB allocation
@@ -368,7 +365,7 @@ TEST(PartitionAllocAddressPoolManagerTest, IsManagedByBRPPool) {
     EXPECT_FALSE(AddressPoolManager::IsManagedByBRPPool(addrs[i]));
   }
 }
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
 TEST(PartitionAllocAddressPoolManagerTest, RegularPoolUsageChanges) {
   AddressSpaceStatsDumperForTesting dumper{};

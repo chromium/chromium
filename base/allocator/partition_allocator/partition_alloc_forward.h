@@ -39,7 +39,7 @@ struct SlotSpanMetadata;
 
 #if (BUILDFLAG(PA_DCHECK_IS_ON) ||                    \
      BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)) && \
-    BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+    BUILDFLAG(USE_BACKUP_REF_PTR)
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 void CheckThatSlotOffsetIsZero(uintptr_t address);
 #endif
