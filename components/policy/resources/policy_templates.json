@@ -33050,7 +33050,7 @@ This policy has no effect if the option to keep existing browsing data is not av
       'caption': 'Enable High Efficiency Mode',
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'future_on': ['chrome.win', 'chrome.mac', 'chrome.linux' ],
+      'future_on': ['chrome.*' ],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -33075,6 +33075,50 @@ This policy has no effect if the option to keep existing browsing data is not av
       'tags': [],
       'desc': '''This policy enables or disables the High Efficiency Mode setting. This setting makes it so that tabs are discarded after some period of time in the background to reclaim memory.
       If this policy is unset, the end user can control this setting in chrome://settings/performance.
+      ''',
+    },
+    {
+      'name': 'BatterySaverModeAvailability',
+      'owners': ['anthonyvd@chromium.org', 'file://components/performance_manager/OWNERS'],
+      'caption': 'Enable Battery Saver Mode',
+      'type': 'int-enum',
+      'schema': {
+        'type': 'integer',
+        'enum': [ 0, 1, 2 ],
+      },
+      'future_on': ['chrome.*' ],
+      'features': {
+        'can_be_recommended': True,
+        'dynamic_refresh': True,
+        'per_profile': False,
+      },
+      'items': [
+        {
+          'name': 'Disabled',
+          'value': 0,
+          'caption': 'Battery Saver Mode will be disabled.',
+        },
+        {
+          'name': 'EnabledBelowThreshold',
+          'value': 1,
+          'caption': 'Battery Saver Mode will be enabled when the device is on battery power and battery level is low.',
+        },
+        {
+          'name': 'EnabledOnBattery',
+          'value': 2,
+          'caption': 'Battery Saver Mode will be enabled when the device is on battery power.',
+        }
+      ],
+      'default': None,
+      'example_value': 1,
+      'id': 1009,
+      'tags': [],
+      'desc': '''This policy enables or disables the Battery Saver Mode setting. This setting makes it so that frame rate is throttled to lower power consumption.
+      If this policy is unset, the end user can control this setting in chrome://settings/performance.
+      The different levels are:
+      <ph name="BATTERY_SAVER_MODE_DISABLED">Disabled</ph> (0): Battery Saver Mode will be disabled.
+      <ph name="BATTERY_SAVER_MODE_ENABLED_BELOW_THRESHOLD">EnabledBelowThreshold</ph> (1): Battery Saver Mode will be enabled when the device is on battery power and battery level is low.
+      <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY">EnabledOnBattery</ph> (2): Battery Saver Mode will be enabled when the device is on battery power.
       ''',
     }
   ],
@@ -34085,6 +34129,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 438, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 1008,
+  'highest_id_currently_used': 1009,
   'highest_atomic_group_id_currently_used': 43
 }

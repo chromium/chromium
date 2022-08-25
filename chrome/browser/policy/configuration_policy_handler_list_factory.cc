@@ -1733,6 +1733,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kHighEfficiencyModeEnabled,
     performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kBatterySaverModeAvailability,
+    performance_manager::user_tuning::prefs::kBatterySaverModeState,
+    base::Value::Type::INTEGER },
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 };
 // clang-format on
