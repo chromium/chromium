@@ -975,16 +975,17 @@ void CopyOrMoveOperationDelegate::DoProcessFile(const FileSystemURL& src_url,
         copy_or_move_hook_delegate_->AsWeakPtr());
   } else {
     // Cross filesystem case.
-    base::File::Error error = base::File::FILE_ERROR_FAILED;
+    base::File::Error get_validator_factory_error =
+        base::File::FILE_ERROR_FAILED;
     CopyOrMoveFileValidatorFactory* validator_factory =
         file_system_context()->GetCopyOrMoveFileValidatorFactory(
-            dest_root_.type(), &error);
-    if (error != base::File::FILE_OK) {
+            dest_root_.type(), &get_validator_factory_error);
+    if (get_validator_factory_error != base::File::FILE_OK) {
       PostTask(base::BindOnce(&CopyOrMoveHookDelegate::OnError,
                               copy_or_move_hook_delegate_->AsWeakPtr(), src_url,
-                              dest_url, error));
+                              dest_url, get_validator_factory_error));
 
-      std::move(callback).Run(error);
+      std::move(callback).Run(get_validator_factory_error);
       return;
     }
 

@@ -54,11 +54,11 @@ std::vector<api::events::Rule> RulesFromValue(const base::Value* value) {
     return rules;
 
   rules.reserve(value->GetList().size());
-  for (const base::Value& value : value->GetList()) {
-    if (!value.is_dict())
+  for (const base::Value& dict_value : value->GetList()) {
+    if (!dict_value.is_dict())
       continue;
     api::events::Rule rule;
-    if (api::events::Rule::Populate(value, &rule))
+    if (api::events::Rule::Populate(dict_value, &rule))
       rules.push_back(std::move(rule));
   }
 

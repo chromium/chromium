@@ -87,12 +87,12 @@ absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
     return absl::nullopt;
 
   // Otherwise the key is partitioned, let's see what it's partitioned by.
-  absl::optional<EncodedAttribute> encoded_attribute =
+  absl::optional<EncodedAttribute> first_attribute =
       DeserializeAttributeSeparator(in.substr(pos_first_caret, 2));
-  if (!encoded_attribute.has_value())
+  if (!first_attribute.has_value())
     return absl::nullopt;
 
-  switch (encoded_attribute.value()) {
+  switch (first_attribute.value()) {
     case EncodedAttribute::kTopLevelSite: {
       // A top-level site is serialized.
 
@@ -113,10 +113,10 @@ absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
           !ValidSeparatorWithData(in, pos_last_caret))
         return absl::nullopt;
 
-      absl::optional<EncodedAttribute> encoded_attribute =
+      absl::optional<EncodedAttribute> last_attribute =
           DeserializeAttributeSeparator(in.substr(pos_last_caret, 2));
-      if (!encoded_attribute.has_value() ||
-          encoded_attribute.value() != EncodedAttribute::kAncestorChainBit)
+      if (!last_attribute.has_value() ||
+          last_attribute.value() != EncodedAttribute::kAncestorChainBit)
         return absl::nullopt;
 
       // The ancestor_chain_bit is the portion beyond the last separator.
@@ -157,10 +157,10 @@ absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
           !ValidSeparatorWithData(in, pos_second_caret))
         return absl::nullopt;
 
-      absl::optional<EncodedAttribute> encoded_attribute =
+      absl::optional<EncodedAttribute> second_attribute =
           DeserializeAttributeSeparator(in.substr(pos_second_caret, 2));
-      if (!encoded_attribute.has_value() ||
-          encoded_attribute.value() != EncodedAttribute::kNonceLow)
+      if (!second_attribute.has_value() ||
+          second_attribute.value() != EncodedAttribute::kNonceLow)
         return absl::nullopt;
 
       // The origin is the portion up to, but not including, the first
