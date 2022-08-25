@@ -33,9 +33,9 @@
 #endif
 
 using content::BrowserThread;
+using media::mojom::RemotingSinkMetadata;
 using media::mojom::RemotingStartFailReason;
 using media::mojom::RemotingStopReason;
-using media::mojom::RemotingSinkMetadata;
 
 bool MediaRemotingDialogCoordinator::Show(
     PermissionCallback permission_callback) {
@@ -88,9 +88,7 @@ class CastRemotingConnector::RemotingBridge final
   void OnStopped(RemotingStopReason reason) { source_->OnStopped(reason); }
 
   // The CastRemotingConnector calls this when it is no longer valid.
-  void OnCastRemotingConnectorDestroyed() {
-    connector_ = nullptr;
-  }
+  void OnCastRemotingConnectorDestroyed() { connector_ = nullptr; }
 
   // media::mojom::Remoter implementation. The source calls these to start/stop
   // media remoting and send messages to the sink. These simply delegate to the
@@ -155,11 +153,12 @@ CastRemotingConnector* CastRemotingConnector::Get(
         media_router::MediaRouterFactory::GetApiForBrowserContext(
             contents->GetBrowserContext()),
         user_prefs::UserPrefs::Get(contents->GetBrowserContext()),
-        sessions::SessionTabHelper::IdForTab(contents)
+        sessions::SessionTabHelper::IdForTab(contents),
 #if defined(TOOLKIT_VIEWS)
-            ,
         std::make_unique<media_router::MediaRemotingDialogCoordinatorViews>(
             contents)
+#else
+        std::make_unique<MediaRemotingDialogCoordinator>()
 #endif
     );
     contents->SetUserData(kUserDataKey, base::WrapUnique(connector));
@@ -207,7 +206,7 @@ CastRemotingConnector::~CastRemotingConnector() {
 }
 
 void CastRemotingConnector::ResetRemotingPermission() {
-  remoting_allowed_.reset();
+  remoting_allowed_ = GetRemotingAllowedUserPref();
 }
 
 void CastRemotingConnector::ConnectWithMediaRemoter(
@@ -296,19 +295,12 @@ void CastRemotingConnector::StartRemoting(RemotingBridge* bridge) {
 
   active_bridge_ = bridge;
 
-  if (!remoting_allowed_.has_value()) {
-    if (!dialog_coordinator_) {
-      remoting_allowed_ = true;
-    } else if (dialog_coordinator_->Show(
-                   base::BindOnce(&CastRemotingConnector::OnDialogClosed,
-                                  weak_factory_.GetWeakPtr()))) {
-      return;
-    } else {
-      remoting_allowed_ = false;
-    }
+  if (remoting_allowed_.has_value()) {
+    StartRemotingIfPermitted();
+    return;
   }
-
-  StartRemotingIfPermitted();
+  dialog_coordinator_->Show(base::BindOnce(
+      &CastRemotingConnector::OnDialogClosed, weak_factory_.GetWeakPtr()));
 }
 
 void CastRemotingConnector::OnDialogClosed(bool remoting_allowed) {
@@ -356,10 +348,9 @@ void CastRemotingConnector::StartRemotingDataStreams(
     return;
   }
 
-    DCHECK(remoter_);
-    remoter_->StartDataStreams(std::move(audio_pipe), std::move(video_pipe),
-                               std::move(audio_sender),
-                               std::move(video_sender));
+  DCHECK(remoter_);
+  remoter_->StartDataStreams(std::move(audio_pipe), std::move(video_pipe),
+                             std::move(audio_sender), std::move(video_sender));
 }
 
 void CastRemotingConnector::StopRemoting(RemotingBridge* bridge,
@@ -375,7 +366,7 @@ void CastRemotingConnector::StopRemoting(RemotingBridge* bridge,
   // Cancel all outstanding callbacks related to the remoting session.
   weak_factory_.InvalidateWeakPtrs();
 
-  if (dialog_coordinator_ && dialog_coordinator_->IsShowing()) {
+  if (dialog_coordinator_->IsShowing()) {
     dialog_coordinator_->Hide();
     if (is_initiated_by_source && remoter_) {
       // The source requested remoting be stopped before the permission request
@@ -421,7 +412,8 @@ void CastRemotingConnector::OnStopped(RemotingStopReason reason) {
 }
 
 void CastRemotingConnector::SendMessageToSink(
-    RemotingBridge* bridge, const std::vector<uint8_t>& message) {
+    RemotingBridge* bridge,
+    const std::vector<uint8_t>& message) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // During an active remoting session, simply pass all binary messages through
@@ -444,7 +436,7 @@ void CastRemotingConnector::OnMessageFromSink(
 
 void CastRemotingConnector::EstimateTransmissionCapacity(
     media::mojom::Remoter::EstimateTransmissionCapacityCallback callback) {
-    std::move(callback).Run(0);
+  std::move(callback).Run(0);
 }
 
 void CastRemotingConnector::OnSinkAvailable(
@@ -513,11 +505,7 @@ void CastRemotingConnector::StartObservingPref() {
       media_router::prefs::kMediaRouterMediaRemotingEnabled,
       base::BindRepeating(&CastRemotingConnector::OnPrefChanged,
                           base::Unretained(this)));
-  if (const PrefService::Preference* pref = pref_service_->FindPreference(
-          media_router::prefs::kMediaRouterMediaRemotingEnabled);
-      pref && !pref->IsDefaultValue()) {
-    remoting_allowed_ = pref->GetValue()->GetBool();
-  }
+  remoting_allowed_ = GetRemotingAllowedUserPref();
 #endif
 }
 
@@ -529,5 +517,18 @@ void CastRemotingConnector::OnPrefChanged() {
   remoting_allowed_ = enabled;
   if (!enabled)
     OnStopped(media::mojom::RemotingStopReason::USER_DISABLED);
+#endif
+}
+
+absl::optional<bool> CastRemotingConnector::GetRemotingAllowedUserPref() const {
+#if BUILDFLAG(IS_ANDROID)
+  return absl::nullopt;
+#else
+  const PrefService::Preference* pref = pref_service_->FindPreference(
+      media_router::prefs::kMediaRouterMediaRemotingEnabled);
+  if (!pref || pref->IsDefaultValue()) {
+    return absl::nullopt;
+  }
+  return pref->GetValue()->GetBool();
 #endif
 }
