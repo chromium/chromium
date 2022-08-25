@@ -240293,7 +240293,7 @@
      },
      "popups": {
       "popup-animated-hide-display.tentative.html": [
-       "0d9ff4a511b39d46171b025ba95b33a25557e7be",
+       "0bbc6b23893f34d4ea45e4fdae5be1cbe3f7f6e9",
        [
         null,
         [
@@ -240306,7 +240306,7 @@
        ]
       ],
       "popup-animated-hide-finishes.tentative.html": [
-       "1213f4fefe4ac98b0ef7e4bc06488cb45c272a41",
+       "a594ecad3f273f69815604b4028b7de2152b4923",
        [
         null,
         [
@@ -240319,7 +240319,7 @@
        ]
       ],
       "popup-animated-show-display.tentative.html": [
-       "9bcc130d8de3a319643d957a5bcb0664cf8bd83f",
+       "f11529c4b75bba48c3f81839ea576c24d49560dc",
        [
         null,
         [
@@ -240371,7 +240371,7 @@
        ]
       ],
       "popup-hidden-display.tentative.html": [
-       "b3845f8270785e8ed9de588a8fc4e823b66b62e9",
+       "d66611a08f59b74f553d2653033b7758aa5504e9",
        [
         null,
         [
@@ -240384,7 +240384,7 @@
        ]
       ],
       "popup-inside-display-none.tentative.html": [
-       "d60b0df9068494825a3ffd0a1dc222c3bc57edb0",
+       "189ffdd5ffd16dd106df58bb1536af8a2b30aa29",
        [
         null,
         [
@@ -405304,6 +405304,13 @@
     }
    },
    "custom-elements": {
+    "CustomElementRegistry-constructor-and-callbacks-are-held-strongly.html": [
+     "5e741eba67e92b41105685ea14248df9b1b4b127",
+     [
+      null,
+      {}
+     ]
+    ],
     "CustomElementRegistry.html": [
      "5b75fc651fcf74685e7f6cd6e753c9cbfd44de48",
      [
@@ -480304,7 +480311,7 @@
         ]
        ],
        "selectmenu-parts-structure.tentative.html": [
-        "2f907c4fb5307d0f17fb49dd2ba68ab859adcb6f",
+        "e7b0bf77055bfbee13d82187ed2a7a07166fe3e0",
         [
          null,
          {
@@ -481291,7 +481298,7 @@
        ]
       ],
       "popup-anchor-nesting.tentative.html": [
-       "aa43dd9aea0a6d6620378c36e7946586f0b4d450",
+       "d4982949006be510d2d57bc1c7deb09da0179f4f",
        [
         null,
         {
@@ -481300,7 +481307,7 @@
        ]
       ],
       "popup-animated-hide-cleanup.tentative.html": [
-       "00ff0db6f57fbf3f46f49b0f70ae1e21d835a16d",
+       "778b384f420c40f564a8e867bccb4b06d29acb74",
        [
         null,
         {
@@ -481309,14 +481316,14 @@
        ]
       ],
       "popup-animation-corner-cases.tentative.html": [
-       "e85d1f72f2f4920c1b09110c320882f1f3e287bc",
+       "e2298fc1752b546c705267c49083031d12bfd990",
        [
         null,
         {}
        ]
       ],
       "popup-attribute-basic.tentative.html": [
-       "1ff7f13c61d8427e85fc7c9ae4a4d82072469b99",
+       "4554162c3ccc9ecec7c3dabd6cbace6956cf2356",
        [
         null,
         {}
@@ -481330,35 +481337,35 @@
        ]
       ],
       "popup-defaultopen-2.tentative.html": [
-       "36b621f2cf0381272ab44d5e5f9a6c2cfd41de1f",
+       "83cc160c6c3befe607142f898956ab5b6033cb19",
        [
         null,
         {}
        ]
       ],
       "popup-defaultopen-hints.tentative.html": [
-       "9bc841eb772610ac846c23bee7f7a1ebfa7c2cc4",
+       "a7535fab2034224362a1d9039244073f50b36adc",
        [
         null,
         {}
        ]
       ],
       "popup-defaultopen.tentative.html": [
-       "f673d1d832081b9e5cea382ceeca155bc763102d",
+       "beb8c7468c6efb059f71e0fe2a388337b966b45a",
        [
         null,
         {}
        ]
       ],
       "popup-events.tentative.html": [
-       "4e2051f275dcc8108da2a091ad6cbd1e2de2c37e",
+       "441980177c38b38c5f1589e071a15ec33237bed1",
        [
         null,
         {}
        ]
       ],
       "popup-focus.tentative.html": [
-       "4290b7dda50c2e3d7b170d90f8e1e2da84eff7e0",
+       "f88f4c2ad83b84bbd0992b27d1107ebc5255c379",
        [
         null,
         {
@@ -481368,7 +481375,7 @@
        ]
       ],
       "popup-invoking-attribute.tentative.html": [
-       "bdfa0fe1a12a35ca9e20939bf69c076f43f7f141",
+       "b676eed54056c2c6b293fadc638e539827a19909",
        [
         null,
         {
@@ -481378,14 +481385,14 @@
        ]
       ],
       "popup-light-dismiss-on-scroll.tentative.html": [
-       "3c32a6dc6a992a7c4a35a3a2bef13e36e7576048",
+       "d48f1b4b63fe21e0c7d01e295c7a77dcc118358f",
        [
         null,
         {}
        ]
       ],
       "popup-light-dismiss.tentative.html": [
-       "7f8f32b645e8b4acf94c7b05f724d51b6d7c6365",
+       "7cd95d8dc23ff63f539b9ab7389d8e5f92e714fe",
        [
         null,
         {
@@ -481395,7 +481402,7 @@
        ]
       ],
       "popup-not-keyboard-focusable.tentative.html": [
-       "3cc545f9ae7e3c19626bee521ce5825f9ebf000a",
+       "393873fddce197407f060ee33080c2945d0b7219",
        [
         null,
         {
@@ -481404,21 +481411,21 @@
        ]
       ],
       "popup-removal-2.tentative.html": [
-       "7cf0951e5b14bcca0a6af7d8846cb4f85e8b8995",
+       "807e625563ef3b09f0c7dbadc35027b913def181",
        [
         null,
         {}
        ]
       ],
       "popup-removal.tentative.html": [
-       "f4df86232768080eede0e039f2a2c19c6ca29f2a",
+       "f43da58e4e2cb0f124af0312b90967907df369c0",
        [
         null,
         {}
        ]
       ],
       "popup-shadow-dom.tentative.html": [
-       "f2cb31a389cef0de615915830a09e055c2afa866",
+       "cbec8a20233cf09df8627a51ad06a698c2c24a7c",
        [
         null,
         {}
@@ -481432,14 +481439,14 @@
        ]
       ],
       "popup-stacking.tentative.html": [
-       "abe3f61996ba9ffe32bf04c0414d37f843756701",
+       "1bf3a108976a18e70109d763fa545280d78e0092",
        [
         null,
         {}
        ]
       ],
       "popup-top-layer-interactions.tentative.html": [
-       "e12645afc2789382b6625c96f7e6d2046addc151",
+       "b973a57f09731848bb2bdc11065e0969b36f8a7d",
        [
         null,
         {
@@ -481448,7 +481455,7 @@
        ]
       ],
       "popup-types.tentative.html": [
-       "b34df5f7960566006c25f02a0fffbf8a34ba5cc1",
+       "f9479cbc8491ca314fad2f1e4cc9b574921e4dde",
        [
         null,
         {}
