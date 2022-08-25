@@ -194,6 +194,7 @@ class CONTENT_EXPORT WebContentsViewAura
                              RenderViewHost* new_host) override;
   void SetOverscrollControllerEnabled(bool enabled) override;
   void OnCapturerCountChanged() override;
+  void FullscreenStateChanged(bool is_fullscreen) override;
 
   // Overridden from RenderViewHostDelegateView:
   void ShowContextMenu(RenderFrameHost& render_frame_host,

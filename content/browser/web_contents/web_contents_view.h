@@ -112,6 +112,8 @@ class WebContentsView {
   // loop has ended.
   virtual bool CloseTabAfterEventTrackingIfNeeded() = 0;
 #endif
+
+  virtual void FullscreenStateChanged(bool is_fullscreen) = 0;
 };
 
 // Factory function to create `WebContentsView`s. Implemented in the platform

@@ -90,6 +90,7 @@ class WebContentsViewMac : public WebContentsView,
   void SetOverscrollControllerEnabled(bool enabled) override;
   bool CloseTabAfterEventTrackingIfNeeded() override;
   void OnCapturerCountChanged() override;
+  void FullscreenStateChanged(bool is_fullscreen) override;
 
   // RenderViewHostDelegateView:
   void StartDragging(const DropData& drop_data,

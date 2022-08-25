@@ -83,6 +83,7 @@ class WebContentsViewAndroid : public WebContentsView,
                              RenderViewHost* new_host) override;
   void SetOverscrollControllerEnabled(bool enabled) override;
   void OnCapturerCountChanged() override;
+  void FullscreenStateChanged(bool is_fullscreen) override;
 
   // Backend implementation of RenderViewHostDelegateView.
   void ShowContextMenu(RenderFrameHost& render_frame_host,

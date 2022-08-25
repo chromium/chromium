@@ -1127,6 +1127,8 @@ void WebContentsViewAura::OnCapturerCountChanged() {
   }
 }
 
+void WebContentsViewAura::FullscreenStateChanged(bool is_fullscreen) {}
+
 ////////////////////////////////////////////////////////////////////////////////
 // WebContentsViewAura, RenderViewHostDelegateView implementation:
 

@@ -291,6 +291,11 @@ void WebContentsViewAndroid::SetOverscrollControllerEnabled(bool enabled) {
 
 void WebContentsViewAndroid::OnCapturerCountChanged() {}
 
+void WebContentsViewAndroid::FullscreenStateChanged(bool is_fullscreen) {
+  if (select_popup_)
+    select_popup_->HideMenu();
+}
+
 void WebContentsViewAndroid::ShowContextMenu(RenderFrameHost& render_frame_host,
                                              const ContextMenuParams& params) {
   if (is_active_drag_ && drag_exceeded_movement_threshold_)

@@ -3521,6 +3521,8 @@ void WebContentsImpl::FullscreenStateChanged(
                         "render_frame_host", rfh, "is_fullscreen",
                         is_fullscreen);
 
+  GetView()->FullscreenStateChanged(is_fullscreen);
+
   if (is_fullscreen) {
     if (options.is_null()) {
       ReceivedBadMessage(rfh->GetProcess(),

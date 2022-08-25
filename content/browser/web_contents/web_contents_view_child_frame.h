@@ -58,6 +58,7 @@ class WebContentsViewChildFrame : public WebContentsView,
   bool CloseTabAfterEventTrackingIfNeeded() override;
 #endif
   void OnCapturerCountChanged() override;
+  void FullscreenStateChanged(bool is_fullscreen) override;
 
   // Backend implementation of RenderViewHostDelegateView.
   void ShowContextMenu(RenderFrameHost& render_frame_host,

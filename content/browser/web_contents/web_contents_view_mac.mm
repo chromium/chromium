@@ -143,6 +143,8 @@ gfx::Rect WebContentsViewMac::GetContainerBounds() const {
 
 void WebContentsViewMac::OnCapturerCountChanged() {}
 
+void WebContentsViewMac::FullscreenStateChanged(bool is_fullscreen) {}
+
 void WebContentsViewMac::StartDragging(
     const DropData& drop_data,
     DragOperationsMask allowed_operations,
