@@ -30,7 +30,7 @@ class TestGuestViewManager : public GuestViewManager {
   ~TestGuestViewManager() override;
 
   void WaitForAllGuestsDeleted();
-
+  void WaitForFirstGuestDeleted();
   void WaitForLastGuestDeleted();
 
   // While the GuestViewBase directly represents a guest view, the

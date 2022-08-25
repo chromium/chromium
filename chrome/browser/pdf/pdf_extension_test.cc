@@ -203,14 +203,25 @@ void WaitForPluginServiceToLoad() {
   run_loop.Run();
 }
 
-void WaitForLoadStart(WebContents* web_contents) {
-  while (!web_contents->IsLoading() &&
-         !web_contents->GetController().GetLastCommittedEntry()) {
+// In preparation for the migration of guest view from inner WebContents to
+// MPArch (crbug/1261928), individual tests should avoid accessing the guest's
+// inner WebContents. The direct access is centralized in this helper function
+// for easier migration.
+//
+// TODO(crbug/1261928): Update this implementation for MPArch, and consider
+// relocate it to `content/public/test/browser_test_utils.h`.
+void WaitForGuestLoadStartThenStop(GuestViewBase* guest_view) {
+  auto* guest_contents = guest_view->web_contents();
+
+  while (!guest_contents->IsLoading() &&
+         !guest_contents->GetController().GetLastCommittedEntry()) {
     base::RunLoop run_loop;
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
     run_loop.Run();
   }
+
+  ASSERT_TRUE(content::WaitForLoadStop(guest_contents));
 }
 }  // namespace
 
@@ -223,6 +234,8 @@ void WaitForLoadStart(WebContents* web_contents) {
 
 class PDFExtensionTest : public extensions::ExtensionApiTest {
  public:
+  PDFExtensionTest() { GuestViewManager::set_factory_for_testing(&factory_); }
+
   void SetUpCommandLine(base::CommandLine* /*command_line*/) override {
     feature_list_.InitWithFeatures(GetEnabledFeatures(), GetDisabledFeatures());
   }
@@ -333,6 +346,23 @@ class PDFExtensionTest : public extensions::ExtensionApiTest {
   }
 
  protected:
+  TestGuestViewManager* GetGuestViewManager() {
+    // TODO(wjmaclean): Re-implement FromBrowserContext in the
+    // TestGuestViewManager class to avoid all callers needing this cast.
+    auto* manager = static_cast<TestGuestViewManager*>(
+        TestGuestViewManager::FromBrowserContext(browser()->profile()));
+    // Test code may access the TestGuestViewManager before it would be created
+    // during creation of the first guest.
+    if (!manager) {
+      manager = static_cast<TestGuestViewManager*>(
+          GuestViewManager::CreateWithDelegate(
+              browser()->profile(),
+              ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate(
+                  browser()->profile())));
+    }
+    return manager;
+  }
+
   WebContents* GetOnlyGuestContents(WebContents* embedder_contents) const {
     content::BrowserPluginGuestManager* guest_manager =
         embedder_contents->GetBrowserContext()->GetGuestManager();
@@ -383,6 +413,7 @@ class PDFExtensionTest : public extensions::ExtensionApiTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  TestGuestViewManagerFactory factory_;
 };
 
 class PDFExtensionTestWithPartialLoading : public PDFExtensionTest {
@@ -395,57 +426,26 @@ class PDFExtensionTestWithPartialLoading : public PDFExtensionTest {
   }
 };
 
-class PDFExtensionTestWithTestGuestViewManager : public PDFExtensionTest {
- public:
-  PDFExtensionTestWithTestGuestViewManager() {
-    GuestViewManager::set_factory_for_testing(&factory_);
-  }
-
- protected:
-  TestGuestViewManager* GetGuestViewManager() {
-    // TODO(wjmaclean): Re-implement FromBrowserContext in the
-    // TestGuestViewManager class to avoid all callers needing this cast.
-    auto* manager = static_cast<TestGuestViewManager*>(
-        TestGuestViewManager::FromBrowserContext(browser()->profile()));
-    // Test code may access the TestGuestViewManager before it would be created
-    // during creation of the first guest.
-    if (!manager) {
-      manager = static_cast<TestGuestViewManager*>(
-          GuestViewManager::CreateWithDelegate(
-              browser()->profile(),
-              ExtensionsAPIClient::Get()->CreateGuestViewManagerDelegate(
-                  browser()->profile())));
-    }
-    return manager;
-  }
-
- private:
-  TestGuestViewManagerFactory factory_;
-};
-
 // This test is a re-implementation of
 // WebPluginContainerTest.PluginDocumentPluginIsFocused, which was introduced
 // for https://crbug.com/536637. The original implementation checked that the
 // BrowserPlugin hosting the pdf extension was focused; in this re-write, we
 // make sure the guest view's WebContents has focus.
-IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
-                       PdfInMainFrameHasFocus) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfInMainFrameHasFocus) {
   // Load test HTML, and verify the text area has focus.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
-  auto* embedder_web_contents = GetActiveWebContents();
+  auto* primary_main_frame = GetActiveWebContents()->GetPrimaryMainFrame();
 
   // Verify the pdf has loaded.
-  auto* guest_web_contents =
-      GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
-  ASSERT_TRUE(guest_web_contents);
-  EXPECT_NE(embedder_web_contents, guest_web_contents);
-  WaitForLoadStart(guest_web_contents);
-  EXPECT_TRUE(content::WaitForLoadStop(guest_web_contents));
+  auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
+  ASSERT_TRUE(guest_view);
+  ASSERT_NE(primary_main_frame, guest_view->GetGuestMainFrame());
+  WaitForGuestLoadStartThenStop(guest_view);
 
   // Make sure the guest WebContents has focus.
-  EXPECT_EQ(guest_web_contents,
-            content::GetFocusedWebContents(embedder_web_contents));
+  ASSERT_EQ(GetActiveWebContents()->GetFocusedFrame(),
+            guest_view->GetGuestMainFrame());
 }
 
 // This test verifies that when a PDF is loaded, that (i) the embedder
@@ -454,42 +454,40 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
 // has the correct URL for the PDF extension.
 // TODO(wjmaclean): Are there any attributes we can/should test with respect to
 // the extension's loaded html?
-IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
-                       PdfExtensionLoadedInGuest) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfExtensionLoadedInGuest) {
   // Load test HTML, and verify the text area has focus.
   const GURL main_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-  auto* embedder_web_contents = GetActiveWebContents();
+  auto* primary_main_frame = GetActiveWebContents()->GetPrimaryMainFrame();
 
   // Verify the pdf has loaded.
-  auto* guest_web_contents =
-      GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
-  ASSERT_TRUE(guest_web_contents);
-  EXPECT_NE(embedder_web_contents, guest_web_contents);
-  WaitForLoadStart(guest_web_contents);
-  EXPECT_TRUE(content::WaitForLoadStop(guest_web_contents));
+  auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
+  ASSERT_TRUE(guest_view);
+  EXPECT_NE(primary_main_frame, guest_view->GetGuestMainFrame());
+  WaitForGuestLoadStartThenStop(guest_view);
 
   // Verify we loaded the extension.
   const GURL extension_url(
       "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/index.html");
-  EXPECT_EQ(extension_url, guest_web_contents->GetLastCommittedURL());
-  EXPECT_EQ(main_url, embedder_web_contents->GetLastCommittedURL());
+  EXPECT_EQ(extension_url,
+            guest_view->GetGuestMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(main_url, primary_main_frame->GetLastCommittedURL());
 
   // Make sure the embedder has the correct html boilerplate.
-  EXPECT_EQ(1, content::EvalJs(embedder_web_contents,
-                               "document.body.children.length;")
-                   .ExtractInt());
-  EXPECT_EQ("EMBED", content::EvalJs(embedder_web_contents,
+  EXPECT_EQ(
+      1, content::EvalJs(primary_main_frame, "document.body.children.length;")
+             .ExtractInt());
+  EXPECT_EQ("EMBED", content::EvalJs(primary_main_frame,
                                      "document.body.firstChild.tagName;")
                          .ExtractString());
-  EXPECT_EQ("application/pdf", content::EvalJs(embedder_web_contents,
+  EXPECT_EQ("application/pdf", content::EvalJs(primary_main_frame,
                                                "document.body.firstChild.type;")
                                    .ExtractString());
-  EXPECT_EQ("about:blank", content::EvalJs(embedder_web_contents,
-                                           "document.body.firstChild.src;")
-                               .ExtractString());
+  EXPECT_EQ("about:blank",
+            content::EvalJs(primary_main_frame, "document.body.firstChild.src;")
+                .ExtractString());
   EXPECT_TRUE(
-      content::EvalJs(embedder_web_contents,
+      content::EvalJs(primary_main_frame,
                       "document.body.firstChild.hasAttribute('internalid');")
           .ExtractBool());
 }
@@ -533,26 +531,24 @@ class InnerWebContentsAttachDelayer {
 // attaching an inner WebContents for a PDF, the inner WebContents can still
 // successfully complete its attachment and subsequent navigation.  See
 // https://crbug.com/1295431.
-IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
-                       PdfExtensionLoadedWhileOldPdfCloses) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfExtensionLoadedWhileOldPdfCloses) {
   // Load test PDF in first tab.
   const GURL main_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-  auto* embedder_web_contents = GetActiveWebContents();
+  auto* primary_main_frame = GetActiveWebContents()->GetPrimaryMainFrame();
 
   // Verify the PDF has loaded.
-  auto* guest_web_contents =
-      GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
-  ASSERT_TRUE(guest_web_contents);
-  EXPECT_NE(embedder_web_contents, guest_web_contents);
-  WaitForLoadStart(guest_web_contents);
-  EXPECT_TRUE(content::WaitForLoadStop(guest_web_contents));
+  auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
+  ASSERT_TRUE(guest_view);
+  EXPECT_NE(primary_main_frame, guest_view->GetGuestMainFrame());
+  WaitForGuestLoadStartThenStop(guest_view);
 
   // Verify we loaded the extension.
   const GURL extension_url(
       "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/index.html");
-  EXPECT_EQ(extension_url, guest_web_contents->GetLastCommittedURL());
-  EXPECT_EQ(main_url, embedder_web_contents->GetLastCommittedURL());
+  EXPECT_EQ(extension_url,
+            guest_view->GetGuestMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(main_url, primary_main_frame->GetLastCommittedURL());
 
   // Open another tab and navigate it to a same-site non-PDF URL.
   ui_test_utils::TabAddedWaiter add_tab1(browser());
@@ -578,89 +574,87 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
   // the middle of initialization. In https://crbug.com/1295431, the extension
   // process exited here and caused a crash when the second PDF resumed.
   EXPECT_EQ(2U, GetGuestViewManager()->GetNumGuestsActive());
-  content::WebContentsDestroyedWatcher destroyed_watcher(guest_web_contents);
   ASSERT_TRUE(browser()->tab_strip_model()->CloseWebContentsAt(
       0, TabCloseTypes::CLOSE_USER_GESTURE));
-  destroyed_watcher.Wait();
+  // `TestGuestViewManager` manages the guests by the order of creation.
+  GetGuestViewManager()->WaitForFirstGuestDeleted();
   EXPECT_EQ(1U, GetGuestViewManager()->GetNumGuestsActive());
+  primary_main_frame = new_web_contents->GetPrimaryMainFrame();
 
   // Now resume the guest attachment and ensure the second PDF loads without
   // crashing.
   delayer.ResumeAttach();
   navigation_observer.Wait();
-  auto* guest_web_contents2 =
-      GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
-  ASSERT_TRUE(guest_web_contents2);
-  EXPECT_NE(embedder_web_contents, guest_web_contents2);
-  WaitForLoadStart(guest_web_contents2);
-  EXPECT_TRUE(content::WaitForLoadStop(guest_web_contents2));
+  auto* guest_view2 = GetGuestViewManager()->WaitForSingleGuestViewCreated();
+  ASSERT_TRUE(guest_view2);
+  EXPECT_NE(primary_main_frame, guest_view2->GetGuestMainFrame());
+  WaitForGuestLoadStartThenStop(guest_view2);
 
   // Verify we loaded the extension.
-  EXPECT_EQ(extension_url, guest_web_contents2->GetLastCommittedURL());
-  EXPECT_EQ(main_url, new_web_contents->GetLastCommittedURL());
+  EXPECT_EQ(extension_url,
+            guest_view2->GetGuestMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(main_url, primary_main_frame->GetLastCommittedURL());
 }
 
 // This test verifies that when a PDF is served with a restrictive
 // Content-Security-Policy, the embed tag is still sized correctly.
 // Regression test for https://crbug.com/271452.
-IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
-                       CSPDoesNotBlockEmbedStyles) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionTest, CSPDoesNotBlockEmbedStyles) {
   const GURL main_url(embedded_test_server()->GetURL("/pdf/test-csp.pdf"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-  auto* embedder_web_contents = GetActiveWebContents();
-  ASSERT_TRUE(embedder_web_contents);
+  ASSERT_TRUE(GetActiveWebContents());
+  auto* primary_main_frame = GetActiveWebContents()->GetPrimaryMainFrame();
+  ASSERT_TRUE(primary_main_frame);
 
   // Verify the pdf has loaded.
-  auto* guest_web_contents =
-      GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
-  ASSERT_TRUE(guest_web_contents);
-  EXPECT_NE(embedder_web_contents, guest_web_contents);
-  WaitForLoadStart(guest_web_contents);
-  EXPECT_TRUE(content::WaitForLoadStop(guest_web_contents));
+  auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
+  ASSERT_TRUE(guest_view);
+  auto* guest_main_frame = guest_view->GetGuestMainFrame();
+  EXPECT_NE(primary_main_frame, guest_main_frame);
+  WaitForGuestLoadStartThenStop(guest_view);
 
   // Verify the extension was loaded.
   const GURL extension_url(
       "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/index.html");
-  EXPECT_EQ(extension_url, guest_web_contents->GetLastCommittedURL());
-  EXPECT_EQ(main_url, embedder_web_contents->GetLastCommittedURL());
+  EXPECT_EQ(extension_url, guest_main_frame->GetLastCommittedURL());
+  EXPECT_EQ(main_url, primary_main_frame->GetLastCommittedURL());
 
   // Verify that the plugin occupies all of the page area.
-  const gfx::Rect embedder_rect = embedder_web_contents->GetContainerBounds();
-  const gfx::Rect guest_rect = guest_web_contents->GetContainerBounds();
+  const gfx::Rect embedder_rect =
+      primary_main_frame->GetView()->GetViewBounds();
+  const gfx::Rect guest_rect = guest_main_frame->GetView()->GetViewBounds();
   EXPECT_EQ(embedder_rect, guest_rect);
 }
 
 // This test verifies that when a PDF is served with
 // Content-Security-Policy: sandbox, this is ignored and the PDF is displayed.
 // Regression test for https://crbug.com/1187122.
-IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
-                       CSPWithSandboxDoesNotBlockPDF) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionTest, CSPWithSandboxDoesNotBlockPDF) {
   const GURL main_url(
       embedded_test_server()->GetURL("/pdf/test-csp-sandbox.pdf"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-  auto* embedder_web_contents = GetActiveWebContents();
-  ASSERT_TRUE(embedder_web_contents);
+  ASSERT_TRUE(GetActiveWebContents());
+  auto* primary_main_frame = GetActiveWebContents()->GetPrimaryMainFrame();
+  ASSERT_TRUE(primary_main_frame);
 
   // Verify the pdf has loaded.
-  auto* guest_web_contents =
-      GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
-  ASSERT_TRUE(guest_web_contents);
-  EXPECT_NE(embedder_web_contents, guest_web_contents);
-  WaitForLoadStart(guest_web_contents);
-  EXPECT_TRUE(content::WaitForLoadStop(guest_web_contents));
+  auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
+  ASSERT_TRUE(guest_view);
+  EXPECT_NE(primary_main_frame, guest_view->GetGuestMainFrame());
+  WaitForGuestLoadStartThenStop(guest_view);
 
   // Verify the extension was loaded.
   const GURL extension_url(
       "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/index.html");
-  EXPECT_EQ(extension_url, guest_web_contents->GetLastCommittedURL());
-  EXPECT_EQ(main_url, embedder_web_contents->GetLastCommittedURL());
+  EXPECT_EQ(extension_url,
+            guest_view->GetGuestMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(main_url, primary_main_frame->GetLastCommittedURL());
 }
 
 // This test verifies that Content-Security-Policy's frame-ancestors 'none'
 // directive is effective on a PDF response.
 // Regression test for https://crbug.com/1107535.
-IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
-                       CSPFrameAncestorsCanBlockEmbedding) {
+IN_PROC_BROWSER_TEST_F(PDFExtensionTest, CSPFrameAncestorsCanBlockEmbedding) {
   WebContents* web_contents = GetActiveWebContents();
   content::WebContentsConsoleObserver console_observer(web_contents);
   console_observer.SetPattern(
@@ -679,27 +673,27 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
 // This test verifies that Content-Security-Policy's frame-ancestors directive
 // overrides an X-Frame-Options header on a PDF response.
 // Regression test for https://crbug.com/1107535.
-IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
+IN_PROC_BROWSER_TEST_F(PDFExtensionTest,
                        CSPFrameAncestorsOverridesXFrameOptions) {
   const GURL main_url(
       embedded_test_server()->GetURL("/pdf/frame-test-csp-and-xfo.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-  auto* embedder_web_contents = GetActiveWebContents();
-  ASSERT_TRUE(embedder_web_contents);
+  ASSERT_TRUE(GetActiveWebContents());
+  auto* primary_main_frame = GetActiveWebContents()->GetPrimaryMainFrame();
+  ASSERT_TRUE(primary_main_frame);
 
   // Verify the pdf has loaded.
-  auto* guest_web_contents =
-      GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
-  ASSERT_TRUE(guest_web_contents);
-  EXPECT_NE(embedder_web_contents, guest_web_contents);
-  WaitForLoadStart(guest_web_contents);
-  EXPECT_TRUE(content::WaitForLoadStop(guest_web_contents));
+  auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
+  ASSERT_TRUE(guest_view);
+  EXPECT_NE(primary_main_frame, guest_view->GetGuestMainFrame());
+  WaitForGuestLoadStartThenStop(guest_view);
 
   // Verify the extension was loaded.
   const GURL extension_url(
       "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/index.html");
-  EXPECT_EQ(extension_url, guest_web_contents->GetLastCommittedURL());
-  EXPECT_EQ(main_url, embedder_web_contents->GetLastCommittedURL());
+  EXPECT_EQ(extension_url,
+            guest_view->GetGuestMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(main_url, primary_main_frame->GetLastCommittedURL());
 }
 
 class PDFExtensionLoadTest : public PDFExtensionTest,
@@ -4525,14 +4519,13 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionSubmitFormTest, MAYBE_SubmitForm) {
   run_loop->Run();
 }
 
-class PDFExtensionPrerenderAndFencedFrameTest
-    : public PDFExtensionTestWithTestGuestViewManager {
+class PDFExtensionPrerenderAndFencedFrameTest : public PDFExtensionTest {
  public:
   PDFExtensionPrerenderAndFencedFrameTest() = default;
   ~PDFExtensionPrerenderAndFencedFrameTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    PDFExtensionTestWithTestGuestViewManager::SetUpCommandLine(command_line);
+    PDFExtensionTest::SetUpCommandLine(command_line);
     // `prerender_helper_` and `fenced_frame_helper_` has a ScopedFeatureList so
     // we needed to delay its creation until now because PDFExtensionTest
     // also uses a ScopedFeatureList and initialization order matters.
@@ -4583,11 +4576,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionPrerenderAndFencedFrameTest,
           GetActiveWebContents()->GetPrimaryMainFrame(), fenced_frame_url);
   ASSERT_TRUE(fenced_frame_host);
 
-  auto* guest_web_contents =
-      GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
-  ASSERT_TRUE(guest_web_contents);
-  WaitForLoadStart(guest_web_contents);
-  EXPECT_TRUE(content::WaitForLoadStop(guest_web_contents));
+  auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
+  ASSERT_TRUE(guest_view);
+  WaitForGuestLoadStartThenStop(guest_view);
 
   // Ensure that the fenced frame's navigation should not abort the PDF stream.
   EXPECT_EQ(1U, GetGuestViewManager()->GetNumGuestsActive());

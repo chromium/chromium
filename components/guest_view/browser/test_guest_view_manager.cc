@@ -77,6 +77,11 @@ void TestGuestViewManager::WaitForAllGuestsDeleted() {
   }
 }
 
+void TestGuestViewManager::WaitForFirstGuestDeleted() {
+  // Wait for the first guest that was created to be deleted.
+  guest_view_watchers_.front()->Wait();
+}
+
 void TestGuestViewManager::WaitForLastGuestDeleted() {
   // Wait for the last guest that was created to be deleted.
   guest_view_watchers_.back()->Wait();
