@@ -2400,6 +2400,78 @@ TEST(ValuesTest, TracingSupport) {
 }
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
+TEST(DictAdapterForMigrationTest, ImplicitConstruction) {
+  {
+    Value::Dict dict;
+    dict.Set("hello", "world");
+    DictAdapterForMigration a = dict;
+    EXPECT_EQ(&dict, &a.dict_for_test());
+  }
+  {
+    DictionaryValue dict;
+    dict.SetString("hello", "world");
+    DictAdapterForMigration v = dict;
+    EXPECT_EQ(&dict.GetDict(), &v.dict_for_test());
+  }
+}
+
+TEST(DictAdapterForMigrationTest, BasicFunctions) {
+  Value::Dict dict;
+  DictAdapterForMigration a = dict;
+
+  EXPECT_TRUE(a.empty());
+  EXPECT_EQ(a.size(), 0u);
+
+  dict.Set("hello", "world");
+  EXPECT_FALSE(a.empty());
+  EXPECT_EQ(a.size(), 1u);
+
+  EXPECT_EQ(dict.cbegin(), a.begin());
+  EXPECT_EQ(dict.cend(), a.end());
+  EXPECT_EQ(dict.cbegin(), a.cbegin());
+  EXPECT_EQ(dict.cend(), a.cend());
+
+  EXPECT_TRUE(a.contains("hello"));
+  EXPECT_FALSE(a.contains("world"));
+
+  EXPECT_EQ(a.Clone(), dict);
+
+  EXPECT_EQ(a.DebugString(), dict.DebugString());
+}
+
+TEST(DictAdapterForMigrationTest, Find) {
+  Value::Dict dict;
+  dict.Set("null", Value());
+  dict.Set("bool", true);
+  dict.Set("int", 2);
+  dict.Set("double", 3.0);
+  dict.Set("string", std::string("4"));
+  dict.Set("blob", Value(Value::BlobStorage()));
+  dict.Set("list", Value::List());
+  dict.Set("dict", Value::Dict());
+  DictAdapterForMigration a = dict;
+
+  EXPECT_EQ(a.Find("n/a"), nullptr);
+  EXPECT_EQ(*a.Find("null"), Value());
+  EXPECT_EQ(a.FindBool("bool"), true);
+  EXPECT_EQ(a.FindInt("int"), 2);
+  EXPECT_EQ(a.FindDouble("double"), 3.0);
+  EXPECT_EQ(*a.FindString("string"), "4");
+  EXPECT_EQ(*a.FindBlob("blob"), Value::BlobStorage());
+  EXPECT_EQ(*a.FindList("list"), Value::List());
+  EXPECT_EQ(*a.FindDict("dict"), Value::Dict());
+
+  EXPECT_EQ(a.FindByDottedPath("n/a"), nullptr);
+  EXPECT_EQ(*a.FindByDottedPath("null"), Value());
+  EXPECT_EQ(a.FindBoolByDottedPath("bool"), true);
+  EXPECT_EQ(a.FindIntByDottedPath("int"), 2);
+  EXPECT_EQ(a.FindDoubleByDottedPath("double"), 3.0);
+  EXPECT_EQ(*a.FindStringByDottedPath("string"), "4");
+  EXPECT_EQ(*a.FindBlobByDottedPath("blob"), Value::BlobStorage());
+  EXPECT_EQ(*a.FindListByDottedPath("list"), Value::List());
+  EXPECT_EQ(*a.FindDictByDottedPath("dict"), Value::Dict());
+}
+
 TEST(ValueViewTest, BasicConstruction) {
   {
     ValueView v = true;

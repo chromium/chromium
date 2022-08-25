@@ -33,6 +33,7 @@
 
 namespace base {
 
+class DictAdapterForMigration;
 class DictionaryValue;
 class ListValue;
 
@@ -1248,6 +1249,75 @@ class BASE_EXPORT GSL_OWNER Value {
                 Dict,
                 List>
       data_;
+};
+
+// DictAdapterForMigration is an adapter class to help the migration of
+// base::DictionaryValue to base::Value::Dict.
+//
+// DictAdapterForMigration mirrors the API of base::Value::Dict,
+// and is implicitly constructable from both base::DictionaryValue
+// and base::Value::Dict. Currently this is read-only, similar to StringPiece.
+//
+// To migrate a function that takes a base::DictionaryValue, change the
+// signature to take DictAdapterForMigration instead, and update the
+// function body to use the Dict::Value API.
+// The call sites can be left unchanged and migrated later.
+//
+// Note that DictAdapterForMigration is intended as a shim to help migrations,
+// and will go away with base::DictionaryValue.
+class BASE_EXPORT GSL_POINTER DictAdapterForMigration {
+ public:
+  using iterator = detail::dict_iterator;
+  using const_iterator = detail::const_dict_iterator;
+
+  DictAdapterForMigration() = delete;
+
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  DictAdapterForMigration(const Value::Dict&) noexcept;
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  DictAdapterForMigration(const DictionaryValue&) noexcept;
+
+  bool empty() const;
+  size_t size() const;
+
+  const_iterator begin() const;
+  const_iterator cbegin() const;
+  const_iterator end() const;
+  const_iterator cend() const;
+
+  bool contains(base::StringPiece key) const;
+
+  Value::Dict Clone() const;
+
+  const Value* Find(StringPiece key) const;
+  absl::optional<bool> FindBool(StringPiece key) const;
+  absl::optional<int> FindInt(StringPiece key) const;
+  absl::optional<double> FindDouble(StringPiece key) const;
+  const std::string* FindString(StringPiece key) const;
+  const Value::BlobStorage* FindBlob(StringPiece key) const;
+  const Value::Dict* FindDict(StringPiece key) const;
+  const Value::List* FindList(StringPiece key) const;
+
+  const Value* FindByDottedPath(StringPiece path) const;
+
+  absl::optional<bool> FindBoolByDottedPath(StringPiece path) const;
+  absl::optional<int> FindIntByDottedPath(StringPiece path) const;
+  absl::optional<double> FindDoubleByDottedPath(StringPiece path) const;
+  const std::string* FindStringByDottedPath(StringPiece path) const;
+  const Value::BlobStorage* FindBlobByDottedPath(StringPiece path) const;
+  const Value::Dict* FindDictByDottedPath(StringPiece path) const;
+  const Value::List* FindListByDottedPath(StringPiece path) const;
+
+  std::string DebugString() const;
+
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+  void WriteIntoTrace(perfetto::TracedValue) const;
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
+
+  const Value::Dict& dict_for_test() const;
+
+ private:
+  const Value::Dict& dict_;
 };
 
 // DictionaryValue provides a key-value dictionary with (optional) "path"
