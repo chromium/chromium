@@ -156,13 +156,26 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
   AccountInfo MakePrimaryAccountAvailable(const std::string& email,
                                           ConsentLevel consent_level);
 
-  // Combination of MakeAccountAvailable() and SetCookieAccounts() for a single
-  // account. It makes an account available for the given email address, and
-  // GAIA ID, setting the cookies and the refresh token that correspond uniquely
-  // to that email address. Blocks until the account is available. Returns the
-  // AccountInfo of the newly-available account.
+  // Combination of `MakeAccountAvailable()` and `SetCookieAccounts()` for a
+  // single account. It makes an account available for the given email address,
+  // and GAIA ID, setting the cookies and the refresh token that correspond
+  // uniquely to that email address. Blocks until the account is available. For
+  // multiple accounts, use `MakeAccountsAvailableWithCookies()` instead, as
+  // sequentially calling `SetCookieAccounts()` will not preserve previously set
+  // cookies.
+  // Returns the AccountInfo of the newly-available account.
   AccountInfo MakeAccountAvailableWithCookies(const std::string& email,
                                               const std::string& gaia_id);
+
+  // Combination of MakeAccountAvailable() and SetCookieAccounts() for a
+  // multiple accounts. It makes accounts available for the given email address,
+  // generates a GAIA ID, settings the cookies and refresh tokens that
+  // correspond to these email addresses. Blocks until the accounts are
+  // available.
+  // Returns the AccountInfo of the newly-available accounts, in the
+  // same order as the given `emails`.
+  std::vector<AccountInfo> MakeAccountsAvailableWithCookies(
+      const std::vector<std::string>& emails);
 
   // Revokes sync consent from the primary account: the primary account is left
   // at ConsentLevel::kSignin.
