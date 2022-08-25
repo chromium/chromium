@@ -7,6 +7,8 @@
 
 #include <string>
 
+#import "third_party/abseil-cpp/absl/types/optional.h"
+
 namespace promos_manager {
 
 // Dictionary key for `promo` identifier in stored impression (base::Value).
@@ -42,7 +44,7 @@ typedef struct Impression {
 std::string NameForPromo(Promo promo);
 
 // Returns promos_manager::Promo for string `promo`.
-Promo PromoForName(std::string promo);
+absl::optional<Promo> PromoForName(std::string promo);
 
 }  // namespace promos_manager
 

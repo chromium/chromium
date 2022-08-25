@@ -52,6 +52,7 @@ source_set("constants") {
     "constants.h",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
+  public_deps = [ "//third_party/abseil-cpp:absl" ]
   deps = [ "//base" ]
 }
 

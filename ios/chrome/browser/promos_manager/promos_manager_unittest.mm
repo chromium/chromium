@@ -104,6 +104,13 @@ TEST_F(PromosManagerTest, ReturnsTestPromoForName) {
             promos_manager::Promo::Test);
 }
 
+// Tests promos_manager::PromoForName correctly returns absl::nullopt for bad
+// input.
+TEST_F(PromosManagerTest, ReturnsNulloptForBadName) {
+  EXPECT_FALSE(promos_manager::PromoForName("promos_manager::Promo::FOOBAR")
+                   .has_value());
+}
+
 // Tests PromosManagerTest::TestPromo() correctly creates one mock promo.
 TEST_F(PromosManagerTest, CreatesPromo) {
   Promo* promo = TestPromo();

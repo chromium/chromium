@@ -86,8 +86,15 @@ std::vector<promos_manager::Impression> PromosManager::ImpressionHistory(
     if (!stored_promo || !stored_day.has_value())
       continue;
 
-    impression_history.push_back(promos_manager::Impression(
-        promos_manager::PromoForName(*stored_promo), stored_day.value()));
+    absl::optional<promos_manager::Promo> promo =
+        promos_manager::PromoForName(*stored_promo);
+
+    // Skip malformed impression history. (This should almost never happen.)
+    if (!promo.has_value())
+      continue;
+
+    impression_history.push_back(
+        promos_manager::Impression(promo.value(), stored_day.value()));
   }
 
   return impression_history;
