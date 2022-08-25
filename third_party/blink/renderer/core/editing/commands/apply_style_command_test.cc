@@ -128,11 +128,10 @@ TEST_F(ApplyStyleCommandTest, JustifyRightWithSVGForeignObject) {
       ->Apply();
   EXPECT_EQ(
       "<svg>"
-      "<foreignObject>"
-      "<div style=\"text-align: right;\">|1</div>"
+      "<foreignObject>|1"
       "</foreignObject>"
       "<foreignObject>"
-      "<div style=\"text-align: right;\">2</div><b></b>"
+      " 2<b></b>"
       "</foreignObject>"
       "</svg>",
       GetSelectionTextFromBody());

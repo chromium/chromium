@@ -625,6 +625,17 @@ static PositionTemplate<Strategy> AdjustPositionForBackwardIteration(
       position.AnchorNode(), Strategy::CaretMaxOffset(*position.AnchorNode()));
 }
 
+static bool CanHaveCaretPosition(const Node& node) {
+  if (!node.IsSVGElement())
+    return true;
+  if (IsA<SVGTextElement>(node))
+    return true;  // See http://crbug.com/891908
+  if (IsA<SVGForeignObjectElement>(node))
+    return true;  // See http://crbug.com/1348816
+  // There is no caret position in non-text svg elements.
+  return false;
+}
+
 // TODO(yosin): We should make |Most{Back,For}kwardCaretPosition()| to work for
 // positions other than |kOffsetInAnchor|. When we convert |position| to
 // |kOffsetInAnchor|, following tests are failed:
@@ -678,8 +689,7 @@ static PositionTemplate<Strategy> MostBackwardCaretPosition(
       last_node = current_node;
     }
 
-    // There is no caret position in non-text svg elements.
-    if (current_node->IsSVGElement() && !IsA<SVGTextElement>(current_node)) {
+    if (!CanHaveCaretPosition(*current_node)) {
       if (boundary_crossed && rule == kCannotCrossEditingBoundary)
         break;
       continue;
@@ -853,8 +863,7 @@ PositionTemplate<Strategy> MostForwardCaretPosition(
     if (IsA<HTMLBodyElement>(*current_node) && current_pos.AtEndOfNode())
       break;
 
-    // There is no caret position in non-text svg elements.
-    if (current_node->IsSVGElement() && !IsA<SVGTextElement>(current_node)) {
+    if (!CanHaveCaretPosition(*current_node)) {
       if (boundary_crossed && rule == kCannotCrossEditingBoundary)
         break;
       continue;

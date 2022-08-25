@@ -230,7 +230,7 @@ TEST_F(ApplyBlockElementCommandTest, IndentSVGWithTable) {
       "<blockquote style=\"margin: 0 0 0 40px; border: none; padding: 0px;\">"
       "<svg><foreignObject><table>| </table></foreignObject></svg>"
       "</blockquote>"
-      "<svg><foreignObject>x</foreignObject></svg>",
+      "<svg><foreignObject> x</foreignObject></svg>",
       GetSelectionTextFromBody());
 }
 

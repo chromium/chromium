@@ -493,6 +493,30 @@ TEST_F(VisibleUnitsTest, mostForwardCaretPositionAfterAnchor) {
             MostBackwardCaretPosition(PositionInFlatTree::AfterNode(*host)));
 }
 
+// http://crbug.com/1348816
+TEST_F(VisibleUnitsTest, MostBackwardCaretPositionBeforeSvg) {
+  EXPECT_EQ(
+      "<div>A<svg><foreignObject height=\"10\" width=\"20\">| "
+      "Z</foreignObject></svg></div>",
+      TestSnapBackward("<div>A<svg><foreignObject height=10 width=20> "
+                       "|Z</foreignObject></svg></div>"));
+}
+
+// http://crbug.com/1348816
+TEST_F(VisibleUnitsTest, MostForwardCaretPositionBeforeSvg) {
+  EXPECT_EQ(
+      "<div>A|<svg><foreignObject height=\"10\" width=\"20\"> "
+      "Z</foreignObject></svg></div>",
+      TestSnapForward("<div>A|<svg><foreignObject height=10 width=20> "
+                      "Z</foreignObject></svg></div>"));
+
+  EXPECT_EQ(
+      "<div>A<svg><foreignObject height=\"10\" width=\"20\"> "
+      "|Z</foreignObject></svg></div>",
+      TestSnapForward("<div>A<svg><foreignObject height=10 width=20>| "
+                      "Z</foreignObject></svg></div>"));
+}
+
 TEST_F(VisibleUnitsTest, mostForwardCaretPositionFirstLetter) {
   // Note: first-letter pseudo element contains letter and punctuations.
   const char* body_content =
