@@ -63,6 +63,7 @@ dependencies {
     compile 'androidx.window.extensions:extensions:{{androidx_dependency_version}}'
     compile 'androidx.window:window-java:{{androidx_dependency_version}}'
     compile 'androidx.window.sidecar:sidecar:{{androidx_dependency_version}}'
+    compile 'androidx.work:work-runtime:{{androidx_dependency_version}}'
 
     // Those are for use by doubledown libraries.
     compile 'androidx.arch.core:core-common:{{androidx_dependency_version}}'
