@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_PROMOS_MANAGER_PROMOS_MANAGER_H_
 
 #import <Foundation/Foundation.h>
+#import <set>
 #import <vector>
 
 #import "base/values.h"
@@ -32,8 +33,8 @@ class PromosManager {
   // Weak pointer to the local state prefs store.
   const raw_ptr<PrefService> local_state_;
 
-  // base::Value::List of active promos.
-  base::Value::List active_promos_;
+  // The set of currently active promos.
+  std::set<promos_manager::Promo> active_promos_;
 
   // The impression history sorted by `day` (most recent -> least recent).
   std::vector<promos_manager::Impression> impression_history_;
@@ -67,6 +68,11 @@ class PromosManager {
   // corresponding a std::vector<promos_manager::Impression>.
   std::vector<promos_manager::Impression> ImpressionHistory(
       const base::Value::List& stored_impression_history);
+
+  // Loops over the stored active promos list (base::Value::List) and returns
+  // a corresponding std::set<promos_manager::Promo>.
+  std::set<promos_manager::Promo> ActivePromos(
+      const base::Value::List& stored_active_promos);
 
   // Returns the most recent day (int) that `promo` was seen by the user.
   //
@@ -174,6 +180,11 @@ class PromosManager {
                            ReturnsBlankImpressionHistoryForBlankPrefs);
   FRIEND_TEST_ALL_PREFIXES(PromosManagerTest,
                            ReturnsImpressionHistoryBySkippingMalformedEntries);
+  FRIEND_TEST_ALL_PREFIXES(PromosManagerTest, ReturnsActivePromos);
+  FRIEND_TEST_ALL_PREFIXES(PromosManagerTest,
+                           ReturnsBlankActivePromosForBlankPrefs);
+  FRIEND_TEST_ALL_PREFIXES(PromosManagerTest,
+                           ReturnsActivePromosAndSkipsMalformedData);
 };
 
 #endif  // IOS_CHROME_BROWSER_PROMOS_MANAGER_PROMOS_MANAGER_H_

@@ -9,6 +9,7 @@ source_set("promos_manager") {
   ]
   frameworks = [ "Foundation.framework" ]
   configs += [ "//build/config/compiler:enable_arc" ]
+  public_deps = [ "//third_party/abseil-cpp:absl" ]
   deps = [
     ":constants",
     ":features",
@@ -16,7 +17,6 @@ source_set("promos_manager") {
     "//base",
     "//components/prefs",
     "//ios/chrome/browser/prefs:pref_names",
-    "//third_party/abseil-cpp:absl",
   ]
 }
 
