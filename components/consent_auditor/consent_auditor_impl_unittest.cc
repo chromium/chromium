@@ -14,8 +14,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/simple_test_clock.h"
-#include "base/time/default_clock.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/consent_auditor/pref_names.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/protocol/user_consent_specifics.pb.h"
@@ -54,7 +54,7 @@ constexpr int kConfirmationMessageId = 47;
 // A helper function to load the |description|, |confirmation|, |version|,
 // and |locale|, in that order, from a record for the |feature| in
 // the |consents| dictionary.
-void LoadEntriesFromLocalConsentRecord(const base::Value* consents,
+void LoadEntriesFromLocalConsentRecord(const base::Value::Dict& consents,
                                        const std::string& feature,
                                        std::string* description,
                                        std::string* confirmation,
@@ -62,27 +62,19 @@ void LoadEntriesFromLocalConsentRecord(const base::Value* consents,
                                        std::string* locale) {
   SCOPED_TRACE(::testing::Message() << "|feature| = " << feature);
 
-  const base::Value* record =
-      consents->FindKeyOfType(feature, base::Value::Type::DICTIONARY);
+  const base::Value::Dict* record = consents.FindDict(feature);
   ASSERT_TRUE(record);
   SCOPED_TRACE(::testing::Message() << "|record| = " << record);
 
-  const base::Value* description_entry =
-      record->FindKey(kLocalConsentDescriptionKey);
-  const base::Value* confirmation_entry =
-      record->FindKey(kLocalConsentConfirmationKey);
-  const base::Value* version_entry = record->FindKey(kLocalConsentVersionKey);
-  const base::Value* locale_entry = record->FindKey(kLocalConsentLocaleKey);
+  *description = *record->FindString(kLocalConsentDescriptionKey);
+  *confirmation = *record->FindString(kLocalConsentConfirmationKey);
+  *version = *record->FindString(kLocalConsentVersionKey);
+  *locale = *record->FindString(kLocalConsentLocaleKey);
 
-  ASSERT_TRUE(description_entry);
-  ASSERT_TRUE(confirmation_entry);
-  ASSERT_TRUE(version_entry);
-  ASSERT_TRUE(locale_entry);
-
-  *description = description_entry->GetString();
-  *confirmation = confirmation_entry->GetString();
-  *version = version_entry->GetString();
-  *locale = locale_entry->GetString();
+  ASSERT_TRUE(description);
+  ASSERT_TRUE(confirmation);
+  ASSERT_TRUE(version);
+  ASSERT_TRUE(locale);
 }
 
 class FakeConsentSyncBridge : public ConsentSyncBridge {
@@ -168,9 +160,8 @@ TEST_F(ConsentAuditorImplTest, LocalConsentPrefRepresentation) {
   consent_auditor()->RecordLocalConsent("feature1", kFeature1Description,
                                         kFeature1Confirmation);
   ASSERT_TRUE(pref_service()->HasPrefPath(prefs::kLocalConsentsDictionary));
-  const base::Value* consents =
-      pref_service()->GetDictionary(prefs::kLocalConsentsDictionary);
-  ASSERT_TRUE(consents);
+  const base::Value::Dict& consents =
+      pref_service()->GetValueDict(prefs::kLocalConsentsDictionary);
 
   std::string description, confirmation, version, locale;
   LoadEntriesFromLocalConsentRecord(consents, "feature1", &description,
@@ -193,9 +184,8 @@ TEST_F(ConsentAuditorImplTest, LocalConsentPrefRepresentation) {
   EXPECT_EQ(kCurrentAppLocale, locale);
 
   // They are two separate records; the latter did not overwrite the former.
-  EXPECT_EQ(2u, consents->DictSize());
-  EXPECT_TRUE(
-      consents->FindKeyOfType("feature1", base::Value::Type::DICTIONARY));
+  EXPECT_EQ(2u, consents.size());
+  EXPECT_TRUE(consents.FindDict("feature1"));
 
   // Overwrite an existing consent, this time use a different product version
   // and a different locale.
@@ -219,7 +209,7 @@ TEST_F(ConsentAuditorImplTest, LocalConsentPrefRepresentation) {
   EXPECT_EQ(kFeature2NewAppLocale, locale);
 
   // We still have two records.
-  EXPECT_EQ(2u, consents->DictSize());
+  EXPECT_EQ(2u, consents.size());
 }
 
 TEST_F(ConsentAuditorImplTest, RecordGaiaConsentAsUserConsent) {
