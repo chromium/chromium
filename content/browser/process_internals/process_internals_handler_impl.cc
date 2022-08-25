@@ -107,29 +107,26 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
 
   // Execute over all frames appending any frames encountered to the parent's
   // subframe data.
-  frame->ForEachRenderFrameHost(base::BindRepeating(
-      [](WebContentsImpl* web_contents, RenderFrameHostImpl* outermost_frame,
-         ::mojom::FrameInfo::Type type,
-         std::map<RenderFrameHostImpl*, ::mojom::FrameInfo*>& all_frame_info,
-         RenderFrameHostImpl* frame) {
+  frame->ForEachRenderFrameHostWithAction(
+      [web_contents, outermost_frame = frame, type,
+       &all_frame_info](RenderFrameHostImpl* rfh) {
         // We've already handled the outermost frame outside of this.
-        if (frame == outermost_frame)
+        if (rfh == outermost_frame)
           return RenderFrameHost::FrameIterationAction::kContinue;
 
         // If this is a nested WebContents skip it, it will be encountered
         // by the GetAllWebContents iteration.
-        if (WebContents::FromRenderFrameHost(frame) != web_contents)
+        if (WebContents::FromRenderFrameHost(rfh) != web_contents)
           return RenderFrameHost::FrameIterationAction::kSkipChildren;
 
         ::mojom::FrameInfoPtr frame_info =
-            RenderFrameHostToFrameInfoNoTraverse(frame, type);
-        all_frame_info[frame] = frame_info.get();
-        RenderFrameHostImpl* parent = frame->GetParentOrOuterDocument();
+            RenderFrameHostToFrameInfoNoTraverse(rfh, type);
+        all_frame_info[rfh] = frame_info.get();
+        RenderFrameHostImpl* parent = rfh->GetParentOrOuterDocument();
         DCHECK(base::Contains(all_frame_info, parent));
         all_frame_info[parent]->subframes.push_back(std::move(frame_info));
         return RenderFrameHost::FrameIterationAction::kContinue;
-      },
-      web_contents, frame, type, std::ref(all_frame_info)));
+      });
 
   return outermost_frame_info;
 }
@@ -137,14 +134,13 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
 // Adds `host` to `out_frames` if it is a prerendered main frame.
 RenderFrameHost::FrameIterationAction CollectPrerenders(
     WebContentsImpl* web_contents,
-    std::vector<::mojom::FrameInfoPtr>& out_frames,
-    RenderFrameHost* host) {
+    RenderFrameHostImpl* host,
+    std::vector<::mojom::FrameInfoPtr>& out_frames) {
   if (!host->GetParentOrOuterDocument()) {
     if (host->GetLifecycleState() ==
         RenderFrameHost::LifecycleState::kPrerendering) {
       out_frames.push_back(RenderFrameHostToFrameInfo(
-          web_contents, static_cast<RenderFrameHostImpl*>(host),
-          ::mojom::FrameInfo::Type::kPrerender));
+          web_contents, host, ::mojom::FrameInfo::Type::kPrerender));
     }
     return RenderFrameHost::FrameIterationAction::kSkipChildren;
   }
@@ -288,8 +284,10 @@ void ProcessInternalsHandlerImpl::GetAllWebContentsInfo(
 
     // Retrieve prerendering root frames.
     web_contents->ForEachRenderFrameHost(
-        base::BindRepeating(&CollectPrerenders, web_contents,
-                            std::ref(info->prerender_root_frames)));
+        [web_contents, &prerender_root_frames = info->prerender_root_frames](
+            RenderFrameHostImpl* rfh) {
+          CollectPrerenders(web_contents, rfh, prerender_root_frames);
+        });
 
     infos.push_back(std::move(info));
   }

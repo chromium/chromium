@@ -353,14 +353,14 @@ class WebviewLoginTest : public OobeBaseTest {
 
     auto* login_main_frame =
         GetLoginUI()->GetWebContents()->GetPrimaryMainFrame();
-    login_main_frame->ForEachRenderFrameHost(
-        base::BindLambdaForTesting([&](content::RenderFrameHost* rfh) {
+    login_main_frame->ForEachRenderFrameHostWithAction(
+        [&](content::RenderFrameHost* rfh) {
           if (rfh->GetStoragePartition() == storage_partition) {
             web_view_found = true;
             return content::RenderFrameHost::FrameIterationAction::kStop;
           }
           return content::RenderFrameHost::FrameIterationAction::kContinue;
-        }));
+        });
 
     return web_view_found;
   }

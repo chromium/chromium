@@ -2460,14 +2460,9 @@ class AdsMemoryMeasurementBrowserTest
         frame_routing_ids;
 
     web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
-        base::BindRepeating(
-            [](std::unordered_set<content::GlobalRenderFrameHostId,
-                                  content::GlobalRenderFrameHostIdHasher>*
-                   frame_routing_ids,
-               content::RenderFrameHost* frame) {
-              frame_routing_ids->insert(frame->GetGlobalId());
-            },
-            &frame_routing_ids));
+        [&frame_routing_ids](content::RenderFrameHost* frame) {
+          frame_routing_ids.insert(frame->GetGlobalId());
+        });
 
     return frame_routing_ids;
   }

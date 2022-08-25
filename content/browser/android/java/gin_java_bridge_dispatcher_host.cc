@@ -55,13 +55,12 @@ void GinJavaBridgeDispatcherHost::InstallFilterAndRegisterAllRoutingIds() {
     return;
   }
 
-  // Unretained() is safe because ForEachRenderFrameHost() is synchronous.
-  web_contents()->GetPrimaryMainFrame()->ForEachRenderFrameHost(
-      base::BindRepeating(
-          [](GinJavaBridgeDispatcherHost* host, RenderFrameHost* frame) {
+  web_contents()
+      ->GetPrimaryMainFrame()
+      ->ForEachRenderFrameHost(
+          [this](RenderFrameHostImpl* frame) {
             AgentSchedulingGroupHost& agent_scheduling_group =
-                static_cast<RenderFrameHostImpl*>(frame)
-                    ->GetAgentSchedulingGroup();
+                frame->GetAgentSchedulingGroup();
 
             scoped_refptr<GinJavaBridgeMessageFilter> per_asg_filter =
                 GinJavaBridgeMessageFilter::FromHost(
@@ -73,12 +72,15 @@ void GinJavaBridgeDispatcherHost::InstallFilterAndRegisterAllRoutingIds() {
                       GinJavaBridgeObjectDeletionMessageFilter::FromHost(
                           agent_scheduling_group.GetProcess(),
                           /*create_if_not_exists=*/true);
-              process_global_filter->AddRoutingIdForHost(host, frame);
+              process_global_filter->AddRoutingIdForHost(this, frame);
             }
 
-            per_asg_filter->AddRoutingIdForHost(host, frame);
-          },
-          base::Unretained(this)));
+            per_asg_filter->AddRoutingIdForHost(this, frame);
+          });
+}
+
+WebContentsImpl* GinJavaBridgeDispatcherHost::web_contents() const {
+  return static_cast<WebContentsImpl*>(WebContentsObserver::web_contents());
 }
 
 void GinJavaBridgeDispatcherHost::RenderFrameCreated(
@@ -105,19 +107,16 @@ void GinJavaBridgeDispatcherHost::RenderFrameCreated(
 void GinJavaBridgeDispatcherHost::WebContentsDestroyed() {
   // Unretained() is safe because ForEachRenderFrameHost() is synchronous.
   web_contents()->GetPrimaryMainFrame()->ForEachRenderFrameHost(
-      base::BindRepeating(
-          [](GinJavaBridgeDispatcherHost* host, RenderFrameHost* frame) {
-            AgentSchedulingGroupHost& agent_scheduling_group =
-                static_cast<RenderFrameHostImpl*>(frame)
-                    ->GetAgentSchedulingGroup();
-            scoped_refptr<GinJavaBridgeMessageFilter> filter =
-                GinJavaBridgeMessageFilter::FromHost(
-                    agent_scheduling_group, /*create_if_not_exists=*/false);
+      [this](RenderFrameHostImpl* frame) {
+        AgentSchedulingGroupHost& agent_scheduling_group =
+            frame->GetAgentSchedulingGroup();
+        scoped_refptr<GinJavaBridgeMessageFilter> filter =
+            GinJavaBridgeMessageFilter::FromHost(
+                agent_scheduling_group, /*create_if_not_exists=*/false);
 
-            if (filter)
-              filter->RemoveHost(host);
-          },
-          base::Unretained(this)));
+        if (filter)
+          filter->RemoveHost(this);
+      });
 }
 
 void GinJavaBridgeDispatcherHost::RenderViewHostChanged(
@@ -254,16 +253,13 @@ void GinJavaBridgeDispatcherHost::AddNamedObject(
   // We should include pending RenderFrameHosts, otherwise they will miss the
   // chance when calling add or remove methods when they are created but not
   // committed. See: http://crbug.com/1087806
-  WebContentsImpl* web_contents_impl =
-      static_cast<WebContentsImpl*>(web_contents());
-  web_contents_impl->GetPrimaryMainFrame()
-      ->ForEachRenderFrameHostIncludingSpeculative(base::BindRepeating(
-          [](const std::string& name, GinJavaBoundObject::ObjectID object_id,
-             RenderFrameHostImpl* render_frame_host) {
+  web_contents()
+      ->GetPrimaryMainFrame()
+      ->ForEachRenderFrameHostIncludingSpeculative(
+          [&name, object_id](RenderFrameHostImpl* render_frame_host) {
             render_frame_host->Send(new GinJavaBridgeMsg_AddNamedObject(
                 render_frame_host->GetRoutingID(), name, object_id));
-          },
-          name, object_id));
+          });
 }
 
 void GinJavaBridgeDispatcherHost::RemoveNamedObject(
@@ -291,15 +287,13 @@ void GinJavaBridgeDispatcherHost::RemoveNamedObject(
   // We should include pending RenderFrameHosts, otherwise they will miss the
   // chance when calling add or remove methods when they are created but not
   // committed. See: http://crbug.com/1087806
-  WebContentsImpl* web_contents_impl =
-      static_cast<WebContentsImpl*>(web_contents());
-  web_contents_impl->GetPrimaryMainFrame()
-      ->ForEachRenderFrameHostIncludingSpeculative(base::BindRepeating(
-          [](const std::string& name, RenderFrameHostImpl* render_frame_host) {
+  web_contents()
+      ->GetPrimaryMainFrame()
+      ->ForEachRenderFrameHostIncludingSpeculative(
+          [&copied_name](RenderFrameHostImpl* render_frame_host) {
             render_frame_host->Send(new GinJavaBridgeMsg_RemoveNamedObject(
-                render_frame_host->GetRoutingID(), name));
-          },
-          copied_name));
+                render_frame_host->GetRoutingID(), copied_name));
+          });
 }
 
 void GinJavaBridgeDispatcherHost::SetAllowObjectContentsInspection(bool allow) {

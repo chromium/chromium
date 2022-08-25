@@ -171,27 +171,25 @@ void FrameAutoAttacher::UpdatePages() {
 
   Hosts new_hosts;
   if (render_frame_host_) {
-    render_frame_host_->ForEachRenderFrameHost(base::BindRepeating(
-        [](Hosts* new_hosts, RenderFrameHost* root, RenderFrameHost* rfh) {
-          RenderFrameHostImpl* rfhi = static_cast<RenderFrameHostImpl*>(rfh);
+    render_frame_host_->ForEachRenderFrameHostWithAction(
+        [root = render_frame_host_, &new_hosts](RenderFrameHostImpl* rfh) {
           if (rfh == root)
             return RenderFrameHost::FrameIterationAction::kContinue;
 
-          FrameTreeNode* frame_tree_node = rfhi->frame_tree_node();
+          FrameTreeNode* frame_tree_node = rfh->frame_tree_node();
           if (frame_tree_node->IsMainFrame() &&
               WebContentsImpl::FromFrameTreeNode(frame_tree_node)->IsPortal()) {
             scoped_refptr<DevToolsAgentHost> new_host =
                 RenderFrameDevToolsAgentHost::GetOrCreateFor(frame_tree_node);
-            new_hosts->insert(new_host);
+            new_hosts.insert(new_host);
             return RenderFrameHost::FrameIterationAction::kSkipChildren;
           }
 
-          if (rfhi->is_local_root())
+          if (rfh->is_local_root())
             return RenderFrameHost::FrameIterationAction::kSkipChildren;
 
           return RenderFrameHost::FrameIterationAction::kContinue;
-        },
-        &new_hosts, render_frame_host_));
+        });
   }
 
   DispatchSetAttachedTargetsOfType(new_hosts, DevToolsAgentHost::kTypePage);
@@ -292,29 +290,27 @@ void FrameAutoAttacher::UpdateFrames() {
   Hosts new_hosts;
   DevToolsAgentHost::List new_worklet_hosts;
   if (render_frame_host_) {
-    render_frame_host_->ForEachRenderFrameHost(base::BindRepeating(
-        [](Hosts* new_hosts, RenderFrameHostImpl* root, RenderFrameHost* rfh) {
-          auto* rfh_impl = static_cast<RenderFrameHostImpl*>(rfh);
-          if (rfh_impl == root || !rfh_impl->is_local_root())
+    render_frame_host_->ForEachRenderFrameHostWithAction(
+        [root = render_frame_host_, &new_hosts](RenderFrameHostImpl* rfh) {
+          if (rfh == root || !rfh->is_local_root())
             return RenderFrameHost::FrameIterationAction::kContinue;
 
-          // At this point, |rfh_impl| is a local root that is in the subtree of
+          // At this point, |rfh| is a local root that is in the subtree of
           // |root|.
-          FrameTreeNode* node = rfh_impl->frame_tree_node();
+          FrameTreeNode* node = rfh->frame_tree_node();
           bool should_create =
               !node->IsMainFrame() || node->IsFencedFrameRoot();
           if (should_create) {
             scoped_refptr<DevToolsAgentHost> new_host =
                 RenderFrameDevToolsAgentHost::GetOrCreateFor(node);
-            new_hosts->insert(new_host);
+            new_hosts.insert(new_host);
           }
 
           // Note: We don't search through children of local roots as they will
           // be handled by a FrameAutoAttacher that is created for the local
           // root.
           return RenderFrameHost::FrameIterationAction::kSkipChildren;
-        },
-        &new_hosts, render_frame_host_));
+        });
 
     AuctionWorkletDevToolsAgentHostManager::GetInstance().GetAllForFrame(
         render_frame_host_, &new_worklet_hosts);

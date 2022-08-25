@@ -155,13 +155,12 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest, Screen) {
           .GetInt();
   EXPECT_NE(main_frame_screen_width, 0);
 
-  auto check_screen_width = [&](RenderFrameHost* frame_host) {
-    int width =
-        ExecuteScriptAndGetValue(frame_host, "window.screen.width").GetInt();
-    EXPECT_EQ(width, main_frame_screen_width);
-  };
   shell()->web_contents()->GetPrimaryMainFrame()->ForEachRenderFrameHost(
-      base::BindLambdaForTesting(check_screen_width));
+      [&](RenderFrameHost* frame_host) {
+        int width = ExecuteScriptAndGetValue(frame_host, "window.screen.width")
+                        .GetInt();
+        EXPECT_EQ(width, main_frame_screen_width);
+      });
 }
 
 // Auto-resize is only implemented for Ash and GuestViews. So we need to inject

@@ -83,15 +83,13 @@ void ExtensionWebContentsObserver::Initialize() {
 
   extension_frame_host_ = CreateExtensionFrameHost(web_contents());
 
-  web_contents()->ForEachRenderFrameHost(base::BindRepeating(
-      [](ExtensionWebContentsObserver* observer,
-         content::RenderFrameHost* render_frame_host) {
+  web_contents()->ForEachRenderFrameHost(
+      [this](content::RenderFrameHost* render_frame_host) {
         // We only initialize the frame if the renderer counterpart is live;
         // otherwise we wait for the RenderFrameCreated notification.
         if (render_frame_host->IsRenderFrameLive())
-          observer->InitializeRenderFrame(render_frame_host);
-      },
-      this));
+          InitializeRenderFrame(render_frame_host);
+      });
 
   // It would be ideal if SessionTabHelper was created before this object,
   // because then we could start observing it here instead of needing to be
@@ -381,14 +379,12 @@ mojom::LocalFrame* ExtensionWebContentsObserver::GetLocalFrame(
 }
 
 void ExtensionWebContentsObserver::OnWindowIdChanged(const SessionID& id) {
-  web_contents()->ForEachRenderFrameHost(base::BindRepeating(
-      [](int32_t window_id, ExtensionWebContentsObserver* observer,
-         content::RenderFrameHost* rfh) {
-        auto* local_frame = observer->GetLocalFrame(rfh);
+  web_contents()->ForEachRenderFrameHost(
+      [&id, this](content::RenderFrameHost* rfh) {
+        auto* local_frame = GetLocalFrame(rfh);
         if (local_frame)
-          local_frame->UpdateBrowserWindowId(window_id);
-      },
-      id.id(), base::Unretained(this)));
+          local_frame->UpdateBrowserWindowId(id.id());
+      });
 }
 
 }  // namespace extensions

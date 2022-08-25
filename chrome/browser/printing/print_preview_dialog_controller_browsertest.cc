@@ -263,16 +263,13 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
 
     frame_count = 0;
     preview_dialog->GetPrimaryMainFrame()->ForEachRenderFrameHost(
-        base::BindLambdaForTesting(
-            [&frame_count](content::RenderFrameHost* /*frame*/) {
-              ++frame_count;
-            }));
+        [&frame_count](content::RenderFrameHost* /*frame*/) { ++frame_count; });
   } while (frame_count < kExpectedFrameCount);
   ASSERT_EQ(kExpectedFrameCount, frame_count);
 
   // Make sure all the frames in the dialog has access to the PDF plugin.
   preview_dialog->GetPrimaryMainFrame()->ForEachRenderFrameHost(
-      base::BindRepeating(&CheckPdfPluginForRenderFrame));
+      &CheckPdfPluginForRenderFrame);
 
   PrintPreviewDone();
 }

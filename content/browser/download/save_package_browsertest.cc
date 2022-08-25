@@ -12,6 +12,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "content/browser/download/download_manager_impl.h"
 #include "content/browser/download/save_package.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_package/web_bundle_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_manager.h"
@@ -190,7 +191,7 @@ class SavePackageBrowserTest : public ContentBrowserTest {
       download_manager->AddObserver(&download_item_killer);
 
       scoped_refptr<SavePackage> save_package(
-          new SavePackage(shell()->web_contents()->GetPrimaryPage()));
+          new SavePackage(web_contents_impl()->GetPrimaryPage()));
       save_package->GetSaveInfo();
       run_loop.Run();
       download_manager->RemoveObserver(&download_item_killer);
@@ -211,6 +212,10 @@ class SavePackageBrowserTest : public ContentBrowserTest {
     download_manager->SetDelegate(old_delegate);
   }
 
+  WebContentsImpl* web_contents_impl() {
+    return static_cast<WebContentsImpl*>(shell()->web_contents());
+  }
+
   // Temporary directory we will save pages to.
   base::ScopedTempDir save_dir_;
 };
@@ -224,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageBrowserTest, ImplicitCancel) {
   base::FilePath full_file_name, dir;
   GetDestinationPaths("a", &full_file_name, &dir);
   scoped_refptr<SavePackage> save_package(
-      new SavePackage(shell()->web_contents()->GetPrimaryPage(),
+      new SavePackage(web_contents_impl()->GetPrimaryPage(),
                       SAVE_PAGE_TYPE_AS_ONLY_HTML, full_file_name, dir));
 }
 
@@ -237,7 +242,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageBrowserTest, ExplicitCancel) {
   base::FilePath full_file_name, dir;
   GetDestinationPaths("a", &full_file_name, &dir);
   scoped_refptr<SavePackage> save_package(
-      new SavePackage(shell()->web_contents()->GetPrimaryPage(),
+      new SavePackage(web_contents_impl()->GetPrimaryPage(),
                       SAVE_PAGE_TYPE_AS_ONLY_HTML, full_file_name, dir));
   save_package->Cancel(true);
 }
@@ -269,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageBrowserTest, Reload) {
   download_manager->SetDelegate(delegate.get());
 
   scoped_refptr<SavePackage> save_package(
-      new SavePackage(shell()->web_contents()->GetPrimaryPage(),
+      new SavePackage(web_contents_impl()->GetPrimaryPage(),
                       SAVE_PAGE_TYPE_AS_ONLY_HTML, full_file_name, dir));
   save_package->GetSaveInfo();
   shell()->web_contents()->GetController().Reload(content::ReloadType::NORMAL,
@@ -312,7 +317,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageWebBundleBrowserTest, OnePageSimple) {
     DownloadCompleteObserver observer(run_loop.QuitClosure());
     download_manager->AddObserver(&observer);
     scoped_refptr<SavePackage> save_package(
-        new SavePackage(shell()->web_contents()->GetPrimaryPage()));
+        new SavePackage(web_contents_impl()->GetPrimaryPage()));
     save_package->GetSaveInfo();
     run_loop.Run();
     download_manager->RemoveObserver(&observer);
@@ -387,7 +392,7 @@ IN_PROC_BROWSER_TEST_F(SavePackageFencedFrameBrowserTest,
     DownloadCompleteObserver observer(run_loop.QuitClosure());
     download_manager->AddObserver(&observer);
     scoped_refptr<SavePackage> save_package(
-        new SavePackage(shell()->web_contents()->GetPrimaryPage()));
+        new SavePackage(web_contents_impl()->GetPrimaryPage()));
     save_package->GetSaveInfo();
     run_loop.Run();
     download_manager->RemoveObserver(&observer);

@@ -18,6 +18,7 @@
 #include "base/callback_helpers.h"
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/function_ref.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
@@ -345,10 +346,11 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool IsPrerenderedFrame(int frame_tree_node_id) override;
   RenderFrameHostImpl* UnsafeFindFrameByFrameTreeNodeId(
       int frame_tree_node_id) override;
+  void ForEachRenderFrameHostWithAction(
+      base::FunctionRef<FrameIterationAction(RenderFrameHost*)> on_frame)
+      override;
   void ForEachRenderFrameHost(
-      RenderFrameHost::FrameIterationCallback on_frame) override;
-  void ForEachRenderFrameHost(
-      RenderFrameHost::FrameIterationAlwaysContinueCallback on_frame) override;
+      base::FunctionRef<void(RenderFrameHost*)> on_frame) override;
   RenderViewHostImpl* GetRenderViewHost() override;
   RenderWidgetHostView* GetRenderWidgetHostView() override;
   RenderWidgetHostView* GetTopLevelRenderWidgetHostView() override;
@@ -1288,14 +1290,14 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // for details. Content internals can also access speculative
   // RenderFrameHostImpls if necessary by using the
   // |ForEachRenderFrameHostIncludingSpeculative| variations.
+  void ForEachRenderFrameHostWithAction(
+      base::FunctionRef<FrameIterationAction(RenderFrameHostImpl*)> on_frame);
   void ForEachRenderFrameHost(
-      RenderFrameHostImpl::FrameIterationCallbackImpl on_frame);
-  void ForEachRenderFrameHost(
-      RenderFrameHostImpl::FrameIterationAlwaysContinueCallbackImpl on_frame);
+      base::FunctionRef<void(RenderFrameHostImpl*)> on_frame);
+  void ForEachRenderFrameHostIncludingSpeculativeWithAction(
+      base::FunctionRef<FrameIterationAction(RenderFrameHostImpl*)> on_frame);
   void ForEachRenderFrameHostIncludingSpeculative(
-      RenderFrameHostImpl::FrameIterationCallbackImpl on_frame);
-  void ForEachRenderFrameHostIncludingSpeculative(
-      RenderFrameHostImpl::FrameIterationAlwaysContinueCallbackImpl on_frame);
+      base::FunctionRef<void(RenderFrameHostImpl*)> on_frame);
 
   // Computes and returns the content specific preferences for this WebContents.
   // Recomputes only the "fast" preferences (those not requiring slow
@@ -1831,7 +1833,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // This is the actual implementation of the various overloads of
   // |ForEachRenderFrameHost|.
   void ForEachRenderFrameHostImpl(
-      RenderFrameHostImpl::FrameIterationCallbackImpl on_frame,
+      base::FunctionRef<FrameIterationAction(RenderFrameHostImpl*)> on_frame,
       bool include_speculative);
 
   // Calls |on_frame_tree| for every FrameTree in this WebContents.

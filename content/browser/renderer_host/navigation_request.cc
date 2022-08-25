@@ -5056,27 +5056,23 @@ void NavigationRequest::CommitPageActivation() {
     // since the page entered bfcache. We must update all frames, not just the
     // top frame, because it is possible (though unlikely) that an iframe's
     // entries have changed, too.
-    activated_entry->render_frame_host()->ForEachRenderFrameHost(
-        base::BindRepeating(
-            [](content::RenderFrameHost* navigating_rfh,
-               NavigationRequest* request, content::RenderFrameHost* rfh) {
-              RenderFrameHostImpl* rfhi =
-                  static_cast<RenderFrameHostImpl*>(rfh);
-              // |request| is given as a parameter to
-              // GetNavigationApiHistoryEntryVectors() only for the frame being
-              // committed (i.e., the top frame).
-              auto entry_arrays =
-                  rfhi->frame_tree()
-                      ->controller()
-                      .GetNavigationApiHistoryEntryVectors(
-                          rfhi->frame_tree_node(),
-                          navigating_rfh == rfh ? request : nullptr);
-              rfhi->GetAssociatedLocalFrame()
-                  ->SetNavigationApiHistoryEntriesForRestore(
-                      std::move(entry_arrays));
-              return content::RenderFrameHost::FrameIterationAction::kContinue;
-            },
-            activated_entry->render_frame_host(), this));
+    activated_entry->render_frame_host()->ForEachRenderFrameHostWithAction(
+        [this, &activated_entry](RenderFrameHostImpl* rfh) {
+          // |this| is given as a parameter to
+          // GetNavigationApiHistoryEntryVectors() only for the frame being
+          // committed (i.e., the top frame).
+          auto entry_arrays =
+              rfh->frame_tree()
+                  ->controller()
+                  .GetNavigationApiHistoryEntryVectors(
+                      rfh->frame_tree_node(),
+                      activated_entry->render_frame_host() == rfh ? this
+                                                                  : nullptr);
+          rfh->GetAssociatedLocalFrame()
+              ->SetNavigationApiHistoryEntriesForRestore(
+                  std::move(entry_arrays));
+          return RenderFrameHost::FrameIterationAction::kContinue;
+        });
 
     base::WeakPtr<NavigationRequest> weak_self(weak_factory_.GetWeakPtr());
     ReadyToCommitNavigation(false /* is_error */);

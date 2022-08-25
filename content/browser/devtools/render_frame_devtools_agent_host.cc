@@ -197,17 +197,15 @@ void RenderFrameDevToolsAgentHost::AddAllAgentHosts(
     // ForEachRenderFrameHost.
     if (wc->GetOutermostWebContents() != wc)
       continue;
-    wc->GetPrimaryMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
-        [](DevToolsAgentHost::List* result,
-           RenderFrameHost* render_frame_host) {
+    wc->GetPrimaryMainFrame()->ForEachRenderFrameHost(
+        [result](RenderFrameHostImpl* render_frame_host) {
           FrameTreeNode* node = FrameTreeNode::From(render_frame_host);
           if (!ShouldCreateDevToolsForNode(node))
             return;
           if (!render_frame_host->IsRenderFrameLive())
             return;
           result->push_back(RenderFrameDevToolsAgentHost::GetOrCreateFor(node));
-        },
-        result));
+        });
   }
 }
 

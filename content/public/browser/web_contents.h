@@ -14,6 +14,7 @@
 
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
+#include "base/functional/function_ref.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -433,10 +434,11 @@ class WebContents : public PageNavigator,
   // For callers only interested in the primary page,
   // |GetMainFrame()->ForEachRenderFrameHost()| can be used.
   // See |RenderFrameHost::ForEachRenderFrameHost| for details.
+  using FrameIterationAction = RenderFrameHost::FrameIterationAction;
+  virtual void ForEachRenderFrameHostWithAction(
+      base::FunctionRef<FrameIterationAction(RenderFrameHost*)> on_frame) = 0;
   virtual void ForEachRenderFrameHost(
-      RenderFrameHost::FrameIterationCallback on_frame) = 0;
-  virtual void ForEachRenderFrameHost(
-      RenderFrameHost::FrameIterationAlwaysContinueCallback on_frame) = 0;
+      base::FunctionRef<void(RenderFrameHost*)> on_frame) = 0;
 
   // Gets the current RenderViewHost for this tab.
   virtual RenderViewHost* GetRenderViewHost() = 0;

@@ -150,13 +150,10 @@ void CastMediaBlocker::OnRenderFrameCreated(
 void CastMediaBlocker::UpdateBackgroundVideoPlaybackState() {
   if (!web_contents())
     return;
-  web_contents()->ForEachRenderFrameHost(base::BindRepeating(
-      [](CastMediaBlocker* cast_media_blocker,
-         content::RenderFrameHost* frame) {
-        cast_media_blocker->UpdateRenderFrameBackgroundVideoPlaybackState(
-            frame);
-      },
-      this));
+  web_contents()->ForEachRenderFrameHost(
+      [this](content::RenderFrameHost* frame) {
+        UpdateRenderFrameBackgroundVideoPlaybackState(frame);
+      });
 }
 
 void CastMediaBlocker::UpdateRenderFrameBackgroundVideoPlaybackState(

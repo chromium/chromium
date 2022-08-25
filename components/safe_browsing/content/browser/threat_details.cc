@@ -636,8 +636,9 @@ void ThreatDetails::StartCollection() {
     // TODO(mattm): In theory, if the user proceeds through the warning DOM
     // detail collection could be started once the page loads.
     web_contents_->GetPrimaryMainFrame()->ForEachRenderFrameHost(
-        base::BindRepeating(&ThreatDetails::RequestThreatDOMDetails,
-                            GetWeakPtr()));
+        [this](content::RenderFrameHost* frame) {
+          RequestThreatDOMDetails(frame);
+        });
   }
 }
 

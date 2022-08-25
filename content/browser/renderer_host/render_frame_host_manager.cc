@@ -298,11 +298,9 @@ void ReuseDefaultProcessFromDifferentBrowsingInstanceIfPossible(
   while (root->IsFencedFrameRoot()) {
     root = root->GetParentOrOuterDocument()->GetMainFrame();
   }
-  root->ForEachRenderFrameHost(base::BindRepeating(
-      [](scoped_refptr<SiteInstance> site_instance, RenderFrameHost* root,
-         RenderFrameHost* rfh) {
-        RenderFrameHostImpl* rfhi = static_cast<RenderFrameHostImpl*>(rfh);
-
+  root->ForEachRenderFrameHostWithAction(
+      [site_instance = std::move(new_instance),
+       root](RenderFrameHostImpl* rfhi) {
         if (rfhi->GetParent())
           return RenderFrameHost::FrameIterationAction::kContinue;
 
@@ -324,8 +322,7 @@ void ReuseDefaultProcessFromDifferentBrowsingInstanceIfPossible(
         }
 
         return RenderFrameHost::FrameIterationAction::kContinue;
-      },
-      new_instance, root));
+      });
 }
 
 }  // namespace

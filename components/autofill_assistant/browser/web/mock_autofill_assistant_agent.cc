@@ -25,13 +25,13 @@ void MockAutofillAssistantAgent::RegisterForAllFrames(
     content::WebContents* web_contents,
     MockAutofillAssistantAgent* agent) {
   web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
-      base::BindLambdaForTesting([agent](content::RenderFrameHost* host) {
+      [agent](content::RenderFrameHost* host) {
         host->GetRemoteAssociatedInterfaces()->OverrideBinderForTesting(
             mojom::AutofillAssistantAgent::Name_,
             base::BindRepeating(
                 &MockAutofillAssistantAgent::BindPendingReceiver,
                 base::Unretained(agent)));
-      }));
+      });
 }
 
 }  // namespace autofill_assistant

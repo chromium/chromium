@@ -162,9 +162,9 @@ bool ExtensionMayAttachToRenderFrameHost(
     content::RenderFrameHost* render_frame_host,
     std::string* error) {
   bool result = true;
-  render_frame_host->ForEachRenderFrameHost(base::BindRepeating(
-      [](const Extension& extension, Profile* extension_profile,
-         std::string* error, bool& result, content::RenderFrameHost* rfh) {
+  render_frame_host->ForEachRenderFrameHostWithAction(
+      [&extension, extension_profile, error,
+       &result](content::RenderFrameHost* rfh) {
         // If |rfh| is attached to an inner MimeHandlerViewGuest skip it.
         // This is done to fix crbug.com/1293856 because an extension cannot
         // inspect another extension.
@@ -193,8 +193,7 @@ bool ExtensionMayAttachToRenderFrameHost(
         }
 
         return content::RenderFrameHost::FrameIterationAction::kContinue;
-      },
-      std::ref(extension), extension_profile, error, std::ref(result)));
+      });
   return result;
 }
 

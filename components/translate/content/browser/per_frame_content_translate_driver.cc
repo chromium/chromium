@@ -152,9 +152,11 @@ void PerFrameContentTranslateDriver::TranslatePage(
   translate_seq_no_ = IncrementSeqNo(translate_seq_no_);
 
   web_contents()->GetPrimaryMainFrame()->ForEachRenderFrameHost(
-      base::BindRepeating(&PerFrameContentTranslateDriver::TranslateFrame,
-                          base::Unretained(this), translate_script, source_lang,
-                          target_lang, translate_seq_no_));
+      [this, &translate_script, &source_lang,
+       &target_lang](content::RenderFrameHost* render_frame_host) {
+        TranslateFrame(translate_script, source_lang, target_lang,
+                       translate_seq_no_, render_frame_host);
+      });
 }
 
 void PerFrameContentTranslateDriver::TranslateFrame(
@@ -191,8 +193,9 @@ void PerFrameContentTranslateDriver::RevertTranslation(int page_seq_no) {
   translate_seq_no_ = IncrementSeqNo(translate_seq_no_);
 
   web_contents()->GetPrimaryMainFrame()->ForEachRenderFrameHost(
-      base::BindRepeating(&PerFrameContentTranslateDriver::RevertFrame,
-                          base::Unretained(this)));
+      [this](content::RenderFrameHost* render_frame_host) {
+        RevertFrame(render_frame_host);
+      });
 }
 
 void PerFrameContentTranslateDriver::RevertFrame(

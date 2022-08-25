@@ -147,12 +147,12 @@ void InjectScript(content::WebContents* contents) {
   // into all of them to ensure that notifications from all of them have been
   // sent.
   contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
-      base::BindRepeating([](content::RenderFrameHost* frame) {
+      [](content::RenderFrameHost* frame) {
         bool js_result = false;
         EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
             frame, "window.domAutomationController.send(true);", &js_result));
         EXPECT_TRUE(js_result);
-      }));
+      });
 }
 
 // A WebContentsObserver useful for testing the DidChangeVisibleSecurityState()

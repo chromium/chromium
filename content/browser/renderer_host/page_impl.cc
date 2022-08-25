@@ -191,13 +191,12 @@ void PageImpl::ActivateForPrerendering(
   // inner WebContents. These are in a different FrameTree which might not know
   // it is being prerendered. We should teach these FrameTrees that they are
   // being prerendered, or ban inner FrameTrees in a prerendering page.
-  main_document_.ForEachRenderFrameHostIncludingSpeculative(base::BindRepeating(
-      [](PageImpl* page, RenderFrameHostImpl* rfh) {
-        if (&rfh->GetPage() != page)
+  main_document_.ForEachRenderFrameHostIncludingSpeculative(
+      [this](RenderFrameHostImpl* rfh) {
+        if (&rfh->GetPage() != this)
           return;
         rfh->RendererWillActivateForPrerendering();
-      },
-      this));
+      });
 }
 
 void PageImpl::MaybeDispatchLoadEventsOnPrerenderActivation() {
@@ -216,28 +215,22 @@ void PageImpl::MaybeDispatchLoadEventsOnPrerenderActivation() {
     main_document_.MainDocumentElementAvailable(uses_temporary_zoom_level());
 
   main_document_.ForEachRenderFrameHost(
-      base::BindRepeating([](RenderFrameHostImpl* rfh) {
-        rfh->MaybeDispatchDOMContentLoadedOnPrerenderActivation();
-      }));
+      &RenderFrameHostImpl::MaybeDispatchDOMContentLoadedOnPrerenderActivation);
 
   if (is_on_load_completed_in_main_document())
     main_document_.DocumentOnLoadCompleted();
 
   main_document_.ForEachRenderFrameHost(
-      base::BindRepeating([](RenderFrameHostImpl* rfh) {
-        rfh->MaybeDispatchDidFinishLoadOnPrerenderActivation();
-      }));
+      &RenderFrameHostImpl::MaybeDispatchDidFinishLoadOnPrerenderActivation);
 }
 
 void PageImpl::DidActivateAllRenderViewsForPrerendering() {
   // Tell each RenderFrameHostImpl in this Page that activation finished.
-  main_document_.ForEachRenderFrameHost(base::BindRepeating(
-      [](PageImpl* page, RenderFrameHostImpl* rfh) {
-        if (&rfh->GetPage() != page)
-          return;
-        rfh->RendererDidActivateForPrerendering();
-      },
-      this));
+  main_document_.ForEachRenderFrameHost([this](RenderFrameHostImpl* rfh) {
+    if (&rfh->GetPage() != this)
+      return;
+    rfh->RendererDidActivateForPrerendering();
+  });
 }
 
 RenderFrameHost& PageImpl::GetMainDocumentHelper() {

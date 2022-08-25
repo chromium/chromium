@@ -619,15 +619,13 @@ void EmulationHandler::UpdateDeviceEmulationState() {
   // this is tricky since we'd have to track the DevTools message id with the
   // WidgetMsg and acknowledgment, as well as plump the acknowledgment back to
   // the EmulationHandler somehow. Mojo callbacks should make this much simpler.
-  host_->ForEachRenderFrameHostIncludingSpeculative(base::BindRepeating(
-      [](EmulationHandler* handler, RenderFrameHostImpl* host) {
+  host_->ForEachRenderFrameHostIncludingSpeculative(
+      [this](RenderFrameHostImpl* host) {
         // The main frame of nested subpages (ex. fenced frames, portals) inside
         // this page are updated as well.
         if (host->is_main_frame())
-          handler->UpdateDeviceEmulationStateForHost(
-              host->GetRenderWidgetHost());
-      },
-      this));
+          UpdateDeviceEmulationStateForHost(host->GetRenderWidgetHost());
+      });
 }
 
 void EmulationHandler::UpdateDeviceEmulationStateForHost(

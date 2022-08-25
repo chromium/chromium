@@ -11,6 +11,7 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/function_ref.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
@@ -356,13 +357,10 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
     // Does not continue traversal.
     kStop
   };
-  using FrameIterationCallback =
-      base::RepeatingCallback<FrameIterationAction(RenderFrameHost*)>;
-  using FrameIterationAlwaysContinueCallback =
-      base::RepeatingCallback<void(RenderFrameHost*)>;
-  virtual void ForEachRenderFrameHost(FrameIterationCallback on_frame) = 0;
+  virtual void ForEachRenderFrameHostWithAction(
+      base::FunctionRef<FrameIterationAction(RenderFrameHost*)> on_frame) = 0;
   virtual void ForEachRenderFrameHost(
-      FrameIterationAlwaysContinueCallback on_frame) = 0;
+      base::FunctionRef<void(RenderFrameHost*)> on_frame) = 0;
 
   // Returns the FrameTreeNode ID associated with this RenderFrameHost. This ID
   // is browser-global and uniquely identifies a browser-side concept of a frame

@@ -124,8 +124,10 @@ WebContentsTaskProvider::WebContentsEntry::~WebContentsEntry() {
 
 void WebContentsTaskProvider::WebContentsEntry::CreateAllTasks() {
   DCHECK(web_contents()->GetPrimaryMainFrame());
-  web_contents()->ForEachRenderFrameHost(base::BindRepeating(
-      &WebContentsEntry::CreateTaskForFrame, base::Unretained(this)));
+  web_contents()->ForEachRenderFrameHost(
+      [this](content::RenderFrameHost* render_frame_host) {
+        CreateTaskForFrame(render_frame_host);
+      });
 }
 
 void WebContentsTaskProvider::WebContentsEntry::ClearAllTasks(
@@ -472,15 +474,12 @@ void WebContentsTaskProvider::WebContentsEntry::ClearTaskForFrame(
 
 void WebContentsTaskProvider::WebContentsEntry::ClearTasksForDescendantsOf(
     RenderFrameHost* ancestor) {
-  ancestor->ForEachRenderFrameHost(base::BindRepeating(
-      [](WebContentsTaskProvider::WebContentsEntry* provider,
-         content::RenderFrameHost* ancestor,
-         content::RenderFrameHost* render_frame_host) {
+  ancestor->ForEachRenderFrameHost(
+      [this, ancestor](content::RenderFrameHost* render_frame_host) {
         if (render_frame_host == ancestor)
           return;
-        provider->ClearTaskForFrame(render_frame_host);
-      },
-      this, ancestor));
+        ClearTaskForFrame(render_frame_host);
+      });
 }
 
 ////////////////////////////////////////////////////////////////////////////////

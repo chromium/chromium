@@ -19,8 +19,8 @@ content::RenderFrameHost* FindPdfChildFrame(content::RenderFrameHost* rfh) {
     return nullptr;
 
   content::RenderFrameHost* pdf_rfh = nullptr;
-  rfh->ForEachRenderFrameHost(base::BindRepeating(
-      [](content::RenderFrameHost*& pdf_rfh, content::RenderFrameHost* rfh) {
+  rfh->ForEachRenderFrameHost(
+      [&pdf_rfh](content::RenderFrameHost* rfh) {
         if (!rfh->GetProcess()->IsPdf())
           return;
 
@@ -28,8 +28,7 @@ content::RenderFrameHost* FindPdfChildFrame(content::RenderFrameHost* rfh) {
             rfh->GetParent()->GetLastCommittedOrigin()));
         DCHECK(!pdf_rfh);
         pdf_rfh = rfh;
-      },
-      std::ref(pdf_rfh)));
+      });
 
   return pdf_rfh;
 }

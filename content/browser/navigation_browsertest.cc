@@ -4669,11 +4669,11 @@ class SubresourceLoadingTest : public NavigationBrowserTest {
 
       // Flush all the frames in the `current_contents's active page.
       current_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
-          base::BindRepeating([](RenderFrameHost* frame_to_flush) {
+          [](RenderFrameHost* frame_to_flush) {
             constexpr bool kDoNothingIfNoNetworkServiceConnection = true;
             frame_to_flush->FlushNetworkAndNavigationInterfacesForTesting(
                 kDoNothingIfNoNetworkServiceConnection);
-          }));
+          });
 
       // Traverse the `current_frame`'s opener chain.
       if (FrameTreeNode* opener_node =

@@ -66,12 +66,6 @@ namespace extensions {
 
 namespace {
 
-void AddFrameToSet(std::set<content::RenderFrameHost*>* frames,
-                   content::RenderFrameHost* rfh) {
-  if (rfh->IsRenderFrameLive())
-    frames->insert(rfh);
-}
-
 GURL CreateBlobURL(content::RenderFrameHost* frame,
                    const std::string& content) {
   std::string blob_url_string;
@@ -153,8 +147,10 @@ class NavigationCompletedObserver : public content::WebContentsObserver {
       : content::WebContentsObserver(web_contents),
         message_loop_runner_(new content::MessageLoopRunner) {
     web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
-        base::BindRepeating(&AddFrameToSet,
-                            base::Unretained(&live_original_frames_)));
+        [this](content::RenderFrameHost* rfh) {
+          if (rfh->IsRenderFrameLive())
+            live_original_frames_.insert(rfh);
+        });
   }
 
   NavigationCompletedObserver(const NavigationCompletedObserver&) = delete;
@@ -182,7 +178,10 @@ class NavigationCompletedObserver : public content::WebContentsObserver {
   bool AllLiveRenderFrameHostsAreCurrent() {
     std::set<content::RenderFrameHost*> current_frames;
     web_contents()->GetPrimaryMainFrame()->ForEachRenderFrameHost(
-        base::BindRepeating(&AddFrameToSet, base::Unretained(&current_frames)));
+        [&current_frames](content::RenderFrameHost* rfh) {
+          if (rfh->IsRenderFrameLive())
+            current_frames.insert(rfh);
+        });
 
     return base::STLSetDifference<std::set<content::RenderFrameHost*>>(
                live_original_frames_, current_frames)

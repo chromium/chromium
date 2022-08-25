@@ -2186,38 +2186,47 @@ bool RenderFrameHostImpl::IsNestedWithinFencedFrame() const {
   }
 }
 
-void RenderFrameHostImpl::ForEachRenderFrameHost(
-    FrameIterationCallback on_frame) {
-  ForEachRenderFrameHost(FrameIterationWrapper(on_frame));
+void RenderFrameHostImpl::ForEachRenderFrameHostWithAction(
+    base::FunctionRef<FrameIterationAction(RenderFrameHost*)> on_frame) {
+  ForEachRenderFrameHostWithAction(
+      [on_frame](RenderFrameHostImpl* rfh) { return on_frame(rfh); });
 }
 
 void RenderFrameHostImpl::ForEachRenderFrameHost(
-    FrameIterationAlwaysContinueCallback on_frame) {
-  ForEachRenderFrameHost(FrameIterationWrapper(on_frame));
+    base::FunctionRef<void(RenderFrameHost*)> on_frame) {
+  ForEachRenderFrameHost(
+      [on_frame](RenderFrameHostImpl* rfh) { on_frame(rfh); });
 }
 
-void RenderFrameHostImpl::ForEachRenderFrameHost(
-    FrameIterationCallbackImpl on_frame) {
+void RenderFrameHostImpl::ForEachRenderFrameHostWithAction(
+    base::FunctionRef<FrameIterationAction(RenderFrameHostImpl*)> on_frame) {
   ForEachRenderFrameHostImpl(on_frame, /*include_speculative=*/false);
 }
 
 void RenderFrameHostImpl::ForEachRenderFrameHost(
-    FrameIterationAlwaysContinueCallbackImpl on_frame) {
-  ForEachRenderFrameHost(FrameIterationWrapper(on_frame));
+    base::FunctionRef<void(RenderFrameHostImpl*)> on_frame) {
+  ForEachRenderFrameHostWithAction([on_frame](RenderFrameHostImpl* rfh) {
+    on_frame(rfh);
+    return FrameIterationAction::kContinue;
+  });
 }
 
-void RenderFrameHostImpl::ForEachRenderFrameHostIncludingSpeculative(
-    FrameIterationCallbackImpl on_frame) {
+void RenderFrameHostImpl::ForEachRenderFrameHostIncludingSpeculativeWithAction(
+    base::FunctionRef<FrameIterationAction(RenderFrameHostImpl*)> on_frame) {
   ForEachRenderFrameHostImpl(on_frame, /*include_speculative=*/true);
 }
 
 void RenderFrameHostImpl::ForEachRenderFrameHostIncludingSpeculative(
-    FrameIterationAlwaysContinueCallbackImpl on_frame) {
-  ForEachRenderFrameHostIncludingSpeculative(FrameIterationWrapper(on_frame));
+    base::FunctionRef<void(RenderFrameHostImpl*)> on_frame) {
+  ForEachRenderFrameHostIncludingSpeculativeWithAction(
+      [on_frame](RenderFrameHostImpl* rfh) {
+        on_frame(rfh);
+        return FrameIterationAction::kContinue;
+      });
 }
 
 void RenderFrameHostImpl::ForEachRenderFrameHostImpl(
-    FrameIterationCallbackImpl on_frame,
+    base::FunctionRef<FrameIterationAction(RenderFrameHostImpl*)> on_frame,
     bool include_speculative) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -2232,7 +2241,7 @@ void RenderFrameHostImpl::ForEachRenderFrameHostImpl(
   // |this| and then actually start iterating over the subtree starting with
   // our children's FrameTreeNodes.
   bool skip_children_of_starting_frame = false;
-  switch (on_frame.Run(this)) {
+  switch (on_frame(this)) {
     case FrameIterationAction::kContinue:
       break;
     case FrameIterationAction::kSkipChildren:
@@ -2253,7 +2262,7 @@ void RenderFrameHostImpl::ForEachRenderFrameHostImpl(
         frame_tree_node()->render_manager()->speculative_frame_host();
     if (speculative_frame_host) {
       DCHECK_EQ(speculative_frame_host->child_count(), 0U);
-      switch (on_frame.Run(speculative_frame_host)) {
+      switch (on_frame(speculative_frame_host)) {
         case FrameIterationAction::kContinue:
         case FrameIterationAction::kSkipChildren:
           break;
@@ -2274,7 +2283,7 @@ void RenderFrameHostImpl::ForEachRenderFrameHostImpl(
     FrameTreeNode* node = *it;
     RenderFrameHostImpl* frame_host = node->current_frame_host();
     if (frame_host) {
-      switch (on_frame.Run(frame_host)) {
+      switch (on_frame(frame_host)) {
         case FrameIterationAction::kContinue:
           ++it;
           break;
@@ -2291,7 +2300,7 @@ void RenderFrameHostImpl::ForEachRenderFrameHostImpl(
           node->render_manager()->speculative_frame_host();
       if (speculative_frame_host) {
         DCHECK_EQ(speculative_frame_host->child_count(), 0U);
-        switch (on_frame.Run(speculative_frame_host)) {
+        switch (on_frame(speculative_frame_host)) {
           case FrameIterationAction::kContinue:
           case FrameIterationAction::kSkipChildren:
             break;
@@ -3529,16 +3538,14 @@ void RenderFrameHostImpl::Init() {
 
   // TODO(danakj): We only blocked the main frame, so we should only need to
   // resume that?
-  ForEachRenderFrameHostIncludingSpeculative(base::BindRepeating(
-      [](RenderFrameHostImpl* main_rfh,
-         RenderFrameHostImpl* render_frame_host) {
+  ForEachRenderFrameHostIncludingSpeculative(
+      [this](RenderFrameHostImpl* render_frame_host) {
         // Inner frame trees shouldn't be possible here.
-        DCHECK_EQ(render_frame_host->frame_tree(), main_rfh->frame_tree());
+        DCHECK_EQ(render_frame_host->frame_tree(), frame_tree());
 
         if (render_frame_host->IsRenderFrameLive())
           render_frame_host->frame_->ResumeBlockedRequests();
-      },
-      base::Unretained(this)));
+      });
 
   if (pending_navigate_) {
     frame_tree_node()->navigator().OnBeginNavigation(
@@ -4534,13 +4541,13 @@ void RenderFrameHostImpl::DidCommitPageActivation(
   //
   // Note that due to PrerenderCommitDeferringCondition, the main frame should
   // have no ongoing NavigationRequest at all, so it is not checked here.
-  ForEachRenderFrameHost(base::BindRepeating([](RenderFrameHostImpl* rfh) {
+  ForEachRenderFrameHost([](RenderFrameHostImpl* rfh) {
     // Interested only in subframes.
     if (rfh->is_main_frame())
       return;
     for (const auto& pair : rfh->navigation_requests_)
       DCHECK_EQ(pair.first->nav_entry_id(), 0);
-  }));
+  });
 #endif
 
   DidCommitNavigationInternal(std::move(owned_request), std::move(params),
@@ -6667,21 +6674,18 @@ bool RenderFrameHostImpl::GetSuddenTerminationDisablerState(
 bool RenderFrameHostImpl::UnloadHandlerExistsInSameSiteInstanceSubtree() {
   DCHECK(!GetParent());
   bool result = false;
-  ForEachRenderFrameHost(base::BindRepeating(
-      [](const SiteInstanceImpl* main_frame_site_instance,
-         const PageImpl* main_frame_page, bool* result,
-         RenderFrameHostImpl* rfhi) {
+  ForEachRenderFrameHostWithAction(
+      [this, &result](RenderFrameHostImpl* rfhi) -> FrameIterationAction {
         // If we aren't from the same page ignore unload handlers.
-        if (&rfhi->GetPage() != main_frame_page)
+        if (&rfhi->GetPage() != &GetPage())
           return FrameIterationAction::kSkipChildren;
-        if (rfhi->GetSiteInstance() == main_frame_site_instance &&
+        if (rfhi->GetSiteInstance() == GetSiteInstance() &&
             rfhi->has_unload_handler_) {
-          *result = true;
+          result = true;
           return FrameIterationAction::kStop;
         }
         return FrameIterationAction::kContinue;
-      },
-      base::Unretained(GetSiteInstance()), &GetPage(), &result));
+      });
   return result;
 }
 
@@ -11123,26 +11127,21 @@ service_manager::InterfaceProvider* RenderFrameHostImpl::GetJavaInterfaces() {
 #endif
 
 void RenderFrameHostImpl::ForEachImmediateLocalRoot(
-    const base::RepeatingCallback<void(RenderFrameHostImpl*)>& callback) {
-  ForEachRenderFrameHost(base::BindRepeating(
-      [](const base::RepeatingCallback<void(RenderFrameHostImpl*)>& callback,
-         const RenderFrameHostImpl* starting_rfh, RenderFrameHostImpl* rfh) {
-        if (rfh->is_local_root() && rfh != starting_rfh) {
-          callback.Run(rfh);
-          return FrameIterationAction::kSkipChildren;
-        }
-        return FrameIterationAction::kContinue;
-      },
-      callback, this));
+    base::FunctionRef<void(RenderFrameHostImpl*)> func_ref) {
+  ForEachRenderFrameHostWithAction([func_ref, this](RenderFrameHostImpl* rfh) {
+    if (rfh->is_local_root() && rfh != this) {
+      func_ref(rfh);
+      return FrameIterationAction::kSkipChildren;
+    }
+    return FrameIterationAction::kContinue;
+  });
 }
 
 void RenderFrameHostImpl::SetVisibilityForChildViews(bool visible) {
-  ForEachImmediateLocalRoot(base::BindRepeating(
-      [](bool is_visible, RenderFrameHostImpl* frame_host) {
-        if (auto* view = frame_host->GetView())
-          return is_visible ? view->Show() : view->Hide();
-      },
-      visible));
+  ForEachImmediateLocalRoot([visible](RenderFrameHostImpl* frame_host) {
+    if (auto* view = frame_host->GetView())
+      return visible ? view->Show() : view->Hide();
+  });
 }
 
 mojom::Frame* RenderFrameHostImpl::GetMojomFrameInRenderer() {

@@ -311,17 +311,11 @@ void LinkToTextMenuObserver::CompleteWithError(LinkGenerationError error) {
 void LinkToTextMenuObserver::ReshareLink() {
   // Get the list of RenderFrameHosts from the current page.
   proxy_->GetWebContents()->GetPrimaryMainFrame()->ForEachRenderFrameHost(
-      base::BindRepeating(
-          [](std::vector<content::GlobalRenderFrameHostId>*
-                 render_frame_host_ids,
-             std::vector<mojo::Remote<blink::mojom::TextFragmentReceiver>>*
-                 text_fragment_remotes,
-             content::RenderFrameHost* rfh) {
-            render_frame_host_ids->push_back(rfh->GetGlobalId());
-            mojo::Remote<blink::mojom::TextFragmentReceiver> remote;
-            text_fragment_remotes->push_back(std::move(remote));
-          },
-          &render_frame_host_ids_, &text_fragment_remotes_));
+      [this](content::RenderFrameHost* rfh) {
+        render_frame_host_ids_.push_back(rfh->GetGlobalId());
+        mojo::Remote<blink::mojom::TextFragmentReceiver> remote;
+        text_fragment_remotes_.push_back(std::move(remote));
+      });
 
   get_frames_existing_selectors_counter_ = render_frame_host_ids_.size();
 
@@ -381,7 +375,7 @@ void LinkToTextMenuObserver::OnGetExistingSelectorsComplete(
 void LinkToTextMenuObserver::RemoveHighlights() {
   // Remove highlights from all frames in the primary page.
   proxy_->GetWebContents()->GetPrimaryMainFrame()->ForEachRenderFrameHost(
-      base::BindRepeating(RemoveHighlightsInFrame));
+      &RemoveHighlightsInFrame);
 
   execute_command_pending_ = false;
   NotifyLinkToTextMenuCompleted();

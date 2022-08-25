@@ -113,8 +113,9 @@ class Handler : public content::WebContentsObserver {
       const size_t requested_frame_count = pending_render_frames_.size();
       for (size_t i = 0; i < requested_frame_count; ++i) {
         pending_render_frames_.at(i)->ForEachRenderFrameHost(
-            base::BindRepeating(&Handler::MaybeAddSubFrame,
-                                base::Unretained(this)));
+            [this](content::RenderFrameHost* frame) {
+              MaybeAddSubFrame(frame);
+            });
       }
     }
 

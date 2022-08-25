@@ -161,12 +161,12 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, ForEachRenderFrameHost) {
     // that point. In this case, if we stop iteration in the primary page, we do
     // not continue to iterate in the bfcached page.
     bool stopped = false;
-    web_contents()->ForEachRenderFrameHost(
-        base::BindLambdaForTesting([&](RenderFrameHostImpl* rfh) {
+    web_contents()->ForEachRenderFrameHostWithAction(
+        [&](RenderFrameHostImpl* rfh) {
           EXPECT_FALSE(stopped);
           stopped = true;
           return RenderFrameHost::FrameIterationAction::kStop;
-        }));
+        });
   }
 
   EXPECT_EQ(nullptr, rfh_a->GetParentOrOuterDocument());

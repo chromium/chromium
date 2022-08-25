@@ -206,18 +206,16 @@ content::RenderFrameHost* LongScreenshotsTabService::GetRootRenderFrameHost(
   }
 
   std::vector<content::RenderFrameHost*> child_frames;
-  main_frame->ForEachRenderFrameHost(base::BindRepeating(
-      [](std::vector<content::RenderFrameHost*>* child_frames,
-         content::RenderFrameHost* main_frame, content::RenderFrameHost* rfh) {
+  main_frame->ForEachRenderFrameHostWithAction(
+      [main_frame, &child_frames](content::RenderFrameHost* rfh) {
         // All frames get traversed in breadth-first order.
         // If a direct child is found, skip traversing its children.
         if (rfh->GetParent() == main_frame) {
-          child_frames->push_back(rfh);
+          child_frames.push_back(rfh);
           return content::RenderFrameHost::FrameIterationAction::kSkipChildren;
         }
         return content::RenderFrameHost::FrameIterationAction::kContinue;
-      },
-      &child_frames, main_frame));
+      });
 
   // In AMP pages the main frame should have exactly one child subframe.
   if (child_frames.size() != 1) {

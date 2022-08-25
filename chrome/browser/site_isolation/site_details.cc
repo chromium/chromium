@@ -65,8 +65,8 @@ SiteData::~SiteData() = default;
 void SiteDetails::CollectSiteInfo(content::Page& page, SiteData* site_data) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  page.GetMainDocument().ForEachRenderFrameHost(base::BindRepeating(
-      [](content::Page* page, SiteData* site_data, RenderFrameHost* frame) {
+  page.GetMainDocument().ForEachRenderFrameHost(
+      [site_data](RenderFrameHost* frame) {
         // Each Page (whether primary or nested) will have its own primary
         // SiteInstance and BrowsingInstance. With MPArch we may have multiple
         // pages which could be in separate BrowsingInstances for nested pages.
@@ -93,8 +93,7 @@ void SiteDetails::CollectSiteInfo(content::Page& page, SiteData* site_data) {
             site_data->out_of_process_inner_frame_trees++;
           }
         }
-      },
-      &page, site_data));
+      });
 }
 
 int SiteDetails::EstimateOriginAgentClusterOverhead(const SiteData& site_data) {

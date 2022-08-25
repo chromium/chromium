@@ -26,21 +26,19 @@ OnscreenContentProvider::OnscreenContentProvider(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<OnscreenContentProvider>(*web_contents) {
-  web_contents->ForEachRenderFrameHost(base::BindRepeating(
-      [](OnscreenContentProvider* provider,
-         content::RenderFrameHost* render_frame_host) {
+  web_contents->ForEachRenderFrameHostWithAction(
+      [this](content::RenderFrameHost* render_frame_host) {
         // Don't cross into inner WebContents since we wouldn't be notified of
         // its changes.
         if (content::WebContents::FromRenderFrameHost(render_frame_host) !=
-            provider->web_contents()) {
+            this->web_contents()) {
           return content::RenderFrameHost::FrameIterationAction::kSkipChildren;
         }
         if (render_frame_host->IsRenderFrameLive()) {
-          provider->RenderFrameCreated(render_frame_host);
+          RenderFrameCreated(render_frame_host);
         }
         return content::RenderFrameHost::FrameIterationAction::kContinue;
-      },
-      this));
+      });
 }
 
 OnscreenContentProvider::~OnscreenContentProvider() = default;

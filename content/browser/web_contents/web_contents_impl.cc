@@ -1387,39 +1387,47 @@ RenderFrameHostImpl* WebContentsImpl::UnsafeFindFrameByFrameTreeNodeId(
   return ftn->current_frame_host();
 }
 
-void WebContentsImpl::ForEachRenderFrameHost(
-    RenderFrameHost::FrameIterationCallback on_frame) {
-  ForEachRenderFrameHost(RenderFrameHostImpl::FrameIterationWrapper(on_frame));
+void WebContentsImpl::ForEachRenderFrameHostWithAction(
+    base::FunctionRef<FrameIterationAction(RenderFrameHost*)> on_frame) {
+  ForEachRenderFrameHostWithAction(
+      [on_frame](RenderFrameHostImpl* rfh) { return on_frame(rfh); });
 }
 
 void WebContentsImpl::ForEachRenderFrameHost(
-    RenderFrameHost::FrameIterationAlwaysContinueCallback on_frame) {
-  ForEachRenderFrameHost(RenderFrameHostImpl::FrameIterationWrapper(on_frame));
+    base::FunctionRef<void(RenderFrameHost*)> on_frame) {
+  ForEachRenderFrameHost(
+      [on_frame](RenderFrameHostImpl* rfh) { on_frame(rfh); });
 }
 
-void WebContentsImpl::ForEachRenderFrameHost(
-    RenderFrameHostImpl::FrameIterationCallbackImpl on_frame) {
+void WebContentsImpl::ForEachRenderFrameHostWithAction(
+    base::FunctionRef<FrameIterationAction(RenderFrameHostImpl*)> on_frame) {
   ForEachRenderFrameHostImpl(on_frame, /* include_speculative */ false);
 }
 
 void WebContentsImpl::ForEachRenderFrameHost(
-    RenderFrameHostImpl::FrameIterationAlwaysContinueCallbackImpl on_frame) {
-  ForEachRenderFrameHost(RenderFrameHostImpl::FrameIterationWrapper(on_frame));
+    base::FunctionRef<void(RenderFrameHostImpl*)> on_frame) {
+  ForEachRenderFrameHostWithAction([on_frame](RenderFrameHostImpl* rfh) {
+    on_frame(rfh);
+    return FrameIterationAction::kContinue;
+  });
 }
 
-void WebContentsImpl::ForEachRenderFrameHostIncludingSpeculative(
-    RenderFrameHostImpl::FrameIterationCallbackImpl on_frame) {
+void WebContentsImpl::ForEachRenderFrameHostIncludingSpeculativeWithAction(
+    base::FunctionRef<FrameIterationAction(RenderFrameHostImpl*)> on_frame) {
   ForEachRenderFrameHostImpl(on_frame, /* include_speculative */ true);
 }
 
 void WebContentsImpl::ForEachRenderFrameHostIncludingSpeculative(
-    RenderFrameHostImpl::FrameIterationAlwaysContinueCallbackImpl on_frame) {
-  ForEachRenderFrameHostIncludingSpeculative(
-      RenderFrameHostImpl::FrameIterationWrapper(on_frame));
+    base::FunctionRef<void(RenderFrameHostImpl*)> on_frame) {
+  ForEachRenderFrameHostIncludingSpeculativeWithAction(
+      [on_frame](RenderFrameHostImpl* rfh) {
+        on_frame(rfh);
+        return FrameIterationAction::kContinue;
+      });
 }
 
 void WebContentsImpl::ForEachRenderFrameHostImpl(
-    RenderFrameHostImpl::FrameIterationCallbackImpl on_frame,
+    base::FunctionRef<FrameIterationAction(RenderFrameHostImpl*)> on_frame,
     bool include_speculative) {
   // Since |RenderFrameHostImpl::ForEachRenderFrameHost| will reach the
   // RenderFrameHosts descending from a specified root, it is enough to start
@@ -1428,25 +1436,21 @@ void WebContentsImpl::ForEachRenderFrameHostImpl(
   // |RenderFrameHostImpl::ForEachRenderFrameHost|, we also need to stop early
   // by not iterating over additional outermost main frames.
   bool iteration_stopped = false;
-  RenderFrameHostImpl::FrameIterationCallbackImpl on_frame_with_termination =
-      base::BindRepeating(
-          [](bool& iteration_stopped,
-             RenderFrameHostImpl::FrameIterationCallbackImpl on_frame,
-             RenderFrameHostImpl* rfh) {
-            const auto action = on_frame.Run(rfh);
-            if (action == RenderFrameHost::FrameIterationAction::kStop) {
-              iteration_stopped = true;
-            }
-            return action;
-          },
-          std::ref(iteration_stopped), on_frame);
+  auto on_frame_with_termination =
+      [on_frame, &iteration_stopped](RenderFrameHostImpl* rfh) {
+        const auto action = on_frame(rfh);
+        if (action == FrameIterationAction::kStop) {
+          iteration_stopped = true;
+        }
+        return action;
+      };
 
   for (auto* rfh : GetOutermostMainFrames()) {
     if (include_speculative) {
-      rfh->ForEachRenderFrameHostIncludingSpeculative(
+      rfh->ForEachRenderFrameHostIncludingSpeculativeWithAction(
           on_frame_with_termination);
     } else {
-      rfh->ForEachRenderFrameHost(on_frame_with_termination);
+      rfh->ForEachRenderFrameHostWithAction(on_frame_with_termination);
     }
 
     if (iteration_stopped) {
@@ -1655,8 +1659,7 @@ void WebContentsImpl::SetAccessibilityMode(ui::AXMode mode) {
   // Update state for all frames in this tree and inner trees. Should also
   // include speculative frame hosts.
   GetPrimaryMainFrame()->ForEachRenderFrameHostIncludingSpeculative(
-      base::BindRepeating(
-          [](RenderFrameHostImpl* rfhi) { rfhi->UpdateAccessibilityMode(); }));
+      &RenderFrameHostImpl::UpdateAccessibilityMode);
 }
 
 void WebContentsImpl::AddAccessibilityMode(ui::AXMode mode) {
@@ -1726,8 +1729,10 @@ void WebContentsImpl::RequestAXTreeSnapshot(AXTreeSnapshotCallback callback,
 
   auto combiner = base::MakeRefCounted<AXTreeSnapshotCombiner>(
       std::move(callback), std::move(params));
-  GetPrimaryMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
-      &AXTreeSnapshotCombiner::AXTreeSnapshotOnFrame, combiner));
+  GetPrimaryMainFrame()->ForEachRenderFrameHost(
+      [&combiner](RenderFrameHostImpl* rfh) {
+        combiner->AXTreeSnapshotOnFrame(rfh);
+      });
 }
 
 void WebContentsImpl::NotifyViewportFitChanged(
@@ -1908,8 +1913,7 @@ void WebContentsImpl::EnableWebContentsOnlyAccessibilityMode() {
   // called indirectly above via AddAccessibilityMode).
   if (need_reset) {
     GetPrimaryMainFrame()->ForEachRenderFrameHostIncludingSpeculative(
-        base::BindRepeating(
-            [](RenderFrameHostImpl* rfhi) { rfhi->AccessibilityReset(); }));
+        &RenderFrameHostImpl::AccessibilityReset);
   }
 }
 
@@ -3230,15 +3234,13 @@ void WebContentsImpl::RemoveObserver(WebContentsObserver* observer) {
 std::set<RenderWidgetHostViewBase*>
 WebContentsImpl::GetRenderWidgetHostViewsInWebContentsTree() {
   std::set<RenderWidgetHostViewBase*> result;
-  GetPrimaryMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
-      [](std::set<RenderWidgetHostViewBase*>& result,
-         RenderFrameHostImpl* rfh) {
+  GetPrimaryMainFrame()->ForEachRenderFrameHost(
+      [&result](RenderFrameHostImpl* rfh) {
         if (auto* view =
                 static_cast<RenderWidgetHostViewBase*>(rfh->GetView())) {
           result.insert(view);
         }
-      },
-      std::ref(result)));
+      });
   return result;
 }
 
@@ -4562,24 +4564,23 @@ void WebContentsImpl::SendScreenRects() {
   DCHECK(!IsBeingDestroyed());
 
   GetPrimaryMainFrame()->ForEachRenderFrameHost(
-      base::BindRepeating([](RenderFrameHostImpl* render_frame_host) {
+      [](RenderFrameHostImpl* render_frame_host) {
         if (render_frame_host->is_local_root()) {
           render_frame_host->GetRenderWidgetHost()->SendScreenRects();
         }
-      }));
+      });
 }
 
 void WebContentsImpl::SendActiveState(bool active) {
   DCHECK(!IsBeingDestroyed());
 
   // Replicate the active state to all LocalRoots.
-  GetPrimaryMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
-      [](bool active, RenderFrameHostImpl* render_frame_host) {
+  GetPrimaryMainFrame()->ForEachRenderFrameHost(
+      [active](RenderFrameHostImpl* render_frame_host) {
         if (render_frame_host->is_local_root()) {
           render_frame_host->GetRenderWidgetHost()->SetActive(active);
         }
-      },
-      active));
+      });
 }
 
 TextInputManager* WebContentsImpl::GetTextInputManager() {

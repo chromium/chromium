@@ -844,18 +844,16 @@ bool WaitForLoadStop(WebContents* web_contents) {
 void PrepContentsForBeforeUnloadTest(WebContents* web_contents,
                                      bool trigger_user_activation) {
   web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
-      base::BindRepeating(
-          [](bool trigger_user_activation, RenderFrameHost* render_frame_host) {
-            if (trigger_user_activation) {
-              render_frame_host->ExecuteJavaScriptWithUserGestureForTests(
-                  std::u16string(), base::NullCallback());
-            }
+      [trigger_user_activation](RenderFrameHost* render_frame_host) {
+        if (trigger_user_activation) {
+          render_frame_host->ExecuteJavaScriptWithUserGestureForTests(
+              std::u16string(), base::NullCallback());
+        }
 
-            // Disable the hang monitor, otherwise there will be a race between
-            // the beforeunload dialog and the beforeunload hang timer.
-            render_frame_host->DisableBeforeUnloadHangMonitorForTesting();
-          },
-          trigger_user_activation));
+        // Disable the hang monitor, otherwise there will be a race between
+        // the beforeunload dialog and the beforeunload hang timer.
+        render_frame_host->DisableBeforeUnloadHangMonitorForTesting();
+      });
 }
 
 bool IsLastCommittedEntryOfPageType(WebContents* web_contents,
@@ -1904,22 +1902,15 @@ EvalJsResult EvalJsAfterLifecycleUpdate(
   return result;
 }
 
-namespace {
-void AddToSetIfFrameMatchesPredicate(
-    std::set<RenderFrameHost*>* frame_set,
-    base::OnceCallback<bool(RenderFrameHost*)> predicate,
-    RenderFrameHost* host) {
-  if (std::move(predicate).Run(host))
-    frame_set->insert(host);
-}
-}
-
 RenderFrameHost* FrameMatchingPredicateOrNullptr(
     Page& page,
     base::RepeatingCallback<bool(RenderFrameHost*)> predicate) {
   std::set<RenderFrameHost*> frame_set;
-  page.GetMainDocument().ForEachRenderFrameHost(base::BindRepeating(
-      &AddToSetIfFrameMatchesPredicate, &frame_set, predicate));
+  page.GetMainDocument().ForEachRenderFrameHost(
+      [&predicate, &frame_set](RenderFrameHost* rfh) {
+        if (predicate.Run(rfh))
+          frame_set.insert(rfh);
+      });
   EXPECT_LE(frame_set.size(), 1u);
   return frame_set.size() == 1 ? *frame_set.begin() : nullptr;
 }
@@ -1963,8 +1954,8 @@ bool HasOriginKeyedProcess(RenderFrameHost* frame) {
 std::vector<RenderFrameHost*> CollectAllRenderFrameHosts(
     RenderFrameHost* starting_rfh) {
   std::vector<RenderFrameHost*> visited_frames;
-  starting_rfh->ForEachRenderFrameHost(base::BindLambdaForTesting(
-      [&](RenderFrameHost* rfh) { visited_frames.push_back(rfh); }));
+  starting_rfh->ForEachRenderFrameHost(
+      [&](RenderFrameHost* rfh) { visited_frames.push_back(rfh); });
   return visited_frames;
 }
 
@@ -1975,8 +1966,8 @@ std::vector<RenderFrameHost*> CollectAllRenderFrameHosts(Page& page) {
 std::vector<RenderFrameHost*> CollectAllRenderFrameHosts(
     WebContents* web_contents) {
   std::vector<RenderFrameHost*> visited_frames;
-  web_contents->ForEachRenderFrameHost(base::BindLambdaForTesting(
-      [&](RenderFrameHost* rfh) { visited_frames.push_back(rfh); }));
+  web_contents->ForEachRenderFrameHost(
+      [&](RenderFrameHost* rfh) { visited_frames.push_back(rfh); });
   return visited_frames;
 }
 

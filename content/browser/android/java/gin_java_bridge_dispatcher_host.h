@@ -25,6 +25,8 @@ class ListValue;
 
 namespace content {
 
+class WebContentsImpl;
+
 // This class handles injecting Java objects into a single WebContents /
 // WebView. The Java object itself lives in the browser process on a background
 // thread, while multiple JavaScript wrapper objects (one per frame) are created
@@ -86,6 +88,7 @@ class GinJavaBridgeDispatcherHost
 
   // Run on the UI thread.
   void InstallFilterAndRegisterAllRoutingIds();
+  WebContentsImpl* web_contents() const;
 
   // Run on any thread.
   GinJavaBoundObject::ObjectID AddObject(

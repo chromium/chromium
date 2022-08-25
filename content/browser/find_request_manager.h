@@ -12,6 +12,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/containers/queue.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -217,11 +218,10 @@ class FindRequestManager {
   std::unique_ptr<FindInPageClient> CreateFindInPageClient(
       RenderFrameHostImpl* rfh);
 
-  using FrameIterationCallback =
-      base::RepeatingCallback<void(RenderFrameHostImpl*)>;
   // Traverses all RenderFrameHosts added for find-in-page and invokes the
   // callback if the each RenderFrameHost is alive and active.
-  void ForEachAddedFindInPageRenderFrameHost(FrameIterationCallback callback);
+  void ForEachAddedFindInPageRenderFrameHost(
+      base::FunctionRef<void(RenderFrameHostImpl*)> func_ref);
 
   void EmitFindRequest(int request_id,
                        const std::u16string& search_text,

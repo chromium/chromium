@@ -1316,19 +1316,18 @@ void AdsPageLoadMetricsObserver::MaybeTriggerHeavyAdIntervention(
   // be available in the the unload handler.
   std::string report_message =
       GetHeavyAdReportMessage(*frame_data, action == HeavyAdAction::kUnload);
-  render_frame_host->ForEachRenderFrameHost(base::BindRepeating(
-      [](const std::string& report_message, const content::Page* page,
-         content::RenderFrameHost* frame) {
+  render_frame_host->ForEachRenderFrameHostWithAction(
+      [&report_message,
+       &page = render_frame_host->GetPage()](content::RenderFrameHost* frame) {
         // If `frame`'s page doesn't match the one we are associated with (for
         // fenced frames or portals) skip the subtree.
-        if (page != &frame->GetPage())
+        if (&page != &frame->GetPage())
           return content::RenderFrameHost::FrameIterationAction::kSkipChildren;
-        const char kReportId[] = "HeavyAdIntervention";
+        static constexpr char kReportId[] = "HeavyAdIntervention";
         if (frame->IsRenderFrameLive())
           frame->SendInterventionReport(kReportId, report_message);
         return content::RenderFrameHost::FrameIterationAction::kContinue;
-      },
-      report_message, &render_frame_host->GetPage()));
+      });
 
   // Report intervention to the blocklist.
   if (auto* blocklist = GetHeavyAdBlocklist()) {

@@ -48,13 +48,11 @@ class DidCommitNavigationInterceptor::FrameAgent
 DidCommitNavigationInterceptor::DidCommitNavigationInterceptor(
     WebContents* web_contents)
     : WebContentsObserver(web_contents) {
-  web_contents->ForEachRenderFrameHost(base::BindRepeating(
-      [](DidCommitNavigationInterceptor* interceptor,
-         RenderFrameHost* render_frame_host) {
+  web_contents->ForEachRenderFrameHost(
+      [this](RenderFrameHost* render_frame_host) {
         if (render_frame_host->IsRenderFrameLive())
-          interceptor->RenderFrameCreated(render_frame_host);
-      },
-      this));
+          RenderFrameCreated(render_frame_host);
+      });
 }
 
 DidCommitNavigationInterceptor::~DidCommitNavigationInterceptor() = default;

@@ -36,11 +36,11 @@ bool IsPluginFrame(content::RenderFrameHost& frame) {
 std::vector<content::RenderFrameHost*> GetPdfPluginFrames(
     content::WebContents* contents) {
   std::vector<content::RenderFrameHost*> plugin_frames;
-  contents->ForEachRenderFrameHost(base::BindLambdaForTesting(
+  contents->ForEachRenderFrameHost(
       [&plugin_frames](content::RenderFrameHost* frame) {
         if (IsPluginFrame(*frame))
           plugin_frames.push_back(frame);
-      }));
+      });
   return plugin_frames;
 }
 
@@ -87,8 +87,8 @@ testing::AssertionResult EnsurePDFHasLoaded(
 
   if (wait_for_hit_test_data) {
     frame.render_frame_host()->ForEachRenderFrameHost(
-        base::BindRepeating<void(content::RenderFrameHost*)>(
-            content::WaitForHitTestData));
+        static_cast<void (*)(content::RenderFrameHost*)>(
+            &content::WaitForHitTestData));
   }
 
   return load_success ? testing::AssertionSuccess()

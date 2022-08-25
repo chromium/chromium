@@ -358,7 +358,7 @@ class PrerenderBrowserTest : public ContentBrowserTest {
     RenderFrameHostImpl* navigated_render_frame_host = current_frame_host();
     // The new page shouldn't be in the prerendering state.
     navigated_render_frame_host->ForEachRenderFrameHost(
-        base::BindRepeating([](content::RenderFrameHostImpl* rfhi) {
+        [](content::RenderFrameHostImpl* rfhi) {
           // All the subframes should be transitioned to
           // LifecycleStateImpl::kActive state after activation.
           EXPECT_EQ(rfhi->lifecycle_state(),
@@ -372,7 +372,7 @@ class PrerenderBrowserTest : public ContentBrowserTest {
             navigator.locks.request('hi', {mode:'shared'}, () => {});
           )";
           EXPECT_TRUE(ExecJs(rfhi, kMojoScript));
-        }));
+        });
   }
 
   test::PrerenderTestHelper* prerender_helper() {
@@ -2686,11 +2686,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MojoCapabilityControl_LoosenMode) {
   std::vector<RenderFrameHostImpl*> all_prerender_frames;
   size_t count_speculative = 0;
   prerendered_render_frame_host->ForEachRenderFrameHostIncludingSpeculative(
-      base::BindLambdaForTesting([&](RenderFrameHostImpl* rfh) {
+      [&](RenderFrameHostImpl* rfh) {
         all_prerender_frames.push_back(rfh);
         count_speculative +=
             (rfh->lifecycle_state() == LifecycleStateImpl::kSpeculative);
-      }));
+      });
   ASSERT_EQ(all_prerender_frames.size(), 4u);
   ASSERT_EQ(count_speculative, 1u);
 
@@ -6844,11 +6844,10 @@ IN_PROC_BROWSER_TEST_P(PrerenderFencedFrameBrowserTest,
   // Since we've deferred creating the fenced frame delegate, we should see no
   // child frames.
   size_t child_frame_count = 0;
-  prerendered_rfh->ForEachRenderFrameHost(
-      base::BindLambdaForTesting([&](RenderFrameHostImpl* rfh) {
-        if (rfh != prerendered_rfh)
-          child_frame_count++;
-      }));
+  prerendered_rfh->ForEachRenderFrameHost([&](RenderFrameHostImpl* rfh) {
+    if (rfh != prerendered_rfh)
+      child_frame_count++;
+  });
   EXPECT_EQ(0lu, child_frame_count);
 
   NavigatePrimaryPage(kPrerenderingUrl);

@@ -45,15 +45,12 @@ void SetViewType(WebContents* tab, mojom::ViewType type) {
 
   ExtensionsBrowserClient::Get()->AttachExtensionTaskManagerTag(tab, type);
 
-  auto send_view_type_to_renderer = [](ExtensionWebContentsObserver* ewco,
-                                       mojom::ViewType type,
-                                       content::RenderFrameHost* frame_host) {
-    if (mojom::LocalFrame* local_frame = ewco->GetLocalFrame(frame_host))
-      local_frame->NotifyRenderViewType(type);
-  };
   if (auto* ewco = ExtensionWebContentsObserver::GetForWebContents(tab)) {
     tab->ForEachRenderFrameHost(
-        base::BindRepeating(send_view_type_to_renderer, ewco, type));
+        [ewco, type](content::RenderFrameHost* frame_host) {
+          if (mojom::LocalFrame* local_frame = ewco->GetLocalFrame(frame_host))
+            local_frame->NotifyRenderViewType(type);
+        });
   }
 }
 

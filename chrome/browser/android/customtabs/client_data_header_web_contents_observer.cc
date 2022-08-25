@@ -21,9 +21,10 @@ ClientDataHeaderWebContentsObserver::ClientDataHeaderWebContentsObserver(
 
 void ClientDataHeaderWebContentsObserver::SetHeader(const std::string& header) {
   header_ = header;
-  web_contents()->ForEachRenderFrameHost(base::BindRepeating(
-      &ClientDataHeaderWebContentsObserver::UpdateFrameCCTHeader,
-      base::Unretained(this)));
+  web_contents()->ForEachRenderFrameHost(
+      [this](content::RenderFrameHost* render_frame_host) {
+        UpdateFrameCCTHeader(render_frame_host);
+      });
 }
 
 void ClientDataHeaderWebContentsObserver::RenderFrameCreated(

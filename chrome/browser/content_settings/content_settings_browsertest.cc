@@ -120,7 +120,7 @@ net::CookieList ExtractCookies(browsing_data::CannedCookieHelper* container) {
 size_t GetRenderFrameHostCount(content::RenderFrameHost* starting_frame) {
   size_t count = 0;
   starting_frame->ForEachRenderFrameHost(
-      base::BindLambdaForTesting([&](content::RenderFrameHost*) { ++count; }));
+      [&](content::RenderFrameHost*) { ++count; });
   return count;
 }
 

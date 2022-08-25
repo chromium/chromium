@@ -162,8 +162,8 @@ RenderFrameHost* CreateSubframe(WebContentsImpl* web_contents,
 std::vector<RenderFrameHostImpl*> CollectAllRenderFrameHosts(
     RenderFrameHostImpl* starting_rfh) {
   std::vector<RenderFrameHostImpl*> visited_frames;
-  starting_rfh->ForEachRenderFrameHost(base::BindLambdaForTesting(
-      [&](RenderFrameHostImpl* rfh) { visited_frames.push_back(rfh); }));
+  starting_rfh->ForEachRenderFrameHost(
+      [&](RenderFrameHostImpl* rfh) { visited_frames.push_back(rfh); });
   return visited_frames;
 }
 
@@ -172,16 +172,15 @@ CollectAllRenderFrameHostsIncludingSpeculative(
     RenderFrameHostImpl* starting_rfh) {
   std::vector<RenderFrameHostImpl*> visited_frames;
   starting_rfh->ForEachRenderFrameHostIncludingSpeculative(
-      base::BindLambdaForTesting(
-          [&](RenderFrameHostImpl* rfh) { visited_frames.push_back(rfh); }));
+      [&](RenderFrameHostImpl* rfh) { visited_frames.push_back(rfh); });
   return visited_frames;
 }
 
 std::vector<RenderFrameHostImpl*> CollectAllRenderFrameHosts(
     WebContentsImpl* web_contents) {
   std::vector<RenderFrameHostImpl*> visited_frames;
-  web_contents->ForEachRenderFrameHost(base::BindLambdaForTesting(
-      [&](RenderFrameHostImpl* rfh) { visited_frames.push_back(rfh); }));
+  web_contents->ForEachRenderFrameHost(
+      [&](RenderFrameHostImpl* rfh) { visited_frames.push_back(rfh); });
   return visited_frames;
 }
 
@@ -189,8 +188,7 @@ std::vector<RenderFrameHostImpl*>
 CollectAllRenderFrameHostsIncludingSpeculative(WebContentsImpl* web_contents) {
   std::vector<RenderFrameHostImpl*> visited_frames;
   web_contents->ForEachRenderFrameHostIncludingSpeculative(
-      base::BindLambdaForTesting(
-          [&](RenderFrameHostImpl* rfh) { visited_frames.push_back(rfh); }));
+      [&](RenderFrameHostImpl* rfh) { visited_frames.push_back(rfh); });
   return visited_frames;
 }
 

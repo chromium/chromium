@@ -53,18 +53,14 @@ content::RenderFrameHost* FindCorrespondingRenderFrameHost(
     return web_contents->GetPrimaryMainFrame();
   }
   content::RenderFrameHost* result = nullptr;
-  web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
-      base::BindRepeating(
-          [](const std::string& frame_id, content::RenderFrameHost** result,
-             content::RenderFrameHost* render_frame_host) {
-            if (render_frame_host->GetDevToolsFrameToken().ToString() ==
-                frame_id) {
-              *result = render_frame_host;
-              return content::RenderFrameHost::FrameIterationAction::kStop;
-            }
-            return content::RenderFrameHost::FrameIterationAction::kContinue;
-          },
-          frame_id, &result));
+  web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHostWithAction(
+      [&frame_id, &result](content::RenderFrameHost* render_frame_host) {
+        if (render_frame_host->GetDevToolsFrameToken().ToString() == frame_id) {
+          result = render_frame_host;
+          return content::RenderFrameHost::FrameIterationAction::kStop;
+        }
+        return content::RenderFrameHost::FrameIterationAction::kContinue;
+      });
   return result;
 }
 

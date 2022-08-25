@@ -210,7 +210,7 @@ TabHelper::TabHelper(content::WebContents* web_contents)
   CreateSessionServiceTabHelper(web_contents);
   // The Unretained() is safe because ForEachRenderFrameHost() is synchronous.
   web_contents->ForEachRenderFrameHost(
-      base::BindRepeating(&TabHelper::SetTabId, base::Unretained(this)));
+      [this](content::RenderFrameHost* host) { SetTabId(host); });
   active_tab_permission_granter_ = std::make_unique<ActiveTabPermissionGranter>(
       web_contents, sessions::SessionTabHelper::IdForTab(web_contents).id(),
       profile_);

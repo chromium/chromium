@@ -281,13 +281,11 @@ HeadlessWebContentsImpl::CreateForChildContents(
   // We want to iterate all frame trees because RenderFrameCreated gets called
   // for any RenderFrame created. base::Unretained is safe here because
   // ForEachRenderFrameHost is synchronous.
-  child->web_contents_->ForEachRenderFrameHost(base::BindRepeating(
-      [](HeadlessWebContentsImpl* child,
-         content::RenderFrameHost* render_frame_host) {
+  child->web_contents_->ForEachRenderFrameHost(
+      [&child](content::RenderFrameHost* render_frame_host) {
         if (render_frame_host->IsRenderFrameLive())
           child->RenderFrameCreated(render_frame_host);
-      },
-      child.get()));
+      });
 
   return child;
 }

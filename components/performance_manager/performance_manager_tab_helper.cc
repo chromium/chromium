@@ -88,11 +88,10 @@ PerformanceManagerTabHelper::PerformanceManagerTabHelper(
 #if DCHECK_IS_ON()
   DCHECK(!web_contents->GetPrimaryMainFrame()->IsRenderFrameLive());
   size_t frame_count = 0;
-  web_contents->ForEachRenderFrameHost(base::BindRepeating(
-      [](size_t* frame_count, content::RenderFrameHost* render_frame_host) {
-        (*frame_count)++;
-      },
-      &frame_count));
+  web_contents->ForEachRenderFrameHost(
+      [&frame_count](content::RenderFrameHost* render_frame_host) {
+        ++frame_count;
+      });
   DCHECK_EQ(1u, frame_count);
 #endif
 

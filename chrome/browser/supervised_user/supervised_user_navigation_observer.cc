@@ -173,8 +173,9 @@ void SupervisedUserNavigationObserver::OnURLFilterChanged() {
 
   // Iframe filtering has been enabled.
   main_frame->ForEachRenderFrameHost(
-      base::BindRepeating(&SupervisedUserNavigationObserver::FilterRenderFrame,
-                          base::Unretained(this)));
+      [this](content::RenderFrameHost* render_frame_host) {
+        FilterRenderFrame(render_frame_host);
+      });
 }
 
 void SupervisedUserNavigationObserver::OnInterstitialDone(int frame_id) {

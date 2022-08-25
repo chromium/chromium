@@ -459,10 +459,10 @@ class WebTestControlHost::WebTestWindowObserver : WebContentsObserver {
     // have a set of RenderFrames already, and we need to notify about them
     // here.
     web_contents->ForEachRenderFrameHost(
-        base::BindLambdaForTesting([&](RenderFrameHost* render_frame_host) {
+        [&](RenderFrameHost* render_frame_host) {
           if (render_frame_host->IsRenderFrameLive())
             RenderFrameCreated(render_frame_host);
-        }));
+        });
   }
 
  private:
@@ -802,7 +802,7 @@ void WebTestControlHost::InitiateCaptureDump(
     DCHECK_EQ(0, waiting_for_layout_dumps_);
 
     main_window_->web_contents()->GetPrimaryMainFrame()->ForEachRenderFrameHost(
-        base::BindLambdaForTesting([&](RenderFrameHost* render_frame_host) {
+        [&](RenderFrameHost* render_frame_host) {
           if (!render_frame_host->IsRenderFrameLive())
             return;
 
@@ -812,7 +812,7 @@ void WebTestControlHost::InitiateCaptureDump(
                   base::BindOnce(&WebTestControlHost::OnDumpFrameLayoutResponse,
                                  weak_factory_.GetWeakPtr(),
                                  render_frame_host->GetFrameTreeNodeId()));
-        }));
+        });
   }
 
   if (capture_pixels) {
@@ -942,10 +942,10 @@ WebTestControlHost::Node* WebTestControlHost::BuildFrameTree(
   //  Collect all live frames in web_contents.
   std::vector<RenderFrameHost*> frames;
   web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
-      base::BindLambdaForTesting([&](RenderFrameHost* render_frame_host) {
+      [&](RenderFrameHost* render_frame_host) {
         if (render_frame_host->IsRenderFrameLive())
           frames.push_back(render_frame_host);
-      }));
+      });
 
   // Add all of the frames to storage.
   for (auto* frame : frames) {
@@ -1276,13 +1276,13 @@ void WebTestControlHost::OnDumpFrameLayoutResponse(int frame_tree_node_id,
   // Stitch the frame-specific results in the right order.
   std::string stitched_layout_dump;
   web_contents()->GetPrimaryMainFrame()->ForEachRenderFrameHost(
-      base::BindLambdaForTesting([&](RenderFrameHost* render_frame_host) {
+      [&](RenderFrameHost* render_frame_host) {
         auto it = frame_to_layout_dump_map_.find(
             render_frame_host->GetFrameTreeNodeId());
         if (it != frame_to_layout_dump_map_.end()) {
           stitched_layout_dump.append(it->second);
         }
-      }));
+      });
 
   layout_dump_.emplace(std::move(stitched_layout_dump));
   ReportResults();

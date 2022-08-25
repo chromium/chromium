@@ -5,6 +5,7 @@
 #include "components/js_injection/browser/js_communication_host.h"
 
 #include "base/bind.h"
+#include "base/functional/function_ref.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/js_injection/browser/js_to_browser_messaging.h"
 #include "components/js_injection/browser/web_message_host.h"
@@ -32,22 +33,20 @@ std::string ConvertToNativeAllowedOriginRulesWithSanityCheck(
 // any inner WebContents.
 void ForEachRenderFrameHostWithinSameWebContents(
     content::RenderFrameHost* render_frame_host,
-    content::RenderFrameHost::FrameIterationAlwaysContinueCallback callback) {
-  render_frame_host->ForEachRenderFrameHost(base::BindRepeating(
-      [](const content::WebContents* starting_web_contents,
-         content::RenderFrameHost::FrameIterationAlwaysContinueCallback
-             callback,
-         content::RenderFrameHost* rfh) {
+    base::FunctionRef<void(content::RenderFrameHost*)> func_ref) {
+  render_frame_host->ForEachRenderFrameHostWithAction(
+      [starting_web_contents =
+           content::WebContents::FromRenderFrameHost(render_frame_host),
+       func_ref](content::RenderFrameHost* rfh) {
         // Don't cross into inner WebContents since we wouldn't be notified of
         // its changes.
         if (content::WebContents::FromRenderFrameHost(rfh) !=
             starting_web_contents) {
           return content::RenderFrameHost::FrameIterationAction::kSkipChildren;
         }
-        callback.Run(rfh);
+        func_ref(rfh);
         return content::RenderFrameHost::FrameIterationAction::kContinue;
-      },
-      content::WebContents::FromRenderFrameHost(render_frame_host), callback));
+      });
 }
 
 }  // namespace
@@ -116,9 +115,10 @@ JsCommunicationHost::AddDocumentStartJavaScript(
 
   ForEachRenderFrameHostWithinSameWebContents(
       web_contents()->GetPrimaryMainFrame(),
-      base::BindRepeating(
-          &JsCommunicationHost::NotifyFrameForAddDocumentStartJavaScript,
-          base::Unretained(this), &*scripts_.rbegin()));
+      [this](content::RenderFrameHost* render_frame_host) {
+        NotifyFrameForAddDocumentStartJavaScript(&*scripts_.rbegin(),
+                                                 render_frame_host);
+      });
   result.script_id = scripts_.rbegin()->script_id_;
   return result;
 }
@@ -129,9 +129,10 @@ bool JsCommunicationHost::RemoveDocumentStartJavaScript(int script_id) {
       scripts_.erase(it);
       ForEachRenderFrameHostWithinSameWebContents(
           web_contents()->GetPrimaryMainFrame(),
-          base::BindRepeating(
-              &JsCommunicationHost::NotifyFrameForRemoveDocumentStartJavaScript,
-              base::Unretained(this), script_id));
+          [this, script_id](content::RenderFrameHost* render_frame_host) {
+            NotifyFrameForRemoveDocumentStartJavaScript(script_id,
+                                                        render_frame_host);
+          });
       return true;
     }
   }
@@ -159,9 +160,9 @@ std::u16string JsCommunicationHost::AddWebMessageHostFactory(
 
   ForEachRenderFrameHostWithinSameWebContents(
       web_contents()->GetPrimaryMainFrame(),
-      base::BindRepeating(
-          &JsCommunicationHost::NotifyFrameForWebMessageListener,
-          base::Unretained(this)));
+      [this](content::RenderFrameHost* render_frame_host) {
+        NotifyFrameForWebMessageListener(render_frame_host);
+      });
   return std::u16string();
 }
 
@@ -173,9 +174,9 @@ void JsCommunicationHost::RemoveWebMessageHostFactory(
       js_objects_.erase(iterator);
       ForEachRenderFrameHostWithinSameWebContents(
           web_contents()->GetPrimaryMainFrame(),
-          base::BindRepeating(
-              &JsCommunicationHost::NotifyFrameForWebMessageListener,
-              base::Unretained(this)));
+          [this](content::RenderFrameHost* render_frame_host) {
+            NotifyFrameForWebMessageListener(render_frame_host);
+          });
       break;
     }
   }

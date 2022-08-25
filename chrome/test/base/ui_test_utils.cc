@@ -150,15 +150,14 @@ class AppModalDialogWaiter : public javascript_dialogs::AppModalDialogObserver {
     // and this will catch that case.
     auto* contents = dialog->web_contents();
     bool found_disabled_for_testing = false;
-    contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
-        [](bool* found_disabled_for_testing, content::RenderFrameHost* frame) {
+    contents->GetPrimaryMainFrame()->ForEachRenderFrameHostWithAction(
+        [&found_disabled_for_testing](content::RenderFrameHost* frame) {
           if (frame->IsBeforeUnloadHangMonitorDisabledForTesting()) {
-            *found_disabled_for_testing = true;
+            found_disabled_for_testing = true;
             return content::RenderFrameHost::FrameIterationAction::kStop;
           }
           return content::RenderFrameHost::FrameIterationAction::kContinue;
-        },
-        &found_disabled_for_testing));
+        });
 
     ASSERT_TRUE(found_disabled_for_testing)
         << "If waiting for a beforeunload dialog, the beforeunload timer "

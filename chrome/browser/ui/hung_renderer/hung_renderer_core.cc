@@ -35,18 +35,14 @@ content::RenderFrameHost* FindFirstRenderFrameHostMatchingProcess(
   content::RenderFrameHost* result = nullptr;
   // We only consider frames visible to the user for hung frames. This is
   // fine because only frames receiving input are considered hung.
-  web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
-      base::BindRepeating(
-          [](const content::RenderProcessHost* hung_process,
-             content::RenderFrameHost** result,
-             content::RenderFrameHost* render_frame_host) {
-            if (render_frame_host->GetProcess() == hung_process) {
-              *result = render_frame_host;
-              return content::RenderFrameHost::FrameIterationAction::kStop;
-            }
-            return content::RenderFrameHost::FrameIterationAction::kContinue;
-          },
-          hung_process, &result));
+  web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHostWithAction(
+      [hung_process, &result](content::RenderFrameHost* render_frame_host) {
+        if (render_frame_host->GetProcess() == hung_process) {
+          result = render_frame_host;
+          return content::RenderFrameHost::FrameIterationAction::kStop;
+        }
+        return content::RenderFrameHost::FrameIterationAction::kContinue;
+      });
   return result;
 }
 

@@ -42,7 +42,7 @@ class DownloadItemImpl;
 
 namespace content {
 class DownloadManagerImpl;
-class Page;
+class PageImpl;
 class FrameTreeNode;
 class RenderFrameHostImpl;
 class SaveFileManager;
@@ -89,7 +89,7 @@ class CONTENT_EXPORT SavePackage
   // Constructor for user initiated page saving. This constructor results in a
   // SavePackage that will generate and sanitize a suggested name for the user
   // in the "Save As" dialog box.
-  explicit SavePackage(Page& page);
+  explicit SavePackage(PageImpl& page);
 
   SavePackage(const SavePackage&) = delete;
   SavePackage& operator=(const SavePackage&) = delete;
@@ -167,7 +167,7 @@ class CONTENT_EXPORT SavePackage
 
   // Used only for testing. Bypasses the file and directory name generation /
   // sanitization by providing well known paths better suited for tests.
-  SavePackage(Page& page,
+  SavePackage(PageImpl& page,
               SavePageType save_type,
               const base::FilePath& file_full_path,
               const base::FilePath& directory_full_path);
@@ -261,7 +261,7 @@ class CONTENT_EXPORT SavePackage
   // with the help of CreatePendingSaveItem, EnqueueSavableResource,
   // EnqueueFrame.
   void GetSavableResourceLinks();
-  void GetSavableResourceLinksForRenderFrameHost(RenderFrameHost* rfh);
+  void GetSavableResourceLinksForRenderFrameHost(RenderFrameHostImpl* rfh);
 
   // Helper for finding or creating a SaveItem with the given parameters.
   SaveItem* CreatePendingSaveItem(
@@ -363,7 +363,7 @@ class CONTENT_EXPORT SavePackage
 
   // The current page, may be null if the primary page has been navigated away
   // or destroyed.
-  base::WeakPtr<Page> page_;
+  base::WeakPtr<PageImpl> page_;
 
   // A queue for items we are about to start saving.
   base::circular_deque<std::unique_ptr<SaveItem>> waiting_item_queue_;

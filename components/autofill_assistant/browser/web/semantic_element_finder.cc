@@ -26,11 +26,6 @@ namespace autofill_assistant {
 
 namespace {
 
-void AddHostToList(std::vector<content::GlobalRenderFrameHostId>& host_ids,
-                   content::RenderFrameHost* host) {
-  host_ids.push_back(host->GetGlobalId());
-}
-
 ElementFinderInfoProto::SemanticInferenceStatus
 NodeDataStatusToSemanticInferenceStatus(
     mojom::NodeDataStatus node_data_status) {
@@ -138,7 +133,10 @@ void SemanticElementFinder::RunAnnotateDomModel(
     content::RenderFrameHost* start_frame) {
   std::vector<content::GlobalRenderFrameHostId> host_ids;
   start_frame->ForEachRenderFrameHost(
-      base::BindRepeating(&AddHostToList, std::ref(host_ids)));
+      [&host_ids](content::RenderFrameHost* host) {
+        host_ids.push_back(host->GetGlobalId());
+      });
+
   const auto run_on_frame =
       base::BarrierCallback<std::vector<GlobalBackendNodeId>>(
           host_ids.size(),
