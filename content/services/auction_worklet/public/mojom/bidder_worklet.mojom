@@ -35,8 +35,15 @@ struct PreviousWin {
 // same between InterestGroups.
 //
 // See blink.mojom.InterestGroup for documentation on individual fields.
+//
+// This doesn't include `priority` or `priority_signals_overrides` as they can
+// be modified by worklets, so could potentially have cross-origin information.
 struct BidderWorkletNonSharedParams {
   string name;
+
+  bool enable_bidding_signals_prioritization;
+  map<string, double>? priority_vector;
+
   blink.mojom.InterestGroup.ExecutionMode execution_mode;
 
   url.mojom.Url? daily_update_url;

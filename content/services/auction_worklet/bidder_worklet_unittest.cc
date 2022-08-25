@@ -216,6 +216,8 @@ class BidderWorkletTest : public testing::Test {
   // test.
   void SetDefaultParameters() {
     interest_group_name_ = "Fred";
+    interest_group_enable_bidding_signals_prioritization_ = false;
+    interest_group_priority_vector_.reset();
     interest_group_user_bidding_signals_ = absl::nullopt;
     join_origin_ = url::Origin::Create(GURL("https://url.test/"));
     execution_mode_ =
@@ -253,6 +255,25 @@ class BidderWorkletTest : public testing::Test {
     browser_signal_highest_scoring_other_bid_ = 0.5;
     browser_signal_made_highest_scoring_other_bid_ = false;
     data_version_.reset();
+  }
+
+  // Helper that creates and runs a script to validate that `expression`
+  // evaluates to true when evaluated in a generateBid() script. Does this by
+  // evaluating the expression in the content of generateBid() and throwing if
+  // it's not true. Otherwise, a bid is generated.
+  void RunGenerateBidExpectingExpressionIsTrue(const std::string& expression) {
+    std::string script = CreateGenerateBidScript(
+        /*raw_return_value=*/R"({bid: 1, render:"https://response.test/"})",
+        /*extra_code=*/base::StringPrintf(R"(let val = %s;
+                                             if (val !== true)
+                                             throw JSON.stringify(val);)",
+                                          expression.c_str()));
+
+    RunGenerateBidWithJavascriptExpectingResult(
+        script, mojom::BidderWorkletBid::New(
+                    /*ad=*/"null",
+                    /*bid=*/1, GURL("https://response.test/"),
+                    /*ad_components=*/absl::nullopt, base::TimeDelta()));
   }
 
   // Configures `url_loader_factory_` to return a generateBid() script with the
@@ -424,7 +445,9 @@ class BidderWorkletTest : public testing::Test {
   // configuration.
   mojom::BidderWorkletNonSharedParamsPtr CreateBidderWorkletNonSharedParams() {
     return mojom::BidderWorkletNonSharedParams::New(
-        interest_group_name_, execution_mode_, daily_update_url_,
+        interest_group_name_,
+        interest_group_enable_bidding_signals_prioritization_,
+        interest_group_priority_vector_, execution_mode_, daily_update_url_,
         interest_group_trusted_bidding_signals_keys_,
         interest_group_user_bidding_signals_, interest_group_ads_,
         interest_group_ad_components_);
@@ -588,6 +611,9 @@ class BidderWorkletTest : public testing::Test {
   // Values used to construct the BiddingInterestGroup passed to the
   // BidderWorklet.
   std::string interest_group_name_;
+  bool interest_group_enable_bidding_signals_prioritization_;
+  absl::optional<base::flat_map<std::string, double>>
+      interest_group_priority_vector_;
   GURL interest_group_bidding_url_ = GURL("https://url.test/");
   url::Origin join_origin_;
   blink::mojom::InterestGroup::ExecutionMode execution_mode_ =
@@ -1469,6 +1495,39 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupName) {
       mojom::BidderWorkletBid::New(
           R"("[1]")", 1, GURL("https://response.test/"),
           /*ad_components=*/absl::nullopt, base::TimeDelta()));
+}
+
+TEST_F(BidderWorkletTest,
+       GenerateBidInterestGroupUseBiddingSignalsPrioritization) {
+  RunGenerateBidExpectingExpressionIsTrue(
+      "interestGroup.useBiddingSignalsPrioritization === false");
+
+  interest_group_enable_bidding_signals_prioritization_ = true;
+  RunGenerateBidExpectingExpressionIsTrue(
+      "interestGroup.useBiddingSignalsPrioritization === true");
+}
+
+TEST_F(BidderWorkletTest, GenerateBidInterestGroupPriorityVector) {
+  RunGenerateBidExpectingExpressionIsTrue(
+      "interestGroup.priorityVector === undefined");
+
+  interest_group_priority_vector_.emplace();
+  RunGenerateBidExpectingExpressionIsTrue(
+      "Object.keys(interestGroup.priorityVector).length === 0");
+
+  interest_group_priority_vector_->emplace("foo", 4);
+  RunGenerateBidExpectingExpressionIsTrue(
+      "Object.keys(interestGroup.priorityVector).length === 1");
+  RunGenerateBidExpectingExpressionIsTrue(
+      "interestGroup.priorityVector['foo'] === 4");
+
+  interest_group_priority_vector_->emplace("bar", -5);
+  RunGenerateBidExpectingExpressionIsTrue(
+      "Object.keys(interestGroup.priorityVector).length === 2");
+  RunGenerateBidExpectingExpressionIsTrue(
+      "interestGroup.priorityVector['foo'] === 4");
+  RunGenerateBidExpectingExpressionIsTrue(
+      "interestGroup.priorityVector['bar'] === -5");
 }
 
 TEST_F(BidderWorkletTest, GenerateBidInterestGroupBiddingLogicUrl) {

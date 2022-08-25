@@ -6100,9 +6100,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateWorkletParameters) {
           /*expiry=*/base::Time(),
           /*owner=*/bidder_origin,
           /*name=*/"cars",
-          /*priority=*/0.0, /*enable_bidding_signals_prioritization=*/false,
-          /*priority_vector=*/absl::nullopt,
-          /*priority_signals_overrides=*/absl::nullopt, /*execution_mode=*/
+          /*priority=*/0.0, /*enable_bidding_signals_prioritization=*/true,
+          /*priority_vector=*/{{{"foo", 2}, {"bar", -11}}},
+          /*priority_signals_overrides=*/{{{"foo", 1}}}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL(
@@ -6180,9 +6180,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*expiry=*/base::Time(),
           /*owner=*/bidder_origin,
           /*name=*/"cars",
-          /*priority=*/0.0, /*enable_bidding_signals_prioritization=*/false,
-          /*priority_vector=*/absl::nullopt,
-          /*priority_signals_overrides=*/absl::nullopt, /*execution_mode=*/
+          /*priority=*/0.0, /*enable_bidding_signals_prioritization=*/true,
+          /*priority_vector=*/{{{"foo", 2}, {"bar", -11}}},
+          /*priority_signals_overrides=*/{{{"foo", 1}}}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL(
@@ -6267,8 +6267,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*owner=*/bidder_origin,
           /*name=*/"cars",
           /*priority=*/0.0, /*enable_bidding_signals_prioritization=*/false,
-          /*priority_vector=*/absl::nullopt,
-          /*priority_signals_overrides=*/absl::nullopt, /*execution_mode=*/
+          /*priority_vector=*/{{{"FOO", 2}}},
+          /*priority_signals_overrides=*/{{{"FOO", 1}}}, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/
           https_server_->GetURL(

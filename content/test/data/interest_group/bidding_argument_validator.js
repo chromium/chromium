@@ -25,7 +25,7 @@ function validateInterestGroup(interestGroup) {
   if (!interestGroup)
     throw 'No interest group';
 
-  if (Object.keys(interestGroup).length !== 9) {
+  if (Object.keys(interestGroup).length !== 11) {
     throw 'Wrong number of interestGroupFields ' +
         JSON.stringify(interestGroup);
   }
@@ -34,6 +34,18 @@ function validateInterestGroup(interestGroup) {
     throw 'Wrong interestGroup.name ' + interestGroup.name;
   if (!interestGroup.owner.startsWith('https://a.test'))
     throw 'Missing a.test in owner ' + interestGroup.owner;
+
+  if (interestGroup.useBiddingSignalsPrioritization !== true) {
+    throw 'Incorrect useBiddingSignalsPrioritization ' +
+        interestGroup.useBiddingSignalsPrioritization;
+  }
+
+  if (Object.keys(interestGroup.priorityVector).length !== 2 ||
+      interestGroup.priorityVector['foo'] !== 2 ||
+      interestGroup.priorityVector['bar'] !== -11) {
+    throw 'Incorrect priorityVector ' +
+        JSON.stringify(interestGroup.priorityVector);
+  }
 
   if (!interestGroup.biddingLogicUrl.startsWith('https://a.test') ||
       !interestGroup.biddingLogicUrl.endsWith(

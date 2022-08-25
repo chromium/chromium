@@ -519,6 +519,9 @@ void BidderWorklet::V8State::GenerateBid(
           "owner", url::Origin::Create(script_source_url_).Serialize()) ||
       !interest_group_dict.Set("name",
                                bidder_worklet_non_shared_params->name) ||
+      !interest_group_dict.Set("useBiddingSignalsPrioritization",
+                               bidder_worklet_non_shared_params
+                                   ->enable_bidding_signals_prioritization) ||
       !interest_group_dict.Set("biddingLogicUrl", script_source_url_.spec()) ||
       (wasm_helper_url_ &&
        !interest_group_dict.Set("biddingWasmHelperUrl",
@@ -537,6 +540,23 @@ void BidderWorklet::V8State::GenerateBid(
            interest_group_object))) {
     PostErrorBidCallbackToUserThread(std::move(callback));
     return;
+  }
+
+  if (bidder_worklet_non_shared_params->priority_vector) {
+    v8::Local<v8::Object> priority_vector = v8::Object::New(isolate);
+    gin::Dictionary priority_vector_dict(isolate, priority_vector);
+    for (const auto& pair :
+         *bidder_worklet_non_shared_params->priority_vector) {
+      if (!priority_vector_dict.Set(pair.first, pair.second)) {
+        PostErrorBidCallbackToUserThread(std::move(callback));
+        return;
+      }
+    }
+    if (!v8_helper_->InsertValue("priorityVector", priority_vector,
+                                 interest_group_object)) {
+      PostErrorBidCallbackToUserThread(std::move(callback));
+      return;
+    }
   }
 
   if (bidder_worklet_non_shared_params->trusted_bidding_signals_keys) {
