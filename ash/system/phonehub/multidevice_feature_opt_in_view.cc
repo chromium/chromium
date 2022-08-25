@@ -135,9 +135,7 @@ MultideviceFeatureOptInView::MultideviceFeatureOptInView(
   setup_mode_ = GetPermissionSetupMode(multidevice_feature_access_manager_);
   access_manager_observation_.Observe(multidevice_feature_access_manager_);
   // Checks and updates its visibility upon creation.
-  UpdateVisibility();
-
-  LogPermissionOnboardingPromoShown(setup_mode_);
+  UpdateVisibility(/*was_visible=*/false);
 }
 
 MultideviceFeatureOptInView::~MultideviceFeatureOptInView() = default;
@@ -164,14 +162,14 @@ void MultideviceFeatureOptInView::DismissButtonPressed() {
 }
 
 void MultideviceFeatureOptInView::OnNotificationAccessChanged() {
-  UpdateVisibility();
+  UpdateVisibility(/*was_visible=*/GetVisible());
 }
 
 void MultideviceFeatureOptInView::OnCameraRollAccessChanged() {
-  UpdateVisibility();
+  UpdateVisibility(/*was_visible=*/GetVisible());
 }
 
-void MultideviceFeatureOptInView::UpdateVisibility() {
+void MultideviceFeatureOptInView::UpdateVisibility(bool was_visible) {
   DCHECK(multidevice_feature_access_manager_);
   // Refresh the permission status if changed
   phonehub::util::PermissionsOnboardingSetUpMode current_mode =
@@ -184,6 +182,9 @@ void MultideviceFeatureOptInView::UpdateVisibility() {
   SetVisible(setup_mode_ != PermissionsOnboardingSetUpMode::kNone &&
              !multidevice_feature_access_manager_
                   ->HasMultideviceFeatureSetupUiBeenDismissed());
+  if (!was_visible && GetVisible()) {
+    LogPermissionOnboardingPromoShown(setup_mode_);
+  }
   PreferredSizeChanged();
 }
 

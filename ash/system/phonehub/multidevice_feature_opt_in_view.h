@@ -42,7 +42,7 @@ class ASH_EXPORT MultideviceFeatureOptInView
 
   // Calculates whether this view should be visible and updates its visibility
   // accordingly.
-  void UpdateVisibility();
+  void UpdateVisibility(bool was_visible);
 
   phonehub::MultideviceFeatureAccessManager*
       multidevice_feature_access_manager_;
