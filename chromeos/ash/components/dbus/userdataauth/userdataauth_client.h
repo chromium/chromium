@@ -99,6 +99,8 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
       chromeos::DBusMethodCallback<::user_data_auth::UpdateAuthFactorReply>;
   using RemoveAuthFactorCallback =
       chromeos::DBusMethodCallback<::user_data_auth::RemoveAuthFactorReply>;
+  using GetRecoveryRequestCallback =
+      chromeos::DBusMethodCallback<::user_data_auth::GetRecoveryRequestReply>;
   using GetAuthSessionStatusCallback =
       chromeos::DBusMethodCallback<::user_data_auth::GetAuthSessionStatusReply>;
 
@@ -293,6 +295,12 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   virtual void RemoveAuthFactor(
       const ::user_data_auth::RemoveAuthFactorRequest& request,
       RemoveAuthFactorCallback callback) = 0;
+
+  // This is called when a user authenticates with recovery to obtain the
+  // request to be sent to the recovery service.
+  virtual void GetRecoveryRequest(
+      const ::user_data_auth::GetRecoveryRequestRequest& request,
+      GetRecoveryRequestCallback callback) = 0;
 
   // This is called when a user wants to get an AuthSession status.
   virtual void GetAuthSessionStatus(

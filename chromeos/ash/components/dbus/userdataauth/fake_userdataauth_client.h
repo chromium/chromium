@@ -248,6 +248,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   void RemoveAuthFactor(
       const ::user_data_auth::RemoveAuthFactorRequest& request,
       RemoveAuthFactorCallback callback) override;
+  void GetRecoveryRequest(
+      const ::user_data_auth::GetRecoveryRequestRequest& request,
+      GetRecoveryRequestCallback callback) override;
   void GetAuthSessionStatus(
       const ::user_data_auth::GetAuthSessionStatusRequest& request,
       GetAuthSessionStatusCallback callback) override;
