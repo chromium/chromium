@@ -61,10 +61,6 @@ class MEDIA_GPU_EXPORT GLES2DecoderHelper {
   // Creates a mailbox for a texture.
   virtual gpu::Mailbox CreateMailbox(
       gpu::gles2::AbstractTexture* texture_ref) = 0;
-
-  // Produce a texture into a mailbox.
-  virtual void ProduceTexture(const gpu::Mailbox& mailbox,
-                              gpu::gles2::AbstractTexture* texture_ref) = 0;
 };
 
 }  // namespace media

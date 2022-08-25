@@ -122,11 +122,6 @@ class MEDIA_GPU_EXPORT CommandBufferHelper
   // be to add a HasStub() method, and not define behavior when it is false.
   virtual gpu::Mailbox CreateMailbox(GLuint service_id) = 0;
 
-  // Produce a texture into a mailbox.  The context does not have to be current.
-  // However, this will fail if the stub has been destroyed.
-  virtual void ProduceTexture(const gpu::Mailbox& mailbox,
-                              GLuint service_id) = 0;
-
   // Waits for a SyncToken, then runs |done_cb|.
   //
   // |done_cb| may be destructed without running if the stub is destroyed.

@@ -184,19 +184,6 @@ class CommandBufferHelperImpl
     return decoder_helper_->CreateMailbox(textures_[service_id].get());
   }
 
-  void ProduceTexture(const gpu::Mailbox& mailbox, GLuint service_id) override {
-    DVLOG(2) << __func__ << "(" << mailbox.ToDebugString() << ", " << service_id
-             << ")";
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-    if (!decoder_helper_)
-      return;
-
-    DCHECK(textures_.count(service_id));
-    return decoder_helper_->ProduceTexture(mailbox,
-                                           textures_[service_id].get());
-  }
-
   void WaitForSyncToken(gpu::SyncToken sync_token,
                         base::OnceClosure done_cb) override {
     DVLOG(2) << __func__;

@@ -150,13 +150,6 @@ gpu::Mailbox FakeCommandBufferHelper::CreateMailbox(GLuint service_id) {
   return gpu::Mailbox::Generate();
 }
 
-void FakeCommandBufferHelper::ProduceTexture(const gpu::Mailbox& mailbox,
-                                             GLuint service_id) {
-  DVLOG(2) << __func__ << "(" << service_id << ")";
-  DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK(service_ids_.count(service_id));
-}
-
 void FakeCommandBufferHelper::WaitForSyncToken(gpu::SyncToken sync_token,
                                                base::OnceClosure done_cb) {
   DVLOG(2) << __func__;
