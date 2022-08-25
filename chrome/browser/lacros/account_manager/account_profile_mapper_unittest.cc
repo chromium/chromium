@@ -1681,3 +1681,34 @@ TEST_F(AccountProfileMapperTest, MigrateAshProfile) {
   // All accounts have been assigned to the main profile.
   VerifyAccountsInPrefs({{main_path(), {"A", "B", "C"}}});
 }
+
+TEST_F(AccountProfileMapperTest, ReportAuthError) {
+  base::FilePath second_path = GetProfilePath("Second");
+  AccountProfileMapper* mapper =
+      CreateMapper({{main_path(), {"A", "B"}}, {second_path, {"A"}}});
+
+  const account_manager::AccountKey account_key{"A", kGaiaType};
+  const GoogleServiceAuthError error =
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER);
+  EXPECT_CALL(*mock_facade(), ReportAuthError(account_key, error));
+
+  mapper->ReportAuthError(second_path, account_key, error);
+}
+
+TEST_F(AccountProfileMapperTest,
+       ReportAuthErrorForUnknownProfileAccountMapping) {
+  base::FilePath second_path = GetProfilePath("Second");
+  AccountProfileMapper* mapper =
+      CreateMapper({{main_path(), {"A", "B"}}, {second_path, {"B"}}});
+
+  const account_manager::AccountKey account_key{"A", kGaiaType};
+  const GoogleServiceAuthError error =
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER);
+  EXPECT_CALL(*mock_facade(), ReportAuthError(account_key, error)).Times(0);
+
+  mapper->ReportAuthError(second_path, account_key, error);
+}

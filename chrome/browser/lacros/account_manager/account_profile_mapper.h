@@ -114,6 +114,9 @@ class AccountProfileMapper
       const base::FilePath& profile_path,
       const account_manager::AccountKey& account,
       OAuth2AccessTokenConsumer* consumer);
+  void ReportAuthError(const base::FilePath& profile_path,
+                       const account_manager::AccountKey& account,
+                       const GoogleServiceAuthError& error);
 
   // Returns the whole map of accounts per profile. An empty path is used as the
   // key for unassigned accounts (this key is not set if there are no unassigned

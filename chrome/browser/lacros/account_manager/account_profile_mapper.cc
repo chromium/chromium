@@ -123,6 +123,18 @@ AccountProfileMapper::CreateAccessTokenFetcher(
   return account_manager_facade_->CreateAccessTokenFetcher(account, consumer);
 }
 
+void AccountProfileMapper::ReportAuthError(
+    const base::FilePath& profile_path,
+    const account_manager::AccountKey& account,
+    const GoogleServiceAuthError& error) {
+  DCHECK(initialized_) << "ReportAuthError called before initialization";
+
+  if (!ProfileContainsAccount(profile_path, account))
+    return;
+
+  account_manager_facade_->ReportAuthError(account, error);
+}
+
 void AccountProfileMapper::GetAccountsMap(MapAccountsCallback callback) {
   if (!initialized_) {
     initialization_callbacks_.push_back(
