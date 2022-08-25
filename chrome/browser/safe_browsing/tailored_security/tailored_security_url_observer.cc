@@ -11,6 +11,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.h"
+#include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service_observer_util.h"
 #include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -23,43 +24,6 @@
 #endif
 
 namespace safe_browsing {
-
-namespace {
-
-const int kThresholdForInFlowNotificationMinutes = 5;
-
-bool CanQueryTailoredSecurityForUrl(GURL url) {
-  return url.DomainIs("google.com") || url.DomainIs("youtube.com");
-}
-
-bool CanQueryTailoredSecurity(Profile* profile) {
-  if (IsEnhancedProtectionEnabled(*profile->GetPrefs()))
-    return false;
-
-  // We should only trigger the unconsented UX if the user is not consented to
-  // sync. Syncing users have different UX, handled by the
-  // `ChromeTailoredSecurityService`.
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  if (!identity_manager ||
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-    return false;
-  }
-
-  if (profile->GetPrefs()->GetBoolean(
-          prefs::kAccountTailoredSecurityShownNotification)) {
-    return false;
-  }
-
-  if (SafeBrowsingPolicyHandler::IsSafeBrowsingProtectionLevelSetByPolicy(
-          profile->GetPrefs())) {
-    return false;
-  }
-
-  return true;
-}
-
-}  // namespace
 
 TailoredSecurityUrlObserver::~TailoredSecurityUrlObserver() {
   if (service_) {
@@ -91,28 +55,11 @@ void TailoredSecurityUrlObserver::OnTailoredSecurityBitChanged(
     base::Time previous_update) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  if (!enabled || IsEnhancedProtectionEnabled(*profile->GetPrefs()))
-    return;
-
-  // We should only trigger the unconsented UX if the user is not consented to
-  // sync. Syncing users have different UX, handled by the
-  // `ChromeTailoredSecurityService`.
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  if (!identity_manager ||
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+  if (!enabled || !CanShowUnconsentedTailoredSecurityDialog(
+                      identity_manager, profile->GetPrefs()))
     return;
-  }
-
-  if (profile->GetPrefs()->GetBoolean(
-          prefs::kAccountTailoredSecurityShownNotification)) {
-    return;
-  }
-
-  if (SafeBrowsingPolicyHandler::IsSafeBrowsingProtectionLevelSetByPolicy(
-          profile->GetPrefs())) {
-    return;
-  }
 
   profile->GetPrefs()->SetBoolean(
       prefs::kAccountTailoredSecurityShownNotification, true);
@@ -171,7 +118,11 @@ void TailoredSecurityUrlObserver::UpdateFocusAndURL(bool focused,
                                                     const GURL& url) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  if (!CanQueryTailoredSecurity(profile)) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+
+  if (!CanShowUnconsentedTailoredSecurityDialog(identity_manager,
+                                                profile->GetPrefs())) {
     return;
   }
 

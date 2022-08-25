@@ -9,6 +9,8 @@ source_set("tailored_security_service") {
     "tailored_security_service.cc",
     "tailored_security_service.h",
     "tailored_security_service_observer.h",
+    "tailored_security_service_observer_util.cc",
+    "tailored_security_service_observer_util.h",
     "tailored_security_service_util.cc",
     "tailored_security_service_util.h",
   ]
