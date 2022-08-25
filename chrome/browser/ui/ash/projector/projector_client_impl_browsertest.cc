@@ -201,31 +201,10 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, OpenProjectorApp) {
             content::PAGE_TYPE_NORMAL);
 }
 
-// This test covers launching the Projector app with files for the first time.
-IN_PROC_BROWSER_TEST_F(ProjectorClientTest, LaunchProjectorAppWithFiles) {
-  auto* profile = browser()->profile();
-  SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
-
-  base::FilePath file1("test1"), file2("test2");
-  LaunchProjectorAppWithFiles({file1, file2});
-  FlushSystemWebAppLaunchesForTesting(profile);
-
-  // Verify that Projector App is opened.
-  Browser* app_browser =
-      FindSystemWebAppBrowser(profile, SystemWebAppType::PROJECTOR);
-  ASSERT_TRUE(app_browser);
-  content::WebContents* tab =
-      app_browser->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(tab);
-  EXPECT_EQ(tab->GetController().GetVisibleEntry()->GetPageType(),
-            content::PAGE_TYPE_NORMAL);
-}
-
 // This test covers launching the Projector app with files when the app is
 // already open. The launch event should recycle the existing window and should
 // not open a new window.
-IN_PROC_BROWSER_TEST_F(ProjectorClientTest,
-                       LaunchProjectorAppWithFilesWhenAppAlreadyOpen) {
+IN_PROC_BROWSER_TEST_F(ProjectorClientTest, SendFilesToProjectorApp) {
   const size_t starting_browser_count = chrome::GetTotalBrowserCount();
 
   auto* profile = browser()->profile();
@@ -244,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest,
   base::FilePath file1("test1"), file2("test2");
   // Launch the app again with files. This operation should recycle the same
   // window.
-  LaunchProjectorAppWithFiles({file1, file2});
+  SendFilesToProjectorApp({file1, file2});
   FlushSystemWebAppLaunchesForTesting(profile);
 
   // Verify that the Projector App is still open.

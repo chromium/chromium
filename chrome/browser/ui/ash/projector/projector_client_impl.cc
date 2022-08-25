@@ -127,7 +127,8 @@ bool ProjectorClientImpl::IsDriveFsMountFailed() const {
 }
 
 void ProjectorClientImpl::OpenProjectorApp() const {
-  LaunchProjectorAppWithFiles(/*files=*/{});
+  auto* profile = ProfileManager::GetActiveUserProfile();
+  ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::PROJECTOR);
 }
 
 void ProjectorClientImpl::MinimizeProjectorApp() const {

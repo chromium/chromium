@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/projector/projector_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/web_applications/test/profile_test_helper.h"
@@ -242,7 +243,7 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs, GetVideoSuccess) {
 
 // Tests that the ScreencastManager rejects malformed video files.
 IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs,
-                       GetMalFormedVideoFail) {
+                       GetMalformedVideoFail) {
   // Uses a binary file for this test and renames it to `kVideoFileName`.
   AddTestMediaFileToDefaultFolder("bear-audio-mp4a.69.ts", kVideoFileName,
                                   kProjectorMediaMimeType, true);
@@ -296,14 +297,9 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs,
   ASSERT_TRUE(first_browser);
   EXPECT_EQ(first_browser->tab_strip_model()->GetActiveWebContents(), app);
 
-  // Use LaunchAppWithFileWithoutWaiting() instead of LaunchAppWithFile()
-  // because the second one waits for the app to finish loading, but we don't
-  // reload the app when we send files. Thus, LaunchAppWithFile() would time out
-  // and we should use LaunchAppWithFileWithoutWaiting() instead.
   base::FilePath absolute_path =
       GetTestFile(kVideoFileName, /*relative=*/false);
-  app = LaunchAppWithFileWithoutWaiting(SystemWebAppType::PROJECTOR,
-                                        absolute_path);
+  SendFilesToProjectorApp({absolute_path});
   Browser* second_browser = chrome::FindBrowserWithActiveWindow();
   // Launching the app with files should not open a new window.
   EXPECT_EQ(first_browser, second_browser);
@@ -370,8 +366,7 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs,
   EXPECT_TRUE(WaitForLoadStop(app));
   base::FilePath absolute_path =
       GetTestFile("NotFoundError.file", /*relative=*/false);
-  app = LaunchAppWithFileWithoutWaiting(SystemWebAppType::PROJECTOR,
-                                        absolute_path);
+  SendFilesToProjectorApp({absolute_path});
 
   const std::string& script = base::StringPrintf(kGetVideoScript, kVideoFileId);
   content::EvalJsResult result =
@@ -393,8 +388,7 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs, NotAVideoMimeType) {
   EXPECT_TRUE(WaitForLoadStop(app));
   base::FilePath absolute_path =
       GetTestFile("MyTestScreencast.txt", /*relative=*/false);
-  app = LaunchAppWithFileWithoutWaiting(SystemWebAppType::PROJECTOR,
-                                        absolute_path);
+  SendFilesToProjectorApp({absolute_path});
 
   AddTestMediaFileToDefaultFolder(kTestVideoFile, kVideoFileName, "text/plain",
                                   /*shared_with_me=*/true);
