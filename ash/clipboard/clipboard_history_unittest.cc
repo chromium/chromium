@@ -457,6 +457,7 @@ TEST_F(ClipboardHistoryTest, DuplicateBitmapEncodingPreserved) {
   const auto& data_to_duplicate = items.back().data();
   const auto original_sequence_number_token =
       data_to_duplicate.sequence_number_token();
+  const auto original_timestamp = items.back().time_copied();
   EXPECT_FALSE(data_to_duplicate.maybe_png());
   auto png = ui::ClipboardData::EncodeBitmapData(test_bitmap_1);
   data_to_duplicate.SetPngDataAfterEncoding(png);
@@ -472,6 +473,7 @@ TEST_F(ClipboardHistoryTest, DuplicateBitmapEncodingPreserved) {
   // Verify that the encoded image data was preserved while deduplicating data
   // and reordering items in clipboard history.
   ASSERT_EQ(items.size(), 2u);
+  EXPECT_GT(items.front().time_copied(), original_timestamp);
   const auto& duplicated_data = items.front().data();
   EXPECT_EQ(duplicated_data, data_to_duplicate);
   EXPECT_NE(duplicated_data.sequence_number_token(),

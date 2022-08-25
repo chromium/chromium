@@ -21,6 +21,7 @@ ClipboardHistoryItem::~ClipboardHistoryItem() = default;
 ui::ClipboardData ClipboardHistoryItem::ReplaceEquivalentData(
     ui::ClipboardData&& new_data) {
   DCHECK(data_ == new_data);
+  time_copied_ = base::Time::Now();
   // If work has already been done to encode an image belonging to both data
   // instances, make sure it is not lost.
   if (data_.maybe_png() && !new_data.maybe_png())

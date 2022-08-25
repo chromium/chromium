@@ -6,8 +6,6 @@
 #define ASH_CLIPBOARD_CLIPBOARD_HISTORY_ITEM_H_
 
 #include "ash/ash_export.h"
-#include "base/i18n/time_formatting.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "ui/base/clipboard/clipboard_data.h"
@@ -43,8 +41,7 @@ class ASH_EXPORT ClipboardHistoryItem {
   // Underlying data for an item in the clipboard history menu.
   ui::ClipboardData data_;
 
-  // Recorded when data is committed to the clipboard history list for the first
-  // time.
+  // Time when the item's current data was set.
   base::Time time_copied_;
 };
 
