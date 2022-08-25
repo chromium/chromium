@@ -683,9 +683,9 @@ inline bool CacheMatchedElementsAndReturnMatchedResultForIndirectRelation(
           selector_matched = true;
         uint8_t old_result =
             cache_scope_context.SetMatchedAndGetOldResult(has_matched_element);
-        if (old_result == kNotCached)
+        if (old_result == kCheckPseudoHasResultNotCached)
           continue;
-        if (old_result & kMatched)
+        if (old_result & kCheckPseudoHasResultMatched)
           break;
       }
     }
@@ -769,7 +769,7 @@ uint8_t SetHasAnchorElementAsCheckedAndGetOldResult(
             CSSSelector::kPseudoHas);
   Element* has_anchor_element = has_checking_context.element;
   uint8_t previous_result = cache_scope_context.GetResult(has_anchor_element);
-  if (previous_result & kChecked)
+  if (previous_result & kCheckPseudoHasResultChecked)
     return previous_result;
 
   // If the selector checking context is for the subject :has() in the argument
@@ -779,12 +779,12 @@ uint8_t SetHasAnchorElementAsCheckedAndGetOldResult(
       cache_scope_context.AlreadyChecked(has_anchor_element)) {
     // If the element already have cache item, set the element as checked.
     // Otherwise, skip to set to prevent increasing unnecessary cache item.
-    if (previous_result != kNotCached)
+    if (previous_result != kCheckPseudoHasResultNotCached)
       cache_scope_context.SetChecked(has_anchor_element);
 
     // If the :has() anchor element was already checked previously, return the
-    // previous result with the kChecked flag set.
-    return previous_result | kChecked;
+    // previous result with the kCheckPseudoHasResultChecked flag set.
+    return previous_result | kCheckPseudoHasResultChecked;
   }
 
   cache_scope_context.SetChecked(has_anchor_element);
@@ -1008,13 +1008,14 @@ EarlyBreakOnHasArgumentChecking CheckEarlyBreakForHasArgument(
   //  - Otherwise, check :has() argument.
   uint8_t previous_result =
       SetHasAnchorElementAsCheckedAndGetOldResult(context, cache_scope_context);
-  if (previous_result & kChecked) {
+  if (previous_result & kCheckPseudoHasResultChecked) {
     if (update_affected_by_has_flags) {
       SetAffectedByHasFlagsForHasAnchorSiblings(argument_context,
                                                 has_anchor_element);
     }
-    return previous_result & kMatched ? kBreakEarlyAndReturnAsMatched
-                                      : kBreakEarlyAndMoveToNextArgument;
+    return previous_result & kCheckPseudoHasResultMatched
+               ? kBreakEarlyAndReturnAsMatched
+               : kBreakEarlyAndMoveToNextArgument;
   }
 
   // Check fast reject filter to reject :has() argument checking early.

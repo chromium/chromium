@@ -3381,7 +3381,7 @@ bool AXObject::IsFocusableStyleUsingBestAvailableState() const {
 
   // The best available source of information is now the AX tree, so use that to
   // figure out whether we have focusable style.
-  return element->IsBaseElementFocusableStyle(GetLayoutObject());
+  return element->IsBaseElementFocusableStyle();
 }
 
 bool AXObject::CanSetFocusAttribute() const {

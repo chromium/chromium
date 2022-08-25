@@ -547,9 +547,10 @@ static inline bool ParseAlphaValue(const CharacterType*& string,
     return false;
 
   if (string[0] != '0' && string[0] != '1' && string[0] != '.') {
-    int length = FindLengthOfValidDouble(string, end);
-    if (length > 0 && ContainsCharAtPos(string, end, length, terminator,
-                                        /*also_accept_whitespace=*/false)) {
+    int double_length = FindLengthOfValidDouble(string, end);
+    if (double_length > 0 &&
+        ContainsCharAtPos(string, end, double_length, terminator,
+                          /*also_accept_whitespace=*/false)) {
       value = negative ? 0 : 255;
       string = end;
       return true;

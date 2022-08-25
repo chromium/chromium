@@ -44,7 +44,7 @@ class CheckPseudoHasArgumentContext;
 //
 // - flag4 (SomeChildrenChecked) : Indicates that some children of the element
 //     were already checked. This flag is set on the parent of the
-//     kAllDescendantsOrNextSiblingsChecked element.
+//     kCheckPseudoHasResultAllDescendantsOrNextSiblingsChecked element.
 //     If the parent of an not-cached element has this flag set, we can
 //     determine whether the element is 'already checked as not-matched' or
 //     'not yet checked' by checking the AllDescendantsOrNextSiblingsChecked
@@ -118,13 +118,14 @@ class CheckPseudoHasArgumentContext;
 //
 // Please refer the check_pseudo_has_cache_scope_context_test.cc for other
 // cases.
-enum CheckPseudoHasResult : uint8_t {
-  kNotCached = 0,
-  kChecked = 1 << 0,
-  kMatched = 1 << 1,
-  kAllDescendantsOrNextSiblingsChecked = 1 << 2,
-  kSomeChildrenChecked = 1 << 3,
-};
+using CheckPseudoHasResult = uint8_t;
+constexpr CheckPseudoHasResult kCheckPseudoHasResultNotCached = 0;
+constexpr CheckPseudoHasResult kCheckPseudoHasResultChecked = 1 << 0;
+constexpr CheckPseudoHasResult kCheckPseudoHasResultMatched = 1 << 1;
+constexpr CheckPseudoHasResult
+    kCheckPseudoHasResultAllDescendantsOrNextSiblingsChecked = 1 << 2;
+constexpr CheckPseudoHasResult kCheckPseudoHasResultSomeChildrenChecked = 1
+                                                                          << 3;
 
 // The :has() result cache keeps the :has() pseudo class checking result
 // regardless of the :has() pseudo class location (whether it is for subject or
@@ -151,7 +152,7 @@ enum CheckPseudoHasResult : uint8_t {
 // :has(<argument-selector>) checking result on each element.
 // - hashmap[<element>] = <result>
 using ElementCheckPseudoHasResultMap =
-    HeapHashMap<Member<const Element>, uint8_t>;
+    HeapHashMap<Member<const Element>, CheckPseudoHasResult>;
 using CheckPseudoHasResultCache =
     HeapHashMap<String, Member<ElementCheckPseudoHasResultMap>>;
 
@@ -238,14 +239,14 @@ class CORE_EXPORT CheckPseudoHasCacheScope {
     Context() = delete;
     Context(const Document*, const CheckPseudoHasArgumentContext&);
 
-    uint8_t SetMatchedAndGetOldResult(Element* element);
+    CheckPseudoHasResult SetMatchedAndGetOldResult(Element* element);
 
     void SetChecked(Element* element);
 
     void SetAllTraversedElementsAsChecked(Element* last_traversed_element,
                                           int last_traversed_depth);
 
-    uint8_t GetResult(Element*) const;
+    CheckPseudoHasResult GetResult(Element*) const;
 
     bool AlreadyChecked(Element*) const;
 
@@ -257,7 +258,8 @@ class CORE_EXPORT CheckPseudoHasCacheScope {
    private:
     friend class CheckPseudoHasCacheScopeContextTest;
 
-    uint8_t SetResultAndGetOld(Element*, uint8_t result);
+    CheckPseudoHasResult SetResultAndGetOld(Element*,
+                                            CheckPseudoHasResult result);
 
     void SetTraversedElementAsChecked(Element* traversed_element,
                                       Element* parent);

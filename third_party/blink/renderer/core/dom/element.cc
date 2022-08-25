@@ -708,11 +708,10 @@ bool Element::IsFocusableStyle() const {
   DCHECK(
       !GetDocument().IsActive() || GetDocument().InStyleRecalc() ||
       !GetDocument().NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(*this));
-  return IsBaseElementFocusableStyle(GetLayoutObject());
+  return IsBaseElementFocusableStyle();
 }
 
-bool Element::IsBaseElementFocusableStyle(
-    const LayoutObject* layout_object) const {
+bool Element::IsBaseElementFocusableStyle() const {
   if (LayoutObject* layout_object = GetLayoutObject())
     return layout_object->StyleRef().IsFocusable();
 
@@ -8582,7 +8581,7 @@ bool Element::checkVisibility(CheckVisibilityOptions* options) const {
 
     // Check for opacity:0
     if (options->checkOpacity()) {
-      if (auto* style = ancestor.GetComputedStyle()) {
+      if (style = ancestor.GetComputedStyle(); style) {
         if (style->Opacity() == 0.f) {
           return false;
         }

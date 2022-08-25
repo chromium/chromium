@@ -2423,8 +2423,8 @@ scoped_refptr<ToggleRootList> StyleBuilderConverter::ConvertToggleRoot(
         DCHECK_LE(1u, states_list->length());
         ToggleRoot::States::NamesType states_vec;
         states_vec.ReserveInitialCapacity(states_list->length());
-        for (const auto& item : *states_list) {
-          states_vec.push_back(To<CSSCustomIdentValue>(*item).Value());
+        for (const auto& state : *states_list) {
+          states_vec.push_back(To<CSSCustomIdentValue>(*state).Value());
         }
         states = ToggleRoot::States(std::move(states_vec));
       } else if (const auto* maximum_state_number =
@@ -2531,21 +2531,22 @@ scoped_refptr<ToggleTriggerList> StyleBuilderConverter::ConvertToggleTrigger(
       }
     }
 
-    ToggleTrigger::State value(1);
+    ToggleTrigger::State trigger_value(1);
     if (item_list->length() == 3u) {
       const CSSValue& target_value = item_list->Item(2);
       if (const auto* target_ident =
               DynamicTo<CSSCustomIdentValue>(target_value)) {
-        value = ToggleTrigger::State(target_ident->Value());
+        trigger_value = ToggleTrigger::State(target_ident->Value());
       } else {
         const auto& target_number = To<CSSPrimitiveValue>(target_value);
-        value = ToggleTrigger::State(target_number.GetValue<uint32_t>());
+        trigger_value =
+            ToggleTrigger::State(target_number.GetValue<uint32_t>());
       }
     } else {
       DCHECK_NE(mode, ToggleTriggerMode::kSet);
     }
 
-    result->Append(ToggleTrigger(name, mode, value));
+    result->Append(ToggleTrigger(name, mode, trigger_value));
   }
   return result;
 }
@@ -2567,10 +2568,10 @@ StyleBuilderConverter::ConvertOverflowClipMargin(StyleResolverState& state,
   }
 
   if (css_value_list.length() > 1) {
-    const auto& value = css_value_list.Item(1);
-    DCHECK(value.IsPrimitiveValue());
+    const auto& primitive_value = css_value_list.Item(1);
+    DCHECK(primitive_value.IsPrimitiveValue());
     DCHECK(!length_value);
-    length_value = &To<CSSPrimitiveValue>(value);
+    length_value = &To<CSSPrimitiveValue>(primitive_value);
   }
 
   auto reference_box = StyleOverflowClipMargin::ReferenceBox::kPaddingBox;

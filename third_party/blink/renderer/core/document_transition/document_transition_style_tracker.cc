@@ -522,9 +522,9 @@ bool DocumentTransitionStyleTracker::Start() {
 
   if (found_new_tags) {
     VectorOf<std::pair<AtomicString, int>> new_tag_pairs;
-    int next_index = 0;
+    int next_tag_index = 0;
     for (const auto& root_tag : AllRootTags())
-      new_tag_pairs.push_back(std::make_pair(root_tag, ++next_index));
+      new_tag_pairs.push_back(std::make_pair(root_tag, ++next_tag_index));
     for (auto& [tag, data] : element_data_map_)
       new_tag_pairs.push_back(std::make_pair(tag, data->element_index));
 

@@ -125,14 +125,16 @@ bool ParseAttributionFilterData(
     WTF::Vector<String> values;
 
     for (wtf_size_t j = 0; j < num_values; ++j) {
-      String value;
-      if (!array->at(j)->AsString(&value))
+      String value_str;
+      if (!array->at(j)->AsString(&value_str))
         return false;
 
-      if (value.CharactersSizeInBytes() > kMaxBytesPerAttributionFilterString)
+      if (value_str.CharactersSizeInBytes() >
+          kMaxBytesPerAttributionFilterString) {
         return false;
+      }
 
-      values.push_back(std::move(value));
+      values.push_back(std::move(value_str));
     }
 
     filter_data.filter_values.insert(entry.first, std::move(values));

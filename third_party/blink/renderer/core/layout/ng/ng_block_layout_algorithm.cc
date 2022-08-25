@@ -1928,7 +1928,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
       new_child_space = CreateConstraintSpaceForChild(
           child, *child_data, ChildAvailableSize(), /* is_new_fc */ false,
           child_bfc_block_offset);
-      auto minimum_top = CreateMinimumTopScopeForChild(child, *child_data);
+      auto minimum_top2 = CreateMinimumTopScopeForChild(child, *child_data);
       layout_result = LayoutInflow(new_child_space, child_break_token,
                                    early_break_, column_spanner_path_, &child,
                                    inline_child_layout_context);

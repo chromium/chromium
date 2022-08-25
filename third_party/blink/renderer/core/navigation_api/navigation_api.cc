@@ -114,7 +114,7 @@ class NavigateReaction final : public ScriptFunction::Callable {
     }
 
     if (navigate_event_->ShouldSendAxEvents()) {
-      auto* window = LocalDOMWindow::From(script_state);
+      window = LocalDOMWindow::From(script_state);
       DCHECK(window);
       if (AXObjectCache* cache = window->document()->ExistingAXObjectCache())
         cache->HandleLoadComplete(window->document());

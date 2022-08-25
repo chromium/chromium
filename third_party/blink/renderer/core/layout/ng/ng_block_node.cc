@@ -737,11 +737,12 @@ const NGLayoutResult* NGBlockNode::LayoutRepeatableRoot(
     DCHECK_GE(fragment_count, 1u);
     box_->ClearNeedsLayout();
     for (wtf_size_t i = 1; i < fragment_count; i++) {
-      const NGPhysicalBoxFragment& fragment = *box_->GetPhysicalFragment(i);
-      bool is_first = i == 1;
+      const NGPhysicalBoxFragment& physical_fragment =
+          *box_->GetPhysicalFragment(i);
+      is_first = i == 1;
       bool is_last = i + 1 == fragment_count;
       NGFragmentRepeater repeater(is_first, is_last);
-      repeater.CloneChildFragments(fragment);
+      repeater.CloneChildFragments(physical_fragment);
     }
   }
 

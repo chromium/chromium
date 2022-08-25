@@ -350,8 +350,8 @@ WebPagePopupImpl::WebPagePopupImpl(
   DCHECK(popup_client_);
   popup_widget_host_.set_disconnect_handler(WTF::Bind(
       &WebPagePopupImpl::WidgetHostDisconnected, WTF::Unretained(this)));
-  if (auto* widget = opener_web_view->MainFrameViewWidget()) {
-    if (auto* device_emulator = widget->DeviceEmulator()) {
+  if (auto* main_frame_widget = opener_web_view->MainFrameViewWidget()) {
+    if (auto* device_emulator = main_frame_widget->DeviceEmulator()) {
       opener_widget_screen_origin_ = device_emulator->ViewRectOrigin();
       opener_original_widget_screen_origin_ =
           device_emulator->original_view_rect().origin();

@@ -93,33 +93,39 @@ CheckPseudoHasCacheScope::Context::Context(
   }
 }
 
-uint8_t CheckPseudoHasCacheScope::Context::SetMatchedAndGetOldResult(
-    Element* element) {
-  return SetResultAndGetOld(element, kChecked | kMatched);
+CheckPseudoHasResult
+CheckPseudoHasCacheScope::Context::SetMatchedAndGetOldResult(Element* element) {
+  return SetResultAndGetOld(
+      element, kCheckPseudoHasResultChecked | kCheckPseudoHasResultMatched);
 }
 
 void CheckPseudoHasCacheScope::Context::SetChecked(Element* element) {
-  SetResultAndGetOld(element, kChecked);
+  SetResultAndGetOld(element, kCheckPseudoHasResultChecked);
 }
 
-uint8_t CheckPseudoHasCacheScope::Context::SetResultAndGetOld(Element* element,
-                                                              uint8_t result) {
+CheckPseudoHasResult CheckPseudoHasCacheScope::Context::SetResultAndGetOld(
+    Element* element,
+    CheckPseudoHasResult result) {
   DCHECK(cache_allowed_);
   DCHECK(result_map_);
-  uint8_t old_result = kNotCached;
+  CheckPseudoHasResult old_result = kCheckPseudoHasResultNotCached;
   auto cache_result = result_map_->insert(element, result);
   if (!cache_result.is_new_entry) {
     old_result = cache_result.stored_value->value;
     cache_result.stored_value->value |= result;
   }
 
-  // kMatched must set with kChecked
-  DCHECK_NE(cache_result.stored_value->value & (kMatched | kChecked), kMatched);
-
-  // kAllDescendantsOrNextSiblingsChecked must set with kChecked
+  // kCheckPseudoHasResultMatched must set with kCheckPseudoHasResultChecked
   DCHECK_NE(cache_result.stored_value->value &
-                (kAllDescendantsOrNextSiblingsChecked | kChecked),
-            kAllDescendantsOrNextSiblingsChecked);
+                (kCheckPseudoHasResultMatched | kCheckPseudoHasResultChecked),
+            kCheckPseudoHasResultMatched);
+
+  // kCheckPseudoHasResultAllDescendantsOrNextSiblingsChecked must set with
+  // kCheckPseudoHasResultChecked
+  DCHECK_NE(cache_result.stored_value->value &
+                (kCheckPseudoHasResultAllDescendantsOrNextSiblingsChecked |
+                 kCheckPseudoHasResultChecked),
+            kCheckPseudoHasResultAllDescendantsOrNextSiblingsChecked);
 
   return old_result;
 }
@@ -130,9 +136,11 @@ void CheckPseudoHasCacheScope::Context::SetTraversedElementAsChecked(
   DCHECK(traversed_element);
   DCHECK(parent);
   DCHECK_EQ(traversed_element->parentElement(), parent);
-  SetResultAndGetOld(traversed_element,
-                     kChecked | kAllDescendantsOrNextSiblingsChecked);
-  SetResultAndGetOld(parent, kSomeChildrenChecked);
+  SetResultAndGetOld(
+      traversed_element,
+      kCheckPseudoHasResultChecked |
+          kCheckPseudoHasResultAllDescendantsOrNextSiblingsChecked);
+  SetResultAndGetOld(parent, kCheckPseudoHasResultSomeChildrenChecked);
 }
 
 void CheckPseudoHasCacheScope::Context::SetAllTraversedElementsAsChecked(
@@ -190,21 +198,24 @@ void CheckPseudoHasCacheScope::Context::SetAllTraversedElementsAsChecked(
   }
 }
 
-uint8_t CheckPseudoHasCacheScope::Context::GetResult(Element* element) const {
+CheckPseudoHasResult CheckPseudoHasCacheScope::Context::GetResult(
+    Element* element) const {
   DCHECK(cache_allowed_);
   DCHECK(result_map_);
   auto iterator = result_map_->find(element);
-  return iterator == result_map_->end() ? kNotCached : iterator->value;
+  return iterator == result_map_->end() ? kCheckPseudoHasResultNotCached
+                                        : iterator->value;
 }
 
 bool CheckPseudoHasCacheScope::Context::
     HasSiblingsWithAllDescendantsOrNextSiblingsChecked(Element* element) const {
   for (Element* sibling = ElementTraversal::PreviousSibling(*element); sibling;
        sibling = ElementTraversal::PreviousSibling(*sibling)) {
-    uint8_t sibling_result = GetResult(sibling);
-    if (sibling_result == kNotCached)
+    CheckPseudoHasResult sibling_result = GetResult(sibling);
+    if (sibling_result == kCheckPseudoHasResultNotCached)
       continue;
-    if (sibling_result & kAllDescendantsOrNextSiblingsChecked)
+    if (sibling_result &
+        kCheckPseudoHasResultAllDescendantsOrNextSiblingsChecked)
       return true;
   }
   return false;
@@ -215,12 +226,13 @@ bool CheckPseudoHasCacheScope::Context::
         Element* element) const {
   for (Element* parent = element->parentElement(); parent;
        element = parent, parent = element->parentElement()) {
-    uint8_t parent_result = GetResult(parent);
-    if (parent_result == kNotCached)
+    CheckPseudoHasResult parent_result = GetResult(parent);
+    if (parent_result == kCheckPseudoHasResultNotCached)
       continue;
-    if (parent_result & kAllDescendantsOrNextSiblingsChecked)
+    if (parent_result &
+        kCheckPseudoHasResultAllDescendantsOrNextSiblingsChecked)
       return true;
-    if (parent_result & kSomeChildrenChecked) {
+    if (parent_result & kCheckPseudoHasResultSomeChildrenChecked) {
       if (HasSiblingsWithAllDescendantsOrNextSiblingsChecked(element))
         return true;
     }
@@ -236,7 +248,7 @@ bool CheckPseudoHasCacheScope::Context::AlreadyChecked(Element* element) const {
       return HasAncestorsWithAllDescendantsOrNextSiblingsChecked(element);
     case CheckPseudoHasArgumentTraversalScope::kAllNextSiblings:
       if (Element* parent = element->parentElement()) {
-        if (!(GetResult(parent) & kSomeChildrenChecked))
+        if (!(GetResult(parent) & kCheckPseudoHasResultSomeChildrenChecked))
           return false;
         return HasSiblingsWithAllDescendantsOrNextSiblingsChecked(element);
       }

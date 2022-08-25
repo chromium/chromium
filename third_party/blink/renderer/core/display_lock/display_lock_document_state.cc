@@ -557,13 +557,14 @@ void DisplayLockDocumentState::UnlockShapingDeferredElements(
       LayoutObject* object = target_object;
       while (!object->ContainingBlock()->IsLayoutView())
         object = object->ContainingBlock();
-      const ComputedStyle& style = object->StyleRef();
+      const ComputedStyle& object_style = object->StyleRef();
       if (object->IsOutOfFlowPositioned() &&
-          (!style.Left().IsAuto() || !style.Right().IsAuto()) &&
-          (!style.Top().IsAuto() || !style.Bottom().IsAuto()))
+          (!object_style.Left().IsAuto() || !object_style.Right().IsAuto()) &&
+          (!object_style.Top().IsAuto() || !object_style.Bottom().IsAuto())) {
         UnlockShapingDeferredInclusiveDescendants(*object);
-      else
+      } else {
         UnlockShapingDeferredElements();
+      }
     }
   }
 }
