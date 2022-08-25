@@ -11,11 +11,13 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_style.h"
 #include "components/permissions/permission_prompt.h"
+#include "components/permissions/permission_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace permissions {
 enum class PermissionAction;
+enum class RequestType;
 }  // namespace permissions
 
 class Browser;

@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/permissions/permission_chip.h"
-#include "chrome/browser/ui/views/permissions/permission_request_chip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
@@ -81,7 +80,6 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipBrowserTest,
   // After animation ended, the chip is expanded and the bubble is shown.
   EXPECT_TRUE(lbv->chip()->GetVisible());
   EXPECT_TRUE(lbv->chip()->IsBubbleShowing());
-  EXPECT_TRUE(lbv->chip()->IsInitialized());
 
   // Type something in the omnibox.
   auto* omnibox_view = lbv->GetOmniboxView();
@@ -94,7 +92,6 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipBrowserTest,
   // location icon isn't offset by the chip and the bubble is hidden.
   EXPECT_FALSE(lbv->chip()->GetVisible());
   EXPECT_FALSE(lbv->chip()->IsBubbleShowing());
-  EXPECT_FALSE(lbv->chip()->IsInitialized());
   EXPECT_EQ(lbv->location_icon_view()->bounds().x(),
             GetLayoutConstant(LOCATION_BAR_ELEMENT_PADDING));
 }

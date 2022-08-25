@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_request.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
@@ -135,6 +136,8 @@ class PermissionUtil {
   static GURL GetCanonicalOrigin(ContentSettingsType permission,
                                  const GURL& requesting_origin,
                                  const GURL& embedding_origin);
+  static bool ShouldPermissionBubbleStartOpen(
+      PermissionPrompt::Delegate* prompt_delegate);
 };
 
 }  // namespace permissions

@@ -1,13 +1,13 @@
 // Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 #include "chrome/browser/ui/views/permissions/permission_chip.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
-#include "chrome/browser/ui/views/permissions/permission_quiet_chip.h"
-#include "chrome/browser/ui/views/permissions/permission_request_chip.h"
+#include "components/permissions/features.h"
+#include "components/permissions/permission_request_enums.h"
+#include "components/permissions/permission_ui_selector.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/test/ax_event_counter.h"
@@ -19,12 +19,25 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
  public:
   explicit TestDelegate(
       const GURL& origin,
-      const std::vector<permissions::RequestType> request_types) {
+      const std::vector<permissions::RequestType> request_types,
+      bool with_gesture)
+      : TestDelegate(origin, request_types, with_gesture, absl::nullopt) {}
+
+  explicit TestDelegate(
+      const GURL& origin,
+      const std::vector<permissions::RequestType> request_types,
+      bool with_gesture,
+      absl::optional<permissions::PermissionUiSelector::QuietUiReason>
+          quiet_ui_reason)
+      : quiet_ui_reason_(quiet_ui_reason) {
     std::transform(
         request_types.begin(), request_types.end(),
         std::back_inserter(requests_), [&](auto& request_type) {
           return std::make_unique<permissions::MockPermissionRequest>(
-              origin, request_type);
+              origin, request_type,
+              with_gesture
+                  ? permissions::PermissionRequestGestureType::GESTURE
+                  : permissions::PermissionRequestGestureType::NO_GESTURE);
         });
     std::transform(requests_.begin(), requests_.end(),
                    std::back_inserter(raw_requests_),
@@ -61,7 +74,7 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
   bool ShouldCurrentRequestUseQuietUI() const override { return false; }
   absl::optional<permissions::PermissionUiSelector::QuietUiReason>
   ReasonForUsingQuietUi() const override {
-    return absl::nullopt;
+    return quiet_ui_reason_;
   }
   void SetDismissOnTabClose() override {}
   void SetBubbleShown() override {}
@@ -79,6 +92,8 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
   std::vector<std::unique_ptr<permissions::PermissionRequest>> requests_;
   std::vector<permissions::PermissionRequest*> raw_requests_;
   bool was_current_request_already_displayed_ = false;
+  absl::optional<permissions::PermissionUiSelector::QuietUiReason>
+      quiet_ui_reason_;
   base::WeakPtrFactory<TestDelegate> weak_factory_{this};
 };
 }  // namespace
@@ -87,7 +102,10 @@ class PermissionChipUnitTest : public TestWithBrowserView {
  public:
   PermissionChipUnitTest()
       : TestWithBrowserView(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    feature_list_.InitAndEnableFeature(
+        permissions::features::kPermissionChipGestureSensitive);
+  }
 
   PermissionChipUnitTest(const PermissionChipUnitTest&) = delete;
   PermissionChipUnitTest& operator=(const PermissionChipUnitTest&) = delete;
@@ -107,6 +125,7 @@ class PermissionChipUnitTest : public TestWithBrowserView {
     base::RunLoop().RunUntilIdle();
   }
 
+  base::test::ScopedFeatureList feature_list_;
   raw_ptr<content::WebContents> web_contents_;
 
   base::TimeDelta kChipCollapseDuration = base::Seconds(12);
@@ -117,10 +136,9 @@ class PermissionChipUnitTest : public TestWithBrowserView {
 
 TEST_F(PermissionChipUnitTest, DisplayChipNoAutoPopupTest) {
   TestDelegate delegate(GURL("https://test.origin"),
-                        {permissions::RequestType::kNotifications});
+                        {permissions::RequestType::kNotifications}, false);
   PermissionChip chip;
-  chip.SetupChip(
-      std::make_unique<PermissionRequestChip>(browser(), &delegate, false));
+  chip.ShowLoudChip(browser(), &delegate);
 
   EXPECT_FALSE(chip.IsBubbleShowing());
 
@@ -165,14 +183,13 @@ TEST_F(PermissionChipUnitTest, DisplayChipNoAutoPopupTest) {
 
 TEST_F(PermissionChipUnitTest, AlreadyDisplayedRequestTest) {
   TestDelegate delegate(GURL("https://test.origin"),
-                        {permissions::RequestType::kNotifications});
+                        {permissions::RequestType::kNotifications}, false);
   delegate.SetAlreadyDisplayed();
 
   EXPECT_TRUE(delegate.WasCurrentRequestAlreadyDisplayed());
 
   PermissionChip chip;
-  chip.SetupChip(
-      std::make_unique<PermissionRequestChip>(browser(), &delegate, false));
+  chip.ShowLoudChip(browser(), &delegate);
 
   EXPECT_FALSE(chip.IsBubbleShowing());
 
@@ -196,10 +213,9 @@ TEST_F(PermissionChipUnitTest, AlreadyDisplayedRequestTest) {
 
 TEST_F(PermissionChipUnitTest, MultiClickOnChipNoAutoPopupTest) {
   TestDelegate delegate(GURL("https://test.origin"),
-                        {permissions::RequestType::kNotifications});
+                        {permissions::RequestType::kNotifications}, false);
   PermissionChip chip;
-  chip.SetupChip(
-      std::make_unique<PermissionRequestChip>(browser(), &delegate, false));
+  chip.ShowLoudChip(browser(), &delegate);
 
   EXPECT_FALSE(chip.IsBubbleShowing());
 
@@ -284,10 +300,9 @@ TEST_F(PermissionChipUnitTest, MultiClickOnChipNoAutoPopupTest) {
 
 TEST_F(PermissionChipUnitTest, DisplayChipAutoPopupTest) {
   TestDelegate delegate(GURL("https://test.origin"),
-                        {permissions::RequestType::kNotifications});
+                        {permissions::RequestType::kNotifications}, true);
   PermissionChip chip;
-  chip.SetupChip(
-      std::make_unique<PermissionRequestChip>(browser(), &delegate, true));
+  chip.ShowLoudChip(browser(), &delegate);
 
   // Due to animation issue, the collapse timer will not be started.
   EXPECT_FALSE(chip.is_collapse_timer_running_for_testing());
@@ -328,10 +343,9 @@ TEST_F(PermissionChipUnitTest, DisplayChipAutoPopupTest) {
 
 TEST_F(PermissionChipUnitTest, MultiClickOnChipAutoPopupTest) {
   TestDelegate delegate(GURL("https://test.origin"),
-                        {permissions::RequestType::kNotifications});
+                        {permissions::RequestType::kNotifications}, true);
   PermissionChip chip;
-  chip.SetupChip(
-      std::make_unique<PermissionRequestChip>(browser(), &delegate, true));
+  chip.ShowLoudChip(browser(), &delegate);
 
   EXPECT_FALSE(chip.IsBubbleShowing());
 
@@ -403,11 +417,11 @@ TEST_F(PermissionChipUnitTest, MultiClickOnChipAutoPopupTest) {
 }
 
 TEST_F(PermissionChipUnitTest, DisplayQuietChipNoAbusiveTest) {
-  TestDelegate delegate(GURL("https://test.origin"),
-                        {permissions::RequestType::kNotifications});
+  TestDelegate delegate(
+      GURL("https://test.origin"), {permissions::RequestType::kNotifications},
+      true, permissions::PermissionUiSelector::QuietUiReason::kEnabledInPrefs);
   PermissionChip chip;
-  chip.SetupChip(
-      std::make_unique<PermissionQuietChip>(browser(), &delegate, true));
+  chip.ShowQuietChip(browser(), &delegate);
 
   EXPECT_FALSE(chip.IsBubbleShowing());
 
@@ -447,11 +461,11 @@ TEST_F(PermissionChipUnitTest, DisplayQuietChipNoAbusiveTest) {
 }
 
 TEST_F(PermissionChipUnitTest, MultiClickOnQuietChipNoAbusiveTest) {
-  TestDelegate delegate(GURL("https://test.origin"),
-                        {permissions::RequestType::kNotifications});
+  TestDelegate delegate(
+      GURL("https://test.origin"), {permissions::RequestType::kNotifications},
+      true, permissions::PermissionUiSelector::QuietUiReason::kEnabledInPrefs);
   PermissionChip chip;
-  chip.SetupChip(
-      std::make_unique<PermissionQuietChip>(browser(), &delegate, true));
+  chip.ShowQuietChip(browser(), &delegate);
 
   EXPECT_FALSE(chip.IsBubbleShowing());
 
@@ -483,7 +497,8 @@ TEST_F(PermissionChipUnitTest, MultiClickOnQuietChipNoAbusiveTest) {
   EXPECT_FALSE(chip.is_collapse_timer_running_for_testing());
   EXPECT_FALSE(chip.is_dismiss_timer_running_for_testing());
 
-  // After 30 seconds the permissin prompt popup bubble should still be visible.
+  // After 30 seconds the permissin prompt popup bubble should still be
+  // visible.
   task_environment()->AdvanceClock(kLongerThanAllTimersDuration);
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(delegate.IsRequestInProgress());
@@ -538,10 +553,12 @@ TEST_F(PermissionChipUnitTest, MultiClickOnQuietChipNoAbusiveTest) {
 
 TEST_F(PermissionChipUnitTest, DisplayQuietChipAbusiveTest) {
   TestDelegate delegate(GURL("https://test.origin"),
-                        {permissions::RequestType::kNotifications});
+                        {permissions::RequestType::kNotifications}, true,
+                        permissions::PermissionUiSelector::QuietUiReason::
+                            kTriggeredDueToAbusiveRequests);
+
   PermissionChip chip;
-  chip.SetupChip(
-      std::make_unique<PermissionQuietChip>(browser(), &delegate, false));
+  chip.ShowQuietChip(browser(), &delegate);
 
   EXPECT_FALSE(chip.IsBubbleShowing());
 
@@ -569,10 +586,11 @@ TEST_F(PermissionChipUnitTest, DisplayQuietChipAbusiveTest) {
 
 TEST_F(PermissionChipUnitTest, MultiClickOnQuietChipAbusiveTest) {
   TestDelegate delegate(GURL("https://test.origin"),
-                        {permissions::RequestType::kNotifications});
+                        {permissions::RequestType::kNotifications}, true,
+                        permissions::PermissionUiSelector::QuietUiReason::
+                            kTriggeredDueToAbusiveRequests);
   PermissionChip chip;
-  chip.SetupChip(
-      std::make_unique<PermissionQuietChip>(browser(), &delegate, false));
+  chip.ShowQuietChip(browser(), &delegate);
 
   EXPECT_FALSE(chip.IsBubbleShowing());
 

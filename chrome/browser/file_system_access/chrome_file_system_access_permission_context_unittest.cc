@@ -32,6 +32,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/permissions/permission_util.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"

@@ -39,6 +39,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/page_info/core/features.h"
 #include "components/permissions/permission_uma_util.h"
+#include "components/permissions/permission_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/ssl_status.h"

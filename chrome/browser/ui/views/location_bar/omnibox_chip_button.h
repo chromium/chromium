@@ -6,10 +6,11 @@
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_OMNIBOX_CHIP_BUTTON_H_
 
 #include "chrome/browser/ui/views/location_bar/omnibox_chip_theme.h"
-#include "chrome/browser/ui/views/permissions/permission_chip_delegate.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/animation/slide_animation.h"
+#include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/button/md_text_button.h"
 
 // UI component for chip button located in the omnibox. A button with an icon
@@ -45,10 +46,7 @@ class OmniboxChipButton : public views::MdTextButton {
   void SetMessage(std::u16string message);
   void SetForceExpandedForTesting(bool force_expanded_for_testing);
 
-  void SetShowBlockedIcon(bool show_blocked_icon);
-
-  void SetPermissionChipDelegate(
-      PermissionChipDelegate* permission_chip_delegate);
+  void SetChipIcon(const gfx::VectorIcon& icon);
 
   void Finalize();
 
@@ -77,13 +75,11 @@ class OmniboxChipButton : public views::MdTextButton {
   // without text.
   bool fully_collapsed_ = false;
 
-  bool show_blocked_icon_ = false;
+  raw_ptr<const gfx::VectorIcon> icon_ = &gfx::kNoneIcon;
 
   base::RepeatingCallback<void()> expand_animation_ended_callback_;
 
   bool force_expanded_for_testing_ = false;
-
-  absl::optional<PermissionChipDelegate*> permission_chip_delegate_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_OMNIBOX_CHIP_BUTTON_H_

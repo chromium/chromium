@@ -22,6 +22,7 @@
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_request.h"
+#include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/switches.h"

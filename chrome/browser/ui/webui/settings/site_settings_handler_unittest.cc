@@ -59,6 +59,7 @@
 #include "components/permissions/object_permission_context_base.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_uma_util.h"
+#include "components/permissions/permission_util.h"
 #include "components/permissions/test/object_permission_context_base_mock_permission_observer.h"
 #include "components/permissions/test/permission_test_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"

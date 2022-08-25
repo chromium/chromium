@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/permissions/permission_chip.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_view.h"
-#include "chrome/browser/ui/views/permissions/permission_request_chip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -35,6 +34,7 @@
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_ui_selector.h"
+#include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "content/public/browser/render_frame_host.h"
@@ -260,8 +260,8 @@ IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleViewBrowserTest,
   }
 }
 
-// Test switching between PermissionChip and PermissionPromptBubbleView and make
-// sure no crashes.
+// Test switching between PermissionChip and PermissionPromptBubbleView and
+// make sure no crashes.
 IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleViewBrowserTest,
                        SwitchBetweenChipAndBubble) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());

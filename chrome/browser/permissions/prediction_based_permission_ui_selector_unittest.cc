@@ -16,6 +16,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_uma_util.h"
+#include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"

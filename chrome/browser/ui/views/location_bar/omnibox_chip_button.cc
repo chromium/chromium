@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
+#include <cstddef>
 
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -129,9 +130,8 @@ ui::ImageModel OmniboxChipButton::GetIconImageModel() const {
 }
 
 const gfx::VectorIcon& OmniboxChipButton::GetIcon() const {
-  if (permission_chip_delegate_.has_value()) {
-    return show_blocked_icon_ ? permission_chip_delegate_.value()->GetIconOff()
-                              : permission_chip_delegate_.value()->GetIconOn();
+  if (icon_) {
+    return const_cast<decltype(*icon_)>(*icon_);
   }
 
   return gfx::kNoneIcon;
@@ -171,26 +171,15 @@ void OmniboxChipButton::SetForceExpandedForTesting(
   force_expanded_for_testing_ = force_expanded_for_testing;
 }
 
-void OmniboxChipButton::SetShowBlockedIcon(bool show_blocked_icon) {
-  if (show_blocked_icon_ != show_blocked_icon) {
-    show_blocked_icon_ = show_blocked_icon;
-    theme_ = show_blocked_icon ? OmniboxChipTheme::kLowVisibility
-                               : OmniboxChipTheme::kNormalVisibility;
-    UpdateIconAndColors();
-  }
-}
-
-void OmniboxChipButton::SetPermissionChipDelegate(
-    PermissionChipDelegate* permission_chip_delegate) {
-  DCHECK(permission_chip_delegate);
-  permission_chip_delegate_ = permission_chip_delegate;
+void OmniboxChipButton::SetChipIcon(const gfx::VectorIcon& icon) {
+  icon_ = &icon;
 
   UpdateIconAndColors();
 }
 
 void OmniboxChipButton::Finalize() {
-  permission_chip_delegate_.reset();
-  show_blocked_icon_ = false;
+  icon_ = (gfx::VectorIcon*)&gfx::kNoneIcon;
+
   // It is possible that a chip gets finalized while the animation was in
   // progress.
   animation_->Stop();

@@ -68,8 +68,6 @@
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_icon_views.h"
 #include "chrome/browser/ui/views/permissions/permission_chip.h"
-#include "chrome/browser/ui/views/permissions/permission_quiet_chip.h"
-#include "chrome/browser/ui/views/permissions/permission_request_chip.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_icon_view.h"
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_icon_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -824,30 +822,6 @@ void LocationBarView::CreateChip() {
     return;
 
   chip_ = AddChildViewAt(std::make_unique<PermissionChip>(), 0);
-}
-
-PermissionChip* LocationBarView::DisplayChip(
-    permissions::PermissionPrompt::Delegate* delegate,
-    bool should_bubble_start_open) {
-  DCHECK(delegate);
-  DCHECK(chip_);
-
-  chip_->SetupChip(std::make_unique<PermissionRequestChip>(
-      browser(), delegate, should_bubble_start_open));
-
-  return chip_;
-}
-
-PermissionChip* LocationBarView::DisplayQuietChip(
-    permissions::PermissionPrompt::Delegate* delegate,
-    bool should_expand) {
-  DCHECK(delegate);
-  DCHECK(chip_);
-
-  chip_->SetupChip(std::make_unique<PermissionQuietChip>(browser(), delegate,
-                                                         should_expand));
-
-  return chip_;
 }
 
 void LocationBarView::FinalizeChip() {

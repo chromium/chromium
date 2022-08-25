@@ -8,9 +8,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
-#include "chrome/browser/ui/views/permissions/permission_chip_delegate.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_style.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_request.h"
+#include "permission_prompt_bubble_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/view_tracker.h"
@@ -55,11 +56,15 @@ class PermissionChip : public views::AccessiblePaneView,
   bool IsAnimating() const override;
   void RestartTimersOnMouseHover() override;
 
-  void SetupChip(
-      std::unique_ptr<PermissionChipDelegate> permission_chip_delegate);
+  void ShowQuietChip(
+      Browser* browser,
+      permissions::PermissionPrompt::Delegate* permission_prompt_delegate);
+
+  void ShowLoudChip(
+      Browser* browser,
+      permissions::PermissionPrompt::Delegate* permission_prompt_delegate);
 
   void Finalize();
-  bool IsInitialized();
   // The chip is fully initialized and visible.
   bool IsActive();
 
@@ -69,7 +74,7 @@ class PermissionChip : public views::AccessiblePaneView,
     return prompt_bubble_tracker_.view();
   }
 
-  bool should_start_open_for_testing() { return should_start_open_; }
+  bool should_start_open_for_testing() { return should_bubble_start_open_; }
   bool should_expand_for_testing() { return should_expand_; }
   OmniboxChipButton* get_chip_button_for_testing() { return chip_button_; }
 
@@ -96,12 +101,15 @@ class PermissionChip : public views::AccessiblePaneView,
   void ShowBlockedIcon();
 
  private:
-  void Show(bool always_open_bubble);
+  void Show();
   void ExpandAnimationEnded();
   void ChipButtonPressed();
   void StartCollapseTimer();
   void StartDismissTimer();
   void Collapse(bool allow_restart);
+  void SetupChip(const std::u16string& text,
+                 OmniboxChipTheme visibility,
+                 const gfx::VectorIcon& icon);
 
   void ResetTimers() {
     collapse_timer_.AbandonAndStop();
@@ -111,10 +119,17 @@ class PermissionChip : public views::AccessiblePaneView,
   void AnnounceChip();
   void OnPromptBubbleDismissed();
 
+  void RecordChipButtonPressed(const char* recordKey);
+
   absl::optional<permissions::PermissionPrompt::Delegate*>
       permission_prompt_delegate_;
 
-  std::unique_ptr<PermissionChipDelegate> permission_chip_delegate_;
+  PermissionPromptStyle prompt_style_;
+
+  // The time when the chip was displayed.
+  base::TimeTicks chip_shown_time_;
+
+  Browser* browser_;
 
   // ViewTracker used to track the prompt bubble.
   views::ViewTracker prompt_bubble_tracker_;
@@ -129,9 +144,13 @@ class PermissionChip : public views::AccessiblePaneView,
   // The button that displays the icon and text.
   raw_ptr<OmniboxChipButton> chip_button_ = nullptr;
 
-  bool should_start_open_ = false;
-  bool should_expand_ = true;
   bool should_dismiss_ = false;
+
+  raw_ptr<const gfx::VectorIcon> blocked_icon_;
+
+  bool should_bubble_start_open_ = false;
+
+  bool should_expand_ = true;
 
   base::WeakPtrFactory<PermissionChip> weak_factory_{this};
 };
