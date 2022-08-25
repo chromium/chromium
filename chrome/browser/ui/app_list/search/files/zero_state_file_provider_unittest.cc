@@ -10,7 +10,9 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/scoped_running_on_chromeos.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/test/test_search_controller.h"
@@ -40,11 +42,21 @@ class ZeroStateFileProviderTest : public testing::Test {
     app_list_color_provider_ =
         std::make_unique<ash::TestAppListColorProvider>();
 
-    profile_ = std::make_unique<TestingProfile>();
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    profile_ = std::make_unique<TestingProfile>(temp_dir_.GetPath());
+
+    // The downloads directory depends on whether it is inside or outside
+    // chromeos. So this needs to be in scope before |provider_| and
+    // |downloads_folder_|.
+    base::test::ScopedRunningOnChromeOS running_on_chromeos;
 
     auto provider = std::make_unique<ZeroStateFileProvider>(profile_.get());
     provider_ = provider.get();
     search_controller_.AddProvider(0, std::move(provider));
+
+    downloads_folder_ =
+        file_manager::util::GetDownloadsFolderForProfile(profile_.get());
+    ASSERT_TRUE(base::CreateDirectory(downloads_folder_));
 
     Wait();
   }
@@ -55,15 +67,19 @@ class ZeroStateFileProviderTest : public testing::Test {
     return profile_->GetPath().AppendASCII(filename);
   }
 
-  void WriteFile(const std::string& filename) {
-    CHECK(base::WriteFile(Path(filename), "abcd"));
-    CHECK(base::PathExists(Path(filename)));
+  base::FilePath DownloadsPath(const std::string& filename) {
+    return downloads_folder_.AppendASCII(filename);
+  }
+
+  void WriteFile(const base::FilePath& path) {
+    CHECK(base::WriteFile(path, "abcd"));
+    CHECK(base::PathExists(path));
     Wait();
   }
 
-  FileTasksObserver::FileOpenEvent OpenEvent(const std::string& filename) {
+  FileTasksObserver::FileOpenEvent OpenEvent(const base::FilePath& path) {
     FileTasksObserver::FileOpenEvent e;
-    e.path = Path(filename);
+    e.path = path;
     e.open_type = FileTasksObserver::OpenType::kOpen;
     return e;
   }
@@ -85,6 +101,9 @@ class ZeroStateFileProviderTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<Profile> profile_;
+  base::ScopedTempDir temp_dir_;
+  base::FilePath downloads_folder_;
+
   TestSearchController search_controller_;
   ZeroStateFileProvider* provider_ = nullptr;
   std::unique_ptr<ash::TestAppListColorProvider> app_list_color_provider_;
@@ -97,14 +116,14 @@ TEST_F(ZeroStateFileProviderTest, NoResultsWithQuery) {
 }
 
 TEST_F(ZeroStateFileProviderTest, ResultsProvided) {
-  WriteFile("exists_1.txt");
-  WriteFile("exists_2.png");
-  WriteFile("exists_3.pdf");
+  WriteFile(Path("exists_1.txt"));
+  WriteFile(Path("exists_2.png"));
+  WriteFile(Path("exists_3.pdf"));
 
   // Results are only added if they have been opened at least once.
-  provider_->OnFilesOpened(
-      {OpenEvent("exists_1.txt"), OpenEvent("exists_2.png")});
-  provider_->OnFilesOpened({OpenEvent("nonexistant.txt")});
+  provider_->OnFilesOpened({OpenEvent(Path("exists_1.txt")),
+                            OpenEvent(Path("exists_2.png")),
+                            OpenEvent(Path("nonexistent.txt"))});
 
   StartZeroStateSearch();
   Wait();
@@ -114,17 +133,40 @@ TEST_F(ZeroStateFileProviderTest, ResultsProvided) {
 }
 
 TEST_F(ZeroStateFileProviderTest, OldFilesNotReturned) {
-  WriteFile("new.txt");
-  WriteFile("old.png");
+  WriteFile(Path("new.txt"));
+  WriteFile(Path("old.png"));
   auto now = base::Time::Now();
   base::TouchFile(Path("old.png"), now, now - base::Days(8));
 
-  provider_->OnFilesOpened({OpenEvent("new.txt"), OpenEvent("old.png")});
+  provider_->OnFilesOpened(
+      {OpenEvent(Path("new.txt")), OpenEvent(Path("old.png"))});
 
   StartZeroStateSearch();
   Wait();
 
   EXPECT_THAT(LastResults(), UnorderedElementsAre(Title(u"new.txt")));
+}
+
+TEST_F(ZeroStateFileProviderTest, FilterScreenshots) {
+  WriteFile(Path("ScreenshotNonDownload.png"));
+  WriteFile(DownloadsPath("ScreenshotNonPng.jpg"));
+  WriteFile(DownloadsPath("NotScreenshot.png"));
+  WriteFile(DownloadsPath("Screenshot123.png"));
+
+  provider_->OnFilesOpened({OpenEvent(Path("ScreenshotNonDownload.png")),
+                            OpenEvent(DownloadsPath("ScreenshotNonPng.jpg")),
+                            OpenEvent(DownloadsPath("NotScreenshot.png")),
+                            OpenEvent(DownloadsPath("Screenshot123.png"))});
+
+  StartZeroStateSearch();
+  Wait();
+
+  // Screenshot123 matches the criteria for a screenshot and should be filtered
+  // out.
+  EXPECT_THAT(LastResults(),
+              UnorderedElementsAre(Title(u"ScreenshotNonDownload.png"),
+                                   Title(u"ScreenshotNonPng.jpg"),
+                                   Title(u"NotScreenshot.png")));
 }
 
 }  // namespace app_list

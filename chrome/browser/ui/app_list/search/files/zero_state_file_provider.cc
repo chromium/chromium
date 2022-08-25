@@ -22,6 +22,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/files/file_result.h"
@@ -41,13 +42,23 @@ constexpr char kSchema[] = "zero_state_file://";
 constexpr size_t kMaxLocalFiles = 10u;
 constexpr base::TimeDelta kSaveDelay = base::Seconds(3);
 
-// Given the output of MrfuCache::GetAll, partition files into:
-// - valid files that exist on-disk and have been modified in the last
-//   |max_last_modified_time| days
-// - invalid files, otherwise.
+// Screenshots are identified as files that match ScreenshotXXX.png in the
+// Downloads folder.
+bool IsScreenshot(const base::FilePath& path,
+                  const base::FilePath& downloads_path) {
+  return path.DirName() == downloads_path && path.Extension() == ".png" &&
+         path.BaseName().value().rfind("Screenshot", 0) == 0;
+}
+
+// Given the output of MrfuCache::GetAll, partition files into valid and invalid
+// files. Valid files are files that:
+// - Exist on-disk
+// - Have been modified in the last |max_last_modified_time| days
+// - Are not screenshots.
 ZeroStateFileProvider::ValidAndInvalidResults ValidateFiles(
     const std::vector<std::pair<std::string, float>>& ranker_results,
-    const base::TimeDelta& max_last_modified_time) {
+    const base::TimeDelta& max_last_modified_time,
+    const base::FilePath& downloads_path) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
@@ -57,13 +68,13 @@ ZeroStateFileProvider::ValidAndInvalidResults ValidateFiles(
   for (const auto& path_score : ranker_results) {
     // We use FilePath::FromUTF8Unsafe to decode the filepath string. As per its
     // documentation, this is a safe use of the function because
-    // ZeroStateFileProvider is only used on ChromeOS, for which
-    // filepaths are UTF8.
+    // ZeroStateFileProvider is only used on ChromeOS, for which filepaths are
+    // UTF8.
     const auto& path = base::FilePath::FromUTF8Unsafe(path_score.first);
-
     base::File::Info info;
     if (base::PathExists(path) && base::GetFileInfo(path, &info) &&
-        (now - info.last_modified <= max_last_modified_time)) {
+        (now - info.last_modified <= max_last_modified_time) &&
+        !IsScreenshot(path, downloads_path)) {
       valid_results.emplace_back(path, path_score.second, info.last_accessed,
                                  info.last_modified);
     } else {
@@ -104,7 +115,9 @@ ZeroStateFileProvider::ZeroStateFileProvider(Profile* profile)
       max_last_modified_time_(base::Days(base::GetFieldTrialParamByFeatureAsInt(
           ash::features::kProductivityLauncher,
           "max_last_modified_time",
-          8))) {
+          8))),
+      downloads_path_(
+          file_manager::util::GetDownloadsFolderForProfile(profile)) {
   DCHECK(profile_);
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::TaskPriority::USER_BLOCKING, base::MayBlock(),
@@ -134,7 +147,7 @@ void ZeroStateFileProvider::OnProtoInitialized(ReadStatus status) {
   base::PostTaskAndReplyWithResult(
       task_runner_.get(), FROM_HERE,
       base::BindOnce(&ValidateFiles, files_ranker_->GetAll(),
-                     max_last_modified_time_),
+                     max_last_modified_time_, downloads_path_),
       base::BindOnce(&ZeroStateFileProvider::SetSearchResults,
                      weak_factory_.GetWeakPtr()));
 }
@@ -166,7 +179,7 @@ void ZeroStateFileProvider::StartZeroState() {
   base::PostTaskAndReplyWithResult(
       task_runner_.get(), FROM_HERE,
       base::BindOnce(&ValidateFiles, files_ranker_->GetAll(),
-                     max_last_modified_time_),
+                     max_last_modified_time_, downloads_path_),
       base::BindOnce(&ZeroStateFileProvider::SetSearchResults,
                      weak_factory_.GetWeakPtr()));
 }

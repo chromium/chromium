@@ -91,6 +91,9 @@ class ZeroStateFileProvider : public SearchProvider,
   // valid.
   const base::TimeDelta max_last_modified_time_;
 
+  // Path to the downloads folder for this profile.
+  const base::FilePath downloads_path_;
+
   base::ScopedObservation<file_manager::file_tasks::FileTasksNotifier,
                           file_manager::file_tasks::FileTasksObserver>
       file_tasks_observer_{this};
