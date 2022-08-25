@@ -216,6 +216,27 @@
 <translation id="1223789468190631420">信頼できる提供元に対してセーフ ブラウジングを有効にする</translation>
 <translation id="123018742985150697">ローカル ユーザーとリモート アクセスホストの所有者の照合を求める</translation>
 <translation id="123081309365616809">デバイスにコンテンツをキャストできるようにする</translation>
+<translation id="1233477540349246382">
+デフォルトの動作（ポリシーを未設定のままにした場合）
+コンテンツ エリアにアカウントを追加すると、新しいプロファイルの作成を求める小さなダイアログが表示される場合があります。このダイアログは閉じることができます。
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />
+ユーザーが <ph name="PRODUCT_NAME" /> ブラウザで Google サービスに初めてログインするとき、企業アカウントの新しいプロファイルの作成を求めるダイアログが表示されます。ユーザーは [キャンセル] をクリックしてログアウトするか、[続行] をクリックして新しいプロファイルを作成できます。既存の閲覧データは新しいプロファイルに追加されません。新しく作成したプロファイルでは、予備のアカウントを設定できます。たとえば、ユーザーはコンテンツ エリアで別のアカウントにログインできます。
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />
+<ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> と同じように動作します。ただし、新しく作成したプロファイルで予備のアカウントを設定することはできません。
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />
+<ph name="POLICY_VALUE_PRIMARY_ACCOUNT" /> と同じように動作しますが、ユーザーがローカルの閲覧データを保持できるようにするためのチェックボックスがダイアログに追加されます。
+このチェックボックスをオンにすると、既存のプロファイル データが管理対象アカウントに関連付けられます。
+-  既存の閲覧データはすべて、新しいプロファイルで保持されます。
+-  このデータには、ブックマーク、履歴、パスワード、自動入力データ、開いているタブ、Cookie、キャッシュ、ウェブ ストレージ、拡張機能などが含まれます。
+ユーザーがチェックボックスをオンにしない場合:
+-  以前のプロファイルが保持されます。データが失われることはありません。
+-  新しいプロファイルが作成されます。
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />
+<ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" /> と同じように動作します。ただし、新しく作成したプロファイルで予備のアカウントを設定することはできません。</translation>
 <translation id="1239526922294123540">より限定されたプライベート ネットワークのエンドポイントに対して、ウェブサイトからの安全でない方法でのリクエストを許可するかどうかを制御します。
 
           このポリシーを True に設定した場合、すべてのオリジンに対して <ph name="PRIVATE_NETWORK_ACCESS" /> のチェックは無効になります。この場合、プライベート ネットワーク サーバーへの <ph name="CSRF" /> 攻撃が生じるおそれがあります。

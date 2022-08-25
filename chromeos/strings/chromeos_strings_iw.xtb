@@ -67,6 +67,7 @@
 <translation id="152892567002884378">הגברת עוצמת הקול</translation>
 <translation id="1555130319947370107">כחול</translation>
 <translation id="155865706765934889">לוח מגע</translation>
+<translation id="1561927818299383735">צבע התאורה האחורית</translation>
 <translation id="1565038567006703504">לא ניתן לעדכן את <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">אלבומים</translation>
 <translation id="1572585716423026576">הגדרה כטפט</translation>
@@ -437,6 +438,7 @@
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">הפעלת תרחישים מחדש</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
+<translation id="5286263799730375393">צבע התאורה האחורית</translation>
 <translation id="5294769550414936029">גרסה <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">העברת חלון לשולחן עבודה וירטואלי</translation>
 <translation id="5304899856529773394">‏נתוני EvDo</translation>
@@ -497,6 +499,7 @@
 <translation id="5895138241574237353">הפעלה מחדש</translation>
 <translation id="5901630391730855834">צהוב</translation>
 <translation id="5903200662178656908">המכשיר משלב מקלדת ועכבר.</translation>
+<translation id="5907649332524363701">הצבע העיקרי</translation>
 <translation id="5916084858004523819">אסור</translation>
 <translation id="5916664084637901428">פועל</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{הקובץ נסרק בהצלחה ונשמר בתיקייה <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}two{הקבצים נסרקו בהצלחה ונשמרו בתיקייה <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{הקבצים נסרקו בהצלחה ונשמרו בתיקייה <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{הקבצים נסרקו בהצלחה ונשמרו בתיקייה <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -598,6 +601,7 @@
 <translation id="6760706756348334449">החלשת עוצמת הקול</translation>
 <translation id="6766275201586212568">‏בקשות לזיהוי DNS שנכשלו</translation>
 <translation id="6768237774506518020">‏שיעור כישלון גבוה לנסיונות זיהוי DNS</translation>
+<translation id="6791471867139427246">צבע התאורה של המקלדת</translation>
 <translation id="680983167891198932">מקש</translation>
 <translation id="6816797338148849397">יש מידע בקשר לבחירה שלך. כדי לגשת אליו, יש להקיש על מקש החץ למעלה.</translation>
 <translation id="6853312040151791195">שיעור הפריקה</translation>
@@ -643,6 +647,7 @@
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">‏פרסום שאלות למומחים בפורום העזרה של Chromebook</translation>
+<translation id="7311368985037279727">צבע המקלדת</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942">‏<ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; כדי לראות את התוצאות בחיפוש Google, לוחצים על 'חיפוש' ועל מקש הרווח.</translation>
 <translation id="7343649194310845056">מכשירים ברשת</translation>

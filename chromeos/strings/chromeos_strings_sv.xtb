@@ -67,6 +67,7 @@
 <translation id="152892567002884378">Höj volymen</translation>
 <translation id="1555130319947370107">Blå</translation>
 <translation id="155865706765934889">Styrplatta</translation>
+<translation id="1561927818299383735">bakgrundsbelysningsfärg</translation>
 <translation id="1565038567006703504">Det gick inte att uppdatera <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Album</translation>
 <translation id="1572585716423026576">Använd som bakgrund</translation>
@@ -437,6 +438,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Kör rutinerna igen</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
+<translation id="5286263799730375393">färg på bakgrundsbelysning</translation>
 <translation id="5294769550414936029">version <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Flytta fönstret till ett skrivbord</translation>
 <translation id="5304899856529773394">EVDO</translation>
@@ -497,6 +499,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="5895138241574237353">Starta om</translation>
 <translation id="5901630391730855834">Gul</translation>
 <translation id="5903200662178656908">Detta är en kombinationsenhet med tangentbord och mus.</translation>
+<translation id="5907649332524363701">tangentfärg</translation>
 <translation id="5916084858004523819">Aldrig</translation>
 <translation id="5916664084637901428">På</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Filen har genomsökts och sparats i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Filerna har genomsökts och sparats i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
@@ -598,6 +601,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="6760706756348334449">Sänk volymen</translation>
 <translation id="6766275201586212568">Misslyckade DNS-matchningar</translation>
 <translation id="6768237774506518020">Hög felfrekvens för DNS-matchningar</translation>
+<translation id="6791471867139427246">färg på tangentbordets belysning</translation>
 <translation id="680983167891198932">Nyckel</translation>
 <translation id="6816797338148849397">Det finns information om det som är markerat. Tryck på uppåtpilen för att komma åt den.</translation>
 <translation id="6853312040151791195">Urladdningshastighet</translation>
@@ -643,6 +647,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7308203371573257315">Fråga experterna på hjälpforumet för Chromebook</translation>
+<translation id="7311368985037279727">tangentbordsfärg</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />: <ph name="RESULT_TEXT" />. Om du trycker på Sök och blanksteg visas resultatet på Google Sök.</translation>
 <translation id="7343649194310845056">Nätverksenheter</translation>
