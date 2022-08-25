@@ -2150,7 +2150,7 @@ void FileManagerBrowserTestBase::SetUpOnMainThread() {
   test::AddDefaultComponentExtensionsOnMainThread(profile());
 
   // Enable System Web Apps if needed.
-  if (options.media_swa || options.files_swa) {
+  if (options.media_swa) {
     ash::SystemWebAppManager::GetForTest(profile())
         ->InstallSystemAppsForTesting();
   }
@@ -2178,6 +2178,10 @@ void FileManagerBrowserTestBase::TearDown() {
 }
 
 void FileManagerBrowserTestBase::StartTest() {
+  if (GetOptions().files_swa) {
+    ash::SystemWebAppManager::GetForTest(profile())
+        ->InstallSystemAppsForTesting();
+  }
   const std::string full_test_name = GetFullTestCaseName();
   LOG(INFO) << "FileManagerBrowserTest::StartTest " << full_test_name;
   static const base::FilePath test_extension_dir =

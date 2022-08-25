@@ -5,6 +5,9 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 
 #include <ostream>
+#include <string>
+
+#include "components/webapps/browser/installable/installable_metrics.h"
 
 namespace web_app {
 
@@ -34,7 +37,71 @@ std::ostream& operator<<(std::ostream& os, WebAppManagement::Type type) {
   }
 }
 
+std::string ConvertWebAppManagementToStringType(
+    const WebAppManagement::Type& source) {
+  switch (source) {
+    case WebAppManagement::Type::kSystem:
+      return "System";
+    case WebAppManagement::Type::kKiosk:
+      return "Kiosk";
+    case WebAppManagement::Type::kPolicy:
+      return "Policy";
+    case WebAppManagement::Type::kSubApp:
+      return "SubApp";
+    case WebAppManagement::Type::kWebAppStore:
+      return "WebAppStore";
+    case WebAppManagement::Type::kSync:
+      return "Sync";
+    case WebAppManagement::Type::kDefault:
+      return "Default";
+    case WebAppManagement::Type::kCommandLine:
+      return "CommandLine";
+  }
+}
+
 static_assert(OsHookType::kShortcuts == 0,
               "OsHookType enum should be zero based");
+
+std::string ConvertUninstallSourceToStringType(
+    const webapps::WebappUninstallSource& uninstall_source) {
+  switch (uninstall_source) {
+    case webapps::WebappUninstallSource::kUnknown:
+      return "Unknown";
+    case webapps::WebappUninstallSource::kAppMenu:
+      return "AppMenu";
+    case webapps::WebappUninstallSource::kAppsPage:
+      return "AppsPage";
+    case webapps::WebappUninstallSource::kOsSettings:
+      return "OS Settings";
+    case webapps::WebappUninstallSource::kSync:
+      return "Sync";
+    case webapps::WebappUninstallSource::kAppManagement:
+      return "App Management";
+    case webapps::WebappUninstallSource::kMigration:
+      return "Migration";
+    case webapps::WebappUninstallSource::kAppList:
+      return "App List";
+    case webapps::WebappUninstallSource::kShelf:
+      return "Shelf";
+    case webapps::WebappUninstallSource::kInternalPreinstalled:
+      return "Internal Preinstalled";
+    case webapps::WebappUninstallSource::kExternalPreinstalled:
+      return "External Preinstalled";
+    case webapps::WebappUninstallSource::kExternalPolicy:
+      return "External Policy";
+    case webapps::WebappUninstallSource::kSystemPreinstalled:
+      return "System Preinstalled";
+    case webapps::WebappUninstallSource::kPlaceholderReplacement:
+      return "Placeholder Replacement";
+    case webapps::WebappUninstallSource::kArc:
+      return "Arc";
+    case webapps::WebappUninstallSource::kSubApp:
+      return "SubApp";
+    case webapps::WebappUninstallSource::kStartupCleanup:
+      return "Startup Cleanup";
+    case webapps::WebappUninstallSource::kParentUninstall:
+      return "Parent App Uninstalled";
+  }
+}
 
 }  // namespace web_app

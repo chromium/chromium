@@ -17,12 +17,15 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -59,7 +62,7 @@ class WebAppUninstallCommandTest : public WebAppTest {
   scoped_refptr<testing::StrictMock<MockFileUtilsWrapper>> file_utils_wrapper_;
 };
 
-TEST_F(WebAppUninstallCommandTest, SimpleUninstall) {
+TEST_F(WebAppUninstallCommandTest, SimpleUninstallInternal) {
   auto web_app = test::CreateWebApp(GURL("https://www.example.com"),
                                     WebAppManagement::kSync);
   AppId app_id = web_app->app_id();
@@ -81,21 +84,56 @@ TEST_F(WebAppUninstallCommandTest, SimpleUninstall) {
   base::RunLoop loop;
   provider()->command_manager().ScheduleCommand(
       std::make_unique<WebAppUninstallCommand>(
-          app_id, url::Origin(), profile(), &os_integration_manager_,
-          &provider()->sync_bridge(), &provider()->icon_manager(),
-          &provider()->registrar(), &provider()->install_manager(),
-          &provider()->install_finalizer(), &provider()->translation_manager(),
-          webapps::WebappUninstallSource::kAppMenu,
+          app_id, absl::nullopt, webapps::WebappUninstallSource::kAppMenu,
           base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
             EXPECT_EQ(webapps::UninstallResultCode::kSuccess, code);
             loop.Quit();
-          })));
+          }),
+          profile(), &os_integration_manager_, &provider()->sync_bridge(),
+          &provider()->icon_manager(), &provider()->registrar(),
+          &provider()->install_manager(), &provider()->translation_manager()));
 
   loop.Run();
   EXPECT_EQ(provider()->registrar().GetAppById(app_id), nullptr);
 }
 
-TEST_F(WebAppUninstallCommandTest, FailedDataDelete) {
+TEST_F(WebAppUninstallCommandTest, SimpleUninstallExternal) {
+  auto web_app = test::CreateWebApp(GURL("https://www.example.com"),
+                                    WebAppManagement::kDefault);
+  AppId app_id = web_app->app_id();
+  {
+    ScopedRegistryUpdate update(&provider()->sync_bridge());
+    update->CreateApp(std::move(web_app));
+  }
+
+  OsHooksErrors result;
+  EXPECT_CALL(os_integration_manager_, UninstallAllOsHooks(app_id, testing::_))
+      .WillOnce(base::test::RunOnceCallback<1>(result));
+
+  base::FilePath deletion_path = GetManifestResourcesDirectoryForApp(
+      GetWebAppsRootDirectory(profile()), app_id);
+
+  EXPECT_CALL(*file_utils_wrapper_, DeleteFileRecursively(deletion_path))
+      .WillOnce(testing::Return(true));
+
+  base::RunLoop loop;
+  provider()->command_manager().ScheduleCommand(
+      std::make_unique<WebAppUninstallCommand>(
+          app_id, WebAppManagement::kDefault,
+          webapps::WebappUninstallSource::kAppMenu,
+          base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
+            EXPECT_EQ(webapps::UninstallResultCode::kSuccess, code);
+            loop.Quit();
+          }),
+          profile(), &os_integration_manager_, &provider()->sync_bridge(),
+          &provider()->icon_manager(), &provider()->registrar(),
+          &provider()->install_manager(), &provider()->translation_manager()));
+
+  loop.Run();
+  EXPECT_EQ(provider()->registrar().GetAppById(app_id), nullptr);
+}
+
+TEST_F(WebAppUninstallCommandTest, FailedDataDeletion) {
   auto web_app = test::CreateWebApp(GURL("https://www.example.com"),
                                     WebAppManagement::kSync);
   AppId app_id = web_app->app_id();
@@ -117,21 +155,20 @@ TEST_F(WebAppUninstallCommandTest, FailedDataDelete) {
   base::RunLoop loop;
   provider()->command_manager().ScheduleCommand(
       std::make_unique<WebAppUninstallCommand>(
-          app_id, url::Origin(), profile(), &os_integration_manager_,
-          &provider()->sync_bridge(), &provider()->icon_manager(),
-          &provider()->registrar(), &provider()->install_manager(),
-          &provider()->install_finalizer(), &provider()->translation_manager(),
-          webapps::WebappUninstallSource::kAppMenu,
+          app_id, absl::nullopt, webapps::WebappUninstallSource::kAppMenu,
           base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
             EXPECT_EQ(webapps::UninstallResultCode::kError, code);
             loop.Quit();
-          })));
+          }),
+          profile(), &os_integration_manager_, &provider()->sync_bridge(),
+          &provider()->icon_manager(), &provider()->registrar(),
+          &provider()->install_manager(), &provider()->translation_manager()));
 
   loop.Run();
   EXPECT_EQ(provider()->registrar().GetAppById(app_id), nullptr);
 }
 
-TEST_F(WebAppUninstallCommandTest, FailedOsHooks) {
+TEST_F(WebAppUninstallCommandTest, FailedOsHooksSetting) {
   auto web_app = test::CreateWebApp(GURL("https://www.example.com"),
                                     WebAppManagement::kSync);
   AppId app_id = web_app->app_id();
@@ -154,21 +191,20 @@ TEST_F(WebAppUninstallCommandTest, FailedOsHooks) {
   base::RunLoop loop;
   provider()->command_manager().ScheduleCommand(
       std::make_unique<WebAppUninstallCommand>(
-          app_id, url::Origin(), profile(), &os_integration_manager_,
-          &provider()->sync_bridge(), &provider()->icon_manager(),
-          &provider()->registrar(), &provider()->install_manager(),
-          &provider()->install_finalizer(), &provider()->translation_manager(),
-          webapps::WebappUninstallSource::kAppMenu,
+          app_id, absl::nullopt, webapps::WebappUninstallSource::kAppMenu,
           base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
             EXPECT_EQ(webapps::UninstallResultCode::kError, code);
             loop.Quit();
-          })));
+          }),
+          profile(), &os_integration_manager_, &provider()->sync_bridge(),
+          &provider()->icon_manager(), &provider()->registrar(),
+          &provider()->install_manager(), &provider()->translation_manager()));
 
   loop.Run();
   EXPECT_EQ(provider()->registrar().GetAppById(app_id), nullptr);
 }
 
-TEST_F(WebAppUninstallCommandTest, UninstallNonExistentApp) {
+TEST_F(WebAppUninstallCommandTest, TryToUninstallNonExistentApp) {
   auto web_app = test::CreateWebApp(GURL("https://www.example.com"),
                                     WebAppManagement::kSync);
   AppId app_id = web_app->app_id();
@@ -185,19 +221,215 @@ TEST_F(WebAppUninstallCommandTest, UninstallNonExistentApp) {
   base::RunLoop loop;
   provider()->command_manager().ScheduleCommand(
       std::make_unique<WebAppUninstallCommand>(
-          app_id, url::Origin(), profile(), &os_integration_manager_,
-          &provider()->sync_bridge(), &provider()->icon_manager(),
-          &provider()->registrar(), &provider()->install_manager(),
-          &provider()->install_finalizer(), &provider()->translation_manager(),
-          webapps::WebappUninstallSource::kAppMenu,
+          app_id, absl::nullopt, webapps::WebappUninstallSource::kAppMenu,
           base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
             EXPECT_EQ(webapps::UninstallResultCode::kNoAppToUninstall, code);
             loop.Quit();
-          })));
+          }),
+          profile(), &os_integration_manager_, &provider()->sync_bridge(),
+          &provider()->icon_manager(), &provider()->registrar(),
+          &provider()->install_manager(), &provider()->translation_manager()));
 
   loop.Run();
   EXPECT_EQ(provider()->registrar().GetAppById(app_id), nullptr);
 }
+
+TEST_F(WebAppUninstallCommandTest, CommandManagerShutdownThrowsError) {
+  auto web_app = test::CreateWebApp(GURL("https://www.example.com"),
+                                    WebAppManagement::kSync);
+  AppId app_id = web_app->app_id();
+  {
+    ScopedRegistryUpdate update(&provider()->sync_bridge());
+    update->CreateApp(std::move(web_app));
+  }
+
+  EXPECT_CALL(os_integration_manager_, UninstallAllOsHooks(app_id, testing::_))
+      .Times(0);
+
+  base::FilePath deletion_path = GetManifestResourcesDirectoryForApp(
+      GetWebAppsRootDirectory(profile()), app_id);
+
+  EXPECT_CALL(*file_utils_wrapper_, DeleteFileRecursively(deletion_path))
+      .Times(0);
+
+  provider()->command_manager().ScheduleCommand(
+      std::make_unique<WebAppUninstallCommand>(
+          app_id, absl::nullopt, webapps::WebappUninstallSource::kAppMenu,
+          base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
+            EXPECT_EQ(webapps::UninstallResultCode::kError, code);
+          }),
+          profile(), &os_integration_manager_, &provider()->sync_bridge(),
+          &provider()->icon_manager(), &provider()->registrar(),
+          &provider()->install_manager(), &provider()->translation_manager()));
+
+  provider()->command_manager().Shutdown();
+  // App is not uninstalled.
+  EXPECT_NE(provider()->registrar().GetAppById(app_id), nullptr);
+}
+
+TEST_F(WebAppUninstallCommandTest, UserUninstalledPrefsFilled) {
+  auto web_app = test::CreateWebApp(GURL("https://www.example.com"),
+                                    WebAppManagement::kDefault);
+  AppId app_id = web_app->app_id();
+  web_app->AddInstallURLToManagementExternalConfigMap(
+      WebAppManagement::kDefault, GURL("https://www.example.com/install"));
+  {
+    ScopedRegistryUpdate update(&provider()->sync_bridge());
+    update->CreateApp(std::move(web_app));
+  }
+  EXPECT_FALSE(UserUninstalledPreinstalledWebAppPrefs(profile()->GetPrefs())
+                   .DoesAppIdExist(app_id));
+
+  OsHooksErrors result;
+  EXPECT_CALL(os_integration_manager_, UninstallAllOsHooks(app_id, testing::_))
+      .WillOnce(base::test::RunOnceCallback<1>(result));
+
+  base::FilePath deletion_path = GetManifestResourcesDirectoryForApp(
+      GetWebAppsRootDirectory(profile()), app_id);
+
+  EXPECT_CALL(*file_utils_wrapper_, DeleteFileRecursively(deletion_path))
+      .WillOnce(testing::Return(true));
+
+  base::RunLoop loop;
+  provider()->command_manager().ScheduleCommand(
+      std::make_unique<WebAppUninstallCommand>(
+          app_id, absl::nullopt, webapps::WebappUninstallSource::kAppMenu,
+          base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
+            EXPECT_EQ(webapps::UninstallResultCode::kSuccess, code);
+            loop.Quit();
+          }),
+          profile(), &os_integration_manager_, &provider()->sync_bridge(),
+          &provider()->icon_manager(), &provider()->registrar(),
+          &provider()->install_manager(), &provider()->translation_manager()));
+
+  loop.Run();
+  EXPECT_EQ(provider()->registrar().GetAppById(app_id), nullptr);
+  EXPECT_TRUE(UserUninstalledPreinstalledWebAppPrefs(profile()->GetPrefs())
+                  .DoesAppIdExist(app_id));
+}
+
+TEST_F(WebAppUninstallCommandTest, RemoveSourceAndTriggerOSUninstallation) {
+  auto web_app = test::CreateWebApp(GURL("https://www.example.com"),
+                                    WebAppManagement::kDefault);
+  web_app->AddSource(WebAppManagement::kPolicy);
+  web_app->AddInstallURLToManagementExternalConfigMap(
+      WebAppManagement::kDefault, GURL("https://example.com/install"));
+  EXPECT_FALSE(web_app->CanUserUninstallWebApp());
+  AppId app_id = web_app->app_id();
+  {
+    ScopedRegistryUpdate update(&provider()->sync_bridge());
+    update->CreateApp(std::move(web_app));
+  }
+
+  EXPECT_CALL(os_integration_manager_, UninstallAllOsHooks(app_id, testing::_))
+      .Times(0);
+
+// This is called once on Windows because OsUninstallRegistration is limited to
+// WIN.
+#if BUILDFLAG(IS_WIN)
+  EXPECT_CALL(os_integration_manager_,
+              MacAppShimOnAppInstalledForProfile(app_id))
+      .Times(1);
+  EXPECT_CALL(os_integration_manager_,
+              RegisterWebAppOsUninstallation(app_id, testing::_))
+      .Times(1);
+#else
+  EXPECT_CALL(os_integration_manager_,
+              RegisterWebAppOsUninstallation(app_id, testing::_))
+      .Times(0);
+#endif
+
+  base::FilePath deletion_path = GetManifestResourcesDirectoryForApp(
+      GetWebAppsRootDirectory(profile()), app_id);
+
+  EXPECT_CALL(*file_utils_wrapper_, DeleteFileRecursively(deletion_path))
+      .Times(0);
+
+  base::RunLoop run_loop;
+  auto command = std::make_unique<WebAppUninstallCommand>(
+      app_id, WebAppManagement::kPolicy,
+      webapps::WebappUninstallSource::kExternalPolicy,
+      base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
+        EXPECT_EQ(webapps::UninstallResultCode::kSuccess, code);
+        run_loop.Quit();
+      }),
+      profile(), &os_integration_manager_, &provider()->sync_bridge(),
+      &provider()->icon_manager(), &provider()->registrar(),
+      &provider()->install_manager(), &provider()->translation_manager());
+
+  command->SetRemoveManagementTypeCallbackForTesting(
+      base::BindLambdaForTesting([&](const AppId& app_id) {
+        // The policy source will be removed and WebAppOsUninstallation is
+        // registered.
+        EXPECT_FALSE(
+            provider()->registrar().GetAppById(app_id)->IsPolicyInstalledApp());
+      }));
+  provider()->command_manager().ScheduleCommand(std::move(command));
+  run_loop.Run();
+}
+
+struct UninstallSources {
+  webapps::WebappUninstallSource source;
+};
+
+class WebAppUninstallCommandSourceTest
+    : public WebAppUninstallCommandTest,
+      public testing::WithParamInterface<UninstallSources> {
+ public:
+  WebAppUninstallCommandSourceTest() = default;
+  ~WebAppUninstallCommandSourceTest() override = default;
+};
+
+// Verify an app can be uninstalled with non-external uninstall_sources and
+// Sync.
+TEST_P(WebAppUninstallCommandSourceTest, RunTestForUninstallSource) {
+  auto web_app = test::CreateWebApp(GURL("https://www.example.com"),
+                                    WebAppManagement::kSync);
+  AppId app_id = web_app->app_id();
+  {
+    ScopedRegistryUpdate update(&provider()->sync_bridge());
+    update->CreateApp(std::move(web_app));
+  }
+
+  OsHooksErrors result;
+  EXPECT_CALL(os_integration_manager_, UninstallAllOsHooks(app_id, testing::_))
+      .WillOnce(base::test::RunOnceCallback<1>(result));
+
+  base::FilePath deletion_path = GetManifestResourcesDirectoryForApp(
+      GetWebAppsRootDirectory(profile()), app_id);
+
+  EXPECT_CALL(*file_utils_wrapper_, DeleteFileRecursively(deletion_path))
+      .WillOnce(testing::Return(true));
+
+  base::RunLoop loop;
+  provider()->command_manager().ScheduleCommand(
+      std::make_unique<WebAppUninstallCommand>(
+          app_id, absl::nullopt, GetParam().source,
+          base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
+            EXPECT_EQ(webapps::UninstallResultCode::kSuccess, code);
+            loop.Quit();
+          }),
+          profile(), &os_integration_manager_, &provider()->sync_bridge(),
+          &provider()->icon_manager(), &provider()->registrar(),
+          &provider()->install_manager(), &provider()->translation_manager()));
+
+  loop.Run();
+  EXPECT_EQ(provider()->registrar().GetAppById(app_id), nullptr);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    WebAppUninstallCommandSourceTest,
+    ::testing::Values(
+        UninstallSources({webapps::WebappUninstallSource::kAppMenu}),
+        UninstallSources({webapps::WebappUninstallSource::kAppsPage}),
+        UninstallSources({webapps::WebappUninstallSource::kOsSettings}),
+        UninstallSources({webapps::WebappUninstallSource::kAppManagement}),
+        UninstallSources({webapps::WebappUninstallSource::kMigration}),
+        UninstallSources({webapps::WebappUninstallSource::kAppList}),
+        UninstallSources({webapps::WebappUninstallSource::kShelf}),
+        UninstallSources({webapps::WebappUninstallSource::kSync}),
+        UninstallSources({webapps::WebappUninstallSource::kStartupCleanup})));
 
 }  // namespace
 }  // namespace web_app

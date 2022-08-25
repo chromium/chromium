@@ -226,15 +226,12 @@ void WebAppInstallManager::UninstallFromSync(
     RepeatingUninstallCallback callback) {
   if (!started_)
     return;
-
   for (auto& app_id : web_apps) {
-    command_manager_->ScheduleCommand(std::make_unique<WebAppUninstallCommand>(
-        app_id,
-        url::Origin::Create(registrar_->GetAppById(app_id)->start_url()),
-        profile_, os_integration_manager_, sync_bridge_, icon_manager_,
-        registrar_, this, finalizer_, translation_manager_,
+    // Sync uninstalls do not require an install source to be passed.
+    finalizer_->ScheduleUninstallCommand(
+        app_id, /*external_install_source=*/absl::nullopt,
         webapps::WebappUninstallSource::kSync,
-        base::BindOnce(callback, app_id)));
+        base::BindOnce(callback, app_id));
   }
 }
 

@@ -19,6 +19,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/commands/install_from_info_command.h"
+#include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/test/fake_data_retriever.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
@@ -295,15 +296,32 @@ class WebAppInstallManagerTest
   }
 
   webapps::UninstallResultCode UninstallPolicyWebAppByUrl(const GURL& app_url) {
+    absl::optional<AppId> app_id =
+        fake_registry_controller_->registrar().LookupExternalAppId(app_url);
+    if (!app_id.has_value()) {
+      return webapps::UninstallResultCode::kNoAppToUninstall;
+    }
+
     webapps::UninstallResultCode result;
     base::RunLoop run_loop;
-    finalizer().UninstallExternalWebAppByUrl(
-        app_url, WebAppManagement::kPolicy,
+    auto uninstall_command = std::make_unique<WebAppUninstallCommand>(
+        app_id.value(), WebAppManagement::kPolicy,
         webapps::WebappUninstallSource::kExternalPolicy,
         base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
           result = code;
           run_loop.Quit();
+        }),
+        profile(), &fake_registry_controller_->os_integration_manager(),
+        &fake_registry_controller_->sync_bridge(), &icon_manager(),
+        &registrar(), &install_manager(),
+        &fake_registry_controller_->translation_manager());
+    uninstall_command->SetRemoveManagementTypeCallbackForTesting(
+        base::BindLambdaForTesting([&](const AppId& app_id) {
+          // On removing the policy source, the web app can now be user
+          // uninstalled.
+          EXPECT_TRUE(finalizer().CanUserUninstallWebApp(app_id));
         }));
+    command_manager().ScheduleCommand(std::move(uninstall_command));
     run_loop.Run();
     return result;
   }
@@ -311,12 +329,19 @@ class WebAppInstallManagerTest
   webapps::UninstallResultCode UninstallWebApp(const AppId& app_id) {
     webapps::UninstallResultCode result;
     base::RunLoop run_loop;
-    finalizer().UninstallWebApp(
-        app_id, webapps::WebappUninstallSource::kAppMenu,
+
+    auto uninstall_command = std::make_unique<WebAppUninstallCommand>(
+        app_id, /*management_source=*/absl::nullopt,
+        webapps::WebappUninstallSource::kAppMenu,
         base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
           result = code;
           run_loop.Quit();
-        }));
+        }),
+        profile(), &fake_registry_controller_->os_integration_manager(),
+        &fake_registry_controller_->sync_bridge(), &icon_manager(),
+        &registrar(), &install_manager(),
+        &fake_registry_controller_->translation_manager());
+    command_manager().ScheduleCommand(std::move(uninstall_command));
     run_loop.Run();
     return result;
   }
@@ -542,7 +567,6 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
   EXPECT_TRUE(registrar().GetAppById(app_id));
   EXPECT_FALSE(observer_uninstall_called);
   EXPECT_FALSE(WasPreinstalledWebAppUninstalled(app_id));
-  EXPECT_TRUE(finalizer().CanUserUninstallWebApp(app_id));
 }
 
 TEST_P(WebAppInstallManagerTest_SyncOnly,
@@ -580,7 +604,6 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
   EXPECT_TRUE(registrar().GetAppById(app_id));
   EXPECT_FALSE(observer_uninstall_called);
   EXPECT_FALSE(WasPreinstalledWebAppUninstalled(app_id));
-  EXPECT_TRUE(finalizer().CanUserUninstallWebApp(app_id));
 }
 
 TEST_P(WebAppInstallManagerTest_SyncOnly, DefaultAndUser_UninstallWebApp) {

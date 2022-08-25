@@ -687,28 +687,6 @@ base::Value WebApp::AsDebugValue() const {
     return value ? base::Value(*value) : base::Value();
   };
 
-  auto ConvertWebAppManagementToStringType =
-      [](const WebAppManagement::Type& source) {
-        switch (source) {
-          case WebAppManagement::Type::kSystem:
-            return "System";
-          case WebAppManagement::Type::kKiosk:
-            return "Kiosk";
-          case WebAppManagement::Type::kPolicy:
-            return "Policy";
-          case WebAppManagement::Type::kSubApp:
-            return "SubApp";
-          case WebAppManagement::Type::kWebAppStore:
-            return "WebAppStore";
-          case WebAppManagement::Type::kSync:
-            return "Sync";
-          case WebAppManagement::Type::kDefault:
-            return "Default";
-          case WebAppManagement::Type::kCommandLine:
-            return "CommandLine";
-        }
-      };
-
   // Prefix with a ! so these fields appear at the top when serialized.
   root.SetStringKey("!app_id", app_id_);
 

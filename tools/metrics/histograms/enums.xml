@@ -101334,7 +101334,8 @@ others/histograms.xml -->
   <int value="13" label="Placeholder app management for preinstalled apps"/>
   <int value="14" label="Externally managed Arc apps"/>
   <int value="15" label="SubApps API"/>
-  <int value="16" label="Incomplete unisntall cleanup on startup."/>
+  <int value="16" label="Incomplete uninstall cleanup on startup."/>
+  <int value="17" label="Sub apps uninstall kicked off by parent app"/>
 </enum>
 
 <enum name="WebAppUrlHandlingDialogState">

@@ -171,8 +171,12 @@ enum class WebappUninstallSource {
   // yet been fully uninstalled are re-uninstalled.
   kStartupCleanup = 16,
 
+  // Used to track uninstalls for web_apps which are installed as sub-apps and
+  // are being removed because of the removal of the parent app.
+  kParentUninstall = 17,
+
   // Add any new values above this one.
-  kMaxValue = kStartupCleanup,
+  kMaxValue = kParentUninstall,
 };
 
 // This is the result of the promotability check that is recorded in the

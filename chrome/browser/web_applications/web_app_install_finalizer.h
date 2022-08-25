@@ -146,7 +146,7 @@ class WebAppInstallFinalizer {
                      WebAppTranslationManager* translation_manager,
                      WebAppCommandManager* command_manager);
 
-  virtual void SetRemoveSourceCallbackForTesting(
+  virtual void SetRemoveManagementTypeCallbackForTesting(
       base::RepeatingCallback<void(const AppId&)>);
 
   Profile* profile() { return profile_; }
@@ -159,17 +159,17 @@ class WebAppInstallFinalizer {
                                   bool is_placeholder,
                                   GURL install_url);
 
+  // Used to schedule a WebAppUninstallCommand. The |external_install_source|
+  // field is only required for external app uninstalls to verify OS
+  // unregistration, and is not used for sync/manual uninstalls.
+  void ScheduleUninstallCommand(
+      const AppId& app_id,
+      absl::optional<WebAppManagement::Type> external_install_source,
+      webapps::WebappUninstallSource uninstall_source,
+      UninstallWebAppCallback callback);
+
  private:
   using CommitCallback = base::OnceCallback<void(bool success)>;
-
-  void UninstallWebAppInternal(const AppId& app_id,
-                               webapps::WebappUninstallSource uninstall_surface,
-                               UninstallWebAppCallback callback);
-  void UninstallExternalWebAppOrRemoveSource(
-      const AppId& app_id,
-      WebAppManagement::Type install_source,
-      webapps::WebappUninstallSource uninstall_surface,
-      UninstallWebAppCallback callback);
 
   void OnMaybeRegisterOsUninstall(const AppId& app_id,
                                   WebAppManagement::Type source,
@@ -237,7 +237,7 @@ class WebAppInstallFinalizer {
   bool started_ = false;
 
   base::RepeatingCallback<void(const AppId& app_id)>
-      install_source_removed_callback_for_testing_;
+      management_type_removed_callback_for_testing_;
 
   base::WeakPtrFactory<WebAppInstallFinalizer> weak_ptr_factory_{this};
 };

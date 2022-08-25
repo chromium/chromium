@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_WEBAPPS_BROWSER_UNINSTALL_RESULT_CODE_H_
 #define COMPONENTS_WEBAPPS_BROWSER_UNINSTALL_RESULT_CODE_H_
 
+#include <string>
+
 namespace webapps {
 
 enum class UninstallResultCode {
@@ -13,6 +15,9 @@ enum class UninstallResultCode {
   kCancelled,
   kError,
 };
-}
+
+std::string ConvertUninstallResultCodeToString(UninstallResultCode code);
+
+}  // namespace webapps
 
 #endif  // COMPONENTS_WEBAPPS_BROWSER_UNINSTALL_RESULT_CODE_H_

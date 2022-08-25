@@ -8,7 +8,9 @@
 #include <stddef.h>
 
 #include <iosfwd>
+#include <string>
 
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-forward.h"
 
@@ -54,6 +56,8 @@ enum Type {
 }  // namespace WebAppManagement
 
 std::ostream& operator<<(std::ostream& os, WebAppManagement::Type type);
+std::string ConvertWebAppManagementToStringType(
+    const WebAppManagement::Type& type);
 
 // Type of OS hook.
 //
@@ -256,6 +260,10 @@ enum class Result {
 };
 
 using ResultCallback = base::OnceCallback<void(Result)>;
+
+// Convert the uninstall source to string for easy printing.
+std::string ConvertUninstallSourceToStringType(
+    const webapps::WebappUninstallSource& uninstall_source);
 
 }  // namespace web_app
 

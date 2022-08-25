@@ -1602,7 +1602,7 @@ void WebAppIntegrationTestDriver::UninstallPolicyApp(Site site) {
       }));
   // If there are still install sources, the app might not be fully uninstalled,
   // so this will listen for the removal of the policy install source.
-  provider()->install_finalizer().SetRemoveSourceCallbackForTesting(
+  provider()->install_finalizer().SetRemoveManagementTypeCallbackForTesting(
       base::BindLambdaForTesting([&](const AppId& app_id) {
         if (policy_app->id == app_id)
           run_loop.Quit();
@@ -2612,7 +2612,7 @@ void WebAppIntegrationTestDriver::UninstallPolicyAppById(const AppId& id) {
       }));
   // If there are still install sources, the app might not be fully uninstalled,
   // so this will listen for the removal of the policy install source.
-  provider()->install_finalizer().SetRemoveSourceCallbackForTesting(
+  provider()->install_finalizer().SetRemoveManagementTypeCallbackForTesting(
       base::BindLambdaForTesting([&](const AppId& app_id) {
         if (id == app_id)
           run_loop.Quit();

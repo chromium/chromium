@@ -1174,13 +1174,6 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest,
-                       PRE_Upgrade) {
-  GetManager().InstallSystemAppsForTesting();
-  EXPECT_GE(GetManager().system_app_delegates().size(),
-            GetManager().GetAppIds().size());
-}
-
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest, Upgrade) {
   GetManager().InstallSystemAppsForTesting();
   const auto& app_ids = GetManager().GetAppIds();
