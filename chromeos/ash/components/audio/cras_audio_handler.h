@@ -306,6 +306,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // (negative percentage).
   void AdjustOutputVolumeByPercent(int adjust_by_percent);
 
+  // Adjusts all active output devices' volume higher by one volume step.
+  void IncreaseOutputVolumeByOneStep();
+
+  // Adjusts all active output devices' volume lower by one volume step
+  void DecreaseOutputVolumeByOneStep();
+
   // Adjusts all active output devices' volume to a minimum audible level if it
   // is too low.
   void AdjustOutputVolumeToAudibleLevel();
