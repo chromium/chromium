@@ -35,8 +35,12 @@ _FIRST_WARNING_DELTA_BYTES = 12 * 1024  # 12 KiB
 _ALWAYS_FAIL_DELTA_BYTES = 100 * 1024  # 100 KiB
 _TRYBOT_DOC = 'https://chromium.googlesource.com/chromium/src/+/main/docs/speed/binary_size/fuchsia_binary_size_trybot.md'
 
+SIZE_FAILURE = 1
+ROLLER_SIZE_WARNING = 2
+SUCCESS = 0
 
-def ComputePackageDiffs(before_sizes_file, after_sizes_file):
+
+def ComputePackageDiffs(before_sizes_file, after_sizes_file, author=None):
   '''Computes difference between after and before diff, for each package.'''
   before_sizes = ReadPackageSizesJson(before_sizes_file)
   after_sizes = ReadPackageSizesJson(after_sizes_file)
@@ -47,7 +51,7 @@ def ComputePackageDiffs(before_sizes_file, after_sizes_file):
       '{} vs {}'.format(before_sizes.keys(), after_sizes.keys()))
 
   growth = {'compressed': {}, 'uncompressed': {}}
-  status_code = 0
+  status_code = SUCCESS
   summary = ''
   for package_name in before_sizes:
     growth['compressed'][package_name] = (after_sizes[package_name].compressed -
@@ -63,12 +67,19 @@ def ComputePackageDiffs(before_sizes_file, after_sizes_file):
       if not summary:
         summary = ('Size check failed! The following package(s) are affected:'
                    '<br>')
-      status_code = 1
+      status_code = SIZE_FAILURE
       summary += (('- {} (compressed) grew by {} bytes (uncompressed growth:'
                    ' {} bytes).<br>').format(
                        package_name, growth['compressed'][package_name],
                        growth['uncompressed'][package_name]))
 
+  # Allow rollers to pass even with size increases. See crbug.com/1355914.
+  if author and '-autoroll' in author and status_code == SIZE_FAILURE:
+    summary = summary.replace('Size check failed! ', '')
+    summary = (
+        'The following growth by an autoroller will be ignored:<br><br>' +
+        summary)
+    status_code = ROLLER_SIZE_WARNING
   growth['status_code'] = status_code
   summary += ('<br>See the following document for more information about'
               ' this trybot:<br>{}'.format(_TRYBOT_DOC))
@@ -94,6 +105,7 @@ def main():
       required=True,
       help='Location of the build with the patch',
   )
+  parser.add_argument('--author', help='Author of change')
   parser.add_argument(
       '--results-path',
       type=os.path.realpath,
@@ -133,7 +145,9 @@ def main():
 
   test_completed = False
   try:
-    growth = ComputePackageDiffs(before_sizes_file, after_sizes_file)
+    growth = ComputePackageDiffs(before_sizes_file,
+                                 after_sizes_file,
+                                 author=args.author)
     test_completed = True
     with open(args.results_path, 'wt') as results_file:
       json.dump(growth, results_file)
