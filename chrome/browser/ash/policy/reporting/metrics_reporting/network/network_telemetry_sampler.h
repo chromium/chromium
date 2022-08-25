@@ -16,7 +16,7 @@ namespace reporting {
 // and connections states.
 class NetworkTelemetrySampler : public Sampler {
  public:
-  explicit NetworkTelemetrySampler(Sampler* https_latency_sampler);
+  NetworkTelemetrySampler();
 
   NetworkTelemetrySampler(const NetworkTelemetrySampler&) = delete;
   NetworkTelemetrySampler& operator=(const NetworkTelemetrySampler&) = delete;
@@ -34,8 +34,6 @@ class NetworkTelemetrySampler : public Sampler {
       OptionalMetricCallback callback,
       ::chromeos::cros_healthd::mojom::TelemetryInfoPtr cros_healthd_telemetry,
       base::flat_map<std::string, int> service_path_rssi_map);
-
-  Sampler* const https_latency_sampler_;
 
   base::WeakPtrFactory<NetworkTelemetrySampler> weak_ptr_factory_{this};
 };

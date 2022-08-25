@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/https_latency_sampler.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -13,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
@@ -49,6 +51,36 @@ constexpr char kDevicePath[] = "/device/path";
 constexpr char kProfilePath[] = "/profile/path";
 constexpr char kGuid[] = "guid";
 constexpr char kUserHash[] = "user_hash";
+
+void SetNetworkData(
+    std::vector<std::string> connection_states,
+    ::ash::NetworkHandlerTestHelper* network_handler_test_helper) {
+  auto* const service_client = network_handler_test_helper->service_test();
+  auto* const device_client = network_handler_test_helper->device_test();
+  network_handler_test_helper->profile_test()->AddProfile(kProfilePath,
+                                                          kUserHash);
+  base::RunLoop().RunUntilIdle();
+  network_handler_test_helper->service_test()->ClearServices();
+  network_handler_test_helper->device_test()->ClearDevices();
+  for (size_t i = 0; i < connection_states.size(); ++i) {
+    std::string index_str = base::StrCat({"_", base::NumberToString(i)});
+    const std::string device_path = base::StrCat({kDevicePath, index_str});
+    const std::string device_name = base::StrCat({kDeviceName, index_str});
+    const std::string service_path = base::StrCat({kServicePath, index_str});
+    const std::string network_name = base::StrCat({kNetworkName, index_str});
+    const std::string guid = base::StrCat({kGuid, index_str});
+    device_client->AddDevice(device_path, shill::kTypeEthernet, device_name);
+    base::RunLoop().RunUntilIdle();
+    service_client->AddService(service_path, guid, network_name,
+                               shill::kTypeEthernet, connection_states[i],
+                               /*visible=*/true);
+    service_client->SetServiceProperty(service_path, shill::kDeviceProperty,
+                                       base::Value(device_path));
+    service_client->SetServiceProperty(service_path, shill::kProfileProperty,
+                                       base::Value(kProfilePath));
+  }
+  base::RunLoop().RunUntilIdle();
+}
 
 class FakeNetworkDiagnostics : public NetworkDiagnostics {
  public:
@@ -134,6 +166,9 @@ class FakeHttpsLatencyDelegate : public HttpsLatencySampler::Delegate {
 
 TEST(HttpsLatencySamplerTest, NoProblem) {
   base::test::TaskEnvironment task_environment;
+  ::ash::NetworkHandlerTestHelper network_handler_test_helper;
+  SetNetworkData({shill::kStateReady, shill::kStateOnline},
+                 &network_handler_test_helper);
 
   FakeNetworkDiagnostics diagnostics;
   int latency_ms = 100;
@@ -169,6 +204,9 @@ TEST(HttpsLatencySamplerTest, NoProblem) {
 
 TEST(HttpsLatencySamplerTest, FailedRequests) {
   base::test::TaskEnvironment task_environment;
+  ::ash::NetworkHandlerTestHelper network_handler_test_helper;
+  SetNetworkData({shill::kStateReady, shill::kStateOnline},
+                 &network_handler_test_helper);
 
   FakeNetworkDiagnostics diagnostics;
   diagnostics.SetResultProblem(HttpsLatencyProblemMojom::kFailedHttpsRequests);
@@ -203,6 +241,9 @@ TEST(HttpsLatencySamplerTest, FailedRequests) {
 
 TEST(HttpsLatencySamplerTest, OverlappingCalls) {
   base::test::TaskEnvironment task_environment;
+  ::ash::NetworkHandlerTestHelper network_handler_test_helper;
+  SetNetworkData({shill::kStateReady, shill::kStateOnline},
+                 &network_handler_test_helper);
 
   FakeNetworkDiagnostics diagnostics;
   diagnostics.SetResultProblem(HttpsLatencyProblemMojom::kFailedDnsResolutions);
@@ -260,6 +301,9 @@ TEST(HttpsLatencySamplerTest, OverlappingCalls) {
 
 TEST(HttpsLatencySamplerTest, SuccessiveCalls) {
   base::test::TaskEnvironment task_environment;
+  ::ash::NetworkHandlerTestHelper network_handler_test_helper;
+  SetNetworkData({shill::kStateReady, shill::kStateOnline},
+                 &network_handler_test_helper);
 
   FakeNetworkDiagnostics diagnostics;
   HttpsLatencySampler sampler(
@@ -328,6 +372,30 @@ TEST(HttpsLatencySamplerTest, SuccessiveCalls) {
   }
 }
 
+TEST(HttpsLatencySamplerTest, Offline) {
+  base::test::TaskEnvironment task_environment;
+  ::ash::NetworkHandlerTestHelper network_handler_test_helper;
+  SetNetworkData({shill::kStateReady, shill::kStateConfiguration},
+                 &network_handler_test_helper);
+
+  FakeNetworkDiagnostics diagnostics;
+  diagnostics.SetResultProblem(HttpsLatencyProblemMojom::kFailedHttpsRequests);
+  HttpsLatencySampler sampler(
+      std::make_unique<FakeHttpsLatencyDelegate>(&diagnostics));
+  bool callback_called = false;
+  absl::optional<MetricData> metric_data_result;
+
+  sampler.MaybeCollect(
+      base::BindLambdaForTesting([&callback_called, &metric_data_result](
+                                     absl::optional<MetricData> metric_data) {
+        callback_called = true;
+        metric_data_result = std::move(metric_data);
+      }));
+
+  ASSERT_TRUE(callback_called);
+  EXPECT_FALSE(metric_data_result.has_value());
+}
+
 struct HttpsLatencyEventDetectorTestCase {
   std::string test_name;
   HttpsLatencyProblem problem;
@@ -336,33 +404,6 @@ struct HttpsLatencyEventDetectorTestCase {
 class HttpsLatencyEventDetectorTest
     : public ::testing::TestWithParam<HttpsLatencyEventDetectorTestCase> {
  protected:
-  void SetNetworkData(std::vector<std::string> connection_states) {
-    auto* const service_client = network_handler_test_helper_.service_test();
-    auto* const device_client = network_handler_test_helper_.device_test();
-    network_handler_test_helper_.profile_test()->AddProfile(kProfilePath,
-                                                            kUserHash);
-    base::RunLoop().RunUntilIdle();
-    network_handler_test_helper_.service_test()->ClearServices();
-    network_handler_test_helper_.device_test()->ClearDevices();
-    for (size_t i = 0; i < connection_states.size(); ++i) {
-      std::string index_str = base::StrCat({"_", base::NumberToString(i)});
-      const std::string device_path = base::StrCat({kDevicePath, index_str});
-      const std::string device_name = base::StrCat({kDeviceName, index_str});
-      const std::string service_path = base::StrCat({kServicePath, index_str});
-      const std::string network_name = base::StrCat({kNetworkName, index_str});
-      const std::string guid = base::StrCat({kGuid, index_str});
-      device_client->AddDevice(device_path, shill::kTypeEthernet, device_name);
-      base::RunLoop().RunUntilIdle();
-      service_client->AddService(service_path, guid, network_name,
-                                 shill::kTypeEthernet, connection_states[i],
-                                 /*visible=*/true);
-      service_client->SetServiceProperty(service_path, shill::kDeviceProperty,
-                                         base::Value(device_path));
-      service_client->SetServiceProperty(service_path, shill::kProfileProperty,
-                                         base::Value(kProfilePath));
-    }
-    base::RunLoop().RunUntilIdle();
-  }
   base::test::TaskEnvironment task_environment_;
 
   ::ash::NetworkHandlerTestHelper network_handler_test_helper_;
@@ -492,7 +533,8 @@ TEST_P(HttpsLatencyEventDetectorTest, RequestError_Offline) {
 
   HttpsLatencyEventDetector detector;
 
-  SetNetworkData({shill::kStateReady, shill::kStateConfiguration});
+  SetNetworkData({shill::kStateReady, shill::kStateConfiguration},
+                 &network_handler_test_helper_);
   auto event_type =
       detector.DetectEvent(previous_metric_data, current_metric_data);
 
@@ -514,7 +556,8 @@ TEST_P(HttpsLatencyEventDetectorTest, RequestError_Online) {
 
   HttpsLatencyEventDetector detector;
 
-  SetNetworkData({shill::kStateReady, shill::kStateOnline});
+  SetNetworkData({shill::kStateReady, shill::kStateOnline},
+                 &network_handler_test_helper_);
   auto event_type =
       detector.DetectEvent(previous_metric_data, current_metric_data);
 

@@ -117,19 +117,9 @@ NetworkType GetNetworkType(const ash::NetworkTypePattern& type) {
   NOTREACHED() << "Unsupported network type: " << type.ToDebugString();
   return NetworkType::NETWORK_TYPE_UNSPECIFIED;  // Unsupported
 }
-
-void OnHttpsLatencySamplerCompleted(OptionalMetricCallback callback,
-                                    MetricData network_data,
-                                    absl::optional<MetricData> latency_data) {
-  if (latency_data.has_value()) {
-    network_data.CheckTypeAndMergeFrom(latency_data.value());
-  }
-  std::move(callback).Run(std::move(network_data));
-}
 }  // namespace
 
-NetworkTelemetrySampler::NetworkTelemetrySampler(Sampler* https_latency_sampler)
-    : https_latency_sampler_(https_latency_sampler) {}
+NetworkTelemetrySampler::NetworkTelemetrySampler() = default;
 
 NetworkTelemetrySampler::~NetworkTelemetrySampler() = default;
 
@@ -199,7 +189,6 @@ void NetworkTelemetrySampler::CollectNetworksStates(
   }
 
   bool should_report = false;
-  bool should_collect_latency = false;
   for (const auto* network : network_state_list) {
     ::ash::NetworkTypePattern type =
         ::ash::NetworkTypePattern::Primitive(network->type());
@@ -212,9 +201,6 @@ void NetworkTelemetrySampler::CollectNetworksStates(
     }
 
     should_report = true;
-    if (network->IsOnline()) {
-      should_collect_latency = true;
-    }
 
     NetworkTelemetry* const network_telemetry =
         metric_data.mutable_telemetry_data()
@@ -280,12 +266,6 @@ void NetworkTelemetrySampler::CollectNetworksStates(
     }
   }
 
-  if (should_collect_latency) {
-    https_latency_sampler_->MaybeCollect(
-        base::BindOnce(OnHttpsLatencySamplerCompleted, std::move(callback),
-                       std::move(metric_data)));
-    return;
-  }
   if (should_report) {
     std::move(callback).Run(std::move(metric_data));
     return;

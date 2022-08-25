@@ -288,19 +288,20 @@ void MetricReportingManager::CreateCrosHealthdOneShotCollector(
 
 void MetricReportingManager::InitNetworkCollectors(Profile* profile) {
   auto https_latency_sampler = std::make_unique<HttpsLatencySampler>();
-  auto network_telemetry_sampler =
-      std::make_unique<NetworkTelemetrySampler>(https_latency_sampler.get());
+  auto network_telemetry_sampler = std::make_unique<NetworkTelemetrySampler>();
   auto network_bandwidth_sampler = std::make_unique<NetworkBandwidthSampler>(
       g_browser_process->network_quality_tracker(), profile);
 
   // Network health telemetry.
-  InitPeriodicCollector(
-      std::move(network_telemetry_sampler), telemetry_report_queue_.get(),
-      /*enable_setting_path=*/::ash::kReportDeviceNetworkStatus,
-      metrics::kReportDeviceNetworkStatusDefaultValue,
-      ::ash::kReportDeviceNetworkTelemetryCollectionRateMs,
-      metrics::GetDefaultCollectionRate(
-          metrics::kDefaultNetworkTelemetryCollectionRate));
+  InitNetworkPeriodicCollector(network_telemetry_sampler.get(),
+                               telemetry_report_queue_.get());
+  samplers_.emplace_back(std::move(network_telemetry_sampler));
+
+  // HttpsLatency telemetry.
+  // |https_latency_sampler| will be added to |samplers_| in
+  // |InitPeriodicEventCollector|.
+  InitNetworkPeriodicCollector(https_latency_sampler.get(),
+                               telemetry_report_queue_.get());
 
   // HttpsLatency events.
   InitPeriodicEventCollector(
@@ -314,13 +315,23 @@ void MetricReportingManager::InitNetworkCollectors(Profile* profile) {
           metrics::kDefaultNetworkTelemetryEventCheckingRate));
 
   // Network bandwidth telemetry.
-  InitPeriodicCollector(
-      std::move(network_bandwidth_sampler), user_telemetry_report_queue_.get(),
-      /*enable_setting_path=*/::ash::kReportDeviceNetworkStatus,
+  InitNetworkPeriodicCollector(network_bandwidth_sampler.get(),
+                               user_telemetry_report_queue_.get());
+  samplers_.emplace_back(std::move(network_bandwidth_sampler));
+}
+
+void MetricReportingManager::InitNetworkPeriodicCollector(
+    Sampler* sampler,
+    MetricReportQueue* metric_report_queue) {
+  periodic_collectors_.emplace_back(delegate_->CreatePeriodicCollector(
+      sampler, metric_report_queue, &reporting_settings_,
+      /*enable_setting_path=*/
+      ::ash::kReportDeviceNetworkStatus,
       metrics::kReportDeviceNetworkStatusDefaultValue,
       ::ash::kReportDeviceNetworkTelemetryCollectionRateMs,
       metrics::GetDefaultCollectionRate(
-          metrics::kDefaultNetworkTelemetryCollectionRate));
+          metrics::kDefaultNetworkTelemetryCollectionRate),
+      /*rate_unit_to_ms=*/1));
 }
 
 void MetricReportingManager::InitAudioCollectors() {

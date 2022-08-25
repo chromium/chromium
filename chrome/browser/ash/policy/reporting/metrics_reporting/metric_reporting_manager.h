@@ -118,6 +118,8 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
       MetricReportQueue* metric_report_queue);
 
   void InitNetworkCollectors(Profile* profile);
+  void InitNetworkPeriodicCollector(Sampler* sampler,
+                                    MetricReportQueue* metric_report_queue);
 
   void InitAudioCollectors();
 

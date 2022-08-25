@@ -646,7 +646,9 @@ INSTANTIATE_TEST_SUITE_P(
           /*disabled_features=*/{},
           /*is_affiliated=*/true, network_telemetry_settings,
           /*expected_count_before_login=*/0,
-          /*expected_count_after_login=*/2},
+          // 3 collectors should be created after login, network telemetry,
+          // https latency, and network bandwidth.
+          /*expected_count_after_login=*/3},
          {"AudioTelemetry_Unaffiliated", /*enabled_features=*/{},
           /*disabled_features=*/{},
           /*is_affiliated=*/false, audio_metric_settings,

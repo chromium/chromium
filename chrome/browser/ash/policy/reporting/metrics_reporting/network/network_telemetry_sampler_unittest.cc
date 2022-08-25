@@ -45,12 +45,6 @@ constexpr int64_t kTxPowerDbm = 2;
 constexpr int64_t kLinkQuality = 1;
 constexpr int64_t kSignalStrength = 70;
 
-// Https latency constants.
-constexpr RoutineVerdict kVerdict = RoutineVerdict::PROBLEM;
-constexpr HttpsLatencyProblem kLatencyProblem =
-    HttpsLatencyProblem::VERY_HIGH_LATENCY;
-constexpr int64_t kLatencyMs = 3000;
-
 struct FakeNetworkData {
   std::string guid;
   std::string connection_state;
@@ -106,16 +100,6 @@ class NetworkTelemetrySamplerTest : public ::testing::Test {
 
     ::ash::cros_healthd::FakeCrosHealthd::Initialize();
     SetWifiInterfaceData();
-
-    MetricData metric_data;
-    auto* latency_data = metric_data.mutable_telemetry_data()
-                             ->mutable_networks_telemetry()
-                             ->mutable_https_latency_data();
-    latency_data->set_verdict(kVerdict);
-    latency_data->set_problem(kLatencyProblem);
-    latency_data->set_latency_ms(kLatencyMs);
-    https_latency_sampler_ = std::make_unique<test::FakeSampler>();
-    https_latency_sampler_->SetMetricData(metric_data);
   }
 
   void TearDown() override {
@@ -174,8 +158,6 @@ class NetworkTelemetrySamplerTest : public ::testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  std::unique_ptr<test::FakeSampler> https_latency_sampler_;
-
   base::test::TaskEnvironment task_environment_;
 
   ::ash::NetworkHandlerTestHelper network_handler_test_helper_;
@@ -191,8 +173,7 @@ TEST_F(NetworkTelemetrySamplerTest, CellularConnected) {
        true /* is_configured */}};
 
   SetNetworkData(networks_data);
-  NetworkTelemetrySampler network_telemetry_sampler(
-      https_latency_sampler_.get());
+  NetworkTelemetrySampler network_telemetry_sampler;
   test::TestEvent<absl::optional<MetricData>> metric_collect_event;
   network_telemetry_sampler.MaybeCollect(metric_collect_event.cb());
   const absl::optional<MetricData> optional_result =
@@ -202,9 +183,6 @@ TEST_F(NetworkTelemetrySamplerTest, CellularConnected) {
   ASSERT_TRUE(optional_result->has_telemetry_data());
   const TelemetryData& result = optional_result->telemetry_data();
   ASSERT_TRUE(result.has_networks_telemetry());
-
-  // No online networks, no latency data should be collected.
-  EXPECT_FALSE(result.networks_telemetry().has_https_latency_data());
 
   ASSERT_THAT(result.networks_telemetry().network_telemetry(),
               ::testing::SizeIs(networks_data.size()));
@@ -241,8 +219,7 @@ TEST_F(NetworkTelemetrySamplerTest, CellularConnected) {
 TEST_F(NetworkTelemetrySamplerTest, NoNetworkData) {
   SetNetworkData({});
 
-  NetworkTelemetrySampler network_telemetry_sampler(
-      https_latency_sampler_.get());
+  NetworkTelemetrySampler network_telemetry_sampler;
   test::TestEvent<absl::optional<MetricData>> metric_collect_event;
   network_telemetry_sampler.MaybeCollect(metric_collect_event.cb());
   const absl::optional<MetricData> result = metric_collect_event.result();
@@ -258,8 +235,7 @@ TEST_F(NetworkTelemetrySamplerTest, CellularNotConnected) {
        true /* is_visible */, true /* is_configured */}};
 
   SetNetworkData(networks_data);
-  NetworkTelemetrySampler network_telemetry_sampler(
-      https_latency_sampler_.get());
+  NetworkTelemetrySampler network_telemetry_sampler;
   test::TestEvent<absl::optional<MetricData>> metric_collect_event;
   network_telemetry_sampler.MaybeCollect(metric_collect_event.cb());
   const absl::optional<MetricData> result = metric_collect_event.result();
@@ -274,8 +250,7 @@ TEST_F(NetworkTelemetrySamplerTest, WifiNotConnected_NoSignalStrength) {
        false /* is_visible */, true /* is_configured */}};
 
   SetNetworkData(networks_data);
-  NetworkTelemetrySampler network_telemetry_sampler(
-      https_latency_sampler_.get());
+  NetworkTelemetrySampler network_telemetry_sampler;
   test::TestEvent<absl::optional<MetricData>> metric_collect_event;
   network_telemetry_sampler.MaybeCollect(metric_collect_event.cb());
   const absl::optional<MetricData> result = metric_collect_event.result();
@@ -291,8 +266,7 @@ TEST_F(NetworkTelemetrySamplerTest, EthernetPortal) {
        true /* is_configured */}};
 
   SetNetworkData(networks_data);
-  NetworkTelemetrySampler network_telemetry_sampler(
-      https_latency_sampler_.get());
+  NetworkTelemetrySampler network_telemetry_sampler;
   test::TestEvent<absl::optional<MetricData>> metric_collect_event;
   network_telemetry_sampler.MaybeCollect(metric_collect_event.cb());
   const absl::optional<MetricData> optional_result =
@@ -302,9 +276,6 @@ TEST_F(NetworkTelemetrySamplerTest, EthernetPortal) {
   ASSERT_TRUE(optional_result->has_telemetry_data());
   const TelemetryData& result = optional_result->telemetry_data();
   ASSERT_TRUE(result.has_networks_telemetry());
-
-  // No online networks, no latency data should be collected.
-  EXPECT_FALSE(result.networks_telemetry().has_https_latency_data());
 
   ASSERT_THAT(result.networks_telemetry().network_telemetry(),
               ::testing::SizeIs(networks_data.size()));
@@ -347,10 +318,8 @@ TEST_F(NetworkTelemetrySamplerTest, EmptyLatencyData) {
        true /* is_configured */}};
 
   SetNetworkData(networks_data);
-  https_latency_sampler_->SetMetricData(absl::nullopt);
 
-  NetworkTelemetrySampler network_telemetry_sampler(
-      https_latency_sampler_.get());
+  NetworkTelemetrySampler network_telemetry_sampler;
   test::TestEvent<absl::optional<MetricData>> metric_collect_event;
   network_telemetry_sampler.MaybeCollect(metric_collect_event.cb());
   const absl::optional<MetricData> optional_result =
@@ -360,9 +329,6 @@ TEST_F(NetworkTelemetrySamplerTest, EmptyLatencyData) {
   ASSERT_TRUE(optional_result->has_telemetry_data());
   const TelemetryData& result = optional_result->telemetry_data();
   ASSERT_TRUE(result.has_networks_telemetry());
-
-  // Latency data is absent but network data is still collected.
-  EXPECT_FALSE(result.networks_telemetry().has_https_latency_data());
 
   ASSERT_THAT(result.networks_telemetry().network_telemetry(),
               ::testing::SizeIs(networks_data.size()));
@@ -420,8 +386,7 @@ TEST_F(NetworkTelemetrySamplerTest, MixTypesAndConfigurations) {
       R"({"GUID": "guid2", "Type": "wifi", "State": "online",
             "WiFi.SignalStrengthRssi": -60})");
 
-  NetworkTelemetrySampler network_telemetry_sampler(
-      https_latency_sampler_.get());
+  NetworkTelemetrySampler network_telemetry_sampler;
   test::TestEvent<absl::optional<MetricData>> metric_collect_event;
   network_telemetry_sampler.MaybeCollect(metric_collect_event.cb());
   const absl::optional<MetricData> optional_result =
@@ -431,15 +396,6 @@ TEST_F(NetworkTelemetrySamplerTest, MixTypesAndConfigurations) {
   ASSERT_TRUE(optional_result->has_telemetry_data());
   const TelemetryData& result = optional_result->telemetry_data();
   ASSERT_TRUE(result.has_networks_telemetry());
-
-  // An online network exists, latency data should be collected.
-  ASSERT_TRUE(result.networks_telemetry().has_https_latency_data());
-  EXPECT_EQ(result.networks_telemetry().https_latency_data().verdict(),
-            kVerdict);
-  EXPECT_EQ(result.networks_telemetry().https_latency_data().problem(),
-            kLatencyProblem);
-  EXPECT_EQ(result.networks_telemetry().https_latency_data().latency_ms(),
-            kLatencyMs);
 
   // Not configured network is not included
   ASSERT_THAT(result.networks_telemetry().network_telemetry(),
@@ -521,8 +477,7 @@ TEST_F(NetworkTelemetrySamplerTest, WifiNotConnected) {
   network_handler_test_helper_.ConfigureService(
       R"({"GUID": "guid1", "Type": "wifi", "State": "idle",
             "WiFi.SignalStrengthRssi": -70})");
-  NetworkTelemetrySampler network_telemetry_sampler(
-      https_latency_sampler_.get());
+  NetworkTelemetrySampler network_telemetry_sampler;
   test::TestEvent<absl::optional<MetricData>> metric_collect_event;
   network_telemetry_sampler.MaybeCollect(metric_collect_event.cb());
   const absl::optional<MetricData> optional_result =
@@ -532,9 +487,6 @@ TEST_F(NetworkTelemetrySamplerTest, WifiNotConnected) {
   ASSERT_TRUE(optional_result->has_telemetry_data());
   const TelemetryData& result = optional_result->telemetry_data();
   ASSERT_TRUE(result.has_networks_telemetry());
-
-  // No online networks, no latency data should be collected.
-  EXPECT_FALSE(result.networks_telemetry().has_https_latency_data());
 
   ASSERT_THAT(result.networks_telemetry().network_telemetry(),
               ::testing::SizeIs(networks_data.size()));
