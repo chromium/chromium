@@ -33,6 +33,11 @@ class VIZ_COMMON_EXPORT SharedQuadState {
   SharedQuadState(const SharedQuadState& other);
   ~SharedQuadState();
 
+  // No comparison for |overlay_damage_index| and |is_fast_rounded_corner|.
+  bool Equals(const SharedQuadState& other) const;
+
+  void SetAll(const SharedQuadState& other);
+
   void SetAll(const gfx::Transform& transform,
               const gfx::Rect& layer_rect,
               const gfx::Rect& visible_layer_rect,

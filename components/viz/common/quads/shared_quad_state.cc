@@ -21,6 +21,32 @@ SharedQuadState::~SharedQuadState() {
                                      "viz::SharedQuadState", this);
 }
 
+bool SharedQuadState::Equals(const SharedQuadState& other) const {
+  // Skip |overlay_damage_index| and |is_fast_rounded_corner|, which are added
+  // in SurfaceAggregator. They don't really control the rendering effect.
+  return quad_to_target_transform == other.quad_to_target_transform &&
+         quad_layer_rect == other.quad_layer_rect &&
+         visible_quad_layer_rect == other.visible_quad_layer_rect &&
+         mask_filter_info == other.mask_filter_info &&
+         clip_rect == other.clip_rect &&
+         are_contents_opaque == other.are_contents_opaque &&
+         opacity == other.opacity && blend_mode == other.blend_mode &&
+         sorting_context_id == other.sorting_context_id &&
+         de_jelly_delta_y == other.de_jelly_delta_y;
+}
+
+void SharedQuadState::SetAll(const SharedQuadState& other) {
+  quad_to_target_transform = other.quad_to_target_transform;
+  quad_layer_rect = other.quad_layer_rect;
+  visible_quad_layer_rect = other.visible_quad_layer_rect;
+  mask_filter_info = other.mask_filter_info;
+  clip_rect = other.clip_rect;
+  are_contents_opaque = other.are_contents_opaque;
+  opacity = other.opacity;
+  blend_mode = other.blend_mode;
+  sorting_context_id = other.sorting_context_id;
+}
+
 void SharedQuadState::SetAll(const gfx::Transform& transform,
                              const gfx::Rect& layer_rect,
                              const gfx::Rect& visible_layer_rect,
