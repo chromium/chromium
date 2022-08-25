@@ -91,9 +91,5 @@
     ]
   },
   "builder_group": "tryserver.chromium.mac",
-  "orchestrator": {
-    "builder_group": "tryserver.chromium.mac",
-    "builder_name": "mac12-arm64-rel"
-  },
   "recipe": "chromium/compilator"
 }

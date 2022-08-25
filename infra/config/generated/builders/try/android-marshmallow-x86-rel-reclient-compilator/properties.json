@@ -79,9 +79,5 @@
     ]
   },
   "builder_group": "tryserver.chromium.android",
-  "orchestrator": {
-    "builder_group": "tryserver.chromium.android",
-    "builder_name": "android-marshmallow-x86-rel-reclient"
-  },
   "recipe": "chromium/compilator"
 }

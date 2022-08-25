@@ -64,9 +64,5 @@
     ]
   },
   "builder_group": "tryserver.chromium.chromiumos",
-  "orchestrator": {
-    "builder_group": "tryserver.chromium.chromiumos",
-    "builder_name": "linux-chromeos-rel"
-  },
   "recipe": "chromium/compilator"
 }

@@ -169,10 +169,6 @@ def _set_orchestrator_properties(ctx):
         compilator = compilators_by_name[orchestrator.compilator_name]
         compilator_properties = dict(orchestrator_properties)
         compilator_properties.update(json.decode(compilator.builder.properties))
-        compilator_properties["orchestrator"] = {
-            "builder_group": orchestrator.builder_group,
-            "builder_name": orchestrator.simple_name,
-        }
         compilator.builder.properties = json.encode(compilator_properties)
         _update_description(
             compilator.builder,

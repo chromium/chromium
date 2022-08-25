@@ -59,9 +59,5 @@
     ]
   },
   "builder_group": "tryserver.chromium.chromiumos",
-  "orchestrator": {
-    "builder_group": "tryserver.chromium.chromiumos",
-    "builder_name": "chromeos-amd64-generic-rel"
-  },
   "recipe": "chromium/compilator"
 }

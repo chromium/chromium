@@ -66,9 +66,5 @@
     ]
   },
   "builder_group": "tryserver.chromium.android",
-  "orchestrator": {
-    "builder_group": "tryserver.chromium.android",
-    "builder_name": "android-pie-arm64-rel"
-  },
   "recipe": "chromium/compilator"
 }

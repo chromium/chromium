@@ -180,9 +180,5 @@
     ]
   },
   "builder_group": "tryserver.chromium.linux",
-  "orchestrator": {
-    "builder_group": "tryserver.chromium.linux",
-    "builder_name": "linux-rel"
-  },
   "recipe": "chromium/compilator"
 }

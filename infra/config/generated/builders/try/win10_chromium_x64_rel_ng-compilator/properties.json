@@ -177,9 +177,5 @@
     ]
   },
   "builder_group": "tryserver.chromium.win",
-  "orchestrator": {
-    "builder_group": "tryserver.chromium.win",
-    "builder_name": "win10_chromium_x64_rel_ng"
-  },
   "recipe": "chromium/compilator"
 }

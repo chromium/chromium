@@ -204,9 +204,5 @@
     ]
   },
   "builder_group": "tryserver.chromium.mac",
-  "orchestrator": {
-    "builder_group": "tryserver.chromium.mac",
-    "builder_name": "mac-rel"
-  },
   "recipe": "chromium/compilator"
 }
