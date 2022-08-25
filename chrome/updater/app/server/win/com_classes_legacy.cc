@@ -955,13 +955,22 @@ STDMETHODIMP PolicyStatusImpl::get_lastCheckedTime(DATE* last_checked) {
 }
 
 STDMETHODIMP PolicyStatusImpl::refreshPolicies() {
+  // Capture `this` object throughout the policy fetch to have an outstanding
+  // self reference of the COM object, otherwise the server could shutdown if
+  // the caller releases its interface pointer when this function returns.
+  using PolicyStatusImplPtr = Microsoft::WRL::ComPtr<PolicyStatusImpl>;
   AppServerSingletonInstance()->main_task_runner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&DeviceManagementTask::RunFetchPolicy,
-                     base::MakeRefCounted<DeviceManagementTask>(
-                         AppServerSingletonInstance()->config(),
-                         AppServerSingletonInstance()->main_task_runner()),
-                     base::DoNothing()));
+      base::BindOnce(
+          [](PolicyStatusImplPtr this_obj) {
+            auto device_management_task =
+                base::MakeRefCounted<DeviceManagementTask>(
+                    AppServerSingletonInstance()->config(),
+                    AppServerSingletonInstance()->main_task_runner());
+            device_management_task->RunFetchPolicy(base::BindOnce(
+                [](PolicyStatusImplPtr /*this_obj*/) {}, this_obj));
+          },
+          PolicyStatusImplPtr(this)));
   return S_OK;
 }
 
