@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
+#include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
@@ -36,34 +37,32 @@ FormfillPageLoadMetricsObserver::OnFencedFramesStart(
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+FormfillPageLoadMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  return CONTINUE_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 FormfillPageLoadMetricsObserver::OnCommit(
     content::NavigationHandle* navigation_handle) {
-  HostContentSettingsMap* settings_map =
-      HostContentSettingsMapFactory::GetForProfile(Profile::FromBrowserContext(
-          GetDelegate().GetWebContents()->GetBrowserContext()));
-  DCHECK(settings_map);
-
-  const url::Origin& origin =
-      navigation_handle->GetRenderFrameHost()->GetLastCommittedOrigin();
-
-  base::Value formfill_metadata = settings_map->GetWebsiteSetting(
-      origin.GetURL(), origin.GetURL(), ContentSettingsType::FORMFILL_METADATA,
-      nullptr);
-
-  // User data field was detected on this site before.
-  if (formfill_metadata.is_dict() &&
-      formfill_metadata.FindBoolKey(kUserDataFieldFilledKey)) {
-    page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
-        navigation_handle->GetRenderFrameHost(),
-        blink::mojom::WebFeature::kUserDataFieldFilledPreviously);
-  }
+  if (!GetDelegate().IsInPrerenderingBeforeActivationStart())
+    MaybeRecordPriorUsageOfUserData(navigation_handle);
 
   return CONTINUE_OBSERVING;
+}
+
+void FormfillPageLoadMetricsObserver::DidActivatePrerenderedPage(
+    content::NavigationHandle* navigation_handle) {
+  MaybeRecordPriorUsageOfUserData(navigation_handle);
 }
 
 void FormfillPageLoadMetricsObserver::OnFeaturesUsageObserved(
     content::RenderFrameHost* rfh,
     const std::vector<blink::UseCounterFeature>& features) {
+  if (GetDelegate().IsInPrerenderingBeforeActivationStart())
+    return;
+
   if (user_data_field_detected_)
     return;
 
@@ -103,5 +102,30 @@ void FormfillPageLoadMetricsObserver::OnFeaturesUsageObserved(
     settings_map->SetWebsiteSettingDefaultScope(
         origin.GetURL(), origin.GetURL(),
         ContentSettingsType::FORMFILL_METADATA, std::move(formfill_metadata));
+  }
+}
+
+// Check if |kUserDataFieldFilledKey| has been previously set for the associated
+// URL.
+void FormfillPageLoadMetricsObserver::MaybeRecordPriorUsageOfUserData(
+    content::NavigationHandle* navigation_handle) {
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(Profile::FromBrowserContext(
+          GetDelegate().GetWebContents()->GetBrowserContext()));
+  DCHECK(settings_map);
+
+  const url::Origin& origin =
+      navigation_handle->GetRenderFrameHost()->GetLastCommittedOrigin();
+
+  base::Value formfill_metadata = settings_map->GetWebsiteSetting(
+      origin.GetURL(), origin.GetURL(), ContentSettingsType::FORMFILL_METADATA,
+      nullptr);
+
+  // User data field was detected on this site before.
+  if (formfill_metadata.is_dict() &&
+      formfill_metadata.FindBoolKey(kUserDataFieldFilledKey)) {
+    page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
+        navigation_handle->GetRenderFrameHost(),
+        blink::mojom::WebFeature::kUserDataFieldFilledPreviously);
   }
 }
