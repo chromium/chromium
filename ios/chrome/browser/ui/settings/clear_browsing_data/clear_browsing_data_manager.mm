@@ -253,7 +253,7 @@ static NSDictionary* imageNamesByItemTypes = @{
   }
   const BOOL hasSectionSavedSiteData =
       [model hasSectionForSectionIdentifier:SectionIdentifierSavedSiteData];
-  if (hasSectionSavedSiteData && [self loggedIn]) {
+  if (hasSectionSavedSiteData == [self loggedIn]) {
     // Nothing to do. We have data iff we are logged-in
     return;
   }
