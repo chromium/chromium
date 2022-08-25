@@ -1068,7 +1068,13 @@ TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearchPdfDisabled) {
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
 }
 
-TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearchPdfEnabled) {
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_LensRegionSearchPdfEnabled DISABLED_LensRegionSearchPdfEnabled
+#else
+#define MAYBE_LensRegionSearchPdfEnabled LensRegionSearchPdfEnabled
+#endif
+// TODO(https://crbug.com/1354637): Re-enable on ChromeOS.
+TEST_F(RenderViewContextMenuPrefsTest, MAYBE_LensRegionSearchPdfEnabled) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures({lens::features::kLensStandalone,
                              lens::features::kEnableRegionSearchOnPdfViewer},
