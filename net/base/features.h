@@ -493,6 +493,9 @@ NET_EXPORT extern const base::Feature kAlpsParsing;
 // Whether ALPS parsing is on for client hint parsing specifically.
 NET_EXPORT extern const base::Feature kAlpsClientHintParsing;
 
+// Whether to kill the session on Error::kAcceptChMalformed.
+NET_EXPORT extern const base::Feature kShouldKillSessionOnAcceptChMalformed;
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_
