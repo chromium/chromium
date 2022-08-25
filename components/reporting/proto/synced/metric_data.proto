@@ -257,6 +257,36 @@ message TouchScreenDevice {
   optional bool has_stylus = 3;
 }
 
+// Information about ePrivacy Screens
+message PrivacyScreenInfo {
+  // If ePrivacy Screen is supported on the device.
+  optional bool supported = 1;
+}
+
+// Information about the displays.
+message DisplayInfo {
+  // Info on all the screens the device has.
+  repeated DisplayDevice display_device = 1;
+}
+
+// Information on one display.
+message DisplayDevice {
+  // Name of display product.
+  optional string display_name = 1;
+  // Display width in millimeters.
+  optional int32 display_width = 2;
+  // Display height in millimeters.
+  optional int32 display_height = 3;
+  // Internal or external display.
+  optional bool is_internal = 4;
+  // Three letter manufacturer ID.
+  optional string manufacturer = 5;
+  // Manufacturer product code.
+  optional int32 model_id = 6;
+  // Year of manufacture.
+  optional int32 manufacture_year = 7;
+}
+
 // Information about keylocker. This is supported on Intel CPUs.
 message KeylockerInfo {
   // If keylocker is supported on the devices CPUs.
@@ -283,6 +313,10 @@ message InfoData {
   optional NetworksInfo networks_info = 4;
   // Touch screen info.
   optional TouchScreenInfo touch_screen_info = 5;
+  // Information about the ePrivacy Screen.
+  optional PrivacyScreenInfo privacy_screen_info = 6;
+  // Information about the displays.
+  optional DisplayInfo display_info = 7;
 }
 
 // Audio telemetry data recorded intermittently
@@ -328,6 +362,22 @@ message UserStatusTelemetry {
   optional DeviceActivityState device_activity_state = 1;
 }
 
+message DisplaysTelemetry {
+  // Status of all the displays.
+  repeated DisplayStatus display_status = 1;
+}
+
+message DisplayStatus {
+  // Name of display product.
+  optional string display_name = 1;
+  // Horizontal resolution.
+  optional int32 resolution_horizontal = 2;
+  // Vertical resolution.
+  optional int32 resolution_vertical = 3;
+  // Refresh rate.
+  optional int64 refresh_rate = 4;
+}
+
 // Data that can change over time, collected and reported every specific period
 // of time or when an event occur.
 message TelemetryData {
@@ -343,6 +393,8 @@ message TelemetryData {
   optional BootPerformanceTelemetry boot_performance_telemetry = 4;
   // User status telemetry data.
   optional UserStatusTelemetry user_status_telemetry = 5;
+  // Displays telemetry data.
+  optional DisplaysTelemetry displays_telemetry = 6;
 }
 
 enum MetricEventType {
