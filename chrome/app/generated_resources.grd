@@ -5633,6 +5633,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
         </message>
       </if>
 
+      <if expr="not is_android">
+        <message name="IDS_WEB_APP_DETAILED_INSTALL_DIALOG_DESCRIPTION_TITLE" desc="Title above app description to explain the content below is from this app">
+          From the app
+        </message>
+      </if>
+
       <message name="IDS_WEB_APP_MENU_BUTTON_TOOLTIP">
         Customize and control <ph name="APP_NAME">$1<ex>GMail</ex></ph>
       </message>
