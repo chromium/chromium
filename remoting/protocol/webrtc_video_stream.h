@@ -23,21 +23,21 @@
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 
+namespace base {
+class SingleThreadTaskRunner;
+}  // namespace base
+
 namespace webrtc {
 class PeerConnectionInterface;
 }  // namespace webrtc
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class HostVideoStatsDispatcher;
 class WebrtcVideoEncoderFactory;
-class WebrtcFrameScheduler;
 class WebrtcTransport;
 
-class WebrtcVideoStream : public VideoStream,
-                          public webrtc::DesktopCapturer::Callback,
-                          public VideoChannelStateObserver {
+class WebrtcVideoStream : public VideoStream, public VideoChannelStateObserver {
  public:
   WebrtcVideoStream(const std::string& stream_name,
                     const SessionOptions& options);
@@ -75,26 +75,23 @@ class WebrtcVideoStream : public VideoStream,
       const WebrtcVideoEncoder::EncodedFrame& frame) override;
 
  private:
+  class Core;
   struct FrameStats;
-
-  // webrtc::DesktopCapturer::Callback interface.
-  void OnCaptureResult(webrtc::DesktopCapturer::Result result,
-                       std::unique_ptr<webrtc::DesktopFrame> frame) override;
-
-  // Called by the |scheduler_|.
-  void CaptureNextFrame();
 
   // Called by |video_track_source_|.
   void OnSinkAddedOrUpdated(const rtc::VideoSinkWants& wants);
 
-  // Screen ID of the monitor being captured, from SelectSource().
-  webrtc::ScreenId screen_id_ = webrtc::kInvalidScreenId;
+  // Called from |core_|.
+  void OnVideoSizeChanged(webrtc::DesktopSize frame_size,
+                          webrtc::DesktopVector frame_dpi);
+  void SendCapturedFrame(
+      std::unique_ptr<webrtc::DesktopFrame> desktop_frame,
+      std::unique_ptr<WebrtcVideoEncoder::FrameStats> frame_stats);
+
+  THREAD_CHECKER(thread_checker_);
 
   // Label of the associated WebRTC video-stream.
   std::string stream_name_;
-
-  // Capturer used to capture the screen.
-  std::unique_ptr<webrtc::DesktopCapturer> capturer_;
 
   // Used to send captured frames to the encoder.
   rtc::scoped_refptr<WebrtcVideoTrackSource> video_track_source_;
@@ -102,29 +99,20 @@ class WebrtcVideoStream : public VideoStream,
   // The transceiver created for this video-stream.
   rtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver_;
 
-  scoped_refptr<InputEventTimestampsSource> event_timestamps_source_;
-
   scoped_refptr<webrtc::PeerConnectionInterface> peer_connection_;
 
   base::WeakPtr<HostVideoStatsDispatcher> video_stats_dispatcher_;
 
-  // Stats of the frame that's being captured.
-  std::unique_ptr<FrameStats> current_frame_stats_;
-
-  std::unique_ptr<WebrtcFrameScheduler> scheduler_;
-
-  webrtc::DesktopSize frame_size_;
-  webrtc::DesktopVector frame_dpi_;
   raw_ptr<Observer> observer_ = nullptr;
 
-  base::ThreadChecker thread_checker_;
-
   const SessionOptions session_options_;
+
+  std::unique_ptr<Core> core_;
+  scoped_refptr<base::SingleThreadTaskRunner> core_task_runner_;
 
   base::WeakPtrFactory<WebrtcVideoStream> weak_factory_{this};
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_WEBRTC_VIDEO_STREAM_H_

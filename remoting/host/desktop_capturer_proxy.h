@@ -7,12 +7,15 @@
 
 #include <memory>
 
-#include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "remoting/protocol/desktop_capturer.h"
+
+#if defined(WEBRTC_USE_GIO)
+#include "base/callback.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_metadata.h"
+#endif
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -23,8 +26,6 @@ class DesktopCaptureOptions;
 }  // namespace webrtc
 
 namespace remoting {
-
-class DesktopDisplayInfoMonitor;
 
 // DesktopCapturerProxy is responsible for calling webrtc::DesktopCapturer on
 // the capturer thread and then returning results to the caller's thread.
@@ -39,13 +40,8 @@ class DesktopCapturerProxy : public DesktopCapturer {
 
   ~DesktopCapturerProxy() override;
 
-  // If |monitor| is non-null, it must outlive |this|, and
-  // monitor->QueryDisplayInfo() will be called after each captured frame.
-  void set_desktop_display_info_monitor(DesktopDisplayInfoMonitor* monitor);
-
   // CreateCapturer() should be used if the capturer needs to be created on the
-  // capturer thread. Alternatively the capturer can be passed to
-  // set_capturer().
+  // capturer thread. Otherwise, the capturer can be passed to set_capturer().
   void CreateCapturer(const webrtc::DesktopCaptureOptions& options);
   void set_capturer(std::unique_ptr<webrtc::DesktopCapturer> capturer);
 
@@ -55,12 +51,11 @@ class DesktopCapturerProxy : public DesktopCapturer {
                                   shared_memory_factory) override;
   void CaptureFrame() override;
   bool GetSourceList(SourceList* sources) override;
+  bool SelectSource(SourceId id) override;
 #if defined(WEBRTC_USE_GIO)
   void GetMetadataAsync(base::OnceCallback<void(webrtc::DesktopCaptureMetadata)>
                             callback) override;
 #endif
-
-  bool SelectSource(SourceId id) override;
 
  private:
   class Core;
@@ -72,19 +67,17 @@ class DesktopCapturerProxy : public DesktopCapturer {
   void OnMetadata(webrtc::DesktopCaptureMetadata metadata);
 #endif
 
-  THREAD_CHECKER(thread_checker_);
-
   std::unique_ptr<Core> core_;
   scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner_;
 
-  raw_ptr<webrtc::DesktopCapturer::Callback> callback_;
-
-  // Monitors and stores info about the desktop displays.
-  raw_ptr<DesktopDisplayInfoMonitor> desktop_display_info_monitor_ = nullptr;
+  raw_ptr<webrtc::DesktopCapturer::Callback> callback_ = nullptr;
 
 #if defined(WEBRTC_USE_GIO)
   base::OnceCallback<void(webrtc::DesktopCaptureMetadata)> metadata_callback_;
 #endif
+
+  THREAD_CHECKER(thread_checker_);
+
   base::WeakPtrFactory<DesktopCapturerProxy> weak_factory_{this};
 };
 

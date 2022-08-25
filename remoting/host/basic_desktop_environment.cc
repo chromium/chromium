@@ -200,7 +200,6 @@ BasicDesktopEnvironment::CreateVideoCapturer() {
 
   auto result =
       std::make_unique<DesktopCapturerProxy>(std::move(dedicated_task_runner));
-  result->set_desktop_display_info_monitor(GetDisplayInfoMonitor());
   result->CreateCapturer(desktop_capture_options());
   return std::move(result);
 }

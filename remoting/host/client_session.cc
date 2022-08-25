@@ -270,6 +270,10 @@ void ClientSession::SetCapabilities(
                             std::move(supported_actions)));
   }
 
+  // TODO(crbug.com/1326339): Remove this code when legacy VideoLayout messages
+  // are fully deprecated and no longer sent. We already start the monitor in
+  // OnConnectionChannelsConnected() so we don't need this block if the legacy
+  // message in multi-stream mode is no longer required.
   if (HasCapability(capabilities_, protocol::kMultiStreamCapability)) {
     if (desktop_display_info_.NumDisplays() != 0) {
       // If display info is already known, create the initial video streams.
@@ -288,8 +292,6 @@ void ClientSession::SetCapabilities(
 
     // Re-send the extended layout information so the client has information
     // needed to identify each stream.
-    // TODO(crbug.com/1326339): Remove this code when legacy VideoLayout
-    // messages are fully deprecated and no longer sent.
     if (desktop_display_info_.NumDisplays() != 0) {
       OnDesktopDisplayChanged(desktop_display_info_.GetVideoLayoutProto());
     }
@@ -667,6 +669,14 @@ void ClientSession::OnConnectionChannelsConnected() {
   if (pending_video_layout_message_) {
     connection_->client_stub()->SetVideoLayout(*pending_video_layout_message_);
     pending_video_layout_message_.reset();
+  }
+
+  // Query the OS for the display-info on a timer.
+  auto* display_info_monitor = desktop_environment_->GetDisplayInfoMonitor();
+  if (display_info_monitor) {
+    // In the multi-process case, |display_info_monitor| will be null and this
+    // will be handled instead by the DesktopSessionAgent.
+    display_info_monitor->Start();
   }
 
   // Notify the event handler that all our channels are now connected.

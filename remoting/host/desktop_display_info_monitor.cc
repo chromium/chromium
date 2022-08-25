@@ -45,9 +45,12 @@ DesktopDisplayInfoMonitor::~DesktopDisplayInfoMonitor() {
 
 void DesktopDisplayInfoMonitor::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  timer_running_ = true;
-  timer_.Start(FROM_HERE, kPollingInterval, this,
-               &DesktopDisplayInfoMonitor::QueryDisplayInfoImpl);
+
+  if (!timer_running_) {
+    timer_running_ = true;
+    timer_.Start(FROM_HERE, kPollingInterval, this,
+                 &DesktopDisplayInfoMonitor::QueryDisplayInfoImpl);
+  }
 }
 
 void DesktopDisplayInfoMonitor::QueryDisplayInfo() {
@@ -61,8 +64,7 @@ void DesktopDisplayInfoMonitor::AddCallback(
     DesktopDisplayInfoMonitor::Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Adding callbacks is not supported after displays have already been
-  // loaded.
+  // Adding callbacks is not supported after displays have been loaded.
   DCHECK_EQ(desktop_display_info_.NumDisplays(), 0);
 
   callback_list_.AddUnsafe(std::move(callback));
