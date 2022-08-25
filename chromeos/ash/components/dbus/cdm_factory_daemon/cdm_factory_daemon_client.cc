@@ -49,7 +49,7 @@ class CdmFactoryDaemonClientImpl : public CdmFactoryDaemonClient {
   }
 
   void WaitForServiceToBeAvailable(
-      WaitForServiceToBeAvailableCallback callback) override {
+      chromeos::WaitForServiceToBeAvailableCallback callback) override {
     proxy_->WaitForServiceToBeAvailable(std::move(callback));
   }
 

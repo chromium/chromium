@@ -46,7 +46,7 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) CdmFactoryDaemonClient {
   // Registers |callback| to run when the CdmFactoryDaemon service becomes
   // available.
   virtual void WaitForServiceToBeAvailable(
-      WaitForServiceToBeAvailableCallback callback) = 0;
+      chromeos::WaitForServiceToBeAvailableCallback callback) = 0;
 
  protected:
   // Initialize/Shutdown should be used instead.

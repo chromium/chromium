@@ -302,7 +302,7 @@ void FakeAuthPolicyClient::SetUserKerberosFiles(const std::string& creds,
 void FakeAuthPolicyClient::SetStarted(bool started) {
   started_ = started;
   if (started_) {
-    std::vector<WaitForServiceToBeAvailableCallback> callbacks;
+    std::vector<chromeos::WaitForServiceToBeAvailableCallback> callbacks;
     callbacks.swap(wait_for_service_to_be_available_callbacks_);
     for (size_t i = 0; i < callbacks.size(); ++i)
       std::move(callbacks[i]).Run(true /* service_is_available*/);

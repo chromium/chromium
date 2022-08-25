@@ -309,7 +309,7 @@ void FakeCrasAudioClient::ResendBluetoothBattery() {
 }
 
 void FakeCrasAudioClient::WaitForServiceToBeAvailable(
-    WaitForServiceToBeAvailableCallback callback) {
+    chromeos::WaitForServiceToBeAvailableCallback callback) {
   std::move(callback).Run(true);
 }
 

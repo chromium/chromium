@@ -145,7 +145,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
 
   // Runs the callback as soon as the service becomes available.
   virtual void WaitForServiceToBeAvailable(
-      WaitForServiceToBeAvailableCallback callback) = 0;
+      chromeos::WaitForServiceToBeAvailableCallback callback) = 0;
 
   // Returns the most recent screen-lock state received from session_manager.
   // This method should only be called by low-level code that is unable to

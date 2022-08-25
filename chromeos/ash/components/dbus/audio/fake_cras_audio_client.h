@@ -87,7 +87,7 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
       const std::map<std::string, std::string>& metadata) override;
   void ResendBluetoothBattery() override;
   void WaitForServiceToBeAvailable(
-      WaitForServiceToBeAvailableCallback callback) override;
+      chromeos::WaitForServiceToBeAvailableCallback callback) override;
 
   // Modifies an AudioNode from |node_list_| based on |audio_node.id|.
   // if the |audio_node.id| cannot be found in list, Add an

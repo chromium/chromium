@@ -366,9 +366,10 @@ void FakeShillManagerClient::DisableTechnology(const std::string& type,
       interactive_delay_);
 }
 
-void FakeShillManagerClient::ConfigureService(const base::Value& properties,
-                                              ObjectPathCallback callback,
-                                              ErrorCallback error_callback) {
+void FakeShillManagerClient::ConfigureService(
+    const base::Value& properties,
+    chromeos::ObjectPathCallback callback,
+    ErrorCallback error_callback) {
   switch (simulate_configuration_result_) {
     case FakeShillSimulatedResult::kSuccess:
       break;
@@ -460,7 +461,7 @@ void FakeShillManagerClient::ConfigureService(const base::Value& properties,
 void FakeShillManagerClient::ConfigureServiceForProfile(
     const dbus::ObjectPath& profile_path,
     const base::Value& properties,
-    ObjectPathCallback callback,
+    chromeos::ObjectPathCallback callback,
     ErrorCallback error_callback) {
   std::string profile_property;
   GetString(properties, shill::kProfileProperty, &profile_property);
@@ -469,7 +470,7 @@ void FakeShillManagerClient::ConfigureServiceForProfile(
 }
 
 void FakeShillManagerClient::GetService(const base::Value& properties,
-                                        ObjectPathCallback callback,
+                                        chromeos::ObjectPathCallback callback,
                                         ErrorCallback error_callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), dbus::ObjectPath()));

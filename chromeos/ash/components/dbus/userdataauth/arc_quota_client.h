@@ -53,7 +53,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) ArcQuotaClient {
 
   // Runs the callback as soon as the service becomes available.
   virtual void WaitForServiceToBeAvailable(
-      WaitForServiceToBeAvailableCallback callback) = 0;
+      chromeos::WaitForServiceToBeAvailableCallback callback) = 0;
 
   // Retrieve the ARC-related disk features supported.
   virtual void GetArcDiskFeatures(

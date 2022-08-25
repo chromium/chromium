@@ -45,10 +45,4 @@ using WaitForServiceToBeAvailableCallback =
 
 }  // namespace chromeos
 
-// TODO(https://crbug.com/1164001): remove when //chromeos/dbus moved to ash.
-namespace ash {
-using ::chromeos::ObjectPathCallback;
-using ::chromeos::WaitForServiceToBeAvailableCallback;
-}  // namespace ash
-
 #endif  // CHROMEOS_DBUS_COMMON_DBUS_METHOD_CALL_STATUS_H_

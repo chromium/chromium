@@ -39,7 +39,7 @@ class WilcoDtcSupportdClientImpl final : public WilcoDtcSupportdClient {
 
   // WilcoDtcSupportdClient overrides:
   void WaitForServiceToBeAvailable(
-      WaitForServiceToBeAvailableCallback callback) override;
+      chromeos::WaitForServiceToBeAvailableCallback callback) override;
   void BootstrapMojoConnection(
       base::ScopedFD fd,
       chromeos::VoidDBusMethodCallback callback) override;
@@ -56,7 +56,7 @@ WilcoDtcSupportdClientImpl::WilcoDtcSupportdClientImpl() = default;
 WilcoDtcSupportdClientImpl::~WilcoDtcSupportdClientImpl() = default;
 
 void WilcoDtcSupportdClientImpl::WaitForServiceToBeAvailable(
-    WaitForServiceToBeAvailableCallback callback) {
+    chromeos::WaitForServiceToBeAvailableCallback callback) {
   wilco_dtc_supportd_proxy_->WaitForServiceToBeAvailable(std::move(callback));
 }
 

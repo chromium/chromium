@@ -242,7 +242,7 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
 
   // Runs the callback as soon as the service becomes available.
   virtual void WaitForServiceToBeAvailable(
-      WaitForServiceToBeAvailableCallback callback) = 0;
+      chromeos::WaitForServiceToBeAvailableCallback callback) = 0;
 
  protected:
   friend class CrasAudioClientTest;

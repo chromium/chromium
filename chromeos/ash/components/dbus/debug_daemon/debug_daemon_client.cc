@@ -467,7 +467,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
   }
 
   void WaitForServiceToBeAvailable(
-      WaitForServiceToBeAvailableCallback callback) override {
+      chromeos::WaitForServiceToBeAvailableCallback callback) override {
     debugdaemon_proxy_->WaitForServiceToBeAvailable(std::move(callback));
   }
 

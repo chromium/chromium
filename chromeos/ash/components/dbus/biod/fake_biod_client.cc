@@ -147,7 +147,7 @@ bool FakeBiodClient::HasObserver(const Observer* observer) const {
 
 void FakeBiodClient::StartEnrollSession(const std::string& user_id,
                                         const std::string& label,
-                                        ObjectPathCallback callback) {
+                                        chromeos::ObjectPathCallback callback) {
   DCHECK_EQ(current_session_, FingerprintSession::NONE);
 
   // Create the enrollment with |user_id|, |label| and a empty fake fingerprint.
@@ -183,7 +183,7 @@ void FakeBiodClient::DestroyAllRecords(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
-void FakeBiodClient::StartAuthSession(ObjectPathCallback callback) {
+void FakeBiodClient::StartAuthSession(chromeos::ObjectPathCallback callback) {
   DCHECK_EQ(current_session_, FingerprintSession::NONE);
 
   current_session_ = FingerprintSession::AUTH;

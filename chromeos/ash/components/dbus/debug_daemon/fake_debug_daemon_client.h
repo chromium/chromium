@@ -98,7 +98,7 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
   void QueryDebuggingFeatures(QueryDevFeaturesCallback callback) override;
   void RemoveRootfsVerification(EnableDebuggingCallback callback) override;
   void WaitForServiceToBeAvailable(
-      WaitForServiceToBeAvailableCallback callback) override;
+      chromeos::WaitForServiceToBeAvailableCallback callback) override;
   void SetOomScoreAdj(const std::map<pid_t, int32_t>& pid_to_oom_score_adj,
                       SetOomScoreAdjCallback callback) override;
   void CupsAddManuallyConfiguredPrinter(
@@ -153,7 +153,7 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
   int features_mask_;
 
   bool service_is_available_;
-  std::vector<WaitForServiceToBeAvailableCallback>
+  std::vector<chromeos::WaitForServiceToBeAvailableCallback>
       pending_wait_for_service_to_be_available_callbacks_;
   std::set<std::string> printers_;
   std::vector<std::string> routes_;

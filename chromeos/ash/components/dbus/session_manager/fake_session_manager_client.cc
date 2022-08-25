@@ -272,7 +272,7 @@ bool FakeSessionManagerClient::HasObserver(const Observer* observer) const {
 }
 
 void FakeSessionManagerClient::WaitForServiceToBeAvailable(
-    WaitForServiceToBeAvailableCallback callback) {
+    chromeos::WaitForServiceToBeAvailableCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }

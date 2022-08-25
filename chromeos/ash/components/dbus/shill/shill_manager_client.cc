@@ -134,7 +134,7 @@ class ShillManagerClientImpl : public ShillManagerClient {
   }
 
   void ConfigureService(const base::Value& properties,
-                        ObjectPathCallback callback,
+                        chromeos::ObjectPathCallback callback,
                         ErrorCallback error_callback) override {
     dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
                                  shill::kConfigureServiceFunction);
@@ -146,7 +146,7 @@ class ShillManagerClientImpl : public ShillManagerClient {
 
   void ConfigureServiceForProfile(const dbus::ObjectPath& profile_path,
                                   const base::Value& properties,
-                                  ObjectPathCallback callback,
+                                  chromeos::ObjectPathCallback callback,
                                   ErrorCallback error_callback) override {
     dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
                                  shill::kConfigureServiceForProfileFunction);
@@ -158,7 +158,7 @@ class ShillManagerClientImpl : public ShillManagerClient {
   }
 
   void GetService(const base::Value& properties,
-                  ObjectPathCallback callback,
+                  chromeos::ObjectPathCallback callback,
                   ErrorCallback error_callback) override {
     dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
                                  shill::kGetServiceFunction);

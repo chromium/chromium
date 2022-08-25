@@ -203,20 +203,20 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
   // Calls Manager.ConfigureService with |properties| which must be a
   // dictionary value describing a Shill service.
   virtual void ConfigureService(const base::Value& properties,
-                                ObjectPathCallback callback,
+                                chromeos::ObjectPathCallback callback,
                                 ErrorCallback error_callback) = 0;
 
   // Calls Manager.ConfigureServiceForProfile for |profile_path| with
   // |properties| which must be a dictionary value describing a Shill service.
   virtual void ConfigureServiceForProfile(const dbus::ObjectPath& profile_path,
                                           const base::Value& properties,
-                                          ObjectPathCallback callback,
+                                          chromeos::ObjectPathCallback callback,
                                           ErrorCallback error_callback) = 0;
 
   // Calls Manager.GetService with |properties| which must be a dictionary value
   // describing a Service.
   virtual void GetService(const base::Value& properties,
-                          ObjectPathCallback callback,
+                          chromeos::ObjectPathCallback callback,
                           ErrorCallback error_callback) = 0;
 
   // Force a fresh WiFi scan if a WiFi device is available as a way of

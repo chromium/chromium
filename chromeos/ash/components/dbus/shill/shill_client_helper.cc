@@ -107,7 +107,7 @@ void OnVoidMethod(ShillClientHelper::RefHolder* ref_holder,
 // Handles responses for methods with ObjectPath results and no status.
 void OnObjectPathMethodWithoutStatus(
     ShillClientHelper::RefHolder* ref_holder,
-    ObjectPathCallback callback,
+    chromeos::ObjectPathCallback callback,
     ShillClientHelper::ErrorCallback error_callback,
     dbus::Response* response) {
   if (!response) {
@@ -280,7 +280,7 @@ void ShillClientHelper::CallVoidMethod(
 
 void ShillClientHelper::CallObjectPathMethodWithErrorCallback(
     dbus::MethodCall* method_call,
-    ObjectPathCallback callback,
+    chromeos::ObjectPathCallback callback,
     ErrorCallback error_callback) {
   DCHECK(!callback.is_null());
   DCHECK(!error_callback.is_null());

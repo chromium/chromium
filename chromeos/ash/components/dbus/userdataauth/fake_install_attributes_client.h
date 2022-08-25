@@ -116,7 +116,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeInstallAttributesClient
 
   // The list of callbacks passed to WaitForServiceToBeAvailable when the
   // service wasn't available.
-  std::vector<WaitForServiceToBeAvailableCallback>
+  std::vector<chromeos::WaitForServiceToBeAvailableCallback>
       pending_wait_for_service_to_be_available_callbacks_;
 };
 

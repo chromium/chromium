@@ -29,7 +29,7 @@ class FakeCdmFactoryDaemonClient : public CdmFactoryDaemonClient {
       base::ScopedFD fd,
       base::OnceCallback<void(bool success)> callback) override;
   void WaitForServiceToBeAvailable(
-      WaitForServiceToBeAvailableCallback callback) override;
+      chromeos::WaitForServiceToBeAvailableCallback callback) override;
 };
 
 }  // namespace ash

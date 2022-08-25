@@ -195,7 +195,7 @@ class SessionManagerClientImpl : public SessionManagerClient {
   }
 
   void WaitForServiceToBeAvailable(
-      WaitForServiceToBeAvailableCallback callback) override {
+      chromeos::WaitForServiceToBeAvailableCallback callback) override {
     session_manager_proxy_->WaitForServiceToBeAvailable(std::move(callback));
   }
 

@@ -68,7 +68,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   void RemoveObserver(Observer* observer) override;
   bool HasObserver(const Observer* observer) const override;
   void WaitForServiceToBeAvailable(
-      WaitForServiceToBeAvailableCallback callback) override;
+      chromeos::WaitForServiceToBeAvailableCallback callback) override;
   bool IsScreenLocked() const override;
   void EmitLoginPromptVisible() override;
   void EmitAshInitialized() override;

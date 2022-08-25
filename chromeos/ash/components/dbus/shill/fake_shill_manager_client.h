@@ -54,14 +54,14 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
                          base::OnceClosure callback,
                          ErrorCallback error_callback) override;
   void ConfigureService(const base::Value& properties,
-                        ObjectPathCallback callback,
+                        chromeos::ObjectPathCallback callback,
                         ErrorCallback error_callback) override;
   void ConfigureServiceForProfile(const dbus::ObjectPath& profile_path,
                                   const base::Value& properties,
-                                  ObjectPathCallback callback,
+                                  chromeos::ObjectPathCallback callback,
                                   ErrorCallback error_callback) override;
   void GetService(const base::Value& properties,
-                  ObjectPathCallback callback,
+                  chromeos::ObjectPathCallback callback,
                   ErrorCallback error_callback) override;
   void ScanAndConnectToBestServices(base::OnceClosure callback,
                                     ErrorCallback error_callback) override;

@@ -1179,7 +1179,7 @@ void FakeUserDataAuthClient::WaitForServiceToBeAvailable(
 }
 
 void FakeUserDataAuthClient::RunPendingWaitForServiceToBeAvailableCallbacks() {
-  std::vector<WaitForServiceToBeAvailableCallback> callbacks;
+  std::vector<chromeos::WaitForServiceToBeAvailableCallback> callbacks;
   callbacks.swap(pending_wait_for_service_to_be_available_callbacks_);
   for (auto& callback : callbacks)
     std::move(callback).Run(false);

@@ -32,7 +32,7 @@ class WilcoDtcSupportdClient : public DBusClient {
   // Registers |callback| to run when the wilco_dtc_supportd service becomes
   // available.
   virtual void WaitForServiceToBeAvailable(
-      WaitForServiceToBeAvailableCallback callback) = 0;
+      chromeos::WaitForServiceToBeAvailableCallback callback) = 0;
 
   // Bootstrap the Mojo connection between Chrome and the wilco_dtc_supportd
   // daemon. |fd| is the file descriptor with the child end of the Mojo pipe.

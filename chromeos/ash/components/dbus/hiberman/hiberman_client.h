@@ -42,7 +42,7 @@ class COMPONENT_EXPORT(HIBERMAN_CLIENT) HibermanClient {
   // Actual DBus Methods:
   // Runs the callback as soon as the service becomes available.
   virtual void WaitForServiceToBeAvailable(
-      WaitForServiceToBeAvailableCallback callback) = 0;
+      chromeos::WaitForServiceToBeAvailableCallback callback) = 0;
 
   // Resume from hibernate, if possible. Upon a successful resume from
   // hibernation, this function does not return, as execution continues in the

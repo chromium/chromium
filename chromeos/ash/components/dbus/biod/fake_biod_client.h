@@ -64,11 +64,11 @@ class COMPONENT_EXPORT(BIOD_CLIENT) FakeBiodClient : public BiodClient {
   bool HasObserver(const Observer* observer) const override;
   void StartEnrollSession(const std::string& user_id,
                           const std::string& label,
-                          ObjectPathCallback callback) override;
+                          chromeos::ObjectPathCallback callback) override;
   void GetRecordsForUser(const std::string& user_id,
                          UserRecordsCallback callback) override;
   void DestroyAllRecords(chromeos::VoidDBusMethodCallback callback) override;
-  void StartAuthSession(ObjectPathCallback callback) override;
+  void StartAuthSession(chromeos::ObjectPathCallback callback) override;
   void RequestType(BiometricTypeCallback callback) override;
   void CancelEnrollSession(chromeos::VoidDBusMethodCallback callback) override;
   void EndAuthSession(chromeos::VoidDBusMethodCallback callback) override;
