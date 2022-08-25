@@ -481,10 +481,30 @@ void SubmenuView::SetDropMenuItem(MenuItemView* item,
   MenuItemView* old_drop_item = drop_item_;
   drop_item_ = item;
   drop_position_ = position;
-  if (old_drop_item && old_drop_item != drop_item_)
-    old_drop_item->OnDropStatusChanged();
-  if (drop_item_)
-    drop_item_->OnDropStatusChanged();
+  if (!old_drop_item || !item) {
+    // Whether the selection is actually drawn
+    // (`MenuItemView:last_paint_as_selected_`) depends upon whether there is a
+    // drop item. Find the selected item and have it updates its paint as
+    // selected state.
+    for (View* child : children()) {
+      if (!child->GetVisible() ||
+          child->GetID() != MenuItemView::kMenuItemViewID) {
+        continue;
+      }
+      MenuItemView* child_menu_item = static_cast<MenuItemView*>(child);
+      if (child_menu_item->IsSelected()) {
+        child_menu_item->OnDropOrSelectionStatusMayHaveChanged();
+        // Only one menu item is selected, so no need to continue iterating once
+        // the selected item is found.
+        break;
+      }
+    }
+  } else {
+    if (old_drop_item && old_drop_item != drop_item_)
+      old_drop_item->OnDropOrSelectionStatusMayHaveChanged();
+    if (drop_item_)
+      drop_item_->OnDropOrSelectionStatusMayHaveChanged();
+  }
   SchedulePaintForDropIndicator(drop_item_, drop_position_);
 }
 

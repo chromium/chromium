@@ -574,7 +574,7 @@ void MenuItemView::SetIconView(std::unique_ptr<ImageView> icon_view) {
   SchedulePaint();
 }
 
-void MenuItemView::OnDropStatusChanged() {
+void MenuItemView::OnDropOrSelectionStatusMayHaveChanged() {
   UpdateSelectionBasedStateIfChanged(PaintMode::kNormal);
 }
 

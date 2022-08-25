@@ -559,6 +559,42 @@ TEST_F(MenuItemViewPaintUnitTest, SelectionBasedStateUpdatedWhenIconChanges) {
   EXPECT_TRUE(child_menu_item->last_paint_as_selected_for_testing());
 }
 
+TEST_F(MenuItemViewPaintUnitTest, SelectionBasedStateUpdatedDuringDragAndDrop) {
+  MenuItemView* submenu_item =
+      menu_item_view()->AppendSubMenu(1, u"submenu_item");
+  MenuItemView* submenu_child1 =
+      submenu_item->AppendMenuItem(1, u"submenu_child");
+  MenuItemView* submenu_child2 =
+      submenu_item->AppendMenuItem(1, u"submenu_child");
+
+  menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
+                           MenuAnchorPosition::kTopLeft,
+                           ui::MENU_SOURCE_KEYBOARD);
+
+  // Show both the root and nested menus.
+  SubmenuView* submenu = submenu_item->GetSubmenu();
+  MenuHost::InitParams params;
+  params.parent = widget();
+  params.bounds = submenu_item->bounds();
+  submenu->ShowAt(params);
+
+  EXPECT_FALSE(submenu_child1->last_paint_as_selected_for_testing());
+  submenu_child1->SetSelected(true);
+  EXPECT_TRUE(submenu_child1->IsSelected());
+  EXPECT_TRUE(submenu_child1->last_paint_as_selected_for_testing());
+
+  // Setting the drop item to `submenu_child2` should force `submenu_child1` to
+  // no longer draw as selected.
+  submenu->SetDropMenuItem(submenu_child2, MenuDelegate::DropPosition::kOn);
+  EXPECT_FALSE(submenu_child1->last_paint_as_selected_for_testing());
+  EXPECT_FALSE(submenu_child2->last_paint_as_selected_for_testing());
+
+  // Clearing the drop item returns `submenu_child1` to drawing as selected.
+  submenu->SetDropMenuItem(nullptr, MenuDelegate::DropPosition::kOn);
+  EXPECT_TRUE(submenu_child1->last_paint_as_selected_for_testing());
+  EXPECT_FALSE(submenu_child2->last_paint_as_selected_for_testing());
+}
+
 // Sets up a custom MenuDelegate that expects functions aren't called. See
 // DontAskForFontsWhenAddingSubmenu.
 class MenuItemViewAccessTest : public MenuItemViewPaintUnitTest {
