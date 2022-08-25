@@ -474,6 +474,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cryptohome.LECredential.LogReplayEntryCount" units="count"
+    expires_after="2023-08-19">
+  <owner>hcyang@google.com</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    How many log entries are used to reconstruct a stale hash tree, for Low
+    Entropy (LE) credential management. This reflects whether the log entries
+    stored at LE credential server side are sufficient for recovering situations
+    where the LE credential client and server are not synced. This is logged
+    every time the client loses sync with the server (might happen during
+    authentication and credential management operations), and attempts to use
+    the LogReplay command to sync server state again.
+  </summary>
+</histogram>
+
 <histogram name="Cryptohome.LegacyCodePathUsage.{Location}"
     enum="BooleanCodePathUsage" expires_after="2022-01-09">
   <owner>hardikgoyal@chromium.org</owner>
