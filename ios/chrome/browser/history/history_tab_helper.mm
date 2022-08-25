@@ -12,7 +12,10 @@
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/chrome/browser/complex_tasks/ios_content_record_task_id.h"
+#import "ios/chrome/browser/complex_tasks/ios_task_tab_helper.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
+#import "ios/chrome/browser/sessions/ios_chrome_session_tab_helper.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -55,6 +58,91 @@ void HistoryTabHelper::UpdateHistoryPageTitle(const web::NavigationItem& item) {
   if (history_service) {
     history_service->SetPageTitle(item.GetVirtualURL(), title.value());
   }
+}
+
+history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
+    web::NavigationItem* last_committed_item,
+    web::NavigationContext* navigation_context) {
+  const GURL& url = last_committed_item->GetURL();
+
+  const ui::PageTransition transition =
+      last_committed_item->GetTransitionType();
+
+  history::RedirectList redirects;
+  const GURL& original_url = last_committed_item->GetOriginalRequestURL();
+  const GURL& referrer_url = last_committed_item->GetReferrer().url;
+  if (original_url != url) {
+    // Simulate a valid redirect chain in case of URLs that have been modified
+    // by CRWWebController -finishHistoryNavigationFromEntry:.
+    if (transition & ui::PAGE_TRANSITION_CLIENT_REDIRECT ||
+        url.EqualsIgnoringRef(original_url)) {
+      redirects.push_back(referrer_url);
+    }
+    // TODO(crbug.com/703872): the redirect chain is not constructed the same
+    // way as desktop so this part needs to be revised.
+    redirects.push_back(original_url);
+    redirects.push_back(url);
+  }
+
+  // Navigations originating from New Tab Page or Reading List should not
+  // contribute to Most Visited.
+  const bool content_suggestions_navigation =
+      referrer_url == ntp_snippets::GetContentSuggestionsReferrerURL() &&
+      ui::PageTransitionCoreTypeIs(transition,
+                                   ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+  const bool consider_for_ntp_most_visited =
+      !content_suggestions_navigation &&
+      referrer_url != kReadingListReferrerURL;
+
+  const int http_response_code =
+      navigation_context->GetResponseHeaders()
+          ? navigation_context->GetResponseHeaders()->response_code()
+          : 0;
+
+  // Hide navigations that result in an error in order to prevent the omnibox
+  // from suggesting URLs that have never been navigated to successfully.
+  // (If a navigation to the URL succeeds at some point, the URL will be
+  // unhidden and thus eligible to be suggested by the omnibox.)
+  const bool hidden = (http_response_code >= 400);
+
+  history::VisitContextAnnotations::OnVisitFields context_annotations;
+
+  context_annotations.browser_type =
+      history::VisitContextAnnotations::BrowserType::kTabbed;
+
+  IOSChromeSessionTabHelper* session_tab_helper =
+      IOSChromeSessionTabHelper::FromWebState(web_state_);
+  if (session_tab_helper) {
+    context_annotations.window_id = session_tab_helper->window_id();
+    context_annotations.tab_id = session_tab_helper->session_id();
+  }
+
+  IOSTaskTabHelper* task_tab_helper =
+      IOSTaskTabHelper::FromWebState(web_state_);
+  if (task_tab_helper) {
+    const IOSContentRecordTaskId* content_record_task_id =
+        task_tab_helper->GetContextRecordTaskId(
+            last_committed_item->GetUniqueID());
+    if (content_record_task_id) {
+      context_annotations.task_id = content_record_task_id->task_id();
+      context_annotations.root_task_id = content_record_task_id->root_task_id();
+      context_annotations.parent_task_id =
+          content_record_task_id->parent_task_id();
+    }
+  }
+
+  context_annotations.response_code = http_response_code;
+
+  return history::HistoryAddPageArgs(
+      url, last_committed_item->GetTimestamp(), this,
+      last_committed_item->GetUniqueID(), referrer_url, redirects, transition,
+      hidden, history::SOURCE_BROWSED,
+      /*did_replace_entry=*/false, consider_for_ntp_most_visited,
+      navigation_context->IsSameDocument() ? GetPageTitle(*last_committed_item)
+                                           : absl::nullopt,
+      /*opener=*/absl::nullopt,
+      /*bookmark_id=*/absl::nullopt,
+      /*context_annotations=*/std::move(context_annotations));
 }
 
 void HistoryTabHelper::SetDelayHistoryServiceNotification(
@@ -130,8 +218,8 @@ void HistoryTabHelper::DidFinishNavigation(
   // desktop, but prevents dumping huge view-source urls into the history
   // database. Keep it NDEBUG only because view-source:// URLs are enabled
   // on NDEBUG builds only.
-  const GURL& url = last_committed_item->GetURL();
 #ifndef NDEBUG
+  const GURL& url = last_committed_item->GetURL();
   if (url.SchemeIs(url::kDataScheme)) {
     return;
   }
@@ -139,46 +227,8 @@ void HistoryTabHelper::DidFinishNavigation(
 
   num_title_changes_ = 0;
 
-  history::RedirectList redirects;
-  const GURL& original_url = last_committed_item->GetOriginalRequestURL();
-  const GURL& referrer_url = last_committed_item->GetReferrer().url;
-  if (original_url != url) {
-    // Simulate a valid redirect chain in case of URLs that have been modified
-    // by CRWWebController -finishHistoryNavigationFromEntry:.
-    if (transition & ui::PAGE_TRANSITION_CLIENT_REDIRECT ||
-        url.EqualsIgnoringRef(original_url)) {
-      redirects.push_back(referrer_url);
-    }
-    // TODO(crbug.com/703872): the redirect chain is not constructed the same
-    // way as desktop so this part needs to be revised.
-    redirects.push_back(original_url);
-    redirects.push_back(url);
-  }
-
-  // Navigations originating from New Tab Page or Reading List should not
-  // contribute to Most Visited.
-  const bool content_suggestions_navigation =
-      referrer_url == ntp_snippets::GetContentSuggestionsReferrerURL() &&
-      ui::PageTransitionCoreTypeIs(transition,
-                                   ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-  const bool consider_for_ntp_most_visited =
-      !content_suggestions_navigation &&
-      referrer_url != kReadingListReferrerURL;
-
-  // Hide navigations that result in an error in order to prevent the omnibox
-  // from suggesting URLs that have never been navigated to successfully.
-  // (If a navigation to the URL succeeds at some point, the URL will be
-  // unhidden and thus eligible to be suggested by the omnibox.)
-  const bool hidden =
-      (navigation_context->GetResponseHeaders() &&
-       navigation_context->GetResponseHeaders()->response_code() >= 400);
-  history::HistoryAddPageArgs add_page_args(
-      url, last_committed_item->GetTimestamp(), this,
-      last_committed_item->GetUniqueID(), referrer_url, redirects, transition,
-      hidden, history::SOURCE_BROWSED,
-      /*did_replace_entry=*/false, consider_for_ntp_most_visited,
-      navigation_context->IsSameDocument() ? GetPageTitle(*last_committed_item)
-                                           : absl::nullopt);
+  history::HistoryAddPageArgs add_page_args =
+      CreateHistoryAddPageArgs(last_committed_item, navigation_context);
 
   if (delay_notification_) {
     recorded_navigations_.push_back(std::move(add_page_args));

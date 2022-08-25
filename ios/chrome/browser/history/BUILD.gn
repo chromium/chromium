@@ -58,6 +58,8 @@ source_set("tab_helper") {
     "//components/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/complex_tasks",
+    "//ios/chrome/browser/sessions",
     "//ios/web",
     "//ui/base",
     "//url",
