@@ -45,6 +45,7 @@
 #include "content/public/common/content_paths.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_mock_cert_verifier.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/signed_exchange_browser_test_helper.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -2226,3 +2227,69 @@ IN_PROC_BROWSER_TEST_P(
       DigitalAssetLinkCrossValidator::kEventHistogramName,
       DigitalAssetLinkCrossValidator::Event::kLookalikeManifestFailed, 1);
 }
+
+class LookalikeUrlNavigationThrottlePrerenderBrowserTest
+    : public LookalikeUrlNavigationThrottleBrowserTest {
+ public:
+  LookalikeUrlNavigationThrottlePrerenderBrowserTest() = default;
+  ~LookalikeUrlNavigationThrottlePrerenderBrowserTest() override = default;
+
+  // |prerender_helper_| has a ScopedFeatureList so we needed to delay its
+  // creation until now because the base class also uses ScopedFeatureList and
+  // initialization order matters.
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    LookalikeUrlNavigationThrottleBrowserTest::SetUpCommandLine(command_line);
+    prerender_helper_ = std::make_unique<content::test::PrerenderTestHelper>(
+        base::BindRepeating(
+            &LookalikeUrlNavigationThrottlePrerenderBrowserTest::web_contents,
+            base::Unretained(this)));
+  }
+
+  void SetUpOnMainThread() override {
+    prerender_helper_->SetUp(embedded_test_server());
+    LookalikeUrlNavigationThrottleBrowserTest::SetUpOnMainThread();
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ protected:
+  std::unique_ptr<content::test::PrerenderTestHelper> prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottlePrerenderBrowserTest,
+                       ShowInterstitialAfterActivation) {
+  // TODO(crbug.com/1176054): Cross-origin prerender isn't yet supported, so we
+  // trigger prerendering a page that needs to show an interstitial like this.
+  // Once cross-origin prerender is supported, this should be updated to more
+  // realistic use-case. i.e. navigate to an primary page with a normal URL and
+  // prerender/activate with a lookalike URL.
+  const GURL kNavigateUrl = GetURL("googlé.com");
+  LoadAndCheckInterstitialAt(browser(), kNavigateUrl);
+  SendInterstitialCommandSync(browser(),
+                              SecurityInterstitialCommand::CMD_PROCEED);
+  ReputationService::Get(browser()->profile())
+      ->ResetWarningDismissedETLDPlusOnesForTesting();
+
+  // Start a prerender.
+  const GURL kPrerenderUrl =
+      embedded_test_server()->GetURL("googlé.com", "/title1.html?prerender");
+  content::test::PrerenderHostObserver host_observer(*web_contents(),
+                                                     kPrerenderUrl);
+  prerender_helper_->AddPrerenderAsync(kPrerenderUrl);
+
+  // Wait until the prerender destroyed.
+  host_observer.WaitForDestroyed();
+  EXPECT_EQ(nullptr, GetCurrentInterstitial(web_contents()));
+
+  // Activate the prerendered page.
+  prerender_helper_->NavigatePrimaryPage(kPrerenderUrl);
+  EXPECT_EQ(LookalikeUrlBlockingPage::kTypeForTesting,
+            GetInterstitialType(web_contents()));
+  EXPECT_FALSE(IsUrlShowing(browser()));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         LookalikeUrlNavigationThrottlePrerenderBrowserTest,
+                         testing::Bool() /* digital_asset_links_enabled */);

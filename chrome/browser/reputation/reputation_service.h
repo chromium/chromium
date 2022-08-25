@@ -96,6 +96,10 @@ class ReputationService : public KeyedService {
                                       size_t num_new_keywords);
   void ResetSensitiveKeywordsForTesting();
 
+  // Reset set of eTLD+1s to forget the user action that ignores warning. Only
+  // for testing.
+  void ResetWarningDismissedETLDPlusOnesForTesting();
+
  private:
   // Callback once we have up-to-date |engaged_sites|. Performs checks on the
   // navigated |url|. |has_delayed_warning| is true if the relevant WebContents

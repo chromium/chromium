@@ -100,9 +100,10 @@ class LookalikeUrlNavigationThrottle : public content::NavigationThrottle {
                                        LookalikeUrlMatchType match_type,
                                        bool triggered_by_initial_url);
 
-  // Checks digital asset links of |lookalike_domain| and |safe_domain| and
-  // shows a full page interstitial if either manifest validation fails.
-  ThrottleCheckResult CheckManifestsAndMaybeShowInterstitial(
+  // Checks if a full page intersitial can be shown. This function checks if
+  // manifest validation fails for digital asset links of |lookalike_domain|,
+  // |safe_domain| or if the navigation isn't in prerendering navigation.
+  ThrottleCheckResult CheckAndMaybeShowInterstitial(
       const GURL& safe_domain,
       const GURL& lookalike_domain,
       ukm::SourceId source_id,

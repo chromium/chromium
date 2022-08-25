@@ -114,10 +114,7 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::WillProcessResponse() {
   content::NavigationHandle* handle = navigation_handle();
 
   // Ignore errors and same document navigations.
-  // TODO(crbug.com/1199724): The throttle would have to cancel the prerender
-  // if we should show an interstitial after activation.
-  if (handle->GetNetErrorCode() != net::OK || !handle->IsInMainFrame() ||
-      handle->IsSameDocument()) {
+  if (handle->GetNetErrorCode() != net::OK || handle->IsSameDocument()) {
     return content::NavigationThrottle::PROCEED;
   }
 
@@ -233,12 +230,16 @@ LookalikeUrlNavigationThrottle::MaybeCreateNavigationThrottle(
 }
 
 ThrottleCheckResult
-LookalikeUrlNavigationThrottle::CheckManifestsAndMaybeShowInterstitial(
+LookalikeUrlNavigationThrottle::CheckAndMaybeShowInterstitial(
     const GURL& safe_domain,
     const GURL& lookalike_domain,
     ukm::SourceId source_id,
     LookalikeUrlMatchType match_type,
     bool triggered_by_initial_url) {
+  // Cancel the prerender to show an interstitial after activation.
+  if (navigation_handle()->IsInPrerenderedMainFrame())
+    return content::NavigationThrottle::CANCEL;
+
   RecordUMAFromMatchType(match_type);
 
   // Punycode interstitial doesn't have a target site, so safe_domain isn't
@@ -400,15 +401,15 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::PerformChecks(
 
   if (first_is_lookalike &&
       ShouldBlockLookalikeUrlNavigation(first_match_type)) {
-    return CheckManifestsAndMaybeShowInterstitial(
-        first_suggested_url, first_url, source_id, first_match_type,
-        first_is_lookalike);
+    return CheckAndMaybeShowInterstitial(first_suggested_url, first_url,
+                                         source_id, first_match_type,
+                                         first_is_lookalike);
   }
 
   if (last_is_lookalike && ShouldBlockLookalikeUrlNavigation(last_match_type)) {
-    return CheckManifestsAndMaybeShowInterstitial(last_suggested_url, last_url,
-                                                  source_id, last_match_type,
-                                                  first_is_lookalike);
+    return CheckAndMaybeShowInterstitial(last_suggested_url, last_url,
+                                         source_id, last_match_type,
+                                         first_is_lookalike);
   }
 
   LookalikeUrlMatchType match_type =

@@ -160,6 +160,10 @@ void ReputationService::ResetSensitiveKeywordsForTesting() {
   num_sensitive_keywords_ = top500_domains::kNumTopKeywords;
 }
 
+void ReputationService::ResetWarningDismissedETLDPlusOnesForTesting() {
+  warning_dismissed_etld1s_.clear();
+}
+
 void ReputationService::GetReputationStatusWithEngagedSites(
     const GURL& url,
     bool has_delayed_warning,
