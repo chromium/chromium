@@ -99,7 +99,7 @@ def SmokeTestGenerator(benchmark_class, num_pages=1, story_tag_filter=None):
 
 
 # The list of benchmark modules to be excluded from our smoke tests.
-_BLACK_LIST_TEST_MODULES = {
+_BLOCK_LIST_TEST_MODULES = {
     octane,  # Often fails & take long time to timeout on cq bot.
     rasterize_and_record_micro,  # Always fails on cq bot.
     speedometer,  # Takes 101 seconds.
@@ -110,7 +110,7 @@ _BLACK_LIST_TEST_MODULES = {
 }
 
 # The list of benchmark names to be excluded from our smoke tests.
-_BLACK_LIST_TEST_NAMES = [
+_BLOCK_LIST_TEST_NAMES = [
     'memory.long_running_idle_gmail_background_tbmv2',
     'tab_switching.typical_25',
     'tracing.tracing_with_background_memory_infra',  # crbug.com/1301865
@@ -147,9 +147,9 @@ def load_tests(loader, standard_tests, pattern):
       benchmarks_dir, top_level_dir, benchmark_module.Benchmark,
       index_by_class_name=False).values()
   for benchmark in all_benchmarks:
-    if sys.modules[benchmark.__module__] in _BLACK_LIST_TEST_MODULES:
+    if sys.modules[benchmark.__module__] in _BLOCK_LIST_TEST_MODULES:
       continue
-    if benchmark.Name() in _BLACK_LIST_TEST_NAMES:
+    if benchmark.Name() in _BLOCK_LIST_TEST_NAMES:
       continue
 
     # tab_switching needs more than one page to test correctly.
