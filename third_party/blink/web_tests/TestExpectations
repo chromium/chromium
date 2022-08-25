@@ -1623,7 +1623,6 @@ crbug.com/1347984 fragmentation/table-row-dimensions.html [ Failure ]
 crbug.com/660611 fast/multicol/flexbox/doubly-nested-with-zero-width-flexbox-and-forced-break-crash.html [ Skip ]
 
 ### Tests failing with LayoutNGFrameSet enabled:
-crbug.com/1346221 external/wpt/css/css-flexbox/frameset-crash.html [ Crash Failure ]
 crbug.com/1346221 external/wpt/css/css-overflow/overflow-no-frameset-propagation.html [ Failure ]
 crbug.com/1346221 printing/frameset.html [ Failure ]
 

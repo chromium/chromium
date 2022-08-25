@@ -75,7 +75,19 @@ const NGLayoutResult* NGFrameSetLayoutAlgorithm::Layout() {
 
 MinMaxSizesResult NGFrameSetLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput&) {
-  return MinMaxSizesResult(MinMaxSizes(), false);
+  MinMaxSizes sizes;
+  const auto& space = ConstraintSpace();
+  // This function needs to return a value which is >= border+padding in order
+  // to pass a DCHECK in NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems()
+  // though <frameset> ignores border and padding.
+  //
+  // We can't use BorderPadding() here because NGFragmentGeometry for <frameset>
+  // doesn't provide it.
+  //
+  // Test: external/wpt/css/css-flexbox/frameset-crash.html
+  sizes += (ComputeBorders(space, Node()) + ComputePadding(space, Style()))
+               .InlineSum();
+  return MinMaxSizesResult(sizes, false);
 }
 
 // https://html.spec.whatwg.org/C/#convert-a-list-of-dimensions-to-a-list-of-pixel-values
