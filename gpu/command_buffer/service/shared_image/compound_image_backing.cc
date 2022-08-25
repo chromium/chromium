@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/trace_event/memory_allocator_dump_guid.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_format_utils.h"
@@ -48,6 +49,15 @@ bool IsValidSharedMemoryBufferFormat(const gfx::Size& size,
   }
 
   return true;
+}
+
+// Unique GUIDs for child backings.
+base::trace_event::MemoryAllocatorDumpGuid GetSubBackingGUIDForTracing(
+    const Mailbox& mailbox,
+    int backing_index) {
+  return base::trace_event::MemoryAllocatorDumpGuid(
+      base::StringPrintf("gpu-shared-image/%s/sub-backing/%d",
+                         mailbox.ToDebugString().c_str(), backing_index));
 }
 
 }  // namespace
@@ -306,17 +316,19 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::CreateSharedMemory(
   }
 
   auto shm_backing = std::make_unique<SharedMemoryImageBacking>(
-      gpu::Mailbox(), format, size, color_space, surface_origin, alpha_type,
+      mailbox, format, size, color_space, surface_origin, alpha_type,
       SHARED_IMAGE_USAGE_CPU_WRITE, std::move(shm_wrapper));
+  shm_backing->SetNotReferencedCounted();
 
   auto gpu_backing = gpu_backing_factory->CreateSharedImage(
-      gpu::Mailbox(), format, surface_handle, size, color_space, surface_origin,
+      mailbox, format, surface_handle, size, color_space, surface_origin,
       alpha_type, usage | SHARED_IMAGE_USAGE_CPU_UPLOAD,
       /*is_thread_safe=*/false);
   if (!gpu_backing) {
     DLOG(ERROR) << "Failed to create GPU backing";
     return nullptr;
   }
+  gpu_backing->SetNotReferencedCounted();
 
   return std::make_unique<CompoundImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
@@ -469,11 +481,42 @@ CompoundImageBacking::ProduceOverlay(SharedImageManager* manager,
 
 void CompoundImageBacking::OnMemoryDump(
     const std::string& dump_name,
-    base::trace_event::MemoryAllocatorDump* dump,
+    base::trace_event::MemoryAllocatorDumpGuid client_guid,
     base::trace_event::ProcessMemoryDump* pmd,
     uint64_t client_tracing_id) {
-  shm_backing_.get()->OnMemoryDump(dump_name, dump, pmd, client_tracing_id);
-  gpu_backing_->OnMemoryDump(dump_name, dump, pmd, client_tracing_id);
+  // Create dump but don't add scalar size. The size will be inferred from the
+  // sizes of the sub-backings.
+  base::trace_event::MemoryAllocatorDump* dump =
+      pmd->CreateAllocatorDump(dump_name);
+
+  dump->AddString("type", "", GetName());
+  dump->AddString("dimensions", "", size().ToString());
+  dump->AddString("format", "", viz::ResourceFormatToString(format()));
+  dump->AddString("usage", "", CreateLabelForSharedImageUsage(usage()));
+
+  // Add ownership edge to `client_guid` which expresses shared ownership with
+  // the client process for the top level dump.
+  pmd->CreateSharedGlobalAllocatorDump(client_guid);
+  pmd->AddOwnershipEdge(dump->guid(), client_guid, kNonOwningEdgeImportance);
+
+  // Add dumps nested under `dump_name` for child backings owned by compound
+  // image. These get different shared GUIDs to add ownership edges with GPU
+  // texture or shared memory.
+  auto shm_client_guid = GetSubBackingGUIDForTracing(mailbox(), 1);
+  std::string shm_dump_name =
+      base::StringPrintf("%s/shared_memory", dump_name.c_str());
+  shm_backing_->OnMemoryDump(shm_dump_name, shm_client_guid, pmd,
+                             client_tracing_id);
+
+  auto gpu_client_guid = GetSubBackingGUIDForTracing(mailbox(), 2);
+  std::string gpu_dump_name = base::StringPrintf("%s/gpu", dump_name.c_str());
+  gpu_backing_->OnMemoryDump(gpu_dump_name, gpu_client_guid, pmd,
+                             client_tracing_id);
+}
+
+size_t CompoundImageBacking::EstimatedSizeForMemTracking() const {
+  return shm_backing_->EstimatedSizeForMemTracking() +
+         gpu_backing_->EstimatedSizeForMemTracking();
 }
 
 }  // namespace gpu

@@ -37,9 +37,10 @@ class RawDrawImageBacking : public ClearTrackingSharedImageBacking {
   bool ProduceLegacyMailbox(MailboxManager* mailbox_manager) override;
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
   void OnMemoryDump(const std::string& dump_name,
-                    base::trace_event::MemoryAllocatorDump* dump,
+                    base::trace_event::MemoryAllocatorDumpGuid client_guid,
                     base::trace_event::ProcessMemoryDump* pmd,
                     uint64_t client_tracing_id) override;
+  size_t EstimatedSizeForMemTracking() const override;
 
  protected:
   std::unique_ptr<RasterImageRepresentation> ProduceRaster(

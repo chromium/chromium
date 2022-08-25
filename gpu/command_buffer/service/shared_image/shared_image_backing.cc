@@ -5,8 +5,11 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 
 #include "base/notreached.h"
+#include "base/trace_event/process_memory_dump.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_format_utils.h"
+#include "gpu/command_buffer/common/shared_image_trace_utils.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
@@ -105,10 +108,24 @@ bool SharedImageBacking::PresentSwapChain() {
 
 void SharedImageBacking::OnMemoryDump(
     const std::string& dump_name,
-    base::trace_event::MemoryAllocatorDump* dump,
+    base::trace_event::MemoryAllocatorDumpGuid client_guid,
     base::trace_event::ProcessMemoryDump* pmd,
     uint64_t client_tracing_id) {
-  NOTIMPLEMENTED();
+  base::trace_event::MemoryAllocatorDump* dump =
+      pmd->CreateAllocatorDump(dump_name);
+  dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
+                  base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                  EstimatedSizeForMemTracking());
+
+  dump->AddString("type", "", GetName());
+  dump->AddString("dimensions", "", size().ToString());
+  dump->AddString("format", "", viz::ResourceFormatToString(format()));
+  dump->AddString("usage", "", CreateLabelForSharedImageUsage(usage()));
+
+  // Add ownership edge to `client_guid` which expresses shared ownership with
+  // the client process.
+  pmd->CreateSharedGlobalAllocatorDump(client_guid);
+  pmd->AddOwnershipEdge(dump->guid(), client_guid, kNonOwningEdgeImportance);
 }
 
 std::unique_ptr<GLTextureImageRepresentation>
@@ -177,8 +194,14 @@ SharedImageBacking::ProduceLegacyOverlay(SharedImageManager* manager,
 }
 #endif
 
+void SharedImageBacking::SetNotReferencedCounted() {
+  DCHECK(!HasAnyRefs());
+  is_ref_counted_ = false;
+}
+
 void SharedImageBacking::AddRef(SharedImageRepresentation* representation) {
   AutoLock auto_lock(this);
+  DCHECK(is_ref_counted_);
 
   bool first_ref = refs_.empty();
   refs_.push_back(representation);
@@ -190,6 +213,7 @@ void SharedImageBacking::AddRef(SharedImageRepresentation* representation) {
 
 void SharedImageBacking::ReleaseRef(SharedImageRepresentation* representation) {
   AutoLock auto_lock(this);
+  DCHECK(is_ref_counted_);
 
   auto found = std::find(refs_.begin(), refs_.end(), representation);
   DCHECK(found != refs_.end());

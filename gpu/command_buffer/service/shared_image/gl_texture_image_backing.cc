@@ -122,15 +122,17 @@ GLuint GLTextureImageBacking::GetGLServiceId() const {
 
 void GLTextureImageBacking::OnMemoryDump(
     const std::string& dump_name,
-    base::trace_event::MemoryAllocatorDump* dump,
+    base::trace_event::MemoryAllocatorDumpGuid client_guid,
     base::trace_event::ProcessMemoryDump* pmd,
     uint64_t client_tracing_id) {
-  const auto client_guid = GetSharedImageGUIDForTracing(mailbox());
+  SharedImageBacking::OnMemoryDump(dump_name, client_guid, pmd,
+                                   client_tracing_id);
+
   if (!IsPassthrough()) {
     const auto service_guid =
         gl::GetGLTextureServiceGUIDForTracing(texture_->service_id());
     pmd->CreateSharedGlobalAllocatorDump(service_guid);
-    pmd->AddOwnershipEdge(client_guid, service_guid, /* importance */ 2);
+    pmd->AddOwnershipEdge(client_guid, service_guid, kOwningEdgeImportance);
     texture_->DumpLevelMemory(pmd, client_tracing_id, dump_name);
   }
 }

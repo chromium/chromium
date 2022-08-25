@@ -164,27 +164,17 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
   }
 
   void OnMemoryDump(const std::string& dump_name,
-                    base::trace_event::MemoryAllocatorDump* dump,
+                    base::trace_event::MemoryAllocatorDumpGuid client_guid,
                     base::trace_event::ProcessMemoryDump* pmd,
                     uint64_t client_tracing_id) override {
+    SharedImageBacking::OnMemoryDump(dump_name, client_guid, pmd,
+                                     client_tracing_id);
+
     // Add a |service_guid| which expresses shared ownership between the
     // various GPU dumps.
-    auto client_guid = GetSharedImageGUIDForTracing(mailbox());
     auto service_guid = gl::GetGLTextureServiceGUIDForTracing(tracing_id_);
     pmd->CreateSharedGlobalAllocatorDump(service_guid);
-
-    std::string format_dump_name =
-        base::StringPrintf("%s/format=%d", dump_name.c_str(), format());
-    base::trace_event::MemoryAllocatorDump* format_dump =
-        pmd->CreateAllocatorDump(format_dump_name);
-    format_dump->AddScalar(
-        base::trace_event::MemoryAllocatorDump::kNameSize,
-        base::trace_event::MemoryAllocatorDump::kUnitsBytes,
-        static_cast<uint64_t>(EstimatedSizeForMemTracking()));
-
-    // TODO(piman): coalesce constant with TextureManager::DumpTextureRef.
-    int importance = 2;  // This client always owns the ref.
-    pmd->AddOwnershipEdge(client_guid, service_guid, importance);
+    pmd->AddOwnershipEdge(client_guid, service_guid, kOwningEdgeImportance);
   }
 
   SkColorType GetSkColorType() {

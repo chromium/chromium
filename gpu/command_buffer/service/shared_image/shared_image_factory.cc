@@ -674,11 +674,11 @@ bool SharedImageFactory::ReleaseSysmemBufferCollection(
 bool SharedImageFactory::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd,
-    int client_id,
+    const std::string& dump_base_name,
     uint64_t client_tracing_id) {
   for (const auto& shared_image : shared_images_) {
-    shared_image_manager_->OnMemoryDump(shared_image->mailbox(), pmd, client_id,
-                                        client_tracing_id);
+    shared_image_manager_->OnMemoryDump(shared_image->mailbox(), pmd,
+                                        dump_base_name, client_tracing_id);
   }
 
   return true;

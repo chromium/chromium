@@ -45,7 +45,7 @@ class TestImageBacking : public SharedImageBacking {
   bool UploadFromMemory(const SkPixmap& pixmap) override;
   bool ProduceLegacyMailbox(MailboxManager* mailbox_manager) override;
   void OnMemoryDump(const std::string& dump_name,
-                    base::trace_event::MemoryAllocatorDump* dump,
+                    base::trace_event::MemoryAllocatorDumpGuid client_guid,
                     base::trace_event::ProcessMemoryDump* pmd,
                     uint64_t client_tracing_id) override {}
 

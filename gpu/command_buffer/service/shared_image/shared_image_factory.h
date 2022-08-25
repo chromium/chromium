@@ -116,7 +116,7 @@ class GPU_GLES2_EXPORT SharedImageFactory {
 
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd,
-                    int client_id,
+                    const std::string& dump_base_name,
                     uint64_t client_tracing_id);
   bool RegisterBacking(std::unique_ptr<SharedImageBacking> backing,
                        bool allow_legacy_mailbox);

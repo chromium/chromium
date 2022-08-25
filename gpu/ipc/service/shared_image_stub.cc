@@ -549,10 +549,11 @@ bool SharedImageStub::OnMemoryDump(
   if (!factory_)
     return true;
 
+  std::string dump_name =
+      base::StringPrintf("gpu/shared_images/client_0x%" PRIX32, ClientId());
+
   if (args.level_of_detail ==
       base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND) {
-    std::string dump_name =
-        base::StringPrintf("gpu/shared_images/client_0x%" PRIX32, ClientId());
     base::trace_event::MemoryAllocatorDump* dump =
         pmd->CreateAllocatorDump(dump_name);
     dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
@@ -562,7 +563,7 @@ bool SharedImageStub::OnMemoryDump(
     return true;
   }
 
-  return factory_->OnMemoryDump(args, pmd, ClientId(), ClientTracingId());
+  return factory_->OnMemoryDump(args, pmd, dump_name, ClientTracingId());
 }
 
 SharedImageStub::SharedImageDestructionCallback

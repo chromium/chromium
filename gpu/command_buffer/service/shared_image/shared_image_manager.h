@@ -101,7 +101,7 @@ class GPU_GLES2_EXPORT SharedImageManager {
   // Dump memory for the given mailbox.
   void OnMemoryDump(const Mailbox& mailbox,
                     base::trace_event::ProcessMemoryDump* pmd,
-                    int client_id,
+                    const std::string& dump_base_name,
                     uint64_t client_tracing_id);
 
   bool is_thread_safe() const { return !!lock_; }

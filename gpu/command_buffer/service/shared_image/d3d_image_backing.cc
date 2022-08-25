@@ -682,19 +682,20 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
 #endif  // BUILDFLAG(USE_DAWN)
 }
 
-void D3DImageBacking::OnMemoryDump(const std::string& dump_name,
-                                   base::trace_event::MemoryAllocatorDump* dump,
-                                   base::trace_event::ProcessMemoryDump* pmd,
-                                   uint64_t client_tracing_id) {
+void D3DImageBacking::OnMemoryDump(
+    const std::string& dump_name,
+    base::trace_event::MemoryAllocatorDumpGuid client_guid,
+    base::trace_event::ProcessMemoryDump* pmd,
+    uint64_t client_tracing_id) {
+  SharedImageBacking::OnMemoryDump(dump_name, client_guid, pmd,
+                                   client_tracing_id);
+
   // Add a |service_guid| which expresses shared ownership between the
   // various GPU dumps.
-  auto client_guid = GetSharedImageGUIDForTracing(mailbox());
   base::trace_event::MemoryAllocatorDumpGuid service_guid =
       gl::GetGLTextureServiceGUIDForTracing(gl_texture_->service_id());
   pmd->CreateSharedGlobalAllocatorDump(service_guid);
-
-  int importance = 2;  // This client always owns the ref.
-  pmd->AddOwnershipEdge(client_guid, service_guid, importance);
+  pmd->AddOwnershipEdge(client_guid, service_guid, kOwningEdgeImportance);
 
   // Swap chain textures only have one level backed by an image.
   GetGLImage()->OnMemoryDump(pmd, client_tracing_id, dump_name);
