@@ -450,9 +450,16 @@ VizProcessTransportFactory::TryCreateContextsForGpuCompositing(
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host) {
   DCHECK(!is_gpu_compositing_disabled_);
 
-  // Fallback to software compositing if there is no IPC channel.
-  if (!gpu_channel_host)
+  if (!gpu_channel_host) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Chrome OS can't fallback to software compositing so treat this as a
+    // transient failure and retry initializing GPU channel.
+    return gpu::ContextResult::kTransientFailure;
+#else
+    // Fallback to software compositing if there is no IPC channel.
     return gpu::ContextResult::kFatalFailure;
+#endif
+  }
 
   const auto& gpu_feature_info = gpu_channel_host->gpu_feature_info();
   // Fallback to software compositing if GPU compositing is blacklisted.
