@@ -45,8 +45,6 @@ class SurfaceObserver {
   // Starts or ends throttling.
   virtual void ThrottleFrameRate(bool on) {}
 
-  virtual void OnFullscreenStateChanged(bool fullscreen) {}
-
  protected:
   virtual ~SurfaceObserver() {}
 };
