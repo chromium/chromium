@@ -51,7 +51,7 @@ class AtkUtilAuraLinuxTest : public AXPlatformNodeTest {
   }
 
  private:
-  ScopedAXModeSetter ax_mode_setter_;
+  ui::testing::ScopedAxModeSetter ax_mode_setter_;
 };
 
 TEST_F(AtkUtilAuraLinuxTest, KeySnooping) {

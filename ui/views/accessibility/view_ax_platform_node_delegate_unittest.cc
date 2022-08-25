@@ -204,7 +204,7 @@ class ViewAXPlatformNodeDelegateTest : public ViewsTestBase {
   raw_ptr<Widget> widget_ = nullptr;
   raw_ptr<Button> button_ = nullptr;
   raw_ptr<Label> label_ = nullptr;
-  ScopedAXModeSetter ax_mode_setter_;
+  ui::testing::ScopedAxModeSetter ax_mode_setter_;
 };
 
 class ViewAXPlatformNodeDelegateTableTest

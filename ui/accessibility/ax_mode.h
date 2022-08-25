@@ -16,9 +16,6 @@ namespace ui {
 
 class AX_BASE_EXPORT AXMode {
  public:
-  // No modes set (default).
-  static constexpr uint32_t kNone = 0;
-
   static constexpr uint32_t kFirstModeFlag = 1 << 0;
 
   // Native accessibility APIs, specific to each platform, are enabled.
@@ -78,7 +75,7 @@ class AX_BASE_EXPORT AXMode {
   // related metrics callsites, see: |ModeFlagHistogramValue|).
   static constexpr uint32_t kLastModeFlag = 1 << 7;
 
-  constexpr AXMode() : flags_(kNone) {}
+  constexpr AXMode() : flags_(0) {}
   constexpr AXMode(uint32_t flags) : flags_(flags) {}
 
   bool has_mode(uint32_t flag) const { return (flags_ & flag) == flag; }

@@ -119,7 +119,7 @@ class AXVirtualViewTest : public ViewsTestBase {
   std::vector<
       std::pair<const ui::AXPlatformNodeDelegate*, const ax::mojom::Event>>
       accessibility_events_;
-  ScopedAXModeSetter ax_mode_setter_;
+  ui::testing::ScopedAxModeSetter ax_mode_setter_;
 };
 
 TEST_F(AXVirtualViewTest, AccessibilityRoleAndName) {

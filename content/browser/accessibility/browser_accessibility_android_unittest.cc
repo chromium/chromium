@@ -10,7 +10,6 @@
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
 #include "content/browser/accessibility/test_browser_accessibility_delegate.h"
-#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/test/test_content_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,7 +43,7 @@ class MockContentClient : public TestContentClient {
   }
 };
 
-class BrowserAccessibilityAndroidTest : public ::testing::Test {
+class BrowserAccessibilityAndroidTest : public testing::Test {
  public:
   BrowserAccessibilityAndroidTest();
 
@@ -62,14 +61,15 @@ class BrowserAccessibilityAndroidTest : public ::testing::Test {
  private:
   void SetUp() override;
   MockContentClient client_;
-  std::unique_ptr<content::testing::ScopedContentAXModeSetter> ax_mode_setter_;
+  ui::testing::ScopedAxModeSetter ax_mode_setter_;
 
   // This is needed to prevent a DCHECK failure when OnAccessibilityApiUsage
   // is called in BrowserAccessibility::GetRole.
   content::BrowserTaskEnvironment task_environment_;
 };
 
-BrowserAccessibilityAndroidTest::BrowserAccessibilityAndroidTest() = default;
+BrowserAccessibilityAndroidTest::BrowserAccessibilityAndroidTest()
+    : ax_mode_setter_(ui::kAXModeComplete) {}
 
 BrowserAccessibilityAndroidTest::~BrowserAccessibilityAndroidTest() = default;
 
@@ -77,9 +77,6 @@ void BrowserAccessibilityAndroidTest::SetUp() {
   test_browser_accessibility_delegate_ =
       std::make_unique<TestBrowserAccessibilityDelegate>();
   SetContentClient(&client_);
-  ax_mode_setter_ =
-      std::make_unique<content::testing::ScopedContentAXModeSetter>(
-          ui::kAXModeComplete);
 }
 
 TEST_F(BrowserAccessibilityAndroidTest, TestRetargetTextOnly) {
