@@ -3,22 +3,22 @@
 // found in the LICENSE file.
 
 (async function(testRunner) {
-  const {page, dp} = await testRunner.startBlank(
-      `Test that clicking an anchor with an insecure attributionsrc triggers an issue.`);
+  const {dp} = await testRunner.startBlank(
+      'Test that clicking an anchor with an insecure attributionsrc triggers an issue.');
 
   await dp.Audits.enable();
 
-  await page.loadHTML(`
-  <a id="adlink" href="https://a.com"
-  attributionsrc="http://insecure.com"
-  target="_blank">Impression</a>`);
+  await dp.Runtime.evaluate({expression: `
+    document.body.innerHTML = '<a id="adlink" href="https://a.com" attributionsrc="http://insecure.com" target="_blank">Link</a>';
+  `});
 
-  const issuePromise = dp.Audits.onceIssueAdded();
+  const issue = dp.Audits.onceIssueAdded();
+
   await dp.Runtime.evaluate({
     expression: `document.getElementById('adlink').click()`,
-    userGesture: true
+    userGesture: true,
   });
-  const issue = await issuePromise;
-  testRunner.log(issue.params.issue, 'Issue reported: ', ['violatingNodeId']);
+
+  testRunner.log((await issue).params.issue, 'Issue reported: ', ['violatingNodeId']);
   testRunner.completeTest();
 })

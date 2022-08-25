@@ -3,18 +3,17 @@
 // found in the LICENSE file.
 
 (async function(testRunner) {
-  const {page, dp} = await testRunner.startBlank(
-      `Test that an attributionsrc response with an invalid Attribution-Reporting-Register-Source header triggers an issue.`);
+  const {dp} = await testRunner.startBlank(
+      'Test that an attributionsrc response with an invalid Attribution-Reporting-Register-Source header triggers an issue.');
 
   await dp.Audits.enable();
-  await page.navigate(
-      'https://devtools.test:8443/inspector-protocol/attribution-reporting/resources/impression.html');
 
-  await page.loadHTML(
-      `<img attributionsrc="https://devtools.test:8443/inspector-protocol/attribution-reporting/resources/register-invalid-source.php">`);
+  const issue = dp.Audits.onceIssueAdded();
 
-  const issuePromise = dp.Audits.onceIssueAdded();
-  const issue = await issuePromise;
-  testRunner.log(issue.params.issue, 'Issue reported: ', ['request']);
+  await dp.Runtime.evaluate({expression: `
+    document.body.innerHTML = '<img attributionsrc="https://devtools.test:8443/inspector-protocol/attribution-reporting/resources/register-invalid-source.php">';
+  `});
+
+  testRunner.log((await issue).params.issue, 'Issue reported: ', ['request']);
   testRunner.completeTest();
 })

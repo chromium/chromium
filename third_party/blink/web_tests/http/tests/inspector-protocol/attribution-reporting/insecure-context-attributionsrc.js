@@ -3,24 +3,23 @@
 // found in the LICENSE file.
 
 (async function(testRunner) {
-  const {page, dp} = await testRunner.startBlank(
-      `Test that clicking an anchor with attributionsrc in an insecure context triggers an issue.`);
+  const {dp} = await testRunner.startURL(
+      'http://devtools.test:8000/inspector-protocol/resources/empty.html',
+      'Test that clicking an anchor with attributionsrc in an insecure context triggers an issue.');
 
   await dp.Audits.enable();
-  await page.navigate(
-      'http://devtools.test:8000/inspector-protocol/attribution-reporting/resources/impression.html');
 
-  await page.loadHTML(`
-  <a id="adlink" href="https://a.com"
-  attributionsrc="https://b.com"
-  target="_blank">Impression</a>`);
+  await dp.Runtime.evaluate({expression: `
+    document.body.innerHTML = '<a id="adlink" href="https://a.com" attributionsrc="https://b.com" target="_blank">Link</a>';
+  `});
 
-  const issuePromise = dp.Audits.onceIssueAdded();
+  const issue = dp.Audits.onceIssueAdded();
+
   await dp.Runtime.evaluate({
     expression: `document.getElementById('adlink').click()`,
-    userGesture: true
+    userGesture: true,
   });
-  const issue = await issuePromise;
-  testRunner.log(issue.params.issue, 'Issue reported: ', ['violatingNodeId']);
+
+  testRunner.log((await issue).params.issue, 'Issue reported: ', ['violatingNodeId']);
   testRunner.completeTest();
 })

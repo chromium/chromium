@@ -3,20 +3,17 @@
 // found in the LICENSE file.
 
 (async function(testRunner) {
-  const {page, dp} = await testRunner.startBlank(
-      `Test that an attributionsrc request whose Attribution-Reporting-Eligible header contains navigation-source triggers an issue.`);
+  const {dp} = await testRunner.startBlank(
+      'Test that an attributionsrc request whose Attribution-Reporting-Eligible header contains navigation-source triggers an issue.');
 
   await dp.Audits.enable();
-  await page.navigate(
-      'https://devtools.test:8443/inspector-protocol/attribution-reporting/resources/impression.html');
-  await page.loadHTML(`<body>`);
 
-  const issuePromise = dp.Audits.onceIssueAdded();
-  await dp.Runtime.evaluate({
-    expression:
-        `fetch('/inspector-protocol/attribution-reporting/resources/register-trigger.php',{headers:{'Attribution-Reporting-Eligible':'navigation-source'}})`,
-  });
-  const issue = await issuePromise;
-  testRunner.log(issue.params.issue, 'Issue reported: ', ['request']);
+  const issue = dp.Audits.onceIssueAdded();
+
+  await dp.Runtime.evaluate({expression: `
+    fetch('/inspector-protocol/attribution-reporting/resources/register-trigger.php',{headers:{'Attribution-Reporting-Eligible':'navigation-source'}});
+  `});
+
+  testRunner.log((await issue).params.issue, 'Issue reported: ', ['request']);
   testRunner.completeTest();
 })

@@ -1,4 +1,4 @@
-Test that registering a trigger using a subbresource request to an insecure reporting origin triggers an issue.
+Test that registering a trigger using a subresource request to an insecure reporting origin triggers an issue.
 Issue reported: {
     code : AttributionReportingIssue
     details : {

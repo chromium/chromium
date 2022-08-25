@@ -3,23 +3,23 @@
 // found in the LICENSE file.
 
 (async function(testRunner) {
-  const {page, dp} = await testRunner.startBlank(
-      `Test that clicking an anchor with valueless attributionsrc triggers an issue when the attribution-reporting Permissions Policy is disabled.`);
+  const {dp} = await testRunner.startURL(
+      'https://devtools.test:8443/inspector-protocol/attribution-reporting/resources/permissions-policy-no-conversion-measurement.php',
+      'Test that clicking an anchor with valueless attributionsrc triggers an issue when the attribution-reporting Permissions Policy is disabled.');
 
   await dp.Audits.enable();
-  await page.navigate(
-      'https://devtools.test:8443/inspector-protocol/attribution-reporting/resources/permissions-policy-no-conversion-measurement.php');
 
-  await page.loadHTML(`
-  <a id="adlink" href="https://a.com"
-  attributionsrc target="_blank">Impression</a>`);
+  await dp.Runtime.evaluate({expression: `
+    document.body.innerHTML = '<a id="adlink" href="https://a.com" attributionsrc target="_blank">Link</a>';
+  `});
 
-  const issuePromise = dp.Audits.onceIssueAdded();
+  const issue = dp.Audits.onceIssueAdded();
+
   await dp.Runtime.evaluate({
     expression: `document.getElementById('adlink').click()`,
-    userGesture: true
+    userGesture: true,
   });
-  const issue = await issuePromise;
-  testRunner.log(issue.params.issue, 'Issue reported: ', ['violatingNodeId']);
+
+  testRunner.log((await issue).params.issue, 'Issue reported: ', ['violatingNodeId']);
   testRunner.completeTest();
 })
