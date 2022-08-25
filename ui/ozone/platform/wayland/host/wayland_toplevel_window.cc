@@ -46,7 +46,8 @@ bool decorations_allowed_for_test_ = true;
 bool ShouldSetBounds(PlatformWindowState state) {
   return state == PlatformWindowState::kNormal ||
          state == PlatformWindowState::kSnappedPrimary ||
-         state == PlatformWindowState::kSnappedSecondary;
+         state == PlatformWindowState::kSnappedSecondary ||
+         state == PlatformWindowState::kFloated;
 }
 }
 
@@ -383,6 +384,8 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(
     state_ = PlatformWindowState::kSnappedPrimary;
   } else if (window_states.is_snapped_secondary) {
     state_ = PlatformWindowState::kSnappedSecondary;
+  } else if (window_states.is_floated) {
+    state_ = PlatformWindowState::kFloated;
   } else {
     state_ = PlatformWindowState::kNormal;
   }

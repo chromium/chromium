@@ -655,14 +655,19 @@ void ShellSurfaceBase::SetRestoreInfoWithWindowIdSource(
 }
 
 void ShellSurfaceBase::SetFloat() {
-  // TODO(crbug.com/1347534): This currently can unset float as well, but its
-  // necessary until configure request is ready otherwise the window will remain
-  // floated forever.
-  chromeos::FloatControllerBase::Get()->ToggleFloat(widget_->GetNativeWindow());
+  aura::Window* window = widget_->GetNativeWindow();
+  if (window->GetProperty(chromeos::kWindowStateTypeKey) !=
+      chromeos::WindowStateType::kFloated) {
+    chromeos::FloatControllerBase::Get()->ToggleFloat(window);
+  }
 }
 
 void ShellSurfaceBase::UnsetFloat() {
-  chromeos::FloatControllerBase::Get()->ToggleFloat(widget_->GetNativeWindow());
+  aura::Window* window = widget_->GetNativeWindow();
+  if (window->GetProperty(chromeos::kWindowStateTypeKey) ==
+      chromeos::WindowStateType::kFloated) {
+    chromeos::FloatControllerBase::Get()->ToggleFloat(window);
+  }
 }
 
 void ShellSurfaceBase::SetDisplay(int64_t display_id) {

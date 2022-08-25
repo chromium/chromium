@@ -790,6 +790,13 @@
           and at the bottom in portrait mode.
         </description>
       </entry>
+      <entry name="floated" value="104" since="38">
+        <description summary="window is floated on top">
+          The window is floated on top of other windows. One floated window is
+          allowed per desk. Floating a window when there is already a floated
+          window on the same desk will unfloat the floated window.
+        </description>
+      </entry>
     </enum>
 
     <event name="origin_change" since="29">

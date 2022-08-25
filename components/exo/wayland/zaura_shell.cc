@@ -794,6 +794,9 @@ void AuraToplevel::OnConfigure(const gfx::Rect& bounds,
   if (state_type == chromeos::WindowStateType::kSecondarySnapped)
     AddState(&states, ZAURA_TOPLEVEL_STATE_SNAPPED_SECONDARY);
 
+  if (state_type == chromeos::WindowStateType::kFloated)
+    AddState(&states, ZAURA_TOPLEVEL_STATE_FLOATED);
+
   if (state_type == chromeos::WindowStateType::kMinimized)
     AddState(&states, ZAURA_TOPLEVEL_STATE_MINIMIZED);
 

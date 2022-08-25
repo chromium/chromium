@@ -286,18 +286,18 @@ void XDGToplevelWrapperImpl::ConfigureAuraTopLevel(
 
   surface->wayland_window_->HandleAuraToplevelConfigure(
       x, y, width, height,
-      {
-          .is_maximized =
-              CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_MAXIMIZED),
-          .is_fullscreen =
-              CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_FULLSCREEN),
-          .is_activated =
-              CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_ACTIVATED),
-          .is_snapped_primary = CheckIfWlArrayHasValue(
-              states, ZAURA_TOPLEVEL_STATE_SNAPPED_PRIMARY),
-          .is_snapped_secondary = CheckIfWlArrayHasValue(
-              states, ZAURA_TOPLEVEL_STATE_SNAPPED_SECONDARY),
-      });
+      {.is_maximized =
+           CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_MAXIMIZED),
+       .is_fullscreen =
+           CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_FULLSCREEN),
+       .is_activated =
+           CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_ACTIVATED),
+       .is_snapped_primary =
+           CheckIfWlArrayHasValue(states, ZAURA_TOPLEVEL_STATE_SNAPPED_PRIMARY),
+       .is_snapped_secondary = CheckIfWlArrayHasValue(
+           states, ZAURA_TOPLEVEL_STATE_SNAPPED_SECONDARY),
+       .is_floated =
+           CheckIfWlArrayHasValue(states, ZAURA_TOPLEVEL_STATE_FLOATED)});
 }
 
 // static

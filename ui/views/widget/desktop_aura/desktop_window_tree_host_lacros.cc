@@ -40,6 +40,8 @@ chromeos::WindowStateType ToChromeosWindowStateType(
       return chromeos::WindowStateType::kPrimarySnapped;
     case ui::PlatformWindowState::kSnappedSecondary:
       return chromeos::WindowStateType::kSecondarySnapped;
+    case ui::PlatformWindowState::kFloated:
+      return chromeos::WindowStateType::kFloated;
   }
 }
 

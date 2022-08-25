@@ -38,6 +38,7 @@ enum class PlatformWindowState {
   // Currently, only used by ChromeOS.
   kSnappedPrimary,
   kSnappedSecondary,
+  kFloated,
 };
 
 enum class PlatformWindowOcclusionState {
