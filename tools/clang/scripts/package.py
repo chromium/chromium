@@ -19,7 +19,7 @@ import sys
 import tarfile
 import time
 
-from update import RELEASE_VERSION, STAMP_FILE
+from update import PACKAGE_VERSION, RELEASE_VERSION, STAMP_FILE
 
 # Path constants.
 THIS_DIR = os.path.dirname(__file__)
@@ -64,12 +64,6 @@ def TeeCmd(cmd, logfile, fail_hard=True):
 def PrintTarProgress(tarinfo):
   print('Adding', tarinfo.name)
   return tarinfo
-
-
-def GetExpectedStamp():
-  rev_cmd = [sys.executable, os.path.join(THIS_DIR, 'update.py'),
-             '--print-revision']
-  return str(subprocess.check_output(rev_cmd).decode()).rstrip()
 
 
 def GetGsutilPath():
@@ -196,7 +190,7 @@ def main():
     print('--build-mac-arm only valid on intel to cross-build arm')
     return 1
 
-  expected_stamp = GetExpectedStamp()
+  expected_stamp = PACKAGE_VERSION
   pdir = 'clang-' + expected_stamp
   print(pdir)
 
