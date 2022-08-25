@@ -743,7 +743,11 @@ class RasterDecoderImpl final : public RasterDecoder,
   }
 
   void SubmitIfNecessary(std::vector<GrBackendSemaphore> signal_semaphores) {
-    if (!signal_semaphores.empty()) {
+    // Note that when DrDc is enabled, we need to call
+    // AddVulkanCleanupTaskForSkiaFlush() on gpu main thread and do skia flush.
+    // This will ensure that vulkan memory allocated on gpu main thread will be
+    // cleaned up.
+    if (!signal_semaphores.empty() || is_drdc_enabled_) {
       GrFlushInfo flush_info = {
           .fNumSemaphores = signal_semaphores.size(),
           .fSignalSemaphores = signal_semaphores.data(),
