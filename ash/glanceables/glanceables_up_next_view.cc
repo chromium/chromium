@@ -8,6 +8,11 @@
 #include <string>
 #include <tuple>
 
+#include "ash/shell.h"
+#include "ash/system/model/system_tray_model.h"
+#include "ash/system/time/calendar_utils.h"
+#include "base/time/time.h"
+#include "google_apis/calendar/calendar_api_response_types.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
@@ -21,7 +26,13 @@
 namespace ash {
 
 // TODO(crbug.com/1353495): file-level todo list:
-// - fetch events for today using the existing calendar api/model;
+// - update existing `CalendarModel` and `CalendarEventFetch` to support 1-day
+//   fetches or consider implementing own simplified model (keep calendar-view
+//   team in the loop);
+// - add "Loading" / "Nothing for today" UI states;
+// - use 12/24hr clock formatter;
+// - refetch events at 00:00 and decide how to pull new events for current day;
+// - correctly display multi-day events (limit to 00:00 and/or 23:59);
 // - limit events list height and switch to `views::ScrollView`;
 // - remove events from the list on their end times;
 // - move fonts/colors/sizes to a config.
@@ -29,25 +40,55 @@ namespace ash {
 GlanceablesUpNextView::GlanceablesUpNextView() {
   SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(15, 0)));
   SetLayoutManager(std::make_unique<views::BoxLayout>());
-  CreateEventsListView();
+  calendar_model_ = Shell::Get()->system_tray_model()->calendar_model();
+  calendar_model_->AddObserver(this);
 }
 
-GlanceablesUpNextView::~GlanceablesUpNextView() = default;
+GlanceablesUpNextView::~GlanceablesUpNextView() {
+  calendar_model_->RemoveObserver(this);
+};
 
-void GlanceablesUpNextView::CreateEventsListItemView() {
+void GlanceablesUpNextView::OnEventsFetched(
+    const CalendarModel::FetchingStatus status,
+    const base::Time start_time,
+    const google_apis::calendar::EventList* fetched_events) {
+  calendar_model_->RemoveObserver(this);
+
+  const base::Time now = base::Time::Now();
+  const base::Time midnight =
+      (now + calendar_utils::GetTimeDifference(now)).UTCMidnight();
+  const SingleDayEventList& all_todays_events =
+      calendar_model_->FindEvents(midnight);
+
+  SingleDayEventList up_next_events;
+  for (const auto& event : all_todays_events) {
+    if (event.start_time().date_time() >= now ||
+        event.end_time().date_time() >= now) {
+      up_next_events.push_back(event);
+    }
+  }
+
+  CreateEventsListView(up_next_events);
+}
+
+void GlanceablesUpNextView::CreateEventsListItemView(
+    const google_apis::calendar::CalendarEvent& event) {
   auto* item = events_list_view_->AddChildView(std::make_unique<views::View>());
   auto* layout = item->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 10));
 
-  auto* event_title_label =
-      item->AddChildView(std::make_unique<views::Label>(u"James / Artsiom"));
+  auto* event_title_label = item->AddChildView(
+      std::make_unique<views::Label>(base::UTF8ToUTF16(event.summary())));
   event_title_label->SetAutoColorReadabilityEnabled(false);
   event_title_label->SetEnabledColor(SK_ColorWHITE);
   event_title_label->SetHorizontalAlignment(
       gfx::HorizontalAlignment::ALIGN_LEFT);
 
-  auto* event_time_label =
-      item->AddChildView(std::make_unique<views::Label>(u"2:00 – 2:30pm"));
+  const std::u16string formatted_time_interval =
+      calendar_utils::FormatTwelveHourClockTimeInterval(
+          event.start_time().date_time(), event.end_time().date_time());
+  auto* event_time_label = item->AddChildView(
+      std::make_unique<views::Label>(formatted_time_interval));
   event_time_label->SetAutoColorReadabilityEnabled(false);
   event_time_label->SetEnabledColor(SK_ColorWHITE);
 
@@ -57,7 +98,8 @@ void GlanceablesUpNextView::CreateEventsListItemView() {
   layout->SetFlexForView(event_time_label, 0, true);
 }
 
-void GlanceablesUpNextView::CreateEventsListView() {
+void GlanceablesUpNextView::CreateEventsListView(
+    const SingleDayEventList& events) {
   events_list_view_ = AddChildView(std::make_unique<views::View>());
   events_list_view_->SetPreferredSize(gfx::Size(300, 150));
   auto* events_list_layout =
@@ -65,8 +107,8 @@ void GlanceablesUpNextView::CreateEventsListView() {
           views::BoxLayout::Orientation::kVertical));
   events_list_layout->set_between_child_spacing(4);
 
-  for (size_t i = 0; i < 5; ++i)
-    CreateEventsListItemView();
+  for (const auto& event : events)
+    CreateEventsListItemView(event);
 }
 
 BEGIN_METADATA(GlanceablesUpNextView, views::View)

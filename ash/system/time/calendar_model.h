@@ -19,7 +19,6 @@
 #include "base/time/time.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "google_apis/common/api_error_codes.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -126,6 +125,7 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   friend class CalendarMonthViewTest;
   friend class CalendarViewTest;
   friend class CalendarViewAnimationTest;
+  friend class GlanceablesTest;
 
   // Checks if the event has allowed statuses and is eligible for insertion.
   bool ShouldInsertEvent(

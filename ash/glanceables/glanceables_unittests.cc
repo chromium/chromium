@@ -5,6 +5,7 @@
 #include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/model/ambient_weather_model.h"
 #include "ash/app_list/test/app_list_test_helper.h"
+#include "ash/components/settings/scoped_timezone_settings.h"
 #include "ash/constants/ash_features.h"
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/glanceables/glanceables_restore_view.h"
@@ -16,13 +17,21 @@
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/pill_button.h"
+#include "ash/system/model/system_tray_model.h"
+#include "ash/system/time/calendar_unittest_utils.h"
+#include "ash/system/time/calendar_utils.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/window_state.h"
+#include "base/check.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
+#include "base/time/time_override.h"
+#include "google_apis/calendar/calendar_api_response_types.h"
+#include "google_apis/common/api_error_codes.h"
 #include "ui/events/test/test_event.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/controls/image_view.h"
@@ -56,6 +65,29 @@ class GlanceablesTest : public AshTestBase {
     ambient_controller->set_backend_controller_for_testing(nullptr);
     ambient_controller->set_backend_controller_for_testing(
         std::make_unique<FakeAmbientBackendControllerImpl>());
+  }
+
+  void SimulateCalendarEventsFetched() {
+    auto fetched_events = std::make_unique<google_apis::calendar::EventList>();
+    fetched_events->set_time_zone("Greenwich Mean Time");
+    fetched_events->InjectItemForTesting(calendar_test_utils::CreateEvent(
+        "id_0", "Past event, the day before", "9 Jan 2022 8:30 GMT",
+        "9 Jan 2022 9:30 GMT"));
+    fetched_events->InjectItemForTesting(calendar_test_utils::CreateEvent(
+        "id_1", "Future event, the day after", "11 Jan 2022 18:00 GMT",
+        "11 Jan 2022 18:45 GMT"));
+    fetched_events->InjectItemForTesting(calendar_test_utils::CreateEvent(
+        "id_2", "Past event, today", "10 Jan 2022 10:00 GMT",
+        "10 Jan 2022 11:00 GMT"));
+    fetched_events->InjectItemForTesting(calendar_test_utils::CreateEvent(
+        "id_3", "Ongoing event, started in the past", "10 Jan 2022 10:00 GMT",
+        "10 Jan 2022 14:00 GMT"));
+    fetched_events->InjectItemForTesting(calendar_test_utils::CreateEvent(
+        "id_4", "Future event, later today", "10 Jan 2022 21:30 GMT",
+        "10 Jan 2022 22:30 GMT"));
+    Shell::Get()->system_tray_model()->calendar_model()->OnEventsFetched(
+        calendar_utils::GetStartOfMonthUTC(base::Time::Now()),
+        google_apis::ApiErrorCode::HTTP_SUCCESS, fetched_events.get());
   }
 
   TestGlanceablesDelegate* GetTestDelegate() {
@@ -145,15 +177,28 @@ TEST_F(GlanceablesTest, WeatherViewShowsWeather) {
 }
 
 TEST_F(GlanceablesTest, UpNextViewRendersCorrectly) {
+  ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
+  base::subtle::ScopedTimeClockOverrides time_override(
+      []() {
+        base::Time now;
+        EXPECT_TRUE(base::Time::FromString("10 Jan 2022 13:00 GMT", &now));
+        return now;
+      },
+      nullptr, nullptr);
+
   controller_->CreateUi();
+  SimulateCalendarEventsFetched();
 
   // Events list contains rendered event items inside.
   const auto& items = GetUpNextView()->events_list_items_views_for_test();
-  EXPECT_EQ(items.size(), 5u);
-  for (const auto& item : items) {
-    EXPECT_EQ(std::get<0>(item)->GetText(), u"James / Artsiom");
-    EXPECT_EQ(std::get<1>(item)->GetText(), u"2:00 – 2:30pm");
-  }
+  EXPECT_EQ(items.size(), 2u);
+
+  EXPECT_EQ(std::get<0>(items[0])->GetText(),
+            u"Ongoing event, started in the past");
+  EXPECT_EQ(std::get<1>(items[0])->GetText(), u"10:00 AM – 2:00 PM");
+
+  EXPECT_EQ(std::get<0>(items[1])->GetText(), u"Future event, later today");
+  EXPECT_EQ(std::get<1>(items[1])->GetText(), u"9:30 – 10:30 PM");
 }
 
 TEST_F(GlanceablesTest, ClickOnSessionRestore) {
