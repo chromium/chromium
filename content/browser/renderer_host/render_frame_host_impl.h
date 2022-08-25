@@ -2583,7 +2583,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const blink::LocalFrameToken& frame_token,
       bool renderer_initiated_creation_of_main_frame,
       LifecycleStateImpl lifecycle_state,
-      scoped_refptr<BrowsingContextState> browsing_context_state);
+      scoped_refptr<BrowsingContextState> browsing_context_state,
+      blink::FrameOwnerElementType frame_owner_element_type);
 
   // The SendCommit* functions below are wrappers for commit calls
   // made to mojom::NavigationClient.
@@ -3493,6 +3494,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // frame_tree_node_ (per crbug.com/1179502).
   // TODO(crbug.com/1270671): make this field const when legacy mode is removed.
   scoped_refptr<BrowsingContextState> browsing_context_state_;
+
+  // Enum for the type of the frame owner element for a frame.
+  blink::FrameOwnerElementType frame_owner_element_type_;
 
   // The immediate children of this specific frame.
   std::vector<std::unique_ptr<FrameTreeNode>> children_;

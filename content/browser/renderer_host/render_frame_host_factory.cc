@@ -38,7 +38,8 @@ std::unique_ptr<RenderFrameHostImpl> RenderFrameHostFactory::Create(
       site_instance, std::move(render_view_host), delegate, frame_tree,
       frame_tree_node, routing_id, std::move(frame_remote), frame_token,
       renderer_initiated_creation, lifecycle_state,
-      std::move(browsing_context_state)));
+      std::move(browsing_context_state),
+      frame_tree_node->frame_owner_element_type()));
 }
 
 // static

@@ -1598,7 +1598,8 @@ RenderFrameHostImpl::RenderFrameHostImpl(
     const blink::LocalFrameToken& frame_token,
     bool renderer_initiated_creation_of_main_frame,
     LifecycleStateImpl lifecycle_state,
-    scoped_refptr<BrowsingContextState> browsing_context_state)
+    scoped_refptr<BrowsingContextState> browsing_context_state,
+    blink::FrameOwnerElementType frame_owner_element_type)
     : render_view_host_(std::move(render_view_host)),
       delegate_(delegate),
       site_instance_(static_cast<SiteInstanceImpl*>(site_instance)),
@@ -1607,6 +1608,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       frame_tree_(frame_tree),
       frame_tree_node_(frame_tree_node),
       browsing_context_state_(std::move(browsing_context_state)),
+      frame_owner_element_type_(frame_owner_element_type),
       parent_(frame_tree_node_->parent()),
       depth_(parent_ ? parent_->GetFrameDepth() + 1 : 0),
       last_committed_site_info_(site_instance_->GetBrowserContext()),
@@ -5778,7 +5780,7 @@ void RenderFrameHostImpl::UpdateSubresourceLoaderFactories() {
 }
 
 blink::FrameOwnerElementType RenderFrameHostImpl::GetFrameOwnerElementType() {
-  return frame_tree_node_->frame_owner_element_type();
+  return frame_owner_element_type_;
 }
 
 bool RenderFrameHostImpl::HasTransientUserActivation() {

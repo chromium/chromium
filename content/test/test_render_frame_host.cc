@@ -83,7 +83,8 @@ TestRenderFrameHost::TestRenderFrameHost(
                           frame_token,
                           /*renderer_initiated_creation_of_main_frame=*/false,
                           lifecycle_state,
-                          browsing_context_state),
+                          browsing_context_state,
+                          frame_tree_node->frame_owner_element_type()),
       child_creation_observer_(
           WebContents::FromRenderViewHost(render_view_host.get())),
       simulate_history_list_was_cleared_(false),
