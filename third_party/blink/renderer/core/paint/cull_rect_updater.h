@@ -29,8 +29,7 @@ class CORE_EXPORT CullRectUpdater {
   STACK_ALLOCATED();
 
  public:
-  explicit CullRectUpdater(PaintLayer& starting_layer)
-      : starting_layer_(starting_layer) {}
+  explicit CullRectUpdater(PaintLayer& starting_layer);
 
   void Update();
 
@@ -76,6 +75,7 @@ class CORE_EXPORT CullRectUpdater {
 
   PaintLayer& starting_layer_;
   PropertyTreeState root_state_ = PropertyTreeState::Uninitialized();
+  bool simulate_old_behavior_ = false;
 };
 
 // Used when painting with a custom top-level cull rect, e.g. when printing a

@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/core/paint/cull_rect_updater.h"
 
 #include "base/auto_reset.h"
+#include "base/feature_list.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -155,6 +157,12 @@ bool HasScrolledEnough(const LayoutObject& object) {
 
 }  // anonymous namespace
 
+CullRectUpdater::CullRectUpdater(PaintLayer& starting_layer)
+    : starting_layer_(starting_layer) {
+  if (base::FeatureList::IsEnabled(features::kOldCullRectUpdater))
+    simulate_old_behavior_ = true;
+}
+
 void CullRectUpdater::Update() {
   TRACE_EVENT0("blink,benchmark", "CullRectUpdate");
   SCOPED_BLINK_UMA_HISTOGRAM_TIMER_HIGHRES("Blink.CullRect.UpdateTime");
@@ -242,6 +250,8 @@ void CullRectUpdater::UpdateRecursively(const Context& parent_context,
       (context.fixed.force_update_children &&
        !object.CanContainFixedPositionObjects() &&
        layer.HasFixedPositionDescendant());
+  if (simulate_old_behavior_)
+    should_traverse_children |= !object.IsStackingContext();
   if (should_traverse_children) {
     context.current.container = &layer;
     if (object.CanContainAbsolutePositionObjects())
@@ -265,8 +275,14 @@ void CullRectUpdater::UpdateForDescendants(const Context& context,
   if (object.ChildPaintBlockedByDisplayLock())
     return;
 
-  for (auto* child = layer.FirstChild(); child; child = child->NextSibling())
+  for (auto* child = layer.FirstChild(); child; child = child->NextSibling()) {
+    if (simulate_old_behavior_ && !child->IsReplacedNormalFlowStacking() &&
+        child->GetLayoutObject().IsStacked()) {
+      child->SetNeedsCullRectUpdate();
+    }
+
     UpdateRecursively(context, *child);
+  }
 
   if (auto* embedded_content = DynamicTo<LayoutEmbeddedContent>(object)) {
     if (auto* embedded_view = embedded_content->GetEmbeddedContentView()) {
