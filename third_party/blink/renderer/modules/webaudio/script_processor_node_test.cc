@@ -28,7 +28,7 @@ TEST(ScriptProcessorNodeTest, BufferLifetime) {
     EXPECT_EQ(2u, handler.shared_input_buffers_.size());
     EXPECT_EQ(2u, handler.shared_input_buffers_.size());
   }
-  BaseAudioContext::GraphAutoLocker locker(context);
+  BaseAudioContext::GraphAutoLocker graph_locker(context);
   handler.Dispose();
   // Buffers should live after dispose() because an audio thread is using
   // them.

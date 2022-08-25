@@ -1633,8 +1633,7 @@ void AXObject::SerializeNameAndDescriptionAttributes(
 
 void AXObject::SerializeScreenReaderAttributes(ui::AXNodeData* node_data) {
   String display_style;
-  Node* node = GetNode();
-  if (node && !node->IsDocumentNode()) {
+  if (Node* node = GetNode(); node && !node->IsDocumentNode()) {
     if (const ComputedStyle* computed_style = node->GetComputedStyle()) {
       display_style = CSSProperty::Get(CSSPropertyID::kDisplay)
                           .CSSValueFromComputedStyle(

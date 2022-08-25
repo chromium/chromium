@@ -940,13 +940,14 @@ int PropertyTreeManager::SynthesizeCcEffectsForClipsIfNeeded(
     CcEffectType type;
   };
   Vector<PendingClip> pending_clips;
-  const ClipPaintPropertyNode* clip = &target_clip;
-  for (; clip && clip != current_.clip; clip = clip->UnaliasedParent()) {
-    if (auto type = SyntheticEffectType(*clip))
-      pending_clips.emplace_back(PendingClip{clip, type});
+  const ClipPaintPropertyNode* clip_node = &target_clip;
+  for (; clip_node && clip_node != current_.clip;
+       clip_node = clip_node->UnaliasedParent()) {
+    if (auto type = SyntheticEffectType(*clip_node))
+      pending_clips.emplace_back(PendingClip{clip_node, type});
   }
 
-  if (!clip) {
+  if (!clip_node) {
     // TODO(crbug.com/803649): We still have clip hierarchy issues with
     // fragment clips. See crbug.com/1238656 for the test case. Will change
     // the above condition to DCHECK after LayoutNGBlockFragmentation is fully

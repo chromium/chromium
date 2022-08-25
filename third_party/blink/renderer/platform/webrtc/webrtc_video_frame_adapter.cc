@@ -264,9 +264,9 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
         // copying only the necessary part.
         if (dst_frame->visible_rect() != source_frame->visible_rect() ||
             dst_frame->natural_size() != source_frame->natural_size()) {
-          const auto format = dst_frame->format();
+          const auto dst_format = dst_frame->format();
           dst_frame = media::VideoFrame::WrapVideoFrame(
-              std::move(dst_frame), format, source_frame->visible_rect(),
+              std::move(dst_frame), dst_format, source_frame->visible_rect(),
               source_frame->natural_size());
           DCHECK(dst_frame);
         }

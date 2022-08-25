@@ -156,9 +156,9 @@ void StatsCollectingDecoder::Decoded(webrtc::VideoFrame& decodedImage,
     int pixel_size = static_cast<int>(decodedImage.size());
     bool is_hardware_accelerated =
         decoder_->GetDecoderInfo().is_hardware_accelerated;
-    float decode_time_ms = decodedImage.processing_time()->Elapsed().ms();
+    float processing_time_ms = decodedImage.processing_time()->Elapsed().ms();
 
-    AddProcessingTime(pixel_size, is_hardware_accelerated, decode_time_ms,
+    AddProcessingTime(pixel_size, is_hardware_accelerated, processing_time_ms,
                       number_of_new_keyframes, now);
   }
 }

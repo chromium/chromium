@@ -92,9 +92,9 @@ bool ClientHintsPreferences::UpdateFromMetaCH(
 
   if (context) {
     for (const auto& elem : network::GetClientHintToNameMap()) {
-      const auto& type = elem.first;
-      if (enabled_hints_.IsEnabled(type))
-        context->CountClientHints(type);
+      const auto& hint_type = elem.first;
+      if (enabled_hints_.IsEnabled(hint_type))
+        context->CountClientHints(hint_type);
     }
   }
   return true;

@@ -337,15 +337,18 @@ FilterOperations CanvasFilterOperationResolver::CreateFilterOperations(
       num_canvas_filter_errors_to_console_allowed_--;
       if (num_canvas_filter_errors_to_console_allowed_ < 0)
         continue;
-      const String& message =
-          (!name.has_value())
-              ? "CanvasFilters require key 'filter' to specify filter type."
-              : String::Format(
-                    "\"%s\" is not among supported CanvasFilter types.",
-                    name->Utf8().c_str());
-      execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::blink::ConsoleMessageSource::kRendering,
-          mojom::blink::ConsoleMessageLevel::kWarning, message));
+      {
+        const String& message =
+            (!name.has_value())
+                ? "CanvasFilters require key 'filter' to specify filter type."
+                : String::Format(
+                      "\"%s\" is not among supported CanvasFilter types.",
+                      name->Utf8().c_str());
+        execution_context->AddConsoleMessage(
+            MakeGarbageCollected<ConsoleMessage>(
+                mojom::blink::ConsoleMessageSource::kRendering,
+                mojom::blink::ConsoleMessageLevel::kWarning, message));
+      }
       if (num_canvas_filter_errors_to_console_allowed_ == 0) {
         const String& message =
             "CanvasFilter: too many errors, no more errors will be reported to "

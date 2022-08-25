@@ -321,9 +321,9 @@ void V8MetricsRecorder::AddMainThreadEvent(
 
     // Report efficacy metrics:
     DEFINE_THREAD_SAFE_STATIC_LOCAL(
-        CustomCountHistogram, efficacy_histogram,
+        CustomCountHistogram, efficacy_cpp_histogram,
         ("V8.GC.Cycle.Efficiency.Full.Cpp", kMinSize, kMaxSize, kNumBuckets));
-    efficacy_histogram.Count(
+    efficacy_cpp_histogram.Count(
         CappedEfficacyInKBPerMs(event.efficiency_cpp_in_bytes_per_us));
 
     DEFINE_THREAD_SAFE_STATIC_LOCAL(
@@ -334,9 +334,9 @@ void V8MetricsRecorder::AddMainThreadEvent(
         event.main_thread_efficiency_cpp_in_bytes_per_us));
 
     DEFINE_THREAD_SAFE_STATIC_LOCAL(
-        CustomCountHistogram, collection_rate_histogram,
+        CustomCountHistogram, collection_rate_cpp_histogram,
         ("V8.GC.Cycle.CollectionRate.Full.Cpp", 1, 100, 20));
-    collection_rate_histogram.Count(
+    collection_rate_cpp_histogram.Count(
         base::saturated_cast<base::Histogram::Sample>(
             100 * event.collection_rate_cpp_in_percent));
   }
