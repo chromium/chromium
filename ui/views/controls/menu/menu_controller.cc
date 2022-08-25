@@ -2808,7 +2808,7 @@ void MenuController::SetSelectionIndices(MenuItemView* parent) {
   SubmenuView* const submenu = parent->GetSubmenu();
 
   for (MenuItemView* item : submenu->GetMenuItems()) {
-    if (!item->GetVisible() || !item->GetEnabled())
+    if (!item->IsTraversableByKeyboard())
       continue;
 
     bool found_focusable = false;

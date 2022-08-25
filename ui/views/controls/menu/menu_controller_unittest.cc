@@ -19,7 +19,9 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/events/event.h"
@@ -3214,6 +3216,45 @@ TEST_F(MenuControllerTest, AccessibilityEmitsSelectChildrenChanged) {
 
   DispatchKey(ui::VKEY_DOWN);
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kSelectedChildrenChanged), 2);
+}
+
+// Test that in accessibility mode disabled menu items are taken into account
+// during items indices assignment.
+TEST_F(MenuControllerTest, AccessibilityDisabledItemsIndices) {
+  ui::testing::ScopedAxModeSetter ax_mode_setter_{ui::AXMode::kNativeAPIs};
+
+#if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/1286137): This test is consistently failing on Win11.
+  if (base::win::OSInfo::GetInstance()->version() >=
+      base::win::Version::WIN11) {
+    GTEST_SKIP() << "Skipping test for WIN11_21H2 and greater";
+  }
+#endif
+  MenuItemView* const item1 = menu_item()->GetSubmenu()->GetMenuItemAt(0);
+  MenuItemView* const item2 = menu_item()->GetSubmenu()->GetMenuItemAt(1);
+  MenuItemView* const item3 = menu_item()->GetSubmenu()->GetMenuItemAt(2);
+  MenuItemView* const item4 = menu_item()->GetSubmenu()->GetMenuItemAt(3);
+
+  item2->SetEnabled(false);
+
+  OpenMenu(menu_item());
+
+  ui::AXNodeData data;
+  item1->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(1, data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet));
+  EXPECT_EQ(4, data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize));
+
+  item2->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(2, data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet));
+  EXPECT_EQ(4, data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize));
+
+  item3->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(3, data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet));
+  EXPECT_EQ(4, data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize));
+
+  item4->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(4, data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet));
+  EXPECT_EQ(4, data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize));
 }
 
 #if BUILDFLAG(IS_MAC)
