@@ -27,9 +27,20 @@ base::TimeDelta SubtractInactiveTime(base::TimeDelta total_length,
   return session_length;
 }
 
-void LogDuration(const std::string& histogram, base::TimeDelta session_length) {
-  DVLOG(1) << "Logging " << histogram << " of " << session_length;
-  base::UmaHistogramLongTimes(histogram, session_length);
+void LogDuration(const std::string& histogram_suffix,
+                 base::TimeDelta session_length) {
+  DVLOG(1) << "Logging Session.TotalDuration*." + histogram_suffix << " of "
+           << session_length;
+  // Log the 1-day long session duration histograms.
+  base::UmaHistogramCustomTimes(
+      "Session.TotalDurationMax1Day." + histogram_suffix, session_length,
+      base::Milliseconds(1), base::Hours(24), 50);
+
+  // Log the legacy 1-hour long histogram.
+  // TODO(https://crbug.com/1355203): Remove these histograms once they are no
+  // longer used to generate the sign-in and sync usage dashboards.
+  base::UmaHistogramLongTimes("Session.TotalDuration." + histogram_suffix,
+                              session_length);
 }
 
 }  // namespace
@@ -229,14 +240,14 @@ void SyncSessionDurationsMetricsRecorder::LogSigninDuration(
     base::TimeDelta session_length) {
   switch (signin_status_) {
     case FeatureState::ON:
-      LogDuration("Session.TotalDuration.WithAccount", session_length);
+      LogDuration("WithAccount", session_length);
       break;
     case FeatureState::UNKNOWN:
       // Since the feature wasn't working for the user if we didn't know its
       // state, log the status as off.
       [[fallthrough]];
     case FeatureState::OFF:
-      LogDuration("Session.TotalDuration.WithoutAccount", session_length);
+      LogDuration("WithoutAccount", session_length);
       break;
   }
 }
@@ -251,26 +262,22 @@ void SyncSessionDurationsMetricsRecorder::LogSyncAndAccountDuration(
                       " known when LogSyncAndAccountDuration() is called";
       break;
     case GetFeatureStates(FeatureState::ON, FeatureState::ON):
-      LogDuration("Session.TotalDuration.OptedInToSyncWithAccount",
-                  session_length);
+      LogDuration("OptedInToSyncWithAccount", session_length);
       break;
     case GetFeatureStates(FeatureState::ON, FeatureState::UNKNOWN):
       // Sync engine not initialized yet, default to it being off.
       [[fallthrough]];
     case GetFeatureStates(FeatureState::ON, FeatureState::OFF):
-      LogDuration("Session.TotalDuration.NotOptedInToSyncWithAccount",
-                  session_length);
+      LogDuration("NotOptedInToSyncWithAccount", session_length);
       break;
     case GetFeatureStates(FeatureState::OFF, FeatureState::ON):
-      LogDuration("Session.TotalDuration.OptedInToSyncWithoutAccount",
-                  session_length);
+      LogDuration("OptedInToSyncWithoutAccount", session_length);
       break;
     case GetFeatureStates(FeatureState::OFF, FeatureState::UNKNOWN):
       // Sync engine not initialized yet, default to it being off.
       [[fallthrough]];
     case GetFeatureStates(FeatureState::OFF, FeatureState::OFF):
-      LogDuration("Session.TotalDuration.NotOptedInToSyncWithoutAccount",
-                  session_length);
+      LogDuration("NotOptedInToSyncWithoutAccount", session_length);
       break;
     default:
       NOTREACHED() << "Unexpected feature states: "

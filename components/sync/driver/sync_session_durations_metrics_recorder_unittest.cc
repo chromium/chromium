@@ -62,6 +62,12 @@ class SyncSessionDurationsMetricsRecorderTest : public testing::Test {
   }
 
   std::string GetSessionHistogramName(const std::string& histogram_suffix) {
+    return std::string("Session.TotalDurationMax1Day.") + histogram_suffix;
+  }
+
+  // TODO(https://crbug.com/1355203): Deprecate this method.
+  std::string GetSessionHistogramLegacyName(
+      const std::string& histogram_suffix) {
     return std::string("Session.TotalDuration.") + histogram_suffix;
   }
 
@@ -72,6 +78,8 @@ class SyncSessionDurationsMetricsRecorderTest : public testing::Test {
     for (const std::string& histogram_suffix : histogram_suffixes) {
       ht.ExpectTimeBucketCount(GetSessionHistogramName(histogram_suffix),
                                expected_session_time, 1);
+      ht.ExpectTimeBucketCount(GetSessionHistogramLegacyName(histogram_suffix),
+                               expected_session_time, 1);
     }
   }
 
@@ -79,6 +87,7 @@ class SyncSessionDurationsMetricsRecorderTest : public testing::Test {
                         const std::vector<std::string>& histogram_suffixes) {
     for (const std::string& histogram_suffix : histogram_suffixes) {
       ht.ExpectTotalCount(GetSessionHistogramName(histogram_suffix), 1);
+      ht.ExpectTotalCount(GetSessionHistogramLegacyName(histogram_suffix), 1);
     }
   }
 
@@ -86,6 +95,7 @@ class SyncSessionDurationsMetricsRecorderTest : public testing::Test {
                        const std::vector<std::string>& histogram_suffixes) {
     for (const std::string& histogram_suffix : histogram_suffixes) {
       ht.ExpectTotalCount(GetSessionHistogramName(histogram_suffix), 0);
+      ht.ExpectTotalCount(GetSessionHistogramLegacyName(histogram_suffix), 0);
     }
   }
 

@@ -216,6 +216,10 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-signin-team@google.com</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
+    This histogram is in the process of being replaced with the equivalent
+    histogram Session.TotalDurationMax1Day.NotOptedInToSyncWithAccount; the only
+    difference is the histogram bucket ranges.
+
     The amount of active browsing time that was spent with sync disabled while
     having a valid refresh token for the primary account. This corresponds to
     the case when the user did not opt in to sync, or sync is disabled due to
@@ -259,6 +263,10 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-signin-team@google.com</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
+    This histogram is in the process of being replaced with the equivalent
+    histogram Session.TotalDurationMax1Day.NotOptedInToSyncWithoutAccount; the
+    only difference is the histogram bucket ranges.
+
     The amount of active browsing time that was spent with sync disabled and
     signed out of Chrome (no primary account or invalid token for the primary
     account).
@@ -310,6 +318,10 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-signin-team@google.com</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
+    This histogram is in the process of being replaced with the equivalent
+    histogram Session.TotalDurationMax1Day.OptedInToSyncWithAccount; the only
+    difference is the histogram bucket ranges.
+
     The total session duration (see Session.TotalDuration) that was spent with
     sync enabled and signed in to Chrome (valid token for the primary account).
 
@@ -349,6 +361,10 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-signin-team@google.com</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
+    This histogram is in the process of being replaced with the equivalent
+    histogram Session.TotalDurationMax1Day.OptedInToSyncWithoutAccount; the only
+    difference is the histogram bucket ranges.
+
     The total session duration (see Session.TotalDuration) that was being spent
     with sync inactive due to an invalid refresh token for the primary account
     (a.k.a. sync in an auth error state). Note that in this state, the user has
@@ -416,6 +432,10 @@ chromium-metrics-reviews@google.com.
   <owner>tschumann@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
+    This histogram is in the process of being replaced with the equivalent
+    histogram Session.TotalDurationMax1Day.WithAccount; the only difference is
+    the histogram bucket ranges.
+
     The total session duration (see Session.TotalDuration) that was spent with a
     Google account signed into the content area.
 
@@ -457,6 +477,10 @@ chromium-metrics-reviews@google.com.
   <owner>tschumann@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
+    This histogram is in the process of being replaced with the equivalent
+    histogram Session.TotalDurationMax1Day.WithoutAccount; the only difference
+    is the histogram bucket ranges.
+
     The total session duration (see Session.TotalDuration) that was spent
     without a Google account signed into the content area.
 
@@ -505,6 +529,278 @@ chromium-metrics-reviews@google.com.
     just with a smaller maximum value. (That one's maximum is 1 hour.)
 
     This histogram is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </summary>
+</histogram>
+
+<histogram name="Session.TotalDurationMax1Day.NotOptedInToSyncWithAccount"
+    units="ms" expires_after="never">
+<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
+
+  <owner>bsazonov@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>tschumann@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    The amount of active browsing time that was spent with sync disabled while
+    having a valid refresh token for the primary account. This corresponds to
+    the case when the user did not opt in to sync, or sync is disabled due to
+    another reason, e.g. enterprise policy. Note that auth errors are not
+    counted here, but rather in
+    Session.TotalDurationMax1Day.OptedInToSyncWithoutAccount.
+
+    This time is measured from when the user starts interacting with the browser
+    until either they stopped interacting with the browser or their signin or
+    sync status changes. These end-points are when the metric is emitted. For
+    details on how &quot;stopped interacting with the browser&quot; is decided,
+    see the description of Session.TotalDuration.
+
+    Because a duration can end either because the user became inactive or
+    because their status changed, the distribution of individual durations
+    measured are unlikely to be helpful. Instead, please compare total
+    durations.
+
+    This metric is recorded on Win/Mac/Linux/iOS/Android.
+
+    One caveat with this metric is that if the user has multiple profiles open
+    at the same time, their session activity will be logged from all the
+    profiles, instead of only from the profile that the user is using at that
+    moment.
+
+    This histogram is of special interest to the chrome-analysis-team@ and
+    chrome-signin-team@. Do not change its semantics or retire it without
+    talking to them first.
+  </summary>
+</histogram>
+
+<histogram name="Session.TotalDurationMax1Day.NotOptedInToSyncWithoutAccount"
+    units="ms" expires_after="never">
+<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
+
+  <owner>bsazonov@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>tschumann@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    The amount of active browsing time that was spent with sync disabled and
+    signed out of Chrome (no primary account or invalid token for the primary
+    account).
+
+    This time is measured from when the user starts interacting with the browser
+    until either they stopped interacting with the browser or their signin or
+    sync status changes. These end-points are when the metric is emitted. For
+    details on how &quot;stopped interacting with the browser&quot; is decided,
+    see the description of Session.TotalDuration.
+
+    Because a duration can end either because the user became inactive or
+    because their status changed, the distribution of individual durations
+    measured are unlikely to be helpful. Instead, please compare total
+    durations.
+
+    This metric is recorded on Win/Mac/Linux/iOS/Android.
+
+    One caveat with this metric is that if the user has multiple profiles open
+    at the same time, their session activity will be logged from all the
+    profiles, instead of only from the profile that the user is using at that
+    moment.
+
+    Note: As part of crbug/1223007, we discovered this histogram was recorded
+    for Guest and System profiles which wasn't intentional. This was fixed in
+    M93.
+
+    After launching background logging in the late February 2021 on Android,
+    this metric started recording for instances that were running in the
+    background, even if Chrome had never come to foreground. The bug was fixed
+    in M92, and after that the metric is recorded only after an instance becomes
+    foregrounded at least once. Hence a glitch is visible in the Feb-Aug 2021
+    data for Android.
+
+    This histogram is of special interest to the chrome-analysis-team@ and
+    chrome-signin-team@. Do not change its semantics or retire it without
+    talking to them first.
+  </summary>
+</histogram>
+
+<histogram name="Session.TotalDurationMax1Day.OptedInToSyncWithAccount"
+    units="ms" expires_after="never">
+<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
+
+  <owner>bsazonov@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>tschumann@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    The total session duration (see Session.TotalDuration) that was spent with
+    sync enabled and signed in to Chrome (valid token for the primary account).
+
+    This time is measured from when the user starts interacting with the browser
+    until either they stopped interacting with the browser or their signin or
+    sync status changes. These end-points are when the metric is emitted. For
+    details on how &quot;stopped interacting with the browser&quot; is decided,
+    see the description of Session.TotalDuration.
+
+    Because a duration can end either because the user became inactive or
+    because their status changed, the distribution of individual durations
+    measured are unlikely to be helpful. Instead, please compare total
+    durations.
+
+    This metric is recorded on Win/Mac/Linux/iOS/Android.
+
+    One caveat with this metric is that if the user has multiple profiles open
+    at the same time, their session activity will be logged from all the
+    profiles, instead of only from the profile that the user is using at that
+    moment.
+
+    This histogram is of special interest to the chrome-analysis-team@ and
+    chrome-signin-team@. Do not change its semantics or retire it without
+    talking to them first.
+  </summary>
+</histogram>
+
+<histogram name="Session.TotalDurationMax1Day.OptedInToSyncWithoutAccount"
+    units="ms" expires_after="never">
+<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
+
+  <owner>bsazonov@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>tschumann@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    The total session duration (see Session.TotalDuration) that was being spent
+    with sync inactive due to an invalid refresh token for the primary account
+    (a.k.a. sync in an auth error state). Note that in this state, the user has
+    already opted in to sync previously. This corresponds to the so-called
+    &quot;Sync paused&quot; state.
+
+    This can for example be the case when a user, that previously opted in to
+    sync, signed out of the web on desktop, changed their password, or otherwise
+    invalidated their signin.
+
+    This time is measured from when the user starts interacting with the browser
+    until either they stopped interacting with the browser or their signin or
+    sync status changes. These end-points are when the metric is emitted. For
+    details on how &quot;stopped interacting with the browser&quot; is decided,
+    see the description of Session.TotalDuration.
+
+    Because a duration can end either because the user became inactive or
+    because their status changed, the distribution of individual durations
+    measured are unlikely to be helpful. Instead, please compare total
+    durations.
+
+    This metric is recorded on Win/Mac/Linux/iOS/Android.
+
+    One caveat with this metric is that if the user has multiple profiles open
+    at the same time, their session activity will be logged from all the
+    profiles, instead of only from the profile that the user is using at that
+    moment.
+
+    After launching background logging in the late February 2021 on Android,
+    this metric started recording for instances that were running in the
+    background, even if Chrome had never come to foreground. The bug was fixed
+    in M92, and after that the metric is recorded only after an instance becomes
+    foregrounded at least once. Hence a glitch is visible in the Feb-Aug 2021
+    data for Android.
+
+    This histogram is of special interest to the chrome-analysis-team@ and
+    chrome-signin-team@. Do not change its semantics or retire it without
+    talking to them first.
+  </summary>
+</histogram>
+
+<histogram name="Session.TotalDurationMax1Day.WithAccount" units="ms"
+    expires_after="never">
+<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
+
+  <owner>bsazonov@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>tschumann@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    The total session duration (see Session.TotalDuration) that was spent with a
+    Google account signed into the content area.
+
+    The difference between the With(out)Account measurements and the
+    Opted(In/Out)ToSyncWith(out)Account measurements is that these metrics are
+    derived from the user's cookies, not their refresh tokens.
+
+    This time is measured from when the user starts interacting with the browser
+    until either they stopped interacting with the browser or their signin
+    status changes. These end-points are when the metric is emitted. For details
+    on how &quot;stopped interacting with the browser&quot; is decided, see the
+    description of Session.TotalDuration.
+
+    Because a duration can end either because the user became inactive or
+    because their status changed, the distribution of individual durations
+    measured are unlikely to be helpful. Instead, please compare total
+    durations.
+
+    This metric is recorded on Win/Mac/Linux/iOS/Android.
+
+    One caveat with this metric is that if the user has multiple profiles open
+    at the same time, their session activity will be logged from all the
+    profiles, instead of only from the profile that the user is using at that
+    moment.
+
+    This histogram is of special interest to the chrome-signin-team@. Do not
+    change its semantics or retire it without talking to them first.
+  </summary>
+</histogram>
+
+<histogram name="Session.TotalDurationMax1Day.WithoutAccount" units="ms"
+    expires_after="never">
+<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
+
+  <owner>bsazonov@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>tschumann@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    The total session duration (see Session.TotalDuration) that was spent
+    without a Google account signed into the content area.
+
+    The difference between the With(out)Account measurements and the
+    Opted(In/Out)ToSyncWith(out)Account measurements is that these metrics are
+    derived from the user's cookies, not their refresh tokens.
+
+    This time is measured from when the user starts interacting with the browser
+    until either they stopped interacting with the browser or their signin
+    status changes. These end-points are when the metric is emitted. For details
+    on how &quot;stopped interacting with the browser&quot; is decided, see the
+    description of Session.TotalDuration.
+
+    Because a duration can end either because the user became inactive or
+    because their status changed, the distribution of individual durations
+    measured are unlikely to be helpful. Instead, please compare total
+    durations.
+
+    This metric is recorded on Win/Mac/Linux/iOS/Android.
+
+    One caveat with this metric is that if the user has multiple profiles open
+    at the same time, their session activity will be logged from all the
+    profiles, instead of only from the profile that the user is using at that
+    moment.
+
+    Note: As part of crbug/1223007, we discovered this histogram was recorded
+    for Guest and System profiles which wasn't intentional. This was fixed in
+    M93.
+
+    This histogram is of special interest to the chrome-signin-team@. Do not
     change its semantics or retire it without talking to them first.
   </summary>
 </histogram>
