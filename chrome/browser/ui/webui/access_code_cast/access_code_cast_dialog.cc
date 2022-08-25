@@ -144,9 +144,9 @@ void AccessCodeCastDialog::OnWidgetActivationChanged(views::Widget* widget,
 }
 
 ui::ModalType AccessCodeCastDialog::GetDialogModalType() const {
-  // If there are no web_contents_, that means that the dialog was launched
-  // from the system tray, so therefore it shuold be a system dialog.
-  return web_contents_ ? ui::MODAL_TYPE_NONE : ui::MODAL_TYPE_SYSTEM;
+  // Make our dialog have no modality, so it will always close if another
+  // window is focused.
+  return ui::MODAL_TYPE_NONE;
 }
 
 std::u16string AccessCodeCastDialog::GetDialogTitle() const {
