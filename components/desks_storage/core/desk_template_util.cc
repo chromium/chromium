@@ -11,10 +11,11 @@ namespace desk_template_util {
 ash::DeskTemplate* FindOtherEntryWithName(
     const std::u16string& name,
     const base::GUID& uuid,
-    const std::map<base::GUID, std::unique_ptr<ash::DeskTemplate>>& entries) {
+    const base::flat_map<base::GUID, std::unique_ptr<ash::DeskTemplate>>&
+        entries) {
   auto iter = std::find_if(
       entries.begin(), entries.end(),
-      [name, uuid](const std::pair<const base::GUID,
+      [name, uuid](const std::pair<base::GUID,
                                    std::unique_ptr<ash::DeskTemplate>>& entry) {
         // Name duplication is allowed if one of the templates is an admin
         // template.

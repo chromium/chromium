@@ -5,10 +5,10 @@
 #ifndef COMPONENTS_DESKS_STORAGE_CORE_LOCAL_DESK_DATA_MANAGER_H_
 #define COMPONENTS_DESKS_STORAGE_CORE_LOCAL_DESK_DATA_MANAGER_H_
 
-#include <map>
 #include <memory>
 
 #include "ash/public/cpp/desk_template.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/guid.h"
 #include "base/memory/ref_counted.h"
@@ -90,7 +90,8 @@ class LocalDeskDataManager : public DeskModel {
   void EnsureCacheIsLoaded(
       const base::FilePath& user_data_dir_path,
       CacheStatus* cache_status_ptr,
-      std::map<base::GUID, std::unique_ptr<ash::DeskTemplate>>* entries_ptr);
+      base::flat_map<base::GUID, std::unique_ptr<ash::DeskTemplate>>*
+          entries_ptr);
 
   // Add or update an entry by `new_entry`'s UUID.
   void AddOrUpdateEntryTask(const base::GUID uuid,
@@ -114,12 +115,14 @@ class LocalDeskDataManager : public DeskModel {
   // Delete all entries.
   void DeleteAllEntriesTask(
       DeskModel::DeleteEntryStatus* status_ptr,
-      std::map<base::GUID, std::unique_ptr<ash::DeskTemplate>>* entries_ptr);
+      base::flat_map<base::GUID, std::unique_ptr<ash::DeskTemplate>>*
+          entries_ptr);
 
   // Wrapper method to call DeleteEntryCallback.
   void OnDeleteEntry(
       std::unique_ptr<DeskModel::DeleteEntryStatus> status_ptr,
-      std::unique_ptr<std::map<base::GUID, std::unique_ptr<ash::DeskTemplate>>>
+      std::unique_ptr<
+          base::flat_map<base::GUID, std::unique_ptr<ash::DeskTemplate>>>
           entries_ptr,
       DeskModel::DeleteEntryCallback callback);
 
@@ -129,7 +132,8 @@ class LocalDeskDataManager : public DeskModel {
   // Wrapper method to load the read files into the `saved_desks_list_` cache.
   void MoveEntriesIntoCache(
       std::unique_ptr<CacheStatus> cache_status_ptr,
-      std::unique_ptr<std::map<base::GUID, std::unique_ptr<ash::DeskTemplate>>>
+      std::unique_ptr<
+          base::flat_map<base::GUID, std::unique_ptr<ash::DeskTemplate>>>
           entries_ptr);
 
   // Task runner used to schedule tasks on the IO thread.
@@ -149,10 +153,11 @@ class LocalDeskDataManager : public DeskModel {
   // Cache status of the templates cache for both desk types.
   CacheStatus cache_status_;
 
-  using SavedDesks = std::map<base::GUID, std::unique_ptr<ash::DeskTemplate>>;
+  using SavedDesks =
+      base::flat_map<base::GUID, std::unique_ptr<ash::DeskTemplate>>;
 
   // In memory cache of saved desks based on their type.
-  std::map<ash::DeskTemplateType, SavedDesks> saved_desks_list_;
+  base::flat_map<ash::DeskTemplateType, SavedDesks> saved_desks_list_;
 
   // Weak pointer factory for posting tasks to task runner.
   base::WeakPtrFactory<LocalDeskDataManager> weak_ptr_factory_{this};

@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/guid.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
@@ -98,7 +99,7 @@ std::unique_ptr<syncer::EntityData> CopyToEntityData(
 
 // Parses the content of `record_list` into `*desk_templates`.
 absl::optional<syncer::ModelError> ParseDeskTemplatesOnBackendSequence(
-    std::map<base::GUID, std::unique_ptr<DeskTemplate>>* desk_templates,
+    base::flat_map<base::GUID, std::unique_ptr<DeskTemplate>>* desk_templates,
     std::unique_ptr<ModelTypeStore::RecordList> record_list) {
   DCHECK(desk_templates);
   DCHECK(desk_templates->empty());
@@ -1421,8 +1422,9 @@ void DeskSyncBridge::UploadLocalOnlyData(
 bool DeskSyncBridge::HasUserTemplateWithName(const std::u16string& name) {
   return std::find_if(
              desk_template_entries_.begin(), desk_template_entries_.end(),
-             [&name](std::pair<const base::GUID,
-                               std::unique_ptr<ash::DeskTemplate>>& entry) {
+             [&name](
+                 const std::pair<base::GUID,
+                                 std::unique_ptr<ash::DeskTemplate>>& entry) {
                return entry.second->template_name() == name;
              }) != desk_template_entries_.end();
 }
@@ -1431,13 +1433,7 @@ bool DeskSyncBridge::HasUuid(const std::string& uuid_str) const {
   const base::GUID uuid = base::GUID::ParseCaseInsensitive(uuid_str);
   if (!uuid.is_valid())
     return false;
-  return std::find_if(
-             desk_template_entries_.begin(), desk_template_entries_.end(),
-             [&uuid](
-                 const std::pair<const base::GUID,
-                                 std::unique_ptr<ash::DeskTemplate>>& entry) {
-               return entry.first == uuid;
-             }) != desk_template_entries_.end();
+  return base::Contains(desk_template_entries_, uuid);
 }
 
 }  // namespace desks_storage

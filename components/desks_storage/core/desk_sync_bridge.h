@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/guid.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -107,7 +108,8 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
   DeskModel::DeleteEntryStatus DeleteAllEntries();
 
  private:
-  using DeskEntries = std::map<base::GUID, std::unique_ptr<ash::DeskTemplate>>;
+  using DeskEntries =
+      base::flat_map<base::GUID, std::unique_ptr<ash::DeskTemplate>>;
 
   // Notify all observers that the model is loaded;
   void NotifyDeskModelLoaded();

@@ -5,7 +5,7 @@
 #include "components/desks_storage/core/desk_template_util.h"
 
 #include <string>
-#include "base/time/time.h"
+#include <utility>
 
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -15,14 +15,14 @@ namespace desks_storage {
 using DeskTemplateUtilTest = testing::Test;
 
 TEST_F(DeskTemplateUtilTest, FindDuplicateEntry) {
-  std::map<base::GUID, std::unique_ptr<ash::DeskTemplate>> entries;
-  const base::GUID uuid = base::GUID::GenerateRandomV4();
+  base::flat_map<base::GUID, std::unique_ptr<ash::DeskTemplate>> entries;
+  base::GUID uuid = base::GUID::GenerateRandomV4();
   auto desk_template = std::make_unique<ash::DeskTemplate>(
       uuid, ash::DeskTemplateSource::kUser, "Template 1", base::Time::Now(),
       ash::DeskTemplateType::kTemplate);
   entries[uuid] = std::move(desk_template);
 
-  const base::GUID new_uuid = base::GUID::GenerateRandomV4();
+  base::GUID new_uuid = base::GUID::GenerateRandomV4();
   auto new_desk_template = std::make_unique<ash::DeskTemplate>(
       new_uuid, ash::DeskTemplateSource::kUser, "Template 1", base::Time::Now(),
       ash::DeskTemplateType::kTemplate);
@@ -32,14 +32,14 @@ TEST_F(DeskTemplateUtilTest, FindDuplicateEntry) {
 }
 
 TEST_F(DeskTemplateUtilTest, FindNoDuplicateEntryInFilledMap) {
-  std::map<base::GUID, std::unique_ptr<ash::DeskTemplate>> entries;
-  const base::GUID uuid = base::GUID::GenerateRandomV4();
+  base::flat_map<base::GUID, std::unique_ptr<ash::DeskTemplate>> entries;
+  base::GUID uuid = base::GUID::GenerateRandomV4();
   auto desk_template = std::make_unique<ash::DeskTemplate>(
       uuid, ash::DeskTemplateSource::kUser, "Template 1", base::Time::Now(),
       ash::DeskTemplateType::kTemplate);
   entries[uuid] = std::move(desk_template);
 
-  const base::GUID new_uuid = base::GUID::GenerateRandomV4();
+  base::GUID new_uuid = base::GUID::GenerateRandomV4();
   auto new_desk_template = std::make_unique<ash::DeskTemplate>(
       new_uuid, ash::DeskTemplateSource::kUser, "Template 2", base::Time::Now(),
       ash::DeskTemplateType::kTemplate);
@@ -49,8 +49,8 @@ TEST_F(DeskTemplateUtilTest, FindNoDuplicateEntryInFilledMap) {
 }
 
 TEST_F(DeskTemplateUtilTest, FindNoDuplicateEntryInAOneElementMap) {
-  std::map<base::GUID, std::unique_ptr<ash::DeskTemplate>> entries;
-  const base::GUID uuid = base::GUID::GenerateRandomV4();
+  base::flat_map<base::GUID, std::unique_ptr<ash::DeskTemplate>> entries;
+  base::GUID uuid = base::GUID::GenerateRandomV4();
   auto desk_template = std::make_unique<ash::DeskTemplate>(
       uuid, ash::DeskTemplateSource::kUser, "Template 1", base::Time::Now(),
       ash::DeskTemplateType::kTemplate);

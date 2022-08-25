@@ -5,9 +5,12 @@
 #ifndef COMPONENTS_DESKS_STORAGE_CORE_DESK_TEMPLATE_UTIL_H_
 #define COMPONENTS_DESKS_STORAGE_CORE_DESK_TEMPLATE_UTIL_H_
 
+#include <memory>
 #include <string>
 
 #include "ash/public/cpp/desk_template.h"
+#include "base/containers/flat_map.h"
+#include "base/guid.h"
 
 namespace desks_storage {
 
@@ -16,7 +19,8 @@ namespace desk_template_util {
 ash::DeskTemplate* FindOtherEntryWithName(
     const std::u16string& name,
     const base::GUID& uuid,
-    const std::map<base::GUID, std::unique_ptr<ash::DeskTemplate>>& entries);
+    const base::flat_map<base::GUID, std::unique_ptr<ash::DeskTemplate>>&
+        entries);
 
 }  // namespace desk_template_util
 
