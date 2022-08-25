@@ -1069,25 +1069,28 @@ void ClickDiagnosticsLink(Browser* browser) {
 // launch chrome://diagnostics/?connectivity app by default. Not running test on
 // LaCROS due to errors on Wayland initialization and to keep test to ChromeOS
 // devices.
-// TODO(crbug.com/1285441): Disabled due to test flakes.
 using ErrorPageOfflineAppLaunchTest = ash::SystemWebAppBrowserTestBase;
 
-IN_PROC_BROWSER_TEST_F(ErrorPageOfflineAppLaunchTest,
-                       DISABLED_DiagnosticsConnectivity) {
+IN_PROC_BROWSER_TEST_F(ErrorPageOfflineAppLaunchTest, DiagnosticsConnectivity) {
   WaitForTestSystemAppInstall();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       URLRequestFailedJob::GetMockHttpUrl(net::ERR_INTERNET_DISCONNECTED)));
 
+  const GURL expected_url = GURL("chrome://diagnostics/?connectivity");
+  content::TestNavigationObserver observer(expected_url);
+  observer.StartWatchingNewWebContents();
+
   // Click to open diagnostics app.
   ClickDiagnosticsLink(browser());
   ash::FlushSystemWebAppLaunchesForTesting(browser()->profile());
+  observer.Wait();
+  EXPECT_TRUE(observer.last_navigation_succeeded());
 
   // The active screen should be Connectivity Diagnostics app.
   content::WebContents* contents =
       ::chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_EQ(GURL("chrome://diagnostics/?connectivity"),
-            contents->GetVisibleURL());
+  EXPECT_EQ(expected_url, contents->GetVisibleURL());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
