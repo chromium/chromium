@@ -53,6 +53,17 @@ Scheduler::SchedulingState::SchedulingState(const SchedulingState& other) =
     default;
 Scheduler::SchedulingState::~SchedulingState() = default;
 
+Scheduler::ScopedAddWaitingPriority::ScopedAddWaitingPriority(
+    Scheduler* scheduler,
+    SequenceId sequence_id,
+    SchedulingPriority priority)
+    : scheduler_(scheduler), sequence_id_(sequence_id), priority_(priority) {
+  scheduler_->AddWaitingPriority(sequence_id_, priority_);
+}
+Scheduler::ScopedAddWaitingPriority::~ScopedAddWaitingPriority() {
+  scheduler_->RemoveWaitingPriority(sequence_id_, priority_);
+}
+
 void Scheduler::SchedulingState::WriteIntoTrace(
     perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
@@ -324,6 +335,8 @@ void Scheduler::Sequence::AddWaitingPriority(SchedulingPriority priority) {
                sequence_id_.GetUnsafeValue(), "new_priority",
                SchedulingPriorityToString(priority));
 
+  scheduler_->lock_.AssertAcquired();
+
   waiting_priority_counts_[static_cast<int>(priority)]++;
 
   if (priority < current_priority_) {
@@ -337,7 +350,7 @@ void Scheduler::Sequence::RemoveWaitingPriority(SchedulingPriority priority) {
   TRACE_EVENT2("gpu", "Scheduler::Sequence::RemoveWaitingPriority",
                "sequence_id", sequence_id_.GetUnsafeValue(), "new_priority",
                SchedulingPriorityToString(priority));
-
+  scheduler_->lock_.AssertAcquired();
   DCHECK(waiting_priority_counts_[static_cast<int>(priority)] > 0);
   waiting_priority_counts_[static_cast<int>(priority)]--;
 
@@ -536,6 +549,22 @@ bool Scheduler::ShouldYield(SequenceId sequence_id) {
   DCHECK(next_sequence->scheduled());
 
   return running_sequence->ShouldYieldTo(next_sequence);
+}
+
+void Scheduler::AddWaitingPriority(SequenceId sequence_id,
+                                   SchedulingPriority priority) {
+  base::AutoLock auto_lock(lock_);
+  Sequence* sequence = GetSequence(sequence_id);
+  if (sequence)
+    sequence->AddWaitingPriority(priority);
+}
+
+void Scheduler::RemoveWaitingPriority(SequenceId sequence_id,
+                                      SchedulingPriority priority) {
+  base::AutoLock auto_lock(lock_);
+  Sequence* sequence = GetSequence(sequence_id);
+  if (sequence)
+    sequence->RemoveWaitingPriority(priority);
 }
 
 void Scheduler::SyncTokenFenceReleased(const SyncToken& sync_token,

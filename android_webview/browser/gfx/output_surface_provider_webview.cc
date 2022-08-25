@@ -8,7 +8,6 @@
 
 #include "android_webview/browser/gfx/aw_gl_surface_external_stencil.h"
 #include "android_webview/browser/gfx/aw_vulkan_context_provider.h"
-#include "android_webview/browser/gfx/deferred_gpu_command_service.h"
 #include "android_webview/browser/gfx/gpu_service_webview.h"
 #include "android_webview/browser/gfx/skia_output_surface_dependency_webview.h"
 #include "android_webview/browser/gfx/task_queue_webview.h"
@@ -20,6 +19,7 @@
 #include "base/no_destructor.h"
 #include "components/viz/common/features.h"
 #include "components/viz/service/display_embedder/skia_output_surface_impl.h"
+#include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/single_task_sequence.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"

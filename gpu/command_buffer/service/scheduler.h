@@ -56,6 +56,19 @@ class GPU_EXPORT Scheduler {
     ReportingCallback report_callback;
   };
 
+  struct ScopedAddWaitingPriority {
+   public:
+    ScopedAddWaitingPriority(Scheduler* scheduler,
+                             SequenceId sequence_id,
+                             SchedulingPriority priority);
+    ~ScopedAddWaitingPriority();
+
+   private:
+    const raw_ptr<Scheduler> scheduler_;
+    const SequenceId sequence_id_;
+    const SchedulingPriority priority_;
+  };
+
   Scheduler(SyncPointManager* sync_point_manager,
             const GpuPreferences& gpu_preferences);
 
@@ -348,6 +361,10 @@ class GPU_EXPORT Scheduler {
 
     base::flat_set<CommandBufferId> client_waits_;
   };
+
+  void AddWaitingPriority(SequenceId sequence_id, SchedulingPriority priority);
+  void RemoveWaitingPriority(SequenceId sequence_id,
+                             SchedulingPriority priority);
 
   void SyncTokenFenceReleased(const SyncToken& sync_token,
                               uint32_t order_num,

@@ -89,6 +89,7 @@ viz::VizMainImpl::ExternalDependencies CreateVizMainDependencies() {
     deps.sync_point_manager = GetContentClient()->gpu()->GetSyncPointManager();
     deps.shared_image_manager =
         GetContentClient()->gpu()->GetSharedImageManager();
+    deps.scheduler = GetContentClient()->gpu()->GetScheduler();
     deps.viz_compositor_thread_runner =
         GetContentClient()->gpu()->GetVizCompositorThreadRunner();
   }

@@ -14,6 +14,7 @@
 namespace gpu {
 struct GpuPreferences;
 class GpuDriverBugWorkarounds;
+class Scheduler;
 class SharedImageManager;
 class SyncPointManager;
 }
@@ -52,6 +53,7 @@ class CONTENT_EXPORT ContentGpuClient {
   // internally create one.
   virtual gpu::SyncPointManager* GetSyncPointManager();
   virtual gpu::SharedImageManager* GetSharedImageManager();
+  virtual gpu::Scheduler* GetScheduler();
   virtual viz::VizCompositorThreadRunner* GetVizCompositorThreadRunner();
 };
 

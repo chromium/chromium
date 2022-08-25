@@ -123,6 +123,7 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
       scoped_refptr<gl::GLSurface> default_offscreen_surface,
       gpu::SyncPointManager* sync_point_manager = nullptr,
       gpu::SharedImageManager* shared_image_manager = nullptr,
+      gpu::Scheduler* scheduler = nullptr,
       base::WaitableEvent* shutdown_event = nullptr);
   void Bind(mojo::PendingReceiver<mojom::GpuService> pending_receiver);
 
@@ -461,13 +462,14 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   // Display compositor gpu thread.
   std::unique_ptr<CompositorGpuThread> compositor_gpu_thread_;
 
-  // On some platforms (e.g. android webview), the SyncPointManager and
-  // SharedImageManager comes from external sources.
+  // On some platforms (e.g. android webview), SyncPointManager,
+  // SharedImageManager and Scheduler come from external sources.
   std::unique_ptr<gpu::SyncPointManager> owned_sync_point_manager_;
 
   std::unique_ptr<gpu::SharedImageManager> owned_shared_image_manager_;
 
-  std::unique_ptr<gpu::Scheduler> scheduler_;
+  std::unique_ptr<gpu::Scheduler> owned_scheduler_;
+  raw_ptr<gpu::Scheduler> scheduler_;
 
 #if BUILDFLAG(ENABLE_VULKAN)
   raw_ptr<gpu::VulkanImplementation> vulkan_implementation_;

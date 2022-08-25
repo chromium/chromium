@@ -28,8 +28,6 @@ source_set("gfx") {
     "child_frame.h",
     "compositor_frame_consumer.h",
     "compositor_frame_producer.h",
-    "deferred_gpu_command_service.cc",
-    "deferred_gpu_command_service.h",
     "display_scheduler_webview.cc",
     "display_scheduler_webview.h",
     "display_webview.cc",

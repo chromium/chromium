@@ -14,6 +14,7 @@
 #include "gpu/command_buffer/service/single_task_sequence.h"
 
 namespace gpu {
+class Scheduler;
 class SyncPointManager;
 }
 
@@ -26,8 +27,9 @@ class TaskQueueWebView;
 // TaskQueueWebView.
 class TaskForwardingSequence : public gpu::SingleTaskSequence {
  public:
-  explicit TaskForwardingSequence(TaskQueueWebView* task_queue,
-                                  gpu::SyncPointManager* sync_point_manager);
+  TaskForwardingSequence(TaskQueueWebView* task_queue,
+                         gpu::SyncPointManager* sync_point_manager,
+                         gpu::Scheduler* scheduler);
 
   TaskForwardingSequence(const TaskForwardingSequence&) = delete;
   TaskForwardingSequence& operator=(const TaskForwardingSequence&) = delete;
@@ -61,11 +63,13 @@ class TaskForwardingSequence : public gpu::SingleTaskSequence {
       std::vector<gpu::SyncToken> sync_token_fences,
       uint32_t order_num,
       gpu::SyncPointManager* sync_point_manager,
+      gpu::Scheduler* scheduler,
       scoped_refptr<gpu::SyncPointOrderData> sync_point_order_data);
 
   // Raw pointer refer to the global instance.
   const raw_ptr<TaskQueueWebView> task_queue_;
   const raw_ptr<gpu::SyncPointManager> sync_point_manager_;
+  const raw_ptr<gpu::Scheduler> scheduler_;
   scoped_refptr<gpu::SyncPointOrderData> sync_point_order_data_;
 };
 

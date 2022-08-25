@@ -14,6 +14,10 @@ gpu::SharedImageManager* ContentGpuClient::GetSharedImageManager() {
   return nullptr;
 }
 
+gpu::Scheduler* ContentGpuClient::GetScheduler() {
+  return nullptr;
+}
+
 viz::VizCompositorThreadRunner*
 ContentGpuClient::GetVizCompositorThreadRunner() {
   return nullptr;

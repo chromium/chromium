@@ -487,6 +487,11 @@ gpu::SharedImageManager* GetSharedImageManager() {
   return GpuServiceWebView::GetInstance()->shared_image_manager();
 }
 
+gpu::Scheduler* GetScheduler() {
+  DCHECK(GpuServiceWebView::GetInstance());
+  return GpuServiceWebView::GetInstance()->scheduler();
+}
+
 viz::VizCompositorThreadRunner* GetVizCompositorThreadRunner() {
   return VizCompositorThreadRunnerWebView::GetInstance();
 }
@@ -497,6 +502,7 @@ content::ContentGpuClient* AwMainDelegate::CreateContentGpuClient() {
   content_gpu_client_ = std::make_unique<AwContentGpuClient>(
       base::BindRepeating(&GetSyncPointManager),
       base::BindRepeating(&GetSharedImageManager),
+      base::BindRepeating(&GetScheduler),
       base::BindRepeating(&GetVizCompositorThreadRunner));
   return content_gpu_client_.get();
 }
