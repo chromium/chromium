@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/download/bubble/download_bubble_security_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_dialog_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -141,6 +142,11 @@ void DownloadToolbarButtonView::Disable() {
 
 void DownloadToolbarButtonView::UpdateDownloadIcon() {
   UpdateIcon();
+}
+
+bool DownloadToolbarButtonView::IsFullscreenWithParentViewHidden() {
+  return browser_->window()->IsFullscreen() &&
+         !browser_->window()->IsToolbarVisible();
 }
 
 // This function shows the partial view. If the main view is already showing,

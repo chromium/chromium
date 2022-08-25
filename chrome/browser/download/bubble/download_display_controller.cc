@@ -101,17 +101,22 @@ void DownloadDisplayController::OnNewItem(bool show_details) {
   std::vector<std::unique_ptr<DownloadUIModel>> all_models =
       bubble_controller_->GetAllItemsToDisplay();
   UpdateToolbarButtonState(all_models);
-  if (show_details) {
-    if (browser_->window()->IsFullscreen()) {
-      browser_->exclusive_access_manager()
-          ->context()
-          ->UpdateExclusiveAccessExitBubbleContent(
-              GURL(), EXCLUSIVE_ACCESS_BUBBLE_TYPE_DOWNLOAD_STARTED,
-              ExclusiveAccessBubbleHideCallback(),
-              /*force_update=*/true);
-    } else if (download::ShouldShowDetailsAutomatically(browser_->profile())) {
-      display_->ShowDetails();
+  if (!show_details) {
+    return;
+  }
+  if (display_->IsFullscreenWithParentViewHidden()) {
+    fullscreen_notification_shown_ = true;
+    ExclusiveAccessContext* exclusive_access_context =
+        browser_->exclusive_access_manager()->context();
+    // exclusive_access_context can be null in tests.
+    if (exclusive_access_context) {
+      exclusive_access_context->UpdateExclusiveAccessExitBubbleContent(
+          GURL(), EXCLUSIVE_ACCESS_BUBBLE_TYPE_DOWNLOAD_STARTED,
+          ExclusiveAccessBubbleHideCallback(),
+          /*force_update=*/true);
     }
+  } else if (download::ShouldShowDetailsAutomatically(browser_->profile())) {
+    display_->ShowDetails();
   }
 }
 
@@ -123,7 +128,9 @@ void DownloadDisplayController::OnUpdatedItem(bool is_done,
   if (is_done) {
     ScheduleToolbarDisappearance(kToolbarIconVisibilityTimeInterval);
     if (show_details_if_done) {
-      if (browser_->window()->IsFullscreen()) {
+      if (display_->IsFullscreenWithParentViewHidden()) {
+        // Suppress the complete event for now because the parent view is
+        // hidden.
         download_completed_while_fullscreen_ = true;
       } else if (download::ShouldShowDetailsAutomatically(
                      browser_->profile())) {
@@ -202,8 +209,11 @@ void DownloadDisplayController::ListenToFullScreenChanges() {
 }
 
 void DownloadDisplayController::OnFullscreenStateChanged() {
-  if (browser_->window()->IsFullscreen())
+  if (!fullscreen_notification_shown_ ||
+      display_->IsFullscreenWithParentViewHidden()) {
     return;
+  }
+  fullscreen_notification_shown_ = false;
 
   std::vector<std::unique_ptr<DownloadUIModel>> all_models =
       bubble_controller_->GetAllItemsToDisplay();
@@ -235,7 +245,7 @@ void DownloadDisplayController::UpdateToolbarButtonState(
                                   last_complete_time)) {
       icon_info_.is_active = true;
       ScheduleToolbarInactive(kToolbarIconActiveTimeInterval);
-    } else if (!browser_->window()->IsFullscreen() &&
+    } else if (!display_->IsFullscreenWithParentViewHidden() &&
                download_completed_while_fullscreen_) {
       icon_info_.is_active = true;
       ScheduleToolbarInactive(kToolbarIconActiveTimeInterval);

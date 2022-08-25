@@ -26,6 +26,9 @@ class DownloadDisplay {
   virtual void HideDetails() = 0;
   // Returns whether the details are visible.
   virtual bool IsShowingDetails() = 0;
+  // Returns whether it is currently in fullscreen and the view that hosts the
+  // download display is hidden.
+  virtual bool IsFullscreenWithParentViewHidden() = 0;
 
  protected:
   virtual ~DownloadDisplay();
