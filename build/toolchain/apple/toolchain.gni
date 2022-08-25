@@ -32,9 +32,10 @@ declare_args() {
 }
 
 if (swift_toolchain_path == "" && build_with_chromium) {
-  # Version of the hermetic compiler. Needs to be updated when a new version
-  # of the compiler is rolled to ensure that all outputs are regenerated.
-  swiftc_version = "llvm:d5f117e38620783-swift:3a67c1adc57fc80"
+  # Version of the hermetic compiler. Needs to be updated when a new version of
+  # the compiler is rolled to ensure that all outputs are regenerated. It must
+  # be kept in sync with the value in //third_party/swift-toolchain/3pp/3pp.pb.
+  swiftc_version = "swift-5.7-20220717"
 
   # Use the hermetic swift toolchain.
   swift_toolchain_path =
