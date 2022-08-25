@@ -182,8 +182,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
     // SearchDelegate implementation.
     @Override
     public void onSearchTextChanged(String query) {
-        resetModel();
-        startQuery(query);
+        setQueryState(QueryState.forQuery(query, mDelegate.getSearchEmptyString()));
     }
 
     @Override
@@ -214,10 +213,8 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
 
         mQueryState = queryState;
         mToolbarModel.set(HistoryClustersToolbarProperties.QUERY_STATE, queryState);
-        if (!queryState.isSearching()) {
-            resetModel();
-            startQuery(mQueryState.getQuery());
-        }
+        resetModel();
+        startQuery(mQueryState.getQuery());
     }
 
     @VisibleForTesting
@@ -371,8 +368,9 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
     }
 
     private void queryComplete(HistoryClustersResult result) {
-        boolean isQueryLess = !mQueryState.isSearching();
-        if (isQueryLess) {
+        boolean showClustersCollapsed =
+                !mQueryState.isSearching() || mQueryState.getQuery().isEmpty();
+        if (showClustersCollapsed) {
             ensureHeaders();
             for (Map.Entry<String, Integer> entry : result.getLabelCounts().entrySet()) {
                 // Check if label exists in the model already

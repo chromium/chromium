@@ -48,8 +48,11 @@ class HistoryClustersViewBinder {
         if (key == HistoryClustersToolbarProperties.QUERY_STATE) {
             QueryState queryState = model.get(HistoryClustersToolbarProperties.QUERY_STATE);
             if (queryState.isSearching()) {
-                toolbar.showSearchView(queryState.getQuery().isEmpty());
-                toolbar.setSearchText(queryState.getQuery());
+                String query = queryState.getQuery();
+                toolbar.setSearchText(query, query.isEmpty());
+                if (!toolbar.isSearching()) {
+                    toolbar.showSearchView(queryState.getQuery().isEmpty());
+                }
             } else {
                 toolbar.hideSearchView();
             }
