@@ -147,6 +147,10 @@ void HTMLFrameSetElement::ParseAttribute(
     } else {
       border_set_ = false;
     }
+    if (auto* box = GetLayoutBox()) {
+      box->SetNeedsLayoutAndFullPaintInvalidation(
+          layout_invalidation_reason::kAttributeChanged);
+    }
   } else if (name == html_names::kBordercolorAttr) {
     border_color_set_ = !value.IsEmpty();
   } else if (name == html_names::kOnafterprintAttr) {
