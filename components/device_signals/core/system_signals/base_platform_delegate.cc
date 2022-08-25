@@ -59,22 +59,4 @@ FilePathMap<bool> BasePlatformDelegate::AreExecutablesRunning(
   return running_map;
 }
 
-FilePathMap<ExecutableMetadata> BasePlatformDelegate::GetAllExecutableMetadata(
-    const FilePathSet& file_paths) {
-  FilePathMap<bool> files_are_running_map = AreExecutablesRunning(file_paths);
-
-  FilePathMap<ExecutableMetadata> file_paths_to_metadata_map;
-  for (const auto& file_path : file_paths) {
-    ExecutableMetadata executable_metadata;
-
-    if (files_are_running_map.contains(file_path)) {
-      executable_metadata.is_running = files_are_running_map[file_path];
-    }
-
-    file_paths_to_metadata_map[file_path] = executable_metadata;
-  }
-
-  return file_paths_to_metadata_map;
-}
-
 }  // namespace device_signals

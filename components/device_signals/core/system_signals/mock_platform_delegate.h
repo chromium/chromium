@@ -23,8 +23,8 @@ class MockPlatformDelegate : public PlatformDelegate {
               ResolveFilePath,
               (const base::FilePath&, base::FilePath*),
               (override));
-  MOCK_METHOD(FilePathMap<ExecutableMetadata>,
-              GetAllExecutableMetadata,
+  MOCK_METHOD(FilePathMap<bool>,
+              AreExecutablesRunning,
               (const FilePathSet&),
               (override));
 };

@@ -3,9 +3,15 @@
 # found in the LICENSE file.
 
 static_library("linux") {
-  public = [ "linux_platform_delegate.h" ]
+  public = [
+    "linux_executable_metadata_service.h",
+    "linux_platform_delegate.h",
+  ]
 
-  sources = [ "linux_platform_delegate.cc" ]
+  sources = [
+    "linux_executable_metadata_service.cc",
+    "linux_platform_delegate.cc",
+  ]
 
   public_deps = [
     "//components/device_signals/core/common",
@@ -14,4 +20,19 @@ static_library("linux") {
   ]
 
   deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "linux_executable_metadata_service_unittest.cc" ]
+
+  deps = [
+    ":linux",
+    "//base",
+    "//components/device_signals/core/common",
+    "//components/device_signals/core/system_signals",
+    "//components/device_signals/core/system_signals:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 }

@@ -8,6 +8,7 @@
 
 #include "components/device_signals/core/common/common_types.h"
 #include "components/device_signals/core/system_signals/file_system_service.h"
+#include "components/device_signals/core/system_signals/linux/linux_executable_metadata_service.h"
 #include "components/device_signals/core/system_signals/linux/linux_platform_delegate.h"
 #include "components/device_signals/core/system_signals/platform_delegate.h"
 
@@ -18,7 +19,10 @@ LinuxSystemSignalsService::LinuxSystemSignalsService(
     : LinuxSystemSignalsService(
           std::move(receiver),
           device_signals::FileSystemService::Create(
-              std::make_unique<device_signals::LinuxPlatformDelegate>())) {}
+              std::make_unique<device_signals::LinuxPlatformDelegate>(),
+              std::make_unique<device_signals::LinuxExecutableMetadataService>(
+                  std::make_unique<device_signals::LinuxPlatformDelegate>()))) {
+}
 
 LinuxSystemSignalsService::LinuxSystemSignalsService(
     mojo::PendingReceiver<device_signals::mojom::SystemSignalsService> receiver,

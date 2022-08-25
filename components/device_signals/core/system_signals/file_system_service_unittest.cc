@@ -13,6 +13,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "components/device_signals/core/common/common_types.h"
+#include "components/device_signals/core/system_signals/executable_metadata_service.h"
+#include "components/device_signals/core/system_signals/mock_executable_metadata_service.h"
 #include "components/device_signals/core/system_signals/mock_platform_delegate.h"
 #include "components/device_signals/core/system_signals/platform_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -61,10 +63,16 @@ class FileSystemServiceTest : public testing::Test {
         std::make_unique<testing::StrictMock<MockPlatformDelegate>>();
     mock_platform_delegate_ = mock_platform_delegate.get();
 
-    file_system_service_ =
-        FileSystemService::Create(std::move(mock_platform_delegate));
+    auto mock_executable_metadata_service =
+        std::make_unique<testing::StrictMock<MockExecutableMetadataService>>();
+    mock_executable_metadata_service_ = mock_executable_metadata_service.get();
 
-    ON_CALL(*mock_platform_delegate_, GetAllExecutableMetadata(FilePathSet()))
+    file_system_service_ =
+        FileSystemService::Create(std::move(mock_platform_delegate),
+                                  std::move(mock_executable_metadata_service));
+
+    ON_CALL(*mock_executable_metadata_service_,
+            GetAllExecutableMetadata(FilePathSet()))
         .WillByDefault(Return(FilePathMap<ExecutableMetadata>()));
   }
 
@@ -85,6 +93,8 @@ class FileSystemServiceTest : public testing::Test {
   }
 
   testing::StrictMock<MockPlatformDelegate>* mock_platform_delegate_;
+  testing::StrictMock<MockExecutableMetadataService>*
+      mock_executable_metadata_service_;
   std::unique_ptr<FileSystemService> file_system_service_;
 };
 
@@ -120,7 +130,7 @@ TEST_F(FileSystemServiceTest, GetSignals_Presence) {
       PresenceValue::kNotFound, PresenceValue::kAccessDenied,
       PresenceValue::kFound};
 
-  EXPECT_CALL(*mock_platform_delegate_,
+  EXPECT_CALL(*mock_executable_metadata_service_,
               GetAllExecutableMetadata(FilePathSet()));
 
   auto file_system_items = file_system_service_->GetSignals(options);
@@ -168,7 +178,7 @@ TEST_F(FileSystemServiceTest, GetSignals_Hash_Success) {
   options.push_back(
       CreateOptions(scoped_dir.GetPath(), /*compute_sha256=*/true, false));
 
-  EXPECT_CALL(*mock_platform_delegate_,
+  EXPECT_CALL(*mock_executable_metadata_service_,
               GetAllExecutableMetadata(FilePathSet()));
 
   auto file_system_items = file_system_service_->GetSignals(options);
@@ -220,7 +230,7 @@ TEST_F(FileSystemServiceTest, GetSignals_ExecutableMetadata) {
   FilePathMap<ExecutableMetadata> result_metadata_map;
   result_metadata_map.insert({first_found_path_resolved, executable_metadata});
 
-  EXPECT_CALL(*mock_platform_delegate_,
+  EXPECT_CALL(*mock_executable_metadata_service_,
               GetAllExecutableMetadata(expected_path_set))
       .WillOnce(Return(result_metadata_map));
 

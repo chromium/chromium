@@ -14,8 +14,6 @@ class FilePath;
 
 namespace device_signals {
 
-struct ExecutableMetadata;
-
 struct CustomFilePathComparator {
   bool operator()(const base::FilePath& a, const base::FilePath& b) const;
 };
@@ -42,8 +40,10 @@ class PlatformDelegate {
   virtual bool ResolveFilePath(const base::FilePath& file_path,
                                base::FilePath* resolved_file_path) = 0;
 
-  // Collects and return executable metadata for all the files in `file_paths`.
-  virtual FilePathMap<ExecutableMetadata> GetAllExecutableMetadata(
+  // Returns a map of file paths to whether a currently running process was
+  // spawned from that file. The set of file paths in the map are specified by
+  // `file_paths`.
+  virtual FilePathMap<bool> AreExecutablesRunning(
       const FilePathSet& file_paths) = 0;
 };
 

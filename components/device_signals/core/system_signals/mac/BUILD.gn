@@ -3,9 +3,15 @@
 # found in the LICENSE file.
 
 static_library("mac") {
-  public = [ "mac_platform_delegate.h" ]
+  public = [
+    "mac_executable_metadata_service.h",
+    "mac_platform_delegate.h",
+  ]
 
-  sources = [ "mac_platform_delegate.mm" ]
+  sources = [
+    "mac_executable_metadata_service.mm",
+    "mac_platform_delegate.mm",
+  ]
 
   public_deps = [
     "//components/device_signals/core/common",
@@ -14,4 +20,19 @@ static_library("mac") {
   ]
 
   deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "mac_executable_metadata_service_unittest.mm" ]
+
+  deps = [
+    ":mac",
+    "//base",
+    "//components/device_signals/core/common",
+    "//components/device_signals/core/system_signals",
+    "//components/device_signals/core/system_signals:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 }

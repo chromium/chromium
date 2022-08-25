@@ -7,9 +7,11 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "components/device_signals/core/common/common_types.h"
+#include "components/device_signals/core/system_signals/executable_metadata_service.h"
 #include "components/device_signals/core/system_signals/hashing_utils.h"
 #include "components/device_signals/core/system_signals/platform_delegate.h"
 
@@ -30,7 +32,9 @@ std::vector<FileSystemItem> GetAllItems(
 
 class FileSystemServiceImpl : public FileSystemService {
  public:
-  explicit FileSystemServiceImpl(std::unique_ptr<PlatformDelegate> delegate);
+  explicit FileSystemServiceImpl(
+      std::unique_ptr<PlatformDelegate> delegate,
+      std::unique_ptr<ExecutableMetadataService> executable_metadata_service);
   ~FileSystemServiceImpl() override;
 
   // FileSystemService:
@@ -42,17 +46,25 @@ class FileSystemServiceImpl : public FileSystemService {
 
  private:
   std::unique_ptr<PlatformDelegate> delegate_;
+  std::unique_ptr<ExecutableMetadataService> executable_metadata_service_;
 };
 
 // static
 std::unique_ptr<FileSystemService> FileSystemService::Create(
-    std::unique_ptr<PlatformDelegate> delegate) {
-  return std::make_unique<FileSystemServiceImpl>(std::move(delegate));
+    std::unique_ptr<PlatformDelegate> delegate,
+    std::unique_ptr<ExecutableMetadataService> executable_metadata_service) {
+  return std::make_unique<FileSystemServiceImpl>(
+      std::move(delegate), std::move(executable_metadata_service));
 }
 
 FileSystemServiceImpl::FileSystemServiceImpl(
-    std::unique_ptr<PlatformDelegate> delegate)
-    : delegate_(std::move(delegate)) {}
+    std::unique_ptr<PlatformDelegate> delegate,
+    std::unique_ptr<ExecutableMetadataService> executable_metadata_service)
+    : delegate_(std::move(delegate)),
+      executable_metadata_service_(std::move(executable_metadata_service)) {
+  DCHECK(delegate_);
+  DCHECK(executable_metadata_service_);
+}
 
 FileSystemServiceImpl::~FileSystemServiceImpl() = default;
 
@@ -100,7 +112,7 @@ std::vector<FileSystemItem> FileSystemServiceImpl::GetSignals(
   }
 
   auto collected_executable_metadata =
-      delegate_->GetAllExecutableMetadata(executable_paths);
+      executable_metadata_service_->GetAllExecutableMetadata(executable_paths);
 
   for (const auto& path_metadata_pair : collected_executable_metadata) {
     if (!resolved_paths_to_item_map.contains(path_metadata_pair.first)) {
