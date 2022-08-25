@@ -53,7 +53,9 @@ bool OriginVerifier::VerifyOrigin(JNIEnv* env,
     return false;
 
   std::string package_name = ConvertJavaStringToUTF8(env, j_package_name);
-  std::string fingerprint = ConvertJavaStringToUTF8(env, j_fingerprint);
+  // TODO(swestphal): pass all fingerprints for verification.
+  std::vector<std::string> fingerprints{
+      ConvertJavaStringToUTF8(env, j_fingerprint)};
   std::string origin = ConvertJavaStringToUTF8(env, j_origin);
   std::string relationship = ConvertJavaStringToUTF8(env, j_relationship);
 
@@ -66,7 +68,7 @@ bool OriginVerifier::VerifyOrigin(JNIEnv* env,
   auto* asset_link_handler_ptr = asset_link_handler.get();
 
   return asset_link_handler_ptr->CheckDigitalAssetLinkRelationshipForAndroidApp(
-      origin, relationship, fingerprint, package_name,
+      origin, relationship, std::move(fingerprints), package_name,
       base::BindOnce(&customtabs::OriginVerifier::OnRelationshipCheckComplete,
                      base::Unretained(this), std::move(asset_link_handler),
                      origin));
