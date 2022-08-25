@@ -48163,6 +48163,14 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   </int>
 </enum>
 
+<enum name="HistoryClustersSurvey">
+  <summary>
+    Logs which HaTS survey was requested by the History Clusters UI code.
+  </summary>
+  <int value="0" label="HistoryEntrypointSurveyRequested"/>
+  <int value="1" label="OmniboxEntrypointSurveyRequested"/>
+</enum>
+
 <enum name="HistoryFaviconsRecoveryEnum">
   <obsolete>
     History.FaviconsRecovery no longer tracked as of March 2017.

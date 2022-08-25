@@ -1030,6 +1030,57 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Clusters.Survey.CanShowAnySurvey" enum="Boolean"
+    expires_after="2022-12-01">
+  <owner>tommycli@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;Journeys</component>
+  <summary>
+    Recorded each time a History Clusters HaTS survey was requested. Records if
+    the HaTS service can show ANY survey BEFORE we make the actual request.
+
+    Used for debugging missing HaTs survey impressions.
+  </summary>
+</histogram>
+
+<histogram name="History.Clusters.Survey.CanShowSurvey" enum="Boolean"
+    expires_after="2022-12-01">
+  <owner>tommycli@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;Journeys</component>
+  <summary>
+    Recorded each time a History Clusters HaTS survey was requested. Records if
+    the HaTS service can show this survey BEFORE we make the actual request.
+
+    Used for debugging missing HaTs survey impressions.
+  </summary>
+</histogram>
+
+<histogram name="History.Clusters.Survey.Requested"
+    enum="HistoryClustersSurvey" expires_after="2022-12-01">
+  <owner>tommycli@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;Journeys</component>
+  <summary>
+    Recorded each time a History Clusters HaTS survey was requested. Records
+    which entrypoint survey was requested.
+  </summary>
+</histogram>
+
+<histogram name="History.Clusters.Survey.Success" enum="Boolean"
+    expires_after="2022-12-01">
+  <owner>tommycli@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;Journeys</component>
+  <summary>
+    Recorded each time a History Clusters HaTS survey was requested. Records if
+    the survey request succeeded. Note that a true count doesn't mean that the
+    survey was actually shown. It only measures if the HaTS service accepted the
+    request. The survey may still not be shown by HaTS for a different reason,
+    such as another survey being shown too recently.
+  </summary>
+</histogram>
+
 <histogram name="History.Clusters.UIActions.Cluster.{ClusterAction}"
     units="index" expires_after="2022-08-25">
   <owner>mahmadi@chromium.org</owner>

@@ -5847,6 +5847,31 @@
             ]
         }
     ],
+    "JourneysHaTSSurvey": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledOmniboxEntrypoint",
+                    "params": {
+                        "en_site_id": "5GjwX6M8T0ugnJ3q1cK0SahkU1Bm",
+                        "probability": "1.0",
+                        "survey": "journeys-omnibox-entrypoint",
+                        "survey-delay-duration": "0s"
+                    },
+                    "enable_features": [
+                        "JourneysSurveyForOmniboxEntrypoint"
+                    ]
+                }
+            ]
+        }
+    ],
     "JourneysHideSingleDomainClusters": [
         {
             "platforms": [

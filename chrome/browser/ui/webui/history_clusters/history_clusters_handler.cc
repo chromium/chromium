@@ -209,6 +209,24 @@ absl::optional<mojom::SearchQueryPtr> SearchQueryToMojom(
   return search_query_mojom;
 }
 
+void ShowSurveyAndLogMetrics(HatsService* service,
+                             content::WebContents* contents,
+                             const std::string& trigger,
+                             base::TimeDelta delay) {
+  DCHECK(service);
+  DCHECK(contents);
+
+  base::UmaHistogramBoolean("History.Clusters.Survey.CanShowAnySurvey",
+                            service->CanShowAnySurvey(/*user_prompted=*/false));
+  base::UmaHistogramBoolean("History.Clusters.Survey.CanShowSurvey",
+                            service->CanShowSurvey(trigger));
+
+  bool success = service->LaunchDelayedSurveyForWebContents(
+      kHatsSurveyTriggerJourneysHistoryEntrypoint, contents,
+      delay.InMilliseconds());
+  base::UmaHistogramBoolean("History.Clusters.Survey.Success", success);
+}
+
 }  // namespace
 
 // Creates a `mojom::QueryResultPtr` using the original `query`, if the query
@@ -506,21 +524,33 @@ void HistoryClustersHandler::LaunchJourneysSurvey() {
     return;
   }
 
+  constexpr char kHistoryClustersSurveyRequestedUmaName[] =
+      "History.Clusters.Survey.Requested";
+  // These values must match enums.xml, and should not be modified.
+  enum HistoryClustersSurvey {
+    kHistoryEntrypoint = 0,
+    kOmniboxEntrypoint = 1,
+    kMaxValue = kOmniboxEntrypoint,
+  };
   if (*initial_state ==
           history_clusters::HistoryClustersInitialState::kSameDocument &&
       base::FeatureList::IsEnabled(kJourneysSurveyForHistoryEntrypoint)) {
     // Same document navigation basically means clicking over from History.
-    hats_service->LaunchDelayedSurveyForWebContents(
-        kHatsSurveyTriggerJourneysHistoryEntrypoint, web_contents_,
-        kJourneysSurveyForHistoryEntrypointDelay.Get().InMilliseconds());
+    ShowSurveyAndLogMetrics(hats_service, web_contents_,
+                            kHatsSurveyTriggerJourneysHistoryEntrypoint,
+                            kJourneysSurveyForHistoryEntrypointDelay.Get());
+    base::UmaHistogramEnumeration(kHistoryClustersSurveyRequestedUmaName,
+                                  kHistoryEntrypoint);
   } else if (*initial_state == history_clusters::HistoryClustersInitialState::
                                    kIndirectNavigation &&
              base::FeatureList::IsEnabled(
                  kJourneysSurveyForOmniboxEntrypoint)) {
     // Indirect navigation basically means from the omnibox.
-    hats_service->LaunchDelayedSurveyForWebContents(
-        kHatsSurveyTriggerJourneysOmniboxEntrypoint, web_contents_,
-        kJourneysSurveyForOmniboxEntrypointDelay.Get().InMilliseconds());
+    ShowSurveyAndLogMetrics(hats_service, web_contents_,
+                            kHatsSurveyTriggerJourneysOmniboxEntrypoint,
+                            kJourneysSurveyForOmniboxEntrypointDelay.Get());
+    base::UmaHistogramEnumeration(kHistoryClustersSurveyRequestedUmaName,
+                                  kOmniboxEntrypoint);
   }
 }
 
