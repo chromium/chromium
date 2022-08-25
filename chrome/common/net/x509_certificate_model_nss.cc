@@ -14,8 +14,6 @@
 
 #include "chrome/third_party/mozilla_security_manager/nsNSSCertHelper.h"
 #include "chrome/third_party/mozilla_security_manager/nsNSSCertificate.h"
-#include "crypto/nss_util.h"
-#include "crypto/scoped_nss_types.h"
 #include "net/cert/x509_util_nss.h"
 
 namespace psm = mozilla_security_manager;
