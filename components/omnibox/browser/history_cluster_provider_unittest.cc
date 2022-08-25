@@ -19,6 +19,7 @@
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/fake_autocomplete_provider.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
+#include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/search_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -272,7 +273,7 @@ TEST_F(HistoryClustersProviderTest, MultipassSyncSearchMatches) {
   EXPECT_THAT(on_provider_update_calls_, testing::ElementsAre(true));
 }
 
-TEST_F(HistoryClustersProviderTest, NoKeyworddMatches) {
+TEST_F(HistoryClustersProviderTest, NoKeywordMatches) {
   // Test the case where none of the search matches match a keyword.
 
   AutocompleteInput input;
@@ -390,4 +391,44 @@ TEST_F(HistoryClustersProviderTest, SearchIntent_HighScoringNav) {
   EXPECT_TRUE(provider_->done());
   ASSERT_EQ(provider_->matches().size(), 1u);
   EXPECT_THAT(on_provider_update_calls_, testing::ElementsAre(true));
+}
+
+TEST_F(HistoryClustersProviderTest, Counterfactual) {
+  const auto verify_feature_triggered = [&](bool expected) {
+    auto* triggered_feature_service =
+        autocomplete_provider_client_->GetOmniboxTriggeredFeatureService();
+    OmniboxTriggeredFeatureService::Features triggered_features;
+    triggered_feature_service->RecordToLogs(&triggered_features);
+    triggered_feature_service->ResetSession();
+    if (expected) {
+      ASSERT_TRUE(!triggered_features.empty());
+      EXPECT_EQ(
+          *triggered_features.begin(),
+          OmniboxTriggeredFeatureService::Feature::kHistoryClusterSuggestion);
+    } else
+      EXPECT_TRUE(triggered_features.empty());
+  };
+
+  AutocompleteInput input;
+  input.set_omit_asynchronous_matches(false);
+
+  // When there are no matches, should not log the feature triggered.
+  search_provider_->done_ = true;
+  provider_->Start(input, false);
+  EXPECT_TRUE(provider_->matches().empty());
+  verify_feature_triggered(false);
+
+  // When there are matches, should log the feature triggered.
+  search_provider_->matches_ = {CreateMatch(u"keyword")};
+  provider_->Start(input, false);
+  EXPECT_FALSE(provider_->matches().empty());
+  verify_feature_triggered(true);
+
+  // When the CF param is true and there are matches, should (a) log the feature
+  // triggered and (b) hide the matches.
+  config_.omnibox_history_cluster_provider_counterfactual = true;
+  history_clusters::SetConfigForTesting(config_);
+  provider_->Start(input, false);
+  EXPECT_TRUE(provider_->matches().empty());
+  verify_feature_triggered(true);
 }

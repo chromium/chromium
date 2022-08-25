@@ -107,6 +107,12 @@ Config::Config() {
   omnibox_history_cluster_provider =
       base::FeatureList::IsEnabled(internal::kOmniboxHistoryClusterProvider);
 
+  omnibox_history_cluster_provider_counterfactual =
+      base::GetFieldTrialParamByFeatureAsBool(
+          internal::kOmniboxHistoryClusterProvider,
+          "omnibox_history_cluster_provider_counterfactual",
+          omnibox_history_cluster_provider_counterfactual);
+
   omnibox_history_cluster_provider_score =
       base::GetFieldTrialParamByFeatureAsInt(
           internal::kOmniboxHistoryClusterProvider,

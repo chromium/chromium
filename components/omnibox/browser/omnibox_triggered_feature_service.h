@@ -22,7 +22,8 @@ class OmniboxTriggeredFeatureService {
     kBookmarkPaths = 1,
     kShortBookmarkSuggestionsByTotalInputLength = 2,
     kFuzzyUrlSuggestions = 3,
-    kMaxValue = kFuzzyUrlSuggestions,
+    kHistoryClusterSuggestion = 4,
+    kMaxValue = kHistoryClusterSuggestion,
   };
   using Features = std::set<Feature>;
 

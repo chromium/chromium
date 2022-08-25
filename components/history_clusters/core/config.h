@@ -119,6 +119,12 @@ struct Config {
   // only have 1 enabled.
   bool omnibox_history_cluster_provider = false;
 
+  // If `omnibox_history_cluster_provider` is enabled, hides its suggestions but
+  // counterfactual logs when it has suggestions (though not necessarily shown
+  // suggestions). Does nothing if `omnibox_history_cluster_provider` is
+  // disabled.
+  bool omnibox_history_cluster_provider_counterfactual = false;
+
   // The score the `HistoryClusterProvider` will assign to journey suggestions.
   // Meaningless if `omnibox_history_cluster_provider` is disabled. 900 seems to
   // work well in local tests. It's high enough to outscore search suggestions

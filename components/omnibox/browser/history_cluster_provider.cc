@@ -108,7 +108,12 @@ bool HistoryClusterProvider::CreateMatches() {
   for (const auto& search_match : search_provider_->matches()) {
     if (client_->GetHistoryClustersService()->DoesQueryMatchAnyCluster(
             base::UTF16ToUTF8(search_match.contents))) {
-      matches_.push_back(CreateMatch(search_match.contents));
+      client_->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
+          OmniboxTriggeredFeatureService::Feature::kHistoryClusterSuggestion);
+      if (!history_clusters::GetConfig()
+               .omnibox_history_cluster_provider_counterfactual) {
+        matches_.push_back(CreateMatch(search_match.contents));
+      }
       return true;
     }
   }
