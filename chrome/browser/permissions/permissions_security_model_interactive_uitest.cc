@@ -2265,29 +2265,57 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension,
       "permissions_test/request_from_popup_v3/has_permissions");
 }
 
+// crbug.com/1356314 Failed on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_OptionsPageNoPermissonsV2Test \
+  DISABLED_OptionsPageNoPermissonsV2Test
+#else
+#define MAYBE_OptionsPageNoPermissonsV2Test OptionsPageNoPermissonsV2Test
+#endif
 IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension,
-                       OptionsPageNoPermissonsV2Test) {
+                       MAYBE_OptionsPageNoPermissonsV2Test) {
   VerifyExtensionsOptionsPage(
       "permissions_test/request_from_options_v2/no_permissions",
       /*shown_prompts=*/4);
 }
 
+// crbug.com/1356314 Failed on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_OptionsPageHasPermissonsV2Test \
+  DISABLED_OptionsPageHasPermissonsV2Test
+#else
+#define MAYBE_OptionsPageHasPermissonsV2Test OptionsPageHasPermissonsV2Test
+#endif
 IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension,
-                       OptionsPageHasPermissonsV2Test) {
+                       MAYBE_OptionsPageHasPermissonsV2Test) {
   VerifyExtensionsOptionsPage(
       "permissions_test/request_from_options_v2/has_permissions",
       /*shown_prompts=*/2);
 }
 
+// crbug.com/1356314 Failed on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_OptionsPageNoPermissonsV3Test \
+  DISABLED_OptionsPageNoPermissonsV3Test
+#else
+#define MAYBE_OptionsPageNoPermissonsV3Test OptionsPageNoPermissonsV3Test
+#endif
 IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension,
-                       OptionsPageNoPermissonsV3Test) {
+                       MAYBE_OptionsPageNoPermissonsV3Test) {
   VerifyExtensionsOptionsPage(
       "permissions_test/request_from_options_v3/no_permissions",
       /*shown_prompts=*/4);
 }
 
+// crbug.com/1356314 Failed on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_OptionsPageHasPermissonsV3Test \
+  DISABLED_OptionsPageHasPermissonsV3Test
+#else
+#define MAYBE_OptionsPageHasPermissonsV3Test OptionsPageHasPermissonsV3Test
+#endif
 IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension,
-                       OptionsPageHasPermissonsV3Test) {
+                       MAYBE_OptionsPageHasPermissonsV3Test) {
   VerifyExtensionsOptionsPage(
       "permissions_test/request_from_options_v3/has_permissions",
       /*shown_prompts=*/2);
