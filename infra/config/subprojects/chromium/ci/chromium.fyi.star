@@ -1679,6 +1679,7 @@ fyi_coverage_builder(
     schedule = "triggered",
     triggered_by = [],
     use_java_coverage = True,
+    export_coverage_to_zoss = True,
     goma_backend = None,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
