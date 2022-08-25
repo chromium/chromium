@@ -69,8 +69,9 @@ void EnableTabMirroringForOrigin(PrefService* prefs,
                                  const std::string& origin) {
   ListPrefUpdate update(prefs,
                         media_router::prefs::kMediaRouterTabMirroringSources);
-  if (!base::Contains(update->GetListDeprecated(), base::Value(origin)))
-    update->Append(origin);
+  base::Value::List& list = update->GetList();
+  if (!base::Contains(list, base::Value(origin)))
+    list.Append(origin);
 }
 #endif
 
@@ -799,7 +800,7 @@ TEST_F(PresentationServiceDelegateImplTest, AutoJoinRequest) {
   {
     ListPrefUpdate update(profile()->GetPrefs(),
                           prefs::kMediaRouterTabMirroringSources);
-    update->EraseListValue(base::Value(origin));
+    update->GetList().EraseValue(base::Value(origin));
   }
 
   // Auto-join requests should now go through.
@@ -857,7 +858,7 @@ TEST_F(PresentationServiceDelegateImplIncognitoTest, AutoJoinRequest) {
     ListPrefUpdate update(
         profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)->GetPrefs(),
         prefs::kMediaRouterTabMirroringSources);
-    update->EraseListValue(base::Value(origin));
+    update->GetList().EraseValue(base::Value(origin));
   }
 
   // Auto-join requests should now go through.
