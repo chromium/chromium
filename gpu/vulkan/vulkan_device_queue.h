@@ -71,7 +71,8 @@ class COMPONENT_EXPORT(VULKAN) VulkanDeviceQueue {
       VkQueue vk_queue,
       uint32_t vk_queue_index,
       gfx::ExtensionSet enabled_extensions,
-      const VkPhysicalDeviceFeatures2& vk_physical_device_features2);
+      const VkPhysicalDeviceFeatures2& vk_physical_device_features2,
+      VmaAllocator vma_allocator);
 
   const gfx::ExtensionSet& enabled_extensions() const {
     return enabled_extensions_;
@@ -146,6 +147,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanDeviceQueue {
   uint32_t vk_queue_index_ = 0;
   VkInstance vk_instance_ = VK_NULL_HANDLE;
   raw_ptr<VulkanInstance> instance_ = nullptr;
+  VmaAllocator owned_vma_allocator_ = VK_NULL_HANDLE;
   VmaAllocator vma_allocator_ = VK_NULL_HANDLE;
   std::unique_ptr<VulkanFenceHelper> cleanup_helper_;
   VkPhysicalDeviceFeatures2 enabled_device_features_2_{
