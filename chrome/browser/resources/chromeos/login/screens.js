@@ -27,7 +27,7 @@ import './screens/common/marketing_opt_in.m.js';
 import './screens/common/multidevice_setup.m.js';
 import './screens/common/offline_ad_login.m.js';
 import './screens/common/oobe_eula.m.js';
-import './screens/common/oobe_reset.m.js';
+import './screens/common/oobe_reset.js';
 import './screens/common/os_install.m.js';
 import './screens/common/os_trial.m.js';
 import './screens/common/parental_handoff.m.js';

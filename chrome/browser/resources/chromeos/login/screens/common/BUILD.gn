@@ -32,7 +32,6 @@ group("polymer3_elements") {
     ":multidevice_setup_module",
     ":offline_ad_login_module",
     ":oobe_eula_module",
-    ":oobe_reset_module",
     ":os_install_module",
     ":os_trial_module",
     ":parental_handoff_module",
@@ -81,7 +80,7 @@ js_type_check("closure_compile_local") {
     ":marketing_opt_in.m",
     ":offline_ad_login.m",
     ":oobe_eula.m",
-    ":oobe_reset.m",
+    ":oobe_reset",
     ":os_install.m",
     ":os_trial.m",
     ":parental_handoff.m",
@@ -432,8 +431,8 @@ js_library("oobe_eula.m") {
   extra_deps = [ ":oobe_eula_module" ]
 }
 
-js_library("oobe_reset.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/oobe_reset.m.js" ]
+js_library("oobe_reset") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/oobe_reset.js" ]
   deps = [
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
@@ -444,7 +443,7 @@ js_library("oobe_reset.m") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:util.m",
   ]
-  extra_deps = [ ":oobe_reset_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("os_install.m") {
@@ -819,15 +818,6 @@ polymer_modulizer("oobe_eula") {
   migrated_imports = oobe_migrated_imports
 }
 
-polymer_modulizer("oobe_reset") {
-  js_file = "oobe_reset.js"
-  html_file = "oobe_reset.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  namespace_rewrites = oobe_namespace_rewrites
-  migrated_imports = oobe_migrated_imports
-}
-
 polymer_modulizer("os_install") {
   js_file = "os_install.js"
   html_file = "os_install.html"
@@ -949,5 +939,6 @@ html_to_js("web_components") {
   js_files = [
     "adb_sideloading.js",
     "arc_terms_of_service.js",
+    "oobe_reset.js",
   ]
 }
