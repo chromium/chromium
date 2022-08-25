@@ -1018,39 +1018,13 @@ bool VisitAnnotationsDatabase::MigrateClustersAddColumns() {
          CreateClustersTable() && CreateClustersAndVisitsTableAndIndex();
 }
 
-bool VisitAnnotationsDatabase::CreateClustersTable() {
-  return GetDB().Execute(
-      "CREATE TABLE IF NOT EXISTS clusters("
-      "cluster_id INTEGER PRIMARY KEY,"
-      "should_show_on_prominent_ui_surfaces BOOLEAN NOT NULL,"
-      "label VARCHAR NOT NULL,"
-      "raw_label VARCHAR NOT NULL)");
-}
-
-bool VisitAnnotationsDatabase::CreateClustersAndVisitsTableAndIndex() {
-  return GetDB().Execute(
-             "CREATE TABLE IF NOT EXISTS clusters_and_visits("
-             "cluster_id INTEGER NOT NULL,"
-             "visit_id INTEGER NOT NULL,"
-             "score NUMERIC NOT NULL,"
-             "engagement_score NUMERIC NOT NULL,"
-             "url_for_deduping LONGVARCHAR NOT NULL,"
-             "normalized_url LONGVARCHAR NOT NULL,"
-             "url_for_display LONGVARCHAR NOT NULL,"
-             "PRIMARY KEY(cluster_id,visit_id))"
-             "WITHOUT ROWID") &&
-         GetDB().Execute(
-             "CREATE INDEX IF NOT EXISTS clusters_for_visit ON "
-             "clusters_and_visits(visit_id)");
-}
-
 bool VisitAnnotationsDatabase::MigrateAnnotationsAddColumnsForSync() {
   if (!GetDB().DoesTableExist("context_annotations")) {
     NOTREACHED() << " Context annotations table should exist before migration";
     return false;
   }
 
-  // ConteXt annotation columns:
+  // Context annotation columns:
 
   if (!GetDB().DoesColumnExist("context_annotations", "browser_type")) {
     if (!GetDB().Execute(
@@ -1105,7 +1079,7 @@ bool VisitAnnotationsDatabase::MigrateAnnotationsAddColumnsForSync() {
     }
   }
 
-  // ConteNt annotation columns:
+  // Content annotation columns:
 
   if (!GetDB().DoesColumnExist("content_annotations", "page_language")) {
     if (!GetDB().Execute("ALTER TABLE content_annotations "
@@ -1123,6 +1097,32 @@ bool VisitAnnotationsDatabase::MigrateAnnotationsAddColumnsForSync() {
   }
 
   return true;
+}
+
+bool VisitAnnotationsDatabase::CreateClustersTable() {
+  return GetDB().Execute(
+      "CREATE TABLE IF NOT EXISTS clusters("
+      "cluster_id INTEGER PRIMARY KEY,"
+      "should_show_on_prominent_ui_surfaces BOOLEAN NOT NULL,"
+      "label VARCHAR NOT NULL,"
+      "raw_label VARCHAR NOT NULL)");
+}
+
+bool VisitAnnotationsDatabase::CreateClustersAndVisitsTableAndIndex() {
+  return GetDB().Execute(
+             "CREATE TABLE IF NOT EXISTS clusters_and_visits("
+             "cluster_id INTEGER NOT NULL,"
+             "visit_id INTEGER NOT NULL,"
+             "score NUMERIC NOT NULL,"
+             "engagement_score NUMERIC NOT NULL,"
+             "url_for_deduping LONGVARCHAR NOT NULL,"
+             "normalized_url LONGVARCHAR NOT NULL,"
+             "url_for_display LONGVARCHAR NOT NULL,"
+             "PRIMARY KEY(cluster_id,visit_id))"
+             "WITHOUT ROWID") &&
+         GetDB().Execute(
+             "CREATE INDEX IF NOT EXISTS clusters_for_visit ON "
+             "clusters_and_visits(visit_id)");
 }
 
 }  // namespace history
