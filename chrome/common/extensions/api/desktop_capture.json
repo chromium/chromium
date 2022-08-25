@@ -18,6 +18,12 @@
         "type": "string",
         "enum": ["include", "exclude"],
         "description": "Mirrors <a href=\"https://w3c.github.io/mediacapture-screen-share/#dom-systemaudiopreferenceenum\">SystemAudioPreferenceEnum</a>."
+      },
+      {
+        "id": "SelfCapturePreferenceEnum",
+        "type": "string",
+        "enum": ["include", "exclude"],
+        "description": "Mirrors <a href=\"https://w3c.github.io/mediacapture-screen-share/#dom-selfcapturepreferenceenum\">SelfCapturePreferenceEnum</a>."
       }
     ],
     "functions": [
@@ -48,6 +54,11 @@
                 "$ref": "SystemAudioPreferenceEnum",
                 "optional": true,
                 "description": "Mirrors <a href=\"https://w3c.github.io/mediacapture-screen-share/#dom-displaymediastreamconstraints-systemaudio\">systemAudio</a>."
+              },
+              "selfBrowserSurface": {
+                "$ref": "SelfCapturePreferenceEnum",
+                "optional": true,
+                "description": "Mirrors <a href=\"https://w3c.github.io/mediacapture-screen-share/#dom-displaymediastreamconstraints-selfbrowsersurface\">selfBrowserSurface</a>."
               }
             },
             "description": "Mirrors members of <a href=\"https://w3c.github.io/mediacapture-screen-share/#dom-displaymediastreamconstraints\">DisplayMediaStreamConstraints</a> which need to be applied before the user makes their selection, and must therefore be provided to chooseDesktopMedia() rather than be deferred to getUserMedia()."

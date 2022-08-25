@@ -36,10 +36,11 @@ class DesktopCaptureChooseDesktopMediaFunctionBase : public ExtensionFunction {
 
   static const char kTargetNotFoundError[];
 
-  // |exclude_system_audio| is piped from the original call. It is a constraint
-  // that needs to be applied before the picker is shown to the user, as it
-  // affects the picker. It is therefore provided to the extension function
-  // rather than to getUserMedia(), as is the case for other constraints.
+  // |exclude_system_audio| and |exclude_self_browser_surface| are piped from
+  // the original call. They are constraints that need to be applied before
+  // the picker is shown to the user, as they affect the picker.
+  // It is therefore provided to the extension function rather than
+  // to getUserMedia(), as is the case for other constraints.
   //
   // |origin| is the origin for which the stream is created.
   //
@@ -48,6 +49,7 @@ class DesktopCaptureChooseDesktopMediaFunctionBase : public ExtensionFunction {
       const std::vector<api::desktop_capture::DesktopCaptureSourceType>&
           sources,
       bool exclude_system_audio,
+      bool exclude_self_browser_surface,
       content::RenderFrameHost* render_frame_host,
       const GURL& origin,
       const std::u16string target_name);

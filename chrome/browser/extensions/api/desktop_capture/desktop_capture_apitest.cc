@@ -276,32 +276,39 @@ IN_PROC_BROWSER_TEST_F(DesktopCaptureApiTest, ServiceWorkerMustSpecifyTab) {
   ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
 }
 
-class DesktopCaptureApiTestWithSystemAudioValue
+class DesktopCaptureApiTestWithMediaPickerOptions
     : public DesktopCaptureApiTest,
       public testing::WithParamInterface<std::string> {
  public:
-  DesktopCaptureApiTestWithSystemAudioValue()
-      : system_audio_preference_(GetParam()) {
+  DesktopCaptureApiTestWithMediaPickerOptions() : options_(GetParam()) {
     DesktopCaptureChooseDesktopMediaFunction::SetPickerFactoryForTests(
         &picker_factory_);
   }
 
-  ~DesktopCaptureApiTestWithSystemAudioValue() override = default;
+  ~DesktopCaptureApiTestWithMediaPickerOptions() override = default;
 
  protected:
-  const std::string system_audio_preference_;
+  const std::string options_;
 };
 
-// |options| itself is optional, as is its member (systemAudio), and so will
-// future members be (e.g. selfBrowserSurface).
-INSTANTIATE_TEST_SUITE_P(_,
-                         DesktopCaptureApiTestWithSystemAudioValue,
-                         ::testing::Values("",
-                                           "{},",
-                                           "{systemAudio: \"include\"},",
-                                           "{systemAudio: \"exclude\"},"));
+// |options| itself is optional, as are its members
+// (systemAudio, selfBrowserSurface), and so will future members be.
+INSTANTIATE_TEST_SUITE_P(
+    _,
+    DesktopCaptureApiTestWithMediaPickerOptions,
+    ::testing::Values(
+        "",
+        "{},",
+        "{systemAudio: \"include\"},",
+        "{systemAudio: \"exclude\"},",
+        "{selfBrowserSurface: \"include\"},",
+        "{selfBrowserSurface: \"exclude\"},",
+        "{selfBrowserSurface: \"include\", systemAudio: \"include\"},",
+        "{selfBrowserSurface: \"include\", systemAudio: \"exclude\"},",
+        "{selfBrowserSurface: \"exclude\", systemAudio: \"include\"},",
+        "{selfBrowserSurface: \"exclude\", systemAudio: \"exclude\"},"));
 
-IN_PROC_BROWSER_TEST_P(DesktopCaptureApiTestWithSystemAudioValue,
+IN_PROC_BROWSER_TEST_P(DesktopCaptureApiTestWithMediaPickerOptions,
                        FromServiceWorker) {
   static constexpr char kManifest[] =
       R"({
@@ -327,7 +334,7 @@ IN_PROC_BROWSER_TEST_P(DesktopCaptureApiTestWithSystemAudioValue,
                  });
              });
         }]))",
-      system_audio_preference_.c_str());
+      options_.c_str());
 
   TestExtensionDir test_dir;
   test_dir.WriteManifest(kManifest);

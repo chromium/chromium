@@ -226,7 +226,8 @@ function onChooseDesktopMediaPort(port) {
       // Options that getDisplayMedia() also has, which are applied *before*
       // the user makes their choice, and which typically serve to shape
       // the choice offered to the user.
-      const options = message['options'] || {systemAudio: 'include'};
+      const options = message['options'] ||
+          {systemAudio: 'include', selfBrowserSurface: 'include'};
 
       let cancelId = null;
       const tab = port.sender.tab;
@@ -242,7 +243,8 @@ function onChooseDesktopMediaPort(port) {
         requestInfo['guestProcessId'] = port.sender.guestProcessId || 0;
         requestInfo['guestRenderFrameId'] =
             port.sender.guestRenderFrameRoutingId || 0;
-        // TODO(crbug.com/1329129): Plumb systemAudio and other options here.
+        // TODO(crbug.com/1329129): Plumb systemAudio, selfBrowserSurface and
+        // other options here.
         cancelId = chrome.webrtcDesktopCapturePrivate.chooseDesktopMedia(
             sources, requestInfo, sendResponse);
       }

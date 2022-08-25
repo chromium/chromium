@@ -82,6 +82,7 @@ ExtensionFunction::ResponseAction
 DesktopCaptureChooseDesktopMediaFunctionBase::Execute(
     const std::vector<api::desktop_capture::DesktopCaptureSourceType>& sources,
     bool exclude_system_audio,
+    bool exclude_self_browser_surface,
     content::RenderFrameHost* render_frame_host,
     const GURL& origin,
     const std::u16string target_name) {
@@ -137,8 +138,13 @@ DesktopCaptureChooseDesktopMediaFunctionBase::Execute(
       capture_policy::GetAllowedCaptureLevel(origin, web_contents);
 
   capture_policy::FilterMediaList(media_types, capture_level);
+
   DesktopMediaList::WebContentsFilter includable_web_contents_filter =
       capture_policy::GetIncludableWebContentsFilter(origin, capture_level);
+  if (exclude_self_browser_surface) {
+    includable_web_contents_filter = DesktopMediaList::ExcludeWebContents(
+        std::move(includable_web_contents_filter), web_contents);
+  }
 
   // Avoid offering window-capture as a separate source, since PipeWire's
   // content-picker will offer both screen and window sources.

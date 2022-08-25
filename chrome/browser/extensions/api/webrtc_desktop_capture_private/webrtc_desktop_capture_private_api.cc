@@ -71,8 +71,9 @@ WebrtcDesktopCapturePrivateChooseDesktopMediaFunction::Run() {
   using Sources = std::vector<api::desktop_capture::DesktopCaptureSourceType>;
   Sources* sources = reinterpret_cast<Sources*>(&params->sources);
 
-  // TODO(crbug.com/1329129): Plumb systemAudio through here.
-  return Execute(*sources, /*exclude_system_audio=*/false, rfh, origin,
+  // TODO(crbug.com/1329129): Plumb systemAudio and selfBrowserSurface here.
+  return Execute(*sources, /*exclude_system_audio=*/false,
+                 /*exclude_self_browser_surface=*/false, rfh, origin,
                  target_name);
 }
 

@@ -313,23 +313,13 @@ void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
     base::Erase(media_types, DesktopMediaList::Type::kWindow);
   }
 
-  auto includable_web_contents_filter = base::BindRepeating(
-      [](DesktopMediaList::WebContentsFilter capture_policy_filter,
-         bool exclude_self_browser_surface,
-         base::WeakPtr<content::WebContents> capturing_web_contents,
-         content::WebContents* captured_web_contents) {
-        if (!capturing_web_contents)
-          return false;
-        if (!capture_policy_filter.Run(captured_web_contents))
-          return false;
-        if (!exclude_self_browser_surface)
-          return true;
-        return capturing_web_contents.get() != captured_web_contents;
-      },
+  auto includable_web_contents_filter =
       capture_policy::GetIncludableWebContentsFilter(request_origin,
-                                                     capture_level),
-      pending_request.request.exclude_self_browser_surface,
-      web_contents->GetWeakPtr());
+                                                     capture_level);
+  if (pending_request.request.exclude_self_browser_surface) {
+    includable_web_contents_filter = DesktopMediaList::ExcludeWebContents(
+        std::move(includable_web_contents_filter), web_contents);
+  }
 
   auto source_lists = picker_factory_->CreateMediaList(
       media_types, web_contents, includable_web_contents_filter);

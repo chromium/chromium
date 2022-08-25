@@ -45,6 +45,17 @@ class DesktopMediaList {
   using WebContentsFilter =
       base::RepeatingCallback<bool(content::WebContents*)>;
 
+  // Wraps a given filter to produce a new filter that excludes a given
+  // WebContents, but is otherwise identical to the original filter.
+  //
+  // Note: |excluded_web_contents| will internally be converted to a WeakPtr
+  // in order to make posting the filter safe. If that weak pointer expires,
+  // the exclusion also expires. This is safe even when the capturer/capturee
+  // are the same, because capturing itself will be rejected in that case.
+  static WebContentsFilter ExcludeWebContents(
+      WebContentsFilter filter,
+      content::WebContents* excluded_web_contents);
+
   // Struct used to represent each entry in the list.
   struct Source {
     Source();

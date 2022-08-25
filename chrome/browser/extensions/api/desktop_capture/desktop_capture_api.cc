@@ -107,8 +107,14 @@ DesktopCaptureChooseDesktopMediaFunction::Run() {
       params->options->system_audio ==
           api::desktop_capture::SYSTEM_AUDIO_PREFERENCE_ENUM_EXCLUDE;
 
+  const bool exclude_self_browser_surface =
+      params->options &&
+      params->options->self_browser_surface ==
+          api::desktop_capture::SELF_CAPTURE_PREFERENCE_ENUM_EXCLUDE;
+
   return Execute(params->sources, exclude_system_audio,
-                 target_render_frame_host, origin, target_name);
+                 exclude_self_browser_surface, target_render_frame_host, origin,
+                 target_name);
 }
 
 std::string DesktopCaptureChooseDesktopMediaFunction::GetExtensionTargetName()
