@@ -59,7 +59,7 @@ class SyncCustomPassphraseSharingLacrosBrowserTest : public SyncTest {
     return base::FilePath(chrome::kInitialProfile);
   }
 
-  // This test replaces production SyncService Crosapi interface with a mock.
+  // This test replaces production SyncService Crosapi interface with a fake.
   // It needs to be done before connection between Ash and Lacros explicit
   // passphrase clients is established (during creation of browser extra parts),
   // but after LacrosService is initialized. Thus CreatedBrowserMainParts() is
@@ -74,7 +74,7 @@ class SyncCustomPassphraseSharingLacrosBrowserTest : public SyncTest {
       return;
     }
 
-    // Replace the production SyncService Crosapi interface with a mock for
+    // Replace the production SyncService Crosapi interface with a fake for
     // testing.
     mojo::Remote<crosapi::mojom::SyncService>& remote =
         chromeos::LacrosService::Get()
