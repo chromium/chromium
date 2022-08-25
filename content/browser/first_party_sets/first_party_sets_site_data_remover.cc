@@ -92,7 +92,7 @@ class ClearingTask : public BrowsingDataRemover::Observer {
 }  // namespace
 
 // static
-void FirstPartySetsSiteDataRemover::HandleRemovingSiteData(
+void FirstPartySetsSiteDataRemover::RemoveSiteData(
     BrowsingDataRemover* remover,
     std::vector<net::SchemefulSite> sites,
     base::OnceCallback<void(uint64_t)> callback) {
