@@ -17,6 +17,29 @@ NGPhysicalAnchorReference::NGPhysicalAnchorReference(
       fragment(logical_reference.fragment),
       is_invalid(logical_reference.is_invalid) {}
 
+void NGLogicalAnchorReference::InsertInPreOrderInto(
+    Member<NGLogicalAnchorReference>* head_ptr) {
+  const LayoutObject* const object = fragment->GetLayoutObject();
+  for (;;) {
+    NGLogicalAnchorReference* const head = *head_ptr;
+    DCHECK(!head || head->fragment->GetLayoutObject());
+    if (!head ||
+        object->IsBeforeInPreOrder(*head->fragment->GetLayoutObject())) {
+      next = head;
+      *head_ptr = this;
+      break;
+    }
+
+    // Skip adding if there is a reference with the same validity status and is
+    // before in the tree order. Only the first one in the tree order is needed
+    // for each validity status.
+    if (is_invalid == head->is_invalid)
+      break;
+
+    head_ptr = &head->next;
+  }
+}
+
 const NGPhysicalAnchorReference* NGPhysicalAnchorQuery::AnchorReference(
     const AtomicString& name) const {
   const auto& it = anchor_references_.find(name);
@@ -46,9 +69,11 @@ const NGLogicalAnchorReference* NGLogicalAnchorQuery::AnchorReference(
     const AtomicString& name) const {
   const auto& it = anchor_references_.find(name);
   if (it != anchor_references_.end()) {
-    const NGLogicalAnchorReference& result = *it->value;
-    if (!result.is_invalid)
-      return &result;
+    for (const NGLogicalAnchorReference* result = it->value; result;
+         result = result->next) {
+      if (!result->is_invalid)
+        return result;
+    }
   }
   return nullptr;
 }
@@ -78,15 +103,27 @@ void NGLogicalAnchorQuery::Set(const AtomicString& name,
 void NGLogicalAnchorQuery::Set(const AtomicString& name,
                                NGLogicalAnchorReference* reference) {
   DCHECK(reference);
+  DCHECK(!reference->next);
   const auto result = anchor_references_.insert(name, reference);
   if (result.is_new_entry)
     return;
 
+  DCHECK(result.stored_value->value);
   NGLogicalAnchorReference& existing = *result.stored_value->value;
-  if (existing.fragment->GetLayoutObject() !=
-      reference->fragment->GetLayoutObject()) {
-    // If this is the same name on a different |LayoutObject|, ignore it.
-    // This logic assumes that callers call this function in the correct order.
+  const LayoutObject* existing_object = existing.fragment->GetLayoutObject();
+  DCHECK(existing_object);
+  const LayoutObject* new_object = reference->fragment->GetLayoutObject();
+  DCHECK(new_object);
+  if (existing_object != new_object) {
+    if (!reference->is_invalid && !existing.is_invalid) {
+      // If both new and existing values are valid, ignore the new value. This
+      // logic assumes the callers call this function in the correct order.
+      DCHECK(existing_object->IsBeforeInPreOrder(*new_object));
+      return;
+    }
+    // When out-of-flow objects are involved, callers can't guarantee the call
+    // order. Insert into the list in the tree order.
+    reference->InsertInPreOrderInto(&result.stored_value->value);
     return;
   }
 
@@ -97,11 +134,17 @@ void NGLogicalAnchorQuery::Set(const AtomicString& name,
 void NGPhysicalAnchorQuery::SetFromLogical(
     const NGLogicalAnchorQuery& logical_query,
     const WritingModeConverter& converter) {
+  // This function assumes |this| is empty on the entry. Merging multiple
+  // references is not supported.
+  DCHECK(IsEmpty());
   for (const auto& it : logical_query.anchor_references_) {
-    DCHECK_EQ(AnchorReference(it.key), nullptr);
-    anchor_references_.Set(
+    // For each key, only the first one in the tree order, valid or invalid, is
+    // needed to be propagated, because the validity is re-computed for each
+    // containing block. Please see |SetFromPhysical|.
+    const auto result = anchor_references_.Set(
         it.key,
         MakeGarbageCollected<NGPhysicalAnchorReference>(*it.value, converter));
+    DCHECK(result.is_new_entry);
   }
 }
 
@@ -294,6 +337,7 @@ absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::EvaluateAnchorSize(
 
 void NGLogicalAnchorReference::Trace(Visitor* visitor) const {
   visitor->Trace(fragment);
+  visitor->Trace(next);
 }
 
 void NGPhysicalAnchorReference::Trace(Visitor* visitor) const {

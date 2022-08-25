@@ -75,10 +75,15 @@ struct CORE_EXPORT NGLogicalAnchorReference
                            bool is_invalid)
       : rect(rect), fragment(&fragment), is_invalid(is_invalid) {}
 
+  // Insert |this| into the given singly linked list in the pre-order.
+  void InsertInPreOrderInto(Member<NGLogicalAnchorReference>* head_ptr);
+
   void Trace(Visitor* visitor) const;
 
   LogicalRect rect;
   Member<const NGPhysicalFragment> fragment;
+  // A singly linked list in the order of the pre-order DFS.
+  Member<NGLogicalAnchorReference> next;
   bool is_invalid = false;
 };
 
