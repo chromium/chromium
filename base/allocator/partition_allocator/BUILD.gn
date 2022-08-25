@@ -41,17 +41,7 @@ if (is_fuchsia) {
   }
 }
 
-if (make_partition_alloc_standalone) {
-  partition_alloc_target_type = "component"
-} else {
-  if (is_component_build) {
-    partition_alloc_target_type = "source_set"
-  } else {
-    partition_alloc_target_type = "static_library"
-  }
-}
-
-target(partition_alloc_target_type, "partition_alloc") {
+component("partition_alloc") {
   sources = [
     "address_pool_manager.cc",
     "address_pool_manager.h",
@@ -313,6 +303,10 @@ target(partition_alloc_target_type, "partition_alloc") {
   if (is_mac) {
     # SecTaskGetCodeSignStatus needs:
     frameworks += [ "Security.framework" ]
+  }
+
+  if (is_component_build && is_apple) {
+    frameworks += [ "CoreFoundation.framework" ]
   }
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

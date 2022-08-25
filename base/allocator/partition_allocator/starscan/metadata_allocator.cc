@@ -6,6 +6,7 @@
 
 #include <cstring>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/no_destructor.h"
 
 namespace partition_alloc::internal {
@@ -22,6 +23,7 @@ constexpr PartitionOptions kConfig{
 };
 }  // namespace
 
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 ThreadSafePartitionRoot& PCScanMetadataAllocator() {
   static internal::base::NoDestructor<ThreadSafePartitionRoot> allocator(
       kConfig);

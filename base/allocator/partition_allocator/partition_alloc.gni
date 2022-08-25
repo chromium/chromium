@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 declare_args() {
-  make_partition_alloc_standalone = false
   use_freeslot_bitmap = false
 }
 

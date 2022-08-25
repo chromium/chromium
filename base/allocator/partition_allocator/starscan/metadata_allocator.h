@@ -7,11 +7,13 @@
 
 #include <utility>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_root.h"
 
 namespace partition_alloc::internal {
 
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 ThreadSafePartitionRoot& PCScanMetadataAllocator();
 void ReinitPCScanMetadataAllocatorForTesting();
 
