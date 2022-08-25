@@ -8445,11 +8445,31 @@
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "settings.enable_screen_lock": {
+            "default_value": false
+          }
+        }
+      },
+      {
         "policies": {
           "ChromeOsLockOnIdleSuspend": true
         },
         "prefs": {
-          "settings.enable_screen_lock": {}
+          "settings.enable_screen_lock": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "ChromeOsLockOnIdleSuspend": false
+        },
+        "prefs": {
+          "settings.enable_screen_lock": {
+            "value": false
+          }
         }
       }
     ]
