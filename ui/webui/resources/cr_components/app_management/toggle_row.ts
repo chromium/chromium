@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 import './app_management_shared_style.css.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.js';
-import '//resources/cr_elements/policy/cr_policy_indicator.m.js';
+import '//resources/cr_elements/policy/cr_policy_indicator.js';
 import '//resources/cr_elements/icons.m.js';
 
 import {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_button/cr_button.js';
-import '//resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
+import '//resources/cr_elements/policy/cr_policy_pref_indicator.js';
 import '//resources/cr_elements/shared_vars_css.m.js';
 import '../settings_shared.css.js';
 

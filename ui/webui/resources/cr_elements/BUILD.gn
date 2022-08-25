@@ -16,6 +16,7 @@ import("./cr_elements.gni")
 
 preprocess_folder = "$root_gen_dir/ui/webui/resources/preprocessed/cr_elements"
 if (include_polymer) {
+  preprocess_src_manifest = "preprocessed_src_manifest.json"
   preprocess_gen_manifest = "preprocessed_gen_manifest.json"
 }
 
@@ -28,7 +29,10 @@ if (include_polymer) {
     grd_prefix = "cr_elements"
     out_grd = "$target_gen_dir/${grd_prefix}_resources.grdp"
     public_deps = [ ":preprocess" ]
-    manifest_files = [ "$target_gen_dir/$preprocess_gen_manifest" ]
+    manifest_files = [
+      "$target_gen_dir/$preprocess_src_manifest",
+      "$target_gen_dir/$preprocess_gen_manifest",
+    ]
 
     if (is_chromeos_ash) {
       manifest_files += [
@@ -51,6 +55,7 @@ group("preprocess") {
       ":css_wrapper_files",
       ":html_wrapper_files",
       ":preprocess_generated",
+      ":preprocess_src",
     ]
   }
 
@@ -93,14 +98,6 @@ if (is_chromeos_ash) {
       "hidden_style_css.html",
       "icons.html",
       "md_select_css.html",
-      "policy/cr_policy_indicator_behavior.html",
-      "policy/cr_policy_indicator_behavior.js",
-      "policy/cr_policy_indicator.html",
-      "policy/cr_policy_indicator.js",
-      "policy/cr_policy_pref_indicator.html",
-      "policy/cr_policy_pref_indicator.js",
-      "policy/cr_tooltip_icon.html",
-      "policy/cr_tooltip_icon.js",
       "shared_style_css.html",
       "shared_vars_css.html",
     ]
@@ -108,6 +105,13 @@ if (is_chromeos_ash) {
 }
 
 if (include_polymer) {
+  preprocess_if_expr("preprocess_src") {
+    in_folder = "."
+    out_folder = preprocess_folder
+    in_files = [ "policy/cr_policy_indicator_behavior.js" ]
+    out_manifest = "$target_gen_dir/$preprocess_src_manifest"
+  }
+
   preprocess_if_expr("preprocess_generated") {
     deps = [ ":custom_elements" ]
     in_folder = target_gen_dir
@@ -125,10 +129,9 @@ if (include_polymer) {
       "hidden_style_css.m.js",
       "icons.m.js",
       "md_select_css.m.js",
-      "policy/cr_policy_indicator_behavior.m.js",
-      "policy/cr_policy_indicator.m.js",
-      "policy/cr_policy_pref_indicator.m.js",
-      "policy/cr_tooltip_icon.m.js",
+      "policy/cr_policy_indicator.js",
+      "policy/cr_policy_pref_indicator.js",
+      "policy/cr_tooltip_icon.js",
       "shared_style_css.m.js",
       "shared_vars_css.m.js",
     ]
@@ -146,7 +149,6 @@ if (include_polymer) {
   group("closure_compile") {
     deps = [
       ":cr_elements_resources",
-      "policy:closure_compile",
 
       # Targets for auto-generated Polymer 3 JS Modules
       ":cr_elements_module_resources",
@@ -250,7 +252,7 @@ if (include_polymer) {
       "cr_dialog:web_components",
       "cr_icon_button:web_components",
       "cr_lottie:web_components",
-      "policy:polymer3_elements",
+      "policy:web_components",
     ]
 
     if (is_chromeos) {

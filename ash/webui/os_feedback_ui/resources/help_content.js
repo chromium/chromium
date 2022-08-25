@@ -9,7 +9,7 @@ import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import '//resources/cr_elements/cr_icons_css.m.js';
 import '//resources/cr_elements/hidden_style_css.m.js';
 import '//resources/cr_elements/icons.m.js';
-import '//resources/cr_elements/policy/cr_tooltip_icon.m.js';
+import '//resources/cr_elements/policy/cr_tooltip_icon.js';
 import '//resources/cr_elements/shared_vars_css.m.js';
 
 import {mojoString16ToString} from '//resources/ash/common/mojo_utils.js';

@@ -4,7 +4,7 @@
 
 import '/tools/typescript/definitions/settings_private.js';
 
-import {CrPolicyIndicatorBehavior} from 'chrome://resources/cr_elements/policy/cr_policy_indicator_behavior.m.js';
+import {CrPolicyIndicatorBehavior} from 'chrome://resources/cr_elements/policy/cr_policy_indicator_behavior.js';
 import {LegacyElementMixin} from 'chrome://resources/polymer/v3_0/polymer/lib/legacy/legacy-element-mixin.js';
 
 interface CrPolicyPrefIndicatorElement extends CrPolicyIndicatorBehavior,

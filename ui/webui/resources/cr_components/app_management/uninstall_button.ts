@@ -4,7 +4,7 @@
 
 import './app_management_shared_style.css.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
-import '//resources/cr_elements/policy/cr_tooltip_icon.m.js';
+import '//resources/cr_elements/policy/cr_tooltip_icon.js';
 
 import {assertNotReached} from '//resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

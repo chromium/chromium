@@ -1,13 +1,3 @@
-<link rel="import" href="../../html/polymer.html">
-
-<link rel="import" href="../icons.html">
-<link rel="import" href="../shared_style_css.html">
-<link rel="import" href="../shared_vars_css.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-tooltip/paper-tooltip.html">
-
-<dom-module id="cr-tooltip-icon">
-  <template>
     <style include="cr-shared-style">
       :host {
         display: flex;  /* Position independently from the line-height. */
@@ -34,6 +24,3 @@
         fit-to-visible-bounds part="tooltip">
       <slot name="tooltip-text">[[tooltipText]]</slot>
     </paper-tooltip>
-  </template>
-  <script src="cr_tooltip_icon.js"></script>
-</dom-module>

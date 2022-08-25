@@ -192,7 +192,7 @@ js_library("stylus") {
     "..:os_route",
     "..:route_observer_behavior",
     "../..:router",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_indicator.m",
+    "//ui/webui/resources/cr_elements/policy:cr_policy_indicator",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",

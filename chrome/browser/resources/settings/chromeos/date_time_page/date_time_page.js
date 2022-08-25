@@ -9,8 +9,8 @@
  */
 
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/policy/cr_policy_indicator.m.js';
-import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
+import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
+import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_page/settings_subpage.js';
 import '../../settings_shared.css.js';
