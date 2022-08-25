@@ -134,6 +134,44 @@
                 android:max="72"/>
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginStart="3dp"
+            android:layout_marginBottom="16dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pcct_initial_height_text"
+                android:layout_marginEnd="8dp"
+                android:maxWidth="160sp"
+                style="?attr/textAppearanceLabelLarge" />
+            <TextView
+                android:id="@+id/pcct_initial_height_slider_label"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical|end"
+                android:minWidth="40sp"
+                android:labelFor="@+id/pcct_initial_height_slider"
+                android:contentDescription="@string/pcct_initial_height_slider_label_desc"
+                style="?attr/textAppearanceLabelLarge" />
+            <SeekBar
+                android:id="@+id/pcct_initial_height_slider"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"/>
+        </LinearLayout>
+
+        <CheckBox
+            android:id="@+id/pcct_resizable_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked = "true"
+            android:text="@string/pcct_resizable_text" />
+
         <Space
             android:layout_width="match_parent"
             android:layout_height="5dp" />

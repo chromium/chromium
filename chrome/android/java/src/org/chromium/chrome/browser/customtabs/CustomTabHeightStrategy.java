@@ -20,14 +20,15 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 public class CustomTabHeightStrategy {
     public static CustomTabHeightStrategy createStrategy(Activity activity, @Px int initialHeight,
             Integer navigationBarColor, Integer navigationBarDividerColor,
-            CustomTabsConnection connection, @Nullable CustomTabsSessionToken session,
+            boolean isPartialCustomTabFixedHeight, CustomTabsConnection connection,
+            @Nullable CustomTabsSessionToken session,
             ActivityLifecycleDispatcher lifecycleDispatcher) {
         if (initialHeight <= 0) {
             return new CustomTabHeightStrategy();
         }
 
         return new PartialCustomTabHeightStrategy(activity, initialHeight, navigationBarColor,
-                navigationBarDividerColor,
+                navigationBarDividerColor, isPartialCustomTabFixedHeight,
                 size -> connection.onResized(session, size), lifecycleDispatcher);
     }
 

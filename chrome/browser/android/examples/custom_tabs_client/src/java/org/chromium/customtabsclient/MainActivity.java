@@ -13,12 +13,16 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.Px;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -28,6 +32,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -59,6 +64,10 @@ public class MainActivity
         extends AppCompatActivity implements OnClickListener, ServiceConnectionCallback {
     private static final String TAG = "CustomTabsClientExample";
     private static final String TOOLBAR_COLOR = "#ef6c00";
+    /**
+     * Minimal height the bottom sheet CCT should show is half of the display height.
+     */
+    private static final float MINIMAL_HEIGHT_RATIO = 0.5f;
 
     private EditText mEditText;
     private CustomTabsSession mCustomTabsSession;
@@ -75,6 +84,11 @@ public class MainActivity
     private MaterialButtonToggleGroup mCloseButtonPositionToggle;
     private TextView mToolbarCornerRadiusLabel;
     private SeekBar mToolbarCornerRadiusSlider;
+    private CheckBox mPcctResizableCheckbox;
+    private TextView mPcctInitialHeightLabel;
+    private SeekBar mPcctInitialHeightSlider;
+    private @Px int mMaxHeight;
+    private @Px int mInitialHeight;
 
     /**
      * Once per second, asks the framework for the process importance, and logs any change.
@@ -161,6 +175,26 @@ public class MainActivity
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 mToolbarCornerRadiusLabel.setText(getString(R.string.dp_template, progress));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
+        mPcctResizableCheckbox = findViewById(R.id.pcct_resizable_checkbox);
+        mMaxHeight = getMaximumPossibleHeight();
+        mInitialHeight = (int) (mMaxHeight * MINIMAL_HEIGHT_RATIO);
+        mPcctInitialHeightSlider = findViewById(R.id.pcct_initial_height_slider);
+        mPcctInitialHeightLabel = findViewById(R.id.pcct_initial_height_slider_label);
+        mPcctInitialHeightSlider.setMax(mMaxHeight);
+        mPcctInitialHeightSlider.setProgress(mInitialHeight);
+        mPcctInitialHeightLabel.setText(getString(R.string.px_template, mInitialHeight));
+        mPcctInitialHeightSlider.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                mPcctInitialHeightLabel.setText(getString(R.string.px_template, progress));
             }
 
             @Override
@@ -315,8 +349,6 @@ public class MainActivity
             CustomTabsIntent customTabsIntent = builder.build();
             configSessionConnection(session, customTabsIntent);
             customTabsIntent.intent.putExtra(
-                    "androidx.browser.customtabs.extra.INITIAL_ACTIVITY_HEIGHT_IN_PIXEL", 500);
-            customTabsIntent.intent.putExtra(
                     "androidx.browser.customtabs.extra.CLOSE_BUTTON_POSITION", closeButtonPosition);
             int toolbarCornerRadiusDp = mToolbarCornerRadiusSlider.getProgress();
             int toolbarCornerRadiusPx =
@@ -324,6 +356,20 @@ public class MainActivity
             customTabsIntent.intent.putExtra(
                     "androidx.browser.customtabs.extra.TOOLBAR_CORNER_RADIUS_IN_PIXEL",
                     toolbarCornerRadiusPx);
+
+            int pcctInitialHeightPx = mPcctInitialHeightSlider.getProgress();
+
+            if (pcctInitialHeightPx != 0) {
+                customTabsIntent.intent.putExtra(
+                        "androidx.browser.customtabs.extra.INITIAL_ACTIVITY_HEIGHT_IN_PIXEL",
+                        pcctInitialHeightPx);
+            }
+
+            if (!mPcctResizableCheckbox.isChecked()) {
+                customTabsIntent.intent.putExtra(
+                        "androidx.browser.customtabs.extra.PARTIAL_CUSTOM_TAB_FIXED_HEIGHT", true);
+            }
+
             customTabsIntent.launchUrl(this, Uri.parse(url));
         }
     }
@@ -385,5 +431,19 @@ public class MainActivity
         mLaunchButton.setEnabled(false);
         mLaunchIncognitoButton.setEnabled(false);
         mClient = null;
+    }
+
+    private @Px int getMaximumPossibleHeight() {
+        @Px
+        int res = 0;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Rect rect = this.getWindowManager().getMaximumWindowMetrics().getBounds();
+            res = Math.max(rect.width(), rect.height());
+        } else {
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            this.getWindowManager().getDefaultDisplay().getRealMetrics(displayMetrics);
+            res = Math.max(displayMetrics.widthPixels, displayMetrics.heightPixels);
+        }
+        return res;
     }
 }

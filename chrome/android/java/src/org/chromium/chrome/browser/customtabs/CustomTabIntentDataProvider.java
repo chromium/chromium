@@ -183,6 +183,12 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     public static final String EXTRA_CLOSE_BUTTON_POSITION =
             "androidx.browser.customtabs.extra.CLOSE_BUTTON_POSITION";
 
+    /**
+     * Extra that, if set, disallows the resizing of the Partial Custom Tab.
+     */
+    public static final String EXTRA_PARTIAL_CUSTOM_TAB_FIXED_HEIGHT =
+            "androidx.browser.customtabs.extra.PARTIAL_CUSTOM_TAB_FIXED_HEIGHT";
+
     private static final String DEFAULT_POLICY_PARAM_NAME = "default_policy";
     private static final String DEFAULT_POLICY_USE_DENYLIST = "use-denylist";
     private static final String DEFAULT_POLICY_USE_ALLOWLIST = "use-allowlist";
@@ -249,6 +255,8 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     private final @Px int mInitialActivityHeight;
     private final @Px int mPartialTabToolbarCornerRadius;
+
+    private final boolean mIsPartialCustomTabFixedHeight;
 
     /**
      * Add extras to customize menu items for opening Reader Mode UI custom tab from Chrome.
@@ -401,6 +409,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         } else {
             mPartialTabToolbarCornerRadius = defaultToolbarCornerRadius;
         }
+
+        mIsPartialCustomTabFixedHeight = IntentUtils.safeGetBooleanExtra(
+                intent, EXTRA_PARTIAL_CUSTOM_TAB_FIXED_HEIGHT, false);
     }
 
     private void updateExtraMenuItems(List<Bundle> menuItems) {
@@ -913,5 +924,10 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     @Override
     public int getPartialTabToolbarCornerRadius() {
         return mPartialTabToolbarCornerRadius;
+    }
+
+    @Override
+    public boolean isPartialCustomTabFixedHeight() {
+        return mIsPartialCustomTabFixedHeight;
     }
 }

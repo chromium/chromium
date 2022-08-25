@@ -495,4 +495,11 @@ public abstract class BrowserServicesIntentDataProvider {
     public @Px int getPartialTabToolbarCornerRadius() {
         return 0;
     }
+
+    /**
+     * Returns false as by default PCCT is resizable.
+     */
+    public boolean isPartialCustomTabFixedHeight() {
+        return false;
+    }
 }

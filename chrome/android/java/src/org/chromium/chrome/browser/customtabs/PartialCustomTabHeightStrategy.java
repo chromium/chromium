@@ -106,6 +106,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private final AnimatorListener mSpinnerFadeoutAnimatorListener;
     private final int mCachedHandleHeight;
     private boolean mWindowAboveNavbar;
+    private final boolean mIsFixedHeight;
     private @Px int mInitialHeight;
     private ValueAnimator mAnimator;
     private int mShadowOffset;
@@ -289,7 +290,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
                     mTargetStatus = HeightStatus.INITIAL_HEIGHT;
                 }
             } else { // Move down
-                // Prevents skipping intial state when swiping from the top.
+                // Prevents skipping initial state when swiping from the top.
                 if (mStatus == HeightStatus.TOP) finalY = Math.min(initialY, finalY);
 
                 if (Math.abs(initialY - finalY) < Math.abs(finalY - bottomY)) {
@@ -310,7 +311,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     }
 
     public PartialCustomTabHeightStrategy(Activity activity, @Px int initialHeight,
-            Integer navigationBarColor, Integer navigationBarDividerColor,
+            Integer navigationBarColor, Integer navigationBarDividerColor, boolean isFixedHeight,
             OnResizedCallback onResizedCallback, ActivityLifecycleDispatcher lifecycleDispatcher) {
         mWindowAboveNavbar = ChromeFeatureList.sCctResizableWindowAboveNavbar.isEnabled();
         mActivity = activity;
@@ -318,6 +319,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         mInitialHeight = MathUtils.clamp(
                 initialHeight, mMaxHeight, (int) (mMaxHeight * MINIMAL_HEIGHT_RATIO));
         mDisplayHeight = getDisplayHeight();
+        mIsFixedHeight = isFixedHeight;
         mOnResizedCallback = onResizedCallback;
         // When the flag is enabled, we make the max snap point 10% shorter, so it will only occupy
         // 90% of the height.
@@ -610,6 +612,11 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private void updateDragBarVisibility() {
         View dragBar = mActivity.findViewById(R.id.drag_bar);
         if (dragBar != null) dragBar.setVisibility(isFullHeight() ? View.GONE : View.VISIBLE);
+
+        View dragHandlebar = mActivity.findViewById(R.id.drag_handlebar);
+        if (dragHandlebar != null) {
+            dragHandlebar.setVisibility(isFixedHeight() ? View.GONE : View.VISIBLE);
+        }
     }
 
     private void updateShadowOffset() {
@@ -641,6 +648,10 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         return mOrientation == Configuration.ORIENTATION_LANDSCAPE || mIsInMultiWindowMode;
     }
 
+    private boolean isFixedHeight() {
+        return mIsFixedHeight;
+    }
+
     private void updateWindowPos(@Px int y) {
         // Do not allow the Window to go above the minimum threshold capped by the status
         // bar and (optionally) the 90%-height adjustment.
@@ -649,6 +660,10 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         Window window = mActivity.getWindow();
         WindowManager.LayoutParams attrs = window.getAttributes();
         if (attrs.y == y) return;
+
+        // If the tab is not resizable then dragging it higher than the initial height will not be
+        // allowed. The tab can still be dragged down in order to be closed.
+        if (isFixedHeight() && y < initialY()) return;
 
         attrs.y = y;
         window.setAttributes(attrs);

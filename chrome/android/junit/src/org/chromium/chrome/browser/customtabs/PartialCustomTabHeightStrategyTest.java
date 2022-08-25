@@ -148,6 +148,8 @@ public class PartialCustomTabHeightStrategyTest {
     @Mock
     private View mDragBar;
     @Mock
+    private View mDragHandlebar;
+    @Mock
     private CommandLine mCommandLine;
 
     private Context mContext;
@@ -167,6 +169,7 @@ public class PartialCustomTabHeightStrategyTest {
         when(mActivity.findViewById(R.id.custom_tabs_handle_view_stub)).thenReturn(mHandleViewStub);
         when(mActivity.findViewById(R.id.custom_tabs_handle_view)).thenReturn(mHandleView);
         when(mActivity.findViewById(R.id.drag_bar)).thenReturn(mDragBar);
+        when(mActivity.findViewById(R.id.drag_handlebar)).thenReturn(mDragHandlebar);
         when(mActivity.findViewById(R.id.coordinator)).thenReturn(mCoordinatorLayout);
         when(mActivity.findViewById(android.R.id.content)).thenReturn(mContentFrame);
         when(mHandleView.getLayoutParams()).thenReturn(mLayoutParams);
@@ -224,8 +227,13 @@ public class PartialCustomTabHeightStrategyTest {
     }
 
     private PartialCustomTabHeightStrategy createPcctAtHeight(int heightPx) {
-        PartialCustomTabHeightStrategy pcct = new PartialCustomTabHeightStrategy(
-                mActivity, heightPx, null, null, mOnResizedCallback, mActivityLifecycleDispatcher);
+        return createPcctAtHeight(heightPx, false);
+    }
+
+    private PartialCustomTabHeightStrategy createPcctAtHeight(int heightPx, boolean isFixedHeight) {
+        PartialCustomTabHeightStrategy pcct =
+                new PartialCustomTabHeightStrategy(mActivity, heightPx, null, null, isFixedHeight,
+                        mOnResizedCallback, mActivityLifecycleDispatcher);
         pcct.setWindowAboveNavbarForTesting(mWindowAboveNavbar);
         pcct.setMockViewForTesting(
                 mNavbar, mSpinnerView, mSpinner, mToolbarView, mToolbarCoordinator);
@@ -657,6 +665,68 @@ public class PartialCustomTabHeightStrategyTest {
 
         // Verify that the tab expands to full height.
         assertTabIsFullHeight(mAttributeResults.get(length - 1));
+    }
+
+    @Test
+    public void moveUpFixedHeight() {
+        PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500, true);
+        verifyWindowFlagsSet();
+
+        assertEquals(1, mAttributeResults.size());
+        assertTabIsAtInitialPos(mAttributeResults.get(0));
+
+        PartialCustomTabHandleStrategy handleStrategy =
+                strategy.new PartialCustomTabHandleStrategy(null);
+
+        long timestamp = SystemClock.uptimeMillis();
+
+        // Try to drag up and verify that the location does not change.
+        actionDown(handleStrategy, timestamp, INITIAL_HEIGHT - 100);
+        actionMove(handleStrategy, timestamp, INITIAL_HEIGHT - 250);
+        assertTabIsAtInitialPos(mAttributeResults.get(0));
+    }
+
+    @Test
+    public void moveDownFixedHeight() {
+        PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500, true);
+        verifyWindowFlagsSet();
+
+        assertEquals(1, mAttributeResults.size());
+        assertTabIsAtInitialPos(mAttributeResults.get(0));
+
+        PartialCustomTabHandleStrategy handleStrategy =
+                strategy.new PartialCustomTabHandleStrategy(null);
+
+        // Try to drag down and check that it returns to the initial height.
+        assertTabIsAtInitialPos(dragTab(handleStrategy, 1500, 1550, 1600));
+    }
+
+    @Test
+    public void moveDownToDismissFixedHeight() {
+        PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500, true);
+        verifyWindowFlagsSet();
+
+        assertEquals(1, mAttributeResults.size());
+        assertTabIsAtInitialPos(mAttributeResults.get(0));
+
+        PartialCustomTabHandleStrategy handleStrategy =
+                strategy.new PartialCustomTabHandleStrategy(null);
+        final boolean[] closed = {false};
+        handleStrategy.setCloseClickHandler(() -> closed[0] = true);
+
+        dragTab(handleStrategy, INITIAL_HEIGHT, DEVICE_HEIGHT - 400);
+        assertTrue("Close click handler should be called.", closed[0]);
+    }
+
+    @Test
+    public void dragHandlebarInvisibleFixedHeight() {
+        PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500, true);
+        verifyWindowFlagsSet();
+
+        assertEquals(1, mAttributeResults.size());
+        assertTabIsAtInitialPos(mAttributeResults.get(0));
+
+        verify(mDragHandlebar).setVisibility(View.GONE);
     }
 
     private void verifyWindowFlagsSet() {

@@ -252,6 +252,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 intentDataProvider.getInitialActivityHeight(),
                 intentDataProvider.getColorProvider().getNavigationBarColor(),
                 intentDataProvider.getColorProvider().getNavigationBarDividerColor(),
+                intentDataProvider.isPartialCustomTabFixedHeight(),
                 CustomTabsConnection.getInstance(), intentDataProvider.getSession(),
                 mActivityLifecycleDispatcher);
     }

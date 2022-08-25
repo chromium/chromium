@@ -292,6 +292,25 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
+    public void partialCustomTabFixedHeight_isSetToTrue() {
+        Intent intent = new Intent().putExtra(
+                CustomTabIntentDataProvider.EXTRA_PARTIAL_CUSTOM_TAB_FIXED_HEIGHT, true);
+
+        CustomTabIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+
+        assertTrue(dataProvider.isPartialCustomTabFixedHeight());
+    }
+
+    @Test
+    public void partialCustomTabFixedHeight_defaultFalse() {
+        CustomTabIntentDataProvider dataProvider =
+                new CustomTabIntentDataProvider(new Intent(), mContext, COLOR_SCHEME_LIGHT);
+
+        assertFalse(dataProvider.isPartialCustomTabFixedHeight());
+    }
+
+    @Test
     public void testGetReferrerPackageName() {
         assertEquals("extra.activity.referrer",
                 CustomTabIntentDataProvider.getReferrerPackageName(

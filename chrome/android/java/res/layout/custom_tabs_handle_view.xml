@@ -16,6 +16,7 @@
         android:layout_height="@dimen/custom_tabs_handle_height"
         android:background="@drawable/custom_tabs_handle_view_shape">
         <ImageView
+            android:id="@+id/drag_handlebar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
