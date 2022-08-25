@@ -207,6 +207,8 @@ ThreadProfilerConfiguration::GenerateBrowserProcessConfiguration(
           platform_configuration.GetEnableRates(release_channel);
 
   CHECK_EQ(0, relative_populations.experiment % 2);
+  DCHECK_EQ(100,
+            relative_populations.enabled + relative_populations.experiment);
   return ChooseVariationGroup({
       {kProfileEnabled, relative_populations.enabled},
       {kProfileControl, relative_populations.experiment / 2},
