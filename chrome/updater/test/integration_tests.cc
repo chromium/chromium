@@ -743,6 +743,29 @@ TEST_F(IntegrationTest, MAYBE_SelfUpdateFromOldReal) {
   ExpectVersionActive(kUpdaterVersion);
   Uninstall();
 }
+
+// Tests that installing and uninstalling an old version of the updater from
+// CIPD is possible.
+// TODO(crbug.com/1341471) - this may be slightly flaky as the typelib errors
+// showing up on Windows (which resulted in disabling SelfUpdateFromOldReal) are
+// being investigated. This test is simpler than SelfUpdateFromOldReal.
+TEST_F(IntegrationTest, InstallUninstallLowerVersion) {
+  SetupRealUpdaterLowerVersion();
+  ExpectVersionNotActive(kUpdaterVersion);
+  Uninstall();
+
+#if BUILDFLAG(IS_WIN)
+  // This deletes a tree of empty subdirectories corresponding to the crash
+  // handler of the lower version updater installed above. `Uninstall` runs
+  // `updater --uninstall` from the out directory of the build, which attempts
+  // to launch the `uninstall.cmd` script corresponding to this version of the
+  // updater from the install directory. However, there is no such script
+  // because this version was never installed, and the script is not found
+  // there.
+  DeleteUpdaterDirectory();
+#endif  // IS_WIN
+}
+
 #endif
 #endif
 
