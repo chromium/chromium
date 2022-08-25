@@ -101,6 +101,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'cancelExportPasswords',
       'changeSavedPassword',
       'exportPasswords',
+      'extendAuthValidity',
       'getCompromisedCredentials',
       'getPasswordCheckStatus',
       'getUrlCollection',
@@ -407,6 +408,10 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       isManualFlow: boolean) {
     this.methodCalled(
         'recordChangePasswordFlowStarted', insecureCredential, isManualFlow);
+  }
+
+  extendAuthValidity() {
+    this.methodCalled('extendAuthValidity');
   }
 
   importPasswords(toStore: chrome.passwordsPrivate.PasswordStoreSet) {

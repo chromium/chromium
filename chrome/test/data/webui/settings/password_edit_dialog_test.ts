@@ -816,6 +816,44 @@ suite('PasswordEditDialog', function() {
     assertEquals('', noteElement!.value);
   });
 
+  test('editingInputsDoesntCallExtendAuthValidity', async function() {
+    loadTimeData.overrideValues({enablePasswordViewPage: false});
+    const commonEntry = createPasswordEntry({
+      url: 'goo.gl',
+      username: 'derine',
+      id: 42,
+    });
+    const passwordDialog = elementFactory.createPasswordEditDialog(commonEntry);
+
+    passwordDialog.$.usernameInput.value += 'l';
+
+    assertEquals(0, passwordManager.getCallCount('extendAuthValidity'));
+
+    passwordDialog.$.passwordInput.value = 'super5tr0ngpa55';
+
+    assertEquals(0, passwordManager.getCallCount('extendAuthValidity'));
+  });
+
+  test('editingInputsCallsExtendAuthValidityOnViewPage', async function() {
+    loadTimeData.overrideValues({enablePasswordViewPage: true});
+    const commonEntry = createPasswordEntry({
+      url: 'goo.gl',
+      username: 'derine',
+      id: 42,
+    });
+    const passwordDialog = elementFactory.createPasswordEditDialog(commonEntry);
+    passwordManager.resetResolver('extendAuthValidity');
+
+    passwordDialog.$.usernameInput.value += 'l';
+
+    assertEquals(1, passwordManager.getCallCount('extendAuthValidity'));
+
+    passwordDialog.shadowRoot!.querySelector<SettingsTextareaElement>(
+                                  '#note')!.value = 'personal account';
+
+    assertEquals(2, passwordManager.getCallCount('extendAuthValidity'));
+  });
+
   // <if expr="not is_chromeos">
   // On ChromeOS/Lacros the behavior is different (on failure we request token
   // and retry).

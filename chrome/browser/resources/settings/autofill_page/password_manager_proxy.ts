@@ -266,6 +266,11 @@ export interface PasswordManagerProxy {
       isManualFlow: boolean): void;
 
   /**
+   * Requests extension of authentication validity.
+   */
+  extendAuthValidity(): void;
+
+  /**
    * Add an observer to the compromised passwords change.
    */
   addCompromisedCredentialsListener(listener: CredentialsChangedListener): void;
@@ -593,6 +598,10 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
       isManualFlow: boolean) {
     chrome.passwordsPrivate.recordChangePasswordFlowStarted(
         insecureCredential, isManualFlow);
+  }
+
+  extendAuthValidity() {
+    chrome.passwordsPrivate.extendAuthValidity();
   }
 
   addCompromisedCredentialsListener(listener: CredentialsChangedListener) {

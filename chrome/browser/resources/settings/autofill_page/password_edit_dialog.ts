@@ -257,7 +257,7 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
         },
       },
 
-      /* If true, change event will be dispatched. */
+      /* Enables dispatching change events and extending auth. */
       isPasswordViewPageEnabled_: {
         type: Boolean,
         value() {
@@ -265,6 +265,12 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
         },
       },
     };
+  }
+
+  static get observers() {
+    return [
+      'extendAuthValidityOnUserInteraction_(username_, password_, note_)',
+    ];
   }
 
   existingEntry: chrome.passwordsPrivate.PasswordUiEntry|null;
@@ -779,6 +785,13 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
       usernamesByOrigin.get(origin).add(entry.username);
       return usernamesByOrigin;
     }, new Map());
+  }
+
+  private extendAuthValidityOnUserInteraction_() {
+    if (!this.isPasswordViewPageEnabled_) {
+      return;
+    }
+    PasswordManagerImpl.getInstance().extendAuthValidity();
   }
 }
 
