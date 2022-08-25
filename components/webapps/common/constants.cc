@@ -15,4 +15,6 @@ const char kWebAppsMigratedPreinstalledApps[] =
 // dimension for screenshots.
 const double kMaximumScreenshotRatio = 2.3;
 
+const size_t kMaximumDescriptionLength = 300;
+
 }  // namespace webapps

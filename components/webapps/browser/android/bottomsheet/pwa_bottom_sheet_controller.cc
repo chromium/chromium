@@ -13,8 +13,10 @@
 #include "components/webapps/browser/android/webapps_jni_headers/PwaBottomSheetControllerProvider_jni.h"
 #include "components/webapps/browser/android/webapps_jni_headers/PwaBottomSheetController_jni.h"
 #include "components/webapps/browser/webapps_client.h"
+#include "components/webapps/common/constants.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/android/java_bitmap.h"
+#include "ui/gfx/text_elider.h"
 
 using base::ASCIIToUTF16;
 using base::android::ConvertUTF16ToJavaString;
@@ -84,8 +86,10 @@ bool PwaBottomSheetController::MaybeShow(
     // longer needed).
     PwaBottomSheetController* controller = new PwaBottomSheetController(
         app_name, primary_icon, is_primary_icon_maskable, start_url,
-        screenshots, description, std::move(a2hs_params),
-        std::move(a2hs_event_callback));
+        screenshots,
+        gfx::TruncateString(description, webapps::kMaximumDescriptionLength,
+                            gfx::CHARACTER_BREAK),
+        std::move(a2hs_params), std::move(a2hs_event_callback));
     controller->ShowBottomSheetInstaller(web_contents, expand_sheet);
   }
   return true;
