@@ -432,9 +432,11 @@ std::unique_ptr<DragImage> DataTransfer::CreateDragImage(
     float device_scale_factor,
     LocalFrame* frame) const {
   if (drag_image_element_) {
-    loc = drag_loc_;
-    // The image below is already rendered, so shouldn't be scaled (using
-    // device_scale_factor).
+    // Convert `drag_loc_` from CSS px to physical pixels. This makes it
+    // match the units used in the rendered image below.
+    // `LocalFrame::PageZoomFactor` converts from CSS px to physical px by
+    // taking into account both device scale factor and page zoom.
+    loc = gfx::ScaleToRoundedPoint(drag_loc_, frame->PageZoomFactor());
     return NodeImage(*frame, *drag_image_element_);
   }
   if (drag_image_) {

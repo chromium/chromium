@@ -2843,11 +2843,10 @@ void RenderWidgetHostImpl::StartDragging(
   float scale = GetScaleFactorForView(GetView());
   gfx::ImageSkia image = gfx::ImageSkia::CreateFromBitmap(bitmap, scale);
   gfx::Vector2d offset = bitmap_offset_in_dip;
-#if !BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN)
   // Scale the offset by device scale factor, otherwise the drag
   // image location doesn't line up with the drop location (drag destination).
-  // (TODO: crbug.com/1298831) Remove !BUILDFLAG(IS_MAC) after fixing the drag
-  // icon position.
+  // TODO(crbug.com/1354831): this conversion should not be necessary.
   gfx::Vector2dF scaled_offset = static_cast<gfx::Vector2dF>(offset);
   scaled_offset.Scale(scale);
   offset = gfx::ToRoundedVector2d(scaled_offset);
