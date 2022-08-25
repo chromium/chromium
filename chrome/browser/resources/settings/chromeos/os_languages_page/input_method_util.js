@@ -151,9 +151,9 @@ export const OPTION_DEFAULT = {
  * @enum {string}
  */
 export const UiType = {
-  TOGGLE_BUTTON: 'toggleButton',
   DROPDOWN: 'dropdown',
   LINK: 'link',
+  TOGGLE_BUTTON: 'toggleButton',
 };
 
 /**
@@ -162,11 +162,11 @@ export const UiType = {
  * @enum {string}
  */
 const SettingsHeaders = {
-  BASIC: 'basic',
   ADVANCED: 'advanced',
+  BASIC: 'basic',
   PHYSICAL_KEYBOARD: 'physicalKeyboard',
-  VIRTUAL_KEYBOARD: 'virtualKeyboard',
   SUGGESTIONS: 'suggestions',
+  VIRTUAL_KEYBOARD: 'virtualKeyboard',
 };
 
 /**
