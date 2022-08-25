@@ -164,8 +164,7 @@ TEST(OverrideSettingsTest, ParseManifest) {
   ASSERT_TRUE(settings_override);
   ASSERT_TRUE(settings_override->search_engine);
   EXPECT_TRUE(settings_override->search_engine->is_default);
-  const ChromeSettingsOverrides::SearchProvider* search_engine =
-      settings_override->search_engine.get();
+  const auto& search_engine = settings_override->search_engine;
   EXPECT_EQ("first", *search_engine->name);
   EXPECT_EQ("firstkey", *search_engine->keyword);
   EXPECT_EQ("http://www.foo.com/s?q={searchTerms}", search_engine->search_url);
@@ -199,8 +198,7 @@ TEST(OverrideSettingsTest, ParsePrepopulatedId) {
   ASSERT_TRUE(settings_override);
   ASSERT_TRUE(settings_override->search_engine);
   EXPECT_TRUE(settings_override->search_engine->is_default);
-  const ChromeSettingsOverrides::SearchProvider* search_engine =
-      settings_override->search_engine.get();
+  const auto& search_engine = settings_override->search_engine;
   ASSERT_TRUE(search_engine->prepopulated_id);
   EXPECT_EQ("http://www.foo.com/s?q={searchTerms}", search_engine->search_url);
   EXPECT_EQ(3, *search_engine->prepopulated_id);

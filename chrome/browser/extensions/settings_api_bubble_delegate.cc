@@ -118,9 +118,9 @@ std::u16string SettingsApiBubbleDelegate::GetMessageBody(
     return std::u16string();
   }
 
-  bool home_change = settings->homepage != NULL;
+  bool home_change = settings->homepage.has_value();
   bool startup_change = !settings->startup_pages.empty();
-  bool search_change = settings->search_engine != NULL;
+  bool search_change = settings->search_engine.has_value();
 
   int first_line_id = 0;
   int second_line_id = 0;
