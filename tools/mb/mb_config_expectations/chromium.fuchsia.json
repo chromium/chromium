@@ -29,9 +29,9 @@
     }
   },
   "fuchsia-arm64-cast": {
+    "args_file": "//build/config/fuchsia/size_optimized_cast_receiver_args.gn",
     "gn_args": {
       "dcheck_always_on": false,
-      "enable_cast_receiver": true,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
@@ -41,9 +41,9 @@
     }
   },
   "fuchsia-x64-cast": {
+    "args_file": "//build/config/fuchsia/size_optimized_cast_receiver_args.gn",
     "gn_args": {
       "dcheck_always_on": false,
-      "enable_cast_receiver": true,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
