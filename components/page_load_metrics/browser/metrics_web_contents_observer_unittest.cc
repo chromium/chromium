@@ -1574,11 +1574,19 @@ class MetricsWebContentsObserverNonPrimaryPageTest
           "MetricsWebContentsObserverNonPrimaryPageTest::MetricsObserver";
       return kName;
     }
+
     ObservePolicy OnFencedFramesStart(
         content::NavigationHandle* navigation_handle,
         const GURL& currently_committed_url) override {
       // Takes the default option to test general cases.
       return FORWARD_OBSERVING;
+    }
+
+    ObservePolicy OnPrerenderStart(
+        content::NavigationHandle* navigation_handle,
+        const GURL& currently_committed_url) override {
+      // This class's users don't need to support Prerendering yet.
+      return STOP_OBSERVING;
     }
 
     ObservePolicy OnCommit(content::NavigationHandle* handle) override {
