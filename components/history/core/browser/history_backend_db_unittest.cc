@@ -2839,6 +2839,15 @@ TEST_F(HistoryBackendDBTest, MigrateAnnotationsAddColumnsForSync) {
 // pre-exists, so adding the NEXT migration doesn't require reverse engineering.
 // If you introduce a new migration, add a test for it above, and add a new
 // history.n.sql file for the new DB layout so that this test keeps passing.
+// SQL schemas can change without migrations, so make sure to verify the
+// history.n-1.sql is up-to-date by re-creating. The flow to create a migration
+// n should be:
+// 1) There should already exist history.n-1.sql.
+// 2) Re-create history.n-1.sql to make sure it hasn't changed since it was
+//    created.
+// 3) Add a migration test beginning with `CreateDBVersion(n-1)` and ending with
+//    `ASSERT_GE(HistoryDatabase::GetCurrentVersion(), n);`
+// 4) Create history.n.sql.
 TEST_F(HistoryBackendDBTest, VerifyTestSQLFileForCurrentVersionAlreadyExists) {
   ASSERT_NO_FATAL_FAILURE(
       CreateDBVersion(HistoryDatabase::GetCurrentVersion()));

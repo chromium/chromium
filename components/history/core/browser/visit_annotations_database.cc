@@ -273,6 +273,13 @@ bool VisitAnnotationsDatabase::InitVisitAnnotationsTables() {
     return false;
   }
 
+  // Index for `cluster_keywords` table.
+  if (!GetDB().Execute(
+          "CREATE INDEX IF NOT EXISTS cluster_keywords_cluster_id_index ON "
+          "cluster_keywords(cluster_id)")) {
+    return false;
+  }
+
   // Represents the one-to-many relationship of `ClusterVisit`s and its
   // duplicates: `DuplicateClusterVisit`s.
   if (!GetDB().Execute("CREATE TABLE IF NOT EXISTS cluster_visit_duplicates("
