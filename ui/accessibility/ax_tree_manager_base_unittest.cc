@@ -22,12 +22,12 @@ namespace ui {
 
 namespace {
 
-class AXTreeManagerTest : public ::testing::Test {
+class AXTreeManagerBaseTest : public ::testing::Test {
  public:
-  AXTreeManagerTest();
-  AXTreeManagerTest(const AXTreeManagerTest&) = delete;
-  AXTreeManagerTest& operator=(const AXTreeManagerTest&) = delete;
-  ~AXTreeManagerTest() override = default;
+  AXTreeManagerBaseTest();
+  AXTreeManagerBaseTest(const AXTreeManagerBaseTest&) = delete;
+  AXTreeManagerBaseTest& operator=(const AXTreeManagerBaseTest&) = delete;
+  ~AXTreeManagerBaseTest() override = default;
 
  protected:
   static constexpr AXNodeID kIframeID = 4;
@@ -48,12 +48,12 @@ class AXTreeManagerTest : public ::testing::Test {
   AXTreeManagerBase complex_manager_;
 };
 
-AXTreeManagerTest::AXTreeManagerTest()
+AXTreeManagerBaseTest::AXTreeManagerBaseTest()
     : simple_manager_(CreateSimpleTree()),
       complex_manager_(CreateComplexTree()) {}
 
 // static
-AXTreeUpdate AXTreeManagerTest::CreateSimpleTreeUpdate() {
+AXTreeUpdate AXTreeManagerBaseTest::CreateSimpleTreeUpdate() {
   AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
@@ -68,12 +68,12 @@ AXTreeUpdate AXTreeManagerTest::CreateSimpleTreeUpdate() {
 }
 
 // static
-std::unique_ptr<AXTree> AXTreeManagerTest::CreateSimpleTree() {
+std::unique_ptr<AXTree> AXTreeManagerBaseTest::CreateSimpleTree() {
   return std::make_unique<AXTree>(CreateSimpleTreeUpdate());
 }
 
 // static
-std::unique_ptr<AXTree> AXTreeManagerTest::CreateComplexTree() {
+std::unique_ptr<AXTree> AXTreeManagerBaseTest::CreateComplexTree() {
   AXNodeData root;
   AXNodeData generic_container_ignored;
   AXNodeData paragraph;
@@ -107,7 +107,7 @@ std::unique_ptr<AXTree> AXTreeManagerTest::CreateComplexTree() {
 }
 
 // static
-void AXTreeManagerTest::HostChildTreeAtNode(AXNode& host_node,
+void AXTreeManagerBaseTest::HostChildTreeAtNode(AXNode& host_node,
                                             AXTree& child_tree) {
   ASSERT_NE(nullptr, host_node.tree());
 
@@ -134,7 +134,7 @@ void AXTreeManagerTest::HostChildTreeAtNode(AXNode& host_node,
   }
 }
 
-void AXTreeManagerTest::SetUp() {
+void AXTreeManagerBaseTest::SetUp() {
   ASSERT_EQ(AXTreeIDUnknown(), empty_manager_.GetTreeID());
   simple_tree_id_ = simple_manager_.GetTreeID();
   ASSERT_NE(ax::mojom::AXTreeIDType::kUnknown, simple_tree_id_.type());
@@ -165,7 +165,7 @@ class TestAXTreeObserver final : public AXTreeObserver {
 
 }  // namespace
 
-TEST_F(AXTreeManagerTest, GetManager) {
+TEST_F(AXTreeManagerBaseTest, GetManager) {
   // Since the following two trees are destroyed when their respective managers
   // are destructed, we cannot use a reference to their tree IDs. We should copy
   // the tree IDs by value if we want to verify that the managers have indeed
@@ -191,7 +191,7 @@ TEST_F(AXTreeManagerTest, GetManager) {
   ASSERT_EQ(nullptr, AXTreeManagerBase::GetManager(complex_tree_id));
 }
 
-TEST_F(AXTreeManagerTest, MoveConstructor) {
+TEST_F(AXTreeManagerBaseTest, MoveConstructor) {
   AXTreeManagerBase new_manager(std::move(simple_manager_));
   EXPECT_EQ(simple_tree_id_, new_manager.GetTreeID());
   EXPECT_NE(nullptr, new_manager.GetTree());
@@ -211,7 +211,7 @@ TEST_F(AXTreeManagerTest, MoveConstructor) {
   EXPECT_EQ(nullptr, new_manager.GetTree());
 }
 
-TEST_F(AXTreeManagerTest, SetTree) {
+TEST_F(AXTreeManagerBaseTest, SetTree) {
   // Try setting a new tree on construction via an `AXTreeUpdate`.
   const AXTreeUpdate initial_state = CreateSimpleTreeUpdate();
   const AXTreeID& initial_tree_id = initial_state.tree_data.tree_id;
@@ -235,7 +235,7 @@ TEST_F(AXTreeManagerTest, SetTree) {
   EXPECT_EQ(initial_tree_id, initial_manager.GetTreeID());
 }
 
-TEST_F(AXTreeManagerTest, ReleaseTree) {
+TEST_F(AXTreeManagerBaseTest, ReleaseTree) {
   std::unique_ptr<AXTree> simple_tree = simple_manager_.ReleaseTree();
   EXPECT_EQ(AXTreeIDUnknown(), simple_manager_.GetTreeID());
   EXPECT_EQ(nullptr, simple_manager_.GetTree());
@@ -243,7 +243,7 @@ TEST_F(AXTreeManagerTest, ReleaseTree) {
   EXPECT_EQ(simple_tree_id_, simple_tree->GetAXTreeID());
 }
 
-TEST_F(AXTreeManagerTest, GetNode) {
+TEST_F(AXTreeManagerBaseTest, GetNode) {
   EXPECT_EQ(simple_manager_.GetRoot(), AXTreeManagerBase::GetNodeFromTree(
                                            simple_tree_id_, /* AXNodeID */ 1));
   EXPECT_EQ(
@@ -258,7 +258,7 @@ TEST_F(AXTreeManagerTest, GetNode) {
   EXPECT_EQ(kIframeID, iframe->id());
 }
 
-TEST_F(AXTreeManagerTest, ParentChildTreeRelationship) {
+TEST_F(AXTreeManagerBaseTest, ParentChildTreeRelationship) {
   EXPECT_EQ(nullptr, empty_manager_.GetRoot());
   EXPECT_EQ(nullptr, empty_manager_.GetHostNode());
 
@@ -278,7 +278,7 @@ TEST_F(AXTreeManagerTest, ParentChildTreeRelationship) {
   EXPECT_EQ(simple_manager_root, complex_manager_.GetRootOfChildTree(*iframe));
 }
 
-TEST_F(AXTreeManagerTest, AttachingAndDetachingChildTrees) {
+TEST_F(AXTreeManagerBaseTest, AttachingAndDetachingChildTrees) {
   AXNode* iframe =
       AXTreeManagerBase::GetNodeFromTree(complex_tree_id_, kIframeID);
   ASSERT_NE(nullptr, iframe);
@@ -326,7 +326,7 @@ TEST_F(AXTreeManagerTest, AttachingAndDetachingChildTrees) {
             complex_manager_.DetachChildTree(kIframeID));
 }
 
-TEST_F(AXTreeManagerTest, Observers) {
+TEST_F(AXTreeManagerBaseTest, Observers) {
   TestAXTreeObserver observer;
   simple_manager_.GetTree()->AddObserver(&observer);
   EXPECT_TRUE(simple_manager_.GetTree()->HasObserver(&observer));
