@@ -4,6 +4,7 @@
 
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/json/values_util.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -40,7 +41,8 @@ constexpr char kTimeOfFirstPin[] = "ash.holding_space.time_of_first_pin";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   // Boolean prefs.
-  registry->RegisterBooleanPref(kPreviewsEnabled, true);
+  registry->RegisterBooleanPref(
+      kPreviewsEnabled, !features::IsHoldingSpacePredictabilityEnabled());
 
   // Time prefs.
   const base::Time unix_epoch = base::Time::UnixEpoch();
