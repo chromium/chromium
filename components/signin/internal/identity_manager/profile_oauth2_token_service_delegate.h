@@ -106,6 +106,9 @@ class ProfileOAuth2TokenServiceDelegate {
   void AddObserver(ProfileOAuth2TokenServiceObserver* observer);
   void RemoveObserver(ProfileOAuth2TokenServiceObserver* observer);
 
+  // Returns true if there is at least one observer.
+  bool HasObserver() const;
+
   // Returns a pointer to its instance of net::BackoffEntry if it has one
   // (`use_backoff` was true in the constructor), or a nullptr otherwise.
   virtual const net::BackoffEntry* BackoffEntry() const;

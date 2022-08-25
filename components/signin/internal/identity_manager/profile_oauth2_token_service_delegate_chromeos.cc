@@ -393,7 +393,6 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::FinishAddingPendingAccount(
   UpdateAuthError(account_id, error,
                   /*fire_auth_error_changed=*/false);
 
-  ScopedBatchChange batch(this);
   FireRefreshTokenAvailable(account_id);
   // See |ProfileOAuth2TokenServiceObserver::OnAuthErrorChanged|.
   // |OnAuthErrorChanged| must be always called after
@@ -457,8 +456,6 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::OnAccountRemoved(
           .account_id;
   DCHECK(!account_id.empty());
   ClearAuthError(account_id);
-
-  ScopedBatchChange batch(this);
 
   // ProfileOAuth2TokenService will clear its cache for |account_id| when this
   // is called. See |ProfileOAuth2TokenService::OnRefreshTokenRevoked|.

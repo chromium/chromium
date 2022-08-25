@@ -77,6 +77,10 @@ void ProfileOAuth2TokenServiceDelegate::RemoveObserver(
   observer_list_.RemoveObserver(observer);
 }
 
+bool ProfileOAuth2TokenServiceDelegate::HasObserver() const {
+  return !observer_list_.empty();
+}
+
 void ProfileOAuth2TokenServiceDelegate::StartBatchChanges() {
   ++batch_change_depth_;
 }
@@ -97,6 +101,7 @@ void ProfileOAuth2TokenServiceDelegate::FireEndBatchChanges() {
 void ProfileOAuth2TokenServiceDelegate::FireRefreshTokenAvailable(
     const CoreAccountId& account_id) {
   DCHECK(!account_id.empty());
+  ScopedBatchChange batch(this);
   for (auto& observer : observer_list_)
     observer.OnRefreshTokenAvailable(account_id);
 }
@@ -104,6 +109,7 @@ void ProfileOAuth2TokenServiceDelegate::FireRefreshTokenAvailable(
 void ProfileOAuth2TokenServiceDelegate::FireRefreshTokenRevoked(
     const CoreAccountId& account_id) {
   DCHECK(!account_id.empty());
+  ScopedBatchChange batch(this);
   for (auto& observer : observer_list_)
     observer.OnRefreshTokenRevoked(account_id);
 }

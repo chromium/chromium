@@ -346,6 +346,7 @@ void MutableProfileOAuth2TokenServiceDelegate::OnWebDataServiceRequestDone(
 
   DCHECK_EQ(web_data_service_request_, handle);
   web_data_service_request_ = 0;
+  ScopedBatchChange batch(this);
 
   if (result) {
     DCHECK(result->GetType() == TOKEN_RESULT);
@@ -458,7 +459,6 @@ void MutableProfileOAuth2TokenServiceDelegate::UpdateCredentials(
   ValidateAccountId(account_id);
   const std::string& existing_token = GetRefreshToken(account_id);
   if (existing_token != refresh_token) {
-    ScopedBatchChange batch(this);
     UpdateCredentialsInMemory(account_id, refresh_token);
     PersistCredentials(account_id, refresh_token);
     FireRefreshTokenAvailable(account_id);
@@ -643,7 +643,6 @@ void MutableProfileOAuth2TokenServiceDelegate::RevokeCredentialsImpl(
 
   if (refresh_tokens_.count(account_id) > 0) {
     VLOG(1) << "MutablePO2TS::RevokeCredentials for account_id=" << account_id;
-    ScopedBatchChange batch(this);
     if (revoke_on_server)
       RevokeCredentialsOnServer(refresh_tokens_[account_id]);
     refresh_tokens_.erase(account_id);

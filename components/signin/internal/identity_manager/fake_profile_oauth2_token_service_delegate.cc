@@ -84,7 +84,6 @@ void FakeProfileOAuth2TokenServiceDelegate::UpdateCredentials(
 void FakeProfileOAuth2TokenServiceDelegate::IssueRefreshTokenForUser(
     const CoreAccountId& account_id,
     const std::string& token) {
-  ScopedBatchChange batch(this);
   if (token.empty()) {
     base::Erase(account_ids_, account_id);
     refresh_tokens_.erase(account_id);
