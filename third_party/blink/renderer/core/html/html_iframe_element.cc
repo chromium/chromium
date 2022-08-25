@@ -29,6 +29,7 @@
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_html_iframe_element.h"
@@ -66,6 +67,17 @@ String ConvertToReportValue(const AtomicString& value) {
   static constexpr size_t kMaxLengthToReport = 1024;
   return value.GetString().Left(kMaxLengthToReport);
 }
+
+bool AnonymousIframeEnabled(const FeatureContext* context) {
+  // AnonymousIframe is enabled via command line flags, or via the Origin Trial.
+  // The origin trial is gated using the `AnonymousIframeOriginTrial` flag until
+  // AnonymousIframe is safe to use. It is useful, because the OT token do not
+  // enforce a specific version.
+  return RuntimeEnabledFeatures::AnonymousIframeEnabled(nullptr) ||
+         (RuntimeEnabledFeatures::AnonymousIframeEnabled(context) &&
+          base::FeatureList::IsEnabled(features::kAnonymousIframeOriginTrial));
+}
+
 };  // namespace
 
 HTMLIFrameElement::HTMLIFrameElement(Document& document)
@@ -257,8 +269,7 @@ void HTMLIFrameElement::ParseAttribute(
       UseCounter::Count(GetDocument(), WebFeature::kIFrameCSPAttribute);
     }
   } else if (name == html_names::kAnonymousAttr &&
-             RuntimeEnabledFeatures::AnonymousIframeEnabled(
-                 GetExecutionContext())) {
+             AnonymousIframeEnabled(GetExecutionContext())) {
     bool new_value = !value.IsNull();
     if (anonymous_ != new_value) {
       anonymous_ = new_value;

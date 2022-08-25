@@ -15,6 +15,14 @@
 namespace blink {
 namespace features {
 
+// Gate access to the AnonymousIframe origin trial. This is useful on its own,
+// because the OT infrastructure doesn't check Chrome's version. It means token
+// generated for the OT applies immediately to every Chrome versions. The
+// feature flag allows Chrome developers to restrict the access to the first
+// fully supported version.
+const base::Feature kAnonymousIframeOriginTrial{
+    "AnonymousIframeOriginTrial", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Apply lazy-loading to ad frames which have embeds likely impacting Core Web
 // Vitals.
 const base::Feature kAutomaticLazyFrameLoadingToAds{

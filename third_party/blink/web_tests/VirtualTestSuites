@@ -5,7 +5,8 @@
     "bases": ["wpt_internal/origin_trials/anonymous-iframe"],
     "args": [
       "--disable-blink-features=AnonymousIframe",
-      "--disable-features=PartitionedCookies"
+      "--disable-features=PartitionedCookies,ThirdPartyStoragePartitioning",
+      "--enable-features=AnonymousIframeOriginTrial"
     ]
   },
   {
