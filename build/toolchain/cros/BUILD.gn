@@ -97,7 +97,11 @@ cros_toolchain("target") {
 # use_sysroot off, and allows the user to set different sets of extra flags.
 cros_toolchain("nacl_bootstrap") {
   toolchain_args = {
-    current_cpu = target_cpu
+    if (target_cpu == "arm64") {
+      current_cpu = "arm"
+    } else {
+      current_cpu = target_cpu
+    }
     current_os = "chromeos"
     use_debug_fission = false
     use_gold = false
@@ -122,6 +126,14 @@ cros_toolchain("nacl_bootstrap") {
     extra_ldflags = cros_nacl_bootstrap_extra_ldflags
 
     toolchain_args.needs_gomacc_path_arg = true
+  }
+
+  # We build for ARM32, even when the rest of the build targets ARM64.
+  if (target_cpu == "arm64") {
+    ar = cros_nacl_helper_arm32_ar
+    cc = cros_nacl_helper_arm32_cc
+    cxx = cros_nacl_helper_arm32_cxx
+    ld = cros_nacl_helper_arm32_ld
   }
 }
 
