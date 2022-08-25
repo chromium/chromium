@@ -67,8 +67,6 @@ void ToGfxTransformOperations(
       case TransformOperation::kTranslate: {
         auto* transform =
             static_cast<const TranslateTransformOperation*>(operation.get());
-        if (!RuntimeEnabledFeatures::CompositeRelativeKeyframesEnabled())
-          DCHECK(transform->X().IsFixed() && transform->Y().IsFixed());
         out_transform_operations->AppendTranslate(
             SkDoubleToScalar(transform->X(box_size)),
             SkDoubleToScalar(transform->Y(box_size)),

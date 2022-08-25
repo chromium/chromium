@@ -73,13 +73,6 @@
     "args": ["--attribution-reporting-debug-mode"]
   },
   {
-    "prefix": "composite-relative-keyframes",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/css/css-transforms/animation"],
-    "args": ["--enable-threaded-compositing",
-             "--enable-blink-features=CompositeRelativeKeyframes"]
-  },
-  {
     "prefix": "off-main-thread-css-paint",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/css/css-paint-api",

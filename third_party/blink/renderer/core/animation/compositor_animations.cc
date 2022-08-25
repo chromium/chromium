@@ -310,20 +310,6 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
         case CSSPropertyID::kScale:
         case CSSPropertyID::kTranslate:
         case CSSPropertyID::kTransform:
-          // TODO(crbug.com/389359): Currently only CSS boxes support
-          // compositing box-size-dependent transform animations. Once such
-          // support is fully working for SVG, this section (and the flag)
-          // should be removed.
-          if (!RuntimeEnabledFeatures::CompositeRelativeKeyframesEnabled() ||
-              (layout_object && layout_object->IsSVGChild())) {
-            if (keyframe->GetCompositorKeyframeValue() &&
-                To<CompositorKeyframeTransform>(
-                    keyframe->GetCompositorKeyframeValue())
-                    ->GetTransformOperations()
-                    .BoxSizeDependencies()) {
-              reasons |= kTransformRelatedPropertyDependsOnBoxSize;
-            }
-          }
           break;
         case CSSPropertyID::kFilter:
           if (keyframe->GetCompositorKeyframeValue() &&

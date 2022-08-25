@@ -410,10 +410,6 @@
       status: {"Android": "stable"},
     },
     {
-      name: "CompositeRelativeKeyframes",
-      status: "stable"
-    },
-    {
       name: "ComputedAccessibilityInfo",
       status: "experimental",
     },

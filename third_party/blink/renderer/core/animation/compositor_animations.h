@@ -96,7 +96,6 @@ class CORE_EXPORT CompositorAnimations {
     // Cases relating to the properties being animated.
     kAnimationAffectsNonCSSProperties = 1 << 9,
     kTransformRelatedPropertyCannotBeAcceleratedOnTarget = 1 << 10,
-    kTransformRelatedPropertyDependsOnBoxSize = 1 << 11,
     kFilterRelatedPropertyMayMovePixels = 1 << 12,
     kUnsupportedCSSProperty = 1 << 13,
 

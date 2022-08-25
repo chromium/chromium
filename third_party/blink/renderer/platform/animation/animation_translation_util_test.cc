@@ -73,8 +73,6 @@ TEST(AnimationTranslationUtilTest, transformsWork) {
 }
 
 TEST(AnimationTranslationUtilTest, RelativeTranslate) {
-  ScopedCompositeRelativeKeyframesForTest relative_keyframes(true);
-
   TransformOperations ops;
   ops.Operations().push_back(TranslateTransformOperation::Create(
       Length::Percent(50), Length::Percent(50),
@@ -92,8 +90,6 @@ TEST(AnimationTranslationUtilTest, RelativeTranslate) {
 }
 
 TEST(AnimationTranslationUtilTest, RelativeInterpolated) {
-  ScopedCompositeRelativeKeyframesForTest relative_keyframes(true);
-
   TransformOperations ops_a, ops_b;
   ops_a.Operations().push_back(TranslateTransformOperation::Create(
       Length::Percent(50), Length::Fixed(0), TransformOperation::kTranslate));

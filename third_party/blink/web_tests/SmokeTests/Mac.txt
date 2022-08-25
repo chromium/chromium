@@ -285,6 +285,7 @@ external/wpt/css/css-text/white-space/control-chars-09F.html
 external/wpt/css/css-text/white-space/pre-wrap-018.html
 external/wpt/css/css-text/word-break/word-break-break-all-004.html
 external/wpt/css/css-transforms/animation/perspective-origin-interpolation.html
+external/wpt/css/css-transforms/animation/transform-interpolation-005.html
 external/wpt/css/css-transforms/transform-inline-001.html
 external/wpt/css/css-ui/compute-kind-widget-generated/kind-of-widget-fallback-meter-background-clip-001.html
 external/wpt/css/css-ui/compute-kind-widget-generated/kind-of-widget-fallback-meter-border-right-width-001.html
@@ -1443,7 +1444,6 @@ virtual/backface-visibility-interop/paint/invalidation/window-resize/window-resi
 virtual/backface-visibility-interop/paint/invalidation/window-resize/window-resize-background-image-fixed-scrolling-contents.html
 virtual/background-svg-in-lcp/external/wpt/largest-contentful-paint/multiple-redirects-TAO.html
 virtual/background-svg-in-lcp/external/wpt/largest-contentful-paint/toJSON.html
-virtual/composite-relative-keyframes/external/wpt/css/css-transforms/animation/transform-interpolation-005.html
 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/resize-corner-tracking-touch.html
 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/subpixel-overflow-mouse-drag.html
 virtual/compositor_threaded_scrollbar_scrolling/paint/invalidation/scroll/sticky/invalidate-after-composited-scroll-with-sticky.html

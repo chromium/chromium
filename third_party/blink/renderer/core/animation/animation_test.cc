@@ -1542,9 +1542,6 @@ TEST_P(AnimationAnimationTestCompositing, InfiniteDurationAnimation) {
 // of the animation if running.
 TEST_P(AnimationAnimationTestCompositing,
        RestartCompositedAnimationOnSizeChange) {
-  // TODO(crbug.com/389359): Remove forced feature enabling once on by
-  // default.
-  ScopedCompositeRelativeKeyframesForTest composite_relative_keyframes(true);
   SetBodyInnerHTML(R"HTML(
     <div id="target" style="width: 100px; height: 200px; background: blue;
                             will-change: transform">
@@ -1595,9 +1592,6 @@ TEST_P(AnimationAnimationTestCompositing,
 // depends on width and a change to the height does not trigger a restart.
 TEST_P(AnimationAnimationTestCompositing,
        RestartCompositedAnimationOnWidthChange) {
-  // TODO(crbug.com/389359): Remove forced feature enabling once on by
-  // default.
-  ScopedCompositeRelativeKeyframesForTest composite_relative_keyframes(true);
   SetBodyInnerHTML(R"HTML(
     <div id="target" style="width: 100px; height: 200px; background: blue;
                             will-change: transform">
@@ -1638,9 +1632,6 @@ TEST_P(AnimationAnimationTestCompositing,
 // affects height and a change to the width does not trigger a restart.
 TEST_P(AnimationAnimationTestCompositing,
        RestartCompositedAnimationOnHeightChange) {
-  // TODO(crbug.com/389359): Remove forced feature enabling once on by
-  // default.
-  ScopedCompositeRelativeKeyframesForTest composite_relative_keyframes(true);
   SetBodyInnerHTML(R"HTML(
     <div id="target" style="width: 100px; height: 200px; background: blue;
                             will-change: transform">

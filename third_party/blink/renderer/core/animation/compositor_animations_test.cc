@@ -622,33 +622,6 @@ TEST_P(AnimationCompositorAnimationsTest,
 }
 
 TEST_P(AnimationCompositorAnimationsTest,
-       IsNotCandidateForCompositorAnimationTransformDependsOnBoxSize) {
-  ScopedCompositeRelativeKeyframesForTest no_relative_keyframes(false);
-
-  // Absolute transforms can be animated on the compositor.
-  String transform = "translateX(2px) translateY(2px)";
-  StringKeyframe* good_keyframe =
-      CreateReplaceOpKeyframe(CSSPropertyID::kTransform, transform);
-  EXPECT_EQ(DuplicateSingleKeyframeAndTestIsCandidateOnResult(good_keyframe),
-            CompositorAnimations::kNoFailure);
-
-  // Transforms that rely on the box size, such as percent calculations, cannot
-  // be animated on the compositor (as the box size may change).
-  String transform2 = "translateX(50%) translateY(2px)";
-  StringKeyframe* bad_keyframe =
-      CreateReplaceOpKeyframe(CSSPropertyID::kTransform, transform2);
-  EXPECT_TRUE(DuplicateSingleKeyframeAndTestIsCandidateOnResult(bad_keyframe) &
-              CompositorAnimations::kTransformRelatedPropertyDependsOnBoxSize);
-
-  // Similarly, calc transforms cannot be animated on the compositor.
-  String transform3 = "translateX(calc(100% + (0.5 * 100px)))";
-  StringKeyframe* bad_keyframe2 =
-      CreateReplaceOpKeyframe(CSSPropertyID::kTransform, transform3);
-  EXPECT_TRUE(DuplicateSingleKeyframeAndTestIsCandidateOnResult(bad_keyframe2) &
-              CompositorAnimations::kTransformRelatedPropertyDependsOnBoxSize);
-}
-
-TEST_P(AnimationCompositorAnimationsTest,
        CanStartEffectOnCompositorKeyframeEffectModel) {
   StringKeyframeVector frames_same;
   frames_same.push_back(CreateDefaultKeyframe(
