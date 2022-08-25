@@ -580,6 +580,15 @@ bool OpaqueBrowserFrameView::ShouldDrawRestoredFrameShadow() const {
   return false;
 }
 
+#if BUILDFLAG(IS_LINUX)
+OpaqueBrowserFrameViewLayoutDelegate::TiledEdges
+OpaqueBrowserFrameView::GetTiledEdges() const {
+  // TODO(crbug.com/1355273): return the actual tiled state of the platform
+  // window.
+  return {};
+}
+#endif
+
 ///////////////////////////////////////////////////////////////////////////////
 // OpaqueBrowserFrameView, protected:
 

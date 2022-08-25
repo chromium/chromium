@@ -11,6 +11,8 @@
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/tab_icon_view.h"
 #include "chrome/common/chrome_switches.h"
@@ -87,6 +89,12 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
       const gfx::Rect& bounding_rect) const override {}
   bool IsTranslucentWindowOpacitySupported() const override { return true; }
   bool ShouldDrawRestoredFrameShadow() const override { return true; }
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  OpaqueBrowserFrameViewLayoutDelegate::TiledEdges GetTiledEdges()
+      const override {
+    return {};
+  }
+#endif
 
  private:
   std::u16string window_title_;

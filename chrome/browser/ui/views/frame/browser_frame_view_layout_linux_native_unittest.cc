@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "ui/linux/nav_button_provider.h"
@@ -76,6 +78,12 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
       const gfx::Rect& bounding_rect) const override {}
   bool IsTranslucentWindowOpacitySupported() const override { return true; }
   bool ShouldDrawRestoredFrameShadow() const override { return true; }
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  OpaqueBrowserFrameViewLayoutDelegate::TiledEdges GetTiledEdges()
+      const override {
+    return {};
+  }
+#endif
 };
 
 class TestNavButtonProvider : public ui::NavButtonProvider {
