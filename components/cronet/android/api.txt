@@ -301,20 +301,6 @@ public abstract class org.chromium.net.UploadDataProvider implements java.io.Clo
   public abstract void rewind(org.chromium.net.UploadDataSink) throws java.io.IOException;
   public void close() throws java.io.IOException;
 }
-final class org.chromium.net.UploadDataProviders$ByteBufferUploadProvider extends org.chromium.net.UploadDataProvider {
-  public long getLength();
-  public void read(org.chromium.net.UploadDataSink, java.nio.ByteBuffer);
-  public void rewind(org.chromium.net.UploadDataSink);
-}
-interface org.chromium.net.UploadDataProviders$FileChannelProvider {
-  public abstract java.nio.channels.FileChannel getChannel() throws java.io.IOException;
-}
-final class org.chromium.net.UploadDataProviders$FileUploadProvider extends org.chromium.net.UploadDataProvider {
-  public long getLength() throws java.io.IOException;
-  public void read(org.chromium.net.UploadDataSink, java.nio.ByteBuffer) throws java.io.IOException;
-  public void rewind(org.chromium.net.UploadDataSink) throws java.io.IOException;
-  public void close() throws java.io.IOException;
-}
 public final class org.chromium.net.UploadDataProviders {
   public static org.chromium.net.UploadDataProvider create(java.io.File);
   public static org.chromium.net.UploadDataProvider create(android.os.ParcelFileDescriptor);
@@ -402,4 +388,4 @@ public abstract class org.chromium.net.UrlResponseInfo {
   public abstract java.lang.String getProxyServer();
   public abstract long getReceivedByteCount();
 }
-Stamp: bfdd219e38031474ec7a93b265352d94
+Stamp: d1a9021c3d37c25d7c22d453097e465e
