@@ -269,6 +269,10 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
         this(buildData(keys.toArray(new PropertyKey[keys.size()])));
     }
 
+    public Map<PropertyKey, ValueContainer> getData() {
+        return mData;
+    }
+
     private PropertyModel(Map<PropertyKey, ValueContainer> startingValues) {
         mData = startingValues;
     }

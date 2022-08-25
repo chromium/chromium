@@ -272,6 +272,13 @@ public class TabListManager {
         return tabList.openNewPage(parent, type, url);
     }
 
+    public boolean openNewPage(@NonNull Tab parent, LoadUrlParams params) {
+        ArkLogger.d("TabListManager", "openNewPage params=" + params);
+
+        ITabGroup tabList = getTabList(parent.isIncognito());
+        return tabList.openNewPage(parent, params);
+    }
+
     public void addObserver(TabManagerObserver observer) {
         ArkLogger.e(TAG, "addObserver hasObserver=" + mObservers.hasObserver(observer));
         if (!mObservers.hasObserver(observer)) {

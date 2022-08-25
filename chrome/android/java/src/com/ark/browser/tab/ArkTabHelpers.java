@@ -4,7 +4,6 @@
 
 package com.ark.browser.tab;
 
-import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantTabHelper;
 import org.chromium.chrome.browser.complex_tasks.TaskTabHelper;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchTabHelper;
@@ -57,7 +56,7 @@ public final class ArkTabHelpers {
         InfoBarContainer.from(tab);
 
         ArkTabWebContentsObserver.from(tab);
-        SwipeRefreshHandler.from(tab);
+        ArkSwipeRefreshHandler.from(tab);
         TabFavicon.from(tab);
         TrustedCdn.from(tab);
         TabAssociatedApp.from(tab);

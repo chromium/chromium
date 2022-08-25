@@ -550,6 +550,31 @@ public class LoadUrlParams {
         return LoadUrlParamsJni.get().isDataScheme(mBaseUrlForDataUrl);
     }
 
+    @Override
+    public String toString() {
+        return "LoadUrlParams{" +
+                "mUrl='" + mUrl + '\'' +
+                ", mInitiatorOrigin=" + mInitiatorOrigin +
+                ", mLoadUrlType=" + mLoadUrlType +
+                ", mTransitionType=" + mTransitionType +
+                ", mReferrer=" + mReferrer +
+                ", mExtraHeaders=" + mExtraHeaders +
+                ", mVerbatimHeaders='" + mVerbatimHeaders + '\'' +
+                ", mUaOverrideOption=" + mUaOverrideOption +
+                ", mPostData=" + mPostData +
+                ", mBaseUrlForDataUrl='" + mBaseUrlForDataUrl + '\'' +
+                ", mVirtualUrlForDataUrl='" + mVirtualUrlForDataUrl + '\'' +
+                ", mDataUrlAsString='" + mDataUrlAsString + '\'' +
+                ", mCanLoadLocalResources=" + mCanLoadLocalResources +
+                ", mIsRendererInitiated=" + mIsRendererInitiated +
+                ", mShouldReplaceCurrentEntry=" + mShouldReplaceCurrentEntry +
+                ", mIntentReceivedTimestamp=" + mIntentReceivedTimestamp +
+                ", mInputStartTimestamp=" + mInputStartTimestamp +
+                ", mHasUserGesture=" + mHasUserGesture +
+                ", mShouldClearHistoryList=" + mShouldClearHistoryList +
+                '}';
+    }
+
     @NativeMethods
     interface Natives {
         /**

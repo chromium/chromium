@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
@@ -37,7 +38,7 @@ import org.chromium.url.Origin;
 @JNINamespace("external_intents")
 public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate {
     private final AuthenticatorNavigationInterceptor mAuthenticatorHelper;
-    private InterceptNavigationDelegateClient mClient;
+    protected final InterceptNavigationDelegateClient mClient;
     private Callback<Pair<GURL, OverrideUrlLoadingResult>> mResultCallbackForTesting;
     private WebContents mWebContents;
     private ExternalNavigationHandler mExternalNavHandler;
@@ -88,11 +89,11 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         }
 
         ExternalNavigationParams params = new ExternalNavigationParams.Builder(url, incognito)
-                                                  .setOpenInNewTab(true)
-                                                  .setIsRendererInitiated(isRendererInitiated)
-                                                  .setInitiatorOrigin(initiatorOrigin)
-                                                  .setIsMainFrame(true)
-                                                  .build();
+                .setOpenInNewTab(true)
+                .setIsRendererInitiated(isRendererInitiated)
+                .setInitiatorOrigin(initiatorOrigin)
+                .setIsMainFrame(true)
+                .build();
         OverrideUrlLoadingResult result = mExternalNavHandler.shouldOverrideUrlLoading(params);
         if (mResultCallbackForTesting != null) {
             mResultCallbackForTesting.onResult(Pair.create(url, result));
@@ -139,13 +140,13 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         boolean shouldCloseTab = shouldCloseContentsOnOverrideUrlLoadingAndLaunchIntent();
         ExternalNavigationParams params = buildExternalNavigationParams(
                 navigationHandle, redirectHandler, shouldCloseTab, escapedUrl)
-                                                  .build();
+                .build();
         OverrideUrlLoadingResult result = mExternalNavHandler.shouldOverrideUrlLoading(params);
         if (mResultCallbackForTesting != null) {
             mResultCallbackForTesting.onResult(Pair.create(url, result));
         }
 
-        mClient.onDecisionReachedForNavigation(navigationHandle, result);
+        result = onResult(navigationHandle, result);
 
         boolean isExternalProtocol = !UrlUtilities.isAcceptedScheme(params.getUrl());
         String protocolType = isExternalProtocol ? "ExternalProtocol" : "InternalProtocol";
@@ -167,6 +168,9 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                     onOverrideUrlLoadingAndLaunchIntent(shouldCloseTab);
                 }
                 return true;
+            case OverrideUrlLoadingResultType.OVERRIDE_WITH_NEW_PAGE:
+                onOverrideUrlLoadingAndLaunchIntent(false);
+                return true;
             case OverrideUrlLoadingResultType.NO_OVERRIDE:
             default:
                 if (navigationHandle.isExternalProtocol()) {
@@ -175,6 +179,11 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                 }
                 return false;
         }
+    }
+
+    protected OverrideUrlLoadingResult onResult(NavigationHandle navigationHandle, OverrideUrlLoadingResult result) {
+        mClient.onDecisionReachedForNavigation(navigationHandle, result);
+        return result;
     }
 
     /**
@@ -190,7 +199,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         // Intent in a new tab when Chrome receives it again.
         return new ExternalNavigationParams
                 .Builder(escapedUrl, mClient.isIncognito(), navigationHandle.getReferrerUrl(),
-                        navigationHandle.pageTransition(), navigationHandle.isRedirect())
+                navigationHandle.pageTransition(), navigationHandle.isRedirect())
                 .setApplicationMustBeInForeground(true)
                 .setRedirectHandler(redirectHandler)
                 .setOpenInNewTab(shouldCloseTab)
@@ -236,12 +245,12 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         return mAuthenticatorHelper;
     }
 
-    private int getLastCommittedEntryIndex() {
+    protected int getLastCommittedEntryIndex() {
         if (mClient.getWebContents() == null) return -1;
         return mClient.getWebContents().getNavigationController().getLastCommittedEntryIndex();
     }
 
-    private boolean isInitialNavigation() {
+    protected boolean isInitialNavigation() {
         if (mClient.getWebContents() == null) return true;
         return mClient.getWebContents().getNavigationController().isInitialNavigation();
     }
@@ -263,6 +272,7 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
     /**
      * Called when Chrome decides to override URL loading and launch an intent or an asynchronous
      * action.
+     *
      * @param shouldCloseTab
      */
     private void onOverrideUrlLoadingAndLaunchIntent(boolean shouldCloseTab) {

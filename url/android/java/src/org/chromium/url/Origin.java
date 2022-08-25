@@ -15,6 +15,11 @@ public class Origin {
     // The internal representation of the origin that should never be used directly.
     private final org.chromium.url.internal.mojom.Origin mInternal;
 
+    /** Protected constructor, used for testing purposes only. */
+    protected Origin() {
+        mInternal = null;
+    }
+
     /**
      * This convenience constructor provides a way to wrap
      * `org.chromium.url.internal.mojom.Origin`s, which are provided by Mojo-generated
@@ -47,11 +52,6 @@ public class Origin {
         return mInternal.nonceIfOpaque != null;
     }
 
-    /** Protected constructor, used for testing purposes only. */
-    protected Origin() {
-        mInternal = null;
-    }
-
     @CalledByNative
     private static ByteBuffer serialize(Origin origin) {
         return origin.mInternal.serialize();
@@ -60,5 +60,15 @@ public class Origin {
     @CalledByNative
     private Origin(ByteBuffer byteBuffer) {
         mInternal = org.chromium.url.internal.mojom.Origin.deserialize(byteBuffer);
+    }
+
+    @Override
+    public String toString() {
+        return "Origin{" +
+                "scheme=" + getScheme() +
+                ", host=" + getHost() +
+                ", port=" + getPort() +
+                ", ppaque=" + isOpaque() +
+                '}';
     }
 }

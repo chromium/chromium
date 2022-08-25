@@ -16,6 +16,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.collection.ArrayMap;
 
+import com.ark.browser.tab.ArkSwipeRefreshHandler;
+import com.ark.browser.tab.TabListManager;
 import com.ark.browser.utils.ArkLogger;
 
 import org.chromium.base.ActivityState;
@@ -23,8 +25,8 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.blink.mojom.DisplayMode;
+import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -32,10 +34,13 @@ import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.media.PictureInPicture;
 import org.chromium.chrome.browser.notifications.WebPlatformNotificationMetrics;
+import org.chromium.chrome.browser.policy.PolicyAuditor;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabWebContentsDelegateAndroid;
+import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.ColorUtils;
@@ -89,7 +94,7 @@ public class ArkTabWebContentsDelegateAndroid extends TabWebContentsDelegateAndr
         // When the dialog is visible, keeping the refresh animation active
         // in the background is distracting and unnecessary (and likely to
         // jank when the dialog is shown).
-        SwipeRefreshHandler handler = SwipeRefreshHandler.get(mTab);
+        ArkSwipeRefreshHandler handler = ArkSwipeRefreshHandler.get(mTab);
         if (handler != null) handler.reset();
 
         showRepostFormWarningTabModalDialog();
@@ -106,8 +111,7 @@ public class ArkTabWebContentsDelegateAndroid extends TabWebContentsDelegateAndr
 
     @Override
     public boolean isFullscreenForTabOrPending() {
-        return mFullscreenManager != null ? mFullscreenManager.getPersistentFullscreenMode()
-                                          : false;
+        return mFullscreenManager != null && mFullscreenManager.getPersistentFullscreenMode();
     }
 
     @Override
@@ -125,7 +129,26 @@ public class ArkTabWebContentsDelegateAndroid extends TabWebContentsDelegateAndr
             int disposition, Rect initialPosition, boolean userGesture) {
 
         Toast.makeText(ContextUtils.getApplicationContext(), "TODO addNewContents", Toast.LENGTH_SHORT).show();
-        return false;
+
+        // Grab the URL, which might not be available via the Tab.
+        GURL url = mWebContentsUrlMapping.remove(webContents);
+
+        // Skip opening a new Tab if it doesn't make sense.
+        if (mTab.isClosing() || url == null) return false;
+
+
+        LoadUrlParams params = new LoadUrlParams(UrlFormatter.fixupUrl(url.getSpec()));
+        params.setHasUserGesture(userGesture);
+        boolean success = TabListManager.getInstance().openNewPage(mTab, params);
+
+        if (success) {
+            if (disposition == org.chromium.ui.mojom.WindowOpenDisposition.NEW_POPUP) {
+                PolicyAuditor auditor = AppHooks.get().getPolicyAuditor();
+                auditor.notifyAuditEvent(ContextUtils.getApplicationContext(),
+                        PolicyAuditor.AuditEvent.OPEN_POPUP_URL_SUCCESS, url.getSpec(), "");
+            }
+        }
+        return success;
 
 //        assert mWebContentsUrlMapping.containsKey(webContents);
 //

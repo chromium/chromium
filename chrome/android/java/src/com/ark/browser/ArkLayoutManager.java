@@ -96,25 +96,16 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
     // LayoutStateObserver.
     private final ObserverList<SceneChangeObserver> mSceneChangeObservers = new ObserverList<>();
 
-    // Current Layout State
-    private Layout mActiveLayout;
-    private Layout mNextActiveLayout;
-    private boolean mAnimateNextLayout;
-
     // Current Event Fitler State
     private EventFilter mActiveEventFilter;
 
     // Internal State
     private final SparseArray<LayoutTab> mTabCache = new SparseArray<>();
-    private int mControlsShowingToken = TokenHolder.INVALID_TOKEN;
     private int mControlsHidingToken = TokenHolder.INVALID_TOKEN;
     private boolean mUpdateRequested;
     private final OverlayPanelManager mOverlayPanelManager;
 
     private final Context mContext;
-
-    // Whether or not the last layout was showing the browser controls.
-    private boolean mPreviousLayoutShowingToolbar;
 
     // Used to store the visible viewport and not create a new Rect object every frame.
     private final RectF mCachedVisibleViewport = new RectF();
@@ -192,8 +183,6 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
      *                          continually forwarded to this class.
      */
     public boolean onInterceptTouchEvent(MotionEvent e, boolean isKeyboardShowing) {
-        if (mActiveLayout == null) return false;
-
         if (e.getAction() == MotionEvent.ACTION_DOWN) {
             mLastTapX = (int) e.getX();
             mLastTapY = (int) e.getY();
@@ -217,13 +206,13 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
 
         // If no overlay's filter took the event, check the layout.
         if (layoutFilter == null) {
-            layoutFilter = mActiveLayout.findInterceptingEventFilter(e, offsets, isKeyboardShowing);
+            layoutFilter = mStaticLayout.findInterceptingEventFilter(e, offsets, isKeyboardShowing);
         }
 
         mIsNewEventFilter = layoutFilter != mActiveEventFilter;
         mActiveEventFilter = layoutFilter;
 
-        if (mActiveEventFilter != null) mActiveLayout.unstallImmediately();
+        if (mActiveEventFilter != null) mStaticLayout.unstallImmediately();
 
         return mActiveEventFilter != null;
     }
@@ -399,7 +388,7 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
         updateControlsHidingState(browserControlsManager);
         getViewportPixel(mCachedVisibleViewport);
         mHost.getWindowViewport(mCachedWindowViewport);
-        SceneLayer layer = mActiveLayout.getUpdatedSceneLayer(mCachedWindowViewport,
+        SceneLayer layer = mStaticLayout.getUpdatedSceneLayer(mCachedWindowViewport,
                 mCachedVisibleViewport, tabContentManager, resourceManager, browserControlsManager);
 
         float offsetPx = mBrowserControlsStateProvider == null
@@ -436,7 +425,7 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
             }
         }
 
-        if (overlayHidesControls || mActiveLayout.forceHideBrowserControlsAndroidView()) {
+        if (overlayHidesControls || mStaticLayout.forceHideBrowserControlsAndroidView()) {
             mControlsHidingToken = controlsVisibilityManager.hideAndroidControlsAndClearOldToken(
                     mControlsHidingToken);
         } else {
@@ -588,50 +577,14 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
     @Override
     public void releaseResourcesForTab(int tabId) {}
 
-    /**
-     * @return The next {@link Layout} that will be shown.  If no {@link Layout} has been set
-     *         since the last time {@link #startShowing(Layout, boolean)} was called, this will be
-     *         {@link #getDefaultLayout()}.
-     */
-    protected Layout getNextLayout() {
-        return mNextActiveLayout != null ? mNextActiveLayout : getDefaultLayout();
-    }
-
-    /** @return Whether a next layout has been explicitly specified. */
-    protected boolean hasExplicitNextLayout() {
-        return mNextActiveLayout != null;
-    }
-
     @Override
     public Layout getActiveLayout() {
-        return mActiveLayout;
+        return mStaticLayout;
     }
 
     @Override
     public void getViewportPixel(RectF rect) {
-        if (getActiveLayout() == null) {
-            mHost.getWindowViewport(rect);
-            return;
-        }
-
-        switch (getActiveLayout().getViewportMode()) {
-            case Layout.ViewportMode.ALWAYS_FULLSCREEN:
-                mHost.getWindowViewport(rect);
-                break;
-            case Layout.ViewportMode.ALWAYS_SHOWING_BROWSER_CONTROLS:
-                mHost.getViewportFullControls(rect);
-                break;
-            case Layout.ViewportMode.USE_PREVIOUS_BROWSER_CONTROLS_STATE:
-                if (mPreviousLayoutShowingToolbar) {
-                    mHost.getViewportFullControls(rect);
-                } else {
-                    mHost.getWindowViewport(rect);
-                }
-                break;
-            case Layout.ViewportMode.DYNAMIC_BROWSER_CONTROLS:
-            default:
-                mHost.getVisibleViewport(rect);
-        }
+        mHost.getVisibleViewport(rect);
     }
 
     @Override
@@ -688,14 +641,6 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
 
     @Override
     public void showLayout(int layoutType, boolean animate) {
-//        Layout activeLayout = getActiveLayout();
-//        if (activeLayout != null && !activeLayout.isStartingToHide()) {
-//            setNextLayout(getLayoutForType(layoutType), animate);
-//            activeLayout.startHiding(Tab.INVALID_TAB_ID, animate);
-//        } else {
-//            startShowing(getLayoutForType(layoutType), animate);
-//        }
-        startShowing(mStaticLayout, false);
     }
 
     /**
@@ -719,27 +664,6 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
         // This can happen in some cases where the start surface may not have been created yet.
         if (layout == null) return;
 
-        // Set the new layout
-        setNextLayout(null, true);
-        mActiveLayout = layout;
-
-        BrowserControlsVisibilityManager controlsVisibilityManager =
-                mHost.getBrowserControlsManager();
-        if (controlsVisibilityManager != null) {
-            mPreviousLayoutShowingToolbar =
-                    !BrowserControlsUtils.areBrowserControlsOffScreen(controlsVisibilityManager);
-
-            // Release any old fullscreen token we were holding.
-            controlsVisibilityManager.getBrowserVisibilityDelegate().releasePersistentShowingToken(
-                    mControlsShowingToken);
-
-            // Grab a new fullscreen token if this layout can't be in fullscreen.
-            if (getActiveLayout().forceShowBrowserControlsAndroidView()) {
-                mControlsShowingToken = controlsVisibilityManager.getBrowserVisibilityDelegate()
-                                                .showControlsPersistent();
-            }
-        }
-
         onViewportChanged();
         getActiveLayout().show(time(), animate);
         mHost.setContentOverlayVisibility(getActiveLayout().shouldDisplayContentOverlay(),
@@ -758,25 +682,9 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
         }
     }
 
-    /**
-     * Sets the next {@link Layout} to show after the current {@link Layout} is finished and is done
-     * hiding.
-     * @param layout The new {@link Layout} to show.
-     * @param animate Whether the next layout should be animated.
-     */
-    protected void setNextLayout(Layout layout, boolean animate) {
-        mNextActiveLayout = (layout == null) ? getDefaultLayout() : layout;
-        mAnimateNextLayout = animate;
-    }
-
-    /** @return The ID of the next layout to show or {@code LayoutType.NONE} if one isn't set. */
-    public int getNextLayoutType() {
-        return mNextActiveLayout != null ? mNextActiveLayout.getLayoutType() : LayoutType.NONE;
-    }
-
     @Override
     public boolean isActiveLayout(Layout layout) {
-        return layout == mActiveLayout;
+        return layout == mStaticLayout;
     }
 
     @Override

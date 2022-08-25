@@ -35,7 +35,7 @@ public class ArkInterceptNavigationDelegateTabHelper implements UserData {
     ArkInterceptNavigationDelegateTabHelper(ArkTabImpl tab) {
         mInterceptNavigationDelegateClient = new ArkInterceptNavigationDelegateClientImpl(tab);
         mInterceptNavigationDelegate =
-                new InterceptNavigationDelegateImpl(mInterceptNavigationDelegateClient);
+                new ArkInterceptNavigationDelegateImpl(tab, mInterceptNavigationDelegateClient);
         mInterceptNavigationDelegateClient.initializeWithDelegate(mInterceptNavigationDelegate);
     }
 

@@ -36,7 +36,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
-import com.ark.browser.BrowserActivity;
+import com.ark.browser.ArkBrowserActivity;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -64,6 +64,7 @@ import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.ChromeActionModeHandler;
 import org.chromium.chrome.browser.ChromeActivitySessionTracker;
 import org.chromium.chrome.browser.ChromeKeyboardVisibilityDelegate;
+import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.ChromeWindow;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.IntentHandler;
@@ -151,7 +152,6 @@ import org.chromium.components.browser_ui.notifications.NotificationManagerProxy
 import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.components.browser_ui.widget.InsetObserverViewSupplier;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
-import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -613,12 +613,14 @@ public abstract class ChromeActivity
 //                    if (tab != null) {
 //                        tab.reload();
 //                    }
-
-
-                    Intent intent = new Intent(ChromeActivity.this, BrowserActivity.class);
+                    Intent intent = new Intent(ChromeActivity.this, ChromeTabbedActivity2.class);
                     startActivity(intent);
+                });
 
-
+                TextView tvTest = findViewById(R.id.tv_test);
+                tvTest.setOnClickListener(v -> {
+                    Intent intent = new Intent(ChromeActivity.this, ArkBrowserActivity.class);
+                    startActivity(intent);
                 });
 
 

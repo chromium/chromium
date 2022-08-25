@@ -5,6 +5,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
@@ -29,6 +30,10 @@ public abstract class ArkWindowAndroid extends ActivityWindowAndroid {
     public abstract TabDelegateFactory getTabDelegateFactory();
 
     public abstract ArkCompositorViewHolder getCompositorViewHolder();
+
+    public TabContentManager getTabContentManager() {
+        return getCompositorViewHolder().getTabContentManager();
+    }
 
     public @Nullable
     ModalDialogManager getModalDialogManager() {

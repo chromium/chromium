@@ -300,6 +300,34 @@ public class NavigationHandle {
         return mIsPageActivation;
     }
 
+    @Override
+    public String toString() {
+        return "NavigationHandle{" +
+                "mNativeNavigationHandleProxy=" + mNativeNavigationHandleProxy +
+                ", mIsInPrimaryMainFrame=" + mIsInPrimaryMainFrame +
+                ", mIsRendererInitiated=" + mIsRendererInitiated +
+                ", mIsSameDocument=" + mIsSameDocument +
+                ", mPageTransition=" + mPageTransition +
+                ", mUrl=" + mUrl +
+                ", mReferrerUrl=" + mReferrerUrl +
+                ", mBaseUrlForDataUrl=" + mBaseUrlForDataUrl +
+                ", mHasCommitted=" + mHasCommitted +
+                ", mIsDownload=" + mIsDownload +
+                ", mIsErrorPage=" + mIsErrorPage +
+                ", mIsFragmentNavigation=" + mIsFragmentNavigation +
+                ", mIsValidSearchFormUrl=" + mIsValidSearchFormUrl +
+                ", mErrorCode=" + mErrorCode +
+                ", mHttpStatusCode=" + mHttpStatusCode +
+                ", mInitiatorOrigin=" + mInitiatorOrigin +
+                ", mIsPost=" + mIsPost +
+                ", mHasUserGesture=" + mHasUserGesture +
+                ", mIsRedirect=" + mIsRedirect +
+                ", mIsExternalProtocol=" + mIsExternalProtocol +
+                ", mNavigationId=" + mNavigationId +
+                ", mIsPageActivation=" + mIsPageActivation +
+                '}';
+    }
+
     @NativeMethods
     interface Natives {
         void setRequestHeader(

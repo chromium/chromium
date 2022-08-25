@@ -77,6 +77,8 @@ public class TabStateFileManager {
             RecordHistogram.recordTimesHistogram(
                     "Tabs.TabState.LoadTime", SystemClock.elapsedRealtime() - startTime);
         }
+        Log.e(TAG, "restoreTabState id=" + id + " deltaTime="
+                + (SystemClock.elapsedRealtime() - startTime) + " folder=" + stateFolder);
         return tabState;
     }
 

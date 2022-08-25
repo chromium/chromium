@@ -176,8 +176,6 @@ public class PageCacheManager {
                 .setWindow(nativeWindow)
                 .setDelegateFactory(nativeWindow.getTabDelegateFactory())
                 .build();
-//        tab = Tab.createFrozenTabFromState(pageInfo, nativeWindow, state);
-//        tab.initialize(null, true, true);
         putPage(tab);
         ArkLogger.d(TAG, "createFrozenPageFromState create tab deltaTime=" + (System.currentTimeMillis() - start));
         return tab;
@@ -200,6 +198,7 @@ public class PageCacheManager {
         Tab tab = tabCache.get(id);
         if (tab != null) {
             tabCache.remove(id);
+            tab.destroy();
 //            ThreadPool.post(tab::remove);
         }
     }
@@ -214,12 +213,5 @@ public class PageCacheManager {
         }
         tabCache.clear();
     }
-
-//    public Tab getOrCreateTab(int id) {
-//        Tab tab = tabCache.get(id);
-//        if (tab == null) {
-//
-//        }
-//    }
 
 }

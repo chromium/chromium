@@ -92,7 +92,7 @@
             android:layout_gravity="bottom"
             android:orientation="horizontal"
             android:background="#eecccccc"
-            android:paddingHorizontal="16dp"
+            android:paddingHorizontal="8dp"
             android:paddingVertical="8dp"
             >
 
@@ -102,7 +102,7 @@
                 android:layout_height="wrap_content"
                 android:text="后退"
                 android:textSize="12sp"
-                android:padding="8dp"
+                android:padding="4dp"
                 android:background="?android:selectableItemBackground"
                 />
 
@@ -112,7 +112,7 @@
                 android:layout_height="wrap_content"
                 android:text="前进"
                 android:textSize="12sp"
-                android:padding="8dp"
+                android:padding="4dp"
                 android:background="?android:selectableItemBackground"
                 />
 
@@ -134,7 +134,7 @@
                 android:layout_height="wrap_content"
                 android:text="加载"
                 android:textSize="12sp"
-                android:padding="8dp"
+                android:padding="4dp"
                 android:background="?android:selectableItemBackground"
                 />
 
@@ -144,7 +144,17 @@
                 android:layout_height="wrap_content"
                 android:text="刷新"
                 android:textSize="12sp"
-                android:padding="8dp"
+                android:padding="4dp"
+                android:background="?android:selectableItemBackground"
+                />
+
+            <TextView
+                android:id="@+id/tv_test"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="test"
+                android:textSize="12sp"
+                android:padding="4dp"
                 android:background="?android:selectableItemBackground"
                 />
 

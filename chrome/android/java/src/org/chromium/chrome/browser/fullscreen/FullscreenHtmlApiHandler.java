@@ -803,9 +803,9 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
      */
     private int applyEnterFullscreenUIFlags(int systemUiVisibility) {
         boolean showNavigationBar =
-                mFullscreenOptions != null ? mFullscreenOptions.showNavigationBar : false;
+                mFullscreenOptions != null && mFullscreenOptions.showNavigationBar;
         boolean showStatusBar =
-                mFullscreenOptions != null ? mFullscreenOptions.showStatusBar : false;
+                mFullscreenOptions != null && mFullscreenOptions.showStatusBar;
 
         int flags = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
         if (!showStatusBar && !showNavigationBar) {
@@ -873,13 +873,5 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
         setContentView(null);
         if (mActiveTabObserver != null) mActiveTabObserver.destroy();
         if (mTabFullscreenObserver != null) mTabFullscreenObserver.destroy();
-    }
-
-    void setTabForTesting(Tab tab) {
-        mTab = tab;
-    }
-
-    boolean isToastVisibleForTesting() {
-        return mNotificationToast != null;
     }
 }

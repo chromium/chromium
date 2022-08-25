@@ -18,7 +18,6 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.AppHooks;
-import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.app.bluetooth.BluetoothNotificationService;
 import org.chromium.chrome.browser.bluetooth.BluetoothNotificationManager;
 import org.chromium.chrome.browser.display_cutout.DisplayCutoutTabHelper;
@@ -281,7 +280,7 @@ public class ArkTabWebContentsObserver extends TabWebContentsUserData {
 
             if (navigation.isInPrimaryMainFrame()) {
                 // Stop swipe-to-refresh animation.
-                SwipeRefreshHandler handler = SwipeRefreshHandler.get(mTab);
+                ArkSwipeRefreshHandler handler = ArkSwipeRefreshHandler.get(mTab);
                 if (handler != null) handler.didStopRefreshing();
             }
         }

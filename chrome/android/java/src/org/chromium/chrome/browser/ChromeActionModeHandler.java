@@ -75,8 +75,8 @@ public class ChromeActionModeHandler {
                 };
     }
 
-    @VisibleForTesting
-    static class ActionModeCallback implements ActionMode.Callback {
+
+    public static class ActionModeCallback implements ActionMode.Callback {
         /**
          * Android Intent size limitations prevent sending over a megabyte of data. Limit
          * query lengths to 100kB because other things may be added to the Intent.
@@ -91,7 +91,7 @@ public class ChromeActionModeHandler {
         // Used for recording UMA histograms.
         private long mContextMenuStartTime;
 
-        ActionModeCallback(Tab tab, WebContents webContents, Consumer<Boolean> observer,
+        public ActionModeCallback(Tab tab, WebContents webContents, Consumer<Boolean> observer,
                 Callback<String> searchCallback) {
             mTab = tab;
             mHelper = getActionModeCallbackHelper(webContents);

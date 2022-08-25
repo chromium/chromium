@@ -389,6 +389,8 @@ public interface ITabGroup {
 
     public boolean openNewPage(Tab parent, @TabLaunchType int type, String url);
 
+    public boolean openNewPage(Tab parent, LoadUrlParams loadUrlParams);
+
     public boolean moveToNewTab(IPage page);
 
     default boolean removePage(Tab tab) {

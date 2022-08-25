@@ -394,7 +394,7 @@ by a child template that "extends" this file.
 
 
         <activity
-            android:name="com.ark.browser.BrowserActivity"
+            android:name="com.ark.browser.ArkBrowserActivity"
             android:configChanges="orientation|screenSize"
             android:windowSoftInputMode="adjustPan"
             android:exported="false"

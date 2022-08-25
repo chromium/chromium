@@ -17,8 +17,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import com.ark.browser.ArkBrowserActivity;
 import com.ark.browser.ArkWindowAndroid;
-import com.ark.browser.BrowserActivity;
 import com.ark.browser.utils.ArkLogger;
 
 import org.chromium.base.ContextUtils;
@@ -32,6 +32,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.WebContentsFactory;
+import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.content.ContentUtils;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -486,12 +487,6 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         GURL fixedUrl = UrlFormatter.fixupUrl(params.getUrl());
         if (!fixedUrl.isValid()) return TabLoadStatus.PAGE_LOAD_FAILED;
 
-        // Record UMA "ShowHistory" here. That way it'll pick up both user
-        // typing chrome://history as well as selecting from the drop down menu.
-        if (fixedUrl.getSpec().equals(UrlConstants.HISTORY_URL)) {
-            RecordUserAction.record("ShowHistory");
-        }
-
         if (TabJni.get().handleNonNavigationAboutURL(fixedUrl)) {
             return TabLoadStatus.DEFAULT_PAGE_LOAD;
         }
@@ -685,6 +680,14 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     @Override
     public void destroy() {
+
+        if (mWindowAndroid != null) {
+            TabContentManager manager = mWindowAndroid.getTabContentManager();
+            if (manager != null) {
+                manager.detachTab(this);
+            }
+        }
+
         // Set at the start since destroying the WebContents can lead to calling back into
         // this class.
         mIsDestroyed = true;
@@ -738,7 +741,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         WindowAndroid window = tab.getWebContents().getTopLevelNativeWindow();
         if (window == null) return true;
         Activity activity = ContextUtils.activityFromContext(window.getContext().get());
-        return !(activity instanceof BrowserActivity);
+        return !(activity instanceof ArkBrowserActivity);
     }
 
     @Override
@@ -1541,9 +1544,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
     private @UserAgentOverrideOption int calculateUserAgentOverrideOption() {
         WebContents webContents = getWebContents();
-        boolean currentRequestDesktopSite = webContents == null
-                ? false
-                : webContents.getNavigationController().getUseDesktopUserAgent();
+        boolean currentRequestDesktopSite = webContents != null && webContents.getNavigationController().getUseDesktopUserAgent();
 
         @TabUserAgent
         int tabUserAgent = CriticalPersistedTabData.from(this).getUserAgent();

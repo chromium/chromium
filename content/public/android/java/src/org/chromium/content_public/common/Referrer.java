@@ -27,4 +27,12 @@ public class Referrer {
     public int getPolicy() {
         return mPolicy;
     }
+
+    @Override
+    public String toString() {
+        return "Referrer{" +
+                "mUrl='" + mUrl + '\'' +
+                ", mPolicy=" + mPolicy +
+                '}';
+    }
 }

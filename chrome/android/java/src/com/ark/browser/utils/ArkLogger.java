@@ -8,8 +8,6 @@ public class ArkLogger {
         Log.e("Ark_" + tag, msg);
     }
 
-
-
     public static void e(String tag, String msg ) {
         Log.e("Ark_" + tag, msg);
     }

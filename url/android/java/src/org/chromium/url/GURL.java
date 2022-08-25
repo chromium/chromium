@@ -257,6 +257,11 @@ public class GURL {
     }
 
     @Override
+    public String toString() {
+        return getSpec();
+    }
+
+    @Override
     public final int hashCode() {
         return mSpec.hashCode();
     }

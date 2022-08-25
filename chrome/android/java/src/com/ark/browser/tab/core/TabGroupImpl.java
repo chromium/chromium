@@ -15,6 +15,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.Referrer;
@@ -185,7 +186,7 @@ public class TabGroupImpl implements ITabGroup {
 
 
         loadUrlParams.setUrl(UrlFormatter.fixupUrl(loadUrlParams.getUrl()).getValidSpecOrEmpty());
-        loadUrlParams.setTransitionType(type);
+//        loadUrlParams.setTransitionType(type);
 
         Tab page = PageCacheManager.getInstance().createLivePageByType(
                 newTab.getPageSize(), getWindowAndroid(), newTab, type);
@@ -252,6 +253,7 @@ public class TabGroupImpl implements ITabGroup {
                 parentPageInfo.getOriginalIndex() + 1, getWindowAndroid(), manager, type);
 //        PageInfo pageInfo = tab.getPageInfo();
         PageInfo pageInfo = new PageInfo();
+        pageInfo.setPageId(tab.getId());
         pageInfo.setUrl(tab.getUrl().toString());
         pageInfo.setTitle(tab.getTitle());
         pageInfo.setIncognito(tab.isIncognito());
@@ -262,17 +264,117 @@ public class TabGroupImpl implements ITabGroup {
 
 //        pageInfoList.add(pageInfo.getOriginalIndex(), pageInfo);
 
-        LoadUrlParams params = new LoadUrlParams(UrlFormatter.fixupUrl(url));
-        params.setTransitionType(type);
-        params.setReferrer(new Referrer(parent.getUrl().toString(), org.chromium.network.mojom.ReferrerPolicy.DEFAULT));
-        ArkLogger.d(TAG, "openNewPage params=" + params);
-        tab.loadUrl(params);
-
-
         for (TabInfoObserver obs : mObservers) {
             obs.didAddTab(page, type);
         }
+
+        LoadUrlParams params = new LoadUrlParams(UrlFormatter.fixupUrl(url));
+        params.setReferrer(new Referrer(parent.getUrl().toString(), org.chromium.network.mojom.ReferrerPolicy.DEFAULT));
+        ArkLogger.d(TAG, "openNewPage params=" + params);
+        tab.loadUrl(params);
         selectTabInfo(manager, page);
+
+
+//        if (++index < pageInfoList.getCount()) {
+//            List<IPage> pageRemoved = pageInfoList.getPageInfoList()
+//                    .subList(index, pageInfoList.getCount());
+//
+//            List<IPage> tempPages = new ArrayList<>(pageRemoved);
+//            ThreadPool.executeIO(() -> {
+//                long start = System.currentTimeMillis();
+//                Log.d(TAG, "openNewPage pageRemovedCount=" + tempPages.size());
+//
+//                DatabaseWrapper database = FlowManager.getDatabase(PageInfoManager.class).getWritableDatabase();
+//                try {
+//                    database.beginTransaction();
+//                    for (IPage info : tempPages) {
+////                        info.removeInfoSync();
+//                        int pageId = info.getId();
+//                        String sql = String.format("delete from PageInfo where pageId=%s", pageId);
+//                        database.execSQL(sql);
+//
+//                        PageCacheManager.getInstance().removePage(info);
+//                        TabSnapshotManager.getInstance().removeSnapshot(pageId);
+//                    }
+//                    database.setTransactionSuccessful();
+//                } finally {
+//                    database.endTransaction();
+//                }
+//
+////                for (PageInfo info : tempPages) {
+////                    info.removeInfoSync();
+////                }
+//                Log.d(TAG, "openNewPage pageRemoved deltaTime=" + (System.currentTimeMillis() - start));
+//            });
+//            pageRemoved.clear();
+//        }
+
+        ArkLogger.d(TAG, "openNewPage end");
+        return true;
+    }
+
+    @Override
+    public boolean openNewPage(Tab parent, LoadUrlParams params) {
+        ArkLogger.d(TAG, "openNewPage params=" + params + " parent=" + parent);
+
+        int parentId = parent.getId();
+        // The parent tab was already closed.  Do not open child tabs.
+        if (isClosurePending(parentId)) return false;
+
+        // If parent is in the same tab model, place the new tab next to it.
+        ITab manager = getTabById(parentId);
+        if (manager == null) {
+            return false;
+        }
+
+        int index = manager.indexOfPage(parentId);
+        ArkLogger.d(TAG, "openNewPage index=" + index);
+        if (index == ITab.INVALID_TAB_INDEX) {
+            return false;
+        }
+
+        PageInfo parentPageInfo = manager.getPageInfoAt(index);
+        ArkLogger.d(TAG, "openNewPage parentPageInfo=" + parentPageInfo);
+        if (parentPageInfo == null) {
+            return false;
+        }
+
+
+        Tab tab = PageCacheManager.getInstance().createLivePageByType(
+                parentPageInfo.getOriginalIndex() + 1, getWindowAndroid(),
+                manager, TabLaunchType.FROM_CHROME_UI);
+//        PageInfo pageInfo = tab.getPageInfo();
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setPageId(tab.getId());
+        pageInfo.setUrl(tab.getUrl().getSpec());
+        pageInfo.setTitle(tab.getTitle());
+        pageInfo.setIncognito(tab.isIncognito());
+        IPage page = new PageImpl(pageInfo);
+        IPageGroup pageInfoList = manager.getPageGroup();
+
+        pageInfoList.getPageInfoList().add(++index, page);
+
+//        LoadUrlParams params = new LoadUrlParams(UrlFormatter.fixupUrl(url));
+//        params.setTransitionType(type);
+//        params.setReferrer(new Referrer(parent.getUrl().toString(), org.chromium.network.mojom.ReferrerPolicy.DEFAULT));
+//        ArkLogger.d(TAG, "openNewPage params=" + params);
+
+
+
+        for (TabInfoObserver obs : mObservers) {
+            obs.didAddTab(page, TabSelectionType.FROM_USER);
+        }
+
+        ArkLogger.d(TAG, "openNewPage params=" + params);
+        tab.loadUrl(params);
+        selectTabInfo(manager, page);
+
+
+        if (++index < pageInfoList.getCount()) {
+            List<IPage> pageRemoved = pageInfoList.getPageInfoList()
+                    .subList(index, pageInfoList.getCount());
+            pageRemoved.clear();
+        }
 
 
 //        if (++index < pageInfoList.getCount()) {

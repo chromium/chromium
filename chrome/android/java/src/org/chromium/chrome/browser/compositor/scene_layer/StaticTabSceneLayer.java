@@ -39,7 +39,6 @@ public class StaticTabSceneLayer extends SceneLayer {
      * @param model         The {@link PropertyModel} to use.
      */
     public void update(PropertyModel model) {
-        Log.e("StaticTabSceneLayer", "update model=" + model);
         if (model == null) {
             return;
         }
@@ -47,6 +46,12 @@ public class StaticTabSceneLayer extends SceneLayer {
         float x = model.get(LayoutTab.RENDER_X) * LayoutTab.sDpToPx;
         float y = model.get(LayoutTab.CONTENT_OFFSET)
                 + model.get(LayoutTab.RENDER_Y) * LayoutTab.sDpToPx;
+
+        Log.e("StaticTabSceneLayer", "update id=" + model.get(LayoutTab.TAB_ID) + " x=" + x + " y=" + y);
+        Log.e("StaticTabSceneLayer", "update CAN_USE_LIVE_TEXTURE=" + model.get(LayoutTab.CAN_USE_LIVE_TEXTURE));
+        Log.e("StaticTabSceneLayer", "update STATIC_TO_VIEW_BLEND=" + model.get(LayoutTab.STATIC_TO_VIEW_BLEND));
+        Log.e("StaticTabSceneLayer", "update SATURATION=" + model.get(LayoutTab.SATURATION));
+        Log.e("StaticTabSceneLayer", "update BRIGHTNESS=" + model.get(LayoutTab.BRIGHTNESS));
 
         StaticTabSceneLayerJni.get().updateTabLayer(mNativePtr, StaticTabSceneLayer.this,
                 model.get(LayoutTab.TAB_ID), model.get(LayoutTab.CAN_USE_LIVE_TEXTURE),

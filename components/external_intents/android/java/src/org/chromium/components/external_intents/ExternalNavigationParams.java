@@ -207,6 +207,28 @@ public class ExternalNavigationParams {
         return (mPageTransition & PageTransition.FROM_API) != 0;
     }
 
+    @Override
+    public String toString() {
+        return "ExternalNavigationParams{" +
+                "mUrl=" + mUrl +
+                ", mIsIncognito=" + mIsIncognito +
+                ", mReferrerUrl=" + mReferrerUrl +
+                ", mPageTransition=" + mPageTransition +
+                ", mIsRedirect=" + mIsRedirect +
+                ", mApplicationMustBeInForeground=" + mApplicationMustBeInForeground +
+                ", mRedirectHandler=" + mRedirectHandler +
+                ", mOpenInNewTab=" + mOpenInNewTab +
+                ", mIsBackgroundTabNavigation=" + mIsBackgroundTabNavigation +
+                ", mIntentLaunchesAllowedInBackgroundTabs=" + mIntentLaunchesAllowedInBackgroundTabs +
+                ", mIsMainFrame=" + mIsMainFrame +
+                ", mNativeClientPackageName='" + mNativeClientPackageName + '\'' +
+                ", mHasUserGesture=" + mHasUserGesture +
+                ", mShouldCloseContentsOnOverrideUrlLoadingAndLaunchIntent=" + mShouldCloseContentsOnOverrideUrlLoadingAndLaunchIntent +
+                ", mIsRendererInitiated=" + mIsRendererInitiated +
+                ", mInitiatorOrigin=" + mInitiatorOrigin +
+                '}';
+    }
+
     /** The builder for {@link ExternalNavigationParams} objects. */
     public static class Builder {
         /** The URL which we are navigating to. */

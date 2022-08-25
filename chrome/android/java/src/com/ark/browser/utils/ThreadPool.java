@@ -13,7 +13,6 @@ import java.util.concurrent.TimeUnit;
 
 public class ThreadPool {
 
-
     private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
 
     private static final ExecutorService EXECUTOR = new ThreadPoolExecutor(
@@ -36,7 +35,6 @@ public class ThreadPool {
         );
     }
 
-
     public static void execute(Runnable runnable) {
         EXECUTOR.execute(runnable);
     }
@@ -57,6 +55,13 @@ public class ThreadPool {
         } else {
             Holder.HANDLER.post(runnable);
         }
+    }
+
+    public static void postOnUIThread(Runnable runnable) {
+        if (runnable == null) {
+            return;
+        }
+        Holder.HANDLER.post(runnable);
     }
 
     public static void postIdle(Runnable runnable) {

@@ -13,6 +13,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Pair;
 import android.view.DragEvent;
@@ -22,12 +23,14 @@ import android.view.PointerIcon;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 
+import com.ark.browser.tab.ArkTabWebContentsObserver;
 import com.ark.browser.tab.TabInfoObserver;
 import com.ark.browser.tab.TabListManager;
 import com.ark.browser.tab.TabManagerObserver;
@@ -35,12 +38,16 @@ import com.ark.browser.tab.core.IPage;
 import com.ark.browser.tab.core.ITabGroup;
 import com.ark.browser.utils.ArkLogger;
 
+import org.chromium.base.Callback;
+import org.chromium.base.Consumer;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.compat.ApiHelperForN;
 import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.ChromeActionModeHandler;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.compositor.CompositorView;
@@ -50,21 +57,28 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.content.ContentOffsetProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
+import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab.TabWebContentsObserver;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.content_capture.OnscreenContentProvider;
 import org.chromium.components.embedder_support.view.ContentView;
+import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.ImeAdapter;
+import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.UiUtils;
@@ -89,9 +103,9 @@ import java.util.Set;
  */
 public class ArkCompositorViewHolder extends FrameLayout
         implements ContentOffsetProvider, LayoutManagerHost, LayoutRenderHost, Invalidator.Host,
-                   BrowserControlsStateProvider.Observer, InsetObserverView.WindowInsetObserver,
-                   TabObscuringHandler.Observer,
-                   ViewGroup.OnHierarchyChangeListener {
+        BrowserControlsStateProvider.Observer, InsetObserverView.WindowInsetObserver,
+        TabObscuringHandler.Observer,
+        ViewGroup.OnHierarchyChangeListener {
 
     private static final String TAG = "ArkCompositorViewHolder";
 
@@ -103,10 +117,10 @@ public class ArkCompositorViewHolder extends FrameLayout
      */
     public interface Initializer {
         void initializeCompositorContent(LayoutManagerImpl layoutManager,
-                ViewGroup contentContainer);
+                                         ViewGroup contentContainer);
     }
 
-    private ObserverList<TouchEventObserver> mTouchEventObservers = new ObserverList<>();
+    private final ObserverList<TouchEventObserver> mTouchEventObservers = new ObserverList<>();
 
 
     protected WindowAndroid mWindowAndroid;
@@ -175,14 +189,6 @@ public class ArkCompositorViewHolder extends FrameLayout
     };
 
 
-
-
-
-
-
-
-
-
     private EventOffsetHandler mEventOffsetHandler;
     private boolean mIsKeyboardShowing;
 
@@ -202,18 +208,20 @@ public class ArkCompositorViewHolder extends FrameLayout
      */
     private Runnable mPostHideKeyboardTask;
 
-    private @Nullable BrowserControlsManager mBrowserControlsManager;
-
     private InsetObserverView mInsetObserverView;
     private ObservableSupplier<Integer> mAutofillUiBottomInsetSupplier;
     private boolean mShowingFullscreen;
     private Runnable mSystemUiFullscreenResizeRunnable;
 
-    /** The currently visible Tab. */
+    /**
+     * The currently visible Tab.
+     */
     @VisibleForTesting
     Tab mTabVisible;
 
-    /** The currently attached View. */
+    /**
+     * The currently attached View.
+     */
     private View mView;
 
     /**
@@ -237,8 +245,8 @@ public class ArkCompositorViewHolder extends FrameLayout
 
     /**
      * Tracks whether geometrychange event is fired for the active tab when the keyboard
-     *  is shown/hidden. When active tab changes, this flag is reset so we can fire
-     *  geometrychange event for the new tab when the keyboard shows.
+     * is shown/hidden. When active tab changes, this flag is reset so we can fire
+     * geometrychange event for the new tab when the keyboard shows.
      */
     private boolean mHasKeyboardGeometryChangeFired;
 
@@ -252,7 +260,8 @@ public class ArkCompositorViewHolder extends FrameLayout
      * Last MotionEvent dispatched to this object for a currently active gesture. If there is no
      * active gesture, this is null.
      */
-    private @Nullable MotionEvent mLastActiveTouchEvent;
+    private @Nullable
+    MotionEvent mLastActiveTouchEvent;
 
     /**
      * This view is created on demand to display debugging information.
@@ -298,6 +307,7 @@ public class ArkCompositorViewHolder extends FrameLayout
 
     /**
      * Creates a {@link CompositorView}.
+     *
      * @param c The Context to create this {@link CompositorView} in.
      */
     public ArkCompositorViewHolder(Context c) {
@@ -308,6 +318,7 @@ public class ArkCompositorViewHolder extends FrameLayout
 
     /**
      * Creates a {@link CompositorView}.
+     *
      * @param c     The Context to create this {@link CompositorView} in.
      * @param attrs The AttributeSet used to create this {@link CompositorView}.
      */
@@ -352,9 +363,10 @@ public class ArkCompositorViewHolder extends FrameLayout
 
             @Override
             public void didAddTab(IPage pageInfo, int type) {
-                mLayoutManager.initLayoutTabFromHost(pageInfo.getId());
                 Tab tab = pageInfo.getNativePage();
                 if (tab != null) {
+                    mTabContentManager.attachTab(tab);
+                    mLayoutManager.initLayoutTabFromHost(pageInfo.getId());
                     tab.addObserver(mTabObserver);
                 }
             }
@@ -385,7 +397,7 @@ public class ArkCompositorViewHolder extends FrameLayout
         addOnLayoutChangeListener(new OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom,
-                    int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                                       int oldLeft, int oldTop, int oldRight, int oldBottom) {
                 Tab tab = getCurrentTab();
                 // Set the size of NTP if we're in the attached state as it may have not been sized
                 // properly when initializing tab. See the comment in #initializeTab() for why.
@@ -515,6 +527,7 @@ public class ArkCompositorViewHolder extends FrameLayout
     /**
      * A supplier providing an inset that resizes the page in addition or instead of the keyboard.
      * This is inset is used by autofill UI as addition to bottom controls.
+     *
      * @param autofillUiBottomInsetSupplier A {@link ObservableSupplier<Integer>}.
      */
     public void setAutofillUiBottomInsetSupplier(
@@ -541,7 +554,8 @@ public class ArkCompositorViewHolder extends FrameLayout
     }
 
     @Override
-    public void onSafeAreaChanged(Rect area) {}
+    public void onSafeAreaChanged(Rect area) {
+    }
 
     /**
      * Should be called for cleanup when the CompositorView instance is no longer used.
@@ -565,6 +579,12 @@ public class ArkCompositorViewHolder extends FrameLayout
         if (mContentView != null) {
             mContentView.removeOnHierarchyChangeListener(this);
         }
+
+        if (mTabContentManager != null) {
+            mTabContentManager.destroy();
+            mTabContentManager = null;
+        }
+
         if (mCallback != null) {
             mCallback.onShutDown();
         }
@@ -614,6 +634,7 @@ public class ArkCompositorViewHolder extends FrameLayout
 
     /**
      * Add observer that needs to listen and process touch events.
+     *
      * @param o {@link TouchEventObserver} object.
      */
     public void addTouchEventObserver(TouchEventObserver o) {
@@ -622,6 +643,7 @@ public class ArkCompositorViewHolder extends FrameLayout
 
     /**
      * Remove observer that needs to listen and process touch events.
+     *
      * @param o {@link TouchEventObserver} object.
      */
     public void removeTouchEventObserver(TouchEventObserver o) {
@@ -767,9 +789,9 @@ public class ArkCompositorViewHolder extends FrameLayout
      * Set tab-backed content view size.
      *
      * @param webContents {@link WebContents} for which the size of the view is set.
-     * @param view {@link View} of the content.
-     * @param w Width of the view.
-     * @param h Height of the view.
+     * @param view        {@link View} of the content.
+     * @param w           Width of the view.
+     * @param h           Height of the view.
      */
     @VisibleForTesting
     void setSize(WebContents webContents, View view, int w, int h) {
@@ -780,11 +802,7 @@ public class ArkCompositorViewHolder extends FrameLayout
         // should be subtracted from the view if they are visible, therefore shrink
         // Blink-side view size.
         // TODO(https://crbug.com/1211066): Centralize the logic for calculating bottom insets.
-        final int totalMinHeight = getKeyboardBottomInsetForControlsPixels()
-                + (mBrowserControlsManager != null
-                                ? mBrowserControlsManager.getTopControlsMinHeight()
-                                        + mBrowserControlsManager.getBottomControlsMinHeight()
-                                : 0);
+        final int totalMinHeight = getKeyboardBottomInsetForControlsPixels();
         int controlsHeight = mControlsResizeView
                 ? getTopControlsHeightPixels() + getBottomControlsHeightPixels()
                 : totalMinHeight;
@@ -836,9 +854,10 @@ public class ArkCompositorViewHolder extends FrameLayout
 
     /**
      * Notifies geometrychange event to JS.
-     * @param w  Width of the view.
+     *
+     * @param w              Width of the view.
      * @param keyboardHeight Height of the keyboard.
-     * @param webContents Active WebContent for which this event needs to be fired.
+     * @param webContents    Active WebContent for which this event needs to be fired.
      */
     private void notifyVirtualKeyboardOverlayGeometryChangeEvent(
             int w, int keyboardHeight, WebContents webContents) {
@@ -886,11 +905,12 @@ public class ArkCompositorViewHolder extends FrameLayout
 
     /**
      * Fires geometrychange event to JS with the keyboard size.
+     *
      * @param webContents Active WebContent for which this event needs to be fired.
-     * @param x When the keyboard is shown, it has the left position of the app's rect, else, 0.
-     * @param y When the keyboard is shown, it has the top position of the app's rect, else, 0.
-     * @param width  When the keyboard is shown, it has the width of the view, else, 0.
-     * @param height The height of the keyboard.
+     * @param x           When the keyboard is shown, it has the left position of the app's rect, else, 0.
+     * @param y           When the keyboard is shown, it has the top position of the app's rect, else, 0.
+     * @param width       When the keyboard is shown, it has the width of the view, else, 0.
+     * @param height      The height of the keyboard.
      */
     @VisibleForTesting
     void notifyVirtualKeyboardOverlayRect(
@@ -904,7 +924,6 @@ public class ArkCompositorViewHolder extends FrameLayout
      * Called whenever the host activity is started.
      */
     public void onStart() {
-        if (mBrowserControlsManager != null) mBrowserControlsManager.addObserver(this);
         requestRender();
     }
 
@@ -912,12 +931,11 @@ public class ArkCompositorViewHolder extends FrameLayout
      * Called whenever the host activity is stopped.
      */
     public void onStop() {
-        if (mBrowserControlsManager != null) mBrowserControlsManager.removeObserver(this);
     }
 
     @Override
     public void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset,
-            int bottomOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {
+                                        int bottomOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {
         onViewportChanged();
         if (needsAnimate) requestRender();
         updateContentViewChildrenDimension();
@@ -960,18 +978,6 @@ public class ArkCompositorViewHolder extends FrameLayout
     private void updateViewportSize() {
         if (mInGesture || mContentViewScrolling) return;
         boolean controlsResizeViewChanged = false;
-        if (mBrowserControlsManager != null) {
-            // Update content viewport size only if the browser controls are not moving, i.e. not
-            // scrolling or animating.
-            if (!BrowserControlsUtils.areBrowserControlsIdle(mBrowserControlsManager)) return;
-
-            boolean controlsResizeView =
-                    BrowserControlsUtils.controlsResizeView(mBrowserControlsManager);
-            if (controlsResizeView != mControlsResizeView) {
-                mControlsResizeView = controlsResizeView;
-                controlsResizeViewChanged = true;
-            }
-        }
         // Reflect the changes that may have happened in in view/control size.
         Point viewportSize = getViewportSize();
         setSize(getWebContents(), getContentView(), viewportSize.x, viewportSize.y);
@@ -999,8 +1005,7 @@ public class ArkCompositorViewHolder extends FrameLayout
         ViewGroup view = getContentView();
         if (view != null) {
             float topViewsTranslation = getOverlayTranslateY();
-            float bottomMargin = mBrowserControlsManager == null ? 0f
-                    : BrowserControlsUtils.getBottomContentOffset(mBrowserControlsManager);
+            float bottomMargin = 0f;
             applyTranslationToTopChildViews(view, topViewsTranslation);
             applyMarginToFullscreenChildViews(view, topViewsTranslation, bottomMargin);
             updateViewportSize();
@@ -1018,7 +1023,7 @@ public class ArkCompositorViewHolder extends FrameLayout
 
             if (layoutParams.height == LayoutParams.MATCH_PARENT
                     && (layoutParams.topMargin != (int) topMargin
-                            || layoutParams.bottomMargin != (int) bottomMargin)) {
+                    || layoutParams.bottomMargin != (int) bottomMargin)) {
                 layoutParams.topMargin = (int) topMargin;
                 layoutParams.bottomMargin = (int) bottomMargin;
                 child.requestLayout();
@@ -1083,23 +1088,13 @@ public class ArkCompositorViewHolder extends FrameLayout
     public void getVisibleViewport(RectF outRect) {
         getWindowViewport(outRect);
 
-        float bottomControlOffset = 0;
-        if (mBrowserControlsManager != null) {
-            // All of these values are in pixels.
-            outRect.top += mBrowserControlsManager.getTopVisibleContentOffset();
-            bottomControlOffset = mBrowserControlsManager.getBottomControlOffset();
-        }
-        outRect.bottom -= (getBottomControlsHeightPixels() - bottomControlOffset);
+        outRect.bottom -= getBottomControlsHeightPixels();
     }
 
     @Override
     public void getViewportFullControls(RectF outRect) {
         getWindowViewport(outRect);
 
-        if (mBrowserControlsManager != null) {
-            // All of these values are in pixels.
-            outRect.top += mBrowserControlsManager.getTopControlsHeight();
-        }
         outRect.bottom -= getBottomControlsHeightPixels();
     }
 
@@ -1189,7 +1184,8 @@ public class ArkCompositorViewHolder extends FrameLayout
     }
 
     @Override
-    public void loadPersitentTextureDataIfNeeded() {}
+    public void loadPersitentTextureDataIfNeeded() {
+    }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -1213,48 +1209,33 @@ public class ArkCompositorViewHolder extends FrameLayout
 
     @Override
     public BrowserControlsManager getBrowserControlsManager() {
-        return mBrowserControlsManager;
+        return null;
     }
 
     @Override
     public FullscreenManager getFullscreenManager() {
-        if (mBrowserControlsManager == null) {
-            return null;
-        }
-        return mBrowserControlsManager.getFullscreenManager();
-    }
-
-    /**
-     * Sets a browser controls manager.
-     * @param manager A browser controls manager.
-     */
-    public void setBrowserControlsManager(BrowserControlsManager manager) {
-        mBrowserControlsManager = manager;
-        mBrowserControlsManager.addObserver(this);
-        onViewportChanged();
+        return null;
     }
 
     @Override
     public int getTopControlsHeightPixels() {
-        return mBrowserControlsManager != null ? mBrowserControlsManager.getTopControlsHeight() : 0;
+        return 0;
     }
 
     @Override
     public int getBottomControlsHeightPixels() {
-        return getKeyboardBottomInsetForControlsPixels()
-                + (mBrowserControlsManager != null
-                                ? mBrowserControlsManager.getBottomControlsHeight()
-                                : 0);
+        return getKeyboardBottomInsetForControlsPixels();
     }
 
     /**
      * If there is keyboard extension or replacement available, this method returns the inset that
      * resizes the page in addition to the bottom controls height.
+     *
      * @return The inset height in pixels.
      */
     private int getKeyboardBottomInsetForControlsPixels() {
         return mAutofillUiBottomInsetSupplier != null
-                        && mAutofillUiBottomInsetSupplier.get() != null
+                && mAutofillUiBottomInsetSupplier.get() != null
                 ? mAutofillUiBottomInsetSupplier.get()
                 : 0;
     }
@@ -1268,10 +1249,7 @@ public class ArkCompositorViewHolder extends FrameLayout
 
     @Override
     public float getOverlayTranslateY() {
-        if (mBrowserControlsManager == null) {
-            return 0f;
-        }
-        return mBrowserControlsManager.getTopVisibleContentOffset();
+        return 0f;
     }
 
     @Override
@@ -1313,7 +1291,7 @@ public class ArkCompositorViewHolder extends FrameLayout
         mCompositorView.initNativeCompositor(
                 SysUtils.isLowEndDevice(), window, mTabContentManager);
 
-        mLayoutManager = new ArkLayoutManagerImpl(this);
+        mLayoutManager = new ArkLayoutManager(this);
         mTabContentManager.addThumbnailChangeListener(new TabContentManager.ThumbnailChangeListener() {
             @Override
             public void onThumbnailChange(int id) {
@@ -1368,6 +1346,25 @@ public class ArkCompositorViewHolder extends FrameLayout
         }
     }
 
+    private final org.chromium.base.Callback<WebContents> mInitWebContentsObserver = (webContents) -> {
+        SelectionPopupController.fromWebContents(webContents)
+                .setActionModeCallback(new ChromeActionModeHandler.ActionModeCallback(
+                        mTabVisible, webContents,
+                        new Consumer<Boolean>() {
+                            @Override
+                            public void accept(Boolean aBoolean) {
+                                Toast.makeText(ContextUtils.getApplicationContext(), "mActionBarObserver show：" + aBoolean, Toast.LENGTH_SHORT).show();
+                            }
+                        },
+                        new org.chromium.base.Callback<String>() {
+                            @Override
+                            public void onResult(String result) {
+                                Toast.makeText(ContextUtils.getApplicationContext(), "搜索：" + result, Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                );
+    };
+
     private void setTab(Tab tab) {
 
         // The StartSurfaceUserData.getInstance().getUnusedTabRestoredAtStartup() is only true when
@@ -1395,9 +1392,25 @@ public class ArkCompositorViewHolder extends FrameLayout
                 mCompositorView.onTabChanged();
             }
             updateViewStateListener(tab != null ? tab.getContentView() : null);
+
+            if (mTabVisible != null && mTabVisible.isInitialized()) {
+                ArkTabWebContentsObserver.from(mTabVisible)
+                        .removeInitWebContentsObserver(mInitWebContentsObserver);
+            }
+            if (mTabVisible != null) {
+                mTabVisible.hide(TabHidingType.CHANGED_TABS);
+            }
+
+            mTabVisible = tab;
+            if (tab != null) {
+                ArkTabWebContentsObserver.from(tab).addInitWebContentsObserver(
+                        mInitWebContentsObserver);
+            }
+
         }
 
-        mTabVisible = tab;
+
+
         mView = newView;
 
         updateContentOverlayVisibility(mContentOverlayVisiblity);
@@ -1415,7 +1428,7 @@ public class ArkCompositorViewHolder extends FrameLayout
             mOnscreenContentProvider.onWebContentsChanged(getWebContents());
         }
 
-        mLayoutManager.showLayout(LayoutType.BROWSING, false);
+//        mLayoutManager.showLayout(LayoutType.BROWSING, false);
     }
 
     private void updateViewStateListener(ContentView newContentView) {
@@ -1431,6 +1444,7 @@ public class ArkCompositorViewHolder extends FrameLayout
     /**
      * Sets the correct size for {@link View} on {@code tab} and sets the correct rendering
      * parameters on {@link WebContents} on {@code tab}.
+     *
      * @param tab The {@link Tab} to initialize.
      */
     private void initializeTab(Tab tab) {
@@ -1454,8 +1468,9 @@ public class ArkCompositorViewHolder extends FrameLayout
     /**
      * Resize {@code view} to match the size of this {@link FrameLayout}.  This will only happen if
      * the {@link View} is not part of the view hierarchy.
-     * @param view The {@link View} to resize.
-     * @param webContents {@link WebContents} associated with the view.
+     *
+     * @param view           The {@link View} to resize.
+     * @param webContents    {@link WebContents} associated with the view.
      * @param controlsHeight Height of top/bottom browser controls combined.
      */
     private void setSizeOfUnattachedView(View view, WebContents webContents, int controlsHeight) {
@@ -1506,18 +1521,20 @@ public class ArkCompositorViewHolder extends FrameLayout
     }
 
 
-
     private TabDelegateFactory mTabDelegateFactory;
 
     public TabDelegateFactory getTabDelegateFactory() {
         if (mTabDelegateFactory == null) {
             mTabDelegateFactory = new ArkTabDelegateFactory(
-                    getBrowserControlsManager(), getFullscreenManager(),
+                    null, getFullscreenManager(),
                     () -> ArkCompositorViewHolder.this);
         }
         return mTabDelegateFactory;
     }
 
+    public TabContentManager getTabContentManager() {
+        return mTabContentManager;
+    }
 
     public interface Callback {
 

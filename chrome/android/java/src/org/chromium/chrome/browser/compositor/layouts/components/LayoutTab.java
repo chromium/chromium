@@ -33,120 +33,120 @@ public class LayoutTab extends PropertyModel {
     // End section --------------
 
     // TODO(crbug.com/1070284): Maybe make this a ReadableIntPropertyKey
-    public static final WritableIntPropertyKey TAB_ID = new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey TAB_ID = new WritableIntPropertyKey("TAB_ID");
 
     // TODO(crbug.com/1070284): Maybe make this a ReadableIntPropertyKey
-    public static final WritableBooleanPropertyKey IS_INCOGNITO = new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey IS_INCOGNITO = new WritableBooleanPropertyKey("IS_INCOGNITO");
 
     // Fields initialized in init()
-    public static final WritableFloatPropertyKey SCALE = new WritableFloatPropertyKey();
+    public static final WritableFloatPropertyKey SCALE = new WritableFloatPropertyKey("SCALE");
 
-    public static final WritableFloatPropertyKey X = new WritableFloatPropertyKey();
+    public static final WritableFloatPropertyKey X = new WritableFloatPropertyKey("X");
 
-    public static final WritableFloatPropertyKey Y = new WritableFloatPropertyKey();
+    public static final WritableFloatPropertyKey Y = new WritableFloatPropertyKey("Y");
 
-    public static final WritableFloatPropertyKey RENDER_X = new WritableFloatPropertyKey();
+    public static final WritableFloatPropertyKey RENDER_X = new WritableFloatPropertyKey("RENDER_X");
 
-    public static final WritableFloatPropertyKey RENDER_Y = new WritableFloatPropertyKey();
+    public static final WritableFloatPropertyKey RENDER_Y = new WritableFloatPropertyKey("RENDER_Y");
 
     // The top left X offset of the clipped rectangle.
-    public static final WritableFloatPropertyKey CLIPPED_X = new WritableFloatPropertyKey();
+    public static final WritableFloatPropertyKey CLIPPED_X = new WritableFloatPropertyKey("CLIPPED_X");
 
     // The top left Y offset of the clipped rectangle.
-    public static final WritableFloatPropertyKey CLIPPED_Y = new WritableFloatPropertyKey();
+    public static final WritableFloatPropertyKey CLIPPED_Y = new WritableFloatPropertyKey("CLIPPED_Y");
 
-    public static final WritableFloatPropertyKey CLIPPED_WIDTH = new WritableFloatPropertyKey();
+    public static final WritableFloatPropertyKey CLIPPED_WIDTH = new WritableFloatPropertyKey("CLIPPED_WIDTH");
 
-    public static final WritableFloatPropertyKey CLIPPED_HEIGHT = new WritableFloatPropertyKey();
+    public static final WritableFloatPropertyKey CLIPPED_HEIGHT = new WritableFloatPropertyKey("CLIPPED_HEIGHT");
 
-    public static final WritableFloatPropertyKey ALPHA = new WritableFloatPropertyKey();
+    public static final WritableFloatPropertyKey ALPHA = new WritableFloatPropertyKey("ALPHA");
 
-    public static final WritableFloatPropertyKey SATURATION = new WritableFloatPropertyKey();
+    public static final WritableFloatPropertyKey SATURATION = new WritableFloatPropertyKey("SATURATION");
 
-    public static final WritableFloatPropertyKey BORDER_ALPHA = new WritableFloatPropertyKey();
+    public static final WritableFloatPropertyKey BORDER_ALPHA = new WritableFloatPropertyKey("BORDER_ALPHA");
 
-    public static final WritableFloatPropertyKey BORDER_SCALE = new WritableFloatPropertyKey();
+    public static final WritableFloatPropertyKey BORDER_SCALE = new WritableFloatPropertyKey("BORDER_SCALE");
 
     public static final WritableFloatPropertyKey ORIGINAL_CONTENT_WIDTH_IN_DP =
-            new WritableFloatPropertyKey();
+            new WritableFloatPropertyKey("ORIGINAL_CONTENT_WIDTH_IN_DP");
 
     public static final WritableFloatPropertyKey ORIGINAL_CONTENT_HEIGHT_IN_DP =
-            new WritableFloatPropertyKey();
+            new WritableFloatPropertyKey("ORIGINAL_CONTENT_HEIGHT_IN_DP");
 
-    public static final WritableFloatPropertyKey MAX_CONTENT_WIDTH = new WritableFloatPropertyKey();
+    public static final WritableFloatPropertyKey MAX_CONTENT_WIDTH = new WritableFloatPropertyKey("MAX_CONTENT_WIDTH");
 
     public static final WritableFloatPropertyKey MAX_CONTENT_HEIGHT =
-            new WritableFloatPropertyKey();
+            new WritableFloatPropertyKey("MAX_CONTENT_HEIGHT");
 
     public static final WritableFloatPropertyKey STATIC_TO_VIEW_BLEND =
-            new WritableFloatPropertyKey();
+            new WritableFloatPropertyKey("STATIC_TO_VIEW_BLEND");
 
-    public static final WritableFloatPropertyKey BRIGHTNESS = new WritableFloatPropertyKey();
+    public static final WritableFloatPropertyKey BRIGHTNESS = new WritableFloatPropertyKey("BRIGHTNESS");
 
-    public static final WritableBooleanPropertyKey IS_VISIBLE = new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey IS_VISIBLE = new WritableBooleanPropertyKey("IS_VISIBLE");
 
-    public static final WritableBooleanPropertyKey SHOULD_STALL = new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey SHOULD_STALL = new WritableBooleanPropertyKey("SHOULD_STALL");
 
     public static final WritableBooleanPropertyKey CAN_USE_LIVE_TEXTURE =
-            new WritableBooleanPropertyKey();
+            new WritableBooleanPropertyKey("CAN_USE_LIVE_TEXTURE");
 
-    public static final WritableBooleanPropertyKey SHOW_TOOLBAR = new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey SHOW_TOOLBAR = new WritableBooleanPropertyKey("SHOW_TOOLBAR");
 
     public static final WritableBooleanPropertyKey ANONYMIZE_TOOLBAR =
-            new WritableBooleanPropertyKey();
+            new WritableBooleanPropertyKey("ANONYMIZE_TOOLBAR");
 
-    public static final WritableFloatPropertyKey TOOLBAR_ALPHA = new WritableFloatPropertyKey();
+    public static final WritableFloatPropertyKey TOOLBAR_ALPHA = new WritableFloatPropertyKey("TOOLBAR_ALPHA");
 
     public static final WritableBooleanPropertyKey INSET_BORDER_VERTICAL =
-            new WritableBooleanPropertyKey();
+            new WritableBooleanPropertyKey("INSET_BORDER_VERTICAL");
 
-    public static final WritableFloatPropertyKey TOOLBAR_Y_OFFSET = new WritableFloatPropertyKey();
+    public static final WritableFloatPropertyKey TOOLBAR_Y_OFFSET = new WritableFloatPropertyKey("TOOLBAR_Y_OFFSET");
 
-    public static final WritableFloatPropertyKey SIDE_BORDER_SCALE = new WritableFloatPropertyKey();
+    public static final WritableFloatPropertyKey SIDE_BORDER_SCALE = new WritableFloatPropertyKey("SIDE_BORDER_SCALE");
 
     public static final WritableBooleanPropertyKey CLOSE_BUTTON_IS_ON_RIGHT =
-            new WritableBooleanPropertyKey();
+            new WritableBooleanPropertyKey("CLOSE_BUTTON_IS_ON_RIGHT");
 
-    public static final WritableObjectPropertyKey<RectF> BOUNDS = new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<RectF> BOUNDS = new WritableObjectPropertyKey<>("BOUNDS");
 
     public static final WritableObjectPropertyKey<RectF> CLOSE_PLACEMENT =
-            new WritableObjectPropertyKey<>();
+            new WritableObjectPropertyKey<>("CLOSE_PLACEMENT");
 
     /** Whether we need to draw the decoration (border, shadow, ..) at all. */
-    public static final WritableFloatPropertyKey DECORATION_ALPHA = new WritableFloatPropertyKey();
+    public static final WritableFloatPropertyKey DECORATION_ALPHA = new WritableFloatPropertyKey("DECORATION_ALPHA");
 
     /**
      * Whether this tab need to have its title texture generated. As this is not a free operation
      * knowing that we won't show it might save a few cycles and memory.
      */
     public static final WritableBooleanPropertyKey IS_TITLE_NEEDED =
-            new WritableBooleanPropertyKey();
+            new WritableBooleanPropertyKey("IS_TITLE_NEEDED");
 
     /**
      * Whether initFromHost() has been called since the last call to init().
      */
     public static final WritableBooleanPropertyKey INIT_FROM_HOST_CALLED =
-            new WritableBooleanPropertyKey();
+            new WritableBooleanPropertyKey("INIT_FROM_HOST_CALLED");
 
     // All the members bellow are initialized from the delayed initialization.
     //
     // Begin section --------------
 
     /** The color of the background of the tab. Used as the best approximation to fill in. */
-    public static final WritableIntPropertyKey BACKGROUND_COLOR = new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey BACKGROUND_COLOR = new WritableIntPropertyKey("BACKGROUND_COLOR");
 
     public static final WritableIntPropertyKey TOOLBAR_BACKGROUND_COLOR =
-            new WritableIntPropertyKey();
+            new WritableIntPropertyKey("TOOLBAR_BACKGROUND_COLOR");
 
     public static final WritableIntPropertyKey TEXT_BOX_BACKGROUND_COLOR =
-            new WritableIntPropertyKey();
+            new WritableIntPropertyKey("TEXT_BOX_BACKGROUND_COLOR");
 
-    public static final WritableFloatPropertyKey TEXT_BOX_ALPHA = new WritableFloatPropertyKey();
+    public static final WritableFloatPropertyKey TEXT_BOX_ALPHA = new WritableFloatPropertyKey("TEXT_BOX_ALPHA");
 
     // End section --------------
 
     public static final PropertyModel.WritableFloatPropertyKey CONTENT_OFFSET =
-            new PropertyModel.WritableFloatPropertyKey();
+            new PropertyModel.WritableFloatPropertyKey("CONTENT_OFFSET");
 
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {TAB_ID, IS_INCOGNITO, SCALE, X,
             Y, RENDER_X, RENDER_Y, CLIPPED_X, CLIPPED_Y, CLIPPED_WIDTH, CLIPPED_HEIGHT, ALPHA,

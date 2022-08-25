@@ -83,7 +83,7 @@ public class ExternalNavigationHandler {
     private static final String TAG = "UrlHandler";
 
     // Enables debug logging on a local build.
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     private static final String WTAI_URL_PREFIX = "wtai://wp/";
     private static final String WTAI_MC_URL_PREFIX = "wtai://wp/mc;";
@@ -201,7 +201,9 @@ public class ExternalNavigationHandler {
     @IntDef({OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
             OverrideUrlLoadingResultType.OVERRIDE_WITH_CLOBBERING_TAB,
             OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION,
-            OverrideUrlLoadingResultType.NO_OVERRIDE, OverrideUrlLoadingResultType.NUM_ENTRIES})
+            OverrideUrlLoadingResultType.NO_OVERRIDE,
+            OverrideUrlLoadingResultType.NUM_ENTRIES,
+            OverrideUrlLoadingResultType.OVERRIDE_WITH_NEW_PAGE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface OverrideUrlLoadingResultType {
         /* We should override the URL loading and launch an intent. */
@@ -215,6 +217,8 @@ public class ExternalNavigationHandler {
         int NO_OVERRIDE = 3;
 
         int NUM_ENTRIES = 4;
+
+        int OVERRIDE_WITH_NEW_PAGE = 5;
     }
 
     /**
@@ -278,6 +282,9 @@ public class ExternalNavigationHandler {
         }
         public static OverrideUrlLoadingResult forNoOverride() {
             return new OverrideUrlLoadingResult(OverrideUrlLoadingResultType.NO_OVERRIDE);
+        }
+        public static OverrideUrlLoadingResult forNewPage() {
+            return new OverrideUrlLoadingResult(OverrideUrlLoadingResultType.OVERRIDE_WITH_NEW_PAGE);
         }
         public static OverrideUrlLoadingResult forClobberingTab() {
             return new OverrideUrlLoadingResult(

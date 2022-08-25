@@ -9,7 +9,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.ark.browser.tab.TabInfoObserver;
 import com.ark.browser.tab.TabListManager;
+import com.ark.browser.tab.TabManagerObserver;
 import com.ark.browser.tab.core.IPage;
 import com.ark.browser.tab.core.ITabGroup;
 import com.ark.browser.utils.ArkLogger;
@@ -47,7 +49,7 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 
-public class BrowserActivity extends AsyncInitializationActivity {
+public class ArkBrowserActivity extends AsyncInitializationActivity {
 
     private static final String TAG = "BrowserActivity";
 
@@ -130,6 +132,15 @@ public class BrowserActivity extends AsyncInitializationActivity {
             mViewHolder = null;
         }
         super.onDestroy();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (TabListManager.getInstance().getCurrentTabList().canGoBack()) {
+            TabListManager.getInstance().getCurrentTabList().goBack();
+            return;
+        }
+        super.onBackPressed();
     }
 
     @Override
@@ -258,37 +269,48 @@ public class BrowserActivity extends AsyncInitializationActivity {
                 TextView tvForward = findViewById(R.id.tv_forward);
 
                 tvBack.setOnClickListener(v -> {
-                    Tab tab = getActivityTab();
-                    if (tab != null && tab.canGoBack()) {
-                        tab.goBack();
-                    } else {
-                        Toast.makeText(this, "cant go back!", Toast.LENGTH_SHORT).show();
+                    if (TabListManager.getInstance().getCurrentTabList().goBack()) {
+                        return;
                     }
+                    Toast.makeText(this, "cant go back!", Toast.LENGTH_SHORT).show();
                 });
 
                 tvForward.setOnClickListener(v -> {
-                    Tab tab = getActivityTab();
-                    if (tab != null && tab.canGoForward()) {
-                        tab.goForward();
-                    } else {
-                        Toast.makeText(this, "cant go forward!", Toast.LENGTH_SHORT).show();
+                    if (TabListManager.getInstance().getCurrentTabList().goForward()) {
+                        return;
                     }
+                    Toast.makeText(this, "cant go forward!", Toast.LENGTH_SHORT).show();
                 });
 
                 EditText etUrl = findViewById(R.id.et_url);
+
+                TabListManager.getInstance().getCurrentTabList().addObserver(new TabInfoObserver() {
+                    @Override
+                    public void didSelectTab(IPage page, int type, int lastId) {
+                        Tab tab = page.getNativePage();
+                        if (tab == null) {
+                            return;
+                        }
+                        etUrl.setText(tab.getUrl().getSpec());
+                    }
+
+                    @Override
+                    public void didCloseTab(int tabId, boolean incognito) {
+
+                    }
+
+                    @Override
+                    public void didAddTab(IPage pageInfo, int type) {
+
+                    }
+                });
+
+
                 TextView tvGo = findViewById(R.id.tv_go);
                 tvGo.setOnClickListener(v -> {
-//                    Tab tab = getActivityTab();
-//                    if (tab != null) {
-//                        LoadUrlParams params = new LoadUrlParams(etUrl.getText().toString()
-//                                , PageTransition.LINK);
-//                        tab.loadUrl(params);
-//                    }
-
                     LoadUrlParams params = new LoadUrlParams(etUrl.getText().toString()
                             , PageTransition.LINK);
                     TabListManager.getInstance().openNewTab(params, TabLaunchType.FROM_CHROME_UI);
-
                 });
 
                 TextView tvRefresh = findViewById(R.id.tv_refresh);
@@ -354,7 +376,6 @@ public class BrowserActivity extends AsyncInitializationActivity {
                     TabListManager.getInstance().onDestroy();
                 }
             });
-            mViewHolder.setBrowserControlsManager(new BrowserControlsManager(this, BrowserControlsManager.ControlsPosition.TOP));
         }
     }
 
