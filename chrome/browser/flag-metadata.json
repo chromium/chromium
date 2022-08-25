@@ -4026,7 +4026,7 @@
   {
     "name": "isolated-app-origins",
     "owners": [ "peletskyi@google.com", "desktop-pwas-team@google.com" ],
-    "expiry_milestone": 106
+    "expiry_milestone": 109
   },
   {
     "name": "isolation-by-default",
