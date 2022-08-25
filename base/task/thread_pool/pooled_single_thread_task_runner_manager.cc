@@ -216,8 +216,7 @@ class WorkerThreadDelegate : public WorkerThread::Delegate {
   bool EnqueueTaskSource(
       TransactionWithRegisteredTaskSource transaction_with_task_source) {
     CheckedAutoLock auto_lock(lock_);
-    auto sort_key = transaction_with_task_source.task_source->GetSortKey(
-        /* disable_fair_scheduling */ false);
+    auto sort_key = transaction_with_task_source.task_source->GetSortKey();
     priority_queue_.Push(std::move(transaction_with_task_source.task_source),
                          sort_key);
     if (!worker_awake_ && CanRunNextTaskSource()) {

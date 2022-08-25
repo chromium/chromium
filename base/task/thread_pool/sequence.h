@@ -118,8 +118,7 @@ class BASE_EXPORT Sequence : public TaskSource {
   // TaskSource:
   ExecutionEnvironment GetExecutionEnvironment() override;
   size_t GetRemainingConcurrency() const override;
-  TaskSourceSortKey GetSortKey(
-      bool disable_fair_scheduling = false) const override;
+  TaskSourceSortKey GetSortKey() const override;
   TimeTicks GetDelayedSortKey() const override;
 
   // Returns a token that uniquely identifies this Sequence.

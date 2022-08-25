@@ -4739,32 +4739,6 @@
             ]
         }
     ],
-    "GreedyWakeupsStrategy": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "strategy": "greedy-wakeups"
-                    },
-                    "enable_features": [
-                        "WakeUpStrategyFeature"
-                    ]
-                }
-            ]
-        }
-    ],
     "GridAndGroupAndroidM5": [
         {
             "platforms": [

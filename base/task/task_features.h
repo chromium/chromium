@@ -13,41 +13,6 @@ namespace base {
 
 struct Feature;
 
-// Under this feature, workers blocked with MayBlock are replaced immediately
-// instead of waiting for a threshold in the foreground thread group.
-extern const BASE_EXPORT Feature kMayBlockWithoutDelay;
-
-// Under this feature, ThreadPool::ShouldYield() always returns false
-extern const BASE_EXPORT Feature kDisableJobYield;
-// Under this feature, JobTaskSource doesn't use worker count in its sort key
-// such that worker threads are not distributed among running jobs equally.
-extern const BASE_EXPORT Feature kDisableFairJobScheduling;
-// Under this feature, priority update on Jobs is disabled.
-extern const BASE_EXPORT Feature kDisableJobUpdatePriority;
-// Under this feature, another WorkerThread is signaled only after the current
-// thread was assigned work.
-extern const BASE_EXPORT Feature kWakeUpAfterGetWork;
-
-// Strategy affecting how WorkerThreads are signaled to pick up pending work.
-enum class WakeUpStrategy {
-  // A single thread scheduling new work signals all required WorkerThreads.
-  kCentralizedWakeUps,
-  // Each thread signals at most a single thread, either when scheduling new
-  // work or picking up pending work.
-  kSerializedWakeUps,
-  // Each thread signals at most 2 threads, either when scheduling new
-  // work or picking up pending work.
-  kExponentialWakeUps,
-  // Each thread signals as many threads as necessary, either when scheduling
-  // new work or picking up pending work.
-  kGreedyWakeUps,
-};
-
-// Under this feature, a given WakeUpStrategy param is used.
-extern const BASE_EXPORT Feature kWakeUpStrategyFeature;
-extern const BASE_EXPORT base::FeatureParam<WakeUpStrategy>
-    kWakeUpStrategyParam;
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 #define HAS_NATIVE_THREAD_POOL() 1
 #else

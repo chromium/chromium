@@ -99,7 +99,6 @@ bool ThreadGroup::IsBoundToCurrentThread() const {
 
 void ThreadGroup::Start() {
   CheckedAutoLock auto_lock(lock_);
-  disable_fair_scheduling_ = FeatureList::IsEnabled(kDisableFairJobScheduling);
 }
 
 size_t
@@ -177,8 +176,7 @@ void ThreadGroup::ReEnqueueTaskSourceLockRequired(
     } else {
       // If the TaskSource should be reenqueued in the current thread group,
       // reenqueue it inside the scope of the lock.
-      auto sort_key = transaction_with_task_source.task_source->GetSortKey(
-          disable_fair_scheduling_);
+      auto sort_key = transaction_with_task_source.task_source->GetSortKey();
       if (push_to_immediate_queue) {
         priority_queue_.Push(
             std::move(transaction_with_task_source.task_source), sort_key);
@@ -225,19 +223,15 @@ RegisteredTaskSource ThreadGroup::TakeRegisteredTaskSource(
     return priority_queue_.PopTaskSource();
   // Replace the top task_source and then update the queue.
   std::swap(priority_queue_.PeekTaskSource(), task_source);
-  if (!disable_fair_scheduling_) {
-    priority_queue_.UpdateSortKey(*task_source.get(),
-                                  task_source->GetSortKey(false));
-  }
+  priority_queue_.UpdateSortKey(*task_source.get(), task_source->GetSortKey());
   return task_source;
 }
 
 void ThreadGroup::UpdateSortKeyImpl(BaseScopedCommandsExecutor* executor,
                                     TaskSource::Transaction transaction) {
   CheckedAutoLock auto_lock(lock_);
-  priority_queue_.UpdateSortKey(
-      *transaction.task_source(),
-      transaction.task_source()->GetSortKey(disable_fair_scheduling_));
+  priority_queue_.UpdateSortKey(*transaction.task_source(),
+                                transaction.task_source()->GetSortKey());
   EnsureEnoughWorkersLockRequired(executor);
 }
 
@@ -257,8 +251,7 @@ void ThreadGroup::PushTaskSourceAndWakeUpWorkersImpl(
         std::move(transaction_with_task_source.task_source));
     return;
   }
-  auto sort_key = transaction_with_task_source.task_source->GetSortKey(
-      disable_fair_scheduling_);
+  auto sort_key = transaction_with_task_source.task_source->GetSortKey();
   priority_queue_.Push(std::move(transaction_with_task_source.task_source),
                        sort_key);
   EnsureEnoughWorkersLockRequired(executor);

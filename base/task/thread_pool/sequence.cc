@@ -287,8 +287,7 @@ bool Sequence::HasImmediateTasks() const {
   return !queue_.empty();
 }
 
-TaskSourceSortKey Sequence::GetSortKey(
-    bool /* disable_fair_scheduling */) const {
+TaskSourceSortKey Sequence::GetSortKey() const {
   return TaskSourceSortKey(priority_racy(),
                            ready_time_.load(std::memory_order_relaxed));
 }

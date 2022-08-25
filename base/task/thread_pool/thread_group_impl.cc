@@ -399,10 +399,6 @@ void ThreadGroupImpl::Start(
 
   DCHECK(!replacement_thread_group_);
 
-  in_start().wakeup_after_getwork = FeatureList::IsEnabled(kWakeUpAfterGetWork);
-  in_start().wakeup_strategy = kWakeUpStrategyParam.Get();
-  in_start().may_block_without_delay =
-      FeatureList::IsEnabled(kMayBlockWithoutDelay);
   in_start().may_block_threshold =
       may_block_threshold ? may_block_threshold.value()
                           : (thread_type_hint_ == ThreadType::kDefault
@@ -612,12 +608,8 @@ RegisteredTaskSource ThreadGroupImpl::WorkerThreadDelegateImpl::GetWork(
   // Note: FlushWorkerCreation() below releases |outer_->lock_|. It is thus
   // important that all other operations come after it to keep this method
   // transactional.
-  if (!outer_->after_start().wakeup_after_getwork &&
-      outer_->after_start().wakeup_strategy !=
-          WakeUpStrategy::kCentralizedWakeUps) {
-    outer_->EnsureEnoughWorkersLockRequired(&executor);
-    executor.FlushWorkerCreation(&outer_->lock_);
-  }
+  outer_->EnsureEnoughWorkersLockRequired(&executor);
+  executor.FlushWorkerCreation(&outer_->lock_);
 
   if (!CanGetWorkLockRequired(&executor, worker))
     return nullptr;
@@ -647,12 +639,6 @@ RegisteredTaskSource ThreadGroupImpl::WorkerThreadDelegateImpl::GetWork(
   DCHECK(!outer_->idle_workers_stack_.Contains(worker));
   write_worker().current_task_priority = priority;
   write_worker().current_shutdown_behavior = task_source->shutdown_behavior();
-
-  if (outer_->after_start().wakeup_after_getwork &&
-      outer_->after_start().wakeup_strategy !=
-          WakeUpStrategy::kCentralizedWakeUps) {
-    outer_->EnsureEnoughWorkersLockRequired(&executor);
-  }
 
   return task_source;
 }
@@ -832,10 +818,8 @@ void ThreadGroupImpl::WorkerThreadDelegateImpl::BlockingStarted(
 
   worker_only().worker_thread_->MaybeUpdateThreadType();
 
-  // MayBlock with no delay reuses WillBlock implementation.
   // WillBlock is always used when time overrides is active. crbug.com/1038867
-  if (outer_->after_start().may_block_without_delay ||
-      base::subtle::ScopedTimeClockOverrides::overrides_active()) {
+  if (base::subtle::ScopedTimeClockOverrides::overrides_active()) {
     blocking_type = BlockingType::WILL_BLOCK;
   }
 
@@ -870,10 +854,8 @@ void ThreadGroupImpl::WorkerThreadDelegateImpl::BlockingTypeUpgraded() {
 
   // The blocking type always being WILL_BLOCK in this experiment and with time
   // overrides, it should never be considered "upgraded".
-  if (outer_->after_start().may_block_without_delay ||
-      base::subtle::ScopedTimeClockOverrides::overrides_active()) {
+  if (base::subtle::ScopedTimeClockOverrides::overrides_active())
     return;
-  }
 
   ScopedCommandsExecutor executor(outer_.get());
   CheckedAutoLock auto_lock(outer_->lock_);
@@ -1117,12 +1099,7 @@ void ThreadGroupImpl::EnsureEnoughWorkersLockRequired(
 
   size_t num_workers_to_wake_up =
       ClampSub(desired_num_awake_workers, num_awake_workers);
-  if (after_start().wakeup_strategy == WakeUpStrategy::kExponentialWakeUps) {
-    num_workers_to_wake_up = std::min(num_workers_to_wake_up, size_t(2U));
-  } else if (after_start().wakeup_strategy ==
-             WakeUpStrategy::kSerializedWakeUps) {
-    num_workers_to_wake_up = std::min(num_workers_to_wake_up, size_t(1U));
-  }
+  num_workers_to_wake_up = std::min(num_workers_to_wake_up, size_t(2U));
 
   // Wake up the appropriate number of workers.
   for (size_t i = 0; i < num_workers_to_wake_up; ++i) {

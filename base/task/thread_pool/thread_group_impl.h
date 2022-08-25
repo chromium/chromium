@@ -253,10 +253,6 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
     // Optional observer notified when a worker enters and exits its main.
     raw_ptr<WorkerThreadObserver> worker_thread_observer = nullptr;
 
-    WakeUpStrategy wakeup_strategy;
-    bool wakeup_after_getwork;
-    bool may_block_without_delay;
-
     // Threshold after which the max tasks is increased to compensate for a
     // worker that is within a MAY_BLOCK ScopedBlockingCall.
     TimeDelta may_block_threshold;

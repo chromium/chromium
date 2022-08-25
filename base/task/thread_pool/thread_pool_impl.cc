@@ -125,11 +125,6 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!started_);
 
-  disable_job_yield_ = FeatureList::IsEnabled(kDisableJobYield);
-  disable_fair_scheduling_ = FeatureList::IsEnabled(kDisableFairJobScheduling);
-  disable_job_update_priority_ =
-      FeatureList::IsEnabled(kDisableJobUpdatePriority);
-
   // The max number of concurrent BEST_EFFORT tasks is |kMaxBestEffortTasks|,
   // unless the max number of foreground threads is lower.
   const size_t max_best_effort_tasks =
@@ -470,8 +465,6 @@ bool ThreadPoolImpl::PostTaskWithSequence(Task task,
 }
 
 bool ThreadPoolImpl::ShouldYield(const TaskSource* task_source) {
-  if (disable_job_yield_)
-    return false;
   const TaskPriority priority = task_source->priority_racy();
   auto* const thread_group =
       GetThreadGroupForTraits({priority, task_source->thread_policy()});
@@ -480,7 +473,7 @@ bool ThreadPoolImpl::ShouldYield(const TaskSource* task_source) {
   if (!thread_group->IsBoundToCurrentThread())
     return true;
   return GetThreadGroupForTraits({priority, task_source->thread_policy()})
-      ->ShouldYield(task_source->GetSortKey(disable_fair_scheduling_));
+      ->ShouldYield(task_source->GetSortKey());
 }
 
 bool ThreadPoolImpl::EnqueueJobTaskSource(
@@ -543,8 +536,6 @@ void ThreadPoolImpl::UpdatePriority(scoped_refptr<TaskSource> task_source,
 
 void ThreadPoolImpl::UpdateJobPriority(scoped_refptr<TaskSource> task_source,
                                        TaskPriority priority) {
-  if (disable_job_update_priority_)
-    return;
   UpdatePriority(std::move(task_source), priority);
 }
 

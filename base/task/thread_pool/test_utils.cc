@@ -206,7 +206,7 @@ void MockPooledTaskRunnerDelegate::PostTaskWithSequenceNow(
 }
 
 bool MockPooledTaskRunnerDelegate::ShouldYield(const TaskSource* task_source) {
-  return thread_group_->ShouldYield(task_source->GetSortKey(false));
+  return thread_group_->ShouldYield(task_source->GetSortKey());
 }
 
 bool MockPooledTaskRunnerDelegate::EnqueueJobTaskSource(

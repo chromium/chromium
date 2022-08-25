@@ -367,11 +367,7 @@ bool JobTaskSource::WillReEnqueue(TimeTicks now,
 // This is a no-op.
 void JobTaskSource::OnBecomeReady() {}
 
-TaskSourceSortKey JobTaskSource::GetSortKey(
-    bool disable_fair_scheduling) const {
-  if (disable_fair_scheduling) {
-    return TaskSourceSortKey(priority_racy(), ready_time_);
-  }
+TaskSourceSortKey JobTaskSource::GetSortKey() const {
   return TaskSourceSortKey(priority_racy(), ready_time_,
                            TS_UNCHECKED_READ(state_).Load().worker_count());
 }
