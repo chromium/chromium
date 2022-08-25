@@ -34,10 +34,12 @@ class AndroidLiveTabContextCloseWrapper : public AndroidLiveTabContext {
   //   `id_to_tab_group`. If the title is null in Java use "".
   AndroidLiveTabContextCloseWrapper(
       TabModel* tab_model,
-      std::vector<TabAndroid*> closed_tabs,
-      std::map<int, tab_groups::TabGroupId> tab_id_to_tab_group,
-      std::map<tab_groups::TabGroupId, tab_groups::TabGroupVisualData>
-          tab_group_visual_data);
+      std::vector<TabAndroid*>&& closed_tabs,
+      std::map<int, tab_groups::TabGroupId>&& tab_id_to_tab_group,
+      std::map<tab_groups::TabGroupId, tab_groups::TabGroupVisualData>&&
+          tab_group_visual_data,
+      std::vector<historical_tab_saver::WebContentsStateByteBuffer>&&
+          web_contents_state);
   ~AndroidLiveTabContextCloseWrapper() override;
 
   AndroidLiveTabContextCloseWrapper(const AndroidLiveTabContextCloseWrapper&) =
@@ -81,6 +83,10 @@ class AndroidLiveTabContextCloseWrapper : public AndroidLiveTabContext {
   // Maps a group ID to its visual data (only a title on Android).
   std::map<tab_groups::TabGroupId, tab_groups::TabGroupVisualData>
       tab_group_visual_data_;
+
+  // List of webContentStates to close linked by tab index for bulk closure.
+  std::vector<historical_tab_saver::WebContentsStateByteBuffer>
+      web_contents_state_;
 
   // The most recently unfrozen web contents. Mutable as const signature methods
   // modify this field (constness inherited from LiveTabContext).
