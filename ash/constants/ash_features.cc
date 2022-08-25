@@ -1033,6 +1033,12 @@ const base::Feature kLacrosProfileMigrationForAnyUser{
 const base::Feature kLacrosMoveProfileMigration{
     "LacrosMoveProfileMigration", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, it is allowed to migrate data from lacros back to ash, provided
+// that other conditions are also met (e.g. the policy is enabled, or the
+// command line flag is passed).
+const base::Feature kLacrosProfileBackwardMigration{
+    "LacrosProfileBackwardMigration", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables sorting app icons shown on the launcher.
 const base::Feature kLauncherAppSort{"LauncherAppSort",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
