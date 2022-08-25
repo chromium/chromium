@@ -2572,6 +2572,7 @@
 <translation id="3406290648907941085">Дозволено им е да ги користат податоците и уредите со виртуелна реалност</translation>
 <translation id="3406396172897554194">Пребарувајте по јазик или по име на методот за внесување</translation>
 <translation id="3406605057700382950">&amp;Покажи лента со обележувачи</translation>
+<translation id="3408849592677950451">{NUM_PASSWORDS,plural, =1{1 лозинка е увезена на Google Password Manager за <ph name="USER_EMAIL" />}one{{NUM_PASSWORDS} лозинка се увезени на Google Password Manager за <ph name="USER_EMAIL" />}other{{NUM_PASSWORDS} лозинки се увезени на Google Password Manager за <ph name="USER_EMAIL" />}}</translation>
 <translation id="3409785640040772790">Карти</translation>
 <translation id="3412265149091626468">Скокни до Избор</translation>
 <translation id="3413122095806433232">Издавачи на ЦА: <ph name="LOCATION" /></translation>
@@ -3326,6 +3327,7 @@
 <translation id="4101352914005291489">Сокриен SSID</translation>
 <translation id="4102469565336584882">Погрешен код. Кодот треба да биде во форматот LPA:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">Рестартирајте за фабричко ресетирање</translation>
+<translation id="4104163789986725820">Из&amp;вези...</translation>
 <translation id="4107048419833779140">Идентификувај и отстранувај надворешни мемории</translation>
 <translation id="4108314971463891922">Следи</translation>
 <translation id="4109135793348361820">Помести прозорец кај <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -3756,6 +3758,7 @@
 <translation id="4541123282641193691">Вашата сметка не може да се потврди. Обидете се повторно или рестартирајте го вашиот Chromebook.</translation>
 <translation id="4541662893742891060">Не може да се поврзе со профилов. За техничка поддршка, контактирајте со операторот.</translation>
 <translation id="4541706525461326392">Се отстранува профилот. Може да потрае неколку минути.</translation>
+<translation id="4542332958571335077">{NUM_PASSWORDS,plural, =1{1 лозинка е увезена на Google Password Manager на уредов}one{{NUM_PASSWORDS} лозинка се увезени на Google Password Manager на уредов}other{{NUM_PASSWORDS} лозинки се увезени на Google Password Manager на уредов}}</translation>
 <translation id="4542520061254486227">Читајте ги вашите податоци на <ph name="WEBSITE_1" /> и <ph name="WEBSITE_2" /></translation>
 <translation id="4543778593405494224">Управник со сертификати</translation>
 <translation id="4544174279960331769">Стандарден син аватар</translation>
@@ -5524,7 +5527,6 @@
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6278776436938569440">Променете ја локацијата</translation>
 <translation id="6279183038361895380">Притиснете |<ph name="ACCELERATOR" />| за да се покаже покажувачот</translation>
-<translation id="6279595948631688299">Извези го избраниот сертификат…</translation>
 <translation id="6280215091796946657">Најави се со друга сметка</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Ја надминува границата од 1 лист хартија}one{Ја надминува границата од {COUNT} лист хартија}other{Ја надминува границата од {COUNT} листови хартија}}</translation>
@@ -6248,6 +6250,7 @@
 <translation id="6968288415730398122">Внесете ја лозинката за да го конфигурирате заклучувањето на екранот</translation>
 <translation id="6969047215179982698">Исклучете „Споделување во близина“</translation>
 <translation id="6970480684834282392">Тип стартување</translation>
+<translation id="6970543303783413625">Не може да се увезат лозинките. Може да увезете најмногу <ph name="COUNT" /> лозинки истовремено.</translation>
 <translation id="6970856801391541997">Печати специфични страници</translation>
 <translation id="6970861306198150268">Уверете се дека ја зачувувате тековната лозинка за сајтов</translation>
 <translation id="6972180789171089114">Аудио/видео</translation>
@@ -6480,6 +6483,7 @@
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Излези од страницата}one{Излези од страниците}other{Излези од страниците}}</translation>
 <translation id="7207457272187520234">Испраќајте податоци за користење и дијагностика. Уредов во моментов автоматски испраќа дијагностички и податоци за користењето на уредот и апликациите до Google. Податоциве ќе ни помогнат околу стабилноста на системот и апликациите и за други подобрувања. Некои збирни податоци ќе им помогнат на апликациите и партнерите на Google, како што се програмерите на Android. Поставкава е наметната од сопственикот. Ако сте ја вклучиле дополнителната поставка „Активност на интернет и апликации“, податоциве може да се зачувуваат во вашата сметка на Google.</translation>
 <translation id="7207631048330366454">Пребарувајте апликации</translation>
+<translation id="7210471695184432500">За да увезете лозинки на Google Password Manager на уредов, изберете датотека CSV</translation>
 <translation id="7210499381659830293">Печатачи за екстензии</translation>
 <translation id="7211783048245131419">Сѐ уште не е назначен прекинувач</translation>
 <translation id="7212097698621322584">Внесете го тековниот PIN за да го промените. Ако не го знаете PIN-кодот, ќе треба да го ресетирате безбедносниот клуч, а потоа да создадете нов PIN.</translation>
@@ -7539,6 +7543,7 @@
 <translation id="8206859287963243715">Мобилен</translation>
 <translation id="8208216423136871611">Не зачувувај</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Ново известување}one{# ново известување}other{# нови известувања}}</translation>
+<translation id="821119981794423735">За да увезете лозинки на Google Password Manager за <ph name="USER_EMAIL" />, изберете датотека CSV</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Преземањето е во тек}one{Преземањата се во тек}other{Преземањата се во тек}}</translation>
 <translation id="8213449224684199188">Влеговте во режим на фотографија</translation>
 <translation id="8214489666383623925">Отвори датотека...</translation>

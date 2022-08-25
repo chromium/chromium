@@ -3313,6 +3313,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4101352914005291489">SSID masqué</translation>
 <translation id="4102469565336584882">Code incorrect. Votre entrée doit respecter le format LPA:1$&lt;adresse smdp&gt;$&lt;code d'activation&gt;</translation>
 <translation id="4102906002417106771">Redémarrer l'appareil pour effectuer une réinitialisation Powerwash</translation>
+<translation id="4104163789986725820">E&amp;xporter...</translation>
 <translation id="4107048419833779140">Identifier et éjecter la mémoire de stockage des appareils</translation>
 <translation id="4108314971463891922">Suivre</translation>
 <translation id="4109135793348361820">Déplacer la fenêtre vers le bureau de <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -5511,7 +5512,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6278428485366576908">Thème</translation>
 <translation id="6278776436938569440">Changer le lieu</translation>
 <translation id="6279183038361895380">Appuyez sur |<ph name="ACCELERATOR" />| pour afficher votre curseur</translation>
-<translation id="6279595948631688299">Exporter le certificat sélectionné…</translation>
 <translation id="6280215091796946657">Se connecter avec un autre compte</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Dépasse la limite de 1 feuille de papier}one{Dépasse la limite de {COUNT} feuille de papier}other{Dépasse la limite de {COUNT} feuilles de papier}}</translation>

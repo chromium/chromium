@@ -3309,6 +3309,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4101352914005291489">Gizli SSID</translation>
 <translation id="4102469565336584882">Geçersiz kod. Girişiniz, LPA:1$&lt;smdp adresi&gt;$&lt;etkinleştirme kodu&gt; biçiminde olmalıdır</translation>
 <translation id="4102906002417106771">Powerwash için yeniden başlat</translation>
+<translation id="4104163789986725820">&amp;Dışa Aktar...</translation>
 <translation id="4107048419833779140">Depolama cihazlarını tanımlama ve çıkarma</translation>
 <translation id="4108314971463891922">Takip et</translation>
 <translation id="4109135793348361820">Pencereyi <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) kullanıcısına taşı</translation>
@@ -5508,7 +5509,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6278776436938569440">Konumu değiştir</translation>
 <translation id="6279183038361895380">İmlecinizi göstermek için |<ph name="ACCELERATOR" />| tuşuna basın</translation>
-<translation id="6279595948631688299">Seçilen sertifikayı dışa aktar...</translation>
 <translation id="6280215091796946657">Farklı bir hesapla oturum aç</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{1 kağıt sınırını aşıyor}other{{COUNT} kağıt sınırını aşıyor}}</translation>

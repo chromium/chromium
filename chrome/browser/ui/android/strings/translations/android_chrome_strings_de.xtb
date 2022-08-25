@@ -433,6 +433,7 @@ Wenn du deinen Browserverlauf löschst – entweder komplett oder für eine bes
 <translation id="3290249595466894471">Sendet außerdem eine kleine Auswahl von Seiten, Downloads, Erweiterungsaktivitäten und Systeminformationen, um die Erkennung neuer Bedrohungen zu verbessern</translation>
 <translation id="3297344142967351106">Sprachassistent</translation>
 <translation id="3303414029551471755">Inhalt herunterladen?</translation>
+<translation id="3305795716056605962">Seiten über die Schaltfläche „Weitere Optionen“ übersetzen lassen</translation>
 <translation id="3334729583274622784">Dateiendung ändern?</translation>
 <translation id="3341262203274374114">Nicht mehr folgen nicht möglich. Ein Fehler ist aufgetreten.</translation>
 <translation id="3359667936385849800">Aktuellen Anbieter verwenden</translation>
@@ -557,6 +558,7 @@ Wenn du deinen Browserverlauf löschst – entweder komplett oder für eine bes
 <translation id="4062305924942672200">Rechtliche Hinweise</translation>
 <translation id="4084682180776658562">Lesezeichen</translation>
 <translation id="4084712963632273211">Von <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />bereitgestellt durch Google<ph name="END_DEEMPHASIZED" /></translation>
+<translation id="409109920254068737">Du kannst dich über dieses Tablet auf dem Gerät anmelden, auf dem dieser QR-Code angezeigt wird.</translation>
 <translation id="4095146165863963773">App-Daten löschen?</translation>
 <translation id="4096227151372679484">Ablauf zum Speichern von Lesezeichen ist halb geöffnet</translation>
 <translation id="4099578267706723511">Nutzungsstatistiken und Absturzberichte zur Verbesserung von Chrome an Google senden</translation>
@@ -591,6 +593,7 @@ Wenn du deinen Browserverlauf löschst – entweder komplett oder für eine bes
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Welche Daten werden verwendet?<ph name="END_BOLD" /> Dein Browserverlauf, das heißt eine Liste der von dir auf diesem Gerät in Chrome besuchten Websites.</translation>
 <translation id="4263656433980196874">Benutzeroberfläche für die Einwilligung in die Sprachsuche von Assistant ganz geöffnet</translation>
 <translation id="4269820728363426813">URL kopieren</translation>
+<translation id="4283102315569707115">Desktopwebsites standardmäßig anfordern?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Displaysperre in den Android-Einstellungen aktivieren<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">Wenn du Chrome verwendest, stimmst du den <ph name="BEGIN_TOS_LINK" />Nutzungsbedingungen von Google<ph name="END_TOS_LINK" /> und den <ph name="BEGIN_ATOS_LINK" />zusätzlichen Nutzungsbedingungen für Google Chrome und Chrome OS<ph name="END_ATOS_LINK" /> zu. Außerdem gilt die <ph name="BEGIN_PRIVACY_LINK" />Datenschutzerklärung<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="4296252229500326964">Neuer Inkognitotab</translation>
@@ -970,6 +973,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6342069812937806050">Gerade eben</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 und <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> weitere}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 und <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> weitere}}</translation>
 <translation id="6345878117466430440">Als gelesen markieren</translation>
+<translation id="6357653805084533597">Du kannst dich über dieses Smartphone auf dem Gerät anmelden, auf dem dieser QR-Code angezeigt wird.</translation>
 <translation id="6363990818884053551">Bestätige deine Identität, um die Synchronisierung zu starten</translation>
 <translation id="6364438453358674297">Vorschlag aus Verlauf entfernen?</translation>
 <translation id="6380100320871303656">Chrome lädt Seiten häufiger vorab, die du wahrscheinlich aufrufen wirst. Bei dieser Einstellung werden voraussichtlich mehr Daten genutzt.</translation>
@@ -1265,6 +1269,7 @@ Trust Tokens verbessern den Datenschutz im Web und können nicht dazu verwendet 
 <translation id="7853202427316060426">Aktivität</translation>
 <translation id="7857691613771368249">Nachfragen, wann Dateien gespeichert werden sollen</translation>
 <translation id="7859988229622350291">Nie übersetzen</translation>
+<translation id="7866213166286285359">Seiten hier übersetzen lassen</translation>
 <translation id="78707286264420418"><ph name="PRODUCT_NAME" /> benötigt die Berechtigung zum Zugriff auf Geräte in der Nähe, um eine Verbindung zu deinem Gerät herzustellen</translation>
 <translation id="7875915731392087153">E-Mail erstellen</translation>
 <translation id="7876243839304621966">Alle entfernen</translation>

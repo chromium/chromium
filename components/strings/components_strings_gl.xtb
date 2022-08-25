@@ -1106,7 +1106,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3969052498612555048">Non es quen de atopar o código? <ph name="BEGIN_LINK" />Xerar novo código<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> está bloqueado</translation>
-<translation id="3978338123949022456">Modo de busca. Escribe unha consulta e preme Introducir para facer a busca con <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="398470910934384994">Aves</translation>
 <translation id="3985750352229496475">Xestiona os enderezos…</translation>
 <translation id="3986705137476756801">Desactivar polo momento a función Subtítulos instantáneos</translation>
@@ -1654,6 +1653,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="540969355065856584">Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque o seu certificado de seguranza non é válido neste momento. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.</translation>
 <translation id="5412040515238827314">O formato non é válido: debe ser unha lista de padróns.</translation>
 <translation id="5412236728747081950">Este sitio obtén os teus intereses de Chrome para mostrarche anuncios máis relevantes</translation>
+<translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" />: <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Amontoador 4</translation>
 <translation id="5421136146218899937">Borrar datos de navegación...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> quere enviarche notificacións</translation>
@@ -2058,6 +2058,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6591833882275308647">O teu <ph name="DEVICE_TYPE" /> non está xestionado</translation>
 <translation id="6592952801936330159">Botón Xestionar configuración dos sitios. Para xestionar na configuración de Chrome os permisos e os datos almacenados dos sitios, preme Introducir</translation>
 <translation id="6596325263575161958">Opcións de cifrado</translation>
+<translation id="6599642189720630047">Produtos dos que se fai un seguimento</translation>
 <translation id="6609880536175561541">Prc7 (sobre)</translation>
 <translation id="6611723696964473273">Noticias sobre economía</translation>
 <translation id="6612010098632894193">Vídeo en liña</translation>
@@ -2585,6 +2586,7 @@ Detalles adicionais:
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8009225694047762179">Xestionar contrasinais</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Gardarase esta tarxeta e o seu enderezo de facturación. Poderás utilizala ao iniciar sesión en <ph name="USER_EMAIL" />.}other{Gardaranse estas tarxetas e os seus enderezos de facturación. Poderás utilizalas ao iniciar sesión en <ph name="USER_EMAIL" />.}}</translation>
+<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8025119109950072390">Os atacantes deste sitio poden enganarte para que fagas algo perigoso como instalar software ou revelar a túa información persoal (por exemplo, contrasinais, números de teléfono ou datos das túas tarxetas de crédito).</translation>
 <translation id="8026334261755873520">Borrar datos de navegación</translation>
 <translation id="8027077570865220386">Bandexa 15</translation>

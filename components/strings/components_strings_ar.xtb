@@ -1108,7 +1108,6 @@
 <translation id="3969052498612555048">ألا يمكنك العثور على الرمز؟ <ph name="BEGIN_LINK" />الحصول على رمز جديد<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">جارٍ الحساب...</translation>
 <translation id="3973234410852337861">تم حظر <ph name="HOST_NAME" /></translation>
-<translation id="3978338123949022456">‏انتقِل إلى وضع البحث وأدخِل طلب البحث ثم اضغط على مفتاح Enter للبحث باستخدام <ph name="KEYWORD_SUFFIX" />.</translation>
 <translation id="398470910934384994">طيور</translation>
 <translation id="3985750352229496475">إدارة العناوين...</translation>
 <translation id="3986705137476756801">إيقاف ميزة "النسخ النصي التلقائي" مؤقتًا</translation>
@@ -2062,6 +2061,7 @@
 <translation id="6591833882275308647">لا تتم إدارة <ph name="DEVICE_TYPE" /></translation>
 <translation id="6592952801936330159">‏زر "إدارة إعدادات المواقع الإلكترونية"، اضغط على مفتاح Enter لإدارة الأذونات والبيانات المُخزّنة في المواقع الإلكترونية من خلال إعدادات متصفّح Chrome.</translation>
 <translation id="6596325263575161958">خيارات التشفير</translation>
+<translation id="6599642189720630047">المنتجات التي يتمّ تتبّع سعرها</translation>
 <translation id="6609880536175561541">‏Prc7 (مغلف)</translation>
 <translation id="6611723696964473273">أخبار الاقتصاد</translation>
 <translation id="6612010098632894193">فيديو على الإنترنت</translation>

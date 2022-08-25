@@ -3328,6 +3328,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4101352914005291489">SSID oculto</translation>
 <translation id="4102469565336584882">Código inválido. Sua entrada precisa ter o formato LPA:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">Reiniciar para executar o Powerwash</translation>
+<translation id="4104163789986725820">E&amp;xportar...</translation>
 <translation id="4107048419833779140">Identificar e ejetar dispositivos de armazenamento</translation>
 <translation id="4108314971463891922">Seguir</translation>
 <translation id="4109135793348361820">Mover janela para <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -5528,7 +5529,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6278776436938569440">Mudar local</translation>
 <translation id="6279183038361895380">Pressione |<ph name="ACCELERATOR" />| para exibir seu cursor</translation>
-<translation id="6279595948631688299">E&amp;xportar o certificado selecionado…</translation>
 <translation id="6280215091796946657">Fazer login com outra conta</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Excede o limite de 1 folha de papel}one{Excede o limite de {COUNT} folha de papel}other{Excede o limite de {COUNT} folhas de papel}}</translation>

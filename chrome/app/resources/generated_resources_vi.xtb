@@ -2571,6 +2571,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3406290648907941085">Được phép sử dụng dữ liệu và thiết bị thực tế ảo</translation>
 <translation id="3406396172897554194">Tìm kiếm theo ngôn ngữ hoặc tên phương thức nhập</translation>
 <translation id="3406605057700382950">&amp;Hiển thị thanh dấu trang</translation>
+<translation id="3408849592677950451">{NUM_PASSWORDS,plural, =1{Đã nhập 1 mật khẩu vào Trình quản lý mật khẩu của Google cho <ph name="USER_EMAIL" />}other{Đã nhập {NUM_PASSWORDS} mật khẩu vào Trình quản lý mật khẩu của Google cho <ph name="USER_EMAIL" />}}</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3412265149091626468">Chuyển tới Phần lựa chọn</translation>
 <translation id="3413122095806433232">Nhà cung cấp CA: <ph name="LOCATION" /></translation>
@@ -3325,6 +3326,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4101352914005291489">SSID ẩn</translation>
 <translation id="4102469565336584882">Mã không hợp lệ. Nội dung bạn nhập phải có định dạng LPA:1$&lt;địa chỉ smdp&gt;$&lt;mã kích hoạt&gt;</translation>
 <translation id="4102906002417106771">Khởi động lại để sử dụng chức năng powerwash</translation>
+<translation id="4104163789986725820">X&amp;uất...</translation>
 <translation id="4107048419833779140">Nhận dạng và ngắt kết nối thiết bị lưu trữ</translation>
 <translation id="4108314971463891922">Theo dõi</translation>
 <translation id="4109135793348361820">Di chuyển cửa sổ đến <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -3755,6 +3757,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4541123282641193691">Không thể xác minh tài khoản của bạn. Vui lòng thử lại hoặc khởi động lại Chromebook.</translation>
 <translation id="4541662893742891060">Không thể kết nối với hồ sơ này. Nếu cần hỗ trợ kỹ thuật, hãy liên hệ với nhà mạng của bạn.</translation>
 <translation id="4541706525461326392">Đang xóa hồ sơ. Quá trình này có thể mất vài phút.</translation>
+<translation id="4542332958571335077">{NUM_PASSWORDS,plural, =1{Đã nhập 1 mật khẩu vào Trình quản lý mật khẩu của Google trên thiết bị này}other{Đã nhập {NUM_PASSWORDS} mật khẩu vào Trình quản lý mật khẩu của Google trên thiết bị này}}</translation>
 <translation id="4542520061254486227">Đọc dữ liệu của bạn trên <ph name="WEBSITE_1" /> và <ph name="WEBSITE_2" /></translation>
 <translation id="4543778593405494224">Trình quản lý chứng chỉ</translation>
 <translation id="4544174279960331769">Hình đại diện màu xanh lam mặc định</translation>
@@ -5492,7 +5495,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">Hệ thống: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="624789221780392884">Bản cập nhật đã sẵn sàng</translation>
-<translation id="6248988683584659830">Tìm kiếm trong phần cài đặt</translation>
+<translation id="6248988683584659830">Tìm chế độ cài đặt</translation>
 <translation id="6249200942125593849">Quản lý chế độ a11y</translation>
 <translation id="6250186368828697007">Khi bạn chia sẻ màn hình, thông tin chi tiết sẽ bị ẩn</translation>
 <translation id="6251870443722440887">Quản lý GDI</translation>
@@ -5523,7 +5526,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6278428485366576908">Chủ đề</translation>
 <translation id="6278776436938569440">Thay đổi vị trí</translation>
 <translation id="6279183038361895380">Nhấn |<ph name="ACCELERATOR" />| để hiển thị con trỏ của bạn</translation>
-<translation id="6279595948631688299">Xuất chứng chỉ đã chọn...</translation>
 <translation id="6280215091796946657">Đăng nhập bằng tài khoản khác</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Vượt quá giới hạn 1 tờ giấy}other{Vượt quá giới hạn {COUNT} tờ giấy}}</translation>
@@ -6245,6 +6247,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6968288415730398122">Nhập mật khẩu của bạn để định cấu hình khóa màn hình</translation>
 <translation id="6969047215179982698">Tắt tính năng Chia sẻ lân cận</translation>
 <translation id="6970480684834282392">Kiểu khởi động</translation>
+<translation id="6970543303783413625">Không nhập được mật khẩu. Mỗi lần, bạn chỉ có thể nhập tối đa <ph name="COUNT" /> mật khẩu.</translation>
 <translation id="6970856801391541997">In các trang cụ thể</translation>
 <translation id="6970861306198150268">Đảm bảo rằng bạn đang lưu mật khẩu hiện tại cho trang web này</translation>
 <translation id="6972180789171089114">Âm thanh/video</translation>
@@ -6477,6 +6480,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Thoát khỏi trang}other{Thoát khỏi các trang}}</translation>
 <translation id="7207457272187520234">Gửi dữ liệu chẩn đoán và dữ liệu về mức sử dụng. Thiết bị này hiện tự động gửi dữ liệu chẩn đoán, dữ liệu về thiết bị và mức sử dụng ứng dụng cho Google. Những thông tin này sẽ giúp tăng độ ổn định của hệ thống và ứng dụng cũng như cải thiện các mặt khác. Một số dữ liệu tổng hợp cũng sẽ hữu ích cho các ứng dụng và đối tác của Google, chẳng hạn như những nhà phát triển Android. Tùy chọn cài đặt này do chủ sở hữu thực thi. Nếu bạn bật tùy chọn cài đặt Hoạt động trên web và ứng dụng bổ sung, thì dữ liệu này có thể được lưu vào Tài khoản Google của bạn.</translation>
 <translation id="7207631048330366454">Tìm kiếm ứng dụng</translation>
+<translation id="7210471695184432500">Để nhập mật khẩu vào Trình quản lý mật khẩu của Google trên thiết bị này, hãy chọn một tệp CSV</translation>
 <translation id="7210499381659830293">Máy in tiện ích</translation>
 <translation id="7211783048245131419">Bạn chưa gán công tắc nào</translation>
 <translation id="7212097698621322584">Nhập mã PIN hiện tại của bạn để thay đổi. Nếu không nhớ mã PIN, thì bạn cần đặt lại khóa bảo mật rồi tạo mã PIN mới.</translation>
@@ -7537,6 +7541,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8206859287963243715">Di động</translation>
 <translation id="8208216423136871611">Không lưu</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Thông báo mới}other{# thông báo mới}}</translation>
+<translation id="821119981794423735">Để nhập mật khẩu vào Trình quản lý mật khẩu của Google cho <ph name="USER_EMAIL" />, hãy chọn một tệp CSV</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Đang tải xuống}other{Đang tải xuống}}</translation>
 <translation id="8213449224684199188">Đã chuyển sang chế độ ảnh</translation>
 <translation id="8214489666383623925">Mở Tệp...</translation>

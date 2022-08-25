@@ -3329,6 +3329,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4101352914005291489">Skrit SSID</translation>
 <translation id="4102469565336584882">Neveljavna koda. Oblika zapisa vašega vnosa mora biti LPA:1$&lt;smdp address&gt;$&lt;activation code&gt;.</translation>
 <translation id="4102906002417106771">Znova zaženite za izvedbo Powerwasha</translation>
+<translation id="4104163789986725820">I&amp;zvozi ...</translation>
 <translation id="4107048419833779140">Prepoznavanje in izmet naprav za shranjevanje</translation>
 <translation id="4108314971463891922">Spremljaj</translation>
 <translation id="4109135793348361820">Premakni okno uporabniku <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -5530,7 +5531,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6278776436938569440">Spremeni lokacijo</translation>
 <translation id="6279183038361895380">Pritisnite |<ph name="ACCELERATOR" />| za prikaz kazalca</translation>
-<translation id="6279595948631688299">I&amp;zvoz izbranega potrdila ...</translation>
 <translation id="6280215091796946657">Prijava z drugim računom</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Presega omejitev za 1 list papirja}one{Presega omejitev za {COUNT} list papirja}two{Presega omejitev za {COUNT} lista papirja}few{Presega omejitev za {COUNT} liste papirja}other{Presega omejitev za {COUNT} listov papirja}}</translation>

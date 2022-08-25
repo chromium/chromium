@@ -2571,6 +2571,7 @@
 <translation id="3406290648907941085">விர்ச்சுவல் ரியாலிட்டியையும் தரவையும் பயன்படுத்த அனுமதிக்கப்பட்டுள்ள தளங்கள்</translation>
 <translation id="3406396172897554194">மொழி அல்லது உள்ளீட்டு முறையின் பெயர் மூலம் தேடலாம்</translation>
 <translation id="3406605057700382950">புக்மார்க்ஸ் பட்டியைக் &amp;காட்டு</translation>
+<translation id="3408849592677950451">{NUM_PASSWORDS,plural, =1{<ph name="USER_EMAIL" /> கணக்கிற்கான 1 கடவுச்சொல் Google Password Managerரில் ஏற்றப்பட்டது}other{<ph name="USER_EMAIL" /> கணக்கிற்கான {NUM_PASSWORDS} கடவுச்சொற்கள் Google Password Managerரில் ஏற்றப்பட்டன}}</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3412265149091626468">தேர்வுக்கு செல்</translation>
 <translation id="3413122095806433232">CA வழங்குநர்கள்: <ph name="LOCATION" /></translation>
@@ -3325,6 +3326,7 @@
 <translation id="4101352914005291489">மறைக்கப்பட்ட SSID</translation>
 <translation id="4102469565336584882">தவறான குறியீடு. LPA:1$&lt;smdp முகவரி&gt;$&lt;செயல்படுத்தல் குறியீடு&gt; என்ற வடிவமைப்பில் உள்ளீடு இருக்க வேண்டும்</translation>
 <translation id="4102906002417106771">பவர்வாஷில் மீண்டும் தொடங்கு</translation>
+<translation id="4104163789986725820">ஏற்று&amp;மதி...</translation>
 <translation id="4107048419833779140">சேமிப்பகச் சாதனங்களைக் கண்டறிந்து, வெளியேற்றுதல்</translation>
 <translation id="4108314971463891922">பின்தொடர்</translation>
 <translation id="4109135793348361820"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) க்குச் சாளரத்தை நகர்த்து</translation>
@@ -3755,6 +3757,7 @@
 <translation id="4541123282641193691">கணக்கைச் சரிபார்க்க முடியவில்லை. மீண்டும் முயலவும் அல்லது Chromebookகை மீண்டும் தொடங்கவும்.</translation>
 <translation id="4541662893742891060">இந்தச் சுயவிவரத்துடன் இணைக்க முடியவில்லை. தொழில்நுட்ப உதவியைப் பெற, உங்கள் மொபைல் நெட்வொர்க் நிறுவனத்தைத் தொடர்புகொள்ளவும்.</translation>
 <translation id="4541706525461326392">நெட்வொர்க் சுயவிவரத்தை அகற்றுகிறது. இதற்குச் சில நிமிடங்கள் ஆகலாம்.</translation>
+<translation id="4542332958571335077">{NUM_PASSWORDS,plural, =1{இந்தச் சாதனத்தில் உள்ள Google Password Managerரில் 1 கடவுச்சொல் ஏற்றப்பட்டது}other{இந்தச் சாதனத்தில் உள்ள Google Password Managerரில் {NUM_PASSWORDS} கடவுச்சொற்கள் ஏற்றப்பட்டன}}</translation>
 <translation id="4542520061254486227">உங்கள் தரவை <ph name="WEBSITE_1" /> மற்றும் <ph name="WEBSITE_2" /> இல் படிக்கவும்</translation>
 <translation id="4543778593405494224">சான்றிதழ் நிர்வாகி</translation>
 <translation id="4544174279960331769">இயல்பு நீலநிறத் தோற்றப்படம்</translation>
@@ -5524,7 +5527,6 @@
 <translation id="6278428485366576908">தீம்</translation>
 <translation id="6278776436938569440">இருப்பிடத்தை மாற்று</translation>
 <translation id="6279183038361895380">உங்கள் சுட்டியைக் காட்ட |<ph name="ACCELERATOR" />| என்பதை அழுத்தவும்</translation>
-<translation id="6279595948631688299">தேர்ந்தெடுத்த சான்றிதழை ஏற்று...</translation>
 <translation id="6280215091796946657">வேறொரு கணக்கு மூலம் உள்நுழைக</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{தாளின் ஒரு பக்கம் என்ற வரம்பை மீறுகிறது}other{தாளின் {COUNT} பக்கங்கள் என்ற வரம்பை மீறுகிறது}}</translation>
@@ -6246,6 +6248,7 @@
 <translation id="6968288415730398122">திரைப் பூட்டை உள்ளமைக்க, கடவுச்சொல்லை உள்ளிடவும்</translation>
 <translation id="6969047215179982698">’அருகிலுள்ளவற்றுடன் பகிர்தல்’ அம்சத்தை முடக்கு</translation>
 <translation id="6970480684834282392">தொடங்கப்படும் வகை</translation>
+<translation id="6970543303783413625">கடவுச்சொற்களை ஏற்ற முடியவில்லை. ஒரே சமயத்தில் அதிகபட்சம் <ph name="COUNT" /> கடவுச்சொற்களை மட்டுமே ஏற்ற முடியும்.</translation>
 <translation id="6970856801391541997">குறிப்பிட்ட பக்கங்களை அச்சிடு</translation>
 <translation id="6970861306198150268">இந்தத் தளத்திற்கான புதிய கடவுச்சொல்லை மறக்காமல் சேமிக்கவும்</translation>
 <translation id="6972180789171089114">ஆடியோ/வீடியோ</translation>
@@ -6478,6 +6481,7 @@
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{பக்கத்திலிருந்து வெளியேறு}other{பக்கங்களிலிருந்து வெளியேறு}}</translation>
 <translation id="7207457272187520234">உபயோகம் மற்றும் பிழை கண்டறிதல் தரவை அனுப்பவும். பிழை கண்டறிதல் தரவு, சாதனம் மற்றும் ஆப்ஸ் உபயோகத் தரவு போன்றவற்றை இந்தச் சாதனம் தற்போது Googleளுக்குத் தானாக அனுப்புகிறது. இது சிஸ்டம் மற்றும் ஆப்ஸின் நிலைத்தன்மையை மேம்படுத்தவும் பிற மேம்பாடுகளைச் செய்யவும் உதவும். ஒருங்கிணைக்கப்பட்ட சில தரவு, Google ஆப்ஸுக்கும் Android டெவெலப்பர்கள் போன்ற கூட்டாளர்களுக்கும் உதவும். உரிமையாளர் இந்த அமைப்பைச் செயல்படுத்தியுள்ளார். கூடுதல் ’இணையம் &amp; ஆப்ஸ் செயல்பாடு’ அமைப்பு இயக்கப்பட்டிருந்தால், இந்தத் தரவு உங்கள் Google கணக்கில் சேமிக்கப்படக்கூடும்.</translation>
 <translation id="7207631048330366454">ஆப்ஸில் தேடுக</translation>
+<translation id="7210471695184432500">இந்தச் சாதனத்தில் Google Password Managerரில் கடவுச்சொற்களை ஏற்ற, CSV ஃபைலைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="7210499381659830293">நீட்டிப்பு பிரிண்டர்கள்</translation>
 <translation id="7211783048245131419">இதுவரை எந்த ஸ்விட்சும் ஒதுக்கப்படவில்லை</translation>
 <translation id="7212097698621322584">தற்போதைய பின்னை மாற்ற அதை உள்ளிடவும். பின் தெரியவில்லை என்றால் புதிய பின்னை உருவாக்க பாதுகாப்பு விசையை மீட்டமைக்க வேண்டும்.</translation>
@@ -7538,6 +7542,7 @@
 <translation id="8206859287963243715">செல்லுலர்</translation>
 <translation id="8208216423136871611">சேமிக்காதே</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{புதிய அறிவிப்பு}other{# புதிய அறிவிப்புகள்}}</translation>
+<translation id="821119981794423735"><ph name="USER_EMAIL" /> கணக்கிற்கான கடவுச்சொற்களை Google Password Managerரில் ஏற்ற, CSV ஃபைலைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{பதிவிறக்கம் செயலில் உள்ளது}other{பதிவிறக்கங்கள் செயலில் உள்ளன}}</translation>
 <translation id="8213449224684199188">படப் பயன்முறைக்குச் சென்றது</translation>
 <translation id="8214489666383623925">ஃபைலைத் திற...</translation>

@@ -1106,7 +1106,6 @@
 <translation id="3969052498612555048">ບໍ່ພົບລະຫັດຂອງທ່ານບໍ? <ph name="BEGIN_LINK" />ຂໍລະຫັດໃໝ່<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">ກໍາລັງຄິດ​ໄລ່...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> ຖືກບລັອກໄວ້</translation>
-<translation id="3978338123949022456">ໂໝດຊອກຫາ, ພິມຄຳຊອກຫາແລ້ວກົດ Enter ເພື່ອຊອກຫາດ້ວຍ <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="398470910934384994">ນົກ</translation>
 <translation id="3985750352229496475">ຈັດການທີ່ຢູ່...</translation>
 <translation id="3986705137476756801">ປິດຄຳບັນຍາຍສົດສຳລັບຕອນນີ້</translation>
@@ -1654,6 +1653,7 @@
 <translation id="540969355065856584">ເຊີບເວີນີ້ບໍ່ສາມາດພິສູດໄດ້ວ່າ ມັນແມ່ນ <ph name="DOMAIN" />; ໃບຢັ້ງຢືນຄວາມປອດໄພຂອງມັນໃຊ້​ບໍ່​ໄດ້​ໃນ​ເວ​ລາ​ນີ້. ອັນນີ້ອາດຈະເຮັດໃຫ້ເກີດມີການປັບຕັ້ງຄ່າຜິດ ຫຼືຜູ້ໂຈມຕີອາດຈະດັກເອົາການເຊື່ອມຕໍ່ຂອງທ່ານ.</translation>
 <translation id="5412040515238827314">ຮູບແບບບໍ່ຖືກຕ້ອງ: ຕ້ອງການລາຍຊື່ຮູບແບບ.</translation>
 <translation id="5412236728747081950">ເວັບໄຊນີ້ໄດ້ຮັບຄວາມສົນໃຈຂອງທ່ານຈາກ Chrome ເພື່ອສະແດງໂຄສະນາທີ່ກ່ຽວຂ້ອງຫຼາຍຂຶ້ນໃຫ້ທ່ານເຫັນ</translation>
+<translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">ສະແຕັກເກີ້ 4</translation>
 <translation id="5421136146218899937">ລຶບຂໍ້ມູນການທ່ອງເນັດ...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ຕ້ອງການສົ່ງການແຈ້ງເຕືອນໃຫ້ທ່ານ</translation>
@@ -2058,6 +2058,7 @@
 <translation id="6591833882275308647">ບໍ່ມີການຈັດການ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>
 <translation id="6592952801936330159">ຈັດການປຸ່ມການຕັ້ງຄ່າເວັບໄຊ, ກົດ Enter ເພື່ອຈັດການການອະນຸຍາດ ແລະ ຂໍ້ມູນທີ່ຈັດເກັບໄວ້ໃນເວັບໄຊຕ່າງໆໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="6596325263575161958">ທາງເລືອກການໃສ່ລະຫັດ</translation>
+<translation id="6599642189720630047">ສິນຄ້າທີ່ຕິດຕາມ</translation>
 <translation id="6609880536175561541">Prc7 (ຊອງຈົດໝາຍ)</translation>
 <translation id="6611723696964473273">ຂ່າວເສດຖະກິດ</translation>
 <translation id="6612010098632894193">ວິດີໂອອອນລາຍ</translation>
@@ -2585,6 +2586,7 @@
 <translation id="8004582292198964060">ບຣາວ​ເຊີ</translation>
 <translation id="8009225694047762179">ຈັດການລະຫັດຜ່ານ</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{ບັດນີ້ ແລະ ທີ່ຢູ່ຮຽກເກັບເງິນຂອງມັນຈະຖືກບັນທຶກໄວ້. ທ່ານຈະສາມາດໃຊ້ມັນໄດ້ໃນເວລາເຂົ້າສູ່ລະບົບ <ph name="USER_EMAIL" />.}other{ບັດເຫຼົ່ານີ້ ແລະ ທີ່ຢູ່ຮຽກເກັບເງິນຂອງພວກມັນຈະຖືກບັນທຶກໄວ້. ທ່ານຈະສາມາດໃຊ້ພວກມັນໄດ້ໃນເວລາເຂົ້າສູ່ລະບົບ <ph name="USER_EMAIL" />.}}</translation>
+<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8025119109950072390">ຜູ້ໂຈມຕີໃນເວັບໄຊນີ້ອາດຈະຫຼອກໃຫ້ທ່ານເຮັດບາງຢ່າງທີ່ອັນຕະລາຍ ເຊັ່ນ ການຕິດຕັ້ງຊອບແວ ຫຼື ເປີດເຜີຍຂໍ້ມູນສ່ວນຕົວຂອງທ່ານ (ຕົວຢ່າງ: ລະຫັດຜ່ານ, ເບີໂທລະສັບ ຫຼື ບັດເຄຣດິດ).</translation>
 <translation id="8026334261755873520">ລຶບຂໍ້​ມູນການທ່ອງ​ເນັດ</translation>
 <translation id="8027077570865220386">ຖາດ 15</translation>

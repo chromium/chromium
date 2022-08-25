@@ -2555,6 +2555,7 @@ Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="3406290648907941085">Sitios que poden usar datos e dispositivos de realidade virtual</translation>
 <translation id="3406396172897554194">Busca un idioma ou o nome dun método de introdución de texto</translation>
 <translation id="3406605057700382950">&amp;Mostrar a barra de marcadores</translation>
+<translation id="3408849592677950451">{NUM_PASSWORDS,plural, =1{Importouse 1 contrasinal ao xestor de contrasinais de Google de <ph name="USER_EMAIL" />}other{Importáronse {NUM_PASSWORDS} contrasinais ao xestor de contrasinais de Google de <ph name="USER_EMAIL" />}}</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3412265149091626468">Saltar á selección</translation>
 <translation id="3413122095806433232">Emisores de CA: <ph name="LOCATION" /></translation>
@@ -3309,6 +3310,7 @@ Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="4101352914005291489">SSID oculto</translation>
 <translation id="4102469565336584882">O código non é válido. Debería ter o formato LPA:1$&lt;enderezo smdp&gt;$&lt;código de activación&gt;</translation>
 <translation id="4102906002417106771">Reiniciar para usar a función Powerwash</translation>
+<translation id="4104163789986725820">E&amp;xportar...</translation>
 <translation id="4107048419833779140">Identificar e expulsar dispositivos de almacenamento</translation>
 <translation id="4108314971463891922">Seguir</translation>
 <translation id="4109135793348361820">Mover ventá a <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -3738,6 +3740,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4541123282641193691">Non se puido verificar a túa conta. Téntao de novo ou reinicia o Chromebook.</translation>
 <translation id="4541662893742891060">Non se puido establecer conexión con este perfil. Para obter asistencia técnica, ponte en contacto co teu operador.</translation>
 <translation id="4541706525461326392">Quitando perfil. Esta acción pode tardar uns minutos.</translation>
+<translation id="4542332958571335077">{NUM_PASSWORDS,plural, =1{Importouse 1 contrasinal ao xestor de contrasinais de Google neste dispositivo}other{Importáronse {NUM_PASSWORDS} contrasinais ao xestor de contrasinais de Google neste dispositivo}}</translation>
 <translation id="4542520061254486227">Ler os teus datos de <ph name="WEBSITE_1" /> e <ph name="WEBSITE_2" /></translation>
 <translation id="4543778593405494224">Xestor de certificados</translation>
 <translation id="4544174279960331769">Avatar azul predeterminado</translation>
@@ -5503,7 +5506,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6278776436938569440">Cambiar localización</translation>
 <translation id="6279183038361895380">Preme |<ph name="ACCELERATOR" />| para mostrar o cursor</translation>
-<translation id="6279595948631688299">E&amp;xportar certificado seleccionado…</translation>
 <translation id="6280215091796946657">Iniciar sesión cunha conta diferente</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Supera o límite de 1 folla}other{Supera o límite de {COUNT} follas}}</translation>
@@ -6225,6 +6227,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6968288415730398122">Introduce o contrasinal para configurar o bloqueo da pantalla</translation>
 <translation id="6969047215179982698">Desactivar Compartir por Nearby</translation>
 <translation id="6970480684834282392">Tipo de inicio</translation>
+<translation id="6970543303783413625">Non se puideron importar os contrasinais. Podes importar ata <ph name="COUNT" /> á vez.</translation>
 <translation id="6970856801391541997">Imprimir páxinas específicas</translation>
 <translation id="6970861306198150268">Asegúrate de gardar o teu contrasinal actual deste sitio</translation>
 <translation id="6972180789171089114">Audio/Vídeo</translation>
@@ -6457,6 +6460,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Páxina de saída}other{Páxinas de saída}}</translation>
 <translation id="7207457272187520234">Enviar datos de uso e diagnóstico. Este dispositivo envía automaticamente datos de diagnóstico e de uso do dispositivo e das aplicacións a Google. Esta información permitirá aumentar a estabilidade do sistema e das aplicacións, e realizar outras melloras. Algúns datos agregados tamén serán útiles para as aplicacións e os socios de Google, como os programadores de Android. Esta opción de configuración contrólaa o propietario. Se está activada a opción Actividade web e das aplicacións adicional, estes datos pódense gardar na túa Conta de Google.</translation>
 <translation id="7207631048330366454">Buscar aplicacións</translation>
+<translation id="7210471695184432500">Para importar contrasinais ao xestor de contrasinais de Google neste dispositivo, selecciona un ficheiro CSV</translation>
 <translation id="7210499381659830293">Impresoras da extensión</translation>
 <translation id="7211783048245131419">Aínda non se asignou ningún interruptor</translation>
 <translation id="7212097698621322584">Introduce o teu PIN actual para cambialo. Se non sabes cal é, deberás restablecer a chave de seguranza e, despois, crear un novo.</translation>
@@ -7515,6 +7519,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8206859287963243715">Móbil</translation>
 <translation id="8208216423136871611">Non gardar</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{1 notificación nova}other{# notificacións novas}}</translation>
+<translation id="821119981794423735">Para importar contrasinais ao xestor de contrasinais de Google de <ph name="USER_EMAIL" />, selecciona un ficheiro CSV</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{A descarga está en curso}other{As descargas están en curso}}</translation>
 <translation id="8213449224684199188">Iniciouse o modo de foto</translation>
 <translation id="8214489666383623925">Abrir ficheiro...</translation>

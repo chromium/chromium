@@ -3313,6 +3313,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4101352914005291489">Yashirin SSID</translation>
 <translation id="4102469565336584882">Kod xato. Xatosiz formatda kiritilishi zarur (LPA:1$&lt;smdp manzili&gt;$&lt;aktivatsiya kodi&gt;</translation>
 <translation id="4102906002417106771">Powerwash amalini bajarish uchun qayta ishga tushirish</translation>
+<translation id="4104163789986725820">&amp;Eksport qilish...</translation>
 <translation id="4107048419833779140">Xotira qurilmalarini aniqlash va uzib qo‘yish</translation>
 <translation id="4108314971463891922">Kuzatish</translation>
 <translation id="4109135793348361820">Oynani <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) foydalanuvchisi ish stoliga ko‘chirish</translation>
@@ -5512,7 +5513,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6278428485366576908">Mavzu</translation>
 <translation id="6278776436938569440">Joyni oʻzgartirish</translation>
 <translation id="6279183038361895380">Kursorni ko‘rish uchun |<ph name="ACCELERATOR" />| tugmasini bosing</translation>
-<translation id="6279595948631688299">Tanlangan sertifikatni eksport qilish...</translation>
 <translation id="6280215091796946657">Boshqa hisobdan kirish</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{1 varaq qogʻoz cheklovdan oshdi}other{{COUNT} varaq qogʻoz cheklovdan oshdi}}</translation>

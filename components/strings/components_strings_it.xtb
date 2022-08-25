@@ -1103,7 +1103,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3969052498612555048">Non riesci a trovare il codice? <ph name="BEGIN_LINK" />Ricevi nuovo codice<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Calcolo in corso...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> è bloccato</translation>
-<translation id="3978338123949022456">Modalità di ricerca, digita una query e premi Invio per cercare con <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="398470910934384994">Uccelli</translation>
 <translation id="3985750352229496475">Gestisci indirizzi…</translation>
 <translation id="3986705137476756801">Disattiva Sottotitoli in tempo reale per ora</translation>
@@ -1651,6 +1650,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="540969355065856584">Questo server non è riuscito a verificare che si tratta di <ph name="DOMAIN" />; il relativo certificato di sicurezza non è considerato valido in questa fase. Il problema potrebbe essere dovuto a un'errata configurazione o a un malintenzionato che ha intercettato la connessione.</translation>
 <translation id="5412040515238827314">Formato non valido: è previsto un elenco di pattern.</translation>
 <translation id="5412236728747081950">Questo sito acquisisce i tuoi interessi da Chrome per mostrarti annunci più pertinenti</translation>
+<translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Fascicolatore 4</translation>
 <translation id="5421136146218899937">Cancella dati di navigazione...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> vuole inviarti notifiche</translation>
@@ -2581,6 +2581,7 @@ Ulteriori dettagli:
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8009225694047762179">Gestisci password</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Questa carta e il relativo indirizzo di fatturazione verranno salvati. Potrai usarla dopo aver eseguito l'accesso all'account <ph name="USER_EMAIL" />.}other{Queste carte e i relativi indirizzi di fatturazione verranno salvati. Potrai usarle dopo aver eseguito l'accesso all'account <ph name="USER_EMAIL" />.}}</translation>
+<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8025119109950072390">I malintenzionati su questo sito potrebbero indurti con l'inganno a effettuare operazioni pericolose, come installare software o fornire i tuoi dati personali (ad esempio password, numeri di telefono o carte di credito).</translation>
 <translation id="8026334261755873520">Cancella dati di navigazione</translation>
 <translation id="8027077570865220386">Vassoio 15</translation>

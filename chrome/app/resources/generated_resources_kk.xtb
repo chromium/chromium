@@ -2553,6 +2553,7 @@
 <translation id="3406290648907941085">Виртуалдық шындық құрылғыларын мен деректерін пайдалануға рұқсаты барлар</translation>
 <translation id="3406396172897554194">Тілді немесе енгізу әдісін көрсетіңіз</translation>
 <translation id="3406605057700382950">Бетбелгілер жолағын &amp;көрсету</translation>
+<translation id="3408849592677950451">{NUM_PASSWORDS,plural, =1{1 құпия сөз <ph name="USER_EMAIL" /> аккаунтына арналған Google Құпия сөз менеджеріне импортталды.}other{{NUM_PASSWORDS} құпия сөз <ph name="USER_EMAIL" /> аккаунтына арналған Google Құпия сөз менеджеріне импортталды.}}</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3412265149091626468">Таңдауға өту</translation>
 <translation id="3413122095806433232">CA мекемелері: <ph name="LOCATION" /></translation>
@@ -3307,6 +3308,7 @@
 <translation id="4101352914005291489">Жасырын SSID</translation>
 <translation id="4102469565336584882">Жарамсыз код. LPA форматында жазуыңыз керек: 1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">Powerwash функциясын іске қосу үшін қайта қосу</translation>
+<translation id="4104163789986725820">Э&amp;кспорттау…</translation>
 <translation id="4107048419833779140">Жад құрылғыларын анықтау және шығару</translation>
 <translation id="4108314971463891922">Жазылу</translation>
 <translation id="4109135793348361820">Терезені <ph name="USER_NAME" /> пайдаланушысына (<ph name="USER_EMAIL" />) жылжыту</translation>
@@ -3736,6 +3738,7 @@
 <translation id="4541123282641193691">Аккаунтыңыз расталмады. Әрекетті қайталаңыз немесе Chromebook құрылғыңызды қайта жүктеңіз.</translation>
 <translation id="4541662893742891060">Бұл профильге қосылу мүмкін емес. Техникалық қолдау керек болса, операторға хабарласыңыз.</translation>
 <translation id="4541706525461326392">Профиль өшірілуде. Бұл бірнеше минутқа созылуы мүмкін.</translation>
+<translation id="4542332958571335077">{NUM_PASSWORDS,plural, =1{1 құпия сөз осы құрылғыдағы Google Құпия сөз менеджеріне импортталды.}other{{NUM_PASSWORDS} құпия сөз осы құрылғыдағы Google Құпия сөз менеджеріне импортталды.}}</translation>
 <translation id="4542520061254486227"><ph name="WEBSITE_1" /> және <ph name="WEBSITE_2" /> веб-сайттарындағы деректеріңізді оқу</translation>
 <translation id="4543778593405494224">Сертификат басқарушысы</translation>
 <translation id="4544174279960331769">Әдепкі көк түсті аватар</translation>
@@ -5501,7 +5504,6 @@
 <translation id="6278428485366576908">Тақырып</translation>
 <translation id="6278776436938569440">Орналасқан жерін өзгерту</translation>
 <translation id="6279183038361895380">Курсорды көрсету үшін |<ph name="ACCELERATOR" />| басыңыз</translation>
-<translation id="6279595948631688299">Таңдалған сертификатты экспорттау…</translation>
 <translation id="6280215091796946657">Басқа аккаунтпен кіру</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{1 қағаз парақ шектеуінен асты}other{{COUNT} қағаз парақ шектеуінен асты}}</translation>
@@ -6223,6 +6225,7 @@
 <translation id="6968288415730398122">Экран құлпын конфигурациялау үшін құпия сөзді енгізіңіз</translation>
 <translation id="6969047215179982698">Nearby Share функциясын өшіру</translation>
 <translation id="6970480684834282392">Іске қосу түрі</translation>
+<translation id="6970543303783413625">Құпия сөздерді импорттау мүмкін емес. Бір уақытта тек <ph name="COUNT" /> құпия сөзге дейін импорттай аласыз.</translation>
 <translation id="6970856801391541997">Арнайы беттерді басып шығару</translation>
 <translation id="6970861306198150268">Осы сайттың ағымдағы құпия сөзін сақтап жатқаныңызға көз жеткізіңіз.</translation>
 <translation id="6972180789171089114">Аудиомазмұн/Бейне</translation>
@@ -6455,6 +6458,7 @@
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Беттен шығу}other{Беттерден шығу}}</translation>
 <translation id="7207457272187520234">Пайдалану және диагностика туралы деректерді жіберу. Бұл құрылғыдан Google-ға диагностика, құрылғы мен қолданбаны пайдалану деректері автоматты түрде жіберіліп тұрады. Олар жүйе мен қолданбаның тұрақты жұмыс істеуіне және басқа да жақсартулар енгізуге көмектеседі. Кейбір жиынтық деректер Google қолданбаларын жетілдіруге және Android әзірлеушілері сияқты серіктестердің жұмысына көмектеседі. Бұл параметрді иесі орнатқан. Егер "Интернет пен қолданбаларды пайдаланудың қосымша тарихы" параметрі қосулы болса, бұл деректер сіздің Google аккаунтыңызға сақталуы мүмкін.</translation>
 <translation id="7207631048330366454">Қолданбалар іздеу</translation>
+<translation id="7210471695184432500">Құпия сөздерді осы құрылғыдағы Google Құпия сөз менеджеріне импорттау үшін CSV файлын таңдаңыз.</translation>
 <translation id="7210499381659830293">Кеңейтім қолданатын принтерлер</translation>
 <translation id="7211783048245131419">Әлі ешқандай ауыстырғыш тағайындалмады.</translation>
 <translation id="7212097698621322584">Қолданыстағы PIN кодын өзгерту үшін оны енгізіңіз. PIN кодыңызды білмесеңіз, оны бастапқы күйге қайтарып, жаңа PIN кодын жасаңыз.</translation>
@@ -7513,6 +7517,7 @@
 <translation id="8206859287963243715">Ұялы</translation>
 <translation id="8208216423136871611">Сақтамау</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Жаңа хабарландыру}other{# жаңа хабарландыру}}</translation>
+<translation id="821119981794423735">Құпия сөздерді <ph name="USER_EMAIL" /> аккаунтына арналған Google Құпия сөз менеджеріне импорттау үшін CSV файлын таңдаңыз.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Файл жүктеп алынуда}other{Файлдар жүктеп алынуда}}</translation>
 <translation id="8213449224684199188">Фото режимі қосылды</translation>
 <translation id="8214489666383623925">Файлды ашу…</translation>

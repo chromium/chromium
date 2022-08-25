@@ -1102,7 +1102,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3969052498612555048">Nemůžete kód najít? <ph name="BEGIN_LINK" />Vygenerovat nový kód<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Probíhá výpočet…</translation>
 <translation id="3973234410852337861">Web <ph name="HOST_NAME" /> je blokován</translation>
-<translation id="3978338123949022456">Režim vyhledávání: Pokud chcete vyhledávat s příponou <ph name="KEYWORD_SUFFIX" />, zadejte dotaz a stiskněte Enter</translation>
 <translation id="398470910934384994">Ptáci</translation>
 <translation id="3985750352229496475">Spravovat adresy...</translation>
 <translation id="3986705137476756801">Zatím živý přepis vypnout</translation>
@@ -2054,6 +2053,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6591833882275308647">Vaše zařízení <ph name="DEVICE_TYPE" /> není spravováno</translation>
 <translation id="6592952801936330159">Tlačítko správy nastavení webů, stisknutím klávesy Enter můžete spravovat oprávnění a uložená data webů v nastavení Chromu</translation>
 <translation id="6596325263575161958">Možnosti šifrování</translation>
+<translation id="6599642189720630047">Sledované produkty</translation>
 <translation id="6609880536175561541">Prc7 (obálka)</translation>
 <translation id="6611723696964473273">Ekonomické zprávy</translation>
 <translation id="6612010098632894193">Online video</translation>

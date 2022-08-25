@@ -3326,6 +3326,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4101352914005291489">SSID tersembunyi</translation>
 <translation id="4102469565336584882">Kode tidak valid. Entri Anda harus memiliki format LPA:1$&lt;alamat smdp&gt;$&lt;kode aktivasi&gt;</translation>
 <translation id="4102906002417106771">Mulai ulang untuk powerwash</translation>
+<translation id="4104163789986725820">E&amp;kspor...</translation>
 <translation id="4107048419833779140">Identifikasi dan keluarkan perangkat penyimpanan</translation>
 <translation id="4108314971463891922">Ikuti</translation>
 <translation id="4109135793348361820">Pindahkan jendela ke <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -5525,7 +5526,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6278776436938569440">Ubah lokasi</translation>
 <translation id="6279183038361895380">Tekan |<ph name="ACCELERATOR" />| untuk menampilkan kursor</translation>
-<translation id="6279595948631688299">E&amp;kspor sertifikat yang dipilih ...</translation>
 <translation id="6280215091796946657">Login dengan akun lain</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Melebihi batas 1 lembar kertas}other{Melebihi batas {COUNT} lembar kertas}}</translation>

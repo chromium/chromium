@@ -3309,6 +3309,7 @@
 <translation id="4101352914005291489">മറച്ചിരിക്കുന്ന SSID</translation>
 <translation id="4102469565336584882">കോഡ് അസാധുവാണ്. നിങ്ങളുടെ എൻട്രിയിൽ LPA:1$&lt;smdp address&gt;$&lt;activation code&gt; എന്ന ഫോർമാറ്റ് ഉണ്ടായിരിക്കണം</translation>
 <translation id="4102906002417106771">Powerwash ചെയ്യുന്നതിന് റീസ്‌റ്റാർട്ട് ചെയ്യുക</translation>
+<translation id="4104163789986725820">കയ&amp;റ്റുമതി ചെയ്യുക...</translation>
 <translation id="4107048419833779140">സ്‌റ്റോറേജ് ​​ഉപകരണം തിരിച്ചറിഞ്ഞ് ഒഴിവാക്കുക</translation>
 <translation id="4108314971463891922">പിന്തുടരുക</translation>
 <translation id="4109135793348361820">വിൻഡോ <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) എന്നതിലേക്ക് നീക്കുക</translation>
@@ -5509,7 +5510,6 @@
 <translation id="6278428485366576908">തീം</translation>
 <translation id="6278776436938569440">ലൊക്കേഷന്‍ മാറ്റുക</translation>
 <translation id="6279183038361895380">നിങ്ങളുടെ കഴ്‌സർ കാണിക്കാൻ |<ph name="ACCELERATOR" />| അമർത്തുക</translation>
-<translation id="6279595948631688299">തിരഞ്ഞെടുത്ത സര്‍ട്ടിഫിക്കറ്റ് എക്‌സ്പോർട്ട് ചെയ്യുക...</translation>
 <translation id="6280215091796946657">മറ്റൊരു അക്കൗണ്ട് ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{ഒരു ഷീറ്റ് പേപ്പർ എന്ന പരിധി കവിഞ്ഞു}other{{COUNT} ഷീറ്റ് പേപ്പർ എന്ന പരിധി കവിഞ്ഞു}}</translation>

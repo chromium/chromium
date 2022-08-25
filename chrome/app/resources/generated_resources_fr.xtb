@@ -2557,6 +2557,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3406290648907941085">Autorisé à utiliser des données et des appareils de réalité virtuelle</translation>
 <translation id="3406396172897554194">Faites une recherche par langue ou mode de saisie</translation>
 <translation id="3406605057700382950">&amp;Afficher la barre de favoris</translation>
+<translation id="3408849592677950451">{NUM_PASSWORDS,plural, =1{1 mot de passe importé dans le Gestionnaire de mots de passe de Google pour <ph name="USER_EMAIL" />}one{{NUM_PASSWORDS} mot de passe importé dans le Gestionnaire de mots de passe de Google pour <ph name="USER_EMAIL" />}other{{NUM_PASSWORDS} mots de passe importés dans le Gestionnaire de mots de passe de Google pour <ph name="USER_EMAIL" />}}</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3412265149091626468">Aller à la sélection</translation>
 <translation id="3413122095806433232">Émetteurs de l'autorité de certification : <ph name="LOCATION" /></translation>
@@ -3311,6 +3312,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4101352914005291489">SSID masqué</translation>
 <translation id="4102469565336584882">Code non valide. Votre entrée devrait correspondre au format LPA:1$&lt;adresse smdp&gt;$&lt;code d'activation&gt;</translation>
 <translation id="4102906002417106771">Redémarrer en mode Powerwash</translation>
+<translation id="4104163789986725820">E&amp;xporter...</translation>
 <translation id="4107048419833779140">Identifier et exclure des périphériques de stockage</translation>
 <translation id="4108314971463891922">Suivre</translation>
 <translation id="4109135793348361820">Déplacer la fenêtre vers <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -3740,6 +3742,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4541123282641193691">Impossible de valider votre compte. Veuillez réessayer ou redémarrer votre Chromebook.</translation>
 <translation id="4541662893742891060">Impossible de se connecter à ce profil. Pour obtenir de l'aide, veuillez contacter votre opérateur.</translation>
 <translation id="4541706525461326392">Suppression du profil… Cela peut prendre quelques minutes.</translation>
+<translation id="4542332958571335077">{NUM_PASSWORDS,plural, =1{1 mot de passe importé dans le Gestionnaire de mots de passe de Google sur cet appareil}one{{NUM_PASSWORDS} mot de passe importé dans le Gestionnaire de mots de passe de Google sur cet appareil}other{{NUM_PASSWORDS} mots de passe importés dans le Gestionnaire de mots de passe de Google sur cet appareil}}</translation>
 <translation id="4542520061254486227">Lire vos données sur <ph name="WEBSITE_1" /> et <ph name="WEBSITE_2" /></translation>
 <translation id="4543778593405494224">Gestionnaire de certificats</translation>
 <translation id="4544174279960331769">Avatar bleu par défaut</translation>
@@ -4556,7 +4559,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5353252989841766347">Exporter des mots de passe depuis Chrome</translation>
 <translation id="5355099869024327351">Autoriser l'Assistant à proposer des notifications</translation>
 <translation id="5355191726083956201">La protection renforcée est activée</translation>
-<translation id="5355501370336370394">Enregistrer l'appareil d'entreprise</translation>
+<translation id="5355501370336370394">Enregistrer un appareil d'entreprise</translation>
 <translation id="5355926466126177564">L'extension <ph name="EXTENSION_NAME" /> a modifié la page qui s'affiche lorsque vous effectuez une recherche dans l'omnibox.</translation>
 <translation id="5356155057455921522">Cette mise à jour de votre administrateur permettra aux applis de votre organisation de s'ouvrir plus rapidement. Cela peut prendre quelques minutes.</translation>
 <translation id="5359910752122114278">1 résultat</translation>
@@ -4591,7 +4594,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5392192690789334093">Autorisés à envoyer des notifications</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Lien}one{# lien}other{# liens}}</translation>
 <translation id="5396325212236512832">La connexion aux sites et applis avec les identifiants enregistrés est automatique. Si cette fonctionnalité est désactivée, vous êtes invité à confirmer chaque connexion à un site ou une appli.</translation>
-<translation id="5397378439569041789">Enregistrer l'appareil en mode Kiosque ou de signalétique</translation>
+<translation id="5397378439569041789">Enregistrer un appareil en mode Kiosque ou de signalétique</translation>
 <translation id="5397794290049113714">Vous</translation>
 <translation id="5398497406011404839">Favoris masqués</translation>
 <translation id="5398572795982417028">Plage de pages hors limites. Le nombre maximal de pages est <ph name="MAXIMUM_PAGE" />.</translation>
@@ -5509,7 +5512,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6278428485366576908">Thème</translation>
 <translation id="6278776436938569440">Modifier l'emplacement</translation>
 <translation id="6279183038361895380">Appuyez sur |<ph name="ACCELERATOR" />| pour afficher le curseur.</translation>
-<translation id="6279595948631688299">E&amp;xporter le certificat sélectionné</translation>
 <translation id="6280215091796946657">Se connecter avec un autre compte</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Vous avez dépassé la limite fixée à 1 feuille de papier}one{Vous avez dépassé la limite fixée à {COUNT} feuille de papier}other{Vous avez dépassé la limite fixée à {COUNT} feuilles de papier}}</translation>
@@ -6233,6 +6235,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6968288415730398122">Saisissez votre mot de passe pour configurer le verrouillage de l'écran</translation>
 <translation id="6969047215179982698">Désactiver le Partage à proximité</translation>
 <translation id="6970480684834282392">Type de démarrage</translation>
+<translation id="6970543303783413625">Impossible d'importer les mots de passe. Vous ne pouvez en importer que <ph name="COUNT" /> à la fois.</translation>
 <translation id="6970856801391541997">Imprimer des pages spécifiques</translation>
 <translation id="6970861306198150268">Veillez à enregistrer votre mot de passe actuel pour ce site</translation>
 <translation id="6972180789171089114">Audio/Vidéo</translation>
@@ -6465,6 +6468,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Quitter la page}one{Quitter la page}other{Quitter les pages}}</translation>
 <translation id="7207457272187520234">Envoyer des données d'utilisation et de diagnostic. À l'heure actuelle, cet appareil envoie automatiquement à Google des données liées à son utilisation et à celle des applications, ainsi que des données de diagnostic. Ces informations nous aideront à améliorer, entre autres, la stabilité du système et des applications. Certaines données globales seront également utiles aux développeurs des applications Google et à nos partenaires tels que les développeurs Android. Ce paramètre est appliqué par le propriétaire. Si vous avez activé le paramètre "Activité supplémentaire sur le Web et les applications", ces données peuvent être enregistrées dans votre compte Google.</translation>
 <translation id="7207631048330366454">Rechercher dans les applications</translation>
+<translation id="7210471695184432500">Pour importer des mots de passe dans le Gestionnaire de mots de passe de Google sur cet appareil, sélectionnez un fichier CSV</translation>
 <translation id="7210499381659830293">Imprimantes d'extension</translation>
 <translation id="7211783048245131419">Aucune action n'a encore été associée à un contacteur</translation>
 <translation id="7212097698621322584">Saisissez votre code actuel pour pouvoir le modifier. Si vous ne vous en souvenez plus, vous devez réinitialiser la clé de sécurité, puis créer un autre code.</translation>
@@ -7525,6 +7529,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8206859287963243715">Mobile</translation>
 <translation id="8208216423136871611">Ne pas enregistrer</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nouvelle notification}one{# nouvelle notification}other{# nouvelles notifications}}</translation>
+<translation id="821119981794423735">Pour importer des mots de passe dans le Gestionnaire de mots de passe de Google pour <ph name="USER_EMAIL" />, sélectionnez un fichier CSV</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Téléchargement en cours}one{Téléchargement en cours}other{Téléchargements en cours}}</translation>
 <translation id="8213449224684199188">Mode Photo activé</translation>
 <translation id="8214489666383623925">Ouvrir le fichier...</translation>

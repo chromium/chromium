@@ -3308,6 +3308,7 @@
 <translation id="4101352914005291489">ଲୁକ୍କାୟିତ SSID</translation>
 <translation id="4102469565336584882">ଅବୈଧ କୋଡ। ଆପଣଙ୍କ ଏଣ୍ଟ୍ରି LPA:1$&lt;smdp address&gt;$&lt;activation code&gt; ଫର୍ମାଟରେ ହେବା ଉଚିତ</translation>
 <translation id="4102906002417106771">ପାୱାରୱାସ୍ କରିବାକୁ ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
+<translation id="4104163789986725820">ଏକ୍ସପୋର୍ଟ...</translation>
 <translation id="4107048419833779140">ଷ୍ଟୋରେଜ୍‌ ଡିଭାଇସ୍‌ଗୁଡ଼ିକ ଚିହ୍ନଟ କରନ୍ତୁ ଏବଂ ବାହାର କରନ୍ତୁ</translation>
 <translation id="4108314971463891922">ଅନୁସରଣ କରନ୍ତୁ</translation>
 <translation id="4109135793348361820"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)କୁ ୱିଣ୍ଡୋ ନିଅନ୍ତୁ</translation>
@@ -5504,7 +5505,6 @@
 <translation id="6278428485366576908">ଥିମ୍</translation>
 <translation id="6278776436938569440">ଲୋକେସନ୍ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="6279183038361895380">ଆପଣଙ୍କର କର୍ସର୍‌ ଦେଖାଇବାକୁ |<ph name="ACCELERATOR" />| ଦବାନ୍ତୁ</translation>
-<translation id="6279595948631688299">ଚୟନିତ ସାର୍ଟିଫିକେଟକୁ ଏକ୍ସପୋର୍ଟ କରନ୍ତୁ...</translation>
 <translation id="6280215091796946657">ଏକ ଭିନ୍ନ ଆକାଉଣ୍ଟ ସାହାଯ୍ୟରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{କାଗଜର 1ଟି ସିଟର ସୀମା ଅତିକ୍ରମ ହୋଇଛି}other{କାଗଜର {COUNT}ଟି ସିଟର ସୀମା ଅତିକ୍ରମ ହୋଇଛି}}</translation>

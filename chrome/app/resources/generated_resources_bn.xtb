@@ -3326,6 +3326,7 @@
 <translation id="4101352914005291489">লুকানো SSID</translation>
 <translation id="4102469565336584882">ভুল কোড। আপনার এন্ট্রি LPA:1$&lt;smdp address&gt;$&lt;activation code&gt; ফর্ম্যাটে হতে হবে</translation>
 <translation id="4102906002417106771">পাওয়ারওয়াশ রিস্টার্ট করুন</translation>
+<translation id="4104163789986725820">র&amp;প্তানি...</translation>
 <translation id="4107048419833779140">স্টোরেজ ডিভাইসগুলি শনাক্ত করে সরিয়ে দিন</translation>
 <translation id="4108314971463891922">ফলো করুন</translation>
 <translation id="4109135793348361820"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) এ উইন্ডো সরান</translation>
@@ -5529,7 +5530,6 @@
 <translation id="6278428485366576908">থীম</translation>
 <translation id="6278776436938569440">লোকেশন পরিবর্তন করুন</translation>
 <translation id="6279183038361895380">আপনার কার্সার দেখাতে |<ph name="ACCELERATOR" />| চাপুন</translation>
-<translation id="6279595948631688299">বেছে নেওয়া সার্টিফিকেট এক্সপোর্ট করুন...</translation>
 <translation id="6280215091796946657">অন্য একটি অ্যাকাউন্ট দিয়ে সাইন-ইন করুন</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{১ শিট কাগজের বেশি হয়ে গেছে}one{{COUNT} শিট কাগজের বেশি হয়ে গেছে}other{{COUNT} শিট কাগজের বেশি হয়ে গেছে}}</translation>

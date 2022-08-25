@@ -3326,6 +3326,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4101352914005291489">Versteekte SSID</translation>
 <translation id="4102469565336584882">Ongeldige kode. Jou inskrywing se formaat moet LPA:1$&lt;smdp address&gt;$&lt;activation code&gt; wees</translation>
 <translation id="4102906002417106771">Herbegin om Powerwash uit te voer</translation>
+<translation id="4104163789986725820">Voer uit …</translation>
 <translation id="4107048419833779140">Identifiseer en maak bergingtoestelle los</translation>
 <translation id="4108314971463891922">Volg</translation>
 <translation id="4109135793348361820">Beweeg venster na <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -5526,7 +5527,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6278776436938569440">Verander ligging</translation>
 <translation id="6279183038361895380">Druk |<ph name="ACCELERATOR" />| om jou merker te wys</translation>
-<translation id="6279595948631688299">Voer geselekteerde sertifikaat uit …</translation>
 <translation id="6280215091796946657">Meld aan met 'n ander rekening</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Oorskry limiet van 1 vel papier}other{Oorskry limiet van {COUNT} velle papier}}</translation>

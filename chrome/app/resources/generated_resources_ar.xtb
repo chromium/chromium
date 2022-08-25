@@ -2561,6 +2561,7 @@
 <translation id="3406290648907941085">المواقع الإلكترونية التي يُسمح لها باستخدام أجهزة الواقع الافتراضي وبياناتها</translation>
 <translation id="3406396172897554194">البحث حسب اللغة أو اسم أسلوب الإدخال</translation>
 <translation id="3406605057700382950">&amp;عرض شريط الإشارات</translation>
+<translation id="3408849592677950451">{NUM_PASSWORDS,plural, =1{‏تم استيراد كلمة مرور واحدة إلى "مدير كلمات المرور في Google" للحساب <ph name="USER_EMAIL" />.}zero{‏تم استيراد {NUM_PASSWORDS} كلمة مرور إلى "مدير كلمات المرور في Google" للحساب <ph name="USER_EMAIL" />.}two{‏تم استيراد كلمتَي مرور ({NUM_PASSWORDS}) إلى "مدير كلمات المرور في Google" للحساب <ph name="USER_EMAIL" />.}few{‏تم استيراد {NUM_PASSWORDS} كلمات مرور إلى "مدير كلمات المرور في Google" للحساب <ph name="USER_EMAIL" />.}many{‏تم استيراد {NUM_PASSWORDS} كلمة مرور إلى "مدير كلمات المرور في Google" للحساب <ph name="USER_EMAIL" />.}other{‏تم استيراد {NUM_PASSWORDS} كلمة مرور إلى "مدير كلمات المرور في Google" للحساب <ph name="USER_EMAIL" />.}}</translation>
 <translation id="3409785640040772790">‏خرائط Google</translation>
 <translation id="3412265149091626468">انتقال سريع إلى التحديد</translation>
 <translation id="3413122095806433232">‏جهات إصدار المرجع المصدق (CA): <ph name="LOCATION" /></translation>
@@ -3313,6 +3314,7 @@
 <translation id="4101352914005291489">‏معرّف SSID المخفي</translation>
 <translation id="4102469565336584882">‏الرمز غير صالح. يجب أن يكون الإدخال بتنسيق LPA:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">‏إعادة التشغيل لإجراء عملية powerwash</translation>
+<translation id="4104163789986725820">ت&amp;صدير...</translation>
 <translation id="4107048419833779140">تحديد أجهزة التخزين وإخراجها</translation>
 <translation id="4108314971463891922">متابعة</translation>
 <translation id="4109135793348361820">نقل النافذة إلى <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -3742,6 +3744,7 @@
 <translation id="4541123282641193691">‏تعذّر التحقق من حسابك. يُرجى المحاولة مرة أخرى أو إعادة تشغيل Chromebook.</translation>
 <translation id="4541662893742891060">تعذّر الربط بهذا الملف الشخصي. للحصول على الدعم الفني، يُرجى التواصل مع مشغّل شبكة الجوّال.</translation>
 <translation id="4541706525461326392">جارٍ إزالة الملف الشخصي. قد تستغرق هذه العملية بضع دقائق.</translation>
+<translation id="4542332958571335077">{NUM_PASSWORDS,plural, =1{‏تم استيراد كلمة مرور واحدة إلى "مدير كلمات المرور في Google" على هذا الجهاز.}zero{‏تم استيراد {NUM_PASSWORDS} كلمة مرور إلى "مدير كلمات المرور في Google" على هذا الجهاز.}two{‏تم استيراد كلمتَي مرور ({NUM_PASSWORDS}) إلى "مدير كلمات المرور في Google" على هذا الجهاز.}few{‏تم استيراد {NUM_PASSWORDS} كلمات مرور إلى "مدير كلمات المرور في Google" على هذا الجهاز.}many{‏تم استيراد {NUM_PASSWORDS} كلمة مرور إلى "مدير كلمات المرور في Google" على هذا الجهاز.}other{‏تم استيراد {NUM_PASSWORDS} كلمة مرور إلى "مدير كلمات المرور في Google" على هذا الجهاز.}}</translation>
 <translation id="4542520061254486227">قراءة بياناتك على <ph name="WEBSITE_1" /> و<ph name="WEBSITE_2" /></translation>
 <translation id="4543778593405494224">إدارة الشهادات</translation>
 <translation id="4544174279960331769">الصورة الرمزية التلقائية الزرقاء</translation>
@@ -5510,7 +5513,6 @@
 <translation id="6278428485366576908">مظهر</translation>
 <translation id="6278776436938569440">تغيير الموقع الجغرافي</translation>
 <translation id="6279183038361895380">اضغط على |<ph name="ACCELERATOR" />| لعرض المؤشر</translation>
-<translation id="6279595948631688299">ت&amp;صدير الشهادة المحدَّدة...</translation>
 <translation id="6280215091796946657">تسجيل الدخول باستخدام حساب مختلف</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{تم تجاوز الحد المسموح به والبالغ ورقة واحدة.}zero{تم تجاوز الحد المسموح به والبالغ {COUNT} ورقة.}two{تم تجاوز الحد المسموح به والبالغ ورقتان ({COUNT}).}few{تم تجاوز الحد المسموح به والبالغ {COUNT} أوراق.}many{تم تجاوز الحد المسموح به والبالغ {COUNT} ورقة.}other{تم تجاوز الحد المسموح به والبالغ {COUNT} ورقة.}}</translation>
@@ -6240,6 +6242,7 @@
 <translation id="6968288415730398122">أدخل كلمة المرور لإعداد قفل الشاشة</translation>
 <translation id="6969047215179982698">إيقاف ميزة "المشاركة عن قرب"</translation>
 <translation id="6970480684834282392">نوع التشغيل</translation>
+<translation id="6970543303783413625">يتعذّر استيراد كلمات المرور. يمكنك استيراد ما يصل إلى <ph name="COUNT" /> كلمة مرور فقط في كل مرة.</translation>
 <translation id="6970856801391541997">طباعة صفحات محددة</translation>
 <translation id="6970861306198150268">احرص على حفظ كلمة المرور الحالية لهذا الموقع الإلكتروني.</translation>
 <translation id="6972180789171089114">صوت/فيديو</translation>
@@ -6473,6 +6476,7 @@
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{الخروج من الصفجة}zero{الخروج من صفحة}two{الخروج من الصفحتين}few{الخروج من صفحات}many{الخروج من صفحة}other{الخروج من صفحة}}</translation>
 <translation id="7207457272187520234">‏يمكنك إرسال بيانات الاستخدام والتشخيص. ويُرسل هذا الجهاز حاليًا بيانات استخدام التطبيق وبيانات التشخيص وبيانات الجهاز تلقائيًا إلى Google. وسيساعد ذلك في تعزيز استقرار النظام والتطبيقات وإجراء المزيد من التحسينات. وسيستفيد أيضًا مطوّرو التطبيقات والشركاء في Google، مثل مطوّري البرامج المتوافقة مع Android، من بعض البيانات المجمّعة. ويفرض المالك هذا الإعداد. في حال تفعيل إعداد "النشاط الإضافي على الويب وفي التطبيقات"، قد يتم حفظ هذه البيانات في حسابك على Google.</translation>
 <translation id="7207631048330366454">البحث في التطبيقات</translation>
+<translation id="7210471695184432500">‏لاستيراد كلمات المرور إلى "مدير كلمات المرور في Google" على هذا الجهاز، يُرجى اختيار ملف CSV.</translation>
 <translation id="7210499381659830293">طابعات مُوصّلة</translation>
 <translation id="7211783048245131419">لم يتم تخصيص مفتاح تبديل بعد</translation>
 <translation id="7212097698621322584">يُرجى إدخال رقم التعريف الشخصي الحالي لتغييره. في حال كنت لا تعرف رقم التعريف الشخصي، عليك إعادة ضبط مفتاح الأمان، ثم إنشاء رقم تعريف شخصي جديد.</translation>
@@ -7534,6 +7538,7 @@
 <translation id="8206859287963243715">خلوي</translation>
 <translation id="8208216423136871611">عدم الحفظ</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{إشعار واحد جديد}zero{# إشعار جديد}two{إشعاران جديدان}few{# إشعارات جديدة}many{# إشعارًا جديدًا}other{# إشعار جديد}}</translation>
+<translation id="821119981794423735">‏لاستيراد كلمات المرور إلى "مدير كلمات المرور في Google" للحساب <ph name="USER_EMAIL" />، يُرجى اختيار ملف CSV.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{جارٍ تنزيل عنصر واحد}zero{جارٍ تنزيل عدّة عناصر}two{جارِ تنزيل عنصرين}few{جارٍ تنزيل عدّة عناصر}many{جارٍ تنزيل عدّة عناصر}other{جارٍ تنزيل عدّة عناصر}}</translation>
 <translation id="8213449224684199188">تم الدخول إلى وضع الصور</translation>
 <translation id="8214489666383623925">فتح ملف...</translation>

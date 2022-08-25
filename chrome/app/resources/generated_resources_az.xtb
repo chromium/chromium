@@ -3308,6 +3308,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4101352914005291489">Gizli SSID</translation>
 <translation id="4102469565336584882">Yanlış kod. Daxiletmə üçün LPA formatı:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">Powerwash üçün yenidən başladın</translation>
+<translation id="4104163789986725820">Eksport...</translation>
 <translation id="4107048419833779140">Yaddaş cihazları müəyyən edin və boşaldın</translation>
 <translation id="4108314971463891922">İzləyin</translation>
 <translation id="4109135793348361820">Pəncərəni <ph name="USER_NAME" /> istifadəçisinə daşıyın (<ph name="USER_EMAIL" />)</translation>
@@ -5504,7 +5505,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6278776436938569440">Məkanı dəyişin</translation>
 <translation id="6279183038361895380">Kursorunuzu göstərmək üçün |<ph name="ACCELERATOR" />| basın</translation>
-<translation id="6279595948631688299">Seçilmiş sertifikatı e&amp;ksport edin...</translation>
 <translation id="6280215091796946657">Fərqli hesab ilə daxil olun</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{1 vərəq limitini keçir}other{{COUNT} vərəq limitini keçir}}</translation>

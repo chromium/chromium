@@ -3298,6 +3298,7 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="4101352914005291489">Ukryty identyfikator SSID</translation>
 <translation id="4102469565336584882">Nieprawidłowy kod. Wpisany ciąg musi mieć format LPA:1$&lt;adres smdp&gt;$&lt;kod aktywacji&gt;</translation>
 <translation id="4102906002417106771">Uruchom ponownie, by wykonać Powerwash</translation>
+<translation id="4104163789986725820">E&amp;ksportuj</translation>
 <translation id="4107048419833779140">Rozpoznawanie i wysuwanie urządzeń pamięci</translation>
 <translation id="4108314971463891922">Obserwuj</translation>
 <translation id="4109135793348361820">Przesuń okno do: <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -5495,7 +5496,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="6278428485366576908">Motyw</translation>
 <translation id="6278776436938569440">Zmień lokalizację</translation>
 <translation id="6279183038361895380">Naciśnij |<ph name="ACCELERATOR" />|, by wyświetlić kursor</translation>
-<translation id="6279595948631688299">E&amp;ksportuj wybrany certyfikat…</translation>
 <translation id="6280215091796946657">Zaloguj się na inne konto</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Przekroczono limit 1 kartki}few{Przekroczono limit {COUNT} kartek}many{Przekroczono limit {COUNT} kartek}other{Przekroczono limit {COUNT} kartki}}</translation>

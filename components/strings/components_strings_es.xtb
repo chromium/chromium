@@ -1106,7 +1106,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3969052498612555048">¿No encuentras el código? <ph name="BEGIN_LINK" />Obtener nuevo código<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="3973234410852337861">La página <ph name="HOST_NAME" /> está bloqueada</translation>
-<translation id="3978338123949022456">Modo de búsqueda: escribe una consulta y pulsa Intro para buscar con <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="398470910934384994">Aves</translation>
 <translation id="3985750352229496475">Gestionar direcciones...</translation>
 <translation id="3986705137476756801">Desactivar Subtítulos automáticos por el momento</translation>
@@ -2059,6 +2058,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6591833882275308647">Tu <ph name="DEVICE_TYPE" /> no está administrado</translation>
 <translation id="6592952801936330159">Botón Gestionar la configuración del sitio, pulsa Intro para gestionar permisos y datos almacenados en sitios en la configuración de Chrome</translation>
 <translation id="6596325263575161958">Opciones de cifrado</translation>
+<translation id="6599642189720630047">Productos que sigues</translation>
 <translation id="6609880536175561541">Prc7 (sobre)</translation>
 <translation id="6611723696964473273">Noticias de economía</translation>
 <translation id="6612010098632894193">Vídeos online</translation>

@@ -3313,6 +3313,7 @@
 <translation id="4101352914005291489">‏پوشیدہ SSID</translation>
 <translation id="4102469565336584882">‏غلط کوڈ۔ آپ کے اندراج کا فارمیٹ LPA:1$&lt;smdp address&gt;$&lt;activation code&gt;‎ ہونا چاہیے</translation>
 <translation id="4102906002417106771">پاور واش کے لیے ری سٹارٹ کریں</translation>
+<translation id="4104163789986725820">برآ&amp;مد کریں…</translation>
 <translation id="4107048419833779140">اسٹوریج کے آلات کی شناخت کر کے انہیں خارج کریں</translation>
 <translation id="4108314971463891922">پیروی کریں</translation>
 <translation id="4109135793348361820">‏ونڈو کو ‎<ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)‎ میں منتقل کریں</translation>
@@ -5510,7 +5511,6 @@
 <translation id="6278428485366576908">تھیم</translation>
 <translation id="6278776436938569440">مقام تبدیل کریں</translation>
 <translation id="6279183038361895380">اپنا کرسر دکھانے کیلئے |<ph name="ACCELERATOR" />| کو دبائیں</translation>
-<translation id="6279595948631688299">منتخب کردہ سرٹیفکیٹ برآمد کریں...</translation>
 <translation id="6280215091796946657">مختلف اکاؤنٹ کے ساتھ سائن ان کریں</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{کاغذ کی 1 شیٹ کی حد سے تجاوز ہو گیا}other{کاغذ کی {COUNT} شیٹ کی حد سے تجاوز ہو گیا}}</translation>

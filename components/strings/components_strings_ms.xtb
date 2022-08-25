@@ -1107,7 +1107,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3969052498612555048">Tidak menemukan kod anda? <ph name="BEGIN_LINK" />Dapatkan kod baharu<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Mengira...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> disekat</translation>
-<translation id="3978338123949022456">Mod carian, taip pertanyaan dan tekan Enter untuk mencari <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="398470910934384994">Burung</translation>
 <translation id="3985750352229496475">Urus Alamat...</translation>
 <translation id="3986705137476756801">Matikan Sari Kata Langsung buat masa ini</translation>
@@ -1655,6 +1654,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="540969355065856584">Pelayan ini tidak dapat membuktikan bahawa pelayan adalah <ph name="DOMAIN" />; sijil keselamatan pelayan tidak sah pada masa ini. Ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang memintas sambungan anda.</translation>
 <translation id="5412040515238827314">Format tidak sah: Menjangkakan senarai pola.</translation>
 <translation id="5412236728747081950">Laman ini mendapat minat anda daripada Chrome untuk memaparkan iklan yang lebih berkaitan kepada anda</translation>
+<translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Petak 4</translation>
 <translation id="5421136146218899937">Kosongkan data semakan imbas...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> mahu menghantar pemberitahuan kepada anda</translation>
@@ -2587,6 +2587,7 @@ Butiran tambahan:
 <translation id="8004582292198964060">Penyemak Imbas</translation>
 <translation id="8009225694047762179">Urus Kata Laluan</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Kad ini dan alamat pengebilannya akan disimpan. Anda akan dapat menggunakan kad ini apabila anda log masuk ke <ph name="USER_EMAIL" />.}other{Kad ini dan alamat pengebilannya akan disimpan. Anda akan dapat menggunakan kad ini apabila anda log masuk ke <ph name="USER_EMAIL" />.}}</translation>
+<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8025119109950072390">Penyerang pada tapak ini mungkin menipu anda supaya melakukan sesuatu yang berbahaya seperti memasang perisian atau mendedahkan maklumat peribadi anda (contohnya, kata laluan, nombor telefon atau maklumat kad kredit).</translation>
 <translation id="8026334261755873520">Kosongkan data semakan imbas</translation>
 <translation id="8027077570865220386">Dulang 15</translation>

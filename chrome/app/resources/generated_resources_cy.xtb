@@ -3329,6 +3329,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="4101352914005291489">SSID cudd</translation>
 <translation id="4102469565336584882">Cod annilys. Rhaid i'ch cofnod gael y fformat LPA:1$&lt;cyfeiriad smdp&gt;$&lt;cod gweithredu&gt;</translation>
 <translation id="4102906002417106771">Ailgychwynnwch i ddefnyddio Powerwash</translation>
+<translation id="4104163789986725820">A&amp;llforio…</translation>
 <translation id="4107048419833779140">Nodi a chael gwared ar ddyfeisiau storfa</translation>
 <translation id="4108314971463891922">Dilyn</translation>
 <translation id="4109135793348361820">Symud y ffenestr i <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -5528,7 +5529,6 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="6278428485366576908">Thema</translation>
 <translation id="6278776436938569440">Newid lleoliad</translation>
 <translation id="6279183038361895380">Pwyswch |<ph name="ACCELERATOR" />| i ddangos eich cyrchwr</translation>
-<translation id="6279595948631688299">Allforio'r dystysgrif a ddewiswyd...</translation>
 <translation id="6280215091796946657">Mewngofnodi â chyfrif gwahanol</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Yn fwy na'r terfyn o 1 ddalen o bapur}zero{Yn fwy na'r terfyn o {COUNT} dalen o bapur}two{Yn fwy na'r terfyn o {COUNT} ddalen o bapur}few{Yn fwy na'r terfyn o {COUNT} dalen o bapur}many{Yn fwy na'r terfyn o {COUNT} dalen o bapur}other{Yn fwy na'r terfyn o {COUNT} dalen o bapur}}</translation>

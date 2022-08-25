@@ -2558,6 +2558,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3406290648907941085">Povolení používat zařízení a data pro virtuální realitu</translation>
 <translation id="3406396172897554194">Vyhledávat podle jazyka nebo názvu metody zadávání</translation>
 <translation id="3406605057700382950">&amp;Zobrazit lištu záložek</translation>
+<translation id="3408849592677950451">{NUM_PASSWORDS,plural, =1{Do Správce hesel Google pro účet <ph name="USER_EMAIL" /> bylo importováno 1 heslo}few{Do Správce hesel Google pro účet <ph name="USER_EMAIL" /> byla importována {NUM_PASSWORDS} hesla}many{Do Správce hesel Google pro účet <ph name="USER_EMAIL" /> bylo importováno {NUM_PASSWORDS} hesla}other{Do Správce hesel Google pro účet <ph name="USER_EMAIL" /> bylo importováno {NUM_PASSWORDS} hesel}}</translation>
 <translation id="3409785640040772790">Mapy</translation>
 <translation id="3412265149091626468">Přejít na výběr</translation>
 <translation id="3413122095806433232">Vydavatelé CA: <ph name="LOCATION" /></translation>
@@ -3311,6 +3312,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4101352914005291489">Skryté SSID</translation>
 <translation id="4102469565336584882">Neplatný kód. Zadaná hodnota by měla mít formát LPA:1$&lt;adresa smdp&gt;$&lt;aktivační kód&gt;</translation>
 <translation id="4102906002417106771">Restartovat a provést powerwash</translation>
+<translation id="4104163789986725820">E&amp;xport...</translation>
 <translation id="4107048419833779140">Identifikovat a vysouvat úložná zařízení</translation>
 <translation id="4108314971463891922">Sledovat</translation>
 <translation id="4109135793348361820">Přesunout okno k uživateli <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -3740,6 +3742,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4541123282641193691">Účet se nepodařilo ověřit. Zkuste to znovu nebo Chromebook restartujte.</translation>
 <translation id="4541662893742891060">Propojení s tímto profilem se nezdařilo. Se žádostmi o technickou podporu se obracejte na svého operátora.</translation>
 <translation id="4541706525461326392">Odstraňování profilu. Může to trvat několik minut.</translation>
+<translation id="4542332958571335077">{NUM_PASSWORDS,plural, =1{Do Správce hesel Google na tomto zařízení bylo importováno 1 heslo}few{Do Správce hesel Google na tomto zařízení byla importována {NUM_PASSWORDS} hesla}many{Do Správce hesel Google na tomto zařízení bylo importováno {NUM_PASSWORDS} hesla}other{Do Správce hesel Google na tomto zařízení bylo importováno {NUM_PASSWORDS} hesel}}</translation>
 <translation id="4542520061254486227">Čtení vašich dat na webech <ph name="WEBSITE_1" /> a <ph name="WEBSITE_2" /></translation>
 <translation id="4543778593405494224">Správce certifikátů</translation>
 <translation id="4544174279960331769">Výchozí modrý avatar</translation>
@@ -5505,7 +5508,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6278428485366576908">Motiv</translation>
 <translation id="6278776436938569440">Změnit umístění</translation>
 <translation id="6279183038361895380">Kurzor zobrazíte stisknutím klávesy |<ph name="ACCELERATOR" />|</translation>
-<translation id="6279595948631688299">E&amp;xportovat vybraný certifikát…</translation>
 <translation id="6280215091796946657">Přihlásit se pomocí jiného účtu</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Překračuje limit 1 listu papíru}few{Překračuje limit {COUNT} listy papíru}many{Překračuje limit {COUNT} listu papíru}other{Překračuje limit {COUNT} listů papíru}}</translation>
@@ -6231,6 +6233,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6968288415730398122">Chcete-li nakonfigurovat zámek obrazovky, zadejte heslo</translation>
 <translation id="6969047215179982698">Vypnout sdílení nablízko</translation>
 <translation id="6970480684834282392">Typ spouštění</translation>
+<translation id="6970543303783413625">Hesla se nepodařilo importovat. Najednou lze importovat maximálně <ph name="COUNT" /> hesel.</translation>
 <translation id="6970856801391541997">Tisknout konkrétní stránky</translation>
 <translation id="6970861306198150268">Dejte pozor, abyste uložili aktuální heslo pro tento web</translation>
 <translation id="6972180789171089114">Zvuk/video</translation>
@@ -6463,6 +6466,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Opustit stránku}few{Opustit stránky}many{Opustit stránky}other{Opustit stránky}}</translation>
 <translation id="7207457272187520234">Odesílat údaje o využití a diagnostice. Toto zařízení aktuálně automaticky odesílá do Googlu diagnostické údaje a údaje o zařízení a aplikacích a jejich využití. Tyto údaje nám pomohou se zvyšováním stability systému a aplikací a dalšími vylepšeními. Některá souhrnná data budou moci využít také naši partneři, např. vývojáři aplikací pro Android. Toto nastavení je vyžadováno vlastníkem. Pokud je zapnuto dodatečné nastavení Aktivita na webu a v aplikacích, mohou se tato data ukládat do vašeho účtu Google.</translation>
 <translation id="7207631048330366454">Hledat v aplikacích</translation>
+<translation id="7210471695184432500">Pokud chcete importovat hesla do Správce hesel Google na tomto zařízení, vyberte soubor CSV</translation>
 <translation id="7210499381659830293">Rozšíření pro tiskárny</translation>
 <translation id="7211783048245131419">Zatím nebyl přiřazen žádný přepínač</translation>
 <translation id="7212097698621322584">Chcete-li změnit PIN, zadejte aktuální PIN. Pokud svůj PIN neznáte, budete bezpečnostní klíč muset resetovat a poté vytvořit nový PIN.</translation>
@@ -7522,6 +7526,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208216423136871611">Neukládat</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nové oznámení}few{# nová oznámení}many{# nového oznámení}other{# nových oznámení}}</translation>
+<translation id="821119981794423735">Pokud chcete importovat hesla do Správce hesel Google pro účet <ph name="USER_EMAIL" />, vyberte soubor CSV</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Probíhá stahování}few{Probíhají stahování}many{Probíhají stahování}other{Probíhají stahování}}</translation>
 <translation id="8213449224684199188">Přešli jste do režimu fotek</translation>
 <translation id="8214489666383623925">Otevřít soubor...</translation>

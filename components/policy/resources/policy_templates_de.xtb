@@ -51,6 +51,13 @@
 
       Ist sie nicht konfiguriert, gilt die Standardeinstellung, in der diese Funktion zwar für verwaltete Nutzer nicht zulässig ist, für andere Nutzer jedoch schon.</translation>
 <translation id="1035860095382451169">Schloss-Symbol in der Omnibox für sichere Verbindungen aktivieren</translation>
+<translation id="1040125341954178855">Diese Funktion wurde in Chrome 100 entfernt.
+
+      Wenn diese Richtlinie aktiviert ist, erhält der Nutzer Empfehlungen für Apps, die er schon auf anderen Geräten installiert hat. Sie werden im Launcher nach den lokalen App-Empfehlungen angezeigt, wenn kein Suchtext eingegeben wurde.
+
+      Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, werden diese Empfehlungen nicht angezeigt.
+
+      Wenn diese Richtlinie konfiguriert ist, kann sie von Nutzern nicht geändert werden.</translation>
 <translation id="1040446814317236570">Stripping von PAC-URLs für https:// aktivieren</translation>
 <translation id="1041719059374171202">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die angeben, welche Websites kein JavaScript ausführen dürfen.
 

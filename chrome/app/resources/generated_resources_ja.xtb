@@ -3301,6 +3301,7 @@
 <translation id="4101352914005291489">ステルス SSID</translation>
 <translation id="4102469565336584882">コードが無効です。エントリは「LPA:1$&lt;smdp address&gt;$&lt;activation code&gt;」という形式にする必要があります。</translation>
 <translation id="4102906002417106771">再起動して Powerwash を実行</translation>
+<translation id="4104163789986725820">エクスポート(&amp;X)</translation>
 <translation id="4107048419833779140">ストレージ デバイスの認識と取り外し</translation>
 <translation id="4108314971463891922">フォロー</translation>
 <translation id="4109135793348361820"><ph name="USER_NAME" />（<ph name="USER_EMAIL" />）にウィンドウを移動</translation>
@@ -5490,7 +5491,6 @@
 <translation id="6278428485366576908">テーマ</translation>
 <translation id="6278776436938569440">場所を変更</translation>
 <translation id="6279183038361895380">カーソルを表示するには |<ph name="ACCELERATOR" />| を押します</translation>
-<translation id="6279595948631688299">選択した証明書をエクスポート(&amp;X)...</translation>
 <translation id="6280215091796946657">別のアカウントでログイン</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{上限（1 枚）を超えています}other{上限（{COUNT} 枚）を超えています}}</translation>

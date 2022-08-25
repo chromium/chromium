@@ -2553,6 +2553,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3406290648907941085">Puede usar datos y dispositivos de realidad virtual</translation>
 <translation id="3406396172897554194">Buscar por idioma o nombre de método de entrada</translation>
 <translation id="3406605057700382950">Mo&amp;strar la barra de favoritos</translation>
+<translation id="3408849592677950451">{NUM_PASSWORDS,plural, =1{Se importó 1 contraseña al Administrador de contraseñas de Google para <ph name="USER_EMAIL" />}other{Se importaron {NUM_PASSWORDS} contraseñas al Administrador de contraseñas de Google para <ph name="USER_EMAIL" />}}</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3412265149091626468">Saltar a selección</translation>
 <translation id="3413122095806433232">Emisores de certificados: <ph name="LOCATION" /></translation>
@@ -3307,6 +3308,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4101352914005291489">SSID oculto</translation>
 <translation id="4102469565336584882">El código no es válido. El formato de tu entrada debe ser LPA:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">Reiniciar con Powerwash</translation>
+<translation id="4104163789986725820">E&amp;xportar...</translation>
 <translation id="4107048419833779140">Identificar y expulsar los dispositivos de almacenamiento</translation>
 <translation id="4108314971463891922">Seguir</translation>
 <translation id="4109135793348361820">Mover ventana a <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -3736,6 +3738,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4541123282641193691">No se pudo verificar la cuenta. Vuelve a intentarlo o reinicia la Chromebook.</translation>
 <translation id="4541662893742891060">No se pudo conectar a este perfil. Para obtener asistencia técnica, comunícate con tu proveedor.</translation>
 <translation id="4541706525461326392">Se está quitando el perfil. Es posible que este proceso demore unos minutos.</translation>
+<translation id="4542332958571335077">{NUM_PASSWORDS,plural, =1{Se importó 1 contraseña al Administrador de contraseñas de Google en este dispositivo}other{Se importaron {NUM_PASSWORDS} contraseñas al Administrador de contraseñas de Google en este dispositivo}}</translation>
 <translation id="4542520061254486227">Leer los datos en <ph name="WEBSITE_1" /> y <ph name="WEBSITE_2" /></translation>
 <translation id="4543778593405494224">Administrador de certificados</translation>
 <translation id="4544174279960331769">Avatar azul predeterminado</translation>
@@ -5504,7 +5507,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6278776436938569440">Cambiar ubicación</translation>
 <translation id="6279183038361895380">Presiona |<ph name="ACCELERATOR" />| para mostrar tu cursor</translation>
-<translation id="6279595948631688299">Exportar el certificado seleccionado…</translation>
 <translation id="6280215091796946657">Acceder con otra cuenta</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Se superó el límite de 1 hoja de papel}other{Se superó el límite de {COUNT} hojas de papel}}</translation>
@@ -6226,6 +6228,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6968288415730398122">Ingresa tu contraseña para configurar el bloqueo de pantalla</translation>
 <translation id="6969047215179982698">Desactivar Compartir con Nearby</translation>
 <translation id="6970480684834282392">Tipo de inicio</translation>
+<translation id="6970543303783413625">No se pudieron importar las contraseñas. Solo puedes importar hasta <ph name="COUNT" /> contraseñas a la vez.</translation>
 <translation id="6970856801391541997">Imprimir páginas específicas</translation>
 <translation id="6970861306198150268">Asegúrate de guardar la contraseña actual para este sitio</translation>
 <translation id="6972180789171089114">Audio/video</translation>
@@ -6458,6 +6461,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Salir de la página}other{Salir de las páginas}}</translation>
 <translation id="7207457272187520234">Envía datos de uso y diagnóstico. De forma automática, este dispositivo está enviando a Google datos de diagnóstico y sobre el uso del dispositivo y las apps. Esta información ayudará a lograr la estabilidad de las apps y el sistema, entre otras mejoras. Algunos datos agregados también ayudarán a las apps y los socios de Google, como los desarrolladores de Android. El propietario controla esta configuración. Si habilitaste la Actividad de web y de aplicaciones adicional, es posible que se almacenen estos datos en tu Cuenta de Google.</translation>
 <translation id="7207631048330366454">Buscar apps</translation>
+<translation id="7210471695184432500">Para importar contraseñas al Administrador de contraseñas de Google en este dispositivo, selecciona un archivo CSV</translation>
 <translation id="7210499381659830293">Impresoras de extensiones</translation>
 <translation id="7211783048245131419">Aún no se asignaron interruptores</translation>
 <translation id="7212097698621322584">Ingresa tu PIN actual para cambiarlo. Si no sabes cuál es, deberás restablecer la llave de seguridad y, luego, crear uno nuevo.</translation>
@@ -7518,6 +7522,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8206859287963243715">Celular</translation>
 <translation id="8208216423136871611">No guardar</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Notificación nueva}other{# notificaciones nuevas}}</translation>
+<translation id="821119981794423735">Para importar contraseñas al Administrador de contraseñas de Google de <ph name="USER_EMAIL" />, selecciona un archivo CSV</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Descarga en curso}other{Descargas en curso}}</translation>
 <translation id="8213449224684199188">Ingresaste al modo de foto</translation>
 <translation id="8214489666383623925">Abrir archivo...</translation>

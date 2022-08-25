@@ -3310,6 +3310,7 @@
 <translation id="4101352914005291489">Скривени SSID</translation>
 <translation id="4102469565336584882">Кôд је неважећи. Унос треба да буде у формату LPA:1$&lt;smdp адреса&gt;$&lt;активациони кôд&gt;</translation>
 <translation id="4102906002417106771">Рестартујте да бисте обавили Powerwash</translation>
+<translation id="4104163789986725820">И&amp;звези...</translation>
 <translation id="4107048419833779140">идентификује и избацује меморијске уређаје</translation>
 <translation id="4108314971463891922">Прати</translation>
 <translation id="4109135793348361820">Премести прозор код <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -5508,7 +5509,6 @@
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6278776436938569440">Промени локацију</translation>
 <translation id="6279183038361895380">Притисните |<ph name="ACCELERATOR" />| да бисте приказали показивач</translation>
-<translation id="6279595948631688299">И&amp;звези изабрани сертификат...</translation>
 <translation id="6280215091796946657">Пријави ме на други налог</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Премашује ограничење од 1 листа папира}one{Премашује ограничење од {COUNT} листа папира}few{Премашује ограничење од {COUNT} листа папира}other{Премашује ограничење од {COUNT} листова папира}}</translation>

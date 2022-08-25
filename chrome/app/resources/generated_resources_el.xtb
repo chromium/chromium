@@ -3326,6 +3326,7 @@
 <translation id="4101352914005291489">Κρυφό SSID</translation>
 <translation id="4102469565336584882">Μη έγκυρος κωδικός. Η καταχώρισή σας θα πρέπει να έχει τη μορφή LPA:1$&lt;smdp address&gt;$&lt;κωδικός ενεργοποίησης&gt;</translation>
 <translation id="4102906002417106771">Επανεκκίνηση για powerwash</translation>
+<translation id="4104163789986725820">Ε&amp;ξαγωγή...</translation>
 <translation id="4107048419833779140">Ταυτοποίηση και κατάργηση συσκευών αποθηκευτικού χώρου</translation>
 <translation id="4108314971463891922">Παρακολούθηση</translation>
 <translation id="4109135793348361820">Μετακίνηση παραθύρου στο χρήστη <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -5526,7 +5527,6 @@
 <translation id="6278428485366576908">Θέμα</translation>
 <translation id="6278776436938569440">Αλλαγή τοποθεσίας</translation>
 <translation id="6279183038361895380">Πιέστε |<ph name="ACCELERATOR" />| για να εμφανιστεί ο δρομέας</translation>
-<translation id="6279595948631688299">Ε&amp;ξαγωγή επιλεγμένου πιστοποιητικού…</translation>
 <translation id="6280215091796946657">Συνδεθείτε με διαφορετικό λογαριασμό</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Υπέρβαση του ορίου 1 φύλλου χαρτιού}other{Υπέρβαση του ορίου {COUNT} φύλλων χαρτιού}}</translation>

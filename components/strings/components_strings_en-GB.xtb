@@ -1106,7 +1106,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3969052498612555048">Can't find your code? <ph name="BEGIN_LINK" />Get new code<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Calculating...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> is blocked</translation>
-<translation id="3978338123949022456">Search mode, type a query and press Enter to search with <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="398470910934384994">Birds</translation>
 <translation id="3985750352229496475">Manage Addresses…</translation>
 <translation id="3986705137476756801">Turn off Live Caption for now</translation>
@@ -1716,6 +1715,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5580958916614886209">Check your expiry month and try again</translation>
 <translation id="558420943003240152">Manage passwords and passkeys…</translation>
 <translation id="5586446728396275693">No saved addresses</translation>
+<translation id="5586831831248371458">Search <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="5587987780934666589">Platform user</translation>
 <translation id="5593349413089863479">Connection is not fully secure</translation>
 <translation id="5595485650161345191">Edit address</translation>

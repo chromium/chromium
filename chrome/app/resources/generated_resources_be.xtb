@@ -3314,6 +3314,7 @@
 <translation id="4101352914005291489">Схаваны ідэнтыфікатар SSID</translation>
 <translation id="4102469565336584882">Няправільны код. Запіс павінен мець фармат LPA:1$&lt;адрас smdp&gt;$&lt;код актывацыі&gt;</translation>
 <translation id="4102906002417106771">Перазапусціце, каб скінуць налады функцыяй Powerwash</translation>
+<translation id="4104163789986725820">Ідзе э&amp;кспарт...</translation>
 <translation id="4107048419833779140">Вызначыць і выдаліць прылады сховішча</translation>
 <translation id="4108314971463891922">Падпісацца</translation>
 <translation id="4109135793348361820">Перамясціць акно карыстальніку <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -5512,7 +5513,6 @@
 <translation id="6278428485366576908">Тэма</translation>
 <translation id="6278776436938569440">Змяніць месцазнаходжанне</translation>
 <translation id="6279183038361895380">Націсніце "<ph name="ACCELERATOR" />", каб убачыць курсор</translation>
-<translation id="6279595948631688299">Экспартаваць выбраны сертыфікат...</translation>
 <translation id="6280215091796946657">Увайсці ў іншы ўліковы запіс</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Перавышана абмежаванне ў 1 аркуш паперы}one{Перавышана абмежаванне ў {COUNT} аркуш паперы}few{Перавышана абмежаванне ў {COUNT} аркушы паперы}many{Перавышана абмежаванне ў {COUNT} аркушаў паперы}other{Перавышана абмежаванне ў {COUNT} аркуша паперы}}</translation>

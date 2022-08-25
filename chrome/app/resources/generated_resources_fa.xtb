@@ -3323,6 +3323,7 @@
 <translation id="4101352914005291489">‏SSID پنهان</translation>
 <translation id="4102469565336584882">‏کد نامعتبر است. ورودی باید در قالب LPA:1$&lt;نشانی smdp&gt;$&lt;کد فعال‌سازی&gt; باشد</translation>
 <translation id="4102906002417106771">‏بازراه‌اندازی برای powerwash</translation>
+<translation id="4104163789986725820">&amp;صادر کردن...</translation>
 <translation id="4107048419833779140">شناسایی و خارج کردن دستگاه‌های ذخیره‌سازی</translation>
 <translation id="4108314971463891922">دنبال کردن</translation>
 <translation id="4109135793348361820">انتقال پنجره به <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -5522,7 +5523,6 @@
 <translation id="6278428485366576908">زمینه</translation>
 <translation id="6278776436938569440">تغییر مکان</translation>
 <translation id="6279183038361895380">برای نمایش نشان‌گر |<ph name="ACCELERATOR" />| را فشار دهید</translation>
-<translation id="6279595948631688299">صادر کردن گواهینامه انتخاب‌شده…</translation>
 <translation id="6280215091796946657">ورود به سیستم با حساب دیگر</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{از تعداد مجاز ۱ برگ کاغذ بیشتر شده است}one{از تعداد مجاز {COUNT} برگ کاغذ بیشتر شده است}other{از تعداد مجاز {COUNT} برگ کاغذ بیشتر شده است}}</translation>
@@ -7192,7 +7192,7 @@
 <translation id="7887334752153342268">کپی‌برداری</translation>
 <translation id="7887864092952184874">موشواره بلوتوث مرتبط شد</translation>
 <translation id="7889371445710865055">تغییر زبان تایپ صوتی</translation>
-<translation id="7890147169288018054">دیدن اطلاعات شبکه، مانند «نشانی واد» یا «واپایش دسترسی رسانه» شما</translation>
+<translation id="7890147169288018054">دیدن اطلاعات شبکه، مانند «مک آدرس» یا «واپایش دسترسی رسانه» شما</translation>
 <translation id="7892384782944609022">مرتبط‌سازی انجام نشد. برای امتحان مجدد، دستگاه را انتخاب کنید.</translation>
 <translation id="7893008570150657497">دسترسی به عکس‌ها، موسیقی، و دیگر رسانه‌ها از رایانه شما</translation>
 <translation id="7893153962594818789">بلوتوث در این <ph name="DEVICE_TYPE" /> خاموش است. گذرواژه‌تان را وارد و بلوتوث را روشن کنید.</translation>

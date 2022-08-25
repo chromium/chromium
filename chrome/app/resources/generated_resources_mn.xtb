@@ -3321,6 +3321,7 @@
 <translation id="4101352914005291489">Нуусан SSID</translation>
 <translation id="4102469565336584882">Код буруу байна. Таны оролт LPA форматтай байх ёстой:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">Үйлдвэрийн тохиргоонд нь буцааж оруулахын тулд дахин эхлүүлэх</translation>
+<translation id="4104163789986725820">Экспортлох ...</translation>
 <translation id="4107048419833779140">Хадгалах төхөөрөмжийг таних, салгах</translation>
 <translation id="4108314971463891922">Дагах</translation>
 <translation id="4109135793348361820">Цонхыг  <ph name="USER_NAME" /> ( <ph name="USER_EMAIL" /> ) руу зөөх</translation>
@@ -5520,7 +5521,6 @@
 <translation id="6278428485366576908">Загвар</translation>
 <translation id="6278776436938569440">Байршлыг өөрчлөх</translation>
 <translation id="6279183038361895380">Курсороо харуулахын тулд |<ph name="ACCELERATOR" />|-г дарна уу</translation>
-<translation id="6279595948631688299">Сонгосон гэрчилгээг экспорт хийх...</translation>
 <translation id="6280215091796946657">Өөр бүртгэлээр нэвтрэх</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{1 хуудас цаасны хязгаараас хэтэрсэн}other{{COUNT} хуудас цаасны хязгаараас хэтэрсэн}}</translation>

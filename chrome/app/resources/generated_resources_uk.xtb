@@ -3329,6 +3329,7 @@
 <translation id="4101352914005291489">Приховане ім'я мережі</translation>
 <translation id="4102469565336584882">Недійсний код. Введіть дані у форматі LPA:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">Перезапустити, щоб виконати Powerwash</translation>
+<translation id="4104163789986725820">Е&amp;кспортувати...</translation>
 <translation id="4107048419833779140">Виявляти й вилучати пристрої пам’яті</translation>
 <translation id="4108314971463891922">Підписатися</translation>
 <translation id="4109135793348361820">Перемістити вікно на робочий стіл користувача <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -5525,7 +5526,6 @@
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6278776436938569440">Змінити місце</translation>
 <translation id="6279183038361895380">Натисніть |<ph name="ACCELERATOR" />|, щоб побачити курсор</translation>
-<translation id="6279595948631688299">Перемістити вибраний сертифікат…</translation>
 <translation id="6280215091796946657">Увійти в інший обліковий запис</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Максимальна кількість аркушів паперу – 1}one{Максимальна кількість аркушів паперу – {COUNT}}few{Максимальна кількість аркушів паперу – {COUNT}}many{Максимальна кількість аркушів паперу – {COUNT}}other{Максимальна кількість аркушів паперу – {COUNT}}}</translation>

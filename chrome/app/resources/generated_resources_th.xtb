@@ -3311,6 +3311,7 @@
 <translation id="4101352914005291489">SSID ที่ซ่อนไว้</translation>
 <translation id="4102469565336584882">รหัสไม่ถูกต้อง รหัสที่คุณป้อนต้องอยู่ในรูปแบบ LPA:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">รีสตาร์ทเพื่อทำ Powerwash</translation>
+<translation id="4104163789986725820">ส่ง&amp;ออก</translation>
 <translation id="4107048419833779140">ระบุและยกเลิกการต่อเชื่อมอุปกรณ์จัดเก็บข้อมูล</translation>
 <translation id="4108314971463891922">ติดตาม</translation>
 <translation id="4109135793348361820">ย้ายหน้าต่างไปยัง <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -5506,7 +5507,6 @@
 <translation id="6278428485366576908">ธีม</translation>
 <translation id="6278776436938569440">เปลี่ยนสถานที่</translation>
 <translation id="6279183038361895380">กด |<ph name="ACCELERATOR" />| เพื่อแสดงเคอร์เซอร์ของคุณ</translation>
-<translation id="6279595948631688299">ส่งออกใบรับรองที่เลือก...</translation>
 <translation id="6280215091796946657">ลงชื่อเข้าใช้ด้วยบัญชีอื่น</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{เกินขีดจำกัด 1 แผ่น}other{เกินขีดจำกัด {COUNT} แผ่น}}</translation>

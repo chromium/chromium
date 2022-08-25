@@ -3318,6 +3318,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4101352914005291489">Skjult SSID</translation>
 <translation id="4102469565336584882">Ugyldig kode. Oppføringen skal være på formatet LPA:1$&lt;smdp-adresse&gt;$&lt;aktiveringskode&gt;</translation>
 <translation id="4102906002417106771">Start på nytt for å utføre en powerwash</translation>
+<translation id="4104163789986725820">E&amp;ksportér</translation>
 <translation id="4107048419833779140">Identifiser og løs ut lagringsenheter</translation>
 <translation id="4108314971463891922">Følg</translation>
 <translation id="4109135793348361820">Flytt vinduet til <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -5515,7 +5516,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6278776436938569440">Endre plassering</translation>
 <translation id="6279183038361895380">Trykk på |<ph name="ACCELERATOR" />| for å se markøren</translation>
-<translation id="6279595948631688299">E&amp;ksporter det valgte sertifikatet…</translation>
 <translation id="6280215091796946657">Logg på med en annen konto</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Overskrider grensen på 1 ark}other{Overskrider grensen på {COUNT} ark}}</translation>

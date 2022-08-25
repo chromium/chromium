@@ -1106,7 +1106,6 @@
 <translation id="3969052498612555048">Не можете да го најдете кодот? <ph name="BEGIN_LINK" />Преземете нов код<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Се пресметува…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> е блокиран</translation>
-<translation id="3978338123949022456">Режим на пребарување, напишете барање и притиснете Enter за да пребарувате со <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="398470910934384994">Птици</translation>
 <translation id="3985750352229496475">Управувајте со адресите…</translation>
 <translation id="3986705137476756801">Исклучете ја „Автоматски титлови“ засега</translation>
@@ -2059,6 +2058,7 @@
 <translation id="6591833882275308647">Вашиот <ph name="DEVICE_TYPE" /> не е управуван</translation>
 <translation id="6592952801936330159">Копче „Управувај со поставките за сајтови“, притиснете Enter за да управувате со дозволите и податоците коишто се складираат на сајтовите во поставките за Chrome</translation>
 <translation id="6596325263575161958">Опции за шифрирање</translation>
+<translation id="6599642189720630047">Следени производи</translation>
 <translation id="6609880536175561541">Prc7 (плик)</translation>
 <translation id="6611723696964473273">Вести за економија</translation>
 <translation id="6612010098632894193">Онлајн видео</translation>

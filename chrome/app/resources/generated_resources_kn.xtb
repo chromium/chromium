@@ -3320,6 +3320,7 @@
 <translation id="4101352914005291489">ಮರೆಮಾಡಲಾಗಿರುವ SSID</translation>
 <translation id="4102469565336584882">ಅಮಾನ್ಯ ಕೋಡ್. ನಿಮ್ಮ ನಮೂದು LPA ಫಾರ್ಮ್ಯಾಟ್‌ನಲ್ಲಿರಬೇಕು:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">ಪವರ್‌ವಾಷ್‌‌ಗೆ ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
+<translation id="4104163789986725820">ರ&amp;ಫ್ತು...</translation>
 <translation id="4107048419833779140">ಸಂಗ್ರಹಣೆ ಸಾಧನಗಳನ್ನು ಗುರುತಿಸಿ ಮತ್ತು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="4108314971463891922">ಫಾಲೋ ಮಾಡಿ</translation>
 <translation id="4109135793348361820">ವಿಂಡೋವನ್ನು <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) ಗೆ ಸರಿಸಿ</translation>
@@ -5520,7 +5521,6 @@
 <translation id="6278428485366576908">ಥೀಮ್</translation>
 <translation id="6278776436938569440">ಸ್ಥಳವನ್ನು ಬದಲಾಯಿಸಿ</translation>
 <translation id="6279183038361895380">ನಿಮ್ಮ ಕರ್ಸರ್ ತೋರಿಸಲು |<ph name="ACCELERATOR" />| ಒತ್ತಿ</translation>
-<translation id="6279595948631688299">ಆಯ್ದ ಪ್ರಮಾಣಪತ್ರವನ್ನು ರಫ್ತು ಮಾಡಿ...</translation>
 <translation id="6280215091796946657">ಬೇರೆ ಖಾತೆಯೊಂದಿಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{1 ಶೀಟ್ ಕಾಗದದ ಮಿತಿಯನ್ನು ಮೀರುತ್ತದೆ}one{{COUNT} ಶೀಟ್‌ಗಳ ಕಾಗದದ ಮಿತಿಯನ್ನು ಮೀರುತ್ತದೆ}other{{COUNT} ಶೀಟ್‌ಗಳ ಕಾಗದದ ಮಿತಿಯನ್ನು ಮೀರುತ್ತದೆ}}</translation>

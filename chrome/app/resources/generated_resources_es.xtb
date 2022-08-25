@@ -2557,6 +2557,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3406290648907941085">Puede usar datos y dispositivos de realidad virtual</translation>
 <translation id="3406396172897554194">Buscar por idioma o nombre de método de introducción de texto</translation>
 <translation id="3406605057700382950">&amp;Mostrar barra de marcadores</translation>
+<translation id="3408849592677950451">{NUM_PASSWORDS,plural, =1{1 contraseña importada al gestor de contraseñas de Google para <ph name="USER_EMAIL" />}other{{NUM_PASSWORDS} contraseñas importadas al gestor de contraseñas de Google para <ph name="USER_EMAIL" />}}</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3412265149091626468">Ir a la selección</translation>
 <translation id="3413122095806433232">Entidades emisoras de certificados: <ph name="LOCATION" /></translation>
@@ -3310,6 +3311,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4101352914005291489">SSID oculto</translation>
 <translation id="4102469565336584882">Código no válido. El formato debe ser LPA:1$&lt;dirección smdp&gt;$&lt;código de activación&gt;</translation>
 <translation id="4102906002417106771">Reiniciar para ejecutar Powerwash</translation>
+<translation id="4104163789986725820">E&amp;xportar...</translation>
 <translation id="4107048419833779140">Identificar y expulsar dispositivos de almacenamiento</translation>
 <translation id="4108314971463891922">Seguir</translation>
 <translation id="4109135793348361820">Mover ventana a <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -3739,6 +3741,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4541123282641193691">No se ha podido verificar tu cuenta. Vuelve a intentarlo o reinicia el Chromebook.</translation>
 <translation id="4541662893742891060">No se ha podido conectar a este perfil. Para obtener asistencia técnica, ponte en contacto con tu operador.</translation>
 <translation id="4541706525461326392">Quitando perfil. Este proceso puede durar unos minutos.</translation>
+<translation id="4542332958571335077">{NUM_PASSWORDS,plural, =1{1 contraseña importada al gestor de contraseñas de Google en este dispositivo}other{{NUM_PASSWORDS} contraseñas importadas al gestor de contraseñas de Google en este dispositivo}}</translation>
 <translation id="4542520061254486227">Leer tus datos en <ph name="WEBSITE_1" /> y en <ph name="WEBSITE_2" /></translation>
 <translation id="4543778593405494224">Administrador de certificados</translation>
 <translation id="4544174279960331769">Avatar azul predeterminado</translation>
@@ -4590,7 +4593,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5392192690789334093">Con permiso para enviar notificaciones</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Enlace}other{# enlaces}}</translation>
 <translation id="5396325212236512832">Inicia sesión automáticamente en sitios y aplicaciones con las credenciales guardadas. Si se desactiva esta opción, se te pedirá confirmación cada vez que vayas a iniciar sesión en un sitio o una aplicación.</translation>
-<translation id="5397378439569041789">Registrar dispositivo de kiosco o señalización</translation>
+<translation id="5397378439569041789">Registrar dispositivo de Kiosk y Signage</translation>
 <translation id="5397794290049113714">Tú</translation>
 <translation id="5398497406011404839">Marcadores ocultos</translation>
 <translation id="5398572795982417028">La referencia de página está fuera de los límites admitidos, el límite es <ph name="MAXIMUM_PAGE" /></translation>
@@ -5507,7 +5510,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6278776436938569440">Cambiar ubicación</translation>
 <translation id="6279183038361895380">Pulsa |<ph name="ACCELERATOR" />| para mostrar el cursor</translation>
-<translation id="6279595948631688299">Exportar certificado seleccionado…</translation>
 <translation id="6280215091796946657">Iniciar sesión con otra cuenta</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Supera el límite de 1 hoja de papel}other{Supera el límite de {COUNT} hojas de papel}}</translation>
@@ -6229,6 +6231,7 @@ Tienes # contraseñas vulneradas más. El gestor de contraseñas de Google te re
 <translation id="6968288415730398122">Introduce tu contraseña para configurar el bloqueo de pantalla</translation>
 <translation id="6969047215179982698">Desactivar Compartir con Nearby</translation>
 <translation id="6970480684834282392">Tipo de inicio</translation>
+<translation id="6970543303783413625">No se pueden importar las contraseñas. Solo puedes importar un máximo de <ph name="COUNT" /> contraseñas a la vez.</translation>
 <translation id="6970856801391541997">Imprimir páginas específicas</translation>
 <translation id="6970861306198150268">Asegúrate de guardar tu contraseña actual para este sitio</translation>
 <translation id="6972180789171089114">Audio/Vídeo</translation>
@@ -6461,6 +6464,7 @@ Tienes # contraseñas vulneradas más. El gestor de contraseñas de Google te re
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Salir de la página}other{Salir de las páginas}}</translation>
 <translation id="7207457272187520234">Envía datos de uso y diagnóstico. Este dispositivo envía automáticamente a Google datos de diagnóstico, del dispositivo y del uso de las aplicaciones. Los datos servirán para aumentar la estabilidad de las aplicaciones y del sistema y realizar otras mejoras. Parte de los datos agregados también ayudarán a las aplicaciones y a los partners de Google, como los desarrolladores de Android. El propietario ha aplicado este ajuste. Si la opción Actividad en la Web y en Aplicaciones Adicional está activada, es posible que estos datos se guarden en tu cuenta de Google.</translation>
 <translation id="7207631048330366454">Buscar aplicaciones</translation>
+<translation id="7210471695184432500">Para importar contraseñas al gestor de contraseñas de Google en este dispositivo, selecciona un archivo CSV</translation>
 <translation id="7210499381659830293">Impresoras de extensiones</translation>
 <translation id="7211783048245131419">Aún no se ha asignado ningún interruptor</translation>
 <translation id="7212097698621322584">Introduce tu PIN actual para cambiarlo. Si no sabes cuál es tu PIN, tendrás que restablecer la llave de seguridad y crear un nuevo PIN.</translation>
@@ -7521,6 +7525,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8206859287963243715">Móvil</translation>
 <translation id="8208216423136871611">No guardar</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Notificación nueva}other{# notificaciones nuevas}}</translation>
+<translation id="821119981794423735">Para importar contraseñas al gestor de contraseñas de Google para <ph name="USER_EMAIL" />, selecciona un archivo CSV</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Descarga en curso}other{Descargas en curso}}</translation>
 <translation id="8213449224684199188">Se ha cambiado al modo de foto</translation>
 <translation id="8214489666383623925">Abrir archivo...</translation>

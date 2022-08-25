@@ -1105,7 +1105,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3969052498612555048">Vai nevarat atrast kodu? <ph name="BEGIN_LINK" />Iegūt jaunu kodu<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Aprēķina...</translation>
 <translation id="3973234410852337861">Vietne <ph name="HOST_NAME" /> ir bloķēta</translation>
-<translation id="3978338123949022456">Meklēšanas režīms; ierakstiet vaicājumu un nospiediet taustiņu Enter, lai veiktu meklēšanu pakalpojumā <ph name="KEYWORD_SUFFIX" />.</translation>
 <translation id="398470910934384994">Putni</translation>
 <translation id="3985750352229496475">Pārvaldīt adreses…</translation>
 <translation id="3986705137476756801">Pagaidām izslēgt subtitrus reāllaikā</translation>
@@ -1653,6 +1652,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="540969355065856584">Šis serveris nevarēja pierādīt, ka šī ir vietne <ph name="DOMAIN" />; tā drošības sertifikāts šobrīd nav derīgs. Iespējams, tas ir nepareizas konfigurācijas dēļ vai arī kāds ļaunprātīgi izmanto jūsu savienojumu.</translation>
 <translation id="5412040515238827314">Nederīgs formāts: ir jābūt rakstu sarakstam.</translation>
 <translation id="5412236728747081950">Šī vietne iegūst informāciju par jūsu interesēm no pārlūka Chrome, lai rādītu jums atbilstošākas reklāmas.</translation>
+<translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> — <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">4. izvades vieta</translation>
 <translation id="5421136146218899937">Notīrīt pārlūkošanas datus</translation>
 <translation id="5426179911063097041">No vietnes <ph name="SITE" /> tiek mēģināts nosūtīt paziņojumus.</translation>
@@ -2585,6 +2585,7 @@ Papildu informācija:
 <translation id="8004582292198964060">Pārlūkprogramma</translation>
 <translation id="8009225694047762179">Pārvaldīt paroles</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Šī karte un tās norēķinu adrese tiks saglabāta. Jūs varēsiet to izmantot, kad būsiet pierakstījies kontā <ph name="USER_EMAIL" />.}zero{Šīs kartes un to norēķinu adreses tiks saglabātas. Jūs varēsiet tās izmantot, kad būsiet pierakstījies kontā <ph name="USER_EMAIL" />.}one{Šīs kartes un to norēķinu adreses tiks saglabātas. Jūs varēsiet tās izmantot, kad būsiet pierakstījies kontā <ph name="USER_EMAIL" />.}other{Šīs kartes un to norēķinu adreses tiks saglabātas. Jūs varēsiet tās izmantot, kad būsiet pierakstījies kontā <ph name="USER_EMAIL" />.}}</translation>
+<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8025119109950072390">Uzbrucēji šajā vietnē var mudināt jūs veikt bīstamas darbības, piemēram, instalēt programmatūru vai atklāt savu personas informāciju (piemēram, paroles, tālruņa numurus vai informāciju par kredītkartēm).</translation>
 <translation id="8026334261755873520">Notīrīt pārlūkošanas datus</translation>
 <translation id="8027077570865220386">15. paplāte</translation>

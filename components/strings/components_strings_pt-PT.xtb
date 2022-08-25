@@ -1106,7 +1106,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3969052498612555048">Não consegue encontrar o seu código? <ph name="BEGIN_LINK" />Obtenha um novo código<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">A calcular...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> está bloqueado</translation>
-<translation id="3978338123949022456">Modo de pesquisa, introduza uma consulta e prima Enter para pesquisar com <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="398470910934384994">Pássaros</translation>
 <translation id="3985750352229496475">Faça a gestão dos endereços…</translation>
 <translation id="3986705137476756801">Desativar as Legendas instantâneas por agora</translation>
@@ -1716,6 +1715,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5580958916614886209">Verifique o mês de validade e tente novamente</translation>
 <translation id="558420943003240152">Gerir palavras-passe e chaves de acesso…</translation>
 <translation id="5586446728396275693">Nenhum endereço guardado</translation>
+<translation id="5586831831248371458">Pesquisar <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="5587987780934666589">Utilizador da plataforma</translation>
 <translation id="5593349413089863479">A ligação não é totalmente segura</translation>
 <translation id="5595485650161345191">Editar morada</translation>

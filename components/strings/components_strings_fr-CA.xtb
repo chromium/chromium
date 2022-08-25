@@ -1106,7 +1106,6 @@
 <translation id="3969052498612555048">Vous ne trouvez pas votre code? <ph name="BEGIN_LINK" />Obtenir un nouveau code<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Calcul en cours...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> est bloquée</translation>
-<translation id="3978338123949022456">Mode Recherche, tapez une requête et appuyez sur Entrée pour rechercher avec <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="398470910934384994">Oiseaux</translation>
 <translation id="3985750352229496475">Gérer les adresses…</translation>
 <translation id="3986705137476756801">Désactiver la transcription instantanée pour le moment</translation>
@@ -1654,6 +1653,7 @@
 <translation id="540969355065856584">Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />, car son certificat de sécurité n'est pas valide présentement. Cela peut être dû à une mauvaise configuration ou à l'interception de votre connexion par une personne malveillante.</translation>
 <translation id="5412040515238827314">Format incorrect : une liste de schémas était attendue.</translation>
 <translation id="5412236728747081950">Ce site récupère vos centres d'intérêt de Chrome pour vous montrer des annonces plus pertinentes</translation>
+<translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> : <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Empileur 4</translation>
 <translation id="5421136146218899937">Effacer les données de navigation...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> veut vous envoyer des notifications.</translation>
@@ -2586,6 +2586,7 @@ Détails supplémentaires :
 <translation id="8004582292198964060">Navigateur</translation>
 <translation id="8009225694047762179">Gérer les mots de passe</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Cette carte et l'adresse de facturation associée seront enregistrées. Vous serez en mesure de l'utiliser lorsque vous serez connecté en tant que <ph name="USER_EMAIL" />.}one{Cette carte et l'adresse de facturation associée seront enregistrées. Vous serez en mesure de l'utiliser lorsque vous serez connecté en tant que <ph name="USER_EMAIL" />.}other{Ces cartes et les adresses de facturation associées seront enregistrées. Vous serez en mesure de les utiliser lorsque vous serez connecté en tant que <ph name="USER_EMAIL" />.}}</translation>
+<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8025119109950072390">Les cyberpirates sur ce site peuvent vous inciter à faire quelque chose de dangereux comme installer un logiciel ou révéler vos renseignements personnels (par exemple vos mots de passe, votre numéro de téléphone ou les données de votre carte de crédit).</translation>
 <translation id="8026334261755873520">Effacer les données de navigation</translation>
 <translation id="8027077570865220386">Bac 15</translation>

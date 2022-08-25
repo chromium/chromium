@@ -2568,6 +2568,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3406290648907941085">Zinazoruhusiwa kutumia data na vifaa vya uhalisia pepe</translation>
 <translation id="3406396172897554194">Tafuta kulingana na lugha au mbinu ya kuingiza data</translation>
 <translation id="3406605057700382950">&amp;Onyesha upau alamisho</translation>
+<translation id="3408849592677950451">{NUM_PASSWORDS,plural, =1{Nenosiri 1 limepakiwa kwenye Kidhibiti cha Manenosiri cha Google cha <ph name="USER_EMAIL" />}other{Manenosiri {NUM_PASSWORDS} yamepakiwa kwenye Kidhibiti cha Manenosiri cha <ph name="USER_EMAIL" />}}</translation>
 <translation id="3409785640040772790">Ramani</translation>
 <translation id="3412265149091626468">Ruka hadi Iliyochaguliwa</translation>
 <translation id="3413122095806433232">Watoaji Vyeti wa Kati:<ph name="LOCATION" /></translation>
@@ -3320,6 +3321,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4101352914005291489">SSID iliyofichwa</translation>
 <translation id="4102469565336584882">Msimbo wa kuthibitisha si sahihi. Data yako inapaswa kuwa na muundo wa LPA:1$&lt;anwani ya smdp&gt;$&lt;msimbo wa kuanza kutumia&gt;</translation>
 <translation id="4102906002417106771">Zima kifaa kisha ukiwashe ili utumie powerwash</translation>
+<translation id="4104163789986725820">&amp;Hamisha...</translation>
 <translation id="4107048419833779140">Tambua na uondoe vifaa vya hifadhi</translation>
 <translation id="4108314971463891922">Fuatilia</translation>
 <translation id="4109135793348361820">Hamisha dirisha hadi kwa <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -3750,6 +3752,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4541123282641193691">Imeshindwa kuthibitisha akaunti yako. Tafadhali jaribu tena au zima kisha uwashe Chromebook yako.</translation>
 <translation id="4541662893742891060">Imeshindwa kuunganisha kwenye wasifu huu. Wasiliana na mtoa huduma wako ili upate usaidizi wa kiufundi.</translation>
 <translation id="4541706525461326392">Inaondoa wasifu. Hatua hii inaweza kuchukua dakika kadhaa.</translation>
+<translation id="4542332958571335077">{NUM_PASSWORDS,plural, =1{Nenosiri 1 limepakiwa kwenye Kidhibiti cha Manenosiri katika kifaa hiki}other{Manenosiri {NUM_PASSWORDS} yamepakiwa kwenye Kidhibiti cha Manenosiri katika kifaa hiki}}</translation>
 <translation id="4542520061254486227">Soma data yako kwenye <ph name="WEBSITE_1" /> na <ph name="WEBSITE_2" /></translation>
 <translation id="4543778593405494224">Kidhibiti cha cheti</translation>
 <translation id="4544174279960331769">Ishara chaguomsingi ya samawati</translation>
@@ -5518,7 +5521,6 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="6278428485366576908">Mandhari</translation>
 <translation id="6278776436938569440">Badilisha mahali</translation>
 <translation id="6279183038361895380">Bonyeza |<ph name="ACCELERATOR" />| ili kiteuzi kionekane</translation>
-<translation id="6279595948631688299">Hamisha cheti kilichochaguliwa...</translation>
 <translation id="6280215091796946657">Ingia kwa kutumia akaunti tofauti</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Inazidi kikomo cha karatasi moja}other{Inazidi kikomo cha karatasi {COUNT}}}</translation>
@@ -6240,6 +6242,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="6968288415730398122">Weka nenosiri lako ili uweke mipangilio ya kufunga skrini</translation>
 <translation id="6969047215179982698">Zima Uhamishaji wa Karibu</translation>
 <translation id="6970480684834282392">Aina ya kuanzisha</translation>
+<translation id="6970543303783413625">Imeshindwa kupakia manenosiri. Unaweza tu kupakia hadi manenosiri <ph name="COUNT" /> kwa wakati mmoja.</translation>
 <translation id="6970856801391541997">Chapisha Kurasa Mahsusi</translation>
 <translation id="6970861306198150268">Hakikisha kwamba unahifadhi nenosiri la sasa unalotumia kwenye tovuti hii</translation>
 <translation id="6972180789171089114">Sauti/Video</translation>
@@ -6472,6 +6475,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Funga ukurasa}other{Funga kurasa}}</translation>
 <translation id="7207457272187520234">Tuma data ya matumizi na uchunguzi. Kwa sasa, kifaa hiki kinatuma kiotomatiki data ya uchunguzi na matumizi ya programu na kifaa kwa Google. Maelezo haya yatatusaidia kuboresha uthabiti wa programu na mfumo na maboresho mengine. Baadhi ya maelezo yaliyojumlishwa pia yatasaidia programu na washirika wa Google kama vile wasanidi programu za Android. Mipangilio hii hutekelezwa na mmiliki. Ikiwa umewasha mipangilio ya historia ya Shughuli za ziada kwenye Wavuti na Programu, huenda data hii itahifadhiwa kwenye Akaunti yako ya Google.</translation>
 <translation id="7207631048330366454">Tafuta programu</translation>
+<translation id="7210471695184432500">Ili upakie manenosiri kwenye Kidhibiti cha Manenosiri cha Google katika kifaa hiki, chagua faili ya CSV</translation>
 <translation id="7210499381659830293">Printa za viendelezi</translation>
 <translation id="7211783048245131419">Bado hujakabidhi swichi yoyote</translation>
 <translation id="7212097698621322584">Weka PIN yako ya sasa ili uibadilishe. Ikiwa hujui PIN yako, utahitaji kubadilisha ufunguo wako wa usalama, kisha uunde PIN mpya.</translation>
@@ -7533,6 +7537,7 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="8206859287963243715">Simu ya Mkononi</translation>
 <translation id="8208216423136871611">Usihifadhi</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Arifa mpya}other{Arifa # mpya}}</translation>
+<translation id="821119981794423735">Ili upakie manenosiri katika Kidhibiti cha Manenosiri cha Google kwenye <ph name="USER_EMAIL" />, chagua faili ya CSV</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Inaendelea kupakua}other{Inaendelea kupakua}}</translation>
 <translation id="8213449224684199188">Umeweka hali ya picha</translation>
 <translation id="8214489666383623925">Fungua Faili...</translation>

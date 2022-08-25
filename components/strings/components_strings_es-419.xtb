@@ -1107,7 +1107,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3969052498612555048">¿No encuentras el código? <ph name="BEGIN_LINK" />Obtener un código nuevo<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="3973234410852337861">Se bloqueó <ph name="HOST_NAME" /></translation>
-<translation id="3978338123949022456">Modo de búsqueda, ingresa una búsqueda y presiona Intro para buscar con <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="398470910934384994">Aves</translation>
 <translation id="3985750352229496475">Administrar direcciones…</translation>
 <translation id="3986705137476756801">Desactivar el Subtitulado instantáneo por el momento</translation>
@@ -1655,6 +1654,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="540969355065856584">Este servidor no pudo demostrar que se trata de <ph name="DOMAIN" />; el certificado de seguridad no es válido en este momento. Esto puede deberse a una configuración incorrecta o a un ataque que intercepta tu conexión.</translation>
 <translation id="5412040515238827314">El formato no es válido: se esperaba una lista de patrones.</translation>
 <translation id="5412236728747081950">Este sitio obtiene tus intereses de Chrome para mostrarte anuncios más relevantes</translation>
+<translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Apilador 4</translation>
 <translation id="5421136146218899937">Borrar datos de navegación...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> quiere enviarte notificaciones</translation>
@@ -2059,6 +2059,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6591833882275308647">Tu <ph name="DEVICE_TYPE" /> no está administrado.</translation>
 <translation id="6592952801936330159">Botón Administrar la configuración de sitios: presiona Intro para administrar en la configuración de Chrome los permisos y datos almacenados en los sitios</translation>
 <translation id="6596325263575161958">Opciones de encriptación</translation>
+<translation id="6599642189720630047">Productos con seguimiento</translation>
 <translation id="6609880536175561541">Prc7 (Envelope)</translation>
 <translation id="6611723696964473273">Noticias sobre economía</translation>
 <translation id="6612010098632894193">Video en línea</translation>
@@ -2586,6 +2587,7 @@ Detalles adicionales:
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8009225694047762179">Administrar contraseñas</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Se guardará esta tarjeta y su dirección de facturación. Podrás usarla cuando accedas a <ph name="USER_EMAIL" />.}other{Se guardarán estas tarjetas y sus direcciones de facturación. Podrás usarlas cuando accedas a <ph name="USER_EMAIL" />.}}</translation>
+<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8025119109950072390">Es posible que los atacantes de este sitio te engañen para que hagas algo peligroso, como instalar software o divulgar información personal (p. ej., contraseñas, números de teléfono o tarjetas de crédito).</translation>
 <translation id="8026334261755873520">Borrar datos de navegación</translation>
 <translation id="8027077570865220386">Bandeja 15</translation>

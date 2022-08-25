@@ -3313,6 +3313,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4101352914005291489">Slēpts SSID</translation>
 <translation id="4102469565336584882">Kods nav derīgs. Ievadiet kodu šādā formātā: LPA:1$&lt;SMDP adrese&gt;$&lt;aktivizācijas kods&gt;.</translation>
 <translation id="4102906002417106771">Restartēt, lai aktivizētu funkciju Powerwash</translation>
+<translation id="4104163789986725820">E&amp;ksportēt...</translation>
 <translation id="4107048419833779140">Identificēt un atvienot atmiņas ierīces</translation>
 <translation id="4108314971463891922">Sekot</translation>
 <translation id="4109135793348361820">Pārvietot logu uz šī lietotāja darbvirsmu: <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -5508,7 +5509,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="6278428485366576908">Motīvs</translation>
 <translation id="6278776436938569440">Mainīt atrašanās vietu</translation>
 <translation id="6279183038361895380">Lai tiktu parādīts kursors, nospiediet |<ph name="ACCELERATOR" />|</translation>
-<translation id="6279595948631688299">E&amp;ksportēt atlasīto sertifikātu…</translation>
 <translation id="6280215091796946657">Pierakstīties ar citu kontu</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Pārsniegts ierobežojums: viena papīra lapa}zero{Pārsniegts ierobežojums: {COUNT} papīra lapu}one{Pārsniegts ierobežojums: {COUNT} papīra lapa}other{Pārsniegts ierobežojums: {COUNT} papīra lapas}}</translation>

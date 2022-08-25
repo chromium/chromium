@@ -1106,7 +1106,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3969052498612555048">Nuk mund ta gjesh kodin tënd? <ph name="BEGIN_LINK" />Merr kod të ri<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Po llogarit...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> është bllokuar</translation>
-<translation id="3978338123949022456">Modaliteti i kërkimit; shkruaj një kërkesë dhe shtyp "Enter" për të kërkuar me <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="398470910934384994">Shpendët</translation>
 <translation id="3985750352229496475">Menaxho adresat...</translation>
 <translation id="3986705137476756801">Çaktivizo "Titrat në çast" për momentin</translation>
@@ -1285,7 +1284,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4441832193888514600">Shpërfillur për shkak se politika mund të shtohet vetëm si politikë e përdoruesit të resë kompjuterike.</translation>
 <translation id="4450893287417543264">Mos e shfaq përsëri</translation>
 <translation id="4451135742916150903">Mund të kërkojë të lidhet me pajisjet HID</translation>
-<translation id="4452328064229197696">Fjalëkalimi që sapo përdore u gjet në një nxjerrje të paautorizuar të të dhënave. Për të mbrojtur llogaritë e tua, "Menaxheri i fjalëkalimeve" i Google rekomandon të kontrollosh fjalëkalimet e ruajtura.</translation>
+<translation id="4452328064229197696">Fjalëkalimi që sapo përdore u gjet në një nxjerrje të paautorizuar të të dhënave. Për të mbrojtur llogaritë e tua, "Menaxheri i fjalëkalimeve i Google" rekomandon të kontrollosh fjalëkalimet e ruajtura.</translation>
 <translation id="4455222631300069614">Ndrysho fjalëkalimin tënd tani</translation>
 <translation id="4460315069258617173">Lejohet derisa të mbyllësh skedat për këtë faqe</translation>
 <translation id="4464826014807964867">Sajtet e uebit me informacione nga organizata jote</translation>
@@ -1654,6 +1653,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="540969355065856584">Ky server nuk mund të provojë se është <ph name="DOMAIN" />; certifikata e tij e sigurisë është e pavlefshme në këtë moment. Kjo mund të shkaktohet për shkak të konfigurimit të pasaktë ose në rast të ndërhyrjes së ndonjë sulmuesi në lidhjen tënde.</translation>
 <translation id="5412040515238827314">Format i pavlefshëm: Pritet një listë motivesh.</translation>
 <translation id="5412236728747081950">Ky sajt merr interesat e tua nga Chrome për të të shfaqur reklama më të përshtatshme</translation>
+<translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Stivuesi 4</translation>
 <translation id="5421136146218899937">Pastro të dhënat e shfletimit...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> dëshiron të të dërgojë njoftime</translation>
@@ -1852,7 +1852,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5989320800837274978">Nuk janë specifikuar serverë përfaqësues fiksë dhe as ndonjë URL e skriptit .pac.</translation>
 <translation id="5992691462791905444">Palosje inxhinierike Z</translation>
 <translation id="5995727681868049093">Menaxho informacionin, privatësinë dhe sigurinë tënde në "Llogarinë tënde të Google"</translation>
-<translation id="5997247540087773573">Fjalëkalimi që sapo përdore u gjet në një nxjerrje të paautorizuar të të dhënave. Për të mbrojtur llogaritë e tua, "Menaxheri i fjalëkalimeve" i Google rekomandon ta ndryshosh atë tani dhe të kontrollosh fjalëkalimet e ruajtura.</translation>
+<translation id="5997247540087773573">Fjalëkalimi që sapo përdore u gjet në një nxjerrje të paautorizuar të të dhënave. Për të mbrojtur llogaritë e tua, "Menaxheri i fjalëkalimeve i Google" rekomandon ta ndryshosh atë tani dhe të kontrollosh fjalëkalimet e ruajtura.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> rezultate për "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6006484371116297560">Klasike</translation>
 <translation id="6008122969617370890">Renditja N deri në 1</translation>
@@ -1883,7 +1883,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6051221802930200923">Nuk mund ta vizitosh <ph name="SITE" /> në këtë moment sepse sajti i uebit përdor gozhdimin e certifikatës. Gabimet dhe sulmet e rrjetit janë zakonisht të përkohshme, prandaj kjo faqe ndoshta do të funksionojë më vonë.</translation>
 <translation id="6051898664905071243">Numri i faqeve:</translation>
 <translation id="6052284303005792909">•</translation>
-<translation id="6052319569711353666">Fjalëkalimi që sapo përdore u gjet në një nxjerrje të paautorizuar të të dhënave. "Menaxheri i fjalëkalimeve" i Google rekomandon ndryshimin e këtij fjalëkalimi tani.</translation>
+<translation id="6052319569711353666">Fjalëkalimi që sapo përdore u gjet në një nxjerrje të paautorizuar të të dhënave. "Menaxheri i fjalëkalimeve i Google" rekomandon ndryshimin e këtij fjalëkalimi tani.</translation>
 <translation id="6055888660316801977">Kredencial pagese të sigurt pa fletë përkatëse kredenciali</translation>
 <translation id="6058977677006700226">Dëshiron t'i përdorësh kartat në të gjitha pajisjet e tua?</translation>
 <translation id="6059925163896151826">Pajisjet USB</translation>
@@ -2057,6 +2057,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6591833882275308647">Pajisja jote <ph name="DEVICE_TYPE" /> nuk është e menaxhuar</translation>
 <translation id="6592952801936330159">Butoni "Menaxho cilësimet e sajtit". Shtyp "Enter" për të menaxhuar lejet dhe të dhënat e ruajtura nëpër sajte te cilësimet e Chrome</translation>
 <translation id="6596325263575161958">Opsionet e enkriptimit</translation>
+<translation id="6599642189720630047">Produktet e monitoruara</translation>
 <translation id="6609880536175561541">Prc7 (Zarf)</translation>
 <translation id="6611723696964473273">Lajmet nga ekonomia</translation>
 <translation id="6612010098632894193">Videot në linjë</translation>
@@ -2584,6 +2585,7 @@ Detaje shtesë:
 <translation id="8004582292198964060">Shfletuesi</translation>
 <translation id="8009225694047762179">Menaxho fjalëkalimet</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Kjo kartë dhe adresa e saj e faturimit do të ruhen. Do të jesh në gjendje ta përdorësh kur të jesh identifikuar në <ph name="USER_EMAIL" />.}other{Këto karta dhe adresat e tyre të faturimit do të ruhen. Do të jesh në gjendje t'i përdorësh kur të jesh identifikuar në <ph name="USER_EMAIL" />.}}</translation>
+<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8025119109950072390">Sulmuesit në këtë sajt mund të të mashtrojnë që të bësh diçka të rrezikshme si të instalosh softuerë ose të zbulosh informacione personal (për shembull, fjalëkalime, numra telefoni ose karta krediti).</translation>
 <translation id="8026334261755873520">Pastro të dhënat e shfletimit</translation>
 <translation id="8027077570865220386">Tabakaja 15</translation>

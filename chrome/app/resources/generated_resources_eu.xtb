@@ -3311,6 +3311,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4101352914005291489">SSID ezkutua</translation>
 <translation id="4102469565336584882">Kodeak ez du balio. Sarrerak formatu hau eduki behar du: LPA:1$&lt;SMDP helbidea&gt;$&lt;aktibazio-kodea&gt;</translation>
 <translation id="4102906002417106771">Berrabiarazi fabrikako ezarpenak Powerwash bidez berrezartzeko</translation>
+<translation id="4104163789986725820">E&amp;sportatu…</translation>
 <translation id="4107048419833779140">Identifikatu eta kanporatu memoria-gailuak</translation>
 <translation id="4108314971463891922">Jarraitu</translation>
 <translation id="4109135793348361820">Eraman leihoa <ph name="USER_NAME" /> erabiltzailearen mahaigainera (<ph name="USER_EMAIL" />)</translation>
@@ -5506,7 +5507,6 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="6278428485366576908">Gaia</translation>
 <translation id="6278776436938569440">Aldatu kokapena</translation>
 <translation id="6279183038361895380">Kurtsorea ikusteko, sakatu |<ph name="ACCELERATOR" />|</translation>
-<translation id="6279595948631688299">Esportatu hautatutako ziurtagiria…</translation>
 <translation id="6280215091796946657">Hasi saioa beste kontu batekin</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{1 orriko muga gainditzen du}other{{COUNT} orriko muga gainditzen du}}</translation>

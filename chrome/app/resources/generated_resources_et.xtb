@@ -3317,6 +3317,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4101352914005291489">Peidetud SSID</translation>
 <translation id="4102469565336584882">Kehtetu kood. Sisestus peab olema järgmises vormingus: LPA:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">Taaskäivita Powerwashi aktiveerimiseks</translation>
+<translation id="4104163789986725820">&amp;Ekspordi...</translation>
 <translation id="4107048419833779140">Salvestusseadmete tuvastamine ja väljutamine</translation>
 <translation id="4108314971463891922">Jälgi</translation>
 <translation id="4109135793348361820">Teisalda aken kasutaja <ph name="USER_NAME" /> töölauale (<ph name="USER_EMAIL" />)</translation>
@@ -5515,7 +5516,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6278428485366576908">Teema</translation>
 <translation id="6278776436938569440">Muuda asukohta</translation>
 <translation id="6279183038361895380">Kursori kuvamiseks vajutage klahvi |<ph name="ACCELERATOR" />|</translation>
-<translation id="6279595948631688299">E&amp;kspordi valitud sertifikaat …</translation>
 <translation id="6280215091796946657">Logige sisse teise kontoga</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Ületab 1 paberilehe piirangut}other{Ületab {COUNT} paberilehe piirangut}}</translation>

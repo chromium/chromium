@@ -3302,6 +3302,7 @@
 <translation id="4101352914005291489">隐藏的 SSID</translation>
 <translation id="4102469565336584882">代码无效。所输入代码的格式应为 LPA:1$&lt;smdp 地址&gt;$&lt;激活码&gt;</translation>
 <translation id="4102906002417106771">重启以执行 Powerwash</translation>
+<translation id="4104163789986725820">导出(&amp;X)...</translation>
 <translation id="4107048419833779140">识别并弹出存储设备</translation>
 <translation id="4108314971463891922">关注</translation>
 <translation id="4109135793348361820">将窗口移至<ph name="USER_NAME" />(<ph name="USER_EMAIL" />)</translation>
@@ -5495,7 +5496,6 @@
 <translation id="6278428485366576908">主题背景</translation>
 <translation id="6278776436938569440">更改位置</translation>
 <translation id="6279183038361895380">按 |<ph name="ACCELERATOR" />| 可显示鼠标光标</translation>
-<translation id="6279595948631688299">导出所选证书(&amp;X)…</translation>
 <translation id="6280215091796946657">使用其他帐号登录</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{超出了 1 张纸的上限}other{超出了 {COUNT} 张纸的上限}}</translation>

@@ -3327,6 +3327,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4101352914005291489">SSID falin</translation>
 <translation id="4102469565336584882">Ógildur kóði. Færslan þín ætti að vera á sniðinu LPA:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">Endurræsa til að djúphreinsa</translation>
+<translation id="4104163789986725820">Flytja út...</translation>
 <translation id="4107048419833779140">Bera kennsl á og aftengja geymslutæki</translation>
 <translation id="4108314971463891922">Fylgja</translation>
 <translation id="4109135793348361820">Færa glugga á <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -5526,7 +5527,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6278428485366576908">Þema</translation>
 <translation id="6278776436938569440">Breyta staðsetningu</translation>
 <translation id="6279183038361895380">Ýttu á |<ph name="ACCELERATOR" />| til að sýna bendilinn</translation>
-<translation id="6279595948631688299">F&amp;lytja út valið vottorð...</translation>
 <translation id="6280215091796946657">Skrá inn með öðrum reikningi</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Yfir 1 blaðsíðu mörkum}one{Yfir {COUNT} blaðsíðu mörkum}other{Yfir {COUNT} blaðsíðna mörkum}}</translation>

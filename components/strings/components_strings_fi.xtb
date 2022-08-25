@@ -1107,7 +1107,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3969052498612555048">Etkö löydä koodiasi? <ph name="BEGIN_LINK" />Pyydä uusi koodi<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Lasketaan...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> on estetty</translation>
-<translation id="3978338123949022456">Hakutila, kirjoita hakulauseke ja paina Enter, niin <ph name="KEYWORD_SUFFIX" /> tekee haun</translation>
 <translation id="398470910934384994">Linnut</translation>
 <translation id="3985750352229496475">Muuta osoitteita…</translation>
 <translation id="3986705137476756801">Laita Livetekstitys päälle toistaiseksi</translation>
@@ -1655,6 +1654,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="540969355065856584">Palvelin ei voinut todistaa olevansa <ph name="DOMAIN" />, sillä sen suojausvarmenne ei tällä hetkellä ole kelvollinen. Tämä voi johtua määritysvirheestä tai verkkoyhteytesi siepanneesta hyökkääjästä.</translation>
 <translation id="5412040515238827314">Virheellinen muoto: odotettu malliluettelo.</translation>
 <translation id="5412236728747081950">Tämä sivusto saa kiinnostuksen kohteesi Chromesta, jotta voit nähdä osuvampia mainoksia</translation>
+<translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Pinoaja 4</translation>
 <translation id="5421136146218899937">Poista selaustiedot...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> haluaa lähettää sinulle ilmoituksia</translation>
@@ -2587,6 +2587,7 @@ Lisätietoja:
 <translation id="8004582292198964060">Selain</translation>
 <translation id="8009225694047762179">Salasanojen hallinta</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Tämä kortti ja sen laskutusosoite tallennetaan. Voit käyttää sitä sisäänkirjautuneena (<ph name="USER_EMAIL" />).}other{Nämä kortit ja niiden laskutusosoitteet tallennetaan. Voit käyttää niitä sisäänkirjautuneena (<ph name="USER_EMAIL" />).}}</translation>
+<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8025119109950072390">Tälle sivustolle hyökännyt taho voi yrittää huijata sinua tekemään jotain vaarallista, kuten asentamaan ohjelmistoja tai paljastamaan henkilötietojasi (esimerkiksi salasanoja, puhelinnumeroita tai luottokorttitietoja).</translation>
 <translation id="8026334261755873520">Poista selaustiedot</translation>
 <translation id="8027077570865220386">Lokero 15</translation>

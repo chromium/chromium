@@ -3327,6 +3327,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4101352914005291489">Nakatagong SSID</translation>
 <translation id="4102469565336584882">Invalid ang code. Dapat LPA:1$&lt;smdp address&gt;$&lt;activation code&gt; ang format ng entry mo</translation>
 <translation id="4102906002417106771">I-restart para mag-powerwash</translation>
+<translation id="4104163789986725820">I-e&amp;xport...</translation>
 <translation id="4107048419833779140">Kumilala at mag-eject ng mga storage device</translation>
 <translation id="4108314971463891922">Subaybayan</translation>
 <translation id="4109135793348361820">Ilipat ang window sa <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -5526,7 +5527,6 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6278776436938569440">Baguhin ang lokasyon</translation>
 <translation id="6279183038361895380">Pindutin ang |<ph name="ACCELERATOR" />| upang ipakita ang iyong cursor</translation>
-<translation id="6279595948631688299">I-e&amp;xport ang napiling certificate...</translation>
 <translation id="6280215091796946657">Mag-sign in gamit ang ibang account</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Lumalampas sa limitasyong 1 pirasong papel}one{Lumalampas sa limitasyong {COUNT} pirasong papel}other{Lumalampas sa limitasyong {COUNT} na pirasong papel}}</translation>

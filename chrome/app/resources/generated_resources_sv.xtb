@@ -3326,6 +3326,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4101352914005291489">Dolt SSID</translation>
 <translation id="4102469565336584882">Ogiltig kod. Posten ska ha formatet LPA:1$&lt;smdp-adress&gt;$&lt;aktiveringskod&gt;</translation>
 <translation id="4102906002417106771">Starta om för att powerwash</translation>
+<translation id="4104163789986725820">E&amp;xportera...</translation>
 <translation id="4107048419833779140">Identifiera och mata ut lagringsenheter</translation>
 <translation id="4108314971463891922">Följ</translation>
 <translation id="4109135793348361820">Flytta fönster till <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -5525,7 +5526,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6278776436938569440">Ändra plats</translation>
 <translation id="6279183038361895380">Tryck på |<ph name="ACCELERATOR" />| om du vill visa markören</translation>
-<translation id="6279595948631688299">Exportera valt certifikat …</translation>
 <translation id="6280215091796946657">Logga in med ett annat konto</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Gränsen på 1 pappersark har överskridits}other{Gränsen på {COUNT} pappersark har överskridits}}</translation>

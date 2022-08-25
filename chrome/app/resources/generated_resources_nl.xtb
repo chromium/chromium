@@ -2556,6 +2556,7 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="3406290648907941085">Toestemming om virtualreality-apparaten en -gegevens te gebruiken</translation>
 <translation id="3406396172897554194">Zoeken op taal of naam van invoermethode</translation>
 <translation id="3406605057700382950">&amp;Bookmarkbalk bekijken</translation>
+<translation id="3408849592677950451">{NUM_PASSWORDS,plural, =1{1 wachtwoord geïmporteerd naar Google Wachtwoordmanager voor <ph name="USER_EMAIL" />}other{{NUM_PASSWORDS} wachtwoorden geïmporteerd naar Google Wachtwoordmanager voor <ph name="USER_EMAIL" />}}</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3412265149091626468">Ga naar selectie</translation>
 <translation id="3413122095806433232">CA-uitgevers: <ph name="LOCATION" /></translation>
@@ -3310,6 +3311,7 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="4101352914005291489">SSID verborgen</translation>
 <translation id="4102469565336584882">Ongeldige code. Je invoer moet deze indeling hebben: LPA:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">Opnieuw opstarten om Powerwash uit te voeren</translation>
+<translation id="4104163789986725820">E&amp;xporteren...</translation>
 <translation id="4107048419833779140">Opslagapparaten identificeren en verwijderen</translation>
 <translation id="4108314971463891922">Volgen</translation>
 <translation id="4109135793348361820">Venster verplaatsen naar <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -3738,6 +3740,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4541123282641193691">Kan je account niet verifiëren. Probeer het opnieuw of start je Chromebook opnieuw op.</translation>
 <translation id="4541662893742891060">Kan geen verbinding maken met dit profiel. Neem contact op met je provider voor technische support.</translation>
 <translation id="4541706525461326392">Profiel verwijderen. Dit kan een paar minuten duren.</translation>
+<translation id="4542332958571335077">{NUM_PASSWORDS,plural, =1{1 wachtwoord geïmporteerd naar Google Wachtwoordmanager op dit apparaat}other{{NUM_PASSWORDS} wachtwoorden geïmporteerd naar Google Wachtwoordmanager op dit apparaat}}</translation>
 <translation id="4542520061254486227">Je gegevens voor <ph name="WEBSITE_1" /> en <ph name="WEBSITE_2" /> lezen</translation>
 <translation id="4543778593405494224">Certificaatbeheer</translation>
 <translation id="4544174279960331769">Standaard blauwe avatar</translation>
@@ -5501,7 +5504,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6278428485366576908">Thema</translation>
 <translation id="6278776436938569440">Locatie wijzigen</translation>
 <translation id="6279183038361895380">Druk op |<ph name="ACCELERATOR" />| om je cursor te bekijken</translation>
-<translation id="6279595948631688299">Geselecteerd certificaat e&amp;xporteren...</translation>
 <translation id="6280215091796946657">Inloggen met een ander account</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Overschrijdt de limiet van 1 vel papier}other{Overschrijdt de limiet van {COUNT} vellen papier}}</translation>
@@ -6222,6 +6224,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6968288415730398122">Geef je wachtwoord op om de schermvergrendeling te configureren</translation>
 <translation id="6969047215179982698">Dichtbij delen uitzetten</translation>
 <translation id="6970480684834282392">Opstarttype</translation>
+<translation id="6970543303783413625">Kan wachtwoorden niet importeren. Je kunt maximaal <ph name="COUNT" /> wachtwoorden tegelijk importeren.</translation>
 <translation id="6970856801391541997">Specifieke pagina's afdrukken</translation>
 <translation id="6970861306198150268">Zorg dat je je huidige wachtwoord voor deze site opslaat</translation>
 <translation id="6972180789171089114">Audio/video</translation>
@@ -6454,6 +6457,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Pagina afsluiten}other{Pagina's afsluiten}}</translation>
 <translation id="7207457272187520234">Stuur gebruiks- en diagnostische gegevens. Dit apparaat stuurt momenteel automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google. Deze gegevens kunnen worden gebruikt om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Daarnaast zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Deze instelling wordt afgedwongen door de eigenaar. Als je de instelling voor aanvullende Web- en app-activiteit hebt aangezet, kunnen deze gegevens worden opgeslagen in je Google-account.</translation>
 <translation id="7207631048330366454">Apps zoeken</translation>
+<translation id="7210471695184432500">Selecteer een csv-bestand om wachtwoorden op dit apparaat te importeren naar Google Wachtwoordmanager</translation>
 <translation id="7210499381659830293">Printers via extensie</translation>
 <translation id="7211783048245131419">Er is nog geen schakelaar toegewezen</translation>
 <translation id="7212097698621322584">Voer je huidige pincode in om deze te wijzigen. Als je je pincode niet weet, moet je de beveiligingssleutel resetten en vervolgens een nieuwe pincode maken.</translation>
@@ -7511,6 +7515,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8206859287963243715">Mobiel</translation>
 <translation id="8208216423136871611">Niet opslaan</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nieuwe melding}other{# nieuwe meldingen}}</translation>
+<translation id="821119981794423735">Selecteer een csv-bestand om wachtwoorden te importeren naar Google Wachtwoordmanager voor <ph name="USER_EMAIL" /></translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Download wordt uitgevoerd}other{Downloads worden uitgevoerd}}</translation>
 <translation id="8213449224684199188">Fotomodus geopend</translation>
 <translation id="8214489666383623925">Open bestand...</translation>

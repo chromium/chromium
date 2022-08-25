@@ -3327,6 +3327,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4101352914005291489">Skjult SSID</translation>
 <translation id="4102469565336584882">Ugyldig kode. Din indtastning bør have formatet LPA:1$&lt;smdp-adresse&gt;$&lt;aktiveringskode&gt;</translation>
 <translation id="4102906002417106771">Genstart for at udføre powerwash</translation>
+<translation id="4104163789986725820">E&amp;ksporter...</translation>
 <translation id="4107048419833779140">Identificer og fjern lagerenheder</translation>
 <translation id="4108314971463891922">Følg</translation>
 <translation id="4109135793348361820">Flyt vindue til <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -5526,7 +5527,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6278776436938569440">Skift placering</translation>
 <translation id="6279183038361895380">Tryk på |<ph name="ACCELERATOR" />| at se markøren</translation>
-<translation id="6279595948631688299">Eksportér det valgte certifikat...</translation>
 <translation id="6280215091796946657">Log ind med en anden konto</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Overskrider grænsen på 1 ark papir}one{Overskrider grænsen på {COUNT} ark papir}other{Overskrider grænsen på {COUNT} ark papir}}</translation>

@@ -3323,6 +3323,7 @@
 <translation id="4101352914005291489">लपवलेला SSID</translation>
 <translation id="4102469565336584882">कोड चुकीचा आहे. तुमची एंट्री ही LPA:1$&lt;smdp address&gt;$&lt;activation code&gt; या फॉरमॅटमध्ये असणे आवश्यक आहे</translation>
 <translation id="4102906002417106771">पॉवरवॉश करण्यासाठी रीस्टार्ट करा</translation>
+<translation id="4104163789986725820">नि&amp;र्यात करा...</translation>
 <translation id="4107048419833779140">स्टोरेज डिव्हाइस ओळखा आणि बाहेर काढून टाका</translation>
 <translation id="4108314971463891922">फॉलो करा</translation>
 <translation id="4109135793348361820"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) वर विंडो हलवा</translation>
@@ -5523,7 +5524,6 @@
 <translation id="6278428485366576908">थीम</translation>
 <translation id="6278776436938569440">स्थान बदला</translation>
 <translation id="6279183038361895380">तुमचा कर्सर दर्शविण्‍यासाठी |<ph name="ACCELERATOR" />| दाबा</translation>
-<translation id="6279595948631688299">निवडलेले प्रमाणपत्र एक्सपोर्ट करा…</translation>
 <translation id="6280215091796946657">एका भिन्न खात्याने साइन इन करा</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{कागदाच्या एका पत्रकाची मर्यादा ओलांडली}other{कागदाच्या {COUNT} पत्रकांची मर्यादा ओलांडली}}</translation>

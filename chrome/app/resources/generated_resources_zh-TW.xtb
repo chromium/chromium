@@ -3310,6 +3310,7 @@
 <translation id="4101352914005291489">隱藏的 SSID</translation>
 <translation id="4102469565336584882">代碼無效，輸入的內容必須使用 LPA 格式：1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">重新啟動以執行 Powerwash</translation>
+<translation id="4104163789986725820">匯出(&amp;X)...</translation>
 <translation id="4107048419833779140">識別並退出儲存裝置</translation>
 <translation id="4108314971463891922">追蹤</translation>
 <translation id="4109135793348361820">將視窗傳送給 <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -5505,7 +5506,6 @@
 <translation id="6278428485366576908">主題</translation>
 <translation id="6278776436938569440">變更位置</translation>
 <translation id="6279183038361895380">按下 |<ph name="ACCELERATOR" />| 即可顯示游標</translation>
-<translation id="6279595948631688299">匯出選取的憑證(&amp;X)...</translation>
 <translation id="6280215091796946657">以其他帳戶登入</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{超出 1 張紙的限制}other{超出 {COUNT} 張紙的限制}}</translation>

@@ -1103,7 +1103,6 @@
 <translation id="3969052498612555048">আপোনাৰ ক’ডটো বিচাৰি পোৱা নাই নেকি? <ph name="BEGIN_LINK" />নতুন ক’ড পাওক<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">গণনা কৰি থকা হৈছে…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" />ক অৱৰোধ কৰা হৈছে</translation>
-<translation id="3978338123949022456">সন্ধান কৰক ম’ড, <ph name="KEYWORD_SUFFIX" />ৰ জৰিয়তে সন্ধান কৰিবলৈ এটা প্ৰশ্ন টাইপ কৰক আৰু এণ্টাৰ টিপক</translation>
 <translation id="398470910934384994">চৰাই</translation>
 <translation id="3985750352229496475">ঠিকনাসমূহ পৰিচালনা কৰক...</translation>
 <translation id="3986705137476756801">এতিয়াৰ বাবে লাইভ কেপশ্বন অফ কৰক</translation>
@@ -1650,6 +1649,7 @@
 <translation id="540969355065856584">এই ছার্ভাৰটোৱে নিজকে <ph name="DOMAIN" />; বুলি প্ৰমাণ কৰিব নোৱাৰিলে; বৰ্তমান ইয়াৰ সুৰক্ষা প্ৰমাণপত্ৰ মান্য নহয়৷ এয়া কোনো ভুল কনফিগাৰেশ্বনৰ বাবে বা কোনো আক্ৰমণকাৰীয়ে আপোনাৰ সংযোগ অৱৰোধ কৰাৰ বাবে হ’ব পাৰে।</translation>
 <translation id="5412040515238827314">অমান্য ফৰ্মেট: আৰ্হিসমূহৰ এখন সূচী আশা কৰা হৈছে।</translation>
 <translation id="5412236728747081950">আপোনাক অধিক প্ৰাসংগিক বিজ্ঞাপন দেখুৱাবলৈ এই ছাইটটোৱে Chromeৰ পৰা আপোনাৰ আগ্ৰহসমূহ পায়</translation>
+<translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">ষ্টেকাৰ ৪</translation>
 <translation id="5421136146218899937">ব্ৰাউজিং ডেটা মচক...</translation>
 <translation id="5426179911063097041"><ph name="SITE" />এ আপোনালৈ জাননী পঠিয়াব বিচাৰে</translation>
@@ -2053,6 +2053,7 @@
 <translation id="6591833882275308647">আপোনাৰ <ph name="DEVICE_TYPE" /> পৰিচালিত নহয়</translation>
 <translation id="6592952801936330159">ছাইটৰ ছেটিঙৰ বুটাম পৰিচালনা কৰক, Chromeৰ ছেটিঙত সমগ্ৰ ছাইটত ষ্ট’ৰ কৰি ৰখা ডেটা আৰু অনুমতি পৰিচালনা কৰিবলৈ এণ্টাৰ টিপক</translation>
 <translation id="6596325263575161958">এনক্ৰিপশ্বনৰ বিকল্প</translation>
+<translation id="6599642189720630047">ট্ৰেক কৰা প্ৰ’ডাক্ট</translation>
 <translation id="6609880536175561541">Prc7 (লেফাফা)</translation>
 <translation id="6611723696964473273">অৰ্থনীতি সম্পৰ্কীয় বাতৰি</translation>
 <translation id="6612010098632894193">অনলাইন ভিডিঅ’</translation>
@@ -2580,6 +2581,7 @@
 <translation id="8004582292198964060">ব্ৰাউজাৰ</translation>
 <translation id="8009225694047762179">পাছৱৰ্ড পৰিচালনা কৰক</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{এই কাৰ্ডখন আৰু ইয়াৰ বিলিঙৰ ঠিকনা ছেভ কৰা হ’ব। আপুনি <ph name="USER_EMAIL" />ত ছাইন ইন কৰিলে এয়া ব্যৱহাৰ কৰিব পাৰিব।}one{এই কাৰ্ডবোৰ আৰু ইয়াৰ বিলিঙৰ ঠিকনা ছেভ কৰা হ’ব। আপুনি <ph name="USER_EMAIL" />ত ছাইন ইন কৰিলে এইবোৰ ব্যৱহাৰ কৰিব পাৰিব।}other{এই কাৰ্ডবোৰ আৰু ইয়াৰ বিলিঙৰ ঠিকনা ছেভ কৰা হ’ব। আপুনি <ph name="USER_EMAIL" />ত ছাইন ইন কৰিলে এইবোৰ ব্যৱহাৰ কৰিব পাৰিব।}}</translation>
+<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8025119109950072390">এই ছাইটৰ আক্ৰমণকাৰীয়ে আপোনাৰ দ্বাৰা কিছুমান বিপজ্জনক কাম কৰাবলৈ চেষ্টা কৰিব পাৰে, যেনে কোনো ছফ্টৱেৰ ইনষ্টল কৰোৱা বা আপোনাৰ ব্যক্তিগত তথ্য (উদাহৰণস্বৰূপে, পাছৱর্ড, ফ’ন নম্বৰ বা ক্ৰেডিট কার্ড) ফাদিল কৰা।</translation>
 <translation id="8026334261755873520">ব্ৰাউজিং ডেটা মচক</translation>
 <translation id="8027077570865220386">ট্ৰে’ ১৫</translation>

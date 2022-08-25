@@ -1105,7 +1105,6 @@
 <translation id="3969052498612555048">ኮድዎን ማግኘት አልቻሉም? <ph name="BEGIN_LINK" />አዲስ ኮድ ያግኙ<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">በማስላት ላይ...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> ታግዷል</translation>
-<translation id="3978338123949022456">የፍለጋ ሁነታ፣ መጠይቅን ይተይቡ እና በ<ph name="KEYWORD_SUFFIX" /> ለመፈለግ አስገባን ይጫኑ</translation>
 <translation id="398470910934384994">አዕዋፍ</translation>
 <translation id="3985750352229496475">አድራሻዎችን ያቀናብሩ...</translation>
 <translation id="3986705137476756801">ለአሁን የቀጥታ መግለጫ ጽሑፍን አጥፋ</translation>
@@ -1653,6 +1652,7 @@
 <translation id="540969355065856584">ይህ አገልጋይ <ph name="DOMAIN" /> መሆኑን ሊያረጋግጥ አልቻለም፤ የደህንነት እውቅና ማረጋገጫው በዚህ ጊዜ ላይ የሚሰራ አይደለም። ይሄ በተሳሳተ አወቃቀር ወይም አንድ አጥቂ ግንኙነትዎን በመጥለፉ የተከሰተ ሊሆን ይችላል።</translation>
 <translation id="5412040515238827314">ልክ ያልኾነ ቅርጸት፦ የስርዓተ ጥለቶች ዝርዝር ተጠብቆ ነበር።</translation>
 <translation id="5412236728747081950">ይህ ጣቢያ ይበልጥ አግባብነት ያላቸውን ማስታወቂያዎች ለእርስዎ ለማሳየት የእርስዎን ዝንባሌዎች ከChrome ያገኛል</translation>
+<translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">ቁልል 4</translation>
 <translation id="5421136146218899937">የአሰሳ ውሂብ አጽዳ…</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ማሳወቂያዎችን ለእርስዎ መላክ ይፈልጋል</translation>
@@ -2585,6 +2585,7 @@
 <translation id="8004582292198964060">አሳሽ</translation>
 <translation id="8009225694047762179">የይለፍ ቃላትን ያቀናብሩ</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{ይህ ካርድ እና የክፍያ መጠየቂያ አድራሻው ይቀመጣሉ። በመለያ ወደ <ph name="USER_EMAIL" /> ሲገቡ ሊጠቀሙበት ይችላሉ።}one{እነዚህ ካርዶች እና የክፍያ መጠየቂያ አድራሻዎቻቸው ይቀመጣሉ። በመለያ ወደ <ph name="USER_EMAIL" /> ሲገቡ ሊጠቀሙባቸው ይችላሉ።}other{እነዚህ ካርዶች እና የክፍያ መጠየቂያ አድራሻዎቻቸው ይቀመጣሉ። በመለያ ወደ <ph name="USER_EMAIL" /> ሲገቡ ሊጠቀሙባቸው ይችላሉ።}}</translation>
+<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8025119109950072390">በዚህ ጣቢያ ላይ ያሉ አጥቂዎች እርስዎ እንደ ሶፍትዌር መጫን ወይም የግል መረጃዎን (ለምሳሌ፦ የይለፍ ቃላት፣ ስልክ ቁጥሮች ወይም ክሬዲት ካርዶች) አሳልፈው እንዲሰጡ ያሉ አደገኛ ነገር እንዲያደርጉ ሊያታልሉዎት ይችላሉ።</translation>
 <translation id="8026334261755873520">የአሰሳ ውሂብ አጽዳ</translation>
 <translation id="8027077570865220386">መሳቢያ 15</translation>

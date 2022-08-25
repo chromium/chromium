@@ -2569,6 +2569,7 @@
 <translation id="3406290648907941085">ভাৰ্ছুৱেল ৰিয়েলিটি ডিভাইচ আৰু ডেটা ব্যৱহাৰ কৰাৰ অনুমতি আছে</translation>
 <translation id="3406396172897554194">ভাষা অথবা ইনপুটৰ নাম অনুসৰি সন্ধান কৰক</translation>
 <translation id="3406605057700382950">বুকমার্ক বাৰ &amp;দেখুৱাওক</translation>
+<translation id="3408849592677950451">{NUM_PASSWORDS,plural, =1{<ph name="USER_EMAIL" />ৰ বাবে Google Password Managerলৈ ১ টা পাছৱৰ্ড আমদানি কৰা হৈছে}one{<ph name="USER_EMAIL" />ৰ বাবে Google Password Managerলৈ {NUM_PASSWORDS} টা পাছৱৰ্ড আমদানি কৰা হৈছে}other{<ph name="USER_EMAIL" />ৰ বাবে Google Password Managerলৈ {NUM_PASSWORDS} টা পাছৱৰ্ড আমদানি কৰা হৈছে}}</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3412265149091626468">বাছনিলৈ যাওক</translation>
 <translation id="3413122095806433232">চিএ ব্যৱহাৰকাৰী: <ph name="LOCATION" /></translation>
@@ -3322,6 +3323,7 @@
 <translation id="4101352914005291489">লুকুৱাই ৰখা SSID</translation>
 <translation id="4102469565336584882">অমান্য ক’ড। আপোনাৰ প্ৰৱিষ্টিটোত LPA:1$&lt;smdp ঠিকনা&gt;$&lt;সক্ৰিয়কৰণৰ ক'ড&gt; ফর্মেটটো থাকিব লাগে।</translation>
 <translation id="4102906002417106771">পাৱাৰৱাশ্ব কৰিবলৈ ৰিষ্টাৰ্ট কৰক</translation>
+<translation id="4104163789986725820">ৰ&amp;প্তানি কৰক...</translation>
 <translation id="4107048419833779140">ষ্ট’ৰেজ ডিভাইচ চিনাক্ত কৰক আৰু বাহিৰ কৰক</translation>
 <translation id="4108314971463891922">ফ’ল’ কৰক</translation>
 <translation id="4109135793348361820"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)লৈ ৱিণ্ড’ক আঁতৰাওক</translation>
@@ -3752,6 +3754,7 @@
 <translation id="4541123282641193691">আপোনাৰ একাউণ্টটো সত্যাপন কৰিব পৰা নগ’ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক অথবা আপোনাৰ Chromebook ৰিষ্টাৰ্ট কৰক।</translation>
 <translation id="4541662893742891060">এই প্ৰ'ফাইলটোৰ সৈতে সংযোগ কৰিবলৈ সক্ষম নহ'ল। কাৰিকৰী সহায়ৰ বাবে অনুগ্ৰহ কৰি আপোনাৰ বাহকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="4541706525461326392">প্ৰ’ফাইল আঁতৰাই থকা হৈছে। এই কামত কেইমিনিটমান সময় লাগিব পাৰে।</translation>
+<translation id="4542332958571335077">{NUM_PASSWORDS,plural, =1{এই ডিভাইচটোত Google Password Managerলৈ ১ টা পাছৱৰ্ড আমদানি কৰা হৈছে}one{এই ডিভাইচটোত Google Password Managerলৈ {NUM_PASSWORDS} টা পাছৱৰ্ড আমদানি কৰা হৈছে}other{এই ডিভাইচটোত Google Password Managerলৈ {NUM_PASSWORDS} টা পাছৱৰ্ড আমদানি কৰা হৈছে}}</translation>
 <translation id="4542520061254486227">আপোনাৰ ডেটা <ph name="WEBSITE_1" /> আৰু <ph name="WEBSITE_2" />ত পঢ়ক</translation>
 <translation id="4543778593405494224">প্ৰমাণপত্ৰৰ পৰিচালক</translation>
 <translation id="4544174279960331769">ডিফ’ল্ট নীলা অৱতাৰ</translation>
@@ -5520,7 +5523,6 @@
 <translation id="6278428485366576908">থীম</translation>
 <translation id="6278776436938569440">অৱস্থান সলনি কৰক</translation>
 <translation id="6279183038361895380">আপোনাৰ কাৰ্ছৰটো দেখুৱাবলৈ |<ph name="ACCELERATOR" />| টিপক</translation>
-<translation id="6279595948631688299">বাছনি কৰা প্ৰমাণপত্ৰ ৰপ্তানি কৰক...</translation>
 <translation id="6280215091796946657">বেলেগ এটা একাউণ্টৰ দ্বাৰা ছাইন ইন কৰক</translation>
 <translation id="6280912520669706465">এআৰচি</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{১ খন কাগজৰ সীমা অতিক্ৰম কৰিছে}one{{COUNT} খন কাগজৰ সীমা অতিক্ৰম কৰিছে}other{{COUNT} খন কাগজৰ সীমা অতিক্ৰম কৰিছে}}</translation>
@@ -6244,6 +6246,7 @@
 <translation id="6968288415730398122">স্ক্ৰীণ লক কনফিগাৰ কৰিবলৈ নিজৰ পাছৱৰ্ড দিয়ক</translation>
 <translation id="6969047215179982698">Nearby Share সুবিধাটো অফ কৰক</translation>
 <translation id="6970480684834282392">ষ্টার্ট আপৰ প্ৰকাৰ</translation>
+<translation id="6970543303783413625">পাছৱৰ্ড আমদানি কৰিব নোৱাৰি। আপুনি এবাৰত মাত্ৰ <ph name="COUNT" /> টালৈকে পাছৱৰ্ড আমদানি কৰিব পাৰে।</translation>
 <translation id="6970856801391541997">নির্দিষ্ট পৃষ্ঠা প্ৰিণ্ট কৰক</translation>
 <translation id="6970861306198150268">আপুনি এই ছাইটটোৰ বাবে নিজৰ বৰ্তমানৰ পাছৱৰ্ডটো ছেভ কৰাটো নিশ্চিত কৰক</translation>
 <translation id="6972180789171089114">অডিঅ’/ভিডিঅ’</translation>
@@ -6476,6 +6479,7 @@
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{পৃষ্ঠাৰ বাহিৰ হওক}one{পৃষ্ঠাসমূহৰ বাহিৰ হওক}other{পৃষ্ঠাসমূহৰ বাহিৰ হওক}}</translation>
 <translation id="7207457272187520234">ব্যৱহাৰ আৰু ডায়গনষ্টিক ডেটা পঠিয়াওক। এই ডিভাইচটোৱে বর্তমান স্বয়ংক্ৰিয়ভাৱে Googleলৈ ডায়গন’ষ্টিক, ডিভাইচ আৰু এপ্ ব্যৱহাৰৰ ডেটা পঠিয়াই আছে। এই কার্যটোৱে ছিষ্টেম আৰু এপৰ স্থিৰতা আৰু অন্য উন্নয়নত সহায় কৰিব। কিছুমান একত্ৰিত ডেটাই Google এপ্‌ আৰু Android বিকাশকৰ্তাৰ দৰে অংশীদাৰকো সহায় কৰিব। এই ছেটিংটো গৰাকীয়ে বলৱৎ কৰিছে। যদি আপোনাৰ অতিৰিক্ত ৱেব আৰু এপৰ কার্যকলাপৰ ছেটিংটো অন কৰা হয় তেন্তে এই ডেটাখিনি আপোনাৰ Google একাউণ্টত ছেভ কৰা হ’ব পাৰে।</translation>
 <translation id="7207631048330366454">এপসমূহ সন্ধান কৰক</translation>
+<translation id="7210471695184432500">এই ডিভাইচটোত Google Password Managerলৈ পাছৱৰ্ড আমদানি কৰিবলৈ, এটা CSV ফাইল বাছনি কৰক</translation>
 <translation id="7210499381659830293">এক্সটেনশ্বন প্ৰিণ্টাৰ</translation>
 <translation id="7211783048245131419">এই পৰ্যন্ত কোনো ছুইচ আবণ্টন কৰা হোৱা নাই</translation>
 <translation id="7212097698621322584">আপোনাৰ বৰ্তমানৰ পিনটো সলনি কৰিবলৈ সেইটো দিয়ক। আপুনি যদি নিজৰ পিনটো নাজানে, আপুনি সুৰক্ষা চাবিটো ৰিছেট কৰি এটা নতুন পিন সৃষ্টি কৰিব লাগিব।</translation>
@@ -7534,6 +7538,7 @@
 <translation id="8206859287963243715">চেলুলাৰ</translation>
 <translation id="8208216423136871611">ছেভ নকৰিব</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{নতুন জাননী}one{# টা নতুন জাননী}other{# টা নতুন জাননী}}</translation>
+<translation id="821119981794423735"><ph name="USER_EMAIL" />ৰ বাবে Google Password Managerলৈ পাছৱৰ্ড আমদানি কৰিবলৈ, এটা CSV ফাইল বাছনি কৰক</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{ডাউনল’ড হৈ আছে}one{ডাউনল’ড হৈ আছে}other{ডাউনল’ড হৈ আছে}}</translation>
 <translation id="8213449224684199188">ফট’ ম’ডত ৰখা হৈছে</translation>
 <translation id="8214489666383623925">ফাইল খোলক...</translation>

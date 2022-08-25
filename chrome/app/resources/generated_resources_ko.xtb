@@ -3325,6 +3325,7 @@
 <translation id="4101352914005291489">숨겨진 SSID</translation>
 <translation id="4102469565336584882">잘못된 코드입니다. LPA:1$&lt;smdp address&gt;$&lt;activation code&gt; 형식이어야 합니다.</translation>
 <translation id="4102906002417106771">다시 시작하여 파워워시</translation>
+<translation id="4104163789986725820">내보내기(&amp;X)...</translation>
 <translation id="4107048419833779140">외부 저장장치 식별 및 제거</translation>
 <translation id="4108314971463891922">팔로우</translation>
 <translation id="4109135793348361820">창을 <ph name="USER_NAME" />(<ph name="USER_EMAIL" />)님에게로 이동</translation>
@@ -5524,7 +5525,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6278428485366576908">테마</translation>
 <translation id="6278776436938569440">위치 변경</translation>
 <translation id="6279183038361895380">|<ph name="ACCELERATOR" />|을(를) 눌러 커서 표시</translation>
-<translation id="6279595948631688299">선택한 인증서 내보내기(&amp;x)...</translation>
 <translation id="6280215091796946657">다른 계정으로 로그인</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{용지 1장 제한 초과}other{용지 {COUNT}장 제한 초과}}</translation>

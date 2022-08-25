@@ -276,6 +276,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="125220115284141797">Predefinidas</translation>
 <translation id="1252987234827889034">Ocorreu um erro do perfil</translation>
 <translation id="1254593899333212300">Ligação direta à Internet</translation>
+<translation id="1257336506558170607">Exportar certificado selecionado</translation>
 <translation id="1258491128795710625">Novidades</translation>
 <translation id="1259152067760398571">A verificação de segurança foi efetuada ontem.</translation>
 <translation id="1260451001046713751">Permitir sempre pop-ups e redirecionamentos de <ph name="HOST" /></translation>
@@ -3312,6 +3313,7 @@ Pretende pará-lo?</translation>
 <translation id="4101352914005291489">SSID oculto</translation>
 <translation id="4102469565336584882">Código inválido. A sua entrada deve ter o formato LPA:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">Reiniciar para Powerwash</translation>
+<translation id="4104163789986725820">E&amp;xportar...</translation>
 <translation id="4107048419833779140">Identificar e ejetar dispositivos de armazenamento</translation>
 <translation id="4108314971463891922">Seguir</translation>
 <translation id="4109135793348361820">Mover a janela para <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -5511,7 +5513,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6278776436938569440">Alterar a localização</translation>
 <translation id="6279183038361895380">Premir |<ph name="ACCELERATOR" />| para mostrar o cursor</translation>
-<translation id="6279595948631688299">E&amp;xportar o certificado selecionado…</translation>
 <translation id="6280215091796946657">Iniciar sessão com uma conta diferente</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Excede o limite de 1 folha de papel.}other{Excede o limite de {COUNT} folhas de papel.}}</translation>

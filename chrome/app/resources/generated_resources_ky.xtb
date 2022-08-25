@@ -3326,6 +3326,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4101352914005291489">Жашырылган SSID</translation>
 <translation id="4102469565336584882">Код туура эмес. Коддо LPA форматы болушу керек:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">Жууп салуу үчүн өчүрүп күйгүзүү</translation>
+<translation id="4104163789986725820">Э&amp;кспорттоо…</translation>
 <translation id="4107048419833779140">Сактагыч түзмөктөрү аныкталып, чыгарылсын</translation>
 <translation id="4108314971463891922">Жазылуу</translation>
 <translation id="4109135793348361820">Терезени буга <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) жылдыруу</translation>
@@ -5525,7 +5526,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6278776436938569440">Жайгашкан жерди өзгөртүү</translation>
 <translation id="6279183038361895380">Курсоруңузду көрсөтүү үчүн |<ph name="ACCELERATOR" />| дегенди басыңыз</translation>
-<translation id="6279595948631688299">Тандалган уруксаттаманы экспорттоо...</translation>
 <translation id="6280215091796946657">Башка аккаунт менен кириңиз</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{1 кагаз чегинен ашып кетти}other{{COUNT} кагаз чегинен ашып кетти}}</translation>

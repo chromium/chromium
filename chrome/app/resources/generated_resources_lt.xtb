@@ -3329,6 +3329,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4101352914005291489">Paslėptas SSID</translation>
 <translation id="4102469565336584882">Netinkamas kodas. Turite įvesti LPA formatu:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">Paleisti iš naujo, kad būtų paleista „Powerwash“</translation>
+<translation id="4104163789986725820">Eksportuoti...</translation>
 <translation id="4107048419833779140">Identifikuoti ir pašalinti saugyklos įrenginius</translation>
 <translation id="4108314971463891922">Stebėti</translation>
 <translation id="4109135793348361820">Perkelti langą <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -5529,7 +5530,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6278776436938569440">Keisti vietą</translation>
 <translation id="6279183038361895380">Paspauskite |<ph name="ACCELERATOR" />|, kad būtų rodomas žymeklis</translation>
-<translation id="6279595948631688299">E&amp;ksportuoti pasirinktą sertifikatą...</translation>
 <translation id="6280215091796946657">Prisijunkite naudodami kitą paskyrą</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Viršytas 1 popieriaus lapo apribojimas}one{Viršytas {COUNT} popieriaus lapo apribojimas}few{Viršytas {COUNT} popieriaus lapų apribojimas}many{Viršytas {COUNT} popieriaus lapo apribojimas}other{Viršytas {COUNT} popieriaus lapų apribojimas}}</translation>

@@ -3326,6 +3326,7 @@
 <translation id="4101352914005291489">ਲੁਕਿਆ ਹੋਇਆ SSID</translation>
 <translation id="4102469565336584882">ਅਵੈਧ ਕੋਡ। ਤੁਹਾਡਾ ਇੰਦਰਾਜ ਇਸ LPA ਫਾਰਮੈਟ ਅਨੁਸਾਰ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">ਪਾਵਰਵਾਸ਼ ਲਈ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ</translation>
+<translation id="4104163789986725820">ਨਿ&amp;ਰਯਾਤ ਕਰੋ..</translation>
 <translation id="4107048419833779140">ਸਟੋਰੇਜ ਡੀਵਾਈਸਾਂ ਪਛਾਣੋ ਅਤੇ ਬਾਹਰ ਕੱਢੋ</translation>
 <translation id="4108314971463891922">ਅਨੁਸਰਣ ਕਰੋ</translation>
 <translation id="4109135793348361820">window ਨੂੰ <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) ਵਿੱਚ ਮੂਵ ਕਰੋ</translation>
@@ -5525,7 +5526,6 @@
 <translation id="6278428485366576908">ਥੀਮ</translation>
 <translation id="6278776436938569440">ਟਿਕਾਣਾ ਬਦਲੋ</translation>
 <translation id="6279183038361895380">ਆਪਣਾ ਕਰਸਰ ਵਿਖਾਉਣ ਲਈ |<ph name="ACCELERATOR" />| ਦਬਾਓ</translation>
-<translation id="6279595948631688299">ਚੁਣਿਆ ਗਿਆ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਨਿਰਯਾਤ ਕਰੋ...</translation>
 <translation id="6280215091796946657">ਕਿਸੇ ਵੱਖਰੇ ਖਾਤੇ ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{1 ਕਾਗਜ਼ ਦੀ ਸ਼ੀਟ ਦੀ ਸੀਮਾ ਨੂੰ ਪਾਰ ਕਰਦੀ ਹੈ}one{{COUNT} ਕਾਗਜ਼ ਦੀ ਸ਼ੀਟ ਦੀ ਸੀਮਾ ਨੂੰ ਪਾਰ ਕਰਦੀ ਹੈ}other{{COUNT} ਕਾਗਜ਼ ਦੀਆਂ ਸ਼ੀਟਾਂ ਦੀ ਸੀਮਾ ਨੂੰ ਪਾਰ ਕਰਦੀ ਹੈ}}</translation>

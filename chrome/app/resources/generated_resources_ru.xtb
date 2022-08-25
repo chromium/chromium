@@ -3313,6 +3313,7 @@
 <translation id="4101352914005291489">Скрытое имя сети</translation>
 <translation id="4102469565336584882">Недействительный код. Запись должна быть в формате LPA: 1$&lt;smdp address&gt;$&lt;activation code&gt;.</translation>
 <translation id="4102906002417106771">Перезапустить и использовать Powerwash</translation>
+<translation id="4104163789986725820">Э&amp;кспорт...</translation>
 <translation id="4107048419833779140">Идентификация и извлечение запоминающих устройств</translation>
 <translation id="4108314971463891922">Подписаться</translation>
 <translation id="4109135793348361820">Перенести окно на рабочий стол пользователя <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -5511,7 +5512,6 @@
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6278776436938569440">Изменить местоположение</translation>
 <translation id="6279183038361895380">Чтобы показать курсор, нажмите |<ph name="ACCELERATOR" />|</translation>
-<translation id="6279595948631688299">Экспорт выбранного сертификата</translation>
 <translation id="6280215091796946657">Войти в другой аккаунт</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Превышено ограничение. Можно напечатать не более 1 листа бумаги.}one{Превышено ограничение. Можно напечатать не более {COUNT} листа бумаги.}few{Превышено ограничение. Можно напечатать не более {COUNT} листов бумаги.}many{Превышено ограничение. Можно напечатать не более {COUNT} листов бумаги.}other{Превышено ограничение. Можно напечатать не более {COUNT} листа бумаги.}}</translation>

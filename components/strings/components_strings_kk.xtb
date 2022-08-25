@@ -1105,7 +1105,6 @@
 <translation id="3969052498612555048">Кодты таба алмай жатырсыз ба? <ph name="BEGIN_LINK" />Жаңа код алу<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Есептелуде…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> бөгелген</translation>
-<translation id="3978338123949022456">Іздеу режимі: <ph name="KEYWORD_SUFFIX" /> сөзі арқылы іздеу үшін сұрауды жазып, Enter пернесін басыңыз.</translation>
 <translation id="398470910934384994">Құстар</translation>
 <translation id="3985750352229496475">Мекенжайларды басқару...</translation>
 <translation id="3986705137476756801">Live Caption функциясын қазір өшіру</translation>
@@ -2058,6 +2057,7 @@
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> құрылғыңыз басқарылмайды.</translation>
 <translation id="6592952801936330159">"Сайт параметрлерін басқару" түймесі. Chrome параметрлеріне кіріп, сайттарға қатысты сақталған рұқсаттар мен деректерді басқару үшін Enter пернесін басыңыз.</translation>
 <translation id="6596325263575161958">Шифрлау опциялары</translation>
+<translation id="6599642189720630047">Қадағаланатын өнімдер</translation>
 <translation id="6609880536175561541">Prc7 (Envelope)</translation>
 <translation id="6611723696964473273">Экономика жаңалықтары</translation>
 <translation id="6612010098632894193">Онлайн бейне</translation>

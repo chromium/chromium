@@ -3318,6 +3318,7 @@
 <translation id="4101352914005291489">የተደበቀ SSID</translation>
 <translation id="4102469565336584882">ልክ ያልሆነ ኮድ። የእርስዎ ግቤት የLPA:1$&lt;smdp address&gt;$&lt;activation code&gt; ቅርጸት ሊኖረው ይገባል።</translation>
 <translation id="4102906002417106771">powerwash ለማድረግ እንደገና ያስጀምሩ</translation>
+<translation id="4104163789986725820">ወደ &amp;ውጪ ላክ...</translation>
 <translation id="4107048419833779140">የማከማቻ መሣሪያዎችን ለይተው ይወቁ እና ያስወጡ</translation>
 <translation id="4108314971463891922">ተከተል</translation>
 <translation id="4109135793348361820">መስኮት ወደ <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) ውሰድ</translation>
@@ -5516,7 +5517,6 @@
 <translation id="6278428485366576908">ገጽታ</translation>
 <translation id="6278776436938569440">አካባቢ ይቀይሩ</translation>
 <translation id="6279183038361895380">የእርስዎን ጠቋሚ ለማሳየት |<ph name="ACCELERATOR" />| ይጫኑ</translation>
-<translation id="6279595948631688299">የተመረጠውን የዕውቅና ማረጋገጫ ወደ ውጪ ላክ...</translation>
 <translation id="6280215091796946657">በተለየ መለያ ይግቡ</translation>
 <translation id="6280912520669706465">ኤአርሲ</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{ከ1 የወረቀት ሉህ ገደብ ይበልጣል}one{ከ{COUNT} የወረቀት ሉህ ገደብ ይበልጣል}other{ከ{COUNT} የወረቀት ሉህ ገደብ ይበልጣል}}</translation>

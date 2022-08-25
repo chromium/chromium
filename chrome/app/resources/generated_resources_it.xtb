@@ -3310,6 +3310,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4101352914005291489">SSID nascosto</translation>
 <translation id="4102469565336584882">Codice non valido. Il formato dell'elemento dovrebbe essere LPA:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">Riavvia per eseguire il Powerwash</translation>
+<translation id="4104163789986725820">E&amp;sporta...</translation>
 <translation id="4107048419833779140">Identifica ed espelli i dispositivi di archiviazione</translation>
 <translation id="4108314971463891922">Segui</translation>
 <translation id="4109135793348361820">Sposta finestra su <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -5504,7 +5505,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6278776436938569440">Cambia posizione</translation>
 <translation id="6279183038361895380">Premi |<ph name="ACCELERATOR" />| per mostrare il puntatore</translation>
-<translation id="6279595948631688299">E&amp;sporta certificato selezionato…</translation>
 <translation id="6280215091796946657">Accedi con un altro account</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Supera il limite di 1 foglio}other{Supera il limite di {COUNT} fogli}}</translation>

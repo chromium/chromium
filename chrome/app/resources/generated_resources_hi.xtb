@@ -2569,6 +2569,7 @@
 <translation id="3406290648907941085">वर्चुअल रियलिटी डिवाइस और डेटा इस्तेमाल करने की अनुमति है</translation>
 <translation id="3406396172897554194">भाषा या इनपुट के नाम से खोजें</translation>
 <translation id="3406605057700382950">बुकमार्क बार &amp;दिखाएं</translation>
+<translation id="3408849592677950451">{NUM_PASSWORDS,plural, =1{<ph name="USER_EMAIL" /> के लिए, Google Password Manager में 1 पासवर्ड इंपोर्ट किया गया}one{<ph name="USER_EMAIL" /> के लिए, Google Password Manager में {NUM_PASSWORDS} पासवर्ड इंपोर्ट किया गया}other{<ph name="USER_EMAIL" /> के लिए, Google Password Manager में {NUM_PASSWORDS} पासवर्ड इंपोर्ट किए गए}}</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3412265149091626468">चुनें पर जाएं</translation>
 <translation id="3413122095806433232">CA जारीकर्ता: <ph name="LOCATION" /></translation>
@@ -3322,6 +3323,7 @@
 <translation id="4101352914005291489">छिपा हुआ SSID</translation>
 <translation id="4102469565336584882">कोड अमान्य है. डाला गया कोड LPA:1$&lt;smdp address&gt;$&lt;activation code&gt; के फ़ॉर्मैट में होना चाहिए</translation>
 <translation id="4102906002417106771">पावरवॉश के लिए रीस्टार्ट करें</translation>
+<translation id="4104163789986725820">नि&amp;र्यात करें...</translation>
 <translation id="4107048419833779140">मेमोरी डिवाइसों की पहचान करें और उन्हें निकालें</translation>
 <translation id="4108314971463891922">फ़ॉलो करें</translation>
 <translation id="4109135793348361820">विंडो को <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) पर ले जाएं</translation>
@@ -3752,6 +3754,7 @@
 <translation id="4541123282641193691">आपके खाते की पुष्टि नहीं हो सकी. कृपया फिर से कोशिश करें या अपना Chromebook रीस्टार्ट करें.</translation>
 <translation id="4541662893742891060">इस प्रोफ़ाइल से कनेक्ट नहीं किया जा सकता. तकनीकी सहायता के लिए, कृपया मोबाइल और इंटरनेट सेवा देने वाली अपनी कंपनी से संपर्क करें.</translation>
 <translation id="4541706525461326392">प्रोफ़ाइल हटाई जा रही है. इसमें कुछ मिनट लग सकते हैं.</translation>
+<translation id="4542332958571335077">{NUM_PASSWORDS,plural, =1{इस डिवाइस पर, Google Password Manager में 1 पासवर्ड इंपोर्ट किया गया}one{इस डिवाइस पर, Google Password Manager में {NUM_PASSWORDS} पासवर्ड इंपोर्ट किया गया}other{इस डिवाइस पर, Google Password Manager में {NUM_PASSWORDS} पासवर्ड इंपोर्ट किए गए}}</translation>
 <translation id="4542520061254486227"><ph name="WEBSITE_1" /> और <ph name="WEBSITE_2" /> पर अपना डेटा पढ़ें</translation>
 <translation id="4543778593405494224">प्रमाणपत्र मैनेजर</translation>
 <translation id="4544174279960331769">डिफ़ॉल्ट नीला अवतार</translation>
@@ -5517,7 +5520,6 @@
 <translation id="6278428485366576908">थीम</translation>
 <translation id="6278776436938569440">जगह बदलें</translation>
 <translation id="6279183038361895380">अपना कर्सर दिखाने के लिए |<ph name="ACCELERATOR" />| दबाएं</translation>
-<translation id="6279595948631688299">चुने गए सर्टिफ़िकेट को एक्सपोर्ट करें...</translation>
 <translation id="6280215091796946657">किसी दूसरे खाते से साइन इन करें</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{काग़ज़ की 1 शीट से ज़्यादा प्रिंट नहीं कर सकते}one{काग़ज़ की {COUNT} शीट से ज़्यादा प्रिंट नहीं कर सकते}other{काग़ज़ की {COUNT} शीट से ज़्यादा प्रिंट नहीं कर सकते}}</translation>
@@ -6238,6 +6240,7 @@
 <translation id="6968288415730398122">स्क्रीन लॉक कॉन्फ़िगर करने के लिए अपना पासवर्ड डालें</translation>
 <translation id="6969047215179982698">आस-पास शेयर करने की सुविधा बंद करें</translation>
 <translation id="6970480684834282392">स्टार्टअप प्रकार</translation>
+<translation id="6970543303783413625">पासवर्ड इंपोर्ट नहीं किए जा सके. एक बार में सिर्फ़ <ph name="COUNT" /> पासवर्ड इंपोर्ट किए जा सकते हैं.</translation>
 <translation id="6970856801391541997">विशेष पेज प्रिंट करें</translation>
 <translation id="6970861306198150268">पक्का करें कि आप इस साइट के लिए अपना मौजूदा पासवर्ड सेव कर रहे हैं</translation>
 <translation id="6972180789171089114">ऑडियो/वीडियो</translation>
@@ -6470,6 +6473,7 @@
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{पेज से बाहर निकलें}one{पेज से बाहर निकलें}other{पेज से बाहर निकलें}}</translation>
 <translation id="7207457272187520234">इस्तेमाल और गड़बड़ी की जानकारी से जुड़ा डेटा भेजें. यह डिवाइस फ़िलहाल Google को गड़बड़ी की जानकारी, डिवाइस, और ऐप्लिकेशन के इस्तेमाल से जुड़ा डेटा अपने-आप भेज रहा है. यह सिस्टम और ऐप्लिकेशन की स्थिरता बढ़ाने और दूसरे सुधार करने में मदद करेगा. इकट्ठा किया गया कुछ डेटा, Google ऐप्लिकेशन और पार्टनर की भी मदद करेगा. जैसे, Android डेवलपर. यह सेटिंग, डिवाइस के मालिक ने लागू की है. अगर आपकी दूसरी 'वेब और ऐप्लिकेशन गतिविधि' सेटिंग चालू है, तो यह डेटा आपके Google खाते में सेव किया जा सकता है.</translation>
 <translation id="7207631048330366454">ऐप्लिकेशन खोजें</translation>
+<translation id="7210471695184432500">इस डिवाइस पर, Google Password Manager में पासवर्ड इंपोर्ट करने के लिए, कोई CSV फ़ाइल चुनें</translation>
 <translation id="7210499381659830293">एक्सटेंशन प्रिंटर</translation>
 <translation id="7211783048245131419">अभी तक कोई भी स्विच असाइन नहीं किया गया</translation>
 <translation id="7212097698621322584">अपना मौजूदा पिन डालकर उसे बदलें. अगर आप पिन नहीं जानते हैं, तो आपको सुरक्षा कुंजी रीसेट करनी होगी, फिर एक नया पिन बनाना होगा.</translation>
@@ -7526,6 +7530,7 @@
 <translation id="8206859287963243715">सेलुलर</translation>
 <translation id="8208216423136871611">न सेव करें</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{नई सूचना}one{# नई सूचना}other{# नई सूचनाएं}}</translation>
+<translation id="821119981794423735"><ph name="USER_EMAIL" /> के लिए, Google Password Manager में पासवर्ड इंपोर्ट करने के लिए, कोई CSV फ़ाइल चुनें</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{डाउनलोड जारी है}one{डाउनलोड जारी हैं}other{डाउनलोड जारी हैं}}</translation>
 <translation id="8213449224684199188">आप फ़ोटो मोड में हैं</translation>
 <translation id="8214489666383623925">फ़ाइल खोलें...</translation>

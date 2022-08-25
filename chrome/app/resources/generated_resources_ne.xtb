@@ -3308,6 +3308,7 @@
 <translation id="4101352914005291489">लुकाइएको SSID</translation>
 <translation id="4102469565336584882">अवैध कोड। तपाईंले हालेको कोड LPA फर्म्याटमा हुनु पर्छ:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">पावरवासको लागि रिस्टार्ट गर्नुहोस्</translation>
+<translation id="4104163789986725820">नि&amp;र्यात...</translation>
 <translation id="4107048419833779140">भण्डारण यन्त्रहरू पहिचान गर्नुहोस् तथा निकाल्नुहोस्‌</translation>
 <translation id="4108314971463891922">फलो गर्नुहोस्</translation>
 <translation id="4109135793348361820">विण्डोलाई <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) मा सार्नुहोस्</translation>
@@ -5505,7 +5506,6 @@
 <translation id="6278428485366576908">विषयवस्तु</translation>
 <translation id="6278776436938569440">स्थान परिवर्तन गर्नुहोस्</translation>
 <translation id="6279183038361895380">तपाईंको कर्सर देखाउन |<ph name="ACCELERATOR" />| लाई थिच्नुहोस्</translation>
-<translation id="6279595948631688299">चयन गरिएको प्रमाणपत्र एक्स्पोर्ट गर्नुहोस्...</translation>
 <translation id="6280215091796946657">फरक खाता मार्फत साइन इन गर्नुहोस्</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{कागजको एकभन्दा बढी पाना प्रिन्ट गर्न मिल्दैन}other{कागजका {COUNT} वटाभन्दा बढी पाना प्रिन्ट गर्न मिल्दैन}}</translation>

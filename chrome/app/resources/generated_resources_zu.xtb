@@ -3326,6 +3326,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="4101352914005291489">I-SSID efihliwe</translation>
 <translation id="4102469565336584882">Ikhodi engavumelekile. Ukufaka kwakho kufanele kube ne-LPA yefomethi:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">Qala kabusha ku-powerwash</translation>
+<translation id="4104163789986725820">T&amp;humela...</translation>
 <translation id="4107048419833779140">Khomba uphinde ukhiphe amadivayisi esitoreji</translation>
 <translation id="4108314971463891922">Landela</translation>
 <translation id="4109135793348361820">Hambisa iwindi ku-<ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -5528,7 +5529,6 @@ Qiniseka ukuthi awuvezi noma yiluphi ulwazi olubucayi.</translation>
 <translation id="6278428485366576908">Itimu</translation>
 <translation id="6278776436938569440">Shintsha indawo</translation>
 <translation id="6279183038361895380">Cindezela u-|<ph name="ACCELERATOR" />| ukuze ubonise ikhesa lakho</translation>
-<translation id="6279595948631688299">Khipha izitifiketi ezikhethiwe...</translation>
 <translation id="6280215091796946657">Ngena ngemvume nge-akhawunti ehlukile</translation>
 <translation id="6280912520669706465">I-ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{Kudlula umkhawulo weshidi lephepha eli-1}one{Kudlula umkhawulo wamashidi wephepha angu-{COUNT}}other{Kudlula umkhawulo wamashidi wephepha angu-{COUNT}}}</translation>

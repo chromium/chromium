@@ -3326,6 +3326,7 @@
 <translation id="4101352914005291489">SSID ដែលបានលាក់</translation>
 <translation id="4102469565336584882">លេខកូដ​មិនត្រឹមត្រូវ។ ការបញ្ចូលរបស់អ្នកគួរតែមានទម្រង់ LPA៖1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="4102906002417106771">ចាប់ផ្ដើមឡើងវិញដើម្បីផៅវើរវាស់</translation>
+<translation id="4104163789986725820">នាំចេញ...</translation>
 <translation id="4107048419833779140">កំណត់​អត្តសញ្ញាណ និងដក​ឧបករណ៍ផ្ទុកចេញ។</translation>
 <translation id="4108314971463891922">តាមដាន</translation>
 <translation id="4109135793348361820">ផ្លាស់ទីផ្ទាំងទៅ <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -5526,7 +5527,6 @@
 <translation id="6278428485366576908">ធីម</translation>
 <translation id="6278776436938569440">ប្ដូរ​ទីតាំង</translation>
 <translation id="6279183038361895380">ចុច |<ph name="ACCELERATOR" />| ដើម្បីបង្ហាញទស្សន៍ទ្រនិចរបស់អ្នក</translation>
-<translation id="6279595948631688299">នាំ&amp;ចេញ​វិញ្ញាបនបត្រ​ដែលបានជ្រើសរើស...</translation>
 <translation id="6280215091796946657">ចូលដោយប្រើគណនីផ្សេង</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{លើសកម្រិតកំណត់ក្រដាស 1 សន្លឹក}other{លើសកម្រិតកំណត់ក្រដាស {COUNT} សន្លឹក}}</translation>

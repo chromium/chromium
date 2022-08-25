@@ -1106,7 +1106,6 @@
 <translation id="3969052498612555048">क्या आपको ओटीपी कोड नहीं मिला? <ph name="BEGIN_LINK" />नया कोड पाएं<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">गणना की जा रही है...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> को ब्लॉक किया गया है</translation>
-<translation id="3978338123949022456">खोज मोड, <ph name="KEYWORD_SUFFIX" /> को खोजने के लिए क्वेरी लिखें और Enter दबाएं</translation>
 <translation id="398470910934384994">पक्षियों से जुड़ी सेवाएं</translation>
 <translation id="3985750352229496475">पते मैनेज करें...</translation>
 <translation id="3986705137476756801">अभी के लिए लाइव कैप्शन की सुविधा बंद करें</translation>
@@ -1654,6 +1653,7 @@
 <translation id="540969355065856584">यह सर्वर यह प्रमाणित नहीं कर सका कि यह <ph name="DOMAIN" /> है; इसका सुरक्षा प्रमाण पत्र इस समय मान्य नहीं है. ऐसा गलत कॉन्फ़िगरेशन या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन में अवरोध डालने के कारण हो सकता है.</translation>
 <translation id="5412040515238827314">अमान्य फ़ॉर्मैट: पैटर्न की सूची होनी चाहिए.</translation>
 <translation id="5412236728747081950">यह साइट आपकी दिलचस्पी के बारे में Chrome से पता करती है, ताकि आपको ज़्यादा काम के विज्ञापन दिखा सके</translation>
+<translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">स्टैकर 4</translation>
 <translation id="5421136146218899937">ब्राउज़िंग डेटा मिटाएं...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> वेबसाइट आपको सूचनाएं भेजना चाहती है</translation>
@@ -2058,6 +2058,7 @@
 <translation id="6591833882275308647">आपका <ph name="DEVICE_TYPE" /> प्रबंधित नहीं किया जाता</translation>
 <translation id="6592952801936330159">साइट की सेटिंग का बटन मैनेज करें, Chrome की सेटिंग में अलग-अलग साइटों पर सेव डेटा और अनुमतियां मैनेज करने के लिए, Enter दबाएं</translation>
 <translation id="6596325263575161958">सुरक्षित करने के तरीकों के विकल्प</translation>
+<translation id="6599642189720630047">ट्रैक किए गए प्रॉडक्ट</translation>
 <translation id="6609880536175561541">पीआरसी7 (एन्वेलप)</translation>
 <translation id="6611723696964473273">आर्थिक मामलों से जुड़ी खबरें</translation>
 <translation id="6612010098632894193">ऑनलाइन वीडियो</translation>
@@ -2585,6 +2586,7 @@
 <translation id="8004582292198964060">ब्राउज़र</translation>
 <translation id="8009225694047762179">पासवर्ड संभालें</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{इस कार्ड और इसके बिलिंग पते को सेव किया जाएगा. <ph name="USER_EMAIL" /> में साइन इन रहने पर आप इसका इस्तेमाल कर पाएंगे.}one{ये कार्ड और इनके बिलिंग पते सेव किए जाएंगे. <ph name="USER_EMAIL" /> में साइन इन रहने पर आप उनका इस्तेमाल कर पाएंगे.}other{ये कार्ड और इनके बिलिंग पते सेव किए जाएंगे. <ph name="USER_EMAIL" /> में साइन इन रहने पर आप उनका इस्तेमाल कर पाएंगे.}}</translation>
+<translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8025119109950072390">इस साइट पर मौजूद हमलावर आपको धोखा देकर आपसे कुछ जोखिम वाला काम करा सकते हैं, जैसे सॉफ़्टवेयर इंस्टॉल करना या आपकी व्यक्तिगत जानकारी (उदाहरण के लिए, पासवर्ड, फ़ोन नंबर या क्रेडिट कार्ड) के बारे में बताना.</translation>
 <translation id="8026334261755873520">ब्राउज़िंग डेटा मिटाएं</translation>
 <translation id="8027077570865220386">ट्रे 15</translation>

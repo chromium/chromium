@@ -3311,6 +3311,7 @@
 <translation id="4101352914005291489">დამალული SSID</translation>
 <translation id="4102469565336584882">კოდი არასწორია. თქვენი შენატანის ფორმატი უნდა იყოს LPA:1$&lt;smdp მისამართი&gt;$&lt;აქტივაციის კოდი&gt;</translation>
 <translation id="4102906002417106771">გადატვირთვა Powerwash-ისთვის</translation>
+<translation id="4104163789986725820">ე&amp;ქსპორტი…</translation>
 <translation id="4107048419833779140">მეხსიერების მოწყობილობების იდენტიფიცირება და ამოღება</translation>
 <translation id="4108314971463891922">თვალის დევნება</translation>
 <translation id="4109135793348361820">ფანჯრის გადატანა <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
@@ -5509,7 +5510,6 @@
 <translation id="6278428485366576908">თემა</translation>
 <translation id="6278776436938569440">მდებარეობის შეცვლა</translation>
 <translation id="6279183038361895380">კურსორის საჩვენებლად, დააჭირეთ კლავიშზე |<ph name="ACCELERATOR" />|</translation>
-<translation id="6279595948631688299">არჩეული სერტიფიკატის ე&amp;ქსპორტირება...</translation>
 <translation id="6280215091796946657">სისტემაში სხვა ანგარიშით შესვლა</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6282180787514676874">{COUNT,plural, =1{გადაჭარბებულია ქაღალდის 1 ფურცლის ლიმიტი}other{გადაჭარბებულია ქაღალდის {COUNT} ფურცლის ლიმიტი}}</translation>
