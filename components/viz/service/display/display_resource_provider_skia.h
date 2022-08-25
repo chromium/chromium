@@ -72,6 +72,19 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderSkia
     std::vector<std::pair<ResourceId, ChildResource*>> resources_;
   };
 
+  // Sets the current read fence. If a resource is locked for read
+  // and has read fences enabled, the resource will not allow writes
+  // until this fence has passed. This is used if a client uses
+  // TransferableResource::SynchronizationType::kGpuCommandsCompleted.
+  void SetGpuCommandsCompletedFence(ResourceFence* fence) {
+    current_gpu_commands_completed_fence_ = fence;
+  }
+  // Sets the current release fence. If a client uses
+  // TransferableResource::SynchronizationType::kReleaseFence, resources must be
+  // returned only after a release fence is stored in this resource fence.
+  // Returned only when gpu commands and the gpu fence are submitted.
+  void SetReleaseFence(ResourceFence* fence) { current_release_fence_ = fence; }
+
  private:
   // DisplayResourceProvider overrides:
   std::vector<ReturnedResource> DeleteAndReturnUnusedResourcesToChildImpl(
@@ -81,6 +94,9 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderSkia
 
   // Used to release resources held by an external consumer.
   raw_ptr<ExternalUseClient> external_use_client_ = nullptr;
+
+  scoped_refptr<ResourceFence> current_gpu_commands_completed_fence_;
+  scoped_refptr<ResourceFence> current_release_fence_;
 };
 
 }  // namespace viz

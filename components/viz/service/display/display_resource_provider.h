@@ -160,19 +160,6 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
     const bool was_access_to_gpu_thread_allowed_;
   };
 
-  // Sets the current read fence. If a resource is locked for read
-  // and has read fences enabled, the resource will not allow writes
-  // until this fence has passed. This is used if a client uses
-  // TransferableResource::SynchronizationType::kGpuCommandsCompleted.
-  void SetGpuCommandsCompletedFence(ResourceFence* fence) {
-    current_gpu_commands_completed_fence_ = fence;
-  }
-  // Sets the current release fence. If a client uses
-  // TransferableResource::SynchronizationType::kReleaseFence, resources must be
-  // returned only after a release fence is stored in this resource fence.
-  // Returned only when gpu commands and the gpu fence are submitted.
-  void SetReleaseFence(ResourceFence* fence) { current_release_fence_ = fence; }
-
   // Creates accounting for a child. Returns a child ID. surface_id is used to
   // associate resources to the surface they belong to. This is used for
   // overlays on webview where overlays are updated outside of normal draw (i.e
@@ -222,35 +209,6 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
     FOR_SHUTDOWN,
   };
 
-  enum SynchronizationState {
-    // The LOCALLY_USED state is the state each resource defaults to when
-    // constructed or modified or read. This state indicates that the
-    // resource has not been properly synchronized and it would be an error
-    // to return this resource to a client.
-    LOCALLY_USED,
-
-    // The NEEDS_WAIT state is the state that indicates a resource has been
-    // modified but it also has an associated sync token assigned to it.
-    // The sync token has not been waited on with the local context. When
-    // a sync token arrives from a client, it is automatically initialized as
-    // NEEDS_WAIT as well since we still need to wait on it before the resource
-    // is synchronized on the current context. It is an error to use the
-    // resource locally for reading or writing if the resource is in this state.
-    NEEDS_WAIT,
-
-    // The SYNCHRONIZED state indicates that the resource has been properly
-    // synchronized locally. This can either synchronized externally (such
-    // as the case of software rasterized bitmaps), or synchronized
-    // internally using a sync token that has been waited upon. In the
-    // former case where the resource was synchronized externally, a
-    // corresponding sync token will not exist. In the latter case which was
-    // synchronized from the NEEDS_WAIT state, a corresponding sync token will
-    // exist which is associated with the resource. This sync token is still
-    // valid and still associated with the resource and can be passed as an
-    // external resource for others to wait on.
-    SYNCHRONIZED,
-  };
-
   struct Child {
     Child();
     Child(Child&& other);
@@ -276,26 +234,13 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
     ~ChildResource();
 
     bool is_gpu_resource_type() const { return !transferable.is_software; }
-    bool needs_sync_token() const {
-      return is_gpu_resource_type() && synchronization_state_ == LOCALLY_USED;
-    }
     const gpu::SyncToken& sync_token() const { return sync_token_; }
-    SynchronizationState synchronization_state() const {
-      return synchronization_state_;
-    }
-    // If true the gpu resource needs its SyncToken waited on in order to be
-    // synchronized for use.
-    bool ShouldWaitSyncToken() const {
-      return synchronization_state_ == NEEDS_WAIT;
-    }
 
     bool InUse() const {
       return lock_for_read_count > 0 || locked_for_external_use ||
              lock_for_overlay_count > 0;
     }
 
-    void SetLocallyUsed();
-    void SetSynchronized();
     void UpdateSyncToken(const gpu::SyncToken& sync_token);
 
     // This is the id of the client the resource comes from.
@@ -324,12 +269,6 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
     // When the resource should be deleted until it is actually reaped.
     bool marked_for_deletion = false;
 
-    // Texture id for texture-backed resources, when the mailbox is mapped into
-    // a client GL id in this process.
-    GLuint gl_id = 0;
-    // The current min/mag filter for GL texture-backed resources. The original
-    // filter as given from the client is saved in |transferable|.
-    GLenum filter;
     // A pointer to the shared memory structure for software-backed resources,
     // when it is mapped into memory in this process.
     std::unique_ptr<SharedBitmap> shared_bitmap;
@@ -357,11 +296,9 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
     gfx::GpuFenceHandle release_fence;
 
    private:
-    // Tracks if a sync token needs to be waited on before using the resource.
-    SynchronizationState synchronization_state_;
     // A SyncToken associated with a texture-backed or GpuMemoryBuffer-backed
     // resource. It is given from a child to the service, and waited on in order
-    // to use the resource, and this is tracked by the |synchronization_state_|.
+    // to use the resource.
     gpu::SyncToken sync_token_;
   };
 
@@ -409,8 +346,6 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   ChildMap children_;
 
   base::flat_map<int, std::vector<ResourceId>> batched_returning_resources_;
-  scoped_refptr<ResourceFence> current_gpu_commands_completed_fence_;
-  scoped_refptr<ResourceFence> current_release_fence_;
   // Keep track of whether deleted resources should be batched up or returned
   // immediately.
   int batch_return_resources_lock_count_ = 0;

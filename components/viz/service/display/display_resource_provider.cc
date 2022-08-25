@@ -66,7 +66,7 @@ bool DisplayResourceProvider::OnMemoryDump(
     if (resource.transferable.is_software)
       backing_memory_allocated = !!resource.shared_bitmap;
     else
-      backing_memory_allocated = resource.gl_id != 0 || resource.image_context;
+      backing_memory_allocated = !!resource.image_context;
 
     if (!backing_memory_allocated) {
       // Don't log unallocated resources - they have no backing memory.
@@ -516,33 +516,19 @@ DisplayResourceProvider::Child::~Child() = default;
 DisplayResourceProvider::ChildResource::ChildResource(
     int child_id,
     const TransferableResource& transferable)
-    : child_id(child_id), transferable(transferable), filter(GL_NONE) {
+    : child_id(child_id), transferable(transferable) {
   if (is_gpu_resource_type())
     UpdateSyncToken(transferable.mailbox_holder.sync_token);
-  else
-    SetSynchronized();
 }
 
 DisplayResourceProvider::ChildResource::ChildResource(ChildResource&& other) =
     default;
 DisplayResourceProvider::ChildResource::~ChildResource() = default;
 
-void DisplayResourceProvider::ChildResource::SetLocallyUsed() {
-  synchronization_state_ = LOCALLY_USED;
-  sync_token_.Clear();
-}
-
-void DisplayResourceProvider::ChildResource::SetSynchronized() {
-  synchronization_state_ = SYNCHRONIZED;
-}
-
 void DisplayResourceProvider::ChildResource::UpdateSyncToken(
     const gpu::SyncToken& sync_token) {
   DCHECK(is_gpu_resource_type());
-  // An empty sync token may be used if commands are guaranteed to have run on
-  // the gpu process or in case of context loss.
   sync_token_ = sync_token;
-  synchronization_state_ = sync_token.HasData() ? NEEDS_WAIT : SYNCHRONIZED;
 }
 
 }  // namespace viz
