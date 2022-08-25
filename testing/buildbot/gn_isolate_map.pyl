@@ -547,6 +547,10 @@
     "label": "//:wpt_tests_isolate",
     "type": "generated_script",
   },
+  "wpt_tests_isolate_content_shell": {
+    "label": "//:wpt_tests_isolate_content_shell",
+    "type": "generated_script",
+  },
   "chrome/browser/media/router": {
     "label": "//chrome/browser/media/router:router",
     "type": "additional_compile_target",

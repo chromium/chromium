@@ -106429,10 +106429,10 @@
           "--child-processes=8",
           "--run-by-dir=0",
           "--no-restart-on-new-group",
-          "--product=content_shell"
+          "--xvfb"
         ],
         "experiment_percentage": 100,
-        "isolate_name": "wpt_tests_isolate",
+        "isolate_name": "wpt_tests_isolate_content_shell",
         "merge": {
           "args": [
             "--verbose"
@@ -106455,7 +106455,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 15
         },
-        "test_id_prefix": "ninja://:wpt_tests_isolate/"
+        "test_id_prefix": "ninja://:wpt_tests_isolate_content_shell/"
       }
     ]
   },

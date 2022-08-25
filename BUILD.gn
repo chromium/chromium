@@ -1151,6 +1151,14 @@ if (!is_ios) {
         "//tools/imagediff",
       ]
     }
+    script_test("wpt_tests_isolate_content_shell") {
+      script = "//testing/scripts/run_wpt_tests.py"
+      args = [ "--product=content_shell" ]
+      data_deps = [
+        ":blink_web_tests_support_data",
+        "//third_party/blink/tools:wpt_tests_isolate",
+      ]
+    }
   }
 
   group("blink_web_tests_support_data") {

@@ -5129,7 +5129,7 @@
           '--child-processes=8',
           '--run-by-dir=0',
           '--no-restart-on-new-group',
-          '--product=content_shell'
+          '--xvfb'
         ],
         'merge': {
           'args': [
@@ -5137,7 +5137,7 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
-        'isolate_name': 'wpt_tests_isolate',
+        'isolate_name': 'wpt_tests_isolate_content_shell',
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 15,
