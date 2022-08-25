@@ -24,6 +24,19 @@ _ORCHESTRATOR = nodes.create_bucket_scoped_node_type("orchestrator")
 # Nodes for the definition of a compilator builder
 _COMPILATOR = nodes.create_node_type_with_builder_ref("compilator")
 
+# We want to be able to set up experimental orchestrator builders that mirror an
+# orchestrator without having to set up a separate pool of compilators, so this
+# provides a means of doing so that can't is unlikely to be done inadvertently.
+# Experimental orchestrators must have the same properties as the
+# non-experimental orchestrator associated with the compilator.
+#
+# The keys are the bucket-qualified name of a compilator (e.g.
+# "try/linux-rel-compilator"), with the values being a container of
+# bucket-qualified names of the experimental orchestrators that can use the
+# compilator.
+_EXPERIMENTAL_ORCHESTRATOR_NAMES_BY_COMPILATOR_NAME = {
+}
+
 def register_orchestrator(bucket, name, builder_group, compilator):
     key = _ORCHESTRATOR.add(bucket, name, props = {
         "bucket": bucket,
@@ -105,9 +118,18 @@ def _get_compilator(bucket_name, builder):
     if not node:
         return None
 
+    compilator_name = _builder_name(node)
+
     orchestrator_nodes = []
     for r in graph.parents(node.key, _COMPILATOR.ref_kind):
         orchestrator_nodes.extend(graph.parents(r.key, _ORCHESTRATOR.kind))
+
+    experimental_orchestrator_names = _EXPERIMENTAL_ORCHESTRATOR_NAMES_BY_COMPILATOR_NAME.get(compilator_name, ())
+    orchestrator_nodes = [
+        n
+        for n in orchestrator_nodes
+        if _builder_name(n) not in experimental_orchestrator_names
+    ]
 
     if len(orchestrator_nodes) != 1:
         fail("compilator should have exactly 1 referring orchestrator, got: {}".format(
@@ -116,10 +138,16 @@ def _get_compilator(bucket_name, builder):
         ))
 
     return struct(
-        name = _builder_name(node),
+        name = compilator_name,
         builder = builder,
         bucket = bucket_name,
         simple_name = builder.name,
+    )
+
+def _builder_link(builder_details):
+    return "<a href=\"{}\">{}</a>".format(
+        builder_url(builder_details.bucket, builder_details.simple_name),
+        builder_details.simple_name,
     )
 
 def _get_orchestrators_and_compilators(ctx):
@@ -129,12 +157,16 @@ def _get_orchestrators_and_compilators(ctx):
     fail will be called if they don't satisfy the necessary constraints.
 
     Returns:
-      A 2-tuple:
-        * A list of details for orchestrator builders. See the return value of
-          _get_orchestrator for more information.
-        * A dict mapping bucket-qualified name (e.g. "try/linux-rel-compilator")
-          of compilator builders to the details for that builder. See the return
+      A list where each element is a struct for a compilator with the
+      attributes:
+        * compilator: The details for the compilator. See the return
           value of _get_compilator for more information.
+        * orchestrator: The details for the non-experimental orchestrator
+          associated with the compilator. See the return value of
+          _get_orchestrator for more information.
+        * experimental_orchestrators: A list of details for any experimental
+          orchestrators associated with the compilator. See the return value of
+          _get_orchestrator for more information.
     """
     cfg = None
     for f in ctx.output:
@@ -144,29 +176,47 @@ def _get_orchestrators_and_compilators(ctx):
     if cfg == None:
         fail("There is no buildbucket configuration file to update properties")
 
-    orchestrators = []
-    compilator_by_name = {}
+    compilators = []
+    orchestrators_by_compilator_name = {}
+    experimental_orchestrators_by_compilator_name = {}
 
     for bucket in cfg.buckets:
         bucket_name = bucket.name
         for builder in bucket.swarming.builders:
             compilator = _get_compilator(bucket_name, builder)
             if compilator:
-                compilator_by_name[compilator.name] = compilator
+                compilators.append(compilator)
                 continue
 
             orchestrator = _get_orchestrator(bucket_name, builder)
             if orchestrator:
-                orchestrators.append(orchestrator)
+                compilator_name = orchestrator.compilator_name
+                if orchestrator.name in _EXPERIMENTAL_ORCHESTRATOR_NAMES_BY_COMPILATOR_NAME.get(compilator_name, ()):
+                    experimental_orchestrators_by_compilator_name.setdefault(compilator_name, []).append(orchestrator)
+                else:
+                    orchestrators_by_compilator_name[compilator_name] = orchestrator
 
-    return orchestrators, compilator_by_name
+    return [struct(
+        compilator = c,
+        orchestrator = orchestrators_by_compilator_name[c.name],
+        experimental_orchestrators = experimental_orchestrators_by_compilator_name.get(c.name, []),
+    ) for c in compilators]
 
 def _set_orchestrator_properties(ctx):
-    orchestrators, compilators_by_name = _get_orchestrators_and_compilators(ctx)
-    for orchestrator in orchestrators:
+    details = _get_orchestrators_and_compilators(ctx)
+    for d in details:
+        orchestrator = d.orchestrator
         orchestrator_properties = json.decode(orchestrator.builder.properties)
 
-        compilator = compilators_by_name[orchestrator.compilator_name]
+        for o in d.experimental_orchestrators:
+            o_properties = json.decode(o.builder.properties)
+            if o_properties != orchestrator_properties:
+                message = ["experimental orchestrator {!r} must have properties equal to those of {!r}".format(o.name, orchestrator.name)]
+                message.append("properties of {!r}: {}".format(o.name, json.indent(json.encode(o_properties), indent = 2)))
+                message.append("properties of {!r}: {}".format(orchestrator.name, json.indent(json.encode(orchestrator_properties), indent = 2)))
+                fail("\n".join(message))
+
+        compilator = d.compilator
         compilator_properties = dict(orchestrator_properties)
         compilator_properties.update(json.decode(compilator.builder.properties))
         compilator.builder.properties = json.encode(compilator_properties)
@@ -183,14 +233,23 @@ def _set_orchestrator_properties(ctx):
             "compilator": compilator.simple_name,
             "compilator_watcher_git_revision": _COMPILATOR_WATCHER_GIT_REVISION,
         }
-        orchestrator.builder.properties = json.encode(orchestrator_properties)
+        encoded_orchestrator_properties = json.encode(orchestrator_properties)
+        orchestrator.builder.properties = encoded_orchestrator_properties
         _update_description(
             orchestrator.builder,
             ("This is the orchestrator half of an orchestrator + compilator pair of builders." +
-             " The compilator is <a href=\"{}\">{}</a>.".format(
-                 builder_url(compilator.bucket, compilator.simple_name),
-                 compilator.simple_name,
-             )),
+             " The compilator is {}.".format(_builder_link(compilator))),
         )
+
+        for o in d.experimental_orchestrators:
+            o.builder.properties = encoded_orchestrator_properties
+            _update_description(
+                o.builder,
+                "This is an experimental orchestrator making use of compilator {}.".format(_builder_link(compilator)),
+            )
+            _update_description(
+                compilator.builder,
+                "It is also the compilator for experimental orchestrator {}.".format(_builder_link(o)),
+            )
 
 lucicfg.generator(_set_orchestrator_properties)
