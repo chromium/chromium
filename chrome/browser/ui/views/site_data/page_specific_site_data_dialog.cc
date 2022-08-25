@@ -14,6 +14,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/omnibox/browser/favicon_cache.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -23,11 +24,30 @@
 
 namespace {
 
+struct PageSpecificSiteDataDialogSite {
+  url::Origin origin;
+  ContentSetting setting;
+};
+
 struct PageSpecificSiteDataDialogSection {
   std::u16string title;
   std::u16string subtitle;
-  std::vector<url::Origin> origins;
+  std::vector<PageSpecificSiteDataDialogSite> sites;
 };
+
+int GetContentSettingRowOrder(ContentSetting setting) {
+  switch (setting) {
+    case CONTENT_SETTING_ALLOW:
+      return 0;
+    case CONTENT_SETTING_SESSION_ONLY:
+      return 1;
+    case CONTENT_SETTING_BLOCK:
+      return 2;
+    default:
+      NOTREACHED();
+      return -1;
+  }
+}
 
 // Creates a new CookiesTreeModel for all objects in the container,
 // copying each of them.
@@ -60,7 +80,7 @@ std::string GetEtldPlusOne(const url::Origin& origin) {
 // * "From other sites" with origins that are third parties in relation to the
 // |current_origin|.
 std::vector<PageSpecificSiteDataDialogSection> GetSections(
-    std::vector<url::Origin> all_origins,
+    std::vector<PageSpecificSiteDataDialogSite> all_sites,
     const url::Origin& current_origin) {
   // TODO(crbug.com/1344787): Use actual strings.
   auto eltd_current_origin = GetEtldPlusOne(current_origin);
@@ -73,11 +93,11 @@ std::vector<PageSpecificSiteDataDialogSection> GetSections(
   third_party_section.title = u"From other site";
   third_party_section.subtitle = u"From other site subtitle";
 
-  for (const auto& origin : all_origins) {
-    if (GetEtldPlusOne(origin) == eltd_current_origin) {
-      first_party_section.origins.push_back(origin);
+  for (const auto& site : all_sites) {
+    if (GetEtldPlusOne(site.origin) == eltd_current_origin) {
+      first_party_section.sites.push_back(site);
     } else {
-      third_party_section.origins.push_back(origin);
+      third_party_section.sites.push_back(site);
     }
   }
 
@@ -126,17 +146,26 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
     }
   }
 
-  std::vector<url::Origin> GetAllOrigins() {
-    std::vector<url::Origin> all_origins;
+  std::vector<PageSpecificSiteDataDialogSite> GetAllSites() {
+    // TODO(crbug.com/1344787): Keep a map of all origins to avoid having
+    // multiple entries. This could happen when there are both partitioned and
+    // regular cookies.
+    std::vector<PageSpecificSiteDataDialogSite> sites;
     for (const auto& node :
          allowed_cookies_tree_model_->GetRoot()->children()) {
-      all_origins.push_back(node->GetDetailedInfo().origin);
+      sites.push_back(CreateSiteFromHostNode(node.get()));
     }
     for (const auto& node :
          blocked_cookies_tree_model_->GetRoot()->children()) {
-      all_origins.push_back(node->GetDetailedInfo().origin);
+      sites.push_back(CreateSiteFromHostNode(node.get()));
     }
-    return all_origins;
+
+    std::sort(sites.begin(), sites.end(), [](const auto& o1, const auto& o2) {
+      return GetContentSettingRowOrder(o1.setting) <
+             GetContentSettingRowOrder(o2.setting);
+    });
+
+    return sites;
   }
 
   FaviconCache* favicon_cache() { return favicon_cache_.get(); }
@@ -184,6 +213,21 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
 
   bool CanCreateContentException(GURL url) const { return !url.SchemeIsFile(); }
 
+  PageSpecificSiteDataDialogSite CreateSiteFromHostNode(CookieTreeNode* node) {
+    GURL current_url = web_contents_->GetVisibleURL();
+
+    PageSpecificSiteDataDialogSite site;
+    site.origin = node->GetDetailedInfo().origin;
+    content_settings::SettingSource source;
+    site.setting = cookie_settings_->GetCookieSetting(
+        site.origin.GetURL(), current_url, &source,
+        content_settings::CookieSettings::QueryReason::kCookies);
+    // TODO(crbug.com/1344787): Handle sources other than SETTING_SOURCE_USER.
+    // TODO(crbug.com/1344787): Handle partitioned nodes.
+
+    return site;
+  }
+
   base::WeakPtr<content::WebContents> web_contents_;
   // Each model represent separate local storage container. The implementation
   // doesn't make a difference between allowed and blocked models and checks
@@ -212,21 +256,19 @@ views::Widget* ShowPageSpecificSiteDataDialog(
           base::Unretained(delegate)));
 
   auto sections =
-      GetSections(delegate->GetAllOrigins(),
+      GetSections(delegate->GetAllSites(),
                   url::Origin::Create(web_contents->GetVisibleURL()));
   for (const auto& section : sections) {
     builder.AddParagraph(
         ui::DialogModelLabel(section.subtitle).set_is_secondary(),
         section.title);
-    for (const auto& origin : section.origins) {
-      // TODO(crbug.com/1344787): Get the actual state based on the cookie
-      // setting.
+    for (const auto& site : section.sites) {
       // It is safe to use base::Unretained for the delegate here because both
       // the row view and the delegate are owned by the dialog and will be
       // destroyed when the dialog is destroyed.
       builder.AddCustomField(
           CreateCustomField(std::make_unique<SiteDataRowView>(
-              origin, CONTENT_SETTING_BLOCK, delegate->favicon_cache(),
+              site.origin, site.setting, delegate->favicon_cache(),
               base::BindRepeating(
                   &PageSpecificSiteDataDialogModelDelegate::DeleteStoredObjects,
                   base::Unretained(delegate)),

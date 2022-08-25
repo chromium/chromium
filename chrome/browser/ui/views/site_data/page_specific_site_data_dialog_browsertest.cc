@@ -64,8 +64,7 @@ class PageSpecificSiteDataDialogBrowserTest
     auto* element_tracker = ui::ElementTracker::GetElementTracker();
     auto* tracked_element =
         element_tracker->GetFirstMatchingElement(id, context);
-    auto* view = tracked_element->AsA<views::TrackedElementViews>()->view();
-    return view;
+    return tracked_element->AsA<views::TrackedElementViews>()->view();
   }
 
   void ClickDeleteMenuItem(SiteDataRowView* row_view) {
@@ -174,12 +173,28 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, DeleteMenuItem) {
       GetViewByIdentifier(context, kPageSpecificSiteDataDialogRowForTesting);
   auto* row_view = static_cast<SiteDataRowView*>(view);
   EXPECT_TRUE(row_view->GetVisible());
-  // TODO(crbug.com/1344787): Remove changing state here after the actual state
-  // is shown in the UI.
-  ClickAllowMenuItem(row_view);
-  EXPECT_EQ(row_view->state_label_for_testing()->GetText(), u"Allowed");
   ClickDeleteMenuItem(row_view);
   EXPECT_FALSE(row_view->GetVisible());
+  // TODO(crbug.com/1344787): Check the histograms value.
+}
+
+IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, BlockMenuItem) {
+  if (!GetParam()) {
+    return;
+  }
+
+  auto* dialog = OpenDialog();
+  ui::ElementContext context =
+      views::ElementTrackerViews::GetContextForWidget(dialog);
+
+  auto* view =
+      GetViewByIdentifier(context, kPageSpecificSiteDataDialogRowForTesting);
+  auto* row_view = static_cast<SiteDataRowView*>(view);
+  // TODO(crbug.com/1344787): The label shouldn't be visible here but GetVisible
+  // returns true. It's not actually visible because it has size 0.
+  ClickBlockMenuItem(row_view);
+  EXPECT_TRUE(row_view->state_label_for_testing()->GetVisible());
+  EXPECT_EQ(row_view->state_label_for_testing()->GetText(), u"Blocked");
   // TODO(crbug.com/1344787): Check the histograms value.
 }
 
@@ -195,8 +210,14 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, AllowMenuItem) {
   auto* view =
       GetViewByIdentifier(context, kPageSpecificSiteDataDialogRowForTesting);
   auto* row_view = static_cast<SiteDataRowView*>(view);
-  // TODO(crbug.com/1344787): Check the initial state.
+  // TODO(crbug.com/1344787): The label shouldn't be visible here but GetVisible
+  // returns true. It's not actually visible because it has size 0.
+  // TODO(crbug.com/1344787): Setup a site with blocked cookies to start with
+  // blocked state here.
+  ClickBlockMenuItem(row_view);
+  EXPECT_EQ(row_view->state_label_for_testing()->GetText(), u"Blocked");
   ClickAllowMenuItem(row_view);
+  EXPECT_TRUE(row_view->state_label_for_testing()->GetVisible());
   EXPECT_EQ(row_view->state_label_for_testing()->GetText(), u"Allowed");
   // TODO(crbug.com/1344787): Check the histograms value.
 }
@@ -214,13 +235,13 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
   auto* view =
       GetViewByIdentifier(context, kPageSpecificSiteDataDialogRowForTesting);
   auto* row_view = static_cast<SiteDataRowView*>(view);
-  // TODO(crbug.com/1344787): Check the initial state.
+  // TODO(crbug.com/1344787): The label shouldn't be visible here but GetVisible
+  // returns true. It's not actually visible because it has size 0.
   ClickClearOnExitMenuItem(row_view);
+  EXPECT_TRUE(row_view->state_label_for_testing()->GetVisible());
   EXPECT_EQ(row_view->state_label_for_testing()->GetText(), u"Clear on close");
   // TODO(crbug.com/1344787): Check the histograms value.
 }
-
-// TODO(crbug.com/1344787): Add test for blocking a site.
 
 // Run tests with kPageSpecificSiteDataDialog flag enabled and disabled.
 INSTANTIATE_TEST_SUITE_P(All,
