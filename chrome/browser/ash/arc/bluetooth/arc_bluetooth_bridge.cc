@@ -1156,6 +1156,7 @@ void ArcBluetoothBridge::SetAdapterProperty(
     uint32_t discovery_timeout = property->get_discovery_timeout();
     if (discovery_timeout > 0) {
       discoverable_off_timeout_ = discovery_timeout;
+      OnSetAdapterProperty(mojom::BluetoothStatus::SUCCESS, std::move(property));
     } else {
       OnSetAdapterProperty(mojom::BluetoothStatus::PARM_INVALID,
                            std::move(property));
