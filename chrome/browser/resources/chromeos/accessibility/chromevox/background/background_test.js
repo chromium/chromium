@@ -1303,8 +1303,10 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'ForceClickInPageLinks', async function() {
 // Note: this test needs the test server running because the browser
 // does not follow same-page links on data urls (because it modifies the
 // url fragment, and any change to the url is disallowed for a data url).
+// crbug.com/1356181 Disable due to flaky.
 AX_TEST_F(
-    'ChromeVoxBackgroundTestWithTestServer', 'InPageLinks', async function() {
+    'ChromeVoxBackgroundTestWithTestServer',
+    'DISABLED_InPageLinks', async function() {
       const mockFeedback = this.createMockFeedback();
       const root = await this.runWithLoadedTree(undefined, {
         url: `${
@@ -1788,7 +1790,9 @@ AX_TEST_F(
       await mockFeedback.replay();
     });
 
-AX_TEST_F('ChromeVoxBackgroundTest', 'GestureGranularity', async function() {
+// crbug.com/1356181 Disable due to flaky.
+AX_TEST_F('ChromeVoxBackgroundTest',
+          'DISABLED_aGestureGranularity', async function() {
   const mockFeedback = this.createMockFeedback();
   const site = `
     <p>This is a test</p>
@@ -3086,8 +3090,9 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'SwipeLeftRight2', async function() {
 });
 
 // TODO(crbug.com/1228418) - Improve the generation of summaries across ChromeOS
+// crbug.com/1356181 Disable due to flaky.
 AX_TEST_F(
-    'ChromeVoxBackgroundTest', 'AlertDialogAutoSummaryTextContent',
+    'ChromeVoxBackgroundTest', 'DISABLED_AlertDialogAutoSummaryTextContent',
     async function() {
       this.resetContextualOutput();
       const mockFeedback = this.createMockFeedback();
@@ -3997,8 +4002,10 @@ AX_TEST_F(
     });
 
 // Make sure navigation with touch to ListBox lands on options.
+// crbug.com/1356181 Disable due to flaky.
 AX_TEST_F(
-    'ChromeVoxBackgroundTest', 'TouchListBoxItemsNavigation', async function() {
+    'ChromeVoxBackgroundTest',
+    'DISABLED_TouchListBoxItemsNavigation', async function() {
       const mockFeedback = this.createMockFeedback();
       await this.runWithLoadedTree(this.listBoxDoc);
       mockFeedback

@@ -1988,7 +1988,8 @@ AX_TEST_F(
       await mockFeedback.replay();
     });
 
-AX_TEST_F('ChromeVoxEditingTest', 'TableNavigation', async function() {
+// crbug.com/1356181 Disable due to flaky.
+AX_TEST_F('ChromeVoxEditingTest', 'DISABLED_TableNavigation', async function() {
   const mockFeedback = this.createMockFeedback();
   const site = `
     <div contenteditable role="textbox" tabindex=0>
