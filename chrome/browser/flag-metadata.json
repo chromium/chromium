@@ -5990,6 +5990,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "smart-sorting-new-destinations",
+    "owners": [ "bwwilliams@google.com", "bling-flags@google.com" ],
+    "expiry_milestone": 111
+  },
+  {
     "name": "smart-sorting-new-overflow-menu",
     "owners": [ "bwwilliams@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 108

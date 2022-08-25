@@ -25,6 +25,9 @@ const base::Feature kNewOverflowMenuSimpleDestinationIcons{
 const base::Feature kSmartSortingNewOverflowMenu{
     "kSmartSortingNewOverflowMenu", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kSmartSortingNewDestinations{
+    "SmartSortingNewDestinations", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kNewOverflowMenuShareChromeAction{
     "kNewOverflowMenuShareChromeAction", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -59,6 +62,11 @@ bool IsPasswordManagerBrandingUpdateEnabled() {
   }
 
   return false;
+}
+
+bool IsSmartSortingNewDestinationsEnabled() {
+  return IsSmartSortingNewOverflowMenuEnabled() &&
+         base::FeatureList::IsEnabled(kSmartSortingNewDestinations);
 }
 
 bool IsSmartSortingNewOverflowMenuEnabled() {
