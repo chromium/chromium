@@ -215,7 +215,7 @@ std::unique_ptr<DesktopEnvironment> Me2MeDesktopEnvironmentFactory::Create(
     return nullptr;
   }
 
-  return std::move(desktop_environment);
+  return desktop_environment;
 }
 
 }  // namespace remoting

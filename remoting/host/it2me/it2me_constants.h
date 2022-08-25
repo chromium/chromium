@@ -40,6 +40,7 @@ extern const char kDirectoryBotJidValue[];
 extern const char kIsEnterpriseAdminUser[];
 extern const char kSuppressUserDialogs[];
 extern const char kSuppressNotifications[];
+extern const char kCurtainLocalUserSession[];
 extern const char kTerminateUponInput[];
 extern const char kUseElevatedHost[];
 extern const char kUseSignalingProxy[];

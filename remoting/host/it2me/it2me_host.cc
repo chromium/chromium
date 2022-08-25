@@ -12,18 +12,15 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/strings/string_util.h"
-#include "base/threading/platform_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "components/policy/policy_constants.h"
 #include "components/webrtc/thread_wrapper.h"
-#include "net/url_request/url_request_context_getter.h"
-#include "remoting/base/auto_thread.h"
+#include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/oauth_token_getter.h"
 #include "remoting/base/rsa_key_pair.h"
-#include "remoting/base/service_urls.h"
 #include "remoting/host/chromoting_host.h"
 #include "remoting/host/chromoting_host_context.h"
 #include "remoting/host/ftl_signaling_connector.h"
@@ -36,7 +33,6 @@
 #include "remoting/host/it2me_desktop_environment.h"
 #include "remoting/protocol/auth_util.h"
 #include "remoting/protocol/chromium_port_allocator_factory.h"
-#include "remoting/protocol/ice_transport.h"
 #include "remoting/protocol/it2me_host_authenticator_factory.h"
 #include "remoting/protocol/jingle_session_manager.h"
 #include "remoting/protocol/network_settings.h"
@@ -101,6 +97,15 @@ void It2MeHost::set_terminate_upon_input(bool terminate_upon_input) {
 #else
   NOTREACHED()
       << "It2MeHost::set_terminate_upon_input is only supported on ChromeOS";
+#endif
+}
+
+void It2MeHost::set_enable_curtaining(bool enable) {
+#if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
+  enable_curtaining_ = enable;
+#else
+  NOTREACHED() << "It2MeHost::set_enable_curtaining is only supported "
+                  "on ChromeOS";
 #endif
 }
 
@@ -265,6 +270,7 @@ void It2MeHost::ConnectOnNetworkThread(
   options.set_enable_user_interface(enable_dialogs_);
   options.set_enable_notifications(enable_notifications_);
   options.set_terminate_upon_input(terminate_upon_input_);
+  options.set_enable_curtaining(enable_curtaining_);
 
   if (max_clipboard_size_.has_value()) {
     options.set_clipboard_size(max_clipboard_size_.value());

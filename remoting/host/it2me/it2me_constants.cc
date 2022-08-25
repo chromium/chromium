@@ -17,6 +17,7 @@ const char kDirectoryBotJidValue[] = "remoting@bot.talk.google.com";
 const char kSuppressUserDialogs[] = "suppressUserDialogs";
 const char kIsEnterpriseAdminUser[] = "isEnterpriseAdminUser";
 const char kSuppressNotifications[] = "suppressNotifications";
+const char kCurtainLocalUserSession[] = "curtainLocalUserSession";
 const char kTerminateUponInput[] = "terminateUponInput";
 const char kUseElevatedHost[] = "useElevatedHost";
 const char kUseSignalingProxy[] = "useSignalingProxy";

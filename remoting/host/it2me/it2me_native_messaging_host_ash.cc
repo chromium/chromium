@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <utility>
-
 #include "remoting/host/it2me/it2me_native_messaging_host_ash.h"
 
+#include <utility>
+
 #include "base/callback.h"
-#include "base/json/json_reader.h"
+#include "base/feature_list.h"
 #include "base/json/json_writer.h"
-#include "base/lazy_instance.h"
-#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "remoting/host/chromeos/chromeos_enterprise_params.h"
+#include "remoting/host/chromeos/features.h"
 #include "remoting/host/chromoting_host_context.h"
 #include "remoting/host/it2me/it2me_native_messaging_host.h"
 #include "remoting/host/native_messaging/native_messaging_helpers.h"
@@ -64,6 +63,24 @@ bool ShouldTerminateUponInput(
     // API.
 #if !defined(NDEBUG)
   return params.terminate_upon_input;
+#else
+  return false;
+#endif
+}
+
+bool ShouldCurtainLocalUserSession(
+    const mojom::SupportSessionParams& params,
+    const absl::optional<ChromeOsEnterpriseParams>& enterprise_params) {
+  if (!base::FeatureList::IsEnabled(features::kEnableCrdAdminRemoteAccess))
+    return false;
+
+  if (enterprise_params)
+    return enterprise_params.value().curtain_local_user_session;
+
+    // On non-debug builds, do not allow setting this value through the Mojom
+    // API.
+#if !defined(NDEBUG)
+  return params.curtain_local_user_session;
 #else
   return false;
 #endif
@@ -122,6 +139,8 @@ void It2MeNativeMessageHostAsh::Connect(
               ShouldSuppressNotifications(*params, enterprise_params));
   message.Set(kTerminateUponInput,
               ShouldTerminateUponInput(*params, enterprise_params));
+  message.Set(kCurtainLocalUserSession,
+              ShouldCurtainLocalUserSession(*params, enterprise_params));
   message.Set(kIsEnterpriseAdminUser, enterprise_params.has_value());
 
   std::string message_json;

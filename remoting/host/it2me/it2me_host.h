@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
@@ -101,10 +100,17 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   // Enable or disable whether or not the session should be terminated if local
   // input is detected.
   void set_terminate_upon_input(bool terminate_upon_input);
+  bool terminate_upon_input() const { return terminate_upon_input_; }
+
+  // Enable, disable, or query whether or not the local user session is
+  // curtained when a remote user has connected.
+  void set_enable_curtaining(bool enable);
+  bool enable_curtaining() const { return enable_curtaining_; }
 
   // Indicates whether the session was initiated through the remote command
   // infrastructure for a managed device.
   void set_is_enterprise_session(bool is_enterprise_session);
+  bool is_enterprise_session() const { return is_enterprise_session_; }
 
   // Creates It2Me host structures and starts the host.
   virtual void Connect(
@@ -240,6 +246,7 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   bool enable_dialogs_ = true;
   bool enable_notifications_ = true;
   bool terminate_upon_input_ = false;
+  bool enable_curtaining_ = false;
 };
 
 // Having a factory interface makes it possible for the test to provide a mock

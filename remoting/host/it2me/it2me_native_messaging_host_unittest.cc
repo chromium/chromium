@@ -18,16 +18,11 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/strings/stringize_macros.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/fake_async_policy_loader.h"
-#include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/policy_constants.h"
-#include "net/base/file_stream.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/host/chromoting_host_context.h"
 #include "remoting/host/it2me/it2me_constants.h"
@@ -222,9 +217,7 @@ class MockIt2MeHostFactory : public It2MeHostFactory {
 
   ~MockIt2MeHostFactory() override = default;
 
-  scoped_refptr<It2MeHost> CreateIt2MeHost() override {
-    return host;
-  }
+  scoped_refptr<It2MeHost> CreateIt2MeHost() override { return host; }
 
   scoped_refptr<MockIt2MeHost> host;
 };
@@ -686,6 +679,57 @@ TEST_F(It2MeNativeMessagingHostTest,
   EXPECT_FALSE(factory_raw_ptr_->host->enable_notifications());
 #else
   EXPECT_TRUE(factory_raw_ptr_->host->enable_notifications());
+#endif
+  ++next_id;
+  WriteMessageToInputPipe(CreateDisconnectMessage(next_id));
+  VerifyDisconnectResponses(next_id);
+}
+
+TEST_F(It2MeNativeMessagingHostTest,
+       ConnectRespectsTerminateUponInputParameterOnChromeOsOnly) {
+  int next_id = 1;
+  base::DictionaryValue connect_message = CreateConnectMessage(next_id);
+  connect_message.SetBoolKey(kTerminateUponInput, true);
+  WriteMessageToInputPipe(connect_message);
+  VerifyConnectResponses(next_id);
+#if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
+  EXPECT_TRUE(factory_raw_ptr_->host->terminate_upon_input());
+#else
+  EXPECT_FALSE(factory_raw_ptr_->host->terminate_upon_input());
+#endif
+  ++next_id;
+  WriteMessageToInputPipe(CreateDisconnectMessage(next_id));
+  VerifyDisconnectResponses(next_id);
+}
+
+TEST_F(It2MeNativeMessagingHostTest,
+       ConnectRespectsIsEnterpriseAdminUserParameterOnChromeOsOnly) {
+  int next_id = 1;
+  base::DictionaryValue connect_message = CreateConnectMessage(next_id);
+  connect_message.SetBoolKey(kIsEnterpriseAdminUser, true);
+  WriteMessageToInputPipe(connect_message);
+  VerifyConnectResponses(next_id);
+#if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
+  EXPECT_TRUE(factory_raw_ptr_->host->is_enterprise_session());
+#else
+  EXPECT_FALSE(factory_raw_ptr_->host->is_enterprise_session());
+#endif
+  ++next_id;
+  WriteMessageToInputPipe(CreateDisconnectMessage(next_id));
+  VerifyDisconnectResponses(next_id);
+}
+
+TEST_F(It2MeNativeMessagingHostTest,
+       ConnectRespectsCurtainLocalUserSessionParameterOnChromeOsOnly) {
+  int next_id = 1;
+  base::DictionaryValue connect_message = CreateConnectMessage(next_id);
+  connect_message.SetBoolKey(kCurtainLocalUserSession, true);
+  WriteMessageToInputPipe(connect_message);
+  VerifyConnectResponses(next_id);
+#if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
+  EXPECT_TRUE(factory_raw_ptr_->host->enable_curtaining());
+#else
+  EXPECT_FALSE(factory_raw_ptr_->host->enable_curtaining());
 #endif
   ++next_id;
   WriteMessageToInputPipe(CreateDisconnectMessage(next_id));

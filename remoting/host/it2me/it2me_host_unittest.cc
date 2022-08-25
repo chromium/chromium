@@ -12,7 +12,7 @@
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -214,6 +214,8 @@ class It2MeHostTest : public testing::Test, public It2MeHost::Observer {
   absl::optional<bool> enable_dialogs_;
   absl::optional<bool> enable_notifications_;
   absl::optional<bool> is_enterprise_session_;
+  absl::optional<bool> terminate_upon_input_;
+  absl::optional<bool> enable_curtaining_;
 
   // Stores the last nat traversal policy value received.
   bool last_nat_traversal_enabled_value_ = false;
@@ -351,6 +353,16 @@ void It2MeHostTest::StartHost() {
     // Only ChromeOS supports this method, so tests setting
     // is_enterprise_session should only be run on ChromeOS.
     it2me_host_->set_is_enterprise_session(is_enterprise_session_.value());
+  }
+  if (terminate_upon_input_.has_value()) {
+    // Only ChromeOS supports this method, so tests setting
+    // terminate_upon_input_ should only be run on ChromeOS.
+    it2me_host_->set_terminate_upon_input(terminate_upon_input_.value());
+  }
+  if (enable_curtaining_.has_value()) {
+    // Only ChromeOS supports this method, so tests setting
+    // curtain_local_user_session should only be run on ChromeOS.
+    it2me_host_->set_enable_curtaining(enable_curtaining_.value());
   }
   auto create_connection_context = base::BindOnce(
       [](std::unique_ptr<SignalStrategy> signal_strategy,
@@ -821,6 +833,28 @@ TEST_F(It2MeHostTest, ConnectRespectsSuppressNotificationsParameter) {
   StartHost();
   EXPECT_FALSE(dialog_factory_->dialog_created());
   EXPECT_FALSE(GetHost()->desktop_environment_options().enable_notifications());
+}
+
+TEST_F(It2MeHostTest, ConnectRespectsTerminateUponInputParameter) {
+  terminate_upon_input_ = true;
+  StartHost();
+  EXPECT_TRUE(GetHost()->desktop_environment_options().terminate_upon_input());
+}
+
+TEST_F(It2MeHostTest, TerminateUponInputDefaultsToFalse) {
+  StartHost();
+  EXPECT_FALSE(GetHost()->desktop_environment_options().terminate_upon_input());
+}
+
+TEST_F(It2MeHostTest, ConnectRespectsEnableCurtainingParameter) {
+  enable_curtaining_ = true;
+  StartHost();
+  EXPECT_TRUE(GetHost()->desktop_environment_options().enable_curtaining());
+}
+
+TEST_F(It2MeHostTest, EnableCurtainingDefaultsToFalse) {
+  StartHost();
+  EXPECT_FALSE(GetHost()->desktop_environment_options().enable_curtaining());
 }
 
 TEST_F(It2MeHostTest,

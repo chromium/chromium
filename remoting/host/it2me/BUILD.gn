@@ -160,6 +160,7 @@ if (is_chromeos) {
         "//remoting/base:base",
         "//remoting/host:common",
         "//remoting/host/chromeos:enterprise_support",
+        "//remoting/host/chromeos:features",
         "//remoting/host/mojom:mojom",
         "//remoting/host/native_messaging",
         "//skia",

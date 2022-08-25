@@ -243,6 +243,8 @@ void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
       message.FindBool(kSuppressNotifications).value_or(false);
   bool terminate_upon_input =
       message.FindBool(kTerminateUponInput).value_or(false);
+  bool curtain_local_user_session =
+      message.FindBool(kCurtainLocalUserSession).value_or(false);
 #endif
 
   bool is_enterprise_admin_user =
@@ -342,6 +344,7 @@ void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
   it2me_host_->set_enable_dialogs(!suppress_user_dialogs);
   it2me_host_->set_enable_notifications(!suppress_notifications);
   it2me_host_->set_terminate_upon_input(terminate_upon_input);
+  it2me_host_->set_enable_curtaining(curtain_local_user_session);
   it2me_host_->set_is_enterprise_session(is_enterprise_admin_user);
 #endif
   it2me_host_->Connect(
