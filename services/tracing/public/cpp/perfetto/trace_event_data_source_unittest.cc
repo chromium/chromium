@@ -1315,13 +1315,7 @@ TEST_F(TraceEventDataSourceTest, EventWithConvertableArgs) {
   EXPECT_EQ(annotations[1].legacy_json_value(), kArgValue2);
 }
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-// TODO(crbug.com/1309080): Re-enable after fix.
-#define MAYBE_NestableAsyncTraceEvent DISABLED_NestableAsyncTraceEvent
-#else
-#define MAYBE_NestableAsyncTraceEvent NestableAsyncTraceEvent
-#endif
-TEST_F(TraceEventDataSourceTest, MAYBE_NestableAsyncTraceEvent) {
+TEST_F(TraceEventDataSourceTest, NestableAsyncTraceEvent) {
   constexpr bool kPrivacyFilteringEnabled = true;
   StartTraceEventDataSource(kPrivacyFilteringEnabled);
 
