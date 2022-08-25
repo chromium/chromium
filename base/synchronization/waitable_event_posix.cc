@@ -98,10 +98,24 @@ bool WaitableEvent::IsSignaled() {
 class SyncWaiter : public WaitableEvent::Waiter {
  public:
   SyncWaiter()
-      : fired_(false), signaling_event_(nullptr), lock_("SyncWaiter.lock_"), cv_(&lock_) {}
+      : fired_(false), signaling_event_(nullptr), lock_("SyncWaiter.lock_"), cv_(&lock_) {
+    // https://linear.app/replay/issue/RUN-513
+    recordreplay::RegisterPointer(this);
+  }
+
+  ~SyncWaiter() override {
+    // https://linear.app/replay/issue/RUN-513
+    recordreplay::UnregisterPointer(this);
+  }
 
   bool Fire(WaitableEvent* signaling_event) override {
     base::AutoLock locked(lock_);
+
+    // https://linear.app/replay/issue/RUN-513
+    recordreplay::Assert("SyncWaiter::Fire %d %d %d",
+                        recordreplay::PointerId(this),
+                        recordreplay::PointerId(signaling_event),
+                        fired_);
 
     if (fired_)
       return false;
@@ -199,6 +213,9 @@ bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
   if (!waiting_is_blocking_)
     sw.cv()->declare_only_used_while_idle();
   sw.lock()->Acquire();
+
+  // https://linear.app/replay/issue/RUN-513
+  recordreplay::Assert("WaitableEvent::TimedWait #0.1 %d", recordreplay::PointerId(&sw));
 
   Enqueue(&sw);
   kernel_->lock_.Release();
@@ -307,6 +324,9 @@ size_t WaitableEvent::WaitMany(WaitableEvent** raw_waitables,
     // enqueued anywhere.
     return waitables[r].second;
   }
+
+  // https://linear.app/replay/issue/RUN-513
+  recordreplay::Assert("WaitableEvent::WaitMany #5 %d", recordreplay::PointerId(&sw));
 
   // At this point, we hold the locks on all the WaitableEvents and we have
   // enqueued our waiter in them all.
