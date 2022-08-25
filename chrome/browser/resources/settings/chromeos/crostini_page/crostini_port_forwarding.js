@@ -28,7 +28,7 @@ import {containerLabel, equalContainerId} from '../guest_os/guest_os_container_s
 import {recordSettingChange} from '../metrics_recorder.js';
 import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
 
-import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniPortActiveSetting, CrostiniPortProtocol, CrostiniPortSetting, DEFAULT_CONTAINER_ID, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_VM} from './crostini_browser_proxy.js';
+import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniPortActiveSetting, CrostiniPortProtocol, CrostiniPortSetting, DEFAULT_CROSTINI_CONTAINER, DEFAULT_CROSTINI_GUEST_ID, DEFAULT_CROSTINI_VM} from './crostini_browser_proxy.js';
 
 /**
  * @constructor
@@ -282,7 +282,8 @@ class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
   showContainerId_(allPorts, id) {
     return allPorts.some(port => equalContainerId(port.container_id, id)) &&
         allPorts.some(
-            port => !equalContainerId(port.container_id, DEFAULT_CONTAINER_ID));
+            port => !equalContainerId(
+                port.container_id, DEFAULT_CROSTINI_GUEST_ID));
   }
 
   /**

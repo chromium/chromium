@@ -13,7 +13,7 @@ import {GuestId} from '../guest_os/guest_os_browser_proxy.js';
 /** @type {string} */ export const DEFAULT_CROSTINI_VM = 'termina';
 /** @type {string} */ export const DEFAULT_CROSTINI_CONTAINER = 'penguin';
 
-/** @type {!GuestId} */ export const DEFAULT_CONTAINER_ID = {
+/** @type {!GuestId} */ export const DEFAULT_CROSTINI_GUEST_ID = {
   vm_name: DEFAULT_CROSTINI_VM,
   container_name: DEFAULT_CROSTINI_CONTAINER,
 };
@@ -74,7 +74,7 @@ export const MAX_VALID_PORT_NUMBER = 65535;  // Maximum 16-bit integer value.
  * to install and uninstall Crostini.
  */
 
-  /** @interface */
+/** @interface */
 export class CrostiniBrowserProxy {
   /* Show crostini installer. */
   requestCrostiniInstallerView() {}

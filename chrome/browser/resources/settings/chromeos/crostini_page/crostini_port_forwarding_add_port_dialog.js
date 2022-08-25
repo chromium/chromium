@@ -19,7 +19,7 @@ import {html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 
 import {ContainerInfo, GuestId} from '../guest_os/guest_os_browser_proxy.js';
 
-import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniPortProtocol, CrostiniPortSetting, DEFAULT_CONTAINER_ID, DEFAULT_CROSTINI_VM, MAX_VALID_PORT_NUMBER, MIN_VALID_PORT_NUMBER, PortState} from './crostini_browser_proxy.js';
+import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniPortProtocol, CrostiniPortSetting, DEFAULT_CROSTINI_GUEST_ID, DEFAULT_CROSTINI_VM, MAX_VALID_PORT_NUMBER, MIN_VALID_PORT_NUMBER, PortState} from './crostini_browser_proxy.js';
 
 /** @polymer */
 class CrostiniPortForwardingAddPortDialog extends PolymerElement {
@@ -71,7 +71,7 @@ class CrostiniPortForwardingAddPortDialog extends PolymerElement {
       containerId_: {
         type: Object,
         value() {
-          return DEFAULT_CONTAINER_ID;
+          return DEFAULT_CROSTINI_GUEST_ID;
         },
       },
 

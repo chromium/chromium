@@ -23,7 +23,7 @@ import {equalContainerId} from '../guest_os/guest_os_container_select.js';
 import {routes} from '../os_route.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
-import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, DEFAULT_CONTAINER_ID, DEFAULT_CROSTINI_VM} from './crostini_browser_proxy.js';
+import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, DEFAULT_CROSTINI_GUEST_ID, DEFAULT_CROSTINI_VM} from './crostini_browser_proxy.js';
 
 /**
  * @constructor
@@ -106,7 +106,7 @@ class SettingsCrostiniExportImportElement extends
       exportContainerId_: {
         type: Object,
         value() {
-          return DEFAULT_CONTAINER_ID;
+          return DEFAULT_CROSTINI_GUEST_ID;
         },
       },
 
@@ -118,7 +118,7 @@ class SettingsCrostiniExportImportElement extends
       importContainerId_: {
         type: Object,
         value() {
-          return DEFAULT_CONTAINER_ID;
+          return DEFAULT_CROSTINI_GUEST_ID;
         },
       },
 
@@ -188,8 +188,8 @@ class SettingsCrostiniExportImportElement extends
   onContainerInfo_(containerInfos) {
     this.allContainers_ = containerInfos;
     if (!this.isMultiContainer_(containerInfos)) {
-      this.exportContainerId_ = DEFAULT_CONTAINER_ID;
-      this.importContainerId_ = DEFAULT_CONTAINER_ID;
+      this.exportContainerId_ = DEFAULT_CROSTINI_GUEST_ID;
+      this.importContainerId_ = DEFAULT_CROSTINI_GUEST_ID;
     }
   }
 
@@ -226,7 +226,7 @@ class SettingsCrostiniExportImportElement extends
   isMultiContainer_(allContainers) {
     return !(
         allContainers.length === 1 &&
-        equalContainerId(allContainers[0].id, DEFAULT_CONTAINER_ID));
+        equalContainerId(allContainers[0].id, DEFAULT_CROSTINI_GUEST_ID));
   }
 
   getSettingsBoxClass_(allContainers) {
