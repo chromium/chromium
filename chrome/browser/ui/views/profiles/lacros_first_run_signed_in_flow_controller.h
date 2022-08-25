@@ -37,6 +37,9 @@ class LacrosFirstRunSignedInFlowController
       ProfilePicker::BrowserOpenedCallback callback) override;
   void SwitchToSyncConfirmation() override;
 
+ protected:
+  void PreShowScreenForDebug() override;
+
  private:
   // Tracks whether the user got to the last step of the FRE flow.
   bool sync_confirmation_seen_ = false;

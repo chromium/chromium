@@ -109,6 +109,11 @@ void LacrosFirstRunSignedInFlowController::Init() {
   if (can_retry_init_observer_)
     can_retry_init_observer_.reset();
 
+  LOG(WARNING) << "Init running "
+               << (identity_manager->AreRefreshTokensLoaded() ? "with"
+                                                              : "without")
+               << " refresh tokens.";
+
   if (!identity_manager->AreRefreshTokensLoaded()) {
     // We can't proceed with the init yet, as the tokens will be needed to
     // obtain extended account info and turn on sync. Register this method to be
@@ -121,6 +126,9 @@ void LacrosFirstRunSignedInFlowController::Init() {
   }
 
   ProfilePickerSignedInFlowController::Init();
+
+  LOG(WARNING)
+      << "Init completed and initiative handed off to TurnSyncOnHelper.";
 }
 
 void LacrosFirstRunSignedInFlowController::FinishAndOpenBrowser(
@@ -137,4 +145,8 @@ void LacrosFirstRunSignedInFlowController::SwitchToSyncConfirmation() {
   sync_confirmation_seen_ = true;
 
   ProfilePickerSignedInFlowController::SwitchToSyncConfirmation();
+}
+
+void LacrosFirstRunSignedInFlowController::PreShowScreenForDebug() {
+  LOG(WARNING) << "Calling ShowScreen()";
 }
