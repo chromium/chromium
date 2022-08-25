@@ -15,8 +15,8 @@
 
     .indented-description {
       color: var(--shimless-instructions-text-color);
+      margin-top: 8px;
       padding: 0; /* specify all to override */
-      padding-inline-start: 60px;
       width: 512px;
     }
 
@@ -117,7 +117,10 @@
 
     cr-radio-button {
       --cr-radio-button-size: 20px;
-      padding-bottom: 8px;
+      align-items: start;
+      font-size: var(--shimless-instructions-font-size);
+      line-height: 20px;
+      padding-bottom: 0;
       padding-inline-start: 20px;
       padding-top: var(--radio-button-top-padding);
     }

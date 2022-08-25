@@ -8,10 +8,10 @@
         on-selected-changed="onOptionChanged_">
       <cr-radio-button name="[[wipeDeviceOption_.WIPE_DEVICE]]"
           label="[[i18n('wipeDeviceRemoveDataLabel')]]">
+        <div class="indented-description" aria-hidden="true">
+          [[i18n('wipeDeviceRemoveDataDescription')]]
+        </div>
       </cr-radio-button>
-      <div class="indented-description" aria-hidden="true">
-        [[i18n('wipeDeviceRemoveDataDescription')]]
-      </div>
       <cr-radio-button name="[[wipeDeviceOption_.PRESERVE_DATA]]"
           label="[[i18n('wipeDevicePreserveDataLabel')]]">
       </cr-radio-button>
