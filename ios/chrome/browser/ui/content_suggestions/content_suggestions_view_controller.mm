@@ -46,7 +46,7 @@
 namespace {
 // The width of the modules.
 const int kModuleWidthCompact = 343;
-const int kModuleWidthRegular = 382;
+const int kModuleWidthRegular = 432;
 
 // The height of the modules;
 const int kModuleHeight = 139;
