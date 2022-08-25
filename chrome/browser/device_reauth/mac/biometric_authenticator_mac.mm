@@ -15,10 +15,8 @@ BiometricAuthenticatorMac::~BiometricAuthenticatorMac() = default;
 
 bool BiometricAuthenticatorMac::CanAuthenticate(
     device_reauth::BiometricAuthRequester requester) {
-  base::scoped_nsobject<LAContext> context([[LAContext alloc] init]);
-  return
-      [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
-                           error:nil];
+  NOTIMPLEMENTED();
+  return false;
 }
 
 void BiometricAuthenticatorMac::Authenticate(
@@ -28,11 +26,9 @@ void BiometricAuthenticatorMac::Authenticate(
   NOTIMPLEMENTED();
 }
 
-void BiometricAuthenticatorMac::Cancel(device_reauth::BiometricAuthRequester) {
-  if (callback_) {
-    std::move(callback_).Run(/*success=*/false);
-  }
-  touch_id_auth_context_ = nullptr;
+void BiometricAuthenticatorMac::Cancel(
+    device_reauth::BiometricAuthRequester requester) {
+  NOTIMPLEMENTED();
 }
 
 void BiometricAuthenticatorMac::AuthenticateWithMessage(
@@ -45,8 +41,9 @@ void BiometricAuthenticatorMac::AuthenticateWithMessage(
     return;
   }
 
-  // Cancel old authentication if a new one comes in.
-  Cancel(requester);
+  if (callback_) {
+    std::move(callback_).Run(/*success=*/false);
+  }
 
   touch_id_auth_context_ = device::fido::mac::TouchIdContext::Create();
   callback_ = std::move(callback);
@@ -58,7 +55,6 @@ void BiometricAuthenticatorMac::AuthenticateWithMessage(
 }
 
 void BiometricAuthenticatorMac::OnAuthenticationCompleted(bool result) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (callback_.is_null()) {
     return;
   }

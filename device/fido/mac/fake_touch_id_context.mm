@@ -14,16 +14,9 @@ namespace mac {
 FakeTouchIdContext::FakeTouchIdContext() = default;
 FakeTouchIdContext::~FakeTouchIdContext() = default;
 
-void FakeTouchIdContext::DoNotResolveNextPrompt() {
-  resolve_next_prompt_ = false;
-}
-
 void FakeTouchIdContext::PromptTouchId(const std::u16string& reason,
                                        Callback callback) {
-  if (resolve_next_prompt_) {
-    std::move(callback).Run(callback_result_);
-  }
-  resolve_next_prompt_ = true;
+  std::move(callback).Run(callback_result_);
 }
 
 }  // namespace mac

@@ -81,10 +81,6 @@ void ScopedTouchIdTestEnvironment::SimulateTouchIdPromptFailure() {
   next_touch_id_context_->set_callback_result(false);
 }
 
-void ScopedTouchIdTestEnvironment::DoNotResolveNextPrompt() {
-  next_touch_id_context_->DoNotResolveNextPrompt();
-}
-
 std::unique_ptr<TouchIdContext>
 ScopedTouchIdTestEnvironment::CreateTouchIdContext() {
   CHECK(next_touch_id_context_)
