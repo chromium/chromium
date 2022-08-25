@@ -6215,6 +6215,7 @@ static_library("browser") {
       "DiskArbitration.framework",
       "IOKit.framework",
       "ImageCaptureCore.framework",
+      "LocalAuthentication.framework",
       "OpenGL.framework",
       "QuartzCore.framework",
       "SafariServices.framework",

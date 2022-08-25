@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_DEVICE_REAUTH_MAC_BIOMETRIC_AUTHENTICATOR_MAC_H_
 
 #include "base/callback.h"
+#include "base/sequence_checker.h"
 #include "chrome/browser/device_reauth/chrome_biometric_authenticator_common.h"
 #include "chrome/browser/device_reauth/chrome_biometric_authenticator_factory.h"
 #include "components/device_reauth/biometric_authenticator.h"
@@ -63,6 +64,8 @@ class BiometricAuthenticatorMac : public ChromeBiometricAuthenticatorCommon {
   // TouchId authenticator object that will handle biometric authentication
   // itself.
   std::unique_ptr<device::fido::mac::TouchIdContext> touch_id_auth_context_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // Factory for weak pointers to this class.
   base::WeakPtrFactory<BiometricAuthenticatorMac> weak_ptr_factory_{this};
