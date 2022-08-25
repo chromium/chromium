@@ -271,6 +271,9 @@ class Port(object):
                                     self.default_configuration())
         if not hasattr(options, 'target') or not options.target:
             self.set_option_default('target', self._options.configuration)
+        # set the default to make unit tests happy
+        if not hasattr(options, 'wpt_only'):
+            self.set_option_default('wpt_only', False)
         if not hasattr(options, 'no_virtual_tests'):
             self.set_option_default('no_virtual_tests', False)
         self._test_configuration = None
@@ -1031,6 +1034,9 @@ class Port(object):
 
     def real_tests(self, paths):
         """Find all real tests in paths except WPT."""
+        if self._options.wpt_only:
+            return []
+
         # When collecting test cases, skip these directories.
         skipped_directories = set([
             'platform', 'resources', 'support', 'script-tests', 'reference',

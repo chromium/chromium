@@ -1451,6 +1451,9 @@ if (!is_ios) {
 
     args = _common_web_test_args
 
+    # Use --wpt-only to skip tests under web_tests/virtual/
+    args += [ "--wpt-only" ]
+
     data_deps = [ ":blink_web_tests_support_data" ]
     data = [
       "//third_party/blink/perf_tests/",
@@ -1474,6 +1477,7 @@ if (!is_ios) {
       # === List Test Cases folders here ===
       "//third_party/blink/web_tests/external/",
       "//third_party/blink/web_tests/wpt_internal/",
+      "//third_party/blink/web_tests/virtual/",
 
       # === Test Case Folders Ends ===
     ]
