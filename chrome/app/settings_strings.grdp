@@ -652,6 +652,17 @@
   <message name="IDS_SETTINGS_PASSWORDS_NOTE_CHARACTER_COUNT_WARNING" desc="Warning for the password note when the user exceeds or is about to exceed the character limit.">
     Notes can save up to <ph name="CHARACTER_LIMIT">$1<ex>1000</ex></ph> characters.
   </message>
+  <message name="IDS_SETTINGS_PASSWORDS_TIMED_OUT" desc="Title for the dialog which shows when the password manager authentication is expired.">
+    Passwords timed out
+  </message>
+  <message name="IDS_SETTINGS_PASSWORDS_TIMED_OUT_DESCRIPTION" desc="Body text for the dialog which shows when the password manager authentication is expired.">
+    {NUM_MINS, plural,
+     =1 {To keep your passwords safe, Google Password Manager locks after 1 minute of inactivity}
+     other {To keep your passwords safe, Google Password Manager locks after {NUM_MINS} minutes of inactivity}}
+  </message>
+  <message name="IDS_SETTINGS_GOT_IT" desc="Label for the button to acknowledge the information in a dialog and dismiss it.">
+    Got it
+  </message>
   <message name="IDS_SETTINGS_ADDRESS_NONE" desc="Placeholder that is shown when there are no addresses in the list of saved addresses.">
     Saved addresses will appear here
   </message>

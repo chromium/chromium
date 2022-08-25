@@ -31,6 +31,7 @@ import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '..
 
 import {SavedPasswordEditedEvent} from './password_edit_dialog.js';
 import {PasswordListItemElement} from './password_list_item.js';
+import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {PasswordRemovalMixin, PasswordRemovalMixinInterface} from './password_removal_mixin.js';
 import {PasswordRemoveDialogPasswordsRemovedEvent} from './password_remove_dialog.js';
 import {PasswordRequestorMixin, PasswordRequestorMixinInterface} from './password_requestor_mixin.js';
@@ -69,6 +70,8 @@ export enum PasswordRemovalUrlParams {
 export enum PasswordViewPageUrlParams {
   ID = 'id',
 }
+
+export const PASSWORD_MANAGER_AUTH_TIMEOUT_PARAM = 'authTimeout';
 
 export function recordPasswordViewInteraction(
     interaction: PasswordViewPageInteractions) {
@@ -147,6 +150,28 @@ export class PasswordViewElement extends PasswordViewElementBase {
   private isPasswordVisible_: boolean;
   private showEditDialog_: boolean;
   private visibilityChangedListener_: () => void;
+  private passwordManagerAuthTimeoutListener_: () => void;
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    this.passwordManagerAuthTimeoutListener_ = () => {
+      if (Router.getInstance().getCurrentRoute() === routes.PASSWORD_VIEW) {
+        const params = new URLSearchParams();
+        params.set(PASSWORD_MANAGER_AUTH_TIMEOUT_PARAM, 'true');
+        Router.getInstance().navigateTo(routes.PASSWORDS, params);
+      }
+    };
+
+    PasswordManagerImpl.getInstance().addPasswordManagerAuthTimeoutListener(
+        this.passwordManagerAuthTimeoutListener_);
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    PasswordManagerImpl.getInstance().removePasswordManagerAuthTimeoutListener(
+        this.passwordManagerAuthTimeoutListener_);
+  }
 
   override currentRouteChanged(route: Route): void {
     if (route !== routes.PASSWORD_VIEW) {

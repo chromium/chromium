@@ -1016,6 +1016,8 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
     {"passwordNoteCharacterCount", IDS_SETTINGS_PASSWORDS_NOTE_CHARACTER_COUNT},
     {"passwordNoteCharacterCountWarning",
      IDS_SETTINGS_PASSWORDS_NOTE_CHARACTER_COUNT_WARNING},
+    {"passwordsTimedOut", IDS_SETTINGS_PASSWORDS_TIMED_OUT},
+    {"passwordsGotIt", IDS_SETTINGS_GOT_IT},
     {"noAddressesFound", IDS_SETTINGS_ADDRESS_NONE},
     {"noPasswordsFound", IDS_SETTINGS_PASSWORDS_NONE},
     {"noExceptionsFound", IDS_SETTINGS_PASSWORDS_EXCEPTIONS_NONE},
@@ -1273,6 +1275,10 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
           autofill::features::kAutofillEnableVirtualCardMetadata));
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
+  // PASSWORD_VIEW page timeouts in 5 minutes:
+  html_source->AddString("passwordsTimedOutDescription",
+                         l10n_util::GetPluralStringFUTF16(
+                             IDS_SETTINGS_PASSWORDS_TIMED_OUT_DESCRIPTION, 5));
 }
 
 void AddSignOutDialogStrings(content::WebUIDataSource* html_source,

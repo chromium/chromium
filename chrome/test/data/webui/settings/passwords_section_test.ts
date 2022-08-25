@@ -1597,4 +1597,24 @@ suite('PasswordsSection', function() {
     flush();
     assertFalse(toastManager.open);
   });
+
+  test('routingWithAuthTimeoutParamShowsRemovalDialog', function() {
+    const passwordEntry =
+        createPasswordEntry({url: 'goo.gl', username: 'bart'});
+    const passwordsSection = elementFactory.createPasswordsSection(
+        passwordManager, [passwordEntry], []);
+    const authTimeoutDialog = passwordsSection.$.authTimeoutDialog;
+
+    const params = new URLSearchParams();
+    params.set('authTimeout', 'true');
+    Router.getInstance().navigateTo(routes.PASSWORDS, params);
+
+    flush();
+    assertTrue(authTimeoutDialog.open);
+
+    authTimeoutDialog.close();
+    flush();
+    assertFalse(authTimeoutDialog.open);
+    assertFalse(!!Router.getInstance().getQueryParameters().get('authTimeout'));
+  });
 });

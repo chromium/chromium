@@ -21,6 +21,8 @@ export type CredentialsChangedListener = (credentials: InsecureCredentials) =>
 export type PasswordCheckStatusChangedListener =
     (status: chrome.passwordsPrivate.PasswordCheckStatus) => void;
 
+export type PasswordManagerAuthTimeoutListener = () => void;
+
 /**
  * Interface for all callbacks to the password API.
  */
@@ -302,6 +304,18 @@ export interface PasswordManagerProxy {
    */
   removePasswordCheckStatusListener(
       listener: PasswordCheckStatusChangedListener): void;
+
+  /**
+   * Add an observer for authentication timeout.
+   */
+  addPasswordManagerAuthTimeoutListener(
+      listener: PasswordManagerAuthTimeoutListener): void;
+
+  /**
+   * Remove the specified observer for authentication timeout.
+   */
+  removePasswordManagerAuthTimeoutListener(
+      listener: PasswordManagerAuthTimeoutListener): void;
 
   /**
    * Records a given interaction on the Password Check page.
@@ -629,6 +643,17 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
   removePasswordCheckStatusListener(listener:
                                         PasswordCheckStatusChangedListener) {
     chrome.passwordsPrivate.onPasswordCheckStatusChanged.removeListener(
+        listener);
+  }
+
+  addPasswordManagerAuthTimeoutListener(
+      listener: PasswordManagerAuthTimeoutListener) {
+    chrome.passwordsPrivate.onPasswordManagerAuthTimeout.addListener(listener);
+  }
+
+  removePasswordManagerAuthTimeoutListener(
+      listener: PasswordManagerAuthTimeoutListener) {
+    chrome.passwordsPrivate.onPasswordManagerAuthTimeout.removeListener(
         listener);
   }
 

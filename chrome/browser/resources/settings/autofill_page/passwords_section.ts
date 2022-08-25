@@ -10,6 +10,7 @@
 
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/icons.m.js';
@@ -33,6 +34,7 @@ import './avatar_icon.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
@@ -58,6 +60,7 @@ import {PasskeysBrowserProxy, PasskeysBrowserProxyImpl} from './passkeys_browser
 import {PasswordCheckMixin, PasswordCheckMixinInterface} from './password_check_mixin.js';
 import {AddCredentialFromSettingsUserInteractions, PasswordEditDialogElement} from './password_edit_dialog.js';
 import {PasswordCheckReferrer, PasswordExceptionListChangedListener, PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
+import {PASSWORD_MANAGER_AUTH_TIMEOUT_PARAM} from './password_view.js';
 import {PasswordsListHandlerElement} from './passwords_list_handler.js';
 import {getTemplate} from './passwords_section.html.js';
 import {UserUtilMixin, UserUtilMixinInterface} from './user_util_mixin.js';
@@ -82,6 +85,7 @@ export interface PasswordsSectionElement {
     accountStorageOptInBody: HTMLElement,
     accountStorageOptOutBody: HTMLElement,
     addPasswordDialog: PasswordEditDialogElement,
+    authTimeoutDialog: CrDialogElement,
     checkPasswordLeakCount: HTMLElement,
     checkPasswordLeakDescription: HTMLElement,
     checkPasswordWarningIcon: HTMLElement,
@@ -361,11 +365,28 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   override currentRouteChanged(route: Route): void {
     super.currentRouteChanged(route);
 
+    if (route !== routes.PASSWORDS) {
+      return;
+    }
+
     // If password change scripts are enabled, the scripts cache should be
     // refreshed to minimize any UI modifications on the password check page.
-    if (route === routes.PASSWORDS && this.isAutomaticPasswordChangeEnabled_) {
+    if (this.isAutomaticPasswordChangeEnabled_) {
       this.passwordManager_.refreshScriptsIfNecessary();
     }
+
+    // Show the auth timeout dialog if the URL has the URL param.
+    const params = Router.getInstance().getQueryParameters();
+    if (!params.get(PASSWORD_MANAGER_AUTH_TIMEOUT_PARAM)) {
+      return;
+    }
+    this.$.authTimeoutDialog.showModal();
+    params.delete(PASSWORD_MANAGER_AUTH_TIMEOUT_PARAM);
+    Router.getInstance().updateRouteParams(params);
+  }
+
+  private onCloseAuthTimeoutDialogButton_() {
+    this.$.authTimeoutDialog.close();
   }
 
   private computeShowAddPasswordButton_(): boolean {

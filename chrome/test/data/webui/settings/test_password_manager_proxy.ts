@@ -5,7 +5,7 @@
 /** @fileoverview Test implementation of PasswordManagerProxy. */
 
 // clang-format off
-import {AccountStorageOptInStateChangedListener, CredentialsChangedListener, PasswordCheckInteraction, PasswordCheckReferrer, PasswordCheckStatusChangedListener, PasswordExceptionListChangedListener, PasswordManagerProxy, PasswordsFileExportProgressListener, SavedPasswordListChangedListener} from 'chrome://settings/settings.js';
+import {AccountStorageOptInStateChangedListener, CredentialsChangedListener, PasswordCheckInteraction, PasswordCheckReferrer, PasswordCheckStatusChangedListener, PasswordExceptionListChangedListener, PasswordManagerProxy, PasswordsFileExportProgressListener, PasswordManagerAuthTimeoutListener, SavedPasswordListChangedListener} from 'chrome://settings/settings.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -78,6 +78,8 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
         AccountStorageOptInStateChangedListener|null,
     addPasswordsFileExportProgressListener: PasswordsFileExportProgressListener|
     null,
+    addPasswordManagerAuthTimeoutListener: PasswordManagerAuthTimeoutListener|
+    null,
   };
 
   private plaintextPassword_: string = '';
@@ -147,6 +149,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       addWeakCredentialsListener: null,
       addAccountStorageOptInStateListener: null,
       addPasswordsFileExportProgressListener: null,
+      addPasswordManagerAuthTimeoutListener: null,
     };
   }
 
@@ -335,6 +338,14 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
 
   removePasswordCheckStatusListener(_listener:
                                         PasswordCheckStatusChangedListener) {}
+
+  addPasswordManagerAuthTimeoutListener(
+      listener: PasswordManagerAuthTimeoutListener) {
+    this.lastCallback.addPasswordManagerAuthTimeoutListener = listener;
+  }
+
+  removePasswordManagerAuthTimeoutListener(
+      _listener: PasswordManagerAuthTimeoutListener) {}
 
   recordPasswordCheckInteraction(interaction: PasswordCheckInteraction) {
     this.methodCalled('recordPasswordCheckInteraction', interaction);
