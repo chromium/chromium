@@ -794,14 +794,14 @@ def main():
     os.chdir(LLVM_BOOTSTRAP_DIR)
 
     projects = 'clang'
-    runtimes = ''
+    runtimes = []
     if args.pgo or sys.platform == 'darwin':
       # Need libclang_rt.profile for PGO.
       # On macOS, the bootstrap toolchain needs to have compiler-rt because
       # dsymutil's link needs libclang_rt.osx.a. Only the x86_64 osx
       # libraries are needed though, and only libclang_rt (i.e.
       # COMPILER_RT_BUILD_BUILTINS).
-      runtimes += ';compiler-rt'
+      runtimes.append('compiler-rt')
     if sys.platform != 'darwin':
       projects += ';lld'
 
@@ -812,7 +812,7 @@ def main():
     bootstrap_args = base_cmake_args + [
         '-DLLVM_TARGETS_TO_BUILD=' + bootstrap_targets,
         '-DLLVM_ENABLE_PROJECTS=' + projects,
-        '-DLLVM_ENABLE_RUNTIMES=' + runtimes,
+        '-DLLVM_ENABLE_RUNTIMES=' + ';'.join(runtimes),
         '-DCMAKE_INSTALL_PREFIX=' + LLVM_BOOTSTRAP_INSTALL_DIR,
         '-DCMAKE_C_FLAGS=' + ' '.join(cflags),
         '-DCMAKE_CXX_FLAGS=' + ' '.join(cxxflags),
