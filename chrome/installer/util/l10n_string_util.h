@@ -38,10 +38,6 @@ void SetTranslationDelegate(TranslationDelegate* delegate);
 // canary Chrome).
 std::wstring GetLocalizedString(int base_message_id);
 
-// Returns the localized version of a string (obtained from GetLocalizedString)
-// with $1 replaced with |a|. Additionally, $$ is replaced by $.
-std::wstring GetLocalizedStringF(int base_message_id, const std::wstring& a);
-
 // Given the system language, return a url that points to the localized eula.
 // The empty string is returned on failure.
 std::wstring GetLocalizedEulaResource();
