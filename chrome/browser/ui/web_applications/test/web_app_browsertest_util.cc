@@ -109,11 +109,18 @@ SkColor GetIconTopLeftColor(const base::FilePath& shortcut_path) {
   base::ScopedCFTypeRef<CFURLRef> url(CFURLCreateFromFileSystemRepresentation(
       NULL, (const UInt8*)icon_path.value().c_str(), icon_path.value().length(),
       false));
-  CGImageSourceRef source = CGImageSourceCreateWithURL(url, NULL);
+  base::ScopedCFTypeRef<CGImageSourceRef> source(
+      CGImageSourceCreateWithURL(url, NULL));
+  if (!source)
+    return 0;
   // Get the first icon in the .icns file (index 0)
   base::ScopedCFTypeRef<CGImageRef> cg_image(
       CGImageSourceCreateImageAtIndex(source, 0, empty_dict));
+  if (!cg_image)
+    return 0;
   SkBitmap bitmap = skia::CGImageToSkBitmap(cg_image);
+  if (bitmap.empty())
+    return 0;
   return bitmap.getColor(0, 0);
 #else
 #if BUILDFLAG(IS_WIN)
