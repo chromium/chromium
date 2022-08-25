@@ -50,7 +50,8 @@ class _PathResolver:
     for p in candidates:
       if p.exists():
         return p
-    raise Exception('Paths do not exist: ' + ', '.join(candidates))
+    raise Exception('Paths do not exist: ' +
+                    ', '.join(str(t) for t in candidates))
 
 
 class _DiffAction:
