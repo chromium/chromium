@@ -1350,6 +1350,12 @@ void PrintRenderFrameHelper::PrintWithParams(
     return;
   }
 
+  if (print_with_params_callback_) {
+    std::move(callback).Run(mojom::PrintWithParamsResult::NewFailureReason(
+        mojom::PrintFailureReason::kPrintingInProgress));
+    return;
+  }
+
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
   frame->DispatchBeforePrintEvent(/*print_client=*/nullptr);
   // Don't print if the RenderFrame is gone.
@@ -1358,6 +1364,8 @@ void PrintRenderFrameHelper::PrintWithParams(
         mojom::PrintFailureReason::kGeneralFailure));
     return;
   }
+
+  print_with_params_callback_ = std::move(callback);
 
   // If we are printing a frame with an internal PDF plugin element, find the
   // plugin node and print that instead.
@@ -1372,9 +1380,6 @@ void PrintRenderFrameHelper::PrintWithParams(
   SetPrintPagesParams(*settings);
   prep_frame_view_ = std::make_unique<PrepareFrameAndViewForPrint>(
       *settings->params, frame, plugin_node, /* ignore_css_margins=*/false);
-
-  CHECK(!print_with_params_callback_);
-  print_with_params_callback_ = std::move(callback);
 
   PrintPages();
   FinishFramePrinting();

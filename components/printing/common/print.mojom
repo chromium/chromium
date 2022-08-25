@@ -273,6 +273,7 @@ interface PrintPreviewUI {
 enum PrintFailureReason {
   kGeneralFailure,
   kInvalidPageRange,
+  kPrintingInProgress,
 };
 
 union PrintWithParamsResult {

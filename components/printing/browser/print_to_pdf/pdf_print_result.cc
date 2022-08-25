@@ -12,8 +12,6 @@ std::string PdfPrintResultToString(PdfPrintResult result) {
       return std::string();  // no error message
     case PdfPrintResult::kPrintFailure:
       return "Printing failed";
-    case PdfPrintResult::kInvalidPrinterSettings:
-      return "Show invalid printer settings error";
     case PdfPrintResult::kInvalidSharedMemoryRegion:
       return "Invalid shared memory region";
     case PdfPrintResult::kInvalidSharedMemoryMapping:
@@ -24,6 +22,8 @@ std::string PdfPrintResultToString(PdfPrintResult result) {
       return "Page range is invalid (start > end)";
     case PdfPrintResult::kPageCountExceeded:
       return "Page range exceeds page count";
+    case PdfPrintResult::kPrintingInProgress:
+      return "Page is already being printed";
   }
 }
 

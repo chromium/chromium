@@ -12,12 +12,12 @@ namespace print_to_pdf {
 enum class PdfPrintResult {
   kPrintSuccess,
   kPrintFailure,
-  kInvalidPrinterSettings,
   kInvalidSharedMemoryRegion,
   kInvalidSharedMemoryMapping,
   kPageRangeSyntaxError,
   kPageRangeInvalidRange,
   kPageCountExceeded,
+  kPrintingInProgress,
 };
 
 std::string PdfPrintResultToString(PdfPrintResult result);

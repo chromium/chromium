@@ -69,6 +69,9 @@ void PdfPrintJob::OnDidPrintWithParams(
       case printing::mojom::PrintFailureReason::kInvalidPageRange:
         FailJob(PdfPrintResult::kPageCountExceeded);
         return;
+      case printing::mojom::PrintFailureReason::kPrintingInProgress:
+        FailJob(PdfPrintResult::kPrintingInProgress);
+        return;
     }
   }
 
