@@ -167,7 +167,6 @@ SkColor AshColorProvider::GetControlsLayerColor(ControlsLayerType type) const {
 }
 
 SkColor AshColorProvider::GetContentLayerColor(ContentLayerType type) const {
-  bool use_dark_color = IsDarkModeEnabled();
   auto* color_provider = GetColorProvider();
   switch (type) {
     case ContentLayerType::kSeparatorColor:
@@ -240,15 +239,9 @@ SkColor AshColorProvider::GetContentLayerColor(ContentLayerType type) const {
     case ContentLayerType::kTextColorSuggestion:
       return color_provider->GetColor(kColorAshTextColorSuggestion);
     case ContentLayerType::kTextColorPrimary:
-      // TODO(crbug.com/1346394): Change to `color_provider` when relevant
-      // callers are fixed.
-      return cros_styles::ResolveColor(ColorName::kTextColorPrimary,
-                                       use_dark_color);
+      return color_provider->GetColor(kColorAshTextColorPrimary);
     case ContentLayerType::kTextColorSecondary:
-      // TODO(crbug.com/1346394): Change to `color_provider` when relevant
-      // callers are fixed.
-      return cros_styles::ResolveColor(ColorName::kTextColorSecondary,
-                                       use_dark_color);
+      return color_provider->GetColor(kColorAshTextColorSecondary);
     case ContentLayerType::kTextColorAlert:
       return color_provider->GetColor(kColorAshTextColorAlert);
     case ContentLayerType::kTextColorWarning:
