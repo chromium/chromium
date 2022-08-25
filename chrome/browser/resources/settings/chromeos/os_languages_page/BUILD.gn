@@ -6,7 +6,6 @@
 # TODO(crbug.com/1226913): Add the missing deps.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/html_to_js.gni")
 import("../os_settings.gni")
 
 js_type_check("closure_compile_module") {
@@ -235,13 +234,5 @@ js_library("smart_inputs_page") {
     "..:route_observer_behavior",
     "../..:router",
     "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-# TODO(crbug.com/1322682): Migrate this to css_to_wrapper().
-html_to_js("css_wrapper_files") {
-  js_files = [
-    "shared_style.js",
-    "shared_vars.js",
   ]
 }

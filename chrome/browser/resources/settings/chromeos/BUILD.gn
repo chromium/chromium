@@ -6,6 +6,7 @@ import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/css_to_wrapper.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
@@ -130,6 +131,7 @@ preprocess_if_expr("preprocess_src_ts_files") {
 preprocess_if_expr("preprocess_gen_ts_files") {
   defines = chrome_grit_defines
   deps = [
+    ":generate_web_component_css_wrapper_files",
     ":generate_web_component_html_wrapper_files",
     ":generate_web_components",
   ]
@@ -141,6 +143,12 @@ preprocess_if_expr("preprocess_gen_ts_files") {
 html_to_wrapper("generate_web_component_html_wrapper_files") {
   in_folder = "../"
   in_files = web_component_html_files
+  out_folder = get_path_info("../", "gen_dir")
+}
+
+css_to_wrapper("generate_web_component_css_wrapper_files") {
+  in_folder = "../"
+  in_files = css_files
   out_folder = get_path_info("../", "gen_dir")
 }
 
@@ -425,10 +433,6 @@ group("generate_web_components") {
     "os_apps_page/app_notifications_page:web_components",
     "os_bluetooth_page:web_components",
     "os_files_page:web_components",
-
-    # TODO(crbug.com/1322682): Migrate os_languages_page's CSS files to
-    # css_to_wrapper().
-    "os_languages_page:css_wrapper_files",
     "os_people_page:web_components",
     "os_printing_page:web_components",
     "os_privacy_page:web_components",
