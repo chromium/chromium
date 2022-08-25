@@ -28,8 +28,6 @@ class CORE_EXPORT V8MetricsRecorder : public v8::metrics::Recorder {
                           ContextId context_id) override;
   void AddMainThreadEvent(const v8::metrics::WasmModuleInstantiated& event,
                           ContextId context_id) override;
-  void AddMainThreadEvent(const v8::metrics::WasmModuleTieredUp& event,
-                          ContextId context_id) override;
 
   void AddMainThreadEvent(const v8::metrics::GarbageCollectionFullCycle& event,
                           ContextId context_id) override;
