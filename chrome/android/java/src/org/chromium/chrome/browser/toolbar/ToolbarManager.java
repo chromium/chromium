@@ -371,6 +371,13 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             }
         }
 
+        public void destroy() {
+            if (mCurrentConstraintDelegate != null) {
+                mCurrentConstraintDelegate.removeObserver(this);
+                mCurrentConstraintDelegate = null;
+            }
+        }
+
         @Override
         public void onResult(Integer result) {
             set(result);
@@ -1620,6 +1627,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mActivity.unregisterComponentCallbacks(mComponentCallbacks);
         mComponentCallbacks = null;
         ChromeAccessibilityUtil.get().removeObserver(this);
+
+        mConstraintsProxy.destroy();
     }
 
     /**
