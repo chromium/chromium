@@ -124,14 +124,9 @@ class AuthenticationFlowTest : public PlatformTest {
 
   void SetSigninSuccessExpectations(ChromeIdentity* identity,
                                     NSString* hosted_domain) {
-    [[[performer_ expect] andDo:^(NSInvocation* invocation) {
-      signin_ui::CompletionCallback callback;
-      [invocation getArgument:&callback atIndex:5];
-      callback(YES);
-    }] signInIdentity:identity
-        withHostedDomain:hosted_domain
-          toBrowserState:browser_state_.get()
-              completion:[OCMArg isNotNil]];
+    [[performer_ expect] signInIdentity:identity
+                       withHostedDomain:hosted_domain
+                         toBrowserState:browser_state_.get()];
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -199,7 +194,7 @@ TEST_F(AuthenticationFlowTest, TestAlreadySignedIn) {
   [[performer_ expect] commitSyncForBrowserState:browser_state_.get()];
 
   AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
-      ->SignIn(identity1_, nil);
+      ->SignIn(identity1_);
   [authentication_flow_ startSignInWithCompletion:sign_in_completion_];
 
   CheckSignInCompletion(/*expected_signed_in=*/true);
@@ -245,7 +240,7 @@ TEST_F(AuthenticationFlowTest, TestSignOutUserChoice) {
   [[performer_ expect] commitSyncForBrowserState:browser_state_.get()];
 
   AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
-      ->SignIn(identity2_, nil);
+      ->SignIn(identity2_);
   [authentication_flow_ startSignInWithCompletion:sign_in_completion_];
 
   CheckSignInCompletion(/*expected_signed_in=*/true);

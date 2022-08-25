@@ -201,7 +201,7 @@ TEST_F(CredentialProviderServiceTest, AccountChange) {
       ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
   identity_service->AddManagedIdentities(@[ @"Name" ]);
   ChromeIdentity* identity = account_manager_service_->GetDefaultIdentity();
-  auth_service_->SignIn(identity, nil);
+  auth_service_->SignIn(identity);
 
   ASSERT_TRUE(auth_service_->GetPrimaryIdentity(signin::ConsentLevel::kSignin));
   ASSERT_TRUE(
@@ -290,7 +290,7 @@ TEST_F(CredentialProviderServiceTest, PasswordSyncStoredEmail) {
       [FakeChromeIdentity identityWithEmail:userEmail
                                      gaiaID:@"gaiaID"
                                        name:@"Test Name"];
-  auth_service_->SignIn(identity, nil);
+  auth_service_->SignIn(identity);
   auth_service_->GrantSyncConsent(identity);
   sync_service_.FireStateChanged();
 

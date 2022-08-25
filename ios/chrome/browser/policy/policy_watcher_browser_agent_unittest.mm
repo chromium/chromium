@@ -95,7 +95,7 @@ class PolicyWatcherBrowserAgentTest : public PlatformTest {
                                          name:@"myName"];
     AuthenticationServiceFactory::GetForBrowserState(
         chrome_browser_state_.get())
-        ->SignIn(identity, nil);
+        ->SignIn(identity);
   }
 
   PrefService* GetLocalState() { return scoped_testing_local_state_.Get(); }
@@ -302,7 +302,7 @@ TEST_F(PolicyWatcherBrowserAgentTest, UINotShownWhileSignOut) {
       [FakeChromeIdentity identityWithEmail:@"email@google.com"
                                      gaiaID:@"gaiaID"
                                        name:@"myName"];
-  authentication_service->SignIn(identity, nil);
+  authentication_service->SignIn(identity);
 
   ASSERT_TRUE(authentication_service->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));

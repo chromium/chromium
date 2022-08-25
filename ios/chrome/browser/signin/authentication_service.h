@@ -129,8 +129,8 @@ class AuthenticationService : public KeyedService,
 
   // Grants signin::ConsentLevel::kSignin to |identity|.
   // This method does not set up Sync-the-feature for the identity.
-  void SignIn(ChromeIdentity* identity,
-              signin_ui::CompletionCallback completion);
+  // Virtual for testing.
+  virtual void SignIn(ChromeIdentity* identity);
 
   // Grants signin::ConsentLevel::kSync to |identity|.
   // This starts setting up Sync-the-feature, but the setup will only complete
@@ -164,10 +164,6 @@ class AuthenticationService : public KeyedService,
  private:
   friend class AuthenticationServiceFake;
   friend class AuthenticationServiceTest;
-
-  // Grants signin::ConsentLevel::kSignin to |identity|.
-  // Virtual for testing.
-  virtual void SignInInternal(ChromeIdentity* identity);
 
   // Clears local data for users under parental controls and runs |completion|.
   void OnIsSubjectToParentalControlsResult(

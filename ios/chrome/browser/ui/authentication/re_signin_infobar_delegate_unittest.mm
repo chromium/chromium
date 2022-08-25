@@ -59,7 +59,7 @@ class ReSignInInfoBarDelegateTest : public PlatformTest {
     AuthenticationService* authentication_service =
         AuthenticationServiceFactory::GetForBrowserState(
             chrome_browser_state_.get());
-    authentication_service->SignIn(chrome_identity, nil);
+    authentication_service->SignIn(chrome_identity);
   }
 
   web::WebTaskEnvironment task_environment_;

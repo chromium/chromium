@@ -321,17 +321,7 @@ ChromeIdentity* AuthenticationService::GetPrimaryIdentity(
   return account_manager_service_->GetIdentityWithGaiaID(authenticated_gaia_id);
 }
 
-// TODO(crbug.com/1351423): Remove asynchronous callback from SignIn function,
-// since this is no longer used by existing callers.
-void AuthenticationService::SignIn(ChromeIdentity* identity,
-                                   signin_ui::CompletionCallback completion) {
-  SignInInternal(identity);
-  if (completion) {
-    completion(HasPrimaryIdentity(signin::ConsentLevel::kSignin));
-  }
-}
-
-void AuthenticationService::SignInInternal(ChromeIdentity* identity) {
+void AuthenticationService::SignIn(ChromeIdentity* identity) {
   ServiceStatus status = GetServiceStatus();
   CHECK(status == ServiceStatus::SigninAllowed ||
         status == ServiceStatus::SigninForcedByPolicy)

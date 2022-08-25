@@ -286,12 +286,9 @@ TEST_F(LegacySigninScreenMediatorTest, TestSignIn) {
       });
   OCMExpect([performer_mock signInIdentity:identity_
                           withHostedDomain:nil
-                            toBrowserState:browser_state_.get()
-                                completion:[OCMArg any]])
+                            toBrowserState:browser_state_.get()])
       .andDo(^(NSInvocation* invocation) {
-        signin_ui::CompletionCallback callback;
-        [invocation getArgument:&callback atIndex:5];
-        auth_service->SignIn(identity_, callback);
+        auth_service->SignIn(identity_);
       });
   OCMExpect([performer_mock
                 shouldHandleMergeCaseForIdentity:identity_

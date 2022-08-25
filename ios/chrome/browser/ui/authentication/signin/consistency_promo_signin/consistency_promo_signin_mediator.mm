@@ -141,7 +141,7 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
       signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
     self.userPrefService->SetInteger(prefs::kSigninWebSignDismissalCount, 0);
   }
-  self.authenticationService->SignIn(identity, nil);
+  self.authenticationService->SignIn(identity);
   [self.delegate consistencyPromoSigninMediatorSigninStarted:self];
   DCHECK(self.authenticationService->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));

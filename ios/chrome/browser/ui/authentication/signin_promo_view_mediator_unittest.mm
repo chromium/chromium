@@ -543,7 +543,7 @@ TEST_F(SigninPromoViewMediatorTest, SigninPromoWhileSignedIn) {
                                        name:@"johndoe2"];
   ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()->AddIdentity(
       expected_default_identity_);
-  GetAuthenticationService()->SignIn(expected_default_identity_, nil);
+  GetAuthenticationService()->SignIn(expected_default_identity_);
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
   ExpectConfiguratorNotification(NO /* identity changed */);
   [mediator_ signinPromoViewIsVisible];

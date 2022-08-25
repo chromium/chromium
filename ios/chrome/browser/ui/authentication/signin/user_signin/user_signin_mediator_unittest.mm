@@ -131,13 +131,10 @@ class UserSigninMediatorTest : public PlatformTest {
         });
     OCMExpect([performer_mock_ signInIdentity:identity_
                              withHostedDomain:nil
-                               toBrowserState:browser_state_.get()
-                                   completion:[OCMArg any]])
+                               toBrowserState:browser_state_.get()])
         .andDo(^(NSInvocation* invocation) {
           NSLog(@" signInIdentity ");
-          signin_ui::CompletionCallback callback;
-          [invocation getArgument:&callback atIndex:5];
-          authentication_service()->SignIn(identity_, callback);
+          authentication_service()->SignIn(identity_);
         });
     if (postSignInAction == POST_SIGNIN_ACTION_COMMIT_SYNC) {
       OCMExpect([performer_mock_
@@ -517,7 +514,7 @@ TEST_F(UserSigninMediatorTest, OpenSettingsLinkWithDifferentIdentityAndCancel) {
                                      gaiaID:@"foo2ID"
                                        name:@"Fake Foo 2"];
   identity_service()->AddIdentity(identity2);
-  authentication_service()->SignIn(identity2, nil);
+  authentication_service()->SignIn(identity2);
 
   // Opens the settings link with identity 1.
   CreateAuthenticationFlow(POST_SIGNIN_ACTION_NONE);
@@ -569,7 +566,7 @@ TEST_F(UserSigninMediatorTest,
                                      gaiaID:@"foo2ID"
                                        name:@"Fake Foo 2"];
   identity_service()->AddIdentity(identity2);
-  authentication_service()->SignIn(identity2, nil);
+  authentication_service()->SignIn(identity2);
 
   // Opens the settings link with identity 1.
   CreateAuthenticationFlow(POST_SIGNIN_ACTION_NONE);

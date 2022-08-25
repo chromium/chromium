@@ -175,7 +175,7 @@
                 // Make sure the mediator is still alive, and the identity is
                 // stil valid (for example the identity can be removed by
                 // another app.
-                authenticationService->SignIn(identity, nil);
+                authenticationService->SignIn(identity);
               }
               if (completion)
                 completion();

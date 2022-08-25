@@ -148,7 +148,7 @@ TEST_F(UnifiedConsentMediatorTest, SelectDefaultIdentityForSignedInUser) {
   AddIdentities();
   CreateMediator();
 
-  GetAuthenticationService()->SignIn(identity2_, nil);
+  GetAuthenticationService()->SignIn(identity2_);
   [mediator_ start];
 
   ASSERT_EQ(identity2_, mediator_.selectedIdentity);
@@ -161,7 +161,7 @@ TEST_F(UnifiedConsentMediatorTest,
   AddIdentities();
   CreateMediator();
 
-  GetAuthenticationService()->SignIn(identity3_, nil);
+  GetAuthenticationService()->SignIn(identity3_);
   [mediator_ start];
   ASSERT_EQ(identity3_, mediator_.selectedIdentity);
   GetAuthenticationService()->SignOut(signin_metrics::SIGNOUT_TEST, false, nil);
@@ -188,7 +188,7 @@ TEST_F(UnifiedConsentMediatorTest, DontOverrideIdentityForSignedInUser) {
   AddIdentities();
   CreateMediator();
 
-  GetAuthenticationService()->SignIn(identity1_, nil);
+  GetAuthenticationService()->SignIn(identity1_);
   mediator_.selectedIdentity = identity2_;
   [mediator_ start];
 
