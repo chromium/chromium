@@ -45,9 +45,8 @@ TEST_F(ObjectPaintInvalidatorTest, Selection) {
   UpdateAllLifecyclePhasesForTest();
   const auto* invalidations =
       &GetRasterInvalidationTracking(*GetDocument().View())->Invalidations();
-  ASSERT_EQ(2u, invalidations->size());
+  ASSERT_EQ(1u, invalidations->size());
   EXPECT_EQ(gfx::Rect(8, 8, 100, 100), (*invalidations)[0].rect);
-  EXPECT_EQ(gfx::Rect(8, 8, 100, 100), (*invalidations)[1].rect);
   EXPECT_EQ(PaintInvalidationReason::kSelection, (*invalidations)[0].reason);
   GetDocument().View()->SetTracksRasterInvalidations(false);
 
@@ -66,9 +65,8 @@ TEST_F(ObjectPaintInvalidatorTest, Selection) {
   UpdateAllLifecyclePhasesForTest();
   invalidations =
       &GetRasterInvalidationTracking(*GetDocument().View())->Invalidations();
-  ASSERT_EQ(2u, invalidations->size());
+  ASSERT_EQ(1u, invalidations->size());
   EXPECT_EQ(gfx::Rect(8, 8, 100, 100), (*invalidations)[0].rect);
-  EXPECT_EQ(gfx::Rect(8, 8, 100, 100), (*invalidations)[1].rect);
   EXPECT_EQ(PaintInvalidationReason::kSelection, (*invalidations)[0].reason);
   GetDocument().View()->SetTracksRasterInvalidations(false);
 }
