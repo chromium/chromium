@@ -7,6 +7,8 @@
 
 #include "third_party/blink/public/mojom/frame/pending_beacon.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/pending_beacon_dispatcher.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
@@ -18,7 +20,9 @@ class ExecutionContext;
 
 // Implementation of the PendingBeacon API.
 // https://github.com/WICG/unload-beacon/blob/main/README.md
-class CORE_EXPORT PendingBeacon : public ScriptWrappable {
+class CORE_EXPORT PendingBeacon
+    : public ScriptWrappable,
+      public PendingBeaconDispatcher::PendingBeacon {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -43,6 +47,10 @@ class CORE_EXPORT PendingBeacon : public ScriptWrappable {
   void sendNow();
 
   void Trace(Visitor*) const override;
+
+  // `PendingBeaconDispatcher::PendingBeacon` implementation.
+  base::TimeDelta GetBackgroundTimeout() const override;
+  void Send() override;
 
  protected:
   explicit PendingBeacon(ExecutionContext* context,

@@ -1,0 +1,416 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include <type_traits>
+
+#include "base/feature_list.h"
+#include "base/location.h"
+#include "base/strings/strcat.h"
+#include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/ukm/test_ukm_recorder.h"
+#include "content/browser/back_forward_cache_test_util.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_utils.h"
+#include "content/shell/browser/shell.h"
+#include "net/dns/mock_host_resolver.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/features.h"
+
+namespace content {
+
+class PendingBeaconTimeoutBrowserTestBase : public ContentBrowserTest {
+ protected:
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    // Using base::Unretained() as `embedded_test_server()` is owned by
+    // `content::BrowserTestBase` and should not be able to outlive.
+    embedded_test_server()->RegisterDefaultHandler(base::BindRepeating(
+        &PendingBeaconTimeoutBrowserTestBase::HandleBeaconRequest,
+        base::Unretained(this)));
+    ContentBrowserTest::SetUpOnMainThread();
+  }
+
+  // Runs JS `script` in page A, and then navigates to page B.
+  void RunScriptInANavigateToB(const std::string& script) {
+    RunScriptInA(script);
+
+    // Navigate to B.
+    ASSERT_TRUE(
+        NavigateToURL(embedded_test_server()->GetURL("b.com", "/title1.html")));
+  }
+
+  // Runs JS `script` in page A.
+  void RunScriptInA(const std::string& script) {
+    // Navigate to A.
+    ASSERT_TRUE(
+        NavigateToURL(embedded_test_server()->GetURL("a.com", "/title1.html")));
+    RenderFrameHostWrapper rfh_a(current_frame_host());
+    // Execute `script` in A.
+    ASSERT_TRUE(ExecJs(web_contents(), script));
+  }
+
+  // Registers a request monitor to wait for `total_beacon` beacons received,
+  // and then starts the test server.
+  void RegisterBeaconRequestMonitor(const size_t total_beacon) {
+    // Using base::Unretained() as `embedded_test_server()` is owned by
+    // `content::BrowserTestBase` and should not be able to outlive.
+    embedded_test_server()->RegisterRequestMonitor(base::BindRepeating(
+        &PendingBeaconTimeoutBrowserTestBase::MonitorBeaconRequest,
+        base::Unretained(this), total_beacon));
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  // Waits for `kBeaconEndpoint` to be requested `total_beacon` times.
+  // If `sent_beacon_count_` does not yet reach `total_beacon`, a RunLoop will
+  // be created and runs until it is stopped by `MonitorBeaconRequest`.
+  void WaitForAllBeaconsSent(size_t total_beacon) {
+    {
+      base::AutoLock auto_lock(count_lock_);
+      if (sent_beacon_count_ >= total_beacon)
+        return;
+    }
+    {
+      base::AutoLock auto_lock(count_lock_);
+      waiting_run_loop_ = std::make_unique<base::RunLoop>(
+          base::RunLoop::Type::kNestableTasksAllowed);
+    }
+    waiting_run_loop_->Run();
+    {
+      base::AutoLock auto_lock(count_lock_);
+      waiting_run_loop_.reset();
+    }
+  }
+
+  WebContents* web_contents() const { return shell()->web_contents(); }
+
+  RenderFrameHostWrapper& current_document() {
+    current_document_ =
+        std::make_unique<RenderFrameHostWrapper>(current_frame_host());
+    return *current_document_;
+  }
+  RenderFrameHostWrapper& previous_document() { return *previous_document_; }
+
+  bool NavigateToURL(const GURL& url) {
+    previous_document_ =
+        std::make_unique<RenderFrameHostWrapper>(current_frame_host());
+    return content::NavigateToURL(web_contents(), url);
+  }
+
+  size_t sent_beacon_count() {
+    base::AutoLock auto_lock(count_lock_);
+    return sent_beacon_count_;
+  }
+
+  static constexpr char kBeaconEndpoint[] = "/pending_beacon/timeout";
+
+ private:
+  // Waits until `total_beacon` beacons received and stops `waiting_run_loop_`.
+  // Invoked on `embedded_test_server()`'s IO Thread, so it's required to use
+  // a lock to protect shared data `sent_beacon_count_` access.
+  void MonitorBeaconRequest(const size_t total_beacon,
+                            const net::test_server::HttpRequest& request) {
+    if (request.relative_url == kBeaconEndpoint) {
+      {
+        base::AutoLock auto_lock(count_lock_);
+        sent_beacon_count_++;
+        if (sent_beacon_count_ < total_beacon) {
+          return;
+        }
+      }
+
+      base::AutoLock auto_lock(count_lock_);
+      if (waiting_run_loop_) {
+        waiting_run_loop_->Quit();
+      }
+    }
+  }
+
+  // Invoked on `embedded_test_server()`'s IO Thread.
+  // PendingBeacon doesn't really look into its response, so this method just
+  // returns OK status.
+  std::unique_ptr<net::test_server::HttpResponse> HandleBeaconRequest(
+      const net::test_server::HttpRequest& request) {
+    if (request.relative_url != kBeaconEndpoint) {
+      return nullptr;
+    }
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    response->set_code(net::HTTP_OK);
+    return response;
+  }
+
+  RenderFrameHost* current_frame_host() {
+    return web_contents()->GetPrimaryMainFrame();
+  }
+
+  base::Lock count_lock_;
+  size_t sent_beacon_count_ GUARDED_BY(count_lock_) = 0;
+  std::unique_ptr<base::RunLoop> waiting_run_loop_;
+
+  std::unique_ptr<RenderFrameHostWrapper> current_document_ = nullptr;
+  std::unique_ptr<RenderFrameHostWrapper> previous_document_ = nullptr;
+};
+
+MATCHER(IsFrameVisible,
+        base::StrCat({"Frame is", negation ? " not" : "", " visible"})) {
+  return arg->GetVisibilityState() == PageVisibilityState::kVisible;
+}
+
+MATCHER(IsFrameHidden,
+        base::StrCat({"Frame is", negation ? " not" : "", " hidden"})) {
+  return arg->GetVisibilityState() == PageVisibilityState::kHidden;
+}
+
+struct TestTimeoutType {
+  std::string test_case_name;
+  int32_t timeout;
+};
+
+// Tests to cover PendingBeacon's backgroundTimeout & timeout behaviors when
+// BackForwardCache is off.
+// Disables BackForwardCache by setting its cache size to 0 such that a page is
+// discarded right away on user navigating to another page. And on page
+// discard, pending beacons should be sent out no matter what value its
+// backgroundTimeout/timeout is.
+class PendingBeaconTimeoutNoBackForwardCacheBrowserTest
+    : public PendingBeaconTimeoutBrowserTestBase,
+      public testing::WithParamInterface<TestTimeoutType> {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kPendingBeaconAPI, {}},
+         {features::kBackForwardCache, {{"cache_size", "0"}}}},
+        {});
+    PendingBeaconTimeoutBrowserTestBase::SetUpCommandLine(command_line);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PendingBeaconTimeoutNoBackForwardCacheBrowserTest,
+    testing::ValuesIn<std::vector<TestTimeoutType>>({
+        {"LongTimeout", 600000},
+        {"OneSecondTimeout", 1000},
+        {"ShortTimeout", 1},
+        {"NoTimeout", 0},
+        {"DefaultTimeout", -1},        // default.
+        {"NegativeTimeout", -600000},  // behaves the same as default.
+    }),
+    [](const testing::TestParamInfo<TestTimeoutType>& info) {
+      return info.param.test_case_name;
+    });
+
+IN_PROC_BROWSER_TEST_P(PendingBeaconTimeoutNoBackForwardCacheBrowserTest,
+                       SendOnPageDiscardNotUsingBackgroundTimeout) {
+  const size_t total_beacon = 1;
+  RegisterBeaconRequestMonitor(total_beacon);
+
+  // Creates a pending beacon with various backgroundTimeout, which should all
+  // be sent on page A discard.
+  RunScriptInANavigateToB(JsReplace(R"(
+    let p = new PendingGetBeacon($1, {backgroundTimeout: $2});
+  )",
+                                    kBeaconEndpoint, GetParam().timeout));
+  ASSERT_TRUE(previous_document().WaitUntilRenderFrameDeleted());
+
+  WaitForAllBeaconsSent(total_beacon);
+  EXPECT_EQ(sent_beacon_count(), total_beacon);
+}
+
+// TODO(crbug.com/1293679): Add tests to cover timeout behaviors.
+
+// Tests to cover PendingBeacon's backgroundTimeout behaviors.
+// Sets `PendingBeaconMaxBackgroundTimeoutInMs` (10s) > BFCache timeout (5s) to
+// also cover beacon sending on page eviction.
+class PendingBeaconBackgroundTimeoutBrowserTest
+    : public PendingBeaconTimeoutBrowserTestBase {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kPendingBeaconAPI,
+          {{"PendingBeaconMaxBackgroundTimeoutInMs", "10000"}}},
+         {features::kBackForwardCache,
+          {{"TimeToLiveInBackForwardCacheInSeconds", "5"}}}},
+        {});
+    PendingBeaconTimeoutBrowserTestBase::SetUpCommandLine(command_line);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PendingBeaconBackgroundTimeoutBrowserTest,
+                       SendOnHidden) {
+  const size_t total_beacon = 1;
+  RegisterBeaconRequestMonitor(total_beacon);
+
+  // Creates a pending beacon with 0s backgroundTimeout.
+  // It should be sent out right on entering `hidden` state.
+  RunScriptInANavigateToB(JsReplace(R"(
+    let p = new PendingGetBeacon($1, {backgroundTimeout: 0});
+  )",
+                                    kBeaconEndpoint));
+  ASSERT_THAT(previous_document(), IsFrameHidden());
+
+  WaitForAllBeaconsSent(total_beacon);
+  ASSERT_THAT(previous_document(), IsFrameHidden());
+  EXPECT_EQ(sent_beacon_count(), total_beacon);
+}
+
+IN_PROC_BROWSER_TEST_F(PendingBeaconBackgroundTimeoutBrowserTest,
+                       SendOnBackgroundTimeout) {
+  const size_t total_beacon = 1;
+  RegisterBeaconRequestMonitor(total_beacon);
+
+  // Creates a pending beacon with backgroundTimeout (1s) < BFCache TTL (5s).
+  // The beacon should be sent out on entering `hidden` state but before
+  // page deletion.
+  RunScriptInANavigateToB(JsReplace(R"(
+    let p = new PendingGetBeacon($1, {backgroundTimeout: 1000});
+  )",
+                                    kBeaconEndpoint));
+  ASSERT_THAT(previous_document(), IsFrameHidden());
+
+  WaitForAllBeaconsSent(total_beacon);
+  ASSERT_THAT(previous_document(), IsFrameHidden());
+  EXPECT_EQ(sent_beacon_count(), total_beacon);
+}
+
+// When backgroundTimeout is set, its timer resets every time when the page
+// becomes visible if it has not yet expired.
+IN_PROC_BROWSER_TEST_F(
+    PendingBeaconBackgroundTimeoutBrowserTest,
+    NotSendWhenPageIsRestoredBeforeBackgroundTimeoutExpires) {
+  const size_t total_beacon = 0;
+  RegisterBeaconRequestMonitor(total_beacon);
+
+  // Creates a pending beacon with backgroundTimeout (3s) < BFCache TTL (5s).
+  RunScriptInANavigateToB(JsReplace(R"(
+    let p = new PendingGetBeacon($1, {backgroundTimeout: 3000});
+  )",
+                                    kBeaconEndpoint));
+  ASSERT_THAT(previous_document(), IsFrameHidden());
+
+  // Navigate back to A.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  // The page A becomes visible again, so backgroundTimeout timer should stop.
+  ASSERT_THAT(current_document(), IsFrameVisible());
+
+  // Verify that beacon is not sent.
+  EXPECT_EQ(sent_beacon_count(), total_beacon);
+}
+
+IN_PROC_BROWSER_TEST_F(PendingBeaconBackgroundTimeoutBrowserTest,
+                       SendOnBackForwardCacheEviction) {
+  const size_t total_beacon = 1;
+  RegisterBeaconRequestMonitor(total_beacon);
+
+  // Creates a pending beacon with backgroundTimeout (8s) > BFCache TTL (5s)
+  // The beacon should be sent out on page deletion.
+  RunScriptInANavigateToB(JsReplace(R"(
+    let p = new PendingGetBeacon($1, {backgroundTimeout: 8000});
+  )",
+                                    kBeaconEndpoint));
+  ASSERT_TRUE(previous_document().WaitUntilRenderFrameDeleted());
+
+  WaitForAllBeaconsSent(total_beacon);
+  EXPECT_EQ(sent_beacon_count(), total_beacon);
+}
+
+IN_PROC_BROWSER_TEST_F(PendingBeaconBackgroundTimeoutBrowserTest,
+                       SendMultipleOnBackgroundTimeout) {
+  const size_t total_beacon = 5;
+  RegisterBeaconRequestMonitor(total_beacon);
+
+  RunScriptInANavigateToB(JsReplace(R"(
+    let p1 = new PendingGetBeacon($1, {backgroundTimeout: 200});
+    let p2 = new PendingGetBeacon($1, {backgroundTimeout: 100});
+    let p3 = new PendingGetBeacon($1, {backgroundTimeout: 500});
+    let p4 = new PendingGetBeacon($1, {backgroundTimeout: 700});
+    let p5 = new PendingGetBeacon($1, {backgroundTimeout: 300});
+  )",
+                                    kBeaconEndpoint));
+  ASSERT_THAT(previous_document(), IsFrameHidden());
+
+  WaitForAllBeaconsSent(total_beacon);
+  EXPECT_EQ(sent_beacon_count(), total_beacon);
+}
+
+// Tests to cover PendingBeacon's backgroundTimeout & timeout mutual behaviors.
+// Sets a long BFCache timeout (1min) so that beacon won't be sent out due to
+// page eviction.
+class PendingBeaconMutualTimeoutWithLongBackForwardCacheTTLBrowserTest
+    : public PendingBeaconTimeoutBrowserTestBase,
+      public BackForwardCacheMetricsTestMatcher {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kPendingBeaconAPI, {}},
+         {features::kBackForwardCache,
+          {{"TimeToLiveInBackForwardCacheInSeconds", "60"}}}},
+        {});
+    PendingBeaconTimeoutBrowserTestBase::SetUpCommandLine(command_line);
+  }
+
+  void SetUpOnMainThread() override {
+    // TestAutoSetUkmRecorder's constructor requires a sequenced context.
+    ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
+    PendingBeaconTimeoutBrowserTestBase::SetUpOnMainThread();
+  }
+
+  void TearDownOnMainThread() override {
+    ukm_recorder_.reset();
+    histogram_tester_.reset();
+    PendingBeaconTimeoutBrowserTestBase::TearDownOnMainThread();
+  }
+
+  // `BackForwardCacheMetricsTestMatcher` implementation.
+  const ukm::TestAutoSetUkmRecorder& ukm_recorder() override {
+    return *ukm_recorder_;
+  }
+  // `BackForwardCacheMetricsTestMatcher` implementation.
+  const base::HistogramTester& histogram_tester() override {
+    return *histogram_tester_;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    PendingBeaconMutualTimeoutWithLongBackForwardCacheTTLBrowserTest,
+    NotSendWhenPageIsRestoredBeforeBeingEvictedFromBackForwardCache) {
+  const size_t total_beacon = 0;
+  RegisterBeaconRequestMonitor(total_beacon);
+
+  // Creates a pending beacon with default backgroundTimeout & timeout.
+  // It should not be sent out as long as the page is alive (not evicted from
+  // BackForwardCache).
+  RunScriptInANavigateToB(JsReplace(R"(
+    let p = new PendingGetBeacon($1);
+  )",
+                                    kBeaconEndpoint));
+  ASSERT_THAT(previous_document(), IsFrameHidden());
+  // Navigate back to A.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  // The same page A is still alive.
+  ExpectRestored(FROM_HERE);
+
+  // Verify that beacon is not sent.
+  EXPECT_EQ(sent_beacon_count(), total_beacon);
+}
+
+}  // namespace content
