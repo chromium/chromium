@@ -44,7 +44,12 @@ absl::optional<bool> IsShortcutPinnedToTaskbar(const base::FilePath& shortcut);
 // Returns true if registry key operation was successful, false otherwise.
 bool SetInstallerPinnedChromeToTaskbar(bool installed);
 
-// Returns whether the current user has an installer-pinned shortcut to Chrome.
-bool GetInstallerPinnedChromeToTaskbar();
+// Returns true if the current user has a Win10+ installer-pinned shortcut to
+// Chrome, false if the user doesn't and the installer at the time of the
+// install pinned some percentage of installs to the taskbar, and absl::nullopt
+// if the Chrome install was done before the installer pinned Chrome to the
+// taskbar for versions of Windows 10+ that support programmatic pinning to the
+// taskbar.
+absl::optional<bool> GetInstallerPinnedChromeToTaskbar();
 
 #endif  // CHROME_INSTALLER_UTIL_TASKBAR_UTIL_H_

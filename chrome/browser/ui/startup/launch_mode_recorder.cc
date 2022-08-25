@@ -24,6 +24,7 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/files/file_path.h"
 #include "base/win/startup_information.h"
+#include "chrome/installer/util/taskbar_util.h"
 #endif
 
 namespace {
@@ -137,10 +138,22 @@ LaunchMode GetLaunchModeSlow() {
 }
 #endif                   // BUILDFLAG(IS_WIN)
 
+void RecordLaunchMode(LaunchMode mode) {
+  base::UmaHistogramEnumeration("Launch.Modes", mode);
+#if BUILDFLAG(IS_WIN)
+  if (mode == LaunchMode::kShortcutTaskbar) {
+    absl::optional<bool> installer_pinned = GetInstallerPinnedChromeToTaskbar();
+    if (installer_pinned.has_value()) {
+      base::UmaHistogramBoolean("Windows.Launch.TaskbarInstallerPinned",
+                                installer_pinned.value());
+    }
+  }
+#endif  // BUILDFLAG(IS_WIN)
+}
+
 // Log in a histogram the frequency of launching by the different methods. See
 // LaunchMode enum for the actual values of the buckets.
 void RecordLaunchModeHistogram(LaunchMode mode) {
-  static constexpr char kLaunchModesHistogram[] = "Launch.Modes";
   if (mode == LaunchMode::kToBeDecided &&
       (mode = GetLaunchModeFast()) == LaunchMode::kToBeDecided) {
     // The mode couldn't be determined with a fast path. Perform a more
@@ -149,12 +162,9 @@ void RecordLaunchModeHistogram(LaunchMode mode) {
         FROM_HERE,
         {base::TaskPriority::BEST_EFFORT,
          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-        base::BindOnce([]() {
-          base::UmaHistogramEnumeration(kLaunchModesHistogram,
-                                        GetLaunchModeSlow());
-        }));
+        base::BindOnce(&RecordLaunchMode, GetLaunchModeSlow()));
   } else {
-    base::UmaHistogramEnumeration(kLaunchModesHistogram, mode);
+    RecordLaunchMode(mode);
   }
 }
 

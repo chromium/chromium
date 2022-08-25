@@ -82,6 +82,7 @@
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
 #include "chrome/browser/shell_integration_win.h"
+#include "chrome/installer/util/taskbar_util.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -386,6 +387,18 @@ void OnIsPinnedToTaskbarResult(bool succeeded, bool is_pinned_to_taskbar) {
 
   base::UmaHistogramEnumeration("Windows.IsPinnedToTaskbar", result,
                                 NUM_RESULTS);
+
+  // If Chrome is not pinned to taskbar, clear the recording that the installer
+  // pinned Chrome to the taskbar, so that if the user pins Chrome back to the
+  // taskbar, we don't count launches as coming from an installer-pinned
+  // shortcut.  TODO(https://crbug.com/1353953): We currently only check if
+  // Chrome is pinned to the taskbar 1 out every 100 launches, which makes this
+  // less meaningful, so if keeping track of whether the installer pinned Chrome
+  // to the taskbar is important, we need to deal with that.
+  if (result == NOT_PINNED &&
+      GetInstallerPinnedChromeToTaskbar().value_or(false)) {
+    SetInstallerPinnedChromeToTaskbar(false);
+  }
 }
 
 // Records the pinned state of the current executable into a histogram. Should

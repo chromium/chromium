@@ -15,12 +15,12 @@ TEST(TaskbarUtilTest, InstallerPinnedChromeToTaskbar) {
       registry_override_manager.OverrideRegistry(HKEY_CURRENT_USER));
 
   // By default, installer has not pinned chrome to taskbar.
-  EXPECT_FALSE(GetInstallerPinnedChromeToTaskbar());
+  EXPECT_FALSE(GetInstallerPinnedChromeToTaskbar().has_value());
 
   // Verify that GetInstallerPinnedChromeToTaskbar returns the values
   // set by SetInstallerPinnedChromeToTaskbar.
   ASSERT_TRUE(SetInstallerPinnedChromeToTaskbar(true));
-  EXPECT_TRUE(GetInstallerPinnedChromeToTaskbar());
+  EXPECT_TRUE(GetInstallerPinnedChromeToTaskbar().value());
   ASSERT_TRUE(SetInstallerPinnedChromeToTaskbar(false));
-  EXPECT_FALSE(GetInstallerPinnedChromeToTaskbar());
+  EXPECT_FALSE(GetInstallerPinnedChromeToTaskbar().value());
 }
