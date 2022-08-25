@@ -173,21 +173,15 @@ size_t FindReturnValueSpace(std::string_view name, size_t paren_idx) {
   return space_idx;
 }
 
-void StripAttributes(std::string* name) {
+void StripAbiTag(std::string* name) {
   // Clang attribute. E.g.: std::allocator<Foo[6]>construct[abi:100]<Bar[7]>()
   size_t start_idx = 0;
   while (true) {
-    start_idx = name->find('[', start_idx);
-    if (start_idx == std::string::npos || start_idx + 1 == name->length()) {
+    start_idx = name->find("[abi:", start_idx);
+    if (start_idx == std::string::npos) {
       return;
     }
-    char next_char = (*name)[start_idx + 1];
-    // Ignore operator[] and arrays.
-    if (next_char == ']' || (next_char >= '0' && next_char <= '9')) {
-      ++start_idx;
-      continue;
-    }
-    size_t end_idx = name->find(']', start_idx);
+    size_t end_idx = name->find(']', start_idx + 5);
     if (end_idx == std::string::npos) {
       return;
     }
@@ -345,8 +339,6 @@ std::tuple<std::string_view, std::string_view, std::string_view> ParseCpp(
     std::string name_no_params =
         std::string(Slice(full_name, space_idx + 1, left_paren_idx));
 
-    StripAttributes(&name_no_params);
-
     // Special case for top-level lambdas.
     if (EndsWith(name_no_params, "}::_FUN")) {
       // Don't use |name_no_params| in here since prior _idx will be off if
@@ -370,9 +362,10 @@ std::tuple<std::string_view, std::string_view, std::string_view> ParseCpp(
   }
 
   owned_strings->emplace_back(name_view);
+  StripAbiTag(&owned_strings->back());
   std::string_view template_name = owned_strings->back();
 
-  owned_strings->push_back(StripTemplateArgs(name_view));
+  owned_strings->push_back(StripTemplateArgs(template_name));
   std::string_view returned_name = owned_strings->back();
 
   return std::make_tuple(full_name, template_name, returned_name);

@@ -200,11 +200,17 @@ class AnalyzeTest(unittest.TestCase):
     check('', 'foo::Bar<Z<Y> >::foo<bar>', '(abc)', '::var<baz>',
           name_without_templates='foo::Bar<>::foo<>::var<>')
 
-    # Attributes
+    # ABI Tag Attributes
     SIG = 'std::make_unique[abi:v15000]<Foo>(Bar const*&)'
     got_full_name, got_template_name, got_name = function_signature.Parse(SIG)
     self.assertEqual('std::make_unique<>', got_name)
     self.assertEqual('std::make_unique<Foo>', got_template_name)
+    self.assertEqual(SIG, got_full_name)
+
+    SIG = 'foo::kBar[abi:baz]'
+    got_full_name, got_template_name, got_name = function_signature.Parse(SIG)
+    self.assertEqual('foo::kBar', got_name)
+    self.assertEqual('foo::kBar', got_template_name)
     self.assertEqual(SIG, got_full_name)
 
     # Make sure operator[] is not considered an attribute.

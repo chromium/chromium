@@ -251,11 +251,17 @@ TEST(AnalyzeTest, ParseFunctionSignature) {
   check("", "foo::Bar<Z<Y> >::foo<bar>", "(abc)", "::var<baz>",
         "foo::Bar<>::foo<>::var<>");
 
-  // Attributes
+  // ABI Tag Attributes
   sig = "std::make_unique[abi:v15000]<Foo>(Bar const*&)";
   ret = caspian::ParseCpp(sig, &owned_strings);
   EXPECT_EQ("std::make_unique<>", std::get<2>(ret));
   EXPECT_EQ("std::make_unique<Foo>", std::get<1>(ret));
+  EXPECT_EQ(sig, std::get<0>(ret));
+
+  sig = "foo::kBar[abi:baz]";
+  ret = caspian::ParseCpp(sig, &owned_strings);
+  EXPECT_EQ("foo::kBar", std::get<2>(ret));
+  EXPECT_EQ("foo::kBar", std::get<1>(ret));
   EXPECT_EQ(sig, std::get<0>(ret));
 
   // Make sure operator[] is not considered an attribute.
