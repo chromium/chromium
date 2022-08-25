@@ -41,6 +41,33 @@ Canvas log:
     }
     10 : {
         commandIndex : 10
+        method : "save"
+        params : undefined
+    }
+    11 : {
+        commandIndex : 11
+        method : "translate"
+        params : {
+            dx : 0
+            dy : 71
+        }
+    }
+    12 : {
+        commandIndex : 12
+        method : "clipRect"
+        params : {
+            SkRegion::Op : "kIntersect_Op"
+            rect : {
+                bottom : 150
+                left : 0
+                right : 300
+                top : 0
+            }
+            softClipEdgeStyle : true
+        }
+    }
+    13 : {
+        commandIndex : 13
         method : "drawRect"
         params : {
             paint : {
@@ -60,8 +87,8 @@ Canvas log:
             }
         }
     }
-    11 : {
-        commandIndex : 11
+    14 : {
+        commandIndex : 14
         method : "restore"
         params : undefined
     }
@@ -93,6 +120,25 @@ Canvas log:
     }
     4 : {
         commandIndex : 4
+        method : "clipRect"
+        params : {
+            SkRegion::Op : "kIntersect_Op"
+            rect : {
+                bottom : 71
+                left : 0
+                right : 19
+                top : 50
+            }
+            softClipEdgeStyle : true
+        }
+    }
+    5 : {
+        commandIndex : 5
+        method : "save"
+        params : undefined
+    }
+    6 : {
+        commandIndex : 6
         method : "concat44"
         params : {
             matrix44 : [
@@ -115,8 +161,8 @@ Canvas log:
             ]
         }
     }
-    5 : {
-        commandIndex : 5
+    7 : {
+        commandIndex : 7
         method : "drawImage"
         params : {
             image : {
@@ -141,37 +187,15 @@ Canvas log:
             top : 0
         }
     }
-    6 : {
-        commandIndex : 6
+    8 : {
+        commandIndex : 8
         method : "restore"
         params : undefined
     }
-    7 : {
-        commandIndex : 7
-        method : "save"
-        params : undefined
-    }
-    8 : {
-        commandIndex : 8
-        method : "translate"
-        params : {
-            dx : 0
-            dy : 71
-        }
-    }
     9 : {
         commandIndex : 9
-        method : "clipRect"
-        params : {
-            SkRegion::Op : "kIntersect_Op"
-            rect : {
-                bottom : 150
-                left : 0
-                right : 300
-                top : 0
-            }
-            softClipEdgeStyle : true
-        }
+        method : "restore"
+        params : undefined
     }
 }
 

@@ -50,21 +50,6 @@ ScopedReplacedContentPaintState::ScopedReplacedContentPaintState(
   if (!fragment_to_paint_)
     return;
 
-  if (input_paint_info_.phase == PaintPhase::kForeground) {
-    if (auto* mf_checker =
-            MobileFriendlinessChecker::From(replaced.GetDocument())) {
-      PhysicalRect content_rect = replaced.ReplacedContentRect();
-      content_rect.Move(paint_offset_);
-      content_rect.Intersect(PhysicalRect(GetPaintInfo().GetCullRect().Rect()));
-      mf_checker->NotifyPaintReplaced(content_rect,
-                                      GetPaintInfo()
-                                          .context.GetPaintController()
-                                          .CurrentPaintChunkProperties()
-                                          .Transform());
-      mf_ignore_scope_.emplace(*mf_checker);
-    }
-  }
-
   const auto* paint_properties = fragment_to_paint_->PaintProperties();
   if (!paint_properties)
     return;
@@ -90,6 +75,21 @@ ScopedReplacedContentPaintState::ScopedReplacedContentPaintState(
     chunk_properties_.emplace(input_paint_info_.context.GetPaintController(),
                               new_properties, replaced,
                               input_paint_info_.DisplayItemTypeForClipping());
+  }
+
+  if (input_paint_info_.phase == PaintPhase::kForeground) {
+    if (auto* mf_checker =
+            MobileFriendlinessChecker::From(replaced.GetDocument())) {
+      PhysicalRect content_rect = replaced.ReplacedContentRect();
+      content_rect.Move(paint_offset_);
+      content_rect.Intersect(PhysicalRect(GetPaintInfo().GetCullRect().Rect()));
+      mf_checker->NotifyPaintReplaced(content_rect,
+                                      GetPaintInfo()
+                                          .context.GetPaintController()
+                                          .CurrentPaintChunkProperties()
+                                          .Transform());
+      mf_ignore_scope_.emplace(*mf_checker);
+    }
   }
 }
 
