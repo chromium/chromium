@@ -56,6 +56,10 @@ function isDefaultOption(option: Option): option is DefaultOption {
       typeof (option as DefaultOption).defaultImageIndex === 'number';
 }
 
+function camelToKebab(className: string): string {
+  return className.replace(/[A-Z]/g, m => '-' + m.toLowerCase());
+}
+
 export class AvatarList extends WithPersonalizationStore {
   static get is() {
     return 'avatar-list';
@@ -348,15 +352,11 @@ export class AvatarList extends WithPersonalizationStore {
     }
   }
 
-  private camelToKebab_(className: string): string {
-    return className.replace(/[A-Z]/g, m => '-' + m.toLowerCase());
-  }
-
   private getOptionInnerContainerClass_(option: Option, image: UserImage|null):
       string {
     const defaultClass = option ? option.class : 'image-container';
     return this.getAriaSelected_(option, image) === 'true' ?
-        `${defaultClass} tast-selected-${this.camelToKebab_(option.id)}` :
+        `${defaultClass} tast-selected-${camelToKebab(option.id)}` :
         defaultClass;
   }
 }
