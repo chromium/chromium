@@ -292,9 +292,7 @@ class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
    * @private
    */
   containerLabel_(id) {
-    return this.showContainerId_(this.allPorts_, id) ?
-        containerLabel(id, DEFAULT_CROSTINI_VM) :
-        '';
+    return containerLabel(id, DEFAULT_CROSTINI_VM);
   }
 
   /**
