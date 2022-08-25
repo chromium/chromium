@@ -456,7 +456,7 @@ ci.builder(
         short_name = "win-asan",
     ),
     # crbug.com/1175182: Temporarily increase timeout
-    execution_timeout = 4 * time.hour,
+    execution_timeout = 5 * time.hour,
     executable = "recipe:chromium_libfuzzer",
     os = os.WINDOWS_DEFAULT,
     triggering_policy = scheduler.greedy_batching(
