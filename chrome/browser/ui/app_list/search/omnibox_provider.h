@@ -38,10 +38,17 @@ class OmniboxProvider : public SearchProvider,
   void StartZeroState() override;
   ash::AppListSearchResultType ResultType() const override;
 
- private:
   // Populates result list from AutocompleteResult.
   void PopulateFromACResult(const AutocompleteResult& result);
 
+  // Change the query_finished_ flag for testing purpose.
+  // TODO(crbug.com/1356409): Replace this function with formal testing
+  // procedures.
+  void set_query_finished_for_test(bool query_finished) {
+    query_finished_ = query_finished;
+  };
+
+ private:
   // AutocompleteController::Observer overrides:
   void OnResultChanged(AutocompleteController* controller,
                        bool default_match_changed) override;

@@ -73,7 +73,6 @@ cam::SearchResultPtr NewAnswerResult(
   result->contents_type = cam::SearchResult::TextType::kUnset;
   result->description = u"description";
   result->description_type = cam::SearchResult::TextType::kUnset;
-  result->is_omnibox_search = cam::SearchResult::OptionalBool::kTrue;
   result->is_omnibox_search = cam::SearchResult::OptionalBool::kFalse;
   result->answer_type = answer_type;
 
