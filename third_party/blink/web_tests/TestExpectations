@@ -4389,6 +4389,9 @@ crbug.com/818650 [ Linux ] wpt_internal/speech/scripted/speechrecognition-restar
 crbug.com/851363 http/tests/devtools/sxg/sxg-prefetch-fail.js [ Failure Pass ]
 crbug.com/851363 http/tests/devtools/sxg/sxg-prefetch.js [ Failure Pass ]
 
+# Prefetching inspector protocol test is flaky
+crbug.com/1347616 virtual/prefetch/http/tests/inspector-protocol/prefetch/request-will-be-sent.https.js [ Failure Pass ]
+
 # Sheriff 2018-03-22
 crbug.com/824848 external/wpt/html/semantics/links/following-hyperlinks/activation-behavior.window.html [ Failure Pass ]
 
