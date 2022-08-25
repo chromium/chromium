@@ -8,6 +8,8 @@
 <body>
 <script>
 
+setup(() => assertSpeculationRulesIsSupported());
+
 promise_test(async t => {
   const uid = token();
   const bc = new PrerenderChannel('test-channel', uid);
@@ -37,6 +39,9 @@ promise_test(async t => {
       prerendering: false
     },
   ];
+  // The spec, https://wicg.github.io/nav-speculation/prerendering.html#web-bluetooth-patch,
+  // mentions getDevices() and requestDevice() but this test uses
+  // getAvailability() instead of them.
   assert_equals(result.length, expected.length);
   for (let i = 0; i < result.length; i++) {
     assert_equals(result[i].event, expected[i].event, `event[${i}]`);
