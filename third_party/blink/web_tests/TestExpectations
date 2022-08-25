@@ -3712,9 +3712,6 @@ crbug.com/626703 external/wpt/media-source/mediasource-getvideoplaybackquality.h
 crbug.com/958104 external/wpt/presentation-api/controlling-ua/getAvailability.https.html [ Failure ]
 crbug.com/626703 external/wpt/screen-orientation/onchange-event-subframe.html [ Timeout ]
 
-# Synthetic modules report the wrong location in errors
-crbug.com/994315 virtual/import-assertions/external/wpt/html/semantics/scripting-1/the-script-element/json-module/parse-error.html [ Skip ]
-
 # These tests pass on the blink_rel bots but fail on the other builders
 crbug.com/1051773 external/wpt/css/CSS2/floats/float-nowrap-3-ref.html [ Crash ]
 crbug.com/1051773 external/wpt/css/CSS2/floats/float-nowrap-4.html [ Crash Timeout ]

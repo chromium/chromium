@@ -197,9 +197,6 @@ const base::Feature kFrequencyCappingForLargeStickyAdDetection{
 const base::Feature kDisplayLocking{"DisplayLocking",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kJSONModules{"JSONModules",
-                                 base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kDeferredFontShaping{"DeferredShaping",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 

@@ -276,7 +276,6 @@ void ModuleScriptLoader::NotifyFetchFinishedSuccess(
   // url, and options.</spec>
   switch (params.GetModuleType()) {
     case ModuleType::kJSON:
-      DCHECK(base::FeatureList::IsEnabled(blink::features::kJSONModules));
       module_script_ = ValueWrapperSyntheticModuleScript::
           CreateJSONWrapperSyntheticModuleScript(params, modulator_);
       break;

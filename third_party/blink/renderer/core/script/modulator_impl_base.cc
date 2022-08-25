@@ -213,8 +213,7 @@ ModuleType ModulatorImplBase::ModuleTypeFromRequest(
     // step="1">Let module type be "javascript".</spec> If no type assertion is
     // provided, the import is treated as a JavaScript module.
     return ModuleType::kJavaScript;
-  } else if (base::FeatureList::IsEnabled(blink::features::kJSONModules) &&
-             module_type_string == "json") {
+  } else if (module_type_string == "json") {
     // <spec href="https://html.spec.whatwg.org/#fetch-a-single-module-script"
     // step="17"> If...module type is "json", then set module script to the
     // result of creating a JSON module script...</spec>

@@ -73,8 +73,7 @@ bool ModuleScriptFetcher::WasModuleLoadSuccessful(
     return true;
   }
   // <spec step="13">If type is a JSON MIME type, then:</spec>
-  if (base::FeatureList::IsEnabled(blink::features::kJSONModules) &&
-      expected_module_type == ModuleType::kJSON &&
+  if (expected_module_type == ModuleType::kJSON &&
       MIMETypeRegistry::IsJSONMimeType(response.HttpContentType())) {
     return true;
   }

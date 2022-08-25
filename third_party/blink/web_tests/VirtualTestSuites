@@ -602,15 +602,6 @@
     "args": ["--disable-blink-features=CSSTrigonometricFunctions"]
   },
   {
-    "prefix": "import-assertions",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/html/semantics/scripting-1/the-script-element/import-assertions", 
-      "external/wpt/html/semantics/scripting-1/the-script-element/css-module",
-      "external/wpt/html/semantics/scripting-1/the-script-element/json-module"],
-    "args": ["--js-flags=--harmony-import-assertions"]
-  },
-  {
     "prefix": "import-maps-disabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/import-maps/not-as-classic-script.html"],

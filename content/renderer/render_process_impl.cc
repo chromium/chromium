@@ -162,8 +162,9 @@ RenderProcessImpl::RenderProcessImpl()
   SetV8FlagIfNotFeature(features::kWebAssemblySimd,
                         "--no-experimental-wasm-simd");
 
-  SetV8FlagIfFeature(blink::features::kJSONModules,
-                     "--harmony-import-assertions");
+  constexpr char kImportAssertionsFlag[] = "--harmony-import-assertions";
+  v8::V8::SetFlagsFromString(kImportAssertionsFlag,
+                             sizeof(kImportAssertionsFlag));
 
   constexpr char kAtomicsFlag[] = "--harmony-atomics";
   v8::V8::SetFlagsFromString(kAtomicsFlag, sizeof(kAtomicsFlag));
