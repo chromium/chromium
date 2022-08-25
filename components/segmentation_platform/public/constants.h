@@ -49,6 +49,11 @@ const char kContextualPageActionsUmaName[] = "ContextualPageActions";
 const char kPowerUserKey[] = "power_user";
 const char kPowerUserUmaName[] = "PowerUser";
 
+// The key is used to decide whether the user is active on multiple synced
+// devices.
+const char kCrossDeviceUserKey[] = "cross_device_user";
+const char kCrossDeviceUserUmaName[] = "CrossDeviceUser";
+
 // The key provide a list of segment IDs, separated by commas, whose ML model
 // execution results are allowed to be uploaded through UKM.
 const char kSegmentIdsAllowedForReportingKey[] =

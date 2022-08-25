@@ -67,4 +67,6 @@ enum SegmentId {
 
   // Determine power users of the browser app.
   POWER_USER_SEGMENT = 1000;
+  // Determine users active on multiple synced devices.
+  CROSS_DEVICE_USER_SEGMENT = 1001;
 };

@@ -30,6 +30,8 @@ const char* SegmentationKeyToUmaName(const std::string& segmentation_key) {
     return kContextualPageActionsUmaName;
   } else if (segmentation_key == kPowerUserKey) {
     return kPowerUserUmaName;
+  } else if (segmentation_key == kCrossDeviceUserKey) {
+    return kCrossDeviceUserUmaName;
   } else if (base::StartsWith(segmentation_key, "test_key")) {
     return "TestKey";
   }
@@ -66,6 +68,8 @@ std::string SegmentIdToHistogramVariant(proto::SegmentId segment_id) {
       return "ContextualPageActionPriceTracking";
     case proto::SegmentId::POWER_USER_SEGMENT:
       return "PowerUserSegment";
+    case proto::SegmentId::CROSS_DEVICE_USER_SEGMENT:
+      return "CrossDeviceUser";
     default:
       // This case is reached when UNKNOWN segment is valid, in case of boolean
       // segment results.

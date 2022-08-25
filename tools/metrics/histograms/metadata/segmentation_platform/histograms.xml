@@ -25,6 +25,7 @@ chromium-metrics-reviews@google.com.
 <variants name="BooleanModel">
   <variant name="ChromeLowUserEngagement"/>
   <variant name="ChromeStartAndroid"/>
+  <variant name="CrossDeviceUser"/>
   <variant name="FeedUserSegment"/>
   <variant name="PowerUserSegment"/>
   <variant name="QueryTiles"/>
@@ -40,6 +41,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ChromeLowUserEngagement"/>
   <variant name="ChromeStartAndroid"/>
   <variant name="ContextualPageActions"/>
+  <variant name="CrossDeviceUser"/>
   <variant name="DummyFeature"/>
   <variant name="FeedUserSegment"/>
   <variant name="PowerUser"/>
@@ -50,6 +52,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ChromeLowUserEngagement"/>
   <variant name="ChromeStartAndroid"/>
   <variant name="ContextualPageActionPriceTracking"/>
+  <variant name="CrossDeviceUser"/>
   <variant name="Dummy"/>
   <variant name="FeedUserSegment"/>
   <variant name="NewTab"/>
