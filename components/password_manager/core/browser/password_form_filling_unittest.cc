@@ -46,7 +46,7 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
  public:
   MOCK_METHOD(int, GetId, (), (const, override));
   MOCK_METHOD(void,
-              FillPasswordForm,
+              SetPasswordFillData,
               (const PasswordFormFillData&),
               (override));
   MOCK_METHOD(void, InformNoSavedCredentials, (bool), (override));
@@ -142,7 +142,7 @@ TEST_F(PasswordFormFillingTest, NoSavedCredentials) {
   std::vector<const PasswordForm*> best_matches;
 
   EXPECT_CALL(driver_, InformNoSavedCredentials(_));
-  EXPECT_CALL(driver_, FillPasswordForm(_)).Times(0);
+  EXPECT_CALL(driver_, SetPasswordFillData(_)).Times(0);
 
   LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
       &client_, &driver_, observed_form_, best_matches, federated_matches_,
@@ -161,7 +161,7 @@ TEST_F(PasswordFormFillingTest, Autofill) {
 
   EXPECT_CALL(driver_, InformNoSavedCredentials(_)).Times(0);
   PasswordFormFillData fill_data;
-  EXPECT_CALL(driver_, FillPasswordForm(_)).WillOnce(SaveArg<0>(&fill_data));
+  EXPECT_CALL(driver_, SetPasswordFillData(_)).WillOnce(SaveArg<0>(&fill_data));
   EXPECT_CALL(client_, PasswordWasAutofilled);
 
   LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
@@ -235,7 +235,8 @@ TEST_F(PasswordFormFillingTest, TestFillOnLoadSuggestion) {
     }
 
     PasswordFormFillData fill_data;
-    EXPECT_CALL(driver_, FillPasswordForm(_)).WillOnce(SaveArg<0>(&fill_data));
+    EXPECT_CALL(driver_, SetPasswordFillData(_))
+        .WillOnce(SaveArg<0>(&fill_data));
     EXPECT_CALL(client_, PasswordWasAutofilled);
 
     LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
@@ -270,7 +271,8 @@ TEST_F(PasswordFormFillingTest, DontFillOnLoadWebAuthnCredentials) {
         .WillOnce(Return(&webauthn_credentials_delegate));
     EXPECT_CALL(webauthn_credentials_delegate, IsWebAuthnAutofillEnabled())
         .WillOnce(Return(webauthn_autofill_enabled));
-    EXPECT_CALL(driver_, FillPasswordForm(_)).WillOnce(SaveArg<0>(&fill_data));
+    EXPECT_CALL(driver_, SetPasswordFillData(_))
+        .WillOnce(SaveArg<0>(&fill_data));
     EXPECT_CALL(client_, PasswordWasAutofilled);
     LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
         &client_, &driver_, observed_form_, {&saved_match_}, federated_matches_,
@@ -350,7 +352,7 @@ TEST_F(PasswordFormFillingTest, TestFillOnLoadSuggestionWithPrefill) {
     observed_form.username_may_use_prefilled_placeholder =
         test_case.username_may_use_prefilled_placeholder;
 
-    EXPECT_CALL(driver_, FillPasswordForm);
+    EXPECT_CALL(driver_, SetPasswordFillData);
     EXPECT_CALL(client_, PasswordWasAutofilled);
 
     LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
@@ -368,7 +370,7 @@ TEST_F(PasswordFormFillingTest, AutofillPSLMatch) {
 
   EXPECT_CALL(driver_, InformNoSavedCredentials(_)).Times(0);
   PasswordFormFillData fill_data;
-  EXPECT_CALL(driver_, FillPasswordForm(_)).WillOnce(SaveArg<0>(&fill_data));
+  EXPECT_CALL(driver_, SetPasswordFillData(_)).WillOnce(SaveArg<0>(&fill_data));
   EXPECT_CALL(client_, PasswordWasAutofilled);
 
   LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
@@ -438,7 +440,7 @@ TEST_F(PasswordFormFillingTest, AutofillAffiliatedWebMatch) {
 
   EXPECT_CALL(driver_, InformNoSavedCredentials).Times(0);
   PasswordFormFillData fill_data;
-  EXPECT_CALL(driver_, FillPasswordForm).WillOnce(SaveArg<0>(&fill_data));
+  EXPECT_CALL(driver_, SetPasswordFillData).WillOnce(SaveArg<0>(&fill_data));
   EXPECT_CALL(client_, PasswordWasAutofilled);
 
   LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(

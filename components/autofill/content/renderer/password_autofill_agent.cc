@@ -1420,7 +1420,7 @@ void PasswordAutofillAgent::ReadyToCommitNavigation(
 void PasswordAutofillAgent::OnProbablyFormSubmitted() {}
 
 // mojom::PasswordAutofillAgent:
-void PasswordAutofillAgent::FillPasswordForm(
+void PasswordAutofillAgent::SetPasswordFillData(
     const PasswordFormFillData& form_data) {
   std::unique_ptr<RendererSavePasswordProgressLogger> logger;
   if (logging_state_active_) {

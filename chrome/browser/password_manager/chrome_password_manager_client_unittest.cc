@@ -176,7 +176,7 @@ class FakePasswordAutofillAgent
 
  private:
   // autofill::mojom::PasswordAutofillAgent:
-  void FillPasswordForm(
+  void SetPasswordFillData(
       const autofill::PasswordFormFillData& form_data) override {}
 
   void InformNoSavedCredentials(

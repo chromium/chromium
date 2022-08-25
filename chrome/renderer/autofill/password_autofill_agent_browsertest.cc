@@ -329,7 +329,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
   // We use that so we don't have to make RenderView::OnFillPasswordForm()
   // protected.
   void SimulateOnFillPasswordForm(const PasswordFormFillData& fill_data) {
-    password_autofill_agent_->FillPasswordForm(fill_data);
+    password_autofill_agent_->SetPasswordFillData(fill_data);
   }
 
   void SendVisiblePasswordForms() {
@@ -3832,14 +3832,14 @@ TEST_F(PasswordAutofillAgentTest, GaiaReauthenticationFormIgnored) {
 TEST_F(PasswordAutofillAgentTest,
        UpdateSuggestionsIfNewerCredentialsAreSupplied) {
   // Supply old fill data
-  password_autofill_agent_->FillPasswordForm(fill_data_);
+  password_autofill_agent_->SetPasswordFillData(fill_data_);
   // The username and password should have been autocompleted.
   CheckTextFieldsSuggestedState(kAliceUsername, true, kAlicePassword, true);
 
   // Change fill data
   fill_data_.password_field.value = u"a-changed-password";
   // Supply changed fill data
-  password_autofill_agent_->FillPasswordForm(fill_data_);
+  password_autofill_agent_->SetPasswordFillData(fill_data_);
   CheckTextFieldsSuggestedState(kAliceUsername, true, "a-changed-password",
                                 true);
 }
@@ -3847,7 +3847,7 @@ TEST_F(PasswordAutofillAgentTest,
 TEST_F(PasswordAutofillAgentTest, SuggestLatestCredentials) {
   SimulateClosingTouchToFillIfAndroid(kUsernameName);
 
-  password_autofill_agent_->FillPasswordForm(fill_data_);
+  password_autofill_agent_->SetPasswordFillData(fill_data_);
   SimulateElementClick(kPasswordName);
   EXPECT_CALL(fake_driver_, ShowPasswordSuggestions);
   base::RunLoop().RunUntilIdle();
@@ -3855,7 +3855,7 @@ TEST_F(PasswordAutofillAgentTest, SuggestLatestCredentials) {
   // Change fill data
   fill_data_.username_field.value = u"a-changed-username";
 
-  password_autofill_agent_->FillPasswordForm(fill_data_);
+  password_autofill_agent_->SetPasswordFillData(fill_data_);
   SimulateElementClick(kPasswordName);
   // Empty value because nothing was typed into the field.
   CheckSuggestions(u"", true);

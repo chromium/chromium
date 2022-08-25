@@ -99,13 +99,14 @@ interface AutofillAgent {
 // There is one instance of this interface per render frame in the render
 // process.
 interface PasswordAutofillAgent {
-  // Fills a password form and prepare field autocomplete for multiple
-  // matching logins. Lets the renderer know if it should disable the popup
-  // because the browser process will own the popup UI.
-  FillPasswordForm(PasswordFormFillData form_data);
+  // Provides fill information for a password form, which can fill the form and
+  // prepare field autocomplete for multiple matching logins. Lets the renderer
+  // know if it should disable the popup because the browser process will own
+  // the popup UI.
+  SetPasswordFillData(PasswordFormFillData form_data);
 
   // Lets the renderer know that there are no saved credentials for filling.
-  // This is the "no results" equivalent of FillPasswordForm.
+  // This is the "no results" equivalent of SetPasswordFillData.
   InformNoSavedCredentials(bool should_show_popup_without_passwords);
 
   // Fills the given |credential| into the last focused text input.

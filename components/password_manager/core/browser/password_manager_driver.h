@@ -50,7 +50,7 @@ class PasswordManagerDriver
   virtual int GetId() const = 0;
 
   // Fills forms matching |form_data|.
-  virtual void FillPasswordForm(
+  virtual void SetPasswordFillData(
       const autofill::PasswordFormFillData& form_data) = 0;
 
   // Informs the driver that there are no saved credentials in the password

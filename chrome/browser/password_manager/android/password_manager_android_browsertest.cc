@@ -96,7 +96,7 @@ IN_PROC_BROWSER_TEST_P(PasswordManagerAndroidBrowserTest,
   // To make the test closer to TouchToFill, use |FillSuggestion| to fill a
   // credential later.
   fill_data.wait_for_username = true;
-  driver->FillPasswordForm(fill_data);
+  driver->SetPasswordFillData(fill_data);
 
   // A user taps the username field.
   ASSERT_TRUE(content::ExecuteScript(

@@ -24,7 +24,7 @@ class StubPasswordManagerDriver : public PasswordManagerDriver {
 
   // PasswordManagerDriver:
   int GetId() const override;
-  void FillPasswordForm(
+  void SetPasswordFillData(
       const autofill::PasswordFormFillData& form_data) override;
   void GeneratedPasswordAccepted(const std::u16string& password) override;
   void FillSuggestion(const std::u16string& username,

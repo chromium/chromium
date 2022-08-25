@@ -58,7 +58,7 @@ class ContentPasswordManagerDriver
 
   // PasswordManagerDriver implementation.
   int GetId() const override;
-  void FillPasswordForm(
+  void SetPasswordFillData(
       const autofill::PasswordFormFillData& form_data) override;
   void InformNoSavedCredentials(
       bool should_show_popup_without_passwords) override;

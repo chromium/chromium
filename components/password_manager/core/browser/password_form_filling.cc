@@ -94,7 +94,7 @@ void Autofill(PasswordManagerClient* client,
       ContainsAndroidCredentials(fill_data));
   metrics_util::LogFilledCredentialIsFromAndroidApp(
       PreferredRealmIsFromAndroid(fill_data));
-  driver->FillPasswordForm(fill_data);
+  driver->SetPasswordFillData(fill_data);
 
   client->PasswordWasAutofilled(best_matches,
                                 url::Origin::Create(form_for_autofill.url),

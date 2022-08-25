@@ -684,12 +684,6 @@ std::vector<autofill::Suggestion> PasswordAutofillManager::BuildSuggestions(
                               ->ShouldShowAccountStorageReSignin(
                                   password_client_->GetLastCommittedURL());
 
-  if (!fill_data_ && !show_account_storage_optin &&
-      !show_account_storage_resignin) {
-    // Probably the credential was deleted in the mean time.
-    return suggestions;
-  }
-
   // Add WebAuthn credentials suitable for an ongoing request if available.
   WebAuthnCredentialsDelegate* delegate =
       password_client_->GetWebAuthnCredentialsDelegate();
@@ -701,6 +695,12 @@ std::vector<autofill::Suggestion> PasswordAutofillManager::BuildSuggestions(
     }
     suggestions.insert(suggestions.end(), webauthn_suggestions.begin(),
                        webauthn_suggestions.end());
+  }
+
+  if (!fill_data_ && !show_account_storage_optin &&
+      !show_account_storage_resignin && suggestions.empty()) {
+    // Probably the credential was deleted in the mean time.
+    return suggestions;
   }
 
   // Add password suggestions if they exist and were requested.

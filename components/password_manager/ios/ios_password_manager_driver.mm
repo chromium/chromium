@@ -33,7 +33,7 @@ int IOSPasswordManagerDriver::GetId() const {
   return 0;
 }
 
-void IOSPasswordManagerDriver::FillPasswordForm(
+void IOSPasswordManagerDriver::SetPasswordFillData(
     const autofill::PasswordFormFillData& form_data) {
   [bridge_ fillPasswordForm:form_data completionHandler:nil];
 }
