@@ -248,7 +248,13 @@ void CSSParserContext::CountDeprecation(WebFeature feature) const {
 }
 
 void CSSParserContext::Count(CSSParserMode mode, CSSPropertyID property) const {
+  // https://linear.app/replay/issue/RUN-469
+  recordreplay::Assert("CSSParserContext::Count %d", IsUseCounterEnabledForMode(mode));
+
   if (IsUseCounterRecordingEnabled() && IsUseCounterEnabledForMode(mode)) {
+    // https://linear.app/replay/issue/RUN-469
+    recordreplay::Assert("CSSParserContext::Count #1");
+
     document_->CountProperty(property);
   }
 }

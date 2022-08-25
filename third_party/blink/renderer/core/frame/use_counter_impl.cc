@@ -196,13 +196,16 @@ void UseCounterImpl::Count(CSSPropertyID property,
   DCHECK(IsCSSPropertyIDWithName(property) ||
          property == CSSPropertyID::kVariable);
 
+  // https://linear.app/replay/issue/RUN-469
+  recordreplay::Assert("UseCounterImpl::Count %d", mute_count_);
+
   if (mute_count_)
     return;
 
   int sample_id = static_cast<int>(GetCSSSampleId(property));
 
   // https://linear.app/replay/issue/RUN-469
-  recordreplay::Assert("UseCounterImpl::Count %d %d", property, sample_id);
+  recordreplay::Assert("UseCounterImpl::Count #1 %d %d", property, sample_id);
 
   switch (type) {
     case CSSPropertyType::kDefault:
