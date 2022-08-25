@@ -127,6 +127,8 @@ ShillConnectResult ShillErrorToConnectResult(const std::string& error_name) {
     return ShillConnectResult::kErrorEapLocalTlsFailed;
   else if (error_name == shill::kErrorEapRemoteTlsFailed)
     return ShillConnectResult::kErrorEapRemoteTlsFailed;
+  else if (error_name == shill::kErrorResultWepNotSupported)
+    return ShillConnectResult::kErrorResultWepNotSupported;
 
   return ShillConnectResult::kUnknown;
 }
