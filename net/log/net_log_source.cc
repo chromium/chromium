@@ -7,25 +7,9 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/check_op.h"
 #include "base/values.h"
-#include "net/log/net_log_capture_mode.h"
 
 namespace net {
-
-namespace {
-
-base::Value SourceEventParametersCallback(const NetLogSource source) {
-  if (!source.IsValid())
-    return base::Value();
-  base::Value::Dict event_params;
-  source.AddToEventParameters(event_params);
-  return base::Value(std::move(event_params));
-}
-
-}  // namespace
 
 // LoadTimingInfo requires this be 0.
 const uint32_t NetLogSource::kInvalidId = 0;
@@ -57,7 +41,11 @@ void NetLogSource::AddToEventParameters(base::Value::Dict& event_params) const {
 }
 
 base::Value NetLogSource::ToEventParameters() const {
-  return SourceEventParametersCallback(*this);
+  if (!IsValid())
+    return base::Value();
+  base::Value::Dict event_params;
+  AddToEventParameters(event_params);
+  return base::Value(std::move(event_params));
 }
 
 }  // namespace net
