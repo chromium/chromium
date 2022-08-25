@@ -436,10 +436,10 @@ TEST_F(LocalPrinterAshTest, GetStatus) {
   printers_manager().SetPrinterStatus(printer1);
   crosapi::mojom::PrinterStatusPtr printer_status;
   local_printer_ash()->GetStatus(
-      "printer1", base::BindOnce(base::BindLambdaForTesting(
-                      [&](crosapi::mojom::PrinterStatusPtr status) {
-                        printer_status = std::move(status);
-                      })));
+      "printer1",
+      base::BindLambdaForTesting([&](crosapi::mojom::PrinterStatusPtr status) {
+        printer_status = std::move(status);
+      }));
   auto expected_status = crosapi::mojom::PrinterStatus::New();
   expected_status->printer_id = "printer1";
   expected_status->timestamp = printer1.GetTimestamp();
@@ -738,8 +738,8 @@ TEST_F(LocalPrinterAshTest, FetchEulaUrlOnNonExistantPrinter) {
 
 TEST_F(LocalPrinterAshTest, GetPolicies_Unset) {
   crosapi::mojom::PoliciesPtr policies;
-  local_printer_ash()->GetPolicies(base::BindOnce(base::BindLambdaForTesting(
-      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); })));
+  local_printer_ash()->GetPolicies(base::BindLambdaForTesting(
+      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); }));
   EXPECT_EQ(crosapi::mojom::Policies::New(), policies);
 }
 
@@ -750,8 +750,8 @@ TEST_F(LocalPrinterAshTest, GetPolicies_PaperSize) {
   prefs->Set("printing.paper_size_default", std::move(paper_size));
 
   crosapi::mojom::PoliciesPtr policies;
-  local_printer_ash()->GetPolicies(base::BindOnce(base::BindLambdaForTesting(
-      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); })));
+  local_printer_ash()->GetPolicies(base::BindLambdaForTesting(
+      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); }));
 
   ASSERT_TRUE(policies);
   EXPECT_EQ(gfx::Size(210000, 297000), policies->paper_size_default);
@@ -765,8 +765,8 @@ TEST_F(LocalPrinterAshTest, GetPolicies_BackgroundGraphics) {
   prefs->SetInteger(prefs::kPrintingBackgroundGraphicsDefault, 1);
 
   crosapi::mojom::PoliciesPtr policies;
-  local_printer_ash()->GetPolicies(base::BindOnce(base::BindLambdaForTesting(
-      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); })));
+  local_printer_ash()->GetPolicies(base::BindLambdaForTesting(
+      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); }));
 
   ASSERT_TRUE(policies);
   EXPECT_EQ(
@@ -782,8 +782,8 @@ TEST_F(LocalPrinterAshTest, GetPolicies_MaxSheetsAllowed) {
   prefs->SetInteger(prefs::kPrintingMaxSheetsAllowed, 5);
 
   crosapi::mojom::PoliciesPtr policies;
-  local_printer_ash()->GetPolicies(base::BindOnce(base::BindLambdaForTesting(
-      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); })));
+  local_printer_ash()->GetPolicies(base::BindLambdaForTesting(
+      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); }));
 
   EXPECT_TRUE(policies->max_sheets_allowed_has_value);
   EXPECT_EQ(5u, policies->max_sheets_allowed);
@@ -795,8 +795,8 @@ TEST_F(LocalPrinterAshTest, GetPolicies_ZeroSheetsAllowed) {
   prefs->SetInteger(prefs::kPrintingMaxSheetsAllowed, 0);
 
   crosapi::mojom::PoliciesPtr policies;
-  local_printer_ash()->GetPolicies(base::BindOnce(base::BindLambdaForTesting(
-      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); })));
+  local_printer_ash()->GetPolicies(base::BindLambdaForTesting(
+      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); }));
 
   ASSERT_TRUE(policies);
   EXPECT_TRUE(policies->max_sheets_allowed_has_value);
@@ -809,8 +809,8 @@ TEST_F(LocalPrinterAshTest, GetPolicies_NegativeMaxSheets) {
   prefs->SetInteger(prefs::kPrintingMaxSheetsAllowed, -1);
 
   crosapi::mojom::PoliciesPtr policies;
-  local_printer_ash()->GetPolicies(base::BindOnce(base::BindLambdaForTesting(
-      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); })));
+  local_printer_ash()->GetPolicies(base::BindLambdaForTesting(
+      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); }));
 
   ASSERT_TRUE(policies);
   EXPECT_FALSE(policies->max_sheets_allowed_has_value);
@@ -820,8 +820,8 @@ TEST_F(LocalPrinterAshTest, GetPolicies_PrintHeaderFooter_UnmanagedDisabled) {
   auto* prefs = GetPrefs();
   prefs->SetBoolean(prefs::kPrintHeaderFooter, false);
   crosapi::mojom::PoliciesPtr policies;
-  local_printer_ash()->GetPolicies(base::BindOnce(base::BindLambdaForTesting(
-      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); })));
+  local_printer_ash()->GetPolicies(base::BindLambdaForTesting(
+      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); }));
   ASSERT_TRUE(policies);
   EXPECT_EQ(crosapi::mojom::Policies::OptionalBool::kUnset,
             policies->print_header_footer_allowed);
@@ -833,8 +833,8 @@ TEST_F(LocalPrinterAshTest, GetPolicies_PrintHeaderFooter_UnmanagedEnabled) {
   auto* prefs = GetPrefs();
   prefs->SetBoolean(prefs::kPrintHeaderFooter, true);
   crosapi::mojom::PoliciesPtr policies;
-  local_printer_ash()->GetPolicies(base::BindOnce(base::BindLambdaForTesting(
-      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); })));
+  local_printer_ash()->GetPolicies(base::BindLambdaForTesting(
+      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); }));
   ASSERT_TRUE(policies);
   EXPECT_EQ(crosapi::mojom::Policies::OptionalBool::kUnset,
             policies->print_header_footer_allowed);
@@ -847,8 +847,8 @@ TEST_F(LocalPrinterAshTest, GetPolicies_PrintHeaderFooter_ManagedDisabled) {
   prefs->SetManagedPref(prefs::kPrintHeaderFooter,
                         std::make_unique<base::Value>(false));
   crosapi::mojom::PoliciesPtr policies;
-  local_printer_ash()->GetPolicies(base::BindOnce(base::BindLambdaForTesting(
-      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); })));
+  local_printer_ash()->GetPolicies(base::BindLambdaForTesting(
+      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); }));
   ASSERT_TRUE(policies);
   EXPECT_EQ(crosapi::mojom::Policies::OptionalBool::kFalse,
             policies->print_header_footer_allowed);
@@ -861,8 +861,8 @@ TEST_F(LocalPrinterAshTest, GetPolicies_PrintHeaderFooter_ManagedEnabled) {
   prefs->SetManagedPref(prefs::kPrintHeaderFooter,
                         std::make_unique<base::Value>(true));
   crosapi::mojom::PoliciesPtr policies;
-  local_printer_ash()->GetPolicies(base::BindOnce(base::BindLambdaForTesting(
-      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); })));
+  local_printer_ash()->GetPolicies(base::BindLambdaForTesting(
+      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); }));
   ASSERT_TRUE(policies);
   EXPECT_EQ(crosapi::mojom::Policies::OptionalBool::kTrue,
             policies->print_header_footer_allowed);
@@ -879,8 +879,8 @@ TEST_F(LocalPrinterAshTest, GetPolicies_Color) {
   prefs->SetInteger(prefs::kPrintingColorDefault, 2);
 
   crosapi::mojom::PoliciesPtr policies;
-  local_printer_ash()->GetPolicies(base::BindOnce(base::BindLambdaForTesting(
-      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); })));
+  local_printer_ash()->GetPolicies(base::BindLambdaForTesting(
+      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); }));
 
   EXPECT_EQ(expected_allowed_color_modes, policies->allowed_color_modes);
   EXPECT_EQ(printing::mojom::ColorModeRestriction::kColor,
@@ -896,8 +896,8 @@ TEST_F(LocalPrinterAshTest, GetPolicies_Duplex) {
   prefs->SetInteger(prefs::kPrintingDuplexDefault, 1);
 
   crosapi::mojom::PoliciesPtr policies;
-  local_printer_ash()->GetPolicies(base::BindOnce(base::BindLambdaForTesting(
-      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); })));
+  local_printer_ash()->GetPolicies(base::BindLambdaForTesting(
+      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); }));
 
   EXPECT_EQ(expected_allowed_duplex_modes, policies->allowed_duplex_modes);
   EXPECT_EQ(printing::mojom::DuplexModeRestriction::kSimplex,
@@ -910,8 +910,8 @@ TEST_F(LocalPrinterAshTest, GetPolicies_Pin) {
   prefs->SetInteger(prefs::kPrintingPinDefault, 2);
 
   crosapi::mojom::PoliciesPtr policies;
-  local_printer_ash()->GetPolicies(base::BindOnce(base::BindLambdaForTesting(
-      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); })));
+  local_printer_ash()->GetPolicies(base::BindLambdaForTesting(
+      [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); }));
 
   EXPECT_EQ(printing::mojom::PinModeRestriction::kPin,
             policies->allowed_pin_modes);

@@ -187,11 +187,11 @@ void RegisterApp(UpdaterScope scope, const std::string& app_id) {
   registration.version = base::Version("0.1");
   base::RunLoop loop;
   update_service->RegisterApp(
-      registration, base::BindOnce(base::BindLambdaForTesting(
-                        [&loop](const RegistrationResponse& response) {
-                          EXPECT_EQ(response.status_code, 0);
-                          loop.Quit();
-                        })));
+      registration,
+      base::BindLambdaForTesting([&loop](const RegistrationResponse& response) {
+        EXPECT_EQ(response.status_code, 0);
+        loop.Quit();
+      }));
   loop.Run();
 }
 
@@ -285,11 +285,11 @@ void RunWakeActive(UpdaterScope scope, int expected_exit_code) {
   {
     scoped_refptr<UpdateService> service = CreateUpdateServiceProxy(scope);
     base::RunLoop loop;
-    service->GetVersion(base::BindOnce(base::BindLambdaForTesting(
+    service->GetVersion(base::BindLambdaForTesting(
         [&loop, &active_version](const base::Version& version) {
           active_version = version;
           loop.Quit();
-        })));
+        }));
     loop.Run();
   }
   ASSERT_TRUE(active_version.IsValid());
@@ -312,8 +312,8 @@ void Update(UpdaterScope scope,
   update_service->Update(
       app_id, install_data_index, UpdateService::Priority::kForeground,
       UpdateService::PolicySameVersionUpdate::kNotAllowed, base::DoNothing(),
-      base::BindOnce(base::BindLambdaForTesting(
-          [&loop](UpdateService::Result result_unused) { loop.Quit(); })));
+      base::BindLambdaForTesting(
+          [&loop](UpdateService::Result result_unused) { loop.Quit(); }));
   loop.Run();
 }
 
@@ -322,8 +322,8 @@ void UpdateAll(UpdaterScope scope) {
   base::RunLoop loop;
   update_service->UpdateAll(
       base::DoNothing(),
-      base::BindOnce(base::BindLambdaForTesting(
-          [&loop](UpdateService::Result result_unused) { loop.Quit(); })));
+      base::BindLambdaForTesting(
+          [&loop](UpdateService::Result result_unused) { loop.Quit(); }));
   loop.Run();
 }
 

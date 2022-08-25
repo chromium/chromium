@@ -82,10 +82,10 @@ TEST_F(LocalPrinterHandlerChromeosTest,
        PrinterStatusRequestNoAsh_ProvidesDefaultValue) {
   absl::optional<base::Value::Dict> printer_status = base::Value::Dict();
   local_printer_handler()->StartPrinterStatusRequest(
-      "printer1", base::BindOnce(base::BindLambdaForTesting(
-                      [&](absl::optional<base::Value::Dict> status) {
-                        printer_status = std::move(status);
-                      })));
+      "printer1",
+      base::BindLambdaForTesting([&](absl::optional<base::Value::Dict> status) {
+        printer_status = std::move(status);
+      }));
   EXPECT_EQ(absl::nullopt, printer_status);
 }
 
@@ -108,9 +108,8 @@ TEST_F(LocalPrinterHandlerChromeosTest, GetPrintersNoAsh_ProvidesDefaultValue) {
 TEST_F(LocalPrinterHandlerChromeosTest,
        GetDefaultPrinterNoAsh_ProvidesDefaultValue) {
   std::string default_printer = "unset";
-  local_printer_handler()->GetDefaultPrinter(
-      base::BindOnce(base::BindLambdaForTesting(
-          [&](const std::string& printer) { default_printer = printer; })));
+  local_printer_handler()->GetDefaultPrinter(base::BindLambdaForTesting(
+      [&](const std::string& printer) { default_printer = printer; }));
   EXPECT_EQ("", default_printer);
 }
 

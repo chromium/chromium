@@ -139,15 +139,14 @@ std::vector<base::ScopedFD> ConnectTestingMojoSocket(
   ssize_t size;
   base::RunLoop run_loop;
   base::ThreadPool::PostTaskAndReply(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(base::BindLambdaForTesting([&]() {
+      FROM_HERE, {base::MayBlock()}, base::BindLambdaForTesting([&]() {
         // Mark the channel as blocking.
         int flags = fcntl(socket_fd.get(), F_GETFL);
         PCHECK(flags != -1);
         fcntl(socket_fd.get(), F_SETFL, flags & ~O_NONBLOCK);
         size = mojo::SocketRecvmsg(socket_fd.get(), buf, sizeof(buf),
                                    &descriptors, true /*block*/);
-      })),
+      }),
       run_loop.QuitClosure());
   run_loop.Run();
   EXPECT_EQ(1, size);
@@ -203,9 +202,8 @@ TEST_F(TestMojoConnectionManagerTest, ConnectMultipleClients) {
   // Set up UserManager to fake the login state.
   user_manager::FakeUserManager user_manager;
   user_manager.Initialize();
-  base::ScopedClosureRunner user_manager_teardown(
-      base::BindOnce(base::BindLambdaForTesting(
-          [&user_manager]() { user_manager.Destroy(); })));
+  base::ScopedClosureRunner user_manager_teardown(base::BindLambdaForTesting(
+      [&user_manager]() { user_manager.Destroy(); }));
   const AccountId account = AccountId::FromUserEmail("test@test");
   const user_manager::User* user = user_manager.AddUser(account);
   user_manager.UserLoggedIn(account, user->username_hash(), false, false);

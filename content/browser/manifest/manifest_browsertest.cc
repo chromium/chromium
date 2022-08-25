@@ -770,14 +770,13 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserPrerenderingTest,
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   {
     base::RunLoop run_loop;
-    web_contents()->GetPrimaryPage().GetManifest(
-        base::BindOnce(base::BindLambdaForTesting(
-            [&](const GURL& manifest_url, blink::mojom::ManifestPtr manifest) {
-              // Get the manifest on a primary page.
-              EXPECT_FALSE(manifest_url.is_empty());
-              EXPECT_FALSE(blink::IsEmptyManifest(*manifest));
-              run_loop.Quit();
-            })));
+    web_contents()->GetPrimaryPage().GetManifest(base::BindLambdaForTesting(
+        [&](const GURL& manifest_url, blink::mojom::ManifestPtr manifest) {
+          // Get the manifest on a primary page.
+          EXPECT_FALSE(manifest_url.is_empty());
+          EXPECT_FALSE(blink::IsEmptyManifest(*manifest));
+          run_loop.Quit();
+        }));
     run_loop.Run();
   }
 
@@ -789,29 +788,27 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserPrerenderingTest,
       prerender_helper().GetPrerenderedMainFrameHost(host_id);
   {
     base::RunLoop run_loop;
-    prerender_rfh->GetPage().GetManifest(
-        base::BindOnce(base::BindLambdaForTesting(
-            [&](const GURL& manifest_url, blink::mojom::ManifestPtr manifest) {
-              // Ensure that the manifest is empty in prerendering.
-              EXPECT_TRUE(manifest_url.is_empty());
-              EXPECT_TRUE(blink::IsEmptyManifest(*manifest));
-              run_loop.Quit();
-            })));
+    prerender_rfh->GetPage().GetManifest(base::BindLambdaForTesting(
+        [&](const GURL& manifest_url, blink::mojom::ManifestPtr manifest) {
+          // Ensure that the manifest is empty in prerendering.
+          EXPECT_TRUE(manifest_url.is_empty());
+          EXPECT_TRUE(blink::IsEmptyManifest(*manifest));
+          run_loop.Quit();
+        }));
     run_loop.Run();
   }
 
   prerender_helper().NavigatePrimaryPage(prerender_url);
   {
     base::RunLoop run_loop;
-    prerender_rfh->GetPage().GetManifest(
-        base::BindOnce(base::BindLambdaForTesting(
-            [&](const GURL& manifest_url, blink::mojom::ManifestPtr manifest) {
-              // Ensure that getting the manifest works after prerendering
-              // activation.
-              EXPECT_FALSE(manifest_url.is_empty());
-              EXPECT_FALSE(blink::IsEmptyManifest(*manifest));
-              run_loop.Quit();
-            })));
+    prerender_rfh->GetPage().GetManifest(base::BindLambdaForTesting(
+        [&](const GURL& manifest_url, blink::mojom::ManifestPtr manifest) {
+          // Ensure that getting the manifest works after prerendering
+          // activation.
+          EXPECT_FALSE(manifest_url.is_empty());
+          EXPECT_FALSE(blink::IsEmptyManifest(*manifest));
+          run_loop.Quit();
+        }));
     run_loop.Run();
   }
 }
@@ -853,16 +850,15 @@ IN_PROC_BROWSER_TEST_F(ManifestFencedFrameBrowserTest,
                          document.head.appendChild(link);)"));
 
   base::RunLoop run_loop;
-  fenced_frame_rfh->GetPage().GetManifest(
-      base::BindOnce(base::BindLambdaForTesting(
-          [&](const GURL& manifest_url, blink::mojom::ManifestPtr manifest) {
-            // Even though `fenced_frame_rfh` has a manifest updated above,
-            // this should get an empty manifest since it's not a primary main
-            // frame.
-            EXPECT_TRUE(manifest_url.is_empty());
-            EXPECT_TRUE(blink::IsEmptyManifest(*manifest));
-            run_loop.Quit();
-          })));
+  fenced_frame_rfh->GetPage().GetManifest(base::BindLambdaForTesting(
+      [&](const GURL& manifest_url, blink::mojom::ManifestPtr manifest) {
+        // Even though `fenced_frame_rfh` has a manifest updated above,
+        // this should get an empty manifest since it's not a primary main
+        // frame.
+        EXPECT_TRUE(manifest_url.is_empty());
+        EXPECT_TRUE(blink::IsEmptyManifest(*manifest));
+        run_loop.Quit();
+      }));
   run_loop.Run();
 }
 

@@ -609,7 +609,7 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest, CallWindowClose) {
       run_loop.Quit();
     };
     offscreen_document->SetCloseHandler(
-        base::BindOnce(base::BindLambdaForTesting(close_handler)));
+        base::BindLambdaForTesting(close_handler));
     content::ExecuteScriptAsync(offscreen_document->host_contents(),
                                 "window.close();");
     run_loop.Run();
@@ -632,7 +632,7 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest, CallWindowClose) {
       ++close_count;
     };
     offscreen_document->SetCloseHandler(
-        base::BindOnce(base::BindLambdaForTesting(close_handler)));
+        base::BindLambdaForTesting(close_handler));
 
     content::WebContents* contents = offscreen_document->host_contents();
     // WebContentsDelegate::CloseContents() isn't guaranteed to be called by the

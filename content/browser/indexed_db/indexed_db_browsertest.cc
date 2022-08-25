@@ -219,12 +219,12 @@ class IndexedDBBrowserTest : public ContentBrowserTest {
     base::RunLoop loop;
     int64_t size = 0;
     auto& control = GetControl(browser);
-    control.GetUsage(base::BindOnce(base::BindLambdaForTesting(
+    control.GetUsage(base::BindLambdaForTesting(
         [&](std::vector<storage::mojom::StorageUsageInfoPtr> usages) {
           for (auto& usage : usages)
             size += usage->total_size_bytes;
           loop.Quit();
-        })));
+        }));
     loop.Run();
     return size;
   }
@@ -234,11 +234,10 @@ class IndexedDBBrowserTest : public ContentBrowserTest {
     int64_t count = 0;
     auto control_test = GetControlTest();
     control_test->GetBlobCountForTesting(
-        bucket_locator,
-        base::BindOnce(base::BindLambdaForTesting([&](int64_t returned_count) {
+        bucket_locator, base::BindLambdaForTesting([&](int64_t returned_count) {
           count = returned_count;
           loop.Quit();
-        })));
+        }));
     loop.Run();
     return count;
   }
@@ -248,11 +247,10 @@ class IndexedDBBrowserTest : public ContentBrowserTest {
     bool downgraded;
     auto control_test = GetControlTest();
     control_test->ForceSchemaDowngradeForTesting(
-        bucket_locator,
-        base::BindOnce(base::BindLambdaForTesting([&](bool was_downgraded) {
+        bucket_locator, base::BindLambdaForTesting([&](bool was_downgraded) {
           downgraded = was_downgraded;
           loop.Quit();
-        })));
+        }));
     loop.Run();
     return downgraded;
   }
@@ -1056,12 +1054,12 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTestWithCorruption,
       ->UpdateOrCreateBucket(
           storage::BucketInitParams::ForDefaultBucket(storage_key),
           base::SequencedTaskRunnerHandle::Get(),
-          base::BindOnce(base::BindLambdaForTesting(
+          base::BindLambdaForTesting(
               [&](storage::QuotaErrorOr<storage::BucketInfo> result) {
                 ASSERT_TRUE(result.ok());
                 bucket_locator = result->ToBucketLocator();
                 loop.Quit();
-              })));
+              }));
   loop.Run();
   embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
       &CorruptDBRequestHandler, base::SequencedTaskRunnerHandle::Get(),

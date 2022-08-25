@@ -255,12 +255,12 @@ GaiaAuthFetcherIOSNSURLSessionBridgeTest::GetCookiesInCookieJar() {
   base::RunLoop run_loop;
   network::mojom::CookieManager* cookie_manager =
       browser_state_->GetCookieManager();
-  cookie_manager->GetAllCookies(base::BindOnce(base::BindLambdaForTesting(
+  cookie_manager->GetAllCookies(base::BindLambdaForTesting(
       [&run_loop,
        &cookies_out](const std::vector<net::CanonicalCookie>& cookies) {
         cookies_out = cookies;
         run_loop.Quit();
-      })));
+      }));
   run_loop.Run();
 
   return cookies_out;

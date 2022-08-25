@@ -1381,11 +1381,10 @@ std::vector<AttributionReport> GetAttributionReportsForTesting(
           AttributionReport::ReportType::kEventLevel,
           AttributionReport::ReportType::kAggregatableAttribution},
       /*limit=*/-1,
-      base::BindOnce(base::BindLambdaForTesting(
-          [&](std::vector<AttributionReport> reports) {
-            attribution_reports = std::move(reports);
-            run_loop.Quit();
-          })));
+      base::BindLambdaForTesting([&](std::vector<AttributionReport> reports) {
+        attribution_reports = std::move(reports);
+        run_loop.Quit();
+      }));
   run_loop.Run();
   return attribution_reports;
 }

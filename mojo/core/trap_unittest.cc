@@ -55,10 +55,10 @@ class TriggerHelper {
     auto* context =
         new NotificationContext(base::BindLambdaForTesting(handler));
     context->SetCancelCallback(
-        base::BindOnce(base::BindLambdaForTesting([cancel_handler, context] {
+        base::BindLambdaForTesting([cancel_handler, context] {
           cancel_handler();
           delete context;
-        })));
+        }));
     return reinterpret_cast<uintptr_t>(context);
   }
 
@@ -1383,7 +1383,7 @@ TEST_F(TrapTest, OtherThreadRemovesTriggerDuringEventHandler) {
         wait_for_cancellation.Signal();
       });
 
-  ThreadedRunner runner(base::BindOnce(base::BindLambdaForTesting([&] {
+  ThreadedRunner runner(base::BindLambdaForTesting([&] {
     wait_for_notification.Wait();
 
     // Cancel the watch while the notification is still running.
@@ -1393,7 +1393,7 @@ TEST_F(TrapTest, OtherThreadRemovesTriggerDuringEventHandler) {
     wait_for_cancellation.Wait();
 
     EXPECT_TRUE(callback_done);
-  })));
+  }));
   runner.Start();
 
   EXPECT_EQ(MOJO_RESULT_OK,

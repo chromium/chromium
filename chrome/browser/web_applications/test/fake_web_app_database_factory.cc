@@ -78,11 +78,11 @@ void FakeWebAppDatabaseFactory::WriteProtos(
 
   store_->CommitWriteBatch(
       std::move(write_batch),
-      base::BindOnce(base::BindLambdaForTesting(
+      base::BindLambdaForTesting(
           [&](const absl::optional<syncer::ModelError>& error) {
             DCHECK(!error);
             run_loop.Quit();
-          })));
+          }));
 
   run_loop.Run();
 }
