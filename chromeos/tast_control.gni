@@ -9,6 +9,10 @@
 # To disable a specific test in chrome_all_tast_tests, add it the following
 # list and cite a bug.
 tast_disabled_tests_from_chrome_all = [
+  # crbug.com/1356506
+  "inputs.VirtualKeyboardHandwriting.docked",
+  "inputs.VirtualKeyboardHandwriting.floating",
+
   # crbug.com/1184931
   "health.ProbeBatteryMetrics",
 
