@@ -19,9 +19,10 @@ Modifications:
 - Add static file zipconfig.h that is generated normally by the build system (patches/0001-add-built-zip_err_str.c.patch)
 - Add static file zip_err_str.c that is generated normally by the build system (patches/0001-add-built-zipconf.h.patch)
 - Modify config.h and zipconfig.h to handle multi-platform build (patches/0001-patch-configs.patch)
+- Replaces uses of sprintf with snprintf (patches/0001-Replace-usage-of-sprintf-with-snprintf.patch)
 
 Update Process:
 1) Clone the libzip github repo at the desired commit into src/
 2) Generate the static files by running make in the src/ directory
 3) Apply each patch listed above residing in patches/ using `git apply patches/$PATCHFILE`, this
-   should add the three files listed in the modifications section above
+   should add and update the files listed in the modifications section above
