@@ -13,6 +13,6 @@ No popup should be displayed here.<p>
 <script>
   const popup = document.querySelector('[popup]');
   popup.showPopUp();
-  if (!popup.matches(':top-layer'))
+  if (!popup.matches(':open'))
     document.body.appendChild(document.createTextNode('FAIL'));
 </script>

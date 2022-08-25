@@ -46,15 +46,15 @@
     setup({ explicit_done: true });
 
     popup2.showPopUp();
-    assert_false(popup1.matches(':top-layer'));
-    assert_true(popup2.matches(':top-layer'));
+    assert_false(popup1.matches(':open'));
+    assert_true(popup2.matches(':open'));
     await clickOn(button1);
     test(t => {
       // Button1 is the anchor for popup1, and an ancestor of popup2.
       // Since popup2 is open, but not popup1, button1 should not be
       // the anchor of any open popup. So popup2 should be closed.
-      assert_false(popup2.matches(':top-layer'));
-      assert_true(popup1.matches(':top-layer'));
+      assert_false(popup2.matches(':open'));
+      assert_true(popup1.matches(':open'));
     },'Nested popups (inside anchor elements) do not affect light dismiss');
 
     done();

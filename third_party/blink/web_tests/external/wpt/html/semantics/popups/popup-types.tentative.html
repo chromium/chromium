@@ -17,10 +17,10 @@
     const manual = document.currentScript.parentElement.querySelectorAll('[popup=manual]')[0];
     const manual2 = document.currentScript.parentElement.querySelectorAll('[popup=manual]')[1];
     function assert_state_1(autoOpen,hintOpen,manualOpen,manual2Open) {
-      assert_equals(auto.matches(':top-layer'),autoOpen,'auto open state is incorrect');
-      assert_equals(hint.matches(':top-layer'),hintOpen,'hint open state is incorrect');
-      assert_equals(manual.matches(':top-layer'),manualOpen,'manual open state is incorrect');
-      assert_equals(manual2.matches(':top-layer'),manual2Open,'manual2 open state is incorrect');
+      assert_equals(auto.matches(':open'),autoOpen,'auto open state is incorrect');
+      assert_equals(hint.matches(':open'),hintOpen,'hint open state is incorrect');
+      assert_equals(manual.matches(':open'),manualOpen,'manual open state is incorrect');
+      assert_equals(manual2.matches(':open'),manual2Open,'manual2 open state is incorrect');
     }
     test(() => {
       assert_state_1(false,false,false,false);
@@ -81,10 +81,10 @@
     const popUp3 = document.currentScript.parentElement.querySelectorAll('[popup=""]')[2];
     const hint = document.currentScript.parentElement.querySelector('[popup=hint]');
     function assert_state_2(popUp1Open,popUp2Open,popUp3Open,hintOpen) {
-      assert_equals(popUp1.matches(':top-layer'),popUp1Open,'popUp1 open state is incorrect');
-      assert_equals(popUp2.matches(':top-layer'),popUp2Open,'popup2 open state is incorrect');
-      assert_equals(popUp3.matches(':top-layer'),popUp3Open,'popup3 open state is incorrect');
-      assert_equals(hint.matches(':top-layer'),hintOpen,'hint open state is incorrect');
+      assert_equals(popUp1.matches(':open'),popUp1Open,'popUp1 open state is incorrect');
+      assert_equals(popUp2.matches(':open'),popUp2Open,'popup2 open state is incorrect');
+      assert_equals(popUp3.matches(':open'),popUp3Open,'popup3 open state is incorrect');
+      assert_equals(hint.matches(':open'),hintOpen,'hint open state is incorrect');
     }
     test(() => {
       assert_state_2(false,false,false,false);
@@ -110,11 +110,11 @@
     const hint1 = document.currentScript.parentElement.querySelectorAll('[popup=hint]')[0];
     const hint2 = document.currentScript.parentElement.querySelectorAll('[popup=hint]')[1];
     hint1.showPopUp();
-    assert_true(hint1.matches(':top-layer'));
-    assert_false(hint2.matches(':top-layer'));
+    assert_true(hint1.matches(':open'));
+    assert_false(hint2.matches(':open'));
     hint2.showPopUp();
-    assert_false(hint1.matches(':top-layer'));
-    assert_true(hint2.matches(':top-layer'));
+    assert_false(hint1.matches(':open'));
+    assert_true(hint2.matches(':open'));
     hint2.hidePopUp();
   },'If a popup=hint is shown, it should hide any other open popup=hint pop-ups, including ancestral pop-ups. (You can\'t nest popup=hint)');
   </script>
@@ -129,11 +129,11 @@
     const hint = document.currentScript.parentElement.querySelector('[popup=hint]');
     const auto = document.currentScript.parentElement.querySelector('[popup=""]');
     hint.showPopUp();
-    assert_true(hint.matches(':top-layer'));
-    assert_false(auto.matches(':top-layer'));
+    assert_true(hint.matches(':open'));
+    assert_false(auto.matches(':open'));
     auto.showPopUp();
-    assert_false(hint.matches(':top-layer'));
-    assert_true(auto.matches(':top-layer'));
+    assert_false(hint.matches(':open'));
+    assert_true(auto.matches(':open'));
     auto.hidePopUp();
   },'If a popup=auto is shown, it should hide any open popup=hint, including if the popup=hint is an ancestral pop-up of the popup=auto. (You can\'t nest a popup=auto inside a popup=hint)');
   </script>
@@ -151,15 +151,15 @@
     const hint = document.currentScript.parentElement.querySelector('[popup=hint]');
     auto.showPopUp();
     auto2.showPopUp();
-    assert_true(auto.matches(':top-layer'));
-    assert_true(auto2.matches(':top-layer'));
+    assert_true(auto.matches(':open'));
+    assert_true(auto2.matches(':open'));
     hint.showPopUp(); // This should hide auto2, since it is nested in auto1.
-    assert_true(auto.matches(':top-layer'));
-    assert_false(auto2.matches(':top-layer'));
-    assert_true(hint.matches(':top-layer'));
+    assert_true(auto.matches(':open'));
+    assert_false(auto2.matches(':open'));
+    assert_true(hint.matches(':open'));
     auto.hidePopUp(); // Should hide both auto and hint.
-    assert_false(auto.matches(':top-layer'));
-    assert_false(hint.matches(':top-layer'));
+    assert_false(auto.matches(':open'));
+    assert_false(hint.matches(':open'));
   },'If you: a) show a popup=auto (call it D), then b) show a descendent popup=hint of D (call it T), then c) hide D, then T should be hidden. (A popup=hint can be nested inside a popup=auto)');
   </script>
 </div>
@@ -173,11 +173,11 @@
     const hint = document.currentScript.parentElement.querySelector('[popup=hint]');
     auto.showPopUp();
     hint.showPopUp();
-    assert_true(auto.matches(':top-layer'));
-    assert_true(hint.matches(':top-layer'));
+    assert_true(auto.matches(':open'));
+    assert_true(hint.matches(':open'));
     auto.hidePopUp();
-    assert_false(auto.matches(':top-layer'));
-    assert_true(hint.matches(':top-layer'));
+    assert_false(auto.matches(':open'));
+    assert_true(hint.matches(':open'));
     hint.hidePopUp();
   },'If you: a) show a popup=auto (call it D), then b) show a non-descendent popup=hint of D (call it T), then c) hide D, then T should be left showing. (Non-nested popup=hint can stay open when unrelated popup=autos are hidden)');
   </script>

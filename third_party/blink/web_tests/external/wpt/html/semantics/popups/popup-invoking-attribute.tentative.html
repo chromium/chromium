@@ -105,7 +105,7 @@ window.addEventListener('load', () => {
                 const otherId = expectedId !== 1 ? 1 : 2;
                 function assertPopUpShowing(num,state,message) {
                   assert_true(num>0,`Invalid expectedId ${num}`);
-                  assert_equals((num===1 ? popUp1 : popUp2).matches(':top-layer'),state,message || "");
+                  assert_equals((num===1 ? popUp1 : popUp2).matches(':open'),state,message || "");
                 }
                 assertPopUpShowing(expectedId,false);
                 assertPopUpShowing(otherId,false);
@@ -179,7 +179,7 @@ popUp.addEventListener('show',() => ++showCount);
 popUp.addEventListener('hide',() => ++hideCount);
 
 async function assertState(expectOpen,expectShow,expectHide) {
-  assert_equals(popUp.matches(':top-layer'),expectOpen,'Popup open state is incorrect');
+  assert_equals(popUp.matches(':open'),expectOpen,'Popup open state is incorrect');
   await new Promise(resolve => requestAnimationFrame(resolve));
   assert_equals(showCount,expectShow,'Show count is incorrect');
   assert_equals(hideCount,expectHide,'Hide count is incorrect');

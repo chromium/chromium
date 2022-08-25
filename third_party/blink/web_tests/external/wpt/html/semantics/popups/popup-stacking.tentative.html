@@ -89,18 +89,18 @@
     const clickToActivate = example.querySelector('.clickme');
     test(function() {
       assert_true(!!descr && !!ancestor && !!child);
-      assert_false(ancestor.matches(':top-layer'));
-      assert_false(child.matches(':top-layer'));
+      assert_false(ancestor.matches(':open'));
+      assert_false(child.matches(':open'));
       ancestor.showPopUp();
       if (clickToActivate)
         clickToActivate.click();
       else
         child.showPopUp();
-      assert_true(child.matches(':top-layer'));
-      assert_true(ancestor.matches(':top-layer'));
+      assert_true(child.matches(':open'));
+      assert_true(ancestor.matches(':open'));
       ancestor.hidePopUp();
-      assert_false(ancestor.matches(':top-layer'));
-      assert_false(child.matches(':top-layer'));
+      assert_false(ancestor.matches(':open'));
+      assert_false(child.matches(':open'));
     },descr);
   }
 
@@ -109,7 +109,7 @@
   function assertState(...states) {
     assert_equals(popups.length,states.length);
     for(let i=0;i<popups.length;++i) {
-      assert_equals(popups[i].matches(':top-layer'),states[i],`Popup #${i+1} incorrect state`);
+      assert_equals(popups[i].matches(':open'),states[i],`Popup #${i+1} incorrect state`);
     }
   }
   test(function() {

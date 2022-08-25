@@ -2486,7 +2486,7 @@ PopupValueType Element::PopupType() const {
   return GetPopupData() ? GetPopupData()->type() : PopupValueType::kNone;
 }
 
-// This should be true when :top-layer should match.
+// This should be true when `:open` should match.
 bool Element::popupOpen() const {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
       GetDocument().GetExecutionContext()));
@@ -2501,7 +2501,7 @@ bool Element::popupOpen() const {
 //     style.
 // 2. Update style. (Transition initial style can be specified in this
 //    state.)
-// 3. Set the :top-layer pseudo class.
+// 3. Set the `:open` pseudo class.
 // 4. Update style. (Animations/transitions happen here.)
 void Element::showPopUp(ExceptionState& exception_state) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
@@ -2584,14 +2584,14 @@ void Element::showPopUp(ExceptionState& exception_state) {
   PseudoStateChanged(CSSSelector::kPseudoPopupHidden);
 
   // Force a style update. This ensures that base property values are set prior
-  // to `:top-layer` matching, so that transitions can start on the change to
+  // to `:open` matching, so that transitions can start on the change to
   // top layer.
   document.UpdateStyleAndLayoutTreeForNode(this);
   EnsureComputedStyle();
 
-  // Make the popup match :top-layer:
+  // Make the popup match `:open`:
   GetPopupData()->setVisibilityState(PopupVisibilityState::kShowing);
-  PseudoStateChanged(CSSSelector::kPseudoTopLayer);
+  PseudoStateChanged(CSSSelector::kPseudoOpen);
 
   SetPopupFocusOnShow();
 
@@ -2691,7 +2691,7 @@ void Element::hidePopUp(ExceptionState& exception_state) {
 // transitions:
 // 1. Capture any already-running animations via getAnimations(), including
 //    animations on descendant elements.
-// 2. Remove the :top-layer pseudo class.
+// 2. Remove the `:open` pseudo class.
 // 3. Fire the 'hide' event.
 // 4. If the hidePopup() call is *not* the result of the pop-up being "forced
 //    out" of the top layer, e.g. by a modal dialog or fullscreen element:
@@ -2744,9 +2744,9 @@ void Element::HidePopUpInternal(HidePopupFocusBehavior focus_behavior,
 
   GetPopupData()->setInvoker(nullptr);
   GetPopupData()->setNeedsRepositioningForSelectMenu(false);
-  // Stop matching :top-layer:
+  // Stop matching `:open`:
   GetPopupData()->setVisibilityState(PopupVisibilityState::kTransitioning);
-  PseudoStateChanged(CSSSelector::kPseudoTopLayer);
+  PseudoStateChanged(CSSSelector::kPseudoOpen);
 
   // Fire the hide event (bubbles, not cancelable).
   Event* event = Event::CreateBubble(event_type_names::kHide);
@@ -2771,7 +2771,7 @@ void Element::HidePopUpInternal(HidePopupFocusBehavior focus_behavior,
 
   // Grab all animations, so that we can "finish" the hide operation once
   // they complete. This will *also* force a style update, ensuring property
-  // values are set after `:top-layer` stops matching, so that transitions
+  // values are set after `:open` stops matching, so that transitions
   // can start.
   HeapHashSet<Member<EventTarget>> animations;
   for (const auto& animation : GetAnimationsInternal(

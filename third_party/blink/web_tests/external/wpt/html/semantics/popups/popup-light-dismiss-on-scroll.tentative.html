@@ -39,7 +39,7 @@
   const popups = document.querySelectorAll('[popup]');
   function assertAll(showing) {
     for(let popup of popups) {
-      assert_equals(popup.matches(':top-layer'),showing);
+      assert_equals(popup.matches(':open'),showing);
     }
   }
   async_test(t => {

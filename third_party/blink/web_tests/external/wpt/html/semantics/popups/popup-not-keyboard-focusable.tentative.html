@@ -23,12 +23,12 @@ promise_test(async () => {
   b1.focus();
   assert_equals(document.activeElement,b1);
   popup.showPopUp();
-  assert_true(popup.matches(':top-layer'));
+  assert_true(popup.matches(':open'));
   assert_equals(document.activeElement,b1);
   // Tab once
   await new test_driver.send_keys(document.body,'\uE004'); // Tab
   assert_equals(document.activeElement, b2, 'Keyboard focus should skip the open popup');
-  assert_false(popup.matches(':top-layer'),'changing focus should close the popup');
+  assert_false(popup.matches(':open'),'changing focus should close the popup');
 
   // Add a focusable button to the popup and make sure we can focus that
   const button = document.createElement('button');
@@ -39,8 +39,8 @@ promise_test(async () => {
   // Tab once
   await new test_driver.send_keys(document.body,'\uE004'); // Tab
   assert_equals(document.activeElement, button, 'Keyboard focus should go to the contained button');
-  assert_true(popup.matches(':top-layer'),'changing focus to the popup should leave it showing');
+  assert_true(popup.matches(':open'),'changing focus to the popup should leave it showing');
   popup.hidePopUp();
-  assert_false(popup.matches(':top-layer'));
+  assert_false(popup.matches(':open'));
 }, "Popup should not be keyboard focusable");
 </script>
