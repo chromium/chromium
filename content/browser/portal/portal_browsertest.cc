@@ -2150,8 +2150,6 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
     EXPECT_EQ(blink::mojom::PortalActivateResult::kPredecessorWasAdopted,
               activated_observer.WaitForActivateResult());
     adoption_observer.WaitUntilPortalCreated();
-    // TODO(https://crbug.com/1332461): Investigate why this does not return
-    // true.
     ASSERT_TRUE(waiter.WaitForNotification());
   }
   EXPECT_EQ(0, main_frame->accessibility_fatal_error_count_for_testing());
