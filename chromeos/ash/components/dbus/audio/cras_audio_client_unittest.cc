@@ -38,6 +38,9 @@ const uint32_t kOutputMaxSupportedChannels = 2;
 const uint32_t kInputAudioEffect = cras::EFFECT_TYPE_NOISE_CANCELLATION;
 const uint32_t kOutputAudioEffect = 0;
 
+const int32_t kInputNumberOfVolumeSteps = 0;
+const int32_t kOutputNumberOfVolumeSteps = 25;
+
 const AudioNode kInternalSpeaker(false,
                                  kInternalSpeakerId,
                                  false /* has_v2_stable_device_id */,
@@ -49,7 +52,8 @@ const AudioNode kInternalSpeaker(false,
                                  false,
                                  0,
                                  kOutputMaxSupportedChannels,
-                                 kOutputAudioEffect);
+                                 kOutputAudioEffect,
+                                 kOutputNumberOfVolumeSteps);
 
 const AudioNode kInternalMic(true,
                              kInternalMicId,
@@ -62,7 +66,8 @@ const AudioNode kInternalMic(true,
                              false,
                              0,
                              kInputMaxSupportedChannels,
-                             kInputAudioEffect);
+                             kInputAudioEffect,
+                             kInputNumberOfVolumeSteps);
 
 const AudioNode kInternalSpeakerV2(
     false,
@@ -78,7 +83,8 @@ const AudioNode kInternalSpeakerV2(
     false,
     0,
     kOutputMaxSupportedChannels,
-    kOutputAudioEffect);
+    kOutputAudioEffect,
+    kOutputNumberOfVolumeSteps);
 
 const AudioNode kInternalMicV2(true,
                                kInternalMicId,
@@ -93,7 +99,8 @@ const AudioNode kInternalMicV2(true,
                                false,
                                0,
                                kInputMaxSupportedChannels,
-                               kInputAudioEffect);
+                               kInputAudioEffect,
+                               kInputNumberOfVolumeSteps);
 
 // A mock CrasAudioClient Observer.
 class MockObserver : public CrasAudioClient::Observer {
@@ -304,6 +311,11 @@ void WriteNodesToResponse(const AudioNodeList& node_list,
     entry_writer.AppendVariantOfUint32(node_list[i].audio_effect);
     sub_writer.CloseContainer(&entry_writer);
 
+    sub_writer.OpenDictEntry(&entry_writer);
+    entry_writer.AppendString(cras::kNumberOfVolumeStepsProperty);
+    entry_writer.AppendVariantOfInt32(node_list[i].number_of_volume_steps);
+    sub_writer.CloseContainer(&entry_writer);
+
     writer->CloseContainer(&sub_writer);
   }
 }
@@ -331,6 +343,8 @@ void ExpectAudioNodeListResult(bool* called,
     EXPECT_EQ(expected_node_list[i].StableDeviceIdVersion(),
               node_list[i].StableDeviceIdVersion());
     EXPECT_EQ(expected_node_list[i].audio_effect, node_list[i].audio_effect);
+    EXPECT_EQ(expected_node_list[i].number_of_volume_steps,
+              node_list[i].number_of_volume_steps);
   }
 }
 

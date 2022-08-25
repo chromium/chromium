@@ -129,18 +129,20 @@ const uint64_t kJabraMic2StableDeviceId = 90002;
 const uint64_t kWebcamMicId = 40003;
 const uint64_t kWebcamMicStableDeviceId = 90003;
 
-const AudioNode kInternalSpeaker(false,
-                                 kInternalSpeakerId,
-                                 true,
-                                 kInternalSpeakerStableDeviceId,
-                                 kInternalSpeakerStableDeviceId ^ 0xFF,
-                                 "Internal Speaker",
-                                 "INTERNAL_SPEAKER",
-                                 "Speaker",
-                                 false,
-                                 0,
-                                 2,
-                                 0);
+const AudioNode kInternalSpeaker(
+    false,
+    kInternalSpeakerId,
+    true,
+    kInternalSpeakerStableDeviceId,
+    kInternalSpeakerStableDeviceId ^ 0xFF,
+    "Internal Speaker",
+    "INTERNAL_SPEAKER",
+    "Speaker",
+    false,
+    0,
+    2,
+    0,
+    25);  // output nodes should get a valid number (>0)
 
 const AudioNode kInternalMic(true,
                              kInternalMicId,
@@ -153,33 +155,38 @@ const AudioNode kInternalMic(true,
                              false,
                              0,
                              1,
-                             1);  // EFFECT_TYPE_NOISE_CANCELLATION
+                             1,   // EFFECT_TYPE_NOISE_CANCELLATION
+                             0);  // input nodes this value is invalid (0)
 
-const AudioNode kJabraSpeaker1(false,
-                               kJabraSpeaker1Id,
-                               true,
-                               kJabraSpeaker1StableDeviceId,
-                               kJabraSpeaker1StableDeviceId ^ 0xFF,
-                               "Jabra Speaker",
-                               "USB",
-                               "Jabra Speaker 1",
-                               false,
-                               0,
-                               2,  // expects CHANNEL_LAYOUT_STEREO
-                               0);
+const AudioNode kJabraSpeaker1(
+    false,
+    kJabraSpeaker1Id,
+    true,
+    kJabraSpeaker1StableDeviceId,
+    kJabraSpeaker1StableDeviceId ^ 0xFF,
+    "Jabra Speaker",
+    "USB",
+    "Jabra Speaker 1",
+    false,
+    0,
+    2,  // expects CHANNEL_LAYOUT_STEREO
+    0,
+    25);  // output nodes should get a valid number (>0)
 
-const AudioNode kJabraSpeaker2(false,
-                               kJabraSpeaker2Id,
-                               true,
-                               kJabraSpeaker2StableDeviceId,
-                               kJabraSpeaker2StableDeviceId ^ 0xFF,
-                               "Jabra Speaker",
-                               "USB",
-                               "Jabra Speaker 2",
-                               false,
-                               0,
-                               6,  // expects CHANNEL_LAYOUT_5_1
-                               0);
+const AudioNode kJabraSpeaker2(
+    false,
+    kJabraSpeaker2Id,
+    true,
+    kJabraSpeaker2StableDeviceId,
+    kJabraSpeaker2StableDeviceId ^ 0xFF,
+    "Jabra Speaker",
+    "USB",
+    "Jabra Speaker 2",
+    false,
+    0,
+    6,  // expects CHANNEL_LAYOUT_5_1
+    0,
+    25);  // output nodes should get a valid number (>0)
 
 const AudioNode kHDMIOutput(false,
                             kHDMIOutputId,
@@ -192,7 +199,8 @@ const AudioNode kHDMIOutput(false,
                             false,
                             0,
                             8,  // expects CHANNEL_LAYOUT_7_1
-                            0);
+                            0,
+                            25);  // output nodes should get a valid number (>0)
 
 const AudioNode kJabraMic1(true,
                            kJabraMic1Id,
@@ -205,7 +213,8 @@ const AudioNode kJabraMic1(true,
                            false,
                            0,
                            1,
-                           0);
+                           0,
+                           0);  // input nodes this value is invalid (0)
 
 const AudioNode kJabraMic2(true,
                            kJabraMic2Id,
@@ -218,7 +227,8 @@ const AudioNode kJabraMic2(true,
                            false,
                            0,
                            1,
-                           0);
+                           0,
+                           0);  // input nodes this value is invalid (0)
 
 const AudioNode kUSBCameraMic(true,
                               kWebcamMicId,
@@ -231,7 +241,8 @@ const AudioNode kUSBCameraMic(true,
                               false,
                               0,
                               1,
-                              0);
+                              0,
+                              0);  // input nodes this value is invalid (0)
 #endif  // defined(USE_CRAS)
 
 const char kRealDefaultInputDeviceID[] = "input2";

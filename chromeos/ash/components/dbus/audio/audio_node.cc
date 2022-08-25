@@ -14,6 +14,8 @@
 
 namespace ash {
 
+constexpr int32_t NUMBER_OF_VOLUME_STEPS_DEFAULT = 25;
+
 AudioNode::AudioNode() = default;
 
 AudioNode::AudioNode(bool is_input,
@@ -27,7 +29,8 @@ AudioNode::AudioNode(bool is_input,
                      bool active,
                      uint64_t plugged_time,
                      uint32_t max_supported_channels,
-                     uint32_t audio_effect)
+                     uint32_t audio_effect,
+                     int32_t number_of_volume_steps)
     : is_input(is_input),
       id(id),
       has_v2_stable_device_id(has_v2_stable_device_id),
@@ -39,8 +42,12 @@ AudioNode::AudioNode(bool is_input,
       active(active),
       plugged_time(plugged_time),
       max_supported_channels(max_supported_channels),
-      audio_effect(audio_effect) {
+      audio_effect(audio_effect),
+      number_of_volume_steps(number_of_volume_steps) {
   DCHECK(!(audio_effect & ~cras::EFFECT_TYPE_NOISE_CANCELLATION));
+  if (!is_input && number_of_volume_steps <= 0) {
+    this->number_of_volume_steps = NUMBER_OF_VOLUME_STEPS_DEFAULT;
+  }
 }
 
 AudioNode::AudioNode(const AudioNode& other) = default;
@@ -66,7 +73,8 @@ std::string AudioNode::ToString() const {
   base::StringAppendF(&result, "max_supported_channels= %s ",
                       base::NumberToString(max_supported_channels).c_str());
   base::StringAppendF(&result, "audio_effect = 0x%" PRIx32 " ", audio_effect);
-
+  base::StringAppendF(&result, "number_of_volume_steps= %s",
+                      base::NumberToString(number_of_volume_steps).c_str());
   return result;
 }
 

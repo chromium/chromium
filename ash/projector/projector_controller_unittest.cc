@@ -197,12 +197,13 @@ TEST_F(ProjectorControllerTest, OnAudioNodesChanged) {
 
   const AudioNodeInfo kInternalMic[] = {
       {true, 55555, "Fake Mic", "INTERNAL_MIC", "Internal Mic"}};
-  const AudioNode audio_node = AudioNode(
-      kInternalMic->is_input, kInternalMic->id,
-      /*has_v2_stable_device_id=*/false, kInternalMic->id,
-      /*stable_device_id_v2=*/0, kInternalMic->device_name, kInternalMic->type,
-      kInternalMic->name, /*active=*/false,
-      /*plugged_time=*/0, /*max_supported_channels=*/1, /*audio_effect=*/1);
+  const AudioNode audio_node =
+      AudioNode(kInternalMic->is_input, kInternalMic->id,
+                /*has_v2_stable_device_id=*/false, kInternalMic->id,
+                /*stable_device_id_v2=*/0, kInternalMic->device_name,
+                kInternalMic->type, kInternalMic->name, /*active=*/false,
+                /*plugged_time=*/0, /*max_supported_channels=*/1,
+                /*audio_effect=*/1, /*number_of_volume_steps=*/25);
   FakeCrasAudioClient::Get()->SetAudioNodesForTesting({audio_node});
 
   CrasAudioHandler::Get()->SetActiveInputNodes({kInternalMic->id});

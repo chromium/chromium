@@ -79,6 +79,9 @@ const uint32_t kOutputMaxSupportedChannels = 2;
 
 const uint32_t kInputAudioEffect = 1;
 const uint32_t kOutputAudioEffect = 0;
+// Does not support getting input step now.
+const int32_t kInputNumberOfVolumeSteps = 0;
+const int32_t kOutputNumberOfVolumeSteps = 25;
 
 AudioDevice CreateAudioDevice(const AudioNodeInfo& info, int version) {
   return AudioDevice(AudioNode(
@@ -86,7 +89,8 @@ AudioDevice CreateAudioDevice(const AudioNodeInfo& info, int version) {
       version == 1 ? 0 : info.id ^ 0xFF /* stable_device_id_v2 */,
       info.device_name, info.type, info.name, false, 0,
       info.is_input ? kInputMaxSupportedChannels : kOutputMaxSupportedChannels,
-      info.is_input ? kInputAudioEffect : kOutputAudioEffect));
+      info.is_input ? kInputAudioEffect : kOutputAudioEffect,
+      info.is_input ? kInputNumberOfVolumeSteps : kOutputNumberOfVolumeSteps));
 }
 
 // Test param determines whether the test should test input or output devices

@@ -43,6 +43,9 @@ struct AudioNodeInfo {
 const uint32_t kInputMaxSupportedChannels = 1;
 const uint32_t kOutputMaxSupportedChannels = 2;
 
+const int32_t kInputNumberOfVolumeSteps = 0;
+const int32_t kOutputNumberOfVolumeSteps = 25;
+
 const AudioNodeInfo kInternalSpeaker[] = {
     {false, kInternalSpeakerId, "Fake Speaker", "INTERNAL_SPEAKER", "Speaker"}};
 
@@ -150,7 +153,10 @@ class CrosAudioConfigImplTest : public testing::Test {
                      /* plugged_time=*/0,
                      node_info->is_input ? kInputMaxSupportedChannels
                                          : kOutputMaxSupportedChannels,
-                     node_info->audio_effect);
+                     node_info->audio_effect,
+                     /* number_of_volume_steps=*/
+                     node_info->is_input ? kInputNumberOfVolumeSteps
+                                         : kOutputNumberOfVolumeSteps);
   }
 
   AudioNodeList GenerateAudioNodeList(

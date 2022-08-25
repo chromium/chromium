@@ -31,7 +31,14 @@ struct COMPONENT_EXPORT(DBUS_AUDIO) AudioNode {
   uint32_t max_supported_channels = 0;
   // Bit-wise audio effect support information.
   uint32_t audio_effect = 0;
-
+  // The number of volume steps that can be adjusted for the node.
+  // Mainly used to calculate the percentage of playback volume change.
+  // e.g. number_of_volume_steps=25 volume will change 4% (100%/25=4%) for one
+  // volume change event. If this value is set to 0, indicates that the value
+  // for this node is invalid. Currently all input nodes this value is invalid
+  // (0), all output nodes should get a valid number (>0) if output nodes
+  // somehow get a number_of_volume_steps <=0, use 25 as default value.
+  int32_t number_of_volume_steps = 0;
   AudioNode();
   AudioNode(bool is_input,
             uint64_t id,
@@ -44,7 +51,8 @@ struct COMPONENT_EXPORT(DBUS_AUDIO) AudioNode {
             bool active,
             uint64_t plugged_time,
             uint32_t max_supported_channels,
-            uint32_t audio_effect);
+            uint32_t audio_effect,
+            int32_t number_of_volume_steps);
   AudioNode(const AudioNode& other);
   ~AudioNode();
 

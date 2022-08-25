@@ -1078,6 +1078,9 @@ class CrasAudioClientImpl : public CrasAudioClient {
       } else if (key == cras::kAudioEffectProperty) {
         if (!value_reader.PopUint32(&node->audio_effect))
           return false;
+      } else if (key == cras::kNumberOfVolumeStepsProperty) {
+        if (!value_reader.PopInt32(&node->number_of_volume_steps))
+          return false;
       }
     }
 

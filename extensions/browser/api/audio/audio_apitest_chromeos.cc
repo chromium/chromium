@@ -57,6 +57,9 @@ const uint32_t kOutputMaxSupportedChannels = 2;
 const uint32_t kInputAudioEffect = 1;
 const uint32_t kOutputAudioEffect = 0;
 
+const int32_t kInputNumberOfVolumeSteps = 0;
+const int32_t kOutputNumberOfVolumeSteps = 25;
+
 const AudioNodeInfo kJabraSpeaker1 = {
     false, kJabraSpeaker1Id, kJabraSpeaker1StableDeviceId, "Jabra Speaker",
     "USB", "Jabra Speaker 1"};
@@ -90,7 +93,8 @@ AudioNode CreateAudioNode(const AudioNodeInfo& info, int version) {
       version == 2 ? info.stable_id ^ 0xFFFF : 0, info.device_name, info.type,
       info.name, false, 0,
       info.is_input ? kInputMaxSupportedChannels : kOutputMaxSupportedChannels,
-      info.is_input ? kInputAudioEffect : kOutputAudioEffect);
+      info.is_input ? kInputAudioEffect : kOutputAudioEffect,
+      info.is_input ? kInputNumberOfVolumeSteps : kOutputNumberOfVolumeSteps);
 }
 
 class AudioApiTest : public ShellApiTest {

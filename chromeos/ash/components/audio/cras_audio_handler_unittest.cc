@@ -89,6 +89,7 @@ struct AudioNodeInfo {
   const char* const device_name;
   const char* const type;
   const char* const name;
+  const int32_t number_of_volume_steps;
 };
 
 const uint32_t kInputMaxSupportedChannels = 1;
@@ -97,68 +98,69 @@ const uint32_t kOutputMaxSupportedChannels = 2;
 const uint32_t kInputAudioEffect = 1;
 const uint32_t kOutputAudioEffect = 0;
 
-const AudioNodeInfo kInternalSpeaker[] = {
-    {false, kInternalSpeakerId, "Fake Speaker", "INTERNAL_SPEAKER", "Speaker"}};
+const AudioNodeInfo kInternalSpeaker[] = {{false, kInternalSpeakerId,
+                                           "Fake Speaker", "INTERNAL_SPEAKER",
+                                           "Speaker", 25}};
 
 const AudioNodeInfo kHeadphone[] = {
-    {false, kHeadphoneId, "Fake Headphone", "HEADPHONE", "Headphone"}};
+    {false, kHeadphoneId, "Fake Headphone", "HEADPHONE", "Headphone", 25}};
 
 const AudioNodeInfo kInternalMic[] = {
-    {true, kInternalMicId, "Fake Mic", "INTERNAL_MIC", "Internal Mic"}};
+    {true, kInternalMicId, "Fake Mic", "INTERNAL_MIC", "Internal Mic", 0}};
 
 const AudioNodeInfo kMicJack[] = {
-    {true, kMicJackId, "Fake Mic Jack", "MIC", "Mic Jack"}};
+    {true, kMicJackId, "Fake Mic Jack", "MIC", "Mic Jack", 0}};
 
 const AudioNodeInfo kUSBMic1[] = {
-    {true, kUSBMicId1, "Fake USB Mic 1", "USB", "USB Microphone 1"}};
+    {true, kUSBMicId1, "Fake USB Mic 1", "USB", "USB Microphone 1", 0}};
 
 const AudioNodeInfo kUSBMic2[] = {
-    {true, kUSBMicId2, "Fake USB Mic 2", "USB", "USB Microphone 2"}};
+    {true, kUSBMicId2, "Fake USB Mic 2", "USB", "USB Microphone 2", 0}};
 
 const AudioNodeInfo kKeyboardMic[] = {{true, kKeyboardMicId,
                                        "Fake Keyboard Mic", "KEYBOARD_MIC",
-                                       "Keyboard Mic"}};
+                                       "Keyboard Mic", 0}};
 
 const AudioNodeInfo kFrontMic[] = {
-    {true, kFrontMicId, "Fake Front Mic", "FRONT_MIC", "Front Mic"}};
+    {true, kFrontMicId, "Fake Front Mic", "FRONT_MIC", "Front Mic", 0}};
 
 const AudioNodeInfo kRearMic[] = {
-    {true, kRearMicId, "Fake Rear Mic", "REAR_MIC", "Rear Mic"}};
+    {true, kRearMicId, "Fake Rear Mic", "REAR_MIC", "Rear Mic", 0}};
 
 const AudioNodeInfo kOther[] = {
-    {false, kOtherId, "Non Simple Output Device", "OTHER", "Other"}};
+    {false, kOtherId, "Non Simple Output Device", "OTHER", "Other", 25}};
 
 const AudioNodeInfo kBluetoothHeadset[] = {{false, kBluetoothHeadsetId,
                                             "Bluetooth Headset", "BLUETOOTH",
-                                            "Bluetooth Headset 1"}};
+                                            "Bluetooth Headset 1", 25}};
 
 const AudioNodeInfo kHDMIOutput[] = {
-    {false, kHDMIOutputId, "HDMI output", "HDMI", "HDMI output"}};
+    {false, kHDMIOutputId, "HDMI output", "HDMI", "HDMI output", 25}};
 
 const AudioNodeInfo kUSBHeadphone1[] = {
-    {false, kUSBHeadphoneId1, "USB Headphone", "USB", "USB Headphone 1"}};
+    {false, kUSBHeadphoneId1, "USB Headphone", "USB", "USB Headphone 1", 25}};
 
 const AudioNodeInfo kUSBHeadphone2[] = {
-    {false, kUSBHeadphoneId2, "USB Headphone", "USB", "USB Headphone 1"}};
+    {false, kUSBHeadphoneId2, "USB Headphone", "USB", "USB Headphone 1", 16}};
 
 const AudioNodeInfo kUSBJabraSpeakerOutput1[] = {
     {false, kUSBJabraSpeakerOutputId1, "Jabra Speaker 1", "USB",
-     "Jabra Speaker 1"}};
+     "Jabra Speaker 1", 16}};
 
 const AudioNodeInfo kUSBJabraSpeakerOutput2[] = {
     {false, kUSBJabraSpeakerOutputId2, "Jabra Speaker 2", "USB",
-     "Jabra Speaker 2"}};
+     "Jabra Speaker 2", 25}};
 
 const AudioNodeInfo kUSBJabraSpeakerInput1[] = {{true, kUSBJabraSpeakerInputId1,
                                                  "Jabra Speaker 1", "USB",
-                                                 "Jabra Speaker"}};
+                                                 "Jabra Speaker", 0}};
 
 const AudioNodeInfo kUSBJabraSpeakerInput2[] = {{true, kUSBJabraSpeakerInputId2,
                                                  "Jabra Speaker 2", "USB",
-                                                 "Jabra Speaker 2"}};
+                                                 "Jabra Speaker 2", 0}};
 
 const AudioNodeInfo kUSBCameraInput[] = {
-    {true, kUSBCameraInputId, "USB Camera", "USB", "USB Camera"}};
+    {true, kUSBCameraInputId, "USB Camera", "USB", "USB Camera", 0}};
 
 class TestObserver : public CrasAudioHandler::AudioObserver {
  public:
@@ -338,7 +340,8 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
         0 /* pluged_time */,
         node_info->is_input ? kInputMaxSupportedChannels
                             : kOutputMaxSupportedChannels,
-        node_info->is_input ? kInputAudioEffect : kOutputAudioEffect);
+        node_info->is_input ? kInputAudioEffect : kOutputAudioEffect,
+        node_info->number_of_volume_steps);
   }
 
   AudioNodeList GenerateAudioNodeList(
