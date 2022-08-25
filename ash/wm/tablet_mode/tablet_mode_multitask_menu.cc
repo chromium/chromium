@@ -4,6 +4,7 @@
 
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu.h"
 
+#include "ash/wm/tablet_mode/tablet_mode_multitask_menu_event_handler.h"
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view.h"
@@ -56,27 +57,41 @@ class TabletModeMultitaskMenuView : public views::View {
 BEGIN_METADATA(TabletModeMultitaskMenuView, View)
 END_METADATA
 
-TabletModeMultitaskMenu::TabletModeMultitaskMenu(aura::Window* window)
-    : window_(window) {
-  DCHECK(window_);
-  const gfx::Rect widget_bounds(
-      window_->bounds().CenterPoint().x() - kMultitaskMenuWidth / 2,
-      kMultitaskMenuVerticalPadding, kMultitaskMenuWidth, kMultitaskMenuHeight);
+TabletModeMultitaskMenu::TabletModeMultitaskMenu(
+    TabletModeMultitaskMenuEventHandler* event_handler,
+    aura::Window* window)
+    : event_handler_(event_handler), window_(window) {
+  // Start observing the window.
+  DCHECK(window);
+  observed_window_.Observe(window);
 
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.parent = window->parent();
-  params.bounds = widget_bounds;
+  params.bounds = gfx::Rect(
+      window->bounds().CenterPoint().x() - kMultitaskMenuWidth / 2,
+      kMultitaskMenuVerticalPadding, kMultitaskMenuWidth, kMultitaskMenuHeight);
   params.name = "TabletModeMultitaskMenuWidget";
+  // TODO(crbug.com/1355572): Set widget as activatable and hide in overview.
 
   multitask_menu_widget_->Init(std::move(params));
   multitask_menu_widget_->SetContentsView(
       std::make_unique<TabletModeMultitaskMenuView>(
-          window, base::BindRepeating(&TabletModeMultitaskMenu::Hide,
-                                      base::Unretained(this))));
+          window_, base::BindRepeating(&TabletModeMultitaskMenu::Hide,
+                                       base::Unretained(this))));
 }
 
 TabletModeMultitaskMenu::~TabletModeMultitaskMenu() = default;
+
+void TabletModeMultitaskMenu::OnWindowDestroying(aura::Window* window) {
+  DCHECK(observed_window_.IsObservingSource(window));
+
+  observed_window_.Reset();
+  window_ = nullptr;
+
+  // Destroys `this`.
+  event_handler_->CloseMultitaskMenu();
+}
 
 void TabletModeMultitaskMenu::Show() {
   DCHECK(multitask_menu_widget_);

@@ -42,8 +42,6 @@ TabletModeMultitaskMenuEventHandler::TabletModeMultitaskMenuEventHandler() {
 
 TabletModeMultitaskMenuEventHandler::~TabletModeMultitaskMenuEventHandler() {
   Shell::Get()->RemovePreTargetHandler(this);
-  if (multitask_menu_)
-    multitask_menu_->window()->RemoveObserver(this);
 }
 
 void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
@@ -103,28 +101,19 @@ void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
   // outside the menu bounds.
 }
 
-void TabletModeMultitaskMenuEventHandler::OnWindowDestroying(
-    aura::Window* window) {
-  HideMultitaskMenu();
-  if (multitask_menu_) {
-    DCHECK_EQ(window, multitask_menu_->window());
-    multitask_menu_->window()->RemoveObserver(this);
-    multitask_menu_ = nullptr;
-  }
-}
-
 void TabletModeMultitaskMenuEventHandler::ShowMultitaskMenu(
     aura::Window* active_window) {
-  // TODO(sophiewen): Check that `active_window` is still active.
-  if (!multitask_menu_) {
-    multitask_menu_ = std::make_unique<TabletModeMultitaskMenu>(active_window);
-    // TODO(crbug.com/1351464): Move WindowObserver to TabletModeMultitaskMenu.
-    active_window->AddObserver(this);
-  }
+  multitask_menu_ =
+      std::make_unique<TabletModeMultitaskMenu>(this, active_window);
   multitask_menu_->Show();
 }
 
+void TabletModeMultitaskMenuEventHandler::CloseMultitaskMenu() {
+  multitask_menu_.reset();
+}
+
 void TabletModeMultitaskMenuEventHandler::HideMultitaskMenu() {
+  // TODO(sophiewen): Replace with CloseMultitaskMenu.
   if (multitask_menu_)
     multitask_menu_->Hide();
 }

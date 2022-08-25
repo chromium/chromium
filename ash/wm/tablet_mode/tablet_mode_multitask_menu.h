@@ -6,20 +6,29 @@
 #define ASH_WM_TABLET_MODE_TABLET_MODE_MULTITASK_MENU_H_
 
 #include "ash/ash_export.h"
+#include "ash/wm/tablet_mode/tablet_mode_multitask_menu_event_handler.h"
+#include "base/scoped_observation.h"
+#include "ui/aura/window.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace ash {
 
+class TabletModeMultitaskMenuEventHandler;
+
 // The container of the multitask menu. Creates and owns the multitask menu
 // widget.
-class ASH_EXPORT TabletModeMultitaskMenu {
+class ASH_EXPORT TabletModeMultitaskMenu : aura::WindowObserver {
  public:
-  explicit TabletModeMultitaskMenu(aura::Window* window);
+  TabletModeMultitaskMenu(TabletModeMultitaskMenuEventHandler* event_handler,
+                          aura::Window* window);
 
   TabletModeMultitaskMenu(const TabletModeMultitaskMenu&) = delete;
   TabletModeMultitaskMenu& operator=(const TabletModeMultitaskMenu&) = delete;
 
-  ~TabletModeMultitaskMenu();
+  ~TabletModeMultitaskMenu() override;
+
+  // aura::WindowObserver:
+  void OnWindowDestroying(aura::Window* window) override;
 
   void Show();
   void Hide();
@@ -31,8 +40,16 @@ class ASH_EXPORT TabletModeMultitaskMenu {
   }
 
  private:
+  // The event handler that created this multitask menu. Guaranteed to outlive
+  // `this`.
+  TabletModeMultitaskMenuEventHandler* event_handler_;
+
   // The window associated with this multitask menu.
-  aura::Window* const window_;
+  aura::Window* window_ = nullptr;
+
+  // Window observer for `window_`.
+  base::ScopedObservation<aura::Window, aura::WindowObserver> observed_window_{
+      this};
 
   views::UniqueWidgetPtr multitask_menu_widget_ =
       std::make_unique<views::Widget>();

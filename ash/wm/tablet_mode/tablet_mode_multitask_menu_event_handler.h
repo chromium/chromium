@@ -14,8 +14,7 @@ class TabletModeMultitaskMenu;
 
 // TabletModeMultitaskMenuEventHandler handles gestures in tablet mode that may
 // show or hide the multitask menu.
-class TabletModeMultitaskMenuEventHandler : public ui::EventHandler,
-                                            public aura::WindowObserver {
+class TabletModeMultitaskMenuEventHandler : public ui::EventHandler {
  public:
   TabletModeMultitaskMenuEventHandler();
   TabletModeMultitaskMenuEventHandler(
@@ -27,8 +26,7 @@ class TabletModeMultitaskMenuEventHandler : public ui::EventHandler,
   // ui::EventHandler:
   void OnGestureEvent(ui::GestureEvent* event) override;
 
-  // aura::WindowObserver:
-  void OnWindowDestroying(aura::Window* window) override;
+  void CloseMultitaskMenu();
 
   TabletModeMultitaskMenu* multitask_menu_for_testing() {
     return multitask_menu_.get();
