@@ -527,19 +527,34 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         initUndoGroupSnackbarController();
     }
 
+    /**
+     * Creates an instance of {@link IncognitoReauthCoordinatorFactory} for tabbed activity.
+     *
+     * Note that, it requires a valid instance of start surface to work properly if
+     * {@link ReturnToChromeUtil.isTabSwitcherOnlyRefactorEnabled} returns false. Start surface is
+     * only constructed if grid tab switcher is enabled.
+     * See {@link ChromeTabbedActivity#setupCompositorContentPreNativeForPhone} and
+     * {@link ChromeTabbedActivity#setupCompositorContentPreNativeForTablet} for more detail.
+     *
+     * TODO(crbug.com/1355870): Validate the Chrome behaviour when grid tab switcher is not enabled.
+     */
     @Override
     protected IncognitoReauthCoordinatorFactory getIncognitoReauthCoordinatorFactory() {
         // TODO(crbug.com/1315676): When the refactor is enabled by default, use
         // |tabSwitcherCustomView| directly instead of the supplier.
         OneshotSupplier<TabSwitcherCustomViewManager> tabSwitcherCustomViewSupplier =
                 new OneshotSupplierImpl<>();
-        if (ReturnToChromeUtil.isTabSwitcherOnlyRefactorEnabled(mActivity)
-                && mActivityType == ActivityType.TABBED) {
+        if (ReturnToChromeUtil.isTabSwitcherOnlyRefactorEnabled(mActivity)) {
             ((OneshotSupplierImpl) tabSwitcherCustomViewSupplier)
                     .set(mTabSwitcherSupplier.get().getTabSwitcherCustomViewManager());
         } else {
-            tabSwitcherCustomViewSupplier =
-                    mStartSurfaceSupplier.get().getTabSwitcherCustomViewManagerSupplier();
+            if (mStartSurfaceSupplier.hasValue()) {
+                assert TabUiFeatureUtilities.isGridTabSwitcherEnabled(mActivity)
+                        || TabUiFeatureUtilities.isTabletGridTabSwitcherEnabled(mActivity)
+                    : "Grid tab switcher should be enabled.";
+                tabSwitcherCustomViewSupplier =
+                        mStartSurfaceSupplier.get().getTabSwitcherCustomViewManagerSupplier();
+            }
         }
 
         // TODO(crbug.com/1324211, crbug.com/1227656) : Refactor below to remove
