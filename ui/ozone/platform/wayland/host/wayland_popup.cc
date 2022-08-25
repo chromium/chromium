@@ -124,7 +124,7 @@ void WaylandPopup::Show(bool inactive) {
     return;
   }
 
-  connection()->ScheduleFlush();
+  connection()->Flush();
   WaylandWindow::Show(inactive);
 }
 
@@ -147,7 +147,7 @@ void WaylandPopup::Hide() {
     decorated_via_aura_popup_ = false;
   }
 
-  connection()->ScheduleFlush();
+  connection()->Flush();
 }
 
 bool WaylandPopup::IsVisible() const {

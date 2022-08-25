@@ -43,7 +43,7 @@ bool ZXDGSurfaceV6WrapperImpl::Initialize() {
 
   zxdg_surface_v6_add_listener(zxdg_surface_v6_.get(),
                                &zxdg_surface_v6_listener, this);
-  connection_->ScheduleFlush();
+  connection_->Flush();
   return true;
 }
 

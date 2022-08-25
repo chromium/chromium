@@ -97,7 +97,7 @@ class WaylandKeyboardTest : public WaylandTest {
           static_cast<base::RunLoop*>(data)->Quit();
         }};
     wl_callback_add_listener(sync_callback.get(), &listener, &run_loop);
-    connection_->ScheduleFlush();
+    connection_->Flush();
     Sync();
 
     server_.Resume();

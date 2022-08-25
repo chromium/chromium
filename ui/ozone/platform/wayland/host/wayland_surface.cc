@@ -205,7 +205,7 @@ void WaylandSurface::UpdateBufferDamageRegion(const gfx::Rect& damage_px) {
 void WaylandSurface::Commit(bool flush) {
   wl_surface_commit(surface_.get());
   if (flush)
-    connection_->ScheduleFlush();
+    connection_->Flush();
 }
 
 void WaylandSurface::SetBufferTransform(gfx::OverlayTransform transform) {

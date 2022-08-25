@@ -84,7 +84,7 @@ class WaylandWindowDragController::ExtendedDragSource {
     auto* surface = window ? window->root_surface()->surface() : nullptr;
     zcr_extended_drag_source_v1_drag(source_.get(), surface, offset.x(),
                                      offset.y());
-    connection_.ScheduleFlush();
+    connection_.Flush();
   }
 
  private:

@@ -74,10 +74,6 @@ void WaylandProxyImpl::DestroyShmForWlBuffer(wl_buffer* buffer) {
   shm_buffers_.erase(it);
 }
 
-void WaylandProxyImpl::ScheduleDisplayFlush() {
-  connection_->ScheduleFlush();
-}
-
 void WaylandProxyImpl::FlushForTesting() {
   connection_->Flush();
 }

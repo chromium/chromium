@@ -119,7 +119,7 @@ void DataSource<wl_data_source>::Offer(
     const std::vector<std::string>& mime_types) {
   for (auto& mime_type : mime_types)
     wl_data_source_offer(data_source_.get(), mime_type.c_str());
-  connection_->ScheduleFlush();
+  connection_->Flush();
 }
 
 template <typename T>
@@ -154,7 +154,7 @@ void DataSource<gtk_primary_selection_source>::Offer(
     const std::vector<std::string>& mime_types) {
   for (const auto& mime_type : mime_types)
     gtk_primary_selection_source_offer(data_source_.get(), mime_type.c_str());
-  connection_->ScheduleFlush();
+  connection_->Flush();
 }
 
 template <>
@@ -173,7 +173,7 @@ void DataSource<zwp_primary_selection_source_v1>::Offer(
   for (const auto& mime_type : mime_types)
     zwp_primary_selection_source_v1_offer(data_source_.get(),
                                           mime_type.c_str());
-  connection_->ScheduleFlush();
+  connection_->Flush();
 }
 
 template class DataSource<gtk_primary_selection_source>;

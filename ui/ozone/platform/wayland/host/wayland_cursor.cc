@@ -109,7 +109,7 @@ void WaylandCursor::HideCursor() {
   wl_surface_attach(pointer_surface_.get(), nullptr, 0, 0);
   wl_surface_commit(pointer_surface_.get());
 
-  connection_->ScheduleFlush();
+  connection_->Flush();
 
   if (listener_)
     listener_->OnCursorBufferAttached(nullptr);
@@ -160,7 +160,7 @@ void WaylandCursor::AttachAndCommit(wl_buffer* buffer,
   wl_surface_attach(pointer_surface_.get(), buffer, 0, 0);
   wl_surface_commit(pointer_surface_.get());
 
-  connection_->ScheduleFlush();
+  connection_->Flush();
 }
 
 }  // namespace ui

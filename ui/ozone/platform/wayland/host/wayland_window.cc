@@ -429,7 +429,7 @@ void WaylandWindow::SetDecorationInsets(const gfx::Insets* insets_px) {
   else
     frame_insets_px_ = absl::nullopt;
   UpdateDecorations();
-  connection_->ScheduleFlush();
+  connection_->Flush();
 }
 
 void WaylandWindow::SetWindowIcons(const gfx::ImageSkia& window_icon,
@@ -550,7 +550,7 @@ void WaylandWindow::UpdateVisualSize(const gfx::Size& size_px) {
 
   if (apply_pending_state_on_update_visual_size_for_testing_) {
     root_surface_->ApplyPendingState();
-    connection_->ScheduleFlush();
+    connection_->Flush();
   }
 }
 
@@ -660,7 +660,7 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
   std::vector<gfx::Rect> region{gfx::Rect{size_px_}};
   root_surface_->SetOpaqueRegion(&region);
   root_surface_->ApplyPendingState();
-  connection_->ScheduleFlush();
+  connection_->Flush();
 
   return true;
 }
@@ -950,7 +950,7 @@ void WaylandWindow::ProcessPendingBoundsDip(uint32_t serial) {
     // window has been applied.
     SetWindowGeometry(pending_bounds_dip_);
     AckConfigure(serial);
-    connection()->ScheduleFlush();
+    connection()->Flush();
   } else if (!pending_configures_.empty() &&
              pending_bounds_dip_.size() ==
                  pending_configures_.back().bounds_dip.size()) {
@@ -1045,7 +1045,7 @@ bool WaylandWindow::ProcessVisualSizeUpdate(const gfx::Size& size_px) {
     auto serial = result->serial;
     SetWindowGeometry(result->bounds_dip);
     AckConfigure(serial);
-    connection()->ScheduleFlush();
+    connection()->Flush();
     pending_configures_.erase(pending_configures_.begin(), ++result);
     return true;
   }

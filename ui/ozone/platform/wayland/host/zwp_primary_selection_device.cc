@@ -31,7 +31,7 @@ void ZwpPrimarySelectionDevice::SetSelectionSource(
   auto* data_source = source ? source->data_source() : nullptr;
   zwp_primary_selection_device_v1_set_selection(data_device_.get(), data_source,
                                                 serial);
-  connection()->ScheduleFlush();
+  connection()->Flush();
 }
 
 // static

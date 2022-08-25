@@ -210,7 +210,7 @@ void WaylandDataDragController::OnDragSurfaceFrame(void* data,
   DCHECK(self);
   self->DrawIconInternal();
   self->icon_frame_callback_.reset();
-  self->connection_->ScheduleFlush();
+  self->connection_->Flush();
 }
 
 void WaylandDataDragController::DrawIconInternal() {

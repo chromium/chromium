@@ -446,6 +446,10 @@ TEST_P(WaylandWindowTest, SetDecorationInsets) {
   // window geometry.  Emulate updating the visual size (sending the frame
   // update) for that.
   window_->UpdateVisualSize(kNormalBounds.size());
+  // Setting geometry is double buffered and requires commit called on the
+  // surface. In production, this is handled during commit of a next frame
+  // (which also updates visual size).
+  window_->root_surface()->Commit();
 
   Sync();
 
@@ -475,6 +479,10 @@ TEST_P(WaylandWindowTest, SetDecorationInsets) {
   // window geometry.  Emulate updating the visual size (sending the frame
   // update) for that.
   window_->UpdateVisualSize(kHiDpiSize);
+  // Setting geometry is double buffered and requires commit called on the
+  // surface. In production, this is handled during commit of a next frame
+  // (which also updates visual size).
+  window_->root_surface()->Commit();
 
   Sync();
 
@@ -3257,6 +3265,7 @@ class WaylandSubsurfaceTest : public WaylandWindowTest {
 
     bool result = window->RequestSubsurface();
     EXPECT_TRUE(result);
+    connection_->Flush();
 
     WaylandSubsurface* wayland_subsurface =
         window->wayland_subsurfaces().begin()->get();
@@ -3271,7 +3280,7 @@ class WaylandSubsurfaceTest : public WaylandWindowTest {
     wayland_subsurface->ConfigureAndShowSurface(
         subsurface_bounds, gfx::RectF(0, 0, 640, 480) /*parent_bounds_px*/,
         1.f /*buffer_scale*/, nullptr, nullptr);
-    connection_->ScheduleFlush();
+    connection_->Flush();
 
     Sync();
 
@@ -3351,7 +3360,7 @@ TEST_P(WaylandSubsurfaceTest, NoDuplicateSubsurfaceRequests) {
                                         gfx::RectF(0.f, 0.f, 800.f, 600.f), 1.f,
                                         nullptr, nullptr);
   }
-  connection_->ScheduleFlush();
+  connection_->Flush();
 
   Sync();
 
@@ -3390,7 +3399,7 @@ TEST_P(WaylandSubsurfaceTest, NoDuplicateSubsurfaceRequests) {
   subsurfaces[2]->ConfigureAndShowSurface(gfx::RectF(1.f, 2.f, 10.f, 20.f),
                                           gfx::RectF(0.f, 0.f, 800.f, 600.f),
                                           1.f, nullptr, subsurfaces[0]);
-  connection_->ScheduleFlush();
+  connection_->Flush();
 
   Sync();
   VerifyAndClearExpectations();
@@ -3426,7 +3435,7 @@ TEST_P(WaylandWindowTest, NoDuplicateViewporterRequests) {
   surface->SetViewportDestination({800, 600});
   surface->ApplyPendingState();
   surface->Commit();
-  connection_->ScheduleFlush();
+  connection_->Flush();
 
   Sync();
   VerifyAndClearExpectations();
@@ -3442,7 +3451,7 @@ TEST_P(WaylandWindowTest, NoDuplicateViewporterRequests) {
   surface->SetViewportDestination({800, 600});
   surface->ApplyPendingState();
   surface->Commit();
-  connection_->ScheduleFlush();
+  connection_->Flush();
 
   Sync();
   VerifyAndClearExpectations();
@@ -3458,7 +3467,7 @@ TEST_P(WaylandWindowTest, NoDuplicateViewporterRequests) {
   surface->SetViewportDestination({1024, 768});
   surface->ApplyPendingState();
   surface->Commit();
-  connection_->ScheduleFlush();
+  connection_->Flush();
 
   Sync();
   VerifyAndClearExpectations();
@@ -3474,7 +3483,7 @@ TEST_P(WaylandWindowTest, NoDuplicateViewporterRequests) {
   surface->SetViewportDestination({1024, 768});
   surface->ApplyPendingState();
   surface->Commit();
-  connection_->ScheduleFlush();
+  connection_->Flush();
 
   Sync();
   VerifyAndClearExpectations();

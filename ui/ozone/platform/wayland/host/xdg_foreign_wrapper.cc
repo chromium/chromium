@@ -165,7 +165,7 @@ void XdgForeignWrapperImpl<zxdg_exporter_v1, zxdg_exported_v1>::
   zxdg_exported_v1_add_listener(exported_surface.exported.get(),
                                 &kExportedListener, this);
   exported_surfaces_.emplace_back(std::move(exported_surface));
-  connection_->ScheduleFlush();
+  connection_->Flush();
 }
 
 template <>
@@ -179,7 +179,7 @@ void XdgForeignWrapperImpl<zxdg_exporter_v2, zxdg_exported_v2>::
   zxdg_exported_v2_add_listener(exported_surface.exported.get(),
                                 &kExportedListener, this);
   exported_surfaces_.emplace_back(std::move(exported_surface));
-  connection_->ScheduleFlush();
+  connection_->Flush();
 }
 
 // static

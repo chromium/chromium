@@ -56,7 +56,7 @@ WaylandDrm::WaylandDrm(wl_drm* drm, WaylandConnection* connection)
       &Capabilities,
   };
   wl_drm_add_listener(wl_drm_.get(), &kDrmListener, this);
-  connection_->ScheduleFlush();
+  connection_->Flush();
 
   // A roundtrip after binding guarantees that the client has received all
   // supported formats and capabilities of the device.
@@ -90,7 +90,7 @@ void WaylandDrm::CreateBuffer(const base::ScopedFD& fd,
   wl::Object<wl_buffer> buffer(wl_drm_create_prime_buffer(
       wl_drm_.get(), fd.get(), size.width(), size.height(), format, offset[0],
       stride[0], offset[1], stride[1], offset[2], stride[2]));
-  connection_->ScheduleFlush();
+  connection_->Flush();
 
   std::move(callback).Run(std::move(buffer));
 }
@@ -144,7 +144,7 @@ void WaylandDrm::Authenticate(const char* drm_device_path) {
   }
 
   wl_drm_authenticate(wl_drm_.get(), magic);
-  connection_->ScheduleFlush();
+  connection_->Flush();
 
   // Do the roundtrip to make sure the server processes this request and
   // authenticates us.

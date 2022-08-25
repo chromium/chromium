@@ -93,10 +93,7 @@ class WaylandConnection {
 
   bool Initialize();
 
-  // Schedules a flush of the Wayland connection.
-  void ScheduleFlush();
-
-  // Immediately flushes. Public for testing.
+  // Immediately flushes the Wayland display.
   void Flush();
 
   // Calls wl_display_roundtrip_queue. Might be required during initialization
@@ -452,8 +449,6 @@ class WaylandConnection {
   // The current window table mode layout state.
   display::TabletState tablet_layout_state_ =
       display::TabletState::kInClamshellMode;
-
-  bool scheduled_flush_ = false;
 
   // Surfaces are submitted in pixel coordinates. Their buffer scales are always
   // advertised to server as 1, and the scale via vp_viewporter won't be

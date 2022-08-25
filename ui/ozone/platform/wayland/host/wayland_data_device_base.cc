@@ -72,7 +72,7 @@ void WaylandDataDeviceBase::RegisterDeferredReadCallback() {
 
   wl_callback_add_listener(deferred_read_callback_.get(), &kListener, this);
 
-  connection_->ScheduleFlush();
+  connection_->Flush();
 }
 
 void WaylandDataDeviceBase::RegisterDeferredReadClosure(

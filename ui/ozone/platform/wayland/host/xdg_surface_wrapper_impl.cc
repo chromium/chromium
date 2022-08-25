@@ -40,7 +40,7 @@ bool XDGSurfaceWrapperImpl::Initialize() {
   }
 
   xdg_surface_add_listener(xdg_surface_.get(), &xdg_surface_listener, this);
-  connection_->ScheduleFlush();
+  connection_->Flush();
   return true;
 }
 

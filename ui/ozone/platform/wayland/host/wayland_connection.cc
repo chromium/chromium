@@ -273,20 +273,6 @@ bool WaylandConnection::Initialize() {
   return true;
 }
 
-void WaylandConnection::ScheduleFlush() {
-  // When we are in tests, the message loop is set later when the
-  // initialization of the OzonePlatform complete. Thus, just
-  // flush directly. This doesn't happen in normal run.
-  if (!base::CurrentUIThread::IsSet()) {
-    Flush();
-  } else if (!scheduled_flush_) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&WaylandConnection::Flush, base::Unretained(this)));
-    scheduled_flush_ = true;
-  }
-}
-
 void WaylandConnection::RoundTripQueue() {
   if (roundtrip_closure_for_testing_) {
     roundtrip_closure_for_testing_.Run();
@@ -355,7 +341,6 @@ void WaylandConnection::RegisterGlobalObjectFactory(
 
 void WaylandConnection::Flush() {
   wl_display_flush(display_.get());
-  scheduled_flush_ = false;
 }
 
 void WaylandConnection::UpdateInputDevices() {
@@ -601,7 +586,7 @@ void WaylandConnection::Global(void* data,
 
   connection->available_globals_.emplace_back(interface, version);
 
-  connection->ScheduleFlush();
+  connection->Flush();
 }
 
 base::TimeTicks WaylandConnection::ConvertPresentationTime(uint32_t tv_sec_hi,
@@ -666,14 +651,14 @@ void WaylandConnection::PingV6(void* data,
                                uint32_t serial) {
   WaylandConnection* connection = static_cast<WaylandConnection*>(data);
   zxdg_shell_v6_pong(shell_v6, serial);
-  connection->ScheduleFlush();
+  connection->Flush();
 }
 
 // static
 void WaylandConnection::Ping(void* data, xdg_wm_base* shell, uint32_t serial) {
   WaylandConnection* connection = static_cast<WaylandConnection*>(data);
   xdg_wm_base_pong(shell, serial);
-  connection->ScheduleFlush();
+  connection->Flush();
 }
 
 // static

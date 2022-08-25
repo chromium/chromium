@@ -307,13 +307,13 @@ TEST_P(WaylandPointerTest, SetBitmap) {
 
   EXPECT_CALL(*pointer_, SetCursor(nullptr, 0, 0));
   connection_->SetCursorBitmap({}, {}, 1.0);
-  connection_->ScheduleFlush();
+  connection_->Flush();
   Sync();
   Mock::VerifyAndClearExpectations(pointer_);
 
   EXPECT_CALL(*pointer_, SetCursor(Ne(nullptr), 5, 8));
   connection_->SetCursorBitmap({dummy_cursor}, gfx::Point(5, 8), 1.0);
-  connection_->ScheduleFlush();
+  connection_->Flush();
   Sync();
   Mock::VerifyAndClearExpectations(pointer_);
 
@@ -348,7 +348,7 @@ TEST_P(WaylandPointerTest, SetBitmapAndScaleOnPointerFocus) {
     EXPECT_CALL(*pointer_, SetCursor(Ne(nullptr), 5, 8))
         .WillOnce(SaveArg<0>(&surface_resource));
     window_->SetCursor(cursor);
-    connection_->ScheduleFlush();
+    connection_->Flush();
 
     wl_pointer_send_leave(pointer_->resource(), ++serial, surface_->resource());
     wl_pointer_send_frame(pointer_->resource());
@@ -367,7 +367,7 @@ TEST_P(WaylandPointerTest, SetBitmapAndScaleOnPointerFocus) {
     wl_pointer_send_frame(pointer_->resource());
     Sync();
 
-    connection_->ScheduleFlush();
+    connection_->Flush();
 
     Sync();
     Mock::VerifyAndClearExpectations(pointer_);
@@ -376,7 +376,7 @@ TEST_P(WaylandPointerTest, SetBitmapAndScaleOnPointerFocus) {
     wl_pointer_send_leave(pointer_->resource(), ++serial, surface_->resource());
     wl_pointer_send_frame(pointer_->resource());
     Sync();
-    connection_->ScheduleFlush();
+    connection_->Flush();
     Sync();
     Mock::VerifyAndClearExpectations(pointer_);
   }

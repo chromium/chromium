@@ -102,7 +102,7 @@ void WaylandZwpLinuxDmabuf::CreateBuffer(const base::ScopedFD& fd,
     // created buffer and notify the client about it via the |callback|.
     pending_params_.emplace(std::move(params), std::move(callback));
   }
-  connection_->ScheduleFlush();
+  connection_->Flush();
 }
 
 bool WaylandZwpLinuxDmabuf::CanCreateBufferImmed() const {
@@ -148,7 +148,7 @@ void WaylandZwpLinuxDmabuf::NotifyRequestCreateBufferDone(
 
   pending_params_.erase(it);
 
-  connection_->ScheduleFlush();
+  connection_->Flush();
 }
 
 // static

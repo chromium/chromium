@@ -171,7 +171,7 @@ class WaylandInputMethodContextTest : public WaylandTest {
     input_method_context_.reset(static_cast<WaylandInputMethodContext*>(
         input_method_context.release()));
     input_method_context_->Init(true);
-    connection_->ScheduleFlush();
+    connection_->Flush();
 
     Sync();
     // Unset Keyboard focus.
@@ -206,7 +206,7 @@ TEST_P(WaylandInputMethodContextTest, ActivateDeactivate) {
   EXPECT_CALL(*zwp_text_input_, ShowInputPanel()).Times(0);
   input_method_context_->UpdateFocus(true, ui::TEXT_INPUT_TYPE_NONE,
                                      ui::TEXT_INPUT_TYPE_TEXT);
-  connection_->ScheduleFlush();
+  connection_->Flush();
   Sync();
   Mock::VerifyAndClearExpectations(zwp_text_input_);
 
@@ -214,14 +214,14 @@ TEST_P(WaylandInputMethodContextTest, ActivateDeactivate) {
   EXPECT_CALL(*zwp_text_input_, ShowInputPanel());
   connection_->wayland_window_manager()->SetKeyboardFocusedWindow(
       window_.get());
-  connection_->ScheduleFlush();
+  connection_->Flush();
   Sync();
   Mock::VerifyAndClearExpectations(zwp_text_input_);
 
   EXPECT_CALL(*zwp_text_input_, HideInputPanel());
   EXPECT_CALL(*zwp_text_input_, Deactivate());
   connection_->wayland_window_manager()->SetKeyboardFocusedWindow(nullptr);
-  connection_->ScheduleFlush();
+  connection_->Flush();
   Sync();
   Mock::VerifyAndClearExpectations(zwp_text_input_);
 
@@ -229,7 +229,7 @@ TEST_P(WaylandInputMethodContextTest, ActivateDeactivate) {
   EXPECT_CALL(*zwp_text_input_, Deactivate()).Times(0);
   input_method_context_->UpdateFocus(true, ui::TEXT_INPUT_TYPE_TEXT,
                                      ui::TEXT_INPUT_TYPE_NONE);
-  connection_->ScheduleFlush();
+  connection_->Flush();
   Sync();
   Mock::VerifyAndClearExpectations(zwp_text_input_);
 
@@ -239,7 +239,7 @@ TEST_P(WaylandInputMethodContextTest, ActivateDeactivate) {
   EXPECT_CALL(*zwp_text_input_, ShowInputPanel()).Times(0);
   connection_->wayland_window_manager()->SetKeyboardFocusedWindow(
       window_.get());
-  connection_->ScheduleFlush();
+  connection_->Flush();
   Sync();
   Mock::VerifyAndClearExpectations(zwp_text_input_);
 
@@ -247,7 +247,7 @@ TEST_P(WaylandInputMethodContextTest, ActivateDeactivate) {
   EXPECT_CALL(*zwp_text_input_, ShowInputPanel());
   input_method_context_->UpdateFocus(true, ui::TEXT_INPUT_TYPE_NONE,
                                      ui::TEXT_INPUT_TYPE_TEXT);
-  connection_->ScheduleFlush();
+  connection_->Flush();
   Sync();
   Mock::VerifyAndClearExpectations(zwp_text_input_);
 
@@ -255,14 +255,14 @@ TEST_P(WaylandInputMethodContextTest, ActivateDeactivate) {
   EXPECT_CALL(*zwp_text_input_, Deactivate());
   input_method_context_->UpdateFocus(true, ui::TEXT_INPUT_TYPE_TEXT,
                                      ui::TEXT_INPUT_TYPE_NONE);
-  connection_->ScheduleFlush();
+  connection_->Flush();
   Sync();
   Mock::VerifyAndClearExpectations(zwp_text_input_);
 
   EXPECT_CALL(*zwp_text_input_, HideInputPanel()).Times(0);
   EXPECT_CALL(*zwp_text_input_, Deactivate()).Times(0);
   connection_->wayland_window_manager()->SetKeyboardFocusedWindow(nullptr);
-  connection_->ScheduleFlush();
+  connection_->Flush();
   Sync();
   Mock::VerifyAndClearExpectations(zwp_text_input_);
 }
@@ -270,14 +270,14 @@ TEST_P(WaylandInputMethodContextTest, ActivateDeactivate) {
 TEST_P(WaylandInputMethodContextTest, Reset) {
   EXPECT_CALL(*zwp_text_input_, Reset());
   input_method_context_->Reset();
-  connection_->ScheduleFlush();
+  connection_->Flush();
   Sync();
 }
 
 TEST_P(WaylandInputMethodContextTest, SetCursorLocation) {
   EXPECT_CALL(*zwp_text_input_, SetCursorRect(50, 0, 1, 1));
   input_method_context_->SetCursorLocation(gfx::Rect(50, 0, 1, 1));
-  connection_->ScheduleFlush();
+  connection_->Flush();
   Sync();
 }
 
@@ -290,7 +290,7 @@ TEST_P(WaylandInputMethodContextTest, SetSurroundingTextForShortText) {
   EXPECT_CALL(*zwp_text_input_, SetSurroundingText(_, _))
       .WillOnce(DoAll(SaveArg<0>(&sent_text), SaveArg<1>(&sent_range)));
   input_method_context_->SetSurroundingText(text, range);
-  connection_->ScheduleFlush();
+  connection_->Flush();
   Sync();
   Mock::VerifyAndClearExpectations(zwp_text_input_);
   // The text and range sent as wayland protocol must be same to the original
@@ -316,7 +316,7 @@ TEST_P(WaylandInputMethodContextTest, SetSurroundingTextForLongText) {
   EXPECT_CALL(*zwp_text_input_, SetSurroundingText(_, _))
       .WillOnce(DoAll(SaveArg<0>(&sent_text), SaveArg<1>(&sent_range)));
   input_method_context_->SetSurroundingText(text, range);
-  connection_->ScheduleFlush();
+  connection_->Flush();
   Sync();
   Mock::VerifyAndClearExpectations(zwp_text_input_);
   // The text sent as wayland protocol must be at most 4000 byte and long
@@ -344,7 +344,7 @@ TEST_P(WaylandInputMethodContextTest, SetSurroundingTextForLongTextInLeftEdge) {
   EXPECT_CALL(*zwp_text_input_, SetSurroundingText(_, _))
       .WillOnce(DoAll(SaveArg<0>(&sent_text), SaveArg<1>(&sent_range)));
   input_method_context_->SetSurroundingText(text, range);
-  connection_->ScheduleFlush();
+  connection_->Flush();
   Sync();
   Mock::VerifyAndClearExpectations(zwp_text_input_);
   // The text sent as wayland protocol must be at most 4000 byte and large
@@ -373,7 +373,7 @@ TEST_P(WaylandInputMethodContextTest,
   EXPECT_CALL(*zwp_text_input_, SetSurroundingText(_, _))
       .WillOnce(DoAll(SaveArg<0>(&sent_text), SaveArg<1>(&sent_range)));
   input_method_context_->SetSurroundingText(text, range);
-  connection_->ScheduleFlush();
+  connection_->Flush();
   Sync();
   Mock::VerifyAndClearExpectations(zwp_text_input_);
   // The text sent as wayland protocol must be at most 4000 byte and large
@@ -400,7 +400,7 @@ TEST_P(WaylandInputMethodContextTest, SetSurroundingTextForLongRange) {
   // UTF8 form is longer than 4000 byte.
   EXPECT_CALL(*zwp_text_input_, SetSurroundingText(_, _)).Times(0);
   input_method_context_->SetSurroundingText(text, range);
-  connection_->ScheduleFlush();
+  connection_->Flush();
   Sync();
 }
 
@@ -413,7 +413,7 @@ TEST_P(WaylandInputMethodContextTest, DeleteSurroundingTextWithExtendedRange) {
   EXPECT_CALL(*zwp_text_input_, SetSurroundingText(_, _))
       .WillOnce(DoAll(SaveArg<0>(&sent_text), SaveArg<1>(&sent_range)));
   input_method_context_->SetSurroundingText(text, range);
-  connection_->ScheduleFlush();
+  connection_->Flush();
   Sync();
   Mock::VerifyAndClearExpectations(zwp_text_input_);
   // The text and range sent as wayland protocol must be same to the original
@@ -440,7 +440,7 @@ TEST_P(WaylandInputMethodContextTest, SetContentType) {
                                         TEXT_INPUT_MODE_DEFAULT,
                                         TEXT_INPUT_FLAG_AUTOCOMPLETE_ON,
                                         /*should_do_learning=*/true);
-  connection_->ScheduleFlush();
+  connection_->Flush();
   Sync();
 }
 
@@ -454,7 +454,7 @@ TEST_P(WaylandInputMethodContextTest, SetContentTypeWithoutLearning) {
                                         TEXT_INPUT_MODE_DEFAULT,
                                         TEXT_INPUT_FLAG_AUTOCOMPLETE_ON,
                                         /*should_do_learning=*/false);
-  connection_->ScheduleFlush();
+  connection_->Flush();
   Sync();
 }
 
@@ -489,7 +489,7 @@ TEST_P(WaylandInputMethodContextTest, MAYBE(OnConfirmCompositionText)) {
   EXPECT_CALL(*zwp_text_input_,
               SetSurroundingText("ab😀cあdef", gfx::Range(7, 10)));
   input_method_context_->SetSurroundingText(text, range);
-  connection_->ScheduleFlush();
+  connection_->Flush();
   Sync();
   Mock::VerifyAndClearExpectations(zwp_text_input_);
 
@@ -509,7 +509,7 @@ TEST_P(WaylandInputMethodContextTest, OnSetPreeditRegion_Success) {
   EXPECT_CALL(*zwp_text_input_,
               SetSurroundingText("abcあdef", gfx::Range(3, 6)));
   input_method_context_->SetSurroundingText(text, range);
-  connection_->ScheduleFlush();
+  connection_->Flush();
   Sync();
   Mock::VerifyAndClearExpectations(zwp_text_input_);
 
@@ -547,7 +547,7 @@ TEST_P(WaylandInputMethodContextTest,
   // SetSurroundingText should be called in UTF-8.
   EXPECT_CALL(*zwp_text_input_, SetSurroundingText(u8_text, u8_range));
   input_method_context_->SetSurroundingText(u16_text, u16_range);
-  connection_->ScheduleFlush();
+  connection_->Flush();
   Sync();
   Mock::VerifyAndClearExpectations(zwp_text_input_);
 
@@ -575,7 +575,7 @@ TEST_P(WaylandInputMethodContextTest,
   // SetSurroundingText should be called in UTF-8.
   EXPECT_CALL(*zwp_text_input_, SetSurroundingText(u8_text, u8_range));
   input_method_context_->SetSurroundingText(u16_text, u16_range);
-  connection_->ScheduleFlush();
+  connection_->Flush();
   Sync();
   Mock::VerifyAndClearExpectations(zwp_text_input_);
 
@@ -620,14 +620,14 @@ TEST_P(WaylandInputMethodContextTest, OnSetVirtualKeyboardOccludedBounds) {
 TEST_P(WaylandInputMethodContextTest, DisplayVirtualKeyboard) {
   EXPECT_CALL(*zwp_text_input_, ShowInputPanel());
   EXPECT_TRUE(input_method_context_->DisplayVirtualKeyboard());
-  connection_->ScheduleFlush();
+  connection_->Flush();
   Sync();
 }
 
 TEST_P(WaylandInputMethodContextTest, DismissVirtualKeyboard) {
   EXPECT_CALL(*zwp_text_input_, HideInputPanel());
   input_method_context_->DismissVirtualKeyboard();
-  connection_->ScheduleFlush();
+  connection_->Flush();
   Sync();
 }
 
@@ -635,13 +635,13 @@ TEST_P(WaylandInputMethodContextTest, UpdateVirtualKeyboardState) {
   EXPECT_FALSE(input_method_context_->IsKeyboardVisible());
 
   zwp_text_input_v1_send_input_panel_state(zwp_text_input_->resource(), 1);
-  connection_->ScheduleFlush();
+  connection_->Flush();
   Sync();
 
   EXPECT_TRUE(input_method_context_->IsKeyboardVisible());
 
   zwp_text_input_v1_send_input_panel_state(zwp_text_input_->resource(), 0);
-  connection_->ScheduleFlush();
+  connection_->Flush();
   Sync();
 
   EXPECT_FALSE(input_method_context_->IsKeyboardVisible());
@@ -668,7 +668,7 @@ TEST_P(WaylandInputMethodContextNoKeyboardTest, ActivateDeactivate) {
   EXPECT_CALL(*zwp_text_input_, ShowInputPanel());
   input_method_context_->UpdateFocus(true, ui::TEXT_INPUT_TYPE_NONE,
                                      ui::TEXT_INPUT_TYPE_TEXT);
-  connection_->ScheduleFlush();
+  connection_->Flush();
   Sync();
   Mock::VerifyAndClearExpectations(zwp_text_input_);
 
@@ -676,7 +676,7 @@ TEST_P(WaylandInputMethodContextNoKeyboardTest, ActivateDeactivate) {
   EXPECT_CALL(*zwp_text_input_, Deactivate());
   input_method_context_->UpdateFocus(false, ui::TEXT_INPUT_TYPE_TEXT,
                                      ui::TEXT_INPUT_TYPE_NONE);
-  connection_->ScheduleFlush();
+  connection_->Flush();
   Sync();
   Mock::VerifyAndClearExpectations(zwp_text_input_);
 }
@@ -690,7 +690,7 @@ TEST_P(WaylandInputMethodContextNoKeyboardTest, UpdateFocusBetweenTextFields) {
   EXPECT_CALL(*zwp_text_input_, ShowInputPanel());
   input_method_context_->UpdateFocus(true, ui::TEXT_INPUT_TYPE_NONE,
                                      ui::TEXT_INPUT_TYPE_TEXT);
-  connection_->ScheduleFlush();
+  connection_->Flush();
   Sync();
   Mock::VerifyAndClearExpectations(zwp_text_input_);
 
@@ -701,7 +701,7 @@ TEST_P(WaylandInputMethodContextNoKeyboardTest, UpdateFocusBetweenTextFields) {
   EXPECT_CALL(*zwp_text_input_, ShowInputPanel()).Times(0);
   input_method_context_->UpdateFocus(false, ui::TEXT_INPUT_TYPE_TEXT,
                                      ui::TEXT_INPUT_TYPE_TEXT);
-  connection_->ScheduleFlush();
+  connection_->Flush();
   Sync();
   Mock::VerifyAndClearExpectations(zwp_text_input_);
 }

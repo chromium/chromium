@@ -46,7 +46,7 @@ void WaylandDataDevice::StartDrag(const WaylandDataSource& data_source,
                             origin_window.root_surface()->surface(),
                             icon_surface, serial);
   drag_delegate_->DrawIcon();
-  connection()->ScheduleFlush();
+  connection()->Flush();
 }
 
 void WaylandDataDevice::ResetDragDelegate() {
@@ -78,7 +78,7 @@ void WaylandDataDevice::SetSelectionSource(WaylandDataSource* source,
                                            uint32_t serial) {
   auto* data_source = source ? source->data_source() : nullptr;
   wl_data_device_set_selection(data_device_.get(), data_source, serial);
-  connection()->ScheduleFlush();
+  connection()->Flush();
 }
 
 void WaylandDataDevice::ReadDragDataFromFD(base::ScopedFD fd,
@@ -140,7 +140,7 @@ void WaylandDataDevice::OnEnter(void* data,
       gfx::PointF(wl_fixed_to_double(x), wl_fixed_to_double(y)), window);
   self->drag_delegate_->OnDragEnter(window, point, serial);
 
-  self->connection()->ScheduleFlush();
+  self->connection()->Flush();
 }
 
 void WaylandDataDevice::OnMotion(void* data,
@@ -161,7 +161,7 @@ void WaylandDataDevice::OnDrop(void* data, wl_data_device* data_device) {
   auto* self = static_cast<WaylandDataDevice*>(data);
   if (self->drag_delegate_) {
     self->drag_delegate_->OnDragDrop();
-    self->connection()->ScheduleFlush();
+    self->connection()->Flush();
   }
 
   // There are buggy Exo versions, which send 'drop' event (even for
@@ -178,7 +178,7 @@ void WaylandDataDevice::OnLeave(void* data, wl_data_device* data_device) {
   auto* self = static_cast<WaylandDataDevice*>(data);
   if (self->drag_delegate_) {
     self->drag_delegate_->OnDragLeave();
-    self->connection()->ScheduleFlush();
+    self->connection()->Flush();
   }
   self->ResetDragDelegateIfNeeded();
 }

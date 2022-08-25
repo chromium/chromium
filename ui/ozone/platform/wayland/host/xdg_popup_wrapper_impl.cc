@@ -230,7 +230,7 @@ bool XDGPopupWrapperImpl::SetBounds(const gfx::Rect& new_bounds) {
   xdg_popup_reposition(xdg_popup_.get(), positioner.get(),
                        ++next_reposition_token_);
 
-  connection_->ScheduleFlush();
+  connection_->Flush();
   return true;
 }
 

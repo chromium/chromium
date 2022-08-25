@@ -132,7 +132,7 @@ void WaylandSeat::OnCapabilities(void* data,
   }
 
   connection_->UpdateInputDevices();
-  connection_->ScheduleFlush();
+  connection_->Flush();
 }
 
 }  // namespace ui
