@@ -69,6 +69,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.State;
 import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.ui.signin.SyncConsentFragmentBase.SyncDataRowClicked;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
@@ -862,6 +863,109 @@ public class SyncConsentFragmentTest {
                 mHistogramTestRule.getHistogramValueCount(
                         "Signin.AddAccountState", State.NULL_ACCOUNT_NAME));
         assertEquals(4, mHistogramTestRule.getHistogramTotalCount("Signin.AddAccountState"));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
+    public void testTangibleSyncConsentFragmentBookmarkRowClicked() {
+        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mSyncConsentActivity = ActivityTestUtils.waitForActivity(
+                InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
+                    SyncConsentActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
+                            mChromeActivityTestRule.getActivity(),
+                            SigninAccessPoint.BOOKMARK_MANAGER,
+                            AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+                });
+
+        onView(withId(R.id.bookmarks_row)).perform(click());
+
+        assertEquals(1,
+                mHistogramTestRule.getHistogramValueCount(
+                        "Signin.SyncConsentScreen.DataRowClicked", SyncDataRowClicked.BOOKMARKS));
+        assertEquals(1,
+                mHistogramTestRule.getHistogramTotalCount(
+                        "Signin.SyncConsentScreen.DataRowClicked"));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
+    public void testTangibleSyncConsentFragmentAutofillRowClicked() {
+        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mSyncConsentActivity = ActivityTestUtils.waitForActivity(
+                InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
+                    SyncConsentActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
+                            mChromeActivityTestRule.getActivity(),
+                            SigninAccessPoint.BOOKMARK_MANAGER,
+                            AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+                });
+
+        onView(withId(R.id.autofill_row)).perform(click());
+
+        assertEquals(1,
+                mHistogramTestRule.getHistogramValueCount(
+                        "Signin.SyncConsentScreen.DataRowClicked", SyncDataRowClicked.AUTOFILL));
+        assertEquals(1,
+                mHistogramTestRule.getHistogramTotalCount(
+                        "Signin.SyncConsentScreen.DataRowClicked"));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
+    public void testTangibleSyncConsentFragmentHistoryRowClicked() {
+        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mSyncConsentActivity = ActivityTestUtils.waitForActivity(
+                InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
+                    SyncConsentActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
+                            mChromeActivityTestRule.getActivity(),
+                            SigninAccessPoint.BOOKMARK_MANAGER,
+                            AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+                });
+
+        onView(withId(R.id.history_row)).perform(click());
+
+        assertEquals(1,
+                mHistogramTestRule.getHistogramValueCount(
+                        "Signin.SyncConsentScreen.DataRowClicked", SyncDataRowClicked.HISTORY));
+        assertEquals(1,
+                mHistogramTestRule.getHistogramTotalCount(
+                        "Signin.SyncConsentScreen.DataRowClicked"));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
+    public void testTangibleSyncConsentFragmentSyncRowClickOnlyRecordedOnce() {
+        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mSyncConsentActivity = ActivityTestUtils.waitForActivity(
+                InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
+                    SyncConsentActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
+                            mChromeActivityTestRule.getActivity(),
+                            SigninAccessPoint.BOOKMARK_MANAGER,
+                            AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+                });
+
+        onView(withId(R.id.bookmarks_row)).perform(click());
+        onView(withId(R.id.bookmarks_row)).perform(click());
+        onView(withId(R.id.autofill_row)).perform(click());
+        onView(withId(R.id.autofill_row)).perform(click());
+        onView(withId(R.id.history_row)).perform(click());
+        onView(withId(R.id.history_row)).perform(click());
+
+        assertEquals(1,
+                mHistogramTestRule.getHistogramValueCount(
+                        "Signin.SyncConsentScreen.DataRowClicked", SyncDataRowClicked.BOOKMARKS));
+        assertEquals(1,
+                mHistogramTestRule.getHistogramValueCount(
+                        "Signin.SyncConsentScreen.DataRowClicked", SyncDataRowClicked.AUTOFILL));
+        assertEquals(1,
+                mHistogramTestRule.getHistogramValueCount(
+                        "Signin.SyncConsentScreen.DataRowClicked", SyncDataRowClicked.HISTORY));
+        assertEquals(3,
+                mHistogramTestRule.getHistogramTotalCount(
+                        "Signin.SyncConsentScreen.DataRowClicked"));
     }
 
     private ViewAction clickOnClickableSpan() {
