@@ -310,6 +310,21 @@ bool IsMultiIdpEnabled() {
       features::kFedCmMultipleIdentityProviders);
 }
 
+// Selects string for disclosure text based on passed-in `privacy_policy_url`
+// and `terms_of_service_url`.
+int SelectDisclosureTextResourceId(const GURL& privacy_policy_url,
+                                   const GURL& terms_of_service_url) {
+  if (privacy_policy_url.is_empty()) {
+    return terms_of_service_url.is_empty()
+               ? IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT_NO_PP_OR_TOS
+               : IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT_NO_PP;
+  }
+
+  return terms_of_service_url.is_empty()
+             ? IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT_NO_TOS
+             : IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT;
+}
+
 }  // namespace
 
 AccountSelectionBubbleView::AccountSelectionBubbleView(
@@ -542,75 +557,37 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
       views::CreateEmptyBorder(gfx::Insets::TLBR(5, 0, 0, 0)));
   disclosure_label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
 
+  int disclosure_resource_id = SelectDisclosureTextResourceId(
+      client_data_.privacy_policy_url, client_data_.terms_of_service_url);
+
+  // The order that the links are added to `link_urls` should match the order of
+  // the links in `disclosure_resource_id`.
+  std::vector<GURL> link_urls;
+  if (!client_data_.privacy_policy_url.is_empty())
+    link_urls.push_back(client_data_.privacy_policy_url);
+  if (!client_data_.terms_of_service_url.is_empty())
+    link_urls.push_back(client_data_.terms_of_service_url);
+
+  // Each link has both <ph name="BEGIN_LINK"> and <ph name="END_LINK">.
+  std::vector<std::u16string> replacements = {idp_for_display_};
+  replacements.insert(replacements.end(), link_urls.size() * 2,
+                      std::u16string());
+
   std::vector<size_t> offsets;
+  const std::u16string disclosure_text = l10n_util::GetStringFUTF16(
+      disclosure_resource_id, replacements, &offsets);
+  disclosure_label->SetText(disclosure_text);
 
-  if (client_data_.privacy_policy_url.is_empty() &&
-      client_data_.terms_of_service_url.is_empty()) {
-    // Case for both the privacy policy and terms of service URLs are missing.
-    const std::u16string disclosure_text = l10n_util::GetStringFUTF16(
-        IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT_NO_PP_OR_TOS,
-        {idp_for_display_});
-    disclosure_label->SetText(disclosure_text);
-    return row;
-  }
-
-  if (client_data_.privacy_policy_url.is_empty()) {
-    // Case for when we only need to add a link for terms of service URL, but
-    // not privacy policy. We use two placeholders for the start and end of
-    // 'terms of service' in order to style that text as a link.
-    const std::u16string disclosure_text = l10n_util::GetStringFUTF16(
-        IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT_NO_PP,
-        {idp_for_display_, std::u16string(), std::u16string()}, &offsets);
-    disclosure_label->SetText(disclosure_text);
-    // Add link styling for terms of service url.
+  size_t offset_index = 1u;
+  for (const GURL& link_url : link_urls) {
     disclosure_label->AddStyleRange(
-        gfx::Range(offsets[1], offsets[2]),
+        gfx::Range(offsets[offset_index], offsets[offset_index + 1]),
         views::StyledLabel::RangeStyleInfo::CreateForLink(
             base::BindRepeating(&AccountSelectionBubbleView::OnLinkClicked,
-                                weak_ptr_factory_.GetWeakPtr(),
-                                client_data_.terms_of_service_url)));
-    return row;
+                                weak_ptr_factory_.GetWeakPtr(), link_url)));
+    offset_index += 2;
   }
 
-  if (client_data_.terms_of_service_url.is_empty()) {
-    // Case for when we only need to add a link for privacy policy URL, but not
-    // terms of service. We use two placeholders for the start and end of
-    // 'privacy policy' in order to style that text as a link.
-    const std::u16string disclosure_text = l10n_util::GetStringFUTF16(
-        IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT_NO_TOS,
-        {idp_for_display_, std::u16string(), std::u16string()}, &offsets);
-    disclosure_label->SetText(disclosure_text);
-    // Add link styling for privacy policy url.
-    disclosure_label->AddStyleRange(
-        gfx::Range(offsets[1], offsets[2]),
-        views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
-            &AccountSelectionBubbleView::OnLinkClicked,
-            weak_ptr_factory_.GetWeakPtr(), client_data_.privacy_policy_url)));
-    return row;
-  }
-
-  // Case for when we add a link for privacy policy URL as well as
-  // terms of service URL. We use four placeholders at start/end of both
-  // 'privacy policy' and 'terms of service' in order to style both of them as
-  // links.
-  const std::vector<std::u16string> replacements = {
-      idp_for_display_, std::u16string(), std::u16string(), std::u16string(),
-      std::u16string()};
-  const std::u16string disclosure_text = l10n_util::GetStringFUTF16(
-      IDS_ACCOUNT_SELECTION_DATA_SHARING_CONSENT, replacements, &offsets);
-  disclosure_label->SetText(disclosure_text);
-  // Add link styling for privacy policy url.
-  disclosure_label->AddStyleRange(
-      gfx::Range(offsets[1], offsets[2]),
-      views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
-          &AccountSelectionBubbleView::OnLinkClicked,
-          weak_ptr_factory_.GetWeakPtr(), client_data_.privacy_policy_url)));
-  // Add link styling for terms of service url.
-  disclosure_label->AddStyleRange(
-      gfx::Range(offsets[3], offsets[4]),
-      views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
-          &AccountSelectionBubbleView::OnLinkClicked,
-          weak_ptr_factory_.GetWeakPtr(), client_data_.terms_of_service_url)));
   return row;
 }
 
