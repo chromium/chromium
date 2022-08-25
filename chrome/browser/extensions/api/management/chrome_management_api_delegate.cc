@@ -63,6 +63,7 @@
 #include "extensions/common/extension.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
+#include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/arc_util.h"
@@ -404,9 +405,10 @@ void OnWebAppInstallabilityChecked(
       content::WebContents* containing_contents = web_contents.get();
       chrome::ScopedTabbedBrowserDisplayer displayer(profile);
       const GURL& url = web_contents->GetLastCommittedURL();
-      chrome::AddWebContents(
-          displayer.browser(), nullptr, std::move(web_contents), url,
-          WindowOpenDisposition::NEW_FOREGROUND_TAB, gfx::Rect());
+      chrome::AddWebContents(displayer.browser(), nullptr,
+                             std::move(web_contents), url,
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             blink::mojom::WindowFeatures());
       web_app::CreateWebAppFromManifest(
           containing_contents, /*bypass_service_worker_check=*/true,
           webapps::WebappInstallSource::MANAGEMENT_API,

@@ -48,6 +48,7 @@ class WeakPtr;
 namespace blink {
 namespace mojom {
 class FileChooserParams;
+class WindowFeatures;
 }
 }  // namespace blink
 
@@ -140,20 +141,22 @@ class CONTENT_EXPORT WebContentsDelegate {
   // security state changed and that security UI should be updated.
   virtual void VisibleSecurityStateChanged(WebContents* source) {}
 
-  // Creates a new tab with the already-created WebContents |new_contents|.
+  // Creates a new tab with the already-created WebContents `new_contents`.
   // The window for the added contents should be reparented correctly when this
-  // method returns. |target_url| is set to the value provided when
-  // |new_contents| was created. If |disposition| is NEW_POPUP, |initial_rect|
-  // should hold the initial position and size. If |was_blocked| is non-nullptr,
-  // then |*was_blocked| will be set to true if the popup gets blocked, and left
+  // method returns. `target_url` is set to the value provided when
+  // `new_contents` was created. If `disposition` is NEW_POPUP,
+  // `window_features` should hold the initial position, size and other
+  // properties of the window. If `was_blocked` is non-nullptr, then
+  // `*was_blocked` will be set to true if the popup gets blocked, and left
   // unchanged otherwise.
-  virtual void AddNewContents(WebContents* source,
-                              std::unique_ptr<WebContents> new_contents,
-                              const GURL& target_url,
-                              WindowOpenDisposition disposition,
-                              const gfx::Rect& initial_rect,
-                              bool user_gesture,
-                              bool* was_blocked) {}
+  virtual void AddNewContents(
+      WebContents* source,
+      std::unique_ptr<WebContents> new_contents,
+      const GURL& target_url,
+      WindowOpenDisposition disposition,
+      const blink::mojom::WindowFeatures& window_features,
+      bool user_gesture,
+      bool* was_blocked) {}
 
   // Selects the specified contents, bringing its container to the front.
   virtual void ActivateContents(WebContents* contents) {}

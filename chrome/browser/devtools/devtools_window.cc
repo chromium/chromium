@@ -1287,13 +1287,14 @@ void DevToolsWindow::ActivateContents(WebContents* contents) {
   }
 }
 
-void DevToolsWindow::AddNewContents(WebContents* source,
-                                    std::unique_ptr<WebContents> new_contents,
-                                    const GURL& target_url,
-                                    WindowOpenDisposition disposition,
-                                    const gfx::Rect& initial_rect,
-                                    bool user_gesture,
-                                    bool* was_blocked) {
+void DevToolsWindow::AddNewContents(
+    WebContents* source,
+    std::unique_ptr<WebContents> new_contents,
+    const GURL& target_url,
+    WindowOpenDisposition disposition,
+    const blink::mojom::WindowFeatures& window_features,
+    bool user_gesture,
+    bool* was_blocked) {
   if (new_contents.get() == toolbox_web_contents_) {
     owned_toolbox_web_contents_ = std::move(new_contents);
 
@@ -1312,8 +1313,8 @@ void DevToolsWindow::AddNewContents(WebContents* source,
   WebContents* inspected_web_contents = GetInspectedWebContents();
   if (inspected_web_contents) {
     inspected_web_contents->GetDelegate()->AddNewContents(
-        source, std::move(new_contents), target_url, disposition, initial_rect,
-        user_gesture, was_blocked);
+        source, std::move(new_contents), target_url, disposition,
+        window_features, user_gesture, was_blocked);
   }
 }
 

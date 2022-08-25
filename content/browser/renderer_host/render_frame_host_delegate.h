@@ -77,6 +77,7 @@ namespace blink {
 namespace mojom {
 class DisplayCutoutHost;
 class FullscreenOptions;
+class WindowFeatures;
 }
 class PageState;
 namespace web_pref {
@@ -409,20 +410,21 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
       bool has_user_gesture,
       SessionStorageNamespace* session_storage_namespace);
 
-  // Show a previously created page with the specified disposition and bounds.
-  // The window is identified by the |main_frame_widget_route_id| passed to
-  // CreateNewWindow.
+  // Show a previously created page with the specified disposition and window
+  // features. The window is identified by the |main_frame_widget_route_id|
+  // passed to CreateNewWindow.
   //
   // The passed |opener| is the RenderFrameHost initiating the window creation.
   // It will never be null, even if the opener is suppressed via |params|.
   //
   // Note: this is not called "ShowWindow" because that will clash with
   // the Windows function which is actually a #define.
-  virtual void ShowCreatedWindow(RenderFrameHostImpl* opener,
-                                 int main_frame_widget_route_id,
-                                 WindowOpenDisposition disposition,
-                                 const gfx::Rect& initial_rect,
-                                 bool user_gesture) {}
+  virtual void ShowCreatedWindow(
+      RenderFrameHostImpl* opener,
+      int main_frame_widget_route_id,
+      WindowOpenDisposition disposition,
+      const blink::mojom::WindowFeatures& window_features,
+      bool user_gesture) {}
 
   // The main frame document element is ready. This happens when the document
   // has finished parsing.

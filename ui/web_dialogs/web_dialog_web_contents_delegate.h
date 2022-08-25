@@ -47,7 +47,7 @@ class WEB_DIALOGS_EXPORT WebDialogWebContentsDelegate
         std::unique_ptr<content::WebContents> new_contents,
         const GURL& target_url,
         WindowOpenDisposition disposition,
-        const gfx::Rect& initial_rect,
+        const blink::mojom::WindowFeatures& window_features,
         bool user_gesture) = 0;
     // This is added to allow the injection of a file chooser handler.
     // The WebDialogWebContentsDelegate's original implementation does not
@@ -86,7 +86,7 @@ class WEB_DIALOGS_EXPORT WebDialogWebContentsDelegate
                       std::unique_ptr<content::WebContents> new_contents,
                       const GURL& target_url,
                       WindowOpenDisposition disposition,
-                      const gfx::Rect& initial_rect,
+                      const blink::mojom::WindowFeatures& window_features,
                       bool user_gesture,
                       bool* was_blocked) override;
   bool PreHandleGestureEvent(content::WebContents* source,

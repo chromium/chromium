@@ -113,11 +113,11 @@ void BackgroundContents::AddNewContents(
     std::unique_ptr<WebContents> new_contents,
     const GURL& target_url,
     WindowOpenDisposition disposition,
-    const gfx::Rect& initial_rect,
+    const blink::mojom::WindowFeatures& window_features,
     bool user_gesture,
     bool* was_blocked) {
   delegate_->AddWebContents(std::move(new_contents), target_url, disposition,
-                            initial_rect, was_blocked);
+                            window_features, was_blocked);
 }
 
 bool BackgroundContents::IsNeverComposited(content::WebContents* web_contents) {

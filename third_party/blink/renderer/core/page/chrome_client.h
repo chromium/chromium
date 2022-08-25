@@ -116,6 +116,7 @@ struct WebWindowFeatures;
 namespace mojom {
 namespace blink {
 class TextAutosizerPageInfo;
+class WindowFeatures;
 }
 }  // namespace mojom
 
@@ -248,7 +249,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   virtual void Show(LocalFrame& frame,
                     LocalFrame& opener_frame,
                     NavigationPolicy navigation_policy,
-                    const gfx::Rect& initial_rect,
+                    const mojom::blink::WindowFeatures& window_features,
                     bool consumed_user_gesture) = 0;
 
   // All the parameters should be in viewport space. That is, if an event

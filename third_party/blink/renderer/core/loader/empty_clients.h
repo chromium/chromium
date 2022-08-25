@@ -104,7 +104,7 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
   void Show(LocalFrame& frame,
             LocalFrame& opener_frame,
             NavigationPolicy navigation_policy,
-            const gfx::Rect& initial_rect,
+            const mojom::blink::WindowFeatures& window_features,
             bool consumed_user_gesture) override {}
   void DidOverscroll(const gfx::Vector2dF&,
                      const gfx::Vector2dF&,

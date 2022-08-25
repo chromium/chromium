@@ -16,6 +16,7 @@
 namespace blink {
 namespace mojom {
 class FileChooserParams;
+class WindowFeatures;
 }
 }  // namespace blink
 
@@ -61,7 +62,7 @@ class AppDelegate {
       std::unique_ptr<content::WebContents> new_contents,
       const GURL& target_url,
       WindowOpenDisposition disposition,
-      const gfx::Rect& initial_rect,
+      const blink::mojom::WindowFeatures& window_features,
       bool user_gesture) = 0;
 
   // Feature support.

@@ -19,6 +19,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
@@ -63,7 +64,7 @@ void AddWebContents(Browser* browser,
                     std::unique_ptr<content::WebContents> new_contents,
                     const GURL& target_url,
                     WindowOpenDisposition disposition,
-                    const gfx::Rect& initial_rect,
+                    const blink::mojom::WindowFeatures& window_features,
                     NavigateParams::WindowAction window_action) {
   // No code for this yet.
   DCHECK(disposition != WindowOpenDisposition::SAVE_TO_DISK);
@@ -74,7 +75,7 @@ void AddWebContents(Browser* browser,
   params.source_contents = source_contents;
   params.url = target_url;
   params.disposition = disposition;
-  params.window_bounds = initial_rect;
+  params.window_bounds = window_features.bounds;
   params.window_action = window_action;
   // At this point, we're already beyond the popup blocker. Even if the popup
   // was created without a user gesture, we have to set |user_gesture| to true,

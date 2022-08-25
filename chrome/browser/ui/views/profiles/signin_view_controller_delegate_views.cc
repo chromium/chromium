@@ -262,12 +262,12 @@ void SigninViewControllerDelegateViews::AddNewContents(
     std::unique_ptr<content::WebContents> new_contents,
     const GURL& target_url,
     WindowOpenDisposition disposition,
-    const gfx::Rect& initial_rect,
+    const blink::mojom::WindowFeatures& window_features,
     bool user_gesture,
     bool* was_blocked) {
   // Allows the Gaia reauth page to open links in a new tab.
   chrome::AddWebContents(browser_, source, std::move(new_contents), target_url,
-                         disposition, initial_rect);
+                         disposition, window_features);
 }
 
 web_modal::WebContentsModalDialogHost*

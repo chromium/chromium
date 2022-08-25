@@ -20,6 +20,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
@@ -93,7 +94,8 @@ TEST_F(WebDialogWebContentsDelegateTest, AddNewContentsForegroundTabTest) {
       WebContentsTester::CreateTestWebContents(profile(), nullptr);
   test_web_contents_delegate_->AddNewContents(
       nullptr, std::move(contents), GURL(),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB, gfx::Rect(), false, nullptr);
+      WindowOpenDisposition::NEW_FOREGROUND_TAB, blink::mojom::WindowFeatures(),
+      false, nullptr);
   // This should create a new foreground tab in the existing browser.
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
   EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
@@ -111,7 +113,7 @@ TEST_F(WebDialogWebContentsDelegateTest, DetachTest) {
                     ui::PAGE_TRANSITION_LINK, false));
   test_web_contents_delegate_->AddNewContents(
       nullptr, nullptr, url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      gfx::Rect(), false, nullptr);
+      blink::mojom::WindowFeatures(), false, nullptr);
   EXPECT_EQ(0, browser()->tab_strip_model()->count());
   EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
 }

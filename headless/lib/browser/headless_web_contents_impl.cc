@@ -44,6 +44,7 @@
 #include "headless/lib/browser/protocol/headless_handler.h"
 #include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
+#include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_features.h"
@@ -119,7 +120,7 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
                       std::unique_ptr<content::WebContents> new_contents,
                       const GURL& target_url,
                       WindowOpenDisposition disposition,
-                      const gfx::Rect& initial_rect,
+                      const blink::mojom::WindowFeatures& window_features,
                       bool user_gesture,
                       bool* was_blocked) override {
     DCHECK(new_contents->GetBrowserContext() ==
@@ -134,7 +135,9 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
 
     const gfx::Rect default_rect(
         headless_web_contents_->browser()->options()->window_size);
-    const gfx::Rect rect = initial_rect.IsEmpty() ? default_rect : initial_rect;
+    const gfx::Rect rect = window_features.bounds.IsEmpty()
+                               ? default_rect
+                               : window_features.bounds;
     raw_child_contents->SetBounds(rect);
   }
 

@@ -191,7 +191,7 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
   void ShowCreatedWindow(RenderFrameHostImpl* opener,
                          int route_id,
                          WindowOpenDisposition disposition,
-                         const gfx::Rect& initial_rect,
+                         const blink::mojom::WindowFeatures& window_features,
                          bool user_gesture) override;
   void ShowCreatedWidget(int process_id,
                          int route_id,

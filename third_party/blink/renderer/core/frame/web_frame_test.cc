@@ -73,6 +73,7 @@
 #include "third_party/blink/public/mojom/page_state/page_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
+#include "third_party/blink/public/mojom/window_features/window_features.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/web_cache.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
@@ -7226,7 +7227,7 @@ class TestAccessInitialDocumentLocalFrameHost
   void RequestClose() override {}
   void ShowCreatedWindow(const ::blink::LocalFrameToken& opener_frame_token,
                          ::ui::mojom::blink::WindowOpenDisposition disposition,
-                         const ::gfx::Rect& rect,
+                         const mojom::blink::WindowFeaturesPtr window_features,
                          bool opened_by_user_gesture,
                          ShowCreatedWindowCallback callback) override {
     std::move(callback).Run();

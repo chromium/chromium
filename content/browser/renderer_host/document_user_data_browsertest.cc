@@ -85,7 +85,7 @@ class PopupCreatedObserver : public WebContentsDelegate {
                       std::unique_ptr<WebContents> new_contents,
                       const GURL& target_url,
                       WindowOpenDisposition disposition,
-                      const gfx::Rect& initial_rect,
+                      const blink::mojom::WindowFeatures& window_features,
                       bool user_gesture,
                       bool* was_blocked) override {
     callback_.Run(new_contents.get());

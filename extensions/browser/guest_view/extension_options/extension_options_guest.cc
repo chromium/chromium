@@ -143,7 +143,7 @@ void ExtensionOptionsGuest::AddNewContents(
     std::unique_ptr<WebContents> new_contents,
     const GURL& target_url,
     WindowOpenDisposition disposition,
-    const gfx::Rect& initial_rect,
+    const blink::mojom::WindowFeatures& window_features,
     bool user_gesture,
     bool* was_blocked) {
   // |new_contents| is potentially used as a non-embedded WebContents, so we
@@ -155,7 +155,7 @@ void ExtensionOptionsGuest::AddNewContents(
     return;
 
   embedder_web_contents()->GetDelegate()->AddNewContents(
-      source, std::move(new_contents), target_url, disposition, initial_rect,
+      source, std::move(new_contents), target_url, disposition, window_features,
       user_gesture, was_blocked);
 }
 

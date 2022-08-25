@@ -43,6 +43,7 @@
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_policy.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
+#include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 
 namespace content {
 
@@ -293,11 +294,11 @@ void Shell::AddNewContents(WebContents* source,
                            std::unique_ptr<WebContents> new_contents,
                            const GURL& target_url,
                            WindowOpenDisposition disposition,
-                           const gfx::Rect& initial_rect,
+                           const blink::mojom::WindowFeatures& window_features,
                            bool user_gesture,
                            bool* was_blocked) {
   CreateShell(
-      std::move(new_contents), AdjustWindowSize(initial_rect.size()),
+      std::move(new_contents), AdjustWindowSize(window_features.bounds.size()),
       !delay_popup_contents_delegate_for_testing_ /* should_set_delegate */);
 }
 

@@ -253,6 +253,7 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "third_party/blink/public/mojom/storage_key/ancestor_chain_bit.mojom.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom.h"
+#include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/accessibility/ax_action_handler_registry.h"
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_tree_update.h"
@@ -5372,7 +5373,7 @@ void RenderFrameHostImpl::RequestClose() {
 void RenderFrameHostImpl::ShowCreatedWindow(
     const blink::LocalFrameToken& opener_frame_token,
     WindowOpenDisposition disposition,
-    const gfx::Rect& initial_rect,
+    blink::mojom::WindowFeaturesPtr window_features,
     bool user_gesture,
     ShowCreatedWindowCallback callback) {
   // This needs to be sent to the opener frame's delegate since it stores
@@ -5390,7 +5391,7 @@ void RenderFrameHostImpl::ShowCreatedWindow(
   }
   opener_frame_host->delegate()->ShowCreatedWindow(
       opener_frame_host, GetRenderWidgetHost()->GetRoutingID(), disposition,
-      initial_rect, user_gesture);
+      *window_features, user_gesture);
   std::move(callback).Run();
 }
 

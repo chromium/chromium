@@ -44,6 +44,7 @@
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/widget/constants.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
+#include "third_party/blink/public/mojom/window_features/window_features.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/web/blink.h"
@@ -354,11 +355,11 @@ void ChromeClientImpl::SetOverscrollBehavior(
 void ChromeClientImpl::Show(LocalFrame& frame,
                             LocalFrame& opener_frame,
                             NavigationPolicy navigation_policy,
-                            const gfx::Rect& initial_rect,
+                            const mojom::blink::WindowFeatures& window_features,
                             bool user_gesture) {
   DCHECK(web_view_);
   const gfx::Rect rect_adjusted_for_minimum =
-      AdjustWindowRectForMinimum(initial_rect);
+      AdjustWindowRectForMinimum(window_features.bounds);
   const gfx::Rect adjusted_rect =
       AdjustWindowRectForDisplay(rect_adjusted_for_minimum, frame);
   // Request the unadjusted rect if the browser may honor cross-screen bounds.

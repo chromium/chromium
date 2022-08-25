@@ -196,6 +196,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(USE_NSS_CERTS)
@@ -5272,9 +5273,9 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, RestoreHasSSLState) {
   WebContents::CreateParams params(tab->GetBrowserContext());
   std::unique_ptr<WebContents> tab2 = WebContents::Create(params);
   WebContents* raw_tab2 = tab2.get();
-  tab->GetDelegate()->AddNewContents(nullptr, std::move(tab2), url,
-                                     WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                     gfx::Rect(), false, nullptr);
+  tab->GetDelegate()->AddNewContents(
+      nullptr, std::move(tab2), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      blink::mojom::WindowFeatures(), false, nullptr);
   std::vector<std::unique_ptr<content::NavigationEntry>> entries;
   entries.push_back(std::move(restored_entry));
   content::TestNavigationObserver observer(raw_tab2);

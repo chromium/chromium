@@ -1636,13 +1636,14 @@ void Browser::VisibleSecurityStateChanged(WebContents* source) {
   }
 }
 
-void Browser::AddNewContents(WebContents* source,
-                             std::unique_ptr<WebContents> new_contents,
-                             const GURL& target_url,
-                             WindowOpenDisposition disposition,
-                             const gfx::Rect& initial_rect,
-                             bool user_gesture,
-                             bool* was_blocked) {
+void Browser::AddNewContents(
+    WebContents* source,
+    std::unique_ptr<WebContents> new_contents,
+    const GURL& target_url,
+    WindowOpenDisposition disposition,
+    const blink::mojom::WindowFeatures& window_features,
+    bool user_gesture,
+    bool* was_blocked) {
   FullscreenController* fullscreen_controller =
       exclusive_access_manager_->fullscreen_controller();
 #if BUILDFLAG(IS_MAC)
@@ -1679,12 +1680,12 @@ void Browser::AddNewContents(WebContents* source,
     // cannot switch their independent spaces simultaneously (crbug.com/1315749)
     fullscreen_controller->RunOrDeferUntilTransitionIsComplete(base::BindOnce(
         &chrome::AddWebContents, this, source, std::move(new_contents),
-        target_url, disposition, initial_rect, window_action));
+        target_url, disposition, window_features, window_action));
     return;
   }
 
   chrome::AddWebContents(this, source, std::move(new_contents), target_url,
-                         disposition, initial_rect, window_action);
+                         disposition, window_features, window_action);
 }
 
 void Browser::ActivateContents(WebContents* contents) {

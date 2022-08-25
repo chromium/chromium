@@ -361,16 +361,17 @@ WebContents* AppWindow::OpenURLFromTab(WebContents* source,
   return helper_->OpenURLFromTab(params);
 }
 
-void AppWindow::AddNewContents(WebContents* source,
-                               std::unique_ptr<WebContents> new_contents,
-                               const GURL& target_url,
-                               WindowOpenDisposition disposition,
-                               const gfx::Rect& initial_rect,
-                               bool user_gesture,
-                               bool* was_blocked) {
+void AppWindow::AddNewContents(
+    WebContents* source,
+    std::unique_ptr<WebContents> new_contents,
+    const GURL& target_url,
+    WindowOpenDisposition disposition,
+    const blink::mojom::WindowFeatures& window_features,
+    bool user_gesture,
+    bool* was_blocked) {
   DCHECK(new_contents->GetBrowserContext() == browser_context_);
   app_delegate_->AddNewContents(browser_context_, std::move(new_contents),
-                                target_url, disposition, initial_rect,
+                                target_url, disposition, window_features,
                                 user_gesture);
 }
 

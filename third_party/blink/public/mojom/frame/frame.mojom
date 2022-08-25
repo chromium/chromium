@@ -56,6 +56,7 @@ import "third_party/blink/public/mojom/timing/resource_timing.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom";
 import "third_party/blink/public/mojom/widget/platform_widget.mojom";
+import "third_party/blink/public/mojom/window_features/window_features.mojom";
 import "ui/base/mojom/window_open_disposition.mojom";
 import "ui/events/mojom/scroll_granularity.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -996,7 +997,8 @@ interface LocalMainFrameHost {
   // which is always set. This is called on the main frame of the window to be shown.
   ShowCreatedWindow(blink.mojom.LocalFrameToken opener_frame_token,
                     ui.mojom.WindowOpenDisposition disposition,
-                    gfx.mojom.Rect rect, bool opened_by_user_gesture) => ();
+                    blink.mojom.WindowFeatures window_features,
+                    bool opened_by_user_gesture) => ();
 
   // Request that the browser change the bounds of the window.
   // This corresponds to the window.resizeTo() and window.moveTo() APIs, and the browser

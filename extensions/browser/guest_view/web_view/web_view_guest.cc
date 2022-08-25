@@ -70,6 +70,7 @@
 #include "third_party/blink/public/common/logging/logging_utils.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "url/url_constants.h"
@@ -112,7 +113,7 @@ uint32_t GetStoragePartitionRemovalMask(uint32_t web_view_removal_mask) {
 }
 
 std::string WindowOpenDispositionToString(
-  WindowOpenDisposition window_open_disposition) {
+    WindowOpenDisposition window_open_disposition) {
   switch (window_open_disposition) {
     case WindowOpenDisposition::IGNORE_ACTION:
       return "ignore";
@@ -283,9 +284,8 @@ std::string WebViewGuest::GetPartitionID(
 const char WebViewGuest::Type[] = "webview";
 
 // static
-int WebViewGuest::GetOrGenerateRulesRegistryID(
-    int embedder_process_id,
-    int webview_instance_id) {
+int WebViewGuest::GetOrGenerateRulesRegistryID(int embedder_process_id,
+                                               int webview_instance_id) {
   bool is_web_view = embedder_process_id && webview_instance_id;
   if (!is_web_view)
     return RulesRegistryService::kDefaultRulesRegistryID;
@@ -296,9 +296,8 @@ int WebViewGuest::GetOrGenerateRulesRegistryID(
     return it->second;
 
   auto* rph = RenderProcessHost::FromID(embedder_process_id);
-  int rules_registry_id =
-      RulesRegistryService::Get(rph->GetBrowserContext())->
-          GetNextRulesRegistryID();
+  int rules_registry_id = RulesRegistryService::Get(rph->GetBrowserContext())
+                              ->GetNextRulesRegistryID();
   web_view_key_to_id_map.Get()[key] = rules_registry_id;
   return rules_registry_id;
 }
@@ -636,8 +635,7 @@ void WebViewGuest::NewGuestWebViewCallback(const content::OpenURLParams& params,
       std::make_pair(new_guest, NewWindowInfo(params.url, std::string())));
 
   // Request permission to show the new window.
-  RequestNewWindowPermission(params.disposition,
-                             gfx::Rect(),
+  RequestNewWindowPermission(params.disposition, gfx::Rect(),
                              new_guest->web_contents());
 }
 
@@ -1090,8 +1088,8 @@ void WebViewGuest::NavigateGuest(const std::string& src,
 bool WebViewGuest::HandleKeyboardShortcuts(
     const content::NativeWebKeyboardEvent& event) {
   // <webview> outside of Chrome Apps do not handle keyboard shortcuts.
-  if (!GuestViewManager::FromBrowserContext(browser_context())->
-          IsOwnedByExtension(this)) {
+  if (!GuestViewManager::FromBrowserContext(browser_context())
+           ->IsOwnedByExtension(this)) {
     return false;
   }
 
@@ -1315,19 +1313,21 @@ bool WebViewGuest::LoadDataWithBaseURL(const GURL& data_url,
   return true;
 }
 
-void WebViewGuest::AddNewContents(WebContents* source,
-                                  std::unique_ptr<WebContents> new_contents,
-                                  const GURL& target_url,
-                                  WindowOpenDisposition disposition,
-                                  const gfx::Rect& initial_rect,
-                                  bool user_gesture,
-                                  bool* was_blocked) {
-  if (was_blocked)
-    *was_blocked = false;
+void WebViewGuest::AddNewContents(
+    WebContents* source,
+    std::unique_ptr<WebContents> new_contents,
+    const GURL& target_url,
+    WindowOpenDisposition disposition,
+    const blink::mojom::WindowFeatures& window_features,
+    bool user_gesture,
+    bool* was_blocked) {
   // This is the guest we created during CreateNewGuestWindow, which we now own.
   // TODO(erikchen): Fix ownership semantics for WebContents inside this class.
   // https://crbug.com/832879.
-  RequestNewWindowPermission(disposition, initial_rect, new_contents.release());
+  if (was_blocked)
+    *was_blocked = false;
+  RequestNewWindowPermission(disposition, window_features.bounds,
+                             new_contents.release());
 }
 
 WebContents* WebViewGuest::OpenURLFromTab(
@@ -1452,11 +1452,10 @@ void WebViewGuest::RequestToLockMouse(WebContents* web_contents,
           base::Unretained(web_contents)));
 }
 
-void WebViewGuest::LoadURLWithParams(
-    const GURL& url,
-    const content::Referrer& referrer,
-    ui::PageTransition transition_type,
-    bool force_navigation) {
+void WebViewGuest::LoadURLWithParams(const GURL& url,
+                                     const content::Referrer& referrer,
+                                     ui::PageTransition transition_type,
+                                     bool force_navigation) {
   if (!url.is_valid()) {
     LoadAbort(true /* is_top_level */, url, net::ERR_INVALID_URL);
     NavigateGuest(url::kAboutBlankURL, false /* force_navigation */);
@@ -1542,21 +1541,19 @@ void WebViewGuest::RequestNewWindowPermission(WindowOpenDisposition disposition,
 }
 
 GURL WebViewGuest::ResolveURL(const std::string& src) {
-  if (!GuestViewManager::FromBrowserContext(browser_context())->
-          IsOwnedByExtension(this)) {
+  if (!GuestViewManager::FromBrowserContext(browser_context())
+           ->IsOwnedByExtension(this)) {
     return GURL(src);
   }
 
-  GURL default_url(base::StringPrintf("%s://%s/",
-                                      kExtensionScheme,
-                                      owner_host().c_str()));
+  GURL default_url(
+      base::StringPrintf("%s://%s/", kExtensionScheme, owner_host().c_str()));
   return default_url.Resolve(src);
 }
 
-void WebViewGuest::OnWebViewNewWindowResponse(
-    int new_window_instance_id,
-    bool allow,
-    const std::string& user_input) {
+void WebViewGuest::OnWebViewNewWindowResponse(int new_window_instance_id,
+                                              bool allow,
+                                              const std::string& user_input) {
   auto* guest = WebViewGuest::From(
       owner_web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
       new_window_instance_id);

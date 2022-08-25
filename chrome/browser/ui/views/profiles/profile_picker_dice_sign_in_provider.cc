@@ -31,6 +31,7 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
+#include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/base/theme_provider.h"
 #include "ui/color/color_provider.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
@@ -149,14 +150,15 @@ void ProfilePickerDiceSignInProvider::AddNewContents(
     std::unique_ptr<content::WebContents> new_contents,
     const GURL& target_url,
     WindowOpenDisposition disposition,
-    const gfx::Rect& initial_rect,
+    const blink::mojom::WindowFeatures& window_features,
     bool user_gesture,
     bool* was_blocked) {
   NavigateParams params(profile_, target_url, ui::PAGE_TRANSITION_LINK);
   // Open all links as new popups.
   params.disposition = WindowOpenDisposition::NEW_POPUP;
   params.contents_to_insert = std::move(new_contents);
-  params.window_bounds = initial_rect;
+
+  params.window_bounds = window_features.bounds;
   Navigate(&params);
 }
 

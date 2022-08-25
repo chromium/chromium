@@ -171,6 +171,7 @@
 #include "third_party/blink/public/mojom/image_downloader/image_downloader.mojom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/ax_tree_combiner.h"
 #include "ui/base/pointer/pointer_device.h"
@@ -4079,19 +4080,9 @@ FrameTree* WebContentsImpl::CreateNewWindow(
       base::WeakPtr<WebContentsImpl> weak_new_contents =
           new_contents_impl->weak_factory_.GetWeakPtr();
 
-      gfx::Rect initial_rect;
-      if (params.features->has_width)
-        initial_rect.set_width(params.features->width);
-      if (params.features->has_height)
-        initial_rect.set_height(params.features->height);
-      if (params.features->has_x)
-        initial_rect.set_x(params.features->x);
-      if (params.features->has_y)
-        initial_rect.set_y(params.features->y);
-
-      delegate_->AddNewContents(this, std::move(new_contents),
-                                params.target_url, params.disposition,
-                                initial_rect, has_user_gesture, &was_blocked);
+      delegate_->AddNewContents(
+          this, std::move(new_contents), params.target_url, params.disposition,
+          *params.features, has_user_gesture, &was_blocked);
       // The delegate may delete |new_contents_impl| during AddNewContents().
       if (!weak_new_contents)
         return nullptr;
@@ -4174,11 +4165,12 @@ RenderWidgetHostImpl* WebContentsImpl::CreateNewPopupWidget(
   return widget_host;
 }
 
-void WebContentsImpl::ShowCreatedWindow(RenderFrameHostImpl* opener,
-                                        int main_frame_widget_route_id,
-                                        WindowOpenDisposition disposition,
-                                        const gfx::Rect& initial_rect,
-                                        bool user_gesture) {
+void WebContentsImpl::ShowCreatedWindow(
+    RenderFrameHostImpl* opener,
+    int main_frame_widget_route_id,
+    WindowOpenDisposition disposition,
+    const blink::mojom::WindowFeatures& window_features,
+    bool user_gesture) {
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::ShowCreatedWindow",
                         "opener", opener, "main_frame_widget_route_id",
                         main_frame_widget_route_id);
@@ -4205,15 +4197,15 @@ void WebContentsImpl::ShowCreatedWindow(RenderFrameHostImpl* opener,
   // from, to control how to show the newly created window.
   WebContentsDelegate* delegate = GetDelegate();
 
-  // Individual members of |initial_rect| may be 0 to indicate that the
-  // window.open() feature string did not specify a value. This code does not
-  // have the ability to distinguish between an unspecified value and 0.
+  // Individual members of |window_features.bounds| may be 0 to indicate that
+  // the window.open() feature string did not specify a value. This code does
+  // not distinguish between an unspecified value and 0.
   // Assume that if any single value is non-zero, all values should be used.
-  // TODO(crbug.com/897300): Plumb values as specified; set defaults here?
-  gfx::Rect adjusted_rect = initial_rect;
+  // TODO(crbug.com/897300): Utilize window_features.has_x and others.
+  blink::mojom::WindowFeatures adjusted_features = window_features;
   int64_t display_id = display::kInvalidDisplayId;
-  if (adjusted_rect != gfx::Rect())
-    display_id = AdjustRequestedWindowBounds(&adjusted_rect, opener);
+  if (adjusted_features.bounds != gfx::Rect())
+    display_id = AdjustRequestedWindowBounds(&adjusted_features.bounds, opener);
 
   // Drop fullscreen when opening a WebContents to prohibit deceptive behavior.
   // Only drop fullscreen on the specific destination display, if it is known.
@@ -4231,7 +4223,7 @@ void WebContentsImpl::ShowCreatedWindow(RenderFrameHostImpl* opener,
 
     delegate->AddNewContents(this, std::move(owned_created->contents),
                              std::move(owned_created->target_url), disposition,
-                             adjusted_rect, user_gesture, nullptr);
+                             adjusted_features, user_gesture, nullptr);
   }
 }
 
@@ -6137,12 +6129,12 @@ void WebContentsImpl::ViewSource(RenderFrameHostImpl* frame) {
                                                 &navigation_entries);
 
   // Add |view_source_contents| as a new tab.
-  gfx::Rect initial_rect;
   constexpr bool kUserGesture = true;
   bool ignored_was_blocked;
   delegate_->AddNewContents(this, std::move(view_source_contents), url,
                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                            initial_rect, kUserGesture, &ignored_was_blocked);
+                            blink::mojom::WindowFeatures(), kUserGesture,
+                            &ignored_was_blocked);
   // Note that the |delegate_| could have deleted |view_source_contents| during
   // AddNewContents method call.
 }
