@@ -576,10 +576,13 @@ WebInputEventResult ScrollManager::HandleGestureScrollBegin(
 
 WebInputEventResult ScrollManager::HandleGestureScrollUpdate(
     const WebGestureEvent& gesture_event) {
-  TRACE_EVENT0("input", "ScrollManager::handleGestureScrollUpdate");
+  TRACE_EVENT1("input", "ScrollManager::handleGestureScrollUpdate",
+               "unexpected_unification",
+               base::FeatureList::IsEnabled(::features::kScrollUnification));
   DCHECK_EQ(gesture_event.GetType(), WebInputEvent::Type::kGestureScrollUpdate);
 
-  DCHECK(!base::FeatureList::IsEnabled(::features::kScrollUnification));
+  // DCHECK temporarily disabled due to crash reports (crbug.com/1342287).
+  // DCHECK(!base::FeatureList::IsEnabled(::features::kScrollUnification));
   if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
     return WebInputEventResult::kNotHandled;
   }
@@ -744,9 +747,12 @@ void ScrollManager::HandleDeferredGestureScrollEnd(
 
 WebInputEventResult ScrollManager::HandleGestureScrollEnd(
     const WebGestureEvent& gesture_event) {
-  TRACE_EVENT0("input", "ScrollManager::handleGestureScrollEnd");
+  TRACE_EVENT1("input", "ScrollManager::handleGestureScrollEnd",
+               "unexpected_unification",
+               base::FeatureList::IsEnabled(::features::kScrollUnification));
 
-  DCHECK(!base::FeatureList::IsEnabled(::features::kScrollUnification));
+  // DCHECK temporarily disabled due to crash reports (crbug.com/1342287).
+  // DCHECK(!base::FeatureList::IsEnabled(::features::kScrollUnification));
   if (base::FeatureList::IsEnabled(::features::kScrollUnification)) {
     return WebInputEventResult::kNotHandled;
   }
