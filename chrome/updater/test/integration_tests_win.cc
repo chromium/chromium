@@ -1220,7 +1220,6 @@ void ExpectLegacyUpdaterDataMigrated(UpdaterScope scope) {
   EXPECT_TRUE(persisted_data->GetBrandCode(kNoPVAppId).empty());
   EXPECT_TRUE(persisted_data->GetFingerprint(kNoPVAppId).empty());
 
-  const std::string kChromeAppId = "{8A69D345-D564-463C-AFF1-A69D9E530F96}";
   EXPECT_EQ(persisted_data->GetProductVersion(kChromeAppId),
             base::Version("99.0.0.1"));
   EXPECT_EQ(persisted_data->GetAP(kChromeAppId), "TestAP");

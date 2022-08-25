@@ -361,7 +361,7 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
 
   if (session->webSocketUrl) {
     WebView* web_view = nullptr;
-    Status status = session->GetTargetWindow(&web_view);
+    status = session->GetTargetWindow(&web_view);
     if (status.IsError())
       return status;
     ChromeImpl* chrome = static_cast<ChromeImpl*>(session->chrome.get());

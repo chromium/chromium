@@ -559,26 +559,27 @@ base::Value WebApp::IsolationData::AsDebugValue() const {
   base::Value::Dict value;
   value.Set(
       "content",
-      absl::visit(
-          base::Overloaded{
-              [](const WebApp::IsolationData::InstalledBundle& bundle) {
-                base::Value::Dict content;
-                content.SetByDottedPath("installed_bundle.path", bundle.path);
-                return content;
-              },
-              [](const WebApp::IsolationData::DevModeBundle& bundle) {
-                base::Value::Dict content;
-                content.SetByDottedPath("dev_mode_bundle.path", bundle.path);
-                return content;
-              },
-              [](const WebApp::IsolationData::DevModeProxy& proxy) {
-                base::Value::Dict content;
-                content.SetByDottedPath("dev_mode_proxy.proxy_url",
-                                        proxy.proxy_url);
-                return content;
-              },
-          },
-          content));
+      absl::visit(base::Overloaded{
+                      [](const WebApp::IsolationData::InstalledBundle& bundle) {
+                        base::Value::Dict content_dict;
+                        content_dict.SetByDottedPath("installed_bundle.path",
+                                                     bundle.path);
+                        return content_dict;
+                      },
+                      [](const WebApp::IsolationData::DevModeBundle& bundle) {
+                        base::Value::Dict content_dict;
+                        content_dict.SetByDottedPath("dev_mode_bundle.path",
+                                                     bundle.path);
+                        return content_dict;
+                      },
+                      [](const WebApp::IsolationData::DevModeProxy& proxy) {
+                        base::Value::Dict content_dict;
+                        content_dict.SetByDottedPath("dev_mode_proxy.proxy_url",
+                                                     proxy.proxy_url);
+                        return content_dict;
+                      },
+                  },
+                  content));
   return base::Value(std::move(value));
 }
 

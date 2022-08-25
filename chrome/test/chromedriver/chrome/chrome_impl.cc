@@ -676,7 +676,7 @@ Status ChromeImpl::CloseTarget(const std::string& id) {
   base::TimeTicks deadline = base::TimeTicks::Now() + base::Seconds(20);
   while (base::TimeTicks::Now() < deadline) {
     WebViewsInfo views_info;
-    Status status = GetWebViewsInfo(&views_info);
+    status = GetWebViewsInfo(&views_info);
     if (status.code() == kChromeNotReachable)
       return Status(kOk);
     if (status.code() == kDisconnected)  // The closed target has gone

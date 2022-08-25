@@ -49,14 +49,13 @@ struct CaptureAccessHandlerBase::Session {
   }
 
   void SetWebContents(int render_process_id, int render_frame_id) {
-    auto* target_web_contents = content::WebContents::FromRenderFrameHost(
+    auto* web_contents = content::WebContents::FromRenderFrameHost(
         content::RenderFrameHost::FromID(render_process_id, render_frame_id));
     // Use the outermost WebContents in the WebContents tree, if possible.
     // If we can't find the WebContents, clear |target_web_contents|.
-    this->target_web_contents =
-        target_web_contents
-            ? target_web_contents->GetOutermostWebContents()->GetWeakPtr()
-            : nullptr;
+    target_web_contents =
+        web_contents ? web_contents->GetOutermostWebContents()->GetWeakPtr()
+                     : nullptr;
   }
 
   content::WebContents* GetWebContents() const {
