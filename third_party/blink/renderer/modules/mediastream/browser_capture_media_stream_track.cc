@@ -80,7 +80,7 @@ void ResolveCropPromiseHelper(ScriptPromiseResolver* resolver,
   switch (result) {
     case media::mojom::CropRequestResult::kSuccess:
       RecordUma(CropToResult::kResolved);
-      // TODO(crbug.com/1247761): Delay reporting success to the Web-application
+      // TODO(crbug.com/1264849): Delay reporting success to the Web-application
       // until "seeing" the last frame cropped to the previous crop-target.
       resolver->Resolve();
       return;

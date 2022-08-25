@@ -379,7 +379,7 @@ struct VideoCaptureDeviceInfo {
 };
 
 // The result of an attempt by the client to start/stop cropping.
-// TODO(crbug.com/1247761): Remove kNotImplemented.
+// TODO(crbug.com/1264849): Remove kNotImplemented.
 enum CropRequestResult {
   kSuccess,
   kErrorGeneric,

@@ -83,7 +83,7 @@ void ServiceLaunchedVideoCaptureDevice::Crop(
     uint32_t crop_version,
     base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
-  // TODO(crbug.com/1247761): Implement if necessary.
+  // TODO(crbug.com/1264849): Implement if necessary.
   std::move(callback).Run(media::mojom::CropRequestResult::kNotImplemented);
 }
 

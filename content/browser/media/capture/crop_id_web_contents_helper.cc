@@ -22,7 +22,7 @@
 
 namespace content {
 
-// TODO(crbug.com/1247761): Remove this protected static function.
+// TODO(crbug.com/1264849): Remove this protected static function.
 // See header for more details.
 base::Token CropIdWebContentsHelper::GUIDToToken(const base::GUID& guid) {
   std::string lowercase = guid.AsLowercaseString();
