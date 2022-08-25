@@ -202,7 +202,7 @@ void ActionLabel::SetDisplayMode(DisplayMode mode) {
       SetToEditFocus();
       break;
     case DisplayMode::kEditedUnbound:
-      SetToEditUnBind();
+      SetToEditUnbindInput();
       break;
     case DisplayMode::kEditedError:
       SetToEditError();
@@ -263,7 +263,7 @@ void ActionLabel::OnMouseExited(const ui::MouseEvent& event) {
 void ActionLabel::OnFocus() {
   SetToEditFocus();
   LabelButton::OnFocus();
-  if (IsUnbound()) {
+  if (IsInputUnbound()) {
     static_cast<ActionView*>(parent())->ShowErrorMsg(
         l10n_util::GetStringUTF8(IDS_INPUT_OVERLAY_EDIT_MISSING_BINDING), this,
         /*ax_annouce=*/false);
@@ -280,7 +280,7 @@ void ActionLabel::OnBlur() {
 }
 
 void ActionLabel::SetToViewMode() {
-  if (IsUnbound()) {
+  if (IsInputUnbound()) {
     SetVisible(false);
     return;
   }
@@ -310,7 +310,7 @@ void ActionLabel::SetToViewMode() {
 }
 
 void ActionLabel::SetToEditMode() {
-  if (IsUnbound())
+  if (IsInputUnbound())
     SetVisible(true);
 
   SetInstallFocusRingOnFocus(true);
@@ -343,7 +343,7 @@ void ActionLabel::SetToEditDefault() {
   label()->SetFontList(gfx::FontList({kFontStyle}, gfx::Font::NORMAL, kFontSize,
                                      gfx::Font::Weight::BOLD));
   views::FocusRing::Get(this)->SetColorId(absl::nullopt);
-  if (IsUnbound()) {
+  if (IsInputUnbound()) {
     SetBackground(views::CreateRoundedRectBackground(kEditedUnboundBgColor,
                                                      kCornerRadiusView));
   } else {
@@ -361,7 +361,7 @@ void ActionLabel::SetToEditFocus() {
   label()->SetFontList(gfx::FontList({kFontStyle}, gfx::Font::NORMAL, kFontSize,
                                      gfx::Font::Weight::BOLD));
   SetPreferredSize(CalculatePreferredSize());
-  if (IsUnbound()) {
+  if (IsInputUnbound()) {
     views::FocusRing::Get(this)->SetColorId(
         ui::kColorAshActionLabelFocusRingError);
     SetBackground(views::CreateRoundedRectBackground(kEditedUnboundBgColor,
@@ -379,13 +379,13 @@ void ActionLabel::SetToEditError() {
       ui::kColorAshActionLabelFocusRingError);
 }
 
-void ActionLabel::SetToEditUnBind() {
+void ActionLabel::SetToEditUnbindInput() {
   SetPreferredSize(CalculatePreferredSize());
   SetBackground(views::CreateRoundedRectBackground(kEditedUnboundBgColor,
                                                    kCornerRadiusView));
 }
 
-bool ActionLabel::IsUnbound() {
+bool ActionLabel::IsInputUnbound() {
   return base::UTF16ToUTF8(GetText()) == kUnknownBind;
 }
 

@@ -187,7 +187,7 @@ void TouchInjector::Update() {
   UpdateForWindowBoundsChanged();
 }
 
-void TouchInjector::OnBindingChange(
+void TouchInjector::OnInputBindingChange(
     Action* target_action,
     std::unique_ptr<InputElement> input_element) {
   if (display_overlay_controller_)
@@ -205,9 +205,9 @@ void TouchInjector::OnBindingChange(
   // Partially unbind or completely unbind the |overlapped_action| if it
   // conflicts with |input_element|.
   if (overlapped_action)
-    overlapped_action->Unbind(*input_element);
+    overlapped_action->UnbindInput(*input_element);
 
-  target_action->PrepareToBind(std::move(input_element));
+  target_action->PrepareToBindInput(std::move(input_element));
 }
 
 void TouchInjector::OnApplyPendingBinding() {
@@ -247,7 +247,7 @@ void TouchInjector::OnProtoDataAvailable(AppDataProto& proto) {
     auto input_element =
         InputElement::ConvertFromProto(action_proto.input_element());
     DCHECK(input_element);
-    OnBindingChange(action, std::move(input_element));
+    OnInputBindingChange(action, std::move(input_element));
   }
   OnApplyPendingBinding();
 }

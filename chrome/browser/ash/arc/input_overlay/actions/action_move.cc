@@ -121,25 +121,25 @@ class ActionMove::ActionMoveKeyView : public ActionView {
     center_.set_x(radius);
     center_.set_y(radius);
 
-    InputElement* binding = nullptr;
+    InputElement* input_binding = nullptr;
     switch (binding_option) {
       case BindingOption::kCurrent:
-        binding = action_->current_binding();
+        input_binding = action_->current_input();
         break;
       case BindingOption::kOriginal:
-        binding = action_->original_binding();
+        input_binding = action_->original_input();
         break;
 
       case BindingOption::kPending:
-        binding = action_->pending_binding();
+        input_binding = action_->pending_input();
         break;
       default:
         NOTREACHED();
     }
-    if (!binding)
+    if (!input_binding)
       return;
 
-    auto keys = binding->keys();
+    const auto keys = input_binding->keys();
     if (labels_.empty()) {
       for (int i = 0; i < keys.size(); i++) {
         auto label =
@@ -163,21 +163,21 @@ class ActionMove::ActionMoveKeyView : public ActionView {
     if (it == labels_.end())
       return;
 
-    const auto& binding = action_->GetCurrentDisplayedBinding();
-    DCHECK(binding.keys().size() == kActionMoveKeysSize);
-    std::vector<ui::DomCode> new_keys = binding.keys();
+    const auto& input_binding = action_->GetCurrentDisplayedInput();
+    DCHECK_EQ(input_binding.keys().size(), kActionMoveKeysSize);
+    std::vector<ui::DomCode> new_keys = input_binding.keys();
     new_keys[it - labels_.begin()] = code;
 
     // If there is duplicate key in its own action, take the key away from
     // previous index.
-    const int unassigned_index = binding.GetIndexOfKey(code);
+    const int unassigned_index = input_binding.GetIndexOfKey(code);
     if (unassigned_index != -1) {
       new_keys[unassigned_index] = ui::DomCode::NONE;
       labels_[unassigned_index]->SetDisplayMode(DisplayMode::kEditedUnbound);
     }
 
     auto input_element = InputElement::CreateActionMoveKeyElement(new_keys);
-    ChangeBinding(action_, action_label, std::move(input_element));
+    ChangeInputBinding(action_, action_label, std::move(input_element));
   }
 
   // TODO(cuicuiruan): Remove this for post MVP for editing |ActionMove|.
@@ -289,8 +289,8 @@ bool ActionMove::ParseJsonFromKeyboard(const base::Value& value) {
     }
     keycodes.emplace_back(key);
   }
-  original_binding_ = InputElement::CreateActionMoveKeyElement(keycodes);
-  current_binding_ = InputElement::CreateActionMoveKeyElement(keycodes);
+  original_input_ = InputElement::CreateActionMoveKeyElement(keycodes);
+  current_input_ = InputElement::CreateActionMoveKeyElement(keycodes);
 
   return true;
 }
@@ -307,8 +307,8 @@ bool ActionMove::ParseJsonFromMouse(const base::Value& value) {
     return false;
   }
   require_mouse_locked_ = true;
-  original_binding_ = InputElement::CreateActionMoveMouseElement(*mouse_action);
-  current_binding_ = InputElement::CreateActionMoveMouseElement(*mouse_action);
+  original_input_ = InputElement::CreateActionMoveMouseElement(*mouse_action);
+  current_input_ = InputElement::CreateActionMoveMouseElement(*mouse_action);
 
   auto* target_area = value.FindDictKey(kTargetArea);
   if (target_area) {
@@ -349,18 +349,16 @@ bool ActionMove::RewriteEvent(const ui::Event& origin,
                               const gfx::Transform* rotation_transform,
                               std::list<ui::TouchEvent>& touch_events,
                               bool& keep_original_event) {
-  if (!IsBound(*current_binding_) ||
-      (IsKeyboardBound(*current_binding_) && !origin.IsKeyEvent()) ||
-      (IsMouseBound(*current_binding_) && !origin.IsMouseEvent()))
+  if (!IsInputBound(*current_input_) ||
+      (IsKeyboardBound(*current_input_) && !origin.IsKeyEvent()) ||
+      (IsMouseBound(*current_input_) && !origin.IsMouseEvent())) {
     return false;
-  DCHECK(
-      (IsKeyboardBound(*current_binding_) &&
-       !IsMouseBound(*current_binding_)) ||
-      (!IsKeyboardBound(*current_binding_) && IsMouseBound(*current_binding_)));
+  }
+  DCHECK_NE(IsKeyboardBound(*current_input_), IsMouseBound(*current_input_));
   LogEvent(origin);
 
   // Rewrite for key event.
-  if (IsKeyboardBound(*current_binding_)) {
+  if (IsKeyboardBound(*current_input_)) {
     auto* key_event = origin.AsKeyEvent();
     bool rewritten = RewriteKeyEvent(key_event, content_bounds,
                                      rotation_transform, touch_events);
@@ -381,7 +379,7 @@ bool ActionMove::RewriteEvent(const ui::Event& origin,
 
 gfx::PointF ActionMove::GetUICenterPosition(const gfx::RectF& content_bounds) {
   if (original_positions().empty()) {
-    DCHECK(IsMouseBound(*current_binding_));
+    DCHECK(IsMouseBound(*current_input_));
     return gfx::PointF(content_bounds.width() / 2, content_bounds.height() / 2);
   }
   return original_positions().front().CalculatePosition(content_bounds);
@@ -391,7 +389,7 @@ std::unique_ptr<ActionView> ActionMove::CreateView(
     DisplayOverlayController* display_overlay_controller,
     const gfx::RectF& content_bounds) {
   std::unique_ptr<ActionView> view;
-  if (IsMouseBound(*current_binding_)) {
+  if (IsMouseBound(*current_input_)) {
     view = std::make_unique<ActionMoveMouseView>(
         this, display_overlay_controller, content_bounds);
   } else {
@@ -403,18 +401,18 @@ std::unique_ptr<ActionView> ActionMove::CreateView(
   return view;
 }
 
-void ActionMove::Unbind(const InputElement& input_element) {
-  if (!pending_binding_)
-    pending_binding_ = std::make_unique<InputElement>(*current_binding_);
+void ActionMove::UnbindInput(const InputElement& input_element) {
+  if (!pending_input_)
+    pending_input_ = std::make_unique<InputElement>(*current_input_);
   if (IsKeyboardBound(input_element)) {
     // It might be partially overlapped and only remove the keys overlapped.
     for (auto code : input_element.keys()) {
-      for (int i = 0; i < pending_binding_->keys().size(); i++) {
-        if (code == pending_binding_->keys()[i]) {
-          pending_binding_->SetKey(i, ui::DomCode::NONE);
+      for (int i = 0; i < pending_input_->keys().size(); i++) {
+        if (code == pending_input_->keys()[i]) {
+          pending_input_->SetKey(i, ui::DomCode::NONE);
           if (action_view_)
             action_view_->set_unbind_label_index(i);
-          PostUnbindProcess();
+          PostUnbindInputProcess();
         }
       }
     }
@@ -428,7 +426,7 @@ bool ActionMove::RewriteKeyEvent(const ui::KeyEvent* key_event,
                                  const gfx::RectF& content_bounds,
                                  const gfx::Transform* rotation_transform,
                                  std::list<ui::TouchEvent>& rewritten_events) {
-  auto keys = current_binding_->keys();
+  auto keys = current_input_->keys();
   auto it = std::find(keys.begin(), keys.end(), key_event->code());
   if (it == keys.end())
     return false;
@@ -510,8 +508,8 @@ bool ActionMove::RewriteMouseEvent(
   DCHECK(mouse_event);
 
   auto type = mouse_event->type();
-  if (!current_binding_->mouse_types().contains(type) ||
-      current_binding_->mouse_flags() != mouse_event->flags()) {
+  if (!current_input_->mouse_types().contains(type) ||
+      current_input_->mouse_flags() != mouse_event->flags()) {
     return false;
   }
 

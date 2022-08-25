@@ -62,38 +62,38 @@ class ActionTap::ActionTapView : public ActionView {
       circle_ = AddChildView(std::move(circle));
     }
 
-    InputElement* binding = nullptr;
+    InputElement* input_binding = nullptr;
     switch (binding_option) {
       case BindingOption::kCurrent:
-        binding = action_->current_binding();
+        input_binding = action_->current_input();
         break;
       case BindingOption::kOriginal:
-        binding = action_->original_binding();
+        input_binding = action_->original_input();
         break;
       case BindingOption::kPending:
-        binding = action_->pending_binding();
+        input_binding = action_->pending_input();
         break;
       default:
         NOTREACHED();
     }
-    if (!binding)
+    if (!input_binding)
       return;
 
     if (labels_.empty()) {
       // Create new action label when initializing.
-      auto label = CreateActionLabel(*binding);
+      auto label = CreateActionLabel(*input_binding);
       labels_.emplace_back(AddChildView(std::move(label)));
-    } else if (!IsBound(*binding)) {
+    } else if (!IsInputBound(*input_binding)) {
       // Action label exists but without any bindings.
       labels_[0]->SetTextActionLabel(
           std::move(GetDisplayText(ui::DomCode::NONE)));
-    } else if (IsKeyboardBound(*binding)) {
+    } else if (IsKeyboardBound(*input_binding)) {
       // Action label is bound to keyboard key.
       labels_[0]->SetTextActionLabel(
-          std::move(GetDisplayText(binding->keys()[0])));
+          std::move(GetDisplayText(input_binding->keys()[0])));
     } else {
       // Action label is bound to mouse.
-      labels_[0]->SetImageActionLabel(binding->mouse_action());
+      labels_[0]->SetImageActionLabel(input_binding->mouse_action());
     }
   }
 
@@ -104,16 +104,16 @@ class ActionTap::ActionTapView : public ActionView {
       return;
 
     auto input_element = InputElement::CreateActionTapKeyElement(code);
-    ChangeBinding(action_, action_label, std::move(input_element));
+    ChangeInputBinding(action_, action_label, std::move(input_element));
   }
 
   void OnBindingToKeyboard() override {
-    const auto& binding = action_->GetCurrentDisplayedBinding();
-    if (!IsMouseBound(binding))
+    const auto& input_binding = action_->GetCurrentDisplayedInput();
+    if (!IsMouseBound(input_binding))
       return;
 
     auto input_element = std::make_unique<InputElement>();
-    action_->set_pending_binding(std::move(input_element));
+    action_->set_pending_input(std::move(input_element));
     auto bounds = CalculateWindowContentBounds(action_->target_window());
     SetViewContent(BindingOption::kPending, bounds);
   }
@@ -122,15 +122,17 @@ class ActionTap::ActionTapView : public ActionView {
     DCHECK(mouse_action == kPrimaryClick || mouse_action == kSecondaryClick);
     if (mouse_action != kPrimaryClick && mouse_action != kSecondaryClick)
       return;
-    const auto& binding = action_->GetCurrentDisplayedBinding();
-    if (IsMouseBound(binding) &&
-        binding.mouse_action() == ConvertToMouseActionEnum(mouse_action)) {
+    const auto& input_binding = action_->GetCurrentDisplayedInput();
+    if (IsMouseBound(input_binding) &&
+        input_binding.mouse_action() ==
+            ConvertToMouseActionEnum(mouse_action)) {
       return;
     }
 
     auto input_element =
         InputElement::CreateActionTapMouseElement(mouse_action);
-    ChangeBinding(action_, /*action_label=*/nullptr, std::move(input_element));
+    ChangeInputBinding(action_, /*action_label=*/nullptr,
+                       std::move(input_element));
   }
 
   void OnMenuEntryPressed() override {
@@ -199,9 +201,9 @@ bool ActionTap::ParseJsonFromKeyboard(const base::Value& value) {
     LOG(ERROR) << "No/invalid key code for key tap action {" << name_ << "}.";
     return false;
   }
-  original_binding_ = InputElement::CreateActionTapKeyElement(key->first);
-  current_binding_ = InputElement::CreateActionTapKeyElement(key->first);
-  if (original_binding_->is_modifier_key())
+  original_input_ = InputElement::CreateActionTapKeyElement(key->first);
+  current_input_ = InputElement::CreateActionTapKeyElement(key->first);
+  if (original_input_->is_modifier_key())
     support_modifier_key_ = true;
   return true;
 }
@@ -217,8 +219,8 @@ bool ActionTap::ParseJsonFromMouse(const base::Value& value) {
                << *mouse_action;
     return false;
   }
-  original_binding_ = InputElement::CreateActionTapMouseElement(*mouse_action);
-  current_binding_ = InputElement::CreateActionTapMouseElement(*mouse_action);
+  original_input_ = InputElement::CreateActionTapMouseElement(*mouse_action);
+  current_input_ = InputElement::CreateActionTapMouseElement(*mouse_action);
   return true;
 }
 
@@ -228,18 +230,15 @@ bool ActionTap::RewriteEvent(const ui::Event& origin,
                              const gfx::Transform* rotation_transform,
                              std::list<ui::TouchEvent>& touch_events,
                              bool& keep_original_event) {
-  if (!IsBound(*current_binding_) ||
-      (IsKeyboardBound(*current_binding_) && !origin.IsKeyEvent()) ||
-      (IsMouseBound(*current_binding_) && !origin.IsMouseEvent())) {
+  if (!IsInputBound(*current_input_) ||
+      (IsKeyboardBound(*current_input_) && !origin.IsKeyEvent()) ||
+      (IsMouseBound(*current_input_) && !origin.IsMouseEvent())) {
     return false;
   }
-  DCHECK((IsKeyboardBound(*current_binding()) &&
-          !IsMouseBound(*current_binding())) ||
-         (!IsKeyboardBound(*current_binding()) &&
-          IsMouseBound(*current_binding())));
+  DCHECK_NE(IsKeyboardBound(*current_input_), IsMouseBound(*current_input_));
   LogEvent(origin);
   // Rewrite for key event.
-  if (IsKeyboardBound(*current_binding())) {
+  if (IsKeyboardBound(*current_input())) {
     auto* key_event = origin.AsKeyEvent();
     bool rewritten =
         RewriteKeyEvent(key_event, content_bounds, rotation_transform,
@@ -271,13 +270,13 @@ std::unique_ptr<ActionView> ActionTap::CreateView(
   return view;
 }
 
-void ActionTap::Unbind(const InputElement& input_element) {
-  if (pending_binding_)
-    pending_binding_.reset();
-  pending_binding_ = std::make_unique<InputElement>();
+void ActionTap::UnbindInput(const InputElement& input_element) {
+  if (pending_input_)
+    pending_input_.reset();
+  pending_input_ = std::make_unique<InputElement>();
   if (action_view_)
     action_view_->set_unbind_label_index(0);
-  PostUnbindProcess();
+  PostUnbindInputProcess();
 }
 
 bool ActionTap::RewriteKeyEvent(const ui::KeyEvent* key_event,
@@ -286,7 +285,7 @@ bool ActionTap::RewriteKeyEvent(const ui::KeyEvent* key_event,
                                 std::list<ui::TouchEvent>& rewritten_events,
                                 bool& keep_original_event) {
   DCHECK(key_event);
-  if (!IsSameDomCode(key_event->code(), current_binding_->keys()[0]))
+  if (!IsSameDomCode(key_event->code(), current_input_->keys()[0]))
     return false;
 
   // Ignore repeated key events, but consider it as processed.
@@ -315,7 +314,7 @@ bool ActionTap::RewriteKeyEvent(const ui::KeyEvent* key_event,
         ui::PointerDetails(ui::EventPointerType::kTouch, *touch_id_));
     ui::Event::DispatcherApi(&(rewritten_events.back()))
         .set_target(target_window_);
-    if (!current_binding_->is_modifier_key()) {
+    if (!current_input_->is_modifier_key()) {
       keys_pressed_.emplace(key_event->code());
     } else {
       // For modifier keys, EventRewriterChromeOS skips release event for other
@@ -356,8 +355,8 @@ bool ActionTap::RewriteMouseEvent(const ui::MouseEvent* mouse_event,
   DCHECK(mouse_event);
 
   auto type = mouse_event->type();
-  if (!current_binding_->mouse_types().contains(type) ||
-      (current_binding_->mouse_flags() & mouse_event->changed_button_flags()) ==
+  if (!current_input_->mouse_types().contains(type) ||
+      (current_input_->mouse_flags() & mouse_event->changed_button_flags()) ==
           0) {
     return false;
   }

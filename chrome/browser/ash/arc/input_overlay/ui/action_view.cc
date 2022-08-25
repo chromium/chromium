@@ -56,12 +56,12 @@ void ActionView::SetDisplayMode(DisplayMode mode, ActionLabel* editing_label) {
     return;
   if (mode == DisplayMode::kView) {
     RemoveEditButton();
-    if (!IsBound(action_->GetCurrentDisplayedBinding()))
+    if (!IsInputBound(action_->GetCurrentDisplayedInput()))
       SetVisible(false);
   }
   if (mode == DisplayMode::kEdit) {
     AddEditButton();
-    if (!IsBound(*action_->current_binding()))
+    if (!IsInputBound(*action_->current_input()))
       SetVisible(true);
   }
 
@@ -129,23 +129,26 @@ void ActionView::RemoveMessage() {
   display_overlay_controller_->RemoveEditMessage();
 }
 
-void ActionView::ChangeBinding(Action* action,
-                               ActionLabel* action_label,
-                               std::unique_ptr<InputElement> input_element) {
-  display_overlay_controller_->OnBindingChange(action,
-                                               std::move(input_element));
+void ActionView::ChangeInputBinding(
+    Action* action,
+    ActionLabel* action_label,
+    std::unique_ptr<InputElement> input_element) {
+  display_overlay_controller_->OnInputBindingChange(action,
+                                                    std::move(input_element));
   SetDisplayMode(DisplayMode::kEditedSuccess, action_label);
 }
 
 void ActionView::OnResetBinding() {
-  const auto& binding = action_->GetCurrentDisplayedBinding();
-  if (!IsBound(binding) || binding == *action_->current_binding())
+  const auto& input_binding = action_->GetCurrentDisplayedInput();
+  if (!IsInputBound(input_binding) ||
+      input_binding == *action_->current_input()) {
     return;
+  }
 
   auto input_element =
-      std::make_unique<InputElement>(*(action_->current_binding()));
-  display_overlay_controller_->OnBindingChange(action_,
-                                               std::move(input_element));
+      std::make_unique<InputElement>(*(action_->current_input()));
+  display_overlay_controller_->OnInputBindingChange(action_,
+                                                    std::move(input_element));
 }
 
 bool ActionView::ShouldShowErrorMsg(ui::DomCode code,

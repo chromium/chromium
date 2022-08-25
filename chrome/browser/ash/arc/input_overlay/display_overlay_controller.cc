@@ -479,10 +479,10 @@ void DisplayOverlayController::RemoveEditMessage() {
   message_ = nullptr;
 }
 
-void DisplayOverlayController::OnBindingChange(
+void DisplayOverlayController::OnInputBindingChange(
     Action* action,
     std::unique_ptr<InputElement> input_element) {
-  touch_injector_->OnBindingChange(action, std::move(input_element));
+  touch_injector_->OnInputBindingChange(action, std::move(input_element));
 }
 
 void DisplayOverlayController::OnCustomizeSave() {

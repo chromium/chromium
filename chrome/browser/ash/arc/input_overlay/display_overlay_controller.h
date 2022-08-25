@@ -60,8 +60,8 @@ class DisplayOverlayController : public ui::EventHandler,
                       MessageType message_type);
   void RemoveEditMessage();
 
-  void OnBindingChange(Action* action,
-                       std::unique_ptr<InputElement> input_element);
+  void OnInputBindingChange(Action* action,
+                            std::unique_ptr<InputElement> input_element);
 
   // Save the changes when users press the save button after editing.
   void OnCustomizeSave();

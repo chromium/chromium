@@ -469,13 +469,13 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapMouse) {
   injector_->RegisterEventRewriter();
 
   auto* primary_action = injector_->actions()[0].get();
-  auto* primary_binding = primary_action->current_binding();
+  auto* primary_binding = primary_action->current_input();
   EXPECT_EQ(primary_binding->mouse_action(), MouseAction::PRIMARY_CLICK);
   EXPECT_TRUE(primary_binding->mouse_types().contains(ui::ET_MOUSE_PRESSED));
   EXPECT_TRUE(primary_binding->mouse_types().contains(ui::ET_MOUSE_RELEASED));
   EXPECT_EQ(ui::EF_LEFT_MOUSE_BUTTON, primary_binding->mouse_flags());
   auto* secondary_action = injector_->actions()[1].get();
-  auto* secondary_binding = secondary_action->current_binding();
+  auto* secondary_binding = secondary_action->current_input();
   EXPECT_EQ(secondary_binding->mouse_action(), MouseAction::SECONDARY_CLICK);
   EXPECT_TRUE(secondary_binding->mouse_types().contains(ui::ET_MOUSE_PRESSED));
   EXPECT_TRUE(secondary_binding->mouse_types().contains(ui::ET_MOUSE_RELEASED));
@@ -627,7 +627,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveMouse) {
   EXPECT_EQ(2u, injector_->actions().size());
   injector_->RegisterEventRewriter();
   auto* hover_action = static_cast<ActionMove*>(injector_->actions()[0].get());
-  auto* hover_binding = hover_action->current_binding();
+  auto* hover_binding = hover_action->current_input();
   EXPECT_EQ(hover_binding->mouse_action(), MouseAction::HOVER_MOVE);
   EXPECT_TRUE(hover_binding->mouse_types().contains(ui::ET_MOUSE_ENTERED));
   EXPECT_TRUE(hover_binding->mouse_types().contains(ui::ET_MOUSE_MOVED));
@@ -636,7 +636,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveMouse) {
 
   auto* right_action =
       static_cast<input_overlay::ActionMove*>(injector_->actions()[1].get());
-  auto* right_binding = right_action->current_binding();
+  auto* right_binding = right_action->current_input();
   EXPECT_EQ(right_binding->mouse_action(), MouseAction::SECONDARY_DRAG_MOVE);
   EXPECT_TRUE(right_binding->mouse_types().contains(ui::ET_MOUSE_PRESSED));
   EXPECT_TRUE(right_binding->mouse_types().contains(ui::ET_MOUSE_DRAGGED));

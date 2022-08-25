@@ -49,7 +49,7 @@ absl::optional<std::pair<ui::DomCode, int>> ParseKeyboardKey(
     const base::StringPiece key_name);
 
 // Return true if the |input_element| is bound.
-bool IsBound(const InputElement& input_element);
+bool IsInputBound(const InputElement& input_element);
 // Return true if the |input_element| is bound to keyboard key.
 bool IsKeyboardBound(const InputElement& input_element);
 // Return true if the |input_element| is bound to mouse.
@@ -85,21 +85,21 @@ class Action {
   // This is called if other actions take the input binding from this action.
   // |input_element| should overlap the current displayed binding. If it is
   // partially overlapped, then we only unbind the overlapped input.
-  virtual void Unbind(const InputElement& input_element) = 0;
+  virtual void UnbindInput(const InputElement& input_element) = 0;
 
   // This is called for editing the actions before change is saved. Or for
   // loading the customized data to override the default input mapping.
-  void PrepareToBind(std::unique_ptr<InputElement> input_element);
-  // Save |pending_binding_| as |current_binding_|.
+  void PrepareToBindInput(std::unique_ptr<InputElement> input_element);
+  // Save |pending_input_| as |current_input_|.
   void BindPending();
-  // Cancel |pending_binding_|.
+  // Cancel |pending_input_|.
   void CancelPendingBind(const gfx::RectF& content_bounds);
   void ResetPendingBind();
 
   // Restore the input binding back to the original binding.
   void RestoreToDefault(const gfx::RectF& content_bounds);
   // Return currently displayed input binding.
-  const InputElement& GetCurrentDisplayedBinding();
+  const InputElement& GetCurrentDisplayedInput();
   // Check if there is any overlap between |input_element| and current
   // displayed binding.
   bool IsOverlapped(const InputElement& input_element);
@@ -110,13 +110,13 @@ class Action {
   void UpdateTouchDownPositions(const gfx::RectF& content_bounds,
                                 const gfx::Transform* rotation_transform);
 
-  InputElement* current_binding() const { return current_binding_.get(); }
-  InputElement* original_binding() const { return original_binding_.get(); }
-  InputElement* pending_binding() const { return pending_binding_.get(); }
-  void set_pending_binding(std::unique_ptr<InputElement> binding) {
-    if (pending_binding_)
-      pending_binding_.reset();
-    pending_binding_ = std::move(binding);
+  InputElement* current_input() const { return current_input_.get(); }
+  InputElement* original_input() const { return original_input_.get(); }
+  InputElement* pending_input() const { return pending_input_.get(); }
+  void set_pending_input(std::unique_ptr<InputElement> input) {
+    if (pending_input_)
+      pending_input_.reset();
+    pending_input_ = std::move(input);
   }
   int id() { return id_; }
   const std::string& name() { return name_; }
@@ -150,14 +150,14 @@ class Action {
   void OnTouchReleased();
   void OnTouchCancelled();
   // Process after unbinding the input mapping.
-  void PostUnbindProcess();
+  void PostUnbindInputProcess();
 
   // Original input binding.
-  std::unique_ptr<InputElement> original_binding_;
+  std::unique_ptr<InputElement> original_input_;
   // Current input binding.
-  std::unique_ptr<InputElement> current_binding_;
+  std::unique_ptr<InputElement> current_input_;
   // Pending input binding. It is used during the editing before it is saved.
-  std::unique_ptr<InputElement> pending_binding_;
+  std::unique_ptr<InputElement> pending_input_;
 
   // Unique ID for each action.
   int id_ = 0;

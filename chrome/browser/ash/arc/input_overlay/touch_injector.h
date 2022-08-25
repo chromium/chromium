@@ -114,8 +114,8 @@ class TouchInjector : public ui::EventRewriter {
   // Change bindings. This could be from user editing from display overlay
   // (|mode| = DisplayMode::kEdit) or from customized protobuf data (|mode| =
   // DisplayMode::kView).
-  void OnBindingChange(Action* target_action,
-                       std::unique_ptr<InputElement> input_element);
+  void OnInputBindingChange(Action* target_action,
+                            std::unique_ptr<InputElement> input_element);
   // Apply pending binding as current binding, but don't save into the storage.
   void OnApplyPendingBinding();
   // Save customized input binding/pending binding as current binding and go

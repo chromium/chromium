@@ -201,7 +201,7 @@ bool Action::ParseFromJson(const base::Value& value) {
   return true;
 }
 
-bool IsBound(const InputElement& input_element) {
+bool IsInputBound(const InputElement& input_element) {
   return input_element.input_sources() != InputSource::IS_NONE;
 }
 
@@ -213,10 +213,10 @@ bool IsMouseBound(const InputElement& input_element) {
   return (input_element.input_sources() & InputSource::IS_MOUSE) != 0;
 }
 
-void Action::PrepareToBind(std::unique_ptr<InputElement> input_element) {
-  if (pending_binding_)
-    pending_binding_.reset();
-  pending_binding_ = std::move(input_element);
+void Action::PrepareToBindInput(std::unique_ptr<InputElement> input_element) {
+  if (pending_input_)
+    pending_input_.reset();
+  pending_input_ = std::move(input_element);
   auto bounds = CalculateWindowContentBounds(target_window_);
 
   if (!action_view_)
@@ -225,18 +225,18 @@ void Action::PrepareToBind(std::unique_ptr<InputElement> input_element) {
 }
 
 void Action::BindPending() {
-  if (!pending_binding_)
+  if (!pending_input_)
     return;
 
-  current_binding_.reset();
-  current_binding_ = std::move(pending_binding_);
-  DCHECK(!pending_binding_);
+  current_input_.reset();
+  current_input_ = std::move(pending_input_);
+  DCHECK(!pending_input_);
 }
 
 void Action::CancelPendingBind(const gfx::RectF& content_bounds) {
-  if (!pending_binding_)
+  if (!pending_input_)
     return;
-  pending_binding_.reset();
+  pending_input_.reset();
 
   DCHECK(action_view_);
   if (!action_view_)
@@ -245,7 +245,7 @@ void Action::CancelPendingBind(const gfx::RectF& content_bounds) {
 }
 
 void Action::ResetPendingBind() {
-  pending_binding_.reset();
+  pending_input_.reset();
 }
 
 void Action::RestoreToDefault(const gfx::RectF& content_bounds) {
@@ -253,9 +253,9 @@ void Action::RestoreToDefault(const gfx::RectF& content_bounds) {
   if (!action_view_)
     return;
 
-  if (GetCurrentDisplayedBinding() != *original_binding_) {
-    pending_binding_.reset();
-    pending_binding_ = std::make_unique<InputElement>(*original_binding_);
+  if (GetCurrentDisplayedInput() != *original_input_) {
+    pending_input_.reset();
+    pending_input_ = std::make_unique<InputElement>(*original_input_);
     action_view_->SetViewContent(BindingOption::kPending, content_bounds);
   }
   // Set to |DisplayMode::kRestore| to clear the focus even the current binding
@@ -263,17 +263,17 @@ void Action::RestoreToDefault(const gfx::RectF& content_bounds) {
   action_view_->SetDisplayMode(DisplayMode::kRestore);
 }
 
-const InputElement& Action::GetCurrentDisplayedBinding() {
-  DCHECK(current_binding_);
-  return pending_binding_ ? *pending_binding_ : *current_binding_;
+const InputElement& Action::GetCurrentDisplayedInput() {
+  DCHECK(current_input_);
+  return pending_input_ ? *pending_input_ : *current_input_;
 }
 
 bool Action::IsOverlapped(const InputElement& input_element) {
-  DCHECK(current_binding_);
-  if (!current_binding_)
+  DCHECK(current_input_);
+  if (!current_input_)
     return false;
-  auto& binding = GetCurrentDisplayedBinding();
-  return binding.IsOverlapped(input_element);
+  auto& input_binding = GetCurrentDisplayedInput();
+  return input_binding.IsOverlapped(input_element);
 }
 
 absl::optional<ui::TouchEvent> Action::GetTouchCanceledEvent() {
@@ -356,7 +356,7 @@ void Action::OnTouchCancelled() {
   current_position_idx_ = 0;
 }
 
-void Action::PostUnbindProcess() {
+void Action::PostUnbindInputProcess() {
   if (!action_view_)
     return;
   auto bounds = CalculateWindowContentBounds(target_window_);
@@ -370,13 +370,13 @@ void Action::PostUnbindProcess() {
 }
 
 std::unique_ptr<ActionProto> Action::ConvertToProtoIfCustomized() {
-  if (*original_binding_ == *current_binding_)
+  if (*original_input_ == *current_input_)
     return nullptr;
 
   auto proto = std::make_unique<ActionProto>();
   proto->set_id(id_);
   proto->set_allocated_input_element(
-      current_binding_->ConvertToProto().release());
+      current_input_->ConvertToProto().release());
   return proto;
 }
 

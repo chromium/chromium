@@ -74,9 +74,9 @@ class ActionView : public views::View {
   // Change binding for |action| binding to |input_element| and set
   // |kEditedSuccess| on |action_label| if |action_label| is not nullptr.
   // Otherwise, set |kEditedSuccess| to all |ActionLabel|.
-  void ChangeBinding(Action* action,
-                     ActionLabel* action_label,
-                     std::unique_ptr<InputElement> input_element);
+  void ChangeInputBinding(Action* action,
+                          ActionLabel* action_label,
+                          std::unique_ptr<InputElement> input_element);
   // Reset binding to its previous binding before entering to the edit mode.
   void OnResetBinding();
   // Return true if it needs to show error message and also shows error message.
