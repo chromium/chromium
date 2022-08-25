@@ -5624,6 +5624,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "robust-audio-device-select-logic",
+    "owners": [ "mingxuanshi@google.com", "chromeos-audio-sw@google.com" ],
+    "expiry_milestone": 114
+  },
+  {
     "name": "rounded-display",
     "owners": [
       "zoraiznaeem",

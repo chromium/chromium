@@ -2688,6 +2688,9 @@ extern const char kBluetoothWbsDogfoodDescription[];
 extern const char kBluetoothCoredumpName[];
 extern const char kBluetoothCoredumpDescription[];
 
+extern const char kRobustAudioDeviceSelectLogicName[];
+extern const char kRobustAudioDeviceSelectLogicDescription[];
+
 extern const char kBluetoothUseFlossName[];
 extern const char kBluetoothUseFlossDescription[];
 

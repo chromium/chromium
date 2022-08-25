@@ -254,6 +254,9 @@ const base::Feature kBluetoothRevamp{"BluetoothRevamp",
 const base::Feature kBluetoothWbsDogfood{"BluetoothWbsDogfood",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kRobustAudioDeviceSelectLogic{
+    "RobustAudioDeviceSelectLogic", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable Big GL when using Borealis.
 const base::Feature kBorealisBigGl{"BorealisBigGl",
                                    base::FEATURE_ENABLED_BY_DEFAULT};
