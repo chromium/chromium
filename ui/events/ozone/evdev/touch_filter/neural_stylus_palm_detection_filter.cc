@@ -258,14 +258,8 @@ void NeuralStylusPalmDetectionFilter::Filter(
 bool NeuralStylusPalmDetectionFilter::ShouldDecideStroke(
     const PalmFilterStroke& stroke) const {
   const NeuralStylusPalmDetectionFilterModelConfig& config = model_->config();
-  // Perform inference at most every |max_sample_count| samples.
-  if (stroke.samples_seen() % config.max_sample_count != 0)
-    return false;
-
-  // Only inference at start.
-  if (stroke.samples_seen() > config.max_sample_count)
-    return false;
-  return true;
+  // Inference only executed once per stroke
+  return stroke.samples_seen() == config.max_sample_count;
 }
 
 bool NeuralStylusPalmDetectionFilter::IsHeuristicPalmStroke(
