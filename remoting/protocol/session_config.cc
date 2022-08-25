@@ -12,8 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -307,5 +306,4 @@ void CandidateSessionConfig::PreferTransport(
   UpdateConfigListToPreferTransport(&audio_configs_, transport);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

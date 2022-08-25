@@ -16,8 +16,7 @@
 
 using crypto::P224EncryptedKeyExchange;
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -205,5 +204,4 @@ bool V2Authenticator::is_host_side() const {
   return local_key_pair_.get() != nullptr;
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

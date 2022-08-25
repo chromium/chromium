@@ -27,8 +27,7 @@
 using testing::_;
 using testing::SaveArg;
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -179,5 +178,4 @@ void AuthenticatorTestBase::OnClientConnected(
   client_socket_ = std::move(socket);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

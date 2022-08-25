@@ -11,8 +11,7 @@
 #include "remoting/protocol/channel_authenticator.h"
 #include "remoting/protocol/p2p_stream_socket.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 SecureChannelFactory::SecureChannelFactory(
     StreamChannelFactory* channel_factory,
@@ -79,5 +78,4 @@ void SecureChannelFactory::OnSecureChannelCreated(
   std::move(callback).Run(std::move(socket));
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

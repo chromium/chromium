@@ -18,22 +18,21 @@ namespace net {
 class IOBuffer;
 }  // namespace net
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class P2PStreamSocket;
 
-// MessageReader reads data from the socket asynchronously and calls
-// callback for each message it receives. It stops calling the
-// callback as soon as the socket is closed, so the socket should
-// always be closed before the callback handler is destroyed.
+// MessageReader reads data from the socket asynchronously and calls the
+// callback for each message it receives. It stops calling the callback as soon
+// as the socket is closed, so the socket should always be closed before the
+// callback handler is destroyed.
 //
-// In order to throttle the stream, MessageReader doesn't try to read
-// new data from the socket until all previously received messages are
-// processed by the receiver (|done_task| is called for each message).
-// It is still possible that the MessageReceivedCallback is called
-// twice (so that there is more than one outstanding message),
-// e.g. when we the sender sends multiple messages in one TCP packet.
+// In order to throttle the stream, MessageReader doesn't try to read new data
+// from the socket until all previously received messages are processed by the
+// receiver (|done_task| is called for each message). It is still possible that
+// the MessageReceivedCallback is called twice (so that there is more than one
+// outstanding message), e.g. when we the sender sends multiple messages in one
+// TCP packet.
 class MessageReader {
  public:
   typedef base::RepeatingCallback<void(std::unique_ptr<CompoundBuffer> message)>
@@ -83,7 +82,6 @@ class MessageReader {
   base::WeakPtrFactory<MessageReader> weak_factory_{this};
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_MESSAGE_READER_H_

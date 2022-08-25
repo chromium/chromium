@@ -20,8 +20,7 @@ using testing::_;
 using testing::DeleteArg;
 using testing::SaveArg;
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -95,5 +94,4 @@ TEST_F(V2AuthenticatorTest, InvalidSecret) {
   ASSERT_EQ(Authenticator::REJECTED, host_->state());
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

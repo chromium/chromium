@@ -32,8 +32,7 @@
 
 using jingle_xmpp::XmlElement;
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -199,25 +198,25 @@ JingleSession::JingleSession(JingleSessionManager* session_manager)
       message_queue_(new OrderedMessageQueue) {}
 
 JingleSession::~JingleSession() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   session_manager_->SessionDestroyed(this);
 }
 
 void JingleSession::SetEventHandler(Session::EventHandler* event_handler) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(event_handler);
   event_handler_ = event_handler;
 }
 
 ErrorCode JingleSession::error() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return error_;
 }
 
 void JingleSession::StartConnection(
     const SignalingAddress& peer_address,
     std::unique_ptr<Authenticator> authenticator) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(authenticator.get());
   DCHECK_EQ(authenticator->state(), Authenticator::MESSAGE_READY);
 
@@ -244,7 +243,7 @@ void JingleSession::InitializeIncomingConnection(
     const std::string& message_id,
     const JingleMessage& initiate_message,
     std::unique_ptr<Authenticator> authenticator) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(initiate_message.description.get());
   DCHECK(authenticator.get());
   DCHECK_EQ(authenticator->state(), Authenticator::WAITING_MESSAGE);
@@ -322,17 +321,17 @@ void JingleSession::ContinueAcceptIncomingConnection() {
 }
 
 const std::string& JingleSession::jid() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return peer_address_.id();
 }
 
 const SessionConfig& JingleSession::config() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return *config_;
 }
 
 void JingleSession::SetTransport(Transport* transport) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!transport_);
   DCHECK(transport);
   transport_ = transport;
@@ -340,7 +339,7 @@ void JingleSession::SetTransport(Transport* transport) {
 
 void JingleSession::SendTransportInfo(
     std::unique_ptr<jingle_xmpp::XmlElement> transport_info) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_EQ(state_, AUTHENTICATED);
 
   std::unique_ptr<JingleMessage> message(new JingleMessage(
@@ -363,7 +362,7 @@ void JingleSession::SendTransportInfo(
 }
 
 void JingleSession::Close(protocol::ErrorCode error) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (is_session_active()) {
     // Send session-terminate message with the appropriate error code.
@@ -417,7 +416,7 @@ void JingleSession::AddPlugin(SessionPlugin* plugin) {
 }
 
 void JingleSession::SendMessage(std::unique_ptr<JingleMessage> message) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (message->action != JingleMessage::SESSION_TERMINATE) {
     // When the host accepts session-initiate message from a client JID it
@@ -454,7 +453,7 @@ void JingleSession::OnMessageResponse(
     JingleMessage::ActionType request_type,
     IqRequest* request,
     const jingle_xmpp::XmlElement* response) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Delete the request from the list of pending requests.
   pending_requests_.erase(
@@ -491,7 +490,7 @@ void JingleSession::OnMessageResponse(
 
 void JingleSession::OnTransportInfoResponse(IqRequest* request,
                                             const jingle_xmpp::XmlElement* response) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!transport_info_requests_.empty());
 
   // Consider transport-info requests sent before this one lost and delete
@@ -537,7 +536,7 @@ void JingleSession::OnIncomingMessage(const std::string& id,
 void JingleSession::ProcessIncomingMessage(
     std::unique_ptr<JingleMessage> message,
     ReplyCallback reply_callback) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (peer_address_ != message->from) {
     // Ignore messages received from a different Jid.
@@ -718,7 +717,7 @@ bool JingleSession::InitializeConfigFromDescription(
 }
 
 void JingleSession::ProcessAuthenticationStep() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_NE(authenticator_->state(), Authenticator::PROCESSING_MESSAGE);
 
   if (state_ != ACCEPTED && state_ != AUTHENTICATING) {
@@ -774,7 +773,7 @@ void JingleSession::OnAuthenticated() {
 }
 
 void JingleSession::SetState(State new_state) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (new_state != state_) {
     DCHECK_NE(state_, CLOSED);
@@ -829,5 +828,4 @@ std::string JingleSession::GetNextOutgoingId() {
   return outgoing_id_prefix_ + "_" + base::NumberToString(++next_outgoing_id_);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

@@ -11,8 +11,7 @@
 #include "net/base/net_errors.h"
 #include "remoting/protocol/stream_channel_factory.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class Authenticator;
 class ChannelAuthenticator;
@@ -56,7 +55,6 @@ class SecureChannelFactory : public StreamChannelFactory {
   AuthenticatorMap channel_authenticators_;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_SECURE_CHANNEL_FACTORY_H_

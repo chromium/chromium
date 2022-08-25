@@ -11,8 +11,7 @@
 #include "third_party/webrtc/media/base/rtp_utils.h"
 #include "third_party/webrtc/rtc_base/time_utils.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -122,5 +121,4 @@ void StunTcpPacketProcessor::ApplyPacketOptions(
                               rtc::TimeMicros());
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

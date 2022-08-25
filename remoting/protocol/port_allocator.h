@@ -14,8 +14,7 @@
 #include "third_party/abseil-cpp/absl/strings/string_view.h"
 #include "third_party/webrtc/p2p/client/basic_port_allocator.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class PortAllocator : public cricket::BasicPortAllocator {
  public:
@@ -71,7 +70,6 @@ class PortAllocatorSession : public cricket::BasicPortAllocatorSession {
   base::WeakPtrFactory<PortAllocatorSession> weak_factory_{this};
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_PORT_ALLOCATOR_H_

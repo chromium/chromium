@@ -28,8 +28,7 @@ class P2PTransportChannel;
 class PortAllocator;
 }  // namespace cricket
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class P2PDatagramSocket;
 class TransportContext;
@@ -133,12 +132,11 @@ class IceTransportChannel : public sigslot::has_slots<> {
   int connect_attempts_left_;
   base::RepeatingTimer reconnect_timer_;
 
-  base::ThreadChecker thread_checker_;
+  THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<IceTransportChannel> weak_factory_{this};
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_ICE_TRANSPORT_CHANNEL_H_

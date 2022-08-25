@@ -88,8 +88,6 @@ class WebrtcVideoStream : public VideoStream, public VideoChannelStateObserver {
       std::unique_ptr<webrtc::DesktopFrame> desktop_frame,
       std::unique_ptr<WebrtcVideoEncoder::FrameStats> frame_stats);
 
-  THREAD_CHECKER(thread_checker_);
-
   // Label of the associated WebRTC video-stream.
   std::string stream_name_;
 
@@ -109,6 +107,8 @@ class WebrtcVideoStream : public VideoStream, public VideoChannelStateObserver {
 
   std::unique_ptr<Core> core_;
   scoped_refptr<base::SingleThreadTaskRunner> core_task_runner_;
+
+  THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<WebrtcVideoStream> weak_factory_{this};
 };

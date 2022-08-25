@@ -14,15 +14,14 @@
 #include "remoting/protocol/clipboard_stub.h"
 #include "remoting/protocol/cursor_shape_stub.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class HostStub;
 class PairingResponse;
 
-// HostControlDispatcher dispatches incoming messages on the control
-// channel to HostStub or ClipboardStub, and also implements ClientStub and
-// CursorShapeStub for outgoing messages.
+// HostControlDispatcher dispatches incoming messages on the control channel to
+// HostStub or ClipboardStub, and also implements ClientStub and CursorShapeStub
+// for outgoing messages.
 class HostControlDispatcher : public ChannelDispatcherBase,
                               public ClientStub {
  public:
@@ -55,8 +54,8 @@ class HostControlDispatcher : public ChannelDispatcherBase,
     clipboard_stub_ = clipboard_stub;
   }
 
-  // Sets the HostStub that will be called for each incoming control
-  // message. |host_stub| must outlive this object.
+  // Sets the HostStub that will be called for each incoming control message.
+  // |host_stub| must outlive this object.
   void set_host_stub(HostStub* host_stub) { host_stub_ = host_stub; }
 
   // Sets the maximum size of outgoing messages, which defaults to 64KiB. This
@@ -73,12 +72,11 @@ class HostControlDispatcher : public ChannelDispatcherBase,
 
   raw_ptr<ClipboardStub> clipboard_stub_ = nullptr;
   raw_ptr<HostStub> host_stub_ = nullptr;
-  // 64 KiB is the default message size expected to be supported in absence of
-  // a higher value negotiated via SDP.
+  // 64 KiB is the default message size expected to be supported in absence of a
+  // higher value negotiated via SDP.
   std::size_t max_message_size_ = 64 * 1024;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_HOST_CONTROL_DISPATCHER_H_

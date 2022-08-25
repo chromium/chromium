@@ -14,8 +14,7 @@ namespace cricket {
 class PortAllocator;
 }  // namespace cricket
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class SessionOptionsProvider;
 class TransportContext;
@@ -31,7 +30,6 @@ class PortAllocatorFactory {
       base::WeakPtr<SessionOptionsProvider> session_options_provider) = 0;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_PORT_ALLOCATOR_FACTORY_H_

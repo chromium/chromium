@@ -9,8 +9,7 @@
 #include "remoting/protocol/channel_dispatcher_base.h"
 #include "remoting/protocol/input_stub.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // ClientEventDispatcher manages the event channel on the client
 // side. It implements InputStub for outgoing input messages.
@@ -33,7 +32,6 @@ class ClientEventDispatcher : public ChannelDispatcherBase, public InputStub {
   void OnIncomingMessage(std::unique_ptr<CompoundBuffer> message) override;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_CLIENT_EVENT_DISPATCHER_H_

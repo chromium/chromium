@@ -8,26 +8,24 @@
 #ifndef REMOTING_PROTOCOL_CLIPBOARD_STUB_H_
 #define REMOTING_PROTOCOL_CLIPBOARD_STUB_H_
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class ClipboardEvent;
 
 class ClipboardStub {
  public:
-  ClipboardStub() {}
+  ClipboardStub() = default;
 
   ClipboardStub(const ClipboardStub&) = delete;
   ClipboardStub& operator=(const ClipboardStub&) = delete;
 
-  virtual ~ClipboardStub() {}
+  virtual ~ClipboardStub() = default;
 
   // Implementations must not assume the presence of |event|'s fields, nor that
   // |event.data| is correctly encoded according to the specified MIME-type.
   virtual void InjectClipboardEvent(const ClipboardEvent& event) = 0;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_CLIPBOARD_STUB_H_

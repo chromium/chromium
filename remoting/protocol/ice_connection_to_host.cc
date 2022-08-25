@@ -25,8 +25,7 @@
 #include "remoting/protocol/transport_context.h"
 #include "remoting/protocol/video_renderer.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 IceConnectionToHost::IceConnectionToHost() = default;
 
@@ -235,5 +234,4 @@ void IceConnectionToHost::SetState(State state, ErrorCode error) {
   }
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

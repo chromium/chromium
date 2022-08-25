@@ -4,8 +4,7 @@
 
 #include "remoting/protocol/input_filter.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 InputFilter::InputFilter() : input_stub_(nullptr), enabled_(true) {
 }
@@ -36,5 +35,4 @@ void InputFilter::InjectTouchEvent(const TouchEvent& event) {
     input_stub_->InjectTouchEvent(event);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

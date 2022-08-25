@@ -12,8 +12,7 @@
 #include "remoting/protocol/third_party_authenticator_base.h"
 #include "remoting/protocol/token_validator.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // Implements the host side of the third party authentication mechanism.
 // The host authenticator sends the |token_url| and |scope| obtained from the
@@ -54,7 +53,6 @@ class ThirdPartyHostAuthenticator : public ThirdPartyAuthenticatorBase {
   std::unique_ptr<TokenValidator> token_validator_;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_THIRD_PARTY_HOST_AUTHENTICATOR_H_

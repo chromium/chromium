@@ -24,8 +24,8 @@ class VideoStub {
                                   base::OnceClosure done) = 0;
 
  protected:
-  VideoStub() {}
-  virtual ~VideoStub() {}
+  VideoStub() = default;
+  virtual ~VideoStub() = default;
 };
 
 }  // namespace protocol

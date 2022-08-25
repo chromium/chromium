@@ -18,8 +18,7 @@ using webrtc::BasicDesktopFrame;
 using webrtc::DesktopRect;
 using webrtc::DesktopSize;
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class WebrtcFrameSchedulerTest : public ::testing::Test {
  public:
@@ -106,5 +105,4 @@ TEST_F(WebrtcFrameSchedulerTest, NoCaptureWhilePaused) {
   EXPECT_LE(1, capture_callback_count_);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

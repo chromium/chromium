@@ -18,8 +18,7 @@ constexpr int kLatencySampleSize = 10;
 
 }  // namespace
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 PerformanceTracker::PerformanceTracker()
     : video_bandwidth_(base::Seconds(kStatsUpdatePeriodSeconds)),
@@ -80,5 +79,4 @@ void PerformanceTracker::OnVideoFrameStats(const FrameStats& stats) {
   round_trip_ms_.Record(round_trip_latency.InMilliseconds());
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

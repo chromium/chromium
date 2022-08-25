@@ -22,8 +22,7 @@ class Location;
 class SingleThreadTaskRunner;
 }  // namespace base
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // PairingRegistry holds information about paired clients to support
 // PIN-less authentication. For each paired client, the registry holds
@@ -185,7 +184,6 @@ class PairingRegistry : public base::RefCountedThreadSafe<PairingRegistry> {
   base::queue<base::OnceClosure> pending_requests_;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_PAIRING_REGISTRY_H_

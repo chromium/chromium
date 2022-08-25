@@ -15,8 +15,7 @@
 
 #include <memory>
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class WebrtcVideoTrackSource
     : public webrtc::Notifier<webrtc::VideoTrackSourceInterface> {
@@ -27,8 +26,10 @@ class WebrtcVideoTrackSource
   // |add_sink_callback| is notified on the main thread whenever a sink is
   // added or updated.
   explicit WebrtcVideoTrackSource(AddSinkCallback add_sink_callback);
+
   ~WebrtcVideoTrackSource() override;
   WebrtcVideoTrackSource(const WebrtcVideoTrackSource&) = delete;
+
   WebrtcVideoTrackSource& operator=(const WebrtcVideoTrackSource&) = delete;
 
   // VideoTrackSourceInterface implementation.
@@ -64,7 +65,6 @@ class WebrtcVideoTrackSource
   uint16_t frame_id_ = 0;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_WEBRTC_VIDEO_TRACK_SOURCE_H_

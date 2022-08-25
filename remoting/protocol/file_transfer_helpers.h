@@ -13,8 +13,7 @@
 #include "remoting/proto/file_transfer.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 template <typename SuccessType>
 using FileTransferResult = Result<SuccessType, FileTransfer_Error>;
@@ -26,7 +25,6 @@ FileTransfer_Error MakeFileTransferError(
 
 std::ostream& operator<<(std::ostream& stream, const FileTransfer_Error& error);
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_FILE_TRANSFER_HELPERS_H_

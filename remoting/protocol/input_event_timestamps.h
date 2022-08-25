@@ -8,8 +8,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // Used on the host side to track timestamps for input events.
 struct InputEventTimestamps {
@@ -29,7 +28,7 @@ struct InputEventTimestamps {
 class InputEventTimestampsSource
     : public base::RefCountedThreadSafe<InputEventTimestampsSource> {
  public:
-  InputEventTimestampsSource() {}
+  InputEventTimestampsSource() = default;
 
   // Returns event timestamps for the input event that was received since the
   // previous call. Null InputEventTimestamps value is returned if no input
@@ -39,7 +38,7 @@ class InputEventTimestampsSource
 
  protected:
   friend base::RefCountedThreadSafe<InputEventTimestampsSource>;
-  virtual ~InputEventTimestampsSource() {}
+  virtual ~InputEventTimestampsSource() = default;
 };
 
 // Simple implementations of InputEventTimestampsSource that just stores the
@@ -60,7 +59,6 @@ class InputEventTimestampsSourceImpl : public InputEventTimestampsSource {
   InputEventTimestamps last_timestamps_;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_INPUT_EVENT_TIMESTAMPS_H_

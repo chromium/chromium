@@ -18,8 +18,7 @@
 using jingle_xmpp::QName;
 using jingle_xmpp::XmlElement;
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -560,5 +559,4 @@ std::unique_ptr<jingle_xmpp::XmlElement> IceTransportInfo::ToXml() const {
   return result;
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

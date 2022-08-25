@@ -7,8 +7,7 @@
 #include "remoting/proto/video.pb.h"
 #include "remoting/proto/video_stats.pb.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 ClientFrameStats::ClientFrameStats() = default;
 ClientFrameStats::ClientFrameStats(const ClientFrameStats&) = default;
@@ -152,5 +151,4 @@ FrameStats::FrameStats() = default;
 FrameStats::FrameStats(const FrameStats&) = default;
 FrameStats::~FrameStats() = default;
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

@@ -19,8 +19,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 FakeChannelAuthenticator::FakeChannelAuthenticator(bool accept, bool async)
     : result_(accept ? net::OK : net::ERR_FAILED), async_(async) {}
@@ -246,5 +245,4 @@ FakeHostAuthenticatorFactory::CreateAuthenticator(
   return std::move(authenticator);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

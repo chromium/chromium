@@ -11,8 +11,7 @@
 
 #include "base/callback.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class MessagePipe;
 
@@ -41,7 +40,6 @@ class DataChannelManager final {
   std::vector<std::pair<std::string, CreateHandlerCallback>> constructors_;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_DATA_CHANNEL_MANAGER_H_

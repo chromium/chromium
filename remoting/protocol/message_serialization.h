@@ -13,8 +13,7 @@
 #include "remoting/base/compound_buffer.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 template <class T>
 std::unique_ptr<T> ParseMessage(CompoundBuffer* buffer) {
@@ -35,7 +34,6 @@ std::unique_ptr<T> ParseMessage(CompoundBuffer* buffer) {
 scoped_refptr<net::IOBufferWithSize> SerializeAndFrameMessage(
     const google::protobuf::MessageLite& msg);
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_MESSAGE_SERIALIZATION_H_

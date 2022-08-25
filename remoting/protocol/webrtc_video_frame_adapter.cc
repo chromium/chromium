@@ -9,8 +9,7 @@
 #include "base/notreached.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 WebrtcVideoFrameAdapter::WebrtcVideoFrameAdapter(
     std::unique_ptr<webrtc::DesktopFrame> frame,
@@ -74,12 +73,10 @@ int WebrtcVideoFrameAdapter::height() const {
 rtc::scoped_refptr<webrtc::I420BufferInterface>
 WebrtcVideoFrameAdapter::ToI420() {
   // Strictly speaking all adapters must implement ToI420(), so that if the
-  // external encoder fails, an internal libvpx could be used. But the
-  // remoting encoder already uses libvpx, so there's no reason for fallback to
-  // happen.
+  // external encoder fails, an internal libvpx could be used. But the remoting
+  // encoder already uses libvpx, so there's no reason for fallback to happen.
   NOTIMPLEMENTED();
   return nullptr;
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

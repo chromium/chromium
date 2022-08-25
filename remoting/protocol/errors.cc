@@ -6,8 +6,7 @@
 
 #include "remoting/base/name_value_map.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -44,5 +43,4 @@ bool ParseErrorCode(const std::string& name, ErrorCode* result) {
   return NameToValue(kErrorCodeNames, name, result);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

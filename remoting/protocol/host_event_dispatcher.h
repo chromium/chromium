@@ -11,13 +11,12 @@
 #include "remoting/protocol/channel_dispatcher_base.h"
 #include "remoting/protocol/input_event_timestamps.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class InputStub;
 
-// HostEventDispatcher dispatches incoming messages on the event
-// channel to InputStub.
+// HostEventDispatcher dispatches incoming messages on the event channel to
+// InputStub.
 class HostEventDispatcher : public ChannelDispatcherBase {
  public:
   HostEventDispatcher();
@@ -52,7 +51,6 @@ class HostEventDispatcher : public ChannelDispatcherBase {
   raw_ptr<InputStub> input_stub_ = nullptr;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_HOST_EVENT_DISPATCHER_H_

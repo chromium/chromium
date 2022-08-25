@@ -14,8 +14,7 @@
 #include "remoting/protocol/channel_dispatcher_base.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class ClientStub;
 class VideoStub;
@@ -50,7 +49,6 @@ class ClientVideoDispatcher : public ChannelDispatcherBase {
   base::WeakPtrFactory<ClientVideoDispatcher> weak_factory_{this};
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_CLIENT_VIDEO_DISPATCHER_H_

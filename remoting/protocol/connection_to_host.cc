@@ -6,8 +6,7 @@
 
 #include "base/notreached.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 #define RETURN_STRING_LITERAL(x) \
 case x: \
@@ -26,5 +25,4 @@ const char* ConnectionToHost::StateToString(State state) {
   return nullptr;
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

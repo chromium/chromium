@@ -80,8 +80,6 @@ class WebrtcVideoStream::Core : public webrtc::DesktopCapturer::Callback {
   // Called by the |scheduler_|.
   void CaptureNextFrame();
 
-  THREAD_CHECKER(thread_checker_);
-
   // The current frame size.
   webrtc::DesktopSize frame_size_;
 
@@ -108,6 +106,8 @@ class WebrtcVideoStream::Core : public webrtc::DesktopCapturer::Callback {
 
   // Allows Core to post messages to its owner in a thread-safe manner.
   scoped_refptr<base::SingleThreadTaskRunner> video_stream_task_runner_;
+
+  THREAD_CHECKER(thread_checker_);
 };
 
 WebrtcVideoStream::Core::Core(std::unique_ptr<webrtc::DesktopCapturer> capturer,

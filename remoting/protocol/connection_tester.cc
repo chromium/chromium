@@ -16,8 +16,7 @@
 #include "remoting/protocol/p2p_stream_socket.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 StreamConnectionTester::StreamConnectionTester(P2PStreamSocket* client_socket,
                                                P2PStreamSocket* host_socket,
@@ -205,5 +204,4 @@ void MessagePipeConnectionTester::OnMessagePipeClosed() {
   FAIL();
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

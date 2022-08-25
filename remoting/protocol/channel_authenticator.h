@@ -9,8 +9,7 @@
 
 #include "base/callback_forward.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class P2PStreamSocket;
 
@@ -32,7 +31,6 @@ class ChannelAuthenticator {
                                      DoneCallback done_callback) = 0;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_CHANNEL_AUTHENTICATOR_H_

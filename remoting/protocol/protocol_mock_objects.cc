@@ -13,8 +13,7 @@
 #include "remoting/protocol/video_stream.h"
 #include "remoting/signaling/signaling_address.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 MockAuthenticator::MockAuthenticator() = default;
 MockAuthenticator::~MockAuthenticator() = default;
@@ -100,5 +99,4 @@ void SynchronousPairingRegistry::PostTask(
   std::move(task).Run();
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

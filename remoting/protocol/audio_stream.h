@@ -5,15 +5,14 @@
 #ifndef REMOTING_PROTOCOL_AUDIO_STREAM_H_
 #define REMOTING_PROTOCOL_AUDIO_STREAM_H_
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
-// AudioStream is responsible for fetching audio data from an AudioSource,
-// and sending it to the client.
+// AudioStream is responsible for fetching audio data from an AudioSource, and
+// sending it to the client.
 class AudioStream {
  public:
-  AudioStream() {}
-  virtual ~AudioStream() {}
+  AudioStream() = default;
+  virtual ~AudioStream() = default;
 
   // Pauses or resumes audio on a running session. This leaves the audio
   // capturer running, and only affects whether or not the captured audio is
@@ -21,7 +20,6 @@ class AudioStream {
   virtual void Pause(bool pause) = 0;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_AUDIO_STREAM_H_

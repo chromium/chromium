@@ -10,8 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "remoting/protocol/stream_channel_factory.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class DatagramChannelFactory;
 class P2PDatagramSocket;
@@ -49,7 +48,6 @@ class PseudoTcpChannelFactory : public StreamChannelFactory {
   PendingSocketsMap pending_sockets_;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_PSEUDOTCP_CHANNEL_FACTORY_H_

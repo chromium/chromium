@@ -11,8 +11,7 @@
 #include "remoting/proto/audio.pb.h"
 #include "remoting/protocol/audio_stub.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 WebrtcAudioSinkAdapter::WebrtcAudioSinkAdapter(
     rtc::scoped_refptr<webrtc::MediaStreamInterface> stream,
@@ -76,5 +75,4 @@ void WebrtcAudioSinkAdapter::OnData(const void* audio_data,
                                 std::move(audio_packet), base::OnceClosure()));
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

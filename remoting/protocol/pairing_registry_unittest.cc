@@ -56,8 +56,7 @@ void VerifyPairing(PairingRegistry::Pairing expected,
 
 }  // namespace
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class PairingRegistryTest : public testing::Test {
  public:
@@ -250,5 +249,4 @@ TEST_F(PairingRegistryTest, SerializedRequests) {
   run_loop_.Run();
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

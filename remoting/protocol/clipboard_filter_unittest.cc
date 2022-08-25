@@ -12,8 +12,7 @@
 
 using ::testing::_;
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 using test::EqualsClipboardEvent;
 
@@ -102,5 +101,4 @@ TEST(ClipboardFilterTest, IgnoreEventsIfNotConfigured) {
   clipboard_filter.InjectClipboardEvent(MakeClipboardEvent("text","foo"));
 }
 
-} // namespace protocol
-} // namespace remoting
+}  // namespace remoting::protocol

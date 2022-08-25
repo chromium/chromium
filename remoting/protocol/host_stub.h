@@ -9,8 +9,7 @@
 #ifndef REMOTING_PROTOCOL_HOST_STUB_H_
 #define REMOTING_PROTOCOL_HOST_STUB_H_
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class AudioControl;
 class Capabilities;
@@ -23,7 +22,7 @@ class VideoControl;
 
 class HostStub {
  public:
-  HostStub() {}
+  HostStub() = default;
 
   HostStub(const HostStub&) = delete;
   HostStub& operator=(const HostStub&) = delete;
@@ -59,10 +58,9 @@ class HostStub {
       const SelectDesktopDisplayRequest& select_display) = 0;
 
  protected:
-  virtual ~HostStub() {}
+  virtual ~HostStub() = default;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_HOST_STUB_H_

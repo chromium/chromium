@@ -10,8 +10,7 @@
 #include "remoting/protocol/channel_dispatcher_base.h"
 #include "remoting/protocol/video_stub.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class VideoFeedbackStub;
 
@@ -38,7 +37,6 @@ class HostVideoDispatcher : public ChannelDispatcherBase, public VideoStub {
   raw_ptr<VideoFeedbackStub> video_feedback_stub_ = nullptr;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_HOST_VIDEO_DISPATCHER_H_

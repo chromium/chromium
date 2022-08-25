@@ -7,8 +7,7 @@
 #include "base/bind.h"
 #include "remoting/proto/event.pb.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 ClipboardThreadProxy::~ClipboardThreadProxy() = default;
 
@@ -34,5 +33,4 @@ void ClipboardThreadProxy::InjectClipboardEventStatic(
   }
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

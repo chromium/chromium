@@ -14,8 +14,7 @@
 
 using ::testing::_;
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 using test::EqualsKeyEvent;
 using test::EqualsMouseMoveEvent;
@@ -82,5 +81,4 @@ TEST(InputFilterTest, IgnoreEventsIfNotConfigured) {
   InjectTestSequence(&input_filter);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

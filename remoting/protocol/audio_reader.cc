@@ -15,8 +15,7 @@
 #include "remoting/protocol/session.h"
 #include "remoting/protocol/session_config.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 AudioReader::AudioReader(AudioStub* audio_stub)
     : ChannelDispatcherBase(kAudioChannelName), audio_stub_(audio_stub) {}
@@ -31,5 +30,4 @@ void AudioReader::OnIncomingMessage(std::unique_ptr<CompoundBuffer> message) {
   }
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

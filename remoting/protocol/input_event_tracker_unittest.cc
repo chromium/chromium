@@ -16,8 +16,7 @@ using ::testing::_;
 using ::testing::ExpectationSet;
 using ::testing::InSequence;
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 using test::EqualsKeyEventWithCapsLock;
 using test::EqualsMouseEvent;
@@ -353,5 +352,4 @@ TEST(InputEventTrackerTest, ReleaseAllRemainingTouchPoints) {
   input_tracker.ReleaseAll();
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

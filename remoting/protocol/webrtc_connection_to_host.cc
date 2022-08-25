@@ -23,8 +23,7 @@
 #include "remoting/protocol/webrtc_transport.h"
 #include "remoting/protocol/webrtc_video_renderer_adapter.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 WebrtcConnectionToHost::WebrtcConnectionToHost() = default;
 WebrtcConnectionToHost::~WebrtcConnectionToHost() = default;
@@ -236,5 +235,4 @@ void WebrtcConnectionToHost::SetState(State state, ErrorCode error) {
   }
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

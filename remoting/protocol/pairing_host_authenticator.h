@@ -9,8 +9,7 @@
 #include "remoting/protocol/pairing_authenticator_base.h"
 #include "remoting/protocol/pairing_registry.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class PairingRegistry;
 
@@ -58,7 +57,6 @@ class PairingHostAuthenticator : public PairingAuthenticatorBase {
   base::WeakPtrFactory<PairingHostAuthenticator> weak_factory_{this};
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_PAIRING_HOST_AUTHENTICATOR_H_

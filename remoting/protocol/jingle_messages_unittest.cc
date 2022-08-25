@@ -17,8 +17,7 @@ using jingle_xmpp::QName;
 using jingle_xmpp::XmlAttr;
 using jingle_xmpp::XmlElement;
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -634,5 +633,4 @@ TEST(JingleMessageTest, AttachmentsMessage) {
   }
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

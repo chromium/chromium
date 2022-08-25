@@ -15,8 +15,7 @@
 #include "remoting/protocol/message_serialization.h"
 #include "remoting/protocol/video_feedback_stub.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 HostVideoDispatcher::HostVideoDispatcher()
     : ChannelDispatcherBase(kVideoChannelName) {}
@@ -37,5 +36,4 @@ void HostVideoDispatcher::OnIncomingMessage(
     video_feedback_stub_->ProcessVideoAck(std::move(ack));
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

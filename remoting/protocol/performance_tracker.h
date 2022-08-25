@@ -11,8 +11,7 @@
 #include "remoting/base/running_samples.h"
 #include "remoting/protocol/frame_stats.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // PerformanceTracker defines a bundle of performance counters and statistics
 // for chromoting.
@@ -63,7 +62,6 @@ class PerformanceTracker : public FrameStatsConsumer {
   RunningSamples round_trip_ms_;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_PERFORMANCE_TRACKER_H_

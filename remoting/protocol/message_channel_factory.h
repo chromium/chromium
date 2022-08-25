@@ -10,8 +10,7 @@
 
 #include "base/callback_forward.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class MessagePipe;
 
@@ -36,7 +35,6 @@ class MessageChannelFactory {
   virtual void CancelChannelCreation(const std::string& name) = 0;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_MESSAGE_CHANNEL_FACTORY_H_

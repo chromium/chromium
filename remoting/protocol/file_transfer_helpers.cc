@@ -4,8 +4,7 @@
 
 #include "remoting/protocol/file_transfer_helpers.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 FileTransfer_Error MakeFileTransferError(
     base::Location location,
@@ -33,5 +32,4 @@ std::ostream& operator<<(std::ostream& stream,
   return stream;
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

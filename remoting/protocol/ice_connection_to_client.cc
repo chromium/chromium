@@ -26,8 +26,7 @@
 #include "remoting/protocol/transport_context.h"
 #include "remoting/protocol/video_frame_pump.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -69,22 +68,22 @@ IceConnectionToClient::IceConnectionToClient(
 }
 
 IceConnectionToClient::~IceConnectionToClient() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
 void IceConnectionToClient::SetEventHandler(
     ConnectionToClient::EventHandler* event_handler) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   event_handler_ = event_handler;
 }
 
 protocol::Session* IceConnectionToClient::session() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return session_.get();
 }
 
 void IceConnectionToClient::Disconnect(ErrorCode error) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // This should trigger OnConnectionClosed() event and this object
   // may be destroyed as the result.
@@ -94,7 +93,7 @@ void IceConnectionToClient::Disconnect(ErrorCode error) {
 std::unique_ptr<VideoStream> IceConnectionToClient::StartVideoStream(
     const std::string& stream_name,
     std::unique_ptr<webrtc::DesktopCapturer> desktop_capturer) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   std::unique_ptr<VideoEncoder> video_encoder =
       VideoEncoder::Create(session_->config());
@@ -109,7 +108,7 @@ std::unique_ptr<VideoStream> IceConnectionToClient::StartVideoStream(
 
 std::unique_ptr<AudioStream> IceConnectionToClient::StartAudioStream(
     std::unique_ptr<AudioSource> audio_source) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Audio channel is disabled.
   if (!audio_writer_)
@@ -125,23 +124,23 @@ std::unique_ptr<AudioStream> IceConnectionToClient::StartAudioStream(
 
 // Return pointer to ClientStub.
 ClientStub* IceConnectionToClient::client_stub() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return control_dispatcher_.get();
 }
 
 void IceConnectionToClient::set_clipboard_stub(
     protocol::ClipboardStub* clipboard_stub) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   control_dispatcher_->set_clipboard_stub(clipboard_stub);
 }
 
 void IceConnectionToClient::set_host_stub(protocol::HostStub* host_stub) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   control_dispatcher_->set_host_stub(host_stub);
 }
 
 void IceConnectionToClient::set_input_stub(protocol::InputStub* input_stub) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   event_dispatcher_->set_input_stub(input_stub);
 }
 
@@ -154,7 +153,7 @@ WebrtcEventLogData* IceConnectionToClient::rtc_event_log() {
 }
 
 void IceConnectionToClient::OnSessionStateChange(Session::State state) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   DCHECK(event_handler_);
   switch (state) {
@@ -200,25 +199,25 @@ void IceConnectionToClient::OnIceTransportRouteChange(
 }
 
 void IceConnectionToClient::OnIceTransportError(ErrorCode error) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   Disconnect(error);
 }
 
 void IceConnectionToClient::OnChannelInitialized(
     ChannelDispatcherBase* channel_dispatcher) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   NotifyIfChannelsReady();
 }
 
 void IceConnectionToClient::OnChannelClosed(
     ChannelDispatcherBase* channel_dispatcher) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   Disconnect(OK);
 }
 
 void IceConnectionToClient::NotifyIfChannelsReady() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (!control_dispatcher_ || !control_dispatcher_->is_connected())
     return;
@@ -241,5 +240,4 @@ void IceConnectionToClient::CloseChannels() {
   audio_writer_.reset();
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

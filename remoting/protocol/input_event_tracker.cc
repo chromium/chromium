@@ -7,8 +7,7 @@
 #include "base/check.h"
 #include "remoting/proto/event.pb.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 InputEventTracker::InputEventTracker() = default;
 
@@ -164,5 +163,4 @@ void InputEventTracker::InjectTouchEvent(const TouchEvent& event) {
   input_stub_->InjectTouchEvent(event);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

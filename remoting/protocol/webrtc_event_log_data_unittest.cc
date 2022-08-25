@@ -6,8 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -68,5 +67,4 @@ TEST(WebrtcEventLogDataTest, StoreThenClear_IsEmpty) {
   EXPECT_TRUE(data.empty());
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

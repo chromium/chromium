@@ -6,8 +6,7 @@
 
 #include "remoting/proto/event.pb.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 ClipboardEchoFilter::ClipboardEchoFilter()
   : host_stub_(nullptr),
@@ -73,5 +72,4 @@ void ClipboardEchoFilter::HostFilter::InjectClipboardEvent(
   filter_->InjectClipboardEventToHost(event);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

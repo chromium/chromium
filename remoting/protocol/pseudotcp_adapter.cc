@@ -27,8 +27,7 @@ const int kReadBufferSize = 65536;  // Maximum size of a packet.
 const uint16_t kDefaultMtu = 1280;
 }  // namespace
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class PseudoTcpAdapter::Core : public cricket::IPseudoTcpNotify,
                                public base::RefCounted<Core> {
@@ -503,5 +502,4 @@ void PseudoTcpAdapter::SetWriteWaitsForSend(bool write_waits_for_send) {
   core_->SetWriteWaitsForSend(write_waits_for_send);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

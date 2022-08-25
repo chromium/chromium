@@ -21,8 +21,7 @@
 #include "third_party/webrtc/rtc_base/socket_address.h"
 #include "third_party/webrtc/rtc_base/time_utils.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -191,5 +190,4 @@ TEST_F(ChromiumSocketFactoryTest, CheckSendTime) {
   ASSERT_EQ(last_packet_time_, rtc::TimeMicros());
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

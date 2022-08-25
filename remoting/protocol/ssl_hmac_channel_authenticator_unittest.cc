@@ -32,8 +32,7 @@ using testing::_;
 using testing::NotNull;
 using testing::SaveArg;
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -213,5 +212,4 @@ TEST_F(SslHmacChannelAuthenticatorTest, InvalidCertificate) {
   ASSERT_TRUE(host_socket_.get() == nullptr);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

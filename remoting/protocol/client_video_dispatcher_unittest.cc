@@ -23,8 +23,7 @@
 #include "remoting/protocol/video_stub.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class ClientVideoDispatcherTest : public testing::Test,
                                   public VideoStub,
@@ -235,5 +234,4 @@ TEST_F(ClientVideoDispatcherTest, AcksOrder) {
   EXPECT_EQ(kTestFrameId + 1, ack_messages_[1]->frame_id());
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

@@ -15,8 +15,7 @@
 #include "remoting/protocol/message_pipe.h"
 #include "remoting/protocol/message_serialization.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 HostControlDispatcher::HostControlDispatcher()
     : ChannelDispatcherBase(kControlChannelName) {}
@@ -131,5 +130,4 @@ void HostControlDispatcher::OnIncomingMessage(
   }
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

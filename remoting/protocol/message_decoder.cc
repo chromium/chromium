@@ -12,13 +12,9 @@
 #include "remoting/proto/internal.pb.h"
 #include "third_party/webrtc/rtc_base/byte_order.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
-MessageDecoder::MessageDecoder()
-    : next_payload_(0),
-      next_payload_known_(false) {
-}
+MessageDecoder::MessageDecoder() = default;
 
 MessageDecoder::~MessageDecoder() = default;
 
@@ -68,5 +64,4 @@ bool MessageDecoder::GetPayloadSize(int* size) {
   return true;
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

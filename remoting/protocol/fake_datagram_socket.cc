@@ -15,8 +15,7 @@
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 FakeDatagramSocket::FakeDatagramSocket()
     : input_pos_(0), task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
@@ -187,5 +186,4 @@ void FakeDatagramChannelFactory::CancelChannelCreation(
   channels_.erase(name);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

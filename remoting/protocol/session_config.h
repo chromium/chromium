@@ -9,9 +9,7 @@
 #include <memory>
 #include <string>
 
-
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 extern const int kDefaultStreamVersion;
 
@@ -193,7 +191,6 @@ class CandidateSessionConfig {
   std::list<ChannelConfig> audio_configs_;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_SESSION_CONFIG_H_

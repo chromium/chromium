@@ -54,7 +54,7 @@ class AudioDecodeScheduler : public AudioStub {
   // Decoder used on the audio thread.
   std::unique_ptr<AudioDecoder> decoder_;
 
-  base::ThreadChecker thread_checker_;
+  THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<AudioDecodeScheduler> weak_factory_{this};
 };

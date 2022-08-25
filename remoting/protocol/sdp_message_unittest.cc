@@ -6,8 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // Verify that SDP is normalized by removing empty lines and normalizing
 // line-endings to \r\n.
@@ -255,5 +254,4 @@ TEST(SdpMessages, PreferVideoCodec_MultiplePlayloads) {
       sdp_message.ToString());
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

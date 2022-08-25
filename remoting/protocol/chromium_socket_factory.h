@@ -11,8 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "third_party/webrtc/api/packet_socket_factory.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class SessionOptionsProvider;
 
@@ -48,7 +47,6 @@ class ChromiumPacketSocketFactory : public rtc::PacketSocketFactory {
   base::WeakPtr<SessionOptionsProvider> session_options_provider_;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_CHROMIUM_SOCKET_FACTORY_H_

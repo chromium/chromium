@@ -10,8 +10,7 @@
 #include "remoting/protocol/channel_authenticator.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 RejectingAuthenticator::RejectingAuthenticator(RejectionReason rejection_reason)
     : rejection_reason_(rejection_reason) {
@@ -56,5 +55,4 @@ RejectingAuthenticator::CreateChannelAuthenticator() const {
   return nullptr;
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

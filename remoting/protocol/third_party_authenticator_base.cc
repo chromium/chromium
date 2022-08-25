@@ -13,8 +13,7 @@
 #include "remoting/protocol/channel_authenticator.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // static
 const jingle_xmpp::StaticQName ThirdPartyAuthenticatorBase::kTokenUrlTag =
@@ -97,5 +96,4 @@ ThirdPartyAuthenticatorBase::CreateChannelAuthenticator() const {
   return underlying_->CreateChannelAuthenticator();
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

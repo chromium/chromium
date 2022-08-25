@@ -20,8 +20,7 @@
 
 using jingle_xmpp::QName;
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 JingleSessionManager::JingleSessionManager(SignalStrategy* signal_strategy)
     : signal_strategy_(signal_strategy),
@@ -152,5 +151,4 @@ void JingleSessionManager::SessionDestroyed(JingleSession* session) {
   sessions_.erase(session->session_id_);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

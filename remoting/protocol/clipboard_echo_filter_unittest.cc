@@ -13,8 +13,7 @@
 using ::testing::_;
 using ::testing::InSequence;
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 using test::EqualsClipboardEvent;
 
@@ -106,5 +105,4 @@ TEST(ClipboardEchoFilter, NoClientStub) {
   filter.client_filter()->InjectClipboardEvent(event);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

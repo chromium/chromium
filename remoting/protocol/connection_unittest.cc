@@ -40,8 +40,7 @@ using ::testing::InvokeWithoutArgs;
 using ::testing::NotNull;
 using ::testing::StrictMock;
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -715,5 +714,4 @@ TEST_P(ConnectionTest, DISABLED_SecondCaptureFailed) {
   WaitNextVideoFrame();
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

@@ -10,8 +10,7 @@
 #include "remoting/protocol/clipboard_stub.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // Forwards clipboard events to |clipboard_stub|, if configured.  Event
 // forwarding may also be disabled independently of the configured
@@ -46,7 +45,6 @@ class ClipboardFilter : public ClipboardStub {
   absl::optional<size_t> max_size_;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_CLIPBOARD_FILTER_H_

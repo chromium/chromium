@@ -16,8 +16,7 @@ namespace base {
 class SingleThreadTaskRunner;
 }  // namespace base
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class AudioStub;
 class ClientStub;
@@ -105,7 +104,6 @@ class ConnectionToHost {
   virtual State state() const = 0;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_CONNECTION_TO_HOST_H_

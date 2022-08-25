@@ -13,8 +13,7 @@
 #include "remoting/protocol/input_stub.h"
 #include "remoting/protocol/message_serialization.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 HostEventDispatcher::HostEventDispatcher()
     : ChannelDispatcherBase(kEventChannelName),
@@ -58,5 +57,4 @@ void HostEventDispatcher::OnIncomingMessage(
   }
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

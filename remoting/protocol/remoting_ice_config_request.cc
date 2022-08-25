@@ -19,8 +19,7 @@
 #include "remoting/protocol/ice_config.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -109,5 +108,4 @@ void RemotingIceConfigRequest::OnResponse(
   std::move(on_ice_config_callback_).Run(IceConfig::Parse(*response));
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

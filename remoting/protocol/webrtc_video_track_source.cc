@@ -11,8 +11,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "remoting/protocol/webrtc_video_frame_adapter.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 WebrtcVideoTrackSource::WebrtcVideoTrackSource(
     AddSinkCallback add_sink_callback)
@@ -98,5 +97,4 @@ void WebrtcVideoTrackSource::SendCapturedFrame(
   sink_->OnFrame(video_frame);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

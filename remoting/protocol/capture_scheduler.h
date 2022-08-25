@@ -112,7 +112,7 @@ class CaptureScheduler : public VideoFeedbackStub {
   // Frame ID to be assigned to the next outgoing video frame.
   uint32_t next_frame_id_;
 
-  base::ThreadChecker thread_checker_;
+  THREAD_CHECKER(thread_checker_);
 };
 
 }  // namespace protocol

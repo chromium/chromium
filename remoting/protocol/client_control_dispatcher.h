@@ -12,8 +12,7 @@
 #include "remoting/protocol/cursor_shape_stub.h"
 #include "remoting/protocol/host_stub.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class ClientStub;
 
@@ -63,7 +62,6 @@ class ClientControlDispatcher : public ChannelDispatcherBase,
   raw_ptr<ClipboardStub> clipboard_stub_ = nullptr;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_CLIENT_CONTROL_DISPATCHER_H_

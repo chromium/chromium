@@ -15,8 +15,7 @@ namespace net {
 class SSLSocket;
 }  // namespace net
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // Labels for use when exporting the SSL shared secret.
 extern const char kClientAuthSslExporterLabel[];
@@ -41,7 +40,6 @@ std::string GetAuthBytes(net::SSLSocket* socket,
                          const base::StringPiece& label,
                          const base::StringPiece& shared_secret);
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_AUTH_UTIL_H_

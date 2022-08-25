@@ -18,8 +18,7 @@
 #include "remoting/proto/video.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 static const int kTestInputs[] = { 100, 50, 30, 20, 10, 30, 60, 80 };
 static const int kMinumumFrameIntervalMs = 50;
@@ -196,5 +195,4 @@ TEST_F(CaptureSchedulerTest, MaximumPendingFrames) {
   EXPECT_TRUE(capture_timer_->IsRunning());
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

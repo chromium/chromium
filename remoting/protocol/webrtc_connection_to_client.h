@@ -20,8 +20,7 @@
 #include "remoting/protocol/session.h"
 #include "remoting/protocol/webrtc_transport.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class WebrtcVideoEncoderFactory;
 class HostControlDispatcher;
@@ -84,8 +83,6 @@ class WebrtcConnectionToClient : public ConnectionToClient,
  private:
   bool allChannelsConnected();
 
-  base::ThreadChecker thread_checker_;
-
   // Event handler for handling events sent from this object.
   raw_ptr<ConnectionToClient::EventHandler> event_handler_ = nullptr;
 
@@ -103,10 +100,12 @@ class WebrtcConnectionToClient : public ConnectionToClient,
 
   std::unique_ptr<HostControlDispatcher> control_dispatcher_;
   std::unique_ptr<HostEventDispatcher> event_dispatcher_;
+
+  THREAD_CHECKER(thread_checker_);
+
   base::WeakPtrFactory<WebrtcConnectionToClient> weak_factory_{this};
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_WEBRTC_CONNECTION_TO_CLIENT_H_

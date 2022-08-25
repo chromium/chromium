@@ -12,8 +12,7 @@
 #include "remoting/protocol/channel_authenticator.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 PairingHostAuthenticator::PairingHostAuthenticator(
     scoped_refptr<PairingRegistry> pairing_registry,
@@ -96,5 +95,4 @@ void PairingHostAuthenticator::InitializeWithPairing(
   std::move(resume_callback).Run();
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

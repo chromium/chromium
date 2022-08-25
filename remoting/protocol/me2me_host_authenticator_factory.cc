@@ -19,8 +19,7 @@
 #include "remoting/signaling/signaling_id_util.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // static
 std::unique_ptr<AuthenticatorFactory>
@@ -125,5 +124,4 @@ Me2MeHostAuthenticatorFactory::CreateAuthenticator(
       Authenticator::RejectionReason::INVALID_CREDENTIALS));
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

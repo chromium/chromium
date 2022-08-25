@@ -7,8 +7,7 @@
 
 #include <cstdint>
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 struct HostFrameStats;
 
@@ -22,11 +21,10 @@ class VideoStatsStub {
                                  const HostFrameStats& frame_stats) = 0;
 
  protected:
-  VideoStatsStub() {}
-  virtual ~VideoStatsStub() {}
+  VideoStatsStub() = default;
+  virtual ~VideoStatsStub() = default;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_VIDEO_STATS_STUB_H_

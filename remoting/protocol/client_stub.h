@@ -14,8 +14,7 @@
 #include "remoting/protocol/cursor_shape_stub.h"
 #include "remoting/protocol/keyboard_layout_stub.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class Capabilities;
 class ExtensionMessage;
@@ -50,7 +49,6 @@ class ClientStub : public ClipboardStub,
   virtual void SetTransportInfo(const TransportInfo& transport_info) = 0;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_CLIENT_STUB_H_

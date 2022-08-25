@@ -16,8 +16,7 @@
 #include "third_party/webrtc/api/peer_connection_interface.h"
 #include "third_party/webrtc/rtc_base/ref_count.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // WebrtcDataStreamAdapter implements MessagePipe for WebRTC data channels.
 class WebrtcDataStreamAdapter : public MessagePipe,
@@ -80,7 +79,6 @@ class WebrtcDataStreamAdapter : public MessagePipe,
   base::WeakPtrFactory<WebrtcDataStreamAdapter> weak_ptr_factory_{this};
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_WEBRTC_DATA_STREAM_ADAPTER_H_

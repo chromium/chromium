@@ -12,8 +12,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 SdpMessage::SdpMessage(const std::string& sdp) {
   sdp_lines_ = base::SplitString(
@@ -124,5 +123,4 @@ std::vector<std::pair<int, std::string>> SdpMessage::FindCodec(
   return results;
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

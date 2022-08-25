@@ -21,8 +21,7 @@
 #include "remoting/protocol/message_serialization.h"
 #include "remoting/protocol/p2p_stream_socket.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 const int kChannelIdUnknown = -1;
@@ -473,5 +472,4 @@ void ChannelMultiplexer::DoWrite(
                 traffic_annotation);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

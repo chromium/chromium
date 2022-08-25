@@ -25,8 +25,7 @@
 #include "remoting/protocol/session.h"
 #include "remoting/protocol/session_config.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class AudioDecodeScheduler;
 class AudioReader;
@@ -114,7 +113,6 @@ class IceConnectionToHost : public ConnectionToHost,
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_ICE_CONNECTION_TO_HOST_H_

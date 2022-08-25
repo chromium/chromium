@@ -41,8 +41,7 @@ const char kSharedSecretBad[] = "0000-0000-0001";
 
 }  // namespace
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class ThirdPartyAuthenticatorTest : public AuthenticatorTestBase {
   class FakeTokenFetcher {
@@ -223,5 +222,4 @@ TEST_F(ThirdPartyAuthenticatorTest, ClientBadSecret) {
   ASSERT_EQ(Authenticator::REJECTED, client_->state());
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

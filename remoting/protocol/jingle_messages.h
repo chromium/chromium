@@ -14,8 +14,7 @@
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 #include "third_party/webrtc/api/candidate.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class ContentDescription;
 
@@ -153,7 +152,6 @@ struct IceTransportInfo {
   std::list<NamedCandidate> candidates;
 };
 
-}  // protocol
-}  // remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_JINGLE_MESSAGES_H_

@@ -30,8 +30,7 @@ using testing::_;
 using testing::AtMost;
 using testing::InvokeWithoutArgs;
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -341,5 +340,4 @@ TEST_F(ChannelMultiplexerTest, SessionFail) {
   base::RunLoop().RunUntilIdle();
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

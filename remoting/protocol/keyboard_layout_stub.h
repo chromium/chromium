@@ -7,8 +7,7 @@
 #ifndef REMOTING_PROTOCOL_KEYBOARD_LAYOUT_STUB_H_
 #define REMOTING_PROTOCOL_KEYBOARD_LAYOUT_STUB_H_
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class KeyboardLayout;
 
@@ -25,7 +24,6 @@ class KeyboardLayoutStub {
   KeyboardLayoutStub() = default;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_KEYBOARD_LAYOUT_STUB_H_

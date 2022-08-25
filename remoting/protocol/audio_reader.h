@@ -9,8 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "remoting/protocol/channel_dispatcher_base.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class AudioStub;
 
@@ -29,7 +28,6 @@ class AudioReader : public ChannelDispatcherBase {
   raw_ptr<AudioStub> audio_stub_;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_AUDIO_READER_H_

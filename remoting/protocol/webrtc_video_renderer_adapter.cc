@@ -25,8 +25,7 @@
 #include "third_party/libyuv/include/libyuv/convert_from.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -67,9 +66,8 @@ WebrtcVideoRendererAdapter::WebrtcVideoRendererAdapter(
 WebrtcVideoRendererAdapter::~WebrtcVideoRendererAdapter() {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
-  // Needed for ConnectionTest unittests which set up a
-  // fake connection without starting any video. This
-  // video adapter is instantiated when the incoming
+  // Needed for ConnectionTest unittests which set up a fake connection without
+  // starting any video. This video adapter is instantiated when the incoming
   // video-stats data channel is created.
   if (!media_stream_) {
     return;
@@ -256,5 +254,4 @@ void WebrtcVideoRendererAdapter::FrameRendered(
     frame_stats_consumer->OnVideoFrameStats(frame_stats);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

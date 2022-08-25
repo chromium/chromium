@@ -11,8 +11,7 @@
 #include "remoting/base/compound_buffer.h"
 #include "remoting/protocol/fake_message_pipe.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 FakeMessagePipeWrapper::FakeMessagePipeWrapper(FakeMessagePipe* pipe)
     : pipe_(pipe) {
@@ -42,5 +41,4 @@ void FakeMessagePipeWrapper::ClosePipe() {
   pipe_->ClosePipe();
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

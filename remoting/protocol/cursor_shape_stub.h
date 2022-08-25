@@ -7,24 +7,22 @@
 #ifndef REMOTING_PROTOCOL_CURSOR_SHAPE_STUB_H_
 #define REMOTING_PROTOCOL_CURSOR_SHAPE_STUB_H_
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class CursorShapeInfo;
 
 class CursorShapeStub {
  public:
-  CursorShapeStub() {}
+  CursorShapeStub() = default;
 
   CursorShapeStub(const CursorShapeStub&) = delete;
   CursorShapeStub& operator=(const CursorShapeStub&) = delete;
 
-  virtual ~CursorShapeStub() {}
+  virtual ~CursorShapeStub() = default;
 
   virtual void SetCursorShape(const CursorShapeInfo& cursor_shape) = 0;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_CURSOR_SHAPE_STUB_H_

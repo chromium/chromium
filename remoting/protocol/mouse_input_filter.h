@@ -10,8 +10,7 @@
 #include "remoting/protocol/input_filter.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // Filtering InputStub implementation which scales mouse events based on the
 // supplied input and output dimensions, and clamps their coordinates to the
@@ -53,7 +52,6 @@ class MouseInputFilter : public InputFilter {
   webrtc::DesktopVector output_offset_;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_MOUSE_INPUT_FILTER_H_

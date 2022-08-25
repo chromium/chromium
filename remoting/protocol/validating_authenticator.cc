@@ -17,8 +17,7 @@
 #include "remoting/protocol/channel_authenticator.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 ValidatingAuthenticator::ValidatingAuthenticator(
     const std::string& remote_jid,
@@ -142,5 +141,4 @@ void ValidatingAuthenticator::UpdateState(base::OnceClosure resume_callback) {
   }
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

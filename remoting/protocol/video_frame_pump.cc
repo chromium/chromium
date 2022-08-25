@@ -20,8 +20,7 @@
 #include "remoting/protocol/video_stub.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // Interval between empty keep-alive frames. These frames are sent only when the
 // stream is paused or inactive for some other reason (e.g. when blocked on
@@ -63,25 +62,25 @@ VideoFramePump::VideoFramePump(
 }
 
 VideoFramePump::~VideoFramePump() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   encode_task_runner_->DeleteSoon(FROM_HERE, encoder_.release());
 }
 
 void VideoFramePump::SetEventTimestampsSource(
     scoped_refptr<InputEventTimestampsSource> event_timestamps_source) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   event_timestamps_source_ = event_timestamps_source;
 }
 
 void VideoFramePump::Pause(bool pause) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   capture_scheduler_.Pause(pause);
 }
 
 void VideoFramePump::SetLosslessEncode(bool want_lossless) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   encode_task_runner_->PostTask(
       FROM_HERE,
@@ -90,7 +89,7 @@ void VideoFramePump::SetLosslessEncode(bool want_lossless) {
 }
 
 void VideoFramePump::SetLosslessColor(bool want_lossless) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   encode_task_runner_->PostTask(
       FROM_HERE,
@@ -99,7 +98,7 @@ void VideoFramePump::SetLosslessColor(bool want_lossless) {
 }
 
 void VideoFramePump::SetObserver(Observer* observer) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   observer_ = observer;
 }
 
@@ -108,7 +107,7 @@ void VideoFramePump::SelectSource(webrtc::ScreenId id) {}
 void VideoFramePump::OnCaptureResult(
     webrtc::DesktopCapturer::Result result,
     std::unique_ptr<webrtc::DesktopFrame> frame) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   capture_scheduler_.OnCaptureCompleted();
 
@@ -138,7 +137,7 @@ void VideoFramePump::OnCaptureResult(
 }
 
 void VideoFramePump::CaptureNextFrame() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   captured_frame_timestamps_ = std::make_unique<FrameTimestamps>();
   captured_frame_timestamps_->capture_started_time = base::TimeTicks::Now();
@@ -182,7 +181,7 @@ VideoFramePump::EncodeFrame(VideoEncoder* encoder,
 
 void VideoFramePump::OnFrameEncoded(
     std::unique_ptr<PacketWithTimestamps> packet) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   capture_scheduler_.OnFrameEncoded(packet->packet.get());
 
@@ -194,7 +193,7 @@ void VideoFramePump::OnFrameEncoded(
 }
 
 void VideoFramePump::SendPacket(std::unique_ptr<PacketWithTimestamps> packet) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!send_pending_);
 
   packet->timestamps->can_send_time = base::TimeTicks::Now();
@@ -233,7 +232,7 @@ void VideoFramePump::UpdateFrameTimers(VideoPacket* packet,
 }
 
 void VideoFramePump::OnVideoPacketSent() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   send_pending_ = false;
   capture_scheduler_.OnFrameSent();
@@ -249,7 +248,7 @@ void VideoFramePump::OnVideoPacketSent() {
 }
 
 void VideoFramePump::SendKeepAlivePacket() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   video_stub_->ProcessVideoPacket(
       std::make_unique<VideoPacket>(),
@@ -258,10 +257,9 @@ void VideoFramePump::SendKeepAlivePacket() {
 }
 
 void VideoFramePump::OnKeepAlivePacketSent() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   keep_alive_timer_.Reset();
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

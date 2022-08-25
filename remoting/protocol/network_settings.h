@@ -10,8 +10,7 @@
 #include "base/time/time.h"
 #include "remoting/protocol/port_range.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 struct NetworkSettings {
 
@@ -58,7 +57,6 @@ struct NetworkSettings {
   int ice_reconnect_attempts = 2;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_NETWORK_SETTINGS_H_

@@ -24,8 +24,7 @@ using testing::DoAll;
 using testing::Mock;
 using testing::SaveArg;
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 const char kTestMessage1[] = "Message1";
@@ -199,5 +198,4 @@ TEST_F(MessageReaderTest, DeleteFromCallback) {
   base::RunLoop().RunUntilIdle();
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

@@ -10,8 +10,7 @@
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/channel_authenticator.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class FakeChannelAuthenticator : public ChannelAuthenticator {
  public:
@@ -147,7 +146,6 @@ class FakeHostAuthenticatorFactory : public AuthenticatorFactory {
   const FakeAuthenticator::Config config_;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_FAKE_AUTHENTICATOR_H_

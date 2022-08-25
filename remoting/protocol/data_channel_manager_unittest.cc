@@ -17,8 +17,7 @@
 #include "remoting/protocol/named_message_pipe_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -264,5 +263,4 @@ TEST(DataChannelManagerTest, MultipleRegistrationsWithAsynchronousPipe) {
   TestDataChannelManagerMultipleRegistrations(true);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

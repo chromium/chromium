@@ -19,17 +19,15 @@
 #include "remoting/protocol/ice_transport.h"
 #include "remoting/protocol/session.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class AudioWriter;
 class HostControlDispatcher;
 class HostEventDispatcher;
 class HostVideoDispatcher;
 
-// This class represents a remote viewer connection to the chromoting
-// host. It sets up all protocol channels and connects them to the
-// stubs.
+// This class represents a remote viewer connection to the chromoting host. It
+// sets up all protocol channels and connects them to the stubs.
 class IceConnectionToClient : public ConnectionToClient,
                               public Session::EventHandler,
                               public IceTransport::EventHandler,
@@ -83,8 +81,6 @@ class IceConnectionToClient : public ConnectionToClient,
 
   void CloseChannels();
 
-  base::ThreadChecker thread_checker_;
-
   // Event handler for handling events sent from this object.
   raw_ptr<ConnectionToClient::EventHandler> event_handler_;
 
@@ -99,9 +95,10 @@ class IceConnectionToClient : public ConnectionToClient,
   std::unique_ptr<HostEventDispatcher> event_dispatcher_;
   std::unique_ptr<HostVideoDispatcher> video_dispatcher_;
   std::unique_ptr<AudioWriter> audio_writer_;
+
+  THREAD_CHECKER(thread_checker_);
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_ICE_CONNECTION_TO_CLIENT_H_

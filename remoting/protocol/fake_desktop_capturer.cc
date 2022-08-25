@@ -15,8 +15,7 @@
 #include "base/time/time.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // FakeDesktopCapturer generates a white picture of size kWidth x kHeight
 // with a rectangle of size kBoxWidth x kBoxHeight. The rectangle moves kSpeed
@@ -180,5 +179,4 @@ bool FakeDesktopCapturer::SelectSource(SourceId id) {
   return false;
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

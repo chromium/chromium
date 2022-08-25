@@ -14,8 +14,7 @@ namespace jingle_xmpp {
 class XmlElement;
 }  // namespace jingle_xmpp
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class Authenticator;
 class ChannelAuthenticator;
@@ -161,7 +160,6 @@ class AuthenticatorFactory {
       const std::string& remote_jid) = 0;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_AUTHENTICATOR_H_

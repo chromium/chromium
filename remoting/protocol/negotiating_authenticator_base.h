@@ -17,8 +17,7 @@ namespace jingle_xmpp {
 struct StaticQName;
 }  // namespace jingle_xmpp
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // This class provides the common base for a meta-authenticator that allows
 // clients and hosts that support multiple authentication methods to negotiate a
@@ -143,7 +142,6 @@ class NegotiatingAuthenticatorBase : public Authenticator {
   RejectionReason rejection_reason_ = RejectionReason::INVALID_CREDENTIALS;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_NEGOTIATING_AUTHENTICATOR_BASE_H_

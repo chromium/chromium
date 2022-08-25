@@ -10,8 +10,7 @@
 
 #include "base/callback_forward.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class P2PDatagramSocket;
 
@@ -20,7 +19,7 @@ class DatagramChannelFactory {
   typedef base::OnceCallback<void(std::unique_ptr<P2PDatagramSocket>)>
       ChannelCreatedCallback;
 
-  DatagramChannelFactory() {}
+  DatagramChannelFactory() = default;
 
   DatagramChannelFactory(const DatagramChannelFactory&) = delete;
   DatagramChannelFactory& operator=(const DatagramChannelFactory&) = delete;
@@ -40,10 +39,9 @@ class DatagramChannelFactory {
   virtual void CancelChannelCreation(const std::string& name) = 0;
 
  protected:
-  virtual ~DatagramChannelFactory() {}
+  virtual ~DatagramChannelFactory() = default;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_DATAGRAM_CHANNEL_FACTORY_H_

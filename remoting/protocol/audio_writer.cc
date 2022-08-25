@@ -16,8 +16,7 @@
 #include "remoting/protocol/session.h"
 #include "remoting/protocol/session_config.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 AudioWriter::AudioWriter() : ChannelDispatcherBase(kAudioChannelName) {}
 AudioWriter::~AudioWriter() = default;
@@ -38,5 +37,4 @@ void AudioWriter::OnIncomingMessage(std::unique_ptr<CompoundBuffer> message) {
   LOG(ERROR) << "Received unexpected message on the audio channel.";
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

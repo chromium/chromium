@@ -15,8 +15,7 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // Filtering InputStub which tracks mouse and keyboard input events before
 // passing them on to |input_stub|, and can dispatch release events to
@@ -68,7 +67,6 @@ class InputEventTracker : public InputStub {
   std::set<uint32_t> touch_point_ids_;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_INPUT_EVENT_TRACKER_H_

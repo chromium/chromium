@@ -16,8 +16,7 @@
 #include "remoting/protocol/message_serialization.h"
 #include "remoting/protocol/video_stats_stub.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 HostVideoStatsDispatcher::HostVideoStatsDispatcher(
     const std::string& stream_name)
@@ -40,5 +39,4 @@ void HostVideoStatsDispatcher::OnVideoFrameStats(uint32_t frame_id,
 void HostVideoStatsDispatcher::OnIncomingMessage(
     std::unique_ptr<CompoundBuffer> message) {}
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

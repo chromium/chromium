@@ -21,8 +21,7 @@ class StreamSocket;
 
 }  // namespace net
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class StreamPacketProcessor;
 
@@ -117,7 +116,6 @@ class StreamPacketSocket final : public rtc::AsyncPacketSocket {
   int error_ = 0;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_STREAM_PACKET_SOCKET_H_

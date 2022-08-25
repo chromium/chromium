@@ -18,8 +18,7 @@ class XmlElement;
 
 }  // namespace jingle_xmpp
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // Implements an authentication method that relies on a third party server for
 // authentication of both client and host.
@@ -74,7 +73,6 @@ class ThirdPartyAuthenticatorBase : public Authenticator {
   RejectionReason rejection_reason_;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_THIRD_PARTY_AUTHENTICATOR_BASE_H_

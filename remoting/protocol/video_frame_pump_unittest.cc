@@ -32,8 +32,7 @@ using ::testing::Expectation;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Return;
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -261,5 +260,4 @@ TEST_F(VideoFramePumpTest, UnchangedFrame) {
   run_loop.Run();
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

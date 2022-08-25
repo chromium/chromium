@@ -4,8 +4,7 @@
 
 #include "remoting/protocol/input_event_timestamps.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 InputEventTimestampsSourceImpl::InputEventTimestampsSourceImpl() = default;
 InputEventTimestampsSourceImpl::~InputEventTimestampsSourceImpl() = default;
@@ -21,5 +20,4 @@ InputEventTimestamps InputEventTimestampsSourceImpl::TakeLastEventTimestamps() {
   return result;
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

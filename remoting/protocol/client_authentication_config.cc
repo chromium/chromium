@@ -4,13 +4,11 @@
 
 #include "remoting/protocol/client_authentication_config.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 ClientAuthenticationConfig::ClientAuthenticationConfig() = default;
 ClientAuthenticationConfig::ClientAuthenticationConfig(
     const ClientAuthenticationConfig& other) = default;
 ClientAuthenticationConfig::~ClientAuthenticationConfig() = default;
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

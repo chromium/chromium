@@ -27,8 +27,7 @@ class DesktopFrame;
 class VideoFrameBuffer;
 }  // namespace webrtc
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class MessagePipe;
 class VideoRenderer;
@@ -91,7 +90,6 @@ class WebrtcVideoRendererAdapter
   base::WeakPtrFactory<WebrtcVideoRendererAdapter> weak_factory_{this};
 };
 
-}  // namespace remoting
-}  // namespace protocol
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_WEBRTC_VIDEO_RENDERER_ADAPTER_H_

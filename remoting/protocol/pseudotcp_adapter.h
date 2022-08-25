@@ -17,8 +17,7 @@
 #include "remoting/protocol/p2p_stream_socket.h"
 #include "third_party/webrtc/p2p/base/pseudo_tcp.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class P2PDatagramSocket;
 
@@ -89,7 +88,6 @@ class PseudoTcpAdapter : public P2PStreamSocket {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_PSEUDOTCP_ADAPTER_H_

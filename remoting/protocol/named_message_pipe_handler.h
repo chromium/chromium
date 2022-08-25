@@ -69,8 +69,9 @@ class NamedMessagePipeHandler : public MessagePipe::EventHandler {
 
   const std::string name_;
   std::unique_ptr<MessagePipe> pipe_;
-  base::ThreadChecker thread_checker_;
   bool is_connected_ = false;
+
+  THREAD_CHECKER(thread_checker_);
 };
 
 }  // namespace protocol

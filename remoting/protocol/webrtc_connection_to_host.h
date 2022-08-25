@@ -18,8 +18,7 @@
 #include "remoting/protocol/session.h"
 #include "remoting/protocol/webrtc_transport.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class ClientControlDispatcher;
 class ClientEventDispatcher;
@@ -116,7 +115,6 @@ class WebrtcConnectionToHost : public ConnectionToHost,
   ErrorCode error_ = OK;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_WEBRTC_CONNECTION_TO_HOST_H_

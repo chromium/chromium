@@ -22,8 +22,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/webrtc/rtc_base/socket_address.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -160,5 +159,4 @@ int TransportContext::GetTurnMaxRateKbps() const {
   return ice_config_.max_bitrate_kbps;
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

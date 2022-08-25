@@ -14,8 +14,7 @@
 #include "remoting/protocol/third_party_authenticator_base.h"
 #include "remoting/protocol/token_validator.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // Implements the client side of the third party authentication mechanism.
 // The client authenticator expects a |token_url| and |scope| in the first
@@ -59,8 +58,6 @@ class ThirdPartyClientAuthenticator : public ThirdPartyAuthenticatorBase {
   base::WeakPtrFactory<ThirdPartyClientAuthenticator> weak_factory_{this};
 };
 
-
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_THIRD_PARTY_CLIENT_AUTHENTICATOR_H_

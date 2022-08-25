@@ -11,8 +11,7 @@
 #include "remoting/protocol/message_channel_factory.h"
 #include "remoting/protocol/message_pipe.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 ChannelDispatcherBase::ChannelDispatcherBase(const std::string& channel_name)
     : channel_name_(channel_name) {}
@@ -62,5 +61,4 @@ void ChannelDispatcherBase::OnMessagePipeClosed() {
   event_handler_->OnChannelClosed(this);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

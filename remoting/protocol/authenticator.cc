@@ -7,8 +7,7 @@
 #include "remoting/base/constants.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 const jingle_xmpp::StaticQName kAuthenticationQName = { kChromotingXmlNamespace,
@@ -32,5 +31,4 @@ const jingle_xmpp::XmlElement* Authenticator::FindAuthenticatorMessage(
   return message->FirstNamed(kAuthenticationQName);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

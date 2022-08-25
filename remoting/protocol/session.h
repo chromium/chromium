@@ -12,8 +12,7 @@
 #include "remoting/protocol/session_config.h"
 #include "remoting/protocol/transport.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class SessionPlugin;
 class Transport;
@@ -51,8 +50,8 @@ class Session {
 
   class EventHandler {
    public:
-    EventHandler() {}
-    virtual ~EventHandler() {}
+    EventHandler() = default;
+    virtual ~EventHandler() = default;
 
     // Called after session state has changed. It is safe to destroy
     // the session from within the handler if |state| is AUTHENTICATING
@@ -60,12 +59,12 @@ class Session {
     virtual void OnSessionStateChange(State state) = 0;
   };
 
-  Session() {}
+  Session() = default;
 
   Session(const Session&) = delete;
   Session& operator=(const Session&) = delete;
 
-  virtual ~Session() {}
+  virtual ~Session() = default;
 
   // Set event handler for this session. |event_handler| must outlive
   // this object.
@@ -97,7 +96,6 @@ class Session {
   virtual void AddPlugin(SessionPlugin* plugin) = 0;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_SESSION_H_

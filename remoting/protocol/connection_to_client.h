@@ -17,9 +17,7 @@ namespace webrtc {
 class DesktopCapturer;
 }  // namespace webrtc
 
-namespace remoting {
-
-namespace protocol {
+namespace remoting::protocol {
 
 class AudioSource;
 class AudioStream;
@@ -123,7 +121,6 @@ class ConnectionToClient {
   virtual WebrtcEventLogData* rtc_event_log() = 0;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_CONNECTION_TO_CLIENT_H_

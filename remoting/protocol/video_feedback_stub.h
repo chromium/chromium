@@ -21,8 +21,8 @@ class VideoFeedbackStub {
   virtual void ProcessVideoAck(std::unique_ptr<VideoAck> video_ack) = 0;
 
  protected:
-  VideoFeedbackStub() {}
-  virtual ~VideoFeedbackStub() {}
+  VideoFeedbackStub() = default;
+  virtual ~VideoFeedbackStub() = default;
 };
 
 }  // namespace protocol

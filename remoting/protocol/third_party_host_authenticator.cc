@@ -14,8 +14,7 @@
 #include "remoting/protocol/token_validator.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 ThirdPartyHostAuthenticator::ThirdPartyHostAuthenticator(
     const CreateBaseAuthenticatorCallback& create_base_authenticator_callback,
@@ -89,5 +88,4 @@ void ThirdPartyHostAuthenticator::OnThirdPartyTokenValidated(
   underlying_->ProcessMessage(message, std::move(resume_callback));
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

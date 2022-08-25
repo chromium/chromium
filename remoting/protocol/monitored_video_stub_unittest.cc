@@ -24,8 +24,7 @@ using ::testing::AnyNumber;
 using ::testing::AtMost;
 using ::testing::InvokeWithoutArgs;
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 static const int64_t kTestOverrideDelayMilliseconds = 1;
 
@@ -97,5 +96,4 @@ TEST_F(MonitoredVideoStubTest, OnChannelStayDisconnected) {
   base::RunLoop().Run();
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

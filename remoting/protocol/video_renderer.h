@@ -26,7 +26,7 @@ class VideoStub;
 // TODO(sergeyu): Reconsider this design.
 class VideoRenderer {
  public:
-  virtual ~VideoRenderer() {}
+  virtual ~VideoRenderer() = default;
 
   // Initializes the video renderer. This allows the renderer to be initialized
   // after it is constructed. Returns true if initialization succeeds and false

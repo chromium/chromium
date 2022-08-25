@@ -16,8 +16,7 @@
 #include "remoting/protocol/p2p_stream_socket.h"
 #include "remoting/protocol/stream_channel_factory.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 StreamMessagePipeAdapter::StreamMessagePipeAdapter(
     std::unique_ptr<P2PStreamSocket> socket,
@@ -127,5 +126,4 @@ void StreamMessageChannelFactoryAdapter::OnChannelCreated(
       std::move(socket), error_callback_));
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

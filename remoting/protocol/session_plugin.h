@@ -9,8 +9,7 @@
 
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // Interface for Session plugins. Plugins allow to send and receive optional
 // information that is not essential for session handshake. Messages generated
@@ -30,7 +29,6 @@ class SessionPlugin {
   virtual void OnIncomingMessage(const jingle_xmpp::XmlElement& attachments) = 0;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_SESSION_PLUGIN_H_

@@ -7,8 +7,7 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // Interface for changing peer connection parameters after the connection is
 // established.
@@ -33,7 +32,6 @@ class PeerConnectionControls {
   virtual void RequestSdpRestart() = 0;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_PEER_CONNECTION_CONTROLS_H_

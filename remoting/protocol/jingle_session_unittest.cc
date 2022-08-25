@@ -48,8 +48,7 @@ using testing::SaveArg;
 using testing::SetArgPointee;
 using testing::WithArg;
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -637,5 +636,4 @@ TEST_F(JingleSessionTest, ImmediatelyCloseSessionAfterConnect) {
   ASSERT_EQ(1U, host_signal_strategy_->received_messages().size());
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

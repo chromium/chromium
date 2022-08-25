@@ -16,8 +16,7 @@
 #include "remoting/protocol/message_serialization.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 static const unsigned int kTestKey = 142;
 
@@ -121,5 +120,4 @@ TEST(MessageDecoderTest, EmptyReads) {
   SimulateReadSequence(kReads, std::size(kReads));
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

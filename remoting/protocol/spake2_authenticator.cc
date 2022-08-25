@@ -18,8 +18,7 @@
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -314,5 +313,4 @@ std::string Spake2Authenticator::CalculateVerificationHash(
   return result;
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

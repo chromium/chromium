@@ -25,8 +25,7 @@ namespace base {
 class SingleThreadTaskRunner;
 }  // namespace base
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class VideoFeedbackStub;
 class VideoStub;
@@ -186,12 +185,11 @@ class VideoFramePump : public VideoStream,
 
   std::vector<std::unique_ptr<PacketWithTimestamps>> pending_packets_;
 
-  base::ThreadChecker thread_checker_;
+  THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<VideoFramePump> weak_factory_{this};
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_VIDEO_FRAME_PUMP_H_

@@ -8,8 +8,7 @@
 #include "remoting/proto/remoting/v1/network_traversal_messages.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 TEST(IceConfigTest, ParseValid) {
   const char kTestConfigJson[] =
@@ -235,5 +234,4 @@ TEST(IceConfigTest, OneSpecifiedMaxRate_IsUsed) {
   EXPECT_EQ(2000, config2.max_bitrate_kbps);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

@@ -12,8 +12,7 @@ namespace net {
 class IOBuffer;
 }  // namespace net
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // Peer-to-peer socket with stream semantics.
 class P2PStreamSocket {
@@ -48,7 +47,6 @@ class P2PStreamSocket {
       const net::NetworkTrafficAnnotationTag& traffic_annotation) = 0;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_P2P_STREAM_SOCKET_H_

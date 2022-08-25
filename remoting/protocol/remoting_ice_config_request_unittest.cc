@@ -14,8 +14,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -88,5 +87,4 @@ TEST_F(RemotingIceConfigRequestTest, FailedRequest) {
   EXPECT_TRUE(received_config.is_null());
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

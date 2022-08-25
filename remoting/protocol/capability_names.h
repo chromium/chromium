@@ -5,8 +5,7 @@
 #ifndef REMOTING_PROTOCOL_CAPABILITY_NAMES_H_
 #define REMOTING_PROTOCOL_CAPABILITY_NAMES_H_
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // Used for negotiating client-host capabilities for touch events.
 constexpr char kTouchEventsCapability[] = "touchEvents";
@@ -35,7 +34,6 @@ constexpr char kWebrtcIceSdpRestartAction[] = "webrtcIceSdpRestartAction";
 // implemented and working on the host side.
 constexpr char kMultiStreamCapability[] = "multiStream_inProgress";
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_CAPABILITY_NAMES_H_

@@ -12,8 +12,7 @@
 #include "remoting/protocol/channel_dispatcher_base.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class VideoStatsStub;
 
@@ -34,7 +33,6 @@ class ClientVideoStatsDispatcher : public ChannelDispatcherBase {
   raw_ptr<VideoStatsStub> video_stats_stub_;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_CLIENT_VIDEO_STATS_DISPATCHER_H_

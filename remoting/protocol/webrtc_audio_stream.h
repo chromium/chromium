@@ -19,8 +19,7 @@ namespace webrtc {
 class PeerConnectionInterface;
 }  // namespace webrtc
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class AudioSource;
 class WebrtcAudioSourceAdapter;
@@ -48,7 +47,6 @@ class WebrtcAudioStream : public AudioStream {
   scoped_refptr<webrtc::PeerConnectionInterface> peer_connection_;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_WEBRTC_AUDIO_STREAM_H_

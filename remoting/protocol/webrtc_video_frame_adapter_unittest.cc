@@ -24,8 +24,7 @@ std::unique_ptr<DesktopFrame> MakeDesktopFrame(int width, int height) {
 
 }  // namespace
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 TEST(WebrtcVideoFrameAdapter, CreateVideoFrameWrapsDesktopFrame) {
   auto desktop_frame = MakeDesktopFrame(100, 200);
@@ -78,5 +77,4 @@ TEST(WebrtcVideoFrameAdapter, VideoUpdateRectSpansDesktopUpdateRegion) {
                 .offset_x = 10, .offset_y = 20, .width = 60, .height = 60}));
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

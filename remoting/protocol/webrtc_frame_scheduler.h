@@ -12,8 +12,7 @@ namespace webrtc {
 class DesktopFrame;
 }  // namespace webrtc
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // An abstract interface for frame schedulers, which are responsible for
 // scheduling when video frames are captured and for defining encoding
@@ -30,16 +29,15 @@ class WebrtcFrameScheduler : public VideoChannelStateObserver {
   // Pause and resumes the scheduler.
   virtual void Pause(bool pause) = 0;
 
-  // Called after |frame| has been captured. |frame| may be set to nullptr
-  // if the capture request failed.
+  // Called after |frame| has been captured. |frame| may be set to nullptr if
+  // the capture request failed.
   virtual void OnFrameCaptured(const webrtc::DesktopFrame* frame) = 0;
 
-  // Called when WebRTC requests the VideoTrackSource to provide frames
-  // at a maximum framerate.
+  // Called when WebRTC requests the VideoTrackSource to provide frames at a
+  // maximum framerate.
   virtual void SetMaxFramerateFps(int max_framerate_fps) = 0;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_WEBRTC_FRAME_SCHEDULER_H_

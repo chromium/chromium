@@ -12,8 +12,7 @@
 #include "remoting/base/constants.h"
 #include "remoting/protocol/channel_authenticator.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 const jingle_xmpp::StaticQName kPairingFailedTag =
@@ -77,7 +76,8 @@ void PairingAuthenticatorBase::ProcessMessage(
                      weak_factory_.GetWeakPtr(), std::move(resume_callback)));
 }
 
-std::unique_ptr<jingle_xmpp::XmlElement> PairingAuthenticatorBase::GetNextMessage() {
+std::unique_ptr<jingle_xmpp::XmlElement>
+PairingAuthenticatorBase::GetNextMessage() {
   DCHECK_EQ(state(), MESSAGE_READY);
   std::unique_ptr<jingle_xmpp::XmlElement> result =
       spake2_authenticator_->GetNextMessage();
@@ -94,7 +94,8 @@ PairingAuthenticatorBase::CreateChannelAuthenticator() const {
   return spake2_authenticator_->CreateChannelAuthenticator();
 }
 
-void PairingAuthenticatorBase::MaybeAddErrorMessage(jingle_xmpp::XmlElement* message) {
+void PairingAuthenticatorBase::MaybeAddErrorMessage(
+    jingle_xmpp::XmlElement* message) {
   if (!error_message_.empty()) {
     jingle_xmpp::XmlElement* pairing_failed_tag =
         new jingle_xmpp::XmlElement(kPairingFailedTag);
@@ -134,5 +135,4 @@ void PairingAuthenticatorBase::CheckForFailedSpakeExchange(
   std::move(resume_callback).Run();
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

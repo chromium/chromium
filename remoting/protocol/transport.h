@@ -16,8 +16,7 @@ namespace jingle_xmpp {
 class XmlElement;
 }  // namespace jingle_xmpp
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class Authenticator;
 
@@ -64,7 +63,6 @@ class Transport {
   virtual bool ProcessTransportInfo(jingle_xmpp::XmlElement* transport_info) = 0;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_TRANSPORT_H_

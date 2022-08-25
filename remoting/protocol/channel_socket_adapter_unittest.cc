@@ -24,8 +24,7 @@ using net::IOBuffer;
 using testing::_;
 using testing::Return;
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 const int kBufferSize = 4096;
@@ -114,5 +113,4 @@ TEST_F(TransportChannelSocketAdapterTest, SendPending) {
   ASSERT_EQ(net::OK, result);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

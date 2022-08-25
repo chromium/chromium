@@ -6,8 +6,7 @@
 
 #include "base/notreached.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // static
 std::string TransportRoute::GetTypeString(RouteType type) {
@@ -26,5 +25,4 @@ std::string TransportRoute::GetTypeString(RouteType type) {
 TransportRoute::TransportRoute() : type(DIRECT) {}
 TransportRoute::~TransportRoute() = default;
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

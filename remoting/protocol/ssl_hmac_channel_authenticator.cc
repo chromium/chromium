@@ -37,8 +37,7 @@
 #include "remoting/protocol/auth_util.h"
 #include "remoting/protocol/p2p_stream_socket.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -463,5 +462,4 @@ void SslHmacChannelAuthenticator::NotifyError(int error) {
   std::move(done_callback_).Run(error, nullptr);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

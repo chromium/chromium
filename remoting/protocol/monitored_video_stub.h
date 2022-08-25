@@ -11,12 +11,7 @@
 #include "base/timer/timer.h"
 #include "remoting/protocol/video_stub.h"
 
-namespace base {
-class ThreadChecker;
-} // namespace base
-
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // MonitoredVideoStub is responsible for notifying the event handler if no
 // frames have been received within |connectivity_check_delay|.
@@ -54,12 +49,12 @@ class MonitoredVideoStub : public VideoStub {
 
   raw_ptr<VideoStub> video_stub_;
   ChannelStateCallback callback_;
-  base::ThreadChecker thread_checker_;
   bool is_connected_;
   base::DelayTimer connectivity_check_timer_;
+
+  THREAD_CHECKER(thread_checker_);
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_MONITORED_VIDEO_STUB_H_

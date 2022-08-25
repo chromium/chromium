@@ -19,8 +19,7 @@ namespace base {
 class SingleThreadTaskRunner;
 }
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // FakeDatagramSocket implement P2PStreamSocket interface. All data written to
 // FakeDatagramSocket is stored in a buffer returned by written_packets().
@@ -147,7 +146,6 @@ class FakeDatagramChannelFactory : public DatagramChannelFactory {
   base::WeakPtrFactory<FakeDatagramChannelFactory> weak_factory_{this};
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_FAKE_DATAGRAM_SOCKET_H_

@@ -14,8 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 FakeMessagePipe::FakeMessagePipe(bool asynchronous)
     : asynchronous_(asynchronous) {}
@@ -132,5 +131,4 @@ void FakeMessagePipe::ClosePipeImpl() {
   event_handler_->OnMessagePipeClosed();
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

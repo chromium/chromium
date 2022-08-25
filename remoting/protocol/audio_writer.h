@@ -13,8 +13,7 @@
 #include "remoting/protocol/audio_stub.h"
 #include "remoting/protocol/channel_dispatcher_base.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class SessionConfig;
 
@@ -40,7 +39,6 @@ class AudioWriter : public ChannelDispatcherBase,
   void OnIncomingMessage(std::unique_ptr<CompoundBuffer> message) override;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_AUDIO_WRITER_H_

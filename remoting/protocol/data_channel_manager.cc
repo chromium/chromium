@@ -9,8 +9,7 @@
 #include "base/check.h"
 #include "remoting/protocol/message_pipe.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 DataChannelManager::DataChannelManager() = default;
 DataChannelManager::~DataChannelManager() = default;
@@ -35,5 +34,4 @@ bool DataChannelManager::OnIncomingDataChannel(
   return false;
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

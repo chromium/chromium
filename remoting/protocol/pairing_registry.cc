@@ -20,8 +20,7 @@
 #include "base/values.h"
 #include "crypto/random.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // How many bytes of random data to use for the shared secret.
 const int kKeySize = 16;
@@ -293,5 +292,4 @@ void PairingRegistry::ServiceNextRequest() {
            std::move(pending_requests_.front()));
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

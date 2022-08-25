@@ -23,8 +23,7 @@
 #include "remoting/protocol/v2_authenticator.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 NegotiatingHostAuthenticator::NegotiatingHostAuthenticator(
     const std::string& local_id,
@@ -246,5 +245,4 @@ void NegotiatingHostAuthenticator::CreateAuthenticator(
   }
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

@@ -32,8 +32,7 @@
 
 using testing::_;
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -371,5 +370,4 @@ TEST_F(IceTransportTest, MAYBE_TestDelayedSignaling) {
   tester.RunAndCheckResults();
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

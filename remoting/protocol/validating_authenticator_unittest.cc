@@ -20,8 +20,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -333,5 +332,4 @@ TEST_F(ValidatingAuthenticatorTest, InvalidConnection_ProtocolError) {
             validating_authenticator_->rejection_reason());
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

@@ -14,8 +14,7 @@
 using ::testing::_;
 using ::testing::InSequence;
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 using test::EqualsMouseMoveEvent;
 
@@ -265,5 +264,4 @@ TEST_F(MouseInputFilterTest, MultimonRightDefault_ShowRightDisplay) {
   RunMouseTests(std::size(expected), injected, expected);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

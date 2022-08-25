@@ -18,8 +18,7 @@ class MessageLite;
 }  // namespace protobuf
 }  // namespace google
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class FakeMessagePipeWrapper;
 
@@ -72,7 +71,6 @@ class FakeMessagePipe final : public MessagePipe {
   base::queue<std::string> sent_messages_;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_FAKE_MESSAGE_PIPE_H_

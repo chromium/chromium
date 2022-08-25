@@ -22,15 +22,14 @@
 #include "remoting/protocol/session_config.h"
 #include "remoting/signaling/iq_sender.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class JingleSessionManager;
 class Transport;
 
-// JingleSessionManager and JingleSession implement the subset of the
-// Jingle protocol used in Chromoting. Instances of this class are
-// created by the JingleSessionManager.
+// JingleSessionManager and JingleSession implement the subset of the Jingle
+// protocol used in Chromoting. Instances of this class are created by the
+// JingleSessionManager.
 class JingleSession : public Session {
  public:
   JingleSession(const JingleSession&) = delete;
@@ -136,8 +135,6 @@ class JingleSession : public Session {
   // sequence ID encoded.
   std::string GetNextOutgoingId();
 
-  base::ThreadChecker thread_checker_;
-
   raw_ptr<JingleSessionManager> session_manager_;
   SignalingAddress peer_address_;
   raw_ptr<Session::EventHandler> event_handler_;
@@ -185,10 +182,11 @@ class JingleSession : public Session {
   // The SessionPlugins attached to this session.
   std::vector<SessionPlugin*> plugins_;
 
+  THREAD_CHECKER(thread_checker_);
+
   base::WeakPtrFactory<JingleSession> weak_factory_{this};
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_JINGLE_SESSION_H_

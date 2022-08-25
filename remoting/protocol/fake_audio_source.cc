@@ -4,8 +4,7 @@
 
 #include "remoting/protocol/fake_audio_source.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 FakeAudioSource::FakeAudioSource() = default;
 FakeAudioSource::~FakeAudioSource() = default;
@@ -15,5 +14,4 @@ bool FakeAudioSource::Start(const PacketCapturedCallback& callback) {
   return true;
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

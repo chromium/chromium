@@ -17,8 +17,7 @@
 #include "remoting/base/compound_buffer.h"
 #include "remoting/protocol/message_serialization.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 WebrtcDataStreamAdapter::WebrtcDataStreamAdapter(
     rtc::scoped_refptr<webrtc::DataChannelInterface> channel)
@@ -163,5 +162,4 @@ WebrtcDataStreamAdapter::PendingMessage::PendingMessage(PendingMessage&&) =
 
 WebrtcDataStreamAdapter::PendingMessage::~PendingMessage() = default;
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
