@@ -15,13 +15,16 @@ namespace policy {
 class BrowserPolicyConnectorAsh;
 }  // namespace policy
 
+class Profile;
+
 namespace enterprise_connectors {
 
 // Definition of the SignalsDecorator for Chrome OS Ash platform.
 class AshSignalsDecorator : public SignalsDecorator {
  public:
   AshSignalsDecorator(
-      policy::BrowserPolicyConnectorAsh* browser_policy_connector);
+      policy::BrowserPolicyConnectorAsh* browser_policy_connector,
+      Profile* profile);
   ~AshSignalsDecorator() override;
 
   // SignalsDecorator:
@@ -36,6 +39,7 @@ class AshSignalsDecorator : public SignalsDecorator {
       crosapi::mojom::GetNetworkDetailsResultPtr result);
 
   policy::BrowserPolicyConnectorAsh* const browser_policy_connector_;
+  Profile* const profile_;
 
   base::WeakPtrFactory<AshSignalsDecorator> weak_ptr_factory_{this};
 };

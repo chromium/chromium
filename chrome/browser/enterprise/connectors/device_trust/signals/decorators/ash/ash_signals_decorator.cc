@@ -9,10 +9,13 @@
 #include "base/values.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/crosapi_util.h"
 #include "chrome/browser/ash/crosapi/networking_attributes_ash.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_decorator.h"
+#include "chromeos/ash/components/network/device_state.h"
 #include "components/device_signals/core/common/signals_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
@@ -24,12 +27,31 @@ using policy::BrowserPolicyConnectorAsh;
 
 constexpr char kLatencyHistogramVariant[] = "Ash";
 
+const ash::DeviceState* GetCurrentlyActiveDeviceState(Profile* profile) {
+  if (!crosapi::browser_util::IsSigninProfileOrBelongsToAffiliatedUser(
+          profile)) {
+    return nullptr;
+  }
+
+  ash::NetworkStateHandler* network_state_handler =
+      ash::NetworkHandler::Get()->network_state_handler();
+  const chromeos::NetworkState* network =
+      network_state_handler->DefaultNetwork();
+  if (!network) {
+    // Not connected to a network.
+    return nullptr;
+  }
+  return network_state_handler->GetDeviceState(network->device_path());
+}
+
 }  // namespace
 
 AshSignalsDecorator::AshSignalsDecorator(
-    policy::BrowserPolicyConnectorAsh* browser_policy_connector)
-    : browser_policy_connector_(browser_policy_connector) {
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector,
+    Profile* profile)
+    : browser_policy_connector_(browser_policy_connector), profile_(profile) {
   DCHECK(browser_policy_connector_);
+  DCHECK(profile_);
 }
 
 AshSignalsDecorator::~AshSignalsDecorator() = default;
@@ -45,6 +67,18 @@ void AshSignalsDecorator::Decorate(base::Value::Dict& signals,
               browser_policy_connector_->GetObfuscatedCustomerID());
   signals.Set(device_signals::names::kEnrollmentDomain,
               browser_policy_connector_->GetEnterpriseDomainManager());
+
+  const ash::DeviceState* device_state =
+      GetCurrentlyActiveDeviceState(profile_);
+  if (device_state) {
+    base::Value::List imei_list;
+    imei_list.Append(device_state->imei());
+    signals.Set(device_signals::names::kImei, std::move(imei_list));
+
+    base::Value::List meid_list;
+    meid_list.Append(device_state->meid());
+    signals.Set(device_signals::names::kMeid, std::move(meid_list));
+  }
 
   if (!crosapi::CrosapiManager::Get() ||
       !crosapi::CrosapiManager::Get()->crosapi_ash() ||

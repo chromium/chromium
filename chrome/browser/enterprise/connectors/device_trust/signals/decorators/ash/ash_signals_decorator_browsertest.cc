@@ -33,6 +33,8 @@ constexpr char kFakeCustomerId[] = "fake_obfuscated_customer_id";
 constexpr char kFakeEnrollmentDomain[] = "fake.domain.google.com";
 constexpr char kFakeAffilationID[] = "fake_affiliation_id";
 
+constexpr char kFakeImei[] = "fake_imei";
+constexpr char kFakeMeid[] = "fake_meid";
 constexpr char kMacAddress[] = "0123456789AB";
 constexpr char kIpv4Address[] = "192.168.0.42";
 constexpr char kIpv6Address[] = "fe80::1262:d0ff:fef5:e8a9";
@@ -40,15 +42,6 @@ constexpr char kWifiDevicePath[] = "/device/stub_wifi";
 constexpr char kWifiServicePath[] = "/service/stub_wifi";
 constexpr char kWifiIPConfigV4Path[] = "/ipconfig/stub_wifi-ipv4";
 constexpr char kWifiIPConfigV6Path[] = "/ipconfig/stub_wifi-ipv6";
-
-void ValidateStaticSignals(const base::Value::Dict& signals) {
-  EXPECT_EQ(*signals.FindString(device_signals::names::kDeviceId),
-            kFakeDeviceId);
-  EXPECT_EQ(*signals.FindString(device_signals::names::kObfuscatedCustomerId),
-            kFakeCustomerId);
-  EXPECT_EQ(*signals.FindString(device_signals::names::kEnrollmentDomain),
-            kFakeEnrollmentDomain);
-}
 
 void SetupFakeNetwork() {
   ash::ShillDeviceClient::TestInterface* shill_device_client =
@@ -68,6 +61,13 @@ void SetupFakeNetwork() {
   shill_device_client->SetDeviceProperty(
       kWifiDevicePath, shill::kAddressProperty, base::Value(kMacAddress),
       /* notify_changed= */ false);
+
+  shill_device_client->SetDeviceProperty(kWifiDevicePath, shill::kMeidProperty,
+                                         base::Value(kFakeMeid),
+                                         /*notify_changed=*/false);
+  shill_device_client->SetDeviceProperty(kWifiDevicePath, shill::kImeiProperty,
+                                         base::Value(kFakeImei),
+                                         /*notify_changed=*/false);
 
   base::DictionaryValue ipconfig_v4_dictionary;
   ipconfig_v4_dictionary.SetKey(shill::kAddressProperty,
@@ -115,15 +115,19 @@ class AshSignalsDecoratorBrowserTest : public DevicePolicyCrosBrowserTest {
   ~AshSignalsDecoratorBrowserTest() override = default;
 };
 
-IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest, TestStaticSignals) {
+IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest,
+                       TestStaticPolicySignals) {
   BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
+  Profile* profile =
+      g_browser_process->profile_manager()->GetPrimaryUserProfile();
+
   device_policy()->policy_data().set_directory_api_id(kFakeDeviceId);
   device_policy()->policy_data().set_obfuscated_customer_id(kFakeCustomerId);
   device_policy()->policy_data().set_managed_by(kFakeEnrollmentDomain);
   policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
 
-  enterprise_connectors::AshSignalsDecorator decorator(connector);
+  enterprise_connectors::AshSignalsDecorator decorator(connector, profile);
 
   base::RunLoop run_loop;
 
@@ -132,19 +136,24 @@ IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest, TestStaticSignals) {
 
   run_loop.Run();
 
-  ValidateStaticSignals(signals);
+  EXPECT_EQ(*signals.FindString(device_signals::names::kDeviceId),
+            kFakeDeviceId);
+  EXPECT_EQ(*signals.FindString(device_signals::names::kObfuscatedCustomerId),
+            kFakeCustomerId);
+  EXPECT_EQ(*signals.FindString(device_signals::names::kEnrollmentDomain),
+            kFakeEnrollmentDomain);
 }
 
-IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest, TestIPSignal) {
+IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest, TestNetworkSignals) {
   BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
-  enterprise_connectors::AshSignalsDecorator decorator(connector);
+  Profile* profile =
+      g_browser_process->profile_manager()->GetPrimaryUserProfile();
+  enterprise_connectors::AshSignalsDecorator decorator(connector, profile);
 
   base::RunLoop run_loop;
   base::Value::Dict signals;
 
-  Profile* profile =
-      g_browser_process->profile_manager()->GetPrimaryUserProfile();
   const user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
 
@@ -165,6 +174,14 @@ IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest, TestIPSignal) {
 
   EXPECT_EQ(*signals.FindString(device_signals::names::kIpAddress),
             kIpv6Address);
+
+  base::Value::List* imei_list = signals.FindList(device_signals::names::kImei);
+  EXPECT_EQ(imei_list->size(), 1);
+  EXPECT_EQ(imei_list->front(), kFakeImei);
+
+  base::Value::List* meid_list = signals.FindList(device_signals::names::kMeid);
+  EXPECT_EQ(meid_list->size(), 1);
+  EXPECT_EQ(meid_list->front(), kFakeMeid);
 }
 
 }  // namespace policy
