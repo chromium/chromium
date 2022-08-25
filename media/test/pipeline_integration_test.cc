@@ -744,8 +744,21 @@ TEST_F(PipelineIntegrationTest, WaveLayoutChange) {
   ASSERT_TRUE(WaitUntilOnEnded());
 }
 
-TEST_F(PipelineIntegrationTest, PlaybackTooManyChannels) {
-  EXPECT_EQ(PIPELINE_ERROR_INITIALIZATION_FAILED, Start("9ch.wav"));
+// TODO(https://crbug.com/1354581): At most one of Playback9Channels48000hz and
+// Playback9Channels44100hz will pass, because for 9+ channel files the hardware
+// sample rate has to match the file's sample rate. They are both disabled
+// because different CI configurations have different hardware sample rates. To
+// run the tests, enable them both and expect at most one of them to pass.
+TEST_F(PipelineIntegrationTest, DISABLED_Playback9Channels48000hz) {
+  EXPECT_EQ(PIPELINE_OK, Start("9ch.wav"));
+}
+
+TEST_F(PipelineIntegrationTest, DISABLED_Playback9Channels44100hz) {
+  EXPECT_EQ(PIPELINE_OK, Start("9ch_44100.wav"));
+}
+
+TEST_F(PipelineIntegrationTest, PlaybackStereo48000hz) {
+  EXPECT_EQ(PIPELINE_OK, Start("stereo_48000.wav"));
 }
 
 TEST_F(PipelineIntegrationTest, PlaybackWithAudioTrackDisabledThenEnabled) {

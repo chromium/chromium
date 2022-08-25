@@ -564,15 +564,21 @@ void AudioRendererImpl::OnDeviceInfoReceived(
     //   renderer. Browser-side will down-mix to the hardware config. If the
     //   hardware later changes to equal stream channels, browser-side will stop
     //   down-mixing and use the data from all stream channels.
-    ChannelLayout renderer_channel_layout =
-        hw_channel_count > stream_channel_count
-            ? hw_channel_layout
-            : stream->audio_decoder_config().channel_layout();
 
-    audio_parameters_.Reset(hw_params.format(), renderer_channel_layout,
-                            sample_rate,
-                            AudioLatency::GetHighLatencyBufferSize(
-                                sample_rate, preferred_buffer_size));
+    ChannelLayout stream_channel_layout =
+        stream->audio_decoder_config().channel_layout();
+    bool use_stream_channel_layout = hw_channel_count <= stream_channel_count;
+
+    audio_parameters_.Reset(
+        hw_params.format(),
+        use_stream_channel_layout ? stream_channel_layout : hw_channel_layout,
+        sample_rate,
+        AudioLatency::GetHighLatencyBufferSize(sample_rate,
+                                               preferred_buffer_size));
+    if (use_stream_channel_layout &&
+        stream_channel_layout == CHANNEL_LAYOUT_DISCRETE) {
+      audio_parameters_.set_channels_for_discrete(stream_channel_count);
+    }
   }
 
   audio_parameters_.set_effects(audio_parameters_.effects() |
