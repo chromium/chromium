@@ -1,0 +1,14 @@
+Name: Byte Buddy agent
+Short Name: byte-buddy-agent
+URL: https://github.com/raphw/byte-buddy
+Version: 1.12.13
+License: Apache 2.0
+License File: NOT_SHIPPED
+CPEPrefix: unknown
+Security Critical: no
+
+Description:
+The Byte Buddy agent offers convenience for attaching an agent to the local or a remote VM.
+
+Local Modifications:
+No modifications.
