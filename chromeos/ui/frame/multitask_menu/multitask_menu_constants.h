@@ -11,7 +11,8 @@
 
 namespace chromeos {
 
-constexpr gfx::Size kMultitaskButtonSize(108, 72);
+constexpr gfx::Size kMultitaskButtonLandscapeSize(108, 72);
+constexpr gfx::Size kMultitaskButtonPortraitSize(72, 108);
 constexpr gfx::Insets kMultitaskBaseButtonMargin(4);
 constexpr int kMultitaskBaseButtonBorderRadius = 7;
 constexpr int kButtonBorderSize = 1;

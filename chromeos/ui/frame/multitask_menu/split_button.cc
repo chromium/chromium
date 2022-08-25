@@ -20,8 +20,10 @@ constexpr int kMultitaskHalfButtonHeight = 72;
 constexpr int kMultitaskOneThirdButtonWidth = 38;
 constexpr int kMultitaskTwoThirdButtonWidth = 70;
 
-constexpr gfx::Insets kPrimaryInsets = gfx::Insets::TLBR(4, 4, 4, 2);
-constexpr gfx::Insets kSecondaryInsets = gfx::Insets::TLBR(4, 2, 4, 4);
+constexpr gfx::Insets kPrimaryLandscapeInsets = gfx::Insets::TLBR(4, 4, 4, 2);
+constexpr gfx::Insets kPrimaryPortraitInsets = gfx::Insets::TLBR(4, 4, 2, 4);
+constexpr gfx::Insets kSecondaryLandscapeInsets = gfx::Insets::TLBR(4, 2, 4, 4);
+constexpr gfx::Insets kSecondaryPortraitInsets = gfx::Insets::TLBR(2, 4, 4, 4);
 
 // TODO(shidi): Button name needs to be internationalized.
 const std::u16string kPrimaryButtonName = u"Split Primary";
@@ -68,20 +70,24 @@ END_METADATA
 SplitButtonView::SplitButtonView(
     SplitButton::SplitButtonType type,
     views::Button::PressedCallback primary_callback,
-    views::Button::PressedCallback secondary_callback)
+    views::Button::PressedCallback secondary_callback,
+    bool is_portrait_mode)
     : type_(type) {
-  SetPreferredSize(kMultitaskButtonSize);
+  SetOrientation(is_portrait_mode ? views::BoxLayout::Orientation::kVertical
+                                  : views::BoxLayout::Orientation::kHorizontal);
+  SetPreferredSize(is_portrait_mode ? kMultitaskButtonPortraitSize
+                                    : kMultitaskButtonLandscapeSize);
 
   auto primary_hover_callback = base::BindRepeating(
       &SplitButtonView::OnButtonHovered, base::Unretained(this));
   auto secondary_hover_callback = base::BindRepeating(
       &SplitButtonView::OnButtonHovered, base::Unretained(this));
-  primary_button_ = AddChildView(
-      std::make_unique<SplitButton>(primary_callback, primary_hover_callback,
-                                    kPrimaryButtonName, kPrimaryInsets));
+  primary_button_ = AddChildView(std::make_unique<SplitButton>(
+      primary_callback, primary_hover_callback, kPrimaryButtonName,
+      is_portrait_mode ? kPrimaryPortraitInsets : kPrimaryLandscapeInsets));
   secondary_button_ = AddChildView(std::make_unique<SplitButton>(
       secondary_callback, secondary_hover_callback, kSecondaryButtonName,
-      kSecondaryInsets));
+      is_portrait_mode ? kSecondaryPortraitInsets : kSecondaryLandscapeInsets));
 
   const int primary_width = type_ == SplitButton::SplitButtonType::kHalfButtons
                                 ? kMultitaskHalfButtonWidth
@@ -92,9 +98,12 @@ SplitButtonView::SplitButtonView(
           : kMultitaskOneThirdButtonWidth;
 
   primary_button_->SetPreferredSize(
-      gfx::Size(primary_width, kMultitaskHalfButtonHeight));
+      is_portrait_mode ? gfx::Size(kMultitaskHalfButtonHeight, primary_width)
+                       : gfx::Size(primary_width, kMultitaskHalfButtonHeight));
   secondary_button_->SetPreferredSize(
-      gfx::Size(secondary_width, kMultitaskHalfButtonHeight));
+      is_portrait_mode
+          ? gfx::Size(kMultitaskHalfButtonHeight, secondary_width)
+          : gfx::Size(secondary_width, kMultitaskHalfButtonHeight));
 }
 
 void SplitButtonView::OnButtonHovered() {

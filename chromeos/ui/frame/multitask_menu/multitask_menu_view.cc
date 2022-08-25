@@ -8,12 +8,14 @@
 
 #include "base/callback_forward.h"
 #include "base/check.h"
+#include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
 #include "ui/aura/window.h"
 #include "ui/base/default_style.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/display/screen.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
@@ -25,6 +27,10 @@ namespace {
 
 constexpr int kCenterPadding = 4;
 constexpr int kLabelFontSize = 13;
+constexpr int kMultitaskMenuLandscapeWidth = 270;
+constexpr int kMultitaskMenuLandscapeHeight = 248;
+constexpr int kMultitaskMenuPortraitWidth = 200;
+constexpr int kMultitaskMenuPortraitHeight = 320;
 
 // Creates multitask button with label.
 std::unique_ptr<views::View> CreateButtonContainer(
@@ -54,6 +60,16 @@ MultitaskMenuView::MultitaskMenuView(
   DCHECK(on_any_button_pressed_);
   SetUseDefaultFillLayout(true);
 
+  // The display orientation. This determines whether menu is in
+  // landscape/portrait mode.
+  const bool is_portrait_mode = !chromeos::IsDisplayLayoutHorizontal(
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window));
+
+  SetPreferredSize(is_portrait_mode ? gfx::Size(kMultitaskMenuPortraitWidth,
+                                                kMultitaskMenuPortraitHeight)
+                                    : gfx::Size(kMultitaskMenuLandscapeWidth,
+                                                kMultitaskMenuLandscapeHeight));
+
   half_button_ =
       static_cast<SplitButtonView*>(AddChildView(CreateButtonContainer(
           std::make_unique<SplitButtonView>(
@@ -63,7 +79,8 @@ MultitaskMenuView::MultitaskMenuView(
                                   SnapDirection::kPrimary),
               base::BindRepeating(&MultitaskMenuView::SplitButtonPressed,
                                   base::Unretained(this),
-                                  SnapDirection::kSecondary)),
+                                  SnapDirection::kSecondary),
+              is_portrait_mode),
           IDS_APP_ACCNAME_HALF)));
 
   // Partial button.
@@ -76,7 +93,8 @@ MultitaskMenuView::MultitaskMenuView(
                                   SnapDirection::kPrimary),
               base::BindRepeating(&MultitaskMenuView::PartialButtonPressed,
                                   base::Unretained(this),
-                                  SnapDirection::kSecondary)),
+                                  SnapDirection::kSecondary),
+              is_portrait_mode),
           IDS_APP_ACCNAME_PARTIAL)));
 
   // Full screen button.
@@ -85,7 +103,7 @@ MultitaskMenuView::MultitaskMenuView(
           std::make_unique<MultitaskBaseButton>(
               base::BindRepeating(&MultitaskMenuView::FullScreenButtonPressed,
                                   base::Unretained(this)),
-              MultitaskBaseButton::Type::kFull,
+              MultitaskBaseButton::Type::kFull, is_portrait_mode,
               l10n_util::GetStringUTF16(IDS_APP_ACCNAME_FULL)),
           IDS_APP_ACCNAME_FULL)));
 
@@ -95,7 +113,7 @@ MultitaskMenuView::MultitaskMenuView(
           std::make_unique<MultitaskBaseButton>(
               base::BindRepeating(&MultitaskMenuView::FloatButtonPressed,
                                   base::Unretained(this)),
-              MultitaskBaseButton::Type::kFloat,
+              MultitaskBaseButton::Type::kFloat, is_portrait_mode,
               l10n_util::GetStringUTF16(IDS_APP_ACCNAME_FLOAT_ON_TOP)),
           IDS_APP_ACCNAME_FLOAT_ON_TOP)));
 }

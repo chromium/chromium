@@ -55,7 +55,8 @@ class SplitButtonView : public views::BoxLayoutView {
 
   SplitButtonView(SplitButton::SplitButtonType type,
                   views::Button::PressedCallback primary_callback,
-                  views::Button::PressedCallback secondary_callback);
+                  views::Button::PressedCallback secondary_callback,
+                  bool is_portrait_mode);
   SplitButtonView(const SplitButtonView&) = delete;
   SplitButtonView& operator=(const SplitButtonView&) = delete;
 

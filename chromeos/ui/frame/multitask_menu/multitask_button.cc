@@ -16,17 +16,22 @@ namespace chromeos {
 namespace {
 
 // Round rect pattern indicate the Full/Float window bounds.
-// TODO(shidi): Update when implement portrait mode.
-constexpr gfx::Rect kFloatPatternBounds(72, 24, 32, 44);
-constexpr gfx::Rect kFullPatternBounds(4, 4, 100, 64);
+constexpr gfx::Rect kFloatPatternLandscapeBounds(72, 24, 32, 44);
+constexpr gfx::Rect kFloatPatternPortraitBounds(36, 60, 32, 44);
+constexpr gfx::Rect kFullPatternLandscapeBounds(4, 4, 100, 64);
+constexpr gfx::Rect kFullPatternPortraitBounds(4, 4, 64, 100);
 
 }  // namespace
 
 MultitaskBaseButton::MultitaskBaseButton(PressedCallback callback,
                                          Type type,
+                                         bool is_portrait_mode,
                                          const std::u16string& name)
-    : views::Button(std::move(callback)), type_(type) {
-  SetPreferredSize(kMultitaskButtonSize);
+    : views::Button(std::move(callback)),
+      type_(type),
+      is_portrait_mode_(is_portrait_mode) {
+  SetPreferredSize(is_portrait_mode_ ? kMultitaskButtonPortraitSize
+                                     : kMultitaskButtonLandscapeSize);
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
   views::InkDrop::Get(this)->SetBaseColor(kMultitaskButtonDefaultColor);
   SetInstallFocusRingOnFocus(true);
@@ -72,9 +77,15 @@ void MultitaskBaseButton::PaintButtonContents(gfx::Canvas* canvas) {
   fill_flags.setColor(fill_color);
   canvas->DrawRoundRect(GetLocalBounds(), kMultitaskBaseButtonBorderRadius,
                         fill_flags);
+  gfx::Rect bounds;
+  if (is_portrait_mode_) {
+    bounds = type_ == Type::kFloat ? kFloatPatternPortraitBounds
+                                   : kFullPatternPortraitBounds;
+  } else {
+    bounds = type_ == Type::kFloat ? kFloatPatternLandscapeBounds
+                                   : kFullPatternLandscapeBounds;
+  }
 
-  gfx::Rect bounds =
-      type_ == Type::kFloat ? kFloatPatternBounds : kFullPatternBounds;
   canvas->DrawRoundRect(bounds, kButtonCornerRadius, pattern_flags);
 }
 

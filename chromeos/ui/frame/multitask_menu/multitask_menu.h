@@ -39,6 +39,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenu
   void OnWidgetDestroying(views::Widget* widget) override;
 
   // display::DisplayObserver:
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t changed_metrics) override;
   void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // Displays the MultitaskMenu.

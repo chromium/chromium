@@ -19,7 +19,7 @@ namespace {
 
 constexpr int kMultitaskMenuVerticalPadding = 4;
 constexpr int kMultitaskMenuWidth = 540;
-constexpr int kMultitaskMenuHeight = 124;
+constexpr int kMultitaskMenuLandscapeHeight = 124;
 constexpr int kBetweenButtonSpacing = 16;
 
 }  // namespace
@@ -68,9 +68,10 @@ TabletModeMultitaskMenu::TabletModeMultitaskMenu(
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.parent = window->parent();
-  params.bounds = gfx::Rect(
-      window->bounds().CenterPoint().x() - kMultitaskMenuWidth / 2,
-      kMultitaskMenuVerticalPadding, kMultitaskMenuWidth, kMultitaskMenuHeight);
+  params.bounds =
+      gfx::Rect(window->bounds().CenterPoint().x() - kMultitaskMenuWidth / 2,
+                kMultitaskMenuVerticalPadding, kMultitaskMenuWidth,
+                kMultitaskMenuLandscapeHeight);
   params.name = "TabletModeMultitaskMenuWidget";
   // TODO(crbug.com/1355572): Set widget as activatable and hide in overview.
 

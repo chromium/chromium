@@ -23,6 +23,7 @@ class MultitaskBaseButton : public views::Button {
 
   MultitaskBaseButton(PressedCallback callback,
                       Type type,
+                      bool is_portrait_mode,
                       const std::u16string& name);
 
   MultitaskBaseButton(const MultitaskBaseButton&) = delete;
@@ -35,6 +36,9 @@ class MultitaskBaseButton : public views::Button {
 
  private:
   const Type type_;
+  // The display orientation. This determines whether button is in
+  // landscape/portrait mode.
+  const bool is_portrait_mode_;
 };
 
 }  // namespace chromeos

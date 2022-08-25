@@ -7,9 +7,11 @@
 #include <memory>
 
 #include "base/check.h"
+#include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
 #include "ui/views/layout/table_layout.h"
 
@@ -19,8 +21,6 @@ namespace {
 
 constexpr int kMultitaskMenuBubbleCornerRadius = 8;
 constexpr int kRowPadding = 16;
-constexpr int KMultitaskMenuWidth = 270;
-constexpr int kMultitaskMenuHeight = 248;
 
 }  // namespace
 
@@ -30,6 +30,7 @@ MultitaskMenu::MultitaskMenu(views::View* anchor, aura::Window* parent_window) {
   set_corner_radius(kMultitaskMenuBubbleCornerRadius);
   set_close_on_deactivate(true);
   set_internal_name("MultitaskMenuBubbleWidget");
+  set_margins(gfx::Insets());
   set_parent_window(parent_window);
 
   SetAnchorView(anchor);
@@ -37,7 +38,7 @@ MultitaskMenu::MultitaskMenu(views::View* anchor, aura::Window* parent_window) {
   // window has no space for `MultitaskMenu` to arrow at `TOP_CENTER`.
   SetArrow(views::BubbleBorder::Arrow::TOP_CENTER);
   SetButtons(ui::DIALOG_BUTTON_NONE);
-  SetPreferredSize(gfx::Size(KMultitaskMenuWidth, kMultitaskMenuHeight));
+
   SetUseDefaultFillLayout(true);
 
   // Must be initialized after setting bounds.
@@ -76,6 +77,21 @@ void MultitaskMenu::OnWidgetDestroying(views::Widget* widget) {
 
 void MultitaskMenu::OnDisplayTabletStateChanged(display::TabletState state) {
   if (state == display::TabletState::kEnteringTabletMode)
+    HideBubble();
+}
+
+void MultitaskMenu::OnDisplayMetricsChanged(const display::Display& display,
+                                            uint32_t changed_metrics) {
+  // Ignore changes to displays that aren't showing the menu.
+  if (display.id() !=
+      display::Screen::GetScreen()
+          ->GetDisplayNearestView(GetWidget()->GetNativeWindow())
+          .id()) {
+    return;
+  }
+  // TODO(shidi): Will do the rotate transition on a separate cl. Close the
+  // bubble at rotation for now.
+  if (changed_metrics & (DISPLAY_METRIC_BOUNDS | DISPLAY_METRIC_ROTATION))
     HideBubble();
 }
 
