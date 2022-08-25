@@ -6,6 +6,7 @@
 #define REMOTING_HOST_X11_CRTC_RESIZER_H_
 
 #include <list>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
@@ -58,6 +59,14 @@ class X11CrtcResizer {
   // outputs/CRTCs that were disabled.
   void ApplyActiveCrtcs();
 
+  // Initializes the active CRTCs from a list of fake X11 replies. As the
+  // replies don't include the CRTC IDs, these will be created sequentially
+  // as 1, 2, ...
+  void SetCrtcsForTest(std::vector<x11::RandR::GetCrtcInfoReply> crtcs);
+
+  // Returns the stored CRTCs as a list of rectangles.
+  std::vector<webrtc::DesktopRect> GetCrtcsForTest() const;
+
  private:
   // Information for an active CRTC, from RRGetCrtcInfo response. When
   // modifying a CRTC, the information here can reconstruct the original
@@ -71,7 +80,7 @@ class X11CrtcResizer {
              uint16_t height,
              x11::RandR::Mode mode,
              x11::RandR::Rotation rotation,
-             std::vector<x11::RandR::Output>&& outputs);
+             const std::vector<x11::RandR::Output>& outputs);
     CrtcInfo(const CrtcInfo&);
     CrtcInfo(CrtcInfo&&);
     CrtcInfo& operator=(const CrtcInfo&);
@@ -90,6 +99,10 @@ class X11CrtcResizer {
     // True if any values are different from the response from RRGetCrtcInfo.
     bool changed = false;
   };
+
+  // Adds a new active CRTC from a reply to RRGetCrtcInfo.
+  void AddCrtcFromReply(x11::RandR::Crtc crtc,
+                        const x11::RandR::GetCrtcInfoReply& reply);
 
   raw_ptr<x11::RandR::GetScreenResourcesCurrentReply> resources_;
   raw_ptr<x11::RandR> randr_;

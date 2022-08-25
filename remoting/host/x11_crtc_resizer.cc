@@ -20,14 +20,15 @@ constexpr auto kDisabledCrtc = static_cast<x11::RandR::Crtc>(0);
 namespace remoting {
 
 X11CrtcResizer::CrtcInfo::CrtcInfo() = default;
-X11CrtcResizer::CrtcInfo::CrtcInfo(x11::RandR::Crtc crtc,
-                                   int16_t x,
-                                   int16_t y,
-                                   uint16_t width,
-                                   uint16_t height,
-                                   x11::RandR::Mode mode,
-                                   x11::RandR::Rotation rotation,
-                                   std::vector<x11::RandR::Output>&& outputs)
+X11CrtcResizer::CrtcInfo::CrtcInfo(
+    x11::RandR::Crtc crtc,
+    int16_t x,
+    int16_t y,
+    uint16_t width,
+    uint16_t height,
+    x11::RandR::Mode mode,
+    x11::RandR::Rotation rotation,
+    const std::vector<x11::RandR::Output>& outputs)
     : crtc(crtc),
       x(x),
       y(y),
@@ -61,9 +62,7 @@ void X11CrtcResizer::FetchActiveCrtcs() {
     if (response->outputs.empty())
       continue;
 
-    active_crtcs_.emplace_back(
-        crtc, response->x, response->y, response->width, response->height,
-        response->mode, response->rotation, std::move(response->outputs));
+    AddCrtcFromReply(crtc, *response.reply);
   }
 }
 
@@ -199,6 +198,31 @@ void X11CrtcResizer::ApplyActiveCrtcs() {
         .outputs = crtc_info.outputs,
     });
   }
+}
+
+void X11CrtcResizer::SetCrtcsForTest(
+    std::vector<x11::RandR::GetCrtcInfoReply> crtcs) {
+  int id = 1;
+  for (const auto& crtc : crtcs) {
+    AddCrtcFromReply(static_cast<x11::RandR::Crtc>(id), crtc);
+    id++;
+  }
+}
+
+std::vector<webrtc::DesktopRect> X11CrtcResizer::GetCrtcsForTest() const {
+  std::vector<webrtc::DesktopRect> result;
+  for (const auto& crtc_info : active_crtcs_) {
+    result.push_back(webrtc::DesktopRect::MakeXYWH(
+        crtc_info.x, crtc_info.y, crtc_info.width, crtc_info.height));
+  }
+  return result;
+}
+
+void X11CrtcResizer::AddCrtcFromReply(
+    x11::RandR::Crtc crtc,
+    const x11::RandR::GetCrtcInfoReply& reply) {
+  active_crtcs_.emplace_back(crtc, reply.x, reply.y, reply.width, reply.height,
+                             reply.mode, reply.rotation, reply.outputs);
 }
 
 }  // namespace remoting
