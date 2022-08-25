@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 
 #include "base/memory/weak_ptr.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_url_loader_client.h"
@@ -923,7 +924,8 @@ static Document* CreateStagingDocumentForMarkupSanitization(
   LocalFrameView* frame_view =
       MakeGarbageCollected<LocalFrameView>(*frame, gfx::Size(800, 600));
   frame->SetView(frame_view);
-  frame->Init(/*opener=*/nullptr, /*policy_container=*/nullptr);
+  // TODO(https://crbug.com/1355751) Initialize `storage_key`.
+  frame->Init(/*opener=*/nullptr, /*policy_container=*/nullptr, StorageKey());
 
   Document* document = frame->GetDocument();
   DCHECK(document);

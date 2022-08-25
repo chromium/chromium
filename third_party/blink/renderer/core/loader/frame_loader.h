@@ -66,6 +66,7 @@ class LocalFrameClient;
 class PolicyContainer;
 class ProgressTracker;
 class ResourceRequest;
+class StorageKey;
 class TracedValue;
 struct FrameLoadRequest;
 struct WebNavigationInfo;
@@ -83,7 +84,8 @@ class CORE_EXPORT FrameLoader final {
   FrameLoader& operator=(const FrameLoader&) = delete;
   ~FrameLoader();
 
-  void Init(std::unique_ptr<PolicyContainer> policy_container);
+  void Init(std::unique_ptr<PolicyContainer> policy_container,
+            const blink::StorageKey& storage_key);
 
   ResourceRequest ResourceRequestForReload(
       WebFrameLoadType,

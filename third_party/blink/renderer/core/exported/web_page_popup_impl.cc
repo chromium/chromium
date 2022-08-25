@@ -36,6 +36,7 @@
 #include "cc/base/features.h"
 #include "cc/layers/picture_layer.h"
 #include "cc/trees/ukm_manager.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "third_party/blink/public/web/web_view_client.h"
@@ -398,7 +399,8 @@ WebPagePopupImpl::WebPagePopupImpl(
         owner_settings->GetAllowUniversalAccessFromFileURLs());
   }
 
-  frame->Init(/*opener=*/nullptr, /*policy_container=*/nullptr);
+  // TODO(https://crbug.com/1355751) Initialize `storage_key`.
+  frame->Init(/*opener=*/nullptr, /*policy_container=*/nullptr, StorageKey());
   frame->View()->SetParentVisible(true);
   frame->View()->SetSelfVisible(true);
 

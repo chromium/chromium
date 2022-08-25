@@ -100,11 +100,15 @@ class SizeF;
 namespace blink {
 
 class AdTracker;
-class AttributionSrcLoader;
 class AssociatedInterfaceProvider;
+class AttributionSrcLoader;
+class BackgroundColorPaintImageGenerator;
+class BoxShadowPaintImageGenerator;
 class BrowserInterfaceBrokerProxy;
+class ClipPathPaintImageGenerator;
 class Color;
 class ContentCaptureManager;
+class CoreProbeSink;
 class Document;
 class Editor;
 class Element;
@@ -114,29 +118,26 @@ class FrameConsole;
 class FrameOverlay;
 class FrameSelection;
 class FrameWidget;
+class IdlenessDetector;
 class InputMethodController;
 class InspectorIssueReporter;
-class InspectorTraceEvents;
-class CoreProbeSink;
-class IdlenessDetector;
 class InspectorTaskRunner;
+class InspectorTraceEvents;
 class InterfaceRegistry;
 class LayoutView;
 class LocalDOMWindow;
-class LocalWindowProxy;
 class LocalFrameClient;
 class LocalFrameMojoHandler;
-class BackgroundColorPaintImageGenerator;
-class BoxShadowPaintImageGenerator;
-class ClipPathPaintImageGenerator;
+class LocalWindowProxy;
 class Node;
 class NodeTraversal;
 class PerformanceMonitor;
-class PolicyContainer;
 class PluginData;
-class SystemClipboard;
+class PolicyContainer;
 class SmoothScrollSequencer;
 class SpellChecker;
+class StorageKey;
+class SystemClipboard;
 class TextFragmentHandler;
 class TextSuggestionController;
 class VirtualKeyboardOverlayChangedObserver;
@@ -189,16 +190,24 @@ class CORE_EXPORT LocalFrame final
       InterfaceRegistry*,
       const base::TickClock* clock = base::DefaultTickClock::GetInstance());
 
-  // Initialize the LocalFrame, creating and initializing its LocalDOMWindow.
-  // |policy_container| is used to set the PolicyContainer of the new
-  // LocalDOMWindow. Usually, it is inherited from the parent or the opener: the
-  // inheritance operation is taken care of by the browser (if this LocalFrame
-  // was just created in response to the creation of a RenderFrameHost) or by
-  // blink if this is a synchronously created LocalFrame child. If you pass a
-  // null |policy_container|, it will be initialized to an empty, default one,
-  // which has no PolicyContainerHost counterpart. This is usually safe to do if
-  // this LocalFrame has no corresponding RenderFrameHost.
-  void Init(Frame* opener, std::unique_ptr<PolicyContainer> policy_container);
+  // Initialize the LocalFrame, creating and initializing its LocalDOMWindow. It
+  // starts from the initial empty document.
+  // - |policy_container| is used to set the PolicyContainer of the new
+  //   LocalDOMWindow. If you pass a null |policy_container|, it will be
+  //   initialized to an empty, default one, which has no PolicyContainerHost
+  //   counterpart. This is usually safe to do if this LocalFrame has no
+  //   corresponding RenderFrameHost.
+  // - |storage_key| is the key used to partition access to storage API like DOM
+  //   storage, IndexedDB, BroadcastChannel, etc...
+  //
+  // Note: Usually, the initial empty document inherits its |policy_container|
+  // and |storage_key| from the parent or the opener. The inheritance operation
+  // is taken care of by the browser (if this LocalFrame was just created in
+  // response to the creation of a RenderFrameHost) or by blink if this is a
+  // synchronously created LocalFrame child.
+  void Init(Frame* opener,
+            std::unique_ptr<PolicyContainer> policy_container,
+            const blink::StorageKey& storage_key);
   void SetView(LocalFrameView*);
   void CreateView(const gfx::Size&, const Color&);
 

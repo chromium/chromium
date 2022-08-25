@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Local storage is correctly partitioned with regards to anonymous iframe in initial empty documents. assert_equals: expected "" but got "value_E"
-Harness: the test ran to completion.
-

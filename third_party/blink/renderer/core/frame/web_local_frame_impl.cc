@@ -103,6 +103,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-blink.h"
@@ -2012,10 +2013,17 @@ WebLocalFrameImpl* WebLocalFrameImpl::CreateMainFrame(
       frame_token);
   Page& page = *To<WebViewImpl>(web_view)->GetPage();
   DCHECK(!page.MainFrame());
+
+  // TODO(https://crbug.com/1355751): From the browser process, plumb the
+  // correct StorageKey for window in main frame. This is not an issue here,
+  // because the FrameLoader is able to recover a correct StorageKey from the
+  // origin of the document only.
+  StorageKey storage_key;
+
   frame->InitializeCoreFrame(
       page, nullptr, nullptr, nullptr, FrameInsertType::kInsertInConstructor,
       name, opener ? &ToCoreFrame(*opener)->window_agent_factory() : nullptr,
-      opener, std::move(policy_container), sandbox_flags);
+      opener, std::move(policy_container), storage_key, sandbox_flags);
   return frame;
 }
 
@@ -2059,7 +2067,7 @@ WebLocalFrameImpl* WebLocalFrameImpl::CreateProvisional(
       *previous_frame->GetPage(), MakeGarbageCollected<DummyFrameOwner>(),
       previous_web_frame->Parent(), nullptr, FrameInsertType::kInsertLater,
       name, &ToCoreFrame(*previous_web_frame)->window_agent_factory(),
-      previous_web_frame->Opener(), /* policy_container */ nullptr,
+      previous_web_frame->Opener(), /*policy_container=*/nullptr, StorageKey(),
       sandbox_flags);
 
   LocalFrame* new_frame = web_frame->GetFrame();
@@ -2148,12 +2156,13 @@ void WebLocalFrameImpl::InitializeCoreFrame(
     WindowAgentFactory* window_agent_factory,
     WebFrame* opener,
     std::unique_ptr<blink::WebPolicyContainer> policy_container,
+    const StorageKey& storage_key,
     network::mojom::blink::WebSandboxFlags sandbox_flags) {
   InitializeCoreFrameInternal(page, owner, parent, previous_sibling,
                               insert_type, name, window_agent_factory, opener,
                               PolicyContainer::CreateFromWebPolicyContainer(
                                   std::move(policy_container)),
-                              sandbox_flags);
+                              storage_key, sandbox_flags);
 }
 
 void WebLocalFrameImpl::InitializeCoreFrameInternal(
@@ -2166,6 +2175,7 @@ void WebLocalFrameImpl::InitializeCoreFrameInternal(
     WindowAgentFactory* window_agent_factory,
     WebFrame* opener,
     std::unique_ptr<PolicyContainer> policy_container,
+    const StorageKey& storage_key,
     network::mojom::blink::WebSandboxFlags sandbox_flags) {
   Frame* parent_frame = parent ? ToCoreFrame(*parent) : nullptr;
   Frame* previous_sibling_frame =
@@ -2202,7 +2212,7 @@ void WebLocalFrameImpl::InitializeCoreFrameInternal(
 
   // We must call init() after frame_ is assigned because it is referenced
   // during init().
-  frame_->Init(opener_frame, std::move(policy_container));
+  frame_->Init(opener_frame, std::move(policy_container), storage_key);
 
   if (!owner) {
     // This trace event is needed to detect the main frame of the
@@ -2277,8 +2287,8 @@ LocalFrame* WebLocalFrameImpl::CreateChildFrame(
   webframe_child->InitializeCoreFrameInternal(
       *GetFrame()->GetPage(), owner_element, this, LastChild(),
       FrameInsertType::kInsertInConstructor, name,
-      &GetFrame()->window_agent_factory(), nullptr,
-      std::move(policy_container));
+      &GetFrame()->window_agent_factory(), nullptr, std::move(policy_container),
+      GetFrame()->DomWindow()->GetStorageKey());
 
   webframe_child->Client()->InitializeAsChildFrame(/*parent=*/this);
 

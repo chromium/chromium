@@ -8,6 +8,7 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -55,7 +56,8 @@ LocalFrame* SingleChildLocalFrameClient::CreateFrame(
   auto policy_container = std::make_unique<PolicyContainer>(
       dummy_host.Unbind(), std::move(policy_container_data));
 
-  child->Init(/*opener=*/nullptr, std::move(policy_container));
+  child->Init(/*opener=*/nullptr, std::move(policy_container),
+              parent_frame->DomWindow()->GetStorageKey());
 
   return child;
 }
