@@ -48,6 +48,10 @@
 
 namespace {
 
+const char kTextPlainMimeType[] = "text/plain";
+const char kTextTypeMimeType[] = "text/";
+const char kTextWildcardMimeType[] = "text/*";
+
 bool ShouldShowDisplayDensityMenuItem(const std::string& app_id,
                                       apps::mojom::MenuType menu_type,
                                       int64_t display_id) {
@@ -73,8 +77,6 @@ apps::IntentFilters CreateIntentFilterForCrostini(
   if (mime_types_set.empty()) {
     return {};
   }
-  std::vector<std::string> mime_types(mime_types_set.begin(),
-                                      mime_types_set.end());
 
   // When a file has a mime type that Files App can't recognise but Crostini can
   // (e.g. a proprietary file type), we should look at the file extensions that
@@ -85,6 +87,24 @@ apps::IntentFilters CreateIntentFilterForCrostini(
     extension_types = mime_types_service->GetExtensionTypesFromMimeTypes(
         mime_types_set, registration.VmName(), registration.ContainerName());
   }
+  std::vector<std::string> mime_types(mime_types_set.begin(),
+                                      mime_types_set.end());
+
+  // If we see that the app supports the text/plain mime-type, then the app
+  // supports all files with type text/*, as per xdg spec.
+  // https://specifications.freedesktop.org/shared-mime-info-spec/shared-mime-info-spec-latest.html.
+  // In this case, remove all mime types that begin with "text/" and replace
+  // them with a single "text/*" mime type.
+  if (base::Contains(mime_types, kTextPlainMimeType)) {
+    mime_types.erase(std::remove_if(mime_types.begin(), mime_types.end(),
+                                    [](const std::string& mime) {
+                                      return mime.find(kTextTypeMimeType) !=
+                                             std::string::npos;
+                                    }),
+                     mime_types.end());
+    mime_types.push_back(kTextWildcardMimeType);
+  }
+
   apps::IntentFilters intent_filters;
   intent_filters.push_back(apps_util::CreateFileFilter(
       {apps_util::kIntentActionView}, mime_types, extension_types,
