@@ -49,7 +49,7 @@ public enum PersistedTabDataConfiguration {
         return sEmptyByteBufferPersistedTabDataStorage;
     }
 
-    private static FilePersistedTabDataStorage getFilePersistedTabDataStorage() {
+    static FilePersistedTabDataStorage getFilePersistedTabDataStorage() {
         if (sFilePersistedTabDataStorage == null) {
             sFilePersistedTabDataStorage = new FilePersistedTabDataStorage();
         }

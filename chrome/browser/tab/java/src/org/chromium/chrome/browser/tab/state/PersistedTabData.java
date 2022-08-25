@@ -447,4 +447,11 @@ public abstract class PersistedTabData implements UserData {
     getSupportedMaintenanceClassesForTesting() {
         return sSupportedMaintenanceClasses;
     }
+
+    /**
+     * Signal to {@link PersistedTabData} that deferred startup is complete.
+     */
+    public static void onDeferredStartup() {
+        PersistedTabDataConfiguration.getFilePersistedTabDataStorage().onDeferredStartup();
+    }
 }
