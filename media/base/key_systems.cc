@@ -320,8 +320,6 @@ class KeySystemsImpl : public KeySystems {
  private:
   friend class base::NoDestructor<KeySystemsImpl>;
 
-  using KeySystemPropertiesMap =
-      std::unordered_map<std::string, std::unique_ptr<KeySystemProperties>>;
   using MimeTypeToCodecsMap = std::unordered_map<std::string, SupportedCodecs>;
   using CodecMap = std::unordered_map<std::string, EmeCodec>;
   using InitDataTypesMap = std::unordered_map<std::string, EmeInitDataType>;
@@ -357,8 +355,8 @@ class KeySystemsImpl : public KeySystems {
   // Pending callbacks for UpdateIfNeeded() calls.
   base::OnceClosureList update_callbacks_;
 
-  // Map from key system string to KeySystemProperties instance.
-  KeySystemPropertiesMap key_system_properties_map_;
+  // Vector of KeySystemProperties .
+  KeySystemPropertiesVector key_system_properties_vector_;
 
   // This member should only be modified by RegisterMimeType().
   MimeTypeToCodecsMap mime_type_to_codecs_map_;
@@ -488,8 +486,8 @@ void KeySystemsImpl::ProcessSupportedKeySystems(
     KeySystemPropertiesVector key_systems) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  // Clear `key_system_properties_map_` before we repopulating it.
-  key_system_properties_map_.clear();
+  // Clear `key_system_properties_vector_` before repopulating it.
+  key_system_properties_vector_.clear();
 
   for (auto& properties : key_systems) {
     DCHECK(!properties->GetBaseKeySystemName().empty());
@@ -520,23 +518,20 @@ void KeySystemsImpl::ProcessSupportedKeySystems(
     }
 
     const auto base_key_system_name = properties->GetBaseKeySystemName();
-    DCHECK(!key_system_properties_map_.count(base_key_system_name))
-        << "Key system '" << base_key_system_name << "' already registered";
     DVLOG(1) << __func__ << ": Adding key system " << base_key_system_name;
-    key_system_properties_map_[base_key_system_name] = std::move(properties);
+    key_system_properties_vector_.push_back(std::move(properties));
   }
 }
 
 const KeySystemProperties* KeySystemsImpl::GetKeySystemProperties(
     const std::string& key_system) const {
   DCHECK(!is_updating_);
-  for (const auto& entry : key_system_properties_map_) {
-    const auto& base_key_system = entry.first;
-    const auto* properties = entry.second.get();
+  for (const auto& key_system_properties : key_system_properties_vector_) {
+    const auto& base_key_system = key_system_properties->GetBaseKeySystemName();
     if ((key_system == base_key_system ||
          IsSubKeySystemOf(key_system, base_key_system)) &&
-        properties->IsSupportedKeySystem(key_system)) {
-      return properties;
+        key_system_properties->IsSupportedKeySystem(key_system)) {
+      return key_system_properties.get();
     }
   }
 
