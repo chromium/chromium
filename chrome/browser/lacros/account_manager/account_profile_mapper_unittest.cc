@@ -5,6 +5,7 @@
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
 
 #include <algorithm>
+#include <utility>
 #include <vector>
 
 #include "base/callback.h"
@@ -49,9 +50,14 @@ const char kLacrosAccountIdsPref[] =
 constexpr account_manager::AccountType kGaiaType =
     account_manager::AccountType::kGaia;
 
-// Map from profile path to a vector of GaiaIds.
+// Map from profile path to a set of GaiaIds.
 using AccountMapping =
     base::flat_map<base::FilePath, base::flat_set<std::string>>;
+
+// Map from profile path to a vector of account error updates.
+using AccountErrorMapping =
+    base::flat_map<base::FilePath,
+                   std::vector<std::pair<std::string, GoogleServiceAuthError>>>;
 
 using MockAddAccountCallback = base::MockOnceCallback<void(
     const absl::optional<AccountProfileMapper::AddAccountResult>&)>;
@@ -63,11 +69,17 @@ class MockAccountProfileMapperObserver : public AccountProfileMapper::Observer {
 
   MOCK_METHOD(void,
               OnAccountUpserted,
-              (const base::FilePath& profile_path, const Account&),
+              (const base::FilePath&, const Account&),
               (override));
   MOCK_METHOD(void,
               OnAccountRemoved,
-              (const base::FilePath& profile_path, const Account&),
+              (const base::FilePath&, const Account&),
+              (override));
+  MOCK_METHOD(void,
+              OnAuthErrorChanged,
+              (const base::FilePath&,
+               const account_manager::AccountKey&,
+               const GoogleServiceAuthError&),
               (override));
 };
 
@@ -286,6 +298,28 @@ class AccountProfileMapperTest : public testing::Test {
         AccountKey key = {gaia_id, kGaiaType};
         EXPECT_CALL(*mock_observer,
                     OnAccountRemoved(profile_path, Field(&Account::key, key)));
+      }
+    }
+  }
+
+  // Setup gMock expectations for `OnAuthErrorChanged()` calls.
+  void ExpectOnAuthErrorChanged(MockAccountProfileMapperObserver* mock_observer,
+                                const AccountErrorMapping& account_errors_map) {
+    if (account_errors_map.empty()) {
+      EXPECT_CALL(*mock_observer,
+                  OnAuthErrorChanged(testing::_, testing::_, testing::_))
+          .Times(0);
+      return;
+    }
+    for (const auto& path_account_errors : account_errors_map) {
+      const base::FilePath profile_path = path_account_errors.first;
+
+      for (const std::pair<std::string, GoogleServiceAuthError>& account_error :
+           path_account_errors.second) {
+        const AccountKey account_key{account_error.first, kGaiaType};
+        const GoogleServiceAuthError error = account_error.second;
+        EXPECT_CALL(*mock_observer,
+                    OnAuthErrorChanged(profile_path, account_key, error));
       }
     }
   }
@@ -826,6 +860,28 @@ TEST_F(AccountProfileMapperTest, ObserveAccountReadded) {
   // Account B gets re-added as an unassigned account.
   ExpectOnAccountUpserted(&mock_observer, {{base::FilePath(), {"B"}}});
   CompleteFacadeGetAccountsGaia({"A", "B"});
+}
+
+// Tests that observers are notified about changes to accounts' error status.
+TEST_F(AccountProfileMapperTest, ObserveAuthErrorChanged) {
+  base::FilePath second_path = GetProfilePath("Second");
+  base::FilePath third_path = GetProfilePath("Third");
+  AccountProfileMapper* mapper = CreateMapper(
+      {{main_path(), {"A", "B"}}, {second_path, {"A"}}, {third_path, {"B"}}});
+  MockAccountProfileMapperObserver mock_observer;
+  base::ScopedObservation<AccountProfileMapper, AccountProfileMapper::Observer>
+      observation{&mock_observer};
+  observation.Observe(mapper);
+
+  GoogleServiceAuthError error =
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER);
+  ExpectOnAuthErrorChanged(&mock_observer,
+                           {{main_path(), {std::make_pair("A", error)}},
+                            {second_path, {std::make_pair("A", error)}}});
+  mapper->OnAuthErrorChanged(account_manager::AccountKey{"A", kGaiaType},
+                             error);
 }
 
 // Tests that a managed syncing secondary profile gets deleted after its primary

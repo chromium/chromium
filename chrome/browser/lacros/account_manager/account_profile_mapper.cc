@@ -278,7 +278,26 @@ void AccountProfileMapper::OnAccountRemoved(
 void AccountProfileMapper::OnAuthErrorChanged(
     const account_manager::AccountKey& account,
     const GoogleServiceAuthError& error) {
-  NOTIMPLEMENTED();
+  DCHECK(initialized_)
+      << "Received account error updates before initialization";
+
+  DCHECK_EQ(account.account_type(), account_manager::AccountType::kGaia);
+  if (!account_cache_.FindAccountByGaiaId(account.id())) {
+    LOG(ERROR) << "Ignoring account error update for unknown account";
+    return;
+  }
+
+  std::vector<ProfileAttributesEntry*> entries =
+      profile_attributes_storage_->GetAllProfilesAttributes();
+  for (const ProfileAttributesEntry* entry : entries) {
+    if (!entry->GetGaiaIds().contains(account.id())) {
+      continue;
+    }
+
+    for (auto& observer : observers_) {
+      observer.OnAuthErrorChanged(entry->GetPath(), account, error);
+    }
+  }
 }
 
 void AccountProfileMapper::OnProfileWillBeRemoved(
