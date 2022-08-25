@@ -460,7 +460,7 @@ try_.builder(
             path = "linux_debug",
         ),
     ],
-    goma_jobs = goma.jobs.J150,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     main_list_view = "try",
     tryjob = try_.job(),
 )
