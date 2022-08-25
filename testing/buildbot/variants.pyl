@@ -910,7 +910,8 @@
     'skylab': {
       'cros_board': 'eve',
       'cros_chrome_version': '105.0.5190.0',
-      'cros_img': 'chromiumos-image-archive/eve-public/R105-14988.0.0',
+      'cros_img': 'eve-public/R105-14988.0.0',
+      'bucket': 'chromiumos-image-archive',
     },
     'enabled': True,
     'identifier': 'EVE_FULL',
@@ -1000,7 +1001,8 @@
     'skylab': {
       'cros_board': 'octopus',
       'cros_chrome_version': '105.0.5190.0',
-      'cros_img': 'chromiumos-image-archive/octopus-public/R105-14988.0.0',
+      'cros_img': 'octopus-public/R105-14988.0.0',
+      'bucket': 'chromiumos-image-archive',
     },
     'enabled': True,
     'identifier': 'OCTOPUS_FULL',

@@ -90155,8 +90155,9 @@
     "skylab_tests": [
       {
         "args": [],
+        "bucket": "chromiumos-image-archive",
         "cros_board": "octopus",
-        "cros_img": "chromiumos-image-archive/octopus-public/R105-14988.0.0",
+        "cros_img": "octopus-public/R105-14988.0.0",
         "name": "lacros_fyi_tast_tests OCTOPUS_FULL",
         "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
@@ -90167,8 +90168,9 @@
       },
       {
         "args": [],
+        "bucket": "chromiumos-image-archive",
         "cros_board": "eve",
-        "cros_img": "chromiumos-image-archive/eve-public/R105-14988.0.0",
+        "cros_img": "eve-public/R105-14988.0.0",
         "name": "lacros_fyi_tast_tests EVE_FULL",
         "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
@@ -90179,8 +90181,9 @@
       },
       {
         "args": [],
+        "bucket": "chromiumos-image-archive",
         "cros_board": "octopus",
-        "cros_img": "chromiumos-image-archive/octopus-public/R105-14988.0.0",
+        "cros_img": "octopus-public/R105-14988.0.0",
         "name": "ozone_unittests OCTOPUS_FULL",
         "swarming": {},
         "test": "ozone_unittests",
@@ -90190,8 +90193,9 @@
       },
       {
         "args": [],
+        "bucket": "chromiumos-image-archive",
         "cros_board": "eve",
-        "cros_img": "chromiumos-image-archive/eve-public/R105-14988.0.0",
+        "cros_img": "eve-public/R105-14988.0.0",
         "name": "ozone_unittests EVE_FULL",
         "swarming": {},
         "test": "ozone_unittests",
