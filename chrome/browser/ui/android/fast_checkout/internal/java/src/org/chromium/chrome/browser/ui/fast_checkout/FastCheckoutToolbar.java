@@ -19,7 +19,7 @@ import org.chromium.components.browser_ui.widget.TintedDrawable;
  * A toolbar for the selection screens in the FastCheckout bottom sheet. It
  * contains an additional Menu with a settings gear icon.
  */
-class FastCheckoutToolbar extends Toolbar {
+public class FastCheckoutToolbar extends Toolbar {
     /** The delegate of the class that processes clicks on menu items. */
     public interface Delegate {
         /**
@@ -71,5 +71,12 @@ class FastCheckoutToolbar extends Toolbar {
                 return false;
             }
         });
+    }
+
+    /** Sets the title of the MenuItem for opening settings. */
+    public void setSettingsMenuTitle(int resId) {
+        MenuItem settingsMenuItem = getMenu().findItem(R.id.settings_menu_id);
+        assert settingsMenuItem != null;
+        settingsMenuItem.setTitle(resId);
     }
 }
