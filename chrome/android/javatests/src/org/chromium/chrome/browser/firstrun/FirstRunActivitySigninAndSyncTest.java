@@ -7,8 +7,11 @@ package org.chromium.chrome.browser.firstrun;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
+import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -29,6 +32,7 @@ import android.widget.TextView;
 import androidx.annotation.IdRes;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
+import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
@@ -390,7 +394,55 @@ public class FirstRunActivitySigninAndSyncTest {
         SyncTestUtil.waitForCanSyncFeatureStart();
     }
 
+    @Test
+    @MediumTest
+    // ChildAccountStatusSupplier uses AppRestrictions to quickly detect non-supervised cases,
+    // adding at least one policy via AppRestrictions prevents that.
+    @Policies.Add(@Policies.Item(key = "ForceSafeSearch", string = "true"))
+    @EnableFeatures({ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS})
+    public void
+    acceptingSyncForChildAccountEndsFreAndEnablesSyncIfAllowSyncOffForChildAccountsFeatureEnabled() {
+        when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
+        mAccountManagerTestRule.addAccount(CHILD_EMAIL);
+        launchFirstRunActivityAndWaitForNativeInitialization();
+        waitUntilCurrentPageIs(SigninFirstRunFragment.class);
+        onView(withId(R.id.signin_fre_selected_account)).check(matches(isDisplayed()));
+        clickButton(R.id.signin_fre_continue_button);
+        waitUntilCurrentPageIs(SyncConsentFirstRunFragment.class);
+
+        clickButton(R.id.positive_button);
+
+        ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
+        SyncTestUtil.waitForSyncFeatureEnabled();
+    }
+
+    @Test
+    @MediumTest
+    // ChildAccountStatusSupplier uses AppRestrictions to quickly detect non-supervised cases,
+    // adding at least one policy via AppRestrictions prevents that.
+    @Policies.Add(@Policies.Item(key = "ForceSafeSearch", string = "true"))
+    @EnableFeatures({ChromeFeatureList.ALLOW_SYNC_OFF_FOR_CHILD_ACCOUNTS})
+    public void
+    refusingSyncForChildAccountEndsFreAndDoesNotEnableSyncIfAllowSyncOffForChildAccountsFeatureEnabled() {
+        when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
+        mAccountManagerTestRule.addAccount(CHILD_EMAIL);
+        launchFirstRunActivityAndWaitForNativeInitialization();
+        waitUntilCurrentPageIs(SigninFirstRunFragment.class);
+        onView(withId(R.id.signin_fre_selected_account)).check(matches(isDisplayed()));
+        clickButton(R.id.signin_fre_continue_button);
+        waitUntilCurrentPageIs(SyncConsentFirstRunFragment.class);
+
+        clickButton(R.id.negative_button);
+
+        ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
+
+        assertFalse(SyncTestUtil.canSyncFeatureStart());
+    }
+
     private void clickButton(@IdRes int buttonId) {
+        // Ensure that the button isn't hidden, and is enabled.
+        onView(allOf(withId(buttonId), withEffectiveVisibility(Visibility.VISIBLE)))
+                .check(matches(isEnabled()));
         // This helps to reduce flakiness on some marshmallow bots in comparison with
         // espresso click.
         TestThreadUtils.runOnUiThreadBlocking(
