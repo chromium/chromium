@@ -1489,6 +1489,26 @@ StartupProfilePathInfo GetStartupProfilePath(
             StartupProfileMode::kBrowserWindow};
   }
 
+  if (command_line.HasSwitch(switches::kProfileEmail)) {
+    // Use GetSwitchValueNative() rather than GetSwitchValueASCII() to support
+    // non-ASCII email addresses.
+    base::CommandLine::StringType email_native =
+        command_line.GetSwitchValueNative(switches::kProfileEmail);
+    if (!email_native.empty()) {
+      std::string email;
+#if BUILDFLAG(IS_WIN)
+      email = base::WideToUTF8(email_native);
+#else
+      email = std::move(email_native);
+#endif
+      base::FilePath profile_dir =
+          g_browser_process->profile_manager()->GetProfileDirForEmail(email);
+      if (!profile_dir.empty()) {
+        return {profile_dir, StartupProfileMode::kBrowserWindow};
+      }
+    }
+  }
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   if (!ignore_profile_picker &&
       ShouldShowProfilePickerAtProcessLaunch(profile_manager, command_line)) {
