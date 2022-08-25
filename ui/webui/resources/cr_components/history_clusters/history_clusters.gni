@@ -6,7 +6,7 @@
 _web_component_files = [
   "cluster.ts",
   "clusters.ts",
-  "menu_container.ts",
+  "cluster_menu.ts",
   "page_favicon.ts",
   "search_query.ts",
   "url_visit.ts",

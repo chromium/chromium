@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './menu_container.js';
+import './cluster_menu.js';
 import './search_query.js';
 import './history_clusters_shared_style.css.js';
 import './shared_vars.css.js';

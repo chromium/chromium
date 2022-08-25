@@ -40,7 +40,7 @@ declare global {
   }
 }
 
-const MenuContainerElementBase = I18nMixin(PolymerElement);
+const ClusterMenuElementBase = I18nMixin(PolymerElement);
 
 interface VisitRowElement {
   $: {
@@ -51,7 +51,7 @@ interface VisitRowElement {
   };
 }
 
-class VisitRowElement extends MenuContainerElementBase {
+class VisitRowElement extends ClusterMenuElementBase {
   static get is() {
     return 'url-visit';
   }

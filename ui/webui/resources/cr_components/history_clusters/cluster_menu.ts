@@ -14,8 +14,8 @@ import {CrActionMenuElement} from '../../cr_elements/cr_action_menu/cr_action_me
 import {CrLazyRenderElement} from '../../cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {loadTimeData} from '../../js/load_time_data.m.js';
 
+import {getTemplate} from './cluster_menu.html.js';
 import {URLVisit} from './history_clusters.mojom-webui.js';
-import {getTemplate} from './menu_container.html.js';
 
 /**
  * @fileoverview This file provides a custom element displaying an action menu.
@@ -25,22 +25,22 @@ import {getTemplate} from './menu_container.html.js';
 
 declare global {
   interface HTMLElementTagNameMap {
-    'menu-container': MenuContainerElement;
+    'cluster-menu': ClusterMenuElement;
   }
 }
 
-const MenuContainerElementBase = I18nMixin(PolymerElement);
+const ClusterMenuElementBase = I18nMixin(PolymerElement);
 
-interface MenuContainerElement {
+interface ClusterMenuElement {
   $: {
     actionMenu: CrLazyRenderElement<CrActionMenuElement>,
     actionMenuButton: HTMLElement,
   };
 }
 
-class MenuContainerElement extends MenuContainerElementBase {
+class ClusterMenuElement extends ClusterMenuElementBase {
   static get is() {
-    return 'menu-container';
+    return 'cluster-menu';
   }
 
   static get template() {
@@ -104,4 +104,4 @@ class MenuContainerElement extends MenuContainerElementBase {
   }
 }
 
-customElements.define(MenuContainerElement.is, MenuContainerElement);
+customElements.define(ClusterMenuElement.is, ClusterMenuElement);
