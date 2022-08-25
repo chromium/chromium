@@ -22,7 +22,7 @@ class NGPhysicalBoxFragmentTest : public NGLayoutTest {
 
   const NGPhysicalBoxFragment& GetPhysicalBoxFragmentByElementId(
       const char* id) {
-    auto* layout_object = To<LayoutBlockFlow>(GetLayoutObjectByElementId(id));
+    auto* layout_object = GetLayoutBoxByElementId(id);
     DCHECK(layout_object);
     const NGPhysicalBoxFragment* fragment =
         layout_object->GetPhysicalFragment(0);
@@ -373,6 +373,15 @@ TEST_F(NGPhysicalBoxFragmentTest, OverflowClipMarginVisualBox) {
   EXPECT_EQ(
       layout_box->GetPhysicalFragment(1)->InkOverflow(),
       PhysicalRect(zero_offset, PhysicalSize(LayoutUnit(85), LayoutUnit(50))));
+}
+
+TEST_F(NGPhysicalBoxFragmentTest, CloneWithPostLayoutFragments) {
+  SetHtmlInnerHTML(R"HTML(<frameset id="fs"></frameset>)HTML");
+  const auto& fragment = GetPhysicalBoxFragmentByElementId("fs");
+  EXPECT_TRUE(fragment.GetFrameSetLayoutData());
+  const auto* clone =
+      NGPhysicalBoxFragment::CloneWithPostLayoutFragments(fragment);
+  EXPECT_TRUE(clone->GetFrameSetLayoutData());
 }
 
 }  // namespace blink

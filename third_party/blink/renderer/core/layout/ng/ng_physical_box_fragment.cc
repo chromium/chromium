@@ -603,7 +603,11 @@ NGPhysicalBoxFragment::RareData::RareData(NGBoxFragmentBuilder* builder)
 }
 
 NGPhysicalBoxFragment::RareData::RareData(const RareData& other)
-    : mathml_paint_info(other.mathml_paint_info
+    : frame_set_layout_data(
+          other.frame_set_layout_data
+              ? new FrameSetLayoutData(*other.frame_set_layout_data)
+              : nullptr),
+      mathml_paint_info(other.mathml_paint_info
                             ? new NGMathMLPaintInfo(*other.mathml_paint_info)
                             : nullptr),
       table_grid_rect(other.table_grid_rect),
