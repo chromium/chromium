@@ -1336,6 +1336,15 @@ String StylePropertySerializer::GetShorthandValueForGrid(
   const CSSValueList* auto_flow_value_list =
       DynamicTo<CSSValueList>(auto_flow_values);
 
+  // We cannot represent a grid shorthand if we have both template row and
+  // template column values along with auto-flow.
+  if (*template_row_values !=
+          *(To<Longhand>(GetCSSPropertyGridTemplateRows()).InitialValue()) &&
+      *template_column_values !=
+          *(To<Longhand>(GetCSSPropertyGridTemplateColumns()).InitialValue())) {
+    return String();
+  }
+
   StringBuilder auto_flow_text;
   auto_flow_text.Append("auto-flow ");
   if (auto_flow_value_list &&
