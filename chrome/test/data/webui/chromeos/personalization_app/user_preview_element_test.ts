@@ -114,6 +114,29 @@ suite('UserPreviewTest', function() {
         'blob url is shown for external image');
   });
 
+  test('displays placeholder image if user image is unavailable', async () => {
+    userPreviewElement = initElement(UserPreview, {path: Paths.ROOT});
+    await waitAfterNextRender(userPreviewElement!);
+
+    const avatarImage = userPreviewElement!.shadowRoot!.getElementById(
+                            'avatar') as HTMLImageElement;
+    assertEquals(
+        'chrome://theme/IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE', avatarImage.src,
+        'placeholder image is shown if user image is unavailable');
+  });
+
+  test('displays placeholder image if user image is invalid', async () => {
+    personalizationStore.data.user.image = {invalidImage: {}};
+    userPreviewElement = initElement(UserPreview, {path: Paths.ROOT});
+    await waitAfterNextRender(userPreviewElement!);
+
+    const avatarImage = userPreviewElement!.shadowRoot!.getElementById(
+                            'avatar') as HTMLImageElement;
+    assertEquals(
+        'chrome://theme/IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE', avatarImage.src,
+        'placeholder image is shown for invalid user image');
+  });
+
   test('displays non-clickable user image on user subpage', async () => {
     personalizationStore.data.user.image = userProvider.image;
     userPreviewElement = initElement(UserPreview, {path: Paths.USER});

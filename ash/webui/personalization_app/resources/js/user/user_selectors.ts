@@ -63,9 +63,12 @@ function bufferToPngObjectUrl(value: BigBuffer): Url|null {
  */
 export function selectUserImageUrl(state: PersonalizationState): Url|null {
   const userImage = state.user.image;
+  const placeHolderUrl = {
+    url: 'chrome://theme/IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE',
+  };
 
   if (!userImage) {
-    return null;
+    return placeHolderUrl;
   }
 
   // Generated types for |userImage| are incorrect for mojom unions. Only one
@@ -73,10 +76,9 @@ export function selectUserImageUrl(state: PersonalizationState): Url|null {
   // to do exhaustiveness checking in the switch/case.
   assert(Object.keys(userImage).length === 1, 'only one key is set');
   const key = Object.keys(userImage)[0] as keyof UserImage;
-
   switch (key) {
     case 'invalidImage':
-      return null;
+      return placeHolderUrl;
     case 'defaultImage':
       return userImage.defaultImage!.url;
     case 'profileImage':
@@ -85,7 +87,7 @@ export function selectUserImageUrl(state: PersonalizationState): Url|null {
       return bufferToPngObjectUrl(userImage.externalImage!);
     default:
       console.error('Unknown image type received', key);
-      return null;
+      return placeHolderUrl;
   }
 }
 
