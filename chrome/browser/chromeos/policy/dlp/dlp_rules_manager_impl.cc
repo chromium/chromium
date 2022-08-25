@@ -183,10 +183,8 @@ std::pair<DlpRulesManager::Level, absl::optional<T>> GetMaxJoinRestrictionLevel(
 }
 
 void OnSetDlpFilesPolicy(const ::dlp::SetDlpFilesPolicyResponse response) {
-  if (DlpScopedFileAccessDelegate::HasInstance()) {
-    DlpScopedFileAccessDelegate::DeleteInstance();
-  }
   if (response.has_error_message()) {
+    DlpScopedFileAccessDelegate::DeleteInstance();
     LOG(ERROR) << "Failed to set DLP Files policy and start DLP daemon, error: "
                << response.error_message();
     return;
@@ -210,9 +208,7 @@ void OnSetDlpFilesPolicy(const ::dlp::SetDlpFilesPolicyResponse response) {
 
 DlpRulesManagerImpl::~DlpRulesManagerImpl() {
   DataTransferDlpController::DeleteInstance();
-  if (DlpScopedFileAccessDelegate::HasInstance()) {
-    DlpScopedFileAccessDelegate::DeleteInstance();
-  }
+  DlpScopedFileAccessDelegate::DeleteInstance();
 }
 
 // static
@@ -627,7 +623,7 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     files_controller_ = std::make_unique<DlpFilesController>(*this);
 #endif
-  } else if (DlpScopedFileAccessDelegate::HasInstance()) {
+  } else {
     DlpScopedFileAccessDelegate::DeleteInstance();
   }
 }

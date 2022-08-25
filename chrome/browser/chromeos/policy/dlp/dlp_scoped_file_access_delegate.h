@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "components/file_access/scoped_file_access.h"
+#include "components/file_access/scoped_file_access_delegate.h"
 #include "url/gurl.h"
 
 namespace chromeos {
@@ -24,22 +25,13 @@ namespace policy {
 
 // Delegate class to proxy file access requests to DLP daemon over D-Bus when
 // DLP Files restrictions should apply.
-class DlpScopedFileAccessDelegate {
+class DlpScopedFileAccessDelegate
+    : public file_access::ScopedFileAccessDelegate {
  public:
-  ~DlpScopedFileAccessDelegate() = default;
-
-  // Returns the singleton instance if was initialized.
-  // Otherwise it means that no files DLP restrictions should be applied.
-  static DlpScopedFileAccessDelegate* Get();
+  ~DlpScopedFileAccessDelegate() override = default;
 
   // Initializes the singleton instance.
   static void Initialize(chromeos::DlpClient* client);
-
-  // Deletes the singleton instance.
-  static void DeleteInstance();
-
-  // Checks if the singleton is initialized
-  static bool HasInstance();
 
   // Requests access to |files| in order to be sent to |destination_url|.
   // |continuation_callback| is called with a token that should be hold until
@@ -47,12 +39,14 @@ class DlpScopedFileAccessDelegate {
   void RequestFilesAccess(
       const std::vector<base::FilePath>& files,
       const GURL& destination_url,
-      base::OnceCallback<void(file_access::ScopedFileAccess)> callback);
+      base::OnceCallback<void(file_access::ScopedFileAccess)> callback)
+      override;
+
+ protected:
+  explicit DlpScopedFileAccessDelegate(chromeos::DlpClient* client);
 
  private:
   friend class DlpScopedFileAccessDelegateTest;
-  explicit DlpScopedFileAccessDelegate(chromeos::DlpClient* client);
-
   // Handles D-Bus response to access files.
   void OnResponse(
       base::OnceCallback<void(file_access::ScopedFileAccess)> callback,

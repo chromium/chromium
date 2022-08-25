@@ -5,7 +5,6 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_scoped_file_access_delegate.h"
 
 #include <sys/stat.h>
-#include <cstddef>
 
 #include "base/process/process_handle.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
@@ -13,8 +12,6 @@
 namespace policy {
 
 namespace {
-
-static DlpScopedFileAccessDelegate* g_delegate = nullptr;
 
 ino_t GetInodeValue(const base::FilePath& path) {
   struct stat file_stats;
@@ -26,24 +23,10 @@ ino_t GetInodeValue(const base::FilePath& path) {
 }  // namespace
 
 // static
-DlpScopedFileAccessDelegate* DlpScopedFileAccessDelegate::Get() {
-  return g_delegate;
-}
-
-// static
-bool DlpScopedFileAccessDelegate::HasInstance() {
-  return g_delegate;
-}
-
-// static
 void DlpScopedFileAccessDelegate::Initialize(chromeos::DlpClient* client) {
-  g_delegate = new DlpScopedFileAccessDelegate(client);
-}
-
-// static
-void DlpScopedFileAccessDelegate::DeleteInstance() {
-  delete g_delegate;
-  g_delegate = nullptr;
+  if (!HasInstance()) {
+    new DlpScopedFileAccessDelegate(client);
+  }
 }
 
 DlpScopedFileAccessDelegate::DlpScopedFileAccessDelegate(

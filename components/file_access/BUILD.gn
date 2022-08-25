@@ -8,9 +8,25 @@ component("file_access") {
   sources = [
     "scoped_file_access.cc",
     "scoped_file_access.h",
+    "scoped_file_access_delegate.cc",
+    "scoped_file_access_delegate.h",
   ]
 
   defines = [ "IS_FILE_ACCESS_IMPL" ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//url:url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "scoped_file_access_delegate_unittest.cc" ]
+
+  deps = [
+    ":file_access",
+    "//base",
+    "//testing/gtest",
+  ]
 }

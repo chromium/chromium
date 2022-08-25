@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chromeos/dbus/dlp/fake_dlp_client.h"
+#include "components/file_access/scoped_file_access_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy {
@@ -43,6 +44,30 @@ TEST_F(DlpScopedFileAccessDelegateTest, Test) {
   delegate_.RequestFilesAccess({file_path}, GURL("example.com"),
                                future2.GetCallback());
   EXPECT_FALSE(future2.Get<0>().is_allowed());
+}
+
+TEST_F(DlpScopedFileAccessDelegateTest, TestFileAccessSingleton) {
+  base::FilePath file_path;
+  base::CreateTemporaryFile(&file_path);
+
+  DlpScopedFileAccessDelegate::Initialize(&fake_dlp_client_);
+
+  base::test::TestFuture<file_access::ScopedFileAccess> future1;
+  auto* delegate = file_access::ScopedFileAccessDelegate::Get();
+  delegate->RequestFilesAccess({file_path}, GURL("example.com"),
+                               future1.GetCallback());
+  EXPECT_TRUE(future1.Get<0>().is_allowed());
+
+  fake_dlp_client_.SetFileAccessAllowed(false);
+  base::test::TestFuture<file_access::ScopedFileAccess> future2;
+  delegate->RequestFilesAccess({file_path}, GURL("example.com"),
+                               future2.GetCallback());
+  EXPECT_FALSE(future2.Get<0>().is_allowed());
+}
+
+TEST_F(DlpScopedFileAccessDelegateTest, TestMultipleInstances) {
+  DlpScopedFileAccessDelegate::Initialize(nullptr);
+  EXPECT_NO_FATAL_FAILURE(DlpScopedFileAccessDelegate::Initialize(nullptr));
 }
 
 }  // namespace policy
