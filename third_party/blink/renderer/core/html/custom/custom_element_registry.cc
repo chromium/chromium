@@ -74,6 +74,13 @@ bool ThrowIfValidName(const AtomicString& name,
 
 }  // namespace
 
+// static
+CustomElementRegistry* CustomElementRegistry::Create(
+    ScriptState* script_state) {
+  return MakeGarbageCollected<CustomElementRegistry>(
+      LocalDOMWindow::From(script_state));
+}
+
 CustomElementRegistry::CustomElementRegistry(const LocalDOMWindow* owner)
     : element_definition_is_running_(false),
       owner_(owner),

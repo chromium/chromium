@@ -6,6 +6,7 @@
 
 [Exposed=Window]
 interface CustomElementRegistry {
+    [CallWith=ScriptState, RuntimeEnabled=ScopedCustomElementRegistry] constructor();
     [CallWith=ScriptState, CEReactions, RaisesException, MeasureAs=CustomElementRegistryDefine] void define(DOMString name, CustomElementConstructor constructor, optional ElementDefinitionOptions options = {});
     any get(DOMString name);
     [CallWith=ScriptState,RaisesException] Promise<void> whenDefined(DOMString name);
