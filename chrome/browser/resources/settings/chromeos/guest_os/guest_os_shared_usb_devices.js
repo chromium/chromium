@@ -9,7 +9,7 @@
  */
 
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
-import '../../settings_shared.css.js';
+import './guest_os_shared_usb_devices_add_dialog.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
@@ -17,7 +17,8 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {recordSettingChange} from '../metrics_recorder.js';
 
-import {GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsSharedUsbDevice} from './guest_os_browser_proxy.js';
+import {ContainerInfo, GuestId, GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsSharedUsbDevice} from './guest_os_browser_proxy.js';
+import {containerLabel, equalContainerId} from './guest_os_container_select.js';
 
 /**
  * @constructor
@@ -29,7 +30,7 @@ const SettingsGuestOsSharedUsbDevicesElementBase =
     mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement);
 
 /** @polymer */
-class SettingsGuestOsSharedUsbDevicesElement extends
+export class SettingsGuestOsSharedUsbDevicesElement extends
     SettingsGuestOsSharedUsbDevicesElementBase {
   static get is() {
     return 'settings-guest-os-shared-usb-devices';
@@ -48,9 +49,27 @@ class SettingsGuestOsSharedUsbDevicesElement extends
 
       /**
        * The USB Devices available for connection to a VM.
-       * @private {Array<{shared: boolean, device: !GuestOsSharedUsbDevice}>}
+       * @private {!Array<{shared: boolean, device: !GuestOsSharedUsbDevice}>}
        */
-      sharedUsbDevices_: Array,
+      sharedUsbDevices_: {
+        type: Array,
+        value() {
+          return [];
+        },
+      },
+
+      /**
+       * @type {!GuestId}
+       */
+      defaultGuestId: {
+        type: Object,
+        value() {
+          return {
+            'vm_name': '',
+            'container_name': '',
+          };
+        },
+      },
 
       /**
        * The USB device which was toggled to be shared, but is already shared
@@ -60,6 +79,32 @@ class SettingsGuestOsSharedUsbDevicesElement extends
       reassignDevice_: {
         type: Object,
         value: null,
+      },
+
+      /**
+       * Whether the guest OS hosts multiple containers.
+       */
+      hasContainers: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private */
+      showAddUsbDialog_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * The known ContainerIds for display in the UI.
+       * @private {!Array<!ContainerInfo>}
+       */
+      allContainers_: {
+        type: Array,
+        notify: true,
+        value() {
+          return [];
+        },
       },
     };
   }
@@ -82,12 +127,48 @@ class SettingsGuestOsSharedUsbDevicesElement extends
   }
 
   /**
+   * @param {!Array<!ContainerInfo>} containerInfos
+   * @protected
+   */
+  onContainerInfo_(containerInfos) {
+    this.set('allContainers_', containerInfos);
+  }
+
+  /**
+   * @param {!Array<{shared: boolean, device: !GuestOsSharedUsbDevice}>}
+   *     sharedUsbDevices
+   * @param {!GuestId} id
+   * @return boolean
+   * @private
+   */
+  showGuestId_(sharedUsbDevices, id) {
+    return sharedUsbDevices.some(this.byGuestId_(id));
+  }
+
+  /**
+   * @param {!Array<{shared: boolean, device: !GuestOsSharedUsbDevice}>}
+   *     sharedUsbDevices
+   * @param {!Array<!ContainerInfo>} containerInfos
+   * @return boolean
+   * @private
+   */
+  hasSharedDevices_(sharedUsbDevices, containerInfos) {
+    return sharedUsbDevices.some(
+        dev => containerInfos.some(
+            info => dev.device.guestId &&
+                equalContainerId(dev.device.guestId, info.id)));
+  }
+
+  /**
    * @param {!Array<GuestOsSharedUsbDevice>} devices
    * @private
    */
   onGuestOsSharedUsbDevicesChanged_(devices) {
     this.sharedUsbDevices_ = devices.map((device) => {
-      return {shared: device.sharedWith === this.vmName_(), device: device};
+      return {
+        shared: device.guestId && device.guestId.vm_name === this.vmName_(),
+        device: device,
+      };
     });
   }
 
@@ -104,7 +185,8 @@ class SettingsGuestOsSharedUsbDevicesElement extends
       return;
     }
     this.browserProxy_.setGuestOsUsbDeviceShared(
-        this.vmName_(), device.guid, event.target.checked);
+        this.vmName_(), this.defaultGuestId.container_name, device.guid,
+        event.target.checked);
     recordSettingChange();
   }
 
@@ -116,7 +198,8 @@ class SettingsGuestOsSharedUsbDevicesElement extends
   /** @private */
   onReassignContinueClick_() {
     this.browserProxy_.setGuestOsUsbDeviceShared(
-        this.vmName_(), this.reassignDevice_.guid, true);
+        this.vmName_(), this.defaultGuestId.container_name,
+        this.reassignDevice_.guid, true);
     this.reassignDevice_ = null;
     recordSettingChange();
   }
@@ -149,6 +232,54 @@ class SettingsGuestOsSharedUsbDevicesElement extends
    */
   getReassignDialogText_(device) {
     return this.i18n('guestOsSharedUsbDevicesReassign', device.label);
+  }
+
+  /**
+   * @param {!GuestId} id
+   * @return function({shared: boolean, device: !GuestOsSharedUsbDevice}):
+   *     boolean
+   * @private
+   */
+  byGuestId_(id) {
+    return dev =>
+               dev.device.guestId && equalContainerId(dev.device.guestId, id);
+  }
+
+  /**
+   * @param {!Event} event
+   * @private
+   */
+  onAddUsbClick_(event) {
+    this.showAddUsbDialog_ = true;
+  }
+
+  /**
+   * @param {!Event} event
+   * @private
+   */
+  onAddUsbDialogClose_(event) {
+    this.showAddUsbDialog_ = false;
+  }
+
+  /**
+   * @param {!GuestId} id
+   * @return string
+   * @private
+   */
+  guestLabel_(id) {
+    return containerLabel(id, this.vmName_());
+  }
+
+  /**
+   * @param {!Event} event
+   * @private
+   */
+  onRemoveUsbClick_(event) {
+    const device = event.model.item.device;
+    if (device.guestId != null) {
+      this.browserProxy_.setGuestOsUsbDeviceShared(
+          device.guestId.vm_name, '', device.guid, false);
+    }
   }
 }
 

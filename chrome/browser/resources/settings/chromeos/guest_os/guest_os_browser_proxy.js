@@ -7,7 +7,9 @@ import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 /**
  * @typedef {{guid: string,
  *            label: string,
- *            sharedWith: ?string,
+ *            guestId: ?GuestId,
+ *            vendorId: string,
+ *            productId: string,
  *            promptBeforeSharing: boolean}}
  */
 export let GuestOsSharedUsbDevice;
@@ -17,13 +19,13 @@ export const PLUGIN_VM_TYPE = 'pluginVm';
 
 /**
  * Non-js key names are kept to match c++ style keys in prefs.
- * @typedef {{vm_name: ?string,
- *            container_name: ?string}}
+ * @typedef {{vm_name: string,
+ *            container_name: string}}
  */
 export let GuestId;
 
 /**
- * |ipv4| below is null if the container is not currently running.
+ * |ipv4| below is null if the guest is not currently running.
  * @typedef {{id: !GuestId,
  *            ipv4: ?string}}
  */
@@ -53,10 +55,11 @@ export class GuestOsBrowserProxy {
 
   /**
    * @param {string} vmName VM to share device with.
+   * @param {string} containerName container to share device with.
    * @param {string} guid Unique device identifier.
    * @param {boolean} shared Whether device is currently shared with Crostini.
    */
-  setGuestOsUsbDeviceShared(vmName, guid, shared) {}
+  setGuestOsUsbDeviceShared(vmName, containerName, guid, shared) {}
 }
 
 /** @type {?GuestOsBrowserProxy} */
@@ -92,7 +95,8 @@ export class GuestOsBrowserProxyImpl {
   }
 
   /** @override */
-  setGuestOsUsbDeviceShared(vmName, guid, shared) {
-    return chrome.send('setGuestOsUsbDeviceShared', [vmName, guid, shared]);
+  setGuestOsUsbDeviceShared(vmName, containerName, guid, shared) {
+    return chrome.send(
+        'setGuestOsUsbDeviceShared', [vmName, containerName, guid, shared]);
   }
 }

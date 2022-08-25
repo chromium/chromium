@@ -14,6 +14,7 @@ js_type_check("closure_compile_module") {
     ":guest_os_container_select",
     ":guest_os_shared_paths",
     ":guest_os_shared_usb_devices",
+    ":guest_os_shared_usb_devices_add_dialog",
   ]
 }
 
@@ -36,12 +37,26 @@ js_library("guest_os_shared_usb_devices") {
   deps = [
     ":guest_os_browser_proxy",
     ":guest_os_container_select",
+    ":guest_os_shared_usb_devices_add_dialog",
     "..:metrics_recorder",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
   externs_list =
       [ "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js" ]
+}
+
+js_library("guest_os_shared_usb_devices_add_dialog") {
+  deps = [
+    ":guest_os_browser_proxy",
+    ":guest_os_container_select",
+    "..:metrics_recorder",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
 }
 
 js_library("guest_os_shared_paths") {
@@ -58,6 +73,7 @@ html_to_js("web_components") {
   js_files = [
     "guest_os_container_select.js",
     "guest_os_shared_usb_devices.js",
+    "guest_os_shared_usb_devices_add_dialog.js",
     "guest_os_shared_paths.js",
   ]
 }

@@ -1667,6 +1667,15 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_REASSIGN" desc="Confirmation explaining to users that reassigning a USB device from being attached from one VM to another could cause errors.">
      "<ph name="USB_DEVICE_NAME">$1<ex>Nexus 5</ex></ph>" is in use. Reassigning the device while it's in use could cause errors. Are you sure you want to continue?
   </message>
+  <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_TABLE_TITLE" desc="Title of the table containing shared USB devices.">
+    USB devices
+  </message>
+  <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_ADD_TITLE" desc="Dialog title for adding shared USB devices.">
+    Add USB device
+  </message>
+  <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_NONE_ATTACHED" desc="Indicates there are no USB devices currently shared.">
+    No USB devices are attached.
+  </message>
 
   <!-- Crostini -->
   <message name="IDS_SETTINGS_CROSTINI_TITLE" desc="The title of Crostini section. It is meant to be used by software developers.">

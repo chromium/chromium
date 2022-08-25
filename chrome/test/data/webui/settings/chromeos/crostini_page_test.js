@@ -1332,17 +1332,30 @@ suite('CrostiniPageTests', function() {
 
     setup(async function() {
       setCrostiniPrefs(true);
+      loadTimeData.overrideValues({
+        showCrostiniExtraContainers: false,
+      });
       guestOsBrowserProxy.sharedUsbDevices = [
         {
           guid: '0001',
           name: 'usb_dev1',
-          sharedWith: 'termina',
+          guestId: {
+            vm_name: 'termina',
+            container_name: '',
+          },
+          vendorId: '0000',
+          productId: '0000',
           promptBeforeSharing: false,
         },
         {
           guid: '0002',
           name: 'usb_dev2',
-          sharedWith: null,
+          guestId: {
+            vm_name: '',
+            container_name: '',
+          },
+          vendorId: '0000',
+          productId: '0000',
           promptBeforeSharing: false,
         },
       ];
@@ -1353,7 +1366,7 @@ suite('CrostiniPageTests', function() {
 
       await flushTasks();
       subpage = crostiniPage.shadowRoot.querySelector(
-          'settings-guest-os-shared-usb-devices');
+          'settings-crostini-shared-usb-devices');
       assertTrue(!!subpage);
     });
 
@@ -1362,6 +1375,76 @@ suite('CrostiniPageTests', function() {
       assertEquals(2, items.length);
       assertTrue(items[0].checked);
       assertFalse(items[1].checked);
+    });
+  });
+
+  // Functionality is already tested in OSSettingsGuestOsSharedUsbDevicesTest,
+  // so just check that we correctly set up the page.
+  suite('SubPageSharedUsbDevicesMultiContainer', function() {
+    let subpage;
+
+    setup(async function() {
+      setCrostiniPrefs(true);
+      loadTimeData.overrideValues({
+        showCrostiniExtraContainers: true,
+      });
+      crostiniBrowserProxy.containerInfo = multipleContainers;
+      guestOsBrowserProxy.sharedUsbDevices = [
+        {
+          guid: '0001',
+          label: 'usb_dev1',
+          guestId: {
+            vm_name: '',
+            container_name: '',
+          },
+          vendorId: '0000',
+          productId: '0000',
+          promptBeforeSharing: false,
+        },
+        {
+          guid: '0002',
+          label: 'usb_dev2',
+          guestId: {
+            vm_name: 'termina',
+            container_name: 'penguin',
+          },
+          vendorId: '0000',
+          productId: '0000',
+          promptBeforeSharing: true,
+        },
+        {
+          guid: '0003',
+          label: 'usb_dev3',
+          guestId: {
+            vm_name: 'not-termina',
+            container_name: 'not-penguin',
+          },
+          vendorId: '0000',
+          productId: '0000',
+          promptBeforeSharing: true,
+        },
+      ];
+
+      await flushTasks();
+      Router.getInstance().navigateTo(routes.CROSTINI_SHARED_USB_DEVICES);
+
+      await flushTasks();
+      subpage = crostiniPage.shadowRoot.querySelector(
+          'settings-crostini-shared-usb-devices');
+      assertTrue(!!subpage);
+    });
+
+    test('USB devices are shown', async function() {
+      const guests = subpage.shadowRoot.querySelectorAll('.usb-list-guest-id');
+      assertEquals(2, guests.length);
+      assertEquals('penguin', guests[0].innerText);
+      assertEquals('not-termina:not-penguin', guests[1].innerText);
+
+      const devices =
+          subpage.shadowRoot.querySelectorAll('.usb-list-card-label');
+      assertEquals(2, devices.length);
+      assertEquals('usb_dev2', devices[0].innerText);
+      assertEquals('usb_dev3', devices[1].innerText);
     });
   });
 

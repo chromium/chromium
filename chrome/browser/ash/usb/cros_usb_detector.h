@@ -50,6 +50,8 @@ struct CrosUsbDeviceInfo {
   CrosUsbDeviceInfo(std::string guid,
                     std::u16string label,
                     absl::optional<guest_os::GuestId> shared_guest_id,
+                    uint16_t vendor_id,
+                    uint16_t product_id,
                     bool prompt_before_sharing);
   CrosUsbDeviceInfo(const CrosUsbDeviceInfo&);
   ~CrosUsbDeviceInfo();
@@ -59,6 +61,8 @@ struct CrosUsbDeviceInfo {
   // Name of VM shared with. Unset if not shared. The device may be shared but
   // not yet attached.
   absl::optional<guest_os::GuestId> shared_guest_id;
+  uint16_t vendor_id;
+  uint16_t product_id;
   // Devices shared with other devices or otherwise in use by the system
   // should have a confirmation prompt shown prior to sharing.
   bool prompt_before_sharing;

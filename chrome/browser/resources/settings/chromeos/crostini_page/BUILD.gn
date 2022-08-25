@@ -24,6 +24,7 @@ js_type_check("closure_compile_module") {
     ":crostini_page",
     ":crostini_port_forwarding",
     ":crostini_port_forwarding_add_port_dialog",
+    ":crostini_shared_usb_devices",
     ":crostini_subpage",
   ]
 }
@@ -131,6 +132,7 @@ js_library("crostini_page") {
     ":crostini_export_import",
     ":crostini_extra_containers",
     ":crostini_port_forwarding",
+    ":crostini_shared_usb_devices",
     ":crostini_subpage",
     "..:deep_linking_behavior",
     "..:os_route",
@@ -235,6 +237,14 @@ js_library("crostini_subpage") {
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
   externs_list = [ "../settings_controls_types.js" ]
+}
+
+js_library("crostini_shared_usb_devices") {
+  deps = [
+    ":crostini_browser_proxy",
+    "../guest_os:guest_os_shared_usb_devices",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
 }
 
 js_library("bruschetta_subpage") {

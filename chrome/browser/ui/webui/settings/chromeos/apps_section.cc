@@ -292,6 +292,12 @@ void AddGuestOsStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_IN_USE},
       {"guestOsSharedUsbDevicesReassign",
        IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_REASSIGN},
+      {"guestOsSharedUsbDevicesTableTitle",
+       IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_TABLE_TITLE},
+      {"guestOsSharedUsbDevicesAddTitle",
+       IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_ADD_TITLE},
+      {"guestOsSharedUsbDevicesNoneAttached",
+       IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_NONE_ATTACHED},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }

@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,8 +26,14 @@ base::Value::List GetSharableUsbDevices(CrosUsbDetector* detector) {
     base::Value::Dict device_info;
     device_info.Set("guid", device.guid);
     device_info.Set("label", device.label);
-    if (device.shared_guest_id.has_value())
-      device_info.Set("sharedWith", device.shared_guest_id->vm_name);
+    if (device.shared_guest_id.has_value()) {
+      base::Value::Dict guest_id;
+      guest_id.Set("vm_name", device.shared_guest_id->vm_name);
+      guest_id.Set("container_name", device.shared_guest_id->container_name);
+      device_info.Set("guestId", std::move(guest_id));
+    }
+    device_info.Set("vendorId", base::StringPrintf("%04x", device.vendor_id));
+    device_info.Set("productId", base::StringPrintf("%04x", device.product_id));
     device_info.Set("promptBeforeSharing", device.prompt_before_sharing);
     usb_devices_list.Append(std::move(device_info));
   }
@@ -119,15 +126,15 @@ void GuestOsHandler::HandleNotifyGuestOsSharedUsbDevicesPageReady(
 
 void GuestOsHandler::HandleSetGuestOsUsbDeviceShared(
     const base::Value::List& args) {
-  CHECK_EQ(3U, args.size());
-  const std::string& guid = args[1].GetString();
-  bool shared = args[2].GetBool();
-
-  const auto guest_id = guest_os::GuestId(args[0].GetString(), "");
-
+  CHECK_EQ(4U, args.size());
   chromeos::CrosUsbDetector* detector = chromeos::CrosUsbDetector::Get();
   if (!detector)
     return;
+
+  const auto guest_id =
+      guest_os::GuestId(args[0].GetString(), args[1].GetString());
+  const std::string& guid = args[2].GetString();
+  bool shared = args[3].GetBool();
 
   if (shared) {
     detector->AttachUsbDeviceToGuest(guest_id, guid, base::DoNothing());

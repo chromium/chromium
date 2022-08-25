@@ -36,8 +36,9 @@ export class TestGuestOsBrowserProxy extends TestBrowserProxy {
   }
 
   /** @override */
-  setGuestOsUsbDeviceShared(vmName, guid, shared) {
-    this.methodCalled('setGuestOsUsbDeviceShared', [vmName, guid, shared]);
+  setGuestOsUsbDeviceShared(vmName, containerName, guid, shared) {
+    this.methodCalled(
+        'setGuestOsUsbDeviceShared', [vmName, containerName, guid, shared]);
   }
 
   /** override */

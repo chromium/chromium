@@ -22,6 +22,7 @@ import './crostini_arc_adb.js';
 import './crostini_export_import.js';
 import './crostini_extra_containers.js';
 import './crostini_port_forwarding.js';
+import './crostini_shared_usb_devices.js';
 import './crostini_subpage.js';
 import './bruschetta_subpage.js';
 
