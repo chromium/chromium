@@ -20,13 +20,18 @@ import("//build/rust/mixed_static_library.gni")
 #
 # Parameters:
 #
+#   bindings_target:
+#     The C++ target (e.g. a `source_set`) that Rust bindings should be
+#     generated for.
+#
 #   public_headers:
 #     The .h files to generate bindings for.
 #
-#     Implementation note: This doesn't just take *all* the headers of the C++
-#     target, because typically only a *subset* of headers provides the
-#     *public* API that bindings are needed for.
-#     TODO(crbug.com/1329611): Internal headers still need to be included in
+#     Implementation note: This doesn't just take *all* the headers of the
+#     `bindings_target`, because typically only a *subset* of headers provides
+#     the *public* API that bindings are needed for.
+#
+#     TODO(crbug.com/1329611): Internal headers should still to be included in
 #     the targets_and_headers metadata...
 #
 #   deps:
@@ -37,9 +42,10 @@ import("//build/rust/mixed_static_library.gni")
 #     bindings for the `TeleportGoat` provided by `teleport_rs_api` depend on
 #     `goat_rs_api`).
 #
-#     Oftentimes `deps` can be a copy of the `public_deps` of the bindings
-#     target, but depending on targets with the suffix "_rs_api".  Still, there
-#     are scenarios where `deps` don't parallel *all* entries from `public_deps`:
+#     Oftentimes `deps` can be a copy of the `public_deps` of the
+#     `bindings_target`, but depending on targets with the suffix "_rs_api".
+#     Still, there are scenarios where `deps` don't parallel *all* entries from
+#     `public_deps`:
 #       * `public_deps` that don't expose Rust APIs (i.e. there are no
 #         "..._rs_api" targets to depend on).
 #       * `public_deps` that Crubit bindings don't depend on (dependencies that
@@ -61,7 +67,8 @@ import("//build/rust/mixed_static_library.gni")
 #       # This will generate "teleport_rs_api" target that provides Rust
 #       # bindings for the "teleport.h" header from the ":teleport" source
 #       # set.
-#       rs_bindings_from_cc("teleport") {
+#       rs_bindings_from_cc("teleport_rs_api") {
+#         bindings_target = ":teleport"
 #         public_headers = ["teleport.h"]
 #         deps = [ ":goat_rs_api" ]  # Parallel's `public_deps` of ":teleport".
 #       }
@@ -71,7 +78,8 @@ import("//build/rust/mixed_static_library.gni")
 #         public_deps = [ ":goat" ]
 #       }
 #
-#       rs_bindings_from_cc("goat") {
+#       rs_bindings_from_cc("goat_rs_api") {
+#         bindings_target = ":goat"
 #         public_headers = ["goat.h"]
 #       }
 #       source_set("goat") {
@@ -99,6 +107,17 @@ import("//build/rust/mixed_static_library.gni")
 #   `rs_bindings_from_cc`).
 #
 template("rs_bindings_from_cc") {
+  # Mandatory parameter: bindings_target.
+  assert(defined(invoker.bindings_target),
+         "Must specify the C target to make bindings for.")
+  _bindings_target = invoker.bindings_target
+
+  # Mandatory/unavoidable parameter: target_name
+  _lib_target_name = target_name
+  _base_target_name = get_label_info(_bindings_target, "name")
+  assert(_lib_target_name == "${_base_target_name}_rs_api",
+         "The convention is that bindings for `foo` are named `foo_rs_api`")
+
   # Mandatory parameter: public_headers.
   assert(defined(invoker.public_headers),
          "Must specify the public C headers to make bindings for.")
@@ -129,14 +148,8 @@ template("rs_bindings_from_cc") {
     _deps = invoker.deps
   }
 
-  # TODO(crbug.com/1329611): Should `_bindings_target` or `_lib_target_name` be
-  # provided explicitly?
-  _bindings_target = ":${target_name}"
-
   # Various names and paths that are shared across multiple targets defined
   # in the template here.
-  _base_target_name = get_label_info(_bindings_target, "name")
-  _lib_target_name = "${_base_target_name}_rs_api"
   _gen_bindings_target_name = "${_lib_target_name}_gen_bindings"
   _gen_metadata_target_name = "${_lib_target_name}_gen_metadata"
   _metadata_target_name = "${_lib_target_name}_metadata"
