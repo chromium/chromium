@@ -72,6 +72,8 @@ interface HelpContentProvider {
 struct FeedbackContext {
   // The e-mail of the user that initiated this feedback.
   string? email;
+  // Whether or not the signed in email is an internal google account.
+  bool is_internal_account;
   // The URL of the page that this issue was being experienced on.
   url.mojom.Url?  page_url;
   // Extra diagnostics information provided by source CrOS application by

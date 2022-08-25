@@ -223,8 +223,9 @@
         <label id="sysInfoCheckboxLabel" inner-h-t-m-l="[[sysInfoCheckboxLabel_]]"></label>
       </div>
       <!-- Bluetooth Logs (Googler Internal Only) -->
-      <div id="bluetoothCheckboxContainer" class="checkbox-field-container">
-        <cr-checkbox id="bluetoothLogsCheckbox" aria-labelledby="sysInfoCheckboxLabel" checked>
+      <div id="bluetoothCheckboxContainer" class="checkbox-field-container"
+          hidden$="[[!shouldShowBluetoothCheckbox_(feedbackContext)]]">
+        <cr-checkbox id="bluetoothLogsCheckbox" aria-labelledby="bluetoothInfoLabel" checked>
         </cr-checkbox>
         <label id="bluetoothInfoLabel" inner-h-t-m-l="[[bluetoothLogsCheckboxLabel_]]"></label>
       </div>

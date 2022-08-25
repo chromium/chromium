@@ -5,7 +5,7 @@
 import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
 
-import {fakeEmptyFeedbackContext, fakeFeedbackContext} from 'chrome://os-feedback/fake_data.js';
+import {fakeEmptyFeedbackContext, fakeFeedbackContext, fakeInternalUserFeedbackContext} from 'chrome://os-feedback/fake_data.js';
 import {FakeFeedbackServiceProvider} from 'chrome://os-feedback/fake_feedback_service_provider.js';
 import {FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
 import {FeedbackAppPreSubmitAction, FeedbackContext} from 'chrome://os-feedback/feedback_types.js';
@@ -646,12 +646,44 @@ export function shareDataPageTestSuite() {
   });
 
   /**
+   * Test that when not logged as internal google account, the bluetooth
+   * checkbox container is hidden, and sendBluetoothLogs flag is set false.
+   */
+  test('bluetoothCheckboxHiddenWithoutInternalAccount', async () => {
+    await initializePage();
+    page.feedbackContext = fakeFeedbackContext;
+
+    await flushTasks();
+    // Verify the bluetooth checkbox is hidden.
+    assertFalse(isVisible(getElement('#bluetoothCheckboxContainer')));
+
+    // Check the bluetooth checkbox.
+    const bluetoothCheckbox = getElement('#bluetoothLogsCheckbox');
+    assertTrue(!!bluetoothCheckbox);
+    bluetoothCheckbox.checked = true;
+
+    // Send report with the checkbox checked somehow, but without an internal
+    // account. The report should not have sendBluetoothLogs flag.
+    const request = (await clickSendAndWait(page)).report;
+
+    assertFalse(request.sendBluetoothLogs);
+    assertFalse(!!request.feedbackContext.categoryTag);
+  });
+
+  /**
    * Test that sendBluetoothLogs flag is true and categoryTag is marked as
    * 'BluetoothReportWithLogs' when bluetooth logs checkbox is checked.
    */
   test('sendReportWithBluetoothLogsFlagChecked', async () => {
     await initializePage();
-    page.feedbackContext = fakeFeedbackContext;
+    page.feedbackContext = fakeInternalUserFeedbackContext;
+    await flushTasks();
+
+    // Fake internal google account is used for login. The bluetooth logs
+    // checkbox container should be visible.
+    assertEquals(
+        getElement('#userEmailDropDown').value, 'test.user@google.com');
+    assertTrue(isVisible(getElement('#bluetoothCheckboxContainer')));
 
     const bluetoothLogsCheckbox = getElement('#bluetoothLogsCheckbox');
 
@@ -659,7 +691,7 @@ export function shareDataPageTestSuite() {
     assertTrue(!!bluetoothLogsCheckbox);
     assertTrue(bluetoothLogsCheckbox.checked);
 
-    // Report should have sendBluetoothLogs flag true,and category marked as
+    // Report should have sendBluetoothLogs flag true, and category marked as
     // "BluetoothReportWithLogs".
     const requestWithBluetoothFlag = (await clickSendAndWait(page)).report;
 
@@ -676,11 +708,17 @@ export function shareDataPageTestSuite() {
    */
   test('sendReportWithoutBluetoothLogsFlagChecked', async () => {
     await initializePage();
-    page.feedbackContext = fakeFeedbackContext;
+    page.feedbackContext = fakeInternalUserFeedbackContext;
+    await flushTasks();
 
-    const bluetoothLogsCheckbox = getElement('#bluetoothLogsCheckbox');
+    // Fake internal google account is used for login. The bluetooth logs
+    // checkbox container should be visible.
+    assertEquals(
+        getElement('#userEmailDropDown').value, 'test.user@google.com');
+    assertTrue(isVisible(getElement('#bluetoothCheckboxContainer')));
 
     // BluetoothLogs checkbox is default to be checked.
+    const bluetoothLogsCheckbox = getElement('#bluetoothLogsCheckbox');
     assertTrue(!!bluetoothLogsCheckbox);
     assertTrue(bluetoothLogsCheckbox.checked);
 
@@ -690,7 +728,7 @@ export function shareDataPageTestSuite() {
     await flushTasks();
 
     // Report should not have sendBluetoothLogs flag,
-    // and category marked as "BluetoothReportWithLogs".
+    // and category should not be marked as "BluetoothReportWithLogs".
     const requestWithoutBluetoothFlag = (await clickSendAndWait(page)).report;
 
     assertFalse(requestWithoutBluetoothFlag.sendBluetoothLogs);

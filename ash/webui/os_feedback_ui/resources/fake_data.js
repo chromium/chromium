@@ -71,12 +71,21 @@ export const fakeSearchResponse = {
 export const fakeFeedbackContext = {
   email: 'test.user2@test.com',
   pageUrl: {url: 'chrome://tab/'},
+  isInternalAccount: false,
 };
 
 /** @type {!FeedbackContext} */
 export const fakeEmptyFeedbackContext = {
   email: '',
   pageUrl: {url: ''},
+  isInternalAccount: false,
+};
+
+/** @type {!FeedbackContext} */
+export const fakeInternalUserFeedbackContext = {
+  email: 'test.user@google.com',
+  pageUrl: {url: 'chrome://tab/'},
+  isInternalAccount: true,
 };
 
 /** @type {!Array<number>} */

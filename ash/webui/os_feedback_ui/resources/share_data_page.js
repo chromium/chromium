@@ -116,6 +116,18 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
    * @return {boolean}
    * @protected
    */
+  shouldShowBluetoothCheckbox_() {
+    // TODO: add an additional logic to hide bluetooth checkbox if user input
+    // is not relevant to bluetooth.
+    return (
+        this.feedbackContext !== null &&
+        this.feedbackContext.isInternalAccount);
+  }
+
+  /**
+   * @return {boolean}
+   * @protected
+   */
   hasScreenshot_() {
     return !!this.screenshotUrl;
   }
@@ -248,7 +260,6 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
           !!this.getElement_('#screenshotImage').src,
       contactUserConsentGranted:
           this.getElement_('#userConsentCheckbox').checked,
-      sendBluetoothLogs: this.getElement_('#bluetoothLogsCheckbox').checked,
     });
 
     report.attachedFile =
@@ -276,8 +287,12 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
           this.feedbackContext.extraDiagnostics;
     }
 
-    if (this.getElement_('#bluetoothLogsCheckbox').checked) {
+    if (!this.getElement_('#bluetoothCheckboxContainer').hidden &&
+        this.getElement_('#bluetoothLogsCheckbox').checked) {
       report.feedbackContext.categoryTag = 'BluetoothReportWithLogs';
+      report.sendBluetoothLogs = true;
+    } else {
+      report.sendBluetoothLogs = false;
     }
 
     return report;

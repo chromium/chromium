@@ -10,6 +10,7 @@
 #include "ash/webui/os_feedback_ui/backend/os_feedback_delegate.h"
 #include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom.h"
 #include "base/bind.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "url/gurl.h"
@@ -66,6 +67,10 @@ void FeedbackServiceProvider::GetFeedbackContext(
   FeedbackContextPtr feedback_context = FeedbackContext::New();
   feedback_context->page_url = feedback_delegate_->GetLastActivePageUrl();
   feedback_context->email = feedback_delegate_->GetSignedInUserEmail();
+
+  feedback_context->is_internal_account =
+      feedback_context->email.has_value() &&
+      gaia::IsGoogleInternalAccountEmail(feedback_context->email.value());
 
   std::move(callback).Run(std::move(feedback_context));
 }
