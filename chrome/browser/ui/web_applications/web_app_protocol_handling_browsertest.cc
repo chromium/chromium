@@ -75,6 +75,9 @@ class WebAppProtocolHandlingBrowserTest : public WebAppNavigationBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(WebAppProtocolHandlingBrowserTest,
                        BasicProtocolHandlers) {
+  if (!IsServiceAvailable())
+    GTEST_SKIP();
+
   AppId app_id = InstallTestApp(
       "/banners/"
       "manifest_test_page.html?manifest=manifest_protocol_handlers.json",
@@ -102,6 +105,9 @@ IN_PROC_BROWSER_TEST_F(WebAppProtocolHandlingBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppProtocolHandlingBrowserTest, NoProtocolHandlers) {
+  if (!IsServiceAvailable())
+    GTEST_SKIP();
+
   AppId app_id =
       InstallTestApp("/banners/manifest_test_page.html?manifest=manifest.json",
                      /*await_metric=*/false);

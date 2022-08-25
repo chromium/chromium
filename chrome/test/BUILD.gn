@@ -4791,6 +4791,7 @@ if (is_chromeos_lacros) {
     }
 
     data = [
+      "data/banners/",
       "data/extensions/",
       "data/media/",
       "data/policy/test_certs/",
@@ -9071,6 +9072,7 @@ if (!is_android) {
 
     if (is_chromeos_lacros) {
       deps += [
+        "//chromeos/lacros",
         "//components/account_manager_core",
         "//components/account_manager_core:test_support",
       ]

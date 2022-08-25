@@ -188,6 +188,9 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
 // app windows.
 IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingBrowserTest,
                        NavigateExistingClientFromBrowser) {
+  if (!IsServiceAvailable())
+    GTEST_SKIP();
+
   InstallTestApp(
       "/web_apps/get_manifest.html?"
       "launch_handler_client_mode_navigate_existing.json");
@@ -220,6 +223,9 @@ IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingBrowserTest,
 // Link captures from about:blank cleans up the about:blank page.
 IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingBrowserTest,
                        AboutBlankNavigationCleanUp) {
+  if (!IsServiceAvailable())
+    GTEST_SKIP();
+
   InstallTestApp("/web_apps/basic.html");
   TurnOnLinkCapturing();
 
@@ -241,6 +247,9 @@ IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingBrowserTest,
 // page.
 IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingBrowserTest,
                        JavascriptAboutBlankNavigationCleanUp) {
+  if (!IsServiceAvailable())
+    GTEST_SKIP();
+
   InstallTestApp("/web_apps/basic.html");
   TurnOnLinkCapturing();
 
@@ -285,6 +294,9 @@ class WebAppTabStripLinkCapturingBrowserTest
 // the app window.
 IN_PROC_BROWSER_TEST_F(WebAppTabStripLinkCapturingBrowserTest,
                        InScopeNavigationsCaptured) {
+  if (!IsServiceAvailable())
+    GTEST_SKIP();
+
   InstallTestTabbedApp();
   TurnOnLinkCapturing();
 

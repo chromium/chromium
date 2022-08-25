@@ -42,14 +42,10 @@ source_set("browser_tests") {
     "web_app_engagement_browsertest.cc",
     "web_app_file_handling_browsertest.cc",
     "web_app_launch_handler_browsertest.cc",
-    "web_app_link_capturing_browsertest.cc",
     "web_app_metrics_browsertest.cc",
     "web_app_navigate_browsertest.cc",
-    "web_app_protocol_handling_browsertest.cc",
     "web_app_ui_manager_impl_browsertest.cc",
     "web_app_uninstall_browsertest.cc",
-    "web_app_url_handling_browsertest.cc",
-    "web_app_window_controls_overlay_browsertest.cc",
   ]
 
   if (!is_chromeos_lacros) {
@@ -97,7 +93,13 @@ source_set("browser_tests") {
 source_set("app_service_browser_tests") {
   testonly = true
 
-  sources = [ "launch_web_app_browsertest.cc" ]
+  sources = [
+    "launch_web_app_browsertest.cc",
+    "web_app_link_capturing_browsertest.cc",
+    "web_app_protocol_handling_browsertest.cc",
+    "web_app_url_handling_browsertest.cc",
+    "web_app_window_controls_overlay_browsertest.cc",
+  ]
 
   if (is_chromeos) {
     sources += [
@@ -118,7 +120,10 @@ source_set("app_service_browser_tests") {
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
+    "//components/embedder_support",
+    "//components/page_load_metrics/browser:test_support",
     "//components/services/app_service/public/cpp:intents",
+    "//components/services/app_service/public/cpp:protocol_handling",
   ]
 
   if (is_chromeos_lacros) {

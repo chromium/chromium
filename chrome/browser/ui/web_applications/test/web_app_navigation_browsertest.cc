@@ -6,14 +6,17 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/logging.h"
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_io_data.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/test/app_registration_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -28,6 +31,11 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/web_app_service.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
+#endif
 
 namespace {
 
@@ -107,6 +115,18 @@ WebAppNavigationBrowserTest::GetTestNavigationObserver(const GURL& target_url) {
   observer->WatchExistingWebContents();
   observer->StartWatchingNewWebContents();
   return observer;
+}
+
+bool WebAppNavigationBrowserTest::IsServiceAvailable() const {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::LacrosService* lacros_service = chromeos::LacrosService::Get();
+  if (!lacros_service ||
+      !lacros_service->IsAvailable<crosapi::mojom::WebAppService>()) {
+    LOG(WARNING) << "Unsupported ash version.";
+    return false;
+  }
+#endif
+  return true;
 }
 
 // static
@@ -243,7 +263,10 @@ AppId WebAppNavigationBrowserTest::InstallTestWebApp(
   web_app_info->description = u"Test description";
   web_app_info->user_display_mode = web_app::UserDisplayMode::kStandalone;
 
-  return test::InstallWebApp(profile(), std::move(web_app_info));
+  AppId app_id = test::InstallWebApp(profile(), std::move(web_app_info));
+  DCHECK(!app_id.empty());
+  AppRegistrationWaiter(profile(), app_id).Await();
+  return app_id;
 }
 
 Browser* WebAppNavigationBrowserTest::OpenTestWebApp() {

@@ -68,6 +68,9 @@ class WebAppUrlHandlingBrowserTest : public WebAppNavigationBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppUrlHandlingBrowserTest, BasicUrlHandlers) {
+  if (!IsServiceAvailable())
+    GTEST_SKIP();
+
   AppId app_id = InstallTestApp(
       "/banners/"
       "manifest_test_page.html?manifest=manifest_url_handlers.json",
@@ -95,6 +98,9 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlHandlingBrowserTest, BasicUrlHandlers) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppUrlHandlingBrowserTest, NoUrlHandlers) {
+  if (!IsServiceAvailable())
+    GTEST_SKIP();
+
   AppId app_id =
       InstallTestApp("/banners/manifest_test_page.html?manifest=manifest.json",
                      /*await_metric=*/false);
