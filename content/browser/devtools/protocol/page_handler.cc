@@ -1468,6 +1468,8 @@ Page::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
       return Page::PrerenderFinalStatusEnum::TriggerDestroyed;
     case PrerenderHost::FinalStatus::kUaChangeRequiresReload:
       return Page::PrerenderFinalStatusEnum::UaChangeRequiresReload;
+    case PrerenderHost::FinalStatus::kHasEffectiveUrl:
+      return Page::PrerenderFinalStatusEnum::HasEffectiveUrl;
   }
 }
 

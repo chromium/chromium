@@ -111,7 +111,8 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
     kMemoryLimitExceeded = 36,
     kFailToGetMemoryUsage = 37,
     kDataSaverEnabled = 38,
-    kMaxValue = kDataSaverEnabled,
+    kHasEffectiveUrl = 39,
+    kMaxValue = kHasEffectiveUrl,
   };
 
   // These values are persisted to logs. Entries should not be renumbered and

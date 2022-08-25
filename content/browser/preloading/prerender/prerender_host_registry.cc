@@ -168,6 +168,17 @@ int PrerenderHostRegistry::CreateAndStartHost(
       }
     }
 
+    // Disallow all pages that have an effective URL like host apps and NTP.
+    if (SiteInstanceImpl::HasEffectiveURL(web_contents.GetBrowserContext(),
+                                          web_contents.GetURL())) {
+      RecordPrerenderHostFinalStatus(
+          PrerenderHost::FinalStatus::kHasEffectiveUrl, attributes,
+          ukm::kInvalidSourceId);
+      if (attempt)
+        attempt->SetEligibility(PreloadingEligibility::kHasEffectiveUrl);
+      return RenderFrameHost::kNoFrameTreeNodeId;
+    }
+
     // Once all eligibility checks are completed, set the status to kEligible.
     if (attempt)
       attempt->SetEligibility(PreloadingEligibility::kEligible);

@@ -357,6 +357,11 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // RenderFrameHostManager.
   static GURL GetEffectiveURL(BrowserContext* browser_context, const GURL& url);
 
+  // True if |url| resolves to an effective URL that is different from |url|.
+  // See GetEffectiveURL().  This will be true for hosted apps as well as NTP
+  // URLs.
+  static bool HasEffectiveURL(BrowserContext* browser_context, const GURL& url);
+
   // Return an ID of the next BrowsingInstance to be created.  This ID is
   // guaranteed to be higher than any ID of an existing BrowsingInstance.
   // This is useful when process model decisions need to be scoped only to
@@ -491,11 +496,6 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
                          const UrlInfo& src_url_info,
                          const UrlInfo& dest_url_info,
                          bool should_compare_effective_urls);
-
-  // True if |url| resolves to an effective URL that is different from |url|.
-  // See GetEffectiveURL().  This will be true for hosted apps as well as NTP
-  // URLs.
-  static bool HasEffectiveURL(BrowserContext* browser_context, const GURL& url);
 
   // Returns true if |url| and its |site_url| can be placed inside a default
   // SiteInstance.

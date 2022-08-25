@@ -733,6 +733,7 @@ void PrerenderHost::SetFailureReason(FinalStatus status) {
     case FinalStatus::kMemoryLimitExceeded:
     case FinalStatus::kFailToGetMemoryUsage:
     case FinalStatus::kDataSaverEnabled:
+    case FinalStatus::kHasEffectiveUrl:
       attempt_->SetFailureReason(ToPreloadingFailureReason(status));
       return;
   }

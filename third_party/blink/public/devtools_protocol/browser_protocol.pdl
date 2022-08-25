@@ -8464,6 +8464,7 @@ domain Page
       # recorded when it fails to get the memory usage.
       FailToGetMemoryUsage
       DataSaverEnabled
+      HasEffectiveUrl
 
   # Fired when a prerender attempt is completed.
   experimental event prerenderAttemptCompleted

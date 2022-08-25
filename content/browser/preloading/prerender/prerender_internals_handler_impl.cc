@@ -82,6 +82,8 @@ const char* FinalStatusToString(PrerenderHost::FinalStatus final_status) {
       return "FailToGetMemoryUsage";
     case PrerenderHost::FinalStatus::kDataSaverEnabled:
       return "DataSaverEnabled";
+    case PrerenderHost::FinalStatus::kHasEffectiveUrl:
+      return "HasEffectiveUrl";
   }
   NOTREACHED();
   return "";
