@@ -82,33 +82,34 @@ void PermissionActionsHistory::RecordAction(
     RequestType type,
     PermissionPromptDisposition prompt_disposition) {
   DictionaryPrefUpdate update(pref_service_, prefs::kPermissionActions);
+  base::Value::Dict& update_dict = update->GetDict();
 
   const base::StringPiece permission_path(PermissionKeyForRequestType(type));
 
-  if (!update->FindPathOfType(permission_path, base::Value::Type::LIST)) {
-    update->SetPath(permission_path, base::Value(base::Value::Type::LIST));
+  if (!update_dict.FindListByDottedPath(permission_path)) {
+    update_dict.SetByDottedPath(permission_path, base::Value::List());
   }
 
-  base::Value* permission_actions =
-      update->FindPathOfType(permission_path, base::Value::Type::LIST);
+  base::Value::List* permission_actions =
+      update_dict.FindListByDottedPath(permission_path);
   CHECK(permission_actions);
 
   // Discard permission actions older than |kPermissionActionMaxAge|.
   const base::Time cutoff = base::Time::Now() - kPermissionActionMaxAge;
-  permission_actions->EraseListValueIf([cutoff](const base::Value& entry) {
-    const absl::optional<base::Time> timestamp =
-        base::ValueToTime(entry.FindKey(kPermissionActionEntryTimestampKey));
+  permission_actions->EraseIf([cutoff](const base::Value& entry) {
+    const absl::optional<base::Time> timestamp = base::ValueToTime(
+        entry.GetDict().Find(kPermissionActionEntryTimestampKey));
     return !timestamp || *timestamp < cutoff;
   });
 
   // Record the new permission action.
-  base::DictionaryValue new_action_attributes;
-  new_action_attributes.SetKey(kPermissionActionEntryTimestampKey,
-                               base::TimeToValue(base::Time::Now()));
-  new_action_attributes.SetIntKey(kPermissionActionEntryActionKey,
-                                  static_cast<int>(action));
-  new_action_attributes.SetIntKey(kPermissionActionEntryPromptDispositionKey,
-                                  static_cast<int>(prompt_disposition));
+  base::Value::Dict new_action_attributes;
+  new_action_attributes.Set(kPermissionActionEntryTimestampKey,
+                            base::TimeToValue(base::Time::Now()));
+  new_action_attributes.Set(kPermissionActionEntryActionKey,
+                            static_cast<int>(action));
+  new_action_attributes.Set(kPermissionActionEntryPromptDispositionKey,
+                            static_cast<int>(prompt_disposition));
   permission_actions->Append(std::move(new_action_attributes));
 }
 
@@ -122,11 +123,11 @@ void PermissionActionsHistory::ClearHistory(const base::Time& delete_begin,
 
   DictionaryPrefUpdate update(pref_service_, prefs::kPermissionActions);
 
-  for (auto permission_entry : update->DictItems()) {
-    permission_entry.second.EraseListValueIf([delete_begin,
-                                              delete_end](const auto& entry) {
-      const absl::optional<base::Time> timestamp =
-          base::ValueToTime(entry.FindKey(kPermissionActionEntryTimestampKey));
+  for (auto permission_entry : update->GetDict()) {
+    permission_entry.second.GetList().EraseIf([delete_begin,
+                                               delete_end](const auto& entry) {
+      const absl::optional<base::Time> timestamp = base::ValueToTime(
+          entry.GetDict().Find(kPermissionActionEntryTimestampKey));
       return (!timestamp ||
               (*timestamp >= delete_begin && *timestamp < delete_end));
     });
@@ -140,17 +141,18 @@ std::vector<PermissionActionsHistory::Entry>
 PermissionActionsHistory::GetHistoryInternal(const base::Time& begin,
                                              const std::string& key,
                                              EntryFilter entry_filter) {
-  const base::Value* permission_actions =
-      pref_service_->GetDictionary(prefs::kPermissionActions)->FindListKey(key);
+  const base::Value::List* permission_actions =
+      pref_service_->GetValueDict(prefs::kPermissionActions).FindList(key);
 
   if (!permission_actions)
     return {};
 
   std::vector<Entry> matching_actions;
 
-  for (const auto& entry : permission_actions->GetListDeprecated()) {
+  for (const auto& entry : *permission_actions) {
+    const base::Value::Dict& entry_dict = entry.GetDict();
     const absl::optional<base::Time> timestamp =
-        base::ValueToTime(entry.FindKey(kPermissionActionEntryTimestampKey));
+        base::ValueToTime(entry_dict.Find(kPermissionActionEntryTimestampKey));
 
     if (timestamp < begin)
       continue;
@@ -159,7 +161,7 @@ PermissionActionsHistory::GetHistoryInternal(const base::Time& begin,
       // If we want either the Loud or Quiet UI actions but don't have this
       // info due to legacy reasons we ignore the entry.
       const absl::optional<int> prompt_disposition_int =
-          entry.FindIntKey(kPermissionActionEntryPromptDispositionKey);
+          entry_dict.FindInt(kPermissionActionEntryPromptDispositionKey);
       if (!prompt_disposition_int)
         continue;
 
@@ -177,7 +179,7 @@ PermissionActionsHistory::GetHistoryInternal(const base::Time& begin,
       }
     }
     const PermissionAction past_action = static_cast<PermissionAction>(
-        *(entry.FindIntKey(kPermissionActionEntryActionKey)));
+        *(entry_dict.FindInt(kPermissionActionEntryActionKey)));
     matching_actions.emplace_back(
         PermissionActionsHistory::Entry{past_action, timestamp.value()});
   }
