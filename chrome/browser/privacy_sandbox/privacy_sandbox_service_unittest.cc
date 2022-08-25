@@ -1286,10 +1286,7 @@ TEST_F(PrivacySandboxServiceTest, DisablingV2SandboxClearsData) {
   // Disabling should start a task clearing all kAPI information.
   EXPECT_CALL(*mock_browsing_topics_service(), ClearAllTopicsData()).Times(1);
   prefs()->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, false);
-  EXPECT_EQ(content::BrowsingDataRemover::DATA_TYPE_INTEREST_GROUPS |
-                content::BrowsingDataRemover::DATA_TYPE_AGGREGATION_SERVICE |
-                content::BrowsingDataRemover::DATA_TYPE_ATTRIBUTION_REPORTING |
-                content::BrowsingDataRemover::DATA_TYPE_TRUST_TOKENS,
+  EXPECT_EQ(content::BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX,
             browsing_data_remover()->GetLastUsedRemovalMaskForTesting());
   EXPECT_EQ(base::Time::Min(),
             browsing_data_remover()->GetLastUsedBeginTimeForTesting());

@@ -7,15 +7,18 @@
 
 #include <memory>
 
+#include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/common/content_export.h"
 #include "content/common/private_aggregation_host.mojom.h"
+#include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace base {
 class FilePath;
+class Time;
 }
 
 namespace url {
@@ -52,6 +55,10 @@ class CONTENT_EXPORT PrivateAggregationManagerImpl
       PrivateAggregationBudgetKey::Api api_for_budgeting,
       mojo::PendingReceiver<mojom::PrivateAggregationHost> pending_receiver)
       override;
+  void ClearBudgetData(base::Time delete_begin,
+                       base::Time delete_end,
+                       StoragePartition::StorageKeyMatcherFunction filter,
+                       base::OnceClosure done) override;
 
  protected:
   // Protected for testing.

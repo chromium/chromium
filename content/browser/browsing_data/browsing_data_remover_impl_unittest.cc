@@ -1371,6 +1371,15 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveAggregationServiceData) {
             StoragePartition::REMOVE_DATA_MASK_AGGREGATION_SERVICE);
 }
 
+TEST_F(BrowsingDataRemoverImplTest, RemovePrivateAggregationData) {
+  BlockUntilBrowsingDataRemoved(
+      base::Time(), base::Time::Max(),
+      BrowsingDataRemover::DATA_TYPE_PRIVATE_AGGREGATION_INTERNAL, false);
+  StoragePartitionRemovalData removal_data = GetStoragePartitionRemovalData();
+  EXPECT_EQ(removal_data.remove_mask,
+            StoragePartition::REMOVE_DATA_MASK_PRIVATE_AGGREGATION_INTERNAL);
+}
+
 class MultipleTasksObserver {
  public:
   // A simple implementation of BrowsingDataRemover::Observer.

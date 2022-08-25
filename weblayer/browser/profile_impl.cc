@@ -304,6 +304,8 @@ void ProfileImpl::ClearBrowsingData(
             content::BrowsingDataRemover::DATA_TYPE_ATTRIBUTION_REPORTING;
         remove_mask |=
             content::BrowsingDataRemover::DATA_TYPE_AGGREGATION_SERVICE;
+        remove_mask |= content::BrowsingDataRemover::
+            DATA_TYPE_PRIVATE_AGGREGATION_INTERNAL;
         break;
       case BrowsingDataType::CACHE:
         remove_mask |= content::BrowsingDataRemover::DATA_TYPE_CACHE;

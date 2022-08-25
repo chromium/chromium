@@ -56,8 +56,7 @@ constexpr DataType DATA_TYPE_SITE_DATA =
 #endif
     DATA_TYPE_SITE_USAGE_DATA | DATA_TYPE_DURABLE_PERMISSION |
     DATA_TYPE_EXTERNAL_PROTOCOL_DATA | DATA_TYPE_ISOLATED_ORIGINS |
-    content::BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX |
-    content::BrowsingDataRemover::DATA_TYPE_ATTRIBUTION_REPORTING;
+    content::BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX;
 
 // Datatypes protected by Important Sites.
 constexpr DataType IMPORTANT_SITES_DATA_TYPES =

@@ -5,9 +5,15 @@
 #ifndef CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_MANAGER_H_
 #define CONTENT_BROWSER_PRIVATE_AGGREGATION_PRIVATE_AGGREGATION_MANAGER_H_
 
+#include "base/callback_forward.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/common/private_aggregation_host.mojom-forward.h"
+#include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+
+namespace base {
+class Time;
+}
 
 namespace url {
 class Origin;
@@ -35,6 +41,18 @@ class PrivateAggregationManager {
       PrivateAggregationBudgetKey::Api api_for_budgeting,
       mojo::PendingReceiver<mojom::PrivateAggregationHost>
           pending_receiver) = 0;
+
+  // Deletes all data in storage for any budgets that could have been set
+  // between `delete_begin` and `delete_end` time (inclusive). Note that the
+  // discrete time windows used in the budgeter may lead to more data being
+  // deleted than strictly necessary. Null times are treated as unbounded lower
+  // or upper range. If `!filter.is_null()`, budget keys with an origin that
+  // does *not* match the `filter` are retained (i.e. not cleared).
+  virtual void ClearBudgetData(
+      base::Time delete_begin,
+      base::Time delete_end,
+      StoragePartition::StorageKeyMatcherFunction filter,
+      base::OnceClosure done) = 0;
 };
 
 }  // namespace content

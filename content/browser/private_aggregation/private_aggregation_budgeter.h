@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/storage_partition.h"
 
 template <class T>
 class scoped_refptr;
@@ -44,8 +45,9 @@ class CONTENT_EXPORT PrivateAggregationBudgeter {
   // Maximum budget allowed to be claimed per-origin per-day per-API.
   static constexpr int kMaxBudgetPerScope = 65536;
 
-  // To avoid unbounded memory growth, limit the number of pending consume
-  // budget calls during initialization.
+  // To avoid unbounded memory growth, limit the number of pending calls during
+  // initialization. Data clearing calls can be posted even if it would exceed
+  // this limit.
   static constexpr int kMaxPendingCalls = 1000;
 
   // The total length of time that per-origin per-API budgets are enforced
@@ -87,6 +89,17 @@ class CONTENT_EXPORT PrivateAggregationBudgeter {
                              const PrivateAggregationBudgetKey& budget_key,
                              base::OnceCallback<void(bool)> on_done);
 
+  // Deletes all data in storage for any budgets that could have been set
+  // between `delete_begin` and `delete_end` time (inclusive). Note that the
+  // discrete time windows used may lead to more data being deleted than
+  // strictly necessary. Null times are treated as unbounded lower or upper
+  // range. If `!filter.is_null()`, budget keys with an origin that does *not*
+  // match the `filter` are retained (i.e. not cleared).
+  virtual void ClearData(base::Time delete_begin,
+                         base::Time delete_end,
+                         StoragePartition::StorageKeyMatcherFunction filter,
+                         base::OnceClosure done);
+
   // TODO(crbug.com/1328439): Clear stale data periodically and on startup.
 
  protected:
@@ -104,13 +117,18 @@ class CONTENT_EXPORT PrivateAggregationBudgeter {
   void ConsumeBudgetImpl(int additional_budget,
                          const PrivateAggregationBudgetKey& budget_key,
                          base::OnceCallback<void(bool)> on_done);
+  void ClearDataImpl(base::Time delete_begin,
+                     base::Time delete_end,
+                     StoragePartition::StorageKeyMatcherFunction filter,
+                     base::OnceClosure done);
 
   void ProcessAllPendingCalls();
 
-  // While the storage initializes, queues calls to ConsumeBudget() in the
-  // order the calls are received. Should be empty after storage is initialized.
-  // The size is limited to `kMaxPendingCalls`.
-  std::vector<base::OnceClosure> pending_consume_budget_calls_;
+  // While the storage initializes, queues calls (e.g. to `ConsumeBudget()`) in
+  // the order the calls are received. Should be empty after storage is
+  // initialized. The size is limited to `kMaxPendingCalls` except that
+  // `ClearData()` can store additional tasks beyond that limit.
+  std::vector<base::OnceClosure> pending_calls_;
 
   // `nullptr` until initialization is complete or if initialization failed.
   // Otherwise, owned by this class until destruction. Iff present,

@@ -10,11 +10,13 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/numerics/checked_math.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/task_traits.h"
+#include "base/time/time.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
@@ -23,6 +25,7 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/aggregatable_report.mojom.h"
 #include "content/common/private_aggregation_host.mojom.h"
+#include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "url/origin.h"
 
@@ -83,6 +86,15 @@ bool PrivateAggregationManagerImpl::BindNewReceiver(
   return host_->BindNewReceiver(std::move(worklet_origin),
                                 std::move(top_frame_origin), api_for_budgeting,
                                 std::move(pending_receiver));
+}
+
+void PrivateAggregationManagerImpl::ClearBudgetData(
+    base::Time delete_begin,
+    base::Time delete_end,
+    StoragePartition::StorageKeyMatcherFunction filter,
+    base::OnceClosure done) {
+  budgeter_->ClearData(delete_begin, delete_end, std::move(filter),
+                       std::move(done));
 }
 
 void PrivateAggregationManagerImpl::OnReportRequestReceivedFromHost(

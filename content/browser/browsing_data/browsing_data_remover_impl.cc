@@ -429,6 +429,10 @@ void BrowsingDataRemoverImpl::RemoveImpl(
     storage_partition_remove_mask |=
         StoragePartition::REMOVE_DATA_MASK_AGGREGATION_SERVICE;
   }
+  if (remove_mask & DATA_TYPE_PRIVATE_AGGREGATION_INTERNAL) {
+    storage_partition_remove_mask |=
+        StoragePartition::REMOVE_DATA_MASK_PRIVATE_AGGREGATION_INTERNAL;
+  }
   if (remove_mask & DATA_TYPE_INTEREST_GROUPS) {
     storage_partition_remove_mask |=
         StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS;
