@@ -61,7 +61,7 @@ class PolicyStatus {
 
 // The PolicyService returns policies for enterprise managed machines from the
 // source with the highest priority where the policy available.
-class PolicyService : public base::RefCounted<PolicyService> {
+class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
  public:
   using PolicyManagerVector =
       std::vector<std::unique_ptr<PolicyManagerInterface>>;
@@ -118,7 +118,7 @@ class PolicyService : public base::RefCounted<PolicyService> {
   virtual ~PolicyService();
 
  private:
-  friend class base::RefCounted<PolicyService>;
+  friend class base::RefCountedThreadSafe<PolicyService>;
 
   // List of policy providers in descending order of priority. All managed
   // providers should be ahead of non-managed providers.
