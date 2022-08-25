@@ -846,6 +846,8 @@ void LocalFrameView::PerformLayout() {
               !document->GetDisplayLockDocumentState().HasForcedScopes());
       DeferredShapingViewportScope viewport_scope(*this, *GetLayoutView());
       GetLayoutView()->UpdateLayout();
+      if (mobile_friendliness_checker_)
+        mobile_friendliness_checker_->NotifyInitialScaleUpdated();
     }
   }
 
@@ -1032,9 +1034,6 @@ DocumentLifecycle& LocalFrameView::Lifecycle() const {
 void LocalFrameView::RunPostLifecycleSteps() {
   AllowThrottlingScope allow_throttling(*this);
   RunIntersectionObserverSteps();
-  if (mobile_friendliness_checker_)
-    mobile_friendliness_checker_->MaybeRecompute();
-
   ForAllRemoteFrameViews([](RemoteFrameView& frame_view) {
     frame_view.UpdateCompositingScaleFactor();
   });
@@ -2004,6 +2003,9 @@ Color LocalFrameView::DocumentBackgroundColor() {
 }
 
 void LocalFrameView::WillBeRemovedFromFrame() {
+  if (mobile_friendliness_checker_)
+    mobile_friendliness_checker_->WillBeRemovedFromFrame();
+
   if (paint_artifact_compositor_)
     paint_artifact_compositor_->WillBeRemovedFromFrame();
 

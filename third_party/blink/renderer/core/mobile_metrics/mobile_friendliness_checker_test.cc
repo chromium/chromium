@@ -76,8 +76,14 @@ class MobileFriendlinessCheckerTest : public testing::Test {
   static void EvalMobileFriendliness(LocalFrameView* view, bool fixed_clock) {
     DCHECK(view->GetFrame().IsLocalRoot());
     ScopedTimeTicksOverride clock(fixed_clock);
-    view->UpdateAllLifecyclePhasesForTest();
-    view->GetMobileFriendlinessChecker()->ComputeNowForTesting();
+    for (const Frame* frame = &view->GetFrame(); frame;
+         frame = frame->Tree().TraverseNext()) {
+      if (const auto* local_frame = DynamicTo<LocalFrame>(frame)) {
+        local_frame->View()->UpdateAllLifecyclePhasesForTest();
+      }
+    }
+
+    view->GetMobileFriendlinessChecker()->DidFinishLifecycleUpdate(*view);
   }
 
   static void ConfigureAndroidSettings(WebSettings* settings) {

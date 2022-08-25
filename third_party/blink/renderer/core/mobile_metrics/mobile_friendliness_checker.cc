@@ -54,18 +54,20 @@ static constexpr base::TimeDelta kTimeBudgetForBadTapTarget =
 // This phase will abort when it consumes more than 4ms.
 static constexpr base::TimeDelta kTimeBudgetForTapTargetExtraction =
     base::Milliseconds(4);
+static constexpr base::TimeDelta kEvaluationDelay = base::Seconds(5);
 static constexpr base::TimeDelta kEvaluationInterval = base::Minutes(1);
 
 MobileFriendlinessChecker::MobileFriendlinessChecker(LocalFrameView& frame_view)
     : frame_view_(&frame_view),
+      timer_(frame_view_->GetFrame().GetTaskRunner(TaskType::kInternalDefault),
+             this,
+             &MobileFriendlinessChecker::Activate),
       viewport_scalar_(
           frame_view_->GetFrame().GetWidgetForLocalRoot()
               ? frame_view_->GetPage()
                     ->GetChromeClient()
                     .WindowToViewportScalar(&frame_view_->GetFrame(), 1)
-              : 1.0),
-      last_evaluated_(base::TimeTicks::Now() - kEvaluationInterval -
-                      base::Seconds(5)) {}
+              : 1.0) {}
 
 MobileFriendlinessChecker::~MobileFriendlinessChecker() = default;
 
@@ -87,36 +89,15 @@ void MobileFriendlinessChecker::NotifyPaintBegin() {
   previous_transform_ = viewport_transform_;
   current_x_offset_ = 0.0;
 
-  const ViewportDescription& viewport = frame_view_->GetFrame()
-                                            .GetDocument()
-                                            ->GetViewportData()
-                                            .GetViewportDescription();
-  if (viewport.type == ViewportDescription::Type::kViewportMeta) {
-    const double zoom = viewport.zoom_is_explicit ? viewport.zoom : 1.0;
-    viewport_device_width_ = viewport.max_width.IsDeviceWidth();
-    if (viewport.max_width.IsFixed()) {
-      viewport_hardcoded_width_ = viewport.max_width.GetFloatValue();
-      // Convert value from Blink space to device-independent pixels.
-      viewport_hardcoded_width_ /= viewport_scalar_;
-    }
-
-    if (viewport.zoom_is_explicit)
-      viewport_initial_scale_x10_ = std::round(viewport.zoom * 10);
-
-    if (viewport.user_zoom_is_explicit) {
-      allow_user_zoom_ = viewport.user_zoom;
-      // If zooming is only allowed slightly.
-      if (viewport.max_zoom / zoom < kMaximumScalePreventsZoomingThreshold)
-        allow_user_zoom_ = false;
-    }
-  }
-
-  initial_scale_ = frame_view_->GetPage()
-                       ->GetPageScaleConstraintsSet()
-                       .FinalConstraints()
-                       .initial_scale;
   int frame_width = frame_view_->GetPage()->GetVisualViewport().Size().width();
   viewport_width_ = frame_width * viewport_scalar_ / initial_scale_;
+
+  if (timer_.IsActive() ||
+      base::TimeTicks::Now() - last_evaluated_ < kEvaluationInterval) {
+    return;
+  }
+
+  timer_.StartOneShot(kEvaluationDelay, FROM_HERE);
 }
 
 void MobileFriendlinessChecker::NotifyPaintEnd() {
@@ -124,6 +105,10 @@ void MobileFriendlinessChecker::NotifyPaintEnd() {
   DCHECK(frame_view_->GetFrame().IsOutermostMainFrame());
   ignore_beyond_viewport_scope_count_ = 0;
   is_painting_ = false;
+}
+
+void MobileFriendlinessChecker::WillBeRemovedFromFrame() {
+  timer_.Stop();
 }
 
 namespace {
@@ -531,17 +516,24 @@ int MobileFriendlinessChecker::ComputeBadTapTargetsRatio() {
   return std::ceil(bad_tap_targets * 100.0 / all_tap_targets);
 }
 
-void MobileFriendlinessChecker::MaybeRecompute() {
+void MobileFriendlinessChecker::Activate(TimerBase*) {
   DCHECK(frame_view_->GetFrame().Client()->IsLocalFrameClientImpl());
   DCHECK(frame_view_->GetFrame().IsOutermostMainFrame());
-  base::TimeTicks now = base::TimeTicks::Now();
-  if (now - last_evaluated_ < kEvaluationInterval)
+
+  // If detached, there's no need to calculate any metrics.
+  if (!frame_view_->GetChromeClient())
     return;
 
-  ComputeNow();
+  frame_view_->RegisterForLifecycleNotifications(this);
+  frame_view_->ScheduleAnimation();
 }
 
-void MobileFriendlinessChecker::ComputeNow() {
+void MobileFriendlinessChecker::DidFinishLifecycleUpdate(
+    const LocalFrameView&) {
+  DCHECK(frame_view_->GetFrame().Client()->IsLocalFrameClientImpl());
+  DCHECK(frame_view_->GetFrame().IsOutermostMainFrame());
+
+  frame_view_->UnregisterFromLifecycleNotifications(this);
   frame_view_->DidChangeMobileFriendliness(MobileFriendliness{
       .viewport_device_width = viewport_device_width_,
       .viewport_initial_scale_x10 = viewport_initial_scale_x10_,
@@ -556,6 +548,40 @@ void MobileFriendlinessChecker::ComputeNow() {
       .bad_tap_targets_ratio = ComputeBadTapTargetsRatio()});
 
   last_evaluated_ = base::TimeTicks::Now();
+}
+
+void MobileFriendlinessChecker::NotifyInitialScaleUpdated() {
+  initial_scale_ = frame_view_->GetPage()
+                       ->GetPageScaleConstraintsSet()
+                       .FinalConstraints()
+                       .initial_scale;
+}
+
+void MobileFriendlinessChecker::NotifyViewportUpdated(
+    const ViewportDescription& viewport) {
+  DCHECK(frame_view_->GetFrame().Client()->IsLocalFrameClientImpl());
+  DCHECK(frame_view_->GetFrame().IsOutermostMainFrame());
+
+  if (viewport.type != ViewportDescription::Type::kViewportMeta)
+    return;
+
+  const double zoom = viewport.zoom_is_explicit ? viewport.zoom : 1.0;
+  viewport_device_width_ = viewport.max_width.IsDeviceWidth();
+  if (viewport.max_width.IsFixed()) {
+    viewport_hardcoded_width_ = viewport.max_width.GetFloatValue();
+    // Convert value from Blink space to device-independent pixels.
+    viewport_hardcoded_width_ /= viewport_scalar_;
+  }
+
+  if (viewport.zoom_is_explicit)
+    viewport_initial_scale_x10_ = std::round(viewport.zoom * 10);
+
+  if (viewport.user_zoom_is_explicit) {
+    allow_user_zoom_ = viewport.user_zoom;
+    // If zooming is only allowed slightly.
+    if (viewport.max_zoom / zoom < kMaximumScalePreventsZoomingThreshold)
+      allow_user_zoom_ = false;
+  }
 }
 
 int MobileFriendlinessChecker::AreaSizes::SmallTextRatio() const {
@@ -631,6 +657,7 @@ void MobileFriendlinessChecker::NotifyPaintReplaced(
 
 void MobileFriendlinessChecker::Trace(Visitor* visitor) const {
   visitor->Trace(frame_view_);
+  visitor->Trace(timer_);
 }
 
 }  // namespace blink
