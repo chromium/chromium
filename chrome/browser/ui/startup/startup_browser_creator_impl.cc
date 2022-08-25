@@ -54,6 +54,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/welcome/helpers.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_app_from_command_line.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "chrome/common/chrome_switches.h"
@@ -187,6 +188,8 @@ void StartupBrowserCreatorImpl::Launch(
     install_chrome_app::InstallChromeApp(
         command_line_.GetSwitchValueASCII(switches::kInstallChromeApp));
   }
+
+  web_app::MaybeInstallAppFromCommandLine(command_line_, *profile);
 
 #if BUILDFLAG(IS_MAC)
   if (process_startup == chrome::startup::IsProcessStartup::kYes) {

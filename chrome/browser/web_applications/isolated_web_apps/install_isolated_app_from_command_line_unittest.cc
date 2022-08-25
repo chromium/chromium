@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_app_from_command_line_flag.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install_isolated_app_from_command_line.h"
 
 #include <string>
 #include <vector>
