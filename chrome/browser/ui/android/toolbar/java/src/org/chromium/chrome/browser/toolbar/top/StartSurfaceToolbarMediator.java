@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.toolbar.top;
 
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.ACCESSIBILITY_ENABLED;
+import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.ALPHA;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.BUTTONS_CLICKABLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IDENTITY_DISC_AT_START;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IDENTITY_DISC_CLICK_HANDLER;
@@ -26,6 +27,7 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.TAB_SWITCHER_BUTTON_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.TRANSLATION_Y;
 
+import android.animation.Animator;
 import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
@@ -52,8 +54,11 @@ import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
+import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
+import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelAnimatorFactory;
 
 /** The mediator implements interacts between the views and the caller. */
 class StartSurfaceToolbarMediator {
@@ -63,6 +68,7 @@ class StartSurfaceToolbarMediator {
     private final boolean mShouldShowTabSwitcherButtonOnHomepage;
     private final Supplier<ButtonData> mIdentityDiscButtonSupplier;
     private final boolean mIsTabGroupsAndroidContinuationEnabled;
+    private final boolean mIsTabToGtsFadeAnimationEnabled;
     private final BooleanSupplier mIsIncognitoModeEnabledSupplier;
     private final MenuButtonCoordinator mMenuButtonCoordinator;
     private final TabModelSelectorObserver mTabModelSelectorObserver;
@@ -86,12 +92,14 @@ class StartSurfaceToolbarMediator {
     private LogoLoadHelper mLogoLoadHelper;
     private LogoView mLogoView;
 
+    private Animator mAlphaAnimator;
+
     StartSurfaceToolbarMediator(PropertyModel model,
             Callback<IPHCommandBuilder> showIdentityIPHCallback,
             boolean hideIncognitoSwitchWhenNoTabs, MenuButtonCoordinator menuButtonCoordinator,
             ObservableSupplier<Boolean> identityDiscStateSupplier,
             Supplier<ButtonData> identityDiscButtonSupplier,
-            boolean shouldShowTabSwitcherButtonOnHomepage,
+            boolean shouldShowTabSwitcherButtonOnHomepage, boolean isTabToGtsFadeAnimationEnabled,
             boolean isTabGroupsAndroidContinuationEnabled,
             BooleanSupplier isIncognitoModeEnabledSupplier,
             ObservableSupplier<Profile> profileSupplier,
@@ -102,6 +110,7 @@ class StartSurfaceToolbarMediator {
         mHideIncognitoSwitchWhenNoTabs = hideIncognitoSwitchWhenNoTabs;
         mMenuButtonCoordinator = menuButtonCoordinator;
         mIdentityDiscButtonSupplier = identityDiscButtonSupplier;
+        mIsTabToGtsFadeAnimationEnabled = isTabToGtsFadeAnimationEnabled;
         mIsTabGroupsAndroidContinuationEnabled = isTabGroupsAndroidContinuationEnabled;
         mIsIncognitoModeEnabledSupplier = isIncognitoModeEnabledSupplier;
         mProfileSupplier = profileSupplier;
@@ -165,6 +174,7 @@ class StartSurfaceToolbarMediator {
 
     void onStartSurfaceStateChanged(@StartSurfaceState int newState,
             boolean shouldShowStartSurfaceToolbar, @LayoutType int newLayoutType) {
+        boolean wasOnGridTabSwitcher = isOnGridTabSwitcher();
         mStartSurfaceState = newState;
         mLayoutType = newLayoutType;
         updateLogoVisibility();
@@ -173,7 +183,7 @@ class StartSurfaceToolbarMediator {
         updateNewTabViewVisibility();
         updateIdentityDisc(mIdentityDiscButtonSupplier.get());
         updateAppMenuUpdateBadgeSuppression();
-        setStartSurfaceToolbarVisibility(shouldShowStartSurfaceToolbar);
+        setStartSurfaceToolbarVisibility(shouldShowStartSurfaceToolbar, wasOnGridTabSwitcher);
         updateButtonsClickable(shouldShowStartSurfaceToolbar);
         updateTranslationY(mNonIncognitoHomepageTranslationY);
     }
@@ -297,10 +307,6 @@ class StartSurfaceToolbarMediator {
         return mTabModelSelector.getModel(true).getCount() != 0;
     }
 
-    void setStartSurfaceToolbarVisibility(boolean shouldShowStartSurfaceToolbar) {
-        mPropertyModel.set(IS_VISIBLE, shouldShowStartSurfaceToolbar);
-    }
-
     void setIncognitoStateProvider(IncognitoStateProvider provider) {
         mPropertyModel.set(INCOGNITO_STATE_PROVIDER, provider);
     }
@@ -324,6 +330,49 @@ class StartSurfaceToolbarMediator {
     void onLogoViewReady(LogoView logoView) {
         mLogoView = logoView;
         mLogoLoadHelper = new LogoLoadHelper(mProfileSupplier, mLogoClickedCallback, logoView);
+    }
+
+    private void setStartSurfaceToolbarVisibility(
+            boolean shouldShowStartSurfaceToolbar, boolean wasOnGridTabSwitcher) {
+        if (mPropertyModel.get(IS_VISIBLE) == shouldShowStartSurfaceToolbar) return;
+
+        if (mAlphaAnimator != null) {
+            mAlphaAnimator.cancel();
+            mAlphaAnimator = null;
+        }
+
+        // Only show cross fade animation when switching between tab and grid tab switcher surface.
+        // When switching between Start surface and grid tab switcher, the visibility won't change,
+        // so it's shortcut above.
+        boolean shouldShowAnimation =
+                mIsTabToGtsFadeAnimationEnabled && (wasOnGridTabSwitcher || isOnGridTabSwitcher());
+
+        if (!shouldShowAnimation) {
+            finishAlphaAnimator(shouldShowStartSurfaceToolbar);
+            return;
+        }
+
+        mPropertyModel.set(IS_VISIBLE, true);
+        mPropertyModel.set(ALPHA, shouldShowStartSurfaceToolbar ? 0.0f : 1.0f);
+        float targetAlpha = shouldShowStartSurfaceToolbar ? 1.0f : 0.0f;
+        final long duration = TopToolbarCoordinator.TAB_SWITCHER_MODE_GTS_ANIMATION_DURATION_MS;
+        mAlphaAnimator = PropertyModelAnimatorFactory.ofFloat(mPropertyModel, ALPHA, targetAlpha);
+        mAlphaAnimator.setDuration(duration);
+        mAlphaAnimator.setStartDelay(shouldShowStartSurfaceToolbar ? duration : 0);
+        mAlphaAnimator.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
+        mAlphaAnimator.addListener(new CancelAwareAnimatorListener() {
+            @Override
+            public void onEnd(Animator animation) {
+                finishAlphaAnimator(shouldShowStartSurfaceToolbar);
+            }
+        });
+        mAlphaAnimator.start();
+    }
+
+    private void finishAlphaAnimator(boolean shouldShowStartSurfaceToolbar) {
+        mPropertyModel.set(ALPHA, 1.0f);
+        mPropertyModel.set(IS_VISIBLE, shouldShowStartSurfaceToolbar);
+        mAlphaAnimator = null;
     }
 
     private void updateLogoVisibility() {

@@ -18,6 +18,7 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
@@ -64,7 +65,7 @@ public class StartSurfaceToolbarCoordinator {
             ObservableSupplier<Boolean> identityDiscStateSupplier, ThemeColorProvider provider,
             MenuButtonCoordinator menuButtonCoordinator,
             Supplier<ButtonData> identityDiscButtonSupplier, boolean isGridTabSwitcherEnabled,
-            boolean isTabGroupsAndroidContinuationEnabled,
+            boolean isTabToGtsAnimationEnabled, boolean isTabGroupsAndroidContinuationEnabled,
             BooleanSupplier isIncognitoModeEnabledSupplier,
             ObservableSupplier<Profile> profileSupplier,
             Callback<LoadUrlParams> logoClickedCallback, boolean isRefactorEnabled) {
@@ -81,6 +82,8 @@ public class StartSurfaceToolbarCoordinator {
                                 isGridTabSwitcherEnabled)
                         .build();
 
+        boolean isTabToGtsFadeAnimationEnabled = isTabToGtsAnimationEnabled
+                && !DeviceClassManager.enableAccessibilityLayout(mStub.getContext());
         mToolbarMediator = new StartSurfaceToolbarMediator(mPropertyModel,
                 (iphCommandBuilder)
                         -> {
@@ -93,8 +96,9 @@ public class StartSurfaceToolbarCoordinator {
                 StartSurfaceConfiguration.START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB.getValue(),
                 menuButtonCoordinator, identityDiscStateSupplier, identityDiscButtonSupplier,
                 StartSurfaceConfiguration.TAB_COUNT_BUTTON_ON_START_SURFACE.getValue(),
-                isTabGroupsAndroidContinuationEnabled, isIncognitoModeEnabledSupplier,
-                profileSupplier, logoClickedCallback, isRefactorEnabled);
+                isTabToGtsFadeAnimationEnabled, isTabGroupsAndroidContinuationEnabled,
+                isIncognitoModeEnabledSupplier, profileSupplier, logoClickedCallback,
+                isRefactorEnabled);
 
         mThemeColorProvider = provider;
         mMenuButtonCoordinator = menuButtonCoordinator;

@@ -504,7 +504,8 @@ public class StartSurfaceToolbarMediatorUnitTest {
                         -> mIdentityDiscController.getForStartSurface(
                                 mMediator.getOverviewModeStateForTesting(),
                                 mMediator.getLayoutTypeForTesting()),
-                shouldShowTabSwitcherButtonOnHomepage, isTabGroupsAndroidContinuationEnabled,
+                shouldShowTabSwitcherButtonOnHomepage, /*isTabToGtsFadeAnimationEnabled=*/false,
+                isTabGroupsAndroidContinuationEnabled,
                 ()
                         -> false,
                 /*profileSupplier=*/null, /*logoClickedCallback=*/null,

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.toolbar.top;
 
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.ACCESSIBILITY_ENABLED;
+import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.ALPHA;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.BUTTONS_CLICKABLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.GRID_TAB_SWITCHER_ENABLED;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IDENTITY_DISC_AT_START;
@@ -75,6 +76,8 @@ class StartSurfaceToolbarViewBinder {
             view.setNewTabViewTextVisibility(model.get(NEW_TAB_VIEW_TEXT_IS_VISIBLE));
         } else if (propertyKey == TRANSLATION_Y) {
             view.setTranslationY(model.get(TRANSLATION_Y));
+        } else if (propertyKey == ALPHA) {
+            view.setAlpha(model.get(ALPHA));
         } else if (propertyKey == TAB_SWITCHER_BUTTON_IS_VISIBLE) {
             view.setTabSwitcherButtonVisibility(model.get(TAB_SWITCHER_BUTTON_IS_VISIBLE));
         } else if (propertyKey == INCOGNITO_TAB_COUNT_PROVIDER) {
