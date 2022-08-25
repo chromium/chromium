@@ -54,17 +54,23 @@ div {
   <div id="right-top" class="snap"></div>
 </div>
 <script>
-test(() => {
+test(t => {
   const scroller = document.getElementById("scroller");
   scroller.scrollTo(0, 0);
-  assert_equals(scroller.scrollLeft, 0);
-  assert_equals(scroller.scrollTop, 0);
+  window.requestAnimationFrame(t.step_func_done(() => {
+    assert_equals(scroller.scrollLeft, 0);
+    assert_equals(scroller.scrollTop, 0);
+  }));
   scroller.scrollTo(500, 600);
-  assert_equals(scroller.scrollLeft, 0);
-  assert_equals(scroller.scrollTop, 800);
+  window.requestAnimationFrame(t.step_func_done(() => {
+    assert_equals(scroller.scrollLeft, 0);
+    assert_equals(scroller.scrollTop, 800);
+  }));
   scroller.scrollTo(600, 500);
-  assert_equals(scroller.scrollLeft, 800);
-  assert_equals(scroller.scrollTop, 0);
+  window.requestAnimationFrame(t.step_func_done(() => {
+    assert_equals(scroller.scrollLeft, 800);
+    assert_equals(scroller.scrollTop, 0);
+  }));
 }, 'Only snap to visible areas in the case where taking the closest snap point of \
   each axis does not snap to a visible area');
 </script>

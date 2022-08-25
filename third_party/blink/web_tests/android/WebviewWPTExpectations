@@ -1206,7 +1206,6 @@ crbug.com/1050754 external/wpt/css/css-scroll-snap/snap-after-relayout/changing-
 crbug.com/1050754 external/wpt/css/css-scroll-snap/snap-after-relayout/changing-scroll-snap-type.html [ Failure ]
 crbug.com/1050754 external/wpt/css/css-scroll-snap/snap-after-relayout/move-current-target.html [ Failure ]
 crbug.com/1050754 external/wpt/css/css-scroll-snap/snap-after-relayout/remove-current-target.html [ Failure ]
-crbug.com/1050754 external/wpt/css/css-scroll-snap/snap-after-relayout/snap-to-different-targets.html [ Failure ]
 crbug.com/1050754 external/wpt/css/css-scroll-snap/snap-area-capturing-add-scroll-container.html [ Failure ]
 crbug.com/1050754 external/wpt/css/css-scroll-snap/snap-area-capturing-remove-scroll-container.html [ Failure ]
 crbug.com/1050754 external/wpt/css/css-scroll-snap/snap-inline-block.html [ Failure Pass ]

@@ -74,7 +74,7 @@ const x_target = document.getElementById("x-axis-target");
 const y_target = document.getElementById("y-axis-target");
 const scroller = document.getElementById("scroller");
 
-test(() => {
+test(t => {
   // The scroller should be snapped to the two closest points on first layout.
   assert_equals(scroller.scrollTop, 200);
   assert_equals(scroller.scrollLeft, 200);
@@ -84,9 +84,11 @@ test(() => {
   // The style change makes it impossible for the scroller to snap to both
   // targets, but at least one of the targets should be preserved. The scroller
   // should then re-evaluate the snap point for the other axis.
-  const snapped_to_x = scroller.scrollLeft == 1000 && scroller.scrollTop == 300;
-  const snapped_to_y = scroller.scrollTop == 1000 && scroller.scrollLeft == 300;
-  assert_true(snapped_to_x || snapped_to_y);
+  window.requestAnimationFrame(t.step_func_done(() => {
+    const snapped_to_x = scroller.scrollLeft == 1000 && scroller.scrollTop == 300;
+    const snapped_to_y = scroller.scrollTop == 1000 && scroller.scrollLeft == 300;
+    assert_true(snapped_to_x || snapped_to_y);
+  }));
 }, "Scroller should snap to at least one of the targets if unable to snap to\
 both after a layout change.");
 </script>
