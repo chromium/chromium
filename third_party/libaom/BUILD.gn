@@ -36,6 +36,8 @@ if (current_cpu == "x86") {
   } else {
     cpu_arch_full = "arm"
   }
+} else if (current_cpu == "riscv64") {
+  cpu_arch_full = "generic"
 } else {
   cpu_arch_full = current_cpu
 }
