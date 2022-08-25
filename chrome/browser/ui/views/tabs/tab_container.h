@@ -46,6 +46,14 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
   virtual void SetActiveTab(absl::optional<size_t> prev_active_index,
                             absl::optional<size_t> new_active_index) = 0;
 
+  // Transfer the tab at `model_index` our of this container so it can be
+  // parented elsewhere. Unlike RemoveTab, this method does not close the tab,
+  // but it does remove it from the layout viewmodel.
+  // TODO(crbug.com/1346023): Find a better name for this once the full suite of
+  // ownership-transferring methods is in place.
+  [[nodiscard]] virtual std::unique_ptr<Tab> TransferTabOut(
+      int model_index) = 0;
+
   // `view` is no longer being dragged. This TabContainer takes ownership of it
   // in the view hierarchy.
   virtual void StoppedDraggingView(TabSlotView* view) = 0;

@@ -61,6 +61,17 @@ class FakeTabContainerController final : public TabContainerController {
     return tab_strip_controller_->GetActiveIndex();
   }
 
+  int NumPinnedTabsInModel() const override {
+    for (size_t i = 0;
+         i < static_cast<size_t>(tab_strip_controller_->GetCount()); ++i) {
+      if (!tab_strip_controller_->IsTabPinned(static_cast<int>(i)))
+        return static_cast<int>(i);
+    }
+
+    // All tabs are pinned.
+    return tab_strip_controller_->GetCount();
+  }
+
   void OnDropIndexUpdate(int index, bool drop_before) override {
     tab_strip_controller_->OnDropIndexUpdate(index, drop_before);
   }

@@ -284,6 +284,13 @@ void TabContainerImpl::SetActiveTab(absl::optional<size_t> prev_active_index,
   layout_helper_->SetActiveTab(prev_active_index, new_active_index);
 }
 
+std::unique_ptr<Tab> TabContainerImpl::TransferTabOut(int model_index) {
+  Tab* tab = GetTabAtModelIndex(model_index);
+  RemoveTabFromViewModel(model_index);
+  // TODO(1346023): Properly animate the other tabs.
+  return RemoveChildViewT(tab);
+}
+
 void TabContainerImpl::StoppedDraggingView(TabSlotView* view) {
   AddChildView(view);
   Tab* tab = views::AsViewClass<Tab>(view);

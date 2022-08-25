@@ -8676,6 +8676,7 @@ test("unit_tests") {
       "../browser/ui/views/side_panel/user_note/user_note_ui_coordinator_unittest.cc",
       "../browser/ui/views/tab_contents/chrome_web_contents_view_delegate_views_unittest.cc",
       "../browser/ui/views/tabs/color_picker_view_unittest.cc",
+      "../browser/ui/views/tabs/compound_tab_container_unittest.cc",
       "../browser/ui/views/tabs/fake_base_tab_strip_controller.cc",
       "../browser/ui/views/tabs/fake_base_tab_strip_controller.h",
       "../browser/ui/views/tabs/fake_tab_slot_controller.cc",

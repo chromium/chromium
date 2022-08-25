@@ -2479,6 +2479,11 @@ const char kScrollableTabStripName[] = "Tab Scrolling";
 const char kScrollableTabStripDescription[] =
     "Enables tab strip to scroll left and right when full.";
 
+const char kSplitTabStripName[] = "Split TabStrip";
+const char kSplitTabStripDescription[] =
+    "Splits pinned and unpinned tabs into separate TabStrips under the hood. "
+    "Pure refactoring, no user-visible behavioral changes are included.";
+
 const char kScrollUnificationName[] = "Scroll Unification";
 const char kScrollUnificationDescription[] =
     "Refactoring project that eliminates scroll handling code from Blink. "

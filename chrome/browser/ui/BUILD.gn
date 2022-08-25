@@ -4958,6 +4958,8 @@ static_library("ui") {
       "views/tabs/browser_tab_strip_controller.h",
       "views/tabs/color_picker_view.cc",
       "views/tabs/color_picker_view.h",
+      "views/tabs/compound_tab_container.cc",
+      "views/tabs/compound_tab_container.h",
       "views/tabs/glow_hover_controller.cc",
       "views/tabs/glow_hover_controller.h",
       "views/tabs/new_tab_button.cc",

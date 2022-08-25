@@ -6017,6 +6017,14 @@
     "expiry_milestone": 100
   },
   {
+    "name": "split-tabstrip",
+    "owners": [
+      "chrome-desktop-ui-sea@google.com",
+      "tbergquist"
+    ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "start-surface",
     "owners": [ "gogerald", "bling-flags@google.com" ],
     "expiry_milestone": 94

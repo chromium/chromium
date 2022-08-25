@@ -74,6 +74,7 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "compound_tab_container.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/pathops/SkPathOps.h"
@@ -127,6 +128,19 @@ namespace {
 ui::mojom::DragEventSource EventSourceFromEvent(const ui::LocatedEvent& event) {
   return event.IsGestureEvent() ? ui::mojom::DragEventSource::kTouch
                                 : ui::mojom::DragEventSource::kMouse;
+}
+
+std::unique_ptr<TabContainer> MakeTabContainer(
+    TabStrip* tab_strip,
+    TabHoverCardController* hover_card_controller,
+    TabDragContext* drag_context) {
+  if (base::FeatureList::IsEnabled(features::kSplitTabStrip)) {
+    return std::make_unique<CompoundTabContainer>(
+        raw_ref<TabContainerController>(*tab_strip), hover_card_controller,
+        drag_context, *tab_strip, tab_strip);
+  }
+  return std::make_unique<TabContainerImpl>(
+      *tab_strip, hover_card_controller, drag_context, *tab_strip, tab_strip);
 }
 
 }  // namespace
@@ -873,13 +887,11 @@ TabStrip::TabStrip(std::unique_ptr<TabStripController> controller)
     : controller_(std::move(controller)),
       hover_card_controller_(std::make_unique<TabHoverCardController>(this)),
       drag_context_(*AddChildView(std::make_unique<TabDragContextImpl>(this))),
-      tab_container_(*AddChildViewAt(
-          std::make_unique<TabContainerImpl>(*this,
-                                             hover_card_controller_.get(),
-                                             &*drag_context_,
-                                             *this,
-                                             this),
-          0)) {
+      tab_container_(
+          *AddChildViewAt(MakeTabContainer(this,
+                                           hover_card_controller_.get(),
+                                           base::to_address(drag_context_)),
+                          0)) {
   // TODO(pbos): This is probably incorrect, the background of individual tabs
   // depend on their selected state. This should probably be pushed down into
   // tabs.
@@ -1356,6 +1368,16 @@ bool TabStrip::IsValidModelIndex(int index) const {
 
 int TabStrip::GetActiveIndex() const {
   return controller_->GetActiveIndex();
+}
+
+int TabStrip::NumPinnedTabsInModel() const {
+  for (size_t i = 0; i < static_cast<size_t>(controller_->GetCount()); ++i) {
+    if (!controller_->IsTabPinned(static_cast<int>(i)))
+      return static_cast<int>(i);
+  }
+
+  // All tabs are pinned.
+  return controller_->GetCount();
 }
 
 void TabStrip::OnDropIndexUpdate(int index, bool drop_before) {

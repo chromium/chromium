@@ -1389,6 +1389,9 @@ extern const char kScrollableTabStripFlagId[];
 extern const char kScrollableTabStripName[];
 extern const char kScrollableTabStripDescription[];
 
+extern const char kSplitTabStripName[];
+extern const char kSplitTabStripDescription[];
+
 extern const char kScrollUnificationName[];
 extern const char kScrollUnificationDescription[];
 

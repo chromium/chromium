@@ -5611,6 +5611,10 @@ const FeatureEntry kFeatureEntries[] = {
                                     kTabScrollingVariations,
                                     "TabScrolling")},
 
+    {"split-tabstrip", flag_descriptions::kSplitTabStripName,
+     flag_descriptions::kSplitTabStripDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kSplitTabStrip)},
+
     {"side-panel-improved-clobbering",
      flag_descriptions::kSidePanelImprovedClobberingName,
      flag_descriptions::kSidePanelImprovedClobberingDescription, kOsDesktop,

@@ -25,6 +25,11 @@ class TabContainerController {
   // Returns the index of the active tab.
   virtual int GetActiveIndex() const = 0;
 
+  // Returns the number of pinned tabs in the model. Note that this can be
+  // different from the number of pinned tabs in the TabStrip view (and its
+  // associated classes) when a tab is being opened, closed, pinned or unpinned.
+  virtual int NumPinnedTabsInModel() const = 0;
+
   // Notifies controller of a drop index update.
   virtual void OnDropIndexUpdate(int index, bool drop_before) = 0;
 

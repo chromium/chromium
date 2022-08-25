@@ -244,6 +244,7 @@ class TabStrip : public views::View,
   // TabContainerController:
   bool IsValidModelIndex(int index) const override;
   int GetActiveIndex() const override;
+  int NumPinnedTabsInModel() const override;
   void OnDropIndexUpdate(int index, bool drop_before) override;
   absl::optional<int> GetFirstTabInGroup(
       const tab_groups::TabGroupId& group) const override;

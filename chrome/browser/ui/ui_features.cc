@@ -173,6 +173,11 @@ const base::Feature kScrollableTabStrip{"ScrollableTabStrip",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 const char kMinimumTabWidthFeatureParameterName[] = "minTabWidth";
 
+// Splits pinned and unpinned tabs into separate TabStrips.
+// https://crbug.com/1346019
+const base::Feature kSplitTabStrip("SplitTabStrip",
+                                   base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Directly controls the "new" badge (as opposed to old "master switch"; see
 // https://crbug.com/1169907 for master switch deprecation and
 // https://crbug.com/968587 for the feature itself)
