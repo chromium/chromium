@@ -319,17 +319,27 @@ TEST(MojoSharedBufferVideoFrameTest, I420SharedMemoryFrameToMojoFrame) {
       data + 4, data + 8, base::TimeDelta());
   frame->BackWithSharedMemory(&mapped_region.region);
 
-  auto mojo_frame = MojoSharedBufferVideoFrame::CreateFromYUVFrame(*frame);
+  size_t num_planes = VideoFrame::NumPlanes(frame->format());
+  std::vector<uint32_t> offsets(num_planes);
+  std::vector<int32_t> strides(num_planes);
+  for (size_t i = 0; i < num_planes; ++i) {
+    strides[i] = frame->stride(i);
+    offsets[i] =
+        base::saturated_cast<uint32_t>(frame->data(i) - frame->data(0));
+  }
+
+  auto mojo_frame = MojoSharedBufferVideoFrame::Create(
+      frame->format(), frame->coded_size(), frame->visible_rect(),
+      frame->natural_size(), frame->shm_region()->Duplicate(), offsets, strides,
+      frame->timestamp());
   EXPECT_TRUE(mojo_frame);
 
-  const size_t y_stride = frame->stride(VideoFrame::kYPlane);
-  const size_t u_stride = frame->stride(VideoFrame::kUPlane);
-
-  // Verifies mapped size and offset.
-  EXPECT_EQ(mojo_frame->shmem_region().GetSize(),
-            static_cast<size_t>(3 * stride));
-  EXPECT_EQ(mojo_frame->PlaneOffset(VideoFrame::kYPlane), 0u);
-  EXPECT_EQ(mojo_frame->PlaneOffset(VideoFrame::kUPlane), y_stride);
-  EXPECT_EQ(mojo_frame->PlaneOffset(VideoFrame::kVPlane), y_stride + u_stride);
+  EXPECT_EQ(mojo_frame->shmem_region().GetSize(), kAllocationSize);
+  EXPECT_EQ(mojo_frame->PlaneOffset(VideoFrame::kYPlane),
+            offsets[VideoFrame::kYPlane]);
+  EXPECT_EQ(mojo_frame->PlaneOffset(VideoFrame::kUPlane),
+            offsets[VideoFrame::kUPlane]);
+  EXPECT_EQ(mojo_frame->PlaneOffset(VideoFrame::kVPlane),
+            offsets[VideoFrame::kVPlane]);
 }
 }  // namespace media

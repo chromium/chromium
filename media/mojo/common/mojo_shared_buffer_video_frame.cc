@@ -82,6 +82,8 @@ MojoSharedBufferVideoFrame::CreateDefaultForTesting(
 
 scoped_refptr<MojoSharedBufferVideoFrame>
 MojoSharedBufferVideoFrame::CreateFromYUVFrame(VideoFrame& frame) {
+  // Use Create() for STORAGE_SHMEM VideoFrame.
+  DCHECK_NE(frame.storage_type(), VideoFrame::STORAGE_SHMEM);
   size_t num_planes = VideoFrame::NumPlanes(frame.format());
   DCHECK_LE(num_planes, 3u);
   DCHECK_GE(num_planes, 2u);
@@ -238,7 +240,7 @@ MojoSharedBufferVideoFrame::MojoSharedBufferVideoFrame(
 MojoSharedBufferVideoFrame::~MojoSharedBufferVideoFrame() = default;
 
 bool MojoSharedBufferVideoFrame::Init(base::span<const uint32_t> offsets) {
-  // TODO(hiroh): Don't map in a client side when sending
+  // TODO(b/241362231): Don't map in a client side when sending
   // MojoSharedBufferVideoFrame to a service process.
   DCHECK(!mapping_.IsValid());
   mapping_ = region_.Map();
