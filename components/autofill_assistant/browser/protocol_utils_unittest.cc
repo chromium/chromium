@@ -48,6 +48,36 @@ class ProtocolUtilsTest : public testing::Test {
   ~ProtocolUtilsTest() override {}
 
   ClientContextProto client_context_proto_;
+
+ protected:
+  std::unique_ptr<GetTriggerScriptsResponseProto>
+  getTriggerScriptResponseProto() {
+    auto proto = std::make_unique<GetTriggerScriptsResponseProto>();
+    proto->add_additional_allowed_domains("example.com");
+    proto->add_additional_allowed_domains("other-example.com");
+
+    proto->set_trigger_condition_check_interval_ms(2000);
+    proto->set_trigger_condition_timeout_ms(500000);
+
+    auto* param_1 = proto->add_script_parameters();
+    param_1->set_name("param_1");
+    param_1->set_value("value_1");
+    auto* param_2 = proto->add_script_parameters();
+    param_2->set_name("param_2");
+    param_2->set_value("value_2");
+
+    TriggerScriptProto trigger_script_1;
+    *trigger_script_1.mutable_trigger_condition()->mutable_selector() =
+        ToSelectorProto("fake_element_1");
+    trigger_script_1.mutable_user_interface()->set_ui_timeout_ms(4000);
+    trigger_script_1.mutable_user_interface()->set_scroll_to_hide(false);
+    TriggerScriptProto trigger_script_2;
+
+    *proto->add_trigger_scripts() = trigger_script_1;
+    *proto->add_trigger_scripts() = trigger_script_2;
+
+    return proto;
+  }
 };
 
 TEST_F(ProtocolUtilsTest, ScriptMissingPath) {
@@ -171,6 +201,33 @@ TEST_F(ProtocolUtilsTest, CreateCapabilitiesByHashRequest) {
       request.ParseFromString(ProtocolUtils::CreateCapabilitiesByHashRequest(
           16U, {13ULL, 17ULL}, client_context_proto_, parameters)));
 
+  // Note: We can only send the following approved fields on the client_context:
+  ClientContextProto client_context;
+  client_context.set_locale(client_context_proto_.locale());
+  client_context.set_country(client_context_proto_.country());
+  client_context.mutable_chrome()->set_chrome_version(
+      client_context_proto_.chrome().chrome_version());
+  client_context.set_platform_type(ClientContextProto::PLATFORM_TYPE_ANDROID);
+  EXPECT_EQ(client_context, request.client_context());
+
+  EXPECT_EQ(request.hash_prefix_length(), 16U);
+  EXPECT_THAT(request.hash_prefix(), ElementsAre(13ULL, 17ULL));
+  EXPECT_THAT(
+      request.script_parameters(),
+      UnorderedElementsAreArray(base::flat_map<std::string, std::string>{
+          {"INTENT", "DUMMY_INTENT"}}));
+}
+
+TEST_F(ProtocolUtilsTest, CreateTriggerScriptsByHashRequest) {
+  ScriptParameters parameters = {
+      {{"key_a", "value_a"}, {"INTENT", "DUMMY_INTENT"}}};
+  GetTriggerScriptsByHashPrefixRequestProto request;
+  EXPECT_TRUE(
+      request.ParseFromString(ProtocolUtils::CreateTriggerScriptsByHashRequest(
+          16U, {13ULL, 17ULL}, client_context_proto_, parameters)));
+
+  LOG(INFO) << "ProtocolUtilsTest: request = " << request.ShortDebugString()
+            << "\n";
   // Note: We can only send the following approved fields on the client_context:
   ClientContextProto client_context;
   client_context.set_locale(client_context_proto_.locale());
@@ -420,6 +477,40 @@ TEST_F(ProtocolUtilsTest, ParseTriggerScriptsValid) {
                       /* only_non_sensitive_allowlisted = */ false),
               ElementsAre(std::make_pair("param_1", "value_1"),
                           std::make_pair("param_2", "value_2")));
+}
+
+TEST_F(ProtocolUtilsTest, ParseTriggerScriptsByHashPrefixValid) {
+  GetTriggerScriptsByHashPrefixResponseProto proto;
+  // Add first GetTriggerScriptsResponseProto
+  auto* matchInfoProto1 = proto.add_match_info();
+  std::unique_ptr<GetTriggerScriptsResponseProto> triggerScriptResponse =
+      getTriggerScriptResponseProto();
+  matchInfoProto1->set_domain("https://adidas.com");
+  matchInfoProto1->mutable_trigger_scripts_response()->add_trigger_scripts();
+
+  // Add second GetTriggerScriptsResponseProto
+  auto* matchInfoProto2 = proto.add_match_info();
+  std::unique_ptr<GetTriggerScriptsResponseProto> triggerScriptResponse2 =
+      getTriggerScriptResponseProto();
+  matchInfoProto2->set_domain("https://nike.com");
+  matchInfoProto2->mutable_trigger_scripts_response()->add_trigger_scripts();
+
+  std::string proto_str;
+  proto.SerializeToString(&proto_str);
+
+  std::vector<std::pair<std::string, std::string>> domainScripts;
+  EXPECT_TRUE(ProtocolUtils::ParseTriggerScriptsByHashPrefix(proto_str,
+                                                             &domainScripts));
+  EXPECT_THAT(domainScripts, SizeIs(2));
+  EXPECT_EQ(domainScripts[0].first, "https://adidas.com");
+  EXPECT_EQ(domainScripts[1].first, "https://nike.com");
+}
+
+TEST_F(ProtocolUtilsTest, ParseTriggerScriptsByHashPrefixInvalid) {
+  std::vector<std::pair<std::string, std::string>> domainScripts;
+  EXPECT_FALSE(ProtocolUtils::ParseTriggerScriptsByHashPrefix("invalid",
+                                                              &domainScripts));
+  EXPECT_TRUE(domainScripts.empty());
 }
 
 TEST_F(ProtocolUtilsTest, TurnOffResizeVisualViewport) {

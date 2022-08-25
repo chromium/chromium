@@ -142,6 +142,11 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
       int http_status,
       const std::string& response,
       const ServiceRequestSender::ResponseInfo& response_info);
+  void OnGetTriggerScriptsByHashPrefix(
+      int http_status,
+      const std::string& response,
+      const ServiceRequestSender::ResponseInfo& response_info);
+  bool ShouldGetTriggerScriptsByHashPrefix();
   void RegisterExperimentSyntheticFieldTrial(
       const ScriptParameters& parameters) const;
   GURL GetCurrentURL() const;

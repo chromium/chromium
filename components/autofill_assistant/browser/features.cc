@@ -77,6 +77,13 @@ const base::Feature kAutofillAssistantGetPaymentsClientToken{
     "AutofillAssistantGetPaymentsClientToken",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Whether Autofill Assistant should enable getting the list of trigger scripts
+// from the backend in a privacy sensitive way. This would enable in-CCT
+// triggering for users who have "Make Searches and Browsing Better" disabled.
+const base::Feature kAutofillAssistantGetTriggerScriptsByHashPrefix{
+    "AutofillAssistantGetTriggerScriptsByHashPrefix",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Whether Autofill Assistant should enable in-CCT triggering, i.e., requesting
 // and showing trigger scripts in CCTs without explicit user request. This
 // requires also specifying valid URL heuristics via

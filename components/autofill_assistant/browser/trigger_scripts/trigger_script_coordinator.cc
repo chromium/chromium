@@ -10,7 +10,9 @@
 #include "components/autofill_assistant/browser/client_context.h"
 #include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/protocol_utils.h"
+#include "components/autofill_assistant/browser/public/autofill_assistant.h"
 #include "components/autofill_assistant/browser/script_parameters.h"
+#include "components/autofill_assistant/browser/service/service_request_sender.h"
 #include "components/autofill_assistant/browser/starter_platform_delegate.h"
 #include "components/autofill_assistant/browser/url_utils.h"
 #include "components/version_info/version_info.h"
@@ -18,6 +20,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
 #include "net/http/http_status_code.h"
+#include "url/origin.h"
 
 namespace {
 
@@ -25,6 +28,10 @@ bool IsDialogOnboardingEnabled() {
   return base::FeatureList::IsEnabled(
       autofill_assistant::features::kAutofillAssistantDialogOnboarding);
 }
+
+// Number of leading bits of the domain url hashes to send to the server.
+const uint32_t kHashPrefixSize = 15;
+
 }  // namespace
 
 namespace autofill_assistant {
@@ -52,6 +59,17 @@ TriggerScriptCoordinator::TriggerScriptCoordinator(
 
 TriggerScriptCoordinator::~TriggerScriptCoordinator() = default;
 
+// |GetTriggerScriptsByHashPrefix| is only triggered for non-MSBB users
+// who have |kAutofillAssistantGetTriggerScriptsByHashPrefix| enabled.
+bool TriggerScriptCoordinator::ShouldGetTriggerScriptsByHashPrefix() {
+  return !starter_delegate_->GetCommonDependencies()
+              ->GetMakeSearchesAndBrowsingBetterEnabled(
+                  web_contents()->GetBrowserContext()) &&
+         base::FeatureList::IsEnabled(
+             autofill_assistant::features::
+                 kAutofillAssistantGetTriggerScriptsByHashPrefix);
+}
+
 void TriggerScriptCoordinator::Start(
     const GURL& deeplink_url,
     std::unique_ptr<TriggerContext> trigger_context,
@@ -75,15 +93,62 @@ void TriggerScriptCoordinator::Start(
   client_context.set_country(
       starter_delegate_->GetCommonDependencies()->GetCountryCode());
 
-  request_sender_->SendRequest(
-      get_trigger_scripts_server_,
-      ProtocolUtils::CreateGetTriggerScriptsRequest(
-          deeplink_url_, client_context,
-          trigger_context_->GetScriptParameters()),
-      ServiceRequestSender::AuthMode::API_KEY,
-      base::BindOnce(&TriggerScriptCoordinator::OnGetTriggerScripts,
-                     weak_ptr_factory_.GetWeakPtr()),
-      autofill_assistant::RpcType::GET_TRIGGER_SCRIPTS);
+  if (ShouldGetTriggerScriptsByHashPrefix()) {
+    uint64_t hash_prefix = AutofillAssistant::GetHashPrefix(
+        kHashPrefixSize, url::Origin::Create(GetCurrentURL()));
+
+    request_sender_->SendRequest(
+        get_trigger_scripts_server_,
+        ProtocolUtils::CreateTriggerScriptsByHashRequest(
+            kHashPrefixSize, {hash_prefix}, client_context,
+            trigger_context_->GetScriptParameters()),
+        ServiceRequestSender::AuthMode::API_KEY,
+        base::BindOnce(
+            &TriggerScriptCoordinator::OnGetTriggerScriptsByHashPrefix,
+            weak_ptr_factory_.GetWeakPtr()),
+        RpcType::GET_TRIGGER_SCRIPTS_BY_HASH_PREFIX);
+  } else {
+    request_sender_->SendRequest(
+        get_trigger_scripts_server_,
+        ProtocolUtils::CreateGetTriggerScriptsRequest(
+            deeplink_url_, client_context,
+            trigger_context_->GetScriptParameters()),
+        ServiceRequestSender::AuthMode::API_KEY,
+        base::BindOnce(&TriggerScriptCoordinator::OnGetTriggerScripts,
+                       weak_ptr_factory_.GetWeakPtr()),
+        autofill_assistant::RpcType::GET_TRIGGER_SCRIPTS);
+  }
+}
+
+void TriggerScriptCoordinator::OnGetTriggerScriptsByHashPrefix(
+    int http_status,
+    const std::string& response,
+    const ServiceRequestSender::ResponseInfo& response_info) {
+  if (http_status != net::HTTP_OK) {
+    Stop(Metrics::TriggerScriptFinishedState::GET_ACTIONS_FAILED);
+    return;
+  }
+
+  std::vector<std::pair<std::string, std::string>> domain_trigger_scripts;
+  if (!ProtocolUtils::ParseTriggerScriptsByHashPrefix(
+          response, &domain_trigger_scripts)) {
+    // TODO(b/242039152) record specific metric
+    Stop(Metrics::TriggerScriptFinishedState::GET_ACTIONS_PARSE_ERROR);
+    return;
+  }
+
+  // Check if any of the returned domains matches the current URL that the
+  // user is on. If there is a match, call the regular |OnGetTriggerScripts|.
+  url::Origin current_url = url::Origin::Create(deeplink_url_);
+  for (const auto& [matched_domain, trigger_script] : domain_trigger_scripts) {
+    if (current_url != url::Origin::Create(GURL(matched_domain))) {
+      continue;
+    }
+    OnGetTriggerScripts(http_status, trigger_script, response_info);
+    return;
+  }
+
+  Stop(Metrics::TriggerScriptFinishedState::NO_TRIGGER_SCRIPT_AVAILABLE);
 }
 
 void TriggerScriptCoordinator::OnGetTriggerScripts(

@@ -46,6 +46,7 @@ namespace {
 
 using features::kAutofillAssistant;
 using features::kAutofillAssistantChromeEntry;
+using features::kAutofillAssistantGetTriggerScriptsByHashPrefix;
 using features::kAutofillAssistantLoadDFMForTriggerScripts;
 using features::kAutofillAssistantProactiveHelp;
 using ::testing::Eq;
@@ -57,9 +58,10 @@ struct TestFeatureConfig {
 };
 
 // Shorthand for the full set of relevant features.
-const std::array<base::Feature, 4> kFullFeatureSet = {
+const std::array<base::Feature, 5> kFullFeatureSet = {
     kAutofillAssistant, kAutofillAssistantProactiveHelp,
-    kAutofillAssistantChromeEntry, kAutofillAssistantLoadDFMForTriggerScripts};
+    kAutofillAssistantChromeEntry, kAutofillAssistantLoadDFMForTriggerScripts,
+    kAutofillAssistantGetTriggerScriptsByHashPrefix};
 
 // Common script parameters to reuse.
 const base::flat_map<std::string, std::string> kRegularScript = {
@@ -160,6 +162,16 @@ class StartupUtilParametrizedTest
 
   void TearDown() override { scoped_feature_list_.reset(); }
 
+  bool IsAnyFeatureSetEnabled(
+      const std::vector<std::vector<base::Feature>>& feature_sets) {
+    for (const auto& features : feature_sets) {
+      if (AreFeaturesEnabled(features)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   bool AreFeaturesEnabled(const std::vector<base::Feature>& features) const {
     for (const auto& feature : features) {
       if (!IsFeatureEnabled(feature)) {
@@ -246,7 +258,12 @@ TEST_P(StartupUtilParametrizedTest, StartRpcTriggerScript) {
               ? StartupMode::START_RPC_TRIGGER_SCRIPT
               : StartupMode::FEATURE_DISABLED));
 
-  // CCT, MSBB is off.
+  // CCT, MSBB is off, but kAutofillAssistantGetTriggerScriptsByHashPrefix might
+  // be enabled.
+  StartupMode expectedStartupMode =
+      IsFeatureEnabled(kAutofillAssistantGetTriggerScriptsByHashPrefix)
+          ? StartupMode::START_RPC_TRIGGER_SCRIPT
+          : StartupMode::SETTING_DISABLED;
   EXPECT_THAT(
       StartupUtil().ChooseStartupModeForIntent(
           TriggerContext{
@@ -257,7 +274,7 @@ TEST_P(StartupUtilParametrizedTest, StartRpcTriggerScript) {
            .feature_module_installed = true}),
       MatchingStartupMode(AreFeaturesEnabled({kAutofillAssistant,
                                               kAutofillAssistantProactiveHelp})
-                              ? StartupMode::SETTING_DISABLED
+                              ? expectedStartupMode
                               : StartupMode::FEATURE_DISABLED));
 
   // CCT, Proactive help is off.

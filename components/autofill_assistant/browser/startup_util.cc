@@ -17,6 +17,8 @@ namespace autofill_assistant {
 using autofill_assistant::features::kAutofillAssistant;
 using autofill_assistant::features::kAutofillAssistantChromeEntry;
 using autofill_assistant::features::kAutofillAssistantDirectActions;
+using autofill_assistant::features::
+    kAutofillAssistantGetTriggerScriptsByHashPrefix;
 using autofill_assistant::features::kAutofillAssistantLoadDFMForTriggerScripts;
 using autofill_assistant::features::kAutofillAssistantProactiveHelp;
 
@@ -81,7 +83,9 @@ StartupMode StartupUtil::ChooseStartupModeForIntent(
   }
 
   DCHECK(script_parameters.GetRequestsTriggerScript().value_or(false));
-  if (!options.msbb_setting_enabled) {
+  if (!options.msbb_setting_enabled &&
+      !base::FeatureList::IsEnabled(
+          kAutofillAssistantGetTriggerScriptsByHashPrefix)) {
     VLOG(1) << "Invalid Autofill Assistant intent: REQUEST_TRIGGER_SCRIPT "
                "requires MSBB, but was turned off.";
     return StartupMode::SETTING_DISABLED;

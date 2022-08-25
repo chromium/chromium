@@ -24,6 +24,7 @@ extern const base::Feature kAutofillAssistantDisableProactiveHelpTiedToMSBB;
 extern const base::Feature kAutofillAssistantFullJsFlowStackTraces;
 extern const base::Feature kAutofillAssistantFullJsSnippetStackTraces;
 extern const base::Feature kAutofillAssistantGetPaymentsClientToken;
+extern const base::Feature kAutofillAssistantGetTriggerScriptsByHashPrefix;
 extern const base::Feature kAutofillAssistantInCCTTriggering;
 extern const base::Feature kAutofillAssistantInTabTriggering;
 extern const base::Feature kAutofillAssistantFeedbackChip;

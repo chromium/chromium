@@ -104,19 +104,8 @@ std::string ProtocolUtils::CreateGetScriptsRequest(
 }
 
 // static
-std::string ProtocolUtils::CreateCapabilitiesByHashRequest(
-    uint32_t hash_prefix_length,
-    const std::vector<uint64_t>& hash_prefix,
-    const ClientContextProto& client_context,
-    const ScriptParameters& script_parameters) {
-  GetCapabilitiesByHashPrefixRequestProto request;
-  request.set_hash_prefix_length(hash_prefix_length);
-  for (uint64_t prefix : hash_prefix) {
-    request.add_hash_prefix(prefix);
-  }
-  *request.mutable_script_parameters() =
-      script_parameters.ToProto(/* only_non_sensitive_allowlisted = */ true);
-
+ClientContextProto ProtocolUtils::CreateNonSensitiveContext(
+    const ClientContextProto& client_context) {
   ClientContextProto non_sensitive_context;
   if (client_context.has_locale()) {
     non_sensitive_context.set_locale(client_context.locale());
@@ -131,7 +120,44 @@ std::string ProtocolUtils::CreateCapabilitiesByHashRequest(
   if (client_context.has_platform_type()) {
     non_sensitive_context.set_platform_type(client_context.platform_type());
   }
-  *request.mutable_client_context() = non_sensitive_context;
+  return non_sensitive_context;
+}
+
+// static
+std::string ProtocolUtils::CreateCapabilitiesByHashRequest(
+    uint32_t hash_prefix_length,
+    const std::vector<uint64_t>& hash_prefix,
+    const ClientContextProto& client_context,
+    const ScriptParameters& script_parameters) {
+  GetCapabilitiesByHashPrefixRequestProto request;
+  request.set_hash_prefix_length(hash_prefix_length);
+  for (uint64_t prefix : hash_prefix) {
+    request.add_hash_prefix(prefix);
+  }
+  *request.mutable_script_parameters() =
+      script_parameters.ToProto(/* only_non_sensitive_allowlisted = */ true);
+  *request.mutable_client_context() = CreateNonSensitiveContext(client_context);
+
+  std::string serialized_request;
+  bool success = request.SerializeToString(&serialized_request);
+  DCHECK(success);
+  return serialized_request;
+}
+
+// static
+std::string ProtocolUtils::CreateTriggerScriptsByHashRequest(
+    uint32_t hash_prefix_length,
+    const std::vector<uint64_t>& hash_prefix,
+    const ClientContextProto& client_context,
+    const ScriptParameters& script_parameters) {
+  GetTriggerScriptsByHashPrefixRequestProto request;
+  request.set_hash_prefix_length(hash_prefix_length);
+  for (uint64_t prefix : hash_prefix) {
+    request.add_hash_prefix(prefix);
+  }
+  *request.mutable_script_parameters() =
+      script_parameters.ToProto(/* only_non_sensitive_allowlisted */ true);
+  *request.mutable_client_context() = CreateNonSensitiveContext(client_context);
 
   std::string serialized_request;
   bool success = request.SerializeToString(&serialized_request);
@@ -956,6 +982,26 @@ bool ProtocolUtils::ParseTriggerScripts(
     *script_parameters = std::make_unique<ScriptParameters>(
         base::flat_map<std::string, std::string>(std::move(parameters)));
   }
+  return true;
+}
+
+// static
+bool ProtocolUtils::ParseTriggerScriptsByHashPrefix(
+    const std::string& response,
+    std::vector<std::pair<std::string, std::string>>* domainScripts) {
+  DCHECK(domainScripts);
+
+  GetTriggerScriptsByHashPrefixResponseProto response_proto;
+  if (!response_proto.ParseFromString(response)) {
+    LOG(ERROR) << "Failed to parse trigger scripts by hash prefix response";
+    return false;
+  }
+
+  for (const auto& match : response_proto.match_info()) {
+    domainScripts->emplace_back(
+        match.domain(), match.trigger_scripts_response().SerializeAsString());
+  }
+
   return true;
 }
 
