@@ -21,6 +21,8 @@ class ASH_EXPORT SaveDeskTemplateButtonContainer : public views::BoxLayoutView {
   SaveDeskTemplateButtonContainer& operator=(
       const SaveDeskTemplateButtonContainer&) = delete;
 
+  ~SaveDeskTemplateButtonContainer() override;
+
   SaveDeskTemplateButton* save_desk_as_template_button() {
     return save_desk_as_template_button_;
   }
@@ -37,11 +39,19 @@ class ASH_EXPORT SaveDeskTemplateButtonContainer : public views::BoxLayoutView {
       int unsupported_window_count,
       int window_count);
 
+  void UpdateButtonContainerForAccessibilityState();
+
  private:
+  class SaveDeskTemplateButtonContainerAccessibilityObserver;
+
   SaveDeskTemplateButton* GetButtonFromType(SaveDeskTemplateButton::Type type);
 
   SaveDeskTemplateButton* save_desk_as_template_button_ = nullptr;
   SaveDeskTemplateButton* save_desk_for_later_button_ = nullptr;
+
+  // Object responsible for observing accessibility setting changes.
+  std::unique_ptr<SaveDeskTemplateButtonContainerAccessibilityObserver>
+      accessibility_observer_;
 };
 
 }  // namespace ash

@@ -290,8 +290,6 @@ std::unique_ptr<views::Widget> CreateSaveDeskButtonContainerWidget(
   views::Widget::InitParams params;
   params.type = views::Widget::InitParams::TYPE_POPUP;
   // If Chromevox is on, let the widget be activatable.
-  // TODO(crbug.com/1354295): Fix focus ring when turning on Chromevox during
-  // overview.
   const bool spoken_feedback_enabled =
       Shell::Get()->accessibility_controller()->spoken_feedback().enabled();
   if (spoken_feedback_enabled)

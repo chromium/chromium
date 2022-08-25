@@ -6,12 +6,17 @@
 
 #include <array>
 
+#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_observer.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "base/check.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 
 namespace ash {
 
@@ -99,6 +104,39 @@ std::pair<bool, int> GetEnableStateAndTooltipIDForButtonType(
 
 }  // namespace
 
+class SaveDeskTemplateButtonContainer::
+    SaveDeskTemplateButtonContainerAccessibilityObserver
+    : public AccessibilityObserver {
+ public:
+  explicit SaveDeskTemplateButtonContainerAccessibilityObserver(
+      const base::RepeatingClosure& accessibility_state_changed_callback)
+      : accessibility_state_changed_callback_(
+            accessibility_state_changed_callback) {
+    observation_.Observe(Shell::Get()->accessibility_controller());
+  }
+
+  SaveDeskTemplateButtonContainerAccessibilityObserver(
+      const SaveDeskTemplateButtonContainerAccessibilityObserver& other) =
+      delete;
+  SaveDeskTemplateButtonContainerAccessibilityObserver& operator=(
+      const SaveDeskTemplateButtonContainerAccessibilityObserver& other) =
+      delete;
+
+  ~SaveDeskTemplateButtonContainerAccessibilityObserver() override = default;
+
+  // AccessibilityObserver:
+  void OnAccessibilityStatusChanged() override {
+    accessibility_state_changed_callback_.Run();
+  }
+  void OnAccessibilityControllerShutdown() override { observation_.Reset(); }
+
+ private:
+  base::RepeatingClosure accessibility_state_changed_callback_;
+
+  base::ScopedObservation<AccessibilityControllerImpl, AccessibilityObserver>
+      observation_{this};
+};
+
 SaveDeskTemplateButtonContainer::SaveDeskTemplateButtonContainer(
     base::RepeatingClosure save_as_template_callback,
     base::RepeatingClosure save_for_later_callback) {
@@ -126,7 +164,15 @@ SaveDeskTemplateButtonContainer::SaveDeskTemplateButtonContainer(
             SaveDeskTemplateButton::Type::kSaveForLater,
             &kSaveDeskForLaterIcon));
   }
+
+  accessibility_observer_ =
+      std::make_unique<SaveDeskTemplateButtonContainerAccessibilityObserver>(
+          base::BindRepeating(&SaveDeskTemplateButtonContainer::
+                                  UpdateButtonContainerForAccessibilityState,
+                              base::Unretained(this)));
 }
+
+SaveDeskTemplateButtonContainer::~SaveDeskTemplateButtonContainer() = default;
 
 void SaveDeskTemplateButtonContainer::UpdateButtonEnableStateAndTooltip(
     SaveDeskTemplateButton::Type type,
@@ -145,6 +191,14 @@ void SaveDeskTemplateButtonContainer::UpdateButtonEnableStateAndTooltip(
   button->SetEnabled(enable_state_and_tooltip_ID.first);
   button->SetTooltipText(
       l10n_util::GetStringUTF16(enable_state_and_tooltip_ID.second));
+}
+
+void SaveDeskTemplateButtonContainer::
+    UpdateButtonContainerForAccessibilityState() {
+  // If Chromevox is turned on or off during the life span of this widget,
+  // adjust to activatable or non-activatable accordingly.
+  GetWidget()->widget_delegate()->SetCanActivate(
+      Shell::Get()->accessibility_controller()->spoken_feedback().enabled());
 }
 
 SaveDeskTemplateButton* SaveDeskTemplateButtonContainer::GetButtonFromType(
