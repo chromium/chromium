@@ -178,7 +178,10 @@ void GPUAdapter::OnRequestDeviceCallback(ScriptState* script_state,
 
 ScriptPromise GPUAdapter::requestDevice(ScriptState* script_state,
                                         GPUDeviceDescriptor* descriptor) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state,
+      ExceptionContext(ExceptionContext::Context::kOperationInvoke,
+                       "GPUAdapter", "requestDevice"));
   ScriptPromise promise = resolver->Promise();
 
   WGPUDeviceDescriptor dawn_desc = {};
@@ -200,6 +203,12 @@ ScriptPromise GPUAdapter::requestDevice(ScriptState* script_state,
     // Insert features into a set to dedup them.
     HashSet<WGPUFeatureName> required_features_set;
     for (const V8GPUFeatureName& f : descriptor->requiredFeatures()) {
+      // If the feature is not a valid feature reject with a type error.
+      if (!features_->has(f.AsString())) {
+        resolver->RejectWithTypeError(
+            String::Format("Unsupported feature: %s", f.AsCStr()));
+        return promise;
+      }
       required_features_set.insert(AsDawnEnum(f));
     }
 
