@@ -56,7 +56,6 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/process/process.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"

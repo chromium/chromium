@@ -8,8 +8,6 @@
 
 #include <memory>
 #include <string>
-
-#include <string>
 #include <vector>
 
 #include "base/bind.h"
