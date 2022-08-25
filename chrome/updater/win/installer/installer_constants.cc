@@ -9,9 +9,6 @@ namespace updater {
 // The prefix of the updater archive resource.
 const wchar_t kUpdaterArchivePrefix[] = L"updater";
 
-// Temp directory prefix that this process creates.
-const wchar_t kTempPrefix[] = L"UPDATER_TEMP_DIR";
-
 // 7zip archive.
 const wchar_t kLZMAResourceType[] = L"B7";
 

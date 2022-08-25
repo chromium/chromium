@@ -259,4 +259,16 @@ TEST(WinUtil, EnableProcessHeapMetadataProtection) {
   EXPECT_TRUE(EnableProcessHeapMetadataProtection());
 }
 
+TEST(WinUtil, CreateSecureTempDir) {
+  absl::optional<base::ScopedTempDir> temp_dir = CreateSecureTempDir();
+  EXPECT_TRUE(temp_dir);
+  EXPECT_TRUE(temp_dir->IsValid());
+
+  base::FilePath program_files_dir;
+  EXPECT_TRUE(
+      base::PathService::Get(base::DIR_PROGRAM_FILES, &program_files_dir));
+  EXPECT_EQ(program_files_dir.IsParent(temp_dir->GetPath()),
+            !!::IsUserAnAdmin());
+}
+
 }  // namespace updater

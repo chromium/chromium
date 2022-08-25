@@ -872,4 +872,21 @@ bool EnableProcessHeapMetadataProtection() {
   return true;
 }
 
+absl::optional<base::ScopedTempDir> CreateSecureTempDir() {
+  base::FilePath temp_dir;
+  if (!base::PathService::Get(
+          ::IsUserAnAdmin() ? base::DIR_PROGRAM_FILES : base::DIR_TEMP,
+          &temp_dir)) {
+    return absl::nullopt;
+  }
+
+  base::ScopedTempDir temp_path;
+  if (!temp_path.CreateUniqueTempDirUnderPath(
+          temp_dir.AppendASCII(COMPANY_SHORTNAME_STRING))) {
+    return absl::nullopt;
+  }
+
+  return temp_path;
+}
+
 }  // namespace updater

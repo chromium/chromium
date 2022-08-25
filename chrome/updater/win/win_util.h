@@ -13,6 +13,7 @@
 
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/hash/hash.h"
 #include "base/process/process_iterator.h"
 #include "base/scoped_generic.h"
@@ -278,6 +279,10 @@ bool CompareOSVersions(const OSVERSIONINFOEX& os, BYTE oper);
 // operations are detected. This call enables protection for the entire process
 // and cannot be reversed.
 bool EnableProcessHeapMetadataProtection();
+
+// Creates a unique temporary directory. The directory is created under
+// %ProgramFiles% if the caller is admin, so it is secure.
+absl::optional<base::ScopedTempDir> CreateSecureTempDir();
 
 }  // namespace updater
 

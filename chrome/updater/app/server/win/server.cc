@@ -17,6 +17,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
@@ -27,7 +28,6 @@
 #include "base/win/atl.h"
 #include "base/win/registry.h"
 #include "base/win/windows_types.h"
-#include "chrome/installer/util/self_cleaning_temp_dir.h"
 #include "chrome/installer/util/work_item_list.h"
 #include "chrome/updater/app/server/win/com_classes.h"
 #include "chrome/updater/app/server/win/com_classes_legacy.h"
@@ -80,28 +80,6 @@ bool SwapUninstallCmdLine(UpdaterScope scope,
       root, UPDATER_KEY, KEY_WOW64_32KEY, kRegValueUninstallCmdLine,
       uninstall_if_unused_command.GetCommandLineString(), true);
 
-  return true;
-}
-
-bool CreateSecureTempDir(UpdaterScope scope,
-                         installer::SelfCleaningTempDir& temp_path) {
-  base::FilePath temp_dir;
-  if (!base::PathService::Get(scope == UpdaterScope::kSystem
-                                  ? int{base::DIR_PROGRAM_FILES}
-                                  : base::DIR_TEMP,
-                              &temp_dir)) {
-    return false;
-  }
-
-  temp_dir = temp_dir.AppendASCII(COMPANY_SHORTNAME_STRING)
-                 .AppendASCII(PRODUCT_FULLNAME_STRING);
-
-  if (!temp_path.Initialize(temp_dir, L"UPDATER_TEMP_DIR")) {
-    PLOG(ERROR) << "Could not create temporary path.";
-    return false;
-  }
-
-  VLOG(2) << "Created temp path " << temp_path.path().value();
   return true;
 }
 
@@ -281,16 +259,15 @@ bool ComServerApp::SwapInNewVersion() {
   const base::FilePath updater_path =
       versioned_directory->Append(GetExecutableRelativePath());
 
-  installer::SelfCleaningTempDir temp_dir;
-  if (!CreateSecureTempDir(updater_scope(), temp_dir)) {
-    return false;
-  }
-
   if (updater_scope() == UpdaterScope::kSystem && !CreateClientStateMedium()) {
     return false;
   }
 
-  if (!SwapGoogleUpdate(updater_scope(), updater_path, temp_dir.path(),
+  absl::optional<base::ScopedTempDir> temp_dir = CreateSecureTempDir();
+  if (!temp_dir)
+    return false;
+
+  if (!SwapGoogleUpdate(updater_scope(), updater_path, temp_dir->GetPath(),
                         UpdaterScopeToHKeyRoot(updater_scope()), list.get())) {
     return false;
   }

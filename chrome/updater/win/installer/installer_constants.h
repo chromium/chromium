@@ -9,7 +9,6 @@ namespace updater {
 
 // Various filenames and prefixes.
 extern const wchar_t kUpdaterArchivePrefix[];
-extern const wchar_t kTempPrefix[];
 
 // The resource types that would be unpacked from the mini installer.
 extern const wchar_t kLZMAResourceType[];
