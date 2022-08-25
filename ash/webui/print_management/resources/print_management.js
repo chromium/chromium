@@ -11,8 +11,8 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import './print_job_clear_history_dialog.js';
 import './print_job_entry.js';
-import './print_management_fonts_css.js';
-import './print_management_shared_css.js';
+import './print_management_fonts.css.js';
+import './print_management_shared.css.js';
 import './strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
@@ -21,6 +21,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getMetadataProvider} from './mojo_interface_provider.js';
+import {getTemplate} from './print_management.html.js';
 import {ActivePrintJobState, PrintJobInfo, PrintJobsObserverInterface, PrintJobsObserverReceiver} from './printing_manager.mojom-webui.js';
 
 const METADATA_STORED_INDEFINITELY = -1;
@@ -68,6 +69,10 @@ const PrintManagementElementBase =
 class PrintManagementElement extends PrintManagementElementBase {
   static get is() {
     return 'print-management';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -377,10 +382,6 @@ class PrintManagementElement extends PrintManagementElementBase {
         'delete-enabled', !this.shouldDisableClearAllButton_);
     this.$.deleteIcon.classList.toggle(
         'delete-disabled', this.shouldDisableClearAllButton_);
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

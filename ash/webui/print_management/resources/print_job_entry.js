@@ -8,9 +8,9 @@ import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
-import './icons.js';
-import './print_management_fonts_css.js';
-import './print_management_shared_css.js';
+import './icons.html.js';
+import './print_management_fonts.css.js';
+import './print_management_shared.css.js';
 import './strings.m.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
@@ -23,6 +23,7 @@ import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-annou
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getMetadataProvider} from './mojo_interface_provider.js';
+import {getTemplate} from './print_job_entry.html.js';
 import {PrinterErrorCode, PrintJobCompletionStatus, PrintJobInfo} from './printing_manager.mojom-webui.js';
 
 const GENERIC_FILE_EXTENSION_ICON = 'print-management:file-generic';
@@ -179,6 +180,10 @@ const PrintJobEntryElementBase = mixinBehaviors(
 class PrintJobEntryElement extends PrintJobEntryElementBase {
   static get is() {
     return 'print-job-entry';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -593,10 +598,6 @@ class PrintJobEntryElement extends PrintJobEntryElementBase {
         assertNotReached();
         return loadTimeData.getString('unknownPrinterErrorStopped');
     }
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

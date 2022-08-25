@@ -121,10 +121,12 @@ PrintManagementUI::PrintManagementUI(
 
   const auto resources = base::make_span(kAshPrintManagementResources,
                                          kAshPrintManagementResourcesSize);
-  SetUpWebUIDataSource(html_source, resources, IDR_PRINT_MANAGEMENT_INDEX_HTML);
+  SetUpWebUIDataSource(html_source, resources,
+                       IDR_ASH_PRINT_MANAGEMENT_INDEX_HTML);
 
-  html_source->AddResourcePath("printing_manager.mojom-webui.js",
-                               IDR_PRINTING_MANAGER_MOJO_WEBUI_JS);
+  html_source->AddResourcePath(
+      "printing_manager.mojom-webui.js",
+      IDR_ASH_PRINT_MANAGEMENT_PRINTING_MANAGER_MOJOM_WEBUI_JS);
 
   AddPrintManagementStrings(html_source);
 }

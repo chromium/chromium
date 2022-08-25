@@ -571,10 +571,9 @@
   "ash/webui/media_app_ui/resources/mock/media_app_bundle_mock_resources.grd": {
     "includes": [3120],
   },
-  "ash/webui/print_management/resources/print_management_resources.grd": {
-    "META": {"join": 2},
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/print_management/resources/ash_print_management_resources.grd": {
+    "META": {"join": 2, "sizes": {"includes": [20]}},
     "includes": [3140],
-    "structures": [3160],
   },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/sample_system_web_app_ui/resources/trusted/ash_sample_system_web_app_resources.grd": {
     "META": {"sizes": {"includes": [50],}},

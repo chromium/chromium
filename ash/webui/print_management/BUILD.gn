@@ -25,7 +25,3 @@ static_library("print_management") {
     "//ui/webui",
   ]
 }
-
-group("closure_compile") {
-  deps = [ "resources:closure_compile_module" ]
-}

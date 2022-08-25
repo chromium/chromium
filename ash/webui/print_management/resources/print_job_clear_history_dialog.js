@@ -4,13 +4,14 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import './print_management_shared_css.js';
+import './print_management_shared.css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getMetadataProvider} from './mojo_interface_provider.js';
+import {getTemplate} from './print_job_clear_history_dialog.html.js';
 
 /**
  * @fileoverview
@@ -31,6 +32,10 @@ class PrintJobClearHistoryDialogElement extends
     PrintJobClearHistoryDialogElementBase {
   static get is() {
     return 'print-job-clear-history-dialog';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -83,10 +88,6 @@ class PrintJobClearHistoryDialogElement extends
     // |clearedHistoryResult| is temporarily set to false until the policy
     // to control print job history deletions is implemented.
     this.$.clearDialog.close();
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 
