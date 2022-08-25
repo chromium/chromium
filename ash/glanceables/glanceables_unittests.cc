@@ -201,6 +201,32 @@ TEST_F(GlanceablesTest, UpNextViewRendersCorrectly) {
   EXPECT_EQ(std::get<1>(items[1])->GetText(), u"9:30 – 10:30 PM");
 }
 
+TEST_F(GlanceablesTest, UpNextViewRendersCorrectlyIn24HrClockFormat) {
+  Shell::Get()->system_tray_model()->SetUse24HourClock(true);
+  ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
+  base::subtle::ScopedTimeClockOverrides time_override(
+      []() {
+        base::Time now;
+        EXPECT_TRUE(base::Time::FromString("10 Jan 2022 13:00 GMT", &now));
+        return now;
+      },
+      nullptr, nullptr);
+
+  controller_->CreateUi();
+  SimulateCalendarEventsFetched();
+
+  // Events list contains rendered event items inside.
+  const auto& items = GetUpNextView()->events_list_items_views_for_test();
+  EXPECT_EQ(items.size(), 2u);
+
+  EXPECT_EQ(std::get<0>(items[0])->GetText(),
+            u"Ongoing event, started in the past");
+  EXPECT_EQ(std::get<1>(items[0])->GetText(), u"10:00 – 14:00");
+
+  EXPECT_EQ(std::get<0>(items[1])->GetText(), u"Future event, later today");
+  EXPECT_EQ(std::get<1>(items[1])->GetText(), u"21:30 – 22:30");
+}
+
 TEST_F(GlanceablesTest, ClickOnSessionRestore) {
   controller_->CreateUi();
 

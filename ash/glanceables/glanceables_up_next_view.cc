@@ -9,8 +9,10 @@
 #include <tuple>
 
 #include "ash/shell.h"
+#include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_utils.h"
+#include "base/i18n/time_formatting.h"
 #include "base/time/time.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -24,13 +26,32 @@
 #include "ui/views/view.h"
 
 namespace ash {
+namespace {
+
+using ::google_apis::calendar::CalendarEvent;
+using ::google_apis::calendar::EventList;
+
+std::u16string GetFormattedEventTimeInterval(const CalendarEvent& event) {
+  const base::Time& event_start_time = event.start_time().date_time();
+  const base::Time& event_end_time = event.end_time().date_time();
+  bool use_12_hour_clock =
+      Shell::Get()->system_tray_model()->clock()->hour_clock_type() ==
+      base::k12HourClock;
+  if (use_12_hour_clock) {
+    return calendar_utils::FormatTwelveHourClockTimeInterval(event_start_time,
+                                                             event_end_time);
+  }
+  return calendar_utils::FormatTwentyFourHourClockTimeInterval(event_start_time,
+                                                               event_end_time);
+}
+
+}  // namespace
 
 // TODO(crbug.com/1353495): file-level todo list:
 // - update existing `CalendarModel` and `CalendarEventFetch` to support 1-day
 //   fetches or consider implementing own simplified model (keep calendar-view
 //   team in the loop);
 // - add "Loading" / "Nothing for today" UI states;
-// - use 12/24hr clock formatter;
 // - refetch events at 00:00 and decide how to pull new events for current day;
 // - correctly display multi-day events (limit to 00:00 and/or 23:59);
 // - limit events list height and switch to `views::ScrollView`;
@@ -51,7 +72,7 @@ GlanceablesUpNextView::~GlanceablesUpNextView() {
 void GlanceablesUpNextView::OnEventsFetched(
     const CalendarModel::FetchingStatus status,
     const base::Time start_time,
-    const google_apis::calendar::EventList* fetched_events) {
+    const EventList* fetched_events) {
   calendar_model_->RemoveObserver(this);
 
   const base::Time now = base::Time::Now();
@@ -72,7 +93,7 @@ void GlanceablesUpNextView::OnEventsFetched(
 }
 
 void GlanceablesUpNextView::CreateEventsListItemView(
-    const google_apis::calendar::CalendarEvent& event) {
+    const CalendarEvent& event) {
   auto* item = events_list_view_->AddChildView(std::make_unique<views::View>());
   auto* layout = item->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 10));
@@ -84,11 +105,8 @@ void GlanceablesUpNextView::CreateEventsListItemView(
   event_title_label->SetHorizontalAlignment(
       gfx::HorizontalAlignment::ALIGN_LEFT);
 
-  const std::u16string formatted_time_interval =
-      calendar_utils::FormatTwelveHourClockTimeInterval(
-          event.start_time().date_time(), event.end_time().date_time());
   auto* event_time_label = item->AddChildView(
-      std::make_unique<views::Label>(formatted_time_interval));
+      std::make_unique<views::Label>(GetFormattedEventTimeInterval(event)));
   event_time_label->SetAutoColorReadabilityEnabled(false);
   event_time_label->SetEnabledColor(SK_ColorWHITE);
 
