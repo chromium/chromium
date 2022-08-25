@@ -677,14 +677,10 @@ class GLHelperTest : public testing::Test {
         SkImageInfo::Make(scaled_size.width(), scaled_size.height(),
                           kRGBA_8888_SkColorType, kPremul_SkAlphaType));
 
-    EXPECT_TRUE(
-        ReadBackTexture(dst_texture, scaled_size,
-                        static_cast<unsigned char*>(output_pixels.getPixels()),
-                        kRGBA_8888_SkColorType));
-    if (flip_output) {
-      // Flip the pixels back.
-      FlipSKBitmap(&output_pixels);
-    }
+    EXPECT_TRUE(ReadBackTexture(
+        dst_texture, scaled_size,
+        static_cast<unsigned char*>(output_pixels.getPixels()),
+        output_pixels.rowBytes(), flip_output, kRGBA_8888_SkColorType));
 
     // If the bitmap shouldn't have changed - compare against input.
     if (source_rect == gfx::Rect(scaled_size)) {
@@ -766,10 +762,10 @@ class GLHelperTest : public testing::Test {
         entire_output_size.width(), entire_output_size.height(),
         kRGBA_8888_SkColorType, kPremul_SkAlphaType));
 
-    EXPECT_TRUE(
-        ReadBackTexture(dst_texture, entire_output_size,
-                        static_cast<unsigned char*>(entire_output.getPixels()),
-                        kRGBA_8888_SkColorType));
+    EXPECT_TRUE(ReadBackTexture(
+        dst_texture, entire_output_size,
+        static_cast<unsigned char*>(entire_output.getPixels()),
+        entire_output.rowBytes(), /*flip_y=*/false, kRGBA_8888_SkColorType));
 
     const std::string human_readable_test_params = base::StringPrintf(
         "scale from: %s "
@@ -812,7 +808,7 @@ class GLHelperTest : public testing::Test {
         EXPECT_TRUE(ReadBackTexture(
             dst_texture, patch_size,
             static_cast<unsigned char*>(patch_output.getPixels()),
-            kRGBA_8888_SkColorType));
+            patch_output.rowBytes(), /*flip_y=*/false, kRGBA_8888_SkColorType));
         SkBitmap expected;
         SkIRect expected_subrect{patch_rect.x(), patch_rect.y(),
                                  patch_rect.right(), patch_rect.bottom()};
@@ -856,6 +852,7 @@ class GLHelperTest : public testing::Test {
           EXPECT_TRUE(ReadBackTexture(
               dst_texture, patch_size,
               static_cast<unsigned char*>(patch_output.getPixels()),
+              patch_output.rowBytes(), /*flip_y=*/false,
               kRGBA_8888_SkColorType));
           Compare(&expected, &patch_output, 2, test_bitmap.get(), stages,
                   "METHOD2 " + human_readable_test_params +
@@ -1008,6 +1005,8 @@ class GLHelperTest : public testing::Test {
   bool ReadBackTexture(GLuint src_texture,
                        const gfx::Size& src_size,
                        unsigned char* pixels,
+                       size_t pixels_stride,
+                       bool flip_y,
                        SkColorType color_type) {
     DCHECK(color_type == kRGBA_8888_SkColorType ||
            color_type == kBGRA_8888_SkColorType);
@@ -1020,7 +1019,8 @@ class GLHelperTest : public testing::Test {
       format = GL_BGRA_EXT;
 
     helper_->ReadbackTextureAsync(
-        src_texture, GL_TEXTURE_2D, src_size, pixels, format,
+        src_texture, GL_TEXTURE_2D, src_size, pixels, pixels_stride, flip_y,
+        format,
         base::BindOnce(
             [](bool* success, base::OnceClosure callback, bool result) {
               *success = result;
@@ -1051,7 +1051,9 @@ class GLHelperTest : public testing::Test {
     // When the readback is over output bitmap should have the red color.
     output_pixels.eraseColor(SK_ColorGREEN);
     uint8_t* pixels = static_cast<uint8_t*>(output_pixels.getPixels());
-    if (!ReadBackTexture(src_texture, src_size, pixels, color_type) ||
+    if (!ReadBackTexture(src_texture, src_size, pixels,
+                         output_pixels.rowBytes(), /*flip_y=*/false,
+                         color_type) ||
         !IsEqual(input_pixels, output_pixels)) {
       LOG(ERROR) << "Bitmap comparison failure Pattern-1";
       return false;
@@ -1063,7 +1065,9 @@ class GLHelperTest : public testing::Test {
                      src_grid_pitch, src_grid_width, input_pixels);
     BindAndAttachTextureWithPixels(src_texture, color_type, src_size,
                                    input_pixels);
-    if (!ReadBackTexture(src_texture, src_size, pixels, color_type) ||
+    if (!ReadBackTexture(src_texture, src_size, pixels,
+                         output_pixels.rowBytes(), /*flip_y=*/false,
+                         color_type) ||
         !IsEqual(input_pixels, output_pixels)) {
       LOG(ERROR) << "Bitmap comparison failure Pattern-2";
       return false;
@@ -1073,7 +1077,9 @@ class GLHelperTest : public testing::Test {
                         rect_w, rect_h, input_pixels);
     BindAndAttachTextureWithPixels(src_texture, color_type, src_size,
                                    input_pixels);
-    if (!ReadBackTexture(src_texture, src_size, pixels, color_type) ||
+    if (!ReadBackTexture(src_texture, src_size, pixels,
+                         output_pixels.rowBytes(), /*flip_y=*/false,
+                         color_type) ||
         !IsEqual(input_pixels, output_pixels)) {
       LOG(ERROR) << "Bitmap comparison failure Pattern-3";
       return false;

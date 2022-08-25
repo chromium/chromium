@@ -178,7 +178,8 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
       const SkImageInfo& dst_info,
       GLuint dst_row_bytes,
       unsigned char* out,
-      base::OnceCallback<void(GrSurfaceOrigin, bool)> readback_done) override;
+      base::OnceCallback<void(bool)> readback_done) override;
+
   void ReadbackYUVPixelsAsync(
       const gpu::Mailbox& source_mailbox,
       GLenum source_target,
@@ -338,14 +339,13 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
       SyncToken* decode_sync_token,
       ClientDiscardableHandle handle);
 
-  void ReadbackImagePixelsINTERNAL(
-      const gpu::Mailbox& source_mailbox,
-      const SkImageInfo& dst_info,
-      GLuint dst_row_bytes,
-      int src_x,
-      int src_y,
-      base::OnceCallback<void(GrSurfaceOrigin, bool)> readback_done,
-      void* dst_pixels);
+  void ReadbackImagePixelsINTERNAL(const gpu::Mailbox& source_mailbox,
+                                   const SkImageInfo& dst_info,
+                                   GLuint dst_row_bytes,
+                                   int src_x,
+                                   int src_y,
+                                   base::OnceCallback<void(bool)> readback_done,
+                                   void* dst_pixels);
 
   struct AsyncARGBReadbackRequest;
   void OnAsyncARGBReadbackDone(AsyncARGBReadbackRequest* request);

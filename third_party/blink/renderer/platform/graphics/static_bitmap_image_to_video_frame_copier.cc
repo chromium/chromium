@@ -180,14 +180,6 @@ void StaticBitmapImageToVideoFrameCopier::ReadARGBPixelsAsync(
                 "kRGBA_8888_SkColorType and kBGRA_8888_SkColorType.");
   SkImageInfo info = SkImageInfo::MakeN32(
       image_size.width(), image_size.height(), kUnpremul_SkAlphaType);
-  GLuint row_bytes;
-  if (!base::CheckedNumeric<size_t>(info.minRowBytes())
-           .AssignIfValid(&row_bytes)) {
-    DLOG(ERROR) << "Row stride must fit in GLuint (32 bits), given stride: "
-                << info.minRowBytes();
-    return;
-  }
-
   GrSurfaceOrigin image_origin = image->IsOriginTopLeft()
                                      ? kTopLeft_GrSurfaceOrigin
                                      : kBottomLeft_GrSurfaceOrigin;
@@ -198,7 +190,8 @@ void StaticBitmapImageToVideoFrameCopier::ReadARGBPixelsAsync(
       mailbox_holder.sync_token.GetConstData());
   context_provider->RasterInterface()->ReadbackARGBPixelsAsync(
       mailbox_holder.mailbox, mailbox_holder.texture_target, image_origin, info,
-      row_bytes, temp_argb_frame->visible_data(media::VideoFrame::kARGBPlane),
+      temp_argb_frame->stride(media::VideoFrame::kARGBPlane),
+      temp_argb_frame->visible_data(media::VideoFrame::kARGBPlane),
       WTF::Bind(&StaticBitmapImageToVideoFrameCopier::OnARGBPixelsReadAsync,
                 weak_ptr_factory_.GetWeakPtr(), image, temp_argb_frame,
                 std::move(callback)));
@@ -241,9 +234,8 @@ void StaticBitmapImageToVideoFrameCopier::ReadYUVPixelsAsync(
 
 void StaticBitmapImageToVideoFrameCopier::OnARGBPixelsReadAsync(
     scoped_refptr<StaticBitmapImage> image,
-    scoped_refptr<media::VideoFrame> temp_argb_frame,
+    scoped_refptr<media::VideoFrame> argb_frame,
     FrameReadyCallback callback,
-    GrSurfaceOrigin result_origin,
     bool success) {
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
   if (!success) {
@@ -253,36 +245,7 @@ void StaticBitmapImageToVideoFrameCopier::OnARGBPixelsReadAsync(
     ReadARGBPixelsSync(image, std::move(callback));
     return;
   }
-
-  // If a frame comes with BottomLeft origin it's effectively upside down.
-  // Frame consumers are not ready to deal with it. We can swap rows to fix it,
-  // but it would add an extra copy. Instead we set up a wrapper frame that
-  // references the same data but has color planes with negative strides,
-  // it forces all the code that handles frames to process rows bottom-up.
-  auto& coded_size = temp_argb_frame->coded_size();
-  if (result_origin == kBottomLeft_GrSurfaceOrigin && coded_size.height() > 1) {
-    auto pixel_format = temp_argb_frame->format();
-    auto argb_plane = temp_argb_frame->layout().planes()[0];
-    size_t last_row_offset =
-        argb_plane.offset + argb_plane.stride * (coded_size.height() - 1);
-    media::ColorPlaneLayout reverse_argb_plane(
-        -argb_plane.stride, last_row_offset, argb_plane.size);
-
-    auto layout = media::VideoFrameLayout::CreateWithPlanes(
-                      pixel_format, coded_size, {reverse_argb_plane})
-                      .value();
-
-    size_t data_size = reverse_argb_plane.offset + reverse_argb_plane.size;
-    auto reverse_stride_frame = media::VideoFrame::WrapExternalDataWithLayout(
-        layout, gfx::Rect(coded_size), coded_size,
-        temp_argb_frame->data(media::VideoFrame::kARGBPlane), data_size,
-        temp_argb_frame->timestamp());
-
-    reverse_stride_frame->AddDestructionObserver(base::BindOnce(
-        [](scoped_refptr<media::VideoFrame>) {}, std::move(temp_argb_frame)));
-    temp_argb_frame = reverse_stride_frame;
-  }
-  std::move(callback).Run(std::move(temp_argb_frame));
+  std::move(callback).Run(std::move(argb_frame));
 }
 
 void StaticBitmapImageToVideoFrameCopier::OnYUVPixelsReadAsync(

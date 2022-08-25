@@ -267,7 +267,7 @@ void RasterImplementationGLES::ReadbackARGBPixelsAsync(
     const SkImageInfo& dst_info,
     GLuint dst_row_bytes,
     unsigned char* out,
-    base::OnceCallback<void(GrSurfaceOrigin, bool)> readback_done) {
+    base::OnceCallback<void(bool)> readback_done) {
   DCHECK(!readback_done.is_null());
   DCHECK(dst_info.colorType() == kRGBA_8888_SkColorType ||
          dst_info.colorType() == kBGRA_8888_SkColorType);
@@ -278,23 +278,35 @@ void RasterImplementationGLES::ReadbackARGBPixelsAsync(
   BeginSharedImageAccessDirectCHROMIUM(
       texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
 
+  // Convert bottom-left GL coordinates to top-left coordinates expected
+  // by RI clients.
+  bool flip_y;
+  switch (src_origin) {
+    case kTopLeft_GrSurfaceOrigin:
+      flip_y = false;
+      break;
+    case kBottomLeft_GrSurfaceOrigin:
+      flip_y = true;
+      break;
+  }
+
   GetGLHelper()->ReadbackTextureAsync(
-      texture_id, source_target, dst_gfx_size, out, format,
+      texture_id, source_target, dst_gfx_size, out, dst_row_bytes, flip_y,
+      format,
       base::BindOnce(&RasterImplementationGLES::OnReadARGBPixelsAsync,
                      weak_ptr_factory_.GetWeakPtr(), texture_id,
-                     std::move(readback_done), src_origin));
+                     std::move(readback_done)));
 }
 
 void RasterImplementationGLES::OnReadARGBPixelsAsync(
     GLuint texture_id,
-    base::OnceCallback<void(GrSurfaceOrigin, bool)> readback_done,
-    GrSurfaceOrigin source_origin,
+    base::OnceCallback<void(bool)> readback_done,
     bool success) {
   DCHECK(texture_id);
   EndSharedImageAccessDirectCHROMIUM(texture_id);
   DeleteGpuRasterTexture(texture_id);
 
-  std::move(readback_done).Run(source_origin, success);
+  std::move(readback_done).Run(success);
 }
 
 void RasterImplementationGLES::ReadbackYUVPixelsAsync(

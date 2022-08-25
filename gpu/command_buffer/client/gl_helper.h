@@ -164,6 +164,8 @@ class GPU_EXPORT GLHelper {
                             GLenum texture_target,
                             const gfx::Size& dst_size,
                             unsigned char* out,
+                            size_t row_stride_bytes,
+                            bool flip_y,
                             GLenum format,
                             base::OnceCallback<void(bool)> callback);
 

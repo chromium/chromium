@@ -127,11 +127,16 @@ class RasterInterface : public InterfaceBase {
       bool needs_mips) = 0;
 
   // Starts an asynchronous readback of |source_mailbox| into caller-owned
-  // memory |out|. Currently supports the kRGBA_8888_SkColorType and
-  // kBGRA_8888_SkColorType color types. |out| must remain valid
-  // until |readback_done| is called with the origin of the pixels in |out| and
-  // a bool indicating if the readback was successful. On success |out| will
-  // contain the pixel data copied back from the GPU process.
+  // memory |out|.
+  // |dst_row_bytes| is a per row stride expected in the |out| buffer.
+  // |source_origin| specifies texture coordinate directions, but
+  // pixels in |out| laid out with top-left origin.
+  // Currently supports the kRGBA_8888_SkColorType and
+  // kBGRA_8888_SkColorType color types.
+  // |out| must remain valid  until |readback_done| is called with
+  // a bool indicating if the readback was successful.
+  // On success |out| will contain the pixel data copied back from the GPU
+  // process.
   virtual void ReadbackARGBPixelsAsync(
       const gpu::Mailbox& source_mailbox,
       GLenum source_target,
@@ -139,7 +144,7 @@ class RasterInterface : public InterfaceBase {
       const SkImageInfo& dst_info,
       GLuint dst_row_bytes,
       unsigned char* out,
-      base::OnceCallback<void(GrSurfaceOrigin, bool)> readback_done) = 0;
+      base::OnceCallback<void(bool)> readback_done) = 0;
 
   // Starts an asynchronus readback and translation of RGBA |source_mailbox|
   // into caller-owned |[yuv]_plane_data|. All provided pointers must remain
