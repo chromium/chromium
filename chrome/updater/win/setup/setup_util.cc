@@ -385,27 +385,6 @@ bool UnregisterUserRunAtStartup(const std::wstring& run_value_name) {
 
 void CheckComInterfaceTypeLib(UpdaterScope scope, bool is_internal) {
   for (const auto& iid : GetInterfaces(is_internal)) {
-    base::FilePath typelib_path;
-    CHECK(base::PathService::Get(base::DIR_EXE, &typelib_path));
-    typelib_path = typelib_path.Append(GetExecutableRelativePath())
-                       .Append(GetComTypeLibResourceIndex(iid));
-
-    Microsoft::WRL::ComPtr<ITypeLib> type_lib;
-    if (HRESULT hr = ::LoadTypeLib(typelib_path.value().c_str(), &type_lib);
-        FAILED(hr)) {
-      LOG(ERROR) << __func__ << " ::LoadTypeLib failed: " << typelib_path
-                 << ": " << std::hex << hr;
-      return;
-    }
-
-    Microsoft::WRL::ComPtr<ITypeInfo> type_info;
-    if (HRESULT hr = type_lib->GetTypeInfoOfGuid(iid, &type_info); FAILED(hr)) {
-      LOG(ERROR) << __func__ << " ::GetTypeInfoOfGuid failed"
-                 << ": " << std::hex << hr
-                 << ": IID: " << base::win::WStringFromGUID(iid);
-      return;
-    }
-
     const HKEY root = UpdaterScopeToHKeyRoot(scope);
     const std::wstring iid_reg_path = GetComIidRegistryPath(iid);
     const std::wstring typelib_reg_path = GetComTypeLibRegistryPath(iid);
@@ -436,11 +415,23 @@ void CheckComInterfaceTypeLib(UpdaterScope scope, bool is_internal) {
         typelib_reg_path + L"\\1.0\\0\\win64";
 
     for (const auto& path : {typelib_reg_path_win32, typelib_reg_path_win64}) {
-      CHECK_EQ(
-          base::win::RegKey(root, path.c_str(), KEY_READ).ReadValue(L"", &val),
-          ERROR_SUCCESS)
+      std::wstring typelib_path;
+      CHECK_EQ(base::win::RegKey(root, path.c_str(), KEY_READ)
+                   .ReadValue(L"", &typelib_path),
+               ERROR_SUCCESS)
           << ": " << root << ": " << path << ": " << iid_string;
-      VLOG(1) << __func__ << ": " << path << ": " << val << ": " << iid_string;
+
+      Microsoft::WRL::ComPtr<ITypeLib> type_lib;
+      HRESULT hr = ::LoadTypeLib(typelib_path.c_str(), &type_lib);
+      CHECK(SUCCEEDED(hr)) << " ::LoadTypeLib failed: " << typelib_path << ": "
+                           << std::hex << hr;
+
+      Microsoft::WRL::ComPtr<ITypeInfo> type_info;
+      hr = type_lib->GetTypeInfoOfGuid(iid, &type_info);
+      CHECK(SUCCEEDED(hr)) << " ::GetTypeInfoOfGuid failed"
+                           << ": " << std::hex << hr
+                           << ": Typelib path: " << typelib_path
+                           << ": IID: " << iid_string;
     }
   }
 }
