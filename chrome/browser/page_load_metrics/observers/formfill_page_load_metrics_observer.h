@@ -24,6 +24,7 @@ class FormfillPageLoadMetricsObserver
       const FormfillPageLoadMetricsObserver&) = delete;
 
   // page_load_metrics::PageLoadMetricsObserver
+  const char* GetObserverName() const override;
   ObservePolicy OnFencedFramesStart(
       content::NavigationHandle* navigation_handle,
       const GURL& currently_committed_url) override;

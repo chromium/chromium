@@ -75,6 +75,10 @@ PageLoadMetricsObserver::ObservePolicy AssertPageLoadMetricsObserver::OnCommit(
   DCHECK(!activated_);
   committed_ = true;
 
+  DCHECK(navigation_handle->IsInPrimaryMainFrame() ||
+         navigation_handle->IsInPrerenderedMainFrame());
+  DCHECK(!navigation_handle->IsPrerenderedPageActivation());
+
   return CONTINUE_OBSERVING;
 }
 

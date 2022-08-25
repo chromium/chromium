@@ -22,12 +22,17 @@ FormfillPageLoadMetricsObserver::FormfillPageLoadMetricsObserver() = default;
 
 FormfillPageLoadMetricsObserver::~FormfillPageLoadMetricsObserver() = default;
 
-// TODO(https://crbug.com/1317494): Audit and use appropriate policy.
+const char* FormfillPageLoadMetricsObserver::GetObserverName() const {
+  static const char kName[] = "FormfillPageLoadMetricsObserver";
+  return kName;
+}
+
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 FormfillPageLoadMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
-  return STOP_OBSERVING;
+  // OnFeaturesUsageObserved needs observer level forwarding.
+  return FORWARD_OBSERVING;
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
@@ -53,8 +58,7 @@ FormfillPageLoadMetricsObserver::OnCommit(
         blink::mojom::WebFeature::kUserDataFieldFilledPreviously);
   }
 
-  return page_load_metrics::PageLoadMetricsObserver::ObservePolicy::
-      CONTINUE_OBSERVING;
+  return CONTINUE_OBSERVING;
 }
 
 void FormfillPageLoadMetricsObserver::OnFeaturesUsageObserved(
