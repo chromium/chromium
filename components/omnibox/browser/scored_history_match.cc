@@ -673,7 +673,7 @@ float ScoredHistoryMatch::GetDocumentSpecificityScore(
 float ScoredHistoryMatch::GetFinalRelevancyScore(float topicality_score,
                                                  float frequency_score,
                                                  float specificity_score) {
-  // |relevance_buckets| gives a mapping from intemerdiate score to the final
+  // |relevance_buckets| gives a mapping from intermediate score to the final
   // relevance score.
   static base::NoDestructor<ScoreMaxRelevances> default_relevance_buckets(
       GetHQPBuckets());

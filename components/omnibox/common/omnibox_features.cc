@@ -254,6 +254,13 @@ const base::Feature kStoreTitleInContentsAndUrlInDescription{
     "OmniboxStoreTitleInContentsAndUrlInDescription",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// HQP scores suggestions higher when it finds fewer matches. When enabled,
+// HQP will consider the count of unique hosts, rather than the total count of
+// matches.
+const base::Feature kHistoryQuickProviderSpecificityScoreCountUniqueHosts{
+    "OmniboxHistoryQuickProviderSpecificityScoreCountUniqueHosts",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Feature used to fetch document suggestions.
 const base::Feature kDocumentProvider{"OmniboxDocumentProvider",
                                       enabled_by_default_desktop_only};

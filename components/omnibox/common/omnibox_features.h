@@ -71,6 +71,8 @@ extern const base::Feature kShortcutExpanding;
 // TODO(crbug.com/1202964): Clean up feature flag used in staged roll-out of
 // various CLs related to the contents/description clean-up work.
 extern const base::Feature kStoreTitleInContentsAndUrlInDescription;
+extern const base::Feature
+    kHistoryQuickProviderSpecificityScoreCountUniqueHosts;
 
 // Document provider
 extern const base::Feature kDocumentProvider;

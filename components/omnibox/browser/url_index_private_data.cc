@@ -15,7 +15,9 @@
 #include <utility>
 
 #include "base/containers/cxx20_erase.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/stack.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/i18n/break_iterator.h"
 #include "base/i18n/case_conversion.h"
@@ -36,6 +38,7 @@
 #include "components/omnibox/browser/in_memory_url_index.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/tailored_word_break_iterator.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/url_formatter/url_formatter.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
@@ -580,8 +583,8 @@ HistoryIDSet URLIndexPrivateData::HistoryIDsForTerm(
     return HistoryIDSet();
 
   // TODO(mrossetti): Consider optimizing for very common terms such as
-  // 'http[s]', 'www', 'com', etc. Or collect the top 100 more frequently
-  // occuring words in the user's searches.
+  //  'http[s]', 'www', 'com', etc. Or collect the top 100 more frequently
+  //  occurring words in the user's searches.
 
   size_t term_length = term.length();
   WordIDSet word_id_set;
@@ -744,8 +747,24 @@ void URLIndexPrivateData::HistoryIdsToScoredMatches(
   });
 
   // Score the matches.
-  const size_t num_matches = history_ids.size();
   const base::Time now = base::Time::Now();
+
+  // `ScoredHistoryMatch` will score suggestions higher when there are fewer
+  // matches. However, since HQP doesn't dedupe suggestions, this can be
+  // problematic when there are multiple duplicate matches. Try counting the
+  // unique hosts in the matches instead.
+  static bool count_unique_hosts = base::FeatureList::IsEnabled(
+      omnibox::kHistoryQuickProviderSpecificityScoreCountUniqueHosts);
+  const size_t num_unique_hosts =
+      count_unique_hosts ? base::MakeFlatSet<std::string>(
+                               history_ids, {},
+                               [&](const auto history_id) {
+                                 return history_info_map_.find(history_id)
+                                     ->second.url_row.url()
+                                     .host();
+                               })
+                               .size()
+                         : history_ids.size();
 
   for (HistoryID history_id : history_ids) {
     auto hist_pos = history_info_map_.find(history_id);
@@ -756,7 +775,7 @@ void URLIndexPrivateData::HistoryIdsToScoredMatches(
         hist_item, hist_pos->second.visits, lower_raw_string, lower_raw_terms,
         lower_terms_to_word_starts_offsets, starts_pos->second,
         bookmark_model && bookmark_model->IsBookmarked(hist_item.url()),
-        num_matches, now);
+        num_unique_hosts, now);
     // Filter new matches that ended up scoring 0. (These are usually matches
     // which didn't match the user's raw terms.)
     if (new_scored_match.raw_score > 0)
