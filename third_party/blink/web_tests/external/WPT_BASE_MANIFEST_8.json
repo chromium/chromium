@@ -332944,8 +332944,16 @@
        "456f15ff699eb36b230b5079f918cbd57ea2705a",
        []
       ],
+      "background-fetch.https.html": [
+       "3f1c072d108ca5b271d81118698a5e0ebc0e3649",
+       []
+      ],
       "battery-status.https.html": [
        "eb611175381240b483bb8776a1610286bd3b7219",
+       []
+      ],
+      "bluetooth-access.https.html": [
+       "b14b46c09cada95f9c673908cc89f10d10ecb97e",
        []
       ],
       "broadcast-channel.html": [
@@ -333036,6 +333044,14 @@
        "62829556bb438c1396a0f17c7e3b45456f2bdad9",
        []
       ],
+      "screen-capture.https.html": [
+       "55f1995643dfb0505e79bad4ed3eb9c2d1bad28e",
+       []
+      ],
+      "screen-orientation-lock.https.html": [
+       "a152e344900826058c61acbc6bce8268557702bb",
+       []
+      ],
       "service-worker-unregister.html": [
        "a78775a5a2c7a5724f7d97a4c3d8c6638c76f6d6",
        []
@@ -333074,6 +333090,10 @@
       ],
       "web-nfc.https.html": [
        "61207ab346db4393d2045bcad3cc50da1a47e38a",
+       []
+      ],
+      "web-share.https.html": [
+       "f4e2f304718ef248ad85da0fe5e649e57987f3e9",
        []
       ],
       "web-usb.https.html": [
@@ -385025,7 +385045,7 @@
        ]
       ],
       "grid-shorthand-serialization.html": [
-       "7f8ebdb986de1e90bfd059ff79229b0c42a056a8",
+       "5114a3e7f4635bce367b5e8d180a37c8dacf0dd3",
        [
         null,
         {}
@@ -468266,7 +468286,7 @@
       ]
      ],
      "popup-redirect-cache.https.html": [
-      "e56e1d551345bcecab3d89a34fd98424583898e0",
+      "6568ac3fdbfcfb193e65c6f6e78ad472517c52be",
       [
        "html/cross-origin-opener-policy/popup-redirect-cache.https.html?0-1",
        {
@@ -526814,7 +526834,7 @@
    },
    "secure-payment-confirmation": {
     "authentication-accepted.https.html": [
-     "1677de3f3c0b9c2f26b9b29adfd36169f9ed76de",
+     "03f0be2cea37d460c0874547834cea5eb57e7be1",
      [
       null,
       {
@@ -526832,7 +526852,7 @@
      ]
     ],
     "authentication-cross-origin.sub.https.html": [
-     "5ef366606cb0cba0801fe0432a4b47329d5acd9b",
+     "779a5f40213a1bb513e8608f6da994f989d2e440",
      [
       null,
       {
@@ -526850,7 +526870,7 @@
      ]
     ],
     "authentication-in-iframe.sub.https.html": [
-     "7c77a1750628dd4aa5a6d9e7943430e8e84f9a4d",
+     "79b6b5baff05b05e158213bc7942b440cef82676",
      [
       null,
       {
@@ -533027,8 +533047,27 @@
        {}
       ]
      ],
+     "restriction-background-fetch.https.html": [
+      "cd1550b8193a00342a874cc0700198c0d6e4584f",
+      [
+       null,
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ]
+     ],
      "restriction-battery-status.https.html": [
       "80e25b08e723a73a75235608c9d902065b96eadd",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "restriction-bluetooth.tentative.https.html": [
+      "243a5d5a74f12b3eacebcd1a348a01b0d05bc3e8",
       [
        null,
        {
@@ -533066,6 +533105,24 @@
      ],
      "restriction-presentation-request.https.html": [
       "5f7742204e2b399b6ee2b2aaad656dfc5a09765c",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "restriction-screen-capture.https.html": [
+      "e4b958d338a9a88eddf26a369993142cec1e2508",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "restriction-screen-orientation-lock.https.html": [
+      "7c2be6acecefe214e010ee9e32cc6126f3e6ba16",
       [
        null,
        {
@@ -533111,6 +533168,15 @@
      ],
      "restriction-web-nfc.https.html": [
       "8e0825537e3882cbe431933b3ea9ac79ce7da1e7",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "restriction-web-share.https.html": [
+      "3bc071d5b497ef4e690f68222793b818811445cd",
       [
        null,
        {

@@ -1176,7 +1176,7 @@ paint/invalidation/overflow/composited-overflow-with-borderbox-background.html [
 paint/invalidation/position/absolute-position-changed.html [ Pass ]
 
 # TODO(michaelludwig): Suppressed for Skia roll, see crbug.com/1354678
-paint/invalidation/reflection/reflection-with-rotation.html [ Pass Failure ]
+paint/invalidation/reflection/reflection-with-rotation.html [ Failure Pass ]
 
 paint/invalidation/scroll/destroy-composited-scrollbar.html [ Pass ]
 paint/invalidation/selection/selection-within-composited-scroller.html [ Pass ]

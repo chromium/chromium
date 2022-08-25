@@ -75,7 +75,7 @@ promise_test(async t => {
   assert_equals(result.clientDataJSON.origin, 'https://{{hosts[alt][]}}:{{ports[https][0]}}');
   assert_equals(result.clientDataJSON.payment.topOrigin, window.location.origin);
   // The credential was created in this frame, and so we are the rp.
-  assert_equals(result.clientDataJSON.payment.rp, window.location.hostname);
+  assert_equals(result.clientDataJSON.payment.rpId, window.location.hostname);
   // The payeeOrigin should be unrelated to what the origin and topOrigin are.
   assert_equals(result.clientDataJSON.payment.payeeOrigin, 'https://merchant.com');
 }, 'SPC authentication ceremony in cross-origin iframe');

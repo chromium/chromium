@@ -66,6 +66,6 @@ promise_test(async t => {
   // The origin should be ourselves, whilst the RP should be the alt hostname
   // (as the owner of the credential).
   assert_equals(clientDataJSON.origin, window.location.origin);
-  assert_equals(clientDataJSON.payment.rp, '{{hosts[alt][]}}');
+  assert_equals(clientDataJSON.payment.rpId, '{{hosts[alt][]}}');
 }, 'Cross-origin SPC authentication ceremony');
 </script>
