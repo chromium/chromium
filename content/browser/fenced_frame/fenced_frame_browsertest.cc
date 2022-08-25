@@ -1978,12 +1978,15 @@ class FencedFrameParameterizedBrowserTest
 // Tests that the fenced frame gets navigated to an actual url given a urn:uuid.
 IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
                        CheckFencedFrameNavigationWithUUID) {
+  base::HistogramTester histogram_tester;
   GURL main_url = https_server()->GetURL("b.test", "/hello.html");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
   // It is safe to obtain the root frame tree node here, as it doesn't change.
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
                             ->GetPrimaryFrameTree()
                             .root();
+  histogram_tester.ExpectTotalCount(
+      "Navigation.BrowserMappedUrnUuidInIframeOrFencedFrame", 0);
 
   {
     EXPECT_TRUE(ExecJs(root,
@@ -2007,11 +2010,24 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
   std::string navigate_urn_script = JsReplace("f.src = $1;", urn_uuid);
 
   {
-    TestFrameNavigationObserver observer(fenced_frame_root_node);
+    TestFrameNavigationObserver navigation_observer(fenced_frame_root_node);
+    WebContentsConsoleObserver console_observer(web_contents());
+    auto filter =
+        [](const content::WebContentsConsoleObserver::Message& message) {
+          return message.log_level ==
+                 blink::mojom::ConsoleMessageLevel::kWarning;
+        };
+    console_observer.SetFilter(base::BindRepeating(filter));
+    console_observer.SetPattern(
+        "FLEDGE will deprecate supporting iframes to render the winning ad*");
     EXPECT_EQ(urn_uuid.spec(), EvalJs(root, navigate_urn_script));
-    observer.WaitForCommit();
+    navigation_observer.WaitForCommit();
+    // No console warning is emitted for urn::uuid navigation in fenced frames.
+    EXPECT_TRUE(console_observer.messages().empty());
   }
 
+  histogram_tester.ExpectBucketCount(
+      "Navigation.BrowserMappedUrnUuidInIframeOrFencedFrame", 0, 1);
   EXPECT_EQ(
       https_url,
       fenced_frame_root_node->current_frame_host()->GetLastCommittedURL());
@@ -4818,9 +4834,12 @@ class UUIDFrameTreeBrowserTest : public ContentBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(UUIDFrameTreeBrowserTest,
                        CheckIframeNavigationWithUUID) {
+  base::HistogramTester histogram_tester;
   GURL main_url = https_server()->GetURL("b.test", "/hello.html");
   GURL initial_frame_url = https_server()->GetURL("a.test", "/hello.html");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  histogram_tester.ExpectTotalCount(
+      "Navigation.BrowserMappedUrnUuidInIframeOrFencedFrame", 0);
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
@@ -4835,6 +4854,8 @@ IN_PROC_BROWSER_TEST_P(UUIDFrameTreeBrowserTest,
   // Initially navigate the iframe to somewhere specific.
   EXPECT_TRUE(NavigateIframeAndCheckURL(web_contents(), "test_iframe",
                                         initial_frame_url, initial_frame_url));
+  histogram_tester.ExpectTotalCount(
+      "Navigation.BrowserMappedUrnUuidInIframeOrFencedFrame", 0);
 
   GURL frame_url(
       https_server()->GetURL("a.test", "/fenced_frames/title1.html"));
@@ -4842,14 +4863,39 @@ IN_PROC_BROWSER_TEST_P(UUIDFrameTreeBrowserTest,
       root->current_frame_host()->GetPage().fenced_frame_urls_map();
   auto urn_uuid = AddAndVerifyFencedFrameURL(&url_mapping, frame_url);
 
+  WebContentsConsoleObserver console_observer(web_contents());
+  auto filter =
+      [](const content::WebContentsConsoleObserver::Message& message) {
+        return message.log_level == blink::mojom::ConsoleMessageLevel::kWarning;
+      };
+  console_observer.SetFilter(base::BindRepeating(filter));
+  console_observer.SetPattern(
+      "FLEDGE will deprecate supporting iframes to render the winning ad*");
+
   if (GetParam()) {
     // If the feature is enabled, we should navigate to the mapped page.
     EXPECT_TRUE(NavigateIframeAndCheckURL(web_contents(), "test_iframe",
                                           urn_uuid, frame_url));
+    histogram_tester.ExpectBucketCount(
+        "Navigation.BrowserMappedUrnUuidInIframeOrFencedFrame", 1, 1);
+    // A console warning is emitted during navigation. This will be removed
+    // once navigation support for urn::uuid in iframes is deprecated.
+    // TODO(crbug.com/1355857)
+    EXPECT_FALSE(console_observer.messages().empty());
+    EXPECT_EQ(
+        console_observer.GetMessageAt(0),
+        "FLEDGE will deprecate supporting iframes to render the winning ad. "
+        "Please use fenced frames instead. See "
+        "https://developer.chrome.com/en/docs/privacy-sandbox/fenced-frame/"
+        "#examples");
   } else {
     // If the feature is disabled, navigation should fail.
     EXPECT_FALSE(NavigateIframeAndCheckURL(web_contents(), "test_iframe",
                                            urn_uuid, GURL()));
+    histogram_tester.ExpectBucketCount(
+        "Navigation.BrowserMappedUrnUuidInIframeOrFencedFrame", 1, 0);
+    // No console warning is emitted if the feature is disabled.
+    EXPECT_TRUE(console_observer.messages().empty());
   }
 
   // Parent will still see the src as the urn_uuid and not the mapped url.

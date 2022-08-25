@@ -496,6 +496,19 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   <summary>Whether the back-forward navigation was served from cache.</summary>
 </histogram>
 
+<histogram name="Navigation.BrowserMappedUrnUuidInIframeOrFencedFrame"
+    enum="NavigationBrowserMappedUrnUuidInIframeOrFencedFrame"
+    expires_after="2023-03-01">
+  <owner>xiaochenzh@chromium.org</owner>
+  <owner>shivanisha@chromium.org</owner>
+  <summary>
+    For navigation requests with FLEDGE or SharedStorage generated urn:uuid,
+    record whether it is rendered in a fenced frame or iframe. Recorded when
+    navigation requests begin (i.e. during
+    NavigationRequest::BeginNavigation()).
+  </summary>
+</histogram>
+
 <histogram name="Navigation.ClearSiteData.Duration" units="ms"
     expires_after="M77">
   <owner>msramek@chromium.org</owner>

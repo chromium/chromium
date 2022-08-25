@@ -67435,6 +67435,11 @@ Called by update_use_counter_css.py.-->
   <int value="3" label="Behind a Non-Symmetric NAT."/>
 </enum>
 
+<enum name="NavigationBrowserMappedUrnUuidInIframeOrFencedFrame">
+  <int value="0" label="Browser mapped urn::uuid is rendered in fenced frame"/>
+  <int value="1" label="Browser mapped urn::uuid is rendered in iframe"/>
+</enum>
+
 <enum name="NavigationCacheEnum">
   <int value="0" label="Validate cache"/>
   <int value="1" label="Bypass cache"/>
