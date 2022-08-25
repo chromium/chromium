@@ -136,6 +136,8 @@ void LocalWindowProxy::DisposeContext(Lifecycle next_status,
 // Record/replay state is initialized along with the first LocalWindowProxy.
 static bool gRecordReplayStateInitialized;
 
+extern "C" void V8RecordReplaySetDefaultContext(v8::Isolate* isolate, v8::Local<v8::Context> cx);
+
 void LocalWindowProxy::Initialize() {
   TRACE_EVENT1("v8", "LocalWindowProxy::Initialize", "IsMainFrame",
                GetFrame()->IsMainFrame());
@@ -194,6 +196,7 @@ void LocalWindowProxy::Initialize() {
       !gRecordReplayStateInitialized) {
     gRecordReplayStateInitialized = true;
     SetupRecordReplayCommands(GetIsolate());
+    V8RecordReplaySetDefaultContext(GetIsolate(), context);
     recordreplay::NewCheckpoint();
   }
 
