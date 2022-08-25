@@ -2,40 +2,42 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/ui/webui/chrome_web_ui_ios_controller_factory.h"
+#import "ios/chrome/browser/ui/webui/chrome_web_ui_ios_controller_factory.h"
 
 #import <Foundation/Foundation.h>
 
-#include "base/bind.h"
-#include "base/location.h"
-#include "base/no_destructor.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/chrome/browser/system_flags.h"
-#include "ios/chrome/browser/ui/webui/about_ui.h"
-#include "ios/chrome/browser/ui/webui/autofill_and_password_manager_internals/autofill_internals_ui_ios.h"
-#include "ios/chrome/browser/ui/webui/autofill_and_password_manager_internals/password_manager_internals_ui_ios.h"
-#include "ios/chrome/browser/ui/webui/crashes_ui.h"
-#include "ios/chrome/browser/ui/webui/download_internals_ui.h"
-#include "ios/chrome/browser/ui/webui/flags_ui.h"
-#include "ios/chrome/browser/ui/webui/gcm/gcm_internals_ui.h"
-#include "ios/chrome/browser/ui/webui/inspect/inspect_ui.h"
-#include "ios/chrome/browser/ui/webui/interstitials/interstitial_ui.h"
-#include "ios/chrome/browser/ui/webui/local_state/local_state_ui.h"
-#include "ios/chrome/browser/ui/webui/management/management_ui.h"
-#include "ios/chrome/browser/ui/webui/net_export/net_export_ui.h"
-#include "ios/chrome/browser/ui/webui/ntp_tiles_internals_ui.h"
-#include "ios/chrome/browser/ui/webui/omaha_ui.h"
-#include "ios/chrome/browser/ui/webui/policy/policy_ui.h"
-#include "ios/chrome/browser/ui/webui/prefs_internals_ui.h"
-#include "ios/chrome/browser/ui/webui/signin_internals_ui_ios.h"
-#include "ios/chrome/browser/ui/webui/terms_ui.h"
-#include "ios/chrome/browser/ui/webui/translate_internals/translate_internals_ui.h"
-#include "ios/chrome/browser/ui/webui/ukm_internals_ui.h"
-#include "ios/chrome/browser/ui/webui/user_actions_ui.h"
-#include "ios/chrome/browser/ui/webui/version_ui.h"
-#include "ios/components/webui/sync_internals/sync_internals_ui.h"
-#include "ios/components/webui/web_ui_url_constants.h"
-#include "url/gurl.h"
+#import "base/bind.h"
+#import "base/location.h"
+#import "base/no_destructor.h"
+#import "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
+#import "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/chrome/browser/system_flags.h"
+#import "ios/chrome/browser/ui/webui/about_ui.h"
+#import "ios/chrome/browser/ui/webui/autofill_and_password_manager_internals/autofill_internals_ui_ios.h"
+#import "ios/chrome/browser/ui/webui/autofill_and_password_manager_internals/password_manager_internals_ui_ios.h"
+#import "ios/chrome/browser/ui/webui/crashes_ui.h"
+#import "ios/chrome/browser/ui/webui/download_internals_ui.h"
+#import "ios/chrome/browser/ui/webui/flags_ui.h"
+#import "ios/chrome/browser/ui/webui/gcm/gcm_internals_ui.h"
+#import "ios/chrome/browser/ui/webui/inspect/inspect_ui.h"
+#import "ios/chrome/browser/ui/webui/interstitials/interstitial_ui.h"
+#import "ios/chrome/browser/ui/webui/local_state/local_state_ui.h"
+#import "ios/chrome/browser/ui/webui/management/management_ui.h"
+#import "ios/chrome/browser/ui/webui/net_export/net_export_ui.h"
+#import "ios/chrome/browser/ui/webui/ntp_tiles_internals_ui.h"
+#import "ios/chrome/browser/ui/webui/omaha_ui.h"
+#import "ios/chrome/browser/ui/webui/optimization_guide_internals/optimization_guide_internals_ui.h"
+#import "ios/chrome/browser/ui/webui/policy/policy_ui.h"
+#import "ios/chrome/browser/ui/webui/prefs_internals_ui.h"
+#import "ios/chrome/browser/ui/webui/signin_internals_ui_ios.h"
+#import "ios/chrome/browser/ui/webui/terms_ui.h"
+#import "ios/chrome/browser/ui/webui/translate_internals/translate_internals_ui.h"
+#import "ios/chrome/browser/ui/webui/ukm_internals_ui.h"
+#import "ios/chrome/browser/ui/webui/user_actions_ui.h"
+#import "ios/chrome/browser/ui/webui/version_ui.h"
+#import "ios/components/webui/sync_internals/sync_internals_ui.h"
+#import "ios/components/webui/web_ui_url_constants.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -96,6 +98,10 @@ WebUIIOSFactoryFunction GetWebUIIOSFactoryFunction(const GURL& url) {
     return &NewWebUIIOS<NTPTilesInternalsUI>;
   if (url_host == kChromeUIOmahaHost)
     return &NewWebUIIOS<OmahaUI>;
+  if (url_host ==
+      optimization_guide_internals::kChromeUIOptimizationGuideInternalsHost) {
+    return &NewWebUIIOS<OptimizationGuideInternalsUI>;
+  }
   if (url_host == kChromeUIPasswordManagerInternalsHost)
     return &NewWebUIIOS<PasswordManagerInternalsUIIOS>;
   if (url_host == kChromeUIPrefsInternalsHost)

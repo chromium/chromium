@@ -62,6 +62,7 @@ repack("repack_unscaled_resources") {
     "$root_gen_dir/components/components_resources.pak",
     "$root_gen_dir/components/dev_ui_components_resources.pak",
     "$root_gen_dir/components/download_internals_resources.pak",
+    "$root_gen_dir/components/optimization_guide_internals_resources.pak",
     "$root_gen_dir/components/sync_driver_sync_internals_resources.pak",
     "$root_gen_dir/ios/chrome/ios_resources.pak",
     "$root_gen_dir/ios/web/ios_web_resources.pak",
@@ -72,6 +73,7 @@ repack("repack_unscaled_resources") {
   deps = [
     ":ios_resources",
     "//components/download/resources/download_internals:resources",
+    "//components/optimization_guide/optimization_guide_internals/resources",
     "//components/resources",
     "//components/sync/driver/resources",
     "//ios/web:resources",

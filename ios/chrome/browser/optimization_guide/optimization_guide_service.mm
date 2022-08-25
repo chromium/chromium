@@ -15,10 +15,8 @@
 #import "components/optimization_guide/core/hints_processing_util.h"
 #import "components/optimization_guide/core/optimization_guide_constants.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/optimization_guide/core/optimization_guide_logger.h"
 #import "components/optimization_guide/core/optimization_guide_navigation_data.h"
-#import "components/optimization_guide/core/optimization_guide_permissions_util.h"
 #import "components/optimization_guide/core/optimization_guide_store.h"
 #import "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/prediction_manager.h"
@@ -151,6 +149,14 @@ OptimizationGuideService::OptimizationGuideService(
   // assumed that all clients that had the previous path have had their previous
   // stores deleted.
   DeleteOldStorePaths(profile_path);
+
+  OPTIMIZATION_GUIDE_LOG(
+      optimization_guide_common::mojom::LogSource::SERVICE_AND_SETTINGS,
+      optimization_guide_logger_,
+      "OptimizationGuide: KeyedService is initalized");
+
+  optimization_guide::LogFeatureFlagsInfo(optimization_guide_logger_.get(),
+                                          off_the_record_, pref_service);
 }
 
 OptimizationGuideService::~OptimizationGuideService() {

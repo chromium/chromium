@@ -228,7 +228,7 @@ class PageContentAnnotationsWebContentsObserverTest
 
     // Overwrite Google base URL.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kGoogleBaseURL, "http://default-engine.com/");
+        ::switches::kGoogleBaseURL, "http://default-engine.com/");
   }
 
   void TearDown() override {

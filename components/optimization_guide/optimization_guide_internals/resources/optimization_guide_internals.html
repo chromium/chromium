@@ -12,6 +12,11 @@ found in the LICENSE file.
     <meta name="viewport" content="width=device-width">
     <link rel="stylesheet" href="optimization_guide_internals.css">
     <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+<if expr="is_ios">
+    <!-- TODO(crbug.com/487000): Remove this once injected by web. -->
+    <script src="chrome://resources/js/ios/web_ui.js"></script>
+    <script src="chrome://resources/js/ios/mojo_api.js"></script>
+</if>
   </head>
 
   <body>

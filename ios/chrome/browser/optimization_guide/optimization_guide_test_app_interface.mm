@@ -70,4 +70,15 @@ optimization_guide::testing::TestHintsComponentCreator
   service->RegisterOptimizationTypes({type});
 }
 
++ (void)canApplyOptimization:(NSString*)url
+                        type:(optimization_guide::proto::OptimizationType)type
+                    metadata:
+                        (optimization_guide::OptimizationMetadata*)metadata {
+  OptimizationGuideService* service =
+      OptimizationGuideServiceFactory::GetForBrowserState(
+          chrome_test_util::GetOriginalBrowserState());
+  service->CanApplyOptimization(GURL(base::SysNSStringToUTF8(url)), type,
+                                metadata);
+}
+
 @end

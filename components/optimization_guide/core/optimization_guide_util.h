@@ -10,6 +10,8 @@
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
+#include "components/optimization_guide/core/optimization_guide_permissions_util.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -24,6 +26,9 @@
     if (optimization_guide::switches::IsDebugLogsEnabled())                    \
       DVLOG(0) << message;                                                     \
   } while (0)
+
+class OptimizationGuideLogger;
+class PrefService;
 
 namespace optimization_guide {
 
@@ -70,6 +75,10 @@ std::string GetStringForOptimizationGuideDecision(
 // Returns client's origin info, including platform and milestone.
 proto::OriginInfo GetClientOriginInfo();
 
+// Logs info about the common optimization guide feature flags.
+void LogFeatureFlagsInfo(OptimizationGuideLogger* optimization_guide_logger,
+                         bool is_off_the_record,
+                         PrefService* pref_service);
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_UTIL_H_

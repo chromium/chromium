@@ -157,6 +157,7 @@ source_set("chrome_url_constants") {
 
   deps = [
     "//base",
+    "//components/optimization_guide/optimization_guide_internals/webui:url_constants",
     "//ios/components/webui:url_constants",
   ]
   frameworks = [ "UIKit.framework" ]

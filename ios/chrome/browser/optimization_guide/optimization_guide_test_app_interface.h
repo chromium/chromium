@@ -9,6 +9,10 @@
 
 #include "components/optimization_guide/proto/hints.pb.h"
 
+namespace optimization_guide {
+class OptimizationMetadata;
+}  // namespace optimization_guide
+
 class OptimizationGuideTestAppInterfaceWrapper {
  public:
   static void SetOptimizationGuideServiceUrl(NSString* url);
@@ -26,6 +30,13 @@ class OptimizationGuideTestAppInterfaceWrapper {
 // Registers the optimization type for which hints should be fetched for.
 + (void)registerOptimizationType:
     (optimization_guide::proto::OptimizationType)type;
+
+// Invokes `CanApplyOptimization` on the the host for its side effect but does
+// not return anything.
++ (void)canApplyOptimization:(NSString*)url
+                        type:(optimization_guide::proto::OptimizationType)type
+                    metadata:
+                        (optimization_guide::OptimizationMetadata*)metadata;
 
 @end
 

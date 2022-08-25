@@ -10,6 +10,8 @@
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_logger.h"
+#include "components/prefs/pref_service.h"
 #include "net/base/url_util.h"
 #include "url/url_canon.h"
 
@@ -65,6 +67,43 @@ optimization_guide::proto::OriginInfo GetClientOriginInfo() {
   optimization_guide::proto::OriginInfo origin_info;
   origin_info.set_platform(GetPlatform());
   return origin_info;
+}
+
+void LogFeatureFlagsInfo(OptimizationGuideLogger* optimization_guide_logger,
+                         bool is_off_the_record,
+                         PrefService* pref_service) {
+  if (!optimization_guide::switches::IsDebugLogsEnabled())
+    return;
+  if (!optimization_guide::features::IsOptimizationHintsEnabled()) {
+    OPTIMIZATION_GUIDE_LOG(
+        optimization_guide_common::mojom::LogSource::SERVICE_AND_SETTINGS,
+        optimization_guide_logger, "FEATURE_FLAG Hints component disabled");
+  }
+  if (!optimization_guide::features::IsRemoteFetchingEnabled()) {
+    OPTIMIZATION_GUIDE_LOG(
+        optimization_guide_common::mojom::LogSource::SERVICE_AND_SETTINGS,
+        optimization_guide_logger,
+        "FEATURE_FLAG remote fetching feature disabled");
+  }
+  if (!optimization_guide::IsUserPermittedToFetchFromRemoteOptimizationGuide(
+          is_off_the_record, pref_service)) {
+    OPTIMIZATION_GUIDE_LOG(
+        optimization_guide_common::mojom::LogSource::SERVICE_AND_SETTINGS,
+        optimization_guide_logger,
+        "FEATURE_FLAG remote fetching user permission disabled");
+  }
+  if (!optimization_guide::features::IsPushNotificationsEnabled()) {
+    OPTIMIZATION_GUIDE_LOG(
+        optimization_guide_common::mojom::LogSource::SERVICE_AND_SETTINGS,
+        optimization_guide_logger,
+        "FEATURE_FLAG remote push notification feature disabled");
+  }
+  if (!optimization_guide::features::IsModelDownloadingEnabled()) {
+    OPTIMIZATION_GUIDE_LOG(
+        optimization_guide_common::mojom::LogSource::SERVICE_AND_SETTINGS,
+        optimization_guide_logger,
+        "FEATURE_FLAG model downloading feature disabled");
+  }
 }
 
 }  // namespace optimization_guide

@@ -501,6 +501,10 @@ extern const char kOmniboxZeroSuggestPrefetchingDescription[];
 extern const char kIOSOmniboxUpdatedPopupUIName[];
 extern const char kIOSOmniboxUpdatedPopupUIDescription[];
 
+// Title and description for the flag to enable Optimization Guide debug logs.
+extern const char kOptimizationGuideDebugLogsName[];
+extern const char kOptimizationGuideDebugLogsDescription[];
+
 // Title and description for the flag to enable TFLite model downloading.
 extern const char kOptimizationGuideModelDownloadingName[];
 extern const char kOptimizationGuideModelDownloadingDescription[];

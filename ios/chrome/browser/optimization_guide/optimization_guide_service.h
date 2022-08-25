@@ -138,6 +138,11 @@ class OptimizationGuideService
   // Getter for the prediction manager.
   optimization_guide::PredictionManager* GetPredictionManager();
 
+  // Getter for the optimization guide logger.
+  OptimizationGuideLogger* GetOptimizationGuideLogger() {
+    return optimization_guide_logger_.get();
+  }
+
  private:
   friend class OptimizationGuideServiceTest;
   friend class OptimizationGuideTabHelper;

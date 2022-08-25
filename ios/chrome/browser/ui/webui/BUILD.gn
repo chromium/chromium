@@ -113,6 +113,7 @@ source_set("webui_internal") {
   ]
   deps = [
     ":webui",
+    "//components/optimization_guide/optimization_guide_internals/webui:url_constants",
     "//components/resources",
     "//components/signin/public/identity_manager",
     "//components/sync/invalidations",
@@ -126,6 +127,7 @@ source_set("webui_internal") {
     "//ios/chrome/browser/ui/webui/interstitials",
     "//ios/chrome/browser/ui/webui/local_state",
     "//ios/chrome/browser/ui/webui/net_export",
+    "//ios/chrome/browser/ui/webui/optimization_guide_internals",
     "//ios/chrome/browser/ui/webui/policy",
     "//ios/chrome/browser/ui/webui/translate_internals",
     "//ios/chrome/common",
@@ -153,6 +155,7 @@ source_set("eg2_tests") {
     "web_ui_egtest.mm",
   ]
   deps = [
+    ":eg_test_support+eg2",
     "//base",
     "//base/test:test_support",
     "//components/strings",
@@ -168,4 +171,25 @@ source_set("eg2_tests") {
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "web_ui_test_utils.h",
+    "web_ui_test_utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/components/webui:url_constants",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+    "//url",
+  ]
 }
