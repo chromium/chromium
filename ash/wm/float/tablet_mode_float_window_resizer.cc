@@ -34,17 +34,22 @@ constexpr int kDistanceFromEdge = 8;
 constexpr int kMinDragDistance = 96;
 constexpr int kScreenEdgeInsetForSnap = 48;
 
+// The minimum distance that will be considered as a drag event.
+constexpr float kMinimumDragDistance = 5.f;
+
 }  // namespace
 
 TabletModeFloatWindowResizer::TabletModeFloatWindowResizer(
     WindowState* window_state)
     : WindowResizer(window_state),
       split_view_drag_indicators_(std::make_unique<SplitViewDragIndicators>(
-          window_state->window()->GetRootWindow())) {
+          window_state->window()->GetRootWindow())),
+      last_location_in_parent_(details().initial_location_in_parent) {
   DCHECK(chromeos::wm::features::IsFloatWindowEnabled());
   // TODO(sophiewen): Remove this once the untuck window widget is implemented.
   Shell::Get()->float_controller()->MaybeUntuckFloatedWindowForTablet(
-      window_state->window());
+      GetTarget());
+  split_view_drag_indicators_->SetDraggedWindow(GetTarget());
 }
 
 TabletModeFloatWindowResizer::~TabletModeFloatWindowResizer() {
@@ -82,6 +87,15 @@ void TabletModeFloatWindowResizer::Drag(const gfx::PointF& location_in_parent,
 }
 
 void TabletModeFloatWindowResizer::CompleteDrag() {
+  // Revert the drag if the window hasn't moved enough. This will prevent
+  // accidental magnetisms.
+  const gfx::Vector2dF distance =
+      last_location_in_parent_ - details().initial_location_in_parent;
+  if (distance.Length() < kMinimumDragDistance) {
+    RevertDrag();
+    return;
+  }
+
   aura::Window* float_window = GetTarget();
   if (snap_position_ != SplitViewController::NONE) {
     // Let `SplitViewController` handle windows that should be snapped.
