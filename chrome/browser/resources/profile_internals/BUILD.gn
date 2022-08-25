@@ -2,76 +2,20 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/browser/resources/tools/build_webui.gni")
 import("//chrome/common/features.gni")
-import("//tools/grit/grit_rule.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_wrapper.gni")
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(!is_android)
 
-# Move everything to one folder using preprocess_if_expr.
-preprocess_folder = "preprocessed"
+build_webui("build") {
+  grd_prefix = "profile_internals"
+  static_files = [ "profile_internals.html" ]
+  web_component_files = [ "profile_internals_app.ts" ]
+  non_web_component_files = [ "profile_internals_browser_proxy.ts" ]
 
-preprocess_if_expr("preprocess") {
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [
-    "profile_internals_app.ts",
-    "profile_internals_browser_proxy.ts",
-  ]
-}
-
-preprocess_if_expr("preprocess_generated") {
-  deps = [ ":html_wrapper_files" ]
-  in_folder = target_gen_dir
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [ "profile_internals_app.html.ts" ]
-}
-
-grit("resources") {
-  enable_input_discovery_for_gn_analyze = false
-  source = "$target_gen_dir/resources.grd"
-  deps = [ ":build_grd" ]
-  outputs = [
-    "grit/profile_internals_resources.h",
-    "grit/profile_internals_resources_map.cc",
-    "grit/profile_internals_resources_map.h",
-    "profile_internals_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chrome"
-}
-
-html_to_wrapper("html_wrapper_files") {
-  in_files = [ "profile_internals_app.html" ]
-}
-
-ts_library("build_ts") {
-  root_dir = "$target_gen_dir/$preprocess_folder"
-  out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "tsconfig_base.json"
-  in_files = [
-    "profile_internals_app.ts",
-    "profile_internals_app.html.ts",
-    "profile_internals_browser_proxy.ts",
-  ]
-  definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
-  deps = [
+  ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+  ts_deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",
   ]
-  extra_deps = [
-    ":preprocess",
-    ":preprocess_generated",
-  ]
-}
-
-generate_grd("build_grd") {
-  grd_prefix = "profile_internals"
-  out_grd = "$target_gen_dir/resources.grd"
-  input_files = [ "profile_internals.html" ]
-  input_files_base_dir = rebase_path(".", "//")
-  deps = [ ":build_ts" ]
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
 }
