@@ -2376,11 +2376,12 @@ void FormStructure::ExtractParseableFieldNames() {
   }
 
   // Determine the parseable names and write them into the corresponding field.
-  std::vector<std::u16string> parseable_names = GetParseableNames(names);
+  std::vector<base::StringPiece16> parseable_names =
+      GetParseableNamesAsStringPiece(&names);
   DCHECK_EQ(parseable_names.size(), field_count());
   size_t idx = 0;
   for (auto& field : *this) {
-    field->set_parseable_name(parseable_names.at(idx++));
+    field->set_parseable_name(std::u16string(parseable_names[idx++]));
   }
 }
 
