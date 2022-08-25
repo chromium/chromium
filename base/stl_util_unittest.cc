@@ -302,14 +302,5 @@ TEST(Erase, IsNotIn) {
   EXPECT_EQ(expected, lhs);
 }
 
-TEST(STLUtilTest, OptionalOrNullptr) {
-  absl::optional<float> optional;
-  EXPECT_EQ(nullptr, base::OptionalOrNullptr(optional));
-
-  optional = 0.1f;
-  EXPECT_EQ(&optional.value(), base::OptionalOrNullptr(optional));
-  EXPECT_NE(nullptr, base::OptionalOrNullptr(optional));
-}
-
 }  // namespace
 }  // namespace base

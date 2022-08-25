@@ -14,7 +14,9 @@
 
 #include "base/check.h"
 #include "base/ranges/algorithm.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+// TODO(https://crbug.com/1356184): Remove this. Temporarily forward to ease the
+// migration to the new location.
+#include "base/types/optional_util.h"
 
 namespace base {
 
@@ -174,25 +176,6 @@ class IsNotIn {
   typename Collection::const_iterator i_;
   const typename Collection::const_iterator end_;
 };
-
-// Helper for returning the optional value's address, or nullptr.
-template <class T>
-T* OptionalOrNullptr(absl::optional<T>& optional) {
-  return optional.has_value() ? &optional.value() : nullptr;
-}
-
-template <class T>
-const T* OptionalOrNullptr(const absl::optional<T>& optional) {
-  return optional.has_value() ? &optional.value() : nullptr;
-}
-
-// Helper for creating an optional<T> from a potentially nullptr T*.
-template <class T>
-absl::optional<T> OptionalFromPtr(const T* value) {
-  if (value)
-    return absl::optional<T>(*value);
-  return absl::nullopt;
-}
 
 }  // namespace base
 
