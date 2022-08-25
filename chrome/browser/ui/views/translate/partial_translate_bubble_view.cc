@@ -629,7 +629,7 @@ std::unique_ptr<views::View> PartialTranslateBubbleView::CreateViewErrorNoTitle(
   // Title row.
   auto title_row = std::make_unique<views::View>();
   title_row->SetLayoutManager(std::make_unique<views::FlexLayout>());
-  int error_message_id = IDS_TRANSLATE_BUBBLE_COULD_NOT_TRANSLATE_TITLE;
+  int error_message_id = IDS_PARTIAL_TRANSLATE_BUBBLE_COULD_NOT_TRANSLATE_TITLE;
   auto error_message_label = std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(error_message_id),
       views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY);
