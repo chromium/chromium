@@ -181,7 +181,7 @@ void NeuralStylusPalmDetectionFilter::Filter(
     PalmFilterStroke& stroke = stroke_it->second;
     if (end_of_stroke) {
       // This is a stroke that hasn't had a decision yet, so we force decide.
-      if (stroke.samples().size() < config.max_sample_count) {
+      if (stroke.samples_seen() < config.max_sample_count) {
         slots_to_decide.insert(slot);
       }
 
