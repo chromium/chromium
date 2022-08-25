@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
 
+#include <algorithm>
+
 #include "base/numerics/checked_math.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
@@ -13,7 +15,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
-#include "third_party/blink/renderer/modules/ml/webnn/ml_operator.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
@@ -103,6 +104,57 @@ bool ValidateClampOptions(const MLClampOptions* options,
     }
   }
   return true;
+}
+
+absl::optional<Vector<int32_t>> BroadcastShapes(const Vector<int32_t>& dims_a,
+                                                const Vector<int32_t>& dims_b) {
+  // According WebNN spec:
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-binary, the element-wise
+  // binary operation will be broadcasted according to numpy-broadcasting-rule:
+  // https://numpy.org/doc/stable/user/basics.broadcasting.html#general-broadcasting-rules.
+  // The rank of the output tensor is the maximum rank of the input tensors.
+  auto rank_a = dims_a.size(), rank_b = dims_b.size();
+  auto rank_output = std::max(rank_a, rank_b);
+  Vector<int32_t> dims_output(rank_output);
+  for (wtf_size_t i = 0; i < rank_output; ++i) {
+    auto dim_a = i < rank_a ? dims_a[rank_a - i - 1] : 1;
+    DCHECK_GT(dim_a, 0);
+    auto dim_b = i < rank_b ? dims_b[rank_b - i - 1] : 1;
+    DCHECK_GT(dim_b, 0);
+    // Two dimensions are compatible when they are equal, or one of them is 1.
+    if (dim_a != dim_b && dim_a != 1 && dim_b != 1) {
+      return absl::nullopt;
+    }
+    // For each dimension of the output tensor, its size is the maximum size
+    // along that dimension of the input tensors.
+    dims_output[rank_output - i - 1] = std::max(dim_a, dim_b);
+  }
+  return dims_output;
+}
+
+MLOperand* BuildElementWiseBinary(MLGraphBuilder* builder,
+                                  MLOperator::OperatorKind kind,
+                                  const MLOperand* a,
+                                  const MLOperand* b,
+                                  ExceptionState& exception_state) {
+  if (a->Type() != b->Type()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "The input types don't match.");
+    return nullptr;
+  }
+  absl::optional<Vector<int32_t>> dims_output =
+      BroadcastShapes(a->Dimensions(), b->Dimensions());
+  if (!dims_output) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "The input shapes are not broadcastable.");
+    return nullptr;
+  }
+  auto* binary = MakeGarbageCollected<MLOperator>(builder, kind);
+  auto* output = MLOperand::CreateOutput(
+      builder, a->Type(), std::move(dims_output.value()), binary);
+  binary->Connect({a, b}, {output});
+  return output;
 }
 
 }  // namespace
@@ -207,15 +259,19 @@ MLOperand* MLGraphBuilder::conv2d(const MLOperand* input,
   return nullptr;
 }
 
-MLOperand* MLGraphBuilder::add(const MLOperand* a,
-                               const MLOperand* b,
-                               ExceptionState& exception_state) {
-  // TODO(crbug.com/1273291): Implement this on operating systems to access
-  // hardware acceleration.
-  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                    "Not implemented");
-  return nullptr;
-}
+#define BUILD_ELEMENTWISE_BINARY_OP(op, op_kind)                              \
+  MLOperand* MLGraphBuilder::op(const MLOperand* a, const MLOperand* b,       \
+                                ExceptionState& exception_state) {            \
+    return BuildElementWiseBinary(this, MLOperator::OperatorKind::op_kind, a, \
+                                  b, exception_state);                        \
+  }
+
+BUILD_ELEMENTWISE_BINARY_OP(add, kAdd)
+BUILD_ELEMENTWISE_BINARY_OP(sub, kSub)
+BUILD_ELEMENTWISE_BINARY_OP(mul, kMul)
+BUILD_ELEMENTWISE_BINARY_OP(div, kDiv)
+BUILD_ELEMENTWISE_BINARY_OP(min, kMin)
+BUILD_ELEMENTWISE_BINARY_OP(max, kMax)
 
 MLOperand* MLGraphBuilder::gemm(const MLOperand* a,
                                 const MLOperand* b,

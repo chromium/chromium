@@ -5128,10 +5128,15 @@ interface MLGraphBuilder
     method constant
     method constructor
     method conv2d
+    method div
     method gemm
     method input
+    method max
+    method min
+    method mul
     method reshape
     method softmax
+    method sub
 interface MLModelLoader
     attribute @@toStringTag
     method constructor

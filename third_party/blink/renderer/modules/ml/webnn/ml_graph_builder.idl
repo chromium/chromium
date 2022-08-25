@@ -70,6 +70,11 @@ dictionary MLClampOptions {
 
   // Element-wise binary operations
   [RaisesException] MLOperand add(MLOperand a, MLOperand b);
+  [RaisesException] MLOperand sub(MLOperand a, MLOperand b);
+  [RaisesException] MLOperand mul(MLOperand a, MLOperand b);
+  [RaisesException] MLOperand div(MLOperand a, MLOperand b);
+  [RaisesException] MLOperand max(MLOperand a, MLOperand b);
+  [RaisesException] MLOperand min(MLOperand a, MLOperand b);
 
   [RaisesException] MLOperand gemm(MLOperand a, MLOperand b, optional MLGemmOptions options = {});
 

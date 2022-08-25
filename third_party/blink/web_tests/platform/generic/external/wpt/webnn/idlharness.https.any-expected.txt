@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 386 tests; 146 PASS, 240 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 386 tests; 151 PASS, 235 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL idl_test setup promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'MLGraphBuilder': parameter 1 is not of type 'MLContext'."
 PASS idl_test validation
 PASS Partial interface MLContext: original interface defined
@@ -168,11 +168,11 @@ FAIL MLGraphBuilder interface: operation concat(sequence<MLOperand>, long) asser
 PASS MLGraphBuilder interface: operation conv2d(MLOperand, MLOperand, optional MLConv2dOptions)
 FAIL MLGraphBuilder interface: operation convTranspose2d(MLOperand, MLOperand, optional MLConvTranspose2dOptions) assert_own_property: interface prototype object missing non-static operation expected property "convTranspose2d" missing
 PASS MLGraphBuilder interface: operation add(MLOperand, MLOperand)
-FAIL MLGraphBuilder interface: operation sub(MLOperand, MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "sub" missing
-FAIL MLGraphBuilder interface: operation mul(MLOperand, MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "mul" missing
-FAIL MLGraphBuilder interface: operation div(MLOperand, MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "div" missing
-FAIL MLGraphBuilder interface: operation max(MLOperand, MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "max" missing
-FAIL MLGraphBuilder interface: operation min(MLOperand, MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "min" missing
+PASS MLGraphBuilder interface: operation sub(MLOperand, MLOperand)
+PASS MLGraphBuilder interface: operation mul(MLOperand, MLOperand)
+PASS MLGraphBuilder interface: operation div(MLOperand, MLOperand)
+PASS MLGraphBuilder interface: operation max(MLOperand, MLOperand)
+PASS MLGraphBuilder interface: operation min(MLOperand, MLOperand)
 FAIL MLGraphBuilder interface: operation pow(MLOperand, MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "pow" missing
 FAIL MLGraphBuilder interface: operation abs(MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "abs" missing
 FAIL MLGraphBuilder interface: operation ceil(MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "ceil" missing
