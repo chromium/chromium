@@ -17,6 +17,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/input_event_activation_protector.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/window/non_client_view.h"
 
 namespace gfx {
@@ -259,9 +260,10 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   int GetMainImageLeftInsets() const;
 
   // Helper method to create a label with text style
-  static std::unique_ptr<Label> CreateLabelWithContext(
+  static std::unique_ptr<Label> CreateLabelWithContextAndStyle(
       const std::u16string& label_text,
-      style::TextContext text_context);
+      style::TextContext text_context,
+      style::TextStyle text_style);
 
   // The bubble border.
   raw_ptr<BubbleBorder> bubble_border_ = nullptr;

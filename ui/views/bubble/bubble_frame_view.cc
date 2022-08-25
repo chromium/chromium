@@ -40,6 +40,7 @@
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/paint_info.h"
 #include "ui/views/resources/grit/views_resources.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -108,7 +109,9 @@ BubbleFrameView::BubbleFrameView(const gfx::Insets& title_margins,
       main_image_(AddChildView(std::make_unique<ImageView>())),
       default_title_(AddChildView(CreateDefaultTitleLabel(std::u16string()))),
       subtitle_(AddChildView(
-          CreateLabelWithContext(std::u16string(), style::CONTEXT_LABEL))) {
+          CreateLabelWithContextAndStyle(std::u16string(),
+                                         style::CONTEXT_LABEL,
+                                         style::STYLE_SECONDARY))) {
   default_title_->SetVisible(false);
   main_image_->SetVisible(false);
   subtitle_->SetVisible(false);
@@ -159,7 +162,8 @@ BubbleFrameView::~BubbleFrameView() = default;
 // static
 std::unique_ptr<Label> BubbleFrameView::CreateDefaultTitleLabel(
     const std::u16string& title_text) {
-  return CreateLabelWithContext(title_text, style::CONTEXT_DIALOG_TITLE);
+  return CreateLabelWithContextAndStyle(title_text, style::CONTEXT_DIALOG_TITLE,
+                                        style::STYLE_PRIMARY);
 }
 
 // static
@@ -1062,10 +1066,11 @@ int BubbleFrameView::GetMainImageLeftInsets() const {
 }
 
 // static
-std::unique_ptr<Label> BubbleFrameView::CreateLabelWithContext(
+std::unique_ptr<Label> BubbleFrameView::CreateLabelWithContextAndStyle(
     const std::u16string& label_text,
-    style::TextContext text_context) {
-  auto label = std::make_unique<Label>(label_text, text_context);
+    style::TextContext text_context,
+    style::TextStyle text_style) {
+  auto label = std::make_unique<Label>(label_text, text_context, text_style);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetCollapseWhenHidden(true);
   label->SetMultiLine(true);
