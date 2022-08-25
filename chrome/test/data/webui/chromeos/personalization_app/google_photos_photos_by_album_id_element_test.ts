@@ -232,7 +232,7 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
     const photosEls = querySelectorAll(photoSelector) as WallpaperGridItem[];
     assertEquals(photosEls.length, photosByAlbumId[album.id]?.length);
     photosEls.forEach((photoEl, i) => {
-      assertEquals(photoEl.imageSrc, photosByAlbumId[album.id]![i]!.url.url);
+      assertEquals(photoEl.src, photosByAlbumId[album.id]![i]!.url);
     });
 
     // Select the other album id for which data is already loaded. Photos should
@@ -690,7 +690,7 @@ suite('GooglePhotosPhotosByAlbumIdTest', function() {
     const photoSelector = 'wallpaper-grid-item:not([hidden]).photo';
     const photoEls = querySelectorAll(photoSelector) as WallpaperGridItem[];
     assertEquals(photoEls.length, 1);
-    assertEquals(photoEls[0]!.imageSrc, photo.url.url);
+    assertEquals(photoEls[0]!.src, photo.url);
     assertEquals(photoEls[0]!.primaryText, undefined);
     assertEquals(photoEls[0]!.secondaryText, undefined);
 

@@ -408,7 +408,7 @@ suite('GooglePhotosPhotosTest', function() {
                   WallpaperGridItem |
               null;
           assertNotEquals(photoEl, null);
-          assertEquals(photoEl!.imageSrc, photo.url.url);
+          assertDeepEquals(photoEl!.src, photo.url);
           assertEquals(photoEl!.primaryText, undefined);
           assertEquals(photoEl!.secondaryText, undefined);
         });
@@ -814,7 +814,7 @@ suite('GooglePhotosPhotosTest', function() {
     const photoSelector = 'wallpaper-grid-item:not([hidden]).photo';
     const photoEls = querySelectorAll(photoSelector) as WallpaperGridItem[];
     assertEquals(photoEls.length, 1);
-    assertEquals(photoEls[0]!.imageSrc, photo.url.url);
+    assertDeepEquals(photoEls[0]!.src, photo.url);
     assertEquals(photoEls[0]!.primaryText, undefined);
     assertEquals(photoEls[0]!.secondaryText, undefined);
 

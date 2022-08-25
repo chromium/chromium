@@ -6,7 +6,7 @@ import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {fetchGooglePhotosAlbums, getCountText, GooglePhotosAlbum, GooglePhotosAlbums, initializeGooglePhotosData, PersonalizationActionName, PersonalizationRouter, SetErrorAction, WallpaperGridItem} from 'chrome://personalization/js/personalization_app.js';
-import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
@@ -95,7 +95,7 @@ suite('GooglePhotosAlbumsTest', function() {
     const albumEls = querySelectorAll(albumSelector) as WallpaperGridItem[];
     assertEquals(albumEls.length, albums.length);
     albumEls.forEach((albumEl, i) => {
-      assertEquals(albumEl.imageSrc, albums[i]!.preview.url);
+      assertDeepEquals(albumEl.src, albums[i]!.preview);
       assertEquals(albumEl.primaryText, albums[i]!.title);
       assertEquals(albumEl.secondaryText, getCountText(albums[i]!.photoCount));
     });

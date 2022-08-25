@@ -6,6 +6,7 @@ import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {WallpaperGridItem} from 'chrome://personalization/js/personalization_app.js';
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
@@ -45,27 +46,29 @@ suite('WallpaperGridItemTest', function() {
   });
 
   test('displays image', async () => {
-    let imageSrc = 'data:image/svg+xml;utf8,' +
-        '<svg xmlns="http://www.w3.org/2000/svg" height="100px" width="100px">' +
-        '<rect fill="red" height="100px" width="100px"></rect>' +
-        '</svg>';
+    const src: Url = {
+      url: 'data:image/svg+xml;utf8,' +
+          '<svg xmlns="http://www.w3.org/2000/svg" height="100px" width="100px">' +
+          '<rect fill="red" height="100px" width="100px"></rect>' +
+          '</svg>',
+    };
 
     // Initialize |wallpaperGridItemElement|.
-    wallpaperGridItemElement = initElement(WallpaperGridItem, {imageSrc});
+    wallpaperGridItemElement = initElement(WallpaperGridItem, {src});
     await waitAfterNextRender(wallpaperGridItemElement);
 
     // Verify state. Note that |img| is shown as |imageSrc| has already loaded.
     const img = querySelector('img');
-    assertEquals(img?.getAttribute('auto-src'), imageSrc);
+    assertEquals(img?.getAttribute('auto-src'), src.url);
     assertEquals(img?.getAttribute('aria-hidden'), 'true');
     assertEquals(img?.hasAttribute('clear-src'), true);
     assertEquals(img?.hasAttribute('hidden'), false);
     assertEquals(img?.hasAttribute('is-google-photos'), true);
 
     // Update state. Note that |img| is hidden as |imageSrc| hasn't yet loaded.
-    imageSrc = imageSrc.replace('red', 'blue');
-    wallpaperGridItemElement.imageSrc = imageSrc;
-    assertEquals(img?.getAttribute('auto-src'), imageSrc);
+    const newSrc: Url = {url: src.url.replace('red', 'blue')};
+    wallpaperGridItemElement.src = newSrc;
+    assertEquals(img?.getAttribute('auto-src'), newSrc.url);
     assertEquals(img?.hasAttribute('hidden'), true);
 
     // Verify that once |imageSrc| has loaded, |img| will be shown.

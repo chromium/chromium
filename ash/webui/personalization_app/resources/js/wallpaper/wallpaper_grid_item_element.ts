@@ -9,6 +9,7 @@
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import '../../css/common.css.js';
 
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getLoadingPlaceholderAnimationDelay} from './utils.js';
@@ -29,8 +30,8 @@ export class WallpaperGridItem extends PolymerElement {
 
   static get properties() {
     return {
-      imageSrc: {
-        type: String,
+      src: {
+        type: Url,
         observer: 'onImageSrcChanged_',
       },
 
@@ -52,7 +53,7 @@ export class WallpaperGridItem extends PolymerElement {
   }
 
   /** The source for the image to render for the grid item. */
-  imageSrc: string|undefined;
+  src: Url|undefined;
 
   /** The index of the grid item within its parent grid. */
   index: number;
@@ -76,11 +77,11 @@ export class WallpaperGridItem extends PolymerElement {
   placeholder: boolean;
 
   // Invoked on changes to |imageSrc|.
-  private onImageSrcChanged_(imageSrc: WallpaperGridItem['imageSrc']) {
+  private onImageSrcChanged_(src: WallpaperGridItem['src']) {
     // Hide the |image| element until it has successfully loaded. Note that it
     // is intentional that the |image| element remain hidden on failure.
     this.$.image.setAttribute('hidden', '');
-    this.$.image.onload = (imageSrc && imageSrc.length) ?
+    this.$.image.onload = (src && src.url.length) ?
         () => this.$.image.removeAttribute('hidden') :
         null;
   }
