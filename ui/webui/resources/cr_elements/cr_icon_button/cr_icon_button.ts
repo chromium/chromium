@@ -44,7 +44,15 @@
 import '../shared_vars_css.m.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getTemplate} from './cr_icon_button.html.js';
+
+export interface CrIconButtonElement {
+  $: {
+    icon: HTMLElement,
+  };
+}
 
 export class CrIconButtonElement extends PolymerElement {
   static get is() {
@@ -52,7 +60,7 @@ export class CrIconButtonElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -78,7 +86,6 @@ export class CrIconButtonElement extends PolymerElement {
         reflectToAttribute: true,
       },
 
-      /** @private */
       multipleIcons_: {
         type: Boolean,
         reflectToAttribute: true,
@@ -86,31 +93,33 @@ export class CrIconButtonElement extends PolymerElement {
     };
   }
 
+  disabled: boolean;
+  customTabIndex: number;
+  ironIcon: string;
+  private multipleIcons_: boolean;
+
+  /**
+   * It is possible to activate a tab when the space key is pressed down. When
+   * this element has focus, the keyup event for the space key should not
+   * perform a 'click'. |spaceKeyDown_| tracks when a space pressed and
+   * handled by this element. Space keyup will only result in a 'click' when
+   * |spaceKeyDown_| is true. |spaceKeyDown_| is set to false when element
+   * loses focus.
+   */
+  private spaceKeyDown_: boolean = false;
+
   constructor() {
     super();
-    /**
-     * It is possible to activate a tab when the space key is pressed down. When
-     * this element has focus, the keyup event for the space key should not
-     * perform a 'click'. |spaceKeyDown_| tracks when a space pressed and
-     * handled by this element. Space keyup will only result in a 'click' when
-     * |spaceKeyDown_| is true. |spaceKeyDown_| is set to false when element
-     * loses focus.
-     * @private {boolean}
-     */
-    this.spaceKeyDown_ = false;
 
     this.addEventListener('blur', this.onBlur_.bind(this));
     this.addEventListener('click', this.onClick_.bind(this));
-    this.addEventListener(
-        'keydown', e => this.onKeyDown_(/** @type {!KeyboardEvent} */ (e)));
-    this.addEventListener(
-        'keyup', e => this.onKeyUp_(/** @type {!KeyboardEvent} */ (e)));
+    this.addEventListener('keydown', this.onKeyDown_.bind(this));
+    this.addEventListener('keyup', this.onKeyUp_.bind(this));
   }
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
-    this.setAttribute('aria-disabled', 'false');
+    this.setAttribute('aria-disabled', this.disabled ? 'true' : 'false');
     if (!this.hasAttribute('role')) {
       this.setAttribute('role', 'button');
     }
@@ -119,21 +128,11 @@ export class CrIconButtonElement extends PolymerElement {
     }
   }
 
-  /** @param {string} className */
-  toggleClass(className) {
-    if (this.classList.contains(className)) {
-      this.classList.remove(className);
-    } else {
-      this.classList.add(className);
-    }
+  toggleClass(className: string) {
+    this.classList.toggle(className);
   }
 
-  /**
-   * @param {boolean} newValue
-   * @param {boolean} oldValue
-   * @private
-   */
-  disabledChanged_(newValue, oldValue) {
+  private disabledChanged_(newValue: boolean, oldValue?: boolean) {
     if (!newValue && oldValue === undefined) {
       return;
     }
@@ -146,34 +145,27 @@ export class CrIconButtonElement extends PolymerElement {
 
   /**
    * Updates the tabindex HTML attribute to the actual value.
-   * @private
    */
-  applyTabIndex_() {
+  private applyTabIndex_() {
     let value = this.customTabIndex;
     if (value === undefined) {
       value = this.disabled ? -1 : 0;
     }
-    this.setAttribute('tabindex', value);
+    this.setAttribute('tabindex', value.toString());
   }
 
-  /** @private */
-  onBlur_() {
+  private onBlur_() {
     this.spaceKeyDown_ = false;
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onClick_(e) {
+  private onClick_(e: Event) {
     if (this.disabled) {
       e.stopImmediatePropagation();
     }
   }
 
-  /** @private */
-  onIronIconChanged_() {
-    this.shadowRoot.querySelectorAll('iron-icon').forEach(el => el.remove());
+  private onIronIconChanged_() {
+    this.shadowRoot!.querySelectorAll('iron-icon').forEach(el => el.remove());
     if (!this.ironIcon) {
       return;
     }
@@ -184,17 +176,13 @@ export class CrIconButtonElement extends PolymerElement {
       ironIcon.icon = icon;
       this.$.icon.appendChild(ironIcon);
       if (ironIcon.shadowRoot) {
-        ironIcon.shadowRoot.querySelectorAll('svg', 'img')
+        ironIcon.shadowRoot.querySelectorAll('svg, img')
             .forEach(child => child.setAttribute('role', 'none'));
       }
     });
   }
 
-  /**
-   * @param {!KeyboardEvent} e
-   * @private
-   */
-  onKeyDown_(e) {
+  private onKeyDown_(e: KeyboardEvent) {
     if (e.key !== ' ' && e.key !== 'Enter') {
       return;
     }
@@ -212,11 +200,7 @@ export class CrIconButtonElement extends PolymerElement {
     }
   }
 
-  /**
-   * @param {!KeyboardEvent} e
-   * @private
-   */
-  onKeyUp_(e) {
+  private onKeyUp_(e: KeyboardEvent) {
     if (e.key === ' ' || e.key === 'Enter') {
       e.preventDefault();
       e.stopPropagation();
@@ -226,6 +210,12 @@ export class CrIconButtonElement extends PolymerElement {
       this.spaceKeyDown_ = false;
       this.click();
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-icon-button': CrIconButtonElement;
   }
 }
 

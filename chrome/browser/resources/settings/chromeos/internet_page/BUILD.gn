@@ -71,7 +71,6 @@ js_library("internet_detail_menu") {
     "//ui/webui/resources/cr_components/chromeos/cellular_setup:esim_manager_listener_behavior.m",
     "//ui/webui/resources/cr_components/chromeos/network:mojo_interface_provider.m",
     "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
@@ -139,7 +138,6 @@ js_library("internet_known_networks_page") {
     "//ui/webui/resources/cr_components/chromeos/network:mojo_interface_provider.m",
     "//ui/webui/resources/cr_components/chromeos/network:network_listener_behavior.m",
     "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
@@ -174,7 +172,6 @@ js_library("internet_page") {
     "//ui/webui/resources/cr_components/chromeos/network:network_listener_behavior.m",
     "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
     "//ui/webui/resources/cr_components/chromeos/network:sim_lock_dialogs.m",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button",
     "//ui/webui/resources/cr_elements/policy:cr_policy_indicator",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
@@ -215,7 +212,6 @@ js_library("internet_subpage") {
     "//ui/webui/resources/cr_components/chromeos/network:network_list.m",
     "//ui/webui/resources/cr_components/chromeos/network:network_listener_behavior.m",
     "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button",
     "//ui/webui/resources/cr_elements/policy:cr_policy_indicator",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
@@ -272,7 +268,6 @@ js_library("network_summary_item") {
     "//ui/webui/resources/cr_components/chromeos/network:network_siminfo.m",
     "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
     "//ui/webui/resources/cr_components/chromeos/traffic_counters:traffic_counters",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button",
     "//ui/webui/resources/cr_elements/policy:cr_policy_indicator_behavior",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -307,7 +302,6 @@ js_library("cellular_networks_list") {
     "//ui/webui/resources/cr_components/chromeos/cellular_setup:esim_manager_utils.m",
     "//ui/webui/resources/cr_components/chromeos/network:cellular_utils.m",
     "//ui/webui/resources/cr_components/chromeos/network:network_list_types.m",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
