@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/sync/sync_service_ash.h"
+#include "chrome/browser/ash/sync/sync_mojo_service_ash.h"
 
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -16,21 +16,24 @@ namespace ash {
 
 namespace {
 
-class SyncServiceAshTest : public testing::Test {
+class SyncMojoServiceAshTest : public testing::Test {
  public:
-  SyncServiceAshTest() {
+  SyncMojoServiceAshTest() {
     override_features_.InitWithFeatures(
         /*enabled_features=*/{syncer::kSyncChromeOSExplicitPassphraseSharing,
                               syncer::kSyncChromeOSAppsToggleSharing},
         /*disabled_features=*/{});
-    sync_service_ash_ = std::make_unique<SyncServiceAsh>(&sync_service_);
+    sync_mojo_service_ash_ =
+        std::make_unique<SyncMojoServiceAsh>(&sync_service_);
   }
 
-  SyncServiceAshTest(const SyncServiceAshTest&) = delete;
-  SyncServiceAshTest& operator=(const SyncServiceAshTest&) = delete;
-  ~SyncServiceAshTest() override = default;
+  SyncMojoServiceAshTest(const SyncMojoServiceAshTest&) = delete;
+  SyncMojoServiceAshTest& operator=(const SyncMojoServiceAshTest&) = delete;
+  ~SyncMojoServiceAshTest() override = default;
 
-  SyncServiceAsh* sync_service_ash() { return sync_service_ash_.get(); }
+  SyncMojoServiceAsh* sync_mojo_service_ash() {
+    return sync_mojo_service_ash_.get();
+  }
 
   void RunAllPendingTasks() { task_environment_.RunUntilIdle(); }
 
@@ -39,15 +42,15 @@ class SyncServiceAshTest : public testing::Test {
   base::test::ScopedFeatureList override_features_;
 
   testing::NiceMock<syncer::MockSyncService> sync_service_;
-  std::unique_ptr<SyncServiceAsh> sync_service_ash_;
+  std::unique_ptr<SyncMojoServiceAsh> sync_mojo_service_ash_;
 };
 
-TEST_F(SyncServiceAshTest, ShouldSupportMultipleRemotes) {
+TEST_F(SyncMojoServiceAshTest, ShouldSupportMultipleRemotes) {
   mojo::Remote<crosapi::mojom::SyncService> remote1;
-  sync_service_ash()->BindReceiver(remote1.BindNewPipeAndPassReceiver());
+  sync_mojo_service_ash()->BindReceiver(remote1.BindNewPipeAndPassReceiver());
 
   mojo::Remote<crosapi::mojom::SyncService> remote2;
-  sync_service_ash()->BindReceiver(remote2.BindNewPipeAndPassReceiver());
+  sync_mojo_service_ash()->BindReceiver(remote2.BindNewPipeAndPassReceiver());
 
   // Disconnect handlers are not called synchronously. They shouldn't be called
   // in this test, but to verify that wait for all pending tasks to be
@@ -57,28 +60,28 @@ TEST_F(SyncServiceAshTest, ShouldSupportMultipleRemotes) {
   EXPECT_TRUE(remote2.is_connected());
 }
 
-TEST_F(SyncServiceAshTest, ShouldDisconnectOnShutdown) {
-  mojo::Remote<crosapi::mojom::SyncService> sync_service_ash_remote;
-  sync_service_ash()->BindReceiver(
-      sync_service_ash_remote.BindNewPipeAndPassReceiver());
-  ASSERT_TRUE(sync_service_ash_remote.is_connected());
+TEST_F(SyncMojoServiceAshTest, ShouldDisconnectOnShutdown) {
+  mojo::Remote<crosapi::mojom::SyncService> sync_mojo_service_ash_remote;
+  sync_mojo_service_ash()->BindReceiver(
+      sync_mojo_service_ash_remote.BindNewPipeAndPassReceiver());
+  ASSERT_TRUE(sync_mojo_service_ash_remote.is_connected());
 
   mojo::Remote<crosapi::mojom::SyncExplicitPassphraseClient>
       explicit_passphrase_client_remote;
-  sync_service_ash()->BindExplicitPassphraseClient(
+  sync_mojo_service_ash()->BindExplicitPassphraseClient(
       explicit_passphrase_client_remote.BindNewPipeAndPassReceiver());
   ASSERT_TRUE(explicit_passphrase_client_remote.is_connected());
 
   mojo::Remote<crosapi::mojom::SyncUserSettingsClient>
       user_settings_client_remote;
-  sync_service_ash()->BindUserSettingsClient(
+  sync_mojo_service_ash()->BindUserSettingsClient(
       user_settings_client_remote.BindNewPipeAndPassReceiver());
   ASSERT_TRUE(user_settings_client_remote.is_connected());
 
-  sync_service_ash()->Shutdown();
+  sync_mojo_service_ash()->Shutdown();
   // Wait for the disconnect handler to be called.
   RunAllPendingTasks();
-  EXPECT_FALSE(sync_service_ash_remote.is_connected());
+  EXPECT_FALSE(sync_mojo_service_ash_remote.is_connected());
   EXPECT_FALSE(explicit_passphrase_client_remote.is_connected());
   EXPECT_FALSE(user_settings_client_remote.is_connected());
 }

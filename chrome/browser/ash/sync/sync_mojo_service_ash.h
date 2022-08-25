@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_SYNC_SYNC_SERVICE_ASH_H_
-#define CHROME_BROWSER_ASH_SYNC_SYNC_SERVICE_ASH_H_
+#ifndef CHROME_BROWSER_ASH_SYNC_SYNC_MOJO_SERVICE_ASH_H_
+#define CHROME_BROWSER_ASH_SYNC_SYNC_MOJO_SERVICE_ASH_H_
 
 #include <memory>
 
@@ -23,18 +23,15 @@ class SyncUserSettingsClientAsh;
 
 // Implements Crosapi SyncService interface, that allows interaction of Lacros
 // and Ash SyncServices.
-// TODO(crbug.com/1233545): Consider renaming to something more distinguishable
-// from syncer::SyncService (e.g. SyncMojoService), especially if there will be
-// a need to create ash-specific SyncService implementation or code around its
-// initialization (e.g. SyncClient or SyncServiceFactory).
-class SyncServiceAsh : public KeyedService, public crosapi::mojom::SyncService {
+class SyncMojoServiceAsh : public KeyedService,
+                           public crosapi::mojom::SyncService {
  public:
   // |sync_service| must not be null. |this| should depend on |sync_service| and
   // be shutted down before it.
-  explicit SyncServiceAsh(syncer::SyncService* sync_service);
-  SyncServiceAsh(const SyncServiceAsh& other) = delete;
-  SyncServiceAsh& operator=(const SyncServiceAsh& other) = delete;
-  ~SyncServiceAsh() override;
+  explicit SyncMojoServiceAsh(syncer::SyncService* sync_service);
+  SyncMojoServiceAsh(const SyncMojoServiceAsh& other) = delete;
+  SyncMojoServiceAsh& operator=(const SyncMojoServiceAsh& other) = delete;
+  ~SyncMojoServiceAsh() override;
 
   void BindReceiver(
       mojo::PendingReceiver<crosapi::mojom::SyncService> receiver);
@@ -67,4 +64,4 @@ class SyncServiceAsh : public KeyedService, public crosapi::mojom::SyncService {
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_SYNC_SYNC_SERVICE_ASH_H_
+#endif  // CHROME_BROWSER_ASH_SYNC_SYNC_MOJO_SERVICE_ASH_H_

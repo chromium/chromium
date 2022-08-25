@@ -2,34 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/sync/sync_service_factory_ash.h"
+#include "chrome/browser/ash/sync/sync_mojo_service_factory_ash.h"
 
 #include "base/memory/singleton.h"
-#include "chrome/browser/ash/sync/sync_service_ash.h"
+#include "chrome/browser/ash/sync/sync_mojo_service_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 
 namespace ash {
 
 // static
-SyncServiceAsh* SyncServiceFactoryAsh::GetForProfile(Profile* profile) {
-  return static_cast<SyncServiceAsh*>(
+SyncMojoServiceAsh* SyncMojoServiceFactoryAsh::GetForProfile(Profile* profile) {
+  return static_cast<SyncMojoServiceAsh*>(
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }
 
 // static
-SyncServiceFactoryAsh* SyncServiceFactoryAsh::GetInstance() {
-  return base::Singleton<SyncServiceFactoryAsh>::get();
+SyncMojoServiceFactoryAsh* SyncMojoServiceFactoryAsh::GetInstance() {
+  return base::Singleton<SyncMojoServiceFactoryAsh>::get();
 }
 
-SyncServiceFactoryAsh::SyncServiceFactoryAsh()
-    : ProfileKeyedServiceFactory("SyncServiceAsh") {
+SyncMojoServiceFactoryAsh::SyncMojoServiceFactoryAsh()
+    : ProfileKeyedServiceFactory("SyncMojoServiceAsh") {
   DependsOn(SyncServiceFactory::GetInstance());
 }
 
-SyncServiceFactoryAsh::~SyncServiceFactoryAsh() = default;
+SyncMojoServiceFactoryAsh::~SyncMojoServiceFactoryAsh() = default;
 
-KeyedService* SyncServiceFactoryAsh::BuildServiceInstanceFor(
+KeyedService* SyncMojoServiceFactoryAsh::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   syncer::SyncService* sync_service =
@@ -40,7 +40,7 @@ KeyedService* SyncServiceFactoryAsh::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  return new SyncServiceAsh(sync_service);
+  return new SyncMojoServiceAsh(sync_service);
 }
 
 }  // namespace ash
