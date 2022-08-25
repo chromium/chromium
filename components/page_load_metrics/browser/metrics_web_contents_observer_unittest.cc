@@ -1569,11 +1569,16 @@ class MetricsWebContentsObserverNonPrimaryPageTest
         MetricsWebContentsObserverNonPrimaryPageTest* owner)
         : owner_(owner) {}
 
-    // TODO(https://crbug.com/1317494): Audit and use appropriate policy.
+    const char* GetObserverName() const override {
+      static const char kName[] =
+          "MetricsWebContentsObserverNonPrimaryPageTest::MetricsObserver";
+      return kName;
+    }
     ObservePolicy OnFencedFramesStart(
         content::NavigationHandle* navigation_handle,
         const GURL& currently_committed_url) override {
-      return STOP_OBSERVING;
+      // Takes the default option to test general cases.
+      return FORWARD_OBSERVING;
     }
 
     ObservePolicy OnCommit(content::NavigationHandle* handle) override {
