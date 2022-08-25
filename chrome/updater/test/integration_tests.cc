@@ -633,7 +633,6 @@ TEST_F(IntegrationTest, UninstallCmdLine) {
   // Uninstall the idle updater.
   RunUninstallCmdLine();
   WaitForUpdaterExit();
-  ExpectClean();
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -665,7 +664,6 @@ TEST_F(IntegrationTest, UninstallIfMaxServerWakesBeforeRegistrationExceeded) {
   SetServerStarts(24);
   RunWake(0);
   WaitForUpdaterExit();
-  ExpectClean();
 }
 
 TEST_F(IntegrationTest, UninstallUpdaterWhenAllAppsUninstalled) {
@@ -683,7 +681,6 @@ TEST_F(IntegrationTest, UninstallUpdaterWhenAllAppsUninstalled) {
   UninstallApp("test1");
   RunWake(0);
   WaitForUpdaterExit();
-  ExpectClean();
 }
 
 // Windows does not currently have a concept of app ownership, so this
