@@ -661,6 +661,9 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
                                   bool is_hung) {}
 #endif
 
+  // The load progress for the primary main frame was changed.
+  virtual void DidChangeLoadProgressForPrimaryMainFrame() {}
+
  protected:
   virtual ~RenderFrameHostDelegate() = default;
 };

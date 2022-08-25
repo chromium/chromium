@@ -62,7 +62,6 @@ class CONTENT_EXPORT FencedFrame : public blink::mojom::FencedFrameOwnerHost,
   void DidStartLoading(FrameTreeNode* frame_tree_node,
                        bool should_show_loading_ui) override {}
   void DidStopLoading() override {}
-  void DidChangeLoadProgress() override {}
   bool IsHidden() override;
   void NotifyPageChanged(PageImpl& page) override {}
   int GetOuterDelegateFrameTreeNodeId() override;

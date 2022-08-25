@@ -144,9 +144,6 @@ class CONTENT_EXPORT FrameTree {
     // indicator for loading.
     virtual void DidStopLoading() = 0;
 
-    // The load progress was changed.
-    virtual void DidChangeLoadProgress() = 0;
-
     // Returns the delegate's top loading tree, which should be used to infer
     // the values of loading-related states. The state of
     // IsLoadingIncludingInnerFrameTrees() is a WebContents level concept and

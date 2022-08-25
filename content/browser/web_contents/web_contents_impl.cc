@@ -7496,7 +7496,7 @@ void WebContentsImpl::DidStopLoading() {
   LoadingStateChanged(true /* should_show_loading_ui */, details.get());
 }
 
-void WebContentsImpl::DidChangeLoadProgress() {
+void WebContentsImpl::DidChangeLoadProgressForPrimaryMainFrame() {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::DidChangeLoadProgress");
   if (IsBeingDestroyed())
     return;

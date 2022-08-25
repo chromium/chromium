@@ -6086,10 +6086,7 @@ void RenderFrameHostImpl::DidBlockNavigation(
 }
 
 void RenderFrameHostImpl::DidChangeLoadProgress(double load_progress) {
-  // We should not be invoking DidChangeLoadProgress for subframes or fenced
-  // frames as we only update the observers for primary/ prerender main frame
-  // load progress change.
-  if (!is_main_frame() || IsFencedFrameRoot())
+  if (!is_main_frame())
     return;
 
   if (load_progress < GetPage().load_progress())
@@ -6097,7 +6094,9 @@ void RenderFrameHostImpl::DidChangeLoadProgress(double load_progress) {
 
   GetPage().set_load_progress(load_progress);
 
-  frame_tree_node_->frame_tree()->delegate()->DidChangeLoadProgress();
+  // Only dispatch LoadProgressChanged for the primary main frame.
+  if (IsInPrimaryMainFrame())
+    delegate_->DidChangeLoadProgressForPrimaryMainFrame();
 }
 
 void RenderFrameHostImpl::DidFinishLoad(const GURL& validated_url) {

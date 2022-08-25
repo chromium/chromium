@@ -31,7 +31,6 @@ class PrerenderPageHolder : public FrameTree::Delegate,
   void DidStartLoading(FrameTreeNode* frame_tree_node,
                        bool should_show_loading_ui) override {}
   void DidStopLoading() override;
-  void DidChangeLoadProgress() override {}
   bool IsHidden() override;
   FrameTree* LoadingTree() override;
   void NotifyPageChanged(PageImpl& page) override {}
