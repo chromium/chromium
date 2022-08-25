@@ -7899,11 +7899,30 @@ class RenderFrameHostManagerUnloadBrowserTest
     return blink::mojom::SuddenTerminationDisablerType::kUnloadHandler;
   }
 
+  // Returns the list of event targets that the given `event_name` should be
+  // registered on.
+  // Since the `visibilitychange` event is fired at the document and it
+  // may bubble up to the window, we should test the cases where the event
+  // listener is registered on both the document and the window.
+  std::vector<const std::string> EventTargetsForEvent(
+      const std::string& event_name) {
+    if (event_name == "unload" || event_name == "beforeunload" ||
+        event_name == "pagehide") {
+      return {"window"};
+    }
+    if (event_name == "visibilitychange") {
+      return {"window", "document"};
+    }
+    NOTREACHED();
+    return {};
+  }
+
   // Adds an unload event handler (can be for the unload, pagehide, or
   // visibilitychange event) to |rfh| and verifies that the unload state
   // bookkeeping on |rfh| is updated properly.
   void AddUnloadEventHandler(RenderFrameHostImpl* rfh,
                              const std::string& event_name,
+                             const std::string& event_target,
                              const std::string& script) {
     EXPECT_THAT(event_name,
                 testing::AnyOf(testing::Eq("unload"), testing::Eq("pagehide"),
@@ -7911,8 +7930,6 @@ class RenderFrameHostManagerUnloadBrowserTest
     EXPECT_FALSE(rfh->GetSuddenTerminationDisablerState(
         DisablerTypeForEvent(event_name)));
     EXPECT_FALSE(rfh->has_unload_handlers());
-    std::string event_target =
-        event_name == "visibilitychange" ? "document" : "window";
     EXPECT_TRUE(ExecuteScript(
         rfh, base::StringPrintf("%s.addEventListener('%s', (e) => { %s });",
                                 event_target.c_str(), event_name.c_str(),
@@ -7985,25 +8002,28 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
   GURL c_url(embedded_test_server()->GetURL("c.com", "/title1.html"));
 
   for (const std::string& unload_event_name : unload_event_names) {
-    EXPECT_TRUE(NavigateToURL(shell(), main_url));
-    FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                              ->GetPrimaryFrameTree()
-                              .root();
-    RenderFrameHostImpl* child_rfh = root->child_at(0)->current_frame_host();
+    for (const std::string& unload_event_target :
+         EventTargetsForEvent(unload_event_name)) {
+      EXPECT_TRUE(NavigateToURL(shell(), main_url));
+      FrameTreeNode* root =
+          static_cast<WebContentsImpl*>(shell()->web_contents())
+              ->GetPrimaryFrameTree()
+              .root();
+      RenderFrameHostImpl* child_rfh = root->child_at(0)->current_frame_host();
+      // Add a subframe unload handler to do a termination ping via sendBeacon.
+      AddUnloadEventHandler(
+          child_rfh, unload_event_name, unload_event_target,
+          base::StringPrintf("navigator.sendBeacon('%s', 'ping');",
+                             ping_url.spec().c_str()));
+      ExtendSubframeUnloadTimeoutForTerminationPing(child_rfh);
 
-    // Add a subframe unload handler to do a termination ping via sendBeacon.
-    AddUnloadEventHandler(
-        child_rfh, unload_event_name,
-        base::StringPrintf("navigator.sendBeacon('%s', 'ping');",
-                           ping_url.spec().c_str()));
-    ExtendSubframeUnloadTimeoutForTerminationPing(child_rfh);
-
-    // Navigate the main frame to c.com and wait for the ping.
-    StartMonitoringRequestsFor(ping_url);
-    EXPECT_TRUE(NavigateToURL(shell(), c_url));
-    // Test succeeds if this doesn't time out while waiting for |ping_url|.
-    WaitForMonitoredRequest();
-    EXPECT_EQ("ping", GetRequestContent());
+      // Navigate the main frame to c.com and wait for the ping.
+      StartMonitoringRequestsFor(ping_url);
+      EXPECT_TRUE(NavigateToURL(shell(), c_url));
+      // Test succeeds if this doesn't time out while waiting for |ping_url|.
+      WaitForMonitoredRequest();
+      EXPECT_EQ("ping", GetRequestContent());
+    }
   }
 }
 
@@ -8028,7 +8048,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
   // image.
   GURL ping_url(embedded_test_server()->GetURL("b.com", "/blank.jpg"));
   AddUnloadEventHandler(
-      child_rfh, "unload",
+      child_rfh, "unload", "window",
       base::StringPrintf("var img = document.createElement('img');"
                          "img.src = '%s';"
                          "document.body.appendChild(img);",
@@ -8071,7 +8091,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
   // sendBeacon.
   GURL ping_url(embedded_test_server()->GetURL("c.com", "/empty.html"));
   AddUnloadEventHandler(
-      child_rfh, "unload",
+      child_rfh, "unload", "window",
       base::StringPrintf("navigator.sendBeacon('%s', 'ping');",
                          ping_url.spec().c_str()));
   ExtendSubframeUnloadTimeoutForTerminationPing(child_rfh);
@@ -8101,7 +8121,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
   RenderFrameHostImpl* child_rfh = root->child_at(0)->current_frame_host();
 
   // Add an unload handler which never finishes to b.com subframe.
-  AddUnloadEventHandler(child_rfh, "unload", "while(1);");
+  AddUnloadEventHandler(child_rfh, "unload", "window", "while(1);");
 
   // Navigate the main frame to c.com and wait for the subframe process to
   // shut down.  This should happen when the subframe unload timeout happens,
@@ -8147,7 +8167,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
 
   // Add an unload handler in the child frame to send a postMessage to the
   // parent frame.
-  AddUnloadEventHandler(child->current_frame_host(), "unload",
+  AddUnloadEventHandler(child->current_frame_host(), "unload", "window",
                         "parent.postMessage('foo', '*')");
 
   // Navigate the subframe cross-site to c.com and wait for the message.
@@ -8162,7 +8182,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
 
   // Now repeat the test with a remote-to-local navigation that brings the
   // subframe back to a.com.
-  AddUnloadEventHandler(child->current_frame_host(), "unload",
+  AddUnloadEventHandler(child->current_frame_host(), "unload", "window",
                         "parent.postMessage('bar', '*')");
   GURL a_url(embedded_test_server()->GetURL("a.com", "/title2.html"));
   EXPECT_TRUE(ExecuteScriptAndExtractString(
@@ -8252,14 +8272,7 @@ IN_PROC_BROWSER_TEST_P(
 
   for (const std::string& event_name :
        sudden_termination_disabler_event_names) {
-    std::vector<const std::string> event_targets = {"window"};
-    // Since the `visibilitychange` event is fired at the document and it
-    // may bubble up to the window, we should test the cases where the event
-    // listener is registered on both the document and window.
-    if (event_name == "visibilitychange")
-      event_targets.push_back("document");
-
-    for (const std::string& event_target : event_targets) {
+    for (const std::string& event_target : EventTargetsForEvent(event_name)) {
       // The sudden termination disabler state is initially set to false.
       EXPECT_FALSE(rfh->GetSuddenTerminationDisablerState(
           DisablerTypeForEvent(event_name)));
