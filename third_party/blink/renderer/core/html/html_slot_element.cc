@@ -230,13 +230,24 @@ void HTMLSlotElement::assign(HeapVector<Member<Node>> nodes,
 }
 
 void HTMLSlotElement::AppendAssignedNode(Node& host_child) {
+  // https://linear.app/replay/issue/RUN-493
+  recordreplay::Assert("HTMLSlotElement::AppendAssignedNode %d",
+                       recordreplay::PointerId(&host_child));
+
   DCHECK(host_child.IsSlotable());
   assigned_nodes_.push_back(&host_child);
 }
 
 void HTMLSlotElement::UpdateManuallyAssignedNodesOrdering() {
-  if (assigned_nodes_.IsEmpty() || assigned_nodes_candidates_.IsEmpty())
+  // https://linear.app/replay/issue/RUN-493
+  recordreplay::Assert("HTMLSlotElement::UpdateManuallyAssignedNodesOrdering %d",
+                       recordreplay::PointerId(this));
+
+  if (assigned_nodes_.IsEmpty() || assigned_nodes_candidates_.IsEmpty()) {
+    // https://linear.app/replay/issue/RUN-493
+    recordreplay::Assert("HTMLSlotElement::UpdateManuallyAssignedNodesOrdering #1");
     return;
+  }
 
   // TODO: (1067153) Add perf benchmark test for large assigned list.
   HeapHashSet<Member<Node>> prev_nodes;
@@ -245,6 +256,9 @@ void HTMLSlotElement::UpdateManuallyAssignedNodesOrdering() {
   }
   assigned_nodes_.clear();
   for (auto& node : assigned_nodes_candidates_) {
+    // https://linear.app/replay/issue/RUN-493
+    recordreplay::Assert("HTMLSlotElement::UpdateManuallyAssignedNodesOrdering #2 %d %d",
+                         prev_nodes.Contains(node), recordreplay::PointerId((void*)node));
     if (prev_nodes.Contains(node))
       assigned_nodes_.push_back(node);
   }
@@ -263,6 +277,9 @@ void HTMLSlotElement::ClearAssignedNodesCandidates() {
 }
 
 void HTMLSlotElement::ClearAssignedNodes() {
+  // https://linear.app/replay/issue/RUN-493
+  recordreplay::Assert("HTMLSlotElement::ClearAssignedNodes %d",
+                       recordreplay::PointerId(this));
   assigned_nodes_.clear();
 }
 
@@ -299,12 +316,20 @@ void HTMLSlotElement::UpdateFlatTreeNodeDataForAssignedNodes() {
 void HTMLSlotElement::RecalcFlatTreeChildren() {
   DCHECK(SupportsAssignment());
 
+  // https://linear.app/replay/issue/RUN-493
+  recordreplay::Assert("HTMLSlotElement::RecalcFlatTreeChildren %d %d",
+                       recordreplay::PointerId(this),
+                       assigned_nodes_.IsEmpty());
+
   HeapVector<Member<Node>> old_flat_tree_children;
   old_flat_tree_children.swap(flat_tree_children_);
 
   if (assigned_nodes_.IsEmpty()) {
     // Use children as fallback
     for (auto& child : NodeTraversal::ChildrenOf(*this)) {
+      // https://linear.app/replay/issue/RUN-493
+      recordreplay::Assert("HTMLSlotElement::RecalcFlatTreeChildren #1 %d %d",
+                          recordreplay::PointerId(&child), child.IsSlotable());
       if (child.IsSlotable())
         flat_tree_children_.push_back(child);
     }
