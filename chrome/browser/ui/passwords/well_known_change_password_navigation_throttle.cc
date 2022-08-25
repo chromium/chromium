@@ -140,13 +140,11 @@ WellKnownChangePasswordNavigationThrottle::WillProcessResponse() {
   // PostTask because the Throttle needs to be deferred before the status code
   // is set. After setting the status code Resume() can be called synchronous
   // and thereby before the throttle is deferred. This would result in a crash.
-  // Unretained is safe because the NavigationThrottle is deferred and can only
-  // be continued after the callback finished.
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &WellKnownChangePasswordState::SetChangePasswordResponseCode,
-          base::Unretained(&well_known_change_password_state_),
+          weak_ptr_factory_.GetWeakPtr(),
           navigation_handle()->GetResponseHeaders()->response_code()));
   return NavigationThrottle::DEFER;
 }
