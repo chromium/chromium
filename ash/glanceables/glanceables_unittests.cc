@@ -32,6 +32,7 @@
 #include "base/time/time_override.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "google_apis/common/api_error_codes.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/test/test_event.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/controls/image_view.h"
@@ -135,6 +136,10 @@ TEST_F(GlanceablesTest, CreateAndDestroyUi) {
   views::View* view = GetGlanceablesView();
   EXPECT_TRUE(view);
   EXPECT_EQ(view, widget->GetContentsView());
+
+  // Backdrop was applied.
+  EXPECT_GT(GetWidget()->GetLayer()->background_blur(), 0);
+  EXPECT_TRUE(view->GetBackground());
 
   controller_->DestroyUi();
 

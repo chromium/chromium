@@ -12,13 +12,18 @@
 #include "ash/glanceables/glanceables_view.h"
 #include "ash/glanceables/glanceables_window_hider.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/style/color_provider.h"
+#include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/bind.h"
 #include "base/time/time.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/compositor/layer.h"
+#include "ui/views/background.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/public/activation_client.h"
@@ -91,6 +96,7 @@ void GlanceablesController::CreateUi() {
 
   view_ = widget_->SetContentsView(std::make_unique<GlanceablesView>());
 
+  ApplyBackdrop();
   widget_->Show();
 }
 
@@ -131,6 +137,14 @@ void GlanceablesController::FetchData() {
         Shell::Get()->system_tray_model()->calendar_model()->FetchEvents(
             calendar_utils::GetStartOfMonthUTC(base::Time::Now()));
       }));
+}
+
+void GlanceablesController::ApplyBackdrop() const {
+  auto* layer = widget_->GetLayer();
+  layer->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+  layer->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  view_->SetBackground(
+      views::CreateSolidBackground(SkColorSetARGB(0x80, 0x00, 0x00, 0x00)));
 }
 
 }  // namespace ash

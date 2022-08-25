@@ -61,6 +61,11 @@ class ASH_EXPORT GlanceablesController : public wm::ActivationChangeObserver {
   // Triggers a fetch of data from the server.
   void FetchData();
 
+  // Adds blur to `widget_` and semiopaque black background to `view_`.
+  // TODO(crbug.com/1354343): investigate if there's a more efficient way to do
+  // this.
+  void ApplyBackdrop() const;
+
   std::unique_ptr<GlanceablesDelegate> delegate_;
   std::unique_ptr<views::Widget> widget_;
   GlanceablesView* view_ = nullptr;
