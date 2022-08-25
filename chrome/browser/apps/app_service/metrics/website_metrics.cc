@@ -376,8 +376,12 @@ void WebsiteMetrics::OnWebContentsUpdated(content::WebContents* web_contents) {
   // contents::WebContentsObserver::PrimaryPageChanged(), set the visible url as
   // default value for the ukm key url.
   webcontents_to_ukm_key_[web_contents] = web_contents->GetVisibleURL();
+  auto it = window_to_web_contents_.find(window);
+  bool is_activated = wm::IsActiveWindow(window) &&
+                      it != window_to_web_contents_.end() &&
+                      it->second == web_contents;
   AddUrlInfo(web_contents->GetVisibleURL(), base::TimeTicks::Now(),
-             UrlContent::kFullUrl, wm::IsActiveWindow(window),
+             UrlContent::kFullUrl, is_activated,
              /*promotable=*/false);
 }
 
@@ -409,8 +413,12 @@ void WebsiteMetrics::OnInstallableWebAppStatusUpdated(
   }
 
   DCHECK(!app_banner_manager->manifest().scope.is_empty());
+  auto window_it = window_to_web_contents_.find(window);
+  bool is_activated = wm::IsActiveWindow(window) &&
+                      window_it != window_to_web_contents_.end() &&
+                      window_it->second == web_contents;
   UpdateUrlInfo(it->second, app_banner_manager->manifest().scope,
-                UrlContent::kScope, wm::IsActiveWindow(window),
+                UrlContent::kScope, is_activated,
                 /*promotable=*/true);
   it->second = app_banner_manager->manifest().scope;
 }
@@ -507,8 +515,11 @@ void WebsiteMetrics::SaveUsageTime() {
       // the raw data collected in a 5 minutes slot.
       it.second.running_time_in_two_hours +=
           GetRandomNoise() * it.second.running_time_in_five_minutes;
-      dict.Set(it.first.spec(), it.second.ConvertToValue());
       it.second.running_time_in_five_minutes = base::TimeDelta();
+    }
+    // Save all urls running time in the past two hours to the user pref.
+    if (!it.second.running_time_in_two_hours.is_zero()) {
+      dict.Set(it.first.spec(), it.second.ConvertToValue());
     }
   }
 }
