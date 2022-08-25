@@ -736,7 +736,7 @@ polymer_modulizer("fingerprint_setup") {
   js_file = "fingerprint_setup.js"
   html_file = "fingerprint_setup.html"
   html_type = "dom-module"
-  auto_imports = oobe_auto_imports
+  auto_imports = oobe_auto_imports + [ "chrome/browser/resources/chromeos/login/components/oobe_cr_lottie.html|OobeCrLottie" ]
   migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }

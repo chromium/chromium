@@ -18,7 +18,7 @@
  * @typedef {{
  *   title:  HTMLAnchorElement,
  *   chromeVoxHint:  OobeModalDialogElement,
- *   welcomeAnimation:  CrLottieElement,
+ *   welcomeAnimation:  OobeCrLottie,
  * }}
  */
 OobeWelcomeDialogBase.$;

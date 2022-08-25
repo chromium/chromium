@@ -194,7 +194,7 @@ class FingerprintSetup extends FingerprintSetupBase {
    * @param {boolean} playing True if animation should be playing.
    */
   setAnimationState_(playing) {
-    const lottieElement = /** @type{CrLottieElement} */ (
+    const lottieElement = /** @type{OobeCrLottie} */ (
         this.$.setupFingerprint.querySelector('#scannerLocationLottie'));
     lottieElement.playing = playing;
     this.$.arc.setPlay(playing);

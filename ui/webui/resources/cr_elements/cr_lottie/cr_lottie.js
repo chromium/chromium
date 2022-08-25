@@ -22,100 +22,113 @@
 export const LOTTIE_JS_URL = 'chrome://resources/lottie/lottie_worker.min.js';
 
 import {assert} from '../../js/assert.m.js';
-import {Polymer, html} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement, html} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-Polymer({
-  is: 'cr-lottie',
+export class CrLottieElement extends PolymerElement {
+  static get is() {
+    return 'cr-lottie';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    animationUrl: {
-      type: String,
-      value: '',
-      observer: 'animationUrlChanged_',
-    },
+  static get properties() {
+    return {
+      animationUrl: {
+        type: String,
+        value: '',
+        observer: 'animationUrlChanged_',
+      },
 
-    autoplay: {
-      type: Boolean,
-      value: false,
-    },
+      autoplay: {
+        type: Boolean,
+        value: false,
+      },
 
-    hidden: {
-      type: Boolean,
-      value: false,
-    },
+      hidden: {
+        type: Boolean,
+        value: false,
+      },
 
-    singleLoop: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      singleLoop: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
-  /** @private {?HTMLCanvasElement} */
-  canvasElement_: null,
+  constructor() {
+    super();
 
-  /** @private {boolean} Whether the animation has loaded successfully */
-  isAnimationLoaded_: false,
+    /** @private {?HTMLCanvasElement} */
+    this.canvasElement_ = null;
 
-  /** @private {?OffscreenCanvas} */
-  offscreenCanvas_: null,
+    /** @private {boolean} Whether the animation has loaded successfully */
+    this.isAnimationLoaded_ = false;
 
-  /**
-   * @private {boolean} Whether the canvas has been transferred to the worker
-   * thread.
-   */
-  hasTransferredCanvas_: false,
+    /** @private {?OffscreenCanvas} */
+    this.offscreenCanvas_ = null;
 
-  /** @private {?ResizeObserver} */
-  resizeObserver_: null,
+    /**
+     * @private {boolean} Whether the canvas has been transferred to the worker
+     * thread.
+     */
+    this.hasTransferredCanvas_ = false;
 
-  /**
-   * @private {boolean} The last state that was explicitly set via setPlay.
-   * In case setPlay() is invoked before the animation is initialized, the
-   * state is stored in this variable. Once the animation initializes, the
-   * state is sent to the worker.
-   */
-  playState_: false,
+    /** @private {?ResizeObserver} */
+    this.resizeObserver_ = null;
 
-  /**
-   * @private {boolean} Whether the Worker needs to receive new size
-   * information about the canvas. This is necessary for the corner case
-   * when the size information is received when the animation is still being
-   * loaded into the worker.
-   */
-  workerNeedsSizeUpdate_: false,
+    /**
+     * @private {boolean} The last state that was explicitly set via setPlay.
+     * In case setPlay() is invoked before the animation is initialized, the
+     * state is stored in this variable. Once the animation initializes, the
+     * state is sent to the worker.
+     */
+    this.playState_ = false;
 
-  /**
-   * @private {boolean} Whether the Worker needs to receive new control
-   * information about its desired state. This is necessary for the corner case
-   * when the control information is received when the animation is still being
-   * loaded into the worker.
-   */
-  workerNeedsPlayControlUpdate_: false,
+    /**
+     * @private {boolean} Whether the Worker needs to receive new size
+     * information about the canvas. This is necessary for the corner case
+     * when the size information is received when the animation is still being
+     * loaded into the worker.
+     */
+    this.workerNeedsSizeUpdate_ = false;
 
-  /** @private {?Worker} */
-  worker_: null,
+    /**
+     * @private {boolean} Whether the Worker needs to receive new control
+     * information about its desired state. This is necessary for the corner
+     * case when the control information is received when the animation is still
+     * being loaded into the worker.
+     */
+    this.workerNeedsPlayControlUpdate_ = false;
 
-  /** @private {?XMLHttpRequest} The current in-flight request. */
-  xhr_: null,
+    /** @private {?Worker} */
+    this.worker_ = null;
+
+    /** @private {?XMLHttpRequest} The current in-flight request. */
+    this.xhr_ = null;
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     // CORS blocks loading worker script from a different origin but
     // loading scripts as blob and then instantiating it as web worker
     // is possible.
     this.sendXmlHttpRequest_(LOTTIE_JS_URL, 'blob', function(response) {
-      if (this.isAttached) {
+      if (this.isConnected) {
         this.worker_ = new Worker(URL.createObjectURL(response));
         this.worker_.onmessage = this.onMessage_.bind(this);
         this.initialize_();
       }
     }.bind(this));
-  },
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
     if (this.resizeObserver_) {
       this.resizeObserver_.disconnect();
     }
@@ -127,7 +140,7 @@ Polymer({
       this.xhr_.abort();
       this.xhr_ = null;
     }
-  },
+  }
 
   /**
    * Controls the animation based on the value of |shouldPlay|. If the
@@ -142,7 +155,7 @@ Polymer({
     } else {
       this.workerNeedsPlayControlUpdate_ = true;
     }
-  },
+  }
 
   /**
    * Sends control (play/pause) information to the worker.
@@ -150,7 +163,7 @@ Polymer({
    */
   sendPlayControlInformationToWorker_() {
     this.worker_.postMessage({control: {play: this.playState_}});
-  },
+  }
 
   /**
    * Initializes all the members of this polymer element.
@@ -173,7 +186,7 @@ Polymer({
     // Open animation file and start playing the animation.
     this.sendXmlHttpRequest_(
         this.animationUrl, 'json', this.initAnimation_.bind(this));
-  },
+  }
 
   /**
    * Updates the animation that is being displayed.
@@ -199,7 +212,7 @@ Polymer({
     }
     this.sendXmlHttpRequest_(
         this.animationUrl, 'json', this.initAnimation_.bind(this));
-  },
+  }
 
   /**
    * Computes the draw buffer size for the canvas. This ensures that the
@@ -216,7 +229,7 @@ Polymer({
       height: clientRect.height * devicePixelRatio,
     };
     return drawSize;
-  },
+  }
 
   /**
    * Returns true if the |maybeValidUrl| provided is safe to use in an
@@ -230,7 +243,7 @@ Polymer({
     return url.protocol === 'chrome:' ||
         (url.protocol === 'data:' &&
          url.pathname.startsWith('application/json;'));
-  },
+  }
 
   /**
    * Sends an XMLHTTPRequest to load a resource and runs the callback on
@@ -259,7 +272,7 @@ Polymer({
         successCallback(response);
       }
     };
-  },
+  }
 
   /**
    * Handles the canvas element resize event. If the animation isn't fully
@@ -273,7 +286,7 @@ Polymer({
       // Mark a size update as necessary once the animation is loaded.
       this.workerNeedsSizeUpdate_ = true;
     }
-  },
+  }
 
   /**
    * This informs the offscreen canvas worker of the current canvas size.
@@ -281,7 +294,7 @@ Polymer({
    */
   sendCanvasSizeToWorker_() {
     this.worker_.postMessage({drawSize: this.getCanvasDrawBufferSize_()});
-  },
+  }
 
   /**
    * Initializes the the animation on the web worker with the data provided.
@@ -301,7 +314,17 @@ Polymer({
       this.hasTransferredCanvas_ = true;
     }
     this.worker_.postMessage(...message);
-  },
+  }
+
+  /**
+   * @param {string} eventName
+   * @param {number=} eventData
+   * @private
+   */
+  fire_(eventName, eventData) {
+    this.dispatchEvent(new CustomEvent(
+        eventName, {bubbles: true, composed: true, detail: eventData}));
+  }
 
   /**
    * Handles the messages sent from the web worker to its parent thread.
@@ -312,17 +335,17 @@ Polymer({
     if (event.data.name === 'initialized' && event.data.success) {
       this.isAnimationLoaded_ = true;
       this.sendPendingInfo_();
-      this.fire('cr-lottie-initialized');
+      this.fire_('cr-lottie-initialized');
     } else if (event.data.name === 'playing') {
-      this.fire('cr-lottie-playing');
+      this.fire_('cr-lottie-playing');
     } else if (event.data.name === 'paused') {
-      this.fire('cr-lottie-paused');
+      this.fire_('cr-lottie-paused');
     } else if (event.data.name === 'stopped') {
-      this.fire('cr-lottie-stopped');
+      this.fire_('cr-lottie-stopped');
     } else if (event.data.name === 'resized') {
-      this.fire('cr-lottie-resized', event.data.size);
+      this.fire_('cr-lottie-resized', event.data.size);
     }
-  },
+  }
 
   /**
    * Called once the animation is fully loaded into the worker. Sends any
@@ -339,6 +362,7 @@ Polymer({
       this.workerNeedsPlayControlUpdate_ = false;
       this.sendPlayControlInformationToWorker_();
     }
-  },
+  }
+}
 
-});
+customElements.define(CrLottieElement.is, CrLottieElement);

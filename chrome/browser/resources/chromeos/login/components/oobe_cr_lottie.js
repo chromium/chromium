@@ -23,7 +23,7 @@ const OobeCrLottieBase =
  */
 OobeCrLottieBase.$;
 
-class OobeCrLottie extends OobeCrLottieBase {
+/* #export */ class OobeCrLottie extends OobeCrLottieBase {
   static get is() {
     return 'oobe-cr-lottie';
   }

@@ -213,6 +213,7 @@ js_library("welcome_dialog.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/welcome_dialog.m.js" ]
   deps = [
     "../../components:long_touch_detector.m",
+    "../../components:oobe_cr_lottie.m",
     "../../components/behaviors:oobe_i18n_behavior.m",
     "../../components/buttons:oobe_icon_button.m",
     "../../components/buttons:oobe_text_button.m",
@@ -312,7 +313,7 @@ polymer_modulizer("welcome_dialog") {
   js_file = "welcome_dialog.js"
   html_file = "welcome_dialog.html"
   html_type = "dom-module"
-  auto_imports = oobe_auto_imports
+  auto_imports = oobe_auto_imports + [ "chrome/browser/resources/chromeos/login/components/oobe_cr_lottie.html|OobeCrLottie" ]
   migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
