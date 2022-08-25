@@ -115,6 +115,12 @@ void ArcAppInstallEventLogger::Add(
   AddEvent(package, gather_disk_space_info, event);
 }
 
+void ArcAppInstallEventLogger::UpdatePolicySuccessRate(
+    const std::string& package,
+    bool success) {
+  policy_data_helper_.UpdatePolicySuccessRate(package, success);
+}
+
 void ArcAppInstallEventLogger::OnPolicyUpdated(const PolicyNamespace& ns,
                                                const PolicyMap& previous,
                                                const PolicyMap& current) {
@@ -134,10 +140,12 @@ void ArcAppInstallEventLogger::OnComplianceReportReceived(
     return;
   }
 
+  const std::set<std::string> all_force_install_apps_in_policy =
+      GetPackagesFromPref(arc::prefs::kArcPushInstallAppsRequested);
   const std::set<std::string> previous_pending =
       GetPackagesFromPref(arc::prefs::kArcPushInstallAppsPending);
 
-  std::set<std::string> pending_in_arc;
+  std::set<std::string> noncompliant_apps_in_report;
   for (const auto& detail : details->GetListDeprecated()) {
     const base::Value* const reason =
         detail.FindKeyOfType("nonComplianceReason", base::Value::Type::INTEGER);
@@ -149,23 +157,28 @@ void ArcAppInstallEventLogger::OnComplianceReportReceived(
     if (!app_name || app_name->GetString().empty()) {
       continue;
     }
-    pending_in_arc.insert(app_name->GetString());
+    noncompliant_apps_in_report.insert(app_name->GetString());
   }
-  const std::set<std::string> current_pending = GetDifference(
-      previous_pending, GetDifference(requested_in_arc_, pending_in_arc));
-  const std::set<std::string> removed =
-      GetDifference(previous_pending, current_pending);
-  AddForSetOfAppsWithDiskSpaceInfo(
-      removed, CreateEvent(em::AppInstallReportLogEvent::SUCCESS));
+  const std::set<std::string> all_installed_apps = GetDifference(
+      all_force_install_apps_in_policy, noncompliant_apps_in_report);
 
-  if (removed.empty()) {
+  std::set<std::string> newly_installed_apps;
+  std::set_intersection(
+      previous_pending.begin(), previous_pending.end(),
+      all_installed_apps.begin(), all_installed_apps.end(),
+      std::inserter(newly_installed_apps, newly_installed_apps.end()));
+
+  AddForSetOfAppsWithDiskSpaceInfo(
+      newly_installed_apps, CreateEvent(em::AppInstallReportLogEvent::SUCCESS));
+
+  if (newly_installed_apps.empty()) {
     return;
   }
 
-  SetPref(arc::prefs::kArcPushInstallAppsPending, current_pending);
+  SetPref(arc::prefs::kArcPushInstallAppsPending, noncompliant_apps_in_report);
 
-  if (!current_pending.empty()) {
-    UpdateCollector(current_pending);
+  if (!noncompliant_apps_in_report.empty()) {
+    UpdateCollector(noncompliant_apps_in_report);
   } else {
     StopCollector();
   }
@@ -223,11 +236,19 @@ void ArcAppInstallEventLogger::EvaluatePolicy(const PolicyMap& policy,
   AddForSetOfAppsWithDiskSpaceInfo(
       added, CreateEvent(em::AppInstallReportLogEvent::SERVER_REQUEST));
   AddForSetOfApps(removed, CreateEvent(em::AppInstallReportLogEvent::CANCELED));
+  // Consider canceled packages as successful since they are not needed
+  policy_data_helper_.UpdatePolicySuccessRateForPackages(removed,
+                                                         /* success */ true);
 
-  const std::set<std::string> current_pending = GetDifference(
-      current_requested, GetDifference(previous_requested, previous_pending));
+  const std::set<std::string> previously_installed =
+      GetDifference(previous_requested, previous_pending);
+  const std::set<std::string> current_pending =
+      GetDifference(current_requested, previously_installed);
   SetPref(arc::prefs::kArcPushInstallAppsRequested, current_requested);
   SetPref(arc::prefs::kArcPushInstallAppsPending, current_pending);
+
+  policy_data_helper_.AddPolicyData(current_pending,
+                                    previously_installed.size());
 
   if (!current_pending.empty()) {
     UpdateCollector(current_pending);

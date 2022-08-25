@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/ash/policy/reporting/arc_app_install_event_log_collector.h"
+#include "chrome/browser/ash/policy/reporting/arc_app_install_policy_data_helper.h"
 #include "chrome/browser/ash/policy/reporting/install_event_logger_base.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -93,6 +94,8 @@ class ArcAppInstallEventLogger
            bool gather_disk_space_info,
            std::unique_ptr<enterprise_management::AppInstallReportLogEvent>
                event) override;
+  void UpdatePolicySuccessRate(const std::string& package,
+                               bool success) override;
 
   // PolicyService::Observer:
   void OnPolicyUpdated(const PolicyNamespace& ns,
@@ -151,6 +154,9 @@ class ArcAppInstallEventLogger
   // push-install process. Non-|nullptr| whenever there are one or more pending
   // app push-install requests.
   std::unique_ptr<ArcAppInstallEventLogCollector> log_collector_;
+
+  // Handles operations for tracking policy metrics.
+  ArcAppInstallPolicyDataHelper policy_data_helper_;
 
   // Weak factory used to reference |this| from background tasks.
   base::WeakPtrFactory<ArcAppInstallEventLogger> weak_factory_{this};

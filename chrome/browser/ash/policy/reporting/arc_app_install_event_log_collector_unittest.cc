@@ -83,19 +83,43 @@ class FakeAppInstallEventLogCollectorDelegate
                            package_name, *event);
   }
 
+  void UpdatePolicySuccessRate(const std::string& package_name,
+                               bool success) override {
+    ++update_policy_success_rate_count_;
+    auto event = std::make_unique<em::AppInstallReportLogEvent>();
+    event->set_event_type(
+        success ? em::AppInstallReportLogEvent::INSTALLATION_FINISHED
+                : em::AppInstallReportLogEvent::INSTALLATION_FAILED);
+
+    requests_.emplace_back(false /* for_all */, false /* add_disk_space_info */,
+                           package_name, *event);
+  }
+
   int add_for_all_count() const { return add_for_all_count_; }
 
   int add_count() const { return add_count_; }
+
+  int update_policy_success_rate_count() const {
+    return update_policy_success_rate_count_;
+  }
 
   const em::AppInstallReportLogEvent& last_event() const {
     return last_request().event;
   }
   const Request& last_request() const { return requests_.back(); }
+
+  const em::AppInstallReportLogEvent& event_at(int index) const {
+    return request_at(index).event;
+  }
+
+  const Request& request_at(int index) const { return requests_.at(index); }
+
   const std::vector<Request>& requests() const { return requests_; }
 
  private:
   int add_for_all_count_ = 0;
   int add_count_ = 0;
+  int update_policy_success_rate_count_ = 0;
   std::vector<Request> requests_;
 };
 
@@ -198,6 +222,7 @@ TEST_F(ArcAppInstallEventLogCollectorTest, NoEventsByDefault) {
 
   EXPECT_EQ(0, delegate()->add_count());
   EXPECT_EQ(0, delegate()->add_for_all_count());
+  EXPECT_EQ(0, delegate()->update_policy_success_rate_count());
 }
 
 TEST_F(ArcAppInstallEventLogCollectorTest, LoginLogout) {
@@ -459,6 +484,36 @@ TEST_F(ArcAppInstallEventLogCollectorTest, OnPlayStoreLocalPolicySet) {
   EXPECT_EQ(TimeToTimestamp(time), delegate()->requests()[0].event.timestamp());
   EXPECT_EQ(kPackageName, delegate()->last_request().package_name);
   EXPECT_TRUE(delegate()->last_request().add_disk_space_info);
+}
+
+TEST_F(ArcAppInstallEventLogCollectorTest,
+       UpdatePolicySuccessRate_InstallSuccess) {
+  std::unique_ptr<ArcAppInstallEventLogCollector> collector =
+      std::make_unique<ArcAppInstallEventLogCollector>(delegate(), profile(),
+                                                       packages_);
+  collector->OnInstallationFinished(kPackageName, /* success */ true);
+
+  int second_to_last_request_index = delegate()->requests().size() - 2;
+  EXPECT_EQ(1, delegate()->update_policy_success_rate_count());
+  EXPECT_EQ(em::AppInstallReportLogEvent::INSTALLATION_FINISHED,
+            delegate()->event_at(second_to_last_request_index).event_type());
+  EXPECT_EQ(kPackageName,
+            delegate()->request_at(second_to_last_request_index).package_name);
+}
+
+TEST_F(ArcAppInstallEventLogCollectorTest,
+       UpdatePolicySuccessRate_InstallFailure) {
+  std::unique_ptr<ArcAppInstallEventLogCollector> collector =
+      std::make_unique<ArcAppInstallEventLogCollector>(delegate(), profile(),
+                                                       packages_);
+  collector->OnInstallationFinished(kPackageName, /* success */ false);
+
+  int second_to_last_request_index = delegate()->requests().size() - 2;
+  EXPECT_EQ(1, delegate()->update_policy_success_rate_count());
+  EXPECT_EQ(em::AppInstallReportLogEvent::INSTALLATION_FAILED,
+            delegate()->event_at(second_to_last_request_index).event_type());
+  EXPECT_EQ(kPackageName,
+            delegate()->request_at(second_to_last_request_index).package_name);
 }
 
 }  // namespace policy

@@ -49,6 +49,10 @@ class ArcAppInstallEventLogCollector : public InstallEventLogCollectorBase,
         std::unique_ptr<enterprise_management::AppInstallReportLogEvent>
             event) = 0;
 
+    // Uses a package's installation status to update policy success rate data.
+    virtual void UpdatePolicySuccessRate(const std::string& package,
+                                         bool success) = 0;
+
    protected:
     virtual ~Delegate() = default;
   };

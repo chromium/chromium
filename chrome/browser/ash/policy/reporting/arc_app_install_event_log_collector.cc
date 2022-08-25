@@ -182,6 +182,7 @@ void ArcAppInstallEventLogCollector::OnInstallationFinished(
   event->set_event_type(
       success ? em::AppInstallReportLogEvent::INSTALLATION_FINISHED
               : em::AppInstallReportLogEvent::INSTALLATION_FAILED);
+  delegate_->UpdatePolicySuccessRate(package_name, success);
   delegate_->Add(package_name, true /* gather_disk_space_info */,
                  std::move(event));
 }
