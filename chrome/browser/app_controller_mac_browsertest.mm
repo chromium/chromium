@@ -744,7 +744,8 @@ IN_PROC_BROWSER_TEST_F(AppControllerReplaceNTPBrowserTest,
 }
 
 // Tests that when a GURL is opened, it is not opened in incognito mode.
-IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, OpenInRegularBrowser) {
+IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
+                       DISABLED_OpenInRegularBrowser) {
   ASSERT_TRUE(embedded_test_server()->Start());
   // Create an incognito browser.
   Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
