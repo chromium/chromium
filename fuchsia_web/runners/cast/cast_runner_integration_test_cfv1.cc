@@ -61,7 +61,7 @@ TEST_F(CastRunnerCfv1ShimIntegrationTest, ProxiesConnect) {
   // whether the service capability is still valid.
   // The second is the test's connection to the shim Runner.
   RunUntilRequestsReceived(2u);
-};
+}
 
 // Ensure that CFv1 "shim" mode tears down the Runner component if the
 // underlying service capability disconnects it. This is required in order to
@@ -83,4 +83,4 @@ TEST_F(CastRunnerCfv1ShimIntegrationTest, ExitOnFailure) {
         quit_loop.Run();
       });
   loop.Run();
-};
+}

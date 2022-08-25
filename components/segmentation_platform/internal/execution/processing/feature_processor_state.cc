@@ -30,7 +30,7 @@ FeatureProcessorState::FeatureProcessorState(
 
 FeatureProcessorState::~FeatureProcessorState() {
   DCHECK(callback_.is_null());
-};
+}
 
 void FeatureProcessorState::SetError(stats::FeatureProcessingError error) {
   stats::RecordFeatureProcessingError(segment_id_, error);

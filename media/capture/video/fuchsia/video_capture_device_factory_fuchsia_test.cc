@@ -107,7 +107,7 @@ class TestDeviceChangeObserver
     ++num_events_;
   }
 
-  size_t num_events() { return num_events_; };
+  size_t num_events() { return num_events_; }
 
  private:
   size_t num_events_ = 0;

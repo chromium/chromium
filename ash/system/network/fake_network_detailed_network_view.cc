@@ -28,7 +28,7 @@ void FakeNetworkDetailedNetworkView::NotifyNetworkListChanged() {
 
 views::View* FakeNetworkDetailedNetworkView::network_list() {
   return network_list_.get();
-};
+}
 
 views::View* FakeNetworkDetailedNetworkView::GetAsView() {
   return this;
@@ -42,7 +42,7 @@ NetworkListNetworkItemView*
 FakeNetworkDetailedNetworkView::AddNetworkListItem() {
   return network_list_->AddChildView(
       new NetworkListNetworkItemView(/*listener=*/nullptr));
-};
+}
 
 NetworkListWifiHeaderView*
 FakeNetworkDetailedNetworkView::AddWifiSectionHeader() {
@@ -53,7 +53,7 @@ FakeNetworkDetailedNetworkView::AddWifiSectionHeader() {
           kWifiSectionHeader));
 
   return network_list_->AddChildView(std::move(wifi_header_view));
-};
+}
 
 NetworkListMobileHeaderView*
 FakeNetworkDetailedNetworkView::AddMobileSectionHeader() {
@@ -68,6 +68,6 @@ FakeNetworkDetailedNetworkView::AddMobileSectionHeader() {
 
 void FakeNetworkDetailedNetworkView::UpdateScanningBarVisibility(bool visible) {
   last_scan_bar_visibility_ = visible;
-};
+}
 
 }  // namespace ash

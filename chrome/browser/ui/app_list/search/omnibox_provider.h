@@ -46,7 +46,7 @@ class OmniboxProvider : public SearchProvider,
   // procedures.
   void set_query_finished_for_test(bool query_finished) {
     query_finished_ = query_finished;
-  };
+  }
 
  private:
   // AutocompleteController::Observer overrides:

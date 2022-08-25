@@ -16,7 +16,7 @@ class ScopedFileAccessDelegateTestInstance : public ScopedFileAccessDelegate {
       const std::vector<base::FilePath>& files,
       const GURL& destination_url,
       base::OnceCallback<void(file_access::ScopedFileAccess)> callback)
-      override{};
+      override {}
 };
 int ScopedFileAccessDelegateTestInstance::instance_counter = 0;
 }  // namespace file_access

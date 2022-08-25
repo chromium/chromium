@@ -67,7 +67,7 @@ GlanceablesUpNextView::GlanceablesUpNextView() {
 
 GlanceablesUpNextView::~GlanceablesUpNextView() {
   calendar_model_->RemoveObserver(this);
-};
+}
 
 void GlanceablesUpNextView::OnEventsFetched(
     const CalendarModel::FetchingStatus status,

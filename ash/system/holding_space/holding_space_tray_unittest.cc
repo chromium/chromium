@@ -528,7 +528,7 @@ class HoldingSpaceTrayTest : public HoldingSpaceAshTestBase,
     scoped_feature_list_.InitWithFeatureState(
         features::kHoldingSpacePredictability,
         IsHoldingSpacePredictabilityEnabled());
-  };
+  }
 
   bool IsHoldingSpacePredictabilityEnabled() const { return GetParam(); }
 
