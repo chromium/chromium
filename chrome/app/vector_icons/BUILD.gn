@@ -224,7 +224,6 @@ aggregate_vector_icons("chrome_vector_icons") {
       "notification_google.icon",
       "notification_image.icon",
       "notification_installed.icon",
-      "notification_linux.icon",
       "notification_messages.icon",
       "notification_mobile_data.icon",
       "notification_mobile_data_off.icon",

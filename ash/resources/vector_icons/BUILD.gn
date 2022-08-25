@@ -197,6 +197,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "notification_charging_usb_c.icon",
     "notification_chromevox.icon",
     "notification_keyboard.icon",
+    "notification_linux.icon",
     "notification_low_power_charger.icon",
     "notification_monitor_warning.icon",
     "notification_multi_device_setup.icon",
