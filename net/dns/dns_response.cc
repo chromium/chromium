@@ -313,9 +313,8 @@ DnsResponse::DnsResponse(
       std::accumulate(additional_records.begin(), additional_records.end(),
                       response_size, do_accumulation);
 
-  io_buffer_ = base::MakeRefCounted<IOBuffer>(response_size);
-  io_buffer_size_ = response_size;
-  base::BigEndianWriter writer(io_buffer_->data(), io_buffer_size_);
+  auto io_buffer = base::MakeRefCounted<IOBuffer>(response_size);
+  base::BigEndianWriter writer(io_buffer->data(), response_size);
   success &= WriteHeader(&writer, header);
   DCHECK(success);
   if (has_query) {
@@ -338,10 +337,10 @@ DnsResponse::DnsResponse(
     DCHECK(success);
   }
   if (!success) {
-    io_buffer_.reset();
-    io_buffer_size_ = 0;
     return;
   }
+  io_buffer_ = io_buffer;
+  io_buffer_size_ = response_size;
   // Ensure we don't have any remaining uninitialized bytes in the buffer.
   DCHECK(!writer.remaining());
   memset(writer.ptr(), 0, writer.remaining());
