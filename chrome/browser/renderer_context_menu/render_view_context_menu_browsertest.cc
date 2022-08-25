@@ -2045,8 +2045,16 @@ class SearchByRegionWithUnifiedSidePanelBrowserTest
   base::RepeatingClosure quit_closure_;
 };
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// TODO(crbug.com/1356584): Failing on Chrome OS.
+#define MAYBE_LensRegionSearchWithValidRegionUnifiedSidePanel \
+  DISABLED_LensRegionSearchWithValidRegionUnifiedSidePanel
+#else
+#define MAYBE_LensRegionSearchWithValidRegionUnifiedSidePanel \
+  LensRegionSearchWithValidRegionUnifiedSidePanel
+#endif
 IN_PROC_BROWSER_TEST_F(SearchByRegionWithUnifiedSidePanelBrowserTest,
-                       LensRegionSearchWithValidRegionUnifiedSidePanel) {
+                       MAYBE_LensRegionSearchWithValidRegionUnifiedSidePanel) {
   lens::CreateLensUnifiedSidePanelEntryForTesting(browser());
   SetupAndLoadPage("/empty.html");
   // We need a base::RunLoop to ensure that our test does not finish until the
