@@ -84,7 +84,6 @@ uint32_t MailboxToUInt32(const gpu::Mailbox& mailbox) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 bool AllowColorSpaceCombination(
-    gfx::BufferFormat source_format,
     const gfx::ColorSpace& source_color_space,
     const gfx::ColorSpace& destination_color_space) {
   // Allow invalid source color spaces because the assumption is that the
@@ -92,35 +91,6 @@ bool AllowColorSpaceCombination(
   // should be consistent with the overlay path.
   if (!source_color_space.IsValid())
     return true;
-
-  // Since https://crrev.com/c/2336347, we force BT.601/narrow for the
-  // COLOR_ENCODING and COLOR_RANGE DRM/KMS properties. On the other hand, the
-  // compositor is able to handle different YUV encodings and ranges. Therefore,
-  // in theory, if we don't want to see a difference between overlays and
-  // compositing, we should not promote video frames to overlays unless they
-  // actually use BT.601/narrow.
-  //
-  // In practice, however, we expect to see lots of BT.709 video frames, and we
-  // don't want to reject all of them for overlays because the visual difference
-  // between BT.601/narrow and BT.709/narrow is not expected to be much.
-  // Therefore, in being consistent with the values we provide for
-  // EGL_YUV_COLOR_SPACE_HINT_EXT/EGL_SAMPLE_RANGE_HINT_EXT (see
-  // https://crrev.com/c/3662321), we'll only allow frames that use non-BT.2020
-  // with non-full range. In those cases, the compositor and the display
-  // controller are expected to render the frames equally (and decently - with
-  // the understanding that the final result may not be fully correct).
-  //
-  // TODO(b/233667677): Remove this when we've plumbed the YUV encoding and
-  // range to DRM/KMS. At that point, we need to ensure that
-  // EGL_YUV_COLOR_SPACE_HINT_EXT/EGL_SAMPLE_RANGE_HINT_EXT would also get the
-  // same values as DRM/KMS.
-  if ((source_format == gfx::BufferFormat::YUV_420_BIPLANAR ||
-       source_format == gfx::BufferFormat::YVU_420) &&
-      (source_color_space.GetPrimaryID() ==
-           gfx::ColorSpace::PrimaryID::BT2020 ||
-       source_color_space.GetRangeID() == gfx::ColorSpace::RangeID::FULL)) {
-    return false;
-  }
 
   // Allow color space mismatches as long as either a) the source color space is
   // SRGB; or b) both the source and destination color spaces have the same
@@ -240,7 +210,6 @@ void OverlayProcessorOzone::CheckOverlaySupportImpl(
       // backend when we get an API for per-plane color management.
       if (!surface_iterator->requires_overlay &&
           !AllowColorSpaceCombination(
-              /*source_format=*/surface_iterator->format,
               /*source_color_space=*/surface_iterator->color_space,
               /*destination_color_space=*/primary_plane_color_space_)) {
         *ozone_surface_iterator = ui::OverlaySurfaceCandidate();
