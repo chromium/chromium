@@ -318,11 +318,16 @@ class CORE_EXPORT WebLocalFrameImpl final
   void SetAdEvidence(const blink::FrameAdEvidence& ad_evidence) override;
   const absl::optional<blink::FrameAdEvidence>& AdEvidence() override;
   bool IsFrameCreatedByAdScript() override;
+  gfx::Size SpoolSizeInPixelsForTesting(
+      const gfx::Size& page_size_in_pixels,
+      const WebVector<uint32_t>& pages) override;
   gfx::Size SpoolSizeInPixelsForTesting(const gfx::Size& page_size_in_pixels,
                                         uint32_t page_count) override;
-  void PrintPagesForTesting(cc::PaintCanvas*,
-                            const gfx::Size& page_size_in_pixels,
-                            const gfx::Size& spool_size_in_pixels) override;
+  void PrintPagesForTesting(
+      cc::PaintCanvas*,
+      const gfx::Size& page_size_in_pixels,
+      const gfx::Size& spool_size_in_pixels,
+      const WebVector<uint32_t>* pages = nullptr) override;
   gfx::Rect GetSelectionBoundsRectForTesting() const override;
   gfx::Point GetPositionInViewportForTesting() const override;
   void WasHidden() override;

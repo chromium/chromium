@@ -847,13 +847,19 @@ class WebLocalFrame : public WebFrame {
   // page-orientation.
   virtual gfx::Size SpoolSizeInPixelsForTesting(
       const gfx::Size& page_size_in_pixels,
+      const WebVector<uint32_t>& pages) = 0;
+  virtual gfx::Size SpoolSizeInPixelsForTesting(
+      const gfx::Size& page_size_in_pixels,
       uint32_t page_count) = 0;
 
-  // Prints the frame into the canvas, with page boundaries drawn as one pixel
-  // wide blue lines. This method exists to support web tests.
-  virtual void PrintPagesForTesting(cc::PaintCanvas*,
-                                    const gfx::Size& page_size_in_pixels,
-                                    const gfx::Size& spool_size_in_pixels) = 0;
+  // Prints the given pages of the frame into the canvas, with page boundaries
+  // drawn as one pixel wide blue lines. By default, all pages are printed. This
+  // method exists to support web tests.
+  virtual void PrintPagesForTesting(
+      cc::PaintCanvas*,
+      const gfx::Size& page_size_in_pixels,
+      const gfx::Size& spool_size_in_pixels,
+      const WebVector<uint32_t>* pages = nullptr) = 0;
 
   // Returns the bounds rect for current selection. If selection is performed
   // on transformed text, the rect will still bound the selection but will

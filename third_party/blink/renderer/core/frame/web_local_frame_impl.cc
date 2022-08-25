@@ -89,6 +89,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <numeric>
 #include <utility>
 
 #include "base/notreached.h"
@@ -328,10 +329,11 @@ class ChromePrintContext : public PrintContext {
     return scale;
   }
 
-  void SpoolAllPagesWithBoundariesForTesting(
+  void SpoolPagesWithBoundariesForTesting(
       cc::PaintCanvas* canvas,
       const gfx::SizeF& page_size_in_pixels,
-      const gfx::SizeF& spool_size_in_pixels) {
+      const gfx::SizeF& spool_size_in_pixels,
+      const WebVector<uint32_t>* pages) {
     DispatchEventsForPrintingOnAllFrames();
     if (!GetFrame()->GetDocument() ||
         !GetFrame()->GetDocument()->GetLayoutView())
@@ -355,11 +357,22 @@ class ChromePrintContext : public PrintContext {
     // Fill the whole background by white.
     context.FillRect(all_pages_rect, Color::kWhite, AutoDarkMode::Disabled());
 
-    wtf_size_t num_pages = PageRects().size();
+    WebVector<uint32_t> all_pages;
+    if (!pages) {
+      all_pages.reserve(page_rects_.size());
+      all_pages.resize(page_rects_.size());
+      std::iota(all_pages.begin(), all_pages.end(), 0);
+      pages = &all_pages;
+    }
+
     int current_height = 0;
-    for (wtf_size_t page_index = 0; page_index < num_pages; page_index++) {
+    for (uint32_t page_index : *pages) {
+      if (page_index >= page_rects_.size()) {
+        break;
+      }
+
       // Draw a line for a page boundary if this isn't the first page.
-      if (page_index > 0) {
+      if (page_index != pages->front()) {
         context.Save();
         context.SetStrokeThickness(1);
         context.SetStrokeColor(Color(0, 0, 255));
@@ -391,7 +404,7 @@ class ChromePrintContext : public PrintContext {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
       // Account for the disabling of scaling in spoolPage. In the context of
-      // SpoolAllPagesWithBoundariesForTesting the scale HAS NOT been
+      // SpoolPagesWithBoundariesForTesting the scale HAS NOT been
       // pre-applied.
       float scale = GetPageShrink(page_index);
       transform.Scale(scale, scale);
@@ -403,6 +416,7 @@ class ChromePrintContext : public PrintContext {
 
       context.Restore();
     }
+
     canvas->drawPicture(context.EndRecording());
   }
 
@@ -1899,12 +1913,13 @@ void WebLocalFrameImpl::GetPageDescription(
 
 gfx::Size WebLocalFrameImpl::SpoolSizeInPixelsForTesting(
     const gfx::Size& page_size_in_pixels,
-    uint32_t page_count) {
+    const WebVector<uint32_t>& pages) {
   int spool_width = page_size_in_pixels.width();
   int spool_height = 0;
-  for (uint32_t page_index = 0; page_index < page_count; page_index++) {
+
+  for (uint32_t page_index : pages) {
     // Make room for the 1px tall page separator.
-    if (page_index)
+    if (page_index != pages.front())
       spool_height++;
 
     WebPrintPageDescription description;
@@ -1919,15 +1934,24 @@ gfx::Size WebLocalFrameImpl::SpoolSizeInPixelsForTesting(
   return gfx::Size(spool_width, spool_height);
 }
 
+gfx::Size WebLocalFrameImpl::SpoolSizeInPixelsForTesting(
+    const gfx::Size& page_size_in_pixels,
+    uint32_t page_count) {
+  WebVector<uint32_t> pages(page_count);
+  std::iota(pages.begin(), pages.end(), 0);
+  return SpoolSizeInPixelsForTesting(page_size_in_pixels, pages);
+}
+
 void WebLocalFrameImpl::PrintPagesForTesting(
     cc::PaintCanvas* canvas,
     const gfx::Size& page_size_in_pixels,
-    const gfx::Size& spool_size_in_pixels) {
+    const gfx::Size& spool_size_in_pixels,
+    const WebVector<uint32_t>* pages) {
   DCHECK(print_context_);
 
-  print_context_->SpoolAllPagesWithBoundariesForTesting(
-      canvas, gfx::SizeF(page_size_in_pixels),
-      gfx::SizeF(spool_size_in_pixels));
+  print_context_->SpoolPagesWithBoundariesForTesting(
+      canvas, gfx::SizeF(page_size_in_pixels), gfx::SizeF(spool_size_in_pixels),
+      pages);
 }
 
 gfx::Rect WebLocalFrameImpl::GetSelectionBoundsRectForTesting() const {

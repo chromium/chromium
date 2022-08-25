@@ -13371,7 +13371,55 @@ void RecursiveCollectTextRunDOMNodeIds(
   }
 }
 
+std::vector<TextRunDOMNodeIdInfo> GetPrintedTextRunDOMNodeIds(
+    WebLocalFrame* frame,
+    const WebVector<uint32_t>* pages = nullptr) {
+  WebPrintParams print_params;
+  gfx::Size page_size(500, 500);
+  print_params.print_content_area.set_size(page_size);
+
+  frame->PrintBegin(print_params, WebNode());
+  cc::PaintRecorder recorder;
+  frame->PrintPagesForTesting(recorder.beginRecording(SkRect::MakeEmpty()),
+                              page_size, page_size, pages);
+  frame->PrintEnd();
+
+  sk_sp<cc::PaintRecord> paint_record = recorder.finishRecordingAsPicture();
+  std::vector<TextRunDOMNodeIdInfo> text_runs;
+  RecursiveCollectTextRunDOMNodeIds(paint_record, 0, &text_runs);
+
+  return text_runs;
+}
+
 }  // namespace
+
+TEST_F(WebFrameTest, PrintSomePages) {
+  RegisterMockedHttpURLLoad("print-pages.html");
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.InitializeAndLoad(base_url_ + "print-pages.html");
+
+  WebVector<uint32_t> pages;
+  pages.push_back(1);
+  pages.push_back(4);
+  pages.push_back(8);
+  std::vector<TextRunDOMNodeIdInfo> text_runs =
+      GetPrintedTextRunDOMNodeIds(web_view_helper.LocalMainFrame(), &pages);
+
+  ASSERT_EQ(3u, text_runs.size());
+  EXPECT_EQ(2, text_runs[0].glyph_len);  // Page 2
+  EXPECT_EQ(5, text_runs[1].glyph_len);  // Page 5
+  EXPECT_EQ(9, text_runs[2].glyph_len);  // Page 9
+}
+
+TEST_F(WebFrameTest, PrintAllPages) {
+  RegisterMockedHttpURLLoad("print-pages.html");
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.InitializeAndLoad(base_url_ + "print-pages.html");
+
+  std::vector<TextRunDOMNodeIdInfo> text_runs =
+      GetPrintedTextRunDOMNodeIds(web_view_helper.LocalMainFrame());
+  EXPECT_EQ(10u, text_runs.size());
+}
 
 TEST_F(WebFrameTest, FirstLetterHasDOMNodeIdWhenPrinting) {
   // When printing, every DrawText painting op needs to have an associated
@@ -13385,21 +13433,8 @@ TEST_F(WebFrameTest, FirstLetterHasDOMNodeIdWhenPrinting) {
   frame_test_helpers::WebViewHelper web_view_helper;
   web_view_helper.InitializeAndLoad(base_url_ + "first-letter.html");
 
-  // Print the page and capture the PaintRecord.
-  WebPrintParams print_params;
-  gfx::Size page_size(500, 500);
-  print_params.print_content_area.set_size(page_size);
-  WebLocalFrameImpl* frame = web_view_helper.LocalMainFrame();
-  EXPECT_EQ(1u, frame->PrintBegin(print_params, WebNode()));
-  cc::PaintRecorder recorder;
-  frame->PrintPagesForTesting(recorder.beginRecording(SkRect::MakeEmpty()),
-                              page_size, page_size);
-  frame->PrintEnd();
-  sk_sp<PaintRecord> paint_record = recorder.finishRecordingAsPicture();
-
-  // Unpack the paint record and collect info about the text runs.
-  std::vector<TextRunDOMNodeIdInfo> text_runs;
-  RecursiveCollectTextRunDOMNodeIds(paint_record, 0, &text_runs);
+  std::vector<TextRunDOMNodeIdInfo> text_runs =
+      GetPrintedTextRunDOMNodeIds(web_view_helper.LocalMainFrame());
 
   // The first text run should be "Hello".
   ASSERT_EQ(3U, text_runs.size());
