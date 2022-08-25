@@ -295,7 +295,6 @@ void AmbientController::OnAmbientUiVisibilityChanged(
         }
       } else {
         DCHECK(visibility == AmbientUiVisibility::kClosed);
-        GetAmbientBackendModel()->ResetImageFailures();
         inactivity_timer_.Stop();
         user_activity_observer_.Reset();
         power_status_observer_.Reset();
@@ -420,6 +419,7 @@ void AmbientController::ScreenIdleStateChanged(
     // Do not show UI if loading images was unsuccessful.
     if (GetAmbientBackendModel()->ImageLoadingFailed()) {
       VLOG(1) << "Skipping ambient mode activation due to prior failure";
+      GetAmbientBackendModel()->ResetImageFailures();
       return;
     }
 
