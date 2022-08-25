@@ -1557,7 +1557,7 @@
 <translation id="243179355394256322">Реєструвати пристрої у вашій організації можуть лише користувачі з відповідним дозволом. Цей користувач не має такого дозволу. Право на реєстрацію обладнання для Google Meet можна надати в розділі "Користувачі" в Консолі адміністратора.</translation>
 <translation id="243275146591958220">Скасувати завантаження</translation>
 <translation id="2433452467737464329">Додайте в URL-адресу параметр запиту для автоматичного оновлення сторінки: chrome://network/?refresh=&lt;sec&gt;</translation>
-<translation id="2433507940547922241">Зовнішній вигляд</translation>
+<translation id="2433507940547922241">Стиль і тема</translation>
 <translation id="2433836460518180625">Розблокувати лише пристрій</translation>
 <translation id="2434449159125086437">Не вдалося налаштувати принтер. Перевірте конфігурацію й повторіть спробу.</translation>
 <translation id="2434758125294431199">Виберіть, хто може надсилати вам дані</translation>
@@ -7397,7 +7397,7 @@
 <translation id="8192944472786724289"><ph name="APP_NAME" /> хоче показувати вміст вашого екрана.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Ваші пристрої<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195027750202970175">Розмір на диску</translation>
-<translation id="8195191503358432289">Додайте пароль</translation>
+<translation id="8195191503358432289">Додати пароль</translation>
 <translation id="8198456017687137612">Трансляція вкладки</translation>
 <translation id="8199300056570174101">Параметри мережі (служби) і пристрою</translation>
 <translation id="8200772114523450471">Відновити</translation>
@@ -7442,7 +7442,6 @@
 <translation id="8242426110754782860">Продовжити</translation>
 <translation id="8243948765190375130">Якість медіаконтенту може знизитися</translation>
 <translation id="8244514732452879619">Невдовзі час спати</translation>
-<translation id="8245361042748627813">Комбінацію клавіш змінено. Щоб друкувати через системне вікно, використовуйте комбінацію клавіш <ph name="NEW_SHORTCUT_KEY" />.</translation>
 <translation id="8246776524656196770">Захистіть ключ безпеки PIN-кодом (особистим ідентифікаційним номером)</translation>
 <translation id="8248050856337841185">&amp;Вставити</translation>
 <translation id="8248381369318572865">Дозволити доступ до мікрофона й аналіз мовлення</translation>
