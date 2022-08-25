@@ -38,8 +38,11 @@
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/viz/privileged/mojom/compositing/display_private.mojom.h"
+#include "services/viz/privileged/mojom/compositing/external_begin_frame_controller.mojom.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "ui/base/ui_base_features.h"
 
@@ -378,18 +381,18 @@ void VizProcessTransportFactory::OnEstablishedGpuChannel(
   mojo::PendingReceiver<viz::mojom::CompositorFrameSinkClient> client_receiver =
       root_params->compositor_frame_sink_client
           .InitWithNewPipeAndPassReceiver();
-  compositor_data.display_private.reset();
+  mojo::AssociatedRemote<viz::mojom::DisplayPrivate> display_private;
   root_params->display_private =
-      compositor_data.display_private.BindNewEndpointAndPassReceiver();
+      display_private.BindNewEndpointAndPassReceiver();
   compositor_data.display_client =
       std::make_unique<HostDisplayClient>(compositor);
   root_params->display_client =
       compositor_data.display_client->GetBoundRemote(resize_task_runner_);
-
+  mojo::AssociatedRemote<viz::mojom::ExternalBeginFrameController>
+      external_begin_frame_controller;
   if (compositor->use_external_begin_frame_control()) {
     root_params->external_begin_frame_controller =
-        compositor_data.external_begin_frame_controller
-            .BindNewEndpointAndPassReceiver();
+        external_begin_frame_controller.BindNewEndpointAndPassReceiver();
   }
 
   root_params->frame_sink_id = compositor->frame_sink_id();
@@ -427,10 +430,10 @@ void VizProcessTransportFactory::OnEstablishedGpuChannel(
           std::move(context_provider), std::move(worker_context_provider),
           &params);
   compositor->SetLayerTreeFrameSink(std::move(frame_sink),
-                                    compositor_data.display_private.get());
+                                    std::move(display_private));
   if (compositor->use_external_begin_frame_control()) {
     compositor->SetExternalBeginFrameController(
-        compositor_data.external_begin_frame_controller.get());
+        std::move(external_begin_frame_controller));
   }
 
 #if BUILDFLAG(IS_WIN)

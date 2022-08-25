@@ -19,6 +19,9 @@ specific_include_rules = {
   "compositor.cc": [
     "+mojo/public/cpp/bindings",
   ],
+  "compositor.h": [
+    "+mojo/public/cpp/bindings",
+  ],
   "run_all_unittests\.cc": [
     "+mojo/core/embedder",
   ],

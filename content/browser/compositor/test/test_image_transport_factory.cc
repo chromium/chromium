@@ -48,8 +48,9 @@ TestImageTransportFactory::~TestImageTransportFactory() = default;
 
 void TestImageTransportFactory::CreateLayerTreeFrameSink(
     base::WeakPtr<ui::Compositor> compositor) {
-  compositor->SetLayerTreeFrameSink(cc::FakeLayerTreeFrameSink::Create3d(),
-                                    nullptr);
+  compositor->SetLayerTreeFrameSink(
+      cc::FakeLayerTreeFrameSink::Create3d(),
+      mojo::AssociatedRemote<viz::mojom::DisplayPrivate>());
 }
 
 scoped_refptr<viz::ContextProvider>

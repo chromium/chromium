@@ -98,6 +98,7 @@ component("compositor") {
     "//cc/paint",
     "//components/viz/host",
     "//gpu/command_buffer/common",
+    "//services/viz/privileged/mojom/compositing",
     "//skia",
     "//ui/base",
     "//ui/display",

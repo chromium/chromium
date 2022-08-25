@@ -334,9 +334,9 @@ void Compositor::RemoveChildFrameSink(const viz::FrameSinkId& frame_sink_id) {
 
 void Compositor::SetLayerTreeFrameSink(
     std::unique_ptr<cc::LayerTreeFrameSink> layer_tree_frame_sink,
-    viz::mojom::DisplayPrivate* display_private) {
+    mojo::AssociatedRemote<viz::mojom::DisplayPrivate> display_private) {
   layer_tree_frame_sink_requested_ = false;
-  display_private_ = display_private;
+  display_private_ = std::move(display_private);
   host_->SetLayerTreeFrameSink(std::move(layer_tree_frame_sink));
   // Display properties are reset when the output surface is lost, so update it
   // to match the Compositor's.
@@ -355,9 +355,10 @@ void Compositor::SetLayerTreeFrameSink(
 }
 
 void Compositor::SetExternalBeginFrameController(
-    viz::mojom::ExternalBeginFrameController* external_begin_frame_controller) {
+    mojo::AssociatedRemote<viz::mojom::ExternalBeginFrameController>
+        external_begin_frame_controller) {
   DCHECK(use_external_begin_frame_control());
-  external_begin_frame_controller_ = external_begin_frame_controller;
+  external_begin_frame_controller_ = std::move(external_begin_frame_controller);
   if (pending_begin_frame_args_) {
     external_begin_frame_controller_->IssueExternalBeginFrame(
         pending_begin_frame_args_->args, pending_begin_frame_args_->force,
@@ -580,8 +581,8 @@ void Compositor::SetAcceleratedWidget(gfx::AcceleratedWidget widget) {
 gfx::AcceleratedWidget Compositor::ReleaseAcceleratedWidget() {
   DCHECK(!IsVisible());
   host_->ReleaseLayerTreeFrameSink();
-  display_private_ = nullptr;
-  external_begin_frame_controller_ = nullptr;
+  display_private_.reset();
+  external_begin_frame_controller_.reset();
   context_factory_->RemoveCompositor(this);
   context_creation_weak_ptr_factory_.InvalidateWeakPtrs();
   widget_valid_ = false;
@@ -686,8 +687,7 @@ void Compositor::BeginMainFrame(const viz::BeginFrameArgs& args) {
     host_->SetNeedsAnimate();
 }
 
-void Compositor::BeginMainFrameNotExpectedSoon() {
-}
+void Compositor::BeginMainFrameNotExpectedSoon() {}
 
 void Compositor::BeginMainFrameNotExpectedUntil(base::TimeTicks time) {}
 
