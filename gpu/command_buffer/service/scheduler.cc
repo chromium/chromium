@@ -489,7 +489,7 @@ void Scheduler::ScheduleTaskHelper(Task task) {
   uint32_t order_num = sequence->ScheduleTask(std::move(task.closure),
                                               std::move(task.report_callback));
 
-  for (const SyncToken& sync_token : task.sync_token_fences) {
+  for (const SyncToken& sync_token : ReduceSyncTokens(task.sync_token_fences)) {
     SequenceId release_sequence_id =
         sync_point_manager_->GetSyncTokenReleaseSequenceId(sync_token);
     // base::Unretained is safe here since all sequences and corresponding sync

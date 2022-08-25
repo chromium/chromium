@@ -78,7 +78,7 @@ void TaskForwardingSequence::RunTask(
     scoped_refptr<gpu::SyncPointOrderData> sync_point_order_data) {
   // Block thread when waiting for sync token. This avoids blocking when we
   // encounter the wait command later.
-  for (const auto& sync_token : sync_token_fences) {
+  for (const auto& sync_token : gpu::ReduceSyncTokens(sync_token_fences)) {
     base::WaitableEvent completion;
     if (sync_point_manager->Wait(
             sync_token, sync_point_order_data->sequence_id(), order_num,

@@ -9,7 +9,9 @@
 #include <string.h>
 
 #include <tuple>
+#include <vector>
 
+#include "base/containers/span.h"
 #include "gpu/command_buffer/common/command_buffer_id.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/gpu_export.h"
@@ -95,6 +97,11 @@ struct GPU_EXPORT SyncToken {
 
 static_assert(sizeof(SyncToken) <= GL_SYNC_TOKEN_SIZE_CHROMIUM,
               "SyncToken size must not exceed GL_SYNC_TOKEN_SIZE_CHROMIUM");
+
+// Remove redundant tokens such that it should be equivalent to wait on all
+// tokens in the output instead of waiting on all input `tokens`.
+GPU_EXPORT std::vector<SyncToken> ReduceSyncTokens(
+    base::span<const SyncToken> tokens);
 
 }  // namespace gpu
 

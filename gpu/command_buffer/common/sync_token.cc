@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/common/sync_token.h"
 
+#include <algorithm>
 #include <sstream>
 
 namespace gpu {
@@ -37,6 +38,25 @@ std::string SyncToken::ToDebugString() const {
   stream << static_cast<int>(namespace_id()) << ":" << channel_or_high << ":"
          << route_or_low << ":" << release_count();
   return stream.str();
+}
+
+std::vector<SyncToken> ReduceSyncTokens(base::span<const SyncToken> tokens) {
+  std::vector<SyncToken> reduced;
+  for (const SyncToken& next_token : tokens) {
+    auto itr = std::find_if(
+        reduced.begin(), reduced.end(), [&next_token](const SyncToken& token) {
+          return next_token.namespace_id() == token.namespace_id() &&
+                 next_token.command_buffer_id() == token.command_buffer_id();
+        });
+    if (itr == reduced.end()) {
+      reduced.push_back(next_token);
+    } else {
+      if (itr->release_count() < next_token.release_count()) {
+        *itr = next_token;
+      }
+    }
+  }
+  return reduced;
 }
 
 }  // namespace gpu
