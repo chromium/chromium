@@ -420,6 +420,11 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   ASSERT_NE(nullptr, top_origin) << response;
   EXPECT_EQ(https_server()->GetURL("a.com", "/"), GURL(*top_origin));
 
+  std::string* rpId = value->FindStringPath("payment.rpId");
+  ASSERT_NE(nullptr, rpId) << response;
+  EXPECT_EQ("a.com", *rpId);
+
+  // TODO(crbug.com/1356224): Remove legacy 'rp' parameter.
   std::string* rp = value->FindStringPath("payment.rp");
   ASSERT_NE(nullptr, rp) << response;
   EXPECT_EQ("a.com", *rp);
