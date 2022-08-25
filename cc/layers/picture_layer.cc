@@ -114,6 +114,9 @@ void PictureLayer::SetNeedsDisplayRect(const gfx::Rect& layer_rect) {
 }
 
 bool PictureLayer::Update() {
+  // https://linear.app/replay/issue/RUN-467
+  recordreplay::Assert("PictureLayer::Update");
+
   update_source_frame_number_ = layer_tree_host()->SourceFrameNumber();
   bool updated = Layer::Update();
 
@@ -140,6 +143,12 @@ bool PictureLayer::Update() {
   updated |= recording_source_->UpdateAndExpandInvalidation(
       &last_updated_invalidation_, layer_size, recorded_viewport);
 
+  // https://linear.app/replay/issue/RUN-467
+  for (gfx::Rect rect : last_updated_invalidation_) {
+    recordreplay::Assert("PictureLayer::Update #1 %d %d %d %d %d",
+                         updated, rect.x(), rect.y(), rect.width(), rect.height());
+  }
+
   if (updated) {
     {
       auto old_display_list = std::move(picture_layer_inputs_.display_list);
@@ -148,6 +157,11 @@ bool PictureLayer::Update() {
       if (old_display_list &&
           picture_layer_inputs_.display_list
               ->NeedsAdditionalInvalidationForLCDText(*old_display_list)) {
+
+        // https://linear.app/replay/issue/RUN-467
+        recordreplay::Assert("PictureLayer::Update #2 %d %d",
+                             bounds().width(), bounds().height());
+
         last_updated_invalidation_ = gfx::Rect(bounds());
       }
     }
@@ -176,6 +190,9 @@ bool PictureLayer::Update() {
     SetNeedsPushProperties();
     IncreasePaintCount();
   } else {
+    // https://linear.app/replay/issue/RUN-467
+    recordreplay::Assert("PictureLayer::Update #5");
+
     // If this invalidation did not affect the recording source, then it can be
     // cleared as an optimization.
     last_updated_invalidation_.Clear();

@@ -9,6 +9,7 @@
 #include <algorithm>
 
 #include "base/numerics/safe_math.h"
+#include "base/record_replay.h"
 #include "cc/base/region.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/paint/display_item_list.h"
@@ -50,6 +51,12 @@ void RecordingSource::FinishDisplayItemListUpdate() {
 }
 
 void RecordingSource::SetNeedsDisplayRect(const gfx::Rect& layer_rect) {
+  // https://linear.app/replay/issue/RUN-467
+  recordreplay::Assert("RecordingSource::SetNeedsDisplayRect %d %d %d %d %d %d",
+                       layer_rect.x(), layer_rect.y(),
+                       layer_rect.width(), layer_rect.height(),
+                       size_.width(), size_.height());
+
   if (!layer_rect.IsEmpty()) {
     // Clamp invalidation to the layer bounds.
     invalidation_.Union(gfx::IntersectRects(layer_rect, gfx::Rect(size_)));

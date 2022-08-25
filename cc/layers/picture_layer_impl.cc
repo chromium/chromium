@@ -714,6 +714,13 @@ void PictureLayerImpl::UpdateRasterSource(
     Region* new_invalidation,
     const PictureLayerTilingSet* pending_set,
     const PaintWorkletRecordMap* pending_paint_worklet_records) {
+  // https://linear.app/replay/issue/RUN-467
+  recordreplay::Assert("PictureLayerImpl::UpdateRasterSource");
+  for (gfx::Rect rect : *new_invalidation) {
+    recordreplay::Assert("PictureLayerImpl::UpdateRasterSource #1 %d %d %d %d",
+                         rect.x(), rect.y(), rect.width(), rect.height());
+  }
+
   // The bounds and the pile size may differ if the pile wasn't updated (ie.
   // PictureLayer::Update didn't happen). In that case the pile will be empty.
   DCHECK(raster_source->GetSize().IsEmpty() ||
@@ -764,6 +771,13 @@ void PictureLayerImpl::UpdateRasterSource(
             layer_tree_impl()->GetRasterColorSpace(
                 new_display_item_list->discardable_image_map()
                     .content_color_usage());
+
+        // https://linear.app/replay/issue/RUN-467
+        recordreplay::Assert("PictureLayerImpl::UpdateRasterSource #4 %d %d %d",
+                             needs_full_invalidation,
+                             raster_source->GetSize().width(),
+                             raster_source->GetSize().height());
+
         if (needs_full_invalidation)
           new_invalidation->Union(gfx::Rect(raster_source->GetSize()));
       }
