@@ -66,6 +66,8 @@ class ContentAnalysisSdkManager {
   }
 
  protected:
+  static void SetManagerForTesting(ContentAnalysisSdkManager* manager);
+
   // Protected for testing.
   ContentAnalysisSdkManager();
   ~ContentAnalysisSdkManager();

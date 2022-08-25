@@ -10,6 +10,10 @@
 #include "content/public/browser/browser_thread.h"
 
 namespace enterprise_connectors {
+namespace {
+
+ContentAnalysisSdkManager* sdk_manager_for_testing = nullptr;
+}
 
 ContentAnalysisSdkManager::WrappedClient::WrappedClient(
     std::unique_ptr<content_analysis::sdk::Client> client)
@@ -19,8 +23,16 @@ ContentAnalysisSdkManager::WrappedClient::~WrappedClient() = default;
 
 // static
 ContentAnalysisSdkManager* ContentAnalysisSdkManager::Get() {
+  if (sdk_manager_for_testing)
+    return sdk_manager_for_testing;
   static base::NoDestructor<ContentAnalysisSdkManager> manager;
   return manager.get();
+}
+
+// static
+void ContentAnalysisSdkManager::SetManagerForTesting(
+    ContentAnalysisSdkManager* manager) {
+  sdk_manager_for_testing = manager;
 }
 
 ContentAnalysisSdkManager::ContentAnalysisSdkManager() = default;
