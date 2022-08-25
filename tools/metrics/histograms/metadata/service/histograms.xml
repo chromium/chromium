@@ -517,6 +517,8 @@ chromium-metrics-reviews@google.com.
 
     The records are breakdown by FetchEventResult.
   </summary>
+  <token key="ServiceWorkerFetchEventResult"
+      variants="ServiceWorkerFetchEventResult"/>
 </histogram>
 
 <histogram
