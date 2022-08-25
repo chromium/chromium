@@ -49,11 +49,10 @@ class DownloadFilePicker : public ui::SelectFileDialog::Listener,
   // policy.
   void OnFileSelected(const base::FilePath& virtual_path);
 
-  // Called when restricted files sources are obtained.
+  // Called when `is_allowed` is obtained.
   // Runs |file_selected_callback_| with |path| and then deletes this
   // object.
-  void CompleteFileSelection(const base::FilePath& path,
-                             const std::vector<GURL>& restricted_sources);
+  void CompleteFileSelection(const base::FilePath& path, bool is_allowed);
 
   // SelectFileDialog::Listener implementation.
   void FileSelected(const base::FilePath& path,

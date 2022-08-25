@@ -22,6 +22,23 @@
 
 namespace ash {
 
+namespace {
+
+// Maps dlp::FileAction proto enum to DlpWarnDialog::FilesAction enum.
+policy::DlpWarnDialog::FilesAction MapProtoToFilesAction(
+    dlp::FileAction file_action) {
+  switch (file_action) {
+    case dlp::FileAction::UPLOAD:
+    // TODO(crbug.com/1356109): Return upload FileAction.
+    case dlp::FileAction::OPEN:
+    // TODO(crbug.com/1356109): Return open FileAction.
+    case dlp::FileAction::TRANSFER:
+      return policy::DlpWarnDialog::FilesAction::kTransfer;
+  }
+}
+
+}  // namespace
+
 DlpFilesPolicyServiceProvider::DlpFilesPolicyServiceProvider() = default;
 DlpFilesPolicyServiceProvider::~DlpFilesPolicyServiceProvider() = default;
 
@@ -106,49 +123,65 @@ void DlpFilesPolicyServiceProvider::IsFilesTransferRestricted(
             "Unable to parse IsFilesTransferRestrictedRequest"));
     return;
   }
-  if (!request.has_destination_url()) {
+  if (!request.has_destination_url() && !request.has_destination_component()) {
     std::move(response_sender)
         .Run(dbus::ErrorResponse::FromMethodCall(
             method_call, DBUS_ERROR_INVALID_ARGS,
-            "Missing destination url in request"));
+            "Missing both destination url and component in request"));
     return;
   }
 
-  std::vector<GURL> source_urls;
-  for (const auto& url : request.files_sources())
-    source_urls.push_back(GURL(url));
-
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  DCHECK(profile);
+  std::vector<policy::DlpFilesController::FileDaemonInfo> files_info;
+  for (const auto& file : request.transferred_files()) {
+    if (!file.has_path() || !file.has_source_url()) {
+      LOG(ERROR) << "Missing file path or file source url";
+      continue;
+    }
+    files_info.emplace_back(base::FilePath(file.path()), file.source_url());
+  }
 
   policy::DlpRulesManager* rules_manager =
       policy::DlpRulesManagerFactory::GetForPrimaryProfile();
   DCHECK(rules_manager);
   policy::DlpFilesController* files_controller =
       rules_manager->GetDlpFilesController();
-
-  if (files_controller) {
-    files_controller->IsFilesTransferRestricted(
-        profile, source_urls, request.destination_url(),
-        policy::DlpWarnDialog::FilesAction::kTransfer,
-        base::BindOnce(
-            &DlpFilesPolicyServiceProvider::RespondWithRestrictedFilesTransfer,
-            weak_ptr_factory_.GetWeakPtr(), method_call,
-            std::move(response_sender)));
-  } else {
+  if (!files_controller) {
     RespondWithRestrictedFilesTransfer(method_call, std::move(response_sender),
-                                       std::vector<GURL>());
+                                       std::move(files_info));
+    return;
   }
+
+  absl::optional<policy::DlpFilesController::DlpFileDestination> destination;
+  if (request.has_destination_component()) {
+    destination.emplace(request.destination_component());
+  } else {
+    destination.emplace(request.destination_url());
+  }
+
+  policy::DlpWarnDialog::FilesAction files_action =
+      policy::DlpWarnDialog::FilesAction::kTransfer;
+  if (request.has_file_action())
+    files_action = MapProtoToFilesAction(request.file_action());
+
+  files_controller->IsFilesTransferRestricted(
+      std::move(files_info), std::move(destination.value()), files_action,
+      base::BindOnce(
+          &DlpFilesPolicyServiceProvider::RespondWithRestrictedFilesTransfer,
+          weak_ptr_factory_.GetWeakPtr(), method_call,
+          std::move(response_sender)));
 }
 
 void DlpFilesPolicyServiceProvider::RespondWithRestrictedFilesTransfer(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender,
-    const std::vector<GURL>& restricted_sources) {
+    const std::vector<policy::DlpFilesController::FileDaemonInfo>&
+        restricted_files) {
   dlp::IsFilesTransferRestrictedResponse response_proto;
 
-  for (const auto& source : restricted_sources) {
-    response_proto.add_files_sources(source.spec());
+  for (const auto& file : restricted_files) {
+    dlp::FileMetadata* file_metadata = response_proto.add_restricted_files();
+    file_metadata->set_path(file.path.value());
+    file_metadata->set_source_url(file.source_url.spec());
   }
   std::unique_ptr<dbus::Response> response =
       dbus::Response::FromMethodCall(method_call);

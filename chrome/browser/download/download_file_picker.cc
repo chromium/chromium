@@ -127,29 +127,25 @@ void DownloadFilePicker::OnFileSelected(const base::FilePath& path) {
       files_controller = rules_manager->GetDlpFilesController();
 
     if (files_controller) {
-      files_controller->IsFilesTransferRestricted(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()),
-          {download_item_->GetURL()}, path.value(),
-          policy::DlpWarnDialog::FilesAction::kDownload,
+      files_controller->CheckIfDownloadAllowed(
+          download_item_->GetURL(), path,
           base::BindOnce(&DownloadFilePicker::CompleteFileSelection,
                          base::Unretained(this), path));
     } else {
-      CompleteFileSelection(path, std::vector<GURL>());
+      CompleteFileSelection(path, /*is_allowed=*/true);
     }
-
     return;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  CompleteFileSelection(path, std::vector<GURL>());
+  CompleteFileSelection(path, /*is_allowed=*/true);
   // Deletes |this|
 }
 
-void DownloadFilePicker::CompleteFileSelection(
-    const base::FilePath& path,
-    const std::vector<GURL>& restricted_sources) {
+void DownloadFilePicker::CompleteFileSelection(const base::FilePath& path,
+                                               bool is_allowed) {
   base::FilePath selected_path(path);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!restricted_sources.empty())
+  if (!is_allowed)
     selected_path.clear();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   std::move(file_selected_callback_)

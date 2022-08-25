@@ -22,8 +22,6 @@ namespace storage {
 class FileSystemURL;
 }  // namespace storage
 
-class Profile;
-
 namespace policy {
 
 // DlpFilesController is responsible for deciding whether file transfers are
@@ -71,15 +69,53 @@ class DlpFilesController {
     std::vector<DlpRulesManager::Component> components;
   };
 
+  // FileDaemonInfo represents file info used for communication with the DLP
+  // daemon.
+  struct FileDaemonInfo {
+    FileDaemonInfo() = delete;
+    FileDaemonInfo(const base::FilePath& path, const std::string& source_url);
+
+    friend bool operator==(const FileDaemonInfo& a, const FileDaemonInfo& b) {
+      return a.path == b.path && a.source_url == b.source_url;
+    }
+    friend bool operator!=(const FileDaemonInfo& a, const FileDaemonInfo& b) {
+      return !(a == b);
+    }
+
+    // File Path.
+    base::FilePath path;
+    // Source URL from which the file was downloaded.
+    GURL source_url;
+  };
+
+  // DlpFileDestination represents the destination for file transfer. It either
+  // has a url or a component.
+  struct DlpFileDestination {
+    explicit DlpFileDestination(const std::string& url);
+    explicit DlpFileDestination(const dlp::DlpComponent component);
+
+    DlpFileDestination& operator=(const DlpFileDestination&);
+    DlpFileDestination(DlpFileDestination&&);
+    DlpFileDestination& operator=(DlpFileDestination&&);
+
+    ~DlpFileDestination();
+
+    // Destination url or destination path.
+    absl::optional<std::string> url_or_path;
+    // Destination component.
+    absl::optional<DlpRulesManager::Component> component;
+  };
+
   using GetDisallowedTransfersCallback =
       base::OnceCallback<void(std::vector<storage::FileSystemURL>)>;
   using GetFilesRestrictedByAnyRuleCallback = GetDisallowedTransfersCallback;
   using FilterDisallowedUploadsCallback = base::OnceCallback<void(
       std::vector<blink::mojom::FileChooserFileInfoPtr>)>;
+  using CheckIfDownloadAllowedCallback = base::OnceCallback<void(bool)>;
   using GetDlpMetadataCallback =
       base::OnceCallback<void(std::vector<DlpFileMetadata>)>;
   using IsFilesTransferRestrictedCallback =
-      base::OnceCallback<void(const std::vector<GURL>&)>;
+      base::OnceCallback<void(const std::vector<FileDaemonInfo>&)>;
 
   explicit DlpFilesController(const DlpRulesManager& rules_manager);
   DlpFilesController(const DlpFilesController& other) = delete;
@@ -89,13 +125,13 @@ class DlpFilesController {
 
   // Returns a list of files disallowed to be transferred in |result_callback|.
   void GetDisallowedTransfers(
-      std::vector<storage::FileSystemURL> transferred_files,
+      const std::vector<storage::FileSystemURL>& transferred_files,
       storage::FileSystemURL destination,
       GetDisallowedTransfersCallback result_callback);
 
   // Retrieves metadata for each entry in |files| and returns it as a list in
   // |result_callback|.
-  void GetDlpMetadata(std::vector<storage::FileSystemURL> files,
+  void GetDlpMetadata(const std::vector<storage::FileSystemURL>& files,
                       GetDlpMetadataCallback result_callback);
 
   // Filters files disallowed to be uploaded to `destination`.
@@ -104,12 +140,18 @@ class DlpFilesController {
       const GURL& destination,
       FilterDisallowedUploadsCallback result_callback);
 
-  // Returns a sublist of |files_sources| in |result_callback| with files
-  // sources restricted from performing |action| to |destination|.
+  // Checks whether the file download from `download_url` to `file_path` is
+  // allowed.
+  void CheckIfDownloadAllowed(const GURL& download_url,
+                              const base::FilePath& file_path,
+                              CheckIfDownloadAllowedCallback result_callback);
+
+  // Returns a sublist of |transferred_files| which aren't allowed to be
+  // transferred to either |destination_url| or |destination_component| in
+  // |result_callback|.
   void IsFilesTransferRestricted(
-      Profile* profile,
-      std::vector<GURL> files_sources,
-      std::string destination,
+      const std::vector<FileDaemonInfo>& transferred_files,
+      const DlpFileDestination& destination,
       DlpWarnDialog::FilesAction files_action,
       IsFilesTransferRestrictedCallback result_callback);
 
@@ -127,10 +169,11 @@ class DlpFilesController {
   // Called back from warning dialog. Passes blocked files sources along
   // to |callback|. In case |should_proceed| is true, passes only
   // |restricted_files_sources|, otherwise passes also |warned_files_sources|.
-  void OnDlpWarnDialogReply(std::vector<GURL> restricted_files_sources,
-                            std::vector<GURL> warned_files_sources,
-                            IsFilesTransferRestrictedCallback callback,
-                            bool should_proceed);
+  void OnDlpWarnDialogReply(
+      std::vector<FileDaemonInfo> restricted_files_sources,
+      std::vector<FileDaemonInfo> warned_files_sources,
+      IsFilesTransferRestrictedCallback callback,
+      bool should_proceed);
 
   void ReturnDisallowedTransfers(
       base::flat_map<std::string, storage::FileSystemURL> files_map,
@@ -141,6 +184,7 @@ class DlpFilesController {
       std::vector<blink::mojom::FileChooserFileInfoPtr> uploaded_files,
       FilterDisallowedUploadsCallback result_callback,
       dlp::CheckFilesTransferResponse response);
+
   void ReturnDlpMetadata(std::vector<absl::optional<ino_t>> inodes,
                          GetDlpMetadataCallback result_callback,
                          const ::dlp::GetFilesSourcesResponse response);

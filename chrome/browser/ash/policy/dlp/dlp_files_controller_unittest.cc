@@ -613,12 +613,16 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(DlpFilesExternalDestinationTest, IsFilesTransferRestricted_Component) {
   auto [mount_name, path, expected_component] = GetParam();
 
-  std::vector<GURL> files_sources(
-      {GURL(kExample1), GURL(kExample2), GURL(kExample3)});
-  std::vector<GURL> disallowed_sources({GURL(kExample1), GURL(kExample3)});
+  std::vector<DlpFilesController::FileDaemonInfo> transferred_files(
+      {DlpFilesController::FileDaemonInfo(base::FilePath(), kExample1),
+       DlpFilesController::FileDaemonInfo(base::FilePath(), kExample2),
+       DlpFilesController::FileDaemonInfo(base::FilePath(), kExample3)});
+  std::vector<DlpFilesController::FileDaemonInfo> disallowed_files(
+      {DlpFilesController::FileDaemonInfo(base::FilePath(), kExample1),
+       DlpFilesController::FileDaemonInfo(base::FilePath(), kExample3)});
 
   MockIsFilesTransferRestrictedCallback cb;
-  EXPECT_CALL(cb, Run(disallowed_sources)).Times(1);
+  EXPECT_CALL(cb, Run(disallowed_files)).Times(1);
 
   EXPECT_CALL(*rules_manager_,
               IsRestrictedComponent(_, expected_component, _, _))
@@ -631,8 +635,9 @@ TEST_P(DlpFilesExternalDestinationTest, IsFilesTransferRestricted_Component) {
   ASSERT_TRUE(dst_url.is_valid());
 
   files_controller_->IsFilesTransferRestricted(
-      profile_.get(), files_sources, dst_url.path().value(),
-      DlpWarnDialog::FilesAction::kDownload, cb.Get());
+      transferred_files,
+      DlpFilesController::DlpFileDestination(dst_url.path().value()),
+      DlpWarnDialog::FilesAction::kTransfer, cb.Get());
 }
 
 class DlpFilesWarningDialogTest
@@ -651,11 +656,13 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(DlpFilesWarningDialogTest,
        IsFilesTransferRestricted_FileDownloadWarned) {
   auto [should_proceed, disallowed_sources_str] = GetParam();
-  std::vector<GURL> disallowed_sources;
+  std::vector<DlpFilesController::FileDaemonInfo> disallowed_files;
   for (const auto& source : disallowed_sources_str)
-    disallowed_sources.emplace_back(source);
-  std::vector<GURL> files_sources(
-      {GURL(kExample1), GURL(kExample2), GURL(kExample3)});
+    disallowed_files.emplace_back(base::FilePath(), source);
+  std::vector<DlpFilesController::FileDaemonInfo> transferred_files(
+      {{base::FilePath(), kExample1},
+       {base::FilePath(), kExample2},
+       {base::FilePath(), kExample3}});
 
   storage::ExternalMountPoints* mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
@@ -674,7 +681,7 @@ TEST_P(DlpFilesWarningDialogTest,
   EXPECT_CALL(*mock_dlp_warn_notifier, ShowDlpWarningDialog).Times(1);
 
   MockIsFilesTransferRestrictedCallback cb;
-  EXPECT_CALL(cb, Run(disallowed_sources)).Times(1);
+  EXPECT_CALL(cb, Run(disallowed_files)).Times(1);
 
   EXPECT_CALL(*rules_manager_,
               IsRestrictedComponent(_, DlpRulesManager::Component::kUsb, _, _))
@@ -688,7 +695,8 @@ TEST_P(DlpFilesWarningDialogTest,
   ASSERT_TRUE(dst_url.is_valid());
 
   files_controller_->IsFilesTransferRestricted(
-      profile_.get(), files_sources, dst_url.path().value(),
+      transferred_files,
+      DlpFilesController::DlpFileDestination(dst_url.path().value()),
       DlpWarnDialog::FilesAction::kDownload, cb.Get());
 
   storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
