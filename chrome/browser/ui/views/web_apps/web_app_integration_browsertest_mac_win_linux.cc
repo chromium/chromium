@@ -74,7 +74,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckSiteNotHandlesFile) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckLaunchFileExpectDialog) {
-  helper_.InstallOmniboxIcon(InstallableSite::kFileHandler);
+  helper_.InstallMenuOption(InstallableSite::kFileHandler);
   helper_.ClosePwa();
   helper_.LaunchFileExpectDialog(Site::kFileHandler, FilesOptions::kOneTextFile,
                                  AllowDenyOptions::kAllow,

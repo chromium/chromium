@@ -116,6 +116,12 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration,
   helper_.CheckWindowControlsOverlay(Site::kWco, IsOn::kOn);
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, SwitchIncognitoProfile) {
+  helper_.SwitchIncognitoProfile();
+  helper_.NavigateBrowser(Site::kStandalone);
+  helper_.CheckCreateShortcutNotShown();
+}
+
 // Generated tests:
 
 IN_PROC_BROWSER_TEST_F(

@@ -231,6 +231,11 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void ApplyRunOnOsLoginPolicyRunWindowed(Site site);
   void DeletePlatformShortcut(Site site);
   void RemoveRunOnOsLoginPolicy(Site site);
+  void LaunchFileExpectDialog(Site site,
+                              FilesOptions files_options,
+                              AllowDenyOptions allow_deny,
+                              AskAgainOptions ask_again);
+  void LaunchFileExpectNoDialog(Site site, FilesOptions files_options);
   void LaunchFromChromeApps(Site site);
   void LaunchFromLaunchIcon(Site site);
   void LaunchFromMenuOption(Site site);
@@ -248,6 +253,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void OpenInChrome();
   void SetOpenInTab(Site site);
   void SetOpenInWindow(Site site);
+  void SwitchIncognitoProfile();
   void SwitchProfileClients(ProfileClient client);
   void SyncTurnOff();
   void SyncTurnOn();
@@ -267,11 +273,8 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CheckAppNotInList(Site site);
   void CheckAppIcon(Site site, Color color);
   void CheckAppTitle(Site site, Title title);
-  void LaunchFileExpectDialog(Site site,
-                              FilesOptions files_options,
-                              AllowDenyOptions allow_deny,
-                              AskAgainOptions ask_again);
-  void LaunchFileExpectNoDialog(Site site, FilesOptions files_options);
+  void CheckCreateShortcutNotShown();
+  void CheckCreateShortcutShown();
   void CheckWindowModeIsNotVisibleInAppSettings(Site site);
   void CheckInstallable();
   void CheckInstallIconShown();

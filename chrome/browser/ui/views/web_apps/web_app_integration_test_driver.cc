@@ -962,6 +962,85 @@ void WebAppIntegrationTestDriver::RemoveRunOnOsLoginPolicy(Site site) {
   AfterStateChangeAction();
 }
 
+void WebAppIntegrationTestDriver::LaunchFileExpectDialog(
+    Site site,
+    FilesOptions files_options,
+    AllowDenyOptions allow_deny,
+    AskAgainOptions ask_again) {
+  BeforeStateChangeAction(__FUNCTION__);
+  AppId app_id = GetAppIdBySiteMode(site);
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "FileHandlerLaunchDialogView");
+  FileHandlerLaunchDialogView::SetDefaultRememberSelectionForTesting(
+      ask_again == AskAgainOptions::kRemember);
+  std::vector<base::FilePath> file_paths = GetTestFilePaths(files_options);
+
+  StartupBrowserCreator browser_creator;
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitchASCII(switches::kAppId, app_id);
+  for (auto file_path : file_paths) {
+    command_line.AppendArgPath(file_path);
+  }
+  browser_creator.Start(command_line, profile()->GetPath(),
+                        {profile(), StartupProfileMode::kBrowserWindow}, {});
+  BrowserAddedWaiter browser_added_waiter;
+
+  // Check the file handling dialog shows up.
+  views::Widget* widget = waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(widget != nullptr);
+
+  views::test::WidgetDestroyedWaiter destroyed_waiter(widget);
+  views::Widget::ClosedReason close_reason;
+  if (allow_deny == AllowDenyOptions::kDeny) {
+    close_reason = views::Widget::ClosedReason::kCancelButtonClicked;
+    if (ask_again == AskAgainOptions::kRemember) {
+      site_remember_deny_open_file.emplace(site);
+    }
+  } else {
+    close_reason = views::Widget::ClosedReason::kAcceptButtonClicked;
+  }
+  // File handling dialog should be destroyed after choosing the action.
+  widget->CloseWithReason(close_reason);
+  destroyed_waiter.Wait();
+
+  if (allow_deny == AllowDenyOptions::kAllow) {
+    browser_added_waiter.Wait();
+    app_browser_ = browser_added_waiter.browser_added();
+    ActivateBrowserAndWait(app_browser_);
+    EXPECT_EQ(app_browser()->app_controller()->app_id(), app_id);
+  }
+  AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::LaunchFileExpectNoDialog(
+    Site site,
+    FilesOptions files_options) {
+  BeforeStateChangeAction(__FUNCTION__);
+  AppId app_id = GetAppIdBySiteMode(site);
+  std::vector<base::FilePath> file_paths = GetTestFilePaths(files_options);
+  BrowserAddedWaiter browser_added_waiter;
+  base::RunLoop run_loop;
+
+  web_app::startup::SetStartupDoneCallbackForTesting(run_loop.QuitClosure());
+  StartupBrowserCreator browser_creator;
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitchASCII(switches::kAppId, app_id);
+  for (auto file_path : file_paths) {
+    command_line.AppendArgPath(file_path);
+  }
+  browser_creator.Start(command_line, profile()->GetPath(),
+                        {profile(), StartupProfileMode::kBrowserWindow}, {});
+  run_loop.Run();
+
+  // if the web app doesn't deny to open the file, wait for the app window.
+  if (!base::Contains(site_remember_deny_open_file, site)) {
+    app_browser_ = browser_added_waiter.browser_added();
+    ActivateBrowserAndWait(app_browser_);
+    EXPECT_EQ(app_browser()->app_controller()->app_id(), app_id);
+  }
+  AfterStateChangeAction();
+}
+
 void WebAppIntegrationTestDriver::LaunchFromChromeApps(Site site) {
   if (!BeforeStateChangeAction(__FUNCTION__))
     return;
@@ -1428,6 +1507,16 @@ void WebAppIntegrationTestDriver::SetOpenInWindow(Site site) {
   AfterStateChangeAction();
 }
 
+void WebAppIntegrationTestDriver::SwitchIncognitoProfile() {
+  BeforeStateChangeAction(__FUNCTION__);
+  content::WebContentsAddedObserver nav_observer;
+  CHECK(chrome::ExecuteCommand(browser(), IDC_NEW_INCOGNITO_WINDOW));
+  ASSERT_EQ(1U, BrowserList::GetIncognitoBrowserCount());
+  nav_observer.GetWebContents();
+  active_browser_ = BrowserList::GetInstance()->GetLastActive();
+  AfterStateChangeAction();
+}
+
 void WebAppIntegrationTestDriver::SwitchProfileClients(ProfileClient client) {
   if (!BeforeStateChangeAction(__FUNCTION__))
     return;
@@ -1846,84 +1935,16 @@ void WebAppIntegrationTestDriver::CheckAppTitle(Site site, Title title) {
   AfterStateCheckAction();
 }
 
-void WebAppIntegrationTestDriver::LaunchFileExpectDialog(
-    Site site,
-    FilesOptions files_options,
-    AllowDenyOptions allow_deny,
-    AskAgainOptions ask_again) {
-  BeforeStateChangeAction(__FUNCTION__);
-  AppId app_id = GetAppIdBySiteMode(site);
-  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       "FileHandlerLaunchDialogView");
-  FileHandlerLaunchDialogView::SetDefaultRememberSelectionForTesting(
-      ask_again == AskAgainOptions::kRemember);
-  std::vector<base::FilePath> file_paths = GetTestFilePaths(files_options);
-
-  StartupBrowserCreator browser_creator;
-  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  command_line.AppendSwitchASCII(switches::kAppId, app_id);
-  for (auto file_path : file_paths) {
-    command_line.AppendArgPath(file_path);
-  }
-  browser_creator.Start(command_line, profile()->GetPath(),
-                        {profile(), StartupProfileMode::kBrowserWindow}, {});
-  BrowserAddedWaiter browser_added_waiter;
-
-  // Check the file handling dialog shows up.
-  views::Widget* widget = waiter.WaitIfNeededAndGet();
-  ASSERT_TRUE(widget != nullptr);
-
-  views::test::WidgetDestroyedWaiter destroyed_waiter(widget);
-  views::Widget::ClosedReason close_reason;
-  if (allow_deny == AllowDenyOptions::kDeny) {
-    close_reason = views::Widget::ClosedReason::kCancelButtonClicked;
-    if (ask_again == AskAgainOptions::kRemember) {
-      site_remember_deny_open_file.emplace(site);
-    }
-  } else {
-    close_reason = views::Widget::ClosedReason::kAcceptButtonClicked;
-  }
-  // File handling dialog should be destroyed after choosing the action.
-  widget->CloseWithReason(close_reason);
-  destroyed_waiter.Wait();
-
-  if (allow_deny == AllowDenyOptions::kAllow) {
-    browser_added_waiter.Wait();
-    app_browser_ = browser_added_waiter.browser_added();
-    ActivateBrowserAndWait(app_browser_);
-    EXPECT_EQ(app_browser()->app_controller()->app_id(), app_id);
-  }
-  AfterStateChangeAction();
+void WebAppIntegrationTestDriver::CheckCreateShortcutNotShown() {
+  BeforeStateCheckAction(__FUNCTION__);
+  EXPECT_EQ(GetAppMenuCommandState(IDC_CREATE_SHORTCUT, browser()), kDisabled);
+  AfterStateCheckAction();
 }
 
-void WebAppIntegrationTestDriver::LaunchFileExpectNoDialog(
-    Site site,
-    FilesOptions files_options) {
-  BeforeStateChangeAction(__FUNCTION__);
-  AppId app_id = GetAppIdBySiteMode(site);
-  std::vector<base::FilePath> file_paths = GetTestFilePaths(files_options);
-  BrowserAddedWaiter browser_added_waiter;
-  base::RunLoop run_loop;
-
-  web_app::startup::SetStartupDoneCallbackForTesting(run_loop.QuitClosure());
-  StartupBrowserCreator browser_creator;
-  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  command_line.AppendSwitchASCII(switches::kAppId, app_id);
-  for (auto file_path : file_paths) {
-    command_line.AppendArgPath(file_path);
-  }
-  browser_creator.Start(command_line, profile()->GetPath(),
-                        {profile(), StartupProfileMode::kBrowserWindow}, {});
-  run_loop.Run();
-
-  // if the web app doesn't deny to open the file, wait for the app window.
-  if (!base::Contains(site_remember_deny_open_file, site)) {
-    app_browser_ = browser_added_waiter.browser_added();
-    ActivateBrowserAndWait(app_browser_);
-    EXPECT_EQ(app_browser()->app_controller()->app_id(), app_id);
-  }
-
-  AfterStateChangeAction();
+void WebAppIntegrationTestDriver::CheckCreateShortcutShown() {
+  BeforeStateCheckAction(__FUNCTION__);
+  EXPECT_EQ(GetAppMenuCommandState(IDC_CREATE_SHORTCUT, browser()), kEnabled);
+  AfterStateCheckAction();
 }
 
 void WebAppIntegrationTestDriver::CheckWindowModeIsNotVisibleInAppSettings(
@@ -2699,9 +2720,7 @@ void WebAppIntegrationTestDriver::NavigateTabbedBrowserToSite(
     NavigationMode mode) {
   DCHECK(browser());
   content::WebContents* web_contents = GetCurrentTab(browser());
-  auto* app_banner_manager =
-      webapps::TestAppBannerManagerDesktop::FromWebContents(web_contents);
-
+  bool is_incognito = web_contents->GetBrowserContext()->IsOffTheRecord();
   if (mode == NavigationMode::kNewTab) {
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(url), WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -2710,7 +2729,11 @@ void WebAppIntegrationTestDriver::NavigateTabbedBrowserToSite(
   } else {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   }
-  app_banner_manager->WaitForInstallableCheck();
+  if (!is_incognito) {
+    auto* app_banner_manager =
+        webapps::TestAppBannerManagerDesktop::FromWebContents(web_contents);
+    app_banner_manager->WaitForInstallableCheck();
+  }
 }
 
 Browser* WebAppIntegrationTestDriver::GetAppBrowserForSite(
