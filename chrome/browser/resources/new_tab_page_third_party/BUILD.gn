@@ -2,70 +2,23 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/common/features.gni")
-import("//tools/grit/grit_rule.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
+import("//chrome/browser/resources/tools/build_webui.gni")
 
-grd_prefix = "new_tab_page_third_party"
-preprocess_folder = "preprocessed"
-
-preprocess_if_expr("preprocess") {
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [
+build_webui("build") {
+  grd_prefix = "new_tab_page_third_party"
+  static_files = [ "new_tab_page_third_party.html" ]
+  non_web_component_files = [
     "browser_proxy.ts",
     "new_tab_page_third_party.ts",
   ]
-}
 
-copy("copy_mojo") {
-  deps = [ "//chrome/browser/ui/webui/new_tab_page_third_party:mojo_bindings_js__generator" ]
-  sources = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party.mojom-webui.js" ]
-  outputs = [ "$target_gen_dir/$preprocess_folder/{{source_file_part}}" ]
-}
+  mojo_files_deps = [ "//chrome/browser/ui/webui/new_tab_page_third_party:mojo_bindings_js__generator" ]
+  mojo_files = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party.mojom-webui.js" ]
 
-grit("resources") {
-  defines = chrome_grit_defines
-  enable_input_discovery_for_gn_analyze = false
-  source = "$target_gen_dir/resources.grd"
-  deps = [ ":build_grd" ]
-  outputs = [
-    "grit/new_tab_page_third_party_resources.h",
-    "grit/new_tab_page_third_party_resources_map.cc",
-    "grit/new_tab_page_third_party_resources_map.h",
-    "new_tab_page_third_party_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chrome"
-}
-
-ts_library("build_ts") {
-  root_dir = "$target_gen_dir/$preprocess_folder"
-  out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "tsconfig_base.json"
-  in_files = [
-    "browser_proxy.ts",
-    "new_tab_page_third_party.ts",
-    "new_tab_page_third_party.mojom-webui.js",
-  ]
-  deps = [
+  ts_deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",
     "//ui/webui/resources/cr_components/most_visited:build_ts",
     "//ui/webui/resources/mojo:library",
   ]
-  extra_deps = [
-    ":copy_mojo",
-    ":preprocess",
-  ]
-}
-
-generate_grd("build_grd") {
-  grd_prefix = grd_prefix
-  out_grd = "$target_gen_dir/resources.grd"
-  input_files = [ "new_tab_page_third_party.html" ]
-  input_files_base_dir = rebase_path(".", "//")
-  deps = [ ":build_ts" ]
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
 }
