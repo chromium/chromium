@@ -254,6 +254,8 @@ void AwFeatureListCreator::SetUpFieldTrials() {
   // back to the provider we previously gave to FieldTrialList, which is a low
   // entropy provider. The X-Client-Data header is not reported on WebView, so
   // we pass an empty object as the |low_entropy_source_value|.
+  // If you update this, consider whether "WebViewEnvironment" in
+  // components/variations/variations_seed_processor_unittest.cc needs updates.
   variations_field_trial_creator_->SetUpFieldTrials(
       variation_ids,
       command_line->GetSwitchValueASCII(

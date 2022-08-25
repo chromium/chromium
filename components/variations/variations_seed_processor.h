@@ -57,23 +57,6 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedProcessor {
 
  private:
   friend void CreateTrialFromStudyFuzzer(const Study& study);
-  friend class VariationsSeedProcessorTest;
-  FRIEND_TEST_ALL_PREFIXES(VariationsSeedProcessorTest,
-                           AllowForceGroupAndVariationId);
-  FRIEND_TEST_ALL_PREFIXES(VariationsSeedProcessorTest,
-                           AllowVariationIdWithForcingFlag);
-  FRIEND_TEST_ALL_PREFIXES(VariationsSeedProcessorTest,
-                           ForbidForceGroupWithVariationId);
-  FRIEND_TEST_ALL_PREFIXES(VariationsSeedProcessorTest, ForceGroupWithFlag1);
-  FRIEND_TEST_ALL_PREFIXES(VariationsSeedProcessorTest, ForceGroupWithFlag2);
-  FRIEND_TEST_ALL_PREFIXES(VariationsSeedProcessorTest,
-                           ForceGroup_ChooseFirstGroupWithFlag);
-  FRIEND_TEST_ALL_PREFIXES(VariationsSeedProcessorTest,
-                           ForceGroup_DontChooseGroupWithFlag);
-  FRIEND_TEST_ALL_PREFIXES(VariationsSeedProcessorTest, IsStudyExpired);
-  FRIEND_TEST_ALL_PREFIXES(VariationsSeedProcessorTest, VariationParams);
-  FRIEND_TEST_ALL_PREFIXES(VariationsSeedProcessorTest,
-                           VariationParamsWithForcingFlag);
 
   // Check if the |study| is only associated with platform Android/iOS and
   // channel dev/canary. If so, forcing flag and variation id can both be set.

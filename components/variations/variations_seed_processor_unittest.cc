@@ -64,24 +64,25 @@ Study::Experiment* AddExperiment(const std::string& name,
   return experiment;
 }
 
-// Populates |study| with test data used for testing associating command line
-// flags with trials groups. The study will contain three groups, a default
-// group that isn't associated with a flag, and two other groups, both
+// Adds a Study to |seed| and populates it with test data associating command
+// line flags with trials groups. The study will contain three groups, a
+// default group that isn't associated with a flag, and two other groups, both
 // associated with different flags.
-Study CreateStudyWithFlagGroups(int default_group_probability,
-                                int flag_group1_probability,
-                                int flag_group2_probability) {
+Study* CreateStudyWithFlagGroups(int default_group_probability,
+                                 int flag_group1_probability,
+                                 int flag_group2_probability,
+                                 VariationsSeed* seed) {
   DCHECK_GE(default_group_probability, 0);
   DCHECK_GE(flag_group1_probability, 0);
   DCHECK_GE(flag_group2_probability, 0);
-  Study study;
-  study.set_name(kFlagStudyName);
-  study.set_default_experiment_name(kNonFlagGroupName);
+  Study* study = seed->add_study();
+  study->set_name(kFlagStudyName);
+  study->set_default_experiment_name(kNonFlagGroupName);
 
-  AddExperiment(kNonFlagGroupName, default_group_probability, &study);
-  AddExperiment(kFlagGroup1Name, flag_group1_probability, &study)
+  AddExperiment(kNonFlagGroupName, default_group_probability, study);
+  AddExperiment(kFlagGroup1Name, flag_group1_probability, study)
       ->set_forcing_flag(kForcingFlag1);
-  AddExperiment(kFlagGroup2Name, flag_group2_probability, &study)
+  AddExperiment(kFlagGroup2Name, flag_group2_probability, study)
       ->set_forcing_flag(kForcingFlag2);
 
   return study;
@@ -118,11 +119,69 @@ class TestOverrideStringCallback {
 
 }  // namespace
 
-class VariationsSeedProcessorTest : public ::testing::Test {
+// Create a ClientFilterableState with reasonable default values for Chrome.
+std::unique_ptr<ClientFilterableState> CreateChromeClientFilterableState() {
+  auto client_state = std::make_unique<ClientFilterableState>(
+      base::BindOnce([] { return false; }));
+  client_state->locale = "en-CA";
+  client_state->reference_date = base::Time::Now();
+  client_state->version = base::Version("20.0.0.0");
+  client_state->channel = Study::STABLE;
+  client_state->form_factor = Study::PHONE;
+  client_state->platform = Study::PLATFORM_ANDROID;
+  return client_state;
+}
+
+// ChromeEnvironment calls CreateTrialsFromSeed with arguments similar to
+// chrome. In particular, it passes a non-nullptr as low_entropy_source.
+class ChromeEnvironment {
  public:
-  VariationsSeedProcessorTest() {
+  void CreateTrialsFromSeed(
+      const VariationsSeed& seed,
+      double low_entropy,
+      base::FeatureList* feature_list,
+      const VariationsSeedProcessor::UIStringOverrideCallback& callback) {
+    auto client_state = CreateChromeClientFilterableState();
+    client_state->platform = Study::PLATFORM_ANDROID;
+
+    base::MockEntropyProvider mock_low_entropy_provider(low_entropy);
+    VariationsSeedProcessor seed_processor;
+    // This should mimic the call through SetUpFieldTrials from
+    // components/variations/service/variations_service.cc
+    seed_processor.CreateTrialsFromSeed(seed, *client_state, callback,
+                                        &mock_low_entropy_provider,
+                                        feature_list);
   }
 
+  bool SupportsLayers() { return true; }
+};
+
+// WebViewEnvironment calls CreateTrialsFromSeed with arguments similar to
+// WebView. In particular, it passes a nullptr as low_entropy_source.
+class WebViewEnvironment {
+ public:
+  void CreateTrialsFromSeed(
+      const VariationsSeed& seed,
+      double low_entropy,
+      base::FeatureList* feature_list,
+      const VariationsSeedProcessor::UIStringOverrideCallback& callback) {
+    auto client_state = CreateChromeClientFilterableState();
+    client_state->platform = Study::PLATFORM_ANDROID_WEBVIEW;
+
+    VariationsSeedProcessor seed_processor;
+    // This should mimic the call through SetUpFieldTrials from
+    // android_webview/browser/aw_feature_list_creator.cc
+    seed_processor.CreateTrialsFromSeed(seed, *client_state, callback, nullptr,
+                                        feature_list);
+  }
+
+  bool SupportsLayers() { return false; }
+};
+
+template <typename Environment>
+class VariationsSeedProcessorTest : public ::testing::Test {
+ public:
+  VariationsSeedProcessorTest() = default;
   VariationsSeedProcessorTest(const VariationsSeedProcessorTest&) = delete;
   VariationsSeedProcessorTest& operator=(const VariationsSeedProcessorTest&) =
       delete;
@@ -134,64 +193,29 @@ class VariationsSeedProcessorTest : public ::testing::Test {
     testing::ClearAllVariationParams();
   }
 
-  bool CreateTrialFromStudy(const Study& study) {
-    base::MockEntropyProvider mock_low_entropy_provider(0.9);
-    return CreateTrialFromStudyWithFeatureListAndEntropyOverride(
-        study, mock_low_entropy_provider, base::FeatureList::GetInstance());
-  }
-
-  bool CreateTrialFromStudyWithEntropyOverride(
-      const Study& study,
-      const base::FieldTrial::EntropyProvider& override_entropy_provider) {
-    return CreateTrialFromStudyWithFeatureListAndEntropyOverride(
-        study, override_entropy_provider, base::FeatureList::GetInstance());
-  }
-
-  bool CreateTrialFromStudyWithFeatureList(const Study& study,
-                                           base::FeatureList* feature_list) {
-    base::MockEntropyProvider mock_low_entropy_provider(0.9);
-    return CreateTrialFromStudyWithFeatureListAndEntropyOverride(
-        study, mock_low_entropy_provider, feature_list);
-  }
-
-  bool CreateTrialFromStudyWithFeatureListAndEntropyOverride(
-      const Study& study,
-      const base::FieldTrial::EntropyProvider& override_entropy_provider,
-      base::FeatureList* feature_list) {
-    ProcessedStudy processed_study;
-    const bool is_expired = internal::IsStudyExpired(study, base::Time::Now());
-    if (processed_study.Init(&study, is_expired)) {
-      VariationsSeedProcessor().CreateTrialFromStudy(
-          processed_study, override_callback_.callback(),
-          &override_entropy_provider, feature_list);
-      return true;
-    }
-    return false;
+  void CreateTrialsFromSeed(const VariationsSeed& seed,
+                            double low_entropy = 0.9) {
+    base::FeatureList feature_list;
+    env.CreateTrialsFromSeed(seed, low_entropy, &feature_list,
+                             override_callback_.callback());
   }
 
   void CreateTrialsFromSeed(const VariationsSeed& seed,
-                            double low_entropy = 0.9) {
-    ClientFilterableState client_state(base::BindOnce([] { return false; }));
-    client_state.locale = "en-CA";
-    client_state.reference_date = base::Time::Now();
-    client_state.version = base::Version("20.0.0.0");
-    client_state.channel = Study::STABLE;
-    client_state.form_factor = Study::PHONE;
-    client_state.platform = Study::PLATFORM_ANDROID;
-
-    base::FeatureList feature_list;
-    base::MockEntropyProvider mock_low_entropy_provider(low_entropy);
-    VariationsSeedProcessor seed_processor;
-    seed_processor.CreateTrialsFromSeed(
-        seed, client_state, override_callback_.callback(),
-        &mock_low_entropy_provider, &feature_list);
+                            base::FeatureList* feature_list) {
+    env.CreateTrialsFromSeed(seed, 0.9, feature_list,
+                             override_callback_.callback());
   }
 
  protected:
+  Environment env;
   TestOverrideStringCallback override_callback_;
 };
 
-TEST_F(VariationsSeedProcessorTest, EmitStudyCountMetric) {
+using EnvironmentTypes =
+    ::testing::Types<ChromeEnvironment, WebViewEnvironment>;
+TYPED_TEST_SUITE(VariationsSeedProcessorTest, EnvironmentTypes);
+
+TYPED_TEST(VariationsSeedProcessorTest, EmitStudyCountMetric) {
   struct StudyCountMetricTestParams {
     VariationsSeed seed;
     int expected_study_count;
@@ -208,19 +232,20 @@ TEST_F(VariationsSeedProcessorTest, EmitStudyCountMetric) {
 
   for (const StudyCountMetricTestParams& test_case : test_cases) {
     base::HistogramTester histogram_tester;
-    CreateTrialsFromSeed(test_case.seed);
+    this->CreateTrialsFromSeed(test_case.seed);
     histogram_tester.ExpectUniqueSample("Variations.AppliedSeed.StudyCount",
                                         test_case.expected_study_count, 1);
   }
 }
 
-TEST_F(VariationsSeedProcessorTest, AllowForceGroupAndVariationId) {
+TYPED_TEST(VariationsSeedProcessorTest, AllowForceGroupAndVariationId) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(kForcingFlag1);
 
-  Study study = CreateStudyWithFlagGroups(100, 0, 0);
-  study.mutable_experiment(1)->set_google_web_experiment_id(kExperimentId);
+  VariationsSeed seed;
+  Study* study = CreateStudyWithFlagGroups(100, 0, 0, &seed);
+  study->mutable_experiment(1)->set_google_web_experiment_id(kExperimentId);
 
-  EXPECT_TRUE(CreateTrialFromStudy(study));
+  this->CreateTrialsFromSeed(seed);
   EXPECT_EQ(kFlagGroup1Name,
             base::FieldTrialList::FindFullName(kFlagStudyName));
 
@@ -229,15 +254,17 @@ TEST_F(VariationsSeedProcessorTest, AllowForceGroupAndVariationId) {
   EXPECT_EQ(kExperimentId, id);
 }
 
-TEST_F(VariationsSeedProcessorTest, AllowForceGroupAndVariationId_FirstParty) {
+TYPED_TEST(VariationsSeedProcessorTest,
+           AllowForceGroupAndVariationId_FirstParty) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(kForcingFlag1);
 
-  Study study = CreateStudyWithFlagGroups(100, 0, 0);
-  Study::Experiment* experiment1 = study.mutable_experiment(1);
+  VariationsSeed seed;
+  Study* study = CreateStudyWithFlagGroups(100, 0, 0, &seed);
+  Study::Experiment* experiment1 = study->mutable_experiment(1);
   experiment1->set_google_web_experiment_id(kExperimentId);
   experiment1->set_google_web_visibility(Study::FIRST_PARTY);
 
-  EXPECT_TRUE(CreateTrialFromStudy(study));
+  this->CreateTrialsFromSeed(seed);
   EXPECT_EQ(kFlagGroup1Name,
             base::FieldTrialList::FindFullName(kFlagStudyName));
 
@@ -247,60 +274,65 @@ TEST_F(VariationsSeedProcessorTest, AllowForceGroupAndVariationId_FirstParty) {
 }
 
 // Test that the group for kForcingFlag1 is forced.
-TEST_F(VariationsSeedProcessorTest, ForceGroupWithFlag1) {
+TYPED_TEST(VariationsSeedProcessorTest, ForceGroupWithFlag1) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(kForcingFlag1);
 
-  Study study = CreateStudyWithFlagGroups(100, 0, 0);
-  EXPECT_TRUE(CreateTrialFromStudy(study));
+  VariationsSeed seed;
+  CreateStudyWithFlagGroups(100, 0, 0, &seed);
+  this->CreateTrialsFromSeed(seed);
   EXPECT_EQ(kFlagGroup1Name,
             base::FieldTrialList::FindFullName(kFlagStudyName));
 }
 
 // Test that the group for kForcingFlag2 is forced.
-TEST_F(VariationsSeedProcessorTest, ForceGroupWithFlag2) {
+TYPED_TEST(VariationsSeedProcessorTest, ForceGroupWithFlag2) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(kForcingFlag2);
 
-  Study study = CreateStudyWithFlagGroups(100, 0, 0);
-  EXPECT_TRUE(CreateTrialFromStudy(study));
+  VariationsSeed seed;
+  CreateStudyWithFlagGroups(100, 0, 0, &seed);
+  this->CreateTrialsFromSeed(seed);
   EXPECT_EQ(kFlagGroup2Name,
             base::FieldTrialList::FindFullName(kFlagStudyName));
 }
 
-TEST_F(VariationsSeedProcessorTest, ForceGroup_ChooseFirstGroupWithFlag) {
+TYPED_TEST(VariationsSeedProcessorTest, ForceGroup_ChooseFirstGroupWithFlag) {
   // Add the flag to the command line arguments so the flag group is forced.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(kForcingFlag1);
   base::CommandLine::ForCurrentProcess()->AppendSwitch(kForcingFlag2);
 
-  Study study = CreateStudyWithFlagGroups(100, 0, 0);
-  EXPECT_TRUE(CreateTrialFromStudy(study));
+  VariationsSeed seed;
+  CreateStudyWithFlagGroups(100, 0, 0, &seed);
+  this->CreateTrialsFromSeed(seed);
   EXPECT_EQ(kFlagGroup1Name,
             base::FieldTrialList::FindFullName(kFlagStudyName));
 }
 
-TEST_F(VariationsSeedProcessorTest, ForceGroup_DontChooseGroupWithFlag) {
+TYPED_TEST(VariationsSeedProcessorTest, ForceGroup_DontChooseGroupWithFlag) {
   // The two flag groups are given high probability, which would normally make
   // them very likely to be chosen. They won't be chosen since flag groups are
   // never chosen when their flag isn't present.
-  Study study = CreateStudyWithFlagGroups(1, 999, 999);
-  EXPECT_TRUE(CreateTrialFromStudy(study));
+  VariationsSeed seed;
+  CreateStudyWithFlagGroups(1, 999, 999, &seed);
+  this->CreateTrialsFromSeed(seed);
   EXPECT_EQ(kNonFlagGroupName,
             base::FieldTrialList::FindFullName(kFlagStudyName));
 }
 
-TEST_F(VariationsSeedProcessorTest, CreateTrialForRegisteredGroup) {
+TYPED_TEST(VariationsSeedProcessorTest, CreateTrialForRegisteredGroup) {
   base::FieldTrialList::CreateFieldTrial(kFlagStudyName, kOtherGroupName);
 
   // Create an arbitrary study that does not have group named |kOtherGroupName|.
-  Study study = CreateStudyWithFlagGroups(100, 0, 0);
+  VariationsSeed seed;
+  CreateStudyWithFlagGroups(100, 0, 0, &seed);
   // Creating the trial should not crash.
-  EXPECT_TRUE(CreateTrialFromStudy(study));
+  this->CreateTrialsFromSeed(seed);
   // And the previous group should still be selected.
   EXPECT_EQ(kOtherGroupName,
             base::FieldTrialList::FindFullName(kFlagStudyName));
 }
 
-TEST_F(VariationsSeedProcessorTest,
-       NonExpiredStudyPrioritizedOverExpiredStudy) {
+TYPED_TEST(VariationsSeedProcessorTest,
+           NonExpiredStudyPrioritizedOverExpiredStudy) {
   VariationsSeedProcessor seed_processor;
 
   const std::string kTrialName = "A";
@@ -336,7 +368,7 @@ TEST_F(VariationsSeedProcessorTest,
     study1->set_expiry_date(TimeToProtoTime(year_ago));
     base::MockEntropyProvider mock_low_entropy_provider(0.9);
     seed_processor.CreateTrialsFromSeed(
-        seed, client_state, override_callback_.callback(),
+        seed, client_state, this->override_callback_.callback(),
         &mock_low_entropy_provider, &feature_list);
     EXPECT_EQ(kGroup1Name, base::FieldTrialList::FindFullName(kTrialName));
   }
@@ -352,102 +384,106 @@ TEST_F(VariationsSeedProcessorTest,
     study2->set_expiry_date(TimeToProtoTime(year_ago));
     base::MockEntropyProvider mock_low_entropy_provider(0.9);
     seed_processor.CreateTrialsFromSeed(
-        seed, client_state, override_callback_.callback(),
+        seed, client_state, this->override_callback_.callback(),
         &mock_low_entropy_provider, &feature_list);
     EXPECT_EQ(kGroup1Name, base::FieldTrialList::FindFullName(kTrialName));
   }
 }
 
-TEST_F(VariationsSeedProcessorTest, OverrideUIStrings) {
-  Study study;
-  study.set_name("Study1");
-  study.set_default_experiment_name("B");
-  study.set_activation_type(Study::ACTIVATE_ON_STARTUP);
+TYPED_TEST(VariationsSeedProcessorTest, OverrideUIStrings) {
+  VariationsSeed seed;
+  Study* study = seed.add_study();
+  study->set_name("Study1");
+  study->set_default_experiment_name("B");
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
 
-  Study::Experiment* experiment1 = AddExperiment("A", 0, &study);
+  Study::Experiment* experiment1 = AddExperiment("A", 0, study);
   Study::Experiment::OverrideUIString* override =
       experiment1->add_override_ui_string();
 
   override->set_name_hash(1234);
   override->set_value("test");
 
-  Study::Experiment* experiment2 = AddExperiment("B", 1, &study);
+  Study::Experiment* experiment2 = AddExperiment("B", 1, study);
 
-  EXPECT_TRUE(CreateTrialFromStudy(study));
+  this->CreateTrialsFromSeed(seed);
 
   const TestOverrideStringCallback::OverrideMap& overrides =
-      override_callback_.overrides();
+      this->override_callback_.overrides();
 
   EXPECT_TRUE(overrides.empty());
 
-  study.set_name("Study2");
+  study->set_name("Study2");
   experiment1->set_probability_weight(1);
   experiment2->set_probability_weight(0);
 
-  EXPECT_TRUE(CreateTrialFromStudy(study));
+  this->CreateTrialsFromSeed(seed);
 
   EXPECT_EQ(1u, overrides.size());
   auto it = overrides.find(1234);
   EXPECT_EQ(u"test", it->second);
 }
 
-TEST_F(VariationsSeedProcessorTest, OverrideUIStringsWithForcingFlag) {
-  Study study = CreateStudyWithFlagGroups(100, 0, 0);
-  ASSERT_EQ(kForcingFlag1, study.experiment(1).forcing_flag());
+TYPED_TEST(VariationsSeedProcessorTest, OverrideUIStringsWithForcingFlag) {
+  VariationsSeed seed;
+  Study* study = CreateStudyWithFlagGroups(100, 0, 0, &seed);
+  ASSERT_EQ(kForcingFlag1, study->experiment(1).forcing_flag());
 
-  study.set_activation_type(Study::ACTIVATE_ON_STARTUP);
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
   Study::Experiment::OverrideUIString* override =
-      study.mutable_experiment(1)->add_override_ui_string();
+      study->mutable_experiment(1)->add_override_ui_string();
   override->set_name_hash(1234);
   override->set_value("test");
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(kForcingFlag1);
-  EXPECT_TRUE(CreateTrialFromStudy(study));
-  EXPECT_EQ(kFlagGroup1Name, base::FieldTrialList::FindFullName(study.name()));
+  this->CreateTrialsFromSeed(seed);
+  EXPECT_EQ(kFlagGroup1Name, base::FieldTrialList::FindFullName(study->name()));
 
   const TestOverrideStringCallback::OverrideMap& overrides =
-      override_callback_.overrides();
+      this->override_callback_.overrides();
   EXPECT_EQ(1u, overrides.size());
   auto it = overrides.find(1234);
   EXPECT_EQ(u"test", it->second);
 }
 
-TEST_F(VariationsSeedProcessorTest, VariationParams) {
-  Study study;
-  study.set_name("Study1");
-  study.set_default_experiment_name("B");
+TYPED_TEST(VariationsSeedProcessorTest, VariationParams) {
+  VariationsSeed seed;
+  Study* study = seed.add_study();
+  study->set_name("Study1");
+  study->set_default_experiment_name("B");
 
-  Study::Experiment* experiment1 = AddExperiment("A", 1, &study);
+  Study::Experiment* experiment1 = AddExperiment("A", 1, study);
   Study::Experiment::Param* param = experiment1->add_param();
   param->set_name("x");
   param->set_value("y");
 
-  Study::Experiment* experiment2 = AddExperiment("B", 0, &study);
+  Study::Experiment* experiment2 = AddExperiment("B", 0, study);
 
-  EXPECT_TRUE(CreateTrialFromStudy(study));
+  this->CreateTrialsFromSeed(seed);
   EXPECT_EQ("y", GetVariationParamValue("Study1", "x"));
 
-  study.set_name("Study2");
+  study->set_name("Study2");
   experiment1->set_probability_weight(0);
   experiment2->set_probability_weight(1);
-  EXPECT_TRUE(CreateTrialFromStudy(study));
+  this->CreateTrialsFromSeed(seed);
   EXPECT_EQ(std::string(), GetVariationParamValue("Study2", "x"));
 }
 
-TEST_F(VariationsSeedProcessorTest, VariationParamsWithForcingFlag) {
-  Study study = CreateStudyWithFlagGroups(100, 0, 0);
-  ASSERT_EQ(kForcingFlag1, study.experiment(1).forcing_flag());
-  Study::Experiment::Param* param = study.mutable_experiment(1)->add_param();
+TYPED_TEST(VariationsSeedProcessorTest, VariationParamsWithForcingFlag) {
+  VariationsSeed seed;
+  Study* study = CreateStudyWithFlagGroups(100, 0, 0, &seed);
+  ASSERT_EQ(kForcingFlag1, study->experiment(1).forcing_flag());
+  Study::Experiment::Param* param = study->mutable_experiment(1)->add_param();
   param->set_name("x");
   param->set_value("y");
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(kForcingFlag1);
-  EXPECT_TRUE(CreateTrialFromStudy(study));
-  EXPECT_EQ(kFlagGroup1Name, base::FieldTrialList::FindFullName(study.name()));
-  EXPECT_EQ("y", GetVariationParamValue(study.name(), "x"));
+  this->CreateTrialsFromSeed(seed);
+  EXPECT_EQ(kFlagGroup1Name, base::FieldTrialList::FindFullName(study->name()));
+  EXPECT_EQ("y", GetVariationParamValue(study->name(), "x"));
 }
 
-TEST_F(VariationsSeedProcessorTest, StartsActive) {
+TYPED_TEST(VariationsSeedProcessorTest, StartsActive) {
   VariationsSeed seed;
   Study* study1 = seed.add_study();
   study1->set_name("A");
@@ -480,7 +516,7 @@ TEST_F(VariationsSeedProcessorTest, StartsActive) {
   VariationsSeedProcessor seed_processor;
   base::MockEntropyProvider mock_low_entropy_provider(0.9);
   seed_processor.CreateTrialsFromSeed(
-      seed, client_state, override_callback_.callback(),
+      seed, client_state, this->override_callback_.callback(),
       &mock_low_entropy_provider, base::FeatureList::GetInstance());
 
   // Non-specified and ACTIVATE_ON_QUERY should not start active, but
@@ -499,43 +535,45 @@ TEST_F(VariationsSeedProcessorTest, StartsActive) {
   EXPECT_TRUE(base::FieldTrialList::IsTrialActive("C"));
 }
 
-TEST_F(VariationsSeedProcessorTest, StartsActiveWithFlag) {
+TYPED_TEST(VariationsSeedProcessorTest, StartsActiveWithFlag) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(kForcingFlag1);
 
-  Study study = CreateStudyWithFlagGroups(100, 0, 0);
-  study.set_activation_type(Study::ACTIVATE_ON_STARTUP);
+  VariationsSeed seed;
+  Study* study = CreateStudyWithFlagGroups(100, 0, 0, &seed);
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
 
-  EXPECT_TRUE(CreateTrialFromStudy(study));
+  this->CreateTrialsFromSeed(seed);
   EXPECT_TRUE(base::FieldTrialList::IsTrialActive(kFlagStudyName));
 
   EXPECT_EQ(kFlagGroup1Name,
             base::FieldTrialList::FindFullName(kFlagStudyName));
 }
 
-TEST_F(VariationsSeedProcessorTest, ForcingFlagAlreadyForced) {
-  Study study = CreateStudyWithFlagGroups(100, 0, 0);
-  ASSERT_EQ(kNonFlagGroupName, study.experiment(0).name());
-  Study::Experiment::Param* param = study.mutable_experiment(0)->add_param();
+TYPED_TEST(VariationsSeedProcessorTest, ForcingFlagAlreadyForced) {
+  VariationsSeed seed;
+  Study* study = CreateStudyWithFlagGroups(100, 0, 0, &seed);
+  ASSERT_EQ(kNonFlagGroupName, study->experiment(0).name());
+  Study::Experiment::Param* param = study->mutable_experiment(0)->add_param();
   param->set_name("x");
   param->set_value("y");
-  study.mutable_experiment(0)->set_google_web_experiment_id(kExperimentId);
+  study->mutable_experiment(0)->set_google_web_experiment_id(kExperimentId);
 
   base::FieldTrialList::CreateFieldTrial(kFlagStudyName, kNonFlagGroupName);
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(kForcingFlag1);
-  EXPECT_TRUE(CreateTrialFromStudy(study));
+  this->CreateTrialsFromSeed(seed);
   // The previously forced experiment should still hold.
   EXPECT_EQ(kNonFlagGroupName,
-            base::FieldTrialList::FindFullName(study.name()));
+            base::FieldTrialList::FindFullName(study->name()));
 
   // Check that params and experiment ids correspond.
-  EXPECT_EQ("y", GetVariationParamValue(study.name(), "x"));
+  EXPECT_EQ("y", GetVariationParamValue(study->name(), "x"));
   VariationID id = GetGoogleVariationID(GOOGLE_WEB_PROPERTIES_ANY_CONTEXT,
                                         kFlagStudyName, kNonFlagGroupName);
   EXPECT_EQ(kExperimentId, id);
 }
 
-TEST_F(VariationsSeedProcessorTest, FeatureEnabledOrDisableByTrial) {
+TYPED_TEST(VariationsSeedProcessorTest, FeatureEnabledOrDisableByTrial) {
   struct base::Feature kFeatureOffByDefault {
     "kOff", base::FEATURE_DISABLED_BY_DEFAULT
   };
@@ -569,12 +607,13 @@ TEST_F(VariationsSeedProcessorTest, FeatureEnabledOrDisableByTrial) {
 
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
 
-    Study study;
-    study.set_name("Study1");
-    study.set_default_experiment_name("B");
-    AddExperiment("B", 0, &study);
+    VariationsSeed seed;
+    Study* study = seed.add_study();
+    study->set_name("Study1");
+    study->set_default_experiment_name("B");
+    AddExperiment("B", 0, study);
 
-    Study::Experiment* experiment = AddExperiment("A", 1, &study);
+    Study::Experiment* experiment = AddExperiment("A", 1, study);
     Study::Experiment::FeatureAssociation* association =
         experiment->mutable_feature_association();
     if (test_case.enable_feature)
@@ -582,7 +621,7 @@ TEST_F(VariationsSeedProcessorTest, FeatureEnabledOrDisableByTrial) {
     else if (test_case.disable_feature)
       association->add_disable_feature(test_case.disable_feature);
 
-    EXPECT_TRUE(CreateTrialFromStudyWithFeatureList(study, feature_list.get()));
+    this->CreateTrialsFromSeed(seed, feature_list.get());
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
@@ -590,7 +629,7 @@ TEST_F(VariationsSeedProcessorTest, FeatureEnabledOrDisableByTrial) {
     EXPECT_FALSE(base::FeatureList::IsEnabled(kUnrelatedFeature));
 
     // Before the associated feature is queried, the trial shouldn't be active.
-    EXPECT_FALSE(base::FieldTrialList::IsTrialActive(study.name()));
+    EXPECT_FALSE(base::FieldTrialList::IsTrialActive(study->name()));
 
     EXPECT_EQ(test_case.expected_feature_off_state,
               base::FeatureList::IsEnabled(kFeatureOffByDefault));
@@ -601,11 +640,11 @@ TEST_F(VariationsSeedProcessorTest, FeatureEnabledOrDisableByTrial) {
     const bool expected_field_trial_active =
         test_case.enable_feature || test_case.disable_feature;
     EXPECT_EQ(expected_field_trial_active,
-              base::FieldTrialList::IsTrialActive(study.name()));
+              base::FieldTrialList::IsTrialActive(study->name()));
   }
 }
 
-TEST_F(VariationsSeedProcessorTest, FeatureAssociationAndForcing) {
+TYPED_TEST(VariationsSeedProcessorTest, FeatureAssociationAndForcing) {
   struct base::Feature kFeatureOffByDefault {
     "kFeatureOffByDefault", base::FEATURE_DISABLED_BY_DEFAULT
   };
@@ -698,43 +737,44 @@ TEST_F(VariationsSeedProcessorTest, FeatureAssociationAndForcing) {
         test_case.enable_features_command_line,
         test_case.disable_features_command_line);
 
-    Study study;
-    study.set_name("Study1");
-    study.set_default_experiment_name(kDefaultGroup);
-    AddExperiment(kDefaultGroup, group == DEFAULT_GROUP ? 1 : 0, &study);
+    VariationsSeed seed;
+    Study* study = seed.add_study();
+    study->set_name("Study1");
+    study->set_default_experiment_name(kDefaultGroup);
+    AddExperiment(kDefaultGroup, group == DEFAULT_GROUP ? 1 : 0, study);
 
     Study::Experiment* feature_enable =
-        AddExperiment(kEnabledGroup, group == ENABLE_GROUP ? 1 : 0, &study);
+        AddExperiment(kEnabledGroup, group == ENABLE_GROUP ? 1 : 0, study);
     feature_enable->mutable_feature_association()->add_enable_feature(
         test_case.feature.name);
 
     Study::Experiment* feature_disable =
-        AddExperiment(kDisabledGroup, group == DISABLE_GROUP ? 1 : 0, &study);
+        AddExperiment(kDisabledGroup, group == DISABLE_GROUP ? 1 : 0, study);
     feature_disable->mutable_feature_association()->add_disable_feature(
         test_case.feature.name);
 
-    AddExperiment(kForcedOnGroup, 0, &study)
+    AddExperiment(kForcedOnGroup, 0, study)
         ->mutable_feature_association()
         ->set_forcing_feature_on(test_case.feature.name);
-    AddExperiment(kForcedOffGroup, 0, &study)
+    AddExperiment(kForcedOffGroup, 0, study)
         ->mutable_feature_association()
         ->set_forcing_feature_off(test_case.feature.name);
 
-    EXPECT_TRUE(CreateTrialFromStudyWithFeatureList(study, feature_list.get()));
+    this->CreateTrialsFromSeed(seed, feature_list.get());
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
     // Trial should not be activated initially, but later might get activated
     // depending on the expected values.
-    EXPECT_FALSE(base::FieldTrialList::IsTrialActive(study.name()));
+    EXPECT_FALSE(base::FieldTrialList::IsTrialActive(study->name()));
     EXPECT_EQ(test_case.expected_feature_state,
               base::FeatureList::IsEnabled(test_case.feature));
     EXPECT_EQ(test_case.expected_trial_activated,
-              base::FieldTrialList::IsTrialActive(study.name()));
+              base::FieldTrialList::IsTrialActive(study->name()));
   }
 }
 
-TEST_F(VariationsSeedProcessorTest, FeaturesInExpiredStudies) {
+TYPED_TEST(VariationsSeedProcessorTest, FeaturesInExpiredStudies) {
   struct base::Feature kDisabledFeature {
     "kDisabledFeature", base::FEATURE_DISABLED_BY_DEFAULT
   };
@@ -771,14 +811,15 @@ TEST_F(VariationsSeedProcessorTest, FeaturesInExpiredStudies) {
 
     // Expired study with a 100% feature group and a default group that has no
     // feature association.
-    Study study;
-    study.set_name("Study1");
-    study.set_default_experiment_name("Default");
+    VariationsSeed seed;
+    Study* study = seed.add_study();
+    study->set_name("Study1");
+    study->set_default_experiment_name("Default");
 
-    study.set_expiry_date(TimeToProtoTime(test_case.expiry_date));
+    study->set_expiry_date(TimeToProtoTime(test_case.expiry_date));
 
-    AddExperiment("Default", 0, &study);
-    Study::Experiment* feature_experiment = AddExperiment("Feature", 1, &study);
+    AddExperiment("Default", 0, study);
+    Study::Experiment* feature_experiment = AddExperiment("Feature", 1, study);
     if (test_case.study_force_feature_state) {
       feature_experiment->mutable_feature_association()->add_enable_feature(
           test_case.feature.name);
@@ -787,7 +828,7 @@ TEST_F(VariationsSeedProcessorTest, FeaturesInExpiredStudies) {
           test_case.feature.name);
     }
 
-    EXPECT_TRUE(CreateTrialFromStudyWithFeatureList(study, feature_list.get()));
+    this->CreateTrialsFromSeed(seed, feature_list.get());
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
@@ -797,13 +838,14 @@ TEST_F(VariationsSeedProcessorTest, FeaturesInExpiredStudies) {
   }
 }
 
-TEST_F(VariationsSeedProcessorTest, NoDefaultExperiment) {
-  Study study;
-  study.set_name("Study1");
+TYPED_TEST(VariationsSeedProcessorTest, NoDefaultExperiment) {
+  VariationsSeed seed;
+  Study* study = seed.add_study();
+  study->set_name("Study1");
 
-  AddExperiment("A", 1, &study);
+  AddExperiment("A", 1, study);
 
-  EXPECT_TRUE(CreateTrialFromStudy(study));
+  this->CreateTrialsFromSeed(seed);
 
   base::FieldTrial* trial = base::FieldTrialList::Find("Study1");
   trial->Disable();
@@ -812,7 +854,7 @@ TEST_F(VariationsSeedProcessorTest, NoDefaultExperiment) {
             base::FieldTrialList::FindFullName("Study1"));
 }
 
-TEST_F(VariationsSeedProcessorTest, ExistingFieldTrial_ExpiredByConfig) {
+TYPED_TEST(VariationsSeedProcessorTest, ExistingFieldTrial_ExpiredByConfig) {
   static struct base::Feature kFeature {
     "FeatureName", base::FEATURE_ENABLED_BY_DEFAULT
   };
@@ -826,23 +868,24 @@ TEST_F(VariationsSeedProcessorTest, ExistingFieldTrial_ExpiredByConfig) {
   trial->AppendGroup("A", 100);
   trial->SetForced();
 
-  Study study;
-  study.set_name("Study1");
+  VariationsSeed seed;
+  Study* study = seed.add_study();
+  study->set_name("Study1");
   const base::Time year_ago = base::Time::Now() - base::Days(365);
-  study.set_expiry_date(TimeToProtoTime(year_ago));
-  auto* exp1 = AddExperiment("A", 1, &study);
+  study->set_expiry_date(TimeToProtoTime(year_ago));
+  auto* exp1 = AddExperiment("A", 1, study);
   exp1->mutable_feature_association()->add_enable_feature(kFeature.name);
-  AddExperiment("Default", 1, &study);
-  study.set_default_experiment_name("Default");
+  AddExperiment("Default", 1, study);
+  study->set_default_experiment_name("Default");
 
-  EXPECT_TRUE(CreateTrialFromStudy(study));
+  this->CreateTrialsFromSeed(seed);
 
   // The expected effect is that processing the server config will expire
   // the existing trial.
   EXPECT_EQ("ExistingDefault", trial->group_name());
 }
 
-TEST_F(VariationsSeedProcessorTest, ExpiredStudy_NoDefaultGroup) {
+TYPED_TEST(VariationsSeedProcessorTest, ExpiredStudy_NoDefaultGroup) {
   static struct base::Feature kFeature {
     "FeatureName", base::FEATURE_ENABLED_BY_DEFAULT
   };
@@ -850,20 +893,21 @@ TEST_F(VariationsSeedProcessorTest, ExpiredStudy_NoDefaultGroup) {
   // Although it's not expected for the server to provide a study with an expiry
   // date set, but not default experiment, this tests that we don't crash if
   // that happens.
-  Study study;
-  study.set_name("Study1");
+  VariationsSeed seed;
+  Study* study = seed.add_study();
+  study->set_name("Study1");
   const base::Time year_ago = base::Time::Now() - base::Days(365);
-  study.set_expiry_date(TimeToProtoTime(year_ago));
-  auto* exp1 = AddExperiment("A", 1, &study);
+  study->set_expiry_date(TimeToProtoTime(year_ago));
+  auto* exp1 = AddExperiment("A", 1, study);
   exp1->mutable_feature_association()->add_enable_feature(kFeature.name);
 
-  EXPECT_FALSE(study.has_default_experiment_name());
-  EXPECT_TRUE(CreateTrialFromStudy(study));
+  EXPECT_FALSE(study->has_default_experiment_name());
+  this->CreateTrialsFromSeed(seed);
   EXPECT_EQ("VariationsDefaultExperiment",
             base::FieldTrialList::FindFullName("Study1"));
 }
 
-TEST_F(VariationsSeedProcessorTest, LowEntropyStudyTest) {
+TYPED_TEST(VariationsSeedProcessorTest, LowEntropyStudyTest) {
   const std::string kTrial1Name = "A";
   const std::string kTrial2Name = "B";
   const std::string kGroup1Name = "AA";
@@ -891,15 +935,9 @@ TEST_F(VariationsSeedProcessorTest, LowEntropyStudyTest) {
   base::FieldTrialList field_trial_list(
       std::make_unique<base::MockEntropyProvider>(0.1));
 
-  // Use a stack instance, since nothing takes ownership of this provider.
   // This entropy value will cause the default group to be chosen since it's a
   // 50/50 trial.
-  base::MockEntropyProvider mock_low_entropy_provider(0.9);
-
-  EXPECT_TRUE(CreateTrialFromStudyWithEntropyOverride(
-      *study1, mock_low_entropy_provider));
-  EXPECT_TRUE(CreateTrialFromStudyWithEntropyOverride(
-      *study2, mock_low_entropy_provider));
+  this->CreateTrialsFromSeed(seed, 0.9);
 
   // Since no experiment in study1 sends experiment IDs, it will use the high
   // entropy provider, which selects the non-default group.
@@ -907,10 +945,15 @@ TEST_F(VariationsSeedProcessorTest, LowEntropyStudyTest) {
 
   // Since an experiment in study2 has google_web_experiment_id set, it will use
   // the low entropy provider, which selects the default group.
-  EXPECT_EQ(kDefaultName, base::FieldTrialList::FindFullName(kTrial2Name));
+  if (this->env.SupportsLayers()) {
+    EXPECT_EQ(kDefaultName, base::FieldTrialList::FindFullName(kTrial2Name));
+  } else {
+    // On WebView we always use the default entropy provider.
+    EXPECT_EQ(kGroup1Name, base::FieldTrialList::FindFullName(kTrial1Name));
+  }
 }
 
-TEST_F(VariationsSeedProcessorTest, StudyWithInvalidLayer) {
+TYPED_TEST(VariationsSeedProcessorTest, StudyWithInvalidLayer) {
   VariationsSeed seed;
 
   Study* study = seed.add_study();
@@ -922,14 +965,14 @@ TEST_F(VariationsSeedProcessorTest, StudyWithInvalidLayer) {
   layer->set_layer_member_id(82);
   AddExperiment("A", 1, study);
 
-  CreateTrialsFromSeed(seed);
+  this->CreateTrialsFromSeed(seed);
 
   // Since the studies references a layer which doesn't exist, it should
   // select the default group.
   EXPECT_FALSE(base::FieldTrialList::IsTrialActive(study->name()));
 }
 
-TEST_F(VariationsSeedProcessorTest, StudyWithInvalidLayerMember) {
+TYPED_TEST(VariationsSeedProcessorTest, StudyWithInvalidLayerMember) {
   VariationsSeed seed;
 
   Layer* layer = seed.add_layers();
@@ -950,14 +993,14 @@ TEST_F(VariationsSeedProcessorTest, StudyWithInvalidLayerMember) {
   layer_membership->set_layer_member_id(88);
   AddExperiment("A", 1, study);
 
-  CreateTrialsFromSeed(seed);
+  this->CreateTrialsFromSeed(seed);
 
   // Since the studies references a layer member which doesn't exist, it should
   // not be active.
   EXPECT_FALSE(base::FieldTrialList::IsTrialActive(study->name()));
 }
 
-TEST_F(VariationsSeedProcessorTest, StudyWithLayerSelected) {
+TYPED_TEST(VariationsSeedProcessorTest, StudyWithLayerSelected) {
   VariationsSeed seed;
 
   Layer* layer = seed.add_layers();
@@ -978,13 +1021,17 @@ TEST_F(VariationsSeedProcessorTest, StudyWithLayerSelected) {
   layer_membership->set_layer_member_id(82);
   AddExperiment("A", 1, study);
 
-  CreateTrialsFromSeed(seed);
+  this->CreateTrialsFromSeed(seed);
 
   // The layer only has the single member, which is what should be chosen.
-  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(study->name()));
+  if (this->env.SupportsLayers()) {
+    EXPECT_TRUE(base::FieldTrialList::IsTrialActive(study->name()));
+  } else {
+    EXPECT_FALSE(base::FieldTrialList::IsTrialActive(study->name()));
+  }
 }
 
-TEST_F(VariationsSeedProcessorTest, StudyWithLayerMemberWithNoSlots) {
+TYPED_TEST(VariationsSeedProcessorTest, StudyWithLayerMemberWithNoSlots) {
   VariationsSeed seed;
 
   Layer* layer = seed.add_layers();
@@ -1004,14 +1051,14 @@ TEST_F(VariationsSeedProcessorTest, StudyWithLayerMemberWithNoSlots) {
   layer_membership->set_layer_member_id(82);
   AddExperiment("A", 1, study);
 
-  CreateTrialsFromSeed(seed);
+  this->CreateTrialsFromSeed(seed);
 
   // The layer member referenced by the study is missing slots, and should
   // never be chosen.
   EXPECT_FALSE(base::FieldTrialList::IsTrialActive(study->name()));
 }
 
-TEST_F(VariationsSeedProcessorTest, StudyWithLayerWithDuplicateSlots) {
+TYPED_TEST(VariationsSeedProcessorTest, StudyWithLayerWithDuplicateSlots) {
   VariationsSeed seed;
 
   Layer* layer = seed.add_layers();
@@ -1037,14 +1084,19 @@ TEST_F(VariationsSeedProcessorTest, StudyWithLayerWithDuplicateSlots) {
   layer_membership->set_layer_member_id(82);
   AddExperiment("A", 1, study);
 
-  CreateTrialsFromSeed(seed);
+  this->CreateTrialsFromSeed(seed);
 
   // The layer only has the single member, which is what should be chosen.
   // Having two duplicate slot ranges within that member should not crash.
-  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(study->name()));
+  if (this->env.SupportsLayers()) {
+    EXPECT_TRUE(base::FieldTrialList::IsTrialActive(study->name()));
+  } else {
+    EXPECT_FALSE(base::FieldTrialList::IsTrialActive(study->name()));
+  }
 }
 
-TEST_F(VariationsSeedProcessorTest, StudyWithLayerMemberWithOutOfRangeSlots) {
+TYPED_TEST(VariationsSeedProcessorTest,
+           StudyWithLayerMemberWithOutOfRangeSlots) {
   VariationsSeed seed;
 
   Layer* layer = seed.add_layers();
@@ -1065,14 +1117,14 @@ TEST_F(VariationsSeedProcessorTest, StudyWithLayerMemberWithOutOfRangeSlots) {
   layer_membership->set_layer_member_id(82);
   AddExperiment("A", 1, study);
 
-  CreateTrialsFromSeed(seed);
+  this->CreateTrialsFromSeed(seed);
 
   // The layer member referenced by the study is missing slots, and should
   // never be chosen.
   EXPECT_FALSE(base::FieldTrialList::IsTrialActive(study->name()));
 }
 
-TEST_F(VariationsSeedProcessorTest, StudyWithLayerMemberWithReversedSlots) {
+TYPED_TEST(VariationsSeedProcessorTest, StudyWithLayerMemberWithReversedSlots) {
   VariationsSeed seed;
 
   Layer* layer = seed.add_layers();
@@ -1093,7 +1145,7 @@ TEST_F(VariationsSeedProcessorTest, StudyWithLayerMemberWithReversedSlots) {
   layer_membership->set_layer_member_id(82);
   AddExperiment("A", 1, study);
 
-  CreateTrialsFromSeed(seed);
+  this->CreateTrialsFromSeed(seed);
 
   // The layer member referenced by the study is has its slots in the wrong
   // order (end < start) which should cause the slot to never be chosen
@@ -1101,7 +1153,7 @@ TEST_F(VariationsSeedProcessorTest, StudyWithLayerMemberWithReversedSlots) {
   EXPECT_FALSE(base::FieldTrialList::IsTrialActive(study->name()));
 }
 
-TEST_F(VariationsSeedProcessorTest, StudyWithLayerNotSelected) {
+TYPED_TEST(VariationsSeedProcessorTest, StudyWithLayerNotSelected) {
   VariationsSeed seed;
 
   Layer* layer = seed.add_layers();
@@ -1139,13 +1191,14 @@ TEST_F(VariationsSeedProcessorTest, StudyWithLayerNotSelected) {
   AddExperiment("A", 1, study);
 
   // Entropy 0.99 Should cause slot 7920 to be chosen.
-  CreateTrialsFromSeed(seed, /*low_entropy=*/0.99);
+  this->CreateTrialsFromSeed(seed, /*low_entropy=*/0.99);
 
-  // The study is a member of the 0xDEAD layer member and should be inactive.
+  // The study is a member of the 0xDEAD layer member and should be inactive
+  // (or layers are not supported by the environment).
   EXPECT_FALSE(base::FieldTrialList::IsTrialActive(study->name()));
 }
 
-TEST_F(VariationsSeedProcessorTest, LayerWithDefaultEntropy) {
+TYPED_TEST(VariationsSeedProcessorTest, LayerWithDefaultEntropy) {
   VariationsSeed seed;
 
   Layer* layer = seed.add_layers();
@@ -1183,13 +1236,17 @@ TEST_F(VariationsSeedProcessorTest, LayerWithDefaultEntropy) {
   // Since we're *not* setting the entropy_mode to LOW, |low_entropy| should
   // be ignored and the default high entropy should be used, which in
   // this case is slot 4000 and hence the first layer member is chosen.
-  CreateTrialsFromSeed(seed, /*low_entropy=*/0.99);
+  this->CreateTrialsFromSeed(seed, /*low_entropy=*/0.99);
 
   // The study is a member of the 0xDEAD layer member and should be active.
-  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(study->name()));
+  if (this->env.SupportsLayers()) {
+    EXPECT_TRUE(base::FieldTrialList::IsTrialActive(study->name()));
+  } else {
+    EXPECT_FALSE(base::FieldTrialList::IsTrialActive(study->name()));
+  }
 }
 
-TEST_F(VariationsSeedProcessorTest, LayerWithNoMembers) {
+TYPED_TEST(VariationsSeedProcessorTest, LayerWithNoMembers) {
   VariationsSeed seed;
 
   Layer* layer = seed.add_layers();
@@ -1198,10 +1255,10 @@ TEST_F(VariationsSeedProcessorTest, LayerWithNoMembers) {
   layer->set_salt(0xBEEF);
 
   // Layer should be rejected and not crash.
-  CreateTrialsFromSeed(seed);
+  this->CreateTrialsFromSeed(seed);
 }
 
-TEST_F(VariationsSeedProcessorTest, LayerWithNoSlots) {
+TYPED_TEST(VariationsSeedProcessorTest, LayerWithNoSlots) {
   VariationsSeed seed;
 
   Layer* layer = seed.add_layers();
@@ -1209,27 +1266,27 @@ TEST_F(VariationsSeedProcessorTest, LayerWithNoSlots) {
   layer->set_salt(0xBEEF);
 
   // Layer should be rejected and not crash.
-  CreateTrialsFromSeed(seed);
+  this->CreateTrialsFromSeed(seed);
 }
 
-TEST_F(VariationsSeedProcessorTest, LayerWithNoID) {
+TYPED_TEST(VariationsSeedProcessorTest, LayerWithNoID) {
   VariationsSeed seed;
   Layer* layer = seed.add_layers();
   layer->set_salt(0xBEEF);
 
   // Layer should be rejected and not crash.
-  CreateTrialsFromSeed(seed);
+  this->CreateTrialsFromSeed(seed);
 }
 
-TEST_F(VariationsSeedProcessorTest, EmptyLayer) {
+TYPED_TEST(VariationsSeedProcessorTest, EmptyLayer) {
   VariationsSeed seed;
   seed.add_layers();
 
   // Layer should be rejected and not crash.
-  CreateTrialsFromSeed(seed);
+  this->CreateTrialsFromSeed(seed);
 }
 
-TEST_F(VariationsSeedProcessorTest, LayersWithDuplicateID) {
+TYPED_TEST(VariationsSeedProcessorTest, LayersWithDuplicateID) {
   VariationsSeed seed;
 
   {
@@ -1257,10 +1314,10 @@ TEST_F(VariationsSeedProcessorTest, LayersWithDuplicateID) {
   }
 
   // The duplicate layer should be rejected and not crash.
-  CreateTrialsFromSeed(seed);
+  this->CreateTrialsFromSeed(seed);
 }
 
-TEST_F(VariationsSeedProcessorTest, StudyWithLayerMemberWithoutID) {
+TYPED_TEST(VariationsSeedProcessorTest, StudyWithLayerMemberWithoutID) {
   VariationsSeed seed;
 
   Layer* layer = seed.add_layers();
@@ -1279,7 +1336,7 @@ TEST_F(VariationsSeedProcessorTest, StudyWithLayerMemberWithoutID) {
   layer_membership->set_layer_id(42);
   AddExperiment("A", 1, study);
 
-  CreateTrialsFromSeed(seed);
+  this->CreateTrialsFromSeed(seed);
 
   // The layer only has the single member but that member has no
   // ID set. The LayerMembership also has no member_id set. The study
@@ -1288,7 +1345,7 @@ TEST_F(VariationsSeedProcessorTest, StudyWithLayerMemberWithoutID) {
   EXPECT_FALSE(base::FieldTrialList::IsTrialActive(study->name()));
 }
 
-TEST_F(VariationsSeedProcessorTest, StudyWithLowerEntropyThanLayer) {
+TYPED_TEST(VariationsSeedProcessorTest, StudyWithLowerEntropyThanLayer) {
   VariationsSeed seed;
 
   Layer* layer = seed.add_layers();
@@ -1310,7 +1367,7 @@ TEST_F(VariationsSeedProcessorTest, StudyWithLowerEntropyThanLayer) {
   AddExperiment("A", 1, study);
   study->mutable_experiment(0)->set_google_web_experiment_id(kExperimentId);
 
-  CreateTrialsFromSeed(seed);
+  this->CreateTrialsFromSeed(seed);
 
   // Since the study will use the low entropy source and the layer the default
   // one, the study should be rejected.
