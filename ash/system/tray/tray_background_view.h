@@ -219,6 +219,7 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
  private:
   class TrayWidgetObserver;
   class TrayBackgroundViewSessionChangeHandler;
+  friend class StatusAreaWidgetQSRevampTest;
 
   void StartVisibilityAnimation(bool visible);
 

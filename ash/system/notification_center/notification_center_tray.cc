@@ -11,6 +11,8 @@
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/message_center/message_center.h"
+#include "ui/message_center/message_center_types.h"
 #include "ui/views/layout/flex_layout.h"
 
 namespace ash {
@@ -18,9 +20,17 @@ namespace ash {
 NotificationCenterTray::NotificationCenterTray(Shelf* shelf)
     : TrayBackgroundView(shelf, RoundedCornerBehavior::kStartRounded) {
   SetLayoutManager(std::make_unique<views::FlexLayout>());
+  message_center_observation_.Observe(message_center::MessageCenter::Get());
+  set_use_bounce_in_animation(false);
 }
 
 NotificationCenterTray::~NotificationCenterTray() = default;
+
+void NotificationCenterTray::UpdateAfterSystemTrayVisibilityChanged(
+    bool system_tray_visible) {
+  system_tray_visibile_ = system_tray_visible;
+  UpdateVisibility();
+}
 
 std::u16string NotificationCenterTray::GetAccessibleNameForTray() {
   return std::u16string();
@@ -39,7 +49,9 @@ void NotificationCenterTray::CloseBubble() {}
 
 void NotificationCenterTray::ShowBubble() {}
 
-void NotificationCenterTray::UpdateAfterLoginStatusChange() {}
+void NotificationCenterTray::UpdateAfterLoginStatusChange() {
+  UpdateVisibility();
+}
 
 TrayBubbleView* NotificationCenterTray::GetBubbleView() {
   return nullptr;
@@ -47,6 +59,38 @@ TrayBubbleView* NotificationCenterTray::GetBubbleView() {
 
 views::Widget* NotificationCenterTray::GetBubbleWidget() const {
   return nullptr;
+}
+
+void NotificationCenterTray::OnNotificationAdded(
+    const std::string& notification_id) {
+  UpdateVisibility();
+}
+
+void NotificationCenterTray::OnNotificationDisplayed(
+    const std::string& notification_id,
+    const message_center::DisplaySource source) {
+  UpdateVisibility();
+}
+
+void NotificationCenterTray::OnNotificationRemoved(
+    const std::string& notification_id,
+    bool by_user) {
+  UpdateVisibility();
+}
+
+void NotificationCenterTray::OnNotificationUpdated(
+    const std::string& notification_id) {
+  UpdateVisibility();
+}
+
+void NotificationCenterTray::UpdateVisibility() {
+  const bool new_visibility =
+      message_center::MessageCenter::Get()->NotificationCount() > 0 &&
+      system_tray_visibile_;
+  if (new_visibility == visible_preferred())
+    return;
+
+  SetVisiblePreferred(new_visibility);
 }
 
 BEGIN_METADATA(NotificationCenterTray, TrayBackgroundView)
