@@ -23,5 +23,9 @@ const base::Feature kEnablePlatformHighContrastInkDrop{
 const base::Feature kEnableViewPaintOptimization{
     "EnableViewPaintOptimization", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// When enabled, widgets will be shown based on their z-order level
+const base::Feature kWidgetLayering{"WidgetLayering",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace views
