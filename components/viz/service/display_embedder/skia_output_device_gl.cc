@@ -58,17 +58,11 @@ NOINLINE void CheckForLoopFailures() {
 
 }  // namespace
 
-// Holds reference needed to keep overlay textures alive. Can either hold a
-// shared image or legacy GL texture.
-// TODO(kylechar): Merge with SkiaOutputDeviceBufferQueue::OverlayData when we
-// dont need to support TexturePassthrough anymore.
+// Holds reference needed to keep overlay textures alive.
+// TODO(kylechar): We can probably merge OverlayData in with
+// SkiaOutputSurfaceImplOnGpu overlay data.
 class SkiaOutputDeviceGL::OverlayData {
  public:
-  // TODO(crbug.com/1011555): Remove ability to hold TexturePassthrough after
-  // all Window video paths use shared image API.
-  explicit OverlayData(scoped_refptr<gpu::gles2::TexturePassthrough> texture)
-      : texture_(std::move(texture)) {}
-
   explicit OverlayData(
       std::unique_ptr<gpu::OverlayImageRepresentation> representation)
       : representation_(std::move(representation)) {}
@@ -76,16 +70,13 @@ class SkiaOutputDeviceGL::OverlayData {
   ~OverlayData() = default;
   OverlayData(OverlayData&& other) = default;
   OverlayData& operator=(OverlayData&& other) {
-    texture_ = std::move(other.texture_);
+    // `access_` must be overwritten before `representation_`.
     access_ = std::move(other.access_);
     representation_ = std::move(other.representation_);
     return *this;
   }
 
   scoped_refptr<gl::GLImage> GetImage() {
-    if (texture_)
-      return texture_->GetLevelImage(texture_->target(), 0);
-
     DCHECK(representation_);
     access_ = representation_->BeginScopedReadAccess(/*needs_gl_image=*/true);
     DCHECK(access_);
@@ -97,7 +88,6 @@ class SkiaOutputDeviceGL::OverlayData {
  private:
   std::unique_ptr<gpu::OverlayImageRepresentation> representation_;
   std::unique_ptr<gpu::OverlayImageRepresentation::ScopedReadAccess> access_;
-  scoped_refptr<gpu::gles2::TexturePassthrough> texture_;
 };
 
 SkiaOutputDeviceGL::SkiaOutputDeviceGL(
@@ -482,26 +472,11 @@ scoped_refptr<gl::GLImage> SkiaOutputDeviceGL::GetGLImageForMailbox(
   if (it != overlays_.end())
     return it->second.GetImage();
 
-  // TODO(crbug.com/1005306): Stop using MailboxManager for lookup once all
-  // clients are using SharedImageInterface to create textures.
-  // For example, the legacy mailbox still uses GL textures (no overlay)
-  // and is still used.
-  auto* texture_base = mailbox_manager_->ConsumeTexture(mailbox);
-  if (texture_base) {
-    DCHECK_EQ(texture_base->GetType(), gpu::TextureBase::Type::kPassthrough);
-    std::tie(it, std::ignore) = overlays_.insert(
-        {mailbox,
-         OverlayData(base::WrapRefCounted(
-             static_cast<gpu::gles2::TexturePassthrough*>(texture_base)))});
-    return it->second.GetImage();
-  }
-
   auto overlay = shared_image_representation_factory_->ProduceOverlay(mailbox);
   if (!overlay)
     return nullptr;
 
-  std::tie(it, std::ignore) =
-      overlays_.try_emplace(mailbox, std::move(overlay));
+  std::tie(it, std::ignore) = overlays_.emplace(mailbox, std::move(overlay));
   return it->second.GetImage();
 }
 
