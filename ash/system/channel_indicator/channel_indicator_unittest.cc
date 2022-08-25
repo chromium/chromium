@@ -24,6 +24,15 @@
 
 namespace ash {
 
+namespace {
+
+// Constants for determining whether a view is "squished" i.e. one of its
+// dimensions is very small and one dimension is much larger than the other.
+constexpr int kSquishedMinDimension = 2;
+constexpr int kSquishedMaxDifferenceBetweenDimensions = 2;
+
+}  // namespace
+
 class ChannelIndicatorViewTest
     : public AshTestBase,
       public testing::WithParamInterface<version_info::Channel> {
@@ -50,6 +59,24 @@ class ChannelIndicatorViewTest
     SessionInfo info;
     info.state = state;
     Shell::Get()->session_controller()->SetSessionInfo(info);
+  }
+
+  bool IsViewSquished(const views::View* view) {
+    DCHECK(view);
+
+    // A view is considered "squished" if:
+    // (1) Either dimension of its bounds is very small and
+    // (2) One dimension is much larger than the other
+    gfx::Rect bounds = view->GetLocalBounds();
+    bool is_squished = (bounds.width() <= kSquishedMinDimension ||
+                        bounds.height() <= kSquishedMinDimension) &&
+                       std::abs(bounds.width() - bounds.height()) >=
+                           kSquishedMaxDifferenceBetweenDimensions;
+    if (is_squished) {
+      LOG(ERROR) << __FUNCTION__ << " view (w: " << bounds.width()
+                 << " h: " << bounds.height() << ") is squished ";
+    }
+    return is_squished;
   }
 
  private:
@@ -112,13 +139,8 @@ TEST_P(ChannelIndicatorViewTest, Visible) {
     channel_indicator_view->GetWidget()->LayoutRootViewIfNecessary();
 
     // Now test the bounds of the image view.
-    gfx::Rect image_view_bounds = GetPrimaryUnifiedSystemTray()
-                                      ->channel_indicator_view()
-                                      ->image_view()
-                                      ->GetLocalBounds();
-    EXPECT_GE(image_view_bounds.width(), kUnifiedTrayChannelIndicatorDimension);
-    EXPECT_GE(image_view_bounds.height(),
-              kUnifiedTrayChannelIndicatorDimension);
+    EXPECT_FALSE(IsViewSquished(
+        GetPrimaryUnifiedSystemTray()->channel_indicator_view()->image_view()));
   }
 
   // User locks the session, view should display text, no image.
@@ -141,13 +163,8 @@ TEST_P(ChannelIndicatorViewTest, Visible) {
     channel_indicator_view->GetWidget()->LayoutRootViewIfNecessary();
 
     // Now test the bounds of the image view.
-    gfx::Rect image_view_bounds = GetPrimaryUnifiedSystemTray()
-                                      ->channel_indicator_view()
-                                      ->image_view()
-                                      ->GetLocalBounds();
-    EXPECT_GE(image_view_bounds.width(), kUnifiedTrayChannelIndicatorDimension);
-    EXPECT_GE(image_view_bounds.height(),
-              kUnifiedTrayChannelIndicatorDimension);
+    EXPECT_FALSE(IsViewSquished(
+        GetPrimaryUnifiedSystemTray()->channel_indicator_view()->image_view()));
   }
 }
 
