@@ -8,34 +8,17 @@ import XCTest
 class ObjectPassingTest: XCTestCase {
 
   func testReferenceParameters() throws {
-    #if swift(>=5.7)
-      let a = Object(10)
-      let b = Object(20)
-    #else
-      var a = Object(10)
-      var b = Object(20)
-    #endif
-    #if swift(>=5.6)
-      let passer = ObjectPassing()
-    #else
-      var passer = ObjectPassing()
-    #endif
+    let a = Object(10)
+    let b = Object(20)
+    let passer = ObjectPassing()
     XCTAssertEqual(a.GetValue(), 10)
-    #if swift(>=5.7)
-      XCTAssertEqual(passer.AddReferences(a, b), 30)
-    #else
-      XCTAssertEqual(passer.AddReferences(&a, &b), 30)
-    #endif
+    XCTAssertEqual(passer.AddReferences(a, b), 30)
   }
 
   func testPointerParameters() throws {
     var a = Object(10)
     var b = Object(20)
-    #if swift(>=5.6)
-      let passer = ObjectPassing()
-    #else
-      var passer = ObjectPassing()
-    #endif
+    let passer = ObjectPassing()
 
     XCTAssertEqual(a.GetValue(), 10)
     XCTAssertEqual(passer.AddPointers(&a, &b), 30)
@@ -58,11 +41,9 @@ class ObjectPassingTest: XCTestCase {
   // Note: prior to Swift 5.6, calling GetValue() (which is const) on these objects
   // results in a compiler error about calling immutable methods on a `let` object.
   // Omit this test on earlier Swift versions.
-  #if swift(>=5.6)
-    func addObjects(one: Object, two: Object) -> Int32 {
-      return one.GetValue() + two.GetValue()
-    }
-  #endif
+  func addObjects(one: Object, two: Object) -> Int32 {
+    return one.GetValue() + two.GetValue()
+  }
 
   func addPointerObjects(one: UnsafeMutablePointer<Object>, two: UnsafeMutablePointer<Object>)
     -> Int32
@@ -74,9 +55,7 @@ class ObjectPassingTest: XCTestCase {
     var a = Object(10)
     var b = Object(20)
 
-    #if swift(>=5.6)
-      XCTAssertEqual(addObjects(one: a, two: b), 30)
-    #endif
+    XCTAssertEqual(addObjects(one: a, two: b), 30)
     XCTAssertEqual(addPointerObjects(one: &a, two: &b), 30)
   }
 }
