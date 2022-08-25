@@ -1239,7 +1239,7 @@ class EventGenerator {
 
     DCHECK_EQ(tasks_.front().status, Task::kScheduled);
     tasks_.pop_front();
-    auto runner = base::SequencedTaskRunnerHandle::Get();
+    const auto& runner = base::SequencedTaskRunnerHandle::Get();
     auto closure = base::BindOnce(&EventGenerator::SendEvent,
                                   weak_ptr_factory_.GetWeakPtr());
     // Non moving tasks can be done immediately.
