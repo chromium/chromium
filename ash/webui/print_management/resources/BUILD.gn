@@ -30,7 +30,7 @@ html_css_preprocess_folder = "preprocessed_html_css_wrapper_files"
 non_web_component_files = [ "mojo_interface_provider.js" ]
 
 web_component_files = [
-  "print_job_clear_history_dialog.js",
+  "print_job_clear_history_dialog.ts",
   "print_job_entry.js",
   "print_management.js",
 ]
@@ -64,7 +64,11 @@ css_to_wrapper("css_to_wrapper_files") {
 html_files = []
 foreach(f, web_component_files) {
   # e.g. my_element.js -> my_element.html
-  html_files += [ string_replace(f, ".js", ".html") ]
+  if (get_path_info(f, "extension") == "ts") {
+    html_files += [ string_replace(f, ".ts", ".html") ]
+  } else {
+    html_files += [ string_replace(f, ".js", ".html") ]
+  }
 }
 
 all_html_files = html_files + [ "icons.html" ]

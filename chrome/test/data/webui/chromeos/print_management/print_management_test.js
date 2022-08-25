@@ -11,6 +11,23 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {flushTasks} from 'chrome://test/test_util.js';
 
 /**
+ * Returns the match for |selector| in |element|'s shadow DOM.
+ * @param {element} Element
+ * @param {selector} string
+ * @return {!Element | null}
+ */
+function querySelector(element, selector) {
+  if (!element) {
+    return null;
+  }
+  if (!element.shadowRoot) {
+    return null;
+  }
+
+  return element.shadowRoot.querySelector(selector);
+}
+
+/**
  * Converts a JS string to mojo_base::mojom::String16 object.
  * @param {string} str
  * @return {!object}
@@ -646,9 +663,10 @@ suite('PrintManagementTest', () => {
           // confirmation button.
           const dialog = page.$$('#clearHistoryDialog');
           assertTrue(!!dialog);
-          assertTrue(!dialog.$$('.action-button').disabled);
-          dialog.$$('.action-button').click();
-          assertTrue(dialog.$$('.action-button').disabled);
+          const dialogActionButton = querySelector(dialog, '.action-button');
+          assertTrue(!dialogActionButton.disabled);
+          dialogActionButton.click();
+          assertTrue(dialogActionButton.disabled);
           return mojoApi_.whenCalled('deleteAllPrintJobs');
         })
         .then(() => {
