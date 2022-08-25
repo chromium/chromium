@@ -345,6 +345,11 @@ const base::Feature kPrerender2 {
       base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 };
+
+const base::Feature kSameSiteCrossOriginForSpeculationRulesPrerender{
+    "SameSiteCrossOriginForSpeculationRulesPrerender",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 const char kPrerender2MaxNumOfRunningSpeculationRules[] =
     "max_num_of_running_speculation_rules";
 
@@ -356,6 +361,11 @@ const char kPrerender2MemoryAcceptablePercentOfSystemMemoryParamName[] =
 
 bool IsPrerender2Enabled() {
   return base::FeatureList::IsEnabled(blink::features::kPrerender2);
+}
+
+bool IsSameSiteCrossOriginForSpeculationRulesPrerender2Enabled() {
+  return base::FeatureList::IsEnabled(
+      blink::features::kSameSiteCrossOriginForSpeculationRulesPrerender);
 }
 
 bool IsFencedFramesEnabled() {

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/browser/preloading/prerender/prerender_navigation_utils.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
 namespace content::prerender_navigation_utils {
 
@@ -15,6 +16,13 @@ bool IsDisallowedHttpResponseCode(int response_code) {
     return true;
   }
   return response_code < 100 || response_code > 399;
+}
+
+bool IsSameSite(const GURL& target_url, const url::Origin& origin) {
+  return target_url.scheme() == origin.scheme() &&
+         net::registry_controlled_domains::SameDomainOrHost(
+             target_url, origin,
+             net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 }
 
 }  // namespace content::prerender_navigation_utils

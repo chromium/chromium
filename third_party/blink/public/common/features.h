@@ -168,8 +168,15 @@ BLINK_COMMON_EXPORT extern const char kPrerender2MemoryThresholdParamName[];
 // pages will not be prerendered even when kPrerender2 is enabled.
 BLINK_COMMON_EXPORT extern const char
     kPrerender2MemoryAcceptablePercentOfSystemMemoryParamName[];
+// Enables same-site cross origin Prerender2
+BLINK_COMMON_EXPORT extern const base::Feature
+    kSameSiteCrossOriginForSpeculationRulesPrerender;
 // Returns true when Prerender2 feature is enabled.
 BLINK_COMMON_EXPORT bool IsPrerender2Enabled();
+// Returns true when the same-site cross origin Prerender2 feature is
+// enabled.
+BLINK_COMMON_EXPORT bool
+IsSameSiteCrossOriginForSpeculationRulesPrerender2Enabled();
 
 // Fenced Frames:
 BLINK_COMMON_EXPORT bool IsFencedFramesEnabled();

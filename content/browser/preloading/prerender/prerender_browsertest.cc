@@ -283,6 +283,14 @@ class PrerenderBrowserTest : public ContentBrowserTest {
     return ssl_server_.GetURL("b.test", path);
   }
 
+  GURL GetUrlForSameSiteCrossOriginTest(const std::string& path) {
+    return ssl_server().GetURL("a.a.test", path);
+  }
+
+  GURL GetSameSiteCrossOriginUrl(const std::string& path) {
+    return ssl_server().GetURL("b.a.test", path);
+  }
+
   void ResetSSLConfig(
       net::test_server::EmbeddedTestServer::ServerCertificate cert,
       const net::SSLServerConfig& ssl_config) {
@@ -4927,6 +4935,28 @@ class PrerenderWithProactiveBrowsingInstanceSwap : public PrerenderBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+class PrerenderSameSiteCrossOriginBrowserTest : public PrerenderBrowserTest {
+ public:
+  PrerenderSameSiteCrossOriginBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kPrerender2, {{}}},
+         {blink::features::kSameSiteCrossOriginForSpeculationRulesPrerender,
+          {{}}}},
+        {/* disabled_features */});
+  }
+
+  GURL GetUrl(const std::string& path) {
+    return ssl_server().GetURL("a.a.test", path);
+  }
+
+  GURL GetCrossOriginUrl(const std::string& path) {
+    return ssl_server().GetURL("a.b.test", path);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Make sure that we can deal with the speculative RFH that is created during
 // the activation navigation.
 // TODO(https://crbug.com/1190197): We should try to avoid creating the
@@ -5554,6 +5584,151 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SkipCrossOriginPrerender) {
         PreloadingTriggeringOutcome::kUnspecified,
         PreloadingFailureReason::kUnspecified,
 
+        /*accurate=*/true);
+
+    EXPECT_EQ(attempt_ukm_entries[0], attempt_expected_entry)
+        << test::ActualVsExpectedUkmEntryToString(attempt_ukm_entries[0],
+                                                  attempt_expected_entry);
+  }
+}
+
+// Tests that same-site cross-origin navigation by speculation rules is not
+// allowed with the feature disabled.
+IN_PROC_BROWSER_TEST_F(
+    PrerenderBrowserTest,
+    SameSiteCrossOriginNavigationSpeculationRulesWithoutFeatureEnabled) {
+  ASSERT_FALSE(blink::features::
+                   IsSameSiteCrossOriginForSpeculationRulesPrerender2Enabled());
+  const GURL kInitialUrl = GetUrlForSameSiteCrossOriginTest("/empty.html");
+  const GURL kPrerenderingUrl =
+      GetSameSiteCrossOriginUrl("/empty.html?samesitecrossorigin");
+
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Add a same-site cross-origin prerender rule.
+  test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
+  AddPrerenderAsync(kPrerenderingUrl);
+  // Wait for PrerenderHostRegistry to receive the cross-origin prerender
+  // request, and it should be ignored.
+  registry_observer.WaitForTrigger(kPrerenderingUrl);
+  EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
+
+  ExpectFinalStatusForSpeculationRule(
+      PrerenderHost::FinalStatus::kCrossOriginNavigation);
+}
+
+// Tests that same-site cross-origin redirection by speculation rules is not
+// allowed with the feature disabled.
+IN_PROC_BROWSER_TEST_F(
+    PrerenderBrowserTest,
+    SameSiteCrossOriginRedirectionSpeculationRulesWithoutFeatureEnabled) {
+  ASSERT_FALSE(blink::features::
+                   IsSameSiteCrossOriginForSpeculationRulesPrerender2Enabled());
+  // Navigate to an initial page.
+  const GURL kInitialUrl = GetUrlForSameSiteCrossOriginTest("/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start prerendering a URL that causes cross-origin redirection. The
+  // cross-origin redirection should fail prerendering.
+  const GURL kRedirectedUrl =
+      GetSameSiteCrossOriginUrl("/empty.html?samesitecrossorigin");
+  const GURL kPrerenderingUrl = GetUrlForSameSiteCrossOriginTest(
+      "/server-redirect?" + kRedirectedUrl.spec());
+  test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
+  test::PrerenderHostObserver host_observer(*web_contents_impl(),
+                                            kPrerenderingUrl);
+  AddPrerenderAsync(kPrerenderingUrl);
+  host_observer.WaitForDestroyed();
+  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+  EXPECT_EQ(GetRequestCount(kRedirectedUrl), 0);
+  EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
+  EXPECT_FALSE(HasHostForUrl(kRedirectedUrl));
+  ExpectFinalStatusForSpeculationRule(
+      PrerenderHost::FinalStatus::kCrossOriginRedirect);
+}
+
+// Tests that same-site cross-origin navigation by speculation rules can be
+// prerendered with the feature enabled.
+IN_PROC_BROWSER_TEST_F(PrerenderSameSiteCrossOriginBrowserTest,
+                       CheckSameSiteCrossOriginSpeculationRulesPrerender) {
+  ASSERT_TRUE(blink::features::
+                  IsSameSiteCrossOriginForSpeculationRulesPrerender2Enabled());
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl =
+      GetSameSiteCrossOriginUrl("/empty.html?samesitecrossorigin");
+
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Add a same-site cross-origin prerender rule.
+  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
+  AddPrerender(kPrerenderingUrl);
+  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+
+  NavigatePrimaryPage(kPrerenderingUrl);
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
+  // Activating the prerendered page should not issue a request.
+  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+  ExpectFinalStatusForSpeculationRule(PrerenderHost::FinalStatus::kActivated);
+}
+
+// Tests that same-site cross-origin redirection by speculation rules is
+// allowed.
+IN_PROC_BROWSER_TEST_F(PrerenderSameSiteCrossOriginBrowserTest,
+                       SameSiteCrossOriginSpeculationRulesRedirection) {
+  ASSERT_TRUE(blink::features::
+                  IsSameSiteCrossOriginForSpeculationRulesPrerender2Enabled());
+  // Navigate to an initial page.
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Start prerendering a URL that causes same-origin redirection.
+  const GURL kRedirectedUrl =
+      GetSameSiteCrossOriginUrl("/empty.html?prerender");
+  const GURL kPrerenderingUrl =
+      GetSameSiteCrossOriginUrl("/server-redirect?" + kRedirectedUrl.spec());
+  RedirectChainObserver redirect_chain_observer(*shell()->web_contents(),
+                                                kRedirectedUrl);
+  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
+  ASSERT_EQ(GetRequestCount(kRedirectedUrl), 0);
+  AddPrerender(kPrerenderingUrl);
+  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+  EXPECT_EQ(GetRequestCount(kRedirectedUrl), 1);
+
+  ASSERT_EQ(2u, redirect_chain_observer.redirect_chain().size());
+  EXPECT_EQ(kPrerenderingUrl, redirect_chain_observer.redirect_chain()[0]);
+  EXPECT_EQ(kRedirectedUrl, redirect_chain_observer.redirect_chain()[1]);
+
+  // The prerender host should be registered for the initial request URL, not
+  // the redirected URL.
+  EXPECT_TRUE(HasHostForUrl(kPrerenderingUrl));
+  EXPECT_FALSE(HasHostForUrl(kRedirectedUrl));
+
+  RedirectChainObserver activation_redirect_chain_observer(
+      *shell()->web_contents(), kRedirectedUrl);
+  NavigatePrimaryPage(kPrerenderingUrl);
+  ASSERT_EQ(1u, activation_redirect_chain_observer.redirect_chain().size());
+  EXPECT_EQ(kRedirectedUrl,
+            activation_redirect_chain_observer.redirect_chain()[0]);
+
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), kRedirectedUrl);
+  ExpectFinalStatusForSpeculationRule(PrerenderHost::FinalStatus::kActivated);
+  // Activating the prerendered page should not issue a request.
+  EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+  EXPECT_EQ(GetRequestCount(kRedirectedUrl), 1);
+
+  {
+    // Cross-check that in case redirection when the prerender navigates and
+    // user ends up navigating to the redirected URL. accurate_triggering is
+    // true.
+    ukm::SourceId ukm_source_id = PrimaryPageSourceId();
+    auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt::kEntryName, test::kPreloadingAttemptUkmMetrics);
+
+    UkmEntry attempt_expected_entry = attempt_ukm_entry_builder().BuildEntry(
+        ukm_source_id, PreloadingType::kPrerender,
+        PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
+        PreloadingTriggeringOutcome::kSuccess,
+        PreloadingFailureReason::kUnspecified,
         /*accurate=*/true);
 
     EXPECT_EQ(attempt_ukm_entries[0], attempt_expected_entry)

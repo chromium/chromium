@@ -15,6 +15,7 @@
 #include "content/browser/preloading/preloading_data_impl.h"
 #include "content/browser/preloading/prerender/prerender_attributes.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
+#include "content/browser/preloading/prerender/prerender_navigation_utils.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_thread.h"
@@ -263,17 +264,34 @@ void SpeculationHostImpl::ProcessCandidatesForPrerender(
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         &rfhi, blink::mojom::WebFeature::kSpeculationRulesPrerender);
 
-    // TODO(crbug.com/1176054): Remove it after supporting cross-origin
+    // TODO(crbug.com/1176054): Remove it after supporting cross-site
     // prerender.
-    if (!rfhi.GetLastCommittedOrigin().IsSameOriginWith(it->url)) {
-      rfhi.AddMessageToConsole(
-          blink::mojom::ConsoleMessageLevel::kWarning,
-          base::StringPrintf(
-              "The SpeculationRules API does not support cross-origin "
-              "prerender yet. (initiator origin: %s, prerender origin: %s). "
-              "https://crbug.com/1176054 tracks cross-origin support.",
-              rfhi.GetLastCommittedOrigin().Serialize().c_str(),
-              url::Origin::Create(it->url).Serialize().c_str()));
+    if (blink::features::
+            IsSameSiteCrossOriginForSpeculationRulesPrerender2Enabled()) {
+      if (!prerender_navigation_utils::IsSameSite(
+              it->url, rfhi.GetLastCommittedOrigin())) {
+        rfhi.AddMessageToConsole(
+            blink::mojom::ConsoleMessageLevel::kWarning,
+            base::StringPrintf(
+                "The SpeculationRules API does not support cross-site "
+                "prerender yet "
+                "(kSameSiteCrossOriginForSpeculationRulesPrerender2 is "
+                "enabled). (initiator origin: %s, prerender origin: %s). "
+                "https://crbug.com/1176054 tracks cross-site support.",
+                rfhi.GetLastCommittedOrigin().Serialize().c_str(),
+                url::Origin::Create(it->url).Serialize().c_str()));
+      }
+    } else {
+      if (!rfhi.GetLastCommittedOrigin().IsSameOriginWith(it->url)) {
+        rfhi.AddMessageToConsole(
+            blink::mojom::ConsoleMessageLevel::kWarning,
+            base::StringPrintf(
+                "The SpeculationRules API does not support cross-origin "
+                "prerender yet. (initiator origin: %s, prerender origin: %s). "
+                "https://crbug.com/1176054 tracks cross-origin support.",
+                rfhi.GetLastCommittedOrigin().Serialize().c_str(),
+                url::Origin::Create(it->url).Serialize().c_str()));
+      }
     }
 
     Referrer referrer(*(it->referrer));

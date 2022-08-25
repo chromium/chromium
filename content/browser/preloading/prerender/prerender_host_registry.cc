@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/prerender/prerender_metrics.h"
+#include "content/browser/preloading/prerender/prerender_navigation_utils.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -137,19 +138,34 @@ int PrerenderHostRegistry::CreateAndStartHost(
       return RenderFrameHost::kNoFrameTreeNodeId;
     }
 
-    // TODO(crbug.com/1176054): Support cross-origin prerendering.
+    // TODO(crbug.com/1176054): Support cross-site prerendering.
     // The initiator origin is nullopt when prerendering is initiated by the
     // browser (not by a renderer using Speculation Rules API). In that case,
-    // skip the same-origin check.
-    if (!attributes.IsBrowserInitiated() &&
-        !attributes.initiator_origin.value().IsSameOriginWith(
-            attributes.prerendering_url)) {
-      RecordPrerenderHostFinalStatus(
-          PrerenderHost::FinalStatus::kCrossOriginNavigation, attributes,
-          ukm::kInvalidSourceId);
-      if (attempt)
-        attempt->SetEligibility(PreloadingEligibility::kCrossOrigin);
-      return RenderFrameHost::kNoFrameTreeNodeId;
+    // skip the  same-site and same-origin check.
+    if (!attributes.IsBrowserInitiated()) {
+      if (blink::features::
+              IsSameSiteCrossOriginForSpeculationRulesPrerender2Enabled()) {
+        if (!prerender_navigation_utils::IsSameSite(
+                attributes.prerendering_url,
+                attributes.initiator_origin.value())) {
+          RecordPrerenderHostFinalStatus(
+              PrerenderHost::FinalStatus::kCrossOriginNavigation, attributes,
+              ukm::kInvalidSourceId);
+          if (attempt)
+            attempt->SetEligibility(PreloadingEligibility::kCrossOrigin);
+          return RenderFrameHost::kNoFrameTreeNodeId;
+        }
+      } else {
+        if (!attributes.initiator_origin.value().IsSameOriginWith(
+                attributes.prerendering_url)) {
+          RecordPrerenderHostFinalStatus(
+              PrerenderHost::FinalStatus::kCrossOriginNavigation, attributes,
+              ukm::kInvalidSourceId);
+          if (attempt)
+            attempt->SetEligibility(PreloadingEligibility::kCrossOrigin);
+          return RenderFrameHost::kNoFrameTreeNodeId;
+        }
+      }
     }
 
     // Once all eligibility checks are completed, set the status to kEligible.
