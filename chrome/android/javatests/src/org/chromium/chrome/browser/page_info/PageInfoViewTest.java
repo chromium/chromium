@@ -73,6 +73,7 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.site_settings.ContentSettingException;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
@@ -763,7 +764,13 @@ public class PageInfoViewTest {
      */
     @Test
     @MediumTest
+    // When both START_SURFACE_ANDROID and TAB_GROUPS_CONTINUATION_ANDROID are enabled, changing
+    // accessibility status won't recreate ChromeTabbedActivity.
+    @EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID,
+            ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    // clang-format off
     public void testCloseButton() {
+        // clang-format on
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true); });
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
