@@ -10963,9 +10963,9 @@ void RenderFrameHostImpl::GetVirtualAuthenticatorManager(
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableWebAuthDeprecatedMojoTestingApi)) {
     auto* environment_singleton = AuthenticatorEnvironmentImpl::GetInstance();
-    environment_singleton->EnableVirtualAuthenticatorFor(frame_tree_node_,
+    environment_singleton->EnableVirtualAuthenticatorFor(this,
                                                          /*enable_ui=*/false);
-    environment_singleton->AddVirtualAuthenticatorReceiver(frame_tree_node_,
+    environment_singleton->AddVirtualAuthenticatorReceiver(this,
                                                            std::move(receiver));
   }
 #endif  // !BUILDFLAG(IS_ANDROID)

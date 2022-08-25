@@ -28,7 +28,10 @@ GetMojoToVirtualAuthenticator(VirtualAuthenticator* authenticator) {
 
 }  // namespace
 
-VirtualAuthenticatorManagerImpl::VirtualAuthenticatorManagerImpl() = default;
+VirtualAuthenticatorManagerImpl::VirtualAuthenticatorManagerImpl(
+    RenderFrameHost* rfh)
+    : DocumentUserData<VirtualAuthenticatorManagerImpl>(rfh) {}
+
 VirtualAuthenticatorManagerImpl::~VirtualAuthenticatorManagerImpl() = default;
 
 void VirtualAuthenticatorManagerImpl::AddObserver(Observer* observer) {
@@ -154,5 +157,7 @@ void VirtualAuthenticatorManagerImpl::ClearAuthenticators(
 
   std::move(callback).Run();
 }
+
+DOCUMENT_USER_DATA_KEY_IMPL(VirtualAuthenticatorManagerImpl);
 
 }  // namespace content
