@@ -1185,7 +1185,7 @@
       'linux_chromium_msan_focal': 'msan_release_bot',
       'linux_chromium_msan_rel_ng': 'msan_release_bot',
 
-      'linux_chromium_tsan_rel_ng': 'tsan_disable_nacl_release_trybot',
+      'linux_chromium_tsan_rel_ng': 'tsan_disable_nacl_release_trybot_reclient',
 
       # This is intentionally a release_bot and not a release_trybot to match
       # the CI configuration, where no debug builder exists.
@@ -3590,8 +3590,8 @@
       'tsan', 'disable_nacl', 'release_bot_reclient',
     ],
 
-    'tsan_disable_nacl_release_trybot': [
-      'tsan', 'disable_nacl', 'release_trybot_minimal_symbols',
+    'tsan_disable_nacl_release_trybot_reclient': [
+      'tsan', 'disable_nacl', 'release_trybot_minimal_symbols_reclient',
     ],
 
     'ubsan_release_bot_reclient': [
