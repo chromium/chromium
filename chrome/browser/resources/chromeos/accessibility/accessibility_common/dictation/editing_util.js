@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {LocaleInfo} from './locale_info.js';
+
 /**
  * EditingUtil provides utility and helper methods for editing-related
  * operations.
@@ -29,10 +31,15 @@ export class EditingUtil {
     deletePhrase = deletePhrase.trim();
     insertPhrase = insertPhrase.trim();
 
-    // Find the right-most occurrence of `deletePhrase`. Require `deletePhrase`
-    // to be separated by word boundaries. If we're deleting text, prefer
-    // the RegExps that include a leading/trailing space to preserve spacing.
-    const re = EditingUtil.getPhraseRegex_(deletePhrase);
+    // Find the right-most occurrence of `deletePhrase`. If we're deleting text,
+    // prefer the RegExps that include a leading/trailing space to preserve
+    // spacing.
+    let re;
+    if (LocaleInfo.considerSpaces()) {
+      re = EditingUtil.getPhraseRegex_(deletePhrase);
+    } else {
+      re = EditingUtil.getPhraseRegexNoWordBoundaries_(deletePhrase);
+    }
     const reWithLeadingSpace =
         EditingUtil.getPhraseRegexLeadingSpace_(deletePhrase);
     const reWithTrailingSpace =
@@ -279,6 +286,7 @@ export class EditingUtil {
   }
 
   /**
+   * TODO(akihiroota): Break regex construction into smaller chunks.
    * Returns a RegExp that matches on the right-most occurrence of a phrase.
    * The returned RegExp is case insensitive and requires that `phrase` is
    * separated by word boundaries.
@@ -288,6 +296,17 @@ export class EditingUtil {
    */
   static getPhraseRegex_(phrase) {
     return new RegExp(`(\\b${phrase}\\b)(?!.*\\b\\1\\b)`, 'i');
+  }
+
+  /**
+   * Similar to above, but doesn't include word boundaries. This is useful for
+   * languages that don't use spaces e.g. Japanese.
+   * @param {string} phrase
+   * @return {!RegExp}
+   * @private
+   */
+  static getPhraseRegexNoWordBoundaries_(phrase) {
+    return new RegExp(`(${phrase})(?!.*\\1)`, 'i');
   }
 
   /**

@@ -81,7 +81,13 @@ class SimpleMacroFactory {
     const message = chrome.i18n.getMessage(
         SimpleMacroFactory.getData_()[macroName].messageId, args);
     const pattern = `^${message}$`;
-    this.commandRegex_ = new RegExp(pattern, 'i');
+    if (LocaleInfo.considerSpaces()) {
+      this.commandRegex_ = new RegExp(pattern, 'i');
+    } else {
+      // A regex to be used if the Dictation language doesn't use spaces e.g.
+      // Japanese.
+      this.commandRegex_ = new RegExp(pattern.replace(/\s+/g, ''), 'i');
+    }
   }
 
   /**

@@ -859,6 +859,18 @@ IN_PROC_BROWSER_TEST_P(DictationJaTest, DeleteCharacter) {
   WaitForRecognitionStopped();
 }
 
+IN_PROC_BROWSER_TEST_P(DictationJaTest, SmartDeletePhrase) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendFinalResultAndWaitForTextAreaValue("私はバスケットボールが好きです。",
+                                         "私はバスケットボールが好きです。");
+  // Delete the first two characters in the sentence.
+  SendFinalResultAndWaitForTextAreaValue("私はを削除",
+                                         "バスケットボールが好きです。");
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStopped();
+}
+
 class DictationCommandsTest : public DictationTest {
  protected:
   DictationCommandsTest() {}

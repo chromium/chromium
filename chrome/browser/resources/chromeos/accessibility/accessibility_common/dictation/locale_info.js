@@ -48,6 +48,15 @@ export class LocaleInfo {
         (LocaleInfo.getUILanguage() === systemLanguage ||
          LocaleInfo.getUILanguage() === systemLocale);
   }
+
+  /**
+   * Returns true if we should consider spaces, false otherwise.
+   * @return {boolean}
+   */
+  static considerSpaces() {
+    const language = LocaleInfo.locale.toLowerCase().split('-')[0];
+    return !LocaleInfo.NO_SPACE_LANGUAGES_.has(language);
+  }
 }
 
 /**
@@ -87,3 +96,12 @@ LocaleInfo.LOCALE_TO_UI_LANGUAGE_MAP_ = {
   'yue-hant-hk': 'zh-tw',
   'no-no': 'nb',
 };
+
+/**
+ * TODO(akihiroota): Follow-up with an i18n expert to get a full list of
+ * languages.
+ * All languages that don't use spaces.
+ * @private {!Set<string>}
+ * @const
+ */
+LocaleInfo.NO_SPACE_LANGUAGES_ = new Set(['ja', 'zh']);

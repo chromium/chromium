@@ -312,6 +312,7 @@ js_library("dictation_focus_handler") {
 
 js_library("dictation_editing_util") {
   sources = [ "dictation/editing_util.js" ]
+  deps = [ ":dictation_locale_info" ]
 }
 
 js_library("dictation_locale_info") {
