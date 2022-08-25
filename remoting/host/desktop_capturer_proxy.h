@@ -24,20 +24,15 @@ class DesktopCaptureOptions;
 
 namespace remoting {
 
-class ClientSessionControl;
 class DesktopDisplayInfoMonitor;
 
 // DesktopCapturerProxy is responsible for calling webrtc::DesktopCapturer on
 // the capturer thread and then returning results to the caller's thread.
 // GetSourceList() is not implemented by this class, it always returns false.
-// This class optionally loads the list of desktop displays on the UI thread
-// (after each captured frame), which will notify the ClientSessionControl
-// if the displays have changed.
 class DesktopCapturerProxy : public DesktopCapturer {
  public:
   explicit DesktopCapturerProxy(
-      scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner);
 
   DesktopCapturerProxy(const DesktopCapturerProxy&) = delete;
   DesktopCapturerProxy& operator=(const DesktopCapturerProxy&) = delete;
@@ -77,7 +72,7 @@ class DesktopCapturerProxy : public DesktopCapturer {
   void OnMetadata(webrtc::DesktopCaptureMetadata metadata);
 #endif
 
-  base::ThreadChecker thread_checker_;
+  THREAD_CHECKER(thread_checker_);
 
   std::unique_ptr<Core> core_;
   scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner_;

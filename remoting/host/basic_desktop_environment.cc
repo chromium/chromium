@@ -37,6 +37,9 @@
 #include "remoting/host/linux/x11_util.h"
 #endif
 
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+
 namespace remoting {
 
 #if defined(REMOTING_USE_X11)
@@ -189,8 +192,14 @@ std::unique_ptr<DesktopCapturer>
 BasicDesktopEnvironment::CreateVideoCapturer() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  auto result = std::make_unique<DesktopCapturerProxy>(
-      video_capture_task_runner_, ui_task_runner_);
+  // Each capturer instance should get its own thread so the capturers don't
+  // compete with each other in multistream mode.
+  auto dedicated_task_runner = base::ThreadPool::CreateSingleThreadTaskRunner(
+      {base::TaskPriority::HIGHEST},
+      base::SingleThreadTaskRunnerThreadMode::DEDICATED);
+
+  auto result =
+      std::make_unique<DesktopCapturerProxy>(std::move(dedicated_task_runner));
   result->set_desktop_display_info_monitor(GetDisplayInfoMonitor());
   result->CreateCapturer(desktop_capture_options());
   return std::move(result);
