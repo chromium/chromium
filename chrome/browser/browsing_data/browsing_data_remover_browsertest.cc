@@ -587,8 +587,14 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, WebrtcVideoPerfHistory) {
   }
 }
 
+// TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_Database DISABLED_Database
+#else
+#define MAYBE_Database Database
+#endif
 // Verify can modify database after deleting it.
-IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, Database) {
+IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, MAYBE_Database) {
   GURL url = embedded_test_server()->GetURL("/simple_database.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
 
@@ -1078,18 +1084,36 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP, NativeIODeletion) {
   TestSiteData("StorageFoundation", GetParam());
 }
 
-IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP, WebSqlDeletion) {
+// TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_WebSqlDeletion DISABLED_WebSqlDeletion
+#else
+#define MAYBE_WebSqlDeletion WebSqlDeletion
+#endif
+IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP, MAYBE_WebSqlDeletion) {
   TestSiteData("WebSql", GetParam());
 }
 
+// TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_WebSqlIncognitoDeletion DISABLED_WebSqlIncognitoDeletion
+#else
+#define MAYBE_WebSqlIncognitoDeletion WebSqlIncognitoDeletion
+#endif
 IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP,
-                       WebSqlIncognitoDeletion) {
+                       MAYBE_WebSqlIncognitoDeletion) {
   UseIncognitoBrowser();
   TestSiteData("WebSql", GetParam());
 }
 
-// Test that empty websql dbs are deleted correctly.
-IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP, EmptyWebSqlDeletion) {
+// TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_EmptyWebSqlDeletion DISABLED_EmptyWebSqlDeletion
+#else
+#define MAYBE_EmptyWebSqlDeletion EmptyWebSqlDeletion
+#endif
+IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP,
+                       MAYBE_EmptyWebSqlDeletion) {
   TestEmptySiteData("WebSql", GetParam());
 }
 
@@ -1356,9 +1380,16 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   ExpectCookieTreeModelCount(0);
 }
 
+// TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_StorageRemovedFromDisk DISABLED_StorageRemovedFromDisk
+#else
+#define MAYBE_StorageRemovedFromDisk StorageRemovedFromDisk
+#endif
 // Check if any data remains after a deletion and a Chrome restart to force
 // all writes to be finished.
-IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, StorageRemovedFromDisk) {
+IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
+                       MAYBE_StorageRemovedFromDisk) {
   // Deletions should remove all traces of browsing data from disk
   // but there are a few bugs that need to be fixed.
   // Any addition to this list must have an associated TODO().
@@ -1399,9 +1430,15 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
                                  CONTENT_SETTING_SESSION_ONLY);
 }
 
+// TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_SessionOnlyStorageRemoved DISABLED_SessionOnlyStorageRemoved
+#else
+#define MAYBE_SessionOnlyStorageRemoved SessionOnlyStorageRemoved
+#endif
 // Restart to delete session only storage.
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
-                       SessionOnlyStorageRemoved) {
+                       MAYBE_SessionOnlyStorageRemoved) {
   // All cookies should have been deleted.
   ExpectCookieTreeModelCount(0);
   GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");

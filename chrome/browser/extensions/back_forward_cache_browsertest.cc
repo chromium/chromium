@@ -972,10 +972,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
                 base::StringPrintf(kScript, iframe_frame_tree_node_id)));
 }
 
+// TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_StorageCallbackEvicts DISABLED_StorageCallbackEvicts
+#else
+#define MAYBE_StorageCallbackEvicts StorageCallbackEvicts
+#endif
 // Test that running extensions message dispatching via a ScriptContext::ForEach
 // for back forward cached pages causes eviction of that RenderFrameHost.
 IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
-                       StorageCallbackEvicts) {
+                       MAYBE_StorageCallbackEvicts) {
   const Extension* extension = extension =
       LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
                         .AppendASCII("content_script_storage"));

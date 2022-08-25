@@ -620,8 +620,16 @@ IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
   TestNestedThirdPartyIFrameStorage(TestType::kWorker);
 }
 
+// TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_NestedFirstPartyIFrameStorageForFrame \
+  DISABLED_NestedFirstPartyIFrameStorageForFrame
+#else
+#define MAYBE_NestedFirstPartyIFrameStorageForFrame \
+  NestedFirstPartyIFrameStorageForFrame
+#endif
 IN_PROC_BROWSER_TEST_F(CookiePolicyBrowserTest,
-                       NestedFirstPartyIFrameStorageForFrame) {
+                       MAYBE_NestedFirstPartyIFrameStorageForFrame) {
   TestNestedFirstPartyIFrameStorage(TestType::kFrame);
 }
 

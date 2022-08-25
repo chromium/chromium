@@ -322,8 +322,14 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest,
   EXPECT_TRUE(is_power_efficient);
 }
 
+// TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_Database DISABLED_Database
+#else
+#define MAYBE_Database Database
+#endif
 // Verify database is reset after Incognito restart.
-IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest, Database) {
+IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest, MAYBE_Database) {
   GURL url = embedded_test_server()->GetURL("/simple_database.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
 
@@ -456,7 +462,13 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest,
   TestSiteData("StorageFoundation");
 }
 
-IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest, WebSqlDeletion) {
+// TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_WebSqlDeletion DISABLED_WebSqlDeletion
+#else
+#define MAYBE_WebSqlDeletion WebSqlDeletion
+#endif
+IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest, MAYBE_WebSqlDeletion) {
   TestSiteData("WebSql");
 }
 
@@ -527,9 +539,15 @@ const std::vector<std::string> kStorageTypes{
     "Cookie", "LocalStorage",  "FileSystem",   "SessionStorage", "IndexedDb",
     "WebSql", "ServiceWorker", "CacheStorage", "MediaLicense"};
 
+// TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_StorageDoesntWriteToDisk DISABLED_StorageDoesntWriteToDisk
+#else
+#define MAYBE_StorageDoesntWriteToDisk StorageDoesntWriteToDisk
+#endif
 // Test that storage doesn't leave any traces on disk.
 IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest,
-                       StorageDoesntWriteToDisk) {
+                       MAYBE_StorageDoesntWriteToDisk) {
   // Checking leveldb content fails in most cases. See https://crbug.com/1238325
   ASSERT_EQ(0, CheckUserDirectoryForString(kLocalHost, {},
                                            /*check_leveldb_content=*/false));

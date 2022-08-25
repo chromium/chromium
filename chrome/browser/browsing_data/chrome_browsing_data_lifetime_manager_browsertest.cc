@@ -250,8 +250,14 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
   }
 }
 
+// TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_SiteData DISABLED_SiteData
+#else
+#define MAYBE_SiteData SiteData
+#endif
 IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
-                       SiteData) {
+                       MAYBE_SiteData) {
   static constexpr char kPref[] =
       R"([{"time_to_live_in_hours": 1, "data_types":
       ["cookies_and_other_site_data"]}])";
@@ -296,8 +302,14 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
   EXPECT_NE(net::OK, content::LoadBasicRequest(network_context(), url));
 }
 
+// TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_KeepsOtherTabData DISABLED_KeepsOtherTabData
+#else
+#define MAYBE_KeepsOtherTabData KeepsOtherTabData
+#endif
 IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
-                       KeepsOtherTabData) {
+                       MAYBE_KeepsOtherTabData) {
   if (IsIncognito())
     return;
 
@@ -376,8 +388,14 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_KeepsOtherWindowData DISABLED_KeepsOtherWindowData
+#else
+#define MAYBE_KeepsOtherWindowData KeepsOtherWindowData
+#endif
 IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
-                       KeepsOtherWindowData) {
+                       MAYBE_KeepsOtherWindowData) {
   if (IsIncognito())
     return;
 

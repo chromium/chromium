@@ -2148,7 +2148,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          AppBannerBackForwardCacheBrowserTest,
                          testing::Bool());
 
-// https://crbug.com/1317431: WebSQL does not work on Fuchsia.
+// TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
 #if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_DoesNotCacheIfWebDatabase DISABLED_DoesNotCacheIfWebDatabase
 #else

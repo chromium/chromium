@@ -354,7 +354,13 @@ IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, PRE_RemoveRecords) {
                                     /* compare_host_only */ true);
 }
 
-IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, RemoveRecords) {
+// TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_RemoveRecords DISABLED_RemoveRecords
+#else
+#define MAYBE_RemoveRecords RemoveRecords
+#endif
+IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, MAYBE_RemoveRecords) {
   // Immediately remove all records and ensure no record remains.
   content::BrowsingDataRemover* remover =
       chrome_test_utils::GetProfile(this)->GetBrowsingDataRemover();
@@ -395,7 +401,13 @@ IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, PRE_CheckSessionOnly) {
             kEmbeddedPageCookieCount + kTopLevelPageCookieCount);
 }
 
-IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, CheckSessionOnly) {
+// TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_CheckSessionOnly DISABLED_CheckSessionOnly
+#else
+#define MAYBE_CheckSessionOnly CheckSessionOnly
+#endif
+IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, MAYBE_CheckSessionOnly) {
   // Confirm all records have been removed.
   auto records = GetAllAccessRecords();
   auto cookies = GetAllCookies();
@@ -403,7 +415,13 @@ IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, CheckSessionOnly) {
   EXPECT_EQ(cookies.size(), 0u);
 }
 
-IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, RemoveHistory) {
+// TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_RemoveHistory DISABLED_RemoveHistory
+#else
+#define MAYBE_RemoveHistory RemoveHistory
+#endif
+IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, MAYBE_RemoveHistory) {
   // Check that removing all history entries for an origin also removes all
   // records where that origin is the top frame origin.
   NavigateToTopLevelPage();
@@ -458,7 +476,13 @@ IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, RemoveHistory) {
             cookies.end());
 }
 
-IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, TreeModelDeletion) {
+// TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_TreeModelDeletion DISABLED_TreeModelDeletion
+#else
+#define MAYBE_TreeModelDeletion TreeModelDeletion
+#endif
+IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, MAYBE_TreeModelDeletion) {
   // Check that removing cookies and storage API usage via the CookiesTreeModel
   // also removes the associated access records.
   NavigateToTopLevelPage();
@@ -502,7 +526,13 @@ IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, TreeModelDeletion) {
   EXPECT_EQ(cookies.size(), 0u);
 }
 
-IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, MultipleAccesses) {
+// TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_MultipleAccesses DISABLED_MultipleAccesses
+#else
+#define MAYBE_MultipleAccesses MultipleAccesses
+#endif
+IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, MAYBE_MultipleAccesses) {
   // Ensure that renavigating to a page in the same tab correctly re-records
   // accesses.
   base::SimpleTestClock clock;
@@ -531,7 +561,13 @@ IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, MultipleAccesses) {
     EXPECT_EQ(record.last_access_time, clock.Now());
 }
 
-IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, TabClosed) {
+// TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_TabClosed DISABLED_TabClosed
+#else
+#define MAYBE_TabClosed TabClosed
+#endif
+IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, MAYBE_TabClosed) {
   // Ensure closing a tab correctly flushes access records.
   NavigateToTopLevelPage();
   NavigateToEmbeddedPage();
@@ -620,8 +656,14 @@ IN_PROC_BROWSER_TEST_F(AccessContextAuditSessionRestoreBrowserTest,
             kEmbeddedPageCookieCount + kTopLevelPageCookieCount);
 }
 
+// TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_RestoreSession DISABLED_RestoreSession
+#else
+#define MAYBE_RestoreSession RestoreSession
+#endif
 IN_PROC_BROWSER_TEST_F(AccessContextAuditSessionRestoreBrowserTest,
-                       RestoreSession) {
+                       MAYBE_RestoreSession) {
   // Check all access records have been correctly persisted across restarts.
   auto records = GetAllAccessRecords();
   auto cookies = GetAllCookies();
