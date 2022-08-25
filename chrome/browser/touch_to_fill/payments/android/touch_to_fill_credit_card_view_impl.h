@@ -5,21 +5,37 @@
 #ifndef CHROME_BROWSER_TOUCH_TO_FILL_PAYMENTS_ANDROID_TOUCH_TO_FILL_CREDIT_CARD_VIEW_IMPL_H_
 #define CHROME_BROWSER_TOUCH_TO_FILL_PAYMENTS_ANDROID_TOUCH_TO_FILL_CREDIT_CARD_VIEW_IMPL_H_
 
-#include "chrome/browser/touch_to_fill/payments/touch_to_fill_credit_card_view.h"
+#include "chrome/browser/touch_to_fill/payments/android/touch_to_fill_credit_card_view.h"
+
+#include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
+
+namespace content {
+class WebContents;
+}
 
 namespace autofill {
 
+class TouchToFillCreditCardViewController;
+
+// Android implementation of the surface to select a credit card to fill.
+// Uses Java TouchToFillCreditCardComponent to present a bottom sheet.
 class TouchToFillCreditCardViewImpl : public TouchToFillCreditCardView {
  public:
-  TouchToFillCreditCardViewImpl();
+  explicit TouchToFillCreditCardViewImpl(content::WebContents* web_contents);
   TouchToFillCreditCardViewImpl(const TouchToFillCreditCardViewImpl&) = delete;
   TouchToFillCreditCardViewImpl& operator=(
       const TouchToFillCreditCardViewImpl&) = delete;
   ~TouchToFillCreditCardViewImpl() override;
 
+ private:
   // TouchToFillCreditCardView:
-  bool Show() override;
+  bool Show(TouchToFillCreditCardViewController* controller) override;
   void Hide() override;
+
+  // The corresponding Java TouchToFillCreditCardViewBridge.
+  base::android::ScopedJavaGlobalRef<jobject> java_object_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 }  // namespace autofill

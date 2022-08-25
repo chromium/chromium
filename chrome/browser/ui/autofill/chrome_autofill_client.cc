@@ -695,7 +695,8 @@ bool ChromeAutofillClient::ShowTouchToFillCreditCard(
     return false;
 
   return touch_to_fill_credit_card_controller_.Show(
-      std::make_unique<TouchToFillCreditCardViewImpl>(), delegate);
+      std::make_unique<TouchToFillCreditCardViewImpl>(web_contents()),
+      delegate);
 #else
   // Touch To Fill is not supported on Desktop.
   NOTREACHED();
