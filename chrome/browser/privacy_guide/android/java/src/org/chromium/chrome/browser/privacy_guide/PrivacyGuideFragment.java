@@ -73,7 +73,7 @@ public class PrivacyGuideFragment extends Fragment {
         getLayoutInflater().inflate(R.layout.privacy_guide_steps, content);
 
         mViewPager = (ViewPager2) mView.findViewById(R.id.review_viewpager);
-        mPagerAdapter = new PrivacyGuidePagerAdapter(this);
+        mPagerAdapter = new PrivacyGuidePagerAdapter(this, new StepDisplayHandlerImpl());
         mViewPager.setAdapter(mPagerAdapter);
         mViewPager.setUserInputEnabled(false);
 

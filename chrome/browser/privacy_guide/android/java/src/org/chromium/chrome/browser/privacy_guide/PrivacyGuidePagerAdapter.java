@@ -10,39 +10,55 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Controls the behavior of the ViewPager to navigate between privacy guide steps.
  */
 public class PrivacyGuidePagerAdapter extends FragmentStateAdapter {
     /**
-     * The types of views supported. Each view corresponds to a step in the privacy guide.
+     * The types of fragments supported. Each fragment corresponds to a step in the privacy guide.
      */
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({FragmentPosition.COOKIES, FragmentPosition.MSBB, FragmentPosition.SAFE_BROWSING,
-            FragmentPosition.SYNC, FragmentPosition.COUNT})
-    private @interface FragmentPosition {
+    @IntDef({FragmentType.COOKIES, FragmentType.MSBB, FragmentType.SAFE_BROWSING,
+            FragmentType.SYNC})
+    private @interface FragmentType {
         int MSBB = 0;
         int SYNC = 1;
         int SAFE_BROWSING = 2;
         int COOKIES = 3;
-        int COUNT = 4;
     }
 
-    public PrivacyGuidePagerAdapter(Fragment parent) {
+    private final List<Integer> mFragmentTypeList = new ArrayList<>();
+
+    public PrivacyGuidePagerAdapter(Fragment parent, StepDisplayHandler displayHandler) {
         super(parent);
+
+        mFragmentTypeList.add(FragmentType.MSBB);
+        if (displayHandler.shouldDisplaySync()) {
+            mFragmentTypeList.add(FragmentType.SYNC);
+        }
+        if (displayHandler.shouldDisplaySafeBrowsing()) {
+            mFragmentTypeList.add(FragmentType.SAFE_BROWSING);
+        }
+        if (displayHandler.shouldDisplayCookies()) {
+            mFragmentTypeList.add(FragmentType.COOKIES);
+        }
     }
 
     @Override
     public Fragment createFragment(int position) {
-        switch (position) {
-            case FragmentPosition.MSBB:
+        @FragmentType
+        int fragmentType = mFragmentTypeList.get(position);
+        switch (fragmentType) {
+            case FragmentType.MSBB:
                 return new MSBBFragment();
-            case FragmentPosition.SYNC:
+            case FragmentType.SYNC:
                 return new SyncFragment();
-            case FragmentPosition.SAFE_BROWSING:
+            case FragmentType.SAFE_BROWSING:
                 return new SafeBrowsingFragment();
-            case FragmentPosition.COOKIES:
+            case FragmentType.COOKIES:
                 return new CookiesFragment();
         }
         return null;
@@ -50,6 +66,6 @@ public class PrivacyGuidePagerAdapter extends FragmentStateAdapter {
 
     @Override
     public int getItemCount() {
-        return FragmentPosition.COUNT;
+        return mFragmentTypeList.size();
     }
 }
