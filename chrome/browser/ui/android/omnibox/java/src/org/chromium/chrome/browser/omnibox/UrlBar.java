@@ -42,6 +42,7 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.components.browser_ui.share.ShareHelper;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowDelegate;
@@ -248,10 +249,9 @@ public abstract class UrlBar extends AutocompleteEditText {
                     }
                 }, ThreadUtils.getUiThreadHandler());
         mGestureDetector.setOnDoubleTapListener(null);
-        mKeyboardHideHelper = new KeyboardHideHelper(this, new Runnable() {
-            @Override
-            public void run() {
-                if (mUrlBarDelegate != null) mUrlBarDelegate.backKeyPressed();
+        mKeyboardHideHelper = new KeyboardHideHelper(this, () -> {
+            if (mUrlBarDelegate != null && !BackPressManager.isEnabled()) {
+                mUrlBarDelegate.backKeyPressed();
             }
         });
 
