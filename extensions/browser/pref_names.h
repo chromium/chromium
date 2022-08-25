@@ -113,6 +113,12 @@ extern const char kChromeAppsEnabled[];
 // TODO(1224886): Delete together with CryptoToken code.
 extern const char kU2fSecurityKeyApiEnabled[];
 
+// A boolean indicating whether the CryptoToken component extension should be
+// loaded at startup.
+//
+// TODO(1224886): Delete together with CryptoToken code.
+extern const char kLoadCryptoTokenExtension[];
+
 // Properties in kExtensions dictionaries --------------------------------------
 
 // Extension-controlled preferences.

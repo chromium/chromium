@@ -32249,6 +32249,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1002" label="PersistentQuotaEnabled"/>
   <int value="1003" label="DeviceContextAwareAccessSignalsAllowlist"/>
   <int value="1004" label="PrefixedStorageInfoEnabled"/>
+  <int value="1005" label="LoadCryptoTokenExtension"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

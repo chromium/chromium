@@ -9949,6 +9949,34 @@
       URLs will only match as U2F appIDs. Domains only match as webauthn RP IDs. So to cover both U2F and webauthn APIs, list the appID URL and domain for a given site.''',
     },
     {
+      'name': 'LoadCryptoTokenExtension',
+      'owners': ['martinkr@google.com', 'rdcronin@google.com'],
+      'tags': [],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Load the extension',
+        },
+        {
+          'value': False,
+          'caption': 'Apply default behavior',
+        },
+      ],
+      'supported_on': ['chrome.*:106-107', 'chrome_os:106-107'],
+      'future_on': ['fuchsia'],
+      'features': {
+        'per_profile': True,
+        'dynamic_refresh': False,
+      },
+      'example_value': True,
+      'default': False,
+      'id': 1005,
+      'caption': '''Load the CryptoToken component extension at startup''',
+      'desc': '''If set to Enabled, the built-in CryptoToken component extension is loaded at startup. If set to Disabled or not set, CryptoToken is not loaded at browser startup. This policy is meant as a temporary workaround for sites broken by `chrome.runtime` being undefined as a side effect of the removal of CryptoToken in M106. Websites must not depend on `chrome.runtime` being defined unconditionally.''',
+    },
+    {
       'name': 'U2fSecurityKeyApiEnabled',
       'owners': ['martinkr@google.com', 'agl@chromium.org'],
       'tags': [],
@@ -33750,6 +33778,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 438, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 1004,
+  'highest_id_currently_used': 1005,
   'highest_atomic_group_id_currently_used': 43
 }
