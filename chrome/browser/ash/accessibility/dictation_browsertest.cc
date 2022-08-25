@@ -851,7 +851,7 @@ IN_PROC_BROWSER_TEST_P(DictationJaTest, CanDictate) {
 IN_PROC_BROWSER_TEST_P(DictationJaTest, DeleteCharacter) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
-  // Dictate something.
+  // Dictate "tennis".
   SendFinalResultAndWaitForTextAreaValue("テニス", "テニス");
   // Perform the 'delete' command.
   SendFinalResultAndWaitForTextAreaValue("削除", "テニ");
@@ -862,11 +862,25 @@ IN_PROC_BROWSER_TEST_P(DictationJaTest, DeleteCharacter) {
 IN_PROC_BROWSER_TEST_P(DictationJaTest, SmartDeletePhrase) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
+  // Dictate "I like basketball".
   SendFinalResultAndWaitForTextAreaValue("私はバスケットボールが好きです。",
                                          "私はバスケットボールが好きです。");
-  // Delete the first two characters in the sentence.
+  // Delete "I" e.g. the first two characters in the sentence.
   SendFinalResultAndWaitForTextAreaValue("私はを削除",
                                          "バスケットボールが好きです。");
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStopped();
+}
+
+IN_PROC_BROWSER_TEST_P(DictationJaTest, SmartReplacePhrase) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  // Dictate "I like basketball".
+  SendFinalResultAndWaitForTextAreaValue("私はバスケットボールが好きです。",
+                                         "私はバスケットボールが好きです。");
+  // Replace "basketball" with "tennis".
+  SendFinalResultAndWaitForTextAreaValue("バスケットボールをテニスに置き換え",
+                                         "私はテニスが好きです。");
   ToggleDictationWithKeystroke();
   WaitForRecognitionStopped();
 }
