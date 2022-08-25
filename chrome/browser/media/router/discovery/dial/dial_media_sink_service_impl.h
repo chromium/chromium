@@ -84,8 +84,6 @@ class DialMediaSinkServiceImpl : public MediaSinkServiceBase,
   virtual std::vector<MediaSinkInternal> GetAvailableSinks(
       const std::string& app_name) const;
 
-  void BindLogger(mojo::PendingRemote<mojom::Logger> pending_remote);
-
  protected:
   void SetDescriptionServiceForTest(
       std::unique_ptr<DeviceDescriptionService> description_service);
@@ -187,11 +185,6 @@ class DialMediaSinkServiceImpl : public MediaSinkServiceBase,
   // Set of sink queries keyed by app name.
   base::flat_map<std::string, std::unique_ptr<SinkQueryByAppCallbackList>>
       sink_queries_;
-
-  // Mojo Remote to the logger owned by the Media Router. The Remote is not
-  // bound until |BindLogger()| is called. Always check if |logger_.is_bound()|
-  // is true before using.
-  mojo::Remote<mojom::Logger> logger_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 

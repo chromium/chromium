@@ -64,14 +64,4 @@ void DialMediaSinkService::RunSinksDiscoveredCallback(
   sinks_discovered_cb.Run(std::move(sinks));
 }
 
-void DialMediaSinkService::BindLogger(
-    mojo::PendingRemote<mojom::Logger> pending_remote) {
-  // TODO(crbug.com/1293535): Simplify how logger instances are made available
-  // to their clients.
-  impl_->task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&DialMediaSinkServiceImpl::BindLogger,
-                     base::Unretained(impl_.get()), std::move(pending_remote)));
-}
-
 }  // namespace media_router

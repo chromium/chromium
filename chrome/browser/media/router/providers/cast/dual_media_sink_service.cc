@@ -115,37 +115,12 @@ void DualMediaSinkService::OnSinksDiscovered(
   sinks_discovered_callbacks_.Notify(provider_name, sinks_for_provider);
 }
 
-void DualMediaSinkService::BindLogger(LoggerImpl* logger_impl) {
-  // TODO(crbug.com/1293535): Simplify how logger instances are made available
-  // to their clients.
-
-  if (logger_is_bound_)
-    return;
-  logger_is_bound_ = true;
-  cast_media_sink_service_->BindLogger(logger_impl);
-
-  if (dial_media_sink_service_) {
-    mojo::PendingRemote<mojom::Logger> dial_pending_remote;
-    logger_impl->BindReceiver(
-        dial_pending_remote.InitWithNewPipeAndPassReceiver());
-    dial_media_sink_service_->BindLogger(std::move(dial_pending_remote));
-  }
-
-  mojo::PendingRemote<mojom::Logger> cast_discovery_pending_remote;
-  logger_impl->BindReceiver(
-      cast_discovery_pending_remote.InitWithNewPipeAndPassReceiver());
-  cast_app_discovery_service_->task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&CastAppDiscoveryService::BindLogger,
-                     base::Unretained(cast_app_discovery_service_.get()),
-                     std::move(cast_discovery_pending_remote)));
+void DualMediaSinkService::AddLogger(LoggerImpl* logger_impl) {
+  LoggerList::GetInstance()->AddLogger(logger_impl);
 }
 
-void DualMediaSinkService::RemoveLogger() {
-  if (!logger_is_bound_)
-    return;
-  logger_is_bound_ = false;
-  cast_media_sink_service_->RemoveLogger();
+void DualMediaSinkService::RemoveLogger(LoggerImpl* logger_impl) {
+  LoggerList::GetInstance()->RemoveLogger(logger_impl);
 }
 
 }  // namespace media_router

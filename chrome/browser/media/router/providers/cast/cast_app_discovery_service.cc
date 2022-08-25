@@ -82,15 +82,14 @@ CastAppDiscoveryServiceImpl::StartObservingMediaSinks(
         cast_channel::CastSocket* socket =
             socket_service_->GetSocket(channel_id);
         if (!socket) {
-          if (logger_.is_bound()) {
-            logger_->LogError(
-                mojom::LogCategory::kDiscovery, kLoggerComponent,
-                base::StringPrintf(
-                    "Socket not found for channel id: %d when starting "
-                    "discovery for source.",
-                    channel_id),
-                sink.first, source.source_id(), "");
-          }
+          LoggerList::GetInstance()->Log(
+              LoggerImpl::Severity::kError, mojom::LogCategory::kDiscovery,
+              kLoggerComponent,
+              base::StringPrintf(
+                  "Socket not found for channel id: %d when starting "
+                  "discovery for source.",
+                  channel_id),
+              sink.first, source.source_id(), "");
           continue;
         }
         RequestAppAvailability(socket, app_id, sink.second);
@@ -111,33 +110,19 @@ void CastAppDiscoveryServiceImpl::Refresh() {
       int channel_id = sink.second.cast_data().cast_channel_id;
       cast_channel::CastSocket* socket = socket_service_->GetSocket(channel_id);
       if (!socket) {
-        if (logger_.is_bound()) {
-          logger_->LogError(
-              mojom::LogCategory::kDiscovery, kLoggerComponent,
-              base::StringPrintf(
-                  "Socket not found for channel id: %d when refreshing "
-                  "the discovery state.",
-                  channel_id),
-              sink.first, "", "");
-        }
+        LoggerList::GetInstance()->Log(
+            LoggerImpl::Severity::kError, mojom::LogCategory::kDiscovery,
+            kLoggerComponent,
+            base::StringPrintf(
+                "Socket not found for channel id: %d when refreshing "
+                "the discovery state.",
+                channel_id),
+            sink.first, "", "");
         continue;
       }
       RequestAppAvailability(socket, app_id, sink.second);
     }
   }
-}
-
-void CastAppDiscoveryServiceImpl::BindLogger(
-    mojo::PendingRemote<mojom::Logger> pending_remote) {
-  // TODO(crbug.com/1293535): Simplify how logger instances are made available
-  // to their clients.
-
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Reset |logger_| if it is bound to a disconnected remote.
-  if (logger_.is_bound())
-    return;
-  logger_.Bind(std::move(pending_remote));
-  logger_.reset_on_disconnect();
 }
 
 scoped_refptr<base::SequencedTaskRunner>
@@ -169,14 +154,13 @@ void CastAppDiscoveryServiceImpl::OnSinkAddedOrUpdated(
   cast_channel::CastSocket* socket =
       socket_service_->GetSocket(sink.cast_channel_id());
   if (!socket) {
-    if (logger_.is_bound()) {
-      logger_->LogError(
-          mojom::LogCategory::kDiscovery, kLoggerComponent,
-          base::StringPrintf("Socket not found for channel id: "
-                             "%d when the sink is added or updated.",
-                             sink.cast_channel_id()),
-          sink.id(), "", "");
-    }
+    LoggerList::GetInstance()->Log(
+        LoggerImpl::Severity::kError, mojom::LogCategory::kDiscovery,
+        kLoggerComponent,
+        base::StringPrintf("Socket not found for channel id: "
+                           "%d when the sink is added or updated.",
+                           sink.cast_channel_id()),
+        sink.id(), "", "");
     return;
   }
 
@@ -215,10 +199,10 @@ void CastAppDiscoveryServiceImpl::UpdateAppAvailability(
     cast_channel::GetAppAvailabilityResult availability) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RecordAppAvailabilityResult(availability, clock_->NowTicks() - start_time);
-  if (availability != cast_channel::GetAppAvailabilityResult::kAvailable &&
-      logger_.is_bound()) {
-    logger_->LogInfo(
-        mojom::LogCategory::kDiscovery, kLoggerComponent,
+  if (availability != cast_channel::GetAppAvailabilityResult::kAvailable) {
+    LoggerList::GetInstance()->Log(
+        LoggerImpl::Severity::kInfo, mojom::LogCategory::kDiscovery,
+        kLoggerComponent,
         base::StrCat({"App ", app_id, " on sink is ", ToString(availability)}),
         sink.id(), "", "");
   }

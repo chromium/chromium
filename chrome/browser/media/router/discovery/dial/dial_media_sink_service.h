@@ -14,7 +14,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/media_router/common/discovery/media_sink_service_util.h"
-#include "components/media_router/common/mojom/logger.mojom.h"
 #include "url/origin.h"
 
 namespace media_router {
@@ -53,10 +52,6 @@ class DialMediaSinkService {
     DCHECK(impl_);
     return impl_.get();
   }
-
-  // Binds |pending_remote| to the Mojo Remote owned by |impl_|.
-  // Marked virtual for tests.
-  virtual void BindLogger(mojo::PendingRemote<mojom::Logger> pending_remote);
 
  private:
   // Marked virtual for tests.

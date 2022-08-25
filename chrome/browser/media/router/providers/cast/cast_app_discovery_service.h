@@ -16,14 +16,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/media/router/logger_list.h"
 #include "chrome/browser/media/router/providers/cast/cast_app_availability_tracker.h"
 #include "components/cast_channel/cast_message_util.h"
 #include "components/media_router/common/discovery/media_sink_service_base.h"
 #include "components/media_router/common/media_sink.h"
 #include "components/media_router/common/media_source.h"
-#include "components/media_router/common/mojom/logger.mojom.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace base {
 class TickClock;
@@ -60,10 +59,6 @@ class CastAppDiscoveryService {
   // Media Router dialog).
   virtual void Refresh() = 0;
 
-  // Binds |pending_remote| to the Mojo Remote owned by |impl_|.
-  virtual void BindLogger(
-      mojo::PendingRemote<mojom::Logger> pending_remote) = 0;
-
   // Returns the SequencedTaskRunner that should be used to invoke methods on
   // this instance. Can be invoked on any thread.
   virtual scoped_refptr<base::SequencedTaskRunner> task_runner() = 0;
@@ -95,8 +90,6 @@ class CastAppDiscoveryServiceImpl : public CastAppDiscoveryService,
   // Reissues app availability requests for currently registered (sink, app_id)
   // pairs whose status is kUnavailable or kUnknown.
   void Refresh() override;
-
-  void BindLogger(mojo::PendingRemote<mojom::Logger> pending_remote) override;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner() override;
 
@@ -154,10 +147,6 @@ class CastAppDiscoveryServiceImpl : public CastAppDiscoveryService,
   CastAppAvailabilityTracker availability_tracker_;
 
   const raw_ptr<const base::TickClock> clock_;
-  // Mojo Remote to the logger owned by the Media Router. The Remote is not
-  // bound until |BindLogger()| is called. Always check if |logger_.is_bound()|
-  // is true before using.
-  mojo::Remote<mojom::Logger> logger_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<CastAppDiscoveryServiceImpl> weak_ptr_factory_{this};

@@ -10,8 +10,6 @@
 
 namespace media_router {
 
-class LoggerImpl;
-
 class NoopDualMediaSinkService : public DualMediaSinkService {
  public:
   NoopDualMediaSinkService();
@@ -26,8 +24,6 @@ class NoopDualMediaSinkService : public DualMediaSinkService {
 #if BUILDFLAG(IS_WIN)
   void StartMdnsDiscovery() override {}
 #endif
-  void BindLogger(LoggerImpl* logger_impl) override {}
-  void RemoveLogger() override {}
 };
 
 }  // namespace media_router

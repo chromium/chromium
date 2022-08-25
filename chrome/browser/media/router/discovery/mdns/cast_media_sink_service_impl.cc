@@ -18,7 +18,6 @@
 #include "chrome/browser/net/system_network_context_manager.h"  // nogncheck
 #include "components/cast_channel/cast_channel_enum.h"
 #include "components/cast_channel/cast_socket_service.h"
-#include "components/cast_channel/logger.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/media_router/common/media_sink.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
@@ -360,15 +359,17 @@ void CastMediaSinkServiceImpl::OnError(const cast_channel::CastSocket& socket,
       std::find_if(sinks.begin(), sinks.end(), [&socket_id](const auto& entry) {
         return entry.second.cast_data().cast_channel_id == socket_id;
       });
-  if (logger_.is_bound()) {
-    auto sink_id = sink_it == sinks.end() ? "" : sink_it->first;
-    logger_->LogError(
-        mojom::LogCategory::kDiscovery, kLoggerComponent,
-        base::StrCat({"Media Router Channel Error: ", EnumToString(error_code),
-                      ". channel_id: ", base::NumberToString(socket_id),
-                      ". IP endpoint: ", ip_endpoint.ToString()}),
-        sink_id, "", "");
-  }
+
+  auto sink_id = sink_it == sinks.end() ? "" : sink_it->first;
+
+  LoggerList::GetInstance()->Log(
+      LoggerImpl::Severity::kError, mojom::LogCategory::kDiscovery,
+      kLoggerComponent,
+      base::StrCat({"Media Router Channel Error: ", EnumToString(error_code),
+                    ". channel_id: ", base::NumberToString(socket_id),
+                    ". IP endpoint: ", ip_endpoint.ToString()}),
+      sink_id, "", "");
+
   if (sink_it == sinks.end()) {
     return;
   }
@@ -416,13 +417,12 @@ void CastMediaSinkServiceImpl::OnNetworksChanged(
     sink_cache_[last_network_id] = std::move(current_sinks);
   }
 
-  if (logger_.is_bound()) {
-    logger_->LogError(mojom::LogCategory::kDiscovery, kLoggerComponent,
-                      base::StringPrintf(
-                          "Network ID chagned from \"%s\" to \"%s\".",
-                          last_network_id.c_str(), current_network_id_.c_str()),
-                      "", "", "");
-  }
+  LoggerList::GetInstance()->Log(
+      LoggerImpl::Severity::kError, mojom::LogCategory::kDiscovery,
+      kLoggerComponent,
+      base::StringPrintf("Network ID chagned from \"%s\" to \"%s\".",
+                         last_network_id.c_str(), current_network_id_.c_str()),
+      "", "", "");
 
   // TODO(imcheng): Maybe this should clear |sinks_| and call |StartTimer()|
   // so it is more responsive?
@@ -667,14 +667,13 @@ void CastMediaSinkServiceImpl::OnChannelOpenFailed(
       !(ip_endpoint == existing_sink->cast_data().ip_endpoint))
     return;
 
-  if (logger_.is_bound()) {
-    logger_->LogError(
-        mojom::LogCategory::kDiscovery, kLoggerComponent,
-        base::StrCat({"Failed to open the channel. IP endpoint: ",
-                      ip_endpoint.ToString(), ". channel_id: ",
-                      base::NumberToString(existing_sink->cast_channel_id())}),
-        sink.sink().id(), "", "");
-  }
+  LoggerList::GetInstance()->Log(
+      LoggerImpl::Severity::kError, mojom::LogCategory::kDiscovery,
+      kLoggerComponent,
+      base::StrCat({"Failed to open the channel. IP endpoint: ",
+                    ip_endpoint.ToString(), ". channel_id: ",
+                    base::NumberToString(existing_sink->cast_channel_id())}),
+      sink.sink().id(), "", "");
   RemoveSink(sink);
 }
 
@@ -735,19 +734,6 @@ void CastMediaSinkServiceImpl::OpenChannelsNow(
 void CastMediaSinkServiceImpl::SetCastAllowAllIPs(bool allow_all_ips) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   allow_all_ips_ = allow_all_ips;
-}
-
-void CastMediaSinkServiceImpl::BindLogger(
-    mojo::PendingRemote<mojom::Logger> pending_remote) {
-  // TODO(crbug.com/1293535): Simplify how logger instances are made available
-  // to their clients.
-
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Reset |logger_| if it is bound to a disconnected remote.
-  if (logger_.is_bound())
-    return;
-  logger_.Bind(std::move(pending_remote));
-  logger_.reset_on_disconnect();
 }
 
 bool CastMediaSinkServiceImpl::HasSink(const MediaSink::Id& sink_id) {

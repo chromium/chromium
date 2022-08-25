@@ -37,7 +37,7 @@ constexpr char kLoggerComponent[] = "MediaRouterDesktop";
 
 MediaRouterDesktop::~MediaRouterDesktop() {
   if (media_sink_service_)
-    media_sink_service_->RemoveLogger();
+    media_sink_service_->RemoveLogger(GetLogger());
 }
 
 void MediaRouterDesktop::OnUserGesture() {
@@ -137,7 +137,7 @@ void MediaRouterDesktop::GetMediaSinkServiceStatus(
 void MediaRouterDesktop::Initialize() {
   MediaRouterMojoImpl::Initialize();
   if (media_sink_service_) {
-    media_sink_service_->BindLogger(GetLogger());
+    media_sink_service_->AddLogger(GetLogger());
     InitializeMediaRouteProviders();
 #if BUILDFLAG(IS_WIN)
     CanFirewallUseLocalPorts(

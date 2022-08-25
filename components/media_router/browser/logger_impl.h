@@ -50,6 +50,16 @@ class LoggerImpl : mojom::Logger {
                 const std::string& session_id) override;
   void BindReceiver(mojo::PendingReceiver<mojom::Logger> receiver) override;
 
+  // Called by tests or in-regular use that want to specify `time`.
+  void Log(Severity severity,
+           mojom::LogCategory category,
+           base::Time time,
+           const std::string& component,
+           const std::string& message,
+           const std::string& sink_id,
+           const std::string& media_source,
+           const std::string& session_id);
+
   std::string GetLogsAsJson() const;
   base::Value GetLogsAsValue() const;
 
@@ -84,21 +94,13 @@ class LoggerImpl : mojom::Logger {
     std::string session_id;
   };
 
-  // Called by tests that want to specify |time|.
-  void Log(Severity severity,
-           mojom::LogCategory category,
-           base::Time time,
-           const std::string& component,
-           const std::string& message,
-           const std::string& sink_id,
-           const std::string& media_source,
-           const std::string& session_id);
-
   static base::Value AsValue(const Entry& entry);
 
   mojo::ReceiverSet<mojom::Logger> receivers_;
   base::circular_deque<Entry> entries_;
   size_t const capacity_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace media_router

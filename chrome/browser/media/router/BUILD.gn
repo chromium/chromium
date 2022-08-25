@@ -23,6 +23,19 @@ source_set("data_decoder_util") {
   ]
 }
 
+source_set("logger_list") {
+  sources = [
+    "logger_list.cc",
+    "logger_list.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/media_router/browser",
+    "//content/public/browser",
+  ]
+}
+
 static_library("media_router_feature") {
   sources = [
     "media_router_feature.cc",
@@ -99,6 +112,8 @@ static_library("router") {
     public_deps += [ "//components/media_router/common/mojom:logger" ]
 
     sources += [
+      "logger_list.cc",
+      "logger_list.h",
       "mojo/media_router_desktop.cc",
       "mojo/media_router_desktop.h",
       "mojo/media_router_mojo_impl.cc",
@@ -278,6 +293,7 @@ source_set("unittests") {
       "discovery/mdns/cast_media_sink_service_unittest.cc",
       "discovery/mdns/dns_sd_registry_unittest.cc",
       "discovery/media_sink_discovery_metrics_unittest.cc",
+      "logger_list_unittest.cc",
       "media_router_feature_unittest.cc",
       "mojo/media_router_mojo_impl_unittest.cc",
       "mojo/media_sink_service_status_unittest.cc",

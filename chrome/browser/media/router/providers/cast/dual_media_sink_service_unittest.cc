@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
-#include "components/media_router/browser/logger_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -114,31 +113,6 @@ TEST_F(DualMediaSinkServiceTest, AddSinksDiscoveredCallbackAfterDiscovery) {
   auto subscription = dual_media_sink_service_->AddSinksDiscoveredCallback(
       base::BindRepeating(&DualMediaSinkServiceTest::OnSinksDiscovered,
                           base::Unretained(this)));
-}
-
-TEST_F(DualMediaSinkServiceTest, BindAndRemoveLogger) {
-  std::unique_ptr<LoggerImpl> logger = std::make_unique<LoggerImpl>();
-  EXPECT_CALL(*cast_media_sink_service_, BindLogger(logger.get()));
-  EXPECT_CALL(*dial_media_sink_service_, BindLogger(_));
-  EXPECT_CALL(*cast_app_discovery_service_, BindLogger(_));
-  dual_media_sink_service_->BindLogger(logger.get());
-  base::RunLoop().RunUntilIdle();
-
-  // |dual_media_sink_service_| cannot bind a new logger if the old one is not
-  // removed.
-  EXPECT_CALL(*cast_media_sink_service_, BindLogger(_)).Times(0);
-  EXPECT_CALL(*dial_media_sink_service_, BindLogger(_)).Times(0);
-  EXPECT_CALL(*cast_app_discovery_service_, BindLogger(_)).Times(0);
-  dual_media_sink_service_->BindLogger(logger.get());
-
-  EXPECT_CALL(*cast_media_sink_service_, RemoveLogger());
-  dual_media_sink_service_->RemoveLogger();
-
-  EXPECT_CALL(*cast_media_sink_service_, BindLogger(logger.get()));
-  EXPECT_CALL(*dial_media_sink_service_, BindLogger(_));
-  EXPECT_CALL(*cast_app_discovery_service_, BindLogger(_));
-  dual_media_sink_service_->BindLogger(logger.get());
-  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace media_router

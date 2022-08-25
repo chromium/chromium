@@ -100,10 +100,9 @@ void CastMediaSinkService::StartMdnsDiscovery() {
     dns_sd_registry_ = DnsSdRegistry::GetInstance();
     dns_sd_registry_->AddObserver(this);
     dns_sd_registry_->RegisterDnsSdListener(kCastServiceType);
-    if (logger_impl_) {
-      logger_impl_->LogInfo(mojom::LogCategory::kDiscovery, kLoggerComponent,
-                            "mDNS discovery started.", "", "", "");
-    }
+    LoggerList::GetInstance()->Log(
+        LoggerImpl::Severity::kInfo, mojom::LogCategory::kDiscovery,
+        kLoggerComponent, "mDNS discovery started.", "", "", "");
   }
 }
 
@@ -155,29 +154,6 @@ void CastMediaSinkService::RunSinksDiscoveredCallback(
     std::vector<MediaSinkInternal> sinks) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sinks_discovered_cb.Run(std::move(sinks));
-}
-
-void CastMediaSinkService::BindLogger(LoggerImpl* logger_impl) {
-  // TODO(crbug.com/1293535): Simplify how logger instances are made available
-  // to their clients.
-
-  DCHECK(logger_impl);
-  logger_impl_ = logger_impl;
-  if (dns_sd_registry_) {
-    logger_impl->LogInfo(mojom::LogCategory::kDiscovery, kLoggerComponent,
-                         "mDNS service has started.", "", "", "");
-  }
-
-  mojo::PendingRemote<mojom::Logger> pending_remote;
-  logger_impl_->BindReceiver(pending_remote.InitWithNewPipeAndPassReceiver());
-  impl_->task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&CastMediaSinkServiceImpl::BindLogger,
-                     base::Unretained(impl_.get()), std::move(pending_remote)));
-}
-
-void CastMediaSinkService::RemoveLogger() {
-  logger_impl_ = nullptr;
 }
 
 }  // namespace media_router

@@ -99,6 +99,10 @@ void DialMediaSinkServiceImpl::Start() {
 
   dial_registry_ = std::make_unique<DialRegistry>(*this, task_runner_);
   dial_registry_->Start();
+
+  LoggerList::GetInstance()->Log(
+      LoggerImpl::Severity::kInfo, mojom::LogCategory::kDiscovery,
+      kLoggerComponent, "DialMediaSinkService has started.", "", "", "");
 }
 
 void DialMediaSinkServiceImpl::OnUserGesture() {
@@ -187,11 +191,10 @@ void DialMediaSinkServiceImpl::OnDialDeviceList(
 
 void DialMediaSinkServiceImpl::OnDialError(DialRegistry::DialErrorCode type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (logger_.is_bound()) {
-    logger_->LogError(mojom::LogCategory::kDiscovery, kLoggerComponent,
-                      base::StrCat({"Dial Error: ", EnumToString(type)}), "",
-                      "", "");
-  }
+  LoggerList::GetInstance()->Log(
+      LoggerImpl::Severity::kError, mojom::LogCategory::kDiscovery,
+      kLoggerComponent, base::StrCat({"Dial Error: ", EnumToString(type)}), "",
+      "", "");
 }
 
 void DialMediaSinkServiceImpl::OnDeviceDescriptionAvailable(
@@ -228,13 +231,12 @@ void DialMediaSinkServiceImpl::OnDeviceDescriptionError(
     const DialDeviceData& device,
     const std::string& error_message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (logger_.is_bound()) {
-    logger_->LogError(
-        mojom::LogCategory::kDiscovery, kLoggerComponent,
-        base::StrCat({"Device description error. Device id: ",
-                      device.device_id(), ", error message: ", error_message}),
-        "", "", "");
-  }
+  LoggerList::GetInstance()->Log(
+      LoggerImpl::Severity::kError, mojom::LogCategory::kDiscovery,
+      kLoggerComponent,
+      base::StrCat({"Device description error. Device id: ", device.device_id(),
+                    ", error message: ", error_message}),
+      "", "", "");
 }
 
 void DialMediaSinkServiceImpl::OnAppInfoParseCompleted(
@@ -254,9 +256,10 @@ void DialMediaSinkServiceImpl::OnAppInfoParseCompleted(
   if (old_status == app_status)
     return;
 
-  if (logger_.is_bound() && !result.app_info) {
-    logger_->LogError(
-        mojom::LogCategory::kDiscovery, kLoggerComponent,
+  if (!result.app_info) {
+    LoggerList::GetInstance()->Log(
+        LoggerImpl::Severity::kError, mojom::LogCategory::kDiscovery,
+        kLoggerComponent,
         base::StringPrintf(
             "App info parsing error. DialAppInfoResultCode: %d. app name: %s",
             static_cast<int>(result.result_code), app_name.c_str()),
@@ -346,24 +349,6 @@ std::vector<MediaSinkInternal> DialMediaSinkServiceImpl::GetAvailableSinks(
       sinks.push_back(sink.second);
   }
   return sinks;
-}
-
-void DialMediaSinkServiceImpl::BindLogger(
-    mojo::PendingRemote<mojom::Logger> pending_remote) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Reset |logger_| if it is bound to a disconnected remote.
-  if (logger_.is_bound())
-    return;
-  logger_.Bind(std::move(pending_remote));
-  logger_.reset_on_disconnect();
-
-  logger_->LogInfo(mojom::LogCategory::kDiscovery, kLoggerComponent,
-                   "DialMediaSinkService has started.", "", "", "");
-
-  mojo::PendingRemote<mojom::Logger> discovery_service_remote;
-  logger_->BindReceiver(
-      discovery_service_remote.InitWithNewPipeAndPassReceiver());
-  app_discovery_service_->BindLogger(std::move(discovery_service_remote));
 }
 
 }  // namespace media_router
