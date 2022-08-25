@@ -13,7 +13,7 @@
   var securityOrigin = 'http://127.0.0.1:8000';
   var databaseName = 'testDatabase - ' + self.location;
   var objectStoreName = 'testObjectStore';
-  var databaseId = new Resources.IndexedDBModel.DatabaseId(securityOrigin, databaseName);
+  var databaseId = new Resources.IndexedDBModel.DatabaseId(securityOrigin, /* storageKey */ undefined, databaseName);
 
   function onConsoleError(callback) {
     var old = console.error;

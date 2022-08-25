@@ -16,7 +16,7 @@
   var objectStoreName1 = 'testObjectStore1';
   var objectStoreName2 = 'testObjectStore2';
   var indexName = 'testIndexName';
-  var databaseId = new Resources.IndexedDBModel.DatabaseId(securityOrigin, databaseName);
+  var databaseId = new Resources.IndexedDBModel.DatabaseId(securityOrigin, /* storageKey */ undefined, databaseName);
 
   /**
    * @param {number} count

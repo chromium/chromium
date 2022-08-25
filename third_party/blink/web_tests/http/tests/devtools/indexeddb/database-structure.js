@@ -12,7 +12,7 @@
   var mainFrameId = TestRunner.resourceTreeModel.mainFrame.id;
   var databaseName = 'testDatabase1';
   var securityOrigin = 'http://127.0.0.1:8000';
-  var databaseId = new Resources.IndexedDBModel.DatabaseId(securityOrigin, databaseName);
+  var databaseId = new Resources.IndexedDBModel.DatabaseId(securityOrigin, /* storageKey */ undefined, databaseName);
 
   function dumpDatabase() {
     TestRunner.addResult('Dumping database:');
