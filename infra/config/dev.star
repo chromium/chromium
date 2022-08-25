@@ -22,6 +22,7 @@ lucicfg.config(
     tracked_files = [
         "luci/chops-weetbix-dev.cfg",
         "luci/cr-buildbucket-dev.cfg",
+        "luci/luci-analysis-dev.cfg",
         "luci/luci-logdog-dev.cfg",
         "luci/luci-milo-dev.cfg",
         "luci/luci-scheduler-dev.cfg",
@@ -30,10 +31,16 @@ lucicfg.config(
     fail_on_warnings = True,
 )
 
-# Just copy chops-weetbix-dev.cfg to generated outputs.
+# Just copy LUCI Analysis config to generated outputs.
+lucicfg.emit(
+    dest = "luci/luci-analysis-dev.cfg",
+    data = io.read_file("luci-analysis-dev.cfg"),
+)
+
+# TODO(b/243488110): Delete when instance decommissioned.
 lucicfg.emit(
     dest = "luci/chops-weetbix-dev.cfg",
-    data = io.read_file("chops-weetbix-dev.cfg"),
+    data = io.read_file("luci-analysis-dev.cfg"),
 )
 
 branches.exec("//dev/dev.star")

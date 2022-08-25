@@ -28,6 +28,7 @@ lucicfg.config(
         "luci/commit-queue.cfg",
         "luci/chops-weetbix.cfg",
         "luci/cr-buildbucket.cfg",
+        "luci/luci-analysis.cfg",
         "luci/luci-logdog.cfg",
         "luci/luci-milo.cfg",
         "luci/luci-notify.cfg",
@@ -58,11 +59,16 @@ lucicfg.emit(
     data = io.read_file("tricium-prod.cfg"),
 )
 
-# Weetbix configuration is also copied verbatim to generated
-# outputs.
+# Just copy LUCI Analysis config to generated outputs.
+lucicfg.emit(
+    dest = "luci/luci-analysis.cfg",
+    data = io.read_file("luci-analysis.cfg"),
+)
+
+# TODO(b/243488110): Delete when instance decommissioned.
 lucicfg.emit(
     dest = "luci/chops-weetbix.cfg",
-    data = io.read_file("chops-weetbix.cfg"),
+    data = io.read_file("luci-analysis.cfg"),
 )
 
 luci.project(
