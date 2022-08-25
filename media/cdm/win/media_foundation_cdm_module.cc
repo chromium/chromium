@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_hstring.h"
+#include "media/base/win/hresults.h"
 #include "media/base/win/mf_helpers.h"
 
 namespace media {
@@ -94,12 +95,12 @@ HRESULT MediaFoundationCdmModule::ActivateCdmFactory() {
 
   if (!library_.is_valid()) {
     LOG(ERROR) << "CDM failed to load previously";
-    return E_FAIL;
+    return kErrorLoadLibrary;
   }
 
   // Initialization required to call base::win::ScopedHString::Create();
   if (!base::win::ScopedHString::ResolveCoreWinRTStringDelayload())
-    return E_FAIL;
+    return kErrorResolveCoreWinRTStringDelayload;
 
   // Get function pointer to the activation factory.
   using GetActivationFactoryFunc =
@@ -110,7 +111,7 @@ HRESULT MediaFoundationCdmModule::ActivateCdmFactory() {
       library_.GetFunctionPointer(kDllGetActivationFactory));
   if (!get_activation_factory_func) {
     LOG(ERROR) << "Cannot get function " << kDllGetActivationFactory;
-    return E_FAIL;
+    return kErrorGetFunctionPointer;
   }
 
   // Activate CdmFactory. Assuming the class ID is always in the format

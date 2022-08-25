@@ -150,9 +150,7 @@ HRESULT MediaFoundationCdmFactory::GetCdmFactory(
   auto itr = create_cdm_factory_cbs_for_testing_.find(key_system);
   if (itr != create_cdm_factory_cbs_for_testing_.end()) {
     auto& create_cdm_factory_cb = itr->second;
-    if (!create_cdm_factory_cb)
-      return E_FAIL;
-
+    DCHECK(create_cdm_factory_cb);
     RETURN_IF_FAILED(create_cdm_factory_cb.Run(cdm_factory));
     return S_OK;
   }

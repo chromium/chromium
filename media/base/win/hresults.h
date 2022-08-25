@@ -21,6 +21,14 @@ constexpr HRESULT kErrorInitializeVideoWindowClass =
     MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xFA02);
 constexpr HRESULT kErrorCdmProxyReceivedInInvalidState =
     MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xFA03);
+constexpr HRESULT kErrorResolveCoreWinRTStringDelayload =
+    MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xFA04);
+constexpr HRESULT kErrorZeroProtectionSystemId =
+    MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xFA05);
+constexpr HRESULT kErrorLoadLibrary =
+    MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xFA06);
+constexpr HRESULT kErrorGetFunctionPointer =
+    MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xFA07);
 
 }  // namespace media
 
