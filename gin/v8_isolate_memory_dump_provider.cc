@@ -170,6 +170,12 @@ void V8IsolateMemoryDumpProvider::DumpHeapStatistics(
       "isolate_0x%" PRIXPTR,
       reinterpret_cast<uintptr_t>(isolate_holder_->isolate()));
 
+  // Dump statistics of the heap's spaces.
+  v8::HeapStatistics heap_statistics;
+  // The total heap sizes should be sampled before the individual space sizes
+  // because of concurrent allocation. DCHECKs below rely on this order.
+  isolate_holder_->isolate()->GetHeapStatistics(&heap_statistics);
+
   IsolateHolder::IsolateType isolate_type = isolate_holder_->isolate_type();
   std::string dump_base_name = "v8/" + IsolateTypeString(isolate_type);
   std::string dump_name_suffix =
@@ -210,12 +216,6 @@ void V8IsolateMemoryDumpProvider::DumpHeapStatistics(
                           base::trace_event::MemoryAllocatorDump::kUnitsBytes,
                           space_used_size);
   }
-
-  // Dump statistics of the heap's spaces.
-  v8::HeapStatistics heap_statistics;
-  // The total heap sizes should be sampled before the individual space sizes
-  // because of concurrent allocation. DCHECKs below rely on this order.
-  isolate_holder_->isolate()->GetHeapStatistics(&heap_statistics);
 
   // Sanity checks that all spaces are accounted for in GetHeapSpaceStatistics.
   // Background threads may be running and allocating concurrently, so the sum
