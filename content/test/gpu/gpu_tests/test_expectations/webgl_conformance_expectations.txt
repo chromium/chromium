@@ -651,7 +651,8 @@ crbug.com/1288590 [ android android-pixel-6 ] conformance/misc/shader-precision-
 # This can be re-added once the general Android suppression due to DrDc (crbug.com/1289303) is removed.
 # crbug.com/1288595 [ android android-pixel-6 passthrough ] conformance/canvas/render-after-resize-test.html [ Failure ]
 crbug.com/1288603 [ android android-pixel-6 passthrough angle-opengles ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
-
+crbug.com/1356252 [ android android-pixel-6 passthrough angle-opengles ] conformance/rendering/color-mask-preserved-during-implicit-clears.html [ Failure ]
+crbug.com/1356252 [ android android-pixel-6 passthrough angle-opengles ] conformance/state/gl-enable-enum-test.html [ Failure ]
 
 # Misc failures
 crbug.com/angleproject/2988 [ android angle-opengles ] conformance/context/context-size-change.html [ Failure ]

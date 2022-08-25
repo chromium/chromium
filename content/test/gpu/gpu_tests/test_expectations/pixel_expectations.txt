@@ -385,6 +385,8 @@ crbug.com/1287280 [ android android-pixel-6 no-passthrough renderer-skia-gl andr
 crbug.com/1287280 [ android android-pixel-6 no-passthrough android-chromium ] Pixel_CanvasDisplaySRGBAccelerated2D [ Failure ]
 crbug.com/1288586 [ android android-pixel-6 no-passthrough renderer-skia-gl android-webview-instrumentation ] Pixel_OffscreenCanvasWebGLDefault [ Failure ]
 crbug.com/1289884 [ android android-pixel-6 renderer-skia-vulkan android-webview-instrumentation ] * [ Failure ]
+crbug.com/1356252 [ android android-pixel-6 passthrough angle-opengles ] Pixel_ScissorTestWithPreserveDrawingBuffer [ Failure ]
+crbug.com/1356252 [ android android-pixel-6 passthrough angle-opengles ] Pixel_WebGLGreenTriangle_AA_NoAlpha [ Failure ]
 
 crbug.com/1290953 [ android android-nexus-5x android-webview-instrumentation ] Pixel_CanvasLowLatency2D [ Failure ]
 crbug.com/1290953 [ android android-nexus-5x android-webview-instrumentation ] Pixel_CanvasLowLatency2DDrawImage [ Failure ]
