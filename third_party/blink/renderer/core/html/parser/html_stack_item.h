@@ -104,6 +104,8 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
   const AtomicString& NamespaceURI() const { return namespace_uri_; }
   const AtomicString& LocalName() const { return token_name_.GetLocalName(); }
 
+  const HTMLTokenName& GetTokenName() const { return token_name_; }
+
   const base::span<Attribute> Attributes() {
     DCHECK(LocalName());
     return {TokenAttributesData(), num_token_attributes_};
@@ -122,22 +124,29 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
   bool HasLocalName(const AtomicString& name) const {
     return token_name_.GetLocalName() == name;
   }
+
   bool HasTagName(const QualifiedName& name) const {
-    return HasLocalName(name.LocalName()) &&
+    return token_name_.GetLocalName() == name.LocalName() &&
            namespace_uri_ == name.NamespaceURI();
   }
 
-  bool MatchesHTMLTag(const AtomicString& name) const {
-    return HasLocalName(name) &&
-           namespace_uri_ == html_names::xhtmlNamespaceURI;
+  bool IsHTMLNamespace() const {
+    return namespace_uri_ == html_names::xhtmlNamespaceURI;
   }
-  bool MatchesHTMLTag(const QualifiedName& name) const {
-    return HasLocalName(name.LocalName()) &&
-           namespace_uri_ == html_names::xhtmlNamespaceURI;
-  }
+
   bool MatchesHTMLTag(const HTMLTokenName& name) const {
-    return name == token_name_ &&
-           namespace_uri_ == html_names::xhtmlNamespaceURI;
+    return name == token_name_ && IsHTMLNamespace();
+  }
+
+  bool MatchesHTMLTag(const AtomicString& name) const {
+    return HasLocalName(name) && IsHTMLNamespace();
+  }
+
+  bool MatchesHTMLTag(html_names::HTMLTag tag) const {
+    // Equality of HTMLTag only works if supplied a value other than
+    // kUnknownTag.
+    DCHECK_NE(tag, html_names::HTMLTag::kUnknown);
+    return tag == GetHTMLTag() && IsHTMLNamespace();
   }
 
   bool CausesFosterParenting() {

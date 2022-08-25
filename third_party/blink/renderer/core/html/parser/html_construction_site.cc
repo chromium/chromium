@@ -1067,7 +1067,7 @@ HTMLStackItem* HTMLConstructionSite::CreateElementFromSavedToken(
   for (Attribute& attr : item->Attributes()) {
     attributes.push_back(std::move(attr));
   }
-  AtomicHTMLToken fake_token(HTMLToken::kStartTag, item->LocalName(),
+  AtomicHTMLToken fake_token(HTMLToken::kStartTag, item->GetTokenName(),
                              std::move(attributes));
   element = CreateElement(&fake_token, item->NamespaceURI());
   return HTMLStackItem::Create(element, &fake_token, item->NamespaceURI());
@@ -1132,11 +1132,11 @@ bool HTMLConstructionSite::InQuirksMode() {
 void HTMLConstructionSite::FindFosterSite(HTMLConstructionSiteTask& task) {
   // 2.1
   HTMLElementStack::ElementRecord* last_template =
-      open_elements_.Topmost(html_names::kTemplateTag.LocalName());
+      open_elements_.Topmost(html_names::HTMLTag::kTemplate);
 
   // 2.2
   HTMLElementStack::ElementRecord* last_table =
-      open_elements_.Topmost(html_names::kTableTag.LocalName());
+      open_elements_.Topmost(html_names::HTMLTag::kTable);
 
   // 2.3
   if (last_template && (!last_table || last_template->IsAbove(last_table))) {

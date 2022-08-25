@@ -165,10 +165,10 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
   inline void ProcessCharacterBufferForInBody(CharacterTokenBuffer&);
 
   void ProcessFakeStartTag(
-      const QualifiedName&,
+      html_names::HTMLTag tag,
       const Vector<Attribute>& attributes = Vector<Attribute>());
-  void ProcessFakeEndTag(const QualifiedName&);
-  void ProcessFakeEndTag(const AtomicString&);
+  void ProcessFakeEndTag(html_names::HTMLTag tag);
+  void ProcessFakeEndTag(const HTMLStackItem& stack_item);
   void ProcessFakePEndTagIfPInButtonScope();
 
   void ProcessGenericRCDATAStartTag(AtomicHTMLToken*);
