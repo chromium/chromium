@@ -37,8 +37,6 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
 
   // VideoEncodeAccelerator implementation.
   VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles() override;
-  VideoEncodeAccelerator::SupportedProfiles GetSupportedProfilesLight()
-      override;
 
   bool Initialize(const Config& config,
                   Client* client,

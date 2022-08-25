@@ -315,26 +315,7 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfiles() {
   SupportedProfiles profiles;
 
   for (auto codec : {VideoCodec::kH264, VideoCodec::kVP9, VideoCodec::kAV1}) {
-    auto codec_profiles = GetSupportedProfilesForCodec(codec, true);
-    profiles.insert(profiles.end(), codec_profiles.begin(),
-                    codec_profiles.end());
-  }
-
-  ReleaseEncoderResources();
-  return profiles;
-}
-
-VideoEncodeAccelerator::SupportedProfiles
-MediaFoundationVideoEncodeAccelerator::GetSupportedProfilesLight() {
-  TRACE_EVENT0(
-      "gpu,startup",
-      "MediaFoundationVideoEncodeAccelerator::GetSupportedProfilesLight");
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  SupportedProfiles profiles;
-
-  for (auto codec : {VideoCodec::kH264, VideoCodec::kVP9, VideoCodec::kAV1}) {
-    auto codec_profiles = GetSupportedProfilesForCodec(codec, false);
+    auto codec_profiles = GetSupportedProfilesForCodec(codec);
     profiles.insert(profiles.end(), codec_profiles.begin(),
                     codec_profiles.end());
   }
@@ -345,8 +326,7 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfilesLight() {
 
 VideoEncodeAccelerator::SupportedProfiles
 MediaFoundationVideoEncodeAccelerator::GetSupportedProfilesForCodec(
-    VideoCodec codec,
-    bool populate_svc_info) {
+    VideoCodec codec) {
   SupportedProfiles profiles;
   if ((codec == VideoCodec::kVP9 &&
        !base::FeatureList::IsEnabled(kMediaFoundationVP9Encoding)) ||
@@ -368,10 +348,8 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfilesForCodec(
   if (pp_activate) {
     for (UINT32 i = 0; i < encoder_count; i++) {
       if (pp_activate[i]) {
-        if (populate_svc_info && !svc_supported &&
-            IsSvcSupported(pp_activate[i])) {
+        if (!svc_supported && IsSvcSupported(pp_activate[i]))
           svc_supported = true;
-        }
 
         // Release the enumerated instances if any.
         // According to Windows Dev Center,

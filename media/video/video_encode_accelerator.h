@@ -355,14 +355,6 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
   // can be called before Initialize().
   virtual SupportedProfiles GetSupportedProfiles() = 0;
 
-  // Returns a list of the supported codec profiles of the video encoder,
-  // similar to GetSupportedProfiles(), but this function only populates:
-  // codec, framerate range and resolution range.
-  //
-  // Populating things like SVC modes can take a lot of time and they are
-  // not always used. See https://crbug.com/1263196
-  virtual SupportedProfiles GetSupportedProfilesLight();
-
   // Initializes the video encoder with specific configuration.  Called once per
   // encoder construction.  This call is synchronous and returns true iff
   // initialization is successful.

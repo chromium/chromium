@@ -52,8 +52,6 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
 
   // VideoEncodeAccelerator implementation.
   VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles() override;
-  VideoEncodeAccelerator::SupportedProfiles GetSupportedProfilesLight()
-      override;
   bool Initialize(const Config& config,
                   Client* client,
                   std::unique_ptr<MediaLog> media_log) override;
@@ -82,8 +80,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
 
   // Get supported profiles for specific codec.
   VideoEncodeAccelerator::SupportedProfiles GetSupportedProfilesForCodec(
-      VideoCodec codec,
-      bool populate_svc_info);
+      VideoCodec codec);
 
   // Activates the asynchronous encoder instance |encoder_| according to codec
   // merit.

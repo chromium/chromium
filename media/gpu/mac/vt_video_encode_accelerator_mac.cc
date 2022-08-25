@@ -162,26 +162,6 @@ VTVideoEncodeAccelerator::GetSupportedProfiles() {
   return profiles;
 }
 
-VideoEncodeAccelerator::SupportedProfiles
-VTVideoEncodeAccelerator::GetSupportedProfilesLight() {
-  DVLOG(3) << __func__;
-  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
-
-  SupportedProfiles profiles;
-
-  SupportedProfile profile;
-  profile.max_framerate_numerator = kMaxFrameRateNumerator;
-  profile.max_framerate_denominator = kMaxFrameRateDenominator;
-  profile.rate_control_modes = VideoEncodeAccelerator::kConstantMode |
-                               VideoEncodeAccelerator::kVariableMode;
-  profile.max_resolution = gfx::Size(kMaxResolutionWidth, kMaxResolutionHeight);
-  for (const auto& supported_profile : kSupportedProfiles) {
-    profile.profile = supported_profile;
-    profiles.push_back(profile);
-  }
-  return profiles;
-}
-
 bool VTVideoEncodeAccelerator::Initialize(const Config& config,
                                           Client* client,
                                           std::unique_ptr<MediaLog> media_log) {
