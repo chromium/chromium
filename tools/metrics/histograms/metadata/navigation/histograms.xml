@@ -1542,7 +1542,8 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   </summary>
 </histogram>
 
-<histogram name="Prerender.Experimental.ActivationNavigationParamsMatch"
+<histogram
+    name="Prerender.Experimental.ActivationNavigationParamsMatch{PrerenderTriggerType}"
     enum="PrerenderActivationNavigationParamsMatch" expires_after="2022-12-05">
   <owner>nhiroki@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
@@ -1551,6 +1552,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
     parameters and the prerender activation navigation parameters. Recorded by
     PrerenderHost in the browser process when comparing these two parameters.
   </summary>
+  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
 </histogram>
 
 <histogram
