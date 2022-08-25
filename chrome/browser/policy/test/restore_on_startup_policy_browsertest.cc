@@ -195,19 +195,21 @@ IN_PROC_BROWSER_TEST_P(RestoreOnStartupPolicyTest, PRE_RunTest) {
 }
 
 IN_PROC_BROWSER_TEST_P(RestoreOnStartupPolicyTest, RunTest) {
-  TabStripModel* model = browser()->tab_strip_model();
-  int size = static_cast<int>(expected_urls_.size());
-  EXPECT_EQ(size, model->count());
-  resource_coordinator::WaitForTransitionToLoaded(model);
-  for (int i = 0; i < size && i < model->count(); ++i) {
-    content::WebContents* web_contents = model->GetWebContentsAt(i);
-    if (blocked_) {
-      CheckURLIsBlockedInWebContents(web_contents, expected_urls_[i]);
-    } else if (expected_urls_[i] == GURL(chrome::kChromeUINewTabURL)) {
-      EXPECT_EQ(ntp_test_utils::GetFinalNtpUrl(browser()->profile()),
-                web_contents->GetLastCommittedURL());
-    } else {
-      EXPECT_EQ(expected_urls_[i], web_contents->GetLastCommittedURL());
+  {
+    TabStripModel* model = browser()->tab_strip_model();
+    int size = static_cast<int>(expected_urls_.size());
+    EXPECT_EQ(size, model->count());
+    resource_coordinator::WaitForTransitionToLoaded(model);
+    for (int i = 0; i < size && i < model->count(); ++i) {
+      content::WebContents* web_contents = model->GetWebContentsAt(i);
+      if (blocked_) {
+        CheckURLIsBlockedInWebContents(web_contents, expected_urls_[i]);
+      } else if (expected_urls_[i] == GURL(chrome::kChromeUINewTabURL)) {
+        EXPECT_EQ(ntp_test_utils::GetFinalNtpUrl(browser()->profile()),
+                  web_contents->GetLastCommittedURL());
+      } else {
+        EXPECT_EQ(expected_urls_[i], web_contents->GetLastCommittedURL());
+      }
     }
   }
   // Policy urls should be opened on a new window if the startup policy is set

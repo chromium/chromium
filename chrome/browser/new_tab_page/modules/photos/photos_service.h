@@ -75,7 +75,7 @@ class PhotosService : public KeyedService,
 
   using GetMemoriesCallback = photos::mojom::PhotosHandler::GetMemoriesCallback;
   // Retrieves Google Photos memories from API.
-  void GetMemories(GetMemoriesCallback callback);
+  void GetMemories(GetMemoriesCallback get_memories_callback);
   // Makes the service not return data for a specified amount of time.
   void DismissModule();
   // Makes the service return data again even if dimiss time is not yet over.

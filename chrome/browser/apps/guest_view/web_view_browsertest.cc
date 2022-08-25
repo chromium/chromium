@@ -5762,12 +5762,14 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, ErrorPageIsolation) {
       embedded_test_server()->GetURL("a.test", "/iframe.html");
   auto interceptor = content::URLLoaderInterceptor::SetupRequestFailForURL(
       error_url, net::ERR_NAME_NOT_RESOLVED);
-  content::TestNavigationObserver load_observer(guest);
-  EXPECT_TRUE(
-      ExecuteScript(guest, "location.href = '" + error_url.spec() + "';"));
-  load_observer.Wait();
-  EXPECT_FALSE(load_observer.last_navigation_succeeded());
-  EXPECT_TRUE(guest->GetPrimaryMainFrame()->IsErrorDocument());
+  {
+    content::TestNavigationObserver load_observer(guest);
+    EXPECT_TRUE(
+        ExecuteScript(guest, "location.href = '" + error_url.spec() + "';"));
+    load_observer.Wait();
+    EXPECT_FALSE(load_observer.last_navigation_succeeded());
+    EXPECT_TRUE(guest->GetPrimaryMainFrame()->IsErrorDocument());
+  }
 
   // The error page's SiteInstance should require a dedicated process due to
   // error page isolation, but it should still be considered a guest and should

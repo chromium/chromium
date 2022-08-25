@@ -138,9 +138,9 @@ void PhotosService::OnPrimaryAccountChanged(
   }
 }
 
-void PhotosService::GetMemories(GetMemoriesCallback callback) {
+void PhotosService::GetMemories(GetMemoriesCallback get_memories_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  callbacks_.push_back(std::move(callback));
+  callbacks_.push_back(std::move(get_memories_callback));
   if (callbacks_.size() > 1) {
     return;
   }

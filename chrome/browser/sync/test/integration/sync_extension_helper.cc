@@ -191,7 +191,6 @@ void SyncExtensionHelper::InstallExtensionsPendingForSync(Profile* profile) {
   std::list<std::string> pending_crx_ids =
       pending_extension_manager->GetPendingIdsForUpdateCheck();
 
-  std::list<std::string>::const_iterator iter;
   const extensions::PendingExtensionInfo* info = nullptr;
   for (const std::string& pending_crx_id : pending_crx_ids) {
     ASSERT_TRUE(info = pending_extension_manager->GetById(pending_crx_id));

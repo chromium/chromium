@@ -148,14 +148,14 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
    public:
     void set_cable_data(
         device::FidoRequestType request_type,
-        std::vector<device::CableDiscoveryData> cable_data,
+        std::vector<device::CableDiscoveryData> data,
         const absl::optional<std::array<uint8_t, device::cablev2::kQRKeySize>>&
             qr_generator_key,
-        std::vector<std::unique_ptr<device::cablev2::Pairing>> v2_pairings)
+        std::vector<std::unique_ptr<device::cablev2::Pairing>> pairings)
         override {
-      this->cable_data = std::move(cable_data);
-      this->qr_key = qr_generator_key;
-      this->v2_pairings = std::move(v2_pairings);
+      cable_data = std::move(data);
+      qr_key = qr_generator_key;
+      v2_pairings = std::move(pairings);
     }
 
     void set_android_accessory_params(

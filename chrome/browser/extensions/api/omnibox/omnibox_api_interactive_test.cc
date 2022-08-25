@@ -382,12 +382,14 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, IncognitoSplitMode) {
       GetAutocompleteControllerForBrowser(incognito_browser);
 
   // Test that we get the incognito-specific suggestions.
-  AutocompleteInput input(
-      u"alpha input", metrics::OmniboxEventProto::NTP,
-      ChromeAutocompleteSchemeClassifier(incognito_profile));
-  incognito_controller->Start(input);
-  WaitForAutocompleteDone(incognito_browser);
-  EXPECT_TRUE(incognito_controller->done());
+  {
+    AutocompleteInput input(
+        u"alpha input", metrics::OmniboxEventProto::NTP,
+        ChromeAutocompleteSchemeClassifier(incognito_profile));
+    incognito_controller->Start(input);
+    WaitForAutocompleteDone(incognito_browser);
+    EXPECT_TRUE(incognito_controller->done());
+  }
 
   // First result should be to invoke the keyword with what we typed, the
   // second should be the provided suggestion from the extension, and the

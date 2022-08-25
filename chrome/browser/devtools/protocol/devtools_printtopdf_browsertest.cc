@@ -279,9 +279,8 @@ class PrintToPdfScaleTest : public PrintToPdfProtocolTest {
 
     PrintToPdfAndRenderPage(std::move(params), 0);
 
-    int x = 0;
     int y = bitmap_height() / 2;
-    uint32_t start_clr = GetPixelRGB(x, y);
+    uint32_t start_clr = GetPixelRGB(0, y);
     EXPECT_EQ(start_clr, 0x123456u);
 
     int red_square_width = 0;

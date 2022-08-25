@@ -93,10 +93,11 @@ ConvertFileSystemInfoOptions(
 }
 
 absl::optional<ParsedSignalsError> ConvertFileSystemInfoResponse(
-    const device_signals::SignalsAggregationResponse& response,
+    const device_signals::SignalsAggregationResponse& aggregation_response,
     std::vector<api::enterprise_reporting_private::GetFileSystemInfoResponse>*
         arg_list) {
-  auto error = TryParseError(response, response.file_system_info_response);
+  auto error = TryParseError(aggregation_response,
+                             aggregation_response.file_system_info_response);
   if (error) {
     return error.value();
   }
@@ -104,7 +105,7 @@ absl::optional<ParsedSignalsError> ConvertFileSystemInfoResponse(
   std::vector<api::enterprise_reporting_private::GetFileSystemInfoResponse>
       api_responses;
   const auto& file_system_signal_values =
-      response.file_system_info_response.value();
+      aggregation_response.file_system_info_response.value();
   for (const auto& file_system_item :
        file_system_signal_values.file_system_items) {
     api::enterprise_reporting_private::GetFileSystemInfoResponse response;

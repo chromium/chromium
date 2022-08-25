@@ -269,13 +269,15 @@ void WebContentsTaskProvider::WebContentsEntry::DidFinishNavigation(
   // which cannot currently be called inside RenderFrameCreated (due to a DCHECK
   // which doesn't allow the method to be called when the state is
   // 'kSpeculative').
-  auto* rfh = navigation_handle->GetRenderFrameHost();
-  auto* site_instance = rfh->GetSiteInstance();
-  auto it = site_instance_infos_.find(site_instance);
-  if (!navigation_handle->IsSameDocument() &&
-      (it == site_instance_infos_.end() ||
-       it->second.frames.find(rfh) == it->second.frames.end())) {
-    CreateTaskForFrame(rfh);
+  {
+    auto* rfh = navigation_handle->GetRenderFrameHost();
+    auto* site_instance = rfh->GetSiteInstance();
+    auto it = site_instance_infos_.find(site_instance);
+    if (!navigation_handle->IsSameDocument() &&
+        (it == site_instance_infos_.end() ||
+         it->second.frames.find(rfh) == it->second.frames.end())) {
+      CreateTaskForFrame(rfh);
+    }
   }
 
   // Update.
@@ -453,7 +455,7 @@ void WebContentsTaskProvider::WebContentsEntry::ClearTaskForFrame(
   // asynchronously after the main frame is deleted.
 
   bool only_bfcache_or_prerender_rfhs = true;
-  for (auto& [site_instance, site_instance_info] : site_instance_infos_) {
+  for (auto& [ignore, site_instance_info] : site_instance_infos_) {
     for (auto* rfh : site_instance_info.frames) {
       const auto state = rfh->GetLifecycleState();
       if (state != RenderFrameHost::LifecycleState::kInBackForwardCache &&

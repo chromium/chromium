@@ -151,8 +151,7 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithTestRecorder,
 
   // We collect all metrics together and check that there is one that contains
   // the web feature metrics.
-  auto it = merged_entries.begin();
-  auto metrics = it->second->metrics;
+  auto metrics = merged_entries.begin()->second->metrics;
 
   for (auto& it : merged_entries) {
     metrics.insert(it.second->metrics.begin(), it.second->metrics.end());
@@ -291,8 +290,7 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithTestRecorder,
 
   // We collect all metrics together and check that there is one that contains
   // the canvas readback metrics.
-  auto it = merged_entries.begin();
-  auto metrics = it->second->metrics;
+  auto metrics = merged_entries.begin()->second->metrics;
 
   for (auto& it : merged_entries) {
     metrics.insert(it.second->metrics.begin(), it.second->metrics.end());
@@ -362,8 +360,7 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithTestRecorder,
   constexpr uint64_t input_digest = UINT64_C(33457614533296512);
   // We collect all metrics together and check that there is one that contains
   // the canvas readback metrics.
-  auto it = merged_entries.begin();
-  auto metrics = it->second->metrics;
+  auto metrics = merged_entries.begin()->second->metrics;
 
   for (auto& it : merged_entries) {
     metrics.insert(it.second->metrics.begin(), it.second->metrics.end());

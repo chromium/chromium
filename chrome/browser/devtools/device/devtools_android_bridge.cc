@@ -316,7 +316,6 @@ static std::set<net::HostPortPair> ParseTargetDiscoveryPreferenceValue(
   std::set<net::HostPortPair> targets;
   if (!preferenceValue || preferenceValue->empty())
     return targets;
-  std::string address;
   for (const auto& address : *preferenceValue) {
     if (!address.is_string())
       continue;
