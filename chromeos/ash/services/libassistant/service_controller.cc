@@ -10,12 +10,12 @@
 #include "base/check.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/libassistant/chromium_api_delegate.h"
+#include "chromeos/ash/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/ash/services/libassistant/libassistant_factory.h"
 #include "chromeos/ash/services/libassistant/settings_controller.h"
 #include "chromeos/ash/services/libassistant/util.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
-#include "chromeos/services/libassistant/grpc/assistant_client.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 

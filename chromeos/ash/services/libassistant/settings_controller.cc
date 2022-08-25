@@ -13,13 +13,13 @@
 #include "chromeos/ash/services/assistant/public/proto/assistant_device_settings_ui.pb.h"
 #include "chromeos/ash/services/assistant/public/proto/settings_ui.pb.h"
 #include "chromeos/ash/services/libassistant/callback_utils.h"
+#include "chromeos/ash/services/libassistant/grpc/assistant_client.h"
+#include "chromeos/ash/services/libassistant/grpc/utils/settings_utils.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/assistant/internal/proto/assistant/display_connection.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/settings_ui.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/config_settings_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/display_interface.pb.h"
-#include "chromeos/services/libassistant/grpc/assistant_client.h"
-#include "chromeos/services/libassistant/grpc/utils/settings_utils.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 
 namespace chromeos {

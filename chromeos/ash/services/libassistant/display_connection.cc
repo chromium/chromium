@@ -9,8 +9,8 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chromeos/ash/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/display_interface.pb.h"
-#include "chromeos/services/libassistant/grpc/assistant_client.h"
 
 namespace chromeos {
 namespace libassistant {

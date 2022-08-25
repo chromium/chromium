@@ -10,7 +10,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "chromeos/ash/services/libassistant/abortable_task_list.h"
-#include "chromeos/services/libassistant/grpc/assistant_client_observer.h"
+#include "chromeos/ash/services/libassistant/grpc/assistant_client_observer.h"
 #include "chromeos/services/libassistant/public/mojom/settings_controller.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 

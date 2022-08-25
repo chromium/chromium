@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/ui.gni")
-import("//chromeos/ash/components/assistant/assistant.gni")
 import("//testing/test.gni")
 
 assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
@@ -25,8 +24,4 @@ source_set("unit_tests") {
     "//chromeos/services/network_config:unit_tests",
     "//chromeos/services/tts:services_unittests",
   ]
-
-  if (enable_cros_libassistant) {
-    deps += [ "//chromeos/services/libassistant/grpc:unit_tests" ]
-  }
 }

@@ -6,7 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_LIBASSISTANT_SPEAKER_ID_ENROLLMENT_CONTROLLER_H_
 
 #include "chromeos/ash/services/libassistant/abortable_task_list.h"
-#include "chromeos/services/libassistant/grpc/assistant_client_observer.h"
+#include "chromeos/ash/services/libassistant/grpc/assistant_client_observer.h"
 #include "chromeos/services/libassistant/public/mojom/audio_input_controller.mojom-forward.h"
 #include "chromeos/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"

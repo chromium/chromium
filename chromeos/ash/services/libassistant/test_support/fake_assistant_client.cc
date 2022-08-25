@@ -6,9 +6,9 @@
 
 #include "base/callback.h"
 #include "base/test/bind.h"
+#include "chromeos/ash/services/libassistant/grpc/utils/timer_utils.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
 #include "chromeos/assistant/internal/test_support/fake_alarm_timer_manager.h"
-#include "chromeos/services/libassistant/grpc/utils/timer_utils.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_timer.h"
 
 namespace chromeos {

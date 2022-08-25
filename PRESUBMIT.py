@@ -680,7 +680,7 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
        '^gin/array_buffer\.(cc|h)',
        '^chrome/services/sharing/nearby/',
        # gRPC provides some C++ libraries that use std::shared_ptr<>.
-       '^chromeos/services/libassistant/grpc/',
+       '^chromeos/ash/services/libassistant/grpc/',
        '^chromecast/cast_core/grpc',
        '^chromecast/cast_core/runtime/browser',
        # Fuchsia provides C++ libraries that use std::shared_ptr<>.

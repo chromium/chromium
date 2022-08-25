@@ -5,9 +5,9 @@
 #ifndef CHROMEOS_ASH_SERVICES_LIBASSISTANT_TEST_SUPPORT_FAKE_ASSISTANT_CLIENT_H_
 #define CHROMEOS_ASH_SERVICES_LIBASSISTANT_TEST_SUPPORT_FAKE_ASSISTANT_CLIENT_H_
 
+#include "chromeos/ash/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
-#include "chromeos/services/libassistant/grpc/assistant_client.h"
 
 namespace chromeos {
 namespace libassistant {

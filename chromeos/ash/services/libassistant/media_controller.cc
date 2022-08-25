@@ -6,14 +6,14 @@
 
 #include "base/strings/string_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chromeos/ash/services/libassistant/grpc/assistant_client.h"
+#include "chromeos/ash/services/libassistant/grpc/external_services/grpc_services_observer.h"
+#include "chromeos/ash/services/libassistant/grpc/utils/media_status_utils.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/device_state_event.pb.h"
 #include "chromeos/assistant/internal/util_headers.h"
 #include "chromeos/services/assistant/public/shared/utils.h"
-#include "chromeos/services/libassistant/grpc/assistant_client.h"
-#include "chromeos/services/libassistant/grpc/external_services/grpc_services_observer.h"
-#include "chromeos/services/libassistant/grpc/utils/media_status_utils.h"
 
 namespace chromeos {
 namespace libassistant {
