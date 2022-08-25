@@ -497,7 +497,9 @@ bool ChromeContentBrowserClientExtensionsPart::
 
   // We must use a new BrowsingInstance (forcing a process swap and disabling
   // scripting by existing tabs) if one of the URLs corresponds to the Chrome
-  // Web Store hosted app, and the other does not.
+  // Web Store and the other does not. For the old Web Store this is done by
+  // checking for the Web Store hosted app and for the new Web Store we just
+  // check against the expected URL.
   //
   // We don't force a BrowsingInstance swap in other cases (i.e., when opening
   // a popup from one extension to a different extension, or to a non-extension
@@ -508,30 +510,44 @@ bool ChromeContentBrowserClientExtensionsPart::
   // (by the content/ part of ShouldSwapBrowsingInstancesForNavigation); this
   // check is just doing the same for top-level frames.  See
   // https://crbug.com/590068.
+
+  // First we check for navigations which are transitioning to/from the URL
+  // associated with the new Webstore.
+  bool current_url_matches_new_webstore =
+      url::Origin::Create(current_effective_url)
+          .IsSameOriginWith(extension_urls::GetNewWebstoreLaunchURL());
+  bool dest_url_matches_new_webstore =
+      url::Origin::Create(destination_effective_url)
+          .IsSameOriginWith(extension_urls::GetNewWebstoreLaunchURL());
+  if (current_url_matches_new_webstore != dest_url_matches_new_webstore)
+    return true;
+
+  // Next we do a process check, looking to see if the Web Store hosted app ID
+  // is associated with the URLs.
   const Extension* current_extension =
       registry->enabled_extensions().GetExtensionOrAppByURL(
           current_effective_url);
-  bool is_current_url_for_web_store =
+  bool is_current_url_for_webstore_app =
       current_extension && current_extension->id() == kWebStoreAppId;
 
   const Extension* dest_extension =
       registry->enabled_extensions().GetExtensionOrAppByURL(
           destination_effective_url);
-  bool is_dest_url_for_web_store =
+  bool is_dest_url_for_webstore_app =
       dest_extension && dest_extension->id() == kWebStoreAppId;
 
-  // First do a process check.  We should force a BrowsingInstance swap if we
-  // are going to Chrome Web Store, but the current process doesn't know about
-  // CWS, even if current_extension somehow corresponds to CWS.
+  // We should force a BrowsingInstance swap if we are going to Chrome Web
+  // Store, but the current process doesn't know about CWS, even if
+  // current_extension somehow corresponds to CWS.
   ProcessMap* process_map = ProcessMap::Get(site_instance->GetBrowserContext());
-  if (is_dest_url_for_web_store && site_instance->HasProcess() &&
+  if (is_dest_url_for_webstore_app && site_instance->HasProcess() &&
       !process_map->Contains(dest_extension->id(),
                              site_instance->GetProcess()->GetID()))
     return true;
 
   // Otherwise, swap BrowsingInstances when transitioning to/from Chrome Web
   // Store.
-  return is_current_url_for_web_store != is_dest_url_for_web_store;
+  return is_current_url_for_webstore_app != is_dest_url_for_webstore_app;
 }
 
 // static
