@@ -68,10 +68,14 @@ const char kExcessNTPTabsRemoved[] = "IOS.NTP.ExcessRemovedTabCount";
       self.previousActivationLevel > SceneActivationLevelBackground) {
     if (base::FeatureList::IsEnabled(kRemoveExcessNTPs)) {
       // Remove duplicate NTP pages upon background event.
-      [self removeExcessNTPsInBrowser:self.sceneState.interfaceProvider
-                                          .mainInterface.browser];
-      [self removeExcessNTPsInBrowser:self.sceneState.interfaceProvider
-                                          .incognitoInterface.browser];
+      if (self.sceneState.interfaceProvider.mainInterface.browser) {
+        [self removeExcessNTPsInBrowser:self.sceneState.interfaceProvider
+                                            .mainInterface.browser];
+      }
+      if (self.sceneState.interfaceProvider.incognitoInterface.browser) {
+        [self removeExcessNTPsInBrowser:self.sceneState.interfaceProvider
+                                            .incognitoInterface.browser];
+      }
     }
   }
   if (level >= SceneActivationLevelForegroundInactive &&
