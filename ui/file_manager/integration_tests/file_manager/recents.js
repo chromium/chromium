@@ -313,7 +313,7 @@ async function cutFileAndPasteTo(appId, fileName, newFolder) {
     const actualSecondaryText = element.attributes['secondary-text'];
 
     if (expectedPrimaryText === actualPrimaryText &&
-        actualSecondaryText === actualSecondaryText) {
+        expectedSecondaryText === actualSecondaryText) {
       return;
     }
 
