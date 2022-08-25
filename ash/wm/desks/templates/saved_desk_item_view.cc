@@ -328,12 +328,6 @@ void SavedDeskItemView::MaybeRemoveNameNumber(
 
 void SavedDeskItemView::MaybeShowReplaceDialog(DeskTemplateType type,
                                                const base::GUID& uuid) {
-  // If the user has somehow exited the overview session don't attempt to
-  // show the dialogue in order to avoid the DCHECK crash.
-  // TODO(avynn): Find a more permanent fix for this.
-  if (!Shell::Get()->overview_controller()->InOverviewSession())
-    return;
-
   // Show replace template dialog. If accepted, replace old template and commit
   // name change.
   aura::Window* root_window = GetWidget()->GetNativeWindow()->GetRootWindow();
