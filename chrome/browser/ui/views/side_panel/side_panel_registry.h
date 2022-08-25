@@ -33,7 +33,7 @@ class SidePanelRegistry final : public base::SupportsUserData::Data,
   // Can return null for non-tab contents.
   static SidePanelRegistry* Get(content::WebContents* web_contents);
 
-  SidePanelEntry* GetEntryForId(SidePanelEntry::Id entry_id);
+  SidePanelEntry* GetEntryForKey(const SidePanelEntry::Key& entry_key);
   void ResetActiveEntry();
 
   // Clear cached view for all owned entries.
@@ -46,9 +46,9 @@ class SidePanelRegistry final : public base::SupportsUserData::Data,
   // registered and false if a SidePanelEntry already exists in the registry for
   // the provided SidePanelEntry::Id.
   bool Register(std::unique_ptr<SidePanelEntry> entry);
-  // Deregisters the entry for the given SidePanelEntry::Id. Returns true if
-  // successful and false if there is no entry registered for the |id|.
-  bool Deregister(SidePanelEntry::Id id);
+  // Deregisters the entry for the given SidePanelEntry::Key. Returns true if
+  // successful and false if there is no entry registered for the |key|.
+  bool Deregister(const SidePanelEntry::Key& key);
 
   absl::optional<SidePanelEntry*> active_entry() { return active_entry_; }
   std::vector<std::unique_ptr<SidePanelEntry>>& entries() { return entries_; }

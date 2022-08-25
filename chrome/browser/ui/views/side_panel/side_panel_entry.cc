@@ -8,13 +8,60 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 
+SidePanelEntry::Key::Key(SidePanelEntry::Id id) : id_(id) {
+  DCHECK(id_ != SidePanelEntry::Id::kExtension);
+}
+
+SidePanelEntry::Key::Key(SidePanelEntry::Id id,
+                         extensions::ExtensionId extension_id)
+    : id_(id), extension_id_(extension_id) {
+  DCHECK(id_ == SidePanelEntry::Id::kExtension);
+}
+
+SidePanelEntry::Key::Key(const Key& other) = default;
+
+SidePanelEntry::Key::~Key() = default;
+
+SidePanelEntry::Key& SidePanelEntry::Key::operator=(const Key& other) = default;
+
+bool SidePanelEntry::Key::operator==(const Key& other) const {
+  if (id_ == other.id_) {
+    if (id_ == SidePanelEntry::Id::kExtension) {
+      DCHECK(extension_id_.has_value() && other.extension_id_.has_value());
+      return extension_id_.value() == other.extension_id_.value();
+    }
+    return true;
+  }
+  return false;
+}
+
+bool SidePanelEntry::Key::operator<(const Key& other) const {
+  if (id_ == other.id_ && id_ == SidePanelEntry::Id::kExtension) {
+    DCHECK(extension_id_.has_value() && other.extension_id_.has_value());
+    // TODO(corising): Updating extension sorting
+    return extension_id_.value() < other.extension_id_.value();
+  }
+  return id_ < other.id_;
+}
+
 SidePanelEntry::SidePanelEntry(
     Id id,
     std::u16string name,
     ui::ImageModel icon,
     base::RepeatingCallback<std::unique_ptr<views::View>()>
         create_content_callback)
-    : id_(id),
+    : SidePanelEntry(Key(id),
+                     std::move(name),
+                     std::move(icon),
+                     std::move(create_content_callback)) {}
+
+SidePanelEntry::SidePanelEntry(
+    Key key,
+    std::u16string name,
+    ui::ImageModel icon,
+    base::RepeatingCallback<std::unique_ptr<views::View>()>
+        create_content_callback)
+    : key_(key),
       name_(std::move(name)),
       icon_(std::move(icon)),
       create_content_callback_(std::move(create_content_callback)) {
@@ -39,13 +86,13 @@ void SidePanelEntry::ClearCachedView() {
 
 void SidePanelEntry::OnEntryShown() {
   entry_shown_timestamp_ = base::TimeTicks::Now();
-  SidePanelUtil::RecordEntryShownMetrics(id_);
+  SidePanelUtil::RecordEntryShownMetrics(key_.id());
   for (SidePanelEntryObserver& observer : observers_)
     observer.OnEntryShown(this);
 }
 
 void SidePanelEntry::OnEntryHidden() {
-  SidePanelUtil::RecordEntryHiddenMetrics(id_, entry_shown_timestamp_);
+  SidePanelUtil::RecordEntryHiddenMetrics(key_.id(), entry_shown_timestamp_);
   for (SidePanelEntryObserver& observer : observers_)
     observer.OnEntryHidden(this);
 }

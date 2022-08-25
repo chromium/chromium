@@ -103,12 +103,12 @@ void ReadAnythingCoordinator::RemoveModelObserver(
 }
 
 void ReadAnythingCoordinator::OnEntryShown(SidePanelEntry* entry) {
-  DCHECK(entry->id() == SidePanelEntry::Id::kReadAnything);
+  DCHECK(entry->key().id() == SidePanelEntry::Id::kReadAnything);
   controller_->Activate(true);
 }
 
 void ReadAnythingCoordinator::OnEntryHidden(SidePanelEntry* entry) {
-  DCHECK(entry->id() == SidePanelEntry::Id::kReadAnything);
+  DCHECK(entry->key().id() == SidePanelEntry::Id::kReadAnything);
   controller_->Activate(false);
 }
 

@@ -46,7 +46,7 @@ void LensSidePanelCoordinator::OnSidePanelDidClose() {
   GetBrowserView()
       ->side_panel_coordinator()
       ->GetGlobalSidePanelRegistry()
-      ->Deregister(SidePanelEntry::Id::kLens);
+      ->Deregister(SidePanelEntry::Key(SidePanelEntry::Id::kLens));
   base::RecordAction(
       base::UserMetricsAction("LensUnifiedSidePanel.HideSidePanel"));
 }
@@ -73,7 +73,8 @@ void LensSidePanelCoordinator::RegisterEntryAndShow(
   auto* global_registry = side_panel_coordinator->GetGlobalSidePanelRegistry();
 
   // check if the view is already registered
-  if (global_registry->GetEntryForId(SidePanelEntry::Id::kLens) != nullptr &&
+  if (global_registry->GetEntryForKey(
+          SidePanelEntry::Key(SidePanelEntry::Id::kLens)) != nullptr &&
       lens_side_panel_view_ != nullptr) {
     // The user issued a follow-up Lens query.
     base::RecordAction(

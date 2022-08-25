@@ -48,7 +48,7 @@ class SideSearchWebView : public views::WebView {
     // side search previously open.
     auto* registry = SidePanelRegistry::Get(tab_web_contents);
     if (registry && registry->active_entry().has_value() &&
-        registry->active_entry().value()->id() ==
+        registry->active_entry().value()->key().id() ==
             SidePanelEntry::Id::kSideSearch) {
       return;
     }
@@ -92,7 +92,7 @@ void UnifiedSideSearchController::SidePanelAvailabilityChanged(
   if (should_close) {
     auto* registry = SidePanelRegistry::Get(web_contents());
     if (registry && registry->active_entry().has_value() &&
-        registry->active_entry().value()->id() ==
+        registry->active_entry().value()->key().id() ==
             SidePanelEntry::Id::kSideSearch) {
       registry->ResetActiveEntry();
     }
@@ -251,8 +251,8 @@ void UnifiedSideSearchController::UpdateSidePanelRegistry(bool is_available) {
   auto* registry = SidePanelRegistry::Get(web_contents());
   if (!registry)
     return;
-  auto* current_entry =
-      registry->GetEntryForId(SidePanelEntry::Id::kSideSearch);
+  auto* current_entry = registry->GetEntryForKey(
+      SidePanelEntry::Key(SidePanelEntry::Id::kSideSearch));
   if (!current_entry && is_available) {
     auto entry = std::make_unique<SidePanelEntry>(
         SidePanelEntry::Id::kSideSearch, GetSideSearchName(),
@@ -267,7 +267,7 @@ void UnifiedSideSearchController::UpdateSidePanelRegistry(bool is_available) {
 
   if (current_entry && !is_available) {
     current_entry->RemoveObserver(this);
-    registry->Deregister(SidePanelEntry::Id::kSideSearch);
+    registry->Deregister(SidePanelEntry::Key(SidePanelEntry::Id::kSideSearch));
     RecordSideSearchAvailabilityChanged(
         SideSearchAvailabilityChangeType::kBecomeUnavailable);
   }

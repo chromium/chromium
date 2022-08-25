@@ -14,6 +14,8 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_registry_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_view_state_observer.h"
+#include "extensions/common/extension_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class BrowserView;
 class SidePanelComboboxModel;
@@ -43,6 +45,9 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   ~SidePanelCoordinator() override;
 
   void Show(absl::optional<SidePanelEntry::Id> entry_id = absl::nullopt,
+            absl::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger =
+                absl::nullopt);
+  void Show(SidePanelEntry::Key entry_key,
             absl::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger =
                 absl::nullopt);
   void Close();
@@ -84,7 +89,7 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
                            PopulateUserNoteSidePanel);
 
   views::View* GetContentView() const;
-  SidePanelEntry* GetEntryForId(SidePanelEntry::Id entry_id);
+  SidePanelEntry* GetEntryForKey(const SidePanelEntry::Key& entry_key);
 
   // Creates header and SidePanelEntry content container within the side panel.
   void InitializeSidePanel();
@@ -103,10 +108,10 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
 
   // Returns the last active entry or the reading list entry if no last active
   // entry exists.
-  absl::optional<SidePanelEntry::Id> GetLastActiveEntryId() const;
+  absl::optional<SidePanelEntry::Key> GetLastActiveEntryKey() const;
 
   // Returns the currently selected id in the combobox, if one is shown.
-  absl::optional<SidePanelEntry::Id> GetSelectedId() const;
+  absl::optional<SidePanelEntry::Key> GetSelectedKey() const;
 
   SidePanelRegistry* GetActiveContextualRegistry() const;
 
@@ -140,7 +145,7 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
 
   const raw_ptr<BrowserView> browser_view_;
   raw_ptr<SidePanelRegistry> global_registry_;
-  absl::optional<SidePanelEntry::Id> last_active_global_entry_id_;
+  absl::optional<SidePanelEntry::Key> last_active_global_entry_key_;
 
   // current_entry_ tracks the entry that currently has its view hosted by the
   // side panel. It is necessary as current_entry_ may belong to a contextual

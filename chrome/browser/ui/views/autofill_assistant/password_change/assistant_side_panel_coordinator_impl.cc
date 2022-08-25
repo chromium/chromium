@@ -21,7 +21,8 @@ constexpr int kAssistantIconSize = 16;
 std::unique_ptr<AssistantSidePanelCoordinator>
 AssistantSidePanelCoordinator::Create(content::WebContents* web_contents) {
   if (SidePanelRegistry::Get(web_contents)
-          ->GetEntryForId(SidePanelEntry::Id::kAssistant)) {
+          ->GetEntryForKey(
+              SidePanelEntry::Key(SidePanelEntry::Id::kAssistant))) {
     return nullptr;
   }
   return std::make_unique<AssistantSidePanelCoordinatorImpl>(web_contents);
@@ -44,14 +45,15 @@ AssistantSidePanelCoordinatorImpl::AssistantSidePanelCoordinatorImpl(
 
   // Listen to `OnEntryHidden` events to be able to propagate them outside.
   GetSidePanelRegistry()
-      ->GetEntryForId(SidePanelEntry::Id::kAssistant)
+      ->GetEntryForKey(SidePanelEntry::Key(SidePanelEntry::Id::kAssistant))
       ->AddObserver(this);
 
   GetSidePanelCoordinator()->Show(SidePanelEntry::Id::kAssistant);
 }
 
 AssistantSidePanelCoordinatorImpl::~AssistantSidePanelCoordinatorImpl() {
-  GetSidePanelRegistry()->Deregister(SidePanelEntry::Id::kAssistant);
+  GetSidePanelRegistry()->Deregister(
+      SidePanelEntry::Key(SidePanelEntry::Id::kAssistant));
 }
 
 bool AssistantSidePanelCoordinatorImpl::Shown() {

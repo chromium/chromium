@@ -45,7 +45,11 @@ TEST_F(CustomizeChromeSidePanelControllerTest, RegisterCustomizeChromeEntry) {
   CustomizeChromeSidePanelController side_panel_controller(web_contents);
   side_panel_controller.CreateAndRegisterEntry();
   auto* registry = SidePanelRegistry::Get(web_contents);
-  EXPECT_EQ(registry->GetEntryForId(SidePanelEntry::Id::kCustomizeChrome)->id(),
+  EXPECT_EQ(registry
+                ->GetEntryForKey(
+                    SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome))
+                ->key()
+                .id(),
             SidePanelEntry::Id::kCustomizeChrome);
 }
 
@@ -57,10 +61,15 @@ TEST_F(CustomizeChromeSidePanelControllerTest, DeregisterCustomizeChromeEntry) {
   side_panel_controller.CreateAndRegisterEntry();
 
   auto* registry = SidePanelRegistry::Get(web_contents);
-  EXPECT_EQ(registry->GetEntryForId(SidePanelEntry::Id::kCustomizeChrome)->id(),
+  EXPECT_EQ(registry
+                ->GetEntryForKey(
+                    SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome))
+                ->key()
+                .id(),
             SidePanelEntry::Id::kCustomizeChrome);
   side_panel_controller.DeregisterEntry();
-  EXPECT_EQ(registry->GetEntryForId(SidePanelEntry::Id::kCustomizeChrome),
+  EXPECT_EQ(registry->GetEntryForKey(
+                SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome)),
             nullptr);
 }
 
@@ -71,13 +80,22 @@ TEST_F(CustomizeChromeSidePanelControllerTest, CreateAndRegisterMultipleTimes) {
   CustomizeChromeSidePanelController side_panel_controller(web_contents);
   side_panel_controller.CreateAndRegisterEntry();
   auto* registry = SidePanelRegistry::Get(web_contents);
-  EXPECT_EQ(registry->GetEntryForId(SidePanelEntry::Id::kCustomizeChrome)->id(),
+  EXPECT_EQ(registry
+                ->GetEntryForKey(
+                    SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome))
+                ->key()
+                .id(),
             SidePanelEntry::Id::kCustomizeChrome);
   side_panel_controller.CreateAndRegisterEntry();
-  EXPECT_EQ(registry->GetEntryForId(SidePanelEntry::Id::kCustomizeChrome)->id(),
+  EXPECT_EQ(registry
+                ->GetEntryForKey(
+                    SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome))
+                ->key()
+                .id(),
             SidePanelEntry::Id::kCustomizeChrome);
   side_panel_controller.DeregisterEntry();
-  EXPECT_EQ(registry->GetEntryForId(SidePanelEntry::Id::kCustomizeChrome),
+  EXPECT_EQ(registry->GetEntryForKey(
+                SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome)),
             nullptr);
 }
 

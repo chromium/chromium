@@ -175,10 +175,18 @@ SidePanelCoordinator::~SidePanelCoordinator() {
 void SidePanelCoordinator::Show(
     absl::optional<SidePanelEntry::Id> entry_id,
     absl::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger) {
-  if (!entry_id.has_value())
-    entry_id = GetLastActiveEntryId().value_or(kDefaultEntry);
+  if (entry_id.has_value()) {
+    Show(SidePanelEntry::Key(entry_id.value()), open_trigger);
+  } else {
+    Show(GetLastActiveEntryKey().value_or(SidePanelEntry::Key(kDefaultEntry)),
+         open_trigger);
+  }
+}
 
-  SidePanelEntry* entry = GetEntryForId(entry_id.value());
+void SidePanelCoordinator::Show(
+    SidePanelEntry::Key entry_key,
+    absl::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger) {
+  SidePanelEntry* entry = GetEntryForKey(entry_key);
   if (!entry)
     return;
 
@@ -217,7 +225,8 @@ void SidePanelCoordinator::Show(
     return;
   }
 
-  SidePanelUtil::RecordEntryShowTriggeredMetrics(entry->id(), open_trigger);
+  SidePanelUtil::RecordEntryShowTriggeredMetrics(entry->key().id(),
+                                                 open_trigger);
 
   content_wrapper->RequestEntry(
       entry, base::BindOnce(&SidePanelCoordinator::PopulateSidePanel,
@@ -249,8 +258,8 @@ void SidePanelCoordinator::Close() {
   }
 
   if (global_registry_->active_entry().has_value()) {
-    last_active_global_entry_id_ =
-        global_registry_->active_entry().value()->id();
+    last_active_global_entry_key_ =
+        global_registry_->active_entry().value()->key();
   }
   // Reset active entry values for all observed registries and clear cache for
   // everything except remaining active entries (i.e. if another tab has an
@@ -297,13 +306,14 @@ void SidePanelCoordinator::SetNoDelaysForTesting() {
 absl::optional<SidePanelEntry::Id> SidePanelCoordinator::GetCurrentEntryId()
     const {
   return current_entry_
-             ? absl::optional<SidePanelEntry::Id>(current_entry_->id())
+             ? absl::optional<SidePanelEntry::Id>(current_entry_->key().id())
              : absl::nullopt;
 }
 
 SidePanelEntry::Id SidePanelCoordinator::GetComboboxDisplayedEntryIdForTesting()
     const {
-  return combobox_model_->GetIdAt(header_combobox_->GetSelectedIndex().value());
+  return combobox_model_->GetKeyAt(header_combobox_->GetSelectedIndex().value())
+      .id();
 }
 
 SidePanelEntry* SidePanelCoordinator::GetLoadingEntryForTesting() const {
@@ -323,13 +333,15 @@ views::View* SidePanelCoordinator::GetContentView() const {
       kSidePanelContentViewId);
 }
 
-SidePanelEntry* SidePanelCoordinator::GetEntryForId(
-    SidePanelEntry::Id entry_id) {
-  if (auto* entry = global_registry_->GetEntryForId(entry_id))
+SidePanelEntry* SidePanelCoordinator::GetEntryForKey(
+    const SidePanelEntry::Key& entry_key) {
+  if (auto* entry = global_registry_->GetEntryForKey(entry_key)) {
     return entry;
+  }
   if (auto* contextual_registry = GetActiveContextualRegistry()) {
-    if (auto* entry = contextual_registry->GetEntryForId(entry_id))
+    if (auto* entry = contextual_registry->GetEntryForKey(entry_key)) {
       return entry;
+    }
   }
   return nullptr;
 }
@@ -368,7 +380,7 @@ void SidePanelCoordinator::PopulateSidePanel(
   // case if `Show()` was called after registering a contextual entry.
   DCHECK(header_combobox_);
   header_combobox_->SetSelectedIndex(
-      combobox_model_->GetIndexForId(entry->id()));
+      combobox_model_->GetIndexForKey(entry->key()));
   header_combobox_->SchedulePaint();
 
   auto* content_wrapper =
@@ -409,25 +421,26 @@ void SidePanelCoordinator::ClearCachedEntryViews() {
   }
 }
 
-absl::optional<SidePanelEntry::Id> SidePanelCoordinator::GetLastActiveEntryId()
-    const {
+absl::optional<SidePanelEntry::Key>
+SidePanelCoordinator::GetLastActiveEntryKey() const {
   // If a contextual entry is active, return that. If not, return the last
   // active global entry. If neither exist, fall back to kReadingList.
   if (GetActiveContextualRegistry() &&
       GetActiveContextualRegistry()->active_entry().has_value()) {
-    return GetActiveContextualRegistry()->active_entry().value()->id();
+    return GetActiveContextualRegistry()->active_entry().value()->key();
   }
 
   if (global_registry_->active_entry().has_value())
-    return global_registry_->active_entry().value()->id();
+    return global_registry_->active_entry().value()->key();
 
-  if (last_active_global_entry_id_.has_value())
-    return last_active_global_entry_id_.value();
+  if (last_active_global_entry_key_.has_value())
+    return last_active_global_entry_key_.value();
 
   return absl::nullopt;
 }
 
-absl::optional<SidePanelEntry::Id> SidePanelCoordinator::GetSelectedId() const {
+absl::optional<SidePanelEntry::Key> SidePanelCoordinator::GetSelectedKey()
+    const {
   if (!header_combobox_)
     return absl::nullopt;
 
@@ -438,11 +451,12 @@ absl::optional<SidePanelEntry::Id> SidePanelCoordinator::GetSelectedId() const {
           GetContentView()->GetViewByID(kSidePanelContentWrapperViewId));
   DCHECK(content_wrapper);
   if (const auto* entry = content_wrapper->loading_entry())
-    return entry->id();
+    return entry->key();
 
   // If we are not waiting on content swapping we want to return the active
   // selected entry id.
-  return combobox_model_->GetIdAt(header_combobox_->GetSelectedIndex().value());
+  return combobox_model_->GetKeyAt(
+      header_combobox_->GetSelectedIndex().value());
 }
 
 SidePanelRegistry* SidePanelCoordinator::GetActiveContextualRegistry() const {
@@ -496,8 +510,8 @@ std::unique_ptr<views::Combobox> SidePanelCoordinator::CreateCombobox() {
   combobox->SetMenuSelectionAtCallback(
       base::BindRepeating(&SidePanelCoordinator::OnComboboxChangeTriggered,
                           base::Unretained(this)));
-  combobox->SetSelectedIndex(combobox_model_->GetIndexForId(
-      GetLastActiveEntryId().value_or(kDefaultEntry)));
+  combobox->SetSelectedIndex(combobox_model_->GetIndexForKey(
+      (GetLastActiveEntryKey().value_or(SidePanelEntry::Key(kDefaultEntry)))));
   // TODO(corising): Replace this with something appropriate.
   combobox->SetAccessibleName(
       combobox_model_->GetItemAt(combobox->GetSelectedIndex().value()));
@@ -516,42 +530,43 @@ std::unique_ptr<views::Combobox> SidePanelCoordinator::CreateCombobox() {
 }
 
 bool SidePanelCoordinator::OnComboboxChangeTriggered(size_t index) {
-  SidePanelEntry::Id entry_id = combobox_model_->GetIdAt(index);
-  Show(entry_id, SidePanelUtil::SidePanelOpenTrigger::kComboboxSelected);
+  SidePanelEntry::Key entry_key = combobox_model_->GetKeyAt(index);
+  Show(entry_key, SidePanelUtil::SidePanelOpenTrigger::kComboboxSelected);
   return true;
 }
 
 void SidePanelCoordinator::OnEntryRegistered(SidePanelEntry* entry) {
   combobox_model_->AddItem(entry);
   if (GetContentView()) {
-    header_combobox_->SetSelectedIndex(combobox_model_->GetIndexForId(
-        GetLastActiveEntryId().value_or(kDefaultEntry)));
+    header_combobox_->SetSelectedIndex(combobox_model_->GetIndexForKey(
+        GetLastActiveEntryKey().value_or(SidePanelEntry::Key(kDefaultEntry))));
     header_combobox_->SchedulePaint();
   }
 }
 
 void SidePanelCoordinator::OnEntryWillDeregister(SidePanelEntry* entry) {
-  absl::optional<SidePanelEntry::Id> selected_id = GetSelectedId();
-  combobox_model_->RemoveItem(entry->id());
+  absl::optional<SidePanelEntry::Key> selected_key = GetSelectedKey();
+  combobox_model_->RemoveItem(entry->key());
   if (GetContentView()) {
-    header_combobox_->SetSelectedIndex(combobox_model_->GetIndexForId(
-        GetLastActiveEntryId().value_or(kDefaultEntry)));
+    header_combobox_->SetSelectedIndex(combobox_model_->GetIndexForKey(
+        GetLastActiveEntryKey().value_or(SidePanelEntry::Key(kDefaultEntry))));
     header_combobox_->SchedulePaint();
   }
 
   // If the active global entry is the entry being deregistered, reset
-  // last_active_global_entry_id_.
-  if (entry->id() == last_active_global_entry_id_) {
-    last_active_global_entry_id_ = absl::nullopt;
+  // last_active_global_entry_key_.
+  if (last_active_global_entry_key_.has_value() &&
+      entry->key() == last_active_global_entry_key_.value()) {
+    last_active_global_entry_key_ = absl::nullopt;
   }
 
   // Update the current entry to make sure we don't show an entry that is being
   // removed or close the panel if the entry being deregistered is the only one
   // that has been visible.
-  if (GetContentView() && selected_id.has_value() &&
-      selected_id.value() == entry->id()) {
+  if (GetContentView() && selected_key.has_value() &&
+      selected_key.value() == entry->key()) {
     if (global_registry_->active_entry().has_value()) {
-      Show(GetLastActiveEntryId().value_or(kDefaultEntry),
+      Show(GetLastActiveEntryKey().value_or(SidePanelEntry::Key(kDefaultEntry)),
            SidePanelUtil::SidePanelOpenTrigger::kSidePanelEntryDeregistered);
     } else {
       Close();
@@ -602,15 +617,16 @@ void SidePanelCoordinator::OnTabStripModelChanged(
       }
       Close();
     } else {
-      Show(GetLastActiveEntryId().value_or(kDefaultEntry),
+      Show(GetLastActiveEntryKey().value_or(SidePanelEntry::Key(kDefaultEntry)),
            SidePanelUtil::SidePanelOpenTrigger::kTabChanged);
-      header_combobox_->SetSelectedIndex(combobox_model_->GetIndexForId(
-          GetLastActiveEntryId().value_or(kDefaultEntry)));
+      header_combobox_->SetSelectedIndex(
+          combobox_model_->GetIndexForKey((GetLastActiveEntryKey().value_or(
+              SidePanelEntry::Key(kDefaultEntry)))));
       header_combobox_->SchedulePaint();
     }
   } else if (new_contextual_registry &&
              new_contextual_registry->active_entry().has_value()) {
-    Show(new_contextual_registry->active_entry().value()->id(),
+    Show(new_contextual_registry->active_entry().value()->key().id(),
          SidePanelUtil::SidePanelOpenTrigger::kTabChanged);
   }
 }
