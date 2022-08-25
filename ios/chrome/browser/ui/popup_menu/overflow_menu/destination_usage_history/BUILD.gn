@@ -8,7 +8,7 @@ source_set("destination_usage_history") {
   deps = [
     "//base",
     "//components/prefs",
-    "//ios/chrome/browser:pref_names",
+    "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/ui/popup_menu/overflow_menu:overflow_menu_constants",
     "//ios/chrome/browser/ui/popup_menu/overflow_menu:overflow_menu_swift",
   ]
@@ -22,7 +22,7 @@ source_set("unit_tests") {
     "//base",
     "//components/prefs",
     "//components/prefs:test_support",
-    "//ios/chrome/browser:pref_names",
+    "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/ui/popup_menu/overflow_menu:overflow_menu_constants",
     "//testing/gmock",
     "//testing/gtest",
@@ -39,7 +39,7 @@ source_set("eg2_tests") {
   sources = [ "destination_usage_history_egtest.mm" ]
   deps = [
     ":destination_usage_history",
-    "//ios/chrome/browser:pref_names",
+    "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",

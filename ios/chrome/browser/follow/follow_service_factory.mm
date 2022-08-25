@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
 #import "ios/chrome/browser/follow/follow_configuration.h"
 #import "ios/chrome/browser/follow/follow_service.h"
-#import "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/public/provider/chrome/browser/follow/follow_api.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

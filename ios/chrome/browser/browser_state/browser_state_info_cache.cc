@@ -19,7 +19,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "ios/chrome/browser/browser_state/browser_state_info_cache_observer.h"
-#include "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 
 namespace {
 const char kGAIAIdKey[] = "gaia_id";

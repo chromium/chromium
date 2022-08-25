@@ -19,7 +19,7 @@
 #include "ios/chrome/browser/ios_chrome_io_thread.h"
 #include "ios/chrome/browser/net/ios_chrome_network_delegate.h"
 #include "ios/chrome/browser/net/ios_chrome_url_request_context_getter.h"
-#include "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/components/cookie_util/cookie_util.h"
 #import "ios/net/cookies/system_cookie_store.h"
 #include "ios/web/public/thread/web_task_traits.h"

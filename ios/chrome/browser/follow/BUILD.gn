@@ -101,9 +101,9 @@ source_set("service_factory") {
     "//base",
     "//components/keyed_service/ios",
     "//components/pref_registry:pref_registry",
-    "//ios/chrome/browser:pref_names",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/discover_feed:discover_feed_factory",
+    "//ios/chrome/browser/prefs:pref_names",
     "//ios/public/provider/chrome/browser/follow:follow_api",
   ]
 }
@@ -122,7 +122,6 @@ source_set("browser_agent") {
     "//components/feed/core/shared_prefs:feed_shared_prefs",
     "//components/prefs",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser:pref_names",
     "//ios/chrome/browser:utils",
     "//ios/chrome/browser/browser_state:browser_state",
     "//ios/chrome/browser/discover_feed:discover_feed",
@@ -131,6 +130,7 @@ source_set("browser_agent") {
     "//ios/chrome/browser/follow:service_factory",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/follow",
     "//ios/chrome/browser/ui/ntp:metrics",

@@ -11,7 +11,7 @@ source_set("prerender_pref") {
     "//base",
     "//components/pref_registry",
     "//components/prefs",
-    "//ios/chrome/browser:pref_names",
+    "//ios/chrome/browser/prefs:pref_names",
   ]
 }
 

@@ -12,7 +12,7 @@
 #include "components/security_interstitials/core/https_only_mode_metrics.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/https_upgrades/https_upgrade_service_factory.h"
-#include "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_blocking_page.h"

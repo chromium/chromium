@@ -32,8 +32,8 @@ source_set("browser_state") {
     "//components/variations/net",
     "//components/webdata_services",
     "//ios/chrome/browser:chrome_url_constants",
-    "//ios/chrome/browser:pref_names",
     "//ios/chrome/browser/net:net_types",
+    "//ios/chrome/browser/prefs:pref_names",
     "//ios/components/webui:url_constants",
     "//ios/web/public/webui",
   ]

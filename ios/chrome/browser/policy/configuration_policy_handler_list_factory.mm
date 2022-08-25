@@ -37,7 +37,7 @@
 #include "ios/chrome/browser/policy/browser_signin_policy_handler.h"
 #include "ios/chrome/browser/policy/new_tab_page_location_policy_handler.h"
 #import "ios/chrome/browser/policy/restrict_accounts_policy_handler.h"
-#include "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

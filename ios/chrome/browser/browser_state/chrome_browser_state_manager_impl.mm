@@ -29,7 +29,7 @@
 #include "ios/chrome/browser/chrome_paths.h"
 #include "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
 #include "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
-#include "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "ios/chrome/browser/signin/account_consistency_service_factory.h"
 #include "ios/chrome/browser/signin/account_reconcilor_factory.h"

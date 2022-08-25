@@ -12,7 +12,7 @@
 #include "components/sync/driver/sync_service.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #include "ios/chrome/browser/policy/policy_util.h"
-#include "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 

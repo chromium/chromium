@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/pref_names.h"
+#include "ios/chrome/browser/prefs/pref_names.h"
 
 namespace prefs {
 
@@ -42,8 +42,7 @@ const char kClearBrowsingDataHistoryNoticeShownTimes[] =
 const char kContextualSearchEnabled[] = "search.contextual_search_enabled";
 
 // Boolean that is true when Data Saver is enabled.
-// TODO(bengr): Migrate the preference string to "data_saver.enabled"
-// (crbug.com/564207).
+// TODO(crbug.com/1356134): Remove this pref
 const char kDataSaverEnabled[] = "spdy_proxy.enabled";
 
 // The default character encoding to assume for a web page in the

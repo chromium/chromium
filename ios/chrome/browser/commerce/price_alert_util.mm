@@ -9,7 +9,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"

@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/policy/policy_util.h"
 
 #include "components/prefs/pref_service.h"
-#include "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

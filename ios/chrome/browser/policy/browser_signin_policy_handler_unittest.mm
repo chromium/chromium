@@ -15,7 +15,7 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "ios/chrome/browser/chrome_switches.h"
 #include "ios/chrome/browser/policy/policy_util.h"
-#include "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 #include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"

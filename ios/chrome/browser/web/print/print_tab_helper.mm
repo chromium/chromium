@@ -6,7 +6,7 @@
 
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/web/print/web_state_printer.h"
 #import "ios/web/public/browser_state.h"
 

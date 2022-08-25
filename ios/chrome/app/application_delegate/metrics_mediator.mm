@@ -29,7 +29,7 @@
 #include "ios/chrome/browser/crash_report/crash_helper.h"
 #include "ios/chrome/browser/main/browser.h"
 #include "ios/chrome/browser/metrics/first_user_action_recorder.h"
-#include "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/signin_util.h"
 #include "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"

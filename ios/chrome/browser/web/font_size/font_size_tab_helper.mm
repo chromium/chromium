@@ -19,7 +19,7 @@
 #include "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 #include "ios/chrome/browser/web/features.h"
 #import "ios/chrome/browser/web/font_size/font_size_java_script_feature.h"
 #include "ios/components/ui_util/dynamic_type_util.h"

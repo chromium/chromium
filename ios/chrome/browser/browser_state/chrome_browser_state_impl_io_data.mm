@@ -26,7 +26,7 @@
 #include "ios/chrome/browser/net/http_server_properties_factory.h"
 #include "ios/chrome/browser/net/ios_chrome_network_delegate.h"
 #include "ios/chrome/browser/net/ios_chrome_url_request_context_getter.h"
-#include "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/components/cookie_util/cookie_util.h"
 #import "ios/net/cookies/cookie_store_ios.h"
 #import "ios/net/cookies/ns_http_system_cookie_store.h"
