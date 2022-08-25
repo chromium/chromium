@@ -3364,7 +3364,7 @@ Press an assigned switch or key to remove assignment.
     Hide sensitive content
   </message>
   <message name="IDS_SETTINGS_PEOPLE_ENABLE_SCREENLOCK" desc="The text on the checkbox to enable screenlocker for current user.  Lock will happen in the device goes into sleep mode from being idle, or when laptop lid or detachable cover is closed">
-    Lock when sleeping or when lid is closed
+    Lock when sleeping or lid is closed
   </message>
   <message name="IDS_SETTINGS_PEOPLE_SCREEN_LOCK_ENABLE_TITLE" desc="The title on the toggle to enable screen lock for current user.">
     Screen lock
