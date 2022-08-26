@@ -671,8 +671,6 @@ void Scheduler::RunNextTask() {
     scheduling_queue.pop_back();
   }
 
-  base::ElapsedTimer task_timer;
-
   Sequence* sequence = GetSequence(state.sequence_id);
   DCHECK(sequence);
   DCHECK_EQ(sequence->task_runner(), task_runner);
@@ -748,12 +746,6 @@ void Scheduler::RunNextTask() {
       std::push_heap(scheduling_queue.begin(), scheduling_queue.end(),
                      &SchedulingState::Comparator);
     }
-  }
-
-  if (log_histograms) {
-    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "GPU.Scheduler.RunTaskTime", task_timer.Elapsed(),
-        base::Microseconds(10), base::Seconds(30), 100);
   }
 
   // Avoid scheduling another RunNextTask if we're done with all tasks.

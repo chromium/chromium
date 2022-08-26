@@ -1348,18 +1348,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.Scheduler.RunTaskTime" units="microseconds"
-    expires_after="2022-08-28">
-  <owner>kylechar@chromium.org</owner>
-  <owner>chrome-gpu-metrics@google.com</owner>
-  <summary>
-    Records the wall time taken for each GPU scheduler task to run. The time
-    delta starts when the GPU scheduler pops the task off the task queue and
-    finishes when the task has completed. Only recorded for clients with high
-    resolution clocks.
-  </summary>
-</histogram>
-
 <histogram name="GPU.Scheduler.TaskDependencyTime" units="microseconds"
     expires_after="2022-08-07">
   <owner>berlu@chromium.org</owner>
