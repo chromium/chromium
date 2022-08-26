@@ -69,4 +69,6 @@ enum SegmentId {
   POWER_USER_SEGMENT = 1000;
   // Determine users active on multiple synced devices.
   CROSS_DEVICE_USER_SEGMENT = 1001;
+  // User segment that regularly use chrome features.
+  FREQUENT_FEATURE_USER_SEGMENT = 1002;
 };

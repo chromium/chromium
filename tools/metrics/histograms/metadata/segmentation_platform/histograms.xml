@@ -27,6 +27,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ChromeStartAndroid"/>
   <variant name="CrossDeviceUser"/>
   <variant name="FeedUserSegment"/>
+  <variant name="FrequentFeatureUser"/>
   <variant name="PowerUserSegment"/>
   <variant name="QueryTiles"/>
 </variants>
@@ -44,6 +45,7 @@ chromium-metrics-reviews@google.com.
   <variant name="CrossDeviceUser"/>
   <variant name="DummyFeature"/>
   <variant name="FeedUserSegment"/>
+  <variant name="FrequentFeatureUser"/>
   <variant name="PowerUser"/>
   <variant name="QueryTiles"/>
 </variants>
@@ -55,6 +57,7 @@ chromium-metrics-reviews@google.com.
   <variant name="CrossDeviceUser"/>
   <variant name="Dummy"/>
   <variant name="FeedUserSegment"/>
+  <variant name="FrequentFeatureUserSegment"/>
   <variant name="NewTab"/>
   <variant name="PowerUserSegment"/>
   <variant name="QueryTiles"/>

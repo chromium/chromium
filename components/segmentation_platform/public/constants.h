@@ -54,6 +54,10 @@ const char kPowerUserUmaName[] = "PowerUser";
 const char kCrossDeviceUserKey[] = "cross_device_user";
 const char kCrossDeviceUserUmaName[] = "CrossDeviceUser";
 
+// Keys related to users of chrome features.
+const char kFrequentFeatureUserKey[] = "frequent_feature_user";
+const char kFrequentFeatureUserUmaName[] = "FrequentFeatureUser";
+
 // The key provide a list of segment IDs, separated by commas, whose ML model
 // execution results are allowed to be uploaded through UKM.
 const char kSegmentIdsAllowedForReportingKey[] =

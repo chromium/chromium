@@ -32,6 +32,8 @@ const char* SegmentationKeyToUmaName(const std::string& segmentation_key) {
     return kPowerUserUmaName;
   } else if (segmentation_key == kCrossDeviceUserKey) {
     return kCrossDeviceUserUmaName;
+  } else if (segmentation_key == kFrequentFeatureUserKey) {
+    return kFrequentFeatureUserUmaName;
   } else if (base::StartsWith(segmentation_key, "test_key")) {
     return "TestKey";
   }
@@ -70,6 +72,8 @@ std::string SegmentIdToHistogramVariant(proto::SegmentId segment_id) {
       return "PowerUserSegment";
     case proto::SegmentId::CROSS_DEVICE_USER_SEGMENT:
       return "CrossDeviceUser";
+    case proto::SegmentId::FREQUENT_FEATURE_USER_SEGMENT:
+      return "FrequentFeatureUserSegment";
     default:
       // This case is reached when UNKNOWN segment is valid, in case of boolean
       // segment results.
