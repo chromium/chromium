@@ -8,6 +8,8 @@
 <script src="/speculation-rules/prerender/resources/utils.js"></script>
 <body>
 <script>
+setup(() => assertSpeculationRulesIsSupported());
+
 promise_test(async t => {
   const uid = token();
   const bc = new PrerenderChannel('prerender-channel', uid);
