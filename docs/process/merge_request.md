@@ -159,6 +159,11 @@ ASAP so that it can be included in the next release built from the branch; if
 you don't merge your cherry-pick soon after approval, it will eventually be
 rejected for merge.
 
+Once the cherry-pick has landed a bot will apply the *merge-merged-##* label if
+the commit references the issue. If for some reason the commit did not
+reference the issue, add the *Merge-Merged-##* label to the issue. After the
+merge is completed the *Merge-Approved-##* label should be manually removed.
+
 ### Using Gerrit UI
 
 Select the "..." button in the Gerrit UI, then choose "Cherry Pick". When
