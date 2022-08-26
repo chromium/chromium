@@ -5082,6 +5082,14 @@ crbug.com/1066732 fast/events/platform-wheelevent-paging-y-in-scrolling-div.html
 # Temporarily disabled for landing changes to DevTools frontend
 crbug.com/1066579 http/tests/devtools/har-importer.js [ Failure Pass ]
 
+# Temporarily disabled for landing DevTools frontend changes
+crbug.com/471601 http/tests/devtools/elements/css-variables/defined-css-variables.js [ Skip ]
+crbug.com/471601 http/tests/devtools/elements/styles-1/filter-matched-styles.js [ Skip ]
+crbug.com/471601 http/tests/devtools/elements/styles-2/cssom-shorthand-important.js [ Skip ]
+crbug.com/471601 http/tests/devtools/elements/styles-4/styles-keyframes-display-none.js [ Skip ]
+crbug.com/471601 http/tests/devtools/elements/styles-4/styles-overloaded-shorthand.js [ Skip ]
+crbug.com/471601 http/tests/devtools/elements/styles-4/styles-properties-overload.js [ Skip ]
+
 # COOP top navigation:
 crbug.com/1153648 external/wpt/html/cross-origin-opener-policy/navigate-top-to-aboutblank.https.html [ Failure ]
 
