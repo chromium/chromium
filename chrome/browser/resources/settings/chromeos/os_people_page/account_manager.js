@@ -379,7 +379,14 @@ class SettingsAccountManagerElement extends SettingsAccountManagerElementBase {
     }
   }
 
-  /** @private */
+  /**
+   * @private
+   *
+   * TODO(crbug/1315757) ParentalControlsBrowserProxy is in TS so
+   * suppress the closure compilation error for launchFamilyLinkSettings()
+   * until this element is converted to TS.
+   * @suppress {missingProperties}
+   */
   onManagedIconClick_() {
     if (this.isChildUser_) {
       ParentalControlsBrowserProxyImpl.getInstance().launchFamilyLinkSettings();

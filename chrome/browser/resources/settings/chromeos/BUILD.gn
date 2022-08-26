@@ -438,7 +438,6 @@ group("generate_web_components") {
     "os_privacy_page:web_components",
     "os_reset_page:web_components",
     "os_search_page:web_components",
-    "parental_controls_page:web_components",
     "settings_scheduler_slider:web_components",
   ]
 }
@@ -473,7 +472,6 @@ group("closure_compile_module") {
     "os_reset_page:closure_compile_module",
     "os_search_page:closure_compile_module",
     "os_settings_page:closure_compile_module",
-    "parental_controls_page:closure_compile_module",
     "settings_scheduler_slider:closure_compile_module",
   ]
 }

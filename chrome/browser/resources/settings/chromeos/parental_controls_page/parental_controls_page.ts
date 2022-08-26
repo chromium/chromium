@@ -13,22 +13,19 @@ import '../../settings_page/settings_subpage.js';
 import '../../settings_shared.css.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 
 import {ParentalControlsBrowserProxy, ParentalControlsBrowserProxyImpl} from './parental_controls_browser_proxy.js';
+import {getTemplate} from './parental_controls_page.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const SettingsParentalControlsPageElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+const SettingsParentalControlsPageElementBase = I18nMixin(PolymerElement) as {
+  new (): PolymerElement & I18nMixinInterface,
+};
 
-/** @polymer */
 export class SettingsParentalControlsPageElement extends
     SettingsParentalControlsPageElementBase {
   static get is() {
@@ -36,12 +33,11 @@ export class SettingsParentalControlsPageElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /** @private */
       isChild_: {
         type: Boolean,
         value() {
@@ -49,7 +45,6 @@ export class SettingsParentalControlsPageElement extends
         },
       },
 
-      /** @private */
       online_: {
         type: Boolean,
         value() {
@@ -59,16 +54,16 @@ export class SettingsParentalControlsPageElement extends
     };
   }
 
-  /** @override */
+  private online_: boolean;
+  private browserProxy_: ParentalControlsBrowserProxy;
+
   constructor() {
     super();
 
-    /** @private {!ParentalControlsBrowserProxy} */
     this.browserProxy_ = ParentalControlsBrowserProxyImpl.getInstance();
   }
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
 
     // Set up online/offline listeners.
@@ -78,35 +73,32 @@ export class SettingsParentalControlsPageElement extends
 
   /**
    * Returns the setup parental controls CrButtonElement.
-   * @return {?CrButtonElement}
    */
-  getSetupButton() {
-    return /** @type {?CrButtonElement} */ (
-        this.shadowRoot.querySelector('#setupButton'));
+  getSetupButton(): CrButtonElement {
+    const setupButton = this.shadowRoot!.querySelector('#setupButton');
+    assert(setupButton);
+    return setupButton as CrButtonElement;
   }
 
   /**
    * Updates the UI when the device goes offline.
-   * @private
    */
-  onOffline_() {
+  private onOffline_() {
     this.online_ = false;
   }
 
   /**
    * Updates the UI when the device comes online.
-   * @private
    */
-  onOnline_() {
+  private onOnline_() {
     this.online_ = true;
   }
 
   /**
-   * @return {string} Returns the string to display in the main
+   * @return Returns the string to display in the main
    * description area for non-child users.
-   * @private
    */
-  getSetupLabelText_(online) {
+  private getSetupLabelText_(online: boolean): string {
     if (online) {
       return this.i18n('parentalControlsPageSetUpLabel');
     } else {
@@ -114,16 +106,20 @@ export class SettingsParentalControlsPageElement extends
     }
   }
 
-  /** @private */
-  handleSetupButtonClick_(event) {
+  private handleSetupButtonClick_(event: Event) {
     event.stopPropagation();
     this.browserProxy_.showAddSupervisionDialog();
   }
 
-  /** @private */
-  handleFamilyLinkButtonClick_(event) {
+  private handleFamilyLinkButtonClick_(event: Event) {
     event.stopPropagation();
     this.browserProxy_.launchFamilyLinkSettings();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-parental-controls-page': SettingsParentalControlsPageElement;
   }
 }
 

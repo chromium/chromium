@@ -2,36 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {osPageVisibility, ParentalControlsBrowserProxy, ParentalControlsBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
+import {osPageVisibility, ParentalControlsBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
-/** @implements {ParentalControlsBrowserProxy} */
-class TestParentalControlsBrowserProxy extends TestBrowserProxy {
-  constructor() {
-    super([
-      'showAddSupervisionDialog',
-      'launchFamilyLinkSettings',
-    ]);
-  }
-
-  /** @override */
-  launchFamilyLinkSettings() {
-    this.methodCalled('launchFamilyLinkSettings');
-  }
-
-  /** @override */
-  showAddSupervisionDialog() {
-    this.methodCalled('showAddSupervisionDialog');
-  }
-}
+import {TestParentalControlsBrowserProxy} from './test_parental_controls_browser_proxy.js';
 
 suite('Chrome OS parental controls page setup item tests', function() {
-  /** @type {ParentalControlsPage} */
   let parentalControlsPage = null;
 
   /** @type {TestParentalControlsBrowserProxy} */
@@ -108,7 +88,6 @@ suite('Chrome OS parental controls page setup item tests', function() {
 });
 
 suite('Chrome OS parental controls page child account tests', function() {
-  /** @type {ParentalControlsPage} */
   let parentalControlsPage = null;
 
   /** @type {TestParentalControlsBrowserProxy} */

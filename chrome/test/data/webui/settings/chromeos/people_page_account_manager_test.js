@@ -130,7 +130,6 @@ class TestAccountManagerBrowserProxyForUnmanagedAccounts extends
   }
 }
 
-/** @implements {ParentalControlsBrowserProxy} */
 class TestParentalControlsBrowserProxy extends TestBrowserProxy {
   constructor() {
     super([

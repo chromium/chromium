@@ -322,13 +322,19 @@ class OsSettingsPeoplePageElement extends OsSettingsPeoplePageElementBase {
     switch (settingId) {
       // Manually show the deep links for settings nested within elements.
       case Setting.kSetUpParentalControls:
-        this.afterRenderShowDeepLink_(settingId, () => {
-          const parentalPage =
-              /** @type {?SettingsParentalControlsPageElement} */ (
-                  this.shadowRoot.querySelector(
-                      'settings-parental-controls-page'));
-          return parentalPage && parentalPage.getSetupButton();
-        });
+        this.afterRenderShowDeepLink_(
+            settingId,
+            /**
+             * TODO(crbug/1315757) settings-parental-controls-page is in TS so
+             * suppress the closure compilation error for getSetupButton()
+             * until this page is converted to TS.
+             * @suppress {missingProperties}
+             */
+            () => {
+              const parentalPage = this.shadowRoot.querySelector(
+                  'settings-parental-controls-page');
+              return parentalPage && parentalPage.getSetupButton();
+            });
         // Stop deep link attempt since we completed it manually.
         return false;
 

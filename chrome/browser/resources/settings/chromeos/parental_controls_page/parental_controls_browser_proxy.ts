@@ -7,42 +7,36 @@
  * Browser Proxy for Parental Controls functions.
  */
 
-/** @interface */
-export class ParentalControlsBrowserProxy {
+export interface ParentalControlsBrowserProxy {
   /**
    * Shows the Add Supervsion dialog.
    */
-  showAddSupervisionDialog() {}
+  showAddSupervisionDialog(): void;
 
   /**
    * Launches an app that shows the Family Link Settings.  Depending
    * on whether the Family Link Helper app is available, this might
    * launch the app, or take some kind of backup/default action.
    */
-  launchFamilyLinkSettings() {}
+  launchFamilyLinkSettings(): void;
 }
 
-/** @type {?ParentalControlsBrowserProxy} */
-let instance = null;
+let instance: ParentalControlsBrowserProxy|null = null;
 
-/** @implements {ParentalControlsBrowserProxy} */
-export class ParentalControlsBrowserProxyImpl {
-  /** @return {!ParentalControlsBrowserProxy} */
-  static getInstance() {
+export class ParentalControlsBrowserProxyImpl implements
+    ParentalControlsBrowserProxy {
+  static getInstance(): ParentalControlsBrowserProxy {
     return instance || (instance = new ParentalControlsBrowserProxyImpl());
   }
 
-  /** @param {!ParentalControlsBrowserProxy} obj */
-  static setInstanceForTesting(obj) {
+  static setInstanceForTesting(obj: ParentalControlsBrowserProxy) {
     instance = obj;
   }
 
-  /** @override */
   showAddSupervisionDialog() {
     chrome.send('showAddSupervisionDialog');
   }
 
-  /** @override */
   launchFamilyLinkSettings() {
     chrome.send('launchFamilyLinkSettings');
   }

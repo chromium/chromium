@@ -35,6 +35,7 @@ web_component_files = [
   "chromeos/os_settings_search_box/os_settings_search_box.ts",
   "chromeos/os_settings_ui/os_settings_ui.ts",
   "chromeos/os_toolbar/os_toolbar.ts",
+  "chromeos/parental_controls_page/parental_controls_page.ts",
   "chromeos/personalization_page/personalization_page.ts",
 ]
 
@@ -145,7 +146,7 @@ non_web_component_files = [
   "chromeos/os_settings.js",
   "chromeos/os_settings_page/main_page_behavior.js",
   "chromeos/os_settings_routes.js",
-  "chromeos/parental_controls_page/parental_controls_browser_proxy.js",
+  "chromeos/parental_controls_page/parental_controls_browser_proxy.ts",
   "chromeos/personalization_page/personalization_hub_browser_proxy.ts",
   "chromeos/personalization_search_handler.js",
   "chromeos/pref_to_setting_metric_converter.js",
@@ -339,7 +340,6 @@ gen_web_component_files = [
   "chromeos/os_search_page/search_engine.js",
   "chromeos/os_search_page/search_subpage.js",
   "chromeos/os_settings_icons_css.js",
-  "chromeos/parental_controls_page/parental_controls_page.js",
   "chromeos/settings_scheduler_slider/settings_scheduler_slider.js",
 ]
 
