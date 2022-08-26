@@ -18,7 +18,10 @@ namespace web_test_string_util {
 
 extern const char* kIllegalString;
 
-std::string NormalizeWebTestURL(const std::string& url);
+// Converts a web test url into a string that is invariant with the testing
+// environment (e.g. the absolute file path of the chrome repository), called
+// when the url will be output in the text result of a test.
+std::string NormalizeWebTestURLForTextOutput(const std::string& url);
 
 std::string URLDescription(const GURL& url);
 const char* WebNavigationPolicyToString(

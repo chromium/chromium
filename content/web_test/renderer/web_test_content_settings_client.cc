@@ -28,7 +28,7 @@ bool WebTestContentSettingsClient::AllowImage(bool enabled_per_settings,
   if (flags_->dump_web_content_settings_client_callbacks()) {
     test_runner_->PrintMessage(
         std::string("WebTestContentSettingsClient: allowImage(") +
-        web_test_string_util::NormalizeWebTestURL(
+        web_test_string_util::NormalizeWebTestURLForTextOutput(
             image_url.GetString().Utf8()) +
         "): " + (allowed ? "true" : "false") + "\n");
   }
@@ -46,7 +46,7 @@ bool WebTestContentSettingsClient::AllowScriptFromSource(
   if (flags_->dump_web_content_settings_client_callbacks()) {
     test_runner_->PrintMessage(
         std::string("WebTestContentSettingsClient: allowScriptFromSource(") +
-        web_test_string_util::NormalizeWebTestURL(
+        web_test_string_util::NormalizeWebTestURLForTextOutput(
             script_url.GetString().Utf8()) +
         "): " + (allowed ? "true" : "false") + "\n");
   }

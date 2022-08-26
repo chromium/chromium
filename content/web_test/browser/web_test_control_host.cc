@@ -127,7 +127,7 @@ std::string DumpFrameState(const blink::ExplodedFrameState& frame_state,
     result.append(indent, ' ');
   }
 
-  std::string url = web_test_string_util::NormalizeWebTestURL(
+  std::string url = web_test_string_util::NormalizeWebTestURLForTextOutput(
       base::UTF16ToUTF8(frame_state.url_string.value_or(std::u16string())));
   result.append(url);
   if (frame_state.target && !frame_state.target->empty()) {
