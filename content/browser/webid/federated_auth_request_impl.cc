@@ -497,7 +497,7 @@ void FederatedAuthRequestImpl::FetchManifest(
     network_manager_->FetchManifestList(identity_provider_ptr->config_url,
                                         std::move(manifest_list_callback));
   } else {
-    manifest_list_checked_ = true;
+    manifest_lists_checked_.insert(identity_provider_ptr->config_url);
   }
   network_manager_->FetchManifest(identity_provider_ptr->config_url,
                                   icon_ideal_size, icon_minimum_size,
@@ -572,7 +572,7 @@ void FederatedAuthRequestImpl::OnManifestListFetched(
     return;
   }
 
-  manifest_list_checked_ = true;
+  manifest_lists_checked_.insert(identity_provider.config_url);
   if (idp_metadata_)
     OnManifestReady(identity_provider, *idp_metadata_);
 }
@@ -619,7 +619,7 @@ void FederatedAuthRequestImpl::OnManifestFetched(
       ResolveManifestUrl(identity_provider, endpoints.client_metadata);
   idp_metadata_ = idp_metadata;
 
-  if (manifest_list_checked_)
+  if (manifest_lists_checked_.count(identity_provider.config_url))
     OnManifestReady(identity_provider, idp_metadata);
 }
 
@@ -1058,7 +1058,7 @@ void FederatedAuthRequestImpl::CleanUp() {
   show_accounts_dialog_time_ = base::TimeTicks();
   select_account_time_ = base::TimeTicks();
   token_response_time_ = base::TimeTicks();
-  manifest_list_checked_ = false;
+  manifest_lists_checked_.clear();
   idp_metadata_.reset();
 }
 

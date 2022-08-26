@@ -189,9 +189,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     GURL client_metadata;
   } endpoints_;
 
-  // Represents whether the manifest has been validated via checking the
+  // Tracks for which IDPs the manifest URL has been checked against the IDP's
   // manifest list.
-  bool manifest_list_checked_ = false;
+  base::flat_set<GURL> manifest_lists_checked_;
   absl::optional<IdentityProviderMetadata> idp_metadata_;
 
   raw_ptr<FederatedIdentityApiPermissionContextDelegate>
