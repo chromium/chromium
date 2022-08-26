@@ -252,6 +252,32 @@ TEST_F(NativeWidgetAuraTest, RestoreBounds) {
   EXPECT_EQ(gfx::Rect(400, 400), widget->GetRestoredBounds());
 }
 
+TEST_F(NativeWidgetAuraTest, GetWorkspace) {
+  Widget::InitParams params(Widget::InitParams::TYPE_WINDOW);
+  params.parent = nullptr;
+  params.context = root_window();
+  params.show_state = ui::SHOW_STATE_MINIMIZED;
+  params.bounds.SetRect(0, 0, 1024, 800);
+  UniqueWidgetPtr widget = std::make_unique<Widget>();
+  widget->Init(std::move(params));
+  widget->Show();
+
+  widget->GetNativeWindow()->SetProperty(
+      aura::client::kWindowWorkspaceKey,
+      aura::client::kWindowWorkspaceUnassignedWorkspace);
+  EXPECT_EQ("", widget->GetWorkspace());
+
+  widget->GetNativeWindow()->SetProperty(
+      aura::client::kWindowWorkspaceKey,
+      aura::client::kWindowWorkspaceVisibleOnAllWorkspaces);
+  EXPECT_EQ("", widget->GetWorkspace());
+
+  const int desk_index = 1;
+  widget->GetNativeWindow()->SetProperty(aura::client::kWindowWorkspaceKey,
+                                         desk_index);
+  EXPECT_EQ(base::NumberToString(desk_index), widget->GetWorkspace());
+}
+
 // A WindowObserver that counts kShowStateKey property changes.
 class TestWindowObserver : public aura::WindowObserver {
  public:

@@ -516,9 +516,12 @@ gfx::Rect NativeWidgetAura::GetRestoredBounds() const {
 
 std::string NativeWidgetAura::GetWorkspace() const {
   int desk_index = window_->GetProperty(aura::client::kWindowWorkspaceKey);
-  return desk_index == aura::client::kWindowWorkspaceUnassignedWorkspace
-             ? std::string()
-             : base::NumberToString(desk_index);
+  if (desk_index == aura::client::kWindowWorkspaceUnassignedWorkspace ||
+      desk_index == aura::client::kWindowWorkspaceVisibleOnAllWorkspaces) {
+    return std::string();
+  }
+
+  return base::NumberToString(desk_index);
 }
 
 void NativeWidgetAura::SetBounds(const gfx::Rect& bounds) {
