@@ -29,6 +29,7 @@
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
+#include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
@@ -342,6 +343,11 @@ void PasswordSyncBridge::ActOnPasswordStoreChanges(
         break;
       }
     }
+  }
+
+  if (absl::optional<syncer::ModelError> error =
+          metadata_change_list.TakeError()) {
+    change_processor()->ReportError(*error);
   }
 }
 
