@@ -57,10 +57,32 @@ constexpr int kDesiredAvatarSize = 30;
 
 const std::vector<std::string> kAccountSuffixes = {"0", "1", "2"};
 
+std::vector<std::string> GetChildClassNames(views::View* parent) {
+  std::vector<std::string> child_class_names;
+  for (views::View* child_view : parent->children()) {
+    child_class_names.push_back(child_view->GetClassName());
+  }
+  return child_class_names;
+}
+
+views::View* GetViewWithClassName(views::View* parent,
+                                  const std::string& class_name) {
+  for (views::View* child_view : parent->children()) {
+    if (child_view->GetClassName() == class_name)
+      return child_view;
+  }
+  return nullptr;
+}
+
 std::u16string GetSignInTitle() {
   return base::FeatureList::IsEnabled(features::kFedCmMultipleIdentityProviders)
              ? kTitleSignInWithoutIdp
              : kTitleSignIn;
+}
+
+bool ShouldIdpBrandIconBeInHeader() {
+  return !base::FeatureList::IsEnabled(
+      features::kFedCmMultipleIdentityProviders);
 }
 
 }  // namespace
@@ -133,7 +155,9 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
     EXPECT_EQ(email_view->GetText(), base::UTF8ToUTF16(expected_email));
   }
 
-  void PerformHeaderChecks(views::View* header, const std::u16string& title) {
+  void PerformHeaderChecks(views::View* header,
+                           const std::u16string& title,
+                           bool expect_idp_brand_icon_in_header) {
     // Perform some basic dialog checks.
     EXPECT_FALSE(dialog()->ShouldShowCloseButton());
     EXPECT_FALSE(dialog()->ShouldShowWindowTitle());
@@ -141,19 +165,21 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
     EXPECT_FALSE(dialog()->GetOkButton());
     EXPECT_FALSE(dialog()->GetCancelButton());
 
-    std::vector<views::View*> header_children = header->children();
-    ASSERT_EQ(header_children.size(), 3u);
-
-    // Potentially hidden back button.
-    EXPECT_STREQ("ImageButton", header_children[0]->GetClassName());
+    // Order: Potentially hidden IDP brand icon, potentially hidden back button,
+    // title, close button.
+    std::vector<std::string> expected_class_names = {"ImageButton", "Label",
+                                                     "ImageButton"};
+    if (expect_idp_brand_icon_in_header) {
+      expected_class_names.insert(expected_class_names.begin(), "ImageView");
+    }
+    EXPECT_THAT(GetChildClassNames(header),
+                testing::ElementsAreArray(expected_class_names));
 
     // Check title text.
-    views::Label* title_view = static_cast<views::Label*>(header_children[1]);
+    views::Label* title_view =
+        static_cast<views::Label*>(GetViewWithClassName(header, "Label"));
     ASSERT_TRUE(title_view);
     EXPECT_EQ(title_view->GetText(), title);
-
-    // Check close button.
-    EXPECT_STREQ("ImageButton", header_children[2]->GetClassName());
 
     // Check separator.
     if (title == kTitleSignIn || title == kTitleSignInWithoutIdp) {
@@ -181,7 +207,8 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
                                   bool click_button) {
     std::vector<views::View*> children = dialog()->children();
     ASSERT_EQ(children.size(), 3u);
-    PerformHeaderChecks(children[0], GetSignInTitle());
+    PerformHeaderChecks(children[0], GetSignInTitle(),
+                        ShouldIdpBrandIconBeInHeader());
 
     views::View* single_account_chooser = children[2];
     std::vector<views::View*> chooser_children =
@@ -218,7 +245,8 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
     std::vector<views::View*> children = dialog()->children();
     ASSERT_EQ(children.size(), 3u);
 
-    PerformHeaderChecks(children[0], GetSignInTitle());
+    PerformHeaderChecks(children[0], GetSignInTitle(),
+                        ShouldIdpBrandIconBeInHeader());
 
     views::ScrollView* scroller = static_cast<views::ScrollView*>(children[2]);
     ASSERT_FALSE(scroller->children().empty());
@@ -244,7 +272,8 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
   void TestAtVerifyingScreen(const std::string& account_suffix) {
     const std::vector<views::View*> children = dialog()->children();
     ASSERT_EQ(children.size(), 3u);
-    PerformHeaderChecks(children[0], kTitleSigningIn);
+    PerformHeaderChecks(children[0], kTitleSigningIn,
+                        ShouldIdpBrandIconBeInHeader());
 
     views::View* row_container = dialog()->children()[2];
     ASSERT_EQ(row_container->children().size(), 1u);
@@ -257,7 +286,8 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
 
     std::vector<views::View*> children = dialog()->children();
     ASSERT_EQ(children.size(), 3u);
-    PerformHeaderChecks(children[0], GetSignInTitle());
+    PerformHeaderChecks(children[0], GetSignInTitle(),
+                        ShouldIdpBrandIconBeInHeader());
 
     views::View* single_account_chooser = children[2];
     ASSERT_EQ(single_account_chooser->children().size(), 3u);
@@ -286,7 +316,8 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
 
     std::vector<views::View*> children = dialog()->children();
     ASSERT_EQ(children.size(), 3u);
-    PerformHeaderChecks(children[0], GetSignInTitle());
+    PerformHeaderChecks(children[0], GetSignInTitle(),
+                        ShouldIdpBrandIconBeInHeader());
 
     views::ScrollView* scroller = static_cast<views::ScrollView*>(children[2]);
     ASSERT_FALSE(scroller->children().empty());
@@ -309,8 +340,14 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
     CreateViewAndShow(kAccountSuffixes);
 
     // Button should not be visible in multi account chooser.
-    views::Button* back_button =
-        static_cast<views::Button*>(dialog()->children()[0]->children()[0]);
+    // In non-multi-IDP account chooser, IDP brand icon precedes back button in
+    // header.
+    size_t back_button_index =
+        base::FeatureList::IsEnabled(features::kFedCmMultipleIdentityProviders)
+            ? 0u
+            : 1u;
+    views::Button* back_button = static_cast<views::Button*>(
+        dialog()->children()[0]->children()[back_button_index]);
     EXPECT_FALSE(back_button->GetVisible());
 
     TestAtMultipleAccountChooser(/*click_index=*/1u);
@@ -364,12 +401,12 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
   }
 
   void CheckIdpRow(views::View* idp_account) {
-    std::vector<views::View*> idp_account_children = idp_account->children();
-    ASSERT_EQ(idp_account_children.size(), 1u);
-    // Check title text.
+    // Order: Brand icon, title.
+    EXPECT_THAT(GetChildClassNames(idp_account),
+                testing::ElementsAre("ImageView", "Label"));
+
     views::Label* title_view =
-        static_cast<views::Label*>(idp_account_children[0]);
-    ASSERT_TRUE(title_view);
+        static_cast<views::Label*>(idp_account->children()[1]);
     EXPECT_EQ(title_view->GetText(), u"idp-example.com");
   }
 
@@ -425,7 +462,8 @@ TEST_F(AccountSelectionBubbleViewTest, SingleAccountNoTermsOfService) {
 
   std::vector<views::View*> children = dialog()->children();
   ASSERT_EQ(children.size(), 3u);
-  PerformHeaderChecks(children[0], GetSignInTitle());
+  PerformHeaderChecks(children[0], GetSignInTitle(),
+                      ShouldIdpBrandIconBeInHeader());
 
   views::View* single_account_chooser = children[2];
   ASSERT_EQ(single_account_chooser->children().size(), 3u);

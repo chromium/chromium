@@ -47,8 +47,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
 
   // Returns a View containing the logo of the identity provider and the title
   // of the bubble, properly formatted.
-  std::unique_ptr<views::View> CreateHeaderView(const std::u16string& title,
-                                                bool show_icon);
+  std::unique_ptr<views::View> CreateHeaderView(const std::u16string& title);
 
   void CloseBubble();
 
@@ -61,20 +60,28 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
   // information, disclosure text and a button for the user to confirm the
   // selection.
   std::unique_ptr<views::View> CreateSingleAccountChooser(
-      const content::IdentityRequestAccount& account);
+      const std::u16string& idp_for_display,
+      const content::IdentityRequestAccount& account,
+      const content::IdentityProviderMetadata& idp_metadata,
+      const content::ClientIdData& client_data);
 
   // Returns a View for multiple account chooser. It contains the info for each
   // account in a button, so the user can pick an account.
   std::unique_ptr<views::View> CreateMultipleAccountChooser(
-      base::span<const content::IdentityRequestAccount> accounts);
+      const std::u16string& idp_for_display,
+      base::span<const content::IdentityRequestAccount> accounts,
+      const content::IdentityProviderMetadata& idp_metadata);
 
   // Creates a row containing the IDP icon as well as the IDP ETLD+1. Used in
   // the multi IDP scenario, when the user is selecting from multiple accounts.
-  std::unique_ptr<views::View> CreateIdpHeaderRow();
+  std::unique_ptr<views::View> CreateIdpHeaderRowForMultiIdp(
+      const std::u16string& idp_for_display,
+      const content::IdentityProviderMetadata& idp_metadata);
 
-  // Returns a View containing information about an account: the picture for the
-  // account on the left, and information about the account on the right.
-  // |should_hover| determines whether the account row is a HoverButton or not.
+  // Returns a View containing information about an account: the picture for
+  // the account on the left, and information about the account on the right.
+  // |should_hover| determines whether the account row is a HoverButton or
+  // not.
   std::unique_ptr<views::View> CreateAccountRow(
       const content::IdentityRequestAccount& account,
       bool should_hover);
@@ -83,8 +90,8 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
   void OnBrandImageFetched(const gfx::Image& image,
                            const image_fetcher::RequestMetadata& metadata);
 
-  // Called when the user clicks on the privacy policy or terms of service URL.
-  // Opens the URL in a new tab.
+  // Called when the user clicks on the privacy policy or terms of service
+  // URL. Opens the URL in a new tab.
   void OnLinkClicked(const GURL& gurl);
 
   // Called when the user selects an account from the multiple account chooser
@@ -105,6 +112,12 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
   // account.
   void ShowVerifySheet(const content::IdentityRequestAccount& account);
 
+  // Sets the brand views::ImageView visibility and image. Initiates the
+  // download of the brand icon if necessary.
+  void ConfigureIdpBrandImageView(
+      views::ImageView* image_view,
+      const content::IdentityProviderMetadata& idp_metadata);
+
   // Sets whether the back button in the header is visible.
   void SetBackButtonVisible(bool is_visible);
 
@@ -117,9 +130,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
   // Used in various messages so the user is aware of who the IDP is.
   std::u16string idp_for_display_;
 
-  // Used in single account chooser to determine the look of the consent button.
-  absl::optional<SkColor> brand_text_color_;
-  absl::optional<SkColor> brand_background_color_;
+  const content::IdentityProviderMetadata idp_metadata_;
 
   // The privacy policy and terms of service URLs.
   const content::ClientIdData client_data_;
@@ -160,8 +171,8 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView {
   // Used to differentiate UI dismissal scenarios.
   bool verify_sheet_shown_ = false;
 
-  // Whether the IDP metadata contains an IDP icon.
-  bool has_idp_icon_ = false;
+  // The icon URLs which have been fetched.
+  std::set<GURL> fetched_icons_;
 
   // Used to ensure that callbacks are not run if the AccountSelectionBubbleView
   // is destroyed.
