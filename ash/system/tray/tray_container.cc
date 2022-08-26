@@ -164,4 +164,9 @@ TrayContainer::LayoutInputs TrayContainer::GetLayoutInputs() const {
           spacing_between_children_};
 }
 
+void TrayContainer::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  SchedulePaint();
+}
+
 }  // namespace ash
