@@ -153,6 +153,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetadataStore
                base::Value value);
   const base::Value* GetPref(const std::string& network_guid,
                              const std::string& key);
+  const base::Value::List* GetListPref(const std::string& network_guid,
+                                       const std::string& key);
   void UpdateExternalModifications(const std::string& network_guid,
                                    const std::string& field);
   void LogHiddenNetworkAge();

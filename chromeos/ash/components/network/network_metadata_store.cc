@@ -50,19 +50,17 @@ std::string GetPath(const std::string& guid, const std::string& subkey) {
   return base::StringPrintf("%s.%s", guid.c_str(), subkey.c_str());
 }
 
-base::Value CreateOrCloneListValue(const base::Value* list) {
+base::Value::List CreateOrCloneListValue(const base::Value::List* list) {
   if (list)
     return list->Clone();
 
-  return base::Value(base::Value::Type::LIST);
+  return base::Value::List();
 }
 
-bool ListContains(const base::Value* list, const std::string& value) {
+bool ListContains(const base::Value::List* list, const std::string& value) {
   if (!list)
     return false;
-  base::Value::ConstListView list_view = list->GetListDeprecated();
-  return std::find(list_view.begin(), list_view.end(), base::Value(value)) !=
-         list_view.end();
+  return std::find(list->begin(), list->end(), value) != list->end();
 }
 
 }  // namespace
@@ -182,10 +180,10 @@ void NetworkMetadataStore::FixSyncedHiddenNetworks() {
     }
 
     total_count++;
-    base::Value dict(base::Value::Type::DICTIONARY);
-    dict.SetBoolKey(shill::kWifiHiddenSsid, false);
+    base::Value::Dict dict;
+    dict.Set(shill::kWifiHiddenSsid, false);
     network_configuration_handler_->SetShillProperties(
-        network->path(), dict, base::DoNothing(),
+        network->path(), base::Value(std::move(dict)), base::DoNothing(),
         base::BindOnce(&NetworkMetadataStore::OnDisableHiddenError,
                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -295,18 +293,20 @@ void NetworkMetadataStore::SetIsCreatedByUser(const std::string& network_guid) {
 void NetworkMetadataStore::UpdateExternalModifications(
     const std::string& network_guid,
     const std::string& field) {
-  const base::Value* fields = GetPref(network_guid, kExternalModifications);
+  const base::Value::List* fields =
+      GetListPref(network_guid, kExternalModifications);
   if (GetIsCreatedByUser(network_guid)) {
     if (ListContains(fields, field)) {
-      base::Value writeable_fields = CreateOrCloneListValue(fields);
-      writeable_fields.EraseListValue(base::Value(field));
+      base::Value::List writeable_fields = CreateOrCloneListValue(fields);
+      writeable_fields.EraseValue(base::Value(field));
       SetPref(network_guid, kExternalModifications,
-              std::move(writeable_fields));
+              base::Value(std::move(writeable_fields)));
     }
   } else if (!ListContains(fields, field)) {
-    base::Value writeable_fields = CreateOrCloneListValue(fields);
-    writeable_fields.Append(base::Value(field));
-    SetPref(network_guid, kExternalModifications, std::move(writeable_fields));
+    base::Value::List writeable_fields = CreateOrCloneListValue(fields);
+    writeable_fields.Append(field);
+    SetPref(network_guid, kExternalModifications,
+            base::Value(std::move(writeable_fields)));
   }
 }
 
@@ -320,16 +320,17 @@ void NetworkMetadataStore::OnConfigurationModified(
 
   SetPref(guid, kIsFromSync, base::Value(false));
 
-  if (set_properties->FindKey(shill::kProxyConfigProperty)) {
+  const base::Value::Dict& set_properties_dict = set_properties->GetDict();
+  if (set_properties_dict.Find(shill::kProxyConfigProperty)) {
     UpdateExternalModifications(guid, shill::kProxyConfigProperty);
   }
-  if (set_properties->FindPath(
+  if (set_properties_dict.FindByDottedPath(
           base::StringPrintf("%s.%s", shill::kStaticIPConfigProperty,
                              shill::kNameServersProperty))) {
     UpdateExternalModifications(guid, shill::kNameServersProperty);
   }
 
-  if (set_properties->FindKey(shill::kPassphraseProperty)) {
+  if (set_properties_dict.Find(shill::kPassphraseProperty)) {
     // Only clear last connected if the passphrase changes.  Other settings
     // (autoconnect, dns, etc.) won't affect the ability to connect to a
     // network.
@@ -459,7 +460,8 @@ bool NetworkMetadataStore::GetIsCreatedByUser(const std::string& network_guid) {
 bool NetworkMetadataStore::GetIsFieldExternallyModified(
     const std::string& network_guid,
     const std::string& field) {
-  const base::Value* fields = GetPref(network_guid, kExternalModifications);
+  const base::Value::List* fields =
+      GetListPref(network_guid, kExternalModifications);
   return ListContains(fields, field);
 }
 
@@ -550,6 +552,15 @@ const base::Value* NetworkMetadataStore::GetPref(
   const base::Value::Dict& device_dict =
       device_pref_service_->GetValueDict(kNetworkMetadataPref);
   return device_dict.FindByDottedPath(GetPath(network_guid, key));
+}
+
+const base::Value::List* NetworkMetadataStore::GetListPref(
+    const std::string& network_guid,
+    const std::string& key) {
+  const base::Value* pref = GetPref(network_guid, key);
+  if (!pref)
+    return nullptr;
+  return pref->GetIfList();
 }
 
 void NetworkMetadataStore::AddObserver(NetworkMetadataObserver* observer) {
