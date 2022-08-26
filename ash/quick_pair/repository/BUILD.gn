@@ -111,6 +111,7 @@ source_set("unit_tests") {
     "fast_pair/pending_write_store_unittest.cc",
     "fast_pair/saved_device_registry_unittest.cc",
     "fast_pair_repository_impl_unittest.cc",
+    "fast_pair_repository_unittest.cc",
     "oauth_http_fetcher_unittest.cc",
     "unauthenticated_http_fetcher_unittest.cc",
   ]
