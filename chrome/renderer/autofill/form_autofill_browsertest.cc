@@ -18,6 +18,7 @@
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/form_cache.h"
+#include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_data_validation.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
@@ -2767,11 +2768,12 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldAutocompletetype) {
     expected.id_attribute = ASCIIToUTF16(test_cases[i].element_id);
     expected.name = expected.id_attribute;
     expected.form_control_type = test_cases[i].form_control_type;
+    expected.max_length = test_cases[i].form_control_type == "text"
+                              ? WebInputElement::DefaultMaxLength()
+                              : 0;
     expected.autocomplete_attribute = test_cases[i].autocomplete_attribute;
-    if (test_cases[i].form_control_type == "text")
-      expected.max_length = WebInputElement::DefaultMaxLength();
-    else
-      expected.max_length = 0;
+    expected.parsed_autocomplete = ParseAutocompleteAttribute(
+        test_cases[i].autocomplete_attribute, expected.max_length);
 
     SCOPED_TRACE(test_cases[i].element_id);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, result);

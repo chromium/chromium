@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
+#include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -467,25 +468,14 @@ TEST_F(FormStructureTestImpl, ShouldBeParsed_BadScheme) {
   FormData form;
   FormFieldData field;
 
-  field.label = u"Name";
-  field.name = u"name";
-  field.form_control_type = "text";
-  field.autocomplete_attribute = "name";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Name", "name", "", "text", "name", &field);
   form.fields.push_back(field);
 
-  field.label = u"Email";
-  field.name = u"email";
-  field.form_control_type = "text";
-  field.autocomplete_attribute = "email";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Email", "email", "", "text", "email", &field);
   form.fields.push_back(field);
 
-  field.label = u"Address";
-  field.name = u"address";
-  field.form_control_type = "text";
-  field.autocomplete_attribute = "address-line1";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Address", "address", "", "text", "address-line1",
+                            &field);
   form.fields.push_back(field);
 
   // Baseline, HTTP should work.
@@ -551,18 +541,10 @@ TEST_F(FormStructureTestImpl, ShouldBeParsed_TwoFields_HasAutocomplete) {
   form.url = GURL("http://www.foo.com/");
   FormFieldData field;
 
-  field.label = u"Name";
-  field.name = u"name";
-  field.form_control_type = "name";
-  field.autocomplete_attribute = "name";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Name", "name", "", "text", "name", &field);
   form.fields.push_back(field);
 
-  field.label = u"Address";
-  field.name = u"Address";
-  field.form_control_type = "select-one";
-  field.autocomplete_attribute = "";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Address", "Address", "", "select-one", "", &field);
   form.fields.push_back(field);
 
   form_structure = std::make_unique<FormStructure>(form);
@@ -592,11 +574,17 @@ TEST_F(FormStructureTestImpl, DetermineHeuristicTypes_AutocompleteFalse) {
       {{{.description_for_logging = "DetermineHeuristicTypes_AutocompleteFalse",
          .fields = {{.label = u"Name",
                      .name = u"name",
-                     .autocomplete_attribute = "false"},
+                     .autocomplete_attribute = "false",
+                     .parsed_autocomplete = ParseAutocompleteAttribute(
+                         "false", /*field_max_length=*/0)},
                     {.role = ServerFieldType::EMAIL_ADDRESS,
-                     .autocomplete_attribute = "false"},
+                     .autocomplete_attribute = "false",
+                     .parsed_autocomplete = ParseAutocompleteAttribute(
+                         "false", /*field_max_length=*/0)},
                     {.role = ServerFieldType::ADDRESS_HOME_STATE,
                      .autocomplete_attribute = "false",
+                     .parsed_autocomplete = ParseAutocompleteAttribute(
+                         "false", /*field_max_length=*/0),
                      .form_control_type = "select-one"}}},
         {
             .determine_heuristic_type = true,
@@ -638,16 +626,24 @@ TEST_F(FormStructureTestImpl, HeuristicsAutocompleteAttribute) {
       {{{.description_for_logging = "HeuristicsAutocompleteAttribute",
          .fields = {{.label = u"",
                      .name = u"field1",
-                     .autocomplete_attribute = "given-name"},
+                     .autocomplete_attribute = "given-name",
+                     .parsed_autocomplete = ParseAutocompleteAttribute(
+                         "given-name", /*field_max_length=*/0)},
                     {.label = u"",
                      .name = u"field2",
-                     .autocomplete_attribute = "family-name"},
+                     .autocomplete_attribute = "family-name",
+                     .parsed_autocomplete = ParseAutocompleteAttribute(
+                         "family-name", /*field_max_length=*/0)},
                     {.label = u"",
                      .name = u"field3",
-                     .autocomplete_attribute = "email"},
+                     .autocomplete_attribute = "email",
+                     .parsed_autocomplete = ParseAutocompleteAttribute(
+                         "email", /*field_max_length=*/0)},
                     {.label = u"",
                      .name = u"field4",
-                     .autocomplete_attribute = "upi-vpa"}}},
+                     .autocomplete_attribute = "upi-vpa",
+                     .parsed_autocomplete = ParseAutocompleteAttribute(
+                         "upi-vpa", /*field_max_length=*/0)}}},
         {
             .determine_heuristic_type = true,
             .is_autofillable = true,
@@ -765,13 +761,19 @@ TEST_F(FormStructureTestImpl, HeuristicsAutocompleteAttributePhoneTypes) {
       {{{.description_for_logging = "HeuristicsAutocompleteAttributePhoneTypes",
          .fields = {{.label = u"",
                      .name = u"field1",
-                     .autocomplete_attribute = "tel-local"},
+                     .autocomplete_attribute = "tel-local",
+                     .parsed_autocomplete = ParseAutocompleteAttribute(
+                         "tel-local", /*field_max_length=*/0)},
                     {.label = u"",
                      .name = u"field2",
-                     .autocomplete_attribute = "tel-local-prefix"},
+                     .autocomplete_attribute = "tel-local-prefix",
+                     .parsed_autocomplete = ParseAutocompleteAttribute(
+                         "tel-local-prefix", /*field_max_length=*/0)},
                     {.label = u"",
                      .name = u"field3",
-                     .autocomplete_attribute = "tel-local-suffix"}}},
+                     .autocomplete_attribute = "tel-local-suffix",
+                     .parsed_autocomplete = ParseAutocompleteAttribute(
+                         "tel-local-suffix", /*field_max_length=*/0)}}},
         {.determine_heuristic_type = true,
          .is_autofillable = true,
          .field_count = 3,
@@ -808,7 +810,9 @@ TEST_F(FormStructureTestImpl,
       {{{.description_for_logging =
              "HeuristicsAndServerPredictions_ValidAutocompleteAttribute",
          .fields = {{.role = ServerFieldType::NAME_FIRST,
-                     .autocomplete_attribute = "given-name"},
+                     .autocomplete_attribute = "given-name",
+                     .parsed_autocomplete = ParseAutocompleteAttribute(
+                         "given-name", /*field_max_length=*/0)},
                     {.role = ServerFieldType::NAME_LAST},
                     {.role = ServerFieldType::EMAIL_ADDRESS}}},
         {.determine_heuristic_type = true,
@@ -830,7 +834,9 @@ TEST_F(FormStructureTestImpl,
             .description_for_logging = "HeuristicsAndServerPredictions_"
                                        "UnrecognizedAutocompleteAttribute",
             .fields = {{.role = ServerFieldType::NAME_FIRST,
-                        .autocomplete_attribute = "unrecognized"},
+                        .autocomplete_attribute = "unrecognized",
+                        .parsed_autocomplete = ParseAutocompleteAttribute(
+                            "unrecognized", /*field_max_length=*/0)},
                        {.label = u"Middle Name", .name = u"middlename"},
                        {.role = ServerFieldType::NAME_LAST},
                        {.role = ServerFieldType::EMAIL_ADDRESS}},
@@ -891,19 +897,13 @@ TEST_F(FormStructureTestImpl,
   form.url = GURL("http://www.foo.com/");
 
   FormFieldData field;
-  field.form_control_type = "text";
 
   // Set a valid autocompelete attribute to the first field.
-  field.label = u"First Name";
-  field.name = u"firstname";
-  field.autocomplete_attribute = "given-name";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("First Name", "firstname", "", "text", "given-name",
+                            &field);
   form.fields.push_back(field);
 
-  field.label = u"Last Name";
-  field.name = u"lastname";
-  field.autocomplete_attribute = "";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Last Name", "lastname", "", "text", "", &field);
   form.fields.push_back(field);
 
   EXPECT_FALSE(FormShouldRunHeuristics(form));
@@ -968,28 +968,17 @@ TEST_F(FormStructureTestImpl, PasswordFormShouldBeQueried) {
 
   // Start with a regular contact form.
   FormFieldData field;
-  field.form_control_type = "text";
 
-  field.label = u"First Name";
-  field.name = u"firstname";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("First Name", "firstname", "", "text", &field);
   form.fields.push_back(field);
 
-  field.label = u"Last Name";
-  field.name = u"lastname";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Last Name", "lastname", "", "text", &field);
   form.fields.push_back(field);
 
-  field.label = u"Email";
-  field.name = u"email";
-  field.autocomplete_attribute = "username";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Email", "email", "", "text", "username", &field);
   form.fields.push_back(field);
 
-  field.label = u"Password";
-  field.name = u"Password";
-  field.form_control_type = "password";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Password", "Password", "", "password", &field);
   form.fields.push_back(field);
 
   FormStructure form_structure(form);
@@ -1006,55 +995,49 @@ TEST_F(FormStructureTestImpl, HeuristicsAutocompleteAttributeWithSections) {
   form.url = GURL("http://www.foo.com/");
 
   FormFieldData field;
-  field.form_control_type = "text";
 
   // Some fields will have no section specified.  These fall into the default
   // section.
-  field.autocomplete_attribute = "email";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("", "", "", "text", "email", &field);
   form.fields.push_back(field);
 
   // We allow arbitrary section names.
-  field.autocomplete_attribute = "section-foo email";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("", "", "", "text", "section-foo email", &field);
   form.fields.push_back(field);
 
   // "shipping" and "billing" are special section tokens that don't require the
   // "section-" prefix.
-  field.autocomplete_attribute = "shipping email";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("", "", "", "text", "shipping email", &field);
   form.fields.push_back(field);
 
-  field.autocomplete_attribute = "billing email";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("", "", "", "text", "billing email", &field);
   form.fields.push_back(field);
 
   // "shipping" and "billing" can be combined with other section names.
-  field.autocomplete_attribute = "section-foo shipping email";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("", "", "", "text", "section-foo shipping email",
+                            &field);
   form.fields.push_back(field);
 
-  field.autocomplete_attribute = "section-foo billing email";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("", "", "", "text", "section-foo billing email",
+                            &field);
   form.fields.push_back(field);
 
   // We don't do anything clever to try to coalesce sections; it's up to site
   // authors to avoid typos.
-  field.autocomplete_attribute = "section--foo email";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("", "", "", "text", "section--foo email", &field);
   form.fields.push_back(field);
 
   // "shipping email" and "section--shipping" email should be parsed as
   // different sections.  This is only an interesting test due to how we
   // implement implicit section names from attributes like "shipping email"; see
   // the implementation for more details.
-  field.autocomplete_attribute = "section--shipping email";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("", "", "", "text", "section--shipping email",
+                            &field);
   form.fields.push_back(field);
 
   // Credit card fields are implicitly in a separate section from other fields.
-  field.autocomplete_attribute = "section-foo cc-number";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("", "", "", "text", "section-foo cc-number",
+                            &field);
   form.fields.push_back(field);
 
   FormStructure form_structure(form);
@@ -1082,34 +1065,31 @@ TEST_F(FormStructureTestImpl,
   form.url = GURL("http://www.foo.com/");
 
   FormFieldData field;
-  field.form_control_type = "text";
 
   // Some fields will have no section specified.  These fall into the default
   // section.
-  field.autocomplete_attribute = "email";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("", "", "", "text", "email", &field);
   form.fields.push_back(field);
 
   // Specifying "section-" is equivalent to not specifying a section.
-  field.autocomplete_attribute = "section- email";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("", "", "", "text", "section- email", &field);
   form.fields.push_back(field);
 
   // Invalid tokens should prevent us from setting a section name.
-  field.autocomplete_attribute = "garbage section-foo email";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("", "", "", "text", "garbage section-foo email",
+                            &field);
   form.fields.push_back(field);
 
-  field.autocomplete_attribute = "garbage section-bar email";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("", "", "", "text", "garbage section-bar email",
+                            &field);
   form.fields.push_back(field);
 
-  field.autocomplete_attribute = "garbage shipping email";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("", "", "", "text", "garbage shipping email",
+                            &field);
   form.fields.push_back(field);
 
-  field.autocomplete_attribute = "garbage billing email";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("", "", "", "text", "garbage billing email",
+                            &field);
   form.fields.push_back(field);
 
   FormStructure form_structure(form);
@@ -1136,14 +1116,12 @@ TEST_F(FormStructureTestImpl,
   form.url = GURL("http://www.foo.com/");
 
   FormFieldData field;
-  field.form_control_type = "text";
 
-  field.autocomplete_attribute = "section-foo email";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("", "", "", "text", "section-foo email", &field);
   form.fields.push_back(field);
 
-  field.autocomplete_attribute = "section-foo address-line1";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("", "", "", "text", "section-foo address-line1",
+                            &field);
   form.fields.push_back(field);
 
   FormStructure form_structure(form);
@@ -1170,26 +1148,17 @@ TEST_F(FormStructureTestImpl,
   form.url = GURL("http://www.foo.com/");
 
   FormFieldData field;
-  field.form_control_type = "text";
 
-  field.name = u"one";
-  field.autocomplete_attribute = "address-line1";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("", "one", "", "text", "address-line1", &field);
   form.fields.push_back(field);
 
-  field.name = std::u16string();
-  field.autocomplete_attribute = "section-foo email";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("", "", "", "text", "section-foo email", &field);
   form.fields.push_back(field);
 
-  field.name = std::u16string();
-  field.autocomplete_attribute = "name";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("", "", "", "text", "name", &field);
   form.fields.push_back(field);
 
-  field.name = u"two";
-  field.autocomplete_attribute = "address-line1";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("", "two", "", "text", "address-line1", &field);
   form.fields.push_back(field);
 
   FormStructure form_structure(form);
@@ -3018,43 +2987,30 @@ TEST_F(FormStructureTestImpl,
   form.is_form_tag = true;
 
   FormFieldData field;
-  field.label = u"First Name";
-  field.name = u"firstname";
-  field.autocomplete_attribute = "given-name";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+
+  test::CreateTestFormField("First Name", "firstname", "", "", "given-name",
+                            &field);
   form.fields.push_back(field);
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {NAME_FIRST});
 
-  field.label = u"Last Name";
-  field.name = u"lastname";
-  field.autocomplete_attribute = "family-name";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Last Name", "lastname", "", "", "family-name",
+                            &field);
   form.fields.push_back(field);
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {NAME_LAST});
 
-  field.label = u"Email";
-  field.name = u"email";
-  field.form_control_type = "email";
-  field.autocomplete_attribute = "email";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Email", "email", "", "email", "email", &field);
   form.fields.push_back(field);
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS});
 
-  field.label = u"username";
-  field.name = u"username";
-  field.form_control_type = "text";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("username", "username", "", "text", &field);
   form.fields.push_back(field);
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {USERNAME});
 
-  field.label = u"password";
-  field.name = u"password";
-  field.form_control_type = "password";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("password", "password", "", "password", &field);
   form.fields.push_back(field);
   test::InitializePossibleTypesAndValidities(possible_field_types,
                                              possible_field_types_validities,
@@ -3146,29 +3102,20 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithAutocomplete) {
   form.is_form_tag = true;
 
   FormFieldData field;
-  field.form_control_type = "text";
 
-  field.label = u"First Name";
-  field.name = u"firstname";
-  field.autocomplete_attribute = "given-name";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("First Name", "firstname", "", "text", "given-name",
+                            &field);
   form.fields.push_back(field);
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {NAME_FIRST});
 
-  field.label = u"Last Name";
-  field.name = u"lastname";
-  field.autocomplete_attribute = "family-name";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Last Name", "lastname", "", "text", "family-name",
+                            &field);
   form.fields.push_back(field);
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {NAME_LAST});
 
-  field.label = u"Email";
-  field.name = u"email";
-  field.form_control_type = "email";
-  field.autocomplete_attribute = "email";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Email", "email", "", "email", "email", &field);
   form.fields.push_back(field);
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS});
@@ -3226,13 +3173,11 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequestWithPropertiesMask) {
   form.is_form_tag = true;
 
   FormFieldData field;
-  field.form_control_type = "text";
 
-  field.label = u"First Name";
-  field.name = u"firstname";
+  test::CreateTestFormField("First Name", "firstname", "", "text", "given-name",
+                            &field);
   field.name_attribute = field.name;
   field.id_attribute = u"first_name";
-  field.autocomplete_attribute = "given-name";
   field.css_classes = u"class1 class2";
   field.properties_mask = FieldPropertiesFlags::kHadFocus;
   field.unique_renderer_id = test::MakeFieldRendererId();
@@ -3240,11 +3185,10 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequestWithPropertiesMask) {
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {NAME_FIRST});
 
-  field.label = u"Last Name";
-  field.name = u"lastname";
+  test::CreateTestFormField("Last Name", "lastname", "", "text", "family-name",
+                            &field);
   field.name_attribute = field.name;
   field.id_attribute = u"last_name";
-  field.autocomplete_attribute = "family-name";
   field.css_classes = u"class1 class2";
   field.properties_mask =
       FieldPropertiesFlags::kHadFocus | FieldPropertiesFlags::kUserTyped;
@@ -3253,12 +3197,9 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequestWithPropertiesMask) {
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {NAME_LAST});
 
-  field.label = u"Email";
-  field.name = u"email";
+  test::CreateTestFormField("Email", "email", "", "email", "email", &field);
   field.name_attribute = field.name;
   field.id_attribute = u"e-mail";
-  field.form_control_type = "email";
-  field.autocomplete_attribute = "email";
   field.css_classes = u"class1 class2";
   field.properties_mask =
       FieldPropertiesFlags::kHadFocus | FieldPropertiesFlags::kUserTyped;
@@ -3646,19 +3587,14 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequestPartialMetadata) {
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {NAME_FIRST});
 
-  field.label = u"Last Name";
-  field.name = u"lastname";
+  test::CreateTestFormField("Last Name", "lastname", "", "text", "family-name",
+                            &field);
   field.name_attribute = field.name;
-  field.autocomplete_attribute = "family-name";
-  field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {NAME_LAST});
 
-  field.label = u"Email";
-  field.form_control_type = "email";
-  field.autocomplete_attribute = "email";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Email", "lastname", "", "email", "email", &field);
   form.fields.push_back(field);
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS});
@@ -3718,36 +3654,30 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_DisabledMetadata) {
   form.is_form_tag = true;
 
   FormFieldData field;
-  field.form_control_type = "text";
 
-  field.label = u"First Name";
-  field.name = u"firstname";
+  test::CreateTestFormField("First Name", "firstname", "", "text", "given-name",
+                            &field);
   field.name_attribute = field.name;
   field.id_attribute = u"first_name";
-  field.autocomplete_attribute = "given-name";
   field.css_classes = u"class1 class2";
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {NAME_FIRST});
 
-  field.label = u"Last Name";
-  field.name = u"lastname";
+  test::CreateTestFormField("Last Name", "lastname", "", "text", "family-name",
+                            &field);
   field.name_attribute = field.name;
   field.id_attribute = u"last_name";
-  field.autocomplete_attribute = "family-name";
   field.css_classes = u"class1 class2";
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
   test::InitializePossibleTypesAndValidities(
       possible_field_types, possible_field_types_validities, {NAME_LAST});
 
-  field.label = u"Email";
-  field.name = u"email";
+  test::CreateTestFormField("Email", "email", "", "email", "email", &field);
   field.name_attribute = field.name;
   field.id_attribute = u"e-mail";
-  field.form_control_type = "email";
-  field.autocomplete_attribute = "email";
   field.css_classes = u"class1 class2";
   field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
@@ -4429,6 +4359,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_RichMetadata) {
     field.aria_description = ASCIIToUTF16(f.aria_description);
     field.css_classes = ASCIIToUTF16(f.css_classes);
     field.autocomplete_attribute = f.autocomplete;
+    field.parsed_autocomplete =
+        ParseAutocompleteAttribute(f.autocomplete, /*field_max_length=*/0);
     field.unique_renderer_id = test::MakeFieldRendererId();
     form.fields.push_back(field);
   }
@@ -4979,20 +4911,14 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_ServerPredictionIsOverride) {
   form_data.url = GURL("http://foo.com");
   field.form_control_type = "text";
 
-  // Just some field.
-  field.label = u"some field";
-  field.name = u"some_field";
-  // But this field has an autocomplete attribute.
-  field.autocomplete_attribute = "name";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  // Just some field with an autocomplete attribute.
+  test::CreateTestFormField("some field", "some_field", "", "text", "name",
+                            &field);
   form_data.fields.push_back(field);
 
-  // Some other field.
-  field.label = u"some other field";
-  field.name = u"some_other_field";
-  // Which has the same attribute.
-  field.autocomplete_attribute = "name";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  // Some other field with the same autocomplete attribute.
+  test::CreateTestFormField("some other field", "some_other_field", "", "text",
+                            "name", &field);
   form_data.fields.push_back(field);
 
   // Setup the query response with an override for the name field to be a first
@@ -5264,22 +5190,15 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_TooManyTypes) {
   FormData form_data;
   FormFieldData field;
   form_data.url = GURL("http://foo.com");
-  field.form_control_type = "text";
 
-  field.label = u"First Name";
-  field.name = u"fname";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("First Name", "fname", "", "text", &field);
   form_data.fields.push_back(field);
 
-  field.label = u"Last Name";
-  field.name = u"lname";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Last Name", "lname", "", "text", &field);
   form_data.fields.push_back(field);
 
-  field.label = u"email";
-  field.name = u"email";
-  field.autocomplete_attribute = "address-level2";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("email", "email", "", "text", "address-level2",
+                            &field);
   form_data.fields.push_back(field);
 
   FormStructure form(form_data);
@@ -5339,22 +5258,15 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_UnknownType) {
   FormData form_data;
   FormFieldData field;
   form_data.url = GURL("http://foo.com");
-  field.form_control_type = "text";
 
-  field.label = u"First Name";
-  field.name = u"fname";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("First Name", "fname", "", "text", &field);
   form_data.fields.push_back(field);
 
-  field.label = u"Last Name";
-  field.name = u"lname";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Last Name", "lname", "", "text", &field);
   form_data.fields.push_back(field);
 
-  field.label = u"email";
-  field.name = u"email";
-  field.autocomplete_attribute = "address-level2";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("email", "email", "", "text", "address-level2",
+                            &field);
   form_data.fields.push_back(field);
 
   FormStructure form(form_data);
@@ -5701,18 +5613,11 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_AuthorDefinedTypes) {
   form.url = GURL("http://foo.com");
   FormFieldData field;
 
-  field.label = u"email";
-  field.name = u"email";
-  field.form_control_type = "text";
-  field.autocomplete_attribute = "email";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("email", "email", "", "text", "email", &field);
   form.fields.push_back(field);
 
-  field.label = u"password";
-  field.name = u"password";
-  field.form_control_type = "password";
-  field.autocomplete_attribute = "new-password";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("password", "password", "", "password",
+                            "new-password", &field);
   form.fields.push_back(field);
 
   FormStructure form_structure(form);
@@ -7702,22 +7607,15 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_RankEqualSignatures) {
   FormData form_data;
   FormFieldData field;
   form_data.url = GURL("http://foo.com");
-  field.form_control_type = "text";
 
-  field.label = u"First Name";
-  field.name = u"name";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("First Name", "name", "", "text", &field);
   form_data.fields.push_back(field);
 
-  field.label = u"Last Name";
-  field.name = u"name";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Last Name", "name", "", "text", &field);
   form_data.fields.push_back(field);
 
-  field.label = u"email";
-  field.name = u"email";
-  field.autocomplete_attribute = "address-level2";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("email", "email", "", "text", "address-level2",
+                            &field);
   form_data.fields.push_back(field);
 
   ASSERT_EQ(CalculateFieldSignatureForField(form_data.fields[0]),
@@ -7754,22 +7652,15 @@ TEST_F(FormStructureTestImpl,
   FormData form_data;
   FormFieldData field;
   form_data.url = GURL("http://foo.com");
-  field.form_control_type = "text";
 
-  field.label = u"First Name";
-  field.name = u"name";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("First Name", "name", "", "text", &field);
   form_data.fields.push_back(field);
 
-  field.label = u"Last Name";
-  field.name = u"name";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Last Name", "name", "", "text", &field);
   form_data.fields.push_back(field);
 
-  field.label = u"email";
-  field.name = u"email";
-  field.autocomplete_attribute = "address-level2";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("email", "email", "", "text", "address-level2",
+                            &field);
   form_data.fields.push_back(field);
 
   ASSERT_EQ(CalculateFieldSignatureForField(form_data.fields[0]),
@@ -7933,45 +7824,32 @@ TEST_F(FormStructureTestImpl, NoSplitByRecurringPhoneFieldType) {
   FormData form;
   form.url = GURL("http://foo.com");
   FormFieldData field;
-  field.form_control_type = "text";
+
   field.max_length = 10000;
 
-  field.label = u"Full Name";
-  field.name = u"fullName";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Full Name", "fullName", "", "text", &field);
   form.fields.push_back(field);
 
-  field.label = u"Phone";
-  field.name = u"phone";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Phone", "phone", "", "text", &field);
   form.fields.push_back(field);
 
-  field.label = u"Mobile Number";
-  field.name = u"mobileNumber";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Mobile Number", "mobileNumber", "", "text",
+                            &field);
   form.fields.push_back(field);
 
-  field.label = u"Full Name";
-  field.name = u"fullName";
-  field.autocomplete_attribute = "section-blue billing name";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Full Name", "fullName", "", "text",
+                            "section-blue billing name", &field);
   form.fields.push_back(field);
 
-  field.label = u"Phone";
-  field.name = u"phone";
-  field.autocomplete_attribute = "section-blue billing tel";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Phone", "phone", "", "text",
+                            "section-blue billing tel", &field);
   form.fields.push_back(field);
 
-  field.label = u"Mobile Number";
-  field.name = u"mobileNumber";
-  field.autocomplete_attribute = "section-blue billing tel";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Mobile Number", "mobileNumber", "", "text",
+                            "section-blue billing tel", &field);
   form.fields.push_back(field);
 
-  field.label = u"Country";
-  field.name = u"country";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Country", "country", "", "text", &field);
   form.fields.push_back(field);
 
   FormStructure form_structure(form);
@@ -8016,31 +7894,25 @@ TEST_F(FormStructureTestImpl, SplitByRecurringFieldType) {
   FormData form;
   form.url = GURL("http://foo.com");
   FormFieldData field;
-  field.form_control_type = "text";
-  field.max_length = 10000;
+  uint64_t field_max_length = 10000;
 
-  field.label = u"Full Name";
-  field.name = u"fullName";
-  field.autocomplete_attribute = "section-blue shipping name";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Full Name", "fullName", "", "text",
+                            "section-blue shipping name", field_max_length,
+                            &field);
   form.fields.push_back(field);
 
-  field.label = u"Country";
-  field.name = u"country";
-  field.autocomplete_attribute = "section-blue shipping country";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Country", "country", "", "text",
+                            "section-blue shipping country", field_max_length,
+                            &field);
   form.fields.push_back(field);
 
-  field.label = u"Full Name";
-  field.name = u"fullName";
-  field.autocomplete_attribute = "section-blue shipping name";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Full Name", "fullName", "", "text",
+                            "section-blue shipping name", field_max_length,
+                            &field);
   form.fields.push_back(field);
 
-  field.label = u"Country";
-  field.name = u"country";
-  field.autocomplete_attribute = "";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Country", "country", "", "text", "",
+                            field_max_length, &field);
   form.fields.push_back(field);
 
   FormStructure form_structure(form);
@@ -8078,31 +7950,24 @@ TEST_F(FormStructureTestImpl,
   FormData form;
   form.url = GURL("http://foo.com");
   FormFieldData field;
-  field.form_control_type = "text";
-  field.max_length = 10000;
+  uint64_t field_max_length = 10000;
 
-  field.label = u"Full Name";
-  field.name = u"fullName";
-  field.autocomplete_attribute = "section-blue shipping name";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Full Name", "fullName", "", "text",
+                            "section-blue shipping name", field_max_length,
+                            &field);
   form.fields.push_back(field);
 
-  field.label = u"Country";
-  field.name = u"country";
-  field.autocomplete_attribute = "section-blue billing country";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Country", "country", "", "text",
+                            "section-blue billing country", field_max_length,
+                            &field);
   form.fields.push_back(field);
 
-  field.label = u"Full Name";
-  field.name = u"fullName";
-  field.autocomplete_attribute = "";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Full Name", "fullName", "", "text", "",
+                            field_max_length, &field);
   form.fields.push_back(field);
 
-  field.label = u"Country";
-  field.name = u"country";
-  field.autocomplete_attribute = "";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Country", "country", "", "text", "",
+                            field_max_length, &field);
   form.fields.push_back(field);
 
   FormStructure form_structure(form);
@@ -8139,31 +8004,24 @@ TEST_F(FormStructureTestImpl, SplitByNewAutocompleteSectionName) {
   FormData form;
   form.url = GURL("http://foo.com");
   FormFieldData field;
-  field.form_control_type = "text";
-  field.max_length = 10000;
+  uint64_t field_max_length = 10000;
 
-  field.label = u"Full Name";
-  field.name = u"fullName";
-  field.autocomplete_attribute = "section-blue shipping name";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Full Name", "fullName", "", "text",
+                            "section-blue shipping name", field_max_length,
+                            &field);
   form.fields.push_back(field);
 
-  field.label = u"City";
-  field.name = u"city";
-  field.autocomplete_attribute = "";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("City", "city", "", "text", "", field_max_length,
+                            &field);
   form.fields.push_back(field);
 
-  field.label = u"Full Name";
-  field.name = u"fullName";
-  field.autocomplete_attribute = "section-blue billing name";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Full Name", "fullName", "", "text",
+                            "section-blue billing name", field_max_length,
+                            &field);
   form.fields.push_back(field);
 
-  field.label = u"City";
-  field.name = u"city";
-  field.autocomplete_attribute = "";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("City", "city", "", "text", "", field_max_length,
+                            &field);
   form.fields.push_back(field);
 
   FormStructure form_structure(form);
@@ -8202,30 +8060,21 @@ TEST_F(
   FormData form;
   form.url = GURL("http://foo.com");
   FormFieldData field;
-  field.form_control_type = "text";
+
   field.max_length = 10000;
 
-  field.label = u"Full Name";
-  field.name = u"fullName";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Full Name", "fullName", "", "text", &field);
   form.fields.push_back(field);
 
-  field.label = u"Country";
-  field.name = u"country";
-  field.autocomplete_attribute = "section-blue shipping country";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Country", "country", "", "text",
+                            "section-blue shipping country", &field);
   form.fields.push_back(field);
 
-  field.label = u"Full Name";
-  field.name = u"fullName";
-  field.autocomplete_attribute = "section-blue billing name";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Full Name", "fullName", "", "text",
+                            "section-blue billing name", &field);
   form.fields.push_back(field);
 
-  field.label = u"City";
-  field.name = u"city";
-  field.autocomplete_attribute = "";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("City", "city", "", "text", "", &field);
   form.fields.push_back(field);
 
   FormStructure form_structure(form);
@@ -8262,18 +8111,14 @@ TEST_F(FormStructureTestImpl, FromEmptyAutocompleteSectionToDefinedOne) {
   FormData form;
   form.url = GURL("http://foo.com");
   FormFieldData field;
-  field.form_control_type = "text";
+
   field.max_length = 10000;
 
-  field.label = u"Full Name";
-  field.name = u"fullName";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Full Name", "fullName", "", "text", &field);
   form.fields.push_back(field);
 
-  field.label = u"Country";
-  field.name = u"country";
-  field.autocomplete_attribute = "section-blue shipping country";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Country", "country", "", "text",
+                            "section-blue shipping country", &field);
   form.fields.push_back(field);
 
   FormStructure form_structure(form);
@@ -8305,25 +8150,19 @@ TEST_F(FormStructureTestImpl,
   FormData form;
   form.url = GURL("http://foo.com");
   FormFieldData field;
-  field.form_control_type = "text";
+
   field.max_length = 10000;
 
-  field.label = u"Full Name";
-  field.name = u"fullName";
-  field.unique_renderer_id = test::MakeFieldRendererId();
+  test::CreateTestFormField("Full Name", "fullName", "", "text", &field);
   form.fields.push_back(field);
 
-  field.label = u"Phone";
-  field.name = u"phone";
+  test::CreateTestFormField("Phone", "phone", "", "text", &field);
   field.is_focusable = false;  // hidden
-  field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
-  field.label = u"FullName";
-  field.name = u"fullName";
+  test::CreateTestFormField("Full Name", "fullName", "", "text",
+                            "shipping name", &field);
   field.is_focusable = true;  // visible
-  field.autocomplete_attribute = "shipping name";
-  field.unique_renderer_id = test::MakeFieldRendererId();
   form.fields.push_back(field);
 
   FormStructure form_structure(form);

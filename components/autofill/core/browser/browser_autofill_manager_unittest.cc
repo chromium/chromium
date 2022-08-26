@@ -63,6 +63,7 @@
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -1142,16 +1143,15 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   form.action = GURL("https://myform.com/submit.html");
   FormFieldData field;
   // Set a valid autocomplete attribute for the first name.
-  test::CreateTestFormField("First name", "firstname", "", "text", &field);
-  field.autocomplete_attribute = "given-name";
+  test::CreateTestFormField("First name", "firstname", "", "text", "given-name",
+                            &field);
   form.fields.push_back(field);
   // Set no autocomplete attribute for the middle name.
-  test::CreateTestFormField("Middle name", "middle", "", "text", &field);
-  field.autocomplete_attribute = "";
+  test::CreateTestFormField("Middle name", "middle", "", "text", "", &field);
   form.fields.push_back(field);
   // Set an unrecognized autocomplete attribute for the last name.
-  test::CreateTestFormField("Last Name", "lastname", "", "text", &field);
-  field.autocomplete_attribute = "unrecognized";
+  test::CreateTestFormField("Last Name", "lastname", "", "text", "unrecognized",
+                            &field);
   form.fields.push_back(field);
   std::vector<FormData> forms(1, form);
   FormsSeen(forms);
@@ -1214,11 +1214,10 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
   FormFieldData field;
-  test::CreateTestFormField("First Name", "firstname", "", "text", &field);
-  field.autocomplete_attribute = "given-name";
+  test::CreateTestFormField("First Name", "firstname", "", "text", "given-name",
+                            &field);
   form.fields.push_back(field);
-  test::CreateTestFormField("Last Name", "lastname", "", "text", &field);
-  field.autocomplete_attribute = "";
+  test::CreateTestFormField("Last Name", "lastname", "", "text", "", &field);
   form.fields.push_back(field);
 
   std::vector<FormData> forms(1, form);
@@ -1247,11 +1246,11 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
   FormFieldData field;
-  test::CreateTestFormField("First Name", "firstname", "", "text", &field);
-  field.autocomplete_attribute = "given-name";
+  test::CreateTestFormField("First Name", "firstname", "", "text", "given-name",
+                            &field);
   form.fields.push_back(field);
-  test::CreateTestFormField("Last Name", "lastname", "", "text", &field);
-  field.autocomplete_attribute = "family-name";
+  test::CreateTestFormField("Last Name", "lastname", "", "text", "family-name",
+                            &field);
   form.fields.push_back(field);
 
   std::vector<FormData> forms(1, form);
@@ -3254,10 +3253,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
   FormFieldData field;
   for (const auto& test_field : test_fields) {
-    test::CreateTestFormField(test_field.label, test_field.name, "", "text",
-                              &field);
-    field.max_length = test_field.max_length;
-    field.autocomplete_attribute = std::string();
+    test::CreateTestFormField(test_field.label, test_field.name, "", "text", "",
+                              test_field.max_length, &field);
     form.fields.push_back(field);
   }
 
@@ -3333,9 +3330,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
     const char* const field_type =
         strcmp(test_field.name, "password") == 0 ? "password" : "text";
     test::CreateTestFormField(test_field.label, test_field.name, "", field_type,
-                              &field);
-    field.max_length = test_field.max_length;
-    field.autocomplete_attribute = test_field.autocomplete_attribute;
+                              test_field.autocomplete_attribute,
+                              test_field.max_length, &field);
     form.fields.push_back(field);
   }
 
@@ -3987,16 +3983,15 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   address_form.action = GURL("https://myform.com/submit.html");
   FormFieldData field;
   // Set a valid autocomplete attribute for the first name.
-  test::CreateTestFormField("First name", "firstname", "", "text", &field);
-  field.autocomplete_attribute = "given-name";
+  test::CreateTestFormField("First name", "firstname", "", "text", "given-name",
+                            &field);
   address_form.fields.push_back(field);
   // Set no autocomplete attribute for the middle name.
-  test::CreateTestFormField("Middle name", "middle", "", "text", &field);
-  field.autocomplete_attribute = "";
+  test::CreateTestFormField("Middle name", "middle", "", "text", "", &field);
   address_form.fields.push_back(field);
   // Set an unrecognized autocomplete attribute for the last name.
-  test::CreateTestFormField("Last name", "lastname", "", "text", &field);
-  field.autocomplete_attribute = "unrecognized";
+  test::CreateTestFormField("Last name", "lastname", "", "text", "unrecognized",
+                            &field);
   address_form.fields.push_back(field);
   std::vector<FormData> address_forms(1, address_form);
   FormsSeen(address_forms);
@@ -4164,16 +4159,16 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
   FormFieldData field;
   // Set a valid autocomplete attribute on the card name.
-  test::CreateTestFormField("Name on Card", "nameoncard", "", "text", &field);
-  field.autocomplete_attribute = "cc-name";
+  test::CreateTestFormField("Name on Card", "nameoncard", "", "text", "cc-name",
+                            &field);
   form.fields.push_back(field);
   // Set no autocomplete attribute on the card number.
-  test::CreateTestFormField("Card Number", "cardnumber", "", "text", &field);
-  field.autocomplete_attribute = "";
+  test::CreateTestFormField("Card Number", "cardnumber", "", "text", "",
+                            &field);
   form.fields.push_back(field);
   // Set an unrecognized autocomplete attribute on the expiration month.
-  test::CreateTestFormField("Expiration Date", "ccmonth", "", "text", &field);
-  field.autocomplete_attribute = "unrecognized";
+  test::CreateTestFormField("Expiration Date", "ccmonth", "", "text",
+                            "unrecognized", &field);
   form.fields.push_back(field);
   std::vector<FormData> forms(1, form);
   FormsSeen(forms);
@@ -4243,23 +4238,22 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
   // Create a credit card form.
   FormFieldData field;
-  test::CreateTestFormField("Name on Card", "nameoncard", "", "text", &field);
-  field.autocomplete_attribute = "cc-name";
+  test::CreateTestFormField("Name on Card", "nameoncard", "", "text", "cc-name",
+                            &field);
   form.fields.push_back(field);
   std::vector<const char*> kCreditCardTypes = {"Visa", "Mastercard", "AmEx",
                                                "discover"};
-  test::CreateTestSelectField("Card Type", "cardtype", "", kCreditCardTypes,
-                              kCreditCardTypes, 4, &field);
-  field.autocomplete_attribute = "cc-type";
+  test::CreateTestSelectField("Card Type", "cardtype", "", "cc-type",
+                              kCreditCardTypes, kCreditCardTypes, 4, &field);
   form.fields.push_back(field);
-  test::CreateTestFormField("Card Number", "cardnumber", "", "text", &field);
-  field.autocomplete_attribute = "cc-number";
+  test::CreateTestFormField("Card Number", "cardnumber", "", "text",
+                            "cc-number", &field);
   form.fields.push_back(field);
-  test::CreateTestFormField("Expiration Month", "ccmonth", "", "text", &field);
-  field.autocomplete_attribute = "cc-exp-month";
+  test::CreateTestFormField("Expiration Month", "ccmonth", "", "text",
+                            "cc-exp-month", &field);
   form.fields.push_back(field);
-  test::CreateTestFormField("Expiration Year", "ccyear", "", "text", &field);
-  field.autocomplete_attribute = "cc-exp-year";
+  test::CreateTestFormField("Expiration Year", "ccyear", "", "text",
+                            "cc-exp-year", &field);
   form.fields.push_back(field);
   std::vector<FormData> forms(1, form);
   FormsSeen(forms);
@@ -4463,48 +4457,45 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
   FormFieldData field;
 
-  test::CreateTestFormField("", "country", "", "text", &field);
-  field.autocomplete_attribute = "section-billing country";
+  test::CreateTestFormField("", "country", "", "text",
+                            "section-billing country", &field);
   form.fields.push_back(field);
 
-  test::CreateTestFormField("", "firstname", "", "text", &field);
-  field.autocomplete_attribute = "given-name";
+  test::CreateTestFormField("", "firstname", "", "text", "given-name", &field);
   form.fields.push_back(field);
 
-  test::CreateTestFormField("", "lastname", "", "text", &field);
-  field.autocomplete_attribute = "family-name";
+  test::CreateTestFormField("", "lastname", "", "text", "family-name", &field);
   form.fields.push_back(field);
 
-  test::CreateTestFormField("", "address", "", "text", &field);
-  field.autocomplete_attribute = "section-billing address-line1";
+  test::CreateTestFormField("", "address", "", "text",
+                            "section-billing address-line1", &field);
   form.fields.push_back(field);
 
-  test::CreateTestFormField("", "city", "", "text", &field);
-  field.autocomplete_attribute = "section-billing locality";
+  test::CreateTestFormField("", "city", "", "text", "section-billing locality",
+                            &field);
   form.fields.push_back(field);
 
-  test::CreateTestFormField("", "state", "", "text", &field);
-  field.autocomplete_attribute = "section-billing region";
+  test::CreateTestFormField("", "state", "", "text", "section-billing region",
+                            &field);
   form.fields.push_back(field);
 
-  test::CreateTestFormField("", "zip", "", "text", &field);
-  field.autocomplete_attribute = "section-billing postal-code";
+  test::CreateTestFormField("", "zip", "", "text",
+                            "section-billing postal-code", &field);
   form.fields.push_back(field);
 
-  test::CreateTestFormField("", "ccname", "", "text", &field);
-  field.autocomplete_attribute = "section-billing cc-name";
+  test::CreateTestFormField("", "ccname", "", "text", "section-billing cc-name",
+                            &field);
   form.fields.push_back(field);
 
-  test::CreateTestFormField("", "ccnumber", "", "text", &field);
-  field.autocomplete_attribute = "section-billing cc-number";
+  test::CreateTestFormField("", "ccnumber", "", "text",
+                            "section-billing cc-number", &field);
   form.fields.push_back(field);
 
-  test::CreateTestFormField("", "ccexp", "", "text", &field);
-  field.autocomplete_attribute = "section-billing cc-exp";
+  test::CreateTestFormField("", "ccexp", "", "text", "section-billing cc-exp",
+                            &field);
   form.fields.push_back(field);
 
-  test::CreateTestFormField("", "email", "", "text", &field);
-  field.autocomplete_attribute = "email";
+  test::CreateTestFormField("", "email", "", "text", "email", &field);
   form.fields.push_back(field);
 
   std::vector<FormData> forms(1, form);
@@ -4820,14 +4811,14 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, FillPhoneNumber) {
   FormFieldData field;
   const size_t default_max_length = field.max_length;
   for (const auto& test_field : test_fields) {
-    test::CreateTestFormField(test_field.label, test_field.name, "", "text",
-                              &field);
-    field.max_length = test_field.max_length;
-    field.autocomplete_attribute = std::string();
+    test::CreateTestFormField(test_field.label, test_field.name, "", "text", "",
+                              test_field.max_length, &field);
     form_with_us_number_max_length.fields.push_back(field);
 
     field.max_length = default_max_length;
     field.autocomplete_attribute = test_field.autocomplete_attribute;
+    field.parsed_autocomplete = ParseAutocompleteAttribute(
+        test_field.autocomplete_attribute, default_max_length);
     form_with_autocompletetype.fields.push_back(field);
   }
 
@@ -5061,11 +5052,10 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   form_with_multiple_componentized_phone_fields.fields.push_back(field);
   test::CreateTestFormField("area code", "area_code", "", "text", &field);
   form_with_multiple_componentized_phone_fields.fields.push_back(field);
-  test::CreateTestFormField("number", "phone_number", "", "text", &field);
-  field.autocomplete_attribute = "tel-national";
+  test::CreateTestFormField("number", "phone_number", "", "text",
+                            "tel-national", &field);
   form_with_multiple_componentized_phone_fields.fields.push_back(field);
-  field.autocomplete_attribute = "";
-  test::CreateTestFormField("extension", "extension", "", "text", &field);
+  test::CreateTestFormField("extension", "extension", "", "text", "", &field);
   form_with_multiple_componentized_phone_fields.fields.push_back(field);
   test::CreateTestFormField("shipping country code", "shipping_country_code",
                             "", "text", &field);
@@ -5127,20 +5117,20 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   field.max_length = 10;
   form_with_misclassified_extension.name =
       u"complete_phone_form_with_extension";
-  test::CreateTestFormField("Full Name", "full_name", "", "text", &field);
-  field.autocomplete_attribute = "name";
+  test::CreateTestFormField("Full Name", "full_name", "", "text", "name",
+                            &field);
   form_with_misclassified_extension.fields.push_back(field);
-  test::CreateTestFormField("address", "address", "", "text", &field);
-  field.autocomplete_attribute = "addresses";
+  test::CreateTestFormField("address", "address", "", "text", "addresses",
+                            &field);
   form_with_misclassified_extension.fields.push_back(field);
-  test::CreateTestFormField("area code", "area_code", "", "text", &field);
-  field.autocomplete_attribute = "tel-area-code";
+  test::CreateTestFormField("area code", "area_code", "", "text",
+                            "tel-area-code", &field);
   form_with_misclassified_extension.fields.push_back(field);
-  test::CreateTestFormField("number", "phone_number", "", "text", &field);
-  field.autocomplete_attribute = "tel-local";
+  test::CreateTestFormField("number", "phone_number", "", "text", "tel-local",
+                            &field);
   form_with_misclassified_extension.fields.push_back(field);
-  test::CreateTestFormField("extension", "extension", "", "text", &field);
-  field.autocomplete_attribute = "tel-local";
+  test::CreateTestFormField("extension", "extension", "", "text", "tel-local",
+                            &field);
   form_with_misclassified_extension.fields.push_back(field);
 
   std::vector<FormData> forms;
@@ -5190,17 +5180,17 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   // Default is zero, have to set to a number autofill can process.
   field.max_length = 10;
   form_with_no_complete_number.name = u"no_complete_phone_form";
-  test::CreateTestFormField("Full Name", "full_name", "", "text", &field);
-  field.autocomplete_attribute = "name";
+  test::CreateTestFormField("Full Name", "full_name", "", "text", "name",
+                            &field);
   form_with_no_complete_number.fields.push_back(field);
-  test::CreateTestFormField("address", "address", "", "text", &field);
-  field.autocomplete_attribute = "address";  // not standard, but covered.
+  test::CreateTestFormField("address", "address", "", "text", "address",
+                            &field);
   form_with_no_complete_number.fields.push_back(field);
-  test::CreateTestFormField("area code", "area_code", "", "text", &field);
-  field.autocomplete_attribute = "tel-area-code";
+  test::CreateTestFormField("area code", "area_code", "", "text",
+                            "tel-area-code", &field);
   form_with_no_complete_number.fields.push_back(field);
-  test::CreateTestFormField("extension", "extension", "", "text", &field);
-  field.autocomplete_attribute = "extension";
+  test::CreateTestFormField("extension", "extension", "", "text", "extension",
+                            &field);
   form_with_no_complete_number.fields.push_back(field);
 
   std::vector<FormData> forms;
@@ -7363,16 +7353,16 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
   FormFieldData field;
   // Set a valid autocomplete attribute on the card name.
-  test::CreateTestFormField("Name on Card", "nameoncard", "", "text", &field);
-  field.autocomplete_attribute = "cc-name";
+  test::CreateTestFormField("Name on Card", "nameoncard", "", "text", "cc-name",
+                            &field);
   form.fields.push_back(field);
   // Set no autocomplete attribute on the card number.
-  test::CreateTestFormField("Card Number", "cardnumber", "", "text", &field);
-  field.autocomplete_attribute = "";
+  test::CreateTestFormField("Card Number", "cardnumber", "", "text", "",
+                            &field);
   form.fields.push_back(field);
   // Set an unrecognized autocomplete attribute on the expiration month.
-  test::CreateTestFormField("Expiration Date", "ccmonth", "", "text", &field);
-  field.autocomplete_attribute = "unrecognized";
+  test::CreateTestFormField("Expiration Date", "ccmonth", "", "text",
+                            "unrecognized", &field);
   form.fields.push_back(field);
   std::vector<FormData> forms(1, form);
   FormsSeen(forms);
@@ -8075,19 +8065,23 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, ShouldUploadForm) {
   EXPECT_TRUE(browser_autofill_manager_->ShouldUploadForm(FormStructure(form)));
 
   // Has less than 3 fields but has autocomplete attribute.
-  form.fields[0].autocomplete_attribute = "given-name";
+  const char* autocomplete = "given-name";
+  form.fields[0].autocomplete_attribute = autocomplete;
+  form.fields[0].parsed_autocomplete =
+      ParseAutocompleteAttribute(autocomplete, form.fields[0].max_length);
 
   EXPECT_TRUE(browser_autofill_manager_->ShouldUploadForm(FormStructure(form)));
 
   // Has more than 3 fields, no autocomplete attribute.
-  form.fields[0].autocomplete_attribute = "";
-  test::CreateTestFormField("Country", "country", "", "text", &field);
+  test::CreateTestFormField("Country", "country", "", "text", "", &field);
   form.fields.push_back(field);
   FormStructure form_structure_3(form);
   EXPECT_TRUE(browser_autofill_manager_->ShouldUploadForm(FormStructure(form)));
 
   // Has more than 3 fields and at least one autocomplete attribute.
-  form.fields[0].autocomplete_attribute = "given-name";
+  form.fields[0].autocomplete_attribute = autocomplete;
+  form.fields[0].parsed_autocomplete =
+      ParseAutocompleteAttribute(autocomplete, form.fields[0].max_length);
   EXPECT_TRUE(browser_autofill_manager_->ShouldUploadForm(FormStructure(form)));
 
   // Is off the record.
@@ -9281,7 +9275,7 @@ INSTANTIATE_TEST_SUITE_P(
 // submission.
 TEST_F(BrowserAutofillManagerTest, AutocompleteMetrics) {
   // `kAutocompleteValues` corresponds to empty, valid, garbage and off.
-  constexpr base::StringPiece kAutocompleteValues[]{"", "name", "asdf", "off"};
+  constexpr const char* kAutocompleteValues[]{"", "name", "asdf", "off"};
   // The 4 possible combinations of heuristic and server type status:
   // - Neither a fillable heuristic type nor a fillable server type.
   // - Only a fillable server type.
@@ -9301,11 +9295,10 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteMetrics) {
   form.url = GURL("https://myform.com/form.html");
   form.action = GURL("https://myform.com/submit.html");
   std::vector<ServerFieldType> heuristic_types, server_types;
-  for (const auto& autocomplete : kAutocompleteValues) {
+  for (const char* autocomplete : kAutocompleteValues) {
     for (const auto& types : kTypeClasses) {
       FormFieldData field;
-      test::CreateTestFormField("", "", "", "text", &field);
-      field.autocomplete_attribute = std::string(autocomplete);
+      test::CreateTestFormField("", "", "", "text", autocomplete, &field);
       form.fields.push_back(field);
       heuristic_types.push_back(types[0]);
       server_types.push_back(types[1]);
@@ -9967,12 +9960,12 @@ TEST_P(OnFocusOnFormFieldTest, AddressSuggestions) {
   form.action = GURL("https://myform.com/submit.html");
   FormFieldData field;
   // Set a valid autocomplete attribute for the first name.
-  test::CreateTestFormField("First name", "firstname", "", "text", &field);
-  field.autocomplete_attribute = "given-name";
+  test::CreateTestFormField("First name", "firstname", "", "text", "given-name",
+                            &field);
   form.fields.push_back(field);
   // Set an unrecognized autocomplete attribute for the last name.
-  test::CreateTestFormField("Last Name", "lastname", "", "text", &field);
-  field.autocomplete_attribute = "unrecognized";
+  test::CreateTestFormField("Last Name", "lastname", "", "text", "unrecognized",
+                            &field);
   form.fields.push_back(field);
   std::vector<FormData> forms(1, form);
   FormsSeen(forms);
@@ -9996,8 +9989,8 @@ TEST_P(OnFocusOnFormFieldTest, AddressSuggestions_AutocompleteOffNotRespected) {
   form.action = GURL("https://myform.com/submit.html");
   FormFieldData field;
   // Set a valid autocomplete attribute for the first name.
-  test::CreateTestFormField("First name", "firstname", "", "text", &field);
-  field.autocomplete_attribute = "given-name";
+  test::CreateTestFormField("First name", "firstname", "", "text", "given-name",
+                            &field);
   form.fields.push_back(field);
   // Set an autocomplete=off attribute for the last name.
   test::CreateTestFormField("Last Name", "lastname", "", "text", &field);

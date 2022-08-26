@@ -97,13 +97,9 @@ TEST_P(AutocompleteAttributeProcessingUtilTest, ParseAutocompleteAttribute) {
   if (test.max_length)
     field.max_length = test.max_length;
 
-  auto result = ParseAutocompleteAttribute(field);
-  ASSERT_EQ(result.has_value(), test.expected_result.has_value());
-  if (result.has_value()) {
-    EXPECT_EQ(result->section, test.expected_result->section);
-    EXPECT_EQ(result->mode, test.expected_result->mode);
-    EXPECT_EQ(result->field_type, test.expected_result->field_type);
-  }
+  auto result = ParseAutocompleteAttribute(field.autocomplete_attribute,
+                                           field.max_length);
+  EXPECT_EQ(result, test.expected_result);
 }
 
 }  // namespace autofill

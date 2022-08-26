@@ -40,6 +40,7 @@
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -2299,9 +2300,8 @@ TEST_P(FormDataImporterTest, ImportCreditCard_Month2DigitYearCombination) {
   test::CreateTestFormField("Card Number:", "card_number", "4111111111111111",
                             "text", &field);
   form.fields.push_back(field);
-  test::CreateTestFormField("Exp Date:", "exp_date", "05/45", "text", &field);
-  field.autocomplete_attribute = "cc-exp";
-  field.max_length = 5;
+  test::CreateTestFormField("Exp Date:", "exp_date", "05/45", "text", "cc-exp",
+                            5, &field);
   form.fields.push_back(field);
 
   SubmitFormAndExpectImportedCardWithData(form, "John MMYY", "4111111111111111",
@@ -2320,9 +2320,8 @@ TEST_P(FormDataImporterTest, ImportCreditCard_Month4DigitYearCombination) {
   test::CreateTestFormField("Card Number:", "card_number", "4111111111111111",
                             "text", &field);
   form.fields.push_back(field);
-  test::CreateTestFormField("Exp Date:", "exp_date", "05/2045", "text", &field);
-  field.autocomplete_attribute = "cc-exp";
-  field.max_length = 7;
+  test::CreateTestFormField("Exp Date:", "exp_date", "05/2045", "text",
+                            "cc-exp", 7, &field);
   form.fields.push_back(field);
 
   SubmitFormAndExpectImportedCardWithData(form, "John MMYYYY",
@@ -2341,8 +2340,8 @@ TEST_P(FormDataImporterTest, ImportCreditCard_1DigitMonth4DigitYear) {
   test::CreateTestFormField("Card Number:", "card_number", "4111111111111111",
                             "text", &field);
   form.fields.push_back(field);
-  test::CreateTestFormField("Exp Date:", "exp_date", "5/2045", "text", &field);
-  field.autocomplete_attribute = "cc-exp";
+  test::CreateTestFormField("Exp Date:", "exp_date", "5/2045", "text", "cc-exp",
+                            &field);
   form.fields.push_back(field);
 
   SubmitFormAndExpectImportedCardWithData(form, "John MYYYY",
@@ -4392,7 +4391,10 @@ TEST_P(FormDataImporterTest, MultiStepImportComplement) {
   // of fields < kMinRequiredFieldsForHeuristics), no heuristics are used.
   FormData form =
       ConstructFormDateFromTypeValuePairs({{EMAIL_ADDRESS, kDefaultMail}});
-  form.fields[0].autocomplete_attribute = "email";
+  const char* autocomplete = "email";
+  form.fields[0].autocomplete_attribute = autocomplete;
+  form.fields[0].parsed_autocomplete =
+      ParseAutocompleteAttribute(autocomplete, form.fields[0].max_length);
   form_structure = ConstructFormStructureFromFormData(form);
   ImportAddressProfileAndVerifyImportOfDefaultProfile(*form_structure);
 }

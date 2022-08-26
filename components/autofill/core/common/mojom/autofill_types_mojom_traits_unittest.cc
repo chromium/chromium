@@ -315,6 +315,10 @@ TEST_F(AutofillTypeTraitsTestImpl, PassFormFieldData) {
   input.id_attribute = u"id";
   input.name_attribute = u"name";
   input.autocomplete_attribute = "on";
+  input.parsed_autocomplete =
+      AutocompleteParsingResult{.section = "autocomplete_section",
+                                .mode = HtmlFieldMode::kShipping,
+                                .field_type = HtmlFieldType::kAddressLine1};
   input.placeholder = u"placeholder";
   input.css_classes = u"class1";
   input.aria_label = u"aria label";
@@ -351,6 +355,7 @@ TEST_F(AutofillTypeTraitsTestImpl, PassDataListFormFieldData) {
   input.id_attribute = u"id";
   input.name_attribute = u"name";
   input.autocomplete_attribute = "on";
+  input.parsed_autocomplete = absl::nullopt;
   input.placeholder = u"placeholder";
   input.css_classes = u"class1";
   input.aria_label = u"aria label";

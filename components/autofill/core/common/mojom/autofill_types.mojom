@@ -12,6 +12,102 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
+// The list of all HTML autocomplete field mode hints supported by Chrome.
+// See [ http://is.gd/whatwg_autocomplete ] for the full list of specced hints.
+enum HtmlFieldMode {
+  kNone,
+  kBilling,
+  kShipping,
+};
+
+// The list of all HTML autocomplete field type hints supported by Chrome.
+// See [ http://is.gd/whatwg_autocomplete ] for the full list of specced hints.
+enum HtmlFieldType {
+  // Default type.
+  kUnspecified,
+
+  // Name types.
+  kName,
+  kHonorificPrefix,
+  kGivenName,
+  kAdditionalName,
+  kFamilyName,
+
+  // Business types.
+  kOrganization,
+
+  // Address types.
+  kStreetAddress,
+  kAddressLine1,
+  kAddressLine2,
+  kAddressLine3,
+  kAddressLevel1,   // For U.S. addresses, corresponds to the state.
+  kAddressLevel2,   // For U.S. addresses, corresponds to the city.
+  kAddressLevel3,   // An area that is more specific than LEVEL2.
+  kCountryCode,     // The ISO 3166-1-alpha-2 country code.
+  kCountryName,     // The localized country name.
+  kPostalCode,
+  kFullAddress,     // The complete address, formatted for display.
+
+  // Credit card types.
+  kCreditCardNameFull,
+  kCreditCardNameFirst,
+  kCreditCardNameLast,
+  kCreditCardNumber,
+  kCreditCardExp,
+  kCreditCardExpMonth,
+  kCreditCardExpYear,
+  kCreditCardVerificationCode,
+  kCreditCardType,
+
+  // Phone number types.
+  kTel,
+  kTelCountryCode,
+  kTelNational,
+  kTelAreaCode,
+  kTelLocal,
+  kTelLocalPrefix,
+  kTelLocalSuffix,
+  kTelExtension,
+
+  // Email.
+  kEmail,
+
+  // Birthdate.
+  kBirthdateDay,
+  kBirthdateMonth,
+  kBirthdateYear,
+
+  // Transaction details.
+  kTransactionAmount,
+  kTransactionCurrency,
+
+  // Variants of type hints specified in the HTML specification that are
+  // inferred based on a field's 'maxlength' attribute.
+  // TODO(isherman): Remove these types, in favor of understanding maxlength
+  // when filling fields.
+  kAdditionalNameInitial,
+  kCreditCardExpDate2DigitYear,
+  kCreditCardExpDate4DigitYear,
+  kCreditCardExp2DigitYear,
+  kCreditCardExp4DigitYear,
+
+  // Universal Payment Interface - Virtual Payment Address.
+  kUpiVpa,
+
+  // Phone number verification one-time-codes.
+  kOneTimeCode,
+
+  // Promo code for merchant sites.
+  kMerchantPromoCode,
+
+  // International Bank Account Number (IBAN) for banking and merchant sites.
+  kIban,
+
+  // Non-standard autocomplete types.
+  kUnrecognized,
+};
+
 // Events observed by the Password Manager that indicate either that a form is
 // potentially being submitted, or that a form has already been successfully
 // submitted. Recorded into a UMA histogram, so order of enumerators should
@@ -141,8 +237,7 @@ struct SelectOption {
 // (components/autofill/core/common/form_field_data.h)
 struct SectionAutocomplete {
   string section;
-  // autofill::HtmlFieldMode
-  uint8 html_field_mode;
+  HtmlFieldMode html_field_mode;
 };
 
 // autofill::Section::FieldIdentifier
@@ -167,6 +262,14 @@ struct Section {
   // autofill::Section::FieldTypeGroupSuffix
   uint8 field_type_group;
   SectionPrefix prefix;
+};
+
+// autofill::AutocompleteParsingResult
+// (components/autofill/core/common/autocomplete_parsing_util.h)
+struct AutocompleteParsingResult {
+  string section;
+  HtmlFieldMode mode;
+  HtmlFieldType field_type;
 };
 
 // autofill::FormFieldData (components/autofill/core/common/form_field_data.h)
@@ -208,6 +311,7 @@ struct FormFieldData {
   mojo_base.mojom.String16 value;
   string form_control_type;
   string autocomplete_attribute;
+  AutocompleteParsingResult? parsed_autocomplete;
   mojo_base.mojom.String16 placeholder;
   mojo_base.mojom.String16 css_classes;
   mojo_base.mojom.String16 aria_label;

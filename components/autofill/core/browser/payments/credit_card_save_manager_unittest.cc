@@ -46,6 +46,7 @@
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -261,20 +262,18 @@ class CreditCardSaveManagerTest : public testing::Test {
     FormFieldData field;
     if (options.split_names) {
       test::CreateTestFormField("First Name on Card", "firstnameoncard", "",
-                                "text", &field);
-      field.autocomplete_attribute = "cc-given-name";
+                                "text", "cc-given-name", &field);
       form->fields.push_back(field);
       test::CreateTestFormField("Last Name on Card", "lastnameoncard", "",
-                                "text", &field);
-      field.autocomplete_attribute = "cc-family-name";
+                                "text", "cc-family-name", &field);
       form->fields.push_back(field);
-      field.autocomplete_attribute = "";
     } else {
       test::CreateTestFormField("Name on Card", "nameoncard", "", "text",
                                 &field);
       form->fields.push_back(field);
     }
-    test::CreateTestFormField("Card Number", "cardnumber", "", "text", &field);
+    test::CreateTestFormField("Card Number", "cardnumber", "", "text", "",
+                              &field);
     field.is_focusable = !options.is_from_non_focusable_form;
     form->fields.push_back(field);
     test::CreateTestFormField("Expiration Date", "ccmonth", "", "text", &field);
@@ -664,15 +663,13 @@ TEST_F(CreditCardSaveManagerTest, LocalCreditCard_LastAndFirstName) {
 
   FormFieldData field;
   test::CreateTestFormField("Last Name on Card", "lastnameoncard", "", "text",
-                            &field);
-  field.autocomplete_attribute = "cc-family-name";
+                            "cc-family-name", &field);
   credit_card_form.fields.push_back(field);
   test::CreateTestFormField("First Name on Card", "firstnameoncard", "", "text",
-                            &field);
-  field.autocomplete_attribute = "cc-given-name";
+                            "cc-given-name", &field);
   credit_card_form.fields.push_back(field);
-  field.autocomplete_attribute = "";
-  test::CreateTestFormField("Card Number", "cardnumber", "", "text", &field);
+  test::CreateTestFormField("Card Number", "cardnumber", "", "text", "",
+                            &field);
   credit_card_form.fields.push_back(field);
   test::CreateTestFormField("Expiration Date", "ccmonth", "", "text", &field);
   credit_card_form.fields.push_back(field);
@@ -1242,15 +1239,13 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_LastAndFirstName) {
 
   FormFieldData field;
   test::CreateTestFormField("Last Name on Card", "lastnameoncard", "", "text",
-                            &field);
-  field.autocomplete_attribute = "cc-family-name";
+                            "cc-family-name", &field);
   credit_card_form.fields.push_back(field);
   test::CreateTestFormField("First Name on Card", "firstnameoncard", "", "text",
-                            &field);
-  field.autocomplete_attribute = "cc-given-name";
+                            "cc-given-name", &field);
   credit_card_form.fields.push_back(field);
-  field.autocomplete_attribute = "";
-  test::CreateTestFormField("Card Number", "cardnumber", "", "text", &field);
+  test::CreateTestFormField("Card Number", "cardnumber", "", "text", "",
+                            &field);
   credit_card_form.fields.push_back(field);
   test::CreateTestFormField("Expiration Date", "ccmonth", "", "text", &field);
   credit_card_form.fields.push_back(field);

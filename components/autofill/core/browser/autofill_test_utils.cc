@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/autofill_test_utils.h"
 
+#include <cstdint>
 #include <string>
 
 #include "base/guid.h"
@@ -197,6 +198,21 @@ void CreateTestFormField(const char* label,
                          FormFieldData* field) {
   CreateTestFormField(label, name, value, type, field);
   field->autocomplete_attribute = autocomplete;
+  field->parsed_autocomplete =
+      ParseAutocompleteAttribute(autocomplete, field->max_length);
+}
+
+void CreateTestFormField(const char* label,
+                         const char* name,
+                         const char* value,
+                         const char* type,
+                         const char* autocomplete,
+                         uint64_t max_length,
+                         FormFieldData* field) {
+  // First, set the `max_length`, as the `parsed_autocomplete` is set based on
+  // this value.
+  field->max_length = max_length;
+  CreateTestFormField(label, name, value, type, autocomplete, field);
 }
 
 void CreateTestSelectField(const char* label,
@@ -217,6 +233,21 @@ void CreateTestSelectField(const char* label,
         .content = base::UTF8ToUTF16(contents[i]),
     });
   }
+}
+
+void CreateTestSelectField(const char* label,
+                           const char* name,
+                           const char* value,
+                           const char* autocomplete,
+                           const std::vector<const char*>& values,
+                           const std::vector<const char*>& contents,
+                           size_t select_size,
+                           FormFieldData* field) {
+  CreateTestSelectField(label, name, value, values, contents, select_size,
+                        field);
+  field->autocomplete_attribute = autocomplete;
+  field->parsed_autocomplete =
+      ParseAutocompleteAttribute(autocomplete, field->max_length);
 }
 
 void CreateTestSelectField(const std::vector<const char*>& values,

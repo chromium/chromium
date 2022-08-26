@@ -7,10 +7,14 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/autofill_util.h"
+#include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/html_field_types.h"
 
 namespace autofill {
 
@@ -53,7 +57,7 @@ bool ContactTypeHintMatchesFieldType(const std::string& token,
 // might indicate a 4 digit year.
 // In case no rationalization rule applies, the original type is returned.
 HtmlFieldType RationalizeAutocompleteType(HtmlFieldType type,
-                                          const FormFieldData& field) {
+                                          uint64_t field_max_length) {
   // (original-type, max-length) -> new-type
   static constexpr auto rules =
       base::MakeFixedFlatMap<std::pair<HtmlFieldType, uint64_t>, HtmlFieldType>(
@@ -70,7 +74,7 @@ HtmlFieldType RationalizeAutocompleteType(HtmlFieldType type,
                HtmlFieldType::kCreditCardExp4DigitYear},
           });
 
-  auto* it = rules.find(std::make_pair(type, field.max_length));
+  auto* it = rules.find(std::make_pair(type, field_max_length));
   return it == rules.end() ? type : it->second;
 }
 
@@ -186,9 +190,26 @@ bool ShouldIgnoreAutocompleteValue(base::StringPiece value) {
 
 }  // namespace
 
+bool operator==(const AutocompleteParsingResult& a,
+                const AutocompleteParsingResult& b) {
+  return std::tie(a.section, a.mode, a.field_type) ==
+         std::tie(b.section, b.mode, b.field_type);
+}
+bool operator!=(const AutocompleteParsingResult& a,
+                const AutocompleteParsingResult& b) {
+  return !(a == b);
+}
+
+std::string AutocompleteParsingResult::ToString() const {
+  return base::StrCat(
+      {"section='", section, "' ", "mode='",
+       std::string(HtmlFieldModeToStringPiece(mode)), "' ", "field_type='",
+       base::NumberToString(static_cast<int>(field_type)), "'"});
+}
+
 HtmlFieldType FieldTypeFromAutocompleteAttributeValue(
     std::string value,
-    const FormFieldData& field) {
+    uint64_t field_max_length) {
   if (value.empty())
     return HtmlFieldType::kUnspecified;
 
@@ -208,7 +229,7 @@ HtmlFieldType FieldTypeFromAutocompleteAttributeValue(
   }
 
   if (type.has_value())
-    return RationalizeAutocompleteType(type.value(), field);
+    return RationalizeAutocompleteType(type.value(), field_max_length);
 
   // `value` cannot be mapped to any HtmlFieldType. By classifying the field
   // as HtmlFieldType::kUnrecognized Autofill is effectively disabled.
@@ -223,9 +244,10 @@ HtmlFieldType FieldTypeFromAutocompleteAttributeValue(
 }
 
 absl::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
-    const FormFieldData& field) {
+    base::StringPiece autocomplete_attribute,
+    uint64_t field_max_length) {
   std::vector<std::string> tokens =
-      LowercaseAndTokenizeAttributeString(field.autocomplete_attribute);
+      LowercaseAndTokenizeAttributeString(autocomplete_attribute);
 
   // The autocomplete attribute is overloaded: it can specify either a field
   // type hint or whether autocomplete should be enabled at all. Ignore the
@@ -248,8 +270,8 @@ absl::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
   // (1) The final token must be the field type.
   std::string field_type_token = tokens.back();
   tokens.pop_back();
-  result.field_type =
-      FieldTypeFromAutocompleteAttributeValue(field_type_token, field);
+  result.field_type = FieldTypeFromAutocompleteAttributeValue(field_type_token,
+                                                              field_max_length);
 
   // (2) The preceding token, if any, may be a type hint.
   if (!tokens.empty() && IsContactTypeHint(tokens.back())) {

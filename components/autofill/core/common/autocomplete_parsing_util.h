@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/strings/string_piece.h"
-#include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/html_field_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -26,6 +25,8 @@ namespace autofill {
 // An unrecognizable field_type doesn't stop parsing and yields
 // HtmlFieldType::kUnrecognized instead.
 struct AutocompleteParsingResult {
+  std::string ToString() const;
+
   // `section` corresponds to the string after "section-".
   std::string section;
   HtmlFieldMode mode;
@@ -33,8 +34,15 @@ struct AutocompleteParsingResult {
   HtmlFieldType field_type;
   // webauthn is parsed, but otherwise unused.
 };
+
+bool operator==(const AutocompleteParsingResult& a,
+                const AutocompleteParsingResult& b);
+bool operator!=(const AutocompleteParsingResult& a,
+                const AutocompleteParsingResult& b);
+
 absl::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
-    const FormFieldData& field);
+    base::StringPiece autocomplete_attribute,
+    uint64_t field_max_length);
 
 // Checks if `autocomplete` is one of "on", "off" or "false". These values are
 // currently ignored by Autofill.
@@ -49,7 +57,7 @@ bool ShouldIgnoreAutocompleteAttribute(base::StringPiece autocomplete);
 // HtmlFieldType::kUnrecognized is returned.
 HtmlFieldType FieldTypeFromAutocompleteAttributeValue(
     std::string value,
-    const FormFieldData& field);
+    uint64_t field_max_length);
 
 }  // namespace autofill
 

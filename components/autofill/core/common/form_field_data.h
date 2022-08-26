@@ -14,6 +14,7 @@
 
 #include "base/i18n/rtl.h"
 #include "build/build_config.h"
+#include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/html_field_types.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/signatures.h"
@@ -267,6 +268,7 @@ struct FormFieldData {
   std::u16string value;
   std::string form_control_type;
   std::string autocomplete_attribute;
+  absl::optional<AutocompleteParsingResult> parsed_autocomplete;
   std::u16string placeholder;
   std::u16string css_classes;
   std::u16string aria_label;
@@ -374,6 +376,7 @@ std::ostream& operator<<(std::ostream& os, const FormFieldData& field);
     EXPECT_EQ(expected.value, actual.value);                                   \
     EXPECT_EQ(expected.form_control_type, actual.form_control_type);           \
     EXPECT_EQ(expected.autocomplete_attribute, actual.autocomplete_attribute); \
+    EXPECT_EQ(expected.parsed_autocomplete, actual.parsed_autocomplete);       \
     EXPECT_EQ(expected.placeholder, actual.placeholder);                       \
     EXPECT_EQ(expected.max_length, actual.max_length);                         \
     EXPECT_EQ(expected.css_classes, actual.css_classes);                       \

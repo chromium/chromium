@@ -515,7 +515,7 @@ void FormField::ParseUsingAutocompleteAttributes(
     FieldCandidatesMap& field_candidates) {
   for (const AutofillField* field : fields) {
     HtmlFieldType html_type = FieldTypeFromAutocompleteAttributeValue(
-        base::UTF16ToUTF8(field->parseable_name()), *field);
+        base::UTF16ToUTF8(field->parseable_name()), field->max_length);
     // The HTML_MODE is irrelevant when converting to a ServerFieldType.
     ServerFieldType type =
         AutofillType(html_type, HtmlFieldMode::kNone).GetStorableType();

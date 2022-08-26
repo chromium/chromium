@@ -165,10 +165,27 @@ void CreateTestFormField(const char* label,
                          const char* autocomplete,
                          FormFieldData* field);
 
+void CreateTestFormField(const char* label,
+                         const char* name,
+                         const char* value,
+                         const char* type,
+                         const char* autocomplete,
+                         uint64_t max_length,
+                         FormFieldData* field);
+
 // Provides a quick way to populate a select field.
 void CreateTestSelectField(const char* label,
                            const char* name,
                            const char* value,
+                           const std::vector<const char*>& values,
+                           const std::vector<const char*>& contents,
+                           size_t select_size,
+                           FormFieldData* field);
+
+void CreateTestSelectField(const char* label,
+                           const char* name,
+                           const char* value,
+                           const char* autocomplete,
                            const std::vector<const char*>& values,
                            const std::vector<const char*>& contents,
                            size_t select_size,

@@ -128,9 +128,8 @@ bool StructTraits<autofill::mojom::SectionAutocompleteDataView,
          autofill::Section::Autocomplete* out) {
   if (!data.ReadSection(&out->section))
     return false;
-  static_assert(sizeof(data.html_field_mode()) <=
-                sizeof(autofill::HtmlFieldMode));
-  out->mode = static_cast<autofill::HtmlFieldMode>(data.html_field_mode());
+  if (!data.ReadHtmlFieldMode(&out->mode))
+    return false;
   return true;
 }
 
@@ -162,6 +161,20 @@ bool StructTraits<autofill::mojom::SectionDataView, autofill::Section>::Read(
 }
 
 // static
+bool StructTraits<autofill::mojom::AutocompleteParsingResultDataView,
+                  autofill::AutocompleteParsingResult>::
+    Read(autofill::mojom::AutocompleteParsingResultDataView data,
+         autofill::AutocompleteParsingResult* out) {
+  if (!data.ReadSection(&out->section))
+    return false;
+  if (!data.ReadMode(&out->mode))
+    return false;
+  if (!data.ReadFieldType(&out->field_type))
+    return false;
+  return true;
+}
+
+// static
 bool StructTraits<
     autofill::mojom::FormFieldDataDataView,
     autofill::FormFieldData>::Read(autofill::mojom::FormFieldDataDataView data,
@@ -180,6 +193,8 @@ bool StructTraits<
   if (!data.ReadFormControlType(&out->form_control_type))
     return false;
   if (!data.ReadAutocompleteAttribute(&out->autocomplete_attribute))
+    return false;
+  if (!data.ReadParsedAutocomplete(&out->parsed_autocomplete))
     return false;
 
   if (!data.ReadPlaceholder(&out->placeholder))

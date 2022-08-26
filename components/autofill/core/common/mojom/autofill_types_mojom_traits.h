@@ -127,9 +127,9 @@ struct StructTraits<autofill::mojom::SectionAutocompleteDataView,
     return r.section;
   }
 
-  static uint8_t html_field_mode(const autofill::Section::Autocomplete& r) {
-    static_assert(sizeof(r.mode) <= sizeof(uint8_t));
-    return static_cast<uint8_t>(r.mode);
+  static autofill::mojom::HtmlFieldMode html_field_mode(
+      const autofill::Section::Autocomplete& r) {
+    return r.mode;
   }
 
   static bool Read(autofill::mojom::SectionAutocompleteDataView data,
@@ -174,6 +174,28 @@ struct StructTraits<autofill::mojom::SectionDataView, autofill::Section> {
 };
 
 template <>
+struct StructTraits<autofill::mojom::AutocompleteParsingResultDataView,
+                    autofill::AutocompleteParsingResult> {
+  static const std::string& section(
+      const autofill::AutocompleteParsingResult& r) {
+    return r.section;
+  }
+
+  static autofill::mojom::HtmlFieldMode mode(
+      const autofill::AutocompleteParsingResult& r) {
+    return r.mode;
+  }
+
+  static autofill::mojom::HtmlFieldType field_type(
+      const autofill::AutocompleteParsingResult& r) {
+    return r.field_type;
+  }
+
+  static bool Read(autofill::mojom::AutocompleteParsingResultDataView data,
+                   autofill::AutocompleteParsingResult* out);
+};
+
+template <>
 struct StructTraits<autofill::mojom::FormFieldDataDataView,
                     autofill::FormFieldData> {
   static const std::u16string& label(const autofill::FormFieldData& r) {
@@ -205,6 +227,11 @@ struct StructTraits<autofill::mojom::FormFieldDataDataView,
   static const std::string& autocomplete_attribute(
       const autofill::FormFieldData& r) {
     return r.autocomplete_attribute;
+  }
+
+  static const absl::optional<autofill::AutocompleteParsingResult>
+  parsed_autocomplete(const autofill::FormFieldData& r) {
+    return r.parsed_autocomplete;
   }
 
   static const std::u16string& placeholder(const autofill::FormFieldData& r) {

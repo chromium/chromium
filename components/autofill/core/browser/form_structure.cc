@@ -1254,8 +1254,8 @@ void FormStructure::ParseFieldTypesFromAutocompleteAttributes() {
   has_author_specified_upi_vpa_hint_ = false;
   for (const std::unique_ptr<AutofillField>& field : fields_) {
     field->section = Section();
-    auto parsing_result = ParseAutocompleteAttribute(*field);
-    if (!parsing_result)
+
+    if (!field->parsed_autocomplete)
       continue;
 
     // A parsable autocomplete value was specified. Even an invalid field_type
@@ -1263,22 +1263,23 @@ void FormStructure::ParseFieldTypesFromAutocompleteAttributes() {
     // attribute like autocomplete="other" on a field to disable all Autofill
     // heuristics for the form.
     has_author_specified_types_ = true;
-    if (parsing_result->field_type == HtmlFieldType::kUnspecified)
+    if (field->parsed_autocomplete->field_type == HtmlFieldType::kUnspecified)
       continue;
 
     // TODO(crbug.com/702223): Flesh out support for UPI-VPA.
-    if (parsing_result->field_type == HtmlFieldType::kUpiVpa) {
+    if (field->parsed_autocomplete->field_type == HtmlFieldType::kUpiVpa) {
       has_author_specified_upi_vpa_hint_ = true;
-      parsing_result->field_type = HtmlFieldType::kUnrecognized;
+      field->parsed_autocomplete->field_type = HtmlFieldType::kUnrecognized;
     }
 
     // Compute a section name based on the specified hints and apply the result.
     if (field->section.SetPrefixFromAutocomplete(
-            {.section = parsing_result->section,
-             .mode = parsing_result->mode})) {
+            {.section = field->parsed_autocomplete->section,
+             .mode = field->parsed_autocomplete->mode})) {
       has_author_specified_sections_ = true;
     }
-    field->SetHtmlType(parsing_result->field_type, parsing_result->mode);
+    field->SetHtmlType(field->parsed_autocomplete->field_type,
+                       field->parsed_autocomplete->mode);
   }
   was_parsed_for_autocomplete_attributes_ = true;
 }

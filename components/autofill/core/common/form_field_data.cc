@@ -29,9 +29,6 @@ namespace {
 // deserialization routine from previous kFormFieldDataPickleVersion format.
 const int kFormFieldDataPickleVersion = 9;
 
-// Default section name for the fields.
-static constexpr char kDefaultSection[] = "-default";
-
 void WriteSelectOption(const SelectOption& option, base::Pickle* pickle) {
   pickle->WriteString16(option.value);
   pickle->WriteString16(option.content);
@@ -239,9 +236,9 @@ auto IdentityTuple(const FormFieldData& f) {
   // uniquely identify the field as well.
   return std::tuple_cat(
       SimilarityTuple(f),
-      std::tie(f.autocomplete_attribute, f.placeholder, f.max_length,
-               f.css_classes, f.is_focusable, f.should_autocomplete, f.role,
-               f.text_direction));
+      std::tie(f.autocomplete_attribute, f.parsed_autocomplete, f.placeholder,
+               f.max_length, f.css_classes, f.is_focusable,
+               f.should_autocomplete, f.role, f.text_direction));
 }
 
 }  // namespace
@@ -325,6 +322,8 @@ void Section::SetPrefixFromFieldIdentifier(
 }
 
 std::string Section::ToString() const {
+  constexpr char kDefaultSection[] = "-default";
+
   std::string section_name;
   if (const Autocomplete* autocomplete = absl::get_if<Autocomplete>(&prefix_)) {
     // To prevent potential section name collisions, append `kDefaultSection`
@@ -431,6 +430,7 @@ void SerializeFormFieldData(const FormFieldData& field_data,
   pickle->WriteString16(field_data.name);
   pickle->WriteString16(field_data.value);
   pickle->WriteString(field_data.form_control_type);
+  // We don't serialize the `parsed_autocomplete`. See http://crbug.com/1353392.
   pickle->WriteString(field_data.autocomplete_attribute);
   pickle->WriteUInt64(field_data.max_length);
   pickle->WriteBool(field_data.is_autofilled);
@@ -595,6 +595,11 @@ std::ostream& operator<<(std::ostream& os, const FormFieldData& field) {
             << "value='" << field.value << "' "
             << "control='" << field.form_control_type << "' "
             << "autocomplete='" << field.autocomplete_attribute << "' "
+            << "parsed_autocomplete='"
+            << (field.parsed_autocomplete
+                    ? field.parsed_autocomplete->ToString()
+                    : "")
+            << "' "
             << "placeholder='" << field.placeholder << "' "
             << "max_length=" << field.max_length << " "
             << "css_classes='" << field.css_classes << "' "
@@ -632,6 +637,9 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormFieldData& field) {
   buffer << Tr{} << "Label:" << truncated_label;
   buffer << Tr{} << "Form control type:" << field.form_control_type;
   buffer << Tr{} << "Autocomplete attribute:" << field.autocomplete_attribute;
+  buffer << Tr{} << "Parsed autocomplete attribute:"
+         << (field.parsed_autocomplete ? field.parsed_autocomplete->ToString()
+                                       : "");
   buffer << Tr{} << "Aria label:" << field.aria_label;
   buffer << Tr{} << "Aria description:" << field.aria_description;
   buffer << Tr{} << "Section:" << field.section;

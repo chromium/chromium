@@ -29,6 +29,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_data_validation.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
@@ -1959,6 +1960,7 @@ void WebFormControlElementToFormField(
   static base::NoDestructor<WebString> kPlaceholder("placeholder");
   static base::NoDestructor<WebString> kClass("class");
 
+  const WebInputElement input_element = element.DynamicTo<WebInputElement>();
   // Save both id and name attributes, if present. If there is only one of them,
   // it will be saved to |name|. See HTMLFormControlElement::nameForAutofill.
   field->name = element.NameForAutofill().Utf16();
@@ -1968,7 +1970,11 @@ void WebFormControlElementToFormField(
   field->host_form_id = form_renderer_id;
   field->form_control_ax_id = element.GetAxId();
   field->form_control_type = element.FormControlTypeForAutofill().Utf8();
+  field->max_length =
+      IsTextInput(input_element) ? input_element.MaxLength() : 0;
   field->autocomplete_attribute = GetAutocompleteAttribute(element);
+  field->parsed_autocomplete = ParseAutocompleteAttribute(
+      field->autocomplete_attribute, field->max_length);
   if (base::FeatureList::IsEnabled(
           features::kAutofillImprovedLabelForInference)) {
     field->label = GetAssignedLabel(element);
@@ -2017,8 +2023,11 @@ void WebFormControlElementToFormField(
       field->name = field->name_attribute.empty() ? field->id_attribute
                                                   : field->name_attribute;
     }
-    if (field->autocomplete_attribute.empty())
+    if (field->autocomplete_attribute.empty()) {
       field->autocomplete_attribute = GetAutocompleteAttribute(host);
+      field->parsed_autocomplete = ParseAutocompleteAttribute(
+          field->autocomplete_attribute, field->max_length);
+    }
     if (field->css_classes.empty() && host.HasAttribute(*kClass))
       field->css_classes = host.GetAttribute(*kClass).Utf16();
     if (field->aria_label.empty())
@@ -2030,7 +2039,6 @@ void WebFormControlElementToFormField(
   if (!IsAutofillableElement(element))
     return;
 
-  const WebInputElement input_element = element.DynamicTo<WebInputElement>();
   if (IsAutofillableInputElement(input_element) || IsTextAreaElement(element) ||
       IsSelectElement(element)) {
     // The browser doesn't need to differentiate between preview and autofill.
@@ -2045,9 +2053,6 @@ void WebFormControlElementToFormField(
   }
 
   if (IsAutofillableInputElement(input_element)) {
-    if (IsTextInput(input_element))
-      field->max_length = input_element.MaxLength();
-
     SetCheckStatus(field, IsCheckableElement(input_element),
                    input_element.IsChecked());
   } else if (IsTextAreaElement(element)) {

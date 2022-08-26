@@ -225,9 +225,9 @@ void LogAutocompletePredictionCollisionTypeMetrics(
     auto autocomplete_state = AutofillMetrics::AutocompleteState::kNone;
     if (ShouldIgnoreAutocompleteAttribute(field->autocomplete_attribute)) {
       autocomplete_state = AutofillMetrics::AutocompleteState::kOff;
-    } else if (auto autocomplete = ParseAutocompleteAttribute(*field)) {
+    } else if (field->parsed_autocomplete) {
       autocomplete_state =
-          autocomplete->field_type != HtmlFieldType::kUnrecognized
+          field->parsed_autocomplete->field_type != HtmlFieldType::kUnrecognized
               ? AutofillMetrics::AutocompleteState::kValid
               : AutofillMetrics::AutocompleteState::kGarbage;
     }

@@ -10,6 +10,7 @@
 #include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,6 +43,7 @@ struct FieldDataDescription {
   absl::optional<std::u16string> name;
   absl::optional<std::u16string> value;
   const std::string autocomplete_attribute;
+  absl::optional<AutocompleteParsingResult> parsed_autocomplete;
   const std::string form_control_type = "text";
   bool should_autocomplete = true;
   absl::optional<bool> is_autofilled;

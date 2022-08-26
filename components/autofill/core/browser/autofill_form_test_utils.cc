@@ -6,6 +6,7 @@
 
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
@@ -104,8 +105,11 @@ FormData GetFormData(const FormDataDescription& d) {
         dd.unique_renderer_id.value_or(MakeFieldRendererId());
     ff.is_focusable = dd.is_focusable;
     ff.is_visible = dd.is_visible;
-    if (!dd.autocomplete_attribute.empty())
+    if (!dd.autocomplete_attribute.empty()) {
       ff.autocomplete_attribute = dd.autocomplete_attribute;
+      ff.parsed_autocomplete =
+          ParseAutocompleteAttribute(dd.autocomplete_attribute, ff.max_length);
+    }
     if (dd.label)
       ff.label = *dd.label;
     if (dd.name)
