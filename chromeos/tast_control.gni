@@ -27,6 +27,15 @@ tast_disabled_tests_from_chrome_all = [
   "inputs.VirtualKeyboardTypingOmnibox.guest",
   "inputs.VirtualKeyboardTypingUserMode.incognito",
 
+  # b/243766745
+  "inputs.InputMethodShelfInputs",
+  "inputs.InputMethodShelfInputs.lacros",
+  "inputs.VirtualKeyboardMultipasteSuggestion",
+  "inputs.VirtualKeyboardTypingInputFields",
+  "inputs.PhysicalKeyboardJapaneseTyping.us_lacros",
+  "inputs.PhysicalKeyboardCantoneseTyping.lacros",
+  "inputs.PhysicalKeyboardCantoneseTyping",
+
   # crbug.com/1184931
   "health.ProbeBatteryMetrics",
 
