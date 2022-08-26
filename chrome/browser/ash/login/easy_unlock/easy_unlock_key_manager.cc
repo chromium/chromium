@@ -24,7 +24,7 @@ EasyUnlockKeyManager::EasyUnlockKeyManager() {}
 EasyUnlockKeyManager::~EasyUnlockKeyManager() {}
 
 void EasyUnlockKeyManager::RefreshKeys(const UserContext& user_context,
-                                       const base::ListValue& remote_devices,
+                                       const base::Value::List& remote_devices,
                                        RefreshKeysCallback callback) {
   EasyUnlockTpmKeyManager* tpm_key_manager =
       EasyUnlockTpmKeyManagerFactory::GetInstance()->GetForUser(
@@ -40,12 +40,10 @@ void EasyUnlockKeyManager::RefreshKeys(const UserContext& user_context,
   auto do_refresh_keys = base::BindRepeating(
       &EasyUnlockKeyManager::RefreshKeysWithTpmKeyPresent,
       weak_ptr_factory_.GetWeakPtr(), user_context,
-      base::Passed(base::ListValue::From(
-          base::Value::ToUniquePtrValue(remote_devices.Clone()))),
-      base::Passed(&callback));
+      base::Passed(remote_devices.Clone()), base::Passed(&callback));
 
   // Private TPM key is needed only when adding new keys.
-  if (remote_devices.GetListDeprecated().empty() ||
+  if (remote_devices.empty() ||
       tpm_key_manager->PrepareTpmKey(/*check_private_key=*/false,
                                      do_refresh_keys)) {
     do_refresh_keys.Run();
@@ -62,7 +60,7 @@ void EasyUnlockKeyManager::RefreshKeys(const UserContext& user_context,
 
 void EasyUnlockKeyManager::RefreshKeysWithTpmKeyPresent(
     const UserContext& user_context,
-    std::unique_ptr<base::ListValue> remote_devices,
+    base::Value::List remote_devices,
     RefreshKeysCallback callback) {
   EasyUnlockTpmKeyManager* tpm_key_manager =
       EasyUnlockTpmKeyManagerFactory::GetInstance()->GetForUser(
@@ -71,7 +69,7 @@ void EasyUnlockKeyManager::RefreshKeysWithTpmKeyPresent(
       tpm_key_manager->GetPublicTpmKey(user_context.GetAccountId());
 
   EasyUnlockDeviceKeyDataList devices;
-  if (!RemoteDeviceRefListToDeviceDataList(*remote_devices, &devices))
+  if (!RemoteDeviceRefListToDeviceDataList(remote_devices, &devices))
     devices.clear();
 
   write_operation_queue_.push_back(
@@ -153,21 +151,21 @@ bool EasyUnlockKeyManager::RemoteDeviceDictionaryToDeviceData(
 void EasyUnlockKeyManager::DeviceDataListToRemoteDeviceList(
     const AccountId& account_id,
     const EasyUnlockDeviceKeyDataList& data_list,
-    base::ListValue* device_list) {
-  device_list->ClearList();
-  for (size_t i = 0; i < data_list.size(); ++i) {
+    base::Value::List* device_list) {
+  device_list->clear();
+  for (const auto& data : data_list) {
     base::DictionaryValue device_dict;
-    DeviceDataToRemoteDeviceDictionary(account_id, data_list[i], &device_dict);
-    device_list->GetList().Append(std::move(device_dict));
+    DeviceDataToRemoteDeviceDictionary(account_id, data, &device_dict);
+    device_list->Append(std::move(device_dict));
   }
 }
 
 // static
 bool EasyUnlockKeyManager::RemoteDeviceRefListToDeviceDataList(
-    const base::ListValue& device_list,
+    const base::Value::List& device_list,
     EasyUnlockDeviceKeyDataList* data_list) {
   EasyUnlockDeviceKeyDataList parsed_devices;
-  for (const auto& entry : device_list.GetListDeprecated()) {
+  for (const auto& entry : device_list) {
     const base::DictionaryValue* dict;
     if (!entry.GetAsDictionary(&dict) || !dict)
       return false;

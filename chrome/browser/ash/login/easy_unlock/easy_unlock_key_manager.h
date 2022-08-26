@@ -47,7 +47,7 @@ class EasyUnlockKeyManager {
   // `remote_devices` and the given `user_context`. `user_context` must have
   // secret to allow keys to be created.
   void RefreshKeys(const UserContext& user_context,
-                   const base::ListValue& remote_devices,
+                   const base::Value::List& remote_devices,
                    RefreshKeysCallback callback);
 
   // Retrieves the remote device data from cryptohome keys for the given
@@ -73,9 +73,9 @@ class EasyUnlockKeyManager {
   static void DeviceDataListToRemoteDeviceList(
       const AccountId& account_id,
       const EasyUnlockDeviceKeyDataList& data_list,
-      base::ListValue* device_list);
+      base::Value::List* device_list);
   static bool RemoteDeviceRefListToDeviceDataList(
-      const base::ListValue& device_list,
+      const base::Value::List& device_list,
       EasyUnlockDeviceKeyDataList* data_list);
 
   // Gets key label for the given key index.
@@ -89,10 +89,9 @@ class EasyUnlockKeyManager {
 
   // Called when the TPM key is ready to be used for creating Easy Unlock key
   // challenges.
-  void RefreshKeysWithTpmKeyPresent(
-      const UserContext& user_context,
-      std::unique_ptr<base::ListValue> remote_devices,
-      RefreshKeysCallback callback);
+  void RefreshKeysWithTpmKeyPresent(const UserContext& user_context,
+                                    base::Value::List remote_devices,
+                                    RefreshKeysCallback callback);
 
   // Callback invoked after refresh keys operation.
   void OnKeysRefreshed(RefreshKeysCallback callback, bool create_success);

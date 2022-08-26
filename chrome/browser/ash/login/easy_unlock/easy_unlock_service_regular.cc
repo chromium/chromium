@@ -299,15 +299,11 @@ AccountId EasyUnlockServiceRegular::GetAccountId() const {
   return primary_user->GetAccountId();
 }
 
-const base::ListValue* EasyUnlockServiceRegular::GetRemoteDevices() const {
-  const base::Value* pairing_dict =
-      profile()->GetPrefs()->GetDictionary(prefs::kEasyUnlockPairing);
-  if (pairing_dict) {
-    const base::Value* devices = pairing_dict->FindListKey(kKeyDevices);
-    if (devices)
-      return &base::Value::AsListValue(*devices);
-  }
-  return NULL;
+const base::Value::List* EasyUnlockServiceRegular::GetRemoteDevices() const {
+  const base::Value::Dict& pairing_dict =
+      profile()->GetPrefs()->GetValueDict(prefs::kEasyUnlockPairing);
+
+  return pairing_dict.FindList(kKeyDevices);
 }
 
 std::string EasyUnlockServiceRegular::GetChallenge() const {

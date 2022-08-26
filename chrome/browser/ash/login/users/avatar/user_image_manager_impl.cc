@@ -429,17 +429,15 @@ void UserImageManagerImpl::Job::SaveImageAndUpdateLocalState(
   // Because the user ID (i.e. email address) contains '.', the code here
   // cannot use the dots notation (path expantion) hence is verbose.
   PrefService* local_state = g_browser_process->local_state();
-  const base::Value* prefs_images =
-      local_state->GetDictionary(kUserImageProperties);
-  if (prefs_images) {
-    const base::Value* image_properties =
-        prefs_images->FindDictKey(account_id().GetUserEmail());
-    if (image_properties) {
-      const std::string* value =
-          image_properties->FindStringKey(kImagePathNodeName);
-      if (value)
-        old_image_path = base::FilePath::FromUTF8Unsafe(*value);
-    }
+  const base::Value::Dict& prefs_images =
+      local_state->GetValueDict(kUserImageProperties);
+
+  const base::Value::Dict* image_properties =
+      prefs_images.FindDict(account_id().GetUserEmail());
+  if (image_properties) {
+    const std::string* value = image_properties->FindString(kImagePathNodeName);
+    if (value)
+      old_image_path = base::FilePath::FromUTF8Unsafe(*value);
   }
 
   base::PostTaskAndReplyWithResult(
@@ -463,15 +461,15 @@ void UserImageManagerImpl::Job::UpdateLocalState() {
 
   PrefService* local_state = g_browser_process->local_state();
 
-  base::DictionaryValue entry;
-  entry.SetKey(kImagePathNodeName, base::Value(image_path_.value()));
-  entry.SetKey(kImageIndexNodeName, base::Value(image_index_));
+  base::Value::Dict entry;
+  entry.Set(kImagePathNodeName, base::Value(image_path_.value()));
+  entry.Set(kImageIndexNodeName, base::Value(image_index_));
   if (!image_url_.is_empty())
-    entry.SetKey(kImageURLNodeName, base::Value(image_url_.spec()));
+    entry.Set(kImageURLNodeName, base::Value(image_url_.spec()));
 
-  const base::Value* existing_value =
-      local_state->GetDictionary(kUserImageProperties)
-          ->FindDictKey(account_id().GetUserEmail());
+  const base::Value::Dict* existing_value =
+      local_state->GetValueDict(kUserImageProperties)
+          .FindDict(account_id().GetUserEmail());
 
   if (existing_value && *existing_value == entry) {
     return;
@@ -479,7 +477,7 @@ void UserImageManagerImpl::Job::UpdateLocalState() {
 
   DictionaryPrefUpdate update(local_state, kUserImageProperties);
 
-  update->SetKey(account_id().GetUserEmail(), std::move(entry));
+  update->SetKey(account_id().GetUserEmail(), base::Value(std::move(entry)));
 
   parent_->user_manager_->NotifyLocalStateChanged();
 }
@@ -505,14 +503,12 @@ UserImageManagerImpl::~UserImageManagerImpl() {}
 
 void UserImageManagerImpl::LoadUserImage() {
   PrefService* local_state = g_browser_process->local_state();
-  const base::Value* prefs_images =
-      local_state->GetDictionary(kUserImageProperties);
-  if (!prefs_images)
-    return;
+  const base::Value::Dict& prefs_images =
+      local_state->GetValueDict(kUserImageProperties);
   user_manager::User* user = GetUserAndModify();
 
-  const base::Value* image_properties =
-      prefs_images->FindDictKey(account_id_.GetUserEmail());
+  const base::Value::Dict* image_properties =
+      prefs_images.FindDict(account_id_.GetUserEmail());
 
   // If the user image for `user_id` is managed by policy and the policy-set
   // image is being loaded and persisted right now, let that job continue. It
@@ -525,7 +521,7 @@ void UserImageManagerImpl::LoadUserImage() {
     return;
   }
 
-  int image_index = image_properties->FindIntKey(kImageIndexNodeName)
+  int image_index = image_properties->FindInt(kImageIndexNodeName)
                         .value_or(user_manager::User::USER_IMAGE_INVALID);
   if (default_user_image::IsValidIndex(image_index)) {
     user->SetImage(std::make_unique<user_manager::UserImage>(
@@ -541,10 +537,10 @@ void UserImageManagerImpl::LoadUserImage() {
   }
 
   const std::string* image_url_string =
-      image_properties->FindStringKey(kImageURLNodeName);
+      image_properties->FindString(kImageURLNodeName);
   GURL image_url(image_url_string ? *image_url_string : std::string());
   const std::string* image_path =
-      image_properties->FindStringKey(kImagePathNodeName);
+      image_properties->FindString(kImagePathNodeName);
 
   user->SetImageURL(image_url);
   user->SetStubImage(

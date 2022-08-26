@@ -79,7 +79,7 @@ class EasyUnlockServiceSignin : public EasyUnlockService {
 
     // The list of remote device dictionaries understood by Easy unlock app.
     // This will be returned by `GetRemoteDevices` method.
-    base::ListValue remote_devices_value;
+    base::Value::List remote_devices_value;
   };
 
   // EasyUnlockService implementation:
@@ -87,7 +87,7 @@ class EasyUnlockServiceSignin : public EasyUnlockService {
       override;
   EasyUnlockService::Type GetType() const override;
   AccountId GetAccountId() const override;
-  const base::ListValue* GetRemoteDevices() const override;
+  const base::Value::List* GetRemoteDevices() const override;
   std::string GetChallenge() const override;
   std::string GetWrappedSecret() const override;
   void RecordEasySignInOutcome(const AccountId& account_id,

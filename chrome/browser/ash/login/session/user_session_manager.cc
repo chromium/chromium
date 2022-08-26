@@ -914,10 +914,10 @@ bool UserSessionManager::RespectLocalePreference(
   if (pref_locale.empty())
     pref_locale = pref_bkup_locale;
 
-  const std::string* account_locale = NULL;
+  const std::string* account_locale = nullptr;
   if (pref_locale.empty() && user->has_gaia_account() &&
-      prefs->GetList(::prefs::kAllowedLanguages)->GetListDeprecated().empty()) {
-    if (user->GetAccountLocale() == NULL)
+      prefs->GetValueList(::prefs::kAllowedLanguages).empty()) {
+    if (user->GetAccountLocale() == nullptr)
       return false;  // wait until Account profile is loaded.
     account_locale = user->GetAccountLocale();
     pref_locale = *account_locale;
@@ -2156,7 +2156,7 @@ void UserSessionManager::UpdateEasyUnlockKeys(const UserContext& user_context) {
     return;
   }
 
-  const base::ListValue* device_list = nullptr;
+  const base::Value::List* device_list = nullptr;
   EasyUnlockService* easy_unlock_service = EasyUnlockService::GetForUser(*user);
   if (easy_unlock_service) {
     device_list = easy_unlock_service->IsChromeOSLoginEnabled()
@@ -2165,7 +2165,7 @@ void UserSessionManager::UpdateEasyUnlockKeys(const UserContext& user_context) {
     easy_unlock_service->SetHardlockState(SmartLockStateHandler::NO_HARDLOCK);
   }
 
-  base::ListValue empty_list;
+  base::Value::List empty_list;
   if (!device_list)
     device_list = &empty_list;
 

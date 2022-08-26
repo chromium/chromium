@@ -167,8 +167,8 @@ void UserSessionInitializer::InitRlz(Profile* profile) {
   // a guest session.
   if (!g_browser_process->local_state()->HasPrefPath(::prefs::kRLZBrand) ||
       g_browser_process->local_state()
-          ->Get(::prefs::kRLZBrand)
-          ->GetString()
+          ->GetValue(::prefs::kRLZBrand)
+          .GetString()
           .empty()) {
     // Read brand code asynchronously from an OEM data and repost ourselves.
     google_brand::chromeos::InitBrand(base::BindOnce(

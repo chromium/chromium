@@ -303,12 +303,12 @@ class EasyUnlockServiceRegularTest : public testing::Test {
   }
 
   void VerifyGetRemoteDevices(bool are_local_and_remote_devices_expected) {
-    const base::ListValue* remote_devices =
+    const base::Value::List* remote_devices =
         static_cast<EasyUnlockService*>(easy_unlock_service_regular_.get())
             ->GetRemoteDevices();
     if (are_local_and_remote_devices_expected)
       // 2 devices are expected: the local device and the remote device.
-      EXPECT_EQ(2u, remote_devices->GetListDeprecated().size());
+      EXPECT_EQ(2u, remote_devices->size());
     else
       EXPECT_FALSE(remote_devices);
   }

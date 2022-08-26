@@ -487,7 +487,7 @@ void EasyUnlockService::CheckCryptohomeKeysAndMaybeHardlock() {
   if (!account_id.is_valid() || !IsChromeOSLoginEnabled())
     return;
 
-  const base::ListValue* device_list = GetRemoteDevices();
+  const base::Value::List* device_list = GetRemoteDevices();
   std::set<std::string> paired_devices;
   if (device_list) {
     EasyUnlockDeviceKeyDataList parsed_paired;

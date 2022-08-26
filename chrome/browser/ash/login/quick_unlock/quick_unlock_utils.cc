@@ -43,18 +43,18 @@ constexpr int kDefaultMinimumPinLength = 6;
 bool HasPolicyValue(const PrefService* pref_service,
                     Purpose purpose,
                     const char* value) {
-  const base::Value* factors = nullptr;
+  const base::Value::List* factors = nullptr;
   switch (purpose) {
     case Purpose::kUnlock:
-      factors = pref_service->GetList(prefs::kQuickUnlockModeAllowlist);
+      factors = &pref_service->GetValueList(prefs::kQuickUnlockModeAllowlist);
       break;
     case Purpose::kWebAuthn:
-      factors = pref_service->GetList(prefs::kWebAuthnFactors);
+      factors = &pref_service->GetValueList(prefs::kWebAuthnFactors);
       break;
     default:
       return false;
   }
-  return base::Contains(factors->GetListDeprecated(), base::Value(value));
+  return base::Contains(*factors, base::Value(value));
 }
 
 // Check if fingerprint is disabled for a specific purpose (so not including

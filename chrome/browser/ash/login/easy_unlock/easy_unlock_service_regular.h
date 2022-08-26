@@ -81,7 +81,7 @@ class EasyUnlockServiceRegular
       override;
   EasyUnlockService::Type GetType() const override;
   AccountId GetAccountId() const override;
-  const base::ListValue* GetRemoteDevices() const override;
+  const base::Value::List* GetRemoteDevices() const override;
   std::string GetChallenge() const override;
   std::string GetWrappedSecret() const override;
   void RecordEasySignInOutcome(const AccountId& account_id,
