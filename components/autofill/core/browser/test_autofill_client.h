@@ -12,8 +12,12 @@
 
 #include "base/compiler_specific.h"
 #include "base/i18n/rtl.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/browser/logging/log_router.h"
+#include "components/autofill/core/browser/logging/text_log_receiver.h"
 #include "components/autofill/core/browser/mock_autocomplete_history_manager.h"
 #include "components/autofill/core/browser/mock_merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
@@ -40,6 +44,9 @@
 namespace autofill {
 
 // This class is for easier writing of tests.
+//
+// If you pass the command-line flag --show-autofill-internals,
+// autofill-internals logs are recorded to LOG(INFO).
 class TestAutofillClient : public AutofillClient {
  public:
   explicit TestAutofillClient(
@@ -176,6 +183,7 @@ class TestAutofillClient : public AutofillClient {
   bool AreServerCardsSupported() const override;
   void ExecuteCommand(int id) override;
   void OpenPromoCodeOfferDetailsURL(const GURL& url) override;
+  LogManager* GetLogManager() const override;
 
   // RiskDataLoader:
   void LoadRiskData(
@@ -372,6 +380,15 @@ class TestAutofillClient : public AutofillClient {
   std::vector<std::string> allowed_merchants_;
   std::vector<std::string> allowed_bin_ranges_;
 #endif
+
+  LogRouter log_router_;
+  std::unique_ptr<LogManager> log_manager_;
+  TextLogReceiver text_log_receiver_;
+  base::ScopedObservation<LogRouter,
+                          LogReceiver,
+                          &LogRouter::RegisterReceiver,
+                          &LogRouter::UnregisterReceiver>
+      scoped_logging_subscription_{&text_log_receiver_};
 };
 
 }  // namespace autofill

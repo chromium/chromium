@@ -113,10 +113,12 @@ class AutofillAgentTests : public web::WebTest {
     return frame;
   }
 
+  // The client_ needs to outlive the fake_web_state_, which owns the
+  // frames.
+  autofill::TestAutofillClient client_;
   web::FakeWebState fake_web_state_;
   web::FakeWebFrame* fake_main_frame_ = nullptr;
   web::FakeWebFramesManager* fake_web_frames_manager_ = nullptr;
-  autofill::TestAutofillClient client_;
   std::unique_ptr<PrefService> prefs_;
   AutofillAgent* autofill_agent_;
 };

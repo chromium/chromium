@@ -67,9 +67,9 @@ class FullCardRequesterTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   content::TestBrowserContext browser_context_;
+  MockAutofillClient autofill_client_;  // Needs to outlive the web_contents_.
   std::unique_ptr<content::WebContents> web_contents_;
   ::network::TestURLLoaderFactory test_url_loader_factory_;
-  MockAutofillClient autofill_client_;
   scoped_refptr<autofill::AutofillWebDataService> database_;
   MockPersonalDataManager personal_data_manager_;
   FullCardRequester full_card_requester_;

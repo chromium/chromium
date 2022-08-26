@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/test_autofill_client.h"
 
+#include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -23,7 +24,12 @@ TestAutofillClient::TestAutofillClient(
     : test_personal_data_manager_(
           pdm ? std::move(pdm) : std::make_unique<TestPersonalDataManager>()),
       form_origin_(GURL("https://example.test")),
-      last_committed_url_(GURL("https://example.test")) {}
+      last_committed_url_(GURL("https://example.test")),
+      log_manager_(LogManager::Create(&log_router_, base::NullCallback())) {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch("show-autofill-internals"))
+    scoped_logging_subscription_.Observe(&log_router_);
+}
 
 TestAutofillClient::~TestAutofillClient() = default;
 
@@ -337,6 +343,10 @@ bool TestAutofillClient::AreServerCardsSupported() const {
 void TestAutofillClient::ExecuteCommand(int id) {}
 
 void TestAutofillClient::OpenPromoCodeOfferDetailsURL(const GURL& url) {}
+
+LogManager* TestAutofillClient::GetLogManager() const {
+  return log_manager_.get();
+}
 
 void TestAutofillClient::LoadRiskData(
     base::OnceCallback<void(const std::string&)> callback) {
