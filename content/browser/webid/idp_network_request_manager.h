@@ -118,11 +118,9 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
       base::OnceCallback<void(FetchStatus, const std::string&)>;
 
   static std::unique_ptr<IdpNetworkRequestManager> Create(
-      const GURL& provider,
       RenderFrameHostImpl* host);
 
   IdpNetworkRequestManager(
-      const GURL& provider,
       const url::Origin& relying_party,
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
       network::mojom::ClientSecurityStatePtr client_security_state);
@@ -138,10 +136,12 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   // Fetch the manifest list. This is the /.well-known/web-identity file on
   // the eTLD+1 calculated from the provider URL, used to check that the
   // provider URL is valid for this eTLD+1.
-  virtual void FetchManifestList(FetchManifestListCallback);
+  virtual void FetchManifestList(const GURL& provider,
+                                 FetchManifestListCallback);
 
   // Attempt to fetch the IDP's FedCM parameters from the fedcm.json manifest.
-  virtual void FetchManifest(absl::optional<int> idp_brand_icon_ideal_size,
+  virtual void FetchManifest(const GURL& provider,
+                             absl::optional<int> idp_brand_icon_ideal_size,
                              absl::optional<int> idp_brand_icon_minimum_size,
                              FetchManifestCallback);
 
@@ -190,9 +190,6 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
       const GURL& url,
       bool send_referrer,
       absl::optional<std::string> request_body = absl::nullopt) const;
-
-  // URL of the Identity Provider.
-  GURL provider_;
 
   url::Origin relying_party_origin_;
 

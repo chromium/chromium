@@ -339,14 +339,16 @@ class DelegatedIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
     DCHECK(delegate_);
   }
 
-  void FetchManifestList(FetchManifestListCallback callback) override {
-    delegate_->FetchManifestList(std::move(callback));
+  void FetchManifestList(const GURL& provider,
+                         FetchManifestListCallback callback) override {
+    delegate_->FetchManifestList(provider, std::move(callback));
   }
 
-  void FetchManifest(absl::optional<int> idp_brand_icon_ideal_size,
+  void FetchManifest(const GURL& provider,
+                     absl::optional<int> idp_brand_icon_ideal_size,
                      absl::optional<int> idp_brand_icon_minimum_size,
                      FetchManifestCallback callback) override {
-    delegate_->FetchManifest(idp_brand_icon_ideal_size,
+    delegate_->FetchManifest(provider, idp_brand_icon_ideal_size,
                              idp_brand_icon_minimum_size, std::move(callback));
   }
 
@@ -392,7 +394,8 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
     delayed_callbacks_.clear();
   }
 
-  void FetchManifestList(FetchManifestListCallback callback) override {
+  void FetchManifestList(const GURL& provider,
+                         FetchManifestListCallback callback) override {
     fetched_endpoints_ |= FetchedEndpoint::MANIFEST_LIST;
     std::set<GURL> url_set(config_.manifest_list.provider_urls.begin(),
                            config_.manifest_list.provider_urls.end());
@@ -401,7 +404,8 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
         base::BindOnce(std::move(callback), FetchStatus::kSuccess, url_set));
   }
 
-  void FetchManifest(absl::optional<int> idp_brand_icon_ideal_size,
+  void FetchManifest(const GURL& provider,
+                     absl::optional<int> idp_brand_icon_ideal_size,
                      absl::optional<int> idp_brand_icon_minimum_size,
                      FetchManifestCallback callback) override {
     fetched_endpoints_ |= FetchedEndpoint::MANIFEST;

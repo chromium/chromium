@@ -9,8 +9,7 @@
 namespace content {
 
 MockIdpNetworkRequestManager::MockIdpNetworkRequestManager()
-    : IdpNetworkRequestManager(GURL(),
-                               url::Origin(),
+    : IdpNetworkRequestManager(url::Origin(),
                                nullptr,
                                network::mojom::ClientSecurityState::New()) {}
 

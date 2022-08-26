@@ -92,7 +92,7 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
  public:
   std::unique_ptr<IdpNetworkRequestManager> CreateTestManager() {
     return std::make_unique<IdpNetworkRequestManager>(
-        GURL(kTestIdpUrl), url::Origin::Create(GURL(kTestRpUrl)),
+        url::Origin::Create(GURL(kTestRpUrl)),
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_),
         network::mojom::ClientSecurityState::New());
@@ -114,7 +114,7 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
         });
 
     std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
-    manager->FetchManifestList(std::move(callback));
+    manager->FetchManifestList(GURL(kTestIdpUrl), std::move(callback));
     run_loop.Run();
 
     return {parsed_fetch_status, parsed_urls};
@@ -137,7 +137,7 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
         });
 
     std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
-    manager->FetchManifest(kTestIdpBrandIconIdealSize,
+    manager->FetchManifest(GURL(kTestIdpUrl), kTestIdpBrandIconIdealSize,
                            kTestIdpBrandIconMinimumSize, std::move(callback));
     run_loop.Run();
 
@@ -483,7 +483,7 @@ TEST_F(IdpNetworkRequestManagerTest, FetchManifestListIllegalDomainFails) {
 
   network::TestURLLoaderFactory test_url_loader_factory;
   auto network_manager = std::make_unique<IdpNetworkRequestManager>(
-      illegal_idp_url, url::Origin::Create(GURL(kTestRpUrl)),
+      url::Origin::Create(GURL(kTestRpUrl)),
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory),
       network::mojom::ClientSecurityState::New());
@@ -497,7 +497,7 @@ TEST_F(IdpNetworkRequestManagerTest, FetchManifestListIllegalDomainFails) {
         EXPECT_EQ(FetchStatus::kHttpNotFoundError, fetch_status);
         run_loop.Quit();
       });
-  network_manager->FetchManifestList(std::move(callback));
+  network_manager->FetchManifestList(illegal_idp_url, std::move(callback));
   run_loop.Run();
 
   // Manifest list download should not have been attempted.

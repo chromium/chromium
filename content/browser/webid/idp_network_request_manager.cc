@@ -522,7 +522,6 @@ constexpr char IdpNetworkRequestManager::kManifestFilePath[];
 
 // static
 std::unique_ptr<IdpNetworkRequestManager> IdpNetworkRequestManager::Create(
-    const GURL& provider,
     RenderFrameHostImpl* host) {
   // Use the browser process URL loader factory because it has cross-origin
   // read blocking disabled. This is safe because even though these are
@@ -530,18 +529,16 @@ std::unique_ptr<IdpNetworkRequestManager> IdpNetworkRequestManager::Create(
   // leak the values to the renderer. The renderer should only learn information
   // when the user selects an account to sign in.
   return std::make_unique<IdpNetworkRequestManager>(
-      provider, host->GetLastCommittedOrigin(),
+      host->GetLastCommittedOrigin(),
       host->GetStoragePartition()->GetURLLoaderFactoryForBrowserProcess(),
       host->BuildClientSecurityState());
 }
 
 IdpNetworkRequestManager::IdpNetworkRequestManager(
-    const GURL& provider,
     const url::Origin& relying_party_origin,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     network::mojom::ClientSecurityStatePtr client_security_state)
-    : provider_(provider),
-      relying_party_origin_(relying_party_origin),
+    : relying_party_origin_(relying_party_origin),
       loader_factory_(loader_factory),
       client_security_state_(std::move(client_security_state)) {
   DCHECK(client_security_state_);
@@ -579,9 +576,10 @@ absl::optional<GURL> IdpNetworkRequestManager::ComputeManifestListUrl(
 }
 
 void IdpNetworkRequestManager::FetchManifestList(
+    const GURL& provider,
     FetchManifestListCallback callback) {
   absl::optional<GURL> manifest_list_url =
-      IdpNetworkRequestManager::ComputeManifestListUrl(provider_);
+      IdpNetworkRequestManager::ComputeManifestListUrl(provider);
 
   if (!manifest_list_url) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -602,11 +600,12 @@ void IdpNetworkRequestManager::FetchManifestList(
 }
 
 void IdpNetworkRequestManager::FetchManifest(
+    const GURL& provider,
     absl::optional<int> idp_brand_icon_ideal_size,
     absl::optional<int> idp_brand_icon_minimum_size,
     FetchManifestCallback callback) {
   GURL target_url =
-      provider_.Resolve(IdpNetworkRequestManager::kManifestFilePath);
+      provider.Resolve(IdpNetworkRequestManager::kManifestFilePath);
 
   std::unique_ptr<network::SimpleURLLoader> url_loader =
       CreateUncredentialedUrlLoader(target_url, /* send_referrer= */ false);

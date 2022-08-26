@@ -140,8 +140,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   void CleanUp();
 
-  std::unique_ptr<IdpNetworkRequestManager> CreateNetworkManager(
-      const GURL& provider);
+  std::unique_ptr<IdpNetworkRequestManager> CreateNetworkManager();
   std::unique_ptr<IdentityRequestDialogController> CreateDialogController();
 
   // Creates an inspector issue related to a federated authentication request to

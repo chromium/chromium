@@ -342,8 +342,7 @@ void FederatedAuthRequestImpl::RequestToken(
     return;
   }
 
-  // TODO(crbug.com/1307709): Handle network managers for multiple IDPs.
-  network_manager_ = CreateNetworkManager(identity_provider_ptr->config_url);
+  network_manager_ = CreateNetworkManager();
 
   FederatedApiPermissionStatus permission_status =
       api_permission_delegate_->GetApiPermissionStatus(GetEmbeddingOrigin());
@@ -439,7 +438,7 @@ void FederatedAuthRequestImpl::LogoutRps(
     return;
   }
 
-  network_manager_ = CreateNetworkManager(origin().GetURL());
+  network_manager_ = CreateNetworkManager();
 
   if (!IsFedCmIdpSignoutEnabled()) {
     CompleteLogoutRequest(LogoutRpsStatus::kError);
@@ -495,11 +494,13 @@ void FederatedAuthRequestImpl::FetchManifest(
                      weak_ptr_factory_.GetWeakPtr(), *identity_provider_ptr);
 
   if (IsFedCmManifestValidationEnabled()) {
-    network_manager_->FetchManifestList(std::move(manifest_list_callback));
+    network_manager_->FetchManifestList(identity_provider_ptr->config_url,
+                                        std::move(manifest_list_callback));
   } else {
     manifest_list_checked_ = true;
   }
-  network_manager_->FetchManifest(icon_ideal_size, icon_minimum_size,
+  network_manager_->FetchManifest(identity_provider_ptr->config_url,
+                                  icon_ideal_size, icon_minimum_size,
                                   std::move(manifest_callback));
 }
 
@@ -1101,12 +1102,12 @@ void FederatedAuthRequestImpl::CompleteLogoutRequest(
 }
 
 std::unique_ptr<IdpNetworkRequestManager>
-FederatedAuthRequestImpl::CreateNetworkManager(const GURL& provider) {
+FederatedAuthRequestImpl::CreateNetworkManager() {
   if (mock_network_manager_)
     return std::move(mock_network_manager_);
 
   return IdpNetworkRequestManager::Create(
-      provider, static_cast<RenderFrameHostImpl*>(&render_frame_host()));
+      static_cast<RenderFrameHostImpl*>(&render_frame_host()));
 }
 
 std::unique_ptr<IdentityRequestDialogController>
