@@ -32,6 +32,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
+import org.robolectric.annotation.Resetter;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
@@ -45,8 +46,10 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowCriticalPersistedTabData;
 import org.chromium.chrome.browser.tab.RequestDesktopUtilsUnitTest.ShadowSysUtils;
 import org.chromium.chrome.browser.tab.TabUtils.LoadIfNeededCaller;
+import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings.SiteLayout;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
@@ -61,6 +64,7 @@ import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -79,7 +83,8 @@ import java.util.Map.Entry;
  * Unit tests for {@link RequestDesktopUtils}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowGURL.class, ShadowSysUtils.class})
+@Config(manifest = Config.NONE,
+        shadows = {ShadowGURL.class, ShadowSysUtils.class, ShadowCriticalPersistedTabData.class})
 public class RequestDesktopUtilsUnitTest {
     @Rule
     public JniMocker mJniMocker = new JniMocker();
@@ -100,6 +105,10 @@ public class RequestDesktopUtilsUnitTest {
     private ModalDialogManager mModalDialogManager;
     @Mock
     private Tracker mTracker;
+    @Mock
+    private Tab mTab;
+    @Mock
+    private CriticalPersistedTabData mCriticalPersistedTabData;
 
     private @ContentSettingValues int mRdsDefaultValue;
     private SharedPreferencesManager mSharedPreferencesManager;
@@ -126,6 +135,25 @@ public class RequestDesktopUtilsUnitTest {
         }
     }
 
+    @Implements(CriticalPersistedTabData.class)
+    static class ShadowCriticalPersistedTabData {
+        private static CriticalPersistedTabData sCriticalPersistedTabData;
+
+        static void setCriticalPersistedTabData(CriticalPersistedTabData criticalPersistedTabData) {
+            sCriticalPersistedTabData = criticalPersistedTabData;
+        }
+
+        @Resetter
+        static void reset() {
+            sCriticalPersistedTabData = null;
+        }
+
+        @Implementation
+        public static CriticalPersistedTabData from(Tab tab) {
+            return sCriticalPersistedTabData;
+        }
+    }
+
     private static final String GOOGLE_COM = "[*.]google.com/";
 
     @Before
@@ -134,6 +162,7 @@ public class RequestDesktopUtilsUnitTest {
 
         mJniMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mWebsitePreferenceBridgeJniMock);
         mJniMocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
+        ShadowCriticalPersistedTabData.setCriticalPersistedTabData(mCriticalPersistedTabData);
 
         doAnswer(invocation -> mRdsDefaultValue)
                 .when(mWebsitePreferenceBridgeJniMock)
@@ -172,6 +201,7 @@ public class RequestDesktopUtilsUnitTest {
     public void tearDown() {
         FeatureList.setTestValues(null);
         ShadowSysUtils.setLowEndDevice(false);
+        ShadowCriticalPersistedTabData.reset();
         mSharedPreferencesManager.removeKey(
                 ChromePreferenceKeys.DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING);
         mSharedPreferencesManager.removeKey(
@@ -543,6 +573,22 @@ public class RequestDesktopUtilsUnitTest {
         verify(mTracker).dismissed(FeatureConstants.REQUEST_DESKTOP_SITE_APP_MENU_FEATURE);
     }
 
+    @Test
+    public void testUpgradeTabLevelDesktopSiteSetting() {
+        mRdsDefaultValue = ContentSettingValues.BLOCK;
+        @TabUserAgent
+        int tabUserAgent = TabUserAgent.DESKTOP;
+
+        enableFeatureRequestDesktopSiteExceptions();
+
+        RequestDesktopUtils.maybeUpgradeTabLevelDesktopSiteSetting(
+                mTab, mProfile, tabUserAgent, mGoogleUrl);
+
+        Assert.assertEquals("Request Desktop Site domain level setting is not set correctly.",
+                ContentSettingValues.ALLOW, mContentSettingMap.get(GOOGLE_COM).intValue());
+        verify(mCriticalPersistedTabData).setUserAgent(TabUserAgent.DEFAULT);
+    }
+
     private void enableFeatureRequestDesktopSiteDefaults(Map<String, String> params) {
         mTestValues.addFeatureFlagOverride(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, true);
         if (params != null) {
@@ -552,6 +598,12 @@ public class RequestDesktopUtilsUnitTest {
                         param.getValue());
             }
         }
+        FeatureList.setTestValues(mTestValues);
+    }
+
+    private void enableFeatureRequestDesktopSiteExceptions() {
+        mTestValues.addFeatureFlagOverride(
+                ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS, true);
         FeatureList.setTestValues(mTestValues);
     }
 

@@ -1654,16 +1654,20 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
         // INHERIT means use the same UA that was used last time.
         @UserAgentOverrideOption
         int userAgentOverrideOption = UserAgentOverrideOption.INHERIT;
-        // Do not override UA if there is a tab level setting.
-        if (tabUserAgent != TabUserAgent.DEFAULT) {
-            recordHistogramUseDesktopUserAgent(currentRequestDesktopSite);
-            return userAgentOverrideOption;
-        }
 
         Profile profile = IncognitoUtils.getProfileFromWindowAndroid(mWindowAndroid, isIncognito());
         if (url == null && webContents != null) {
             url = webContents.getVisibleUrl();
         }
+
+        // Do not override UA if there is a tab level setting.
+        if (tabUserAgent != TabUserAgent.DEFAULT) {
+            recordHistogramUseDesktopUserAgent(currentRequestDesktopSite);
+            RequestDesktopUtils.maybeUpgradeTabLevelDesktopSiteSetting(
+                    this, profile, tabUserAgent, url);
+            return userAgentOverrideOption;
+        }
+
         boolean shouldRequestDesktopSite =
                 TabUtils.readRequestDesktopSiteContentSettings(profile, url);
         if (!shouldRequestDesktopSite

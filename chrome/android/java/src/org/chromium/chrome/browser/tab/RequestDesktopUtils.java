@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabUtils.LoadIfNeededCaller;
+import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
@@ -36,6 +37,7 @@ import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -170,6 +172,34 @@ public class RequestDesktopUtils {
         WebsitePreferenceBridge.setContentSettingCustomScope(browserContextHandle,
                 ContentSettingsType.REQUEST_DESKTOP_SITE, hostPattern,
                 /*secondaryPattern*/ SITE_WILDCARD, contentSettingValue);
+    }
+
+    /**
+     * Upgrade a non-default tab level RDS setting to a domain level setting when RDS exceptions is
+     * supported. This method is expected to be invoked only once after support is added for domain
+     * level exceptions.
+     * @param tab The {@link Tab} for which the RDS setting will be upgraded.
+     * @param profile The {@link Profile} used to upgrade the RDS setting.
+     * @param tabUserAgent The current {@link TabUserAgent} set for the tab.
+     * @param url The {@link GURL} for which a domain level exception will be added.
+     */
+    public static void maybeUpgradeTabLevelDesktopSiteSetting(
+            Tab tab, Profile profile, @TabUserAgent int tabUserAgent, @Nullable GURL url) {
+        if (!ContentFeatureList.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)
+                || url == null) {
+            return;
+        }
+
+        // If the tab UA is UNSET, it represents a state before tab level settings were applied for
+        // the tab, so the domain level setting cannot be upgraded to at this time.
+        if (tabUserAgent == TabUserAgent.UNSET) {
+            return;
+        }
+
+        RequestDesktopUtils.setRequestDesktopSiteContentSettingsForUrl(
+                profile, url, tabUserAgent == TabUserAgent.DESKTOP);
+        // Reset the tab level setting after upgrade.
+        CriticalPersistedTabData.from(tab).setUserAgent(TabUserAgent.DEFAULT);
     }
 
     /**
