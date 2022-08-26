@@ -268,6 +268,12 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
   }
   gfx::Point3F Origin() const { return state_.transform_and_origin.Origin(); }
 
+  void DirectlyUpdateTransformAndOrigin(
+      TransformAndOrigin&& transform_and_origin) {
+    state_.transform_and_origin = std::move(transform_and_origin);
+    AddChanged(PaintPropertyChangeType::kChangedOnlyValues);
+  }
+
   // The associated scroll node, or nullptr otherwise.
   const ScrollPaintPropertyNode* ScrollNode() const {
     return state_.scroll.get();

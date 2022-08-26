@@ -3653,8 +3653,10 @@ void LayoutObject::WillBeDestroyed() {
   SECURITY_DCHECK(as_image_observer_count_ == 0u);
 #endif
 
-  if (GetFrameView())
+  if (GetFrameView()) {
+    GetFrameView()->RemovePendingTransformUpdate(*this);
     SetIsBackgroundAttachmentFixedObject(false);
+  }
 }
 
 DISABLE_CFI_PERF

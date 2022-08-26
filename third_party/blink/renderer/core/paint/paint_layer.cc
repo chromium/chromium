@@ -86,6 +86,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_paint_order_iterator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/paint/paint_property_tree_builder.h"
 #include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"
@@ -482,6 +483,14 @@ void PaintLayer::MarkAncestorChainForFlagsUpdate(
     if (flag == kNeedsDescendantDependentUpdate)
       layer->needs_descendant_dependent_flags_update_ = true;
     layer->GetLayoutObject().SetNeedsPaintPropertyUpdate();
+  }
+}
+
+void PaintLayer::SetNeedsDescendantDependentFlagsUpdate() {
+  for (PaintLayer* layer = this; layer; layer = layer->Parent()) {
+    if (layer->needs_descendant_dependent_flags_update_)
+      break;
+    layer->needs_descendant_dependent_flags_update_ = true;
   }
 }
 
@@ -2400,9 +2409,19 @@ void PaintLayer::StyleDidChange(StyleDifference diff,
     MarkAncestorChainForFlagsUpdate();
   }
 
+  bool needs_full_transform_update = diff.TransformChanged();
+  if (needs_full_transform_update) {
+    // Schedule a direct transform update instead of full update.
+    if (PaintPropertyTreeBuilder::ScheduleDeferredTransformNodeUpdate(
+            GetLayoutObject())) {
+      needs_full_transform_update = false;
+      SetNeedsDescendantDependentFlagsUpdate();
+    }
+  }
+
   // See also |LayoutObject::SetStyle| which handles these invalidations if a
   // PaintLayer is not present.
-  if (diff.TransformChanged() || diff.OpacityChanged() ||
+  if (needs_full_transform_update || diff.OpacityChanged() ||
       diff.ZIndexChanged() || diff.FilterChanged() || diff.CssClipChanged() ||
       diff.BlendModeChanged() || diff.MaskChanged() ||
       diff.CompositingReasonsChanged()) {

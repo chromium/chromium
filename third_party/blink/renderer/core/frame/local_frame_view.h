@@ -803,6 +803,11 @@ class CORE_EXPORT LocalFrameView final
            RuntimeEnabledFeatures::PaintUnderInvalidationCheckingEnabled();
   }
 
+  void AddPendingTransformUpdate(LayoutObject& object);
+  void RemovePendingTransformUpdate(const LayoutObject& object);
+  void UpdateAllPendingTransforms();
+  void ClearAllPendingTransformUpdates();
+
  protected:
   void FrameRectsChanged(const gfx::Rect&) override;
   void SelfVisibleChanged() override;
@@ -1208,6 +1213,8 @@ class CORE_EXPORT LocalFrameView final
 
   // Filter used for inverting the document background for forced darkening.
   std::unique_ptr<DarkModeFilter> dark_mode_filter_;
+
+  Member<HeapHashSet<Member<LayoutObject>>> pending_transform_updates_;
 
 #if DCHECK_IS_ON()
   bool is_updating_descendant_dependent_flags_;

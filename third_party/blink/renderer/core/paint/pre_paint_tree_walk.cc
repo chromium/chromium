@@ -59,8 +59,10 @@ void PrePaintTreeWalk::WalkTree(LocalFrameView& root_frame_view) {
   // GeometryMapper depends on paint properties.
   bool needs_tree_builder_context_update =
       NeedsTreeBuilderContextUpdate(root_frame_view, context);
-  if (needs_tree_builder_context_update)
+  if (needs_tree_builder_context_update) {
+    root_frame_view.ClearAllPendingTransformUpdates();
     GeometryMapper::ClearCache();
+  }
 
   VisualViewport& visual_viewport =
       root_frame_view.GetPage()->GetVisualViewport();
@@ -85,6 +87,7 @@ void PrePaintTreeWalk::WalkTree(LocalFrameView& root_frame_view) {
     if (auto* client = root_frame_view.GetChromeClient())
       client->InvalidateContainer();
   }
+  root_frame_view.UpdateAllPendingTransforms();
 }
 
 void PrePaintTreeWalk::Walk(LocalFrameView& frame_view,

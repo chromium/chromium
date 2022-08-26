@@ -1675,7 +1675,8 @@ TEST_P(PaintPropertyTreeUpdateTest, ChangeDuringAnimation) {
   style->SetTransformOrigin(TransformOrigin(Length(70, Length::kFixed),
                                             Length(30, Length::kFixed), 0));
   target->SetStyle(std::move(style));
-  EXPECT_TRUE(target->NeedsPaintPropertyUpdate());
+  // Using fast path for this so no need for Paint Property Update
+  EXPECT_FALSE(target->NeedsPaintPropertyUpdate());
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kStyleClean);
   {
 #if DCHECK_IS_ON()
@@ -1946,6 +1947,30 @@ TEST_P(PaintPropertyTreeUpdateTest, LocalBorderBoxPropertiesChange) {
   EXPECT_TRUE(target_child_layer->SelfNeedsRepaint());
   // |under_isolate_layer|'s local border box properties didn't change.
   EXPECT_FALSE(under_isolate_layer->SelfNeedsRepaint());
+}
+
+// Test that, for simple transform updates with an existing blink transform
+// node, we can go from style change to updated blink transform node without
+// running the blink property tree builder.
+TEST_P(PaintPropertyTreeUpdateTest,
+       DirectTransformUpdateSkipsPropertyTreeBuilder) {
+  SetBodyInnerHTML(R"HTML(
+      <div id='div' style="transform:translateX(100px)"></div>
+  )HTML");
+
+  auto* div_properties = PaintPropertiesForElement("div");
+  ASSERT_TRUE(div_properties);
+  EXPECT_EQ(100, div_properties->Transform()->Translation2D().x());
+  auto* div = GetDocument().getElementById("div");
+  EXPECT_FALSE(div->GetLayoutObject()->NeedsPaintPropertyUpdate());
+
+  div->setAttribute(html_names::kStyleAttr, "transform: translateX(200px)");
+  GetDocument().View()->UpdateLifecycleToLayoutClean(
+      DocumentUpdateReason::kTest);
+  EXPECT_FALSE(div->GetLayoutObject()->NeedsPaintPropertyUpdate());
+
+  UpdateAllLifecyclePhasesExceptPaint();
+  EXPECT_EQ(200, div_properties->Transform()->Translation2D().x());
 }
 
 }  // namespace blink

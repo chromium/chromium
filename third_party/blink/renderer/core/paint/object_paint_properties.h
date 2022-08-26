@@ -314,6 +314,12 @@ class CORE_EXPORT ObjectPaintProperties {
   }
 #endif
 
+  void DirectlyUpdateTransformAndOrigin(
+      TransformPaintPropertyNode::TransformAndOrigin&& transform_and_origin) {
+    transform_->DirectlyUpdateTransformAndOrigin(
+        std::move(transform_and_origin));
+  }
+
  private:
   // Return true if the property tree structure changes (an existing node was
   // deleted), and false otherwise. See the class-level comment ("update & clear

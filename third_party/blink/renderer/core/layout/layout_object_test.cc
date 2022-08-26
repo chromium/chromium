@@ -1571,6 +1571,25 @@ TEST_F(LayoutObjectTest, SetNeedsCollectInlinesForSvgInline) {
   EXPECT_TRUE(GetLayoutObjectByElementId("text")->NeedsCollectInlines());
 }
 
+TEST_F(LayoutObjectTest, RemovePendingTransformUpdatesCorrectly) {
+  SetBodyInnerHTML(R"HTML(
+  <div id="div1" style="transform:translateX(100px)">
+  </div>
+  <div id="div2" style="transform:translateX(100px)">
+  </div>
+      )HTML");
+
+  auto* div2 = GetDocument().getElementById("div2");
+  div2->setAttribute(html_names::kStyleAttr, "transform: translateX(200px)");
+  GetDocument().View()->UpdateLifecycleToLayoutClean(
+      DocumentUpdateReason::kTest);
+
+  auto* div1 = GetDocument().getElementById("div1");
+  div1->setAttribute(html_names::kStyleAttr, "transform: translateX(200px)");
+  div2->SetInlineStyleProperty(CSSPropertyID::kDisplay, "none");
+  UpdateAllLifecyclePhasesForTest();
+}
+
 static const char* const kTransformsWith3D[] = {"transform: rotateX(20deg)",
                                                 "transform: translateZ(30px)"};
 static const char kTransformWithout3D[] =

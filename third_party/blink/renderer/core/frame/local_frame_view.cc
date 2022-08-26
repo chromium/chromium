@@ -333,6 +333,7 @@ void LocalFrameView::Trace(Visitor* visitor) const {
   visitor->Trace(mobile_friendliness_checker_);
   visitor->Trace(lifecycle_observers_);
   visitor->Trace(fullscreen_video_elements_);
+  visitor->Trace(pending_transform_updates_);
 }
 
 void LocalFrameView::ForAllChildViewsAndPlugins(
@@ -5026,6 +5027,46 @@ bool LocalFrameView::LockDeferredRequested(Element& element) const {
 
 void LocalFrameView::UnregisterShapingDeferredElement(Element& element) {
   deferred_to_be_locked_.erase(&element);
+}
+
+void LocalFrameView::AddPendingTransformUpdate(LayoutObject& object) {
+  if (!pending_transform_updates_) {
+    pending_transform_updates_ =
+        MakeGarbageCollected<HeapHashSet<Member<LayoutObject>>>();
+  }
+  pending_transform_updates_->insert(&object);
+}
+
+void LocalFrameView::RemovePendingTransformUpdate(const LayoutObject& object) {
+  if (pending_transform_updates_) {
+    pending_transform_updates_->erase(const_cast<LayoutObject*>(&object));
+  }
+}
+
+void LocalFrameView::UpdateAllPendingTransforms() {
+  DCHECK(GetFrame().IsLocalRoot() || !IsAttached());
+  GeometryMapper::ClearCache();
+  ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
+    if (frame_view.pending_transform_updates_) {
+      for (const LayoutObject* object :
+           *frame_view.pending_transform_updates_) {
+        PaintPropertyTreeBuilder::DirectlyUpdateTransformMatrix(*object);
+      }
+      frame_view.pending_transform_updates_->clear();
+    }
+  });
+}
+
+void LocalFrameView::ClearAllPendingTransformUpdates() {
+  DCHECK(GetFrame().IsLocalRoot() || !IsAttached());
+  ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
+    if (frame_view.pending_transform_updates_) {
+      for (LayoutObject* object : *frame_view.pending_transform_updates_) {
+        object->SetNeedsPaintPropertyUpdate();
+      }
+      frame_view.pending_transform_updates_->clear();
+    }
+  });
 }
 
 }  // namespace blink
