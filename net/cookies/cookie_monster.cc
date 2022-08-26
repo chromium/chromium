@@ -161,6 +161,13 @@ bool IncludeUnpartitionedCookies(
   return false;
 }
 
+size_t NameValueSizeBytes(const std::string& name, const std::string& value) {
+  base::CheckedNumeric<size_t> name_value_pair_size = name.size();
+  name_value_pair_size += value.size();
+  DCHECK(name_value_pair_size.IsValid());
+  return name_value_pair_size.ValueOrDie();
+}
+
 }  // namespace
 
 namespace net {
@@ -1541,6 +1548,11 @@ void CookieMonster::SetCanonicalCookie(
       UMA_HISTOGRAM_EXACT_LINEAR("Cookie.SamePartySetIncluded.PartyContextSize",
                                  options.full_party_context_size(),
                                  1 + IsolationInfo::kPartyContextMaxSize);
+    }
+
+    if (cc->IsEffectivelySameSiteNone()) {
+      UMA_HISTOGRAM_COUNTS_10000("Cookie.SameSiteNoneSizeBytes",
+                                 NameValueSizeBytes(cc->Name(), cc->Value()));
     }
 
     bool is_partitioned_cookie = cc->IsPartitioned();

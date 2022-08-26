@@ -810,6 +810,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cookie.SameSiteNoneSizeBytes" units="bytes"
+    expires_after="2023-02-01">
+  <owner>dylancutler@chromium.org</owner>
+  <owner>src/net/cookies/OWNERS</owner>
+  <summary>
+    Size of SameSite=None cookies in bytes. Counted whenever a cookie is set via
+    CookieMonster::SetCanonicalCookie.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.TimeBlockedOnLoad" units="ms"
     expires_after="2023-01-01">
   <owner>nharper@chromium.org</owner>
