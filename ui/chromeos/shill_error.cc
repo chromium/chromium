@@ -118,6 +118,10 @@ std::u16string GetShillErrorString(const std::string& error,
   if (error == shill::kErrorResultWrongState) {
     return l10n_util::GetStringUTF16(IDS_CHROMEOS_NETWORK_ERROR_WRONG_STATE);
   }
+  if (error == shill::kErrorResultWepNotSupported) {
+    return l10n_util::GetStringUTF16(
+        IDS_CHROMEOS_NETWORK_ERROR_WEP_NOT_SUPPORTED);
+  }
 
   if (base::ToLowerASCII(error) == base::ToLowerASCII(shill::kUnknownString)) {
     return l10n_util::GetStringUTF16(IDS_CHROMEOS_NETWORK_ERROR_UNKNOWN);
