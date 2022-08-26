@@ -308,7 +308,7 @@ void Section::SetPrefixToCreditCard() {
 }
 
 bool Section::SetPrefixFromAutocomplete(Autocomplete autocomplete) {
-  if (autocomplete.section.empty() && autocomplete.mode == HTML_MODE_NONE)
+  if (autocomplete.section.empty() && autocomplete.mode == HtmlFieldMode::kNone)
     return false;
   prefix_ = std::move(autocomplete);
   return true;
@@ -333,7 +333,7 @@ std::string Section::ToString() const {
     // street-address" would have the same prefix.
     section_name =
         autocomplete->section +
-        (autocomplete->mode != HTML_MODE_NONE
+        (autocomplete->mode != HtmlFieldMode::kNone
              ? "-" + std::string(HtmlFieldModeToStringPiece(autocomplete->mode))
              : kDefaultSection);
   } else if (const FieldIdentifier* f =

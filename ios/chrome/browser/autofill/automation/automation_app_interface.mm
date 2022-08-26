@@ -47,10 +47,11 @@ autofill::ServerFieldType ServerFieldTypeFromString(const std::string& str,
           autofill_type.GetStorableType();
     }
 
-    for (size_t i = autofill::HTML_TYPE_UNSPECIFIED;
-         i < autofill::HTML_TYPE_UNRECOGNIZED; ++i) {
+    for (size_t i = static_cast<size_t>(autofill::HtmlFieldType::kUnspecified);
+         i <= static_cast<size_t>(autofill::HtmlFieldType::kMaxValue); ++i) {
       autofill::AutofillType autofill_type(
-          static_cast<autofill::HtmlFieldType>(i), autofill::HTML_MODE_NONE);
+          static_cast<autofill::HtmlFieldType>(i),
+          autofill::HtmlFieldMode::kNone);
       string_to_field_type_map[autofill_type.ToString()] =
           autofill_type.GetStorableType();
     }

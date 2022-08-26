@@ -10,11 +10,11 @@ namespace autofill {
 
 base::StringPiece HtmlFieldModeToStringPiece(HtmlFieldMode mode) {
   switch (mode) {
-    case HTML_MODE_NONE:
+    case HtmlFieldMode::kNone:
       return "";
-    case HTML_MODE_BILLING:
+    case HtmlFieldMode::kBilling:
       return "billing";
-    case HTML_MODE_SHIPPING:
+    case HtmlFieldMode::kShipping:
       return "shipping";
   }
   NOTREACHED();

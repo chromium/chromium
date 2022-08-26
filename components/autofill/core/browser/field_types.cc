@@ -329,107 +329,107 @@ base::StringPiece FieldTypeToStringPiece(ServerFieldType type) {
 
 base::StringPiece FieldTypeToStringPiece(HtmlFieldType type) {
   switch (type) {
-    case HTML_TYPE_UNSPECIFIED:
+    case HtmlFieldType::kUnspecified:
       return "HTML_TYPE_UNSPECIFIED";
-    case HTML_TYPE_NAME:
+    case HtmlFieldType::kName:
       return "HTML_TYPE_NAME";
-    case HTML_TYPE_HONORIFIC_PREFIX:
+    case HtmlFieldType::kHonorificPrefix:
       return "HTML_TYPE_HONORIFIC_PREFIX";
-    case HTML_TYPE_GIVEN_NAME:
+    case HtmlFieldType::kGivenName:
       return "HTML_TYPE_GIVEN_NAME";
-    case HTML_TYPE_ADDITIONAL_NAME:
+    case HtmlFieldType::kAdditionalName:
       return "HTML_TYPE_ADDITIONAL_NAME";
-    case HTML_TYPE_FAMILY_NAME:
+    case HtmlFieldType::kFamilyName:
       return "HTML_TYPE_FAMILY_NAME";
-    case HTML_TYPE_ORGANIZATION:
+    case HtmlFieldType::kOrganization:
       return "HTML_TYPE_ORGANIZATION";
-    case HTML_TYPE_STREET_ADDRESS:
+    case HtmlFieldType::kStreetAddress:
       return "HTML_TYPE_STREET_ADDRESS";
-    case HTML_TYPE_ADDRESS_LINE1:
+    case HtmlFieldType::kAddressLine1:
       return "HTML_TYPE_ADDRESS_LINE1";
-    case HTML_TYPE_ADDRESS_LINE2:
+    case HtmlFieldType::kAddressLine2:
       return "HTML_TYPE_ADDRESS_LINE2";
-    case HTML_TYPE_ADDRESS_LINE3:
+    case HtmlFieldType::kAddressLine3:
       return "HTML_TYPE_ADDRESS_LINE3";
-    case HTML_TYPE_ADDRESS_LEVEL1:
+    case HtmlFieldType::kAddressLevel1:
       return "HTML_TYPE_ADDRESS_LEVEL1";
-    case HTML_TYPE_ADDRESS_LEVEL2:
+    case HtmlFieldType::kAddressLevel2:
       return "HTML_TYPE_ADDRESS_LEVEL2";
-    case HTML_TYPE_ADDRESS_LEVEL3:
+    case HtmlFieldType::kAddressLevel3:
       return "HTML_TYPE_ADDRESS_LEVEL3";
-    case HTML_TYPE_COUNTRY_CODE:
+    case HtmlFieldType::kCountryCode:
       return "HTML_TYPE_COUNTRY_CODE";
-    case HTML_TYPE_COUNTRY_NAME:
+    case HtmlFieldType::kCountryName:
       return "HTML_TYPE_COUNTRY_NAME";
-    case HTML_TYPE_POSTAL_CODE:
+    case HtmlFieldType::kPostalCode:
       return "HTML_TYPE_POSTAL_CODE";
-    case HTML_TYPE_FULL_ADDRESS:
+    case HtmlFieldType::kFullAddress:
       return "HTML_TYPE_FULL_ADDRESS";
-    case HTML_TYPE_CREDIT_CARD_NAME_FULL:
+    case HtmlFieldType::kCreditCardNameFull:
       return "HTML_TYPE_CREDIT_CARD_NAME_FULL";
-    case HTML_TYPE_CREDIT_CARD_NAME_FIRST:
+    case HtmlFieldType::kCreditCardNameFirst:
       return "HTML_TYPE_CREDIT_CARD_NAME_FIRST";
-    case HTML_TYPE_CREDIT_CARD_NAME_LAST:
+    case HtmlFieldType::kCreditCardNameLast:
       return "HTML_TYPE_CREDIT_CARD_NAME_LAST";
-    case HTML_TYPE_CREDIT_CARD_NUMBER:
+    case HtmlFieldType::kCreditCardNumber:
       return "HTML_TYPE_CREDIT_CARD_NUMBER";
-    case HTML_TYPE_CREDIT_CARD_EXP:
+    case HtmlFieldType::kCreditCardExp:
       return "HTML_TYPE_CREDIT_CARD_EXP";
-    case HTML_TYPE_CREDIT_CARD_EXP_MONTH:
+    case HtmlFieldType::kCreditCardExpMonth:
       return "HTML_TYPE_CREDIT_CARD_EXP_MONTH";
-    case HTML_TYPE_CREDIT_CARD_EXP_YEAR:
+    case HtmlFieldType::kCreditCardExpYear:
       return "HTML_TYPE_CREDIT_CARD_EXP_YEAR";
-    case HTML_TYPE_CREDIT_CARD_VERIFICATION_CODE:
+    case HtmlFieldType::kCreditCardVerificationCode:
       return "HTML_TYPE_CREDIT_CARD_VERIFICATION_CODE";
-    case HTML_TYPE_CREDIT_CARD_TYPE:
+    case HtmlFieldType::kCreditCardType:
       return "HTML_TYPE_CREDIT_CARD_TYPE";
-    case HTML_TYPE_TEL:
+    case HtmlFieldType::kTel:
       return "HTML_TYPE_TEL";
-    case HTML_TYPE_TEL_COUNTRY_CODE:
+    case HtmlFieldType::kTelCountryCode:
       return "HTML_TYPE_TEL_COUNTRY_CODE";
-    case HTML_TYPE_TEL_NATIONAL:
+    case HtmlFieldType::kTelNational:
       return "HTML_TYPE_TEL_NATIONAL";
-    case HTML_TYPE_TEL_AREA_CODE:
+    case HtmlFieldType::kTelAreaCode:
       return "HTML_TYPE_TEL_AREA_CODE";
-    case HTML_TYPE_TEL_LOCAL:
+    case HtmlFieldType::kTelLocal:
       return "HTML_TYPE_TEL_LOCAL";
-    case HTML_TYPE_TEL_LOCAL_PREFIX:
+    case HtmlFieldType::kTelLocalPrefix:
       return "HTML_TYPE_TEL_LOCAL_PREFIX";
-    case HTML_TYPE_TEL_LOCAL_SUFFIX:
+    case HtmlFieldType::kTelLocalSuffix:
       return "HTML_TYPE_TEL_LOCAL_SUFFIX";
-    case HTML_TYPE_TEL_EXTENSION:
+    case HtmlFieldType::kTelExtension:
       return "HTML_TYPE_TEL_EXTENSION";
-    case HTML_TYPE_EMAIL:
+    case HtmlFieldType::kEmail:
       return "HTML_TYPE_EMAIL";
-    case HTML_TYPE_BIRTHDATE_DAY:
+    case HtmlFieldType::kBirthdateDay:
       return "HTML_TYPE_BIRTHDATE_DAY";
-    case HTML_TYPE_BIRTHDATE_MONTH:
+    case HtmlFieldType::kBirthdateMonth:
       return "HTML_TYPE_BIRTHDATE_MONTH";
-    case HTML_TYPE_BIRTHDATE_YEAR:
+    case HtmlFieldType::kBirthdateYear:
       return "HTML_TYPE_BIRTHDATE_YEAR";
-    case HTML_TYPE_TRANSACTION_AMOUNT:
+    case HtmlFieldType::kTransactionAmount:
       return "HTML_TYPE_TRANSACTION_AMOUNT";
-    case HTML_TYPE_TRANSACTION_CURRENCY:
+    case HtmlFieldType::kTransactionCurrency:
       return "HTML_TYPE_TRANSACTION_CURRENCY";
-    case HTML_TYPE_ADDITIONAL_NAME_INITIAL:
+    case HtmlFieldType::kAdditionalNameInitial:
       return "HTML_TYPE_ADDITIONAL_NAME_INITIAL";
-    case HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR:
+    case HtmlFieldType::kCreditCardExpDate2DigitYear:
       return "HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR";
-    case HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR:
+    case HtmlFieldType::kCreditCardExpDate4DigitYear:
       return "HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR";
-    case HTML_TYPE_CREDIT_CARD_EXP_2_DIGIT_YEAR:
+    case HtmlFieldType::kCreditCardExp2DigitYear:
       return "HTML_TYPE_CREDIT_CARD_EXP_2_DIGIT_YEAR";
-    case HTML_TYPE_CREDIT_CARD_EXP_4_DIGIT_YEAR:
+    case HtmlFieldType::kCreditCardExp4DigitYear:
       return "HTML_TYPE_CREDIT_CARD_EXP_4_DIGIT_YEAR";
-    case HTML_TYPE_UPI_VPA:
+    case HtmlFieldType::kUpiVpa:
       return "HTML_TYPE_UPI_VPA";
-    case HTML_TYPE_ONE_TIME_CODE:
+    case HtmlFieldType::kOneTimeCode:
       return "HTML_TYPE_ONE_TIME_CODE";
-    case HTML_TYPE_MERCHANT_PROMO_CODE:
+    case HtmlFieldType::kMerchantPromoCode:
       return "HTML_TYPE_MERCHANT_PROMO_CODE";
-    case HTML_TYPE_IBAN:
+    case HtmlFieldType::kIban:
       return "HTML_TYPE_IBAN";
-    case HTML_TYPE_UNRECOGNIZED:
+    case HtmlFieldType::kUnrecognized:
       return "HTML_TYPE_UNRECOGNIZED";
   }
 

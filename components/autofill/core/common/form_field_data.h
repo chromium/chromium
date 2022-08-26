@@ -73,7 +73,7 @@ class Section {
 
   struct Autocomplete {
     std::string section;
-    HtmlFieldMode mode;
+    HtmlFieldMode mode = HtmlFieldMode::kNone;
   };
 
   using Default = base::StrongAlias<struct DefaultTag, absl::monostate>;

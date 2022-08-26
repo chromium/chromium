@@ -128,85 +128,88 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
 FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type,
                                         HtmlFieldMode field_mode) {
   switch (field_type) {
-    case HTML_TYPE_NAME:
-    case HTML_TYPE_HONORIFIC_PREFIX:
-    case HTML_TYPE_GIVEN_NAME:
-    case HTML_TYPE_ADDITIONAL_NAME:
-    case HTML_TYPE_ADDITIONAL_NAME_INITIAL:
-    case HTML_TYPE_FAMILY_NAME:
-      return field_mode == HTML_MODE_BILLING ? FieldTypeGroup::kNameBilling
-                                             : FieldTypeGroup::kName;
+    case HtmlFieldType::kName:
+    case HtmlFieldType::kHonorificPrefix:
+    case HtmlFieldType::kGivenName:
+    case HtmlFieldType::kAdditionalName:
+    case HtmlFieldType::kAdditionalNameInitial:
+    case HtmlFieldType::kFamilyName:
+      return field_mode == HtmlFieldMode::kBilling
+                 ? FieldTypeGroup::kNameBilling
+                 : FieldTypeGroup::kName;
 
-    case HTML_TYPE_ORGANIZATION:
+    case HtmlFieldType::kOrganization:
       return FieldTypeGroup::kCompany;
 
-    case HTML_TYPE_STREET_ADDRESS:
-    case HTML_TYPE_ADDRESS_LINE1:
-    case HTML_TYPE_ADDRESS_LINE2:
-    case HTML_TYPE_ADDRESS_LINE3:
-    case HTML_TYPE_ADDRESS_LEVEL1:
-    case HTML_TYPE_ADDRESS_LEVEL2:
-    case HTML_TYPE_ADDRESS_LEVEL3:
-    case HTML_TYPE_COUNTRY_CODE:
-    case HTML_TYPE_COUNTRY_NAME:
-    case HTML_TYPE_POSTAL_CODE:
-    case HTML_TYPE_FULL_ADDRESS:
-      return field_mode == HTML_MODE_BILLING ? FieldTypeGroup::kAddressBilling
-                                             : FieldTypeGroup::kAddressHome;
+    case HtmlFieldType::kStreetAddress:
+    case HtmlFieldType::kAddressLine1:
+    case HtmlFieldType::kAddressLine2:
+    case HtmlFieldType::kAddressLine3:
+    case HtmlFieldType::kAddressLevel1:
+    case HtmlFieldType::kAddressLevel2:
+    case HtmlFieldType::kAddressLevel3:
+    case HtmlFieldType::kCountryCode:
+    case HtmlFieldType::kCountryName:
+    case HtmlFieldType::kPostalCode:
+    case HtmlFieldType::kFullAddress:
+      return field_mode == HtmlFieldMode::kBilling
+                 ? FieldTypeGroup::kAddressBilling
+                 : FieldTypeGroup::kAddressHome;
 
-    case HTML_TYPE_CREDIT_CARD_NAME_FULL:
-    case HTML_TYPE_CREDIT_CARD_NAME_FIRST:
-    case HTML_TYPE_CREDIT_CARD_NAME_LAST:
-    case HTML_TYPE_CREDIT_CARD_NUMBER:
-    case HTML_TYPE_CREDIT_CARD_EXP:
-    case HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR:
-    case HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR:
-    case HTML_TYPE_CREDIT_CARD_EXP_MONTH:
-    case HTML_TYPE_CREDIT_CARD_EXP_YEAR:
-    case HTML_TYPE_CREDIT_CARD_EXP_2_DIGIT_YEAR:
-    case HTML_TYPE_CREDIT_CARD_EXP_4_DIGIT_YEAR:
-    case HTML_TYPE_CREDIT_CARD_VERIFICATION_CODE:
-    case HTML_TYPE_CREDIT_CARD_TYPE:
+    case HtmlFieldType::kCreditCardNameFull:
+    case HtmlFieldType::kCreditCardNameFirst:
+    case HtmlFieldType::kCreditCardNameLast:
+    case HtmlFieldType::kCreditCardNumber:
+    case HtmlFieldType::kCreditCardExp:
+    case HtmlFieldType::kCreditCardExpDate2DigitYear:
+    case HtmlFieldType::kCreditCardExpDate4DigitYear:
+    case HtmlFieldType::kCreditCardExpMonth:
+    case HtmlFieldType::kCreditCardExpYear:
+    case HtmlFieldType::kCreditCardExp2DigitYear:
+    case HtmlFieldType::kCreditCardExp4DigitYear:
+    case HtmlFieldType::kCreditCardVerificationCode:
+    case HtmlFieldType::kCreditCardType:
       return FieldTypeGroup::kCreditCard;
 
-    case HTML_TYPE_TRANSACTION_AMOUNT:
-    case HTML_TYPE_TRANSACTION_CURRENCY:
+    case HtmlFieldType::kTransactionAmount:
+    case HtmlFieldType::kTransactionCurrency:
       return FieldTypeGroup::kTransaction;
 
-    case HTML_TYPE_TEL:
-    case HTML_TYPE_TEL_COUNTRY_CODE:
-    case HTML_TYPE_TEL_NATIONAL:
-    case HTML_TYPE_TEL_AREA_CODE:
-    case HTML_TYPE_TEL_LOCAL:
-    case HTML_TYPE_TEL_LOCAL_PREFIX:
-    case HTML_TYPE_TEL_LOCAL_SUFFIX:
-    case HTML_TYPE_TEL_EXTENSION:
-      return field_mode == HTML_MODE_BILLING ? FieldTypeGroup::kPhoneBilling
-                                             : FieldTypeGroup::kPhoneHome;
+    case HtmlFieldType::kTel:
+    case HtmlFieldType::kTelCountryCode:
+    case HtmlFieldType::kTelNational:
+    case HtmlFieldType::kTelAreaCode:
+    case HtmlFieldType::kTelLocal:
+    case HtmlFieldType::kTelLocalPrefix:
+    case HtmlFieldType::kTelLocalSuffix:
+    case HtmlFieldType::kTelExtension:
+      return field_mode == HtmlFieldMode::kBilling
+                 ? FieldTypeGroup::kPhoneBilling
+                 : FieldTypeGroup::kPhoneHome;
 
-    case HTML_TYPE_EMAIL:
+    case HtmlFieldType::kEmail:
       return FieldTypeGroup::kEmail;
 
-    case HTML_TYPE_BIRTHDATE_DAY:
-    case HTML_TYPE_BIRTHDATE_MONTH:
-    case HTML_TYPE_BIRTHDATE_YEAR:
+    case HtmlFieldType::kBirthdateDay:
+    case HtmlFieldType::kBirthdateMonth:
+    case HtmlFieldType::kBirthdateYear:
       return FieldTypeGroup::kBirthdateField;
 
-    case HTML_TYPE_UPI_VPA:
+    case HtmlFieldType::kUpiVpa:
       // TODO(crbug/702223): Add support for UPI-VPA.
       return FieldTypeGroup::kNoGroup;
 
-    case HTML_TYPE_ONE_TIME_CODE:
+    case HtmlFieldType::kOneTimeCode:
       return FieldTypeGroup::kNoGroup;
 
-    case HTML_TYPE_MERCHANT_PROMO_CODE:
+    case HtmlFieldType::kMerchantPromoCode:
       return FieldTypeGroup::kNoGroup;
 
-    case HTML_TYPE_IBAN:
+    case HtmlFieldType::kIban:
       return FieldTypeGroup::kNoGroup;
 
-    case HTML_TYPE_UNSPECIFIED:
-    case HTML_TYPE_UNRECOGNIZED:
+    case HtmlFieldType::kUnspecified:
+    case HtmlFieldType::kUnrecognized:
       return FieldTypeGroup::kNoGroup;
   }
   NOTREACHED();
@@ -214,12 +217,10 @@ FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type,
 }
 
 AutofillType::AutofillType(ServerFieldType field_type)
-    : server_type_(ToSafeServerFieldType(field_type, UNKNOWN_TYPE)),
-      html_type_(HTML_TYPE_UNSPECIFIED),
-      html_mode_(HTML_MODE_NONE) {}
+    : server_type_(ToSafeServerFieldType(field_type, UNKNOWN_TYPE)) {}
 
 AutofillType::AutofillType(HtmlFieldType field_type, HtmlFieldMode mode)
-    : server_type_(UNKNOWN_TYPE), html_type_(field_type), html_mode_(mode) {}
+    : html_type_(field_type), html_mode_(mode) {}
 
 FieldTypeGroup AutofillType::group() const {
   FieldTypeGroup result = FieldTypeGroup::kNoGroup;
@@ -232,8 +233,9 @@ FieldTypeGroup AutofillType::group() const {
 }
 
 bool AutofillType::IsUnknown() const {
-  return server_type_ == UNKNOWN_TYPE && (html_type_ == HTML_TYPE_UNSPECIFIED ||
-                                          html_type_ == HTML_TYPE_UNRECOGNIZED);
+  return server_type_ == UNKNOWN_TYPE &&
+         (html_type_ == HtmlFieldType::kUnspecified ||
+          html_type_ == HtmlFieldType::kUnrecognized);
 }
 
 ServerFieldType AutofillType::GetStorableType() const {
@@ -241,147 +243,147 @@ ServerFieldType AutofillType::GetStorableType() const {
     return server_type_;
 
   switch (html_type_) {
-    case HTML_TYPE_UNSPECIFIED:
+    case HtmlFieldType::kUnspecified:
       return UNKNOWN_TYPE;
 
-    case HTML_TYPE_NAME:
+    case HtmlFieldType::kName:
       return NAME_FULL;
 
-    case HTML_TYPE_HONORIFIC_PREFIX:
+    case HtmlFieldType::kHonorificPrefix:
       return NAME_HONORIFIC_PREFIX;
 
-    case HTML_TYPE_GIVEN_NAME:
+    case HtmlFieldType::kGivenName:
       return NAME_FIRST;
 
-    case HTML_TYPE_ADDITIONAL_NAME:
+    case HtmlFieldType::kAdditionalName:
       return NAME_MIDDLE;
 
-    case HTML_TYPE_FAMILY_NAME:
+    case HtmlFieldType::kFamilyName:
       return NAME_LAST;
 
-    case HTML_TYPE_ORGANIZATION:
+    case HtmlFieldType::kOrganization:
       return COMPANY_NAME;
 
-    case HTML_TYPE_STREET_ADDRESS:
+    case HtmlFieldType::kStreetAddress:
       return ADDRESS_HOME_STREET_ADDRESS;
 
-    case HTML_TYPE_ADDRESS_LINE1:
+    case HtmlFieldType::kAddressLine1:
       return ADDRESS_HOME_LINE1;
 
-    case HTML_TYPE_ADDRESS_LINE2:
+    case HtmlFieldType::kAddressLine2:
       return ADDRESS_HOME_LINE2;
 
-    case HTML_TYPE_ADDRESS_LINE3:
+    case HtmlFieldType::kAddressLine3:
       return ADDRESS_HOME_LINE3;
 
-    case HTML_TYPE_ADDRESS_LEVEL1:
+    case HtmlFieldType::kAddressLevel1:
       return ADDRESS_HOME_STATE;
 
-    case HTML_TYPE_ADDRESS_LEVEL2:
+    case HtmlFieldType::kAddressLevel2:
       return ADDRESS_HOME_CITY;
 
-    case HTML_TYPE_ADDRESS_LEVEL3:
+    case HtmlFieldType::kAddressLevel3:
       return ADDRESS_HOME_DEPENDENT_LOCALITY;
 
-    case HTML_TYPE_COUNTRY_CODE:
-    case HTML_TYPE_COUNTRY_NAME:
+    case HtmlFieldType::kCountryCode:
+    case HtmlFieldType::kCountryName:
       return ADDRESS_HOME_COUNTRY;
 
-    case HTML_TYPE_POSTAL_CODE:
+    case HtmlFieldType::kPostalCode:
       return ADDRESS_HOME_ZIP;
 
     // Full address is composed of other types; it can't be stored.
-    case HTML_TYPE_FULL_ADDRESS:
+    case HtmlFieldType::kFullAddress:
       return UNKNOWN_TYPE;
 
-    case HTML_TYPE_CREDIT_CARD_NAME_FULL:
+    case HtmlFieldType::kCreditCardNameFull:
       return CREDIT_CARD_NAME_FULL;
 
-    case HTML_TYPE_CREDIT_CARD_NAME_FIRST:
+    case HtmlFieldType::kCreditCardNameFirst:
       return CREDIT_CARD_NAME_FIRST;
 
-    case HTML_TYPE_CREDIT_CARD_NAME_LAST:
+    case HtmlFieldType::kCreditCardNameLast:
       return CREDIT_CARD_NAME_LAST;
 
-    case HTML_TYPE_CREDIT_CARD_NUMBER:
+    case HtmlFieldType::kCreditCardNumber:
       return CREDIT_CARD_NUMBER;
 
-    case HTML_TYPE_CREDIT_CARD_EXP:
+    case HtmlFieldType::kCreditCardExp:
       return CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR;
 
-    case HTML_TYPE_CREDIT_CARD_EXP_MONTH:
+    case HtmlFieldType::kCreditCardExpMonth:
       return CREDIT_CARD_EXP_MONTH;
 
-    case HTML_TYPE_CREDIT_CARD_EXP_YEAR:
+    case HtmlFieldType::kCreditCardExpYear:
       return CREDIT_CARD_EXP_4_DIGIT_YEAR;
 
-    case HTML_TYPE_CREDIT_CARD_VERIFICATION_CODE:
+    case HtmlFieldType::kCreditCardVerificationCode:
       return CREDIT_CARD_VERIFICATION_CODE;
 
-    case HTML_TYPE_CREDIT_CARD_TYPE:
+    case HtmlFieldType::kCreditCardType:
       return CREDIT_CARD_TYPE;
 
-    case HTML_TYPE_TEL:
+    case HtmlFieldType::kTel:
       return PHONE_HOME_WHOLE_NUMBER;
 
-    case HTML_TYPE_TEL_COUNTRY_CODE:
+    case HtmlFieldType::kTelCountryCode:
       return PHONE_HOME_COUNTRY_CODE;
 
-    case HTML_TYPE_TEL_NATIONAL:
+    case HtmlFieldType::kTelNational:
       return PHONE_HOME_CITY_AND_NUMBER;
 
-    case HTML_TYPE_TEL_AREA_CODE:
+    case HtmlFieldType::kTelAreaCode:
       return PHONE_HOME_CITY_CODE;
 
-    case HTML_TYPE_TEL_LOCAL:
+    case HtmlFieldType::kTelLocal:
       return PHONE_HOME_NUMBER;
 
-    case HTML_TYPE_TEL_LOCAL_PREFIX:
+    case HtmlFieldType::kTelLocalPrefix:
       return PHONE_HOME_NUMBER_PREFIX;
 
-    case HTML_TYPE_TEL_LOCAL_SUFFIX:
+    case HtmlFieldType::kTelLocalSuffix:
       return PHONE_HOME_NUMBER_SUFFIX;
 
-    case HTML_TYPE_TEL_EXTENSION:
+    case HtmlFieldType::kTelExtension:
       return PHONE_HOME_EXTENSION;
 
-    case HTML_TYPE_EMAIL:
+    case HtmlFieldType::kEmail:
       return EMAIL_ADDRESS;
 
-    case HTML_TYPE_BIRTHDATE_DAY:
+    case HtmlFieldType::kBirthdateDay:
       return BIRTHDATE_DAY;
-    case HTML_TYPE_BIRTHDATE_MONTH:
+    case HtmlFieldType::kBirthdateMonth:
       return BIRTHDATE_MONTH;
-    case HTML_TYPE_BIRTHDATE_YEAR:
+    case HtmlFieldType::kBirthdateYear:
       return BIRTHDATE_4_DIGIT_YEAR;
 
-    case HTML_TYPE_ADDITIONAL_NAME_INITIAL:
+    case HtmlFieldType::kAdditionalNameInitial:
       return NAME_MIDDLE_INITIAL;
 
-    case HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR:
+    case HtmlFieldType::kCreditCardExpDate2DigitYear:
       return CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR;
 
-    case HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR:
+    case HtmlFieldType::kCreditCardExpDate4DigitYear:
       return CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR;
 
-    case HTML_TYPE_CREDIT_CARD_EXP_2_DIGIT_YEAR:
+    case HtmlFieldType::kCreditCardExp2DigitYear:
       return CREDIT_CARD_EXP_2_DIGIT_YEAR;
 
-    case HTML_TYPE_CREDIT_CARD_EXP_4_DIGIT_YEAR:
+    case HtmlFieldType::kCreditCardExp4DigitYear:
       return CREDIT_CARD_EXP_4_DIGIT_YEAR;
 
-    case HTML_TYPE_UPI_VPA:
+    case HtmlFieldType::kUpiVpa:
       return UPI_VPA;
 
     // These types aren't stored; they're transient.
-    case HTML_TYPE_TRANSACTION_AMOUNT:
-    case HTML_TYPE_TRANSACTION_CURRENCY:
-    case HTML_TYPE_ONE_TIME_CODE:
-    case HTML_TYPE_MERCHANT_PROMO_CODE:
-    case HTML_TYPE_IBAN:
+    case HtmlFieldType::kTransactionAmount:
+    case HtmlFieldType::kTransactionCurrency:
+    case HtmlFieldType::kOneTimeCode:
+    case HtmlFieldType::kMerchantPromoCode:
+    case HtmlFieldType::kIban:
       return UNKNOWN_TYPE;
 
-    case HTML_TYPE_UNRECOGNIZED:
+    case HtmlFieldType::kUnrecognized:
       return UNKNOWN_TYPE;
   }
 

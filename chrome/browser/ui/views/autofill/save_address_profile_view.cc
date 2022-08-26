@@ -127,7 +127,8 @@ std::unique_ptr<views::View> CreateStreetAddressView(
       .SetCollapseMargins(true)
       .SetDefault(views::kMarginsKey, gfx::Insets());
 
-  const AutofillType kCountryCode(HTML_TYPE_COUNTRY_CODE, HTML_MODE_NONE);
+  const AutofillType kCountryCode(HtmlFieldType::kCountryCode,
+                                  HtmlFieldMode::kNone);
   const std::u16string& country_code = profile.GetInfo(kCountryCode, locale);
 
   std::vector<std::vector<::i18n::addressinput::AddressUiComponent>> components;

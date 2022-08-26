@@ -206,7 +206,7 @@ TEST_F(AutofillFieldFillerTest, Type) {
 TEST_F(AutofillFieldFillerTest, Type_CreditCardOverrideHtml_Heuristics) {
   AutofillField field;
 
-  field.SetHtmlType(HTML_TYPE_UNRECOGNIZED, HTML_MODE_NONE);
+  field.SetHtmlType(HtmlFieldType::kUnrecognized, HtmlFieldMode::kNone);
 
   // A credit card heuristic prediction overrides the unrecognized type.
   field.set_heuristic_type(GetActivePatternSource(), CREDIT_CARD_NUMBER);
@@ -219,7 +219,7 @@ TEST_F(AutofillFieldFillerTest, Type_CreditCardOverrideHtml_Heuristics) {
 
   // A credit card heuristic prediction doesn't override a known specified html
   // type.
-  field.SetHtmlType(HTML_TYPE_NAME, HTML_MODE_NONE);
+  field.SetHtmlType(HtmlFieldType::kName, HtmlFieldMode::kNone);
   field.set_heuristic_type(GetActivePatternSource(), CREDIT_CARD_NUMBER);
   EXPECT_EQ(NAME_FULL, field.Type().GetStorableType());
 }
@@ -231,7 +231,7 @@ TEST_F(AutofillFieldFillerTest, Type_CreditCardOverrideHtml_ServerPredicitons) {
   AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction
       prediction;
 
-  field.SetHtmlType(HTML_TYPE_UNRECOGNIZED, HTML_MODE_NONE);
+  field.SetHtmlType(HtmlFieldType::kUnrecognized, HtmlFieldMode::kNone);
 
   // A credit card server prediction overrides the unrecognized type.
   prediction.set_type(CREDIT_CARD_NUMBER);
@@ -246,7 +246,7 @@ TEST_F(AutofillFieldFillerTest, Type_CreditCardOverrideHtml_ServerPredicitons) {
 
   // A credit card server prediction doesn't override a known specified html
   // type.
-  field.SetHtmlType(HTML_TYPE_NAME, HTML_MODE_NONE);
+  field.SetHtmlType(HtmlFieldType::kName, HtmlFieldMode::kNone);
   prediction.set_type(CREDIT_CARD_NUMBER);
   field.set_server_predictions({prediction});
   EXPECT_EQ(NAME_FULL, field.Type().GetStorableType());
@@ -261,7 +261,7 @@ TEST_F(AutofillFieldFillerTest,
   AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction
       prediction;
 
-  field.SetHtmlType(HTML_TYPE_TEL, HTML_MODE_NONE);
+  field.SetHtmlType(HtmlFieldType::kTel, HtmlFieldMode::kNone);
 
   prediction.set_type(PHONE_HOME_CITY_AND_NUMBER);
   field.set_server_predictions({prediction});
@@ -273,20 +273,20 @@ TEST_F(AutofillFieldFillerTest,
   EXPECT_EQ(PHONE_HOME_NUMBER, field.Type().GetStorableType());
 
   // Overrides autocomplete=tel-national too.
-  field.SetHtmlType(HTML_TYPE_TEL_NATIONAL, HTML_MODE_NONE);
+  field.SetHtmlType(HtmlFieldType::kTelNational, HtmlFieldMode::kNone);
   prediction.set_type(PHONE_HOME_WHOLE_NUMBER);
   field.set_server_predictions({prediction});
   EXPECT_EQ(PHONE_HOME_WHOLE_NUMBER, field.Type().GetStorableType());
 
   // If autocomplete=tel-national but server says it's not a phone field,
   // do not override.
-  field.SetHtmlType(HTML_TYPE_TEL_NATIONAL, HTML_MODE_NONE);
+  field.SetHtmlType(HtmlFieldType::kTelNational, HtmlFieldMode::kNone);
   prediction.set_type(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR);
   field.set_server_predictions({prediction});
   EXPECT_EQ(PHONE_HOME_CITY_AND_NUMBER, field.Type().GetStorableType());
 
   // If html type not specified, we still use server prediction.
-  field.SetHtmlType(HTML_TYPE_UNSPECIFIED, HTML_MODE_NONE);
+  field.SetHtmlType(HtmlFieldType::kUnspecified, HtmlFieldMode::kNone);
   prediction.set_type(PHONE_HOME_CITY_AND_NUMBER);
   field.set_server_predictions({prediction});
   EXPECT_EQ(PHONE_HOME_CITY_AND_NUMBER, field.Type().GetStorableType());
@@ -571,37 +571,36 @@ INSTANTIATE_TEST_SUITE_P(
     PhoneNumberTest,
     testing::Values(
         // Filling a prefix type field should just fill the prefix.
-        AutofillPhoneFieldFillerTestCase{HTML_TYPE_TEL_LOCAL_PREFIX,
+        AutofillPhoneFieldFillerTestCase{HtmlFieldType::kTelLocalPrefix,
                                          /*field_max_length=*/0, u"555",
                                          u"+15145554578"},
         // Filling a suffix type field with a phone number of 7 digits should
         // just fill the suffix.
-        AutofillPhoneFieldFillerTestCase{HTML_TYPE_TEL_LOCAL_SUFFIX,
+        AutofillPhoneFieldFillerTestCase{HtmlFieldType::kTelLocalSuffix,
                                          /*field_max_length=*/0, u"4578",
                                          u"+15145554578"},
         // TODO(crbug.com/581485): There should be a test case where the full
-        // number is requested (HTML_TYPE_TEL) but a field_max_length of 3 would
-        // fill the prefix.
-        // Filling a phone type field with a max length of 4 should fill only
-        // the suffix.
-        AutofillPhoneFieldFillerTestCase{HTML_TYPE_TEL,
+        // number is requested (HtmlFieldType::kTel) but a
+        // field_max_length of 3 would fill the prefix. Filling a phone type
+        // field with a max length of 4 should fill only the suffix.
+        AutofillPhoneFieldFillerTestCase{HtmlFieldType::kTel,
                                          /*field_max_length=*/4, u"4578",
                                          u"+15145554578"},
         // Filling a phone type field with a max length of 10 with a phone
         // number including the country code should fill the phone number
         // without the country code.
-        AutofillPhoneFieldFillerTestCase{HTML_TYPE_TEL,
+        AutofillPhoneFieldFillerTestCase{HtmlFieldType::kTel,
                                          /*field_max_length=*/10, u"5145554578",
                                          u"+15145554578"},
         // Filling a phone type field with a max length of 5 with a phone number
         // should fill with the last 5 digits of that phone number.
-        AutofillPhoneFieldFillerTestCase{HTML_TYPE_TEL,
+        AutofillPhoneFieldFillerTestCase{HtmlFieldType::kTel,
                                          /*field_max_length=*/5, u"54578",
                                          u"+15145554578"},
         // Filling a phone type field with a max length of 10 with a phone
         // number including the country code should fill the phone number
         // without the country code.
-        AutofillPhoneFieldFillerTestCase{HTML_TYPE_TEL,
+        AutofillPhoneFieldFillerTestCase{HtmlFieldType::kTel,
                                          /*field_max_length=*/10, u"123456789",
                                          u"+886123456789"}));
 
@@ -635,32 +634,32 @@ INSTANTIATE_TEST_SUITE_P(
         // A field predicted as a 2 digits expiration year should fill the last
         // 2 digits of the expiration year if the field has an unspecified max
         // length (0) or if it's greater than 1.
-        AutofillFieldFillerTestCase{HTML_TYPE_CREDIT_CARD_EXP_2_DIGIT_YEAR,
+        AutofillFieldFillerTestCase{HtmlFieldType::kCreditCardExp2DigitYear,
                                     /* default value */ 0, u"23"},
-        AutofillFieldFillerTestCase{HTML_TYPE_CREDIT_CARD_EXP_2_DIGIT_YEAR, 2,
+        AutofillFieldFillerTestCase{HtmlFieldType::kCreditCardExp2DigitYear, 2,
                                     u"23"},
-        AutofillFieldFillerTestCase{HTML_TYPE_CREDIT_CARD_EXP_2_DIGIT_YEAR, 12,
+        AutofillFieldFillerTestCase{HtmlFieldType::kCreditCardExp2DigitYear, 12,
                                     u"23"},
         // A field predicted as a 2 digit expiration year should fill the last
         // digit of the expiration year if the field has a max length of 1.
-        AutofillFieldFillerTestCase{HTML_TYPE_CREDIT_CARD_EXP_2_DIGIT_YEAR, 1,
+        AutofillFieldFillerTestCase{HtmlFieldType::kCreditCardExp2DigitYear, 1,
                                     u"3"},
         // A field predicted as a 4 digit expiration year should fill the 4
         // digits of the expiration year if the field has an unspecified max
         // length (0) or if it's greater than 3 .
-        AutofillFieldFillerTestCase{HTML_TYPE_CREDIT_CARD_EXP_4_DIGIT_YEAR,
+        AutofillFieldFillerTestCase{HtmlFieldType::kCreditCardExp4DigitYear,
                                     /* default value */ 0, u"2023"},
-        AutofillFieldFillerTestCase{HTML_TYPE_CREDIT_CARD_EXP_4_DIGIT_YEAR, 4,
+        AutofillFieldFillerTestCase{HtmlFieldType::kCreditCardExp4DigitYear, 4,
                                     u"2023"},
-        AutofillFieldFillerTestCase{HTML_TYPE_CREDIT_CARD_EXP_4_DIGIT_YEAR, 12,
+        AutofillFieldFillerTestCase{HtmlFieldType::kCreditCardExp4DigitYear, 12,
                                     u"2023"},
         // A field predicted as a 4 digits expiration year should fill the last
         // 2 digits of the expiration year if the field has a max length of 2.
-        AutofillFieldFillerTestCase{HTML_TYPE_CREDIT_CARD_EXP_4_DIGIT_YEAR, 2,
+        AutofillFieldFillerTestCase{HtmlFieldType::kCreditCardExp4DigitYear, 2,
                                     u"23"},
         // A field predicted as a 4 digits expiration year should fill the last
         // digit of the expiration year if the field has a max length of 1.
-        AutofillFieldFillerTestCase{HTML_TYPE_CREDIT_CARD_EXP_4_DIGIT_YEAR, 1,
+        AutofillFieldFillerTestCase{HtmlFieldType::kCreditCardExp4DigitYear, 1,
                                     u"3"}));
 
 struct FillUtilExpirationDateTestCase {
@@ -715,31 +714,31 @@ INSTANTIATE_TEST_SUITE_P(
         // 6: Use format MMYYYY
         // 7: Use format MM/YYYY
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
+            HtmlFieldType::kCreditCardExpDate2DigitYear,
             /* default value */ 0, u"03/22", true},
         // Unsupported max lengths of 1-3, fail
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 1, u"", false},
+            HtmlFieldType::kCreditCardExpDate2DigitYear, 1, u"", false},
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 2, u"", false},
+            HtmlFieldType::kCreditCardExpDate2DigitYear, 2, u"", false},
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 3, u"", false},
+            HtmlFieldType::kCreditCardExpDate2DigitYear, 3, u"", false},
         // A max length of 4 indicates a format of MMYY.
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 4, u"0322", true},
+            HtmlFieldType::kCreditCardExpDate2DigitYear, 4, u"0322", true},
         // A max length of 6 indicates a format of MMYYYY, the 21st century is
         // assumed.
         // Desired case of proper max length >= 5
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 5, u"03/22", true},
+            HtmlFieldType::kCreditCardExpDate2DigitYear, 5, u"03/22", true},
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 6, u"032022", true},
+            HtmlFieldType::kCreditCardExpDate2DigitYear, 6, u"032022", true},
         // A max length of 7 indicates a format of MM/YYYY, the 21st century is
         // assumed.
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 7, u"03/2022", true},
+            HtmlFieldType::kCreditCardExpDate2DigitYear, 7, u"03/2022", true},
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 12, u"03/22", true},
+            HtmlFieldType::kCreditCardExpDate2DigitYear, 12, u"03/22", true},
 
         // A field predicted as a expiration date w/ 4 digit year should fill
         // with a format of MM/YYYY unless it has max-length of:
@@ -747,72 +746,72 @@ INSTANTIATE_TEST_SUITE_P(
         // 5: Use format MM/YY
         // 6: Use format MMYYYY
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
+            HtmlFieldType::kCreditCardExpDate4DigitYear,
             /* default value */ 0, u"03/2022", true},
         // Unsupported max lengths of 1-3, fail
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 1, u"", false},
+            HtmlFieldType::kCreditCardExpDate4DigitYear, 1, u"", false},
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 2, u"", false},
+            HtmlFieldType::kCreditCardExpDate4DigitYear, 2, u"", false},
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 3, u"", false},
+            HtmlFieldType::kCreditCardExpDate4DigitYear, 3, u"", false},
         // A max length of 4 indicates a format of MMYY.
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 4, u"0322", true},
+            HtmlFieldType::kCreditCardExpDate4DigitYear, 4, u"0322", true},
         // A max length of 5 indicates a format of MM/YY.
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 5, u"03/22", true},
+            HtmlFieldType::kCreditCardExpDate4DigitYear, 5, u"03/22", true},
         // A max length of 6 indicates a format of MMYYYY.
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 6, u"032022", true},
+            HtmlFieldType::kCreditCardExpDate4DigitYear, 6, u"032022", true},
         // Desired case of proper max length >= 7
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 7, u"03/2022", true},
+            HtmlFieldType::kCreditCardExpDate4DigitYear, 7, u"03/2022", true},
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 12, u"03/2022", true},
+            HtmlFieldType::kCreditCardExpDate4DigitYear, 12, u"03/2022", true},
 
         // Tests for features::kAutofillFillCreditCardAsPerFormatString:
 
         // Base case works regardless of captialization.
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 0, u"03/22", true,
+            HtmlFieldType::kCreditCardExpDate2DigitYear, 0, u"03/22", true,
             "mm/yy"},
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 0, u"03/22", true,
+            HtmlFieldType::kCreditCardExpDate2DigitYear, 0, u"03/22", true,
             "MM/YY"},
         // Even if we expect a 4 digit expiration date, we follow the
         // placeholder.
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 0, u"03/22", true,
+            HtmlFieldType::kCreditCardExpDate4DigitYear, 0, u"03/22", true,
             "MM/YY"},
         // Whitespaces are respected.
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 0, u"03 / 22", true,
+            HtmlFieldType::kCreditCardExpDate2DigitYear, 0, u"03 / 22", true,
             "MM / YY"},
         // Whitespaces are stripped if that makes the string fit.
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 5, u"03/22", true,
+            HtmlFieldType::kCreditCardExpDate2DigitYear, 5, u"03/22", true,
             "MM / YY"},
         // Different separators work.
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 0, u"03-22", true,
+            HtmlFieldType::kCreditCardExpDate2DigitYear, 0, u"03-22", true,
             "MM-YY"},
         // Four year expiration years work.
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 0, u"03-2022", true,
+            HtmlFieldType::kCreditCardExpDate2DigitYear, 0, u"03-2022", true,
             "MM-YYYY"},
         // Some extra text around the pattern does not matter.
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, 0, u"03/22", true,
+            HtmlFieldType::kCreditCardExpDate2DigitYear, 0, u"03/22", true,
             "Credit card in format MM/YY."},
         // Fallback to the length based filling in case the maxlength is too
         // low.
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 5, u"03/22", true,
+            HtmlFieldType::kCreditCardExpDate4DigitYear, 5, u"03/22", true,
             "MM/YYYY"},
         // Empty strings are handled gracefully.
         FillUtilExpirationDateTestCase{
-            HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, 5, u"03/22", true,
+            HtmlFieldType::kCreditCardExpDate4DigitYear, 5, u"03/22", true,
             ""}));
 
 TEST_F(AutofillFieldFillerTest, FillSelectControlByValue) {
@@ -1688,29 +1687,32 @@ INSTANTIATE_TEST_SUITE_P(
         // Filling a state to a text field with the default maxlength value
         // should
         // fill the state value as is.
-        FillStateTextTestCase{HTML_TYPE_ADDRESS_LEVEL1, /* default value */ 0,
-                              u"New York", u"New York", true},
-        FillStateTextTestCase{HTML_TYPE_ADDRESS_LEVEL1, /* default value */ 0,
-                              u"NY", u"NY", true},
+        FillStateTextTestCase{HtmlFieldType::kAddressLevel1,
+                              /* default value */ 0, u"New York", u"New York",
+                              true},
+        FillStateTextTestCase{HtmlFieldType::kAddressLevel1,
+                              /* default value */ 0, u"NY", u"NY", true},
         // Filling a state to a text field with a maxlength value equal to the
         // value's length should fill the state value as is.
-        FillStateTextTestCase{HTML_TYPE_ADDRESS_LEVEL1, 8, u"New York",
+        FillStateTextTestCase{HtmlFieldType::kAddressLevel1, 8, u"New York",
                               u"New York", true},
         // Filling a state to a text field with a maxlength value lower than the
         // value's length but higher than the value's abbreviation should fill
         // the state abbreviation.
-        FillStateTextTestCase{HTML_TYPE_ADDRESS_LEVEL1, 2, u"New York", u"NY",
+        FillStateTextTestCase{HtmlFieldType::kAddressLevel1, 2, u"New York",
+                              u"NY", true},
+        FillStateTextTestCase{HtmlFieldType::kAddressLevel1, 2, u"NY", u"NY",
                               true},
-        FillStateTextTestCase{HTML_TYPE_ADDRESS_LEVEL1, 2, u"NY", u"NY", true},
         // Filling a state to a text field with a maxlength value lower than the
         // value's length and the value's abbreviation should not fill at all.
-        FillStateTextTestCase{HTML_TYPE_ADDRESS_LEVEL1, 1, u"New York", u"",
+        FillStateTextTestCase{HtmlFieldType::kAddressLevel1, 1, u"New York",
+                              u"", false},
+        FillStateTextTestCase{HtmlFieldType::kAddressLevel1, 1, u"NY", u"",
                               false},
-        FillStateTextTestCase{HTML_TYPE_ADDRESS_LEVEL1, 1, u"NY", u"", false},
         // Filling a state to a text field with a maxlength value lower than the
         // value's length and that has no associated abbreviation should not
         // fill at all.
-        FillStateTextTestCase{HTML_TYPE_ADDRESS_LEVEL1, 3, u"Quebec", u"",
+        FillStateTextTestCase{HtmlFieldType::kAddressLevel1, 3, u"Quebec", u"",
                               false}));
 
 // Tests that the correct option is chosen in the selection box when one of the

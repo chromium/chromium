@@ -407,7 +407,7 @@ std::u16string Address::GetInfoImpl(const AutofillType& type,
                 structured_address_.GetValueForType(ADDRESS_HOME_COUNTRY))
           : country_code_;
 
-  if (type.html_type() == HTML_TYPE_COUNTRY_CODE) {
+  if (type.html_type() == HtmlFieldType::kCountryCode) {
     return base::ASCIIToUTF16(country_code);
   }
 
@@ -427,7 +427,7 @@ bool Address::SetInfoWithVerificationStatusImpl(const AutofillType& type,
   bool use_structured_address =
       structured_address::StructuredAddressesEnabled();
 
-  if (type.html_type() == HTML_TYPE_COUNTRY_CODE) {
+  if (type.html_type() == HtmlFieldType::kCountryCode) {
     std::string country_code = base::ToUpperASCII(base::UTF16ToASCII(value));
     if (!data_util::IsValidCountryCode(country_code)) {
       // To counteract the misuse of autocomplete=country attribute when used
@@ -454,7 +454,7 @@ bool Address::SetInfoWithVerificationStatusImpl(const AutofillType& type,
     return !country_code.empty();
   }
 
-  if (type.html_type() == HTML_TYPE_FULL_ADDRESS) {
+  if (type.html_type() == HtmlFieldType::kFullAddress) {
     // Parsing a full address is too hard.
     return false;
   }

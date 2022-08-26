@@ -226,9 +226,10 @@ void LogAutocompletePredictionCollisionTypeMetrics(
     if (ShouldIgnoreAutocompleteAttribute(field->autocomplete_attribute)) {
       autocomplete_state = AutofillMetrics::AutocompleteState::kOff;
     } else if (auto autocomplete = ParseAutocompleteAttribute(*field)) {
-      autocomplete_state = autocomplete->field_type != HTML_TYPE_UNRECOGNIZED
-                               ? AutofillMetrics::AutocompleteState::kValid
-                               : AutofillMetrics::AutocompleteState::kGarbage;
+      autocomplete_state =
+          autocomplete->field_type != HtmlFieldType::kUnrecognized
+              ? AutofillMetrics::AutocompleteState::kValid
+              : AutofillMetrics::AutocompleteState::kGarbage;
     }
 
     AutofillMetrics::LogAutocompletePredictionCollisionState(
@@ -1074,8 +1075,8 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     }
 
     // Therefore, we check the attribute explicitly.
-    if (context.focused_field &&
-        context.focused_field->Type().html_type() == HTML_TYPE_UNRECOGNIZED) {
+    if (context.focused_field && context.focused_field->Type().html_type() ==
+                                     HtmlFieldType::kUnrecognized) {
       return false;
     }
 
@@ -2280,7 +2281,7 @@ void BrowserAutofillManager::OnFormProcessed(
                             client()->GetUkmSourceId(), form_structure);
 
   for (const auto& field : form_structure) {
-    if (field->Type().html_type() == HTML_TYPE_ONE_TIME_CODE) {
+    if (field->Type().html_type() == HtmlFieldType::kOneTimeCode) {
       has_observed_one_time_code_field_ = true;
       break;
     }
@@ -2932,7 +2933,8 @@ void BrowserAutofillManager::PreProcessStateMatchingTypes(
     if (!canonical_state_name_from_profile)
       continue;
 
-    const AutofillType kCountryCode(HTML_TYPE_COUNTRY_CODE, HTML_MODE_NONE);
+    const AutofillType kCountryCode(HtmlFieldType::kCountryCode,
+                                    HtmlFieldMode::kNone);
     const std::u16string& country_code =
         profile.GetInfo(kCountryCode, app_locale_);
 

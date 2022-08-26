@@ -60,20 +60,20 @@ TEST_P(AddressTest, GetCountry) {
   country = address.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), "en-US");
   EXPECT_EQ(u"United States", country);
   country = address.GetInfo(
-      AutofillType(HTML_TYPE_COUNTRY_NAME, HTML_MODE_NONE), "en-US");
+      AutofillType(HtmlFieldType::kCountryName, HtmlFieldMode::kNone), "en-US");
   EXPECT_EQ(u"United States", country);
   country = address.GetInfo(
-      AutofillType(HTML_TYPE_COUNTRY_CODE, HTML_MODE_NONE), "en-US");
+      AutofillType(HtmlFieldType::kCountryCode, HtmlFieldMode::kNone), "en-US");
   EXPECT_EQ(u"US", country);
 
   address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"CA");
   country = address.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), "en-US");
   EXPECT_EQ(u"Canada", country);
   country = address.GetInfo(
-      AutofillType(HTML_TYPE_COUNTRY_NAME, HTML_MODE_NONE), "en-US");
+      AutofillType(HtmlFieldType::kCountryName, HtmlFieldMode::kNone), "en-US");
   EXPECT_EQ(u"Canada", country);
   country = address.GetInfo(
-      AutofillType(HTML_TYPE_COUNTRY_CODE, HTML_MODE_NONE), "en-US");
+      AutofillType(HtmlFieldType::kCountryCode, HtmlFieldMode::kNone), "en-US");
   EXPECT_EQ(u"CA", country);
 }
 
@@ -83,8 +83,8 @@ TEST_P(AddressTest, SetHtmlCountryCodeTypeWithFullCountryName) {
   Address address;
   EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_COUNTRY));
 
-  // Create an autofill type from HTML_TYPE_COUNTRY_CODE.
-  AutofillType autofill_type(HTML_TYPE_COUNTRY_CODE, HTML_MODE_NONE);
+  // Create an autofill type from HtmlFieldType::kCountryCode.
+  AutofillType autofill_type(HtmlFieldType::kCountryCode, HtmlFieldMode::kNone);
 
   // Test that the country value can be set and retrieved if it is not
   // a country code but a full country name.
@@ -92,7 +92,7 @@ TEST_P(AddressTest, SetHtmlCountryCodeTypeWithFullCountryName) {
   std::u16string actual_country =
       address.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), "en-US");
   std::u16string actual_country_code = address.GetInfo(
-      AutofillType(HTML_TYPE_COUNTRY_CODE, HTML_MODE_NONE), "en-US");
+      AutofillType(HtmlFieldType::kCountryCode, HtmlFieldMode::kNone), "en-US");
   EXPECT_EQ(u"Germany", actual_country);
   EXPECT_EQ(u"DE", actual_country_code);
 
@@ -100,7 +100,7 @@ TEST_P(AddressTest, SetHtmlCountryCodeTypeWithFullCountryName) {
   address.SetInfo(autofill_type, u"", "en-US");
   actual_country = address.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), "en-US");
   actual_country_code = address.GetInfo(
-      AutofillType(HTML_TYPE_COUNTRY_CODE, HTML_MODE_NONE), "en-US");
+      AutofillType(HtmlFieldType::kCountryCode, HtmlFieldMode::kNone), "en-US");
   EXPECT_EQ(u"", actual_country);
   EXPECT_EQ(u"", actual_country_code);
 
@@ -109,7 +109,7 @@ TEST_P(AddressTest, SetHtmlCountryCodeTypeWithFullCountryName) {
   address.SetInfo(autofill_type, u"deutschland", "de");
   actual_country = address.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), "en-US");
   actual_country_code = address.GetInfo(
-      AutofillType(HTML_TYPE_COUNTRY_CODE, HTML_MODE_NONE), "en-US");
+      AutofillType(HtmlFieldType::kCountryCode, HtmlFieldMode::kNone), "en-US");
   EXPECT_EQ(u"Germany", actual_country);
   EXPECT_EQ(u"DE", actual_country_code);
 
@@ -121,7 +121,7 @@ TEST_P(AddressTest, SetHtmlCountryCodeTypeWithFullCountryName) {
   address.SetInfo(autofill_type, u"DE", "en-US");
   actual_country = address.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), "en-US");
   actual_country_code = address.GetInfo(
-      AutofillType(HTML_TYPE_COUNTRY_CODE, HTML_MODE_NONE), "en-US");
+      AutofillType(HtmlFieldType::kCountryCode, HtmlFieldMode::kNone), "en-US");
   EXPECT_EQ(u"DE", actual_country_code);
   EXPECT_EQ(u"Germany", actual_country);
 }
@@ -165,7 +165,7 @@ TEST_P(AddressTest, SetCountry) {
 
   // Test setting the country based on an HTML field type.
   AutofillType html_type_country_code =
-      AutofillType(HTML_TYPE_COUNTRY_CODE, HTML_MODE_NONE);
+      AutofillType(HtmlFieldType::kCountryCode, HtmlFieldMode::kNone);
   address.SetInfo(html_type_country_code, u"US", "en-US");
   country = address.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), "en-US");
   EXPECT_EQ(u"US", address.GetRawInfo(ADDRESS_HOME_COUNTRY));

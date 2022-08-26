@@ -129,7 +129,7 @@ struct StructTraits<autofill::mojom::SectionAutocompleteDataView,
 
   static uint8_t html_field_mode(const autofill::Section::Autocomplete& r) {
     static_assert(sizeof(r.mode) <= sizeof(uint8_t));
-    return r.mode;
+    return static_cast<uint8_t>(r.mode);
   }
 
   static bool Read(autofill::mojom::SectionAutocompleteDataView data,

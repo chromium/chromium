@@ -277,8 +277,8 @@ std::vector<Section> SectionTestCases() {
 
   // Autocomplete.
   s = Section();
-  s.SetPrefixFromAutocomplete({.section = "autocomplete_section",
-                               .mode = HtmlFieldMode::HTML_MODE_BILLING});
+  s.SetPrefixFromAutocomplete(
+      {.section = "autocomplete_section", .mode = HtmlFieldMode::kBilling});
   s.set_field_type_group(Section::FieldTypeGroupSuffix::kDefault);
   test_cases.push_back(s);
 
@@ -330,8 +330,7 @@ TEST_F(AutofillTypeTraitsTestImpl, PassFormFieldData) {
   input.bounds = gfx::RectF(1, 2, 10, 100);
   base::flat_map<LocalFrameToken, size_t> frame_token_ids;
   input.section.SetPrefixFromAutocomplete(
-      {.section = "autocomplete_section",
-       .mode = HtmlFieldMode::HTML_MODE_SHIPPING});
+      {.section = "autocomplete_section", .mode = HtmlFieldMode::kShipping});
 
   EXPECT_FALSE(input.host_frame.is_empty());
   base::RunLoop loop;

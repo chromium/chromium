@@ -134,7 +134,7 @@ AutofillType AutofillField::ComputedType() const {
 
   // If the explicit type is cc-exp and either the server or heuristics agree
   // on a 2 vs 4 digit specialization of cc-exp, use that specialization.
-  if (html_type_ == HTML_TYPE_CREDIT_CARD_EXP) {
+  if (html_type_ == HtmlFieldType::kCreditCardExp) {
     if (server_type() == CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR ||
         server_type() == CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR) {
       return AutofillType(server_type());
@@ -149,7 +149,7 @@ AutofillType AutofillField::ComputedType() const {
   // return an UNKNOWN_TYPE predition, unless either the heuristic or server
   // prediction suggest that the field is credit-card related, or if the
   // |kAutofillFillAndImportFromMoreFields| feature is enabled.
-  if (html_type_ == HTML_TYPE_UNRECOGNIZED && !IsCreditCardPrediction() &&
+  if (html_type_ == HtmlFieldType::kUnrecognized && !IsCreditCardPrediction() &&
       !base::FeatureList::IsEnabled(
           features::kAutofillFillAndImportFromMoreFields)) {
     return AutofillType(html_type_, html_mode_);
@@ -157,8 +157,8 @@ AutofillType AutofillField::ComputedType() const {
 
   // If the autocomplete attribute is neither empty or unrecognized, use it
   // unconditionally.
-  if (html_type_ != HTML_TYPE_UNSPECIFIED &&
-      html_type_ != HTML_TYPE_UNRECOGNIZED) {
+  if (html_type_ != HtmlFieldType::kUnspecified &&
+      html_type_ != HtmlFieldType::kUnrecognized) {
     return AutofillType(html_type_, html_mode_);
   }
 
@@ -256,7 +256,8 @@ bool AutofillField::IsFieldFillable() const {
 
 bool AutofillField::ShouldSuppressPromptDueToUnrecognizedAutocompleteAttribute()
     const {
-  return html_type_ == HTML_TYPE_UNRECOGNIZED && !IsCreditCardPrediction() &&
+  return html_type_ == HtmlFieldType::kUnrecognized &&
+         !IsCreditCardPrediction() &&
          base::FeatureList::IsEnabled(
              features::kAutofillFillAndImportFromMoreFields);
 }

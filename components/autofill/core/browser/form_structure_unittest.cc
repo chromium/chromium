@@ -571,7 +571,8 @@ TEST_F(FormStructureTestImpl, ShouldBeParsed_TwoFields_HasAutocomplete) {
 }
 
 // Tests that unmappable autocomplete values containing "address" are treated
-// as HTML_TYPE_UNSPECIFIED instead of HTML_TYPE_UNRECOGNIZED.
+// as HtmlFieldType::kUnspecified instead of
+// HtmlFieldType::kUnrecognized.
 TEST_F(FormStructureTestImpl, IgnoreUnmappableAutocompleteValues) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
@@ -581,7 +582,7 @@ TEST_F(FormStructureTestImpl, IgnoreUnmappableAutocompleteValues) {
       {{{.description_for_logging = "IgnoreUnmappableAutocompleteValues",
          .fields = {{.autocomplete_attribute = "address-info"}}},
         {.determine_heuristic_type = true},
-        {.expected_html_type = {HTML_TYPE_UNSPECIFIED}}}});
+        {.expected_html_type = {HtmlFieldType::kUnspecified}}}});
 }
 
 // Tests that ShouldBeParsed returns true for a form containing less than three
@@ -655,8 +656,10 @@ TEST_F(FormStructureTestImpl, HeuristicsAutocompleteAttribute) {
             .field_count = 4,
             .autofill_count = 3,
         },
-        {.expected_html_type = {HTML_TYPE_GIVEN_NAME, HTML_TYPE_FAMILY_NAME,
-                                HTML_TYPE_EMAIL, HTML_TYPE_UNRECOGNIZED},
+        {.expected_html_type = {HtmlFieldType::kGivenName,
+                                HtmlFieldType::kFamilyName,
+                                HtmlFieldType::kEmail,
+                                HtmlFieldType::kUnrecognized},
          .expected_heuristic_type = {UNKNOWN_TYPE, UNKNOWN_TYPE, UNKNOWN_TYPE,
                                      UNKNOWN_TYPE}}}});
 }
@@ -773,8 +776,9 @@ TEST_F(FormStructureTestImpl, HeuristicsAutocompleteAttributePhoneTypes) {
          .is_autofillable = true,
          .field_count = 3,
          .autofill_count = 3},
-        {.expected_html_type = {HTML_TYPE_TEL_LOCAL, HTML_TYPE_TEL_LOCAL_PREFIX,
-                                HTML_TYPE_TEL_LOCAL_SUFFIX}}}});
+        {.expected_html_type = {HtmlFieldType::kTelLocal,
+                                HtmlFieldType::kTelLocalPrefix,
+                                HtmlFieldType::kTelLocalSuffix}}}});
 }
 
 // The heuristics and server predictions should run if there are more than two
@@ -5017,10 +5021,10 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_ServerPredictionIsOverride) {
 
     // Validate the type predictions.
     EXPECT_EQ(UNKNOWN_TYPE, form.field(0)->heuristic_type());
-    EXPECT_EQ(HTML_TYPE_NAME, form.field(0)->html_type());
+    EXPECT_EQ(HtmlFieldType::kName, form.field(0)->html_type());
     EXPECT_EQ(NAME_FIRST, form.field(0)->server_type());
     EXPECT_EQ(UNKNOWN_TYPE, form.field(1)->heuristic_type());
-    EXPECT_EQ(HTML_TYPE_NAME, form.field(1)->html_type());
+    EXPECT_EQ(HtmlFieldType::kName, form.field(1)->html_type());
     EXPECT_EQ(NAME_LAST, form.field(1)->server_type());
 
     // Validate that the overrides are set correctly.
@@ -5049,10 +5053,10 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_ServerPredictionIsOverride) {
 
     // Validate the type predictions.
     EXPECT_EQ(UNKNOWN_TYPE, form.field(0)->heuristic_type());
-    EXPECT_EQ(HTML_TYPE_NAME, form.field(0)->html_type());
+    EXPECT_EQ(HtmlFieldType::kName, form.field(0)->html_type());
     EXPECT_EQ(NAME_FIRST, form.field(0)->server_type());
     EXPECT_EQ(UNKNOWN_TYPE, form.field(1)->heuristic_type());
-    EXPECT_EQ(HTML_TYPE_NAME, form.field(1)->html_type());
+    EXPECT_EQ(HtmlFieldType::kName, form.field(1)->html_type());
     EXPECT_EQ(NAME_LAST, form.field(1)->server_type());
 
     // Validate that the overrides are set correctly.
@@ -5305,19 +5309,19 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_TooManyTypes) {
   // Validate field 0.
   EXPECT_EQ(NAME_FIRST, form.field(0)->heuristic_type());
   EXPECT_EQ(NAME_FIRST, form.field(0)->server_type());
-  EXPECT_EQ(HTML_TYPE_UNSPECIFIED, form.field(0)->html_type());
+  EXPECT_EQ(HtmlFieldType::kUnspecified, form.field(0)->html_type());
   EXPECT_EQ(NAME_FIRST, form.field(0)->Type().GetStorableType());
 
   // Validate field 1.
   EXPECT_EQ(NAME_LAST, form.field(1)->heuristic_type());
   EXPECT_EQ(NAME_LAST, form.field(1)->server_type());
-  EXPECT_EQ(HTML_TYPE_UNSPECIFIED, form.field(1)->html_type());
+  EXPECT_EQ(HtmlFieldType::kUnspecified, form.field(1)->html_type());
   EXPECT_EQ(NAME_LAST, form.field(1)->Type().GetStorableType());
 
-  // Validate field 2. Note: HTML_TYPE_ADDRESS_LEVEL2 -> City
+  // Validate field 2. Note: HtmlFieldType::kAddressLevel2 -> City
   EXPECT_EQ(EMAIL_ADDRESS, form.field(2)->heuristic_type());
   EXPECT_EQ(ADDRESS_HOME_LINE1, form.field(2)->server_type());
-  EXPECT_EQ(HTML_TYPE_ADDRESS_LEVEL2, form.field(2)->html_type());
+  EXPECT_EQ(HtmlFieldType::kAddressLevel2, form.field(2)->html_type());
   EXPECT_EQ(ADDRESS_HOME_CITY, form.field(2)->Type().GetStorableType());
 
   // Also check the extreme case of an empty form.
@@ -5377,19 +5381,19 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_UnknownType) {
   // Validate field 0.
   EXPECT_EQ(NAME_FIRST, form.field(0)->heuristic_type());
   EXPECT_EQ(UNKNOWN_TYPE, form.field(0)->server_type());
-  EXPECT_EQ(HTML_TYPE_UNSPECIFIED, form.field(0)->html_type());
+  EXPECT_EQ(HtmlFieldType::kUnspecified, form.field(0)->html_type());
   EXPECT_EQ(UNKNOWN_TYPE, form.field(0)->Type().GetStorableType());
 
   // Validate field 1.
   EXPECT_EQ(NAME_LAST, form.field(1)->heuristic_type());
   EXPECT_EQ(NO_SERVER_DATA, form.field(1)->server_type());
-  EXPECT_EQ(HTML_TYPE_UNSPECIFIED, form.field(1)->html_type());
+  EXPECT_EQ(HtmlFieldType::kUnspecified, form.field(1)->html_type());
   EXPECT_EQ(NAME_LAST, form.field(1)->Type().GetStorableType());
 
-  // Validate field 2. Note: HTML_TYPE_ADDRESS_LEVEL2 -> City
+  // Validate field 2. Note: HtmlFieldType::kAddressLevel2 -> City
   EXPECT_EQ(EMAIL_ADDRESS, form.field(2)->heuristic_type());
   EXPECT_EQ(ADDRESS_HOME_LINE1, form.field(2)->server_type());
-  EXPECT_EQ(HTML_TYPE_ADDRESS_LEVEL2, form.field(2)->html_type());
+  EXPECT_EQ(HtmlFieldType::kAddressLevel2, form.field(2)->html_type());
   EXPECT_EQ(ADDRESS_HOME_CITY, form.field(2)->Type().GetStorableType());
 }
 
@@ -6330,8 +6334,7 @@ TEST_F(FormStructureTestImpl,
   field.max_length = 10000;
 
   // Billing.
-  field.section.SetPrefixFromAutocomplete(
-      {.section = "Billing", .mode = HtmlFieldMode::HTML_MODE_NONE});
+  field.section.SetPrefixFromAutocomplete({.section = "Billing"});
 
   field.label = u"Full Name";
   field.name = u"fullName";
@@ -6349,8 +6352,7 @@ TEST_F(FormStructureTestImpl,
   form.fields.push_back(field);
 
   // Shipping.
-  field.section.SetPrefixFromAutocomplete(
-      {.section = "Shipping", .mode = HtmlFieldMode::HTML_MODE_NONE});
+  field.section.SetPrefixFromAutocomplete({.section = "Shipping"});
 
   field.label = u"Full Name";
   field.name = u"fullName";
@@ -6418,8 +6420,7 @@ TEST_F(
   field.max_length = 10000;
 
   // Shipping.
-  field.section.SetPrefixFromAutocomplete(
-      {.section = "Shipping", .mode = HtmlFieldMode::HTML_MODE_NONE});
+  field.section.SetPrefixFromAutocomplete({.section = "Shipping"});
   field.label = u"Full Name";
   field.name = u"fullName";
   field.unique_renderer_id = test::MakeFieldRendererId();
@@ -6441,8 +6442,7 @@ TEST_F(
   form.fields.push_back(field);
 
   // Billing.
-  field.section.SetPrefixFromAutocomplete(
-      {.section = "Billing", .mode = HtmlFieldMode::HTML_MODE_NONE});
+  field.section.SetPrefixFromAutocomplete({.section = "Billing"});
   field.label = u"Full Name";
   field.name = u"fullName";
   field.unique_renderer_id = test::MakeFieldRendererId();
@@ -6469,8 +6469,7 @@ TEST_F(
   form.fields.push_back(field);
 
   // Work address (not realistic).
-  field.section.SetPrefixFromAutocomplete(
-      {.section = "Work", .mode = HtmlFieldMode::HTML_MODE_NONE});
+  field.section.SetPrefixFromAutocomplete({.section = "Work"});
   field.label = u"Full Name";
   field.name = u"fullName";
   field.unique_renderer_id = test::MakeFieldRendererId();
@@ -6871,8 +6870,7 @@ TEST_F(FormStructureTestImpl,
   field.max_length = 10000;
 
   // Shipping.
-  field.section.SetPrefixFromAutocomplete(
-      {.section = "shipping", .mode = HtmlFieldMode::HTML_MODE_NONE});
+  field.section.SetPrefixFromAutocomplete({.section = "shipping"});
 
   field.label = u"Full Name";
   field.name = u"fullName";
@@ -6895,8 +6893,7 @@ TEST_F(FormStructureTestImpl,
   form.fields.push_back(field);
 
   // Billing.
-  field.section.SetPrefixFromAutocomplete(
-      {.section = "billing", .mode = HtmlFieldMode::HTML_MODE_NONE});
+  field.section.SetPrefixFromAutocomplete({.section = "billing"});
 
   field.label = u"Country";
   field.name = u"country2";
@@ -6946,8 +6943,7 @@ TEST_F(FormStructureTestImpl,
   form.fields.push_back(field);
 
   // Billing-2.
-  field.section.SetPrefixFromAutocomplete(
-      {.section = "billing-2", .mode = HtmlFieldMode::HTML_MODE_NONE});
+  field.section.SetPrefixFromAutocomplete({.section = "billing-2"});
 
   field.label = u"Country";
   field.name = u"country";
@@ -7184,8 +7180,7 @@ TEST_F(FormStructureTestImpl,
   field.form_control_type = "text";
   field.max_length = 10000;
 
-  field.section.SetPrefixFromAutocomplete(
-      {.section = "billing", .mode = HtmlFieldMode::HTML_MODE_NONE});
+  field.section.SetPrefixFromAutocomplete({.section = "billing"});
 
   field.label = u"Country";
   field.name = u"country";
@@ -7254,8 +7249,7 @@ TEST_F(FormStructureTestImpl,
   field.form_control_type = "text";
   field.max_length = 10000;
 
-  field.section.SetPrefixFromAutocomplete(
-      {.section = "billing", .mode = HtmlFieldMode::HTML_MODE_NONE});
+  field.section.SetPrefixFromAutocomplete({.section = "billing"});
 
   field.label = u"Country";
   field.name = u"country";

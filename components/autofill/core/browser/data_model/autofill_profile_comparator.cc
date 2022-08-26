@@ -675,7 +675,8 @@ bool AutofillProfileComparator::MergePhoneNumbers(
   // Figure out a country code hint.
   // TODO(crbug.com/1313862) |GetNonEmptyOf()| prefers |p1| in case both are
   // non empty.
-  const AutofillType kCountryCode(HTML_TYPE_COUNTRY_CODE, HTML_MODE_NONE);
+  const AutofillType kCountryCode(HtmlFieldType::kCountryCode,
+                                  HtmlFieldMode::kNone);
   std::string region = UTF16ToUTF8(GetNonEmptyOf(p1, p2, kCountryCode));
   if (region.empty())
     region = AutofillCountry::CountryCodeForLocale(app_locale_);
@@ -777,7 +778,8 @@ bool AutofillProfileComparator::MergeAddresses(const AutofillProfile& p1,
 
   // One of the countries is empty or they are the same modulo case, so we just
   // have to find the non-empty one, if any.
-  const AutofillType kCountryCode(HTML_TYPE_COUNTRY_CODE, HTML_MODE_NONE);
+  const AutofillType kCountryCode(HtmlFieldType::kCountryCode,
+                                  HtmlFieldMode::kNone);
   const std::u16string& country_code =
       base::i18n::ToUpper(GetNonEmptyOf(p1, p2, kCountryCode));
   address.SetInfo(kCountryCode, country_code, app_locale_);
@@ -1329,7 +1331,8 @@ bool AutofillProfileComparator::HaveMergeableAddresses(
 
   // If the address are not in the same country, then they're not the same. If
   // one of the address countries is unknown/invalid the comparison continues.
-  const AutofillType kCountryCode(HTML_TYPE_COUNTRY_CODE, HTML_MODE_NONE);
+  const AutofillType kCountryCode(HtmlFieldType::kCountryCode,
+                                  HtmlFieldMode::kNone);
   const std::u16string& country1 = p1.GetInfo(kCountryCode, app_locale_);
   const std::u16string& country2 = p2.GetInfo(kCountryCode, app_locale_);
   if (!country1.empty() && !country2.empty() &&

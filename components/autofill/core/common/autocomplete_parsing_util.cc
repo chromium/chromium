@@ -32,17 +32,17 @@ bool ContactTypeHintMatchesFieldType(const std::string& token,
   // The "home" and "work" type hints are only appropriate for email and phone
   // number field types.
   if (token == "home" || token == "work") {
-    return field_type == HTML_TYPE_EMAIL ||
-           (field_type >= HTML_TYPE_TEL &&
-            field_type <= HTML_TYPE_TEL_LOCAL_SUFFIX);
+    return field_type == HtmlFieldType::kEmail ||
+           (field_type >= HtmlFieldType::kTel &&
+            field_type <= HtmlFieldType::kTelLocalSuffix);
   }
 
   // The "mobile" type hint is only appropriate for phone number field types.
   // Note that "fax" and "pager" are intentionally ignored, as Chrome does not
   // support filling either type of information.
   if (token == "mobile") {
-    return field_type >= HTML_TYPE_TEL &&
-           field_type <= HTML_TYPE_TEL_LOCAL_SUFFIX;
+    return field_type >= HtmlFieldType::kTel &&
+           field_type <= HtmlFieldType::kTelLocalSuffix;
   }
 
   return false;
@@ -58,16 +58,16 @@ HtmlFieldType RationalizeAutocompleteType(HtmlFieldType type,
   static constexpr auto rules =
       base::MakeFixedFlatMap<std::pair<HtmlFieldType, uint64_t>, HtmlFieldType>(
           {
-              {{HTML_TYPE_ADDITIONAL_NAME, 1},
-               HTML_TYPE_ADDITIONAL_NAME_INITIAL},
-              {{HTML_TYPE_CREDIT_CARD_EXP, 5},
-               HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
-              {{HTML_TYPE_CREDIT_CARD_EXP, 7},
-               HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
-              {{HTML_TYPE_CREDIT_CARD_EXP_YEAR, 2},
-               HTML_TYPE_CREDIT_CARD_EXP_2_DIGIT_YEAR},
-              {{HTML_TYPE_CREDIT_CARD_EXP_YEAR, 4},
-               HTML_TYPE_CREDIT_CARD_EXP_4_DIGIT_YEAR},
+              {{HtmlFieldType::kAdditionalName, 1},
+               HtmlFieldType::kAdditionalNameInitial},
+              {{HtmlFieldType::kCreditCardExp, 5},
+               HtmlFieldType::kCreditCardExpDate2DigitYear},
+              {{HtmlFieldType::kCreditCardExp, 7},
+               HtmlFieldType::kCreditCardExpDate4DigitYear},
+              {{HtmlFieldType::kCreditCardExpYear, 2},
+               HtmlFieldType::kCreditCardExp2DigitYear},
+              {{HtmlFieldType::kCreditCardExpYear, 4},
+               HtmlFieldType::kCreditCardExp4DigitYear},
           });
 
   auto* it = rules.find(std::make_pair(type, field.max_length));
@@ -81,46 +81,46 @@ absl::optional<HtmlFieldType> ParseStandardizedAutocompleteAttribute(
     base::StringPiece value) {
   static constexpr auto standardized_attributes =
       base::MakeFixedFlatMap<base::StringPiece, HtmlFieldType>({
-          {"additional-name", HTML_TYPE_ADDITIONAL_NAME},
-          {"address-level1", HTML_TYPE_ADDRESS_LEVEL1},
-          {"address-level2", HTML_TYPE_ADDRESS_LEVEL2},
-          {"address-level3", HTML_TYPE_ADDRESS_LEVEL3},
-          {"address-line1", HTML_TYPE_ADDRESS_LINE1},
-          {"address-line2", HTML_TYPE_ADDRESS_LINE2},
-          {"address-line3", HTML_TYPE_ADDRESS_LINE3},
-          {"bday-day", HTML_TYPE_BIRTHDATE_DAY},
-          {"bday-month", HTML_TYPE_BIRTHDATE_MONTH},
-          {"bday-year", HTML_TYPE_BIRTHDATE_YEAR},
-          {"cc-csc", HTML_TYPE_CREDIT_CARD_VERIFICATION_CODE},
-          {"cc-exp", HTML_TYPE_CREDIT_CARD_EXP},
-          {"cc-exp-month", HTML_TYPE_CREDIT_CARD_EXP_MONTH},
-          {"cc-exp-year", HTML_TYPE_CREDIT_CARD_EXP_YEAR},
-          {"cc-family-name", HTML_TYPE_CREDIT_CARD_NAME_LAST},
-          {"cc-given-name", HTML_TYPE_CREDIT_CARD_NAME_FIRST},
-          {"cc-name", HTML_TYPE_CREDIT_CARD_NAME_FULL},
-          {"cc-number", HTML_TYPE_CREDIT_CARD_NUMBER},
-          {"cc-type", HTML_TYPE_CREDIT_CARD_TYPE},
-          {"country", HTML_TYPE_COUNTRY_CODE},
-          {"country-name", HTML_TYPE_COUNTRY_NAME},
-          {"email", HTML_TYPE_EMAIL},
-          {"family-name", HTML_TYPE_FAMILY_NAME},
-          {"given-name", HTML_TYPE_GIVEN_NAME},
-          {"honorific-prefix", HTML_TYPE_HONORIFIC_PREFIX},
-          {"name", HTML_TYPE_NAME},
-          {"one-time-code", HTML_TYPE_ONE_TIME_CODE},
-          {"organization", HTML_TYPE_ORGANIZATION},
-          {"postal-code", HTML_TYPE_POSTAL_CODE},
-          {"street-address", HTML_TYPE_STREET_ADDRESS},
-          {"tel-area-code", HTML_TYPE_TEL_AREA_CODE},
-          {"tel-country-code", HTML_TYPE_TEL_COUNTRY_CODE},
-          {"tel-extension", HTML_TYPE_TEL_EXTENSION},
-          {"tel", HTML_TYPE_TEL},
-          {"tel-local", HTML_TYPE_TEL_LOCAL},
-          {"tel-local-prefix", HTML_TYPE_TEL_LOCAL_PREFIX},
-          {"tel-local-suffix", HTML_TYPE_TEL_LOCAL_SUFFIX},
-          {"tel-national", HTML_TYPE_TEL_NATIONAL},
-          {"transaction-amount", HTML_TYPE_TRANSACTION_AMOUNT},
-          {"transaction-currency", HTML_TYPE_TRANSACTION_CURRENCY},
+          {"additional-name", HtmlFieldType::kAdditionalName},
+          {"address-level1", HtmlFieldType::kAddressLevel1},
+          {"address-level2", HtmlFieldType::kAddressLevel2},
+          {"address-level3", HtmlFieldType::kAddressLevel3},
+          {"address-line1", HtmlFieldType::kAddressLine1},
+          {"address-line2", HtmlFieldType::kAddressLine2},
+          {"address-line3", HtmlFieldType::kAddressLine3},
+          {"bday-day", HtmlFieldType::kBirthdateDay},
+          {"bday-month", HtmlFieldType::kBirthdateMonth},
+          {"bday-year", HtmlFieldType::kBirthdateYear},
+          {"cc-csc", HtmlFieldType::kCreditCardVerificationCode},
+          {"cc-exp", HtmlFieldType::kCreditCardExp},
+          {"cc-exp-month", HtmlFieldType::kCreditCardExpMonth},
+          {"cc-exp-year", HtmlFieldType::kCreditCardExpYear},
+          {"cc-family-name", HtmlFieldType::kCreditCardNameLast},
+          {"cc-given-name", HtmlFieldType::kCreditCardNameFirst},
+          {"cc-name", HtmlFieldType::kCreditCardNameFull},
+          {"cc-number", HtmlFieldType::kCreditCardNumber},
+          {"cc-type", HtmlFieldType::kCreditCardType},
+          {"country", HtmlFieldType::kCountryCode},
+          {"country-name", HtmlFieldType::kCountryName},
+          {"email", HtmlFieldType::kEmail},
+          {"family-name", HtmlFieldType::kFamilyName},
+          {"given-name", HtmlFieldType::kGivenName},
+          {"honorific-prefix", HtmlFieldType::kHonorificPrefix},
+          {"name", HtmlFieldType::kName},
+          {"one-time-code", HtmlFieldType::kOneTimeCode},
+          {"organization", HtmlFieldType::kOrganization},
+          {"postal-code", HtmlFieldType::kPostalCode},
+          {"street-address", HtmlFieldType::kStreetAddress},
+          {"tel-area-code", HtmlFieldType::kTelAreaCode},
+          {"tel-country-code", HtmlFieldType::kTelCountryCode},
+          {"tel-extension", HtmlFieldType::kTelExtension},
+          {"tel", HtmlFieldType::kTel},
+          {"tel-local", HtmlFieldType::kTelLocal},
+          {"tel-local-prefix", HtmlFieldType::kTelLocalPrefix},
+          {"tel-local-suffix", HtmlFieldType::kTelLocalSuffix},
+          {"tel-national", HtmlFieldType::kTelNational},
+          {"transaction-amount", HtmlFieldType::kTransactionAmount},
+          {"transaction-currency", HtmlFieldType::kTransactionCurrency},
       });
 
   auto* it = standardized_attributes.find(value);
@@ -135,10 +135,10 @@ absl::optional<HtmlFieldType> ParseProposedAutocompleteAttribute(
     base::StringPiece value) {
   static constexpr auto proposed_attributes =
       base::MakeFixedFlatMap<base::StringPiece, HtmlFieldType>({
-          {"address", HTML_TYPE_STREET_ADDRESS},
-          {"coupon-code", HTML_TYPE_MERCHANT_PROMO_CODE},
+          {"address", HtmlFieldType::kStreetAddress},
+          {"coupon-code", HtmlFieldType::kMerchantPromoCode},
           // TODO(crbug.com/1351760): Investigate if this mapping makes sense.
-          {"username", HTML_TYPE_EMAIL},
+          {"username", HtmlFieldType::kEmail},
       });
 
   auto* it = proposed_attributes.find(value);
@@ -153,18 +153,18 @@ absl::optional<HtmlFieldType> ParseNonStandarizedAutocompleteAttribute(
     base::StringPiece value) {
   static constexpr auto non_standardized_attributes =
       base::MakeFixedFlatMap<base::StringPiece, HtmlFieldType>({
-          {"company", HTML_TYPE_ORGANIZATION},
-          {"first-name", HTML_TYPE_GIVEN_NAME},
-          {"gift-code", HTML_TYPE_MERCHANT_PROMO_CODE},
-          {"iban", HTML_TYPE_IBAN},
-          {"locality", HTML_TYPE_ADDRESS_LEVEL2},
-          {"promo-code", HTML_TYPE_MERCHANT_PROMO_CODE},
-          {"promotional-code", HTML_TYPE_MERCHANT_PROMO_CODE},
-          {"promotion-code", HTML_TYPE_MERCHANT_PROMO_CODE},
-          {"region", HTML_TYPE_ADDRESS_LEVEL1},
-          {"tel-ext", HTML_TYPE_TEL_EXTENSION},
-          {"upi", HTML_TYPE_UPI_VPA},
-          {"upi-vpa", HTML_TYPE_UPI_VPA},
+          {"company", HtmlFieldType::kOrganization},
+          {"first-name", HtmlFieldType::kGivenName},
+          {"gift-code", HtmlFieldType::kMerchantPromoCode},
+          {"iban", HtmlFieldType::kIban},
+          {"locality", HtmlFieldType::kAddressLevel2},
+          {"promo-code", HtmlFieldType::kMerchantPromoCode},
+          {"promotional-code", HtmlFieldType::kMerchantPromoCode},
+          {"promotion-code", HtmlFieldType::kMerchantPromoCode},
+          {"region", HtmlFieldType::kAddressLevel1},
+          {"tel-ext", HtmlFieldType::kTelExtension},
+          {"upi", HtmlFieldType::kUpiVpa},
+          {"upi-vpa", HtmlFieldType::kUpiVpa},
       });
 
   auto* it = non_standardized_attributes.find(value);
@@ -190,7 +190,7 @@ HtmlFieldType FieldTypeFromAutocompleteAttributeValue(
     std::string value,
     const FormFieldData& field) {
   if (value.empty())
-    return HTML_TYPE_UNSPECIFIED;
+    return HtmlFieldType::kUnspecified;
 
   // We are lenient and accept '_' instead of '-' as a separator. E.g.
   // "given_name" is treated like "given-name".
@@ -211,14 +211,15 @@ HtmlFieldType FieldTypeFromAutocompleteAttributeValue(
     return RationalizeAutocompleteType(type.value(), field);
 
   // `value` cannot be mapped to any HtmlFieldType. By classifying the field
-  // as HTML_TYPE_UNRECOGNIZED Autofill is effectively disabled. Instead, check
-  // if we have reason to ignore the value and treat the field as
-  // HTML_TYPE_UNSPECIFIED. This makes us ignore the autocomplete value.
+  // as HtmlFieldType::kUnrecognized Autofill is effectively disabled.
+  // Instead, check if we have reason to ignore the value and treat the field as
+  // HtmlFieldType::kUnspecified. This makes us ignore the autocomplete
+  // value.
   return ShouldIgnoreAutocompleteValue(value) &&
                  base::FeatureList::IsEnabled(
                      features::kAutofillIgnoreUnmappableAutocompleteValues)
-             ? HTML_TYPE_UNSPECIFIED
-             : HTML_TYPE_UNRECOGNIZED;
+             ? HtmlFieldType::kUnspecified
+             : HtmlFieldType::kUnrecognized;
 }
 
 absl::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
@@ -263,9 +264,10 @@ absl::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
 
   // (3) The preceding token, if any, may be a fixed string that is either
   // "shipping" or "billing".
-  result.mode = HTML_MODE_NONE;
+  result.mode = HtmlFieldMode::kNone;
   if (!tokens.empty()) {
-    for (HtmlFieldMode mode : {HTML_MODE_BILLING, HTML_MODE_SHIPPING})
+    for (HtmlFieldMode mode :
+         {HtmlFieldMode::kBilling, HtmlFieldMode::kShipping})
       if (tokens.back() == HtmlFieldModeToStringPiece(mode)) {
         result.mode = mode;
         tokens.pop_back();

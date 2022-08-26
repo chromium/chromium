@@ -24,7 +24,7 @@ namespace autofill {
 // - The type_hint doesn't match the field_type.
 // - If ShouldIgnoreAutocompleteAttribute(autocomplete) is true.
 // An unrecognizable field_type doesn't stop parsing and yields
-// HTML_TYPE_UNRECOGNIZED instead.
+// HtmlFieldType::kUnrecognized instead.
 struct AutocompleteParsingResult {
   // `section` corresponds to the string after "section-".
   std::string section;
@@ -43,9 +43,10 @@ bool ShouldIgnoreAutocompleteAttribute(base::StringPiece autocomplete);
 // Parses `value` as an HTML field type and converts it to the corresponding
 // HtmlFieldType, if it is supposed by Autofill. Rationalization based on the
 // `field` is done.
-// HTML_TYPE_UNSPECIFIED is returned if `value` is empty, or if `value` is
-// supposed to be ignored by `kAutofillIgnoreUnmappableAutocompleteValues`.
-// Otherwise HTML_TYPE_UNRECOGNIZED is returned.
+// HtmlFieldType::kUnspecified is returned if `value` is empty, or if
+// `value` is supposed to be ignored by
+// `kAutofillIgnoreUnmappableAutocompleteValues`. Otherwise
+// HtmlFieldType::kUnrecognized is returned.
 HtmlFieldType FieldTypeFromAutocompleteAttributeValue(
     std::string value,
     const FormFieldData& field);
