@@ -276,6 +276,7 @@ _CONFIG = [
             'base::WithBaseSyncPrimitives',
             'base::ThreadPolicy',
             'base::ThreadPool',
+            'base::SingleThreadTaskRunnerThreadMode',
 
             # Byte order
             'base::ByteSwap',

@@ -75,4 +75,10 @@ void VideoFrameMetadata::MergeMetadataFrom(
 #undef MERGE_OPTIONAL_FIELD
 }
 
+void VideoFrameMetadata::ClearTextureFrameMedatada() {
+  is_webgpu_compatible = false;
+  texture_origin_is_top_left = true;
+  read_lock_fences_enabled = false;
+}
+
 }  // namespace media

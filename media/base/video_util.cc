@@ -22,6 +22,7 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_pool.h"
 #include "media/base/video_types.h"
+#include "media/base/wait_and_replace_sync_token_client.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -708,7 +709,7 @@ bool I420CopyWithPadding(const VideoFrame& src_frame, VideoFrame* dst_frame) {
 }
 
 scoped_refptr<VideoFrame> ReadbackTextureBackedFrameToMemorySync(
-    const VideoFrame& txt_frame,
+    VideoFrame& txt_frame,
     gpu::raster::RasterInterface* ri,
     GrDirectContext* gr_context,
     VideoFramePool* pool) {
@@ -732,6 +733,7 @@ scoped_refptr<VideoFrame> ReadbackTextureBackedFrameToMemorySync(
                  txt_frame.natural_size(), txt_frame.timestamp());
   result->set_color_space(txt_frame.ColorSpace());
   result->metadata().MergeMetadataFrom(txt_frame.metadata());
+  result->metadata().ClearTextureFrameMedatada();
 
   size_t planes = VideoFrame::NumPlanes(format);
   for (size_t plane = 0; plane < planes; plane++) {
@@ -742,11 +744,10 @@ scoped_refptr<VideoFrame> ReadbackTextureBackedFrameToMemorySync(
       return nullptr;
     }
   }
-
   return result;
 }
 
-bool ReadbackTexturePlaneToMemorySync(const VideoFrame& src_frame,
+bool ReadbackTexturePlaneToMemorySync(VideoFrame& src_frame,
                                       size_t src_plane,
                                       gfx::Rect& src_rect,
                                       uint8_t* dest_pixels,
@@ -755,14 +756,18 @@ bool ReadbackTexturePlaneToMemorySync(const VideoFrame& src_frame,
                                       GrDirectContext* gr_context) {
   DCHECK(ri);
 
+  bool result;
   if (gr_context) {
-    return ReadbackTexturePlaneToMemorySyncSkImage(src_frame, src_plane,
-                                                   src_rect, dest_pixels,
-                                                   dest_stride, ri, gr_context);
+    result = ReadbackTexturePlaneToMemorySyncSkImage(
+        src_frame, src_plane, src_rect, dest_pixels, dest_stride, ri,
+        gr_context);
+  } else {
+    result = ReadbackTexturePlaneToMemorySyncOOP(src_frame, src_plane, src_rect,
+                                                 dest_pixels, dest_stride, ri);
   }
-
-  return ReadbackTexturePlaneToMemorySyncOOP(src_frame, src_plane, src_rect,
-                                             dest_pixels, dest_stride, ri);
+  WaitAndReplaceSyncTokenClient client(ri);
+  src_frame.UpdateReleaseSyncToken(&client);
+  return result;
 }
 
 EncoderStatus ConvertAndScaleFrame(const VideoFrame& src_frame,
