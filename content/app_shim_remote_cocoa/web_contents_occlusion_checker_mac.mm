@@ -221,7 +221,15 @@ NSString* const kWindowIsOccludedKey = @"ChromeWindowIsOccludedKey";
 - (void)windowWillClose:(NSNotification*)notification {
   NSWindow* theWindow = [notification object];
 
-  if ([self windowCanTriggerOcclusionUpdates:theWindow])
+  // -windowCanTriggerOcclusionUpdates: returns NO if the window doesn't
+  // contain a webcontents. In some cases, however, a closing browser window
+  // will be stripped of its webcontents by the time we reach this method.
+  // As a result, if we use windowCanTriggerOcclusionUpdates:, the browser
+  // window's closure won't trigger an occlusion state update, leaving the
+  // webcontentses in windows it covered in the occluded state. To avoid this,
+  // we'll perform an occlusion update if the window isn't a child window.
+  // See http://crbug.com/1356622 .
+  if ([theWindow parentWindow] == nil)
     [self scheduleOcclusionStateUpdates];
 }
 
