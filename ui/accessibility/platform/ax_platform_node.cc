@@ -111,11 +111,6 @@ void AXPlatformNode::SetAXMode(AXMode new_mode) {
 }
 
 // static
-void AXPlatformNode::ResetAxModeForTesting() {
-  ax_mode_ = 0;
-}
-
-// static
 void AXPlatformNode::SetPopupFocusOverride(
     gfx::NativeViewAccessible popup_focus_override) {
   popup_focus_override_ = popup_focus_override;

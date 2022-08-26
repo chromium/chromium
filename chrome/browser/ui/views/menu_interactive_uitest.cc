@@ -13,6 +13,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/test_browser_window.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/test/browser_test.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/test/ui_controls.h"
@@ -112,7 +113,8 @@ class MenuControllerUITest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(MenuControllerUITest, TestMouseOverShownMenu) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  ui::testing::ScopedAxModeSetter ax_mode_setter(ui::kAXModeComplete);
+  content::testing::ScopedContentAXModeSetter ax_mode_setter(
+      ui::kAXModeComplete);
 #endif
 #if BUILDFLAG(IS_WIN)
   // TODO(crbug.com/1286137): This test is consistently failing on Win11.
@@ -221,7 +223,8 @@ IN_PROC_BROWSER_TEST_F(MenuControllerUITest, FocusOnOrphanMenu) {
   // Going into full screen mode prevents pre-test focus and mouse position
   // state from affecting test, and helps ui_controls function correctly.
   chrome::ToggleFullscreenMode(browser());
-  ui::testing::ScopedAxModeSetter ax_mode_setter(ui::kAXModeComplete);
+  content::testing::ScopedContentAXModeSetter ax_mode_setter(
+      ui::kAXModeComplete);
   MenuDelegate menu_delegate;
   MenuItemView* menu_item = new MenuItemView(&menu_delegate);
   AXEventCounter ax_counter(views::AXEventManager::Get());

@@ -3221,7 +3221,7 @@ TEST_F(MenuControllerTest, AccessibilityEmitsSelectChildrenChanged) {
 // Test that in accessibility mode disabled menu items are taken into account
 // during items indices assignment.
 TEST_F(MenuControllerTest, AccessibilityDisabledItemsIndices) {
-  ui::testing::ScopedAxModeSetter ax_mode_setter_{ui::AXMode::kNativeAPIs};
+  ScopedAXModeSetter ax_mode_setter_{ui::AXMode::kNativeAPIs};
 
 #if BUILDFLAG(IS_WIN)
   // TODO(crbug.com/1286137): This test is consistently failing on Win11.
