@@ -957,3 +957,17 @@ static jboolean JNI_WebsitePreferenceBridge_GetLocationAllowedByPolicy(
              ->GetDefaultContentSetting(ContentSettingsType::GEOLOCATION,
                                         nullptr) == CONTENT_SETTING_ALLOW;
 }
+
+static ScopedJavaLocalRef<jstring>
+JNI_WebsitePreferenceBridge_ToDomainWildcardPattern(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& pattern) {
+  std::string pattern_string = ConvertJavaStringToUTF8(env, pattern);
+  ContentSettingsPattern domain_wildcard_pattern =
+      ContentSettingsPattern::ToDomainWildcardPattern(
+          ContentSettingsPattern::FromString(pattern_string));
+  std::string domain_wildcard_pattern_string =
+      domain_wildcard_pattern.IsValid() ? domain_wildcard_pattern.ToString()
+                                        : pattern_string;
+  return ConvertUTF8ToJavaString(env, domain_wildcard_pattern_string);
+}

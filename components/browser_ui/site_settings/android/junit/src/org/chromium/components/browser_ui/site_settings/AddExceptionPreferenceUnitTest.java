@@ -4,10 +4,13 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -67,5 +70,18 @@ public class AddExceptionPreferenceUnitTest {
         assertFalse("Pattern is invalid when its ContentSettingsPattern is invalid.",
                 AddExceptionPreference.isPatternValid(
                         "https://", SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE));
+    }
+
+    @Test
+    public void testUpdatePatternIfNeeded() {
+        assertEquals("Pattern should not be updated except for REQUEST_DESKTOP_SITE type.",
+                "maps.google.com",
+                AddExceptionPreference.updatePatternIfNeeded(
+                        "maps.google.com", SiteSettingsCategory.Type.COOKIES));
+
+        AddExceptionPreference.updatePatternIfNeeded(
+                "https://maps.google.com", SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE);
+        verify(mWebsitePreferenceBridgeJniMock)
+                .toDomainWildcardPattern(eq("https://maps.google.com"));
     }
 }

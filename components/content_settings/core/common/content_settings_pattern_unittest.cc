@@ -515,6 +515,36 @@ TEST(ContentSettingsPatternTest, FromString_WebUISchemes) {
   }
 }
 
+TEST(ContentSettingsPatternTest, ToDomainWildcardPattern) {
+  // Patterns with scheme, port and path.
+  ContentSettingsPattern pattern =
+      Pattern("https://www.google.com:81/temporary/");
+  ContentSettingsPattern domain_wildcard_pattern =
+      ContentSettingsPattern::ToDomainWildcardPattern(pattern);
+  EXPECT_TRUE(domain_wildcard_pattern.IsValid());
+  EXPECT_EQ("[*.]google.com", domain_wildcard_pattern.ToString());
+
+  // Pattern with host only.
+  pattern = Pattern("www.example.com");
+  domain_wildcard_pattern =
+      ContentSettingsPattern::ToDomainWildcardPattern(pattern);
+  EXPECT_TRUE(domain_wildcard_pattern.IsValid());
+  EXPECT_EQ("[*.]example.com", domain_wildcard_pattern.ToString());
+
+  // Pattern with domain wildcard.
+  pattern = Pattern("[*.]example.com");
+  domain_wildcard_pattern =
+      ContentSettingsPattern::ToDomainWildcardPattern(pattern);
+  EXPECT_TRUE(domain_wildcard_pattern.IsValid());
+  EXPECT_EQ("[*.]example.com", domain_wildcard_pattern.ToString());
+
+  // Pattern is an ip address.
+  pattern = Pattern("1.2.3.4");
+  domain_wildcard_pattern =
+      ContentSettingsPattern::ToDomainWildcardPattern(pattern);
+  EXPECT_FALSE(domain_wildcard_pattern.IsValid());
+}
+
 TEST(ContentSettingsPatternTest, InvalidPatterns) {
   // StubObserver expects an empty pattern top be returned as empty string.
   EXPECT_FALSE(ContentSettingsPattern().IsValid());

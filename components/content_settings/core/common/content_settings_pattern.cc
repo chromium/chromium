@@ -17,6 +17,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "components/content_settings/core/common/content_settings_pattern_parser.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -476,6 +477,27 @@ bool ContentSettingsPattern::IsNonWildcardDomainNonPortScheme(
     }
   }
   return false;
+}
+
+// static
+ContentSettingsPattern ContentSettingsPattern::ToDomainWildcardPattern(
+    const ContentSettingsPattern& pattern) {
+  std::string registrable_domain =
+      net::registry_controlled_domains::GetDomainAndRegistry(
+          pattern.GetHost(),
+          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+
+  if (registrable_domain.empty()) {
+    return CreateBuilder()->Invalid()->Build();
+  }
+
+  return CreateBuilder()
+      ->WithHost(registrable_domain)
+      ->WithDomainWildcard()
+      ->WithSchemeWildcard()
+      ->WithPortWildcard()
+      ->WithPathWildcard()
+      ->Build();
 }
 
 ContentSettingsPattern::ContentSettingsPattern()

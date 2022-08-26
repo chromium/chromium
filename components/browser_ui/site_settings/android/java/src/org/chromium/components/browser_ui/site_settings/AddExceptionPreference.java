@@ -139,6 +139,7 @@ public class AddExceptionPreference
                 if (button == AlertDialog.BUTTON_POSITIVE) {
                     boolean isThirdPartyException = thirdPartyExceptionsBox.isChecked();
                     String pattern = input.getText().toString().trim();
+                    pattern = updatePatternIfNeeded(pattern, mCategory.getType());
 
                     // If a user clicks the third party checkbox, set wildcard as primary
                     String primary = isThirdPartyException ? SITE_WILDCARD : pattern;
@@ -202,6 +203,14 @@ public class AddExceptionPreference
                 input.setTextColor(isValid ? mDefaultColor : mErrorColor);
             }
         });
+    }
+
+    @VisibleForTesting
+    static String updatePatternIfNeeded(@NonNull String pattern, int type) {
+        if (type != SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE) {
+            return pattern;
+        }
+        return WebsitePreferenceBridge.toDomainWildcardPattern(pattern);
     }
 
     @VisibleForTesting

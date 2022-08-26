@@ -189,6 +189,11 @@ class ContentSettingsPattern {
   // Compares |scheme| against the schemes set by the embedder.
   static bool IsNonWildcardDomainNonPortScheme(base::StringPiece scheme);
 
+  // Convert pattern to domain wildcard pattern. If fail to extract domain from
+  // the pattern, return an invalid pattern.
+  static ContentSettingsPattern ToDomainWildcardPattern(
+      const ContentSettingsPattern& pattern);
+
   // Constructs an empty pattern. Empty patterns are invalid patterns. Invalid
   // patterns match nothing.
   ContentSettingsPattern();
