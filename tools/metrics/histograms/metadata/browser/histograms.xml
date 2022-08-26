@@ -1095,6 +1095,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DigitalAssetLinks.NumFingerprints" units="NumFingerprints"
+    expires_after="M116">
+  <owner>swestphal@chromium.org</owner>
+  <owner>rayankans@chromium.org</owner>
+  <summary>
+    Records the number of fingerprints in assetlinks.json for every performed
+    Digital Asset Link validation with a valid `sha256_cert_fingerprints`-entry.
+  </summary>
+</histogram>
+
 <histogram name="InfoBar.Shown" enum="InfoBarIdentifier" expires_after="never">
 <!-- expires-never: Required as long as infobars exist. -->
 
