@@ -32,7 +32,7 @@ namespace {
 
 // Requests a network::mojom::ProxyResolvingSocketFactory on the UI thread. Note
 // that a WeakPtr of GCMProfileService is needed to detect when the KeyedService
-// shuts down, and avoid calling into |profile| which might have also been
+// shuts down, and avoid calling into `profile` which might have also been
 // destroyed.
 void RequestProxyResolvingSocketFactoryOnUIThread(
     web::BrowserState* context,
