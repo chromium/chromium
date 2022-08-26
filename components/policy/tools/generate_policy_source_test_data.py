@@ -36,9 +36,9 @@ message CloudPolicySettings {
   optional BooleanPolicyProto CloudOnlyPolicy = 7;
   optional StringPolicyProto CloudManagementEnrollmentToken = 8;
   optional StringPolicyProto DeprecatedButGenerated = 9;
-  optional BooleanPolicyProto ChunkZeroLastFieldBooleanPolicy = 1017;
-  optional CloudPolicySubProto1 subProto1 = 1018;
-  optional CloudPolicySubProto2 subProto2 = 1019;
+  optional BooleanPolicyProto ChunkZeroLastFieldBooleanPolicy = 1042;
+  optional CloudPolicySubProto1 subProto1 = 1043;
+  optional CloudPolicySubProto2 subProto2 = 1044;
 }
 '''
 
@@ -197,7 +197,7 @@ message ChunkTwoLastFieldStringPolicyProto {
 }
 
 // --------------------------------------------------
-// PBs for policies with ID > 1015.
+// PBs for policies with ID > 1040.
 
 message ChromeSettingsSubProto1 {
   optional ChunkOneFirstFieldBooleanPolicyProto ChunkOneFirstFieldBooleanPolicy = 1;
@@ -222,9 +222,9 @@ message ChromeSettingsProto {
   optional DeprecatedButGeneratedProto DeprecatedButGenerated = 9;
   optional DeprecatedNotGeneratedProto DeprecatedNotGenerated = 10;
   optional UnsupportedPolicyProto UnsupportedPolicy = 11;
-  optional ChunkZeroLastFieldBooleanPolicyProto ChunkZeroLastFieldBooleanPolicy = 1017;
-  optional ChromeSettingsSubProto1 subProto1 = 1018;
-  optional ChromeSettingsSubProto2 subProto2 = 1019;
+  optional ChunkZeroLastFieldBooleanPolicyProto ChunkZeroLastFieldBooleanPolicy = 1042;
+  optional ChromeSettingsSubProto1 subProto1 = 1043;
+  optional ChromeSettingsSubProto2 subProto2 = 1044;
 }
 """
 
@@ -418,15 +418,15 @@ namespace policy {
   // DeprecatedButGenerated
   { false,        false,    false,              7,                     0, {  } },
   // ChunkZeroLastFieldBooleanPolicy
-  { false,        false,    false,           1015,                     0, {  } },
+  { false,        false,    false,           1040,                     0, {  } },
   // ChunkOneFirstFieldBooleanPolicy
-  { false,        false,    false,           1016,                     0, {  } },
+  { false,        false,    false,           1041,                     0, {  } },
   // ChunkOneLastFieldBooleanPolicy
-  { false,        false,    false,           1815,                     0, {  } },
+  { false,        false,    false,           1840,                     0, {  } },
   // ChunkTwoFirstFieldStringPolicy
-  { false,        false,    false,           1816,                     0, {  } },
+  { false,        false,    false,           1841,                     0, {  } },
   // ChunkTwoLastFieldStringPolicy
-  { false,        false,    false,           2615,                     0, {  } },
+  { false,        false,    false,           2640,                     0, {  } },
 };
 
 const internal::SchemaNode kSchemas[] = {
