@@ -1,0 +1,121 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/segmentation_platform/embedder/default_model/intentional_user_model.h"
+
+#include <array>
+
+#include "base/threading/sequenced_task_runner_handle.h"
+#include "components/segmentation_platform/internal/metadata/metadata_writer.h"
+#include "components/segmentation_platform/public/model_provider.h"
+#include "components/segmentation_platform/public/proto/model_metadata.pb.h"
+
+namespace segmentation_platform {
+
+namespace {
+using proto::SegmentId;
+
+// Default parameters for intentional user model.
+constexpr SegmentId kIntentionalUserSegmentId =
+    SegmentId::INTENTIONAL_USER_SEGMENT;
+// Configuration for input storage and aggregation, we'll store our inputs in
+// buckets of 1 day.
+constexpr proto::TimeUnit kIntentionalUserTimeUnit = proto::TimeUnit::DAY;
+constexpr uint64_t kIntentionalUserBucketDuration = 1;
+// Store 28 buckets of input data (28 days).
+constexpr int64_t kIntentionalUserSignalStorageLength = 28;
+// Wait until we have 28 buckets of input data to run the model (28 days).
+constexpr int64_t kIntentionalUserMinSignalCollectionLength = 28;
+// Re-run the model every 1 day just to collect metrics, segments are updated
+// based on the config on segmentation_platform_config.cc.
+constexpr int64_t kIntentionalUserResultTTL = 1;
+// Threshold for our heuristic, if the user launched Chrome directly at least 2
+// times in the last 28 days then we consider them an intentional user.
+constexpr int64_t kIntentionalLaunchThreshold = 2;
+
+// Discrete mapping parameters.
+constexpr char kIntentionalUserDiscreteMappingKey[] = "intentional_user";
+constexpr float kIntentionalUserDiscreteMappingMinResult = 1;
+constexpr int64_t kIntentionalUserDiscreteMappingRank = 1;
+constexpr std::pair<float, int> kDiscreteMappings[] = {
+    {kIntentionalUserDiscreteMappingMinResult,
+     kIntentionalUserDiscreteMappingRank}};
+
+// InputFeatures.
+
+// MobileStartup.LaunchCause enum values to record an aggregate, these values
+// come from LaunchCauseMetrics.LaunchCause.
+constexpr std::array<int32_t, 1> kLaunchCauseMainLauncherIcon{
+    6  // MAIN_LAUNCHER_ICON.
+};
+
+// Set UMA metrics to use as input.
+constexpr std::array<MetadataWriter::UMAFeature, 1>
+    kIntentionalUserUMAFeatures = {
+        // This input is the sum of all times MobileStartup.LaunchCause was
+        // recorded with a value of MAIN_LAUNCHER_ICON in the last 28 days.
+        MetadataWriter::UMAFeature::FromEnumHistogram(
+            "MobileStartup.LaunchCause",
+            /* This is the number of buckets to store and aggregate, each bucket
+               is 1 day according to kIntentionalUserTimeUnit and
+               kIntentionalUserBucketDuration. */
+            28,
+            kLaunchCauseMainLauncherIcon.data(),
+            kLaunchCauseMainLauncherIcon.size())};
+
+}  // namespace
+
+IntentionalUserModel::IntentionalUserModel()
+    : ModelProvider(kIntentionalUserSegmentId) {}
+
+void IntentionalUserModel::InitAndFetchModel(
+    const ModelUpdatedCallback& model_updated_callback) {
+  proto::SegmentationModelMetadata intentional_user_metadata;
+  MetadataWriter writer(&intentional_user_metadata);
+  writer.SetSegmentationMetadataConfig(
+      kIntentionalUserTimeUnit, kIntentionalUserBucketDuration,
+      kIntentionalUserSignalStorageLength,
+      kIntentionalUserMinSignalCollectionLength, kIntentionalUserResultTTL);
+
+  // Set discrete mapping.
+  writer.AddDiscreteMappingEntries(kIntentionalUserDiscreteMappingKey,
+                                   kDiscreteMappings, 1);
+
+  // Set features.
+  writer.AddUmaFeatures(kIntentionalUserUMAFeatures.data(),
+                        kIntentionalUserUMAFeatures.size());
+
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindRepeating(model_updated_callback, kIntentionalUserSegmentId,
+                          std::move(intentional_user_metadata),
+                          /* Model version number. */ 1));
+}
+
+void IntentionalUserModel::ExecuteModelWithInput(
+    const std::vector<float>& inputs,
+    ExecutionCallback callback) {
+  // Invalid inputs.
+  if (inputs.size() != kIntentionalUserUMAFeatures.size()) {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), absl::nullopt));
+    return;
+  }
+
+  const int main_launcher_clicks = inputs[0];
+  float result = 0;
+
+  if (main_launcher_clicks >= kIntentionalLaunchThreshold) {
+    result = 1;  // User is intentionally using Chrome.
+  }
+
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), result));
+}
+
+bool IntentionalUserModel::ModelAvailable() {
+  return true;
+}
+
+}  // namespace segmentation_platform

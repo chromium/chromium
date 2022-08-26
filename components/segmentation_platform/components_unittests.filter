@@ -9,6 +9,7 @@ FeatureListQueryProcessorTest.*
 FeedUserModelTest.*
 HistogramSignalHandlerTest.*
 HistoryDelegateImplTest.*
+IntentionalUserModelTest.*
 LowUserEngagementModelTest.*
 MetadataUtilsTest.*
 ModelExecutionManagerTest.*

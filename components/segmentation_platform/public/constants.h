@@ -62,6 +62,10 @@ const char kCrossDeviceUserUmaName[] = "CrossDeviceUser";
 const char kFrequentFeatureUserKey[] = "frequent_feature_user";
 const char kFrequentFeatureUserUmaName[] = "FrequentFeatureUser";
 
+// This key is used to decide whether the user uses Chrome intentionally.
+const char kIntentionalUserKey[] = "intentional_user";
+const char kIntentionalUserUmaName[] = "IntentionalUser";
+
 // The key provide a list of segment IDs, separated by commas, whose ML model
 // execution results are allowed to be uploaded through UKM.
 const char kSegmentIdsAllowedForReportingKey[] =

@@ -15,7 +15,7 @@ package segmentation_platform.proto;
 // should have a value higher than `MAX_OPTIMIZATION_TARGET`.
 enum SegmentId {
   reserved 20;
-  
+
   OPTIMIZATION_TARGET_UNKNOWN = 0;
   // Should only be applied when the page load is predicted to be painful.
   OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD = 1;
@@ -71,4 +71,7 @@ enum SegmentId {
   CROSS_DEVICE_USER_SEGMENT = 1001;
   // User segment that regularly use chrome features.
   FREQUENT_FEATURE_USER_SEGMENT = 1002;
+  // Target for intentional users (people opening Chrome on their own instead of
+  // arriving from other apps).
+  INTENTIONAL_USER_SEGMENT = 1003;
 };

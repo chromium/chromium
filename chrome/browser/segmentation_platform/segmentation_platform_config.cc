@@ -12,9 +12,11 @@
 #include "build/build_config.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "components/segmentation_platform/embedder/default_model/feed_user_segment.h"
+#include "components/segmentation_platform/embedder/default_model/intentional_user_model.h"
 #include "components/segmentation_platform/embedder/default_model/low_user_engagement_model.h"
 #include "components/segmentation_platform/internal/config_parser.h"
 #include "components/segmentation_platform/public/config.h"
+#include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
@@ -156,6 +158,18 @@ std::unique_ptr<Config> GetConfigForQueryTiles() {
       kNumDaysMVCkicksBelowThreshold, kQueryTilesDefaultUnknownTTLDays);
   config->segment_selection_ttl = base::Days(segment_selection_ttl_days);
   config->unknown_selection_ttl = base::Days(unknown_selection_ttl_days);
+  return config;
+}
+
+std::unique_ptr<Config> GetConfigForIntentionalUser() {
+  auto config = std::make_unique<Config>();
+  config->segmentation_key = kIntentionalUserKey;
+  config->segmentation_uma_name = kIntentionalUserUmaName;
+  config->AddSegmentId(SegmentId::INTENTIONAL_USER_SEGMENT,
+                       std::make_unique<IntentionalUserModel>());
+  config->segment_selection_ttl = base::Days(28);
+  config->unknown_selection_ttl = base::Days(28);
+
   return config;
 }
 
@@ -305,6 +319,8 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
           query_tiles::features::kQueryTilesSegmentation)) {
     configs.emplace_back(GetConfigForQueryTiles());
   }
+
+  configs.emplace_back(GetConfigForIntentionalUser());
 #endif
   if (IsLowEngagementFeatureEnabled()) {
     configs.emplace_back(GetConfigForChromeLowUserEngagement());

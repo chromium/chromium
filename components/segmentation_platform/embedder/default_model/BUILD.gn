@@ -6,6 +6,8 @@ static_library("default_model") {
   sources = [
     "feed_user_segment.cc",
     "feed_user_segment.h",
+    "intentional_user_model.cc",
+    "intentional_user_model.h",
     "low_user_engagement_model.cc",
     "low_user_engagement_model.h",
     "price_tracking_action_model.cc",
@@ -30,6 +32,7 @@ source_set("unit_tests") {
   # tests in //components/segmentation_platform/components_unittests.filter
   sources = [
     "feed_user_segment_unittest.cc",
+    "intentional_user_model_unittest.cc",
     "low_user_engagement_model_unittest.cc",
     "price_tracking_action_model_unittest.cc",
     "query_tiles_model_unittest.cc",
