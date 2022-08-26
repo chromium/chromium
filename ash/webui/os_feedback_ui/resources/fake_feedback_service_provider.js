@@ -148,9 +148,6 @@ export class FakeFeedbackServiceProvider {
     return this.callCounts_.openDiagnosticsApp;
   }
 
-  /**
-   * @return {void}
-   */
   openDiagnosticsApp() {
     this.callCounts_.openDiagnosticsApp++;
   }
@@ -162,9 +159,6 @@ export class FakeFeedbackServiceProvider {
     return this.callCounts_.openExploreApp;
   }
 
-  /**
-   * @return {void}
-   */
   openExploreApp() {
     this.callCounts_.openExploreApp++;
   }
@@ -176,9 +170,6 @@ export class FakeFeedbackServiceProvider {
     return this.callCounts_.openMetricsDialog;
   }
 
-  /**
-   * @return {void}
-   */
   openMetricsDialog() {
     this.callCounts_.openMetricsDialog++;
   }
@@ -190,9 +181,6 @@ export class FakeFeedbackServiceProvider {
     return this.callCounts_.openSystemInfoDialog;
   }
 
-  /**
-   * @return {void}
-   */
   openSystemInfoDialog() {
     this.callCounts_.openSystemInfoDialog++;
   }
@@ -229,7 +217,6 @@ export class FakeFeedbackServiceProvider {
 
   /**
    * @param {!FeedbackAppPostSubmitAction} action
-   * @return {void}
    */
   recordPostSubmitAction(action) {
     if (this.postSubmitAction_ === null) {
@@ -264,7 +251,6 @@ export class FakeFeedbackServiceProvider {
 
   /**
    * @param {!FeedbackAppPreSubmitAction} action
-   * @return {void}
    */
   recordPreSubmitAction(action) {
     this.preSubmitActionMap_.set(
