@@ -151,9 +151,6 @@ class ChromiumDepGraph {
             isShipped: false,  // Annotations are stripped by R8.
             licenseName: 'CDDLv1.0',
             licensePath: 'licenses/CDDLv1.0.txt'),
-        org_mockito_mockito_core: new PropertyOverride(
-            licenseUrl: 'https://raw.githubusercontent.com/mockito/mockito/main/LICENSE',
-            licenseName: 'The MIT License'),
         net_bytebuddy_byte_buddy: new PropertyOverride(
             url: 'https://github.com/raphw/byte-buddy',
             licenseUrl: 'https://raw.githubusercontent.com/raphw/byte-buddy/master/LICENSE',
@@ -182,7 +179,7 @@ class ChromiumDepGraph {
             licenseUrl: 'https://raw.githubusercontent.com/jhy/jsoup/master/LICENSE',
             licenseName: 'The MIT License'),
         org_mockito_mockito_core: new PropertyOverride(
-            licensePath: 'licenses/Codehaus_License-2009.txt',
+            licenseUrl: 'https://raw.githubusercontent.com/mockito/mockito/main/LICENSE',
             licenseName: 'The MIT License'),
         org_objenesis_objenesis: new PropertyOverride(
             url: 'http://objenesis.org/index.html',
