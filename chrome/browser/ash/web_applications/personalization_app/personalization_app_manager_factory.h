@@ -8,8 +8,7 @@
 #include "base/memory/singleton.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
-namespace ash {
-namespace personalization_app {
+namespace ash::personalization_app {
 
 class PersonalizationAppManager;
 
@@ -36,7 +35,6 @@ class PersonalizationAppManagerFactory : public ProfileKeyedServiceFactory {
   bool ServiceIsNULLWhileTesting() const override;
 };
 
-}  // namespace personalization_app
-}  // namespace ash
+}  // namespace ash::personalization_app
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_MANAGER_FACTORY_H_

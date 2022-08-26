@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager_factory.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_metrics.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
@@ -78,16 +79,17 @@ void PersonalizationResult::Open(int event_flags) {
 PersonalizationProvider::PersonalizationProvider(Profile* profile)
     : profile_(profile) {
   DCHECK(ash::features::IsPersonalizationHubEnabled());
-  DCHECK(profile_ && profile_->IsRegularProfile())
-      << "Regular profile required for personalization search";
+  DCHECK(
+      ash::personalization_app::CanSeeWallpaperOrPersonalizationApp(profile_));
 
   app_service_proxy_ = apps::AppServiceProxyFactory::GetForProfile(profile_);
   Observe(&app_service_proxy_->AppRegistryCache());
   StartLoadIcon();
 
-  search_handler_ = ash::personalization_app::PersonalizationAppManagerFactory::
-                        GetForBrowserContext(profile_)
-                            ->search_handler();
+  auto* personalization_app_manager = ash::personalization_app::
+      PersonalizationAppManagerFactory::GetForBrowserContext(profile_);
+  DCHECK(personalization_app_manager);
+  search_handler_ = personalization_app_manager->search_handler();
   DCHECK(search_handler_);
   search_handler_->AddObserver(
       search_results_observer_.BindNewPipeAndPassRemote());

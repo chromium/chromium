@@ -24,8 +24,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 
-namespace ash {
-namespace personalization_app {
+namespace ash::personalization_app {
 
 namespace {
 
@@ -46,14 +45,14 @@ class PersonalizationAppManagerImpl : public PersonalizationAppManager {
       content::BrowserContext* context,
       ::chromeos::local_search_service::LocalSearchServiceProxy&
           local_search_service_proxy)
-      : context_(context) {
+      : profile_(Profile::FromBrowserContext(context)) {
+    DCHECK(profile_);
     if (ash::features::IsPersonalizationHubEnabled()) {
       // Only create the search handler if personalization hub feature is
       // enabled. This makes it simpler to reason about settings vs
       // personalization search results when the feature is off.
       search_handler_ = std::make_unique<SearchHandler>(
-          local_search_service_proxy,
-          Profile::FromBrowserContext(context)->GetPrefs(),
+          local_search_service_proxy, profile_->GetPrefs(),
           std::make_unique<EnterprisePolicyDelegateImpl>(context));
     }
   }
@@ -66,8 +65,7 @@ class PersonalizationAppManagerImpl : public PersonalizationAppManager {
     }
 
     if (::ash::HatsNotificationController::ShouldShowSurveyToProfile(
-            Profile::FromBrowserContext(context_),
-            GetHatsConfig(hats_survey_type))) {
+            profile_, GetHatsConfig(hats_survey_type))) {
       // |base::Unretained| is safe to use because |this| owns |hats_timer_|.
       hats_timer_.Start(
           FROM_HERE, base::Seconds(60),
@@ -88,15 +86,14 @@ class PersonalizationAppManagerImpl : public PersonalizationAppManager {
         {"is_personalization_hub_enabled",
          ::ash::features::IsPersonalizationHubEnabled() ? "true" : "false"}};
 
-    Profile* profile = Profile::FromBrowserContext(context_);
     const HatsConfig& config = GetHatsConfig(hats_survey_type);
 
     hats_notification_controller_ =
         base::MakeRefCounted<::ash::HatsNotificationController>(
-            profile, config, product_specific_data);
+            profile_, config, product_specific_data);
   }
 
-  raw_ptr<content::BrowserContext> context_;
+  const raw_ptr<Profile> profile_;
 
   base::OneShotTimer hats_timer_;
   scoped_refptr<HatsNotificationController> hats_notification_controller_;
@@ -117,5 +114,4 @@ std::unique_ptr<PersonalizationAppManager> PersonalizationAppManager::Create(
       context, local_search_service_proxy);
 }
 
-}  // namespace personalization_app
-}  // namespace ash
+}  // namespace ash::personalization_app

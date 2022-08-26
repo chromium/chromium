@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/app_search_provider.h"
 #include "chrome/browser/ui/app_list/search/arc/arc_app_shortcuts_search_provider.h"
@@ -207,7 +208,7 @@ std::unique_ptr<SearchController> CreateSearchController(
   }
 
   if (ash::features::IsPersonalizationHubEnabled() &&
-      profile->IsRegularProfile()) {
+      ash::personalization_app::CanSeeWallpaperOrPersonalizationApp(profile)) {
     size_t personalization_app_group_id =
         controller->AddGroup(kGenericMaxResults);
 

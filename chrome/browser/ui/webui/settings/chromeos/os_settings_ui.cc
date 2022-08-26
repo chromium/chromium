@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager_factory.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_manager.h"
 #include "chrome/browser/nearby_sharing/nearby_receive_manager.h"
 #include "chrome/browser/nearby_sharing/nearby_share_settings.h"
@@ -146,8 +147,8 @@ void OSSettingsUI::BindInterface(
          "is enabled";
 
   auto* profile = Profile::FromWebUI(web_ui());
-  DCHECK(profile->IsRegularProfile())
-      << "This interface should only be bound for regular profiles";
+  DCHECK(
+      ash::personalization_app::CanSeeWallpaperOrPersonalizationApp(profile));
 
   auto* search_handler =
       ::ash::personalization_app::PersonalizationAppManagerFactory::

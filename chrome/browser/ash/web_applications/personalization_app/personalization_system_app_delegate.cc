@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/webui/grit/ash_personalization_app_resources.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
@@ -101,7 +102,8 @@ bool PersonalizationSystemAppDelegate::ShouldCaptureNavigations() const {
 }
 
 bool PersonalizationSystemAppDelegate::IsAppEnabled() const {
-  return true;
+  return ash::personalization_app::CanSeeWallpaperOrPersonalizationApp(
+      profile());
 }
 
 bool PersonalizationSystemAppDelegate::ShouldShowInLauncher() const {
