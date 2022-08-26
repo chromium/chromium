@@ -100,11 +100,20 @@ def _DontModifyIDLFiles(input_api, output_api):
     """
     interfaces_path = input_api.os_path.join(input_api.PresubmitLocalPath(), 'wpt', 'interfaces')
 
-    def is_idl_file(f):
+    def is_generated_idl_file(f):
         abs_path = f.AbsoluteLocalPath()
-        return abs_path.endswith(input_api.os_path.relpath(abs_path, interfaces_path))
+        if not abs_path.endswith(
+                input_api.os_path.relpath(abs_path, interfaces_path)):
+            return False
+        # WPT's tools/ci/interfaces_update.sh replaces all files that end in
+        # .idl but do not end in .tentative.idl .
+        return (abs_path.endswith(".idl")
+                and not abs_path.endswith(".tentative.idl"))
 
-    idl_files = [f.LocalPath() for f in input_api.AffectedSourceFiles(is_idl_file)]
+    idl_files = [
+        f.LocalPath()
+        for f in input_api.AffectedSourceFiles(is_generated_idl_file)
+    ]
 
     if not idl_files:
         return []

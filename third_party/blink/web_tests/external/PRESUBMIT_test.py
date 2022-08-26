@@ -164,6 +164,16 @@ class DontModifyIDLFilesTest(unittest.TestCase):
         errors = PRESUBMIT._DontModifyIDLFiles(mock_input, mock_output)
         self.assertEqual(errors, [])
 
+    def testModifiesTentativeIDL(self):
+        mock_input = MockInputApi()
+        mock_output = MockOutputApi()
+        mock_input.affected_paths = [
+            os.path.join(mock_input.PresubmitLocalPath(), 'wpt', 'interfaces',
+                         'test.tentative.idl')
+        ]
+        errors = PRESUBMIT._DontModifyIDLFiles(mock_input, mock_output)
+        self.assertEqual(errors, [])
+
 
 if __name__ == '__main__':
     unittest.main()
