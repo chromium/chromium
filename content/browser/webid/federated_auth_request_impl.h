@@ -133,9 +133,15 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       const std::string& token);
   void DispatchOneLogout();
   void OnLogoutCompleted();
-  void CompleteRequest(blink::mojom::FederatedAuthRequestResult,
-                       const std::string& token,
-                       bool should_delay_callback);
+  void CompleteRequestWithError(
+      blink::mojom::FederatedAuthRequestResult result,
+      absl::optional<content::FedCmRequestIdTokenStatus> token_status,
+      bool should_delay_callback);
+  void CompleteRequest(
+      blink::mojom::FederatedAuthRequestResult result,
+      absl::optional<content::FedCmRequestIdTokenStatus> token_status,
+      const std::string& token,
+      bool should_delay_callback);
   void CompleteLogoutRequest(blink::mojom::LogoutRpsStatus);
 
   void CleanUp();

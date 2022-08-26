@@ -243,9 +243,9 @@ FederatedAuthRequestImpl::~FederatedAuthRequestImpl() {
   // pending promise.
   if (auth_request_callback_) {
     DCHECK(!logout_callback_);
-    fedcm_metrics_->RecordRequestTokenStatus(TokenStatus::kUnhandledRequest);
-    CompleteRequest(FederatedAuthRequestResult::kError, "",
-                    /*should_delay_callback=*/false);
+    CompleteRequestWithError(FederatedAuthRequestResult::kError,
+                             TokenStatus::kUnhandledRequest,
+                             /*should_delay_callback=*/false);
   }
 }
 
@@ -335,10 +335,9 @@ void FederatedAuthRequestImpl::RequestToken(
 
   if (!network::IsOriginPotentiallyTrustworthy(
           url::Origin::Create(identity_provider_ptr->config_url))) {
-    fedcm_metrics_->RecordRequestTokenStatus(
-        TokenStatus::kIdpNotPotentiallyTrustworthy);
-    CompleteRequest(FederatedAuthRequestResult::kError, "",
-                    /*should_delay_callback=*/false);
+    CompleteRequestWithError(FederatedAuthRequestResult::kError,
+                             TokenStatus::kIdpNotPotentiallyTrustworthy,
+                             /*should_delay_callback=*/false);
     return;
   }
 
@@ -375,8 +374,8 @@ void FederatedAuthRequestImpl::RequestToken(
   }
 
   if (error_token_status) {
-    fedcm_metrics_->RecordRequestTokenStatus(*error_token_status);
-    CompleteRequest(request_result, "", /*should_delay_callback=*/true);
+    CompleteRequestWithError(request_result, *error_token_status,
+                             /*should_delay_callback=*/true);
     return;
   }
 
@@ -391,10 +390,10 @@ void FederatedAuthRequestImpl::CancelTokenRequest() {
 
   // Dialog will be hidden by the destructor for request_dialog_controller_,
   // triggered by CompleteRequest.
-  fedcm_metrics_->RecordRequestTokenStatus(TokenStatus::kAborted);
 
-  CompleteRequest(FederatedAuthRequestResult::kErrorCanceled, "",
-                  /*should_delay_callback=*/false);
+  CompleteRequestWithError(FederatedAuthRequestResult::kErrorCanceled,
+                           TokenStatus::kAborted,
+                           /*should_delay_callback=*/false);
 }
 
 // TODO(kenrb): Depending on how this code evolves, it might make sense to
@@ -510,28 +509,23 @@ void FederatedAuthRequestImpl::OnManifestListFetched(
     const std::set<GURL>& urls) {
   switch (status) {
     case IdpNetworkRequestManager::FetchStatus::kHttpNotFoundError: {
-      fedcm_metrics_->RecordRequestTokenStatus(
-          TokenStatus::kManifestListHttpNotFound);
-      CompleteRequest(
+      CompleteRequestWithError(
           FederatedAuthRequestResult::kErrorFetchingManifestListHttpNotFound,
-          "",
+          TokenStatus::kManifestListHttpNotFound,
           /*should_delay_callback=*/true);
       return;
     }
     case IdpNetworkRequestManager::FetchStatus::kNoResponseError: {
-      fedcm_metrics_->RecordRequestTokenStatus(
-          TokenStatus::kManifestListNoResponse);
-      CompleteRequest(
-          FederatedAuthRequestResult::kErrorFetchingManifestListNoResponse, "",
+      CompleteRequestWithError(
+          FederatedAuthRequestResult::kErrorFetchingManifestListNoResponse,
+          TokenStatus::kManifestListNoResponse,
           /*should_delay_callback=*/true);
       return;
     }
     case IdpNetworkRequestManager::FetchStatus::kInvalidResponseError: {
-      fedcm_metrics_->RecordRequestTokenStatus(
-          TokenStatus::kManifestListInvalidResponse);
-      CompleteRequest(
+      CompleteRequestWithError(
           FederatedAuthRequestResult::kErrorFetchingManifestListInvalidResponse,
-          "",
+          TokenStatus::kManifestListInvalidResponse,
           /*should_delay_callback=*/true);
       return;
     }
@@ -541,9 +535,10 @@ void FederatedAuthRequestImpl::OnManifestListFetched(
   }
 
   if (urls.size() > kMaxProvidersInManifestList) {
-    fedcm_metrics_->RecordRequestTokenStatus(TokenStatus::kManifestListTooBig);
-    CompleteRequest(FederatedAuthRequestResult::kErrorManifestListTooBig, "",
-                    /*should_delay_callback=*/true);
+    CompleteRequestWithError(
+        FederatedAuthRequestResult::kErrorManifestListTooBig,
+        TokenStatus::kManifestListTooBig,
+        /*should_delay_callback=*/true);
     return;
   }
 
@@ -565,10 +560,10 @@ void FederatedAuthRequestImpl::OnManifestListFetched(
   bool provider_url_is_valid = (urls.count(identity_provider.config_url) != 0);
 
   if (!provider_url_is_valid) {
-    fedcm_metrics_->RecordRequestTokenStatus(
-        TokenStatus::kManifestNotInManifestList);
-    CompleteRequest(FederatedAuthRequestResult::kErrorManifestNotInManifestList,
-                    "", /*should_delay_callback=*/true);
+    CompleteRequestWithError(
+        FederatedAuthRequestResult::kErrorManifestNotInManifestList,
+        TokenStatus::kManifestNotInManifestList,
+        /*should_delay_callback=*/true);
     return;
   }
 
@@ -584,26 +579,23 @@ void FederatedAuthRequestImpl::OnManifestFetched(
     IdentityProviderMetadata idp_metadata) {
   switch (status) {
     case IdpNetworkRequestManager::FetchStatus::kHttpNotFoundError: {
-      fedcm_metrics_->RecordRequestTokenStatus(
-          TokenStatus::kManifestHttpNotFound);
-      CompleteRequest(
-          FederatedAuthRequestResult::kErrorFetchingManifestHttpNotFound, "",
+      CompleteRequestWithError(
+          FederatedAuthRequestResult::kErrorFetchingManifestHttpNotFound,
+          TokenStatus::kManifestHttpNotFound,
           /*should_delay_callback=*/true);
       return;
     }
     case IdpNetworkRequestManager::FetchStatus::kNoResponseError: {
-      fedcm_metrics_->RecordRequestTokenStatus(
-          TokenStatus::kManifestNoResponse);
-      CompleteRequest(
-          FederatedAuthRequestResult::kErrorFetchingManifestNoResponse, "",
+      CompleteRequestWithError(
+          FederatedAuthRequestResult::kErrorFetchingManifestNoResponse,
+          TokenStatus::kManifestNoResponse,
           /*should_delay_callback=*/true);
       return;
     }
     case IdpNetworkRequestManager::FetchStatus::kInvalidResponseError: {
-      fedcm_metrics_->RecordRequestTokenStatus(
-          TokenStatus::kManifestInvalidResponse);
-      CompleteRequest(
-          FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse, "",
+      CompleteRequestWithError(
+          FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
+          TokenStatus::kManifestInvalidResponse,
           /*should_delay_callback=*/true);
       return;
     }
@@ -641,10 +633,9 @@ void FederatedAuthRequestImpl::OnManifestReady(
     }
     render_frame_host().AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kError, message);
-    fedcm_metrics_->RecordRequestTokenStatus(
-        TokenStatus::kManifestInvalidResponse);
-    CompleteRequest(
-        FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse, "",
+    CompleteRequestWithError(
+        FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
+        TokenStatus::kManifestInvalidResponse,
         /*should_delay_callback=*/true);
     return;
   }
@@ -686,26 +677,23 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
     IdpNetworkRequestManager::AccountList accounts) {
   switch (status) {
     case IdpNetworkRequestManager::FetchStatus::kHttpNotFoundError: {
-      fedcm_metrics_->RecordRequestTokenStatus(
-          TokenStatus::kAccountsHttpNotFound);
-      CompleteRequest(
-          FederatedAuthRequestResult::kErrorFetchingAccountsHttpNotFound, "",
+      CompleteRequestWithError(
+          FederatedAuthRequestResult::kErrorFetchingAccountsHttpNotFound,
+          TokenStatus::kAccountsHttpNotFound,
           /*should_delay_callback=*/true);
       return;
     }
     case IdpNetworkRequestManager::FetchStatus::kNoResponseError: {
-      fedcm_metrics_->RecordRequestTokenStatus(
-          TokenStatus::kAccountsNoResponse);
-      CompleteRequest(
-          FederatedAuthRequestResult::kErrorFetchingAccountsNoResponse, "",
+      CompleteRequestWithError(
+          FederatedAuthRequestResult::kErrorFetchingAccountsNoResponse,
+          TokenStatus::kAccountsNoResponse,
           /*should_delay_callback=*/true);
       return;
     }
     case IdpNetworkRequestManager::FetchStatus::kInvalidResponseError: {
-      fedcm_metrics_->RecordRequestTokenStatus(
-          TokenStatus::kAccountsInvalidResponse);
-      CompleteRequest(
-          FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse, "",
+      CompleteRequestWithError(
+          FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse,
+          TokenStatus::kAccountsInvalidResponse,
           /*should_delay_callback=*/true);
       return;
     }
@@ -718,10 +706,9 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
       // Does not show the dialog if the user has left the page. e.g. they may
       // open a new tab before browser is ready to show the dialog.
       if (!is_visible) {
-        fedcm_metrics_->RecordRequestTokenStatus(
-            TokenStatus::kRpPageNotVisible);
-        CompleteRequest(FederatedAuthRequestResult::kError, "",
-                        /*should_delay_callback=*/true);
+        CompleteRequestWithError(FederatedAuthRequestResult::kError,
+                                 TokenStatus::kRpPageNotVisible,
+                                 /*should_delay_callback=*/true);
         return;
       }
 
@@ -825,10 +812,10 @@ void FederatedAuthRequestImpl::OnAccountSelected(
   // have time to disable the FedCM API in other types of requests.
   if (api_permission_delegate_->GetApiPermissionStatus(GetEmbeddingOrigin()) !=
       FederatedApiPermissionStatus::GRANTED) {
-    fedcm_metrics_->RecordRequestTokenStatus(TokenStatus::kDisabledInSettings);
-
-    CompleteRequest(FederatedAuthRequestResult::kErrorDisabledInSettings, "",
-                    /*should_delay_callback=*/true);
+    CompleteRequestWithError(
+        FederatedAuthRequestResult::kErrorDisabledInSettings,
+        TokenStatus::kDisabledInSettings,
+        /*should_delay_callback=*/true);
     return;
   }
 
@@ -870,7 +857,6 @@ void FederatedAuthRequestImpl::OnDialogDismissed(
     fedcm_metrics_->RecordCancelOnDialogTime(dismiss_dialog_time -
                                              show_accounts_dialog_time_);
   }
-  fedcm_metrics_->RecordRequestTokenStatus(TokenStatus::kNotSelectAccount);
   fedcm_metrics_->RecordCancelReason(dismiss_reason);
 
   if (should_embargo) {
@@ -880,8 +866,9 @@ void FederatedAuthRequestImpl::OnDialogDismissed(
   // Reject the promise immediately if the UI is dismissed without selecting
   // an account. Meanwhile, we fuzz the rejection time for other failures to
   // make it indistinguishable.
-  CompleteRequest(FederatedAuthRequestResult::kError, "",
-                  /*should_delay_callback=*/false);
+  CompleteRequestWithError(FederatedAuthRequestResult::kError,
+                           TokenStatus::kNotSelectAccount,
+                           /*should_delay_callback=*/false);
 }
 
 void FederatedAuthRequestImpl::OnTokenResponseReceived(
@@ -918,25 +905,23 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
   DCHECK(!start_time_.is_null());
   switch (status) {
     case IdpNetworkRequestManager::FetchStatus::kHttpNotFoundError: {
-      fedcm_metrics_->RecordRequestTokenStatus(
-          TokenStatus::kIdTokenHttpNotFound);
-      CompleteRequest(
-          FederatedAuthRequestResult::kErrorFetchingIdTokenHttpNotFound, "",
+      CompleteRequestWithError(
+          FederatedAuthRequestResult::kErrorFetchingIdTokenHttpNotFound,
+          TokenStatus::kIdTokenHttpNotFound,
           /*should_delay_callback=*/true);
       return;
     }
     case IdpNetworkRequestManager::FetchStatus::kNoResponseError: {
-      fedcm_metrics_->RecordRequestTokenStatus(TokenStatus::kIdTokenNoResponse);
-      CompleteRequest(
-          FederatedAuthRequestResult::kErrorFetchingIdTokenNoResponse, "",
+      CompleteRequestWithError(
+          FederatedAuthRequestResult::kErrorFetchingIdTokenNoResponse,
+          TokenStatus::kIdTokenNoResponse,
           /*should_delay_callback=*/true);
       return;
     }
     case IdpNetworkRequestManager::FetchStatus::kInvalidResponseError: {
-      fedcm_metrics_->RecordRequestTokenStatus(
-          TokenStatus::kIdTokenInvalidResponse);
-      CompleteRequest(
-          FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse, "",
+      CompleteRequestWithError(
+          FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
+          TokenStatus::kIdTokenInvalidResponse,
           /*should_delay_callback=*/true);
       return;
     }
@@ -965,8 +950,8 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
       fedcm_metrics_->RecordTokenResponseAndTurnaroundTime(
           token_response_time_ - select_account_time_,
           token_response_time_ - start_time_);
-      fedcm_metrics_->RecordRequestTokenStatus(TokenStatus::kSuccess);
-      CompleteRequest(FederatedAuthRequestResult::kSuccess, token,
+      CompleteRequest(FederatedAuthRequestResult::kSuccess,
+                      TokenStatus::kSuccess, token,
                       /*should_delay_callback=*/false);
       return;
     }
@@ -1007,14 +992,25 @@ void FederatedAuthRequestImpl::OnLogoutCompleted() {
   DispatchOneLogout();
 }
 
+void FederatedAuthRequestImpl::CompleteRequestWithError(
+    blink::mojom::FederatedAuthRequestResult result,
+    absl::optional<TokenStatus> token_status,
+    bool should_delay_callback) {
+  CompleteRequest(result, token_status, /*id_token=*/"", should_delay_callback);
+}
+
 void FederatedAuthRequestImpl::CompleteRequest(
     blink::mojom::FederatedAuthRequestResult result,
+    absl::optional<TokenStatus> token_status,
     const std::string& id_token,
     bool should_delay_callback) {
   DCHECK(result == FederatedAuthRequestResult::kSuccess || id_token.empty());
 
   if (!auth_request_callback_)
     return;
+
+  if (token_status)
+    fedcm_metrics_->RecordRequestTokenStatus(*token_status);
 
   if (!errors_logged_to_console_ &&
       result != FederatedAuthRequestResult::kSuccess) {
@@ -1148,8 +1144,8 @@ void FederatedAuthRequestImpl::OnRejectRequest() {
   if (auth_request_callback_) {
     DCHECK(!logout_callback_);
     DCHECK(errors_logged_to_console_);
-    CompleteRequest(FederatedAuthRequestResult::kError, "",
-                    /*should_delay_callback=*/false);
+    CompleteRequestWithError(FederatedAuthRequestResult::kError, absl::nullopt,
+                             /*should_delay_callback=*/false);
   }
 }
 
