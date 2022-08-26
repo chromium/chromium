@@ -348,7 +348,7 @@ class MockFileSystem(object):
         return self.open_binary_file_for_writing(path), path
 
     def open_binary_file_for_reading(self, path):
-        if self.files[path] is None:
+        if self.files.get(path) is None:
             self._raise_not_found(path)
         return BufferedReader(WriteThroughBinaryFile(self, path))
 
@@ -357,10 +357,10 @@ class MockFileSystem(object):
         return WriteThroughBinaryFile(self, path)
 
     def read_binary_file(self, path):
-        # Intentionally raises KeyError if we don't recognize the path.
-        if self.files[path] is None:
+        maybe_contents = self.files.get(path)
+        if maybe_contents is None:
             self._raise_not_found(path)
-        return self.files[path]
+        return maybe_contents
 
     def write_binary_file(self, path, contents):
         # FIXME: should this assert if dirname(path) doesn't exist?
@@ -373,8 +373,6 @@ class MockFileSystem(object):
         return self.open_text_file_for_writing(path), path
 
     def open_text_file_for_reading(self, path):
-        if self.files[path] is None:
-            self._raise_not_found(path)
         return TextIOWrapper(self.open_binary_file_for_reading(path))
 
     def open_text_file_for_writing(self, path):
@@ -503,6 +501,10 @@ class MockFileSystem(object):
             stack.enter_context(patch('os.path.join', self.join))
             stack.enter_context(patch('os.path.isfile', self.isfile))
             stack.enter_context(patch('os.path.isdir', self.isdir))
+            stack.enter_context(patch('os.makedirs',
+                                      self.maybe_make_directory))
+            stack.enter_context(patch('os.replace', self.move))
+            stack.enter_context(patch('os.unlink', self.remove))
             yield
 
 

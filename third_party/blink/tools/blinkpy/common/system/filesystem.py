@@ -220,13 +220,9 @@ class FileSystem(object):
 
     def maybe_make_directory(self, *path):
         """Creates the specified directory if it doesn't already exist."""
-        try:
-            # os.makedirs() supports UNC paths:
-            # https://docs.python.org/2/library/os.html#os.makedirs
-            os.makedirs(self._path_for_access(self.join(*path)))
-        except OSError as error:
-            if error.errno != errno.EEXIST:
-                raise
+        # os.makedirs() supports UNC paths:
+        # https://docs.python.org/2/library/os.html#os.makedirs
+        os.makedirs(self._path_for_access(self.join(*path)), exist_ok=True)
 
     def move(self, source, destination):
         shutil.move(source, destination)

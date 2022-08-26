@@ -16,16 +16,78 @@ from blinkpy.common.net.git_cl_mock import MockGitCL
 from blinkpy.common.net.rpc import Build, RPCError
 from blinkpy.common.system.log_testing import LoggingTestCase
 from blinkpy.tool.mock_tool import MockBlinkTool
-from blinkpy.tool.commands.update_metadata import UpdateMetadata
+from blinkpy.tool.commands.update_metadata import UpdateMetadata, MetadataUpdater
 from blinkpy.web_tests.builder_list import BuilderList
 
 
 @patch('concurrent.futures.ThreadPoolExecutor.map', new=map)
-class UpdateMetadataTest(LoggingTestCase):
+class BaseUpdateMetadataTest(LoggingTestCase):
     def setUp(self):
         super().setUp()
         self.maxDiff = None
+
         self.tool = MockBlinkTool()
+        self.finder = PathFinder(self.tool.filesystem)
+        self.tool.filesystem.write_text_file(
+            self.finder.path_from_web_tests('external', 'wpt',
+                                            'MANIFEST.json'),
+            json.dumps({
+                'version': 8,
+                'items': {
+                    'reftest': {
+                        'fail.html': [
+                            'c3f2fb6f436da59d43aeda0a7e8a018084557033',
+                            [None, [['fail-ref.html', '==']], {}],
+                        ],
+                    },
+                    'testharness': {
+                        'pass.html': [
+                            'd933fd981d4a33ba82fb2b000234859bdda1494e',
+                            [None, {}],
+                        ],
+                        'crash.html': [
+                            'd933fd981d4a33ba82fb2b000234859bdda1494e',
+                            [None, {}],
+                        ],
+                        'variant.html': [
+                            'b8db5972284d1ac6bbda0da81621d9bca5d04ee7',
+                            ['variant.html?foo=bar/abc', {}],
+                            ['variant.html?foo=baz', {}],
+                        ],
+                    },
+                },
+            }))
+        self.tool.filesystem.write_text_file(
+            self.finder.path_from_web_tests('wpt_internal', 'MANIFEST.json'),
+            json.dumps({
+                'version': 8,
+                'url_base': '/wpt_internal/',
+                'items': {
+                    'testharness': {
+                        'dir': {
+                            'multiglob.https.any.js': [
+                                'd6498c3e388e0c637830fa080cca78b0ab0e5305',
+                                ['dir/multiglob.https.any.window.html', {}],
+                                ['dir/multiglob.https.any.worker.html', {}],
+                            ],
+                        },
+                    },
+                },
+            }))
+
+    @contextlib.contextmanager
+    def _patch_builtins(self):
+        with contextlib.ExitStack() as stack:
+            stack.enter_context(self.tool.filesystem.patch_builtins())
+            stack.enter_context(self.tool.executive.patch_builtins())
+            yield stack
+
+
+class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
+    """Verify the tool's frontend and build infrastructure interactions."""
+
+    def setUp(self):
+        super().setUp()
         self.tool.builders = BuilderList({
             'test-linux-rel': {
                 'port_name': 'test-linux-trusty',
@@ -50,53 +112,6 @@ class UpdateMetadataTest(LoggingTestCase):
         }
         self.git_cl = MockGitCL(self.tool, self.builds)
         self.command = UpdateMetadata(self.tool, self.git_cl)
-
-        finder = PathFinder(self.tool.filesystem)
-        self.tool.filesystem.write_text_file(
-            finder.path_from_web_tests('external', 'wpt', 'MANIFEST.json'),
-            json.dumps({
-                'version': 8,
-                'items': {
-                    'reftest': {
-                        'fail.html': [
-                            'c3f2fb6f436da59d43aeda0a7e8a018084557033',
-                            [None, [['reftest-ref.html', '==']], {}],
-                        ],
-                    },
-                    'testharness': {
-                        'pass.html': [
-                            'd933fd981d4a33ba82fb2b000234859bdda1494e',
-                            [None, {}],
-                        ],
-                        'crash.html': [
-                            'd933fd981d4a33ba82fb2b000234859bdda1494e',
-                            [None, {}],
-                        ],
-                        'variant.html': [
-                            'b8db5972284d1ac6bbda0da81621d9bca5d04ee7',
-                            ['variant.html?foo=bar/abc', {}],
-                            ['variant.html?foo=baz', {}],
-                        ],
-                    },
-                },
-            }))
-        self.tool.filesystem.write_text_file(
-            finder.path_from_web_tests('wpt_internal', 'MANIFEST.json'),
-            json.dumps({
-                'version': 8,
-                'url_base': '/wpt_internal/',
-                'items': {
-                    'testharness': {
-                        'dir': {
-                            'multiglob.https.any.js': [
-                                'd6498c3e388e0c637830fa080cca78b0ab0e5305',
-                                ['dir/multiglob.https.any.window.html', {}],
-                                ['dir/multiglob.https.any.worker.html', {}],
-                            ],
-                        },
-                    },
-                },
-            }))
 
         self.tool.web.append_prpc_response({
             'artifacts': [{
@@ -132,13 +147,6 @@ class UpdateMetadataTest(LoggingTestCase):
             }],
         }).encode()
 
-    @contextlib.contextmanager
-    def _patch_builtins(self):
-        with contextlib.ExitStack() as stack:
-            stack.enter_context(self.tool.filesystem.patch_builtins())
-            stack.enter_context(self.tool.executive.patch_builtins())
-            yield stack
-
     def test_execute_all(self):
         with self._patch_builtins():
             exit_code = self.command.main([])
@@ -148,11 +156,11 @@ class UpdateMetadataTest(LoggingTestCase):
         self.assertLog([
             'INFO: All builds finished.\n',
             'INFO: Processing wptrunner report (1/1)\n',
-            "INFO: Updating 'crash.html' (1/5)\n",
-            "INFO: Updating 'dir/multiglob.https.any.js' (2/5)\n",
-            "INFO: Updating 'fail.html' (3/5)\n",
-            "INFO: Updating 'pass.html' (4/5)\n",
-            "INFO: Updating 'variant.html' (5/5)\n",
+            "INFO: Updated 'crash.html' (1/5)\n",
+            "INFO: Updated 'dir/multiglob.https.any.js' (2/5)\n",
+            "INFO: Updated 'fail.html' (3/5)\n",
+            "INFO: Updated 'pass.html' (4/5)\n",
+            "INFO: Updated 'variant.html' (5/5)\n",
         ])
 
     def test_execute_explicit_include_patterns(self):
@@ -173,9 +181,9 @@ class UpdateMetadataTest(LoggingTestCase):
         self.assertLog([
             'INFO: All builds finished.\n',
             'INFO: Processing wptrunner report (1/1)\n',
-            "INFO: Updating 'dir/multiglob.https.any.js' (1/3)\n",
-            "INFO: Updating 'pass.html' (2/3)\n",
-            "INFO: Updating 'variant.html' (3/3)\n",
+            "INFO: Updated 'dir/multiglob.https.any.js' (1/3)\n",
+            "INFO: Updated 'pass.html' (2/3)\n",
+            "INFO: Updated 'variant.html' (3/3)\n",
         ])
 
     def test_execute_with_no_issue_number_aborts(self):
@@ -270,6 +278,401 @@ class UpdateMetadataTest(LoggingTestCase):
             'WARNING: All builds are missing report artifacts.\n',
             'WARNING: No reports to process.\n',
         ])
+
+
+class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
+    """Verify the metadata ASTs are manipulated and written correctly.
+
+    The update algorithm is already tested in wptrunner, but is particularly
+    complex. This auxiliary test suite ensures Blink-specific scenarios work
+    as intended.
+    """
+
+    def update(self, *reports, **options):
+        result_defaults = {
+            'subtests': [],
+            'message': None,
+            'duration': 1000,
+            'expected': 'OK',
+            'known_intermittent': [],
+        }
+        with self._patch_builtins():
+            updater = MetadataUpdater.from_path_finder(self.finder, **options)
+            for report in reports:
+                report['run_info'] = {
+                    'os': 'mac',
+                    'version': '12',
+                    'processor': 'arm',
+                    'bits': 64,
+                    'flag_specific': None,
+                    'product': 'chrome',
+                    'debug': False,
+                    **(report.get('run_info') or {}),
+                }
+                report['results'] = [{
+                    **result_defaults,
+                    **result
+                } for result in report['results']]
+                buf = io.StringIO(json.dumps(report))
+                updater.collect_results(buf)
+            for test_file in updater.test_files_to_update():
+                updater.update(test_file)
+
+    def write_contents(self, path_to_metadata, contents):
+        path = self.finder.path_from_web_tests(path_to_metadata)
+        self.tool.filesystem.write_text_file(path, textwrap.dedent(contents))
+
+    def assert_contents(self, path_to_metadata, contents):
+        path = self.finder.path_from_web_tests(path_to_metadata)
+        self.assertEqual(self.tool.filesystem.read_text_file(path),
+                         textwrap.dedent(contents))
+
+    def exists(self, path_to_metadata):
+        path = self.finder.path_from_web_tests(path_to_metadata)
+        return self.tool.filesystem.exists(path)
+
+    def test_create_new_expectations(self):
+        """The updater creates metadata for new unexpected results."""
+        self.assertFalse(self.exists('external/wpt/variant.html.ini'))
+        self.update({
+            'results': [{
+                'test': '/fail.html',
+                'status': 'FAIL',
+            }, {
+                'test': '/fail.html',
+                'status': 'OK',
+            }],
+        })
+        # 'OK' is prioritized as the primary expected status.
+        self.assert_contents(
+            'external/wpt/fail.html.ini', """\
+            [fail.html]
+              expected: [OK, FAIL]
+            """)
+
+    def test_remove_all_pass(self):
+        """The updater removes metadata for a test that became all-pass."""
+        self.write_contents(
+            'external/wpt/variant.html.ini', """\
+            [variant.html?foo=baz]
+              [formerly failing subtest]
+                expected: FAIL
+            """)
+        self.update({
+            'results': [{
+                'test':
+                '/variant.html?foo=baz',
+                'status':
+                'OK',
+                'subtests': [{
+                    'name': 'formerly failing subtest',
+                    'status': 'PASS',
+                    'message': None,
+                    'expected': 'FAIL',
+                    'known_intermittent': [],
+                }],
+            }],
+        })
+        self.assertFalse(self.exists('external/wpt/variant.html.ini'))
+
+    def test_retain_other_keys(self):
+        """The updater retains non-`expected` keys, even for all-pass tests."""
+        self.write_contents(
+            'external/wpt/variant.html.ini', """\
+            [variant.html?foo=baz]
+              implementation-status: implementing
+              [formerly failing subtest]
+                expected: FAIL
+            """)
+        self.update({
+            'results': [{
+                'test':
+                '/variant.html?foo=baz',
+                'status':
+                'OK',
+                'subtests': [{
+                    'name': 'formerly failing subtest',
+                    'status': 'PASS',
+                    'message': None,
+                    'expected': 'FAIL',
+                    'known_intermittent': [],
+                }],
+            }],
+        })
+        self.assert_contents(
+            'external/wpt/variant.html.ini', """\
+            [variant.html?foo=baz]
+              implementation-status: implementing
+            """)
+
+    def test_remove_nonexistent_subtest(self):
+        """A full update cleans up subtests that no longer exist."""
+        self.write_contents(
+            'external/wpt/variant.html.ini', """\
+            [variant.html?foo=baz]
+              expected: CRASH
+
+              [subtest that was removed]
+                expected: CRASH
+                custom_key: should not prevent removal
+            """)
+        self.update(
+            {
+                'results': [{
+                    'test': '/variant.html?foo=baz',
+                    'status': 'CRASH',
+                    'subtests': [],
+                }],
+            },
+            overwrite_conditions='yes')
+        self.assert_contents(
+            'external/wpt/variant.html.ini', """\
+            [variant.html?foo=baz]
+              expected: CRASH
+            """)
+
+    def test_keep_unobserved_subtest(self):
+        """A partial update should not remove an unobserved subtest."""
+        self.write_contents(
+            'external/wpt/variant.html.ini', """\
+            [variant.html?foo=baz]
+              [subtest that should not be removed]
+                expected: CRASH
+            """)
+        self.update(
+            {
+                'results': [{
+                    'test': '/variant.html?foo=baz',
+                    'status': 'CRASH',
+                    'subtests': [],
+                }],
+            },
+            overwrite_conditions='no')
+        self.write_contents(
+            'external/wpt/variant.html.ini', """\
+            [variant.html?foo=baz]
+              [subtest that should not be removed]
+                expected: CRASH
+            """)
+
+    def test_no_change_for_expected(self):
+        """The updater does not modify metadata for an expected result."""
+        self.write_contents(
+            'external/wpt/fail.html.ini', """\
+            [fail.html]
+              expected: [FAIL, CRASH]
+            """)
+        self.update(
+            {
+                'results': [{
+                    'test': '/fail.html',
+                    'status': 'CRASH',
+                    'expected': 'FAIL',
+                    'known_intermittent': ['CRASH'],
+                }],
+            },
+            disable_intermittent='flaky')
+        self.assert_contents(
+            'external/wpt/fail.html.ini', """\
+            [fail.html]
+              expected: [FAIL, CRASH]
+            """)
+
+    def test_remove_stale_expectation(self):
+        """The updater removes stale expectations by default."""
+        self.write_contents(
+            'external/wpt/fail.html.ini', """\
+            [fail.html]
+              expected: [OK, FAIL]
+            """)
+        self.update({
+            'results': [{
+                'test': '/fail.html',
+                'status': 'FAIL',
+                'expected': 'OK',
+                'known_intermittent': ['FAIL'],
+            }, {
+                'test': '/fail.html',
+                'status': 'CRASH',
+                'expected': 'OK',
+                'known_intermittent': ['FAIL'],
+            }],
+        })
+        self.assert_contents(
+            'external/wpt/fail.html.ini', """\
+            [fail.html]
+              expected: [FAIL, CRASH]
+            """)
+
+    def test_keep_existing_expectations(self):
+        """The updater keeps stale expectations if explicitly requested."""
+        self.write_contents(
+            'external/wpt/fail.html.ini', """\
+            [fail.html]
+              expected: [OK, FAIL]
+            """)
+        self.update(
+            {
+                'results': [{
+                    'test': '/fail.html',
+                    'status': 'CRASH',
+                    'expected': 'OK',
+                    'known_intermittent': ['FAIL'],
+                }],
+            },
+            keep_statuses=True)
+        # The disable only works for flaky results in a single run.
+        self.assert_contents(
+            'external/wpt/fail.html.ini', """\
+            [fail.html]
+              expected: [CRASH, OK, FAIL]
+            """)
+
+    def test_disable_intermittent(self):
+        """The updater can disable flaky tests.
+
+        Note that the status list is not updated.
+        """
+        self.write_contents(
+            'external/wpt/fail.html.ini', """\
+            [fail.html]
+              expected: FAIL
+            """)
+        self.update(
+            {
+                'results': [{
+                    'test': '/fail.html',
+                    'status': 'OK',
+                    'expected': 'FAIL',
+                }, {
+                    'test': '/fail.html',
+                    'status': 'FAIL',
+                    'expected': 'FAIL',
+                }],
+            },
+            disable_intermittent='flaky')
+        self.assert_contents(
+            'external/wpt/fail.html.ini', """\
+            [fail.html]
+              disabled: flaky
+              expected: FAIL
+            """)
+
+    def test_condition_split(self):
+        """A new status on a platform creates a new condition branch."""
+        self.write_contents(
+            'external/wpt/fail.html.ini', """\
+            [fail.html]
+              expected:
+                if os == 'mac': FAIL
+            """)
+        self.update(
+            {
+                'run_info': {
+                    'os': 'mac',
+                    'version': '12',
+                },
+                'results': [{
+                    'test': '/fail.html',
+                    'status': 'TIMEOUT',
+                    'expected': 'FAIL',
+                }],
+            }, {
+                'run_info': {
+                    'os': 'mac',
+                    'version': '11',
+                },
+                'results': [{
+                    'test': '/fail.html',
+                    'status': 'FAIL',
+                    'expected': 'FAIL',
+                }],
+            }, {
+                'run_info': {
+                    'os': 'win',
+                    'version': '11',
+                },
+                'results': [{
+                    'test': '/fail.html',
+                    'status': 'OK',
+                    'expected': 'OK',
+                }],
+            },
+            overwrite_conditions='yes')
+        path = self.finder.path_from_web_tests('external', 'wpt',
+                                               'fail.html.ini')
+        lines = self.tool.filesystem.read_text_file(path).splitlines()
+        expected = textwrap.dedent("""\
+            [fail.html]
+              expected:
+                if (os == "mac") and (version == "12"): TIMEOUT
+                if (os == "mac") and (version == "11"): FAIL
+                OK
+            """)
+        # TODO(crbug.com/1299650): The branch order appears unstable, which we
+        # should fix upstream to avoid create spurious diffs.
+        self.assertEqual(sorted(lines, reverse=True), expected.splitlines())
+
+    def test_condition_merge(self):
+        """Results that become property-agnostic consolidate conditions."""
+        self.write_contents(
+            'external/wpt/fail.html.ini', """\
+            [fail.html]
+              expected:
+                if os == 'mac' and version == '11': FAIL
+                if os == 'mac' and version == '12': TIMEOUT
+            """)
+        self.update(
+            {
+                'run_info': {
+                    'os': 'mac',
+                    'version': '12',
+                },
+                'results': [{
+                    'test': '/fail.html',
+                    'status': 'FAIL',
+                    'expected': 'TIMEOUT',
+                }],
+            }, {
+                'run_info': {
+                    'os': 'mac',
+                    'version': '11',
+                },
+                'results': [{
+                    'test': '/fail.html',
+                    'status': 'FAIL',
+                    'expected': 'FAIL',
+                }],
+            }, {
+                'run_info': {
+                    'os': 'win',
+                    'version': '11',
+                },
+                'results': [{
+                    'test': '/fail.html',
+                    'status': 'OK',
+                    'expected': 'OK',
+                }],
+            },
+            overwrite_conditions='yes')
+        path = self.finder.path_from_web_tests('external', 'wpt',
+                                               'fail.html.ini')
+        contents = self.tool.filesystem.read_text_file(path)
+        self.assertIn(
+            contents, {
+                textwrap.dedent("""\
+                [fail.html]
+                  expected:
+                    if os == "mac": FAIL
+                    OK
+                """),
+                textwrap.dedent("""\
+                [fail.html]
+                  expected:
+                    if os == "win": OK
+                    FAIL
+                """),
+            })
 
 
 class UpdateMetadataArgumentParsingTest(unittest.TestCase):

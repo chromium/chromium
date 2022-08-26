@@ -12,7 +12,7 @@ import logging
 import pathlib
 import optparse
 import re
-from typing import Iterator, List, Mapping, Optional
+from typing import Iterator, List, Literal, Mapping, Optional
 
 from blinkpy.common import path_finder
 from blinkpy.common.host import Host
@@ -27,7 +27,7 @@ from blinkpy.tool.commands.rebaseline_cl import RebaselineCL
 from blinkpy.web_tests.port.base import Port
 
 path_finder.bootstrap_wpt_imports()
-from wptrunner import metadata, testloader
+from wptrunner import metadata, testloader, wpttest
 
 _log = logging.getLogger(__name__)
 
@@ -78,8 +78,8 @@ class UpdateMetadata(Command):
             optparse.make_option(
                 '--disable-intermittent',
                 metavar='REASON',
-                help=('Disable tests that have inconsistent results '
-                      'with the given reason.')),
+                help=('Disable tests and subtests that have inconsistent '
+                      'results instead of updating the status list.')),
             optparse.make_option('--keep-statuses',
                                  action='store_true',
                                  help='Keep all existing statuses.'),
@@ -125,7 +125,10 @@ class UpdateMetadata(Command):
             can_trigger_jobs=(options.trigger_jobs and not options.dry_run))
         updater = MetadataUpdater.from_path_finder(
             path_finder.PathFinder(self._tool.filesystem),
-            self._explicit_include_patterns(options, args))
+            self._explicit_include_patterns(options, args),
+            overwrite_conditions=options.overwrite_conditions,
+            disable_intermittent=options.disable_intermittent,
+            keep_statuses=options.keep_statuses)
         try:
             build_statuses = build_resolver.resolve_builds(
                 self._select_builds(options), options.patchset)
@@ -135,7 +138,12 @@ class UpdateMetadata(Command):
                 for report in self.gather_reports(build_statuses,
                                                   options.reports or []):
                     updater.collect_results(report)
-                updater.update()
+                test_files = updater.test_files_to_update()
+                for i, test_file in enumerate(
+                        self._io_pool.map(updater.update, test_files)):
+                    _log.info("Updated '%s' (%d/%d)",
+                              pathlib.Path(test_file.test_path).as_posix(),
+                              i + 1, len(test_files))
         except RPCError as error:
             _log.error('%s', error)
             _log.error('Request payload: %s',
@@ -197,8 +205,11 @@ class UpdateMetadata(Command):
                       total_reports)
             yield contents
 
-    def _fetch_report_contents(self, urls: List[str], report_paths: List[str]
-                               ) -> Iterator[io.TextIOBase]:
+    def _fetch_report_contents(
+            self,
+            urls: List[str],
+            report_paths: List[str],
+    ) -> Iterator[io.TextIOBase]:
         fs = self._tool.filesystem
         for path in report_paths:
             with fs.open_text_file_for_reading(path) as file_handle:
@@ -241,15 +252,41 @@ TestFileMap = Mapping[str, metadata.TestFileData]
 
 
 class MetadataUpdater:
-    def __init__(self, test_files: TestFileMap):
+    def __init__(
+            self,
+            test_files: TestFileMap,
+            primary_properties: Optional[List[str]] = None,
+            dependent_properties: Optional[Mapping[str, str]] = None,
+            overwrite_conditions: Literal['yes', 'no', 'fill',
+                                          'auto'] = 'fill',
+            disable_intermittent: Optional[str] = None,
+            keep_statuses: bool = False,
+    ):
         self._test_files = test_files
         self._updater = metadata.ExpectedUpdater(self._test_files)
+        self._default_expected = _default_expected_by_type()
+        self._primary_properties = primary_properties or [
+            'debug',
+            'os',
+            'processor',
+            'product',
+            'flag_specific',
+        ]
+        self._dependent_properties = dependent_properties or {
+            'os': ['version'],
+            'processor': ['bits'],
+        }
+        self._overwrite_conditions = overwrite_conditions
+        self._disable_intermittent = disable_intermittent
+        self._keep_statuses = keep_statuses
 
     @classmethod
-    def from_path_finder(cls,
-                         finder: path_finder.PathFinder,
-                         include: Optional[List[str]] = None
-                         ) -> 'MetadataUpdater':
+    def from_path_finder(
+            cls,
+            finder: path_finder.PathFinder,
+            include: Optional[List[str]] = None,
+            **options,
+    ) -> 'MetadataUpdater':
         """Construct a metadata updater from a path finder.
 
         Arguments:
@@ -289,28 +326,64 @@ class MetadataUpdater:
             manifest.itertypes = _compose(test_filter, manifest.itertypes)
             test_files.update(
                 metadata.create_test_tree(paths['metadata_path'], manifest))
-        return MetadataUpdater(test_files)
+        return MetadataUpdater(test_files, **options)
 
     def collect_results(self, report: io.TextIOBase):
         """Parse and record test results."""
         self._updater.update_from_log(report)
 
-    def update(self):
-        """Update the AST of each metadata file and serialize them to disk."""
-        test_files_to_update = {
+    def test_files_to_update(self) -> List[metadata.TestFileData]:
+        test_files = {
             test_file
             for test_file in self._test_files.values()
             if not test_file.test_path.endswith('__dir__')
         }
-        for i, test_file in enumerate(
-                sorted(test_files_to_update, key=lambda f: f.test_path)):
-            _log.info("Updating '%s' (%d/%d)",
-                      pathlib.Path(test_file.test_path).as_posix(), i + 1,
-                      len(test_files_to_update))
+        return sorted(test_files, key=lambda test_file: test_file.test_path)
+
+    def _determine_if_full_update(self,
+                                  test_file: metadata.TestFileData) -> bool:
+        if self._overwrite_conditions == 'fill':
+            # TODO(crbug.com/1299650): To be implemented.
+            return True
+        elif self._overwrite_conditions == 'auto':
+            # TODO(crbug.com/1299650): To be implemented.
+            return False
+        elif self._overwrite_conditions == 'yes':
+            return True
+        else:
+            return False
+
+    def update(self, test_file: metadata.TestFileData):
+        """Update the AST of each metadata file and serialize them to disk."""
+        expected = test_file.update(
+            self._default_expected,
+            (self._primary_properties, self._dependent_properties),
+            full_update=self._determine_if_full_update(test_file),
+            disable_intermittent=self._disable_intermittent,
+            # `disable_intermittent` becomes a no-op when `update_intermittent`
+            # is set, so always force them to be opposites. See:
+            #   https://github.com/web-platform-tests/wpt/blob/merge_pr_35624/tools/wptrunner/wptrunner/manifestupdate.py#L422-L436
+            update_intermittent=(not self._disable_intermittent),
+            remove_intermittent=(not self._keep_statuses))
+        if expected and expected.modified:
+            metadata.write_new_expected(test_file.metadata_path, expected)
+        return test_file
 
 
 def _compose(f, g):
     return lambda *args, **kwargs: f(g(*args, **kwargs))
+
+
+def _default_expected_by_type():
+    default_expected_by_type = {}
+    for test_type, test_cls in wpttest.manifest_test_cls.items():
+        if test_cls.result_cls:
+            expected = test_cls.result_cls.default_expected
+            default_expected_by_type[test_type, False] = expected
+        if test_cls.subtest_result_cls:
+            expected = test_cls.subtest_result_cls.default_expected
+            default_expected_by_type[test_type, True] = expected
+    return default_expected_by_type
 
 
 def _parse_build_specifiers(option: optparse.Option, _opt_str: str, value: str,
