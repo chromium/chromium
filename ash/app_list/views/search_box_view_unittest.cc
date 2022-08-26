@@ -317,15 +317,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Values(false));
 
 TEST_P(SearchBoxViewTest, SearchBoxTextUsesAppListSearchBoxTextColor) {
-  if (IsProductivityLauncherEnabled()) {
-    // Text should be the primary light color when productivity launcher is
-    // used.
-    EXPECT_EQ(view()->search_box()->GetTextColor(), gfx::kGoogleGrey900);
-  } else {
-    EXPECT_EQ(view()->search_box()->GetTextColor(),
-              AppListColorProvider::Get()->GetSearchBoxTextColor(
-                  kDeprecatedSearchBoxTextDefaultColor));
-  }
+  // With darklight mode enabled by default, search box text color should be the
+  // same with and without productivity launcher enabled.
+  EXPECT_EQ(view()->search_box()->GetTextColor(), gfx::kGoogleGrey900);
 }
 
 // Tests that the close button is invisible by default.
