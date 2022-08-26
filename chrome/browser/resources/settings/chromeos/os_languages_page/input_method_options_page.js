@@ -138,7 +138,8 @@ class SettingsInputMethodOptionsPageElement extends
   populateOptionSections_() {
     const options = generateOptions(
         this.engineId_, loadTimeData.getBoolean('allowPredictiveWriting'),
-        loadTimeData.getBoolean('allowDiacriticsOnPhysicalKeyboardLongpress'));
+        loadTimeData.getBoolean('allowDiacriticsOnPhysicalKeyboardLongpress'),
+        loadTimeData.getBoolean('languageSettingsUpdateJapanese'));
     const prefValue = this.getPref(this.PREFS_PATH).value;
     const prefix = this.getPrefsPrefix_();
     const currentSettings = prefix in prefValue ? prefValue[prefix] : {};
@@ -292,6 +293,16 @@ class SettingsInputMethodOptionsPageElement extends
         return this.i18n('inputMethodOptionsVirtualKeyboardSectionTitle');
       case 'suggestions':
         return this.i18n('inputMethodOptionsSuggestionsSectionTitle');
+      // Japanese section
+      case 'inputAssistance':
+        return this.i18n('inputMethodOptionsInputAssistanceSectionTitle');
+      // Japanese section
+      case 'userDictionaries':
+        return this.i18n('inputMethodOptionsUserDictionariesSectionTitle');
+      // Japanese section
+      case 'privacy':
+        return this.i18n('inputMethodOptionsPrivacySectionTitle');
+
       default:
         assertNotReached();
     }

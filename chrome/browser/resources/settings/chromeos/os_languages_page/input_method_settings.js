@@ -16,6 +16,7 @@ export const SettingsType = {
   ENGLISH_SOUTH_AFRICA_SETTINGS: 6,
   SUGGESTION_SETTINGS: 7,
   PK_DIACRITICS_SETTINGS: 8,
+  JAPANESE_SETTINGS: 9,
 };
 
 /**
@@ -24,7 +25,8 @@ export const SettingsType = {
  * @return {Object<string,!Array<!SettingsType>>}
  */
 export function getInputMethodSettings(
-    predictiveWritingEnabled, physicalKeyboardDiacriticsEnabled) {
+    predictiveWritingEnabled, physicalKeyboardDiacriticsEnabled,
+    isJapaneseSettingsEnabled) {
   const usEnglishSettings = [SettingsType.LATIN_SETTINGS];
   if (predictiveWritingEnabled) {
     usEnglishSettings.push(SettingsType.SUGGESTION_SETTINGS);
@@ -32,7 +34,7 @@ export function getInputMethodSettings(
   if (physicalKeyboardDiacriticsEnabled) {
     usEnglishSettings.push(SettingsType.PK_DIACRITICS_SETTINGS);
   }
-  return {
+  const settingsMap = {
     // NOTE: Please group by SettingsType, and keep entries sorted
     // alphabetically
     // by ID within each group, just for readability.
@@ -133,4 +135,10 @@ export function getInputMethodSettings(
     // ENGLISH_SOUTH_AFRICA_SETTINGS
     'xkb:za:gb:eng': [SettingsType.ENGLISH_SOUTH_AFRICA_SETTINGS],
   };
+  // MOZC settings
+  if (isJapaneseSettingsEnabled) {
+    settingsMap['nacl_mozc_jp'] = [SettingsType.JAPANESE_SETTINGS];
+    settingsMap['nacl_mozc_us'] = [SettingsType.JAPANESE_SETTINGS];
+  }
+  return settingsMap;
 }

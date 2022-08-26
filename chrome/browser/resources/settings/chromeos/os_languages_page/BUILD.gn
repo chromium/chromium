@@ -18,6 +18,7 @@ js_type_check("closure_compile_module") {
     ":change_device_language_dialog",
     ":cr_checkbox_with_policy",
     ":input_method_options_page",
+    ":input_method_types",
     ":input_method_util",
     ":input_page",
     ":languages",
@@ -123,9 +124,13 @@ js_library("cr_checkbox_with_policy") {
   ]
 }
 
+js_library("input_method_types") {
+}
+
 js_library("input_method_util") {
   deps = [
     ":input_method_settings",
+    ":input_method_types",
     "..:os_route",
     "..:route_observer_behavior",
     "../..:router",

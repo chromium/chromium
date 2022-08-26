@@ -122,6 +122,7 @@ non_web_component_files = [
   "chromeos/os_bluetooth_page/os_bluetooth_devices_subpage_browser_proxy.js",
   "chromeos/os_bluetooth_page/settings_fast_pair_constants.js",
   "chromeos/os_languages_page/input_method_settings.js",
+  "chromeos/os_languages_page/input_method_types.js",
   "chromeos/os_languages_page/input_method_util.js",
   "chromeos/os_languages_page/languages.js",
   "chromeos/os_languages_page/languages_browser_proxy.js",

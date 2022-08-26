@@ -8,6 +8,7 @@ import {Route} from '../../router.js';
 import {routes} from '../os_route.js';
 
 import {getInputMethodSettings, SettingsType} from './input_method_settings.js';
+import {JAPANESE_INPUT_MODE, JAPANESE_KEYMAP_STYLE, JAPANESE_PUNCTUATION_STYLE, JAPANESE_SECTION_SHORTCUT, JAPANESE_SPACE_INPUT_STYLE, JAPANESE_SYMBOL_STYLE} from './input_method_types.js';
 
 /**
  * @fileoverview constants related to input method options.
@@ -65,6 +66,15 @@ export const OptionType = {
   VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL: 'virtualKeyboardAutoCorrectionLevel',
   VIRTUAL_KEYBOARD_ENABLE_CAPITALIZATION: 'virtualKeyboardEnableCapitalization',
   XKB_LAYOUT: 'xkbLayout',
+  // Options for Japanese input method.
+  JAPANESE_INPUT_MODE: 'JapaneseInputMode',
+  JAPANESE_INPUT_MODE_KANA: 'JapaneseInputModeKana',
+  JAPANESE_INPUT_MODE_ROMAJI: 'JapaneseInputModeRomaji',
+  JAPANESE_PUNCTUATION_STYLE: 'JapanesePunctuationStyle',
+  JAPANESE_SYMBOL_STYLE: 'JapaneseSymbolStyle',
+  JAPANESE_SPACE_INPUT_STYLE: 'JapaneseSpaceInputStyle',
+  JAPANESE_SECTION_SHORTCUT: 'JapaneseSectionShortcut',
+  JAPANESE_KEYMAP_STYLE: 'JapaneseKeymapStyle',
   // Options for Korean input method.
   KOREAN_ENABLE_SYLLABLE_INPUT: 'koreanEnableSyllableInput',
   KOREAN_KEYBOARD_LAYOUT: 'koreanKeyboardLayout',
@@ -115,6 +125,17 @@ export const OPTION_DEFAULT = {
   [OptionType.VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL]: 1,
   [OptionType.VIRTUAL_KEYBOARD_ENABLE_CAPITALIZATION]: true,
   [OptionType.XKB_LAYOUT]: 'US',
+  // Options for Japanese input methods.
+  [OptionType.JAPANESE_INPUT_MODE]: JAPANESE_INPUT_MODE.ROMAJI,
+  [OptionType.JAPANESE_PUNCTUATION_STYLE]:
+      JAPANESE_PUNCTUATION_STYLE.KUTEN_TOUTEN,
+  [OptionType.JAPANESE_SYMBOL_STYLE]:
+      JAPANESE_SYMBOL_STYLE.CORNER_BRACKET_MIDDLE_DOT,
+  [OptionType.JAPANESE_SPACE_INPUT_STYLE]:
+      JAPANESE_SPACE_INPUT_STYLE.INPUT_MODE,
+  [OptionType.JAPANESE_SECTION_SHORTCUT]:
+      JAPANESE_SECTION_SHORTCUT.DIGITS_123456789,
+  [OptionType.JAPANESE_KEYMAP_STYLE]: JAPANESE_KEYMAP_STYLE.CUSTOM,
   // Options for Korean input method.
   [OptionType.KOREAN_ENABLE_SYLLABLE_INPUT]: true,
   [OptionType.KOREAN_KEYBOARD_LAYOUT]: KeyboardLayout.SET2,
@@ -164,8 +185,11 @@ export const UiType = {
 const SettingsHeaders = {
   ADVANCED: 'advanced',
   BASIC: 'basic',
+  INPUT_ASSISTANCE: 'inputAssistance',
   PHYSICAL_KEYBOARD: 'physicalKeyboard',
+  PRIVACY: 'privacy',
   SUGGESTIONS: 'suggestions',
+  USER_DICTIONARIES: 'userDictionaries',
   VIRTUAL_KEYBOARD: 'virtualKeyboard',
 };
 
@@ -199,6 +223,59 @@ const Settings = {
         {name: OptionType.ENABLE_DOUBLE_SPACE_PERIOD},
         {name: OptionType.EDIT_USER_DICT},
       ],
+    },
+  ],
+  [SettingsType.JAPANESE_SETTINGS]: [
+    {
+      title: SettingsHeaders.BASIC,
+      optionNames: [
+        {name: OptionType.JAPANESE_INPUT_MODE},
+        {name: OptionType.JAPANESE_PUNCTUATION_STYLE},
+        {name: OptionType.JAPANESE_SYMBOL_STYLE},
+        {name: OptionType.JAPANESE_SPACE_INPUT_STYLE},
+        {name: OptionType.JAPANESE_SECTION_SHORTCUT},
+        {name: OptionType.JAPANESE_KEYMAP_STYLE},
+      ],
+    },
+    {
+      // TODO(b/234790486): Customize inputAssistance with the correct values.
+      // The correct values are the ones from the legacy settings page that used
+      // to be found in
+      // chrome-extension://jkghodnilhceideoidjikpgommlajknk/mozc_option.html.
+      title: SettingsHeaders.INPUT_ASSISTANCE,
+      optionNames: [{
+        name: OptionType.JAPANESE_INPUT_MODE,
+      }],
+    },
+    {
+      // TODO(b/234790486): Customize suggestions with the correct values.
+      // The correct values are the ones from the legacy settings page that used
+      // to be found in
+      // chrome-extension://jkghodnilhceideoidjikpgommlajknk/mozc_option.html.
+      title: SettingsHeaders.SUGGESTIONS,
+      optionNames: [{
+        name: OptionType.JAPANESE_INPUT_MODE,
+      }],
+    },
+    {
+      // TODO(b/234790486): Customize userDictionaries with the correct values.
+      // The correct values are the ones from the legacy settings page that used
+      // to be found in
+      // chrome-extension://jkghodnilhceideoidjikpgommlajknk/mozc_option.html.
+      title: SettingsHeaders.USER_DICTIONARIES,
+      optionNames: [{
+        name: OptionType.JAPANESE_INPUT_MODE,
+      }],
+    },
+    {
+      // TODO(b/234790486): Customize privacy with the correct values. The
+      // correct values are the ones from the legacy settings page that used to
+      // be found in
+      // chrome-extension://jkghodnilhceideoidjikpgommlajknk/mozc_option.html.
+      title: SettingsHeaders.PRIVACY,
+      optionNames: [{
+        name: OptionType.JAPANESE_INPUT_MODE,
+      }],
     },
   ],
   [SettingsType.ZHUYIN_SETTINGS]: [{
@@ -294,14 +371,16 @@ export function getFirstPartyInputMethodEngineId(id) {
  * @return {boolean} true if the input method's options page is implemented.
  */
 export function hasOptionsPageInSettings(
-    id, predictiveWritingEnabled, physicalKeyboardDiacriticsEnabled) {
+    id, predictiveWritingEnabled, physicalKeyboardDiacriticsEnabled,
+    isJapaneseSettingsEnabled) {
   if (!isFirstPartyInputMethodId_(id)) {
     return false;
   }
   const engineId = getFirstPartyInputMethodEngineId(id);
 
   const inputMethodSettings = getInputMethodSettings(
-      predictiveWritingEnabled, physicalKeyboardDiacriticsEnabled);
+      predictiveWritingEnabled, physicalKeyboardDiacriticsEnabled,
+      isJapaneseSettingsEnabled);
   return !!inputMethodSettings[engineId];
 }
 
@@ -315,11 +394,12 @@ export function hasOptionsPageInSettings(
  *     displayed.
  */
 export function generateOptions(
-    engineId, predictiveWritingEnabled, physicalKeyboardDiacriticsEnabled) {
+    engineId, predictiveWritingEnabled, physicalKeyboardDiacriticsEnabled,
+    isJapaneseSettingsEnabled) {
   const options = [];
-
   const inputMethodSettings = getInputMethodSettings(
-      predictiveWritingEnabled, physicalKeyboardDiacriticsEnabled);
+      predictiveWritingEnabled, physicalKeyboardDiacriticsEnabled,
+      isJapaneseSettingsEnabled);
   const engineSettings = inputMethodSettings[engineId];
   if (engineSettings) {
     const pushedOptions = {};
@@ -384,6 +464,12 @@ export function getOptionUiType(option) {
     case OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL:
     case OptionType.VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL:
     case OptionType.XKB_LAYOUT:
+    case OptionType.JAPANESE_INPUT_MODE:
+    case OptionType.JAPANESE_PUNCTUATION_STYLE:
+    case OptionType.JAPANESE_SYMBOL_STYLE:
+    case OptionType.JAPANESE_SPACE_INPUT_STYLE:
+    case OptionType.JAPANESE_SECTION_SHORTCUT:
+    case OptionType.JAPANESE_KEYMAP_STYLE:
     case OptionType.KOREAN_KEYBOARD_LAYOUT:
     case OptionType.ZHUYIN_KEYBOARD_LAYOUT:
     case OptionType.ZHUYIN_SELECT_KEYS:
@@ -452,6 +538,22 @@ export function getOptionLabelName(option) {
     case OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL:
     case OptionType.VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL:
       return 'inputMethodOptionsAutoCorrection';
+    case OptionType.JAPANESE_INPUT_MODE:
+      return 'inputMethodOptionsJapaneseInputMode';
+    case OptionType.JAPANESE_PUNCTUATION_STYLE:
+      return 'inputMethodOptionsJapanesePunctuationStyle';
+    case OptionType.JAPANESE_SYMBOL_STYLE:
+      return 'inputMethodOptionsJapaneseSymbolStyle';
+    case OptionType.JAPANESE_SPACE_INPUT_STYLE:
+      return 'inputMethodOptionsJapaneseSpaceInputStyle';
+    case OptionType.JAPANESE_SECTION_SHORTCUT:
+      return 'inputMethodOptionsJapaneseSectionShortcut';
+    case OptionType.JAPANESE_KEYMAP_STYLE:
+      return 'inputMethodOptionsJapaneseKeymapStyle';
+    case OptionType.JAPANESE_INPUT_MODE_KANA:
+      return 'inputMethodOptionsJapaneseInputModeKana';
+    case OptionType.JAPANESE_INPUT_MODE_ROMAJI:
+      return 'inputMethodOptionsJapaneseInputModeRomaji';
     case OptionType.XKB_LAYOUT:
       return 'inputMethodOptionsXkbLayout';
     case OptionType.EDIT_USER_DICT:
@@ -543,6 +645,112 @@ export function getOptionMenuItems(option) {
         {value: '10'},
         {value: '9'},
         {value: '8'},
+      ];
+    case OptionType.JAPANESE_INPUT_MODE:
+      return [
+        {
+          value: JAPANESE_INPUT_MODE.KANA,
+          name: 'inputMethodOptionsJapaneseInputModeRomaji',
+        },
+        {
+          value: JAPANESE_INPUT_MODE.ROMAJI,
+          name: 'inputMethodOptionsJapaneseInputModeKana',
+        },
+      ];
+    case OptionType.JAPANESE_PUNCTUATION_STYLE:
+      return [
+        {
+          value: JAPANESE_PUNCTUATION_STYLE.KUTEN_TOUTEN,
+          name: 'inputMethodOptionsJapanesePunctuationStyleKutenTouten',
+        },
+        {
+          value: JAPANESE_PUNCTUATION_STYLE.COMMA_PERIOD,
+          name: 'inputMethodOptionsJapanesePunctuationStyleCommaPeriod',
+        },
+        {
+          value: JAPANESE_PUNCTUATION_STYLE.KUTEN_PERIOD,
+          name: 'inputMethodOptionsJapanesePunctuationStyleKutenPeriod',
+        },
+        {
+          value: JAPANESE_PUNCTUATION_STYLE.COMMA_TOUTEN,
+          name: 'inputMethodOptionsJapanesePunctuationStyleCommaTouten',
+        },
+      ];
+    case OptionType.JAPANESE_SYMBOL_STYLE:
+      return [
+        {
+          value: JAPANESE_SYMBOL_STYLE.CORNER_BRACKET_MIDDLE_DOT,
+          name: 'inputMethodOptionsJapaneseSymbolStyleCornerBracketMiddleDot',
+        },
+        {
+          value: JAPANESE_SYMBOL_STYLE.SQUARE_BRACKET_SLASH,
+          name: 'inputMethodOptionsJapaneseSymbolStyleSquareBracketSlash',
+        },
+        {
+          value: JAPANESE_SYMBOL_STYLE.CORNER_BRACKET_SLASH,
+          name: 'inputMethodOptionsJapaneseSymbolStyleCornerBracketSlash',
+        },
+        {
+          value: JAPANESE_SYMBOL_STYLE.SQUARE_BRACKET_MIDDLE_DOT,
+          name: 'inputMethodOptionsJapaneseSymbolStyleSquareBracketMiddleDot',
+        },
+      ];
+    case OptionType.JAPANESE_SPACE_INPUT_STYLE:
+      return [
+        {
+          value: JAPANESE_SPACE_INPUT_STYLE.INPUT_MODE,
+          name: 'inputMethodOptionsJapaneseSpaceInputStyleInputMode',
+        },
+        {
+          value: JAPANESE_SPACE_INPUT_STYLE.FULLWIDTH,
+          name: 'inputMethodOptionsJapaneseSpaceInputStyleFullwidth',
+        },
+        {
+          value: JAPANESE_SPACE_INPUT_STYLE.HALFWIDTH,
+          name: 'inputMethodOptionsJapaneseSpaceInputStyleHalfwidth',
+        },
+      ];
+    case OptionType.JAPANESE_SECTION_SHORTCUT:
+      return [
+        {
+          value: JAPANESE_SECTION_SHORTCUT.NO_SHORTCUT,
+          name: 'inputMethodOptionsJapaneseSectionShortcutNoShortcut',
+        },
+        {
+          value: JAPANESE_SECTION_SHORTCUT.DIGITS_123456789,
+          name: 'inputMethodOptionsJapaneseSectionShortcut123456789',
+        },
+        {
+          value: JAPANESE_SECTION_SHORTCUT.ASDFGHJKL,
+          name: 'inputMethodOptionsJapaneseSectionShortcutAsdfghjkl',
+        },
+      ];
+    case OptionType.JAPANESE_KEYMAP_STYLE:
+      return [
+        {
+          value: JAPANESE_KEYMAP_STYLE.CUSTOM,
+          name: 'inputMethodOptionsJapaneseKeymapStyleCustom',
+        },
+        {
+          value: JAPANESE_KEYMAP_STYLE.ATOK,
+          name: 'inputMethodOptionsJapaneseKeymapStyleAtok',
+        },
+        {
+          value: JAPANESE_KEYMAP_STYLE.MS_IME,
+          name: 'inputMethodOptionsJapaneseKeymapStyleMsIme',
+        },
+        {
+          value: JAPANESE_KEYMAP_STYLE.KOTOERI,
+          name: 'inputMethodOptionsJapaneseKeymapStyleKotoeri',
+        },
+        {
+          value: JAPANESE_KEYMAP_STYLE.MOBILE,
+          name: 'inputMethodOptionsJapaneseKeymapStyleMobile',
+        },
+        {
+          value: JAPANESE_KEYMAP_STYLE.CHROME_OS,
+          name: 'inputMethodOptionsJapaneseKeymapStyleChromeOs',
+        },
       ];
     case OptionType.KOREAN_KEYBOARD_LAYOUT:
       // Korean layout strings are already Korean / English, so not
