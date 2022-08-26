@@ -380,7 +380,8 @@ void ShoppingService::HandleOptGuideProductInfoResponse(
   std::unique_ptr<ProductInfo> info = OptGuideResultToProductInfo(metadata);
 
   absl::optional<ProductInfo> optional_info;
-  if (info) {
+  // The product info is considered valid only if it has a country code.
+  if (info && !info->country_code.empty()) {
     optional_info.emplace(*info);
     UpdateProductInfoCache(url, true, std::move(info));
   }

@@ -35,10 +35,10 @@ class ShoppingServiceMetricsTest : public ShoppingServiceTestBase {
  public:
   ShoppingServiceMetricsTest() {
     og_response_with_image_ =
-        opt_guide_->BuildPriceTrackingResponse("", kImageUrl, 0, 0, "");
+        opt_guide_->BuildPriceTrackingResponse("", kImageUrl, 0, 0, "us");
 
     og_response_no_image_ =
-        opt_guide_->BuildPriceTrackingResponse("", "", 0, 0, "");
+        opt_guide_->BuildPriceTrackingResponse("", "", 0, 0, "us");
   }
   ShoppingServiceMetricsTest(const ShoppingServiceMetricsTest&) = delete;
   ShoppingServiceMetricsTest operator=(const ShoppingServiceMetricsTest&) =
