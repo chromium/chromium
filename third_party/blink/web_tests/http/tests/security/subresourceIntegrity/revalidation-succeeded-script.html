@@ -8,6 +8,7 @@
   var foo;
   var t_script = async_test(
     "SRI with script with successful revalidation shouldn't crash");
+  window.onload = () => t_script.step_timeout(revalidate_script, 0);
   function revalidate_script() {
     var script = document.createElement('script');
     script.integrity = "sha256-tbudgBSg+bHWHiHnlteNzN8TUvI80ygS9IULh4rklEw=";
@@ -22,7 +23,6 @@
   src="../../cache/resources/etag.php?revalidation-failed-script"
   type="text/javascript"
   integrity="sha256-tbudgBSg+bHWHiHnlteNzN8TUvI80ygS9IULh4rklEw="
-  onload="t_script.step_timeout(revalidate_script, 0)"
   onerror="t_script.unreached_func('First request should pass')()"
 ></script>
 </html>
