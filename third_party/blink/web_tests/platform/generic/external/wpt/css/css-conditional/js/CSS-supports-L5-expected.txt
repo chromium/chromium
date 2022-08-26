@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+FAIL font-format() function accepts a known format assert_equals: expected true but got false
+PASS font-format() function doesn't accept an unknown format
+PASS font-format() function doesn't accept a format list
+PASS font-format() function doesn't accept a string.
+FAIL font-tech() function accepts a known technology assert_equals: expected true but got false
+PASS font-tech() function doesn't accept an unknown technology
+PASS font-tech() function doesn't accept a technology list
+PASS font-tech() function doesn't accept a string.
+Harness: the test ran to completion.
+
