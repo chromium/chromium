@@ -30,5 +30,11 @@ export class PasswordManagerSideBarElement extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'password-manager-side-bar': PasswordManagerSideBarElement;
+  }
+}
+
 customElements.define(
     PasswordManagerSideBarElement.is, PasswordManagerSideBarElement);

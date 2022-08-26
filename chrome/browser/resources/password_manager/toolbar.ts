@@ -19,5 +19,11 @@ export class PasswordManagerToolbarElement extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'password-manager-toolbar': PasswordManagerToolbarElement;
+  }
+}
+
 customElements.define(
     PasswordManagerToolbarElement.is, PasswordManagerToolbarElement);
