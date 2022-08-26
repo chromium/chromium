@@ -2011,6 +2011,36 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="ChromeOS.USB.ExternalDeviceAttached.{USBPortType}.DeviceClass"
+    enum="ChromeOSUsbDeviceClass" expires_after="2023-06-30">
+  <owner>wonchung@google.com</owner>
+  <owner>chromeos-usb@google.com</owner>
+  <summary>
+    USB device class per {USBPortType}. This is emitted each time an external
+    device is attached via USB and when user logs in with an external device
+    attached.
+  </summary>
+  <token key="USBPortType">
+    <variant name="TypeA"/>
+    <variant name="TypeC"/>
+  </token>
+</histogram>
+
+<histogram name="ChromeOS.USB.ExternalDeviceAttached.{USBPortType}.DeviceSpeed"
+    enum="ChromeOSUsbDeviceSpeed" expires_after="2023-06-30">
+  <owner>wonchung@google.com</owner>
+  <owner>chromeos-usb@google.com</owner>
+  <summary>
+    USB device speed per {USBPortType}. This is emitted each time an external
+    device is attached via USB and when user logs in with an external device
+    attached.
+  </summary>
+  <token key="USBPortType">
+    <variant name="TypeA"/>
+    <variant name="TypeC"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.UserTypeByDeviceType.LogSegment"
     enum="UserDeviceMatrix" expires_after="2023-04-24">
   <owner>bmalcolm@chromium.org</owner>

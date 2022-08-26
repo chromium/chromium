@@ -15821,6 +15821,40 @@ Called by update_protocol_commands_enum.py.-->
   <int value="508" label="Show Continue Section"/>
 </enum>
 
+<enum name="ChromeOSUsbDeviceClass">
+  <summary>https://www.usb.org/defined-class-codes</summary>
+  <int value="0" label="Application Specific"/>
+  <int value="1" label="Audio"/>
+  <int value="2" label="Audio/Video"/>
+  <int value="3" label="Card"/>
+  <int value="4" label="Communication"/>
+  <int value="5" label="Healthcare"/>
+  <int value="6" label="HID"/>
+  <int value="7" label="Hub"/>
+  <int value="8" label="Image"/>
+  <int value="9" label="Miscellaneous"/>
+  <int value="10" label="Other"/>
+  <int value="11" label="Physical"/>
+  <int value="12" label="Printer"/>
+  <int value="13" label="Security"/>
+  <int value="14" label="Storage"/>
+  <int value="15" label="Vendor Specific"/>
+  <int value="16" label="Video"/>
+  <int value="17" label="Wireless"/>
+</enum>
+
+<enum name="ChromeOSUsbDeviceSpeed">
+  <int value="0" label="Other"/>
+  <int value="1" label="1.5 Mbps (USB 1.1)"/>
+  <int value="2" label="12 Mbps (USB 1.1)"/>
+  <int value="3" label="480 Mbps (USB 2.0)"/>
+  <int value="4"
+      label="480 Mbps fallback (USB 2.0 fallen back from SuperSpeed)"/>
+  <int value="5" label="5000 Mbps (USB 3.2 Gen 1)"/>
+  <int value="6" label="10000 Mbps (USB 3.2 Gen 2)"/>
+  <int value="7" label="20000 Mbps (USB 3.2 Gen 2x2)"/>
+</enum>
+
 <enum name="ChromeOSUsbEventTiming">
   <int value="0" label="kLoggedOut"/>
   <int value="1" label="kLoggedIn"/>
