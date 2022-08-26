@@ -471,7 +471,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'libjxl_revision': '3e246a860ea6d510d91ceca5413dcc50e8c41dd9',
+  'libjxl_revision': '8001738dc9cd8dc6fa24cf75fefd08f909b2ac3c',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
