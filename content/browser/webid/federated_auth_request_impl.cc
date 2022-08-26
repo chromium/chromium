@@ -91,8 +91,9 @@ std::string ComputeUrlEncodedTokenPostData(const std::string& client_id,
 
 std::string GetConsoleErrorMessage(FederatedAuthRequestResult status) {
   switch (status) {
-    case FederatedAuthRequestResult::kApprovalDeclined: {
-      return "User declined the sign-in attempt.";
+    case FederatedAuthRequestResult::kShouldEmbargo: {
+      return "User declined or dismissed prompt. API exponential cool down "
+             "triggered.";
     }
     case FederatedAuthRequestResult::kErrorDisabledInSettings: {
       return "Third-party sign in was disabled in browser Site Settings.";
@@ -164,6 +165,9 @@ std::string GetConsoleErrorMessage(FederatedAuthRequestResult status) {
     case FederatedAuthRequestResult::kErrorCanceled: {
       return "The request has been aborted.";
     }
+    case FederatedAuthRequestResult::kErrorRpPageNotVisible: {
+      return "RP page is not visible.";
+    }
     case FederatedAuthRequestResult::kError: {
       return "Error retrieving a token.";
     }
@@ -182,15 +186,13 @@ RequestTokenStatus FederatedAuthRequestResultToRequestTokenStatus(
     case FederatedAuthRequestResult::kSuccess: {
       return RequestTokenStatus::kSuccess;
     }
-    case FederatedAuthRequestResult::kApprovalDeclined: {
-      return RequestTokenStatus::kApprovalDeclined;
-    }
     case FederatedAuthRequestResult::kErrorTooManyRequests: {
       return RequestTokenStatus::kErrorTooManyRequests;
     }
     case FederatedAuthRequestResult::kErrorCanceled: {
       return RequestTokenStatus::kErrorCanceled;
     }
+    case FederatedAuthRequestResult::kShouldEmbargo:
     case FederatedAuthRequestResult::kErrorDisabledInSettings:
     case FederatedAuthRequestResult::kErrorFetchingManifestListHttpNotFound:
     case FederatedAuthRequestResult::kErrorFetchingManifestListNoResponse:
@@ -210,8 +212,66 @@ RequestTokenStatus FederatedAuthRequestResultToRequestTokenStatus(
     case FederatedAuthRequestResult::kErrorFetchingIdTokenHttpNotFound:
     case FederatedAuthRequestResult::kErrorFetchingIdTokenNoResponse:
     case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse:
+    case FederatedAuthRequestResult::kErrorRpPageNotVisible:
     case FederatedAuthRequestResult::kError: {
       return RequestTokenStatus::kError;
+    }
+  }
+}
+
+IdpNetworkRequestManager::MetricsEndpointErrorCode
+FederatedAuthRequestResultToMetricsEndpointErrorCode(
+    blink::mojom::FederatedAuthRequestResult result) {
+  switch (result) {
+    case FederatedAuthRequestResult::kSuccess: {
+      return IdpNetworkRequestManager::MetricsEndpointErrorCode::kNone;
+    }
+    case FederatedAuthRequestResult::kErrorTooManyRequests: {
+      return IdpNetworkRequestManager::MetricsEndpointErrorCode::
+          kTooManyRequests;
+    }
+    case FederatedAuthRequestResult::kErrorCanceled: {
+      return IdpNetworkRequestManager::MetricsEndpointErrorCode::kErrorCanceled;
+    }
+    case FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse: {
+      return IdpNetworkRequestManager::MetricsEndpointErrorCode::
+          kAccountsEndpointInvalidResponse;
+    }
+    case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse: {
+      return IdpNetworkRequestManager::MetricsEndpointErrorCode::
+          kTokenEndpointInvalidResponse;
+    }
+    case FederatedAuthRequestResult::kShouldEmbargo:
+    case FederatedAuthRequestResult::kErrorDisabledInSettings:
+    case FederatedAuthRequestResult::kErrorRpPageNotVisible: {
+      return IdpNetworkRequestManager::MetricsEndpointErrorCode::kUserFailure;
+    }
+    case FederatedAuthRequestResult::kErrorFetchingManifestListHttpNotFound:
+    case FederatedAuthRequestResult::kErrorFetchingManifestListNoResponse:
+    case FederatedAuthRequestResult::kErrorFetchingManifestHttpNotFound:
+    case FederatedAuthRequestResult::kErrorFetchingManifestNoResponse:
+    case FederatedAuthRequestResult::kErrorFetchingClientMetadataHttpNotFound:
+    case FederatedAuthRequestResult::kErrorFetchingClientMetadataNoResponse:
+    case FederatedAuthRequestResult::kErrorFetchingAccountsHttpNotFound:
+    case FederatedAuthRequestResult::kErrorFetchingAccountsNoResponse:
+    case FederatedAuthRequestResult::kErrorFetchingIdTokenHttpNotFound:
+    case FederatedAuthRequestResult::kErrorFetchingIdTokenNoResponse: {
+      return IdpNetworkRequestManager::MetricsEndpointErrorCode::
+          kIdpServerUnavailable;
+    }
+    case FederatedAuthRequestResult::kErrorManifestNotInManifestList:
+    case FederatedAuthRequestResult::kErrorManifestListTooBig: {
+      return IdpNetworkRequestManager::MetricsEndpointErrorCode::kManifestError;
+    }
+    case FederatedAuthRequestResult::kErrorFetchingManifestListInvalidResponse:
+    case FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse:
+    case FederatedAuthRequestResult::
+        kErrorFetchingClientMetadataInvalidResponse: {
+      return IdpNetworkRequestManager::MetricsEndpointErrorCode::
+          kIdpServerInvalidResponse;
+    }
+    case FederatedAuthRequestResult::kError: {
+      return IdpNetworkRequestManager::MetricsEndpointErrorCode::kOther;
     }
   }
 }
@@ -609,6 +669,7 @@ void FederatedAuthRequestImpl::OnManifestFetched(
       ResolveManifestUrl(identity_provider, endpoints.accounts);
   endpoints_.client_metadata =
       ResolveManifestUrl(identity_provider, endpoints.client_metadata);
+  endpoints_.metrics = ResolveManifestUrl(identity_provider, endpoints.metrics);
   idp_metadata_ = idp_metadata;
 
   if (manifest_lists_checked_.count(identity_provider.config_url))
@@ -706,9 +767,10 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
       // Does not show the dialog if the user has left the page. e.g. they may
       // open a new tab before browser is ready to show the dialog.
       if (!is_visible) {
-        CompleteRequestWithError(FederatedAuthRequestResult::kError,
-                                 TokenStatus::kRpPageNotVisible,
-                                 /*should_delay_callback=*/true);
+        CompleteRequestWithError(
+            FederatedAuthRequestResult::kErrorRpPageNotVisible,
+            TokenStatus::kRpPageNotVisible,
+            /*should_delay_callback=*/true);
         return;
       }
 
@@ -866,8 +928,11 @@ void FederatedAuthRequestImpl::OnDialogDismissed(
   // Reject the promise immediately if the UI is dismissed without selecting
   // an account. Meanwhile, we fuzz the rejection time for other failures to
   // make it indistinguishable.
-  CompleteRequestWithError(FederatedAuthRequestResult::kError,
-                           TokenStatus::kNotSelectAccount,
+  CompleteRequestWithError(should_embargo
+                               ? FederatedAuthRequestResult::kShouldEmbargo
+                               : FederatedAuthRequestResult::kError,
+                           should_embargo ? TokenStatus::kShouldEmbargo
+                                          : TokenStatus::kNotSelectAccount,
                            /*should_delay_callback=*/false);
 }
 
@@ -950,6 +1015,15 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
       fedcm_metrics_->RecordTokenResponseAndTurnaroundTime(
           token_response_time_ - select_account_time_,
           token_response_time_ - start_time_);
+
+      if (endpoints_.metrics.is_valid()) {
+        network_manager_->SendSuccessfulTokenRequestMetrics(
+            endpoints_.metrics, show_accounts_dialog_time_ - start_time_,
+            select_account_time_ - show_accounts_dialog_time_,
+            token_response_time_ - select_account_time_,
+            token_response_time_ - start_time_);
+      }
+
       CompleteRequest(FederatedAuthRequestResult::kSuccess,
                       TokenStatus::kSuccess, token,
                       /*should_delay_callback=*/false);
@@ -1025,6 +1099,12 @@ void FederatedAuthRequestImpl::CompleteRequest(
     // issue from the browser.
     AddInspectorIssue(result);
     AddConsoleErrorMessage(result);
+
+    if (endpoints_.metrics.is_valid()) {
+      network_manager_->SendFailedTokenRequestMetrics(
+          endpoints_.metrics,
+          FederatedAuthRequestResultToMetricsEndpointErrorCode(result));
+    }
   }
 
   CleanUp();

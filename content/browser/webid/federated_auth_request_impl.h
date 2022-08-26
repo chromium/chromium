@@ -193,6 +193,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     GURL token;
     GURL accounts;
     GURL client_metadata;
+    GURL metrics;
   } endpoints_;
 
   // Tracks for which IDPs the manifest URL has been checked against the IDP's

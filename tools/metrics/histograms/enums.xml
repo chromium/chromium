@@ -41381,6 +41381,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="28" label="DisabledEmbargo"/>
   <int value="29" label="UserInterfaceTimedOut"/>
   <int value="30" label="RpPageNotVisible"/>
+  <int value="31" label="ShouldEmbargo"/>
 </enum>
 
 <enum name="FedCmRevokeStatus">

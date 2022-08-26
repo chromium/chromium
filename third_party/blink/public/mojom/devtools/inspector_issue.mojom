@@ -188,7 +188,7 @@ struct LowTextContrastIssue {
 // includes all cases except for kSuccess.
 enum FederatedAuthRequestResult {
   kSuccess,
-  kApprovalDeclined,
+  kShouldEmbargo,
   kErrorDisabledInSettings,
   kErrorTooManyRequests,
   kErrorFetchingManifestListHttpNotFound,
@@ -209,6 +209,7 @@ enum FederatedAuthRequestResult {
   kErrorFetchingIdTokenNoResponse,
   kErrorFetchingIdTokenInvalidResponse,
   kErrorCanceled,
+  kErrorRpPageNotVisible,
   kError,
 };
 

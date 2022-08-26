@@ -166,8 +166,8 @@ std::string FederatedAuthRequestResultToProtocol(
   namespace FederatedAuthRequestIssueReasonEnum =
       protocol::Audits::FederatedAuthRequestIssueReasonEnum;
   switch (result) {
-    case FederatedAuthRequestResult::kApprovalDeclined: {
-      return FederatedAuthRequestIssueReasonEnum::ApprovalDeclined;
+    case FederatedAuthRequestResult::kShouldEmbargo: {
+      return FederatedAuthRequestIssueReasonEnum::ShouldEmbargo;
     }
     case FederatedAuthRequestResult::kErrorDisabledInSettings: {
       return FederatedAuthRequestIssueReasonEnum::DisabledInSettings;
@@ -231,6 +231,8 @@ std::string FederatedAuthRequestResultToProtocol(
     case FederatedAuthRequestResult::kErrorCanceled: {
       return FederatedAuthRequestIssueReasonEnum::Canceled;
     }
+    case FederatedAuthRequestResult::kErrorRpPageNotVisible:
+      return FederatedAuthRequestIssueReasonEnum::RpPageNotVisible;
     case FederatedAuthRequestResult::kError: {
       return FederatedAuthRequestIssueReasonEnum::ErrorIdToken;
     }

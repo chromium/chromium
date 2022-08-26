@@ -51,8 +51,9 @@ enum class FedCmRequestIdTokenStatus {
   kDisabledEmbargo,
   kUserInterfaceTimedOut,  // obsolete
   kRpPageNotVisible,
+  kShouldEmbargo,
 
-  kMaxValue = kRpPageNotVisible
+  kMaxValue = kShouldEmbargo
 };
 
 // This enum describes whether user sign-in states between IDP and browser
