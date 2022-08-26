@@ -114,23 +114,12 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     bool low_priority_subframe_throttleable;
     bool low_priority_hidden_frame;
 
-    // Used along with |low_priority_subframe|, |low_priority_throttleable|,
-    // |low_priority_subframe_throttleable|, |low_priority_hidden_frame|
-    // to enable one of these experiments during the loading phase only.
-    bool use_frame_priorities_only_during_loading;
-
     // Ads priority experiment (crbug.com/856150).
     bool low_priority_ad_frame;
     bool best_effort_ad_frame;
-    bool use_adframe_priorities_only_during_loading;
 
     // Origin type priority experiment (crbug.com/856158).
     bool low_priority_cross_origin;
-    bool low_priority_cross_origin_only_during_loading;
-
-    // Use resource fetch priority for resource loading tasks
-    // (crbug.com/860545).
-    bool use_resource_fetch_priority;
 
     // Prioritize compositing and loading tasks until first contentful paint.
     // (crbug.com/971191)
@@ -138,12 +127,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
     // Prioritise one BeginMainFrame after an input task.
     bool prioritize_compositing_after_input;
-
-    // Contains a mapping from net::RequestPriority to TaskQueue::QueuePriority
-    // when use_resource_fetch_priority is enabled.
-    std::array<base::sequence_manager::TaskQueue::QueuePriority,
-               net::RequestPrioritySize::NUM_PRIORITIES>
-        net_to_blink_priority;
 
     // If enabled, base::ThreadTaskRunnerHandle::Get() and
     // base::SequencedTaskRunnerHandle::Get() returns the current active

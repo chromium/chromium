@@ -73,8 +73,6 @@ class PLATFORM_EXPORT FrameTaskQueueController {
   scoped_refptr<MainThreadTaskQueue> GetTaskQueue(
       MainThreadTaskQueue::QueueTraits);
 
-  scoped_refptr<MainThreadTaskQueue> NewResourceLoadingTaskQueue();
-
   scoped_refptr<MainThreadTaskQueue> NewWebSchedulingTaskQueue(
       MainThreadTaskQueue::QueueTraits,
       WebSchedulingPriority);
@@ -87,15 +85,6 @@ class PLATFORM_EXPORT FrameTaskQueueController {
   // Gets the associated QueueEnabledVoter for the given task queue, or nullptr
   // if one doesn't exist.
   base::sequence_manager::TaskQueue::QueueEnabledVoter* GetQueueEnabledVoter(
-      const scoped_refptr<MainThreadTaskQueue>&);
-
-  // Remove a resource loading task queue that FrameTaskQueueController created,
-  // along with its QueueEnabledVoter, if one exists. Returns true if the task
-  // queue was found and erased and false otherwise.
-  //
-  // Removes are linear in the total number of task queues since
-  // |all_task_queues_and_voters_| needs to be updated.
-  bool RemoveResourceLoadingTaskQueue(
       const scoped_refptr<MainThreadTaskQueue>&);
 
   void WriteIntoTrace(perfetto::TracedValue context) const;
@@ -129,10 +118,6 @@ class PLATFORM_EXPORT FrameTaskQueueController {
 
   // Map of all TaskQueues, indexed by QueueTraits.
   TaskQueueMap task_queues_;
-
-  // Set of all resource loading task queues.
-  WTF::HashSet<scoped_refptr<MainThreadTaskQueue>>
-      resource_loading_task_queues_;
 
   using TaskQueueEnabledVoterMap = WTF::HashMap<
       scoped_refptr<MainThreadTaskQueue>,

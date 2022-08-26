@@ -508,12 +508,6 @@ class FrameSchedulerImplTest : public testing::Test {
     return frame_scheduler_->CalculateLifecycleState(type);
   }
 
-  void DidChangeResourceLoadingPriority(
-      scoped_refptr<MainThreadTaskQueue> task_queue,
-      net::RequestPriority priority) {
-    frame_scheduler_->DidChangeResourceLoadingPriority(task_queue, priority);
-  }
-
   void DidCommitProvisionalLoad(
       FrameScheduler::NavigationType navigation_type) {
     frame_scheduler_->DidCommitProvisionalLoad(
@@ -1574,8 +1568,7 @@ TEST_F(BestEffortPriorityBackgroundPageExperimentTest, FrameQueuesPriorities) {
 class LowPriorityHiddenFrameExperimentTest : public FrameSchedulerImplTest {
  public:
   LowPriorityHiddenFrameExperimentTest()
-      : FrameSchedulerImplTest({kLowPriorityForHiddenFrame},
-                               {kFrameExperimentOnlyWhenLoading}) {}
+      : FrameSchedulerImplTest({kLowPriorityForHiddenFrame}, {}) {}
 };
 
 TEST_F(LowPriorityHiddenFrameExperimentTest, FrameQueuesPriorities) {
@@ -1610,65 +1603,10 @@ TEST_F(LowPriorityHiddenFrameExperimentTest, FrameQueuesPriorities) {
             TaskQueue::QueuePriority::kNormalPriority);
 }
 
-class LowPriorityHiddenFrameDuringLoadingExperimentTest
-    : public FrameSchedulerImplTest {
- public:
-  LowPriorityHiddenFrameDuringLoadingExperimentTest()
-      : FrameSchedulerImplTest(
-            {kLowPriorityForHiddenFrame, kFrameExperimentOnlyWhenLoading},
-            {}) {}
-};
-
-TEST_F(LowPriorityHiddenFrameDuringLoadingExperimentTest,
-       FrameQueuesPriorities) {
-  // Main thread scheduler is in the loading use case.
-  std::unique_ptr<FrameSchedulerImpl> main_frame_scheduler =
-      CreateFrameScheduler(page_scheduler_.get(),
-                           frame_scheduler_delegate_.get(),
-                           /*is_in_embedded_frame_tree=*/false,
-                           FrameScheduler::FrameType::kMainFrame);
-  main_frame_scheduler->OnFirstContentfulPaintInMainFrame();
-  ASSERT_EQ(scheduler_->current_use_case(), UseCase::kLoading);
-
-  // Hidden Frame Task Queues.
-  frame_scheduler_->SetFrameVisible(false);
-  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kLowPriority);
-
-  // Main thread scheduler is no longer in loading use case.
-  main_frame_scheduler->OnFirstMeaningfulPaint();
-  ASSERT_EQ(scheduler_->current_use_case(), UseCase::kNone);
-  EXPECT_FALSE(page_scheduler_->IsLoading());
-
-  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-}
-
 class LowPrioritySubFrameExperimentTest : public FrameSchedulerImplTest {
  public:
   LowPrioritySubFrameExperimentTest()
-      : FrameSchedulerImplTest({kLowPriorityForSubFrame},
-                               {kFrameExperimentOnlyWhenLoading}) {}
+      : FrameSchedulerImplTest({kLowPriorityForSubFrame}, {}) {}
 };
 
 TEST_F(LowPrioritySubFrameExperimentTest, FrameQueuesPriorities) {
@@ -1706,65 +1644,11 @@ TEST_F(LowPrioritySubFrameExperimentTest, FrameQueuesPriorities) {
             TaskQueue::QueuePriority::kNormalPriority);
 }
 
-class LowPrioritySubFrameDuringLoadingExperimentTest
-    : public FrameSchedulerImplTest {
- public:
-  LowPrioritySubFrameDuringLoadingExperimentTest()
-      : FrameSchedulerImplTest(
-            {kLowPriorityForSubFrame, kFrameExperimentOnlyWhenLoading},
-            {}) {}
-};
-
-TEST_F(LowPrioritySubFrameDuringLoadingExperimentTest, FrameQueuesPriorities) {
-  // Main thread scheduler is in the loading use case.
-  std::unique_ptr<FrameSchedulerImpl> main_frame_scheduler =
-      CreateFrameScheduler(page_scheduler_.get(),
-                           frame_scheduler_delegate_.get(),
-                           /*is_in_embedded_frame_tree=*/false,
-                           FrameScheduler::FrameType::kMainFrame);
-  main_frame_scheduler->OnFirstContentfulPaintInMainFrame();
-  ASSERT_EQ(scheduler_->current_use_case(), UseCase::kLoading);
-
-  // Sub-Frame Task Queues.
-  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kLowPriority);
-
-  // Main thread scheduler is no longer in loading use case.
-  main_frame_scheduler->OnFirstMeaningfulPaint();
-  ASSERT_EQ(scheduler_->current_use_case(), UseCase::kNone);
-  EXPECT_FALSE(page_scheduler_->IsLoading());
-
-  // Sub-Frame Task Queues.
-  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-}
-
 class LowPrioritySubFrameThrottleableTaskExperimentTest
     : public FrameSchedulerImplTest {
  public:
   LowPrioritySubFrameThrottleableTaskExperimentTest()
-      : FrameSchedulerImplTest({kLowPriorityForSubFrameThrottleableTask},
-                               {kFrameExperimentOnlyWhenLoading}) {}
+      : FrameSchedulerImplTest({kLowPriorityForSubFrameThrottleableTask}, {}) {}
 };
 
 TEST_F(LowPrioritySubFrameThrottleableTaskExperimentTest,
@@ -1803,66 +1687,11 @@ TEST_F(LowPrioritySubFrameThrottleableTaskExperimentTest,
             TaskQueue::QueuePriority::kNormalPriority);
 }
 
-class LowPrioritySubFrameThrottleableTaskDuringLoadingExperimentTest
-    : public FrameSchedulerImplTest {
- public:
-  LowPrioritySubFrameThrottleableTaskDuringLoadingExperimentTest()
-      : FrameSchedulerImplTest({kLowPriorityForSubFrameThrottleableTask,
-                                kFrameExperimentOnlyWhenLoading},
-                               {}) {}
-};
-
-TEST_F(LowPrioritySubFrameThrottleableTaskDuringLoadingExperimentTest,
-       FrameQueuesPriorities) {
-  // Main thread scheduler is in the loading use case.
-  std::unique_ptr<FrameSchedulerImpl> main_frame_scheduler =
-      CreateFrameScheduler(page_scheduler_.get(),
-                           frame_scheduler_delegate_.get(),
-                           /*is_in_embedded_frame_tree=*/false,
-                           FrameScheduler::FrameType::kMainFrame);
-  main_frame_scheduler->OnFirstContentfulPaintInMainFrame();
-  ASSERT_EQ(scheduler_->current_use_case(), UseCase::kLoading);
-
-  // Sub-Frame Task Queues.
-  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-
-  // Main thread scheduler is no longer in loading use case.
-  main_frame_scheduler->OnFirstMeaningfulPaint();
-  ASSERT_EQ(scheduler_->current_use_case(), UseCase::kNone);
-  EXPECT_FALSE(page_scheduler_->IsLoading());
-
-  // Sub-Frame Task Queues.
-  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-}
-
 class LowPriorityThrottleableTaskExperimentTest
     : public FrameSchedulerImplTest {
  public:
   LowPriorityThrottleableTaskExperimentTest()
-      : FrameSchedulerImplTest({kLowPriorityForThrottleableTask},
-                               {kFrameExperimentOnlyWhenLoading}) {}
+      : FrameSchedulerImplTest({kLowPriorityForThrottleableTask}, {}) {}
 };
 
 TEST_F(LowPriorityThrottleableTaskExperimentTest, FrameQueuesPriorities) {
@@ -1900,109 +1729,10 @@ TEST_F(LowPriorityThrottleableTaskExperimentTest, FrameQueuesPriorities) {
             TaskQueue::QueuePriority::kNormalPriority);
 }
 
-class LowPriorityThrottleableTaskDuringLoadingExperimentTest
-    : public FrameSchedulerImplTest {
- public:
-  LowPriorityThrottleableTaskDuringLoadingExperimentTest()
-      : FrameSchedulerImplTest(
-            {kLowPriorityForThrottleableTask, kFrameExperimentOnlyWhenLoading},
-            {}) {}
-};
-
-TEST_F(LowPriorityThrottleableTaskDuringLoadingExperimentTest,
-       SubFrameQueuesPriorities) {
-  // Main thread is in the loading use case.
-  std::unique_ptr<FrameSchedulerImpl> main_frame_scheduler =
-      CreateFrameScheduler(page_scheduler_.get(),
-                           frame_scheduler_delegate_.get(),
-                           /*is_in_embedded_frame_tree=*/false,
-                           FrameScheduler::FrameType::kMainFrame);
-  main_frame_scheduler->OnFirstContentfulPaintInMainFrame();
-  ASSERT_EQ(scheduler_->current_use_case(), UseCase::kLoading);
-
-  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-
-  // Main thread is no longer in loading use case.
-  main_frame_scheduler->OnFirstMeaningfulPaint();
-  ASSERT_EQ(scheduler_->current_use_case(), UseCase::kNone);
-
-  EXPECT_FALSE(page_scheduler_->IsLoading());
-
-  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-}
-
-TEST_F(LowPriorityThrottleableTaskDuringLoadingExperimentTest,
-       MainFrameQueuesPriorities) {
-  frame_scheduler_->OnFirstMeaningfulPaint();
-
-  frame_scheduler_ =
-      CreateFrameScheduler(page_scheduler_.get(), nullptr,
-                           /*is_in_embedded_frame_tree=*/false,
-                           FrameScheduler::FrameType::kMainFrame);
-
-  // Main thread is in the loading use case.
-  frame_scheduler_->OnFirstContentfulPaintInMainFrame();
-
-  // Main Frame Task Queues.
-  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-
-  // Main thread is no longer in loading use case.
-  frame_scheduler_->OnFirstMeaningfulPaint();
-  EXPECT_FALSE(page_scheduler_->IsLoading());
-
-  // Main Frame Task Queues.
-  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-}
-
 class LowPriorityAdFrameExperimentTest : public FrameSchedulerImplTest {
  public:
   LowPriorityAdFrameExperimentTest()
-      : FrameSchedulerImplTest({kLowPriorityForAdFrame},
-                               {kAdFrameExperimentOnlyWhenLoading}) {}
+      : FrameSchedulerImplTest({kLowPriorityForAdFrame}, {}) {}
 };
 
 TEST_F(LowPriorityAdFrameExperimentTest, FrameQueuesPriorities) {
@@ -2056,67 +1786,10 @@ TEST_F(LowPriorityAdFrameExperimentTest, FrameQueuesPriorities) {
             TaskQueue::QueuePriority::kNormalPriority);
 }
 
-class LowPriorityAdFrameDuringLoadingExperimentTest
-    : public FrameSchedulerImplTest {
- public:
-  LowPriorityAdFrameDuringLoadingExperimentTest()
-      : FrameSchedulerImplTest(
-            {kLowPriorityForAdFrame, kAdFrameExperimentOnlyWhenLoading},
-            {}) {}
-};
-
-TEST_F(LowPriorityAdFrameDuringLoadingExperimentTest, FrameQueuesPriorities) {
-  frame_scheduler_->SetIsAdFrame(true);
-
-  EXPECT_TRUE(frame_scheduler_->IsAdFrame());
-
-  // Main thread scheduler is in the loading use case.
-  std::unique_ptr<FrameSchedulerImpl> main_frame_scheduler =
-      CreateFrameScheduler(page_scheduler_.get(),
-                           frame_scheduler_delegate_.get(),
-                           /*is_in_embedded_frame_tree=*/false,
-                           FrameScheduler::FrameType::kMainFrame);
-  main_frame_scheduler->OnFirstContentfulPaintInMainFrame();
-  ASSERT_EQ(scheduler_->current_use_case(), UseCase::kLoading);
-
-  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kLowPriority);
-
-  // Main thread scheduler is no longer in loading use case.
-  main_frame_scheduler->OnFirstMeaningfulPaint();
-  ASSERT_EQ(scheduler_->current_use_case(), UseCase::kNone);
-
-  EXPECT_FALSE(page_scheduler_->IsLoading());
-
-  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-}
-
 class BestEffortPriorityAdFrameExperimentTest : public FrameSchedulerImplTest {
  public:
   BestEffortPriorityAdFrameExperimentTest()
-      : FrameSchedulerImplTest({kBestEffortPriorityForAdFrame},
-                               {kAdFrameExperimentOnlyWhenLoading}) {}
+      : FrameSchedulerImplTest({kBestEffortPriorityForAdFrame}, {}) {}
 };
 
 TEST_F(BestEffortPriorityAdFrameExperimentTest, FrameQueuesPriorities) {
@@ -2169,115 +1842,6 @@ TEST_F(BestEffortPriorityAdFrameExperimentTest, FrameQueuesPriorities) {
             TaskQueue::QueuePriority::kNormalPriority);
 }
 
-class BestEffortPriorityAdFrameDuringLoadingExperimentTest
-    : public FrameSchedulerImplTest {
- public:
-  BestEffortPriorityAdFrameDuringLoadingExperimentTest()
-      : FrameSchedulerImplTest(
-            {kBestEffortPriorityForAdFrame, kAdFrameExperimentOnlyWhenLoading},
-            {}) {}
-};
-
-TEST_F(BestEffortPriorityAdFrameDuringLoadingExperimentTest,
-       FrameQueuesPriorities) {
-  frame_scheduler_->SetIsAdFrame(true);
-
-  EXPECT_TRUE(frame_scheduler_->IsAdFrame());
-
-  // Main thread scheduler is in the loading use case.
-  std::unique_ptr<FrameSchedulerImpl> main_frame_scheduler =
-      CreateFrameScheduler(page_scheduler_.get(),
-                           frame_scheduler_delegate_.get(),
-                           /*is_in_embedded_frame_tree=*/false,
-                           FrameScheduler::FrameType::kMainFrame);
-  main_frame_scheduler->OnFirstContentfulPaintInMainFrame();
-  ASSERT_EQ(scheduler_->current_use_case(), UseCase::kLoading);
-
-  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kBestEffortPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kBestEffortPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kBestEffortPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kBestEffortPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kBestEffortPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kBestEffortPriority);
-
-  // Main thread scheduler is no longer in loading use case.
-  main_frame_scheduler->OnFirstMeaningfulPaint();
-  ASSERT_EQ(scheduler_->current_use_case(), UseCase::kNone);
-
-  EXPECT_FALSE(page_scheduler_->IsLoading());
-
-  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-}
-
-class ResourceFetchPriorityExperimentTest : public FrameSchedulerImplTest {
- public:
-  ResourceFetchPriorityExperimentTest()
-      : FrameSchedulerImplTest({kUseResourceFetchPriority}, {}) {
-    base::FieldTrialParams params{{"HIGHEST", "HIGH"}, {"MEDIUM", "NORMAL"},
-                                  {"LOW", "NORMAL"},   {"LOWEST", "LOW"},
-                                  {"IDLE", "LOW"},     {"THROTTLED", "LOW"}};
-
-    const char kStudyName[] = "ResourceFetchPriorityExperiment";
-    const char kGroupName[] = "GroupName1";
-
-    base::AssociateFieldTrialParams(kStudyName, kGroupName, params);
-    base::FieldTrialList::CreateFieldTrial(kStudyName, kGroupName);
-  }
-};
-
-TEST_F(ResourceFetchPriorityExperimentTest, DidChangePriority) {
-  std::unique_ptr<ResourceLoadingTaskRunnerHandleImpl> handle =
-      GetResourceLoadingTaskRunnerHandleImpl();
-  scoped_refptr<MainThreadTaskQueue> task_queue = handle->task_queue();
-
-  TaskQueue::QueuePriority priority = task_queue->GetQueuePriority();
-  EXPECT_EQ(priority, TaskQueue::QueuePriority::kNormalPriority);
-
-  DidChangeResourceLoadingPriority(task_queue, net::RequestPriority::LOWEST);
-  EXPECT_EQ(task_queue->GetQueuePriority(),
-            TaskQueue::QueuePriority::kLowPriority);
-
-  DidChangeResourceLoadingPriority(task_queue, net::RequestPriority::HIGHEST);
-  EXPECT_EQ(task_queue->GetQueuePriority(),
-            TaskQueue::QueuePriority::kHighPriority);
-}
-
-TEST_F(
-    FrameSchedulerImplTest,
-    DidChangeResourceLoadingPriority_ResourceFecthPriorityExperimentDisabled) {
-  // If the experiment is disabled, we use |loading_task_queue_| for resource
-  // loading tasks and we don't want the priority of this queue to be affected
-  // by individual resources.
-  std::unique_ptr<ResourceLoadingTaskRunnerHandleImpl> handle =
-      GetResourceLoadingTaskRunnerHandleImpl();
-  scoped_refptr<MainThreadTaskQueue> task_queue = handle->task_queue();
-
-  TaskQueue::QueuePriority priority = task_queue->GetQueuePriority();
-
-  DidChangeResourceLoadingPriority(task_queue, net::RequestPriority::LOW);
-  EXPECT_EQ(task_queue->GetQueuePriority(), priority);
-
-  DidChangeResourceLoadingPriority(task_queue, net::RequestPriority::HIGHEST);
-  EXPECT_EQ(task_queue->GetQueuePriority(), priority);
-}
-
 class LowPriorityCrossOriginTaskExperimentTest : public FrameSchedulerImplTest {
  public:
   LowPriorityCrossOriginTaskExperimentTest()
@@ -2316,74 +1880,6 @@ TEST_F(LowPriorityCrossOriginTaskExperimentTest, FrameQueuesPriorities) {
             TaskQueue::QueuePriority::kLowPriority);
   EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
             TaskQueue::QueuePriority::kLowPriority);
-}
-
-class LowPriorityCrossOriginTaskDuringLoadingExperimentTest
-    : public FrameSchedulerImplTest {
- public:
-  LowPriorityCrossOriginTaskDuringLoadingExperimentTest()
-      : FrameSchedulerImplTest({kLowPriorityForCrossOriginOnlyWhenLoading},
-                               {}) {}
-};
-
-TEST_F(LowPriorityCrossOriginTaskDuringLoadingExperimentTest,
-       FrameQueuesPriorities) {
-  // Main thread is in the loading use case.
-  std::unique_ptr<FrameSchedulerImpl> main_frame_scheduler =
-      CreateFrameScheduler(page_scheduler_.get(),
-                           frame_scheduler_delegate_.get(),
-                           /*is_in_embedded_frame_tree=*/false,
-                           FrameScheduler::FrameType::kMainFrame);
-
-  main_frame_scheduler->OnFirstContentfulPaintInMainFrame();
-  ASSERT_EQ(scheduler_->current_use_case(), UseCase::kLoading);
-
-  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-
-  frame_scheduler_->SetCrossOriginToNearestMainFrame(true);
-  EXPECT_TRUE(frame_scheduler_->IsCrossOriginToNearestMainFrame());
-
-  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kLowPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kLowPriority);
-
-  // Main thread is no longer in loading use case.
-  main_frame_scheduler->OnFirstMeaningfulPaint();
-  ASSERT_EQ(scheduler_->current_use_case(), UseCase::kNone);
-  EXPECT_FALSE(page_scheduler_->IsLoading());
-
-  EXPECT_EQ(LoadingTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(LoadingControlTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kHighPriority);
-  EXPECT_EQ(DeferrableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(ThrottleableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(PausableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
-  EXPECT_EQ(UnpausableTaskQueue()->GetQueuePriority(),
-            TaskQueue::QueuePriority::kNormalPriority);
 }
 
 TEST_F(FrameSchedulerImplTest, TaskTypeToTaskQueueMapping) {

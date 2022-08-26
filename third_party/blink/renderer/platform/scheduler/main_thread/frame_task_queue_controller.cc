@@ -54,16 +54,6 @@ FrameTaskQueueController::GetAllTaskQueuesAndVoters() const {
 }
 
 scoped_refptr<MainThreadTaskQueue>
-FrameTaskQueueController::NewResourceLoadingTaskQueue() {
-  scoped_refptr<MainThreadTaskQueue> task_queue =
-      main_thread_scheduler_impl_->NewLoadingTaskQueue(
-          MainThreadTaskQueue::QueueType::kFrameLoading, frame_scheduler_impl_);
-  TaskQueueCreated(task_queue);
-  resource_loading_task_queues_.insert(task_queue);
-  return task_queue;
-}
-
-scoped_refptr<MainThreadTaskQueue>
 FrameTaskQueueController::NewWebSchedulingTaskQueue(
     QueueTraits queue_traits,
     WebSchedulingPriority priority) {
@@ -150,22 +140,10 @@ FrameTaskQueueController::GetQueueEnabledVoter(
   return it->value.get();
 }
 
-bool FrameTaskQueueController::RemoveResourceLoadingTaskQueue(
-    const scoped_refptr<MainThreadTaskQueue>& task_queue) {
-  DCHECK(task_queue);
-
-  if (!resource_loading_task_queues_.Contains(task_queue))
-    return false;
-  resource_loading_task_queues_.erase(task_queue);
-  RemoveTaskQueueAndVoter(task_queue.get());
-  return true;
-}
-
 void FrameTaskQueueController::WriteIntoTrace(
     perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("task_queues", task_queues_.Values());
-  dict.Add("resource_loading_task_queues", resource_loading_task_queues_);
 }
 
 // static

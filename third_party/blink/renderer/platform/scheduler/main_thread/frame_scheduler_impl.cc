@@ -556,50 +556,8 @@ FrameSchedulerImpl::CreateResourceLoadingMaybeUnfreezableTaskRunnerHandle() {
 
 std::unique_ptr<ResourceLoadingTaskRunnerHandleImpl>
 FrameSchedulerImpl::CreateResourceLoadingTaskRunnerHandleImpl() {
-  if (main_thread_scheduler_->scheduling_settings()
-          .use_resource_fetch_priority) {
-    scoped_refptr<MainThreadTaskQueue> task_queue =
-        frame_task_queue_controller_->NewResourceLoadingTaskQueue();
-    resource_loading_task_queue_priorities_.insert(
-        task_queue, task_queue->GetQueuePriority());
-    return ResourceLoadingTaskRunnerHandleImpl::WrapTaskRunner(task_queue);
-  }
-
   return ResourceLoadingTaskRunnerHandleImpl::WrapTaskRunner(
       GetTaskQueue(TaskType::kNetworking));
-}
-
-void FrameSchedulerImpl::DidChangeResourceLoadingPriority(
-    scoped_refptr<MainThreadTaskQueue> task_queue,
-    net::RequestPriority priority) {
-  // This check is done since in some cases (when kUseResourceFetchPriority
-  // feature isn't enabled) we use the loading task queue for resource loading
-  // and the priority of this queue shouldn't be affected by resource
-  // priorities.
-  auto queue_priority_pair =
-      resource_loading_task_queue_priorities_.find(task_queue);
-  if (queue_priority_pair != resource_loading_task_queue_priorities_.end()) {
-    queue_priority_pair->value = main_thread_scheduler_->scheduling_settings()
-                                     .net_to_blink_priority[priority];
-    auto* voter =
-        frame_task_queue_controller_->GetQueueEnabledVoter(task_queue);
-    UpdateQueuePolicy(task_queue.get(), voter);
-  }
-}
-
-void FrameSchedulerImpl::OnShutdownResourceLoadingTaskQueue(
-    scoped_refptr<MainThreadTaskQueue> task_queue) {
-  // This check is done since in some cases (when kUseResourceFetchPriority
-  // feature isn't enabled) we use the loading task queue for resource loading,
-  // and the lifetime of this queue isn't bound to one resource.
-  auto iter = resource_loading_task_queue_priorities_.find(task_queue);
-  if (iter != resource_loading_task_queue_priorities_.end()) {
-    resource_loading_task_queue_priorities_.erase(iter);
-    bool removed = frame_task_queue_controller_->RemoveResourceLoadingTaskQueue(
-        task_queue);
-    DCHECK(removed);
-    CleanUpQueue(task_queue.get());
-  }
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
@@ -961,11 +919,6 @@ TaskQueue::QueuePriority FrameSchedulerImpl::ComputePriority(
   // Checks the task queue is associated with this frame scheduler.
   DCHECK_EQ(frame_scheduler, this);
 
-  auto queue_priority_pair =
-      resource_loading_task_queue_priorities_.find(task_queue);
-  if (queue_priority_pair != resource_loading_task_queue_priorities_.end())
-    return queue_priority_pair->value;
-
   // TODO(crbug.com/986569): Ordering here is relative to the experiments below.
   // Cleanup unused experiment logic so that this switch can be merged with the
   // prioritisation type decisions below.
@@ -1018,48 +971,38 @@ TaskQueue::QueuePriority FrameSchedulerImpl::ComputePriority(
     }
   }
 
-  // If the page is loading or if the priority experiments should take place at
-  // all times.
-  if (parent_page_scheduler_->IsLoading() ||
-      !main_thread_scheduler_->scheduling_settings()
-           .use_frame_priorities_only_during_loading) {
-    // Low priority feature enabled for hidden frame.
-    if (main_thread_scheduler_->scheduling_settings()
-            .low_priority_hidden_frame &&
-        !IsFrameVisible()) {
-      return TaskQueue::QueuePriority::kLowPriority;
-    }
+  // Low priority feature enabled for hidden frame.
+  if (main_thread_scheduler_->scheduling_settings().low_priority_hidden_frame &&
+      !IsFrameVisible()) {
+    return TaskQueue::QueuePriority::kLowPriority;
+  }
 
-    bool is_subframe = GetFrameType() == FrameScheduler::FrameType::kSubframe;
-    bool is_throttleable_task_queue =
-        task_queue->queue_type() ==
-        MainThreadTaskQueue::QueueType::kFrameThrottleable;
+  bool is_subframe = GetFrameType() == FrameScheduler::FrameType::kSubframe;
+  bool is_throttleable_task_queue =
+      task_queue->queue_type() ==
+      MainThreadTaskQueue::QueueType::kFrameThrottleable;
 
-    // Low priority feature enabled for sub-frame.
-    if (main_thread_scheduler_->scheduling_settings().low_priority_subframe &&
-        is_subframe) {
-      return TaskQueue::QueuePriority::kLowPriority;
-    }
+  // Low priority feature enabled for sub-frame.
+  if (main_thread_scheduler_->scheduling_settings().low_priority_subframe &&
+      is_subframe) {
+    return TaskQueue::QueuePriority::kLowPriority;
+  }
 
-    // Low priority feature enabled for sub-frame throttleable task queues.
-    if (main_thread_scheduler_->scheduling_settings()
-            .low_priority_subframe_throttleable &&
-        is_subframe && is_throttleable_task_queue) {
-      return TaskQueue::QueuePriority::kLowPriority;
-    }
+  // Low priority feature enabled for sub-frame throttleable task queues.
+  if (main_thread_scheduler_->scheduling_settings()
+          .low_priority_subframe_throttleable &&
+      is_subframe && is_throttleable_task_queue) {
+    return TaskQueue::QueuePriority::kLowPriority;
+  }
 
-    // Low priority feature enabled for throttleable task queues.
-    if (main_thread_scheduler_->scheduling_settings()
-            .low_priority_throttleable &&
-        is_throttleable_task_queue) {
-      return TaskQueue::QueuePriority::kLowPriority;
-    }
+  // Low priority feature enabled for throttleable task queues.
+  if (main_thread_scheduler_->scheduling_settings().low_priority_throttleable &&
+      is_throttleable_task_queue) {
+    return TaskQueue::QueuePriority::kLowPriority;
   }
 
   // Ad frame experiment.
-  if (IsAdFrame() && (parent_page_scheduler_->IsLoading() ||
-                      !main_thread_scheduler_->scheduling_settings()
-                           .use_adframe_priorities_only_during_loading)) {
+  if (IsAdFrame()) {
     if (main_thread_scheduler_->scheduling_settings().low_priority_ad_frame) {
       return TaskQueue::QueuePriority::kLowPriority;
     }
@@ -1070,14 +1013,9 @@ TaskQueue::QueuePriority FrameSchedulerImpl::ComputePriority(
   }
 
   // Frame origin type experiment.
-  if (IsCrossOriginToNearestMainFrame()) {
-    if (main_thread_scheduler_->scheduling_settings()
-            .low_priority_cross_origin ||
-        (main_thread_scheduler_->scheduling_settings()
-             .low_priority_cross_origin_only_during_loading &&
-         parent_page_scheduler_->IsLoading())) {
-      return TaskQueue::QueuePriority::kLowPriority;
-    }
+  if (IsCrossOriginToNearestMainFrame() &&
+      main_thread_scheduler_->scheduling_settings().low_priority_cross_origin) {
+    return TaskQueue::QueuePriority::kLowPriority;
   }
 
   if (task_queue->GetPrioritisationType() ==

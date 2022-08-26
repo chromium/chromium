@@ -104,10 +104,8 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   FrameScheduler::FrameType GetFrameType() const override;
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(TaskType) override;
 
-  // Returns a wrapper around an instance of MainThreadTaskQueue which is
-  // maintained in |resource_loading_task_queues_| map. The main thread task
-  // queue is removed from the map and detached from both the main thread and
-  // the frame schedulers when the wrapper instance goes out of scope.
+  // Returns a wrapper around an instance of MainThreadTaskQueue.
+  // TODO(crbug.com/860545): Decide whether this method should be removed.
   std::unique_ptr<WebResourceLoadingTaskRunnerHandle>
   CreateResourceLoadingTaskRunnerHandle() override;
 
@@ -212,13 +210,6 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   // page scheduler. Should be used only for testing purposes.
   FrameSchedulerImpl();
 
-  void OnShutdownResourceLoadingTaskQueue(
-      scoped_refptr<MainThreadTaskQueue> task_queue);
-
-  void DidChangeResourceLoadingPriority(
-      scoped_refptr<MainThreadTaskQueue> task_queue,
-      net::RequestPriority priority);
-
   scoped_refptr<MainThreadTaskQueue> GetTaskQueue(TaskType);
 
  private:
@@ -318,14 +309,6 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
 
   TraceableVariableController tracing_controller_;
   std::unique_ptr<FrameTaskQueueController> frame_task_queue_controller_;
-
-  using ResourceLoadingTaskQueuePriorityMap =
-      WTF::HashMap<scoped_refptr<MainThreadTaskQueue>,
-                   base::sequence_manager::TaskQueue::QueuePriority>;
-
-  // Queue to priority map of resource loading task queues created by
-  // |frame_task_queue_controller_| via CreateResourceLoadingTaskRunnerHandle.
-  ResourceLoadingTaskQueuePriorityMap resource_loading_task_queue_priorities_;
 
   MainThreadSchedulerImpl* const main_thread_scheduler_;  // NOT OWNED
   PageSchedulerImpl* parent_page_scheduler_;              // NOT OWNED

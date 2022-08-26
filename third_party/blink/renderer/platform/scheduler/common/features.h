@@ -55,14 +55,6 @@ const base::Feature kLowPriorityForHiddenFrame{
     "BlinkSchedulerLowPriorityForHiddenFrame",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Used along with |kLowPriorityForHiddenFrame|,
-// |kLowPriorityForSubFrameThrottleableTask|, |kLowPriorityForThrottleableTask|,
-// |kLowPriorityForSubFrame| to enable one of these experiments only during the
-// load use case.
-const base::Feature kFrameExperimentOnlyWhenLoading{
-    "BlinkSchedulerFrameExperimentOnlyWhenLoading",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables setting the priority of an ad frame to low priority.
 const base::Feature kLowPriorityForAdFrame{
     "BlinkSchedulerLowPriorityForAdFrame", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -72,27 +64,10 @@ const base::Feature kBestEffortPriorityForAdFrame{
     "BlinkSchedulerBestEffortPriorityForAdFrame",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Used along with |kLowPriorityForAdFrame| or |kBestEffortPriorityForAdFrame|
-// to enable one of these experiments only during the load use case.
-const base::Feature kAdFrameExperimentOnlyWhenLoading{
-    "BlinkSchedulerAdFrameExperimentOnlyWhenLoading",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enables using a resource's fetch priority to determine the priority of the
-// resource's loading tasks posted to blink's scheduler.
-const base::Feature kUseResourceFetchPriority{
-    "BlinkSchedulerResourceFetchPriority", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables setting the priority of cross-origin task queues to
 // low priority.
 const base::Feature kLowPriorityForCrossOrigin{
     "BlinkSchedulerLowPriorityForCrossOrigin",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enables setting the priority of cross-origin task queues to
-// low priority during loading only.
-const base::Feature kLowPriorityForCrossOriginOnlyWhenLoading{
-    "BlinkSchedulerLowPriorityForCrossOriginOnlyWhenLoading",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Prioritizes loading and compositing tasks while loading.

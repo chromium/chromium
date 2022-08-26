@@ -78,11 +78,6 @@ const double kShortIdlePeriodDurationPercentile = 50;
 const double kFastCompositingIdleTimeThreshold = .2;
 const int64_t kSecondsPerMinute = 60;
 
-// Name of the finch study that enables using resource fetch priorities to
-// schedule tasks on Blink.
-constexpr const char kResourceFetchPriorityExperiment[] =
-    "ResourceFetchPriorityExperiment";
-
 constexpr base::TimeDelta kPrioritizeCompositingAfterDelay =
     base::Milliseconds(100);
 
@@ -174,26 +169,6 @@ const char* OptionalTaskPriorityToString(
   if (!priority)
     return nullptr;
   return TaskQueue::PriorityToString(priority.value());
-}
-
-TaskQueue::QueuePriority StringToTaskQueuePriority(
-    const std::string& priority) {
-  if (priority == "CONTROL") {
-    return TaskQueue::QueuePriority::kControlPriority;
-  } else if (priority == "HIGHEST") {
-    return TaskQueue::QueuePriority::kHighestPriority;
-  } else if (priority == "HIGH") {
-    return TaskQueue::QueuePriority::kHighPriority;
-  } else if (priority == "NORMAL") {
-    return TaskQueue::QueuePriority::kNormalPriority;
-  } else if (priority == "LOW") {
-    return TaskQueue::QueuePriority::kLowPriority;
-  } else if (priority == "BEST_EFFORT") {
-    return TaskQueue::QueuePriority::kBestEffortPriority;
-  } else {
-    NOTREACHED();
-    return TaskQueue::QueuePriority::kQueuePriorityCount;
-  }
 }
 
 bool IsBlockingEvent(const blink::WebInputEvent& web_input_event) {
@@ -562,22 +537,13 @@ MainThreadSchedulerImpl::SchedulingSettings::SchedulingSettings() {
       base::FeatureList::IsEnabled(kLowPriorityForThrottleableTask);
   low_priority_subframe_throttleable =
       base::FeatureList::IsEnabled(kLowPriorityForSubFrameThrottleableTask);
-  use_frame_priorities_only_during_loading =
-      base::FeatureList::IsEnabled(kFrameExperimentOnlyWhenLoading);
 
   low_priority_ad_frame = base::FeatureList::IsEnabled(kLowPriorityForAdFrame);
   best_effort_ad_frame =
       base::FeatureList::IsEnabled(kBestEffortPriorityForAdFrame);
-  use_adframe_priorities_only_during_loading =
-      base::FeatureList::IsEnabled(kAdFrameExperimentOnlyWhenLoading);
 
   low_priority_cross_origin =
       base::FeatureList::IsEnabled(kLowPriorityForCrossOrigin);
-  low_priority_cross_origin_only_during_loading =
-      base::FeatureList::IsEnabled(kLowPriorityForCrossOriginOnlyWhenLoading);
-
-  use_resource_fetch_priority =
-      base::FeatureList::IsEnabled(kUseResourceFetchPriority);
 
   prioritize_compositing_and_loading_during_early_loading =
       base::FeatureList::IsEnabled(
@@ -585,23 +551,6 @@ MainThreadSchedulerImpl::SchedulingSettings::SchedulingSettings() {
 
   prioritize_compositing_after_input =
       base::FeatureList::IsEnabled(kPrioritizeCompositingAfterInput);
-
-  if (use_resource_fetch_priority) {
-    base::FieldTrialParams params;
-    base::GetFieldTrialParams(kResourceFetchPriorityExperiment, &params);
-    for (size_t net_priority = 0;
-         net_priority < net::RequestPrioritySize::NUM_PRIORITIES;
-         net_priority++) {
-      net_to_blink_priority[net_priority] =
-          TaskQueue::QueuePriority::kNormalPriority;
-      auto iter = params.find(net::RequestPriorityToString(
-          static_cast<net::RequestPriority>(net_priority)));
-      if (iter != params.end()) {
-        net_to_blink_priority[net_priority] =
-            StringToTaskQueuePriority(iter->second);
-      }
-    }
-  }
 
   mbi_override_task_runner_handle =
       base::FeatureList::IsEnabled(kMbiOverrideTaskRunnerHandle);
