@@ -92,8 +92,6 @@ if (is_chromeos_ash) {
       "cr_container_shadow_behavior.html",
       "cr_container_shadow_behavior.js",
       "cr_icons_css.html",
-      "cr_scrollable_behavior.html",
-      "cr_scrollable_behavior.js",
       "find_shortcut_behavior.js",
       "hidden_style_css.html",
       "icons.html",
@@ -108,7 +106,10 @@ if (include_polymer) {
   preprocess_if_expr("preprocess_src") {
     in_folder = "."
     out_folder = preprocess_folder
-    in_files = [ "policy/cr_policy_indicator_behavior.js" ]
+    in_files = [
+      "cr_scrollable_behavior.js",
+      "policy/cr_policy_indicator_behavior.js",
+    ]
     out_manifest = "$target_gen_dir/$preprocess_src_manifest"
   }
 
@@ -124,7 +125,6 @@ if (include_polymer) {
       "cr_dialog/cr_dialog.js",
       "cr_icons_css.m.js",
       "cr_lottie/cr_lottie.js",
-      "cr_scrollable_behavior.m.js",
       "hidden_style_css.m.js",
       "icons.m.js",
       "md_select_css.m.js",
@@ -160,14 +160,7 @@ if (include_polymer) {
 
   js_type_check("cr_elements_resources") {
     uses_legacy_modules = true
-    deps = [
-      ":cr_container_shadow_behavior",
-      ":cr_scrollable_behavior",
-    ]
-  }
-
-  js_library("cr_scrollable_behavior") {
-    deps = [ "//third_party/polymer/v1_0/components-chromium/iron-list:iron-list-extracted" ]
+    deps = [ ":cr_container_shadow_behavior" ]
   }
 
   js_library("cr_container_shadow_behavior") {
@@ -225,11 +218,9 @@ if (include_polymer) {
     html_type = "iron-iconset"
   }
 
-  js_modulizer("modulize") {
-    input_files = [ "cr_scrollable_behavior.js" ]
-
-    if (is_chromeos_ash) {
-      input_files += [ "cr_container_shadow_behavior.js" ]
+  if (is_chromeos_ash) {
+    js_modulizer("modulize") {
+      input_files = [ "cr_container_shadow_behavior.js" ]
     }
   }
 }
@@ -243,7 +234,6 @@ if (include_polymer) {
       ":hidden_style_css_module",
       ":icons_module",
       ":md_select_css_module",
-      ":modulize",
       ":shared_style_css_module",
       ":shared_vars_css_module",
       "cr_button:web_components",
@@ -252,6 +242,9 @@ if (include_polymer) {
       "policy:web_components",
     ]
 
+    if (is_chromeos_ash) {
+      public_deps += [ ":modulize" ]
+    }
     if (is_chromeos) {
       public_deps += [ "chromeos:polymer3_elements" ]
     }
@@ -261,7 +254,7 @@ if (include_polymer) {
 if (include_polymer) {
   js_type_check("cr_elements_module_resources") {
     is_polymer3 = true
-    deps = [ ":cr_scrollable_behavior.m" ]
+    deps = [ ":cr_scrollable_behavior" ]
 
     if (is_chromeos_ash) {
       deps += [
@@ -279,13 +272,11 @@ if (include_polymer) {
     }
   }
 
-  js_library("cr_scrollable_behavior.m") {
-    sources = [ "$root_gen_dir/ui/webui/resources/cr_elements/cr_scrollable_behavior.m.js" ]
+  js_library("cr_scrollable_behavior") {
     deps = [
       "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
       "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     ]
-    extra_deps = [ ":modulize" ]
   }
 }
 

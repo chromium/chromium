@@ -35,12 +35,13 @@
  */
 
 // clang-format off
-// #import {beforeNextRender, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import {beforeNextRender, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 // clang-format on
 
 /** @polymerBehavior */
-/* #export */ const CrScrollableBehavior = {
+export const CrScrollableBehavior = {
 
   /** @private {number|null} */
   intervalId_: null,
@@ -60,7 +61,7 @@
     // TODO(dpapad): Remove Polymer 1 codepath when Polymer 2 migration has
     // completed.
     if (Polymer.DomIf) {
-      Polymer.RenderStatus.beforeNextRender(this, readyAsync);
+      beforeNextRender(this, readyAsync);
       return;
     }
     readyAsync();
@@ -191,7 +192,7 @@
   },
 };
 
-/* #export */ class CrScrollableBehaviorInterface {
+export class CrScrollableBehaviorInterface {
   updateScrollableContents() {}
   requestUpdateScroll() {}
 }
