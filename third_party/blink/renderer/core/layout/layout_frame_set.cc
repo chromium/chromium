@@ -294,7 +294,7 @@ void LayoutFrameSet::UpdateLayout() {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
 
-  if (!Parent()->IsFrameSet() && !GetDocument().Printing()) {
+  if (!Parent()->IsFrameSet()) {
     SetWidth(LayoutUnit(View()->ViewWidth()));
     SetHeight(LayoutUnit(View()->ViewHeight()));
   }
