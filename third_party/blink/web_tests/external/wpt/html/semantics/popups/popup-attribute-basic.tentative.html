@@ -5,6 +5,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/popup-utils.js"></script>
+<script src="../../resources/common.js"></script>
 
 <div id=popups>
   <div popup id=boolean>Pop up</div>
@@ -12,12 +13,17 @@
   <div popup=auto>Pop up</div>
   <div popup=hint>Pop up</div>
   <div popup=manual>Pop up</div>
+  <article popup>Different element type</article>
+  <header popup>Different element type</header>
+  <nav popup>Different element type</nav>
+  <input type=text popup value="Different element type">
+  <div popup=true>Invalid popup value - defaults to popup=manual</div>
+  <div popup=popup>Invalid popup value - defaults to popup=manual</div>
+  <div popup=invalid>Invalid popup value - defaults to popup=manual</div>
 </div>
 
 <div id=nonpopups>
   <div>Not a pop-up</div>
-  <div popup=popup>Not a pop-up</div>
-  <div popup=invalid>Not a pop-up</div>
 </div>
 
 <div popup class=animated>Animated pop-up</div>
@@ -32,24 +38,25 @@
 </style>
 
 <script>
-  function popUpVisible(popUp, isPopUp) {
+  function assertPopUpVisibility(popUp, isPopUp, expectedVisibility, message) {
     const isVisible = isElementVisible(popUp);
+    assert_equals(isVisible, expectedVisibility,`${message}: Expected this element to be ${expectedVisibility ? "visible" : "not visible"}`);
+    // Check other things related to being visible or not:
     if (isVisible) {
       assert_not_equals(window.getComputedStyle(popUp).display,'none');
-      assert_equals(popUp.matches(':open'),isPopUp);
+      assert_equals(popUp.matches(':open'),isPopUp,`${message}: Visible pop-ups should match :open`);
     } else {
-      assert_equals(window.getComputedStyle(popUp).display,'none');
-      assert_false(popUp.matches(':open'));
+      assert_equals(window.getComputedStyle(popUp).display,'none',`${message}: Non-showing pop-ups should have display:none`);
+      assert_false(popUp.matches(':open'),`${message}: Non-showing pop-ups should *not* match :open`);
     }
-    return isVisible;
   }
   function assertIsFunctionalPopUp(popUp) {
-    assert_false(popUpVisible(popUp, /*isPopUp*/true));
+    assertPopUpVisibility(popUp, /*isPopUp*/true, /*expectedVisibility*/false, 'A pop-up should start out hidden');
     popUp.showPopUp();
-    assert_true(popUpVisible(popUp, /*isPopUp*/true));
+    assertPopUpVisibility(popUp, /*isPopUp*/true, /*expectedVisibility*/true, 'After showPopUp(), a pop-up should be visible');
     assert_throws_dom("InvalidStateError",() => popUp.showPopUp(),'Calling showPopUp on a showing pop-up should throw InvalidStateError');
     popUp.hidePopUp();
-    assert_false(popUpVisible(popUp, /*isPopUp*/true));
+    assertPopUpVisibility(popUp, /*isPopUp*/true, /*expectedVisibility*/false, 'After hidePopUp(), a pop-up should be hidden');
     assert_throws_dom("InvalidStateError",() => popUp.hidePopUp(),'Calling hidePopUp on a hidden pop-up should throw InvalidStateError');
     const parent = popUp.parentElement;
     popUp.remove();
@@ -60,23 +67,36 @@
     // If the non-pop-up element nonetheless has a 'popup' attribute, it should
     // be invisible. Otherwise, it should be visible.
     const expectVisible = !nonPopUp.hasAttribute('popup');
-    assert_equals(popUpVisible(nonPopUp, /*isPopUp*/false),expectVisible);
+    assertPopUpVisibility(nonPopUp, /*isPopUp*/false, expectVisible, 'A non-pop-up should start out visible');
     assert_throws_dom("NotSupportedError",() => nonPopUp.showPopUp(),'Calling showPopUp on a non-pop-up should throw NotSupportedError');
-    assert_equals(popUpVisible(nonPopUp, /*isPopUp*/false),expectVisible);
+    assertPopUpVisibility(nonPopUp, /*isPopUp*/false, expectVisible, 'Calling showPopUp on a non-pop-up should leave it visible');
     assert_throws_dom("NotSupportedError",() => nonPopUp.hidePopUp(),'Calling hidePopUp on a non-pop-up should throw NotSupportedError');
-    assert_equals(popUpVisible(nonPopUp, /*isPopUp*/false),expectVisible);
+    assertPopUpVisibility(nonPopUp, /*isPopUp*/false, expectVisible, 'Calling hidePopUp on a non-pop-up should leave it visible');
   }
 
+  // Start with the provided examples:
   Array.from(document.getElementById('popups').children).forEach(popUp => {
     test((t) => {
       assertIsFunctionalPopUp(popUp);
-    }, `The .showPopUp() and .hidePopUp() work on a pop-up, for ${popUp.outerHTML}.`);
+    }, `The element ${popUp.outerHTML} should behave as a pop-up.`);
   });
-
   Array.from(document.getElementById('nonpopups').children).forEach(nonPopUp => {
     test((t) => {
       assertNotAPopUp(nonPopUp);
-    }, `The .showPopUp() and .hidePopUp() do NOT work on elements without a 'popup' attribute, ${nonPopUp.outerHTML}.`);
+    }, `The element ${nonPopUp.outerHTML} should *not* behave as a pop-up.`);
+  });
+
+  // Then loop through all HTML5 elements that render a box by default:
+  let elementsThatDontRender = ['audio','base','br','datalist','dialog','embed','head','link','meta','noscript','param','rp','script','style','template','title','wbr'];
+  const elements = HTML5_ELEMENTS.filter(el => !elementsThatDontRender.includes(el));
+  elements.forEach(tag => {
+    test((t) => {
+      const element = document.createElement(tag);
+      element.setAttribute('popup','auto');
+      document.body.appendChild(element);
+      t.add_cleanup(() => element.remove());
+      assertIsFunctionalPopUp(element);
+    }, `A <${tag}> element should behave as a pop-up.`);
   });
 
   function createPopUp(t) {
@@ -102,7 +122,7 @@
     assert_equals(popUp.popUp,'hint','Case is normalized in IDL');
     assert_equals(popUp.getAttribute('popup'),'hInT','Value set from IDL is propagated exactly to the content attribute');
     popUp.setAttribute('popup','invalid');
-    assert_equals(popUp.popUp,null,'Invalid values should reflect as null');
+    assert_equals(popUp.popUp,'manual','Invalid values should reflect as "manual"');
     popUp.removeAttribute('popup');
     assert_equals(popUp.popUp,null,'No value should reflect as null');
     popUp.popUp='hint';
@@ -117,7 +137,7 @@
     assert_equals(popUp.popUp,'auto');
     popUp.popUp='invalid';
     assert_equals(popUp.getAttribute('popup'),'invalid','IDL setter allows any value');
-    assert_equals(popUp.popUp,null,'but IDL getter does not re-reflect invalid values');
+    assert_equals(popUp.popUp,'manual','but IDL getter reflects "manual"');
     popUp.popUp='';
     assert_equals(popUp.getAttribute('popup'),'','IDL setter propagates exactly');
     assert_equals(popUp.popUp,'auto','Empty should map to auto in IDL');
@@ -146,8 +166,8 @@
     assertIsFunctionalPopUp(popUp);
     popUp.popUp = 'aUtO';
     assertIsFunctionalPopUp(popUp);
-    popUp.popUp = 'invalid';
-    assertNotAPopUp(popUp);
+    popUp.popUp = 'invalid'; // treated as "manual"
+    assertIsFunctionalPopUp(popUp);
   },'Popup attribute value should be case insensitive');
 
   test((t) => {
@@ -156,11 +176,11 @@
     popUp.setAttribute('popup','hint'); // Change pop-up type
     assertIsFunctionalPopUp(popUp);
     popUp.setAttribute('popup','invalid'); // Change pop-up type to something invalid
-    assertNotAPopUp(popUp);
+    assertIsFunctionalPopUp(popUp);
     popUp.popUp = 'hint'; // Change pop-up type via IDL
     assertIsFunctionalPopUp(popUp);
-    popUp.popUp = 'invalid'; // Make invalid via IDL
-    assertNotAPopUp(popUp);
+    popUp.popUp = 'invalid'; // Make invalid via IDL (treated as "manual")
+    assertIsFunctionalPopUp(popUp);
   },'Changing attribute values for pop-up should work');
 
   test((t) => {
@@ -176,7 +196,13 @@
     popUp.showPopUp();
     assert_true(popUp.matches(':open'));
     popUp.setAttribute('popup','invalid');
-    assert_false(popUp.matches(':open'));
+    assert_true(popUp.matches(':open'),'From "manual" to "invalid" (which is interpreted as "manual") should not close the pop-up');
+    popUp.setAttribute('popup','auto');
+    assert_false(popUp.matches(':open'),'From "invalid" ("manual") to "auto" should hide the pop-up');
+    popUp.showPopUp();
+    assert_true(popUp.matches(':open'));
+    popUp.setAttribute('popup','invalid');
+    assert_false(popUp.matches(':open'),'From "auto" to "invalid" (which is interpreted as "manual") should close the pop-up');
   },'Changing attribute values should close open pop-ups');
 
   function modalPseudoSupported() {

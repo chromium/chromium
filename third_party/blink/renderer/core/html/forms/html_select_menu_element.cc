@@ -338,7 +338,7 @@ bool HTMLSelectMenuElement::open() const {
   // either of the key parts (button or listbox) are missing.
   if (!listbox_part_)
     return false;
-  return listbox_part_->HasValidPopupAttribute() && listbox_part_->popupOpen();
+  return listbox_part_->HasPopupAttribute() && listbox_part_->popupOpen();
 }
 
 void HTMLSelectMenuElement::OpenListbox() {
@@ -354,7 +354,7 @@ void HTMLSelectMenuElement::OpenListbox() {
 
 void HTMLSelectMenuElement::CloseListbox() {
   if (listbox_part_ && open()) {
-    if (listbox_part_->HasValidPopupAttribute()) {
+    if (listbox_part_->HasPopupAttribute()) {
       // We will handle focus directly.
       listbox_part_->HidePopUpInternal(
           HidePopupFocusBehavior::kNone,
@@ -418,7 +418,7 @@ bool HTMLSelectMenuElement::IsValidListboxPart(const Node* node,
     return false;
   }
 
-  if (!element->HasValidPopupAttribute()) {
+  if (!element->HasPopupAttribute()) {
     if (show_warning) {
       GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::blink::ConsoleMessageSource::kRendering,

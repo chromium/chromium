@@ -2394,7 +2394,7 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
   }
 
   if (params.reason == AttributeModificationReason::kByParser &&
-      name == html_names::kDefaultopenAttr && HasValidPopupAttribute()) {
+      name == html_names::kDefaultopenAttr && HasPopupAttribute()) {
     DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
         GetDocument().GetExecutionContext()));
     DCHECK(!isConnected());
@@ -2445,10 +2445,19 @@ void Element::UpdatePopupAttribute(String value) {
     type = PopupValueType::kHint;
   } else if (EqualIgnoringASCIICase(value, kPopupTypeValueManual)) {
     type = PopupValueType::kManual;
-  } else {
-    type = PopupValueType::kNone;
+  } else if (!value.IsNull()) {
+    // Invalid values default to popup=manual.
+    type = PopupValueType::kManual;
+    // TODO(masonf) This console message might be too much log spam. Though
+    // in case there's a namespace collision with something the developer is
+    // doing with e.g. a function called 'popup', this will be helpful to
+    // troubleshoot that.
+    GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kOther,
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        "Found a 'popup' attribute with an invalid value."));
   }
-  if (HasValidPopupAttribute()) {
+  if (HasPopupAttribute()) {
     if (PopupType() == type)
       return;
     // If the popup type is changing, hide it.
@@ -2458,25 +2467,17 @@ void Element::UpdatePopupAttribute(String value) {
     }
   }
   if (type == PopupValueType::kNone) {
-    if (HasValidPopupAttribute()) {
-      // If the popup is changing from valid to invalid, remove the PopupData.
+    if (HasPopupAttribute()) {
+      // If the popup attribute is being removed, remove the PopupData.
       GetElementRareData()->RemovePopupData();
     }
-    // TODO(masonf) This console message might be too much log spam. Though
-    // in case there's a namespace collision with something the developer is
-    // doing with e.g. a function called 'popup', this will be helpful to
-    // troubleshoot that.
-    GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kOther,
-        mojom::blink::ConsoleMessageLevel::kInfo,
-        "Found a 'popup' attribute with an invalid value."));
     return;
   }
   UseCounter::Count(GetDocument(), WebFeature::kValidPopupAttribute);
   EnsureElementRareData().EnsurePopupData().setType(type);
 }
 
-bool Element::HasValidPopupAttribute() const {
+bool Element::HasPopupAttribute() const {
   return GetPopupData();
 }
 
@@ -2507,7 +2508,7 @@ bool Element::popupOpen() const {
 void Element::showPopUp(ExceptionState& exception_state) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
       GetDocument().GetExecutionContext()));
-  if (!HasValidPopupAttribute()) {
+  if (!HasPopupAttribute()) {
     return exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         "Not supported on elements that do not have a valid value for the "
@@ -2526,7 +2527,7 @@ void Element::showPopUp(ExceptionState& exception_state) {
 
   // The 'show' event handler could have changed this pop-up, e.g. by changing
   // its type, removing it from the document, or calling showPopUp().
-  if (!HasValidPopupAttribute() || !isConnected() || popupOpen())
+  if (!HasPopupAttribute() || !isConnected() || popupOpen())
     return;
 
   bool should_restore_focus = false;
@@ -2560,7 +2561,7 @@ void Element::showPopUp(ExceptionState& exception_state) {
 
     // The 'hide' event handlers could have changed this popup, e.g. by changing
     // its type, removing it from the document, or calling showPopUp().
-    if (!HasValidPopupAttribute() || !isConnected() || popupOpen())
+    if (!HasPopupAttribute() || !isConnected() || popupOpen())
       return;
 
     // We only restore focus for popup/hint, and only for the first popup in
@@ -2598,7 +2599,7 @@ void Element::showPopUp(ExceptionState& exception_state) {
 
   // Only restore focus (later) if focus changed as a result of showing the
   // pop-up.
-  if (should_restore_focus && HasValidPopupAttribute() &&
+  if (should_restore_focus && HasPopupAttribute() &&
       originally_focused_element != document.FocusedElement()) {
     GetPopupData()->setPreviouslyFocusedElement(originally_focused_element);
   }
@@ -2616,7 +2617,7 @@ void Element::HideAllPopupsUntil(const Element* endpoint,
                                  HidePopupIndependence popup_independence) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
       document.GetExecutionContext()));
-  DCHECK(!endpoint || endpoint->HasValidPopupAttribute());
+  DCHECK(!endpoint || endpoint->HasPopupAttribute());
 
   // If we're forcing a popup to hide immediately, first hide any other popups
   // that have already started the hide process.
@@ -2670,7 +2671,7 @@ void Element::HideAllPopupsUntil(const Element* endpoint,
 void Element::hidePopUp(ExceptionState& exception_state) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
       GetDocument().GetExecutionContext()));
-  if (!HasValidPopupAttribute()) {
+  if (!HasPopupAttribute()) {
     return exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         "Not supported on elements that do not have a valid value for the "
@@ -2706,7 +2707,7 @@ void Element::HidePopUpInternal(HidePopupFocusBehavior focus_behavior,
                                 HidePopupForcingLevel forcing_level) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
       GetDocument().GetExecutionContext()));
-  DCHECK(HasValidPopupAttribute());
+  DCHECK(HasPopupAttribute());
   auto& document = GetDocument();
   if (PopupType() == PopupValueType::kAuto ||
       PopupType() == PopupValueType::kHint) {
@@ -2716,7 +2717,7 @@ void Element::HidePopUpInternal(HidePopupFocusBehavior focus_behavior,
 
     // The 'hide' event handlers could have changed this popup, e.g. by changing
     // its type, removing it from the document, or calling hidePopUp().
-    if (!HasValidPopupAttribute() || !isConnected() ||
+    if (!HasPopupAttribute() || !isConnected() ||
         GetPopupData()->visibilityState() != PopupVisibilityState::kShowing) {
       DCHECK(!GetDocument().PopupStack().Contains(this));
       return;
@@ -2764,7 +2765,7 @@ void Element::HidePopUpInternal(HidePopupFocusBehavior focus_behavior,
 
   // The 'hide' event handler could have changed this popup, e.g. by changing
   // its type, removing it from the document, or calling showPopUp().
-  if (!isConnected() || !HasValidPopupAttribute() ||
+  if (!isConnected() || !HasPopupAttribute() ||
       GetPopupData()->visibilityState() !=
           PopupVisibilityState::kTransitioning) {
     return;
@@ -2870,7 +2871,7 @@ Element* Element::GetPopupFocusableArea() const {
     auto* element = DynamicTo<Element>(node);
     if (!element)
       continue;
-    if (element->HasValidPopupAttribute() || IsA<HTMLDialogElement>(*element)) {
+    if (element->HasPopupAttribute() || IsA<HTMLDialogElement>(*element)) {
       next = FlatTreeTraversal::NextSkippingChildren(*element, this);
       continue;
     }
@@ -2981,7 +2982,7 @@ const Element* Element::NearestOpenAncestralPopup(const Node& node,
   }
   auto* element = DynamicTo<Element>(node);
   bool new_element =
-      element && element->HasValidPopupAttribute() && !element->popupOpen();
+      element && element->HasPopupAttribute() && !element->popupOpen();
   if (new_element) {
     DCHECK(!inclusive);
     popup_positions.Set(element, indx++);
@@ -3000,7 +3001,7 @@ const Element* Element::NearestOpenAncestralPopup(const Node& node,
     for (const Node* current_node = &node; current_node;
          current_node = FlatTreeTraversal::Parent(*current_node)) {
       if (auto* current_element = DynamicTo<Element>(current_node);
-          current_element && current_element->HasValidPopupAttribute() &&
+          current_element && current_element->HasPopupAttribute() &&
           current_element->popupOpen() &&
           current_element->PopupType() != PopupValueType::kManual) {
         upper_bound =
@@ -3076,7 +3077,7 @@ void Element::InvokePopup(Element* invoker) {
   DCHECK(invoker);
   DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
       GetDocument().GetExecutionContext()));
-  DCHECK(HasValidPopupAttribute());
+  DCHECK(HasPopupAttribute());
   GetPopupData()->setInvoker(invoker);
   showPopUp(ASSERT_NO_EXCEPTION);
 }
@@ -3085,7 +3086,7 @@ Element* Element::anchorElement() const {
   if (!RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
           GetDocument().GetExecutionContext()))
     return nullptr;
-  if (!HasValidPopupAttribute())
+  if (!HasPopupAttribute())
     return nullptr;
   const AtomicString& anchor_id = FastGetAttribute(html_names::kAnchorAttr);
   if (anchor_id.IsNull())
@@ -3099,11 +3100,11 @@ void Element::SetNeedsRepositioningForSelectMenu(bool flag) {
   DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
   DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
       GetDocument().GetExecutionContext()));
-  DCHECK(HasValidPopupAttribute());
-  auto& popup_data = EnsureElementRareData().EnsurePopupData();
-  if (popup_data.needsRepositioningForSelectMenu() == flag)
+  DCHECK(HasPopupAttribute());
+  auto* popup_data = GetPopupData();
+  if (popup_data->needsRepositioningForSelectMenu() == flag)
     return;
-  popup_data.setNeedsRepositioningForSelectMenu(flag);
+  popup_data->setNeedsRepositioningForSelectMenu(flag);
   if (flag) {
     SetHasCustomStyleCallbacks();
     SetNeedsStyleRecalc(kLocalStyleChange,
@@ -3116,15 +3117,15 @@ void Element::SetOwnerSelectMenuElement(HTMLSelectMenuElement* element) {
   DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
   DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
       GetDocument().GetExecutionContext()));
-  DCHECK(HasValidPopupAttribute());
-  EnsureElementRareData().EnsurePopupData().setOwnerSelectMenuElement(element);
+  DCHECK(HasPopupAttribute());
+  GetPopupData()->setOwnerSelectMenuElement(element);
 }
 
 // TODO(crbug.com/1197720): The popup position should be provided by the new
 // anchored positioning scheme.
 void Element::AdjustPopupPositionForSelectMenu(ComputedStyle& style) {
   DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
-  DCHECK(HasValidPopupAttribute());
+  DCHECK(HasPopupAttribute());
   DCHECK(GetPopupData()->needsRepositioningForSelectMenu());
   auto* owner_select = GetPopupData()->ownerSelectMenuElement();
   DCHECK(owner_select);
@@ -3492,7 +3493,7 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
 
   // If a popup is removed from the document, make sure it gets
   // removed from the popup element stack and the top layer.
-  if (was_in_document && HasValidPopupAttribute()) {
+  if (was_in_document && HasPopupAttribute()) {
     // We can't run focus event handlers while removing elements.
     HidePopUpInternal(HidePopupFocusBehavior::kNone,
                       HidePopupForcingLevel::kHideImmediately);
@@ -7903,7 +7904,7 @@ scoped_refptr<ComputedStyle> Element::CustomStyleForLayoutObject(
       OriginalStyleForLayoutObject(style_recalc_context);
   // TODO(crbug.com/1197720): This logic is for positioning the selectmenu
   // popup. This should be replaced by the new anchored positioning scheme.
-  if (HasValidPopupAttribute() &&
+  if (HasPopupAttribute() &&
       GetPopupData()->needsRepositioningForSelectMenu()) {
     DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
     DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(

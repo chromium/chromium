@@ -365,7 +365,7 @@ HTMLFormControlElement::popupTargetElement() const {
   if (idref.IsNull())
     return no_element;
   Element* popup_element = GetTreeScope().getElementById(idref);
-  if (!popup_element || !popup_element->HasValidPopupAttribute())
+  if (!popup_element || !popup_element->HasPopupAttribute())
     return no_element;
   return PopupTargetElement{.element = popup_element,
                             .action = action,

@@ -17,7 +17,7 @@ PopupAnimationFinishedEventListener::PopupAnimationFinishedEventListener(
     Member<Element> popup_element,
     HeapHashSet<Member<EventTarget>>&& animations)
     : popup_element_(popup_element), animations_(std::move(animations)) {
-  DCHECK(popup_element->HasValidPopupAttribute());
+  DCHECK(popup_element->HasPopupAttribute());
   DCHECK(!animations_.IsEmpty());
   for (auto animation : animations_) {
     animation->addEventListener(event_type_names::kFinish, this,

@@ -1500,7 +1500,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       break;
     }
     case CSSSelector::kPseudoOpen:
-      if (element.HasValidPopupAttribute()) {
+      if (element.HasPopupAttribute()) {
         return element.popupOpen();
       }
       return false;
@@ -1509,7 +1509,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
               element.GetDocument().GetExecutionContext())) {
         return false;
       }
-      if (element.HasValidPopupAttribute()) {
+      if (element.HasPopupAttribute()) {
         return element.GetPopupData()->visibilityState() ==
                PopupVisibilityState::kHidden;
       }

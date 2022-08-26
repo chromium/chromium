@@ -588,7 +588,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   // Popup API related functions.
   void UpdatePopupAttribute(String);
-  bool HasValidPopupAttribute() const;
+  bool HasPopupAttribute() const;
   PopupData* GetPopupData() const;
   PopupValueType PopupType() const;
   bool popupOpen() const;

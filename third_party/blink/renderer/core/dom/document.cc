@@ -7497,7 +7497,7 @@ Element* Document::TopmostPopupAutoOrHint() const {
 void Document::SetPopUpMousedownTarget(const Element* pop_up) {
   DCHECK(
       RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(GetExecutionContext()));
-  DCHECK(!pop_up || pop_up->HasValidPopupAttribute());
+  DCHECK(!pop_up || pop_up->HasPopupAttribute());
   pop_up_mousedown_target_ = pop_up;
 }
 

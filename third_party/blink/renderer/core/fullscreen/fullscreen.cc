@@ -404,7 +404,7 @@ bool RequestFullscreenConditionsMet(Element& pending, Document& document) {
     return false;
 
   // |pending| is not a dialog or popup element.
-  if (IsA<HTMLDialogElement>(pending) || pending.HasValidPopupAttribute())
+  if (IsA<HTMLDialogElement>(pending) || pending.HasPopupAttribute())
     return false;
 
   // The fullscreen element ready check for |pending| returns false.
