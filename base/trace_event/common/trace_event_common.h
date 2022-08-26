@@ -1094,7 +1094,12 @@ struct BASE_EXPORT TraceTimestampTraits<::base::TimeTicks> {
 
 // Flags for changing the behavior of TRACE_EVENT_API_ADD_TRACE_EVENT.
 #define TRACE_EVENT_FLAG_NONE (static_cast<unsigned int>(0))
+
+// Should not be used outside this file or
+// except `trace_event_impl.cc` (implementation details).
+// If used, it will result in CHECK failure in SDK build.
 #define TRACE_EVENT_FLAG_COPY (static_cast<unsigned int>(1 << 0))
+
 #define TRACE_EVENT_FLAG_HAS_ID (static_cast<unsigned int>(1 << 1))
 #define TRACE_EVENT_FLAG_SCOPE_OFFSET (static_cast<unsigned int>(1 << 2))
 #define TRACE_EVENT_FLAG_SCOPE_EXTRA (static_cast<unsigned int>(1 << 3))

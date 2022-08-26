@@ -1538,48 +1538,35 @@ TEST_F(TraceEventTestFixture, NormallyNoDeepCopy) {
 #endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 TEST_F(TraceEventTestFixture, DeepCopy) {
-  static const char kOriginalName1[] = "name1";
-  static const char kOriginalName2[] = "name2";
-  static const char kOriginalName3[] = "name3";
-  std::string name1(kOriginalName1);
-  std::string name2(kOriginalName2);
-  std::string name3(kOriginalName3);
+  static const char kOriginalName[] = "name1";
+  std::string name(kOriginalName);
   std::string arg1("arg1");
   std::string arg2("arg2");
-  std::string val1("val1");
-  std::string val2("val2");
+  std::string val("val");
 
   BeginTrace();
-  TRACE_EVENT_INSTANT_WITH_FLAGS0(
-      "category", name1.c_str(),
-      TRACE_EVENT_FLAG_COPY | TRACE_EVENT_SCOPE_THREAD);
-  TRACE_EVENT_BEGIN_WITH_FLAGS1("category", name2.c_str(),
-                                TRACE_EVENT_FLAG_COPY, arg1.c_str(), 5);
-  TRACE_EVENT_END_WITH_FLAGS0("category", name2.c_str(), TRACE_EVENT_FLAG_COPY);
-  TRACE_EVENT_COPY_BEGIN2("category", name3.c_str(), arg1.c_str(), val1,
-                          arg2.c_str(), val2);
+  TRACE_EVENT_COPY_BEGIN2("category", name.c_str(), arg1.c_str(), 5,
+                          arg2.c_str(), val);
+  TRACE_EVENT_COPY_BEGIN2("category", name.c_str(), arg1.c_str(), 5,
+                          arg2.c_str(), val);
 
   // As per NormallyNoDeepCopy, modify the strings in place.
-  name1[0] = name2[0] = name3[0] = arg1[0] = arg2[0] = val1[0] = val2[0] = '@';
+  name[0] = arg1[0] = arg2[0] = val[0] = '@';
 
   EndTraceAndFlush();
 
-  EXPECT_FALSE(FindTraceEntry(trace_parsed_, name1.c_str()));
-  EXPECT_FALSE(FindTraceEntry(trace_parsed_, name2.c_str()));
-  EXPECT_FALSE(FindTraceEntry(trace_parsed_, name3.c_str()));
+  EXPECT_FALSE(FindTraceEntry(trace_parsed_, name.c_str()));
 
-  const Value* entry1 = FindTraceEntry(trace_parsed_, kOriginalName1);
-  const Value* entry2 = FindTraceEntry(trace_parsed_, kOriginalName2);
-  const Value* entry3 = FindTraceEntry(trace_parsed_, kOriginalName3);
-  ASSERT_TRUE(entry1);
-  ASSERT_TRUE(entry2);
-  ASSERT_TRUE(entry3);
+  const Value* entry = FindTraceEntry(trace_parsed_, kOriginalName);
+  ASSERT_TRUE(entry);
 
-  EXPECT_FALSE(entry2->FindIntPath("args.@rg1"));
-  EXPECT_EQ(*entry2->FindIntPath("args.arg1"), 5);
+  EXPECT_FALSE(entry->FindIntPath("args.@rg1"));
 
-  EXPECT_EQ(*entry3->FindStringPath("args.arg1"), "val1");
-  EXPECT_EQ(*entry3->FindStringPath("args.arg2"), "val2");
+  ASSERT_TRUE(entry->FindIntPath("args.arg1"));
+  EXPECT_EQ(*entry->FindIntPath("args.arg1"), 5);
+
+  ASSERT_TRUE(entry->FindStringPath("args.arg2"));
+  EXPECT_EQ(*entry->FindStringPath("args.arg2"), "val");
 }
 
 // Test that TraceResultBuffer outputs the correct result whether it is added

@@ -1145,8 +1145,8 @@ TEST_F(TraceEventDataSourceTest, EventWithStringArgs) {
 TEST_F(TraceEventDataSourceTest, EventWithCopiedStrings) {
   StartTraceEventDataSource();
 
-  TRACE_EVENT_INSTANT2(kCategoryGroup, "bar",
-                       TRACE_EVENT_SCOPE_THREAD | TRACE_EVENT_FLAG_COPY,
+  TRACE_EVENT_COPY_INSTANT2(kCategoryGroup, "bar",
+                       TRACE_EVENT_SCOPE_THREAD,
                        "arg1_name", "arg1_val", "arg2_name", "arg2_val");
 
   size_t packet_index = ExpectStandardPreamble();
@@ -1155,21 +1155,12 @@ TEST_F(TraceEventDataSourceTest, EventWithCopiedStrings) {
   const auto& annotations = e_packet->track_event().debug_annotations();
   EXPECT_EQ(annotations.size(), 2);
 
-#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-  // Perfetto uses interning even for copied strings.
-  ExpectTraceEvent(e_packet, /*category_iid=*/1u, /*name_iid=*/1u,
-                   TRACE_EVENT_PHASE_INSTANT,
-                   TRACE_EVENT_SCOPE_THREAD | TRACE_EVENT_FLAG_COPY);
-  EXPECT_EQ(annotations[0].name_iid(), 1u);
-  EXPECT_EQ(annotations[1].name_iid(), 2u);
-#else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   ExpectTraceEvent(e_packet, /*category_iid=*/1u, /*name=*/"bar",
                    TRACE_EVENT_PHASE_INSTANT,
                    TRACE_EVENT_SCOPE_THREAD | TRACE_EVENT_FLAG_COPY);
   EXPECT_EQ(e_packet->track_event().name(), "bar");
   EXPECT_EQ(annotations[0].name(), "arg1_name");
   EXPECT_EQ(annotations[1].name(), "arg2_name");
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
   EXPECT_EQ(annotations[0].string_value(), "arg1_val");
   EXPECT_EQ(annotations[1].string_value(), "arg2_val");
@@ -1971,11 +1962,11 @@ TEST_F(TraceEventDataSourceTest, FilteringEventWithFlagCopy) {
       [](perfetto::EventContext& ev) { ev.event()->set_name("javaName"); },
       "arg1_name", "arg1_val", "arg2_name", "arg2_val");
 #else
-  TRACE_EVENT_INSTANT2(kCategoryGroup, "bar",
-                       TRACE_EVENT_SCOPE_THREAD | TRACE_EVENT_FLAG_COPY,
+  TRACE_EVENT_COPY_INSTANT2(kCategoryGroup, "bar",
+                       TRACE_EVENT_SCOPE_THREAD,
                        "arg1_name", "arg1_val", "arg2_name", "arg2_val");
-  TRACE_EVENT_INSTANT2(kCategoryGroup, "javaName",
-                       TRACE_EVENT_SCOPE_THREAD | TRACE_EVENT_FLAG_COPY |
+  TRACE_EVENT_COPY_INSTANT2(kCategoryGroup, "javaName",
+                       TRACE_EVENT_SCOPE_THREAD |
                            TRACE_EVENT_FLAG_JAVA_STRING_LITERALS,
                        "arg1_name", "arg1_val", "arg2_name", "arg2_val");
 #endif
