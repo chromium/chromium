@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_data.h"
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_item.h"
+#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_line_resolver.h"
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_track_collection.h"
 #include "third_party/blink/renderer/platform/wtf/doubly_linked_list.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -166,11 +167,10 @@ class CORE_EXPORT NGGridPlacement {
 
   bool HasSparsePacking() const;
 
-  // Used to resolve positions using |GridPositionsResolver|.
-  const ComputedStyle& grid_style_;
-
   PackingBehavior packing_behavior_;
   NGGridPlacementData placement_data_;
+
+  NGGridLineResolver line_resolver_;
   GridTrackSizingDirection major_direction_;
   GridTrackSizingDirection minor_direction_;
 

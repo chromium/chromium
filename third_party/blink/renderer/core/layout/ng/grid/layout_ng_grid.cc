@@ -166,18 +166,10 @@ wtf_size_t LayoutNGGrid::ExplicitGridEndForDirection(
   if (IsGridPlacementDirty())
     return 0;
 
-  const bool is_for_columns = track_direction == kForColumns;
-  const wtf_size_t subgrid_span_size =
-      is_for_columns ? cached_placement_data_.column_subgrid_span_size
-                     : cached_placement_data_.row_subgrid_span_size;
-
   const wtf_size_t explicit_grid_track_count =
-      is_for_columns ? NGGridLineResolver::ExplicitGridColumnCount(
-                           StyleRef(), AutoRepeatCountForDirection(kForColumns),
-                           subgrid_span_size)
-                     : NGGridLineResolver::ExplicitGridRowCount(
-                           StyleRef(), AutoRepeatCountForDirection(kForRows),
-                           subgrid_span_size);
+      (track_direction == kForColumns)
+          ? cached_placement_data_.column_explicit_count
+          : cached_placement_data_.row_explicit_count;
 
   return base::checked_cast<wtf_size_t>(
       ExplicitGridStartForDirection(track_direction) +

@@ -13,18 +13,15 @@
 namespace blink {
 
 NGGridNamedLineCollection::NGGridNamedLineCollection(
-    const ComputedStyle& grid_container_style,
     const String& named_line,
     GridTrackSizingDirection track_direction,
+    const NamedGridLinesMap& implicit_grid_line_names,
+    const ComputedGridTrackList& computed_grid_track_list,
     wtf_size_t last_line,
     wtf_size_t auto_repeat_tracks_count,
     bool is_parent_grid_container)
     : last_line_(last_line),
       auto_repeat_total_tracks_(auto_repeat_tracks_count) {
-  const bool is_for_columns = track_direction == kForColumns;
-  const ComputedGridTrackList& computed_grid_track_list =
-      is_for_columns ? grid_container_style.GridTemplateColumns()
-                     : grid_container_style.GridTemplateRows();
   is_standalone_grid_ =
       computed_grid_track_list.axis_type == GridAxisType::kStandaloneAxis;
 
@@ -39,9 +36,6 @@ NGGridNamedLineCollection::NGGridNamedLineCollection(
       computed_grid_track_list.named_grid_lines;
   const NamedGridLinesMap& auto_repeat_grid_line_names =
       computed_grid_track_list.auto_repeat_named_grid_lines;
-  const NamedGridLinesMap& implicit_grid_line_names =
-      is_for_columns ? grid_container_style.ImplicitNamedGridColumnLines()
-                     : grid_container_style.ImplicitNamedGridRowLines();
 
   if (!grid_line_names.IsEmpty() && are_named_lines_valid) {
     auto it = grid_line_names.find(named_line);

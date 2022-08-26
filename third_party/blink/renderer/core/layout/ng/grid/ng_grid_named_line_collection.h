@@ -10,16 +10,19 @@
 
 namespace blink {
 
-class ComputedStyle;
+using NamedGridLinesMap = HashMap<String, Vector<wtf_size_t>>;
+struct ComputedGridTrackList;
 
 class NGGridNamedLineCollection {
  public:
-  NGGridNamedLineCollection(const ComputedStyle&,
-                            const String& named_line,
-                            GridTrackSizingDirection,
-                            wtf_size_t last_line,
-                            wtf_size_t auto_repeat_tracks_count,
-                            bool is_parent_grid_container = false);
+  NGGridNamedLineCollection(
+      const String& named_line,
+      GridTrackSizingDirection track_direction,
+      const NamedGridLinesMap& implicit_grid_line_names,
+      const ComputedGridTrackList& computed_grid_track_list,
+      wtf_size_t last_line,
+      wtf_size_t auto_repeat_tracks_count,
+      bool is_parent_grid_container = false);
 
   NGGridNamedLineCollection(const NGGridNamedLineCollection&) = delete;
   NGGridNamedLineCollection& operator=(const NGGridNamedLineCollection&) =

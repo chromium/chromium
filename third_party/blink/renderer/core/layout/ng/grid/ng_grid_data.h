@@ -25,7 +25,9 @@ struct CORE_EXPORT NGGridPlacementData {
            column_auto_repetitions == other.column_auto_repetitions &&
            row_auto_repetitions == other.row_auto_repetitions &&
            column_start_offset == other.column_start_offset &&
-           row_start_offset == other.row_start_offset;
+           row_start_offset == other.row_start_offset &&
+           column_explicit_count == other.column_explicit_count &&
+           row_explicit_count == other.row_explicit_count;
   }
 
   bool HasStandalonePlacement(GridTrackSizingDirection track_direction) const {
@@ -53,6 +55,8 @@ struct CORE_EXPORT NGGridPlacementData {
   wtf_size_t row_auto_repetitions{0};
   wtf_size_t column_start_offset{0};
   wtf_size_t row_start_offset{0};
+  wtf_size_t column_explicit_count{0};
+  wtf_size_t row_explicit_count{0};
 };
 
 // This struct contains the column and row data necessary to layout grid items.
