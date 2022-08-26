@@ -9,7 +9,7 @@ import {OsBluetoothDevicesSubpageBrowserProxyImpl} from 'chrome://os-settings/ch
 import {DeviceConnectionState} from 'chrome://resources/mojo/chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {createDefaultBluetoothDevice} from 'chrome://test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
-import {eventToPromise} from 'chrome://test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://test/test_util.js';
 
 import {assertEquals, assertTrue} from '../../../chai_assert.js';
 
@@ -95,6 +95,7 @@ suite('OsSavedDevicesListTest', function() {
     await flushAsync();
     assertEquals(getListItems().length, 5);
   });
+
   test('Device list has correct a11y labels', async function() {
     const device0 = {name: 'dev0', imageUrl: '', accountKey: '0'};
     const device1 = {name: 'dev1', imageUrl: '', accountKey: '1'};
@@ -131,5 +132,18 @@ suite('OsSavedDevicesListTest', function() {
     assertEquals(
         getListItems()[2].shadowRoot.querySelector('.icon-more-vert').ariaLabel,
         savedDevicesList.i18n('savedDeviceItemButtonA11yLabel', 'dev2'));
+  });
+
+  test('Device images render correctly', async function() {
+    const device0 = {name: 'dev0', imageUrl: '', accountKey: '0'};
+    const device1 = {name: 'dev1', imageUrl: 'fakeUrl', accountKey: '1'};
+
+    savedDevicesList.devices = [device0, device1];
+    await flushAsync();
+
+    assertTrue(isVisible(getListItems()[0].$$('#noDeviceImage')));
+    assertFalse(isVisible(getListItems()[0].$$('#deviceImage')));
+    assertFalse(isVisible(getListItems()[1].$$('#noDeviceImage')));
+    assertTrue(isVisible(getListItems()[1].$$('#deviceImage')));
   });
 });

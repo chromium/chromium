@@ -3,14 +3,13 @@
     padding-top: 3px;
   }
 
-  #deviceImage {
+  .device-icon {
     height: 24px;
     width: 24px;
   }
 
 </style>
 <div focus-row-container>
-  <!-- TODO: b/238808398 Add a11y label. -->
   <div class="list-item"
       focus-row-control
       focus-type="rowWrapper"
@@ -18,8 +17,15 @@
       selectable
       aria-label="[[getAriaLabel_(device, itemIndex, listSize)]]">
     <div class="image-wrapper">
-      <img id="deviceImage" src="[[getImageSrc_(device)]]"
-          alt="bud device image">
+      <template is="dom-if" if="[[!getImageSrc_(device)]]" restamp>
+        <!-- TODO(b/241277552) audit default Fast Pair icon -->
+        <iron-icon id="noDeviceImage" class="device-icon"
+            icon="os-settings:headset"></iron-icon>
+      </template>
+      <template is="dom-if" if="[[getImageSrc_(device)]]" restamp>
+        <img id="deviceImage" class="device-icon"
+            src="[[getImageSrc_(device)]]">
+      </template>
     </div>
     <div class="middle" aria-hidden="true">
       <div id="deviceName">[[getDeviceName_(device)]]</div>
