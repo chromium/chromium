@@ -1937,7 +1937,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Omnibox.SuggestTiles.DeletedTilePosition" units="position"
+<histogram name="Omnibox.SuggestTiles.DeletedTileIndex" units="position"
     expires_after="2023-06-01">
   <owner>ender@google.com</owner>
   <owner>mahmadi@chromium.org</owner>
@@ -1966,7 +1966,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Omnibox.SuggestTiles.SelectedTilePosition" units="position"
+<histogram name="Omnibox.SuggestTiles.SelectedTileIndex" units="position"
     expires_after="2023-06-01">
   <owner>ender@google.com</owner>
   <owner>mahmadi@chromium.org</owner>
