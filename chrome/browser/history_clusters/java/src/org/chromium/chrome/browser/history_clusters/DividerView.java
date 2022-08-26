@@ -11,8 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout.LayoutParams;
 
-import androidx.annotation.DimenRes;
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
 
 /**
  * A horizontal divider view with a fixed height that spans the width of its parent along the
@@ -22,6 +22,7 @@ class DividerView extends View {
     public DividerView(
             Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        setBackground(AppCompatResources.getDrawable(getContext(), R.drawable.rectangle_surface_1));
         setVisibility(View.GONE);
     }
 
@@ -32,8 +33,16 @@ class DividerView extends View {
         parent.addView(this, layoutParams);
     }
 
-    public void setHeightRes(@DimenRes int dimenResId) {
-        getLayoutParams().height = getResources().getDimensionPixelSize(dimenResId);
+    public void setIsThickDivider(boolean isThick) {
+        LayoutParams layoutParams = (LayoutParams) getLayoutParams();
+        if (isThick) {
+            layoutParams.height =
+                    getResources().getDimensionPixelSize(R.dimen.thick_divider_height);
+            layoutParams.topMargin = getResources().getDimensionPixelSize(R.dimen.divider_margin);
+        } else {
+            layoutParams.height = getResources().getDimensionPixelSize(R.dimen.divider_height);
+            layoutParams.topMargin = 0;
+        }
         requestLayout();
     }
 }

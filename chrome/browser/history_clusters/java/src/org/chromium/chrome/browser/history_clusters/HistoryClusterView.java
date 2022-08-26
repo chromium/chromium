@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
 
-import androidx.annotation.DimenRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
@@ -101,8 +100,8 @@ class HistoryClusterView extends SelectableItemView<HistoryCluster> {
         mDividerView.setVisibility(visible ? VISIBLE : GONE);
     }
 
-    void setDividerHeight(@DimenRes int dimenResId) {
-        mDividerView.setHeightRes(dimenResId);
+    void setHasThickDivider(boolean hasThickDivider) {
+        mDividerView.setIsThickDivider(hasThickDivider);
     }
 
     void setIconDrawableVisibility(int visibility) {
