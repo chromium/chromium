@@ -134,5 +134,9 @@ const base::Feature kAutofillAssistantUrlHeuristics{
 const base::Feature kAutofillAssistantDesktop{"AutofillAssistantDesktop",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Controls whether to filter existing profiles in Collect User Data action
+const base::Feature kAutofillAssistantCudFilterProfiles{
+    "AutofillAssistantCudFilterProfiles", base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace autofill_assistant

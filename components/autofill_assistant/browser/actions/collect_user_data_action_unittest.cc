@@ -4,6 +4,10 @@
 
 #include "components/autofill_assistant/browser/actions/collect_user_data_action.h"
 
+#include <algorithm>
+#include <codecvt>
+#include <functional>
+#include <memory>
 #include <set>
 #include <string>
 #include <utility>
@@ -15,14 +19,17 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
 #include "components/autofill_assistant/browser/cud_condition.pb.h"
+#include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/field_formatter.h"
 #include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/mock_personal_data_manager.h"
@@ -258,6 +265,7 @@ class CollectUserDataActionTest : public testing::Test {
   ukm::SourceId source_id_;
   UserData user_data_;
   UserModel user_model_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(CollectUserDataActionTest, FailsForMissingPrivacyText) {
@@ -3496,6 +3504,7 @@ TEST_F(CollectUserDataActionTest, LogsUkmProfilesCount) {
   ON_CALL(mock_personal_data_manager_, IsAutofillProfileEnabled)
       .WillByDefault(Return(true));
 
+  // Note that each profile has a different last name to avoid deduplication
   // This profile is a complete contact and shipping address.
   autofill::AutofillProfile complete;
   autofill::test::SetProfileInfo(&complete, "Adam", "", "West",
@@ -3507,7 +3516,7 @@ TEST_F(CollectUserDataActionTest, LogsUkmProfilesCount) {
                                  "", "", "", "", "", "", "", "", "", "");
   // This profile is incomplete both as a contact and as a shipping address.
   autofill::AutofillProfile incomplete;
-  autofill::test::SetProfileInfo(&incomplete, "", "West", "", "", "", "", "",
+  autofill::test::SetProfileInfo(&incomplete, "", "", "Bird", "", "", "", "",
                                  "", "", "", "", "", "");
 
   ON_CALL(mock_personal_data_manager_, GetProfiles)
@@ -3634,21 +3643,21 @@ TEST_F(CollectUserDataActionTest, LogsUkmCreditCardsCount) {
                   source_id_, kIncompleteCreditCardsCount, 2)}));
 }
 
-TEST_F(CollectUserDataActionTest, LogsUkmMoreThanFiveProfilesCount) {
+TEST_F(CollectUserDataActionTest, ProfilesNotDeduplicatedWithDisabledFlag) {
+  scoped_feature_list_.InitAndDisableFeature(
+      features::kAutofillAssistantCudFilterProfiles);
   ON_CALL(mock_personal_data_manager_, IsAutofillProfileEnabled)
       .WillByDefault(Return(true));
 
-  // This profile is a complete contact and shipping address.
-  autofill::AutofillProfile complete;
-  autofill::test::SetProfileInfo(&complete, "Adam", "", "West",
+  autofill::AutofillProfile profile;
+  autofill::test::SetProfileInfo(&profile, "Adam", "", "West",
                                  "adam.west@gmail.com", "", "Main St. 18", "",
                                  "abc", "New York", "NY", "10001", "US", "");
-
-  // We return the same profile 6 times, to verify that the count is correctly
+  // We return the 6 profiles, to verify that the count is correctly
   // set in the |MORE_THAN_FIVE| bucket.
   ON_CALL(mock_personal_data_manager_, GetProfiles)
       .WillByDefault(Return(std::vector<autofill::AutofillProfile*>(
-          {&complete, &complete, &complete, &complete, &complete, &complete})));
+          {&profile, &profile, &profile, &profile, &profile, &profile})));
 
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
@@ -3678,6 +3687,121 @@ TEST_F(CollectUserDataActionTest, LogsUkmMoreThanFiveProfilesCount) {
       GetUkmCompleteContactProfilesCount(ukm_recorder_),
       ElementsAreArray({ToHumanReadableEntry(
           source_id_, kCompleteContactProfilesCount,
+          static_cast<int64_t>(Metrics::UserDataEntryCount::FIVE_OR_MORE))}));
+  EXPECT_THAT(
+      GetUkmCompleteShippingProfilesCount(ukm_recorder_),
+      ElementsAreArray({ToHumanReadableEntry(
+          source_id_, kCompleteShippingProfilesCount,
+          static_cast<int64_t>(Metrics::UserDataEntryCount::FIVE_OR_MORE))}));
+}
+
+TEST_F(CollectUserDataActionTest, ProfilesDeduplicatedWithEnabledFlag) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kAutofillAssistantCudFilterProfiles);
+  ON_CALL(mock_personal_data_manager_, IsAutofillProfileEnabled)
+      .WillByDefault(Return(true));
+
+  autofill::AutofillProfile profile;
+  autofill::test::SetProfileInfo(&profile, "Adam", "", "West",
+                                 "adam.west@gmail.com", "", "Main St. 18", "",
+                                 "abc", "New York", "NY", "10001", "US", "");
+  // We return 6 duplicate profiles, to verify that they are deduplicated
+  // correctly and the count is correctly set in the |ONE| bucket.
+  ON_CALL(mock_personal_data_manager_, GetProfiles)
+      .WillByDefault(Return(std::vector<autofill::AutofillProfile*>(
+          {&profile, &profile, &profile, &profile, &profile, &profile})));
+
+  ON_CALL(mock_action_delegate_, CollectUserData(_))
+      .WillByDefault(
+          Invoke([=](CollectUserDataOptions* collect_user_data_options) {
+            std::move(collect_user_data_options->confirm_callback)
+                .Run(&user_data_, &user_model_);
+          }));
+
+  ActionProto action_proto;
+  auto* user_data = action_proto.mutable_collect_user_data();
+  user_data->set_request_terms_and_conditions(false);
+  auto* contact_details = user_data->mutable_contact_details();
+  contact_details->set_request_payer_name(true);
+  contact_details->set_request_payer_email(true);
+  contact_details->set_contact_details_name("contact");
+  user_data->set_shipping_address_name("shipping-address");
+  *contact_details->add_required_data_piece() =
+      MakeRequiredDataPiece(autofill::ServerFieldType::NAME_FIRST);
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
+  CollectUserDataAction action(&mock_action_delegate_, action_proto);
+  action.ProcessAction(callback_.Get());
+
+  EXPECT_THAT(GetUkmCompleteContactProfilesCount(ukm_recorder_),
+              ElementsAreArray({ToHumanReadableEntry(
+                  source_id_, kCompleteContactProfilesCount,
+                  static_cast<int64_t>(Metrics::UserDataEntryCount::ONE))}));
+  EXPECT_THAT(GetUkmCompleteShippingProfilesCount(ukm_recorder_),
+              ElementsAreArray({ToHumanReadableEntry(
+                  source_id_, kCompleteShippingProfilesCount,
+                  static_cast<int64_t>(Metrics::UserDataEntryCount::ONE))}));
+}
+
+TEST_F(CollectUserDataActionTest, LogsUkmMoreThanFiveProfilesCount) {
+  ON_CALL(mock_personal_data_manager_, IsAutofillProfileEnabled)
+      .WillByDefault(Return(true));
+
+  std::vector<std::unique_ptr<autofill::AutofillProfile>> profiles;
+  std::vector<autofill::AutofillProfile*> profile_pointers;
+  for (int i = 0; i < 6; i++) {
+    // We are changing the last name of each profile to make sure they don't get
+    // deduplicated
+    std::unique_ptr<autofill::AutofillProfile> profile =
+        std::make_unique<autofill::AutofillProfile>();
+    std::string last_name = "West" + base::NumberToString(i);
+    autofill::test::SetProfileInfo(profile.get(), "Adam", "", last_name.data(),
+                                   "adam.west@gmail.com", "", "Main St. 18", "",
+                                   "abc", "New York", "NY", "10001", "US", "");
+    profile_pointers.push_back(profile.get());
+    profiles.push_back(std::move(profile));
+  }
+
+  // We return the 6 profiles, to verify that the count is correctly
+  // set in the |MORE_THAN_FIVE| bucket.
+  ON_CALL(mock_personal_data_manager_, GetProfiles)
+      .WillByDefault(Return(profile_pointers));
+
+  ON_CALL(mock_action_delegate_, CollectUserData(_))
+      .WillByDefault(
+          Invoke([=](CollectUserDataOptions* collect_user_data_options) {
+            std::move(collect_user_data_options->confirm_callback)
+                .Run(&user_data_, &user_model_);
+          }));
+
+  ActionProto action_proto;
+  auto* user_data = action_proto.mutable_collect_user_data();
+  user_data->set_request_terms_and_conditions(false);
+  auto* contact_details = user_data->mutable_contact_details();
+  contact_details->set_request_payer_name(true);
+  contact_details->set_request_payer_email(true);
+  contact_details->set_contact_details_name("contact");
+  user_data->set_shipping_address_name("shipping-address");
+  *contact_details->add_required_data_piece() =
+      MakeRequiredDataPiece(autofill::ServerFieldType::NAME_FIRST);
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
+  CollectUserDataAction action(&mock_action_delegate_, action_proto);
+  action.ProcessAction(callback_.Get());
+
+  EXPECT_THAT(
+      GetUkmCompleteContactProfilesCount(ukm_recorder_),
+      ElementsAreArray({ToHumanReadableEntry(
+          source_id_, kCompleteContactProfilesCount,
+          static_cast<int64_t>(Metrics::UserDataEntryCount::FIVE_OR_MORE))}));
+  EXPECT_THAT(
+      GetUkmCompleteShippingProfilesCount(ukm_recorder_),
+      ElementsAreArray({ToHumanReadableEntry(
+          source_id_, kCompleteShippingProfilesCount,
           static_cast<int64_t>(Metrics::UserDataEntryCount::FIVE_OR_MORE))}));
 }
 

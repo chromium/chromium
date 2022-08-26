@@ -58,6 +58,10 @@ const char kServiceRequestSuccessRetryCount[] =
     "Android.AutofillAssistant.ServiceRequestSender.SuccessRetryCount";
 const char kServiceRequestFailureRetryCount[] =
     "Android.AutofillAssistant.ServiceRequestSender.FailureRetryCount";
+const char kCudAutofillProfileDeduplicatedContact[] =
+    "Android.AutofillAssistant.Cud.AutofillProfileDeduplicatedContact";
+const char kCudAutofillProfileDeduplicatedAddress[] =
+    "Android.AutofillAssistant.Cud.AutofillProfileDeduplicatedAddress";
 static bool DROPOUT_RECORDED = false;
 
 std::string GetSuffixForIntent(const std::string& intent) {
@@ -295,6 +299,26 @@ void Metrics::RecordPaymentRequestAutofillChanged(
                                         NOTCHANGED_ADDITIONAL_ACTION_SELECTED);
       return;
   }
+}
+
+// static
+void Metrics::RecordCollectUserDataProfileDeduplicationForContact(
+    int number_of_profiles_deduplicated_for_contact) {
+  base::UmaHistogramEnumeration(
+      kCudAutofillProfileDeduplicatedContact,
+      Metrics::UserDataEntryCount(
+          ToEntryCountBucket(number_of_profiles_deduplicated_for_contact)));
+  return;
+}
+
+// static
+void Metrics::RecordCollectUserDataProfileDeduplicationForAddress(
+    int number_of_profiles_deduplicated_for_address) {
+  base::UmaHistogramEnumeration(
+      kCudAutofillProfileDeduplicatedAddress,
+      Metrics::UserDataEntryCount(
+          ToEntryCountBucket(number_of_profiles_deduplicated_for_address)));
+  return;
 }
 
 // static

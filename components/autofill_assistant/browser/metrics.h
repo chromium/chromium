@@ -769,6 +769,10 @@ class Metrics {
       CollectUserDataResult result);
   static void RecordPaymentRequestAutofillChanged(bool changed,
                                                   CollectUserDataResult result);
+  static void RecordCollectUserDataProfileDeduplicationForContact(
+      int number_of_profiles_deduplicated_for_contact);
+  static void RecordCollectUserDataProfileDeduplicationForAddress(
+      int number_of_profiles_deduplicated_for_address);
   static void RecordPaymentRequestFirstNameOnly(bool first_name_only);
   static void RecordTriggerScriptStarted(ukm::UkmRecorder* ukm_recorder,
                                          ukm::SourceId source_id,

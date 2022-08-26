@@ -36,6 +36,7 @@ extern const base::Feature kAutofillAssistantUrlHeuristic4;
 extern const base::Feature kAutofillAssistantUrlHeuristic5;
 extern const base::Feature kAutofillAssistantUrlHeuristics;
 extern const base::Feature kAutofillAssistantVerifyGetActionsResponses;
+extern const base::Feature kAutofillAssistantCudFilterProfiles;
 
 }  // namespace features
 }  // namespace autofill_assistant
