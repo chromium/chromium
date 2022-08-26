@@ -291,55 +291,55 @@ TEST(ExtensionL10nUtil, LoadMessageCatalogsCompressed) {
 
 // Caller owns the returned object.
 MessageBundle* CreateManifestBundle() {
-  auto catalog = std::make_unique<base::DictionaryValue>();
+  base::Value::Dict catalog;
 
-  base::Value name_tree(base::Value::Type::DICTIONARY);
-  name_tree.SetStringKey("message", "name");
-  catalog->SetKey("name", std::move(name_tree));
+  base::Value::Dict name_tree;
+  name_tree.Set("message", "name");
+  catalog.Set("name", std::move(name_tree));
 
-  base::Value short_name_tree(base::Value::Type::DICTIONARY);
-  short_name_tree.SetStringKey("message", "short_name");
-  catalog->SetKey("short_name", std::move(short_name_tree));
+  base::Value::Dict short_name_tree;
+  short_name_tree.Set("message", "short_name");
+  catalog.Set("short_name", std::move(short_name_tree));
 
-  base::Value description_tree(base::Value::Type::DICTIONARY);
-  description_tree.SetStringKey("message", "description");
-  catalog->SetKey("description", std::move(description_tree));
+  base::Value::Dict description_tree;
+  description_tree.Set("message", "description");
+  catalog.Set("description", std::move(description_tree));
 
-  base::Value action_title_tree(base::Value::Type::DICTIONARY);
-  action_title_tree.SetStringKey("message", "action title");
-  catalog->SetKey("title", std::move(action_title_tree));
+  base::Value::Dict action_title_tree;
+  action_title_tree.Set("message", "action title");
+  catalog.Set("title", std::move(action_title_tree));
 
-  base::Value omnibox_keyword_tree(base::Value::Type::DICTIONARY);
-  omnibox_keyword_tree.SetStringKey("message", "omnibox keyword");
-  catalog->SetKey("omnibox_keyword", std::move(omnibox_keyword_tree));
+  base::Value::Dict omnibox_keyword_tree;
+  omnibox_keyword_tree.Set("message", "omnibox keyword");
+  catalog.Set("omnibox_keyword", std::move(omnibox_keyword_tree));
 
-  base::Value file_handler_title_tree(base::Value::Type::DICTIONARY);
-  file_handler_title_tree.SetStringKey("message", "file handler title");
-  catalog->SetKey("file_handler_title", std::move(file_handler_title_tree));
+  base::Value::Dict file_handler_title_tree;
+  file_handler_title_tree.Set("message", "file handler title");
+  catalog.Set("file_handler_title", std::move(file_handler_title_tree));
 
-  base::Value launch_local_path_tree(base::Value::Type::DICTIONARY);
-  launch_local_path_tree.SetStringKey("message", "main.html");
-  catalog->SetKey("launch_local_path", std::move(launch_local_path_tree));
+  base::Value::Dict launch_local_path_tree;
+  launch_local_path_tree.Set("message", "main.html");
+  catalog.Set("launch_local_path", std::move(launch_local_path_tree));
 
-  base::Value launch_web_url_tree(base::Value::Type::DICTIONARY);
-  launch_web_url_tree.SetStringKey("message", "http://www.google.com/");
-  catalog->SetKey("launch_web_url", std::move(launch_web_url_tree));
+  base::Value::Dict launch_web_url_tree;
+  launch_web_url_tree.Set("message", "http://www.google.com/");
+  catalog.Set("launch_web_url", std::move(launch_web_url_tree));
 
-  base::Value first_command_description_tree(base::Value::Type::DICTIONARY);
-  first_command_description_tree.SetStringKey("message", "first command");
-  catalog->SetKey("first_command_description",
-                  std::move(first_command_description_tree));
+  base::Value::Dict first_command_description_tree;
+  first_command_description_tree.Set("message", "first command");
+  catalog.Set("first_command_description",
+              std::move(first_command_description_tree));
 
-  base::Value second_command_description_tree(base::Value::Type::DICTIONARY);
-  second_command_description_tree.SetStringKey("message", "second command");
-  catalog->SetKey("second_command_description",
-                  std::move(second_command_description_tree));
+  base::Value::Dict second_command_description_tree;
+  second_command_description_tree.Set("message", "second command");
+  catalog.Set("second_command_description",
+              std::move(second_command_description_tree));
 
-  base::Value url_country_tree(base::Value::Type::DICTIONARY);
-  url_country_tree.SetStringKey("message", "de");
-  catalog->SetKey("country", std::move(url_country_tree));
+  base::Value::Dict url_country_tree;
+  url_country_tree.Set("message", "de");
+  catalog.Set("country", std::move(url_country_tree));
 
-  std::vector<std::unique_ptr<base::DictionaryValue>> catalogs;
+  MessageBundle::CatalogVector catalogs;
   catalogs.push_back(std::move(catalog));
 
   std::string error;

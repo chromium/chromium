@@ -70,13 +70,12 @@ bool MessageBundle::Init(const CatalogVector& locale_catalogs,
   dictionary_.clear();
 
   for (const auto& catalog : base::Reversed(locale_catalogs)) {
-    for (base::DictionaryValue::Iterator message_it(*catalog);
-         !message_it.IsAtEnd(); message_it.Advance()) {
-      std::string key(base::ToLowerASCII(message_it.key()));
-      if (!IsValidName(message_it.key()))
+    for (auto message_it : catalog) {
+      std::string key(base::ToLowerASCII(message_it.first));
+      if (!IsValidName(message_it.first))
         return BadKeyMessage(key, error);
       std::string value;
-      if (!GetMessageValue(message_it.key(), message_it.value(), &value, error))
+      if (!GetMessageValue(message_it.first, message_it.second, &value, error))
         return false;
       // Keys are not case-sensitive.
       dictionary_[key] = value;
@@ -130,17 +129,19 @@ bool MessageBundle::GetMessageValue(const std::string& key,
                                     std::string* value,
                                     std::string* error) const {
   // Get the top level tree for given key (name part).
-  const base::DictionaryValue* name_tree;
-  if (!name_value.GetAsDictionary(&name_tree)) {
+  const base::Value::Dict* name_tree = name_value.GetIfDict();
+  if (!name_tree) {
     *error = base::StringPrintf("Not a valid tree for key %s.", key.c_str());
     return false;
   }
   // Extract message from it.
-  if (!name_tree->GetString(kMessageKey, value)) {
+  const std::string* str = name_tree->FindString(kMessageKey);
+  if (!str) {
     *error = base::StringPrintf(
         "There is no \"%s\" element for key %s.", kMessageKey, key.c_str());
     return false;
   }
+  *value = *str;
 
   SubstitutionMap placeholders;
   if (!GetPlaceholders(*name_tree, key, &placeholders, error))
@@ -155,39 +156,39 @@ bool MessageBundle::GetMessageValue(const std::string& key,
 MessageBundle::MessageBundle() {
 }
 
-bool MessageBundle::GetPlaceholders(const base::DictionaryValue& name_tree,
+bool MessageBundle::GetPlaceholders(const base::Value::Dict& name_tree,
                                     const std::string& name_key,
                                     SubstitutionMap* placeholders,
                                     std::string* error) const {
-  if (!name_tree.FindKey(kPlaceholdersKey))
+  if (!name_tree.Find(kPlaceholdersKey))
     return true;
 
-  const base::DictionaryValue* placeholders_tree;
-  if (!name_tree.GetDictionary(kPlaceholdersKey, &placeholders_tree)) {
+  const base::Value::Dict* placeholders_tree =
+      name_tree.FindDict(kPlaceholdersKey);
+  if (!placeholders_tree) {
     *error = base::StringPrintf("Not a valid \"%s\" element for key %s.",
                                 kPlaceholdersKey, name_key.c_str());
     return false;
   }
 
-  for (base::DictionaryValue::Iterator it(*placeholders_tree); !it.IsAtEnd();
-       it.Advance()) {
-    const base::DictionaryValue* placeholder;
-    const std::string& content_key(it.key());
+  for (auto it : *placeholders_tree) {
+    const std::string& content_key(it.first);
     if (!IsValidName(content_key))
       return BadKeyMessage(content_key, error);
-    if (!it.value().GetAsDictionary(&placeholder)) {
+    const base::Value::Dict* placeholder = it.second.GetIfDict();
+    if (!placeholder) {
       *error = base::StringPrintf("Invalid placeholder %s for key %s",
                                   content_key.c_str(),
                                   name_key.c_str());
       return false;
     }
-    std::string content;
-    if (!placeholder->GetString(kContentKey, &content)) {
+    const std::string* content = placeholder->FindString(kContentKey);
+    if (!content) {
       *error = base::StringPrintf("Invalid \"%s\" element for key %s.",
                                   kContentKey, name_key.c_str());
       return false;
     }
-    (*placeholders)[base::ToLowerASCII(content_key)] = content;
+    (*placeholders)[base::ToLowerASCII(content_key)] = *content;
   }
 
   return true;

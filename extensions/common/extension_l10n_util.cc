@@ -477,7 +477,7 @@ extensions::MessageBundle* LoadMessageCatalogs(
   std::vector<std::string> all_fallback_locales;
   GetAllFallbackLocales(default_locale, &all_fallback_locales);
 
-  std::vector<std::unique_ptr<base::DictionaryValue>> catalogs;
+  extensions::MessageBundle::CatalogVector catalogs;
   for (size_t i = 0; i < all_fallback_locales.size(); ++i) {
     // Skip all parent locales that are not supplied.
     base::FilePath this_locale_path =
@@ -491,7 +491,7 @@ extensions::MessageBundle* LoadMessageCatalogs(
       // an error.
       return nullptr;
     }
-    catalogs.push_back(std::move(catalog));
+    catalogs.push_back(std::move(catalog->GetDict()));
   }
 
   return extensions::MessageBundle::Create(catalogs, error);
