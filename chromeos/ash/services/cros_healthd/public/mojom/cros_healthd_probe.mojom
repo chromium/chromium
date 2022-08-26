@@ -122,7 +122,7 @@ union ProcessResult {
 
 // Information related to a particular process.
 //
-// NextMinVersion: 2, NextIndex: 20
+// NextMinVersion: 3, NextIndex: 21
 [Stable]
 struct ProcessInfo {
   // Command which started the process.
@@ -177,6 +177,8 @@ struct ProcessInfo {
   [MinVersion=1] uint32 process_group_id@18;
   // Number of threads in this process.
   [MinVersion=1] uint32 threads@19;
+  // Process ID of the particular process.
+  [MinVersion=2] uint32 process_id@20;
 };
 
 // Battery probe result. Can either be populated with the BatteryInfo or an
