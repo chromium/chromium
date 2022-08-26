@@ -835,33 +835,33 @@ cr.define('cr.ui.login.debug', function() {
           // Password was scraped
           id: 'scraped',
           trigger: (screen) => {
-            screen.show(
-                'someone@example.com',
-                false,  // manualPasswordInput
-                0,      // attempt count
-                () => {});
+            screen.onBeforeShow({
+              email: 'someone@example.com',
+              manualPasswordInput: false,
+            });
+            screen.showPasswordStep(false);
           },
         },
         {
           // Password was scraped
           id: 'scraped-retry',
           trigger: (screen) => {
-            screen.show(
-                'someone@example.com',
-                false,  // manualPasswordInput
-                1,      // attempt count
-                () => {});
+            screen.onBeforeShow({
+              email: 'someone@example.com',
+              manualPasswordInput: false,
+            });
+            screen.showPasswordStep(true);
           },
         },
         {
           // No password was scraped
           id: 'manual',
           trigger: (screen) => {
-            screen.show(
-                'someone@example.com',
-                true,  // manualPasswordInput
-                0,     // attempt count
-                () => {});
+            screen.onBeforeShow({
+              email: 'someone@example.com',
+              manualPasswordInput: true,
+            });
+            screen.showPasswordStep(false);
           },
         },
       ],
