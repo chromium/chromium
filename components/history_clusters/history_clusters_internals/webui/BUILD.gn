@@ -15,6 +15,7 @@ static_library("webui") {
   ]
   deps = [
     "//base",
+    "//components/history/core/browser",
     "//components/history_clusters/core",
     "//components/history_clusters/history_clusters_internals/resources:resources",
     "//components/history_clusters/history_clusters_internals/webui:mojo_bindings",

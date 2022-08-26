@@ -10,9 +10,13 @@
 #include "ui/base/webui/resource_path.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
+namespace history {
+class HistoryService;
+}  // namespace history
+
 namespace history_clusters {
 class HistoryClustersService;
-}
+}  // namespace history_clusters
 
 class HistoryClustersInternalsPageHandlerImpl;
 
@@ -28,6 +32,7 @@ class HistoryClustersInternalsUI
   explicit HistoryClustersInternalsUI(
       content::WebUI* web_ui,
       history_clusters::HistoryClustersService* history_clusters_service,
+      history::HistoryService* history_service,
       SetupWebUIDataSourceCallback set_up_data_source_callback);
   ~HistoryClustersInternalsUI() override;
 
@@ -42,13 +47,19 @@ class HistoryClustersInternalsUI
  private:
   // history_clusters_internals::mojom::PageHandlerFactory impls.
   void CreatePageHandler(
-      mojo::PendingRemote<history_clusters_internals::mojom::Page> page)
-      override;
+      mojo::PendingRemote<history_clusters_internals::mojom::Page> page,
+      mojo::PendingReceiver<history_clusters_internals::mojom::PageHandler>
+          page_handler) override;
 
   // Not owned. Guaranteed to outlive |this|, since the history clusters keyed
   // service has the lifetime of Profile, while |this| has the lifetime of
   // RenderFrameHostImpl::WebUIImpl.
   raw_ptr<history_clusters::HistoryClustersService> history_clusters_service_;
+
+  // Not owned. Guaranteed to outlive |this|, since the history keyed
+  // service has the lifetime of Profile, while |this| has the lifetime of
+  // RenderFrameHostImpl::WebUIImpl.
+  raw_ptr<history::HistoryService> history_service_;
 
   std::unique_ptr<HistoryClustersInternalsPageHandlerImpl>
       history_clusters_internals_page_handler_;

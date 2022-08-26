@@ -11,9 +11,11 @@
 HistoryClustersInternalsUI::HistoryClustersInternalsUI(
     content::WebUI* web_ui,
     history_clusters::HistoryClustersService* history_clusters_service,
+    history::HistoryService* history_service,
     SetupWebUIDataSourceCallback set_up_data_source_callback)
     : MojoWebUIController(web_ui, /*enable_chrome_send=*/true),
-      history_clusters_service_(history_clusters_service) {
+      history_clusters_service_(history_clusters_service),
+      history_service_(history_service) {
   std::move(set_up_data_source_callback)
       .Run(base::make_span(kHistoryClustersInternalsResources,
                            kHistoryClustersInternalsResourcesSize),
@@ -32,10 +34,13 @@ void HistoryClustersInternalsUI::BindInterface(
 }
 
 void HistoryClustersInternalsUI::CreatePageHandler(
-    mojo::PendingRemote<history_clusters_internals::mojom::Page> page) {
+    mojo::PendingRemote<history_clusters_internals::mojom::Page> page,
+    mojo::PendingReceiver<history_clusters_internals::mojom::PageHandler>
+        page_handler) {
   history_clusters_internals_page_handler_ =
       std::make_unique<HistoryClustersInternalsPageHandlerImpl>(
-          std::move(page), history_clusters_service_);
+          std::move(page), std::move(page_handler), history_clusters_service_,
+          history_service_);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(HistoryClustersInternalsUI)

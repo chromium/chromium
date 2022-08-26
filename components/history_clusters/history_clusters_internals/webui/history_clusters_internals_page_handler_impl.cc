@@ -7,14 +7,20 @@
 #include "base/time/time.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
-#include "components/history_clusters/core/history_clusters_service.h"
+#include "components/history_clusters/core/history_clusters_db_tasks.h"
+#include "components/history_clusters/core/history_clusters_debug_jsons.h"
 
 HistoryClustersInternalsPageHandlerImpl::
     HistoryClustersInternalsPageHandlerImpl(
         mojo::PendingRemote<history_clusters_internals::mojom::Page> page,
-        history_clusters::HistoryClustersService* history_clusters_service)
+        mojo::PendingReceiver<history_clusters_internals::mojom::PageHandler>
+            pending_page_handler,
+        history_clusters::HistoryClustersService* history_clusters_service,
+        history::HistoryService* history_service)
     : page_(std::move(page)),
-      history_clusters_service_(history_clusters_service) {
+      page_handler_(this, std::move(pending_page_handler)),
+      history_clusters_service_(history_clusters_service),
+      history_service_(history_service) {
   if (!history_clusters::GetConfig().history_clusters_internals_page) {
     page_->OnLogMessageAdded(
         "History clusters internals page feature is turned off.");
@@ -32,6 +38,36 @@ HistoryClustersInternalsPageHandlerImpl::
     ~HistoryClustersInternalsPageHandlerImpl() {
   if (history_clusters_service_)
     history_clusters_service_->RemoveObserver(this);
+}
+
+void HistoryClustersInternalsPageHandlerImpl::GetVisitsJson(
+    GetVisitsJsonCallback callback) {
+  if (!history_service_) {
+    return;
+  }
+
+  // There are two forms of cancellation here because `ScheduleDBTask` does not
+  // take in a callback.
+  history_service_->ScheduleDBTask(
+      FROM_HERE,
+      std::make_unique<history_clusters::GetAnnotatedVisitsToCluster>(
+          history_clusters::IncompleteVisitMap(), /*begin_time=*/base::Time(),
+          history_clusters::QueryClustersContinuationParams(),
+          /*recent_first=*/true,
+          /*days_of_clustered_visits=*/0, /*recluster=*/false,
+          base::BindOnce(
+              &HistoryClustersInternalsPageHandlerImpl::OnGotAnnotatedVisits,
+              weak_ptr_factory_.GetWeakPtr(), std::move(callback))),
+      &task_tracker_);
+}
+
+void HistoryClustersInternalsPageHandlerImpl::OnGotAnnotatedVisits(
+    GetVisitsJsonCallback callback,
+    std::vector<int64_t> old_clusters,
+    std::vector<history::AnnotatedVisit> annotated_visits,
+    history_clusters::QueryClustersContinuationParams continuation_params) {
+  std::move(callback).Run(
+      history_clusters::GetDebugJSONForVisits(annotated_visits));
 }
 
 void HistoryClustersInternalsPageHandlerImpl::OnDebugMessage(

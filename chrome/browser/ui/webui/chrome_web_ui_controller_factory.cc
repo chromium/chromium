@@ -20,6 +20,7 @@
 #include "chrome/browser/accessibility/accessibility_ui.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/media/history/media_history_keyed_service.h"
 #include "chrome/browser/media/media_engagement_service.h"
@@ -457,6 +458,8 @@ WebUIController* NewWebUI<HistoryClustersInternalsUI>(WebUI* web_ui,
   Profile* profile = Profile::FromWebUI(web_ui);
   return new HistoryClustersInternalsUI(
       web_ui, HistoryClustersServiceFactory::GetForBrowserContext(profile),
+      HistoryServiceFactory::GetForProfile(profile,
+                                           ServiceAccessType::EXPLICIT_ACCESS),
       base::BindOnce(
           &SetUpWebUIDataSource, web_ui,
           history_clusters_internals::kChromeUIHistoryClustersInternalsHost));

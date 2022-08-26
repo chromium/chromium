@@ -6,6 +6,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -52,6 +53,8 @@ class TestWebUIControllerFactory : public content::WebUIControllerFactory {
       Profile* profile = Profile::FromWebUI(web_ui);
       return std::make_unique<HistoryClustersInternalsUI>(
           web_ui, HistoryClustersServiceFactory::GetForBrowserContext(profile),
+          HistoryServiceFactory::GetForProfile(
+              profile, ServiceAccessType::EXPLICIT_ACCESS),
           base::BindOnce(&SetUpWebUIDataSource, web_ui,
                          history_clusters_internals::
                              kChromeUIHistoryClustersInternalsHost));

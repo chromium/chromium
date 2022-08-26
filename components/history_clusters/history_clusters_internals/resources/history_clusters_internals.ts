@@ -9,25 +9,41 @@ import {HistoryClustersInternalsBrowserProxy} from './history_clusters_internals
 // Contains all the log events received when the internals page is open.
 const logMessages: string[] = [];
 
+/**
+ * Dumps file with JSON contents to filename.
+ */
+function dumpFileWithJsonContents(contents: string, filename: string) {
+  const blob = new Blob([contents], {'type': 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.setAttribute('href', url);
+  a.setAttribute('download', filename);
+  a.click();
+}
 
 /**
  * The callback to button#log-messages-dump to save the logs to a file.
  */
 function onLogMessagesDump() {
   const data = logMessages.join('\n');
-  const blob = new Blob([data], {'type': 'text/json'});
-  const url = URL.createObjectURL(blob);
-  const filename = 'history_clusters_internals_logs_dump.json';
+  dumpFileWithJsonContents(data, 'history_clusters_internals_logs_dump.json');
+}
 
-  const a = document.createElement('a');
-  a.setAttribute('href', url);
-  a.setAttribute('download', filename);
+/**
+ * The callback to button#visits-dump to save the visits to a file.
+ */
+function onVisitsDumpRequested() {
+  getProxy().getHandler().getVisitsJson().then(onVisitsJsonReady);
+}
 
-  const event = document.createEvent('MouseEvent');
-  event.initMouseEvent(
-      'click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0,
-      null);
-  a.dispatchEvent(event);
+/**
+ * The callback when the visits JSON string has been prepared.
+ */
+function onVisitsJsonReady(resp: {visitsJson: string}) {
+  const data = resp.visitsJson;
+  const filename = 'history_clusters_visits_dump.json';
+
+  dumpFileWithJsonContents(data, filename);
 }
 
 function getProxy(): HistoryClustersInternalsBrowserProxy {
@@ -39,6 +55,7 @@ function initialize() {
   const logMessageContainer = $('log-message-container') as HTMLTableElement;
 
   $('log-messages-dump').addEventListener('click', onLogMessagesDump);
+  $('visits-dump').addEventListener('click', onVisitsDumpRequested);
 
   getProxy().getCallbackRouter().onLogMessageAdded.addListener(
       (message: string) => {
