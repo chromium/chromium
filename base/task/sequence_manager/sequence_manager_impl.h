@@ -358,7 +358,7 @@ class BASE_EXPORT SequenceManagerImpl
   // Called by the task queue to inform this SequenceManager of a task that's
   // about to be queued. This SequenceManager may use this opportunity to add
   // metadata to |pending_task| before it is moved into the queue.
-  void WillQueueTask(Task* pending_task, const char* task_queue_name);
+  void WillQueueTask(Task* pending_task);
 
   // Enqueues onto delayed WorkQueues all delayed tasks which must run now
   // (cannot be postponed) and possibly some delayed tasks which can run now but

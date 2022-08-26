@@ -323,7 +323,7 @@ bool TaskTracker::WillPostTask(Task* task,
   }
 
   // TODO(scheduler-dev): Record the task traits here.
-  task_annotator_.WillQueueTask("ThreadPool_PostTask", task, "");
+  task_annotator_.WillQueueTask("ThreadPool_PostTask", task);
 
   return true;
 }

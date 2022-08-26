@@ -453,7 +453,7 @@ void TaskQueueImpl::PostImmediateTaskImpl(PostedTask task,
 #endif
 
     sequence_manager_->WillQueueTask(
-        &any_thread_.immediate_incoming_queue.back(), name_);
+        &any_thread_.immediate_incoming_queue.back());
     MaybeReportIpcTaskQueuedFromAnyThreadLocked(
         any_thread_.immediate_incoming_queue.back(), name_);
 
@@ -520,7 +520,7 @@ void TaskQueueImpl::PushOntoDelayedIncomingQueueFromMainThread(
 #endif
 
   if (notify_task_annotator) {
-    sequence_manager_->WillQueueTask(&pending_task, name_);
+    sequence_manager_->WillQueueTask(&pending_task);
     MaybeReportIpcTaskQueuedFromMainThread(pending_task, name_);
   }
   RecordQueuingDelayedTaskMetrics(pending_task, lazy_now);
@@ -531,7 +531,7 @@ void TaskQueueImpl::PushOntoDelayedIncomingQueueFromMainThread(
 }
 
 void TaskQueueImpl::PushOntoDelayedIncomingQueue(Task pending_task) {
-  sequence_manager_->WillQueueTask(&pending_task, name_);
+  sequence_manager_->WillQueueTask(&pending_task);
   MaybeReportIpcTaskQueuedFromAnyThreadUnlocked(pending_task, name_);
 
 #if DCHECK_IS_ON()

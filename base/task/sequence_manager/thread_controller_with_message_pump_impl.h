@@ -59,8 +59,7 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   void SetSequencedTaskSource(SequencedTaskSource* task_source) override;
   void BindToCurrentThread(std::unique_ptr<MessagePump> message_pump) override;
   void SetWorkBatchSize(int work_batch_size) override;
-  void WillQueueTask(PendingTask* pending_task,
-                     const char* task_queue_name) override;
+  void WillQueueTask(PendingTask* pending_task) override;
   void ScheduleWork() override;
   void SetNextDelayedDoWork(LazyNow* lazy_now,
                             absl::optional<WakeUp> wake_up) override;

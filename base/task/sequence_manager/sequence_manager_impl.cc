@@ -837,9 +837,8 @@ bool SequenceManagerImpl::OnSystemIdle() {
   return have_work_to_do;
 }
 
-void SequenceManagerImpl::WillQueueTask(Task* pending_task,
-                                        const char* task_queue_name) {
-  controller_->WillQueueTask(pending_task, task_queue_name);
+void SequenceManagerImpl::WillQueueTask(Task* pending_task) {
+  controller_->WillQueueTask(pending_task);
 }
 
 TaskQueue::TaskTiming SequenceManagerImpl::InitializeTaskTiming(

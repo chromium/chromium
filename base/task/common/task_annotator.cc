@@ -56,10 +56,8 @@ TaskAnnotator::TaskAnnotator() = default;
 TaskAnnotator::~TaskAnnotator() = default;
 
 void TaskAnnotator::WillQueueTask(perfetto::StaticString trace_event_name,
-                                  PendingTask* pending_task,
-                                  const char* task_queue_name) {
+                                  PendingTask* pending_task) {
   DCHECK(pending_task);
-  DCHECK(task_queue_name);
   TRACE_EVENT_INSTANT(
       "toplevel.flow", trace_event_name,
       perfetto::Flow::ProcessScoped(GetTaskTraceID(*pending_task)));
