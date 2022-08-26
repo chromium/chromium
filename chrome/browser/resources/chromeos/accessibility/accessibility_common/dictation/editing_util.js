@@ -89,9 +89,16 @@ export class EditingUtil {
     insertPhrase = insertPhrase.trim();
     beforePhrase = beforePhrase.trim();
 
-    const re = EditingUtil.getPhraseRegex_(beforePhrase);
-    // Runs when a regex match occurs and returns the replacement string.
-    const replacer = () => `${insertPhrase} ${beforePhrase}`;
+    let re;
+    let replacer;
+    if (LocaleInfo.considerSpaces()) {
+      re = EditingUtil.getPhraseRegex_(beforePhrase);
+      replacer = () => `${insertPhrase} ${beforePhrase}`;
+    } else {
+      re = EditingUtil.getPhraseRegexNoWordBoundaries_(beforePhrase);
+      replacer = () => `${insertPhrase}${beforePhrase}`;
+    }
+
     const newLeft = leftOfCaret.replace(re, replacer);
     const newIndex = re.test(leftOfCaret) ?
         re.exec(leftOfCaret).index + insertPhrase.length :

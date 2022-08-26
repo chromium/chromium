@@ -885,6 +885,21 @@ IN_PROC_BROWSER_TEST_P(DictationJaTest, SmartReplacePhrase) {
   WaitForRecognitionStopped();
 }
 
+IN_PROC_BROWSER_TEST_P(DictationJaTest, SmartInsertBefore) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  // Dictate "I like tennis".
+  SendFinalResultAndWaitForTextAreaValue("私はテニスが好きです。",
+                                         "私はテニスが好きです。");
+  // Insert "basketball and" before "tennis".
+  // Final text area value should be "I like basketball and tennis".
+  SendFinalResultAndWaitForTextAreaValue(
+      "バスケットボールとをテニスの前に挿入",
+      "私はバスケットボールとテニスが好きです。");
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStopped();
+}
+
 class DictationCommandsTest : public DictationTest {
  protected:
   DictationCommandsTest() {}
