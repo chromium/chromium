@@ -17,6 +17,7 @@
 namespace blink {
 
 class Element;
+class ExceptionState;
 
 // Represents the set of toggles on an element.
 using ToggleMap = HeapHashMap<AtomicString, Member<CSSToggle>>;
@@ -36,7 +37,9 @@ class CORE_EXPORT CSSToggleMap : public ScriptWrappable,
 
   void Trace(Visitor* visitor) const override;
 
-  CSSToggleMap* set(const AtomicString& key, CSSToggle* value);
+  CSSToggleMap* set(const AtomicString& key,
+                    CSSToggle* value,
+                    ExceptionState& exception_state);
   void clearForBinding(ScriptState*, ExceptionState&);
   bool deleteForBinding(ScriptState*, const AtomicString&, ExceptionState&);
   wtf_size_t size() const { return toggles_.size(); }

@@ -7,5 +7,5 @@
     RuntimeEnabled=CSSToggles
 ] interface CSSToggleMap {
   maplike<DOMString, CSSToggle>;
-  CSSToggleMap set(DOMString key, CSSToggle value);
+  [RaisesException] CSSToggleMap set(DOMString key, CSSToggle value);
 };

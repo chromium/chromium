@@ -79,6 +79,12 @@ promise_test(async function() {
   assert_equals(b.toggles.get("newtoggle"), undefined, 'b.toggles.get("newtoggle") after rename');
   assert_equals(b.toggles.get("newname"), t, 'b.toggles.get("newname") after rename');
 
+  assert_throws_dom("SyntaxError", () => { a.toggles.set("none", t); },
+                    "setting toggle_name to 'none'");
+  assert_equals(a.toggles.size, 0, "a.toggles.size after failed set");
+  assert_equals(b.toggles.size, 1, "b.toggles.size after failed set");
+  assert_equals(b.toggles.get("newname"), t, "b.toggles.get after failed set");
+
   // TODO(https://crbug.com/1250716): Should the toggle on a be
   // re-created at some point?  If so, when?
 

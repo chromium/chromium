@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/dom/css_toggle_map.h"
 
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
 
@@ -18,11 +19,20 @@ void CSSToggleMap::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
-CSSToggleMap* CSSToggleMap::set(const AtomicString& key, CSSToggle* value) {
+CSSToggleMap* CSSToggleMap::set(const AtomicString& key,
+                                CSSToggle* value,
+                                ExceptionState& exception_state) {
   // The specification describes the name as stored by the toggle map;
   // however, it's convenient in our implementation to store it on the toggle
   // instead (by inheriting from ToggleRoot).  And since a toggle can only be
   // in one map at once, it's not distinguishable by the API user.
+
+  if (EqualIgnoringASCIICase(key, "none")) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kSyntaxError,
+        "The key \"" + key + "\" is not allowed.");
+    return this;
+  }
 
   CSSToggleMap* old_map = value->OwnerToggleMap();
   if (old_map == this && key == value->Name())
