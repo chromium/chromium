@@ -29,10 +29,11 @@ def main(request, response):
 
     # Collect relevant params to be visible to response JS
     params = {}
-    for key in (b"navHistory", b"avoidBackAndForth", b"navigate", b"channel", b"responseToken", b"iframeToken"):
+    for key in (b"navHistory", b"avoidBackAndForth", b"navigate", b"channel"):
         value = requestData.first(key, None)
         params[key.decode()] = value and value.decode()
 
+    # This uses an <iframe> as BroadcastChannel is same-origin bound.
     response.content = b"""
 <!doctype html>
 <meta charset=utf-8>
@@ -71,12 +72,7 @@ def main(request, response):
       iframe.contentWindow.postMessage(payload, "*");
     };
     const channelName = params.channel;
-    const responseToken = params.responseToken;
-    const iframeToken = params.iframeToken;
-    iframe.src = `${get_host_info().HTTPS_ORIGIN}/html/cross-origin-opener-policy/resources/postback.html` +
-                 `?channel=${encodeURIComponent(channelName)}` +
-                 `&responseToken=${responseToken}` +
-                 `&iframeToken=${iframeToken}`;
+    iframe.src = `${get_host_info().HTTPS_ORIGIN}/html/cross-origin-opener-policy/resources/postback.html?channel=${encodeURIComponent(channelName)}`;
     document.body.appendChild(iframe);
   }
 </script>
