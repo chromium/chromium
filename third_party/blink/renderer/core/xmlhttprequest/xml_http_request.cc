@@ -325,15 +325,6 @@ v8::Local<v8::String> XMLHttpRequest::responseText(
 v8::Local<v8::String> XMLHttpRequest::ResponseJSONSource() {
   DCHECK_EQ(response_type_code_, kResponseTypeJSON);
 
-  const auto& head = response_body_head_;
-  if (state_ == kDone && !error_ && head.size() >= 2) {
-    if ((head[0] == 0xfe && head[1] == 0xff) ||
-        (head[0] == 0xff && head[1] == 0xfe)) {
-      Deprecation::CountDeprecation(GetExecutionContext(),
-                                    WebFeature::kXHRJSONEncodingDetection);
-    }
-  }
-
   if (error_ || state_ != kDone)
     return v8::Local<v8::String>();
   return response_text_.V8Value(isolate_);
@@ -1907,13 +1898,6 @@ void XMLHttpRequest::DidReceiveData(const char* data, unsigned len) {
 
   if (!len)
     return;
-
-  // Store the first few bytes of the response body so that we can check the BOM
-  // later.
-  for (wtf_size_t i = 0;
-       i < len && response_body_head_.size() < kResponseBodyHeadSize; ++i) {
-    response_body_head_.push_back(static_cast<uint8_t>(data[i]));
-  }
 
   if (response_type_code_ == kResponseTypeDocument && ResponseIsHTML()) {
     ParseDocumentChunk(data, len);
