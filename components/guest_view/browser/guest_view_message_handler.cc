@@ -95,15 +95,13 @@ void GuestViewMessageHandler::AttachToEmbedderFrame(
     return;
   }
 
-  content::WebContents* guest_web_contents =
-      manager->GetGuestByInstanceIDSafely(guest_instance_id,
-                                          render_process_id());
-  if (!guest_web_contents) {
+  GuestViewBase* guest = manager->GetGuestByInstanceIDSafely(
+      guest_instance_id, render_process_id());
+  if (!guest) {
     std::move(callback).Run();
     return;
   }
 
-  auto* guest = GuestViewBase::FromWebContents(guest_web_contents);
   content::WebContents* owner_web_contents = guest->owner_web_contents();
   DCHECK(owner_web_contents);
   auto* embedder_frame = RenderFrameHost::FromID(

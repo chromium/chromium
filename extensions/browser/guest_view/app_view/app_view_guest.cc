@@ -51,7 +51,7 @@ struct ResponseInfo {
         app_view_guest(app_view_guest),
         callback(std::move(callback)) {}
 
-  ~ResponseInfo() {}
+  ~ResponseInfo() = default;
 };
 
 using PendingResponseMap = std::map<int, std::unique_ptr<ResponseInfo>>;
@@ -96,7 +96,7 @@ bool AppViewGuest::CompletePendingRequest(
       url, response_info->guest_extension.get(),
       std::move(response_info->callback));
 
-  response_map->erase(guest_instance_id);
+  response_map->erase(it);
   return true;
 }
 

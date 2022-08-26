@@ -112,7 +112,7 @@ void GuestViewManager::set_factory_for_testing(
   g_factory = factory;
 }
 
-content::WebContents* GuestViewManager::GetGuestByInstanceIDSafely(
+GuestViewBase* GuestViewManager::GetGuestByInstanceIDSafely(
     int guest_instance_id,
     int embedder_render_process_id) {
   if (!CanEmbedderAccessInstanceIDMaybeKill(embedder_render_process_id,
@@ -414,12 +414,11 @@ void GuestViewManager::DispatchEvent(
   delegate_->DispatchEvent(event_name, std::move(args), guest, instance_id);
 }
 
-content::WebContents* GuestViewManager::GetGuestByInstanceID(
-    int guest_instance_id) {
+GuestViewBase* GuestViewManager::GetGuestByInstanceID(int guest_instance_id) {
   auto it = guest_web_contents_by_instance_id_.find(guest_instance_id);
   if (it == guest_web_contents_by_instance_id_.end())
     return nullptr;
-  return it->second;
+  return GuestViewBase::FromWebContents(it->second);
 }
 
 bool GuestViewManager::CanEmbedderAccessInstanceIDMaybeKill(

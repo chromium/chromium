@@ -49,12 +49,8 @@ SetSizeParams::~SetSizeParams() = default;
 // toggled so the guest can change itself accordingly.
 class GuestViewBase::OwnerContentsObserver : public WebContentsObserver {
  public:
-  OwnerContentsObserver(GuestViewBase* guest,
-                        WebContents* embedder_web_contents)
-      : WebContentsObserver(embedder_web_contents),
-        is_fullscreen_(false),
-        destroyed_(false),
-        guest_(guest) {}
+  OwnerContentsObserver(GuestViewBase* guest, WebContents* owner_web_contents)
+      : WebContentsObserver(owner_web_contents), guest_(guest) {}
 
   OwnerContentsObserver(const OwnerContentsObserver&) = delete;
   OwnerContentsObserver& operator=(const OwnerContentsObserver&) = delete;
@@ -117,8 +113,8 @@ class GuestViewBase::OwnerContentsObserver : public WebContentsObserver {
   }
 
  private:
-  bool is_fullscreen_;
-  bool destroyed_;
+  bool is_fullscreen_ = false;
+  bool destroyed_ = false;
   raw_ptr<GuestViewBase> guest_;
 
   void Destroy() {
@@ -163,25 +159,14 @@ GuestViewBase::GuestViewBase(WebContents* owner_web_contents)
     : owner_web_contents_(owner_web_contents),
       browser_context_(owner_web_contents->GetBrowserContext()),
       guest_instance_id_(GetGuestViewManager()->GetNextInstanceID()),
-      view_instance_id_(kInstanceIDNone),
-      element_instance_id_(kInstanceIDNone),
-      attach_in_progress_(false),
-      initialized_(false),
-      is_being_destroyed_(false),
-      guest_host_(nullptr),
-      auto_size_enabled_(false),
-      is_full_page_plugin_(false) {
+      guest_host_(nullptr) {
   SetOwnerHost();
 }
 
-GuestViewBase::~GuestViewBase() {}
+GuestViewBase::~GuestViewBase() = default;
 
 void GuestViewBase::Init(const base::Value::Dict& create_params,
                          WebContentsCreatedCallback callback) {
-  if (initialized_)
-    return;
-  initialized_ = true;
-
   if (!GetGuestViewManager()->IsGuestAvailableToContext(this)) {
     // The derived class did not create a WebContents so this class serves no
     // purpose. Let's self-destruct.
@@ -334,13 +319,8 @@ GuestViewBase* GuestViewBase::From(int owner_process_id,
   if (!host)
     return nullptr;
 
-  WebContents* guest_web_contents =
-      GuestViewManager::FromBrowserContext(host->GetBrowserContext())
-          ->GetGuestByInstanceIDSafely(guest_instance_id, owner_process_id);
-  if (!guest_web_contents)
-    return nullptr;
-
-  return GuestViewBase::FromWebContents(guest_web_contents);
+  return GuestViewManager::FromBrowserContext(host->GetBrowserContext())
+      ->GetGuestByInstanceIDSafely(guest_instance_id, owner_process_id);
 }
 
 // static
@@ -449,29 +429,15 @@ void GuestViewBase::SetAttachParams(const base::Value::Dict& params) {
 }
 
 void GuestViewBase::SetOpener(GuestViewBase* guest) {
-  if (guest) {
-    opener_ = guest->weak_ptr_factory_.GetWeakPtr();
-    if (!attached()) {
-      opener_lifetime_observer_ =
-          std::make_unique<OpenerLifetimeObserver>(this);
-    }
-  } else {
-    opener_ = base::WeakPtr<GuestViewBase>();
-    opener_lifetime_observer_.reset();
+  DCHECK(guest);
+  opener_ = guest->weak_ptr_factory_.GetWeakPtr();
+  if (!attached()) {
+    opener_lifetime_observer_ = std::make_unique<OpenerLifetimeObserver>(this);
   }
 }
 
 void GuestViewBase::SetGuestHost(content::GuestHost* guest_host) {
   guest_host_ = guest_host;
-}
-
-void GuestViewBase::WillAttach(WebContents* embedder_web_contents,
-                               int element_instance_id,
-                               bool is_full_page_plugin,
-                               base::OnceClosure completion_callback) {
-  WillAttach(embedder_web_contents, nullptr, element_instance_id,
-             is_full_page_plugin, std::move(completion_callback),
-             base::NullCallback());
 }
 
 void GuestViewBase::WillAttach(

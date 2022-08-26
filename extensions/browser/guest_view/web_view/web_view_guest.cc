@@ -1515,8 +1515,9 @@ void WebViewGuest::RequestNewWindowPermission(WindowOpenDisposition disposition,
   const NewWindowInfo& new_window_info = it->second;
 
   // Retrieve the opener partition info if we have it.
-  const auto storage_partition_config =
-      new_contents->GetSiteInstance()->GetStoragePartitionConfig();
+  const auto storage_partition_config = guest->GetGuestMainFrame()
+                                            ->GetSiteInstance()
+                                            ->GetStoragePartitionConfig();
   std::string storage_partition_id =
       GetStoragePartitionIdFromPartitionConfig(storage_partition_config);
 
