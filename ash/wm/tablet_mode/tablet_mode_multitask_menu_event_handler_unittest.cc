@@ -88,4 +88,27 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, OnWindowDestroying) {
   EXPECT_FALSE(event_handler->multitask_menu_for_testing());
 }
 
+TEST_F(TabletModeMultitaskMenuEventHandlerTest, HideMultitaskMenuInOverview) {
+  auto window = CreateTestWindow();
+
+  ShowMultitaskMenu(window.get());
+
+  auto* event_handler =
+      TabletModeControllerTestApi()
+          .tablet_mode_window_manager()
+          ->tablet_mode_multitask_menu_event_handler_for_testing();
+  auto* multitask_menu = event_handler->multitask_menu_for_testing();
+  ASSERT_TRUE(multitask_menu);
+  ASSERT_TRUE(multitask_menu->multitask_menu_widget_for_testing()
+                  ->GetContentsView()
+                  ->GetVisible());
+
+  EnterOverview();
+
+  // Verify that the menu is hidden.
+  EXPECT_FALSE(event_handler->multitask_menu_for_testing()
+                   ->multitask_menu_widget_for_testing()
+                   ->IsVisible());
+}
+
 }  // namespace ash

@@ -75,6 +75,7 @@ TabletModeMultitaskMenu::TabletModeMultitaskMenu(
 
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+  params.activatable = views::Widget::InitParams::Activatable::kYes;
   params.parent = window->parent();
   params.bounds =
       gfx::Rect(window->bounds().CenterPoint().x() - kMultitaskMenuWidth / 2,
@@ -84,8 +85,6 @@ TabletModeMultitaskMenu::TabletModeMultitaskMenu(
   params.corner_radius = kCornerRadius;
   params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
   params.shadow_elevation = kShadowElevation;
-
-  // TODO(crbug.com/1355572): Set widget as activatable and hide in overview.
 
   multitask_menu_widget_->Init(std::move(params));
   multitask_menu_widget_->SetContentsView(
