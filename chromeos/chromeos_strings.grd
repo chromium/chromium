@@ -2883,7 +2883,7 @@ Try tapping the mic to ask me anything.
         Perform RMA Server Unlock
       </message>
       <message name="IDS_SHIMLESS_RMA_RSU_CODE_INSTRUCTIONS" translateable="false" desc="Instructions for the RSU challenge page.">
-        Use this QR code to get the 8 character unlock code. You can also manually type <ph name="LINK_BEGIN">&lt;a id="rsuCodeDialogLink"&gt;</ph>this URL<ph name="LINK_END">&lt;/a&gt;</ph>.
+        Use this QR code to get the 8 character unlock code. You can also manually type <ph name="LINK_BEGIN">&lt;a&gt;</ph>this URL<ph name="LINK_END">&lt;/a&gt;</ph>.
       </message>
       <message name="IDS_SHIMLESS_RMA_RSU_CODE_LABEL" translateable="false" desc="Label for the RSU code input box.">
         Enter the 8-characters

@@ -122,7 +122,9 @@ export function onboardingEnterRsuWpDisableCodePageTest() {
   test('EnterRsuWpDisableCodePageOpenChallengeDialog', async () => {
     await initializeEnterRsuWpDisableCodePage('', '');
 
-    component.shadowRoot.querySelector('#rsuCodeDialogLink').click();
+    component.shadowRoot.querySelector('#rsuCodeDialogLink')
+        .shadowRoot.querySelector('a')
+        .click();
     assertTrue(component.shadowRoot.querySelector('#rsuChallengeDialog').open);
   });
 
@@ -139,7 +141,9 @@ export function onboardingEnterRsuWpDisableCodePageTest() {
     await initializeEnterRsuWpDisableCodePage('', '');
 
     component.allButtonsDisabled = true;
-    component.shadowRoot.querySelector('#rsuCodeDialogLink').click();
+    component.shadowRoot.querySelector('#rsuCodeDialogLink')
+        .shadowRoot.querySelector('a')
+        .click();
     assertFalse(component.shadowRoot.querySelector('#rsuChallengeDialog').open);
   });
 
