@@ -252,6 +252,13 @@ void AssignOptionalValue(const std::unique_ptr<T>& source,
     *destination = std::make_unique<T>(*source);
 }
 
+template <typename T>
+void AssignOptionalValue(const absl::optional<T>& source,
+                         std::unique_ptr<T>* destination) {
+  if (source)
+    *destination = std::make_unique<T>(*source);
+}
+
 ui::WindowShowState ConvertToWindowShowState(windows::WindowState state) {
   switch (state) {
     case windows::WINDOW_STATE_NORMAL:
@@ -1035,7 +1042,7 @@ ExtensionFunction::ResponseAction TabsGetSelectedFunction::Run() {
   std::unique_ptr<tabs::GetSelected::Params> params(
       tabs::GetSelected::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
-  if (params->window_id.get())
+  if (params->window_id)
     window_id = *params->window_id;
 
   Browser* browser = NULL;
@@ -1061,7 +1068,7 @@ ExtensionFunction::ResponseAction TabsGetAllInWindowFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
   // windowId defaults to "current" window.
   int window_id = extension_misc::kCurrentWindowId;
-  if (params->window_id.get())
+  if (params->window_id)
     window_id = *params->window_id;
 
   Browser* browser = NULL;
@@ -1103,15 +1110,15 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
     title = *params->query_info.title;
 
   int window_id = extension_misc::kUnknownWindowId;
-  if (params->query_info.window_id.get())
+  if (params->query_info.window_id)
     window_id = *params->query_info.window_id;
 
   absl::optional<int> group_id = absl::nullopt;
-  if (params->query_info.group_id.get())
+  if (params->query_info.group_id)
     group_id = *params->query_info.group_id;
 
   int index = -1;
-  if (params->query_info.index.get())
+  if (params->query_info.index)
     index = *params->query_info.index;
 
   std::string window_type;
@@ -1380,9 +1387,8 @@ ExtensionFunction::ResponseAction TabsHighlightFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   // Get the window id from the params; default to current window if omitted.
-  int window_id = extension_misc::kCurrentWindowId;
-  if (params->highlight_info.window_id.get())
-    window_id = *params->highlight_info.window_id;
+  int window_id = params->highlight_info.window_id.value_or(
+      extension_misc::kCurrentWindowId);
 
   Browser* browser = NULL;
   std::string error;
@@ -1458,7 +1464,7 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
 
   int tab_id = -1;
   WebContents* contents = NULL;
-  if (!params->tab_id.get()) {
+  if (!params->tab_id) {
     Browser* browser = ChromeExtensionFunctionDetails(this).GetCurrentBrowser();
     if (!browser)
       return RespondNow(Error(tabs_constants::kNoCurrentWindowError));
@@ -1562,7 +1568,7 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
         base::NumberToString(tab_id))));
   }
 
-  if (params->update_properties.opener_tab_id.get()) {
+  if (params->update_properties.opener_tab_id) {
     int opener_id = *params->update_properties.opener_tab_id;
     WebContents* opener_contents = NULL;
     if (opener_id == tab_id)
@@ -1667,7 +1673,7 @@ ExtensionFunction::ResponseAction TabsMoveFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   int new_index = params->move_properties.index;
-  int* window_id = params->move_properties.window_id.get();
+  const auto& window_id = params->move_properties.window_id;
   base::ListValue tab_values;
 
   size_t num_tabs = 0;
@@ -1708,7 +1714,7 @@ ExtensionFunction::ResponseAction TabsMoveFunction::Run() {
 bool TabsMoveFunction::MoveTab(int tab_id,
                                int* new_index,
                                base::ListValue* tab_values,
-                               int* window_id,
+                               const absl::optional<int>& window_id,
                                std::string* error) {
   Browser* source_browser = nullptr;
   TabStripModel* source_tab_strip = nullptr;
@@ -1804,7 +1810,7 @@ ExtensionFunction::ResponseAction TabsReloadFunction::Run() {
   // in the current window.
   Browser* current_browser =
       ChromeExtensionFunctionDetails(this).GetCurrentBrowser();
-  if (!params->tab_id.get()) {
+  if (!params->tab_id) {
     if (!current_browser)
       return RespondNow(Error(tabs_constants::kNoCurrentWindowError));
 
@@ -1938,7 +1944,7 @@ ExtensionFunction::ResponseAction TabsGroupFunction::Run() {
   int group_id = -1;
   Browser* target_browser = nullptr;
   tab_groups::TabGroupId group = tab_groups::TabGroupId::CreateEmpty();
-  if (params->options.group_id.get()) {
+  if (params->options.group_id) {
     if (params->options.create_properties.get())
       return RespondNow(Error(tabs_constants::kGroupParamsError));
 
@@ -1951,7 +1957,7 @@ ExtensionFunction::ResponseAction TabsGroupFunction::Run() {
   } else {
     int window_id = extension_misc::kCurrentWindowId;
     if (params->options.create_properties.get() &&
-        params->options.create_properties->window_id.get()) {
+        params->options.create_properties->window_id) {
       window_id = *params->options.create_properties->window_id;
     }
     if (!GetBrowserFromWindowID(this, window_id, &target_browser, &error))
@@ -2261,7 +2267,7 @@ ExtensionFunction::ResponseAction TabsDetectLanguageFunction::Run() {
   // If |tab_id| is specified, look for it. Otherwise default to selected tab
   // in the current window.
   std::string error;
-  if (params->tab_id.get()) {
+  if (params->tab_id) {
     tab_id = *params->tab_id;
     if (!GetTabById(tab_id, browser_context(), include_incognito_information(),
                     &browser, nullptr, &contents, nullptr, &error)) {

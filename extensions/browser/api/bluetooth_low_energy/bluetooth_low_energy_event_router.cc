@@ -151,8 +151,7 @@ void PopulateDevice(const device::BluetoothDevice* device,
   request->device.address = device->GetAddress();
   request->device.name = std::make_unique<std::string>(
       base::UTF16ToUTF8(device->GetNameForDisplay()));
-  request->device.device_class =
-      std::make_unique<int>(device->GetBluetoothClass());
+  request->device.device_class = device->GetBluetoothClass();
 }
 
 typedef extensions::ApiResourceManager<extensions::BluetoothLowEnergyConnection>

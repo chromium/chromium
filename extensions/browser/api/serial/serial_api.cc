@@ -50,6 +50,12 @@ void SetDefaultScopedPtrValue(std::unique_ptr<T>& ptr, const T& value) {
     ptr.reset(new T(value));
 }
 
+template <typename T>
+void SetDefaultOptionalValue(absl::optional<T>& field, const T& value) {
+  if (!field)
+    field = value;
+}
+
 }  // namespace
 
 SerialExtensionFunction::SerialExtensionFunction() = default;
@@ -85,9 +91,9 @@ void SerialGetDevicesFunction::OnGotDevices(
     extensions::api::serial::DeviceInfo info;
     info.path = device->path.AsUTF8Unsafe();
     if (device->has_vendor_id)
-      info.vendor_id = std::make_unique<int>(device->vendor_id);
+      info.vendor_id = device->vendor_id;
     if (device->has_product_id)
-      info.product_id = std::make_unique<int>(device->product_id);
+      info.product_id = device->product_id;
     if (device->display_name)
       info.display_name = std::make_unique<std::string>(*device->display_name);
     results.push_back(std::move(info));
@@ -97,9 +103,9 @@ void SerialGetDevicesFunction::OnGotDevices(
       extensions::api::serial::DeviceInfo alternate_info;
       alternate_info.path = device->alternate_path->AsUTF8Unsafe();
       if (device->has_vendor_id)
-        alternate_info.vendor_id = std::make_unique<int>(device->vendor_id);
+        alternate_info.vendor_id = device->vendor_id;
       if (device->has_product_id)
-        alternate_info.product_id = std::make_unique<int>(device->product_id);
+        alternate_info.product_id = device->product_id;
       if (device->display_name) {
         alternate_info.display_name =
             std::make_unique<std::string>(*device->display_name);
@@ -125,11 +131,11 @@ ExtensionFunction::ResponseAction SerialConnectFunction::Run() {
   serial::ConnectionOptions* options = params->options.get();
 
   SetDefaultScopedPtrValue(options->persistent, false);
-  SetDefaultScopedPtrValue(options->buffer_size, kDefaultBufferSize);
-  SetDefaultScopedPtrValue(options->bitrate, kDefaultBitrate);
+  SetDefaultOptionalValue(options->buffer_size, kDefaultBufferSize);
+  SetDefaultOptionalValue(options->bitrate, kDefaultBitrate);
   SetDefaultScopedPtrValue(options->cts_flow_control, false);
-  SetDefaultScopedPtrValue(options->receive_timeout, kDefaultReceiveTimeout);
-  SetDefaultScopedPtrValue(options->send_timeout, kDefaultSendTimeout);
+  SetDefaultOptionalValue(options->receive_timeout, kDefaultReceiveTimeout);
+  SetDefaultOptionalValue(options->send_timeout, kDefaultSendTimeout);
 
   if (options->data_bits == serial::DATA_BITS_NONE)
     options->data_bits = kDefaultDataBits;

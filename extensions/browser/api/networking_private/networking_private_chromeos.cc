@@ -153,8 +153,7 @@ void AppendDeviceState(
       auto sim_lock_status = std::make_unique<private_api::SIMLockStatus>();
       sim_lock_status->lock_enabled = device->sim_lock_enabled();
       sim_lock_status->lock_type = device->sim_lock_type();
-      sim_lock_status->retries_left =
-          std::make_unique<int>(device->sim_retries_left());
+      sim_lock_status->retries_left = device->sim_retries_left();
       properties->sim_lock_status = std::move(sim_lock_status);
     }
   }

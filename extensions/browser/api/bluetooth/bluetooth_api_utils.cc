@@ -127,16 +127,16 @@ void BluetoothDeviceToApiDevice(const device::BluetoothDevice& device,
   out->address = device.GetAddress();
   out->name = std::make_unique<std::string>(
       base::UTF16ToUTF8(device.GetNameForDisplay()));
-  out->device_class = std::make_unique<int>(device.GetBluetoothClass());
+  out->device_class = device.GetBluetoothClass();
 
   // Only include the Device ID members when one exists for the device, and
   // always include all or none.
   if (ConvertVendorIDSourceToApi(device.GetVendorIDSource(),
                                  &(out->vendor_id_source)) &&
       out->vendor_id_source != VENDOR_ID_SOURCE_NONE) {
-    out->vendor_id = std::make_unique<int>(device.GetVendorID());
-    out->product_id = std::make_unique<int>(device.GetProductID());
-    out->device_id = std::make_unique<int>(device.GetDeviceID());
+    out->vendor_id = device.GetVendorID();
+    out->product_id = device.GetProductID();
+    out->device_id = device.GetDeviceID();
   }
 
   ConvertDeviceTypeToApi(device.GetDeviceType(), &(out->type));
@@ -154,13 +154,12 @@ void BluetoothDeviceToApiDevice(const device::BluetoothDevice& device,
   out->uuids.reset(string_uuids);
 
   if (device.GetInquiryRSSI())
-    out->inquiry_rssi = std::make_unique<int>(device.GetInquiryRSSI().value());
+    out->inquiry_rssi = device.GetInquiryRSSI().value();
   else
     out->inquiry_rssi.reset();
 
   if (device.GetInquiryTxPower()) {
-    out->inquiry_tx_power =
-        std::make_unique<int>(device.GetInquiryTxPower().value());
+    out->inquiry_tx_power = device.GetInquiryTxPower().value();
   } else {
     out->inquiry_tx_power.reset();
   }
@@ -170,8 +169,7 @@ void BluetoothDeviceToApiDevice(const device::BluetoothDevice& device,
       device.GetBatteryInfo(device::BluetoothDevice::BatteryType::kDefault);
 
   if (battery_info && battery_info->percentage.has_value())
-    out->battery_percentage =
-        std::make_unique<int>(battery_info->percentage.value());
+    out->battery_percentage = battery_info->percentage.value();
   else
     out->battery_percentage.reset();
 #endif

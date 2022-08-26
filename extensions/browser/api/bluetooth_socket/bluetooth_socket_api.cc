@@ -52,7 +52,7 @@ SocketInfo CreateSocketInfo(int socket_id, BluetoothApiSocket* socket) {
   }
   socket_info.persistent = socket->persistent();
   if (socket->buffer_size() > 0) {
-    socket_info.buffer_size = std::make_unique<int>(socket->buffer_size());
+    socket_info.buffer_size = socket->buffer_size();
   }
   socket_info.paused = socket->paused();
   socket_info.connected = socket->IsConnected();
@@ -75,7 +75,7 @@ void SetSocketProperties(BluetoothApiSocket* socket,
   if (properties->persistent.get()) {
     socket->set_persistent(*properties->persistent);
   }
-  if (properties->buffer_size.get()) {
+  if (properties->buffer_size) {
     // buffer size is validated when issuing the actual Recv operation
     // on the socket.
     socket->set_buffer_size(*properties->buffer_size);
@@ -346,7 +346,7 @@ void BluetoothSocketListenUsingRfcommFunction::CreateService(
   service_options.name = std::move(name);
 
   ListenOptions* options = params_->options.get();
-  if (options && options->channel.get())
+  if (options && options->channel)
     service_options.channel = *options->channel;
 
   adapter->CreateRfcommService(uuid, service_options, std::move(callback),

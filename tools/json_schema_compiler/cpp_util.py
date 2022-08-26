@@ -104,6 +104,16 @@ def GetValueType(type_):
 
   raise ValueError('Invalid type: %s' % type_.name)
 
+def ShouldUseAbslOptional(type_):
+  """Called to validate whether or not an optional value should be represented
+  with absl::optional. This function is a temporary utility, while optional
+  fields are gradually migrated away from using std::unique_ptr.
+  """
+
+  if type_.property_type == PropertyType.INTEGER:
+    return True
+
+  return False
 
 def GetParameterDeclaration(param, type_):
   """Gets a parameter declaration of a given model.Property and its C++

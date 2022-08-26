@@ -112,7 +112,7 @@ ExtensionFunction::ResponseAction TabGroupsQueryFunction::Run() {
       continue;
     }
 
-    if (params->query_info.window_id.get()) {
+    if (params->query_info.window_id) {
       int window_id = *params->query_info.window_id;
       if (window_id >= 0 && window_id != ExtensionTabUtil::GetWindowId(browser))
         continue;
@@ -217,7 +217,7 @@ ExtensionFunction::ResponseAction TabGroupsMoveFunction::Run() {
 
   int group_id = params->group_id;
   int new_index = params->move_properties.index;
-  int* window_id = params->move_properties.window_id.get();
+  const auto& window_id = params->move_properties.window_id;
 
   tab_groups::TabGroupId group = tab_groups::TabGroupId::CreateEmpty();
   std::string error;
@@ -233,7 +233,7 @@ ExtensionFunction::ResponseAction TabGroupsMoveFunction::Run() {
 
 bool TabGroupsMoveFunction::MoveGroup(int group_id,
                                       int new_index,
-                                      int* window_id,
+                                      const absl::optional<int>& window_id,
                                       tab_groups::TabGroupId* group,
                                       std::string* error) {
   Browser* source_browser = nullptr;

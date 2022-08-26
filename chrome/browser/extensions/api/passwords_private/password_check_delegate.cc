@@ -487,13 +487,12 @@ PasswordCheckDelegate::GetPasswordCheckStatus() const {
     result.state = api::passwords_private::PASSWORD_CHECK_STATE_RUNNING;
 
     if (password_check_progress_) {
-      result.already_processed =
-          std::make_unique<int>(password_check_progress_->already_processed());
+      result.already_processed = password_check_progress_->already_processed();
       result.remaining_in_queue =
-          std::make_unique<int>(password_check_progress_->remaining_in_queue());
+          password_check_progress_->remaining_in_queue();
     } else {
-      result.already_processed = std::make_unique<int>(0);
-      result.remaining_in_queue = std::make_unique<int>(0);
+      result.already_processed = 0;
+      result.remaining_in_queue = 0;
     }
 
     return result;

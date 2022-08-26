@@ -20,6 +20,13 @@ void SetValueScopedPtr(T value, std::unique_ptr<T>* destination) {
     destination->reset(new T(value));
 }
 
+template <class T>
+void SetValueOptional(T value, absl::optional<T>* destination) {
+  DCHECK(destination);
+  if (value >= 0)
+    *destination = value;
+}
+
 template <>
 void SetValueScopedPtr(std::string value,
                        std::unique_ptr<std::string>* destination) {
@@ -52,21 +59,21 @@ std::unique_ptr<base::DictionaryValue> MojoMediaMetadataToValue(
   // Video files have dimensions.
   if (metadata->height >= 0 && metadata->width >= 0) {
     ChangeAudioMimePrefixToVideo(&media_metadata.mime_type);
-    SetValueScopedPtr(metadata->height, &media_metadata.height);
-    SetValueScopedPtr(metadata->width, &media_metadata.width);
+    SetValueOptional(metadata->height, &media_metadata.height);
+    SetValueOptional(metadata->width, &media_metadata.width);
   }
 
   SetValueScopedPtr(metadata->duration, &media_metadata.duration);
-  SetValueScopedPtr(metadata->rotation, &media_metadata.rotation);
+  SetValueOptional(metadata->rotation, &media_metadata.rotation);
   SetValueScopedPtr(std::move(metadata->artist), &media_metadata.artist);
   SetValueScopedPtr(std::move(metadata->album), &media_metadata.album);
   SetValueScopedPtr(std::move(metadata->comment), &media_metadata.comment);
   SetValueScopedPtr(std::move(metadata->copyright), &media_metadata.copyright);
-  SetValueScopedPtr(metadata->disc, &media_metadata.disc);
+  SetValueOptional(metadata->disc, &media_metadata.disc);
   SetValueScopedPtr(std::move(metadata->genre), &media_metadata.genre);
   SetValueScopedPtr(std::move(metadata->language), &media_metadata.language);
   SetValueScopedPtr(std::move(metadata->title), &media_metadata.title);
-  SetValueScopedPtr(metadata->track, &media_metadata.track);
+  SetValueOptional(metadata->track, &media_metadata.track);
 
   for (const chrome::mojom::MediaStreamInfoPtr& info : metadata->raw_tags) {
     file_manager_private::StreamInfo stream_info;

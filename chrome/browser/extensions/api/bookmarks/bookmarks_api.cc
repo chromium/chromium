@@ -144,7 +144,7 @@ const BookmarkNode* BookmarksFunction::CreateBookmarkNode(
     return nullptr;
 
   size_t index;
-  if (!details.index.get()) {  // Optional (defaults to end).
+  if (!details.index) {  // Optional (defaults to end).
     index = parent->children().size();
   } else {
     if (*details.index < 0 ||
@@ -641,7 +641,7 @@ ExtensionFunction::ResponseValue BookmarksMoveFunction::RunOnReady() {
     return Error(error);
 
   size_t index;
-  if (params->destination.index.get()) {  // Optional (defaults to end).
+  if (params->destination.index) {  // Optional (defaults to end).
     if (*params->destination.index < 0 ||
         static_cast<size_t>(*params->destination.index) >
             parent->children().size()) {

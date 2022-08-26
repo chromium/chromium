@@ -480,7 +480,7 @@ DeclarativeRule<ConditionT, ActionT>::Create(
     return std::move(error_result);
   }
 
-  CHECK(rule.priority.get());
+  CHECK(rule.priority);
   int priority = *(rule.priority);
 
   GlobalRuleId rule_id(extension->id(), *(rule.id));

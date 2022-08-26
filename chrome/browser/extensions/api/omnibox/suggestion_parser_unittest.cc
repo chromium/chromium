@@ -35,7 +35,7 @@ testing::Matcher<api::omnibox::MatchClassification> GetStyleMatcher(
       ::testing::Field(&api::omnibox::MatchClassification::offset,
                        ::testing::Eq(offset)),
       ::testing::Field(&api::omnibox::MatchClassification::length,
-                       ::testing::Pointee(::testing::Eq(length))));
+                       ::testing::Eq(length)));
 }
 
 }  // namespace

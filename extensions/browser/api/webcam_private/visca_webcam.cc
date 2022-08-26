@@ -165,13 +165,13 @@ void ViscaWebcam::Open(const std::string& extension_id,
   api::serial::ConnectionOptions options;
 
   // Set the receive buffer size to receive the response data 1 by 1.
-  options.buffer_size = std::make_unique<int>(1);
+  options.buffer_size = 1;
   options.persistent = std::make_unique<bool>(false);
-  options.bitrate = std::make_unique<int>(9600);
+  options.bitrate = 9600;
   options.cts_flow_control = std::make_unique<bool>(false);
   // Enable send and receive timeout error.
-  options.receive_timeout = std::make_unique<int>(3000);
-  options.send_timeout = std::make_unique<int>(3000);
+  options.receive_timeout = 3000;
+  options.send_timeout = 3000;
   options.data_bits = api::serial::DATA_BITS_EIGHT;
   options.parity_bit = api::serial::PARITY_BIT_NO;
   options.stop_bits = api::serial::STOP_BITS_ONE;

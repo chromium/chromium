@@ -236,11 +236,11 @@ void SerialConnection::Open(api::SerialPortManager* port_manager,
     set_persistent(*options.persistent);
   if (options.name.get())
     set_name(*options.name);
-  if (options.buffer_size.get())
+  if (options.buffer_size)
     set_buffer_size(*options.buffer_size);
-  if (options.receive_timeout.get())
+  if (options.receive_timeout)
     set_receive_timeout(*options.receive_timeout);
-  if (options.send_timeout.get())
+  if (options.send_timeout)
     set_send_timeout(*options.send_timeout);
 
   mojo::PendingRemote<device::mojom::SerialPortClient> client;
@@ -439,11 +439,11 @@ void SerialConnection::Configure(const api::serial::ConnectionOptions& options,
     set_persistent(*options.persistent);
   if (options.name.get())
     set_name(*options.name);
-  if (options.buffer_size.get())
+  if (options.buffer_size)
     set_buffer_size(*options.buffer_size);
-  if (options.receive_timeout.get())
+  if (options.receive_timeout)
     set_receive_timeout(*options.receive_timeout);
-  if (options.send_timeout.get())
+  if (options.send_timeout)
     set_send_timeout(*options.send_timeout);
   serial_port_->ConfigurePort(
       device::mojom::SerialConnectionOptions::From(options),
@@ -471,7 +471,7 @@ void SerialConnection::GetInfo(GetInfoCompleteCallback callback) const {
           std::move(callback).Run(false, std::move(info));
           return;
         }
-        info->bitrate = std::make_unique<int>(port_info->bitrate);
+        info->bitrate = port_info->bitrate;
         info->data_bits = ConvertDataBitsFromMojo(port_info->data_bits);
         info->parity_bit = ConvertParityBitFromMojo(port_info->parity_bit);
         info->stop_bits = ConvertStopBitsFromMojo(port_info->stop_bits);
@@ -649,7 +649,7 @@ TypeConverter<device::mojom::SerialConnectionOptionsPtr,
     Convert(const extensions::api::serial::ConnectionOptions& input) {
   device::mojom::SerialConnectionOptionsPtr output(
       device::mojom::SerialConnectionOptions::New());
-  if (input.bitrate.get() && *input.bitrate > 0)
+  if (input.bitrate && *input.bitrate > 0)
     output->bitrate = *input.bitrate;
   output->data_bits = extensions::ConvertDataBitsToMojo(input.data_bits);
   output->parity_bit = extensions::ConvertParityBitToMojo(input.parity_bit);

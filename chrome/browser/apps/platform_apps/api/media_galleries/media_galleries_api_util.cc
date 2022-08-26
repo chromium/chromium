@@ -19,6 +19,12 @@ void SetValueScopedPtr(T value, std::unique_ptr<T>* destination) {
     destination->reset(new T(value));
 }
 
+template <typename T>
+void SetValueOptional(T value, absl::optional<T>& destination) {
+  if (value >= 0)
+    destination = value;
+}
+
 template <>
 void SetValueScopedPtr(std::string value,
                        std::unique_ptr<std::string>* destination) {
@@ -33,8 +39,8 @@ std::unique_ptr<base::DictionaryValue> SerializeMediaMetadata(
   media_galleries::MediaMetadata extension_metadata;
   extension_metadata.mime_type = std::move(metadata->mime_type);
   if (metadata->height >= 0 && metadata->width >= 0) {
-    extension_metadata.height = std::make_unique<int>(metadata->height);
-    extension_metadata.width = std::make_unique<int>(metadata->width);
+    extension_metadata.height = metadata->height;
+    extension_metadata.width = metadata->width;
   }
 
   SetValueScopedPtr(metadata->duration, &extension_metadata.duration);
@@ -43,13 +49,13 @@ std::unique_ptr<base::DictionaryValue> SerializeMediaMetadata(
   SetValueScopedPtr(std::move(metadata->comment), &extension_metadata.comment);
   SetValueScopedPtr(std::move(metadata->copyright),
                     &extension_metadata.copyright);
-  SetValueScopedPtr(metadata->disc, &extension_metadata.disc);
+  SetValueOptional(metadata->disc, extension_metadata.disc);
   SetValueScopedPtr(std::move(metadata->genre), &extension_metadata.genre);
   SetValueScopedPtr(std::move(metadata->language),
                     &extension_metadata.language);
-  SetValueScopedPtr(metadata->rotation, &extension_metadata.rotation);
+  SetValueOptional(metadata->rotation, extension_metadata.rotation);
   SetValueScopedPtr(std::move(metadata->title), &extension_metadata.title);
-  SetValueScopedPtr(metadata->track, &extension_metadata.track);
+  SetValueOptional(metadata->track, extension_metadata.track);
 
   for (const chrome::mojom::MediaStreamInfoPtr& info : metadata->raw_tags) {
     media_galleries::StreamInfo stream_info;

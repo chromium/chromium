@@ -251,7 +251,7 @@ bool NotificationsApiFunction::CreateNotification(
     optional_fields.small_image_needs_additional_masking = true;
   }
 
-  if (options->priority.get())
+  if (options->priority)
     optional_fields.priority = *options->priority;
 
   if (options->event_time.get())
@@ -303,7 +303,7 @@ bool NotificationsApiFunction::CreateNotification(
     return false;
   }
 
-  if (options->progress.get() != NULL) {
+  if (options->progress) {
     // We should have progress if and only if the type is a progress type.
     if (type != message_center::NOTIFICATION_TYPE_PROGRESS) {
       *error = kUnexpectedProgressValueForNonProgressType;

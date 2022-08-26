@@ -41,7 +41,7 @@ std::unique_ptr<dnr_api::Redirect> MakeRedirectUrl(const char* redirect_url) {
 
 dnr_api::Rule CreateGenericParsedRule() {
   dnr_api::Rule rule;
-  rule.priority = std::make_unique<int>(kMinValidPriority);
+  rule.priority = kMinValidPriority;
   rule.id = kMinValidID;
   rule.condition.url_filter = std::make_unique<std::string>("filter");
   rule.action.type = dnr_api::RULE_ACTION_TYPE_BLOCK;
@@ -77,33 +77,26 @@ TEST_F(IndexedRuleTest, IDParsing) {
 TEST_F(IndexedRuleTest, PriorityParsing) {
   struct {
     dnr_api::RuleActionType action_type;
-    std::unique_ptr<int> priority;
+    absl::optional<int> priority;
     const ParseResult expected_result;
     // Only valid if |expected_result| is SUCCESS.
     const uint32_t expected_priority;
   } cases[] = {
-      {dnr_api::RULE_ACTION_TYPE_REDIRECT,
-       std::make_unique<int>(kMinValidPriority - 1),
+      {dnr_api::RULE_ACTION_TYPE_REDIRECT, kMinValidPriority - 1,
        ParseResult::ERROR_INVALID_RULE_PRIORITY, kDefaultPriority},
-      {dnr_api::RULE_ACTION_TYPE_REDIRECT,
-       std::make_unique<int>(kMinValidPriority), ParseResult::SUCCESS,
-       kMinValidPriority},
-      {dnr_api::RULE_ACTION_TYPE_REDIRECT, nullptr, ParseResult::SUCCESS,
+      {dnr_api::RULE_ACTION_TYPE_REDIRECT, kMinValidPriority,
+       ParseResult::SUCCESS, kMinValidPriority},
+      {dnr_api::RULE_ACTION_TYPE_REDIRECT, absl::nullopt, ParseResult::SUCCESS,
        kDefaultPriority},
-      {dnr_api::RULE_ACTION_TYPE_REDIRECT,
-       std::make_unique<int>(kMinValidPriority + 1), ParseResult::SUCCESS,
-       kMinValidPriority + 1},
-      {dnr_api::RULE_ACTION_TYPE_UPGRADESCHEME,
-       std::make_unique<int>(kMinValidPriority - 1),
+      {dnr_api::RULE_ACTION_TYPE_REDIRECT, kMinValidPriority + 1,
+       ParseResult::SUCCESS, kMinValidPriority + 1},
+      {dnr_api::RULE_ACTION_TYPE_UPGRADESCHEME, kMinValidPriority - 1,
        ParseResult::ERROR_INVALID_RULE_PRIORITY, kDefaultPriority},
-      {dnr_api::RULE_ACTION_TYPE_UPGRADESCHEME,
-       std::make_unique<int>(kMinValidPriority), ParseResult::SUCCESS,
-       kMinValidPriority},
-      {dnr_api::RULE_ACTION_TYPE_BLOCK,
-       std::make_unique<int>(kMinValidPriority - 1),
+      {dnr_api::RULE_ACTION_TYPE_UPGRADESCHEME, kMinValidPriority,
+       ParseResult::SUCCESS, kMinValidPriority},
+      {dnr_api::RULE_ACTION_TYPE_BLOCK, kMinValidPriority - 1,
        ParseResult::ERROR_INVALID_RULE_PRIORITY, kDefaultPriority},
-      {dnr_api::RULE_ACTION_TYPE_BLOCK,
-       std::make_unique<int>(kMinValidPriority), ParseResult::SUCCESS,
+      {dnr_api::RULE_ACTION_TYPE_BLOCK, kMinValidPriority, ParseResult::SUCCESS,
        kMinValidPriority},
   };
 
@@ -758,7 +751,7 @@ TEST_F(IndexedRuleTest, RegexSubstitutionParsing) {
           std::make_unique<std::string>(test_case.regex_filter);
     }
 
-    rule.priority = std::make_unique<int>(kMinValidPriority);
+    rule.priority = kMinValidPriority;
     rule.action.type = dnr_api::RULE_ACTION_TYPE_REDIRECT;
     rule.action.redirect = std::make_unique<dnr_api::Redirect>();
     rule.action.redirect->regex_substitution =
@@ -782,7 +775,7 @@ TEST_F(IndexedRuleTest, RegexSubstitutionParsing) {
 // specified.
 TEST_F(IndexedRuleTest, MultipleRedirectKeys) {
   dnr_api::Rule rule = CreateGenericParsedRule();
-  rule.priority = std::make_unique<int>(kMinValidPriority);
+  rule.priority = kMinValidPriority;
   rule.condition.url_filter.reset();
   rule.condition.regex_filter = std::make_unique<std::string>("\\.*");
   rule.action.type = dnr_api::RULE_ACTION_TYPE_REDIRECT;

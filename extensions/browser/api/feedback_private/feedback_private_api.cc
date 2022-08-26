@@ -241,7 +241,7 @@ std::unique_ptr<FeedbackInfo> FeedbackPrivateAPI::CreateFeedbackInfo(
 
   // The manager is only available if tracing is enabled.
   if (ContentTracingManager* manager = ContentTracingManager::Get()) {
-    info->trace_id = std::make_unique<int>(manager->RequestTrace());
+    info->trace_id = manager->RequestTrace();
   }
   info->flow = flow;
 #if BUILDFLAG(IS_MAC)
@@ -255,8 +255,7 @@ std::unique_ptr<FeedbackInfo> FeedbackPrivateAPI::CreateFeedbackInfo(
   // If the feedback is from Chrome Labs or Kaleidoscope then this should use
   // a custom product ID.
   if (from_chrome_labs_or_kaleidoscope) {
-    info->product_id =
-        std::make_unique<int>(kChromeLabsAndKaleidoscopeProductId);
+    info->product_id = kChromeLabsAndKaleidoscopeProductId;
   }
 
   return info;

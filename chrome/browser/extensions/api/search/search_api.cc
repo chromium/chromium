@@ -39,14 +39,14 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
 
   // Convenience for input params.
   const std::string& text = params->query_info.text;
-  const std::unique_ptr<int>& tab_id = params->query_info.tab_id;
+  const absl::optional<int>& tab_id = params->query_info.tab_id;
   Disposition disposition = params->query_info.disposition;
 
   // Simple validation of input params.
   if (text.empty()) {
     return RespondNow(Error("Empty text parameter."));
   }
-  if (tab_id.get() && disposition != Disposition::DISPOSITION_NONE) {
+  if (tab_id && disposition != Disposition::DISPOSITION_NONE) {
     return RespondNow(Error("Cannot set both 'disposition' and 'tabId'."));
   }
 
@@ -58,7 +58,7 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
 
   // If the extension specified a tab, that takes priority.
   // Get web_contents if tab_id is valid, or dispoosition.
-  if (tab_id.get()) {
+  if (tab_id) {
     if (!ExtensionTabUtil::GetTabById(
             *tab_id, profile, include_incognito_information(), &web_contents)) {
       return RespondNow(

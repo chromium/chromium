@@ -471,8 +471,7 @@ ExtensionFunction::ResponseAction SocketListenFunction::Work() {
     return RespondNow(ErrorWithCode(-1, kPermissionError));
   }
 
-  socket->Listen(params_->address, params_->port,
-                 params_->backlog.get() ? *params_->backlog : 5,
+  socket->Listen(params_->address, params_->port, params_->backlog.value_or(5),
                  base::BindOnce(&SocketListenFunction::OnCompleted, this));
   return RespondLater();
 }
@@ -552,7 +551,7 @@ ExtensionFunction::ResponseAction SocketReadFunction::Work() {
         api::socket::Read::Results::Create(info), kSocketNotFoundError));
   }
 
-  socket->Read(params->buffer_size.get() ? *params->buffer_size : 4096,
+  socket->Read(params->buffer_size.value_or(4096),
                base::BindOnce(&SocketReadFunction::OnCompleted, this));
   return RespondLater();
 }
@@ -624,7 +623,7 @@ ExtensionFunction::ResponseAction SocketRecvFromFunction::Work() {
         api::socket::RecvFrom::Results::Create(info), kSocketNotFoundError));
   }
 
-  socket->RecvFrom(params->buffer_size.get() ? *params->buffer_size : 4096,
+  socket->RecvFrom(params->buffer_size.value_or(4096),
                    base::BindOnce(&SocketRecvFromFunction::OnCompleted, this));
   return RespondLater();
 }
@@ -732,7 +731,7 @@ ExtensionFunction::ResponseAction SocketSetKeepAliveFunction::Work() {
                            kSocketNotFoundError));
   }
   int delay = 0;
-  if (params->delay.get())
+  if (params->delay)
     delay = *params->delay;
   socket->SetKeepAlive(
       params->enable, delay,
@@ -798,7 +797,7 @@ ExtensionFunction::ResponseAction SocketGetInfoFunction::Work() {
   if (socket->GetPeerAddress(&peerAddress)) {
     info.peer_address =
         std::make_unique<std::string>(peerAddress.ToStringWithoutPort());
-    info.peer_port = std::make_unique<int>(peerAddress.port());
+    info.peer_port = peerAddress.port();
   }
 
   // Grab the local address as known by the OS.
@@ -806,7 +805,7 @@ ExtensionFunction::ResponseAction SocketGetInfoFunction::Work() {
   if (socket->GetLocalAddress(&localAddress)) {
     info.local_address =
         std::make_unique<std::string>(localAddress.ToStringWithoutPort());
-    info.local_port = std::make_unique<int>(localAddress.port());
+    info.local_port = localAddress.port();
   }
 
   return RespondNow(ArgumentList(api::socket::GetInfo::Results::Create(info)));

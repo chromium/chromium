@@ -212,8 +212,8 @@ class TestPasswordsDelegate : public extensions::TestPasswordsPrivateDelegate {
     extensions::api::passwords_private::PasswordCheckStatus status;
     status.state = state_;
     if (total_ != 0) {
-      status.already_processed = std::make_unique<int>(done_);
-      status.remaining_in_queue = std::make_unique<int>(total_ - done_);
+      status.already_processed = done_;
+      status.remaining_in_queue = total_ - done_;
     }
     return status;
   }

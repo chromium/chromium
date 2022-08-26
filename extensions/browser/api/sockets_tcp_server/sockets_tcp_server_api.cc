@@ -45,7 +45,7 @@ SocketInfo CreateSocketInfo(int socket_id, ResumableTCPServerSocket* socket) {
   if (socket->GetLocalAddress(&localAddress)) {
     socket_info.local_address =
         std::make_unique<std::string>(localAddress.ToStringWithoutPort());
-    socket_info.local_port = std::make_unique<int>(localAddress.port());
+    socket_info.local_port = localAddress.port();
   }
 
   return socket_info;
@@ -182,7 +182,7 @@ ExtensionFunction::ResponseAction SocketsTcpServerListenFunction::Work() {
 
   socket->Listen(
       params_->address, params_->port,
-      params_->backlog.get() ? *params_->backlog : kDefaultListenBacklog,
+      params_->backlog.value_or(kDefaultListenBacklog),
       base::BindOnce(&SocketsTcpServerListenFunction::OnCompleted, this));
   return RespondLater();
 }

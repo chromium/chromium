@@ -194,7 +194,7 @@ bool ValidatePairingResponseOptions(
     const bt_private::SetPairingResponseOptions& options) {
   bool response = options.response != bt_private::PAIRING_RESPONSE_NONE;
   bool pincode = options.pincode != nullptr;
-  bool passkey = options.passkey != nullptr;
+  bool passkey = options.passkey.has_value();
 
   if (!response && !pincode && !passkey)
     return false;
@@ -373,7 +373,7 @@ void BluetoothPrivateSetPairingResponseFunction::DoWork(
 
   if (options.pincode.get()) {
     device->SetPinCode(*options.pincode);
-  } else if (options.passkey.get()) {
+  } else if (options.passkey) {
     device->SetPasskey(*options.passkey);
   } else {
     switch (options.response) {
@@ -500,7 +500,7 @@ void BluetoothPrivateSetDiscoveryFilterFunction::DoWork(
 
   // If all filter fields are empty, we are clearing filter. If any field is
   // set, then create proper filter.
-  if (df_param.uuids.get() || df_param.rssi.get() || df_param.pathloss.get() ||
+  if (df_param.uuids.get() || df_param.rssi || df_param.pathloss ||
       df_param.transport != bt_private::TransportType::TRANSPORT_TYPE_NONE) {
     device::BluetoothTransport transport;
 
@@ -534,10 +534,10 @@ void BluetoothPrivateSetDiscoveryFilterFunction::DoWork(
       }
     }
 
-    if (df_param.rssi.get())
+    if (df_param.rssi)
       discovery_filter->SetRSSI(*df_param.rssi);
 
-    if (df_param.pathloss.get())
+    if (df_param.pathloss)
       discovery_filter->SetPathloss(*df_param.pathloss);
   }
 

@@ -636,7 +636,7 @@ class _Generator(object):
                maybe_namespace,
                self._type_helper.GetEnumNoneValue(prop.type_)))
         else:
-          c.Sblock('if (%s.get()) {' % prop_var)
+          c.Sblock('if (%s) {' % prop_var)
 
       # ANY is a base::Value which is abstract and cannot be a direct member, so
       # it will always be a pointer.
@@ -962,6 +962,9 @@ class _Generator(object):
       if is_ptr:
         if is_string_or_function:
           c.Append('%(dst_var)s = std::make_unique<%(cpp_type)s>(*temp);')
+        elif cpp_util.ShouldUseAbslOptional(underlying_type):
+          c.Append('%(dst_var)s = ' +
+            'temp.value();')
         else:
           c.Append('%(dst_var)s = ' +
             'std::make_unique<%(cpp_type)s>(temp.value());')

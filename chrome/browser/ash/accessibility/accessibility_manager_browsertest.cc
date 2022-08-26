@@ -1494,7 +1494,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityManagerUserTypeTest, BrailleWhenLoggedIn) {
   // activated.
   KeyEvent event;
   event.command = extensions::api::braille_display_private::KEY_COMMAND_DOTS;
-  event.braille_dots = std::make_unique<int>(0);
+  event.braille_dots = 0;
   braille_controller_.GetObserver()->OnBrailleKeyEvent(event);
   EXPECT_TRUE(IsBrailleImeCurrent());
 

@@ -145,7 +145,7 @@ void FillProcessData(
     task_info.title = base::UTF16ToUTF8(task_manager->GetTitle(task_id));
     const SessionID tab_id = task_manager->GetTabId(task_id);
     if (tab_id.is_valid())
-      task_info.tab_id = std::make_unique<int>(tab_id.id());
+      task_info.tab_id = tab_id.id();
 
     out_process->tasks.push_back(std::move(task_info));
   }

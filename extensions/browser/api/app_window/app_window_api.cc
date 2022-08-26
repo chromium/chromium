@@ -95,11 +95,11 @@ namespace {
 
 // If the same property is specified for the inner and outer bounds, raise an
 // error.
-bool CheckBoundsConflict(const std::unique_ptr<int>& inner_property,
-                         const std::unique_ptr<int>& outer_property,
+bool CheckBoundsConflict(const absl::optional<int>& inner_property,
+                         const absl::optional<int>& outer_property,
                          const std::string& property_name,
                          std::string* error) {
-  if (inner_property.get() && outer_property.get()) {
+  if (inner_property && outer_property) {
     std::vector<std::string> subst;
     subst.push_back(property_name);
     *error = base::ReplaceStringPlaceholders(
@@ -117,21 +117,21 @@ void CopyBoundsSpec(const app_window::BoundsSpecification* input_spec,
   if (!input_spec)
     return;
 
-  if (input_spec->left.get())
+  if (input_spec->left)
     create_spec->bounds.set_x(*input_spec->left);
-  if (input_spec->top.get())
+  if (input_spec->top)
     create_spec->bounds.set_y(*input_spec->top);
-  if (input_spec->width.get())
+  if (input_spec->width)
     create_spec->bounds.set_width(*input_spec->width);
-  if (input_spec->height.get())
+  if (input_spec->height)
     create_spec->bounds.set_height(*input_spec->height);
-  if (input_spec->min_width.get())
+  if (input_spec->min_width)
     create_spec->minimum_size.set_width(*input_spec->min_width);
-  if (input_spec->min_height.get())
+  if (input_spec->min_height)
     create_spec->minimum_size.set_height(*input_spec->min_height);
-  if (input_spec->max_width.get())
+  if (input_spec->max_width)
     create_spec->maximum_size.set_width(*input_spec->max_width);
-  if (input_spec->max_height.get())
+  if (input_spec->max_height)
     create_spec->maximum_size.set_height(*input_spec->max_height);
 }
 
@@ -512,45 +512,45 @@ bool AppWindowCreateFunction::GetBoundsSpec(
     // the bounds set the position of the window and the size of the content.
     // This will be preserved as apps may be relying on this behavior.
 
-    if (options.default_width.get())
+    if (options.default_width)
       params->content_spec.bounds.set_width(*options.default_width);
-    if (options.default_height.get())
+    if (options.default_height)
       params->content_spec.bounds.set_height(*options.default_height);
-    if (options.default_left.get())
+    if (options.default_left)
       params->window_spec.bounds.set_x(*options.default_left);
-    if (options.default_top.get())
+    if (options.default_top)
       params->window_spec.bounds.set_y(*options.default_top);
 
-    if (options.width.get())
+    if (options.width)
       params->content_spec.bounds.set_width(*options.width);
-    if (options.height.get())
+    if (options.height)
       params->content_spec.bounds.set_height(*options.height);
-    if (options.left.get())
+    if (options.left)
       params->window_spec.bounds.set_x(*options.left);
-    if (options.top.get())
+    if (options.top)
       params->window_spec.bounds.set_y(*options.top);
 
     if (options.bounds.get()) {
       app_window::ContentBounds* bounds = options.bounds.get();
-      if (bounds->width.get())
+      if (bounds->width)
         params->content_spec.bounds.set_width(*bounds->width);
-      if (bounds->height.get())
+      if (bounds->height)
         params->content_spec.bounds.set_height(*bounds->height);
-      if (bounds->left.get())
+      if (bounds->left)
         params->window_spec.bounds.set_x(*bounds->left);
-      if (bounds->top.get())
+      if (bounds->top)
         params->window_spec.bounds.set_y(*bounds->top);
     }
 
     gfx::Size& minimum_size = params->content_spec.minimum_size;
-    if (options.min_width.get())
+    if (options.min_width)
       minimum_size.set_width(*options.min_width);
-    if (options.min_height.get())
+    if (options.min_height)
       minimum_size.set_height(*options.min_height);
     gfx::Size& maximum_size = params->content_spec.maximum_size;
-    if (options.max_width.get())
+    if (options.max_width)
       maximum_size.set_width(*options.max_width);
-    if (options.max_height.get())
+    if (options.max_height)
       maximum_size.set_height(*options.max_height);
   }
 

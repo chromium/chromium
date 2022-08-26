@@ -302,8 +302,8 @@ api::passwords_private::PasswordCheckStatus
 TestPasswordsPrivateDelegate::GetPasswordCheckStatus() {
   api::passwords_private::PasswordCheckStatus status;
   status.state = api::passwords_private::PASSWORD_CHECK_STATE_RUNNING;
-  status.already_processed = std::make_unique<int>(5);
-  status.remaining_in_queue = std::make_unique<int>(10);
+  status.already_processed = 5;
+  status.remaining_in_queue = 10;
   status.elapsed_time_since_last_check =
       std::make_unique<std::string>(base::UTF16ToUTF8(
           TimeFormat::Simple(TimeFormat::FORMAT_ELAPSED,

@@ -308,7 +308,7 @@ TEST(JsonSchemaCompilerErrorTest, OptionalUnableToPopulateArray) {
         EqualsUtf16("Error at key 'integers': Parsing array failed at index 1: "
                     "expected integer, got boolean",
                     error));
-    EXPECT_EQ(NULL, out.as_integer.get());
+    EXPECT_FALSE(out.as_integer.has_value());
   }
 }
 

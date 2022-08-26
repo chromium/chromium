@@ -43,7 +43,7 @@ SocketInfo CreateSocketInfo(int socket_id, ResumableTCPSocket* socket) {
   }
   socket_info.persistent = socket->persistent();
   if (socket->buffer_size() > 0) {
-    socket_info.buffer_size = std::make_unique<int>(socket->buffer_size());
+    socket_info.buffer_size = socket->buffer_size();
   }
   socket_info.paused = socket->paused();
   socket_info.connected = socket->IsConnected();
@@ -53,7 +53,7 @@ SocketInfo CreateSocketInfo(int socket_id, ResumableTCPSocket* socket) {
   if (socket->GetLocalAddress(&localAddress)) {
     socket_info.local_address =
         std::make_unique<std::string>(localAddress.ToStringWithoutPort());
-    socket_info.local_port = std::make_unique<int>(localAddress.port());
+    socket_info.local_port = localAddress.port();
   }
 
   // Grab the peer address as known by the OS. This and the call below will
@@ -64,7 +64,7 @@ SocketInfo CreateSocketInfo(int socket_id, ResumableTCPSocket* socket) {
   if (socket->GetPeerAddress(&peerAddress)) {
     socket_info.peer_address =
         std::make_unique<std::string>(peerAddress.ToStringWithoutPort());
-    socket_info.peer_port = std::make_unique<int>(peerAddress.port());
+    socket_info.peer_port = peerAddress.port();
   }
 
   return socket_info;
@@ -78,7 +78,7 @@ void SetSocketProperties(ResumableTCPSocket* socket,
   if (properties->persistent.get()) {
     socket->set_persistent(*properties->persistent);
   }
-  if (properties->buffer_size.get()) {
+  if (properties->buffer_size) {
     // buffer size is validated when issuing the actual Recv operation
     // on the socket.
     socket->set_buffer_size(*properties->buffer_size);
@@ -387,7 +387,7 @@ void SocketsTcpSendFunction::SetSendResult(int net_result, int bytes_sent) {
   sockets_tcp::SendInfo send_info;
   send_info.result_code = net_result;
   if (net_result == net::OK) {
-    send_info.bytes_sent = std::make_unique<int>(bytes_sent);
+    send_info.bytes_sent = bytes_sent;
   }
 
   auto args = sockets_tcp::Send::Results::Create(send_info);

@@ -347,18 +347,9 @@ void SingleEntryPropertiesGetterForDriveFs::OnGetFileInfo(
         GetShareUrlFromAlternateUrl(GURL(*properties_->alternate_url));
   }
   if (metadata->image_metadata) {
-    if (metadata->image_metadata->height) {
-      properties_->image_height =
-          std::make_unique<int32_t>(metadata->image_metadata->height);
-    }
-    if (metadata->image_metadata->width) {
-      properties_->image_width =
-          std::make_unique<int32_t>(metadata->image_metadata->width);
-    }
-    if (metadata->image_metadata->rotation) {
-      properties_->image_rotation =
-          std::make_unique<int32_t>(metadata->image_metadata->rotation);
-    }
+    properties_->image_height = metadata->image_metadata->height;
+    properties_->image_width = metadata->image_metadata->width;
+    properties_->image_rotation = metadata->image_metadata->rotation;
   }
 
   properties_->can_delete =

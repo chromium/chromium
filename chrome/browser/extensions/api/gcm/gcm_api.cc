@@ -168,7 +168,7 @@ ExtensionFunction::ResponseAction GcmSendFunction::Run() {
   gcm::OutgoingMessage outgoing_message;
   outgoing_message.id = params->message.message_id;
   outgoing_message.data = params->message.data.additional_properties;
-  if (params->message.time_to_live.get())
+  if (params->message.time_to_live)
     outgoing_message.time_to_live = *params->message.time_to_live;
 
   GetGCMDriver()->Send(

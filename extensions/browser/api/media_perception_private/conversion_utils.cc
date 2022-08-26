@@ -36,29 +36,27 @@ HotwordType HotwordTypeProtoToIdl(const mri::HotwordDetection::Type& type) {
 Hotword HotwordProtoToIdl(const mri::HotwordDetection::Hotword& hotword) {
   Hotword hotword_result;
   if (hotword.has_id())
-    hotword_result.id = std::make_unique<int>(hotword.id());
+    hotword_result.id = hotword.id();
 
   if (hotword.has_type())
     hotword_result.type = HotwordTypeProtoToIdl(hotword.type());
 
   if (hotword.has_frame_id())
-    hotword_result.frame_id = std::make_unique<int>(hotword.frame_id());
+    hotword_result.frame_id = hotword.frame_id();
 
   if (hotword.has_start_timestamp_ms()) {
-    hotword_result.start_timestamp_ms =
-        std::make_unique<int>(hotword.start_timestamp_ms());
+    hotword_result.start_timestamp_ms = hotword.start_timestamp_ms();
   }
 
   if (hotword.has_end_timestamp_ms()) {
-    hotword_result.end_timestamp_ms =
-        std::make_unique<int>(hotword.end_timestamp_ms());
+    hotword_result.end_timestamp_ms = hotword.end_timestamp_ms();
   }
 
   if (hotword.has_confidence())
     hotword_result.confidence = std::make_unique<double>(hotword.confidence());
 
   if (hotword.has_id())
-    hotword_result.id = std::make_unique<int>(hotword.id());
+    hotword_result.id = hotword.id();
 
   return hotword_result;
 }
@@ -333,7 +331,7 @@ EntityType EntityTypeProtoToIdl(const mri::Entity& entity) {
 Entity EntityProtoToIdl(const mri::Entity& entity) {
   Entity entity_result;
   if (entity.has_id())
-    entity_result.id = std::make_unique<int>(entity.id());
+    entity_result.id = entity.id();
 
   entity_result.type = EntityTypeProtoToIdl(entity);
   if (entity.has_confidence())
@@ -361,8 +359,7 @@ PacketLatency PacketLatencyProtoToIdl(
   }
 
   if (packet_latency.has_latency_usec()) {
-    packet_latency_result.latency_usec =
-        std::make_unique<int>(packet_latency.latency_usec());
+    packet_latency_result.latency_usec = packet_latency.latency_usec();
   }
 
   return packet_latency_result;
@@ -372,16 +369,15 @@ FramePerception FramePerceptionProtoToIdl(
     const mri::FramePerception& frame_perception) {
   FramePerception frame_perception_result;
   if (frame_perception.has_frame_id()) {
-    frame_perception_result.frame_id =
-        std::make_unique<int>(frame_perception.frame_id());
+    frame_perception_result.frame_id = frame_perception.frame_id();
   }
   if (frame_perception.has_frame_width_in_px()) {
     frame_perception_result.frame_width_in_px =
-        std::make_unique<int>(frame_perception.frame_width_in_px());
+        frame_perception.frame_width_in_px();
   }
   if (frame_perception.has_frame_height_in_px()) {
     frame_perception_result.frame_height_in_px =
-        std::make_unique<int>(frame_perception.frame_height_in_px());
+        frame_perception.frame_height_in_px();
   }
   if (frame_perception.has_timestamp()) {
     frame_perception_result.timestamp =
@@ -436,14 +432,13 @@ ImageFormat ImageFormatProtoToIdl(const mri::ImageFrame& image_frame) {
 ImageFrame ImageFrameProtoToIdl(const mri::ImageFrame& image_frame) {
   ImageFrame image_frame_result;
   if (image_frame.has_width())
-    image_frame_result.width = std::make_unique<int>(image_frame.width());
+    image_frame_result.width = image_frame.width();
 
   if (image_frame.has_height())
-    image_frame_result.height = std::make_unique<int>(image_frame.height());
+    image_frame_result.height = image_frame.height();
 
   if (image_frame.has_data_length()) {
-    image_frame_result.data_length =
-        std::make_unique<int>(image_frame.data_length());
+    image_frame_result.data_length = image_frame.data_length();
   }
 
   if (image_frame.has_pixel_data()) {

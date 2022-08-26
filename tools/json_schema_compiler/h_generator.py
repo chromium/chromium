@@ -171,9 +171,10 @@ class _Generator(object):
         c.Comment(prop.description)
       # ANY is a base::Value which is abstract and cannot be a direct member, so
       # we always need to wrap it in a scoped_ptr.
-      is_ptr = prop.optional or prop.type_.property_type == PropertyType.ANY
+      is_optional = (
+          prop.optional or prop.type_.property_type == PropertyType.ANY)
       (c.Append('%s %s;' % (
-           self._type_helper.GetCppType(prop.type_, is_ptr=is_ptr),
+           self._type_helper.GetCppType(prop.type_, is_optional=is_optional),
            prop.unix_name))
       )
     return c
@@ -279,7 +280,7 @@ class _Generator(object):
         c.Append('// Choices:')
         for choice_type in type_.choices:
           c.Append('%s as_%s;' % (
-              self._type_helper.GetCppType(choice_type, is_ptr=True),
+              self._type_helper.GetCppType(choice_type, is_optional=True),
               choice_type.unix_name))
       else:
         properties = type_.properties.values()

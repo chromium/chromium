@@ -524,7 +524,7 @@ TEST_F(PrintingAPIHandlerUnittest, GetPrinters_OnePrinter) {
   EXPECT_EQ(kUri, idl_printer.uri);
   EXPECT_EQ(api::printing::PRINTER_SOURCE_POLICY, idl_printer.source);
   EXPECT_FALSE(idl_printer.is_default);
-  EXPECT_EQ(nullptr, idl_printer.recently_used_rank);
+  EXPECT_EQ(absl::nullopt, idl_printer.recently_used_rank);
 }
 
 // Test that calling GetPrinters() returns printers with correct `is_default`

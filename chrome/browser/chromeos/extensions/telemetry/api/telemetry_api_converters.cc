@@ -44,16 +44,14 @@ telemetry_api::LogicalCpuInfo UncheckedConvertPtr(
     telemetry_service::ProbeLogicalCpuInfoPtr input) {
   telemetry_api::LogicalCpuInfo result;
   if (input->max_clock_speed_khz) {
-    result.max_clock_speed_khz =
-        std::make_unique<int32_t>(input->max_clock_speed_khz->value);
+    result.max_clock_speed_khz = input->max_clock_speed_khz->value;
   }
   if (input->scaling_max_frequency_khz) {
-    result.scaling_max_frequency_khz =
-        std::make_unique<int32_t>(input->scaling_max_frequency_khz->value);
+    result.scaling_max_frequency_khz = input->scaling_max_frequency_khz->value;
   }
   if (input->scaling_current_frequency_khz) {
     result.scaling_current_frequency_khz =
-        std::make_unique<int32_t>(input->scaling_current_frequency_khz->value);
+        input->scaling_current_frequency_khz->value;
   }
   if (input->idle_time_ms) {
     result.idle_time_ms =

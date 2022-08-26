@@ -166,8 +166,7 @@ void SpeechRecognitionPrivateManager::HandleSpeechRecognitionResult(
   api::speech_recognition_private::SpeechRecognitionResultEvent event;
   event.transcript = base::UTF16ToUTF8(transcript);
   event.is_final = is_final;
-  if (client_id)
-    event.client_id = std::make_unique<int>(*client_id);
+  event.client_id = client_id;
 
   auto event_args = api::speech_recognition_private::OnResult::Create(event);
   std::unique_ptr<Event> event_ptr = std::make_unique<Event>(
@@ -187,8 +186,7 @@ void SpeechRecognitionPrivateManager::HandleSpeechRecognitionError(
 
   api::speech_recognition_private::SpeechRecognitionErrorEvent event;
   event.message = message;
-  if (client_id)
-    event.client_id = std::make_unique<int>(*client_id);
+  event.client_id = client_id;
 
   auto event_args = api::speech_recognition_private::OnError::Create(event);
   std::unique_ptr<Event> event_ptr = std::make_unique<Event>(

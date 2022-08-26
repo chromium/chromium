@@ -426,8 +426,8 @@ std::string RulesRegistry::CheckAndFillInOptionalRules(
 void RulesRegistry::FillInOptionalPriorities(
     std::vector<api::events::Rule>* rules) {
   for (auto& rule : *rules) {
-    if (!rule.priority.get())
-      rule.priority = std::make_unique<int>(DEFAULT_PRIORITY);
+    if (!rule.priority)
+      rule.priority = DEFAULT_PRIORITY;
   }
 }
 

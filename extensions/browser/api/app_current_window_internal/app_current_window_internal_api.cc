@@ -74,20 +74,20 @@ void GetBoundsFields(const Bounds& bounds_spec, gfx::Rect* bounds) {
 // Copy the constraint value from the API to our internal representation of
 // content size constraints. A value of zero resets the constraints. The insets
 // are used to transform window constraints to content constraints.
-void GetConstraintWidth(const std::unique_ptr<int>& width,
+void GetConstraintWidth(const absl::optional<int>& width,
                         const gfx::Insets& insets,
                         gfx::Size* size) {
-  if (!width.get())
+  if (!width)
     return;
 
   size->set_width(*width > 0 ? std::max(0, *width - insets.width())
                              : kUnboundedSize);
 }
 
-void GetConstraintHeight(const std::unique_ptr<int>& height,
+void GetConstraintHeight(const absl::optional<int>& height,
                          const gfx::Insets& insets,
                          gfx::Size* size) {
-  if (!height.get())
+  if (!height)
     return;
 
   size->set_height(*height > 0 ? std::max(0, *height - insets.height())

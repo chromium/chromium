@@ -333,7 +333,7 @@ ExtensionFunction::ResponseAction AutomationInternalEnableTabFunction::Run() {
   AutomationInternalApiDelegate* automation_api_delegate =
       ExtensionsAPIClient::Get()->GetAutomationInternalApiDelegate();
   int tab_id = -1;
-  if (params->args.tab_id.get()) {
+  if (params->args.tab_id) {
     tab_id = *params->args.tab_id;
     std::string error_string;
     if (!automation_api_delegate->GetTabById(tab_id, browser_context(),
@@ -730,8 +730,7 @@ AutomationInternalPerformActionFunction::Run() {
   std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
-  int* request_id_ptr = params->args.request_id.get();
-  int request_id = request_id_ptr ? *request_id_ptr : -1;
+  int request_id = params->args.request_id.value_or(-1);
 
   ui::AXActionData data;
   Result result = ConvertToAXActionData(

@@ -55,9 +55,9 @@ void InitializeVideoStreamParam(media_perception::VideoStreamParam& param,
                                 int height,
                                 int frame_rate) {
   param.id = std::make_unique<std::string>(id);
-  param.width = std::make_unique<int>(width);
-  param.height = std::make_unique<int>(height);
-  param.frame_rate = std::make_unique<int>(frame_rate);
+  param.width = width;
+  param.height = height;
+  param.frame_rate = frame_rate;
 }
 
 void InitializeFakeMetadata(mri::Metadata* metadata) {

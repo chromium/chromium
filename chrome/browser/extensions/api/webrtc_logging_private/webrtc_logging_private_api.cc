@@ -139,7 +139,7 @@ content::RenderProcessHost* WebrtcLoggingPrivateFunction::RphFromRequest(
 
   // If |guest_process_id| is defined, directly use this id to find the
   // corresponding RenderProcessHost.
-  if (request.guest_process_id.get()) {
+  if (request.guest_process_id) {
     content::RenderProcessHost* rph =
         content::RenderProcessHost::FromID(*request.guest_process_id);
     if (!rph) {
@@ -152,7 +152,7 @@ content::RenderProcessHost* WebrtcLoggingPrivateFunction::RphFromRequest(
 
   // Otherwise, use the |tab_id|. If there's no |target_viewview|, no |tab_id|,
   // and no |guest_process_id|, we can't look up the RenderProcessHost.
-  if (!request.tab_id.get()) {
+  if (!request.tab_id) {
     *error = "No webview, tab ID, or guest process ID specified.";
     return nullptr;
   }

@@ -87,7 +87,7 @@ void WalkNode(const base::Value& node, DescriptionAndStyles* result) {
     result->styles[current_index].offset = offset;
     WalkNode(child, result);
     result->styles[current_index].length =
-        std::make_unique<int>(result->description.length() - offset);
+        result->description.length() - offset;
   }
 }
 

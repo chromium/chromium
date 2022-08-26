@@ -71,8 +71,8 @@ HistoryItem GetHistoryItem(const history::URLRow& row) {
       std::make_unique<std::string>(base::UTF16ToUTF8(row.title()));
   history_item.last_visit_time =
       std::make_unique<double>(MilliSecondsFromTime(row.last_visit()));
-  history_item.typed_count = std::make_unique<int>(row.typed_count());
-  history_item.visit_count = std::make_unique<int>(row.visit_count());
+  history_item.typed_count = row.typed_count();
+  history_item.visit_count = row.visit_count();
 
   return history_item;
 }
@@ -300,7 +300,7 @@ ExtensionFunction::ResponseAction HistorySearchFunction::Run() {
     options.begin_time = GetTime(*params->query.start_time);
   if (params->query.end_time.get())
     options.end_time = GetTime(*params->query.end_time);
-  if (params->query.max_results.get())
+  if (params->query.max_results)
     options.max_count = *params->query.max_results;
 
   history::HistoryService* hs = HistoryServiceFactory::GetForProfile(

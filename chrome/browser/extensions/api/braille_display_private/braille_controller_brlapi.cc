@@ -88,12 +88,12 @@ std::unique_ptr<DisplayState> BrailleControllerImpl::GetDisplayState() {
     } else if (rows * columns > 0) {
       // rows * columns == 0 means no display present.
       display_state->available = true;
-      display_state->text_column_count = std::make_unique<int>(columns);
-      display_state->text_row_count = std::make_unique<int>(rows);
+      display_state->text_column_count = columns;
+      display_state->text_row_count = rows;
 
       unsigned int cell_size = 0;
       connection_->GetCellSize(&cell_size);
-      display_state->cell_size = std::make_unique<int>(cell_size);
+      display_state->cell_size = cell_size;
     }
   }
   return display_state;

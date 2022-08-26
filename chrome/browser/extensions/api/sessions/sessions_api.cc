@@ -355,10 +355,10 @@ SessionsGetDevicesFunction::CreateWindowModel(
       CreateWindowModelHelper(std::move(tabs), session_id, type, state));
   // TODO(dwankri): Dig deeper to resolve bounds not being optional, so closed
   // windows in GetRecentlyClosed can have set values in Window helper.
-  window_struct->left = std::make_unique<int>(window.bounds.x());
-  window_struct->top = std::make_unique<int>(window.bounds.y());
-  window_struct->width = std::make_unique<int>(window.bounds.width());
-  window_struct->height = std::make_unique<int>(window.bounds.height());
+  window_struct->left = window.bounds.x();
+  window_struct->top = window.bounds.y();
+  window_struct->width = window.bounds.width();
+  window_struct->height = window.bounds.height();
 
   return window_struct;
 }

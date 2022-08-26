@@ -162,7 +162,7 @@ TEST(RulesRegistryTest, FillOptionalPriority) {
   {
     std::vector<api::events::Rule> add_rules;
     add_rules.emplace_back();
-    add_rules[0].priority = std::make_unique<int>(2);
+    add_rules[0].priority = 2;
     add_rules.emplace_back();
     error = registry->AddRules(kExtensionId, std::move(add_rules));
     EXPECT_TRUE(error.empty()) << error;
@@ -173,8 +173,8 @@ TEST(RulesRegistryTest, FillOptionalPriority) {
 
   ASSERT_EQ(2u, get_rules.size());
 
-  ASSERT_TRUE(get_rules[0]->priority.get());
-  ASSERT_TRUE(get_rules[1]->priority.get());
+  ASSERT_TRUE(get_rules[0]->priority);
+  ASSERT_TRUE(get_rules[1]->priority);
 
   // Verify the precondition so that the following EXPECT_EQ statements work.
   EXPECT_GT(RulesRegistry::DEFAULT_PRIORITY, 2);

@@ -186,7 +186,7 @@ bool ConvertRecipientFromApi(const Recipient& input,
 
 template <class T>
 bool GetTransferInSize(const T& input, uint32_t* output) {
-  const int* length = input.length.get();
+  const auto& length = input.length;
   if (length && *length >= 0 &&
       static_cast<uint32_t>(*length) < kMaxTransferLength) {
     *output = *length;
@@ -304,7 +304,7 @@ EndpointDescriptor ConvertEndpointDescriptor(
   output.synchronization =
       ConvertSynchronizationTypeToApi(input.synchronization_type);
   output.usage = ConvertUsageTypeToApi(input.usage_type);
-  output.polling_interval = std::make_unique<int>(input.polling_interval);
+  output.polling_interval = input.polling_interval;
   output.extra_data.assign(input.extra_data.begin(), input.extra_data.end());
   return output;
 }
@@ -590,9 +590,8 @@ ExtensionFunction::ResponseAction UsbFindDevicesFunction::Run() {
 
   vendor_id_ = parameters->options.vendor_id;
   product_id_ = parameters->options.product_id;
-  int interface_id = parameters->options.interface_id.get()
-                         ? *parameters->options.interface_id
-                         : UsbDevicePermissionData::SPECIAL_VALUE_ANY;
+  int interface_id = parameters->options.interface_id.value_or(
+      UsbDevicePermissionData::SPECIAL_VALUE_ANY);
   // Bail out early if there is no chance that the app has manifest permission
   // for the USB device described by vendor ID, product ID, and interface ID.
   // Note that this will match any permission filter that has only interface

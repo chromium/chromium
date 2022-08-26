@@ -410,7 +410,7 @@ std::unique_ptr<api::tabs::Tab> ExtensionTabUtil::CreateTabObject(
   if (!tab_strip)
     ExtensionTabUtil::GetTabStripModel(contents, &tab_strip, &tab_index);
   auto tab_object = std::make_unique<api::tabs::Tab>();
-  tab_object->id = std::make_unique<int>(GetTabIdForExtensions(contents));
+  tab_object->id = GetTabIdForExtensions(contents);
   tab_object->index = tab_index;
   tab_object->window_id = GetWindowIdOfTab(contents);
   tab_object->status = GetLoadingStatus(contents);
@@ -456,8 +456,8 @@ std::unique_ptr<api::tabs::Tab> ExtensionTabUtil::CreateTabObject(
   tab_object->muted_info = CreateMutedInfo(contents);
   tab_object->incognito = contents->GetBrowserContext()->IsOffTheRecord();
   gfx::Size contents_size = contents->GetContainerBounds().size();
-  tab_object->width = std::make_unique<int>(contents_size.width());
-  tab_object->height = std::make_unique<int>(contents_size.height());
+  tab_object->width = contents_size.width();
+  tab_object->height = contents_size.height();
 
   tab_object->url =
       std::make_unique<std::string>(contents->GetLastCommittedURL().spec());
@@ -478,8 +478,7 @@ std::unique_ptr<api::tabs::Tab> ExtensionTabUtil::CreateTabObject(
   if (tab_strip) {
     WebContents* opener = tab_strip->GetOpenerOfWebContentsAt(tab_index);
     if (opener) {
-      tab_object->opener_tab_id =
-          std::make_unique<int>(GetTabIdForExtensions(opener));
+      tab_object->opener_tab_id = GetTabIdForExtensions(opener);
     }
   }
 

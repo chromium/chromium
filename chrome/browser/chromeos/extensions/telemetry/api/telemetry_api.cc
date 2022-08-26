@@ -106,8 +106,7 @@ void OsTelemetryGetCpuInfoFunction::OnResult(
 
   api::os_telemetry::CpuInfo result;
   if (cpu_info->num_total_threads) {
-    result.num_total_threads =
-        std::make_unique<int32_t>(cpu_info->num_total_threads->value);
+    result.num_total_threads = cpu_info->num_total_threads->value;
   }
   result.architecture = converters::Convert(cpu_info->architecture);
   result.physical_cpus =
@@ -140,16 +139,13 @@ void OsTelemetryGetMemoryInfoFunction::OnResult(
 
   const auto& memory_info = ptr->memory_result->get_memory_info();
   if (memory_info->total_memory_kib) {
-    result.total_memory_ki_b =
-        std::make_unique<int32_t>(memory_info->total_memory_kib->value);
+    result.total_memory_ki_b = memory_info->total_memory_kib->value;
   }
   if (memory_info->free_memory_kib) {
-    result.free_memory_ki_b =
-        std::make_unique<int32_t>(memory_info->free_memory_kib->value);
+    result.free_memory_ki_b = memory_info->free_memory_kib->value;
   }
   if (memory_info->available_memory_kib) {
-    result.available_memory_ki_b =
-        std::make_unique<int32_t>(memory_info->available_memory_kib->value);
+    result.available_memory_ki_b = memory_info->available_memory_kib->value;
   }
   if (memory_info->page_faults_since_last_boot) {
     result.page_faults_since_last_boot = std::make_unique<double_t>(

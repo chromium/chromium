@@ -85,7 +85,7 @@ TEST(IdlCompiler, OptionalArguments) {
   base::Value::List list;
   std::unique_ptr<Function7::Params> f7_params =
       Function7::Params::Create(list);
-  EXPECT_EQ(nullptr, f7_params->arg.get());
+  EXPECT_FALSE(f7_params->arg.has_value());
   list.Append(7);
   f7_params = Function7::Params::Create(list);
   EXPECT_EQ(7, *(f7_params->arg));

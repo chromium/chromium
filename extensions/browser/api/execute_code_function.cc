@@ -89,9 +89,8 @@ bool ExecuteCodeFunction::Execute(const std::string& code_string,
           ? ScriptExecutor::INCLUDE_SUB_FRAMES
           : ScriptExecutor::SPECIFIED_FRAMES;
 
-  root_frame_id_ = details_->frame_id.get()
-                       ? *details_->frame_id
-                       : ExtensionApiFrameIdMap::kTopFrameId;
+  root_frame_id_ =
+      details_->frame_id.value_or(ExtensionApiFrameIdMap::kTopFrameId);
 
   ScriptExecutor::MatchAboutBlank match_about_blank =
       details_->match_about_blank.get() && *details_->match_about_blank

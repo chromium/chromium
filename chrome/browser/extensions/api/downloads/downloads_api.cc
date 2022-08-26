@@ -584,7 +584,7 @@ void RunDownloadQuery(const downloads::DownloadQuery& query_in,
   DownloadQuery query_out;
 
   size_t limit = 1000;
-  if (query_in.limit.get()) {
+  if (query_in.limit) {
     if (*query_in.limit < 0) {
       *error = download_extension_errors::kInvalidQueryLimit;
       return;
@@ -634,7 +634,7 @@ void RunDownloadQuery(const downloads::DownloadQuery& query_in,
   }
 
   DownloadQuery::DownloadVector all_items;
-  if (query_in.id.get()) {
+  if (query_in.id) {
     DownloadItem* download_item = manager->GetDownload(*query_in.id);
     if (!download_item && incognito_manager)
       download_item = incognito_manager->GetDownload(*query_in.id);
@@ -1619,7 +1619,7 @@ ExtensionFunction::ResponseAction DownloadsGetFileIconFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
   const downloads::GetFileIconOptions* options = params->options.get();
   int icon_size = kDefaultIconSize;
-  if (options && options->size.get())
+  if (options && options->size)
     icon_size = *options->size;
   DownloadItem* download_item = GetDownload(
       browser_context(), include_incognito_information(), params->download_id);

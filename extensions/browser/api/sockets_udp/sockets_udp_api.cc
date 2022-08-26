@@ -63,7 +63,7 @@ sockets_udp::SocketInfo CreateSocketInfo(int socket_id,
   }
   socket_info.persistent = socket->persistent();
   if (socket->buffer_size() > 0) {
-    socket_info.buffer_size = std::make_unique<int>(socket->buffer_size());
+    socket_info.buffer_size = socket->buffer_size();
   }
   socket_info.paused = socket->paused();
 
@@ -72,7 +72,7 @@ sockets_udp::SocketInfo CreateSocketInfo(int socket_id,
   if (socket->GetLocalAddress(&localAddress)) {
     socket_info.local_address =
         std::make_unique<std::string>(localAddress.ToStringWithoutPort());
-    socket_info.local_port = std::make_unique<int>(localAddress.port());
+    socket_info.local_port = localAddress.port();
   }
 
   return socket_info;
@@ -86,7 +86,7 @@ void SetSocketProperties(ResumableUDPSocket* socket,
   if (properties->persistent.get()) {
     socket->set_persistent(*properties->persistent);
   }
-  if (properties->buffer_size.get()) {
+  if (properties->buffer_size) {
     socket->set_buffer_size(*properties->buffer_size);
   }
 }
@@ -300,7 +300,7 @@ void SocketsUdpSendFunction::SetSendResult(int net_result, int bytes_sent) {
   sockets_udp::SendInfo send_info;
   send_info.result_code = net_result;
   if (net_result == net::OK) {
-    send_info.bytes_sent = std::make_unique<int>(bytes_sent);
+    send_info.bytes_sent = bytes_sent;
   }
 
   auto args = sockets_udp::Send::Results::Create(send_info);

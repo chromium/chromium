@@ -158,7 +158,7 @@ class TabsMoveFunction : public ExtensionFunction {
   bool MoveTab(int tab_id,
                int* new_index,
                base::ListValue* tab_values,
-               int* window_id,
+               const absl::optional<int>& window_id,
                std::string* error);
   DECLARE_EXTENSION_FUNCTION("tabs.move", TABS_MOVE)
 };

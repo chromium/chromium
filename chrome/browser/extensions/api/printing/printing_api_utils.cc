@@ -89,9 +89,7 @@ idl::Printer PrinterToIdl(
       DoesPrinterMatchDefaultPrinterRules(printer, default_printer_rules);
   auto it = recently_used_ranks.find(printer.id);
   if (it != recently_used_ranks.end())
-    idl_printer.recently_used_rank = std::make_unique<int>(it->second);
-  else
-    idl_printer.recently_used_rank = nullptr;
+    idl_printer.recently_used_rank = it->second;
   return idl_printer;
 }
 

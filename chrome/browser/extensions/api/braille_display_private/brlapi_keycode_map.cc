@@ -141,11 +141,11 @@ void MapCommand(brlapi_keyCode_t code, KeyEvent* event) {
       switch (code & BRLAPI_KEY_CMD_BLK_MASK) {
         case BRLAPI_KEY_CMD_ROUTE:
           event->command = KEY_COMMAND_ROUTING;
-          event->display_position = std::make_unique<int>(argument);
+          event->display_position = argument;
           break;
         case BRLAPI_KEY_CMD_PASSDOTS:
           unsigned int dots = argument & kAllDots;
-          event->braille_dots = std::make_unique<int>(dots);
+          event->braille_dots = dots;
 
           // BRLAPI_DOTC represents when the braille space key is pressed.
           if (dots && (argument & BRLAPI_DOTC))
