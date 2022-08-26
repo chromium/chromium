@@ -303,8 +303,9 @@ TEST_F(VisitAnnotationsDatabaseTest, UpdateContentAnnotationsForVisit) {
   EXPECT_EQ(final.alternative_title, "New alternative title");
 }
 
-TEST_F(VisitAnnotationsDatabaseTest,
-       AddClusters_GetCluster_GetClusterVisit_GetClusterKeywords) {
+TEST_F(
+    VisitAnnotationsDatabaseTest,
+    AddClusters_GetCluster_GetClusterVisit_GetClusterKeywords_GetDuplicateClusterVisitIdsForClusterVisit) {
   // Test `AddClusters()`.
 
   // Cluster without visits shouldn't be added.
@@ -325,6 +326,9 @@ TEST_F(VisitAnnotationsDatabaseTest,
   // persisted.
   visit_1.matches_search_query = true;
   visit_1.hidden = true;
+  // Duplicate visits should be persisted.
+  visit_1.duplicate_visits.push_back({3});
+  visit_1.duplicate_visits.push_back({4});
 
   ClusterVisit visit_2;
   visit_2.annotated_visit.visit_row.visit_id = 21;
@@ -340,10 +344,10 @@ TEST_F(VisitAnnotationsDatabaseTest,
 
   // Empty or `nullopt` labels should both be retrieved as `nullopt`.
   clusters.push_back(
-      {11, {visit_1, visit_2}, {}, false, u"", absl::nullopt, {}, {}, .6});
+      {11, {visit_2}, {}, false, u"", absl::nullopt, {}, {}, .6});
   AddClusters(clusters);
 
-  // Test `GetCluster()`
+  // Test `GetCluster()`.
 
   // Should return the non-empty cluster2.
   const auto cluster_1 = GetCluster(1);
@@ -351,7 +355,7 @@ TEST_F(VisitAnnotationsDatabaseTest,
   EXPECT_EQ(cluster_1.should_show_on_prominent_ui_surfaces, false);
   EXPECT_EQ(cluster_1.label, u"label");
   EXPECT_EQ(cluster_1.raw_label, u"raw_label");
-  // Should not populate visits.
+  // Should not populate `visits`.
   EXPECT_TRUE(cluster_1.visits.empty());
   EXPECT_THAT(GetVisitIdsInCluster(1), UnorderedElementsAre(20, 21));
   // Should not populate the non-persisted `search_match_score` field.
@@ -361,6 +365,7 @@ TEST_F(VisitAnnotationsDatabaseTest,
   EXPECT_EQ(cluster_2.cluster_id, 2);
   EXPECT_EQ(cluster_2.label, absl::nullopt);
   EXPECT_EQ(cluster_2.raw_label, absl::nullopt);
+  EXPECT_THAT(GetVisitIdsInCluster(2), UnorderedElementsAre(21));
 
   // There should be no other cluster.
   EXPECT_EQ(GetCluster(3).cluster_id, 0);
@@ -378,6 +383,8 @@ TEST_F(VisitAnnotationsDatabaseTest,
   // fields.
   EXPECT_EQ(visit_1_retrieved.matches_search_query, false);
   EXPECT_EQ(visit_1_retrieved.hidden, false);
+  // Should not populate `duplicate_visits`.
+  EXPECT_TRUE(visit_1_retrieved.duplicate_visits.empty());
 
   const auto visit_2_retrieved = GetClusterVisit(21);
   EXPECT_EQ(visit_2_retrieved.annotated_visit.visit_row.visit_id, 21);
@@ -386,6 +393,12 @@ TEST_F(VisitAnnotationsDatabaseTest,
   EXPECT_EQ(visit_2_retrieved.url_for_deduping, GURL{"url_for_deduping_2"});
   EXPECT_EQ(visit_2_retrieved.normalized_url, GURL{"normalized_url_2"});
   EXPECT_EQ(visit_2_retrieved.url_for_display, u"url_for_display_2");
+
+  // Test `GetDuplicateClusterVisitIdsForClusterVisit()`.
+
+  const auto duplicate_visits_retrieved =
+      GetDuplicateClusterVisitIdsForClusterVisit(20);
+  EXPECT_THAT(duplicate_visits_retrieved, ElementsAre(3, 4));
 }
 
 TEST_F(VisitAnnotationsDatabaseTest, GetMostRecentClusterIds) {
@@ -444,6 +457,7 @@ TEST_F(VisitAnnotationsDatabaseTest, DeleteAnnotationsForVisit) {
   auto cluster = CreateCluster({1, 2});
   cluster.keyword_to_data_map[u"keyword1"];
   cluster.keyword_to_data_map[u"keyword2"];
+  cluster.visits[0].duplicate_visits.push_back({3});
   AddClusters({cluster});
 
   VisitContentAnnotations got_content_annotations;
@@ -458,6 +472,9 @@ TEST_F(VisitAnnotationsDatabaseTest, DeleteAnnotationsForVisit) {
   EXPECT_EQ(GetClusterIdContainingVisit(1), 1);
   EXPECT_EQ(GetClusterIdContainingVisit(2), 1);
   EXPECT_EQ(GetClusterKeywords(1).size(), 2u);
+  EXPECT_EQ(GetDuplicateClusterVisitIdsForClusterVisit(1).size(), 1u);
+  EXPECT_TRUE(GetDuplicateClusterVisitIdsForClusterVisit(2).empty());
+  EXPECT_TRUE(GetDuplicateClusterVisitIdsForClusterVisit(3).empty());
 
   // Delete 1 visit. Make sure the tables are updated, but the cluster remains.
   DeleteAnnotationsForVisit(1);
@@ -470,6 +487,7 @@ TEST_F(VisitAnnotationsDatabaseTest, DeleteAnnotationsForVisit) {
   EXPECT_EQ(GetClusterIdContainingVisit(1), 0);
   EXPECT_EQ(GetClusterIdContainingVisit(2), 1);
   EXPECT_EQ(GetClusterKeywords(1).size(), 2u);
+  EXPECT_TRUE(GetDuplicateClusterVisitIdsForClusterVisit(1).empty());
 
   // Delete the 2nd visit. Make sure the cluster is removed.
   DeleteAnnotationsForVisit(2);

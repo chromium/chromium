@@ -1927,15 +1927,15 @@ std::vector<ClusterVisit> HistoryBackend::ToClusterVisits(
 std::vector<DuplicateClusterVisit> HistoryBackend::ToDuplicateClusterVisits(
     const std::vector<VisitID>& visit_ids) {
   std::vector<DuplicateClusterVisit> duplicate_cluster_visits;
-  base::ranges::transform(
-      visit_ids, std::back_inserter(duplicate_cluster_visits),
-      [&](const auto visit_id) -> DuplicateClusterVisit {
-        VisitRow visit_row;
-        db_->GetRowForVisit(visit_id, &visit_row);
-        URLRow url_row;
-        GetURLByID(visit_row.url_id, &url_row);
-        return {visit_id, url_row.url(), visit_row.visit_time};
-      });
+  for (auto visit_id : visit_ids) {
+    VisitRow visit_row;
+    URLRow url_row;
+    if (db_->GetRowForVisit(visit_id, &visit_row) &&
+        GetURLByID(visit_row.url_id, &url_row)) {
+      duplicate_cluster_visits.push_back(
+          {visit_id, url_row.url(), visit_row.visit_time});
+    }
+  }
   return duplicate_cluster_visits;
 }
 
