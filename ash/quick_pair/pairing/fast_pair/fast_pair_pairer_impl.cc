@@ -297,8 +297,8 @@ void FastPairPairerImpl::OnConnectDevice(device::BluetoothDevice* device) {
   FastPairRepository::Get()->FetchDeviceImages(device_);
 }
 
-void FastPairPairerImpl::OnConnectError() {
-  QP_LOG(WARNING) << __func__;
+void FastPairPairerImpl::OnConnectError(const std::string& error_message) {
+  QP_LOG(WARNING) << __func__ << " " << error_message;
   RecordConnectDeviceResult(/*success=*/false);
   std::move(pair_failed_callback_).Run(device_, PairFailure::kAddressConnect);
 }

@@ -56,6 +56,7 @@ class Adapter : public mojom::Adapter,
   void ConnectToServiceInsecurely(
       const std::string& address,
       const device::BluetoothUUID& service_uuid,
+      bool should_unbond_on_error,
       ConnectToServiceInsecurelyCallback callback) override;
   void CreateRfcommServiceInsecurely(
       const std::string& service_name,
@@ -89,12 +90,14 @@ class Adapter : public mojom::Adapter,
     ConnectToServiceRequestDetails(const std::string& address,
                                    const device::BluetoothUUID& service_uuid,
                                    const base::Time& time_requested,
+                                   bool should_unbond_on_error,
                                    ConnectToServiceInsecurelyCallback callback);
     ~ConnectToServiceRequestDetails();
 
     std::string address;
     device::BluetoothUUID service_uuid;
     base::Time time_requested;
+    bool should_unbond_on_error;
     ConnectToServiceInsecurelyCallback callback;
   };
 
@@ -131,6 +134,8 @@ class Adapter : public mojom::Adapter,
   void OnConnectToService(int request_id,
                           scoped_refptr<device::BluetoothSocket> socket);
   void OnConnectToServiceError(int request_id, const std::string& message);
+  void OnConnectToServiceInsecurelyError(int request_id,
+                                         const std::string& error_message);
 
   void OnCreateRfcommServiceInsecurely(
       CreateRfcommServiceInsecurelyCallback callback,

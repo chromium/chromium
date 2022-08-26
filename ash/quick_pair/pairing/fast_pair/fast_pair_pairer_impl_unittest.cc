@@ -151,9 +151,9 @@ class FakeBluetoothAdapter
       const std::string& address,
       const absl::optional<device::BluetoothDevice::AddressType>& address_type,
       base::OnceCallback<void(device::BluetoothDevice*)> callback,
-      base::OnceClosure error_callback) override {
+      base::OnceCallback<void(const std::string&)> error_callback) override {
     if (connect_device_failure_) {
-      std::move(error_callback).Run();
+      std::move(error_callback).Run("");
       return;
     }
 

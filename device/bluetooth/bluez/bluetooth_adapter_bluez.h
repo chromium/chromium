@@ -169,7 +169,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
       const std::string& address,
       const absl::optional<device::BluetoothDevice::AddressType>& address_type,
       ConnectDeviceCallback callback,
-      ErrorCallback error_callback) override;
+      ConnectDeviceErrorCallback error_callback) override;
 
   device::BluetoothLocalGattService* GetGattService(
       const std::string& identifier) const override;
@@ -528,7 +528,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
 
   void OnConnectDevice(ConnectDeviceCallback callback,
                        const dbus::ObjectPath& object_path);
-  void OnConnectDeviceError(ErrorCallback error_callback,
+  void OnConnectDeviceError(ConnectDeviceErrorCallback error_callback,
                             const std::string& error_name,
                             const std::string& error_message);
 

@@ -92,7 +92,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterCast
       const std::string& address,
       const absl::optional<BluetoothDevice::AddressType>& address_type,
       ConnectDeviceCallback callback,
-      ErrorCallback error_callback) override;
+      ConnectDeviceErrorCallback error_callback) override;
   BluetoothLocalGattService* GetGattService(
       const std::string& identifier) const override;
   base::WeakPtr<BluetoothAdapter> GetWeakPtr() override;

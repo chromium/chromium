@@ -178,9 +178,9 @@ void BluetoothAdapterCast::ConnectDevice(
     const std::string& address,
     const absl::optional<BluetoothDevice::AddressType>& address_type,
     ConnectDeviceCallback callback,
-    ErrorCallback error_callback) {
+    ConnectDeviceErrorCallback error_callback) {
   NOTIMPLEMENTED() << __func__ << " GATT server mode not supported";
-  std::move(error_callback).Run();
+  std::move(error_callback).Run(/*error_message=*/std::string());
 }
 
 void BluetoothAdapterCast::ResetAdvertising(

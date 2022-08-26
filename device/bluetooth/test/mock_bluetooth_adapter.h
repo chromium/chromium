@@ -143,7 +143,7 @@ class MockBluetoothAdapter : public BluetoothAdapter {
       void(const std::string& address,
            const absl::optional<BluetoothDevice::AddressType>& address_type,
            ConnectDeviceCallback callback,
-           ErrorCallback error_callback));
+           ConnectDeviceErrorCallback error_callback));
 
 #endif
 

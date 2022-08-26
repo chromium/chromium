@@ -130,7 +130,7 @@ class TestBluetoothAdapter final : public BluetoothAdapter {
       const std::string& address,
       const absl::optional<BluetoothDevice::AddressType>& address_type,
       ConnectDeviceCallback callback,
-      ErrorCallback error_callback) override {}
+      ConnectDeviceErrorCallback error_callback) override {}
 #endif
 
   BluetoothLocalGattService* GetGattService(

@@ -102,7 +102,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
       const std::string& address,
       const absl::optional<device::BluetoothDevice::AddressType>& address_type,
       ConnectDeviceCallback callback,
-      ErrorCallback error_callback) override;
+      ConnectDeviceErrorCallback error_callback) override;
 
   device::BluetoothLocalGattService* GetGattService(
       const std::string& identifier) const override;

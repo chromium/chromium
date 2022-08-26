@@ -191,7 +191,7 @@ class FakeCentral final : public mojom::FakeCentral,
       const std::string& address,
       const absl::optional<device::BluetoothDevice::AddressType>& address_type,
       ConnectDeviceCallback callback,
-      ErrorCallback error_callback) override;
+      ConnectDeviceErrorCallback error_callback) override;
 #endif
   device::BluetoothLocalGattService* GetGattService(
       const std::string& identifier) const override;
