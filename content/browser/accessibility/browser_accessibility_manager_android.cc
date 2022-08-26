@@ -97,10 +97,16 @@ BrowserAccessibility* BrowserAccessibilityManagerAndroid::RetargetForEvents(
     BrowserAccessibility* node,
     RetargetEventType type) const {
   // TODO(crbug.com/1350627): Node should not be null. But this seems to be
-  // happening in the wild for reasons not yet determined. Make this a
-  // DCHECK.
-  if (!node)
+  // happening in the wild for reasons not yet determined. Because the only
+  // consequence of node being null is that we'll fail to fire an event on a
+  // non-existent object, the style guide's suggestion of using a CHECK
+  // temporarily seems a bit strong. Nonetheless we should get to the bottom of
+  // this. So we are temporarily using NOTREACHED in the hopes that ClusterFuzz
+  // will lead to a reliably-reproducible test case.
+  if (!node) {
+    NOTREACHED();
     return nullptr;
+  }
 
   // Sometimes we get events on nodes in our internal accessibility tree
   // that aren't exposed on Android. Get |updated| to point to the lowest
