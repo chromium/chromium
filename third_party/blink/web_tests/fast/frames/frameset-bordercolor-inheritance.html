@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<script>
+window.onload = () => {
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    document.body.removeAttribute('bordercolor');
+    document.documentElement.removeAttribute('class');
+  }));
+};
+</script>
+<frameset bordercolor="red" border="100" rows="50%,*">
+  <frameset cols="50%,*"><frame></frame><frame></frame></frameset>
+  <frame></frame>
+</frameset>
+</html>
+
