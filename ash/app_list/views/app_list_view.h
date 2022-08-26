@@ -331,12 +331,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   // Returns the height of app list in fullscreen state.
   int GetFullscreenStateHeight() const;
 
-  // Calculates and returns the app list view state after dragging from shelf
-  // ends.
-  AppListViewState CalculateStateAfterShelfDrag(
-      const ui::LocatedEvent& event_in_screen,
-      float launcher_above_shelf_bottom_amount) const;
-
   // Returns a animation metrics reporting callback  for state transition.
   metrics_util::SmoothnessCallback GetStateTransitionMetricsReportCallback();
 
@@ -357,9 +351,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
 
   void OnTabletModeAnimationTransitionNotified(
       TabletModeAnimationTransition animation_transition);
-
-  // Called at the end of dragging AppList from Shelf.
-  void EndDragFromShelf(AppListViewState app_list_state);
 
   // Moves the AppListView off screen and calls a layout if needed.
   void OnBoundsAnimationCompleted(AppListViewState target_state);

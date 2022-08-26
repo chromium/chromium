@@ -128,13 +128,6 @@ class ASH_EXPORT AppListPresenterImpl
   // transition is in progress.
   bool GetTargetVisibility() const;
 
-  // Updates y position and opacity of app list.
-  void UpdateYPositionAndOpacity(float y_position_in_screen,
-                                 float background_opacity);
-
-  // Ends the drag of app list from shelf.
-  void EndDragFromShelf(AppListViewState app_list_state);
-
   // Passes data from a Scroll event from the shelf to the
   // AppListView.
   void ProcessScrollOffset(const gfx::Point& location,

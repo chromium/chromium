@@ -3684,18 +3684,6 @@ TEST_P(AppListPresenterNonBubbleTest, AppListViewDragHandler) {
   GetAppListTestHelper()->CheckVisibility(false);
 }
 
-// Tests that the bottom shelf background is hidden when the app list is shown
-// in laptop mode.
-TEST_F(AppListPresenterNonBubbleTest,
-       ShelfBackgroundIsHiddenWhenAppListIsShown) {
-  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
-  ShelfLayoutManager* shelf_layout_manager =
-      Shelf::ForWindow(Shell::GetRootWindowForDisplayId(GetPrimaryDisplayId()))
-          ->shelf_layout_manager();
-  EXPECT_EQ(ShelfBackgroundType::kAppList,
-            shelf_layout_manager->GetShelfBackgroundType());
-}
-
 // Tests the shelf background type is as expected when a window is created after
 // going to tablet mode.
 TEST_F(AppListPresenterTest, ShelfBackgroundWithHomeLauncher) {
@@ -3711,131 +3699,6 @@ TEST_F(AppListPresenterTest, ShelfBackgroundWithHomeLauncher) {
   auto window = CreateTestWindow();
   wm::ActivateWindow(window.get());
   EXPECT_EQ(ShelfBackgroundType::kInApp,
-            shelf_layout_manager->GetShelfBackgroundType());
-}
-
-// Tests that app list understands shelf rounded corners state while animating
-// out and in, and that it keeps getting notified of shelf state changes if
-// close animation is interrupted by another show request.
-TEST_F(AppListPresenterNonBubbleTest, AppListShownWhileClosing) {
-  auto window = CreateTestWindow();
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MAXIMIZED);
-
-  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
-  GetAppListTestHelper()->CheckVisibility(true);
-
-  ShelfLayoutManager* shelf_layout_manager =
-      Shelf::ForWindow(Shell::GetRootWindowForDisplayId(GetPrimaryDisplayId()))
-          ->shelf_layout_manager();
-
-  EXPECT_FALSE(GetAppListView()->shelf_has_rounded_corners());
-  EXPECT_EQ(ShelfBackgroundType::kMaximizedWithAppList,
-            shelf_layout_manager->GetShelfBackgroundType());
-
-  // Enable animation to account for delay between app list starting to close
-  // and reporting visibility change (which happens when close animation
-  // finishes).
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-
-  // Dismiss and immediately show the app list (before close animation is done).
-  GetAppListTestHelper()->Dismiss();
-
-  EXPECT_FALSE(GetAppListView()->shelf_has_rounded_corners());
-  EXPECT_EQ(ShelfBackgroundType::kMaximizedWithAppList,
-            shelf_layout_manager->GetShelfBackgroundType());
-
-  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
-
-  // Finish app list animations.
-  if (GetAppListView()->GetWidget()->GetLayer()->GetAnimator()->is_animating())
-    GetAppListView()->GetWidget()->GetLayer()->GetAnimator()->StopAnimating();
-
-  EXPECT_FALSE(GetAppListView()->shelf_has_rounded_corners());
-  EXPECT_EQ(ShelfBackgroundType::kMaximizedWithAppList,
-            shelf_layout_manager->GetShelfBackgroundType());
-
-  // Verify that the app list still picks up shelf changes.
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MINIMIZED);
-  EXPECT_TRUE(GetAppListView()->shelf_has_rounded_corners());
-  EXPECT_EQ(ShelfBackgroundType::kAppList,
-            shelf_layout_manager->GetShelfBackgroundType());
-}
-
-// Tests how shelf state is updated as app list state changes with a maximized
-// window open. It verifies that the app list knows that the maximized shelf had
-// no rounded corners.
-TEST_F(AppListPresenterNonBubbleTest, AppListWithMaximizedShelf) {
-  auto window = CreateTestWindow();
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MAXIMIZED);
-
-  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
-  GetAppListTestHelper()->CheckVisibility(true);
-
-  ShelfLayoutManager* shelf_layout_manager =
-      Shelf::ForWindow(Shell::GetRootWindowForDisplayId(GetPrimaryDisplayId()))
-          ->shelf_layout_manager();
-
-  EXPECT_FALSE(GetAppListView()->shelf_has_rounded_corners());
-  EXPECT_EQ(ShelfBackgroundType::kMaximizedWithAppList,
-            shelf_layout_manager->GetShelfBackgroundType());
-
-  // Enable animation to account for delay between app list starting to close
-  // and reporting visibility change (which happens when close animation
-  // finishes).
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-
-  // Start closing the app list view.
-  GetAppListTestHelper()->Dismiss();
-
-  EXPECT_FALSE(GetAppListView()->shelf_has_rounded_corners());
-  EXPECT_EQ(ShelfBackgroundType::kMaximizedWithAppList,
-            shelf_layout_manager->GetShelfBackgroundType());
-
-  // Minimize the window, and verify that the shelf state changed from a
-  // maximized state, and that |shelf_has_rounded_corners()| value was updated.
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MINIMIZED);
-
-  EXPECT_TRUE(GetAppListView()->shelf_has_rounded_corners());
-  EXPECT_EQ(ShelfBackgroundType::kAppList,
-            shelf_layout_manager->GetShelfBackgroundType());
-
-  // Stop app list hide animation.
-  ASSERT_TRUE(
-      GetAppListView()->GetWidget()->GetLayer()->GetAnimator()->is_animating());
-  GetAppListView()->GetWidget()->GetLayer()->GetAnimator()->StopAnimating();
-
-  EXPECT_EQ(ShelfBackgroundType::kDefaultBg,
-            shelf_layout_manager->GetShelfBackgroundType());
-}
-
-// Verifies the shelf background state changes when a window is maximized while
-// app list is shown. Verifies that AppList::shelf_has_rounded_corners() is
-// updated.
-TEST_F(AppListPresenterNonBubbleTest, WindowMaximizedWithAppListShown) {
-  auto window = CreateTestWindow();
-
-  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
-  GetAppListTestHelper()->CheckVisibility(true);
-
-  ShelfLayoutManager* shelf_layout_manager =
-      Shelf::ForWindow(Shell::GetRootWindowForDisplayId(GetPrimaryDisplayId()))
-          ->shelf_layout_manager();
-
-  EXPECT_TRUE(GetAppListView()->shelf_has_rounded_corners());
-  EXPECT_EQ(ShelfBackgroundType::kAppList,
-            shelf_layout_manager->GetShelfBackgroundType());
-
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MAXIMIZED);
-
-  EXPECT_FALSE(GetAppListView()->shelf_has_rounded_corners());
-  EXPECT_EQ(ShelfBackgroundType::kMaximizedWithAppList,
-            shelf_layout_manager->GetShelfBackgroundType());
-
-  GetAppListTestHelper()->Dismiss();
-
-  EXPECT_EQ(ShelfBackgroundType::kMaximized,
             shelf_layout_manager->GetShelfBackgroundType());
 }
 
@@ -4313,30 +4176,6 @@ TEST_P(AppListPresenterNonBubbleTest,
   EXPECT_TRUE(result_selection_controller->selected_result()->selected());
   EXPECT_TRUE(result_selection_controller->selected_location_details()
                   ->is_first_result());
-}
-
-// Tests that the shelf background displays/hides with bottom shelf
-// alignment.
-TEST_F(AppListPresenterNonBubbleTest,
-       ShelfBackgroundRespondsToAppListBeingShown) {
-  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kBottom);
-
-  // Show the app list, the shelf background should be transparent.
-  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
-  ShelfLayoutManager* shelf_layout_manager =
-      GetPrimaryShelf()->shelf_layout_manager();
-  EXPECT_EQ(ShelfBackgroundType::kAppList,
-            shelf_layout_manager->GetShelfBackgroundType());
-  GetAppListTestHelper()->DismissAndRunLoop();
-
-  // Set the alignment to the side and show the app list. The background
-  // should show.
-  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kLeft);
-  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
-  EXPECT_FALSE(GetPrimaryShelf()->IsHorizontalAlignment());
-  EXPECT_EQ(
-      ShelfBackgroundType::kAppList,
-      GetPrimaryShelf()->shelf_layout_manager()->GetShelfBackgroundType());
 }
 
 // Tests that the half app list closes itself if the user taps outside its
@@ -6583,53 +6422,6 @@ TEST_P(AppListPresenterHomeLauncherTest, WallpaperContextMenu) {
   generator->ClickLeftButton();
   GetAppListTestHelper()->WaitUntilIdle();
   EXPECT_FALSE(root_window_controller->IsContextMenuShown());
-}
-
-// Tests app list visibility when switching to tablet mode during dragging from
-// shelf.
-TEST_P(AppListPresenterHomeLauncherTest,
-       SwitchToTabletModeDuringDraggingFromShelf) {
-  // ProductivityLauncher doesn't use peeking state or app list dragging.
-  if (features::IsProductivityLauncherEnabled())
-    return;
-
-  UpdateDisplay("1080x900");
-  GetAppListTestHelper()->CheckVisibility(false);
-
-  // Drag from the shelf to show the app list.
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  const int x = 540;
-  const int closed_y = 890;
-  const int fullscreen_y = 0;
-  generator->MoveTouch(gfx::Point(x, closed_y));
-  generator->PressTouch();
-  generator->MoveTouch(gfx::Point(x, fullscreen_y));
-  generator->ReleaseTouch();
-  GetAppListTestHelper()->CheckVisibility(true);
-
-  // Drag to shelf to close app list.
-  generator->MoveTouch(gfx::Point(x, fullscreen_y));
-  generator->PressTouch();
-  generator->MoveTouch(gfx::Point(x, closed_y));
-  generator->ReleaseTouch();
-  GetAppListTestHelper()->WaitUntilIdle();
-  GetAppListTestHelper()->CheckVisibility(false);
-
-  // Drag from the shelf to show the app list.
-  generator->MoveTouch(gfx::Point(x, closed_y));
-  generator->PressTouch();
-  generator->MoveTouch(gfx::Point(x, fullscreen_y));
-  GetAppListTestHelper()->CheckVisibility(true);
-
-  // Switch to tablet mode.
-  EnableTabletMode(true);
-  GetAppListTestHelper()->CheckVisibility(true);
-
-  // Drag to shelf to try to close app list.
-  generator->MoveTouch(gfx::Point(x, closed_y));
-  generator->ReleaseTouch();
-  GetAppListTestHelper()->WaitUntilIdle();
-  GetAppListTestHelper()->CheckVisibility(true);
 }
 
 // Tests app list visibility when switching to tablet mode during dragging to

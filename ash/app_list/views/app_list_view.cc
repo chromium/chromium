@@ -2077,52 +2077,6 @@ int AppListView::GetFullscreenStateHeight() const {
   return display_bounds.height() - display.work_area().y() + display_bounds.y();
 }
 
-AppListViewState AppListView::CalculateStateAfterShelfDrag(
-    const ui::LocatedEvent& event_in_screen,
-    float launcher_above_shelf_bottom_amount) const {
-  AppListViewState app_list_state = AppListViewState::kPeeking;
-  if (event_in_screen.type() == ui::ET_SCROLL_FLING_START &&
-      fabs(event_in_screen.AsGestureEvent()->details().velocity_y()) >
-          kDragVelocityFromShelfThreshold) {
-    // If the scroll sequence terminates with a fling, show the fullscreen app
-    // list if the fling was fast enough and in the correct direction, otherwise
-    // close it.
-    app_list_state =
-        event_in_screen.AsGestureEvent()->details().velocity_y() < 0
-            ? AppListViewState::kFullscreenAllApps
-            : AppListViewState::kClosed;
-  } else {
-    // Snap the app list to corresponding state according to the snapping
-    // thresholds.
-    if (delegate_->IsInTabletMode()) {
-      app_list_state =
-          launcher_above_shelf_bottom_amount > kDragSnapToFullscreenThreshold
-              ? AppListViewState::kFullscreenAllApps
-              : AppListViewState::kClosed;
-    } else {
-      if (launcher_above_shelf_bottom_amount <= kDragSnapToClosedThreshold) {
-        app_list_state = AppListViewState::kClosed;
-      } else if (launcher_above_shelf_bottom_amount <=
-                 kDragSnapToPeekingThreshold) {
-        app_list_state = AppListViewState::kPeeking;
-      } else {
-        app_list_state = AppListViewState::kFullscreenAllApps;
-      }
-    }
-  }
-
-  // Deal with the situation of dragging app list from shelf while typing in
-  // the search box.
-  if (app_list_state == AppListViewState::kFullscreenAllApps) {
-    AppListState active_state =
-        app_list_main_view_->contents_view()->GetActiveState();
-    if (active_state == AppListState::kStateSearchResults)
-      app_list_state = AppListViewState::kFullscreenSearch;
-  }
-
-  return app_list_state;
-}
-
 metrics_util::SmoothnessCallback
 AppListView::GetStateTransitionMetricsReportCallback() {
   return state_animation_metrics_reporter_->GetReportCallback(
@@ -2442,18 +2396,6 @@ void AppListView::OnTabletModeAnimationTransitionNotified(
     TabletModeAnimationTransition animation_transition) {
   state_animation_metrics_reporter_->SetTabletModeAnimationTransition(
       animation_transition);
-}
-
-void AppListView::EndDragFromShelf(AppListViewState app_list_state) {
-  SetIsInDrag(false);
-
-  if (app_list_state == AppListViewState::kClosed ||
-      target_app_list_state_ == AppListViewState::kClosed) {
-    Dismiss();
-  } else {
-    SetState(app_list_state);
-  }
-  UpdateChildViewsYPositionAndOpacity();
 }
 
 void AppListView::ResetSubpixelPositionOffset(ui::Layer* layer) {

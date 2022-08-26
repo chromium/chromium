@@ -91,7 +91,6 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
     kDragInProgress,
     kDragCancelInProgress,
     kDragCompleteInProgress,
-    kDragAppListInProgress,
     kDragHomeToOverviewInProgress,
     kFlingBubbleLauncherInProgress,
   };
@@ -354,10 +353,6 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
 
   DragStatus drag_status_for_test() const { return drag_status_; }
 
-  bool IsDraggingApplist() const {
-    return drag_status_ == kDragAppListInProgress;
-  }
-
   // Gets the target HotseatState based on the current state of HomeLauncher,
   // Overview, Shelf, and any active gestures.
   // TODO(manucornet): Move this to the hotseat class.
@@ -547,8 +542,6 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
 
   // Drag related functions, utilized by both gesture drag and mouse drag:
   bool IsDragAllowed() const;
-  bool StartAppListDrag(const ui::LocatedEvent& event_in_screen,
-                        float scroll_y_hint);
   bool StartShelfDrag(const ui::LocatedEvent& event_in_screen,
                       const gfx::Vector2dF& scroll_hint);
   // Sets the Hotseat up to be dragged, if applicable.
@@ -557,7 +550,6 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
                   float scroll_x,
                   float scroll_y);
   void CompleteDrag(const ui::LocatedEvent& event_in_screen);
-  void CompleteAppListDrag(const ui::LocatedEvent& event_in_screen);
   void CompleteDragHomeToOverview(const ui::LocatedEvent& event_in_screen);
   void CancelDrag(absl::optional<ShelfWindowDragResult> window_drag_result);
   void CompleteDragWithChangedVisibility();
@@ -682,9 +674,6 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
 
   // Whether background blur is enabled.
   const bool is_background_blur_enabled_;
-
-  // Whether the feature ProductivityLauncher is enabled.
-  const bool is_productivity_launcher_enabled_;
 
   // Pretarget handler responsible for hiding the hotseat.
   std::unique_ptr<ui::EventHandler> hotseat_event_handler_;

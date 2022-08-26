@@ -551,23 +551,6 @@ void AppListControllerImpl::Show(int64_t display_id,
                               event_time_stamp, show_source);
 }
 
-void AppListControllerImpl::UpdateYPositionAndOpacity(
-    int y_position_in_screen,
-    float background_opacity) {
-  // Avoid changing app list opacity and position when homecher is enabled.
-  if (IsTabletMode())
-    return;
-  fullscreen_presenter_->UpdateYPositionAndOpacity(y_position_in_screen,
-                                                   background_opacity);
-}
-
-void AppListControllerImpl::EndDragFromShelf(AppListViewState app_list_state) {
-  // Avoid dragging app list when homecher is enabled.
-  if (IsTabletMode())
-    return;
-  fullscreen_presenter_->EndDragFromShelf(app_list_state);
-}
-
 void AppListControllerImpl::ProcessMouseWheelEvent(
     const ui::MouseWheelEvent& event) {
   fullscreen_presenter_->ProcessMouseWheelOffset(event.location(),
@@ -1224,16 +1207,6 @@ bool AppListControllerImpl::IsShowingEmbeddedAssistantUI() const {
     return true;
   }
   return fullscreen_presenter_->IsShowingEmbeddedAssistantUI();
-}
-
-AppListViewState AppListControllerImpl::CalculateStateAfterShelfDrag(
-    const ui::LocatedEvent& event_in_screen,
-    float launcher_above_shelf_bottom_amount) const {
-  if (fullscreen_presenter_->GetView()) {
-    return fullscreen_presenter_->GetView()->CalculateStateAfterShelfDrag(
-        event_in_screen, launcher_above_shelf_bottom_amount);
-  }
-  return AppListViewState::kClosed;
 }
 
 void AppListControllerImpl::SetStateTransitionAnimationCallbackForTesting(
