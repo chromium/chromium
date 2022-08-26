@@ -16,7 +16,8 @@
 namespace {
 
 // Size constraints for this view.
-const CGFloat kViewWidthAnchor = 149.0f;
+const CGFloat kviewWidthAnchor = 149.0f;
+const CGFloat kviewWidthAnchorLong = 174.0f;
 const CGFloat kViewHeightAnchor = 51.5f;
 
 // Width constraint for the search ImageView.
@@ -39,6 +40,8 @@ const CGFloat kTouchDownAlpha = 0.25f;
 @interface QuerySuggestionView ()
 
 @property(nonatomic, strong) UILabel* queryLabel;
+
+@property(nonatomic, strong) NSLayoutConstraint* widthLayoutAnchor;
 
 @end
 
@@ -76,6 +79,12 @@ const CGFloat kTouchDownAlpha = 0.25f;
     [self addSubview:searchImageView];
     [self addSubview:self.queryLabel];
 
+    CGFloat queryViewWidth = self.traitCollection.horizontalSizeClass ==
+                                     UIUserInterfaceSizeClassRegular
+                                 ? kviewWidthAnchorLong
+                                 : kviewWidthAnchor;
+    self.widthLayoutAnchor =
+        [self.widthAnchor constraintEqualToConstant:queryViewWidth];
     [NSLayoutConstraint activateConstraints:@[
       [searchImageView.widthAnchor
           constraintLessThanOrEqualToConstant:kQueryImageMaxWidth],
@@ -91,7 +100,7 @@ const CGFloat kTouchDownAlpha = 0.25f;
       [self.queryLabel.trailingAnchor
           constraintEqualToAnchor:self.trailingAnchor],
       [self.heightAnchor constraintEqualToConstant:kViewHeightAnchor],
-      [self.widthAnchor constraintEqualToConstant:kViewWidthAnchor]
+      self.widthLayoutAnchor
     ]];
     if (config) {
       // Let label take up all vertical space for two-line query text.
@@ -136,6 +145,18 @@ const CGFloat kTouchDownAlpha = 0.25f;
     self.queryLabel.alpha = kTouchDownAlpha;
   } else {
     self.queryLabel.alpha = 1.0;
+  }
+}
+
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (previousTraitCollection.horizontalSizeClass !=
+      self.traitCollection.horizontalSizeClass) {
+    self.widthLayoutAnchor.constant =
+        self.traitCollection.horizontalSizeClass ==
+                UIUserInterfaceSizeClassRegular
+            ? kviewWidthAnchorLong
+            : kviewWidthAnchor;
   }
 }
 
