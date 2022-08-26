@@ -132,9 +132,8 @@ AndroidPlatformConfiguration::GetEnableRates(
 
   DCHECK(*release_channel == version_info::Channel::CANARY ||
          *release_channel == version_info::Channel::DEV);
-  // Put all users in 50/50 experiment groups to maximize signal in the relevant
-  // metrics.
-  return RelativePopulations{0, 100};
+  // Use a 50/50 experiment to maximize signal in the relevant metrics.
+  return RelativePopulations{0, 50};
 }
 
 double AndroidPlatformConfiguration::GetChildProcessEnableFraction(
