@@ -5,6 +5,8 @@
 #ifndef BASE_CPU_REDUCTION_EXPERIMENT_H_
 #define BASE_CPU_REDUCTION_EXPERIMENT_H_
 
+#include <atomic>
+
 #include "base/base_export.h"
 
 namespace base {
@@ -27,7 +29,7 @@ class BASE_EXPORT CpuReductionExperimentFilter {
   bool ShouldLogHistograms();
 
  private:
-  int counter_ = 0;
+  std::atomic_int counter_ = 0;
 };
 
 }  // namespace base

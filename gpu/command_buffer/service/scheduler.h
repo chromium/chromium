@@ -410,11 +410,11 @@ class GPU_EXPORT Scheduler {
 
     // Indicates when the next task run was scheduled
     base::TimeTicks run_next_task_scheduled;
-
-    base::CpuReductionExperimentFilter cpu_reduction_experiment_filter;
   };
   base::flat_map<base::SingleThreadTaskRunner*, PerThreadState>
       per_thread_state_map_ GUARDED_BY(lock_);
+
+  base::CpuReductionExperimentFilter cpu_reduction_experiment_filter_;
 
   // Accumulated time the thread was blocked during running task
   base::TimeDelta total_blocked_time_ GUARDED_BY(lock_);

@@ -646,7 +646,7 @@ void Scheduler::RunNextTask() {
   auto* thread_state = &per_thread_state_map_[task_runner];
 
   const bool log_histograms =
-      thread_state->cpu_reduction_experiment_filter.ShouldLogHistograms();
+      cpu_reduction_experiment_filter_.ShouldLogHistograms();
 
   if (log_histograms) {
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
