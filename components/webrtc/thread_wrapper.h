@@ -124,7 +124,6 @@ class ThreadWrapper : public base::CurrentThread::DestructionObserver,
   void Quit() override;
   void Restart() override;
   bool Get(rtc::Message* message, int delay_ms, bool process_io) override;
-  bool Peek(rtc::Message* message, int delay_ms) override;
   int GetDelay() override;
 
   // rtc::Thread overrides.

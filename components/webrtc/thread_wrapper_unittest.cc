@@ -53,17 +53,6 @@ ACTION(DeleteMessageData) {
   delete arg0->pdata;
 }
 
-// Helper class used in the Dispose test.
-class DeletableObject {
- public:
-  DeletableObject(bool* deleted) : deleted_(deleted) { *deleted = false; }
-
-  ~DeletableObject() { *deleted_ = true; }
-
- private:
-  raw_ptr<bool> deleted_;
-};
-
 class ThreadWrapperTest : public testing::Test {
  public:
   // This method is used by the SendDuringSend test. It sends message to the
@@ -304,14 +293,6 @@ TEST_F(ThreadWrapperTest, SendDuringSend) {
   target->Send(RTC_FROM_HERE, &handler1_, kTestMessage1, data);
 
   Mock::VerifyAndClearExpectations(&handler1_);
-}
-
-TEST_F(ThreadWrapperTest, Dispose) {
-  bool deleted_ = false;
-  thread_->Dispose(new DeletableObject(&deleted_));
-  EXPECT_FALSE(deleted_);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(deleted_);
 }
 
 // Provider needed for the MetronomeLikeTaskQueueTest suite.

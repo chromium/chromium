@@ -427,12 +427,7 @@ void ThreadWrapper::RunTaskInternal(int task_id) {
   }
 
   if (have_message) {
-    if (message.message_id == rtc::MQID_DISPOSE) {
-      DCHECK(message.phandler == nullptr);
-      delete message.pdata;
-    } else {
-      Dispatch(&message);
-    }
+    Dispatch(&message);
   }
 }
 
@@ -452,11 +447,6 @@ void ThreadWrapper::Restart() {
 }
 
 bool ThreadWrapper::Get(rtc::Message*, int, bool) {
-  NOTREACHED();
-  return false;
-}
-
-bool ThreadWrapper::Peek(rtc::Message*, int) {
   NOTREACHED();
   return false;
 }
