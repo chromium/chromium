@@ -21,8 +21,16 @@ class CORE_EXPORT CSSToggleEvent : public Event {
       const CSSToggleEventInit* initializer = nullptr) {
     return MakeGarbageCollected<CSSToggleEvent>(type, initializer);
   }
+  static CSSToggleEvent* Create(const AtomicString& type,
+                                const AtomicString& toggle_name,
+                                CSSToggle* toggle) {
+    return MakeGarbageCollected<CSSToggleEvent>(type, toggle_name, toggle);
+  }
 
-  CSSToggleEvent(const AtomicString&, const CSSToggleEventInit*);
+  CSSToggleEvent(const AtomicString& type, const CSSToggleEventInit*);
+  CSSToggleEvent(const AtomicString& type,
+                 const AtomicString& toggle_name,
+                 CSSToggle* toggle);
 
   String toggleName() const { return toggle_name_; }
   CSSToggle* toggle() const { return toggle_; }

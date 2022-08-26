@@ -18,6 +18,13 @@ CSSToggleEvent::CSSToggleEvent(const AtomicString& type,
   }
 }
 
+CSSToggleEvent::CSSToggleEvent(const AtomicString& type,
+                               const AtomicString& toggle_name,
+                               CSSToggle* toggle)
+    : Event(type, Bubbles::kNo, Cancelable::kNo),
+      toggle_name_(toggle_name),
+      toggle_(toggle) {}
+
 void CSSToggleEvent::Trace(Visitor* visitor) const {
   visitor->Trace(toggle_);
 

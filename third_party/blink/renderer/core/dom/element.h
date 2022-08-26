@@ -1640,7 +1640,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   static void ChangeToggle(CSSToggle* toggle,
                            const ToggleTrigger& action,
                            const ToggleRoot* override_spec);
-  void FireToggleChangeEvent(CSSToggle* toggle);
 
   Member<ElementData> element_data_;
 };

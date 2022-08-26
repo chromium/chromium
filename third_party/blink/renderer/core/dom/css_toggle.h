@@ -74,6 +74,8 @@ class CORE_EXPORT CSSToggle : public ScriptWrappable, public ToggleRoot {
   void SetValue(const State& value);
   void MakeRestOfToggleGroupZero();
 
+  void FireToggleChangeEvent();
+
   enum class PostRecalcAt : uint8_t {
     kNow = 0,
     kLater = 1,

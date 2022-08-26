@@ -8999,7 +8999,7 @@ void Element::FireToggleActivation(const ToggleTrigger& activation) {
   }
 
   ChangeToggle(toggle, activation, toggle_specifier);
-  element->FireToggleChangeEvent(toggle);
+  toggle->FireToggleChangeEvent();
 }
 
 // Implement https://tabatkins.github.io/css-toggle/#change-a-toggle
@@ -9113,11 +9113,6 @@ void Element::ChangeToggle(CSSToggle* t,
   // all other toggles in the same toggle group as t to 0.
   if (is_group && !t->ValueMatches(State(0u)))
     t->MakeRestOfToggleGroupZero();
-}
-
-void Element::FireToggleChangeEvent(CSSToggle* toggle) {
-  // TODO(https://crbug.com/1250716): Write code to add event classes and fire
-  // toggle change events.
 }
 
 }  // namespace blink

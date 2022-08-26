@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_stringarray_unsignedlong.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_stringsequence_unsignedlong.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
+#include "third_party/blink/renderer/core/dom/css_toggle_event.h"
 #include "third_party/blink/renderer/core/dom/css_toggle_map.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -474,6 +475,12 @@ void CSSToggle::MakeRestOfToggleGroupZero() {
     }
     e = ElementTraversal::Next(*e, stay_within);
   } while (e);
+}
+
+void CSSToggle::FireToggleChangeEvent() {
+  DCHECK(OwnerElement());
+  OwnerElement()->DispatchEvent(
+      *CSSToggleEvent::Create(event_type_names::kTogglechange, Name(), this));
 }
 
 }  // namespace blink
