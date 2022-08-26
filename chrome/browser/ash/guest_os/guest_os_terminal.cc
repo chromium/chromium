@@ -40,6 +40,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/services/app_service/public/cpp/menu.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/url_util.h"
@@ -529,8 +530,7 @@ std::vector<std::pair<std::string, std::string>> GetSSHConnections(
   return result;
 }
 
-void AddTerminalMenuItems(Profile* profile,
-                          apps::mojom::MenuItemsPtr* menu_items) {
+void AddTerminalMenuItems(Profile* profile, apps::MenuItems& menu_items) {
   apps::AddCommandItem(ash::SETTINGS, IDS_INTERNAL_APP_SETTINGS, menu_items);
   if (crostini::IsCrostiniRunning(profile)) {
     apps::AddCommandItem(ash::SHUTDOWN_GUEST_OS,
@@ -541,7 +541,7 @@ void AddTerminalMenuItems(Profile* profile,
 void AddTerminalMenuShortcuts(
     Profile* profile,
     int next_command_id,
-    apps::mojom::MenuItemsPtr menu_items,
+    apps::MenuItems menu_items,
     apps::mojom::Publisher::GetMenuModelCallback callback,
     std::vector<gfx::ImageSkia> images) {
   ui::ColorProvider* color_provider =
@@ -559,7 +559,7 @@ void AddTerminalMenuShortcuts(
   auto* registry = guest_os::GuestOsService::GetForProfile(profile)
                        ->TerminalProviderRegistry();
   if (connections.size() > 0 || registry->List().size() > 0) {
-    apps::AddSeparator(ui::DOUBLE_SEPARATOR, &menu_items);
+    apps::AddSeparator(ui::DOUBLE_SEPARATOR, menu_items);
   }
 
   for (auto id : registry->List()) {
@@ -567,16 +567,16 @@ void AddTerminalMenuShortcuts(
     apps::AddShortcutCommandItem(
         next_command_id++,
         ShortcutIdFromContainerId(profile, provider->GuestId()),
-        provider->Label(), crostini_mascot_icon, &menu_items);
+        provider->Label(), crostini_mascot_icon, menu_items);
   }
 
   for (const auto& connection : connections) {
     apps::AddShortcutCommandItem(
         next_command_id++, ShortcutIdForSSH(connection.first),
-        connection.second, terminal_ssh_icon, &menu_items);
+        connection.second, terminal_ssh_icon, menu_items);
   }
 
-  std::move(callback).Run(std::move(menu_items));
+  std::move(callback).Run(ConvertMenuItemsToMojomMenuItems(menu_items));
 }
 
 bool ExecuteTerminalMenuShortcutCommand(Profile* profile,

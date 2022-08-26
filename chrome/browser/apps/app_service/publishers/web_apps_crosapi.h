@@ -27,6 +27,10 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
+namespace apps {
+struct MenuItems;
+}
+
 namespace base {
 class Location;
 }  // namespace base
@@ -161,7 +165,7 @@ class WebAppsCrosapi : public KeyedService,
   void OnGetMenuModelFromCrosapi(
       const std::string& app_id,
       apps::mojom::MenuType menu_type,
-      apps::mojom::MenuItemsPtr menu_items,
+      apps::MenuItems menu_items,
       GetMenuModelCallback callback,
       crosapi::mojom::MenuItemsPtr crosapi_menu_items);
 

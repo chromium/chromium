@@ -55,6 +55,7 @@ namespace apps {
 class PublisherTest;
 class WebApkManager;
 struct AppLaunchParams;
+struct MenuItems;
 
 // An app publisher (in the App Service sense) of ARC++ apps,
 //
@@ -258,13 +259,13 @@ class ArcApps : public KeyedService,
       std::vector<apps::mojom::IntentFilterPtr>* intent_filters);
 
   void BuildMenuForShortcut(const std::string& package_name,
-                            apps::mojom::MenuItemsPtr menu_items,
+                            MenuItems menu_items,
                             GetMenuModelCallback callback);
 
   // Bound by |arc_app_shortcuts_request_|'s OnGetAppShortcutItems method.
   void OnGetAppShortcutItems(
       const base::TimeTicks start_time,
-      apps::mojom::MenuItemsPtr menu_items,
+      MenuItems menu_items,
       GetMenuModelCallback callback,
       std::unique_ptr<apps::AppShortcutItems> app_shortcut_items);
 

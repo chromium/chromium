@@ -302,26 +302,26 @@ void CrostiniApps::GetMenuModel(const std::string& app_id,
                                 apps::mojom::MenuType menu_type,
                                 int64_t display_id,
                                 GetMenuModelCallback callback) {
-  apps::mojom::MenuItemsPtr menu_items = apps::mojom::MenuItems::New();
+  MenuItems menu_items;
 
   if (menu_type == apps::mojom::MenuType::kShelf) {
     AddCommandItem(ash::APP_CONTEXT_MENU_NEW_WINDOW, IDS_APP_LIST_NEW_WINDOW,
-                   &menu_items);
+                   menu_items);
   }
 
   if (crostini::IsUninstallable(profile_, app_id)) {
-    AddCommandItem(ash::UNINSTALL, IDS_APP_LIST_UNINSTALL_ITEM, &menu_items);
+    AddCommandItem(ash::UNINSTALL, IDS_APP_LIST_UNINSTALL_ITEM, menu_items);
   }
 
   if (ShouldAddOpenItem(app_id, ConvertMojomMenuTypeToMenuType(menu_type),
                         profile_)) {
     AddCommandItem(ash::LAUNCH_NEW, IDS_APP_CONTEXT_MENU_ACTIVATE_ARC,
-                   &menu_items);
+                   menu_items);
   }
 
   if (ShouldAddCloseItem(app_id, ConvertMojomMenuTypeToMenuType(menu_type),
                          profile_)) {
-    AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE, &menu_items);
+    AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE, menu_items);
   }
 
   // Offer users the ability to toggle per-application UI scaling.
@@ -334,15 +334,15 @@ void CrostiniApps::GetMenuModel(const std::string& app_id,
     if (registration) {
       if (registration->IsScaled()) {
         AddCommandItem(ash::CROSTINI_USE_HIGH_DENSITY,
-                       IDS_CROSTINI_USE_HIGH_DENSITY, &menu_items);
+                       IDS_CROSTINI_USE_HIGH_DENSITY, menu_items);
       } else {
         AddCommandItem(ash::CROSTINI_USE_LOW_DENSITY,
-                       IDS_CROSTINI_USE_LOW_DENSITY, &menu_items);
+                       IDS_CROSTINI_USE_LOW_DENSITY, menu_items);
       }
     }
   }
 
-  std::move(callback).Run(std::move(menu_items));
+  std::move(callback).Run(ConvertMenuItemsToMojomMenuItems(menu_items));
 }
 
 void CrostiniApps::OnRegistryUpdated(

@@ -27,6 +27,7 @@
 #include "components/app_restore/full_restore_utils.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/intent.h"
+#include "components/services/app_service/public/cpp/menu.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
 namespace apps {
@@ -399,30 +400,30 @@ void StandaloneBrowserExtensionApps::GetMenuModel(
   // by StandaloneBrowserExtensionAppContextMenu.
   DCHECK(!is_platform_app);
 
-  apps::mojom::MenuItemsPtr menu_items = apps::mojom::MenuItems::New();
+  apps::MenuItems menu_items;
   apps::CreateOpenNewSubmenu(display_mode == WindowMode::kWindow
                                  ? IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW
                                  : IDS_APP_LIST_CONTEXT_MENU_NEW_TAB,
-                             &menu_items);
+                             menu_items);
 
   if (menu_type == apps::mojom::MenuType::kShelf) {
     if (proxy()->BrowserAppInstanceRegistry()->IsAppRunning(app_id)) {
       apps::AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE,
-                           &menu_items);
+                           menu_items);
     }
   }
 
   if (can_use_uninstall) {
     apps::AddCommandItem(ash::UNINSTALL, IDS_APP_LIST_UNINSTALL_ITEM,
-                         &menu_items);
+                         menu_items);
   }
 
   if (show_app_info) {
     apps::AddCommandItem(ash::SHOW_APP_INFO, IDS_APP_CONTEXT_MENU_SHOW_INFO,
-                         &menu_items);
+                         menu_items);
   }
 
-  std::move(callback).Run(std::move(menu_items));
+  std::move(callback).Run(ConvertMenuItemsToMojomMenuItems(menu_items));
 }
 
 void StandaloneBrowserExtensionApps::StopApp(const std::string& app_id) {

@@ -27,67 +27,59 @@
 namespace {
 const int kInvalidRadioGroupId = -1;
 const int kGroupId = 1;
+
+apps::MenuItemPtr CreateRadioItem(uint32_t command_id,
+                                  uint32_t string_id,
+                                  int group_id) {
+  apps::MenuItemPtr menu_item =
+      std::make_unique<apps::MenuItem>(apps::MenuItemType::kRadio, command_id);
+  menu_item->string_id = string_id;
+  menu_item->radio_group_id = group_id;
+  return menu_item;
 }
+}  // namespace
 
 namespace apps {
 
 void AddCommandItem(uint32_t command_id,
                     uint32_t string_id,
-                    apps::mojom::MenuItemsPtr* menu_items) {
-  apps::mojom::MenuItemPtr menu_item = apps::mojom::MenuItem::New();
-  menu_item->type = apps::mojom::MenuItemType::kCommand;
-  menu_item->command_id = command_id;
+                    MenuItems& menu_items) {
+  MenuItemPtr menu_item =
+      std::make_unique<MenuItem>(MenuItemType::kCommand, command_id);
   menu_item->string_id = string_id;
   menu_item->radio_group_id = kInvalidRadioGroupId;
-  (*menu_items)->items.push_back(std::move(menu_item));
-}
-
-apps::mojom::MenuItemPtr CreateRadioItem(uint32_t command_id,
-                                         uint32_t string_id,
-                                         int group_id) {
-  apps::mojom::MenuItemPtr menu_item = apps::mojom::MenuItem::New();
-  menu_item->type = apps::mojom::MenuItemType::kRadio;
-  menu_item->command_id = command_id;
-  menu_item->string_id = string_id;
-  menu_item->radio_group_id = group_id;
-  return menu_item;
+  menu_items.items.push_back(std::move(menu_item));
 }
 
 void AddRadioItem(uint32_t command_id,
                   uint32_t string_id,
                   int group_id,
-                  apps::mojom::MenuItemsPtr* menu_items) {
-  (*menu_items)
-      ->items.push_back(CreateRadioItem(command_id, string_id, group_id));
+                  MenuItems& menu_items) {
+  menu_items.items.push_back(CreateRadioItem(command_id, string_id, group_id));
 }
 
-void AddSeparator(ui::MenuSeparatorType separator_type,
-                  apps::mojom::MenuItemsPtr* menu_items) {
-  apps::mojom::MenuItemPtr menu_item = apps::mojom::MenuItem::New();
-  menu_item->type = apps::mojom::MenuItemType::kSeparator;
-  menu_item->command_id = separator_type;
-  (*menu_items)->items.push_back(std::move(menu_item));
+void AddSeparator(ui::MenuSeparatorType separator_type, MenuItems& menu_items) {
+  MenuItemPtr menu_item =
+      std::make_unique<MenuItem>(MenuItemType::kSeparator, separator_type);
+  menu_items.items.push_back(std::move(menu_item));
 }
 
 void AddShortcutCommandItem(int command_id,
                             const std::string& shortcut_id,
                             const std::string& label,
                             const gfx::ImageSkia& icon,
-                            apps::mojom::MenuItemsPtr* menu_items) {
-  apps::mojom::MenuItemPtr menu_item = apps::mojom::MenuItem::New();
-  menu_item->type = apps::mojom::MenuItemType::kPublisherCommand;
-  menu_item->command_id = command_id;
+                            MenuItems& menu_items) {
+  MenuItemPtr menu_item =
+      std::make_unique<MenuItem>(MenuItemType::kPublisherCommand, command_id);
   menu_item->shortcut_id = shortcut_id;
   menu_item->label = label;
   menu_item->image = icon;
-  (*menu_items)->items.push_back(std::move(menu_item));
+  menu_items.items.push_back(std::move(menu_item));
 }
 
-void CreateOpenNewSubmenu(uint32_t string_id,
-                          apps::mojom::MenuItemsPtr* menu_items) {
-  apps::mojom::MenuItemPtr menu_item = apps::mojom::MenuItem::New();
-  menu_item->type = apps::mojom::MenuItemType::kSubmenu;
-  menu_item->command_id = ash::LAUNCH_NEW;
+void CreateOpenNewSubmenu(uint32_t string_id, MenuItems& menu_items) {
+  MenuItemPtr menu_item =
+      std::make_unique<MenuItem>(MenuItemType::kSubmenu, ash::LAUNCH_NEW);
   menu_item->string_id = string_id;
 
   menu_item->submenu.push_back(
@@ -105,7 +97,7 @@ void CreateOpenNewSubmenu(uint32_t string_id,
 
   menu_item->radio_group_id = kInvalidRadioGroupId;
 
-  (*menu_items)->items.push_back(std::move(menu_item));
+  menu_items.items.push_back(std::move(menu_item));
 }
 
 bool ShouldAddOpenItem(const std::string& app_id,
@@ -227,15 +219,15 @@ MenuType MenuTypeFromString(base::StringPiece menu_type) {
   return MenuType::kShelf;
 }
 
-mojom::MenuItemsPtr CreateBrowserMenuItems(const Profile* profile) {
+MenuItems CreateBrowserMenuItems(const Profile* profile) {
   DCHECK(profile);
-  mojom::MenuItemsPtr menu_items = mojom::MenuItems::New();
+  MenuItems menu_items;
 
   // "Normal" windows are not allowed when incognito is enforced.
   if (IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
       IncognitoModePrefs::Availability::kForced) {
     AddCommandItem(ash::APP_CONTEXT_MENU_NEW_WINDOW, IDS_APP_LIST_NEW_WINDOW,
-                   &menu_items);
+                   menu_items);
   }
 
   // Incognito windows are not allowed when incognito is disabled.
@@ -243,11 +235,11 @@ mojom::MenuItemsPtr CreateBrowserMenuItems(const Profile* profile) {
       IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
           IncognitoModePrefs::Availability::kDisabled) {
     AddCommandItem(ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW,
-                   IDS_APP_LIST_NEW_INCOGNITO_WINDOW, &menu_items);
+                   IDS_APP_LIST_NEW_INCOGNITO_WINDOW, menu_items);
   }
 
   AddCommandItem(ash::SHOW_APP_INFO, IDS_APP_CONTEXT_MENU_SHOW_INFO,
-                 &menu_items);
+                 menu_items);
 
   return menu_items;
 }

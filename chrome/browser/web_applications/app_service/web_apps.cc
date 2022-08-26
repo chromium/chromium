@@ -424,7 +424,7 @@ void WebApps::GetMenuModel(const std::string& app_id,
     return;
   }
 
-  apps::mojom::MenuItemsPtr menu_items = apps::mojom::MenuItems::New();
+  apps::MenuItems menu_items;
   if (web_app->IsSystemApp()) {
     DCHECK(web_app->client_data().system_web_app_data.has_value());
     ash::SystemWebAppType swa_type =
@@ -434,34 +434,34 @@ void WebApps::GetMenuModel(const std::string& app_id,
         ash::SystemWebAppManager::Get(profile())->GetSystemApp(swa_type);
     if (system_app && system_app->ShouldShowNewWindowMenuOption()) {
       apps::AddCommandItem(ash::LAUNCH_NEW,
-                           IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW, &menu_items);
+                           IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW, menu_items);
     }
   } else {
     apps::CreateOpenNewSubmenu(
         publisher_helper().GetWindowMode(app_id) == apps::WindowMode::kBrowser
             ? IDS_APP_LIST_CONTEXT_MENU_NEW_TAB
             : IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW,
-        &menu_items);
+        menu_items);
   }
 
   if (app_id == guest_os::kTerminalSystemAppId) {
-    guest_os::AddTerminalMenuItems(profile_, &menu_items);
+    guest_os::AddTerminalMenuItems(profile_, menu_items);
   }
 
   if (menu_type == apps::mojom::MenuType::kShelf &&
       instance_registry_->ContainsAppId(app_id)) {
     apps::AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE,
-                         &menu_items);
+                         menu_items);
   }
 
   if (web_app->CanUserUninstallWebApp()) {
     apps::AddCommandItem(ash::UNINSTALL, IDS_APP_LIST_UNINSTALL_ITEM,
-                         &menu_items);
+                         menu_items);
   }
 
   if (!web_app->IsSystemApp()) {
     apps::AddCommandItem(ash::SHOW_APP_INFO, IDS_APP_CONTEXT_MENU_SHOW_INFO,
-                         &menu_items);
+                         menu_items);
   }
 
   if (app_id == guest_os::kTerminalSystemAppId) {
@@ -474,7 +474,7 @@ void WebApps::GetMenuModel(const std::string& app_id,
 }
 
 void WebApps::GetAppShortcutMenuModel(const std::string& app_id,
-                                      apps::mojom::MenuItemsPtr menu_items,
+                                      apps::MenuItems menu_items,
                                       GetMenuModelCallback callback) {
   const WebApp* web_app = GetWebApp(app_id);
   if (!web_app) {
@@ -489,13 +489,13 @@ void WebApps::GetAppShortcutMenuModel(const std::string& app_id,
                                base::AsWeakPtr<WebApps>(this), app_id,
                                std::move(menu_items), std::move(callback)));
   } else {
-    std::move(callback).Run(std::move(menu_items));
+    std::move(callback).Run(ConvertMenuItemsToMojomMenuItems(menu_items));
   }
 }
 
 void WebApps::OnShortcutsMenuIconsRead(
     const std::string& app_id,
-    apps::mojom::MenuItemsPtr menu_items,
+    apps::MenuItems menu_items,
     GetMenuModelCallback callback,
     ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps) {
   const WebApp* web_app = GetWebApp(app_id);
@@ -504,7 +504,7 @@ void WebApps::OnShortcutsMenuIconsRead(
     return;
   }
 
-  apps::AddSeparator(ui::DOUBLE_SEPARATOR, &menu_items);
+  apps::AddSeparator(ui::DOUBLE_SEPARATOR, menu_items);
 
   size_t menu_item_index = 0;
 
@@ -522,7 +522,7 @@ void WebApps::OnShortcutsMenuIconsRead(
     }
 
     if (menu_item_index != 0) {
-      apps::AddSeparator(ui::PADDED_SEPARATOR, &menu_items);
+      apps::AddSeparator(ui::PADDED_SEPARATOR, menu_items);
     }
 
     gfx::ImageSkia icon;
@@ -546,12 +546,12 @@ void WebApps::OnShortcutsMenuIconsRead(
     publisher_helper().StoreShortcutId(shortcut_id, menu_item_info);
 
     apps::AddShortcutCommandItem(command_id, shortcut_id, label, icon,
-                                 &menu_items);
+                                 menu_items);
 
     ++menu_item_index;
   }
 
-  std::move(callback).Run(std::move(menu_items));
+  std::move(callback).Run(ConvertMenuItemsToMojomMenuItems(menu_items));
 }
 
 void WebApps::ExecuteContextMenuCommand(const std::string& app_id,

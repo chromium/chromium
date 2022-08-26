@@ -335,26 +335,26 @@ void PluginVmApps::GetMenuModel(const std::string& app_id,
                                 apps::mojom::MenuType menu_type,
                                 int64_t display_id,
                                 GetMenuModelCallback callback) {
-  apps::mojom::MenuItemsPtr menu_items = apps::mojom::MenuItems::New();
+  apps::MenuItems menu_items;
 
   if (ShouldAddOpenItem(app_id, ConvertMojomMenuTypeToMenuType(menu_type),
                         profile_)) {
     AddCommandItem(ash::LAUNCH_NEW, IDS_APP_CONTEXT_MENU_ACTIVATE_ARC,
-                   &menu_items);
+                   menu_items);
   }
 
   if (ShouldAddCloseItem(app_id, ConvertMojomMenuTypeToMenuType(menu_type),
                          profile_)) {
-    AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE, &menu_items);
+    AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE, menu_items);
   }
 
   if (app_id == plugin_vm::kPluginVmShelfAppId &&
       plugin_vm::IsPluginVmRunning(profile_)) {
     AddCommandItem(ash::SHUTDOWN_GUEST_OS, IDS_PLUGIN_VM_SHUT_DOWN_MENU_ITEM,
-                   &menu_items);
+                   menu_items);
   }
 
-  std::move(callback).Run(std::move(menu_items));
+  std::move(callback).Run(ConvertMenuItemsToMojomMenuItems(menu_items));
 }
 
 void PluginVmApps::OnRegistryUpdated(

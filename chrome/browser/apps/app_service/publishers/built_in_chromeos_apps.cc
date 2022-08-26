@@ -202,20 +202,20 @@ void BuiltInChromeOsApps::GetMenuModel(const std::string& app_id,
                                        apps::mojom::MenuType menu_type,
                                        int64_t display_id,
                                        GetMenuModelCallback callback) {
-  apps::mojom::MenuItemsPtr menu_items = apps::mojom::MenuItems::New();
+  apps::MenuItems menu_items;
 
   if (ShouldAddOpenItem(app_id, ConvertMojomMenuTypeToMenuType(menu_type),
                         profile_)) {
     AddCommandItem(ash::LAUNCH_NEW, IDS_APP_CONTEXT_MENU_ACTIVATE_ARC,
-                   &menu_items);
+                   menu_items);
   }
 
   if (ShouldAddCloseItem(app_id, ConvertMojomMenuTypeToMenuType(menu_type),
                          profile_)) {
-    AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE, &menu_items);
+    AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE, menu_items);
   }
 
-  std::move(callback).Run(std::move(menu_items));
+  std::move(callback).Run(ConvertMenuItemsToMojomMenuItems(menu_items));
 }
 
 }  // namespace apps

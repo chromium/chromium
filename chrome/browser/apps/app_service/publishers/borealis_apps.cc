@@ -399,22 +399,22 @@ void BorealisApps::GetMenuModel(const std::string& app_id,
                                 apps::mojom::MenuType menu_type,
                                 int64_t display_id,
                                 GetMenuModelCallback callback) {
-  apps::mojom::MenuItemsPtr menu_items = apps::mojom::MenuItems::New();
+  MenuItems menu_items;
 
   if (borealis::BorealisService::GetForProfile(profile_)
           ->Features()
           .IsEnabled()) {
-    AddCommandItem(ash::UNINSTALL, IDS_APP_LIST_UNINSTALL_ITEM, &menu_items);
+    AddCommandItem(ash::UNINSTALL, IDS_APP_LIST_UNINSTALL_ITEM, menu_items);
   }
 
   if (ShouldAddCloseItem(app_id, ConvertMojomMenuTypeToMenuType(menu_type),
                          profile_)) {
-    AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE, &menu_items);
+    AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE, menu_items);
   }
 
   // TODO(b/162562622): Menu models for borealis apps.
 
-  std::move(callback).Run(std::move(menu_items));
+  std::move(callback).Run(ConvertMenuItemsToMojomMenuItems(menu_items));
 }
 
 void BorealisApps::OnRegistryUpdated(

@@ -15,6 +15,10 @@
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/display/types/display_constants.h"
 
+namespace apps {
+struct MenuItems;
+}
+
 class Profile;
 
 namespace guest_os {
@@ -173,14 +177,13 @@ std::vector<std::pair<std::string, std::string>> GetSSHConnections(
     Profile* profile);
 
 // Add terminal menu items (Settings, Shut down Linux).
-void AddTerminalMenuItems(Profile* profile,
-                          apps::mojom::MenuItemsPtr* menu_items);
+void AddTerminalMenuItems(Profile* profile, apps::MenuItems& menu_items);
 
 // Add terminal shortcut items in menu.
 void AddTerminalMenuShortcuts(
     Profile* profile,
     int next_command_id,
-    apps::mojom::MenuItemsPtr menu_items,
+    apps::MenuItems menu_items,
     apps::mojom::Publisher::GetMenuModelCallback callback,
     std::vector<gfx::ImageSkia> icons = {});
 

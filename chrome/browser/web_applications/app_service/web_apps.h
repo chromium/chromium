@@ -34,6 +34,10 @@
 
 static_assert(!BUILDFLAG(IS_CHROMEOS_LACROS), "For non-Lacros only");
 
+namespace apps {
+struct MenuItems;
+}
+
 class Profile;
 
 namespace webapps {
@@ -184,12 +188,12 @@ class WebApps : public apps::PublisherBase,
                                  int64_t display_id) override;
 
   void GetAppShortcutMenuModel(const std::string& app_id,
-                               apps::mojom::MenuItemsPtr menu_items,
+                               apps::MenuItems menu_items,
                                GetMenuModelCallback callback);
 
   void OnShortcutsMenuIconsRead(
       const std::string& app_id,
-      apps::mojom::MenuItemsPtr menu_items,
+      apps::MenuItems menu_items,
       GetMenuModelCallback callback,
       ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

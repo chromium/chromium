@@ -36,29 +36,27 @@ using GetVectorIconCallback =
 // Adds a command menu item to |menu_items|.
 void AddCommandItem(uint32_t command_id,
                     uint32_t string_id,
-                    apps::mojom::MenuItemsPtr* menu_items);
+                    MenuItems& menu_items);
 
 // Adds a radio menu item to |menu_items|.
 void AddRadioItem(uint32_t command_id,
                   uint32_t string_id,
                   int group_id,
-                  apps::mojom::MenuItemsPtr* menu_items);
+                  MenuItems& menu_items);
 
 // Adds a separator of the specified type to |menu_items|.
-void AddSeparator(ui::MenuSeparatorType separator_type,
-                  apps::mojom::MenuItemsPtr* menu_items);
+void AddSeparator(ui::MenuSeparatorType separator_type, MenuItems& menu_items);
 
 // Adds a shortcut command menu item to |menu_items|.
 void AddShortcutCommandItem(int command_id,
                             const std::string& shortcut_id,
                             const std::string& label,
                             const gfx::ImageSkia& icon,
-                            apps::mojom::MenuItemsPtr* menu_items);
+                            MenuItems& menu_items);
 
 // Adds a LAUNCH_NEW menu item to |menu_items|, and create radio items for the
 // submenu.
-void CreateOpenNewSubmenu(uint32_t string_id,
-                          apps::mojom::MenuItemsPtr* menu_items);
+void CreateOpenNewSubmenu(uint32_t string_id, MenuItems& menu_items);
 
 // Returns true if the open menu item can be added, when |menu_type| is Shelf,
 // and the app identified by |app_id| is not running, otherwise returns false.
@@ -95,7 +93,7 @@ base::StringPiece MenuTypeToString(MenuType menu_type);
 MenuType MenuTypeFromString(base::StringPiece menu_type);
 
 // Returns the browser menu items for the given |menu_type|.
-mojom::MenuItemsPtr CreateBrowserMenuItems(const Profile* profile);
+MenuItems CreateBrowserMenuItems(const Profile* profile);
 
 ui::ColorId GetColorIdForMenuItemIcon();
 

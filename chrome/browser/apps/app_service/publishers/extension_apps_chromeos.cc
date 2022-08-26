@@ -72,6 +72,7 @@
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
+#include "components/services/app_service/public/cpp/menu.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/clear_site_data_utils.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -362,15 +363,16 @@ void ExtensionAppsChromeOs::GetMenuModel(const std::string& app_id,
                                          apps::mojom::MenuType menu_type,
                                          int64_t display_id,
                                          GetMenuModelCallback callback) {
-  apps::mojom::MenuItemsPtr menu_items = apps::mojom::MenuItems::New();
+  MenuItems menu_items;
   const auto* extension = MaybeGetExtension(app_id);
   if (!extension) {
-    std::move(callback).Run(std::move(menu_items));
+    std::move(callback).Run(ConvertMenuItemsToMojomMenuItems(menu_items));
     return;
   }
 
   if (app_id == app_constants::kChromeAppId) {
-    std::move(callback).Run(CreateBrowserMenuItems(profile()));
+    std::move(callback).Run(
+        ConvertMenuItemsToMojomMenuItems(CreateBrowserMenuItems(profile())));
     return;
   }
 
@@ -382,18 +384,18 @@ void ExtensionAppsChromeOs::GetMenuModel(const std::string& app_id,
                 extensions::LaunchType::LAUNCH_TYPE_WINDOW
             ? IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW
             : IDS_APP_LIST_CONTEXT_MENU_NEW_TAB,
-        &menu_items);
+        menu_items);
   }
 
   if (!is_platform_app && menu_type == apps::mojom::MenuType::kAppList &&
       extensions::util::IsAppLaunchableWithoutEnabling(app_id, profile()) &&
       extensions::OptionsPageInfo::HasOptionsPage(extension)) {
-    AddCommandItem(ash::OPTIONS, IDS_NEW_TAB_APP_OPTIONS, &menu_items);
+    AddCommandItem(ash::OPTIONS, IDS_NEW_TAB_APP_OPTIONS, menu_items);
   }
 
   if (menu_type == apps::mojom::MenuType::kShelf &&
       instance_registry_->ContainsAppId(app_id)) {
-    AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE, &menu_items);
+    AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE, menu_items);
   }
 
   const extensions::ManagementPolicy* policy =
@@ -401,15 +403,15 @@ void ExtensionAppsChromeOs::GetMenuModel(const std::string& app_id,
   DCHECK(policy);
   if (policy->UserMayModifySettings(extension, nullptr) &&
       !policy->MustRemainInstalled(extension, nullptr)) {
-    AddCommandItem(ash::UNINSTALL, IDS_APP_LIST_UNINSTALL_ITEM, &menu_items);
+    AddCommandItem(ash::UNINSTALL, IDS_APP_LIST_UNINSTALL_ITEM, menu_items);
   }
 
   if (extension->ShouldDisplayInAppLauncher()) {
     AddCommandItem(ash::SHOW_APP_INFO, IDS_APP_CONTEXT_MENU_SHOW_INFO,
-                   &menu_items);
+                   menu_items);
   }
 
-  std::move(callback).Run(std::move(menu_items));
+  std::move(callback).Run(ConvertMenuItemsToMojomMenuItems(menu_items));
 }
 
 void ExtensionAppsChromeOs::OnAppWindowAdded(

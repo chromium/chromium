@@ -22,6 +22,7 @@
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/app_constants/constants.h"
+#include "components/services/app_service/public/cpp/menu.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/views/widget/widget.h"
 
@@ -201,7 +202,8 @@ void StandaloneBrowserApps::GetMenuModel(const std::string& app_id,
                                          apps::mojom::MenuType menu_type,
                                          int64_t display_id,
                                          GetMenuModelCallback callback) {
-  std::move(callback).Run(CreateBrowserMenuItems(profile_));
+  std::move(callback).Run(
+      ConvertMenuItemsToMojomMenuItems(CreateBrowserMenuItems(profile_)));
 }
 
 void StandaloneBrowserApps::OpenNativeSettings(const std::string& app_id) {
