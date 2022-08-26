@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
-
+#include "third_party/blink/renderer/modules/webgpu/gpu_programmable_stage.h"
 namespace blink {
 
 class GPUBindGroupLayout;
@@ -15,8 +15,24 @@ class GPURenderPipelineDescriptor;
 class ExceptionState;
 class ScriptState;
 
-struct OwnedFragmentState {
- public:
+struct OwnedVertexState : OwnedProgrammableStage {
+  OwnedVertexState() = default;
+
+  //  This struct should be non-copyable non-movable because it contains
+  //  self-referencing pointers that would be invalidated when moved / copied.
+  OwnedVertexState(const OwnedVertexState& desc) = delete;
+  OwnedVertexState(OwnedVertexState&& desc) = delete;
+  OwnedVertexState& operator=(const OwnedVertexState& desc) = delete;
+  OwnedVertexState& operator=(OwnedVertexState&& desc) = delete;
+
+  // Points to OwnedRenderPipelineDescriptor::dawn_desc::vertex as it's a
+  // non-pointer member of WGPURenderPipelineDescriptor
+  WGPUVertexState* dawn_desc = nullptr;
+  std::unique_ptr<WGPUVertexBufferLayout[]> buffers;
+  std::unique_ptr<std::unique_ptr<WGPUVertexAttribute[]>[]> attributes;
+};
+
+struct OwnedFragmentState : OwnedProgrammableStage {
   OwnedFragmentState() = default;
 
   //  This struct should be non-copyable non-movable because it contains
@@ -27,13 +43,11 @@ struct OwnedFragmentState {
   OwnedFragmentState& operator=(OwnedFragmentState&& desc) = delete;
 
   WGPUFragmentState dawn_desc = {};
-  std::string entry_point;
   std::unique_ptr<WGPUColorTargetState[]> targets;
   Vector<WGPUBlendState> blend_states;
 };
 
 struct OwnedPrimitiveState {
- public:
   OwnedPrimitiveState() = default;
 
   //  This struct should be non-copyable non-movable because it contains
@@ -48,7 +62,6 @@ struct OwnedPrimitiveState {
 };
 
 struct OwnedRenderPipelineDescriptor {
- public:
   OwnedRenderPipelineDescriptor() = default;
 
   //  This struct should be non-copyable non-movable because it contains
@@ -63,9 +76,7 @@ struct OwnedRenderPipelineDescriptor {
 
   WGPURenderPipelineDescriptor dawn_desc = {};
   std::string label;
-  std::string vertex_entry_point;
-  std::unique_ptr<WGPUVertexBufferLayout[]> buffers;
-  std::unique_ptr<std::unique_ptr<WGPUVertexAttribute[]>[]> attributes;
+  OwnedVertexState vertex;
   OwnedPrimitiveState primitive;
   WGPUDepthStencilState depth_stencil;
   OwnedFragmentState fragment;

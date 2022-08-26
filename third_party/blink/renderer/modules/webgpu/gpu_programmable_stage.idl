@@ -7,4 +7,10 @@
 dictionary GPUProgrammableStage {
     required GPUShaderModule module;
     required USVString entryPoint;
+
+    // Should have a default of {}, but Blink doesn't seem to support that yet.
+    record<USVString, GPUPipelineConstantValue> constants;
 };
+
+// May represent WGSL’s bool, f32, i32, u32, and f16 if enabled.
+typedef double GPUPipelineConstantValue;

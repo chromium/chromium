@@ -12,12 +12,13 @@ namespace blink {
 
 class GPUBindGroupLayout;
 class GPUComputePipelineDescriptor;
+struct OwnedProgrammableStage;
 
 WGPUComputePipelineDescriptor AsDawnType(
     GPUDevice* device,
     const GPUComputePipelineDescriptor* webgpu_desc,
     std::string* label,
-    OwnedProgrammableStageDescriptor* computeStageDescriptor);
+    OwnedProgrammableStage* computeStage);
 
 class GPUComputePipeline : public DawnObject<WGPUComputePipeline> {
   DEFINE_WRAPPERTYPEINFO();

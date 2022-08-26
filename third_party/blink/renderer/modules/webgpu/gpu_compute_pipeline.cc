@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_bind_group_layout.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_pipeline_layout.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_programmable_stage.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_shader_module.h"
 
 namespace blink {
@@ -17,10 +18,10 @@ WGPUComputePipelineDescriptor AsDawnType(
     GPUDevice* device,
     const GPUComputePipelineDescriptor* webgpu_desc,
     std::string* label,
-    OwnedProgrammableStageDescriptor* computeStageDescriptor) {
+    OwnedProgrammableStage* computeStage) {
   DCHECK(webgpu_desc);
   DCHECK(label);
-  DCHECK(computeStageDescriptor);
+  DCHECK(computeStage);
 
   WGPUComputePipelineDescriptor dawn_desc = {};
   dawn_desc.nextInChain = nullptr;
@@ -40,8 +41,13 @@ WGPUComputePipelineDescriptor AsDawnType(
     dawn_desc.label = label->c_str();
   }
 
-  *computeStageDescriptor = AsDawnType(webgpu_desc->compute());
-  dawn_desc.compute = std::get<0>(*computeStageDescriptor);
+  GPUProgrammableStage* programmable_stage_desc = webgpu_desc->compute();
+  GPUProgrammableStageAsWGPUProgrammableStage(programmable_stage_desc,
+                                              computeStage);
+  dawn_desc.compute.constantCount = computeStage->constantCount;
+  dawn_desc.compute.constants = computeStage->constants.get();
+  dawn_desc.compute.module = programmable_stage_desc->module()->GetHandle();
+  dawn_desc.compute.entryPoint = computeStage->entry_point.c_str();
 
   return dawn_desc;
 }
@@ -54,9 +60,9 @@ GPUComputePipeline* GPUComputePipeline::Create(
   DCHECK(webgpu_desc);
 
   std::string label;
-  OwnedProgrammableStageDescriptor computeStageDescriptor;
+  OwnedProgrammableStage computeStage;
   WGPUComputePipelineDescriptor dawn_desc =
-      AsDawnType(device, webgpu_desc, &label, &computeStageDescriptor);
+      AsDawnType(device, webgpu_desc, &label, &computeStage);
 
   GPUComputePipeline* pipeline = MakeGarbageCollected<GPUComputePipeline>(
       device, device->GetProcs().deviceCreateComputePipeline(

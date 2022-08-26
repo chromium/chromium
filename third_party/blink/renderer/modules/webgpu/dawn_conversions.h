@@ -22,7 +22,6 @@
 namespace blink {
 
 class GPUColorDict;
-class GPUProgrammableStage;
 class GPUImageCopyTexture;
 class GPUImageDataLayout;
 class V8UnionGPUAutoLayoutModeOrGPUPipelineLayout;
@@ -42,9 +41,6 @@ WGPUPipelineLayout AsDawnType(
 
 const char* ValidateTextureDataLayout(const GPUImageDataLayout* webgpu_layout,
                                       WGPUTextureDataLayout* layout);
-using OwnedProgrammableStageDescriptor =
-    std::tuple<WGPUProgrammableStageDescriptor, std::unique_ptr<char[]>>;
-OwnedProgrammableStageDescriptor AsDawnType(const GPUProgrammableStage*);
 
 // WebGPU objects are converted to Dawn objects by getting the opaque handle
 // which can be passed to Dawn.

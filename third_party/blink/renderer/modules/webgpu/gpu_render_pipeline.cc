@@ -169,11 +169,11 @@ WGPUMultisampleState AsDawnType(const GPUMultisampleState* webgpu_desc) {
 
 void AsDawnVertexBufferLayouts(GPUDevice* device,
                                const GPUVertexState* descriptor,
-                               OwnedRenderPipelineDescriptor* dawn_desc_info) {
+                               OwnedVertexState* dawn_desc_info) {
   DCHECK(descriptor);
   DCHECK(dawn_desc_info);
 
-  WGPUVertexState* dawn_vertex = &dawn_desc_info->dawn_desc.vertex;
+  WGPUVertexState* dawn_vertex = dawn_desc_info->dawn_desc;
   dawn_vertex->bufferCount = descriptor->buffers().size();
 
   if (dawn_vertex->bufferCount == 0) {
@@ -209,6 +209,25 @@ void AsDawnVertexBufferLayouts(GPUDevice* device,
   }
 }
 
+void GPUVertexStateAsWGPUVertexState(GPUDevice* device,
+                                     const GPUVertexState* descriptor,
+                                     OwnedVertexState* dawn_vertex) {
+  DCHECK(descriptor);
+  DCHECK(dawn_vertex);
+
+  *dawn_vertex->dawn_desc = {};
+  dawn_vertex->dawn_desc->nextInChain = nullptr;
+  GPUProgrammableStageAsWGPUProgrammableStage(descriptor, dawn_vertex);
+  dawn_vertex->dawn_desc->constantCount = dawn_vertex->constantCount;
+  dawn_vertex->dawn_desc->constants = dawn_vertex->constants.get();
+  dawn_vertex->dawn_desc->module = descriptor->module()->GetHandle();
+  dawn_vertex->dawn_desc->entryPoint = dawn_vertex->entry_point.c_str();
+
+  if (descriptor->hasBuffers()) {
+    AsDawnVertexBufferLayouts(device, descriptor, dawn_vertex);
+  }
+}
+
 void GPUFragmentStateAsWGPUFragmentState(GPUDevice* device,
                                          const GPUFragmentState* descriptor,
                                          OwnedFragmentState* dawn_fragment,
@@ -218,15 +237,12 @@ void GPUFragmentStateAsWGPUFragmentState(GPUDevice* device,
 
   dawn_fragment->dawn_desc = {};
   dawn_fragment->dawn_desc.nextInChain = nullptr;
+
+  GPUProgrammableStageAsWGPUProgrammableStage(descriptor, dawn_fragment);
+  dawn_fragment->dawn_desc.constantCount = dawn_fragment->constantCount;
+  dawn_fragment->dawn_desc.constants = dawn_fragment->constants.get();
   dawn_fragment->dawn_desc.module = descriptor->module()->GetHandle();
-
-  dawn_fragment->entry_point = descriptor->entryPoint().Utf8();
   dawn_fragment->dawn_desc.entryPoint = dawn_fragment->entry_point.c_str();
-
-  // TODO(crbug.com/dawn/1041): implement pipeline overridable constants when
-  // the spec is settled.
-  dawn_fragment->dawn_desc.constantCount = 0;
-  dawn_fragment->dawn_desc.constants = nullptr;
 
   dawn_fragment->dawn_desc.targets = nullptr;
   dawn_fragment->dawn_desc.targetCount =
@@ -288,22 +304,9 @@ void ConvertToDawnType(v8::Isolate* isolate,
 
   // Vertex
   const GPUVertexState* vertex = webgpu_desc->vertex();
-  WGPUVertexState* dawn_vertex = &dawn_desc_info->dawn_desc.vertex;
-  *dawn_vertex = {};
-
-  dawn_vertex->module = vertex->module()->GetHandle();
-
-  dawn_desc_info->vertex_entry_point = vertex->entryPoint().Utf8();
-  dawn_vertex->entryPoint = dawn_desc_info->vertex_entry_point.c_str();
-
-  // TODO(crbug.com/dawn/1041): implement pipeline overridable constants when
-  // the spec is settled.
-  dawn_vertex->constantCount = 0;
-  dawn_vertex->constants = nullptr;
-
-  if (vertex->hasBuffers()) {
-    AsDawnVertexBufferLayouts(device, vertex, dawn_desc_info);
-  }
+  OwnedVertexState* dawn_vertex = &dawn_desc_info->vertex;
+  dawn_vertex->dawn_desc = &dawn_desc_info->dawn_desc.vertex;
+  GPUVertexStateAsWGPUVertexState(device, vertex, dawn_vertex);
 
   // Primitive
   GPUPrimitiveStateAsWGPUPrimitiveState(
