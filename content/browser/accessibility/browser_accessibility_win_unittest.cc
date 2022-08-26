@@ -706,7 +706,7 @@ TEST_F(BrowserAccessibilityWinTest, TestComplexHypertext) {
   const std::u16string link_text_name = u"Blue";
   // Each control (combo / check box, button and link) will be represented by an
   // embedded object character.
-  const std::u16string embed(1, BrowserAccessibilityComWin::kEmbeddedCharacter);
+  const std::u16string embed(1, ui::AXPlatformNodeBase::kEmbeddedCharacter);
   const std::u16string root_hypertext =
       text1_name + embed + text2_name + embed + embed + embed;
   const LONG root_hypertext_len = root_hypertext.length();
@@ -2341,7 +2341,7 @@ TEST_F(BrowserAccessibilityWinTest, TestIAccessibleHyperlink) {
   base::win::ScopedBstr bstr;
 
   std::u16string div_hypertext(u"Click ");
-  div_hypertext.push_back(BrowserAccessibilityComWin::kEmbeddedCharacter);
+  div_hypertext.push_back(ui::AXPlatformNodeBase::kEmbeddedCharacter);
 
   // div_accessible and link_accessible are the only IA2 hyperlinks.
   EXPECT_HRESULT_FAILED(

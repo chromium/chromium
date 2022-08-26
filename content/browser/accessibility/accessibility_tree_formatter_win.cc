@@ -509,12 +509,12 @@ void AccessibilityTreeFormatterWin::AddIA2HypertextProperties(
     // Replace all embedded characters with the child indices of the
     // accessibility objects they refer to.
     std::wstring embedded_character = base::UTF16ToWide(
-        std::u16string(1, BrowserAccessibilityComWin::kEmbeddedCharacter));
+        std::u16string(1, ui::AXPlatformNodeBase::kEmbeddedCharacter));
     size_t character_index = 0;
     size_t hypertext_index = 0;
     while (hypertext_index < ia2_hypertext.length()) {
       if (ia2_hypertext[hypertext_index] !=
-          BrowserAccessibilityComWin::kEmbeddedCharacter) {
+          ui::AXPlatformNodeBase::kEmbeddedCharacter) {
         ++character_index;
         ++hypertext_index;
         continue;

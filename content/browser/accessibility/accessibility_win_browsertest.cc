@@ -3788,7 +3788,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   ASSERT_EQ(13, n_characters);
 
   const std::u16string embedded_character(
-      1, BrowserAccessibilityComWin::kEmbeddedCharacter);
+      1, ui::AXPlatformNodeBase::kEmbeddedCharacter);
   const std::wstring expected_hypertext =
       L"Before" + base::UTF16ToWide(embedded_character) + L"after.";
 
@@ -3961,7 +3961,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   Microsoft::WRL::ComPtr<IAccessibleText> paragraph_text;
   SetUpSampleParagraph(&paragraph_text);
   std::wstring embedded_character = base::UTF16ToWide(
-      std::u16string(1, BrowserAccessibilityComWin::kEmbeddedCharacter));
+      std::u16string(1, ui::AXPlatformNodeBase::kEmbeddedCharacter));
   std::vector<std::wstring> words = {
       L"Game ",    L"theory ",      L"is ",       L"\"",
       L"the ",     L"study ",       L"of ",       embedded_character,
