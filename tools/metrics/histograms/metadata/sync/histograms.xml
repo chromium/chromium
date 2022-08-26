@@ -531,6 +531,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Sync.Local.Enabled" enum="BooleanEnabled"
     expires_after="2023-02-19">
+  <owner>igorruvinov@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <component>Services&gt;Sync</component>
   <summary>
@@ -539,6 +540,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.Local.FileSizeKB" units="KB" expires_after="2023-01-15">
+  <owner>igorruvinov@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <component>Services&gt;Sync</component>
   <summary>
@@ -549,8 +551,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Sync.Local.ReadPlatformFileError" enum="PlatformFileError"
     expires_after="2023-01-29">
-  <owner>pastarmovj@chromium.org</owner>
   <owner>igorruvinov@chromium.org</owner>
+  <owner>pastarmovj@chromium.org</owner>
   <component>Services&gt;Sync</component>
   <summary>
     Error code describing failure to read persisted sync state from local file.
@@ -560,7 +562,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.Local.RoamingProfileUnavailable" enum="BooleanError"
-    expires_after="2022-09-11">
+    expires_after="2023-08-01">
+  <owner>igorruvinov@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <component>Services&gt;Sync</component>
   <summary>
