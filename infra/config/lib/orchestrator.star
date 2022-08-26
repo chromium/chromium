@@ -35,6 +35,7 @@ _COMPILATOR = nodes.create_node_type_with_builder_ref("compilator")
 # bucket-qualified names of the experimental orchestrators that can use the
 # compilator.
 _EXPERIMENTAL_ORCHESTRATOR_NAMES_BY_COMPILATOR_NAME = {
+    "try/linux-rel-compilator": ["try/linux-rel-inverse-fyi"],
 }
 
 def register_orchestrator(bucket, name, builder_group, compilator):

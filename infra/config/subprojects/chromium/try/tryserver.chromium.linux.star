@@ -696,6 +696,32 @@ try_.gpu.optional_tests_builder(
 )
 
 # RTS builders
+try_.orchestrator_builder(
+    name = "linux-rel-inverse-fyi",
+    compilator = "linux-rel-compilator",
+    check_for_flakiness = True,
+    mirrors = [
+        "ci/Linux Builder",
+        "ci/Linux Tests",
+        "ci/GPU Linux Builder",
+        "ci/Linux Release (NVIDIA)",
+    ],
+    try_settings = builder_config.try_settings(
+        rts_config = builder_config.rts_config(
+            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
+        ),
+    ),
+    use_clang_coverage = True,
+    coverage_test_types = ["unit", "overall"],
+    tryjob = try_.job(
+        experiment_percentage = 5,
+    ),
+    experiments = {
+        "remove_src_checkout_experiment": 100,
+        "chromium_rts.inverted_rts": 100,
+    },
+    use_orchestrator_pool = True,
+)
 
 # ML experimental builder, modifies RTS itself to use a ml model
 try_.builder(
