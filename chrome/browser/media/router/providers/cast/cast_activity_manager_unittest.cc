@@ -375,7 +375,7 @@ class CastActivityManagerTest : public testing::Test,
           mirroring_activity_callback_ = base::DoNothing();
         });
     // We expect EnsureConnection() to be called for both the sender client and
-    // |message_handler_.sender_id()|. The latter is captured in
+    // |message_handler_.source_id()|. The latter is captured in
     // ResolveMirroringSessionLaunch().
     //
     // CallLaunchSessionSuccess() calls VerifyAndClearExpectations() on
@@ -390,7 +390,7 @@ class CastActivityManagerTest : public testing::Test,
     // MediaRouter is notified of new route.
     ExpectSingleRouteUpdate();
     EXPECT_CALL(message_handler_,
-                EnsureConnection(kChannelId, message_handler_.sender_id(),
+                EnsureConnection(kChannelId, message_handler_.source_id(),
                                  "theTransportId",
                                  cast_channel::VirtualConnectionType::kStrong));
 

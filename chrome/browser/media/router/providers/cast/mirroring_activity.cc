@@ -298,6 +298,29 @@ void MirroringActivity::OnAppMessage(
     DVLOG(2) << "Ignoring message with namespace " << message.namespace_();
     return;
   }
+  CastSession* session = GetSession();
+  if (!session) {
+    DVLOG(2) << "No valid session.";
+    return;
+  }
+
+  if (message.destination_id() != session->destination_id() &&
+      message.destination_id() != "*") {
+    // Ignore messages sent to someone else.
+    DVLOG(2) << "Ignoring message intended for destination_id:\""
+             << message.destination_id() << "\" (expected \""
+             << session->destination_id() << "\").";
+    return;
+  }
+
+  if (message.source_id() != message_handler_->source_id()) {
+    // Ignore messages sent by a stranger.
+    DVLOG(2) << "Ignoring message unexpectedly sent by source_id: \""
+             << message.source_id() << "\" (expected \""
+             << message_handler_->source_id() << "\")";
+    return;
+  }
+
   DVLOG(2) << "Relaying app message from receiver: " << message.DebugString();
   DCHECK(message.has_payload_utf8());
   DCHECK_EQ(message.protocol_version(),
@@ -314,8 +337,6 @@ void MirroringActivity::OnAppMessage(
   mirroring::mojom::CastMessagePtr ptr = mirroring::mojom::CastMessage::New();
   ptr->message_namespace = message.namespace_();
   ptr->json_format_data = message.payload_utf8();
-  // TODO(crbug.com/1291712): Do something with message.source_id() and
-  // message.destination_id()?
   channel_to_service_->Send(std::move(ptr));
 }
 
@@ -386,8 +407,8 @@ void MirroringActivity::HandleParseJsonResult(
   }
 
   cast::channel::CastMessage cast_message = cast_channel::CreateCastMessage(
-      message_namespace, std::move(*result), message_handler_->sender_id(),
-      session->transport_id());
+      message_namespace, std::move(*result), message_handler_->source_id(),
+      session->destination_id());
   if (message_handler_->SendCastMessage(cast_data_.cast_channel_id,
                                         cast_message) == Result::kFailed) {
     logger_->LogError(

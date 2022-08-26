@@ -159,7 +159,7 @@ void CastActivity::CloseConnectionOnReceiver(const std::string& client_id) {
   if (!session)
     return;
   message_handler_->CloseConnection(cast_channel_id(), client_id,
-                                    session->transport_id());
+                                    session->destination_id());
 }
 
 void CastActivity::HandleLeaveSession(const std::string& client_id) {

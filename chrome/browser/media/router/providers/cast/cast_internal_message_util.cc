@@ -372,7 +372,7 @@ std::unique_ptr<CastSession> CastSession::From(
   const base::Value::Dict* app_dict = (*app_list_value)[0].GetIfDict();
   if (!app_dict || !GetString(*app_dict, "sessionId", &session->session_id_) ||
       !GetString(*app_dict, "appId", &session->app_id_) ||
-      !GetString(*app_dict, "transportId", &session->transport_id_) ||
+      !GetString(*app_dict, "transportId", &session->destination_id_) ||
       !GetString(*app_dict, "displayName", &session->display_name_)) {
     DVLOG(2) << "app_value missing mandatory fields: " << (*app_list_value)[0];
     return nullptr;
@@ -396,7 +396,7 @@ std::unique_ptr<CastSession> CastSession::From(
   base::Value::Dict session_dict;
   session_dict.Set("sessionId", session->session_id());
   session_dict.Set("appId", session->app_id());
-  session_dict.Set("transportId", session->transport_id());
+  session_dict.Set("transportId", session->destination_id());
   session_dict.Set("receiver", std::move(receiver_value));
 
   CopyValueWithDefault(*app_dict, "displayName", base::Value(""), session_dict);

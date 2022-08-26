@@ -171,8 +171,8 @@ class CastSession {
   // ID of the app in the session.
   const std::string& app_id() const { return app_id_; }
 
-  // ID used for communicating with the session over the Cast channel.
-  const std::string& transport_id() const { return transport_id_; }
+  // The ID of the Cast device this session is communicating with.
+  const std::string& destination_id() const { return destination_id_; }
 
   // The set of accepted message namespaces. Must be non-empty, unless the
   // session represents a multizone leader.
@@ -188,7 +188,7 @@ class CastSession {
  private:
   std::string session_id_;
   std::string app_id_;
-  std::string transport_id_;
+  std::string destination_id_;
   base::flat_set<std::string> message_namespaces_;
   base::Value value_;
 

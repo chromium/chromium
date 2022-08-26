@@ -68,7 +68,7 @@ CastMessageHandler::CastMessageHandler(CastSocketService* socket_service,
                                        const std::string& user_agent,
                                        const std::string& browser_version,
                                        const std::string& locale)
-    : sender_id_(base::StringPrintf("sender-%d", base::RandInt(0, 1000000))),
+    : source_id_(base::StringPrintf("sender-%d", base::RandInt(0, 1000000))),
       parse_json_(std::move(parse_json)),
       user_agent_(user_agent),
       browser_version_(browser_version),
@@ -159,7 +159,7 @@ void CastMessageHandler::RequestAppAvailability(
           std::make_unique<GetAppAvailabilityRequest>(
               request_id, std::move(callback), clock_, app_id))) {
     SendCastMessageToSocket(socket, CreateGetAppAvailabilityRequest(
-                                        sender_id_, request_id, app_id));
+                                        source_id_, request_id, app_id));
   }
 }
 
@@ -174,7 +174,7 @@ void CastMessageHandler::RequestReceiverStatus(int channel_id) {
 
   int request_id = NextRequestId();
   SendCastMessageToSocket(socket,
-                          CreateReceiverStatusRequest(sender_id_, request_id));
+                          CreateReceiverStatusRequest(source_id_, request_id));
 }
 
 Result CastMessageHandler::SendBroadcastMessage(
@@ -196,7 +196,7 @@ Result CastMessageHandler::SendBroadcastMessage(
   // Note: Even though the message is formatted like a request, we don't care
   // about the response, as broadcasts are fire-and-forget.
   CastMessage message =
-      CreateBroadcastRequest(sender_id_, request_id, app_ids, request);
+      CreateBroadcastRequest(source_id_, request_id, app_ids, request);
   if (message.ByteSizeLong() > kMaxCastMessagePayload) {
     return Result::kFailed;
   }
@@ -226,7 +226,7 @@ void CastMessageHandler::LaunchSession(
   DVLOG(2) << __func__ << ", channel_id: " << channel_id
            << ", request_id: " << request_id;
   CastMessage message = CreateLaunchRequest(
-      sender_id_, request_id, app_id, locale_, supported_app_types, app_params);
+      source_id_, request_id, app_id, locale_, supported_app_types, app_params);
   if (message.ByteSizeLong() > kMaxCastMessagePayload) {
     std::move(callback).Run(GetLaunchSessionResponseError(
         "Message size exceeds maximum cast channel message payload."));
@@ -259,7 +259,7 @@ void CastMessageHandler::StopSession(
   if (requests->AddStopRequest(std::make_unique<StopSessionRequest>(
           request_id, std::move(callback), clock_))) {
     SendCastMessageToSocket(
-        socket, CreateStopRequest(client_id.value_or(sender_id_), request_id,
+        socket, CreateStopRequest(client_id.value_or(source_id_), request_id,
                                   session_id));
   }
 }

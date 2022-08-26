@@ -301,7 +301,7 @@ TEST_F(CastMessageHandlerTest, RequestAppAvailability) {
   CastMessage response;
   response.set_namespace_("urn:x-cast:com.google.cast.receiver");
   response.set_source_id("receiver-0");
-  response.set_destination_id(handler_.sender_id());
+  response.set_destination_id(handler_.source_id());
   response.set_payload_type(
       CastMessage::PayloadType::CastMessage_PayloadType_STRING);
   response.set_payload_utf8(
@@ -417,7 +417,7 @@ TEST_F(CastMessageHandlerTest, LaunchSession) {
   CastMessage response;
   response.set_namespace_("urn:x-cast:com.google.cast.receiver");
   response.set_source_id("receiver-0");
-  response.set_destination_id(handler_.sender_id());
+  response.set_destination_id(handler_.source_id());
   response.set_payload_type(
       CastMessage::PayloadType::CastMessage_PayloadType_STRING);
   response.set_payload_utf8(

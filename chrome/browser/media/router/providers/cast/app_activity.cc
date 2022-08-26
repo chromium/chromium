@@ -73,7 +73,7 @@ cast_channel::Result AppActivity::SendAppMessageToReceiver(
       cast_channel_id(),
       cast_channel::CreateCastMessage(
           message_namespace, cast_message.app_message_body(),
-          cast_message.client_id(), session->transport_id()));
+          cast_message.client_id(), session->destination_id()));
 }
 
 absl::optional<int> AppActivity::SendMediaRequestToReceiver(
@@ -83,7 +83,7 @@ absl::optional<int> AppActivity::SendMediaRequestToReceiver(
     return absl::nullopt;
   return message_handler_->SendMediaRequest(
       cast_channel_id(), cast_message.v2_message_body(),
-      cast_message.client_id(), session->transport_id());
+      cast_message.client_id(), session->destination_id());
 }
 
 void AppActivity::SendSetVolumeRequestToReceiver(
@@ -118,7 +118,7 @@ void AppActivity::CreateMediaController(
                       cast_channel::V2MessageType::kMediaGetStatus>());
       message_handler_->SendMediaRequest(cast_channel_id(), status_request,
                                          media_controller_->sender_id(),
-                                         session->transport_id());
+                                         session->destination_id());
     }
   }
 }

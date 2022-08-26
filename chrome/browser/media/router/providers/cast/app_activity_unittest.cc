@@ -347,7 +347,7 @@ TEST_F(AppActivityTest, CloseConnectionOnReceiver) {
   AddMockClient("theClientId1");
 
   EXPECT_CALL(message_handler_, CloseConnection(kChannelId, "theClientId1",
-                                                session_->transport_id()));
+                                                session_->destination_id()));
   activity_->CloseConnectionOnReceiver("theClientId1");
 }
 

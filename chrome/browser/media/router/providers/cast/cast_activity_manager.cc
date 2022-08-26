@@ -359,7 +359,7 @@ void CastActivityManager::JoinSession(
       client_id,
       CreateNewSessionMessage(*session, client_id, *sink, hash_token_));
   message_handler_->EnsureConnection(sink->cast_data().cast_channel_id,
-                                     client_id, session->transport_id(),
+                                     client_id, session->destination_id(),
                                      cast_source.connection_type());
 
   // Route is now local; update route queries.
@@ -797,7 +797,7 @@ void CastActivityManager::HandleLaunchSessionResponse(
   const std::string& client_id = cast_source.client_id();
   std::string app_id = ChooseAppId(cast_source, params.sink);
   const auto channel_id = sink.cast_data().cast_channel_id;
-  const auto destination_id = session->transport_id();
+  const auto destination_id = session->destination_id();
 
   if (MediaSource(cast_source.source_id()).IsCastPresentationUrl()) {
     presentation_connection = activity_it->second->AddClient(
@@ -919,7 +919,7 @@ void CastActivityManager::EnsureConnection(const std::string& client_id,
   }
   if (cast_source.ContainsStreamingApp()) {
     message_handler_->EnsureConnection(
-        channel_id, message_handler_->sender_id(), destination_id,
+        channel_id, message_handler_->source_id(), destination_id,
         cast_channel::VirtualConnectionType::kStrong);
   }
 }

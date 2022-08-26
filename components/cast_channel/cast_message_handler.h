@@ -255,7 +255,7 @@ class CastMessageHandler : public CastSocket::Observer {
   void OnMessage(const CastSocket& socket, const CastMessage& message) override;
   void OnReadyStateChanged(const CastSocket& socket) override;
 
-  const std::string& sender_id() const { return sender_id_; }
+  const std::string& source_id() const { return source_id_; }
 
  private:
   friend class CastMessageHandlerTest;
@@ -327,7 +327,7 @@ class CastMessageHandler : public CastSocket::Observer {
 
   // Source ID used for platform messages. The suffix is randomized to
   // distinguish it from other Cast senders on the same network.
-  const std::string sender_id_;
+  const std::string source_id_;
 
   // Used for parsing JSON payload from receivers.
   ParseJsonCallback parse_json_;
