@@ -38,10 +38,6 @@ std::vector<mojom::CompositionSegmentPtr> ConvertSegments(
     mojom::CompositionSegmentPtr segment = mojom::CompositionSegment::New();
     segment->start_offset = ime_text_span.start_offset;
     segment->end_offset = ime_text_span.end_offset;
-    segment->emphasized =
-        (ime_text_span.thickness == ui::ImeTextSpan::Thickness::kThick ||
-         (composition.selection.start() == ime_text_span.start_offset &&
-          composition.selection.end() == ime_text_span.end_offset));
     segment->style = GetSegmentStyle(ime_text_span);
     segments.push_back(std::move(segment));
   }
@@ -150,14 +146,6 @@ void ArcImeBridgeImpl::OnTextInputTypeChanged(
                                     ConvertTextInputFlags(flags));
 }
 
-void ArcImeBridgeImpl::OnCursorRectChangedDeprecated(
-    const gfx::Rect& rect,
-    bool is_screen_coordinates) {
-  delegate_->OnCursorRectChanged(
-      rect, is_screen_coordinates ? mojom::CursorCoordinateSpace::SCREEN
-                                  : mojom::CursorCoordinateSpace::NOTIFICATION);
-}
-
 void ArcImeBridgeImpl::OnCursorRectChanged(
     const gfx::Rect& rect,
     mojom::CursorCoordinateSpace coordinate_space) {
@@ -170,18 +158,6 @@ void ArcImeBridgeImpl::OnCancelComposition() {
 
 void ArcImeBridgeImpl::ShowVirtualKeyboardIfEnabled() {
   delegate_->ShowVirtualKeyboardIfEnabled();
-}
-
-void ArcImeBridgeImpl::OnCursorRectChangedWithSurroundingTextDeprecated(
-    const gfx::Rect& rect,
-    const gfx::Range& text_range,
-    const std::string& text_in_range,
-    const gfx::Range& selection_range,
-    bool is_screen_coordinates) {
-  delegate_->OnCursorRectChangedWithSurroundingText(
-      rect, text_range, base::UTF8ToUTF16(text_in_range), selection_range,
-      is_screen_coordinates ? mojom::CursorCoordinateSpace::SCREEN
-                            : mojom::CursorCoordinateSpace::NOTIFICATION);
 }
 
 void ArcImeBridgeImpl::OnCursorRectChangedWithSurroundingText(

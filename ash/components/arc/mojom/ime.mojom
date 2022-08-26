@@ -81,7 +81,7 @@ struct KeyEventData {
   [MinVersion=20] bool is_alt_gr_down;
 };
 
-// Deprecated method IDs: 5, 6
+// Deprecated method IDs: 1, 4, 5, 6
 // Next method ID: 10
 interface ImeHost {
   // Notifies Chrome that the text input focus is changed.
@@ -90,11 +90,6 @@ interface ImeHost {
       TextInputType type,
       [MinVersion=10] bool is_personalized_learning_allowed,
       [MinVersion=11] int32 flags);
-
-  // DEPRECATED: Please use OnCursorRectChanged@8 instead.
-  OnCursorRectChangedDeprecated@1(
-      Rect rect,
-      [MinVersion=8] bool is_screen_coordinates);
 
   // Notifies Chrome that the cursor position has changed.
   //
@@ -109,14 +104,6 @@ interface ImeHost {
 
   // Show virtual keyboard of Chrome OS if needed.
   [MinVersion=2] ShowVirtualKeyboardIfEnabled@3();
-
-  // DEPRECATED: Please use OnCursorRectChangedWithSurroundingText@9 instead.
-  [MinVersion=5] OnCursorRectChangedWithSurroundingTextDeprecated@4(
-      Rect rect,
-      Range text_range,
-      string text_in_range,
-      Range selection_range,
-      [MinVersion=8] bool is_screen_coordinates);
 
   // Notifies Chrome that the cursor position has changed and
   // also sends surrounding text.
