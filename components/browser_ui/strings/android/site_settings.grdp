@@ -414,6 +414,9 @@
   <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_DESCRIPTION_DESKTOP_SITE_BLOCK" desc="The description for the request mobile view for a specific site dialog.">
     Always view mobile site
   </message>
+  <message name="IDS_WEBSITE_SETTINGS_DOMAIN_DESKTOP_SITE_EXCEPTION_CHECKBOX" translateable="false" desc="Summary text of a checkbox in the dialog to add a website to a list.">
+   Including all sites under this domain (recommended)
+  </message>
 
   <!-- Federated Identity -->
   <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_DESCRIPTION_FEDERATED_IDENTITY_ALLOW" desc="The description for the allow third-party sign-in for website dialog.">

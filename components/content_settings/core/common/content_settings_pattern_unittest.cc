@@ -532,7 +532,7 @@ TEST(ContentSettingsPatternTest, ToDomainWildcardPattern) {
   EXPECT_EQ("[*.]example.com", domain_wildcard_pattern.ToString());
 
   // Pattern with domain wildcard.
-  pattern = Pattern("[*.]example.com");
+  pattern = Pattern("https://[*.]example.com");
   domain_wildcard_pattern =
       ContentSettingsPattern::ToDomainWildcardPattern(pattern);
   EXPECT_TRUE(domain_wildcard_pattern.IsValid());
@@ -543,6 +543,48 @@ TEST(ContentSettingsPatternTest, ToDomainWildcardPattern) {
   domain_wildcard_pattern =
       ContentSettingsPattern::ToDomainWildcardPattern(pattern);
   EXPECT_FALSE(domain_wildcard_pattern.IsValid());
+}
+
+TEST(ContentSettingsPatternTest, ToHostOnlyPattern) {
+  // Patterns with scheme, port and path.
+  ContentSettingsPattern pattern =
+      Pattern("https://www.google.com:81/temporary/");
+  ContentSettingsPattern host_only_pattern =
+      ContentSettingsPattern::ToHostOnlyPattern(pattern);
+  EXPECT_TRUE(host_only_pattern.IsValid());
+  EXPECT_EQ("www.google.com", host_only_pattern.ToString());
+
+  // Pattern with host only.
+  pattern = Pattern("www.example.com");
+  host_only_pattern = ContentSettingsPattern::ToHostOnlyPattern(pattern);
+  EXPECT_TRUE(host_only_pattern.IsValid());
+  EXPECT_EQ("www.example.com", host_only_pattern.ToString());
+
+  // Pattern with domain wildcard.
+  pattern = Pattern("https://[*.]example.com");
+  host_only_pattern = ContentSettingsPattern::ToHostOnlyPattern(pattern);
+  EXPECT_TRUE(host_only_pattern.IsValid());
+  EXPECT_EQ("[*.]example.com", host_only_pattern.ToString());
+
+  // Pattern is an ip address.
+  pattern = Pattern("1.2.3.4");
+  host_only_pattern = ContentSettingsPattern::ToHostOnlyPattern(pattern);
+  EXPECT_TRUE(host_only_pattern.IsValid());
+  EXPECT_EQ("1.2.3.4", host_only_pattern.ToString());
+}
+
+TEST(ContentSettingsPatternTest, HasDomainWildcard) {
+  // Pattern with domain wildcard.
+  ContentSettingsPattern pattern = Pattern("[*.]example.com");
+  EXPECT_TRUE(pattern.HasDomainWildcard());
+
+  // Pattern with host wildcard.
+  pattern = Pattern("*");
+  EXPECT_FALSE(pattern.HasDomainWildcard());
+
+  // Patterns with scheme, port and path.
+  pattern = Pattern("https://www.google.com:81/temporary/");
+  EXPECT_FALSE(pattern.HasDomainWildcard());
 }
 
 TEST(ContentSettingsPatternTest, InvalidPatterns) {

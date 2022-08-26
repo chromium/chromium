@@ -482,6 +482,7 @@ bool ContentSettingsPattern::IsNonWildcardDomainNonPortScheme(
 // static
 ContentSettingsPattern ContentSettingsPattern::ToDomainWildcardPattern(
     const ContentSettingsPattern& pattern) {
+  DCHECK(pattern.IsValid());
   std::string registrable_domain =
       net::registry_controlled_domains::GetDomainAndRegistry(
           pattern.GetHost(),
@@ -498,6 +499,21 @@ ContentSettingsPattern ContentSettingsPattern::ToDomainWildcardPattern(
       ->WithPortWildcard()
       ->WithPathWildcard()
       ->Build();
+}
+
+// static
+ContentSettingsPattern ContentSettingsPattern::ToHostOnlyPattern(
+    const ContentSettingsPattern& pattern) {
+  DCHECK(pattern.IsValid());
+  auto builder = CreateBuilder();
+  builder->WithHost(pattern.GetHost());
+  builder->WithSchemeWildcard();
+  builder->WithPortWildcard();
+  builder->WithPathWildcard();
+  if (pattern.HasDomainWildcard()) {
+    builder->WithDomainWildcard();
+  }
+  return builder->Build();
 }
 
 ContentSettingsPattern::ContentSettingsPattern()
@@ -564,6 +580,10 @@ bool ContentSettingsPattern::Matches(
 
 bool ContentSettingsPattern::MatchesAllHosts() const {
   return parts_.has_domain_wildcard && parts_.host.empty();
+}
+
+bool ContentSettingsPattern::HasDomainWildcard() const {
+  return parts_.has_domain_wildcard && !parts_.host.empty();
 }
 
 std::string ContentSettingsPattern::ToString() const {

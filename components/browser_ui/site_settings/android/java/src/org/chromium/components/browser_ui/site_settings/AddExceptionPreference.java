@@ -123,28 +123,27 @@ public class AddExceptionPreference
                 (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.add_site_dialog, null);
         final EditText input = (EditText) view.findViewById(R.id.site);
-        final CheckBox thirdPartyExceptionsBox =
-                (CheckBox) view.findViewById(R.id.third_parties_exception_checkbox);
+        final CheckBox checkBox = (CheckBox) view.findViewById(R.id.add_site_dialog_checkbox);
 
-        if (mCategory.getType() != SiteSettingsCategory.Type.COOKIES) {
-            // TODO(crbug.com/1077766): Change the string of the checkbox to something like
-            // "including third-party cookies on this site".
-            thirdPartyExceptionsBox.setVisibility(View.GONE);
-            thirdPartyExceptionsBox.setChecked(false);
+        if (mCategory.getType() == SiteSettingsCategory.Type.COOKIES) {
+            checkBox.setVisibility(View.VISIBLE);
+            checkBox.setText(R.string.website_settings_third_party_cookies_exception_label);
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE) {
+            checkBox.setVisibility(View.VISIBLE);
+            checkBox.setText(R.string.website_settings_domain_desktop_site_exception_checkbox);
+            checkBox.setChecked(true);
         }
 
         DialogInterface.OnClickListener onClickListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int button) {
                 if (button == AlertDialog.BUTTON_POSITIVE) {
-                    boolean isThirdPartyException = thirdPartyExceptionsBox.isChecked();
+                    int categoryType = mCategory.getType();
+                    boolean isChecked = checkBox.isChecked();
                     String pattern = input.getText().toString().trim();
-                    pattern = updatePatternIfNeeded(pattern, mCategory.getType());
-
-                    // If a user clicks the third party checkbox, set wildcard as primary
-                    String primary = isThirdPartyException ? SITE_WILDCARD : pattern;
-                    String secondary = !isThirdPartyException ? SITE_WILDCARD : pattern;
-
+                    pattern = updatePatternIfNeeded(pattern, categoryType, isChecked);
+                    String primary = getPrimaryPattern(pattern, categoryType, isChecked);
+                    String secondary = getSecondaryPattern(pattern, categoryType, isChecked);
                     mSiteAddedCallback.onAddSite(primary, secondary);
                 } else {
                     dialog.dismiss();
@@ -206,11 +205,33 @@ public class AddExceptionPreference
     }
 
     @VisibleForTesting
-    static String updatePatternIfNeeded(@NonNull String pattern, int type) {
+    static String updatePatternIfNeeded(@NonNull String pattern, int type, boolean isChecked) {
         if (type != SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE) {
             return pattern;
         }
-        return WebsitePreferenceBridge.toDomainWildcardPattern(pattern);
+        if (isChecked) {
+            return WebsitePreferenceBridge.toDomainWildcardPattern(pattern);
+        } else {
+            return WebsitePreferenceBridge.toHostOnlyPattern(pattern);
+        }
+    }
+
+    @VisibleForTesting
+    static String getPrimaryPattern(@NonNull String pattern, int type, boolean isChecked) {
+        if (type != SiteSettingsCategory.Type.COOKIES) {
+            return pattern;
+        }
+        // If a user clicks the third party checkbox, set wildcard as primary.
+        return isChecked ? SITE_WILDCARD : pattern;
+    }
+
+    @VisibleForTesting
+    static String getSecondaryPattern(@NonNull String pattern, int type, boolean isChecked) {
+        if (type != SiteSettingsCategory.Type.COOKIES) {
+            return SITE_WILDCARD;
+        }
+        // If a user clicks the third party checkbox, set pattern as secondary.
+        return isChecked ? pattern : SITE_WILDCARD;
     }
 
     @VisibleForTesting

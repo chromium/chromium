@@ -194,6 +194,10 @@ class ContentSettingsPattern {
   static ContentSettingsPattern ToDomainWildcardPattern(
       const ContentSettingsPattern& pattern);
 
+  // Convert pattern to host only pattern.
+  static ContentSettingsPattern ToHostOnlyPattern(
+      const ContentSettingsPattern& pattern);
+
   // Constructs an empty pattern. Empty patterns are invalid patterns. Invalid
   // patterns match nothing.
   ContentSettingsPattern();
@@ -206,6 +210,9 @@ class ContentSettingsPattern {
 
   // True if this pattern matches all hosts (i.e. it has a host wildcard).
   bool MatchesAllHosts() const;
+
+  // True if this pattern has domain wildcard.
+  bool HasDomainWildcard() const;
 
   // Returns a std::string representation of this pattern.
   std::string ToString() const;

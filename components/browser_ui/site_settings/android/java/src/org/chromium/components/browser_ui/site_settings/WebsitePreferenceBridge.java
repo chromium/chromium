@@ -362,6 +362,15 @@ public class WebsitePreferenceBridge {
         return WebsitePreferenceBridgeJni.get().toDomainWildcardPattern(pattern);
     }
 
+    /**
+     * Convert pattern to host only pattern.
+     * @param pattern The original pattern to be converted to host only pattern.
+     * @return The host only pattern.
+     */
+    public static String toHostOnlyPattern(String pattern) {
+        return WebsitePreferenceBridgeJni.get().toHostOnlyPattern(pattern);
+    }
+
     @NativeMethods
     public interface Natives {
         boolean isNotificationEmbargoedForOrigin(
@@ -424,5 +433,6 @@ public class WebsitePreferenceBridge {
                 BrowserContextHandle browserContextHandle, int contentSettingType);
         boolean getLocationAllowedByPolicy(BrowserContextHandle browserContextHandle);
         String toDomainWildcardPattern(String pattern);
+        String toHostOnlyPattern(String pattern);
     }
 }

@@ -963,11 +963,25 @@ JNI_WebsitePreferenceBridge_ToDomainWildcardPattern(
     JNIEnv* env,
     const JavaParamRef<jstring>& pattern) {
   std::string pattern_string = ConvertJavaStringToUTF8(env, pattern);
+  ContentSettingsPattern original_pattern =
+      ContentSettingsPattern::FromString(pattern_string);
   ContentSettingsPattern domain_wildcard_pattern =
-      ContentSettingsPattern::ToDomainWildcardPattern(
-          ContentSettingsPattern::FromString(pattern_string));
+      ContentSettingsPattern::ToDomainWildcardPattern(original_pattern);
   std::string domain_wildcard_pattern_string =
-      domain_wildcard_pattern.IsValid() ? domain_wildcard_pattern.ToString()
-                                        : pattern_string;
+      domain_wildcard_pattern.IsValid()
+          ? domain_wildcard_pattern.ToString()
+          : ContentSettingsPattern::ToHostOnlyPattern(original_pattern)
+                .ToString();
   return ConvertUTF8ToJavaString(env, domain_wildcard_pattern_string);
+}
+
+static ScopedJavaLocalRef<jstring>
+JNI_WebsitePreferenceBridge_ToHostOnlyPattern(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& pattern) {
+  std::string pattern_string = ConvertJavaStringToUTF8(env, pattern);
+  ContentSettingsPattern host_only_pattern =
+      ContentSettingsPattern::ToHostOnlyPattern(
+          ContentSettingsPattern::FromString(pattern_string));
+  return ConvertUTF8ToJavaString(env, host_only_pattern.ToString());
 }

@@ -18,10 +18,10 @@
         android:hint="@string/example_url"
         android:inputType="textNoSuggestions" />
 
-    <!-- A checkbox to decide if this exception applies for third-party cookies. -->
-    <CheckBox android:id="@+id/third_parties_exception_checkbox"
+    <!-- A checkbox to decide how this exception is applied. -->
+    <CheckBox android:id="@+id/add_site_dialog_checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/website_settings_third_party_cookies_exception_label" />
+        android:visibility="gone" />
 
 </LinearLayout>

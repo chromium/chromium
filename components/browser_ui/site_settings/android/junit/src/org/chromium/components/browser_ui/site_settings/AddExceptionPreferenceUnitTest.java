@@ -12,6 +12,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.SITE_WILDCARD;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -77,11 +79,65 @@ public class AddExceptionPreferenceUnitTest {
         assertEquals("Pattern should not be updated except for REQUEST_DESKTOP_SITE type.",
                 "maps.google.com",
                 AddExceptionPreference.updatePatternIfNeeded(
-                        "maps.google.com", SiteSettingsCategory.Type.COOKIES));
+                        "maps.google.com", SiteSettingsCategory.Type.COOKIES, true));
+        assertEquals("Pattern should not be updated except for REQUEST_DESKTOP_SITE type.",
+                "maps.google.com",
+                AddExceptionPreference.updatePatternIfNeeded(
+                        "maps.google.com", SiteSettingsCategory.Type.COOKIES, false));
 
         AddExceptionPreference.updatePatternIfNeeded(
-                "https://maps.google.com", SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE);
+                "https://maps.google.com", SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE, true);
         verify(mWebsitePreferenceBridgeJniMock)
                 .toDomainWildcardPattern(eq("https://maps.google.com"));
+
+        AddExceptionPreference.updatePatternIfNeeded(
+                "https://maps.google.com", SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE, false);
+        verify(mWebsitePreferenceBridgeJniMock).toHostOnlyPattern(eq("https://maps.google.com"));
+    }
+
+    @Test
+    public void testGetPrimaryPattern() {
+        assertEquals(
+                "Primary pattern should always be the original pattern except for COOKIES type.",
+                "maps.google.com",
+                AddExceptionPreference.getPrimaryPattern(
+                        "maps.google.com", SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE, true));
+        assertEquals(
+                "Primary pattern should always be the original pattern except for COOKIES type.",
+                "maps.google.com",
+                AddExceptionPreference.getPrimaryPattern(
+                        "maps.google.com", SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE, false));
+        assertEquals(
+                "Primary pattern should be wildcard for COOKIES type if user clicks the third party checkbox.",
+                SITE_WILDCARD,
+                AddExceptionPreference.getPrimaryPattern(
+                        "maps.google.com", SiteSettingsCategory.Type.COOKIES, true));
+        assertEquals(
+                "Primary pattern should be the original pattern for COOKIES type if user does not click the third party checkbox.",
+                "maps.google.com",
+                AddExceptionPreference.getPrimaryPattern(
+                        "maps.google.com", SiteSettingsCategory.Type.COOKIES, false));
+    }
+
+    @Test
+    public void testGetSecondaryPattern() {
+        assertEquals("Secondary pattern should always be wildcard except for COOKIES type.",
+                SITE_WILDCARD,
+                AddExceptionPreference.getSecondaryPattern(
+                        "maps.google.com", SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE, true));
+        assertEquals("Secondary pattern should always be wildcard except for COOKIES type.",
+                SITE_WILDCARD,
+                AddExceptionPreference.getSecondaryPattern(
+                        "maps.google.com", SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE, false));
+        assertEquals(
+                "Secondary pattern should be the original pattern for COOKIES type if user clicks the third party checkbox.",
+                "maps.google.com",
+                AddExceptionPreference.getSecondaryPattern(
+                        "maps.google.com", SiteSettingsCategory.Type.COOKIES, true));
+        assertEquals(
+                "Secondary pattern should be wildcard for COOKIES type if user does not click the third party checkbox.",
+                SITE_WILDCARD,
+                AddExceptionPreference.getSecondaryPattern(
+                        "maps.google.com", SiteSettingsCategory.Type.COOKIES, false));
     }
 }
