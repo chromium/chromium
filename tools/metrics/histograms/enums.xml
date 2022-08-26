@@ -79269,7 +79269,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="20" label="kInitiatorOriginTrialFeature"/>
   <int value="21" label="kHrefTranslate"/>
   <int value="22" label="kIsHistoryNavigationInNewChildFrame"/>
-  <int value="23" label="kReferrerPolicy"/>
+  <int value="23" label="kReferrerPolicy (Obsolete)"/>
   <int value="24" label="kRequestDestination"/>
 </enum>
 

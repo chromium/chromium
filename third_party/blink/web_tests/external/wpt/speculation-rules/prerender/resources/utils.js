@@ -350,9 +350,15 @@ async function addPrerenderRC(referrerRemoteContext) {
  * @param {RemoteContextWrapper} prerenderedRC - The `RemoteContextWrapper`
  *     pointing to the prerendered content. This is monitored to ensure the
  *     navigation results in a prerendering activation.
+ * @param {(string) => Promise<undefined>} [navigateFn] - An optional function
+ *     to customize the navigation. It will be passed the URL of the prerendered
+ *     content, and will run as a script in `referrerRC` (see
+ *     `RemoteContextWrapper.prototype.executeScript`). If not given, navigation
+ *     will be done via the `location.href` setter (see
+ *     `RemoteContextWrapper.prototype.navigateTo`).
  * @returns {Promise<undefined>}
  */
-async function activatePrerenderRC(referrerRC, prerenderedRC) {
+async function activatePrerenderRC(referrerRC, prerenderedRC, navigateFn) {
   // Store a promise that will fulfill when the prerenderingchange event fires.
   await prerenderedRC.executeScript(() => {
     window.activatedPromise = new Promise(resolve => {
@@ -360,8 +366,11 @@ async function activatePrerenderRC(referrerRC, prerenderedRC) {
     });
   });
 
-  // Activate the prerendered page.
-  referrerRC.navigateTo(prerenderedRC.url);
+  if (navigateFn === undefined) {
+    referrerRC.navigateTo(prerenderedRC.url);
+  } else {
+    referrerRC.navigate(navigateFn, [prerenderedRC.url]);
+  }
 
   // Wait until that event fires. If the activation fails and a normal
   // navigation happens instead, then prerenderedRC will start pointing to that

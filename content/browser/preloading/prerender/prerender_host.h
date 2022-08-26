@@ -108,7 +108,7 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused. This enum corresponds to
   // PrerenderActivationNavigationParamsMatch in
-  // tools/metrics/histograms/test_data/enums.xml
+  // tools/metrics/histograms/enums.xml
   enum class ActivationNavigationParamsMatch {
     kOk = 0,
     kInitiatorFrameToken = 1,
@@ -133,7 +133,7 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
     kInitiatorOriginTrialFeature = 20,
     kHrefTranslate = 21,
     kIsHistoryNavigationInNewChildFrame = 22,
-    kReferrerPolicy = 23,
+    // kReferrerPolicy = 23,  Obsolete
     kRequestDestination = 24,
     kMaxValue = kRequestDestination,
   };

@@ -966,14 +966,14 @@ TEST_F(PrerenderHostRegistryTest,
 
 TEST_F(PrerenderHostRegistryTest,
        CompareInitialAndActivationCommonParams_ReferrerPolicy) {
-  EXPECT_FALSE(CheckIsActivatedForParams(
+  EXPECT_TRUE(CheckIsActivatedForParams(
       base::BindLambdaForTesting([&](NavigationSimulatorImpl* navigation) {
         navigation->SetReferrer(blink::mojom::Referrer::New(
             web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL(),
             network::mojom::ReferrerPolicy::kAlways));
       })));
   ExpectUniqueSampleOfActivationNavigationParamsMatch(
-      PrerenderHost::ActivationNavigationParamsMatch::kReferrerPolicy);
+      PrerenderHost::ActivationNavigationParamsMatch::kOk);
 }
 
 // End navigation parameter matching tests ---------
