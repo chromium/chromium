@@ -100,4 +100,14 @@ InMemoryClientHintsControllerDelegate::GetUserAgentMetadata() {
   return user_agent_metadata_;
 }
 
+void InMemoryClientHintsControllerDelegate::SetMostRecentMainFrameViewportSize(
+    const gfx::Size& viewport_size) {
+  viewport_size_ = viewport_size;
+}
+
+gfx::Size
+InMemoryClientHintsControllerDelegate::GetMostRecentMainFrameViewportSize() {
+  return viewport_size_;
+}
+
 }  // namespace client_hints

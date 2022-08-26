@@ -12,6 +12,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/client_hints_controller_delegate.h"
+#include "ui/gfx/geometry/size_f.h"
 
 class GURL;
 class HostContentSettingsMap;
@@ -62,6 +63,10 @@ class ClientHints : public KeyedService,
 
   void ClearAdditionalClientHints() override;
 
+  void SetMostRecentMainFrameViewportSize(
+      const gfx::Size& viewport_size) override;
+  gfx::Size GetMostRecentMainFrameViewportSize() override;
+
  private:
   raw_ptr<content::BrowserContext> context_ = nullptr;
   raw_ptr<network::NetworkQualityTracker> network_quality_tracker_ = nullptr;
@@ -69,6 +74,11 @@ class ClientHints : public KeyedService,
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   std::vector<network::mojom::WebClientHintsType> additional_hints_;
   raw_ptr<PrefService> pref_service_;
+
+  // This stores the viewport size of the most recent visible main frame tree
+  // node. This value is only used when the viewport size cannot be directly
+  // queried such as for prefetch requests and for tab restores.
+  gfx::Size viewport_size_;
 };
 
 }  // namespace client_hints

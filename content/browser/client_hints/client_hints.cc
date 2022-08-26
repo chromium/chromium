@@ -274,76 +274,102 @@ void AddSaveDataHeader(net::HttpRequestHeaders* headers,
     SetHeaderToString(headers, WebClientHintsType::kSaveData, "on");
 }
 
-void AddViewportWidthHeader(net::HttpRequestHeaders* headers,
-                            BrowserContext* context,
-                            const GURL& url,
-                            bool use_deprecated_version = false) {
-  DCHECK(headers);
-  DCHECK(context);
-  // The default value on Android. See
-  // https://cs.chromium.org/chromium/src/third_party/WebKit/Source/core/css/viewportAndroid.css.
-  double viewport_width = 980;
+RenderWidgetHostView* GetRenderWidgetHostViewFromFrameTreeNode(
+    FrameTreeNode* frame_tree_node) {
+  if (!frame_tree_node || !frame_tree_node->current_frame_host())
+    return nullptr;
+
+  return frame_tree_node->current_frame_host()->GetView();
+}
+
+gfx::Size GetViewportSize(FrameTreeNode* frame_tree_node,
+                          ClientHintsControllerDelegate* delegate) {
+  // If possible, return the current viewport size.
+  RenderWidgetHostView* view =
+      GetRenderWidgetHostViewFromFrameTreeNode(frame_tree_node);
+  if (view) {
+    return view->GetVisibleViewportSize();
+  }
+
+  // Otherwise, use the cached viewport size if it is valid (both dimensions are
+  // greater than zero).
+  gfx::Size cached_viewport_size =
+      delegate->GetMostRecentMainFrameViewportSize();
+  if (cached_viewport_size.width() > 0 && cached_viewport_size.height() > 0) {
+    return cached_viewport_size;
+  }
+
+  // Finally, use the display size if neither of the above methods work.
+  return display::Screen::GetScreen()->GetPrimaryDisplay().GetSizeInPixel();
+}
+
+gfx::Size GetScaledViewportSize(BrowserContext* context,
+                                const GURL& url,
+                                FrameTreeNode* frame_tree_node,
+                                ClientHintsControllerDelegate* delegate) {
+  gfx::Size viewport_size = GetViewportSize(frame_tree_node, delegate);
 
 #if BUILDFLAG(IS_ANDROID)
+  // On Android, the viewport is scaled so the width is 980. See
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/css/viewportAndroid.css.
+  // TODO(1246208): Improve the usefulness of the viewport client hints for
+  // navigation requests.
+  if (viewport_size.width() > 0) {
+    viewport_size =
+        ScaleToRoundedSize(viewport_size, 980.0 / viewport_size.width());
+  }
+
   // On Android, use the default value when the AccessibilityPageZoom
   // feature is not enabled.
   if (!base::FeatureList::IsEnabled(features::kAccessibilityPageZoom)) {
-    SetHeaderToInt(headers,
-                   use_deprecated_version
-                       ? WebClientHintsType::kViewportWidth_DEPRECATED
-                       : WebClientHintsType::kViewportWidth,
-                   viewport_width);
-    return;
+    return viewport_size;
   }
 #endif
 
-  double device_scale_factor = GetDeviceScaleFactor();
-  viewport_width = (display::Screen::GetScreen()
-                        ->GetPrimaryDisplay()
-                        .GetSizeInPixel()
-                        .width()) /
-                   GetZoomFactor(context, url) / device_scale_factor;
-  DCHECK_LT(0, viewport_width);
+  double scale_factor = GetZoomFactor(context, url) * GetDeviceScaleFactor();
+  if (scale_factor > 0) {
+    viewport_size = ScaleToRoundedSize(viewport_size, 1.0 / scale_factor);
+  }
+  return viewport_size;
+}
+
+void AddViewportWidthHeader(net::HttpRequestHeaders* headers,
+                            BrowserContext* context,
+                            const GURL& url,
+                            FrameTreeNode* frame_tree_node,
+                            ClientHintsControllerDelegate* delegate,
+                            bool use_deprecated_version = false) {
+  DCHECK(headers);
+  DCHECK(context);
+
+  gfx::Size viewport_size =
+      GetScaledViewportSize(context, url, frame_tree_node, delegate);
+
+  DCHECK_LT(0, viewport_size.width());
   // TODO(yoav): Find out why this 0 check is needed...
-  if (viewport_width > 0) {
+  if (viewport_size.width() > 0) {
     SetHeaderToInt(headers,
                    use_deprecated_version
                        ? WebClientHintsType::kViewportWidth_DEPRECATED
                        : WebClientHintsType::kViewportWidth,
-                   viewport_width);
+                   viewport_size.width());
   }
 }
 
 void AddViewportHeightHeader(net::HttpRequestHeaders* headers,
                              BrowserContext* context,
-                             const GURL& url) {
+                             const GURL& url,
+                             FrameTreeNode* frame_tree_node,
+                             ClientHintsControllerDelegate* delegate) {
   DCHECK(headers);
   DCHECK(context);
 
-  double overall_scale_factor =
-      GetZoomFactor(context, url) * GetDeviceScaleFactor();
-  double viewport_height = (display::Screen::GetScreen()
-                                ->GetPrimaryDisplay()
-                                .GetSizeInPixel()
-                                .height()) /
-                           overall_scale_factor;
-#if BUILDFLAG(IS_ANDROID)
-  // On Android, the viewport is scaled so the width is 980 and the height
-  // maintains the same ratio.
-  // TODO(1246208): Improve the usefulness of the viewport client hints for
-  // navigation requests.
-  double viewport_width = (display::Screen::GetScreen()
-                               ->GetPrimaryDisplay()
-                               .GetSizeInPixel()
-                               .width()) /
-                          overall_scale_factor;
-  viewport_height *= 980.0 / viewport_width;
-#endif  // BUILDFLAG(IS_ANDROID)
+  gfx::Size viewport_size =
+      GetScaledViewportSize(context, url, frame_tree_node, delegate);
 
-  DCHECK_LT(0, viewport_height);
-
+  DCHECK_LT(0, viewport_size.height());
   SetHeaderToInt(headers, network::mojom::WebClientHintsType::kViewportHeight,
-                 viewport_height);
+                 viewport_size.height());
 }
 
 void AddRttHeader(net::HttpRequestHeaders* headers,
@@ -916,15 +942,15 @@ void AddRequestClientHintsHeaders(
   }
   if (ShouldAddClientHint(data,
                           WebClientHintsType::kViewportWidth_DEPRECATED)) {
-    AddViewportWidthHeader(headers, context, url,
+    AddViewportWidthHeader(headers, context, url, frame_tree_node, delegate,
                            /*use_deprecated_version*/ true);
   }
   if (ShouldAddClientHint(data, WebClientHintsType::kViewportWidth)) {
-    AddViewportWidthHeader(headers, context, url);
+    AddViewportWidthHeader(headers, context, url, frame_tree_node, delegate);
   }
   if (ShouldAddClientHint(
           data, network::mojom::WebClientHintsType::kViewportHeight)) {
-    AddViewportHeightHeader(headers, context, url);
+    AddViewportHeightHeader(headers, context, url, frame_tree_node, delegate);
   }
   network::NetworkQualityTracker* network_quality_tracker =
       delegate->GetNetworkQualityTracker();

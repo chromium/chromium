@@ -107,6 +107,7 @@
 #include "components/blocked_content/popup_opener_tab_helper.h"
 #include "components/breadcrumbs/core/breadcrumbs_status.h"
 #include "components/captive_portal/core/buildflags.h"
+#include "components/client_hints/browser/client_hints_web_contents_observer.h"
 #include "components/commerce/content/browser/commerce_tab_helper.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
@@ -326,6 +327,8 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
       autofill::ChromeAutofillClient::FromWebContents(web_contents));
   CreateSubresourceFilterWebContentsHelper(web_contents);
   ChromeTranslateClient::CreateForWebContents(web_contents);
+  client_hints::ClientHintsWebContentsObserver::CreateForWebContents(
+      web_contents);
   commerce::CommerceTabHelper::CreateForWebContents(
       web_contents, profile->IsOffTheRecord(),
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile),
