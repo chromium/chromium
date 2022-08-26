@@ -149,10 +149,12 @@ void LiveCaptionUnavailabilityNotifier::
           ->GetPrefs();
   ListPrefUpdate update(
       prefs, prefs::kLiveCaptionMediaFoundationRendererErrorSilenced);
+  base::Value::List& update_list = update->GetList();
   if (checked) {
-    update->Append(render_frame_host().GetLastCommittedOrigin().Serialize());
+    update_list.Append(
+        render_frame_host().GetLastCommittedOrigin().Serialize());
   } else {
-    update->EraseListValueIf([&](const base::Value& value) {
+    update_list.EraseIf([&](const base::Value& value) {
       return value.GetString() ==
              render_frame_host().GetLastCommittedOrigin().Serialize();
     });
