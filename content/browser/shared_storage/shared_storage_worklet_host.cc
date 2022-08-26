@@ -23,6 +23,7 @@
 #include "content/common/renderer.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
 namespace content {
 
@@ -501,6 +502,19 @@ void SharedStorageWorkletHost::ConsoleLog(const std::string& message) {
   devtools_instrumentation::LogWorkletMessage(
       static_cast<RenderFrameHostImpl&>(document_service_->render_frame_host()),
       blink::mojom::ConsoleMessageLevel::kInfo, message);
+}
+
+void SharedStorageWorkletHost::RecordUseCounters(
+    const std::vector<blink::mojom::WebFeature>& features) {
+  // If the worklet host has outlived the page, we unfortunately can't count the
+  // feature.
+  if (!page_)
+    return;
+
+  for (blink::mojom::WebFeature feature : features) {
+    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+        &page_->GetMainDocument(), feature);
+  }
 }
 
 void SharedStorageWorkletHost::OnAddModuleOnWorkletFinished(

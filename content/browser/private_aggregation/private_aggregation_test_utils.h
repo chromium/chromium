@@ -111,6 +111,10 @@ class MockPrivateAggregationContentBrowserClient
                const url::Origin& top_frame_origin,
                const url::Origin& reporting_origin),
               (override));
+  MOCK_METHOD(void,
+              LogWebFeatureForCurrentPage,
+              (content::RenderFrameHost*, blink::mojom::WebFeature),
+              (override));
 };
 
 bool operator==(const PrivateAggregationBudgetKey::TimeWindow&,

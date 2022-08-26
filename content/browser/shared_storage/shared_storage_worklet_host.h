@@ -15,6 +15,7 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-forward.h"
 #include "url/origin.h"
 
 namespace content {
@@ -82,7 +83,7 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // keep-alive phase.
   void EnterKeepAliveOnDocumentDestroyed(KeepAliveFinishedCallback callback);
 
-  // shared_storage_worklet::mojom::SharedStorageWorkletServiceClient.
+  // shared_storage_worklet::mojom::SharedStorageWorkletServiceClient:
   void SharedStorageSet(const std::u16string& key,
                         const std::u16string& value,
                         bool ignore_if_present,
@@ -105,6 +106,8 @@ class CONTENT_EXPORT SharedStorageWorkletHost
           pending_listener) override;
   void SharedStorageLength(SharedStorageLengthCallback callback) override;
   void ConsoleLog(const std::string& message) override;
+  void RecordUseCounters(
+      const std::vector<blink::mojom::WebFeature>& features) override;
 
   const url::Origin& shared_storage_origin_for_testing() const {
     return shared_storage_origin_;

@@ -113,8 +113,8 @@ void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
       .Check();
 
   if (private_aggregation_host) {
-    private_aggregation_ =
-        std::make_unique<PrivateAggregation>(*private_aggregation_host);
+    private_aggregation_ = std::make_unique<PrivateAggregation>(
+        *client, *private_aggregation_host);
     global
         ->Set(context, gin::StringToSymbol(Isolate(), "privateAggregation"),
               private_aggregation_->GetWrapper(Isolate()).ToLocalChecked())

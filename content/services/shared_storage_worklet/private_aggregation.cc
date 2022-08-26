@@ -17,6 +17,7 @@
 #include "gin/dictionary.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-external.h"
@@ -91,8 +92,9 @@ absl::optional<absl::uint128> ConvertBigIntToUint128(
 }  // namespace
 
 PrivateAggregation::PrivateAggregation(
+    mojom::SharedStorageWorkletServiceClient& client,
     content::mojom::PrivateAggregationHost& private_aggregation_host)
-    : private_aggregation_host_(private_aggregation_host) {}
+    : client_(client), private_aggregation_host_(private_aggregation_host) {}
 
 PrivateAggregation::~PrivateAggregation() = default;
 
@@ -110,6 +112,13 @@ const char* PrivateAggregation::GetTypeName() {
 }
 
 void PrivateAggregation::SendHistogramReport(gin::Arguments* args) {
+  if (!has_recorded_use_counters_) {
+    has_recorded_use_counters_ = true;
+    client_->RecordUseCounters(
+        {blink::mojom::WebFeature::kPrivateAggregationApiAll,
+         blink::mojom::WebFeature::kPrivateAggregationApiSharedStorage});
+  }
+
   v8::Isolate* isolate = args->isolate();
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
 

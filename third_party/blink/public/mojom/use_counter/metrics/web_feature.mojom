@@ -3651,6 +3651,9 @@ enum WebFeature {
   kFlexboxAbsPosJustifyContent = 4330,
   kMultipleFetchHandlersInServiceWorker = 4331,
   kStorageAccessAPI_requestStorageAccessForSite_Method = 4332,
+  kPrivateAggregationApiAll = 4333,
+  kPrivateAggregationApiFledge = 4334,
+  kPrivateAggregationApiSharedStorage = 4335,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
