@@ -20,6 +20,7 @@ class AutofillProfileSpecifics;
 class AutofillSpecifics;
 class AutofillOfferSpecifics;
 class AutofillWalletSpecifics;
+class AutofillWalletUsageSpecifics;
 class BookmarkSpecifics;
 class ClientConfigParams;
 class ClientToServerMessage;
@@ -109,6 +110,10 @@ std::unique_ptr<base::DictionaryValue> AutofillSpecificsToValue(
 
 std::unique_ptr<base::DictionaryValue> AutofillWalletSpecificsToValue(
     const sync_pb::AutofillWalletSpecifics& autofill_wallet_specifics);
+
+std::unique_ptr<base::DictionaryValue> AutofillWalletUsageSpecificsToValue(
+    const sync_pb::AutofillWalletUsageSpecifics&
+        autofill_wallet_usage_specifics);
 
 std::unique_ptr<base::DictionaryValue> BookmarkSpecificsToValue(
     const sync_pb::BookmarkSpecifics& bookmark_specifics);

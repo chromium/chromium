@@ -72,6 +72,8 @@ enum ModelType {
   // Offers and rewards from the user's account. These are read-only on the
   // client side.
   AUTOFILL_WALLET_OFFER,
+  // Autofill usage data of a payment method related to a specific merchant.
+  AUTOFILL_WALLET_USAGE,
   // A theme object.
   THEMES,
   // A typed_url object, i.e. a URL the user has typed into the Omnibox.
@@ -239,7 +241,8 @@ enum class ModelTypeForHistograms {
   kHistory = 51,
   kPrintersAuthorizationServers = 52,
   kContactInfo = 53,
-  kMaxValue = kContactInfo
+  kAutofillWalletUsage = 54,
+  kMaxValue = kAutofillWalletUsage
 };
 
 // Used to mark the type of EntitySpecifics that has no actual data.
@@ -256,13 +259,14 @@ constexpr ModelTypeSet ProtocolTypes() {
   return ModelTypeSet(
       BOOKMARKS, PREFERENCES, PASSWORDS, AUTOFILL_PROFILE, AUTOFILL,
       AUTOFILL_WALLET_DATA, AUTOFILL_WALLET_METADATA, AUTOFILL_WALLET_OFFER,
-      THEMES, TYPED_URLS, EXTENSIONS, SEARCH_ENGINES, SESSIONS, APPS,
-      APP_SETTINGS, EXTENSION_SETTINGS, HISTORY_DELETE_DIRECTIVES, DICTIONARY,
-      DEVICE_INFO, PRIORITY_PREFERENCES, SUPERVISED_USER_SETTINGS, APP_LIST,
-      ARC_PACKAGE, PRINTERS, READING_LIST, USER_EVENTS, NIGORI, USER_CONSENTS,
-      SEND_TAB_TO_SELF, SECURITY_EVENTS, WEB_APPS, WIFI_CONFIGURATIONS,
-      OS_PREFERENCES, OS_PRIORITY_PREFERENCES, SHARING_MESSAGE, WORKSPACE_DESK,
-      HISTORY, PRINTERS_AUTHORIZATION_SERVERS, CONTACT_INFO);
+      AUTOFILL_WALLET_USAGE, THEMES, TYPED_URLS, EXTENSIONS,
+      SEARCH_ENGINES, SESSIONS, APPS, APP_SETTINGS, EXTENSION_SETTINGS,
+      HISTORY_DELETE_DIRECTIVES, DICTIONARY, DEVICE_INFO, PRIORITY_PREFERENCES,
+      SUPERVISED_USER_SETTINGS, APP_LIST, ARC_PACKAGE, PRINTERS, READING_LIST,
+      USER_EVENTS, NIGORI, USER_CONSENTS, SEND_TAB_TO_SELF, SECURITY_EVENTS,
+      WEB_APPS, WIFI_CONFIGURATIONS, OS_PREFERENCES, OS_PRIORITY_PREFERENCES,
+      SHARING_MESSAGE, WORKSPACE_DESK, HISTORY, PRINTERS_AUTHORIZATION_SERVERS,
+      CONTACT_INFO);
 }
 
 // These are the normal user-controlled types. This is to distinguish from
