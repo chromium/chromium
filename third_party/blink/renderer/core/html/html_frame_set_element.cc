@@ -129,6 +129,7 @@ void HTMLFrameSetElement::ParseAttribute(
         frameborder_set_ = true;
       } else if (EqualIgnoringASCIICase(value, "yes") ||
                  EqualIgnoringASCIICase(value, "1")) {
+        frameborder_ = true;
         frameborder_set_ = true;
       }
     } else {
@@ -136,6 +137,10 @@ void HTMLFrameSetElement::ParseAttribute(
       frameborder_set_ = false;
     }
     DirtyEdgeInfoAndFullPaintInvalidation();
+    for (auto& frame_set :
+         Traversal<HTMLFrameSetElement>::DescendantsOf(*this)) {
+      frame_set.DirtyEdgeInfoAndFullPaintInvalidation();
+    }
   } else if (name == html_names::kNoresizeAttr) {
     DirtyEdgeInfo();
   } else if (name == html_names::kBorderAttr) {
@@ -272,6 +277,14 @@ void HTMLFrameSetElement::ParseAttribute(
   } else {
     HTMLElement::ParseAttribute(params);
   }
+}
+
+bool HTMLFrameSetElement::HasFrameBorder() const {
+  if (frameborder_set_)
+    return frameborder_;
+  if (const auto* frame_set = DynamicTo<HTMLFrameSetElement>(parentNode()))
+    return frame_set->HasFrameBorder();
+  return true;
 }
 
 bool HTMLFrameSetElement::NoResize() const {
@@ -412,9 +425,7 @@ void HTMLFrameSetElement::AttachLayoutTree(AttachContext& context) {
   // FIXME: This is not dynamic.
   if (HTMLFrameSetElement* frameset =
           Traversal<HTMLFrameSetElement>::FirstAncestor(*this)) {
-    if (!frameborder_set_)
-      frameborder_ = frameset->HasFrameBorder();
-    if (frameborder_) {
+    if (HasFrameBorder()) {
       if (!border_set_)
         border_ = frameset->HasFrameBorder() ? frameset->border_ : 0;
     }

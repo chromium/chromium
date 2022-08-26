@@ -43,7 +43,7 @@ class HTMLFrameSetElement final : public HTMLElement {
   // HTMLElement override
   bool IsHTMLFrameSetElement() const override { return true; }
 
-  bool HasFrameBorder() const { return frameborder_; }
+  bool HasFrameBorder() const;
   bool NoResize() const;
 
   wtf_size_t TotalRows() const {
