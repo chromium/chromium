@@ -945,6 +945,18 @@ if (!is_ios) {
       ]
     }
 
+    if (is_chromeos) {
+      sources += [ "feedback/content/content_tracing_manager_browsertest.cc" ]
+      deps += [
+        "//base",
+        "//base/test:test_support",
+        "//components/feedback",
+        "//components/feedback/content",
+        "//testing/gmock",
+        "//testing/gtest",
+      ]
+    }
+
     if (enable_basic_printing) {
       sources += [ "printing/test/print_render_frame_helper_browsertest.cc" ]
       deps += [

@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 
@@ -50,6 +51,7 @@ class ContentTracingManager : public TracingManager {
 
   void StartTracing();
   void OnTraceDataCollected(std::unique_ptr<std::string> data);
+  void OnTraceDataCompressed(scoped_refptr<base::RefCountedString> data);
 
   // ID of the trace that is being collected.
   int current_trace_id_ = 0;
