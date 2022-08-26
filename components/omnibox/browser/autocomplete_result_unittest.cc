@@ -106,7 +106,7 @@ class AutocompleteResultTest : public testing::Test {
     AutocompleteMatchType::Type type{AutocompleteMatchType::SEARCH_SUGGEST};
 
     // Suggestion Group ID for this suggestion
-    absl::optional<SuggestionGroupId> suggestion_group_id;
+    absl::optional<omnibox::GroupId> suggestion_group_id;
 
     // Inline autocompletion.
     std::string inline_autocompletion;
@@ -1857,8 +1857,8 @@ TEST_F(AutocompleteResultTest, SortAndCull_DemoteSuggestionGroups_ExceedLimit) {
       {{omnibox::kDynamicMaxAutocomplete,
         omnibox::kRetainSuggestionsWithHeaders}});
 
-  const auto group_1 = SuggestionGroupId::kNonPersonalizedZeroSuggest1;
-  const auto group_2 = SuggestionGroupId::kNonPersonalizedZeroSuggest2;
+  const auto group_1 = omnibox::GroupId::POLARIS_RESERVED_1;
+  const auto group_2 = omnibox::GroupId::POLARIS_RESERVED_2;
   TestData data[] = {
       {0, 4, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group_1},
       {1, 2, 600, false, {}, AutocompleteMatchType::HISTORY_URL},
@@ -1993,8 +1993,8 @@ TEST_F(AutocompleteResultTest,
        {omnibox::kRetainSuggestionsWithHeaders, {}}},
       {{omnibox::kDynamicMaxAutocomplete}});
 
-  const auto group_1 = SuggestionGroupId::kNonPersonalizedZeroSuggest1;
-  const auto group_2 = SuggestionGroupId::kNonPersonalizedZeroSuggest2;
+  const auto group_1 = omnibox::GroupId::POLARIS_RESERVED_1;
+  const auto group_2 = omnibox::GroupId::POLARIS_RESERVED_2;
   TestData data[] = {
       {1, 1, 1100, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
       {2, 1, 1099, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
@@ -2071,8 +2071,8 @@ TEST_F(AutocompleteResultTest,
        {omnibox::kRetainSuggestionsWithHeaders, {}}},
       {});
 
-  const auto group_1 = SuggestionGroupId::kNonPersonalizedZeroSuggest1;
-  const auto group_2 = SuggestionGroupId::kNonPersonalizedZeroSuggest2;
+  const auto group_1 = omnibox::GroupId::POLARIS_RESERVED_1;
+  const auto group_2 = omnibox::GroupId::POLARIS_RESERVED_2;
   TestData data[] = {
       {1, 1, 1100, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},
       {2, 1, 1099, true, {}, AutocompleteMatchType::SEARCH_SUGGEST},

@@ -87,7 +87,7 @@ class OmniboxRowView::HeaderView : public views::View {
     }
   }
 
-  void SetHeader(SuggestionGroupId suggestion_group_id,
+  void SetHeader(omnibox::GroupId suggestion_group_id,
                  const std::u16string& header_text) {
     suggestion_group_id_ = suggestion_group_id;
     header_text_ = header_text;
@@ -245,7 +245,7 @@ class OmniboxRowView::HeaderView : public views::View {
   raw_ptr<views::ToggleImageButton> header_toggle_button_;
 
   // The group ID associated with this header.
-  SuggestionGroupId suggestion_group_id_ = SuggestionGroupId::kInvalid;
+  omnibox::GroupId suggestion_group_id_ = omnibox::GroupId::INVALID;
 
   // The unmodified header text for this header.
   std::u16string header_text_;
@@ -329,7 +329,7 @@ OmniboxRowView::OmniboxRowView(size_t line,
   result_view_ = AddChildView(std::move(result_view));
 }
 
-void OmniboxRowView::ShowHeader(SuggestionGroupId suggestion_group_id,
+void OmniboxRowView::ShowHeader(omnibox::GroupId suggestion_group_id,
                                 const std::u16string& header_text) {
   // Create the header (at index 0) if it doesn't exist.
   if (header_view_ == nullptr)

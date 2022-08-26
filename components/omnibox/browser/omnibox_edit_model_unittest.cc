@@ -741,10 +741,10 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
   matches[3].has_tab_match = true;
   matches[3].deletable = true;
   // Make match index 4 have a suggestion_group_id to test header behavior.
-  const auto kNewGroupId = SuggestionGroupId::kNonPersonalizedZeroSuggest1;
+  const auto kNewGroupId = omnibox::GroupId::POLARIS_RESERVED_1;
   matches[4].suggestion_group_id = kNewGroupId;
   // Make match index 5 have a suggestion_group_id but no header text.
-  matches[5].suggestion_group_id = SuggestionGroupId::kHistoryCluster;
+  matches[5].suggestion_group_id = omnibox::GroupId::HISTORY_CLUSTER;
 
   auto* result = &model()->autocomplete_controller()->result_;
   result->AppendMatches(matches);
@@ -752,7 +752,7 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
   SuggestionGroupsMap suggestion_groups_map;
   suggestion_groups_map[kNewGroupId].group_config_info.set_header_text(
       "header");
-  suggestion_groups_map[SuggestionGroupId::kHistoryCluster]
+  suggestion_groups_map[omnibox::GroupId::HISTORY_CLUSTER]
       .group_config_info.set_header_text("");
 
   // Do not set the original_group_id on purpose to test that default visibility
@@ -836,7 +836,7 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelectionWithHiddenGroupIds) {
   }
 
   // Hide the second two matches.
-  const auto kNewGroupId = SuggestionGroupId::kNonPersonalizedZeroSuggest1;
+  const auto kNewGroupId = omnibox::GroupId::POLARIS_RESERVED_1;
   matches[2].suggestion_group_id = kNewGroupId;
   matches[3].suggestion_group_id = kNewGroupId;
 
@@ -914,7 +914,7 @@ TEST_F(OmniboxEditModelPopupTest, PopupInlineAutocompleteAndTemporaryText) {
   matches[0].inline_autocompletion = u"1";
   matches[1].fill_into_edit = u"a2";
   matches[2].fill_into_edit = u"a3";
-  const auto kNewGroupId = SuggestionGroupId::kNonPersonalizedZeroSuggest1;
+  const auto kNewGroupId = omnibox::GroupId::POLARIS_RESERVED_1;
   matches[2].suggestion_group_id = kNewGroupId;
 
   auto* result = &model()->autocomplete_controller()->result_;

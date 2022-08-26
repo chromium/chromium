@@ -10,6 +10,7 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/omnibox_proto/group_config_info.pb.h"
+#include "third_party/omnibox_proto/group_id.pb.h"
 
 // Determines the order in which suggestion groups appear in the final displayed
 // list relative to one another. A higher numeric value places a given group
@@ -34,44 +35,17 @@ enum class SuggestionGroupPriority {
   kRemoteZeroSuggest10 = 10,
 };
 
-// These values uniquely identify the suggestion groups in SuggestionGroupsMap.
-//
-// Use a fixed underlying int type for this enum to ensure its values can be
-// safely converted to primitive integer types, namely in SearchSuggestionParser
-// and for Android and WebUI.
-// TODO(crbug.com/1343512): Investigate migrating this enum to a proto enum
-// to make these conversions safer.
-enum class SuggestionGroupId : int {
-  // SuggestionGroupIds::INVALID in suggestion_config.proto.
-  kInvalid = -1,
-  // Reserved for non-personalized zero-prefix suggestions. These values don't
-  // match the reserved range for these suggestions in suggestion_config.proto.
-  // Produced by SearchSuggestionParser.
-  kNonPersonalizedZeroSuggest1 = 10000,
-  kNonPersonalizedZeroSuggest2 = 10001,
-  kNonPersonalizedZeroSuggest3 = 10002,
-  kNonPersonalizedZeroSuggest4 = 10003,
-  kNonPersonalizedZeroSuggest5 = 10004,
-  kNonPersonalizedZeroSuggest6 = 10005,
-  kNonPersonalizedZeroSuggest7 = 10006,
-  kNonPersonalizedZeroSuggest8 = 10007,
-  kNonPersonalizedZeroSuggest9 = 10008,
-  kNonPersonalizedZeroSuggest10 = 10009,
-  // SuggestionGroupIds::PERSONALIZED_HISTORY_GROUP in suggestion_config.proto.
-  // Found in server response. Also Produced by LocalHistoryZeroSuggestProvider.
-  kPersonalizedZeroSuggest = 40000,
-
-  // Produced by HistoryClusterProvider.
-  kHistoryCluster = 100000,
-};
-
-// This allows using SuggestionGroupId as the key in SuggestionGroupsMap.
-struct SuggestionGroupIdHash {
+// This allows using omnibox::GroupId as the key in SuggestionGroupsMap.
+struct GroupIdHash {
   template <typename T>
   int operator()(T t) const {
     return static_cast<int>(t);
   }
 };
+
+// Returns the omnibox::GroupId enum object corresponding to |value|. Returns
+// omnibox::GroupId::INVALID when there is no corresponding enum object.
+omnibox::GroupId GroupIdForNumber(int value);
 
 // Contains the information about the suggestion groups.
 struct SuggestionGroup {
@@ -94,8 +68,8 @@ struct SuggestionGroup {
   omnibox::GroupConfigInfo group_config_info;
 };
 
-// A map of SuggestionGroupId to SuggestionGroup.
-using SuggestionGroupsMap = std::
-    unordered_map<SuggestionGroupId, SuggestionGroup, SuggestionGroupIdHash>;
+// A map of omnibox::GroupId to SuggestionGroup.
+using SuggestionGroupsMap =
+    std::unordered_map<omnibox::GroupId, SuggestionGroup, GroupIdHash>;
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_SUGGESTION_GROUP_H_

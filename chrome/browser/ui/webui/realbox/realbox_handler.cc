@@ -216,7 +216,7 @@ std::vector<realbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
     }
     mojom_match->destination_url = match.destination_url;
     mojom_match->suggestion_group_id = static_cast<int>(
-        match.suggestion_group_id.value_or(SuggestionGroupId::kInvalid));
+        match.suggestion_group_id.value_or(omnibox::GroupId::INVALID));
     const bool is_bookmarked =
         bookmark_model->IsBookmarked(match.destination_url);
     mojom_match->icon_url =
@@ -691,14 +691,12 @@ void RealboxHandler::DeleteAutocompleteMatch(uint8_t line) {
 
 void RealboxHandler::ToggleSuggestionGroupIdVisibility(
     int32_t suggestion_group_id) {
-  if (!autocomplete_controller_)
+  if (!autocomplete_controller_) {
     return;
+  }
 
-  // It should be safe to cast |suggestion_group_id| to SuggestionGroupId type,
-  // since the group ID was originally passed to the page by the browser.
-  // TODO(crbug.com/1343512): Investigate migrating this enum to a proto enum
-  // to take advantage of its built-in check for conversion from int32 type.
-  const auto& group_id = static_cast<SuggestionGroupId>(suggestion_group_id);
+  const auto& group_id = GroupIdForNumber(suggestion_group_id);
+  DCHECK_NE(omnibox::GroupId::INVALID, group_id);
   const bool current_visibility =
       autocomplete_controller_->result().IsSuggestionGroupHidden(
           profile_->GetPrefs(), group_id);

@@ -4,6 +4,13 @@
 
 #include "components/omnibox/browser/suggestion_group.h"
 
+omnibox::GroupId GroupIdForNumber(int value) {
+  if (!omnibox::GroupId_IsValid(value)) {
+    return omnibox::GroupId::INVALID;
+  }
+  return static_cast<omnibox::GroupId>(value);
+}
+
 void SuggestionGroup::MergeFrom(const SuggestionGroup& other) {
   if (priority == SuggestionGroupPriority::kDefault &&
       other.priority != SuggestionGroupPriority::kDefault) {

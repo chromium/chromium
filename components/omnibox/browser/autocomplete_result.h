@@ -236,7 +236,7 @@ class AutocompleteResult {
   // Returns the header string associated with |suggestion_group_id|.
   // DCHECKs whether |suggestion_group_id| is found in |suggestion_groups_map_|.
   std::u16string GetHeaderForSuggestionGroup(
-      SuggestionGroupId suggestion_group_id) const;
+      omnibox::GroupId suggestion_group_id) const;
 
   // Returns whether or not |suggestion_group_id| should be collapsed in the UI.
   // This method takes into account both the user's stored prefs as well as
@@ -245,20 +245,20 @@ class AutocompleteResult {
   // Returns false if the group info does not contain the original server
   // provided group ID.
   bool IsSuggestionGroupHidden(PrefService* prefs,
-                               SuggestionGroupId suggestion_group_id) const;
+                               omnibox::GroupId suggestion_group_id) const;
 
   // Sets the UI collapsed/expanded state of the |suggestion_group_id| in the
   // user's stored prefs based on the value of |hidden|.
   // DCHECKs whether |suggestion_group_id| is found in |suggestion_groups_map_|
   // and whether the group info contains the original server provided group ID.
   void SetSuggestionGroupHidden(PrefService* prefs,
-                                SuggestionGroupId suggestion_group_id,
+                                omnibox::GroupId suggestion_group_id,
                                 bool hidden) const;
 
   // Returns the priority associated with |suggestion_group_id|.
   // DCHECKs whether |suggestion_group_id| is found in |suggestion_groups_map_|.
   SuggestionGroupPriority GetPriorityForSuggestionGroup(
-      SuggestionGroupId suggestion_group_id) const;
+      omnibox::GroupId suggestion_group_id) const;
 
   // Updates |suggestion_groups_map_| with the suggestion groups information
   // from |suggeston_groups_map|. Followed by GroupAndDemoteMatchesInGroups()

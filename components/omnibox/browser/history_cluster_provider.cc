@@ -150,10 +150,10 @@ AutocompleteMatch HistoryClusterProvider::CreateMatch(std::u16string text) {
   match.contents_class.push_back(
       ACMatchClassification(0, ACMatchClassification::URL));
 
-  match.suggestion_group_id = SuggestionGroupId::kHistoryCluster;
+  match.suggestion_group_id = omnibox::GroupId::HISTORY_CLUSTER;
   // Insert a corresponding SuggestionGroup with default values in the
   // suggestion groups map; otherwise the group ID will get dropped.
-  suggestion_groups_map_[SuggestionGroupId::kHistoryCluster];
+  suggestion_groups_map_[omnibox::GroupId::HISTORY_CLUSTER];
 
   return match;
 }

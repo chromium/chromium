@@ -116,31 +116,31 @@ constexpr char kTypeIntFieldNumber[] = "4";
 constexpr char kStringValueFieldNumber[] = "2";
 
 constexpr auto kReservedGroupIdsMap =
-    base::MakeFixedFlatMap<int, SuggestionGroupId>(
-        {{0, SuggestionGroupId::kNonPersonalizedZeroSuggest1},
-         {1, SuggestionGroupId::kNonPersonalizedZeroSuggest2},
-         {2, SuggestionGroupId::kNonPersonalizedZeroSuggest3},
-         {3, SuggestionGroupId::kNonPersonalizedZeroSuggest4},
-         {4, SuggestionGroupId::kNonPersonalizedZeroSuggest5},
-         {5, SuggestionGroupId::kNonPersonalizedZeroSuggest6},
-         {6, SuggestionGroupId::kNonPersonalizedZeroSuggest7},
-         {7, SuggestionGroupId::kNonPersonalizedZeroSuggest8},
-         {8, SuggestionGroupId::kNonPersonalizedZeroSuggest9},
-         {9, SuggestionGroupId::kNonPersonalizedZeroSuggest10}});
+    base::MakeFixedFlatMap<int, omnibox::GroupId>(
+        {{0, omnibox::GroupId::POLARIS_RESERVED_1},
+         {1, omnibox::GroupId::POLARIS_RESERVED_2},
+         {2, omnibox::GroupId::POLARIS_RESERVED_3},
+         {3, omnibox::GroupId::POLARIS_RESERVED_4},
+         {4, omnibox::GroupId::POLARIS_RESERVED_5},
+         {5, omnibox::GroupId::POLARIS_RESERVED_6},
+         {6, omnibox::GroupId::POLARIS_RESERVED_7},
+         {7, omnibox::GroupId::POLARIS_RESERVED_8},
+         {8, omnibox::GroupId::POLARIS_RESERVED_9},
+         {9, omnibox::GroupId::POLARIS_RESERVED_10}});
 
 // Converts the given group ID to one known to Chrome based on its 0-based index
 // in the server response.
-SuggestionGroupId ChromeGroupIdForRemoteGroupIdAndIndex(const int group_id,
-                                                        const int group_index) {
+omnibox::GroupId ChromeGroupIdForRemoteGroupIdAndIndex(const int group_id,
+                                                       const int group_index) {
   if (group_id ==
-      static_cast<int>(SuggestionGroupId::kPersonalizedZeroSuggest)) {
+      static_cast<int>(omnibox::GroupId::PERSONALIZED_ZERO_SUGGEST)) {
     // The group ID for personalized zero-suggest is already known to Chrome.
-    return SuggestionGroupId::kPersonalizedZeroSuggest;
+    return omnibox::GroupId::PERSONALIZED_ZERO_SUGGEST;
   } else if (base::Contains(kReservedGroupIdsMap, group_index)) {
     return kReservedGroupIdsMap.at(group_index);
   } else {
     // Return an invalid group ID if we don't have any reserved IDs left.
-    return SuggestionGroupId::kInvalid;
+    return omnibox::GroupId::INVALID;
   }
 }
 
@@ -550,7 +550,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
   int prefetch_index = -1;
   int prerender_index = -1;
   std::unordered_map<int, SuggestionGroup> parsed_suggestion_groups_map;
-  std::unordered_map<int, SuggestionGroupId> chrome_group_ids_map;
+  std::unordered_map<int, omnibox::GroupId> chrome_group_ids_map;
 
   if (root_list.size() > 4u && root_list[4].is_dict()) {
     const base::Value& extras = root_list[4];
@@ -833,7 +833,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
           // reserved group IDs to assign.
           const auto chrome_group_id = ChromeGroupIdForRemoteGroupIdAndIndex(
               *suggestion_group_id, group_index);
-          if (chrome_group_id == SuggestionGroupId::kInvalid) {
+          if (chrome_group_id == omnibox::GroupId::INVALID) {
             continue;
           }
 
@@ -873,7 +873,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
     // Convert the server-provided group ID to one known to Chrome.
     const auto chrome_group_id =
         ChromeGroupIdForRemoteGroupIdAndIndex(entry.first, group_index);
-    if (chrome_group_id == SuggestionGroupId::kInvalid) {
+    if (chrome_group_id == omnibox::GroupId::INVALID) {
       continue;
     }
 

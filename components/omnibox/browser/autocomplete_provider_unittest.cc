@@ -334,7 +334,7 @@ class AutocompleteProviderTest : public testing::Test {
 
   struct SuggestionGroupsTestData {
     SuggestionGroupsMap suggestion_groups_map;
-    std::vector<absl::optional<SuggestionGroupId>> suggestion_group_ids;
+    std::vector<absl::optional<omnibox::GroupId>> suggestion_group_ids;
   };
 
   struct AssistedQueryStatsTestData {
@@ -869,16 +869,14 @@ TEST_F(AutocompleteProviderTest, ExactMatchKeywords) {
 TEST_F(AutocompleteProviderTest, SuggestionGroups) {
   ResetControllerWithKeywordAndSearchProviders();
 
-  const auto kRecommendedGroupId =
-      SuggestionGroupId::kNonPersonalizedZeroSuggest1;
+  const auto kRecommendedGroupId = omnibox::GroupId::POLARIS_RESERVED_1;
   const std::string kRecommended = "Recommended for you";
-  const auto kRecentSearchesGroupId =
-      SuggestionGroupId::kNonPersonalizedZeroSuggest2;
+  const auto kRecentSearchesGroupId = omnibox::GroupId::POLARIS_RESERVED_2;
   const std::string kRecentSearches = "Recent Searches";
 
   // This exists to verify that suggestion group IDs without associated
   // suggestion groups information are stripped away.
-  const auto kBadSuggestionGroupId = SuggestionGroupId::kInvalid;
+  const auto kBadGroupId = omnibox::GroupId::INVALID;
 
   {
     // Headers are optional for suggestion groups.
@@ -964,11 +962,11 @@ TEST_F(AutocompleteProviderTest, SuggestionGroups) {
         .group_config_info.set_header_text(kRecentSearches);
     UpdateResultsWithSuggestionGroupsTestData({std::move(suggestion_groups_map),
                                                {
-                                                   {kBadSuggestionGroupId},
+                                                   {kBadGroupId},
                                                    {kRecentSearchesGroupId},
                                                    {kRecommendedGroupId},
-                                                   {kBadSuggestionGroupId},
-                                                   {kBadSuggestionGroupId},
+                                                   {kBadGroupId},
+                                                   {kBadGroupId},
                                                }});
 
     EXPECT_FALSE(result_.match_at(0)->suggestion_group_id.has_value());
