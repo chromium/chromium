@@ -1604,43 +1604,6 @@
             ]
         }
     ],
-    "AutofillServerTypeTakesPrecedence": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillServerTypeTakesPrecedence"
-                    ]
-                }
-            ]
-        }
-    ],
-    "AutofillServerTypeTakesPrecedenceOnWebView": [
-        {
-            "platforms": [
-                "android_weblayer",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillServerTypeTakesPrecedence"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillShadowDOM": [
         {
             "platforms": [

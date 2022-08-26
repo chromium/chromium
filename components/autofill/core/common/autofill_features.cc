@@ -360,7 +360,7 @@ const base::Feature kAutofillHighlightOnlyChangedValuesInPreviewMode{
 // granted precedence over html type attributes.
 // TODO(crbug.com/1170384) Remove once launched
 const base::Feature kAutofillServerTypeTakesPrecedence{
-    "AutofillServerTypeTakesPrecedence", base::FEATURE_DISABLED_BY_DEFAULT};
+    "AutofillServerTypeTakesPrecedence", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // When enabled, Autofill suggestions are displayed in the keyboard accessory
 // instead of the regular popup.
