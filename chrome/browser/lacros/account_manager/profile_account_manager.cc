@@ -100,7 +100,7 @@ ProfileAccountManager::CreateAccessTokenFetcher(
 void ProfileAccountManager::ReportAuthError(
     const account_manager::AccountKey& account,
     const GoogleServiceAuthError& error) {
-  NOTIMPLEMENTED();
+  mapper_->ReportAuthError(profile_path_, account, error);
 }
 
 void ProfileAccountManager::UpsertAccountForTesting(
