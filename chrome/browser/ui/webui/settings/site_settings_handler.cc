@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/page_info/page_info_infobar_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/settings/recent_site_settings_helper.h"
+#include "chrome/browser/ui/webui/settings/review_notification_permissions_helper.h"
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
@@ -577,6 +578,11 @@ void SiteSettingsHandler::RegisterMessages() {
       "getChooserExceptionList",
       base::BindRepeating(&SiteSettingsHandler::HandleGetChooserExceptionList,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getReviewNotificationPermissions",
+      base::BindRepeating(
+          &SiteSettingsHandler::HandleGetReviewNotificationPermissions,
+          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "getOriginPermissions",
       base::BindRepeating(&SiteSettingsHandler::HandleGetOriginPermissions,
@@ -1216,6 +1222,32 @@ void SiteSettingsHandler::HandleGetOriginPermissions(
   }
 
   ResolveJavascriptCallback(callback_id, exceptions);
+}
+
+void SiteSettingsHandler::HandleGetReviewNotificationPermissions(
+    const base::Value::List& args) {
+  AllowJavascript();
+
+  const base::Value& callback_id = args[0];
+
+  auto review_notification_permissions =
+      site_settings::GetReviewNotificationPermissions(profile_);
+
+  base::Value::List result;
+  for (const auto& notification_permission : review_notification_permissions) {
+    base::Value::Dict permission;
+    permission.Set(site_settings::kOrigin, notification_permission.origin);
+
+    std::string notification_info_string =
+        base::UTF16ToUTF8(l10n_util::GetPluralStringFUTF16(
+            IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_COUNT_LABEL,
+            notification_permission.notification_count));
+    permission.Set(site_settings::kNotificationInfoString,
+                   notification_info_string);
+    result.Append(std::move(permission));
+  }
+
+  ResolveJavascriptCallback(callback_id, base::Value(std::move(result)));
 }
 
 void SiteSettingsHandler::HandleSetOriginPermissions(

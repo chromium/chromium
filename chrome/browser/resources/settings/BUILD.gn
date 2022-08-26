@@ -182,6 +182,7 @@ build_webui("build") {
     "privacy_page/privacy_guide/privacy_guide_welcome_fragment.ts",
     "privacy_page/privacy_guide/step_indicator.ts",
     "privacy_page/privacy_page.ts",
+    "privacy_page/review_notification_permissions.ts",
     "privacy_page/secure_dns.ts",
     "privacy_page/secure_dns_input.ts",
     "privacy_page/security_keys_bio_enroll_dialog.ts",

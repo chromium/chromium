@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {MetricsReporting, PrivacyPageBrowserProxy, ResolverOption, SecureDnsMode, SecureDnsSetting, SecureDnsUiManagementMode} from 'chrome://settings/settings.js';
+import {NotificationPermission, MetricsReporting, PrivacyPageBrowserProxy, ResolverOption, SecureDnsMode, SecureDnsSetting, SecureDnsUiManagementMode} from 'chrome://settings/settings.js';
 import {assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -14,6 +14,7 @@ export class TestPrivacyPageBrowserProxy extends TestBrowserProxy implements
   metricsReporting: MetricsReporting;
   secureDnsSetting: SecureDnsSetting;
   private resolverList_: ResolverOption[];
+  private reviewNotificationList_: NotificationPermission[];
   private isValidConfigResults_: {[config: string]: boolean} = {};
   private probeConfigResults_: {[config: string]: boolean} = {};
 
@@ -28,6 +29,7 @@ export class TestPrivacyPageBrowserProxy extends TestBrowserProxy implements
       'isValidConfig',
       'probeConfig',
       'recordUserDropdownInteraction',
+      'getReviewNotificationPermissions',
     ]);
 
     this.metricsReporting = {
@@ -42,6 +44,8 @@ export class TestPrivacyPageBrowserProxy extends TestBrowserProxy implements
     };
 
     this.resolverList_ = [{name: 'Custom', value: 'custom', policy: ''}];
+
+    this.reviewNotificationList_ = [];
   }
 
   getMetricsReporting() {
@@ -67,6 +71,11 @@ export class TestPrivacyPageBrowserProxy extends TestBrowserProxy implements
    */
   setResolverList(resolverList: ResolverOption[]) {
     this.resolverList_ = resolverList;
+  }
+
+  setReviewNotificationPermissions(reviewNotificationList:
+                                       NotificationPermission[]) {
+    this.reviewNotificationList_ = reviewNotificationList;
   }
 
   getSecureDnsResolverList() {
@@ -112,5 +121,10 @@ export class TestPrivacyPageBrowserProxy extends TestBrowserProxy implements
   recordUserDropdownInteraction(oldSelection: string, newSelection: string) {
     this.methodCalled(
         'recordUserDropdownInteraction', [oldSelection, newSelection]);
+  }
+
+  getReviewNotificationPermissions(): Promise<NotificationPermission[]> {
+    this.methodCalled('getReviewNotificationPermissions');
+    return Promise.resolve(this.reviewNotificationList_.slice());
   }
 }

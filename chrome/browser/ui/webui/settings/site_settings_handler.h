@@ -218,6 +218,8 @@ class SiteSettingsHandler
   // Returns the list of chooser exceptions for a given chooser type.
   void HandleGetChooserExceptionList(const base::Value::List& args);
 
+  void HandleGetReviewNotificationPermissions(const base::Value::List& args);
+
   // Gets and sets a list of ContentSettingTypes for an origin.
   // TODO(https://crbug.com/739241): Investigate replacing the
   // '*CategoryPermissionForPattern' equivalents below with these methods.

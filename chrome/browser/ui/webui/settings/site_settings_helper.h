@@ -68,6 +68,7 @@ constexpr char kPolicyIndicator[] = "indicator";
 constexpr char kSource[] = "source";
 constexpr char kType[] = "type";
 constexpr char kIsEmbargoed[] = "isEmbargoed";
+constexpr char kNotificationInfoString[] = "notificationInfoString";
 
 enum class SiteSettingSource {
   kAllowlist,

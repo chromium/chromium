@@ -785,6 +785,27 @@ TEST_F('CrSettingsSiteDataDetailsSubpageTest', 'All', function() {
   mocha.run();
 });
 
+var CrSettingsReviewNotificationPermissionsTest =
+    class extends CrSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=settings/review_notification_permissions_test.js';
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled: [
+        'features::kSafetyCheckPermissions',
+      ],
+    };
+  }
+};
+
+TEST_F('CrSettingsReviewNotificationPermissionsTest', 'All', function() {
+  mocha.run();
+});
+
 [['AppearanceFontsPage', 'appearance_fonts_page_test.js'],
  [
    'SettingsCategoryDefaultRadioGroup',

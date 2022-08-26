@@ -1,0 +1,54 @@
+<style include="cr-shared-style settings-shared">
+  site-favicon {
+    /** Pad the difference between --cr-link-row-icon-width and
+        site-favicon width to align with link rows */
+    padding-inline-end: 24px;
+  }
+
+  .display-name {
+    flex: 1;
+    max-width: 100%;
+  }
+</style>
+<h2>$i18n{safetyCheckReviewNotificationPermissionsPrimaryLabel}</h2>
+<div class="secondary">
+  $i18n{safetyCheckReviewNotificationPermissionsSecondaryLabel}
+</div>
+<template id="reviewNotificatioPermissionsList"
+    is="dom-repeat" items="[[reviewNotificationPermissionsList_]]">
+  <div class$="cr-row [[getClassForIndex_(index)]]">
+    <site-favicon url="[[item.origin]]"></site-favicon>
+    <div id="displayName_[[index]]" class="display-name cr-padded-text">
+      <div class="site-representation">
+        <span class="url-directionality">[[getDisplayName_(item)]]</span>
+      </div>
+      <div class="second-line secondary">[[item.notificationInfoString]]</div>
+    </div>
+    <cr-icon-button iron-icon="cr20:block"
+        aria-label$="[[getDisplayName_(item)]]"
+        aria-describedby$="displayName_[[index]]"
+        focus-row-control focus-type="show-detail"
+        on-pointerenter="onShowTooltip_"
+        actionable></cr-icon-button>
+    <cr-icon-button id="actionMenuButton" class="icon-more-vert"
+        on-click="onShowActionMenuClick_" title="$i18n{moreActions}"
+        focus-row-control focus-type="menu"></cr-icon-button>
+  </div>
+</template>
+<paper-tooltip id="tooltip"
+    fit-to-visible-bounds manual-mode position="top">
+  $i18n{safetyCheckReviewNotificationPermissionsDontAllowLabel}
+</paper-tooltip>
+<cr-lazy-render id="actionMenu">
+  <template>
+    <cr-action-menu role-description="$i18n{menu}">
+      <button class="dropdown-item" id="allow">
+        $i18n{safetyCheckReviewNotificationPermissionsIgnoreLabel}
+      </button>
+      <button class="dropdown-item" id="block">
+        $i18n{safetyCheckReviewNotificationPermissionsResetLabel}
+      </button>
+    </cr-action-menu>
+
+  </template>
+</cr-lazy-render>

@@ -515,6 +515,10 @@
             <div class="secondary">
               $i18n{siteSettingsNotificationsDescription}
             </div>
+            <template is="dom-if" if="[[safetyCheckPermissionsEnabled_]]">
+              <review-notification-permissions>
+              </review-notification-permissions>
+            </template>
             <h2>$i18n{siteSettingsDefaultBehavior}</h2>
             <div id="notificationSubHeading"
               class="secondary radio-sub-heading">

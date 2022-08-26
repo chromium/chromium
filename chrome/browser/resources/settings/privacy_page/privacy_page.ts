@@ -232,6 +232,13 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         type: Object,
         value: ChooserType,
       },
+
+      safetyCheckPermissionsEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('safetyCheckPermissionsEnabled');
+        },
+      },
     };
   }
 
@@ -251,6 +258,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private showPrivacyGuideEntryPoint_: boolean;
   private enablePrivacyGuidePage_: boolean;
   private isPrivacySandboxRestricted_: boolean;
+  private safetyCheckPermissionsEnabled_: boolean;
   private focusConfig_: FocusConfig;
   private searchFilter_: string;
   private siteDataFilter_: string;

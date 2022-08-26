@@ -7,6 +7,8 @@ per-file devtools_ui*=dgozman@chromium.org
 per-file devtools_ui*=caseq@chromium.org
 per-file inspect_ui*=dgozman@chromium.org
 per-file inspect_ui*=caseq@chromium.org
+per-file review_notification_permissions*=rainhard@chromium.org
+per-file review_notification_permissions*=sauski@google.com
 
 per-file memory_internals_ui*=erikchen@chromium.org
 
