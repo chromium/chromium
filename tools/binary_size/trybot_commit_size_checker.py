@@ -119,7 +119,9 @@ def _SymbolDiffHelper(title_fragment, symbols):
 
 
 def _CreateMutableConstantsDelta(symbols):
-  symbols = symbols.WhereInSection('d').WhereNameMatches(r'\bk[A-Z]|\b[A-Z_]+$')
+  symbols = (
+      symbols.WhereInSection('d').WhereNameMatches(r'\bk[A-Z]|\b[A-Z_]+$').
+      WhereFullNameMatches('abi:logically_const').Inverted())
   lines, net_added = _SymbolDiffHelper('Mutable Constants', symbols)
 
   return lines, _SizeDelta('Mutable Constants', 'symbols', 0, net_added)
