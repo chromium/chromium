@@ -33,6 +33,7 @@
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -263,7 +264,35 @@ TEST_F(InstallIsolatedAppCommandTest, URLLoaderIgnoresQueryParameters) {
 }
 
 TEST_F(InstallIsolatedAppCommandTest,
-       InstallationFinalizedWithManagementApiInstallSource) {
+       InstallationFailsWhenFinalizerReturnNotInstallableError) {
+  SetPrepareForLoadResultLoaded();
+
+  ExpectLoadedForURL("http://test-url-example.com");
+
+  install_finalizer().SetNextFinalizeInstallResult(
+      GenerateAppIdFromUnhashed("http://testing-unused-app-id.com/"),
+      webapps::InstallResultCode::kNotInstallable);
+
+  EXPECT_THAT(ExecuteCommand("http://test-url-example.com"),
+              Not(IsInstallationOk()));
+}
+
+TEST_F(InstallIsolatedAppCommandTest,
+       InstallationSucceedesWhenFinalizerReturnSuccessNewInstall) {
+  SetPrepareForLoadResultLoaded();
+
+  ExpectLoadedForURL("http://test-url-example.com");
+
+  install_finalizer().SetNextFinalizeInstallResult(
+      GenerateAppIdFromUnhashed("http://testing-unused-app-id.com/"),
+      webapps::InstallResultCode::kSuccessNewInstall);
+
+  EXPECT_THAT(ExecuteCommand("http://test-url-example.com"),
+              IsInstallationOk());
+}
+
+TEST_F(InstallIsolatedAppCommandTest,
+       InstallationFinalizedWithIsolatedAppDebInstallInstallSource) {
   SetPrepareForLoadResultLoaded();
 
   ExpectLoadedForURL("http://test-url-example.com");

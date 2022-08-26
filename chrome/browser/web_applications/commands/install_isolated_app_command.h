@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_INSTALL_ISOLATED_APP_COMMAND_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_INSTALL_ISOLATED_APP_COMMAND_H_
 
+#include <memory>
 #include <string>
 
 #include "base/callback.h"
@@ -67,7 +68,7 @@ class InstallIsolatedAppCommand : public WebAppCommand {
   void ReportSuccess();
   void Report(bool success);
 
-  void DownloadIcons();
+  void DownloadIcons(WebAppInstallInfo install_info);
 
   void LoadUrl(GURL url);
   void OnLoadUrl(WebAppUrlLoaderResult result);

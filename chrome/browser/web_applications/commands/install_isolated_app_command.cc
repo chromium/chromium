@@ -200,35 +200,36 @@ void InstallIsolatedAppCommand::OnCheckInstallabilityAndRetrieveManifest(
   if (absl::optional<WebAppInstallInfo> install_info =
           CreateInstallInfoFromManifest(*opt_manifest, manifest_url);
       install_info.has_value()) {
-    FinalizeInstall(*install_info);
+    DownloadIcons(*std::move(install_info));
   } else {
     ReportFailure();
   }
 }
 
 void InstallIsolatedAppCommand::FinalizeInstall(const WebAppInstallInfo& info) {
+  auto is_finalize_install_success =
+      [](const AppId& unused_app_id,
+         webapps::InstallResultCode install_result_code,
+         OsHooksErrors unused_os_hooks_errors) {
+        return install_result_code ==
+               webapps::InstallResultCode::kSuccessNewInstall;
+      };
+
   install_finalizer_.FinalizeInstall(
       info,
       WebAppInstallFinalizer::FinalizeOptions{
           /*install_surface=*/webapps::WebappInstallSource::
               ISOLATED_APP_DEV_INSTALL,
       },
-      base::BindOnce([](const AppId& unused_app_id,
-                        webapps::InstallResultCode unused_install_result_code,
-                        OsHooksErrors unused_os_hooks_errors) {
-        // TODO(kuragin): Implement error handling. Current implementation of
-        // the install finalizer doesn't allow to mock errors.
-        //
-        // See |FakeInstallFinalizer::FinalizeInstall| for details.
-      })
-          .Then(base::BindOnce(&InstallIsolatedAppCommand::DownloadIcons,
+      base::BindOnce(is_finalize_install_success)
+          .Then(base::BindOnce(&InstallIsolatedAppCommand::Report,
                                weak_factory_.GetWeakPtr())));
 }
 
-void InstallIsolatedAppCommand::DownloadIcons() {
+void InstallIsolatedAppCommand::DownloadIcons(WebAppInstallInfo install_info) {
   // TODO(kuragin): Find a way to test icons downloading and relationship with
   // icon population in the web app install info. Implement icons downloading.
-  ReportSuccess();
+  FinalizeInstall(install_info);
 }
 
 void InstallIsolatedAppCommand::OnSyncSourceRemoved() {
