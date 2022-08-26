@@ -155,7 +155,6 @@ js_library("input_page") {
     "..:os_route",
     "..:route_observer_behavior",
     "../..:router",
-    "../keyboard_shortcut_banner:keyboard_shortcut_banner",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js:load_time_data.m",

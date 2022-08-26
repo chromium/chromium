@@ -15,20 +15,13 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './keyboard_shortcut_banner.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const KeyboardShortcutBannerBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+const KeyboardShortcutBannerBase = I18nMixin(PolymerElement);
 
-/** @polymer */
 class KeyboardShortcutBanner extends KeyboardShortcutBannerBase {
   static get is() {
     return 'keyboard-shortcut-banner';
@@ -44,35 +37,27 @@ class KeyboardShortcutBanner extends KeyboardShortcutBannerBase {
         type: String,
       },
 
-      /** @type {!Array<string>} */
       body: {
         type: Array,
       },
     };
   }
 
-  /** @private */
-  onDismissClick_() {
+  header: string;
+  body: string[];
+
+  private onDismissClick_(): void {
     getAnnouncerInstance().announce(this.i18n('shortcutBannerDismissed'));
     this.dispatchEvent(
         new CustomEvent('dismiss', {bubbles: true, composed: true}));
   }
 
-  /**
-   * @param {number} index
-   * @return {string}
-   * @private
-   */
-  getIdForIndex_(index) {
+  private getIdForIndex_(index: number): string {
     return `id${index}`;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getBodyIds_() {
-    const /** !Array<string> */ ids = [];
+  private getBodyIds_(): string {
+    const ids: string[] = [];
     for (let i = 0; i < this.body.length; i++) {
       ids.push(this.getIdForIndex_(i));
     }
@@ -81,3 +66,9 @@ class KeyboardShortcutBanner extends KeyboardShortcutBannerBase {
 }
 
 customElements.define(KeyboardShortcutBanner.is, KeyboardShortcutBanner);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'keyboard-shortcut-banner': KeyboardShortcutBanner;
+  }
+}

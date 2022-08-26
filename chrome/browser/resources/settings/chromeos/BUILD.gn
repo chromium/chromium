@@ -455,7 +455,6 @@ group("closure_compile_module") {
     "guest_os:closure_compile_module",
     "internet_page:closure_compile_module",
     "kerberos_page:closure_compile_module",
-    "keyboard_shortcut_banner:closure_compile_module",
     "multidevice_page:closure_compile_module",
     "os_a11y_page:closure_compile_module",
     "os_apps_page:closure_compile_module",
