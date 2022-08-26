@@ -5822,6 +5822,18 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_UPDATE_PASSWORD" desc="The title of the save password bubble when a password can be updated.">
         Update password?
       </message>
+      <message name="IDS_SIGN_IN_TO_SAVE_PASSWORDS" desc="The title of the password manager error message when the user needs to sign in to save a password.">
+        Sign in to save passwords
+      </message>
+      <message name="IDS_SIGN_IN_TO_USE_PASSWORDS" desc="The title of the password manager error message when the user needs to sign in to use a password.">
+        Sign in to use passwords
+      </message>
+      <message name="IDS_PASSWORD_ERROR_DESCRIPTION" desc="The description of the password manager error message.">
+        Sign back in to Google Password Manager
+      </message>
+      <message name="IDS_PASSWORD_ERROR_SIGN_IN_BUTTON_TITLE" desc="The title of the sign in button in the password manager error message.">
+        Sign in
+      </message>
       <message name="IDS_SAVE_PASSWORD_DIFFERENT_DOMAINS_TITLE" desc="The title of the save password bubble when the submitted form origin isn't equal to the page origin.">
         Save password for <ph name="ORIGIN">$1<ex>example.com</ex></ph>?
       </message>

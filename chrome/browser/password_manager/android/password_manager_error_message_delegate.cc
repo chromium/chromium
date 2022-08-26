@@ -1,0 +1,82 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/password_manager/android/password_manager_error_message_delegate.h"
+
+#include "base/android/jni_android.h"
+#include "chrome/browser/android/android_theme_resources.h"
+#include "chrome/browser/android/resource_mapper.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/messages/android/message_dispatcher_bridge.h"
+#include "ui/base/l10n/l10n_util.h"
+
+PasswordManagerErrorMessageDelegate::PasswordManagerErrorMessageDelegate() =
+    default;
+
+PasswordManagerErrorMessageDelegate::~PasswordManagerErrorMessageDelegate() =
+    default;
+
+void PasswordManagerErrorMessageDelegate::DisplayPasswordManagerErrorMessage(
+    content::WebContents* web_contents,
+    bool save_password) {
+  DCHECK(web_contents);
+
+  // Dismiss previous message if it is displayed.
+  DismissPasswordManagerErrorMessage(messages::DismissReason::UNKNOWN);
+
+  CreateMessage(save_password);
+  messages::MessageDispatcherBridge::Get()->EnqueueMessage(
+      message_.get(), web_contents, messages::MessageScopeType::WEB_CONTENTS,
+      messages::MessagePriority::kUrgent);
+}
+
+void PasswordManagerErrorMessageDelegate::DismissPasswordManagerErrorMessage(
+    messages::DismissReason dismiss_reason) {
+  if (message_ != nullptr) {
+    messages::MessageDispatcherBridge::Get()->DismissMessage(message_.get(),
+                                                             dismiss_reason);
+  }
+}
+
+void PasswordManagerErrorMessageDelegate::CreateMessage(bool save_password) {
+  messages::MessageIdentifier message_id =
+      messages::MessageIdentifier::PASSWORD_MANAGER_ERROR;
+  // Binding with base::Unretained(this) is safe here because
+  // PasswordManagerErrorMessageDelegate owns `message_`. Callbacks won't be
+  // called after the current object is destroyed.
+  base::OnceClosure callback = base::BindOnce(
+      &PasswordManagerErrorMessageDelegate::HandleSignInButtonClicked,
+      base::Unretained(this));
+
+  message_ = std::make_unique<messages::MessageWrapper>(
+      message_id, std::move(callback),
+      base::BindOnce(
+          &PasswordManagerErrorMessageDelegate::HandleMessageDismissed,
+          base::Unretained(this)));
+
+  int title_message_id = save_password ? IDS_SIGN_IN_TO_SAVE_PASSWORDS
+                                       : IDS_SIGN_IN_TO_USE_PASSWORDS;
+  message_->SetTitle(l10n_util::GetStringUTF16(title_message_id));
+
+  std::u16string description =
+      l10n_util::GetStringUTF16(IDS_PASSWORD_ERROR_DESCRIPTION);
+  message_->SetDescription(description);
+
+  message_->SetPrimaryButtonText(
+      l10n_util::GetStringUTF16(IDS_PASSWORD_ERROR_SIGN_IN_BUTTON_TITLE));
+
+  message_->SetIconResourceId(ResourceMapper::MapToJavaDrawableId(
+      IDR_ANDORID_MESSAGE_PASSWORD_MANAGER_ERROR));
+  message_->DisableIconTint();
+}
+
+void PasswordManagerErrorMessageDelegate::HandleMessageDismissed(
+    messages::DismissReason dismiss_reason) {
+  message_.reset();
+}
+
+void PasswordManagerErrorMessageDelegate::HandleSignInButtonClicked() {
+  // TODO (crbug/1352415): Implement opening the signin flow.
+  DismissPasswordManagerErrorMessage(messages::DismissReason::PRIMARY_ACTION);
+}

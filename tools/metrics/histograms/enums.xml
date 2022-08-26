@@ -66071,6 +66071,7 @@ Called by update_use_counter_css.py.-->
   <int value="32" label="FramebustBlocked"/>
   <int value="33" label="DesktopSiteGlobalDefaultOptOut"/>
   <int value="34" label="DesktopSiteGlobalOptIn"/>
+  <int value="35" label="PasswordManagerError"/>
 </enum>
 
 <enum name="MessageLoopProblems">

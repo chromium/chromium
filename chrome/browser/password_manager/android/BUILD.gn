@@ -232,6 +232,7 @@ robolectric_binary("password_manager_junit_tests") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/ic_key_error.xml",
     "java/res/drawable/ic_vpn_key_blue.xml",
     "java/res/layout/confirmation_dialog_view.xml",
   ]
@@ -409,6 +410,7 @@ source_set("unit_tests") {
     "mock_password_sync_controller_delegate_bridge.h",
     "password_accessory_controller_impl_unittest.cc",
     "password_generation_controller_impl_unittest.cc",
+    "password_manager_error_message_delegate_unittest.cc",
     "password_manager_settings_service_android_impl_unittest.cc",
     "password_store_android_backend_unittest.cc",
     "password_sync_controller_delegate_android_unittest.cc",
