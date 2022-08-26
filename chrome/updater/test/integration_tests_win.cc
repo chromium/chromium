@@ -24,6 +24,7 @@
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1253,12 +1254,12 @@ void RunOfflineInstall(UpdaterScope scope) {
       "      <manifest version=\"1.2.3.4\">\n"
       "        <packages>\n"
       "          <package hash_sha256=\"sha256hash_foobar\"\n"
-      "            name=\"reg.exe\" required=\"true\" size=\"%lld\"/>\n"
+      "            name=\"cmd.exe\" required=\"true\" size=\"%lld\"/>\n"
       "        </packages>\n"
       "        <actions>\n"
       "          <action event=\"install\"\n"
-      "            run=\"reg.exe\"\n"
-      "            arguments=\"IMPORT %s /REG:32\"/>\n"
+      "            run=\"cmd.exe\"\n"
+      "            arguments=\"/c &quot;%ls&quot; \"/>\n"
       "        </actions>\n"
       "      </manifest>\n"
       "    </updatecheck>\n"
@@ -1273,47 +1274,71 @@ void RunOfflineInstall(UpdaterScope scope) {
 
   EXPECT_TRUE(DeleteRegKey(root, app_client_state_key));
 
-  base::FilePath reg_exe_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SYSTEM, &reg_exe_path));
-  reg_exe_path = reg_exe_path.Append(L"reg.exe");
-  ASSERT_TRUE(base::PathExists(reg_exe_path));
+  // Create a unique name for a shared event to be waited for in this process
+  // and signaled in the offline installer process to confirm the installer
+  // was run.
+  const std::wstring event_name = base::StrCat(
+      {L"OfflineInstallTest-", base::NumberToWString(::GetCurrentProcessId())});
+  NamedObjectAttributes attr;
+  GetNamedObjectAttributes(event_name.c_str(), scope, &attr);
+  base::WaitableEvent event(base::win::ScopedHandle(
+      ::CreateEvent(&attr.sa, FALSE, FALSE, attr.name.c_str())));
+  ASSERT_NE(event.handle(), nullptr);
 
   base::ScopedTempDir temp_dir;
   EXPECT_TRUE(temp_dir.CreateUniqueTempDir());
   const base::FilePath& offline_dir = temp_dir.GetPath();
 
-  // Create installer result reg file. These are 32-bit registry values and
-  // must be imported with flag `/REG:32`.
-  constexpr char kRegFileName[] = "InstallerResult.reg";
-  constexpr char kInstallerResultRegFileFormat[] =
-      "Windows Registry Editor Version 5.00\n"
-      "\n"
-      "[%s\\%ls]\n"
-      "\"InstallerResult\"=dword:00000000\n"
-      "\"InstallerError\"=dword:00000000\n"
-      "\"InstallerExtraCode1\"=dword:00000000\n"
-      "\"InstallerResultUIString\"=\"CoolApp\"\n"
-      "\"InstallerSuccessLaunchCmdLine\"=\"\"\n";
-  base::FilePath installer_result_path = offline_dir.AppendASCII(kRegFileName);
+  // Create a batch file as the installer script, which creates some registry
+  // values as the installation artifacts.
+  base::FilePath installer_path = offline_dir.AppendASCII("test_installer.bat");
   EXPECT_TRUE(base::WriteFile(
-      installer_result_path,
-      base::StringPrintf(kInstallerResultRegFileFormat,
-                         scope == UpdaterScope::kSystem ? "HKEY_LOCAL_MACHINE"
-                                                        : "HKEY_CURRENT_USER",
-                         app_client_state_key.c_str())));
+      installer_path,
+      [](UpdaterScope scope, const std::string& app_client_state_key,
+         const std::wstring& event_name) -> std::string {
+        const std::string reg_hive =
+            scope == UpdaterScope::kSystem ? "HKLM" : "HKCU";
+
+        base::CommandLine post_install_cmd(GetTestProcessCommandLine(scope));
+        post_install_cmd.AppendSwitchNative(kTestEventToSignal, event_name);
+        std::vector<std::string> commands;
+        const struct {
+          const char* value_name;
+          const char* type;
+          const std::string value;
+        } reg_items[5] = {
+            {"InstallerResult", "REG_DWORD", "0"},
+            {"InstallerError", "REG_DWORD", "0"},
+            {"InstallerExtraCode1", "REG_DWORD", "0"},
+            {"InstallerResultUIString", "REG_SZ", "CoolApp"},
+            {"InstallerSuccessLaunchCmdLine", "REG_SZ",
+             base::WideToASCII(post_install_cmd.GetCommandLineString())},
+        };
+        for (const auto& reg_item : reg_items) {
+          commands.push_back(base::StringPrintf(
+              "REG.exe ADD \"%s\\%s\" /v %s /t %s /d \"%s\" /f /reg:32",
+              reg_hive.c_str(), app_client_state_key.c_str(),
+              reg_item.value_name, reg_item.type, reg_item.value.c_str()));
+        }
+        return base::JoinString(commands, "\n");
+      }(scope, base::WideToASCII(app_client_state_key), attr.name)));
+
+  // The updater only allows `.exe` or `.msi` to run from the offline directory.
+  // Setup `cmd.exe` as the wrapper installer.
+  base::FilePath cmd_exe_path;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SYSTEM, &cmd_exe_path));
+  cmd_exe_path = cmd_exe_path.Append(L"cmd.exe");
+  ASSERT_TRUE(base::CopyFile(cmd_exe_path,
+                             offline_dir.Append(cmd_exe_path.BaseName())));
 
   // Create manifest file.
   base::FilePath manifest_path =
       offline_dir.Append(FILE_PATH_LITERAL("OfflineManifest.gup"));
   int64_t exe_size = 0;
-  EXPECT_TRUE(base::GetFileSize(reg_exe_path, &exe_size));
-  const std::string manifest =
-      base::StringPrintf(kManifestFormat, kTestAppID, exe_size, kRegFileName);
+  EXPECT_TRUE(base::GetFileSize(cmd_exe_path, &exe_size));
+  const std::string manifest = base::StringPrintf(
+      kManifestFormat, kTestAppID, exe_size, installer_path.value().c_str());
   EXPECT_TRUE(base::WriteFile(manifest_path, manifest));
-
-  // Copy app installer.
-  ASSERT_TRUE(base::CopyFile(reg_exe_path,
-                             offline_dir.Append(FILE_PATH_LITERAL("reg.exe"))));
 
   // Trigger offline install.
   const absl::optional<base::FilePath> updater_exe =
@@ -1339,48 +1364,49 @@ void RunOfflineInstall(UpdaterScope scope) {
   EXPECT_TRUE(process.IsValid());
 
   // Dismiss the installation completion dialog, then wait for the process exit.
-  EXPECT_TRUE(WaitFor(base::BindRepeating(
-      [](HKEY root, const wchar_t* test_key_name,
-         const wchar_t* test_value_name) {
-        // Enumerate the top-level dialogs to find the setup dialog.
-        WindowEnumerator(
-            ::GetDesktopWindow(), base::BindRepeating([](HWND hwnd) {
-              return WindowEnumerator::IsSystemDialog(hwnd) &&
-                     base::Contains(WindowEnumerator::GetWindowText(hwnd),
-                                    GetLocalizedStringF(
-                                        IDS_INSTALLER_DISPLAY_NAME_BASE,
-                                        GetLocalizedString(
-                                            IDS_FRIENDLY_COMPANY_NAME_BASE)));
-            }),
-            base::BindRepeating([](HWND hwnd) {
-              // Enumerates the dialog items to search for installation complete
-              // message. Once found, close the dialog.
-              WindowEnumerator(
-                  hwnd, base::BindRepeating([](HWND hwnd) {
-                    return base::Contains(
-                        WindowEnumerator::GetWindowText(hwnd),
-                        GetLocalizedString(
-                            IDS_BUNDLE_INSTALLED_SUCCESSFULLY_BASE));
-                  }),
-                  base::BindRepeating([](HWND hwnd) {
-                    ::PostMessage(::GetParent(hwnd), WM_CLOSE, 0, 0);
-                  }))
-                  .Run();
-            }))
-            .Run();
+  EXPECT_TRUE(WaitFor(base::BindRepeating([]() {
+    // Enumerate the top-level dialogs to find the setup dialog.
+    WindowEnumerator(
+        ::GetDesktopWindow(), base::BindRepeating([](HWND hwnd) {
+          return WindowEnumerator::IsSystemDialog(hwnd) &&
+                 base::Contains(
+                     WindowEnumerator::GetWindowText(hwnd),
+                     GetLocalizedStringF(
+                         IDS_INSTALLER_DISPLAY_NAME_BASE,
+                         GetLocalizedString(IDS_FRIENDLY_COMPANY_NAME_BASE)));
+        }),
+        base::BindRepeating([](HWND hwnd) {
+          // Enumerates the dialog items to search for installation complete
+          // message. Once found, close the dialog.
+          WindowEnumerator(
+              hwnd, base::BindRepeating([](HWND hwnd) {
+                return base::Contains(
+                    WindowEnumerator::GetWindowText(hwnd),
+                    GetLocalizedString(IDS_BUNDLE_INSTALLED_SUCCESSFULLY_BASE));
+              }),
+              base::BindRepeating([](HWND hwnd) {
+                ::PostMessage(::GetParent(hwnd), WM_CLOSE, 0, 0);
+              }))
+              .Run();
+        }))
+        .Run();
 
-        if (IsUpdaterRunning())
-          return false;
+    return !IsUpdaterRunning();
+  })));
 
-        // Wait for the app installer to write the expected reg value.
-        base::win::RegKey key;
-        std::wstring value;
-        return ERROR_SUCCESS ==
-                   key.Open(root, test_key_name, Wow6432(KEY_QUERY_VALUE)) &&
-               ERROR_SUCCESS == key.ReadValue(test_value_name, &value) &&
-               value == L"CoolApp";
-      },
-      root, app_client_state_key.c_str(), kRegValueInstallerResultUIString)));
+  // App installer should have created the expected reg value.
+  base::win::RegKey key;
+  std::wstring value;
+  EXPECT_EQ(
+      key.Open(root, app_client_state_key.c_str(), Wow6432(KEY_QUERY_VALUE)),
+      ERROR_SUCCESS);
+  EXPECT_EQ(key.ReadValue(kRegValueInstallerResultUIString, &value),
+            ERROR_SUCCESS);
+  EXPECT_EQ(value, L"CoolApp");
+
+  // Event should have been signaled by the post-install command via the
+  // installer result API.
+  EXPECT_TRUE(event.TimedWait(TestTimeouts::action_max_timeout()));
 
   EXPECT_TRUE(DeleteRegKey(root, app_client_state_key));
 }
