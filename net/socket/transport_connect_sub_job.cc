@@ -222,6 +222,13 @@ int TransportConnectSubJob::DoEndpointLockComplete() {
           parent_job_->network_quality_estimator(), net_log.net_log(),
           net_log.source());
 
+  net_log.AddEvent(NetLogEventType::TRANSPORT_CONNECT_JOB_CONNECT_ATTEMPT, [&] {
+    base::Value::Dict dict;
+    dict.Set("address", CurrentAddress().ToString());
+    transport_socket_->NetLog().source().AddToEventParameters(dict);
+    return base::Value(std::move(dict));
+  });
+
   // If `websocket_endpoint_lock_manager_` is non-null, this class now owns an
   // endpoint lock. Wrap `socket` in a `WebSocketStreamSocket` to take ownership
   // of the lock and release it when the socket goes out of scope. This must

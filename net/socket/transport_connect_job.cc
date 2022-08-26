@@ -9,17 +9,14 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "base/values.h"
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"
@@ -28,7 +25,6 @@
 #include "net/dns/host_resolver_results.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log_event_type.h"
-#include "net/log/net_log_source.h"
 #include "net/socket/socket_tag.h"
 #include "net/socket/transport_connect_sub_job.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -491,6 +487,7 @@ void TransportConnectJob::OnSubJobComplete(int result,
 
 void TransportConnectJob::StartIPv4JobAsync() {
   DCHECK(ipv4_job_);
+  net_log().AddEvent(NetLogEventType::TRANSPORT_CONNECT_JOB_IPV6_FALLBACK);
   int result = ipv4_job_->Start();
   if (result != ERR_IO_PENDING)
     OnSubJobComplete(result, ipv4_job_.get());

@@ -148,7 +148,8 @@ ConnectJob::GetHostResolverEndpointResult() const {
 void ConnectJob::SetSocket(std::unique_ptr<StreamSocket> socket,
                            absl::optional<std::set<std::string>> dns_aliases) {
   if (socket) {
-    net_log().AddEvent(NetLogEventType::CONNECT_JOB_SET_SOCKET);
+    net_log().AddEventReferencingSource(NetLogEventType::CONNECT_JOB_SET_SOCKET,
+                                        socket->NetLog().source());
     if (dns_aliases)
       socket->SetDnsAliases(std::move(dns_aliases.value()));
   }

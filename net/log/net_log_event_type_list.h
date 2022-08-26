@@ -795,6 +795,21 @@ EVENT_TYPE(HTTP_PROXY_CONNECT_JOB_CONNECT)
 //   }
 EVENT_TYPE(SSL_CONNECT_JOB_RESTART_WITH_ECH_CONFIG_LIST)
 
+// This event is logged when the TransportConnectJob IPv6 fallback timer expires
+// and the IPv4 addresses are attempted.
+EVENT_TYPE(TRANSPORT_CONNECT_JOB_IPV6_FALLBACK)
+
+// This event is logged whenever the ConnectJob attempts a new TCP connection.
+// association. The ConnectJob may attempt multiple addresses in parallel, so
+// this event does not log when the connection attempt succeeds or fails. The
+// source dependency may be used to determine this.
+//
+//   {
+//     "address": <String of the network address being attempted>,
+//     "source_dependency": <The source identifier for the new socket.>,
+//   }
+EVENT_TYPE(TRANSPORT_CONNECT_JOB_CONNECT_ATTEMPT)
+
 // ------------------------------------------------------------------------
 // ClientSocketPoolBaseHelper
 // ------------------------------------------------------------------------
