@@ -100151,7 +100151,6 @@
     "additional_compile_targets": [
       "chrome",
       "chrome_sandbox",
-      "linux_symbols",
       "symupload"
     ],
     "gtest_tests": [
@@ -102001,7 +102000,6 @@
     "additional_compile_targets": [
       "chrome",
       "chrome_sandbox",
-      "linux_symbols",
       "symupload"
     ],
     "gtest_tests": [

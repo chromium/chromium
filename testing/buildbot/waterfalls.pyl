@@ -1669,7 +1669,6 @@
         'additional_compile_targets': [
           'chrome',
           'chrome_sandbox',
-          'linux_symbols',
           'symupload'
         ],
         'test_suites': {
@@ -3642,7 +3641,6 @@
         'additional_compile_targets': [
           'chrome',
           'chrome_sandbox',
-          'linux_symbols',
           'symupload'
         ],
         'swarming': {
@@ -3660,7 +3658,6 @@
         'additional_compile_targets': [
           'chrome',
           'chrome_sandbox',
-          'linux_symbols',
           'symupload'
         ],
         'mixins': [
