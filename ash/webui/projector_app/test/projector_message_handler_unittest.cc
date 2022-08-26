@@ -17,6 +17,8 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/test_web_ui.h"
+#include "net/http/http_status_code.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -269,7 +271,7 @@ TEST_F(ProjectorMessageHandlerUnitTest, SendXhr) {
   ASSERT_TRUE(call_data.arg3()->is_dict());
 
   // Verify that it is success.
-  EXPECT_TRUE(call_data.arg3()->FindBoolPath(kXhrResponseSuccessPath));
+  EXPECT_TRUE(*call_data.arg3()->FindBoolPath(kXhrResponseSuccessPath));
 
   // Verify the response.
   const std::string* response =
@@ -280,6 +282,57 @@ TEST_F(ProjectorMessageHandlerUnitTest, SendXhr) {
   const std::string* error =
       call_data.arg3()->FindStringPath(kXhrResponseErrorPath);
   EXPECT_TRUE(error->empty());
+}
+
+TEST_F(ProjectorMessageHandlerUnitTest, SendXhrFailed) {
+  const std::string& test_error_response_body = "error";
+
+  base::Value::List list_args;
+  list_args.Append(kSendXhrCallback);
+  base::ListValue args;
+  args.Append(kTestXhrUrl);
+  args.Append(kTestXhrMethod);
+  args.Append(kTestXhrRequestBody);
+  // Add useCredentials.
+  args.Append(true);
+  // Add additional headers.
+  base::Value::Dict dict;
+  dict.Set(kTestXhrHeaderKey, kTestXhrHeaderValue);
+  args.Append(std::move(dict));
+  list_args.Append(std::move(args));
+
+  mock_app_client().test_url_loader_factory().AddResponse(
+      /*url=*/kTestXhrUrl,
+      /*content=*/test_error_response_body,
+      /*status=*/net::HttpStatusCode::HTTP_NOT_FOUND);
+
+  base::RunLoop run_loop;
+  message_handler()->SetXhrRequestRunLoopQuitClosure(run_loop.QuitClosure());
+  web_ui().HandleReceivedMessage("sendXhr", list_args);
+  run_loop.Run();
+
+  EXPECT_EQ(web_ui().call_data().size(), 1u);
+
+  const content::TestWebUI::CallData& call_data = FetchCallData(0);
+  EXPECT_EQ(call_data.function_name(), kWebUIResponse);
+  EXPECT_EQ(call_data.arg1()->GetString(), kSendXhrCallback);
+
+  // Whether the callback was rejected.
+  EXPECT_TRUE(call_data.arg2()->GetBool());
+  ASSERT_TRUE(call_data.arg3()->is_dict());
+
+  // Verify that request failed.
+  EXPECT_FALSE(*call_data.arg3()->FindBoolPath(kXhrResponseSuccessPath));
+
+  // Verify the response.
+  const std::string* response =
+      call_data.arg3()->FindStringPath(kXhrResponseStringPath);
+  EXPECT_EQ(test_error_response_body, *response);
+
+  // Verify error is empty.
+  const std::string* error =
+      call_data.arg3()->FindStringPath(kXhrResponseErrorPath);
+  EXPECT_EQ("XHR_FETCH_FAILURE", *error);
 }
 
 TEST_F(ProjectorMessageHandlerUnitTest, SendXhrWithUnSupportedUrl) {
@@ -320,7 +373,7 @@ TEST_F(ProjectorMessageHandlerUnitTest, SendXhrWithUnSupportedUrl) {
       call_data.arg3()->FindStringPath(kXhrResponseStringPath);
   EXPECT_TRUE(response->empty());
 
-  // Verify error is empty.
+  // Verify error is UNSUPPORTED_URL.
   const std::string* error =
       call_data.arg3()->FindStringPath(kXhrResponseErrorPath);
   EXPECT_EQ("UNSUPPORTED_URL", *error);
