@@ -313,9 +313,9 @@ class TestAbstractParallelRebaselineCommand(BaseTestCase):
         baseline_paths = self.command._generic_baseline_paths(
             test_baseline_set)
         self.assertEqual(baseline_paths, [
-            MOCK_WEB_TESTS + 'platform/generic/passes/text-expected.png',
-            MOCK_WEB_TESTS + 'platform/generic/passes/text-expected.txt',
-            MOCK_WEB_TESTS + 'platform/generic/passes/text-expected.wav',
+            MOCK_WEB_TESTS + 'passes/text-expected.png',
+            MOCK_WEB_TESTS + 'passes/text-expected.txt',
+            MOCK_WEB_TESTS + 'passes/text-expected.wav',
         ])
 
     def test_unstaged_baselines(self):

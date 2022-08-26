@@ -185,34 +185,37 @@ class BaselineOptimizerTest(unittest.TestCase):
         })
 
     def test_covers_mac_win_linux(self):
-        self._assert_optimization({
-            'platform/mac': '1',
-            'platform/win': '1',
-            'platform/linux': '1',
-        }, {
-            'platform/generic': '1',
-        })
+        self._assert_optimization(
+            {
+                'platform/mac': '1',
+                'platform/win': '1',
+                'platform/linux': '1',
+            }, {
+                '': '1',
+            })
 
     def test_overwrites_root(self):
-        self._assert_optimization({
-            'platform/mac': '1',
-            'platform/win': '1',
-            'platform/linux': '1',
-            'platform/generic': '2',
-        }, {
-            'platform/generic': '1',
-        })
+        self._assert_optimization(
+            {
+                'platform/mac': '1',
+                'platform/win': '1',
+                'platform/linux': '1',
+                '': '2',
+            }, {
+                '': '1',
+            })
 
     def test_no_new_common_directory(self):
-        self._assert_optimization({
-            'platform/mac': '1',
-            'platform/linux': '1',
-            'platform/generic': '2',
-        }, {
-            'platform/mac': '1',
-            'platform/linux': '1',
-            'platform/generic': '2',
-        })
+        self._assert_optimization(
+            {
+                'platform/mac': '1',
+                'platform/linux': '1',
+                '': '2',
+            }, {
+                'platform/mac': '1',
+                'platform/linux': '1',
+                '': '2',
+            })
 
     def test_local_optimization(self):
         self._assert_optimization({
@@ -236,24 +239,26 @@ class BaselineOptimizerTest(unittest.TestCase):
         })
 
     def test_baseline_redundant_with_root(self):
-        self._assert_optimization({
-            'platform/mac': '1',
-            'platform/win': '2',
-            'platform/generic': '2',
-        }, {
-            'platform/mac': '1',
-            'platform/generic': '2',
-        })
+        self._assert_optimization(
+            {
+                'platform/mac': '1',
+                'platform/win': '2',
+                '': '2',
+            }, {
+                'platform/mac': '1',
+                '': '2',
+            })
 
     def test_root_baseline_unused(self):
-        self._assert_optimization({
-            'platform/mac': '1',
-            'platform/win': '2',
-            'platform/generic': '3',
-        }, {
-            'platform/mac': '1',
-            'platform/win': '2',
-        })
+        self._assert_optimization(
+            {
+                'platform/mac': '1',
+                'platform/win': '2',
+                '': '3',
+            }, {
+                'platform/mac': '1',
+                'platform/win': '2',
+            })
 
     def test_root_baseline_unused_and_non_existant(self):
         self._assert_optimization({
@@ -287,42 +292,46 @@ class BaselineOptimizerTest(unittest.TestCase):
             baseline_dirname='virtual/gpu/fast/canvas')
 
     def test_virtual_baseline_redundant_with_actual_root(self):
-        self._assert_optimization({
-            'platform/win/virtual/gpu/fast/canvas': '2',
-            'platform/generic/fast/canvas': '2',
-        }, {
-            'platform/generic/fast/canvas': '2',
-        },
-                                  baseline_dirname='virtual/gpu/fast/canvas')
+        self._assert_optimization(
+            {
+                'platform/win/virtual/gpu/fast/canvas': '2',
+                'fast/canvas': '2',
+            }, {
+                'fast/canvas': '2',
+            },
+            baseline_dirname='virtual/gpu/fast/canvas')
 
     def test_virtual_root_redundant_with_actual_root(self):
-        self._assert_optimization({
-            'platform/generic/virtual/gpu/fast/canvas': '2',
-            'platform/generic/fast/canvas': '2',
-        }, {
-            'platform/generic/fast/canvas': '2',
-        },
-                                  baseline_dirname='virtual/gpu/fast/canvas')
+        self._assert_optimization(
+            {
+                'virtual/gpu/fast/canvas': '2',
+                'fast/canvas': '2',
+            }, {
+                'fast/canvas': '2',
+            },
+            baseline_dirname='virtual/gpu/fast/canvas')
 
     def test_virtual_root_redundant_with_ancestors(self):
-        self._assert_optimization({
-            'platform/generic/virtual/gpu/fast/canvas': '2',
-            'platform/mac/fast/canvas': '2',
-            'platform/win/fast/canvas': '2',
-        }, {
-            'platform/generic/fast/canvas': '2',
-        },
-                                  baseline_dirname='virtual/gpu/fast/canvas')
+        self._assert_optimization(
+            {
+                'virtual/gpu/fast/canvas': '2',
+                'platform/mac/fast/canvas': '2',
+                'platform/win/fast/canvas': '2',
+            }, {
+                'fast/canvas': '2',
+            },
+            baseline_dirname='virtual/gpu/fast/canvas')
 
     def test_virtual_root_not_redundant_with_ancestors(self):
-        self._assert_optimization({
-            'platform/generic/virtual/gpu/fast/canvas': '2',
-            'platform/mac/fast/canvas': '1',
-        }, {
-            'platform/generic/virtual/gpu/fast/canvas': '2',
-            'platform/mac/fast/canvas': '1',
-        },
-                                  baseline_dirname='virtual/gpu/fast/canvas')
+        self._assert_optimization(
+            {
+                'virtual/gpu/fast/canvas': '2',
+                'platform/mac/fast/canvas': '1',
+            }, {
+                'virtual/gpu/fast/canvas': '2',
+                'platform/mac/fast/canvas': '1',
+            },
+            baseline_dirname='virtual/gpu/fast/canvas')
 
     def test_virtual_covers_mac_win_linux(self):
         self._assert_optimization(
@@ -331,15 +340,13 @@ class BaselineOptimizerTest(unittest.TestCase):
                 'platform/win/virtual/gpu/fast/canvas': '1',
                 'platform/linux/virtual/gpu/fast/canvas': '1',
             }, {
-                'platform/generic/virtual/gpu/fast/canvas': '1',
-                'virtual/gpu/fast/canvas': None,
+                'virtual/gpu/fast/canvas': '1',
             },
             baseline_dirname='virtual/gpu/fast/canvas')
 
     def test_all_pass_testharness_at_root(self):
-        self._assert_optimization({
-            'platform/generic': ALL_PASS_TESTHARNESS_RESULT
-        }, {'platform/generic': None})
+        self._assert_optimization({'': ALL_PASS_TESTHARNESS_RESULT},
+                                  {'': None})
 
     def test_all_pass_testharness_at_linux(self):
         self._assert_optimization({
@@ -359,9 +366,8 @@ class BaselineOptimizerTest(unittest.TestCase):
 
     def test_all_pass_testharness_at_virtual_root(self):
         self._assert_optimization(
-            {
-                'platform/generic/virtual/gpu/fast/canvas': ALL_PASS_TESTHARNESS_RESULT
-            }, {'platform/generic/virtual/gpu/fast/canvas': None},
+            {'virtual/gpu/fast/canvas': ALL_PASS_TESTHARNESS_RESULT},
+            {'virtual/gpu/fast/canvas': None},
             baseline_dirname='virtual/gpu/fast/canvas')
 
     def test_all_pass_testharness_at_virtual_linux(self):
@@ -376,17 +382,17 @@ class BaselineOptimizerTest(unittest.TestCase):
         # https://crbug.com/866802
         self._assert_optimization(
             {
-                'platform/generic/fast/canvas':
+                'fast/canvas':
                 'failure',
-                'platform/generic/virtual/gpu/fast/canvas':
+                'virtual/gpu/fast/canvas':
                 ALL_PASS_TESTHARNESS_RESULT,
                 'platform/win/virtual/gpu/fast/canvas':
                 ALL_PASS_TESTHARNESS_RESULT2,
                 'platform/mac/virtual/gpu/fast/canvas':
                 ALL_PASS_TESTHARNESS_RESULT2,
             }, {
-                'platform/generic/fast/canvas': 'failure',
-                'platform/generic/virtual/gpu/fast/canvas': ALL_PASS_TESTHARNESS_RESULT2,
+                'fast/canvas': 'failure',
+                'virtual/gpu/fast/canvas': ALL_PASS_TESTHARNESS_RESULT2,
                 'platform/win/virtual/gpu/fast/canvas': None,
                 'platform/mac/virtual/gpu/fast/canvas': None,
             },
@@ -397,20 +403,20 @@ class BaselineOptimizerTest(unittest.TestCase):
         self._assert_optimization(
             {
                 'platform/linux': ALL_PASS_TESTHARNESS_RESULT,
-                'platform/generic': '1'
+                '': '1'
             }, {
                 'platform/linux': ALL_PASS_TESTHARNESS_RESULT,
-                'platform/generic': '1'
+                '': '1'
             })
 
     def test_virtual_all_pass_testharness_falls_back_to_base(self):
         # The all-PASS baseline needs to be preserved in this case.
         self._assert_optimization(
             {
-                'platform/generic/virtual/gpu/fast/canvas': ALL_PASS_TESTHARNESS_RESULT,
+                'virtual/gpu/fast/canvas': ALL_PASS_TESTHARNESS_RESULT,
                 'platform/linux/fast/canvas': '1',
             }, {
-                'platform/generic/virtual/gpu/fast/canvas': ALL_PASS_TESTHARNESS_RESULT,
+                'virtual/gpu/fast/canvas': ALL_PASS_TESTHARNESS_RESULT,
                 'platform/linux/fast/canvas': '1',
             },
             baseline_dirname='virtual/gpu/fast/canvas')
@@ -419,18 +425,16 @@ class BaselineOptimizerTest(unittest.TestCase):
         # The all-PASS baseline needs to be preserved in this case.
         self._assert_optimization(
             {
-                'platform/generic/virtual/gpu/slow/canvas':
-                ALL_PASS_TESTHARNESS_RESULT,
+                'virtual/gpu/slow/canvas': ALL_PASS_TESTHARNESS_RESULT,
                 'platform/linux/slow/canvas': '1',
             }, {
-                'platform/generic/virtual/gpu/slow/canvas':
-                ALL_PASS_TESTHARNESS_RESULT,
+                'virtual/gpu/slow/canvas': ALL_PASS_TESTHARNESS_RESULT,
                 'platform/linux/slow/canvas': '1',
             },
             baseline_dirname='virtual/gpu/slow/canvas')
 
     def test_empty_at_root(self):
-        self._assert_optimization({'platform/generic': ''}, {'platform/generic': None})
+        self._assert_optimization({'': ''}, {'': None})
 
     def test_empty_at_linux(self):
         self._assert_optimization({
@@ -448,9 +452,8 @@ class BaselineOptimizerTest(unittest.TestCase):
         })
 
     def test_empty_at_virtual_root(self):
-        self._assert_optimization({
-            'platform/generic/virtual/gpu/fast/canvas': ''
-        }, {'platform/generic/virtual/gpu/fast/canvas': None},
+        self._assert_optimization({'virtual/gpu/fast/canvas': ''},
+                                  {'virtual/gpu/fast/canvas': None},
                                   baseline_dirname='virtual/gpu/fast/canvas')
 
     def test_empty_at_virtual_linux(self):
@@ -464,25 +467,26 @@ class BaselineOptimizerTest(unittest.TestCase):
         # The empty baseline needs to be preserved in this case.
         self._assert_optimization({
             'platform/linux': '',
-            'platform/generic': '1',
+            '': '1',
         }, {
             'platform/linux': '',
-            'platform/generic': '1',
+            '': '1',
         })
 
     def test_virtual_empty_falls_back_to_non_empty(self):
         # The empty baseline needs to be preserved in this case.
-        self._assert_optimization({
-            'platform/generic/virtual/gpu/fast/canvas': '',
-            'platform/linux/fast/canvas': '1',
-        }, {
-            'platform/generic/virtual/gpu/fast/canvas': '',
-            'platform/linux/fast/canvas': '1',
-        },
-                                  baseline_dirname='virtual/gpu/fast/canvas')
+        self._assert_optimization(
+            {
+                'virtual/gpu/fast/canvas': '',
+                'platform/linux/fast/canvas': '1',
+            }, {
+                'virtual/gpu/fast/canvas': '',
+                'platform/linux/fast/canvas': '1',
+            },
+            baseline_dirname='virtual/gpu/fast/canvas')
 
     def test_extra_png_for_reftest_at_root(self):
-        self._assert_reftest_optimization({'platform/generic': 'extra'}, {'platform/generic': None})
+        self._assert_reftest_optimization({'': 'extra'}, {'': None})
 
     def test_extra_png_for_reftest_at_linux(self):
         self._assert_reftest_optimization({
@@ -501,9 +505,8 @@ class BaselineOptimizerTest(unittest.TestCase):
 
     def test_extra_png_for_reftest_at_virtual_root(self):
         self._assert_reftest_optimization(
-            {
-                'platform/generic/virtual/gpu/fast/canvas': 'extra'
-            }, {'platform/generic/virtual/gpu/fast/canvas': None},
+            {'virtual/gpu/fast/canvas': 'extra'},
+            {'virtual/gpu/fast/canvas': None},
             test_path='fast/canvas',
             baseline_dirname='virtual/gpu/fast/canvas')
 
@@ -518,23 +521,24 @@ class BaselineOptimizerTest(unittest.TestCase):
     def test_extra_png_for_reftest_falls_back_to_base(self):
         # The extra png for reftest should be removed even if it's different
         # from the fallback.
-        self._assert_reftest_optimization({
-            'platform/linux': 'extra1',
-            'platform/generic': 'extra2',
-        }, {
-            'platform/linux': None,
-            'platform/generic': None,
-        })
+        self._assert_reftest_optimization(
+            {
+                'platform/linux': 'extra1',
+                '': 'extra2',
+            }, {
+                'platform/linux': None,
+                '': None,
+            })
 
     def test_virtual_extra_png_for_reftest_falls_back_to_base(self):
         # The extra png for reftest should be removed even if it's different
         # from the fallback.
         self._assert_reftest_optimization(
             {
-                'platform/generic/virtual/gpu/fast/canvas': 'extra',
+                'virtual/gpu/fast/canvas': 'extra',
                 'platform/linux/fast/canvas': 'extra2',
             }, {
-                'platform/generic/virtual/gpu/fast/canvas': None,
+                'virtual/gpu/fast/canvas': None,
                 'platform/linux/fast/canvas': None,
             },
             test_path='fast/canvas',
@@ -543,10 +547,10 @@ class BaselineOptimizerTest(unittest.TestCase):
     def test_flag_specific_falls_back_to_base(self):
         self._assert_optimization(
             {
-                'platform/generic/fast/canvas': '1',
+                'fast/canvas': '1',
                 'flag-specific/highdpi/fast/canvas': '1',
             }, {
-                'platform/generic/fast/canvas': '1',
+                'fast/canvas': '1',
             },
             baseline_dirname='fast/canvas',
             options={'flag_specific': 'highdpi'})
@@ -554,13 +558,13 @@ class BaselineOptimizerTest(unittest.TestCase):
     def test_flag_specific_virtual_falls_back_to_virtual_base(self):
         self._assert_optimization(
             {
-                'platform/generic/fast/canvas': '1',
-                'platform/generic/virtual/gpu/fast/canvas': '2',
+                'fast/canvas': '1',
+                'virtual/gpu/fast/canvas': '2',
                 'flag-specific/highdpi/fast/canvas': '3',
                 'flag-specific/highdpi/virtual/gpu/fast/canvas': '2',
             }, {
-                'platform/generic/fast/canvas': '1',
-                'platform/generic/virtual/gpu/fast/canvas': '2',
+                'fast/canvas': '1',
+                'virtual/gpu/fast/canvas': '2',
                 'flag-specific/highdpi/fast/canvas': '3',
             },
             baseline_dirname='virtual/gpu/fast/canvas',
@@ -569,11 +573,11 @@ class BaselineOptimizerTest(unittest.TestCase):
     def test_flag_specific_virtual_falls_back_to_flag_specific(self):
         self._assert_optimization(
             {
-                'platform/generic/fast/canvas': '1',
+                'fast/canvas': '1',
                 'flag-specific/highdpi/fast/canvas': '2',
                 'flag-specific/highdpi/virtual/gpu/fast/canvas': '2',
             }, {
-                'platform/generic/fast/canvas': '1',
+                'fast/canvas': '1',
                 'flag-specific/highdpi/fast/canvas': '2',
             },
             baseline_dirname='virtual/gpu/fast/canvas',
@@ -582,11 +586,11 @@ class BaselineOptimizerTest(unittest.TestCase):
     def test_both_flag_specific_falls_back_to_base(self):
         self._assert_optimization(
             {
-                'platform/generic/fast/canvas': '1',
+                'fast/canvas': '1',
                 'flag-specific/highdpi/fast/canvas': '1',
                 'flag-specific/highdpi/virtual/gpu/fast/canvas': '1',
             }, {
-                'platform/generic/fast/canvas': '1',
+                'fast/canvas': '1',
             },
             baseline_dirname='virtual/gpu/fast/canvas',
             options={'flag_specific': 'highdpi'})
@@ -601,7 +605,7 @@ class BaselineOptimizerTest(unittest.TestCase):
         self.fs.write_binary_file(
             MOCK_WEB_TESTS + 'platform/mac/another/test-expected.txt',
             'result A')
-        self.fs.write_binary_file(MOCK_WEB_TESTS + 'platform/generic/another/test-expected.txt',
+        self.fs.write_binary_file(MOCK_WEB_TESTS + 'another/test-expected.txt',
                                   'result B')
         baseline_optimizer = BaselineOptimizer(
             self.host, self.host.port_factory.get(),
@@ -610,13 +614,13 @@ class BaselineOptimizerTest(unittest.TestCase):
             'another/test-expected.txt', {
                 MOCK_WEB_TESTS + 'platform/win': 'aaa',
                 MOCK_WEB_TESTS + 'platform/mac': 'aaa',
-                MOCK_WEB_TESTS + 'platform/generic': 'bbb',
+                MOCK_WEB_TESTS[:-1]: 'bbb',
             }, {
-                MOCK_WEB_TESTS + 'platform/generic': 'aaa',
+                MOCK_WEB_TESTS[:-1]: 'aaa',
             })
         self.assertEqual(
             self.fs.read_binary_file(MOCK_WEB_TESTS +
-                                     'platform/generic/another/test-expected.txt'), 'result A')
+                                     'another/test-expected.txt'), 'result A')
 
     def test_move_baselines_skip_git_commands(self):
         self.fs.write_text_file(MOCK_WEB_TESTS + 'VirtualTestSuites', '[]')
@@ -626,7 +630,7 @@ class BaselineOptimizerTest(unittest.TestCase):
         self.fs.write_binary_file(
             MOCK_WEB_TESTS + 'platform/mac/another/test-expected.txt',
             'result A')
-        self.fs.write_binary_file(MOCK_WEB_TESTS + 'platform/generic/another/test-expected.txt',
+        self.fs.write_binary_file(MOCK_WEB_TESTS + 'another/test-expected.txt',
                                   'result B')
         baseline_optimizer = BaselineOptimizer(
             self.host, self.host.port_factory.get(),
@@ -635,14 +639,14 @@ class BaselineOptimizerTest(unittest.TestCase):
             'another/test-expected.txt', {
                 MOCK_WEB_TESTS + 'platform/win': 'aaa',
                 MOCK_WEB_TESTS + 'platform/mac': 'aaa',
-                MOCK_WEB_TESTS + 'platform/generic': 'bbb',
+                MOCK_WEB_TESTS[:-1]: 'bbb',
             }, {
                 MOCK_WEB_TESTS + 'platform/linux': 'bbb',
-                MOCK_WEB_TESTS + 'platform/generic': 'aaa',
+                MOCK_WEB_TESTS[:-1]: 'aaa',
             })
         self.assertEqual(
             self.fs.read_binary_file(MOCK_WEB_TESTS +
-                                     'platform/generic/another/test-expected.txt'), 'result A')
+                                     'another/test-expected.txt'), 'result A')
 
 
 class ResultDigestTest(unittest.TestCase):

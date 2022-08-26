@@ -47,7 +47,6 @@ class BaselineOptimizer(object):
             self._ports[port_name] = host.port_factory.get(port_name)
 
         self._web_tests_dir = default_port.web_tests_dir()
-        self._generic_baselines_dir = default_port.generic_baselines_dir()
         self._parent_of_tests = self._filesystem.dirname(self._web_tests_dir)
         self._web_tests_dir_name = self._filesystem.relpath(
             self._web_tests_dir, self._parent_of_tests)
@@ -351,7 +350,7 @@ class BaselineOptimizer(object):
             'Copying non-virtual baselines to the virtual subtree to make it independent.'
         )
         virtual_root_baseline_path = self._filesystem.join(
-            self._generic_baselines_dir, baseline_name)
+            self._web_tests_dir, baseline_name)
         if self._filesystem.exists(virtual_root_baseline_path):
             return
 
@@ -370,7 +369,7 @@ class BaselineOptimizer(object):
     def _optimize_virtual_root(self, test_name, extension, baseline_name,
                                non_virtual_baseline_name):
         virtual_root_baseline_path = self._filesystem.join(
-            self._generic_baselines_dir, baseline_name)
+            self._web_tests_dir, baseline_name)
         if self._filesystem.exists(virtual_root_baseline_path):
             _log.debug(
                 'Virtual root baseline found. Checking if we can remove it.')
@@ -426,7 +425,7 @@ class BaselineOptimizer(object):
 
     def _baseline_root(self):
         """Returns the name of the root (generic) baseline directory."""
-        return self._filesystem.join(self._web_tests_dir_name, "platform", "generic")
+        return self._web_tests_dir_name
 
     def _baseline_search_path(self, port):
         """Returns the baseline search path (a list of absolute paths) of the

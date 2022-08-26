@@ -785,7 +785,9 @@ class Port(object):
             if not all_baselines and baselines:
                 return baselines
 
-        baseline_dir = self.generic_baselines_dir()
+        # If it wasn't found in a platform directory, return the expected
+        # result in the test directory.
+        baseline_dir = self.web_tests_dir()
         if self._filesystem.exists(
                 self._filesystem.join(baseline_dir, baseline_filename)):
             baselines.append((baseline_dir, baseline_filename))
@@ -800,8 +802,7 @@ class Port(object):
                           extension,
                           return_default=True,
                           fallback_base_for_virtual=True,
-                          match=True,
-                          look_for_same_folder_reference_file=False):
+                          match=True):
         """Given a test name, returns an absolute path to its expected results.
 
         If no expected results are found in any of the searched directories,
@@ -824,8 +825,6 @@ class Port(object):
                 to find baselines of the base test; if False, depending on
                 |return_default|, returns the generic virtual baseline or None.
             match: Whether the baseline is a match or a mismatch.
-            look_for_same_folder_reference_file: For reference test only. Returns
-                the reference file if found in the same folder of the test file.
 
         Returns:
             An absolute path to its expected results, or None if not found.
@@ -837,25 +836,16 @@ class Port(object):
         if baseline_dir:
             return self._filesystem.join(baseline_dir, baseline_filename)
 
-        if look_for_same_folder_reference_file:
-            path = self._filesystem.join(self.web_tests_dir(),
-                                         baseline_filename)
-            if self._filesystem.exists(path):
-                return path
-
         if fallback_base_for_virtual:
             actual_test_name = self.lookup_virtual_test_base(test_name)
             if actual_test_name:
-                return self.expected_filename(
-                    actual_test_name,
-                    extension,
-                    return_default,
-                    match=match,
-                    look_for_same_folder_reference_file=look_for_same_folder_reference_file
-                )
+                return self.expected_filename(actual_test_name,
+                                              extension,
+                                              return_default,
+                                              match=match)
 
         if return_default:
-            return self._filesystem.join(self.generic_baselines_dir(),
+            return self._filesystem.join(self.web_tests_dir(),
                                          baseline_filename)
         return None
 
@@ -950,12 +940,9 @@ class Port(object):
         reftest_list = []
         for expectation in ('==', '!='):
             for extension in Port.supported_file_extensions:
-                path = self.expected_filename(
-                    test_name,
-                    extension,
-                    match=(expectation == '=='),
-                    look_for_same_folder_reference_file=True
-                )
+                path = self.expected_filename(test_name,
+                                              extension,
+                                              match=(expectation == '=='))
                 if self._filesystem.exists(path):
                     reftest_list.append((expectation, path))
         if reftest_list:
@@ -1353,9 +1340,6 @@ class Port(object):
         if custom_web_tests_dir:
             return self._filesystem.abspath(custom_web_tests_dir)
         return self._path_finder.web_tests_dir()
-
-    def generic_baselines_dir(self):
-        return self._filesystem.join(self.web_tests_dir(), "platform", "generic")
 
     def skips_test(self, test):
         """Checks whether the given test is skipped for this port.

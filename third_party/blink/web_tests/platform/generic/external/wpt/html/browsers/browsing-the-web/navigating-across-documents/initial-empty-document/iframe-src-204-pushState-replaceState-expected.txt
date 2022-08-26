@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL history.pushState promise_test: Unhandled rejection with value: object "SecurityError: Failed to execute 'pushState' on 'History': A history state object with URL 'about:blank#foo' cannot be created in a document with origin 'http://web-platform.test:8001' and URL 'about:blank'."
-FAIL history.replaceState promise_test: Unhandled rejection with value: object "SecurityError: Failed to execute 'replaceState' on 'History': A history state object with URL 'about:blank#foo' cannot be created in a document with origin 'http://web-platform.test:8001' and URL 'about:blank'."
-Harness: the test ran to completion.
-

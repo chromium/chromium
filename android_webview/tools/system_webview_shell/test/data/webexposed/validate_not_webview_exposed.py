@@ -9,8 +9,7 @@ import re
 SRC = os.path.abspath(
     os.path.join(os.path.dirname(__file__), *([os.pardir] * 6)))
 BLINK_WEB_TESTS = os.path.join(SRC, 'third_party', 'blink', 'web_tests')
-BLINK_WEB_EXPOSED_TESTS = os.path.join(BLINK_WEB_TESTS, 'platform', 'generic',
-                                       'webexposed')
+BLINK_WEB_EXPOSED_TESTS = os.path.join(BLINK_WEB_TESTS, 'webexposed')
 BLINK_INTERFACES_PATH = os.path.join(BLINK_WEB_EXPOSED_TESTS,
                                      'global-interface-listing-expected.txt')
 BLINK_PLATFORM_INTERFACES_PATH = os.path.join(

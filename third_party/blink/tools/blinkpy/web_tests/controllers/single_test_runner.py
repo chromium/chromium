@@ -246,7 +246,7 @@ class SingleTestRunner(object):
         # Remove |output_path| if it exists and is not the generic expectation to
         # avoid extra baseline if the new baseline is the same as the fallback baseline.
         generic_dir = fs.join(
-            port.generic_baselines_dir(),
+            port.web_tests_dir(),
             fs.dirname(
                 port.lookup_virtual_test_base(self._test_name)
                 or self._test_name))

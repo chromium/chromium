@@ -164,8 +164,8 @@ class PrintBaselinesTest(unittest.TestCase):
         command.execute(options, ['passes/text.html'], self.tool)
         stdout, _, _ = self.restore_output()
         self.assertMultiLineEqual(stdout, ('// For test-win-win7\n'
-                                           'platform/generic/passes/text-expected.png\n'
-                                           'platform/generic/passes/text-expected.txt\n'))
+                                           'passes/text-expected.png\n'
+                                           'passes/text-expected.txt\n'))
 
     def test_multiple(self):
         command = PrintBaselines()
@@ -179,12 +179,12 @@ class PrintBaselinesTest(unittest.TestCase):
         command.execute(options, ['passes/text.html'], self.tool)
         stdout, _, _ = self.restore_output()
         self.assertMultiLineEqual(stdout, ('// For test-win-win10\n'
-                                           'platform/generic/passes/text-expected.png\n'
-                                           'platform/generic/passes/text-expected.txt\n'
+                                           'passes/text-expected.png\n'
+                                           'passes/text-expected.txt\n'
                                            '\n'
                                            '// For test-win-win7\n'
-                                           'platform/generic/passes/text-expected.png\n'
-                                           'platform/generic/passes/text-expected.txt\n'))
+                                           'passes/text-expected.png\n'
+                                           'passes/text-expected.txt\n'))
 
     def test_csv(self):
         command = PrintBaselines()
@@ -198,6 +198,6 @@ class PrintBaselinesTest(unittest.TestCase):
         command.execute(options, ['passes/text.html'], self.tool)
         stdout, _, _ = self.restore_output()
         self.assertMultiLineEqual(stdout, (
-            'test-win-win7,passes/text.html,None,png,platform/generic/passes/text-expected.png,generic\n'
-            'test-win-win7,passes/text.html,None,txt,platform/generic/passes/text-expected.txt,generic\n'
+            'test-win-win7,passes/text.html,None,png,passes/text-expected.png,None\n'
+            'test-win-win7,passes/text.html,None,txt,passes/text-expected.txt,None\n'
         ))
