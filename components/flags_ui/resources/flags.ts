@@ -186,7 +186,10 @@ function registerFocusEvents(el: HTMLElement) {
     if (lastChanged && e.key === 'Tab' && !e.shiftKey) {
       lastFocused = lastChanged;
       e.preventDefault();
-      restartButton.focus();
+      // There is no restart button on iOS.
+      if (restartButton) {
+        restartButton.focus();
+      }
     }
   });
   el.addEventListener('blur', function() {
@@ -267,7 +270,7 @@ function crosUrlFlagsRedirect() {
  */
 function showRestartToast(show: boolean) {
   $('needs-restart').classList.toggle('show', show);
-  const restartButton = $('experiment-restart-button');
+  // There is no restart button on iOS.
   if (restartButton) {
     restartButton.setAttribute('tabindex', show ? '9' : '-1');
   }
@@ -665,6 +668,11 @@ let instance: FlagSearch|null = null;
  * in the list instead of going to the top of the page.
  */
 function setupRestartButton() {
+  // There is no restart button on iOS.
+  if (!restartButton) {
+    return;
+  }
+
   restartButton.addEventListener('keydown', function(e) {
     if (e.shiftKey && e.key === 'Tab' && lastFocused) {
       e.preventDefault();
