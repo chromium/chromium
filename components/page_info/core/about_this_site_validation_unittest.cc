@@ -65,21 +65,11 @@ TEST(AboutThisSiteValidation, InvalidSiteInfoProto) {
   EXPECT_EQ(ValidateMetadata(metadata), AboutThisSiteStatus::kMissingSiteInfo);
   metadata.mutable_site_info();
   EXPECT_EQ(ValidateMetadata(metadata), AboutThisSiteStatus::kEmptySiteInfo);
+
   metadata = GetSampleMetaData();
   metadata.mutable_site_info()->clear_description();
-  {
-    base::test::ScopedFeatureList features;
-    features.InitAndDisableFeature(
-        kPageInfoAboutThisSiteDescriptionPlaceholder);
-    EXPECT_EQ(ValidateMetadata(metadata),
-              AboutThisSiteStatus::kMissingDescription);
-  }
-
-  {
-    base::test::ScopedFeatureList features;
-    features.InitAndEnableFeature(kPageInfoAboutThisSiteDescriptionPlaceholder);
-    EXPECT_EQ(ValidateMetadata(metadata), AboutThisSiteStatus::kValid);
-  }
+  EXPECT_EQ(ValidateMetadata(metadata),
+            AboutThisSiteStatus::kMissingDescription);
 }
 
 TEST(AboutThisSiteValidation, InvalidDescription) {
@@ -109,17 +99,40 @@ TEST(AboutThisSiteValidation, OnlyMoreAbout) {
   proto::SiteInfo site_info;
   *site_info.mutable_more_about() = GetSampleMoreAbout();
 
+  // Test that a proto with only a more_about section is invalid unless both
+  // kPageInfoAboutThisSiteMoreInfo and
+  // kPageInfoAboutThisSiteDescriptionPlaceholder are enabled.
+
   {
     base::test::ScopedFeatureList features;
-    features.InitAndDisableFeature(
-        kPageInfoAboutThisSiteDescriptionPlaceholder);
+    features.InitWithFeatures({},
+                              {kPageInfoAboutThisSiteMoreInfo,
+                               kPageInfoAboutThisSiteDescriptionPlaceholder});
     EXPECT_EQ(ValidateSiteInfo(site_info),
               AboutThisSiteStatus::kMissingDescription);
   }
 
   {
     base::test::ScopedFeatureList features;
-    features.InitAndEnableFeature(kPageInfoAboutThisSiteDescriptionPlaceholder);
+    features.InitWithFeatures({kPageInfoAboutThisSiteMoreInfo},
+                              {kPageInfoAboutThisSiteDescriptionPlaceholder});
+    EXPECT_EQ(ValidateSiteInfo(site_info),
+              AboutThisSiteStatus::kMissingDescription);
+  }
+
+  {
+    base::test::ScopedFeatureList features;
+    features.InitWithFeatures({kPageInfoAboutThisSiteDescriptionPlaceholder},
+                              {kPageInfoAboutThisSiteMoreInfo});
+    EXPECT_EQ(ValidateSiteInfo(site_info),
+              AboutThisSiteStatus::kMissingDescription);
+  }
+
+  {
+    base::test::ScopedFeatureList features;
+    features.InitWithFeatures({kPageInfoAboutThisSiteMoreInfo,
+                               kPageInfoAboutThisSiteDescriptionPlaceholder},
+                              {});
     EXPECT_EQ(ValidateSiteInfo(site_info), AboutThisSiteStatus::kValid);
   }
 }

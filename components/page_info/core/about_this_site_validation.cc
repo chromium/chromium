@@ -74,7 +74,8 @@ AboutThisSiteStatus ValidateSiteInfo(const proto::SiteInfo& site_info) {
   if (site_info.has_description()) {
     status = ValidateDescription(site_info.description());
   } else {
-    if (!base::FeatureList::IsEnabled(
+    if (!base::FeatureList::IsEnabled(kPageInfoAboutThisSiteMoreInfo) ||
+        !base::FeatureList::IsEnabled(
             kPageInfoAboutThisSiteDescriptionPlaceholder))
       return AboutThisSiteStatus::kMissingDescription;
   }
