@@ -1999,6 +1999,11 @@ const char kOmniboxZeroSuggestPrefetchingOnWebDescription[] =
     "Enables prefetching of the zero prefix suggestions for eligible users "
     "on the Web (i.e. non-NTP and non-SRP URLs).";
 
+const char kOmniboxZeroSuggestInMemoryCachingName[] =
+    "Omnibox Zero Prefix Suggestion in-memory caching";
+const char kOmniboxZeroSuggestInMemoryCachingDescription[] =
+    "Enables in-memory caching of zero prefix suggestions.";
+
 const char kOmniboxOnDeviceHeadSuggestionsName[] =
     "Omnibox on device head suggestions (non-incognito only)";
 const char kOmniboxOnDeviceHeadSuggestionsDescription[] =

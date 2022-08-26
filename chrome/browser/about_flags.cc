@@ -5302,6 +5302,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxZeroSuggestPrefetchingOnWebDescription, kOsAll,
      FEATURE_VALUE_TYPE(omnibox::kZeroSuggestPrefetchingOnWeb)},
 
+    {"omnibox-zero-suggest-in-memory-caching",
+     flag_descriptions::kOmniboxZeroSuggestInMemoryCachingName,
+     flag_descriptions::kOmniboxZeroSuggestInMemoryCachingDescription, kOsAll,
+     FEATURE_VALUE_TYPE(omnibox::kZeroSuggestInMemoryCaching)},
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
     {"omnibox-experimental-keyword-mode",

@@ -56408,6 +56408,7 @@ from previous Chrome versions.
   <int value="-1880355454" label="disable-topchrome-md"/>
   <int value="-1879877238" label="disable-cancel-all-touches"/>
   <int value="-1878958319" label="ScrollableTabStripButtons:disabled"/>
+  <int value="-1877005823" label="ZeroSuggestInMemoryCaching:enabled"/>
   <int value="-1876955850" label="EnablePciguardUi:enabled"/>
   <int value="-1876881908"
       label="disable-infobar-for-protected-media-identifier"/>
@@ -59508,6 +59509,7 @@ from previous Chrome versions.
   <int value="27507364" label="apps-keep-chrome-alive"/>
   <int value="27632363" label="JourneysOmniboxHistoryClusterProvider:enabled"/>
   <int value="29212695" label="OfflineIndicator:enabled"/>
+  <int value="31439497" label="ZeroSuggestInMemoryCaching:disabled"/>
   <int value="31776417" label="EnableIkev2Vpn:disabled"/>
   <int value="31848187" label="ViewsTaskManager:disabled"/>
   <int value="32057053" label="EnterpriseReportingInBrowser:disabled"/>

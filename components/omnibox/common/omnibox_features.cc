@@ -184,6 +184,11 @@ const base::Feature kZeroSuggestPrefetchingOnSRP{
 const base::Feature kZeroSuggestPrefetchingOnWeb{
     "ZeroSuggestPrefetchingOnWeb", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, zero prefix suggestions will be stored using an in-memory caching
+// service, instead of using the existing prefs-based cache.
+extern const base::Feature kZeroSuggestInMemoryCaching{
+    "ZeroSuggestInMemoryCaching", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Features to provide non personalized head search suggestion from a compact
 // on device model. More specifically, feature name with suffix Incognito /
 // NonIncognito will only controls behaviors under incognito / non-incognito
