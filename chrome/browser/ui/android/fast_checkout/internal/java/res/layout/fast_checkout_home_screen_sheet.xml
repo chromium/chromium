@@ -54,7 +54,6 @@
             android:layout_width="@dimen/fast_checkout_address_icon"
             android:layout_height="@dimen/fast_checkout_address_icon"
             android:background="@null"
-            android:layout_marginTop="1dp"
             android:layout_marginStart="18dp"
             android:layout_marginEnd="18dp"
             android:importantForAccessibility="no"
@@ -79,7 +78,6 @@
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:layout_marginTop="8dp"
-              android:layout_marginEnd="@dimen/fast_checkout_sheet_margin"
               android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
             <TextView
               android:id="@+id/fast_checkout_home_sheet_profile_phone_number"
@@ -90,7 +88,8 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/fast_checkout_home_sheet_expand_option_icon_margin"
+            android:layout_marginStart="@dimen/fast_checkout_home_sheet_expand_option_icon_margin_start"
+            android:layout_marginEnd="@dimen/fast_checkout_home_sheet_expand_option_icon_margin_end"
             android:layout_gravity="center_vertical"
             android:importantForAccessibility="no"
             app:tint="@color/default_icon_color_secondary_tint_list"
@@ -128,7 +127,8 @@
           <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/fast_checkout_home_sheet_expand_option_icon_margin"
+            android:layout_marginStart="@dimen/fast_checkout_home_sheet_expand_option_icon_margin_start"
+            android:layout_marginEnd="@dimen/fast_checkout_home_sheet_expand_option_icon_margin_end"
             android:importantForAccessibility="no"
             app:tint="@color/default_icon_color_secondary_tint_list"
             app:srcCompat="@drawable/ic_expand_more_horizontal_black_24dp" />
