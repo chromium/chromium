@@ -25,9 +25,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
-#if defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
-#include <VersionHelpers.h>  // For IsWindows8Point1OrGreater().
-#endif
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace partition_alloc::internal {
@@ -37,6 +34,33 @@ namespace partition_alloc::internal {
 namespace {
 
 #if BUILDFLAG(IS_WIN)
+
+#if defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
+bool IsLegacyWindowsVersion() {
+  // Use ::RtlGetVersion instead of ::GetVersionEx or helpers from
+  // VersionHelpers.h because those alternatives change their behavior depending
+  // on whether or not the calling executable has a compatibility manifest
+  // resource. It's better for the allocator to not depend on that to decide the
+  // pool size.
+  // Assume legacy if ::RtlGetVersion is not available or it fails.
+  using RtlGetVersion = LONG(WINAPI*)(OSVERSIONINFOEX*);
+  const RtlGetVersion rtl_get_version = reinterpret_cast<RtlGetVersion>(
+      ::GetProcAddress(::GetModuleHandle(L"ntdll.dll"), "RtlGetVersion"));
+  if (!rtl_get_version)
+    return true;
+
+  OSVERSIONINFOEX version_info = {};
+  version_info.dwOSVersionInfoSize = sizeof(version_info);
+  if (rtl_get_version(&version_info) != ERROR_SUCCESS)
+    return true;
+
+  // Anything prior to Windows 8.1 is considered legacy for the allocator.
+  // Windows 8.1 is major 6 with minor 3.
+  return version_info.dwMajorVersion < 6 ||
+         (version_info.dwMajorVersion == 6 && version_info.dwMinorVersion < 3);
+}
+#endif  // defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
+
 PA_NOINLINE void HandleGigaCageAllocFailureOutOfVASpace() {
   PA_NO_CODE_FOLDING();
   PA_CHECK(false);
@@ -120,12 +144,11 @@ PA_ALWAYS_INLINE size_t PartitionAddressSpace::BRPPoolSize() {
 }
 #else
 PA_ALWAYS_INLINE size_t PartitionAddressSpace::RegularPoolSize() {
-  return IsWindows8Point1OrGreater() ? kRegularPoolSize
-                                     : kRegularPoolSizeForLegacyWindows;
+  return IsLegacyWindowsVersion() ? kRegularPoolSizeForLegacyWindows
+                                  : kRegularPoolSize;
 }
 PA_ALWAYS_INLINE size_t PartitionAddressSpace::BRPPoolSize() {
-  return IsWindows8Point1OrGreater() ? kBRPPoolSize
-                                     : kBRPPoolSizeForLegacyWindows;
+  return IsLegacyWindowsVersion() ? kBRPPoolSizeForLegacyWindows : kBRPPoolSize;
 }
 #endif  // BUILDFLAG(IS_IOS)
 #endif  // defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
