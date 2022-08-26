@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL Starting history.length for window.open() assert_equals: history.length should start at 1 for newly opened window expected 1 but got 0
+FAIL Starting history.length for window.open(about:blank) assert_equals: history.length should start at 1 for newly opened window expected 1 but got 0
+FAIL Starting history.length for window.open(url-with-204-response) assert_equals: history.length should start at 1 for newly opened window expected 1 but got 0
+Harness: the test ran to completion.
+
