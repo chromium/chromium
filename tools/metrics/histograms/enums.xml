@@ -76174,6 +76174,9 @@ Called by update_net_trust_anchors.py.-->
   <int value="10" label="Accepts WebAuthn credentials">
     The form acccepts WebAuthn credentials from an active WebAuthn request.
   </int>
+  <int value="11" label="Biometric authentication">
+    User needs to reauthenticate using biometric.
+  </int>
 </enum>
 
 <enum name="PasswordManagerHttpCredentialType">

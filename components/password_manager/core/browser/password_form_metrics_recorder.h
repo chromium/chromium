@@ -236,7 +236,9 @@ class PasswordFormMetricsRecorder
     kAffiliatedWebsite = 9,
     // The form may accept WebAuthn credentials.
     kAcceptsWebAuthnCredentials = 10,
-    kMaxValue = kAcceptsWebAuthnCredentials,
+    // User need to reauthenticate using biometric.
+    kBiometricAuthentication = 11,
+    kMaxValue = kBiometricAuthentication,
   };
 
   // Used in UMA histogram, please do NOT reorder.

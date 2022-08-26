@@ -1590,10 +1590,15 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthNotAvailable) {
   }
 }
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthSuccessful) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
+#if BUILDFLAG(IS_MAC)
+      password_manager::features::kBiometricAuthenticationForFilling);
+#else
       password_manager::features::kBiometricTouchToFill);
+#endif
   TestPasswordManagerClient client;
   NiceMock<MockAutofillClient> autofill_client;
   client.SetBiometricAuthenticator(authenticator_);
@@ -1634,10 +1639,17 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthSuccessful) {
     EXPECT_CALL(*authenticator_.get(),
                 CanAuthenticate(BiometricAuthRequester::kAutofillSuggestion))
         .WillOnce(Return(true));
-    EXPECT_CALL(*authenticator_.get(),
-                Authenticate(BiometricAuthRequester::kAutofillSuggestion, _,
-                             /*use_last_valid_auth= */ true))
+    EXPECT_CALL(
+        *authenticator_.get(),
+#if BUILDFLAG(IS_MAC)
+        AuthenticateWithMessage(BiometricAuthRequester::kAutofillSuggestion,
+                                /*message=*/_, _))
+        .WillOnce(RunOnceCallback<2>(/*auth_succeeded=*/true));
+#else
+        Authenticate(BiometricAuthRequester::kAutofillSuggestion, _,
+                     /*use_last_valid_auth= */ true))
         .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/true));
+#endif
 
     // Accept the suggestion to start the filing process which tries to
     // reauthenticate the user if possible.
@@ -1650,7 +1662,11 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthSuccessful) {
 TEST_F(PasswordAutofillManagerTest, DoesntFillSuggestionIfAuthFailed) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
+#if BUILDFLAG(IS_MAC)
+      password_manager::features::kBiometricAuthenticationForFilling);
+#else
       password_manager::features::kBiometricTouchToFill);
+#endif
   for (bool is_suggestion_on_password_field : {false, true}) {
     TestPasswordManagerClient client;
     NiceMock<MockAutofillClient> autofill_client;
@@ -1691,10 +1707,17 @@ TEST_F(PasswordAutofillManagerTest, DoesntFillSuggestionIfAuthFailed) {
     EXPECT_CALL(*authenticator_.get(),
                 CanAuthenticate(BiometricAuthRequester::kAutofillSuggestion))
         .WillOnce(Return(true));
-    EXPECT_CALL(*authenticator_.get(),
-                Authenticate(BiometricAuthRequester::kAutofillSuggestion, _,
-                             /*use_last_valid_auth= */ true))
+    EXPECT_CALL(
+        *authenticator_.get(),
+#if BUILDFLAG(IS_MAC)
+        AuthenticateWithMessage(BiometricAuthRequester::kAutofillSuggestion,
+                                /*message=*/_, _))
+        .WillOnce(RunOnceCallback<2>(/*auth_succeeded=*/false));
+#else
+        Authenticate(BiometricAuthRequester::kAutofillSuggestion, _,
+                     /*use_last_valid_auth= */ true))
         .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/false));
+#endif
 
     // Accept the suggestion to start the filing process which tries to
     // reauthenticate the user if possible.
@@ -1707,7 +1730,11 @@ TEST_F(PasswordAutofillManagerTest, DoesntFillSuggestionIfAuthFailed) {
 TEST_F(PasswordAutofillManagerTest, CancelsOngoingBiometricAuthOnDestroy) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
+#if BUILDFLAG(IS_MAC)
+      password_manager::features::kBiometricAuthenticationForFilling);
+#else
       password_manager::features::kBiometricTouchToFill);
+#endif
   TestPasswordManagerClient client;
   NiceMock<MockAutofillClient> autofill_client;
   client.SetBiometricAuthenticator(authenticator_);
@@ -1735,9 +1762,15 @@ TEST_F(PasswordAutofillManagerTest, CancelsOngoingBiometricAuthOnDestroy) {
   EXPECT_CALL(*authenticator_.get(),
               CanAuthenticate(BiometricAuthRequester::kAutofillSuggestion))
       .WillOnce(Return(true));
-  EXPECT_CALL(*authenticator_.get(),
-              Authenticate(BiometricAuthRequester::kAutofillSuggestion, _,
-                           /*use_last_valid_auth= */ true));
+  EXPECT_CALL(
+      *authenticator_.get(),
+#if BUILDFLAG(IS_MAC)
+      AuthenticateWithMessage(BiometricAuthRequester::kAutofillSuggestion,
+                              /*message=*/_, _));
+#else
+      Authenticate(BiometricAuthRequester::kAutofillSuggestion, _,
+                   /*use_last_valid_auth= */ true));
+#endif
 
   // Accept the suggestion to start the filing process which tries to
   // reauthenticate the user if possible.
@@ -1753,7 +1786,11 @@ TEST_F(PasswordAutofillManagerTest,
        CancelsOngoingBiometricAuthOnDeleteFillData) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
+#if BUILDFLAG(IS_MAC)
+      password_manager::features::kBiometricAuthenticationForFilling);
+#else
       password_manager::features::kBiometricTouchToFill);
+#endif
   TestPasswordManagerClient client;
   NiceMock<MockAutofillClient> autofill_client;
   client.SetBiometricAuthenticator(authenticator_);
@@ -1781,9 +1818,15 @@ TEST_F(PasswordAutofillManagerTest,
   EXPECT_CALL(*authenticator_.get(),
               CanAuthenticate(BiometricAuthRequester::kAutofillSuggestion))
       .WillOnce(Return(true));
-  EXPECT_CALL(*authenticator_.get(),
-              Authenticate(BiometricAuthRequester::kAutofillSuggestion, _,
-                           /*use_last_valid_auth= */ true));
+  EXPECT_CALL(
+      *authenticator_.get(),
+#if BUILDFLAG(IS_MAC)
+      AuthenticateWithMessage(BiometricAuthRequester::kAutofillSuggestion,
+                              /*message=*/_, _));
+#else
+      Authenticate(BiometricAuthRequester::kAutofillSuggestion, _,
+                   /*use_last_valid_auth= */ true));
+#endif
 
   // Accept the suggestion to start the filing process which tries to
   // reauthenticate the user if possible.
@@ -1800,7 +1843,11 @@ TEST_F(PasswordAutofillManagerTest,
        CancelsOngoingBiometricAuthOnFillDataChange) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
+#if BUILDFLAG(IS_MAC)
+      password_manager::features::kBiometricAuthenticationForFilling);
+#else
       password_manager::features::kBiometricTouchToFill);
+#endif
   TestPasswordManagerClient client;
   NiceMock<MockAutofillClient> autofill_client;
   client.SetBiometricAuthenticator(authenticator_);
@@ -1828,9 +1875,15 @@ TEST_F(PasswordAutofillManagerTest,
   EXPECT_CALL(*authenticator_.get(),
               CanAuthenticate(BiometricAuthRequester::kAutofillSuggestion))
       .WillOnce(Return(true));
-  EXPECT_CALL(*authenticator_.get(),
-              Authenticate(BiometricAuthRequester::kAutofillSuggestion, _,
-                           /*use_last_valid_auth= */ true));
+  EXPECT_CALL(
+      *authenticator_.get(),
+#if BUILDFLAG(IS_MAC)
+      AuthenticateWithMessage(BiometricAuthRequester::kAutofillSuggestion,
+                              /*message=*/_, _));
+#else
+      Authenticate(BiometricAuthRequester::kAutofillSuggestion, _,
+                   /*use_last_valid_auth= */ true));
+#endif
 
   // Accept the suggestion to start the filing process which tries to
   // reauthenticate the user if possible.
@@ -1842,6 +1895,7 @@ TEST_F(PasswordAutofillManagerTest,
               Cancel(BiometricAuthRequester::kAutofillSuggestion));
   password_autofill_manager_->OnAddPasswordFillData(CreateTestFormFillData());
 }
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 
 TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
   TestPasswordManagerClient client;

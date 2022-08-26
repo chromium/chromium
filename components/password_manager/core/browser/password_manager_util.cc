@@ -392,8 +392,15 @@ PasswordForm MakeNormalizedBlocklistedForm(
 bool CanUseBiometricAuth(device_reauth::BiometricAuthenticator* authenticator,
                          device_reauth::BiometricAuthRequester requester) {
   return authenticator && authenticator->CanAuthenticate(requester) &&
-         base::FeatureList::IsEnabled(
-             password_manager::features::kBiometricTouchToFill);
+         (base::FeatureList::IsEnabled(
+              password_manager::features::kBiometricTouchToFill)
+// TODO(crbug.com/1354081): Use settings toggle to check if biometric reauth is
+// enabled.
+#if BUILDFLAG(IS_MAC)
+          || base::FeatureList::IsEnabled(
+                 password_manager::features::kBiometricAuthenticationForFilling)
+#endif
+         );
 }
 
 GURL StripAuthAndParams(const GURL& gurl) {

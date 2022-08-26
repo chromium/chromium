@@ -152,6 +152,11 @@ TEST_F(PasswordFormFillingTest, NoSavedCredentials) {
 }
 
 TEST_F(PasswordFormFillingTest, Autofill) {
+#if BUILDFLAG(IS_MAC)
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kBiometricAuthenticationForFilling);
+#endif
   std::vector<const PasswordForm*> best_matches;
   best_matches.push_back(&saved_match_);
   PasswordForm another_saved_match = saved_match_;
@@ -171,7 +176,7 @@ TEST_F(PasswordFormFillingTest, Autofill) {
 
   // On Android Touch To Fill will prevent autofilling credentials on page load.
   // On iOS Reauth is always required.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_MAC)
   EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect, likely_form_filling);
   EXPECT_TRUE(fill_data.wait_for_username);
 #else
@@ -198,6 +203,11 @@ TEST_F(PasswordFormFillingTest, Autofill) {
 }
 
 TEST_F(PasswordFormFillingTest, TestFillOnLoadSuggestion) {
+#if BUILDFLAG(IS_MAC)
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kBiometricAuthenticationForFilling);
+#endif
   const struct {
     const char* description;
     bool new_password_present;
@@ -250,7 +260,7 @@ TEST_F(PasswordFormFillingTest, TestFillOnLoadSuggestion) {
     if (test_case.current_password_present) {
       // On Android Touch To Fill will prevent autofilling credentials on page
       // load. On iOS Reauth is always required.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_MAC)
       EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect, likely_form_filling);
 #else
       EXPECT_EQ(LikelyFormFilling::kFillOnPageLoad, likely_form_filling);

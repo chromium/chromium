@@ -65,6 +65,13 @@ bool IsFillOnAccountSelectFeatureEnabled() {
 }
 #endif
 
+#if BUILDFLAG(IS_MAC)
+bool IsBiometricAuthenticationForFillingEnabled() {
+  return base::FeatureList::IsEnabled(
+      password_manager::features::kBiometricAuthenticationForFilling);
+}
+#endif
+
 bool IsPublicSuffixMatchOrAffiliationBasedMatch(const PasswordForm& form) {
   return form.is_public_suffix_match || form.is_affiliation_based_match;
 }
@@ -197,6 +204,12 @@ LikelyFormFilling SendFillInformationToRenderer(
       WaitForUsernameReason::kDontWait;
   if (client->IsIncognito()) {
     wait_for_username_reason = WaitForUsernameReason::kIncognitoMode;
+// TODO(1354081): Use settings toggle to check if reauth should be
+// triggered.
+#if BUILDFLAG(IS_MAC)
+  } else if (IsBiometricAuthenticationForFillingEnabled()) {
+    wait_for_username_reason = WaitForUsernameReason::kBiometricAuthentication;
+#endif
   } else if (preferred_match && preferred_match->is_affiliation_based_match &&
              !IsValidAndroidFacetURI(preferred_match->signon_realm)) {
     wait_for_username_reason = WaitForUsernameReason::kAffiliatedWebsite;
