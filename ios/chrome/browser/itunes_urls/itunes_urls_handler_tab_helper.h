@@ -43,7 +43,7 @@ class ITunesUrlsHandlerTabHelper
   ~ITunesUrlsHandlerTabHelper() override;
   explicit ITunesUrlsHandlerTabHelper(web::WebState* web_state);
 
-  // Returns true, if ITunesUrlsHandlerTabHelper can handle the given |url|.
+  // Returns true, if ITunesUrlsHandlerTabHelper can handle the given `url`.
   static bool CanHandleUrl(const GURL& url);
 
   // web::WebStatePolicyDecider implementation
@@ -55,7 +55,7 @@ class ITunesUrlsHandlerTabHelper
  private:
   friend class web::WebStateUserData<ITunesUrlsHandlerTabHelper>;
 
-  // Opens the StoreKit for the given iTunes app |url|.
+  // Opens the StoreKit for the given iTunes app `url`.
   void HandleITunesUrl(const GURL& url);
 
   WEB_STATE_USER_DATA_KEY_DECL();

@@ -37,7 +37,7 @@ class ITunesUrlsHandlerTabHelperTest : public PlatformTest {
     StoreKitTabHelper::FromWebState(&web_state_)->SetLauncher(fake_launcher_);
   }
 
-  // Calls ShouldAllowRequest for a request with the given |url_string| and
+  // Calls ShouldAllowRequest for a request with the given `url_string` and
   // returns true if storekit was launched.
   bool VerifyStoreKitLaunched(NSString* url_string, bool main_frame) {
     fake_launcher_.launchedProductID = nil;

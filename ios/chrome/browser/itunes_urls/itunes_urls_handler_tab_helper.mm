@@ -50,7 +50,7 @@ void RecordStoreKitHandlingResult(ITunesUrlsStoreKitHandlingResult result) {
                             ITunesUrlsStoreKitHandlingResult::kCount);
 }
 
-// Returns true, it the given |url| is iTunes product URL.
+// Returns true, it the given `url` is iTunes product URL.
 // iTunes URL should start with apple host and has product id.
 bool IsITunesProductUrl(const GURL& url) {
   if (!url.SchemeIsHTTPOrHTTPS() ||
@@ -60,14 +60,12 @@ bool IsITunesProductUrl(const GURL& url) {
     return false;
 
   std::string file_name = url.ExtractFileName();
-  // The first |kITunesProductIdLength| characters must be
-  // |kITunesProductIdPrefix|, followed by the app ID.
-  size_t prefix_length = strlen(kITunesProductIdPrefix);
-  return (file_name.length() > prefix_length &&
-          file_name.substr(0, prefix_length) == kITunesProductIdPrefix);
+  // The first `kITunesProductIdLength` characters must be
+  // `kITunesProductIdPrefix`, followed by the app ID.
+  return base::StartsWith(file_name, kITunesProductIdPrefix);
 }
 
-// Extracts iTunes product parameters from the given |url| to be used with the
+// Extracts iTunes product parameters from the given `url` to be used with the
 // StoreKit launcher.
 NSDictionary* ExtractITunesProductParameters(const GURL& url) {
   NSMutableDictionary<NSString*, NSString*>* params_dictionary =
