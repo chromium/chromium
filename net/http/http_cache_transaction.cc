@@ -2506,6 +2506,7 @@ int HttpCache::Transaction::DoCacheReadDataComplete(int result) {
   SCOPED_CRASH_KEY_STRING32(
       "net", "transaction state",
       ToString(transaction_state_at_transition_to_reading_state_));
+  SCOPED_CRASH_KEY_NUMBER("net", "result", result);
   CHECK(InWriters() || entry_->TransactionInReaders(this));
 
   TRACE_EVENT_WITH_FLOW1("net", "HttpCacheTransaction::DoCacheReadDataComplete",
