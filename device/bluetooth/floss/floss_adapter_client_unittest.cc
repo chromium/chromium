@@ -145,9 +145,26 @@ class FlossAdapterClientTest : public testing::Test {
     EXPECT_CALL(*bus_.get(), GetExportedObject)
         .WillRepeatedly(::testing::Return(exported_callbacks_.get()));
 
-    // Make sure we export all callbacks. This will need to be updated once new
-    // callbacks are added.
-    EXPECT_CALL(*exported_callbacks_.get(), ExportMethod).Times(11);
+    // Exported callback methods that we don't need to invoke.
+    // This will need to be updated once new callbacks are added.
+    EXPECT_CALL(*exported_callbacks_.get(), ExportMethod).Times(8);
+
+    // Save the method handlers of exported callbacks that we need to invoke in
+    // test.
+    EXPECT_CALL(
+        *exported_callbacks_.get(),
+        ExportMethod(adapter::kCallbackInterface, adapter::kOnAddressChanged,
+                     testing::_, testing::_))
+        .WillOnce(testing::SaveArg<2>(&on_address_changed_));
+    EXPECT_CALL(*exported_callbacks_.get(),
+                ExportMethod(adapter::kCallbackInterface,
+                             adapter::kOnNameChanged, testing::_, testing::_))
+        .WillOnce(testing::SaveArg<2>(&on_name_changed_));
+    EXPECT_CALL(
+        *exported_callbacks_.get(),
+        ExportMethod(adapter::kCallbackInterface,
+                     adapter::kOnDiscoverableChanged, testing::_, testing::_))
+        .WillOnce(testing::SaveArg<2>(&on_discoverable_changed_));
 
     // Handle method calls on the object proxy
     ON_CALL(
@@ -259,7 +276,7 @@ class FlossAdapterClientTest : public testing::Test {
       writer.AppendString(address);
     }
 
-    client_->OnAddressChanged(&method_call, std::move(response));
+    on_address_changed_.Run(&method_call, std::move(response));
   }
 
   void SendNameChangeCallback(bool error,
@@ -273,7 +290,7 @@ class FlossAdapterClientTest : public testing::Test {
       writer.AppendString(name);
     }
 
-    client_->OnNameChanged(&method_call, std::move(response));
+    on_name_changed_.Run(&method_call, std::move(response));
   }
 
   void SendDiscoverableChangeCallback(
@@ -288,7 +305,7 @@ class FlossAdapterClientTest : public testing::Test {
       writer.AppendBool(discoverable);
     }
 
-    client_->OnDiscoverableChanged(&method_call, std::move(response));
+    on_discoverable_changed_.Run(&method_call, std::move(response));
   }
 
   void SendDiscoveringChangeCallback(
@@ -421,6 +438,10 @@ class FlossAdapterClientTest : public testing::Test {
   scoped_refptr<::dbus::MockExportedObject> exported_callbacks_;
   scoped_refptr<::dbus::MockObjectProxy> adapter_object_proxy_;
   std::unique_ptr<FlossAdapterClient> client_;
+
+  dbus::ExportedObject::MethodCallCallback on_address_changed_;
+  dbus::ExportedObject::MethodCallCallback on_name_changed_;
+  dbus::ExportedObject::MethodCallCallback on_discoverable_changed_;
 
   base::test::TaskEnvironment task_environment_;
   base::WeakPtrFactory<FlossAdapterClientTest> weak_ptr_factory_{this};
