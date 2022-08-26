@@ -65,7 +65,7 @@ async def test_session_status(websocket):
     command = {"id": 5, "method": "session.status", "params": {}}
     await send_JSON_command(websocket, command)
     resp = await read_JSON_message(websocket)
-    assert resp == {"id": 5, "result": {"ready": True, "message": "ready"}}
+    assert resp == {"id": 5, "result": {"ready": False, "message": "already connected"}}
 
 
 @pytest.mark.asyncio

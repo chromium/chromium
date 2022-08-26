@@ -77,7 +77,7 @@ export class CommandProcessor {
 
   // noinspection JSMethodCanBeStatic,JSUnusedLocalSymbols
   async #process_session_status(): Promise<Session.StatusResult> {
-    return { result: { ready: true, message: 'ready' } };
+    return { result: { ready: false, message: 'already connected' } };
   }
 
   async #process_session_subscribe(
