@@ -208,7 +208,8 @@ void LoginPinInputView::UpdatePalette(const LoginPalette& palette) {
 }
 
 void LoginPinInputView::UpdateView() {
-  bool was_visible = GetVisible();
+  const bool was_visible = GetVisible();
+  const bool was_readonly = IsReadOnly();
 
   // Hide the view before deleting.
   SetVisible(false);
@@ -221,7 +222,7 @@ void LoginPinInputView::UpdateView() {
                           base::Unretained(this)),
       base::BindRepeating(&LoginPinInputView::OnChanged,
                           base::Unretained(this))));
-  is_read_only_ = false;
+  SetReadOnly(was_readonly);
   Layout();
   SetVisible(was_visible);
 }
