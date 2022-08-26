@@ -290,6 +290,7 @@ void PositionView(UIView* view, CGPoint point) {
 
 - (void)hideActivityIndicator {
   [self.activityIndicator stopAnimating];
+  [self.activityIndicator setHidden:YES];
   [self.iconView setHidden:NO];
 }
 
