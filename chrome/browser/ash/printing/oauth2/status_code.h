@@ -8,10 +8,9 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/strings/string_piece.h"
 
-namespace ash {
-namespace printing {
-namespace oauth2 {
+namespace ash::printing::oauth2 {
 
 enum class StatusCode {
   // Success - no errors occurred.
@@ -26,8 +25,7 @@ enum class StatusCode {
   // dynamic registration (as described in rfc7591).
   kClientNotRegistered,
   // The server is untrusted.
-  // TODO(b:240799350) - replace Unknown with Untrusted.
-  kUnknownAuthorizationServer,
+  kUntrustedAuthorizationServer,
   // The server denied the request.
   kAccessDenied,
   // RedirectURL obtained during authorization process does not match any
@@ -50,6 +48,11 @@ enum class StatusCode {
   kUnexpectedError
 };
 
+// Returns the given `status` as strings that can be used in device-log.
+// Returned string equals C++ name of `status` without leading 'k', e.g.:
+// kClientNotRegistered is converted to "ClientNotRegistered".
+base::StringPiece ToStringPiece(StatusCode status);
+
 // This is the standard callback used in oauth2 namespace. When `status` equals
 // StatusCode::kOK, `data` may contain an access token or authorization URL.
 // When `status` is different than StatusCode::kOK, `data` may contain
@@ -57,8 +60,6 @@ enum class StatusCode {
 using StatusCallback =
     base::OnceCallback<void(StatusCode status, const std::string& data)>;
 
-}  // namespace oauth2
-}  // namespace printing
-}  // namespace ash
+}  // namespace ash::printing::oauth2
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_OAUTH2_STATUS_CODE_H_

@@ -221,13 +221,13 @@ TEST_F(PrintingOAuth2AuthorizationZonesManagerTest, UntrustedAuthServer) {
   chromeos::Uri ipp_endpoint("https://printer");
 
   CallbackResult cr = CallInitAuthorization(url, "scope");
-  EXPECT_EQ(cr.status, StatusCode::kUnknownAuthorizationServer);
+  EXPECT_EQ(cr.status, StatusCode::kUntrustedAuthorizationServer);
 
   cr = CallFinishAuthorization(url, redirect_url);
-  EXPECT_EQ(cr.status, StatusCode::kUnknownAuthorizationServer);
+  EXPECT_EQ(cr.status, StatusCode::kUntrustedAuthorizationServer);
 
   cr = CallGetEndpointAccessToken(url, ipp_endpoint, "scope");
-  EXPECT_EQ(cr.status, StatusCode::kUnknownAuthorizationServer);
+  EXPECT_EQ(cr.status, StatusCode::kUntrustedAuthorizationServer);
 }
 
 TEST_F(PrintingOAuth2AuthorizationZonesManagerTest, PassingCallsToAuthZones) {
@@ -327,7 +327,7 @@ TEST_F(PrintingOAuth2AuthorizationZonesManagerTest, ApplySyncChanges) {
 
   // Check if |url_1| is gone.
   CallbackResult cr = CallInitAuthorization(url_1, "scope1");
-  EXPECT_EQ(cr.status, StatusCode::kUnknownAuthorizationServer);
+  EXPECT_EQ(cr.status, StatusCode::kUntrustedAuthorizationServer);
 
   // Check if |url_2| is added.
   AuthZoneMock* auth_zone_2 = auth_zones_[url_2];

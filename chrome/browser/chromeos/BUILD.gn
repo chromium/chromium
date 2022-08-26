@@ -1634,6 +1634,7 @@ source_set("chromeos") {
     "../ash/printing/oauth2/ipp_endpoint_token_fetcher.h",
     "../ash/printing/oauth2/profile_auth_servers_sync_bridge.cc",
     "../ash/printing/oauth2/profile_auth_servers_sync_bridge.h",
+    "../ash/printing/oauth2/status_code.cc",
     "../ash/printing/oauth2/status_code.h",
     "../ash/printing/ppd_provider_factory.cc",
     "../ash/printing/ppd_provider_factory.h",

@@ -355,13 +355,13 @@ void AuthorizationZoneImpl::MarkAuthorizationZoneAsUntrusted() {
 
   // This method will call all callbacks from `waiting_authorizations_` and
   // empty it.
-  OnInitializeCallback(StatusCode::kUnknownAuthorizationServer, msg);
+  OnInitializeCallback(StatusCode::kUntrustedAuthorizationServer, msg);
 
   // Clear `sessions_`.
   for (std::unique_ptr<AuthorizationServerSession>& session : sessions_) {
     std::vector<StatusCallback> callbacks = session->TakeWaitingList();
     for (StatusCallback& callback : callbacks) {
-      std::move(callback).Run(StatusCode::kUnknownAuthorizationServer, msg);
+      std::move(callback).Run(StatusCode::kUntrustedAuthorizationServer, msg);
     }
   }
   sessions_.clear();
@@ -370,7 +370,7 @@ void AuthorizationZoneImpl::MarkAuthorizationZoneAsUntrusted() {
   for (auto& [_, ipp_endpoint] : ipp_endpoints_) {
     std::vector<StatusCallback> callbacks = ipp_endpoint->TakeWaitingList();
     for (StatusCallback& callback : callbacks) {
-      std::move(callback).Run(StatusCode::kUnknownAuthorizationServer, msg);
+      std::move(callback).Run(StatusCode::kUntrustedAuthorizationServer, msg);
     }
   }
   ipp_endpoints_.clear();

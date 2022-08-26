@@ -472,13 +472,13 @@ TEST_F(PrintingOAuth2AuthorizationZoneTest, CancellationDuringInitialization) {
   authorization_zone_->InitAuthorization("scope0", BindResult(cr_0));
   authorization_zone_->InitAuthorization("scope1", BindResult(cr_1));
   authorization_zone_->MarkAuthorizationZoneAsUntrusted();
-  EXPECT_EQ(cr_0.status, StatusCode::kUnknownAuthorizationServer);
-  EXPECT_EQ(cr_1.status, StatusCode::kUnknownAuthorizationServer);
+  EXPECT_EQ(cr_0.status, StatusCode::kUntrustedAuthorizationServer);
+  EXPECT_EQ(cr_1.status, StatusCode::kUntrustedAuthorizationServer);
 
   // Response from the server should not trigger anything.
   ProcessMetadataRequest();
-  EXPECT_EQ(cr_0.status, StatusCode::kUnknownAuthorizationServer);
-  EXPECT_EQ(cr_1.status, StatusCode::kUnknownAuthorizationServer);
+  EXPECT_EQ(cr_0.status, StatusCode::kUntrustedAuthorizationServer);
+  EXPECT_EQ(cr_1.status, StatusCode::kUntrustedAuthorizationServer);
 }
 
 TEST_F(PrintingOAuth2AuthorizationZoneTest, CancelExistingSessions) {
@@ -506,8 +506,8 @@ TEST_F(PrintingOAuth2AuthorizationZoneTest, CancelExistingSessions) {
 
   // Cancel the zone. All pending callbacks should return.
   authorization_zone_->MarkAuthorizationZoneAsUntrusted();
-  EXPECT_EQ(cr_0.status, StatusCode::kUnknownAuthorizationServer);
-  EXPECT_EQ(cr_1.status, StatusCode::kUnknownAuthorizationServer);
+  EXPECT_EQ(cr_0.status, StatusCode::kUntrustedAuthorizationServer);
+  EXPECT_EQ(cr_1.status, StatusCode::kUntrustedAuthorizationServer);
 }
 
 TEST_F(PrintingOAuth2AuthorizationZoneTest, PrefixInErrorMessage) {

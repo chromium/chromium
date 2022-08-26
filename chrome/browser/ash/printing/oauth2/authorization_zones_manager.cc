@@ -86,7 +86,7 @@ class AuthorizationZonesManagerImpl
     if (!zone) {
       auto it = waiting_servers_.find(auth_server);
       if (it == waiting_servers_.end()) {
-        std::move(callback).Run(StatusCode::kUnknownAuthorizationServer,
+        std::move(callback).Run(StatusCode::kUntrustedAuthorizationServer,
                                 auth_server.possibly_invalid_spec());
       } else {
         it->second.init_calls.emplace_back(
@@ -105,7 +105,7 @@ class AuthorizationZonesManagerImpl
     if (!zone) {
       const StatusCode code = base::Contains(waiting_servers_, auth_server)
                                   ? StatusCode::kAuthorizationNeeded
-                                  : StatusCode::kUnknownAuthorizationServer;
+                                  : StatusCode::kUntrustedAuthorizationServer;
       std::move(callback).Run(code, auth_server.possibly_invalid_spec());
       return;
     }
@@ -121,7 +121,7 @@ class AuthorizationZonesManagerImpl
     if (!zone) {
       const StatusCode code = base::Contains(waiting_servers_, auth_server)
                                   ? StatusCode::kAuthorizationNeeded
-                                  : StatusCode::kUnknownAuthorizationServer;
+                                  : StatusCode::kUntrustedAuthorizationServer;
       std::move(callback).Run(code, auth_server.possibly_invalid_spec());
       return;
     }
