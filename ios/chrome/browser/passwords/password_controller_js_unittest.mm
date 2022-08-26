@@ -63,7 +63,7 @@ class PasswordControllerJsTest : public PlatformTest {
     autofill::FormUtilJavaScriptFeature::GetInstance()
         ->SetUpForUniqueIDsWithInitialState(main_frame, next_available_id);
 
-    // Wait for |SetUpForUniqueIDsWithInitialState| to complete.
+    // Wait for `SetUpForUniqueIDsWithInitialState` to complete.
     success = WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
       return [web::test::ExecuteJavaScript(@"document[__gCrWeb.fill.ID_SYMBOL]",
                                            web_state()) intValue] ==
@@ -118,8 +118,8 @@ NSString* const kEmailInputID = @"Email";
 NSString* const kPasswordInputID = @"Passwd";
 
 // Returns an autoreleased string of an HTML form that is similar to the
-// Google Accounts sign in form. |email| may be nil if the form does not
-// need to be pre-filled with the username. Use |isReadOnly| flag to indicate
+// Google Accounts sign in form. `email` may be nil if the form does not
+// need to be pre-filled with the username. Use `isReadOnly` flag to indicate
 // if the email field should be read-only.
 NSString* GAIASignInForm(NSString* formAction,
                          NSString* email,
@@ -961,7 +961,7 @@ TEST_F(PasswordControllerJsTest, FillOnlyPasswordField) {
                         @"__gCrWeb.passwords.fillPasswordForm(%@, '', '%@')",
                         form_fill_data, password],
           web_state()));
-  // Verifies that the sign-in form has been filled with |password|.
+  // Verifies that the sign-in form has been filled with `password`.
   EXPECT_NSEQ(password,
               web::test::ExecuteJavaScript(
                   @"document.getElementById('password').value", web_state()));

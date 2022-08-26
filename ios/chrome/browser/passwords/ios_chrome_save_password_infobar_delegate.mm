@@ -26,11 +26,11 @@
 namespace {
 
 // Records Presentation Metrics for the Infobar Delegate.
-// |current_password_saved| is true if the Infobar is on read-only mode after a
+// `current_password_saved` is true if the Infobar is on read-only mode after a
 // Save/Update action has occured.
-// |update_infobar| is YES if presenting an Update Infobar, NO if presenting a
+// `update_infobar` is YES if presenting an Update Infobar, NO if presenting a
 // Save Infobar.
-// |automatic| is YES the Infobar was presented automatically(e.g. The banner
+// `automatic` is YES the Infobar was presented automatically(e.g. The banner
 // was presented), NO if the user triggered it  (e.g. Tapped onthe badge).
 void RecordPresentationMetrics(
     password_manager::PasswordFormManagerForUI* form_to_save,
@@ -83,9 +83,9 @@ void RecordPresentationMetrics(
 }
 
 // Records Dismissal Metrics for the Infobar Delegate.
-// |infobar_response| is the action that was taken in order to dismiss the
+// `infobar_response` is the action that was taken in order to dismiss the
 // Infobar.
-// |update_infobar| is YES if presenting an Update Infobar, NO if presenting a
+// `update_infobar` is YES if presenting an Update Infobar, NO if presenting a
 // Save Infobar.
 void RecordDismissalMetrics(
     password_manager::PasswordFormManagerForUI* form_to_save,

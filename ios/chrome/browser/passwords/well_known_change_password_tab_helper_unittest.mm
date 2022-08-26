@@ -118,7 +118,7 @@ class WellKnownChangePasswordTabHelperTest : public PlatformTest {
     test_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
 
-  // Sets a response for the |test_url_loader_factory_| with the |test_server_|
+  // Sets a response for the `test_url_loader_factory_` with the `test_server_`
   // as the host.
   void SetUrlLoaderResponse(const std::string& path,
                             net::HttpStatusCode status_code) {
@@ -159,9 +159,9 @@ class WellKnownChangePasswordTabHelperTest : public PlatformTest {
   std::unique_ptr<web::WebState> web_state_;
 
  private:
-  // Returns a response for the given request. Uses |path_response_map_| to
+  // Returns a response for the given request. Uses `path_response_map_` to
   // construct the response. Returns nullptr when the path is not defined in
-  // |path_response_map_|.
+  // `path_response_map_`.
   std::unique_ptr<HttpResponse> HandleRequest(const HttpRequest& request);
 
   base::test::ScopedFeatureList feature_list_;
@@ -174,7 +174,7 @@ GURL WellKnownChangePasswordTabHelperTest::GetNavigatedUrl() const {
   web::URLVerificationTrustLevel trust_level =
       web::URLVerificationTrustLevel::kAbsolute;
   GURL url = web_state()->GetCurrentURL(&trust_level);
-  // When redirecting with WebState::OpenURL() |web_state_| is not
+  // When redirecting with WebState::OpenURL() `web_state_` is not
   // updated, we only see the registered request in
   // FakeWebStateDelegate::last_open_url_request().
   if (delegate_.last_open_url_request()) {

@@ -103,11 +103,11 @@ class IOSChromePasswordCheckManager
 
   ChromeBrowserState* browser_state_ = nullptr;
 
-  // Handle to the password store, powering both |saved_passwords_presenter_|
-  // and |insecure_credentials_manager_|.
+  // Handle to the password store, powering both `saved_passwords_presenter_`
+  // and `insecure_credentials_manager_`.
   scoped_refptr<password_manager::PasswordStoreInterface> password_store_;
 
-  // Used by |insecure_credentials_manager_| to obtain the list of saved
+  // Used by `insecure_credentials_manager_` to obtain the list of saved
   // passwords.
   password_manager::SavedPasswordsPresenter saved_passwords_presenter_;
 
@@ -130,12 +130,12 @@ class IOSChromePasswordCheckManager
   // when password check run less than 3 seconds.
   base::Time start_time_;
 
-  // A scoped observer for |saved_passwords_presenter_|.
+  // A scoped observer for `saved_passwords_presenter_`.
   base::ScopedObservation<password_manager::SavedPasswordsPresenter,
                           password_manager::SavedPasswordsPresenter::Observer>
       observed_saved_passwords_presenter_{this};
 
-  // A scoped observer for |insecure_credentials_manager_|.
+  // A scoped observer for `insecure_credentials_manager_`.
   base::ScopedObservation<
       password_manager::InsecureCredentialsManager,
       password_manager::InsecureCredentialsManager::Observer>

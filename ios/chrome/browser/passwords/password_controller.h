@@ -35,7 +35,7 @@ class PasswordManagerClient;
 // to use the UI command patterns.
 @protocol PasswordControllerDelegate
 
-// Adds |viewController| as child controller in order to display auto sign-in
+// Adds `viewController` as child controller in order to display auto sign-in
 // notification. Returns YES if view was displayed, NO otherwise.
 - (BOOL)displaySignInNotification:(UIViewController*)viewController
                         fromTabId:(NSString*)tabId;
@@ -80,7 +80,7 @@ class PasswordManagerClient;
 @property(nonatomic, readonly)
     SharedPasswordController* sharedPasswordController;
 
-// |webState| should not be nil.
+// `webState` should not be nil.
 - (instancetype)initWithWebState:(web::WebState*)webState;
 
 // This is just for testing.

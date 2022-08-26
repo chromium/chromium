@@ -38,8 +38,8 @@ WellKnownChangePasswordTabHelper::~WellKnownChangePasswordTabHelper() = default;
 void WellKnownChangePasswordTabHelper::DidStartNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
-  // |request_url_| is set when the first request goes to
-  // .well-known-change-password. If the navigation url and |request_url_| are
+  // `request_url_` is set when the first request goes to
+  // .well-known-change-password. If the navigation url and `request_url_` are
   // equal, DidStartNavigation() is called for the .well-known/change-password
   // navigation. Otherwise a different navigation was started.
   if (!(request_url_.is_valid() &&

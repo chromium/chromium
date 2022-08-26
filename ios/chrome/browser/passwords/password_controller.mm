@@ -131,14 +131,14 @@ BOOL IsPasswordManagerBrandingUpdateEnabled() {
 // Tracks current potential generated password until accepted or rejected.
 @property(nonatomic, copy) NSString* generatedPotentialPassword;
 
-// Displays infobar for |form| with |type|. If |type| is UPDATE, the user
-// is prompted to update the password. If |type| is SAVE, the user is prompted
+// Displays infobar for `form` with `type`. If `type` is UPDATE, the user
+// is prompted to update the password. If `type` is SAVE, the user is prompted
 // to save the password.
 - (void)showInfoBarForForm:(std::unique_ptr<PasswordFormManagerForUI>)form
                infoBarType:(PasswordInfoBarType)type
                     manual:(BOOL)manual;
 
-// Removes infobar for given |type| if it exists. If it is not found the
+// Removes infobar for given `type` if it exists. If it is not found the
 // request is silently ignored (because that use case is expected).
 - (void)removeInfoBarOfType:(PasswordInfoBarType)type manual:(BOOL)manual;
 
@@ -335,7 +335,7 @@ BOOL IsPasswordManagerBrandingUpdateEnabled() {
   if (![_delegate displaySignInNotification:self.notifyAutoSigninViewController
                                   fromTabId:_webState->GetStableIdentifier()]) {
     // The notification was not shown. Store the password form in
-    // |_pendingAutoSigninPasswordForm| to show the notification later.
+    // `_pendingAutoSigninPasswordForm` to show the notification later.
     _pendingAutoSigninPasswordForm = std::move(formSignedIn);
     self.notifyAutoSigninViewController = nil;
     return;

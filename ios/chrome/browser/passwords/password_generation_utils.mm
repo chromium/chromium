@@ -12,8 +12,8 @@ namespace passwords {
 
 namespace {
 
-// The actual implementation of |RunPipeline| that begins with the first block
-// in |blocks|.
+// The actual implementation of `RunPipeline` that begins with the first block
+// in `blocks`.
 void RunSearchPipeline(NSArray* blocks,
                        PipelineCompletionBlock on_complete,
                        NSUInteger from_index) {

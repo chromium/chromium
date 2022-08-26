@@ -165,8 +165,8 @@ class IOSChromePasswordManagerClient
 
   void LogPasswordReuseDetectedEvent() override;
 
-  // Shows the password protection UI. |warning_text| is the displayed text.
-  // |callback| is invoked when the user dismisses the UI.
+  // Shows the password protection UI. `warning_text` is the displayed text.
+  // `callback` is invoked when the user dismisses the UI.
   void NotifyUserPasswordProtectionWarning(
       const std::u16string& warning_text,
       base::OnceCallback<void(safe_browsing::WarningAction)> callback);

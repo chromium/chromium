@@ -43,7 +43,7 @@ scoped_refptr<password_manager::PasswordStoreInterface>
 IOSChromePasswordStoreFactory::GetForBrowserState(
     ChromeBrowserState* browser_state,
     ServiceAccessType access_type) {
-  // |profile| gets always redirected to a non-Incognito profile below, so
+  // `profile` gets always redirected to a non-Incognito profile below, so
   // Incognito & IMPLICIT_ACCESS means that incognito browsing session would
   // result in traces in the normal profile without the user knowing it.
   if (access_type == ServiceAccessType::IMPLICIT_ACCESS &&

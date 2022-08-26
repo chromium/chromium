@@ -55,7 +55,7 @@ class TestPasswordManagerClient
   PasswordStoreInterface* GetProfilePasswordStore() const override;
   const PasswordManager* GetPasswordManager() const override;
   url::Origin GetLastCommittedOrigin() const override;
-  // Stores |manager| into |manager_|. Save() should be
+  // Stores `manager` into `manager_`. Save() should be
   // called manually in test. To put expectation on this function being called,
   // use PromptUserToSavePasswordPtr.
   bool PromptUserToSaveOrUpdatePassword(

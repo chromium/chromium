@@ -15,7 +15,7 @@
 @protocol SavePasswordsConsumerDelegate
 
 // Callback called when the async request launched from
-// |getLoginsFromPasswordStore| finishes.
+// `getLoginsFromPasswordStore` finishes.
 - (void)onGetPasswordStoreResults:
     (std::vector<std::unique_ptr<password_manager::PasswordForm>>)results;
 

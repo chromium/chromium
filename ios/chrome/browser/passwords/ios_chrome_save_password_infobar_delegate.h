@@ -20,7 +20,7 @@ class PasswordFormManagerForUI;
 // password_manager::PasswordFormManager and move it to a
 // IOSChromeSavePasswordInfoBarDelegate while the user makes up their mind
 // with the "save password" infobar.
-// If |password_update| is true the delegate will use "Update" related strings,
+// If `password_update` is true the delegate will use "Update" related strings,
 // and should Update the credentials instead of Saving new ones.
 class IOSChromeSavePasswordInfoBarDelegate
     : public IOSChromePasswordManagerInfoBarDelegate {
@@ -38,7 +38,7 @@ class IOSChromeSavePasswordInfoBarDelegate
 
   ~IOSChromeSavePasswordInfoBarDelegate() override;
 
-  // Returns |delegate| as an IOSChromeSavePasswordInfoBarDelegate, or nullptr
+  // Returns `delegate` as an IOSChromeSavePasswordInfoBarDelegate, or nullptr
   // if it is of another type.
   static IOSChromeSavePasswordInfoBarDelegate* FromInfobarDelegate(
       infobars::InfoBarDelegate* delegate);
@@ -53,13 +53,13 @@ class IOSChromeSavePasswordInfoBarDelegate
   bool Cancel() override;
   void InfoBarDismissed() override;
 
-  // Updates the credentials being saved with |username| and |password|.
+  // Updates the credentials being saved with `username` and `password`.
   // TODO(crbug.com/1040653): This function is only virtual so it can be mocked
   // for testing purposes.  It should become non-virtual once this test is
   // refactored for testability.
   virtual void UpdateCredentials(NSString* username, NSString* password);
 
-  // Informs the delegate that the Infobar has been presented. If |automatic|
+  // Informs the delegate that the Infobar has been presented. If `automatic`
   // YES the Infobar was presented automatically (e.g. The banner was
   // presented), if NO the user triggered it  (e.g. Tapped on the badge).
   // TODO(crbug.com/1040653): This function is only virtual so it can be mocked

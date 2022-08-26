@@ -35,7 +35,7 @@ class PasswordTabHelper : public web::WebStateObserver,
 
   ~PasswordTabHelper() override;
 
-  // Creates a PasswordTabHelper and attaches it to the given |web_state|.
+  // Creates a PasswordTabHelper and attaches it to the given `web_state`.
   static void CreateForWebState(web::WebState* web_state);
 
   // Sets the BaseViewController from which to present UI.
