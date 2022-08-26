@@ -44,6 +44,7 @@ const char kWebDriverSyncScriptCommand[] = "sync";
 const char kWebDriverAsyncScriptCommand[] = "async";
 const char kWebDriverScreenshotCommand[] = "screenshot";
 const char kWebDriverWindowRectCommand[] = "rect";
+const char kWebDriverActionsCommand[] = "actions";
 
 // Non-standard commands used only for testing Chrome.
 // This command is similar to the standard "url" command. It loads the URL
@@ -258,6 +259,9 @@ absl::optional<base::Value> CWTRequestHandler::ProcessCommand(
     if (command == kWebDriverWindowCommand)
       return CloseTargetTab();
 
+    if (command == kWebDriverActionsCommand)
+      return ReleaseActions();
+
     return absl::nullopt;
   }
 
@@ -331,6 +335,10 @@ base::Value CWTRequestHandler::InitializeSession() {
 base::Value CWTRequestHandler::CloseSession() {
   session_id_.clear();
   session_completion_handler_();
+  return base::Value(base::Value::Type::NONE);
+}
+
+base::Value CWTRequestHandler::ReleaseActions() {
   return base::Value(base::Value::Type::NONE);
 }
 

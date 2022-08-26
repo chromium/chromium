@@ -88,6 +88,11 @@ class CWTRequestHandler {
   // Otherwise, returns the ids of the remaining tabs.
   base::Value CloseTargetTab();
 
+  // Releases keys and buttons that are currently pressed as a result of
+  // performed actions. This is currently a no-op since performing actions is
+  // not supported.
+  base::Value ReleaseActions();
+
   // Executes the given script in the target tab. Returns an error if script
   // execution times out. Otherwise, returns the result of script execution.
   // When |is_async_function| is true, the given script must be the body of a

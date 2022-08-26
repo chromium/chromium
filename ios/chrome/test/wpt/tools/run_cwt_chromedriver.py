@@ -35,11 +35,17 @@ parser.add_argument('--build-dir', default=GetDefaultBuildDir(),
     help='Chrome build directory')
 parser.add_argument('--out-dir', default='/tmp/cwt_chromedriver',
     help='Output directory for CWTChromeDriver\'s dummy test case')
-parser.add_argument('--os', default='14.4', help='iOS version')
+parser.add_argument('--os', default='15.5', help='iOS version')
 parser.add_argument('--device', default='iPhone 11 Pro', help='Device type')
 parser.add_argument('--asan-build', help='Use ASan-related libraries',
     dest='asan_build', action='store_true')
 parser.set_defaults(asan_build=False)
+parser.add_argument('--enable-chrome-logs', action='store_true',
+    help='No-op, recognized as an argument for compatiblity with ChromeDriver')
+parser.add_argument('--verbose', action='store_true',
+    help='No-op, recognized as an argument for compatiblity with ChromeDriver')
+parser.add_argument('--log-path',
+    help='No-op, recognized as an argument for compatiblity with ChromeDriver')
 args=parser.parse_args()
 
 test_app = os.path.join(
