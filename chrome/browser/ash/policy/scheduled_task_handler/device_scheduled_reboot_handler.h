@@ -8,11 +8,13 @@
 #include <memory>
 
 #include "ash/components/settings/timezone_settings.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/reboot_notifications_scheduler.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/scheduled_task_executor.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/scoped_wake_lock.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "services/device/public/mojom/wake_lock.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
@@ -22,7 +24,8 @@ namespace policy {
 // This class listens for changes in the scheduled reboot policy and then
 // manages recurring reboots based on the policy.
 class DeviceScheduledRebootHandler
-    : public ash::system::TimezoneSettings::Observer {
+    : public ash::system::TimezoneSettings::Observer,
+      chromeos::PowerManagerClient::Observer {
  public:
   DeviceScheduledRebootHandler(
       ash::CrosSettings* cros_settings,
@@ -37,6 +40,11 @@ class DeviceScheduledRebootHandler
   // ScheduledTaskExecutor. ash::system::TimezoneSettings::Observer
   // implementation.
   void TimezoneChanged(const icu::TimeZone& time_zone) override;
+
+  // Called when the power manager service becomes available. Reboot timer can
+  // only be started after this moment.
+  // chromeos::PowerManagerClient::Observer overrides:
+  void PowerManagerBecameAvailable(bool available) override;
 
   // The tag associated to register |scheduled_task_executor_|.
   static constexpr char kRebootTimerTag[] = "DeviceScheduledRebootHandler";
@@ -60,10 +68,10 @@ class DeviceScheduledRebootHandler
   // reboot instantly.
   virtual void OnRebootButtonClicked();
 
- private:
   // Callback triggered when scheduled reboot setting has changed.
-  void OnScheduledRebootDataChanged();
+  virtual void OnScheduledRebootDataChanged();
 
+ private:
   // Calls |scheduled_task_executor_| to start the timer. Requires
   // |scheduled_update_check_data_| to be set.
   void StartRebootTimer();
@@ -103,6 +111,11 @@ class DeviceScheduledRebootHandler
 
   // Indicating if the reboot should be skipped.
   bool skip_reboot_ = false;
+
+  // Observation of chromeos::PowerManagerClient.
+  base::ScopedObservation<chromeos::PowerManagerClient,
+                          chromeos::PowerManagerClient::Observer>
+      observation_{this};
 };
 
 }  // namespace policy

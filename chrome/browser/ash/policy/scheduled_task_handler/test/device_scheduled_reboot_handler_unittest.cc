@@ -68,6 +68,9 @@ class DeviceScheduledRebootHandlerForTest
   }
 
   int GetRebootTimerExpirations() const { return reboot_timer_expirations_; }
+  int GetPolicyChangesProcessedCount() const {
+    return policy_changes_processed_;
+  }
 
  private:
   void OnRebootTimerExpired() override {
@@ -75,8 +78,16 @@ class DeviceScheduledRebootHandlerForTest
     DeviceScheduledRebootHandler::OnRebootTimerExpired();
   }
 
+  void OnScheduledRebootDataChanged() override {
+    ++policy_changes_processed_;
+    DeviceScheduledRebootHandler::OnScheduledRebootDataChanged();
+  }
+
   // Number of calls to |OnRebootTimerExpired|.
   int reboot_timer_expirations_ = 0;
+
+  // Number of calls to |OnScheduledRebootDataChanged|.
+  int policy_changes_processed_ = 0;
 };
 
 class DeviceScheduledRebootHandlerTest : public testing::Test {
@@ -706,5 +717,99 @@ TEST_F(ScheduledRebootTimerFailureTest, SimulateTimerStartFailure) {
   EXPECT_EQ(device_scheduled_reboot_handler_->GetScheduledRebootDataForTest(),
             absl::nullopt);
   EXPECT_EQ(device_scheduled_reboot_handler_->IsRebootSkippedForTest(), false);
+}
+
+// PowerManagerClient class that simulates delay in service availability.
+class DelayedFakePowerManagerClient : public chromeos::FakePowerManagerClient {
+ public:
+  DelayedFakePowerManagerClient() = default;
+  ~DelayedFakePowerManagerClient() override { observer_ = nullptr; }
+  void AddObserver(chromeos::PowerManagerClient::Observer* observer) override {
+    observer_ = observer;
+  }
+  void NotifyServiceAvailability(bool is_available) {
+    observer_->PowerManagerBecameAvailable(is_available);
+  }
+
+ protected:
+  chromeos::PowerManagerClient::Observer* observer_ = nullptr;
+};
+
+class ScheduledRebootDelayedServiceTest : public testing::Test {
+ public:
+  ScheduledRebootDelayedServiceTest()
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO,
+                          base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    ScopedWakeLock::OverrideWakeLockProviderBinderForTesting(
+        base::BindRepeating(&device::TestWakeLockProvider::BindReceiver,
+                            base::Unretained(&wake_lock_provider_)));
+    power_manager_ = new DelayedFakePowerManagerClient();
+    auto task_executor = std::make_unique<FakeScheduledTaskExecutor>(
+        task_environment_.GetMockClock());
+    scheduled_task_executor_ = task_executor.get();
+    auto notifications_scheduler =
+        std::make_unique<FakeRebootNotificationsScheduler>(
+            task_environment_.GetMockClock(),
+            task_environment_.GetMockTickClock(), nullptr);
+    notifications_scheduler_ = notifications_scheduler.get();
+    device_scheduled_reboot_handler_ =
+        std::make_unique<DeviceScheduledRebootHandlerForTest>(
+            ash::CrosSettings::Get(), std::move(task_executor),
+            std::move(notifications_scheduler));
+  }
+
+  ~ScheduledRebootDelayedServiceTest() override {
+    device_scheduled_reboot_handler_.reset();
+    chromeos::PowerManagerClient::Shutdown();
+  }
+
+ protected:
+  base::test::TaskEnvironment task_environment_;
+  FakeScheduledTaskExecutor* scheduled_task_executor_;
+  std::unique_ptr<DeviceScheduledRebootHandlerForTest>
+      device_scheduled_reboot_handler_;
+  ash::ScopedTestingCrosSettings cros_settings_;
+  FakeRebootNotificationsScheduler* notifications_scheduler_;
+  DelayedFakePowerManagerClient* power_manager_;
+  device::TestWakeLockProvider wake_lock_provider_;
+};
+
+TEST_F(ScheduledRebootDelayedServiceTest, SimulateServiceIsAvailableLaterTest) {
+  int expected_policy_processed_count = 0;
+  EXPECT_EQ(device_scheduled_reboot_handler_->GetPolicyChangesProcessedCount(),
+            expected_policy_processed_count);
+  power_manager_->NotifyServiceAvailability(true);
+  expected_policy_processed_count += 1;
+  EXPECT_EQ(device_scheduled_reboot_handler_->GetPolicyChangesProcessedCount(),
+            expected_policy_processed_count);
+}
+
+TEST_F(ScheduledRebootDelayedServiceTest,
+       SimulateServiceStopsBeingAvailableTest) {
+  // Schedule reboot in 30 minutes.
+  base::TimeDelta delay_from_now = base::Minutes(30);
+  auto time_zone_ = base::WrapUnique(icu::TimeZone::createTimeZone(
+      icu::UnicodeString::fromUTF8(kESTTimeZoneID)));
+  auto policy_and_next_reboot_time = scheduled_task_test_util::CreatePolicy(
+      *time_zone_.get(), task_environment_.GetMockClock()->Now(),
+      delay_from_now, ScheduledTaskExecutor::Frequency::kDaily,
+      kRebootTaskTimeFieldName);
+  int expected_policy_processed_count =
+      device_scheduled_reboot_handler_->GetPolicyChangesProcessedCount();
+
+  // Notify that the service is available and expect processing policy.
+  power_manager_->NotifyServiceAvailability(true);
+  expected_policy_processed_count += 1;
+  EXPECT_EQ(device_scheduled_reboot_handler_->GetPolicyChangesProcessedCount(),
+            expected_policy_processed_count);
+
+  // Notify that the service stopped being available and verify that the state
+  // is reset and that the policy is not processed.
+  power_manager_->NotifyServiceAvailability(false);
+  EXPECT_EQ(device_scheduled_reboot_handler_->GetScheduledRebootDataForTest(),
+            absl::nullopt);
+  EXPECT_EQ(device_scheduled_reboot_handler_->IsRebootSkippedForTest(), false);
+  EXPECT_EQ(device_scheduled_reboot_handler_->GetPolicyChangesProcessedCount(),
+            expected_policy_processed_count);
 }
 }  // namespace policy
