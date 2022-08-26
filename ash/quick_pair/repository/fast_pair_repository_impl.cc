@@ -30,24 +30,6 @@
 
 namespace {
 
-constexpr int kBluetoothAddressSize = 6;
-
-// Computes and returns the SHA256 of the concatenation of the given
-// |account_key| and |mac_address|.
-std::string GenerateSha256AccountKeyMacAddress(const std::string& account_key,
-                                               const std::string& mac_address) {
-  std::vector<uint8_t> concat_bytes(account_key.begin(), account_key.end());
-  std::vector<uint8_t> mac_address_bytes(kBluetoothAddressSize);
-  device::ParseBluetoothAddress(mac_address, mac_address_bytes);
-
-  concat_bytes.insert(concat_bytes.end(), mac_address_bytes.begin(),
-                      mac_address_bytes.end());
-  std::array<uint8_t, crypto::kSHA256Length> hashed =
-      crypto::SHA256Hash(concat_bytes);
-
-  return std::string(hashed.begin(), hashed.end());
-}
-
 // Checks if the mac address of a FastPairDevice is the same as the given
 // |mac_address| by checking if the SHA256 from the given |device| equals to
 // SHA256(concat(account_key of |device|, |mac_address|)).
@@ -59,7 +41,9 @@ bool IsDeviceSha256Matched(const nearby::fastpair::FastPairDevice& device,
   }
 
   return device.sha256_account_key_public_address() ==
-         GenerateSha256AccountKeyMacAddress(device.account_key(), mac_address);
+         ash::quick_pair::FastPairRepository::
+             GenerateSha256OfAccountKeyAndMacAddress(device.account_key(),
+                                                     mac_address);
 }
 
 }  // namespace
@@ -291,7 +275,7 @@ void FastPairRepositoryImpl::AddDeviceToFootprints(
   }
 
   footprints_fetcher_->AddUserFastPairInfo(
-      BuildFastPairInfo(hex_model_id, account_key, metadata),
+      BuildFastPairInfo(hex_model_id, account_key, mac_address, metadata),
       base::BindOnce(&FastPairRepositoryImpl::OnAddDeviceToFootprintsComplete,
                      weak_ptr_factory_.GetWeakPtr(), mac_address, account_key));
 }

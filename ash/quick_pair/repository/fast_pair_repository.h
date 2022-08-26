@@ -50,6 +50,12 @@ class FastPairRepository {
  public:
   static FastPairRepository* Get();
 
+  // Computes and returns the SHA256 of the concatenation of the given
+  // |account_key| and |mac_address|.
+  static std::string GenerateSha256OfAccountKeyAndMacAddress(
+      const std::string& account_key,
+      const std::string& mac_address);
+
   FastPairRepository();
   virtual ~FastPairRepository();
 

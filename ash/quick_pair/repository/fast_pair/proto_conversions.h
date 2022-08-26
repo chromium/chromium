@@ -15,6 +15,7 @@ class DeviceMetadata;
 nearby::fastpair::FastPairInfo BuildFastPairInfo(
     const std::string& hex_model_id,
     const std::vector<uint8_t>& account_key,
+    const std::string& mac_address,
     DeviceMetadata* metadata);
 
 nearby::fastpair::FastPairInfo BuildFastPairInfoForOptIn(

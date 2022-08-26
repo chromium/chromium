@@ -6,6 +6,7 @@
 
 #include "ash/quick_pair/proto/fastpair_data.pb.h"
 #include "ash/quick_pair/repository/fast_pair/device_metadata.h"
+#include "ash/quick_pair/repository/fast_pair_repository.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/time/time.h"
 
@@ -15,10 +16,17 @@ namespace quick_pair {
 nearby::fastpair::FastPairInfo BuildFastPairInfo(
     const std::string& hex_model_id,
     const std::vector<uint8_t>& account_key,
+    const std::string& mac_address,
     DeviceMetadata* device_metadata) {
   nearby::fastpair::FastPairInfo proto;
   auto* device = proto.mutable_device();
   device->set_account_key(std::string(account_key.begin(), account_key.end()));
+
+  // Create a SHA256 hash of the |mac_address| with the |account_key| as salt.
+  // The hash is used to identify devices via non discoverable advertisements.
+  device->set_sha256_account_key_public_address(
+      FastPairRepository::GenerateSha256OfAccountKeyAndMacAddress(
+          std::string(account_key.begin(), account_key.end()), mac_address));
 
   auto& details = device_metadata->GetDetails();
   auto& strings = device_metadata->response().strings();

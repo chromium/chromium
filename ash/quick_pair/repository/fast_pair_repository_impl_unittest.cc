@@ -294,7 +294,8 @@ TEST_F(FastPairRepositoryImplTest, CheckAccountKeys_Match) {
 
   // FakeFootprintsFetcher APIs are actually synchronous.
   footprints_fetcher_->AddUserFastPairInfo(
-      BuildFastPairInfo(kValidModelId, kAccountKey1, &metadata),
+      BuildFastPairInfo(kValidModelId, kAccountKey1, kTestClassicAddress1,
+                        &metadata),
       base::DoNothing());
 
   auto run_loop = std::make_unique<base::RunLoop>();
@@ -760,6 +761,27 @@ TEST_F(FastPairRepositoryImplTest,
   base::MockCallback<base::OnceCallback<void(bool)>> callback;
   EXPECT_CALL(callback, Run(testing::Eq(false))).Times(1);
   fast_pair_repository_->IsDeviceSavedToAccount(kTestClassicAddress1,
+                                                callback.Get());
+
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FastPairRepositoryImplTest, IsHashCorrect) {
+  nearby::fastpair::GetObservedDeviceResponse device;
+  DeviceMetadata metadata(device, gfx::Image());
+  std::string account_key = Base64Decode(kBase64AccountKey);
+  std::vector<uint8_t> account_key_bytes(account_key.begin(),
+                                         account_key.end());
+
+  // FakeFootprintsFetcher APIs are actually synchronous.
+  footprints_fetcher_->AddUserFastPairInfo(
+      BuildFastPairInfo(kValidModelId, account_key_bytes, kTestClassicAddress3,
+                        &metadata),
+      base::DoNothing());
+
+  base::MockCallback<base::OnceCallback<void(bool)>> callback;
+  EXPECT_CALL(callback, Run(testing::Eq(true))).Times(1);
+  fast_pair_repository_->IsDeviceSavedToAccount(kTestClassicAddress3,
                                                 callback.Get());
 
   base::RunLoop().RunUntilIdle();
