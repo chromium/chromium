@@ -19,10 +19,6 @@ if (include_polymer) {
   preprocess_gen_manifest = "preprocessed_gen_manifest.json"
 }
 
-if (is_chromeos_ash) {
-  preprocess_polymer2_manifest = "preprocessed_polymer2_manifest.json"
-}
-
 if (include_polymer) {
   generate_grd("build_grdp") {
     grd_prefix = "cr_elements"
@@ -33,12 +29,6 @@ if (include_polymer) {
       "$target_gen_dir/$preprocess_gen_manifest",
     ]
 
-    if (is_chromeos_ash) {
-      manifest_files += [
-        # TODO(crbug.com/1184053): Fully remove once no longer used by CrOS.
-        "$target_gen_dir/$preprocess_polymer2_manifest",
-      ]
-    }
     resource_path_prefix = "cr_elements"
   }
 }
@@ -57,13 +47,6 @@ group("preprocess") {
       ":preprocess_src",
     ]
   }
-
-  if (is_chromeos_ash) {
-    public_deps += [
-      # TODO(crbug.com/1184053): Fully remove once no longer used by CrOS.
-      ":preprocess_polymer2",
-    ]
-  }
 }
 
 # TS files are passed to a separate target so that they are not listed in the
@@ -79,26 +62,6 @@ preprocess_if_expr("preprocess_ts") {
   }
 }
 
-if (is_chromeos_ash) {
-  preprocess_if_expr("preprocess_polymer2") {
-    in_folder = "./"
-    out_folder = "$preprocess_folder"
-    out_manifest = "$target_gen_dir/$preprocess_polymer2_manifest"
-    in_files = [
-      "action_link_css.html",
-      "chromeos/cros_color_overrides.html",
-      "cr_actionable_row_style.html",
-      "cr_icons_css.html",
-      "find_shortcut_behavior.js",
-      "hidden_style_css.html",
-      "icons.html",
-      "md_select_css.html",
-      "shared_style_css.html",
-      "shared_vars_css.html",
-    ]
-  }
-}
-
 if (include_polymer) {
   preprocess_if_expr("preprocess_src") {
     in_folder = "."
@@ -109,7 +72,10 @@ if (include_polymer) {
     ]
 
     if (is_chromeos_ash) {
-      in_files += [ "cr_container_shadow_behavior.js" ]
+      in_files += [
+        "cr_container_shadow_behavior.js",
+        "find_shortcut_behavior.js",
+      ]
     }
 
     out_manifest = "$target_gen_dir/$preprocess_src_manifest"
