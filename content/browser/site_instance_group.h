@@ -11,7 +11,6 @@
 #include "base/observer_list.h"
 #include "base/types/id_type.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
-#include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browsing_instance_id.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -23,6 +22,7 @@ class SiteInstanceGroup;
 
 namespace content {
 
+class RenderProcessHost;
 class SiteInstance;
 class SiteInstanceImpl;
 struct ChildProcessTerminationInfo;
