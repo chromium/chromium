@@ -1000,6 +1000,11 @@ interface CSSToggle
     setter value
     setter valueAsNumber
     setter valueAsString
+interface CSSToggleEvent : Event
+    attribute @@toStringTag
+    getter toggle
+    getter toggleName
+    method constructor
 interface CSSToggleMap
     attribute @@toStringTag
     getter size

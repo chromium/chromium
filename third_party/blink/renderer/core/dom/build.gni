@@ -59,6 +59,8 @@ blink_core_sources_dom = [
   "context_features_client_impl.h",
   "css_toggle.cc",
   "css_toggle.h",
+  "css_toggle_event.cc",
+  "css_toggle_event.h",
   "css_toggle_map.cc",
   "css_toggle_map.h",
   "create_element_flags.h",

@@ -45,7 +45,7 @@ interface CSSToggleEvent : Event {
   readonly attribute CSSToggle? toggle;
 };
 
-dictionary CSSToggleEventInit {
+dictionary CSSToggleEventInit : EventInit {
   DOMString toggleName = "";
   CSSToggle? toggle = null;
 };
