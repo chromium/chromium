@@ -75,7 +75,7 @@ const char* ParseHash(const char* begin,
   // At this point we've successfully consumed a hash, so parse it.
   bool parsed = false;
   hash = WTF::HexCharactersToUInt(reinterpret_cast<const unsigned char*>(begin),
-                                  cur - begin, WTF::NumberParsingOptions::kNone,
+                                  cur - begin, WTF::NumberParsingOptions(),
                                   &parsed);
   DCHECK(parsed);
 
@@ -297,7 +297,7 @@ void BackgroundTracingHelper::GetMarkHashAndSequenceNumber(
     bool result = false;
     int seq_num = WTF::CharactersToInt(
         reinterpret_cast<const unsigned char*>(suffix.data()), suffix.size(),
-        WTF::NumberParsingOptions::kNone, &result);
+        WTF::NumberParsingOptions(), &result);
     if (result) {
       // Cap the sequence number to an easily human-consumable size. It is fine
       // for this calculation to overflow.

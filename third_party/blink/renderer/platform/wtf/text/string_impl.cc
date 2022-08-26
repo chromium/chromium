@@ -671,21 +671,19 @@ wtf_size_t StringImpl::ToUInt(NumberParsingOptions options, bool* ok) const {
 }
 
 wtf_size_t StringImpl::HexToUIntStrict(bool* ok) {
+  constexpr auto kStrict = NumberParsingOptions::Strict();
   if (Is8Bit()) {
-    return HexCharactersToUInt(Characters8(), length_,
-                               NumberParsingOptions::kStrict, ok);
+    return HexCharactersToUInt(Characters8(), length_, kStrict, ok);
   }
-  return HexCharactersToUInt(Characters16(), length_,
-                             NumberParsingOptions::kStrict, ok);
+  return HexCharactersToUInt(Characters16(), length_, kStrict, ok);
 }
 
 uint64_t StringImpl::HexToUInt64Strict(bool* ok) {
+  constexpr auto kStrict = NumberParsingOptions::Strict();
   if (Is8Bit()) {
-    return HexCharactersToUInt64(Characters8(), length_,
-                                 NumberParsingOptions::kStrict, ok);
+    return HexCharactersToUInt64(Characters8(), length_, kStrict, ok);
   }
-  return HexCharactersToUInt64(Characters16(), length_,
-                               NumberParsingOptions::kStrict, ok);
+  return HexCharactersToUInt64(Characters16(), length_, kStrict, ok);
 }
 
 int64_t StringImpl::ToInt64(NumberParsingOptions options, bool* ok) const {

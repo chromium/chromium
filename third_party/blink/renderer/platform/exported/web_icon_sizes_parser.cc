@@ -42,10 +42,10 @@ static inline int PartialStringToInt(const String& string,
                                      wtf_size_t end) {
   if (string.Is8Bit()) {
     return CharactersToInt(string.Characters8() + start, end - start,
-                           WTF::NumberParsingOptions::kNone, nullptr);
+                           WTF::NumberParsingOptions(), nullptr);
   }
   return CharactersToInt(string.Characters16() + start, end - start,
-                         WTF::NumberParsingOptions::kNone, nullptr);
+                         WTF::NumberParsingOptions(), nullptr);
 }
 
 }  // namespace

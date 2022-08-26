@@ -147,16 +147,16 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
 
     // Listing a key with no value is shorthand for key=yes
     int value;
+    constexpr auto kLoose = WTF::NumberParsingOptions::Loose();
     if (value_string.IsEmpty() || value_string == "yes" ||
         value_string == "true") {
       value = 1;
     } else if (value_string.Is8Bit()) {
       value = CharactersToInt(value_string.Characters8(), value_string.length(),
-                              WTF::NumberParsingOptions::kLoose, nullptr);
+                              kLoose, nullptr);
     } else {
-      value =
-          CharactersToInt(value_string.Characters16(), value_string.length(),
-                          WTF::NumberParsingOptions::kLoose, nullptr);
+      value = CharactersToInt(value_string.Characters16(),
+                              value_string.length(), kLoose, nullptr);
     }
 
     if (!ui_features_were_disabled && key_string != "noopener" &&

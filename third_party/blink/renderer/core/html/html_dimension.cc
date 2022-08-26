@@ -63,9 +63,9 @@ static HTMLDimension ParseDimension(const CharacterType* characters,
 
   if (position > last_parsed_index) {
     bool ok = false;
-    unsigned integer_value = CharactersToUInt(
-        characters + last_parsed_index, position - last_parsed_index,
-        WTF::NumberParsingOptions::kNone, &ok);
+    unsigned integer_value = CharactersToUInt(characters + last_parsed_index,
+                                              position - last_parsed_index,
+                                              WTF::NumberParsingOptions(), &ok);
     if (!ok)
       return HTMLDimension(0., HTMLDimension::kRelative);
     value += integer_value;
@@ -84,7 +84,7 @@ static HTMLDimension ParseDimension(const CharacterType* characters,
       if (fraction_numbers.size()) {
         double fraction_value =
             CharactersToUInt(fraction_numbers.data(), fraction_numbers.size(),
-                             WTF::NumberParsingOptions::kNone, &ok);
+                             WTF::NumberParsingOptions(), &ok);
         if (!ok)
           return HTMLDimension(0., HTMLDimension::kRelative);
 

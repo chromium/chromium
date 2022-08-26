@@ -88,7 +88,7 @@ struct DescriptorToken {
       ++position;
     }
     return CharactersToInt(attribute + start, length_excluding_descriptor,
-                           WTF::NumberParsingOptions::kNone, &is_valid);
+                           WTF::NumberParsingOptions(), &is_valid);
   }
 
   template <typename CharType>

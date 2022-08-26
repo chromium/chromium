@@ -14,20 +14,20 @@ TEST(StringToNumberTest, CharactersToInt) {
   do {                                                                  \
     bool ok;                                                            \
     int value = CharactersToInt(reinterpret_cast<const LChar*>(string), \
-                                std::strlen(string),                    \
-                                NumberParsingOptions::options, &ok);    \
+                                std::strlen(string), options, &ok);     \
     EXPECT_TRUE(ok);                                                    \
     EXPECT_EQ(value, expectedValue);                                    \
   } while (false)
 
-#define EXPECT_INVALID(string, options)                                       \
-  do {                                                                        \
-    bool ok;                                                                  \
-    CharactersToInt(reinterpret_cast<const LChar*>(string),                   \
-                    std::strlen(string), NumberParsingOptions::options, &ok); \
-    EXPECT_FALSE(ok);                                                         \
+#define EXPECT_INVALID(string, options)                     \
+  do {                                                      \
+    bool ok;                                                \
+    CharactersToInt(reinterpret_cast<const LChar*>(string), \
+                    std::strlen(string), options, &ok);     \
+    EXPECT_FALSE(ok);                                       \
   } while (false)
 
+  constexpr auto kStrict = NumberParsingOptions::Strict();
   EXPECT_VALID("1", kStrict, 1);
   EXPECT_VALID("2", kStrict, 2);
   EXPECT_VALID("9", kStrict, 9);
@@ -40,7 +40,7 @@ TEST(StringToNumberTest, CharactersToInt) {
   EXPECT_VALID("-10", kStrict, -10);
   EXPECT_VALID("+0", kStrict, 0);
   EXPECT_VALID("+1", kStrict, 1);
-  EXPECT_INVALID("+1", kNone);
+  EXPECT_INVALID("+1", NumberParsingOptions());
   EXPECT_VALID("+2", kStrict, 2);
   EXPECT_VALID("+9", kStrict, 9);
   EXPECT_VALID("+10", kStrict, 10);
@@ -51,10 +51,10 @@ TEST(StringToNumberTest, CharactersToInt) {
   EXPECT_VALID("-01", kStrict, -1);
   EXPECT_VALID("00000000000000000000", kStrict, 0);
   EXPECT_VALID(" 3 ", kStrict, 3);
-  EXPECT_INVALID(" 3 ", kNone);
-  EXPECT_VALID(" 3 pt", kLoose, 3);
+  EXPECT_INVALID(" 3 ", NumberParsingOptions());
+  EXPECT_VALID(" 3 pt", NumberParsingOptions::Loose(), 3);
   EXPECT_INVALID(" 3 pt", kStrict);
-  EXPECT_VALID("3px", kAcceptTrailingGarbage, 3);
+  EXPECT_VALID("3px", NumberParsingOptions().SetAcceptTrailingGarbage(), 3);
   EXPECT_INVALID("a", kStrict);
   EXPECT_INVALID("1a", kStrict);
   EXPECT_INVALID("a1", kStrict);
@@ -97,20 +97,22 @@ TEST(StringToNumberTest, CharactersToUInt) {
   do {                                                                        \
     bool ok;                                                                  \
     unsigned value = CharactersToUInt(reinterpret_cast<const LChar*>(string), \
-                                      std::strlen(string),                    \
-                                      NumberParsingOptions::options, &ok);    \
+                                      std::strlen(string), options, &ok);     \
     EXPECT_TRUE(ok);                                                          \
     EXPECT_EQ(value, expectedValue);                                          \
   } while (false)
 
-#define EXPECT_INVALID(string, options)                                        \
-  do {                                                                         \
-    bool ok;                                                                   \
-    CharactersToUInt(reinterpret_cast<const LChar*>(string),                   \
-                     std::strlen(string), NumberParsingOptions::options, &ok); \
-    EXPECT_FALSE(ok);                                                          \
+#define EXPECT_INVALID(string, options)                      \
+  do {                                                       \
+    bool ok;                                                 \
+    CharactersToUInt(reinterpret_cast<const LChar*>(string), \
+                     std::strlen(string), options, &ok);     \
+    EXPECT_FALSE(ok);                                        \
   } while (false)
 
+  constexpr auto kStrict = NumberParsingOptions::Strict();
+  constexpr auto kAcceptMinusZeroForUnsigned =
+      NumberParsingOptions().SetAcceptMinusZeroForUnsigned();
   EXPECT_VALID("1", kStrict, 1u);
   EXPECT_VALID("2", kStrict, 2u);
   EXPECT_VALID("9", kStrict, 9u);
@@ -121,7 +123,7 @@ TEST(StringToNumberTest, CharactersToUInt) {
   EXPECT_VALID("+2", kStrict, 2u);
   EXPECT_VALID("+9", kStrict, 9u);
   EXPECT_VALID("+10", kStrict, 10u);
-  EXPECT_INVALID("+10", kNone);
+  EXPECT_INVALID("+10", NumberParsingOptions());
   EXPECT_VALID("00", kStrict, 0u);
   EXPECT_VALID("+00", kStrict, 0u);
   EXPECT_VALID("01", kStrict, 1u);
@@ -179,18 +181,18 @@ TEST(StringToNumberTest, HexCharactersToUInt) {
     bool ok;                                                         \
     unsigned value = HexCharactersToUInt(                            \
         reinterpret_cast<const LChar*>(string), std::strlen(string), \
-        NumberParsingOptions::kStrict, &ok);                         \
+        NumberParsingOptions::Strict(), &ok);                        \
     EXPECT_TRUE(ok);                                                 \
     EXPECT_EQ(value, expectedValue);                                 \
   } while (false)
 
-#define EXPECT_INVALID(string)                                              \
-  do {                                                                      \
-    bool ok;                                                                \
-    HexCharactersToUInt(reinterpret_cast<const LChar*>(string),             \
-                        std::strlen(string), NumberParsingOptions::kStrict, \
-                        &ok);                                               \
-    EXPECT_FALSE(ok);                                                       \
+#define EXPECT_INVALID(string)                                               \
+  do {                                                                       \
+    bool ok;                                                                 \
+    HexCharactersToUInt(reinterpret_cast<const LChar*>(string),              \
+                        std::strlen(string), NumberParsingOptions::Strict(), \
+                        &ok);                                                \
+    EXPECT_FALSE(ok);                                                        \
   } while (false)
 
   EXPECT_VALID("1", 1u);
@@ -227,7 +229,7 @@ NumberParsingResult ParseUInt(const char* str, unsigned* value) {
   NumberParsingResult result;
   *value =
       CharactersToUInt(reinterpret_cast<const LChar*>(str), std::strlen(str),
-                       NumberParsingOptions::kStrict, &result);
+                       NumberParsingOptions::Strict(), &result);
   return result;
 }
 

@@ -85,7 +85,7 @@ static bool ParseFontSize(const CharacterType* characters,
 
   // Step 8
   int value = CharactersToInt(digits_start, position - digits_start,
-                              WTF::NumberParsingOptions::kNone, nullptr);
+                              WTF::NumberParsingOptions(), nullptr);
 
   // Step 9
   if (mode == kRelativePlus) {

@@ -14,42 +14,67 @@
 namespace WTF {
 
 // Copyable and immutable object representing number parsing flags.
-class NumberParsingOptions {
+class NumberParsingOptions final {
   STACK_ALLOCATED();
 
  public:
-  static constexpr unsigned kNone = 0;
-  static constexpr unsigned kAcceptTrailingGarbage = 1;
-  static constexpr unsigned kAcceptLeadingPlus = 1 << 1;
-  static constexpr unsigned kAcceptLeadingTrailingWhitespace = 1 << 2;
-  static constexpr unsigned kAcceptMinusZeroForUnsigned = 1 << 3;
-
   // 'Strict' behavior for WTF::String.
-  static constexpr unsigned kStrict =
-      kAcceptLeadingPlus | kAcceptLeadingTrailingWhitespace;
+  static constexpr NumberParsingOptions Strict() {
+    return NumberParsingOptions().SetAcceptLeadingPlus().SetAcceptWhiteSpace();
+  }
   // Non-'Strict' behavior for WTF::String.
-  static constexpr unsigned kLoose = kStrict | kAcceptTrailingGarbage;
-
-  // This constructor allows implicit conversion from unsigned.
-  NumberParsingOptions(unsigned options) : options_(options) {
-    DCHECK_LT(options, 1u << 4) << "NumberParsingOptions should be built with "
-                                   "a combination of "
-                                   "NumberParsingOptions::kFoo constants.";
+  static constexpr NumberParsingOptions Loose() {
+    return Strict().SetAcceptTrailingGarbage();
   }
 
-  bool AcceptTrailingGarbage() const {
-    return options_ & kAcceptTrailingGarbage;
+  // Construct an instance without any flags set.
+  constexpr NumberParsingOptions()
+      : accept_trailing_garbage_(false),
+        accept_leading_plus_(false),
+        accept_leading_trailing_whitespace_(false),
+        accept_minus_zero_for_unsigned_(false) {}
+
+  // Returns a new instance by merging |this| and AcceptTrailingGarbage flag.
+  constexpr NumberParsingOptions SetAcceptTrailingGarbage() const {
+    NumberParsingOptions copy = *this;
+    copy.accept_trailing_garbage_ = true;
+    return copy;
   }
-  bool AcceptLeadingPlus() const { return options_ & kAcceptLeadingPlus; }
-  bool AcceptWhitespace() const {
-    return options_ & kAcceptLeadingTrailingWhitespace;
+
+  // Returns a new instance by merging |this| and AcceptLeadingPlus flag.
+  constexpr NumberParsingOptions SetAcceptLeadingPlus() const {
+    NumberParsingOptions copy = *this;
+    copy.accept_leading_plus_ = true;
+    return copy;
   }
+
+  // Returns a new instance by merging |this| and AcceptWhiteSpace flag.
+  constexpr NumberParsingOptions SetAcceptWhiteSpace() const {
+    NumberParsingOptions copy = *this;
+    copy.accept_leading_trailing_whitespace_ = true;
+    return copy;
+  }
+
+  // Returns a new instance by merging |this| and AcceptMinusZeroForUnsigned
+  // flag.
+  constexpr NumberParsingOptions SetAcceptMinusZeroForUnsigned() const {
+    NumberParsingOptions copy = *this;
+    copy.accept_minus_zero_for_unsigned_ = true;
+    return copy;
+  }
+
+  bool AcceptTrailingGarbage() const { return accept_trailing_garbage_; }
+  bool AcceptLeadingPlus() const { return accept_leading_plus_; }
+  bool AcceptWhitespace() const { return accept_leading_trailing_whitespace_; }
   bool AcceptMinusZeroForUnsigned() const {
-    return options_ & kAcceptMinusZeroForUnsigned;
+    return accept_minus_zero_for_unsigned_;
   }
 
  private:
-  unsigned options_;
+  unsigned accept_trailing_garbage_ : 1;
+  unsigned accept_leading_plus_ : 1;
+  unsigned accept_leading_trailing_whitespace_ : 1;
+  unsigned accept_minus_zero_for_unsigned_ : 1;
 };
 
 }  // namespace WTF
