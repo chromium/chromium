@@ -762,6 +762,7 @@ CORE_EXPORT void ShowFragmentTree(
 
 // Output the fragment tree(s) from the entire document to the log.
 // See DumpFragmentTree(const LayoutObject& ...).
+CORE_EXPORT void ShowEntireFragmentTree(const blink::LayoutObject& target);
 CORE_EXPORT void ShowEntireFragmentTree(
     const blink::NGPhysicalFragment* target);
 #endif  // DCHECK_IS_ON()

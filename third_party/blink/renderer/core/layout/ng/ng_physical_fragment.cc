@@ -1123,6 +1123,10 @@ void ShowFragmentTree(const blink::LayoutObject& root,
                    .Utf8();
 }
 
+void ShowEntireFragmentTree(const blink::LayoutObject& target) {
+  ShowFragmentTree(*target.View());
+}
+
 void ShowEntireFragmentTree(const blink::NGPhysicalFragment* target) {
   if (!target) {
     LOG(INFO) << "Cannot show fragment tree. Fragment is null.";
