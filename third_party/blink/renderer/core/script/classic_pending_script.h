@@ -25,10 +25,10 @@ namespace blink {
 // A RefPtr alone does not prevent the underlying Resource from purging its data
 // buffer. This class holds a dummy client open for its lifetime in order to
 // guarantee that the data buffer will not be purged.
-class CORE_EXPORT ClassicPendingScript final : public PendingScript,
-                                               public ResourceClient,
-                                               public ScriptCacheConsumerClient,
-                                               public MemoryPressureListener {
+class CORE_EXPORT ClassicPendingScript final
+    : public PendingScript,
+      public ResourceClient,
+      public ScriptCacheConsumerClient {
  public:
   // https://html.spec.whatwg.org/C/#fetch-a-classic-script
   //
@@ -109,9 +109,6 @@ class CORE_EXPORT ClassicPendingScript final : public PendingScript,
 
   void RecordThirdPartyRequestWithCookieIfNeeded(const ResourceResponse&) const;
 
-  // MemoryPressureListener
-  void OnPurgeMemory() override;
-
   const ScriptFetchOptions options_;
 
   const KURL source_url_for_inline_script_;
@@ -131,7 +128,6 @@ class CORE_EXPORT ClassicPendingScript final : public PendingScript,
   const ScriptSourceLocationType source_location_type_;
   const bool is_external_;
   ReadyState ready_state_;
-  bool integrity_failure_;
   // Describes if this script is eligible for DelayAsyncScriptExecution
   // (see crbug/1340837).
   const bool is_eligible_for_delay_;

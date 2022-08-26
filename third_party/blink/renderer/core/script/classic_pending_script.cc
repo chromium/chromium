@@ -150,7 +150,6 @@ ClassicPendingScript::ClassicPendingScript(
       source_location_type_(source_location_type),
       is_external_(is_external),
       ready_state_(is_external ? kWaitingForResource : kReady),
-      integrity_failure_(false),
       is_eligible_for_delay_(is_eligible_for_delay) {
   CHECK(GetElement());
 
@@ -161,8 +160,6 @@ ClassicPendingScript::ClassicPendingScript(
     DCHECK(!base_url_for_inline_script_.IsNull());
     DCHECK(!source_text_for_inline_script_.IsNull());
   }
-
-  MemoryPressureListenerRegistry::Instance().RegisterClient(this);
 }
 
 ClassicPendingScript::~ClassicPendingScript() = default;
@@ -239,11 +236,8 @@ void ClassicPendingScript::RecordThirdPartyRequestWithCookieIfNeeded(
           kUndeferrableThirdPartySubresourceRequestWithCookie);
 }
 
-
 void ClassicPendingScript::DisposeInternal() {
-  MemoryPressureListenerRegistry::Instance().UnregisterClient(this);
   ClearResource();
-  integrity_failure_ = false;
 }
 
 bool ClassicPendingScript::IsEligibleForDelay() const {
@@ -295,7 +289,7 @@ void ClassicPendingScript::NotifyFinished(Resource* resource) {
   }
 
   SubresourceIntegrityHelper::DoReport(*execution_context,
-                                       GetResource()->IntegrityReportInfo());
+                                       resource->IntegrityReportInfo());
 
   // It is possible to get back a script resource with integrity metadata
   // for a request with an empty integrity attribute. In that case, the
@@ -304,10 +298,10 @@ void ClassicPendingScript::NotifyFinished(Resource* resource) {
   // the preload cache however, we know any associated integrity metadata and
   // checks were destined for this request, so we cannot skip the integrity
   // check.
-  if (!options_.GetIntegrityMetadata().IsEmpty() ||
-      GetResource()->IsLinkPreload()) {
-    integrity_failure_ = GetResource()->IntegrityDisposition() !=
-                         ResourceIntegrityDisposition::kPassed;
+  bool integrity_failure = false;
+  if (!options_.GetIntegrityMetadata().IsEmpty() || resource->IsLinkPreload()) {
+    integrity_failure = resource->IntegrityDisposition() !=
+                        ResourceIntegrityDisposition::kPassed;
   }
 
   if (intervened_) {
@@ -336,14 +330,14 @@ void ClassicPendingScript::NotifyFinished(Resource* resource) {
                          TRACE_EVENT_FLAG_FLOW_OUT, "data",
                          [&](perfetto::TracedValue context) {
                            inspector_parse_script_event::Data(
-                               std::move(context), GetResource()->InspectorId(),
-                               GetResource()->Url().GetString());
+                               std::move(context), resource->InspectorId(),
+                               resource->Url().GetString());
                          });
 
   // Ordinal ErrorOccurred(), SRI, and MIME check are all considered as network
   // errors in the Fetch spec.
   bool error_occurred =
-      GetResource()->ErrorOccurred() || integrity_failure_ || mime_type_failure;
+      resource->ErrorOccurred() || integrity_failure || mime_type_failure;
   if (error_occurred) {
     AdvanceReadyState(kErrorOccurred);
     return;
@@ -376,7 +370,6 @@ void ClassicPendingScript::NotifyCacheConsumeFinished() {
 void ClassicPendingScript::Trace(Visitor* visitor) const {
   visitor->Trace(classic_script_);
   ResourceClient::Trace(visitor);
-  MemoryPressureListener::Trace(visitor);
   PendingScript::Trace(visitor);
 }
 
@@ -501,13 +494,6 @@ void ClassicPendingScript::AdvanceReadyState(ReadyState new_ready_state) {
   // Did we transition into a 'ready' state?
   if (IsReady() && IsWatchingForLoad())
     PendingScriptFinished();
-}
-
-void ClassicPendingScript::OnPurgeMemory() {
-  CheckState();
-  // TODO(crbug.com/846951): the implementation of CancelStreaming() is
-  // currently incorrect and consequently a call to this method was removed from
-  // here.
 }
 
 bool ClassicPendingScript::WasCanceled() const {
