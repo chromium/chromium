@@ -8,20 +8,22 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CollectionUtil;
+import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.WebContentsState;
+import org.chromium.chrome.browser.tab.WebContentsStateBridge;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -87,29 +89,18 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
         // Titles corresponding to each element in groupIds.
         List<String> groupTitles = new ArrayList<>();
 
-        // Byte buffer associated with WebContentsState per tab by index.
-        List<ByteBuffer> byteBuffers = new ArrayList<>();
-        // Saved state version of WebContentsState per tab by index.
-        List<Integer> savedStateVersions = new ArrayList<>();
-
         for (HistoricalEntry entry : validEntries) {
             if (entry.isSingleTab()) {
-                WebContentsState tabWebContentsState = getWebContentsState(entry.getTabs().get(0));
                 allTabs.add(entry.getTabs().get(0));
                 perTabGroupId.add(Tab.INVALID_TAB_ID);
-                byteBuffers.add(tabWebContentsState.buffer());
-                savedStateVersions.add(tabWebContentsState.version());
                 continue;
             }
 
             groupIds.add(entry.getGroupId());
             groupTitles.add(entry.getGroupTitle() == null ? "" : entry.getGroupTitle());
             for (Tab tab : entry.getTabs()) {
-                WebContentsState tabWebContentsState = getWebContentsState(tab);
                 allTabs.add(tab);
                 perTabGroupId.add(entry.getGroupId());
-                byteBuffers.add(tabWebContentsState.buffer());
-                savedStateVersions.add(tabWebContentsState.version());
             }
         }
 
@@ -124,9 +115,8 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
             RecordHistogram.recordEnumeratedHistogram(
                     "Tabs.RecentlyClosed.HistoricalSaverCloseType", HistoricalSaverCloseType.GROUP,
                     HistoricalSaverCloseType.COUNT);
-            HistoricalTabSaverImplJni.get().createHistoricalGroup(mTabModel, groupTitles.get(0),
-                    allTabs.toArray(new Tab[0]), byteBuffers.toArray(new ByteBuffer[0]),
-                    CollectionUtil.integerListToIntArray(savedStateVersions));
+            HistoricalTabSaverImplJni.get().createHistoricalGroup(
+                    mTabModel, groupTitles.get(0), allTabs.toArray(new Tab[0]));
             return;
         }
 
@@ -135,16 +125,13 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
                 HistoricalSaverCloseType.BULK, HistoricalSaverCloseType.COUNT);
         HistoricalTabSaverImplJni.get().createHistoricalBulkClosure(mTabModel,
                 CollectionUtil.integerListToIntArray(groupIds), groupTitles.toArray(new String[0]),
-                CollectionUtil.integerListToIntArray(perTabGroupId), allTabs.toArray(new Tab[0]),
-                byteBuffers.toArray(new ByteBuffer[0]),
-                CollectionUtil.integerListToIntArray(savedStateVersions));
+                CollectionUtil.integerListToIntArray(perTabGroupId), allTabs.toArray(new Tab[0]));
     }
 
     private void createHistoricalTabInternal(Tab tab) {
         RecordHistogram.recordEnumeratedHistogram("Tabs.RecentlyClosed.HistoricalSaverCloseType",
                 HistoricalSaverCloseType.TAB, HistoricalSaverCloseType.COUNT);
-        HistoricalTabSaverImplJni.get().createHistoricalTab(
-                tab, getWebContentsState(tab).buffer(), getWebContentsState(tab).version());
+        HistoricalTabSaverImplJni.get().createHistoricalTab(tab);
     }
 
     /**
@@ -161,8 +148,6 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
         if (tab.getWebContents() != null) {
             committedUrlOrFrozenUrl = tab.getWebContents().getLastCommittedUrl();
         } else {
-            if (CriticalPersistedTabData.from(tab).getWebContentsState() == null) return false;
-
             committedUrlOrFrozenUrl = tab.getUrl();
         }
 
@@ -207,15 +192,22 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
         return validatedEntries;
     }
 
-    private static WebContentsState getWebContentsState(Tab tab) {
-        WebContentsState tempState = WebContentsState.getTempWebContentsState();
-        // If WebContents exists, on the native side during frozen tab restoration the same check
-        // will be made and return the contents immediately, skipping the logic that requires
-        // restoring from the WebContentsState. This tempState acts as an empty object placeholder.
-        if (tab.getWebContents() != null) return tempState;
-
+    @CalledByNative
+    private static WebContents createTemporaryWebContents(Tab tab) {
+        assert tab.isFrozen();
+        assert tab.getWebContents() == null;
         WebContentsState state = CriticalPersistedTabData.from(tab).getWebContentsState();
-        return (state == null) ? tempState : state;
+        if (state == null) return null;
+
+        return WebContentsStateBridge.restoreContentsFromByteBuffer(
+                state, /*isHidden=*/true, /*noRenderer=*/true);
+    }
+
+    @CalledByNative
+    private static void destroyTemporaryWebContents(WebContents webContents) {
+        if (webContents == null) return;
+
+        webContents.destroy();
     }
 
     @VisibleForTesting
@@ -225,11 +217,9 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
 
     @NativeMethods
     interface Natives {
-        void createHistoricalTab(Tab tab, ByteBuffer state, int savedStateVersion);
-        void createHistoricalGroup(TabModel model, String title, Tab[] tabs,
-                ByteBuffer[] byteBuffers, int[] savedStationsVersions);
-        void createHistoricalBulkClosure(TabModel model, int[] groupIds, String[] titles,
-                int[] perTabGroupId, Tab[] tabs, ByteBuffer[] byteBuffers,
-                int[] savedStateVersions);
+        void createHistoricalTab(Tab tab);
+        void createHistoricalGroup(TabModel model, String title, Tab[] tabs);
+        void createHistoricalBulkClosure(
+                TabModel model, int[] groupIds, String[] titles, int[] perTabGroupId, Tab[] tabs);
     }
 }
