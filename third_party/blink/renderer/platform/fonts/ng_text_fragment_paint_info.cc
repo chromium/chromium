@@ -6,26 +6,23 @@
 
 namespace blink {
 
-NGTextFragmentPaintInfo NGTextFragmentPaintInfo::Slice(unsigned from,
-                                                       unsigned to) const {
-  DCHECK_LE(this->from, from);
-  DCHECK_LE(from, to);
-  DCHECK_LE(to, this->to);
-  return {text, from, to, shape_result};
+NGTextFragmentPaintInfo NGTextFragmentPaintInfo::Slice(
+    unsigned slice_from,
+    unsigned slice_to) const {
+  DCHECK_LE(from, slice_from);
+  DCHECK_LE(slice_from, slice_to);
+  DCHECK_LE(slice_to, to);
+  return {text, slice_from, slice_to, shape_result};
 }
 
 NGTextFragmentPaintInfo NGTextFragmentPaintInfo::WithStartOffset(
-    unsigned from) const {
-  DCHECK_LE(this->from, from);
-  DCHECK_LE(from, this->to);
-  return {text, from, to, shape_result};
+    unsigned start_from) const {
+  return Slice(start_from, to);
 }
 
 NGTextFragmentPaintInfo NGTextFragmentPaintInfo::WithEndOffset(
-    unsigned to) const {
-  DCHECK_LE(this->from, to);
-  DCHECK_LE(to, this->to);
-  return {text, from, to, shape_result};
+    unsigned end_to) const {
+  return Slice(from, end_to);
 }
 
 }  // namespace blink

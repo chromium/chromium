@@ -249,7 +249,7 @@ ScriptPromise RemotePlayback::prompt(ScriptState* script_state,
   prompt_promise_resolver_ = resolver;
   PromptInternal();
   RemotePlaybackMetrics::RecordRemotePlaybackLocation(
-      RemotePlaybackInitiationLocation::REMOTE_PLAYBACK_API);
+      RemotePlaybackInitiationLocation::kRemovePlaybackAPI);
   return promise;
 }
 

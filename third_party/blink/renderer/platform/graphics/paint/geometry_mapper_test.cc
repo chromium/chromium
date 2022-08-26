@@ -28,21 +28,21 @@ class GeometryMapperTest : public testing::Test,
     return descendant_clip.GetClipCache().GetCachedClip(clip_and_transform);
   }
 
-  void LocalToAncestorVisualRectInternal(
-      const PropertyTreeStateOrAlias& local_state,
-      const PropertyTreeStateOrAlias& ancestor_state,
+  static void LocalToAncestorVisualRectInternal(
+      const PropertyTreeStateOrAlias& local,
+      const PropertyTreeStateOrAlias& ancestor,
       FloatClipRect& mapping_rect) {
     GeometryMapper::LocalToAncestorVisualRectInternalForTesting(
-        local_state.Unalias(), ancestor_state.Unalias(), mapping_rect);
+        local.Unalias(), ancestor.Unalias(), mapping_rect);
   }
 
-  void LocalToAncestorVisualRectForCompositingOverlap(
-      const PropertyTreeStateOrAlias& local_state,
-      const PropertyTreeStateOrAlias& ancestor_state,
+  static void LocalToAncestorVisualRectForCompositingOverlap(
+      const PropertyTreeStateOrAlias& local,
+      const PropertyTreeStateOrAlias& ancestor,
       FloatClipRect& mapping_rect) {
     GeometryMapper::
         LocalToAncestorVisualRectInternalForCompositingOverlapForTesting(
-            local_state.Unalias(), ancestor_state.Unalias(), mapping_rect);
+            local.Unalias(), ancestor.Unalias(), mapping_rect);
   }
 
   bool MightOverlapForCompositing(const gfx::RectF& rect1,

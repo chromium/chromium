@@ -2396,7 +2396,7 @@ scoped_refptr<ToggleGroupList> StyleBuilderConverter::ConvertToggleGroup(
   return result;
 }
 scoped_refptr<ToggleRootList> StyleBuilderConverter::ConvertToggleRoot(
-    const StyleResolverState& state,
+    const StyleResolverState& state_unused,
     const CSSValue& value) {
   if (const auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
     DCHECK_EQ(ident->GetValueID(), CSSValueID::kNone);

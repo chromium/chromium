@@ -11,10 +11,10 @@ class ExecutionContext;
 // Do not remove or renumber enums as this is used for metrics. When making
 // changes, also update the enum list in tools/metrics/histograms/enums.xml to
 // keep it in sync.
-enum RemotePlaybackInitiationLocation {
-  REMOTE_PLAYBACK_API = 0,
-  HTML_MEDIA_ELEMENT = 1,
-  kMaxValue = HTML_MEDIA_ELEMENT,
+enum class RemotePlaybackInitiationLocation {
+  kRemovePlaybackAPI = 0,
+  kHTMLMediaElement = 1,
+  kMaxValue = kHTMLMediaElement,
 };
 
 class RemotePlaybackMetrics {

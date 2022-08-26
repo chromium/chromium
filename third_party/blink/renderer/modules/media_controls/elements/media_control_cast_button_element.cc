@@ -102,7 +102,7 @@ void MediaControlCastButtonElement::DefaultEventHandler(Event& event) {
 
     RemotePlayback::From(MediaElement()).PromptInternal();
     RemotePlaybackMetrics::RecordRemotePlaybackLocation(
-        RemotePlaybackInitiationLocation::HTML_MEDIA_ELEMENT);
+        RemotePlaybackInitiationLocation::kHTMLMediaElement);
   }
   MediaControlInputElement::DefaultEventHandler(event);
 }

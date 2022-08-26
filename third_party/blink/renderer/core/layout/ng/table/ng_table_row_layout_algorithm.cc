@@ -210,10 +210,12 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
     }
   }
 
-  NGLayoutResult::EStatus status = PlaceCells(row.block_size, row_baseline);
-  if (status == NGLayoutResult::kOutOfFragmentainerSpace)
-    return container_builder_.Abort(status);
-  DCHECK_EQ(status, NGLayoutResult::kSuccess);
+  {
+    NGLayoutResult::EStatus status = PlaceCells(row.block_size, row_baseline);
+    if (status == NGLayoutResult::kOutOfFragmentainerSpace)
+      return container_builder_.Abort(status);
+    DCHECK_EQ(status, NGLayoutResult::kSuccess);
+  }
 
   LayoutUnit previous_consumed_row_block_size;
   if (IsResumingLayout(BreakToken())) {

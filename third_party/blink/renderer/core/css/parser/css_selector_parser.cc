@@ -850,9 +850,9 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
   selector->SetMatch(colons == 1 ? CSSSelector::kPseudoClass
                                  : CSSSelector::kPseudoElement);
 
-  AtomicString value = token.Value().ToAtomicString();
   bool has_arguments = token.GetType() == kFunctionToken;
-  selector->UpdatePseudoType(value, *context_, has_arguments, context_->Mode());
+  selector->UpdatePseudoType(token.Value().ToAtomicString(), *context_,
+                             has_arguments, context_->Mode());
 
   if (selector->Match() == CSSSelector::kPseudoElement) {
     switch (selector->GetPseudoType()) {

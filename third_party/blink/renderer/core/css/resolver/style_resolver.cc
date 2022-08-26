@@ -518,18 +518,21 @@ static void MatchSlottedRulesForUAHost(const Element& element,
 static void MatchSlottedRules(const Element& element,
                               ElementRuleCollector& collector) {
   MatchSlottedRulesForUAHost(element, collector);
-  HTMLSlotElement* slot = element.AssignedSlot();
-  if (!slot)
-    return;
-
   HeapVector<std::pair<Member<HTMLSlotElement>, Member<ScopedStyleResolver>>>
       resolvers;
-  for (; slot; slot = slot->AssignedSlot()) {
-    if (ScopedStyleResolver* resolver =
-            slot->GetTreeScope().GetScopedStyleResolver()) {
-      resolvers.push_back(std::make_pair(slot, resolver));
+  {
+    HTMLSlotElement* slot = element.AssignedSlot();
+    if (!slot)
+      return;
+
+    for (; slot; slot = slot->AssignedSlot()) {
+      if (ScopedStyleResolver* resolver =
+              slot->GetTreeScope().GetScopedStyleResolver()) {
+        resolvers.push_back(std::make_pair(slot, resolver));
+      }
     }
   }
+
   for (const auto& [slot, resolver] : base::Reversed(resolvers)) {
     ElementRuleCollector::SlottedRulesScope scope(collector, *slot);
     collector.ClearMatchedRules();
