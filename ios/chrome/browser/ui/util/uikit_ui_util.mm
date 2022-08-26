@@ -17,7 +17,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/notreached.h"
 #include "base/numerics/math_constants.h"
-#include "ios/chrome/browser/system_flags.h"
+#import "ios/chrome/browser/flags/system_flags.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/browser/ui/util/dynamic_type_util.h"
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"

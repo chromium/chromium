@@ -14,6 +14,7 @@ source_set("flags") {
   ]
 
   deps = [
+    ":system_flags",
     "//base",
     "//components/autofill/core/common",
     "//components/autofill/ios/browser",
@@ -88,6 +89,39 @@ source_set("flags") {
   if (ios_enable_screen_time) {
     deps += [ "//ios/chrome/browser/screen_time:feature_flags" ]
   }
+}
+
+source_set("system_flags") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "chrome_switches.h",
+    "system_flags.h",
+  ]
+  deps = [
+    "//base",
+    "//build:branding_buildflags",
+    "//components/autofill/core/common",
+    "//components/password_manager/core/common:features",
+    "//components/variations",
+    "//ios/chrome/browser/browsing_data:feature_flags",
+    "//ios/chrome/browser/ui:feature_flags",
+  ]
+  public_deps = [ "//ios/chrome/browser:utils" ]
+}
+
+source_set("client_side") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "ios_chrome_field_trials.h" ]
+  deps = [
+    "//base",
+    "//components/metrics",
+    "//components/variations",
+    "//ios/chrome/app:tests_hook",
+    "//ios/chrome/browser/application_context",
+    "//ios/chrome/browser/paths",
+    "//ios/chrome/browser/ui/first_run:field_trial",
+  ]
+  public_deps = [ "//ios/chrome/browser" ]
 }
 
 source_set("unit_tests") {

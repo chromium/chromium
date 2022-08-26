@@ -20,8 +20,8 @@
 #include "components/sync/model/model_type_store_service.h"
 #include "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/flags/system_flags.h"
 #include "ios/chrome/browser/sync/model_type_store_service_factory.h"
-#include "ios/chrome/browser/system_flags.h"
 #include "ios/chrome/common/channel_info.h"
 #include "ios/web/public/thread/web_thread.h"
 

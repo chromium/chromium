@@ -159,6 +159,7 @@ source_set("omnibox_internal") {
     "//ios/chrome/browser/bookmarks:bookmarks_utils",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/https_upgrades",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/net",

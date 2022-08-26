@@ -107,6 +107,7 @@ source_set("eg2_tests") {
     "//components/signin/ios/browser:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser:utils",
+    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/browser/ui/authentication/signin:constants",
     "//ios/chrome/browser/ui/authentication/unified_consent:constants",

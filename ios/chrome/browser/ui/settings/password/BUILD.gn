@@ -87,6 +87,7 @@ source_set("password_ui") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/passwords",

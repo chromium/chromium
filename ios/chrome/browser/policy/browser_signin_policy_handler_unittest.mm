@@ -13,7 +13,7 @@
 #include "components/policy/core/common/schema.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "ios/chrome/browser/chrome_switches.h"
+#import "ios/chrome/browser/flags/chrome_switches.h"
 #include "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"

@@ -33,6 +33,7 @@ source_set("hooks") {
     "//components/policy/core/common:test_support",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser",
+    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/policy:test_support",
     "//ios/chrome/browser/ui/authentication:eg_app_support+eg2",
     "//ios/chrome/test/app:test_support",

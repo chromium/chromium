@@ -120,6 +120,7 @@ source_set("webui_internal") {
     "//ios/chrome/app/resources:ios_resources",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/omaha",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",

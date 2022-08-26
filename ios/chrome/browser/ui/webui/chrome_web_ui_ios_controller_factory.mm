@@ -11,7 +11,7 @@
 #import "base/no_destructor.h"
 #import "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
 #import "ios/chrome/browser/chrome_url_constants.h"
-#import "ios/chrome/browser/system_flags.h"
+#import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/ui/webui/about_ui.h"
 #import "ios/chrome/browser/ui/webui/autofill_and_password_manager_internals/autofill_internals_ui_ios.h"
 #import "ios/chrome/browser/ui/webui/autofill_and_password_manager_internals/password_manager_internals_ui_ios.h"

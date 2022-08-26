@@ -20,6 +20,7 @@ source_set("ntp") {
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/discover_feed:constants",
+    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/components/webui:url_constants",
     "//ios/web/common:features",
@@ -38,7 +39,7 @@ source_set("features") {
     "//base",
     "//components/version_info:channel",
     "//ios/chrome/app:buildflags",
-    "//ios/chrome/browser:utils",
+    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/common",
   ]
 }

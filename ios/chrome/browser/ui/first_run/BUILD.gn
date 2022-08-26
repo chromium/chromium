@@ -143,6 +143,7 @@ source_set("utils") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/crash_report",
     "//ios/chrome/browser/first_run",
+    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/settings/sync/utils",

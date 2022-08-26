@@ -231,6 +231,7 @@ source_set("web_internal") {
     "//ios/chrome/browser:browser_impl",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/content_settings",
+    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/follow:javascript_feature",
     "//ios/chrome/browser/https_upgrades",
     "//ios/chrome/browser/link_to_text",

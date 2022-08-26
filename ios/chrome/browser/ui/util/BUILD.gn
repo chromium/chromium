@@ -56,6 +56,7 @@ source_set("util") {
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser:utils",
+    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/common:timing",
     "//ios/chrome/common/ui/util",

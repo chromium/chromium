@@ -11,7 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/bookmarks/browser/bookmark_model.h"
-#include "ios/chrome/browser/system_flags.h"
+#import "ios/chrome/browser/flags/system_flags.h"
 #include "ios/chrome/browser/ui/bookmarks/bookmark_ios_unittest.h"
 #include "testing/gtest_mac.h"
 

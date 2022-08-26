@@ -42,6 +42,7 @@ source_set("authentication") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/policy",

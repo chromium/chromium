@@ -198,6 +198,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser:utils",
     "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/paths",
     "//ios/chrome/browser/prefs",

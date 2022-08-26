@@ -8,8 +8,8 @@
 #include "components/url_formatter/url_fixer.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
-#include "ios/chrome/browser/system_flags.h"
 #include "ios/components/webui/web_ui_url_constants.h"
 #include "ios/web/public/browser_state.h"
 

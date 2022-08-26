@@ -8,7 +8,7 @@
 #include "ios/chrome/app/spotlight/actions_spotlight_manager.h"
 #include "ios/chrome/app/spotlight/bookmarks_spotlight_manager.h"
 #include "ios/chrome/app/spotlight/topsites_spotlight_manager.h"
-#include "ios/chrome/browser/system_flags.h"
+#import "ios/chrome/browser/flags/system_flags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

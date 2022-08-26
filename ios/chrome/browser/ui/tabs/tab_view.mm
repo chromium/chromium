@@ -10,7 +10,7 @@
 #include "base/i18n/rtl.h"
 #include "base/ios/ios_util.h"
 #include "base/strings/sys_string_conversions.h"
-#include "ios/chrome/browser/system_flags.h"
+#import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/ui/elements/fade_truncating_label.h"
 #import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/image_util/image_util.h"

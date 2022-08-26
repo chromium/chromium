@@ -6,7 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
-#include "ios/chrome/browser/chrome_switches.h"
+#import "ios/chrome/browser/flags/chrome_switches.h"
 #include "ios/chrome/browser/policy/test_platform_policy_provider.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/test/app/chrome_test_util.h"

@@ -128,6 +128,7 @@ source_set("settings") {
     "//ios/chrome/browser/content_settings",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/feature_engagement",
+    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/net:crurl",

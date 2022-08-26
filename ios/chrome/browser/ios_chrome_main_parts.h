@@ -9,7 +9,7 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/command_line.h"
-#include "ios/chrome/browser/ios_chrome_field_trials.h"
+#import "ios/chrome/browser/flags/ios_chrome_field_trials.h"
 #include "ios/web/public/init/web_main_parts.h"
 
 class ApplicationContextImpl;

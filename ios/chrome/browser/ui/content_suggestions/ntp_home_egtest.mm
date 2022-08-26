@@ -8,7 +8,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/feed/core/v2/public/ios/pref_names.h"
 #include "components/strings/grit/components_strings.h"
-#include "ios/chrome/browser/chrome_switches.h"
+#import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
