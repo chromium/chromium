@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
 #include "third_party/blink/renderer/core/css/css_quad_value.h"
+#include "third_party/blink/renderer/core/css/css_scroll_value.h"
 #include "third_party/blink/renderer/core/css/css_timing_function_value.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
@@ -357,21 +358,34 @@ AtomicString CSSToStyleMap::MapAnimationName(const CSSValue& value) {
   return CSSAnimationData::InitialName();
 }
 
-StyleNameOrKeyword CSSToStyleMap::MapAnimationTimeline(const CSSValue& value) {
+StyleTimeline CSSToStyleMap::MapAnimationTimeline(const CSSValue& value) {
   if (value.IsInitialValue())
     return CSSAnimationData::InitialTimeline();
   if (auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
     DCHECK(ident->GetValueID() == CSSValueID::kAuto ||
            ident->GetValueID() == CSSValueID::kNone);
-    return StyleNameOrKeyword(ident->GetValueID());
+    return StyleTimeline(ident->GetValueID());
   }
   if (auto* custom_ident = DynamicTo<CSSCustomIdentValue>(value)) {
-    return StyleNameOrKeyword(
+    return StyleTimeline(
         StyleName(custom_ident->Value(), StyleName::Type::kCustomIdent));
   }
-  return StyleNameOrKeyword(
-      StyleName(AtomicString(To<CSSStringValue>(value).Value()),
-                StyleName::Type::kString));
+  if (auto* string_value = DynamicTo<CSSStringValue>(value)) {
+    return StyleTimeline(StyleName(AtomicString(string_value->Value()),
+                                   StyleName::Type::kString));
+  }
+  const auto& scroll_value = To<cssvalue::CSSScrollValue>(value);
+  const auto* axis_value = DynamicTo<CSSIdentifierValue>(scroll_value.Axis());
+  const auto* scroller_value =
+      DynamicTo<CSSIdentifierValue>(scroll_value.Scroller());
+
+  TimelineAxis axis = axis_value ? axis_value->ConvertTo<TimelineAxis>()
+                                 : StyleTimeline::ScrollData::DefaultAxis();
+  TimelineScroller scroller =
+      scroller_value ? scroller_value->ConvertTo<TimelineScroller>()
+                     : StyleTimeline::ScrollData::DefaultScroller();
+
+  return StyleTimeline(StyleTimeline::ScrollData(axis, scroller));
 }
 
 EAnimPlayState CSSToStyleMap::MapAnimationPlayState(const CSSValue& value) {

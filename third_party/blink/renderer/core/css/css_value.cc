@@ -73,6 +73,7 @@
 #include "third_party/blink/renderer/core/css/css_reflect_value.h"
 #include "third_party/blink/renderer/core/css/css_revert_layer_value.h"
 #include "third_party/blink/renderer/core/css/css_revert_value.h"
+#include "third_party/blink/renderer/core/css/css_scroll_value.h"
 #include "third_party/blink/renderer/core/css/css_shadow_value.h"
 #include "third_party/blink/renderer/core/css/css_string_value.h"
 #include "third_party/blink/renderer/core/css/css_timing_function_value.h"
@@ -299,6 +300,8 @@ bool CSSValue::operator==(const CSSValue& other) const {
         return CompareCSSValues<CSSLightDarkValuePair>(*this, other);
       case kIdSelectorClass:
         return CompareCSSValues<cssvalue::CSSIdSelectorValue>(*this, other);
+      case kScrollClass:
+        return CompareCSSValues<cssvalue::CSSScrollValue>(*this, other);
       case kElementOffsetClass:
         return CompareCSSValues<cssvalue::CSSElementOffsetValue>(*this, other);
       case kRatioClass:
@@ -435,6 +438,8 @@ String CSSValue::CssText() const {
       return To<CSSLightDarkValuePair>(this)->CustomCSSText();
     case kIdSelectorClass:
       return To<cssvalue::CSSIdSelectorValue>(this)->CustomCSSText();
+    case kScrollClass:
+      return To<cssvalue::CSSScrollValue>(this)->CustomCSSText();
     case kElementOffsetClass:
       return To<cssvalue::CSSElementOffsetValue>(this)->CustomCSSText();
     case kRatioClass:
@@ -637,6 +642,9 @@ void CSSValue::FinalizeGarbageCollectedObject() {
       return;
     case kIdSelectorClass:
       To<cssvalue::CSSIdSelectorValue>(this)->~CSSIdSelectorValue();
+      return;
+    case kScrollClass:
+      To<cssvalue::CSSScrollValue>(this)->~CSSScrollValue();
       return;
     case kElementOffsetClass:
       To<cssvalue::CSSElementOffsetValue>(this)->~CSSElementOffsetValue();
@@ -841,6 +849,9 @@ void CSSValue::Trace(Visitor* visitor) const {
       return;
     case kIdSelectorClass:
       To<cssvalue::CSSIdSelectorValue>(this)->TraceAfterDispatch(visitor);
+      return;
+    case kScrollClass:
+      To<cssvalue::CSSScrollValue>(this)->TraceAfterDispatch(visitor);
       return;
     case kElementOffsetClass:
       To<cssvalue::CSSElementOffsetValue>(this)->TraceAfterDispatch(visitor);

@@ -43,12 +43,11 @@ test(() => {
   assert_not_equals(style.cssText.indexOf('animation-timeline'), -1);
 }, 'The animation-timeline property shows up in CSSStyleDeclaration.cssText');
 
-// The tentative scroll() notation:
+// https://drafts.csswg.org/scroll-animations-1/#scroll-notation
+//
 // animation-timeline: scroll(<axis>? <scroller>?);
 // <axis> = block | inline | vertical | horizontal
-// <scroller> = root | nearest | <container-name>
-//
-// https://github.com/w3c/csswg-drafts/issues/6674
+// <scroller> = root | nearest
 test_computed_value('animation-timeline', 'scroll()');
 test_computed_value('animation-timeline', 'scroll(block)', 'scroll()');
 test_computed_value('animation-timeline', 'scroll(inline)');
@@ -58,5 +57,4 @@ test_computed_value('animation-timeline', 'scroll(root)');
 test_computed_value('animation-timeline', 'scroll(nearest)', 'scroll()');
 test_computed_value('animation-timeline', 'scroll(inline nearest)', 'scroll(inline)');
 test_computed_value('animation-timeline', 'scroll(vertical root)');
-// TODO: add <container-name> cases
 </script>

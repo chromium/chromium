@@ -1533,5 +1533,9 @@
     // inline,
     "self-block",
     "self-inline",
+
+    // scroll()
+    "root",
+    "nearest",
   ],
 }

@@ -401,7 +401,7 @@ const CSSValue* AnimationTimeline::CSSValueFromComputedStyleInternal(
   const CSSAnimationData* animation_data = style.Animations();
   if (animation_data) {
     for (const auto& timeline : animation_data->TimelineList())
-      list->Append(*ComputedStyleUtils::ValueForStyleNameOrKeyword(timeline));
+      list->Append(*ComputedStyleUtils::ValueForAnimationTimeline(timeline));
   } else {
     list->Append(*InitialValue());
   }

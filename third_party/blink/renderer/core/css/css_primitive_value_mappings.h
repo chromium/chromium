@@ -1768,6 +1768,33 @@ inline TimelineAxis CSSIdentifierValue::ConvertTo() const {
   return TimelineAxis::kBlock;
 }
 
+template <>
+inline CSSIdentifierValue::CSSIdentifierValue(TimelineScroller scroller)
+    : CSSValue(kIdentifierClass) {
+  switch (scroller) {
+    case TimelineScroller::kNearest:
+      value_id_ = CSSValueID::kNearest;
+      break;
+    case TimelineScroller::kRoot:
+      value_id_ = CSSValueID::kRoot;
+      break;
+  }
+}
+
+template <>
+inline TimelineScroller CSSIdentifierValue::ConvertTo() const {
+  switch (GetValueID()) {
+    case CSSValueID::kNearest:
+      return TimelineScroller::kNearest;
+    case CSSValueID::kRoot:
+      return TimelineScroller::kRoot;
+    default:
+      break;
+  }
+  NOTREACHED();
+  return TimelineScroller::kNearest;
+}
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PRIMITIVE_VALUE_MAPPINGS_H_

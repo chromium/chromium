@@ -310,6 +310,8 @@ CSSValue* ConsumeAnimationIterationCount(CSSParserTokenRange&,
 CSSValue* ConsumeAnimationName(CSSParserTokenRange&,
                                const CSSParserContext&,
                                bool allow_quoted_name);
+CSSValue* ConsumeScroller(CSSParserTokenRange&, const CSSParserContext&);
+CSSValue* ConsumeScrollFunction(CSSParserTokenRange&, const CSSParserContext&);
 CSSValue* ConsumeAnimationTimeline(CSSParserTokenRange&,
                                    const CSSParserContext&);
 CSSValue* ConsumeAnimationTimingFunction(CSSParserTokenRange&,

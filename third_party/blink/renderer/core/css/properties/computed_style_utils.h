@@ -29,6 +29,7 @@ class FontFamily;
 class StyleColor;
 class StyleIntrinsicLength;
 class StylePropertyShorthand;
+class StyleTimeline;
 
 enum class CSSValuePhase { kComputedValue, kUsedValue };
 
@@ -146,6 +147,7 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* ValueForAnimationPlayState(EAnimPlayState);
   static CSSValue* CreateTimingFunctionValue(const TimingFunction*);
   static CSSValue* ValueForAnimationTimingFunction(const CSSTimingData*);
+  static CSSValue* ValueForAnimationTimeline(const StyleTimeline&);
   static CSSValueList* ValuesForBorderRadiusCorner(const LengthSize&,
                                                    const ComputedStyle&);
   static CSSValue* ValueForBorderRadiusCorner(const LengthSize&,

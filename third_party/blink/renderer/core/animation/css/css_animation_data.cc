@@ -24,9 +24,9 @@ const AtomicString& CSSAnimationData::InitialName() {
   return name;
 }
 
-const StyleNameOrKeyword& CSSAnimationData::InitialTimeline() {
-  DEFINE_STATIC_LOCAL(const StyleNameOrKeyword, name, (CSSValueID::kAuto));
-  return name;
+const StyleTimeline& CSSAnimationData::InitialTimeline() {
+  DEFINE_STATIC_LOCAL(const StyleTimeline, timeline, (CSSValueID::kAuto));
+  return timeline;
 }
 
 bool CSSAnimationData::AnimationsMatchForStyleRecalc(
@@ -51,7 +51,7 @@ Timing CSSAnimationData::ConvertToTiming(size_t index) const {
   return timing;
 }
 
-const StyleNameOrKeyword& CSSAnimationData::GetTimeline(size_t index) const {
+const StyleTimeline& CSSAnimationData::GetTimeline(size_t index) const {
   DCHECK_LT(index, name_list_.size());
   return GetRepeated(timeline_list_, index);
 }

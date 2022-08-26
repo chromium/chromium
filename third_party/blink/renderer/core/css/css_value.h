@@ -182,6 +182,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     return class_type_ == kLightDarkValuePairClass;
   }
   bool IsIdSelectorValue() const { return class_type_ == kIdSelectorClass; }
+  bool IsScrollValue() const { return class_type_ == kScrollClass; }
   bool IsElementOffsetValue() const {
     return class_type_ == kElementOffsetClass;
   }
@@ -218,6 +219,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kValuePairClass,
     kLightDarkValuePairClass,
     kIdSelectorClass,
+    kScrollClass,
     kElementOffsetClass,
     kRatioClass,
 

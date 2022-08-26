@@ -135,7 +135,7 @@ const CSSValue* Animation::CSSValueFromComputedStyleInternal(
       if (CSSAnimationData::InitialTimeline() !=
           animation_data->GetTimeline(i)) {
         DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
-        list->Append(*ComputedStyleUtils::ValueForStyleNameOrKeyword(
+        list->Append(*ComputedStyleUtils::ValueForAnimationTimeline(
             animation_data->GetTimeline(i)));
       }
       animations_list->Append(*list);

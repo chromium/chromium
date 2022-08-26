@@ -608,6 +608,17 @@ bool ComputedValuesEqual(const PropertyHandle& property,
   }
 }
 
+absl::optional<StyleNameOrKeyword> GetTimelineName(
+    const StyleTimeline& style_timeline) {
+  if (style_timeline.IsKeyword())
+    return StyleNameOrKeyword(style_timeline.GetKeyword());
+  if (style_timeline.IsName())
+    return StyleNameOrKeyword(style_timeline.GetName());
+  // TODO(crbug.com/1317765: Support scroll().
+  DCHECK(style_timeline.IsScroll());
+  return absl::nullopt;
+}
+
 }  // namespace
 
 void CSSAnimations::CalculateCompositorAnimationUpdate(
@@ -798,7 +809,12 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
       if (!keyframes_rule)
         continue;  // Cancel the animation if there's no style rule for it.
 
-      const StyleNameOrKeyword& timeline_name = animation_data->GetTimeline(i);
+      const StyleTimeline& style_timeline = animation_data->GetTimeline(i);
+
+      // TODO(crbug.com/1317765: Support scroll().
+      StyleNameOrKeyword timeline_name =
+          GetTimelineName(style_timeline)
+              .value_or(StyleNameOrKeyword(CSSValueID::kNone));
 
       const RunningAnimation* existing_animation = nullptr;
       wtf_size_t existing_animation_index = 0;

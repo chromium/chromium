@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
 #include "third_party/blink/renderer/core/css/css_quad_value.h"
 #include "third_party/blink/renderer/core/css/css_reflect_value.h"
+#include "third_party/blink/renderer/core/css/css_scroll_value.h"
 #include "third_party/blink/renderer/core/css/css_shadow_value.h"
 #include "third_party/blink/renderer/core/css/css_string_value.h"
 #include "third_party/blink/renderer/core/css/css_timing_function_value.h"
@@ -1835,6 +1836,28 @@ CSSValue* ComputedStyleUtils::ValueForAnimationTimingFunction(
         CSSTimingData::InitialTimingFunction().get()));
   }
   return list;
+}
+
+CSSValue* ComputedStyleUtils::ValueForAnimationTimeline(
+    const StyleTimeline& timeline) {
+  if (timeline.IsKeyword()) {
+    DCHECK(timeline.GetKeyword() == CSSValueID::kAuto ||
+           timeline.GetKeyword() == CSSValueID::kNone);
+    return CSSIdentifierValue::Create(timeline.GetKeyword());
+  }
+  if (timeline.IsName())
+    return ValueForStyleName(timeline.GetName());
+  DCHECK(timeline.IsScroll());
+  const StyleTimeline::ScrollData& scroll_data = timeline.GetScroll();
+  CSSValue* axis = scroll_data.HasDefaultAxis()
+                       ? nullptr
+                       : CSSIdentifierValue::Create(scroll_data.GetAxis());
+  CSSValue* scroller =
+      scroll_data.HasDefaultScroller()
+          ? nullptr
+          : CSSIdentifierValue::Create(scroll_data.GetScroller());
+
+  return MakeGarbageCollected<cssvalue::CSSScrollValue>(axis, scroller);
 }
 
 CSSValueList* ComputedStyleUtils::ValuesForBorderRadiusCorner(

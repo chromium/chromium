@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/css/css_property_value.h"
 #include "third_party/blink/renderer/core/css/css_ratio_value.h"
 #include "third_party/blink/renderer/core/css/css_ray_value.h"
+#include "third_party/blink/renderer/core/css/css_scroll_value.h"
 #include "third_party/blink/renderer/core/css/css_shadow_value.h"
 #include "third_party/blink/renderer/core/css/css_string_value.h"
 #include "third_party/blink/renderer/core/css/css_timing_function_value.h"
@@ -106,6 +107,11 @@ bool IsContentDistributionKeyword(CSSValueID id) {
 
 bool IsOverflowKeyword(CSSValueID id) {
   return IdentMatches<CSSValueID::kUnsafe, CSSValueID::kSafe>(id);
+}
+
+bool IsIdent(const CSSValue& value, CSSValueID id) {
+  const auto* ident = DynamicTo<CSSIdentifierValue>(value);
+  return ident && ident->GetValueID() == id;
 }
 
 CSSIdentifierValue* ConsumeOverflowPositionKeyword(CSSParserTokenRange& range) {
@@ -3253,13 +3259,37 @@ CSSValue* ConsumeAnimationName(CSSParserTokenRange& range,
   return ConsumeCustomIdent(range, context);
 }
 
+CSSValue* ConsumeScrollFunction(CSSParserTokenRange& range,
+                                const CSSParserContext& context) {
+  if (range.Peek().FunctionId() != CSSValueID::kScroll)
+    return nullptr;
+  CSSParserTokenRange block = range.ConsumeBlock();
+  CSSIdentifierValue* axis =
+      ConsumeIdent<CSSValueID::kBlock, CSSValueID::kInline,
+                   CSSValueID::kVertical, CSSValueID::kHorizontal>(block);
+  CSSValue* scroller =
+      ConsumeIdent<CSSValueID::kNearest, CSSValueID::kRoot>(block);
+  if (!block.AtEnd())
+    return nullptr;
+  // Nullify default values.
+  // https://drafts.csswg.org/scroll-animations-1/#valdef-scroll-block
+  if (axis && IsIdent(*axis, CSSValueID::kBlock))
+    axis = nullptr;
+  // https://drafts.csswg.org/scroll-animations-1/#valdef-scroll-nearest
+  if (scroller && IsIdent(*scroller, CSSValueID::kNearest))
+    scroller = nullptr;
+  return MakeGarbageCollected<cssvalue::CSSScrollValue>(axis, scroller);
+}
+
 CSSValue* ConsumeAnimationTimeline(CSSParserTokenRange& range,
                                    const CSSParserContext& context) {
   if (auto* value = ConsumeIdent<CSSValueID::kNone, CSSValueID::kAuto>(range))
     return value;
   if (auto* value = ConsumeCustomIdent(range, context))
     return value;
-  return ConsumeString(range);
+  if (auto* value = ConsumeString(range))
+    return value;
+  return ConsumeScrollFunction(range, context);
 }
 
 CSSValue* ConsumeAnimationTimingFunction(CSSParserTokenRange& range,
