@@ -528,35 +528,72 @@ CSSScrollTimeline* CSSAnimations::FindPreviousSiblingAncestorTimeline(
       name, parent, GetPendingAnimationUpdate(*parent));
 }
 
+namespace {
+
+std::pair<ScrollTimeline::ReferenceType, absl::optional<Element*>>
+ComputeReference(Element* element, TimelineScroller scroller) {
+  using ReferenceType = ScrollTimeline::ReferenceType;
+
+  switch (scroller) {
+    case TimelineScroller::kNearest:
+      return {ReferenceType::kNearestAncestor, element};
+    case TimelineScroller::kRoot:
+      // Note that absl::nullopt will translate to
+      // Document::ScrollingElementNoLayout in the CSSScrollTimeline
+      // constructor.
+      return {ReferenceType::kSource, absl::nullopt};
+  }
+}
+
+CSSScrollTimeline* ComputeScrollFunctionTimeline(
+    Element* element,
+    const StyleTimeline::ScrollData& scroll_data) {
+  Document& document = element->GetDocument();
+
+  auto [reference_type, reference_element] =
+      ComputeReference(element, scroll_data.GetScroller());
+  CSSScrollTimeline::Options options(document, reference_type,
+                                     reference_element, g_null_atom /* name */,
+                                     scroll_data.GetAxis());
+  // TODO(crbug.com/1356482): Cache/re-use timelines created from scroll().
+  return MakeGarbageCollected<CSSScrollTimeline>(&document, std::move(options));
+}
+
+}  // namespace
+
 AnimationTimeline* CSSAnimations::ComputeTimeline(
     Element* element,
-    const StyleNameOrKeyword& timeline_name,
+    const StyleTimeline& style_timeline,
     const CSSAnimationUpdate& update) {
   Document& document = element->GetDocument();
-  if (timeline_name.IsKeyword()) {
-    if (timeline_name.GetKeyword() == CSSValueID::kAuto)
+  if (style_timeline.IsKeyword()) {
+    if (style_timeline.GetKeyword() == CSSValueID::kAuto)
       return &document.Timeline();
-    DCHECK_EQ(timeline_name.GetKeyword(), CSSValueID::kNone);
+    DCHECK_EQ(style_timeline.GetKeyword(), CSSValueID::kNone);
     return nullptr;
   }
-  // First, look for timelines created by 'scroll-timeline' properties.
-  if (CSSScrollTimeline* timeline = FindPreviousSiblingAncestorTimeline(
-          timeline_name.GetName().GetValue(), element, &update)) {
+  if (style_timeline.IsName()) {
+    // First, look for timelines created by 'scroll-timeline' properties.
+    if (CSSScrollTimeline* timeline = FindPreviousSiblingAncestorTimeline(
+            style_timeline.GetName().GetValue(), element, &update)) {
+      return timeline;
+    }
+    // Otherwise, look for timelines created by @scroll-timeline.
+    // TODO(crbug.com/1317765): Remove support for @scroll-timeline.
+    CSSScrollTimeline* timeline = document.GetStyleEngine().FindScrollTimeline(
+        style_timeline.GetName().GetValue());
+    if (!timeline)
+      return nullptr;
+    // This currently enforces the lookup rules from the new scroll timeline API
+    // on @scroll-timelines. This makes transitioning to the new API easier.
+    if (timeline->source() &&
+        !IsPreviousSiblingAncestor(timeline->source(), element)) {
+      return nullptr;
+    }
     return timeline;
   }
-  // Otherwise, look for timelines created by @scroll-timeline.
-  // TODO(crbug.com/1317765): Remove support for @scroll-timeline.
-  CSSScrollTimeline* timeline = document.GetStyleEngine().FindScrollTimeline(
-      timeline_name.GetName().GetValue());
-  if (!timeline)
-    return nullptr;
-  // This currently enforces the lookup rules from the new scroll timeline API
-  // on @scroll-timelines. This makes transitioning to the new API easier.
-  if (timeline->source() &&
-      !IsPreviousSiblingAncestor(timeline->source(), element)) {
-    return nullptr;
-  }
-  return timeline;
+  DCHECK(style_timeline.IsScroll());
+  return ComputeScrollFunctionTimeline(element, style_timeline.GetScroll());
 }
 
 CSSAnimations::CSSAnimations() = default;
@@ -606,17 +643,6 @@ bool ComputedValuesEqual(const PropertyHandle& property,
     // parsed.
     return CSSPropertyEquality::PropertiesEqual(property, a, b);
   }
-}
-
-absl::optional<StyleNameOrKeyword> GetTimelineName(
-    const StyleTimeline& style_timeline) {
-  if (style_timeline.IsKeyword())
-    return StyleNameOrKeyword(style_timeline.GetKeyword());
-  if (style_timeline.IsName())
-    return StyleNameOrKeyword(style_timeline.GetName());
-  // TODO(crbug.com/1317765: Support scroll().
-  DCHECK(style_timeline.IsScroll());
-  return absl::nullopt;
 }
 
 }  // namespace
@@ -705,8 +731,9 @@ void CSSAnimations::CalculateTimelineUpdate(CSSAnimationUpdate& update,
     // If the computed values of scroll-timeline-* would produce a
     // CSSScrollTimeline identical to the existing one, we reuse the existing
     // one instead.
-    CSSScrollTimeline::Options options(document, &animating_element, name,
-                                       axis);
+    CSSScrollTimeline::Options options(document,
+                                       ScrollTimeline::ReferenceType::kSource,
+                                       &animating_element, name, axis);
     if (existing_timeline && existing_timeline->Matches(options)) {
       new_scroll_timeline = existing_timeline;
     } else {
@@ -811,11 +838,6 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
 
       const StyleTimeline& style_timeline = animation_data->GetTimeline(i);
 
-      // TODO(crbug.com/1317765: Support scroll().
-      StyleNameOrKeyword timeline_name =
-          GetTimelineName(style_timeline)
-              .value_or(StyleNameOrKeyword(CSSValueID::kNone));
-
       const RunningAnimation* existing_animation = nullptr;
       wtf_size_t existing_animation_index = 0;
 
@@ -877,7 +899,7 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
 
         AnimationTimeline* timeline = existing_animation->Timeline();
         if (!is_animation_style_change && !animation->GetIgnoreCSSTimeline())
-          timeline = ComputeTimeline(&element, timeline_name, update);
+          timeline = ComputeTimeline(&element, style_timeline, update);
 
         if (keyframes_rule != existing_animation->style_rule ||
             keyframes_rule->Version() !=
@@ -946,7 +968,7 @@ void CSSAnimations::CalculateAnimationUpdate(CSSAnimationUpdate& update,
       } else {
         DCHECK(!is_animation_style_change);
         AnimationTimeline* timeline =
-            ComputeTimeline(&element, timeline_name, update);
+            ComputeTimeline(&element, style_timeline, update);
         absl::optional<AnimationTimeDelta> inherited_time =
             AnimationTimeDelta();
 

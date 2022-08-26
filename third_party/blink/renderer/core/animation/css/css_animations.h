@@ -49,11 +49,12 @@
 
 namespace blink {
 
+class CSSScrollTimeline;
 class CSSTransitionData;
 class Element;
 class StylePropertyShorthand;
 class StyleResolver;
-class CSSScrollTimeline;
+class StyleTimeline;
 
 class CORE_EXPORT CSSAnimations final {
   DISALLOW_NEW();
@@ -275,10 +276,9 @@ class CORE_EXPORT CSSAnimations final {
       Node*,
       const CSSAnimationUpdate*);
 
-  static AnimationTimeline* ComputeTimeline(
-      Element*,
-      const StyleNameOrKeyword& timeline_name,
-      const CSSAnimationUpdate&);
+  static AnimationTimeline* ComputeTimeline(Element*,
+                                            const StyleTimeline& timeline_name,
+                                            const CSSAnimationUpdate&);
 
   // The before-change style is defined as the computed values of all properties
   // on the element as of the previous style change event, except with any

@@ -133,34 +133,38 @@ HeapVector<Member<IdTargetObserver>> CreateElementReferenceObservers(
 
 CSSScrollTimeline::Options::Options(Document& document,
                                     StyleRuleScrollTimeline& rule)
-    : source_(ComputeScrollSource(document, rule.GetSource())),
+    : reference_type_(ScrollTimeline::ReferenceType::kSource),
+      reference_element_(ComputeScrollSource(document, rule.GetSource())),
       direction_(ComputeScrollDirection(rule.GetOrientation())),
       name_(rule.GetName()),
       rule_(&rule) {}
 
-CSSScrollTimeline::Options::Options(Document& document,
-                                    Element* reference_element,
-                                    const AtomicString& name,
-                                    TimelineAxis axis)
-    : source_(reference_element),
+CSSScrollTimeline::Options::Options(
+    Document& document,
+    ScrollTimeline::ReferenceType reference_type,
+    absl::optional<Element*> reference_element,
+    const AtomicString& name,
+    TimelineAxis axis)
+    : reference_type_(reference_type),
+      reference_element_(reference_element),
       direction_(ComputeScrollDirection(axis)),
       name_(name),
       rule_(nullptr) {}
 
 CSSScrollTimeline::CSSScrollTimeline(Document* document, Options&& options)
-    : ScrollTimeline(
-          document,
-          ReferenceType::kSource,
-          options.source_.value_or(document->ScrollingElementNoLayout()),
-          options.direction_),
+    : ScrollTimeline(document,
+                     options.reference_type_,
+                     options.reference_element_.value_or(
+                         document->ScrollingElementNoLayout()),
+                     options.direction_),
       name_(options.name_),
       rule_(options.rule_) {
   SnapshotState();
 }
 
 bool CSSScrollTimeline::Matches(const Options& options) const {
-  // TODO(crbug.com/1060384): Support ReferenceType::kNearestAncestor.
-  return HasExplicitSource() && (SourceInternal() == options.source_) &&
+  return (GetReferenceType() == options.reference_type_) &&
+         (ReferenceElement() == options.reference_element_) &&
          (GetOrientation() == options.direction_) && (name_ == options.name_) &&
          (rule_ == options.rule_);
 }

@@ -165,6 +165,8 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   // during lifecycle update.
   Element* SourceInternal() const;
 
+  ReferenceType GetReferenceType() const { return reference_type_; }
+
   bool HasExplicitSource() const {
     return reference_type_ == ReferenceType::kSource;
   }

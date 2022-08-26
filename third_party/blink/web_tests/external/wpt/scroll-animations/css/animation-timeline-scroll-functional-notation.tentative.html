@@ -5,6 +5,7 @@
 <link rel="help" src="https://github.com/w3c/csswg-drafts/issues/6674">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/web-animations/testcommon.js"></script>
 <style>
   @keyframes anim {
     from { translate: 50px; }
@@ -70,55 +71,65 @@ const createTargetWithStuff = function(t, contentClass) {
   return [container, target];
 };
 
-test(t => {
+async function scrollLeft(element, value) {
+  element.scrollLeft = value;
+  await waitForNextFrame();
+}
+
+async function scrollTop(element, value) {
+  element.scrollTop = value;
+  await waitForNextFrame();
+}
+
+promise_test(async t => {
   let [container, div] = createTargetWithStuff(t, 'block-content');
   div.style.animation = "anim 10s linear scroll(nearest)";
 
-  root.scrollTop = 50;
+  await scrollTop(root, 50);
   assert_equals(getComputedStyle(div).translate, '50px');
 
-  container.scrollTop = 50;
+  await scrollTop(container, 50);
   assert_equals(getComputedStyle(div).translate, '100px');
 
-  root.scrollTop = 0;
+  await scrollTop(root, 0);
 }, 'animation-timeline: scroll(nearest)');
 
-test(t => {
+promise_test(async t => {
   let [container, div] = createTargetWithStuff(t, 'block-content');
   div.style.animation = "anim 10s linear scroll(root)";
 
-  container.scrollTop = 50;
+  await scrollTop(container, 50);
   assert_equals(getComputedStyle(div).translate, '50px');
 
-  root.scrollTop = 50;
+  await scrollTop(root, 50);
   assert_equals(getComputedStyle(div).translate, '100px');
 
-  root.scrollTop = 0;
+  await scrollTop(root, 0);
 }, 'animation-timeline: scroll(root)');
 
-test(t => {
+promise_test(async t => {
   let [container, div] = createTargetWithStuff(t, 'inline-content');
   div.style.animation = "anim 10s linear scroll(inline)";
 
-  container.scrollLeft = 50;
+  await scrollLeft(container, 50);
   assert_equals(getComputedStyle(div).translate, '100px');
 }, 'animation-timeline: scroll(inline)');
 
-test(t => {
+promise_test(async t => {
   let [container, div] = createTargetWithStuff(t, 'block-content');
   container.style.writingMode = 'vertical-lr';
   div.style.animation = "anim 10s linear scroll(horizontal)";
 
-  container.scrollLeft = 50;
+  await scrollLeft(container, 50);
   assert_equals(getComputedStyle(div).translate, '100px');
 }, 'animation-timeline: scroll(horizontal)');
 
-test(t => {
+promise_test(async t => {
   let [container, div] = createTargetWithStuff(t, 'inline-content');
   container.style.writingMode = 'vertical-lr';
   div.style.animation = "anim 10s linear scroll(vertical)";
 
-  container.scrollTop = 50;
+  await scrollTop(container, 50);
   assert_equals(getComputedStyle(div).translate, '100px');
 }, 'animation-timeline: scroll(vertical)');
 
