@@ -9186,7 +9186,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ozone.NeuralStylusReport.ActivePalmTouchCount"
-    units="touch event count" expires_after="2020-09-30">
+    units="touch event count" expires_after="2023-06-30">
   <owner>napper@chromium.org</owner>
   <owner>robsc@chromium.org</owner>
   <summary>
@@ -9196,7 +9196,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ozone.NeuralStylusReport.FingerAgeBeforeStylus"
-    units="duration" expires_after="2020-09-30">
+    units="duration" expires_after="2023-06-30">
   <owner>napper@chromium.org</owner>
   <owner>robsc@chromium.org</owner>
   <summary>
@@ -9206,7 +9206,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ozone.NeuralStylusReport.PalmAgeBeforeStylus" units="duration"
-    expires_after="2020-09-30">
+    expires_after="2023-06-30">
   <owner>napper@chromium.org</owner>
   <owner>robsc@chromium.org</owner>
   <summary>
@@ -9216,7 +9216,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ozone.TouchEventConverterEvdev.HoldCountAtCancel"
-    units="touch event" expires_after="2020-12-01">
+    units="touch event" expires_after="2023-06-30">
   <owner>robsc@chromium.org</owner>
   <summary>
     The count of the number of held events cancelled when we decide to finally
@@ -9226,7 +9226,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ozone.TouchEventConverterEvdev.HoldCountAtRelease"
-    units="touch event" expires_after="2020-12-01">
+    units="touch event" expires_after="2023-06-30">
   <owner>robsc@chromium.org</owner>
   <summary>
     The count of the number of held events released at once for a stroke when we
