@@ -70,13 +70,12 @@ bool AutoLaunchProtocolsPolicyHandler::CheckPolicySettings(
   if (!CheckAndGetValue(policies, nullptr, &policy_value) || !policy_value)
     return false;
 
-  base::Value::ConstListView policy_list = policy_value->GetListDeprecated();
+  base::Value::List& policy_list = policy_value->GetList();
   for (size_t i = 0; i < policy_list.size(); ++i) {
-    const base::DictionaryValue& protocol_origins_map =
-        base::Value::AsDictionaryValue(policy_list[i]);
+    const base::Value::Dict& protocol_origins_map = policy_list[i].GetDict();
 
     // If the protocol is invalid mark it as an error.
-    const std::string* protocol = protocol_origins_map.FindStringKey(
+    const std::string* protocol = protocol_origins_map.FindString(
         policy::external_protocol::kProtocolNameKey);
     DCHECK(protocol);
     if (!IsValidProtocol(*protocol)) {
@@ -84,9 +83,9 @@ bool AutoLaunchProtocolsPolicyHandler::CheckPolicySettings(
                        IDS_POLICY_INVALID_PROTOCOL_ERROR, PolicyErrorPath{i});
     }
 
-    const base::Value* origins_list = protocol_origins_map.FindListKey(
+    const base::Value::List* origins_list = protocol_origins_map.FindList(
         policy::external_protocol::kOriginListKey);
-    for (const auto& entry : origins_list->GetListDeprecated()) {
+    for (const auto& entry : *origins_list) {
       const std::string pattern = entry.GetString();
       // If it's not a valid origin pattern mark it as an error.
       if (!IsValidOriginMatchingPattern(pattern)) {
@@ -95,7 +94,7 @@ bool AutoLaunchProtocolsPolicyHandler::CheckPolicySettings(
       }
     }
     // If the origin list is empty mark it as an error.
-    if (origins_list->GetListDeprecated().empty()) {
+    if (origins_list->empty()) {
       errors->AddError(policy::key::kAutoLaunchProtocolsFromOrigins,
                        IDS_POLICY_EMPTY_ORIGIN_LIST_ERROR, PolicyErrorPath{i});
     }
@@ -112,29 +111,30 @@ void AutoLaunchProtocolsPolicyHandler::ApplyPolicySettings(
   std::unique_ptr<base::Value> policy_value;
   CheckAndGetValue(policies, nullptr, &policy_value);
 
-  base::ListValue validated_pref_values;
-  for (auto& protocol_origins_map : policy_value->GetListDeprecated()) {
+  base::Value::List validated_pref_values;
+  for (auto& protocol_origins_map : policy_value->GetList()) {
     // If the protocol is invalid skip the entry.
-    const std::string* protocol = protocol_origins_map.FindStringKey(
+    base::Value::Dict& protocol_origins_dict = protocol_origins_map.GetDict();
+    const std::string* protocol = protocol_origins_dict.FindString(
         policy::external_protocol::kProtocolNameKey);
     DCHECK(protocol);
     if (!IsValidProtocol(*protocol))
       continue;
 
     // Remove invalid patterns from the list.
-    base::Value* origin_patterns_list = protocol_origins_map.FindListKey(
+    base::Value::List* origin_patterns_list = protocol_origins_dict.FindList(
         policy::external_protocol::kOriginListKey);
-    origin_patterns_list->EraseListValueIf([](const base::Value& pattern) {
+    origin_patterns_list->EraseIf([](const base::Value& pattern) {
       return !IsValidOriginMatchingPattern(pattern.GetString());
     });
     // If the origin list is empty skip the entry.
-    if (origin_patterns_list->GetListDeprecated().size() == 0)
+    if (origin_patterns_list->size() == 0)
       continue;
 
-    validated_pref_values.Append(protocol_origins_map.Clone());
+    validated_pref_values.Append(protocol_origins_dict.Clone());
   }
   prefs->SetValue(prefs::kAutoLaunchProtocolsFromOrigins,
-                  std::move(validated_pref_values));
+                  base::Value(std::move(validated_pref_values)));
 }
 
 }  // namespace policy
