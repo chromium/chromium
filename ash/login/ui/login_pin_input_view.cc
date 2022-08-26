@@ -52,6 +52,10 @@ class LoginPinInput : public FixedLengthCodeInput {
   // views::view
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
+  void UpdatePalette(const LoginPalette& palette) {
+    SetInputColor(palette.pin_input_text_color);
+  }
+
  private:
   int length_ = 0;
   LoginPinInputView::OnPinSubmit on_submit_;
@@ -199,17 +203,9 @@ void LoginPinInputView::UpdateLength(const size_t pin_length) {
     return;
 
   length_ = pin_length;
-  UpdateView();
-}
 
-void LoginPinInputView::UpdatePalette(const LoginPalette& palette) {
-  palette_ = palette;
-  UpdateView();
-}
-
-void LoginPinInputView::UpdateView() {
-  const bool was_visible = GetVisible();
   const bool was_readonly = IsReadOnly();
+  const bool was_visible = GetVisible();
 
   // Hide the view before deleting.
   SetVisible(false);
@@ -222,9 +218,16 @@ void LoginPinInputView::UpdateView() {
                           base::Unretained(this)),
       base::BindRepeating(&LoginPinInputView::OnChanged,
                           base::Unretained(this))));
+
   SetReadOnly(was_readonly);
   Layout();
   SetVisible(was_visible);
+}
+
+void LoginPinInputView::UpdatePalette(const LoginPalette& palette) {
+  palette_ = palette;
+  DCHECK(code_input_);
+  code_input_->UpdatePalette(palette_);
 }
 
 void LoginPinInputView::SetAuthenticateWithEmptyPinOnReturnKey(bool enabled) {
@@ -243,7 +246,7 @@ void LoginPinInputView::Backspace() {
 
 void LoginPinInputView::InsertDigit(int digit) {
   DCHECK(code_input_);
-  if (!is_read_only_)
+  if (!IsReadOnly())
     code_input_->InsertDigit(digit);
 }
 
@@ -273,7 +276,7 @@ bool LoginPinInputView::OnKeyPressed(const ui::KeyEvent& event) {
   // It just performs an unlock attempt with an empty PIN, which triggers a
   // SmartLock attempt in LoginAuthUserView. The user's PIN is only submitted
   // when the last digit is inserted.
-  if (event.key_code() == ui::KeyboardCode::VKEY_RETURN && !is_read_only_ &&
+  if (event.key_code() == ui::KeyboardCode::VKEY_RETURN && !IsReadOnly() &&
       authenticate_with_empty_pin_on_return_key_) {
     SubmitPin(u"");
     return true;
