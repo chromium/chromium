@@ -1689,6 +1689,8 @@ crbug.com/958381 [ Mac ] virtual/text-antialias/hyphen-min-preferred-width.html 
 crbug.com/958381 [ Win ] virtual/text-antialias/hyphen-min-preferred-width.html [ Failure ]
 crbug.com/958381 [ Mac ] fragmentation/single-line-cells-paginated-with-text.html [ Failure ]
 
+crbug.com/1356256 fast/table/percent-widths-float.html [ Failure Pass ]
+
 # TablesNG ends
 
 # ====== LayoutNG-only failures until here ======
@@ -3786,6 +3788,7 @@ crbug.com/990240 external/wpt/css/css-multicol/multicol-breaking-nobackground-00
 crbug.com/481431 external/wpt/css/css-multicol/multicol-breaking-nobackground-004.html [ Failure ]
 crbug.com/829028 [ Mac ] external/wpt/css/css-multicol/multicol-list-item-004.html [ Failure ]
 crbug.com/829028 [ Mac ] external/wpt/css/css-multicol/multicol-list-item-005.html [ Failure ]
+crbug.com/1356561 external/wpt/css/css-multicol/multicol-overflow-transform-001.html [ Failure Pass ]
 crbug.com/792435 external/wpt/css/css-multicol/multicol-rule-004.xht [ Failure ]
 crbug.com/792437 external/wpt/css/css-multicol/multicol-rule-inset-000.xht [ Failure ]
 crbug.com/990240 external/wpt/css/css-multicol/multicol-rule-nested-balancing-001.html [ Failure ]
