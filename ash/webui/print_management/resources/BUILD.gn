@@ -27,12 +27,12 @@ html_css_preprocess_folder = "preprocessed_html_css_wrapper_files"
 # `static_resource_files` are static files that don't need
 #     to be processed, e.g. images
 
-non_web_component_files = [ "mojo_interface_provider.js" ]
+non_web_component_files = [ "mojo_interface_provider.ts" ]
 
 web_component_files = [
   "print_job_clear_history_dialog.ts",
-  "print_job_entry.js",
-  "print_management.js",
+  "print_job_entry.ts",
+  "print_management.ts",
 ]
 
 static_resource_files = [
@@ -53,7 +53,7 @@ foreach(f, css_files) {
   css_to_wrapper_output_files += [ f + ".ts" ]
 }
 
-# Process raw CSS files into wrapped files suitable for importing into TS/JS.
+# Process raw CSS files into wrapped files suitable for importing into TS.
 css_to_wrapper("css_to_wrapper_files") {
   in_files = css_files
   in_folder = "."
@@ -63,12 +63,8 @@ css_to_wrapper("css_to_wrapper_files") {
 # Files that are passed as input to html_to_wrapper().
 html_files = []
 foreach(f, web_component_files) {
-  # e.g. my_element.js -> my_element.html
-  if (get_path_info(f, "extension") == "ts") {
-    html_files += [ string_replace(f, ".ts", ".html") ]
-  } else {
-    html_files += [ string_replace(f, ".js", ".html") ]
-  }
+  # e.g. my_element.ts -> my_element.html
+  html_files += [ string_replace(f, ".ts", ".html") ]
 }
 
 all_html_files = html_files + [ "icons.html" ]
@@ -80,19 +76,19 @@ foreach(f, all_html_files) {
   html_to_wrapper_output_files += [ f + ".ts" ]
 }
 
-# Process raw HTML files into wrapped files suitable for importing into TS/JS.
+# Process raw HTML files into wrapped files suitable for importing into TS.
 html_to_wrapper("html_to_wrapper_files") {
   in_files = all_html_files
   in_folder = "."
   out_folder = "$target_gen_dir/$html_css_preprocess_folder"
 }
 
-js_files = non_web_component_files + web_component_files
+ts_files = non_web_component_files + web_component_files
 
 # This target is meant to process "if expressions" (e.g. <if expr="cond">...</if>).
 # In practice, the following two targets just copy files into the $preprocess_folder.
 preprocess_if_expr("preprocess") {
-  in_files = js_files
+  in_files = ts_files
   in_folder = "."
   out_folder = "$target_gen_dir/$preprocess_folder"
 }
@@ -119,7 +115,7 @@ ts_library("build_ts") {
   root_dir = "$target_gen_dir/$preprocess_folder"
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
-  in_files = js_files + html_to_wrapper_output_files +
+  in_files = ts_files + html_to_wrapper_output_files +
              css_to_wrapper_output_files + [ "printing_manager.mojom-webui.js" ]
   definitions = []
   deps = [

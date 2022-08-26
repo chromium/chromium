@@ -15,39 +15,39 @@ import './print_management_fonts.css.js';
 import './print_management_shared.css.js';
 import './strings.m.js';
 
+import {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getMetadataProvider} from './mojo_interface_provider.js';
 import {getTemplate} from './print_management.html.js';
-import {ActivePrintJobState, PrintJobInfo, PrintJobsObserverInterface, PrintJobsObserverReceiver} from './printing_manager.mojom-webui.js';
+import {ActivePrintJobState, PrintingMetadataProviderInterface, PrintJobInfo, PrintJobsObserverInterface, PrintJobsObserverReceiver} from './printing_manager.mojom-webui.js';
 
 const METADATA_STORED_INDEFINITELY = -1;
 const METADATA_STORED_FOR_ONE_DAY = 1;
 const METADATA_NOT_STORED = 0;
 
-/**
- * @typedef {Array<!PrintJobInfo>}
- */
-let PrintJobInfoArr;
+type RemovePrintJobEvent = CustomEvent<string>;
 
-/**
- * @param {!PrintJobInfo} first
- * @param {!PrintJobInfo} second
- * @return {number}
- */
-function comparePrintJobsReverseChronologically(first, second) {
+declare global {
+  interface HTMLElementEventMap {
+    'remove-print-job': RemovePrintJobEvent;
+    'all-history-cleared': CustomEvent<void>;
+  }
+  interface Window {
+    CrPolicyStrings: {[key: string]: string};
+  }
+}
+
+function comparePrintJobsReverseChronologically(
+    first: PrintJobInfo, second: PrintJobInfo): number {
   return -comparePrintJobsChronologically(first, second);
 }
 
-/**
- * @param {!PrintJobInfo} first
- * @param {!PrintJobInfo} second
- * @return {number}
- */
-function comparePrintJobsChronologically(first, second) {
+function comparePrintJobsChronologically(
+    first: PrintJobInfo, second: PrintJobInfo): number {
   return Number(first.creationTime.internalValue) -
       Number(second.creationTime.internalValue);
 }
@@ -57,16 +57,14 @@ function comparePrintJobsChronologically(first, second) {
  * 'print-management' is used as the main app to display print jobs.
  */
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const PrintManagementElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+const PrintManagementElementBase = I18nMixin(PolymerElement);
 
-/** @polymer */
-class PrintManagementElement extends PrintManagementElementBase {
+interface PrintManagementElement {
+  $: {deleteIcon: IronIconElement};
+}
+
+class PrintManagementElement extends PrintManagementElementBase implements
+    PrintJobsObserverInterface {
   static get is() {
     return 'print-management';
   }
@@ -77,74 +75,53 @@ class PrintManagementElement extends PrintManagementElementBase {
 
   static get properties() {
     return {
-      /**
-       * @type {!PrintJobInfoArr}
-       * @private
-       */
       printJobs_: {
         type: Array,
         value: () => [],
       },
 
-      /** @private */
       printJobHistoryExpirationPeriod_: {
         type: String,
         value: '',
       },
 
-      /** @private */
       activeHistoryInfoIcon_: {
         type: String,
         value: '',
       },
 
-      /** @private */
       isPolicyControlled_: {
         type: Boolean,
         value: false,
       },
 
-      /**
-       * @type {!PrintJobInfoArr}
-       * @private
-       */
       ongoingPrintJobs_: {
         type: Array,
         value: () => [],
       },
 
-      /**
-       * Used by FocusRowBehavior to track the last focused element on a row.
-       * @private
-       */
+      // Used by FocusRowBehavior to track the last focused element on a row.
       lastFocused_: Object,
 
-      /**
-       * Used by FocusRowBehavior to track if the list has been blurred.
-       * @private
-       */
+      // Used by FocusRowBehavior to track if the list has been blurred.
       listBlurred_: Boolean,
 
-      /** @private */
       showClearAllButton_: {
         type: Boolean,
         value: false,
         reflectToAttribute: true,
       },
 
-      /** @private */
       showClearAllDialog_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       deletePrintJobHistoryAllowedByPolicy_: {
         type: Boolean,
         value: true,
       },
 
-      /** @private */
       shouldDisableClearAllButton_: {
         type: Boolean,
         computed: 'computeShouldDisableClearAllButton_(printJobs_,' +
@@ -154,7 +131,6 @@ class PrintManagementElement extends PrintManagementElementBase {
       /**
        * Receiver responsible for observing print job updates notification
        * events.
-       * @private {?PrintJobsObserverReceiver}
        */
       printJobsObserverReceiver_: {type: Object},
     };
@@ -164,7 +140,6 @@ class PrintManagementElement extends PrintManagementElementBase {
     return ['onClearAllButtonUpdated_(shouldDisableClearAllButton_)'];
   }
 
-  /** @override */
   constructor() {
     super();
 
@@ -175,12 +150,25 @@ class PrintManagementElement extends PrintManagementElementBase {
           loadTimeData.getString('clearAllPrintJobPolicyIndicatorToolTip'),
     };
 
-    window.addEventListener('all-history-cleared', () => this.getPrintJobs_());
-    window.addEventListener('remove-print-job', (e) => this.removePrintJob_(e));
+    this.addEventListener('all-history-cleared', () => this.getPrintJobs_());
+    this.addEventListener('remove-print-job', (e) => this.removePrintJob_(e));
   }
 
-  /** @override */
-  connectedCallback() {
+  private mojoInterfaceProvider_: PrintingMetadataProviderInterface;
+  private isPolicyControlled_: boolean;
+  private printJobs_: PrintJobInfo[];
+  private printJobHistoryExpirationPeriod_: string;
+  private activeHistoryInfoIcon_: string;
+  private ongoingPrintJobs_: PrintJobInfo[];
+  private lastFocused_: Element;
+  private listBlurred_: boolean;
+  private showClearAllButton_: boolean;
+  private showClearAllDialog_: boolean;
+  private deletePrintJobHistoryAllowedByPolicy_: boolean;
+  private shouldDisableClearAllButton_: boolean;
+  private printJobsObserverReceiver_: PrintJobsObserverReceiver;
+
+  override connectedCallback() {
     super.connectedCallback();
 
     this.getPrintJobHistoryExpirationPeriod_();
@@ -188,57 +176,41 @@ class PrintManagementElement extends PrintManagementElementBase {
     this.fetchDeletePrintJobHistoryPolicy_();
   }
 
-  /** @override */
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     this.printJobsObserverReceiver_.$.close();
   }
 
-  /** @private */
-  startObservingPrintJobs_() {
-    this.printJobsObserverReceiver_ = new PrintJobsObserverReceiver(
-        /**
-         * @type {!PrintJobsObserverInterface}
-         */
-        (this));
-    this.mojoInterfaceProvider_.observePrintJobs(
-        this.printJobsObserverReceiver_.$.bindNewPipeAndPassRemote())
+  private startObservingPrintJobs_() {
+    this.printJobsObserverReceiver_ = new PrintJobsObserverReceiver((this));
+    this.mojoInterfaceProvider_
+        .observePrintJobs(
+            this.printJobsObserverReceiver_.$.bindNewPipeAndPassRemote())
         .then(() => {
           this.getPrintJobs_();
         });
   }
 
-  /** @private */
-  fetchDeletePrintJobHistoryPolicy_() {
+  private fetchDeletePrintJobHistoryPolicy_() {
     this.mojoInterfaceProvider_.getDeletePrintJobHistoryAllowedByPolicy().then(
-        /*@type {!{isAllowedByPolicy: boolean}}*/ (param) => {
+        (param) => {
           this.onGetDeletePrintHistoryPolicy_(param);
         });
   }
 
-  /**
-   * @param {!{isAllowedByPolicy: boolean}} responseParam
-   * @private
-   */
-  onGetDeletePrintHistoryPolicy_(responseParam) {
+  private onGetDeletePrintHistoryPolicy_(responseParam:
+                                             {isAllowedByPolicy: boolean}) {
     this.showClearAllButton_ = true;
     this.deletePrintJobHistoryAllowedByPolicy_ =
         responseParam.isAllowedByPolicy;
   }
 
-  /**
-   * Overrides PrintJobsObserverInterface
-   */
   onAllPrintJobsDeleted() {
     this.getPrintJobs_();
   }
 
-  /**
-   * Overrides PrintJobsObserverInterface
-   * @param {!PrintJobInfo} job
-   */
-  onPrintJobUpdate(job) {
+  onPrintJobUpdate(job: PrintJobInfo) {
     // Only update ongoing print jobs.
     assert(job.activePrintJobInfo);
 
@@ -254,7 +226,7 @@ class PrintManagementElement extends PrintManagementElementBase {
       this.push('ongoingPrintJobs_', job);
     }
 
-    if (job.activePrintJobInfo.activeState ===
+    if (job.activePrintJobInfo?.activeState ===
         ActivePrintJobState.kDocumentDone) {
       // This print job is now completed, next step is to update the history
       // list with the recently stored print job.
@@ -262,11 +234,7 @@ class PrintManagementElement extends PrintManagementElementBase {
     }
   }
 
-  /**
-   * @param {!{printJobs: !PrintJobInfoArr}} jobs
-   * @private
-   */
-  onPrintJobsReceived_(jobs) {
+  private onPrintJobsReceived_(jobs: {printJobs: PrintJobInfo[]}) {
     // TODO(crbug/1073690): Update this when BigInt is supported for
     // updateList().
     const ongoingList = [];
@@ -281,25 +249,19 @@ class PrintManagementElement extends PrintManagementElementBase {
     }
 
     // Sort the print jobs in chronological order.
-    this.ongoingPrintJobs_ =
-        ongoingList.sort(comparePrintJobsChronologically);
+    this.ongoingPrintJobs_ = ongoingList.sort(comparePrintJobsChronologically);
     this.printJobs_ = historyList.sort(comparePrintJobsReverseChronologically);
   }
 
-  /** @private */
-  getPrintJobs_() {
-    this.mojoInterfaceProvider_.getPrintJobs()
-      .then(this.onPrintJobsReceived_.bind(this));
+  private getPrintJobs_() {
+    this.mojoInterfaceProvider_.getPrintJobs().then(
+        this.onPrintJobsReceived_.bind(this));
   }
 
-  /**
-   * @param {!{
-   *     expirationPeriodInDays: number,
-   *     isFromPolicy: boolean
-   * }}  printJobPolicyInfo
-   * @private
-   */
-  onPrintJobHistoryExpirationPeriodReceived_(printJobPolicyInfo) {
+  private onPrintJobHistoryExpirationPeriodReceived_(printJobPolicyInfo: {
+    expirationPeriodInDays: number,
+    isFromPolicy: boolean,
+  }) {
     const expirationPeriod = printJobPolicyInfo.expirationPeriodInDays;
     // If print jobs are not persisted, we can return early since the tooltip
     // section won't be shown.
@@ -308,18 +270,17 @@ class PrintManagementElement extends PrintManagementElementBase {
     }
 
     this.isPolicyControlled_ = printJobPolicyInfo.isFromPolicy;
-    this.activeHistoryInfoIcon_ = this.isPolicyControlled_
-      ? 'enterpriseIcon'
-      : 'infoIcon';
+    this.activeHistoryInfoIcon_ =
+        this.isPolicyControlled_ ? 'enterpriseIcon' : 'infoIcon';
 
     switch (expirationPeriod) {
       case METADATA_STORED_INDEFINITELY:
         this.printJobHistoryExpirationPeriod_ =
-          loadTimeData.getString('printJobHistoryIndefinitePeriod');
+            loadTimeData.getString('printJobHistoryIndefinitePeriod');
         break;
       case METADATA_STORED_FOR_ONE_DAY:
         this.printJobHistoryExpirationPeriod_ =
-          loadTimeData.getString('printJobHistorySingleDay');
+            loadTimeData.getString('printJobHistorySingleDay');
         break;
       default:
         this.printJobHistoryExpirationPeriod_ = loadTimeData.getStringF(
@@ -329,55 +290,38 @@ class PrintManagementElement extends PrintManagementElementBase {
     }
   }
 
-  /** @private */
-  getPrintJobHistoryExpirationPeriod_() {
-    this.mojoInterfaceProvider_.getPrintJobHistoryExpirationPeriod()
-      .then(this.onPrintJobHistoryExpirationPeriodReceived_.bind(this));
+  private getPrintJobHistoryExpirationPeriod_() {
+    this.mojoInterfaceProvider_.getPrintJobHistoryExpirationPeriod().then(
+        this.onPrintJobHistoryExpirationPeriodReceived_.bind(this));
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  removePrintJob_(e) {
-    const idx = this.getIndexOfOngoingPrintJob_(e.detail) ;
+  private removePrintJob_(e: RemovePrintJobEvent) {
+    const idx = this.getIndexOfOngoingPrintJob_(e.detail);
     if (idx !== -1) {
       this.splice('ongoingPrintJobs_', idx, 1);
     }
   }
 
-  /** @private */
-  onClearHistoryClicked_() {
+  private onClearHistoryClicked_() {
     this.showClearAllDialog_ = true;
   }
 
-  /** @private */
-  onClearHistoryDialogClosed_() {
+  private onClearHistoryDialogClosed_() {
     this.showClearAllDialog_ = false;
   }
 
-  /**
-   * @param {string} expectedId
-   * @return {number}
-   * @private
-   */
-  getIndexOfOngoingPrintJob_(expectedId) {
+  private getIndexOfOngoingPrintJob_(expectedId: string): number {
     return this.ongoingPrintJobs_.findIndex(
-        arr_job => arr_job.id === expectedId,
+        arrJob => arrJob.id === expectedId,
     );
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeShouldDisableClearAllButton_() {
+  private computeShouldDisableClearAllButton_(): boolean {
     return !this.deletePrintJobHistoryAllowedByPolicy_ ||
         !this.printJobs_.length;
   }
 
-  /** @private */
-  onClearAllButtonUpdated_() {
+  private onClearAllButtonUpdated_() {
     this.$.deleteIcon.classList.toggle(
         'delete-enabled', !this.shouldDisableClearAllButton_);
     this.$.deleteIcon.classList.toggle(

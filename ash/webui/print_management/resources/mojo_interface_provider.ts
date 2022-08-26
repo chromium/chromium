@@ -4,22 +4,14 @@
 
 import {PrintingMetadataProvider, PrintingMetadataProviderInterface} from './printing_manager.mojom-webui.js';
 
-/**
- * @type {?PrintingMetadataProviderInterface}
- */
-let metadataProvider = null;
+let metadataProvider: PrintingMetadataProviderInterface|null = null;
 
-/**
- * @param {!PrintingMetadataProviderInterface} testProvider
- */
-export function setMetadataProviderForTesting(testProvider) {
+export function setMetadataProviderForTesting(
+    testProvider: PrintingMetadataProviderInterface) {
   metadataProvider = testProvider;
 }
 
-/**
- * @return {!PrintingMetadataProviderInterface}
- */
-export function getMetadataProvider() {
+export function getMetadataProvider(): PrintingMetadataProviderInterface {
   if (metadataProvider) {
     return metadataProvider;
   }

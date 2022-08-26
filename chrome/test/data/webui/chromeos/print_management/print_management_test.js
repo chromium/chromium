@@ -161,7 +161,7 @@ function verifyPrintJobs(expected, actual) {
  * @return {!Array<!HTMLElement>}
  */
 function getHistoryPrintJobEntries(page) {
-  const entryList = page.$$('#entryList');
+  const entryList = querySelector(page, '#entryList');
   return Array.from(
       entryList.querySelectorAll('print-job-entry:not([hidden])'));
 }
@@ -171,8 +171,8 @@ function getHistoryPrintJobEntries(page) {
  * @return {!Array<!HTMLElement>}
  */
 function getOngoingPrintJobEntries(page) {
-  assertTrue(page.$$('#ongoingEmptyState').hidden);
-  const entryList = page.$$('#ongoingList');
+  assertTrue(querySelector(page, '#ongoingEmptyState').hidden);
+  const entryList = querySelector(page, '#ongoingList');
   return Array.from(
       entryList.querySelectorAll('print-job-entry:not([hidden])'));
 }
@@ -435,7 +435,8 @@ suite('PrintManagementTest', () => {
       jobEntryElement, mojoApi, shouldAttemptCancel, expectedHistoryList) {
     mojoApi.setShouldAttemptCancel(shouldAttemptCancel);
 
-    const cancelButton = jobEntryElement.$$('#cancelPrintJobButton');
+    const cancelButton =
+        querySelector(jobEntryElement, '#cancelPrintJobButton');
     cancelButton.click();
     return mojoApi.whenCalled('cancelPrintJob').then(() => {
       // Create copy of |jobEntryElement.jobEntry| to modify.
@@ -472,7 +473,7 @@ suite('PrintManagementTest', () => {
           return mojoApi_.whenCalled('getPrintJobHistoryExpirationPeriod');
         })
         .then(() => {
-          const historyInfoTooltip = page.$$('paper-tooltip');
+          const historyInfoTooltip = querySelector(page, 'paper-tooltip');
           assertEquals(expectedText, historyInfoTooltip.textContent.trim());
         });
   });
@@ -500,7 +501,7 @@ suite('PrintManagementTest', () => {
           return mojoApi_.whenCalled('getPrintJobHistoryExpirationPeriod');
         })
         .then(() => {
-          const historyInfoTooltip = page.$$('paper-tooltip');
+          const historyInfoTooltip = querySelector(page, 'paper-tooltip');
           assertEquals(expectedText, historyInfoTooltip.textContent.trim());
         });
   });
@@ -529,7 +530,7 @@ suite('PrintManagementTest', () => {
           return mojoApi_.whenCalled('getPrintJobHistoryExpirationPeriod');
         })
         .then(() => {
-          const historyInfoTooltip = page.$$('paper-tooltip');
+          const historyInfoTooltip = querySelector(page, 'paper-tooltip');
           assertEquals(expectedText, historyInfoTooltip.textContent.trim());
         });
   });
@@ -556,7 +557,7 @@ suite('PrintManagementTest', () => {
           return mojoApi_.whenCalled('getPrintJobHistoryExpirationPeriod');
         })
         .then(() => {
-          const historyInfoTooltip = page.$$('paper-tooltip');
+          const historyInfoTooltip = querySelector(page, 'paper-tooltip');
           assertEquals(expectedText, historyInfoTooltip.textContent.trim());
         });
   });
@@ -601,8 +602,8 @@ suite('PrintManagementTest', () => {
         })
         .then(() => {
           flush();
-          assertTrue(page.$$('#clearAllButton').disabled);
-          assertTrue(!page.$$('#policyIcon'));
+          assertTrue(querySelector(page, '#clearAllButton').disabled);
+          assertTrue(!querySelector(page, '#policyIcon'));
         });
   });
 
@@ -621,8 +622,8 @@ suite('PrintManagementTest', () => {
         })
         .then(() => {
           flush();
-          assertTrue(page.$$('#clearAllButton').disabled);
-          assertTrue(!!page.$$('#policyIcon'));
+          assertTrue(querySelector(page, '#clearAllButton').disabled);
+          assertTrue(!!querySelector(page, '#policyIcon'));
         });
   });
 
@@ -656,12 +657,12 @@ suite('PrintManagementTest', () => {
           verifyPrintJobs(expectedArr, getHistoryPrintJobEntries(page));
 
           // Click the clear all button.
-          const button = page.$$('#clearAllButton');
+          const button = querySelector(page, '#clearAllButton');
           button.click();
           flush();
           // Verify that the confirmation dialog shows up and click on the
           // confirmation button.
-          const dialog = page.$$('#clearHistoryDialog');
+          const dialog = querySelector(page, '#clearHistoryDialog');
           assertTrue(!!dialog);
           const dialogActionButton = querySelector(dialog, '.action-button');
           assertTrue(!dialogActionButton.disabled);
@@ -673,9 +674,9 @@ suite('PrintManagementTest', () => {
           flush();
           // After clearing the history list, expect that the history list and
           // header are no longer
-          assertTrue(!page.$$('#entryList'));
-          assertTrue(!page.$$('#historyHeaderContainer'));
-          assertTrue(page.$$('#clearAllButton').disabled);
+          assertTrue(!querySelector(page, '#entryList'));
+          assertTrue(!querySelector(page, '#historyHeaderContainer'));
+          assertTrue(querySelector(page, '#clearAllButton').disabled);
         });
   });
 
@@ -714,9 +715,9 @@ suite('PrintManagementTest', () => {
           flush();
           // After clearing the history list, expect that the history list and
           // header are no longer
-          assertTrue(!page.$$('#entryList'));
-          assertTrue(!page.$$('#historyHeaderContainer'));
-          assertTrue(page.$$('#clearAllButton').disabled);
+          assertTrue(!querySelector(page, '#entryList'));
+          assertTrue(!querySelector(page, '#historyHeaderContainer'));
+          assertTrue(querySelector(page, '#clearAllButton').disabled);
         });
   });
 
@@ -729,7 +730,7 @@ suite('PrintManagementTest', () => {
           flush();
           // Header should be not be rendered since no there are no completed
           // print jobs in the history.
-          assertTrue(!page.$$('#historyHeaderContainer'));
+          assertTrue(!querySelector(page, '#historyHeaderContainer'));
         });
   });
 
@@ -905,8 +906,8 @@ suite('PrintManagementTest', () => {
           flush();
           // Assert that ongoing list is empty and the empty state message is
           // not hidden.
-          assertTrue(!page.$$('#ongoingList'));
-          assertTrue(!page.$$('#ongoingEmptyState').hidden);
+          assertTrue(!querySelector(page, '#ongoingList'));
+          assertTrue(!querySelector(page, '#ongoingEmptyState').hidden);
         });
   });
 
@@ -944,7 +945,7 @@ suite('PrintManagementTest', () => {
           flush();
           // Verify that there are no ongoing print jobs and history list is
           // populated.
-          assertTrue(!page.$$('#ongoingList'));
+          assertTrue(!querySelector(page, '#ongoingList'));
           verifyPrintJobs(expectedHistoryList, getHistoryPrintJobEntries(page));
         });
   });
@@ -985,7 +986,7 @@ suite('PrintManagementTest', () => {
           // Verify that there are no ongoing print jobs and history list is
           // populated.
           // TODO(crbug/1093527): Show error message to user after UX guidance.
-          assertTrue(!page.$$('#ongoingList'));
+          assertTrue(!querySelector(page, '#ongoingList'));
           verifyPrintJobs(expectedHistoryList, getHistoryPrintJobEntries(page));
         });
   });
@@ -1024,7 +1025,8 @@ suite('PrintJobEntryTest', () => {
   function updateAndVerifyCompletionStatus(element, newStatus, expectedStatus) {
     element.set('jobEntry.completedInfo.completionStatus', newStatus);
     assertEquals(
-        expectedStatus, element.$$('#completionStatus').textContent.trim());
+        expectedStatus,
+        querySelector(element, '#completionStatus').textContent.trim());
   }
 
   test('initializeJobEntry', () => {
@@ -1042,13 +1044,16 @@ suite('PrintJobEntryTest', () => {
 
     // Assert the title, creation time, and status are displayed correctly.
     assertEquals(
-        expectedTitle, jobEntryTestElement.$$('#jobTitle').textContent.trim());
+        expectedTitle,
+        querySelector(jobEntryTestElement, '#jobTitle').textContent.trim());
     assertEquals(
         'Printed',
-        jobEntryTestElement.$$('#completionStatus').textContent.trim());
+        querySelector(jobEntryTestElement, '#completionStatus')
+            .textContent.trim());
     // Verify correct icon is shown.
     assertEquals(
-        'print-management:file-pdf', jobEntryTestElement.$$('#fileIcon').icon);
+        'print-management:file-pdf',
+        querySelector(jobEntryTestElement, '#fileIcon').icon);
 
     // Change date and assert it shows the correct date (Feb 5, 2020);
     jobEntryTestElement.set('jobEntry.creationTime', {
@@ -1056,7 +1061,7 @@ suite('PrintJobEntryTest', () => {
     });
     assertEquals(
         'Feb 5, 2020',
-        jobEntryTestElement.$$('#creationTime').textContent.trim());
+        querySelector(jobEntryTestElement, '#creationTime').textContent.trim());
   });
 
   test('initializeFailedJobEntry', () => {
@@ -1073,16 +1078,19 @@ suite('PrintJobEntryTest', () => {
 
     // Assert the title, creation time, and status are displayed correctly.
     assertEquals(
-        expectedTitle, jobEntryTestElement.$$('#jobTitle').textContent.trim());
+        expectedTitle,
+        querySelector(jobEntryTestElement, '#jobTitle').textContent.trim());
     assertEquals(
         'Failed - Out of paper',
-        jobEntryTestElement.$$('#completionStatus').textContent.trim());
+        querySelector(jobEntryTestElement, '#completionStatus')
+            .textContent.trim());
     // Verify correct icon is shown.
     assertEquals(
-        'print-management:file-word', jobEntryTestElement.$$('#fileIcon').icon);
+        'print-management:file-word',
+        querySelector(jobEntryTestElement, '#fileIcon').icon);
     assertEquals(
         'Feb 5, 2020',
-        jobEntryTestElement.$$('#creationTime').textContent.trim());
+        querySelector(jobEntryTestElement, '#creationTime').textContent.trim());
   });
 
   test('initializeOngoingJobEntry', () => {
@@ -1100,15 +1108,18 @@ suite('PrintJobEntryTest', () => {
 
     // Assert the title, creation time, and status are displayed correctly.
     assertEquals(
-        expectedTitle, jobEntryTestElement.$$('#jobTitle').textContent.trim());
+        expectedTitle,
+        querySelector(jobEntryTestElement, '#jobTitle').textContent.trim());
     assertEquals(
         'Feb 5, 2020',
-        jobEntryTestElement.$$('#creationTime').textContent.trim());
+        querySelector(jobEntryTestElement, '#creationTime').textContent.trim());
     assertEquals(
-        '1/4', jobEntryTestElement.$$('#numericalProgress').textContent.trim());
+        '1/4',
+        querySelector(jobEntryTestElement, '#numericalProgress')
+            .textContent.trim());
     assertEquals(
         'print-management:file-generic',
-        jobEntryTestElement.$$('#fileIcon').icon);
+        querySelector(jobEntryTestElement, '#fileIcon').icon);
   });
 
   test('initializeStoppedOngoingJobEntry', () => {
@@ -1127,16 +1138,17 @@ suite('PrintJobEntryTest', () => {
 
     // Assert the title, creation time, and status are displayed correctly.
     assertEquals(
-        expectedTitle, jobEntryTestElement.$$('#jobTitle').textContent.trim());
+        expectedTitle,
+        querySelector(jobEntryTestElement, '#jobTitle').textContent.trim());
     assertEquals(
         'Feb 5, 2020',
-        jobEntryTestElement.$$('#creationTime').textContent.trim());
+        querySelector(jobEntryTestElement, '#creationTime').textContent.trim());
     assertEquals(
         'Stopped - Out of paper',
-        jobEntryTestElement.$$('#ongoingError').textContent.trim());
+        querySelector(jobEntryTestElement, '#ongoingError').textContent.trim());
     assertEquals(
         'print-management:file-generic',
-        jobEntryTestElement.$$('#fileIcon').icon);
+        querySelector(jobEntryTestElement, '#fileIcon').icon);
   });
 
   test('ensureGoogleFileIconIsShown', () => {
@@ -1151,7 +1163,8 @@ suite('PrintJobEntryTest', () => {
     flush();
 
     assertEquals(
-        'print-management:file-gdoc', jobEntryTestElement.$$('#fileIcon').icon);
+        'print-management:file-gdoc',
+        querySelector(jobEntryTestElement, '#fileIcon').icon);
   });
 
   test('ensureGenericFileIconIsShown', () => {
@@ -1167,7 +1180,7 @@ suite('PrintJobEntryTest', () => {
 
     assertEquals(
         'print-management:file-generic',
-        jobEntryTestElement.$$('#fileIcon').icon);
+        querySelector(jobEntryTestElement, '#fileIcon').icon);
   });
 
   test('ensureFileIconClassMatchesFileIcon', () => {

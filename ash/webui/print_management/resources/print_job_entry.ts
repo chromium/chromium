@@ -15,23 +15,20 @@ import './strings.m.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getMetadataProvider} from './mojo_interface_provider.js';
 import {getTemplate} from './print_job_entry.html.js';
-import {PrinterErrorCode, PrintJobCompletionStatus, PrintJobInfo} from './printing_manager.mojom-webui.js';
+import {PrinterErrorCode, PrintingMetadataProviderInterface, PrintJobCompletionStatus, PrintJobInfo} from './printing_manager.mojom-webui.js';
 
 const GENERIC_FILE_EXTENSION_ICON = 'print-management:file-generic';
 
-/**
- * Lookup table maps icons to the correct display class.
- * @private {Map<string, string>}
- */
+// Lookup table maps icons to the correct display class.
 const ICON_CLASS_MAP = new Map([
   ['print-management:file-gdoc', 'file-icon-blue'],
   ['print-management:file-word', 'file-icon-blue'],
@@ -46,12 +43,8 @@ const ICON_CLASS_MAP = new Map([
   ['print-management:file-ppt', 'file-icon-red'],
 ]);
 
-/**
- * Converts a mojo time to a JS time.
- * @param {!Time} mojoTime
- * @return {!Date}
- */
-function convertMojoTimeToJS(mojoTime) {
+// Converts a mojo time to a JS time.
+function convertMojoTimeToJS(mojoTime: Time): Date {
   // The JS Date() is based off of the number of milliseconds since the
   // UNIX epoch (1970-01-01 00::00:00 UTC), while |internalValue| of the
   // base::Time (represented in mojom.Time) represents the number of
@@ -67,12 +60,8 @@ function convertMojoTimeToJS(mojoTime) {
   return new Date(timeInMs - epochDeltaInMs);
 }
 
-/**
- * Returns true if |date| is today, false otherwise.
- * @param {!Date} date
- * @return {boolean}
- */
-function isToday(date) {
+// Returns true if |date| is today, false otherwise.
+function isToday(date: Date): boolean {
   const todayDate = new Date();
   return date.getDate() === todayDate.getDate() &&
       date.getMonth() === todayDate.getMonth() &&
@@ -84,10 +73,8 @@ function isToday(date) {
  * name extension. If extension is not available, return an empty string. If
  * file name does have an extension but we don't have an icon for it, return a
  * generic icon name.
- * @param {string} fileName
- * @return {string}
  */
-function getFileExtensionIconName(fileName) {
+function getFileExtensionIconName(fileName: string): string {
   // Get file extension delimited by '.'.
   const ext = fileName.split('.').pop();
 
@@ -128,10 +115,8 @@ function getFileExtensionIconName(fileName) {
  * Best effort to get the file icon name for a Google-file
  * (e.g. Google docs, Google sheets, Google forms). Returns an empty
  * string if |fileName| is not a Google-file.
- * @param {string} fileName
- * @return {string}
  */
-function getGFileIconName(fileName) {
+function getGFileIconName(fileName: string): string {
   // Google-files are delimited by '-'.
   const ext = fileName.split('-').pop();
 
@@ -164,19 +149,10 @@ function getGFileIconName(fileName) {
  * item.
  */
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const PrintJobEntryElementBase = mixinBehaviors(
-    [
-      FocusRowBehavior,
-      I18nBehavior,
-    ],
-    PolymerElement);
+const PrintJobEntryElementBase =
+    mixinBehaviors([FocusRowBehavior], I18nMixin(PolymerElement)) as
+    {new (): PolymerElement & I18nMixinInterface};
 
-/** @polymer */
 class PrintJobEntryElement extends PrintJobEntryElementBase {
   static get is() {
     return 'print-job-entry';
@@ -188,39 +164,31 @@ class PrintJobEntryElement extends PrintJobEntryElementBase {
 
   static get properties() {
     return {
-      /** @type {!PrintJobInfo} */
       jobEntry: {
         type: Object,
       },
 
-      /** @private */
       jobTitle_: {
         type: String,
         computed: 'decodeString16_(jobEntry.title)',
       },
 
-      /** @private */
       printerName_: {
         type: String,
         computed: 'decodeString16_(jobEntry.printerName)',
       },
 
-      /** @private */
       creationTime_: {
         type: String,
         computed: 'computeDate_(jobEntry.creationTime)',
       },
 
-      /** @private */
       completionStatus_: {
         type: String,
         computed: 'computeCompletionStatus_(jobEntry.completedInfo)',
       },
 
-      /**
-       * Empty if there is no ongoing error.
-       * @private
-       */
+      // Empty if there is no ongoing error.
       ongoingErrorStatus_: {
         type: String,
         computed: 'getOngoingErrorStatus_(jobEntry.printerErrorCode)',
@@ -230,14 +198,12 @@ class PrintJobEntryElement extends PrintJobEntryElementBase {
        * A representation in fraction form of pages printed versus total number
        * of pages to be printed. E.g. 5/7 (5 pages printed / 7 total pages to
        * print).
-       * @private
        */
       readableProgress_: {
         type: String,
         computed: 'computeReadableProgress_(jobEntry.activePrintJobInfo)',
       },
 
-      /** @private */
       jobEntryAriaLabel_: {
         type: String,
         computed: 'getJobEntryAriaLabel_(jobEntry, jobTitle_, printerName_, ' +
@@ -245,19 +211,14 @@ class PrintJobEntryElement extends PrintJobEntryElementBase {
             'jobEntry.activePrintJobinfo.printedPages, jobEntry.numberOfPages)',
       },
 
-      /**
-       * This is only updated by media queries from window width changes.
-       * @private
-       */
+      // This is only updated by media queries from window width changes.
       showFullOngoingStatus_: Boolean,
 
-      /** @private {string} */
       fileIcon_: {
         type: String,
         computed: 'computeFileIcon_(jobTitle_)',
       },
 
-      /** @private {string} */
       fileIconClass_: {
         type: String,
         computed: 'computeFileIconClass_(fileIcon_)',
@@ -266,6 +227,19 @@ class PrintJobEntryElement extends PrintJobEntryElementBase {
     };
   }
 
+  jobEntry: PrintJobInfo;
+  private mojoInterfaceProvider_: PrintingMetadataProviderInterface;
+  private jobTitle_: string;
+  private printerName_: string;
+  private creationTime_: string;
+  private completionStatus_: string;
+  private ongoingErrorStatus_: string;
+  private readableProgress_: string;
+  private jobEntryAriaLabel_: string;
+  private showFullOngoingStatus_: boolean;
+  private fileIcon_: string;
+  private fileIconClass_: string;
+
   static get observers() {
     return [
       'printJobEntryDataChanged_(jobTitle_, printerName_, creationTime_, ' +
@@ -273,44 +247,6 @@ class PrintJobEntryElement extends PrintJobEntryElementBase {
     ];
   }
 
-  /**
-   * Check if any elements with the class "overflow-ellipsis" needs to
-   * add/remove the title attribute.
-   * @private
-   */
-  printJobEntryDataChanged_() {
-    Array.from(this.shadowRoot.querySelectorAll('.overflow-ellipsis'))
-        .forEach((/** @type {HTMLElement} */ e) => {
-          // Checks if text is truncated
-          if (e.offsetWidth < e.scrollWidth) {
-            e.setAttribute('title', e.textContent);
-          } else {
-            e.removeAttribute('title');
-          }
-        });
-  }
-
-  /** @private */
-  onClick_() {
-    // Since the status or cancel button has the focus-row-control attribute,
-    // this will trigger the iron-list focus behavior and highlight the entire
-    // entry.
-    if (this.isCompletedPrintJob_()) {
-      this.shadowRoot.querySelector('#completionStatus').focus();
-      return;
-    }
-    // Focus on the cancel button when clicking on the entry.
-    this.shadowRoot.querySelector('#cancelPrintJobButton').focus();
-  }
-
-  /** @override */
-  connectedCallback() {
-    super.connectedCallback();
-
-    IronA11yAnnouncer.requestAvailability();
-  }
-
-  /** @override */
   constructor() {
     super();
 
@@ -320,10 +256,55 @@ class PrintJobEntryElement extends PrintJobEntryElementBase {
   }
 
   /**
-   * @return {string}
-   * @private
+   * Check if any elements with the class "overflow-ellipsis" needs to
+   * add/remove the title attribute.
    */
-  computeCompletionStatus_() {
+  private printJobEntryDataChanged_() {
+    if (!this.shadowRoot) {
+      return;
+    }
+
+    Array
+        .from(
+            this.shadowRoot.querySelectorAll<HTMLElement>('.overflow-ellipsis'),
+            )
+        .forEach((e) => {
+          // Checks if text is truncated
+          if (e.offsetWidth < e.scrollWidth) {
+            e.setAttribute('title', e.textContent || '');
+          } else {
+            e.removeAttribute('title');
+          }
+        });
+  }
+
+  private onClick_() {
+    if (!this.shadowRoot) {
+      return;
+    }
+
+    // Since the status or cancel button has the focus-row-control attribute,
+    // this will trigger the iron-list focus behavior and highlight the entire
+    // entry.
+    if (this.isCompletedPrintJob_()) {
+      this.shadowRoot.querySelector<HTMLElement>('#completionStatus')?.focus();
+      return;
+    }
+    // Focus on the cancel button when clicking on the entry.
+    this.shadowRoot
+        .querySelector<HTMLElement>(
+            '#cancelPrintJobButton',
+            )
+        ?.focus();
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    IronA11yAnnouncer.requestAvailability();
+  }
+
+  private computeCompletionStatus_(): string {
     if (!this.jobEntry.completedInfo) {
       return '';
     }
@@ -332,11 +313,7 @@ class PrintJobEntryElement extends PrintJobEntryElementBase {
         this.jobEntry.completedInfo.completionStatus);
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeReadableProgress_() {
+  private computeReadableProgress_(): string {
     if (!this.jobEntry.activePrintJobInfo) {
       return '';
     }
@@ -347,19 +324,12 @@ class PrintJobEntryElement extends PrintJobEntryElementBase {
         this.jobEntry.numberOfPages.toString());
   }
 
-  /** @private */
-  onCancelPrintJobClicked_() {
+  private onCancelPrintJobClicked_() {
     this.mojoInterfaceProvider_.cancelPrintJob(this.jobEntry.id)
-        .then(
-            (/** @param {{attemptedCancel: boolean}} response */ (response) =>
-                 this.onPrintJobCanceled_(response.attemptedCancel)));
+        .then((() => this.onPrintJobCanceled_()));
   }
 
-  /**
-   * @param {boolean} attemptedCancel
-   * @private
-   */
-  onPrintJobCanceled_(attemptedCancel) {
+  private onPrintJobCanceled_() {
     // TODO(crbug/1093527): Handle error case in which attempted cancellation
     // failed. Need to discuss with UX on error states.
     this.dispatchEvent(new CustomEvent('iron-announce', {
@@ -373,24 +343,15 @@ class PrintJobEntryElement extends PrintJobEntryElementBase {
         {bubbles: true, composed: true, detail: this.jobEntry.id}));
   }
 
-  /**
-   * Converts utf16 to a readable string.
-   * @param {!String16} arr
-   * @return {string}
-   * @private
-   */
-  decodeString16_(arr) {
+  private decodeString16_(arr: String16): string {
     return arr.data.map(ch => String.fromCodePoint(ch)).join('');
   }
 
   /**
    * Converts mojo time to JS time. Returns "Today" if |mojoTime| is at the
    * current day.
-   * @param {!Time} mojoTime
-   * @return {string}
-   * @private
    */
-  computeDate_(mojoTime) {
+  private computeDate_(mojoTime: Time): string {
     const jsDate = convertMojoTimeToJS(mojoTime);
     // Date() is constructed with the current time in UTC. If the Date() matches
     // |jsDate|'s date, display the 12hour time of the current date.
@@ -404,14 +365,8 @@ class PrintJobEntryElement extends PrintJobEntryElementBase {
         {month: 'short', day: 'numeric', year: 'numeric'});
   }
 
-  /**
-   * Returns the corresponding completion status from |mojoCompletionStatus|.
-   * @param {!PrintJobCompletionStatus}
-   *     mojoCompletionStatus
-   * @return {string}
-   * @private
-   */
-  convertStatusToString_(mojoCompletionStatus) {
+  private convertStatusToString_(mojoCompletionStatus:
+                                     PrintJobCompletionStatus): string {
     switch (mojoCompletionStatus) {
       case PrintJobCompletionStatus.kFailed:
         return this.getFailedStatusString_(this.jobEntry.printerErrorCode);
@@ -426,19 +381,14 @@ class PrintJobEntryElement extends PrintJobEntryElementBase {
   }
 
   /**
-   * @return {boolean} Returns true if the job entry is a completed print job.
-   *                   Returns false otherwise.
-   * @private
+   * Returns true if the job entry is a completed print job.
+   * Returns false otherwise.
    */
-  isCompletedPrintJob_() {
+  private isCompletedPrintJob_(): boolean {
     return !!this.jobEntry.completedInfo && !this.jobEntry.activePrintJobInfo;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getJobEntryAriaLabel_() {
+  private getJobEntryAriaLabel_(): string {
     if (!this.jobEntry || this.jobEntry.numberOfPages === undefined ||
         this.printerName_ === undefined || this.jobTitle_ === undefined ||
         !this.creationTime_) {
@@ -466,19 +416,20 @@ class PrintJobEntryElement extends PrintJobEntryElementBase {
     return loadTimeData.getStringF(
         'ongoingPrintJobLabel', this.jobTitle_, this.printerName_,
         this.creationTime_,
-        this.jobEntry.activePrintJobInfo.printedPages.toString(),
+        this.jobEntry.activePrintJobInfo ?
+            this.jobEntry.activePrintJobInfo.printedPages.toString() :
+            '',
         this.jobEntry.numberOfPages.toString());
   }
 
   /**
    * Returns the percentage, out of 100, of the pages printed versus total
    * number of pages.
-   * @param {number} printedPages
-   * @param {number} totalPages
-   * @return {number}
-   * @private
    */
-  computePrintPagesProgress_(printedPages, totalPages) {
+  private computePrintPagesProgress_(
+      printedPages: number,
+      totalPages: number,
+      ): number {
     assert(printedPages >= 0);
     assert(totalPages > 0);
     assert(printedPages <= totalPages);
@@ -490,10 +441,8 @@ class PrintJobEntryElement extends PrintJobEntryElementBase {
    * (i.e. [iron-iconset-svg name]:[SVG <g> tag id]) for a given file.
    * This is a best effort approach, as we are only given the file name and
    * not necessarily its extension.
-   * @return {string}
-   * @private
    */
-  computeFileIcon_() {
+  private computeFileIcon_(): string {
     const fileExtension = getFileExtensionIconName(this.jobTitle_);
     // It's valid for a file to have '.' in its name and not be its extension.
     // If this is the case and we don't have a non-generic file icon, attempt to
@@ -511,21 +460,15 @@ class PrintJobEntryElement extends PrintJobEntryElementBase {
 
   /**
    * Uses file-icon SVG id to determine correct class to apply for file icon.
-   * @return {string}
-   * @private
    */
-  computeFileIconClass_() {
+  private computeFileIconClass_(): string {
     const iconClass = ICON_CLASS_MAP.get(this.fileIcon_);
     return `flex-center ${iconClass}`;
   }
 
-  /**
-   * @param {!PrinterErrorCode}
-   *     mojoPrinterErrorCode
-   * @return {string}
-   * @private
-   */
-  getFailedStatusString_(mojoPrinterErrorCode) {
+  private getFailedStatusString_(
+      mojoPrinterErrorCode: PrinterErrorCode,
+      ): string {
     switch (mojoPrinterErrorCode) {
       case PrinterErrorCode.kNoError:
         return loadTimeData.getString('completionStatusPrinted');
@@ -557,13 +500,9 @@ class PrintJobEntryElement extends PrintJobEntryElementBase {
     }
   }
 
-  /**
-   * @param {!PrinterErrorCode}
-   *     mojoPrinterErrorCode
-   * @return {string}
-   * @private
-   */
-  getOngoingErrorStatus_(mojoPrinterErrorCode) {
+  private getOngoingErrorStatus_(
+      mojoPrinterErrorCode: PrinterErrorCode,
+      ): string {
     if (this.isCompletedPrintJob_()) {
       return '';
     }
