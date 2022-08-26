@@ -2,29 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("user_feedback") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "user_feedback_provider.h",
-    "user_feedback_provider.mm",
-    "user_feedback_sender.h",
-  ]
-  deps = [ "//base" ]
-}
-
-source_set("test_support") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  testonly = true
-  sources = [
-    "test_user_feedback_provider.h",
-    "test_user_feedback_provider.mm",
-  ]
-  deps = [
-    ":user_feedback",
-    "//base",
-  ]
-}
-
 source_set("user_feedback_api") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [

@@ -8,7 +8,6 @@
 
 #import "base/check.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
-#import "ios/public/provider/chrome/browser/user_feedback/test_user_feedback_provider.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -16,8 +15,7 @@
 
 namespace ios {
 
-TestChromeBrowserProvider::TestChromeBrowserProvider()
-    : user_feedback_provider_(std::make_unique<TestUserFeedbackProvider>()) {}
+TestChromeBrowserProvider::TestChromeBrowserProvider() {}
 
 TestChromeBrowserProvider::~TestChromeBrowserProvider() {}
 
@@ -25,11 +23,6 @@ TestChromeBrowserProvider::~TestChromeBrowserProvider() {}
 TestChromeBrowserProvider& TestChromeBrowserProvider::GetTestProvider() {
   ChromeBrowserProvider& provider = GetChromeBrowserProvider();
   return static_cast<TestChromeBrowserProvider&>(provider);
-}
-
-TestUserFeedbackProvider* TestChromeBrowserProvider::GetUserFeedbackProvider()
-    const {
-  return user_feedback_provider_.get();
 }
 
 std::unique_ptr<ChromeIdentityService>

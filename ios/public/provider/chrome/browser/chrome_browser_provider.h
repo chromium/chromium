@@ -9,8 +9,6 @@
 
 #include "base/observer_list.h"
 
-class UserFeedbackProvider;
-
 namespace ios {
 
 class ChromeBrowserProvider;
@@ -60,9 +58,6 @@ class ChromeBrowserProvider {
       std::unique_ptr<ChromeIdentityService> service);
   // Returns an instance of a Chrome identity service.
   ChromeIdentityService* GetChromeIdentityService();
-
-  // Returns an instance of the user feedback provider.
-  virtual UserFeedbackProvider* GetUserFeedbackProvider() const;
 
   // Adds and removes observers.
   void AddObserver(Observer* observer);

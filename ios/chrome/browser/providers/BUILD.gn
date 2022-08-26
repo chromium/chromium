@@ -10,7 +10,6 @@ source_set("providers") {
   deps = [
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/signin",
-    "//ios/public/provider/chrome/browser/user_feedback",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }

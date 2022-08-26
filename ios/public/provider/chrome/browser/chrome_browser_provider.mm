@@ -60,10 +60,6 @@ ChromeIdentityService* ChromeBrowserProvider::GetChromeIdentityService() {
   return chrome_identity_service_.get();
 }
 
-UserFeedbackProvider* ChromeBrowserProvider::GetUserFeedbackProvider() const {
-  return nullptr;
-}
-
 void ChromeBrowserProvider::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
 }
