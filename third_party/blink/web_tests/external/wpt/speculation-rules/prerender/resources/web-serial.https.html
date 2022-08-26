@@ -17,6 +17,9 @@ if (!isPrerendering) {
   loadInitiatorPage();
 } else {
   const prerenderEventCollector = new PrerenderEventCollector();
+  // The spec, https://wicg.github.io/nav-speculation/prerendering.html#patch-serial,
+  // says that Web Serial API has delay while prerendering for
+  // requestPort(). As this test uses getPorts(), it's a tentative test.
   prerenderEventCollector.start(
       navigator.serial.getPorts(), 'navigator.serial.getPorts');
 }

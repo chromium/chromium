@@ -1,10 +1,4 @@
 <!DOCTYPE html>
-<!--
-This file cannot be upstreamed to WPT until:
-* The defer expectation is replaced with rejecting the promise with
-  “SecurityError” to match the specification at:
-  https://wicg.github.io/nav-speculation/prerendering.html#patch-serial
--->
 <title>Access to the Web Serial API is deferred</title>
 <meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
@@ -13,6 +7,7 @@ This file cannot be upstreamed to WPT until:
 <script src="/speculation-rules/prerender/resources/utils.js"></script>
 <body>
 <script>
+setup(() => assertSpeculationRulesIsSupported());
 
 promise_test(async t => {
   const uid = token();
@@ -34,6 +29,9 @@ promise_test(async t => {
     {event: 'prerendering change',                        prerendering: false},
     {event: 'finished waiting navigator.serial.getPorts', prerendering: false},
   ];
+  // The spec, https://wicg.github.io/nav-speculation/prerendering.html#patch-serial,
+  // says that Web Serial API has delay while prerendering for
+  // requestPort(). As this test uses getPorts(), it's a tentative test.
   assert_equals(result.length, expected.length);
   for (let i = 0; i < result.length; i++) {
     assert_equals(result[i].event, expected[i].event, `event[${i}]`);
