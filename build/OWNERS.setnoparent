@@ -77,3 +77,9 @@ file://third_party/blink/common/origin_trials/OT_OWNERS
 # New notifiers added to //ash/constants/notifier_catalogs.h should be reviewed
 # by //ash/system owners to ensure that the correct notifier is being used.
 file://ash/system/OWNERS
+
+# Generic baselines should be put in test folders. Add owner approve to avoid
+# merge conflict at the transition time. This should be reverted once the work
+# is done. It will also be harmless as the directory will be an empty folder.
+file://third_party/blink/web_tests/BASELINE_OWNERS
+
