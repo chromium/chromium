@@ -27,16 +27,16 @@ struct PoolStats {
 
 struct AddressSpaceStats {
   PoolStats regular_pool_stats;
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   PoolStats brp_pool_stats;
-#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 #if defined(PA_HAS_64_BITS_POINTERS)
   PoolStats configurable_pool_stats;
 #else
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   size_t blocklist_size;  // measured in super pages
   size_t blocklist_hit_count;
-#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
 };
 

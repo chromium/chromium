@@ -60,11 +60,11 @@ class DeltaCounter {
 ThreadSafePartitionRoot* CreatePartitionRoot() {
   ThreadSafePartitionRoot* root = new ThreadSafePartitionRoot({
     PartitionOptions::AlignedAlloc::kAllowed,
-#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if !BUILDFLAG(ENABLE_PARTITION_ALLOC_AS_MALLOC_SUPPORT)
         PartitionOptions::ThreadCache::kEnabled,
 #else
         PartitionOptions::ThreadCache::kDisabled,
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // BUILDFLAG(ENABLE_PARTITION_ALLOC_AS_MALLOC_SUPPORT)
         PartitionOptions::Quarantine::kAllowed,
         PartitionOptions::Cookie::kDisallowed,
         PartitionOptions::BackupRefPtr::kDisabled,
