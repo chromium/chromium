@@ -376,6 +376,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "audio-peripheral-volume-granularity",
+    "owners": ["whalechang@google.com"],
+    "expiry_milestone": 117
+  },
+  {
     "name": "audio-settings-page",
     "owners": [ "gordonseto", "michaelcheco", "cros-peripherals@google.com" ],
     "expiry_milestone": 113

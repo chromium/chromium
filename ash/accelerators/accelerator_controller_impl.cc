@@ -1394,7 +1394,11 @@ void HandleVolumeDown() {
   if (audio_handler->IsOutputMuted()) {
     audio_handler->SetOutputVolumePercent(0);
   } else {
-    audio_handler->AdjustOutputVolumeByPercent(-kStepPercentage);
+    if (features::IsAudioPeripheralVolumeGranularityEnabled())
+      audio_handler->DecreaseOutputVolumeByOneStep();
+    else
+      audio_handler->AdjustOutputVolumeByPercent(-kStepPercentage);
+
     if (audio_handler->IsOutputVolumeBelowDefaultMuteLevel())
       audio_handler->SetOutputMute(true);
     else
@@ -1420,7 +1424,10 @@ void HandleVolumeUp() {
     play_sound = true;
   } else {
     play_sound = audio_handler->GetOutputVolumePercent() != 100;
-    audio_handler->AdjustOutputVolumeByPercent(kStepPercentage);
+    if (features::IsAudioPeripheralVolumeGranularityEnabled())
+      audio_handler->IncreaseOutputVolumeByOneStep();
+    else
+      audio_handler->AdjustOutputVolumeByPercent(kStepPercentage);
   }
 
   if (play_sound)

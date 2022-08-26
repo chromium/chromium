@@ -193,6 +193,10 @@ const base::Feature kAssistPersonalInfoPhoneNumber{
 const base::Feature kAssistantNativeIcons{"AssistantNativeIcons",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables Peripheral volume change by hardware reported steps
+const base::Feature kAudioPeripheralVolumeGranularity{
+    "AudioPeripheralVolumeGranularity", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the Audio Settings Page in System Settings, which allows
 // audio configuration. crbug.com/1092970.
 const base::Feature kAudioSettingsPage{"AudioSettingsPage",
@@ -1986,6 +1990,10 @@ bool IsDriveFsMirroringEnabled() {
 
 bool IsEapGtcWifiAuthenticationEnabled() {
   return base::FeatureList::IsEnabled(kEapGtcWifiAuthentication);
+}
+
+bool IsAudioPeripheralVolumeGranularityEnabled() {
+  return base::FeatureList::IsEnabled(kAudioPeripheralVolumeGranularity);
 }
 
 bool IsEcheSWAEnabled() {
