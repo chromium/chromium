@@ -6909,10 +6909,19 @@ void Document::setAllowDeclarativeShadowRoots(bool val) {
 
 void Document::MaybeExecuteDelayedAsyncScripts(
     MilestoneForDelayedAsyncScript milestone) {
-  if (!base::FeatureList::IsEnabled(features::kDelayAsyncScriptExecution))
+  // This is called on each paint when DelayAsyncScriptDelayType is kEachPaint,
+  // which causes regression. Cache the feature status to avoid frequent
+  // calculation.
+  static const bool delay_async_script_execution_is_enabled =
+      base::FeatureList::IsEnabled(features::kDelayAsyncScriptExecution);
+  if (!delay_async_script_execution_is_enabled)
     return;
 
-  switch (features::kDelayAsyncScriptExecutionDelayParam.Get()) {
+  // Cache for performance reason.
+  static const features::DelayAsyncScriptDelayType
+      delay_async_script_delay_type =
+          features::kDelayAsyncScriptExecutionDelayParam.Get();
+  switch (delay_async_script_delay_type) {
     case features::DelayAsyncScriptDelayType::kFirstPaintOrFinishedParsing:
       // Notify the ScriptRunner if the first paint has been recorded and
       // we're delaying async scripts until first paint or finished parsing
