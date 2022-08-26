@@ -4,6 +4,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/common/chrome_constants.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -140,6 +141,28 @@ IN_PROC_BROWSER_TEST_F(SyncAppsToggleSharingLacrosBrowserTest,
   client_ash().SetAppsSyncIsEnabled(/*enabled=*/false);
   EXPECT_TRUE(
       WebAppsSyncActiveStateChecker(/*expected_state=*/false, GetSyncService(0))
+          .Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(SyncAppsToggleSharingLacrosBrowserTest,
+                       ShouldEnableWebAppsInTransportOnlyMode) {
+  if (!IsServiceAvailable()) {
+    GTEST_SKIP() << "Unsupported Ash version.";
+  }
+  ASSERT_TRUE(SetupClients());
+
+  // Setup a primary account, but don't actually enable Sync-the-feature (so
+  // that Sync will start in transport-only mode).
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+
+  // By enabling apps sync in ash settings, WEB_APPS should become enabled even
+  // in transport-only mode.
+  client_ash().SetAppsSyncIsEnabled(/*enabled=*/true);
+  EXPECT_TRUE(
+      WebAppsSyncActiveStateChecker(/*expected_state=*/true, GetSyncService(0))
           .Wait());
 }
 

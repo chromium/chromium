@@ -4,6 +4,7 @@
 
 #include "chrome/browser/sync/chrome_sync_client.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -69,6 +70,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/report_unrecoverable_error.h"
@@ -77,6 +79,7 @@
 #include "components/sync/driver/sync_api_component_factory.h"
 #include "components/sync/driver/syncable_service_based_model_type_controller.h"
 #include "components/sync/model/forwarding_model_type_controller_delegate.h"
+#include "components/sync/model/model_type_controller_delegate.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_store_service.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
@@ -743,6 +746,22 @@ std::unique_ptr<syncer::ModelTypeController>
 ChromeSyncClient::CreateWebAppsModelTypeController() {
   syncer::ModelTypeControllerDelegate* delegate =
       GetControllerDelegateForModelType(syncer::WEB_APPS).get();
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing)) {
+    // When apps sync controlled by Ash Sync settings, allow running WEB_APPS in
+    // transport-only mode using the same `delegate`.
+    return std::make_unique<syncer::ModelTypeController>(
+        syncer::WEB_APPS,
+        /*delegate_for_full_sync_mode=*/
+        std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+            delegate),
+        /*delegate_for_transport_mode=*/
+        std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+            delegate));
+  }
+#endif
+
   return std::make_unique<syncer::ModelTypeController>(
       syncer::WEB_APPS,
       std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
