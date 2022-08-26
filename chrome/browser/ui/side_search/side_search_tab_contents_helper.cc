@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/browser/ui/side_search/side_search_config.h"
+#include "chrome/browser/ui/side_search/side_search_metrics.h"
 #include "chrome/browser/ui/side_search/side_search_utils.h"
 #include "chrome/browser/ui/side_search/unified_side_search_helper.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -33,7 +34,13 @@
 #include "chrome/browser/extensions/tab_helper.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-SideSearchTabContentsHelper::~SideSearchTabContentsHelper() = default;
+SideSearchTabContentsHelper::~SideSearchTabContentsHelper() {
+  // Record the number of times we navigated back to a previous SRP before
+  // closing the tab. Only record this value if we actually navigated to a
+  // search page URL at some point during the life of the tab.
+  if (last_search_url_)
+    RecordSideSearchNumTimesReturnedBackToSRP(returned_to_previous_srp_count_);
+}
 
 void SideSearchTabContentsHelper::NavigateInTabContents(
     const content::OpenURLParams& params) {
@@ -104,6 +111,14 @@ void SideSearchTabContentsHelper::DidFinishNavigation(
         url == last_search_url_) {
       ++returned_to_previous_srp_count_;
     } else {
+      // Record the number of times the user navigated to the previous SRP
+      // before resetting the value. Do not do so if this is the first
+      // navigation to a SRP in this tab.
+      if (last_search_url_.has_value()) {
+        RecordSideSearchNumTimesReturnedBackToSRP(
+            returned_to_previous_srp_count_);
+      }
+
       returned_to_previous_srp_count_ = 0;
     }
 
@@ -160,6 +175,12 @@ content::WebContents* SideSearchTabContentsHelper::GetSidePanelContents() {
   DCHECK(side_panel_contents_);
   UpdateSideContentsNavigation();
   return side_panel_contents_.get();
+}
+
+void SideSearchTabContentsHelper::SetAutoTriggered(bool auto_triggered) {
+  if (!side_panel_contents_)
+    return;
+  GetSideContentsHelper()->set_auto_triggered(auto_triggered);
 }
 
 void SideSearchTabContentsHelper::ClearSidePanelContents() {

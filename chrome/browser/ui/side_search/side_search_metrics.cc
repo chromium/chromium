@@ -29,14 +29,28 @@ void RecordSideSearchNavigation(SideSearchNavigationType type) {
   base::UmaHistogramEnumeration("SideSearch.Navigation", type);
 }
 
-void RecordNavigationCommittedWithinSideSearchCountPerJourney(int count) {
+void RecordNavigationCommittedWithinSideSearchCountPerJourney(
+    int count,
+    bool was_auto_triggered) {
   base::UmaHistogramCounts100(
-      "SideSearch.NavigationCommittedWithinSideSearchCountPerJourney", count);
+      "SideSearch.NavigationCommittedWithinSideSearchCountPerJourney2", count);
+
+  if (was_auto_triggered) {
+    base::UmaHistogramCounts100(
+        "SideSearch.AutoTrigger."
+        "NavigationCommittedWithinSideSearchCountPerJourney",
+        count);
+  }
 }
 
-void RecordRedirectionToTabCountPerJourney(int count) {
-  base::UmaHistogramCounts100("SideSearch.RedirectionToTabCountPerJourney",
+void RecordRedirectionToTabCountPerJourney(int count, bool was_auto_triggered) {
+  base::UmaHistogramCounts100("SideSearch.RedirectionToTabCountPerJourney2",
                               count);
+
+  if (was_auto_triggered) {
+    base::UmaHistogramCounts100(
+        "SideSearch.AutoTrigger.RedirectionToTabCountPerJourney", count);
+  }
 }
 
 void RecordSideSearchSidePanelTimeShown(bool shown_via_entrypoint,
@@ -45,4 +59,8 @@ void RecordSideSearchSidePanelTimeShown(bool shown_via_entrypoint,
       shown_via_entrypoint ? "SideSearch.SidePanel.TimeShownOpenedViaEntrypoint"
                            : "SideSearch.SidePanel.TimeShownOpenedViaTabSwitch",
       sample);
+}
+
+void RecordSideSearchNumTimesReturnedBackToSRP(int count) {
+  base::UmaHistogramCounts100("SideSearch.TimesReturnedBackToSRP", count);
 }

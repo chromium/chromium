@@ -87,6 +87,10 @@ class SideSearchTabContentsHelper
   // currently exist.
   content::WebContents* GetSidePanelContents();
 
+  // Flags whether or not the current search journey was automatically triggered
+  // (i.e. the user did not explicitly open the side panel).
+  void SetAutoTriggered(bool auto_triggered);
+
   // Called by clients as a hint to the tab helper to clear away its
   // `side_panel_contents_` if it exists. Caching strategies can leverage this
   // hint and reset the `side_panel_contents_` at some later point in time.

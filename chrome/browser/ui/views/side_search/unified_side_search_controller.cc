@@ -116,8 +116,10 @@ void UnifiedSideSearchController::DidFinishNavigation(
     auto* tracker =
         feature_engagement::TrackerFactory::GetForBrowserContext(GetProfile());
     auto* browser_view = GetBrowserView();
+    auto* tab_contents_helper =
+        SideSearchTabContentsHelper::FromWebContents(web_contents());
 
-    if (!browser_view || !tracker ||
+    if (!browser_view || !tracker || !tab_contents_helper ||
         !tracker->ShouldTriggerHelpUI(
             feature_engagement::kIPHSideSearchAutoTriggeringFeature)) {
       return;
@@ -126,6 +128,7 @@ void UnifiedSideSearchController::DidFinishNavigation(
     browser_view->side_panel_coordinator()->Show(
         SidePanelEntry::Id::kSideSearch,
         SidePanelUtil::SidePanelOpenTrigger::kIPHSideSearchAutoTrigger);
+    tab_contents_helper->SetAutoTriggered(true);
 
     // Note that `Dismiss()` in this case does not dismiss the UI. It's telling
     // the FE backend that the promo is done so that other promos can run. The

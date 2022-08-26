@@ -48,9 +48,12 @@ void RecordSideSearchPageActionLabelVisibilityOnToggle(
 void RecordSideSearchOpenAction(SideSearchOpenActionType action);
 void RecordSideSearchCloseAction(SideSearchCloseActionType action);
 void RecordSideSearchNavigation(SideSearchNavigationType type);
-void RecordNavigationCommittedWithinSideSearchCountPerJourney(int count);
-void RecordRedirectionToTabCountPerJourney(int count);
+void RecordNavigationCommittedWithinSideSearchCountPerJourney(
+    int count,
+    bool was_auto_triggered);
+void RecordRedirectionToTabCountPerJourney(int count, bool was_auto_triggered);
 void RecordSideSearchSidePanelTimeShown(bool shown_via_entrypoint,
                                         base::TimeDelta sample);
+void RecordSideSearchNumTimesReturnedBackToSRP(int count);
 
 #endif  // CHROME_BROWSER_UI_SIDE_SEARCH_SIDE_SEARCH_METRICS_H_

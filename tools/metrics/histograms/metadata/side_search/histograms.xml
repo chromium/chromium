@@ -22,6 +22,31 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram
+    name="SideSearch.AutoTrigger.NavigationCommittedWithinSideSearchCountPerJourney"
+    units="navigations" expires_after="2023-02-05">
+  <owner>yuhengh@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <summary>
+    Number of navigations committed within the side search panel a given side
+    search journey started from an autotriggered side panel. Emitted when the
+    current search journey ends (i.e. the side panel was explicitly closed by
+    the user).
+  </summary>
+</histogram>
+
+<histogram name="SideSearch.AutoTrigger.RedirectionToTabCountPerJourney"
+    units="navigations" expires_after="2023-02-05">
+  <owner>yuhengh@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <summary>
+    Number of navigations redirected to the tab from the side panel for side
+    search journeys started from an autotriggered side panel. Emitted when the
+    current search journey ends (i.e. the side panel was explicitly closed by
+    the user).
+  </summary>
+</histogram>
+
 <histogram name="SideSearch.AvailabilityChanged"
     enum="SideSearchAvailabilityChangeType" expires_after="2023-02-12">
   <owner>yuhengh@chromium.org</owner>
@@ -83,6 +108,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SideSearch.NavigationCommittedWithinSideSearchCountPerJourney"
     units="navigations" expires_after="2023-02-05">
+  <obsolete>
+    Removed in M107
+  </obsolete>
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
@@ -90,6 +118,19 @@ chromium-metrics-reviews@google.com.
     Number of navigations committed within the side search panel in the same
     side panel web contents for a given search journey. Recorded when the
     current search journey ends.
+  </summary>
+</histogram>
+
+<histogram
+    name="SideSearch.NavigationCommittedWithinSideSearchCountPerJourney2"
+    units="navigations" expires_after="2023-02-05">
+  <owner>yuhengh@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <summary>
+    The number of navigations committed within the side search panel for a given
+    search journey. The search journey corresponds to the life of the side panel
+    web contents. Emitted when the side panel WebContents is destroyed.
   </summary>
 </histogram>
 
@@ -115,15 +156,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SideSearch.RedirectionToTabCountPerJourney"
+<histogram name="SideSearch.RedirectionToTabCountPerJourney2"
     units="navigations" expires_after="2023-02-05">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>
   <summary>
-    Number of navigations redirected to the tab in the same side panel web
-    contents for a given search journey. Recorded when the current search
-    journey ends.
+    Number of navigations redirected to the tab from the side panel for a given
+    side search journeys. Emitted when the current search journey ends (i.e. the
+    side panel was explicitly closed by the user).
   </summary>
 </histogram>
 
@@ -150,6 +191,17 @@ chromium-metrics-reviews@google.com.
     The time interval between when the side panel is made available to when it
     is first opened for a given tab. Emitted for the active tab when the side
     panel is toggled open.
+  </summary>
+</histogram>
+
+<histogram name="SideSearch.TimesReturnedBackToSRP" units="navigations"
+    expires_after="2022-09-29">
+  <owner>yuhengh@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <summary>
+    The number of times the user navigated back to the same search results page
+    in a given tab's history. Emitted after the count is reset when the user
+    navigates to a new search results page in a given tab.
   </summary>
 </histogram>
 

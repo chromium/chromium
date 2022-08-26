@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/side_search/side_search_config.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -101,11 +102,16 @@ class SideSearchTabContentsHelperTest : public ::testing::Test {
 
   SideSearchConfig* GetConfig() { return SideSearchConfig::Get(&profile_); }
 
+  void ResetWebContents() { web_contents_.reset(); }
+
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_enabler_;
   TestingProfile profile_;
   std::unique_ptr<content::WebContents> web_contents_;
+  base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -209,6 +215,46 @@ TEST_F(SideSearchTabContentsHelperTest, ClearsInternalStateWhenConfigChanges) {
   EXPECT_FALSE(helper()->last_search_url().has_value());
   EXPECT_FALSE(helper()->toggled_open());
   EXPECT_EQ(nullptr, helper()->side_panel_contents_for_testing());
+}
+
+TEST_F(SideSearchTabContentsHelperTest, EmitsReturnedToSRPMetrics) {
+  // Navigating to a matching search. Then navigate to a non-matching URL and
+  // navigate back, doing so twice.
+  LoadURL(kSearchMatchUrl1);
+  LoadURL(kNonMatchUrl);
+  GoBack();
+  LoadURL(kNonMatchUrl);
+  GoBack();
+  LoadURL(kNonMatchUrl);
+
+  // Return metrics should not yet have been emitted.
+  histogram_tester().ExpectUniqueSample("SideSearch.TimesReturnedBackToSRP", 2,
+                                        0);
+
+  // Navigating to a new search URL should cause the previous metrics to have
+  // been emitted.
+  LoadURL(kSearchMatchUrl2);
+  histogram_tester().ExpectUniqueSample("SideSearch.TimesReturnedBackToSRP", 2,
+                                        1);
+
+  // Navigating to a matching search. Then navigate to a non-matching URL and
+  // navigate back, doing so three times.
+  LoadURL(kNonMatchUrl);
+  GoBack();
+  LoadURL(kNonMatchUrl);
+  GoBack();
+  LoadURL(kNonMatchUrl);
+  GoBack();
+  LoadURL(kNonMatchUrl);
+
+  // Return metrics for this interaction should not yet have been emitted.
+  histogram_tester().ExpectBucketCount("SideSearch.TimesReturnedBackToSRP", 3,
+                                       0);
+
+  // Resetting the web contents should result in these metrics being emitted.
+  ResetWebContents();
+  histogram_tester().ExpectBucketCount("SideSearch.TimesReturnedBackToSRP", 3,
+                                       1);
 }
 
 }  // namespace test
