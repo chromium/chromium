@@ -75,7 +75,8 @@ void ActionView::SetDisplayMode(DisplayMode mode, ActionLabel* editing_label) {
   }
 }
 
-void ActionView::SetPositionFromCenterPosition(gfx::PointF& center_position) {
+void ActionView::SetPositionFromCenterPosition(
+    const gfx::PointF& center_position) {
   int left = std::max(0, (int)(center_position.x() - center_.x()));
   int top = std::max(0, (int)(center_position.y() - center_.y()));
   // SetPosition function needs the top-left position.

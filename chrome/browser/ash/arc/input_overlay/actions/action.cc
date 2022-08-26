@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ash/arc/input_overlay/actions/position.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_id_manager.h"
+#include "ui/aura/window.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -137,7 +138,8 @@ absl::optional<std::pair<ui::DomCode, int>> ParseKeyboardKey(
   return absl::make_optional<std::pair<ui::DomCode, int>>(code, modifiers);
 }
 
-Action::Action(aura::Window* window) : target_window_(window) {}
+Action::Action(TouchInjector* touch_injector)
+    : touch_injector_(touch_injector) {}
 
 Action::~Action() = default;
 
@@ -217,11 +219,10 @@ void Action::PrepareToBindInput(std::unique_ptr<InputElement> input_element) {
   if (pending_input_)
     pending_input_.reset();
   pending_input_ = std::move(input_element);
-  auto bounds = CalculateWindowContentBounds(target_window_);
 
   if (!action_view_)
     return;
-  action_view_->SetViewContent(BindingOption::kPending, bounds);
+  action_view_->SetViewContent(BindingOption::kPending);
 }
 
 void Action::BindPending() {
@@ -233,7 +234,7 @@ void Action::BindPending() {
   DCHECK(!pending_input_);
 }
 
-void Action::CancelPendingBind(const gfx::RectF& content_bounds) {
+void Action::CancelPendingBind() {
   if (!pending_input_)
     return;
   pending_input_.reset();
@@ -241,14 +242,14 @@ void Action::CancelPendingBind(const gfx::RectF& content_bounds) {
   DCHECK(action_view_);
   if (!action_view_)
     return;
-  action_view_->SetViewContent(BindingOption::kCurrent, content_bounds);
+  action_view_->SetViewContent(BindingOption::kCurrent);
 }
 
 void Action::ResetPendingBind() {
   pending_input_.reset();
 }
 
-void Action::RestoreToDefault(const gfx::RectF& content_bounds) {
+void Action::RestoreToDefault() {
   DCHECK(action_view_);
   if (!action_view_)
     return;
@@ -256,7 +257,7 @@ void Action::RestoreToDefault(const gfx::RectF& content_bounds) {
   if (GetCurrentDisplayedInput() != *original_input_) {
     pending_input_.reset();
     pending_input_ = std::make_unique<InputElement>(*original_input_);
-    action_view_->SetViewContent(BindingOption::kPending, content_bounds);
+    action_view_->SetViewContent(BindingOption::kPending);
   }
   // Set to |DisplayMode::kRestore| to clear the focus even the current binding
   // is same as original binding.
@@ -283,7 +284,7 @@ absl::optional<ui::TouchEvent> Action::GetTouchCanceledEvent() {
       ui::EventType::ET_TOUCH_CANCELLED, last_touch_root_location_,
       last_touch_root_location_, ui::EventTimeForNow(),
       ui::PointerDetails(ui::EventPointerType::kTouch, touch_id_.value()));
-  ui::Event::DispatcherApi(&*touch_event).set_target(target_window_);
+  ui::Event::DispatcherApi(&*touch_event).set_target(touch_injector_->window());
   LogEvent(*touch_event);
   OnTouchCancelled();
   return touch_event;
@@ -296,16 +297,17 @@ absl::optional<ui::TouchEvent> Action::GetTouchReleasedEvent() {
       ui::EventType::ET_TOUCH_RELEASED, last_touch_root_location_,
       last_touch_root_location_, ui::EventTimeForNow(),
       ui::PointerDetails(ui::EventPointerType::kTouch, touch_id_.value()));
-  ui::Event::DispatcherApi(&*touch_event).set_target(target_window_);
+  ui::Event::DispatcherApi(&*touch_event).set_target(touch_injector_->window());
   LogEvent(*touch_event);
   OnTouchReleased();
   return touch_event;
 }
 
-int Action::GetUIRadius(const gfx::RectF& content_bounds) {
+int Action::GetUIRadius() {
   if (!radius_)
     return kMinRadius;
 
+  const auto& content_bounds = touch_injector_->content_bounds();
   int min = std::min(content_bounds.width(), content_bounds.height());
   return std::max(static_cast<int>(*radius_ * min), kMinRadius);
 }
@@ -359,8 +361,7 @@ void Action::OnTouchCancelled() {
 void Action::PostUnbindInputProcess() {
   if (!action_view_)
     return;
-  auto bounds = CalculateWindowContentBounds(target_window_);
-  action_view_->SetViewContent(BindingOption::kPending, bounds);
+  action_view_->SetViewContent(BindingOption::kPending);
   const int label_index = action_view_->unbind_label_index();
   action_view_->SetDisplayMode(DisplayMode::kEditedUnbound,
                                (label_index == kDefaultLabelIndex
@@ -380,24 +381,22 @@ std::unique_ptr<ActionProto> Action::ConvertToProtoIfCustomized() {
   return proto;
 }
 
-void Action::UpdateTouchDownPositions(
-    const gfx::RectF& content_bounds,
-    const gfx::Transform* rotation_transform) {
+void Action::UpdateTouchDownPositions() {
   if (original_positions_.empty())
     return;
 
   touch_down_positions_.clear();
-
+  const auto& content_bounds = touch_injector_->content_bounds();
   for (int i = 0; i < original_positions_.size(); i++) {
     auto point = original_positions_[i].CalculatePosition(content_bounds);
     const auto calculated_point = point.ToString();
     point.Offset(content_bounds.origin().x(), content_bounds.origin().y());
     const auto root_point = point.ToString();
-    float scale = target_window_->GetHost()->device_scale_factor();
+    float scale = touch_injector_->window()->GetHost()->device_scale_factor();
     point.Scale(scale);
     const auto root_point_pixel = point.ToString();
-    if (rotation_transform)
-      rotation_transform->TransformPoint(&point);
+    if (touch_injector_->rotation_transform())
+      touch_injector_->rotation_transform()->TransformPoint(&point);
     touch_down_positions_.emplace_back(point);
 
     VLOG(1) << "Calculate touch position for location at index " << i

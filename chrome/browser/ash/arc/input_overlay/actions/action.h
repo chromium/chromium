@@ -18,9 +18,9 @@
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
+#include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_label.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
-#include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -33,6 +33,7 @@ constexpr char kMouse[] = "mouse";
 
 class ActionView;
 class DisplayOverlayController;
+class TouchInjector;
 
 // Parse position from Json.
 std::unique_ptr<Position> ParsePosition(const base::Value& value);
@@ -70,18 +71,15 @@ class Action {
   //    Call DiscardEvent to discard event such as repeated key event.
   // 3. Return false:
   //    No need to rewrite the event, so call SendEvent with original event.
-  // |content_bounds| is the window bounds excluding caption.
   virtual bool RewriteEvent(const ui::Event& origin,
-                            const gfx::RectF& content_bounds,
                             const bool is_mouse_locked,
                             const gfx::Transform* rotation_transform,
                             std::list<ui::TouchEvent>& touch_events,
                             bool& keep_original_event) = 0;
   // Get the UI location in the content view.
-  virtual gfx::PointF GetUICenterPosition(const gfx::RectF& content_bounds) = 0;
+  virtual gfx::PointF GetUICenterPosition() = 0;
   virtual std::unique_ptr<ActionView> CreateView(
-      DisplayOverlayController* display_overlay_controller,
-      const gfx::RectF& content_bounds) = 0;
+      DisplayOverlayController* display_overlay_controller) = 0;
   // This is called if other actions take the input binding from this action.
   // |input_element| should overlap the current displayed binding. If it is
   // partially overlapped, then we only unbind the overlapped input.
@@ -93,11 +91,11 @@ class Action {
   // Save |pending_input_| as |current_input_|.
   void BindPending();
   // Cancel |pending_input_|.
-  void CancelPendingBind(const gfx::RectF& content_bounds);
+  void CancelPendingBind();
   void ResetPendingBind();
 
   // Restore the input binding back to the original binding.
-  void RestoreToDefault(const gfx::RectF& content_bounds);
+  void RestoreToDefault();
   // Return currently displayed input binding.
   const InputElement& GetCurrentDisplayedInput();
   // Check if there is any overlap between |input_element| and current
@@ -105,10 +103,9 @@ class Action {
   bool IsOverlapped(const InputElement& input_element);
   // Return the proto object if the action is customized.
   std::unique_ptr<ActionProto> ConvertToProtoIfCustomized();
-  // Update |touch_down_positions_| for different |content_bounds| or/and
-  // |rotation_transform|.
-  void UpdateTouchDownPositions(const gfx::RectF& content_bounds,
-                                const gfx::Transform* rotation_transform);
+  // Update |touch_down_positions_| after reposition, rotation change or window
+  // bounds change.
+  void UpdateTouchDownPositions();
 
   InputElement* current_input() const { return current_input_.get(); }
   InputElement* original_input() const { return original_input_.get(); }
@@ -127,7 +124,7 @@ class Action {
     return touch_down_positions_;
   }
   bool require_mouse_locked() const { return require_mouse_locked_; }
-  aura::Window* target_window() const { return target_window_; }
+  TouchInjector* touch_injector() const { return touch_injector_; }
   int current_position_idx() const { return current_position_idx_; }
   const absl::optional<int> touch_id() const { return touch_id_; }
   bool on_left_or_middle_side() const { return on_left_or_middle_side_; }
@@ -138,10 +135,11 @@ class Action {
   // event is still not released.
   absl::optional<ui::TouchEvent> GetTouchCanceledEvent();
   absl::optional<ui::TouchEvent> GetTouchReleasedEvent();
-  int GetUIRadius(const gfx::RectF& content_bounds);
+  int GetUIRadius();
 
  protected:
-  explicit Action(aura::Window* window);
+  // |touch_injector| must be non-NULL and own this Action.
+  explicit Action(TouchInjector* touch_injector);
 
   bool IsRepeatedKeyEvent(const ui::KeyEvent& key_event);
   // Verify the key release event. If it is verified, it continues to simulate
@@ -175,7 +173,7 @@ class Action {
   int parsed_input_sources_ = 0;
   absl::optional<int> touch_id_;
   size_t current_position_idx_ = 0;
-  raw_ptr<aura::Window> target_window_;
+  raw_ptr<TouchInjector> touch_injector_;
 
   gfx::PointF last_touch_root_location_;
   base::flat_set<ui::DomCode> keys_pressed_;

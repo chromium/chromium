@@ -14,7 +14,7 @@ namespace input_overlay {
 // ActionTap transform key/mouse events to touch events.
 class ActionTap : public Action {
  public:
-  explicit ActionTap(aura::Window* window);
+  explicit ActionTap(TouchInjector* touch_injector);
   ActionTap(const ActionTap&) = delete;
   ActionTap& operator=(const ActionTap&) = delete;
   ~ActionTap() override;
@@ -22,15 +22,13 @@ class ActionTap : public Action {
   // Override from Action.
   bool ParseFromJson(const base::Value& value) override;
   bool RewriteEvent(const ui::Event& origin,
-                    const gfx::RectF& content_bounds,
                     const bool is_mouse_locked,
                     const gfx::Transform* rotation_transform,
                     std::list<ui::TouchEvent>& touch_events,
                     bool& keep_original_event) override;
-  gfx::PointF GetUICenterPosition(const gfx::RectF& content_bounds) override;
+  gfx::PointF GetUICenterPosition() override;
   std::unique_ptr<ActionView> CreateView(
-      DisplayOverlayController* display_overlay_controller,
-      const gfx::RectF& content_bounds) override;
+      DisplayOverlayController* display_overlay_controller) override;
   void UnbindInput(const InputElement& input_element) override;
 
  private:

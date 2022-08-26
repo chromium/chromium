@@ -94,7 +94,7 @@ gfx::Rect DisplayOverlayController::GetInputMappingViewBoundsForTesting() {
 void DisplayOverlayController::AddOverlay(DisplayMode display_mode) {
   RemoveOverlayIfAny();
   auto* shell_surface_base =
-      exo::GetShellSurfaceBaseForWindow(touch_injector_->target_window());
+      exo::GetShellSurfaceBaseForWindow(touch_injector_->window());
   if (!shell_surface_base)
     return;
 
@@ -110,7 +110,7 @@ void DisplayOverlayController::AddOverlay(DisplayMode display_mode) {
 
 void DisplayOverlayController::RemoveOverlayIfAny() {
   auto* shell_surface_base =
-      exo::GetShellSurfaceBaseForWindow(touch_injector_->target_window());
+      exo::GetShellSurfaceBaseForWindow(touch_injector_->window());
   if (shell_surface_base && shell_surface_base->HasOverlay()) {
     // Call |RemoveInputMenuView| explicitly to make sure UMA stats is updated.
     RemoveInputMenuView();
@@ -326,7 +326,7 @@ void DisplayOverlayController::OnEducationalViewDismissed() {
 
 views::Widget* DisplayOverlayController::GetOverlayWidget() {
   auto* shell_surface_base =
-      exo::GetShellSurfaceBaseForWindow(touch_injector_->target_window());
+      exo::GetShellSurfaceBaseForWindow(touch_injector_->window());
   DCHECK(shell_surface_base);
 
   return shell_surface_base ? static_cast<views::Widget*>(
@@ -581,10 +581,8 @@ void DisplayOverlayController::ProcessPressedEvent(
 
   auto root_location = event.root_location();
   // Convert the LocatedEvent root location to screen location.
-  auto origin = touch_injector_->target_window()
-                    ->GetRootWindow()
-                    ->GetBoundsInScreen()
-                    .origin();
+  auto origin =
+      touch_injector_->window()->GetRootWindow()->GetBoundsInScreen().origin();
   root_location.Offset(origin.x(), origin.y());
 
   if (action_edit_menu_) {

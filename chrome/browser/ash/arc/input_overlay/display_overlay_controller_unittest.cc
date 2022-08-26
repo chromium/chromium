@@ -14,30 +14,6 @@
 
 namespace arc {
 namespace input_overlay {
-namespace {
-
-constexpr const char kValidJson[] =
-    R"json({
-      "tap": [
-        {
-          "input_sources": [
-            "keyboard"
-          ],
-          "name": "Run",
-          "key": "KeyB",
-          "location": [
-            {
-              "type": "position",
-              "anchor_to_target": [
-                0.8,
-                0.8
-              ]
-            }
-          ]
-        }
-      ]
-    })json";
-}  // namespace
 
 class DisplayOverlayControllerTest : public exo::test::ExoTestBase {
  public:
@@ -54,6 +30,7 @@ class DisplayOverlayControllerTest : public exo::test::ExoTestBase {
  protected:
   std::unique_ptr<input_overlay::test::ArcTestWindow> arc_test_window_;
   std::unique_ptr<DisplayOverlayController> controller_;
+  std::unique_ptr<TouchInjector> injector_;
 
  private:
   void SetUp() override {
@@ -65,8 +42,6 @@ class DisplayOverlayControllerTest : public exo::test::ExoTestBase {
         arc_test_window_->GetWindow(),
         base::BindLambdaForTesting(
             [&](std::unique_ptr<AppDataProto>, const std::string&) {}));
-    auto json_value = base::JSONReader::ReadAndReturnValueWithError(kValidJson);
-    injector_->ParseActions(*json_value);
     controller_ =
         std::make_unique<DisplayOverlayController>(injector_.get(), false);
   }
@@ -77,8 +52,6 @@ class DisplayOverlayControllerTest : public exo::test::ExoTestBase {
     arc_test_window_.reset();
     exo::test::ExoTestBase::TearDown();
   }
-
-  std::unique_ptr<TouchInjector> injector_;
 };
 
 TEST_F(DisplayOverlayControllerTest, TestWindowBoundsChange) {
@@ -91,9 +64,12 @@ TEST_F(DisplayOverlayControllerTest, TestWindowBoundsChange) {
 
   display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
   arc_test_window_->SetBounds(display, new_bounds);
+  // Trigger the updates for window bounds change.
+  injector_->UpdateForWindowBoundsChanged();
   controller_->OnWindowBoundsChanged();
   auto updated_bounds = GetInputMappingViewBounds();
   EXPECT_NE(original_bounds, updated_bounds);
+  EXPECT_EQ(updated_bounds, new_bounds);
 }
 
 }  // namespace input_overlay

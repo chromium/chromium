@@ -53,10 +53,9 @@ std::unique_ptr<Position> ParseApplyAreaPosition(const base::Value& value,
 class ActionMove::ActionMoveMouseView : public ActionView {
  public:
   ActionMoveMouseView(Action* action,
-                      DisplayOverlayController* display_overlay_controller,
-                      const gfx::RectF& content_bounds)
+                      DisplayOverlayController* display_overlay_controller)
       : ActionView(action, display_overlay_controller) {
-    SetViewContent(BindingOption::kCurrent, content_bounds);
+    SetViewContent(BindingOption::kCurrent);
   }
 
   ActionMoveMouseView(const ActionMoveMouseView&) = delete;
@@ -64,8 +63,7 @@ class ActionMove::ActionMoveMouseView : public ActionView {
   ~ActionMoveMouseView() override = default;
 
   // TODO(cuicuiruan): rewrite for post MVP once design is ready.
-  void SetViewContent(BindingOption binding_option,
-                      const gfx::RectF& content_bounds) override {
+  void SetViewContent(BindingOption binding_option) override {
     auto label = ActionLabel::CreateTextActionLabel(kMouseCursorLock);
     labels_.emplace_back(AddChildView(std::move(label)));
   }
@@ -89,29 +87,24 @@ class ActionMove::ActionMoveMouseView : public ActionView {
     center_.set_x(label_size.width() / 2);
     center_.set_y(label_size.height() / 2);
     SetSize(label_size);
-    auto center_pos = action_->GetUICenterPosition(
-        CalculateWindowContentBounds(action_->target_window()));
-    SetPositionFromCenterPosition(center_pos);
+    SetPositionFromCenterPosition(action_->GetUICenterPosition());
   }
 };
 
 class ActionMove::ActionMoveKeyView : public ActionView {
  public:
   ActionMoveKeyView(Action* action,
-                    DisplayOverlayController* display_overlay_controller,
-                    const gfx::RectF& content_bounds)
+                    DisplayOverlayController* display_overlay_controller)
       : ActionView(action, display_overlay_controller) {
-    SetViewContent(BindingOption::kCurrent, content_bounds);
+    SetViewContent(BindingOption::kCurrent);
   }
 
   ActionMoveKeyView(const ActionMoveKeyView&) = delete;
   ActionMoveKeyView& operator=(const ActionMoveKeyView&) = delete;
   ~ActionMoveKeyView() override = default;
 
-  void SetViewContent(BindingOption binding_option,
-                      const gfx::RectF& content_bounds) override {
-    int radius =
-        std::max(kActionMoveMinRadius, action_->GetUIRadius(content_bounds));
+  void SetViewContent(BindingOption binding_option) override {
+    int radius = std::max(kActionMoveMinRadius, action_->GetUIRadius());
     auto* action_move = static_cast<ActionMove*>(action_);
     action_move->set_move_distance(radius / 2);
     if (show_circle() && !circle_) {
@@ -209,10 +202,7 @@ class ActionMove::ActionMoveKeyView : public ActionView {
     if (label_index == -1)
       return;
 
-    auto content_bounds =
-        CalculateWindowContentBounds(action_->target_window());
-    int radius =
-        std::max(kActionMoveMinRadius, action_->GetUIRadius(content_bounds));
+    const int radius = std::max(kActionMoveMinRadius, action_->GetUIRadius());
     auto label_size = label->CalculatePreferredSize();
     label->SetSize(label_size);
     int x = kDirection[label_index][0];
@@ -236,12 +226,12 @@ class ActionMove::ActionMoveKeyView : public ActionView {
     auto size = gfx::Size(radius * 2, radius * 2);
     size.SetToMax(gfx::Size(right - left, bottom - top));
     SetSize(size);
-    auto center_pos = action_->GetUICenterPosition(content_bounds);
-    SetPositionFromCenterPosition(center_pos);
+    SetPositionFromCenterPosition(action_->GetUICenterPosition());
   }
 };
 
-ActionMove::ActionMove(aura::Window* window) : Action(window) {}
+ActionMove::ActionMove(TouchInjector* touch_injector)
+    : Action(touch_injector) {}
 
 ActionMove::~ActionMove() = default;
 
@@ -344,7 +334,6 @@ bool ActionMove::ParseJsonFromMouse(const base::Value& value) {
 }
 
 bool ActionMove::RewriteEvent(const ui::Event& origin,
-                              const gfx::RectF& content_bounds,
                               const bool is_mouse_locked,
                               const gfx::Transform* rotation_transform,
                               std::list<ui::TouchEvent>& touch_events,
@@ -358,6 +347,7 @@ bool ActionMove::RewriteEvent(const ui::Event& origin,
   LogEvent(origin);
 
   // Rewrite for key event.
+  const auto& content_bounds = touch_injector_->content_bounds();
   if (IsKeyboardBound(*current_input_)) {
     auto* key_event = origin.AsKeyEvent();
     bool rewritten = RewriteKeyEvent(key_event, content_bounds,
@@ -377,7 +367,8 @@ bool ActionMove::RewriteEvent(const ui::Event& origin,
   return rewritten;
 }
 
-gfx::PointF ActionMove::GetUICenterPosition(const gfx::RectF& content_bounds) {
+gfx::PointF ActionMove::GetUICenterPosition() {
+  const auto& content_bounds = touch_injector_->content_bounds();
   if (original_positions().empty()) {
     DCHECK(IsMouseBound(*current_input_));
     return gfx::PointF(content_bounds.width() / 2, content_bounds.height() / 2);
@@ -386,15 +377,14 @@ gfx::PointF ActionMove::GetUICenterPosition(const gfx::RectF& content_bounds) {
 }
 
 std::unique_ptr<ActionView> ActionMove::CreateView(
-    DisplayOverlayController* display_overlay_controller,
-    const gfx::RectF& content_bounds) {
+    DisplayOverlayController* display_overlay_controller) {
   std::unique_ptr<ActionView> view;
   if (IsMouseBound(*current_input_)) {
-    view = std::make_unique<ActionMoveMouseView>(
-        this, display_overlay_controller, content_bounds);
+    view =
+        std::make_unique<ActionMoveMouseView>(this, display_overlay_controller);
   } else {
-    view = std::make_unique<ActionMoveKeyView>(this, display_overlay_controller,
-                                               content_bounds);
+    view =
+        std::make_unique<ActionMoveKeyView>(this, display_overlay_controller);
   }
   action_view_ = view.get();
   view->set_editable(true);
@@ -452,7 +442,7 @@ bool ActionMove::RewriteKeyEvent(const ui::KeyEvent* key_event,
           last_touch_root_location_, key_event->time_stamp(),
           ui::PointerDetails(ui::EventPointerType::kTouch, *touch_id_));
       ui::Event::DispatcherApi(&(rewritten_events.back()))
-          .set_target(target_window_);
+          .set_target(touch_injector_->window());
     }
     DCHECK(touch_id_);
     if (!touch_id_)
@@ -466,7 +456,7 @@ bool ActionMove::RewriteKeyEvent(const ui::KeyEvent* key_event,
         last_touch_root_location_, key_event->time_stamp(),
         ui::PointerDetails(ui::EventPointerType::kTouch, *touch_id_));
     ui::Event::DispatcherApi(&(rewritten_events.back()))
-        .set_target(target_window_);
+        .set_target(touch_injector_->window());
     keys_pressed_.emplace(key_event->code());
   } else {
     if (!VerifyOnKeyRelease(key_event->code()))
@@ -482,7 +472,7 @@ bool ActionMove::RewriteKeyEvent(const ui::KeyEvent* key_event,
           last_touch_root_location_, key_event->time_stamp(),
           ui::PointerDetails(ui::EventPointerType::kTouch, *touch_id_));
       ui::Event::DispatcherApi(&(rewritten_events.back()))
-          .set_target(target_window_);
+          .set_target(touch_injector_->window());
     } else {
       // Generate touch release.
       rewritten_events.emplace_back(
@@ -490,7 +480,7 @@ bool ActionMove::RewriteKeyEvent(const ui::KeyEvent* key_event,
           last_touch_root_location_, key_event->time_stamp(),
           ui::PointerDetails(ui::EventPointerType::kTouch, *touch_id_));
       ui::Event::DispatcherApi(&(rewritten_events.back()))
-          .set_target(target_window_);
+          .set_target(touch_injector_->window());
       OnTouchReleased();
       move_vector_.set_x(0);
       move_vector_.set_y(0);
@@ -514,7 +504,7 @@ bool ActionMove::RewriteMouseEvent(
   }
 
   auto mouse_location = gfx::Point(mouse_event->root_location());
-  target_window_->GetHost()->ConvertPixelsToDIP(&mouse_location);
+  touch_injector_->window()->GetHost()->ConvertPixelsToDIP(&mouse_location);
   auto mouse_location_f = gfx::PointF(mouse_location);
   // Discard mouse events outside of the app content bounds if the mouse is
   // locked.
@@ -552,7 +542,7 @@ bool ActionMove::RewriteMouseEvent(
         ui::PointerDetails(ui::EventPointerType::kTouch, *touch_id_));
   }
   ui::Event::DispatcherApi(&(rewritten_events.back()))
-      .set_target(target_window_);
+      .set_target(touch_injector_->window());
   return true;
 }
 
@@ -564,7 +554,8 @@ void ActionMove::CalculateMoveVector(gfx::PointF& touch_press_pos,
   DCHECK(direction_index >= 0 && direction_index < kActionMoveKeysSize);
   auto new_move = gfx::Vector2dF(kDirection[direction_index][0],
                                  kDirection[direction_index][1]);
-  float display_scale_factor = target_window_->GetHost()->device_scale_factor();
+  float display_scale_factor =
+      touch_injector_->window()->GetHost()->device_scale_factor();
   float scale = display_scale_factor * move_distance_;
   new_move.Scale(scale, scale);
   if (key_press) {
@@ -620,7 +611,7 @@ gfx::PointF ActionMove::TransformLocationInPixels(
     new_pos.SetPoint(root_location.x(), root_location.y());
   }
 
-  float scale = target_window_->GetHost()->device_scale_factor();
+  float scale = touch_injector_->window()->GetHost()->device_scale_factor();
   new_pos.Scale(scale);
   return new_pos;
 }

@@ -43,20 +43,18 @@ std::unique_ptr<ActionLabel> CreateActionLabel(InputElement& input_element) {
 class ActionTap::ActionTapView : public ActionView {
  public:
   ActionTapView(Action* action,
-                DisplayOverlayController* display_overlay_controller,
-                const gfx::RectF& content_bounds)
+                DisplayOverlayController* display_overlay_controller)
       : ActionView(action, display_overlay_controller) {
-    SetViewContent(BindingOption::kCurrent, content_bounds);
+    SetViewContent(BindingOption::kCurrent);
   }
 
   ActionTapView(const ActionTapView&) = delete;
   ActionTapView& operator=(const ActionTapView&) = delete;
   ~ActionTapView() override = default;
 
-  void SetViewContent(BindingOption binding_option,
-                      const gfx::RectF& content_bounds) override {
+  void SetViewContent(BindingOption binding_option) override {
     // Add circle if it doesn't exist.
-    int radius = action_->GetUIRadius(content_bounds);
+    int radius = action_->GetUIRadius();
     if (show_circle() && !circle_) {
       auto circle = std::make_unique<ActionCircle>(radius);
       circle_ = AddChildView(std::move(circle));
@@ -114,8 +112,7 @@ class ActionTap::ActionTapView : public ActionView {
 
     auto input_element = std::make_unique<InputElement>();
     action_->set_pending_input(std::move(input_element));
-    auto bounds = CalculateWindowContentBounds(action_->target_window());
-    SetViewContent(BindingOption::kPending, bounds);
+    SetViewContent(BindingOption::kPending);
   }
 
   void OnBindingToMouse(std::string mouse_action) override {
@@ -148,9 +145,7 @@ class ActionTap::ActionTapView : public ActionView {
     if (static_cast<ActionLabel*>(child) != labels_[0])
       return;
 
-    auto content_bounds =
-        CalculateWindowContentBounds(action_->target_window());
-    int radius = action_->GetUIRadius(content_bounds);
+    int radius = action_->GetUIRadius();
     auto* label = labels_[0];
     auto label_size = label->CalculatePreferredSize();
     int width = std::max(
@@ -175,12 +170,11 @@ class ActionTap::ActionTapView : public ActionView {
     }
     label->SetSize(label_size);
     SetSize(gfx::Size(width, radius * 2));
-    auto center_pos = action_->GetUICenterPosition(content_bounds);
-    SetPositionFromCenterPosition(center_pos);
+    SetPositionFromCenterPosition(action_->GetUICenterPosition());
   }
 };
 
-ActionTap::ActionTap(aura::Window* window) : Action(window) {}
+ActionTap::ActionTap(TouchInjector* touch_injector) : Action(touch_injector) {}
 ActionTap::~ActionTap() = default;
 
 bool ActionTap::ParseFromJson(const base::Value& value) {
@@ -225,7 +219,6 @@ bool ActionTap::ParseJsonFromMouse(const base::Value& value) {
 }
 
 bool ActionTap::RewriteEvent(const ui::Event& origin,
-                             const gfx::RectF& content_bounds,
                              const bool is_mouse_locked,
                              const gfx::Transform* rotation_transform,
                              std::list<ui::TouchEvent>& touch_events,
@@ -238,6 +231,7 @@ bool ActionTap::RewriteEvent(const ui::Event& origin,
   DCHECK_NE(IsKeyboardBound(*current_input_), IsMouseBound(*current_input_));
   LogEvent(origin);
   // Rewrite for key event.
+  auto content_bounds = touch_injector_->content_bounds();
   if (IsKeyboardBound(*current_input())) {
     auto* key_event = origin.AsKeyEvent();
     bool rewritten =
@@ -256,15 +250,14 @@ bool ActionTap::RewriteEvent(const ui::Event& origin,
   return rewritten;
 }
 
-gfx::PointF ActionTap::GetUICenterPosition(const gfx::RectF& content_bounds) {
-  return original_positions().front().CalculatePosition(content_bounds);
+gfx::PointF ActionTap::GetUICenterPosition() {
+  return original_positions().front().CalculatePosition(
+      touch_injector_->content_bounds());
 }
 
 std::unique_ptr<ActionView> ActionTap::CreateView(
-    DisplayOverlayController* display_overlay_controller,
-    const gfx::RectF& content_bounds) {
-  auto view = std::make_unique<ActionTapView>(this, display_overlay_controller,
-                                              content_bounds);
+    DisplayOverlayController* display_overlay_controller) {
+  auto view = std::make_unique<ActionTapView>(this, display_overlay_controller);
   view->set_editable(true);
   action_view_ = view.get();
   return view;
@@ -313,7 +306,7 @@ bool ActionTap::RewriteKeyEvent(const ui::KeyEvent* key_event,
         last_touch_root_location_, key_event->time_stamp(),
         ui::PointerDetails(ui::EventPointerType::kTouch, *touch_id_));
     ui::Event::DispatcherApi(&(rewritten_events.back()))
-        .set_target(target_window_);
+        .set_target(touch_injector_->window());
     if (!current_input_->is_modifier_key()) {
       keys_pressed_.emplace(key_event->code());
     } else {
@@ -338,7 +331,7 @@ bool ActionTap::RewriteKeyEvent(const ui::KeyEvent* key_event,
         last_touch_root_location_, key_event->time_stamp(),
         ui::PointerDetails(ui::EventPointerType::kTouch, *touch_id_));
     ui::Event::DispatcherApi(&(rewritten_events.back()))
-        .set_target(target_window_);
+        .set_target(touch_injector_->window());
 
     last_touch_root_location_.set_x(0);
     last_touch_root_location_.set_y(0);
@@ -374,7 +367,7 @@ bool ActionTap::RewriteMouseEvent(const ui::MouseEvent* mouse_event,
       // Primary click.
       auto root_location = mouse_event->root_location_f();
       last_touch_root_location_.SetPoint(root_location.x(), root_location.y());
-      float scale = target_window_->GetHost()->device_scale_factor();
+      float scale = touch_injector_->window()->GetHost()->device_scale_factor();
       last_touch_root_location_.Scale(scale);
     }
     rewritten_events.emplace_back(
@@ -389,7 +382,7 @@ bool ActionTap::RewriteMouseEvent(const ui::MouseEvent* mouse_event,
     OnTouchReleased();
   }
   ui::Event::DispatcherApi(&(rewritten_events.back()))
-      .set_target(target_window_);
+      .set_target(touch_injector_->window());
   return true;
 }
 

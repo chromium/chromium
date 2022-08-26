@@ -61,7 +61,7 @@ void RemoveActionsWithSameID(std::vector<std::unique_ptr<Action>>& actions) {
 
 // Parse Json to different types of actions.
 std::vector<std::unique_ptr<Action>> ParseJsonToActions(
-    aura::Window* window,
+    TouchInjector* touch_injector,
     const base::Value& root) {
   std::vector<std::unique_ptr<Action>> actions;
 
@@ -69,7 +69,7 @@ std::vector<std::unique_ptr<Action>> ParseJsonToActions(
   const auto* tap_act_list = root.FindListKey(kTapAction);
   if (tap_act_list && tap_act_list->is_list()) {
     for (const auto& val : tap_act_list->GetListDeprecated()) {
-      auto action = std::make_unique<ActionTap>(window);
+      auto action = std::make_unique<ActionTap>(touch_injector);
       bool succeed = action->ParseFromJson(val);
       if (succeed)
         actions.emplace_back(std::move(action));
@@ -80,7 +80,7 @@ std::vector<std::unique_ptr<Action>> ParseJsonToActions(
   const base::Value* move_act_list = root.FindListKey(kMoveAction);
   if (move_act_list && move_act_list->is_list()) {
     for (const base::Value& val : move_act_list->GetListDeprecated()) {
-      auto action = std::make_unique<ActionMove>(window);
+      auto action = std::make_unique<ActionMove>(touch_injector);
       bool succeed = action->ParseFromJson(val);
       if (succeed)
         actions.emplace_back(std::move(action));
@@ -141,7 +141,8 @@ class TouchInjector::KeyCommand {
 
 TouchInjector::TouchInjector(aura::Window* top_level_window,
                              OnSaveProtoFileCallback save_file_callback)
-    : target_window_(top_level_window),
+    : window_(top_level_window),
+      content_bounds_(CalculateWindowContentBounds(window_)),
       save_file_callback_(save_file_callback) {}
 
 TouchInjector::~TouchInjector() {
@@ -152,7 +153,7 @@ void TouchInjector::ParseActions(const base::Value& root) {
   if (enable_mouse_lock_)
     ParseMouseLock(root);
 
-  auto parsed_actions = ParseJsonToActions(target_window_, root);
+  auto parsed_actions = ParseJsonToActions(this, root);
   if (!parsed_actions.empty()) {
     std::move(parsed_actions.begin(), parsed_actions.end(),
               std::back_inserter(actions_));
@@ -168,7 +169,7 @@ void TouchInjector::NotifyTextInputState(bool active) {
 void TouchInjector::RegisterEventRewriter() {
   if (observation_.IsObserving())
     return;
-  observation_.Observe(target_window_->GetHost()->GetEventSource());
+  observation_.Observe(window_->GetHost()->GetEventSource());
   Update();
 }
 
@@ -224,17 +225,17 @@ void TouchInjector::OnBindingSave() {
 
 void TouchInjector::OnBindingCancel() {
   for (auto& action : actions_)
-    action->CancelPendingBind(content_bounds_);
+    action->CancelPendingBind();
   display_overlay_controller_->SetDisplayMode(DisplayMode::kView);
 }
 
 void TouchInjector::OnBindingRestore() {
   for (auto& action : actions_)
-    action->RestoreToDefault(content_bounds_);
+    action->RestoreToDefault();
 }
 
 const std::string* TouchInjector::GetPackageName() const {
-  return target_window_->GetProperty(ash::kArcPackageNameKey);
+  return window_->GetProperty(ash::kArcPackageNameKey);
 }
 
 void TouchInjector::OnProtoDataAvailable(AppDataProto& proto) {
@@ -276,8 +277,7 @@ void TouchInjector::UpdateForDisplayMetricsChanged() {
   if (rotation_transform_)
     rotation_transform_.reset();
 
-  auto display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(target_window_);
+  auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(window_);
   // No need to transform if there is no rotation.
   if (display.panel_rotation() == display::Display::ROTATE_0)
     return;
@@ -291,10 +291,9 @@ void TouchInjector::UpdateForDisplayMetricsChanged() {
 }
 
 void TouchInjector::UpdateForWindowBoundsChanged() {
-  content_bounds_ = CalculateWindowContentBounds(target_window_);
+  content_bounds_ = CalculateWindowContentBounds(window_);
   for (auto& action : actions_) {
-    action->UpdateTouchDownPositions(content_bounds_,
-                                     rotation_transform_.get());
+    action->UpdateTouchDownPositions();
   }
 }
 
@@ -432,9 +431,9 @@ bool TouchInjector::LocatedEventOnMenuEntry(const ui::Event& event,
   }
 
   auto event_location = gfx::Point(event.AsLocatedEvent()->root_location());
-  target_window_->GetHost()->ConvertPixelsToDIP(&event_location);
+  window_->GetHost()->ConvertPixelsToDIP(&event_location);
   // Convert |event_location| from root window location to screen location.
-  auto origin = target_window_->GetRootWindow()->GetBoundsInScreen().origin();
+  auto origin = window_->GetRootWindow()->GetBoundsInScreen().origin();
   event_location.Offset(origin.x(), origin.y());
 
   if (!press_required)
@@ -519,7 +518,7 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
   if (event.IsTouchEvent()) {
     auto* touch_event = event.AsTouchEvent();
     auto location = touch_event->root_location();
-    target_window_->GetHost()->ConvertPixelsToDIP(&location);
+    window_->GetHost()->ConvertPixelsToDIP(&location);
     auto location_f = gfx::PointF(location);
     // Send touch event as it is if the event is outside of the content bounds.
     if (!content_bounds_.Contains(location_f))
@@ -548,9 +547,9 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
   std::list<ui::TouchEvent> touch_events;
   for (auto& action : actions_) {
     bool keep_original_event = false;
-    bool rewritten = action->RewriteEvent(
-        event, content_bounds_, is_mouse_locked_, rotation_transform_.get(),
-        touch_events, keep_original_event);
+    bool rewritten =
+        action->RewriteEvent(event, is_mouse_locked_, rotation_transform_.get(),
+                             touch_events, keep_original_event);
     if (!rewritten)
       continue;
     if (keep_original_event)

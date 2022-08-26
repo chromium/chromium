@@ -37,8 +37,7 @@ class ActionView : public views::View {
   ~ActionView() override;
 
   // Each type of the actions sets view content differently.
-  virtual void SetViewContent(BindingOption binding_option,
-                              const gfx::RectF& content_bounds) = 0;
+  virtual void SetViewContent(BindingOption binding_option) = 0;
   // Each type of the actions acts differently on key binding change.
   virtual void OnKeyBindingChange(ActionLabel* action_label,
                                   ui::DomCode code) = 0;
@@ -55,7 +54,7 @@ class ActionView : public views::View {
                               ActionLabel* editing_label = nullptr);
 
   // Set position from its center position.
-  void SetPositionFromCenterPosition(gfx::PointF& center_position);
+  void SetPositionFromCenterPosition(const gfx::PointF& center_position);
   // Get edit menu position in parent's bounds.
   gfx::Point GetEditMenuPosition(gfx::Size menu_size);
   void RemoveEditMenu();

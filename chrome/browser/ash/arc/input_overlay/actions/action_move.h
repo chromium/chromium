@@ -19,7 +19,7 @@ constexpr int kActionMoveMinRadius = 99;
 // move involved.
 class ActionMove : public Action {
  public:
-  explicit ActionMove(aura::Window* window);
+  explicit ActionMove(TouchInjector* touch_injector);
   ActionMove(const ActionMove&) = delete;
   ActionMove& operator=(const ActionMove&) = delete;
   ~ActionMove() override;
@@ -27,15 +27,13 @@ class ActionMove : public Action {
   // Override from Action.
   bool ParseFromJson(const base::Value& value) override;
   bool RewriteEvent(const ui::Event& origin,
-                    const gfx::RectF& content_bounds,
                     const bool is_mouse_locked,
                     const gfx::Transform* rotation_transform,
                     std::list<ui::TouchEvent>& touch_events,
                     bool& keep_original_event) override;
-  gfx::PointF GetUICenterPosition(const gfx::RectF& content_bounds) override;
+  gfx::PointF GetUICenterPosition() override;
   std::unique_ptr<ActionView> CreateView(
-      DisplayOverlayController* display_overlay_controller,
-      const gfx::RectF& content_bounds) override;
+      DisplayOverlayController* display_overlay_controller) override;
   void UnbindInput(const InputElement& input_element) override;
 
   void set_move_distance(int move_distance) { move_distance_ = move_distance; }

@@ -50,7 +50,7 @@ class TouchInjector : public ui::EventRewriter {
   TouchInjector& operator=(const TouchInjector&) = delete;
   ~TouchInjector() override;
 
-  aura::Window* target_window() { return target_window_; }
+  aura::Window* window() { return window_; }
   const gfx::RectF& content_bounds() { return content_bounds_; }
   const gfx::Transform* rotation_transform() {
     return rotation_transform_.get();
@@ -212,7 +212,10 @@ class TouchInjector : public ui::EventRewriter {
   int GetRewrittenTouchInfoSizeForTesting();
   DisplayOverlayController* GetControllerForTesting();
 
-  raw_ptr<aura::Window> target_window_;
+  // TouchInjector is created when targeted |window_| is created and is
+  // registered only when |window_| is focused. And TouchInjector doesn't own
+  // |window_| and it is destroyed when |window_| is destroyed.
+  raw_ptr<aura::Window> window_;
   gfx::RectF content_bounds_;
   base::WeakPtr<ui::EventRewriterContinuation> continuation_;
   std::vector<std::unique_ptr<Action>> actions_;
