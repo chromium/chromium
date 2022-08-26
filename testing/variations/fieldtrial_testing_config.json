@@ -1475,30 +1475,6 @@
             ]
         }
     ],
-    "AutofillRemoveInaccessibleProfileValues": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "remove_inaccessible_fields_on_startup": "false"
-                    },
-                    "enable_features": [
-                        "AutofillRemoveInaccessibleProfileValues"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillRemoveInvalidPhoneNumberOnImport": [
         {
             "platforms": [
