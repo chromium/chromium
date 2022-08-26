@@ -35,7 +35,7 @@ if (swift_toolchain_path == "" && build_with_chromium) {
   # Version of the hermetic compiler. Needs to be updated when a new version of
   # the compiler is rolled to ensure that all outputs are regenerated. It must
   # be kept in sync with the value in //third_party/swift-toolchain/3pp/3pp.pb.
-  swiftc_version = "swift-5.7-20220717"
+  swiftc_version = "swift-5.7-20220818"
 
   # Use the hermetic swift toolchain.
   swift_toolchain_path =
