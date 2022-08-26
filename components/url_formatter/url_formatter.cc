@@ -840,4 +840,8 @@ std::u16string MaybeRemoveDiacritics(const std::u16string& host) {
   return g_idn_spoof_checker.Get().MaybeRemoveDiacritics(host);
 }
 
+bool HasDeviationCharacters(base::StringPiece16 url_text) {
+  return g_idn_spoof_checker.Get().HasDeviationCharacters(url_text);
+}
+
 }  // namespace url_formatter

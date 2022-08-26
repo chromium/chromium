@@ -712,6 +712,17 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   </summary>
 </histogram>
 
+<histogram name="Navigation.HostnameHasDeviationCharacters" units="count"
+    expires_after="2023-01-15">
+  <owner>meacer@chromium.org</owner>
+  <owner>chrome-trusty-transport@google.com</owner>
+  <summary>
+    Counts the number of typed and pasted main frame navigations to hostnames
+    that contain characters that are treated differently between IDNA 2003 and
+    IDNA 2008, aka deviation characters. Ignores reload navigations.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.IsLockedProcess" enum="NavigationIsLockedProcess"
     expires_after="2022-12-09">
   <owner>alexmos@chromium.org</owner>

@@ -133,4 +133,37 @@ TEST(NavigationMetrics, MainFrameSameDocumentHasRTLDomainTrue) {
   test.ExpectUniqueSample(kMainFrameHasRTLDomain, 1 /* true */, 1);
 }
 
+TEST(NavigationMetrics, RecordIDNA2008Metrics) {
+  static constexpr char kHistogram[] =
+      "Navigation.HostnameHasDeviationCharacters";
+  base::HistogramTester histograms;
+
+  // Shouldn't record metrics for non-unique hostnames.
+  RecordIDNA2008Metrics(u"faß.local");
+  histograms.ExpectTotalCount(kHistogram, 0);
+
+  // Shouldn't record deviation characters in subdomains.
+  RecordIDNA2008Metrics(u"faß.example.de");
+  histograms.ExpectTotalCount(kHistogram, 1);
+  histograms.ExpectBucketCount(kHistogram, false, 1);
+  histograms.ExpectBucketCount(kHistogram, true, 0);
+
+  // Shouldn't record deviation characters in subdomains of private registries.
+  RecordIDNA2008Metrics(u"faß.blogspot.com");
+  histograms.ExpectTotalCount(kHistogram, 2);
+  histograms.ExpectBucketCount(kHistogram, false, 2);
+  histograms.ExpectBucketCount(kHistogram, true, 0);
+
+  // Positive tests.
+  RecordIDNA2008Metrics(u"faß.de");
+  histograms.ExpectTotalCount(kHistogram, 3);
+  histograms.ExpectBucketCount(kHistogram, false, 2);
+  histograms.ExpectBucketCount(kHistogram, true, 1);
+
+  RecordIDNA2008Metrics(u"subdomain.faß.de");
+  histograms.ExpectTotalCount(kHistogram, 4);
+  histograms.ExpectBucketCount(kHistogram, false, 2);
+  histograms.ExpectBucketCount(kHistogram, true, 2);
+}
+
 }  // namespace navigation_metrics

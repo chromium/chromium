@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_paths.h"
@@ -54,6 +55,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -1408,4 +1410,116 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_SelectAllStaysAfterUpdate) {
   // And shift-right should reduce by one character.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_RIGHT, ui::EF_SHIFT_DOWN));
   EXPECT_EQ(1u, GetSelectionSize(omnibox_view));
+}
+
+// Tests for IDN hostnames that contain deviation characters. See
+// idn_spoof_checker.h for details.
+class NavigationMetricsRecorderIDNABrowserTest : public InProcessBrowserTest {
+ public:
+  static constexpr char kHistogram[] =
+      "Navigation.HostnameHasDeviationCharacters";
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+  }
+
+ protected:
+  void TypeTextAndNavigate(const std::string& text) {
+    OmniboxView* omnibox =
+        browser()->window()->GetLocationBar()->GetOmniboxView();
+
+    // Focus the omnibox.
+    // If the omnibox already has focus, just notify OmniboxTabHelper.
+    if (omnibox->model()->has_focus()) {
+      content::WebContents* active_tab =
+          browser()->tab_strip_model()->GetActiveWebContents();
+      OmniboxTabHelper::FromWebContents(active_tab)
+          ->OnFocusChanged(OMNIBOX_FOCUS_VISIBLE,
+                           OMNIBOX_FOCUS_CHANGE_EXPLICIT);
+    } else {
+      browser()->window()->GetLocationBar()->FocusLocation(false);
+    }
+
+    // Enter user input mode to prevent spurious unelision.
+    omnibox->model()->SetInputInProgress(true);
+    omnibox->OnBeforePossibleChange();
+    omnibox->SetUserText(base::UTF8ToUTF16(text), true);
+    omnibox->OnAfterPossibleChange(true);
+
+    // Press enter and wait for the navigation to finish.
+    content::TestNavigationObserver navigation_observer(
+        browser()->tab_strip_model()->GetActiveWebContents(), 1);
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](const Browser* browser) {
+              EXPECT_TRUE(ui_test_utils::SendKeyPressSync(
+                  browser, ui::VKEY_RETURN, false, false, false, false));
+            },
+            browser()));
+    navigation_observer.Wait();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(NavigationMetricsRecorderIDNABrowserTest,
+                       IDNA2008Metrics) {
+  base::HistogramTester histograms;
+
+  auto url_loader_interceptor =
+      std::make_unique<content::URLLoaderInterceptor>(base::BindRepeating(
+          [](content::URLLoaderInterceptor::RequestParams* params) {
+            network::URLLoaderCompletionStatus status;
+            std::string headers =
+                "HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\n";
+            std::string body = "<html>Hello world</html>";
+            content::URLLoaderInterceptor::WriteResponse(headers, body,
+                                                         params->client.get());
+            return true;
+          }));
+
+  // Do a search. Shouldn't record metrics.
+  TypeTextAndNavigate("faß");
+  histograms.ExpectTotalCount(kHistogram, 0);
+
+  // Type a hostname without deviation characters.
+  TypeTextAndNavigate("fass.de");
+  histograms.ExpectTotalCount(kHistogram, 1);
+  histograms.ExpectBucketCount(kHistogram, false, 1);
+  histograms.ExpectBucketCount(kHistogram, true, 0);
+
+  // Type a hostname with a deviation character.
+  // Do this in a new tab otherwise omnibox will treat the navigation as a
+  // reload.
+  chrome::NewTab(browser());
+  TypeTextAndNavigate("faß.de");
+  histograms.ExpectTotalCount(kHistogram, 2);
+  histograms.ExpectBucketCount(kHistogram, false, 1);
+  histograms.ExpectBucketCount(kHistogram, true, 1);
+
+  // Should also work with full URLs.
+  TypeTextAndNavigate("http://faß.de/test_url");
+  histograms.ExpectTotalCount(kHistogram, 3);
+  histograms.ExpectBucketCount(kHistogram, false, 1);
+  histograms.ExpectBucketCount(kHistogram, true, 2);
+
+  // Reload. Shouldn't record additional metrics since we only care about first
+  // time navigations.
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  tab->GetController().Reload(content::ReloadType::NORMAL, false);
+  histograms.ExpectTotalCount(kHistogram, 3);
+  histograms.ExpectBucketCount(kHistogram, false, 1);
+  histograms.ExpectBucketCount(kHistogram, true, 2);
+
+  // Shouldn't record deviation characters outside the hostname.
+  TypeTextAndNavigate("http://example.com/faß");
+  histograms.ExpectTotalCount(kHistogram, 4);
+  histograms.ExpectBucketCount(kHistogram, false, 2);
+  histograms.ExpectBucketCount(kHistogram, true, 2);
+
+  // Shouldn't record metrics for non-HTTP/HTTPS.
+  TypeTextAndNavigate("data:faß.de");
+  histograms.ExpectTotalCount(kHistogram, 4);
+  histograms.ExpectBucketCount(kHistogram, false, 2);
+  histograms.ExpectBucketCount(kHistogram, true, 2);
 }

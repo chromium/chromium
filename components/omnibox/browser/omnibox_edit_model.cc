@@ -1006,7 +1006,7 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
       navigation_metrics::RecordOmniboxURLNavigation(match.destination_url);
     }
 
-    // The following histogram should be recorded for both TYPED and pasted
+    // The following histograms should be recorded for both TYPED and pasted
     // URLs, but should still exclude reloads.
     if (ui::PageTransitionTypeIncludingQualifiersIs(
             match.transition, ui::PAGE_TRANSITION_TYPED) ||
@@ -1014,6 +1014,23 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
                                                     ui::PAGE_TRANSITION_LINK)) {
       net::cookie_util::RecordCookiePortOmniboxHistograms(
           match.destination_url);
+
+      if (match.destination_url.SchemeIsHTTPOrHTTPS()) {
+        // Extract the typed hostname from autocomplete input for IDNA 2008
+        // metrics. We can't use GURL here as it removes the deviation
+        // characters that we want to measure.
+        size_t hostname_begin = input_.parts().host.begin;
+        if (input_.added_default_scheme_to_typed_url() && hostname_begin > 0) {
+          // If the omnibox upgrades a navigation to https, it offsets
+          // components by one to the right due to the added "s" to http. Adjust
+          // the offset again. Ideally, hostname_begin should always be non-zero
+          // in that case, but we check it for safety.
+          --hostname_begin;
+        }
+        std::u16string hostname(input_.text(), hostname_begin,
+                                static_cast<size_t>(input_.parts().host.len));
+        navigation_metrics::RecordIDNA2008Metrics(hostname);
+      }
     }
   }
 

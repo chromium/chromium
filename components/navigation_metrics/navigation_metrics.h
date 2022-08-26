@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_NAVIGATION_METRICS_NAVIGATION_METRICS_H_
 #define COMPONENTS_NAVIGATION_METRICS_NAVIGATION_METRICS_H_
 
+#include <string>
+
 class GURL;
 
 namespace profile_metrics {
@@ -59,6 +61,10 @@ void RecordPrimaryMainFrameNavigation(
     profile_metrics::BrowserProfileType profile_type);
 
 void RecordOmniboxURLNavigation(const GURL& url);
+
+// Records metrics about deviation characters in `hostname`. `hostname` can
+// be punycode or unicode and can have subdomains.
+void RecordIDNA2008Metrics(const std::u16string& hostname);
 
 }  // namespace navigation_metrics
 

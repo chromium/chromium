@@ -1502,4 +1502,22 @@ TEST(IDNSpoofCheckerNoFixtureTest, MaybeRemoveDiacritics) {
             non_lgc_result.spoof_check_result);
 }
 
+TEST(IDNSpoofCheckerNoFixtureTest, HasDeviationCharacters) {
+  IDNSpoofChecker checker;
+  EXPECT_FALSE(checker.HasDeviationCharacters(u"example.com"));
+  // These test cases are from
+  // https://www.unicode.org/reports/tr46/tr46-27.html#Table_Deviation_Characters.
+  // faß.de:
+  EXPECT_TRUE(checker.HasDeviationCharacters(u"fa\u00df.de"));
+  // βόλος.com:
+  EXPECT_TRUE(
+      checker.HasDeviationCharacters(u"\u03b2\u03cc\u03bb\u03bf\u03c2.com"));
+  // ශ්‍රී.com:
+  EXPECT_TRUE(
+      checker.HasDeviationCharacters(u"\u0dc1\u0dca\u200d\u0dbb\u0dd3.com"));
+  // نامه<ZWNJ>ای.com:
+  EXPECT_TRUE(checker.HasDeviationCharacters(
+      u"\u0646\u0627\u0645\u0647\u200c\u0627\u06cc.com"));
+}
+
 }  // namespace url_formatter
