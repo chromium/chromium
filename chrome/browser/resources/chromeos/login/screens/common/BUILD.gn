@@ -37,7 +37,6 @@ group("polymer3_elements") {
     ":parental_handoff_module",
     ":pin_setup_module",
     ":recommend_apps_module",
-    ":saml_confirm_password_module",
     ":signin_fatal_error_module",
     ":smart_privacy_protection_module",
     ":sync_consent_module",
@@ -86,7 +85,7 @@ js_type_check("closure_compile_local") {
     ":parental_handoff.m",
     ":pin_setup.m",
     ":recommend_apps.m",
-    ":saml_confirm_password.m",
+    ":saml_confirm_password",
     ":signin_fatal_error.m",
     ":smart_privacy_protection.m",
     ":sync_consent.m",
@@ -537,8 +536,8 @@ js_library("recommend_apps.m") {
   extra_deps = [ ":recommend_apps_module" ]
 }
 
-js_library("saml_confirm_password.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/saml_confirm_password.m.js" ]
+js_library("saml_confirm_password") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/saml_confirm_password.js" ]
   deps = [
     "../../:login_ui_tools.m",
     "../../components/behaviors:oobe_i18n_behavior.m",
@@ -548,7 +547,7 @@ js_library("saml_confirm_password.m") {
     "../../components/dialogs:oobe_loading_dialog.m",
     "../../components/dialogs:oobe_modal_dialog.m",
   ]
-  extra_deps = [ ":saml_confirm_password_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("signin_fatal_error.m") {
@@ -869,15 +868,6 @@ polymer_modulizer("user_creation") {
   namespace_rewrites = oobe_namespace_rewrites
 }
 
-polymer_modulizer("saml_confirm_password") {
-  js_file = "saml_confirm_password.js"
-  html_file = "saml_confirm_password.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  migrated_imports = oobe_migrated_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 polymer_modulizer("signin_fatal_error") {
   js_file = "signin_fatal_error.js"
   html_file = "signin_fatal_error.html"
@@ -940,5 +930,6 @@ html_to_js("web_components") {
     "adb_sideloading.js",
     "arc_terms_of_service.js",
     "oobe_reset.js",
+    "saml_confirm_password.js",
   ]
 }

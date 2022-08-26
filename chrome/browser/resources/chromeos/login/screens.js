@@ -33,7 +33,7 @@ import './screens/common/os_trial.m.js';
 import './screens/common/parental_handoff.m.js';
 import './screens/common/pin_setup.m.js';
 import './screens/common/recommend_apps.m.js';
-import './screens/common/saml_confirm_password.m.js';
+import './screens/common/saml_confirm_password.js';
 import './screens/common/signin_fatal_error.m.js';
 import './screens/common/smart_privacy_protection.m.js';
 import './screens/common/sync_consent.m.js';
