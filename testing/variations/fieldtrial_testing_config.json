@@ -9882,21 +9882,6 @@
             ]
         }
     ],
-    "UseNativeThreadPool": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseNativeThreadPool"
-                    ]
-                }
-            ]
-        }
-    ],
     "UseSnappyForParkableStrings": [
         {
             "platforms": [
