@@ -30,6 +30,7 @@ class VideoEncoderConfig;
 class VideoEncoderInit;
 class VideoEncoderEncodeOptions;
 class WebGraphicsContext3DVideoFramePool;
+class BackgroundReadback;
 
 class MODULES_EXPORT VideoEncoderTraits {
  public:
@@ -80,6 +81,9 @@ class MODULES_EXPORT VideoEncoder : public EncoderBase<VideoEncoderTraits> {
   // ScriptWrappable override.
   bool HasPendingActivity() const override;
 
+  // GarbageCollected override.
+  void Trace(Visitor*) const override;
+
  protected:
   using Base = EncoderBase<VideoEncoderTraits>;
   using ParsedConfig = VideoEncoderTraits::ParsedConfig;
@@ -95,6 +99,13 @@ class MODULES_EXPORT VideoEncoder : public EncoderBase<VideoEncoderTraits> {
   void ProcessReconfigure(Request* request) override;
   void ResetInternal() override;
 
+  void OnEncodeDone(Request* request, media::EncoderStatus status);
+  // This will execute shortly after the async readback completes.
+  void OnReadbackDone(bool keyframe,
+                      uint32_t reset_count,
+                      scoped_refptr<media::VideoFrame> txt_frame,
+                      media::VideoEncoder::EncoderStatusCB done_callback,
+                      scoped_refptr<media::VideoFrame> result_frame);
   void OnMediaEncoderCreated(std::string encoder_name, bool is_hw_accelerated);
   static std::unique_ptr<media::VideoEncoder> CreateSoftwareVideoEncoder(
       VideoEncoder* self,
@@ -118,11 +129,14 @@ class MODULES_EXPORT VideoEncoder : public EncoderBase<VideoEncoderTraits> {
       media::GpuVideoAcceleratorFactories* gpu_factories);
   bool CanReconfigure(ParsedConfig& original_config,
                       ParsedConfig& new_config) override;
-  scoped_refptr<media::VideoFrame> ReadbackTextureBackedFrameToMemory(
-      scoped_refptr<media::VideoFrame> txt_frame);
 
-  media::VideoFramePool readback_frame_pool_;
+  using ReadbackDoneCallback =
+      base::OnceCallback<void(scoped_refptr<media::VideoFrame>)>;
+  bool StartReadback(scoped_refptr<media::VideoFrame> frame,
+                     ReadbackDoneCallback result_cb);
+
   std::unique_ptr<WebGraphicsContext3DVideoFramePool> accelerated_frame_pool_;
+  Member<BackgroundReadback> background_readback_;
 
   // True if an error occurs during frame pool usage.
   bool disable_accelerated_frame_pool_ = false;

@@ -156,7 +156,7 @@ MEDIA_EXPORT scoped_refptr<VideoFrame> ConvertToMemoryMappedFrame(
 // media::ConvertAndScaleFrame and put it into a new class
 // media:FrameSizeAndFormatConverter.
 MEDIA_EXPORT scoped_refptr<VideoFrame> ReadbackTextureBackedFrameToMemorySync(
-    const VideoFrame& txt_frame,
+    VideoFrame& txt_frame,
     gpu::raster::RasterInterface* ri,
     GrDirectContext* gr_context,
     VideoFramePool* pool = nullptr);
@@ -164,7 +164,7 @@ MEDIA_EXPORT scoped_refptr<VideoFrame> ReadbackTextureBackedFrameToMemorySync(
 // Synchronously reads a single plane. |src_rect| is relative to the plane,
 // which may be smaller than |frame| due to subsampling.
 MEDIA_EXPORT bool ReadbackTexturePlaneToMemorySync(
-    const VideoFrame& src_frame,
+    VideoFrame& src_frame,
     size_t src_plane,
     gfx::Rect& src_rect,
     uint8_t* dest_pixels,
