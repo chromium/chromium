@@ -28,9 +28,7 @@ promise_test(async t => {
   const newLocation = oldLocation + '#fragment';
 
   // Navigate to same document.
-  rc.navigate((newLocation) => {
-    location = newLocation;
-  }, [newLocation]);
+  await rc.navigateTo(newLocation);
 
   // Verify that the window navigated.
   await assertLocationIs(rc, newLocation);

@@ -17,13 +17,13 @@ promise_test(async t => {
   const rc2 = await rc1.navigateToNew();
   await assertSimplestScriptRuns(rc2);
 
-  rc2.historyBack();
+  await rc2.historyBack();
   await assertSimplestScriptRuns(rc1);
 
-  rc1.historyForward();
+  await rc1.historyForward();
   await assertSimplestScriptRuns(rc2);
 
   const rc3 = await rc2.navigateToNew();
-  rc3.historyGo(-2);
+  await rc3.historyGo(-2);
   await assertSimplestScriptRuns(rc1);
 });

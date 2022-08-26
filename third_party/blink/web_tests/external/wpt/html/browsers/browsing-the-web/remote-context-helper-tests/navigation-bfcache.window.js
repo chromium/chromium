@@ -28,7 +28,7 @@ promise_test(async t => {
   await assertSimplestScriptRuns(rc2);
 
   // Navigate back.
-  rc2.historyBack();
+  await rc2.historyBack();
 
   // Verify that the document was BFCached.
   assert_true(await rc1.executeScript(() => {

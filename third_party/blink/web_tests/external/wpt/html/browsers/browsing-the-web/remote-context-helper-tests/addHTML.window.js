@@ -16,7 +16,7 @@ promise_test(async t => {
   const main = await rcHelper.addWindow();
   await assertSimplestScriptRuns(main);
 
-  await main.addHtml('<div id=div-id>div-content</div>');
+  await main.addHTML('<div id=div-id>div-content</div>');
   await assertFunctionRuns(
       main, () => document.getElementById('div-id').textContent, 'div-content');
 });

@@ -67,7 +67,7 @@
     if (!origin) {
       return location.origin;
     }
-    if (origin.indexOf('/') == -1) {
+    if (!origin.includes('/')) {
       const origins = get_host_info();
       if (origin in origins) {
         return origins[origin];
@@ -93,18 +93,20 @@
    */
   class RemoteContextConfig {
     /**
-     * @param {string} origin A URL or a key in `get_host_info()`. @see finalizeOrigin for how origins are handled.
-     * @param {string[]} scripts  A list of script URLs. The current document
-     *     will be used as the base for relative URLs.
-     * @param {[string, string][]} headers  A list of pairs of name and value.
-     *     The executor will be served with these headers set.
-     * @param {string} startOn If supplied, the executor will start when this
-     *     event occurs, e.g. "pageshow",
-     *  (@see window.addEventListener). This only makes sense for window-based executors, not worker-based.
-     *
+     * @param {Object} [options]
+     * @param {string} [options.origin] A URL or a key in `get_host_info()`.
+     *                 @see finalizeOrigin for how origins are handled.
+     * @param {string[]} [options.scripts]  A list of script URLs. The current
+     *     document will be used as the base for relative URLs.
+     * @param {[string, string][]} [options.headers]  A list of pairs of name
+     *     and value. The executor will be served with these headers set.
+     * @param {string} [options.startOn] If supplied, the executor will start
+     *     when this event occurs, e.g. "pageshow",
+     *     (@see window.addEventListener). This only makes sense for
+     *     window-based executors, not worker-based.
      */
     constructor(
-        {origin = null, scripts = [], headers = [], startOn = null} = {}) {
+        {origin, scripts = [], headers = [], startOn} = {}) {
       this.origin = origin;
       this.scripts = scripts;
       this.headers = headers;
@@ -115,7 +117,7 @@
      * If `config` is not already a `RemoteContextConfig`, one is constructed
      * using `config`.
      * @private
-     * @param {object} config
+     * @param {object} [config]
      * @returns
      */
     static ensure(config) {
@@ -138,16 +140,16 @@
         origin = extraConfig.origin;
       }
       let startOn = this.startOn;
-      if (extraConfig.startOn !== null) {
+      if (extraConfig.startOn) {
         startOn = extraConfig.startOn;
       }
       const headers = this.headers.concat(extraConfig.headers);
       const scripts = this.scripts.concat(extraConfig.scripts);
       return new RemoteContextConfig({
-        origin: origin,
-        headers: headers,
-        scripts: scripts,
-        startOn: startOn,
+        origin,
+        headers,
+        scripts,
+        startOn,
       });
     }
   }
@@ -169,7 +171,7 @@
      * @param {RemoteContextConfig|object} config The configuration
      *     for this remote context.
      */
-    constructor(config = null) {
+    constructor(config) {
       this.config = RemoteContextConfig.ensure(config);
     }
 
@@ -177,17 +179,19 @@
      * Creates a new remote context and returns a `RemoteContextWrapper` giving
      * access to it.
      * @private
-     * @param {(url: string) => RemoteContext} executorCreator A function that
-     *     takes a URL and returns a context, e.g. an iframe or window.
-     * @param {RemoteContextConfig|object|null} extraConfig If
-     *     supplied, extra configuration for this remote context to be merged
-     * with `this`'s existing config. If it's not a `RemoteContextConfig`, it
-     * will be used to construct a new one.
-     * @returns {RemoteContextWrapper}
+     * @param {Object} options
+     * @param {(url: string) => Promise<undefined>} options.executorCreator A
+     *     function that takes a URL and causes the browser to navigate some
+     *     window to that URL, e.g. via an iframe or a new window.
+     * @param {RemoteContextConfig|object} [options.extraConfig] If supplied,
+     *     extra configuration for this remote context to be merged with
+     *     `this`'s existing config. If it's not a `RemoteContextConfig`, it
+     *     will be used to construct a new one.
+     * @returns {Promise<RemoteContextWrapper>}
      */
     async createContext({
-      executorCreator: executorCreator,
-      extraConfig = null,
+      executorCreator,
+      extraConfig,
       isWorker = false,
     }) {
       const config =
@@ -212,27 +216,25 @@
         url.searchParams.append('startOn', config.startOn);
       }
 
-      executorCreator(url);
-      return new RemoteContextWrapper(new RemoteContext(uuid), this);
+      await executorCreator(url.href);
+      return new RemoteContextWrapper(new RemoteContext(uuid), this, url.href);
     }
 
     /**
      * Creates a window with a remote context. @see createContext for
-     * @param {RemoteContextConfig|object} extraConfig Will be
+     * @param {RemoteContextConfig|object} [extraConfig] Will be
      *     merged with `this`'s config.
-     * @param {string} options.target Passed to `window.open` as the 2nd
-     *     argument
-     * @param {string} options.features Passed to `window.open` as the 3rd
-     *     argument
-     * @returns {RemoteContextWrapper}
+     * @param {Object} [options]
+     * @param {string} [options.target] Passed to `window.open` as the
+     *     2nd argument
+     * @param {string} [options.features] Passed to `window.open` as the
+     *     3rd argument
+     * @returns {Promise<RemoteContextWrapper>}
      */
-    addWindow(extraConfig = null, options = {
-      target: null,
-      features: null,
-    }) {
+    addWindow(extraConfig, options) {
       return this.createContext({
         executorCreator: windowExecutorCreator(options),
-        extraConfig: extraConfig,
+        extraConfig,
       });
     }
   }
@@ -256,10 +258,7 @@
     url.searchParams.append('pipe', formattedHeaders.join('|'));
   }
 
-  function windowExecutorCreator({target, features}) {
-    if (!target) {
-      target = '_blank';
-    }
+  function windowExecutorCreator({target = '_blank', features} = {}) {
     return url => {
       window.open(url, target, features);
     };
@@ -268,7 +267,7 @@
   function elementExecutorCreator(
       remoteContextWrapper, elementName, attributes) {
     return url => {
-      remoteContextWrapper.executeScript((url, elementName, attributes) => {
+      return remoteContextWrapper.executeScript((url, elementName, attributes) => {
         const el = document.createElement(elementName);
         for (const attribute in attributes) {
           el.setAttribute(attribute, attributes[attribute]);
@@ -287,7 +286,7 @@
 
   function navigateExecutorCreator(remoteContextWrapper) {
     return url => {
-      remoteContextWrapper.navigate((url) => {
+      return remoteContextWrapper.navigate((url) => {
         window.location = url;
       }, [url]);
     };
@@ -315,8 +314,8 @@
      * Executes a script in the remote context.
      * @param {function} fn The script to execute.
      * @param {any[]} args An array of arguments to pass to the script.
-     * @returns {any} The return value of the script (after being serialized and
-     *     deserialized).
+     * @returns {Promise<any>} The return value of the script (after
+     *     being serialized and deserialized).
      */
     async executeScript(fn, args) {
       return this.context.execute_script(fn, args);
@@ -325,9 +324,9 @@
     /**
      * Adds a string of HTML to the executor's document.
      * @param {string} html
-     * @returns
+     * @returns {Promise<undefined>}
      */
-    async addHtml(html) {
+    async addHTML(html) {
       return this.executeScript((htmlSource) => {
         document.body.insertAdjacentHTML('beforebegin', htmlSource);
       }, [html]);
@@ -337,7 +336,7 @@
      * Adds scripts to the executor's document.
      * @param {string[]} urls A list of URLs. URLs are relative to the current
      *     document.
-     * @returns
+     * @returns {Promise<undefined>}
      */
     async addScripts(urls) {
       if (!urls) {
@@ -350,28 +349,28 @@
 
     /**
      * Adds an iframe to the current document.
-     * @param {RemoteContextConfig} extraConfig
-     * @param {[string, string][]} options.attributes A list of pairs of strings
+     * @param {RemoteContextConfig} [extraConfig]
+     * @param {[string, string][]} [attributes] A list of pairs of strings
      *     of attribute name and value these will be set on the iframe element
      *     when added to the document.
-     * @returns {RemoteContextWrapper} The remote context.
+     * @returns {Promise<RemoteContextWrapper>} The remote context.
      */
-    addIframe(extraConfig = null, attributes = {}) {
+    addIframe(extraConfig, attributes = {}) {
       return this.helper.createContext({
         executorCreator: elementExecutorCreator(this, 'iframe', attributes),
-        extraConfig: extraConfig,
+        extraConfig,
       });
     }
 
     /**
      * Adds a dedicated worker to the current document.
-     * @param {RemoteContextConfig} extraConfig
-     * @returns {RemoteContextWrapper} The remote context.
+     * @param {RemoteContextConfig} [extraConfig]
+     * @returns {Promise<RemoteContextWrapper>} The remote context.
      */
-    addWorker(extraConfig = null) {
+    addWorker(extraConfig) {
       return this.helper.createContext({
         executorCreator: workerExecutorCreator(),
-        extraConfig: extraConfig,
+        extraConfig,
         isWorker: true,
       });
     }
@@ -389,8 +388,9 @@
      *
      * Foolproof rule:
      * - The script must perform exactly one navigation.
-     * - If that navigation is a same-document history navigation, you must
-     * `await` the result of `waitUntilLocationIs`.
+     * - If that navigation is a same-document history traversal, you must
+     * `await` the result of `waitUntilLocationIs`. (Same-document non-traversal
+     * navigations do not need this extra step.)
      *
      * More complex rules:
      * - The script must perform a navigation. If it performs no navigation,
@@ -403,22 +403,48 @@
      *
      * @param {function} fn The script to execute.
      * @param {any[]} args An array of arguments to pass to the script.
+     * @returns {Promise<undefined>}
      */
     navigate(fn, args) {
-      this.executeScript((fnText, args) => {
+      return this.executeScript((fnText, args) => {
         executeScriptToNavigate(fnText, args);
       }, [fn.toString(), args]);
     }
 
     /**
-     * Navigates the context to a new document running an executor.
-     * @param {RemoteContextConfig} extraConfig
-     * @returns {RemoteContextWrapper} The remote context.
+     * Navigates to the given URL, by executing a script in the remote
+     * context that will perform navigation with the `location.href`
+     * setter.
+     *
+     * Be aware that performing a cross-document navigation using this
+     * method will cause this `RemoteContextWrapper` to become dormant,
+     * since the remote context it points to is no longer active and
+     * able to receive messages. You also won't be able to reliably
+     * tell when the navigation finishes; the returned promise will
+     * fulfill when the script finishes running, not when the navigation
+     * is done. As such, this is most useful for testing things like
+     * unload behavior (where it doesn't matter) or prerendering (where
+     * there is already a `RemoteContextWrapper` for the destination).
+     * For other cases, using `navigateToNew()` will likely be better.
+     *
+     * @param {string|URL} url The URL to navigate to.
+     * @returns {Promise<undefined>}
      */
-    async navigateToNew(extraConfig = null) {
+    navigateTo(url) {
+      return this.navigate(url => {
+        location.href = url;
+      }, [url.toString()]);
+    }
+
+    /**
+     * Navigates the context to a new document running an executor.
+     * @param {RemoteContextConfig} [extraConfig]
+     * @returns {Promise<RemoteContextWrapper>} The remote context.
+     */
+    async navigateToNew(extraConfig) {
       return this.helper.createContext({
         executorCreator: navigateExecutorCreator(this),
-        extraConfig: extraConfig,
+        extraConfig,
       });
     }
 
@@ -436,14 +462,14 @@
 
     async waitUntilLocationIs(expectedLocation) {
       return this.executeScript(async (expectedLocation) => {
-        if (location == expectedLocation) {
+        if (location.href === expectedLocation) {
           return;
         }
 
         // Wait until the location updates to the expected one.
         await new Promise(resolve => {
           const listener = addEventListener('hashchange', (event) => {
-            if (event.newURL == expectedLocation) {
+            if (event.newURL === expectedLocation) {
               removeEventListener(listener);
               resolve();
             }
@@ -455,43 +481,43 @@
     /**
      * Performs a history traversal.
      * @param {integer} n How many steps to traverse. @see history.go
-     * @param {string} expectedLocation If supplied will be passed to @see waitUntilLocationIs.
-     * @returns The return value of `waitUntilLocationIs` or nothing.
+     * @param {string} [expectedLocation] If supplied will be passed to @see waitUntilLocationIs.
+     * @returns {Promise<undefined>}
      */
-    async historyGo(n, expectedLocation = null) {
-      this.navigate((n) => {
+    async historyGo(n, expectedLocation) {
+      await this.navigate((n) => {
         history.go(n);
       }, [n]);
       if (expectedLocation) {
-        return this.waitUntilLocationIs(expectedLocation);
+        await this.waitUntilLocationIs(expectedLocation);
       }
     }
 
     /**
      * Performs a history traversal back.
-     * @param {string} expectedLocation If supplied will be passed to @see waitUntilLocationIs.
-     * @returns The return value of `waitUntilLocationIs` or nothing.
+     * @param {string} [expectedLocation] If supplied will be passed to @see waitUntilLocationIs.
+     * @returns {Promise<undefined>}
      */
-    async historyBack(expectedLocation = null) {
-      this.navigate(() => {
+    async historyBack(expectedLocation) {
+      await this.navigate(() => {
         history.back();
       });
       if (expectedLocation) {
-        return this.waitUntilLocationIs(expectedLocation);
+        await this.waitUntilLocationIs(expectedLocation);
       }
     }
 
     /**
      * Performs a history traversal back.
-     * @param {string} expectedLocation If supplied will be passed to @see waitUntilLocationIs.
-     * @returns The return value of `waitUntilLocationIs` or nothing.
+     * @param {string} [expectedLocation] If supplied will be passed to @see waitUntilLocationIs.
+     * @returns {Promise<undefined>}
      */
-    async historyForward(expectedLocation = null) {
-      this.navigate(() => {
+    async historyForward(expectedLocation) {
+      await this.navigate(() => {
         history.forward();
       });
       if (expectedLocation) {
-        return this.waitUntilLocationIs(expectedLocation);
+        await this.waitUntilLocationIs(expectedLocation);
       }
     }
   }
