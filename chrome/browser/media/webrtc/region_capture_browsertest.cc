@@ -756,8 +756,10 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Original track becomes unblocked for cropping after clone is GCed 3/3.
-IN_PROC_BROWSER_TEST_F(RegionCaptureClonesBrowserTest,
-                       CanUncropOriginalTrackAfterCloneIsGarbageCollected) {
+IN_PROC_BROWSER_TEST_F(
+    RegionCaptureClonesBrowserTest,
+    // TODO(crbug.com/1356788): Re-enable this test
+    DISABLED_CanUncropOriginalTrackAfterCloneIsGarbageCollected) {
   ManualSetUp();
 
   ASSERT_TRUE(CropTo(kCropTarget0, Frame::kTopLevelDocument, Track::kOriginal));
