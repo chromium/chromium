@@ -184,6 +184,39 @@ public class AnimationFrameTimeHistogramTest {
 If a native method is called without setting a mock in a unit test, an
 `UnsupportedOperationException` will be thrown.
 
+### Testing for readiness: use `get()`
+
+JNI Generator automatically produces checks that verify that the Natives interface can be safely
+called. These checks are compiled out of Release builds, making these an excellent way to determine
+whether your code is called safely.
+
+![Check Flow](doc/jni-check-flow.svg)
+
+Most of the time you would write your code so that you only use JNI once the native libraries are
+loaded. There's nothing extra you need to do here.
+
+If you expect your code to be called by an external caller, it's often helpful to know _ahead of
+time_ that the context is valid (ie. either native libraries are loaded or mocks are installed).
+In this case it is helpful to call `get()` method, that performs all the Debug checks listed
+above, but does not instantiate a new object for interfacing Native libraries.
+Note that the unused value returned by the `get()` method will be optimized away in release builds
+so there's no harm in ignoring it.
+
+#### Addressing `Jni.get()` exceptions.
+
+When you identify a scenario leading to an exception, relocate (or defer) the appropriate call to
+be made to a place where (or time when) you know the native libraries have been initialized (eg.
+`onStartWithNative`, `onNativeInitialized` etc).
+
+Please avoid calling `LibraryLoader.isInitialized()` / `LibraryLoader.isLoaded()` in new code.
+Using `LibraryLoader` calls makes unit-testing more difficult:
+* this call can not verify whether Mock object is used, making the use of mocks more complicated,
+* using `LibraryLoader.setLibrariesLoadedForNativeTests()` alters the state for subsequently
+executed tests, inaccurately reporting flakiness and failures of these victim tests.
+* Introducing `LibraryLoader.is*()` calls in your code immediately affects all callers, forcing
+the authors of the code up the call stack to override `LibraryLoader` internal state in order to be
+able to unit-test their code.
+
 ### Calling Native -> Java
 
  * Methods annotated with `@CalledByNative` will have stubs generated for them.
