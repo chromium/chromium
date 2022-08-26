@@ -26,7 +26,7 @@ namespace {
 const char kEnabledGroupName[] = "Enabled";
 const char kDisabledGroupName[] = "Disabled";
 
-// Create 20 ONE_TIME_RANDOMIZED test trials to make sure they persist their
+// Create 20 OneTimeRandomization test trials to make sure they persist their
 // state correctly between runs. We use 20 trials instead of just a couple so
 // that if there's a failure, it likely won't be too flaky since the chance
 // of all 20 randomly getting the same state is very low.
@@ -38,7 +38,7 @@ const int kNumTestTrials = 20;
 // It spans multiple browser launches (using the PRE_ construct) and checks
 // that forcing two trials affects only those trials, but not other ones. For
 // the other trials, it checks that they get the same state between sessions
-// as they are ONE_TIME_RANDOMIZED.
+// as they use OneTimeRandomization.
 class ForceFieldTrialsBrowserTest : public InProcessBrowserTest,
                                     public testing::WithParamInterface<bool> {
  public:
@@ -54,11 +54,11 @@ class ForceFieldTrialsBrowserTest : public InProcessBrowserTest,
     return base::StringPrintf("_TestTrial_%d", trial_number);
   }
 
-  // Creates a 50/50 trial with ONE_TIME_RANDOMIZED consistency.
+  // Creates a 50/50 trial with OneTimeRandomization consistency.
   void CreateFiftyPercentTrial(const std::string& trial_name) {
     auto* trial = base::FieldTrialList::FactoryGetFieldTrial(
-        trial_name, 100, "Default", base::FieldTrial::ONE_TIME_RANDOMIZED,
-        nullptr);
+        trial_name, 100, "Default",
+        base::FieldTrialList::GetEntropyProviderForOneTimeRandomization());
     trial->AppendGroup(kEnabledGroupName, 50);
     trial->AppendGroup(kDisabledGroupName, 50);
   }

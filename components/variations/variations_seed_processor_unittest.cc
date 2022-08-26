@@ -863,8 +863,8 @@ TYPED_TEST(VariationsSeedProcessorTest, ExistingFieldTrial_ExpiredByConfig) {
   // group than the study config, which is expired. This tests that we don't
   // crash in such a case.
   auto* trial = base::FieldTrialList::FactoryGetFieldTrial(
-      "Study1", 100, "ExistingDefault", base::FieldTrial::SESSION_RANDOMIZED,
-      nullptr);
+      "Study1", 100, "ExistingDefault",
+      base::FieldTrialList::GetEntropyProviderForSessionRandomization());
   trial->AppendGroup("A", 100);
   trial->SetForced();
 

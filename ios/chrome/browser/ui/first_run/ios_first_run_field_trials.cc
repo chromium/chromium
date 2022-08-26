@@ -29,10 +29,9 @@ FirstRunFieldTrialConfig::CreateOneTimeRandomizedTrial(
   DCHECK(!tests_hook::DisableClientSideFieldTrials());
   DCHECK_LE(GetTotalProbability(), 100);
   scoped_refptr<base::FieldTrial> trial =
-      base::FieldTrialList::FactoryGetFieldTrialWithRandomizationSeed(
+      base::FieldTrialList::FactoryGetFieldTrial(
           trial_name_, /*total_probability=*/100, default_group_name,
-          base::FieldTrial::ONE_TIME_RANDOMIZED, /*randomization_seed=*/0,
-          /*default_group_number=*/nullptr, &low_entropy_provider);
+          low_entropy_provider);
   for (const auto& group : groups_) {
     variations::AssociateGoogleVariationID(
         variations::GOOGLE_WEB_PROPERTIES_FIRST_PARTY, trial_name_,

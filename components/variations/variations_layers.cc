@@ -13,12 +13,12 @@ namespace {
 // Returns a double in the [0, 1] range to be used to select a slot within
 // a layer with the given randomization seed value.
 double GetEntropyForLayer(
-    const base::FieldTrial::EntropyProvider* entropy_provider,
+    const base::FieldTrial::EntropyProvider& entropy_provider,
     uint32_t randomization_seed) {
   // GetEntropyForTrial will ignore the trial_name parameter in favor of the
   // randomization_seed.
-  return entropy_provider->GetEntropyForTrial(/*trial_name=*/"",
-                                              randomization_seed);
+  return entropy_provider.GetEntropyForTrial(/*trial_name=*/"",
+                                             randomization_seed);
 }
 
 // Iterates through the members of the given layer proto definition, and
@@ -81,13 +81,11 @@ void VariationsLayers::ConstructLayer(
   double entropy_value;
   if (layer_proto.entropy_mode() == Layer::LOW) {
     entropy_value =
-        GetEntropyForLayer(&low_entropy_provider, layer_proto.salt());
+        GetEntropyForLayer(low_entropy_provider, layer_proto.salt());
   } else {
-    const base::FieldTrial::EntropyProvider* default_entropy_provider =
-        base::FieldTrialList::GetEntropyProviderForOneTimeRandomization();
-    CHECK(default_entropy_provider);
-    entropy_value =
-        GetEntropyForLayer(default_entropy_provider, layer_proto.salt());
+    entropy_value = GetEntropyForLayer(
+        base::FieldTrialList::GetEntropyProviderForOneTimeRandomization(),
+        layer_proto.salt());
   }
 
   const double kEpsilon = 1e-8;

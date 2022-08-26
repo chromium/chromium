@@ -25,8 +25,7 @@ const base::FieldTrial::Probability kTotalProbability = 100;
 scoped_refptr<base::FieldTrial> CreateFieldTrial() {
   return base::FieldTrialList::FactoryGetFieldTrial(
       kTrialName, kTotalProbability, kDisabledGroup,
-      base::FieldTrial::ONE_TIME_RANDOMIZED,
-      /*default_group_number=*/nullptr);
+      base::FieldTrialList::GetEntropyProviderForOneTimeRandomization());
 }
 
 // Sets the feature state based on the trial group.

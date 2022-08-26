@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/memory.h"
@@ -77,6 +78,18 @@ const size_t kFieldTrialAllocationSize = 128 << 10;  // 128 KiB
 #if BUILDFLAG(IS_MAC)
 constexpr MachPortsForRendezvous::key_type kFieldTrialRendezvousKey = 'fldt';
 #endif
+
+class SessionEntropyProvider : public FieldTrial::EntropyProvider {
+ public:
+  SessionEntropyProvider() = default;
+  ~SessionEntropyProvider() override = default;
+
+  double GetEntropyForTrial(StringPiece trial_name,
+                            uint32_t randomization_seed) const override {
+    DCHECK_EQ(randomization_seed, 0u);
+    return RandDouble();
+  };
+};
 
 // Writes out string1 and then string2 to pickle.
 void WriteStringPair(Pickle* pickle,
@@ -284,8 +297,8 @@ void FieldTrial::Disable() {
   }
 }
 
-int FieldTrial::AppendGroup(const std::string& name,
-                            Probability group_probability) {
+void FieldTrial::AppendGroup(const std::string& name,
+                             Probability group_probability) {
   // When the group choice was previously forced, we only need to return the
   // the id of the chosen group, and anything can be returned for the others.
   if (forced_) {
@@ -295,12 +308,13 @@ int FieldTrial::AppendGroup(const std::string& name,
       // forced trial, it will not have the same value as the default group
       // number returned from the non-forced |FactoryGetFieldTrial()| call,
       // which takes care to ensure that this does not happen.
-      return group_;
+      return;
     }
     DCHECK_NE(next_group_number_, group_);
     // We still return different numbers each time, in case some caller need
     // them to be different.
-    return next_group_number_++;
+    next_group_number_++;
+    return;
   }
 
   DCHECK_LE(group_probability, divisor_);
@@ -316,7 +330,8 @@ int FieldTrial::AppendGroup(const std::string& name,
     // This is the group that crossed the random line, so we do the assignment.
     SetGroupChoice(name, next_group_number_);
   }
-  return next_group_number_++;
+  next_group_number_++;
+  return;
 }
 
 int FieldTrial::group() {
@@ -480,67 +495,17 @@ FieldTrial* FieldTrialList::FactoryGetFieldTrial(
     StringPiece trial_name,
     FieldTrial::Probability total_probability,
     StringPiece default_group_name,
-    FieldTrial::RandomizationType randomization_type,
-    int* default_group_number) {
-  return FactoryGetFieldTrialWithRandomizationSeed(
-      trial_name, total_probability, default_group_name, randomization_type, 0,
-      default_group_number, nullptr);
-}
-
-// static
-FieldTrial* FieldTrialList::FactoryGetFieldTrialWithRandomizationSeed(
-    StringPiece trial_name,
-    FieldTrial::Probability total_probability,
-    StringPiece default_group_name,
-    FieldTrial::RandomizationType randomization_type,
-    uint32_t randomization_seed,
-    int* default_group_number,
-    const FieldTrial::EntropyProvider* override_entropy_provider) {
-  if (default_group_number)
-    *default_group_number = FieldTrial::kDefaultGroupNumber;
+    const FieldTrial::EntropyProvider& entropy_provider,
+    uint32_t randomization_seed) {
   // Check if the field trial has already been created in some other way.
   FieldTrial* existing_trial = Find(trial_name);
   if (existing_trial) {
     CHECK(existing_trial->forced_);
-    // If the default group name differs between the existing forced trial
-    // and this trial, then use a different value for the default group number.
-    if (default_group_number &&
-        default_group_name != existing_trial->default_group_name()) {
-      // If the new default group number corresponds to the group that was
-      // chosen for the forced trial (which has been finalized when it was
-      // forced), then set the default group number to that.
-      if (default_group_name == existing_trial->group_name_internal()) {
-        *default_group_number = existing_trial->group_;
-      } else {
-        // Otherwise, use |kNonConflictingGroupNumber| (-2) for the default
-        // group number, so that it does not conflict with the |AppendGroup()|
-        // result for the chosen group.
-        const int kNonConflictingGroupNumber = -2;
-        static_assert(
-            kNonConflictingGroupNumber != FieldTrial::kDefaultGroupNumber,
-            "The 'non-conflicting' group number conflicts");
-        static_assert(kNonConflictingGroupNumber != FieldTrial::kNotFinalized,
-                      "The 'non-conflicting' group number conflicts");
-        *default_group_number = kNonConflictingGroupNumber;
-      }
-    }
     return existing_trial;
   }
 
-  double entropy_value;
-  if (randomization_type == FieldTrial::ONE_TIME_RANDOMIZED) {
-    // If an override entropy provider is given, use it.
-    const FieldTrial::EntropyProvider* entropy_provider =
-        override_entropy_provider ? override_entropy_provider
-                                  : GetEntropyProviderForOneTimeRandomization();
-    CHECK(entropy_provider);
-    entropy_value = entropy_provider->GetEntropyForTrial(trial_name,
-                                                         randomization_seed);
-  } else {
-    DCHECK_EQ(FieldTrial::SESSION_RANDOMIZED, randomization_type);
-    DCHECK_EQ(0U, randomization_seed);
-    entropy_value = RandDouble();
-  }
+  double entropy_value =
+      entropy_provider.GetEntropyForTrial(trial_name, randomization_seed);
 
   FieldTrial* field_trial = new FieldTrial(trial_name, total_probability,
                                            default_group_name, entropy_value);
@@ -1118,14 +1083,21 @@ FieldTrialList::GetAllFieldTrialsFromPersistentAllocator(
 }
 
 // static
-const FieldTrial::EntropyProvider*
+const FieldTrial::EntropyProvider&
 FieldTrialList::GetEntropyProviderForOneTimeRandomization() {
-  if (!global_) {
-    used_without_global_ = true;
-    return nullptr;
-  }
+  // It's invalid to call this when we haven't created the global list with
+  // support for one-time randomization. CHECK that we don't return a null
+  // reference, which would generate a confusing error later.
+  CHECK(global_->entropy_provider_);
+  return *global_->entropy_provider_;
+}
 
-  return global_->entropy_provider_.get();
+// static
+const FieldTrial::EntropyProvider&
+FieldTrialList::GetEntropyProviderForSessionRandomization() {
+  static const base::NoDestructor<SessionEntropyProvider>
+      session_entropy_provider;
+  return *session_entropy_provider;
 }
 
 // static

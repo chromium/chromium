@@ -228,14 +228,14 @@ void InitializeFeatureList(const base::Value::Dict& dcs_features,
     //   - The probability is hard-coded to 100% so that the FeatureList always
     //     respects the value from DCS.
     //   - The default group is unused; it will be the same for every feature.
-    //   - SESSION_RANDOMIZED is used to prevent the need for an
-    //     entropy_provider. However, this value doesn't matter.
+    //   - SessionRandomization is used as a trivial entropy_provider. However,
+    //     this value doesn't matter.
     //   - We don't care about the group_id.
     //
     const std::string& feature_name = kv.first;
     auto* field_trial = base::FieldTrialList::FactoryGetFieldTrial(
         feature_name, k100PercentProbability, kDefaultDCSFeaturesGroup,
-        base::FieldTrial::SESSION_RANDOMIZED, nullptr);
+        base::FieldTrialList::GetEntropyProviderForSessionRandomization());
 
     if (kv.second.is_bool()) {
       // A boolean entry simply either enables or disables a feature.

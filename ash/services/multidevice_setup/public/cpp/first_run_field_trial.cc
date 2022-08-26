@@ -42,8 +42,8 @@ void CreateFirstRunFieldTrial(base::FeatureList* feature_list) {
   scoped_refptr<base::FieldTrial> trial(
       base::FieldTrialList::FactoryGetFieldTrial(
           kInstantTetheringTrialName, 100 /* total_probability */,
-          kInstantTetheringGroupName, base::FieldTrial::ONE_TIME_RANDOMIZED,
-          nullptr /* default_group_number */));
+          kInstantTetheringGroupName,
+          base::FieldTrialList::GetEntropyProviderForOneTimeRandomization()));
   feature_list->RegisterFieldTrialOverride(
       features::kInstantTethering.name,
       base::FeatureList::OVERRIDE_ENABLE_FEATURE, trial.get());

@@ -278,16 +278,24 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
   if (processed_study.total_probability() <= 0)
     return;
 
+  const auto* entropy_provider =
+      &base::FieldTrialList::GetEntropyProviderForSessionRandomization();
   uint32_t randomization_seed = 0;
-  base::FieldTrial::RandomizationType randomization_type =
-      base::FieldTrial::SESSION_RANDOMIZED;
   if (study.has_consistency() &&
       study.consistency() == Study_Consistency_PERMANENT &&
       // If all assignments are to a single group, no need to enable one time
       // randomization (which is more expensive to compute), since the result
       // will be the same.
       !processed_study.all_assignments_to_one_group()) {
-    randomization_type = base::FieldTrial::ONE_TIME_RANDOMIZED;
+    // WebView currently passes a null low_entropy_provider, which actually
+    // means that the default provider is low-entropy.
+    // TODO(b/183955043): Express that more coherently and without nullptr.
+    if (low_entropy_provider && ShouldStudyUseLowEntropy(study)) {
+      entropy_provider = low_entropy_provider;
+    } else {
+      entropy_provider =
+          &base::FieldTrialList::GetEntropyProviderForOneTimeRandomization();
+    }
     if (study.has_randomization_seed())
       randomization_seed = study.randomization_seed();
   }
@@ -296,11 +304,10 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
   // expiration check in field_trial.cc is based on the build date. Instead,
   // the expiration check using |reference_date| is done explicitly below.
   scoped_refptr<base::FieldTrial> trial(
-      base::FieldTrialList::FactoryGetFieldTrialWithRandomizationSeed(
+      base::FieldTrialList::FactoryGetFieldTrial(
           study.name(), processed_study.total_probability(),
-          processed_study.GetDefaultExperimentName(), randomization_type,
-          randomization_seed, nullptr,
-          ShouldStudyUseLowEntropy(study) ? low_entropy_provider : nullptr));
+          processed_study.GetDefaultExperimentName(), *entropy_provider,
+          randomization_seed));
 
   bool has_overrides = false;
   bool enables_or_disables_features = false;

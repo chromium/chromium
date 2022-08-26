@@ -193,11 +193,11 @@ TEST(EntropyProviderTest, UseOneTimeRandomizationSHA1) {
       std::make_unique<SHA1EntropyProvider>("client_id"));
   scoped_refptr<base::FieldTrial> trials[] = {
       base::FieldTrialList::FactoryGetFieldTrial(
-          "one", 100, "default", base::FieldTrial::ONE_TIME_RANDOMIZED,
-          nullptr),
+          "one", 100, "default",
+          base::FieldTrialList::GetEntropyProviderForOneTimeRandomization()),
       base::FieldTrialList::FactoryGetFieldTrial(
-          "two", 100, "default", base::FieldTrial::ONE_TIME_RANDOMIZED,
-          nullptr),
+          "two", 100, "default",
+          base::FieldTrialList::GetEntropyProviderForOneTimeRandomization()),
   };
 
   for (size_t i = 0; i < std::size(trials); ++i) {
@@ -226,11 +226,11 @@ TEST(EntropyProviderTest, UseOneTimeRandomizationNormalizedMurmurHash) {
           1234, kMaxLowEntropySize));
   scoped_refptr<base::FieldTrial> trials[] = {
       base::FieldTrialList::FactoryGetFieldTrial(
-          "one", 100, "default", base::FieldTrial::ONE_TIME_RANDOMIZED,
-          nullptr),
+          "one", 100, "default",
+          base::FieldTrialList::GetEntropyProviderForOneTimeRandomization()),
       base::FieldTrialList::FactoryGetFieldTrial(
-          "two", 100, "default", base::FieldTrial::ONE_TIME_RANDOMIZED,
-          nullptr),
+          "two", 100, "default",
+          base::FieldTrialList::GetEntropyProviderForOneTimeRandomization()),
   };
 
   for (size_t i = 0; i < std::size(trials); ++i) {
@@ -254,12 +254,14 @@ TEST(EntropyProviderTest, UseOneTimeRandomizationWithCustomSeedSHA1) {
       std::make_unique<SHA1EntropyProvider>("client_id"));
   const uint32_t kCustomSeed = 9001;
   scoped_refptr<base::FieldTrial> trials[] = {
-      base::FieldTrialList::FactoryGetFieldTrialWithRandomizationSeed(
-          "one", 100, "default", base::FieldTrial::ONE_TIME_RANDOMIZED,
-          kCustomSeed, nullptr, nullptr),
-      base::FieldTrialList::FactoryGetFieldTrialWithRandomizationSeed(
-          "two", 100, "default", base::FieldTrial::ONE_TIME_RANDOMIZED,
-          kCustomSeed, nullptr, nullptr),
+      base::FieldTrialList::FactoryGetFieldTrial(
+          "one", 100, "default",
+          base::FieldTrialList::GetEntropyProviderForOneTimeRandomization(),
+          kCustomSeed),
+      base::FieldTrialList::FactoryGetFieldTrial(
+          "two", 100, "default",
+          base::FieldTrialList::GetEntropyProviderForOneTimeRandomization(),
+          kCustomSeed),
   };
 
   for (size_t i = 0; i < std::size(trials); ++i) {
@@ -285,12 +287,14 @@ TEST(EntropyProviderTest,
           1234, kMaxLowEntropySize));
   const uint32_t kCustomSeed = 9001;
   scoped_refptr<base::FieldTrial> trials[] = {
-      base::FieldTrialList::FactoryGetFieldTrialWithRandomizationSeed(
-          "one", 100, "default", base::FieldTrial::ONE_TIME_RANDOMIZED,
-          kCustomSeed, nullptr, nullptr),
-      base::FieldTrialList::FactoryGetFieldTrialWithRandomizationSeed(
-          "two", 100, "default", base::FieldTrial::ONE_TIME_RANDOMIZED,
-          kCustomSeed, nullptr, nullptr),
+      base::FieldTrialList::FactoryGetFieldTrial(
+          "one", 100, "default",
+          base::FieldTrialList::GetEntropyProviderForOneTimeRandomization(),
+          kCustomSeed),
+      base::FieldTrialList::FactoryGetFieldTrial(
+          "two", 100, "default",
+          base::FieldTrialList::GetEntropyProviderForOneTimeRandomization(),
+          kCustomSeed),
   };
 
   for (size_t i = 0; i < std::size(trials); ++i) {

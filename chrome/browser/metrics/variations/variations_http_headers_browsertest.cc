@@ -635,9 +635,8 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
   // either uses a different API or tighten the current API to set up a field
   // trial that can only be made with the low entropy provider.
   scoped_refptr<base::FieldTrial> trial =
-      base::FieldTrialList::FactoryGetFieldTrialWithRandomizationSeed(
-          "t1", 100, "default", base::FieldTrial::ONE_TIME_RANDOMIZED, 0,
-          /*default_group_number=*/nullptr, low_entropy_provider.get());
+      base::FieldTrialList::FactoryGetFieldTrial("t1", 100, "default",
+                                                 *low_entropy_provider);
   for (int i = 1; i < 101; ++i) {
     const std::string group_name = base::StringPrintf("%d", i);
     variations::AssociateGoogleVariationID(
