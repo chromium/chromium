@@ -82,6 +82,10 @@ crbug.com/887140 virtual/hdr/video-canvas-alpha.html [ Failure ]
 # Tested by paint/background/root-element-background-transparency.html for now.
 external/wpt/css/compositing/root-element-background-transparency.html [ Failure ]
 
+# Deferred Shaping
+# The following test fails due to scrollable area size difference.
+external/wpt/css/CSS2/backgrounds/background-attachment-004.xht [ Failure ]
+
 # ====== Synchronous, budgeted HTML parser tests from here ========================
 # See crbug.com/1254921 for details.
 # These tests either started failing outright, or became flaky, when the new HTML

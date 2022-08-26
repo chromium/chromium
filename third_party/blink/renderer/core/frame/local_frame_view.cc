@@ -833,17 +833,10 @@ void LocalFrameView::PerformLayout() {
           default_allow_deferred_shaping_ &&
           RuntimeEnabledFeatures::DeferredShapingEnabled() &&
           !frame_->PagePopupOwner() && !auto_size_info_ &&
-          !FirstMeaningfulPaintDetector::From(*frame_->GetDocument())
-               .SeenFirstMeaningfulPaint();
+          !GetScrollableArea()->HasPendingHistoryRestoreScrollOffset();
       base::AutoReset<bool> deferred_shaping(
           &allow_deferred_shaping_,
-          default_allow_deferred_shaping_ && !document->Printing() &&
-              // Locking many shaping-deferred elements is very slow if we have
-              // ScopedForcedUpdate instances.
-              // Without this check, PerformPostLayoutTasks() takes 200 seconds
-              // in editing/deleting/delete-many-lines-of-text.html with a
-              // debug build.
-              !document->GetDisplayLockDocumentState().HasForcedScopes());
+          default_allow_deferred_shaping_ && !document->Printing());
       DeferredShapingViewportScope viewport_scope(*this, *GetLayoutView());
       GetLayoutView()->UpdateLayout();
     }
@@ -1363,6 +1356,7 @@ void LocalFrameView::ProcessUrlFragment(const KURL& url,
     // part of the lifecycle.
     if (same_document_navigation)
       ScheduleAnimation();
+    ReshapeAllDeferred();
   }
 }
 
@@ -1862,15 +1856,52 @@ void LocalFrameView::PerformPostLayoutTasks(bool visual_viewport_size_changed) {
 
   if (deferred_to_be_locked_.size() > 0) {
     DCHECK(RuntimeEnabledFeatures::DeferredShapingEnabled());
-    for (auto& element : deferred_to_be_locked_) {
-      DCHECK(element->GetLayoutObject()->IsShapingDeferred());
-      auto& context = element->EnsureDisplayLockContext();
-      context.SetRequestedState(EContentVisibility::kAuto);
-    }
     DEFERRED_SHAPING_VLOG(1)
         << "Deferred " << deferred_to_be_locked_.size() << " elements";
-    deferred_to_be_locked_.resize(0);
     UseCounter::Count(document, WebFeature::kDeferredShapingWorked);
+  }
+}
+
+void LocalFrameView::ScheduleReshapeAllDeferred() {
+  if (!RuntimeEnabledFeatures::DeferredShapingEnabled())
+    return;
+  if (!default_allow_deferred_shaping_)
+    return;
+  default_allow_deferred_shaping_ = false;
+  reshaping_task_handle_ = PostCancellableTask(
+      *GetFrame().GetTaskRunner(TaskType::kInternalDefault), FROM_HERE,
+      WTF::Bind(&LocalFrameView::ReshapeAllDeferredInternal,
+                WrapWeakPersistent(this)));
+}
+
+size_t LocalFrameView::ReshapeAllDeferred() {
+  default_allow_deferred_shaping_ = false;
+  if (deferred_to_be_locked_.IsEmpty())
+    return 0;
+  size_t count = 0;
+  for (auto& element : deferred_to_be_locked_) {
+    if (!element->isConnected())
+      continue;
+    LayoutBox* box = element->GetLayoutBox();
+    if (!box || !box->IsShapingDeferred())
+      continue;
+    ++count;
+    box->MarkContainerChainForLayout();
+    box->SetIntrinsicLogicalWidthsDirty();
+    box->SetChildNeedsLayout();
+    // Make sure we don't use cached NGFragmentItem objects.
+    box->DisassociatePhysicalFragments();
+    box->ClearLayoutResults();
+  }
+  deferred_to_be_locked_.clear();
+  return count;
+}
+
+void LocalFrameView::ReshapeAllDeferredInternal() {
+  size_t count = ReshapeAllDeferred();
+  if (count) {
+    DEFERRED_SHAPING_VLOG(1)
+        << "Re-shaped all " << count << " elements by idle-after-parsing";
   }
 }
 
@@ -4733,6 +4764,9 @@ void LocalFrameView::OnFirstContentfulPaint() {
 
   if (frame_->IsLocalRoot())
     EnsureUkmAggregator().DidReachFirstContentfulPaint();
+
+  if (frame_->GetDocument()->HasFinishedParsing())
+    ScheduleReshapeAllDeferred();
 }
 
 void LocalFrameView::RegisterForLifecycleNotifications(
@@ -4982,12 +5016,16 @@ void LocalFrameView::DisallowDeferredShaping() {
 }
 
 void LocalFrameView::RequestToLockDeferred(Element& element) {
-  deferred_to_be_locked_.push_back(element);
+  deferred_to_be_locked_.insert(&element);
 }
 
 bool LocalFrameView::LockDeferredRequested(Element& element) const {
   return !deferred_to_be_locked_.IsEmpty() &&
-         deferred_to_be_locked_.Find(&element) != WTF::kNotFound;
+         deferred_to_be_locked_.Contains(&element);
+}
+
+void LocalFrameView::UnregisterShapingDeferredElement(Element& element) {
+  deferred_to_be_locked_.erase(&element);
 }
 
 }  // namespace blink

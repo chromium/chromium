@@ -1610,6 +1610,7 @@ void Element::setScrollLeft(double new_left) {
   if (!InActiveDocument())
     return;
 
+  GetDocument().View()->ReshapeAllDeferred();
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
 
@@ -1661,6 +1662,7 @@ void Element::setScrollTop(double new_top) {
   if (!InActiveDocument())
     return;
 
+  GetDocument().View()->ReshapeAllDeferred();
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
 
@@ -3743,11 +3745,10 @@ void Element::DetachLayoutTree(bool performing_reattach) {
     GetDocument().UserActionElements().DidDetach(*this);
   }
 
-  if (context) {
+  if (context)
     context->DetachLayoutTree();
-    if (was_shaping_deferred)
-      context->SetRequestedState(EContentVisibility::kVisible);
-  }
+  if (was_shaping_deferred && GetDocument().View())
+    GetDocument().View()->UnregisterShapingDeferredElement(*this);
 }
 
 void Element::ReattachLayoutTreeChildren(base::PassKey<StyleEngine>) {
@@ -3825,18 +3826,8 @@ scoped_refptr<ComputedStyle> Element::StyleForLayoutObject(
   if (UNLIKELY(context || !style->IsContentVisibilityVisible())) {
     if (!context)
       context = &EnsureDisplayLockContext();
-    bool is_shaping_deferred =
-        GetLayoutObject() && GetLayoutObject()->IsShapingDeferred();
-    // If shaping is deferred and |content-visibility| is |visible|, do nothing
-    // in order to keep the "deferred" state.
-    if (!is_shaping_deferred || !style->IsContentVisibilityVisible()) {
-      // If shaping is deferred and |content-visibility| is not |visible|,
-      // leave the "deferred" state.
-      if (is_shaping_deferred)
-        To<LayoutBlockFlow>(GetLayoutObject())->StopDeferringShaping();
-      context->SetRequestedState(style->ContentVisibility());
-      context->AdjustElementStyle(style.get());
-    }
+    context->SetRequestedState(style->ContentVisibility());
+    context->AdjustElementStyle(style.get());
   }
 
   if (style->DependsOnSizeContainerQueries())

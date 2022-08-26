@@ -310,9 +310,7 @@ bool DisplayLockContext::ShouldStyleChildren() const {
          forced_info_.is_forced(ForcedPhase::kStyleAndLayoutTree) ||
          (document_->GetDisplayLockDocumentState()
               .ActivatableDisplayLocksForced() &&
-          IsActivatable(DisplayLockActivationReason::kAny)) ||
-         (element_->GetLayoutObject() &&
-          element_->GetLayoutObject()->IsShapingDeferred());
+          IsActivatable(DisplayLockActivationReason::kAny));
 }
 
 void DisplayLockContext::DidStyleSelf() {
@@ -347,9 +345,7 @@ bool DisplayLockContext::ShouldLayoutChildren() const {
   return !is_locked_ || forced_info_.is_forced(ForcedPhase::kLayout) ||
          (document_->GetDisplayLockDocumentState()
               .ActivatableDisplayLocksForced() &&
-          IsActivatable(DisplayLockActivationReason::kAny)) ||
-         (element_->GetLayoutObject() &&
-          element_->GetLayoutObject()->IsShapingDeferred());
+          IsActivatable(DisplayLockActivationReason::kAny));
 }
 
 void DisplayLockContext::DidLayoutChildren() {
@@ -367,16 +363,13 @@ bool DisplayLockContext::ShouldPrePaintChildren() const {
   return !is_locked_ || forced_info_.is_forced(ForcedPhase::kPrePaint) ||
          (document_->GetDisplayLockDocumentState()
               .ActivatableDisplayLocksForced() &&
-          IsActivatable(DisplayLockActivationReason::kAny)) ||
-         (element_->GetLayoutObject() &&
-          element_->GetLayoutObject()->IsShapingDeferred());
+          IsActivatable(DisplayLockActivationReason::kAny));
 }
 
 bool DisplayLockContext::ShouldPaintChildren() const {
   // Note that forced updates should never require us to paint, so we don't
   // check |forced_info_| here.
-  return !is_locked_ || (element_->GetLayoutObject() &&
-                         element_->GetLayoutObject()->IsShapingDeferred());
+  return !is_locked_;
 }
 // End Should* and Did* functions ==============================================
 
@@ -523,8 +516,7 @@ void DisplayLockContext::UpgradeForcedScope(ForcedPhase old_phase,
 
 void DisplayLockContext::ScheduleStateChangeEventIfNeeded() {
   if (state_ == EContentVisibility::kAuto &&
-      RuntimeEnabledFeatures::ContentVisibilityAutoStateChangedEventEnabled() &&
-      !IsShapingDeferred()) {
+      RuntimeEnabledFeatures::ContentVisibilityAutoStateChangedEventEnabled()) {
     element_->EnqueueEvent(
         *ContentVisibilityAutoStateChangedEvent::Create(
             event_type_names::kContentvisibilityautostatechanged, is_locked_),
@@ -673,13 +665,6 @@ bool DisplayLockContext::MarkForLayoutIfNeeded() {
       // to mark its ancestors as dirty here so that it will be traversed to on
       // the next layout.
       layout_object->MarkContainerChainForLayout();
-      if (layout_object->IsShapingDeferred()) {
-        layout_object->SetIntrinsicLogicalWidthsDirty();
-        layout_object->SetChildNeedsLayout();
-        // Make sure we don't use cached NGFragmentItem objects.
-        To<LayoutBox>(layout_object)->DisassociatePhysicalFragments();
-        To<LayoutBox>(layout_object)->ClearLayoutResults();
-      }
     }
     return true;
   }
@@ -777,7 +762,7 @@ bool DisplayLockContext::IsElementDirtyForStyleRecalc() const {
 bool DisplayLockContext::IsElementDirtyForLayout() const {
   if (auto* layout_object = element_->GetLayoutObject()) {
     return layout_object->NeedsLayout() || child_layout_was_blocked_ ||
-           HasStashedScrollOffset() || layout_object->IsShapingDeferred();
+           HasStashedScrollOffset();
   }
   return false;
 }
@@ -942,20 +927,6 @@ void DisplayLockContext::ScheduleTopLayerCheck() {
   ScheduleAnimation();
 }
 
-bool DisplayLockContext::IsShapingDeferred() const {
-  if (!element_)
-    return false;
-  if (const auto* layout_object = element_->GetLayoutObject())
-    return layout_object->IsShapingDeferred();
-  return false;
-}
-
-bool DisplayLockContext::IsInclusiveDescendantOf(
-    const LayoutObject& ancestor) const {
-  const LayoutObject* object = element_ ? element_->GetLayoutObject() : nullptr;
-  return object && object->IsDescendantOf(&ancestor);
-}
-
 void DisplayLockContext::ScheduleAnimation() {
   DCHECK(element_);
   if (!ConnectedToView() || !document_ || !document_->GetPage())
@@ -979,11 +950,6 @@ const char* DisplayLockContext::ShouldForceUnlock() const {
     DCHECK(DisplayLockUtilities::LockedAncestorPreventingStyle(*element_));
     return nullptr;
   }
-
-  // Do not force-unlock for deferred elements.
-  if (element_->GetLayoutObject() &&
-      element_->GetLayoutObject()->IsShapingDeferred())
-    return nullptr;
 
   if (element_->HasDisplayContentsStyle())
     return rejection_names::kUnsupportedDisplay;
@@ -1299,17 +1265,6 @@ void DisplayLockContext::NotifyRenderAffectingStateChanged() {
         !state(RenderAffectingState::kAutoUnlockedForPrint) &&
         !state(RenderAffectingState::kSubtreeHasTopLayerElement) &&
         !state(RenderAffectingState::kSharedElementTransitionChain)));
-
-  // For shaping-deferred boxes, we'd like to unlock permanently.
-  if (IsShapingDeferred() && state_ != EContentVisibility::kVisible &&
-      !should_be_locked && IsLocked()) {
-    SetRequestedState(EContentVisibility::kVisible);
-    // We need to change the document lifecycle explicitly because Unlock()
-    // inside the above SetRequestedState() didn't change the lifecycle.
-    // See CanDirtyStyle() check in Unlock().
-    document_->Lifecycle().EnsureStateAtMost(DocumentLifecycle::kStyleClean);
-    return;
-  }
 
   if (should_be_locked && !IsLocked())
     Lock();

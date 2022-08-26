@@ -1621,8 +1621,6 @@ void LocalDOMWindow::scrollBy(const ScrollToOptions* scroll_to_options) const {
   if (!IsCurrentlyDisplayedInFrame())
     return;
 
-  document()->UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
-
   LocalFrameView* view = GetFrame()->View();
   if (!view)
     return;
@@ -1630,6 +1628,9 @@ void LocalDOMWindow::scrollBy(const ScrollToOptions* scroll_to_options) const {
   Page* page = GetFrame()->GetPage();
   if (!page)
     return;
+
+  view->ReshapeAllDeferred();
+  document()->UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
 
   float x = 0.0f;
   float y = 0.0f;
@@ -1688,6 +1689,7 @@ void LocalDOMWindow::scrollTo(const ScrollToOptions* scroll_to_options) const {
   // clamped, which is never the case for (0, 0).
   if (!scroll_to_options->hasLeft() || !scroll_to_options->hasTop() ||
       scroll_to_options->left() || scroll_to_options->top()) {
+    view->ReshapeAllDeferred();
     document()->UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
   }
 

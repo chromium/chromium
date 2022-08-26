@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
 #include "third_party/blink/renderer/platform/graphics/subtree_paint_property_update_reason.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -508,8 +509,12 @@ class CORE_EXPORT LocalFrameView final
   bool DefaultAllowDeferredShaping() const {
     return default_allow_deferred_shaping_;
   }
+  // TODO(crbug.com/1259085): Stop using the word 'Lock' for DeferredShaping.
   void RequestToLockDeferred(Element& element);
   bool LockDeferredRequested(Element& element) const;
+  void UnregisterShapingDeferredElement(Element& element);
+  size_t ReshapeAllDeferred();
+  void ScheduleReshapeAllDeferred();
 
   // The window that hosts the LocalFrameView. The LocalFrameView will
   // communicate scrolls and repaints to the host window in the window's
@@ -1042,6 +1047,7 @@ class CORE_EXPORT LocalFrameView final
   bool AnyFrameIsPrintingOrPaintingPreview();
 
   DarkModeFilter& EnsureDarkModeFilter();
+  void ReshapeAllDeferredInternal();
 
   LayoutSize size_;
 
@@ -1050,7 +1056,8 @@ class CORE_EXPORT LocalFrameView final
 
   Member<LocalFrame> frame_;
 
-  HeapVector<Member<Element>> deferred_to_be_locked_;
+  TaskHandle reshaping_task_handle_;
+  HeapHashSet<Member<Element>> deferred_to_be_locked_;
   LayoutUnit current_viewport_bottom_ = kIndefiniteSize;
   LayoutUnit current_minimum_top_;
   bool allow_deferred_shaping_ = false;

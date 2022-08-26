@@ -3317,8 +3317,8 @@ static void GetInlineRun(LayoutObject* start,
 void LayoutBlockFlow::MakeChildrenNonInline(LayoutObject* insertion_point) {
   NOT_DESTROYED();
 
-  if (GetDisplayLockContext() && IsShapingDeferred())
-    GetDisplayLockContext()->SetRequestedState(EContentVisibility::kVisible);
+  if (IsShapingDeferred())
+    GetFrameView()->UnregisterShapingDeferredElement(*To<Element>(GetNode()));
 
   // makeChildrenNonInline takes a block whose children are *all* inline and it
   // makes sure that inline children are coalesced under anonymous blocks.

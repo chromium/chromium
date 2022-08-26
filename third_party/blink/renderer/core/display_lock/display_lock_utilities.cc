@@ -47,9 +47,7 @@ Element* NearestLockedExclusiveAncestor(const Node& node) {
     if (!ancestor_element)
       continue;
     if (auto* context = ancestor_element->GetDisplayLockContext()) {
-      if (context->IsLocked() &&
-          (!ancestor_element->GetLayoutObject() ||
-           !ancestor_element->GetLayoutObject()->IsShapingDeferred()))
+      if (context->IsLocked())
         return ancestor_element;
     }
   }
@@ -68,9 +66,7 @@ const Element* NearestLockedInclusiveAncestor(const Node& node) {
     return nullptr;
   }
   if (auto* context = element->GetDisplayLockContext()) {
-    if (context->IsLocked() &&
-        (!element->GetLayoutObject() ||
-         !element->GetLayoutObject()->IsShapingDeferred()))
+    if (context->IsLocked())
       return element;
   }
   return NearestLockedExclusiveAncestor(node);
@@ -853,8 +849,7 @@ bool DisplayLockUtilities::IsDisplayLockedPreventingPaint(
         // IsLockedForAccessibility by recording whether this context is locked
         // but allow paint. However, that situation is not possible since all
         // locked contexts always prevent paint except for DeferredShaping.
-        DCHECK(!context->IsLocked() || !context->ShouldPaintChildren() ||
-               context->IsShapingDeferred());
+        DCHECK(!context->IsLocked() || !context->ShouldPaintChildren());
         if (!context->ShouldPaintChildren()) {
           memoizer_->NotifyLocked(previous_ancestor);
           return true;

@@ -82,23 +82,6 @@ PaintLayer* FindFirstStickyBetween(LayoutObject* from, LayoutObject* to) {
   return nullptr;
 }
 
-bool HasIfcAncestorWithinContainingBlock(const LayoutObject& positioned,
-                                         const LayoutObject& containing_block) {
-  for (const LayoutObject* parent = positioned.Parent(); parent;
-       parent = parent->Parent()) {
-    if (const auto* block_flow = DynamicTo<LayoutBlockFlow>(parent)) {
-      // TODO(tkent): The following check is not correct, and we assume BFCs as
-      // IFCs in many cases. We need to use the logic in
-      // NGBlockNode::FirstChild() and IsInlineFormattingContextRoot().
-      if (block_flow->ChildrenInline())
-        return true;
-    }
-    if (parent == &containing_block)
-      return false;
-  }
-  return false;
-}
-
 void MarkBoxForRelayoutAfterSplit(LayoutBoxModelObject* box) {
   // FIXME: The table code should handle that automatically. If not,
   // we should fix it and remove the table part checks.
@@ -123,12 +106,6 @@ void CollapseLoneAnonymousBlockChild(LayoutBox* parent, LayoutObject* child) {
   if (!parent_block_flow)
     return;
   parent_block_flow->CollapseAnonymousBlockChild(child_block_flow);
-}
-
-void DisableDeferredShaping(Document& doc, LocalFrameView& frame_view) {
-  frame_view.DisallowDeferredShaping();
-  UseCounter::Count(doc, WebFeature::kDeferredShapingDisabledByPositioned);
-  DEFERRED_SHAPING_VLOG(1) << "Disabled DeferredShaping by positioned objects.";
 }
 
 }  // namespace
@@ -379,69 +356,6 @@ void LayoutBoxModelObject::InsertedIntoTree() {
 }
 
 void LayoutBoxModelObject::DisallowDeferredShapingIfNegativePositioned() const {
-  DCHECK(IsOutOfFlowPositioned() || IsRelPositioned());
-  DCHECK(Parent());
-  if (!RuntimeEnabledFeatures::DeferredShapingEnabled() ||
-      !GetFrameView()->DefaultAllowDeferredShaping())
-    return;
-  // For positioned boxes,
-  //  - if its vertical position can be above the containing block, or
-  //  - if its horizontal position depends on containing IFCs,
-  // we need precise positions/sizes of all prior boxes. So we give up applying
-  // Deferred Shaping in the entire frame.
-  // https://docs.google.com/document/d/1DKyzB0-bhYDIS8fHMTOvHCK99a-QUQLfyxk83Kh7fgo/edit?pli=1#heading=h.lyoqtzi7df9t
-
-  // Wikipedia uses "position:absolute; top:-9999px" to hide accessibility text.
-  // We don't want to disable Deferred Shaping due to it.
-  constexpr float kInvisibleVerticalPosition = -9999.0;
-
-  const Length& top = StyleRef().Top();
-  bool negative_vertical_position = false;
-  if (top.IsCalculated()) {
-    negative_vertical_position = true;
-  } else if (top.IsFixed() || top.IsPercent()) {
-    if (top.Value() <= kInvisibleVerticalPosition)
-      return;
-    if (top.Value() < 0)
-      negative_vertical_position = true;
-  }
-  const Length& bottom = StyleRef().Bottom();
-  negative_vertical_position =
-      negative_vertical_position || (top.IsAuto() && !bottom.IsAuto());
-
-  const auto* containing_block = ContainingBlock();
-  const bool clipping_containing_block =
-      containing_block->StyleRef().OverflowY() != EOverflow::kVisible ||
-      containing_block->ShouldApplyPaintContainment();
-
-  if (IsOutOfFlowPositioned()) {
-    // If this box is not clipped by containing_block and
-    // negative_vertical_position is true, the box might be painted above
-    // containing_block. We need the precise position of the containing_block.
-    if (!clipping_containing_block && negative_vertical_position) {
-      DisableDeferredShaping(GetDocument(), *GetFrameView());
-      return;
-    }
-
-    // If neither |left| nor |right| is specified and |top| and/or |bottom| is
-    // specified, the horizontal position of this box depends on a containing
-    // inline layout.  We should not defer containing IFCs.
-    if (StyleRef().Left().IsAuto() && StyleRef().Right().IsAuto() &&
-        (!top.IsAuto() || !bottom.IsAuto())) {
-      if (HasIfcAncestorWithinContainingBlock(*this, *containing_block)) {
-        DisableDeferredShaping(GetDocument(), *GetFrameView());
-        return;
-      }
-    }
-    return;
-  }
-
-  DCHECK(IsRelPositioned());
-  // If this box is not clipped by containing_block and
-  // negative_vertical_position is true, the box might be painted above
-  // containing_block. We need the precise position of the containing_block.
-  if (!clipping_containing_block && negative_vertical_position)
-    DisableDeferredShaping(GetDocument(), *GetFrameView());
 }
 
 void LayoutBoxModelObject::CreateLayerAfterStyleChange() {

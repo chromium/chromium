@@ -5,14 +5,10 @@
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node_data.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/page/print_context.h"
-#include "third_party/blink/renderer/core/paint/first_meaningful_paint_detector.h"
-#include "third_party/blink/renderer/core/paint/paint_timing.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_inline_headers.h"
-#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
@@ -24,14 +20,8 @@ class DeferredShapingTest : public RenderingTest {
     return layout_object && layout_object->IsShapingDeferred();
   }
 
-  bool IsLocked(const char* id_value) const {
-    const auto* context = GetElementById(id_value)->GetDisplayLockContext();
-    return context && context->IsLocked();
-  }
-
-  void ScrollAndWaitForIntersectionCheck(double new_scroll_top) {
+  void ScrollAndLayout(double new_scroll_top) {
     GetDocument().scrollingElement()->setScrollTop(new_scroll_top);
-    UpdateAllLifecyclePhasesForTest();
     UpdateAllLifecyclePhasesForTest();
   }
 
@@ -47,23 +37,19 @@ TEST_F(DeferredShapingTest, Basic) {
 )HTML");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(IsDefer("target"));
-  EXPECT_TRUE(IsLocked("target"));
 
-  ScrollAndWaitForIntersectionCheck(1800);
+  ScrollAndLayout(1800);
   EXPECT_FALSE(IsDefer("target"));
-  EXPECT_FALSE(IsLocked("target"));
 }
 
-TEST_F(DeferredShapingTest, ViewportMargin) {
-  // The box starting around y=1200 (viewport height * 2) is not deferred due to
-  // a viewport margin setting for IntersectionObserver.
+TEST_F(DeferredShapingTest, NoViewportMargin) {
+  // The box starting around y=600 (== viewport height) is deferred.
   SetBodyInnerHTML(R"HTML(
-<div style="height:1200px"></div>
+<div style="height:600px"></div>
 <div id="target">IFC</div>
 )HTML");
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(IsDefer("target"));
-  EXPECT_FALSE(IsLocked("target"));
+  EXPECT_TRUE(IsDefer("target"));
 }
 
 TEST_F(DeferredShapingTest, AlreadyAuto) {
@@ -74,11 +60,9 @@ TEST_F(DeferredShapingTest, AlreadyAuto) {
 )HTML");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(IsDefer("target"));
-  EXPECT_TRUE(IsLocked("target"));
 
-  ScrollAndWaitForIntersectionCheck(1800);
+  ScrollAndLayout(1800);
   EXPECT_FALSE(IsDefer("target"));
-  EXPECT_FALSE(IsLocked("target"));
 }
 
 TEST_F(DeferredShapingTest, AlreadyHidden) {
@@ -89,11 +73,9 @@ TEST_F(DeferredShapingTest, AlreadyHidden) {
 )HTML");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(IsDefer("target"));
-  EXPECT_TRUE(IsLocked("target"));
 
-  ScrollAndWaitForIntersectionCheck(1800);
+  ScrollAndLayout(1800);
   EXPECT_FALSE(IsDefer("target"));
-  EXPECT_TRUE(IsLocked("target"));
 }
 
 TEST_F(DeferredShapingTest, DynamicAuto) {
@@ -104,16 +86,13 @@ TEST_F(DeferredShapingTest, DynamicAuto) {
 )HTML");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(IsDefer("target"));
-  EXPECT_TRUE(IsLocked("target"));
 
   GetElementById("target")->setAttribute("style", "content-visibility:auto");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(IsDefer("target"));
-  EXPECT_TRUE(IsLocked("target"));
 
-  ScrollAndWaitForIntersectionCheck(1800);
+  ScrollAndLayout(1800);
   EXPECT_FALSE(IsDefer("target"));
-  EXPECT_FALSE(IsLocked("target"));
 }
 
 TEST_F(DeferredShapingTest, DynamicHidden) {
@@ -124,23 +103,19 @@ TEST_F(DeferredShapingTest, DynamicHidden) {
 )HTML");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(IsDefer("target"));
-  EXPECT_TRUE(IsLocked("target"));
 
   GetElementById("target")->setAttribute("style", "content-visibility:hidden");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(IsDefer("target"));
-  EXPECT_TRUE(IsLocked("target"));
 
   GetElementById("target")->setAttribute("style", "content-visibility:visible");
   // A change of content-visibility property triggers a full layout, and the
   // target box is determined as "deferred" again.
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(IsDefer("target"));
-  EXPECT_TRUE(IsLocked("target"));
 
-  ScrollAndWaitForIntersectionCheck(1800);
+  ScrollAndLayout(1800);
   EXPECT_FALSE(IsDefer("target"));
-  EXPECT_FALSE(IsLocked("target"));
 }
 
 TEST_F(DeferredShapingTest, DynamicPropertyChange) {
@@ -151,52 +126,10 @@ TEST_F(DeferredShapingTest, DynamicPropertyChange) {
 )HTML");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(IsDefer("target"));
-  EXPECT_TRUE(IsLocked("target"));
 
   GetElementById("target")->setAttribute("style", "width: 10em;");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(IsDefer("target"));
-  EXPECT_TRUE(IsLocked("target"));
-}
-
-TEST_F(DeferredShapingTest, NoAutoLock) {
-  SetBodyInnerHTML(R"HTML(
-<div style="height:1800px"></div>
-<div id="target">IFC</div>
-)HTML");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(IsDefer("target"));
-  EXPECT_TRUE(IsLocked("target"));
-
-  auto* context = GetElementById("target")->GetDisplayLockContext();
-  context->NotifySubtreeGainedSelection();
-  EXPECT_FALSE(IsLocked("target"));
-
-  context->NotifySubtreeLostSelection();
-  EXPECT_FALSE(IsLocked("target"));
-}
-
-// crbug.com/1330060
-TEST_F(DeferredShapingTest, NoAutoLockWithoutElement) {
-  SetBodyInnerHTML(R"HTML(
-<div style="height:1800px"></div>
-<div id="target">IFC</div>
-)HTML");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(IsDefer("target"));
-  EXPECT_TRUE(IsLocked("target"));
-
-  Persistent<DisplayLockContext> context =
-      GetElementById("target")->GetDisplayLockContext();
-  context->NotifySubtreeGainedSelection();
-  EXPECT_FALSE(IsLocked("target"));
-
-  GetElementById("target")->remove();
-  UpdateAllLifecyclePhasesForTest();
-  // Clear a WeakMember of DisplayLockContext.
-  ThreadState::Current()->CollectAllGarbageForTesting();
-  context->NotifySubtreeLostSelection();
-  // Pass if no crashes.
 }
 
 TEST_F(DeferredShapingTest, ListMarkerCrash) {
@@ -207,7 +140,6 @@ TEST_F(DeferredShapingTest, ListMarkerCrash) {
 </ul>)HTML");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(IsDefer("target"));
-  EXPECT_TRUE(IsLocked("target"));
 
   // Re-layout the target while deferred.
   GetElementById("target")->setTextContent("foobar");
@@ -230,7 +162,6 @@ MMM MMMMM MMMMM MMM MMMMM MMMM MMM MMMM MMM.
 </p>)HTML");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(IsDefer("target"));
-  EXPECT_TRUE(IsLocked("target"));
   auto* target_box = GetLayoutBoxByElementId("target");
   const LayoutUnit deferred_item_width =
       (*target_box->PhysicalFragments().begin())
@@ -239,9 +170,8 @@ MMM MMMMM MMMMM MMM MMMMM MMMM MMM MMMM MMM.
           .Size()
           .width;
 
-  ScrollAndWaitForIntersectionCheck(1800);
+  ScrollAndLayout(1800);
   EXPECT_FALSE(IsDefer("target"));
-  EXPECT_FALSE(IsLocked("target"));
   EXPECT_NE(deferred_item_width, (*target_box->PhysicalFragments().begin())
                                      .Items()
                                      ->Items()[0]
@@ -266,7 +196,6 @@ MMM MMMMM MMMMM MMM MMMMM MMMM MMM MMMM MMM.
 </p></div></div>)HTML");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(IsDefer("target-p"));
-  EXPECT_TRUE(IsLocked("target-p"));
   auto* target_box = GetLayoutBoxByElementId("target-p");
   const LayoutUnit deferred_item_width =
       (*target_box->PhysicalFragments().begin())
@@ -275,9 +204,8 @@ MMM MMMMM MMMMM MMM MMMMM MMMM MMM MMMM MMM.
           .Size()
           .width;
 
-  ScrollAndWaitForIntersectionCheck(1800);
+  ScrollAndLayout(1800);
   EXPECT_FALSE(IsDefer("target-p"));
-  EXPECT_FALSE(IsLocked("target-p"));
   EXPECT_NE(deferred_item_width, (*target_box->PhysicalFragments().begin())
                                      .Items()
                                      ->Items()[0]
@@ -292,14 +220,12 @@ TEST_F(DeferredShapingTest, FragmentAssociationAfterUnlock) {
 <div id="target">IFC</div>)HTML");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(IsDefer("target"));
-  EXPECT_TRUE(IsLocked("target"));
   auto* box = GetLayoutBoxByElementId("target");
   auto* fragment = box->GetPhysicalFragment(0);
   EXPECT_EQ(box, fragment->GetLayoutObject());
 
-  ScrollAndWaitForIntersectionCheck(1800);
+  ScrollAndLayout(1800);
   EXPECT_FALSE(IsDefer("target"));
-  EXPECT_FALSE(IsLocked("target"));
   EXPECT_EQ(nullptr, fragment->GetLayoutObject());
 }
 
@@ -310,24 +236,14 @@ TEST_F(DeferredShapingTest, UpdateTextInDeferred) {
 </ul>)HTML");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(IsDefer("target"));
-  EXPECT_TRUE(IsLocked("target"));
 
-  // Force to mark FMP. It disables deferred shaping.
-  PaintTiming::From(GetDocument()).MarkFirstPaint();
-  PaintTiming::From(GetDocument()).MarkFirstContentfulPaint();
-  auto& fmp_detector = FirstMeaningfulPaintDetector::From(GetDocument());
-  fmp_detector.MarkNextPaintAsMeaningfulForTesting();
-  fmp_detector.NotifyPaint();
-  fmp_detector.OnNetwork2Quiet();
-  EXPECT_TRUE(fmp_detector.SeenFirstMeaningfulPaint());
+  GetFrame().View()->DisallowDeferredShaping();
 
   // Re-layout the target while it was deferred but deferred shaping is
-  // disabled. We had an inconsistent state issue that the target was
-  // locked but not deferred.
+  // disabled. We had an inconsistent state issue.
   GetElementById("target")->setTextContent("foobar");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(IsDefer("target"));
-  EXPECT_TRUE(IsLocked("target"));
 }
 
 TEST_F(DeferredShapingTest, UnlockNestedDeferred) {
@@ -340,16 +256,12 @@ TEST_F(DeferredShapingTest, UnlockNestedDeferred) {
 </p></div>)HTML");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(IsDefer("target"));
-  EXPECT_TRUE(IsLocked("target"));
   EXPECT_TRUE(IsDefer("target2"));
-  EXPECT_TRUE(IsLocked("target2"));
 
-  ScrollAndWaitForIntersectionCheck(1800);
-  // Nested deferred IFCs are unlocked together.
+  ScrollAndLayout(1800);
+  // Nested deferred IFCs are re-shaped together.
   EXPECT_FALSE(IsDefer("target"));
-  EXPECT_FALSE(IsLocked("target"));
   EXPECT_FALSE(IsDefer("target2"));
-  EXPECT_FALSE(IsLocked("target2"));
   EXPECT_EQ(GetElementById("ref2")->clientWidth(),
             GetElementById("target2")->clientWidth());
 }
@@ -359,12 +271,10 @@ TEST_F(DeferredShapingTest, UnlockOnSwitchingToFlex) {
 <p id="target">IFC</p>)HTML");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(IsDefer("target"));
-  EXPECT_TRUE(IsLocked("target"));
 
   GetElementById("target")->setAttribute("style", "display:flex");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(IsDefer("target"));
-  EXPECT_FALSE(IsLocked("target"));
 }
 
 TEST_F(DeferredShapingTest, UnlockOnSwitchingToAnotherBlockFlow) {
@@ -372,14 +282,12 @@ TEST_F(DeferredShapingTest, UnlockOnSwitchingToAnotherBlockFlow) {
 <p id="target">IFC</p>)HTML");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(IsDefer("target"));
-  EXPECT_TRUE(IsLocked("target"));
 
   GetElementById("target")->setAttribute("style", "display:inline-block");
   UpdateAllLifecyclePhasesForTest();
   // Switching from 'block' to 'inline-block' unlocks the element
   // then locks the element again.
   EXPECT_TRUE(IsDefer("target"));
-  EXPECT_TRUE(IsLocked("target"));
 }
 
 TEST_F(DeferredShapingTest, UnlockOnDetach) {
@@ -387,12 +295,10 @@ TEST_F(DeferredShapingTest, UnlockOnDetach) {
 <div id="container"><p id="target">IFC</p></div>)HTML");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(IsDefer("target"));
-  EXPECT_TRUE(IsLocked("target"));
 
   GetElementById("container")->setAttribute("style", "display:none");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(IsDefer("target"));
-  EXPECT_FALSE(IsLocked("target"));
 }
 
 TEST_F(DeferredShapingTest, UnlockOnSwithcingToBfc) {
@@ -400,13 +306,11 @@ TEST_F(DeferredShapingTest, UnlockOnSwithcingToBfc) {
 <p id="target">IFC</p>)HTML");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(IsDefer("target"));
-  EXPECT_TRUE(IsLocked("target"));
 
   GetElementById("target")->appendChild(
       GetDocument().CreateRawElement(html_names::kDivTag));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(IsDefer("target"));
-  EXPECT_FALSE(IsLocked("target"));
 }
 
 // crbug.com/1324458
@@ -415,12 +319,10 @@ TEST_F(DeferredShapingTest, UnlockOnSwithcingToBfcByChildPositionChange) {
 <li id="target">\n<div id="abs" style="position:absolute"></div></li>)HTML");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(IsDefer("target"));
-  EXPECT_TRUE(IsLocked("target"));
 
   GetElementById("abs")->setAttribute("style", "position:static");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(IsDefer("target"));
-  EXPECT_FALSE(IsLocked("target"));
 }
 
 // crbug.com/1335731
@@ -429,7 +331,6 @@ TEST_F(DeferredShapingTest, KeepDeferredAfterTextChange) {
 <p id="target">ifc<p>)HTML");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(IsDefer("target"));
-  EXPECT_TRUE(IsLocked("target"));
 
   auto* target = GetElementById("target");
   target->appendChild(GetDocument().createTextNode("ifc2 "));
@@ -438,7 +339,6 @@ TEST_F(DeferredShapingTest, KeepDeferredAfterTextChange) {
   target->normalize();
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(IsDefer("target"));
-  EXPECT_TRUE(IsLocked("target"));
 }
 
 TEST_F(DeferredShapingTest, ScrollIntoView) {
@@ -449,15 +349,11 @@ TEST_F(DeferredShapingTest, ScrollIntoView) {
 )HTML");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(IsDefer("prior"));
-  EXPECT_TRUE(IsLocked("prior"));
   EXPECT_TRUE(IsDefer("ancestor"));
-  EXPECT_TRUE(IsLocked("ancestor"));
 
   GetElementById("target")->scrollIntoView();
   EXPECT_FALSE(IsDefer("prior"));
-  EXPECT_FALSE(IsLocked("prior"));
   EXPECT_FALSE(IsDefer("ancestor"));
-  EXPECT_FALSE(IsLocked("ancestor"));
 }
 
 TEST_F(DeferredShapingTest, ElementGeometry) {
@@ -468,15 +364,11 @@ TEST_F(DeferredShapingTest, ElementGeometry) {
 </p>)HTML");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(IsDefer("previous"));
-  EXPECT_TRUE(IsLocked("previous"));
   EXPECT_TRUE(IsDefer("ancestor"));
-  EXPECT_TRUE(IsLocked("ancestor"));
 
   GetElementById("target")->getBoundingClientRect();
   EXPECT_FALSE(IsDefer("previous"));
-  EXPECT_FALSE(IsLocked("previous"));
   EXPECT_FALSE(IsDefer("ancestor"));
-  EXPECT_FALSE(IsLocked("ancestor"));
 }
 
 TEST_F(DeferredShapingTest, ElementGeometryContainingDeferred) {
@@ -488,17 +380,15 @@ TEST_F(DeferredShapingTest, ElementGeometryContainingDeferred) {
 )HTML");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(IsDefer("target-child"));
-  EXPECT_TRUE(IsLocked("target-child"));
 
   DOMRect& reference = *GetElementById("reference")->getBoundingClientRect();
   DOMRect& target = *GetElementById("target")->getBoundingClientRect();
   EXPECT_EQ(reference.width(), target.width());
   EXPECT_EQ(reference.height(), target.height());
   EXPECT_FALSE(IsDefer("target-child"));
-  EXPECT_FALSE(IsLocked("target-child"));
 }
 
-TEST_F(DeferredShapingTest, ElementGeometryMinimumUnlock) {
+TEST_F(DeferredShapingTest, ElementGeometryAllReshape) {
   SetBodyInnerHTML(R"HTML(<div style="height:1800px"></div>
 <p id="previous">Previous IFC</p>
 <p id="ancestor">IFC
@@ -509,29 +399,20 @@ TEST_F(DeferredShapingTest, ElementGeometryMinimumUnlock) {
 )HTML");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(IsDefer("previous"));
-  EXPECT_TRUE(IsLocked("previous"));
   EXPECT_TRUE(IsDefer("ancestor"));
-  EXPECT_TRUE(IsLocked("ancestor"));
   EXPECT_TRUE(IsDefer("inner"));
-  EXPECT_TRUE(IsLocked("inner"));
 
   To<HTMLElement>(GetElementById("inline_target"))->offsetWidthForBinding();
-  EXPECT_TRUE(IsDefer("previous"));
-  EXPECT_TRUE(IsLocked("previous"));
+  EXPECT_FALSE(IsDefer("previous"));
   EXPECT_FALSE(IsDefer("ancestor"));
-  EXPECT_FALSE(IsLocked("ancestor"));
 
   To<HTMLElement>(GetElementById("block_target"))->offsetHeightForBinding();
-  EXPECT_TRUE(IsDefer("previous"));
-  EXPECT_TRUE(IsLocked("previous"));
+  EXPECT_FALSE(IsDefer("previous"));
   EXPECT_FALSE(IsDefer("inner"));
-  EXPECT_FALSE(IsLocked("inner"));
 
   To<HTMLElement>(GetElementById("abs_block"))->getBoundingClientRect();
-  EXPECT_TRUE(IsDefer("previous"));
-  EXPECT_TRUE(IsLocked("previous"));
+  EXPECT_FALSE(IsDefer("previous"));
   EXPECT_FALSE(IsDefer("abs_block"));
-  EXPECT_FALSE(IsLocked("abs_block"));
 }
 
 TEST_F(DeferredShapingTest, RangeGetClientRects) {
@@ -542,21 +423,17 @@ TEST_F(DeferredShapingTest, RangeGetClientRects) {
 </p>)HTML");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(IsDefer("previous"));
-  EXPECT_TRUE(IsLocked("previous"));
   EXPECT_TRUE(IsDefer("ancestor"));
-  EXPECT_TRUE(IsLocked("ancestor"));
 
   Element* target = GetElementById("target");
   Range* range = GetDocument().createRange();
   range->setStart(target, 0);
   range->setEnd(target, 1);
-  // getClientRects() should unlock prior elements.
+  // getClientRects() should re-shape all elements.
   range->getClientRects();
 
   EXPECT_FALSE(IsDefer("previous"));
-  EXPECT_FALSE(IsLocked("previous"));
   EXPECT_FALSE(IsDefer("ancestor"));
-  EXPECT_FALSE(IsLocked("ancestor"));
 }
 
 TEST_F(DeferredShapingTest, RangeGetBoundingClientRect) {
@@ -567,21 +444,17 @@ TEST_F(DeferredShapingTest, RangeGetBoundingClientRect) {
 </p>)HTML");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(IsDefer("previous"));
-  EXPECT_TRUE(IsLocked("previous"));
   EXPECT_TRUE(IsDefer("ancestor"));
-  EXPECT_TRUE(IsLocked("ancestor"));
 
   Element* target = GetElementById("target");
   Range* range = GetDocument().createRange();
   range->setStart(target, 0);
   range->setEnd(target, 1);
-  // getBoundingClientRect() should unlock prior elements.
+  // getBoundingClientRect() should re-shape all elements.
   range->getBoundingClientRect();
 
   EXPECT_FALSE(IsDefer("previous"));
-  EXPECT_FALSE(IsLocked("previous"));
   EXPECT_FALSE(IsDefer("ancestor"));
-  EXPECT_FALSE(IsLocked("ancestor"));
 }
 
 TEST_F(DeferredShapingTest, NonLayoutNGBlockFlow) {
@@ -592,137 +465,6 @@ TEST_F(DeferredShapingTest, NonLayoutNGBlockFlow) {
   // LayoutNGTableCaption, which is not a subclass of LayoutNGBlockFlow,
   // should support IsShapingDeferred().
   EXPECT_TRUE(IsDefer("target"));
-  EXPECT_TRUE(IsLocked("target"));
-}
-
-TEST_F(DeferredShapingTest, AbsolutePositionedHugeNegativeTop) {
-  SetBodyInnerHTML(R"HTML(
-<div style="height:1800px"></div>
-<div>IFC
-  <span id="target" style="position:absolute; top:-9999px"></span>
-</div>)HTML");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(GetFrame().View()->DefaultAllowDeferredShaping());
-
-  GetElementById("target")->setAttribute(html_names::kStyleAttr,
-                                         "position:absolute; top:-20px;");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(GetFrame().View()->DefaultAllowDeferredShaping());
-}
-
-TEST_F(DeferredShapingTest, AbsolutePositionedNegativeTopInIfc) {
-  SetBodyInnerHTML(R"HTML(
-<div style="height:1800px"></div>
-<div>IFC<span style="position:absolute; top:-1800px"></span></div>)HTML");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(GetFrame().View()->DefaultAllowDeferredShaping());
-}
-
-TEST_F(DeferredShapingTest, AbsolutePositionedNegativeTopInBfc) {
-  SetBodyInnerHTML(R"HTML(
-<div style="height:1800px"></div>
-<p>IFC</p>
-<div><div style="position:absolute; top:-1800px"></div></div>)HTML");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(GetFrame().View()->DefaultAllowDeferredShaping());
-}
-
-TEST_F(DeferredShapingTest, AbsolutePositionedBottomInIfc) {
-  SetBodyInnerHTML(R"HTML(
-<div style="height:1800px"></div>
-<div>IFC<span style="position:absolute; bottom:0px"></span></div>)HTML");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(GetFrame().View()->DefaultAllowDeferredShaping());
-}
-
-TEST_F(DeferredShapingTest, AbsolutePositionedBottomInBfc) {
-  SetBodyInnerHTML(R"HTML(
-<div style="height:1800px"></div>
-<p>IFC</p>
-<div><div style="position:absolute; top:0px"></div></div>)HTML");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(GetFrame().View()->DefaultAllowDeferredShaping());
-}
-
-TEST_F(DeferredShapingTest, AbsolutePositionedInNonVisibleOverflow) {
-  SetBodyInnerHTML(R"HTML(
-<div style="height:1800px"></div>
-<div style="overflow:scroll">IFC
-  <span style="position:absolute; top:-1800px; left:0px"></span></div>)HTML");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(GetFrame().View()->DefaultAllowDeferredShaping());
-}
-
-TEST_F(DeferredShapingTest, AbsolutePositionedNoLeftRightInIfc) {
-  SetBodyInnerHTML(R"HTML(
-<div style="height:1800px"></div>
-<div>IFC<span style="position:absolute; top:0px"></span></div>)HTML");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(GetFrame().View()->DefaultAllowDeferredShaping());
-}
-
-TEST_F(DeferredShapingTest, AbsolutePositionedNoLeftRightInBfc) {
-  SetBodyInnerHTML(R"HTML(
-<div style="height:1800px"></div>
-<div><div></div><div style="position:absolute; top:0px"></div></div>)HTML");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(GetFrame().View()->DefaultAllowDeferredShaping());
-}
-
-TEST_F(DeferredShapingTest, RelativePositionedHugeNegativeTop) {
-  SetBodyInnerHTML(R"HTML(
-<div style="height:1800px"></div>
-<div>IFC
-  <span id="target" style="position:relative; top:-9999px"></span>
-</div>)HTML");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(GetFrame().View()->DefaultAllowDeferredShaping());
-
-  GetElementById("target")->setAttribute(html_names::kStyleAttr,
-                                         "position:relative; top:-20px;");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(GetFrame().View()->DefaultAllowDeferredShaping());
-}
-
-TEST_F(DeferredShapingTest, RelativePositionedNegativeTopInIfc) {
-  SetBodyInnerHTML(R"HTML(
-<div style="height:1800px"></div>
-<div>IFC<span style="position:relative; top:-1800px"></span></div>)HTML");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(GetFrame().View()->DefaultAllowDeferredShaping());
-}
-
-TEST_F(DeferredShapingTest, RelativePositionedNegativeTopInBfc) {
-  SetBodyInnerHTML(R"HTML(
-<div style="height:1800px"></div>
-<div><div></div><div style="position:relative; top:-1800px"></div></div>)HTML");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(GetFrame().View()->DefaultAllowDeferredShaping());
-}
-
-TEST_F(DeferredShapingTest, RelativePositionedBottomInIfc) {
-  SetBodyInnerHTML(R"HTML(
-<div style="height:1800px"></div>
-<div>IFC<span style="position:relative; bottom:0px"></span></div>)HTML");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(GetFrame().View()->DefaultAllowDeferredShaping());
-}
-
-TEST_F(DeferredShapingTest, RelativePositionedBottomInBfc) {
-  SetBodyInnerHTML(R"HTML(
-<div style="height:1800px"></div>
-<div><div></div><div style="position:relative; bottom:0px"></div></div>)HTML");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(GetFrame().View()->DefaultAllowDeferredShaping());
-}
-
-TEST_F(DeferredShapingTest, RelativePositionedInNonVisibleOverflow) {
-  SetBodyInnerHTML(R"HTML(
-<div style="height:1800px"></div>
-<div style="overflow:scroll">IFC
-  <span style="position:relative; top:-1800px; left:0px"></span></div>)HTML");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(GetFrame().View()->DefaultAllowDeferredShaping());
 }
 
 TEST_F(DeferredShapingTest, ShapeResultCrash) {
@@ -745,7 +487,6 @@ TEST_F(DeferredShapingTest, InnerText) {
 )HTML");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(IsDefer("target"));
-  EXPECT_TRUE(IsLocked("target"));
   EXPECT_EQ("Not-deferred\nIFC", GetDocument().body()->innerText());
 }
 
@@ -756,7 +497,6 @@ TEST_F(DeferredShapingTest, PositionForPoint) {
 )HTML");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(IsDefer("target"));
-  EXPECT_TRUE(IsLocked("target"));
 
   auto& target = To<Element>(*GetElementById("target"));
   Node* text = target.firstChild();
@@ -775,13 +515,11 @@ TEST_F(DeferredShapingTest, DeferThenPrint) {
 )HTML");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(IsDefer("target"));
-  EXPECT_TRUE(IsLocked("target"));
 
   // Shaping-deferred elements are unlocked by printing.
   ScopedPrintContext print_context(&GetFrame());
   print_context->BeginPrintMode(800, 600);
   EXPECT_FALSE(IsDefer("target"));
-  EXPECT_FALSE(IsLocked("target"));
 }
 
 TEST_F(DeferredShapingTest, NoDeferDuringPrint) {
@@ -794,7 +532,6 @@ TEST_F(DeferredShapingTest, NoDeferDuringPrint) {
   ScopedPrintContext print_context(&GetFrame());
   print_context->BeginPrintMode(800, 600);
   EXPECT_FALSE(IsDefer("target"));
-  EXPECT_FALSE(IsLocked("target"));
 }
 
 TEST_F(DeferredShapingTest, NoDeferForAutoSizing) {

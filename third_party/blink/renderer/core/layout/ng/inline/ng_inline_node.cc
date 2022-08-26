@@ -541,7 +541,8 @@ void NGInlineNode::ShapeTextOrDefer(const NGConstraintSpace& space) const {
   auto& view = *GetLayoutBox()->GetFrameView();
   NGInlineNodeData::ShapingState new_state = NGInlineNodeData::kShapingDone;
   if (view.AllowDeferredShaping() && !GetLayoutBox()->IsInsideFlowThread() &&
-      Style().IsContentVisibilityVisible()) {
+      Style().IsContentVisibilityVisible() &&
+      Style().PageTransitionTag().IsEmpty()) {
     DCHECK(IsHorizontalWritingMode(Style().GetWritingMode()));
     const LayoutUnit viewport_bottom = view.CurrentViewportBottom();
     DCHECK_NE(viewport_bottom, kIndefiniteSize) << GetLayoutBox();
@@ -2026,29 +2027,13 @@ bool NGInlineNode::UseFirstLineStyle() const {
 bool NGInlineNode::ShouldBeReshaped() const {
   if (!Data().IsShapingDeferred())
     return false;
-  if (const auto* context = GetDisplayLockContext()) {
-    if (context->IsLocked())
-      return false;
-    // Need to check the request queue because
-    // 1. ShapeTextOrDefer() in ComputeMinMaxSizes() requested to lock an
-    //    element.
-    // 2. ShapeTextOrDefer() in Layout() calls this function before handling
-    //    the request queue.
-    return !GetLayoutBox()->GetFrameView()->LockDeferredRequested(
-        *To<Element>(GetDOMNode()));
-  }
-  // This is deferred, but not locked yet.
-  return false;
-}
-
-DisplayLockContext* NGInlineNode::GetDisplayLockContext() const {
-  return GetLayoutBox()->GetDisplayLockContext();
+  return !GetLayoutBox()->GetFrameView()->LockDeferredRequested(
+      *To<Element>(GetDOMNode()));
 }
 
 bool NGInlineNode::IsDisplayLocked() const {
-  if (const auto* context = GetDisplayLockContext())
-    return context->IsLocked();
-  return false;
+  return GetLayoutBox()->GetFrameView()->LockDeferredRequested(
+      *To<Element>(GetDOMNode()));
 }
 
 void NGInlineNode::CheckConsistency() const {

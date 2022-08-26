@@ -183,6 +183,8 @@ class CORE_EXPORT DisplayLockDocumentState final
   };
 
   void NotifyPrintingOrPreviewChanged();
+
+  // TODO(crbug.com/1259085): Move out the following four methods.
   void UnlockShapingDeferredElements();
   // Unlock shaping-deferred elements so that |target| can return the precise
   // value of |property_id|.
@@ -216,8 +218,6 @@ class CORE_EXPORT DisplayLockDocumentState final
   // one of the contexts skips its descendants, this return true. Otherwise, it
   // returns false.
   bool MarkAncestorContextsHaveTopLayerElement(Element*);
-
-  void UnlockShapingDeferredInclusiveDescendants(const LayoutObject& ancestor);
 
   Member<Document> document_;
 

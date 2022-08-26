@@ -90,12 +90,9 @@ class CORE_EXPORT DisplayLockContext final
   bool ShouldStyleChildren() const;
   void DidStyleSelf();
   void DidStyleChildren();
-  // This returns |true| for an IsShapingDeferred element.
   bool ShouldLayoutChildren() const;
   void DidLayoutChildren();
-  // This returns |true| for an IsShapingDeferred element.
   bool ShouldPrePaintChildren() const;
-  // This returns |true| for an IsShapingDeferred element.
   bool ShouldPaintChildren() const;
 
   // Returns true if the last style recalc traversal was blocked at this
@@ -217,9 +214,6 @@ class CORE_EXPORT DisplayLockContext final
   void ClearHasTopLayerElement();
 
   void ScheduleTopLayerCheck();
-
-  bool IsShapingDeferred() const;
-  bool IsInclusiveDescendantOf(const LayoutObject& ancestor) const;
 
   // This updates the rendering state to account for the fact that one of the
   // ancestor may be a non-root shared element, which should cause the

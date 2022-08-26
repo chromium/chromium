@@ -19,12 +19,7 @@ DeferredShapingViewportScope::DeferredShapingViewportScope(
                      : 0);
   LayoutUnit viewport_height =
       layout_view.InitialContainingBlockSize().block_size;
-  view_.SetCurrentViewportBottom(
-      PassKey(),
-      viewport_top + viewport_height +
-          LayoutUnit(viewport_height *
-                     DisplayLockDocumentState::kViewportMarginPercentage /
-                     100));
+  view_.SetCurrentViewportBottom(PassKey(), viewport_top + viewport_height);
 }
 
 }  // namespace blink

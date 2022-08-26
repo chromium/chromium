@@ -868,8 +868,7 @@ void NGBlockNode::FinishLayout(LayoutBlockFlow* block_flow,
     bool has_inline_children = items || HasInlineChildren(block_flow);
 
     // Don't consider display-locked objects as having any children.
-    if (has_inline_children && !block_flow->IsShapingDeferred() &&
-        box_->ChildLayoutBlockedByDisplayLock()) {
+    if (has_inline_children && box_->ChildLayoutBlockedByDisplayLock()) {
       has_inline_children = false;
       // It could be the case that our children are already clean at the time
       // the lock was acquired. This means that |box_| self dirty bits might be
