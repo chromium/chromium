@@ -2,80 +2,35 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//tools/grit/grit_rule.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_wrapper.gni")
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
-import("./access_code_cast.gni")
+import("//chrome/browser/resources/tools/build_webui.gni")
 
 assert(!is_android, "access_code_cast is not for android.")
 
-resources_grd_file = "$target_gen_dir/resources.grd"
+build_webui("build") {
+  grd_prefix = "access_code_cast"
 
-html_to_wrapper("html_wrapper_files") {
-  in_files = html_files
-}
+  static_files = [ "index.html" ]
 
-preprocess_if_expr("preprocess_src") {
-  in_files = ts_files
-}
+  web_component_files = [
+    "access_code_cast.ts",
+    "error_message/error_message.ts",
+    "passcode_input/passcode_input.ts",
+  ]
 
-copy("copy_mojo") {
-  deps = [
+  non_web_component_files = [ "browser_proxy.ts" ]
+
+  mojo_files_deps = [
     "//chrome/browser/ui/webui/access_code_cast:mojo_bindings_webui_js",
     "//components/media_router/common/mojom:route_request_result_code_webui_js",
   ]
-
-  sources = [
+  mojo_files = [
     "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/access_code_cast/access_code_cast.mojom-webui.js",
     "$root_gen_dir/mojom-webui/components/media_router/common/mojom/route_request_result_code.mojom-webui.js",
   ]
-  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
-}
 
-ts_library("build_ts") {
-  deps = [
+  ts_composite = true
+  ts_deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",
   ]
-  extra_deps = [
-    ":copy_mojo",
-    ":html_wrapper_files",
-    ":preprocess_src",
-  ]
-  root_dir = target_gen_dir
-  out_dir = "$target_gen_dir/tsc"
-  composite = true
-  tsconfig_base = "tsconfig_base.json"
-  in_files = ts_files + html_wrapper_files + [
-               "access_code_cast.mojom-webui.js",
-               "route_request_result_code.mojom-webui.js",
-             ]
-}
-
-generate_grd("build_grd") {
-  input_files = [ "index.html" ]
-  input_files_base_dir = rebase_path(".", "//")
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
-  deps = [ ":build_ts" ]
-
-  grd_prefix = "access_code_cast"
-  out_grd = resources_grd_file
-}
-
-grit("resources") {
-  # These arguments are needed since the grd is generated at build time.
-  enable_input_discovery_for_gn_analyze = false
-  source = resources_grd_file
-  deps = [ ":build_grd" ]
-
-  outputs = [
-    "grit/access_code_cast_resources.h",
-    "grit/access_code_cast_resources_map.cc",
-    "grit/access_code_cast_resources_map.h",
-    "access_code_cast_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chrome"
 }
