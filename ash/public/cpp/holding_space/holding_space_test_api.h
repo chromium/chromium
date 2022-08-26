@@ -19,6 +19,7 @@ class FilePath;
 }  // namespace base
 
 namespace views {
+class ImageView;
 class View;
 }  // namespace views
 
@@ -94,7 +95,7 @@ class ASH_EXPORT HoldingSpaceTestApi {
 
   // Returns the holding space tray icon view for the default, non content
   // forward  icon.
-  views::View* GetDefaultTrayIcon();
+  views::ImageView* GetDefaultTrayIcon();
 
   // Returns the holding space tray icon view for the content forward icon,
   // which displays previews of most recent items added to holding space.

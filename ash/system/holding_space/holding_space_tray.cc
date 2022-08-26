@@ -481,7 +481,9 @@ void HoldingSpaceTray::OnThemeChanged() {
 
   // Default tray icon.
   default_tray_icon_->SetImage(gfx::CreateVectorIcon(
-      kHoldingSpaceIcon, kHoldingSpaceTrayIconSize, color));
+      features::IsHoldingSpaceRebrandEnabled() ? kHoldingSpaceRebrandIcon
+                                               : kHoldingSpaceIcon,
+      kHoldingSpaceTrayIconSize, color));
 
   // Drop target icon.
   drop_target_icon_->SetImage(

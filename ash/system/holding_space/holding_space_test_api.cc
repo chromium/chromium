@@ -16,10 +16,10 @@
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "ash/system/holding_space/holding_space_tray.h"
 #include "ash/system/status_area_widget.h"
-#include "ui/aura/window.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/view.h"
-#include "ui/views/widget/widget.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -178,8 +178,9 @@ views::View* HoldingSpaceTestApi::GetTrayDropTargetOverlay() {
   return holding_space_tray_->GetViewByID(kHoldingSpaceTrayDropTargetOverlayId);
 }
 
-views::View* HoldingSpaceTestApi::GetDefaultTrayIcon() {
-  return holding_space_tray_->GetViewByID(kHoldingSpaceTrayDefaultIconId);
+views::ImageView* HoldingSpaceTestApi::GetDefaultTrayIcon() {
+  return views::AsViewClass<views::ImageView>(
+      holding_space_tray_->GetViewByID(kHoldingSpaceTrayDefaultIconId));
 }
 
 views::View* HoldingSpaceTestApi::GetPreviewsTrayIcon() {

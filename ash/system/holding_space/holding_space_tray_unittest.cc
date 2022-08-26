@@ -21,6 +21,7 @@
 #include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "ash/public/cpp/holding_space/mock_holding_space_client.h"
 #include "ash/public/cpp/test/shell_test_api.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
@@ -50,6 +51,8 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/skia_util.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "url/gurl.h"
@@ -2620,6 +2623,39 @@ TEST_F(HoldingSpacePreviewsTrayTest,
             HoldingSpaceItemView::Cast(screen_capture_chips[0])->item()->id());
 
   test_api()->Close();
+}
+
+// Base class for tests of the holding space icon parameterized by:
+// * a boolean for the kHoldingSpaceRebrand feature flag.
+class HoldingSpaceTrayIconTest : public HoldingSpaceTrayTest {
+ public:
+  HoldingSpaceTrayIconTest() {
+    scoped_feature_list_.InitWithFeatureState(features::kHoldingSpaceRebrand,
+                                              IsHoldingSpaceRebrandEnabled());
+  }
+
+  // Returns if kHoldingSpaceRebrand flag is enabled given the test
+  // parameterization.
+  bool IsHoldingSpaceRebrandEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All, HoldingSpaceTrayIconTest, ::testing::Bool());
+
+TEST_P(HoldingSpaceTrayIconTest, TrayButtonWithRebrandIcon) {
+  StartSession(/*pre_mark_time_of_first_add=*/true);
+  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
+  EXPECT_TRUE(gfx::BitmapsAreEqual(
+      *test_api()->GetDefaultTrayIcon()->GetImage().bitmap(),
+      *gfx::CreateVectorIcon(
+           IsHoldingSpaceRebrandEnabled() ? kHoldingSpaceRebrandIcon
+                                          : kHoldingSpaceIcon,
+           kHoldingSpaceTrayIconSize,
+           AshColorProvider::Get()->GetContentLayerColor(
+               AshColorProvider::ContentLayerType::kIconColorPrimary))
+           .bitmap()));
 }
 
 // Base class for tests of the holding space downloads section parameterized by:

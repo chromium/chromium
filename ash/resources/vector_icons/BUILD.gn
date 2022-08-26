@@ -102,6 +102,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "hide_closed_caption.icon",
     "holding_space.icon",
     "holding_space_download.icon",
+    "holding_space_rebrand.icon",
     "hollow_check_circle.icon",
     "ime_menu_emoticon.icon",
     "ime_menu_microphone.icon",
