@@ -270,6 +270,26 @@ TEST_F(GpuWatchdogTest, GpuInitializationHang) {
   // retry on failure.
 }
 
+// GPU Hang In Initialization.
+TEST_F(GpuWatchdogTest, GpuInitializationHangWithReportOnly) {
+  auto allowed_time =
+      timeout_ * (kInitFactor + 1) + full_thread_time_on_windows_;
+
+  watchdog_thread_->EnableReportOnlyMode();
+
+  // GPU init takes longer than timeout.
+  SimpleTask(allowed_time, /*extra_time=*/extra_gpu_job_time_);
+
+  // Gpu hangs. OnInitComplete() is not called
+  bool result = watchdog_thread_->IsGpuHangDetectedWithoutKillForTesting();
+  bool non_result = watchdog_thread_->IsGpuHangDetectedForTesting();
+  EXPECT_TRUE(result);
+  EXPECT_FALSE(non_result);
+
+  watchdog_thread_->DisableReportOnlyMode();
+  // retry on failure.
+}
+
 // Normal GPU Initialization and Running Task.
 TEST_F(GpuWatchdogTest, GpuInitializationAndRunningTasks) {
   // Assume GPU initialization takes quarter of WatchdogTimeout time.

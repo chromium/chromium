@@ -315,6 +315,11 @@ const base::Feature kSkiaDawn{"SkiaDawn", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kEnableGrShaderCacheForVulkan{
     "EnableGrShaderCacheForVulkan", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enable report only mode on the GPU watchdog instead of pausing the watchdog
+// thread during GPU startup.
+const base::Feature kEnableWatchdogReportOnlyModeOnGpuInit{
+    "EnableWatchdogReportOnlyModeOnGpuInit", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable persistent storage of VkPipelineCache data.
 const base::Feature kEnableVkPipelineCache{"EnableVkPipelineCache",
                                            base::FEATURE_DISABLED_BY_DEFAULT};

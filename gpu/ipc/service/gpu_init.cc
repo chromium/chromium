@@ -464,16 +464,28 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
 
   if (!gl_initialized) {
     // Pause watchdog. LoadLibrary in GLBindings may take long time.
-    if (watchdog_thread_)
-      watchdog_thread_->PauseWatchdog();
+    if (watchdog_thread_) {
+      if (base::FeatureList::IsEnabled(
+              features::kEnableWatchdogReportOnlyModeOnGpuInit)) {
+        watchdog_thread_->EnableReportOnlyMode();
+      } else {
+        watchdog_thread_->PauseWatchdog();
+      }
+    }
     gl_initialized = gl::init::InitializeStaticGLBindingsOneOff();
     if (!gl_initialized) {
       VLOG(1) << "gl::init::InitializeStaticGLBindingsOneOff failed";
       return false;
     }
 
-    if (watchdog_thread_)
-      watchdog_thread_->ResumeWatchdog();
+    if (watchdog_thread_) {
+      if (base::FeatureList::IsEnabled(
+              features::kEnableWatchdogReportOnlyModeOnGpuInit)) {
+        watchdog_thread_->DisableReportOnlyMode();
+      } else {
+        watchdog_thread_->ResumeWatchdog();
+      }
+    }
     if (gl::GetGLImplementation() != gl::kGLImplementationDisabled) {
       gl_display = gl::init::InitializeGLNoExtensionsOneOff(
           /*init_bindings*/ false, system_device_id);

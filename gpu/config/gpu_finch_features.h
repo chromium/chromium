@@ -64,6 +64,8 @@ GPU_EXPORT extern const base::Feature kSkiaDawn;
 
 GPU_EXPORT extern const base::Feature kEnableGrShaderCacheForVulkan;
 
+GPU_EXPORT extern const base::Feature kEnableWatchdogReportOnlyModeOnGpuInit;
+
 GPU_EXPORT extern const base::Feature kEnableVkPipelineCache;
 
 GPU_EXPORT extern const base::Feature kReduceOpsTaskSplitting;
