@@ -435,6 +435,15 @@ TEST_F(LocalFrameViewTest, TogglePaintEligibility) {
   EXPECT_TRUE(child_timing.FirstEligibleToPaint().is_null());
 }
 
+TEST_F(LocalFrameViewTest, WillNotBlockCommitsForNonMainFrames) {
+  SetBodyInnerHTML("<iframe><p>Hello</p></iframe>");
+
+  GetDocument().SetDeferredCompositorCommitIsAllowed(true);
+  ChildDocument().SetDeferredCompositorCommitIsAllowed(true);
+  EXPECT_TRUE(GetDocument().View()->WillDoPaintHoldingForFCP());
+  EXPECT_FALSE(ChildDocument().View()->WillDoPaintHoldingForFCP());
+}
+
 TEST_F(LocalFrameViewTest, IsUpdatingLifecycle) {
   SetBodyInnerHTML("<iframe srcdoc='Hello, world!'></iframe>>");
   EXPECT_FALSE(GetFrame().View()->IsUpdatingLifecycle());

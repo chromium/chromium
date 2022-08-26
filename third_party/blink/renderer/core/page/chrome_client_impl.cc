@@ -1074,7 +1074,7 @@ void ChromeClientImpl::OnDeferCommitsChanged(
 bool ChromeClientImpl::StartDeferringCommits(LocalFrame& main_frame,
                                              base::TimeDelta timeout,
                                              cc::PaintHoldingReason reason) {
-  DCHECK(main_frame.IsMainFrame());
+  DCHECK(main_frame.IsLocalRoot());
   return WebLocalFrameImpl::FromFrame(main_frame)
       ->FrameWidgetImpl()
       ->StartDeferringCommits(timeout, reason);
@@ -1083,7 +1083,7 @@ bool ChromeClientImpl::StartDeferringCommits(LocalFrame& main_frame,
 void ChromeClientImpl::StopDeferringCommits(
     LocalFrame& main_frame,
     cc::PaintHoldingCommitTrigger trigger) {
-  DCHECK(main_frame.IsMainFrame());
+  DCHECK(main_frame.IsLocalRoot());
   WebLocalFrameImpl::FromFrame(main_frame)
       ->FrameWidgetImpl()
       ->StopDeferringCommits(trigger);

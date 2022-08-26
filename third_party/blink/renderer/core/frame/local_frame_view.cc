@@ -1958,7 +1958,7 @@ void LocalFrameView::DidAttachDocument() {
 
   if (frame_->IsMainFrame()) {
     // Allow for commits to be deferred because this is a new document.
-    have_deferred_commits_ = false;
+    have_deferred_main_frame_commits_ = false;
   }
 }
 
@@ -4622,7 +4622,7 @@ void LocalFrameView::BeginLifecycleUpdates() {
   // multiple times, and we do not want to defer a second time if we have
   // already done so once and resumed commits already.
   if (WillDoPaintHoldingForFCP()) {
-    have_deferred_commits_ = true;
+    have_deferred_main_frame_commits_ = true;
     chrome_client.StartDeferringCommits(
         GetFrame(), base::Milliseconds(kCommitDelayDefaultInMs),
         cc::PaintHoldingReason::kFirstContentfulPaint);
@@ -4634,7 +4634,7 @@ void LocalFrameView::BeginLifecycleUpdates() {
 bool LocalFrameView::WillDoPaintHoldingForFCP() const {
   Document* document = GetFrame().GetDocument();
   return document && document->DeferredCompositorCommitIsAllowed() &&
-         !have_deferred_commits_;
+         !have_deferred_main_frame_commits_ && GetFrame().IsMainFrame();
 }
 
 MainThreadScrollingReasons LocalFrameView::MainThreadScrollingReasonsPerFrame()

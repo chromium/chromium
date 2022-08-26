@@ -1163,8 +1163,9 @@ class CORE_EXPORT LocalFrameView final
   bool needs_focus_on_fragment_;
 
   // True if the frame has deferred commits at least once per document load.
-  // We won't defer again for the same document.
-  bool have_deferred_commits_ = false;
+  // We won't defer again for the same document. This is only meaningful for
+  // main frames.
+  bool have_deferred_main_frame_commits_ = false;
 
   bool visual_viewport_or_overlay_needs_repaint_ = false;
 
