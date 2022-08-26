@@ -502,7 +502,7 @@ ChromeAuthenticatorRequestDelegate::ChromeAuthenticatorRequestDelegate(
     content::RenderFrameHost* render_frame_host)
     : render_frame_host_id_(render_frame_host->GetGlobalId()),
       dialog_model_(std::make_unique<AuthenticatorRequestDialogModel>(
-          content::WebContents::FromRenderFrameHost(GetRenderFrameHost()))) {
+          GetRenderFrameHost())) {
   dialog_model_->AddObserver(this);
   if (g_observer) {
     g_observer->Created(this);

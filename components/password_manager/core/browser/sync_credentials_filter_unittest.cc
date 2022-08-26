@@ -80,7 +80,8 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
   signin::IdentityManager* GetIdentityManager() override {
     return identity_manager_;
   }
-  MockWebAuthnCredentialsDelegate* GetWebAuthnCredentialsDelegate() override {
+  MockWebAuthnCredentialsDelegate* GetWebAuthnCredentialsDelegateForDriver(
+      password_manager::PasswordManagerDriver*) override {
     return &webauthn_credentials_delegate_;
   }
 

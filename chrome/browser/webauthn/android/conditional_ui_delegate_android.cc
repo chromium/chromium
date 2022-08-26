@@ -7,8 +7,11 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
+#include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate_factory.h"
 #include "content/public/browser/web_contents.h"
 #include "device/fido/discoverable_credential_metadata.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 // static
 ConditionalUiDelegateAndroid*
@@ -33,30 +36,18 @@ ConditionalUiDelegateAndroid::ConditionalUiDelegateAndroid() {}
 ConditionalUiDelegateAndroid::~ConditionalUiDelegateAndroid() {}
 
 void ConditionalUiDelegateAndroid::OnWebAuthnRequestPending(
+    content::RenderFrameHost* frame_host,
     const std::vector<device::DiscoverableCredentialMetadata>& credentials,
     base::OnceCallback<void(const std::vector<uint8_t>& id)> callback) {
   webauthn_account_selection_callback_ = std::move(callback);
-  webauthn_account_suggestions_ = std::move(credentials);
 
-  if (retrieve_credentials_callback_) {
-    std::move(retrieve_credentials_callback_)
-        .Run(webauthn_account_suggestions_);
-  }
+  ChromeWebAuthnCredentialsDelegateFactory::GetFactory(
+      content::WebContents::FromRenderFrameHost(frame_host))
+      ->GetDelegateForFrame(frame_host)
+      ->OnCredentialsReceived(credentials);
 }
 
 void ConditionalUiDelegateAndroid::OnWebAuthnAccountSelected(
     const std::vector<uint8_t>& user_id) {
   std::move(webauthn_account_selection_callback_).Run(user_id);
-}
-
-void ConditionalUiDelegateAndroid::RetrieveWebAuthnCredentials(
-    base::OnceCallback<void(
-        const std::vector<device::DiscoverableCredentialMetadata>&)> callback) {
-  // Complete immediately if there is an outstanding WebAuthn get request.
-  if (webauthn_account_selection_callback_) {
-    std::move(callback).Run(webauthn_account_suggestions_);
-    return;
-  }
-
-  retrieve_credentials_callback_ = std::move(callback);
 }

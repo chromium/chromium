@@ -44,6 +44,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -483,7 +484,8 @@ void PasswordAutofillManager::DidAcceptSuggestion(
     metrics_util::LogPasswordDropdownItemSelected(
         PasswordDropdownSelectedOption::kWebAuthn,
         password_client_->IsIncognito());
-    password_client_->GetWebAuthnCredentialsDelegate()
+    password_client_
+        ->GetWebAuthnCredentialsDelegateForDriver(password_manager_driver_)
         ->SelectWebAuthnCredential(
             absl::holds_alternative<autofill::Suggestion::BackendId>(payload)
                 ? absl::get<autofill::Suggestion::BackendId>(payload).value()
@@ -493,7 +495,9 @@ void PasswordAutofillManager::DidAcceptSuggestion(
     metrics_util::LogPasswordDropdownItemSelected(
         PasswordDropdownSelectedOption::kWebAuthnSignInWithAnotherDevice,
         password_client_->IsIncognito());
-    password_client_->GetWebAuthnCredentialsDelegate()->LaunchWebAuthnFlow();
+    password_client_
+        ->GetWebAuthnCredentialsDelegateForDriver(password_manager_driver_)
+        ->LaunchWebAuthnFlow();
   } else {
     metrics_util::LogPasswordDropdownItemSelected(
         PasswordDropdownSelectedOption::kPassword,
@@ -703,15 +707,19 @@ std::vector<autofill::Suggestion> PasswordAutofillManager::BuildSuggestions(
 
   // Add WebAuthn credentials suitable for an ongoing request if available.
   WebAuthnCredentialsDelegate* delegate =
-      password_client_->GetWebAuthnCredentialsDelegate();
-  if (show_webauthn_credentials && delegate->IsWebAuthnAutofillEnabled()) {
-    std::vector<autofill::Suggestion> webauthn_suggestions =
+      password_client_->GetWebAuthnCredentialsDelegateForDriver(
+          password_manager_driver_);
+  if (show_webauthn_credentials && delegate &&
+      delegate->IsWebAuthnAutofillEnabled()) {
+    absl::optional<std::vector<autofill::Suggestion>> webauthn_suggestions =
         delegate->GetWebAuthnSuggestions();
-    for (auto& suggestion : webauthn_suggestions) {
-      suggestion.custom_icon = page_favicon_;
+    if (webauthn_suggestions.has_value()) {
+      for (auto& suggestion : *webauthn_suggestions) {
+        suggestion.custom_icon = page_favicon_;
+      }
+      suggestions.insert(suggestions.end(), webauthn_suggestions->begin(),
+                         webauthn_suggestions->end());
     }
-    suggestions.insert(suggestions.end(), webauthn_suggestions.begin(),
-                       webauthn_suggestions.end());
   }
 
   if (!fill_data_ && !show_account_storage_optin &&
@@ -729,7 +737,8 @@ std::vector<autofill::Suggestion> PasswordAutofillManager::BuildSuggestions(
 
 #if !BUILDFLAG(IS_ANDROID)
   // Add "Sign in with another device" button.
-  if (show_webauthn_credentials && delegate->IsWebAuthnAutofillEnabled()) {
+  if (show_webauthn_credentials && delegate &&
+      delegate->IsWebAuthnAutofillEnabled()) {
     suggestions.push_back(CreateWebAuthnEntry());
   }
 #endif  // !BUILDFLAG(IS_ANDROID)

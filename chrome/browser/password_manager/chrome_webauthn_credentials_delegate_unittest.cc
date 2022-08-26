@@ -14,15 +14,19 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate_factory.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
+#include "components/strings/grit/components_strings.h"
+#include "content/public/test/web_contents_tester.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/public_key_credential_user_entity.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/webauthn/authenticator_request_scheduler.h"
@@ -93,15 +97,15 @@ class ChromeWebAuthnCredentialsDelegateTest
         ConditionalUiDelegateAndroid::GetConditionalUiDelegate(web_contents());
 #endif
 
-    ChromePasswordManagerClient::CreateForWebContentsWithAutofillClient(
-        web_contents(), nullptr);
-    credentials_delegate_ = std::make_unique<ChromeWebAuthnCredentialsDelegate>(
-        ChromePasswordManagerClient::FromWebContents(web_contents()));
+    content::WebContentsTester::For(web_contents())
+        ->NavigateAndCommit(GURL("https://example.com"));
+
+    credentials_delegate_ =
+        ChromeWebAuthnCredentialsDelegateFactory::GetFactory(web_contents())
+            ->GetDelegateForFrame(web_contents()->GetPrimaryMainFrame());
   }
 
   void TearDown() override {
-    credentials_delegate_.reset();
-
 #if !BUILDFLAG(IS_ANDROID)
     authenticator_request_delegate_.reset();
 #endif
@@ -117,9 +121,10 @@ class ChromeWebAuthnCredentialsDelegateTest
     dialog_model()->ReplaceCredListForTesting(std::move(creds));
 #else
     delegate_->OnWebAuthnRequestPending(
-        creds, base::BindOnce(
-                   &ChromeWebAuthnCredentialsDelegateTest::OnAccountSelected,
-                   base::Unretained(this)));
+        main_rfh(), creds,
+        base::BindOnce(
+            &ChromeWebAuthnCredentialsDelegateTest::OnAccountSelected,
+            base::Unretained(this)));
 #endif
   }
 
@@ -140,7 +145,7 @@ class ChromeWebAuthnCredentialsDelegateTest
 #endif
 
  protected:
-  std::unique_ptr<ChromeWebAuthnCredentialsDelegate> credentials_delegate_;
+  ChromeWebAuthnCredentialsDelegate* credentials_delegate_;
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<ChromeAuthenticatorRequestDelegate>
       authenticator_request_delegate_;
@@ -165,32 +170,57 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest, RetrieveCredentials) {
       device::PublicKeyCredentialUserEntity(UserId2(), UserName2(),
                                             DisplayName2(), absl::nullopt));
 
-  SetCredList(users);
-
-  credentials_delegate_->RetrieveWebAuthnSuggestions(base::BindOnce([]() {}));
-  task_environment()->RunUntilIdle();
+  credentials_delegate_->OnCredentialsReceived(users);
 
   auto suggestions = credentials_delegate_->GetWebAuthnSuggestions();
-  ASSERT_EQ(suggestions.size(), 2u);
-  ASSERT_EQ(suggestions[0].labels.size(), 1u);
-  ASSERT_EQ(suggestions[1].labels.size(), 1u);
-  ASSERT_EQ(suggestions[0].labels[0].size(), 1u);
-  ASSERT_EQ(suggestions[1].labels[0].size(), 1u);
-  EXPECT_EQ(suggestions[0].main_text.value, base::UTF8ToUTF16(UserName1()));
-  EXPECT_EQ(suggestions[0].labels[0][0].value, kPlatformAuthenticatorLabel);
-  EXPECT_EQ(suggestions[1].main_text.value, base::UTF8ToUTF16(UserName2()));
-  EXPECT_EQ(suggestions[1].labels[0][0].value, kPlatformAuthenticatorLabel);
+  EXPECT_TRUE(suggestions.has_value());
+  EXPECT_EQ(suggestions->size(), 2u);
+  ASSERT_EQ((*suggestions)[0].labels.size(), 1u);
+  ASSERT_EQ((*suggestions)[1].labels.size(), 1u);
+  ASSERT_EQ((*suggestions)[0].labels[0].size(), 1u);
+  ASSERT_EQ((*suggestions)[1].labels[0].size(), 1u);
+  EXPECT_EQ((*suggestions)[0].main_text.value, base::UTF8ToUTF16(UserName1()));
+  EXPECT_EQ((*suggestions)[0].labels[0][0].value, kPlatformAuthenticatorLabel);
+  EXPECT_EQ((*suggestions)[1].main_text.value, base::UTF8ToUTF16(UserName2()));
+  EXPECT_EQ((*suggestions)[1].labels[0][0].value, kPlatformAuthenticatorLabel);
+}
+
+// Testing retrieving suggestions when the credentials are not received until
+// afterward.
+TEST_F(ChromeWebAuthnCredentialsDelegateTest, RetrieveCredentialsDelayed) {
+  const std::u16string kPlatformAuthenticatorLabel = l10n_util::GetStringUTF16(
+      password_manager::GetPlatformAuthenticatorLabel());
+  std::vector<device::DiscoverableCredentialMetadata> users;
+  users.emplace_back(
+      kRpId, CredId1(),
+      device::PublicKeyCredentialUserEntity(UserId1(), UserName1(),
+                                            DisplayName1(), absl::nullopt));
+  users.emplace_back(
+      kRpId, CredId2(),
+      device::PublicKeyCredentialUserEntity(UserId2(), UserName2(),
+                                            DisplayName2(), absl::nullopt));
+
+  credentials_delegate_->OnCredentialsReceived(users);
+
+  auto suggestions = credentials_delegate_->GetWebAuthnSuggestions();
+  EXPECT_TRUE(suggestions.has_value());
+  EXPECT_EQ(suggestions->size(), 2u);
+  ASSERT_EQ((*suggestions)[0].labels.size(), 1u);
+  ASSERT_EQ((*suggestions)[1].labels.size(), 1u);
+  ASSERT_EQ((*suggestions)[0].labels[0].size(), 1u);
+  ASSERT_EQ((*suggestions)[1].labels[0].size(), 1u);
+  EXPECT_EQ((*suggestions)[0].main_text.value, base::UTF8ToUTF16(UserName1()));
+  EXPECT_EQ((*suggestions)[0].labels[0][0].value, kPlatformAuthenticatorLabel);
+  EXPECT_EQ((*suggestions)[1].main_text.value, base::UTF8ToUTF16(UserName2()));
+  EXPECT_EQ((*suggestions)[1].labels[0][0].value, kPlatformAuthenticatorLabel);
 }
 
 // Testing retrieving suggestions when there are no public key credentials
 // present.
 TEST_F(ChromeWebAuthnCredentialsDelegateTest,
        RetrieveCredentialsWithEmptyList) {
-  credentials_delegate_->RetrieveWebAuthnSuggestions(base::BindOnce([]() {}));
-  task_environment()->RunUntilIdle();
-
   auto suggestions = credentials_delegate_->GetWebAuthnSuggestions();
-  EXPECT_EQ(suggestions.size(), 0u);
+  EXPECT_FALSE(suggestions.has_value());
 }
 
 // Testing retrieving suggestions when there is a public key credential present
@@ -206,16 +236,16 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest,
       kRpId, CredId1(),
       device::PublicKeyCredentialUserEntity(UserId1(), absl::nullopt,
                                             DisplayName1(), absl::nullopt));
-  SetCredList(users);
-  credentials_delegate_->RetrieveWebAuthnSuggestions(base::BindOnce([]() {}));
-  task_environment()->RunUntilIdle();
+
+  credentials_delegate_->OnCredentialsReceived(users);
 
   auto suggestions = credentials_delegate_->GetWebAuthnSuggestions();
-  EXPECT_EQ(suggestions.size(), 1u);
-  EXPECT_EQ(suggestions[0].main_text.value, kErrorLabel);
-  ASSERT_EQ(suggestions[0].labels.size(), 1u);
-  ASSERT_EQ(suggestions[0].labels[0].size(), 1u);
-  EXPECT_EQ(suggestions[0].labels[0][0].value, kPlatformAuthenticatorLabel);
+  EXPECT_TRUE(suggestions.has_value());
+  EXPECT_EQ(suggestions->size(), 1u);
+  EXPECT_EQ((*suggestions)[0].main_text.value, kErrorLabel);
+  ASSERT_EQ((*suggestions)[0].labels.size(), 1u);
+  ASSERT_EQ((*suggestions)[0].labels[0].size(), 1u);
+  EXPECT_EQ((*suggestions)[0].labels[0][0].value, kPlatformAuthenticatorLabel);
 }
 
 // Testing selection of a credential.
@@ -229,7 +259,9 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest, SelectCredential) {
       kRpId, CredId2(),
       device::PublicKeyCredentialUserEntity(UserId2(), UserName2(),
                                             DisplayName2(), absl::nullopt));
+
   SetCredList(users);
+  credentials_delegate_->OnCredentialsReceived(users);
 
 #if !BUILDFLAG(IS_ANDROID)
   base::RunLoop run_loop;

@@ -22,6 +22,7 @@
 #include "chrome/browser/webauthn/authenticator_transport.h"
 #include "chrome/browser/webauthn/observable_authenticator_list.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
+#include "content/public/browser/global_routing_id.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
@@ -31,13 +32,17 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
-namespace gfx {
-struct VectorIcon;
-}
+namespace content {
+class RenderFrameHost;
+}  // namespace content
 
 namespace device {
 class AuthenticatorGetAssertionResponse;
 class DiscoverableCredentialMetadata;
+}
+
+namespace gfx {
+struct VectorIcon;
 }
 
 // Encapsulates the model behind the Web Authentication request dialog's UX
@@ -244,7 +249,8 @@ class AuthenticatorRequestDialogModel {
     UNLOCK_YOUR_PHONE = 12,
   };
 
-  explicit AuthenticatorRequestDialogModel(content::WebContents* web_contents);
+  explicit AuthenticatorRequestDialogModel(
+      content::RenderFrameHost* render_frame_host);
 
   AuthenticatorRequestDialogModel(const AuthenticatorRequestDialogModel&) =
       delete;
@@ -567,13 +573,6 @@ class AuthenticatorRequestDialogModel {
   void RequestAttestationPermission(bool is_enterprise_attestation,
                                     base::OnceCallback<void(bool)> callback);
 
-  // If ephemeral_state_.creds_ has been set, this invokes the callback
-  // immediately with the user list. If not, it waits until a user list is
-  // obtained from processing a Conditional UI getAssertion request.
-  void GetCredentialListForConditionalUi(
-      base::OnceCallback<
-          void(const std::vector<device::DiscoverableCredentialMetadata>&)>);
-
   const std::vector<device::DiscoverableCredentialMetadata>& creds() {
     return ephemeral_state_.creds_;
   }
@@ -596,7 +595,7 @@ class AuthenticatorRequestDialogModel {
   // phones.
   std::vector<std::string> paired_phone_names() const;
 
-  void set_relying_party_id(std::string relying_party_id) {
+  void set_relying_party_id(const std::string& relying_party_id) {
     relying_party_id_ = relying_party_id;
   }
   const std::string& relying_party_id() const { return relying_party_id_; }
@@ -637,6 +636,9 @@ class AuthenticatorRequestDialogModel {
     // authenticator has responded to a request.
     std::vector<device::DiscoverableCredentialMetadata> creds_;
   };
+
+  // Can return nullptr in tests.
+  content::WebContents* GetWebContents();
 
   void SetCurrentStep(Step step);
 
@@ -681,9 +683,9 @@ class AuthenticatorRequestDialogModel {
   // Valid action when at all steps.
   void HideDialogAndDispatchToPlatformAuthenticator();
 
-  // Web contents where the dialog is shown. May be null on unit tests where
-  // there's no actual UI being shown.
-  raw_ptr<content::WebContents> web_contents_;
+  // Identifier for the RenderFrameHost of the frame that initiated the current
+  // request.
+  content::GlobalRenderFrameHostId frame_host_id_;
 
   EphemeralState ephemeral_state_;
 
@@ -780,14 +782,6 @@ class AuthenticatorRequestDialogModel {
   base::RepeatingCallback<void(size_t)> contact_phone_callback_;
 
   absl::optional<std::string> cable_qr_string_;
-
-  // Callback for a request for a Conditional UI user list. This is set when
-  // password manager sees an input field that will accept WebAuthn
-  // credentials, but the signing request has not yet been received from the
-  // renderer.
-  base::OnceCallback<void(
-      const std::vector<device::DiscoverableCredentialMetadata>&)>
-      conditional_ui_user_list_callback_;
 
   base::WeakPtrFactory<AuthenticatorRequestDialogModel> weak_factory_{this};
 };

@@ -41,6 +41,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 using autofill::FieldDataManager;
@@ -140,7 +141,7 @@ PasswordFormManager::PasswordFormManager(
     owned_form_fetcher_->Fetch();
 
     WebAuthnCredentialsDelegate* delegate =
-        client_->GetWebAuthnCredentialsDelegate();
+        client_->GetWebAuthnCredentialsDelegateForDriver(driver_.get());
     bool is_webauthn_autofill_enabled =
         delegate && delegate->IsWebAuthnAutofillEnabled();
 
@@ -867,10 +868,10 @@ void PasswordFormManager::Fill() {
 
   bool webauthn_suggestions_available = false;
   WebAuthnCredentialsDelegate* delegate =
-      client_->GetWebAuthnCredentialsDelegate();
+      client_->GetWebAuthnCredentialsDelegateForDriver(driver_.get());
   if (delegate && delegate->IsWebAuthnAutofillEnabled()) {
     webauthn_suggestions_available =
-        delegate->GetWebAuthnSuggestions().size() > 0;
+        delegate->GetWebAuthnSuggestions().has_value();
   }
 
   SendFillInformationToRenderer(

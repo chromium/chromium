@@ -19,5 +19,6 @@ void ChromeWebAuthnClientAndroid::OnWebAuthnRequestPending(
   auto* delegate = ConditionalUiDelegateAndroid::GetConditionalUiDelegate(
       content::WebContents::FromRenderFrameHost(frame_host));
 
-  delegate->OnWebAuthnRequestPending(credentials, std::move(callback));
+  delegate->OnWebAuthnRequestPending(frame_host, credentials,
+                                     std::move(callback));
 }

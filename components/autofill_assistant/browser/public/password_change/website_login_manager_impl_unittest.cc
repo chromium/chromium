@@ -69,8 +69,8 @@ class MockPasswordManagerClient
               (const GURL&),
               (const, override));
   MOCK_METHOD(password_manager::MockWebAuthnCredentialsDelegate*,
-              GetWebAuthnCredentialsDelegate,
-              (),
+              GetWebAuthnCredentialsDelegateForDriver,
+              (password_manager::PasswordManagerDriver*),
               (override));
 };
 
@@ -198,7 +198,7 @@ class WebsiteLoginManagerImplTest : public content::RenderViewHostTestHarness {
     password_manager_ = std::make_unique<PasswordManager>(&client_);
     ON_CALL(client_, GetPasswordManager())
         .WillByDefault(Return(password_manager_.get()));
-    ON_CALL(client_, GetWebAuthnCredentialsDelegate())
+    ON_CALL(client_, GetWebAuthnCredentialsDelegateForDriver)
         .WillByDefault(Return(&webauthn_credentials_delegate_));
     ON_CALL(webauthn_credentials_delegate_, IsWebAuthnAutofillEnabled)
         .WillByDefault(Return(false));

@@ -14,7 +14,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom-forward.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -72,11 +71,16 @@ struct PasswordGenerationUIData;
 }  // namespace autofill
 
 namespace content {
+class RenderFrameHost;
 class WebContents;
 }
 
 namespace device_reauth {
 class BiometricAuthenticator;
+}
+
+namespace password_manager {
+class WebAuthnCredentialsDelegate;
 }
 
 // ChromePasswordManagerClient implements the PasswordManagerClient interface.
@@ -262,7 +266,8 @@ class ChromePasswordManagerClient
   bool IsNewTabPage() const override;
   password_manager::FieldInfoManager* GetFieldInfoManager() const override;
   password_manager::WebAuthnCredentialsDelegate*
-  GetWebAuthnCredentialsDelegate() override;
+  GetWebAuthnCredentialsDelegateForDriver(
+      password_manager::PasswordManagerDriver* driver) override;
   version_info::Channel GetChannel() const override;
   void RefreshPasswordManagerSettingsIfNeeded() const override;
 
@@ -397,8 +402,6 @@ class ChromePasswordManagerClient
 
   raw_ptr<password_manager::ContentPasswordManagerDriverFactory>
       driver_factory_;
-
-  ChromeWebAuthnCredentialsDelegate webauthn_credentials_delegate_;
 
   // As a mojo service, will be registered into service registry
   // of the main frame host by ChromeContentBrowserClient

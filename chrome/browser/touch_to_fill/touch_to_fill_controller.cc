@@ -195,11 +195,11 @@ void TouchToFillController::OnWebAuthnCredentialSelected(
   if (!driver_)
     return;
 
+  password_client_->GetWebAuthnCredentialsDelegateForDriver(driver_.get())
+      ->SelectWebAuthnCredential(credential.id().value());
+
   CleanUpDriverAndReportOutcome(TouchToFillOutcome::kWebAuthnCredentialSelected,
                                 /*show_virtual_keyboard=*/false);
-
-  password_client_->GetWebAuthnCredentialsDelegate()->SelectWebAuthnCredential(
-      credential.id().value());
 }
 
 void TouchToFillController::OnManagePasswordsSelected() {

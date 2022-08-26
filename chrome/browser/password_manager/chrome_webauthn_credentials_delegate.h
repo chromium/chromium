@@ -6,22 +6,26 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_CHROME_WEBAUTHN_CREDENTIALS_DELEGATE_H_
 
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace content {
+class WebContents;
+}
 
 namespace device {
 class DiscoverableCredentialMetadata;
 }
-
-class ChromePasswordManagerClient;
 
 // Chrome implementation of WebAuthnCredentialsDelegate.
 class ChromeWebAuthnCredentialsDelegate
     : public password_manager::WebAuthnCredentialsDelegate {
  public:
   explicit ChromeWebAuthnCredentialsDelegate(
-      ChromePasswordManagerClient* client);
+      content::WebContents* web_contents);
   ~ChromeWebAuthnCredentialsDelegate() override;
   ChromeWebAuthnCredentialsDelegate(const ChromeWebAuthnCredentialsDelegate&) =
       delete;
@@ -32,23 +36,24 @@ class ChromeWebAuthnCredentialsDelegate
   bool IsWebAuthnAutofillEnabled() const override;
   void LaunchWebAuthnFlow() override;
   void SelectWebAuthnCredential(std::string backend_id) override;
-  const std::vector<autofill::Suggestion>& GetWebAuthnSuggestions()
-      const override;
+  const absl::optional<std::vector<autofill::Suggestion>>&
+  GetWebAuthnSuggestions() const override;
   void RetrieveWebAuthnSuggestions(base::OnceClosure callback) override;
 
- protected:
-  const raw_ptr<ChromePasswordManagerClient> client_;
-
- private:
-  // Callback for providing a list of WebAuthn user entities that can be
-  // provided as autofill suggestions.
+  // Method for providing a list of WebAuthn user entities that can be provided
+  // as autofill suggestions. This is called when a WebAuthn Conditional UI
+  // request is received.
   void OnCredentialsReceived(
       const std::vector<device::DiscoverableCredentialMetadata>& credentials);
 
+ protected:
+  const raw_ptr<content::WebContents> web_contents_;
+
+ private:
   // List of autofill suggestions populated from an authenticator from a call
   // to RetrieveWebAuthnSuggestions, and returned to the client via
   // GetWebAuthnSuggestions.
-  std::vector<autofill::Suggestion> suggestions_;
+  absl::optional<std::vector<autofill::Suggestion>> suggestions_;
 
   base::OnceClosure retrieve_suggestions_callback_;
 

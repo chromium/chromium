@@ -18,9 +18,14 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
+#include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate_factory.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_dialog.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
@@ -159,8 +164,11 @@ void AuthenticatorRequestDialogModel::EphemeralState::Reset() {
 }
 
 AuthenticatorRequestDialogModel::AuthenticatorRequestDialogModel(
-    content::WebContents* web_contents)
-    : web_contents_(web_contents) {}
+    content::RenderFrameHost* frame_host) {
+  if (frame_host) {
+    frame_host_id_ = frame_host->GetGlobalId();
+  }
+}
 
 AuthenticatorRequestDialogModel::~AuthenticatorRequestDialogModel() {
   for (auto& observer : observers_)
@@ -799,17 +807,6 @@ void AuthenticatorRequestDialogModel::RequestAttestationPermission(
                      : Step::kAttestationPermissionRequest);
 }
 
-void AuthenticatorRequestDialogModel::GetCredentialListForConditionalUi(
-    base::OnceCallback<void(
-        const std::vector<device::DiscoverableCredentialMetadata>&)> callback) {
-  if (current_step() == Step::kConditionalMediation) {
-    std::move(callback).Run(ephemeral_state_.creds_);
-    return;
-  }
-
-  conditional_ui_user_list_callback_ = std::move(callback);
-}
-
 void AuthenticatorRequestDialogModel::set_cable_transport_info(
     absl::optional<bool> extension_is_v2,
     std::vector<PairedPhone> paired_phones,
@@ -857,6 +854,11 @@ AuthenticatorRequestDialogModel::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+content::WebContents* AuthenticatorRequestDialogModel::GetWebContents() {
+  return content::WebContents::FromRenderFrameHost(
+      content::RenderFrameHost::FromID(frame_host_id_));
+}
+
 void AuthenticatorRequestDialogModel::SetCurrentStep(Step step) {
   if (!started_) {
     // Dialog isn't showing yet. Remember to show this step when it appears.
@@ -869,8 +871,9 @@ void AuthenticatorRequestDialogModel::SetCurrentStep(Step step) {
     // The dialog will close itself.
     showing_dialog_ = false;
   } else {
-    if (!showing_dialog_ && web_contents_) {
-      ShowAuthenticatorRequestDialog(web_contents_, this);
+    auto* web_contents = GetWebContents();
+    if (!showing_dialog_ && web_contents) {
+      ShowAuthenticatorRequestDialog(web_contents, this);
       showing_dialog_ = true;
     }
   }
@@ -980,8 +983,12 @@ void AuthenticatorRequestDialogModel::StartConditionalMediationRequest() {
   ephemeral_state_.creds_ =
       transport_availability_.recognized_platform_authenticator_credentials;
 
-  if (conditional_ui_user_list_callback_) {
-    std::move(conditional_ui_user_list_callback_).Run(ephemeral_state_.creds_);
+  auto* render_frame_host = content::RenderFrameHost::FromID(frame_host_id_);
+  auto* web_contents = GetWebContents();
+  if (web_contents && render_frame_host) {
+    ChromeWebAuthnCredentialsDelegateFactory::GetFactory(web_contents)
+        ->GetDelegateForFrame(render_frame_host)
+        ->OnCredentialsReceived(ephemeral_state_.creds_);
   }
 
   SetCurrentStep(Step::kConditionalMediation);

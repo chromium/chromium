@@ -180,8 +180,8 @@ class TestPasswordManagerClient : public StubPasswordManagerClient {
               (ManagePasswordsReferrer),
               (override));
   MOCK_METHOD(WebAuthnCredentialsDelegate*,
-              GetWebAuthnCredentialsDelegate,
-              (),
+              GetWebAuthnCredentialsDelegateForDriver,
+              (PasswordManagerDriver*),
               (override));
 
  private:
@@ -315,7 +315,7 @@ class PasswordAutofillManagerTest : public testing::Test {
 
     webauthn_credentials_delegate_ =
         std::make_unique<MockWebAuthnCredentialsDelegate>();
-    ON_CALL(*client, GetWebAuthnCredentialsDelegate)
+    ON_CALL(*client, GetWebAuthnCredentialsDelegateForDriver)
         .WillByDefault(Return(webauthn_credentials_delegate_.get()));
     ON_CALL(*webauthn_credentials_delegate_, IsWebAuthnAutofillEnabled)
         .WillByDefault(Return(false));
@@ -1914,9 +1914,9 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
   webauthn_credential.labels = {{Suggestion::Text(kAuthenticator)}};
   ON_CALL(webauthn_credentials_delegate, IsWebAuthnAutofillEnabled)
       .WillByDefault(Return(true));
-  EXPECT_CALL(client, GetWebAuthnCredentialsDelegate)
+  EXPECT_CALL(client, GetWebAuthnCredentialsDelegateForDriver)
       .WillRepeatedly(Return(&webauthn_credentials_delegate));
-  auto webauthn_credential_list =
+  absl::optional<std::vector<autofill::Suggestion>> webauthn_credential_list =
       std::vector<autofill::Suggestion>{webauthn_credential};
   EXPECT_CALL(webauthn_credentials_delegate, GetWebAuthnSuggestions)
       .WillOnce(ReturnRef(webauthn_credential_list));
@@ -1974,10 +1974,10 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSignInWithAnotherDevice) {
   InitializePasswordAutofillManager(&client, &autofill_client);
 
   // Enable WebAuthn autofill.
-  std::vector<autofill::Suggestion> webauthn_credentials;
+  absl::optional<std::vector<autofill::Suggestion>> webauthn_credentials;
   ON_CALL(webauthn_credentials_delegate, IsWebAuthnAutofillEnabled)
       .WillByDefault(Return(true));
-  EXPECT_CALL(client, GetWebAuthnCredentialsDelegate)
+  EXPECT_CALL(client, GetWebAuthnCredentialsDelegateForDriver)
       .WillRepeatedly(Return(&webauthn_credentials_delegate));
   EXPECT_CALL(webauthn_credentials_delegate, GetWebAuthnSuggestions)
       .WillOnce(ReturnRef(webauthn_credentials));

@@ -66,8 +66,8 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               (const, override));
   MOCK_METHOD(bool, IsCommittedMainFrameSecure, (), (const, override));
   MOCK_METHOD(MockWebAuthnCredentialsDelegate*,
-              GetWebAuthnCredentialsDelegate,
-              (),
+              GetWebAuthnCredentialsDelegateForDriver,
+              (PasswordManagerDriver*),
               (override));
 };
 
@@ -121,7 +121,7 @@ class PasswordFormFillingTest : public testing::Test {
     metrics_recorder_ = base::MakeRefCounted<PasswordFormMetricsRecorder>(
         true, client_.GetUkmSourceId(), /*pref_service=*/nullptr);
 
-    ON_CALL(client_, GetWebAuthnCredentialsDelegate)
+    ON_CALL(client_, GetWebAuthnCredentialsDelegateForDriver)
         .WillByDefault(Return(&webauthn_credentials_delegate_));
     ON_CALL(webauthn_credentials_delegate_, IsWebAuthnAutofillEnabled)
         .WillByDefault(Return(false));
@@ -277,7 +277,7 @@ TEST_F(PasswordFormFillingTest, DontFillOnLoadWebAuthnCredentials) {
   observed_form_.accepts_webauthn_credentials = true;
   for (bool webauthn_autofill_enabled : {false, true}) {
     PasswordFormFillData fill_data;
-    EXPECT_CALL(client_, GetWebAuthnCredentialsDelegate())
+    EXPECT_CALL(client_, GetWebAuthnCredentialsDelegateForDriver)
         .WillOnce(Return(&webauthn_credentials_delegate));
     EXPECT_CALL(webauthn_credentials_delegate, IsWebAuthnAutofillEnabled())
         .WillOnce(Return(webauthn_autofill_enabled));
@@ -300,7 +300,7 @@ TEST_F(PasswordFormFillingTest, FillWithOnlyWebAuthnCredentials) {
   MockWebAuthnCredentialsDelegate webauthn_credentials_delegate;
   observed_form_.accepts_webauthn_credentials = true;
 
-  EXPECT_CALL(client_, GetWebAuthnCredentialsDelegate())
+  EXPECT_CALL(client_, GetWebAuthnCredentialsDelegateForDriver)
       .WillOnce(Return(&webauthn_credentials_delegate));
   EXPECT_CALL(webauthn_credentials_delegate, IsWebAuthnAutofillEnabled())
       .WillOnce(Return(true));

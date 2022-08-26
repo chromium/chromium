@@ -42,7 +42,10 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
     set_should_verify_dialog_bounds(false);
 
     model_ = std::make_unique<AuthenticatorRequestDialogModel>(
-        browser()->tab_strip_model()->GetActiveWebContents());
+        browser()
+            ->tab_strip_model()
+            ->GetActiveWebContents()
+            ->GetPrimaryMainFrame());
     model_->set_relying_party_id("example.com");
     ::device::FidoRequestHandlerBase::TransportAvailabilityInfo
         transport_availability;

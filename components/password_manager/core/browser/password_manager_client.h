@@ -472,8 +472,9 @@ class PasswordManagerClient {
   // Returns if the Autofill Assistant UI is shown.
   virtual bool IsAutofillAssistantUIVisible() const = 0;
 
-  // Returns the WebAuthnCredentialsDelegate, if available.
-  virtual WebAuthnCredentialsDelegate* GetWebAuthnCredentialsDelegate();
+  // Returns the WebAuthnCredentialsDelegate for the given driver, if available.
+  virtual WebAuthnCredentialsDelegate* GetWebAuthnCredentialsDelegateForDriver(
+      PasswordManagerDriver* driver);
 
   // Returns the Chrome channel for the installation.
   virtual version_info::Channel GetChannel() const;

@@ -29,6 +29,8 @@
 #include "chrome/browser/history/history_tab_helper.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
+#include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
+#include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate_factory.h"
 #include "chrome/browser/password_manager/field_info_manager_factory.h"
 #include "chrome/browser/password_manager/password_manager_settings_service_factory.h"
 #include "chrome/browser/password_manager/password_reuse_manager_factory.h"
@@ -51,6 +53,7 @@
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/logging/log_receiver.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill_assistant/browser/public/runtime_manager.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
@@ -113,6 +116,7 @@
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
@@ -450,24 +454,26 @@ void ChromePasswordManagerClient::ShowTouchToFill(
     PasswordManagerDriver* driver,
     autofill::mojom::SubmissionReadinessState submission_readiness) {
   std::vector<TouchToFillWebAuthnCredential> webauthn_credentials;
-  if (GetWebAuthnCredentialsDelegate() &&
-      GetWebAuthnCredentialsDelegate()->IsWebAuthnAutofillEnabled()) {
-    const std::vector<autofill::Suggestion>& suggestions =
-        GetWebAuthnCredentialsDelegate()->GetWebAuthnSuggestions();
-    base::ranges::transform(
-        suggestions, std::back_inserter(webauthn_credentials),
-        [](const auto& suggestion) {
-          return TouchToFillWebAuthnCredential(
-              TouchToFillWebAuthnCredential::Username(
-                  suggestion.labels.empty() ? std::u16string()
-                                            : suggestion.labels[0][0].value),
-              TouchToFillWebAuthnCredential::DisplayName(
-                  suggestion.main_text.value),
-              TouchToFillWebAuthnCredential::BackendId(
-                  (suggestion
-                       .template GetPayload<autofill::Suggestion::BackendId>())
-                      .value()));
-        });
+  auto* webauthn_delegate = GetWebAuthnCredentialsDelegateForDriver(driver);
+  if (webauthn_delegate && webauthn_delegate->IsWebAuthnAutofillEnabled()) {
+    const absl::optional<std::vector<autofill::Suggestion>>& suggestions =
+        webauthn_delegate->GetWebAuthnSuggestions();
+    if (suggestions.has_value()) {
+      base::ranges::transform(
+          *suggestions, std::back_inserter(webauthn_credentials),
+          [](const auto& suggestion) {
+            return TouchToFillWebAuthnCredential(
+                TouchToFillWebAuthnCredential::Username(
+                    suggestion.labels.empty() ? std::u16string()
+                                              : suggestion.labels[0][0].value),
+                TouchToFillWebAuthnCredential::DisplayName(
+                    suggestion.main_text.value),
+                TouchToFillWebAuthnCredential::BackendId(
+                    (suggestion.template GetPayload<
+                         autofill::Suggestion::BackendId>())
+                        .value()));
+          });
+    }
   }
 
   GetOrCreateTouchToFillController()->Show(
@@ -1050,8 +1056,13 @@ FieldInfoManager* ChromePasswordManagerClient::GetFieldInfoManager() const {
 }
 
 password_manager::WebAuthnCredentialsDelegate*
-ChromePasswordManagerClient::GetWebAuthnCredentialsDelegate() {
-  return &webauthn_credentials_delegate_;
+ChromePasswordManagerClient::GetWebAuthnCredentialsDelegateForDriver(
+    PasswordManagerDriver* driver) {
+  auto* frame_host =
+      static_cast<password_manager::ContentPasswordManagerDriver*>(driver)
+          ->render_frame_host();
+  return ChromeWebAuthnCredentialsDelegateFactory::GetFactory(web_contents())
+      ->GetDelegateForFrame(frame_host);
 }
 
 version_info::Channel ChromePasswordManagerClient::GetChannel() const {
@@ -1350,7 +1361,6 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
       httpauth_manager_(this),
       password_reuse_detection_manager_(this),
       driver_factory_(nullptr),
-      webauthn_credentials_delegate_(this),
       content_credential_manager_(this),
       password_generation_driver_receivers_(web_contents, this),
       observer_(nullptr),

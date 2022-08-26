@@ -67,8 +67,8 @@ class MockPasswordManagerClient
               (password_manager::ManagePasswordsReferrer),
               (override));
   MOCK_METHOD(password_manager::WebAuthnCredentialsDelegate*,
-              GetWebAuthnCredentialsDelegate,
-              (),
+              GetWebAuthnCredentialsDelegateForDriver,
+              (password_manager::PasswordManagerDriver*),
               (override));
 };
 
@@ -134,7 +134,7 @@ class TouchToFillControllerTest : public testing::Test {
 
     webauthn_credentials_delegate_ =
         std::make_unique<password_manager::MockWebAuthnCredentialsDelegate>();
-    ON_CALL(client_, GetWebAuthnCredentialsDelegate)
+    ON_CALL(client_, GetWebAuthnCredentialsDelegateForDriver)
         .WillByDefault(Return(webauthn_credentials_delegate_.get()));
     ON_CALL(*webauthn_credentials_delegate_, IsWebAuthnAutofillEnabled)
         .WillByDefault(Return(false));

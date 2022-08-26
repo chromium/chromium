@@ -103,9 +103,14 @@ void Autofill(PasswordManagerClient* client,
       PreferredRealmIsFromAndroid(fill_data));
   driver->SetPasswordFillData(fill_data);
 
-  client->PasswordWasAutofilled(best_matches,
-                                url::Origin::Create(form_for_autofill.url),
-                                &federated_matches);
+  // Matches can be empty when there are only WebAuthn credentials available.
+  // In that case there will be no actual fill so the client doesn't need
+  // to be notified.
+  if (!best_matches.empty() || !federated_matches.empty()) {
+    client->PasswordWasAutofilled(best_matches,
+                                  url::Origin::Create(form_for_autofill.url),
+                                  &federated_matches);
+  }
 }
 
 std::string GetPreferredRealm(const PasswordForm& form) {
@@ -230,7 +235,7 @@ LikelyFormFilling SendFillInformationToRenderer(
   } else if (IsFillOnAccountSelectFeatureEnabled()) {
     wait_for_username_reason = WaitForUsernameReason::kFoasFeature;
   } else if (observed_form.accepts_webauthn_credentials &&
-             client->GetWebAuthnCredentialsDelegate()
+             client->GetWebAuthnCredentialsDelegateForDriver(driver)
                  ->IsWebAuthnAutofillEnabled()) {
     wait_for_username_reason =
         WaitForUsernameReason::kAcceptsWebAuthnCredentials;

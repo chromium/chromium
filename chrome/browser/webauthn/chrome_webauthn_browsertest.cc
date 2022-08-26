@@ -16,7 +16,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/test_extension_system.h"
-#include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
@@ -280,10 +280,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthnConditionalUITest,
   virtual_device_factory_->mutable_state()->simulate_press_callback =
       base::BindLambdaForTesting(
           [&](device::VirtualFidoDevice* device) { return true; });
-  ChromePasswordManagerClient* password_manager_client =
-      ChromePasswordManagerClient::FromWebContents(web_contents);
-  password_manager_client->GetWebAuthnCredentialsDelegate()
-      ->LaunchWebAuthnFlow();
+  ChromeWebAuthnCredentialsDelegate delegate(web_contents);
+  delegate.LaunchWebAuthnFlow();
 
   std::string result;
   ASSERT_TRUE(message_queue.WaitForMessage(&result));

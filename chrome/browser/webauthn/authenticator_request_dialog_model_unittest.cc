@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/webauthn/authenticator_reference.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/discoverable_credential_metadata.h"
@@ -133,7 +134,8 @@ std::string SetToString(base::flat_set<T> s) {
 
 }  // namespace
 
-class AuthenticatorRequestDialogModelTest : public ::testing::Test {
+class AuthenticatorRequestDialogModelTest
+    : public ChromeRenderViewHostTestHarness {
  public:
   using Step = AuthenticatorRequestDialogModel::Step;
 
@@ -143,10 +145,6 @@ class AuthenticatorRequestDialogModelTest : public ::testing::Test {
       const AuthenticatorRequestDialogModelTest&) = delete;
   AuthenticatorRequestDialogModelTest& operator=(
       const AuthenticatorRequestDialogModelTest&) = delete;
-
- protected:
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
@@ -662,18 +660,18 @@ TEST_F(AuthenticatorRequestDialogModelTest,
   // should only be invoked once (USB is not dispatched through the UI).
   model.StartTransportFlowForTesting(AuthenticatorTransport::kInternal);
   EXPECT_TRUE(model.should_dialog_be_closed());
-  task_environment_.FastForwardUntilNoTasksRemain();
+  task_environment()->RunUntilIdle();
   EXPECT_EQ(1, num_called);
   model.StartTransportFlowForTesting(
       AuthenticatorTransport::kUsbHumanInterfaceDevice);
   EXPECT_EQ(AuthenticatorRequestDialogModel::Step::kUsbInsertAndActivate,
             model.current_step());
-  task_environment_.FastForwardUntilNoTasksRemain();
+  task_environment()->RunUntilIdle();
   EXPECT_FALSE(model.should_dialog_be_closed());
   EXPECT_EQ(1, num_called);
   model.StartTransportFlowForTesting(AuthenticatorTransport::kInternal);
   EXPECT_TRUE(model.should_dialog_be_closed());
-  task_environment_.FastForwardUntilNoTasksRemain();
+  task_environment()->RunUntilIdle();
   EXPECT_EQ(1, num_called);
 }
 
@@ -700,7 +698,7 @@ TEST_F(AuthenticatorRequestDialogModelTest,
                   /*prefer_native_api=*/false);
 
   EXPECT_TRUE(model.should_dialog_be_closed());
-  task_environment_.FastForwardUntilNoTasksRemain();
+  task_environment()->RunUntilIdle();
   EXPECT_THAT(dispatched_authenticator_ids, ElementsAre(kWinAuthenticatorId));
 }
 
@@ -732,7 +730,7 @@ TEST_F(AuthenticatorRequestDialogModelTest,
   model.StartFlow(std::move(transports_info),
                   /*is_conditional_mediation=*/true,
                   /*prefer_native_api=*/false);
-  task_environment_.FastForwardUntilNoTasksRemain();
+  task_environment()->RunUntilIdle();
   EXPECT_EQ(model.current_step(), Step::kConditionalMediation);
   EXPECT_TRUE(model.should_dialog_be_closed());
   EXPECT_EQ(preselect_num_called, 0);
@@ -780,7 +778,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIRecognizedCredential) {
   // After preselecting an account, the request should be dispatched to the
   // platform authenticator.
   model.OnAccountPreselected(cred_1.cred_id);
-  task_environment_.FastForwardUntilNoTasksRemain();
+  task_environment()->RunUntilIdle();
   EXPECT_EQ(preselect_num_called, 1);
   EXPECT_EQ(request_num_called, 1);
 }
@@ -891,7 +889,7 @@ TEST_F(AuthenticatorRequestDialogModelPreselectCredentialTest,
   // After preselecting an account, the request should be dispatched to the
   // platform authenticator.
   model.OnAccountPreselected(cred_1.cred_id);
-  task_environment_.FastForwardUntilNoTasksRemain();
+  task_environment()->RunUntilIdle();
   EXPECT_EQ(preselect_num_called, 1);
   EXPECT_EQ(request_num_called, 1);
 }
