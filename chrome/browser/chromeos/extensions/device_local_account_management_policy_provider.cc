@@ -4,31 +4,13 @@
 
 #include "chrome/browser/chromeos/extensions/device_local_account_management_policy_provider.h"
 
-#include <stddef.h>
-
-#include <string>
-
-#include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/strings/string_util.h"
+#include "base/dcheck_is_on.h"
+#include "base/immediate_crash.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/values.h"
-#include "chrome/browser/chromeos/extensions/device_local_account_util.h"
-#include "chrome/browser/profiles/profiles_state.h"
-#include "chrome/common/extensions/api/chrome_url_overrides.h"
-#include "chrome/common/extensions/api/omnibox.h"
 #include "chrome/grit/generated_resources.h"
-#include "extensions/common/api/incognito.h"
-#include "extensions/common/api/oauth2.h"
-#include "extensions/common/api/requirements.h"
-#include "extensions/common/api/shared_module.h"
-#include "extensions/common/api/web_accessible_resources.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
-#include "extensions/common/manifest_constants.h"
-#include "extensions/common/manifest_handlers/app_isolation_info.h"
-#include "extensions/common/permissions/api_permission.h"
-#include "extensions/common/permissions/permissions_info.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using extensions::mojom::ManifestLocation;
@@ -38,21 +20,13 @@ namespace chromeos {
 DeviceLocalAccountManagementPolicyProvider::
     DeviceLocalAccountManagementPolicyProvider(
         policy::DeviceLocalAccount::Type account_type)
-    : account_type_(account_type) {
-}
+    : account_type_(account_type) {}
 
 DeviceLocalAccountManagementPolicyProvider::
-    ~DeviceLocalAccountManagementPolicyProvider() {
-}
+    ~DeviceLocalAccountManagementPolicyProvider() = default;
 
-// static
-bool DeviceLocalAccountManagementPolicyProvider::IsWhitelisted(
-    const std::string& extension_id) {
-  return extensions::IsAllowlistedForPublicSession(extension_id);
-}
-
-std::string DeviceLocalAccountManagementPolicyProvider::
-    GetDebugPolicyProviderName() const {
+std::string
+DeviceLocalAccountManagementPolicyProvider::GetDebugPolicyProviderName() const {
 #if DCHECK_IS_ON()
   return "whitelist for device-local accounts";
 #else
@@ -96,9 +70,9 @@ bool DeviceLocalAccountManagementPolicyProvider::UserMayLoad(
   // Disallow all other extensions.
   if (error) {
     *error = l10n_util::GetStringFUTF16(
-          IDS_EXTENSION_CANT_INSTALL_IN_DEVICE_LOCAL_ACCOUNT,
-          base::UTF8ToUTF16(extension->name()),
-          base::UTF8ToUTF16(extension->id()));
+        IDS_EXTENSION_CANT_INSTALL_IN_DEVICE_LOCAL_ACCOUNT,
+        base::UTF8ToUTF16(extension->name()),
+        base::UTF8ToUTF16(extension->id()));
   }
   return false;
 }

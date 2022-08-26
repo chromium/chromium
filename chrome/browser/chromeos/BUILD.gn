@@ -2111,8 +2111,6 @@ source_set("chromeos") {
     "extensions/device_local_account_external_policy_loader.h",
     "extensions/device_local_account_management_policy_provider.cc",
     "extensions/device_local_account_management_policy_provider.h",
-    "extensions/device_local_account_util.cc",
-    "extensions/device_local_account_util.h",
     "extensions/dictionary_event_router.cc",
     "extensions/dictionary_event_router.h",
     "extensions/extensions_permissions_tracker.cc",
