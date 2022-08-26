@@ -26,6 +26,8 @@ import java.util.Set;
 class BindingManager implements ComponentCallbacks2 {
     private static final String TAG = "BindingManager";
 
+    public static final int NO_MAX_SIZE = -1;
+
     // Low reduce ratio of bindings.
     private static final float BINDING_LOW_REDUCE_RATIO = 0.25f;
     // High reduce ratio of binding.
@@ -201,32 +203,26 @@ class BindingManager implements ComponentCallbacks2 {
     }
 
     /**
-     * Construct instance without maxsize and can support arbitrary number of connections.
-     */
-    BindingManager(Context context, Iterable<ChildProcessConnection> ranking) {
-        this(-1, ranking, context);
-    }
-
-    /**
      * Construct instance with maxSize.
+     * @param context Android's context.
+     * @param maxSize The maximum number of connections or NO_MAX_SIZE for unlimited connections.
+     * @param ranking The ranking of {@link ChildProcessConnection}s based on importance.
      */
     BindingManager(Context context, int maxSize, Iterable<ChildProcessConnection> ranking) {
-        this(maxSize, ranking, context);
-        assert maxSize > 0;
-    }
-
-    private BindingManager(int maxSize, Iterable<ChildProcessConnection> ranking, Context context) {
         assert LauncherThread.runningOnLauncherThread();
-        Log.i(TAG, "Moderate binding enabled: maxSize=%d", maxSize);
+        Log.i(TAG, "Visible binding enabled: maxSize=%d", maxSize);
 
         mMaxSize = maxSize;
         mRanking = ranking;
-        assert mMaxSize > 0 || mMaxSize == -1;
+        if (mMaxSize <= 0 && mMaxSize != NO_MAX_SIZE) {
+            throw new IllegalArgumentException(
+                    "maxSize must be a positive integer or NO_MAX_SIZE. Was " + maxSize);
+        }
 
         mDelayedClearer = new Runnable() {
             @Override
             public void run() {
-                Log.i(TAG, "Release moderate connections: %d", mConnections.size());
+                Log.i(TAG, "Release visible connections: %d", mConnections.size());
                 removeAllConnections();
             }
         };
@@ -242,8 +238,15 @@ class BindingManager implements ComponentCallbacks2 {
         // Note that the size of connections is currently fairly small (40).
         // If it became bigger we should consider using an alternate data structure.
         boolean alreadyInQueue = !mConnections.add(connection);
-        if (!alreadyInQueue) addBinding(connection);
-        assert mMaxSize == -1 || mConnections.size() <= mMaxSize;
+        if (alreadyInQueue) return;
+
+        addBinding(connection);
+
+        if (mMaxSize != NO_MAX_SIZE && mConnections.size() == mMaxSize + 1) {
+            removeOldConnections(1);
+            ensureLowestRankIsWaived();
+        }
+        assert mMaxSize == NO_MAX_SIZE || mConnections.size() <= mMaxSize;
     }
 
     public void removeConnection(ChildProcessConnection connection) {

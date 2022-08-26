@@ -1208,6 +1208,11 @@ const base::Feature kBackgroundMediaRendererHasModerateBinding{
     "BackgroundMediaRendererHasModerateBinding",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// When this feature is enabled a cap is placed on the number of bindings held
+// by the BindingManager.
+const base::Feature kBindingManagerConnectionLimit{
+    "BindingManagerConnectionLimit", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When this feature is enabled the BindingManager for non-low-end devices will
 // use a not perceptible binding for background renderers on Android Q+.
 const base::Feature kBindingManagerUseNotPerceptibleBinding{

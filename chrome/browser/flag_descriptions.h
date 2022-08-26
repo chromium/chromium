@@ -1860,6 +1860,9 @@ extern const char kAppMenuMobileSiteOptionDescription[];
 extern const char kBackGestureRefactorAndroidName[];
 extern const char kBackGestureRefactorAndroidDescription[];
 
+extern const char kBindingManagerConnectionLimitName[];
+extern const char kBindingManagerConnectionLimitDescription[];
+
 extern const char kBindingManagerUseNotPerceptibleBindingName[];
 extern const char kBindingManagerUseNotPerceptibleBindingDescription[];
 

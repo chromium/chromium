@@ -52,7 +52,8 @@ public class ChildProcessConnectionMetricsUnitTest {
         UmaRecorderHolder.resetForTesting();
         LauncherThread.setCurrentThreadAsLauncherThread();
         mRanking = new LinkedList<ChildProcessConnection>();
-        mBindingManager = new BindingManager(RuntimeEnvironment.application, mRanking);
+        mBindingManager = new BindingManager(
+                RuntimeEnvironment.application, BindingManager.NO_MAX_SIZE, mRanking);
         mConnectionMetrics = new ChildProcessConnectionMetrics();
         mConnectionMetrics.setBindingManager(mBindingManager);
     }

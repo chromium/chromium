@@ -60811,6 +60811,7 @@ from previous Chrome versions.
   <int value="846951416" label="CopylessPaste:enabled"/>
   <int value="848005486" label="WebViewLegacyTlsSupport:disabled"/>
   <int value="848324390" label="enable-lock-screen-apps"/>
+  <int value="849262171" label="BindingManagerConnectionLimit:disabled"/>
   <int value="849980462" label="RemoveNtpFakebox:disabled"/>
   <int value="850779988" label="allow-popups-during-page-unload"/>
   <int value="851085848" label="enable-settings-window"/>
@@ -61239,6 +61240,7 @@ from previous Chrome versions.
   <int value="1114794286" label="AutofillTypeSpecificPopupWidth:disabled"/>
   <int value="1115532551" label="EnableFrameSinkDesktopCapturerInCrd:enabled"/>
   <int value="1115635149" label="EnableUnifiedMultiDeviceSetup:enabled"/>
+  <int value="1116084116" label="BindingManagerConnectionLimit:enabled"/>
   <int value="1116593018" label="CaptureThumbnailOnLoadFinished:disabled"/>
   <int value="1116798400" label="NoncedPartitionedCookies:enabled"/>
   <int value="1117270978" label="ArcDocumentsProviderUnknownSize:disabled"/>

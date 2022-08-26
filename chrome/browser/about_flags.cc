@@ -3282,6 +3282,27 @@ const FeatureEntry::FeatureVariation kHighEfficiencyModeAvailableVariations[] =
 };
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam
+    kBindingManagerConnectionLimit_10_connections[] = {
+        {"max_connections", "10"}};
+const FeatureEntry::FeatureParam
+    kBindingManagerConnectionLimit_20_connections[] = {
+        {"max_connections", "20"}};
+const FeatureEntry::FeatureParam
+    kBindingManagerConnectionLimit_40_connections[] = {
+        {"max_connections", "40"}};
+const FeatureEntry::FeatureVariation
+    kBindingManagerConnectionLimitVariations[] = {
+        {"- 10 connections", kBindingManagerConnectionLimit_10_connections,
+         std::size(kBindingManagerConnectionLimit_10_connections), nullptr},
+        {"- 20 connections", kBindingManagerConnectionLimit_20_connections,
+         std::size(kBindingManagerConnectionLimit_20_connections), nullptr},
+        {"- 40 connections", kBindingManagerConnectionLimit_40_connections,
+         std::size(kBindingManagerConnectionLimit_40_connections), nullptr},
+};
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -9216,6 +9237,15 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableMerchantOptOutErrorDialog)},
+
+#if BUILDFLAG(IS_ANDROID)
+    {"binding-manager-connection-limit",
+     flag_descriptions::kBindingManagerConnectionLimitName,
+     flag_descriptions::kBindingManagerConnectionLimitDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(::features::kBindingManagerConnectionLimit,
+                                    kBindingManagerConnectionLimitVariations,
+                                    "BindingManagerConnectionLimit")},
+#endif
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

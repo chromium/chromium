@@ -314,6 +314,7 @@ CONTENT_EXPORT extern const base::Feature kWebXrArModule;
 CONTENT_EXPORT extern const base::Feature kAccessibilityPageZoom;
 CONTENT_EXPORT extern const base::Feature
     kBackgroundMediaRendererHasModerateBinding;
+CONTENT_EXPORT extern const base::Feature kBindingManagerConnectionLimit;
 CONTENT_EXPORT extern const base::Feature
     kBindingManagerUseNotPerceptibleBinding;
 CONTENT_EXPORT extern const base::Feature kReduceGpuPriorityOnBackground;

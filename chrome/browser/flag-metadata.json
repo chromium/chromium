@@ -649,6 +649,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "binding-manager-connection-limit",
+    "owners": ["ckitagawa", "yfriedman"],
+    "expiry_milestone": 109
+  },
+  {
     "name": "binding-manager-use-not-perceptible-binding",
     "owners": ["ckitagawa", "yfriedman"],
     "expiry_milestone": 109

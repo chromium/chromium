@@ -54,6 +54,8 @@ public class BindingManagerTest {
         { put(ContentFeatures.BINDING_MANAGER_USE_NOT_PERCEPTIBLE_BINDING, true); }
     };
 
+    private static final int BINDING_COUNT_LIMIT = 5;
+
     // Creates a mocked ChildProcessConnection that is optionally added to a BindingManager.
     private static ChildProcessConnection createTestChildProcessConnection(
             int pid, BindingManager manager, List<ChildProcessConnection> iterable) {
@@ -63,7 +65,9 @@ public class BindingManagerTest {
                 null /* serviceBundle */);
         connection.setPid(pid);
         connection.start(false /* useStrongBinding */, null /* serviceCallback */);
-        manager.addConnection(connection);
+        if (manager != null) {
+            manager.addConnection(connection);
+        }
         iterable.add(connection);
         connection.removeVisibleBinding(); // Remove initial binding.
         return connection;
@@ -84,8 +88,8 @@ public class BindingManagerTest {
         LauncherThread.setCurrentThreadAsLauncherThread();
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mIterable = new ArrayList<>();
-        mManager = new BindingManager(mActivity, 4, mIterable);
-        mVariableManager = new BindingManager(mActivity, mIterable);
+        mManager = new BindingManager(mActivity, BINDING_COUNT_LIMIT, mIterable);
+        mVariableManager = new BindingManager(mActivity, BindingManager.NO_MAX_SIZE, mIterable);
     }
 
     @After
@@ -368,31 +372,31 @@ public class BindingManagerTest {
     @Feature({"ProcessManagement"})
     public void testOneWaivedConnection_VisibleBinding() {
         setupBindingType(false);
-        testOneWaivedConnection(mManager);
+        doTestOneWaivedConnection(mManager);
     }
 
     @Test
     @Feature({"ProcessManagement"})
     public void testOneWaivedConnectionWithVariableSize_VisibleBinding() {
         setupBindingType(false);
-        testOneWaivedConnection(mVariableManager);
+        doTestOneWaivedConnection(mVariableManager);
     }
 
     @Test
     @Feature({"ProcessManagement"})
     public void testOneWaivedConnection_NotPerceptibleBinding() {
         setupBindingType(true);
-        testOneWaivedConnection(mManager);
+        doTestOneWaivedConnection(mManager);
     }
 
     @Test
     @Feature({"ProcessManagement"})
     public void testOneWaivedConnectionWithVariableSize_NotPerceptibleBinding() {
         setupBindingType(true);
-        testOneWaivedConnection(mVariableManager);
+        doTestOneWaivedConnection(mVariableManager);
     }
 
-    private void testOneWaivedConnection(BindingManager manager) {
+    private void doTestOneWaivedConnection(BindingManager manager) {
         ChildProcessConnection[] connections = new ChildProcessConnection[3];
         for (int i = 0; i < connections.length; i++) {
             connections[i] = createTestChildProcessConnection(i + 1 /* pid */, manager, mIterable);
@@ -401,6 +405,10 @@ public class BindingManagerTest {
         // Make sure binding is added for all connections.
         checkConnections(
                 connections, BindingManager.useNotPerceptibleBinding(), /*isConnected=*/true);
+
+        manager.rankingChanged();
+        checkConnections(connections, BindingManager.useNotPerceptibleBinding(),
+                new boolean[] {false, true, true});
 
         // Move middle connection to be the first (ie lowest ranked).
         mIterable.set(0, connections[1]);
@@ -423,5 +431,100 @@ public class BindingManagerTest {
         manager.removeConnection(connections[0]);
         checkConnections(connections, BindingManager.useNotPerceptibleBinding(),
                 new boolean[] {false, false, true});
+    }
+
+    @Test
+    @Feature({"ProcessManagement"})
+    public void testBindingCountLimit_VisibleBinding() {
+        setupBindingType(false);
+        doTestBindingCountLimit(mManager, /*limited=*/true);
+    }
+
+    @Test
+    @Feature({"ProcessManagement"})
+    public void testNoBindingCountLimitWithVariableSize_VisibleBinding() {
+        setupBindingType(false);
+        doTestBindingCountLimit(mVariableManager, /*limited=*/false);
+    }
+
+    @Test
+    @Feature({"ProcessManagement"})
+    public void testBindingCountLimit_NotPerceptibleBinding() {
+        setupBindingType(true);
+        doTestBindingCountLimit(mManager, /*limited=*/true);
+    }
+
+    @Test
+    @Feature({"ProcessManagement"})
+    public void testNoBindingCountLimitWithVariableSize_NotPerceptibleBinding() {
+        setupBindingType(true);
+        doTestBindingCountLimit(mVariableManager, /*limited=*/false);
+    }
+
+    private void doTestBindingCountLimit(BindingManager manager, boolean limited) {
+        ChildProcessConnection[] connections = new ChildProcessConnection[BINDING_COUNT_LIMIT + 1];
+        for (int i = 0; i < connections.length; i++) {
+            connections[i] = createTestChildProcessConnection(/*pid*/ i + 1, manager, mIterable);
+        }
+
+        if (!limited) {
+            checkConnections(
+                    connections, BindingManager.useNotPerceptibleBinding(), /*isConnected=*/true);
+        } else {
+            checkConnections(connections, BindingManager.useNotPerceptibleBinding(),
+                    new boolean[] {false, true, true, true, true, true});
+        }
+    }
+
+    @Test
+    @Feature({"ProcessManagement"})
+    public void testBindingCountLimitLowestRankAddedLast_VisibleBinding() {
+        setupBindingType(false);
+        doTestBindingCountLimitLowestRankAddedLast(mManager, /*limited=*/true);
+    }
+
+    @Test
+    @Feature({"ProcessManagement"})
+    public void testNoBindingCountLimitLowestRankAddedLastWithVariableSize_VisibleBinding() {
+        setupBindingType(false);
+        doTestBindingCountLimitLowestRankAddedLast(mVariableManager, /*limited=*/false);
+    }
+
+    @Test
+    @Feature({"ProcessManagement"})
+    public void testBindingCountLimitLowestRankAddedLast_NotPerceptibleBinding() {
+        setupBindingType(true);
+        doTestBindingCountLimitLowestRankAddedLast(mManager, /*limited=*/true);
+    }
+
+    @Test
+    @Feature({"ProcessManagement"})
+    public void testNoBindingCountLimitLowestRankAddedLastWithVariableSize_NotPerceptibleBinding() {
+        setupBindingType(true);
+        doTestBindingCountLimitLowestRankAddedLast(mVariableManager, /*limited=*/false);
+    }
+
+    private void doTestBindingCountLimitLowestRankAddedLast(
+            BindingManager manager, boolean limited) {
+        ChildProcessConnection[] connections = new ChildProcessConnection[BINDING_COUNT_LIMIT + 1];
+        for (int i = 0; i < connections.length; i++) {
+            connections[i] = createTestChildProcessConnection(/*pid*/ i + 1, null, mIterable);
+        }
+
+        // Add the lowest ranked connection last to ensure it doesn't get added if the limit is
+        // applied.
+        mIterable.set(0, connections[BINDING_COUNT_LIMIT]);
+        mIterable.set(BINDING_COUNT_LIMIT, connections[0]);
+        for (int i = 0; i < connections.length; i++) {
+            manager.addConnection(connections[i]);
+        }
+
+        if (!limited) {
+            checkConnections(
+                    connections, BindingManager.useNotPerceptibleBinding(), /*isConnected=*/true);
+        } else {
+            checkConnections(connections, BindingManager.useNotPerceptibleBinding(),
+                    new boolean[] {true, true, true, true, true, false});
+        }
     }
 }

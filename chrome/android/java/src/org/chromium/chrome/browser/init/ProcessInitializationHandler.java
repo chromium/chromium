@@ -349,7 +349,7 @@ public class ProcessInitializationHandler {
                         BluetoothNotificationService.class);
                 UsbNotificationManager.clearUsbNotifications(UsbNotificationService.class);
 
-                startModerateBindingManagementIfNeeded();
+                startBindingManagementIfNeeded();
 
                 recordKeyboardLocaleUma();
             }
@@ -677,11 +677,10 @@ public class ProcessInitializationHandler {
         }
     }
 
-    private void startModerateBindingManagementIfNeeded() {
+    private void startBindingManagementIfNeeded() {
         // Moderate binding doesn't apply to low end devices.
         if (SysUtils.isLowEndDevice()) return;
-        ChildProcessLauncherHelper.startModerateBindingManagement(
-                ContextUtils.getApplicationContext());
+        ChildProcessLauncherHelper.startBindingManagement(ContextUtils.getApplicationContext());
     }
 
     @SuppressWarnings("deprecation") // InputMethodSubtype.getLocale() deprecated in API 24
