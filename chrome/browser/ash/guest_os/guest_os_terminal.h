@@ -184,7 +184,7 @@ void AddTerminalMenuShortcuts(
     Profile* profile,
     int next_command_id,
     apps::MenuItems menu_items,
-    apps::mojom::Publisher::GetMenuModelCallback callback,
+    base::OnceCallback<void(apps::MenuItems)> callback,
     std::vector<gfx::ImageSkia> icons = {});
 
 // Called when user clicks on terminal menu items. Returns true if |shortcut_id|

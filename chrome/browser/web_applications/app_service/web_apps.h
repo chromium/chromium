@@ -22,6 +22,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent.h"
+#include "components/services/app_service/public/cpp/menu.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
@@ -33,10 +34,6 @@
 #include "url/gurl.h"
 
 static_assert(!BUILDFLAG(IS_CHROMEOS_LACROS), "For non-Lacros only");
-
-namespace apps {
-struct MenuItems;
-}
 
 class Profile;
 
@@ -123,6 +120,10 @@ class WebApps : public apps::PublisherBase,
                  apps::UninstallSource uninstall_source,
                  bool clear_site_data,
                  bool report_abuse) override;
+  void GetMenuModel(const std::string& app_id,
+                    apps::MenuType menu_type,
+                    int64_t display_id,
+                    base::OnceCallback<void(apps::MenuItems)> callback);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   void SetWindowMode(const std::string& app_id,
@@ -187,14 +188,15 @@ class WebApps : public apps::PublisherBase,
                                  const std::string& shortcut_id,
                                  int64_t display_id) override;
 
-  void GetAppShortcutMenuModel(const std::string& app_id,
-                               apps::MenuItems menu_items,
-                               GetMenuModelCallback callback);
+  void GetAppShortcutMenuModel(
+      const std::string& app_id,
+      apps::MenuItems menu_items,
+      base::OnceCallback<void(apps::MenuItems)> callback);
 
   void OnShortcutsMenuIconsRead(
       const std::string& app_id,
       apps::MenuItems menu_items,
-      GetMenuModelCallback callback,
+      base::OnceCallback<void(apps::MenuItems)> callback,
       ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

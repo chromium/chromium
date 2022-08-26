@@ -542,7 +542,7 @@ void AddTerminalMenuShortcuts(
     Profile* profile,
     int next_command_id,
     apps::MenuItems menu_items,
-    apps::mojom::Publisher::GetMenuModelCallback callback,
+    base::OnceCallback<void(apps::MenuItems)> callback,
     std::vector<gfx::ImageSkia> images) {
   ui::ColorProvider* color_provider =
       ui::ColorProviderManager::Get().GetColorProviderFor(
@@ -576,7 +576,7 @@ void AddTerminalMenuShortcuts(
         connection.second, terminal_ssh_icon, menu_items);
   }
 
-  std::move(callback).Run(ConvertMenuItemsToMojomMenuItems(menu_items));
+  std::move(callback).Run(std::move(menu_items));
 }
 
 bool ExecuteTerminalMenuShortcutCommand(Profile* profile,
