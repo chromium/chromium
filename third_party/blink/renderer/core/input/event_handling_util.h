@@ -39,7 +39,6 @@ ScrollableArea* AssociatedScrollableArea(const PaintLayer*);
 bool IsInDocument(EventTarget*);
 
 ContainerNode* ParentForClickEvent(const Node&);
-ContainerNode* ParentForClickEventInteractiveElementSensitive(const Node&);
 
 CORE_EXPORT PhysicalOffset
 ContentPointFromRootFrame(LocalFrame*, const gfx::PointF& point_in_root_frame);

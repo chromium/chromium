@@ -152,7 +152,6 @@ void MouseEventManager::Clear() {
   mouse_pressed_ = false;
   click_count_ = 0;
   click_element_ = nullptr;
-  mouse_down_element_ = nullptr;
   mouse_down_pos_ = gfx::Point();
   mouse_down_timestamp_ = base::TimeTicks();
   mouse_down_ = WebMouseEvent();
@@ -171,7 +170,6 @@ void MouseEventManager::Trace(Visitor* visitor) const {
   visitor->Trace(element_under_mouse_);
   visitor->Trace(mouse_press_node_);
   visitor->Trace(click_element_);
-  visitor->Trace(mouse_down_element_);
   SynchronousMutationObserver::Trace(visitor);
 }
 
@@ -356,51 +354,25 @@ WebInputEventResult MouseEventManager::DispatchMouseClickIfNeeded(
 #endif
 
   const bool should_dispatch_click_event =
-      click_count_ > 0 && !context_menu_event && mouse_down_element_ &&
-      mouse_release_target &&
-      mouse_down_element_->isConnected();
+      click_count_ > 0 && !context_menu_event && click_element_ &&
+      mouse_release_target && click_element_->isConnected();
   if (!should_dispatch_click_event)
     return WebInputEventResult::kNotHandled;
 
   Node* click_target_node = nullptr;
-  Node* old_click_target_node = nullptr;
-  if (mouse_down_element_ == mouse_release_target) {
-    click_target_node = mouse_down_element_;
-    old_click_target_node = click_target_node;
-  } else if (mouse_down_element_->GetDocument() ==
-             mouse_release_target->GetDocument()) {
+  if (click_element_->GetDocument() == mouse_release_target->GetDocument()) {
     click_target_node = mouse_release_target->CommonAncestor(
-        *mouse_down_element_, event_handling_util::ParentForClickEvent);
-
-    // Record how often interactive element might change the click target.
-    old_click_target_node = mouse_release_target->CommonAncestor(
-        *mouse_down_element_,
-        event_handling_util::ParentForClickEventInteractiveElementSensitive);
+        *click_element_, event_handling_util::ParentForClickEvent);
   }
   if (!click_target_node)
     return WebInputEventResult::kNotHandled;
 
-  UMA_HISTOGRAM_BOOLEAN("Event.ClickTargetChangedDueToInteractiveElement",
-                        click_target_node != old_click_target_node);
-
-  const bool click_element_still_in_flat_tree =
-      (click_element_ && click_element_->isConnected());
-  UMA_HISTOGRAM_BOOLEAN("Event.ClickNotFiredDueToDomManipulation",
-                        !click_element_still_in_flat_tree);
-  DCHECK_EQ(click_element_ == mouse_down_element_,
-            click_element_still_in_flat_tree);
-
-  if (click_element_still_in_flat_tree ||
-      RuntimeEnabledFeatures::ClickRetargettingEnabled()) {
-    return DispatchMouseEvent(
-        click_target_node,
-        (mouse_event.button == WebPointerProperties::Button::kLeft)
-            ? event_type_names::kClick
-            : event_type_names::kAuxclick,
-        mouse_event, nullptr, nullptr, false, pointer_id, pointer_type);
-  }
-
-  return WebInputEventResult::kNotHandled;
+  return DispatchMouseEvent(
+      click_target_node,
+      (mouse_event.button == WebPointerProperties::Button::kLeft)
+          ? event_type_names::kClick
+          : event_type_names::kAuxclick,
+      mouse_event, nullptr, nullptr, false, pointer_id, pointer_type);
 }
 
 void MouseEventManager::RecomputeMouseHoverStateIfNeeded() {
@@ -505,9 +477,6 @@ void MouseEventManager::NodeChildrenWillBeRemoved(ContainerNode& container) {
       !container.IsShadowIncludingInclusiveAncestorOf(*click_element_))
     return;
   click_element_ = nullptr;
-
-  // TODO(crbug.com/716694): Do not reset mouse_down_element_ for the purpose of
-  // gathering data.
 }
 
 void MouseEventManager::NodeWillBeRemoved(Node& node_to_be_removed) {
@@ -516,9 +485,6 @@ void MouseEventManager::NodeWillBeRemoved(Node& node_to_be_removed) {
     // We don't dispatch click events if the mousedown node is removed
     // before a mouseup event. It is compatible with IE and Firefox.
     click_element_ = nullptr;
-
-    // TODO(crbug.com/716694): Do not reset mouse_down_element_ for the purpose
-    // of gathering data.
   }
   if (mouse_press_node_ &&
       node_to_be_removed.IsShadowIncludingInclusiveAncestorOf(
@@ -1181,7 +1147,6 @@ bool MouseEventManager::HandleSvgPanIfNeeded(bool is_release_event) {
 void MouseEventManager::InvalidateClick() {
   click_count_ = 0;
   click_element_ = nullptr;
-  mouse_down_element_ = nullptr;
 }
 
 bool MouseEventManager::MousePressed() {
@@ -1208,14 +1173,13 @@ void MouseEventManager::SetMousePressNode(Node* node) {
   mouse_press_node_ = node;
 }
 
-Element* MouseEventManager::MouseDownElement() {
-  return mouse_down_element_;
+Element* MouseEventManager::ClickElement() {
+  return click_element_;
 }
 
 void MouseEventManager::SetClickElement(Element* element) {
   SetDocument(element ? element->ownerDocument() : nullptr);
   click_element_ = element;
-  mouse_down_element_ = element;
 }
 
 void MouseEventManager::SetClickCount(int click_count) {

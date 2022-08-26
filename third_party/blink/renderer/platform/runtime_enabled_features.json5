@@ -356,10 +356,6 @@
       status: "stable",
     },
     {
-      name: "ClickRetargetting",
-      status: "experimental",
-    },
-    {
       name: "ClientHintsMetaEquivDelegateCH",
       status: "stable",
     },

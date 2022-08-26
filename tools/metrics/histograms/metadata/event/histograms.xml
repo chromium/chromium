@@ -82,27 +82,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Event.ClickNotFiredDueToDomManipulation" enum="BooleanHit"
-    expires_after="M82">
-  <owner>nzolghadr@chromium.org</owner>
-  <summary>
-    Whether click target was affected by DOM manipulation or not.
-
-    Team: input-dev@chromium.org.
-  </summary>
-</histogram>
-
-<histogram name="Event.ClickTargetChangedDueToInteractiveElement"
-    enum="BooleanHit" expires_after="M80">
-  <owner>nzolghadr@chromium.org</owner>
-  <summary>
-    Whether click target was affected by interactive element being in the
-    ancestor path.
-
-    Team: input-dev@chromium.org.
-  </summary>
-</histogram>
-
 <histogram
     name="Event.DownEventCount.PerInputFormFactorDestinationCombination2"
     enum="DownEventInputFormFactorDestinationCombination2"

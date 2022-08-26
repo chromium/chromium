@@ -101,17 +101,6 @@ ScrollableArea* AssociatedScrollableArea(const PaintLayer* layer) {
   return nullptr;
 }
 
-ContainerNode* ParentForClickEventInteractiveElementSensitive(
-    const Node& node) {
-  // IE doesn't dispatch click events for mousedown/mouseup events across form
-  // controls.
-  auto* html_element = DynamicTo<HTMLElement>(node);
-  if (html_element && html_element->IsInteractiveContent())
-    return nullptr;
-
-  return FlatTreeTraversal::Parent(node);
-}
-
 ContainerNode* ParentForClickEvent(const Node& node) {
   return FlatTreeTraversal::Parent(node);
 }

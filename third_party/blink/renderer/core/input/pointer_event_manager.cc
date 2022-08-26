@@ -1107,7 +1107,7 @@ bool PointerEventManager::SetPointerCapture(PointerId pointer_id,
     UseCounter::Count(frame_->GetDocument(),
                       WebFeature::kPointerEventSetCapture);
     if (pointer_id == PointerEventFactory::kMouseId &&
-        target != mouse_event_manager_->MouseDownElement()) {
+        target != mouse_event_manager_->ClickElement()) {
       UseCounter::Count(frame_->GetDocument(),
                         WebFeature::kExplicitPointerCaptureClickTargetDiff);
     }
