@@ -46,6 +46,8 @@
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/hash_functions.h"
+#include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
 namespace blink {
@@ -60,7 +62,23 @@ class CORE_EXPORT CSSValuePool final : public GarbageCollected<CSSValuePool> {
   using CSSUnsetValue = cssvalue::CSSUnsetValue;
   using CSSRevertValue = cssvalue::CSSRevertValue;
   using CSSRevertLayerValue = cssvalue::CSSRevertLayerValue;
-  using ColorValueCache = HeapHashMap<unsigned, Member<CSSColor>>;
+
+  // Special keys for deleted and empty values. Use white and transparent as
+  // they're common colors and worth having an early-out for.
+  struct ColorHashTraitsForCSSValuePool : WTF::GenericHashTraits<Color> {
+    STATIC_ONLY(ColorHashTraitsForCSSValuePool);
+    static Color EmptyValue() { return Color::kTransparent; }
+    static void ConstructDeletedValue(Color& slot, bool) {
+      slot = Color::kWhite;
+    }
+    static bool IsDeletedValue(const Color& value) {
+      return value == Color::kWhite;
+    }
+  };
+  using ColorValueCache = HeapHashMap<Color,
+                                      Member<CSSColor>,
+                                      typename DefaultHash<Color>::Hash,
+                                      ColorHashTraitsForCSSValuePool>;
   static const unsigned kMaximumColorCacheSize = 512;
   using FontFaceValueCache =
       HeapHashMap<AtomicString, Member<const CSSValueList>>;
@@ -122,11 +140,27 @@ class CORE_EXPORT CSSValuePool final : public GarbageCollected<CSSValuePool> {
   }
 
   // Hash map caches.
-  ColorValueCache::AddResult GetColorCacheEntry(RGBA32 rgb_value) {
+  CSSColor* GetOrCreateColor(const Color& color) {
+    // These are the empty and deleted values of the hash table.
+    // See ColorHashTraitsForCSSValuePool.
+    if (color == Color::kTransparent)
+      return TransparentColor();
+    if (color == Color::kWhite)
+      return WhiteColor();
+
+    // Just because it is common.
+    if (color == Color::kBlack)
+      return BlackColor();
+
     // Just wipe out the cache and start rebuilding if it gets too big.
     if (color_value_cache_.size() > kMaximumColorCacheSize)
       color_value_cache_.clear();
-    return color_value_cache_.insert(rgb_value, nullptr);
+
+    ColorValueCache::AddResult entry =
+        color_value_cache_.insert(color, nullptr);
+    if (entry.is_new_entry)
+      entry.stored_value->value = MakeGarbageCollected<CSSColor>(color);
+    return entry.stored_value->value;
   }
   FontFamilyValueCache::AddResult GetFontFamilyCacheEntry(
       const String& family_name) {

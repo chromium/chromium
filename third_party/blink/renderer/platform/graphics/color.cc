@@ -29,7 +29,6 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/decimal.h"
-#include "third_party/blink/renderer/platform/wtf/dtoa.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
@@ -358,6 +357,28 @@ Color Color::FromRGBAFloat(float r, float g, float b, float a) {
 // static
 Color Color::FromSkColor4f(SkColor4f fc) {
   return Color(MakeRGBA32FromFloats(fc.fR, fc.fG, fc.fB, fc.fA));
+}
+
+// This converts -0.0 to 0.0, so that they have the same hash value. This
+// ensures that equal FontDescription have the same hash value.
+float NormalizeSign(float number) {
+  if (UNLIKELY(number == 0.0))
+    return 0.0;
+  return number;
+}
+
+unsigned Color::GetHash() const {
+  unsigned result = WTF::HashInts(static_cast<uint8_t>(serialization_type_),
+                                  static_cast<uint8_t>(color_function_space_));
+  WTF::AddFloatToHash(result, NormalizeSign(param0_));
+  WTF::AddFloatToHash(result, NormalizeSign(param1_));
+  WTF::AddFloatToHash(result, NormalizeSign(param2_));
+  WTF::AddFloatToHash(result, NormalizeSign(alpha_));
+  WTF::AddIntToHash(result, param0_is_none_);
+  WTF::AddIntToHash(result, param1_is_none_);
+  WTF::AddIntToHash(result, param2_is_none_);
+  WTF::AddIntToHash(result, alpha_is_none_);
+  return result;
 }
 
 SkColor4f Color::toSkColor4f() const {

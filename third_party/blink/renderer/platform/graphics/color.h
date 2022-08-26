@@ -30,7 +30,7 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -213,6 +213,8 @@ class PLATFORM_EXPORT Color {
   }
   inline bool operator!=(const Color& other) const { return !(*this == other); }
 
+  unsigned GetHash() const;
+
  private:
   constexpr explicit Color(RGBA32 color)
       : param0_is_none_(0),
@@ -280,5 +282,20 @@ PLATFORM_EXPORT Color ColorFromPremultipliedARGB(RGBA32);
 PLATFORM_EXPORT RGBA32 PremultipliedARGBFromColor(const Color&);
 
 }  // namespace blink
+
+namespace WTF {
+template <>
+struct DefaultHash<blink::Color> {
+  STATIC_ONLY(DefaultHash);
+  struct Hash {
+    STATIC_ONLY(Hash);
+    static unsigned GetHash(const blink::Color& key) { return key.GetHash(); }
+    static bool Equal(const blink::Color& a, const blink::Color& b) {
+      return a == b;
+    }
+    static const bool safe_to_compare_to_empty_or_deleted = true;
+  };
+};
+}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COLOR_H_
