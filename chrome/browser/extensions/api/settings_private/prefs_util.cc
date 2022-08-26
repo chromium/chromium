@@ -824,6 +824,10 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
 #endif
 
+  // Supervised Users.  This setting is queried in our Tast tests (b/241943380).
+  (*s_allowlist)[::prefs::kSupervisedUserExtensionsMayRequestPermissions] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   (*s_allowlist)[::prefs::kUseAshProxy] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
