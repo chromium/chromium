@@ -19,8 +19,6 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/power_monitor/power_monitor.h"
-#include "base/power_monitor/power_monitor_source.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -1159,17 +1157,11 @@ MediaStreamManager::MediaStreamManager(
   InitializeMaybeAsync(std::move(video_capture_provider));
 
   audio_service_listener_ = std::make_unique<AudioServiceListener>();
-
-  base::PowerMonitor::AddPowerSuspendObserver(this);
-  base::PowerMonitor::AddPowerThermalObserver(this);
 }
 
 MediaStreamManager::~MediaStreamManager() {
   DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::IO));
   DCHECK(requests_.empty());
-
-  base::PowerMonitor::RemovePowerSuspendObserver(this);
-  base::PowerMonitor::RemovePowerThermalObserver(this);
 }
 
 VideoCaptureManager* MediaStreamManager::video_capture_manager() const {
@@ -3021,27 +3013,6 @@ void MediaStreamManager::Aborted(
       "Aborted({stream_type=%s}, {session_id=%s})",
       StreamTypeToString(stream_type), capture_session_id.ToString().c_str()));
   StopDevice(stream_type, capture_session_id);
-}
-
-void MediaStreamManager::OnSuspend() {
-  SendLogMessage(base::StringPrintf("OnSuspend([this=%p])", this));
-}
-
-void MediaStreamManager::OnResume() {
-  SendLogMessage(base::StringPrintf("OnResume([this=%p])", this));
-}
-
-void MediaStreamManager::OnThermalStateChange(
-    base::PowerThermalObserver::DeviceThermalState new_state) {
-  const char* state_name =
-      base::PowerMonitorSource::DeviceThermalStateToString(new_state);
-  SendLogMessage(base::StringPrintf(
-      "OnThermalStateChange({this=%p}, {new_state=%s})", this, state_name));
-}
-
-void MediaStreamManager::OnSpeedLimitChange(int new_limit) {
-  SendLogMessage(base::StringPrintf(
-      "OnSpeedLimitChange({this=%p}, {new_limit=%d})", this, new_limit));
 }
 
 void MediaStreamManager::UseFakeUIFactoryForTests(

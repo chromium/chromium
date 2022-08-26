@@ -1692,6 +1692,8 @@ source_set("browser") {
     "renderer_host/media/media_stream_dispatcher_host.h",
     "renderer_host/media/media_stream_manager.cc",
     "renderer_host/media/media_stream_manager.h",
+    "renderer_host/media/media_stream_power_logger.cc",
+    "renderer_host/media/media_stream_power_logger.h",
     "renderer_host/media/media_stream_provider.h",
     "renderer_host/media/media_stream_track_metrics_host.cc",
     "renderer_host/media/media_stream_track_metrics_host.h",
