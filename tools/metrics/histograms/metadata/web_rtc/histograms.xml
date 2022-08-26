@@ -821,6 +821,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.Audio.ReceiverDelayEstimateMs" units="ms"
+    expires_after="2023-01-15">
+  <owner>hlundin@chromium.org</owner>
+  <owner>webrtc-audio@google.com</owner>
+  <summary>
+    The sum of the jitter buffer delay and the sound card's buffering delay for
+    the receiving side. That is, the sum of the metrics
+    WebRTC.Audio.ReceiverDeviceDelayMs and
+    WebRTC.Audio.ReceiverJitterBufferDelayMs. Sampled once every 10 ms when
+    WebRTC audio is playing. Warning: this histogram was expired from 2020-07-06
+    to 2022-08-25; data may be missing.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.Audio.ReceiverDeviceDelayMs" units="ms"
     expires_after="2023-01-15">
   <owner>hlundin@chromium.org</owner>
