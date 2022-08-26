@@ -1061,6 +1061,7 @@
       'gpu-fyi-try-chromeos-octopus-exp': 'gpu_tests_chromeos_octopus_release_trybot',
       'gpu-fyi-try-chromeos-zork-exp': 'gpu_tests_chromeos_zork_release_trybot',
       'lacros-amd64-generic-rel': 'chromeos_amd64-generic_lacros_rel_dchecks',
+      'lacros-amd64-generic-rel-skylab-fyi': 'chromeos_amd64-generic_lacros_rel_fyi',
       'lacros-arm-generic-rel': 'chromeos_arm-generic_lacros_rel_dchecks',
       'lacros-arm64-generic-rel': 'chromeos_arm64-generic_lacros_rel_dchecks',
       'linux-cfm-rel': 'linux_cfm_release_trybot',
