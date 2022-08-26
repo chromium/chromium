@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/ash/ash_signals_decorator.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -12,12 +13,15 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/shill/shill_device_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_ipconfig_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_profile_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "components/device_signals/core/common/signals_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
@@ -26,7 +30,9 @@
 
 using testing::InvokeWithoutArgs;
 
-namespace policy {
+namespace enterprise_connectors {
+
+namespace {
 
 constexpr char kFakeDeviceId[] = "fake_device_id";
 constexpr char kFakeCustomerId[] = "fake_obfuscated_customer_id";
@@ -107,30 +113,48 @@ void SetupFakeNetwork() {
   base::RunLoop().RunUntilIdle();
 }
 
-class AshSignalsDecoratorBrowserTest : public DevicePolicyCrosBrowserTest {
+}  // namespace
+
+class AshSignalsDecoratorBrowserTest
+    : public policy::DevicePolicyCrosBrowserTest {
  public:
   AshSignalsDecoratorBrowserTest() {
     device_state_.set_skip_initial_policy_setup(true);
   }
   ~AshSignalsDecoratorBrowserTest() override = default;
+
+ protected:
+  void SetUpOnMainThread() override {
+    // Register prefs in test pref services.
+    prefs_.registry()->RegisterBooleanPref(ash::prefs::kAllowScreenLock, false);
+
+    TestingProfile::Builder profile_builder;
+    testing_profile_ = profile_builder.Build();
+    connector_ =
+        g_browser_process->platform_part()->browser_policy_connector_ash();
+  }
+
+  void TearDownOnMainThread() override { testing_profile_.reset(); }
+
+  Profile* testing_profile() { return testing_profile_.get(); }
+
+  std::unique_ptr<TestingProfile> testing_profile_;
+  TestingPrefServiceSimple prefs_;
+  policy::BrowserPolicyConnectorAsh* connector_;
 };
 
 IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest,
                        TestStaticPolicySignals) {
-  BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  Profile* profile =
-      g_browser_process->profile_manager()->GetPrimaryUserProfile();
-
   device_policy()->policy_data().set_directory_api_id(kFakeDeviceId);
   device_policy()->policy_data().set_obfuscated_customer_id(kFakeCustomerId);
   device_policy()->policy_data().set_managed_by(kFakeEnrollmentDomain);
   policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
 
-  enterprise_connectors::AshSignalsDecorator decorator(connector, profile);
+  testing_profile()->GetPrefs()->SetBoolean(ash::prefs::kAllowScreenLock,
+                                            false);
 
   base::RunLoop run_loop;
-
+  AshSignalsDecorator decorator(connector_, testing_profile());
   base::Value::Dict signals;
   decorator.Decorate(signals, run_loop.QuitClosure());
 
@@ -145,20 +169,14 @@ IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest, TestNetworkSignals) {
-  BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  Profile* profile =
-      g_browser_process->profile_manager()->GetPrimaryUserProfile();
-  enterprise_connectors::AshSignalsDecorator decorator(connector, profile);
-
-  base::RunLoop run_loop;
-  base::Value::Dict signals;
-
-  const user_manager::User* user =
-      ash::ProfileHelper::Get()->GetUserByProfile(profile);
-
   device_policy()->policy_data().add_device_affiliation_ids(kFakeAffilationID);
   policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
+
+  Profile* profile =
+      g_browser_process->profile_manager()->GetPrimaryUserProfile();
+  const user_manager::User* user =
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
+  AshSignalsDecorator decorator(connector_, profile);
 
   std::set<std::string> user_affiliation_ids;
   user_affiliation_ids.insert(kFakeAffilationID);
@@ -168,6 +186,8 @@ IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest, TestNetworkSignals) {
 
   SetupFakeNetwork();
 
+  base::RunLoop run_loop;
+  base::Value::Dict signals;
   decorator.Decorate(signals, run_loop.QuitClosure());
 
   run_loop.Run();
@@ -184,4 +204,4 @@ IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest, TestNetworkSignals) {
   EXPECT_EQ(meid_list->front(), kFakeMeid);
 }
 
-}  // namespace policy
+}  // namespace enterprise_connectors

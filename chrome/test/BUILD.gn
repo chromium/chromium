@@ -3114,17 +3114,6 @@ if (!is_android) {
         ]
       }
 
-      if (is_chromeos_ash) {
-        sources += [ "../browser/enterprise/connectors/device_trust/signals/decorators/ash/ash_signals_decorator_browsertest.cc" ]
-
-        deps += [
-          "//chrome/browser/enterprise/connectors/device_trust:features",
-          "//chrome/browser/enterprise/connectors/device_trust/common",
-          "//components/device_signals/core/common",
-          "//components/device_signals/core/common:features",
-        ]
-      }
-
       if (is_win) {
         sources += [
           "../browser/safe_browsing/chrome_cleaner/chrome_cleaner_dialog_controller_impl_browsertest_win.cc",
@@ -3905,6 +3894,7 @@ if (!is_android) {
         "../browser/chromeos/tablet_mode/tablet_mode_page_behavior_browsertest.cc",
         "../browser/device_api/device_attribute_api_browsertest.cc",
         "../browser/drive/drive_notification_manager_factory_browsertest.cc",
+        "../browser/enterprise/connectors/device_trust/signals/decorators/ash/ash_signals_decorator_browsertest.cc",
         "../browser/feedback/show_feedback_page_browsertest.cc",
         "../browser/metrics/chromeos_family_link_user_metrics_provider_browsertest.cc",
         "../browser/metrics/chromeos_metrics_provider_browsertest.cc",
@@ -4138,6 +4128,7 @@ if (!is_android) {
         "//ash/components/login/auth:test_support",
         "//ash/components/smbfs",
         "//ash/components/timezone",
+        "//ash/constants:constants",
         "//ash/keyboard/ui:test_support",
         "//ash/public/cpp/external_arc",
         "//ash/services/multidevice_setup/public/cpp:test_support",
@@ -4175,6 +4166,7 @@ if (!is_android) {
         "//chrome/browser/chromeos:key_permissions_proto",
         "//chrome/browser/chromeos:test_support",
         "//chrome/browser/enterprise/connectors/device_trust:features",
+        "//chrome/browser/enterprise/connectors/device_trust/common",
         "//chrome/browser/image_decoder",
         "//chrome/browser/media/router:test_support",
         "//chrome/browser/metrics/structured",
@@ -4253,6 +4245,8 @@ if (!is_android) {
         "//components/arc:arc_test_support",
         "//components/crash/content/browser/error_reporting:mock_crash_endpoint",
         "//components/device_event_log",
+        "//components/device_signals/core/common",
+        "//components/device_signals/core/common:features",
         "//components/drive",
         "//components/exo:test_support",
         "//components/feedback:feedback",

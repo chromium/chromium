@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/ash/ash_signals_decorator.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/check.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -15,9 +16,11 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_decorator.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "components/device_signals/core/common/signals_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/prefs/pref_service.h"
 
 namespace enterprise_connectors {
 
@@ -67,6 +70,8 @@ void AshSignalsDecorator::Decorate(base::Value::Dict& signals,
               browser_policy_connector_->GetObfuscatedCustomerID());
   signals.Set(device_signals::names::kEnrollmentDomain,
               browser_policy_connector_->GetEnterpriseDomainManager());
+  signals.Set(device_signals::names::kAllowScreenLock,
+              profile_->GetPrefs()->GetBoolean(ash::prefs::kAllowScreenLock));
 
   const ash::DeviceState* device_state =
       GetCurrentlyActiveDeviceState(profile_);

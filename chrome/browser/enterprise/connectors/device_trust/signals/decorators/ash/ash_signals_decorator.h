@@ -19,7 +19,7 @@ class Profile;
 
 namespace enterprise_connectors {
 
-// Definition of the SignalsDecorator for Chrome OS Ash platform.
+// Definition of the SignalsDecorator for ChromeOS Ash platform.
 class AshSignalsDecorator : public SignalsDecorator {
  public:
   AshSignalsDecorator(
@@ -39,7 +39,7 @@ class AshSignalsDecorator : public SignalsDecorator {
       crosapi::mojom::GetNetworkDetailsResultPtr result);
 
   policy::BrowserPolicyConnectorAsh* const browser_policy_connector_;
-  Profile* const profile_;
+  Profile* profile_;
 
   base::WeakPtrFactory<AshSignalsDecorator> weak_ptr_factory_{this};
 };
