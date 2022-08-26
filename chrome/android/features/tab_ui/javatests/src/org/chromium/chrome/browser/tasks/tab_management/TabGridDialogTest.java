@@ -1262,7 +1262,7 @@ public class TabGridDialogTest {
         int largeMargin = (int) cta.getResources().getDimension(R.dimen.tab_grid_dialog_top_margin);
         int topMargin = isPortrait ? largeMargin : smallMargin;
         int sideMargin = isPortrait ? smallMargin : largeMargin;
-        View parentView = cta.findViewById(TabUiTestHelper.getTabSwitcherParentId(cta));
+        View parentView = cta.getCompositorViewHolderForTesting();
         Rect parentRect = new Rect();
         parentView.getGlobalVisibleRect(parentRect);
         int[] parentLoc = new int[2];

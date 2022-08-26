@@ -28,6 +28,7 @@ import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_POLLING_INTERVA
 import static org.chromium.components.browser_ui.widget.RecyclerViewTestUtils.waitForStableRecyclerView;
 
 import android.app.Activity;
+import android.content.Context;
 import android.provider.Settings;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
@@ -63,6 +64,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.tab_ui.R;
@@ -78,6 +80,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Utilities helper class for tab grid/group tests.
@@ -228,16 +231,18 @@ public class TabUiTestHelper {
     }
 
     /** Close the first tab in grid tab switcher. */
-    public static void closeFirstTabInTabSwitcher() {
-        closeNthTabInTabSwitcher(0);
+    public static void closeFirstTabInTabSwitcher(Context context) {
+        closeNthTabInTabSwitcher(context, 0);
     }
 
     /**
      * Close the Nth tab in grid tab switcher.
+     * @param context The activity context.
      * @param index The index of the target tab to close.
      */
-    static void closeNthTabInTabSwitcher(int index) {
-        onView(allOf(withParent(withId(R.id.compositor_view_holder)), withId(R.id.tab_list_view)))
+    static void closeNthTabInTabSwitcher(Context context, int index) {
+        onView(allOf(withParent(withId(getTabSwitcherParentId(context))),
+                       withId(R.id.tab_list_view)))
                 .perform(new ViewAction() {
                     @Override
                     public Matcher<View> getConstraints() {
@@ -380,16 +385,25 @@ public class TabUiTestHelper {
 
     /**
      * Returns parentId of GridTabSwitcher based on form factor and feature enabled.
-     * @param cta Activity running.
+     * @param context The activity context.
      * @return View Id of GTS parent view.
      */
-    public static int getTabSwitcherParentId(ChromeTabbedActivity cta) {
-        int viewHolder = org.chromium.chrome.R.id.compositor_view_holder;
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(cta)
-                && TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(cta)) {
+    public static int getTabSwitcherParentId(Context context) {
+        int viewHolder = getIsStartSurfaceEnabledFromUIThread(context)
+                ? org.chromium.chrome.R.id.tasks_surface_body
+                : org.chromium.chrome.R.id.compositor_view_holder;
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
+                && TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(context)) {
             viewHolder = R.id.grid_tab_switcher_view_holder;
         }
         return viewHolder;
+    }
+
+    private static boolean getIsStartSurfaceEnabledFromUIThread(Context context) {
+        AtomicReference<Boolean> isStartSurfaceEnabled = new AtomicReference<>();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> isStartSurfaceEnabled.set(ReturnToChromeUtil.isStartSurfaceEnabled(context)));
+        return isStartSurfaceEnabled.get();
     }
 
     /**
