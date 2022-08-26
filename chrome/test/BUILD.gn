@@ -1562,10 +1562,6 @@ if (!is_android) {
       "//ui/webui/resources/js/cr/ui:modulize_runtime_data",
     ]
 
-    if (is_chromeos_ash) {
-      data_deps += [ "//ui/webui/resources/cr_elements:modulize_runtime_data" ]
-    }
-
     if (!is_component_build) {
       # WebRTC's frame_analyzer doesn't build correctly on component builds,
       # because some compilers will get confused by the fact that WebRTC

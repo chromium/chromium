@@ -10,7 +10,6 @@ import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/polymer/polymer.gni")
 import("//ui/webui/resources/include_polymer.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
 import("//ui/webui/webui_features.gni")
 import("./cr_elements.gni")
 
@@ -89,8 +88,6 @@ if (is_chromeos_ash) {
       "action_link_css.html",
       "chromeos/cros_color_overrides.html",
       "cr_actionable_row_style.html",
-      "cr_container_shadow_behavior.html",
-      "cr_container_shadow_behavior.js",
       "cr_icons_css.html",
       "find_shortcut_behavior.js",
       "hidden_style_css.html",
@@ -110,6 +107,11 @@ if (include_polymer) {
       "cr_scrollable_behavior.js",
       "policy/cr_policy_indicator_behavior.js",
     ]
+
+    if (is_chromeos_ash) {
+      in_files += [ "cr_container_shadow_behavior.js" ]
+    }
+
     out_manifest = "$target_gen_dir/$preprocess_src_manifest"
   }
 
@@ -136,10 +138,7 @@ if (include_polymer) {
     ]
 
     if (is_chromeos_ash) {
-      in_files += [
-        "chromeos/cros_color_overrides.m.js",
-        "cr_container_shadow_behavior.m.js",
-      ]
+      in_files += [ "chromeos/cros_color_overrides.m.js" ]
     }
   }
 }
@@ -147,8 +146,6 @@ if (include_polymer) {
 if (include_polymer) {
   group("closure_compile") {
     deps = [
-      ":cr_elements_resources",
-
       # Targets for auto-generated Polymer 3 JS Modules
       ":cr_elements_module_resources",
       "cr_button:closure_compile_module",
@@ -156,15 +153,6 @@ if (include_polymer) {
       "cr_lottie:closure_compile_module",
       "policy:closure_compile_module",
     ]
-  }
-
-  js_type_check("cr_elements_resources") {
-    uses_legacy_modules = true
-    deps = [ ":cr_container_shadow_behavior" ]
-  }
-
-  js_library("cr_container_shadow_behavior") {
-    deps = [ "//ui/webui/resources/js:assert" ]
   }
 }
 
@@ -217,12 +205,6 @@ if (include_polymer) {
     html_file = "icons.html"
     html_type = "iron-iconset"
   }
-
-  if (is_chromeos_ash) {
-    js_modulizer("modulize") {
-      input_files = [ "cr_container_shadow_behavior.js" ]
-    }
-  }
 }
 
 if (include_polymer) {
@@ -242,9 +224,6 @@ if (include_polymer) {
       "policy:web_components",
     ]
 
-    if (is_chromeos_ash) {
-      public_deps += [ ":modulize" ]
-    }
     if (is_chromeos) {
       public_deps += [ "chromeos:polymer3_elements" ]
     }
@@ -258,17 +237,15 @@ if (include_polymer) {
 
     if (is_chromeos_ash) {
       deps += [
-        ":cr_container_shadow_behavior.m",
+        ":cr_container_shadow_behavior",
         ":find_shortcut_behavior",
       ]
     }
   }
 
   if (is_chromeos_ash) {
-    js_library("cr_container_shadow_behavior.m") {
-      sources = [ "$root_gen_dir/ui/webui/resources/cr_elements/cr_container_shadow_behavior.m.js" ]
+    js_library("cr_container_shadow_behavior") {
       deps = [ "//ui/webui/resources/js:assert.m" ]
-      extra_deps = [ ":modulize" ]
     }
   }
 
