@@ -51,7 +51,6 @@ class PendingBeaconTimeoutBrowserTestBase : public ContentBrowserTest {
     // Navigate to A.
     ASSERT_TRUE(
         NavigateToURL(embedded_test_server()->GetURL("a.com", "/title1.html")));
-    RenderFrameHostWrapper rfh_a(current_frame_host());
     // Execute `script` in A.
     ASSERT_TRUE(ExecJs(web_contents(), script));
   }
@@ -263,8 +262,14 @@ class PendingBeaconBackgroundTimeoutBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(crbug.com/1356665): Update tests to accommodate for hidden on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_SendOnHidden DISABLED_SendOnHidden
+#else
+#define MAYBE_SendOnHidden SendOnHidden
+#endif
 IN_PROC_BROWSER_TEST_F(PendingBeaconBackgroundTimeoutBrowserTest,
-                       SendOnHidden) {
+                       MAYBE_SendOnHidden) {
   const size_t total_beacon = 1;
   RegisterBeaconRequestMonitor(total_beacon);
 
@@ -281,8 +286,14 @@ IN_PROC_BROWSER_TEST_F(PendingBeaconBackgroundTimeoutBrowserTest,
   EXPECT_EQ(sent_beacon_count(), total_beacon);
 }
 
+// TODO(crbug.com/1356665): Update tests to accommodate for hidden on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_SendOnBackgroundTimeout DISABLED_SendOnBackgroundTimeout
+#else
+#define MAYBE_SendOnBackgroundTimeout SendOnBackgroundTimeout
+#endif
 IN_PROC_BROWSER_TEST_F(PendingBeaconBackgroundTimeoutBrowserTest,
-                       SendOnBackgroundTimeout) {
+                       MAYBE_SendOnBackgroundTimeout) {
   const size_t total_beacon = 1;
   RegisterBeaconRequestMonitor(total_beacon);
 
@@ -300,11 +311,19 @@ IN_PROC_BROWSER_TEST_F(PendingBeaconBackgroundTimeoutBrowserTest,
   EXPECT_EQ(sent_beacon_count(), total_beacon);
 }
 
+// TODO(crbug.com/1356665): Update tests to accommodate for hidden on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_NotSendWhenPageIsRestoredBeforeBackgroundTimeoutExpires \
+  DISABLED_NotSendWhenPageIsRestoredBeforeBackgroundTimeoutExpires
+#else
+#define MAYBE_NotSendWhenPageIsRestoredBeforeBackgroundTimeoutExpires \
+  NotSendWhenPageIsRestoredBeforeBackgroundTimeoutExpires
+#endif
 // When backgroundTimeout is set, its timer resets every time when the page
 // becomes visible if it has not yet expired.
 IN_PROC_BROWSER_TEST_F(
     PendingBeaconBackgroundTimeoutBrowserTest,
-    NotSendWhenPageIsRestoredBeforeBackgroundTimeoutExpires) {
+    MAYBE_NotSendWhenPageIsRestoredBeforeBackgroundTimeoutExpires) {
   const size_t total_beacon = 0;
   RegisterBeaconRequestMonitor(total_beacon);
 
@@ -382,9 +401,16 @@ IN_PROC_BROWSER_TEST_F(PendingBeaconTimeoutBrowserTest, SendOnZeroTimeout) {
   EXPECT_EQ(sent_beacon_count(), total_beacon);
 }
 
+// TODO(crbug.com/1356665): Update tests to accommodate for hidden on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_SendOnTimeoutWhenPageIsHidden \
+  DISABLED_SendOnTimeoutWhenPageIsHidden
+#else
+#define MAYBE_SendOnTimeoutWhenPageIsHidden SendOnTimeoutWhenPageIsHidden
+#endif
 // When timeout is set, it's not relevant whether the page is hidden or not.
 IN_PROC_BROWSER_TEST_F(PendingBeaconTimeoutBrowserTest,
-                       SendOnTimeoutWhenPageIsHidden) {
+                       MAYBE_SendOnTimeoutWhenPageIsHidden) {
   const size_t total_beacon = 1;
   RegisterBeaconRequestMonitor(total_beacon);
 
@@ -524,9 +550,17 @@ class PendingBeaconMutualTimeoutWithLongBackForwardCacheTTLBrowserTest
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
+// TODO(crbug.com/1356665): Update tests to accommodate for hidden on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_NotSendWhenPageIsRestoredBeforeBeingEvictedFromBackForwardCache \
+  DISABLED_NotSendWhenPageIsRestoredBeforeBeingEvictedFromBackForwardCache
+#else
+#define MAYBE_NotSendWhenPageIsRestoredBeforeBeingEvictedFromBackForwardCache \
+  NotSendWhenPageIsRestoredBeforeBeingEvictedFromBackForwardCache
+#endif
 IN_PROC_BROWSER_TEST_F(
     PendingBeaconMutualTimeoutWithLongBackForwardCacheTTLBrowserTest,
-    NotSendWhenPageIsRestoredBeforeBeingEvictedFromBackForwardCache) {
+    MAYBE_NotSendWhenPageIsRestoredBeforeBeingEvictedFromBackForwardCache) {
   const size_t total_beacon = 0;
   RegisterBeaconRequestMonitor(total_beacon);
 
