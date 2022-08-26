@@ -183,8 +183,6 @@ void DocumentsProviderRootManager::OnGetRoots(
 
     RootInfo root_info;
     root_info.authority = root->authority;
-    root_info.root_id = root->root_id;
-    root_info.document_id = root->document_id;
     root_info.title = root->title;
     if (root->summary.has_value())
       root_info.summary = root->summary.value();
@@ -193,6 +191,23 @@ void DocumentsProviderRootManager::OnGetRoots(
     root_info.supports_create = root->supports_create;
     if (root->mime_types.has_value())
       root_info.mime_types = root->mime_types.value();
+
+    // Strip new lines from the Root and Document IDs.
+    //
+    // Some Android Documents Provider implementations (e.g. Dropbox) have
+    // long, base-64 encoded IDs broken up by '\n' bytes, presumably to help
+    // human readability. However, these IDs become part of URLs (represented
+    // by GURL or storage::FileSystemURL objects) but passed between processes
+    // (e.g. Fusebox) as strings, not C++ objects. Various URL parsing and
+    // unparsing along the way can strip out the '\n' bytes, which breaks exact
+    // string match on the IDs (e.g. ArcDocumentsProviderRootMap map keys).
+    //
+    // New lines within a serialized GURL or storage::FileSystemURL also makes
+    // it harder for line-based tools (e.g. grep) to process log messages.
+    //
+    // To avoid those problems, we strip the '\n' bytes eagerly, here.
+    base::RemoveChars(root->root_id, "\n", &root_info.root_id);
+    base::RemoveChars(root->document_id, "\n", &root_info.document_id);
 
     roots_info.emplace_back(std::move(root_info));
   }
