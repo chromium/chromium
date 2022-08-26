@@ -6,7 +6,7 @@
 
 #include "base/logging.h"
 #include "components/component_updater/component_updater_paths.h"
-#include "ios/chrome/browser/chrome_paths.h"
+#import "ios/chrome/browser/paths/paths.h"
 #include "third_party/skia/include/core/SkGraphics.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

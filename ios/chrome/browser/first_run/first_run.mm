@@ -8,7 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
-#include "ios/chrome/browser/chrome_paths.h"
+#import "ios/chrome/browser/paths/paths.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

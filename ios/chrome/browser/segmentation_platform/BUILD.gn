@@ -28,13 +28,13 @@ source_set("segmentation_platform") {
     "//components/segmentation_platform/public",
     "//components/segmentation_platform/public/proto",
     "//components/variations",
-    "//ios/chrome/browser:chrome_paths",
     "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/metrics:accessor",
     "//ios/chrome/browser/optimization_guide",
+    "//ios/chrome/browser/paths",
     "//ios/chrome/browser/web_state_list",
   ]
   if (build_with_tflite_lib) {

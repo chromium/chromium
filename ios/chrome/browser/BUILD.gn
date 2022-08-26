@@ -10,21 +10,6 @@ import("//ios/chrome/features.gni")
 import("//rlz/buildflags/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-source_set("chrome_paths") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "chrome_paths.h",
-    "chrome_paths.mm",
-    "chrome_paths_internal.h",
-  ]
-
-  deps = [
-    "//base",
-    "//build:branding_buildflags",
-    "//components/gcm_driver",
-  ]
-}
-
 source_set("browser") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -113,10 +98,10 @@ source_set("browser") {
     "//url",
   ]
   public_deps = [
-    ":chrome_paths",
     ":chrome_url_constants",
     ":utils",
     "//ios/chrome/browser/application_context",
+    "//ios/chrome/browser/paths",
     "//ios/chrome/browser/prefs:pref_names",
   ]
   allow_circular_includes_from = [

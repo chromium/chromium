@@ -25,11 +25,11 @@
 #import "components/variations/synthetic_trials.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_paths.h"
 #import "ios/chrome/browser/metrics/ios_chrome_metrics_service_accessor.h"
 #import "ios/chrome/browser/optimization_guide/ios_chrome_hints_manager.h"
 #include "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/tab_url_provider_impl.h"
+#import "ios/chrome/browser/paths/paths.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 

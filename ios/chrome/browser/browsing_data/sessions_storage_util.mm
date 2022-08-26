@@ -7,7 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/strings/sys_string_conversions.h"
-#include "ios/chrome/browser/chrome_paths.h"
+#import "ios/chrome/browser/paths/paths.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

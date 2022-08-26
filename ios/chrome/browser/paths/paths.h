@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_CHROME_PATHS_H_
-#define IOS_CHROME_BROWSER_CHROME_PATHS_H_
+#ifndef IOS_CHROME_BROWSER_PATHS_PATHS_H_
+#define IOS_CHROME_BROWSER_PATHS_PATHS_H_
 
 // This file declares path keys for the Chrome on iOS application.  These can be
 // used with the PathService to access various special directories and files.
@@ -32,6 +32,6 @@ enum {
 // Call once to register the provider for the path keys defined above.
 void RegisterPathProvider();
 
-}  // namespace
+}  // namespace ios
 
-#endif  // IOS_CHROME_BROWSER_CHROME_PATHS_H_
+#endif  // IOS_CHROME_BROWSER_PATHS_PATHS_H_

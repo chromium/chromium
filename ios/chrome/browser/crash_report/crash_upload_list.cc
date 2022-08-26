@@ -10,7 +10,7 @@
 #include "components/crash/core/common/reporter_running_ios.h"
 #include "components/upload_list/crash_upload_list.h"
 #include "components/upload_list/text_log_upload_list.h"
-#include "ios/chrome/browser/chrome_paths.h"
+#import "ios/chrome/browser/paths/paths.h"
 
 namespace ios {
 

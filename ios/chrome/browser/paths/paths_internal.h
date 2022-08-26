@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_CHROME_PATHS_INTERNAL_H_
-#define IOS_CHROME_BROWSER_CHROME_PATHS_INTERNAL_H_
+#ifndef IOS_CHROME_BROWSER_PATHS_PATHS_INTERNAL_H_
+#define IOS_CHROME_BROWSER_PATHS_PATHS_INTERNAL_H_
 
 namespace base {
 class FilePath;
@@ -20,4 +20,4 @@ void GetUserCacheDirectory(const base::FilePath& browser_state_dir,
 
 }  // namespace ios
 
-#endif  // IOS_CHROME_BROWSER_CHROME_PATHS_INTERNAL_H_
+#endif  // IOS_CHROME_BROWSER_PATHS_PATHS_INTERNAL_H_
