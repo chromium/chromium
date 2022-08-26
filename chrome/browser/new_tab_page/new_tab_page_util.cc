@@ -56,27 +56,24 @@ bool IsRecipeTasksModuleEnabled() {
   if (base::FeatureList::GetInstance()->IsFeatureOverridden(
           ntp_features::kNtpRecipeTasksModule.name)) {
     return base::FeatureList::IsEnabled(ntp_features::kNtpRecipeTasksModule);
-  } else {
-    return IsOsSupportedForRecipe() && IsInUS();
   }
+  return IsOsSupportedForRecipe() && IsInUS();
 }
 
 bool IsCartModuleEnabled() {
   if (base::FeatureList::GetInstance()->IsFeatureOverridden(
           ntp_features::kNtpChromeCartModule.name)) {
     return base::FeatureList::IsEnabled(ntp_features::kNtpChromeCartModule);
-  } else {
-    return IsOsSupportedForCart() && IsInUS();
   }
+  return IsOsSupportedForCart() && IsInUS();
 }
 
 bool IsDriveModuleEnabled() {
   if (base::FeatureList::GetInstance()->IsFeatureOverridden(
           ntp_features::kNtpDriveModule.name)) {
     return base::FeatureList::IsEnabled(ntp_features::kNtpDriveModule);
-  } else {
-    return IsOsSupportedForDrive() && IsInUS();
   }
+  return IsOsSupportedForDrive() && IsInUS();
 }
 
 bool IsModuleFreEnabled() {
@@ -84,7 +81,6 @@ bool IsModuleFreEnabled() {
           ntp_features::kNtpModulesFirstRunExperience.name)) {
     return base::FeatureList::IsEnabled(
         ntp_features::kNtpModulesFirstRunExperience);
-  } else {
-    return IsInUS();
   }
+  return IsInUS();
 }
