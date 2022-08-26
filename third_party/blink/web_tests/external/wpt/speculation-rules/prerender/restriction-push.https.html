@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<!--
-This file cannot be upstreamed to WPT until:
-* internals.setPermission() usage is replaced with a WebDriver API
--->
 <title>Access to the Push API is deferred</title>
 <meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 <script src="/common/utils.js"></script>
 <script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
 <script src="/speculation-rules/prerender/resources/utils.js"></script>
 <body>
 <script>
+
+setup(() => assertSpeculationRulesIsSupported());
 
 promise_test(async t => {
   const uid = token();
@@ -30,8 +30,8 @@ promise_test(async t => {
   // pushManager.subscribe() waits until the permission is granted, which
   // is deferred during prerendering so the test would trivially pass without
   // the permission.
-  await internals.setPermission({name: 'push', userVisibleOnly: true},
-                                'granted', location.origin, location.origin);
+  await test_driver.set_permission({ name: 'push', userVisibleOnly: true },
+                                   'granted');
 
   // Install the service worker first to test pushManager.subscribe in the
   // prerendering page.
