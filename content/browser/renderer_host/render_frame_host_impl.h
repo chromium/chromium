@@ -3100,6 +3100,16 @@ class CONTENT_EXPORT RenderFrameHostImpl
                                              bool send_ipc,
                                              bool is_reload);
 
+  // |ForEachRenderFrameHost|'s callback used in
+  // |CheckOrDispatchBeforeUnloadForSubtree|.
+  FrameIterationAction CheckOrDispatchBeforeUnloadForFrame(
+      bool subframes_only,
+      bool send_ipc,
+      bool is_reload,
+      bool* found_beforeunload,
+      bool* run_beforeunload_for_legacy,
+      RenderFrameHostImpl* rfh);
+
   // Called by |beforeunload_timeout_| when the beforeunload timeout fires.
   void BeforeUnloadTimeout();
 

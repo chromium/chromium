@@ -8424,101 +8424,121 @@ bool RenderFrameHostImpl::CheckOrDispatchBeforeUnloadForSubtree(
     bool subframes_only,
     bool send_ipc,
     bool is_reload) {
-  bool found_beforeunload = false;
-  bool run_beforeunload_for_legacy = false;
-
   // Beforeunload is not supported inside fenced frame trees.
   if (IsFencedFrameRoot())
     return false;
 
-  for (FrameTreeNode* node : frame_tree()->SubtreeNodes(frame_tree_node_)) {
-    RenderFrameHostImpl* rfh = node->current_frame_host();
+  bool found_beforeunload = false;
+  bool run_beforeunload_for_legacy = false;
 
-    // If |subframes_only| is true, skip this frame and its same-site
-    // descendants.  This happens for renderer-initiated navigations, where
-    // these frames have already run beforeunload.
-    if (subframes_only && rfh->GetSiteInstance() == GetSiteInstance())
-      continue;
-
-    // No need to run beforeunload if the RenderFrame isn't live.
-    if (!rfh->IsRenderFrameLive())
-      continue;
-
-    // Only run beforeunload in frames that have registered a beforeunload
-    // handler. See description of SendBeforeUnload() for details on simulating
-    // beforeunload for legacy reasons. If
-    // `kAvoidUnnecessaryBeforeUnloadCheckSync` is true and there is no
-    // beforeunload handler for the navigating frame, then do not simulate a
-    // beforeunload handler, and navigation can continue.
-    const bool run_beforeunload_for_legacy_frame =
-        rfh == this && !rfh->has_before_unload_handler_ &&
-        !IsAvoidUnnecessaryBeforeUnloadCheckSyncEnabled();
-    const bool should_run_beforeunload =
-        rfh->has_before_unload_handler_ || run_beforeunload_for_legacy_frame;
-
-    if (!should_run_beforeunload)
-      continue;
-
-    // If we're only checking whether there's at least one frame with
-    // beforeunload, then we've just found one, so we can return now.
-    found_beforeunload = true;
-    if (!send_ipc)
-      return true;
-
-    // Otherwise, figure out whether we need to send the IPC, or whether this
-    // beforeunload was already triggered by an ancestor frame's IPC.
-
-    // Only send beforeunload to local roots, and let Blink handle any
-    // same-site frames under them. That is, if a frame has a beforeunload
-    // handler, ask its local root to run it. If we've already sent the message
-    // to that local root, skip this frame. For example, in A1(A2,A3), if A2
-    // and A3 contain beforeunload handlers, and all three frames are
-    // same-site, we ask A1 to run beforeunload for all three frames, and only
-    // ask it once.
-    while (!rfh->is_local_root() && rfh != this)
-      rfh = rfh->GetParent();
-    if (base::Contains(beforeunload_pending_replies_, rfh))
-      continue;
-
-    // For a case like A(B(A)), it's not necessary to send an IPC for the
-    // innermost frame, as Blink will walk all same-site (local)
-    // descendants. Detect cases like this and skip them.
-    bool has_same_site_ancestor = false;
-    for (auto* added_rfh : beforeunload_pending_replies_) {
-      if (rfh->IsDescendantOfWithinFrameTree(added_rfh) &&
-          rfh->GetSiteInstance() == added_rfh->GetSiteInstance()) {
-        has_same_site_ancestor = true;
-        break;
-      }
-    }
-    if (has_same_site_ancestor)
-      continue;
-
-    if (run_beforeunload_for_legacy_frame &&
-        IsAvoidUnnecessaryBeforeUnloadCheckPostTaskEnabled()) {
-      // Wait to schedule until all frames have been processed. The legacy
-      // beforeunload is not needed if another frame has a beforeunload
-      // handler. Note that for `kAvoidUnnecessaryBeforeUnloadCheckSync`
-      // `run_beforeunload_for_legacy_frame` is never true.
-      run_beforeunload_for_legacy = true;
-      continue;
-    }
-
-    run_beforeunload_for_legacy = false;
-
-    // Add |rfh| to the list of frames that need to receive beforeunload
-    // ACKs.
-    beforeunload_pending_replies_.insert(rfh);
-
-    SendBeforeUnload(is_reload, rfh->GetWeakPtr(), /*for_legacy=*/false);
-  }
+  ForEachRenderFrameHostWithAction(
+      [this, subframes_only, send_ipc, is_reload, &found_beforeunload,
+       &run_beforeunload_for_legacy](
+          RenderFrameHostImpl* rfh) -> FrameIterationAction {
+        return CheckOrDispatchBeforeUnloadForFrame(
+            subframes_only, send_ipc, is_reload, &found_beforeunload,
+            &run_beforeunload_for_legacy, rfh);
+      });
 
   if (run_beforeunload_for_legacy) {
+    DCHECK(send_ipc);
     beforeunload_pending_replies_.insert(this);
     SendBeforeUnload(is_reload, GetWeakPtr(), /*for_legacy=*/true);
   }
 
   return found_beforeunload;
+}
+
+RenderFrameHost::FrameIterationAction
+RenderFrameHostImpl::CheckOrDispatchBeforeUnloadForFrame(
+    bool subframes_only,
+    bool send_ipc,
+    bool is_reload,
+    bool* found_beforeunload,
+    bool* run_beforeunload_for_legacy,
+    RenderFrameHostImpl* rfh) {
+  // Don't traverse into inner pages.
+  if (&GetPage() != &rfh->GetPage())
+    return FrameIterationAction::kSkipChildren;
+
+  // If |subframes_only| is true, skip this frame and its same-site
+  // descendants.  This happens for renderer-initiated navigations, where
+  // these frames have already run beforeunload.
+  if (subframes_only && rfh->GetSiteInstance() == GetSiteInstance())
+    return FrameIterationAction::kContinue;
+
+  // No need to run beforeunload if the RenderFrame isn't live.
+  if (!rfh->IsRenderFrameLive())
+    return FrameIterationAction::kContinue;
+
+  // Only run beforeunload in frames that have registered a beforeunload
+  // handler. See description of SendBeforeUnload() for details on simulating
+  // beforeunload for legacy reasons. If
+  // `kAvoidUnnecessaryBeforeUnloadCheckSync` is true and there is no
+  // beforeunload handler for the navigating frame, then do not simulate a
+  // beforeunload handler, and navigation can continue.
+  const bool run_beforeunload_for_legacy_frame =
+      rfh == this && !rfh->has_before_unload_handler_ &&
+      !IsAvoidUnnecessaryBeforeUnloadCheckSyncEnabled();
+  const bool should_run_beforeunload =
+      rfh->has_before_unload_handler_ || run_beforeunload_for_legacy_frame;
+
+  if (!should_run_beforeunload)
+    return FrameIterationAction::kContinue;
+
+  // If we're only checking whether there's at least one frame with
+  // beforeunload, then we've just found one, so we can return now.
+  *found_beforeunload = true;
+  if (!send_ipc)
+    return FrameIterationAction::kStop;
+
+  // Otherwise, figure out whether we need to send the IPC, or whether this
+  // beforeunload was already triggered by an ancestor frame's IPC.
+
+  // Only send beforeunload to local roots, and let Blink handle any
+  // same-site frames under them. That is, if a frame has a beforeunload
+  // handler, ask its local root to run it. If we've already sent the message
+  // to that local root, skip this frame. For example, in A1(A2,A3), if A2
+  // and A3 contain beforeunload handlers, and all three frames are
+  // same-site, we ask A1 to run beforeunload for all three frames, and only
+  // ask it once.
+  while (!rfh->is_local_root() && rfh != this)
+    rfh = rfh->GetParent();
+  if (base::Contains(beforeunload_pending_replies_, rfh))
+    return FrameIterationAction::kContinue;
+
+  // For a case like A(B(A)), it's not necessary to send an IPC for the
+  // innermost frame, as Blink will walk all same-site (local)
+  // descendants. Detect cases like this and skip them.
+  bool has_same_site_ancestor = false;
+  for (auto* added_rfh : beforeunload_pending_replies_) {
+    if (rfh->IsDescendantOfWithinFrameTree(added_rfh) &&
+        rfh->GetSiteInstance() == added_rfh->GetSiteInstance()) {
+      has_same_site_ancestor = true;
+      break;
+    }
+  }
+  if (has_same_site_ancestor)
+    return FrameIterationAction::kContinue;
+
+  if (run_beforeunload_for_legacy_frame &&
+      IsAvoidUnnecessaryBeforeUnloadCheckPostTaskEnabled()) {
+    // Wait to schedule until all frames have been processed. The legacy
+    // beforeunload is not needed if another frame has a beforeunload
+    // handler. Note that for `kAvoidUnnecessaryBeforeUnloadCheckSync`
+    // `run_beforeunload_for_legacy_frame` is never true.
+    *run_beforeunload_for_legacy = true;
+    return FrameIterationAction::kContinue;
+  }
+
+  *run_beforeunload_for_legacy = false;
+
+  // Add |rfh| to the list of frames that need to receive beforeunload
+  // ACKs.
+  beforeunload_pending_replies_.insert(rfh);
+
+  SendBeforeUnload(is_reload, rfh->GetWeakPtr(), /*for_legacy=*/false);
+  return FrameIterationAction::kContinue;
 }
 
 void RenderFrameHostImpl::SimulateBeforeUnloadCompleted(bool proceed) {
