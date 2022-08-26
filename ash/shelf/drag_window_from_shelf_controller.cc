@@ -503,8 +503,8 @@ void DragWindowFromShelfController::UpdateDraggedWindow(
   // calculate the expected transformed bounds and then adjust the transform if
   // needed.
   gfx::RectF transformed_bounds(window_->bounds());
-  gfx::Transform new_tranform = TransformAboutPivot(
-      gfx::ToRoundedPoint(transformed_bounds.origin()), transform);
+  const gfx::Transform new_tranform =
+      TransformAboutPivot(transformed_bounds.origin(), transform);
   new_tranform.TransformRect(&transformed_bounds);
   ::wm::TranslateRectToScreen(window_->parent(), &transformed_bounds);
   if (transformed_bounds.y() < display_bounds.y()) {

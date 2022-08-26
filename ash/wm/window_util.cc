@@ -416,9 +416,8 @@ gfx::RectF GetTransformedBounds(aura::Window* transformed_window,
       continue;
     }
     gfx::RectF window_bounds(window->GetTargetBounds());
-    gfx::Transform new_transform =
-        TransformAboutPivot(gfx::ToRoundedPoint(window_bounds.origin()),
-                            window->layer()->GetTargetTransform());
+    const gfx::Transform new_transform = TransformAboutPivot(
+        window_bounds.origin(), window->layer()->GetTargetTransform());
     new_transform.TransformRect(&window_bounds);
 
     // The preview title is shown above the preview window. Hide the window

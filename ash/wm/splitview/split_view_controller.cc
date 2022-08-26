@@ -2614,21 +2614,18 @@ void SplitViewController::SetTransformWithAnimation(
     aura::Window* window,
     const gfx::Transform& start_transform,
     const gfx::Transform& target_transform) {
-  gfx::Point target_origin =
-      gfx::ToRoundedPoint(GetTargetBoundsInScreen(window).origin());
+  const gfx::PointF target_origin = GetTargetBoundsInScreen(window).origin();
   for (auto* window_iter : GetTransientTreeIterator(window)) {
     // Adjust |start_transform| and |target_transform| for the transient child.
     aura::Window* parent_window = window_iter->parent();
-    gfx::Rect original_bounds(window_iter->GetTargetBounds());
-    ::wm::ConvertRectToScreen(parent_window, &original_bounds);
-    gfx::Transform new_start_transform =
-        TransformAboutPivot(gfx::Point(target_origin.x() - original_bounds.x(),
-                                       target_origin.y() - original_bounds.y()),
-                            start_transform);
-    gfx::Transform new_target_transform =
-        TransformAboutPivot(gfx::Point(target_origin.x() - original_bounds.x(),
-                                       target_origin.y() - original_bounds.y()),
-                            target_transform);
+    gfx::RectF original_bounds(window_iter->GetTargetBounds());
+    ::wm::TranslateRectToScreen(parent_window, &original_bounds);
+    const gfx::PointF pivot(target_origin.x() - original_bounds.x(),
+                            target_origin.y() - original_bounds.y());
+    const gfx::Transform new_start_transform =
+        TransformAboutPivot(pivot, start_transform);
+    const gfx::Transform new_target_transform =
+        TransformAboutPivot(pivot, target_transform);
     if (new_start_transform != window_iter->layer()->GetTargetTransform())
       window_iter->SetTransform(new_start_transform);
 
@@ -2835,7 +2832,7 @@ void SplitViewController::DoSplitDividerSpawnAnimation(aura::Window* window) {
   static const double value = gfx::Tween::CalculateValue(
       gfx::Tween::FAST_OUT_SLOW_IN,
       kSplitviewDividerSpawnDelay / kSplitviewWindowTransformDuration);
-  gfx::TransformAboutPivot(bounds.origin(),
+  gfx::TransformAboutPivot(gfx::PointF(bounds.origin()),
                            gfx::Tween::TransformValueBetween(
                                value, window->transform(), gfx::Transform()))
       .TransformPoint(&p);

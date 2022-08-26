@@ -82,22 +82,19 @@ SplitViewController* OverviewTestBase::GetSplitViewController() {
 }
 
 gfx::Rect OverviewTestBase::GetTransformedBounds(aura::Window* window) {
-  gfx::Rect bounds_in_screen = window->layer()->bounds();
-  wm::ConvertRectToScreen(window->parent(), &bounds_in_screen);
-  gfx::RectF bounds(bounds_in_screen);
-  gfx::Transform transform(gfx::TransformAboutPivot(
-      gfx::ToFlooredPoint(bounds.origin()), window->layer()->transform()));
+  gfx::RectF bounds(window->layer()->bounds());
+  wm::TranslateRectToScreen(window->parent(), &bounds);
+  const gfx::Transform transform =
+      gfx::TransformAboutPivot(bounds.origin(), window->layer()->transform());
   transform.TransformRect(&bounds);
   return ToStableSizeRoundedRect(bounds);
 }
 
 gfx::Rect OverviewTestBase::GetTransformedTargetBounds(aura::Window* window) {
-  gfx::Rect bounds_in_screen = window->layer()->GetTargetBounds();
-  wm::ConvertRectToScreen(window->parent(), &bounds_in_screen);
-  gfx::RectF bounds(bounds_in_screen);
-  gfx::Transform transform(
-      gfx::TransformAboutPivot(gfx::ToFlooredPoint(bounds.origin()),
-                               window->layer()->GetTargetTransform()));
+  gfx::RectF bounds(window->layer()->GetTargetBounds());
+  wm::TranslateRectToScreen(window->parent(), &bounds);
+  const gfx::Transform transform = gfx::TransformAboutPivot(
+      bounds.origin(), window->layer()->GetTargetTransform());
   transform.TransformRect(&bounds);
   return ToStableSizeRoundedRect(bounds);
 }

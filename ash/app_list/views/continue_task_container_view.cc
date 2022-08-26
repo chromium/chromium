@@ -81,7 +81,8 @@ void ScheduleFadeOutAnimation(views::View* view,
   scale.Scale(0.75f, 0.75f);
   sequence->SetTransform(
       view->layer(),
-      gfx::TransformAboutPivot(view->GetLocalBounds().CenterPoint(), scale),
+      gfx::TransformAboutPivot(gfx::RectF(view->GetLocalBounds()).CenterPoint(),
+                               scale),
       gfx::Tween::FAST_OUT_LINEAR_IN);
   sequence->SetOpacity(view->layer(), 0.0f, gfx::Tween::FAST_OUT_LINEAR_IN);
 }

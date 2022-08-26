@@ -86,8 +86,8 @@ void DeskDragProxy::InitAndScaleAndMoveToX(float location_screen_x) {
   // Scale the bounds around its center.
   gfx::Rect proxy_bounds_in_screen = drag_widget_->GetWindowBoundsInScreen();
   layer->SetTransform(gfx::TransformAboutPivot(
-      proxy_bounds_in_screen.CenterPoint() -
-          proxy_bounds_in_screen.origin().OffsetFromOrigin(),
+      gfx::PointF(0.5f * proxy_bounds_in_screen.width(),
+                  0.5f * proxy_bounds_in_screen.height()),
       scale_transform));
 
   // When being dragged, the shadow elevation will be increased.

@@ -71,8 +71,8 @@ constexpr base::TimeDelta kTemplateViewsScaleAndFadeDuration =
 gfx::Transform GetScaleTransformForView(views::View* view) {
   gfx::Transform scale_transform;
   scale_transform.Scale(kAddOrDeleteItemScale, kAddOrDeleteItemScale);
-  return gfx::TransformAboutPivot(view->GetLocalBounds().CenterPoint(),
-                                  scale_transform);
+  return gfx::TransformAboutPivot(
+      gfx::RectF(view->GetLocalBounds()).CenterPoint(), scale_transform);
 }
 
 }  // namespace

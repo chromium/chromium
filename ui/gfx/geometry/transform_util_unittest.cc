@@ -183,7 +183,7 @@ TEST(TransformUtilTest, NoSnapSkewedCompositeTransform) {
 TEST(TransformUtilTest, TransformAboutPivot) {
   Transform transform;
   transform.Scale(3, 4);
-  transform = TransformAboutPivot(Point(7, 8), transform);
+  transform = TransformAboutPivot(PointF(7, 8), transform);
 
   Point point;
 

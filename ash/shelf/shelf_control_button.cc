@@ -67,8 +67,8 @@ ShelfControlButton::ShelfControlButton(
 
 ShelfControlButton::~ShelfControlButton() = default;
 
-gfx::Point ShelfControlButton::GetCenterPoint() const {
-  return GetLocalBounds().CenterPoint();
+gfx::PointF ShelfControlButton::GetCenterPoint() const {
+  return gfx::RectF(GetLocalBounds()).CenterPoint();
 }
 
 const char* ShelfControlButton::GetClassName() const {

@@ -567,7 +567,7 @@ bool SnapTransform(Transform* out,
   return snappable;
 }
 
-Transform TransformAboutPivot(const Point& pivot, const Transform& transform) {
+Transform TransformAboutPivot(const PointF& pivot, const Transform& transform) {
   Transform result;
   result.Translate(pivot.x(), pivot.y());
   result.PreconcatTransform(transform);

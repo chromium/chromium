@@ -884,8 +884,8 @@ void AppsGridView::FolderHidden(const std::string& item_id) {
 
   gfx::Transform scale;
   scale.Scale(0.5, 0.5);
-  scale = gfx::TransformAboutPivot(item_view->GetLocalBounds().CenterPoint(),
-                                   scale);
+  scale = gfx::TransformAboutPivot(
+      gfx::RectF(item_view->GetLocalBounds()).CenterPoint(), scale);
   animation.Once()
       .SetDuration(kFolderItemFadeOutDuration)
       .SetTransform(item_view->layer(), scale, gfx::Tween::FAST_OUT_LINEAR_IN)
