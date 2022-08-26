@@ -23,7 +23,7 @@ class SafeBrowsingBlockingPage
     : public security_interstitials::IOSSecurityInterstitialPage {
  public:
   // Creates a safe browsing blocking page that creates the HTML for the error
-  // page shown for |resource|.
+  // page shown for `resource`.
   static std::unique_ptr<SafeBrowsingBlockingPage> Create(
       const security_interstitials::UnsafeResource& resource);
   ~SafeBrowsingBlockingPage() override;
@@ -46,7 +46,7 @@ class SafeBrowsingBlockingPage
 
     // The URL of the resource causing the insterstitial.
     GURL url_;
-    // The threat type encountered for |url_|.
+    // The threat type encountered for `url_`.
     safe_browsing::SBThreatType threat_type_;
     safe_browsing::ThreatSource threat_source_;
   };

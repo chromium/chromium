@@ -153,7 +153,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
     }
   }
 
-  // |appConfigurationForTestCase| is called during [super setUp], and
+  // `appConfigurationForTestCase` is called during [super setUp], and
   // depends on the URLs initialized above.
   [super setUp];
 

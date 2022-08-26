@@ -9,7 +9,7 @@
 
 class ChromeBrowserState;
 
-// Creates a ChromeUserPopulation proto for the given |browser_state|.
+// Creates a ChromeUserPopulation proto for the given `browser_state`.
 safe_browsing::ChromeUserPopulation GetUserPopulationForBrowserState(
     ChromeBrowserState* browser_state);
 

@@ -34,7 +34,7 @@ namespace {
 // Name of the metric recorded when a malware interstitial is shown or closed.
 const char kMalwareDecisionMetric[] = "interstitial.malware.decision";
 
-// Creates an UnsafeResource for |web_state| using |url|.
+// Creates an UnsafeResource for `web_state` using `url`.
 UnsafeResource CreateResource(web::WebState* web_state, const GURL& url) {
   UnsafeResource resource;
   resource.url = url;

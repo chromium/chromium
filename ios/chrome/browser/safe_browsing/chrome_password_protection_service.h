@@ -74,8 +74,8 @@ class ChromePasswordProtectionService
       const std::string& verdict_token,
       safe_browsing::ReusedPasswordAccountType password_type) override;
 
-  // Stores |verdict| in the cache based on its |trigger_type|, |url|,
-  // reused |password_type|, |verdict| and |receive_time|.
+  // Stores `verdict` in the cache based on its `trigger_type`, `url`,
+  // reused `password_type`, `verdict` and `receive_time`.
   void CacheVerdict(
       const GURL& url,
       safe_browsing::LoginReputationClientRequest::TriggerType trigger_type,
@@ -91,7 +91,7 @@ class ChromePasswordProtectionService
       safe_browsing::ReusedPasswordAccountType password_type,
       safe_browsing::LoginReputationClientResponse* out_response) override;
 
-  // Returns the number of saved verdicts for the given |trigger_type|.
+  // Returns the number of saved verdicts for the given `trigger_type`.
   int GetStoredVerdictCount(
       safe_browsing::LoginReputationClientRequest::TriggerType trigger_type)
       override;
@@ -241,9 +241,9 @@ class ChromePasswordProtectionService
       safe_browsing::LoginReputationClientRequest* request_proto) override;
 
  private:
-  // Returns true if the |web_state| is already showing a warning dialog.
+  // Returns true if the `web_state` is already showing a warning dialog.
   bool IsModalWarningShowingInWebState(web::WebState* web_state);
-  // Removes all warning requests for |web_state|.
+  // Removes all warning requests for `web_state`.
   void RemoveWarningRequestsByWebState(web::WebState* web_state);
 
   password_manager::PasswordStoreInterface* GetStoreForReusedCredential(
@@ -257,10 +257,10 @@ class ChromePasswordProtectionService
   // account and is accessible only when the user is signed in and non syncing.
   password_manager::PasswordStoreInterface* GetAccountPasswordStore() const;
 
-  // Gets prefs associated with |browser_state_|.
+  // Gets prefs associated with `browser_state_`.
   PrefService* GetPrefs() const;
 
-  // Returns whether |browser_state_| has safe browsing service enabled.
+  // Returns whether `browser_state_` has safe browsing service enabled.
   bool IsSafeBrowsingEnabled();
 
   // Lookup for a callback for showing a warning for a given request.

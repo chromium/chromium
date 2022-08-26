@@ -38,7 +38,7 @@ using security_interstitials::IOSBlockingPageMetricsHelper;
 using security_interstitials::SafeBrowsingLoudErrorUI;
 
 namespace {
-// Creates a metrics helper for |resource|.
+// Creates a metrics helper for `resource`.
 std::unique_ptr<IOSBlockingPageMetricsHelper> CreateMetricsHelper(
     const UnsafeResource& resource) {
   security_interstitials::MetricsHelper::ReportDetails reporting_info;
@@ -131,7 +131,7 @@ void SafeBrowsingBlockingPage::HandleCommand(
     web::WebFrame* sender_frame) {
   error_ui_->HandleCommand(command);
   if (command == security_interstitials::CMD_DONT_PROCEED) {
-    // |error_ui_| handles recording PROCEED and
+    // `error_ui_` handles recording PROCEED and
     // OPEN_ENHANCED_PROTECTION_SETTINGS decisions.
     client_->metrics_helper()->RecordUserDecision(
         security_interstitials::MetricsHelper::DONT_PROCEED);

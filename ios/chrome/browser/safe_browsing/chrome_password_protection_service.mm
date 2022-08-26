@@ -96,7 +96,7 @@ bool HasArtificialCachedVerdict() {
   return !phishing_url_string.empty();
 }
 
-// Given a |web_state|, returns a timestamp of its last committed
+// Given a `web_state`, returns a timestamp of its last committed
 // navigation.
 int64_t GetLastCommittedNavigationTimestamp(web::WebState* web_state) {
   if (!web_state)
