@@ -42,7 +42,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.graphics.drawable.DrawableWrapper;
+import androidx.appcompat.graphics.drawable.DrawableWrapperCompat;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -2437,7 +2437,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
      * NTP.  This allows animations to continue as the drawable is switched between the two owning
      * views.
      */
-    private static class NtpSearchBoxDrawable extends DrawableWrapper {
+    private static class NtpSearchBoxDrawable extends DrawableWrapperCompat {
         private final Drawable.Callback mCallback;
 
         private int mBoundsLeft;

@@ -17,7 +17,7 @@ import android.os.Looper;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.graphics.drawable.DrawableWrapper;
+import androidx.appcompat.graphics.drawable.DrawableWrapperCompat;
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * {@link Animatable} {@link Drawable}s in the {@link Drawable} hierarchy when this {@link Drawable}
  * is shown or hidden.
  */
-public class AutoAnimatorDrawable extends DrawableWrapper {
+public class AutoAnimatorDrawable extends DrawableWrapperCompat {
     // Since Drawables default visible to true by default, we might not get a change and start the
     // animation on the first visibility request.
     private boolean mGotVisibilityCall;
@@ -50,7 +50,7 @@ public class AutoAnimatorDrawable extends DrawableWrapper {
         AutoAnimatorDrawable.attachRestartListeners(this);
     }
 
-    // DrawableWrapper implementation.
+    // DrawableWrapperCompat implementation.
     @Override
     public boolean setVisible(boolean visible, boolean restart) {
         boolean changed = super.setVisible(visible, restart);
@@ -116,10 +116,10 @@ public class AutoAnimatorDrawable extends DrawableWrapper {
             // versions of Android (see below for other if/else blocks).
             AutoAnimatorDrawable.animatedDrawableHelper(
                     ((android.graphics.drawable.DrawableWrapper) drawable).getDrawable(), consumer);
-        } else if (drawable instanceof DrawableWrapper) {
-            // Support the AppCompat DrawableWrapper.
+        } else if (drawable instanceof DrawableWrapperCompat) {
+            // Support the AppCompat DrawableWrapperCompat.
             AutoAnimatorDrawable.animatedDrawableHelper(
-                    ((DrawableWrapper) drawable).getWrappedDrawable(), consumer);
+                    ((DrawableWrapperCompat) drawable).getDrawable(), consumer);
         } else if (drawable instanceof LayerDrawable) {
             // Support a LayerDrawable and try to animate all layers.
             LayerDrawable layerDrawable = (LayerDrawable) drawable;

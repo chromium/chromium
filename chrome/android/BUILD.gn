@@ -1228,6 +1228,7 @@ robolectric_binary("chrome_junit_tests") {
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_activity_activity_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_browser_browser_java",
     "//third_party/androidx:androidx_collection_collection_java",
     "//third_party/androidx:androidx_lifecycle_lifecycle_runtime_java",
