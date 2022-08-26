@@ -69,7 +69,7 @@ class SendTabToSelfBrowserAgent
   // BrowserObserver::
   void BrowserDestroyed(Browser* browser) override;
 
-  // Display an infobar for |entry| on the specified |web_state|.
+  // Display an infobar for `entry` on the specified `web_state`.
   void DisplayInfoBar(web::WebState* web_state,
                       const send_tab_to_self::SendTabToSelfEntry* entry);
 

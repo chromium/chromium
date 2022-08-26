@@ -128,7 +128,7 @@ class SendTabToSelfBrowserAgentTest : public PlatformTest {
     item->SetTitle(u"Page title");
     auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     navigation_manager->SetLastCommittedItem(item.get());
-    // Test nav manager doesn't own its items, so move |item| into the storage
+    // Test nav manager doesn't own its items, so move `item` into the storage
     // vector to define its lifetime.
     navigation_items_.push_back(std::move(item));
     fake_web_state->SetNavigationManager(std::move(navigation_manager));

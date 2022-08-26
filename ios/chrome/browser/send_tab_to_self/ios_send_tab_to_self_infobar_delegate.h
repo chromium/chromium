@@ -52,7 +52,7 @@ class IOSSendTabToSelfInfoBarDelegate : public ConfirmInfoBarDelegate {
   // The entry that was share to this device. Must outlive this instance.
   const SendTabToSelfEntry* entry_ = nullptr;
 
-  // The SendTabToSelfModel that holds the |entry_|. Must outlive this instance.
+  // The SendTabToSelfModel that holds the `entry_`. Must outlive this instance.
   SendTabToSelfModel* model_ = nullptr;
 
   // Registration with NSNotificationCenter for this window.

@@ -62,7 +62,7 @@ IOSSendTabToSelfInfoBarDelegate::IOSSendTabToSelfInfoBarDelegate(
                 if (!weakPtr)
                   return;
 
-                // Ignore the notification if it was sent by |weakPtr| (i.e. the
+                // Ignore the notification if it was sent by `weakPtr` (i.e. the
                 // instance that responded first to the send to self infobar)
                 if (note.object == weakPtr->registration_)
                   return;
