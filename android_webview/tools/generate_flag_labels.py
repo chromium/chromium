@@ -257,29 +257,34 @@ def _GetIncorrectWebViewEnums():
 
 def _GenerateEnumFlagMessage(enums_need_fixing, enums_to_add):
   output = ''
+  enums_path = '//tools/metrics/histograms/enums.xml'
   if enums_need_fixing:
     output += """\
 It looks like some flags in enums.xml have the wrong 'int value'. This is
-probably a mistake in enums.xml. Please update these flags in enums.xml
+probably a mistake in {enums_path}. Please update these flags in enums.xml
 to use the following (correct) int values:
 
-"""
+""".format(enums_path=enums_path)
     output += '\n'.join(
         sorted(['  ' + enum.ToXml() for enum in enums_need_fixing]))
-    output += '\n\n'
 
   if enums_to_add:
     output += """\
 It looks like you added flags to ProductionSupportedFlagList but didn't yet add
-the flags to enums.xml. Please double-check that the following flag labels are
-spelled correctly (case-sensitive). You can correct any spelling mistakes by
+the flags to {enums_path}. Please double-check that the following flag labels
+are spelled correctly (case-sensitive). You can correct any spelling mistakes by
 editing KNOWN_MISTAKES in {script_path}.
 Once the spelling is correct, please run this tool again and add the following
 to enums.xml:
 
-""".format(script_path=_SCRIPT_PATH)
+""".format(enums_path=enums_path, script_path=_SCRIPT_PATH)
     output += '\n'.join(sorted(['  ' + enum.ToXml() for enum in enums_to_add]))
-    output += '\n\n'
+
+  output += """
+
+You can run this check again by running the {script_path} tool.
+""".format(script_path=_SCRIPT_PATH)
+
   return output
 
 
@@ -297,22 +302,9 @@ def CheckMissingWebViewEnums(input_api, output_api):
     # Return empty list to tell git-cl presubmit there were no errors.
     return []
 
-  enums_path = '//tools/metrics/histograms/enums.xml'
-
   return [
-      output_api.PresubmitPromptWarning("""
-It looks like new flags have been added to ProductionSupportedFlagList but the
-labels still need to be added to LoginCustomFlags enum in {enums_path}.
-If you believe this warning is correct, please update enums.xml by pasting the
-following lines under LoginCustomFlags and running `git-cl format` to correctly
-sort the changes:
-
-{enums}
-
-You can run this check again by running the {script_path} tool.
-""".format(enums=_GenerateEnumFlagMessage(enums_need_fixing, enums_to_add),
-           enums_path=enums_path,
-           script_path=_SCRIPT_PATH))
+      output_api.PresubmitPromptWarning(
+          _GenerateEnumFlagMessage(enums_need_fixing, enums_to_add))
   ]
 
 
@@ -327,16 +319,6 @@ def main():
   if not enums_need_fixing and not enums_to_add:
     print('enums.xml is already up-to-date!')
     return
-
-  message = """\
-This is a best-effort attempt to generate missing enums.xml entries. Please
-double-check this picked the correct labels for your new features (labels are
-case-sensitive!), add these to enums.xml, run `git-cl format`, and then follow
-these steps as a final check:
-
-https://chromium.googlesource.com/chromium/src/+/main/tools/metrics/histograms/README.md#flag-histograms
-"""
-  print(message)
 
   print(_GenerateEnumFlagMessage(enums_need_fixing, enums_to_add))
 
