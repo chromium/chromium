@@ -822,6 +822,13 @@ TEST_F(BookmarkProviderTest, KeywordModeExtractUserInput) {
   matches = provider_->matches();
   ASSERT_EQ(matches.size(), 1u);
   EXPECT_EQ(u"domain", matches[0].description);
+
+  // Ensure keyword and transition are set properly to keep user in keyword
+  // mode.
+  EXPECT_TRUE(matches[0].from_keyword);
+  EXPECT_EQ(matches[0].keyword, u"@bookmarks");
+  EXPECT_TRUE(PageTransitionCoreTypeIs(matches[0].transition,
+                                       ui::PAGE_TRANSITION_KEYWORD));
 }
 
 TEST_F(BookmarkProviderTest, MaxMatches) {
