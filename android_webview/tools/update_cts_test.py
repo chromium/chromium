@@ -344,7 +344,7 @@ class UpdateCTSTest(unittest.TestCase):
           'cipd', 'ensure', '-root',
           os.path.dirname(repo_cipd_yaml), '-ensure-file', mock.ANY
       ])
-      run_mock.assert_any_call(['python', GENERATE_BUILDBOT_JSON])
+      run_mock.assert_any_call(['vpython3', GENERATE_BUILDBOT_JSON])
 
   @patch('devil.utils.cmd_helper.RunCmd')
   @patch('devil.utils.cmd_helper.GetCmdOutput')

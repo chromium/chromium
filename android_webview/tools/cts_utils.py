@@ -381,7 +381,7 @@ class ChromiumRepoHelper:
       IOError: If generation failed.
     """
     with chdir(self._root_dir):
-      ret = cmd_helper.RunCmd(['python', _GENERATE_BUILDBOT_JSON])
+      ret = cmd_helper.RunCmd(['vpython3', _GENERATE_BUILDBOT_JSON])
       if ret:
         raise IOError('Error while generating_buildbot_json.py')
 
