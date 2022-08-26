@@ -295,7 +295,7 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
 
   // Helper method for Write(): deletes meta files up to, but not including
   // |sequencing_id_to_keep|. Any errors are ignored.
-  void DeleteOutdatedMetadata(int64_t sequencing_id_to_keep);
+  void DeleteOutdatedMetadata(int64_t sequencing_id_to_keep) const;
 
   // Helper method for Write(): composes record header and writes it to the
   // file, followed by data. Stores record digest in the queue, increments
@@ -333,8 +333,13 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
 
   // Sequential task runner for all activities in this StorageQueue
   // (must be first member in class).
-  scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
   SEQUENCE_CHECKER(storage_queue_sequence_checker_);
+
+  // Dedicated sequence task runner for low priority actions (which make
+  // no impact on the main activity - e.g., deletion of the outdated metafiles).
+  // Serializeing them should reduce their impact.
+  const scoped_refptr<base::SequencedTaskRunner> low_priority_task_runner_;
 
   // Immutable options, stored at the time of creation.
   const QueueOptions options_;

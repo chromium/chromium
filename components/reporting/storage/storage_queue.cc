@@ -141,6 +141,8 @@ StorageQueue::StorageQueue(
     scoped_refptr<CompressionModule> compression_module)
     : base::RefCountedDeleteOnSequence<StorageQueue>(sequenced_task_runner),
       sequenced_task_runner_(std::move(sequenced_task_runner)),
+      low_priority_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::BEST_EFFORT, base::MayBlock()})),
       options_(options),
       async_start_upload_cb_(async_start_upload_cb),
       encryption_module_(encryption_module),
@@ -611,10 +613,9 @@ Status StorageQueue::WriteMetadata(base::StringPiece current_record_digest) {
   meta_file_ = std::move(meta_file);
   // Asynchronously delete all earlier metafiles. Do not wait for this to
   // happen.
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-      base::BindOnce(&StorageQueue::DeleteOutdatedMetadata, this,
-                     next_sequencing_id_));
+  low_priority_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&StorageQueue::DeleteOutdatedMetadata, this,
+                                next_sequencing_id_));
   return Status::StatusOK();
 }
 
@@ -755,7 +756,7 @@ void StorageQueue::DeleteUnusedFiles(
                     &used_files_set));
 }
 
-void StorageQueue::DeleteOutdatedMetadata(int64_t sequencing_id_to_keep) {
+void StorageQueue::DeleteOutdatedMetadata(int64_t sequencing_id_to_keep) const {
   // Delete file on disk. Note: disk space has already been released when the
   // metafile was destructed, and so we don't need to do that here.
   // If the deletion of a file fails, the file will be naturally handled next
