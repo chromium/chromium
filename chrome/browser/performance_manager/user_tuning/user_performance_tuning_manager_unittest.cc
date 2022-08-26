@@ -10,6 +10,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/performance_manager/test_support/fake_frame_throttling_delegate.h"
+#include "chrome/browser/performance_manager/test_support/fake_high_efficiency_mode_toggle_delegate.h"
+#include "chrome/browser/performance_manager/test_support/fake_power_monitor_source.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/testing_pref_service.h"
@@ -17,26 +19,6 @@
 
 namespace performance_manager::user_tuning {
 namespace {
-
-class FakePowerMonitorSource : public base::PowerMonitorSource {
- public:
-  bool IsOnBatteryPower() override { return on_battery_power_; }
-
-  void SetOnBatteryPower(bool on_battery_power) {
-    on_battery_power_ = on_battery_power;
-    ProcessPowerEvent(POWER_STATE_EVENT);
-  }
-
-  bool on_battery_power_ = false;
-};
-
-class FakeHighEfficiencyModeToggleDelegate
-    : public performance_manager::user_tuning::UserPerformanceTuningManager::
-          HighEfficiencyModeToggleDelegate {
- public:
-  void ToggleHighEfficiencyMode(bool enabled) override {}
-  ~FakeHighEfficiencyModeToggleDelegate() override = default;
-};
 
 class QuitRunLoopObserverBase : public performance_manager::user_tuning::
                                     UserPerformanceTuningManager::Observer {

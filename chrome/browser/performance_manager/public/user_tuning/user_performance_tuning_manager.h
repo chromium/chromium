@@ -103,6 +103,7 @@ class UserPerformanceTuningManager : public base::PowerStateObserver {
   friend class ::ChromeBrowserMainExtraPartsPerformanceManager;
   friend class ::PerformanceManagerMetricsProviderTest;
   friend class UserPerformanceTuningManagerTest;
+  friend class TestUserPerformanceTuningManagerEnvironment;
 
   explicit UserPerformanceTuningManager(
       PrefService* local_state,
