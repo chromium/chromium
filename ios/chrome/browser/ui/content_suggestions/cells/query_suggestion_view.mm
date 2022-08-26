@@ -18,7 +18,7 @@ namespace {
 
 // Size constraints for this view.
 const CGFloat kviewWidthAnchor = 149.0f;
-const CGFloat kviewWidthAnchorLong = 174.0f;
+const CGFloat kviewWidthAnchorLong = 194.0f;
 const CGFloat kViewHeightAnchor = 51.5f;
 
 // Width constraint for the search ImageView.
