@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './realbox_match.js';
+import './realbox_dropdown_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_icons_css.m.js';
@@ -362,6 +363,14 @@ export class RealboxDropdownElement extends PolymerElement {
             this.result.suggestionGroupsMap[groupId].hideGroupA11yLabel) :
         decodeString16(
             this.result.suggestionGroupsMap[groupId].showGroupA11yLabel);
+  }
+
+  private expandIconNameForGroup_(groupId: number): string {
+    if (!this.groupHasHeader_(groupId)) {
+      return '';
+    }
+    return this.groupIsHidden_(groupId) ? 'icon-expand-more' :
+                                          'icon-expand-less';
   }
 }
 

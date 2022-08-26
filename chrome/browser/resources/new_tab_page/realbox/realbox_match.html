@@ -1,4 +1,4 @@
-<style include="cr-hidden-style cr-icons">
+<style include="cr-hidden-style cr-icons realbox-dropdown-shared-style">
   :host {
     display: block;
     outline: none;
@@ -113,14 +113,6 @@
   }
 
   #remove {
-    --cr-icon-button-active-background-color: rgba(var(--google-grey-900-rgb), .16);
-    --cr-icon-button-fill-color: var(--search-box-icon, var(--google-grey-700));
-    --cr-icon-button-focus-outline-color: var(--google-blue-600);
-    --cr-icon-button-hover-background-color: rgba(var(--google-grey-900-rgb), .1);
-    --cr-icon-button-icon-size: 16px;
-    --cr-icon-button-margin-end: 0;
-    --cr-icon-button-margin-start: 0;
-    --cr-icon-button-size: 24px;
     margin-inline-end: 1px;
     opacity: 0; /* Hides the button while keeping it in tab order. */
   }
@@ -149,7 +141,7 @@
     <span id="separator" class="dim">[[separatorText_]]</span>
     <span id="description" inner-h-t-m-l="[[descriptionHtml_]]"></span>
   </div>
-  <cr-icon-button id="remove" class="icon-clear"
+  <cr-icon-button id="remove" class="action-icon icon-clear"
     aria-label="[[removeButtonAriaLabel_]]"
     on-click="onRemoveButtonClick_" on-mousedown="onRemoveButtonMouseDown_"
     title="[[removeButtonTitle_]]" hidden$="[[!match.supportsDeletion]]"

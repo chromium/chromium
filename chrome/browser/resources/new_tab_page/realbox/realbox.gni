@@ -13,3 +13,6 @@ realbox_web_component_files = [
   "realbox/realbox_match.ts",
   "realbox/realbox.ts",
 ]
+
+# Files that are passed as input to css_to_wrapper().
+realbox_css_files = [ "realbox/realbox_dropdown_shared_style.css" ]
