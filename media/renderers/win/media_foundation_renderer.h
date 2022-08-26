@@ -153,7 +153,7 @@ class MEDIA_EXPORT MediaFoundationRenderer
   //   `renderer_client` via OnError().
   void OnError(PipelineStatus status,
                ErrorReason reason,
-               absl::optional<HRESULT> hresult = absl::nullopt,
+               HRESULT hresult,
                PipelineStatusCallback status_cb = base::NullCallback());
 
   // Renderer methods are running in the same sequence.

@@ -18,6 +18,7 @@ component("media_foundation_util") {
   sources = [
     "dxgi_device_manager.cc",
     "dxgi_device_manager.h",
+    "hresults.h",
     "mf_helpers.cc",
     "mf_helpers.h",
     "mf_initializer.cc",
