@@ -62,7 +62,7 @@ if (include_polymer) {
 
   icons_html_files = [
     "mwb_shared_icons.html",
-    "cr_fingerprint/cr_fingerprint_icon.html",
+    "cr_fingerprint/cr_fingerprint_icons.html",
   ]
 
   # Polymer HTML files that are passed as input to html_to_wrapper().
