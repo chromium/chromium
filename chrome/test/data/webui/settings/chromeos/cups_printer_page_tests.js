@@ -338,7 +338,7 @@ suite('CupsAddPrinterDialogTests', function() {
   test('LogDialogCancelledIpp', function() {
     const makeAndModel = 'Printer Make And Model';
     // Start on add manual dialog.
-    dialog.fire('open-manually-add-printer-dialog');
+    dialog.dispatchEvent(new CustomEvent('open-manually-add-printer-dialog'));
     flush();
 
     // Populate the printer object.
@@ -608,29 +608,31 @@ suite('CupsAddPrinterDialogTests', function() {
           // disabled.
           manufacturerDropdown.shadowRoot.querySelector('#search').value =
               'hlrRkJQkNsh';
-          manufacturerDropdown.shadowRoot.querySelector('#search').fire(
-              'input');
+          manufacturerDropdown.shadowRoot.querySelector('#search')
+              .dispatchEvent(new CustomEvent('input'));
           assertTrue(addButton.disabled);
 
           // Then mimic typing in the original value to re-enable the Add
           // button.
           manufacturerDropdown.shadowRoot.querySelector('#search').value =
               'make';
-          manufacturerDropdown.shadowRoot.querySelector('#search').fire(
-              'input');
+          manufacturerDropdown.shadowRoot.querySelector('#search')
+              .dispatchEvent(new CustomEvent('input'));
           assertFalse(addButton.disabled);
 
           // Mimic typing in random input. Make sure the Add button becomes
           // disabled.
           modelDropdown.shadowRoot.querySelector('#search').value =
               'hlrRkJQkNsh';
-          modelDropdown.shadowRoot.querySelector('#search').fire('input');
+          modelDropdown.shadowRoot.querySelector('#search').dispatchEvent(
+              new CustomEvent('input'));
           assertTrue(addButton.disabled);
 
           // Then mimic typing in the original value to re-enable the Add
           // button.
           modelDropdown.shadowRoot.querySelector('#search').value = 'model';
-          modelDropdown.shadowRoot.querySelector('#search').fire('input');
+          modelDropdown.shadowRoot.querySelector('#search').dispatchEvent(
+              new CustomEvent('input'));
           assertFalse(addButton.disabled);
         });
   });
@@ -775,7 +777,7 @@ suite('EditPrinterDialog', function() {
               dialog.shadowRoot.querySelector('.printer-name-input');
           assertTrue(!!nameField);
           nameField.value = 'edited printer';
-          nameField.fire('input');
+          nameField.dispatchEvent(new CustomEvent('input'));
 
           // Assert that the "Save" button is enabled.
           const saveButton = dialog.shadowRoot.querySelector('.action-button');
@@ -804,7 +806,7 @@ suite('EditPrinterDialog', function() {
           // Change printer name to something valid.
           const printerName = dialog.$.printerName;
           printerName.value = 'new printer name';
-          printerName.fire('input');
+          printerName.dispatchEvent(new CustomEvent('input'));
           assertFalse(saveButton.disabled);
 
           // Change printer address to something invalid.
@@ -992,7 +994,7 @@ suite('EditPrinterDialog', function() {
               dialog.shadowRoot.querySelector('.printer-name-input');
           assertTrue(!!nameField);
           nameField.value = 'edited printer';
-          nameField.fire('input');
+          nameField.dispatchEvent(new CustomEvent('input'));
 
           assertTrue(!saveButton.disabled);
         });
@@ -1015,7 +1017,7 @@ suite('EditPrinterDialog', function() {
               dialog.shadowRoot.querySelector('#printerAddress');
           assertTrue(!!addressField);
           addressField.value = 'newAddress:789';
-          addressField.fire('input');
+          addressField.dispatchEvent(new CustomEvent('input'));
 
           assertTrue(!saveButton.disabled);
         });
@@ -1037,7 +1039,7 @@ suite('EditPrinterDialog', function() {
           const queueField = dialog.shadowRoot.querySelector('#printerQueue');
           assertTrue(!!queueField);
           queueField.value = 'newqueueinfo';
-          queueField.fire('input');
+          queueField.dispatchEvent(new CustomEvent('input'));
 
           assertTrue(!saveButton.disabled);
         });
@@ -1189,7 +1191,7 @@ suite('EditPrinterDialog', function() {
               dialog.shadowRoot.querySelector('.printer-name-input');
           assertTrue(!!nameField);
           nameField.value = expectedName;
-          nameField.fire('input');
+          nameField.dispatchEvent(new CustomEvent('input'));
 
           flush();
 
@@ -1225,7 +1227,7 @@ suite('EditPrinterDialog', function() {
           assertFalse(nameField.disabled);
 
           nameField.value = expectedName;
-          nameField.fire('input');
+          nameField.dispatchEvent(new CustomEvent('input'));
 
           flush();
 
@@ -1453,43 +1455,46 @@ suite('PrintServerTests', function() {
           ],
         });
 
-    return flushTasks().then(() => {
-      // Simulate that a print server was queried previously.
-      setEntryManagerPrinters(
-          /*savedPrinters=*/[], /*nearbyPrinters=*/[],
-          /*discoveredPrinters=*/[], [
-            createPrinterListEntry(
-                'nameA', 'serverAddress', 'idA', PrinterType.PRINTSERVER),
-            createPrinterListEntry(
-                'nameB', 'serverAddress', 'idB', PrinterType.PRINTSERVER),
-          ]);
-      flush();
-      assertEquals(2, entryManager.printServerPrinters.length);
+    return flushTasks()
+        .then(() => {
+          // Simulate that a print server was queried previously.
+          setEntryManagerPrinters(
+              /*savedPrinters=*/[], /*nearbyPrinters=*/[],
+              /*discoveredPrinters=*/[], [
+                createPrinterListEntry(
+                    'nameA', 'serverAddress', 'idA', PrinterType.PRINTSERVER),
+                createPrinterListEntry(
+                    'nameB', 'serverAddress', 'idB', PrinterType.PRINTSERVER),
+              ]);
+          flush();
+          assertEquals(2, entryManager.printServerPrinters.length);
 
-      // Simulate adding a saved printer.
-      entryManager.setSavedPrintersList([createPrinterListEntry(
-          'nameA', 'serverAddress', 'idA', PrinterType.SAVED)]);
-      flush();
+          // Simulate adding a saved printer.
+          entryManager.setSavedPrintersList([createPrinterListEntry(
+              'nameA', 'serverAddress', 'idA', PrinterType.SAVED)]);
+          flush();
 
-      // Simulate the underlying model changes. Nearby printers are also
-      // updated after changes to saved printers.
-      webUIListenerCallback(
-          'on-nearby-printers-changed', /*automaticPrinter=*/[],
-          /*discoveredPrinters=*/[]);
-      flush();
-
-      // Verify that we now only have 1 printer in print server printers
-      // list.
-      assertEquals(1, entryManager.printServerPrinters.length);
-      const nearbyPrintersElement =
-          page.shadowRoot.querySelector('settings-cups-nearby-printers');
-      assertEquals(1, nearbyPrintersElement.nearbyPrinters.length);
-      // Verify we correctly removed the duplicate printer, 'idA', since
-      // it exists in the saved printer list. Expect only 'idB' in
-      // the print server printers list.
-      assertEquals(
-          'idB', entryManager.printServerPrinters[0].printerInfo.printerId);
-    });
+          // Simulate the underlying model changes. Nearby printers are also
+          // updated after changes to saved printers.
+          webUIListenerCallback(
+              'on-nearby-printers-changed', /*automaticPrinter=*/[],
+              /*discoveredPrinters=*/[]);
+          return flushTasks();
+        })
+        .then(() => {
+          // Verify that we now only have 1 printer in print server printers
+          // list.
+          assertEquals(1, entryManager.printServerPrinters.length);
+          const nearbyPrintersElement =
+              page.shadowRoot.querySelector('settings-cups-nearby-printers');
+          assertTrue(!!nearbyPrintersElement);
+          assertEquals(1, nearbyPrintersElement.nearbyPrinters.length);
+          // Verify we correctly removed the duplicate printer, 'idA', since
+          // it exists in the saved printer list. Expect only 'idB' in
+          // the print server printers list.
+          assertEquals(
+              'idB', entryManager.printServerPrinters[0].printerInfo.printerId);
+        });
   });
 
   test('AddPrintServerAddressError', function() {
