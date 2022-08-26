@@ -18,6 +18,7 @@
 #include "net/base/completion_once_callback.h"
 #include "storage/browser/blob/shareable_file_reference.h"
 #include "storage/browser/file_system/file_stream_reader.h"
+#include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
 
 namespace base {
@@ -57,19 +58,27 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileStreamReader
 
  private:
   friend class FileStreamReader;
+  using SnapshotCallback = FileSystemOperationRunner::SnapshotFileCallback;
 
-  int CreateSnapshot();
-  void DidCreateSnapshot(base::File::Error file_error,
-                         const base::File::Info& file_info,
-                         const base::FilePath& platform_path,
-                         scoped_refptr<ShareableFileReference> file_ref);
-  void OnRead(int rv);
-  void OnGetLength(int64_t rv);
+  int CreateSnapshot(SnapshotCallback callback);
+  void DidCreateSnapshotForRead(net::IOBuffer* read_buf,
+                                int read_len,
+                                net::CompletionOnceCallback callback,
+                                base::File::Error file_error,
+                                const base::File::Info& file_info,
+                                const base::FilePath& platform_path,
+                                scoped_refptr<ShareableFileReference> file_ref);
+  void DidCreateSnapshotForGetLength(
+      net::Int64CompletionOnceCallback callback,
+      base::File::Error file_error,
+      const base::File::Info& file_info,
+      const base::FilePath& platform_path,
+      scoped_refptr<ShareableFileReference> file_ref);
+  void CreateFileReader(const base::FilePath& platform_path);
 
-  raw_ptr<net::IOBuffer, DanglingUntriaged> read_buf_;
-  int read_buf_len_;
-  net::CompletionOnceCallback read_callback_;
-  net::Int64CompletionOnceCallback get_length_callback_;
+  void OnRead(net::CompletionOnceCallback callback, int rv);
+  void OnGetLength(net::Int64CompletionOnceCallback callback, int64_t rv);
+
   scoped_refptr<FileSystemContext> file_system_context_;
   FileSystemURL url_;
   const int64_t initial_offset_;

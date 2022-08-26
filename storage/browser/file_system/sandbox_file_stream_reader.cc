@@ -28,9 +28,7 @@ SandboxFileStreamReader::SandboxFileStreamReader(
     const FileSystemURL& url,
     int64_t initial_offset,
     const base::Time& expected_modification_time)
-    : read_buf_(nullptr),
-      read_buf_len_(0),
-      file_system_context_(file_system_context),
+    : file_system_context_(file_system_context),
       url_(url),
       initial_offset_(initial_offset),
       expected_modification_time_(expected_modification_time),
@@ -41,13 +39,14 @@ SandboxFileStreamReader::~SandboxFileStreamReader() = default;
 int SandboxFileStreamReader::Read(net::IOBuffer* buf,
                                   int buf_len,
                                   net::CompletionOnceCallback callback) {
+  DCHECK(buf);
   if (file_reader_)
     return file_reader_->Read(buf, buf_len, std::move(callback));
 
-  read_buf_ = buf;
-  read_buf_len_ = buf_len;
-  read_callback_ = std::move(callback);
-  return CreateSnapshot();
+  return CreateSnapshot(
+      base::BindOnce(&SandboxFileStreamReader::DidCreateSnapshotForRead,
+                     weak_factory_.GetWeakPtr(), base::Unretained(buf), buf_len,
+                     std::move(callback)));
 }
 
 int64_t SandboxFileStreamReader::GetLength(
@@ -55,20 +54,23 @@ int64_t SandboxFileStreamReader::GetLength(
   if (file_reader_)
     return file_reader_->GetLength(std::move(callback));
 
-  get_length_callback_ = std::move(callback);
-  return CreateSnapshot();
+  return CreateSnapshot(
+      base::BindOnce(&SandboxFileStreamReader::DidCreateSnapshotForGetLength,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-int SandboxFileStreamReader::CreateSnapshot() {
+int SandboxFileStreamReader::CreateSnapshot(SnapshotCallback callback) {
   DCHECK(!has_pending_create_snapshot_);
   has_pending_create_snapshot_ = true;
   file_system_context_->operation_runner()->CreateSnapshotFile(
-      url_, base::BindOnce(&SandboxFileStreamReader::DidCreateSnapshot,
-                           weak_factory_.GetWeakPtr()));
+      url_, std::move(callback));
   return net::ERR_IO_PENDING;
 }
 
-void SandboxFileStreamReader::DidCreateSnapshot(
+void SandboxFileStreamReader::DidCreateSnapshotForRead(
+    net::IOBuffer* read_buf,
+    int read_len,
+    net::CompletionOnceCallback callback,
     base::File::Error file_error,
     const base::File::Info& file_info,
     const base::FilePath& platform_path,
@@ -78,18 +80,58 @@ void SandboxFileStreamReader::DidCreateSnapshot(
   has_pending_create_snapshot_ = false;
 
   if (file_error != base::File::FILE_OK) {
-    if (read_callback_) {
-      DCHECK(!get_length_callback_);
-      std::move(read_callback_).Run(net::FileErrorToNetError(file_error));
-      return;
-    }
-    std::move(get_length_callback_).Run(net::FileErrorToNetError(file_error));
+    std::move(callback).Run(net::FileErrorToNetError(file_error));
     return;
   }
 
   // Keep the reference (if it's non-null) so that the file won't go away.
   snapshot_ref_ = std::move(file_ref);
 
+  CreateFileReader(platform_path);
+
+  auto callback_pair = base::SplitOnceCallback(std::move(callback));
+
+  DCHECK(read_buf);
+  int rv = Read(read_buf, read_len,
+                base::BindOnce(&SandboxFileStreamReader::OnRead,
+                               weak_factory_.GetWeakPtr(),
+                               std::move(callback_pair.first)));
+  if (rv != net::ERR_IO_PENDING) {
+    std::move(callback_pair.second).Run(rv);
+  }
+}
+
+void SandboxFileStreamReader::DidCreateSnapshotForGetLength(
+    net::Int64CompletionOnceCallback callback,
+    base::File::Error file_error,
+    const base::File::Info& file_info,
+    const base::FilePath& platform_path,
+    scoped_refptr<ShareableFileReference> file_ref) {
+  DCHECK(has_pending_create_snapshot_);
+  DCHECK(!file_reader_.get());
+  has_pending_create_snapshot_ = false;
+
+  if (file_error != base::File::FILE_OK) {
+    std::move(callback).Run(net::FileErrorToNetError(file_error));
+    return;
+  }
+
+  // Keep the reference (if it's non-null) so that the file won't go away.
+  snapshot_ref_ = std::move(file_ref);
+
+  CreateFileReader(platform_path);
+
+  auto callback_pair = base::SplitOnceCallback(std::move(callback));
+
+  int64_t rv = file_reader_->GetLength(base::BindOnce(
+      &SandboxFileStreamReader::OnGetLength, weak_factory_.GetWeakPtr(),
+      std::move(callback_pair.first)));
+  if (rv != net::ERR_IO_PENDING)
+    std::move(callback_pair.second).Run(rv);
+}
+
+void SandboxFileStreamReader::CreateFileReader(
+    const base::FilePath& platform_path) {
   if (file_system_context_->is_incognito()) {
     base::WeakPtr<ObfuscatedFileUtilMemoryDelegate> memory_file_util_delegate =
         file_system_context_->sandbox_delegate()->memory_file_util_delegate();
@@ -102,29 +144,17 @@ void SandboxFileStreamReader::DidCreateSnapshot(
         file_system_context_->default_file_task_runner(), platform_path,
         initial_offset_, expected_modification_time_);
   }
-
-  if (read_callback_) {
-    DCHECK(!get_length_callback_);
-    int rv = Read(read_buf_, read_buf_len_,
-                  base::BindOnce(&SandboxFileStreamReader::OnRead,
-                                 weak_factory_.GetWeakPtr()));
-    if (rv != net::ERR_IO_PENDING)
-      std::move(read_callback_).Run(rv);
-    return;
-  }
-
-  int64_t rv = file_reader_->GetLength(base::BindOnce(
-      &SandboxFileStreamReader::OnGetLength, weak_factory_.GetWeakPtr()));
-  if (rv != net::ERR_IO_PENDING)
-    std::move(get_length_callback_).Run(rv);
 }
 
-void SandboxFileStreamReader::OnRead(int rv) {
-  std::move(read_callback_).Run(rv);
+void SandboxFileStreamReader::OnRead(net::CompletionOnceCallback callback,
+                                     int rv) {
+  std::move(callback).Run(rv);
 }
 
-void SandboxFileStreamReader::OnGetLength(int64_t rv) {
-  std::move(get_length_callback_).Run(rv);
+void SandboxFileStreamReader::OnGetLength(
+    net::Int64CompletionOnceCallback callback,
+    int64_t rv) {
+  std::move(callback).Run(rv);
 }
 
 }  // namespace storage
