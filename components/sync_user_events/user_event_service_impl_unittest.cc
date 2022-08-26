@@ -59,8 +59,9 @@ class TestGlobalIdMapper : public GlobalIdMapper {
 class UserEventServiceImplTest : public testing::Test {
  protected:
   UserEventServiceImplTest() {
-    sync_service_.SetPreferredDataTypes(
-        {HISTORY_DELETE_DIRECTIVES, USER_EVENTS});
+    sync_service_.GetUserSettings()->SetSelectedTypes(
+        /*sync_everything=*/false,
+        /*types=*/{syncer::UserSelectableType::kHistory});
     ON_CALL(mock_processor_, IsTrackingMetadata())
         .WillByDefault(testing::Return(true));
     ON_CALL(mock_processor_, TrackedAccountId())

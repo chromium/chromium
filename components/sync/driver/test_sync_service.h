@@ -39,7 +39,8 @@ class TestSyncService : public SyncService {
   void SetSetupInProgress(bool in_progress);
   void SetAuthError(const GoogleServiceAuthError& auth_error);
   void SetFirstSetupComplete(bool first_setup_complete);
-  void SetPreferredDataTypes(const ModelTypeSet& types);
+  // TODO(crbug.com/1356216): reconsider SetActiveDataTypes() use in tests. It
+  // should set the active types from the user selected types; did not fail.
   void SetActiveDataTypes(const ModelTypeSet& types);
   void SetLastCycleSnapshot(const SyncCycleSnapshot& snapshot);
   // Convenience versions of the above, for when the caller doesn't care about
@@ -125,7 +126,6 @@ class TestSyncService : public SyncService {
   bool setup_in_progress_ = false;
   GoogleServiceAuthError auth_error_;
 
-  ModelTypeSet preferred_data_types_;
   ModelTypeSet active_data_types_;
 
   bool detailed_sync_status_engine_available_ = false;

@@ -15,6 +15,7 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
+#import "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/test_sync_service.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -302,8 +303,13 @@ TEST_F(CredentialProviderServiceTest, PasswordSyncStoredEmail) {
   // Turn off password sync.
   auto model_type_set = sync_service_.GetActiveDataTypes();
   model_type_set.Remove(syncer::PASSWORDS);
-  sync_service_.SetPreferredDataTypes(model_type_set);
   sync_service_.SetActiveDataTypes(model_type_set);
+  syncer::UserSelectableTypeSet user_selectable_type_set =
+      sync_service_.GetUserSettings()->GetSelectedTypes();
+  user_selectable_type_set.Remove(syncer::UserSelectableType::kPasswords);
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/user_selectable_type_set);
 
   sync_service_.FireStateChanged();
 

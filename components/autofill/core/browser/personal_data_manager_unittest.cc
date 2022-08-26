@@ -52,6 +52,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/test_sync_service.h"
 #include "components/version_info/version_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -4709,7 +4710,9 @@ TEST_F(PersonalDataManagerTest, LogStoredCreditCardMetrics) {
 
 TEST_F(PersonalDataManagerTest, CreateDataForTest) {
   // Disable sync so the data gets created.
-  sync_service_.SetPreferredDataTypes(syncer::ModelTypeSet());
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/{});
   sync_service_.SetActiveDataTypes(syncer::ModelTypeSet());
 
   // By default, the creation of test data is disabled.
@@ -4959,9 +4962,15 @@ TEST_F(
   AddProfileToPersonalDataManager(profile);
 
   // Turn off autofill profile sync.
+  syncer::UserSelectableTypeSet user_selectable_type_set =
+      sync_service_.GetUserSettings()->GetSelectedTypes();
+  user_selectable_type_set.Remove(syncer::UserSelectableType::kAutofill);
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/user_selectable_type_set);
+
   auto model_type_set = sync_service_.GetActiveDataTypes();
   model_type_set.Remove(syncer::AUTOFILL_PROFILE);
-  sync_service_.SetPreferredDataTypes(model_type_set);
   sync_service_.SetActiveDataTypes(model_type_set);
 
   // The data should still exist.
@@ -4994,8 +5003,14 @@ TEST_F(
   auto model_type_set = sync_service_.GetActiveDataTypes();
   model_type_set.Remove(syncer::AUTOFILL_WALLET_DATA);
   model_type_set.Remove(syncer::AUTOFILL_WALLET_METADATA);
-  sync_service_.SetPreferredDataTypes(model_type_set);
   sync_service_.SetActiveDataTypes(model_type_set);
+
+  syncer::UserSelectableTypeSet user_selectable_type_set =
+      sync_service_.GetUserSettings()->GetSelectedTypes();
+  user_selectable_type_set.Remove(syncer::UserSelectableType::kAutofill);
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/user_selectable_type_set);
 
   // The credit card should still exist.
   ASSERT_EQ(1U, personal_data_->GetCreditCards().size());

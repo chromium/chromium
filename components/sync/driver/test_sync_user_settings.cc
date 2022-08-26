@@ -13,10 +13,39 @@
 #include "components/sync/driver/test_sync_service.h"
 #include "components/sync/engine/nigori/nigori.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif
+
 namespace syncer {
 
+ModelTypeSet UserSelectableTypesToModelTypes(
+    UserSelectableTypeSet selected_types) {
+  ModelTypeSet preferred_types;
+  for (UserSelectableType type : selected_types) {
+    preferred_types.PutAll(UserSelectableTypeToAllModelTypes(type));
+  }
+  return preferred_types;
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+ModelTypeSet UserSelectableOsTypesToModelTypes(
+    UserSelectableOsTypeSet selected_types) {
+  ModelTypeSet preferred_types;
+  for (UserSelectableOsType type : selected_types) {
+    preferred_types.PutAll(UserSelectableOsTypeToAllModelTypes(type));
+  }
+  return preferred_types;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 TestSyncUserSettings::TestSyncUserSettings(TestSyncService* service)
-    : service_(service) {}
+    : service_(service),
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      selected_os_types_(UserSelectableOsTypeSet::All()),
+#endif
+      selected_types_(UserSelectableTypeSet::All()) {
+}
 
 TestSyncUserSettings::~TestSyncUserSettings() = default;
 
@@ -47,36 +76,34 @@ bool TestSyncUserSettings::IsSyncEverythingEnabled() const {
   return sync_everything_enabled_;
 }
 
-UserSelectableTypeSet TestSyncUserSettings::GetSelectedTypes() const {
-  // TODO(crbug.com/950874): consider getting rid of the logic inversion here.
-  // service_.preferred_type should be derived from selected types, not vice
-  // versa.
-  ModelTypeSet preferred_types = service_->GetPreferredDataTypes();
-  UserSelectableTypeSet selected_types;
-  for (UserSelectableType type : UserSelectableTypeSet::All()) {
-    if (preferred_types.Has(UserSelectableTypeToCanonicalModelType(type))) {
-      selected_types.Put(type);
-    }
-  }
-  return selected_types;
-}
-
 void TestSyncUserSettings::SetSelectedTypes(bool sync_everything,
                                             UserSelectableTypeSet types) {
   // TODO(crbug.com/1330894): take custom logic for Lacros apps into account.
-  // It's probably easier to address TODO about logic inversion above first.
+
   sync_everything_enabled_ = sync_everything;
 
   if (sync_everything_enabled_) {
-    service_->SetPreferredDataTypes(syncer::ModelTypeSet::All());
-    return;
+    selected_types_.PutAll(UserSelectableTypeSet::All());
+  } else {
+    selected_types_ = types;
   }
+}
 
-  syncer::ModelTypeSet preferred_types;
-  for (UserSelectableType type : types) {
-    preferred_types.PutAll(UserSelectableTypeToAllModelTypes(type));
+UserSelectableTypeSet TestSyncUserSettings::GetSelectedTypes() const {
+  return selected_types_;
+}
+
+ModelTypeSet TestSyncUserSettings::GetPreferredDataTypes() const {
+  ModelTypeSet types = UserSelectableTypesToModelTypes(GetSelectedTypes());
+  types.PutAll(AlwaysPreferredUserTypes());
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
+    types.PutAll(UserSelectableOsTypesToModelTypes(GetSelectedOsTypes()));
   }
-  service_->SetPreferredDataTypes(preferred_types);
+#endif
+  types.PutAll(ControlTypes());
+  return types;
 }
 
 UserSelectableTypeSet TestSyncUserSettings::GetRegisteredSelectableTypes()
@@ -90,31 +117,26 @@ bool TestSyncUserSettings::IsSyncAllOsTypesEnabled() const {
 }
 
 UserSelectableOsTypeSet TestSyncUserSettings::GetSelectedOsTypes() const {
-  ModelTypeSet preferred_types = service_->GetPreferredDataTypes();
-  UserSelectableOsTypeSet selected_types;
-  for (UserSelectableOsType type : UserSelectableOsTypeSet::All()) {
-    if (preferred_types.Has(UserSelectableOsTypeToCanonicalModelType(type))) {
-      selected_types.Put(type);
-    }
-  }
-  return selected_types;
+  return selected_os_types_;
 }
 
 void TestSyncUserSettings::SetSelectedOsTypes(bool sync_all_os_types,
                                               UserSelectableOsTypeSet types) {
   sync_all_os_types_enabled_ = sync_all_os_types;
 
-  syncer::ModelTypeSet preferred_types;
+  UserSelectableOsTypeSet selected_os_types;
+
   if (sync_all_os_types_enabled_) {
     for (UserSelectableOsType type : UserSelectableOsTypeSet::All()) {
-      preferred_types.PutAll(UserSelectableOsTypeToAllModelTypes(type));
+      selected_os_types.Put(type);
     }
   } else {
     for (UserSelectableOsType type : types) {
-      preferred_types.PutAll(UserSelectableOsTypeToAllModelTypes(type));
+      selected_os_types.Put(type);
     }
   }
-  service_->SetPreferredDataTypes(preferred_types);
+
+  selected_os_types_ = selected_os_types;
 }
 
 UserSelectableOsTypeSet TestSyncUserSettings::GetRegisteredSelectableOsTypes()
@@ -125,15 +147,15 @@ UserSelectableOsTypeSet TestSyncUserSettings::GetRegisteredSelectableOsTypes()
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void TestSyncUserSettings::SetAppsSyncEnabledByOs(bool apps_sync_enabled) {
-  syncer::ModelTypeSet preferred_types = service_->GetPreferredDataTypes();
+  UserSelectableTypeSet selected_types = GetSelectedTypes();
   if (apps_sync_enabled) {
-    preferred_types.PutAll(
-        UserSelectableTypeToAllModelTypes(UserSelectableType::kApps));
+    selected_types.Put(UserSelectableType::kApps);
   } else {
-    preferred_types.RemoveAll(
-        UserSelectableTypeToAllModelTypes(UserSelectableType::kApps));
+    selected_types.Remove(UserSelectableType::kApps);
   }
-  service_->SetPreferredDataTypes(preferred_types);
+  SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/selected_types);
 }
 #endif
 
@@ -154,8 +176,7 @@ ModelTypeSet TestSyncUserSettings::GetEncryptedDataTypes() const {
   }
   // Some types can never be encrypted, e.g. DEVICE_INFO and
   // AUTOFILL_WALLET_DATA, so make sure we don't report them as encrypted.
-  return Intersection(service_->GetPreferredDataTypes(),
-                      EncryptableUserTypes());
+  return Intersection(GetPreferredDataTypes(), EncryptableUserTypes());
 }
 
 bool TestSyncUserSettings::IsPassphraseRequired() const {

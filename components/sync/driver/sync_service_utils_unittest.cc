@@ -20,7 +20,9 @@ TEST(SyncServiceUtilsTest, UploadToGoogleDisabledIfSyncNotAllowed) {
       syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
   service.SetTransportState(syncer::SyncService::TransportState::DISABLED);
 
-  service.SetPreferredDataTypes(ProtocolTypes());
+  service.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/true,
+      /*types=*/UserSelectableTypeSet::All());
   service.SetActiveDataTypes(ProtocolTypes());
 
   EXPECT_EQ(UploadState::NOT_ACTIVE,
@@ -42,7 +44,9 @@ TEST(SyncServiceUtilsTest,
   service.SetDisableReasons(SyncService::DisableReasonSet());
   service.SetTransportState(
       syncer::SyncService::TransportState::START_DEFERRED);
-  service.SetPreferredDataTypes(ProtocolTypes());
+  service.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/true,
+      /*types=*/UserSelectableTypeSet::All());
   service.SetActiveDataTypes(ProtocolTypes());
   service.SetEmptyLastCycleSnapshot();
 
@@ -68,7 +72,9 @@ TEST(SyncServiceUtilsTest, UploadToGoogleDisabledForModelType) {
   service.SetNonEmptyLastCycleSnapshot();
 
   // Sync is enabled only for a specific model type.
-  service.SetPreferredDataTypes(ModelTypeSet(syncer::BOOKMARKS));
+  service.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/{syncer::UserSelectableType::kBookmarks});
   service.SetActiveDataTypes(ModelTypeSet(syncer::BOOKMARKS));
 
   // Sanity check: Upload is ACTIVE for this model type.
@@ -91,8 +97,11 @@ TEST(SyncServiceUtilsTest,
   service.SetNonEmptyLastCycleSnapshot();
 
   // Sync is enabled for some model types.
-  service.SetPreferredDataTypes(
-      ModelTypeSet(syncer::BOOKMARKS, syncer::PREFERENCES));
+  service.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/{syncer::UserSelectableType::kBookmarks,
+                 syncer::UserSelectableType::kPreferences});
+
   // But one of them fails to actually start up!
   service.SetActiveDataTypes(ModelTypeSet(syncer::BOOKMARKS));
 
@@ -108,7 +117,9 @@ TEST(SyncServiceUtilsTest,
 TEST(SyncServiceUtilsTest, UploadToGoogleDisabledIfLocalSyncEnabled) {
   TestSyncService service;
   service.SetDisableReasons(SyncService::DisableReasonSet());
-  service.SetPreferredDataTypes(ProtocolTypes());
+  service.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/true,
+      /*types=*/UserSelectableTypeSet::All());
   service.SetActiveDataTypes(ProtocolTypes());
   service.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
   service.SetNonEmptyLastCycleSnapshot();
@@ -128,7 +139,9 @@ TEST(SyncServiceUtilsTest, UploadToGoogleDisabledIfLocalSyncEnabled) {
 TEST(SyncServiceUtilsTest, UploadToGoogleDisabledOnPersistentAuthError) {
   TestSyncService service;
   service.SetDisableReasons(SyncService::DisableReasonSet());
-  service.SetPreferredDataTypes(ProtocolTypes());
+  service.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/true,
+      /*types=*/UserSelectableTypeSet::All());
   service.SetActiveDataTypes(ProtocolTypes());
   service.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
   service.SetNonEmptyLastCycleSnapshot();
@@ -168,7 +181,9 @@ TEST(SyncServiceUtilsTest, UploadToGoogleDisabledOnPersistentAuthError) {
 TEST(SyncServiceUtilsTest, UploadToGoogleDisabledIfCustomPassphraseInUse) {
   TestSyncService service;
   service.SetDisableReasons(SyncService::DisableReasonSet());
-  service.SetPreferredDataTypes(ProtocolTypes());
+  service.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/true,
+      /*types=*/UserSelectableTypeSet::All());
   service.SetActiveDataTypes(ProtocolTypes());
   service.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
   service.SetNonEmptyLastCycleSnapshot();
@@ -198,7 +213,9 @@ TEST(SyncServiceUtilsTest, UploadToGoogleDisabledIfCustomPassphraseInUse) {
 TEST(SyncServiceUtilsTest, UploadToGoogleDisabledForSecondaryAccount) {
   TestSyncService service;
   service.SetDisableReasons(SyncService::DisableReasonSet());
-  service.SetPreferredDataTypes(ProtocolTypes());
+  service.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/true,
+      /*types=*/UserSelectableTypeSet::All());
   service.SetActiveDataTypes(ProtocolTypes());
   service.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
   service.SetNonEmptyLastCycleSnapshot();

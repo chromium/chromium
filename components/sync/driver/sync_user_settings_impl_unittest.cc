@@ -124,7 +124,7 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncAllOsTypes) {
   EXPECT_EQ(GetUserTypes(), GetPreferredUserTypes(*sync_user_settings));
   for (UserSelectableOsType type : UserSelectableOsTypeSet::All()) {
     sync_user_settings->SetSelectedOsTypes(/*sync_all_os_types=*/true,
-                                           /*selected_types=*/{type});
+                                           /*types=*/{type});
     EXPECT_EQ(GetUserTypes(), GetPreferredUserTypes(*sync_user_settings));
   }
 }
@@ -136,7 +136,7 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesNotKeepEverythingSynced) {
 
   sync_user_settings->SetSelectedTypes(
       /*sync_everything=*/false,
-      /*selected_types=*/UserSelectableTypeSet());
+      /*types=*/UserSelectableTypeSet());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
     // GetPreferredUserTypes() returns ModelTypes, which includes both browser
@@ -158,7 +158,7 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesNotKeepEverythingSynced) {
         UserSelectableTypeToAllModelTypes(type);
     expected_preferred_types.PutAll(AlwaysPreferredUserTypes());
     sync_user_settings->SetSelectedTypes(/*sync_everything=*/false,
-                                         /*selected_types=*/{type});
+                                         /*types=*/{type});
     EXPECT_EQ(expected_preferred_types,
               GetPreferredUserTypes(*sync_user_settings));
   }
@@ -175,10 +175,10 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesNotAllOsTypesSynced) {
 
   sync_user_settings->SetSelectedTypes(
       /*sync_everything=*/false,
-      /*selected_types=*/UserSelectableTypeSet());
+      /*types=*/UserSelectableTypeSet());
   sync_user_settings->SetSelectedOsTypes(
       /*sync_all_os_types=*/false,
-      /*selected_types=*/UserSelectableOsTypeSet());
+      /*types=*/UserSelectableOsTypeSet());
   EXPECT_FALSE(sync_user_settings->IsSyncEverythingEnabled());
   EXPECT_FALSE(sync_user_settings->IsSyncAllOsTypesEnabled());
   EXPECT_EQ(AlwaysPreferredUserTypes(),
@@ -189,7 +189,7 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesNotAllOsTypesSynced) {
         UserSelectableOsTypeToAllModelTypes(type);
     expected_preferred_types.PutAll(AlwaysPreferredUserTypes());
     sync_user_settings->SetSelectedOsTypes(/*sync_all_os_types=*/false,
-                                           /*selected_types=*/{type});
+                                           /*types=*/{type});
     EXPECT_EQ(expected_preferred_types,
               GetPreferredUserTypes(*sync_user_settings));
   }
@@ -205,19 +205,19 @@ TEST_F(SyncUserSettingsImplTest, DeviceInfo) {
   UserSelectableTypeSet all_registered_types =
       sync_user_settings->GetRegisteredSelectableTypes();
   sync_user_settings->SetSelectedTypes(
-      /*keep_everything_synced=*/true,
-      /*selected_types=*/all_registered_types);
+      /*sync_everything=*/true,
+      /*types=*/all_registered_types);
   EXPECT_TRUE(sync_user_settings->GetPreferredDataTypes().Has(DEVICE_INFO));
 
   sync_user_settings->SetSelectedTypes(
-      /*keep_everything_synced=*/false,
-      /*selected_types=*/all_registered_types);
+      /*sync_everything=*/false,
+      /*types=*/all_registered_types);
   EXPECT_TRUE(sync_user_settings->GetPreferredDataTypes().Has(DEVICE_INFO));
 
   sync_user_settings = MakeSyncUserSettings(ModelTypeSet(DEVICE_INFO));
   sync_user_settings->SetSelectedTypes(
-      /*keep_everything_synced=*/false,
-      /*selected_types=*/UserSelectableTypeSet());
+      /*sync_everything=*/false,
+      /*types=*/UserSelectableTypeSet());
   EXPECT_TRUE(sync_user_settings->GetPreferredDataTypes().Has(DEVICE_INFO));
 }
 
@@ -230,19 +230,19 @@ TEST_F(SyncUserSettingsImplTest, UserConsents) {
   UserSelectableTypeSet all_registered_types =
       sync_user_settings->GetRegisteredSelectableTypes();
   sync_user_settings->SetSelectedTypes(
-      /*keep_everything_synced=*/true,
-      /*selected_types=*/all_registered_types);
+      /*sync_everything=*/true,
+      /*types=*/all_registered_types);
   EXPECT_TRUE(sync_user_settings->GetPreferredDataTypes().Has(USER_CONSENTS));
 
   sync_user_settings->SetSelectedTypes(
-      /*keep_everything_synced=*/false,
-      /*selected_types=*/all_registered_types);
+      /*sync_everything=*/false,
+      /*types=*/all_registered_types);
   EXPECT_TRUE(sync_user_settings->GetPreferredDataTypes().Has(USER_CONSENTS));
 
   sync_user_settings = MakeSyncUserSettings(ModelTypeSet(USER_CONSENTS));
   sync_user_settings->SetSelectedTypes(
-      /*keep_everything_synced=*/false,
-      /*selected_types=*/UserSelectableTypeSet());
+      /*sync_everything=*/false,
+      /*types=*/UserSelectableTypeSet());
   EXPECT_TRUE(sync_user_settings->GetPreferredDataTypes().Has(USER_CONSENTS));
 }
 
@@ -257,13 +257,13 @@ TEST_F(SyncUserSettingsImplTest, AlwaysPreferredTypes_ChromeOS) {
 
   // Disable all browser types.
   sync_user_settings->SetSelectedTypes(
-      /*keep_everything_synced=*/false,
-      /*selected_types=*/UserSelectableTypeSet());
+      /*sync_everything=*/false,
+      /*types=*/UserSelectableTypeSet());
 
   // Disable all OS types.
   sync_user_settings->SetSelectedOsTypes(
       /*sync_all_os_types=*/false,
-      /*selected_types=*/UserSelectableOsTypeSet());
+      /*types=*/UserSelectableOsTypeSet());
 
   // Important types are still preferred.
   ModelTypeSet preferred_types = sync_user_settings->GetPreferredDataTypes();
@@ -291,8 +291,8 @@ TEST_F(SyncUserSettingsImplTest, AppsAreHandledByOsSettings) {
 
   // Disable browser types.
   settings->SetSelectedTypes(
-      /*keep_everything_synced=*/false,
-      /*selected_types=*/UserSelectableTypeSet());
+      /*sync_everything=*/false,
+      /*types=*/UserSelectableTypeSet());
 
   // App model types are still enabled.
   EXPECT_TRUE(settings->GetPreferredDataTypes().Has(APP_LIST));
@@ -304,7 +304,7 @@ TEST_F(SyncUserSettingsImplTest, AppsAreHandledByOsSettings) {
   // Disable OS types.
   settings->SetSelectedOsTypes(
       /*sync_all_os_types=*/false,
-      /*selected_types=*/UserSelectableOsTypeSet());
+      /*types=*/UserSelectableOsTypeSet());
 
   // Apps are disabled.
   EXPECT_FALSE(settings->GetPreferredDataTypes().Has(APP_LIST));
