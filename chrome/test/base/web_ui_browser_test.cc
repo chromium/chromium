@@ -38,6 +38,7 @@
 #include "chrome/test/base/test_chrome_web_ui_controller_factory.h"
 #include "chrome/test/base/test_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/base/web_ui_test_data_source.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
@@ -520,15 +521,19 @@ void BaseWebUIBrowserTest::SetUpOnMainThread() {
 
   logging::SetLogMessageHandler(&LogHandler);
 
-  // Register URLDataSource that serves files used in tests at chrome://test/
-  // e.g. `chrome://test/mocha.js`.
-  //
   // For tests that run on the login screen, there is no Browser during
   // SetUpOnMainThread() so skip adding TestDataSource. These tests don't need
   // TestDataSource anyway.
   if (browser()) {
+    // Register URLDataSource that serves files used in tests at chrome://test/
+    // e.g. `chrome://test/mocha.js`.
     content::URLDataSource::Add(browser()->profile(),
                                 std::make_unique<TestDataSource>("webui"));
+
+    // Register data sources for chrome://webui-test/ URLs
+    // e.g. `chrome://webui-test/chai_assert.js`.
+    content::WebUIDataSource* source = webui::CreateWebUITestDataSource();
+    content::WebUIDataSource::Add(browser()->profile(), source);
   }
 
   test_factory_ = std::make_unique<TestChromeWebUIControllerFactory>();
