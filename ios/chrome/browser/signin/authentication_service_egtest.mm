@@ -26,7 +26,7 @@
 // * Add the identity again and sign in.
 - (void)testRestart {
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
-  // Adds and signs in with |fakeIdentity|.
+  // Adds and signs in with `fakeIdentity`.
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   // Restarts Chrome.
@@ -37,7 +37,7 @@
   // Verifies that the user is not signed in anymore (fake identities are
   // not preserved with a restart).
   [SigninEarlGrey verifySignedOut];
-  // Adds and signs in with |fakeIdentity|.
+  // Adds and signs in with `fakeIdentity`.
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }

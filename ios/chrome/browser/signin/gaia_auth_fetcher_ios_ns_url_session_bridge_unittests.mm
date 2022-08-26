@@ -81,28 +81,28 @@ class FakeGaiaAuthFetcherIOSBridgeDelegate
   // Returns true if has been called().
   bool GetFetchCompleteCalled() const { return fetch_complete_called_; }
 
-  // Returns |url| from FetchComplete().
+  // Returns `url` from FetchComplete().
   const GURL& GetURL() const { return url_; }
 
-  // Returns |data| from FetchComplete().
+  // Returns `data` from FetchComplete().
   const std::string& GetData() const { return data_; }
 
-  // Returns |net_error| from FetchComplete().
+  // Returns `net_error` from FetchComplete().
   net::Error GetNetError() const { return net_error_; }
 
-  // Returns |response_code| from FetchComplete().
+  // Returns `response_code` from FetchComplete().
   int GetResponseCode() const { return response_code_; }
 
  private:
   // true if has been called().
   bool fetch_complete_called_;
-  // |url| from FetchComplete().
+  // `url` from FetchComplete().
   GURL url_;
-  // |data| from FetchComplete().
+  // `data` from FetchComplete().
   std::string data_;
-  // |net_error| from FetchComplete().
+  // `net_error` from FetchComplete().
   net::Error net_error_;
-  // |response_code| from FetchComplete().
+  // `response_code` from FetchComplete().
   int response_code_;
 };
 
@@ -167,9 +167,9 @@ class GaiaAuthFetcherIOSNSURLSessionBridgeTest : public PlatformTest {
   // Instance used for the tests.
   std::unique_ptr<TestGaiaAuthFetcherIOSNSURLSessionBridge>
       ns_url_session_bridge_;
-  // Fake delegate for |ns_url_session_bridge_|.
+  // Fake delegate for `ns_url_session_bridge_`.
   std::unique_ptr<FakeGaiaAuthFetcherIOSBridgeDelegate> delegate_;
-  // Delegate for |url_session_mock_|, provided by |ns_url_session_bridge_|.
+  // Delegate for `url_session_mock_`, provided by `ns_url_session_bridge_`.
   id<NSURLSessionTaskDelegate> url_session_delegate_;
 
   NSURLSession* url_session_mock_;

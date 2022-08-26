@@ -56,11 +56,11 @@ class PatternAccountRestriction {
   std::vector<Pattern> patterns_;
 };
 
-// Returns true if |value| holds a correct list of patterns. If one of the
+// Returns true if `value` holds a correct list of patterns. If one of the
 // pattern is invalid, returns false.
 bool ArePatternsValid(const base::Value* value);
 
-// Creates a PatternAccountRestriction from |value| which needs to
+// Creates a PatternAccountRestriction from `value` which needs to
 // be a list of strings.
 absl::optional<PatternAccountRestriction> PatternAccountRestrictionFromValue(
     const base::Value::ConstListView& value);

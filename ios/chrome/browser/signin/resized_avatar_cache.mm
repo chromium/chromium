@@ -19,7 +19,7 @@
 
 // Size of resized avatar.
 @property(nonatomic, assign) CGSize expectedSize;
-// Default avatar at |self.expectedSize| size.
+// Default avatar at `self.expectedSize` size.
 @property(nonatomic, strong) UIImage* defaultResizedAvatar;
 // Retains resized images. Key is Chrome Identity.
 @property(nonatomic, strong) NSCache<ChromeIdentity*, UIImage*>* resizedImages;

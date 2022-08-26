@@ -46,9 +46,9 @@ class GaiaAuthFetcherIOSBridge {
   virtual ~GaiaAuthFetcherIOSBridge();
 
   // Starts a network fetch.
-  // * |url| is the URL to fetch.
-  // * |headers| are the HTTP headers to add to the request.
-  // * |body| is the HTTP body to add to the request. If not empty, the fetch
+  // * `url` is the URL to fetch.
+  // * `headers` are the HTTP headers to add to the request.
+  // * `body` is the HTTP body to add to the request. If not empty, the fetch
   //   will be a POST request.
   //
   // Implementations are expected to call
@@ -63,7 +63,7 @@ class GaiaAuthFetcherIOSBridge {
   //
   // Implementations are expected to call
   // GaiaAuthFetcherIOSBridgeDelegate::OnFetchComplete() with error
-  // |net::ERR_ABORTED|.
+  // `net::ERR_ABORTED`.
   virtual void Cancel() = 0;
 
  protected:

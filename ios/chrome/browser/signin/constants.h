@@ -50,7 +50,7 @@ enum class IdentityAvatarSize {
 namespace signin_ui {
 
 // Completion callback for a sign-in operation.
-// |success| is YES if the operation was successful.
+// `success` is YES if the operation was successful.
 typedef void (^CompletionCallback)(BOOL success);
 
 }  // namespace signin_ui

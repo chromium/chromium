@@ -18,9 +18,9 @@ class AuthenticationService;
 class AuthenticationServiceDelegate;
 class ChromeBrowserState;
 
-// Singleton that owns all |AuthenticationServices| and associates them with
-// browser states. Listens for the |BrowserState|'s destruction notification and
-// cleans up the associated |AuthenticationService|.
+// Singleton that owns all `AuthenticationServices` and associates them with
+// browser states. Listens for the `BrowserState`'s destruction notification and
+// cleans up the associated `AuthenticationService`.
 class AuthenticationServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
   static AuthenticationService* GetForBrowserState(

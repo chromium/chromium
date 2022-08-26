@@ -47,13 +47,13 @@ class ChromeAccountManagerServiceObserverBridgeTest : public PlatformTest {
   id<ChromeAccountManagerServiceObserver> test_observer_ = nil;
 };
 
-// Tests that |onIdentityListChanged| is forwarded.
+// Tests that `onIdentityListChanged` is forwarded.
 TEST_F(ChromeAccountManagerServiceObserverBridgeTest, onIdentityListChanged) {
   OCMExpect([test_observer_ identityListChanged]);
   observer_bridge_->OnIdentityListChanged(false);
 }
 
-// Tests that |onIdentityChanged| is forwarded.
+// Tests that `onIdentityChanged` is forwarded.
 TEST_F(ChromeAccountManagerServiceObserverBridgeTest, onIdentityChanged) {
   ChromeIdentity* identity = [[ChromeIdentity alloc] init];
 

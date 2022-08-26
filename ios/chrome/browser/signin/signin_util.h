@@ -18,16 +18,16 @@ namespace signin {
 enum class Tribool;
 }  // namespace signin
 
-// Returns an NSArray of |scopes| as NSStrings.
+// Returns an NSArray of `scopes` as NSStrings.
 NSArray* GetScopeArray(const std::set<std::string>& scopes);
 
-// Returns whether the given signin |error| should be handled.
+// Returns whether the given signin `error` should be handled.
 //
 // Note that cancel errors and errors handled internally by the signin component
 // should not be handled.
 bool ShouldHandleSigninError(NSError* error);
 
-// Returns CGSize based on |IdentityAvatarSize|.
+// Returns CGSize based on `IdentityAvatarSize`.
 CGSize GetSizeForIdentityAvatarSize(IdentityAvatarSize avatar_size);
 
 // Returns whether Chrome has been started after a device restore. This method

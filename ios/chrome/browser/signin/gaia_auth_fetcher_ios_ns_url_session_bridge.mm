@@ -221,7 +221,7 @@ void GaiaAuthFetcherIOSNSURLSessionBridge::FetchPendingRequestWithCookies(
   NSMutableArray* http_cookies = [[NSMutableArray alloc]
       initWithCapacity:cookies_with_access_results.size()];
   for (const auto& cookie_with_access_result : cookies_with_access_results) {
-    // |CHROME_CONNECTED| cookie is attached to all web requests to Google web
+    // `CHROME_CONNECTED` cookie is attached to all web requests to Google web
     // properties. Requests initiated from the browser services (e.g.
     // GaiaCookieManagerService) must not include this cookie.
     if (cookie_with_access_result.cookie.Name() ==

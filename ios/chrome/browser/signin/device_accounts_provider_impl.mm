@@ -20,7 +20,7 @@
 #endif
 
 namespace {
-// Returns the account info for |identity| (which must not be nil).
+// Returns the account info for `identity` (which must not be nil).
 DeviceAccountsProvider::AccountInfo GetAccountInfo(
     ChromeIdentity* identity,
     ios::ChromeIdentityService* identity_service) {

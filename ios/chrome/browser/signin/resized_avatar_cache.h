@@ -18,7 +18,7 @@
 // Initializes a new object with width and height of resized avatar.
 - (instancetype)initWithSize:(CGSize)size NS_DESIGNATED_INITIALIZER;
 
-// Initializes a new object based on |IdentityAvatarSize|.
+// Initializes a new object based on `IdentityAvatarSize`.
 - (instancetype)initWithIdentityAvatarSize:(IdentityAvatarSize)avatarSize;
 
 - (instancetype)init NS_UNAVAILABLE;

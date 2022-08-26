@@ -38,7 +38,7 @@ void RecordSentinelErrorHistogram(SigninIOSDeviceRestoreSentinelError error) {
 }
 
 // Creates a sentinel file asynchronously, and set ExcludeFromBackupFlag
-// according to |exclude_from_backup|.
+// according to `exclude_from_backup`.
 void CreateSentinelFileAsync(const base::FilePath sentinel_path,
                              bool exclude_from_backup) {
   dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
@@ -80,7 +80,7 @@ const base::FilePath::CharType kSentinelThatIsBackedUp[] =
 const base::FilePath::CharType kSentinelThatIsNotBackedUp[] =
     FILE_PATH_LITERAL("NotBackedUpSentinel");
 
-// Computes the full path for a sentinel file with name |sentinel_name|.
+// Computes the full path for a sentinel file with name `sentinel_name`.
 // This method can return an emtpy string if failed.
 base::FilePath PathForSentinel(const base::FilePath::CharType* sentinel_name) {
   base::FilePath user_data_path;
