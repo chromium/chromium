@@ -70,6 +70,7 @@ proto_library("proto") {
   proto_in_dir = "//"
   sources = [ "external_action.proto" ]
   link_deps = [
+    "//components/autofill_assistant/browser/public/assistant_ui/proto:proto",
     "//components/autofill_assistant/browser/public/fast_checkout/proto:proto",
     "//components/autofill_assistant/browser/public/password_change/proto:proto",
   ]
@@ -81,6 +82,7 @@ if (is_android) {
     proto_path = "//"
     sources = [ "external_action.proto" ]
     deps = [
+      "//components/autofill_assistant/browser/public/assistant_ui/proto:proto_java",
       "//components/autofill_assistant/browser/public/fast_checkout/proto:proto_java",
       "//components/autofill_assistant/browser/public/password_change/proto:proto_java",
     ]
