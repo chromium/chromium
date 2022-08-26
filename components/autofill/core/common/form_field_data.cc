@@ -236,12 +236,20 @@ auto IdentityTuple(const FormFieldData& f) {
   // uniquely identify the field as well.
   return std::tuple_cat(
       SimilarityTuple(f),
-      std::tie(f.autocomplete_attribute, f.parsed_autocomplete, f.placeholder,
-               f.max_length, f.css_classes, f.is_focusable,
-               f.should_autocomplete, f.role, f.text_direction));
+      std::tie(f.autocomplete_attribute, f.placeholder, f.max_length,
+               f.css_classes, f.is_focusable, f.should_autocomplete, f.role,
+               f.text_direction, f.options));
 }
 
 }  // namespace
+
+bool operator==(const SelectOption& lhs, const SelectOption& rhs) {
+  return std::tie(lhs.value, lhs.content) == std::tie(rhs.value, rhs.content);
+}
+
+bool operator!=(const SelectOption& lhs, const SelectOption& rhs) {
+  return !(lhs == rhs);
+}
 
 Section::Section() = default;
 Section::Section(const Section& section) = default;
