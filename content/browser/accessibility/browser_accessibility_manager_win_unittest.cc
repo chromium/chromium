@@ -78,7 +78,8 @@ TEST_F(BrowserAccessibilityManagerWinTest, DynamicallyAddedIFrame) {
 
   std::unique_ptr<BrowserAccessibilityManager> root_manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root), test_browser_accessibility_delegate_.get()));
+          MakeAXTreeUpdateForTesting(root),
+          test_browser_accessibility_delegate_.get()));
 
   TestFragmentRootDelegate test_fragment_root_delegate(root_manager.get());
 
@@ -102,7 +103,7 @@ TEST_F(BrowserAccessibilityManagerWinTest, DynamicallyAddedIFrame) {
   iframe_delegate->accelerated_widget_ = gfx::kMockAcceleratedWidget;
 
   std::unique_ptr<BrowserAccessibilityManager> iframe_manager(
-      BrowserAccessibilityManager::Create(MakeAXTreeUpdate(root),
+      BrowserAccessibilityManager::Create(MakeAXTreeUpdateForTesting(root),
                                           iframe_delegate.get()));
 
   // The new frame is not a root frame, so the fragment root's lone child should
@@ -119,13 +120,15 @@ TEST_F(BrowserAccessibilityManagerWinTest, ChildTree) {
   ui::AXNodeData child_tree_root;
   child_tree_root.id = 1;
   child_tree_root.role = ax::mojom::Role::kRootWebArea;
-  ui::AXTreeUpdate child_tree_update = MakeAXTreeUpdate(child_tree_root);
+  ui::AXTreeUpdate child_tree_update =
+      MakeAXTreeUpdateForTesting(child_tree_root);
 
   ui::AXNodeData parent_tree_root;
   parent_tree_root.id = 1;
   parent_tree_root.role = ax::mojom::Role::kRootWebArea;
   parent_tree_root.AddChildTreeId(child_tree_update.tree_data.tree_id);
-  ui::AXTreeUpdate parent_tree_update = MakeAXTreeUpdate(parent_tree_root);
+  ui::AXTreeUpdate parent_tree_update =
+      MakeAXTreeUpdateForTesting(parent_tree_root);
 
   child_tree_update.tree_data.parent_tree_id =
       parent_tree_update.tree_data.tree_id;

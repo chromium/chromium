@@ -104,7 +104,7 @@ class BrowserAccessibilityMacTest : public ui::CocoaTest {
     child2.role = ax::mojom::Role::kHeading;
 
     manager_ = std::make_unique<BrowserAccessibilityManagerMac>(
-        MakeAXTreeUpdate(root_, child1, child2), nullptr);
+        MakeAXTreeUpdateForTesting(root_, child1, child2), nullptr);
     accessibility_.reset(
         [manager_->GetRoot()->GetNativeViewAccessible() retain]);
   }
@@ -179,7 +179,7 @@ TEST_F(BrowserAccessibilityMacTest, TestComputeTextEdit) {
   root_.id = 1;
   root_.role = ax::mojom::Role::kTextField;
   manager_ = std::make_unique<BrowserAccessibilityManagerMac>(
-      MakeAXTreeUpdate(root_), nullptr);
+      MakeAXTreeUpdateForTesting(root_), nullptr);
   accessibility_.reset([manager_->GetRoot()->GetNativeViewAccessible() retain]);
 
   // Insertion but no deletion.

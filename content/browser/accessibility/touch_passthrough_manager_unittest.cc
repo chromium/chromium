@@ -41,7 +41,7 @@ class TestTouchPassthroughManager : public TouchPassthroughManager {
     target2.relative_bounds.bounds = gfx::RectF(100, 200, 400, 100);
 
     browser_accessibility_manager_.reset(BrowserAccessibilityManager::Create(
-        MakeAXTreeUpdate(root, target1, target2), nullptr));
+        MakeAXTreeUpdateForTesting(root, target1, target2), nullptr));
   }
 
   ~TestTouchPassthroughManager() override = default;

@@ -83,7 +83,7 @@ bool MergeTreeUpdates(const std::vector<ui::AXTreeUpdate>& src,
 
 }  // namespace
 
-ui::AXTreeUpdate MakeAXTreeUpdate(
+ui::AXTreeUpdate MakeAXTreeUpdateForTesting(
     const ui::AXNodeData& node1,
     const ui::AXNodeData& node2 /* = ui::AXNodeData() */,
     const ui::AXNodeData& node3 /* = ui::AXNodeData() */,

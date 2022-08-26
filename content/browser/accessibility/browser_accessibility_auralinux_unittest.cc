@@ -59,7 +59,7 @@ TEST_F(BrowserAccessibilityAuraLinuxTest, TestSimpleAtkText) {
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root_data),
+          MakeAXTreeUpdateForTesting(root_data),
           test_browser_accessibility_delegate_.get()));
 
   ui::AXPlatformNodeAuraLinux* root_obj =
@@ -112,7 +112,7 @@ TEST_F(BrowserAccessibilityAuraLinuxTest, TestCompositeAtkText) {
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root, text1, text2),
+          MakeAXTreeUpdateForTesting(root, text1, text2),
           test_browser_accessibility_delegate_.get()));
 
   ui::AXPlatformNodeAuraLinux* root_obj =
@@ -218,8 +218,9 @@ TEST_F(BrowserAccessibilityAuraLinuxTest, TestComplexHypertext) {
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root, text1, combo_box, text2, check_box,
-                           radio_button, radio_button_text, link, link_text),
+          MakeAXTreeUpdateForTesting(root, text1, combo_box, text2, check_box,
+                                     radio_button, radio_button_text, link,
+                                     link_text),
           test_browser_accessibility_delegate_.get()));
 
   ui::AXPlatformNodeAuraLinux* root_obj =
@@ -341,7 +342,8 @@ TEST_F(BrowserAccessibilityAuraLinuxTest, TestTextAttributesInButtons) {
                                   "Times");
   root.child_ids.push_back(empty_button.id);
 
-  ui::AXTreeUpdate update = MakeAXTreeUpdate(root, button, text, empty_button);
+  ui::AXTreeUpdate update =
+      MakeAXTreeUpdateForTesting(root, button, text, empty_button);
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
           update, test_browser_accessibility_delegate_.get()));
@@ -453,8 +455,8 @@ TEST_F(BrowserAccessibilityAuraLinuxTest,
   div_editable.child_ids = {text_before.id, link.id, text_after.id};
   link.child_ids.push_back(link_text.id);
 
-  ui::AXTreeUpdate update = MakeAXTreeUpdate(root, div_editable, text_before,
-                                             link, link_text, text_after);
+  ui::AXTreeUpdate update = MakeAXTreeUpdateForTesting(
+      root, div_editable, text_before, link, link_text, text_after);
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
@@ -643,8 +645,8 @@ TEST_F(BrowserAccessibilityAuraLinuxTest,
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root, container, combo_box, menu_list, menu_option_1,
-                           menu_option_2),
+          MakeAXTreeUpdateForTesting(root, container, combo_box, menu_list,
+                                     menu_option_1, menu_option_2),
           test_browser_accessibility_delegate_.get()));
 
   ui::AXPlatformNodeAuraLinux* combo_box_node =
@@ -658,7 +660,7 @@ TEST_F(BrowserAccessibilityAuraLinuxTest,
   // which won't modify this.
   container.SetName("container");
   ui::AXTree* tree = const_cast<ui::AXTree*>(manager->ax_tree());
-  ASSERT_TRUE(tree->Unserialize(MakeAXTreeUpdate(container)));
+  ASSERT_TRUE(tree->Unserialize(MakeAXTreeUpdateForTesting(container)));
   ASSERT_FALSE(combo_box_node->IsChildOfLeaf());
   ASSERT_EQ(original_atk_object, combo_box_node->GetNativeViewAccessible());
 
@@ -728,8 +730,8 @@ TEST_F(BrowserAccessibilityAuraLinuxTest,
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root, combo_box, combo_box_div, static_text1,
-                           static_text2),
+          MakeAXTreeUpdateForTesting(root, combo_box, combo_box_div,
+                                     static_text1, static_text2),
           test_browser_accessibility_delegate_.get()));
 
   ASSERT_NE(nullptr, manager->GetRoot());
@@ -814,12 +816,12 @@ TEST_F(BrowserAccessibilityAuraLinuxTest, TextAtkStaticTextChange) {
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root, div_editable, text),
+          MakeAXTreeUpdateForTesting(root, div_editable, text),
           test_browser_accessibility_delegate_.get()));
 
   text.SetName("Text2");
   ui::AXTree* tree = const_cast<ui::AXTree*>(manager->ax_tree());
-  ASSERT_TRUE(tree->Unserialize(MakeAXTreeUpdate(text)));
+  ASSERT_TRUE(tree->Unserialize(MakeAXTreeUpdateForTesting(text)));
 
   // The change to the static text node should have triggered an update of the
   // containing div's hypertext.
@@ -857,7 +859,7 @@ TEST_F(BrowserAccessibilityAuraLinuxTest, TestAtkTextGetOffesetAtPoint) {
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(static_text1, inline_box1),
+          MakeAXTreeUpdateForTesting(static_text1, inline_box1),
           test_browser_accessibility_delegate_.get()));
 
   ASSERT_NE(nullptr, manager->GetRoot());

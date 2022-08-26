@@ -62,8 +62,7 @@ typedef base::RepeatingCallback<
     void(BrowserAccessibilityDelegate*, ui::AXEventGenerator::Event, int)>
     GeneratedEventCallbackForTesting;
 
-// For testing.
-CONTENT_EXPORT ui::AXTreeUpdate MakeAXTreeUpdate(
+CONTENT_EXPORT ui::AXTreeUpdate MakeAXTreeUpdateForTesting(
     const ui::AXNodeData& node,
     const ui::AXNodeData& node2 = ui::AXNodeData(),
     const ui::AXNodeData& node3 = ui::AXNodeData(),
