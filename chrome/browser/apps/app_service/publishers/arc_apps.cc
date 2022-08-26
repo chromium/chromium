@@ -54,7 +54,6 @@
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
-#include "components/services/app_service/public/cpp/menu.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/permission_utils.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
@@ -1032,6 +1031,51 @@ void ArcApps::Uninstall(const std::string& app_id,
   arc::UninstallArcApp(app_id, profile_);
 }
 
+void ArcApps::GetMenuModel(const std::string& app_id,
+                           MenuType menu_type,
+                           int64_t display_id,
+                           base::OnceCallback<void(MenuItems)> callback) {
+  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
+  if (!prefs) {
+    std::move(callback).Run(MenuItems());
+    return;
+  }
+  const std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
+      prefs->GetApp(app_id);
+  if (!app_info) {
+    std::move(callback).Run(MenuItems());
+    return;
+  }
+
+  MenuItems menu_items;
+
+  // Add Open item if the app is not opened and not suspended.
+  if (!base::Contains(app_id_to_task_ids_, app_id) && !app_info->suspended) {
+    AddCommandItem(ash::LAUNCH_NEW, IDS_APP_CONTEXT_MENU_ACTIVATE_ARC,
+                   menu_items);
+  }
+
+  if (app_info->shortcut) {
+    AddCommandItem(ash::UNINSTALL, IDS_APP_LIST_REMOVE_SHORTCUT, menu_items);
+  } else if (app_info->ready && !app_info->sticky) {
+    AddCommandItem(ash::UNINSTALL, IDS_APP_LIST_UNINSTALL_ITEM, menu_items);
+  }
+
+  // App Info item.
+  if (app_info->ready && ShouldShow(*app_info)) {
+    AddCommandItem(ash::SHOW_APP_INFO, IDS_APP_CONTEXT_MENU_SHOW_INFO,
+                   menu_items);
+  }
+
+  if (menu_type == MenuType::kShelf &&
+      base::Contains(app_id_to_task_ids_, app_id)) {
+    AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE, menu_items);
+  }
+
+  BuildMenuForShortcut(app_info->package_name, std::move(menu_items),
+                       std::move(callback));
+}
+
 void ArcApps::OnPreferredAppSet(
     const std::string& app_id,
     IntentFilterPtr intent_filter,
@@ -1343,45 +1387,8 @@ void ArcApps::GetMenuModel(const std::string& app_id,
                            apps::mojom::MenuType menu_type,
                            int64_t display_id,
                            GetMenuModelCallback callback) {
-  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
-  if (!prefs) {
-    std::move(callback).Run(apps::mojom::MenuItems::New());
-    return;
-  }
-  const std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
-      prefs->GetApp(app_id);
-  if (!app_info) {
-    std::move(callback).Run(apps::mojom::MenuItems::New());
-    return;
-  }
-
-  MenuItems menu_items;
-
-  // Add Open item if the app is not opened and not suspended.
-  if (!base::Contains(app_id_to_task_ids_, app_id) && !app_info->suspended) {
-    AddCommandItem(ash::LAUNCH_NEW, IDS_APP_CONTEXT_MENU_ACTIVATE_ARC,
-                   menu_items);
-  }
-
-  if (app_info->shortcut) {
-    AddCommandItem(ash::UNINSTALL, IDS_APP_LIST_REMOVE_SHORTCUT, menu_items);
-  } else if (app_info->ready && !app_info->sticky) {
-    AddCommandItem(ash::UNINSTALL, IDS_APP_LIST_UNINSTALL_ITEM, menu_items);
-  }
-
-  // App Info item.
-  if (app_info->ready && ShouldShow(*app_info)) {
-    AddCommandItem(ash::SHOW_APP_INFO, IDS_APP_CONTEXT_MENU_SHOW_INFO,
-                   menu_items);
-  }
-
-  if (menu_type == apps::mojom::MenuType::kShelf &&
-      base::Contains(app_id_to_task_ids_, app_id)) {
-    AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE, menu_items);
-  }
-
-  BuildMenuForShortcut(app_info->package_name, std::move(menu_items),
-                       std::move(callback));
+  GetMenuModel(app_id, ConvertMojomMenuTypeToMenuType(menu_type), display_id,
+               MenuItemsToMojomMenuItemsCallback(std::move(callback)));
 }
 
 void ArcApps::ExecuteContextMenuCommand(const std::string& app_id,
@@ -2099,9 +2106,10 @@ void ArcApps::UpdateAppIntentFilters(
   }
 }
 
-void ArcApps::BuildMenuForShortcut(const std::string& package_name,
-                                   MenuItems menu_items,
-                                   GetMenuModelCallback callback) {
+void ArcApps::BuildMenuForShortcut(
+    const std::string& package_name,
+    MenuItems menu_items,
+    base::OnceCallback<void(MenuItems)> callback) {
   // The previous request is cancelled, and start a new request if the callback
   // of the previous request is not called.
   arc_app_shortcuts_request_ =
@@ -2114,11 +2122,11 @@ void ArcApps::BuildMenuForShortcut(const std::string& package_name,
 void ArcApps::OnGetAppShortcutItems(
     const base::TimeTicks start_time,
     MenuItems menu_items,
-    GetMenuModelCallback callback,
+    base::OnceCallback<void(MenuItems)> callback,
     std::unique_ptr<apps::AppShortcutItems> app_shortcut_items) {
   if (!app_shortcut_items || app_shortcut_items->empty()) {
     // No need log time for empty requests.
-    std::move(callback).Run(ConvertMenuItemsToMojomMenuItems(menu_items));
+    std::move(callback).Run(std::move(menu_items));
     arc_app_shortcuts_request_.reset();
     return;
   }
@@ -2143,7 +2151,7 @@ void ArcApps::OnGetAppShortcutItems(
     AddShortcutCommandItem(command_id++, item.shortcut_id, item.short_label,
                            item.icon, menu_items);
   }
-  std::move(callback).Run(ConvertMenuItemsToMojomMenuItems(menu_items));
+  std::move(callback).Run(std::move(menu_items));
   arc_app_shortcuts_request_.reset();
 
   UMA_HISTOGRAM_TIMES("Arc.AppShortcuts.BuildMenuTime",

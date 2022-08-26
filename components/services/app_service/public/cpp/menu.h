@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/component_export.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/gfx/image/image_skia.h"
@@ -118,6 +119,10 @@ MenuItems ConvertMojomMenuItemsToMenuItems(
 COMPONENT_EXPORT(APP_TYPES)
 apps::mojom::MenuItemsPtr ConvertMenuItemsToMojomMenuItems(
     const MenuItems& menu_item);
+
+COMPONENT_EXPORT(APP_TYPES)
+base::OnceCallback<void(MenuItems)> MenuItemsToMojomMenuItemsCallback(
+    base::OnceCallback<void(apps::mojom::MenuItemsPtr)> callback);
 
 }  // namespace apps
 

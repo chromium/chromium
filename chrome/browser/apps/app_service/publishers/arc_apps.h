@@ -40,6 +40,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/cpp/intent.h"
+#include "components/services/app_service/public/cpp/menu.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
@@ -55,7 +56,6 @@ namespace apps {
 class PublisherTest;
 class WebApkManager;
 struct AppLaunchParams;
-struct MenuItems;
 
 // An app publisher (in the App Service sense) of ARC++ apps,
 //
@@ -130,6 +130,10 @@ class ArcApps : public KeyedService,
                  UninstallSource uninstall_source,
                  bool clear_site_data,
                  bool report_abuse) override;
+  void GetMenuModel(const std::string& app_id,
+                    MenuType menu_type,
+                    int64_t display_id,
+                    base::OnceCallback<void(MenuItems)> callback);
   void OnPreferredAppSet(
       const std::string& app_id,
       IntentFilterPtr intent_filter,
@@ -260,13 +264,13 @@ class ArcApps : public KeyedService,
 
   void BuildMenuForShortcut(const std::string& package_name,
                             MenuItems menu_items,
-                            GetMenuModelCallback callback);
+                            base::OnceCallback<void(MenuItems)> callback);
 
   // Bound by |arc_app_shortcuts_request_|'s OnGetAppShortcutItems method.
   void OnGetAppShortcutItems(
       const base::TimeTicks start_time,
       MenuItems menu_items,
-      GetMenuModelCallback callback,
+      base::OnceCallback<void(MenuItems)> callback,
       std::unique_ptr<apps::AppShortcutItems> app_shortcut_items);
 
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;

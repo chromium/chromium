@@ -129,4 +129,15 @@ apps::mojom::MenuItemsPtr ConvertMenuItemsToMojomMenuItems(
   return mojom_menu_items;
 }
 
+base::OnceCallback<void(MenuItems)> MenuItemsToMojomMenuItemsCallback(
+    base::OnceCallback<void(apps::mojom::MenuItemsPtr)> callback) {
+  return base::BindOnce(
+      [](base::OnceCallback<void(apps::mojom::MenuItemsPtr)> inner_callback,
+         MenuItems menu_items) {
+        std::move(inner_callback)
+            .Run(ConvertMenuItemsToMojomMenuItems(std::move(menu_items)));
+      },
+      std::move(callback));
+}
+
 }  // namespace apps
