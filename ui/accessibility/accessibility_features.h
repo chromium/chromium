@@ -129,6 +129,14 @@ AX_BASE_EXPORT extern const base::Feature kAccessibilityService;
 // Returns true if the Accessibility Service enabled.
 AX_BASE_EXPORT bool IsAccessibilityServiceEnabled();
 
+// Enables the experimental color enhancements settings.
+AX_BASE_EXPORT extern const base::Feature
+    kExperimentalAccessibilityColorEnhancementSettings;
+
+// Returns true if the experimental color enhancements settings are enabled.
+AX_BASE_EXPORT bool
+AreExperimentalAccessibilityColorEnhancementSettingsEnabled();
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Enables Get Image Descriptions to augment existing images labels,

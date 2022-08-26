@@ -2146,6 +2146,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "enable-experimental-accessibility-color-enhancement-settings",
+    "owners": [ "katie", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "enable-experimental-accessibility-dictation-with-pumpkin",
     "owners": [ "akihiroota"],
     "expiry_milestone": 107

@@ -157,6 +157,15 @@ const base::Feature kAccessibilityService{"AccessibilityService",
 bool IsAccessibilityServiceEnabled() {
   return base::FeatureList::IsEnabled(::features::kAccessibilityService);
 }
+
+const base::Feature kExperimentalAccessibilityColorEnhancementSettings{
+    "ExperimentalAccessibilityColorEnhancementSettings",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool AreExperimentalAccessibilityColorEnhancementSettingsEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kExperimentalAccessibilityColorEnhancementSettings);
+}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 const base::Feature kAugmentExistingImageLabels{

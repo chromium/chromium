@@ -608,6 +608,10 @@ extern const char kAccessibilityOSSettingsVisibilityDescription[];
 extern const char kAccessibilityServiceName[];
 extern const char kAccessibilityServiceDescription[];
 
+extern const char kExperimentalAccessibilityColorEnhancementSettingsName[];
+extern const char
+    kExperimentalAccessibilityColorEnhancementSettingsDescription[];
+
 extern const char kPostQuantumCECPQ2Name[];
 extern const char kPostQuantumCECPQ2Description[];
 
