@@ -8,29 +8,36 @@ import '../shared_vars_css.m.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-Polymer({
-  is: 'cr-tooltip-icon',
+/** @polymer */
+class CrTooltipIconElement extends PolymerElement {
+  static get is() {
+    return 'cr-tooltip-icon';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    iconAriaLabel: String,
+  static get properties() {
+    return {
+      iconAriaLabel: String,
+      iconClass: String,
+      tooltipText: String,
 
-    iconClass: String,
-
-    tooltipText: String,
-
-    /** Position of tooltip popup related to the icon. */
-    tooltipPosition: {
-      type: String,
-      value: 'top',
-    },
-  },
+      /** Position of tooltip popup related to the icon. */
+      tooltipPosition: {
+        type: String,
+        value: 'top',
+      },
+    };
+  }
 
   /** @return {!Element} */
   getFocusableElement() {
     return this.$.indicator;
-  },
-});
+  }
+}
+
+customElements.define(CrTooltipIconElement.is, CrTooltipIconElement);

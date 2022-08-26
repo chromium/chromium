@@ -156,3 +156,28 @@ export const CrPolicyIndicatorBehavior = {
     return '';
   },
 };
+
+/** @interface */
+export class CrPolicyIndicatorBehaviorInterface {
+  constructor() {
+    /** @type {CrPolicyIndicatorType} */
+    this.indicatorType;
+
+    /** @type {string} */
+    this.indicatorSourceName;
+
+    /** @type {boolean} */
+    this.indicatorVisible;
+
+    /** @type {string} */
+    this.indicatorIcon;
+  }
+
+  /**
+   * @param {!CrPolicyIndicatorType} type
+   * @param {string} name
+   * @param {boolean=} matches
+   * @return {string}
+   */
+  getIndicatorTooltip(type, name, matches) {}
+}

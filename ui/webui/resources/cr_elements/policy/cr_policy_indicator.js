@@ -6,26 +6,40 @@
 import '../hidden_style_css.m.js';
 import './cr_tooltip_icon.js';
 
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrPolicyIndicatorBehavior, CrPolicyIndicatorType} from './cr_policy_indicator_behavior.js';
+import {CrPolicyIndicatorBehavior, CrPolicyIndicatorBehaviorInterface, CrPolicyIndicatorType} from './cr_policy_indicator_behavior.js';
 
-Polymer({
-  is: 'cr-policy-indicator',
 
-  _template: html`{__html_template__}`,
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {CrPolicyIndicatorBehaviorInterface}
+ */
+const CrPolicyIndicatorElementBase =
+    mixinBehaviors([CrPolicyIndicatorBehavior], PolymerElement);
 
-  behaviors: [CrPolicyIndicatorBehavior],
+/** @polymer */
+class CrPolicyIndicatorElement extends CrPolicyIndicatorElementBase {
+  static get is() {
+    return 'cr-policy-indicator';
+  }
 
-  properties: {
-    iconAriaLabel: String,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @private {string} */
-    indicatorTooltip_: {
-      type: String,
-      computed: 'getIndicatorTooltip_(indicatorType, indicatorSourceName)',
-    },
-  },
+  static get properties() {
+    return {
+      iconAriaLabel: String,
+
+      /** @private {string} */
+      indicatorTooltip_: {
+        type: String,
+        computed: 'getIndicatorTooltip_(indicatorType, indicatorSourceName)',
+      },
+    };
+  }
 
   /**
    * @param {!CrPolicyIndicatorType} indicatorType
@@ -35,5 +49,7 @@ Polymer({
    */
   getIndicatorTooltip_(indicatorType, indicatorSourceName) {
     return this.getIndicatorTooltip(indicatorType, indicatorSourceName);
-  },
-});
+  }
+}
+
+customElements.define(CrPolicyIndicatorElement.is, CrPolicyIndicatorElement);
