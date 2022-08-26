@@ -1432,4 +1432,14 @@ slot {
     tfoot { break-inside:avoid; }
 }
 
+/* spelling/grammar error pseudos */
+
+html::spelling-error {
+    text-decoration: -internal-spelling-error-color spelling-error;
+}
+
+html::grammar-error {
+    text-decoration: -internal-grammar-error-color grammar-error;
+}
+
 /* noscript is handled internally, as it depends on settings. */

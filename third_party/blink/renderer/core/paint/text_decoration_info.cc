@@ -537,12 +537,6 @@ ETextDecorationStyle TextDecorationInfo::DecorationStyle() const {
 }
 
 Color TextDecorationInfo::LineColor() const {
-  // TODO(rego): Allow customize the spelling and grammar error color with
-  // text-decoration-color property.
-  if (line_data_.line == TextDecorationLine::kSpellingError)
-    return LayoutTheme::GetTheme().PlatformSpellingMarkerUnderlineColor();
-  if (line_data_.line == TextDecorationLine::kGrammarError)
-    return LayoutTheme::GetTheme().PlatformGrammarMarkerUnderlineColor();
   if (highlight_override_)
     return *highlight_override_;
 

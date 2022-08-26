@@ -40,7 +40,7 @@ class CORE_EXPORT NGHighlightPainter {
   STACK_ALLOCATED();
 
  public:
-  class SelectionPaintState {
+  class CORE_EXPORT SelectionPaintState {
     STACK_ALLOCATED();
 
    public:
@@ -184,7 +184,7 @@ class CORE_EXPORT NGHighlightPainter {
   Case PaintCase() const;
 
   // PaintCase() == kFastSpellingGrammar only
-  void FastPaintSpellingGrammarDecorations() const;
+  void FastPaintSpellingGrammarDecorations();
 
   // PaintCase() == kOverlay only
   void PaintOriginatingText(const TextPaintStyle&, DOMNodeId);
@@ -215,14 +215,13 @@ class CORE_EXPORT NGHighlightPainter {
   };
 
   Case ComputePaintCase() const;
-  void FastPaintSpellingGrammarDecorations(
-      const Text& text_node,
-      const StringView& text,
-      const DocumentMarkerVector& markers) const;
+  void FastPaintSpellingGrammarDecorations(const Text& text_node,
+                                           const StringView& text,
+                                           const DocumentMarkerVector& markers);
   void PaintOneSpellingGrammarDecoration(const DocumentMarker::MarkerType&,
                                          const StringView& text,
                                          unsigned paint_start_offset,
-                                         unsigned paint_end_offset) const;
+                                         unsigned paint_end_offset);
   void ClipToPartDecorations(const NGHighlightOverlay::HighlightPart&);
   void PaintDecorationsExceptLineThrough(
       const NGHighlightOverlay::HighlightPart&);

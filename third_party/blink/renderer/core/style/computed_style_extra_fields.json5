@@ -242,6 +242,9 @@
       custom_compare: true,
       computed_style_custom_functions: ["getter", "setter"],
     },
+    // Whether any non-universal highlight selectors were found when collecting
+    // rules for the originating element. Stored in the *originating* style, and
+    // needs to be restored *non-monotonically* in ApplyMatchedCache.
     {
       name: "HasNonUniversalHighlightPseudoStyles",
       field_template: "primitive",

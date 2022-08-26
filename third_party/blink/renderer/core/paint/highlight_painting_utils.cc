@@ -414,6 +414,8 @@ TextPaintStyle HighlightPaintingUtils::HighlightPaintingStyle(
     highlight_style.fill_color = ResolveColor(
         document, style, pseudo_style.get(), pseudo,
         GetCSSPropertyWebkitTextFillColor(), previous_layer_current_color);
+    // TODO(crbug.com/1147859) ignore highlight ‘text-emphasis-color’
+    // https://github.com/w3c/csswg-drafts/issues/7101
     highlight_style.emphasis_mark_color = ResolveColor(
         document, style, pseudo_style.get(), pseudo,
         GetCSSPropertyTextEmphasisColor(), previous_layer_current_color);
