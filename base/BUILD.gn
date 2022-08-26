@@ -217,7 +217,6 @@ mixed_component("base") {
     "base64.h",
     "base64url.cc",
     "base64url.h",
-    "base_export.h",
     "base_switches.h",
     "big_endian.cc",
     "big_endian.h",
@@ -370,7 +369,6 @@ mixed_component("base") {
     "hash/hash.h",
     "hash/legacy_hash.cc",
     "hash/legacy_hash.h",
-    "immediate_crash.h",
     "json/json_common.h",
     "json/json_file_value_serializer.cc",
     "json/json_file_value_serializer.h",
@@ -1542,6 +1540,15 @@ mixed_component("base") {
     "//third_party/abseil-cpp:absl",
   ]
 
+  # Windows cannot use the nodebug assertion handler because it doesn't support
+  # weak symbols, which are required to override the default libc++
+  # implementation.
+  # TODO(crbug.com/1335422): Make the non-debug assertion handler work on
+  # Windows.
+  if (use_custom_libcxx && !is_debug && !is_win) {
+    public_deps += [ ":nodebug_assertion" ]
+  }
+
   # Needed for <atomic> if using newer C++ library than sysroot, except if
   # building inside the cros_sdk environment - use host_toolchain as a
   # more robust check for this.
@@ -2664,8 +2671,10 @@ buildflag_header("power_monitor_buildflags") {
 # base_static.
 static_library("base_static") {
   sources = [
+    "base_export.h",
     "base_switches.cc",
     "base_switches.h",
+    "immediate_crash.h",
   ]
 
   deps = [ "//build:chromeos_buildflags" ]
@@ -2688,6 +2697,17 @@ static_library("base_static") {
   if (!is_debug) {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_max" ]
+  }
+}
+
+if (use_custom_libcxx && !is_debug && !is_win) {
+  # nodebug_assertion.cc has to be in its own source_set instead of being
+  # included as a source in //base as otherwise its symbols won't be linked in
+  # if they end up in an archive.
+  source_set("nodebug_assertion") {
+    defines = [ "BASE_IMPLEMENTATION" ]
+    sources = [ "nodebug_assertion.cc" ]
+    deps = [ ":base_static" ]
   }
 }
 
@@ -3408,6 +3428,10 @@ test("base_unittests") {
     "version_unittest.cc",
     "vlog_unittest.cc",
   ]
+
+  if (use_custom_libcxx) {
+    sources += [ "libcpp_hardening_test.cc" ]
+  }
 
   # TODO(crbug.com/1304253): iOS test() targets don't support mixing Rust code
   # yet.

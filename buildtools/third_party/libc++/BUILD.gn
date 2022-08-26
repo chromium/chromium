@@ -203,5 +203,8 @@ target(_libcxx_target_type, "libc++") {
     if (!export_libcxxabi_from_executables) {
       deps = [ "//buildtools/third_party/libc++abi" ]
     }
+    if (!is_debug) {
+      defines += [ "_LIBCPP_AVAILABILITY_CUSTOM_VERBOSE_ABORT_PROVIDED=1" ]
+    }
   }
 }
