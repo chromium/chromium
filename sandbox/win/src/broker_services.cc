@@ -410,7 +410,7 @@ BrokerServicesBase::~BrokerServicesBase() {
   ::PostQueuedCompletionStatus(job_port_.Get(), 0, THREAD_CTRL_QUIT, nullptr);
 
   if (job_thread_.IsValid() &&
-      WAIT_TIMEOUT == ::WaitForSingleObject(job_thread_.Get(), 1000)) {
+      WAIT_TIMEOUT == ::WaitForSingleObject(job_thread_.Get(), 5000)) {
     // Cannot clean broker services.
     NOTREACHED();
     return;
