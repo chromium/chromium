@@ -234,11 +234,13 @@ void PageLoadMetricsForwardObserver::OnFeaturesUsageObserved(
   parent_observer_->OnFeaturesUsageObserved(rfh, features);
 }
 
+// SetUpSharedMemoryForSmoothness is called only for the outermost page.
 void PageLoadMetricsForwardObserver::SetUpSharedMemoryForSmoothness(
     const base::ReadOnlySharedMemoryRegion& shared_memory) {
-  if (!parent_observer_)
-    return;
-  parent_observer_->SetUpSharedMemoryForSmoothness(shared_memory);
+  // See also MetricsWebContentsObserver::SetUpSharedMemoryForSmoothness and
+  // the relevant TODO. Currently, information from OOPIFs and FencedFrames are
+  // not handled.
+  NOTREACHED();
 }
 
 // PageLoadTracker already aggregates inter-pages data and processes it via

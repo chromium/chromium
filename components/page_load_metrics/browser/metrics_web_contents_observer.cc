@@ -1098,9 +1098,12 @@ void MetricsWebContentsObserver::SetUpSharedMemoryForSmoothness(
     base::ReadOnlySharedMemoryRegion shared_memory) {
   content::RenderFrameHost* render_frame_host =
       page_load_metrics_receivers_.GetCurrentTargetFrame();
-  const bool is_main_frame = render_frame_host->GetParent() == nullptr;
-  if (!is_main_frame) {
-    // TODO(1115136): Merge smoothness metrics from OOPIFs with the main-frame.
+  const bool is_outermost_main_frame =
+      render_frame_host->GetParentOrOuterDocument() == nullptr;
+  if (!is_outermost_main_frame) {
+    // TODO(https://crbug.com/1115136): Merge smoothness metrics from OOPIFs and
+    // FencedFrames with the main-frame. Also need to check if FencedFrames
+    // send this request correctly.
     return;
   }
 

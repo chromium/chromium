@@ -250,11 +250,12 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnStart(
   return CONTINUE_OBSERVING;
 }
 
-// TODO(https://crbug.com/1317494): Audit and use appropriate policy.
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 UkmPageLoadMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
+  // Only OnLoadedResource needs observer level forwarding, but the method
+  // handles only the outermost main frame case.
   return STOP_OBSERVING;
 }
 
@@ -505,6 +506,8 @@ void UkmPageLoadMetricsObserver::OnLoadedResource(
         extra_request_complete_info) {
   if (was_hidden_)
     return;
+  // This condition check accepts only the outermost main frame as FencedFrame
+  // has RequestDestination::kFencedFrame.
   if (extra_request_complete_info.request_destination ==
       network::mojom::RequestDestination::kDocument) {
     DCHECK(!main_frame_timing_.has_value());
