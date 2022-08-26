@@ -83,7 +83,7 @@ struct OverflowMenuDestinationList: View {
               LazyHStack(alignment: alignment, spacing: 0) {
                 // Make sure the space to the first icon is constant, so add extra
                 // spacing before the first item.
-                Spacer(minLength: Constants.iconInitialSpace - spacing.iconSpacing)
+                Spacer().frame(width: Constants.iconInitialSpace - spacing.iconSpacing)
                 ForEach(destinations) { destination in
                   OverflowMenuDestinationView(
                     destination: destination, layoutParameters: layoutParameters,
