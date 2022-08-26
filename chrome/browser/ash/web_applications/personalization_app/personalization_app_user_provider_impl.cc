@@ -335,7 +335,9 @@ void PersonalizationAppUserProviderImpl::OnUserProfileImageUpdated(
     return;
 
   user_image_observer_remote_->OnUserProfileImageUpdated(
-      GURL(webui::GetBitmapDataUrl(*profile_image.bitmap())));
+      profile_image.isNull()
+          ? GURL()
+          : GURL(webui::GetBitmapDataUrl(*profile_image.bitmap())));
 }
 
 void PersonalizationAppUserProviderImpl::OnCameraPresenceCheckDone(

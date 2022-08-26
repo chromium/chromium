@@ -164,7 +164,7 @@ export class AvatarList extends WithPersonalizationStore {
       icon: 'personalization:folder',
       title: this.i18n('chooseAFile'),
     });
-    if (profileImage) {
+    if (profileImage && profileImage.url) {
       options.push({
         id: OptionId.PROFILE_IMAGE,
         class: 'image-container',
