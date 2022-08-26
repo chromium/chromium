@@ -403,7 +403,7 @@ def upload_screenshot_set(json_path, test_name, bucket, builder_name,
   dest = google_storage_helper.unique_name(
     'screenshots_%s_%s_%s' % (test_name, builder_name, build_number),
     suffix='.json')
-  with tempfile.NamedTemporaryFile(suffix='.json') as temp_file:
+  with tempfile.NamedTemporaryFile(mode='w', suffix='.json') as temp_file:
     temp_file.write(screenshot_set)
     temp_file.flush()
     return google_storage_helper.upload(
