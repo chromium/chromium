@@ -96,6 +96,7 @@ class _Group:
 # src-internal. The artifcts can be found in
 # chromium/src-internal/testing/buildbot/archive/lacros64.json and
 # chromium/src-internal/testing/buildbot/archive/lacros-arm32.json
+# chromium/src-internal/testing/buildbot/archive/lacros-arm64.json
 _TRACKED_GROUPS = [
     _Group(paths=['chrome'],
            title='File: chrome',
@@ -300,6 +301,10 @@ def _run_resource_sizes(args):
     tracked_groups.append(
         _Group(paths=['nacl_helper_bootstrap'],
                title='File: nacl_helper_bootstrap'))
+  # TODO(https://crbug.com/1356761): remove the following part once nacl files
+  # are available.
+  elif args.arch == 'arm64':
+    tracked_groups.remove(paths=['nacl_helper'])
 
   for g in tracked_groups:
     sizes = sum(
@@ -330,7 +335,8 @@ def main():
   argparser.add_argument('--arch',
                          required=True,
                          type=str,
-                         help='The architecture of lacros.')
+                         help='The architecture of lacros, valid values: amd64,'
+                         ' arm32, arm64')
 
   output_group = argparser.add_mutually_exclusive_group()
 
