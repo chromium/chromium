@@ -112,14 +112,6 @@ bool IsNetworkConnectable(const NetworkStatePropertiesPtr& network_properties) {
   return false;
 }
 
-bool IsCellularSimLocked() {
-  const DeviceStateProperties* cellular_device =
-      Shell::Get()->system_tray_model()->network_state_model()->GetDevice(
-          NetworkType::kCellular);
-  return cellular_device &&
-         !cellular_device->sim_lock_status->lock_type.empty();
-}
-
 }  // namespace
 
 NetworkDetailedViewController::NetworkDetailedViewController(
@@ -203,10 +195,6 @@ void NetworkDetailedViewController::OnMobileToggleClicked(bool new_state) {
 
   // When Cellular is available, the toggle controls Cellular enabled state.
   if (cellular_state != DeviceStateType::kUnavailable) {
-    if (new_state && IsCellularSimLocked()) {
-      Shell::Get()->system_tray_model()->client()->ShowSettingsSimUnlock();
-      return;
-    }
     model_->SetNetworkTypeEnabledState(NetworkType::kCellular, new_state);
     return;
   }
