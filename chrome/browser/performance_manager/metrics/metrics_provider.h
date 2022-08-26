@@ -70,6 +70,8 @@ class MetricsProvider : public ::metrics::MetricsProvider,
   const raw_ptr<PrefService> local_state_;
   EfficiencyMode current_mode_ = EfficiencyMode::kNormal;
 
+  bool battery_saver_enabled_ = false;
+
   bool initialized_ = false;
 };
 

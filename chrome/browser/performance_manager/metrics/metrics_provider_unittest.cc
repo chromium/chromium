@@ -54,6 +54,8 @@ class PerformanceManagerMetricsProviderTest : public testing::Test {
 
   performance_manager::MetricsProvider* provider() { return provider_.get(); }
 
+  void ShutdownUserPerformanceTuningManager() { manager_.reset(); }
+
  private:
   void SetUp() override {
     feature_list_.InitWithFeatures(
@@ -178,5 +180,36 @@ TEST_F(PerformanceManagerMetricsProviderTest, TestBothModes) {
     provider()->ProvideCurrentSessionData(nullptr);
     ExpectSingleUniqueSample(
         tester, performance_manager::MetricsProvider::EfficiencyMode::kBoth);
+  }
+}
+
+TEST_F(PerformanceManagerMetricsProviderTest,
+       TestCorrectlyLoggedDuringShutdown) {
+  SetBatterySaverEnabled(true);
+
+  InitProvider();
+
+  {
+    base::HistogramTester tester;
+    // No changes until the following report, "Battery saver" is reported
+    provider()->ProvideCurrentSessionData(nullptr);
+    ExpectSingleUniqueSample(
+        tester,
+        performance_manager::MetricsProvider::EfficiencyMode::kBatterySaver);
+  }
+
+  ShutdownUserPerformanceTuningManager();
+
+  // During shutdown, the MetricsProvider will attempt to record session data
+  // one last time. This happens after the UserPerformanceTuningManager is
+  // destroyed, which can cause a crash if the manager is accessed to compute
+  // the current mode.
+  {
+    base::HistogramTester tester;
+    // No changes until the following report, "Battery saver" is reported
+    provider()->ProvideCurrentSessionData(nullptr);
+    ExpectSingleUniqueSample(
+        tester,
+        performance_manager::MetricsProvider::EfficiencyMode::kBatterySaver);
   }
 }

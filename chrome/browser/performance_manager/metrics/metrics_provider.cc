@@ -38,6 +38,9 @@ void MetricsProvider::Initialize() {
                           base::Unretained(this)));
   performance_manager::user_tuning::UserPerformanceTuningManager::GetInstance()
       ->AddObserver(this);
+  battery_saver_enabled_ = performance_manager::user_tuning::
+                               UserPerformanceTuningManager::GetInstance()
+                                   ->IsBatterySaverActive();
 
   initialized_ = true;
   current_mode_ = ComputeCurrentMode();
@@ -65,6 +68,7 @@ MetricsProvider::MetricsProvider(PrefService* local_state)
 }
 
 void MetricsProvider::OnBatterySaverModeChanged(bool is_active) {
+  battery_saver_enabled_ = is_active;
   OnTuningModesChanged();
 }
 
@@ -88,16 +92,14 @@ MetricsProvider::EfficiencyMode MetricsProvider::ComputeCurrentMode() const {
     return EfficiencyMode::kNormal;
   }
 
+  // It's possible for this function to be called during shutdown, after
+  // UserPerformanceTuningManager is destroyed. Do not access UPTM directly from
+  // here.
+
   bool high_efficiency_enabled = local_state_->GetBoolean(
       performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled);
 
-  performance_manager::user_tuning::UserPerformanceTuningManager*
-      user_performance_tuning_manager = performance_manager::user_tuning::
-          UserPerformanceTuningManager::GetInstance();
-  bool battery_saver_enabled =
-      user_performance_tuning_manager->IsBatterySaverActive();
-
-  if (high_efficiency_enabled && battery_saver_enabled) {
+  if (high_efficiency_enabled && battery_saver_enabled_) {
     return EfficiencyMode::kBoth;
   }
 
@@ -105,7 +107,7 @@ MetricsProvider::EfficiencyMode MetricsProvider::ComputeCurrentMode() const {
     return EfficiencyMode::kHighEfficiency;
   }
 
-  if (battery_saver_enabled) {
+  if (battery_saver_enabled_) {
     return EfficiencyMode::kBatterySaver;
   }
 
