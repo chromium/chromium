@@ -91,22 +91,38 @@ Browser* LaunchSystemWebAppImpl(Profile* profile,
                                 const GURL& url,
                                 const apps::AppLaunchParams& params);
 
-// Returns a browser that is hosting the given system |app_type|,
-// |browser_type| and |url| (if not empty) or nullptr if not found.
+// Returns a browser that is dedicated (i.e. has a standalone shelf icon) to
+// hosting the given system |app_type| that matches |browser_type| and
+// optionally |url|.
+//
+// If |url| is is not empty, this method only returns the browser if it is
+// showing |url| page.
+//
+// If there are multiple browsers hosting the app, returns the currently active
+// (focused) one (if it exists), otherwise the most recently created one.
+//
+// This method is intended for performing UI manipulations (e.g. changing
+// window size and position). Don't retrieve and interact with the WebContents
+// in the returned browser, as it might be rendering a different origin.
+//
+// Consider using the WebUIController to retrieve the WebContents currently
+// rendering the app if you want to interact with app's JavaScript environment.
 Browser* FindSystemWebAppBrowser(Profile* profile,
                                  SystemWebAppType app_type,
                                  Browser::Type browser_type = Browser::TYPE_APP,
                                  const GURL& url = GURL());
 
-// Returns true if the |browser| is a system web app.
+// Returns true if the |browser| is dedicated (see above) to hosting a system
+// web app.
 bool IsSystemWebApp(Browser* browser);
+
+// Returns whether the |browser| is dedicated (see above) to hosting the system
+// app |type|.
+bool IsBrowserForSystemWebApp(Browser* browser, SystemWebAppType type);
 
 // Returns the SystemWebAppType that should capture the |url|.
 absl::optional<SystemWebAppType> GetCapturingSystemAppForURL(Profile* profile,
                                                              const GURL& url);
-
-// Returns whether the |browser| hosts the system app |type|.
-bool IsBrowserForSystemWebApp(Browser* browser, SystemWebAppType type);
 
 // Returns the minimum window size for a system web app, or an empty size if
 // the app does not specify a minimum size.
