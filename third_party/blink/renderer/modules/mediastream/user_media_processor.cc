@@ -991,12 +991,14 @@ void UserMediaProcessor::GenerateStreamForCurrentRequestInfo(
   // GetOpenDevice() should be called.
   if (current_request_info_->request() &&
       current_request_info_->request()->IsTransferredTrackRequest()) {
+    MediaStreamRequestResult result = MediaStreamRequestResult::INVALID_STATE;
+    blink::mojom::blink::GetOpenDeviceResponsePtr response;
     GetMediaStreamDispatcherHost()->GetOpenDevice(
         current_request_info_->request_id(),
         *current_request_info_->request()->GetSessionId(),
-        /*transfer_id=*/base::UnguessableToken::Create(),
-        WTF::Bind(&UserMediaProcessor::GotOpenDevice, WrapWeakPersistent(this),
-                  current_request_info_->request_id()));
+        /*transfer_id=*/base::UnguessableToken::Create(), &result, &response);
+    GotOpenDevice(current_request_info_->request_id(), result,
+                  std::move(response));
   } else {
     // The browser replies to this request by invoking OnStreamGenerated().
     GetMediaStreamDispatcherHost()->GenerateStreams(

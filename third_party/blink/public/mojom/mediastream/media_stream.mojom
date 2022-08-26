@@ -265,6 +265,9 @@ interface MediaStreamDispatcherHost {
   // This allows for example transferring of MediaStreamTracks between
   // contexts: the receiving context calls GetOpenDevice with the session id
   // of the MediaStreamDevice created by the original context.
+  //
+  // This call is synchronous since the MediaStreamTrack needs to be created
+  // synchronously during deserialization of a transferred track.
   // |request_id| is used by the renderer to identify the stream generation
   // request.
   // |session_id| is used to uniquely identify a session/MediaStreamDevice.
@@ -272,6 +275,7 @@ interface MediaStreamDispatcherHost {
   // This is generated in the original context and passed to the receiving
   // context to identify this transfer in the browser process.
   // |response| is null if and only if result != OK.
+  [Sync]
   GetOpenDevice(int32 request_id, mojo_base.mojom.UnguessableToken session_id,
                 mojo_base.mojom.UnguessableToken transfer_id)
             => (MediaStreamRequestResult result, GetOpenDeviceResponse? response);
