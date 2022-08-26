@@ -34,7 +34,6 @@ group("polymer3_elements") {
     ":oobe_eula_module",
     ":os_install_module",
     ":os_trial_module",
-    ":parental_handoff_module",
     ":pin_setup_module",
     ":recommend_apps_module",
     ":signin_fatal_error_module",
@@ -82,7 +81,7 @@ js_type_check("closure_compile_local") {
     ":oobe_reset",
     ":os_install.m",
     ":os_trial.m",
-    ":parental_handoff.m",
+    ":parental_handoff",
     ":pin_setup.m",
     ":recommend_apps.m",
     ":saml_confirm_password",
@@ -466,8 +465,8 @@ js_library("os_install.m") {
   extra_deps = [ ":os_install_module" ]
 }
 
-js_library("parental_handoff.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/parental_handoff.m.js" ]
+js_library("parental_handoff") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/parental_handoff.js" ]
   deps = [
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
@@ -476,7 +475,7 @@ js_library("parental_handoff.m") {
     "../../components/dialogs:oobe_adaptive_dialog.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  extra_deps = [ ":parental_handoff_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("os_trial.m") {
@@ -833,14 +832,6 @@ polymer_modulizer("os_trial") {
   namespace_rewrites = oobe_namespace_rewrites
 }
 
-polymer_modulizer("parental_handoff") {
-  js_file = "parental_handoff.js"
-  html_file = "parental_handoff.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 polymer_modulizer("pin_setup") {
   js_file = "pin_setup.js"
   html_file = "pin_setup.html"
@@ -930,6 +921,7 @@ html_to_js("web_components") {
     "adb_sideloading.js",
     "arc_terms_of_service.js",
     "oobe_reset.js",
+    "parental_handoff.js",
     "saml_confirm_password.js",
   ]
 }
