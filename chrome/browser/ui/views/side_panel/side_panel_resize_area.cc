@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/side_panel/side_panel_resize_area.h"
 
+#include "base/i18n/rtl.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/grit/generated_resources.h"
@@ -101,7 +102,8 @@ void SidePanelResizeArea::Layout() {
   gfx::Rect contents_bounds = parent()->GetContentsBounds();
 
   gfx::Rect resize_bounds;
-  if (side_panel_->IsRightAligned()) {
+  if ((side_panel_->IsRightAligned() && !base::i18n::IsRTL()) ||
+      (!side_panel_->IsRightAligned() && base::i18n::IsRTL())) {
     resize_bounds = gfx::Rect(local_bounds.x(), local_bounds.y(),
                               contents_bounds.x(), local_bounds.height());
   } else {

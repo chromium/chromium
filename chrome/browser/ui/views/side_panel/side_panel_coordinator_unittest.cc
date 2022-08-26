@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
@@ -192,6 +193,38 @@ TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthMaxMin) {
       layout_manager->GetMinWebContentsWidthForTesting();
   EXPECT_EQ(browser_view()->contents_web_view()->width(),
             min_web_contents_width);
+}
+
+TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthRTL) {
+  // Set side panel to right-aligned
+  browser_view()->GetProfile()->GetPrefs()->SetBoolean(
+      prefs::kSidePanelHorizontalAlignment, true);
+  // Set UI direction to LTR
+  base::i18n::SetRTLForTesting(false);
+  coordinator_->Toggle();
+  const int starting_width = 500;
+  browser_view()->right_aligned_side_panel()->SetPanelWidth(starting_width);
+  browser_view()->Layout();
+  EXPECT_EQ(browser_view()->right_aligned_side_panel()->width(),
+            starting_width);
+
+  const int increment = 50;
+  browser_view()->right_aligned_side_panel()->OnResize(increment, true);
+  browser_view()->Layout();
+  EXPECT_EQ(browser_view()->right_aligned_side_panel()->width(),
+            starting_width - increment);
+
+  // Set UI direction to RTL
+  base::i18n::SetRTLForTesting(true);
+  browser_view()->right_aligned_side_panel()->SetPanelWidth(starting_width);
+  browser_view()->Layout();
+  EXPECT_EQ(browser_view()->right_aligned_side_panel()->width(),
+            starting_width);
+
+  browser_view()->right_aligned_side_panel()->OnResize(increment, true);
+  browser_view()->Layout();
+  EXPECT_EQ(browser_view()->right_aligned_side_panel()->width(),
+            starting_width + increment);
 }
 
 TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthWindowResize) {
