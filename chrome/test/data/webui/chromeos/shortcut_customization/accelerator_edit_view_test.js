@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorEditViewElement} from 'chrome://shortcut-customization/accelerator_edit_view.js';
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/accelerator_lookup_manager.js';
@@ -13,7 +15,7 @@ import {flushTasks} from '../../test_util.js';
 
 import {CreateDefaultAccelerator, CreateUserAccelerator} from './shortcut_customization_test_util.js';
 
-export function acceleratorEditViewTest() {
+suite('acceleratorEditViewTest', function() {
   /** @type {?AcceleratorEditViewElement} */
   let editViewElement = null;
 
@@ -152,4 +154,4 @@ export function acceleratorEditViewTest() {
     await flushTasks();
     assertFalse(editViewElement.hasError);
   });
-}
+});

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorRowElement} from 'chrome://shortcut-customization/accelerator_row.js';
 import {AcceleratorSource, AcceleratorState, AcceleratorType, Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
@@ -11,7 +13,7 @@ import {flushTasks} from '../../test_util.js';
 
 import {CreateUserAccelerator} from './shortcut_customization_test_util.js';
 
-export function acceleratorRowTest() {
+suite('acceleratorRowTest', function() {
   /** @type {?AcceleratorRowElement} */
   let rowElement = null;
 
@@ -97,4 +99,4 @@ export function acceleratorRowTest() {
     assertTrue(
         rowElement.shadowRoot.querySelector('#lockIconContainer').hidden);
   });
-}
+});

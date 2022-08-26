@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/accelerator_lookup_manager.js';
 import {AcceleratorSubsectionElement} from 'chrome://shortcut-customization/accelerator_subsection.js';
 import {fakeAcceleratorConfig, fakeLayoutInfo, fakeSubCategories} from 'chrome://shortcut-customization/fake_data.js';
@@ -14,7 +16,7 @@ import {flushTasks} from '../../test_util.js';
 
 import {CreateUserAccelerator} from './shortcut_customization_test_util.js';
 
-export function shortcutCustomizationAppTest() {
+suite('shortcutCustomizationAppTest', function() {
   /** @type {?ShortcutCustomizationAppElement} */
   let page = null;
 
@@ -366,14 +368,4 @@ export function shortcutCustomizationAppTest() {
     restoreDialog = page.shadowRoot.querySelector('#restoreDialog');
     assertFalse(!!restoreDialog);
   });
-
-  suite('FakeMojoProviderTest', () => {
-    test('SettingGettingTestProvider', () => {
-      // TODO(zentaro): Replace with fake when built.
-      const fake_provider =
-          /** @type {!ShortcutProviderInterface} */ (new Object());
-      setShortcutProviderForTesting(fake_provider);
-      assertEquals(fake_provider, getShortcutProvider());
-    });
-  });
-}
+});

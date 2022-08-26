@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/accelerator_lookup_manager.js';
 import {AcceleratorSubsectionElement} from 'chrome://shortcut-customization/accelerator_subsection.js';
@@ -13,7 +15,7 @@ import {flushTasks} from '../../test_util.js';
 
 import {CreateUserAccelerator} from './shortcut_customization_test_util.js';
 
-export function acceleratorSubsectionTest() {
+suite('acceleratorSubsectionTest', function() {
   /** @type {?AcceleratorSubsectionElement} */
   let sectionElement = null;
 
@@ -87,4 +89,4 @@ export function acceleratorSubsectionTest() {
         manager.getAcceleratorName(/*source=*/ 0, /*action=*/ 1),
         rowListElement[1].description);
   });
-}
+});

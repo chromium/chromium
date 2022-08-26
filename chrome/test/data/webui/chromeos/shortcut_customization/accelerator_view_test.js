@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/accelerator_lookup_manager.js';
 import {AcceleratorViewElement, ViewState} from 'chrome://shortcut-customization/accelerator_view.js';
@@ -12,7 +14,7 @@ import {assertEquals, assertTrue} from '../../chai_assert.js';
 
 import {CreateDefaultAccelerator, CreateUserAccelerator} from './shortcut_customization_test_util.js';
 
-export function acceleratorViewTest() {
+suite('acceleratorViewTest', function() {
   /** @type {?AcceleratorViewElement} */
   let viewElement = null;
 
@@ -108,4 +110,4 @@ export function acceleratorViewTest() {
     assertEquals('alpha-numeric-selected', pendingKey.keyState);
     assertEquals('e', pendingKey.key);
   });
-}
+});

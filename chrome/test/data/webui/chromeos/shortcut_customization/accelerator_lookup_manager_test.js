@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/accelerator_lookup_manager.js';
 import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/fake_data.js';
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/fake_shortcut_provider.js';
@@ -10,7 +12,7 @@ import {AcceleratorSource, AcceleratorState, Modifier} from 'chrome://shortcut-c
 import {assertDeepEquals, assertEquals} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';
 
-export function acceleratorLookupManagerTest() {
+suite('acceleratorLookupManagerTest', function() {
   /** @type {?FakeShortcutProvider} */
   let provider = null;
 
@@ -345,4 +347,4 @@ export function acceleratorLookupManagerTest() {
           manager.getAcceleratorFromKeys(JSON.stringify(removedAccelerator)));
     });
   });
-}
+});

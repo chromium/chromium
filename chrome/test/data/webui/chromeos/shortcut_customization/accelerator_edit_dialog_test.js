@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorEditDialogElement} from 'chrome://shortcut-customization/accelerator_edit_dialog.js';
 import {Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
@@ -10,7 +12,7 @@ import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
 import {CreateUserAccelerator} from './shortcut_customization_test_util.js';
 
-export function acceleratorEditDialogTest() {
+suite('acceleratorEditDialogTest', function() {
   /** @type {?AcceleratorEditDialogElement} */
   let viewElement = null;
 
@@ -141,4 +143,4 @@ export function acceleratorEditDialogTest() {
     pendingAccelerator = dialog.querySelector('#pendingAccelerator');
     assertFalse(!!pendingAccelerator);
   });
-}
+});
