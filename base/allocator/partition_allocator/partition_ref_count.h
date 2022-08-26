@@ -285,11 +285,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRefCount {
   // architectures, count_ happens stay even, which works well with the
   // double-free-detection in ReleaseFromAllocator(). Don't change the layout of
   // this class, to preserve this functionality.
-#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
-  std::atomic<uint64_t> count_{kMemoryHeldByAllocatorBit};
-#else
-  std::atomic<uint32_t> count_{kMemoryHeldByAllocatorBit};
-#endif
+  std::atomic<CountType> count_{kMemoryHeldByAllocatorBit};
 
 #if defined(PA_REF_COUNT_CHECK_COOKIE)
   static constexpr uint32_t kCookieSalt = 0xc01dbeef;
