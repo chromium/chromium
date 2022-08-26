@@ -20,19 +20,43 @@ using GameMode = ash::ResourcedClient::GameMode;
 void AddArcPkgNameForTesting(const std::string& pkg_name);
 void ClearArcPkgNamesForTesting();
 
-// When a borealis window enters full screen, game mode is enabled.
-// The controller works as follows:
+// When a Borealis or ARC game app game enters full screen, game mode is
+// enabled. Game Mode is actually enabled as a result of multiple sets of
+// criteria being fulfilled, each checked in sequence.
 //
-//          +"GameMode off"+              "GameMode off"
-//          |              |                  |     ^ Not fullscreen
-//          |              | N                |     |
-//          V   focused    |              Y   V     |   Fullscreen
-// "Watch focus"------->"Borealis window?"-->"Watch state"----->"GameMode on"
-//         ^                    ^             |   |     ^          |
-//         |                    +-------------+   |     +----------+
-//         |                    focus changed     |
-//         +------"GameMode off"<-----------------+
-//                                No window focused
+// When one criteria set is met, a new criteria object is constructed which
+// is responsible for checking the next criteria, and is owned by the prior
+// criteria object. An owner destroys its direct and indirect owned (subsequent)
+// criteria objects as soon as itself becomes invalid.
+//
+// The criteria objects are constructed in this order:
+//
+// Criteria object         Conditions checked      Causes invalidation (x)
+// -----------------------------------------------------------------------------
+// GameModeController      Window is focused
+// WindowTracker *         Window is fullscreen    Window is destroyed
+// ArcGameModeCriteria **  ARC app is game
+// GameModeEnabler ***     None
+//
+// (x) Indicates the responsible criteria object makes itself inactive and
+//     discards its child criteria, if any.
+// *   WindowTracker is responsible for determining the type of window
+// **  ArcGameModeCriteria is not constructed for Borealis windows. Instead, a
+//     GameModeEnabler is constructed directly.
+// *** GameModeEnabler starts game mode on construction, and stops game mode on
+//     destruction.
+//
+// More concretely, this is the logical flow:
+//
+//          +"GameMode off"+<---------------------------------------------+
+//          |              ^ focus                                  focus ^
+//          |              | lost                                   lost  |
+//          V   focused    |                                   Y          |
+// "Watch focus"------->"Watch state"--------->"Game window?"---->"GameMode on"
+//                          ^         full           |                    |
+//                          |       screen'd         | N       fullscreen |
+//                          |                        V               lost V
+//                     "GameMode off"<------------------------------------+
 //
 class GameModeController : public aura::client::FocusChangeObserver {
  public:
