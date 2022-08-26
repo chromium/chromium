@@ -136,6 +136,9 @@ generated JSON file. Commonly used arguments include:
   This flag should be set rarely, usually only temporarily to manage capacity
   concerns during an outage.
 
+* `description`: a string to describe the test suite. The text will be shown on
+  Milo.
+
 * `swarming`: a dictionary of Swarming parameters. Note that these will be
   applied to *every* bot that refers to this test suite. It is often more useful
   to specify the Swarming dimensions at the bot level, in waterfalls.pyl. More

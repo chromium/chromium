@@ -1214,6 +1214,13 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         cloned_config['mixins'] = (cloned_config.get('mixins', []) +
                                    cloned_variant.get('mixins', []) + mixins)
 
+        description = []
+        if piece := cloned_config.get('description'):
+          description.append(piece)
+        if piece := cloned_variant.get('description'):
+          description.append(piece)
+        if description:
+          cloned_config['description'] = '\n'.join(description)
         basic_swarming_def = cloned_config.get('swarming', {})
         variant_swarming_def = cloned_variant.get('swarming', {})
         if basic_swarming_def and variant_swarming_def:
