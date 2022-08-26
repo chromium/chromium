@@ -161,9 +161,8 @@ ContainerQueryEvaluator::Change ContainerQueryEvaluator::SizeContainerChanged(
   return change;
 }
 
-ContainerQueryEvaluator::Change ContainerQueryEvaluator::StyleContainerChanged(
-    Element& container) {
-  SetData(container.GetDocument(), container, size_, contained_axes_);
+ContainerQueryEvaluator::Change
+ContainerQueryEvaluator::StyleContainerChanged() {
   if (!depends_on_style_)
     return Change::kNone;
 

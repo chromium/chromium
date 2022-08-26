@@ -4447,7 +4447,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
                                        new_style->InheritedVariables()) ||
                !base::ValuesEquivalent(old_style->NonInheritedVariables(),
                                        new_style->NonInheritedVariables()))) {
-            switch (evaluator->StyleContainerChanged(*this)) {
+            switch (evaluator->StyleContainerChanged()) {
               case ContainerQueryEvaluator::Change::kNone:
                 break;
               case ContainerQueryEvaluator::Change::kNearestContainer:

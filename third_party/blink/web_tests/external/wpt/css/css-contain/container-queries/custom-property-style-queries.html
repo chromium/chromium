@@ -29,6 +29,8 @@
   </div>
 </div>
 <script>
+  const green = "rgb(0, 128, 0)";
+
   function test_evaluation(query, expected) {
     test((t) => {
       let style_node = document.createElement('style');
@@ -111,6 +113,56 @@
 </div>
 <script>
   test(() => {
-    assert_equals(getComputedStyle(document.querySelector("#important-child")).color, "rgb(0, 128, 0)");
+    assert_equals(getComputedStyle(document.querySelector("#important-child")).color, green);
   }, "Query custom property with !important declaration");
+</script>
+
+<style>
+  #var-query {
+    --foo: baz;
+    --bar: baz;
+  }
+  @container style(--foo: var(--bar)) {
+    #var-subst { color: green; }
+  }
+  @container not style(--foo: var(--unknown)) {
+    #var-subst-unknown { color: green; }
+  }
+  @container not style(--foo: var(--unknown, nomatch)) {
+    #var-subst-unknown-fallback { color: green; }
+  }
+  @container style(--foo: var(--unknown, baz)) {
+    #var-subst-matching-fallback { color: green; }
+  }
+  @container style(--baz: var(--unknown)) {
+    #var-subst-unknown-matching { color: green; }
+  }
+</style>
+<div id="var-query">
+  <div id="var-subst"></div>
+  <div id="var-subst-unknown"></div>
+  <div id="var-subst-unknown-fallback"></div>
+  <div id="var-subst-matching-fallback"></div>
+  <div id="var-subst-unknown-matching"></div>
+</div>
+<script>
+  test(() => {
+    assert_equals(getComputedStyle(document.querySelector("#var-subst")).color, green);
+  }, "Query custom property using var()");
+
+  test(() => {
+    assert_equals(getComputedStyle(document.querySelector("#var-subst-unknown")).color, green);
+  }, "Query custom property including unknown var() reference");
+
+  test(() => {
+    assert_equals(getComputedStyle(document.querySelector("#var-subst-unknown-fallback")).color, green);
+  }, "Query custom property including unknown var() reference with non-matching fallback");
+
+  test(() => {
+    assert_equals(getComputedStyle(document.querySelector("#var-subst-matching-fallback")).color, green);
+  }, "Query custom property including unknown var() reference with matching fallback");
+
+  test(() => {
+    assert_equals(getComputedStyle(document.querySelector("#var-subst-unknown-matching")).color, green);
+  }, "Query custom property matching guaranteed-invalid values");
 </script>

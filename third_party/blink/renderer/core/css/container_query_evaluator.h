@@ -70,9 +70,8 @@ class CORE_EXPORT ContainerQueryEvaluator final
                               PhysicalSize,
                               PhysicalAxes contained_axes);
 
-  // Update the ComputedStyle used for evaluating style queries, evaluate the
-  // cached results, and clear any results which are affected.
-  Change StyleContainerChanged(Element& container);
+  // Re-evaluate the cached results and clear any results which are affected.
+  Change StyleContainerChanged();
 
   // We may need to update the internal CSSContainerValues of this evaluator
   // when e.g. the rem unit changes.

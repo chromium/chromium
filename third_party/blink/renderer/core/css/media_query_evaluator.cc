@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/css/media_values_dynamic.h"
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css/resolver/media_query_result.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -57,6 +58,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/media_type_names.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/graphics/color_space_gamut.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -1418,19 +1420,25 @@ KleeneValue MediaQueryEvaluator::EvalStyleFeature(
   DCHECK(bounds.right.op == MediaQueryOperator::kNone);
   DCHECK(bounds.right.IsValid());
   DCHECK(bounds.right.value.IsCSSValue());
-  DCHECK(media_values_->GetComputedStyle());
 
+  Element* container = media_values_->ContainerElement();
+  DCHECK(container);
+
+  AtomicString property_name(feature.Name());
   CSSVariableData* computed =
-      media_values_->GetComputedStyle()->GetVariableData(
-          AtomicString(feature.Name()));
-  CSSVariableData* queried =
-      To<CSSCustomPropertyDeclaration>(bounds.right.value.GetCSSValue())
-          .Value();
+      container->ComputedStyleRef().GetVariableData(property_name);
+  const CSSCustomPropertyDeclaration* query_value =
+      DynamicTo<CSSCustomPropertyDeclaration>(
+          StyleResolver::ComputeValue(container, CSSPropertyName(property_name),
+                                      bounds.right.value.GetCSSValue()));
+
+  CSSVariableData* query_computed =
+      query_value ? query_value->Value() : nullptr;
 
   // TODO(crbug.com/1220144): Compare the two CSSVariableData using
   // base::ValuesEquivalent when we correctly strip leading and trailing
   // whitespaces for custom property values.
-  if (TokensEqualIgnoringLeadingAndTrailingSpaces(computed, queried)) {
+  if (TokensEqualIgnoringLeadingAndTrailingSpaces(computed, query_computed)) {
     return KleeneValue::kTrue;
   }
   return KleeneValue::kFalse;

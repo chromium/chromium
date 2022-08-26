@@ -37,6 +37,19 @@ class ContainerQueryEvaluatorTest : public PageTestBase,
   ContainerQueryEvaluatorTest()
       : ScopedCSSContainerQueriesForTest(true), ScopedLayoutNGForTest(true) {}
 
+  void SetUp() override {
+    PageTestBase::SetUp();
+    GetDocument().body()->setInnerHTML(R"HTML(
+      <div id="container-parent">
+        <div id="container"></div>
+      </div>
+    )HTML");
+  }
+
+  Element& ContainerElement() {
+    return *GetDocument().getElementById("container");
+  }
+
   ContainerQuery* ParseContainer(String query) {
     String rule = "@container " + query + " {}";
     auto* style_rule = DynamicTo<StyleRuleContainer>(
@@ -46,38 +59,21 @@ class ContainerQueryEvaluatorTest : public PageTestBase,
     return &style_rule->GetContainerQuery();
   }
 
-  class TemporaryContainerElement {
-    STACK_ALLOCATED();
-
-   public:
-    explicit TemporaryContainerElement(
-        Document& document,
-        scoped_refptr<const ComputedStyle> style) {
-      element = MakeGarbageCollected<HTMLDivElement>(document);
-      document.body()->AppendChild(element);
-      element->SetComputedStyle(style);
-    }
-
-    ~TemporaryContainerElement() { element->remove(); }
-
-    Element* element;
-  };
-
   bool Eval(String query,
             double width,
             double height,
             unsigned container_type,
             PhysicalAxes contained_axes) {
-    auto style = ComputedStyle::Clone(GetDocument().ComputedStyleRef());
+    scoped_refptr<ComputedStyle> style =
+        GetDocument().GetStyleResolver().InitialStyleForElement();
     style->SetContainerType(container_type);
-
-    TemporaryContainerElement temp_container(GetDocument(), style);
+    ContainerElement().SetComputedStyle(style);
 
     ContainerQuery* container_query = ParseContainer(query);
     DCHECK(container_query);
     auto* evaluator = MakeGarbageCollected<ContainerQueryEvaluator>();
     evaluator->SizeContainerChanged(
-        GetDocument(), *temp_container.element,
+        GetDocument(), ContainerElement(),
         PhysicalSize(LayoutUnit(width), LayoutUnit(height)), contained_axes);
     return evaluator->Eval(*container_query);
   }
@@ -99,12 +95,11 @@ class ContainerQueryEvaluatorTest : public PageTestBase,
         GetDocument().GetStyleResolver().InitialStyleForElement();
     style->SetVariableData(AtomicString(custom_property_name), value->Value(),
                            false);
-
-    TemporaryContainerElement temp_container(GetDocument(), style);
+    ContainerElement().SetComputedStyle(style);
 
     auto* evaluator = MakeGarbageCollected<ContainerQueryEvaluator>();
     evaluator->SizeContainerChanged(
-        GetDocument(), *temp_container.element,
+        GetDocument(), ContainerElement(),
         PhysicalSize(LayoutUnit(100), LayoutUnit(100)),
         PhysicalAxes{kPhysicalAxisNone});
 
@@ -118,13 +113,12 @@ class ContainerQueryEvaluatorTest : public PageTestBase,
                               PhysicalSize size,
                               unsigned container_type,
                               PhysicalAxes axes) {
-    auto style = ComputedStyle::Clone(GetDocument().ComputedStyleRef());
+    scoped_refptr<ComputedStyle> style =
+        GetDocument().GetStyleResolver().InitialStyleForElement();
     style->SetContainerType(container_type);
-
-    TemporaryContainerElement temp_container(GetDocument(), style);
-
-    return evaluator->SizeContainerChanged(GetDocument(),
-                                           *temp_container.element, size, axes);
+    ContainerElement().SetComputedStyle(style);
+    return evaluator->SizeContainerChanged(GetDocument(), ContainerElement(),
+                                           size, axes);
   }
 
   bool EvalAndAdd(ContainerQueryEvaluator* evaluator,
@@ -290,16 +284,15 @@ TEST_F(ContainerQueryEvaluatorTest, SizeContainerChanged) {
 TEST_F(ContainerQueryEvaluatorTest, StyleContainerChanged) {
   PhysicalSize size_100(LayoutUnit(100), LayoutUnit(100));
 
-  auto style = ComputedStyle::Clone(GetDocument().ComputedStyleRef());
+  Element& container_element = ContainerElement();
+  scoped_refptr<ComputedStyle> style =
+      GetDocument().GetStyleResolver().InitialStyleForElement();
   style->SetContainerType(type_inline_size);
-
-  TemporaryContainerElement temp_container(GetDocument(), style);
-  Element* container_element = temp_container.element;
-  ASSERT_TRUE(container_element);
+  container_element.SetComputedStyle(style);
 
   auto* evaluator = MakeGarbageCollected<ContainerQueryEvaluator>();
   EXPECT_EQ(Change::kNone,
-            evaluator->SizeContainerChanged(GetDocument(), *container_element,
+            evaluator->SizeContainerChanged(GetDocument(), container_element,
                                             size_100, horizontal));
 
   ContainerQuery* foo_bar_query = ParseContainer("style(--foo: bar)");
@@ -321,8 +314,7 @@ TEST_F(ContainerQueryEvaluatorTest, StyleContainerChanged) {
 
   // Calling StyleContainerChanged without changing the style should not produce
   // a change.
-  EXPECT_EQ(Change::kNone,
-            evaluator->StyleContainerChanged(*container_element));
+  EXPECT_EQ(Change::kNone, evaluator->StyleContainerChanged());
   EXPECT_EQ(3u, GetResults(evaluator).size());
 
   const bool inherited = true;
@@ -331,23 +323,20 @@ TEST_F(ContainerQueryEvaluatorTest, StyleContainerChanged) {
   // match.
   style->SetVariableData("--no", css_test_helpers::CreateVariableData("match"),
                          inherited);
-  EXPECT_EQ(Change::kNone,
-            evaluator->StyleContainerChanged(*container_element));
+  EXPECT_EQ(Change::kNone, evaluator->StyleContainerChanged());
   EXPECT_EQ(3u, GetResults(evaluator).size());
 
   // Set --foo: bar. Should trigger change.
   style->SetVariableData("--foo", css_test_helpers::CreateVariableData("bar"),
                          inherited);
-  EXPECT_EQ(Change::kNearestContainer,
-            evaluator->StyleContainerChanged(*container_element));
+  EXPECT_EQ(Change::kNearestContainer, evaluator->StyleContainerChanged());
   EXPECT_EQ(0u, GetResults(evaluator).size());
 
   // Set --bar: foo. Should trigger change because size part also matches.
   eval_and_add_all();
   style->SetVariableData("--bar", css_test_helpers::CreateVariableData("foo"),
                          inherited);
-  EXPECT_EQ(Change::kNearestContainer,
-            evaluator->StyleContainerChanged(*container_element));
+  EXPECT_EQ(Change::kNearestContainer, evaluator->StyleContainerChanged());
   EXPECT_EQ(0u, GetResults(evaluator).size());
 }
 
