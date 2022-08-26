@@ -14,6 +14,7 @@
 #include "media/base/video_color_space.h"
 #include "media/base/video_types.h"
 #include "media/gpu/accelerated_video_decoder.h"
+#include "media/gpu/av1_picture.h"
 #include "media/gpu/media_gpu_export.h"
 #include "third_party/libgav1/src/src/utils/constants.h"
 
@@ -32,7 +33,6 @@ class Vector;
 }  // namespace libgav1
 
 namespace media {
-class AV1Picture;
 using AV1ReferenceFrameVector =
     std::array<scoped_refptr<AV1Picture>, libgav1::kNumReferenceFrameTypes>;
 
