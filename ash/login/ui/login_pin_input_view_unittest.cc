@@ -131,6 +131,41 @@ TEST_P(LoginPinInputViewTest, AccessibleValues) {
   ExpectDescription("One digit remaining");
 }
 
+TEST_P(LoginPinInputViewTest, ReadOnly) {
+  EXPECT_FALSE(view_->IsReadOnly());
+  view_->SetReadOnly(true);
+  EXPECT_TRUE(view_->IsReadOnly());
+  ExpectTextValue("      ");
+
+  // Keys are ignored in the read-only mode.
+  PressKeyHelper(ui::KeyboardCode::VKEY_1);
+  ExpectTextValue("      ");
+  PressKeyHelper(ui::KeyboardCode::VKEY_RETURN);
+  EXPECT_FALSE(submitted_pin_.has_value());
+
+  // After unsetting the read-only mode, keys start working again.
+  view_->SetReadOnly(false);
+  PressKeyHelper(ui::KeyboardCode::VKEY_1);
+  ExpectTextValue("\u2022     "); /* 1 bullet 5 spaces */
+}
+
+TEST_P(LoginPinInputViewTest, FlagsPreservedOnPaletteChange) {
+  EXPECT_TRUE(view_->GetVisible());
+  EXPECT_FALSE(view_->IsReadOnly());
+
+  // Updating the palette doesn't affect the default flags.
+  view_->UpdatePalette(CreateDefaultLoginPalette());
+  EXPECT_TRUE(view_->GetVisible());
+  EXPECT_FALSE(view_->IsReadOnly());
+
+  // After inverting flags and updating the pallette, the flags are preserved.
+  view_->SetVisible(false);
+  view_->SetReadOnly(true);
+  view_->UpdatePalette(CreateDefaultLoginPalette());
+  EXPECT_FALSE(view_->GetVisible());
+  EXPECT_TRUE(view_->IsReadOnly());
+}
+
 INSTANTIATE_TEST_SUITE_P(PinInputViewTests,
                          LoginPinInputViewTest,
                          testing::Values(6),
