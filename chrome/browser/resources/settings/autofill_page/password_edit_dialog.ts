@@ -28,8 +28,10 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {loadTimeData} from '../i18n_setup.js';
 
 import {getTemplate} from './password_edit_dialog.html.js';
+import {PasswordListItemElement} from './password_list_item.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {PasswordRequestorMixin} from './password_requestor_mixin.js';
+import {PASSWORD_VIEW_PAGE_REQUESTED_EVENT_NAME} from './password_view.js';
 
 export type SavedPasswordEditedEvent =
     CustomEvent<chrome.passwordsPrivate.PasswordUiEntry>;
@@ -718,6 +720,18 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
       return entry.urls.signonRealm === this.websiteUrls_!.signonRealm &&
           entry.username === this.username_;
     })!;
+    if (this.isPasswordViewPageEnabled_) {
+      // wrap the id in a PasswordListItemElement:
+      this.dispatchEvent(
+          new CustomEvent(PASSWORD_VIEW_PAGE_REQUESTED_EVENT_NAME, {
+            bubbles: true,
+            composed: true,
+            detail: {entry: existingEntry} as unknown as
+                PasswordListItemElement,
+          }));
+      this.close();
+      return;
+    }
     this.requestPlaintextPassword(
             existingEntry.id, chrome.passwordsPrivate.PlaintextReason.EDIT)
         .then(password => {

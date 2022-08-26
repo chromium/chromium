@@ -630,6 +630,7 @@ suite('PasswordEditDialog', function() {
   test(
       'requestsPlaintextPasswordAndSwitchesToEditModeOnViewPasswordClick',
       async function() {
+        loadTimeData.overrideValues({enablePasswordViewPage: false});
         const existingEntry = createPasswordEntry(
             {url: 'website.com', username: 'username', id: 0});
         const addDialog =
@@ -655,6 +656,27 @@ suite('PasswordEditDialog', function() {
         assertEquals(existingEntry.username, addDialog.$.usernameInput.value);
         assertEquals(existingEntry.password, addDialog.$.passwordInput.value);
       });
+
+  test('dispatchesViewPageRequestedEventOnViewPasswordClick', async function() {
+    loadTimeData.overrideValues({enablePasswordViewPage: true});
+    const existingEntry =
+        createPasswordEntry({url: 'website.com', username: 'username', id: 0});
+    const addDialog =
+        elementFactory.createPasswordEditDialog(null, [existingEntry]);
+    assertFalse(isElementVisible(addDialog.$.viewExistingPasswordLink));
+
+    await updateWebsiteInput(
+        addDialog, passwordManager, existingEntry.urls.shown);
+    addDialog.$.usernameInput.value = existingEntry.username;
+    assertTrue(isElementVisible(addDialog.$.viewExistingPasswordLink));
+
+    const passwordViewPageRequestedEvent =
+        eventToPromise('password-view-page-requested', addDialog);
+    addDialog.$.viewExistingPasswordLink.click();
+    await passwordViewPageRequestedEvent.then((event) => {
+      assertEquals(existingEntry, event.detail.entry);
+    });
+  });
 
   test('hasCorrectInitialStateWhenEditModeWhenNotesEnabled', async function() {
     loadTimeData.overrideValues({enablePasswordNotes: true});
@@ -860,6 +882,7 @@ suite('PasswordEditDialog', function() {
   test(
       'notSwitchToEditModeOnViewPasswordClickWhenRequestPlaintextPasswordFailed',
       async function() {
+        loadTimeData.overrideValues({enablePasswordViewPage: false});
         const existingEntry = createPasswordEntry(
             {url: 'website.com', username: 'username', id: 0});
         const addDialog =
@@ -887,6 +910,7 @@ suite('PasswordEditDialog', function() {
   test(
       'requestsPlaintextPasswordAndSwitchesToEditModeOnViewPasswordClickInCros',
       async function() {
+        loadTimeData.overrideValues({enablePasswordViewPage: false});
         const existingEntry = createPasswordEntry(
             {url: 'website.com', username: 'username', id: 0});
         const addDialog =
