@@ -146,45 +146,22 @@ class SequenceBound {
   // same sequence.
 
   // Constructs a null SequenceBound with no managed `T`.
-  // TODO(dcheng): Add an `Emplace()` method to go with `Reset()`.
   SequenceBound() = default;
 
-  // Schedules asynchronous construction of a new instance of `T` on
-  // `task_runner`.
+  // Constructs a SequenceBound that manages a new instance of `T` on
+  // `task_runner`. `T` will be constructed on `task_runner`.
   //
-  // Once the SequenceBound constructor completes, the caller can immediately
-  // use `AsyncCall()`, et cetera, to schedule work after the construction of
-  // `T` on `task_runner`.
-  //
-  // Marked NO_SANITIZE because cfi doesn't like casting uninitialized memory to
-  // `T*`. However, this is safe here because:
-  //
-  // 1. The cast is well-defined (see https://eel.is/c++draft/basic.life#6) and
-  // 2. The resulting pointer is only ever dereferenced on `impl_task_runner_`.
-  //    By the time SequenceBound's constructor returns, the task to construct
-  //    `T` will already be posted; thus, subsequent dereference of `t_` on
-  //    `impl_task_runner_` are safe.
+  // Once this constructor returns, it is safe to immediately use `AsyncCall()`,
+  // et cetera; these calls will be sequenced after the construction of the
+  // managed `T`.
   template <typename... Args>
-  NO_SANITIZE("cfi-unrelated-cast")
   explicit SequenceBound(scoped_refptr<SequencedTaskRunner> task_runner,
                          Args&&... args)
       : impl_task_runner_(std::move(task_runner)) {
-    // Allocate space for but do not construct an instance of `T`.
-    // AlignedAlloc() requires alignment be a multiple of sizeof(void*).
-    storage_ = AlignedAlloc(
-        sizeof(T), sizeof(void*) > alignof(T) ? sizeof(void*) : alignof(T));
-    t_ = reinterpret_cast<T*>(storage_);
-
-    // Ensure that `t_` will be initialized
-    CrossThreadBindTraits::PostTask(
-        *impl_task_runner_, FROM_HERE,
-        CrossThreadBindTraits::BindOnce(&ConstructOwnerRecord<Args...>,
-                                        CrossThreadBindTraits::Unretained(t_),
-                                        std::forward<Args>(args)...));
+    AsyncConstruct(std::forward<Args>(args)...);
   }
 
-  // If non-null, destruction of the managed `T` is posted to
-  // `impl_task_runner_`.`
+  // If non-null, the managed `T` will be destroyed on `impl_task_runner_`.`
   ~SequenceBound() { Reset(); }
 
   // Disallow copy or assignment. SequenceBound has single ownership of the
@@ -213,6 +190,22 @@ class SequenceBound {
   SequenceBound& operator=(SequenceBound<From, CrossThreadBindTraits>&& other) {
     Reset();
     MoveRecordFrom(other);
+    return *this;
+  }
+
+  // Constructs a new managed instance of `T` on `task_runner`. If `this` is
+  // already managing another instance of `T`, that pre-existing instance will
+  // first be destroyed by calling `Reset()`.
+  //
+  // Once `emplace()` returns, it is safe to immediately use `AsyncCall()`,
+  // et cetera; these calls will be sequenced after the construction of the
+  // managed `T`.
+  template <typename... Args>
+  SequenceBound& emplace(scoped_refptr<SequencedTaskRunner> task_runner,
+                         Args&&... args) {
+    Reset();
+    impl_task_runner_ = std::move(task_runner);
+    AsyncConstruct(std::forward<Args>(args)...);
     return *this;
   }
 
@@ -382,6 +375,35 @@ class SequenceBound {
   using EnableIfIsCrossThreadTask =
       typename CrossThreadBindTraits::template EnableIfIsCrossThreadTask<
           CallbackType>;
+
+  // Schedules asynchronous construction of a new instance of `T` on
+  // `task_runner`.
+  //
+  // Marked NO_SANITIZE because cfi doesn't like casting uninitialized memory to
+  // `T*`. However, this is safe here because:
+  //
+  // 1. The cast is well-defined (see https://eel.is/c++draft/basic.life#6) and
+  // 2. The resulting pointer is only ever dereferenced on `impl_task_runner_`.
+  //    By the time SequenceBound's constructor returns, the task to construct
+  //    `T` will already be posted; thus, subsequent dereference of `t_` on
+  //    `impl_task_runner_` are safe.
+  template <typename... Args>
+  NO_SANITIZE("cfi-unrelated-cast")
+  void AsyncConstruct(Args&&... args) {
+    DCHECK(!t_);
+    // Allocate space for but do not construct an instance of `T`.
+    // AlignedAlloc() requires alignment be a multiple of sizeof(void*).
+    storage_ = AlignedAlloc(
+        sizeof(T), sizeof(void*) > alignof(T) ? sizeof(void*) : alignof(T));
+    t_ = reinterpret_cast<T*>(storage_);
+
+    // Ensure that `t_` will be initialized
+    CrossThreadBindTraits::PostTask(
+        *impl_task_runner_, FROM_HERE,
+        CrossThreadBindTraits::BindOnce(&ConstructOwnerRecord<Args...>,
+                                        CrossThreadBindTraits::Unretained(t_),
+                                        std::forward<Args>(args)...));
+  }
 
   // Support helpers for `AsyncCall()` implementation.
   //
