@@ -12,8 +12,8 @@
 #include "content/browser/compute_pressure/pressure_quantizer.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_user_data.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
-#include "mojo/public/cpp/bindings/remote_set.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/pressure_manager.mojom.h"
 #include "services/device/public/mojom/pressure_state.mojom.h"
 #include "third_party/blink/public/mojom/compute_pressure/pressure_service.mojom.h"
@@ -47,9 +47,11 @@ class CONTENT_EXPORT PressureServiceImpl
       mojo::PendingReceiver<blink::mojom::PressureService> receiver);
 
   // blink::mojom::PressureService implementation.
-  void AddObserver(mojo::PendingRemote<blink::mojom::PressureObserver> observer,
-                   blink::mojom::PressureQuantizationPtr quantization,
-                   AddObserverCallback callback) override;
+  void BindObserver(
+      mojo::PendingRemote<blink::mojom::PressureObserver> observer,
+      BindObserverCallback callback) override;
+  void SetQuantization(blink::mojom::PressureQuantizationPtr quantization,
+                       SetQuantizationCallback callback) override;
 
   // device::mojom::PressureClient implementation.
   void PressureStateChanged(device::mojom::PressureStatePtr state,
@@ -59,19 +61,17 @@ class CONTENT_EXPORT PressureServiceImpl
   PressureServiceImpl(RenderFrameHost* render_frame_host,
                       base::TimeDelta visible_observer_rate_limit);
 
-  void OnObserverRemoteDisconnected(mojo::RemoteSetElementId /*id*/);
+  void OnObserverRemoteDisconnected();
 
   void OnManagerRemoteDisconnected();
 
-  void DidAddObserver(
-      mojo::PendingRemote<blink::mojom::PressureObserver> observer,
-      AddObserverCallback callback,
-      bool success);
+  void DidBindObserver(BindObserverCallback callback, bool success);
 
-  // Resets the state used to dispatch updates to observers.
-  //
-  // Called when the quantizing scheme changes.
+  // Resets the state used to dispatch updates to observer.
   void ResetObserverState();
+
+  // Called when the quantizing scheme changes.
+  void ResetTimestampAndState();
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -95,10 +95,10 @@ class CONTENT_EXPORT PressureServiceImpl
   // Stored to implement rate-limiting.
   base::Time last_reported_timestamp_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  mojo::RemoteSet<blink::mojom::PressureObserver> observers_
+  mojo::Remote<blink::mojom::PressureObserver> observer_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  mojo::ReceiverSet<blink::mojom::PressureService> receivers_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  mojo::Receiver<blink::mojom::PressureService> GUARDED_BY_CONTEXT(
+      sequence_checker_) receiver_{this};
 
   mojo::Remote<device::mojom::PressureManager> remote_
       GUARDED_BY_CONTEXT(sequence_checker_);

@@ -48,7 +48,7 @@ promise_test(async t => {
 
   // Calling disconnect() from a detached iframe should not crash.
   observer.disconnect();
-}, 'PressureObserver.stop() on detached frame returns');
+}, 'PressureObserver.disconnect() on detached frame returns');
 
 promise_test(async t => {
   const iframe = document.createElement('iframe');

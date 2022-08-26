@@ -42,7 +42,7 @@ interface PressureObserver {
   OnUpdate(device.mojom.PressureState state);
 };
 
-// Result of PressureService.AddObserver().
+// Result of PressureService.BindObserver().
 enum PressureStatus {
   kOk,
 
@@ -59,24 +59,39 @@ enum PressureStatus {
   kSecurityError,
 };
 
+// Result of PressureService.SetQuantization().
+enum SetQuantizationStatus {
+  // A valid but same PressureQuantization is used.
+  kUnchanged,
+
+  // A valid but different PressureQuantization is used.
+  kChanged,
+};
+
 // The interface is implemented in the browser and consumed by renderers. The
 // interface is only accessible to frames (and not workers).  Each frame that
 // accesses the API creates a separate connection.
 interface PressureService {
   // Subscribes to updates on the device's PressureState.
   //
-  // The reported state will be quantized according to the `quantization`
-  // scheme. `quantization` must be a valid quantization scheme.
+  // If `status` is kOk, SetQuantization() should be called to set
+  // quantization scheme and the reported state will be quantized
+  // according to the quantization scheme.
   //
-  // `observer` is active (eligible for notifications) as soon as AddObserver()
-  // completes. Observation is stopped by disconnecting the mojo pipe.
-  //
+  // `observer` is active (eligible for notifications) as soon as
+  // SetQuantization() completes. Observation is stopped by
+  // disconnecting the mojo pipe.
+  BindObserver(pending_remote<PressureObserver> observer)
+      => (PressureStatus status);
+
   // All active observers belonging to a frame use the same `quantization`
   // scheme. If `quantization` differs from the scheme used by active observers
   // belonging to the same frame, the conflict is resolved by stopping all the
-  // frame's pre-existing active observers. In other words, after AddObserver()
-  // completes, the newly created observer will be the only active observer.
-  AddObserver(pending_remote<PressureObserver> observer,
-              PressureQuantization quantization)
-      => (PressureStatus status);
+  // frame's pre-existing active observers and call SetQuantization() to set
+  // the new `quantization`. In other words, after SetQuantization() completes,
+  // the newly created observer will be the only active observer.
+  //
+  // `quantization` must be a valid quantization scheme.
+  SetQuantization(PressureQuantization quantization)
+      => (SetQuantizationStatus status);
 };

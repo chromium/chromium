@@ -32,10 +32,10 @@ the platform-specific code's requirements.
 compute pressure state from the operating system. This interface is also
 a dependency injection point for tests.
 
-`content::PressureServiceImpl` serves all the mojo connections for a frame.
+`content::PressureServiceImpl` serves the mojo connection for a frame.
 Each instance is owned by a `content::RenderFrameHostImpl`. The class receives
 `device::mojom::PressureState` from `device::PressureManagerImpl` and
-broadcasts the information to the `blink::PressureObserver` instances.
+broadcasts the information to the `blink::PressureObserverManager` instance.
 
 `content::PressureQuantizer` implements the quantization logic that converts
 a high-entropy `device::mojom::PressureState` into a low-entropy one, which
@@ -46,3 +46,8 @@ quantization schema and produces quantized data suitable for frame.
 
 `blink::PressureObserver` implements bindings for the PressureObserver
 interface. There can be more than one PressureObserver per frame.
+
+`blink::PressureObserverManager` maintains the list of active observers.
+All active observers should use the same quantization schema. The class
+receives `device::mojom::PressureState` from `content::PressureServiceImpl`
+and broadcasts the information to active observers.

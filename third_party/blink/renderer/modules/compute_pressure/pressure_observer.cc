@@ -4,38 +4,24 @@
 
 #include "third_party/blink/renderer/modules/compute_pressure/pressure_observer.h"
 
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/mojom/compute_pressure/pressure_service.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_observer_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_record.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_source.h"
-#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/modules/compute_pressure/pressure_observer_manager.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/wtf/functional.h"
-#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
-PressureObserver::PressureObserver(ExecutionContext* execution_context,
-                                   V8PressureUpdateCallback* observer_callback,
+PressureObserver::PressureObserver(V8PressureUpdateCallback* observer_callback,
                                    PressureObserverOptions* normalized_options)
-    : ExecutionContextLifecycleStateObserver(execution_context),
-      observer_callback_(observer_callback),
-      normalized_options_(normalized_options),
-      pressure_service_(execution_context),
-      receiver_(this, execution_context) {
-  execution_context->GetBrowserInterfaceBroker().GetInterface(
-      pressure_service_.BindNewPipeAndPassReceiver(
-          execution_context->GetTaskRunner(TaskType::kUserInteraction)));
-  // ExecutionContextLifecycleStateObserver.
-  UpdateStateIfNeeded();
-}
+    : observer_callback_(observer_callback),
+      normalized_options_(normalized_options) {}
 
 PressureObserver::~PressureObserver() = default;
 
@@ -93,8 +79,7 @@ bool NormalizeObserverOptions(PressureObserverOptions& options,
 }  // namespace
 
 // static
-PressureObserver* PressureObserver::Create(ScriptState* script_state,
-                                           V8PressureUpdateCallback* callback,
+PressureObserver* PressureObserver::Create(V8PressureUpdateCallback* callback,
                                            PressureObserverOptions* options,
                                            ExceptionState& exception_state) {
   // TODO(crbug.com/1306803): Remove this check whenever bucketing is not
@@ -104,9 +89,7 @@ PressureObserver* PressureObserver::Create(ScriptState* script_state,
     return nullptr;
   }
 
-  ExecutionContext* execution_context = ExecutionContext::From(script_state);
-  return MakeGarbageCollected<PressureObserver>(execution_context, callback,
-                                                options);
+  return MakeGarbageCollected<PressureObserver>(callback, options);
 }
 
 // static
@@ -120,32 +103,19 @@ Vector<V8PressureSource> PressureObserver::supportedSources() {
 ScriptPromise PressureObserver::observe(ScriptState* script_state,
                                         V8PressureSource source,
                                         ExceptionState& exception_state) {
-  if (!pressure_service_.is_bound()) {
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  if (execution_context->IsContextDestroyed()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      "Compute pressure is not available");
+                                      "Execution context is detached.");
     return ScriptPromise();
   }
 
-  if (receiver_.is_bound())
-    return ScriptPromise::CastUndefined(script_state);
+  if (!manager_) {
+    LocalDOMWindow* window = To<LocalDOMWindow>(execution_context);
+    manager_ = PressureObserverManager::From(*window);
+  }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      ExecutionContext::From(script_state)
-          ->GetTaskRunner(TaskType::kMiscPlatformAPI);
-
-  auto mojo_options = mojom::blink::PressureQuantization::New(
-      normalized_options_->cpuUtilizationThresholds());
-
-  pressure_service_->AddObserver(
-      receiver_.BindNewPipeAndPassRemote(std::move(task_runner)),
-      std::move(mojo_options),
-      WTF::Bind(&PressureObserver::DidAddObserver, WrapWeakPersistent(this),
-                WrapPersistent(resolver)));
-  receiver_.set_disconnect_handler(WTF::Bind(
-      &PressureObserver::OnReceiverDisconnect, WrapWeakPersistent(this)));
-  return resolver->Promise();
+  return manager_->AddObserver(source, this, script_state, exception_state);
 }
 
 // TODO(crbug.com/1306819): Unobserve is supposed to only stop observing
@@ -153,35 +123,38 @@ ScriptPromise PressureObserver::observe(ScriptState* script_state,
 // For now, since "cpu" is the only source, unobserve() has the same
 // functionality as disconnect().
 void PressureObserver::unobserve(V8PressureSource source) {
+  // Wrong order of calls.
+  if (!manager_)
+    return;
+
   // TODO(crbug.com/1306819):
   // 1. observer needs to be dequeued from active observer list of
   // requested source.
   // 2. observer records from the source need to be removed from `records_`
-  // 3. receiver_.reset is only necessary when no source is being observed.
-
   // For now 'cpu' is the only source.
-
+  manager_->RemoveObserver(source, this);
   switch (source.AsEnum()) {
     case V8PressureSource::Enum::kCpu:
       records_.clear();
       break;
   }
-  receiver_.reset();
 }
 
 void PressureObserver::disconnect() {
-  receiver_.reset();
+  // Wrong order of calls.
+  if (!manager_)
+    return;
+
+  manager_->RemoveObserverFromAllSources(this);
   records_.clear();
 }
 
 void PressureObserver::Trace(blink::Visitor* visitor) const {
-  visitor->Trace(observer_callback_);
+  visitor->Trace(manager_);
   visitor->Trace(normalized_options_);
-  visitor->Trace(pressure_service_);
-  visitor->Trace(receiver_);
+  visitor->Trace(observer_callback_);
   visitor->Trace(records_);
   ScriptWrappable::Trace(visitor);
-  ExecutionContextLifecycleStateObserver::Trace(visitor);
 }
 
 void PressureObserver::OnUpdate(device::mojom::blink::PressureStatePtr state) {
@@ -199,51 +172,11 @@ void PressureObserver::OnUpdate(device::mojom::blink::PressureStatePtr state) {
   observer_callback_->InvokeAndReportException(this, record, this);
 }
 
-void PressureObserver::ContextDestroyed() {
-  receiver_.reset();
-}
-
 HeapVector<Member<PressureRecord>> PressureObserver::takeRecords() {
   // This method clears records_.
   HeapVector<Member<PressureRecord>, kMaxQueuedRecords> records;
   records.swap(records_);
   return records;
-}
-
-void PressureObserver::ContextLifecycleStateChanged(
-    mojom::blink::FrameLifecycleState state) {
-  // TODO(https://crbug.com/1186433): Disconnect and re-establish a connection
-  // when frozen or send a disconnect event.
-}
-
-void PressureObserver::OnReceiverDisconnect() {
-  receiver_.reset();
-}
-
-void PressureObserver::DidAddObserver(ScriptPromiseResolver* resolver,
-                                      mojom::blink::PressureStatus status) {
-  ScriptState* script_state = resolver->GetScriptState();
-  if (!script_state->ContextIsValid())
-    return;
-  ScriptState::Scope scope(script_state);
-
-  switch (status) {
-    case mojom::blink::PressureStatus::kOk:
-      break;
-    case mojom::blink::PressureStatus::kNotSupported:
-      resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-          script_state->GetIsolate(), DOMExceptionCode::kNotSupportedError,
-          "Not available on this platform."));
-      return;
-    case mojom::blink::PressureStatus::kSecurityError:
-      resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-          script_state->GetIsolate(), DOMExceptionCode::kSecurityError,
-          "Security error. Make sure the page is visible and that observation "
-          "is not requested from a fenced frame."));
-      return;
-  }
-
-  resolver->Resolve();
 }
 
 }  // namespace blink
