@@ -36,7 +36,6 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -102,7 +101,6 @@ public class ConfirmManagedSyncDataDialogTest {
 
     @Test
     @LargeTest
-    @DisabledTest(message = "https://crbug.com/1341379")
     public void testDialogIsDismissedAndOnCancelNotCalledWhenRecreated() {
         showManagedSyncDataDialog();
         onView(withText(R.string.sign_in_managed_account))
