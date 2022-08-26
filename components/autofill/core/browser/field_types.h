@@ -284,15 +284,8 @@ bool IsFillableFieldType(ServerFieldType field_type);
 
 // Returns a StringPiece describing |type|. As the StringPiece points to a
 // static string, you don't need to worry about memory deallocation.
-//
-// The returned string is intentionally kept in the old constant style
-// ("HTML_TYPE_FOO" rather than "kFoo" or "HtmlFieldType::kFoo") because
-// external tools may depend on it.
-base::StringPiece FieldTypeToStringPiece(HtmlFieldType type);
-
-// Returns a StringPiece describing |type|. As the StringPiece points to a
-// static string, you don't need to worry about memory deallocation.
 base::StringPiece FieldTypeToStringPiece(ServerFieldType type);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FIELD_TYPES_H_

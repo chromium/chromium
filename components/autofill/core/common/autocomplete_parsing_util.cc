@@ -201,10 +201,9 @@ bool operator!=(const AutocompleteParsingResult& a,
 }
 
 std::string AutocompleteParsingResult::ToString() const {
-  return base::StrCat(
-      {"section='", section, "' ", "mode='",
-       std::string(HtmlFieldModeToStringPiece(mode)), "' ", "field_type='",
-       base::NumberToString(static_cast<int>(field_type)), "'"});
+  return base::StrCat({"section='", section, "' ", "mode='",
+                       HtmlFieldModeToStringPiece(mode), "' ", "field_type='",
+                       FieldTypeToStringPiece(field_type), "'"});
 }
 
 HtmlFieldType FieldTypeFromAutocompleteAttributeValue(

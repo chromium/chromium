@@ -14,6 +14,14 @@ namespace autofill {
 using HtmlFieldMode = ::autofill::mojom::HtmlFieldMode;
 using HtmlFieldType = ::autofill::mojom::HtmlFieldType;
 
+// Returns a StringPiece describing `type`. As the StringPiece points to a
+// static string, you don't need to worry about memory deallocation.
+//
+// The returned string is intentionally kept in the old constant style
+// ("HTML_TYPE_FOO" rather than "kFoo" or "HtmlFieldType::kFoo") because
+// external tools may depend on it.
+base::StringPiece FieldTypeToStringPiece(HtmlFieldType type);
+
 // Maps HtmlFieldMode::kBilling and HtmlFieldMode::kShipping to
 // their string constants, as specified in the autocomplete standard.
 base::StringPiece HtmlFieldModeToStringPiece(HtmlFieldMode mode);
