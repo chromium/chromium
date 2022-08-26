@@ -63,8 +63,10 @@ class IntentPickerTabHelper
                            IntentPickerIconLoaderCallback callback);
 
   // Sets a OnceClosure callback which will be called next time the icon is
-  // updated.
-  void SetIconUpdateCallbackForTesting(base::OnceClosure callback);
+  // updated. If include_latest_navigation is true, and the latest navigation
+  // was finished, the callback is called immediately.
+  void SetIconUpdateCallbackForTesting(base::OnceClosure callback,
+                                       bool include_latest_navigation = false);
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
@@ -90,6 +92,8 @@ class IntentPickerTabHelper
   void ShowOrHideIconInternal(bool should_show_icon);
 
   // content::WebContentsObserver:
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
@@ -101,6 +105,7 @@ class IntentPickerTabHelper
   const raw_ptr<web_app::WebAppInstallManager> install_manager_;
 
   bool should_show_icon_ = false;
+  bool icon_resolved_after_last_navigation_ = false;
   url::Origin last_shown_origin_;
   // True if the icon should be shown as in an expanded chip style due to usage
   // on this origin.

@@ -50,6 +50,7 @@ enum class Site {
   kWco,
   kIsolated,
   kFileHandler,
+  kNoServiceWorker,
 };
 
 enum class InstallableSite {
@@ -60,6 +61,7 @@ enum class InstallableSite {
   kWco,
   kIsolated,
   kFileHandler,
+  kNoServiceWorker,
 };
 
 enum class Title { kStandaloneOriginal, kStandaloneUpdated };
@@ -98,16 +100,12 @@ enum class FilesOptions {
 // each state-change action.
 
 struct TabState {
-  TabState(GURL tab_url, bool is_tab_installable)
-      : url(std::move(tab_url)), is_installable(is_tab_installable) {}
+  explicit TabState(GURL tab_url) : url(std::move(tab_url)) {}
   TabState(const TabState&) = default;
   TabState& operator=(const TabState&) = default;
-  bool operator==(const TabState& other) const {
-    return url == other.url && is_installable == other.is_installable;
-  }
+  bool operator==(const TabState& other) const { return url == other.url; }
 
   GURL url;
-  bool is_installable;
 };
 
 struct BrowserState {
@@ -115,7 +113,6 @@ struct BrowserState {
                base::flat_map<content::WebContents*, TabState> tab_state,
                content::WebContents* active_web_contents,
                const AppId& app_id,
-               bool install_icon_visible,
                bool launch_icon_visible);
   ~BrowserState();
   BrowserState(const BrowserState&);
@@ -126,7 +123,6 @@ struct BrowserState {
   content::WebContents* active_tab;
   // If this isn't an app browser, `app_id` is empty.
   AppId app_id;
-  bool install_icon_shown;
   bool launch_icon_shown;
 };
 
@@ -276,7 +272,6 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CheckCreateShortcutNotShown();
   void CheckCreateShortcutShown();
   void CheckWindowModeIsNotVisibleInAppSettings(Site site);
-  void CheckInstallable();
   void CheckInstallIconShown();
   void CheckInstallIconNotShown();
   void CheckLaunchIconShown();

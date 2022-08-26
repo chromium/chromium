@@ -122,6 +122,16 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, SwitchIncognitoProfile) {
   helper_.CheckCreateShortcutNotShown();
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppIntegration,
+                       AppsWithoutServiceWorkerCanBeInstalledViaMenu) {
+  helper_.InstallMenuOption(InstallableSite::kNoServiceWorker);
+  helper_.CheckWindowCreated();
+  helper_.CheckAppInListWindowed(Site::kNoServiceWorker);
+  helper_.CheckAppNavigationIsStartUrl();
+  helper_.NavigateBrowser(Site::kNoServiceWorker);
+  helper_.CheckLaunchIconShown();
+}
+
 // Generated tests:
 
 IN_PROC_BROWSER_TEST_F(

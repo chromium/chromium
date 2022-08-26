@@ -82,6 +82,14 @@ void LoadSingleAppIcon(Profile* profile,
       std::move(callback));
 }
 
+bool IsNavigatingToNewSite(content::NavigationHandle* navigation_handle) {
+  return navigation_handle->IsInPrimaryMainFrame() &&
+         navigation_handle->HasCommitted() &&
+         (!navigation_handle->IsSameDocument() ||
+          navigation_handle->GetURL() !=
+              navigation_handle->GetPreviousPrimaryMainFrameURL());
+}
+
 }  // namespace
 
 IntentPickerTabHelper::~IntentPickerTabHelper() = default;
@@ -176,7 +184,12 @@ void IntentPickerTabHelper::LoadAppIcons(
 }
 
 void IntentPickerTabHelper::SetIconUpdateCallbackForTesting(
-    base::OnceClosure callback) {
+    base::OnceClosure callback,
+    bool include_latest_navigation) {
+  if (icon_resolved_after_last_navigation_ && include_latest_navigation) {
+    std::move(callback).Run();
+    return;
+  }
   icon_update_closure_ = std::move(callback);
 }
 
@@ -276,8 +289,16 @@ void IntentPickerTabHelper::ShowOrHideIconInternal(bool should_show_icon) {
     return;
   browser->window()->UpdatePageActionIcon(PageActionIconType::kIntentPicker);
 
+  icon_resolved_after_last_navigation_ = true;
   if (icon_update_closure_)
     std::move(icon_update_closure_).Run();
+}
+
+void IntentPickerTabHelper::DidStartNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (IsNavigatingToNewSite(navigation_handle)) {
+    icon_resolved_after_last_navigation_ = false;
+  }
 }
 
 void IntentPickerTabHelper::DidFinishNavigation(
@@ -290,11 +311,7 @@ void IntentPickerTabHelper::DidFinishNavigation(
   if (!web_contents()) {
     return;
   }
-  if (navigation_handle->IsInPrimaryMainFrame() &&
-      navigation_handle->HasCommitted() &&
-      (!navigation_handle->IsSameDocument() ||
-       navigation_handle->GetURL() !=
-           navigation_handle->GetPreviousPrimaryMainFrameURL())) {
+  if (IsNavigatingToNewSite(navigation_handle)) {
     bool is_valid_page = navigation_handle->GetURL().SchemeIsHTTPOrHTTPS() &&
                          !navigation_handle->IsErrorPage();
     if (is_valid_page) {

@@ -89,6 +89,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/webapps/browser/features.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
@@ -168,6 +169,8 @@ Site InstallableSiteToSite(InstallableSite site) {
       return Site::kIsolated;
     case InstallableSite::kFileHandler:
       return Site::kFileHandler;
+    case InstallableSite::kNoServiceWorker:
+      return Site::kNoServiceWorker;
   }
 }
 
@@ -271,6 +274,13 @@ base::flat_map<Site, SiteConfig> g_site_configs = {
       .app_name = "File Handler",
       .wco_not_enabled_title = u"File Handler",
       .icon_color = SK_ColorBLACK}},
+    {Site::kNoServiceWorker,
+     {.relative_scope_url = "/web_apps/site_no_service_worker/",
+      .relative_start_url = "/web_apps/site_no_service_worker/basic.html",
+      .relative_manifest_id = "web_apps/site_no_service_worker/basic.html",
+      .app_name = "Site NoServiceWorker",
+      .wco_not_enabled_title = u"Site NoServiceWorker",
+      .icon_color = SK_ColorGREEN}},
 };
 
 struct DisplayConfig {
@@ -501,20 +511,17 @@ BrowserState::BrowserState(
     base::flat_map<content::WebContents*, TabState> tab_state,
     content::WebContents* active_web_contents,
     const AppId& app_id,
-    bool install_icon_visible,
     bool launch_icon_visible)
     : browser(browser_ptr),
       tabs(std::move(tab_state)),
       active_tab(active_web_contents),
       app_id(app_id),
-      install_icon_shown(install_icon_visible),
       launch_icon_shown(launch_icon_visible) {}
 BrowserState::~BrowserState() = default;
 BrowserState::BrowserState(const BrowserState&) = default;
 bool BrowserState::operator==(const BrowserState& other) const {
   return browser == other.browser && tabs == other.tabs &&
          active_tab == other.active_tab && app_id == other.app_id &&
-         install_icon_shown == other.install_icon_shown &&
          launch_icon_shown == other.launch_icon_shown;
 }
 
@@ -590,7 +597,6 @@ std::ostream& operator<<(std::ostream& os, const StateSnapshot& snapshot) {
         base::Value::Dict tab_dict;
         const TabState& tab = tab_pair.second;
         tab_dict.Set("url", tab.url.spec());
-        tab_dict.Set("is_installable", tab.is_installable);
         tab_dicts.Set(base::StringPrintf("%p", tab_pair.first),
                       std::move(tab_dict));
       }
@@ -598,7 +604,6 @@ std::ostream& operator<<(std::ostream& os, const StateSnapshot& snapshot) {
       browser_dict.Set("active_tab",
                        base::StringPrintf("%p", browser.active_tab));
       browser_dict.Set("app_id", browser.app_id);
-      browser_dict.Set("install_icon_shown", browser.install_icon_shown);
       browser_dict.Set("launch_icon_shown", browser.launch_icon_shown);
 
       browsers_dict.Set(base::StringPrintf("%p", browser_pair.first),
@@ -856,6 +861,11 @@ void WebAppIntegrationTestDriver::InstallOmniboxIcon(InstallableSite site) {
   MaybeNavigateTabbedBrowserInScope(InstallableSiteToSite(site));
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(true);
 
+  auto* app_banner_manager =
+      webapps::TestAppBannerManagerDesktop::FromWebContents(
+          GetCurrentTab(browser()));
+  app_banner_manager->WaitForInstallableCheck();
+
   web_app::AppId app_id;
   base::RunLoop run_loop;
   web_app::SetInstalledCallbackForTesting(base::BindLambdaForTesting(
@@ -1054,12 +1064,8 @@ void WebAppIntegrationTestDriver::LaunchFromChromeApps(Site site) {
     ui_test_utils::UrlLoadObserver url_observer(
         app_registrar.GetAppLaunchUrl(app_id),
         content::NotificationService::AllSources());
-    Browser* browser = LaunchBrowserForWebAppInTab(profile(), app_id);
+    LaunchBrowserForWebAppInTab(profile(), app_id);
     url_observer.Wait();
-    auto* app_banner_manager =
-        webapps::TestAppBannerManagerDesktop::FromWebContents(
-            GetCurrentTab(browser));
-    app_banner_manager->WaitForInstallableCheck();
   } else {
     app_browser_ = LaunchWebAppBrowserAndWait(profile(), app_id);
     active_app_id_ = app_id;
@@ -1144,10 +1150,6 @@ void WebAppIntegrationTestDriver::LaunchFromPlatformShortcut(Site site) {
     EXPECT_EQ(app_browser()->app_controller()->app_id(), app_id);
   } else {
     LaunchAppStartupBrowserCreator(app_id);
-    auto* app_banner_manager =
-        webapps::TestAppBannerManagerDesktop::FromWebContents(
-            GetCurrentTab(browser()));
-    app_banner_manager->WaitForInstallableCheck();
   }
   AfterStateChangeAction();
 #else
@@ -1980,37 +1982,28 @@ void WebAppIntegrationTestDriver::CheckWindowModeIsNotVisibleInAppSettings(
 #endif
 }
 
-void WebAppIntegrationTestDriver::CheckInstallable() {
-  if (!BeforeStateCheckAction(__FUNCTION__))
-    return;
-  absl::optional<BrowserState> browser_state = GetStateForBrowser(
-      after_state_change_action_state_.get(), profile(), browser());
-  ASSERT_TRUE(browser_state.has_value());
-  absl::optional<TabState> active_tab =
-      GetStateForActiveTab(browser_state.value());
-  ASSERT_TRUE(active_tab.has_value());
-  EXPECT_TRUE(active_tab->is_installable);
-  AfterStateCheckAction();
-}
-
 void WebAppIntegrationTestDriver::CheckInstallIconShown() {
+  // Currently this function does not support tests that check install icons
+  // for sites that have a manifest but no service worker.
   if (!BeforeStateCheckAction(__FUNCTION__))
     return;
-  absl::optional<BrowserState> browser_state = GetStateForBrowser(
-      after_state_change_action_state_.get(), profile(), browser());
-  ASSERT_TRUE(browser_state.has_value());
-  EXPECT_TRUE(browser_state->install_icon_shown);
+  auto* app_banner_manager =
+      webapps::TestAppBannerManagerDesktop::FromWebContents(
+          GetCurrentTab(browser()));
+  app_banner_manager->WaitForInstallableCheck();
   EXPECT_TRUE(pwa_install_view()->GetVisible());
   AfterStateCheckAction();
 }
 
 void WebAppIntegrationTestDriver::CheckInstallIconNotShown() {
+  // Currently this function does not support tests that check install icons
+  // for sites that have a manifest but no service worker.
   if (!BeforeStateCheckAction(__FUNCTION__))
     return;
-  absl::optional<BrowserState> browser_state = GetStateForBrowser(
-      after_state_change_action_state_.get(), profile(), browser());
-  ASSERT_TRUE(browser_state.has_value());
-  EXPECT_FALSE(browser_state->install_icon_shown);
+  auto* app_banner_manager =
+      webapps::TestAppBannerManagerDesktop::FromWebContents(
+          GetCurrentTab(browser()));
+  app_banner_manager->WaitForInstallableCheck();
   EXPECT_FALSE(pwa_install_view()->GetVisible());
   AfterStateCheckAction();
 }
@@ -2462,19 +2455,20 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
         content::WebContents* tab = tabs->GetWebContentsAt(i);
         DCHECK(tab);
         GURL url = tab->GetURL();
-        auto* app_banner_manager =
-            webapps::TestAppBannerManagerDesktop::FromWebContents(tab);
-        bool installable = app_banner_manager->WaitForInstallableCheck();
-
-        tab_state_map.emplace(tab, TabState(url, installable));
+        tab_state_map.emplace(tab, TabState(url));
       }
       content::WebContents* active_tab = tabs->GetActiveWebContents();
+      bool launch_icon_shown = false;
       bool is_app_browser = AppBrowserController::IsWebApp(browser);
-      bool install_icon_visible = false;
-      bool launch_icon_visible = false;
       if (!is_app_browser && active_tab != nullptr) {
-        install_icon_visible = pwa_install_view()->GetVisible();
-        launch_icon_visible = intent_picker_view()->GetVisible();
+        auto* tab_helper = IntentPickerTabHelper::FromWebContents(active_tab);
+        base::RunLoop run_loop;
+        tab_helper->SetIconUpdateCallbackForTesting(
+            run_loop.QuitClosure(),
+            /*include_latest_navigation*/ true);
+        run_loop.Run();
+
+        launch_icon_shown = intent_picker_view()->GetVisible();
       }
       AppId app_id;
       if (AppBrowserController::IsWebApp(browser))
@@ -2482,7 +2476,7 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
 
       browser_state.emplace(
           browser, BrowserState(browser, tab_state_map, active_tab, app_id,
-                                install_icon_visible, launch_icon_visible));
+                                launch_icon_shown));
     }
 
     WebAppRegistrar& registrar = GetProviderForProfile(profile)->registrar();
@@ -2719,8 +2713,6 @@ void WebAppIntegrationTestDriver::NavigateTabbedBrowserToSite(
     const GURL& url,
     NavigationMode mode) {
   DCHECK(browser());
-  content::WebContents* web_contents = GetCurrentTab(browser());
-  bool is_incognito = web_contents->GetBrowserContext()->IsOffTheRecord();
   if (mode == NavigationMode::kNewTab) {
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(url), WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -2728,11 +2720,6 @@ void WebAppIntegrationTestDriver::NavigateTabbedBrowserToSite(
             ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   } else {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  }
-  if (!is_incognito) {
-    auto* app_banner_manager =
-        webapps::TestAppBannerManagerDesktop::FromWebContents(web_contents);
-    app_banner_manager->WaitForInstallableCheck();
   }
 }
 
