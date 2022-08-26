@@ -18,8 +18,6 @@ import android.provider.Settings.SettingNotFoundException;
 import android.view.Display;
 import android.view.Menu;
 import android.view.View;
-import android.view.ViewTreeObserver;
-import android.view.ViewTreeObserver.OnPreDrawListener;
 import android.view.WindowManager;
 
 import androidx.annotation.CallSuper;
@@ -187,7 +185,6 @@ public abstract class AsyncInitializationActivity
         if (!enableInstantStart) {
             triggerLayoutInflation();
         }
-        if (mLaunchBehindWorkaround != null) mLaunchBehindWorkaround.onSetContentView();
     }
 
     /** Controls the parameter of {@link NativeInitializationController#startBackgroundTasks}.*/
@@ -512,7 +509,6 @@ public abstract class AsyncInitializationActivity
         mFirstResumePending = false;
 
         mNativeInitializationController.onResume();
-        if (mLaunchBehindWorkaround != null) mLaunchBehindWorkaround.onResume();
     }
 
     @CallSuper
@@ -520,7 +516,6 @@ public abstract class AsyncInitializationActivity
     public void onPause() {
         mNativeInitializationController.onPause();
         super.onPause();
-        if (mLaunchBehindWorkaround != null) mLaunchBehindWorkaround.onPause();
     }
 
     @CallSuper
@@ -858,65 +853,6 @@ public abstract class AsyncInitializationActivity
      */
     public MultiWindowModeStateDispatcher getMultiWindowModeStateDispatcher() {
         return mMultiWindowModeStateDispatcher;
-    }
-
-    /**
-     * Lollipop (pre-MR1) makeTaskLaunchBehind() workaround.
-     *
-     * Our activity's surface is destroyed at the end of the new activity animation
-     * when ActivityOptions.makeTaskLaunchBehind() is used, which causes a crash.
-     * Making everything invisible when paused prevents the crash, since view changes
-     * will not trigger draws to the missing surface. However, we need to wait until
-     * after the first draw to make everything invisible, as the activity launch
-     * animation needs a full frame (or it will delay the animation excessively).
-     */
-    private final LaunchBehindWorkaround mLaunchBehindWorkaround =
-            (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP)
-                    ? new LaunchBehindWorkaround()
-                    : null;
-
-    private class LaunchBehindWorkaround {
-        private boolean mPaused;
-
-        private View getDecorView() {
-            return getWindow().getDecorView();
-        }
-
-        private ViewTreeObserver getViewTreeObserver() {
-            return getDecorView().getViewTreeObserver();
-        }
-
-        private void onPause() {
-            mPaused = true;
-        }
-
-        public void onResume() {
-            mPaused = false;
-            getDecorView().setVisibility(View.VISIBLE);
-        }
-
-        public void onSetContentView() {
-            getViewTreeObserver().addOnPreDrawListener(mPreDrawListener);
-        }
-
-        // Note, we probably want onDrawListener here, but it isn't being called
-        // when I add this to the decorView. However, it should be the same for
-        // this purpose as long as no other pre-draw listener returns false.
-        private final OnPreDrawListener mPreDrawListener = new OnPreDrawListener() {
-            @Override
-            public boolean onPreDraw() {
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mPaused) {
-                            getDecorView().setVisibility(View.GONE);
-                        }
-                        getViewTreeObserver().removeOnPreDrawListener(mPreDrawListener);
-                    }
-                });
-                return true;
-            }
-        };
     }
 
     @Override
