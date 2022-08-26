@@ -89,6 +89,15 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
     InterningIndex<TypeList<uintptr_t>, SizeList<1024>> interned_modules_{};
   };
 
+  // Different kinds of unwinders that are used for stack sampling.
+  enum class UnwinderType {
+    kUnknown,
+    kArm64Android,
+    kCfiAndroid,
+    kCustomAndroid,
+    kDefault
+  };
+
   // This class will receive the sampling profiler stackframes and output them
   // to the chrome trace via an event. Exposed for testing.
   class COMPONENT_EXPORT(TRACING_CPP) TracingProfileBuilder
@@ -121,6 +130,8 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
     void SetTraceWriter(std::unique_ptr<perfetto::TraceWriter> trace_writer);
 #endif
 
+    void SetUnwinderType(TracingSamplerProfiler::UnwinderType unwinder_type);
+
    private:
     struct BufferedSample {
       BufferedSample(base::TimeTicks, std::vector<base::Frame>&&);
@@ -137,6 +148,9 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
     };
 
     void WriteSampleToTrace(const BufferedSample& sample);
+    // Emits an instant event capturing information about the kind of unwinder
+    // used for stack sampling.
+    void EmitUnwinderTypeTraceEvent() const;
 
     // TODO(ssid): Consider using an interning scheme to reduce memory usage
     // and increase the sample size.
@@ -166,6 +180,8 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
     uint32_t last_incremental_state_reset_id_ = 0;
     base::TimeTicks last_timestamp_;
     base::RepeatingClosure sample_callback_for_testing_;
+    // Which type of unwinder is being used for stack sampling?
+    UnwinderType unwinder_type_ = UnwinderType::kUnknown;
   };
 
   using CoreUnwindersCallback =
