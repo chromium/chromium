@@ -617,6 +617,14 @@ void V4L2VideoEncodeAccelerator::Flush(FlushCallback flush_callback) {
 void V4L2VideoEncodeAccelerator::FlushTask(FlushCallback flush_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
 
+  if (encoder_state_ == kInitialized) {
+    // Flush() is called before either Encode() or UseOutputBitstreamBuffer() is
+    // called. Just return as successful.
+    child_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(std::move(flush_callback), true));
+    return;
+  }
+
   if (flush_callback_ || encoder_state_ != kEncoding) {
     VLOGF(1) << "Flush failed: there is a pending flush, "
              << "or VideoEncodeAccelerator is not in kEncoding state";
@@ -793,6 +801,12 @@ void V4L2VideoEncodeAccelerator::EncodeTask(scoped_refptr<VideoFrame> frame,
     // not been called yet.
     if (input_buffer_map_.empty() && !CreateInputBuffers())
       return;
+
+    if (encoder_state_ == kInitialized) {
+      if (!StartDevicePoll())
+        return;
+      encoder_state_ = kEncoding;
+    }
   }
 
   if (image_processor_) {
