@@ -12,6 +12,7 @@ source_set("connectivity") {
     "//components/cbor",
     "//crypto",
     "//device/bluetooth",
+    "//ui/chromeos",
     "//url",
   ]
   sources = [
@@ -52,6 +53,7 @@ source_set("unit_tests") {
     ":connectivity",
     "//base",
     "//base/test:test_support",
+    "//chromeos/constants",
     "//components/cbor",
     "//device/bluetooth:mocks",
     "//url",

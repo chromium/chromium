@@ -11,11 +11,14 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fast_pair_advertiser.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "ui/chromeos/devicetype_utils.h"
 
 namespace ash::quick_start {
 
@@ -39,7 +42,7 @@ constexpr uint8_t kEndpointInfoDeviceType = 0;
 // Boolean field indicating to Smart Setup whether the client is Quick Start.
 constexpr uint8_t kEndpointInfoIsQuickStart = 1;
 
-constexpr char kEndpointInfoDefaultDisplayName[] = "Chromebook";
+constexpr size_t kMaxEndpointInfoDisplayNameLength = 18;
 
 // Derive three decimal digits from the RandomSessionId.
 std::string GetDisplayNameSessionIdDigits(const RandomSessionId& session_id) {
@@ -57,16 +60,18 @@ std::string GetDisplayNameSessionIdDigits(const RandomSessionId& session_id) {
 // - If less than 18 bytes, must be null-terminated
 std::vector<uint8_t> GetEndpointInfoDisplayNameBytes(
     const RandomSessionId& session_id) {
-  std::string display_name = kEndpointInfoDefaultDisplayName;
+  std::string display_name = base::UTF16ToUTF8(ui::GetChromeOSDeviceName());
   std::string suffix = " (" + GetDisplayNameSessionIdDigits(session_id) + ")";
 
-  // TODO(b/234655072): Before appending suffix, vary |display_name| based on
-  // device type, e.g. Chromebook, Chromebox, Chromebase, etc.
+  base::TruncateUTF8ToByteSize(
+      display_name, kMaxEndpointInfoDisplayNameLength - suffix.size(),
+      &display_name);
   display_name += suffix;
 
   std::vector<uint8_t> display_name_bytes(display_name.begin(),
                                           display_name.end());
-  display_name_bytes.push_back(0);
+  if (display_name_bytes.size() < kMaxEndpointInfoDisplayNameLength)
+    display_name_bytes.push_back(0);
 
   return display_name_bytes;
 }

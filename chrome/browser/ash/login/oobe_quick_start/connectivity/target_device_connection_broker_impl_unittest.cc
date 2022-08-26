@@ -7,10 +7,12 @@
 #include <array>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fast_pair_advertiser.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
+#include "chromeos/constants/devicetype.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -26,9 +28,48 @@ constexpr size_t kMaxEndpointInfoDisplayNameLength = 18;
 // code is (0x135e % 1000) = 958.
 constexpr std::array<uint8_t, 10> kRandomSessionId = {
     0x13, 0x5e, 0xfb, 0x0f, 0x3a, 0x20, 0x06, 0xbd, 0xbf, 0x95};
-constexpr char kExpectedEndpointInfoDisplayName[] = "Chromebook (958)";
+
+struct EndpointInfoTestCase {
+  chromeos::DeviceType device_type;
+  std::string expected_display_name;
+};
+
+const EndpointInfoTestCase kEndpointInfoTestCases[] = {
+    {chromeos::DeviceType::kChromebook, "Chromebook (958)"},
+    {chromeos::DeviceType::kChromebox, "Chromebox (958)"},
+    {chromeos::DeviceType::kChromebit, "Chromebit (958)"},
+    {chromeos::DeviceType::kChromebase, "Chromebase (958)"},
+    {chromeos::DeviceType::kUnknown, "Chrome devic (958)"},
+};
 
 using testing::NiceMock;
+
+// Ensures that the device name retrieved for the EndpointInfo display name will
+// include the specified device type, e.g. kChromebook will result in a device
+// name like "Chromebook (958)".
+void SetDeviceType(chromeos::DeviceType device_type) {
+  switch (device_type) {
+    case chromeos::DeviceType::kChromebook:
+      base::CommandLine::ForCurrentProcess()->InitFromArgv(
+          {"", "--form-factor=CHROMEBOOK"});
+      break;
+    case chromeos::DeviceType::kChromebox:
+      base::CommandLine::ForCurrentProcess()->InitFromArgv(
+          {"", "--form-factor=CHROMEBOX"});
+      break;
+    case chromeos::DeviceType::kChromebit:
+      base::CommandLine::ForCurrentProcess()->InitFromArgv(
+          {"", "--form-factor=CHROMEBIT"});
+      break;
+    case chromeos::DeviceType::kChromebase:
+      base::CommandLine::ForCurrentProcess()->InitFromArgv(
+          {"", "--form-factor=CHROMEBASE"});
+      break;
+    case chromeos::DeviceType::kUnknown:
+      base::CommandLine::ForCurrentProcess()->InitFromArgv({"", ""});
+      break;
+  }
+}
 
 // Allows us to delay returning a Bluetooth adapter until after ReturnAdapter()
 // is called. Used for testing how the connection broker behaves before the
@@ -236,6 +277,16 @@ class TargetDeviceConnectionBrokerImplTest : public testing::Test {
       this};
 };
 
+class TargetDeviceConnectionBrokerImplEndpointInfoTest
+    : public TargetDeviceConnectionBrokerImplTest,
+      public testing::WithParamInterface<EndpointInfoTestCase> {
+ public:
+  void SetUp() override {
+    SetDeviceType(GetParam().device_type);
+    TargetDeviceConnectionBrokerImplTest::SetUp();
+  }
+};
+
 TEST_F(TargetDeviceConnectionBrokerImplTest, GetFeatureSupportStatus) {
   EXPECT_EQ(
       TargetDeviceConnectionBrokerImpl::FeatureSupportStatus::kUndetermined,
@@ -389,7 +440,7 @@ TEST_F(TargetDeviceConnectionBrokerImplTest, StopFastPairAdvertising) {
   EXPECT_TRUE(stop_advertising_callback_called_);
 }
 
-TEST_F(TargetDeviceConnectionBrokerImplTest, GenerateEndpointInfo) {
+TEST_P(TargetDeviceConnectionBrokerImplEndpointInfoTest, GenerateEndpointInfo) {
   std::vector<uint8_t> endpoint_info = GenerateEndpointInfo();
 
   // Points to the field being parsed.
@@ -422,7 +473,7 @@ TEST_F(TargetDeviceConnectionBrokerImplTest, GenerateEndpointInfo) {
   }
   std::string display_name =
       std::string(display_name_bytes.begin(), display_name_bytes.end());
-  EXPECT_EQ(kExpectedEndpointInfoDisplayName, display_name);
+  EXPECT_EQ(GetParam().expected_display_name, display_name);
   i += j;
 
   ASSERT_GT(endpoint_info.size(), i);
@@ -451,5 +502,9 @@ TEST_F(TargetDeviceConnectionBrokerImplTest, GenerateEndpointInfo) {
   // There should be no more endpoint info after the isQuickStart field.
   EXPECT_EQ(endpoint_info.size(), i + 1);
 }
+
+INSTANTIATE_TEST_SUITE_P(TargetDeviceConnectionBrokerImplTest,
+                         TargetDeviceConnectionBrokerImplEndpointInfoTest,
+                         testing::ValuesIn(kEndpointInfoTestCases));
 
 }  // namespace ash::quick_start
