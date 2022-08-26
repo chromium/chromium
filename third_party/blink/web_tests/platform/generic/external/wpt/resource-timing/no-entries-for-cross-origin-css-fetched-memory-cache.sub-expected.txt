@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Make sure that resources fetched by cross origin CSS are not in the timeline. assert_equals: Font should not be in timeline expected 0 but got 1
+Harness: the test ran to completion.
+
