@@ -2353,7 +2353,6 @@ crbug.com/1050754 external/wpt/html/browsers/history/joint-session-history/joint
 crbug.com/1050754 external/wpt/html/browsers/history/the-history-interface/001.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/html/browsers/history/the-history-interface/007.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/html/browsers/history/the-history-interface/history_go_undefined.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/html/browsers/history/the-history-interface/history_properties_only_fully_active.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/html/browsers/history/the-location-interface/allow_prototype_cycle_through_location.sub.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/html/browsers/history/the-location-interface/assign_after_load.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/html/browsers/history/the-location-interface/assign_before_load.html [ Failure Pass ]

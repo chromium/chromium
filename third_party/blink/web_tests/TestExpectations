@@ -3264,6 +3264,7 @@ crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/preren
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Win10.20h2 ] wpt_internal/orientation-event/motion/page-visibility.https.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-conditional/at-supports-font-format-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-conditional/at-supports-font-tech-001.html [ Failure ]
 crbug.com/626703 external/wpt/html/semantics/embedded-content/the-img-element/image-loading-lazy-zero-intersection-area.html [ Timeout ]
