@@ -44,7 +44,7 @@ void PendingWriteStore::AddPairedDevice(const std::string& mac_address,
     return;
   }
   DictionaryPrefUpdate update(pref_service, kFastPairPendingWritesPref);
-  update->SetStringKey(mac_address, hex_model_id);
+  update->GetDict().Set(mac_address, hex_model_id);
 }
 
 std::vector<PendingWriteStore::PendingWrite>
@@ -76,7 +76,7 @@ void PendingWriteStore::OnPairedDeviceSaved(const std::string& mac_address) {
   }
 
   DictionaryPrefUpdate update(pref_service, kFastPairPendingWritesPref);
-  update->RemoveKey(mac_address);
+  update->GetDict().Remove(mac_address);
 }
 
 void PendingWriteStore::DeletePairedDevice(const std::string& hex_account_key) {
@@ -87,7 +87,7 @@ void PendingWriteStore::DeletePairedDevice(const std::string& hex_account_key) {
     return;
   }
   ListPrefUpdate update(pref_service, kFastPairPendingDeletesPref);
-  update->Append(hex_account_key);
+  update->GetList().Append(hex_account_key);
 }
 
 std::vector<const std::string> PendingWriteStore::GetPendingDeletes() {
@@ -119,7 +119,7 @@ void PendingWriteStore::OnPairedDeviceDeleted(
   }
 
   ListPrefUpdate update(pref_service, kFastPairPendingDeletesPref);
-  update->EraseListValue(base::Value(hex_account_key));
+  update->GetList().EraseValue(base::Value(hex_account_key));
 }
 
 }  // namespace quick_pair
