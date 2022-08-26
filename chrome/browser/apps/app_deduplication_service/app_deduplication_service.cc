@@ -5,20 +5,25 @@
 #include <utility>
 
 #include "chrome/browser/apps/app_deduplication_service/app_deduplication_service.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 
 namespace apps::deduplication {
 
-AppDeduplicationService::AppDeduplicationService(Profile* profile) {
+AppDeduplicationService::AppDeduplicationService(Profile* profile)
+    : profile_(profile) {
   app_provisioning_data_observeration_.Observe(
       AppProvisioningDataManager::Get());
+  app_registry_cache_observation_.Observe(
+      &apps::AppServiceProxyFactory::GetForProfile(profile)
+           ->AppRegistryCache());
 }
 
 AppDeduplicationService::~AppDeduplicationService() = default;
 
 std::vector<Entry> AppDeduplicationService::GetDuplicates(
     const EntryId& entry_id) {
-  // TODO(b/238394602): Only return installed apps (might need to add a flag in
-  // the interface to indicate).
   // TODO(b/238394602): Add logic to handle url entry id and web apps.
   std::vector<Entry> entries;
 
@@ -28,13 +33,20 @@ std::vector<Entry> AppDeduplicationService::GetDuplicates(
     return entries;
   }
   uint32_t duplication_index = it->second;
-  auto group = duplication_map_.find(duplication_index);
+  const auto& group = duplication_map_.find(duplication_index);
   if (group == duplication_map_.end()) {
     return entries;
   }
 
   for (const auto& entry : group->second.entries) {
-    entries.push_back(entry);
+    auto status_it = entry_status_.find(entry.entry_id);
+    if (status_it == entry_status_.end()) {
+      continue;
+    }
+    if (status_it->second == EntryStatus::kNonApp ||
+        status_it->second == EntryStatus::kInstalledApp) {
+      entries.push_back(entry);
+    }
   }
   return entries;
 }
@@ -80,6 +92,10 @@ void AppDeduplicationService::OnDuplicatedGroupListUpdated(
       }
 
       entry_to_group_map_[entry_id] = index;
+      // Initialize entry status.
+      entry_status_[entry_id] = entry_id.entry_type == EntryType::kApp
+                                    ? EntryStatus::kNotInstalledApp
+                                    : EntryStatus::kNonApp;
 
       Entry entry(std::move(entry_id));
       duplicate_group.entries.push_back(std::move(entry));
@@ -87,6 +103,35 @@ void AppDeduplicationService::OnDuplicatedGroupListUpdated(
     duplication_map_[index] = std::move(duplicate_group);
     index++;
   }
+
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile_);
+  proxy->AppRegistryCache().ForEachApp([this](const apps::AppUpdate& update) {
+    UpdateInstallationStatus(update);
+  });
+}
+
+void AppDeduplicationService::OnAppUpdate(const apps::AppUpdate& update) {
+  UpdateInstallationStatus(update);
+}
+
+void AppDeduplicationService::OnAppRegistryCacheWillBeDestroyed(
+    apps::AppRegistryCache* cache) {
+  app_registry_cache_observation_.Reset();
+}
+
+void AppDeduplicationService::UpdateInstallationStatus(
+    const apps::AppUpdate& update) {
+  EntryId entry_id(update.PublisherId(), update.AppType());
+  auto it = entry_status_.find(entry_id);
+
+  if (it == entry_status_.end()) {
+    return;
+  }
+
+  it->second = apps_util::IsInstalled(update.Readiness())
+                   ? EntryStatus::kInstalledApp
+                   : EntryStatus::kNotInstalledApp;
 }
 
 }  // namespace apps::deduplication

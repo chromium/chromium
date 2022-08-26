@@ -14,13 +14,15 @@
 #include "chrome/browser/apps/app_provisioning_service/app_provisioning_data_manager.h"
 #include "chrome/browser/apps/app_provisioning_service/proto/app_data.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
 
 class Profile;
 
 namespace apps::deduplication {
 
 class AppDeduplicationService : public KeyedService,
-                                public AppProvisioningDataManager::Observer {
+                                public AppProvisioningDataManager::Observer,
+                                public apps::AppRegistryCache::Observer {
  public:
   explicit AppDeduplicationService(Profile* profile);
   ~AppDeduplicationService() override;
@@ -34,18 +36,39 @@ class AppDeduplicationService : public KeyedService,
   friend class AppDeduplicationServiceTest;
   FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceTest,
                            OnDuplicatedGroupListUpdated);
-  FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceTest, ExactDuplicate);
+  FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceTest,
+                           ExactDuplicateAllInstalled);
+  FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceTest, Installation);
+
+  enum class EntryStatus {
+    // This entry is not an app entry (could be website, phonehub, etc.).
+    kNonApp = 0,
+    kInstalledApp = 1,
+    kNotInstalledApp = 2
+  };
 
   // AppProvisioningDataManager::Observer:
   void OnDuplicatedGroupListUpdated(
       const proto::DuplicatedGroupList& duplicated_apps_map) override;
 
+  // apps::AppRegistryCache::Observer:
+  void OnAppUpdate(const apps::AppUpdate& update) override;
+  void OnAppRegistryCacheWillBeDestroyed(
+      apps::AppRegistryCache* cache) override;
+
+  void UpdateInstallationStatus(const apps::AppUpdate& update);
+
   std::map<uint32_t, DuplicateGroup> duplication_map_;
   std::map<EntryId, uint32_t> entry_to_group_map_;
+  std::map<EntryId, EntryStatus> entry_status_;
+  Profile* profile_;
 
   base::ScopedObservation<AppProvisioningDataManager,
                           AppProvisioningDataManager::Observer>
       app_provisioning_data_observeration_{this};
+  base::ScopedObservation<apps::AppRegistryCache,
+                          apps::AppRegistryCache::Observer>
+      app_registry_cache_observation_{this};
 };
 
 }  // namespace apps::deduplication

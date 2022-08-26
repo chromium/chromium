@@ -11,6 +11,8 @@
 #include "chrome/browser/apps/app_deduplication_service/app_deduplication_service_factory.h"
 #include "chrome/browser/apps/app_provisioning_service/app_provisioning_data_manager.h"
 #include "chrome/browser/apps/app_provisioning_service/proto/app_data.pb.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
@@ -27,6 +29,20 @@ class AppDeduplicationServiceTest : public testing::Test {
   AppDeduplicationServiceTest() {
     scoped_feature_list_.InitAndEnableFeature(
         features::kAppDeduplicationService);
+  }
+
+  void UpdateAppReadiness(AppServiceProxy* proxy,
+                          const std::string& app_id,
+                          const std::string& publisher_id,
+                          apps::AppType app_type,
+                          Readiness readiness) {
+    AppPtr app = std::make_unique<apps::App>(app_type, app_id);
+    app->publisher_id = publisher_id;
+    app->readiness = readiness;
+    std::vector<AppPtr> apps;
+    apps.push_back(std::move(app));
+    proxy->AppRegistryCache().OnApps(std::move(apps), app_type,
+                                     /*should_notify_initialized=*/false);
   }
 
  private:
@@ -149,7 +165,9 @@ TEST_F(AppDeduplicationServiceTest, OnDuplicatedGroupListUpdated) {
                           Entry(EntryId(whatsapp_web_app_id, AppType::kWeb))));
 }
 
-TEST_F(AppDeduplicationServiceTest, ExactDuplicate) {
+// Test that if all apps in the duplicated group are installed, the full list
+// will be returned.
+TEST_F(AppDeduplicationServiceTest, ExactDuplicateAllInstalled) {
   base::FilePath path;
   EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &path));
   path = path.AppendASCII("app_deduplication_service/binary_test_data.pb");
@@ -162,6 +180,23 @@ TEST_F(AppDeduplicationServiceTest, ExactDuplicate) {
 
   TestingProfile::Builder profile_builder;
   auto profile = profile_builder.Build();
+
+  // Set up app installed.
+  auto* proxy = AppServiceProxyFactory::GetForProfile(profile.get());
+  std::string skype_arc_app_id = "com.skype.raider";
+  std::string skype_web_app_id = "http://web.skype.com/";
+  std::string whatsapp_arc_app_id = "com.whatsapp";
+  std::string whatsapp_web_app_id = "http://web.whatsapp.com/";
+
+  UpdateAppReadiness(proxy, "app1", skype_arc_app_id, apps::AppType::kArc,
+                     Readiness::kReady);
+  UpdateAppReadiness(proxy, "app2", skype_web_app_id, apps::AppType::kWeb,
+                     Readiness::kReady);
+  UpdateAppReadiness(proxy, "app3", whatsapp_arc_app_id, apps::AppType::kArc,
+                     Readiness::kReady);
+  UpdateAppReadiness(proxy, "app4", whatsapp_web_app_id, apps::AppType::kWeb,
+                     Readiness::kReady);
+
   ASSERT_TRUE(AppDeduplicationServiceFactory::
                   IsAppDeduplicationServiceAvailableForProfile(profile.get()));
   auto* service = AppDeduplicationServiceFactory::GetForProfile(profile.get());
@@ -169,12 +204,11 @@ TEST_F(AppDeduplicationServiceTest, ExactDuplicate) {
 
   service->OnDuplicatedGroupListUpdated(duplicated_group_list);
 
-  EntryId skype_arc_entry_id("com.skype.raider", apps::AppType::kArc);
-  EntryId skype_web_entry_id("http://web.skype.com/", apps::AppType::kWeb);
+  EntryId skype_arc_entry_id(skype_arc_app_id, apps::AppType::kArc);
+  EntryId skype_web_entry_id(skype_web_app_id, apps::AppType::kWeb);
   EntryId skype_phonehub_entry_id("com.skype.raider");
-  EntryId whatsapp_arc_entry_id("com.whatsapp", apps::AppType::kArc);
-  EntryId whatsapp_web_entry_id("http://web.whatsapp.com/",
-                                apps::AppType::kWeb);
+  EntryId whatsapp_arc_entry_id(whatsapp_arc_app_id, apps::AppType::kArc);
+  EntryId whatsapp_web_entry_id(whatsapp_web_app_id, apps::AppType::kWeb);
   EntryId whatsapp_phonehub_entry_id("com.whatsapp");
 
   EXPECT_THAT(
@@ -249,10 +283,79 @@ TEST_F(AppDeduplicationServiceTest, ExactDuplicate) {
       service->AreDuplicates(not_duplicate_app_id, whatsapp_phonehub_entry_id));
 }
 
+TEST_F(AppDeduplicationServiceTest, Installation) {
+  base::FilePath path;
+  EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &path));
+  path = path.AppendASCII("app_deduplication_service/binary_test_data.pb");
+
+  std::string dedupe_pb;
+  ASSERT_TRUE(base::ReadFileToString(path, &dedupe_pb));
+
+  proto::DuplicatedGroupList duplicated_group_list;
+  ASSERT_TRUE(duplicated_group_list.ParseFromString(dedupe_pb));
+
+  TestingProfile::Builder profile_builder;
+  auto profile = profile_builder.Build();
+
+  auto* proxy = AppServiceProxyFactory::GetForProfile(profile.get());
+
+  ASSERT_TRUE(AppDeduplicationServiceFactory::
+                  IsAppDeduplicationServiceAvailableForProfile(profile.get()));
+  auto* service = AppDeduplicationServiceFactory::GetForProfile(profile.get());
+  EXPECT_NE(nullptr, service);
+
+  service->OnDuplicatedGroupListUpdated(duplicated_group_list);
+
+  std::string skype_arc_app_id = "com.skype.raider";
+  std::string skype_web_app_id = "http://web.skype.com/";
+  std::string whatsapp_arc_app_id = "com.whatsapp";
+  std::string whatsapp_web_app_id = "http://web.whatsapp.com/";
+
+  EntryId skype_arc_entry_id(skype_arc_app_id, apps::AppType::kArc);
+  EntryId skype_web_entry_id(skype_web_app_id, apps::AppType::kWeb);
+  EntryId skype_phonehub_entry_id("com.skype.raider");
+  EntryId whatsapp_arc_entry_id(whatsapp_arc_app_id, apps::AppType::kArc);
+  EntryId whatsapp_web_entry_id(whatsapp_web_app_id, apps::AppType::kWeb);
+  EntryId whatsapp_phonehub_entry_id("com.whatsapp");
+
+  // If nothing is installed, should only return phonehub app.
+  EXPECT_THAT(service->GetDuplicates(skype_arc_entry_id),
+              ElementsAre(Entry(skype_phonehub_entry_id)));
+  EXPECT_THAT(service->GetDuplicates(whatsapp_web_entry_id),
+              ElementsAre(Entry(whatsapp_phonehub_entry_id)));
+
+  UpdateAppReadiness(proxy, "app1", skype_arc_app_id, apps::AppType::kArc,
+                     Readiness::kReady);
+  EXPECT_THAT(
+      service->GetDuplicates(skype_web_entry_id),
+      ElementsAre(Entry(skype_phonehub_entry_id), Entry(skype_arc_entry_id)));
+
+  UpdateAppReadiness(proxy, "app2", whatsapp_web_app_id, apps::AppType::kWeb,
+                     Readiness::kReady);
+  EXPECT_THAT(service->GetDuplicates(whatsapp_arc_entry_id),
+              ElementsAre(Entry(whatsapp_phonehub_entry_id),
+                          Entry(whatsapp_web_entry_id)));
+
+  // Uninstall the app removes it from duplicates.
+  UpdateAppReadiness(proxy, "app1", skype_arc_app_id, apps::AppType::kArc,
+                     Readiness::kUninstalledByUser);
+  EXPECT_THAT(service->GetDuplicates(skype_arc_entry_id),
+              ElementsAre(Entry(skype_phonehub_entry_id)));
+}
+
 // Test updating duplication data from app provisioning data manager.
 TEST_F(AppDeduplicationServiceTest, AppPromisioningDataManagerUpdate) {
   TestingProfile::Builder profile_builder;
   auto profile = profile_builder.Build();
+
+  auto* proxy = AppServiceProxyFactory::GetForProfile(profile.get());
+  std::string test_arc_app = "test_arc_app_id";
+  std::string test_web_app = "test_web_app_id";
+  UpdateAppReadiness(proxy, "app1", test_arc_app, apps::AppType::kArc,
+                     Readiness::kReady);
+  UpdateAppReadiness(proxy, "app2", test_web_app, apps::AppType::kWeb,
+                     Readiness::kReady);
+
   ASSERT_TRUE(AppDeduplicationServiceFactory::
                   IsAppDeduplicationServiceAvailableForProfile(profile.get()));
   auto* service = AppDeduplicationServiceFactory::GetForProfile(profile.get());
