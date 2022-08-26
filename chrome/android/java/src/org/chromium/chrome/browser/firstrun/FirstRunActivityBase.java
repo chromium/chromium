@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.SystemClock;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
@@ -50,11 +51,13 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity {
 
     public static final boolean DEFAULT_METRICS_AND_CRASH_REPORTING = true;
 
+    private static PolicyLoadListenerFactory sPolicyLoadListenerFactory;
+
     private boolean mNativeInitialized;
 
     private final FirstRunAppRestrictionInfo mFirstRunAppRestrictionInfo;
     private final OneshotSupplierImpl<PolicyService> mPolicyServiceSupplier;
-    private final PolicyLoadListener mPolicyLoadListener;
+    private PolicyLoadListener mPolicyLoadListener;
 
     private final long mStartTime;
     private long mNativeInitializedTime;
@@ -64,8 +67,10 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity {
     public FirstRunActivityBase() {
         mFirstRunAppRestrictionInfo = FirstRunAppRestrictionInfo.takeMaybeInitialized();
         mPolicyServiceSupplier = new OneshotSupplierImpl<>();
-        mPolicyLoadListener =
-                new PolicyLoadListener(mFirstRunAppRestrictionInfo, mPolicyServiceSupplier);
+        mPolicyLoadListener = sPolicyLoadListenerFactory == null
+                ? new PolicyLoadListener(mFirstRunAppRestrictionInfo, mPolicyServiceSupplier)
+                : sPolicyLoadListenerFactory.inject(
+                        mFirstRunAppRestrictionInfo, mPolicyServiceSupplier);
         mStartTime = SystemClock.elapsedRealtime();
         mPolicyLoadListener.onAvailable(this::onPolicyLoadListenerAvailable);
     }
@@ -194,7 +199,7 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity {
      * @see PolicyLoadListener for return value expectation.
      */
     public OneshotSupplier<Boolean> getPolicyLoadListener() {
-        return mPolicyLoadListener;
+      return mPolicyLoadListener;
     }
 
     /**
@@ -220,5 +225,24 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity {
                 IntentUtils.safeGetBundleExtra(freIntent, EXTRA_CHROME_LAUNCH_INTENT_EXTRAS);
         CustomTabsConnection.getInstance().sendFirstRunCallbackIfNecessary(
                 launchIntentExtras, complete);
+    }
+
+    /**
+     * Allows tests to inject a fake/mock {@link PolicyLoadListener} into {@link
+     * FirstRunActivityBase}'s constructor.
+     */
+    public interface PolicyLoadListenerFactory {
+        PolicyLoadListener inject(FirstRunAppRestrictionInfo appRestrictionInfo,
+                OneshotSupplier<PolicyService> policyServiceSupplier);
+    }
+
+    /**
+     * Forces the {@link FirstRunActivityBase}'s constructor to use a {@link PolicyLoadListener}
+     * defined by a test, instead of creating its own instance.
+     */
+    @VisibleForTesting
+    public static void setPolicyLoadListenerFactoryForTesting(
+            PolicyLoadListenerFactory policyLoadListenerFactory) {
+        sPolicyLoadListenerFactory = policyLoadListenerFactory;
     }
 }
