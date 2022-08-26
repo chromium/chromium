@@ -195,7 +195,14 @@ void RemoteRouterLink::AcceptParcel(Parcel& parcel) {
   // Serialize attached objects. We accumulate the Routers of all attached
   // portals, because we need to reference them again after transmission, with
   // a 1:1 correspondence to the serialized RouterDescriptors.
-  absl::InlinedVector<Ref<Router>, 4> routers_to_proxy;
+  absl::InlinedVector<Ref<Router>, 4> routers_to_proxy(num_portals);
+  absl::InlinedVector<RouterDescriptor, 4> descriptors(num_portals);
+
+  // Explicitly zero the descriptor memory since there may be padding bits
+  // within and we'll be copying the full contents into message data below.
+  memset(descriptors.data(), 0, descriptors.size() * sizeof(descriptors[0]));
+
+  size_t portal_index = 0;
   for (size_t i = 0; i < objects.size(); ++i) {
     APIObject& object = *objects[i];
 
@@ -204,8 +211,10 @@ void RemoteRouterLink::AcceptParcel(Parcel& parcel) {
         handle_types[i] = HandleType::kPortal;
 
         Ref<Router> router = Portal::FromObject(&object)->router();
-        router->SerializeNewRouter(*node_link(), new_routers[i]);
-        routers_to_proxy.push_back(std::move(router));
+        ABSL_ASSERT(portal_index < num_portals);
+        router->SerializeNewRouter(*node_link(), descriptors[portal_index]);
+        routers_to_proxy[portal_index] = std::move(router);
+        ++portal_index;
         break;
       }
 
@@ -219,6 +228,11 @@ void RemoteRouterLink::AcceptParcel(Parcel& parcel) {
         break;
     }
   }
+
+  // Copy all the serialized router descriptors into the message. Our local
+  // copy will supply inputs for BeginProxyingToNewRouter() calls below.
+  memcpy(new_routers.data(), descriptors.data(),
+         new_routers.size() * sizeof(new_routers[0]));
 
   if (must_split_parcel) {
     msg::AcceptParcelDriverObjects accept_objects;
@@ -241,9 +255,9 @@ void RemoteRouterLink::AcceptParcel(Parcel& parcel) {
 
   // Now that the parcel has been transmitted, it's safe to start proxying from
   // any routers whose routes have just been extended to the destination.
-  ABSL_ASSERT(routers_to_proxy.size() == new_routers.size());
+  ABSL_ASSERT(routers_to_proxy.size() == descriptors.size());
   for (size_t i = 0; i < routers_to_proxy.size(); ++i) {
-    routers_to_proxy[i]->BeginProxyingToNewRouter(*node_link(), new_routers[i]);
+    routers_to_proxy[i]->BeginProxyingToNewRouter(*node_link(), descriptors[i]);
   }
 
   // Finally, a Parcel will normally close all attached objects when destroyed.

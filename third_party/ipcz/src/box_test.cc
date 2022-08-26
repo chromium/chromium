@@ -56,6 +56,7 @@ MULTINODE_TEST(BoxTest, Peek) {
 
 constexpr const char kMessage1[] = "Hello, world?";
 constexpr const char kMessage2[] = "Hello, world!";
+constexpr const char kMessage3[] = "Hello. World.";
 
 MULTINODE_TEST_NODE(BoxTestNode, TransferBoxClient) {
   IpczHandle b = ConnectToBroker();
@@ -73,6 +74,32 @@ MULTINODE_TEST(BoxTest, TransferBox) {
   IpczHandle box = BoxBlob(kMessage1);
   EXPECT_EQ(IPCZ_RESULT_OK, Put(c, kMessage2, {&box, 1}));
   Close(c);
+}
+
+MULTINODE_TEST_NODE(BoxTestNode, TransferBoxAndPortalClient) {
+  IpczHandle b = ConnectToBroker();
+
+  IpczHandle handles[2];
+  std::string message;
+  EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(b, &message, handles));
+  EXPECT_EQ(kMessage2, message);
+  EXPECT_EQ(IPCZ_RESULT_OK, Put(handles[1], kMessage3));
+  EXPECT_EQ(kMessage1, UnboxBlob(handles[0]));
+  CloseAll({b, handles[1]});
+}
+
+MULTINODE_TEST(BoxTest, TransferBoxAndPortal) {
+  IpczHandle c = SpawnTestNode<TransferBoxAndPortalClient>();
+
+  auto [q, p] = OpenPortals();
+  IpczHandle box = BoxBlob(kMessage1);
+  IpczHandle handles[] = {box, p};
+  EXPECT_EQ(IPCZ_RESULT_OK, Put(c, kMessage2, absl::MakeSpan(handles)));
+
+  std::string message;
+  EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(q, &message));
+  EXPECT_EQ(kMessage3, message);
+  CloseAll({c, q});
 }
 
 constexpr size_t TransferBoxBetweenNonBrokersNumIterations = 50;
