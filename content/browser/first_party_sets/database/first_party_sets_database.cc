@@ -238,7 +238,7 @@ FirstPartySetsDatabase::FetchAllSitesToClearFilter(
   if (!LazyInit())
     return {};
 
-  base::flat_map<net::SchemefulSite, int64_t> results;
+  std::vector<std::pair<net::SchemefulSite, int64_t>> results;
   static constexpr char kSelectSql[] =
       // clang-format off
       "SELECT site,marked_at_run FROM browser_context_sites_to_clear "
@@ -255,7 +255,7 @@ FirstPartySetsDatabase::FetchAllSitesToClearFilter(
     // TODO(crbug/1314039): Invalid sites should be rare case but possible.
     // Consider deleting them from DB.
     if (site.has_value()) {
-      results.emplace(std::move(site.value()), statement.ColumnInt(1));
+      results.emplace_back(std::move(site.value()), statement.ColumnInt(1));
     }
   }
 
@@ -273,7 +273,8 @@ FirstPartySetsDatabase::FetchPolicyModifications(
   if (!LazyInit())
     return {};
 
-  base::flat_map<net::SchemefulSite, absl::optional<net::FirstPartySetEntry>>
+  std::vector<
+      std::pair<net::SchemefulSite, absl::optional<net::FirstPartySetEntry>>>
       results;
   static constexpr char kSelectSql[] =
       // clang-format off
@@ -297,7 +298,7 @@ FirstPartySetsDatabase::FetchPolicyModifications(
     // TODO(crbug/1314039): Invalid sites should be rare case but possible.
     // Consider deleting them from DB.
     if (site.has_value()) {
-      results.emplace(
+      results.emplace_back(
           std::move(site.value()),
           maybe_site_owner.has_value()
               ? absl::make_optional(net::FirstPartySetEntry(
@@ -310,6 +311,9 @@ FirstPartySetsDatabase::FetchPolicyModifications(
               : absl::nullopt);
     }
   }
+  if (!statement.Succeeded())
+    return {};
+
   return results;
 }
 
