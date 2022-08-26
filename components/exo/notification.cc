@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/strings/utf_string_conversions.h"
@@ -75,6 +76,7 @@ Notification::Notification(
                             ->user_info.account_id.GetUserEmail();
 
   message_center::RichNotificationData data;
+  data.vector_small_image = &ash::kNotificationLinuxIcon;
   for (const auto& button : buttons)
     data.buttons.emplace_back(base::UTF8ToUTF16(button));
 
