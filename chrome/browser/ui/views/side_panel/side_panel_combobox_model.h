@@ -20,14 +20,14 @@
 class SidePanelComboboxModel : public ui::ComboboxModel {
  public:
   struct Item {
-    Item(SidePanelEntry::Id id, std::u16string text, ui::ImageModel icon);
+    Item(SidePanelEntry::Key key, std::u16string text, ui::ImageModel icon);
     Item(const Item& other);
     Item& operator=(const Item& other);
     Item(Item&& other);
     Item& operator=(Item&& other);
     ~Item();
 
-    SidePanelEntry::Id id;
+    SidePanelEntry::Key key;
     std::u16string text;
     ui::ImageModel icon;
   };
@@ -38,14 +38,14 @@ class SidePanelComboboxModel : public ui::ComboboxModel {
   ~SidePanelComboboxModel() override;
 
   void AddItem(SidePanelEntry* entry);
-  void RemoveItem(SidePanelEntry::Id entry_id);
+  void RemoveItem(const SidePanelEntry::Key& entry_key);
   void AddItems(const std::vector<std::unique_ptr<SidePanelEntry>>& entries);
   void RemoveItems(const std::vector<std::unique_ptr<SidePanelEntry>>& entries);
-  SidePanelEntry::Id GetIdAt(int index) const;
+  SidePanelEntry::Key GetKeyAt(int index) const;
 
   // Returns the index for the given side panel entry id, if the id doesn't
   // exist in entries_ then default to 0.
-  int GetIndexForId(SidePanelEntry::Id id);
+  int GetIndexForKey(const SidePanelEntry::Key& key);
 
   // ui::ComboboxModel:
   size_t GetItemCount() const override;

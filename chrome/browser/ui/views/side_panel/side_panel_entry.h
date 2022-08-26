@@ -12,6 +12,8 @@
 #include "base/callback.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "extensions/common/extension_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/view.h"
 
@@ -37,10 +39,40 @@ class SidePanelEntry final {
     kLens,
     kAssistant,
     kAboutThisSite,
-    kCustomizeChrome
+    kCustomizeChrome,
+    // Extensions (nothing more should be added below here)
+    kExtension
+  };
+
+  // Container for entry identification related information.
+  class Key {
+   public:
+    explicit Key(Id id);
+    Key(Id id, extensions::ExtensionId extension_id);
+    Key(const Key& other);
+    ~Key();
+
+    Key& operator=(const Key& other);
+    bool operator==(const Key& other) const;
+    bool operator<(const Key& other) const;
+
+    Id id() const { return id_; }
+    absl::optional<extensions::ExtensionId> extension_id() const {
+      return extension_id_;
+    }
+
+   private:
+    Id id_;
+    absl::optional<extensions::ExtensionId> extension_id_ = absl::nullopt;
   };
 
   SidePanelEntry(Id id,
+                 std::u16string name,
+                 ui::ImageModel icon,
+                 base::RepeatingCallback<std::unique_ptr<views::View>()>
+                     create_content_callback);
+  // Constructor used for extensions.
+  SidePanelEntry(Key key,
                  std::u16string name,
                  ui::ImageModel icon,
                  base::RepeatingCallback<std::unique_ptr<views::View>()>
@@ -62,7 +94,7 @@ class SidePanelEntry final {
   void OnEntryShown();
   void OnEntryHidden();
 
-  Id id() const { return id_; }
+  const Key& key() const { return key_; }
   const std::u16string& name() const { return name_; }
   const ui::ImageModel& icon() const { return icon_; }
 
@@ -74,7 +106,7 @@ class SidePanelEntry final {
   }
 
  private:
-  const Id id_;
+  const Key key_;
   const std::u16string name_;
   const ui::ImageModel icon_;
   std::unique_ptr<views::View> content_view_;

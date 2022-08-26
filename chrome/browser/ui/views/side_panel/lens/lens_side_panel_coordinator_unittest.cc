@@ -84,9 +84,11 @@ TEST_F(LensSidePanelCoordinatorTest,
                              ui::PAGE_TRANSITION_LINK, false));
 
   EXPECT_TRUE(GetRightAlignedSidePanel()->GetVisible());
-  EXPECT_EQ(
-      GetSidePanelCoordinator()->GetCurrentSidePanelEntryForTesting()->id(),
-      SidePanelEntry::Id::kLens);
+  EXPECT_EQ(GetSidePanelCoordinator()
+                ->GetCurrentSidePanelEntryForTesting()
+                ->key()
+                .id(),
+            SidePanelEntry::Id::kLens);
   EXPECT_EQ(1, user_action_tester.GetActionCount(kLensQueryAction));
   EXPECT_EQ(1, user_action_tester.GetActionCount(kNewLensQueryAction));
   EXPECT_EQ(1,
@@ -104,9 +106,11 @@ TEST_F(LensSidePanelCoordinatorTest, OpenWithUrlWhenSidePanelOpenShowsLens) {
                              ui::PAGE_TRANSITION_LINK, false));
 
   EXPECT_TRUE(GetRightAlignedSidePanel()->GetVisible());
-  EXPECT_EQ(
-      GetSidePanelCoordinator()->GetCurrentSidePanelEntryForTesting()->id(),
-      SidePanelEntry::Id::kLens);
+  EXPECT_EQ(GetSidePanelCoordinator()
+                ->GetCurrentSidePanelEntryForTesting()
+                ->key()
+                .id(),
+            SidePanelEntry::Id::kLens);
   EXPECT_EQ(1, user_action_tester.GetActionCount(kNewLensQueryAction));
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    kLensQuerySidePanelOpenNonLensAction));
@@ -126,9 +130,11 @@ TEST_F(LensSidePanelCoordinatorTest,
                              ui::PAGE_TRANSITION_LINK, false));
 
   EXPECT_TRUE(GetRightAlignedSidePanel()->GetVisible());
-  EXPECT_EQ(
-      GetSidePanelCoordinator()->GetCurrentSidePanelEntryForTesting()->id(),
-      SidePanelEntry::Id::kLens);
+  EXPECT_EQ(GetSidePanelCoordinator()
+                ->GetCurrentSidePanelEntryForTesting()
+                ->key()
+                .id(),
+            SidePanelEntry::Id::kLens);
   EXPECT_EQ(2, user_action_tester.GetActionCount(kLensQueryAction));
   EXPECT_EQ(1,
             user_action_tester.GetActionCount(kLensQuerySidePanelClosedAction));
@@ -147,9 +153,11 @@ TEST_F(LensSidePanelCoordinatorTest, SwitchToDifferentItemTriggersHideEvent) {
   GetSidePanelCoordinator()->Show(SidePanelEntry::Id::kBookmarks);
 
   EXPECT_TRUE(GetRightAlignedSidePanel()->GetVisible());
-  EXPECT_EQ(
-      GetSidePanelCoordinator()->GetCurrentSidePanelEntryForTesting()->id(),
-      SidePanelEntry::Id::kBookmarks);
+  EXPECT_EQ(GetSidePanelCoordinator()
+                ->GetCurrentSidePanelEntryForTesting()
+                ->key()
+                .id(),
+            SidePanelEntry::Id::kBookmarks);
   EXPECT_EQ(1,
             user_action_tester.GetActionCount(kLensQuerySidePanelClosedAction));
   EXPECT_EQ(1, user_action_tester.GetActionCount(kLensEntryHiddenAction));
@@ -167,9 +175,11 @@ TEST_F(LensSidePanelCoordinatorTest, SwitchBackToLensTriggersShowEvent) {
   GetSidePanelCoordinator()->Show(SidePanelEntry::Id::kLens);
 
   EXPECT_TRUE(GetRightAlignedSidePanel()->GetVisible());
-  EXPECT_EQ(
-      GetSidePanelCoordinator()->GetCurrentSidePanelEntryForTesting()->id(),
-      SidePanelEntry::Id::kLens);
+  EXPECT_EQ(GetSidePanelCoordinator()
+                ->GetCurrentSidePanelEntryForTesting()
+                ->key()
+                .id(),
+            SidePanelEntry::Id::kLens);
   EXPECT_EQ(1, user_action_tester.GetActionCount(kLensQueryAction));
   EXPECT_EQ(1, user_action_tester.GetActionCount(kNewLensQueryAction));
   EXPECT_EQ(1,

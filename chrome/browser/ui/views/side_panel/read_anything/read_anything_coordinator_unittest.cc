@@ -107,8 +107,8 @@ TEST_F(ReadAnythingCoordinatorTest, ActivatesAndDeactivatesController) {
   side_panel_coordinator_->Close();
   EXPECT_FALSE(IsControllerActive());
 
-  SidePanelEntry* entry =
-      side_panel_registry_->GetEntryForId(SidePanelEntry::Id::kReadAnything);
+  SidePanelEntry* entry = side_panel_registry_->GetEntryForKey(
+      SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
   entry->OnEntryShown();
   EXPECT_TRUE(IsControllerActive());
   entry->OnEntryHidden();

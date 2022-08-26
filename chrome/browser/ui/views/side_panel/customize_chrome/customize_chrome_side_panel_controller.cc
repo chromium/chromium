@@ -55,12 +55,13 @@ void CustomizeChromeSidePanelController::DeregisterEntry() {
   if (!registry)
     return;
 
-  if (auto* current_entry =
-          registry->GetEntryForId(SidePanelEntry::Id::kCustomizeChrome)) {
+  if (auto* current_entry = registry->GetEntryForKey(
+          SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome))) {
     current_entry->RemoveObserver(this);
   }
 
-  registry->Deregister(SidePanelEntry::Id::kCustomizeChrome);
+  registry->Deregister(
+      SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome));
 }
 
 void CustomizeChromeSidePanelController::ShowCustomizeChromeSidePanel() {
@@ -85,10 +86,9 @@ bool CustomizeChromeSidePanelController::IsCustomizeChromeEntryShowing() const {
 bool CustomizeChromeSidePanelController::IsCustomizeChromeEntryAvailable()
     const {
   auto* registry = SidePanelRegistry::Get(web_contents_);
-  return registry
-             ? (registry->GetEntryForId(SidePanelEntry::Id::kCustomizeChrome) !=
-                nullptr)
-             : false;
+  return registry ? (registry->GetEntryForKey(SidePanelEntry::Key(
+                         SidePanelEntry::Id::kCustomizeChrome)) != nullptr)
+                  : false;
 }
 
 void CustomizeChromeSidePanelController::OnEntryShown(SidePanelEntry* entry) {
