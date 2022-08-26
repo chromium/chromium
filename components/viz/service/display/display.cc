@@ -67,14 +67,6 @@ namespace viz {
 
 namespace {
 
-enum class TypeOfVideoInFrame {
-  kNoVideo = 0,
-  kVideo = 1,
-
-  // This should be the last entry/largest value above.
-  kMaxValue = kVideo,
-};
-
 const DrawQuad::Material kNonSplittableMaterials[] = {
     // Exclude debug quads from quad splitting
     DrawQuad::Material::kDebugBorder,
@@ -719,14 +711,6 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
     }
   }
   DebugDrawFrame(frame);
-
-  // Records whether the aggregated frame contains video or not.
-  // TODO(vikassoni) : Extend this capability to record whether a video frame is
-  // inline or fullscreen.
-  UMA_HISTOGRAM_ENUMERATION("Compositing.SurfaceAggregator.FrameContainsVideo",
-                            frame.may_contain_video
-                                ? TypeOfVideoInFrame::kVideo
-                                : TypeOfVideoInFrame::kNoVideo);
 
   if (frame.delegated_ink_metadata) {
     TRACE_EVENT_INSTANT1(

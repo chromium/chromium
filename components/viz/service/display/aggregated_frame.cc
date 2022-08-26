@@ -19,7 +19,6 @@ AggregatedFrame& AggregatedFrame::operator=(AggregatedFrame&& other) = default;
 void AggregatedFrame::AsValueInto(base::trace_event::TracedValue* value) const {
   value->SetBoolean("has_copy_requests", has_copy_requests);
   value->SetBoolean("video_capture_enabled", video_capture_enabled);
-  value->SetBoolean("may_contain_video", may_contain_video);
 
   // Quad data can be quite large, so only dump render passes if we are
   // logging verbosely or viz.quads tracing category is enabled.

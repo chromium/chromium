@@ -763,17 +763,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compositing.SurfaceAggregator.FrameContainsVideo"
-    enum="TypeOfVideoInFrame" expires_after="2021-10-04">
-  <owner>vikassoni@chromium.org</owner>
-  <owner>khushalsagar@chromium.org</owner>
-  <summary>
-    Whether an aggregated frame contains video or not. This metric will be used
-    to analyze the percentage of displayed frame with video. This metric will be
-    extended in future to specify whether the video is inline or fullscreen.
-  </summary>
-</histogram>
-
 <histogram name="Compositing.SurfaceAggregator.PrewalkedSurfaceCount"
     units="surfaces" expires_after="2022-10-30">
   <owner>kylechar@chromium.org</owner>

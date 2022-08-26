@@ -274,7 +274,6 @@ struct SurfaceAggregator::PrewalkResult {
   // not included in a SurfaceDrawQuad.
   base::flat_set<SurfaceId> undrawn_surfaces;
   bool video_capture_enabled = false;
-  bool may_contain_video = false;
   bool frame_sinks_changed = false;
   bool page_fullscreen_mode = false;
   gfx::ContentColorUsage content_color_usage = gfx::ContentColorUsage::kSRGB;
@@ -1897,8 +1896,6 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(ResolvedFrameData& resolved_frame,
   }
 
   referenced_surfaces_.erase(surface->surface_id());
-  if (!damage_rect.IsEmpty() && frame.metadata.may_contain_video)
-    result.may_contain_video = true;
   result.content_color_usage =
       std::max(result.content_color_usage, frame.metadata.content_color_usage);
 
@@ -2047,7 +2044,6 @@ AggregatedFrame SurfaceAggregator::Aggregate(
 
   frame.has_copy_requests = has_copy_requests_ && take_copy_requests_;
   frame.video_capture_enabled = prewalk_result.video_capture_enabled;
-  frame.may_contain_video = prewalk_result.may_contain_video;
   frame.content_color_usage = prewalk_result.content_color_usage;
   frame.page_fullscreen_mode = prewalk_result.page_fullscreen_mode;
 
