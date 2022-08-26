@@ -12,35 +12,29 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
-#include "third_party/blink/renderer/platform/timer.h"
 
 namespace blink {
 
 class Document;
 class LocalFrameView;
 class TransformPaintPropertyNodeOrAlias;
-struct ViewportDescription;
 
 // Calculates the mobile usability of current page, especially friendliness on
 // smart phone devices are checked. The calculated value will be sent as a part
 // of UKM.
 class CORE_EXPORT MobileFriendlinessChecker
-    : public GarbageCollected<MobileFriendlinessChecker>,
-      public LocalFrameView::LifecycleNotificationObserver {
+    : public GarbageCollected<MobileFriendlinessChecker> {
  public:
   explicit MobileFriendlinessChecker(LocalFrameView& frame_view);
   virtual ~MobileFriendlinessChecker();
   static MobileFriendlinessChecker* Create(LocalFrameView& frame_view);
   static MobileFriendlinessChecker* From(const Document&);
 
-  // LocalFrameView::LifecycleNotificationObserver implementation
-  void DidFinishLifecycleUpdate(const LocalFrameView&) override;
-  void NotifyInitialScaleUpdated();
+  void MaybeRecompute();
+  void ComputeNowForTesting() { ComputeNow(); }
 
   void NotifyPaintBegin();
   void NotifyPaintEnd();
-  void WillBeRemovedFromFrame();
-  void NotifyViewportUpdated(const ViewportDescription&);
   void NotifyPaintTextFragment(
       const PhysicalRect& paint_rect,
       int font_size,
@@ -49,7 +43,7 @@ class CORE_EXPORT MobileFriendlinessChecker
       const PhysicalRect& paint_rect,
       const TransformPaintPropertyNodeOrAlias& current_transform);
 
-  void Trace(Visitor* visitor) const override;
+  void Trace(Visitor* visitor) const;
 
   struct AreaSizes {
     double small_font_area = 0;
@@ -87,7 +81,8 @@ class CORE_EXPORT MobileFriendlinessChecker
   };
 
  private:
-  void Activate(TimerBase*);
+  // Evaluate mobile friendliness of the page.
+  void ComputeNow();
 
   // Returns percentage value [0-100] of bad tap targets in the area of the
   // first page. Returns kTimeBudgetExceeded if the time limit is exceeded.
@@ -104,7 +99,6 @@ class CORE_EXPORT MobileFriendlinessChecker
   const TransformPaintPropertyNodeOrAlias* previous_transform_ = nullptr;
   float current_x_offset_ = 0.0;
   float viewport_width_ = 0.0;
-  HeapTaskRunnerTimer<MobileFriendlinessChecker> timer_;
   double viewport_scalar_;
   double initial_scale_ = 1.0;
   base::TimeTicks last_evaluated_;
