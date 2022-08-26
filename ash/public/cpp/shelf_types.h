@@ -82,18 +82,8 @@ enum class ShelfBackgroundType {
   // for a split view.
   kMaximized,
 
-  // The background when the app list is visible in clamshell mode.
-  // TODO(https://crbug.com/1356661): remove background for app list dragging.
-  kAppList,
-
   // The background when the app list is visible in tablet mode.
   kHomeLauncher,
-
-  // The background when a maximized window exists or two windows are maximized
-  // for a split view, and the app list is visible. If the app list were not
-  // visible, the shelf would be in ShelfBackgroundType::kMaximized state.
-  // TODO(https://crbug.com/1356661): remove background for app list dragging.
-  kMaximizedWithAppList,
 
   // The background when OOBE is active.
   kOobe,

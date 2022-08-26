@@ -3014,20 +3014,9 @@ TEST_P(ShelfLayoutManagerDragDropTest, AutoHideShelfOnDragDropEvents) {
   // TODO(crbug.com/1240332): Test screen exits when behavior is consistent.
 }
 
-class AppListBubbleShelfLayoutManagerTest : public ShelfLayoutManagerTest {
- public:
-  AppListBubbleShelfLayoutManagerTest() {
-    scoped_features_.InitAndEnableFeature(features::kProductivityLauncher);
-  }
-  ~AppListBubbleShelfLayoutManagerTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_features_;
-};
-
 // Tests that the shelf background does not change when the bubble launcher is
 // shown.
-TEST_F(AppListBubbleShelfLayoutManagerTest, NoBackgroundChange) {
+TEST_F(ShelfLayoutManagerTest, NoBackgroundChange) {
   const auto shelf_background_type = GetShelfWidget()->GetBackgroundType();
   AppListControllerImpl* app_list_controller =
       Shell::Get()->app_list_controller();
@@ -3042,7 +3031,7 @@ TEST_F(AppListBubbleShelfLayoutManagerTest, NoBackgroundChange) {
   EXPECT_EQ(shelf_background_type, GetShelfWidget()->GetBackgroundType());
 }
 
-TEST_F(AppListBubbleShelfLayoutManagerTest, SwipeUpOnShelfDoesNotShowAppList) {
+TEST_F(ShelfLayoutManagerTest, SwipeUpOnShelfDoesNotShowAppList) {
   Shelf* shelf = GetPrimaryShelf();
   ASSERT_EQ(ShelfAlignment::kBottom, shelf->alignment());
   ASSERT_EQ(ShelfAutoHideBehavior::kNever, shelf->auto_hide_behavior());
@@ -3065,8 +3054,7 @@ TEST_F(AppListBubbleShelfLayoutManagerTest, SwipeUpOnShelfDoesNotShowAppList) {
 }
 
 // Tests that tapping the home button is successful on the autohidden shelf.
-TEST_F(AppListBubbleShelfLayoutManagerTest,
-       NoTemporaryAutoHideStateWhileOpeningLauncher) {
+TEST_F(ShelfLayoutManagerTest, NoTemporaryAutoHideStateWhileOpeningLauncher) {
   // Enable animations and simulate the zero state search called when showing
   // the launcher.
   ui::ScopedAnimationDurationScaleMode duration(
@@ -4253,82 +4241,6 @@ TEST_F(ShelfLayoutManagerTest, ShelfShowsPinnedAppsOnOtherDisplays) {
           << "screen edge on display " << display_index << " with " << app_count
           << " apps";
     }
-  }
-}
-
-// Tests that the mousewheel scroll and the two finger gesture when the mouse is
-// over the shelf shows the app list in peeking state.
-TEST_F(ShelfLayoutManagerTest, ScrollUpFromShelfToShowPeekingAppList) {
-  // ProductivityLauncher does not support shelf drags to show app list.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kProductivityLauncher);
-
-  const struct {
-    views::View* view;
-    bool with_mousewheel_scroll;
-    bool reverse_scroll;
-  } test_table[]{
-      {GetPrimaryShelf()->GetShelfViewForTesting(), false, false},
-      {GetShelfWidget()->status_area_widget()->GetContentsView(), false, false},
-      {GetPrimaryShelf()->navigation_widget()->GetContentsView(), false, false},
-      {GetShelfWidget()->status_area_widget()->GetContentsView(), true, false},
-      {GetPrimaryShelf()->navigation_widget()->GetContentsView(), true, false},
-      {GetPrimaryShelf()->GetShelfViewForTesting(), false, true},
-      {GetShelfWidget()->status_area_widget()->GetContentsView(), false, true},
-      {GetPrimaryShelf()->navigation_widget()->GetContentsView(), false, true},
-      {GetShelfWidget()->status_area_widget()->GetContentsView(), true, true},
-      {GetPrimaryShelf()->navigation_widget()->GetContentsView(), true, true},
-  };
-  base::HistogramTester histogram_tester;
-  const int scroll_offset_threshold =
-      ShelfConfig::Get()->mousewheel_scroll_offset_threshold();
-  int bucket_count = 0;
-
-  for (auto test : test_table) {
-    ASSERT_EQ(ShelfAlignment::kBottom, GetPrimaryShelf()->alignment());
-
-    // Scrolling up from the center of the view above the threshold should show
-    // the peeking app list.
-    const gfx::Point start = test.view->GetBoundsInScreen().CenterPoint();
-    if (test.with_mousewheel_scroll) {
-      DoMouseWheelScrollAtLocation(start, scroll_offset_threshold + 1,
-                                   test.reverse_scroll);
-    } else {
-      DoTwoFingerScrollAtLocation(start, /*x_offset=*/0,
-                                  scroll_offset_threshold + 10,
-                                  test.reverse_scroll);
-    }
-
-    GetAppListTestHelper()->WaitUntilIdle();
-    GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
-    GetAppListTestHelper()->CheckVisibility(true);
-    histogram_tester.ExpectBucketCount("Apps.AppListShowSource",
-                                       AppListShowSource::kScrollFromShelf,
-                                       ++bucket_count);
-
-    GetAppListTestHelper()->DismissAndRunLoop();
-    GetAppListTestHelper()->CheckVisibility(false);
-
-    // Scrolling up from the center of the view below the threshold should not
-    // show the app list.
-    if (test.with_mousewheel_scroll) {
-      DoMouseWheelScrollAtLocation(start, scroll_offset_threshold,
-                                   test.reverse_scroll);
-    } else {
-      // A ScrollEvent gets amplified when transformed into a mousewheel event.
-      // We need to set a lower offset so when it gets amplified, it still is
-      // under the threshold.
-      DoTwoFingerScrollAtLocation(start, /*x_offset=*/0,
-                                  scroll_offset_threshold - 10,
-                                  test.reverse_scroll);
-    }
-
-    GetAppListTestHelper()->WaitUntilIdle();
-    GetAppListTestHelper()->CheckState(AppListViewState::kClosed);
-    GetAppListTestHelper()->CheckVisibility(false);
-    histogram_tester.ExpectBucketCount("Apps.AppListShowSource",
-                                       AppListShowSource::kScrollFromShelf,
-                                       bucket_count);
   }
 }
 

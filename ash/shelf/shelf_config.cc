@@ -478,10 +478,6 @@ SkColor ShelfConfig::GetShelfControlButtonColor() const {
       AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
 }
 
-SkColor ShelfConfig::GetShelfWithAppListColor() const {
-  return SkColorSetA(SK_ColorBLACK, 20);  // 8% opacity
-}
-
 SkColor ShelfConfig::GetMaximizedShelfColor() const {
   return SkColorSetA(GetDefaultShelfColor(), 0xFF);  // 100% opacity
 }

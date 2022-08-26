@@ -93,11 +93,9 @@ bool IsShelfBackgroundTypeWithRoundedCorners(
     ShelfBackgroundType background_type) {
   switch (background_type) {
     case ShelfBackgroundType::kDefaultBg:
-    case ShelfBackgroundType::kAppList:
     case ShelfBackgroundType::kOverview:
       return true;
     case ShelfBackgroundType::kMaximized:
-    case ShelfBackgroundType::kMaximizedWithAppList:
     case ShelfBackgroundType::kOobe:
     case ShelfBackgroundType::kHomeLauncher:
     case ShelfBackgroundType::kLogin:

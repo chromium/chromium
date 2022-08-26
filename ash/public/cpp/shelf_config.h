@@ -203,9 +203,6 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   // Gets the current color for the shelf control buttons.
   SkColor GetShelfControlButtonColor() const;
 
-  // Gets the shelf color when the app list is open, used in clamshell mode.
-  SkColor GetShelfWithAppListColor() const;
-
   // Gets the shelf color when a window is maximized.
   SkColor GetMaximizedShelfColor() const;
 

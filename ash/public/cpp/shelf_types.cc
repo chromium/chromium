@@ -32,12 +32,8 @@ std::ostream& operator<<(std::ostream& out, ShelfBackgroundType type) {
       return out << "DefaultBg";
     case ShelfBackgroundType::kMaximized:
       return out << "Maximized";
-    case ShelfBackgroundType::kAppList:
-      return out << "AppList";
     case ShelfBackgroundType::kHomeLauncher:
       return out << "HomeLauncher";
-    case ShelfBackgroundType::kMaximizedWithAppList:
-      return out << "MaximizedWithAppList";
     case ShelfBackgroundType::kOobe:
       return out << "Oobe";
     case ShelfBackgroundType::kLogin:

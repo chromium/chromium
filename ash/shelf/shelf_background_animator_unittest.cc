@@ -244,15 +244,6 @@ TEST_F(ShelfBackgroundAnimatorTest, MaximizedBackground) {
             observer_.GetBackgroundAlpha());
 }
 
-// Verify the alpha values for the ShelfBackgroundType::kAppList state.
-TEST_F(ShelfBackgroundAnimatorTest, FullscreenAppListBackground) {
-  PaintBackground(ShelfBackgroundType::kAppList);
-
-  EXPECT_EQ(ShelfBackgroundType::kAppList, animator_->target_background_type());
-  EXPECT_EQ((int)SkColorGetA(ShelfConfig::Get()->GetShelfWithAppListColor()),
-            observer_.GetBackgroundAlpha());
-}
-
 TEST_F(ShelfBackgroundAnimatorTest,
        AnimatorIsDetroyedWhenCompletingSuccessfully) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
@@ -307,7 +298,8 @@ TEST_F(ShelfBackgroundAnimatorTest,
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
-  PaintBackground(ShelfBackgroundType::kAppList, AnimationChangeType::ANIMATE);
+  PaintBackground(ShelfBackgroundType::kHomeLauncher,
+                  AnimationChangeType::ANIMATE);
 
   const gfx::SlideAnimation* animator = test_api_->animator();
   EXPECT_TRUE(animator);

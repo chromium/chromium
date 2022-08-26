@@ -45,9 +45,7 @@ namespace {
 
 bool IsAppListBackground(ShelfBackgroundType background_type) {
   switch (background_type) {
-    case ShelfBackgroundType::kAppList:
     case ShelfBackgroundType::kHomeLauncher:
-    case ShelfBackgroundType::kMaximizedWithAppList:
       return true;
     case ShelfBackgroundType::kDefaultBg:
     case ShelfBackgroundType::kMaximized:

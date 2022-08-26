@@ -177,9 +177,7 @@ void ShelfBackgroundAnimator::CreateAnimator(
 
   switch (background_type) {
     case ShelfBackgroundType::kDefaultBg:
-    case ShelfBackgroundType::kAppList:
     case ShelfBackgroundType::kHomeLauncher:
-    case ShelfBackgroundType::kMaximizedWithAppList:
       duration = base::Milliseconds(500);
       break;
     case ShelfBackgroundType::kMaximized:
@@ -217,10 +215,6 @@ SkColor ShelfBackgroundAnimator::GetBackgroundColor(
     ShelfBackgroundType background_type) const {
   SkColor shelf_target_color = ShelfConfig::Get()->GetDefaultShelfColor();
   switch (background_type) {
-    case ShelfBackgroundType::kAppList:
-    case ShelfBackgroundType::kMaximizedWithAppList:
-      shelf_target_color = ShelfConfig::Get()->GetShelfWithAppListColor();
-      break;
     case ShelfBackgroundType::kDefaultBg:
     case ShelfBackgroundType::kHomeLauncher:
       shelf_target_color = ShelfConfig::Get()->GetDefaultShelfColor();
