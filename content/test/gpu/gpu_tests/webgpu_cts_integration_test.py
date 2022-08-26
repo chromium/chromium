@@ -40,7 +40,7 @@ BACKEND_VALIDATION_MULTIPLIER = 6
 # In most cases, this should be very fast, but the first test run after a page
 # load can be slow.
 MESSAGE_TIMEOUT_TEST_STARTED = 10
-MESSAGE_TIMEOUT_TEST_LOG = 0.5
+MESSAGE_TIMEOUT_TEST_LOG = 1
 
 HTML_FILENAME = os.path.join('webgpu-cts', 'test_page.html')
 
@@ -277,8 +277,6 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     if JAVASCRIPT_DURATION in self.additionalTags:
       del self.additionalTags[JAVASCRIPT_DURATION]
 
-    timeout = self._GetTestTimeout()
-
     try:
       self._NavigateIfNecessary(test_path)
       asyncio.run_coroutine_threadsafe(
@@ -287,7 +285,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                   'q': self._query,
                   'w': self._run_in_worker
               })), WebGpuCtsIntegrationTest.event_loop)
-      result = self.HandleMessageLoop(timeout)
+      result = self.HandleMessageLoop()
 
       log_str = ''.join(result.log_pieces)
       status = result.status
@@ -302,7 +300,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     finally:
       WebGpuCtsIntegrationTest.total_tests_run += 1
 
-  def HandleMessageLoop(self, test_timeout: float) -> WebGpuTestResult:
+  def HandleMessageLoop(self) -> WebGpuTestResult:
     """Helper function to handle the loop for the message protocol.
 
     See //docs/gpu/webgpu_cts_harness_message_protocol.md for more information
@@ -324,12 +322,31 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         MESSAGE_TYPE_TEST_STATUS: False,
         MESSAGE_TYPE_TEST_LOG: False,
     }
-    timeout = MESSAGE_TIMEOUT_TEST_STARTED
+    step_timeout = MESSAGE_TIMEOUT_TEST_STARTED
+
+    # Parallel jobs can cause heavier tests to flakily time out, so increase the
+    # timeout based on the number of parallel jobs. 2x the timeout with 4 jobs
+    # seemed to work well, so target that.
+    # This multiplier will be applied for all message events.
+    timeout_multiplier = 1 + (self.child.jobs - 1) / 3.0
+    # Scale up all timeouts with ASAN.
+    if self._is_asan:
+      timeout_multiplier *= ASAN_MULTIPLIER
+
+    # Scale the test timeout if test execution is expected to be slow: the test
+    # is explicitly marked as slow, or we're running with backend validation.
+    test_timeout_multiplier = 1
+    if self._IsSlowTest():
+      test_timeout_multiplier *= SLOW_MULTIPLIER
+    if self._enable_dawn_backend_validation:
+      test_timeout_multiplier *= BACKEND_VALIDATION_MULTIPLIER
+
     # Loop until we receive a message saying that the test is finished. This
     # currently has no practical effect, but it is an intermediate step to
     # supporting a heartbeat mechanism. See crbug.com/1340602.
-    try:
-      while True:
+    while True:
+      timeout = step_timeout * timeout_multiplier
+      try:
         future = asyncio.run_coroutine_threadsafe(
             asyncio.wait_for(WebGpuCtsIntegrationTest.websocket.recv(),
                              timeout), WebGpuCtsIntegrationTest.event_loop)
@@ -343,7 +360,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
           # complaining about unused variables, don't grab it until we actually
           # need it.
           VerifyMessageOrderTestStarted(message_state)
-          timeout = test_timeout
+          step_timeout = self._test_timeout * test_timeout_multiplier
 
         elif response_type == MESSAGE_TYPE_TEST_HEARTBEAT:
           VerifyMessageOrderTestHeartbeat(message_state)
@@ -356,7 +373,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
           # Specify the precision to avoid scientific notation. Nanoseconds
           # should be more precision than we need anyways.
           self.additionalTags[JAVASCRIPT_DURATION] = '%.9fs' % js_duration
-          timeout = MESSAGE_TIMEOUT_TEST_LOG
+          step_timeout = MESSAGE_TIMEOUT_TEST_LOG
 
         elif response_type == MESSAGE_TYPE_TEST_LOG:
           VerifyMessageOrderTestLog(message_state)
@@ -369,17 +386,18 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         else:
           raise WebGpuMessageProtocolError('Received unknown message type %s' %
                                            response_type)
-    except asyncio.TimeoutError as e:
-      # Report the max timeout if the JavaScript code actually timed out (i.e.
-      # we were between TEST_STARTED and TEST_STATUS), otherwise don't modify
-      # anything.
-      if (message_state[MESSAGE_TYPE_TEST_STARTED]
-          and not message_state[MESSAGE_TYPE_TEST_STATUS]
-          and JAVASCRIPT_DURATION not in self.additionalTags):
-        self.additionalTags[JAVASCRIPT_DURATION] = '%.9fs' % test_timeout
-      raise WebGpuTimeoutError(
-          'Timed out waiting %.3f seconds for a message. Message state: %s' %
-          (timeout, message_state)) from e
+      except asyncio.TimeoutError as e:
+        # Report the max timeout if the JavaScript code actually timed out (i.e.
+        # we were between TEST_STARTED and TEST_STATUS), otherwise don't modify
+        # anything.
+        if (message_state[MESSAGE_TYPE_TEST_STARTED]
+            and not message_state[MESSAGE_TYPE_TEST_STATUS]
+            and JAVASCRIPT_DURATION not in self.additionalTags):
+          self.additionalTags[JAVASCRIPT_DURATION] = '%.9fs' % (
+              self._test_timeout * test_timeout_multiplier * timeout_multiplier)
+        raise WebGpuTimeoutError(
+            'Timed out waiting %.3f seconds for a message. Message state: %s' %
+            (timeout, message_state)) from e
     return result
 
   @classmethod
@@ -417,22 +435,6 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     expectation = self.child.expectations.expectations_for(
         TestNameFromInputs(self._query, self._run_in_worker))
     return 'Slow' in expectation.raw_results
-
-  def _GetTestTimeout(self) -> int:
-    timeout = self._test_timeout
-    # Parallel jobs can cause heavier tests to flakily time out, so increase the
-    # timeout based on the number of parallel jobs. 2x the timeout with 4 jobs
-    # seemed to work well, so target that.
-    timeout *= 1 + (self.child.jobs - 1) / 3.0
-
-    if self._IsSlowTest():
-      timeout *= SLOW_MULTIPLIER
-    if self._is_asan:
-      timeout *= ASAN_MULTIPLIER
-    if self._enable_dawn_backend_validation:
-      timeout *= BACKEND_VALIDATION_MULTIPLIER
-
-    return int(timeout)
 
   @classmethod
   def GetPlatformTags(cls, browser: ct.Browser) -> List[str]:
