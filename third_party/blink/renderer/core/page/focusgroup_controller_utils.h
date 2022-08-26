@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_FOCUSGROUP_CONTROLLER_UTILS_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -13,8 +14,6 @@ namespace blink {
 class Element;
 class GridFocusgroupStructureInfo;
 class KeyboardEvent;
-
-enum FocusgroupFlags : uint8_t;
 
 enum class FocusgroupDirection {
   kNone,
