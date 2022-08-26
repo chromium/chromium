@@ -16,6 +16,8 @@ namespace gcm {
 namespace features {
 
 extern const base::Feature kInvalidateTokenFeature;
+extern const base::Feature kGCMIncludeAccountTokensInCheckinRequest;
+extern const base::Feature kGCMReportAccountTokenChanges;
 extern const char kParamNameTokenInvalidationPeriodDays[];
 
 // The period after which the GCM token becomes stale.
