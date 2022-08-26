@@ -784,26 +784,6 @@ TEST(VideoFrameMetadata, MergeMetadata) {
   VerifyVideoFrameMetadataEquality(empty_metadata, reference_metadata);
 }
 
-TEST(VideoFrameMetadata, ClearTextureMetadata) {
-  VideoFrameMetadata reference_md = GetFullVideoFrameMetadata();
-  reference_md.is_webgpu_compatible = true;
-  reference_md.texture_origin_is_top_left = false;
-  reference_md.read_lock_fences_enabled = true;
-
-  VideoFrameMetadata copy_md;
-  copy_md.MergeMetadataFrom(reference_md);
-
-  copy_md.ClearTextureFrameMedatada();
-  EXPECT_FALSE(copy_md.is_webgpu_compatible);
-  EXPECT_TRUE(copy_md.texture_origin_is_top_left);
-  EXPECT_FALSE(copy_md.read_lock_fences_enabled);
-
-  reference_md.is_webgpu_compatible = false;
-  reference_md.texture_origin_is_top_left = true;
-  reference_md.read_lock_fences_enabled = false;
-  VerifyVideoFrameMetadataEquality(copy_md, reference_md);
-}
-
 TEST(VideoFrameMetadata, PartialMergeMetadata) {
   VideoFrameMetadata full_metadata = GetFullVideoFrameMetadata();
 

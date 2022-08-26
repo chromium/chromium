@@ -27,9 +27,6 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // Merges internal values from |metadata_source|.
   void MergeMetadataFrom(const VideoFrameMetadata& metadata_source);
 
-  // CLear metadata fields that only make sense for texture backed frames.
-  void ClearTextureFrameMedatada();
-
   // Sources of VideoFrames use this marker to indicate that the associated
   // VideoFrame can be overlaid, case in which its contents do not need to be
   // further composited but displayed directly.

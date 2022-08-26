@@ -58,7 +58,6 @@
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
 #include "third_party/blink/renderer/modules/webcodecs/allow_shared_buffer_source_util.h"
-#include "third_party/blink/renderer/modules/webcodecs/background_readback.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_state_helper.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk.h"
 #include "third_party/blink/renderer/modules/webcodecs/gpu_factories_retriever.h"
@@ -71,7 +70,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
-#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
@@ -653,112 +651,11 @@ bool VideoEncoder::HasPendingActivity() const {
   return (active_encodes_ > 0) || Base::HasPendingActivity();
 }
 
-void VideoEncoder::Trace(Visitor* visitor) const {
-  visitor->Trace(background_readback_);
-  Base::Trace(visitor);
-}
-
 bool VideoEncoder::ReadyToProcessNextRequest() {
   if (active_encodes_ >= kMaxActiveEncodes)
     return false;
 
   return Base::ReadyToProcessNextRequest();
-}
-
-bool VideoEncoder::StartReadback(scoped_refptr<media::VideoFrame> frame,
-                                 ReadbackDoneCallback result_cb) {
-  // Stall request processing while we wait for the copy to complete. It'd
-  // be nice to not have to do this, but currently the request processing
-  // loop must execute synchronously or flush() will miss frames.
-  blocking_request_in_progress_ = true;
-
-  // TODO(crbug.com/1195433): Once support for alpha channel encoding is
-  // implemented, |force_opaque| must be set based on the
-  // VideoEncoderConfig.
-  const bool can_use_gmb =
-      !disable_accelerated_frame_pool_ &&
-      CanUseGpuMemoryBufferReadback(frame->format(), /*force_opaque=*/true);
-  if (can_use_gmb && !accelerated_frame_pool_) {
-    if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
-      accelerated_frame_pool_ =
-          std::make_unique<WebGraphicsContext3DVideoFramePool>(wrapper);
-    }
-  }
-
-  auto [pool_result_cb, background_result_cb] =
-      base::SplitOnceCallback(std::move(result_cb));
-  if (can_use_gmb && accelerated_frame_pool_) {
-    auto origin = frame->metadata().texture_origin_is_top_left
-                      ? kTopLeft_GrSurfaceOrigin
-                      : kBottomLeft_GrSurfaceOrigin;
-
-    // CopyRGBATextureToVideoFrame() operates on mailboxes and
-    // not frames, so we must manually copy over properties relevant to
-    // the encoder. We amend result callback to do exactly that.
-    auto metadata_fix_lambda = [](scoped_refptr<media::VideoFrame> txt_frame,
-                                  scoped_refptr<media::VideoFrame> result_frame)
-        -> scoped_refptr<media::VideoFrame> {
-      if (!result_frame)
-        return result_frame;
-      result_frame->set_timestamp(txt_frame->timestamp());
-      result_frame->metadata().MergeMetadataFrom(txt_frame->metadata());
-      result_frame->metadata().ClearTextureFrameMedatada();
-      return result_frame;
-    };
-
-    auto callback_chain = ConvertToBaseOnceCallback(
-                              CrossThreadBindOnce(metadata_fix_lambda, frame))
-                              .Then(std::move(pool_result_cb));
-
-    // TODO(crbug.com/1224279): This assumes that all frames are 8-bit sRGB.
-    // Expose the color space and pixel format that is backing
-    // `image->GetMailboxHolder()`, or, alternatively, expose an accelerated
-    // SkImage.
-    auto format = (frame->format() == media::PIXEL_FORMAT_XBGR ||
-                   frame->format() == media::PIXEL_FORMAT_ABGR)
-                      ? viz::ResourceFormat::RGBA_8888
-                      : viz::ResourceFormat::BGRA_8888;
-
-    // When doing RGBA to YUVA conversion using `accelerated_frame_pool_`, use
-    // sRGB primaries and the 601 YUV matrix. Note that this is subtly
-    // different from the 601 gfx::ColorSpace because the 601 gfx::ColorSpace
-    // has different (non-sRGB) primaries.
-    // https://crbug.com/1258245
-    constexpr gfx::ColorSpace kDstColorSpace(
-        gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::SRGB,
-        gfx::ColorSpace::MatrixID::SMPTE170M,
-        gfx::ColorSpace::RangeID::LIMITED);
-
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("media", "CopyRGBATextureToVideoFrame",
-                                      this, "timestamp", frame->timestamp());
-    if (accelerated_frame_pool_->CopyRGBATextureToVideoFrame(
-            format, frame->coded_size(), frame->ColorSpace(), origin,
-            frame->mailbox_holder(0), kDstColorSpace,
-            std::move(callback_chain))) {
-      return true;
-    }
-
-    TRACE_EVENT_NESTABLE_ASYNC_END0("media", "CopyRGBATextureToVideoFrame",
-                                    this);
-
-    // Error occurred, fall through to normal readback path below.
-    disable_accelerated_frame_pool_ = true;
-    accelerated_frame_pool_.reset();
-  }
-
-  if (!background_readback_)
-    background_readback_ = BackgroundReadback::From(*GetExecutionContext());
-
-  if (background_readback_) {
-    background_readback_->ReadbackTextureBackedFrameToMemory(
-        std::move(frame), std::move(background_result_cb));
-    return true;
-  }
-
-  // Oh well, none of our readback mechanisms were able to succeed,
-  // let's unblock request processing and report an error.
-  blocking_request_in_progress_ = false;
-  return false;
 }
 
 void VideoEncoder::ProcessEncode(Request* request) {
@@ -774,29 +671,140 @@ void VideoEncoder::ProcessEncode(Request* request) {
   active_encodes_++;
   request->StartTracingVideoEncode(keyframe, frame->timestamp());
 
-  auto encode_done_callback = ConvertToBaseOnceCallback(CrossThreadBindOnce(
-      &VideoEncoder::OnEncodeDone, WrapCrossThreadWeakPersistent(this),
-      WrapCrossThreadPersistent(request)));
+  auto done_callback = [](VideoEncoder* self, Request* req,
+                          media::EncoderStatus status) {
+    if (!self || self->reset_count_ != req->reset_count) {
+      req->EndTracing(/*aborted=*/true);
+      return;
+    }
+    DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
+
+    self->active_encodes_--;
+    if (!status.is_ok()) {
+      self->HandleError(
+          self->logger_->MakeException("Encoding error.", std::move(status)));
+    }
+    req->EndTracing();
+    self->ProcessRequests();
+  };
 
   // Currently underlying encoders can't handle frame backed by textures,
   // so let's readback pixel data to CPU memory.
   // TODO(crbug.com/1229845): We shouldn't be reading back frames here.
   if (frame->HasTextures() && !frame->HasGpuMemoryBuffer()) {
-    auto readback_done_callback = WTF::Bind(
-        &VideoEncoder::OnReadbackDone, WrapWeakPersistent(this), keyframe,
-        reset_count_, frame, std::move(encode_done_callback));
-    if (StartReadback(std::move(frame), std::move(readback_done_callback))) {
-      request->input->close();
-    } else {
-      callback_runner_->PostTask(
-          FROM_HERE,
-          ConvertToBaseOnceCallback(CrossThreadBindOnce(
-              &VideoEncoder::OnEncodeDone, WrapCrossThreadWeakPersistent(this),
-              WrapCrossThreadPersistent(request),
-              media::EncoderStatus(
-                  media::EncoderStatus::Codes::kEncoderFailedEncode,
-                  "Can't readback frame textures."))));
+    // TODO(crbug.com/1195433): Once support for alpha channel encoding is
+    // implemented, |force_opaque| must be set based on the VideoEncoderConfig.
+    const bool can_use_gmb =
+        !disable_accelerated_frame_pool_ &&
+        CanUseGpuMemoryBufferReadback(frame->format(), /*force_opaque=*/true);
+    if (can_use_gmb && !accelerated_frame_pool_) {
+      if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
+        accelerated_frame_pool_ =
+            std::make_unique<WebGraphicsContext3DVideoFramePool>(wrapper);
+      }
     }
+    if (can_use_gmb && accelerated_frame_pool_) {
+      // This will execute shortly after CopyRGBATextureToVideoFrame()
+      // completes. |blocking_request_in_progress_| = true will ensure that
+      // HasPendingActivity() keeps the VideoEncoder alive long enough.
+      auto blit_done_callback =
+          [](VideoEncoder* self, bool keyframe, uint32_t reset_count,
+             base::TimeDelta timestamp, media::VideoFrameMetadata metadata,
+             media::VideoEncoder::EncoderStatusCB done_callback,
+             scoped_refptr<media::VideoFrame> frame) {
+            TRACE_EVENT_NESTABLE_ASYNC_END0(
+                "media", "CopyRGBATextureToVideoFrame", self);
+            if (!self || self->reset_count_ != reset_count || !frame)
+              return;
+
+            // CopyRGBATextureToVideoFrame() operates on mailboxes and not
+            // frames, so we must manually copy over properties relevant to the
+            // encoder.
+            frame->set_timestamp(timestamp);
+            frame->set_metadata(metadata);
+
+            DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
+            --self->requested_encodes_;
+            self->ScheduleDequeueEvent();
+            self->blocking_request_in_progress_ = false;
+            self->media_encoder_->Encode(std::move(frame), keyframe,
+                                         std::move(done_callback));
+            self->ProcessRequests();
+          };
+
+      auto origin = frame->metadata().texture_origin_is_top_left
+                        ? kTopLeft_GrSurfaceOrigin
+                        : kBottomLeft_GrSurfaceOrigin;
+
+      // TODO(crbug.com/1224279): This assumes that all frames are 8-bit sRGB.
+      // Expose the color space and pixel format that is backing
+      // `image->GetMailboxHolder()`, or, alternatively, expose an accelerated
+      // SkImage.
+      auto format = (frame->format() == media::PIXEL_FORMAT_XBGR ||
+                     frame->format() == media::PIXEL_FORMAT_ABGR)
+                        ? viz::ResourceFormat::RGBA_8888
+                        : viz::ResourceFormat::BGRA_8888;
+
+      // Stall request processing while we wait for the copy to complete. It'd
+      // be nice to not have to do this, but currently the request processing
+      // loop must execute synchronously or flush() will miss frames.
+      blocking_request_in_progress_ = true;
+      // When doing RGBA to YUVA conversion using `accelerated_frame_pool_`, use
+      // sRGB primaries and the 601 YUV matrix. Note that this is subtly
+      // different from the 601 gfx::ColorSpace because the 601 gfx::ColorSpace
+      // has different (non-sRGB) primaries.
+      // https://crbug.com/1258245
+      constexpr gfx::ColorSpace dst_color_space(
+          gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::SRGB,
+          gfx::ColorSpace::MatrixID::SMPTE170M,
+          gfx::ColorSpace::RangeID::LIMITED);
+
+      TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("media", "CopyRGBATextureToVideoFrame",
+                                        this, "timestamp", frame->timestamp());
+      if (accelerated_frame_pool_->CopyRGBATextureToVideoFrame(
+              format, frame->coded_size(), frame->ColorSpace(), origin,
+              frame->mailbox_holder(0), dst_color_space,
+              WTF::Bind(blit_done_callback, WrapWeakPersistent(this), keyframe,
+                        reset_count_, frame->timestamp(), frame->metadata(),
+                        ConvertToBaseOnceCallback(CrossThreadBindOnce(
+                            done_callback, WrapCrossThreadWeakPersistent(this),
+                            WrapCrossThreadPersistent(request)))))) {
+        request->input->close();
+        return;
+      }
+
+      TRACE_EVENT_NESTABLE_ASYNC_END0("media", "CopyRGBATextureToVideoFrame",
+                                      this);
+
+      // Error occurred, fall through to normal readback path below.
+      blocking_request_in_progress_ = false;
+      disable_accelerated_frame_pool_ = true;
+      accelerated_frame_pool_.reset();
+    }
+
+    auto wrapper = SharedGpuContext::ContextProviderWrapper();
+    scoped_refptr<viz::RasterContextProvider> raster_provider;
+    if (wrapper && wrapper->ContextProvider())
+      raster_provider = wrapper->ContextProvider()->RasterContextProvider();
+    if (raster_provider) {
+      auto* ri = raster_provider->RasterInterface();
+      auto* gr_context = raster_provider->GrContext();
+
+      frame = ReadbackTextureBackedFrameToMemorySync(*frame, ri, gr_context,
+                                                     &readback_frame_pool_);
+    } else {
+      frame.reset();
+    }
+  }
+
+  if (!frame) {
+    callback_runner_->PostTask(
+        FROM_HERE, ConvertToBaseOnceCallback(CrossThreadBindOnce(
+                       done_callback, WrapCrossThreadWeakPersistent(this),
+                       WrapCrossThreadPersistent(request),
+                       media::EncoderStatus(
+                           media::EncoderStatus::Codes::kEncoderFailedEncode,
+                           "Can't readback frame textures."))));
     return;
   }
 
@@ -810,54 +818,13 @@ void VideoEncoder::ProcessEncode(Request* request) {
 
   --requested_encodes_;
   ScheduleDequeueEvent();
-  media_encoder_->Encode(frame, keyframe, std::move(encode_done_callback));
+  media_encoder_->Encode(frame, keyframe,
+                         ConvertToBaseOnceCallback(CrossThreadBindOnce(
+                             done_callback, WrapCrossThreadWeakPersistent(this),
+                             WrapCrossThreadPersistent(request))));
 
   // We passed a copy of frame() above, so this should be safe to close here.
   request->input->close();
-}
-
-void VideoEncoder::OnReadbackDone(
-    bool keyframe,
-    uint32_t reset_count,
-    scoped_refptr<media::VideoFrame> txt_frame,
-    media::VideoEncoder::EncoderStatusCB done_callback,
-    scoped_refptr<media::VideoFrame> result_frame) {
-  TRACE_EVENT_NESTABLE_ASYNC_END0("media", "CopyRGBATextureToVideoFrame", this);
-  if (reset_count_ != reset_count)
-    return;
-
-  if (!result_frame) {
-    callback_runner_->PostTask(
-        FROM_HERE, ConvertToBaseOnceCallback(CrossThreadBindOnce(
-                       std::move(done_callback),
-                       media::EncoderStatus(
-                           media::EncoderStatus::Codes::kEncoderFailedEncode,
-                           "Can't readback frame textures."))));
-    return;
-  }
-
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  --requested_encodes_;
-  ScheduleDequeueEvent();
-  blocking_request_in_progress_ = false;
-  media_encoder_->Encode(std::move(result_frame), keyframe,
-                         std::move(done_callback));
-  ProcessRequests();
-}
-
-void VideoEncoder::OnEncodeDone(Request* request, media::EncoderStatus status) {
-  if (reset_count_ != request->reset_count) {
-    request->EndTracing(/*aborted=*/true);
-    return;
-  }
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  active_encodes_--;
-  if (!status.is_ok()) {
-    HandleError(logger_->MakeException("Encoding error.", std::move(status)));
-  }
-  request->EndTracing();
-  ProcessRequests();
 }
 
 void VideoEncoder::ProcessConfigure(Request* request) {

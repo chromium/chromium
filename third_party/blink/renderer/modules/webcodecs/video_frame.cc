@@ -329,7 +329,7 @@ void CopyMappablePlanes(const media::VideoFrame& src_frame,
   }
 }
 
-bool CopyTexturablePlanes(media::VideoFrame& src_frame,
+bool CopyTexturablePlanes(const media::VideoFrame& src_frame,
                           const gfx::Rect& src_rect,
                           const VideoFrameLayout& dest_layout,
                           base::span<uint8_t> dest_buffer) {

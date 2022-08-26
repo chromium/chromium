@@ -1366,8 +1366,6 @@ _CONFIG = [
         'allowed': [
             'base::ClampMul',
             'base::PlatformThreadRef',
-            'base::SplitOnceCallback',
-            'base::SingleThreadTaskRunnerThreadMode',
             'base::WrapRefCounted',
             'cc::kNumYUVPlanes',
             'cc::YUVIndex',
