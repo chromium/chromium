@@ -11,7 +11,7 @@
 
 namespace reading_list {
 
-// Returns the offline URL for |entry_url|, the URL of the ReadingListEntry
+// Returns the offline URL for `entry_url`, the URL of the ReadingListEntry
 // which must not be empty or invalid.
 GURL OfflineURLForURL(const GURL& entry_url);
 
@@ -19,11 +19,11 @@ GURL OfflineURLForURL(const GURL& entry_url);
 // parameters.
 GURL OfflineReloadURLForURL(const GURL& entry_url);
 
-// If |offline_url| has a "entryURL" query params that is a URL, returns it.
+// If `offline_url` has a "entryURL" query params that is a URL, returns it.
 // If not, return GURL::EmptyURL().
 GURL EntryURLForOfflineURL(const GURL& offline_url);
 
-// If |offline_url| has a "reload" query params that is a URL, returns it.
+// If `offline_url` has a "reload" query params that is a URL, returns it.
 // If not, return GURL::EmptyURL().
 GURL ReloadURLForOfflineURL(const GURL& offline_url);
 

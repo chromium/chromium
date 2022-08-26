@@ -47,8 +47,8 @@ const int kNumberOfFailsBeforeWifiOnly = 5;
 // it.
 const int kNumberOfFailsBeforeStop = 7;
 
-// Scans |root| directory and deletes all subdirectories not listed
-// in |directories_to_keep|.
+// Scans `root` directory and deletes all subdirectories not listed
+// in `directories_to_keep`.
 // Must be called on File thread.
 void CleanUpFiles(base::FilePath root,
                   const std::set<std::string>& processed_directories) {

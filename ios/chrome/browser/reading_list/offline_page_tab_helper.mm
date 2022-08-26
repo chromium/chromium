@@ -35,7 +35,7 @@
 #endif
 
 namespace {
-// Gets the offline data at |offline_path|. The result is a single std::string
+// Gets the offline data at `offline_path`. The result is a single std::string
 // with all resources inlined.
 // This method access file system and cannot be called on UI thread.
 // TODO(crbug.com/1166398): Remove backwards compatibility after M95
@@ -143,7 +143,7 @@ void OfflinePageTabHelper::LoadData(int offline_navigation,
   dont_reload_online_on_next_navigation_ = true;
   web_state_->LoadData(ns_data, mime, offline_navigation_triggered_);
   // LoadData replace the last committed item and will set the URL to
-  // |offline_navigation_triggered_|. Set the VirtualURL to |url| so it is
+  // `offline_navigation_triggered_`. Set the VirtualURL to `url` so it is
   // displayed in the omnibox.
   web_state_->GetNavigationManager()->GetLastCommittedItem()->SetVirtualURL(
       url);

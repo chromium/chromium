@@ -34,13 +34,13 @@ class ReadingListDistillerPageFactory {
 
   virtual ~ReadingListDistillerPageFactory();
 
-  // Creates a ReadingListDistillerPage to distill |url|.
-  // Information about page will be reported to |delegate|.
+  // Creates a ReadingListDistillerPage to distill `url`.
+  // Information about page will be reported to `delegate`.
   std::unique_ptr<ReadingListDistillerPage> CreateReadingListDistillerPage(
       const GURL& url,
       ReadingListDistillerPageDelegate* delegate) const;
 
-  // Releases all WebState owned by |web_state_dispatcher_|.
+  // Releases all WebState owned by `web_state_dispatcher_`.
   void ReleaseAllRetainedWebState();
 
  private:

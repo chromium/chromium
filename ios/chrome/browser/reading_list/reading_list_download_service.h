@@ -72,11 +72,11 @@ class ReadingListDownloadService
  private:
   // Checks the model and determines which entries are processed and which
   // entries need to be processed.
-  // Initiates a cleanup of |OfflineRoot()| directory removing sub_directories
+  // Initiates a cleanup of `OfflineRoot()` directory removing sub_directories
   // not corresponding to a processed ReadingListEntry.
   // Schedules unprocessed entries for distillation.
   void SyncWithModel();
-  // Schedules all entries in |unprocessed_entries| for distillation.
+  // Schedules all entries in `unprocessed_entries` for distillation.
   void DownloadUnprocessedEntries(const std::set<GURL>& unprocessed_entries);
   // Processes a new entry and schedules a download if needed.
   void ProcessNewEntry(const GURL& url);

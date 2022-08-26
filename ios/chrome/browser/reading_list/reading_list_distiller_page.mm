@@ -270,7 +270,7 @@ void ReadingListDistillerPage::OnHandleGoogleCachedAMPPageResult(
       CurrentWebState()->GetNavigationManager()->LoadURLWithParams(params);
 
       // If there is no error, the navigation completion will
-      // trigger a new |OnLoadURLDone| call that will resume
+      // trigger a new `OnLoadURLDone` call that will resume
       // the distillation.
       return;
     }

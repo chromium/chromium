@@ -60,7 +60,7 @@ TEST_F(OfflineURLUtilsTest, ParseOfflineURLWithVirtualURLTest) {
   EXPECT_TRUE(entry_url.is_empty());
 }
 
-// Checks that the offline URLs are correctly detected by |IsOfflineURL|.
+// Checks that the offline URLs are correctly detected by `IsOfflineURL`.
 TEST_F(OfflineURLUtilsTest, IsOfflineURL) {
   EXPECT_FALSE(reading_list::IsOfflineURL(GURL()));
   EXPECT_FALSE(reading_list::IsOfflineURL(GURL("chrome://")));
@@ -78,7 +78,7 @@ TEST_F(OfflineURLUtilsTest, IsOfflineURL) {
       GURL("chrome://offline/foobar?reload=http%3A%2F%2Ffoo.bar%2F")));
 }
 
-// Checks that the offline URLs are correctly detected by |IsOfflineEntryURL|.
+// Checks that the offline URLs are correctly detected by `IsOfflineEntryURL`.
 TEST_F(OfflineURLUtilsTest, IsOfflineEntryURL) {
   EXPECT_FALSE(reading_list::IsOfflineEntryURL(GURL()));
   EXPECT_FALSE(reading_list::IsOfflineEntryURL(GURL("chrome://")));
@@ -99,7 +99,7 @@ TEST_F(OfflineURLUtilsTest, IsOfflineEntryURL) {
       GURL("chrome://offline/foobar?reload=http%3A%2F%2Ffoo.bar%2F")));
 }
 
-// Checks that the offline URLs are correctly detected by |IsOfflineReloadURL|.
+// Checks that the offline URLs are correctly detected by `IsOfflineReloadURL`.
 TEST_F(OfflineURLUtilsTest, IsOfflineReloadURL) {
   EXPECT_FALSE(reading_list::IsOfflineReloadURL(GURL()));
   EXPECT_FALSE(reading_list::IsOfflineReloadURL(GURL("chrome://")));

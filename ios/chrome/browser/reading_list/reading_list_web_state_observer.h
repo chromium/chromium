@@ -46,23 +46,23 @@ class ReadingListWebStateObserver
 
   // Looks at the loading percentage. If less than 25% * time, attemps to load
   // the offline version of that page.
-  // |time| is the number of seconds since |StartCheckingProgress| was called.
+  // `time` is the number of seconds since `StartCheckingProgress` was called.
   void VerifyIfReadingListEntryStartedLoading();
 
   friend class ReadingListWebStateObserverUserDataWrapper;
 
-  // Stops checking the loading of the |pending_url_|.
+  // Stops checking the loading of the `pending_url_`.
   // The WebState will still be observed, but no action will be done on events.
   void StopCheckingProgress();
 
   // Loads the offline version of the URL in place of the current page.
   void LoadOfflineReadingListEntry();
 
-  // Returns if the current page with |url| has an offline version that can be
+  // Returns if the current page with `url` has an offline version that can be
   // displayed if the normal loading fails.
   bool IsUrlAvailableOffline(const GURL& url) const;
 
-  // Checks if |item| should be observed or not.
+  // Checks if `item` should be observed or not.
   // A non-null item should be observed if it is not already loading an offline
   // URL.
   bool ShouldObserveItem(web::NavigationItem* item) const;

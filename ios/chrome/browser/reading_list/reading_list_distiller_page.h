@@ -48,9 +48,9 @@ class ReadingListDistillerPageDelegate {
 // and add a 2 seconds delay between loading and distillation.
 class ReadingListDistillerPage : public dom_distiller::DistillerPageIOS {
  public:
-  // Creates a ReadingListDistillerPage to distill |url|. WebStates to download
+  // Creates a ReadingListDistillerPage to distill `url`. WebStates to download
   // the pages will be provided by web_state_dispatcher.
-  // |browser_state|, |web_state_dispatcher| and |delegate| must not be null.
+  // `browser_state`, `web_state_dispatcher` and `delegate` must not be null.
   explicit ReadingListDistillerPage(
       const GURL& url,
       web::BrowserState* browser_state,
@@ -101,12 +101,12 @@ class ReadingListDistillerPage : public dom_distiller::DistillerPageIOS {
   void OnHandleWikipediaPageResult(const base::Value* value);
 
   // Continue the distillation on the page that is currently loaded in
-  // |CurrentWebState()|.
+  // `CurrentWebState()`.
   void ContinuePageDistillation();
-  // Starts the fetching of |page_url|'s favicon.
+  // Starts the fetching of `page_url`'s favicon.
   void FetchFavicon(const GURL& page_url);
 
-  // Continues distillation by calling superclass |OnLoadURLDone|.
+  // Continues distillation by calling superclass `OnLoadURLDone`.
   void DelayedOnLoadURLDone(int delayed_task_id);
   GURL original_url_;
   bool distilling_main_page_;

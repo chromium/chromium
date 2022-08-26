@@ -20,8 +20,8 @@ namespace reading_list {
 // Implementation of the FaviconWebStateDispatcher.
 class FaviconWebStateDispatcherImpl : public FaviconWebStateDispatcher {
  public:
-  // Constructor for keeping the WebStates alive for |keep_alive_second|
-  // seconds. If |keep_alive_second| < 0 then the default value is used.
+  // Constructor for keeping the WebStates alive for `keep_alive_second`
+  // seconds. If `keep_alive_second` < 0 then the default value is used.
   FaviconWebStateDispatcherImpl(web::BrowserState* browser_state,
                                 int64_t keep_alive_second);
   ~FaviconWebStateDispatcherImpl() override;

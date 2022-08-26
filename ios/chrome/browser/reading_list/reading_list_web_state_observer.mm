@@ -151,7 +151,7 @@ void ReadingListWebStateObserver::StartCheckingLoading() {
   bool reloading_from_offline = last_load_was_offline && is_reload;
 
   // No need to launch the timer either if there is no offline version to show.
-  // Track |pending_url_| to mark the entry as read in case of a successful
+  // Track `pending_url_` to mark the entry as read in case of a successful
   // load.
   if (reloading_from_offline || !IsUrlAvailableOffline(pending_url_)) {
     return;
@@ -234,7 +234,7 @@ void ReadingListWebStateObserver::VerifyIfReadingListEntryStartedLoading() {
   }
   if (try_number_ >= 3) {
     // Loading reached 75%, let the page finish normal loading.
-    // Do not call |StopCheckingProgress()| as |pending_url_| is still
+    // Do not call `StopCheckingProgress()` as `pending_url_` is still
     // needed to mark the entry read on success loading or to display
     // offline version on error.
     timer_->Stop();
@@ -264,7 +264,7 @@ void ReadingListWebStateObserver::LoadOfflineReadingListEntry() {
     item->SetURL(url);
     item->SetVirtualURL(pending_url_);
     // Changing navigation item from web to native an calling
-    // |navigationManager->Reload| will not insert NativeContent. This is a bug
+    // `navigationManager->Reload` will not insert NativeContent. This is a bug
     // which will not be fixed because NativeContent support is deprecated.
     // Offline Version will be eventually rewritten without relying on
     // NativeContent (crbug.com/725239).

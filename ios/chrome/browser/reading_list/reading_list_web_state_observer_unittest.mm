@@ -129,7 +129,7 @@ TEST_F(ReadingListWebStateObserverTest, TestLoadReadingListFailure) {
 
   EXPECT_FALSE(fake_navigation_manager->ReloadCalled());
   EXPECT_EQ(fake_navigation_manager->GoToIndexCalled(), -1);
-  // Check that |GetLastCommittedItem()| has not been altered.
+  // Check that `GetLastCommittedItem()` has not been altered.
   EXPECT_EQ(fake_navigation_manager->GetLastCommittedItem()->GetVirtualURL(),
             GURL());
   EXPECT_EQ(fake_navigation_manager->GetLastCommittedItem()->GetURL(), GURL());
@@ -157,7 +157,7 @@ TEST_F(ReadingListWebStateObserverTest, TestLoadReadingListOnline) {
 
   EXPECT_FALSE(fake_navigation_manager->ReloadCalled());
   EXPECT_EQ(fake_navigation_manager->GoToIndexCalled(), -1);
-  // Check that |GetLastCommittedItem()| has not been altered.
+  // Check that `GetLastCommittedItem()` has not been altered.
   EXPECT_EQ(fake_navigation_manager->GetLastCommittedItem()->GetVirtualURL(),
             GURL());
   EXPECT_EQ(fake_navigation_manager->GetLastCommittedItem()->GetURL(), GURL());
