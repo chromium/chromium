@@ -11,6 +11,7 @@ import "services/network/public/mojom/url_loader_factory.mojom";
 import "services/service_manager/public/mojom/interface_provider.mojom";
 import "third_party/blink/public/mojom/devtools/console_message.mojom";
 import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
+import "third_party/blink/public/mojom/frame/policy_container.mojom";
 import "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom";
 import "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom";
 import "third_party/blink/public/mojom/renderer_preference_watcher.mojom";
@@ -146,6 +147,9 @@ struct EmbeddedWorkerStartParams {
   // Valid only when the service worker is new and the script needs to be loaded
   // from the network.
   WorkerMainScriptLoadParams? main_script_load_params;
+
+  // A container for several security policies to be applied to the worker.
+  PolicyContainer policy_container;
 };
 
 // Holds timing information about the start worker sequence for UMA.

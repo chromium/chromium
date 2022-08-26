@@ -251,7 +251,7 @@ void ServiceWorkerContainerHost::Register(
                      weak_factory_.GetWeakPtr(), GURL(script_url),
                      GURL(options->scope), std::move(wrapped_callback),
                      trace_id, mojo::GetBadMessageCallback()),
-      global_frame_id);
+      global_frame_id, policy_container_policies_.value());
 }
 
 void ServiceWorkerContainerHost::GetRegistration(
@@ -804,7 +804,7 @@ ServiceWorkerClientInfo ServiceWorkerContainerHost::GetServiceWorkerClientInfo()
 
 void ServiceWorkerContainerHost::OnBeginNavigationCommit(
     const GlobalRenderFrameHostId& rfh_id,
-    const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+    const PolicyContainerPolicies& policy_container_policies,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter,
     ukm::SourceId document_ukm_source_id) {
@@ -817,8 +817,9 @@ void ServiceWorkerContainerHost::OnBeginNavigationCommit(
   if (controller_)
     controller_->UpdateForegroundPriority();
 
-  DCHECK(!cross_origin_embedder_policy_.has_value());
-  cross_origin_embedder_policy_ = cross_origin_embedder_policy;
+  DCHECK(!policy_container_policies_.has_value());
+  policy_container_policies_ = policy_container_policies.Clone();
+
   coep_reporter_.Bind(std::move(coep_reporter));
 
   mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
@@ -829,9 +830,10 @@ void ServiceWorkerContainerHost::OnBeginNavigationCommit(
   if (controller_ && controller_->fetch_handler_existence() ==
                          ServiceWorkerVersion::FetchHandlerExistence::EXISTS) {
     DCHECK(pending_controller_receiver_);
-    controller_->controller()->Clone(std::move(pending_controller_receiver_),
-                                     cross_origin_embedder_policy_.value(),
-                                     std::move(coep_reporter_to_be_passed));
+    controller_->controller()->Clone(
+        std::move(pending_controller_receiver_),
+        policy_container_policies_->cross_origin_embedder_policy,
+        std::move(coep_reporter_to_be_passed));
   }
 
   auto* rfh = RenderFrameHostImpl::FromID(rfh_id);
@@ -859,20 +861,21 @@ void ServiceWorkerContainerHost::OnEndNavigationCommit() {
 }
 
 void ServiceWorkerContainerHost::CompleteWebWorkerPreparation(
-    const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+    const PolicyContainerPolicies& policy_container_policies,
     ukm::SourceId worker_ukm_source_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsContainerForWorkerClient());
 
-  DCHECK(!cross_origin_embedder_policy_.has_value());
-  cross_origin_embedder_policy_ = cross_origin_embedder_policy;
+  DCHECK(!policy_container_policies_);
+  policy_container_policies_ = policy_container_policies.Clone();
   if (controller_ && controller_->fetch_handler_existence() ==
                          ServiceWorkerVersion::FetchHandlerExistence::EXISTS) {
     DCHECK(pending_controller_receiver_);
     // TODO(https://crbug.com/999049): Plumb the COEP reporter.
-    controller_->controller()->Clone(std::move(pending_controller_receiver_),
-                                     cross_origin_embedder_policy_.value(),
-                                     mojo::NullRemote());
+    controller_->controller()->Clone(
+        std::move(pending_controller_receiver_),
+        policy_container_policies_->cross_origin_embedder_policy,
+        mojo::NullRemote());
   }
 
   DCHECK_EQ(ukm_source_id_, ukm::kInvalidSourceId);
@@ -999,7 +1002,7 @@ ServiceWorkerContainerHost::GetRemoteControllerServiceWorker() {
 
     controller_->controller()->Clone(
         remote_controller.BindNewPipeAndPassReceiver(),
-        cross_origin_embedder_policy_.value(),
+        policy_container_policies_->cross_origin_embedder_policy,
         std::move(coep_reporter_to_be_passed));
   }
   return remote_controller;
@@ -1407,9 +1410,10 @@ void ServiceWorkerContainerHost::StartControllerComplete(
       DCHECK(IsContainerForWorkerClient());
     }
 
-    controller_->controller()->Clone(std::move(receiver),
-                                     cross_origin_embedder_policy_.value(),
-                                     std::move(coep_reporter_to_be_passed));
+    controller_->controller()->Clone(
+        std::move(receiver),
+        policy_container_policies_->cross_origin_embedder_policy,
+        std::move(coep_reporter_to_be_passed));
   }
 }
 

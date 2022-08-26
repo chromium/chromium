@@ -92,7 +92,9 @@ bool SignedExchangeBrowserTestHelper::OnInterceptCallback(
   const auto it = interceptor_data_path_map_.find(params->url_request.url);
   if (it == interceptor_data_path_map_.end())
     return false;
-  URLLoaderInterceptor::WriteResponse(it->second, params->client.get());
+  URLLoaderInterceptor::WriteResponse(
+      it->second, params->client.get(), /*headers=*/nullptr,
+      absl::optional<net::SSLInfo>(), params->url_request.url);
   return true;
 }
 

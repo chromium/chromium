@@ -19,8 +19,12 @@
 #include "base/unguessable_token.h"
 #include "components/services/storage/service_worker/service_worker_database.pb.h"
 #include "net/base/features.h"
+#include "services/network/public/cpp/web_sandbox_flags.h"
+#include "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/frame/policy_container.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
@@ -88,6 +92,8 @@ void VerifyRegistrationData(const RegistrationData& expected,
   EXPECT_EQ(expected.cross_origin_embedder_policy,
             actual.cross_origin_embedder_policy);
   EXPECT_EQ(expected.ancestor_frame_type, actual.ancestor_frame_type);
+  EXPECT_EQ(expected.policy_container_policies,
+            actual.policy_container_policies);
 }
 
 void VerifyResourceRecords(const std::vector<ResourceRecordPtr>& expected,
@@ -181,6 +187,7 @@ TEST(ServiceWorkerDatabaseTest, DatabaseVersion_ValidSchemaVersion) {
   data.scope = origin;
   data.key = blink::StorageKey(url::Origin::Create(data.scope));
   data.resources_total_size_bytes = 10;
+  data.policy_container_policies = blink::mojom::PolicyContainerPolicies::New();
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteRegistration(data, resources, &deleted_version));
 
@@ -206,6 +213,7 @@ TEST(ServiceWorkerDatabaseTest, DatabaseVersion_ObsoleteSchemaVersion) {
   data.scope = origin;
   data.key = blink::StorageKey(url::Origin::Create(data.scope));
   data.resources_total_size_bytes = 10;
+  data.policy_container_policies = blink::mojom::PolicyContainerPolicies::New();
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteRegistration(data, resources, &deleted_version));
   int64_t db_version = -1;
@@ -246,6 +254,7 @@ TEST(ServiceWorkerDatabaseTest, DatabaseVersion_CorruptedSchemaVersion) {
   data.scope = origin;
   data.key = blink::StorageKey(url::Origin::Create(data.scope));
   data.resources_total_size_bytes = 10;
+  data.policy_container_policies = blink::mojom::PolicyContainerPolicies::New();
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteRegistration(data, resources, &deleted_version));
   int64_t db_version = -1;
@@ -326,6 +335,8 @@ TEST(ServiceWorkerDatabaseTest, GetNextAvailableIds) {
   data1.script = URL(origin, "/script1.js");
   data1.version_id = 200;
   data1.resources_total_size_bytes = 300;
+  data1.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
   resources1.push_back(CreateResource(1, data1.script, 300));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteRegistration(data1, resources1, &deleted_version));
@@ -346,6 +357,8 @@ TEST(ServiceWorkerDatabaseTest, GetNextAvailableIds) {
   data2.script = URL(origin, "/script2.js");
   data2.version_id = 20;
   data2.resources_total_size_bytes = 400;
+  data2.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
   std::vector<ResourceRecordPtr> resources2;
   resources2.push_back(CreateResource(2, data2.script, 400));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -387,6 +400,8 @@ TEST(ServiceWorkerDatabaseTest, GetStorageKeysWithRegistrations) {
   data1.script = URL(origin1, "/script1.js");
   data1.version_id = 456;
   data1.resources_total_size_bytes = 100;
+  data1.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
   std::vector<ResourceRecordPtr> resources1;
   resources1.push_back(CreateResource(1, data1.script, 100));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -401,6 +416,8 @@ TEST(ServiceWorkerDatabaseTest, GetStorageKeysWithRegistrations) {
   data2.script = URL(origin2, "/script2.js");
   data2.version_id = 567;
   data2.resources_total_size_bytes = 200;
+  data2.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
   std::vector<ResourceRecordPtr> resources2;
   resources2.push_back(CreateResource(2, data2.script, 200));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -415,6 +432,8 @@ TEST(ServiceWorkerDatabaseTest, GetStorageKeysWithRegistrations) {
   data3.script = URL(origin3, "/script3.js");
   data3.version_id = 678;
   data3.resources_total_size_bytes = 300;
+  data3.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
   std::vector<ResourceRecordPtr> resources3;
   resources3.push_back(CreateResource(3, data3.script, 300));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -428,6 +447,8 @@ TEST(ServiceWorkerDatabaseTest, GetStorageKeysWithRegistrations) {
   data4.script = URL(origin3, "/script4.js");
   data4.version_id = 789;
   data4.resources_total_size_bytes = 400;
+  data4.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
   std::vector<ResourceRecordPtr> resources4;
   resources4.push_back(CreateResource(4, data4.script, 400));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -451,6 +472,8 @@ TEST(ServiceWorkerDatabaseTest, GetStorageKeysWithRegistrations) {
   data5.script = URL(origin5, "/script5.js");
   data5.version_id = 890;
   data5.resources_total_size_bytes = 500;
+  data5.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
   std::vector<ResourceRecordPtr> resources5;
   resources5.push_back(CreateResource(5, data5.script, 500));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -467,6 +490,8 @@ TEST(ServiceWorkerDatabaseTest, GetStorageKeysWithRegistrations) {
   data6.script = URL(origin6, "/script6.js");
   data6.version_id = 8910;
   data6.resources_total_size_bytes = 600;
+  data6.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
   std::vector<ResourceRecordPtr> resources6;
   resources6.push_back(CreateResource(6, data6.script, 600));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -488,6 +513,8 @@ TEST(ServiceWorkerDatabaseTest, GetStorageKeysWithRegistrations) {
   data7.script = URL(origin7, "/script7.js");
   data7.version_id = 91011;
   data7.resources_total_size_bytes = 700;
+  data7.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
   std::vector<ResourceRecordPtr> resources7;
   resources7.push_back(CreateResource(7, data7.script, 700));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -579,6 +606,10 @@ TEST(ServiceWorkerDatabaseTest, GetRegistrationsForStorageKey) {
   data1.script_response_time = base::Time::FromJsTime(0);
   data1.cross_origin_embedder_policy = CrossOriginEmbedderPolicyNone();
   data1.ancestor_frame_type = blink::mojom::AncestorFrameType::kNormalFrame;
+  data1.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
+  data1.policy_container_policies->cross_origin_embedder_policy =
+      data1.cross_origin_embedder_policy.value;
   std::vector<ResourceRecordPtr> resources1;
   resources1.push_back(CreateResource(1, data1.script, 100));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -604,6 +635,10 @@ TEST(ServiceWorkerDatabaseTest, GetRegistrationsForStorageKey) {
   data2.script_response_time = base::Time::FromJsTime(42);
   data2.cross_origin_embedder_policy = CrossOriginEmbedderPolicyRequireCorp();
   data2.ancestor_frame_type = blink::mojom::AncestorFrameType::kFencedFrame;
+  data2.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
+  data2.policy_container_policies->cross_origin_embedder_policy =
+      data2.cross_origin_embedder_policy.value;
   std::vector<ResourceRecordPtr> resources2;
   resources2.push_back(CreateResource(2, data2.script, 200));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -628,6 +663,10 @@ TEST(ServiceWorkerDatabaseTest, GetRegistrationsForStorageKey) {
   data3.resources_total_size_bytes = 300;
   data3.script_response_time = base::Time::FromJsTime(420);
   data3.cross_origin_embedder_policy = CrossOriginEmbedderPolicyNone();
+  data3.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
+  data3.policy_container_policies->cross_origin_embedder_policy =
+      data3.cross_origin_embedder_policy.value;
   std::vector<ResourceRecordPtr> resources3;
   resources3.push_back(CreateResource(3, data3.script, 300));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -644,6 +683,10 @@ TEST(ServiceWorkerDatabaseTest, GetRegistrationsForStorageKey) {
   data4.script_response_time = base::Time::FromJsTime(4200);
   data4.cross_origin_embedder_policy =
       CrossOriginEmbedderPolicyCredentialless();
+  data4.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
+  data4.policy_container_policies->cross_origin_embedder_policy =
+      data4.cross_origin_embedder_policy.value;
   std::vector<ResourceRecordPtr> resources4;
   resources4.push_back(CreateResource(4, data4.script, 400));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -691,6 +734,10 @@ TEST(ServiceWorkerDatabaseTest, GetAllRegistrations) {
   data1.resources_total_size_bytes = 100;
   data1.cross_origin_embedder_policy = CrossOriginEmbedderPolicyNone();
   data1.ancestor_frame_type = blink::mojom::AncestorFrameType::kNormalFrame;
+  data1.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
+  data1.policy_container_policies->cross_origin_embedder_policy =
+      data1.cross_origin_embedder_policy.value;
   std::vector<ResourceRecordPtr> resources1;
   resources1.push_back(CreateResource(1, data1.script, 100));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -707,6 +754,10 @@ TEST(ServiceWorkerDatabaseTest, GetAllRegistrations) {
   data2.update_via_cache = blink::mojom::ServiceWorkerUpdateViaCache::kNone;
   data2.cross_origin_embedder_policy = CrossOriginEmbedderPolicyRequireCorp();
   data2.ancestor_frame_type = blink::mojom::AncestorFrameType::kFencedFrame;
+  data2.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
+  data2.policy_container_policies->cross_origin_embedder_policy =
+      data2.cross_origin_embedder_policy.value;
   std::vector<ResourceRecordPtr> resources2;
   resources2.push_back(CreateResource(2, data2.script, 200));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -722,6 +773,10 @@ TEST(ServiceWorkerDatabaseTest, GetAllRegistrations) {
   data3.resources_total_size_bytes = 300;
   data3.cross_origin_embedder_policy =
       CrossOriginEmbedderPolicyCredentialless();
+  data3.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
+  data3.policy_container_policies->cross_origin_embedder_policy =
+      data3.cross_origin_embedder_policy.value;
   std::vector<ResourceRecordPtr> resources3;
   resources3.push_back(CreateResource(3, data3.script, 300));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -735,6 +790,8 @@ TEST(ServiceWorkerDatabaseTest, GetAllRegistrations) {
   data4.script = URL(origin3, "/script4.js");
   data4.version_id = 4000;
   data4.resources_total_size_bytes = 400;
+  data4.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
   std::vector<ResourceRecordPtr> resources4;
   resources4.push_back(CreateResource(4, data4.script, 400));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -760,6 +817,10 @@ TEST(ServiceWorkerDatabaseTest, GetAllRegistrations) {
   data5.cross_origin_embedder_policy =
       CrossOriginEmbedderPolicyCredentialless();
   std::vector<ResourceRecordPtr> resources5;
+  data5.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
+  data5.policy_container_policies->cross_origin_embedder_policy =
+      data5.cross_origin_embedder_policy.value;
   resources5.push_back(CreateResource(5, data5.script, 500));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteRegistration(data5, resources5, &deleted_version));
@@ -776,6 +837,10 @@ TEST(ServiceWorkerDatabaseTest, GetAllRegistrations) {
   data6.resources_total_size_bytes = 600;
   data6.cross_origin_embedder_policy =
       CrossOriginEmbedderPolicyCredentialless();
+  data6.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
+  data6.policy_container_policies->cross_origin_embedder_policy =
+      data6.cross_origin_embedder_policy.value;
   std::vector<ResourceRecordPtr> resources6;
   resources6.push_back(CreateResource(6, data6.script, 600));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -797,6 +862,10 @@ TEST(ServiceWorkerDatabaseTest, GetAllRegistrations) {
   data7.resources_total_size_bytes = 700;
   data7.cross_origin_embedder_policy =
       CrossOriginEmbedderPolicyCredentialless();
+  data7.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
+  data7.policy_container_policies->cross_origin_embedder_policy =
+      data7.cross_origin_embedder_policy.value;
   std::vector<ResourceRecordPtr> resources7;
   resources7.push_back(CreateResource(7, data7.script, 700));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -841,6 +910,7 @@ TEST(ServiceWorkerDatabaseTest, Registration_Basic) {
   data.used_features = {blink::mojom::WebFeature::kNavigatorVendor,
                         blink::mojom::WebFeature::kLinkRelPreload,
                         blink::mojom::WebFeature::kCSSFilterInvert};
+  data.policy_container_policies = blink::mojom::PolicyContainerPolicies::New();
 
   std::vector<ResourceRecordPtr> resources;
   resources.push_back(CreateResource(1, URL(origin, "/resource1"), 10939));
@@ -926,6 +996,7 @@ TEST(ServiceWorkerDatabaseTest, DeleteNonExistentRegistration) {
   data.script = URL(origin, "/resource1");
   data.version_id = 200;
   data.resources_total_size_bytes = 19 + 29129;
+  data.policy_container_policies = blink::mojom::PolicyContainerPolicies::New();
 
   std::vector<ResourceRecordPtr> resources;
   resources.push_back(CreateResource(1, URL(origin, "/resource1"), 19));
@@ -983,6 +1054,7 @@ TEST(ServiceWorkerDatabaseTest, Registration_Overwrite) {
   data.used_features = {blink::mojom::WebFeature::kNavigatorVendor,
                         blink::mojom::WebFeature::kLinkRelPreload,
                         blink::mojom::WebFeature::kCSSFilterInvert};
+  data.policy_container_policies = blink::mojom::PolicyContainerPolicies::New();
 
   std::vector<ResourceRecordPtr> resources1;
   resources1.push_back(CreateResource(1, URL(origin, "/resource1"), 10));
@@ -1064,6 +1136,8 @@ TEST(ServiceWorkerDatabaseTest, Registration_Multiple) {
   data1.script = URL(origin, "/resource1");
   data1.version_id = 200;
   data1.resources_total_size_bytes = 1451 + 15234;
+  data1.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
 
   std::vector<ResourceRecordPtr> resources1;
   resources1.push_back(CreateResource(1, URL(origin, "/resource1"), 1451));
@@ -1079,6 +1153,8 @@ TEST(ServiceWorkerDatabaseTest, Registration_Multiple) {
   data2.script = URL(origin, "/resource3");
   data2.version_id = 201;
   data2.resources_total_size_bytes = 5 + 6;
+  data2.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
 
   std::vector<ResourceRecordPtr> resources2;
   resources2.push_back(CreateResource(3, URL(origin, "/resource3"), 5));
@@ -1212,6 +1288,8 @@ TEST(ServiceWorkerDatabaseTest, Registration_ScriptType) {
   data1.script = URL(origin1, "/resource1");
   data1.version_id = 100;
   data1.resources_total_size_bytes = 10 + 10000;
+  data1.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
   EXPECT_EQ(blink::mojom::ScriptType::kClassic, data1.script_type);
   std::vector<ResourceRecordPtr> resources1;
   resources1.push_back(CreateResource(1, URL(origin1, "/resource1"), 10));
@@ -1229,6 +1307,8 @@ TEST(ServiceWorkerDatabaseTest, Registration_ScriptType) {
   data2.version_id = 200;
   data2.resources_total_size_bytes = 20 + 20000;
   data2.script_type = blink::mojom::ScriptType::kClassic;
+  data2.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
   std::vector<ResourceRecordPtr> resources2;
   resources2.push_back(CreateResource(3, URL(origin2, "/resource3"), 20));
   resources2.push_back(CreateResource(4, URL(origin2, "/resource4"), 20000));
@@ -1245,6 +1325,8 @@ TEST(ServiceWorkerDatabaseTest, Registration_ScriptType) {
   data3.version_id = 300;
   data3.resources_total_size_bytes = 30 + 30000;
   data3.script_type = blink::mojom::ScriptType::kModule;
+  data3.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
   std::vector<ResourceRecordPtr> resources3;
   resources3.push_back(CreateResource(5, URL(origin3, "/resource5"), 30));
   resources3.push_back(CreateResource(6, URL(origin3, "/resource6"), 30000));
@@ -1297,6 +1379,7 @@ TEST(ServiceWorkerDatabaseTest, UserData_Basic) {
   data.script = URL(kOrigin.GetURL(), "/script.js");
   data.version_id = 200;
   data.resources_total_size_bytes = 100;
+  data.policy_container_policies = blink::mojom::PolicyContainerPolicies::New();
   std::vector<ResourceRecordPtr> resources;
   resources.push_back(CreateResource(1, data.script, 100));
   ServiceWorkerDatabase::DeletedVersion deleted_version;
@@ -1419,6 +1502,8 @@ TEST(ServiceWorkerDatabaseTest,
   data1.script = URL(kOrigin.GetURL(), "/script1.js");
   data1.version_id = 200;
   data1.resources_total_size_bytes = 100;
+  data1.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
   std::vector<ResourceRecordPtr> resources1;
   resources1.push_back(CreateResource(1, data1.script, 100));
 
@@ -1430,6 +1515,8 @@ TEST(ServiceWorkerDatabaseTest,
   data2.script = URL(kOrigin.GetURL(), "/script2.js");
   data2.version_id = 201;
   data2.resources_total_size_bytes = 200;
+  data2.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
   std::vector<ResourceRecordPtr> resources2;
   resources2.push_back(CreateResource(2, data2.script, 200));
 
@@ -1515,6 +1602,7 @@ TEST(ServiceWorkerDatabaseTest, ReadUserDataByKeyPrefix) {
   data.script = URL(kOrigin.GetURL(), "/script.js");
   data.version_id = 200;
   data.resources_total_size_bytes = 100;
+  data.policy_container_policies = blink::mojom::PolicyContainerPolicies::New();
   std::vector<ResourceRecordPtr> resources;
   resources.push_back(CreateResource(1, data.script, 100));
   ServiceWorkerDatabase::DeletedVersion deleted_version;
@@ -1563,6 +1651,7 @@ TEST(ServiceWorkerDatabaseTest, ReadUserKeysAndDataByKeyPrefix) {
   data.script = URL(kOrigin.GetURL(), "/script.js");
   data.version_id = 200;
   data.resources_total_size_bytes = 100;
+  data.policy_container_policies = blink::mojom::PolicyContainerPolicies::New();
   std::vector<ResourceRecordPtr> resources;
   resources.push_back(CreateResource(1, data.script, 100));
   ServiceWorkerDatabase::DeletedVersion deleted_version;
@@ -1615,6 +1704,8 @@ TEST(ServiceWorkerDatabaseTest, UserData_DeleteUserDataByKeyPrefixes) {
   data1.script = URL(kOrigin.GetURL(), "/script1.js");
   data1.version_id = 200;
   data1.resources_total_size_bytes = 100;
+  data1.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
   std::vector<ResourceRecordPtr> resources1;
   resources1.push_back(CreateResource(1, data1.script, 100));
 
@@ -1626,6 +1717,8 @@ TEST(ServiceWorkerDatabaseTest, UserData_DeleteUserDataByKeyPrefixes) {
   data2.script = URL(kOrigin.GetURL(), "/script2.js");
   data2.version_id = 201;
   data2.resources_total_size_bytes = 200;
+  data2.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
   std::vector<ResourceRecordPtr> resources2;
   resources2.push_back(CreateResource(2, data2.script, 200));
 
@@ -1726,6 +1819,8 @@ TEST(ServiceWorkerDatabaseTest,
   data1.script = URL(kOrigin.GetURL(), "/script1.js");
   data1.version_id = 200;
   data1.resources_total_size_bytes = 100;
+  data1.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
   std::vector<ResourceRecordPtr> resources1;
   resources1.push_back(CreateResource(1, data1.script, 100));
 
@@ -1737,6 +1832,8 @@ TEST(ServiceWorkerDatabaseTest,
   data2.script = URL(kOrigin.GetURL(), "/script2.js");
   data2.version_id = 201;
   data2.resources_total_size_bytes = 200;
+  data2.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
   std::vector<ResourceRecordPtr> resources2;
   resources2.push_back(CreateResource(2, data2.script, 200));
 
@@ -1816,6 +1913,8 @@ TEST(ServiceWorkerDatabaseTest, UserData_DataIsolation) {
   data1.script = URL(kOrigin.GetURL(), "/script1.js");
   data1.version_id = 200;
   data1.resources_total_size_bytes = 100;
+  data1.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
   std::vector<ResourceRecordPtr> resources1;
   resources1.push_back(CreateResource(1, data1.script, 100));
 
@@ -1828,6 +1927,8 @@ TEST(ServiceWorkerDatabaseTest, UserData_DataIsolation) {
   data2.version_id = 201;
   data2.resources_total_size_bytes = 200;
   data2.update_via_cache = blink::mojom::ServiceWorkerUpdateViaCache::kImports;
+  data2.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
   std::vector<ResourceRecordPtr> resources2;
   resources2.push_back(CreateResource(2, data2.script, 200));
 
@@ -1917,6 +2018,8 @@ TEST(ServiceWorkerDatabaseTest, UserData_DeleteRegistration) {
   data1.script = URL(kOrigin.GetURL(), "/script1.js");
   data1.version_id = 200;
   data1.resources_total_size_bytes = 100;
+  data1.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
   std::vector<ResourceRecordPtr> resources1;
   resources1.push_back(CreateResource(1, data1.script, 100));
 
@@ -1928,6 +2031,8 @@ TEST(ServiceWorkerDatabaseTest, UserData_DeleteRegistration) {
   data2.script = URL(kOrigin.GetURL(), "/script2.js");
   data2.version_id = 201;
   data2.resources_total_size_bytes = 200;
+  data2.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
   std::vector<ResourceRecordPtr> resources2;
   resources2.push_back(CreateResource(2, data2.script, 200));
 
@@ -2043,6 +2148,7 @@ TEST(ServiceWorkerDatabaseTest, UpdateVersionToActive) {
   data.version_id = 200;
   data.is_active = false;
   data.resources_total_size_bytes = 100;
+  data.policy_container_policies = blink::mojom::PolicyContainerPolicies::New();
   std::vector<ResourceRecordPtr> resources;
   resources.push_back(CreateResource(1, data.script, 100));
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -2101,6 +2207,7 @@ TEST(ServiceWorkerDatabaseTest, UpdateLastCheckTime) {
   data.version_id = 200;
   data.last_update_check = base::Time::Now();
   data.resources_total_size_bytes = 100;
+  data.policy_container_policies = blink::mojom::PolicyContainerPolicies::New();
   std::vector<ResourceRecordPtr> resources;
   resources.push_back(CreateResource(1, data.script, 100));
   EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
@@ -2211,6 +2318,8 @@ TEST(ServiceWorkerDatabaseTest, DeleteAllDataForStorageKey) {
   data1.script = URL(url1, "/resource1");
   data1.version_id = 100;
   data1.resources_total_size_bytes = 2013 + 512;
+  data1.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
 
   std::vector<ResourceRecordPtr> resources1;
   resources1.push_back(CreateResource(1, URL(url1, "/resource1"), 2013));
@@ -2233,6 +2342,8 @@ TEST(ServiceWorkerDatabaseTest, DeleteAllDataForStorageKey) {
   data2.script = URL(url1, "/resource3");
   data2.version_id = 101;
   data2.resources_total_size_bytes = 4 + 5;
+  data2.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
 
   std::vector<ResourceRecordPtr> resources2;
   resources2.push_back(CreateResource(3, URL(url1, "/resource3"), 4));
@@ -2256,6 +2367,8 @@ TEST(ServiceWorkerDatabaseTest, DeleteAllDataForStorageKey) {
   data3.script = URL(url2, "/resource5");
   data3.version_id = 102;
   data3.resources_total_size_bytes = 6 + 7;
+  data3.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
 
   std::vector<ResourceRecordPtr> resources3;
   resources3.push_back(CreateResource(5, URL(url2, "/resource5"), 6));
@@ -2373,6 +2486,7 @@ TEST(ServiceWorkerDatabaseTest, Corruption_NoMainResource) {
   data.script = URL(origin, "/resource1");
   data.version_id = 100;
   data.resources_total_size_bytes = 2016;
+  data.policy_container_policies = blink::mojom::PolicyContainerPolicies::New();
 
   // Simulate that "/resource1" wasn't correctly written in the database by not
   // adding it.
@@ -2411,6 +2525,8 @@ TEST(ServiceWorkerDatabaseTest, Corruption_GetRegistrationsForStorageKey) {
   data1.script = URL(origin, "/resource1");
   data1.version_id = 1;
   data1.resources_total_size_bytes = 2016;
+  data1.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
   resources.push_back(CreateResource(1, URL(origin, "/resource1"), 2016));
   ASSERT_EQ(ServiceWorkerDatabase::Status::kOk,
             database->WriteRegistration(data1, resources, &deleted_version));
@@ -2423,6 +2539,8 @@ TEST(ServiceWorkerDatabaseTest, Corruption_GetRegistrationsForStorageKey) {
   data2.script = URL(origin, "/resource2");
   data2.version_id = 2;
   data2.resources_total_size_bytes = 2016;
+  data2.policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
   // Simulate that "/resource2" wasn't correctly written in the database by
   // not adding it.
   resources.clear();
@@ -2518,6 +2636,9 @@ TEST(ServiceWorkerDatabaseTest, CrossOriginEmbedderPolicyStoreRestore) {
     data.version_id = 456;
     data.resources_total_size_bytes = 100;
     data.cross_origin_embedder_policy = policy;
+    data.policy_container_policies =
+        blink::mojom::PolicyContainerPolicies::New();
+    data.policy_container_policies->cross_origin_embedder_policy = policy.value;
     std::vector<ResourceRecordPtr> resources;
     resources.push_back(CreateResource(1, data.script, 100));
 
@@ -2609,6 +2730,123 @@ TEST(ServiceWorkerDatabaseTest, NoCrossOriginEmbedderPolicyValue) {
             database->ParseRegistrationData(value, key, &registration));
   EXPECT_EQ(network::mojom::CrossOriginEmbedderPolicyValue::kNone,
             registration->cross_origin_embedder_policy.value);
+}
+
+const network::mojom::WebSandboxFlags kWebSandboxFlags[] = {
+    network::mojom::WebSandboxFlags::kNone,
+    network::mojom::WebSandboxFlags::kNavigation,
+    network::mojom::WebSandboxFlags::kPlugins,
+    network::mojom::WebSandboxFlags::kOrigin,
+    network::mojom::WebSandboxFlags::kForms,
+    network::mojom::WebSandboxFlags::kScripts,
+    network::mojom::WebSandboxFlags::kTopNavigation,
+    network::mojom::WebSandboxFlags::kPopups,
+    network::mojom::WebSandboxFlags::kAutomaticFeatures,
+    network::mojom::WebSandboxFlags::kPointerLock,
+    network::mojom::WebSandboxFlags::kDocumentDomain,
+    network::mojom::WebSandboxFlags::kOrientationLock,
+    network::mojom::WebSandboxFlags::kPropagatesToAuxiliaryBrowsingContexts,
+    network::mojom::WebSandboxFlags::kModals,
+    network::mojom::WebSandboxFlags::kPresentationController,
+    network::mojom::WebSandboxFlags::kTopNavigationByUserActivation,
+    network::mojom::WebSandboxFlags::kDownloads,
+    network::mojom::WebSandboxFlags::kStorageAccessByUserActivation,
+    network::mojom::WebSandboxFlags::kTopNavigationToCustomProtocols,
+    network::mojom::WebSandboxFlags::kAll,
+};
+
+static_assert(
+    network::mojom::WebSandboxFlags::kTopNavigationToCustomProtocols ==
+        network::mojom::WebSandboxFlags::kMaxValue,
+    "The array should contain all the flags");
+
+// Check that every field of PolicyContainerPolicies can be properly
+// serialized and deserialized.
+TEST(ServiceWorkerDatabaseTest, PolicyContainerPoliciesStoreRestore) {
+  auto store_and_restore =
+      [](blink::mojom::PolicyContainerPoliciesPtr policies) {
+        // Build the minimal RegistrationData with the given |policy|.
+        GURL origin("https://example.com");
+        RegistrationData data;
+        data.registration_id = 123;
+        data.scope = URL(origin, "/foo");
+        data.key = blink::StorageKey(url::Origin::Create(data.scope));
+        data.script = URL(origin, "/script.js");
+        data.version_id = 456;
+        data.resources_total_size_bytes = 100;
+        data.policy_container_policies = std::move(policies);
+        data.cross_origin_embedder_policy.value =
+            data.policy_container_policies->cross_origin_embedder_policy;
+        std::vector<ResourceRecordPtr> resources;
+        resources.push_back(CreateResource(1, data.script, 100));
+
+        // Store.
+        std::unique_ptr<ServiceWorkerDatabase> database(
+            CreateDatabaseInMemory());
+        ServiceWorkerDatabase::DeletedVersion deleted_version;
+        ASSERT_EQ(
+            ServiceWorkerDatabase::Status::kOk,
+            database->WriteRegistration(data, resources, &deleted_version));
+
+        // Restore.
+        std::vector<mojom::ServiceWorkerRegistrationDataPtr> registrations;
+        std::vector<std::vector<ResourceRecordPtr>> resources_list;
+        EXPECT_EQ(ServiceWorkerDatabase::Status::kOk,
+                  database->GetRegistrationsForStorageKey(
+                      blink::StorageKey(url::Origin::Create(origin)),
+                      &registrations, &resources_list));
+
+        // The data must not have been altered.
+        VerifyRegistrationData(data, *registrations[0]);
+      };
+
+  {
+    auto policies = blink::mojom::PolicyContainerPolicies::New();
+    store_and_restore(policies->Clone());
+
+    for (auto value : {
+             network::mojom::CrossOriginEmbedderPolicyValue::kNone,
+             network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
+             network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless,
+         }) {
+      policies->cross_origin_embedder_policy = value;
+      store_and_restore(policies->Clone());
+    }
+  }
+
+  {
+    auto policies = blink::mojom::PolicyContainerPolicies::New();
+
+    for (auto referrer_policy : {
+             network::mojom::ReferrerPolicy::kAlways,
+             network::mojom::ReferrerPolicy::kDefault,
+             network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade,
+             network::mojom::ReferrerPolicy::kNever,
+             network::mojom::ReferrerPolicy::kOrigin,
+             network::mojom::ReferrerPolicy::kOriginWhenCrossOrigin,
+             network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin,
+             network::mojom::ReferrerPolicy::kSameOrigin,
+             network::mojom::ReferrerPolicy::kStrictOrigin,
+         }) {
+      policies->referrer_policy = referrer_policy;
+      store_and_restore(policies->Clone());
+    }
+  }
+
+  {
+    auto policies = blink::mojom::PolicyContainerPolicies::New();
+
+    for (auto sandbox_flags : kWebSandboxFlags) {
+      policies->sandbox_flags = sandbox_flags;
+      store_and_restore(policies->Clone());
+      for (auto sandbox_flags_2 : kWebSandboxFlags) {
+        if (sandbox_flags_2 >= sandbox_flags)
+          break;
+        policies->sandbox_flags = sandbox_flags | sandbox_flags_2;
+        store_and_restore(policies->Clone());
+      }
+    }
+  }
 }
 
 // As part of crbug.com/1199077 ServiceWorkerDataBase was refactored to use
@@ -2775,6 +3013,8 @@ TEST(ServiceWorkerDatabaseTest, FetchHandlerTypeStoreRestore) {
         data.fetch_handler_type = type;
         data.resources_total_size_bytes = 100;
         data.cross_origin_embedder_policy = CrossOriginEmbedderPolicyNone();
+        data.policy_container_policies =
+            blink::mojom::PolicyContainerPolicies::New();
         std::vector<ResourceRecordPtr> resources;
         resources.push_back(CreateResource(1, data.script, 100));
 

@@ -415,6 +415,13 @@ void ServiceWorkerRegistry::StoreRegistration(
     data->cross_origin_embedder_policy =
         *version->cross_origin_embedder_policy();
   }
+  data->policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
+  if (version->policy_container_host()) {
+    data->policy_container_policies = version->policy_container_host()
+                                          ->policies()
+                                          .ToMojoPolicyContainerPolicies();
+  }
 
   ResourceList resources;
   version->script_cache_map()->GetResources(&resources);
@@ -895,6 +902,9 @@ ServiceWorkerRegistry::GetOrCreateRegistration(
     version->set_used_features(std::move(used_features));
     version->set_cross_origin_embedder_policy(
         data.cross_origin_embedder_policy);
+    version->set_policy_container_host(
+        base::MakeRefCounted<PolicyContainerHost>(
+            PolicyContainerPolicies(*data.policy_container_policies)));
   }
   version->set_script_response_time_for_devtools(data.script_response_time);
 

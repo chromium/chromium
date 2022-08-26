@@ -498,7 +498,8 @@ void ServiceWorkerContextWrapper::RegisterServiceWorker(
           [](StatusCodeCallback callback, blink::ServiceWorkerStatusCode status,
              const std::string&, int64_t) { std::move(callback).Run(status); },
           std::move(callback)),
-      /*requesting_frame_id=*/GlobalRenderFrameHostId());
+      /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+      PolicyContainerPolicies());
 }
 
 void ServiceWorkerContextWrapper::UnregisterServiceWorker(

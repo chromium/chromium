@@ -750,6 +750,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void BindBrowserControlInterface(mojo::ScopedMessagePipeHandle pipe) override;
   bool ShouldInheritCrossOriginEmbedderPolicyImplicitly(
       const GURL& url) override;
+  bool ShouldServiceWorkerInheritPolicyContainerFromCreator(
+      const GURL& url) override;
   bool ShouldAllowInsecurePrivateNetworkRequests(
       content::BrowserContext* browser_context,
       const url::Origin& origin) override;

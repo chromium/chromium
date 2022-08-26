@@ -9,6 +9,9 @@ module network.mojom;
 // See content/browser/renderer_host/sandbox_flags.md for more details about how
 // the web-layer components (i.e. //content and Blink) consume and apply these
 // flags.
+//
+// These values are persisted to disk, so any changes must be append-only and
+// not affect existing values.
 
 [Extensible]
 enum WebSandboxFlags {

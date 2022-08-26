@@ -38,6 +38,7 @@
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom-shared.h"
 #include "third_party/blink/public/platform/web_fetch_client_settings_object.h"
+#include "third_party/blink/public/platform/web_policy_container.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 
@@ -67,6 +68,8 @@ struct WebEmbeddedWorkerStartData {
   // Non-null only when the service worker is new and the script needs to be
   // loaded from the network.
   std::unique_ptr<WorkerMainScriptLoadParameters> main_script_load_params;
+
+  std::unique_ptr<WebPolicyContainer> policy_container;
 
   explicit WebEmbeddedWorkerStartData(
       WebFetchClientSettingsObject outside_fetch_client_settings_object)

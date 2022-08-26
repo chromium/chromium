@@ -116,6 +116,7 @@ void ServiceWorkerUpdateChecker::OnOneUpdateCheckFinished(
   if (is_main_script) {
     cross_origin_embedder_policy_ =
         running_checker_->cross_origin_embedder_policy();
+    policy_container_host_ = running_checker_->policy_container_host();
   }
 
   if (ServiceWorkerSingleScriptUpdateChecker::Result::kDifferent == result) {

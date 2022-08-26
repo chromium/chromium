@@ -7,6 +7,7 @@ module storage.mojom;
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
 import "third_party/blink/public/mojom/script/script_type.mojom";
+import "third_party/blink/public/mojom/frame/policy_container.mojom";
 import "third_party/blink/public/mojom/service_worker/navigation_preload_state.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_ancestor_frame_type.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_database.mojom";
@@ -67,7 +68,9 @@ struct ServiceWorkerRegistrationData {
   // Not populated until the registration is stored into database.
   int64 resources_total_size_bytes = 0;
 
+  // TODO(crbug.com/1177199): merge COEP to policy container
   network.mojom.CrossOriginEmbedderPolicy cross_origin_embedder_policy;
+  blink.mojom.PolicyContainerPolicies policy_container_policies;
 
   // The type of the frame that registered this service worker, which is used
   // to restrict the use of some powerful APIs in FencedFrames

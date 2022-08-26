@@ -22,7 +22,7 @@ message ServiceWorkerNavigationPreloadState {
   optional string header = 2;
 }
 
-// NEXT ID TO USE: 23
+// NEXT ID TO USE: 24
 message ServiceWorkerRegistrationData {
   enum ServiceWorkerScriptType {
     CLASSIC = 0;
@@ -46,6 +46,23 @@ message ServiceWorkerRegistrationData {
     reserved 0;  // Deprecated UNKNOWN_FETCH_HANDLER.
     NOT_SKIPPABLE = 1;
     SKIPPABLE_EMPTY_FETCH_HANDLER = 2;
+  }
+  enum ReferrerPolicyValue {
+    ALWAYS = 0;
+    DEFAULT = 1;
+    NO_REFERRER_WHEN_DOWNGRADE = 2;
+    NEVER = 3;
+    ORIGIN = 4;
+    ORIGIN_WHEN_CROSS_ORIGIN = 5;
+    STRICT_ORIGIN_WHEN_CROSS_ORIGIN = 6;
+    SAME_ORIGIN = 7;
+    STRICT_ORIGIN = 8;
+  }
+
+  message PolicyContainerPolicies {
+    optional ReferrerPolicyValue referrer_policy = 1 [default = DEFAULT];
+    optional int32 sandbox_flags = 2 [default = 0];
+    // TODO(https://crbug.com/1177199): add content security policies
   }
 
   required int64 registration_id = 1;
@@ -98,6 +115,8 @@ message ServiceWorkerRegistrationData {
   optional string cross_origin_embedder_policy_report_only_reporting_endpoint =
       20;
   optional AncestorFrameType ancestor_frame_type = 21 [default = NORMAL_FRAME];
+
+  optional PolicyContainerPolicies policy_container_policies = 23;
 }
 
 message ServiceWorkerResourceRecord {

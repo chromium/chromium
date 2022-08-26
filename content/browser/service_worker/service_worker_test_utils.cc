@@ -302,8 +302,8 @@ base::WeakPtr<ServiceWorkerContainerHost> CreateContainerHostForWindow(
   // In production code this is called from NavigationRequest in the browser
   // process right before navigation commit.
   container_host->OnBeginNavigationCommit(
-      render_frame_host_id, network::CrossOriginEmbedderPolicy(),
-      std::move(reporter), ukm::kInvalidSourceId);
+      render_frame_host_id, PolicyContainerPolicies(), std::move(reporter),
+      ukm::kInvalidSourceId);
   return container_host;
 }
 
@@ -426,6 +426,8 @@ scoped_refptr<ServiceWorkerVersion> CreateNewServiceWorkerVersion(
           }));
   run_loop.Run();
   DCHECK(version);
+  version->set_policy_container_host(
+      base::MakeRefCounted<PolicyContainerHost>(PolicyContainerPolicies()));
   return version;
 }
 
@@ -807,6 +809,7 @@ void ServiceWorkerUpdateCheckTestUtils::SetComparedScriptInfoForVersion(
        ServiceWorkerSingleScriptUpdateChecker::Result::kDifferent)
           ? script_url
           : GURL(),
+      base::MakeRefCounted<PolicyContainerHost>(),
       network::CrossOriginEmbedderPolicy());
 }
 

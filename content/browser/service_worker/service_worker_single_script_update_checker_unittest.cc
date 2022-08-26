@@ -18,6 +18,7 @@
 #include "net/base/load_flags.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/parsed_headers.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "third_party/blink/public/common/features.h"
@@ -183,6 +184,7 @@ class ServiceWorkerSingleScriptUpdateCheckerTest : public testing::Test {
     head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
         net::HttpUtil::AssembleRawHeaders(header));
     head->headers->GetMimeType(&head->mime_type);
+    head->parsed_headers = network::mojom::ParsedHeaders::New();
     network::URLLoaderCompletionStatus status(error);
     status.decoded_body_length = body.size();
     loader_factory->AddResponse(url, std::move(head), body, status);
@@ -477,6 +479,7 @@ TEST_F(ServiceWorkerSingleScriptUpdateCheckerTest,
   head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(kSuccessHeader));
   head->headers->GetMimeType(&head->mime_type);
+  head->parsed_headers = network::mojom::ParsedHeaders::New();
 
   // Simulate sending the response body. The buffer size for the data pipe
   // should be larger than the body to send the whole body in one chunk.
@@ -776,6 +779,7 @@ TEST_F(ServiceWorkerSingleScriptUpdateCheckerTest,
     head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
         net::HttpUtil::AssembleRawHeaders(kSuccessHeader));
     head->headers->GetMimeType(&head->mime_type);
+    head->parsed_headers = network::mojom::ParsedHeaders::New();
 
     MojoCreateDataPipeOptions options;
     options.struct_size = sizeof(MojoCreateDataPipeOptions);

@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -18,6 +19,7 @@
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/devtools_throttle_handle.h"
 #include "content/browser/devtools/service_worker_devtools_manager.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/embedded_worker_instance.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_consts.h"
@@ -32,6 +34,7 @@
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_client.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/common/service_worker/service_worker_type_converters.h"
@@ -50,7 +53,8 @@ ServiceWorkerRegisterJob::ServiceWorkerRegisterJob(
     blink::mojom::FetchClientSettingsObjectPtr
         outside_fetch_client_settings_object,
     const GlobalRenderFrameHostId& requesting_frame_id,
-    blink::mojom::AncestorFrameType ancestor_frame_type)
+    blink::mojom::AncestorFrameType ancestor_frame_type,
+    PolicyContainerPolicies policy_container_policies)
     : context_(context),
       job_type_(REGISTRATION_JOB),
       scope_(options.scope),
@@ -67,7 +71,8 @@ ServiceWorkerRegisterJob::ServiceWorkerRegisterJob(
       skip_script_comparison_(false),
       promise_resolved_status_(blink::ServiceWorkerStatusCode::kOk),
       requesting_frame_id_(requesting_frame_id),
-      ancestor_frame_type_(ancestor_frame_type) {
+      ancestor_frame_type_(ancestor_frame_type),
+      creator_policy_container_policies_(std::move(policy_container_policies)) {
   DCHECK(context_);
   DCHECK(outside_fetch_client_settings_object_);
 }
@@ -510,10 +515,19 @@ void ServiceWorkerRegisterJob::StartWorkerForUpdate(
   set_new_version(std::move(version));
   new_version()->set_force_bypass_cache_for_scripts(force_bypass_cache_);
 
+  if (GetContentClient()
+          ->browser()
+          ->ShouldServiceWorkerInheritPolicyContainerFromCreator(script_url_)) {
+    new_version()->set_policy_container_host(
+        base::MakeRefCounted<PolicyContainerHost>(
+            std::move(creator_policy_container_policies_)));
+  }
+
   if (update_checker_) {
     new_version()->PrepareForUpdate(
         update_checker_->TakeComparedResults(),
         update_checker_->updated_script_url(),
+        update_checker_->policy_container_host(),
         update_checker_->cross_origin_embedder_policy());
     update_checker_.reset();
   }

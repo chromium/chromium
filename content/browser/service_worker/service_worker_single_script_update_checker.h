@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_SINGLE_SCRIPT_UPDATE_CHECKER_H_
 
 #include "base/time/time.h"
+#include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/service_worker/service_worker_updated_script_loader.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -167,6 +168,9 @@ class CONTENT_EXPORT ServiceWorkerSingleScriptUpdateChecker
       const {
     return cross_origin_embedder_policy_;
   }
+  const scoped_refptr<PolicyContainerHost> policy_container_host() const {
+    return policy_container_host_;
+  }
 
   static const char* ResultToString(Result result);
 
@@ -207,6 +211,7 @@ class CONTENT_EXPORT ServiceWorkerSingleScriptUpdateChecker
   const base::TimeDelta time_since_last_check_;
   bool network_accessed_ = false;
   network::CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
+  scoped_refptr<PolicyContainerHost> policy_container_host_;
 
   // The endpoint called by `network_loader_`. That needs to be alive while
   // `network_loader_` is alive.

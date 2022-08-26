@@ -270,7 +270,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // tests use a fake id.
   void OnBeginNavigationCommit(
       const GlobalRenderFrameHostId& rfh_id,
-      const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+      const PolicyContainerPolicies& policy_container_policies,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,
       ukm::SourceId document_ukm_source_id);
@@ -286,7 +286,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // After this is called, is_response_committed() and is_execution_ready()
   // return true.
   void CompleteWebWorkerPreparation(
-      const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+      const PolicyContainerPolicies& cross_origin_embedder_policy,
       ukm::SourceId worker_ukm_source_id);
 
   // Sets `url_`, `top_frame_origin_` and `key_`. For service worker clients,
@@ -741,9 +741,8 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // on the GUID format.
   base::UnguessableToken fetch_request_window_id_;
 
-  // The embedder policy of the client. Set on response commit.
-  absl::optional<network::CrossOriginEmbedderPolicy>
-      cross_origin_embedder_policy_;
+  // The policy container policies of the client. Set on response commit.
+  absl::optional<PolicyContainerPolicies> policy_container_policies_;
 
   // An endpoint connected to the COEP reporter. A clone of this connection is
   // passed to the service worker. Bound on response commit.

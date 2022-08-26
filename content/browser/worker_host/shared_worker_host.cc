@@ -233,35 +233,25 @@ void SharedWorkerHost::Start(
     policy_container_host = std::move(creator_policy_container_host_);
   } else {
     // https://html.spec.whatwg.org/C/#creating-a-policy-container-from-a-fetch-response
-    auto ip_address_space = network::mojom::IPAddressSpace::kUnknown;
-    bool is_web_secure_context =
-        network::IsUrlPotentiallyTrustworthy(final_response_url_) &&
-        creator_client_security_state_->is_web_secure_context;
-    std::vector<network::mojom::ContentSecurityPolicyPtr> csps;
-    network::CrossOriginOpenerPolicy cross_origin_opener_policy;
-    auto sandbox_flags = network::mojom::WebSandboxFlags::kNone;
+    policy_container_host = base::MakeRefCounted<PolicyContainerHost>(
+        // This does not parse the referrer policy, which will be
+        // updated in ServiceWorkerGlobalScope::Initialize
+        PolicyContainerPolicies(final_response_url,
+                                main_script_load_params->response_head.get(),
+                                nullptr));
 
     if (main_script_load_params->response_head->parsed_headers) {
       worker_client_security_state_->cross_origin_embedder_policy =
           main_script_load_params->response_head->parsed_headers
               ->cross_origin_embedder_policy;
-      cross_origin_opener_policy =
-          main_script_load_params->response_head->parsed_headers
-              ->cross_origin_opener_policy;
-      ip_address_space = CalculateIPAddressSpace(
-          final_response_url_, main_script_load_params->response_head.get(),
-          client);
-      for (auto& csp : main_script_load_params->response_head->parsed_headers
-                           ->content_security_policy) {
-        csps.push_back(csp->Clone());
-        sandbox_flags |= csp->sandbox;
-      }
     }
     if (base::FeatureList::IsEnabled(
             features::kPrivateNetworkAccessForWorkers)) {
-      worker_client_security_state_->ip_address_space = ip_address_space;
+      worker_client_security_state_->ip_address_space =
+          policy_container_host->ip_address_space();
       worker_client_security_state_->is_web_secure_context =
-          is_web_secure_context;
+          policy_container_host->policies().is_web_secure_context &&
+          creator_client_security_state_->is_web_secure_context;
       worker_client_security_state_->private_network_request_policy =
           DerivePrivateNetworkRequestPolicy(
               worker_client_security_state_->ip_address_space,
@@ -290,16 +280,6 @@ void SharedWorkerHost::Start(
         worker_client_security_state_->cross_origin_embedder_policy
             .report_only_reporting_endpoint,
         GetReportingSource(), GetNetworkIsolationKey());
-
-    // The referrer policy is parsed in the renderer and we tentatively pass
-    // kDefault here
-    policy_container_host =
-        base::MakeRefCounted<PolicyContainerHost>(PolicyContainerPolicies(
-            network::mojom::ReferrerPolicy::kDefault, ip_address_space,
-            is_web_secure_context, std::move(csps), cross_origin_opener_policy,
-            worker_client_security_state_->cross_origin_embedder_policy,
-            sandbox_flags,
-            /*is_anonymous=*/false));
   }
 
   auto options = blink::mojom::WorkerOptions::New(

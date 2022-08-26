@@ -29,6 +29,7 @@
 #include "base/timer/timer.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
+#include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/service_worker/embedded_worker_instance.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_client_utils.h"
@@ -561,6 +562,9 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // Returns nullptr if `client_security_state()` is nullptr.
   const network::CrossOriginEmbedderPolicy* cross_origin_embedder_policy()
       const;
+  const scoped_refptr<PolicyContainerHost> policy_container_host() const {
+    return policy_container_host_;
+  }
 
   // Returns the client security state used by this service worker, if any.
   // Never returns a nullptr value after returning a non-nullptr value.
@@ -600,6 +604,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
       std::map<GURL, ServiceWorkerUpdateChecker::ComparedScriptInfo>
           compared_script_info_map,
       const GURL& updated_script_url,
+      scoped_refptr<PolicyContainerHost> policy_container_host,
       network::CrossOriginEmbedderPolicy cross_origin_embedder_policy);
   const std::map<GURL, ServiceWorkerUpdateChecker::ComparedScriptInfo>&
   compared_script_info_map() const;
@@ -639,6 +644,11 @@ class CONTENT_EXPORT ServiceWorkerVersion
       mojo::PendingReceiver<blink::mojom::ReportingObserver>
           reporting_observer_receiver) {
     reporting_observer_receiver_ = std::move(reporting_observer_receiver);
+  }
+
+  void set_policy_container_host(
+      scoped_refptr<PolicyContainerHost> policy_container_host) {
+    policy_container_host_ = std::move(policy_container_host);
   }
 
   // Initializes the global scope of the ServiceWorker on the renderer side.
@@ -1185,6 +1195,8 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // Identifier for UKM recording in the service worker thread. Stored here so
   // it can be associated with clients' source IDs.
   const ukm::SourceId ukm_source_id_;
+
+  scoped_refptr<PolicyContainerHost> policy_container_host_;
 
   base::UnguessableToken reporting_source_;
 

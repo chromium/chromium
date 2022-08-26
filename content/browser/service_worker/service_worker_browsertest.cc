@@ -1249,8 +1249,9 @@ IN_PROC_BROWSER_TEST_P(UserAgentServiceWorkerBrowserTest, NavigatorUserAgent) {
           }
         }
 
-        URLLoaderInterceptor::WriteResponse(path, params->client.get(),
-                                            &headers);
+        URLLoaderInterceptor::WriteResponse(
+            path, params->client.get(), &headers,
+            absl::optional<net::SSLInfo>(), params->url_request.url);
 
         if (--it->second == 0)
           expected_request_urls.erase(it);

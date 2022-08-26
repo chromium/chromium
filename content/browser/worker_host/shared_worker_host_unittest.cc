@@ -37,6 +37,7 @@
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/not_implemented_url_loader_factory.h"
+#include "services/network/public/mojom/parsed_headers.mojom.h"
 #include "services/network/test/client_security_state_builder.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -105,6 +106,9 @@ class SharedWorkerHostTest : public testing::Test {
           network::mojom::URLResponseHead::New()) {
     auto main_script_load_params =
         blink::mojom::WorkerMainScriptLoadParams::New();
+    if (!response_head->parsed_headers) {
+      response_head->parsed_headers = network::mojom::ParsedHeaders::New();
+    }
     main_script_load_params->response_head = std::move(response_head);
     mojo::ScopedDataPipeProducerHandle producer_handle;
     mojo::ScopedDataPipeConsumerHandle consumer_handle;

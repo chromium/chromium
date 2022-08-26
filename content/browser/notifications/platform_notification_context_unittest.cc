@@ -588,7 +588,8 @@ TEST_F(PlatformNotificationContextTest, ServiceWorkerUnregistered) {
       script_url, key, options, blink::mojom::FetchClientSettingsObject::New(),
       base::BindOnce(&PlatformNotificationContextTest::DidRegisterServiceWorker,
                      base::Unretained(this), &service_worker_registration_id),
-      /*requesting_frame_id=*/GlobalRenderFrameHostId());
+      /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+      PolicyContainerPolicies());
 
   base::RunLoop().RunUntilIdle();
   ASSERT_NE(service_worker_registration_id,

@@ -171,7 +171,8 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
               &BlinkNotificationServiceImplTest::DidRegisterServiceWorker,
               base::Unretained(this), &service_worker_registration_id,
               run_loop.QuitClosure()),
-          /*requesting_frame_id=*/GlobalRenderFrameHostId());
+          /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+          PolicyContainerPolicies());
       run_loop.Run();
     }
 

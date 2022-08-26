@@ -2178,6 +2178,12 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool ShouldInheritCrossOriginEmbedderPolicyImplicitly(
       const GURL& url);
 
+  // Returns true when a ServiceWorker whose URL is |url| should inherit its
+  // PolicyContainer from its creator instead of from its main script
+  // response.
+  virtual bool ShouldServiceWorkerInheritPolicyContainerFromCreator(
+      const GURL& url);
+
   // Returns whether a context with the given |origin| should be allowed to make
   // insecure private network requests.
   //

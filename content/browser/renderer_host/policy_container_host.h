@@ -9,6 +9,7 @@
 
 #include "content/common/child_process_host_impl.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/content_browser_client.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
@@ -18,8 +19,10 @@
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom.h"
+#include "url/gurl.h"
 
 namespace content {
 
@@ -38,6 +41,15 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
       network::mojom::WebSandboxFlags sandbox_flags,
       bool is_anonymous);
 
+  explicit PolicyContainerPolicies(
+      const blink::mojom::PolicyContainerPolicies& policies);
+
+  // Used when loading workers from network schemes.
+  // WARNING: This does not populate referrer policy.
+  PolicyContainerPolicies(const GURL& url,
+                          network::mojom::URLResponseHead* response_head,
+                          ContentBrowserClient* client);
+
   // Instances of this type are move-only.
   PolicyContainerPolicies(const PolicyContainerPolicies&) = delete;
   PolicyContainerPolicies& operator=(const PolicyContainerPolicies&) = delete;
@@ -55,6 +67,9 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
   // Helper function to append items to `content_security_policies`.
   void AddContentSecurityPolicies(
       std::vector<network::mojom::ContentSecurityPolicyPtr> policies);
+
+  blink::mojom::PolicyContainerPoliciesPtr ToMojoPolicyContainerPolicies()
+      const;
 
   // The referrer policy for the associated document. If not overwritten via a
   // call to SetReferrerPolicy (for example after parsing the Referrer-Policy
@@ -195,6 +210,11 @@ class CONTENT_EXPORT PolicyContainerHost
   void set_cross_origin_opener_policy(
       const network::CrossOriginOpenerPolicy& policy) {
     policies_.cross_origin_opener_policy = policy;
+  }
+
+  void set_cross_origin_embedder_policy(
+      const network::CrossOriginEmbedderPolicy& policy) {
+    policies_.cross_origin_embedder_policy = policy;
   }
 
   // Merges the provided sandbox flags with the existing flags.

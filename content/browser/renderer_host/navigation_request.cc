@@ -4951,9 +4951,8 @@ void NavigationRequest::CommitNavigation() {
     // about to go.
     service_worker_handle_->OnBeginNavigationCommit(
         render_frame_host_->GetGlobalId(),
-        policy_container_builder_->FinalPolicies().cross_origin_embedder_policy,
-        std::move(reporter_remote), &service_worker_container_info,
-        commit_params_->document_ukm_source_id);
+        policy_container_builder_->FinalPolicies(), std::move(reporter_remote),
+        &service_worker_container_info, commit_params_->document_ukm_source_id);
   }
 
   if (web_bundle_handle_) {

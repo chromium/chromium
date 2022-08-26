@@ -244,7 +244,8 @@ scoped_refptr<ServiceWorkerRegistration> ServiceWorkerJobTest::RunRegisterJob(
       script_url, options, key, std::move(outside_fetch_client_settings_object),
       /*requesting_frame_id=*/GlobalRenderFrameHostId(),
       /*ancestor_frame_type=*/blink::mojom::AncestorFrameType::kNormalFrame,
-      SaveRegistration(expected_status, &registration, run_loop.QuitClosure()));
+      SaveRegistration(expected_status, &registration, run_loop.QuitClosure()),
+      PolicyContainerPolicies());
   run_loop.Run();
   return registration;
 }
@@ -754,7 +755,8 @@ TEST_F(ServiceWorkerJobTest, AbortAll_Register) {
       /*requesting_frame_id=*/GlobalRenderFrameHostId(),
       /*ancestor_frame_type=*/blink::mojom::AncestorFrameType::kNormalFrame,
       SaveRegistration(blink::ServiceWorkerStatusCode::kErrorAbort,
-                       &registration1, barrier_closure));
+                       &registration1, barrier_closure),
+      PolicyContainerPolicies());
 
   scoped_refptr<ServiceWorkerRegistration> registration2;
   job_coordinator()->Register(
@@ -763,7 +765,8 @@ TEST_F(ServiceWorkerJobTest, AbortAll_Register) {
       /*requesting_frame_id=*/GlobalRenderFrameHostId(),
       /*ancestor_frame_type=*/blink::mojom::AncestorFrameType::kNormalFrame,
       SaveRegistration(blink::ServiceWorkerStatusCode::kErrorAbort,
-                       &registration2, barrier_closure));
+                       &registration2, barrier_closure),
+      PolicyContainerPolicies());
 
   job_coordinator()->AbortAll();
 
@@ -819,7 +822,8 @@ TEST_F(ServiceWorkerJobTest, AbortAll_RegUnreg) {
       /*requesting_frame_id=*/GlobalRenderFrameHostId(),
       /*ancestor_frame_type=*/blink::mojom::AncestorFrameType::kNormalFrame,
       SaveRegistration(blink::ServiceWorkerStatusCode::kErrorAbort,
-                       &registration, barrier_closure));
+                       &registration, barrier_closure),
+      PolicyContainerPolicies());
 
   job_coordinator()->Unregister(
       options.scope, key, /*is_immediate=*/false,
@@ -855,7 +859,8 @@ TEST_F(ServiceWorkerJobTest, AbortScope) {
       /*requesting_frame_id=*/GlobalRenderFrameHostId(),
       /*ancestor_frame_type=*/blink::mojom::AncestorFrameType::kNormalFrame,
       SaveRegistration(blink::ServiceWorkerStatusCode::kErrorAbort,
-                       &registration1, barrier_closure));
+                       &registration1, barrier_closure),
+      PolicyContainerPolicies());
 
   scoped_refptr<ServiceWorkerRegistration> registration2;
   job_coordinator()->Register(
@@ -864,7 +869,8 @@ TEST_F(ServiceWorkerJobTest, AbortScope) {
       /*requesting_frame_id=*/GlobalRenderFrameHostId(),
       /*ancestor_frame_type=*/blink::mojom::AncestorFrameType::kNormalFrame,
       SaveRegistration(blink::ServiceWorkerStatusCode::kOk, &registration2,
-                       barrier_closure));
+                       barrier_closure),
+      PolicyContainerPolicies());
 
   job_coordinator()->Abort(options1.scope, key1);
 
@@ -896,6 +902,8 @@ TEST_F(ServiceWorkerJobTest, UnregisterWaitingSetsRedundant) {
       registration.get(), script_url, blink::mojom::ScriptType::kClassic, 1L,
       mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
       helper_->context()->AsWeakPtr());
+  version->set_policy_container_host(
+      base::MakeRefCounted<PolicyContainerHost>(PolicyContainerPolicies()));
   ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk,
             StartServiceWorker(version.get()));
 
@@ -1514,7 +1522,8 @@ class UpdateJobTestHelper : public EmbeddedWorkerTestHelper,
         /*requesting_frame_id=*/GlobalRenderFrameHostId(),
         /*ancestor_frame_type=*/blink::mojom::AncestorFrameType::kNormalFrame,
         SaveRegistration(blink::ServiceWorkerStatusCode::kOk, &registration,
-                         run_loop.QuitClosure()));
+                         run_loop.QuitClosure()),
+        PolicyContainerPolicies());
     run_loop.Run();
     // Wait until the worker becomes active.
     base::RunLoop().RunUntilIdle();
@@ -2330,7 +2339,8 @@ TEST_F(ServiceWorkerJobTest, TimeoutBadJobs) {
       /*requesting_frame_id=*/GlobalRenderFrameHostId(),
       /*ancestor_frame_type=*/blink::mojom::AncestorFrameType::kNormalFrame,
       SaveRegistration(blink::ServiceWorkerStatusCode::kErrorTimeout,
-                       &registration1, loop1.QuitClosure()));
+                       &registration1, loop1.QuitClosure()),
+      PolicyContainerPolicies());
 
   task_environment_.FastForwardBy(base::Minutes(1));
 
@@ -2347,7 +2357,8 @@ TEST_F(ServiceWorkerJobTest, TimeoutBadJobs) {
       /*requesting_frame_id=*/GlobalRenderFrameHostId(),
       /*ancestor_frame_type=*/blink::mojom::AncestorFrameType::kNormalFrame,
       SaveRegistration(blink::ServiceWorkerStatusCode::kOk, &registration2,
-                       loop2.QuitClosure()));
+                       loop2.QuitClosure()),
+      PolicyContainerPolicies());
 
   task_environment_.FastForwardBy(base::Minutes(1));
 
@@ -2360,7 +2371,8 @@ TEST_F(ServiceWorkerJobTest, TimeoutBadJobs) {
       /*requesting_frame_id=*/GlobalRenderFrameHostId(),
       /*ancestor_frame_type=*/blink::mojom::AncestorFrameType::kNormalFrame,
       SaveRegistration(blink::ServiceWorkerStatusCode::kOk, &registration3,
-                       loop3.QuitClosure()));
+                       loop3.QuitClosure()),
+      PolicyContainerPolicies());
 
   task_environment_.FastForwardBy(base::Minutes(1));
 

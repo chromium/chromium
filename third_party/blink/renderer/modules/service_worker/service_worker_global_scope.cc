@@ -282,8 +282,8 @@ void ServiceWorkerGlobalScope::FetchAndRunClassicScript(
     WorkerResourceTimingNotifier& outside_resource_timing_notifier,
     const v8_inspector::V8StackTraceId& stack_id) {
   DCHECK(!IsContextPaused());
-  // TODO(crbug.com/1177199): SetPolicyContainer once we passed down policy
-  // container from ServiceWorkerVersion
+
+  SetPolicyContainer(std::move(policy_container));
 
   if (installed_scripts_manager_) {
     // This service worker is installed. Load and run the installed script.
@@ -345,8 +345,8 @@ void ServiceWorkerGlobalScope::FetchAndRunModuleScript(
     RejectCoepUnsafeNone reject_coep_unsafe_none) {
   DCHECK(IsContextThread());
   DCHECK(!reject_coep_unsafe_none);
-  // TODO(crbug.com/1177199): SetPolicyContainer once we passed down policy
-  // container from ServiceWorkerVersion
+
+  SetPolicyContainer(std::move(policy_container));
 
   if (worker_main_script_load_params) {
     SetWorkerMainScriptLoadingParametersForModules(

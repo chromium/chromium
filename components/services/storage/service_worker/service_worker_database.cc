@@ -18,6 +18,10 @@
 #include "base/strings/stringprintf.h"
 #include "components/services/storage/filesystem_proxy_factory.h"
 #include "components/services/storage/service_worker/service_worker_database.pb.h"
+#include "services/network/public/cpp/web_sandbox_flags.h"
+#include "services/network/public/mojom/cross_origin_embedder_policy.mojom-shared.h"
+#include "services/network/public/mojom/cross_origin_opener_policy.mojom-shared.h"
+#include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_ancestor_frame_type.mojom.h"
@@ -1722,17 +1726,34 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
   }
 
   if (data.has_cross_origin_embedder_policy_value()) {
+    if (!(*out)->policy_container_policies) {
+      (*out)->policy_container_policies =
+          blink::mojom::PolicyContainerPolicies::New();
+    }
+    if (!ServiceWorkerRegistrationData::CrossOriginEmbedderPolicyValue_IsValid(
+            data.cross_origin_embedder_policy_value())) {
+      DLOG(ERROR)
+          << "Cross origin embedder policy in policy container policies '"
+          << data.cross_origin_embedder_policy_value() << "' is not valid.";
+      return Status::kErrorCorrupted;
+    }
     switch (data.cross_origin_embedder_policy_value()) {
       case ServiceWorkerRegistrationData::REQUIRE_CORP:
         (*out)->cross_origin_embedder_policy.value =
+            network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
+        (*out)->policy_container_policies->cross_origin_embedder_policy =
             network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
         break;
       case ServiceWorkerRegistrationData::CREDENTIALLESS:
         (*out)->cross_origin_embedder_policy.value =
             network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless;
+        (*out)->policy_container_policies->cross_origin_embedder_policy =
+            network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless;
         break;
-      default:
+      case ServiceWorkerRegistrationData::NONE_OR_NOT_EXIST:
         (*out)->cross_origin_embedder_policy.value =
+            network::mojom::CrossOriginEmbedderPolicyValue::kNone;
+        (*out)->policy_container_policies->cross_origin_embedder_policy =
             network::mojom::CrossOriginEmbedderPolicyValue::kNone;
     }
   }
@@ -1782,7 +1803,79 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
     }
   }
 
+  if (data.has_policy_container_policies()) {
+    if (!(*out)->policy_container_policies) {
+      (*out)->policy_container_policies =
+          blink::mojom::PolicyContainerPolicies::New();
+    }
+    auto& policies = data.policy_container_policies();
+    if (!ServiceWorkerRegistrationData::ReferrerPolicyValue_IsValid(
+            policies.referrer_policy())) {
+      DLOG(ERROR) << "Referrer policy in policy container policies '"
+                  << policies.referrer_policy() << "' is not valid.";
+      return Status::kErrorCorrupted;
+    }
+    if (policies.has_referrer_policy()) {
+      switch (policies.referrer_policy()) {
+        case ServiceWorkerRegistrationData::DEFAULT:
+          (*out)->policy_container_policies->referrer_policy =
+              network::mojom::ReferrerPolicy::kDefault;
+          break;
+        case ServiceWorkerRegistrationData::ALWAYS:
+          (*out)->policy_container_policies->referrer_policy =
+              network::mojom::ReferrerPolicy::kAlways;
+          break;
+        case ServiceWorkerRegistrationData::NO_REFERRER_WHEN_DOWNGRADE:
+          (*out)->policy_container_policies->referrer_policy =
+              network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade;
+          break;
+        case ServiceWorkerRegistrationData::NEVER:
+          (*out)->policy_container_policies->referrer_policy =
+              network::mojom::ReferrerPolicy::kNever;
+          break;
+        case ServiceWorkerRegistrationData::ORIGIN:
+          (*out)->policy_container_policies->referrer_policy =
+              network::mojom::ReferrerPolicy::kOrigin;
+          break;
+        case ServiceWorkerRegistrationData::ORIGIN_WHEN_CROSS_ORIGIN:
+          (*out)->policy_container_policies->referrer_policy =
+              network::mojom::ReferrerPolicy::kOriginWhenCrossOrigin;
+          break;
+        case ServiceWorkerRegistrationData::STRICT_ORIGIN_WHEN_CROSS_ORIGIN:
+          (*out)->policy_container_policies->referrer_policy =
+              network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin;
+          break;
+        case ServiceWorkerRegistrationData::SAME_ORIGIN:
+          (*out)->policy_container_policies->referrer_policy =
+              network::mojom::ReferrerPolicy::kSameOrigin;
+          break;
+        case ServiceWorkerRegistrationData::STRICT_ORIGIN:
+          (*out)->policy_container_policies->referrer_policy =
+              network::mojom::ReferrerPolicy::kStrictOrigin;
+          break;
+      }
+    }
+    if (policies.has_sandbox_flags()) {
+      (*out)->policy_container_policies->sandbox_flags =
+          static_cast<network::mojom::WebSandboxFlags>(
+              policies.sandbox_flags());
+    }
+  }
+
   return Status::kOk;
+}
+
+ServiceWorkerRegistrationData::CrossOriginEmbedderPolicyValue
+ConvertCrossOriginEmbedderPolicyFromMojomToProtocolBuffer(
+    network::mojom::CrossOriginEmbedderPolicyValue value) {
+  switch (value) {
+    case network::mojom::CrossOriginEmbedderPolicyValue::kNone:
+      return ServiceWorkerRegistrationData::NONE_OR_NOT_EXIST;
+    case network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp:
+      return ServiceWorkerRegistrationData::REQUIRE_CORP;
+    case network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless:
+      return ServiceWorkerRegistrationData::CREDENTIALLESS;
+  }
 }
 
 void ServiceWorkerDatabase::WriteRegistrationDataInBatch(
@@ -1860,36 +1953,17 @@ void ServiceWorkerDatabase::WriteRegistrationDataInBatch(
           ServiceWorkerRegistrationData_ServiceWorkerUpdateViaCacheType>(
           registration.update_via_cache));
 
-  switch (registration.cross_origin_embedder_policy.value) {
-    case network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp:
-      data.set_cross_origin_embedder_policy_value(
-          ServiceWorkerRegistrationData::REQUIRE_CORP);
-      break;
-    case network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless:
-      data.set_cross_origin_embedder_policy_value(
-          ServiceWorkerRegistrationData::CREDENTIALLESS);
-      break;
-    default:
-      data.set_cross_origin_embedder_policy_value(
-          ServiceWorkerRegistrationData::NONE_OR_NOT_EXIST);
-  }
+  data.set_cross_origin_embedder_policy_value(
+      ConvertCrossOriginEmbedderPolicyFromMojomToProtocolBuffer(
+          registration.cross_origin_embedder_policy.value));
+
   if (registration.cross_origin_embedder_policy.reporting_endpoint) {
     data.set_cross_origin_embedder_policy_reporting_endpoint(
         registration.cross_origin_embedder_policy.reporting_endpoint.value());
   }
-  switch (registration.cross_origin_embedder_policy.report_only_value) {
-    case network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp:
-      data.set_cross_origin_embedder_policy_report_only_value(
-          ServiceWorkerRegistrationData::REQUIRE_CORP);
-      break;
-    case network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless:
-      data.set_cross_origin_embedder_policy_report_only_value(
-          ServiceWorkerRegistrationData::CREDENTIALLESS);
-      break;
-    default:
-      data.set_cross_origin_embedder_policy_report_only_value(
-          ServiceWorkerRegistrationData::NONE_OR_NOT_EXIST);
-  }
+  data.set_cross_origin_embedder_policy_report_only_value(
+      ConvertCrossOriginEmbedderPolicyFromMojomToProtocolBuffer(
+          registration.cross_origin_embedder_policy.report_only_value));
   if (registration.cross_origin_embedder_policy
           .report_only_reporting_endpoint) {
     data.set_cross_origin_embedder_policy_report_only_reporting_endpoint(
@@ -1905,6 +1979,45 @@ void ServiceWorkerDatabase::WriteRegistrationDataInBatch(
       data.set_ancestor_frame_type(ServiceWorkerRegistrationData::FENCED_FRAME);
       break;
   }
+
+  ServiceWorkerRegistrationData::PolicyContainerPolicies* policies =
+      data.mutable_policy_container_policies();
+  DCHECK(registration.policy_container_policies);
+  switch (registration.policy_container_policies->referrer_policy) {
+    case network::mojom::ReferrerPolicy::kDefault:
+      policies->set_referrer_policy(ServiceWorkerRegistrationData::DEFAULT);
+      break;
+    case network::mojom::ReferrerPolicy::kAlways:
+      policies->set_referrer_policy(ServiceWorkerRegistrationData::ALWAYS);
+      break;
+    case network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade:
+      policies->set_referrer_policy(
+          ServiceWorkerRegistrationData::NO_REFERRER_WHEN_DOWNGRADE);
+      break;
+    case network::mojom::ReferrerPolicy::kNever:
+      policies->set_referrer_policy(ServiceWorkerRegistrationData::NEVER);
+      break;
+    case network::mojom::ReferrerPolicy::kOrigin:
+      policies->set_referrer_policy(ServiceWorkerRegistrationData::ORIGIN);
+      break;
+    case network::mojom::ReferrerPolicy::kOriginWhenCrossOrigin:
+      policies->set_referrer_policy(
+          ServiceWorkerRegistrationData::ORIGIN_WHEN_CROSS_ORIGIN);
+      break;
+    case network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin:
+      policies->set_referrer_policy(
+          ServiceWorkerRegistrationData::STRICT_ORIGIN_WHEN_CROSS_ORIGIN);
+      break;
+    case network::mojom::ReferrerPolicy::kSameOrigin:
+      policies->set_referrer_policy(ServiceWorkerRegistrationData::SAME_ORIGIN);
+      break;
+    case network::mojom::ReferrerPolicy::kStrictOrigin:
+      policies->set_referrer_policy(
+          ServiceWorkerRegistrationData::STRICT_ORIGIN);
+      break;
+  }
+  policies->set_sandbox_flags(
+      static_cast<int>(registration.policy_container_policies->sandbox_flags));
 
   std::string value;
   bool success = data.SerializeToString(&value);

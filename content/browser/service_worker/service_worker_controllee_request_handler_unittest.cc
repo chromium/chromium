@@ -125,6 +125,8 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
         registration_.get(), script_url_, blink::mojom::ScriptType::kClassic,
         1L, mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
         context()->AsWeakPtr());
+    version_->set_policy_container_host(
+        base::MakeRefCounted<PolicyContainerHost>(PolicyContainerPolicies()));
 
     std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> records;
     records.push_back(WriteToDiskCacheSync(

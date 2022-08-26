@@ -7,8 +7,10 @@
 #include "base/lazy_instance.h"
 #include "content/browser/renderer_host/frame_navigation_entry.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/private_network_access_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_thread.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 
 namespace content {
@@ -128,6 +130,34 @@ PolicyContainerPolicies::PolicyContainerPolicies(
       sandbox_flags(sandbox_flags),
       is_anonymous(is_anonymous) {}
 
+PolicyContainerPolicies::PolicyContainerPolicies(
+    const blink::mojom::PolicyContainerPolicies& policies) {
+  cross_origin_embedder_policy.value = policies.cross_origin_embedder_policy;
+  referrer_policy = policies.referrer_policy;
+  content_security_policies = mojo::Clone(policies.content_security_policies);
+  is_anonymous = policies.is_anonymous;
+  sandbox_flags = policies.sandbox_flags;
+}
+
+PolicyContainerPolicies::PolicyContainerPolicies(
+    const GURL& url,
+    network::mojom::URLResponseHead* response_head,
+    ContentBrowserClient* client)
+    : PolicyContainerPolicies(
+          network::mojom::ReferrerPolicy::kDefault,
+          CalculateIPAddressSpace(url, response_head, client),
+          network::IsUrlPotentiallyTrustworthy(url),
+          mojo::Clone(response_head->parsed_headers->content_security_policy),
+          response_head->parsed_headers->cross_origin_opener_policy,
+          response_head->parsed_headers->cross_origin_embedder_policy,
+          network::mojom::WebSandboxFlags::kNone,
+          /*is_anonymous=*/false) {
+  for (auto& content_security_policy :
+       response_head->parsed_headers->content_security_policy) {
+    sandbox_flags |= content_security_policy->sandbox;
+  }
+}
+
 PolicyContainerPolicies::PolicyContainerPolicies(PolicyContainerPolicies&&) =
     default;
 
@@ -153,6 +183,13 @@ void PolicyContainerPolicies::AddContentSecurityPolicies(
   content_security_policies.insert(content_security_policies.end(),
                                    std::make_move_iterator(policies.begin()),
                                    std::make_move_iterator(policies.end()));
+}
+
+blink::mojom::PolicyContainerPoliciesPtr
+PolicyContainerPolicies::ToMojoPolicyContainerPolicies() const {
+  return blink::mojom::PolicyContainerPolicies::New(
+      cross_origin_embedder_policy.value, referrer_policy,
+      mojo::Clone(content_security_policies), is_anonymous, sandbox_flags);
 }
 
 PolicyContainerHost::PolicyContainerHost() = default;
@@ -219,12 +256,7 @@ PolicyContainerHost::CreatePolicyContainerForBlink() {
       remote.InitWithNewEndpointAndPassReceiver()));
 
   return blink::mojom::PolicyContainer::New(
-      blink::mojom::PolicyContainerPolicies::New(
-          policies_.cross_origin_embedder_policy.value,
-          policies_.referrer_policy,
-          mojo::Clone(policies_.content_security_policies),
-          policies_.is_anonymous, policies_.sandbox_flags),
-      std::move(remote));
+      policies_.ToMojoPolicyContainerPolicies(), std::move(remote));
 }
 
 scoped_refptr<PolicyContainerHost> PolicyContainerHost::Clone() const {

@@ -180,7 +180,8 @@ class PreinstalledWebAppManagerBrowserTestBase
               CreateFakeSslInfoCertificate(&ssl_info);
 
               content::URLLoaderInterceptor::WriteResponse(
-                  path, params->client.get(), /*headers=*/nullptr, ssl_info);
+                  path, params->client.get(), /*headers=*/nullptr, ssl_info,
+                  params->url_request.url);
 
               return /*intercepted=*/true;
             }));

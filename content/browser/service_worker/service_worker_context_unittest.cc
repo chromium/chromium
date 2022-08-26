@@ -421,7 +421,8 @@ TEST_F(ServiceWorkerContextTest, RegistrationCompletedObserver) {
   context()->RegisterServiceWorker(
       script_url, key, options, blink::mojom::FetchClientSettingsObject::New(),
       MakeRegisteredCallback(&called, &registration_id),
-      /*requesting_frame_id=*/GlobalRenderFrameHostId());
+      /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+      PolicyContainerPolicies());
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(called);
@@ -585,7 +586,8 @@ TEST_F(ServiceWorkerContextTest, OnVersionRunningStatusChangedObserver) {
   context()->RegisterServiceWorker(
       script_url, key, options, blink::mojom::FetchClientSettingsObject::New(),
       base::BindOnce(&RegisteredCallback, run_loop.QuitClosure()),
-      /*requesting_frame_id=*/GlobalRenderFrameHostId());
+      /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+      PolicyContainerPolicies());
   run_loop.Run();
 
   context_wrapper()->StopAllServiceWorkersForStorageKey(
@@ -644,7 +646,8 @@ TEST_F(ServiceWorkerContextTest, Register) {
   context()->RegisterServiceWorker(
       script_url, key, options, blink::mojom::FetchClientSettingsObject::New(),
       MakeRegisteredCallback(&called, &registration_id),
-      /*requesting_frame_id=*/GlobalRenderFrameHostId());
+      /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+      PolicyContainerPolicies());
 
   ASSERT_FALSE(called);
   base::RunLoop().RunUntilIdle();
@@ -698,7 +701,8 @@ TEST_F(ServiceWorkerContextTest, Register_RejectInstall) {
   context()->RegisterServiceWorker(
       script_url, key, options, blink::mojom::FetchClientSettingsObject::New(),
       MakeRegisteredCallback(&called, &registration_id),
-      /*requesting_frame_id=*/GlobalRenderFrameHostId());
+      /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+      PolicyContainerPolicies());
 
   ASSERT_FALSE(called);
   base::RunLoop().RunUntilIdle();
@@ -749,7 +753,8 @@ TEST_F(ServiceWorkerContextTest, Register_RejectActivate) {
   context()->RegisterServiceWorker(
       script_url, key, options, blink::mojom::FetchClientSettingsObject::New(),
       MakeRegisteredCallback(&called, &registration_id),
-      /*requesting_frame_id=*/GlobalRenderFrameHostId());
+      /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+      PolicyContainerPolicies());
 
   ASSERT_FALSE(called);
   base::RunLoop().RunUntilIdle();
@@ -793,7 +798,8 @@ TEST_F(ServiceWorkerContextTest, Unregister) {
       GURL("https://www.example.com/service_worker.js"), key, options,
       blink::mojom::FetchClientSettingsObject::New(),
       MakeRegisteredCallback(&called, &registration_id),
-      /*requesting_frame_id=*/GlobalRenderFrameHostId());
+      /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+      PolicyContainerPolicies());
 
   ASSERT_FALSE(called);
   base::RunLoop().RunUntilIdle();
@@ -852,7 +858,8 @@ TEST_F(ServiceWorkerContextTest, UnregisterMultiple) {
         GURL("https://www.example.com/service_worker.js"), key1, options,
         blink::mojom::FetchClientSettingsObject::New(),
         MakeRegisteredCallback(&called, &registration_id1),
-        /*requesting_frame_id=*/GlobalRenderFrameHostId());
+        /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+        PolicyContainerPolicies());
     ASSERT_FALSE(called);
     base::RunLoop().RunUntilIdle();
     ASSERT_TRUE(called);
@@ -866,7 +873,8 @@ TEST_F(ServiceWorkerContextTest, UnregisterMultiple) {
         GURL("https://www.example.com/service_worker2.js"), key1, options,
         blink::mojom::FetchClientSettingsObject::New(),
         MakeRegisteredCallback(&called, &registration_id2),
-        /*requesting_frame_id=*/GlobalRenderFrameHostId());
+        /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+        PolicyContainerPolicies());
     ASSERT_FALSE(called);
     base::RunLoop().RunUntilIdle();
     ASSERT_TRUE(called);
@@ -880,7 +888,8 @@ TEST_F(ServiceWorkerContextTest, UnregisterMultiple) {
         GURL("https://www.example.com:8080/service_worker3.js"), key2, options,
         blink::mojom::FetchClientSettingsObject::New(),
         MakeRegisteredCallback(&called, &registration_id3),
-        /*requesting_frame_id=*/GlobalRenderFrameHostId());
+        /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+        PolicyContainerPolicies());
     ASSERT_FALSE(called);
     base::RunLoop().RunUntilIdle();
     ASSERT_TRUE(called);
@@ -894,7 +903,8 @@ TEST_F(ServiceWorkerContextTest, UnregisterMultiple) {
         GURL("https://www.other.com/service_worker4.js"), key3, options,
         blink::mojom::FetchClientSettingsObject::New(),
         MakeRegisteredCallback(&called, &registration_id4),
-        /*requesting_frame_id=*/GlobalRenderFrameHostId());
+        /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+        PolicyContainerPolicies());
     ASSERT_FALSE(called);
     base::RunLoop().RunUntilIdle();
     ASSERT_TRUE(called);
@@ -987,7 +997,8 @@ TEST_F(ServiceWorkerContextTest, RegisterNewScript) {
       GURL("https://www.example.com/service_worker.js"), key, options,
       blink::mojom::FetchClientSettingsObject::New(),
       MakeRegisteredCallback(&called, &old_registration_id),
-      /*requesting_frame_id=*/GlobalRenderFrameHostId());
+      /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+      PolicyContainerPolicies());
 
   ASSERT_FALSE(called);
   base::RunLoop().RunUntilIdle();
@@ -1002,7 +1013,8 @@ TEST_F(ServiceWorkerContextTest, RegisterNewScript) {
       GURL("https://www.example.com/service_worker_new.js"), key, options,
       blink::mojom::FetchClientSettingsObject::New(),
       MakeRegisteredCallback(&called, &new_registration_id),
-      /*requesting_frame_id=*/GlobalRenderFrameHostId());
+      /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+      PolicyContainerPolicies());
 
   ASSERT_FALSE(called);
   base::RunLoop().RunUntilIdle();
@@ -1042,7 +1054,8 @@ TEST_F(ServiceWorkerContextTest, RegisterDuplicateScript) {
   context()->RegisterServiceWorker(
       script_url, key, options, blink::mojom::FetchClientSettingsObject::New(),
       MakeRegisteredCallback(&called, &old_registration_id),
-      /*requesting_frame_id=*/GlobalRenderFrameHostId());
+      /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+      PolicyContainerPolicies());
 
   ASSERT_FALSE(called);
   base::RunLoop().RunUntilIdle();
@@ -1056,7 +1069,8 @@ TEST_F(ServiceWorkerContextTest, RegisterDuplicateScript) {
   context()->RegisterServiceWorker(
       script_url, key, options, blink::mojom::FetchClientSettingsObject::New(),
       MakeRegisteredCallback(&called, &new_registration_id),
-      /*requesting_frame_id=*/GlobalRenderFrameHostId());
+      /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+      PolicyContainerPolicies());
 
   ASSERT_FALSE(called);
   base::RunLoop().RunUntilIdle();
@@ -1198,7 +1212,8 @@ TEST_P(ServiceWorkerContextRecoveryTest, DeleteAndStartOver) {
   context()->RegisterServiceWorker(
       script_url, key, options, blink::mojom::FetchClientSettingsObject::New(),
       MakeRegisteredCallback(&called, &registration_id),
-      /*requesting_frame_id=*/GlobalRenderFrameHostId());
+      /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+      PolicyContainerPolicies());
 
   ASSERT_FALSE(called);
   content::RunAllTasksUntilIdle();
@@ -1235,7 +1250,8 @@ TEST_P(ServiceWorkerContextRecoveryTest, DeleteAndStartOver) {
   context()->RegisterServiceWorker(
       script_url, key, options, blink::mojom::FetchClientSettingsObject::New(),
       MakeRegisteredCallback(&called, &registration_id),
-      /*requesting_frame_id=*/GlobalRenderFrameHostId());
+      /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+      PolicyContainerPolicies());
 
   ASSERT_FALSE(called);
   content::RunAllTasksUntilIdle();

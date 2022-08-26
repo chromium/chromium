@@ -1413,7 +1413,7 @@ TEST_F(ServiceWorkerVersionTest,
   container_host->OnBeginNavigationCommit(
       GlobalRenderFrameHostId(version_->embedded_worker()->process_id(),
                               /*frame_routing_id=*/1),
-      network::CrossOriginEmbedderPolicy(), std::move(reporter),
+      PolicyContainerPolicies(), std::move(reporter),
       ukm::UkmRecorder::GetNewSourceID());
 
   // RenderProcessHost should be notified of foreground worker.

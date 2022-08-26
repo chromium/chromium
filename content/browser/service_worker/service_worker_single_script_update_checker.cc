@@ -239,6 +239,16 @@ void ServiceWorkerSingleScriptUpdateChecker::OnReceiveResponse(
         response_head->parsed_headers
             ? response_head->parsed_headers->cross_origin_embedder_policy
             : network::CrossOriginEmbedderPolicy();
+
+    if (!GetContentClient()
+             ->browser()
+             ->ShouldServiceWorkerInheritPolicyContainerFromCreator(
+                 script_url_)) {
+      policy_container_host_ = base::MakeRefCounted<PolicyContainerHost>(
+          // This does not parse the referrer policy, which will be
+          // updated in ServiceWorkerGlobalScope::Initialize
+          PolicyContainerPolicies(script_url_, response_head.get(), nullptr));
+    }
   }
 
   network_accessed_ = response_head->network_accessed;

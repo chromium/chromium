@@ -512,7 +512,8 @@ void ServiceWorkerContextCore::RegisterServiceWorker(
     blink::mojom::FetchClientSettingsObjectPtr
         outside_fetch_client_settings_object,
     RegistrationCallback callback,
-    const GlobalRenderFrameHostId& requesting_frame_id) {
+    const GlobalRenderFrameHostId& requesting_frame_id,
+    const PolicyContainerPolicies& policy_container_policies) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::string error_message;
   if (!IsValidRegisterRequest(script_url, options.scope, key, &error_message)) {
@@ -533,7 +534,8 @@ void ServiceWorkerContextCore::RegisterServiceWorker(
       script_url, options, key, std::move(outside_fetch_client_settings_object),
       requesting_frame_id, ancestor_frame_type,
       base::BindOnce(&ServiceWorkerContextCore::RegistrationComplete,
-                     AsWeakPtr(), options.scope, key, std::move(callback)));
+                     AsWeakPtr(), options.scope, key, std::move(callback)),
+      policy_container_policies);
 }
 
 void ServiceWorkerContextCore::UpdateServiceWorker(

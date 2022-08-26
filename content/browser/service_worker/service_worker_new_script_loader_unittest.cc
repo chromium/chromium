@@ -31,6 +31,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
+#include "services/network/public/mojom/parsed_headers.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "third_party/blink/public/common/features.h"
@@ -107,6 +108,7 @@ class MockNetwork {
     if (response.has_certificate_error) {
       response_head->cert_status = response.cert_status;
     }
+    response_head->parsed_headers = network::mojom::ParsedHeaders::New();
 
     mojo::Remote<network::mojom::URLLoaderClient>& client = params->client;
     if (response_head->headers->response_code() == 307) {

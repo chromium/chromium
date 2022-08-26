@@ -1282,6 +1282,11 @@ bool ContentBrowserClient::ShouldInheritCrossOriginEmbedderPolicyImplicitly(
   return false;
 }
 
+bool ContentBrowserClient::ShouldServiceWorkerInheritPolicyContainerFromCreator(
+    const GURL& url) {
+  return url.SchemeIsLocal();
+}
+
 bool ContentBrowserClient::ShouldAllowInsecurePrivateNetworkRequests(
     BrowserContext* browser_context,
     const url::Origin& origin) {

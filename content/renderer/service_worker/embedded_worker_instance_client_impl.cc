@@ -13,6 +13,7 @@
 #include "content/child/child_thread_impl.h"
 #include "content/child/scoped_child_process_reference.h"
 #include "content/public/common/content_client.h"
+#include "content/renderer/policy_container_util.h"
 #include "content/renderer/service_worker/service_worker_context_client.h"
 #include "content/renderer/worker/fetch_client_settings_object_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -78,6 +79,8 @@ void EmbeddedWorkerInstanceClientImpl::StartWorker(
     start_data->main_script_load_params->url_loader_client_endpoints =
         std::move(params->main_script_load_params->url_loader_client_endpoints);
   }
+  start_data->policy_container =
+      ToWebPolicyContainer(std::move(params->policy_container));
 
   for (const auto& feature : params->forced_enabled_runtime_features) {
     blink::WebRuntimeFeatures::EnableFeatureFromString(feature, true);

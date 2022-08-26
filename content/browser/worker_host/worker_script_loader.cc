@@ -320,10 +320,11 @@ void WorkerScriptLoader::CommitCompleted(
   completed_ = true;
 
   if (status.error_code == net::OK && service_worker_handle_) {
-    // TODO(https://crbug.com/999049): Parse the COEP header and pass it to
-    // the service worker handle.
-    service_worker_handle_->OnBeginWorkerCommit(
-        network::CrossOriginEmbedderPolicy(), ukm_source_id_);
+    // TODO(https://crbug.com/999049): Pass the PolicyContainerPolicies. It can
+    // be built from `WorkerScriptLoader::OnReceiveResponse` from the
+    // `response_head->parsed_headers`.
+    service_worker_handle_->OnBeginWorkerCommit(PolicyContainerPolicies(),
+                                                ukm_source_id_);
   }
 
   client_->OnComplete(status);

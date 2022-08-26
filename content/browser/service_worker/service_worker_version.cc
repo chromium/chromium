@@ -1978,6 +1978,10 @@ void ServiceWorkerVersion::StartWorkerInternal() {
 
   params->ukm_source_id = ukm_source_id_;
 
+  DCHECK(policy_container_host_);
+  params->policy_container =
+      policy_container_host_->CreatePolicyContainerForBlink();
+
   embedded_worker_->Start(std::move(params),
                           base::BindOnce(&ServiceWorkerVersion::OnStartSent,
                                          weak_factory_.GetWeakPtr()));
@@ -2446,10 +2450,17 @@ void ServiceWorkerVersion::PrepareForUpdate(
     std::map<GURL, ServiceWorkerUpdateChecker::ComparedScriptInfo>
         compared_script_info_map,
     const GURL& updated_script_url,
+    scoped_refptr<PolicyContainerHost> policy_container_host,
     network::CrossOriginEmbedderPolicy cross_origin_embedder_policy) {
   compared_script_info_map_ = std::move(compared_script_info_map);
   updated_script_url_ = updated_script_url;
   set_cross_origin_embedder_policy(cross_origin_embedder_policy);
+  if (!GetContentClient()
+           ->browser()
+           ->ShouldServiceWorkerInheritPolicyContainerFromCreator(
+               updated_script_url)) {
+    set_policy_container_host(policy_container_host);
+  }
 }
 
 const std::map<GURL, ServiceWorkerUpdateChecker::ComparedScriptInfo>&
