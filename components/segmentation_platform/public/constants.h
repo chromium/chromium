@@ -41,6 +41,10 @@ const char kChromeLowUserEngagementUmaName[] = "ChromeLowUserEngagement";
 const char kFeedUserSegmentationKey[] = "feed_user_segment";
 const char kFeedUserSegmentUmaName[] = "FeedUserSegment";
 
+// The key is used to decide whether the user is interested in shopping or not.
+const char kShoppingUserSegmentationKey[] = "shopping_user";
+const char kShoppingUserUmaName[] = "ShoppingUser";
+
 // The key is used to show a contextual page action.
 const char kContextualPageActionsKey[] = "contextual_page_actions";
 const char kContextualPageActionsUmaName[] = "ContextualPageActions";

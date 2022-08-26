@@ -30,6 +30,7 @@ chromium-metrics-reviews@google.com.
   <variant name="FrequentFeatureUser"/>
   <variant name="PowerUserSegment"/>
   <variant name="QueryTiles"/>
+  <variant name="ShoppingUser"/>
 </variants>
 
 <variants name="ModelExecutionStatus">
@@ -48,6 +49,7 @@ chromium-metrics-reviews@google.com.
   <variant name="FrequentFeatureUser"/>
   <variant name="PowerUser"/>
   <variant name="QueryTiles"/>
+  <variant name="ShoppingUser"/>
 </variants>
 
 <variants name="SegmentationModel">
@@ -62,6 +64,7 @@ chromium-metrics-reviews@google.com.
   <variant name="PowerUserSegment"/>
   <variant name="QueryTiles"/>
   <variant name="Share"/>
+  <variant name="ShoppingUser"/>
   <variant name="Unknown"/>
   <variant name="Voice"/>
 </variants>
