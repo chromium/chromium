@@ -371,19 +371,21 @@ AX_TEST_F(
       await mockFeedback.replay();
     });
 
-AX_TEST_F('ChromeVoxBackgroundTest', 'SelectSingleBasic', async function() {
-  const mockFeedback = this.createMockFeedback();
-  await this.runWithLoadedTree(this.formsDoc);
-  mockFeedback.expectSpeech('apple', 'has pop up', 'Collapsed')
-      .expectBraille('apple btn +popup +3 +')
-      .call(press(KeyCode.DOWN))
-      .expectSpeech('grape', /2 of 3/)
-      .expectBraille('grape 2/3')
-      .call(press(KeyCode.DOWN))
-      .expectSpeech('banana', /3 of 3/)
-      .expectBraille('banana 3/3');
-  await mockFeedback.replay();
-});
+// crbug.com/1356181 Disable due to flaky.
+AX_TEST_F(
+    'ChromeVoxBackgroundTest', 'DISABLED_SelectSingleBasic', async function() {
+      const mockFeedback = this.createMockFeedback();
+      await this.runWithLoadedTree(this.formsDoc);
+      mockFeedback.expectSpeech('apple', 'has pop up', 'Collapsed')
+          .expectBraille('apple btn +popup +3 +')
+          .call(press(KeyCode.DOWN))
+          .expectSpeech('grape', /2 of 3/)
+          .expectBraille('grape 2/3')
+          .call(press(KeyCode.DOWN))
+          .expectSpeech('banana', /3 of 3/)
+          .expectBraille('banana 3/3');
+      await mockFeedback.replay();
+    });
 
 AX_TEST_F('ChromeVoxBackgroundTest', 'ContinuousRead', async function() {
   const mockFeedback = this.createMockFeedback();
