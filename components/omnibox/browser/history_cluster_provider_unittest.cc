@@ -393,7 +393,8 @@ TEST_F(HistoryClustersProviderTest, SearchIntent_HighScoringNav) {
   EXPECT_THAT(on_provider_update_calls_, testing::ElementsAre(true));
 }
 
-TEST_F(HistoryClustersProviderTest, Counterfactual) {
+// TODO(crbug.com/1356807) Disabled for race condition in reading the config.
+TEST_F(HistoryClustersProviderTest, DISABLED_Counterfactual) {
   const auto verify_feature_triggered = [&](bool expected) {
     auto* triggered_feature_service =
         autocomplete_provider_client_->GetOmniboxTriggeredFeatureService();
