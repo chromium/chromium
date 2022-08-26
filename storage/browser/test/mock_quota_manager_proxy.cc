@@ -23,14 +23,6 @@ MockQuotaManagerProxy::MockQuotaManagerProxy(
           quota_manager ? quota_manager->profile_path() : base::FilePath()),
       mock_quota_manager_(quota_manager) {}
 
-void MockQuotaManagerProxy::RegisterClient(
-    mojo::PendingRemote<storage::mojom::QuotaClient> client,
-    QuotaClientType client_type,
-    const std::vector<blink::mojom::StorageType>& storage_types) {
-  DCHECK(!registered_client_);
-  registered_client_.Bind(std::move(client));
-}
-
 void MockQuotaManagerProxy::UpdateOrCreateBucket(
     const BucketInitParams& params,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,

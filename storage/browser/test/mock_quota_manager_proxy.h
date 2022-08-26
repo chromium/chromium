@@ -38,11 +38,6 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
   MockQuotaManagerProxy(const MockQuotaManagerProxy&) = delete;
   MockQuotaManagerProxy& operator=(const MockQuotaManagerProxy&) = delete;
 
-  void RegisterClient(
-      mojo::PendingRemote<mojom::QuotaClient> client,
-      QuotaClientType client_type,
-      const std::vector<blink::mojom::StorageType>& storage_types) override;
-
   void UpdateOrCreateBucket(
       const BucketInitParams& bucket_params,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
@@ -173,8 +168,6 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
   int bucket_modified_count_ = 0;
   storage::BucketId last_notified_bucket_id_ = BucketId::FromUnsafeValue(0);
   int64_t last_notified_bucket_delta_ = 0;
-
-  mojo::Remote<mojom::QuotaClient> registered_client_;
 };
 
 }  // namespace storage
