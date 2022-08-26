@@ -21,6 +21,19 @@ namespace blink {
 
 namespace {
 
+bool IsFloatingPointType(V8MLOperandType::Enum operand_type) {
+  switch (operand_type) {
+    case V8MLOperandType::Enum::kFloat32:
+    case V8MLOperandType::Enum::kFloat16:
+      return true;
+    case V8MLOperandType::Enum::kInt32:
+    case V8MLOperandType::Enum::kUint32:
+    case V8MLOperandType::Enum::kInt8:
+    case V8MLOperandType::Enum::kUint8:
+      return false;
+  }
+}
+
 DOMArrayBufferView::ViewType GetArrayBufferViewType(
     V8MLOperandType::Enum operand_type) {
   switch (operand_type) {
@@ -151,8 +164,8 @@ MLOperand* BuildElementWiseBinary(MLGraphBuilder* builder,
     return nullptr;
   }
   auto* binary = MakeGarbageCollected<MLOperator>(builder, kind);
-  auto* output = MLOperand::CreateOutput(
-      builder, a->Type(), std::move(dims_output.value()), binary);
+  auto* output =
+      MLOperand::CreateOutput(builder, a->Type(), dims_output.value(), binary);
   binary->Connect({a, b}, {output});
   return output;
 }
@@ -232,8 +245,8 @@ MLOperand* MLGraphBuilder::clamp(const MLOperand* input,
   // According to WebNN spec
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-clamp, the output tensor of
   // clamp has the same type and dimensions as its input.
-  auto* output = MLOperand::CreateOutput(this, input->Type(),
-                                         std::move(input->Dimensions()), clamp);
+  auto* output =
+      MLOperand::CreateOutput(this, input->Type(), input->Dimensions(), clamp);
   clamp->Connect({input}, {output});
   return output;
 }
@@ -306,11 +319,28 @@ MLOperand* MLGraphBuilder::reshape(const MLOperand* input,
 
 MLOperand* MLGraphBuilder::softmax(const MLOperand* input,
                                    ExceptionState& exception_state) {
-  // TODO(crbug.com/1273291): Implement this on operating systems to access
-  // hardware acceleration.
-  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                    "Not implemented");
-  return nullptr;
+  // According to WebNN spec:
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-softmax, The input must be
+  // a 2-D tensor.
+  if (input->Dimensions().size() != 2) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "The input must be a 2-D tensor.");
+    return nullptr;
+  }
+  // The input type must be one of the floating point types.
+  if (!IsFloatingPointType(input->Type())) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "The input type must be one of the floating point types.");
+    return nullptr;
+  }
+  auto* softmax = MakeGarbageCollected<MLOperator>(
+      this, MLOperator::OperatorKind::kSoftmax);
+  // The output tensor has the same shape as the input tensor.
+  auto* output = MLOperand::CreateOutput(this, input->Type(),
+                                         input->Dimensions(), softmax);
+  softmax->Connect({input}, {output});
+  return output;
 }
 
 }  // namespace blink

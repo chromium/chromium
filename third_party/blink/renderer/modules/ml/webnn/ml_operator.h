@@ -23,13 +23,13 @@ class MLOperator final : public ScriptWrappable {
   enum class OperatorKind {
     // Keep the order as the same as build methods of MLGraphBuilder.
     kClamp,
-    // Element-wise binary operations
     kAdd,
     kSub,
     kMul,
     kDiv,
     kMax,
-    kMin
+    kMin,
+    kSoftmax
   };
   MLOperator(MLGraphBuilder* builder,
              OperatorKind kind,
