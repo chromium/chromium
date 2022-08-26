@@ -18,7 +18,6 @@
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/raster_cmd_format.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/command_buffer/service/mailbox_manager_impl.h"
 #include "gpu/command_buffer/service/query_manager.h"
 #include "gpu/command_buffer/service/raster_decoder_unittest_base.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -232,7 +231,7 @@ class RasterDecoderOOPTest : public testing::Test, DecoderClient {
     workarounds.webgl_or_caps_max_texture_size = INT_MAX - 1;
     shared_image_factory_ = std::make_unique<SharedImageFactory>(
         GpuPreferences(), workarounds, GpuFeatureInfo(), context_state_.get(),
-        &mailbox_manager_, &shared_image_manager_, nullptr, nullptr,
+        &shared_image_manager_, nullptr, nullptr,
         /*is_for_display_compositor=*/false);
 
     client_texture_mailbox_ =
@@ -373,7 +372,6 @@ class RasterDecoderOOPTest : public testing::Test, DecoderClient {
 
   std::unique_ptr<SharedImageFactory> shared_image_factory_;
   SharedImageManager shared_image_manager_;
-  gles2::MailboxManagerImpl mailbox_manager_;
   raw_ptr<gl::GLDisplay> display_ = nullptr;
 };
 

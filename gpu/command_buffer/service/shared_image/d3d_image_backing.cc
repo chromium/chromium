@@ -576,11 +576,6 @@ bool D3DImageBacking::CopyToGpuMemoryBuffer() {
   return true;
 }
 
-bool D3DImageBacking::ProduceLegacyMailbox(MailboxManager* mailbox_manager) {
-  mailbox_manager->ProduceTexture(mailbox(), gl_texture_.get());
-  return true;
-}
-
 WGPUTextureUsageFlags D3DImageBacking::GetAllowedDawnUsages(
     const WGPUTextureFormat wgpu_format) const {
   // TODO(crbug.com/2709243): Figure out other SI flags, if any.

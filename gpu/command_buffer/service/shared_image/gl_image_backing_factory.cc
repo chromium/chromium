@@ -248,7 +248,6 @@ bool GLImageBackingFactory::IsSupported(uint32_t usage,
                                         bool thread_safe,
                                         gfx::GpuMemoryBufferType gmb_type,
                                         GrContextType gr_context_type,
-                                        bool* allow_legacy_mailbox,
                                         bool is_pixel_used) {
   if (is_pixel_used && gr_context_type != GrContextType::kGL) {
     return false;
@@ -268,7 +267,6 @@ bool GLImageBackingFactory::IsSupported(uint32_t usage,
 #if BUILDFLAG(IS_MAC)
   // On macOS, there is no separate interop factory. Any GpuMemoryBuffer-backed
   // image can be used with both OpenGL and Metal
-  *allow_legacy_mailbox = gr_context_type == GrContextType::kGL;
   return true;
 #else
   // Doesn't support contexts other than GL for OOPR Canvas
@@ -282,7 +280,6 @@ bool GLImageBackingFactory::IsSupported(uint32_t usage,
     // return false if it needs interop factory
     return false;
   }
-  *allow_legacy_mailbox = gr_context_type == GrContextType::kGL;
   return true;
 #endif
 }

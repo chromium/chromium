@@ -39,7 +39,6 @@ class GpuFence;
 }  // namespace gfx
 
 namespace gpu {
-class MailboxManager;
 class SharedContextState;
 class SharedImageManager;
 class SharedImageRepresentation;
@@ -167,10 +166,6 @@ class GPU_GLES2_EXPORT SharedImageBacking {
       base::trace_event::MemoryAllocatorDumpGuid client_guid,
       base::trace_event::ProcessMemoryDump* pmd,
       uint64_t client_tracing_id);
-
-  // Prepares the backing for use with the legacy mailbox system.
-  // TODO(ericrk): Remove this once the new codepath is complete.
-  virtual bool ProduceLegacyMailbox(MailboxManager* mailbox_manager) = 0;
 
   // Reports the estimated size of the backing for the purpose of memory
   // tracking.

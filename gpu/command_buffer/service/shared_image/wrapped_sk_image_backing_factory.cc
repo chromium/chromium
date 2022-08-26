@@ -23,7 +23,6 @@
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/feature_info.h"
-#include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
@@ -143,10 +142,6 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
   // SharedImageBacking implementation.
   SharedImageBackingType GetType() const override {
     return SharedImageBackingType::kWrappedSkImage;
-  }
-
-  bool ProduceLegacyMailbox(MailboxManager* mailbox_manager) override {
-    return false;
   }
 
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override {
@@ -506,7 +501,6 @@ bool WrappedSkImageBackingFactory::IsSupported(
     bool thread_safe,
     gfx::GpuMemoryBufferType gmb_type,
     GrContextType gr_context_type,
-    bool* allow_legacy_mailbox,
     bool is_pixel_used) {
   // Note that this backing support thread safety only for vulkan mode because
   // the underlying vulkan resources like vulkan images can be shared across
@@ -535,7 +529,6 @@ bool WrappedSkImageBackingFactory::IsSupported(
     return false;
   }
 
-  *allow_legacy_mailbox = false;
   return true;
 }
 

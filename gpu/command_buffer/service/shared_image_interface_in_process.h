@@ -18,7 +18,6 @@ class WaitableEvent;
 }
 
 namespace gpu {
-class MailboxManager;
 class SharedContextState;
 class SharedImageFactory;
 class SharedImageManager;
@@ -69,7 +68,6 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
       const GpuDriverBugWorkarounds& gpu_workarounds,
       const GpuFeatureInfo& gpu_feature_info,
       gpu::SharedContextState* context_state,
-      MailboxManager* mailbox_manager,
       SharedImageManager* shared_image_manager,
       ImageFactory* image_factory,
       MemoryTracker* tracker,

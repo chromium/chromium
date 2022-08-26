@@ -79,7 +79,6 @@ bool SharedMemoryImageBackingFactory::IsSupported(
     bool thread_safe,
     gfx::GpuMemoryBufferType gmb_type,
     GrContextType gr_context_type,
-    bool* allow_legacy_mailbox,
     bool is_pixel_used) {
   if (gmb_type != gfx::SHARED_MEMORY_BUFFER) {
     return false;
@@ -89,7 +88,6 @@ bool SharedMemoryImageBackingFactory::IsSupported(
     return false;
   }
 
-  *allow_legacy_mailbox = false;
   return true;
 }
 

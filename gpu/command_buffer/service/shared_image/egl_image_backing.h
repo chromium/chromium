@@ -57,7 +57,6 @@ class EGLImageBacking : public ClearTrackingSharedImageBacking {
   // SharedImageBacking implementation.
   SharedImageBackingType GetType() const override;
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
-  bool ProduceLegacyMailbox(MailboxManager* mailbox_manager) override;
   void MarkForDestruction() override;
 
  protected:

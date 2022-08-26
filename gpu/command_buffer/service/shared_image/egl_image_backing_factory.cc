@@ -84,7 +84,6 @@ bool EGLImageBackingFactory::IsSupported(uint32_t usage,
                                          bool thread_safe,
                                          gfx::GpuMemoryBufferType gmb_type,
                                          GrContextType gr_context_type,
-                                         bool* allow_legacy_mailbox,
                                          bool is_pixel_used) {
   if (is_pixel_used && gr_context_type != GrContextType::kGL) {
     return false;
@@ -107,7 +106,6 @@ bool EGLImageBackingFactory::IsSupported(uint32_t usage,
   if (usage & kInvalidUsage) {
     return false;
   }
-  *allow_legacy_mailbox = false;
   return true;
 }
 

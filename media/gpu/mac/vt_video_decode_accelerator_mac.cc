@@ -2227,7 +2227,7 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
           gl_params, gl_client_.is_passthrough);
 
       const bool success = shared_image_stub->factory()->RegisterBacking(
-          std::move(shared_image), /*allow_legacy_mailbox=*/false);
+          std::move(shared_image));
       if (!success) {
         DLOG(ERROR) << "Failed to register shared image";
         NotifyError(PLATFORM_FAILURE, SFT_PLATFORM_ERROR);

@@ -74,7 +74,6 @@ class GPU_GLES2_EXPORT SharedImageBackingFactory {
                            bool thread_safe,
                            gfx::GpuMemoryBufferType gmb_type,
                            GrContextType gr_context_type,
-                           bool* allow_legacy_mailbox,
                            bool is_pixel_used) = 0;
 };
 

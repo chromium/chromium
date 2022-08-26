@@ -15,7 +15,6 @@
 #include "gpu/command_buffer/service/display_compositor_memory_and_task_controller_on_gpu.h"
 #include "gpu/command_buffer/service/gpu_command_buffer_memory_tracker.h"
 #include "gpu/command_buffer/service/image_factory.h"
-#include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/single_task_sequence.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
@@ -32,7 +31,6 @@ struct SharedImageInterfaceInProcess::SetUpOnGpuParams {
   const GpuDriverBugWorkarounds gpu_workarounds;
   const GpuFeatureInfo gpu_feature_info;
   const raw_ptr<gpu::SharedContextState> context_state;
-  const raw_ptr<MailboxManager> mailbox_manager;
   const raw_ptr<SharedImageManager> shared_image_manager;
   const raw_ptr<ImageFactory> image_factory;
   const raw_ptr<MemoryTracker> memory_tracker;
@@ -42,7 +40,6 @@ struct SharedImageInterfaceInProcess::SetUpOnGpuParams {
                    const GpuDriverBugWorkarounds& gpu_workarounds,
                    const GpuFeatureInfo& gpu_feature_info,
                    gpu::SharedContextState* context_state,
-                   MailboxManager* mailbox_manager,
                    SharedImageManager* shared_image_manager,
                    ImageFactory* image_factory,
                    MemoryTracker* memory_tracker,
@@ -51,7 +48,6 @@ struct SharedImageInterfaceInProcess::SetUpOnGpuParams {
         gpu_workarounds(gpu_workarounds),
         gpu_feature_info(gpu_feature_info),
         context_state(context_state),
-        mailbox_manager(mailbox_manager),
         shared_image_manager(shared_image_manager),
         image_factory(image_factory),
         memory_tracker(memory_tracker),
@@ -74,7 +70,6 @@ SharedImageInterfaceInProcess::SharedImageInterfaceInProcess(
           display_controller->gpu_driver_bug_workarounds(),
           display_controller->gpu_feature_info(),
           display_controller->shared_context_state(),
-          display_controller->mailbox_manager(),
           display_controller->shared_image_manager(),
           display_controller->image_factory(),
           display_controller->memory_tracker(),
@@ -88,7 +83,6 @@ SharedImageInterfaceInProcess::SharedImageInterfaceInProcess(
     const GpuDriverBugWorkarounds& gpu_workarounds,
     const GpuFeatureInfo& gpu_feature_info,
     gpu::SharedContextState* context_state,
-    MailboxManager* mailbox_manager,
     SharedImageManager* shared_image_manager,
     ImageFactory* image_factory,
     MemoryTracker* memory_tracker,
@@ -102,12 +96,12 @@ SharedImageInterfaceInProcess::SharedImageInterfaceInProcess(
       sync_point_manager_(sync_point_manager) {
   DETACH_FROM_SEQUENCE(gpu_sequence_checker_);
   task_sequence_->ScheduleTask(
-      base::BindOnce(
-          &SharedImageInterfaceInProcess::SetUpOnGpu, base::Unretained(this),
-          std::make_unique<SetUpOnGpuParams>(
-              gpu_preferences, gpu_workarounds, gpu_feature_info, context_state,
-              mailbox_manager, shared_image_manager, image_factory,
-              memory_tracker, is_for_display_compositor)),
+      base::BindOnce(&SharedImageInterfaceInProcess::SetUpOnGpu,
+                     base::Unretained(this),
+                     std::make_unique<SetUpOnGpuParams>(
+                         gpu_preferences, gpu_workarounds, gpu_feature_info,
+                         context_state, shared_image_manager, image_factory,
+                         memory_tracker, is_for_display_compositor)),
       {});
 }
 
@@ -132,9 +126,8 @@ void SharedImageInterfaceInProcess::SetUpOnGpu(
         auto shared_image_factory = std::make_unique<SharedImageFactory>(
             params->gpu_preferences, params->gpu_workarounds,
             params->gpu_feature_info, params->context_state,
-            params->mailbox_manager, params->shared_image_manager,
-            params->image_factory, params->memory_tracker,
-            params->is_for_display_compositor);
+            params->shared_image_manager, params->image_factory,
+            params->memory_tracker, params->is_for_display_compositor);
         return shared_image_factory;
       },
       std::move(params));

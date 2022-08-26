@@ -13,7 +13,6 @@
 #include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
-#include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
@@ -68,12 +67,6 @@ void SharedMemoryImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
 const SharedMemoryRegionWrapper&
 SharedMemoryImageBacking::shared_memory_wrapper() {
   return shared_memory_wrapper_;
-}
-
-bool SharedMemoryImageBacking::ProduceLegacyMailbox(
-    MailboxManager* mailbox_manager) {
-  NOTREACHED();
-  return false;
 }
 
 SharedImageBackingType SharedMemoryImageBacking::GetType() const {

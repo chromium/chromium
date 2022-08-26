@@ -224,11 +224,6 @@ void EGLImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
   NOTREACHED();
 }
 
-bool EGLImageBacking::ProduceLegacyMailbox(MailboxManager* mailbox_manager) {
-  // This backing doe not support legacy mailbox system.
-  return false;
-}
-
 template <class T>
 std::unique_ptr<T> EGLImageBacking::ProduceGLTextureInternal(
     SharedImageManager* manager,

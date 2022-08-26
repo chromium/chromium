@@ -178,7 +178,6 @@ bool OzoneImageBackingFactory::IsSupported(uint32_t usage,
                                            bool thread_safe,
                                            gfx::GpuMemoryBufferType gmb_type,
                                            GrContextType gr_context_type,
-                                           bool* allow_legacy_mailbox,
                                            bool is_pixel_used) {
   if (gmb_type != gfx::EMPTY_BUFFER && gmb_type != gfx::NATIVE_PIXMAP) {
     return false;
@@ -218,7 +217,6 @@ bool OzoneImageBackingFactory::IsSupported(uint32_t usage,
   }
 #endif
 
-  *allow_legacy_mailbox = false;
   return true;
 }
 

@@ -137,11 +137,6 @@ class AngleVulkanImageBacking : public ClearTrackingSharedImageBacking,
     return SharedImageBackingType::kAngleVulkan;
   }
 
-  bool ProduceLegacyMailbox(MailboxManager* mailbox_manager) override {
-    NOTREACHED() << "Not supported.";
-    return false;
-  }
-
   bool UploadFromMemory(const SkPixmap& pixmap) override {
     PrepareBackendTexture();
     DCHECK(backend_texture_.isValid());
@@ -637,7 +632,6 @@ bool AngleVulkanImageBackingFactory::IsSupported(
     bool thread_safe,
     gfx::GpuMemoryBufferType gmb_type,
     GrContextType gr_context_type,
-    bool* allow_legacy_mailbox,
     bool is_pixel_used) {
   DCHECK_EQ(gr_context_type, GrContextType::kVulkan);
   if (!CanUseAngleVulkanImageBacking(usage))
@@ -649,8 +643,6 @@ bool AngleVulkanImageBackingFactory::IsSupported(
   if (gmb_type != gfx::EMPTY_BUFFER) {
     return false;
   }
-
-  *allow_legacy_mailbox = false;
 
   return true;
 }

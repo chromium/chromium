@@ -219,13 +219,12 @@ bool GpuSharedImageVideoFactory::CreateImageInternal(
       kPremul_SkAlphaType, std::move(image), std::move(shared_context),
       std::move(drdc_lock));
 
-  // Register it with shared image mailbox as well as legacy mailbox. This
-  // keeps |shared_image| around until its destruction cb is called.
-  // NOTE: Currently none of the video mailbox consumer uses shared image
-  // mailbox.
+  // Register it with shared image mailbox. This keeps |shared_image| around
+  // until its destruction cb is called. NOTE: Currently none of the video
+  // mailbox consumer uses shared image mailbox.
   DCHECK(stub_->channel()->gpu_channel_manager()->shared_image_manager());
   stub_->channel()->shared_image_stub()->factory()->RegisterBacking(
-      std::move(shared_image), /*allow_legacy_mailbox=*/false);
+      std::move(shared_image));
 
   return true;
 }

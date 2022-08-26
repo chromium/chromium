@@ -10,7 +10,6 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/abstract_texture.h"
 #include "gpu/command_buffer/service/abstract_texture_impl.h"
-#include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/ref_counted_lock.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/video_image_reader_image_backing.h"
@@ -124,15 +123,6 @@ void AndroidVideoImageBacking::SetClearedRect(const gfx::Rect& cleared_rect) {}
 
 void AndroidVideoImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
   DCHECK(!in_fence);
-}
-
-bool AndroidVideoImageBacking::ProduceLegacyMailbox(
-    MailboxManager* mailbox_manager) {
-  // Android does not use legacy mailbox anymore. Hence marking this as
-  // NOTREACHED() now. Once all platform stops using legacy mailbox, this
-  // method can be removed.
-  NOTREACHED();
-  return false;
 }
 
 }  // namespace gpu

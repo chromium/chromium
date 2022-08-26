@@ -570,7 +570,6 @@ bool D3DImageBackingFactory::IsSupported(uint32_t usage,
                                          bool thread_safe,
                                          gfx::GpuMemoryBufferType gmb_type,
                                          GrContextType gr_context_type,
-                                         bool* allow_legacy_mailbox,
                                          bool is_pixel_used) {
   if (is_pixel_used) {
     return false;
@@ -591,7 +590,6 @@ bool D3DImageBackingFactory::IsSupported(uint32_t usage,
     return false;
   }
 
-  *allow_legacy_mailbox = false;
   return true;
 }
 

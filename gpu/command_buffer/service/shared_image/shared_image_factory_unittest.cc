@@ -7,7 +7,6 @@
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/command_buffer/service/mailbox_manager_impl.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/command_buffer/tests/texture_image_factory.h"
@@ -41,7 +40,7 @@ class SharedImageFactoryTest : public testing::Test {
     GpuPreferences preferences;
     GpuDriverBugWorkarounds workarounds;
     factory_ = std::make_unique<SharedImageFactory>(
-        preferences, workarounds, GpuFeatureInfo(), nullptr, &mailbox_manager_,
+        preferences, workarounds, GpuFeatureInfo(), nullptr,
         &shared_image_manager_, &image_factory_, nullptr,
         /*is_for_display_compositor=*/false);
   }
@@ -54,7 +53,6 @@ class SharedImageFactoryTest : public testing::Test {
  protected:
   scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<gl::GLContext> context_;
-  gles2::MailboxManagerImpl mailbox_manager_;
   TextureImageFactory image_factory_;
   std::unique_ptr<SharedImageFactory> factory_;
   SharedImageManager shared_image_manager_;
@@ -70,12 +68,7 @@ TEST_F(SharedImageFactoryTest, Basic) {
   EXPECT_TRUE(factory_->CreateSharedImage(
       mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin,
       kPremul_SkAlphaType, surface_handle, usage));
-  TextureBase* texture_base = mailbox_manager_.ConsumeTexture(mailbox);
-  // Validation of the produced backing/mailbox is handled in individual backing
-  // factory unittests.
-  ASSERT_TRUE(texture_base);
   EXPECT_TRUE(factory_->DestroySharedImage(mailbox));
-  EXPECT_FALSE(mailbox_manager_.ConsumeTexture(mailbox));
 }
 
 TEST_F(SharedImageFactoryTest, DuplicateMailbox) {
@@ -95,7 +88,7 @@ TEST_F(SharedImageFactoryTest, DuplicateMailbox) {
   GpuPreferences preferences;
   GpuDriverBugWorkarounds workarounds;
   auto other_factory = std::make_unique<SharedImageFactory>(
-      preferences, workarounds, GpuFeatureInfo(), nullptr, &mailbox_manager_,
+      preferences, workarounds, GpuFeatureInfo(), nullptr,
       &shared_image_manager_, &image_factory_, nullptr,
       /*is_for_display_compositor=*/false);
   EXPECT_FALSE(other_factory->CreateSharedImage(

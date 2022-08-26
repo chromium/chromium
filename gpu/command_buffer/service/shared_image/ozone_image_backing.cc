@@ -17,7 +17,6 @@
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/gl_ozone_image_representation.h"
@@ -136,11 +135,6 @@ void OzoneImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
   if (in_fence) {
     external_write_fence_ = in_fence->GetGpuFenceHandle().Clone();
   }
-}
-
-bool OzoneImageBacking::ProduceLegacyMailbox(MailboxManager* mailbox_manager) {
-  NOTREACHED();
-  return false;
 }
 
 scoped_refptr<gfx::NativePixmap> OzoneImageBacking::GetNativePixmap() {

@@ -166,7 +166,6 @@ bool ExternalVkImageBackingFactory::IsSupported(
     bool thread_safe,
     gfx::GpuMemoryBufferType gmb_type,
     GrContextType gr_context_type,
-    bool* allow_legacy_mailbox,
     bool is_pixel_used) {
   if (gmb_type != gfx::EMPTY_BUFFER && !CanImportGpuMemoryBuffer(gmb_type)) {
     return false;
@@ -193,7 +192,6 @@ bool ExternalVkImageBackingFactory::IsSupported(
   }
 #endif
 
-  *allow_legacy_mailbox = false;
   return true;
 }
 

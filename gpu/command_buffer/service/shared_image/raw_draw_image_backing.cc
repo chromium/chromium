@@ -131,12 +131,6 @@ SharedImageBackingType RawDrawImageBacking::GetType() const {
   return SharedImageBackingType::kRawDraw;
 }
 
-bool RawDrawImageBacking::ProduceLegacyMailbox(
-    MailboxManager* mailbox_manager) {
-  NOTIMPLEMENTED();
-  return false;
-}
-
 void RawDrawImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
   NOTIMPLEMENTED();
 }

@@ -59,7 +59,6 @@ class GPU_GLES2_EXPORT AndroidVideoImageBacking : public AndroidImageBacking {
   gfx::Rect ClearedRect() const override;
   void SetClearedRect(const gfx::Rect& cleared_rect) override;
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
-  bool ProduceLegacyMailbox(MailboxManager* mailbox_manager) override;
 
  protected:
   AndroidVideoImageBacking(const Mailbox& mailbox,

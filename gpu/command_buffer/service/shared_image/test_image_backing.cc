@@ -231,10 +231,6 @@ bool TestImageBacking::UploadFromMemory(const SkPixmap& pixmap) {
   return true;
 }
 
-bool TestImageBacking::ProduceLegacyMailbox(MailboxManager* mailbox_manager) {
-  return false;
-}
-
 std::unique_ptr<GLTextureImageRepresentation>
 TestImageBacking::ProduceGLTexture(SharedImageManager* manager,
                                    MemoryTypeTracker* tracker) {

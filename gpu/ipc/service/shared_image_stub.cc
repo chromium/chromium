@@ -14,7 +14,6 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/ipc/common/command_buffer_id.h"
@@ -505,7 +504,6 @@ ContextResult SharedImageStub::MakeContextCurrentAndCreateFactory() {
       channel_manager->gpu_preferences(),
       channel_manager->gpu_driver_bug_workarounds(),
       channel_manager->gpu_feature_info(), context_state_.get(),
-      channel_manager->mailbox_manager(),
       channel_manager->shared_image_manager(),
       gmb_factory ? gmb_factory->AsImageFactory() : nullptr, this,
       /*is_for_display_compositor=*/false);

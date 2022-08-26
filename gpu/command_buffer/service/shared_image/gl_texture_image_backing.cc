@@ -20,7 +20,6 @@
 #include "gpu/command_buffer/service/context_state.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/image_factory.h"
-#include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/gl_image_backing.h"
@@ -159,15 +158,6 @@ void GLTextureImageBacking::SetClearedRect(const gfx::Rect& cleared_rect) {
   // Use shared image based tracking for passthrough, because we don't always
   // use angle robust initialization.
   ClearTrackingSharedImageBacking::SetClearedRect(cleared_rect);
-}
-
-bool GLTextureImageBacking::ProduceLegacyMailbox(
-    MailboxManager* mailbox_manager) {
-  if (IsPassthrough())
-    mailbox_manager->ProduceTexture(mailbox(), passthrough_texture_.get());
-  else
-    mailbox_manager->ProduceTexture(mailbox(), texture_);
-  return true;
 }
 
 std::unique_ptr<GLTextureImageRepresentation>

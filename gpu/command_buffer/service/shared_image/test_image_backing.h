@@ -43,7 +43,6 @@ class TestImageBacking : public SharedImageBacking {
   void SetClearedRect(const gfx::Rect& cleared_rect) override;
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override {}
   bool UploadFromMemory(const SkPixmap& pixmap) override;
-  bool ProduceLegacyMailbox(MailboxManager* mailbox_manager) override;
   void OnMemoryDump(const std::string& dump_name,
                     base::trace_event::MemoryAllocatorDumpGuid client_guid,
                     base::trace_event::ProcessMemoryDump* pmd,

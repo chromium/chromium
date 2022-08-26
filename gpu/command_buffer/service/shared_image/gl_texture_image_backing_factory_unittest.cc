@@ -13,7 +13,6 @@
 #include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/command_buffer/service/mailbox_manager_impl.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
@@ -136,7 +135,6 @@ class GLTextureImageBackingFactoryTestBase
   scoped_refptr<gl::GLContext> context_;
   scoped_refptr<SharedContextState> context_state_;
   std::unique_ptr<GLTextureImageBackingFactory> backing_factory_;
-  gles2::MailboxManagerImpl mailbox_manager_;
   std::unique_ptr<SharedImageManager> shared_image_manager_;
   std::unique_ptr<MemoryTypeTracker> memory_type_tracker_;
   std::unique_ptr<SharedImageRepresentationFactory>
@@ -196,28 +194,12 @@ TEST_P(GLTextureImageBackingFactoryTest, Basic) {
     EXPECT_TRUE(backing->IsCleared());
   }
 
-  // First, validate via a legacy mailbox.
-  EXPECT_TRUE(backing->ProduceLegacyMailbox(&mailbox_manager_));
-  TextureBase* texture_base = mailbox_manager_.ConsumeTexture(mailbox);
-  ASSERT_TRUE(texture_base);
-  GLenum expected_target = GL_TEXTURE_2D;
-  EXPECT_EQ(texture_base->target(), expected_target);
-  if (!use_passthrough()) {
-    auto* texture = static_cast<gles2::Texture*>(texture_base);
-    EXPECT_TRUE(texture->IsImmutable());
-    int width, height, depth;
-    bool has_level =
-        texture->GetLevelSize(GL_TEXTURE_2D, 0, &width, &height, &depth);
-    EXPECT_TRUE(has_level);
-    EXPECT_EQ(width, size.width());
-    EXPECT_EQ(height, size.height());
-  }
-
-  // Next, validate via a GLTextureImageRepresentation.
+  // First, validate via a GLTextureImageRepresentation.
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
       shared_image_manager_->Register(std::move(backing),
                                       memory_type_tracker_.get());
   EXPECT_TRUE(shared_image);
+  GLenum expected_target = GL_TEXTURE_2D;
   if (!use_passthrough()) {
     auto gl_representation =
         shared_image_representation_factory_->ProduceGLTexture(mailbox);
@@ -289,7 +271,6 @@ TEST_P(GLTextureImageBackingFactoryTest, Basic) {
   skia_representation.reset();
 
   shared_image.reset();
-  EXPECT_FALSE(mailbox_manager_.ConsumeTexture(mailbox));
 }
 
 TEST_P(GLTextureImageBackingFactoryTest, InitialData) {
@@ -353,7 +334,6 @@ TEST_P(GLTextureImageBackingFactoryTest, InitialData) {
     }
 
     shared_image.reset();
-    EXPECT_FALSE(mailbox_manager_.ConsumeTexture(mailbox));
   }
 }
 

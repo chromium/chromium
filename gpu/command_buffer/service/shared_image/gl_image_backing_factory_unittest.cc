@@ -14,7 +14,6 @@
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/command_buffer/service/mailbox_manager_impl.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
@@ -143,7 +142,6 @@ class GLImageBackingFactoryTestBase
   scoped_refptr<SharedContextState> context_state_;
   std::unique_ptr<GLImageBackingFactory> backing_factory_;
   std::unique_ptr<GLImageBackingFactory> backing_factory_shmem_;
-  gles2::MailboxManagerImpl mailbox_manager_;
   std::unique_ptr<SharedImageManager> shared_image_manager_;
   std::unique_ptr<MemoryTypeTracker> memory_type_tracker_;
   std::unique_ptr<SharedImageRepresentationFactory>
@@ -203,23 +201,7 @@ TEST_P(GLImageBackingFactoryTest, Basic) {
     EXPECT_TRUE(backing->IsCleared());
   }
 
-  // First, validate via a legacy mailbox.
-  EXPECT_TRUE(backing->ProduceLegacyMailbox(&mailbox_manager_));
-  TextureBase* texture_base = mailbox_manager_.ConsumeTexture(mailbox);
-  ASSERT_TRUE(texture_base);
-  GLenum target = texture_base->target();
-  scoped_refptr<gl::GLImage> image;
-  if (use_passthrough()) {
-    auto* texture = static_cast<gles2::TexturePassthrough*>(texture_base);
-    image = texture->GetLevelImage(target, 0);
-  } else {
-    auto* texture = static_cast<gles2::Texture*>(texture_base);
-    image = texture->GetLevelImage(target, 0);
-  }
-  ASSERT_TRUE(image);
-  EXPECT_EQ(size, image->GetSize());
-
-  // Next, validate via a GLTextureImageRepresentation.
+  // First, validate via a GLTextureImageRepresentation.
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
       shared_image_manager_->Register(std::move(backing),
                                       memory_type_tracker_.get());
@@ -295,7 +277,6 @@ TEST_P(GLImageBackingFactoryTest, Basic) {
   skia_representation.reset();
 
   shared_image.reset();
-  EXPECT_FALSE(mailbox_manager_.ConsumeTexture(mailbox));
 
   if (!use_passthrough() &&
       context_state_->feature_info()->feature_flags().ext_texture_rg) {
@@ -317,6 +298,7 @@ TEST_P(GLImageBackingFactoryTest, Basic) {
     ASSERT_TRUE(texture);
     GLenum type = 0;
     GLenum internal_format = 0;
+    GLenum target = GL_TEXTURE_2D;
     EXPECT_TRUE(texture->GetLevelType(target, 0, &type, &internal_format));
     EXPECT_EQ(internal_format, static_cast<GLenum>(GL_RGBA));
     gl_representation.reset();
@@ -354,16 +336,12 @@ TEST_P(GLImageBackingFactoryTest, InitialData) {
     ASSERT_TRUE(backing);
     EXPECT_TRUE(backing->IsCleared());
 
-    EXPECT_TRUE(backing->ProduceLegacyMailbox(&mailbox_manager_));
-    TextureBase* texture_base = mailbox_manager_.ConsumeTexture(mailbox);
-    ASSERT_TRUE(texture_base);
-    GLenum expected_target = texture_base->target();
-
     // Validate via a GLTextureImageRepresentation(Passthrough).
     std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
         shared_image_manager_->Register(std::move(backing),
                                         memory_type_tracker_.get());
     EXPECT_TRUE(shared_image);
+    GLenum expected_target = GL_TEXTURE_2D;
 
     if (!use_passthrough()) {
       auto gl_representation =
@@ -392,7 +370,6 @@ TEST_P(GLImageBackingFactoryTest, InitialData) {
     }
 
     shared_image.reset();
-    EXPECT_FALSE(mailbox_manager_.ConsumeTexture(mailbox));
   }
 }
 

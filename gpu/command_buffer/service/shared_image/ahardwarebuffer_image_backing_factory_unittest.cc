@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/command_buffer/service/mailbox_manager_impl.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
@@ -83,7 +82,6 @@ class AHardwareBufferImageBackingFactoryTest : public testing::Test {
   scoped_refptr<gl::GLContext> context_;
   scoped_refptr<SharedContextState> context_state_;
   std::unique_ptr<AHardwareBufferImageBackingFactory> backing_factory_;
-  gles2::MailboxManagerImpl mailbox_manager_;
   SharedImageManager shared_image_manager_;
   std::unique_ptr<MemoryTypeTracker> memory_type_tracker_;
   std::unique_ptr<SharedImageRepresentationFactory>
@@ -95,7 +93,6 @@ class GlLegacySharedImage {
   GlLegacySharedImage(
       AHardwareBufferImageBackingFactory* backing_factory,
       bool is_thread_safe,
-      gles2::MailboxManagerImpl* mailbox_manager,
       SharedImageManager* shared_image_manager,
       MemoryTypeTracker* memory_type_tracker,
       SharedImageRepresentationFactory* shared_image_representation_factory);
@@ -105,7 +102,6 @@ class GlLegacySharedImage {
   Mailbox mailbox() { return mailbox_; }
 
  private:
-  raw_ptr<gles2::MailboxManagerImpl> mailbox_manager_;
   gfx::Size size_;
   Mailbox mailbox_;
   std::unique_ptr<SharedImageBacking> backing_;
@@ -118,11 +114,11 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, Basic) {
     return;
 
   GlLegacySharedImage gl_legacy_shared_image{
-      backing_factory_.get(),     false /* is_thread_safe */,
-      &mailbox_manager_,          &shared_image_manager_,
-      memory_type_tracker_.get(), shared_image_representation_factory_.get()};
+      backing_factory_.get(), false /* is_thread_safe */,
+      &shared_image_manager_, memory_type_tracker_.get(),
+      shared_image_representation_factory_.get()};
 
-  // Finally, validate a SkiaImageRepresentation.
+  // Validate a SkiaImageRepresentation.
   auto skia_representation = shared_image_representation_factory_->ProduceSkia(
       gl_legacy_shared_image.mailbox(), context_state_.get());
   EXPECT_TRUE(skia_representation);
@@ -220,7 +216,6 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, GLSkiaGL) {
   EXPECT_EQ(dst_pixels[3], 255);
 
   factory_ref.reset();
-  EXPECT_FALSE(mailbox_manager_.ConsumeTexture(mailbox));
 }
 
 TEST_F(AHardwareBufferImageBackingFactoryTest, InitialData) {
@@ -258,7 +253,6 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, InitialData) {
 
   EXPECT_EQ(dst_pixels, initial_data);
   factory_ref.reset();
-  EXPECT_FALSE(mailbox_manager_.ConsumeTexture(mailbox));
 }
 
 // Test to check invalid format support.
@@ -340,8 +334,7 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, DISABLED_OnlyOneWriter) {
     return;
 
   GlLegacySharedImage gl_legacy_shared_image{
-      backing_factory_.get(),     true /* is_thread_safe */,
-      &mailbox_manager_,          &shared_image_manager_,
+      backing_factory_.get(), true /* is_thread_safe */, &shared_image_manager_,
       memory_type_tracker_.get(), shared_image_representation_factory_.get()};
 
   auto skia_representation = shared_image_representation_factory_->ProduceSkia(
@@ -382,8 +375,7 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, CanHaveMultipleReaders) {
     return;
 
   GlLegacySharedImage gl_legacy_shared_image{
-      backing_factory_.get(),     true /* is_thread_safe */,
-      &mailbox_manager_,          &shared_image_manager_,
+      backing_factory_.get(), true /* is_thread_safe */, &shared_image_manager_,
       memory_type_tracker_.get(), shared_image_representation_factory_.get()};
 
   auto skia_representation = shared_image_representation_factory_->ProduceSkia(
@@ -420,8 +412,7 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, CannotWriteWhileReading) {
     return;
 
   GlLegacySharedImage gl_legacy_shared_image{
-      backing_factory_.get(),     true /* is_thread_safe */,
-      &mailbox_manager_,          &shared_image_manager_,
+      backing_factory_.get(), true /* is_thread_safe */, &shared_image_manager_,
       memory_type_tracker_.get(), shared_image_representation_factory_.get()};
 
   auto skia_representation = shared_image_representation_factory_->ProduceSkia(
@@ -463,8 +454,7 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, CannotReadWhileWriting) {
     return;
 
   GlLegacySharedImage gl_legacy_shared_image{
-      backing_factory_.get(),     true /* is_thread_safe */,
-      &mailbox_manager_,          &shared_image_manager_,
+      backing_factory_.get(), true /* is_thread_safe */, &shared_image_manager_,
       memory_type_tracker_.get(), shared_image_representation_factory_.get()};
 
   auto skia_representation = shared_image_representation_factory_->ProduceSkia(
@@ -496,77 +486,20 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, CannotReadWhileWriting) {
   skia_representation.reset();
 }
 
-// Test to check that setting/unsetting legacy shared image mailboxes works as
-// expected.
-TEST_F(AHardwareBufferImageBackingFactoryTest, LegacyClearing) {
-  if (!base::AndroidHardwareBufferCompat::IsSupportAvailable())
-    return;
-
-  GlLegacySharedImage gl_legacy_shared_image{
-      backing_factory_.get(),     false /* is_thread_safe */,
-      &mailbox_manager_,          &shared_image_manager_,
-      memory_type_tracker_.get(), shared_image_representation_factory_.get()};
-
-  TextureBase* texture_base =
-      mailbox_manager_.ConsumeTexture(gl_legacy_shared_image.mailbox());
-  auto* texture = gles2::Texture::CheckedCast(texture_base);
-  EXPECT_TRUE(texture);
-  GLenum target = texture->target();
-
-  auto skia_representation = shared_image_representation_factory_->ProduceSkia(
-      gl_legacy_shared_image.mailbox(), context_state_.get());
-  EXPECT_TRUE(skia_representation);
-
-  // Check initial state.
-  EXPECT_TRUE(texture->IsLevelCleared(target, 0));
-  EXPECT_TRUE(skia_representation->IsCleared());
-
-  // Un-clear the representation.
-  skia_representation->SetClearedRect(gfx::Rect());
-  EXPECT_FALSE(texture->IsLevelCleared(target, 0));
-  EXPECT_FALSE(skia_representation->IsCleared());
-
-  // Partially clear the representation.
-  gfx::Rect partial_clear_rect(0, 0, 128, 128);
-  skia_representation->SetClearedRect(partial_clear_rect);
-  EXPECT_EQ(partial_clear_rect, texture->GetLevelClearedRect(target, 0));
-  EXPECT_EQ(partial_clear_rect, skia_representation->ClearedRect());
-
-  // Fully clear the representation.
-  skia_representation->SetCleared();
-  EXPECT_TRUE(texture->IsLevelCleared(target, 0));
-  EXPECT_TRUE(skia_representation->IsCleared());
-
-  // Un-clear the texture.
-  texture->SetLevelClearedRect(target, 0, gfx::Rect());
-  EXPECT_FALSE(texture->IsLevelCleared(target, 0));
-  EXPECT_FALSE(skia_representation->IsCleared());
-
-  // Partially clear the texture.
-  texture->SetLevelClearedRect(target, 0, partial_clear_rect);
-  EXPECT_EQ(partial_clear_rect, texture->GetLevelClearedRect(target, 0));
-  EXPECT_EQ(partial_clear_rect, skia_representation->ClearedRect());
-
-  // Fully clear the representation.
-  texture->SetLevelCleared(target, 0, true);
-  EXPECT_TRUE(texture->IsLevelCleared(target, 0));
-  EXPECT_TRUE(skia_representation->IsCleared());
-}
-
 GlLegacySharedImage::GlLegacySharedImage(
     AHardwareBufferImageBackingFactory* backing_factory,
     bool is_thread_safe,
-    gles2::MailboxManagerImpl* mailbox_manager,
     SharedImageManager* shared_image_manager,
     MemoryTypeTracker* memory_type_tracker,
     SharedImageRepresentationFactory* shared_image_representation_factory)
-    : mailbox_manager_(mailbox_manager), size_(256, 256) {
+    : size_(256, 256) {
   mailbox_ = Mailbox::GenerateForSharedImage();
   auto format = viz::ResourceFormat::RGBA_8888;
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
   SkAlphaType alpha_type = kPremul_SkAlphaType;
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
+  GLenum expected_target = GL_TEXTURE_2D;
 
   // SHARED_IMAGE_USAGE_DISPLAY for skia read and SHARED_IMAGE_USAGE_RASTER for
   // skia write.
@@ -582,32 +515,6 @@ GlLegacySharedImage::GlLegacySharedImage(
   if (!backing_->IsCleared()) {
     backing_->SetCleared();
     EXPECT_TRUE(backing_->IsCleared());
-  }
-
-  GLenum expected_target = GL_TEXTURE_2D;
-
-  // First, validate via a legacy mailbox (only available when not
-  // |is_thread_safe|).
-  if (!is_thread_safe) {
-    EXPECT_TRUE(backing_->ProduceLegacyMailbox(mailbox_manager_));
-
-    TextureBase* texture_base = mailbox_manager_->ConsumeTexture(mailbox_);
-
-    // Currently there is no support for passthrough texture on android and
-    // hence in AHB backing. So the TextureBase* should be pointing to a Texture
-    // object.
-    auto* texture = gles2::Texture::CheckedCast(texture_base);
-    EXPECT_TRUE(texture);
-    EXPECT_EQ(texture->target(), expected_target);
-    EXPECT_TRUE(texture->IsImmutable());
-    int width, height, depth;
-    bool has_level =
-        texture->GetLevelSize(GL_TEXTURE_2D, 0, &width, &height, &depth);
-    EXPECT_TRUE(has_level);
-    EXPECT_EQ(width, size_.width());
-    EXPECT_EQ(height, size_.height());
-  } else {
-    EXPECT_FALSE(backing_->ProduceLegacyMailbox(mailbox_manager_));
   }
 
   shared_image_ =
@@ -628,7 +535,6 @@ GlLegacySharedImage::GlLegacySharedImage(
 
 GlLegacySharedImage::~GlLegacySharedImage() {
   shared_image_.reset();
-  EXPECT_FALSE(mailbox_manager_->ConsumeTexture(mailbox_));
 }
 
 TEST_F(AHardwareBufferImageBackingFactoryTest, Overlay) {
@@ -636,9 +542,9 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, Overlay) {
     return;
 
   GlLegacySharedImage gl_legacy_shared_image{
-      backing_factory_.get(),     false /* is_thread_safe */,
-      &mailbox_manager_,          &shared_image_manager_,
-      memory_type_tracker_.get(), shared_image_representation_factory_.get()};
+      backing_factory_.get(), false /* is_thread_safe */,
+      &shared_image_manager_, memory_type_tracker_.get(),
+      shared_image_representation_factory_.get()};
 
   auto skia_representation = shared_image_representation_factory_->ProduceSkia(
       gl_legacy_shared_image.mailbox(), context_state_.get());

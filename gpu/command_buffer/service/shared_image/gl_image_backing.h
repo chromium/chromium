@@ -209,7 +209,6 @@ class GPU_GLES2_EXPORT GLImageBacking
   SharedImageBackingType GetType() const override;
   gfx::Rect ClearedRect() const final;
   void SetClearedRect(const gfx::Rect& cleared_rect) final;
-  bool ProduceLegacyMailbox(MailboxManager* mailbox_manager) final;
   std::unique_ptr<GLTextureImageRepresentation> ProduceGLTexture(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) final;

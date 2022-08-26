@@ -194,7 +194,6 @@ class TestImageBackingFactory : public gpu::SharedImageBackingFactory {
                    bool thread_safe,
                    gfx::GpuMemoryBufferType gmb_type,
                    gpu::GrContextType gr_context_type_,
-                   bool* allow_legacy_mailbox,
                    bool is_pixel_used) override {
     return true;
   }
@@ -308,8 +307,8 @@ class SkiaOutputDeviceBufferQueueTest : public TestOnGpu {
         dependency_->GetGpuDriverBugWorkarounds(),
         dependency_->GetGpuFeatureInfo(),
         dependency_->GetSharedContextState().get(),
-        dependency_->GetMailboxManager(), dependency_->GetSharedImageManager(),
-        dependency_->GetGpuImageFactory(), memory_tracker_.get(),
+        dependency_->GetSharedImageManager(), dependency_->GetGpuImageFactory(),
+        memory_tracker_.get(),
         /*is_for_display_compositor=*/true),
     shared_image_factory_->RegisterSharedImageBackingFactoryForTesting(
         &test_backing_factory_);

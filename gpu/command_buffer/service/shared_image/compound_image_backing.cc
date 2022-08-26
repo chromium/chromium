@@ -404,11 +404,6 @@ void CompoundImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
   shm_has_update_ = true;
 }
 
-bool CompoundImageBacking::ProduceLegacyMailbox(
-    MailboxManager* mailbox_manager) {
-  return gpu_backing_->ProduceLegacyMailbox(mailbox_manager);
-}
-
 gfx::Rect CompoundImageBacking::ClearedRect() const {
   return gpu_backing_->ClearedRect();
 }

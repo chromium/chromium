@@ -26,7 +26,6 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/ahardwarebuffer_utils.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
-#include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/android_image_backing.h"
@@ -142,10 +141,6 @@ class AHardwareBufferImageBacking : public AndroidImageBacking {
   // SharedImageBacking implementation.
   SharedImageBackingType GetType() const override;
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
-  // We never generate LegacyMailboxes in threadsafe mode, so exclude this
-  // function from thread safety analysis.
-  bool ProduceLegacyMailbox(MailboxManager* mailbox_manager)
-      NO_THREAD_SAFETY_ANALYSIS override;
   gfx::Rect ClearedRect() const override;
   void SetClearedRect(const gfx::Rect& cleared_rect) override;
   base::android::ScopedHardwareBufferHandle GetAhbHandle() const;
@@ -173,9 +168,6 @@ class AHardwareBufferImageBacking : public AndroidImageBacking {
  private:
   const base::android::ScopedHardwareBufferHandle hardware_buffer_handle_;
 
-  // Not guarded by |lock_| as we do not use legacy_texture_ in threadsafe
-  // mode.
-  raw_ptr<gles2::Texture> legacy_texture_ = nullptr;
   scoped_refptr<OverlayImage> overlay_image_ GUARDED_BY(lock_);
 };
 
@@ -271,10 +263,6 @@ AHardwareBufferImageBacking::~AHardwareBufferImageBacking() {
   // |have_context_| via have_context().
   AutoLock auto_lock(this);
   DCHECK(hardware_buffer_handle_.is_valid());
-  if (legacy_texture_) {
-    legacy_texture_->RemoveLightweightRef(have_context());
-    legacy_texture_ = nullptr;
-  }
 }
 
 SharedImageBackingType AHardwareBufferImageBacking::GetType() const {
@@ -283,56 +271,18 @@ SharedImageBackingType AHardwareBufferImageBacking::GetType() const {
 
 gfx::Rect AHardwareBufferImageBacking::ClearedRect() const {
   AutoLock auto_lock(this);
-  // If a |legacy_texture_| exists, defer to that. Once created,
-  // |legacy_texture_| is never destroyed, so no need to synchronize with
-  // ClearedRectInternal.
-  if (legacy_texture_) {
-    return legacy_texture_->GetLevelClearedRect(legacy_texture_->target(), 0);
-  } else {
-    return ClearedRectInternal();
-  }
+  return ClearedRectInternal();
 }
 
 void AHardwareBufferImageBacking::SetClearedRect(
     const gfx::Rect& cleared_rect) {
   AutoLock auto_lock(this);
-  // If a |legacy_texture_| exists, defer to that. Once created,
-  // |legacy_texture_| is never destroyed, so no need to synchronize with
-  // SetClearedRectInternal.
-  if (legacy_texture_) {
-    legacy_texture_->SetLevelClearedRect(legacy_texture_->target(), 0,
-                                         cleared_rect);
-  } else {
-    SetClearedRectInternal(cleared_rect);
-  }
+  SetClearedRectInternal(cleared_rect);
 }
 
 void AHardwareBufferImageBacking::Update(
     std::unique_ptr<gfx::GpuFence> in_fence) {
   DCHECK(!in_fence);
-}
-
-bool AHardwareBufferImageBacking::ProduceLegacyMailbox(
-    MailboxManager* mailbox_manager) {
-  // Legacy mailboxes cannot be used safely in threadsafe mode.
-  if (is_thread_safe())
-    return false;
-
-  // This doesn't need to take a lock because it is only called at creation
-  // time.
-  DCHECK(!is_writing_);
-  DCHECK_EQ(size_t{0}, active_readers_.size());
-  DCHECK(hardware_buffer_handle_.is_valid());
-  legacy_texture_ =
-      GenGLTexture(hardware_buffer_handle_.get(), GL_TEXTURE_2D, color_space(),
-                   size(), estimated_size(), ClearedRect());
-  if (!legacy_texture_)
-    return false;
-  // Make sure our |legacy_texture_| has the right initial cleared rect.
-  legacy_texture_->SetLevelClearedRect(legacy_texture_->target(), 0,
-                                       ClearedRectInternal());
-  mailbox_manager->ProduceTexture(mailbox(), legacy_texture_);
-  return true;
 }
 
 base::android::ScopedHardwareBufferHandle
@@ -736,7 +686,6 @@ bool AHardwareBufferImageBackingFactory::IsSupported(
     bool thread_safe,
     gfx::GpuMemoryBufferType gmb_type,
     GrContextType gr_context_type,
-    bool* allow_legacy_mailbox,
     bool is_pixel_used) {
   if (gmb_type != gfx::EMPTY_BUFFER && !CanImportGpuMemoryBuffer(gmb_type)) {
     return false;
@@ -752,7 +701,6 @@ bool AHardwareBufferImageBackingFactory::IsSupported(
     return false;
   }
 
-  *allow_legacy_mailbox = false;
   return true;
 }
 

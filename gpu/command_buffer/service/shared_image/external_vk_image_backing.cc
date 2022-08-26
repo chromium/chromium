@@ -518,14 +518,6 @@ void ExternalVkImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
   SetCleared();
 }
 
-bool ExternalVkImageBacking::ProduceLegacyMailbox(
-    MailboxManager* mailbox_manager) {
-  // It is not safe to produce a legacy mailbox because it would bypass the
-  // synchronization between Vulkan and GL that is implemented in the
-  // representation classes.
-  return false;
-}
-
 void ExternalVkImageBacking::AddSemaphoresToPendingListOrRelease(
     std::vector<ExternalSemaphore> semaphores) {
   constexpr size_t kMaxPendingSemaphores = 4;

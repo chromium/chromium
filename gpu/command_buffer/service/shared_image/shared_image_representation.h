@@ -155,9 +155,6 @@ class SharedImageRepresentationFactoryRef : public SharedImageRepresentation {
     backing()->OnWriteSucceeded();
   }
   bool CopyToGpuMemoryBuffer() { return backing()->CopyToGpuMemoryBuffer(); }
-  bool ProduceLegacyMailbox(MailboxManager* mailbox_manager) {
-    return backing()->ProduceLegacyMailbox(mailbox_manager);
-  }
   bool PresentSwapChain() { return backing()->PresentSwapChain(); }
   void RegisterImageFactory(SharedImageFactory* factory) {
     backing()->RegisterImageFactory(factory);

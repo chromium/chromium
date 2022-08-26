@@ -285,7 +285,7 @@ gpu::Mailbox StreamTexture::CreateSharedImage(const gfx::Size& coded_size) {
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, this, context_state_,
       /*drdc_lock=*/nullptr);
   channel_->shared_image_stub()->factory()->RegisterBacking(
-      std::move(shared_image), /*allow_legacy_mailbox=*/false);
+      std::move(shared_image));
 
   return mailbox;
 }
