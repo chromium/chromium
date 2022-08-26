@@ -152,6 +152,17 @@ void WaitForRefreshTokensLoaded(IdentityManager* identity_manager) {
   DCHECK(identity_manager->AreRefreshTokensLoaded());
 }
 
+absl::optional<signin::ConsentLevel> GetPrimaryAccountConsentLevel(
+    IdentityManager* identity_manager) {
+  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    return absl::nullopt;
+  }
+
+  return identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)
+             ? signin::ConsentLevel::kSync
+             : signin::ConsentLevel::kSignin;
+}
+
 CoreAccountInfo SetPrimaryAccount(IdentityManager* identity_manager,
                                   const std::string& email,
                                   ConsentLevel consent_level) {

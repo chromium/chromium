@@ -22,12 +22,11 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_window.h"
-#include "chrome/browser/signin/chrome_signin_client_factory.h"
-#include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/dice_intercepted_session_startup_helper.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -229,19 +228,11 @@ void CheckHistograms(const base::HistogramTester& histogram_tester,
 
 }  // namespace
 
-class DiceWebSigninInterceptorBrowserTest : public InProcessBrowserTest {
+class DiceWebSigninInterceptorBrowserTest : public SigninBrowserTestBase {
  public:
   DiceWebSigninInterceptorBrowserTest() = default;
 
   Profile* profile() { return browser()->profile(); }
-
-  signin::IdentityTestEnvironment* identity_test_env() {
-    return identity_test_env_profile_adaptor_->identity_test_env();
-  }
-
-  network::TestURLLoaderFactory* test_url_loader_factory() {
-    return &test_url_loader_factory_;
-  }
 
   content::WebContents* AddTab(const GURL& url) {
     ui_test_utils::NavigateToURLWithDisposition(
@@ -281,34 +272,15 @@ class DiceWebSigninInterceptorBrowserTest : public InProcessBrowserTest {
  private:
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
+    SigninBrowserTestBase::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
-    identity_test_env_profile_adaptor_ =
-        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
     DiceWebSigninInterceptorFactory::GetForProfile(profile())
         ->SetAccountLevelSigninRestrictionFetchResultForTesting("");
   }
 
-  void TearDownOnMainThread() override {
-    // Must be destroyed before the Profile.
-    identity_test_env_profile_adaptor_.reset();
-  }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating(&DiceWebSigninInterceptorBrowserTest::
-                                        OnWillCreateBrowserContextServices,
-                                    base::Unretained(this)));
-  }
-
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    IdentityTestEnvironmentProfileAdaptor::
-        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
-    ChromeSigninClientFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
-                                     &test_url_loader_factory_));
+  void OnWillCreateBrowserContextServices(
+      content::BrowserContext* context) override {
+    SigninBrowserTestBase::OnWillCreateBrowserContextServices(context);
     DiceWebSigninInterceptorFactory::GetInstance()->SetTestingFactory(
         context,
         base::BindRepeating(&DiceWebSigninInterceptorBrowserTest::
@@ -327,10 +299,6 @@ class DiceWebSigninInterceptorBrowserTest : public InProcessBrowserTest {
         Profile::FromBrowserContext(context), std::move(fake_delegate));
   }
 
-  network::TestURLLoaderFactory test_url_loader_factory_;
-  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
-      identity_test_env_profile_adaptor_;
-  base::CallbackListSubscription create_services_subscription_;
   std::map<content::BrowserContext*, FakeDiceWebSigninInterceptorDelegate*>
       interceptor_delegates_;
 };

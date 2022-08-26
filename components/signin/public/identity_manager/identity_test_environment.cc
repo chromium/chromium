@@ -38,6 +38,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
@@ -455,6 +456,23 @@ AccountInfo IdentityTestEnvironment::MakeAccountAvailableWithCookies(
     const std::string& gaia_id) {
   return signin::MakeAccountAvailableWithCookies(
       identity_manager(), test_url_loader_factory(), email, gaia_id);
+}
+
+std::vector<AccountInfo>
+IdentityTestEnvironment::MakeAccountsAvailableWithCookies(
+    const std::vector<std::string>& emails) {
+  // Logging out existing accounts is not yet supported.
+  EXPECT_EQ(0u, identity_manager()->GetAccountsWithRefreshTokens().size());
+
+  std::vector<signin::CookieParamsForTest> cookie_accounts;
+  std::vector<AccountInfo> accounts_info;
+  for (auto email : emails) {
+    auto account_info = MakeAccountAvailable(email);
+    accounts_info.push_back(account_info);
+    cookie_accounts.push_back({account_info.email, account_info.gaia});
+  }
+  SetCookieAccounts(cookie_accounts);
+  return accounts_info;
 }
 
 void IdentityTestEnvironment::SetRefreshTokenForAccount(
