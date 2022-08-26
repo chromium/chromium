@@ -1897,6 +1897,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.MobileMetrics.BadTapTargetRatioExtractionSucceed"
+    units="Boolean" expires_after="2022-12-01">
+  <owner>kumagi@google.com</owner>
+  <owner>gaul@google.com</owner>
+  <owner>paint-dev@google.com</owner>
+  <summary>
+    Whether element extraction phase succeed without consuming entire 4ms time
+    budget in MobileFriendlinessChecker::ComputeBadTapTargetsRatio() evaluation.
+    This metric recorded at 5 seconds after first MainFrame's commit and
+    periodically every 1 minutes after that.
+  </summary>
+</histogram>
+
+<histogram name="Blink.MobileMetrics.BadTapTargetRatioTime"
+    units="microseconds" expires_after="2022-12-01">
+  <owner>kumagi@google.com</owner>
+  <owner>gaul@google.com</owner>
+  <owner>paint-dev@google.com</owner>
+  <summary>
+    The time taken in MobileFriendliness::ComputebadTapTargetsRatio evalution.
+    This metric recorded at 5 seconds after first MainFrame's commit and
+    periodically every 1 minutes after that.
+
+    The histogram does not record metric on machines with low-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Navigator.ReducedUserAgent" enum="Boolean"
     expires_after="M110">
   <owner>miketaylr@chromium.org</owner>
