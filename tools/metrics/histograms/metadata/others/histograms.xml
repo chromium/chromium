@@ -7688,6 +7688,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Linux.Wayland.BaseShellUsed" enum="LinuxWaylandShellName"
+    expires_after="never">
+<!-- expires-never: Needed to measure Linux ecosystem. -->
+
+  <owner>rjkroege@chromium.org</owner>
+  <owner>adunaev@igalia.com</owner>
+  <summary>
+    The Linux Wayland base shell protocol used actually. Logged in each session
+    when the browser creates the first shell surface.
+  </summary>
+</histogram>
+
 <histogram name="Linux.Wayland.Shell" enum="LinuxWaylandShellName"
     expires_after="never">
 <!-- expires-never: Needed to measure Linux ecosystem. -->
