@@ -28,6 +28,7 @@ from blinkpy.web_tests.port.base import Port
 
 path_finder.bootstrap_wpt_imports()
 from wptrunner import metadata, testloader, wpttest
+from wptrunner.wptmanifest.backends import conditional
 
 _log = logging.getLogger(__name__)
 
@@ -128,7 +129,8 @@ class UpdateMetadata(Command):
             self._explicit_include_patterns(options, args),
             overwrite_conditions=options.overwrite_conditions,
             disable_intermittent=options.disable_intermittent,
-            keep_statuses=options.keep_statuses)
+            keep_statuses=options.keep_statuses,
+            bug=options.bug)
         try:
             build_statuses = build_resolver.resolve_builds(
                 self._select_builds(options), options.patchset)
@@ -261,6 +263,7 @@ class MetadataUpdater:
                                           'auto'] = 'fill',
             disable_intermittent: Optional[str] = None,
             keep_statuses: bool = False,
+            bug: Optional[int] = None,
     ):
         self._test_files = test_files
         self._updater = metadata.ExpectedUpdater(self._test_files)
@@ -279,6 +282,7 @@ class MetadataUpdater:
         self._overwrite_conditions = overwrite_conditions
         self._disable_intermittent = disable_intermittent
         self._keep_statuses = keep_statuses
+        self._bug = bug
 
     @classmethod
     def from_path_finder(
@@ -366,8 +370,15 @@ class MetadataUpdater:
             update_intermittent=(not self._disable_intermittent),
             remove_intermittent=(not self._keep_statuses))
         if expected and expected.modified:
+            if self._bug:
+                self._add_bug_url(expected)
             metadata.write_new_expected(test_file.metadata_path, expected)
         return test_file
+
+    def _add_bug_url(self, expected: conditional.ManifestItem):
+        for test_id_section in expected.iterchildren():
+            if test_id_section.modified:
+                test_id_section.set('bug', 'crbug.com/%d' % self._bug)
 
 
 def _compose(f, g):

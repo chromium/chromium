@@ -558,6 +558,34 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
               expected: FAIL
             """)
 
+    def test_update_bug_url(self):
+        """The updater updates the 'bug' field for affected test IDs."""
+        self.write_contents(
+            'external/wpt/variant.html.ini', """\
+            [variant.html?foo=bar/abc]
+              bug: crbug.com/123
+
+            [variant.html?foo=baz]
+              bug: crbug.com/456
+            """)
+        self.update(
+            {
+                'results': [{
+                    'test': '/variant.html?foo=baz',
+                    'status': 'FAIL',
+                }],
+            },
+            bug=789)
+        self.assert_contents(
+            'external/wpt/variant.html.ini', """\
+            [variant.html?foo=bar/abc]
+              bug: crbug.com/123
+
+            [variant.html?foo=baz]
+              bug: crbug.com/789
+              expected: FAIL
+            """)
+
     def test_condition_split(self):
         """A new status on a platform creates a new condition branch."""
         self.write_contents(
