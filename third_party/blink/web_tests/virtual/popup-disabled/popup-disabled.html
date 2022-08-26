@@ -21,7 +21,7 @@
 
   const elements = document.getElementById('elements').children;
   test(() => {
-    assert_throws_dom("SyntaxError",() => {elements[0].matches(':top-layer')},"The :popup-open pseudo class shouldn't be available");
+    assert_throws_dom("SyntaxError",() => {elements[0].matches(':open')},"The :popup-open pseudo class shouldn't be available");
   },'Basic tests');
 
   for(let el of elements) {

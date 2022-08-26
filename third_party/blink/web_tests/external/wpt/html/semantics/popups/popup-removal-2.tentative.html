@@ -16,13 +16,13 @@
       const frame2Doc = document.getElementById('frame2').contentDocument;
       const popup = frame1Doc.querySelector('[popup]');
       assert_true(!!popup);
-      assert_false(popup.matches(':top-layer'));
+      assert_false(popup.matches(':open'));
       popup.showPopUp();
-      assert_true(popup.matches(':top-layer'));
+      assert_true(popup.matches(':open'));
       frame2Doc.body.appendChild(popup);
-      assert_false(popup.matches(':top-layer'));
+      assert_false(popup.matches(':open'));
       popup.showPopUp();
-      assert_true(popup.matches(':top-layer'));
+      assert_true(popup.matches(':open'));
     }, 'Moving popup between documents shouldn\'t cause issues');
   };
 </script>

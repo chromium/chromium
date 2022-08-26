@@ -15,7 +15,7 @@ window.onload = () => {
     const popup = document.querySelector('[popup]');
     let showCount = 0;
     let hideCount = 0;
-    assert_false(popup.matches(':top-layer'));
+    assert_false(popup.matches(':open'));
     const controller = new AbortController();
     const signal = controller.signal;
     t.add_cleanup(() => controller.abort());
@@ -24,18 +24,18 @@ window.onload = () => {
     assert_equals(0,showCount);
     assert_equals(0,hideCount);
     popup.showPopUp();
-    assert_true(popup.matches(':top-layer'));
+    assert_true(popup.matches(':open'));
     assert_equals(1,showCount);
     assert_equals(0,hideCount);
     await waitForRender();
-    assert_true(popup.matches(':top-layer'));
+    assert_true(popup.matches(':open'));
     popup.hidePopUp();
-    assert_false(popup.matches(':top-layer'));
+    assert_false(popup.matches(':open'));
     assert_equals(1,showCount);
     assert_equals(1,hideCount);
     await waitForRender();
     // No additional events after animation frame
-    assert_false(popup.matches(':top-layer'));
+    assert_false(popup.matches(':open'));
     assert_equals(1,showCount);
     assert_equals(1,hideCount);
   }, 'Show and hide events get properly dispatched for popups');
@@ -50,14 +50,14 @@ window.onload = () => {
       if (cancel)
         e.preventDefault();
     }, {signal});
-    assert_false(popUp.matches(':top-layer'));
+    assert_false(popUp.matches(':open'));
     popUp.showPopUp();
-    assert_false(popUp.matches(':top-layer'),'The "show" event should be cancelable');
+    assert_false(popUp.matches(':open'),'The "show" event should be cancelable');
     cancel = false;
     popUp.showPopUp();
-    assert_true(popUp.matches(':top-layer'));
+    assert_true(popUp.matches(':open'));
     popUp.hidePopUp();
-    assert_false(popUp.matches(':top-layer'));
+    assert_false(popUp.matches(':open'));
   }, 'Show event is cancelable');
 };
 </script>

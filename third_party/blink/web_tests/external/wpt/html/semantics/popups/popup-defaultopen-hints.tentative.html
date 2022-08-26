@@ -13,7 +13,7 @@
     await waitForRender();
     await waitForRender();
     const popUp = document.querySelector('[popup]');
-    assert_false(popUp.matches(':top-layer'),'defaultopen does not apply to hint pop-ups');
+    assert_false(popUp.matches(':open'),'defaultopen does not apply to hint pop-ups');
     assert_true(popUp.hasAttribute('defaultopen'),'attribute should still be present');
     assert_true(popUp.defaultOpen,'defaultopen should be present/true, even if not opened');
   }, "The defaultopen attribute should not apply to popup=hint");

@@ -258,106 +258,106 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
       return kPseudoIdPageTransitionOutgoingImage;
     case kPseudoPageTransitionIncomingImage:
       return kPseudoIdPageTransitionIncomingImage;
-    case kPseudoUnknown:
-    case kPseudoEmpty:
-    case kPseudoFirstChild:
-    case kPseudoFirstOfType:
-    case kPseudoLastChild:
-    case kPseudoLastOfType:
-    case kPseudoOnlyChild:
-    case kPseudoOnlyOfType:
-    case kPseudoNthChild:
-    case kPseudoNthOfType:
-    case kPseudoNthLastChild:
-    case kPseudoNthLastOfType:
-    case kPseudoLink:
-    case kPseudoVisited:
+    case kPseudoActive:
     case kPseudoAny:
-    case kPseudoIs:
-    case kPseudoWhere:
     case kPseudoAnyLink:
-    case kPseudoWebkitAnyLink:
     case kPseudoAutofill:
-    case kPseudoWebKitAutofill:
     case kPseudoAutofillPreviewed:
     case kPseudoAutofillSelected:
-    case kPseudoHover:
+    case kPseudoBlinkInternalElement:
+    case kPseudoChecked:
+    case kPseudoCornerPresent:
+    case kPseudoCue:
+    case kPseudoDecrement:
+    case kPseudoDefault:
+    case kPseudoDefined:
+    case kPseudoDir:
+    case kPseudoDisabled:
+    case kPseudoDoubleButton:
     case kPseudoDrag:
+    case kPseudoEmpty:
+    case kPseudoEnabled:
+    case kPseudoEnd:
+    case kPseudoFileSelectorButton:
+    case kPseudoFirstChild:
+    case kPseudoFirstOfType:
+    case kPseudoFirstPage:
     case kPseudoFocus:
     case kPseudoFocusVisible:
     case kPseudoFocusWithin:
-    case kPseudoActive:
-    case kPseudoChecked:
-    case kPseudoEnabled:
     case kPseudoFullPageMedia:
-    case kPseudoDefault:
-    case kPseudoDisabled:
-    case kPseudoOptional:
-    case kPseudoPlaceholder:
-    case kPseudoPlaceholderShown:
-    case kPseudoFileSelectorButton:
-    case kPseudoRequired:
-    case kPseudoReadOnly:
-    case kPseudoReadWrite:
-    case kPseudoValid:
-    case kPseudoInvalid:
-    case kPseudoIndeterminate:
-    case kPseudoTarget:
-    case kPseudoLang:
-    case kPseudoDir:
-    case kPseudoNot:
-    case kPseudoRoot:
-    case kPseudoScope:
-    case kPseudoWindowInactive:
-    case kPseudoCornerPresent:
-    case kPseudoDecrement:
-    case kPseudoIncrement:
-    case kPseudoHorizontal:
-    case kPseudoVertical:
-    case kPseudoStart:
-    case kPseudoEnd:
-    case kPseudoDoubleButton:
-    case kPseudoSingleButton:
-    case kPseudoNoButton:
-    case kPseudoFirstPage:
-    case kPseudoLeftPage:
-    case kPseudoRightPage:
-    case kPseudoInRange:
-    case kPseudoOutOfRange:
-    case kPseudoToggle:
-    case kPseudoWebKitCustomElement:
-    case kPseudoBlinkInternalElement:
-    case kPseudoCue:
-    case kPseudoFutureCue:
-    case kPseudoPastCue:
-    case kPseudoDefined:
-    case kPseudoHost:
-    case kPseudoHostContext:
-    case kPseudoPart:
-    case kPseudoState:
     case kPseudoFullScreen:
     case kPseudoFullScreenAncestor:
     case kPseudoFullscreen:
+    case kPseudoFutureCue:
+    case kPseudoHas:
+    case kPseudoHasDatalist:
+    case kPseudoHorizontal:
+    case kPseudoHost:
+    case kPseudoHostContext:
+    case kPseudoHostHasAppearance:
+    case kPseudoHover:
+    case kPseudoInRange:
+    case kPseudoIncrement:
+    case kPseudoIndeterminate:
+    case kPseudoInvalid:
+    case kPseudoIs:
+    case kPseudoIsHtml:
+    case kPseudoLang:
+    case kPseudoLastChild:
+    case kPseudoLastOfType:
+    case kPseudoLeftPage:
+    case kPseudoLink:
+    case kPseudoListBox:
+    case kPseudoModal:
+    case kPseudoMultiSelectFocus:
+    case kPseudoNoButton:
+    case kPseudoNot:
+    case kPseudoNthChild:
+    case kPseudoNthLastChild:
+    case kPseudoNthLastOfType:
+    case kPseudoNthOfType:
+    case kPseudoOnlyChild:
+    case kPseudoOnlyOfType:
+    case kPseudoOpen:
+    case kPseudoOptional:
+    case kPseudoOutOfRange:
+    case kPseudoPart:
+    case kPseudoPastCue:
     case kPseudoPaused:
     case kPseudoPictureInPicture:
+    case kPseudoPlaceholder:
+    case kPseudoPlaceholderShown:
     case kPseudoPlaying:
+    case kPseudoPopupHidden:
+    case kPseudoReadOnly:
+    case kPseudoReadWrite:
+    case kPseudoRelativeAnchor:
+    case kPseudoRequired:
+    case kPseudoRightPage:
+    case kPseudoRoot:
+    case kPseudoScope:
+    case kPseudoSelectorFragmentAnchor:
+    case kPseudoSingleButton:
+    case kPseudoSlotted:
     case kPseudoSpatialNavigationFocus:
     case kPseudoSpatialNavigationInterest:
-    case kPseudoHasDatalist:
-    case kPseudoIsHtml:
-    case kPseudoListBox:
-    case kPseudoMultiSelectFocus:
-    case kPseudoHostHasAppearance:
-    case kPseudoSlotted:
-    case kPseudoTopLayer:
-    case kPseudoPopupHidden:
+    case kPseudoStart:
+    case kPseudoState:
+    case kPseudoTarget:
+    case kPseudoToggle:
+    case kPseudoUnknown:
+    case kPseudoValid:
+    case kPseudoVertical:
     case kPseudoVideoPersistent:
     case kPseudoVideoPersistentAncestor:
+    case kPseudoVisited:
+    case kPseudoWebKitAutofill:
+    case kPseudoWebKitCustomElement:
+    case kPseudoWebkitAnyLink:
+    case kPseudoWhere:
+    case kPseudoWindowInactive:
     case kPseudoXrOverlay:
-    case kPseudoModal:
-    case kPseudoSelectorFragmentAnchor:
-    case kPseudoHas:
-    case kPseudoRelativeAnchor:
       return kPseudoIdNone;
   }
 
@@ -454,6 +454,7 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"no-button", CSSSelector::kPseudoNoButton},
     {"only-child", CSSSelector::kPseudoOnlyChild},
     {"only-of-type", CSSSelector::kPseudoOnlyOfType},
+    {"open", CSSSelector::kPseudoOpen},
     {"optional", CSSSelector::kPseudoOptional},
     {"out-of-range", CSSSelector::kPseudoOutOfRange},
     {"page-transition", CSSSelector::kPseudoPageTransition},
@@ -475,7 +476,6 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"start", CSSSelector::kPseudoStart},
     {"target", CSSSelector::kPseudoTarget},
     {"target-text", CSSSelector::kPseudoTargetText},
-    {"top-layer", CSSSelector::kPseudoTopLayer},
     {"valid", CSSSelector::kPseudoValid},
     {"vertical", CSSSelector::kPseudoVertical},
     {"visited", CSSSelector::kPseudoVisited},
@@ -573,7 +573,7 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
   bool popup_attribute_enabled =
       !document || RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
                        document->GetExecutionContext());
-  if (match->type == CSSSelector::kPseudoTopLayer && !popup_attribute_enabled)
+  if (match->type == CSSSelector::kPseudoOpen && !popup_attribute_enabled)
     return CSSSelector::kPseudoUnknown;
 
   if (match->type == CSSSelector::kPseudoPopupHidden &&
@@ -771,6 +771,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoNthOfType:
     case kPseudoOnlyChild:
     case kPseudoOnlyOfType:
+    case kPseudoOpen:
     case kPseudoOptional:
     case kPseudoOutOfRange:
     case kPseudoPastCue:
@@ -791,7 +792,6 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoState:
     case kPseudoTarget:
     case kPseudoToggle:
-    case kPseudoTopLayer:
     case kPseudoUnknown:
     case kPseudoValid:
     case kPseudoVertical:

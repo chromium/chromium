@@ -22,7 +22,7 @@ const examples = [
     createElement: () => Object.assign(document.createElement('div'), {popUp: 'auto'}),
     trigger: function() {this.element.showPopUp()},
     close: function() {this.element.hidePopUp()},
-    isTopLayer: function() {return this.element.matches(':top-layer')},
+    isTopLayer: function() {return this.element.matches(':open')},
   },
   {
     type: types.modalDialog,

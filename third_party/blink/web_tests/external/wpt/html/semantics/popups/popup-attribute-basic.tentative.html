@@ -26,7 +26,7 @@
   opacity: 0;
   transition: opacity 10s;
 }
-[popup].animated:top-layer {
+[popup].animated:open {
   opacity: 1;
 }
 </style>
@@ -36,10 +36,10 @@
     const isVisible = isElementVisible(popUp);
     if (isVisible) {
       assert_not_equals(window.getComputedStyle(popUp).display,'none');
-      assert_equals(popUp.matches(':top-layer'),isPopUp);
+      assert_equals(popUp.matches(':open'),isPopUp);
     } else {
       assert_equals(window.getComputedStyle(popUp).display,'none');
-      assert_false(popUp.matches(':top-layer'));
+      assert_false(popUp.matches(':open'));
     }
     return isVisible;
   }
@@ -164,17 +164,17 @@
   test((t) => {
     const popUp = createPopUp(t);
     popUp.showPopUp();
-    assert_true(popUp.matches(':top-layer'));
+    assert_true(popUp.matches(':open'));
     popUp.setAttribute('popup','hint'); // Change pop-up type
-    assert_false(popUp.matches(':top-layer'));
+    assert_false(popUp.matches(':open'));
     popUp.showPopUp();
-    assert_true(popUp.matches(':top-layer'));
+    assert_true(popUp.matches(':open'));
     popUp.setAttribute('popup','manual');
-    assert_false(popUp.matches(':top-layer'));
+    assert_false(popUp.matches(':open'));
     popUp.showPopUp();
-    assert_true(popUp.matches(':top-layer'));
+    assert_true(popUp.matches(':open'));
     popUp.setAttribute('popup','invalid');
-    assert_false(popUp.matches(':top-layer'));
+    assert_false(popUp.matches(':open'));
   },'Changing attribute values should close open pop-ups');
 
   function modalPseudoSupported() {
@@ -191,11 +191,11 @@
       const popUp = createPopUp(t);
       popUp.setAttribute('popup',type);
       popUp.showPopUp();
-      assert_true(popUp.matches(':top-layer'));
+      assert_true(popUp.matches(':open'));
       popUp.remove();
-      assert_false(popUp.matches(':top-layer'));
+      assert_false(popUp.matches(':open'));
       document.body.appendChild(popUp);
-      assert_false(popUp.matches(':top-layer'));
+      assert_false(popUp.matches(':open'));
     },`Removing a visible popup=${type} element from the document should close the pop-up`);
 
     if (modalPseudoSupported()) {
@@ -203,7 +203,7 @@
         const popUp = createPopUp(t);
         popUp.setAttribute('popup',type);
         popUp.showPopUp();
-        assert_true(popUp.matches(':top-layer'));
+        assert_true(popUp.matches(':open'));
         assert_false(popUp.matches(':modal'));
         popUp.hidePopUp();
       },`A showing popup=${type} does not match :modal`);
@@ -215,14 +215,14 @@
     assert_true(!!popUp);
     assert_false(isElementVisible(popUp));
     popUp.showPopUp();
-    assert_true(popUp.matches(':top-layer'));
+    assert_true(popUp.matches(':open'));
     assert_true(getComputedStyle(popUp).opacity < 0.1,'Animations should start on show');
     assert_throws_dom("InvalidStateError",() => popUp.showPopUp(),'Calling showPopUp on a popup that is in the process of animating show should throw InvalidStateError');
     await finishAnimations(popUp);
     assert_true(getComputedStyle(popUp).opacity > 0.9);
     assert_true(isElementVisible(popUp));
     popUp.hidePopUp();
-    assert_false(popUp.matches(':top-layer'));
+    assert_false(popUp.matches(':open'));
     assert_true(getComputedStyle(popUp).opacity > 0.9,'Animations should start on hide');
     assert_throws_dom("InvalidStateError",() => popUp.hidePopUp(),'Calling hidePopUp on a popup that is in the process of animating hide should throw InvalidStateError');
     popUp.showPopUp(); // But showPopUp should still be ok.
