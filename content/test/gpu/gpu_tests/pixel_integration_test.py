@@ -334,6 +334,12 @@ class PixelIntegrationTest(
     self._AssertHighPerformanceGPU()
     tab.EvaluateJavaScript('render()')
 
+  # pylint: disable=R0201
+  def _ScrollOutAndBack(self, tab: ct.Tab,
+                        page: pixel_test_pages.PixelTestPage) -> None:
+    del page  # Unused in this particular action.
+    tab.EvaluateJavaScript('scrollOutAndBack()')
+
   @classmethod
   def ExpectationsFiles(cls) -> List[str]:
     return [

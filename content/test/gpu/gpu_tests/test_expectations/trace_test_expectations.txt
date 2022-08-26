@@ -131,6 +131,9 @@ crbug.com/1129879 [ fuchsia ] TraceTest_Video_Media_Stream_Incompatible_Stride [
 crbug.com/1345767 [ mac asan ] WebGPUTraceTest_WebGPUCanvasOneCopyCapture [ Skip ]
 crbug.com/1345767 [ mac asan ] WebGPUTraceTest_WebGPUCanvasDisableOneCopyCapture* [ Skip ]
 
+# Test is very slow and there's no point in running it as a trace test.
+crbug.com/1356246 TraceTest_SVGHuge [ Skip ]
+
 ###############################
 # Temporary Skip Expectations #
 ###############################

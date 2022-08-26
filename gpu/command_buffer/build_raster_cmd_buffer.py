@@ -385,6 +385,7 @@ _FUNCTION_INFO = {
     'type': 'DELn',
     'internal': True,
     'unit_test': False,
+    'data_transfer_methods': ['immediate', 'shm'],
   },
   'ClearPaintCacheINTERNAL': {
     'decoder_func': 'DoClearPaintCacheINTERNAL',

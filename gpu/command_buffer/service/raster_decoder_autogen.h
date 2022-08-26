@@ -230,6 +230,26 @@ error::Error RasterDecoderImpl::HandleDeletePaintCachePathsINTERNALImmediate(
   return error::kNoError;
 }
 
+error::Error RasterDecoderImpl::HandleDeletePaintCachePathsINTERNAL(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile raster::cmds::DeletePaintCachePathsINTERNAL& c =
+      *static_cast<const volatile raster::cmds::DeletePaintCachePathsINTERNAL*>(
+          cmd_data);
+  GLsizei n = static_cast<GLsizei>(c.n);
+  uint32_t ids_size;
+  if (!base::CheckMul(n, sizeof(GLuint)).AssignIfValid(&ids_size)) {
+    return error::kOutOfBounds;
+  }
+  const GLuint* ids = GetSharedMemoryAs<const GLuint*>(
+      c.ids_shm_id, c.ids_shm_offset, ids_size);
+  if (ids == nullptr) {
+    return error::kOutOfBounds;
+  }
+  DeletePaintCachePathsINTERNALHelper(n, ids);
+  return error::kNoError;
+}
+
 error::Error RasterDecoderImpl::HandleClearPaintCacheINTERNAL(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {

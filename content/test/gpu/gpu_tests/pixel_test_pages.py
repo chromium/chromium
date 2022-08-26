@@ -378,6 +378,11 @@ class PixelTestPages():
                       base_name + '_WebGLPreservedAfterTabSwitch',
                       test_rect=[0, 0, 300, 300],
                       optional_action='SwitchTabsAndCopyImage'),
+        PixelTestPage('pixel_svg_huge.html',
+                      base_name + '_SVGHuge',
+                      test_rect=[0, 0, 400, 400],
+                      optional_action='ScrollOutAndBack',
+                      grace_period_end=date(2022, 8, 29)),
     ]
 
   @staticmethod
