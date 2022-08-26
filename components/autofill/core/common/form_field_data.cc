@@ -348,6 +348,9 @@ std::string Section::ToString() const {
   }
 
   section_name = section_name.empty() ? kDefaultSection : section_name;
+
+  // TODO(1153539): Remove `FieldTypeGroupSuffix` completely when the sectioning
+  // is redesigned.
   switch (field_type_group_) {
     case FieldTypeGroupSuffix::kNoGroup:
       return section_name;
@@ -357,6 +360,7 @@ std::string Section::ToString() const {
       return section_name + "-cc";
   }
   NOTREACHED();
+  return "";
 }
 
 LogBuffer& operator<<(LogBuffer& buffer, const Section& section) {
