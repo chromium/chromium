@@ -8,12 +8,14 @@
 #include <ostream>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "printing/page_range.h"
 
 namespace printing {
 
-// Represents a page series using the array of page ranges.
+// Represents a page series using the array of page ranges. Pages are assumed
+// to be 0-indexed.
 class COMPONENT_EXPORT(PRINTING) PageNumber {
  public:
   // Initializes the page to the first page in the ranges or 0.
@@ -29,9 +31,13 @@ class COMPONENT_EXPORT(PRINTING) PageNumber {
   void Init(const PageRanges& ranges, uint32_t document_page_count);
 
   // Converts to a page numbers.
-  uint32_t ToUint() const { return page_number_; }
+  uint32_t ToUint() const {
+    DCHECK(*this == npos() || page_number_ < document_page_count_);
+    return page_number_;
+  }
 
-  // Calculates the next page in the series.
+  // Calculates the next page in the series. Sets this PageNumber to
+  // PageNumber::npos() if we reach document_page_count_.
   uint32_t operator++();
 
   // Returns an instance that represents the end of a series.
@@ -42,6 +48,8 @@ class COMPONENT_EXPORT(PRINTING) PageNumber {
   bool operator==(const PageNumber& other) const;
   bool operator!=(const PageNumber& other) const;
 
+  // Returns all pages represented by the given PageRanges up to and including
+  // page document_page_count - 1.
   static std::vector<uint32_t> GetPages(PageRanges ranges,
                                         uint32_t document_page_count);
 
@@ -56,7 +64,8 @@ class COMPONENT_EXPORT(PRINTING) PageNumber {
   // if document()->settings().range.empty() is false.
   uint32_t page_range_index_;
 
-  // Number of expected pages in the document. Used when ranges_ is NULL.
+  // Total number of pages in the underlying document, including outside of the
+  // specified ranges.
   uint32_t document_page_count_;
 };
 

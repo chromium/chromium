@@ -32,6 +32,8 @@ TEST(PageNumberTest, Count) {
 
 TEST(PageNumberTest, GetPages) {
   printing::PageRanges ranges = {{5, 6}, {0, 2}, {9, 9}, {11, 10000}};
+  EXPECT_THAT(printing::PageNumber::GetPages(ranges, 8),
+              testing::ElementsAre(0, 1, 2, 5, 6));
   EXPECT_THAT(printing::PageNumber::GetPages(ranges, 13),
               testing::ElementsAre(0, 1, 2, 5, 6, 9, 11, 12));
   EXPECT_THAT(printing::PageNumber::GetPages({}, 5),

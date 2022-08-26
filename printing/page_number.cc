@@ -58,6 +58,10 @@ uint32_t PageNumber::operator++() {
       *this = npos();
     } else {
       page_number_ = (*ranges_)[page_range_index_].from;
+      if (page_number_ >= document_page_count_) {
+        // Finished.
+        *this = npos();
+      }
     }
   }
   return ToUint();
