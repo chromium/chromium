@@ -1964,8 +1964,8 @@ TEST_F(WebContentsImplTest, UpdateWebContentsVisibility) {
   EXPECT_EQ(Visibility::HIDDEN, contents()->GetVisibility());
 }
 
-TEST_F(WebContentsImplTest, PictureInPictureStaysVisibleIfHidden) {
-  // Entering Picture in Picture then hiding keeps the view visible.
+TEST_F(WebContentsImplTest, VideoPictureInPictureStaysVisibleIfHidden) {
+  // Entering video Picture in Picture then hiding keeps the view visible.
   TestRenderWidgetHostView* view = static_cast<TestRenderWidgetHostView*>(
       main_test_rfh()->GetRenderViewHost()->GetWidget()->GetView());
   // Must set the visibility to "visible" before anything interesting happens.
@@ -1976,9 +1976,42 @@ TEST_F(WebContentsImplTest, PictureInPictureStaysVisibleIfHidden) {
   EXPECT_TRUE(view->is_showing());
 }
 
-TEST_F(WebContentsImplTest, VisibilityIsUpdatedIfPictureInPictureChanges) {
-  // Hiding, then entering Picture in Picture shows the view.  If we then leave
-  // picture-in-picture, the view should become hidden.
+TEST_F(WebContentsImplTest, VisibilityIsUpdatedIfVideoPictureInPictureChanges) {
+  // Hiding, then entering video Picture in Picture shows the view.  If we then
+  // leave picture-in-picture, the view should become hidden.
+  TestRenderWidgetHostView* view = static_cast<TestRenderWidgetHostView*>(
+      main_test_rfh()->GetRenderViewHost()->GetWidget()->GetView());
+  contents()->UpdateWebContentsVisibility(Visibility::VISIBLE);
+
+  contents()->UpdateWebContentsVisibility(Visibility::HIDDEN);
+  EXPECT_FALSE(view->is_showing());
+
+  // If the WebContents enters video Picture in Picture while hidden, then it
+  // should notify the view that it's visible.
+  contents()->SetHasPictureInPictureVideo(true);
+  EXPECT_TRUE(view->is_showing());
+
+  // The view should be re-hidden if the WebContents leaves PiP.
+  contents()->SetHasPictureInPictureVideo(false);
+  EXPECT_FALSE(view->is_showing());
+}
+
+TEST_F(WebContentsImplTest, DocumentPictureInPictureStaysVisibleIfHidden) {
+  // Entering document Picture in Picture then hiding keeps the view visible.
+  TestRenderWidgetHostView* view = static_cast<TestRenderWidgetHostView*>(
+      main_test_rfh()->GetRenderViewHost()->GetWidget()->GetView());
+  // Must set the visibility to "visible" before anything interesting happens.
+  contents()->UpdateWebContentsVisibility(Visibility::VISIBLE);
+
+  contents()->SetHasPictureInPictureDocument(true);
+  contents()->UpdateWebContentsVisibility(Visibility::HIDDEN);
+  EXPECT_TRUE(view->is_showing());
+}
+
+TEST_F(WebContentsImplTest,
+       VisibilityIsUpdatedIfDocumentPictureInPictureChanges) {
+  // Hiding, then entering document Picture in Picture shows the view.  If we
+  // then leave picture-in-picture, the view should become hidden.
   TestRenderWidgetHostView* view = static_cast<TestRenderWidgetHostView*>(
       main_test_rfh()->GetRenderViewHost()->GetWidget()->GetView());
   contents()->UpdateWebContentsVisibility(Visibility::VISIBLE);
@@ -1988,11 +2021,11 @@ TEST_F(WebContentsImplTest, VisibilityIsUpdatedIfPictureInPictureChanges) {
 
   // If the WebContents enters Picture in Picture while hidden, it should notify
   // the view that it's visible.
-  contents()->SetHasPictureInPictureVideo(true);
+  contents()->SetHasPictureInPictureDocument(true);
   EXPECT_TRUE(view->is_showing());
 
   // The view should be re-hidden if the WebContents leaves PiP.
-  contents()->SetHasPictureInPictureVideo(false);
+  contents()->SetHasPictureInPictureDocument(false);
   EXPECT_FALSE(view->is_showing());
 }
 
