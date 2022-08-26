@@ -144,6 +144,11 @@ class TRIVIAL_ABI GSL_POINTER raw_ref {
     return inner_.operator->();
   }
 
+  ALWAYS_INLINE T* operator&() const ABSL_ATTRIBUTE_RETURNS_NONNULL {
+    CHECK(inner_.get());  // Catch use-after-move.
+    return inner_.get();
+  }
+
   friend ALWAYS_INLINE void swap(raw_ref& lhs, raw_ref& rhs) noexcept {
     CHECK(lhs.inner_.get());  // Catch use-after-move.
     CHECK(rhs.inner_.get());  // Catch use-after-move.
