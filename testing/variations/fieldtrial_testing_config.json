@@ -3202,11 +3202,12 @@
             ],
             "experiments": [
                 {
-                    "name": "Handles_20220118",
+                    "name": "Handles_20220826",
                     "enable_features": [
                         "ContextualTriggersSelectionHandles"
                     ],
                     "disable_features": [
+                        "ContextualTriggersSelectionMenu",
                         "ContextualTriggersSelectionSize"
                     ]
                 }
