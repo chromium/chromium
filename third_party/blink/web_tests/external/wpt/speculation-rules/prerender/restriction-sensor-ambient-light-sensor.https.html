@@ -1,27 +1,27 @@
 <!DOCTYPE html>
-<!--
-This file cannot be upstreamed to WPT until:
-* internals.setPermission() usage is replaced with a WebDriver API
--->
-<title>Access to the Magnetometer API is deferred</title>
+<title>Access to the Ambient Light Sensor API is deferred</title>
 <meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 <script src="/common/utils.js"></script>
 <script src="/speculation-rules/prerender/resources/utils.js"></script>
 <body>
 <script>
+
+setup(() => assertSpeculationRulesIsSupported());
+
 promise_test(async t => {
   const uid = token();
   const bc = new PrerenderChannel('test-channel', uid);
   t.add_cleanup(_ => bc.close());
 
   // We grant the permission here to make a more discerning test because
-  // Magnetometer() waits until the permission is granted, which
+  // AmbientLightSensor() waits until the permission is granted, which
   // is deferred during prerendering so the test would trivially pass without
   // the permission.
-  await internals.setPermission({name: 'magnetometer'}, 'granted',
-                                  location.origin, location.origin);
+  await test_driver.set_permission({ name: 'ambient-light-sensor' }, 'granted');
 
   const gotMessage = new Promise(resolve => {
     bc.addEventListener('message', e => {
@@ -30,13 +30,13 @@ promise_test(async t => {
       once: true
     });
   });
-  const url = `resources/generic-sensor.https.html?sensorName=Magnetometer&uid=${uid}`;
+  const url = `resources/generic-sensor.https.html?sensorName=AmbientLightSensor&uid=${uid}`;
   window.open(url, '_blank', 'noopener');
 
   const result = await gotMessage;
   const expected = [
     {
-      event: 'started waiting Magnetometer test',
+      event: 'started waiting AmbientLightSensor test',
       prerendering: true
     },
     {
@@ -44,7 +44,7 @@ promise_test(async t => {
       prerendering: false
     },
     {
-      event: 'finished waiting Magnetometer test',
+      event: 'finished waiting AmbientLightSensor test',
       prerendering: false
     },
   ];
@@ -57,8 +57,8 @@ promise_test(async t => {
 
   // Send a close signal to PrerenderEventCollector on the prerendered page.
   new PrerenderChannel('close', uid).postMessage('');
-}, `the access to the Magnetometer API should be deferred until the prerendered
-    page is activated`);
+}, `the access to the Ambient Light Sensor API should be deferred until the
+    prerendered page is activated`);
 
 </script>
 </body>
