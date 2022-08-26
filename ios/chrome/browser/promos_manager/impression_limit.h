@@ -9,10 +9,10 @@
 
 @interface ImpressionLimit : NSObject
 
-// The max number of impressions allowed within |numDays|.
+// The max number of impressions allowed within `numDays`.
 @property(nonatomic, readonly) NSInteger numImpressions;
 
-// The number of days the limit |numImpressions| is restricted to.
+// The number of days the limit `numImpressions` is restricted to.
 @property(nonatomic, readonly) NSInteger numDays;
 
 // Designated initializer. Initializes with an impression count limit for a
