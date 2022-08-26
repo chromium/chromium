@@ -141,6 +141,10 @@ void FeedbackServiceProvider::RecordHelpContentOutcome(
   os_feedback_ui::metrics::EmitFeedbackAppHelpContentOutcome(outcome);
 }
 
+void FeedbackServiceProvider::RecordHelpContentSearchResultCount(int count) {
+  os_feedback_ui::metrics::EmitFeedbackAppHelpContentSearchResultCount(count);
+}
+
 void FeedbackServiceProvider::BindInterface(
     mojo::PendingReceiver<os_feedback_ui::mojom::FeedbackServiceProvider>
         receiver) {

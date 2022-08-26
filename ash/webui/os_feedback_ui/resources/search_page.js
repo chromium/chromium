@@ -64,6 +64,10 @@ export class SearchPageElement extends SearchPageElementBase {
         readonly: true,
         observer: SearchPageElement.prototype.descriptionTemplateChanged_,
       },
+      helpContentSearchResultCount: {
+        type: Number,
+        notify: true,
+      },
     };
   }
 
@@ -72,6 +76,9 @@ export class SearchPageElement extends SearchPageElementBase {
 
     /** @type {string} */
     this.descriptionTemplate = '';
+
+    /** @private {number} */
+    this.helpContentSearchResultCount = 0;
 
     /**
      * Record the most recent number of characters in the input for which a
@@ -184,6 +191,8 @@ export class SearchPageElement extends SearchPageElementBase {
       isQueryEmpty: isQueryEmpty,
       isPopularContent: isPopularContent,
     };
+
+    this.helpContentSearchResultCount = response.response.results.length;
 
     // Wait for the iframe to complete loading before postMessage.
     await this.iframeLoaded_;
@@ -304,6 +313,13 @@ export class SearchPageElement extends SearchPageElementBase {
    */
   descriptionTemplateChanged_(currentTemplate) {
     this.getInputElement_().value = currentTemplate;
+  }
+
+  /**
+   * @return {!number}
+   */
+  getSearchResultCountForTesting() {
+    return this.helpContentSearchResultCount;
   }
 }
 

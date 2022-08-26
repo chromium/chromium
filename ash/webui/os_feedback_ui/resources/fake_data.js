@@ -55,6 +55,9 @@ export const fakeHelpContentList = [
   },
 ];
 
+/** @type {!HelpContentList} */
+export const fakeEmptyHelpContentList = [];
+
 /** @type {!SearchRequest} */
 export const fakeSearchRequest = {
   maxResults: 5,
@@ -65,6 +68,12 @@ export const fakeSearchRequest = {
 export const fakeSearchResponse = {
   results: fakeHelpContentList,
   totalResults: 10,
+};
+
+/** @type {!SearchResponse} */
+export const fakeEmptySearchResponse = {
+  results: fakeEmptyHelpContentList,
+  totalResults: 0,
 };
 
 /** @type {!FeedbackContext} */

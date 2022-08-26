@@ -46,6 +46,8 @@ constexpr char kFeedbackAppTimeOnPageShareDataPage[] =
     "Feedback.ChromeOSApp.TimeOnPage.ShareDataPage";
 constexpr char kFeedbackAppTimeOnPageConfirmationPage[] =
     "Feedback.ChromeOSApp.TimeOnPage.ConfirmationPage";
+constexpr char kFeedbackAppHelpContentSearchResultCount[] =
+    "Feedback.ChromeOSApp.HelpContentSearchResultCount";
 
 // The enums below are used in histograms, do not remove/renumber entries. If
 // you're adding to any of these enums, update the corresponding enum listing in
@@ -88,6 +90,8 @@ void EmitFeedbackAppTimeOnSearchPage(const base::TimeDelta& time_elapsed);
 void EmitFeedbackAppTimeOnShareDataPage(const base::TimeDelta& time_elapsed);
 
 void EmitFeedbackAppTimeOnConfirmationPage(const base::TimeDelta& time_elapsed);
+
+void EmitFeedbackAppHelpContentSearchResultCount(int count);
 
 }  // namespace ash::os_feedback_ui::metrics
 

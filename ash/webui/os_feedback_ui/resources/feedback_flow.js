@@ -121,6 +121,13 @@ export class FeedbackFlowElement extends PolymerElement {
      * @private
      */
     this.helpContentOutcomeMetricEmitted_ = false;
+
+    /**
+     * Number of results returned in each search.
+     * @type {number}
+     * @private
+     */
+    this.helpContentSearchResultCount_;
   }
 
   ready() {
@@ -142,6 +149,8 @@ export class FeedbackFlowElement extends PolymerElement {
       this.helpContentClicked_ = true;
       this.feedbackServiceProvider_.recordPreSubmitAction(
           FeedbackAppPreSubmitAction.kViewedHelpContent);
+      this.feedbackServiceProvider_.recordHelpContentSearchResultCount(
+          this.helpContentSearchResultCount_);
     });
 
     window.addEventListener('beforeunload', event => {

@@ -466,6 +466,8 @@ export function FeedbackFlowTestSuite() {
         0,
         feedbackServiceProvider.getRecordPreSubmitActionCallCount(
             FeedbackAppPreSubmitAction.kViewedHelpContent));
+    assertEquals(
+        0, feedbackServiceProvider.getRecordHelpContentSearchResultCount());
 
     // Get Search Page.
     const SearchPage = getSearchPage();
@@ -482,6 +484,7 @@ export function FeedbackFlowTestSuite() {
         helpContentClicked = true;
         feedbackServiceProvider.recordPreSubmitAction(
             FeedbackAppPreSubmitAction.kViewedHelpContent);
+        feedbackServiceProvider.recordHelpContentSearchResultCount();
       }
     });
 
@@ -500,6 +503,10 @@ export function FeedbackFlowTestSuite() {
         1,
         feedbackServiceProvider.getRecordPreSubmitActionCallCount(
             FeedbackAppPreSubmitAction.kViewedHelpContent));
+    // Verify that clicks the help content will emit the
+    // recordHelpContentSearchResult metric.
+    assertEquals(
+        1, feedbackServiceProvider.getRecordHelpContentSearchResultCount());
   });
 
   // Test that correct exitPathMetrics is emitted when user clicks help content

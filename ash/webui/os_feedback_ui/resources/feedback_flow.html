@@ -1,7 +1,8 @@
 <div>
   <iron-pages attr-for-selected="id" selected="[[currentState_]]">
     <search-page id="searchPage" on-continue-click="handleContinueClick_"
-        description-template="[[descriptionTemplate_]]">
+        description-template="[[descriptionTemplate_]]"
+        help-content-search-result-count="{{helpContentSearchResultCount_}}">
     </search-page>
     <share-data-page id="shareDataPage" feedback-context="[[feedbackContext_]]"
         on-continue-click="handleContinueClick_"

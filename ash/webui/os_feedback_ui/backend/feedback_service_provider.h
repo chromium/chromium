@@ -46,6 +46,7 @@ class FeedbackServiceProvider
       os_feedback_ui::mojom::FeedbackAppExitPath exit_path) override;
   void RecordHelpContentOutcome(
       os_feedback_ui::mojom::FeedbackAppHelpContentOutcome outcome) override;
+  void RecordHelpContentSearchResultCount(int count) override;
 
   void BindInterface(
       mojo::PendingReceiver<os_feedback_ui::mojom::FeedbackServiceProvider>

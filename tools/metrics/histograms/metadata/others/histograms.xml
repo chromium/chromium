@@ -5781,6 +5781,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Feedback.ChromeOSApp.HelpContentSearchResultCount"
+    units="numbers" expires_after="2023-08-15">
+  <owner>longbowei@google.com</owner>
+  <owner>xiangdongkong@google.com</owner>
+  <owner>cros-feedback-app@google.com</owner>
+  <summary>
+    Records the number of help content results returned in each search. Fires
+    when user clicks and views the help content on search page.
+  </summary>
+</histogram>
+
 <histogram name="Feedback.ChromeOSApp.IncludedEmail" units="boolean"
     expires_after="2023-07-27">
   <owner>longbowei@google.com</owner>

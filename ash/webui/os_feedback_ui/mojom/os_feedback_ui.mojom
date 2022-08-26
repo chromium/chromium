@@ -234,4 +234,7 @@ interface FeedbackServiceProvider {
   RecordExitPath(FeedbackAppExitPath exit_path);
   // Record the outcome of clicking and viewing the help content.
   RecordHelpContentOutcome(FeedbackAppHelpContentOutcome outcome);
+  // Record metrics of number of results returned in each search, fires when
+  // user clicks help content.
+  RecordHelpContentSearchResultCount(int32 count);
 };

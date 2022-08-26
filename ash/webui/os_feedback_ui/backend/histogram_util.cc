@@ -93,4 +93,8 @@ void EmitFeedbackAppHelpContentOutcome(
   base::UmaHistogramEnumeration(kFeedbackAppHelpContentOutcome, outcome);
 }
 
+void EmitFeedbackAppHelpContentSearchResultCount(int count) {
+  base::UmaHistogramCounts100(kFeedbackAppHelpContentSearchResultCount, count);
+}
+
 }  // namespace ash::os_feedback_ui::metrics
