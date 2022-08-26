@@ -88,7 +88,7 @@ TEST_P(CompositingReasonFinderTest, DontPromoteTrivial3DWithLowEndDevice) {
   )HTML");
 
   EXPECT_REASONS(
-      CompositingReason::kNoCompositingReason,
+      CompositingReason::kNone,
       DirectReasonsForPaintProperties(*GetLayoutObjectByElementId("target")));
 }
 
@@ -129,7 +129,7 @@ TEST_P(CompositingReasonFinderTest, OnlyAnchoredStickyPositionPromoted) {
   EXPECT_REASONS(CompositingReason::kStickyPosition,
                  DirectReasonsForPaintProperties(
                      *GetLayoutObjectByElementId("sticky-top")));
-  EXPECT_REASONS(CompositingReason::kNoCompositingReason,
+  EXPECT_REASONS(CompositingReason::kNone,
                  DirectReasonsForPaintProperties(
                      *GetLayoutObjectByElementId("sticky-no-anchor")));
 }
@@ -182,7 +182,7 @@ TEST_P(CompositingReasonFinderTest, OnlyScrollingStickyPositionPromoted) {
           *GetPaintLayerByElementId("sticky-scrolling")));
 
   EXPECT_REASONS(
-      CompositingReason::kNoCompositingReason,
+      CompositingReason::kNone,
       CompositingReasonFinder::CompositingReasonsForScrollDependentPosition(
           *GetPaintLayerByElementId("sticky-no-scrolling")));
 
@@ -192,12 +192,12 @@ TEST_P(CompositingReasonFinderTest, OnlyScrollingStickyPositionPromoted) {
           *GetPaintLayerByElementId("overflow-hidden-scrolling")));
 
   EXPECT_REASONS(
-      CompositingReason::kNoCompositingReason,
+      CompositingReason::kNone,
       CompositingReasonFinder::CompositingReasonsForScrollDependentPosition(
           *GetPaintLayerByElementId("overflow-hidden-no-scrolling")));
 
   EXPECT_REASONS(
-      CompositingReason::kNoCompositingReason,
+      CompositingReason::kNone,
       CompositingReasonFinder::CompositingReasonsForScrollDependentPosition(
           *GetPaintLayerByElementId("under-fixed")));
 }
@@ -219,10 +219,10 @@ void CompositingReasonFinderTest::CheckCompositingReasonsForAnimation(
   object->SetStyle(style);
 
   EXPECT_REASONS(
-      CompositingReason::kNoCompositingReason,
+      CompositingReason::kNone,
       CompositingReasonFinder::CompositingReasonsForAnimation(*object));
 
-  CompositingReasons expected_reason = CompositingReason::kNoCompositingReason;
+  CompositingReasons expected_reason = CompositingReason::kNone;
 
   style->SetHasCurrentTransformAnimation(true);
   if (supports_transform_animation)
@@ -311,7 +311,7 @@ TEST_P(CompositingReasonFinderTest, PromoteCrossOriginIframe) {
   PaintLayer* iframe_layer = iframe_layout_view->Layer();
   ASSERT_TRUE(iframe_layer);
   EXPECT_FALSE(iframe_layer->GetScrollableArea()->NeedsCompositedScrolling());
-  EXPECT_REASONS(CompositingReason::kNoCompositingReason,
+  EXPECT_REASONS(CompositingReason::kNone,
                  DirectReasonsForPaintProperties(*iframe_layout_view));
 
   SetBodyInnerHTML(R"HTML(
@@ -422,7 +422,7 @@ TEST_P(CompositingReasonFinderTest,
                  DirectReasonsForPaintProperties(
                      *GetLayoutObjectByElementId("intermediate")));
   EXPECT_REASONS(
-      CompositingReason::kNoCompositingReason,
+      CompositingReason::kNone,
       DirectReasonsForPaintProperties(*GetLayoutObjectByElementId("target")));
 }
 
@@ -441,7 +441,7 @@ TEST_P(CompositingReasonFinderTest,
   )HTML");
 
   EXPECT_REASONS(
-      CompositingReason::kNoCompositingReason,
+      CompositingReason::kNone,
       DirectReasonsForPaintProperties(*GetLayoutObjectByElementId("target")));
 }
 
@@ -459,7 +459,7 @@ TEST_P(CompositingReasonFinderTest, CompositeWithBackfaceVisibility) {
   )HTML");
 
   EXPECT_REASONS(
-      CompositingReason::kNoCompositingReason,
+      CompositingReason::kNone,
       DirectReasonsForPaintProperties(*GetLayoutObjectByElementId("target")));
 }
 
@@ -475,7 +475,7 @@ TEST_P(CompositingReasonFinderTest, CompositedSVGText) {
             DirectReasonsForPaintProperties(*svg_text));
   auto* text = svg_text->SlowFirstChild();
   ASSERT_TRUE(text->IsText());
-  EXPECT_REASONS(CompositingReason::kNoCompositingReason,
+  EXPECT_REASONS(CompositingReason::kNone,
                  DirectReasonsForPaintProperties(*text));
 }
 
@@ -500,7 +500,7 @@ TEST_P(CompositingReasonFinderTest, NotSupportedTransformAnimationsOnSVG) {
   )HTML");
 
   auto* defs = GetLayoutObjectByElementId("defs");
-  EXPECT_REASONS(CompositingReason::kNoCompositingReason,
+  EXPECT_REASONS(CompositingReason::kNone,
                  DirectReasonsForPaintProperties(*defs));
 
   auto* text = GetLayoutObjectByElementId("text");
@@ -509,20 +509,20 @@ TEST_P(CompositingReasonFinderTest, NotSupportedTransformAnimationsOnSVG) {
 
   auto* text_content = text->SlowFirstChild();
   ASSERT_TRUE(text_content->IsText());
-  EXPECT_EQ(CompositingReason::kNoCompositingReason,
+  EXPECT_EQ(CompositingReason::kNone,
             DirectReasonsForPaintProperties(*text_content));
 
   auto* tspan = GetLayoutObjectByElementId("tspan");
-  EXPECT_REASONS(CompositingReason::kNoCompositingReason,
+  EXPECT_REASONS(CompositingReason::kNone,
                  DirectReasonsForPaintProperties(*tspan));
 
   auto* tspan_content = tspan->SlowFirstChild();
   ASSERT_TRUE(tspan_content->IsText());
-  EXPECT_EQ(CompositingReason::kNoCompositingReason,
+  EXPECT_EQ(CompositingReason::kNone,
             DirectReasonsForPaintProperties(*tspan_content));
 
   auto* feBlend = GetLayoutObjectByElementId("feBlend");
-  EXPECT_REASONS(CompositingReason::kNoCompositingReason,
+  EXPECT_REASONS(CompositingReason::kNone,
                  DirectReasonsForPaintProperties(*feBlend));
 }
 
@@ -536,7 +536,7 @@ TEST_P(CompositingReasonFinderTest, WillChangeScrollPosition) {
 
   auto* target = GetLayoutObjectByElementId("target");
   EXPECT_TRUE(CompositingReasonFinder::ShouldForcePreferCompositingToLCDText(
-      *target, CompositingReason::kNoCompositingReason));
+      *target, CompositingReason::kNone));
   EXPECT_REASONS(CompositingReason::kOverflowScrolling,
                  DirectReasonsForPaintProperties(*target));
 
@@ -544,8 +544,8 @@ TEST_P(CompositingReasonFinderTest, WillChangeScrollPosition) {
       CSSPropertyID::kWillChange);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(CompositingReasonFinder::ShouldForcePreferCompositingToLCDText(
-      *target, CompositingReason::kNoCompositingReason));
-  EXPECT_REASONS(CompositingReason::kNoCompositingReason,
+      *target, CompositingReason::kNone));
+  EXPECT_REASONS(CompositingReason::kNone,
                  DirectReasonsForPaintProperties(*target));
 }
 

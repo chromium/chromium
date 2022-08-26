@@ -155,8 +155,7 @@ std::unique_ptr<JSONObject> TransformPaintPropertyNode::ToJSON() const {
     json->SetString("renderingContextId",
                     String::Format("%x", state_.rendering_context_id));
   }
-  if (state_.direct_compositing_reasons !=
-      CompositingReason::kNoCompositingReason) {
+  if (state_.direct_compositing_reasons != CompositingReason::kNone) {
     json->SetString(
         "directCompositingReasons",
         CompositingReason::ToString(state_.direct_compositing_reasons));

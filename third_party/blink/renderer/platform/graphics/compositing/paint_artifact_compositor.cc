@@ -1014,7 +1014,7 @@ CompositingReasons PaintArtifactCompositor::GetCompositingReasons(
     }
   }
 
-  CompositingReasons reasons = CompositingReason::kNoCompositingReason;
+  CompositingReasons reasons = CompositingReason::kNone;
   if (!previous_layer ||
       &layer.GetPropertyTreeState().Transform() !=
           &previous_layer->GetPropertyTreeState().Transform()) {
@@ -1032,7 +1032,7 @@ CompositingReasons PaintArtifactCompositor::GetCompositingReasons(
     const auto& effect = layer.GetPropertyTreeState().Effect();
     if (effect.HasDirectCompositingReasons())
       reasons |= effect.DirectCompositingReasonsForDebugging();
-    if (reasons == CompositingReason::kNoCompositingReason &&
+    if (reasons == CompositingReason::kNone &&
         layer.GetCompositingType() == PendingLayer::kOther) {
       if (effect.Opacity() != 1.0f)
         reasons |= CompositingReason::kOpacityWithCompositedDescendants;
@@ -1045,7 +1045,7 @@ CompositingReasons PaintArtifactCompositor::GetCompositingReasons(
     }
   }
 
-  if (reasons == CompositingReason::kNoCompositingReason &&
+  if (reasons == CompositingReason::kNone &&
       layer.GetCompositingType() == PendingLayer::kOverlap)
     reasons = CompositingReason::kOverlap;
 

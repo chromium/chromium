@@ -3961,7 +3961,7 @@ bool LayoutObject::CanHaveAdditionalCompositingReasons() const {
 
 CompositingReasons LayoutObject::AdditionalCompositingReasons() const {
   NOT_DESTROYED();
-  return CompositingReason::kNoCompositingReason;
+  return CompositingReason::kNone;
 }
 
 bool LayoutObject::HitTestAllPhases(HitTestResult& result,

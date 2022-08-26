@@ -521,7 +521,7 @@ static bool NeedsPaintOffsetTranslation(
   // very likely that the object will be composited, so a paint offset
   // translation will be beneficial.
   bool has_paint_offset_compositing_reason =
-      direct_compositing_reasons != CompositingReason::kNoCompositingReason ||
+      direct_compositing_reasons != CompositingReason::kNone ||
       box_model.StyleRef().BackfaceVisibility() == EBackfaceVisibility::kHidden;
   if (has_paint_offset_compositing_reason) {
     // Don't let paint offset cross composited layer boundaries when possible,
@@ -604,10 +604,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateForPaintOffsetTranslation(
 
   ResetPaintOffset(subpixel_accumulation);
 
-  if (full_context_.direct_compositing_reasons ==
-      CompositingReason::kNoCompositingReason) {
+  if (full_context_.direct_compositing_reasons == CompositingReason::kNone)
     return;
-  }
 
   if (paint_offset_translation && properties_ &&
       properties_->PaintOffsetTranslation()) {
@@ -1010,7 +1008,7 @@ static bool NeedsScale(const LayoutObject& object,
 static bool NeedsOffset(const LayoutObject& object,
                         CompositingReasons direct_compositing_reasons) {
   return NeedsIndividualTransform(
-      object, CompositingReason::kNoCompositingReason,
+      object, CompositingReason::kNone,
       [](const ComputedStyle& style) { return style.HasOffset(); });
 }
 
@@ -1150,7 +1148,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateIndividualTransform(
           state.backface_visibility =
               TransformPaintPropertyNode::BackfaceVisibility::kHidden;
         } else if (state.direct_compositing_reasons !=
-                   CompositingReason::kNoCompositingReason) {
+                   CompositingReason::kNone) {
           // The above condition fixes a CompositeAfterPaint regression
           // (crbug.com/1260603) by letting non-directly-composited transforms
           // inherit parent's backface visibility.
@@ -1268,8 +1266,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateOffset() {
             ComputedStyle::kIncludeMotionPath,
             ComputedStyle::kExcludeIndependentTransformProperties);
       },
-      CompositingReason::kNoCompositingReason,
-      CompositingReason::kNoCompositingReason,
+      CompositingReason::kNone, CompositingReason::kNone,
       // TODO(dbaron): When we support animating offset on the
       // compositor, we need to use an element ID specific to offset.
       // This is currently unused.
@@ -1564,7 +1561,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
           full_context_.direct_compositing_reasons &
                   CompositingReason::kDirectReasonsForBackdropFilter
               ? CompositingReason::kBackdropFilterMask
-              : CompositingReason::kNoCompositingReason;
+              : CompositingReason::kNone;
 
       if (mask_clip) {
         EffectPaintPropertyNode::State mask_state;
@@ -4032,8 +4029,7 @@ void PaintPropertyTreeBuilder::UpdateForSelf() {
       ObjectTypeMightNeedMultipleFragmentData()) {
     UpdateFragments();
   } else {
-    DCHECK_EQ(context_.direct_compositing_reasons,
-              CompositingReason::kNoCompositingReason);
+    DCHECK_EQ(context_.direct_compositing_reasons, CompositingReason::kNone);
     if (!IsInNGFragmentTraversal())
       object_.GetMutableForPainting().FirstFragment().ClearNextFragment();
   }
