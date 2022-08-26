@@ -35,29 +35,10 @@ namespace {
 // waiting on these threads).
 constexpr base::TimeDelta kReatimeThreadPeriod = base::Milliseconds(10);
 
-absl::optional<base::TimeDelta> GetAudioThreadHangDeadline() {
-  if (!base::FeatureList::IsEnabled(
-          features::kAudioServiceOutOfProcessKillAtHang)) {
-    return absl::nullopt;
-  }
-  const std::string timeout_string = base::GetFieldTrialParamValueByFeature(
-      features::kAudioServiceOutOfProcessKillAtHang, "timeout_seconds");
-  int timeout_int = 0;
-  if (!base::StringToInt(timeout_string, &timeout_int) || timeout_int == 0)
-    return absl::nullopt;
-  return base::Seconds(timeout_int);
-}
-
 HangAction GetAudioThreadHangAction() {
-  const bool dump =
-      base::FeatureList::IsEnabled(features::kDumpOnAudioServiceHang);
-  const bool kill = base::FeatureList::IsEnabled(
-      features::kAudioServiceOutOfProcessKillAtHang);
-  if (dump) {
-    return kill ? HangAction::kDumpAndTerminateCurrentProcess
-                : HangAction::kDump;
-  }
-  return kill ? HangAction::kTerminateCurrentProcess : HangAction::kDoNothing;
+  return base::FeatureList::IsEnabled(features::kDumpOnAudioServiceHang)
+             ? HangAction::kDumpAndTerminateCurrentProcess
+             : HangAction::kTerminateCurrentProcess;
 }
 
 // Thread class for hosting owned AudioManager on the main thread of the
@@ -93,7 +74,7 @@ MainThread::MainThread()
       worker_thread_("AudioWorkerThread", kReatimeThreadPeriod),
       hang_monitor_(media::AudioThreadHangMonitor::Create(
           GetAudioThreadHangAction(),
-          GetAudioThreadHangDeadline(),
+          /*use the default*/ absl::nullopt,
           base::DefaultTickClock::GetInstance(),
           task_runner_)) {}
 

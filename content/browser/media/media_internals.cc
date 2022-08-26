@@ -488,21 +488,6 @@ void MediaInternals::SendGeneralAudioInformation() {
 
   set_feature_data(features::kAudioServiceOutOfProcess);
 
-  std::string feature_value_string;
-  if (base::FeatureList::IsEnabled(
-          features::kAudioServiceOutOfProcessKillAtHang)) {
-    std::string timeout_value = base::GetFieldTrialParamValueByFeature(
-        features::kAudioServiceOutOfProcessKillAtHang, "timeout_seconds");
-    if (timeout_value.empty())
-      timeout_value = "<undefined>";
-    feature_value_string =
-        base::StrCat({"Enabled, timeout = ", timeout_value, " seconds"});
-  } else {
-    feature_value_string = "Disabled";
-  }
-  audio_info_data.Set(features::kAudioServiceOutOfProcessKillAtHang.name,
-                      base::Value(feature_value_string));
-
   set_feature_data(features::kAudioServiceLaunchOnStartup);
   set_explicit_feature_data(
       features::kAudioServiceSandbox,
