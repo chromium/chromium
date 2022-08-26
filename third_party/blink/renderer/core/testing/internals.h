@@ -156,6 +156,7 @@ class Internals final : public ScriptWrappable {
   Node* previousInFlatTree(Node*, ExceptionState&);
 
   unsigned updateStyleAndReturnAffectedElementCount(ExceptionState&) const;
+  unsigned styleForElementCount(ExceptionState&) const;
   unsigned needsLayoutCount(ExceptionState&) const;
   unsigned layoutCountForTesting(ExceptionState&) const;
   unsigned hitTestCount(Document*, ExceptionState&) const;

@@ -62,6 +62,7 @@
     Node parentTreeScope(Node node);
     [RaisesException] unsigned short compareTreeScopePosition(Node treeScope1, Node treeScope2);
     [RaisesException] unsigned long updateStyleAndReturnAffectedElementCount();
+    [RaisesException] unsigned long styleForElementCount();
     [RaisesException] unsigned long needsLayoutCount();
     [RaisesException] unsigned long layoutCountForTesting();
     [RaisesException] unsigned long hitTestCount(Document document);

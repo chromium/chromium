@@ -751,6 +751,17 @@ unsigned Internals::updateStyleAndReturnAffectedElementCount(
   return document_->GetStyleEngine().StyleForElementCount() - before_count;
 }
 
+unsigned Internals::styleForElementCount(
+    ExceptionState& exception_state) const {
+  if (!document_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
+                                      "No context document is available.");
+    return 0;
+  }
+
+  return document_->GetStyleEngine().StyleForElementCount();
+}
+
 unsigned Internals::needsLayoutCount(ExceptionState& exception_state) const {
   LocalFrame* context_frame = GetFrame();
   if (!context_frame) {
