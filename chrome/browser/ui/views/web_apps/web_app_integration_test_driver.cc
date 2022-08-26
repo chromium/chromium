@@ -66,6 +66,7 @@
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
+#include "chrome/browser/web_applications/test/app_registration_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
@@ -810,6 +811,7 @@ void WebAppIntegrationTestDriver::CreateShortcut(Site site,
     app_browser_ = browser_added_waiter.browser_added();
     ActivateBrowserAndWait(app_browser_);
   }
+  AppRegistrationWaiter(profile(), active_app_id_).Await();
   AfterStateChangeAction();
 }
 
@@ -827,6 +829,7 @@ void WebAppIntegrationTestDriver::InstallMenuOption(InstallableSite site) {
   app_browser_ = browser_added_waiter.browser_added();
   ActivateBrowserAndWait(app_browser_);
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(/*auto_accept=*/false);
+  AppRegistrationWaiter(profile(), active_app_id_).Await();
   AfterStateChangeAction();
 }
 
@@ -851,6 +854,7 @@ void WebAppIntegrationTestDriver::InstallLocally(Site site) {
   observer.BeginListening();
   handler.HandleInstallAppLocally(web_app_ids);
   observer.Wait();
+  AppRegistrationWaiter(profile(), app_id).Await();
   AfterStateChangeAction();
 }
 #endif
@@ -888,6 +892,7 @@ void WebAppIntegrationTestDriver::InstallOmniboxIcon(InstallableSite site) {
   app_browser_ = browser_added_waiter.browser_added();
   ActivateBrowserAndWait(app_browser_);
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(false);
+  AppRegistrationWaiter(profile(), active_app_id_).Await();
   AfterStateChangeAction();
 }
 
