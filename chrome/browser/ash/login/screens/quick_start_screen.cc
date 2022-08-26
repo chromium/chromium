@@ -11,10 +11,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
+#include "chrome/browser/ash/login/oobe_quick_start/verification_shapes.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ui/webui/chromeos/login/quick_start_screen_handler.h"
-#include "chromeos/ash/components/oobe_quick_start/target_device_bootstrap_controller.h"
-#include "chromeos/ash/components/oobe_quick_start/verification_shapes.h"
 
 namespace ash {
 

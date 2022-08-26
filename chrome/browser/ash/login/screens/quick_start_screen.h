@@ -9,9 +9,9 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/quick_start_screen_handler.h"
-#include "chromeos/ash/components/oobe_quick_start/target_device_bootstrap_controller.h"
 
 namespace ash {
 
