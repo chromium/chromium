@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_DIALOGS_DIALOG_CONSTANTS_H_
-#define IOS_CHROME_BROWSER_UI_DIALOGS_DIALOG_CONSTANTS_H_
+#ifndef IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_WEB_CONTENT_AREA_ALERT_CONSTANTS_H_
+#define IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_WEB_CONTENT_AREA_ALERT_CONSTANTS_H_
 
 #import <Foundation/Foundation.h>
 
@@ -11,5 +11,7 @@
 extern NSString* const kJavaScriptDialogAccessibilityIdentifier;
 // Accessibility identifier added to the text field of JavaScript prompts.
 extern NSString* const kJavaScriptDialogTextFieldAccessibilityIdentifier;
+// Accessibility identifier for a media permissions dialog.
+extern NSString* const kPermissionsDialogAccessibilityIdentifier;
 
-#endif  // IOS_CHROME_BROWSER_UI_DIALOGS_DIALOG_CONSTANTS_H_
+#endif  // IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_WEB_CONTENT_AREA_ALERT_CONSTANTS_H_

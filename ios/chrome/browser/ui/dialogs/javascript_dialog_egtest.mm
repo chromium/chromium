@@ -10,7 +10,7 @@
 #import "base/test/ios/wait_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
-#import "ios/chrome/browser/ui/dialogs/dialog_constants.h"
+#import "ios/chrome/browser/overlays/public/web_content_area/alert_constants.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"

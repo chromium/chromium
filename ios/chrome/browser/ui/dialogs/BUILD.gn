@@ -31,14 +31,6 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
-source_set("constants") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "dialog_constants.h",
-    "dialog_constants.mm",
-  ]
-}
-
 source_set("dialogs_internal") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -49,7 +41,6 @@ source_set("dialogs_internal") {
   ]
   deps = [
     ":completion_block_util",
-    ":constants",
     ":dialogs",
     "//base",
     "//components/strings",
@@ -57,6 +48,7 @@ source_set("dialogs_internal") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/web_content_area",
+    "//ios/chrome/browser/overlays/public/web_content_area:constants",
     "//ios/chrome/browser/ui/alert_coordinator",
     "//ios/chrome/browser/ui/alert_coordinator",
     "//ios/chrome/browser/ui/util",
@@ -109,12 +101,12 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "javascript_dialog_egtest.mm" ]
   deps = [
-    ":constants",
     "//base",
     "//base/test:test_support",
     "//components/strings",
     "//components/url_formatter",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/overlays/public/web_content_area:constants",
     "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",

@@ -17,16 +17,24 @@ source_set("web_content_area") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
+    ":constants",
     "//base",
     "//components/strings:components_strings_grit",
     "//ios/chrome/app/strings:ios_strings",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/ui/dialogs",
-    "//ios/chrome/browser/ui/dialogs:constants",
     "//ios/chrome/browser/ui/elements",
     "//ios/web/public",
     "//ui/base",
     "//url",
+  ]
+}
+
+source_set("constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "alert_constants.h",
+    "alert_constants.mm",
   ]
 }
 
@@ -41,13 +49,13 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
+    ":constants",
     ":web_content_area",
     "//base",
     "//components/strings:components_strings_grit",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/ui/dialogs",
-    "//ios/chrome/browser/ui/dialogs:constants",
     "//ios/chrome/browser/ui/elements",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
