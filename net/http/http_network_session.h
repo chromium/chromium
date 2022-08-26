@@ -83,8 +83,11 @@ const uint32_t kSpdyMaxHeaderListSize = 256 * 1024;
 // Specifies the maximum concurrent streams server could send (via push).
 const uint32_t kSpdyMaxConcurrentPushedStreams = 1000;
 
-  // Self-contained structure with all the simple configuration options
-  // supported by the HttpNetworkSession.
+// Specifies the the default value for the push setting, which is disabled.
+const uint32_t kSpdyDisablePush = 0;
+
+// Self-contained structure with all the simple configuration options
+// supported by the HttpNetworkSession.
 struct NET_EXPORT HttpNetworkSessionParams {
   HttpNetworkSessionParams();
   HttpNetworkSessionParams(const HttpNetworkSessionParams& other);

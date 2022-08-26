@@ -72,6 +72,10 @@ spdy::SettingsMap AddDefaultHttp2Settings(spdy::SettingsMap http2_settings) {
     http2_settings[spdy::SETTINGS_MAX_HEADER_LIST_SIZE] =
         kSpdyMaxHeaderListSize;
 
+  it = http2_settings.find(spdy::SETTINGS_ENABLE_PUSH);
+  if (it == http2_settings.end())
+    http2_settings[spdy::SETTINGS_ENABLE_PUSH] = kSpdyDisablePush;
+
   return http2_settings;
 }
 
