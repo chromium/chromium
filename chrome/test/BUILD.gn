@@ -2059,8 +2059,6 @@ if (!is_android) {
       "../browser/signin/e2e_tests/live_test.cc",
       "../browser/signin/e2e_tests/live_test.h",
       "../browser/signin/remove_local_account_browsertest.cc",
-      "../browser/signin/signin_browser_test_base.cc",
-      "../browser/signin/signin_browser_test_base.h",
       "../browser/site_isolation/chrome_site_per_process_browsertest.cc",
       "../browser/site_isolation/chrome_site_per_process_test.cc",
       "../browser/site_isolation/chrome_site_per_process_test.h",
@@ -4377,7 +4375,6 @@ if (!is_android) {
         # Tests for non mobile and non CrOS (includes Linux, Win, Mac).
         "../browser/extensions/api/image_writer_private/image_writer_utility_client_browsertest.cc",
         "../browser/profiles/profile_statistics_browsertest.cc",
-        "../browser/ui/webui/signin/turn_sync_on_helper_browsertest.cc",
       ]
 
       if (!is_chromeos_lacros) {
