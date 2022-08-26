@@ -116,18 +116,18 @@ void X11CrtcResizer::UpdateActiveCrtcs(x11::RandR::Crtc crtc,
     int16_t old_right_edge = iter->x + iter->width;
     int16_t new_right_edge = iter->x + new_size.width();
     int16_t x_adjustment = 0;
-    for (auto& crtc : active_crtcs_) {
+    for (auto& active_crtc : active_crtcs_) {
       // Only consider CRTCs whose left edges lie between these values.
-      if (crtc.x >= old_right_edge && crtc.x < new_right_edge) {
-        int16_t adjustment = new_right_edge - crtc.x;
+      if (active_crtc.x >= old_right_edge && active_crtc.x < new_right_edge) {
+        int16_t adjustment = new_right_edge - active_crtc.x;
         x_adjustment = std::max(x_adjustment, adjustment);
       }
     }
     if (x_adjustment > 0) {
-      for (auto& crtc : active_crtcs_) {
-        if (crtc.x >= old_right_edge) {
-          crtc.x += x_adjustment;
-          crtc.changed = true;
+      for (auto& active_crtc : active_crtcs_) {
+        if (active_crtc.x >= old_right_edge) {
+          active_crtc.x += x_adjustment;
+          active_crtc.changed = true;
         }
       }
     }
@@ -139,17 +139,17 @@ void X11CrtcResizer::UpdateActiveCrtcs(x11::RandR::Crtc crtc,
     int16_t old_bottom_edge = iter->y + iter->height;
     int16_t new_bottom_edge = iter->y + new_size.height();
     int16_t y_adjustment = 0;
-    for (auto& crtc : active_crtcs_) {
-      if (crtc.y >= old_bottom_edge && crtc.y < new_bottom_edge) {
-        int16_t adjustment = new_bottom_edge - crtc.y;
+    for (auto& active_crtc : active_crtcs_) {
+      if (active_crtc.y >= old_bottom_edge && active_crtc.y < new_bottom_edge) {
+        int16_t adjustment = new_bottom_edge - active_crtc.y;
         y_adjustment = std::max(y_adjustment, adjustment);
       }
     }
     if (y_adjustment > 0) {
-      for (auto& crtc : active_crtcs_) {
-        if (crtc.y >= old_bottom_edge) {
-          crtc.y += y_adjustment;
-          crtc.changed = true;
+      for (auto& active_crtc : active_crtcs_) {
+        if (active_crtc.y >= old_bottom_edge) {
+          active_crtc.y += y_adjustment;
+          active_crtc.changed = true;
         }
       }
     }
