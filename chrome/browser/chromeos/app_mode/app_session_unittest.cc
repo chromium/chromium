@@ -64,46 +64,54 @@ class AppSessionTest : public testing::Test {
 
   base::test::TaskEnvironment* task_environment() { return &task_environment_; }
 
-  void TearDown() override {
-    local_state()->RemoveUserPref(prefs::kKioskMetrics);
+  std::unique_ptr<Browser> CreateBrowserWithTestWindow() {
+    return CreateBrowserWithTestWindowForParams(
+        Browser::CreateParams(&profile_, true));
   }
 
-  std::unique_ptr<Browser> CreateBrowserWithTestWindow(
-      TestingProfile* profile) {
-    Browser::CreateParams params(profile, true);
-    return CreateBrowserWithTestWindowForParams(params);
-  }
+  // Simulate starting a kiosk session.
+  void StartWebKioskSession() {
+    // Create the main kiosk browser window, which is normally auto-created when
+    // a web kiosk session starts.
+    web_kiosk_main_browser_ = CreateBrowserWithTestWindow();
 
-  void WebKioskTracksBrowserCreationTest() {
-    // |profile| needs to outlive |app_session|.
-    TestingProfile profile;
-    auto app_session =
+    app_session_ =
         std::make_unique<AppSession>(base::DoNothing(), local_state());
+    app_session_->InitForWebKiosk(web_kiosk_main_browser_.get());
+  }
 
-    auto app_browser = CreateBrowserWithTestWindow(&profile);
+  // Simulate opening a second browser window, and ensure it is automatically
+  // closed.
+  void OpenSecondBrowserAndEnsureItIsClosed() {
+    auto another_browser = CreateBrowserWithTestWindow();
 
-    app_session->InitForWebKiosk(app_browser.get());
-
-    auto another_browser = CreateBrowserWithTestWindow(&profile);
-
+    // Ensure it is closed.
     base::RunLoop loop;
     static_cast<TestBrowserWindow*>(another_browser->window())
         ->SetCloseCallback(
             base::BindLambdaForTesting([&loop]() { loop.Quit(); }));
     loop.Run();
+  }
 
-    bool chrome_closed = false;
-    app_session->SetAttemptUserExitForTesting(base::BindLambdaForTesting(
-        [&chrome_closed]() { chrome_closed = true; }));
+  void CloseMainBrowser() {
+    // Close the main browser window.
+    web_kiosk_main_browser_.reset();
+  }
 
-    app_browser.reset();
-    ASSERT_TRUE(chrome_closed);
+  bool IsSessionShuttingDown() const {
+    return app_session_->is_shutting_down();
   }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<ScopedTestingLocalState> local_state_;
+
+  // Must outlive |app_session_|.
+  TestingProfile profile_;
+  // Main browser window created when launching a web kiosk app.
+  std::unique_ptr<Browser> web_kiosk_main_browser_;
   base::HistogramTester histogram_;
+  std::unique_ptr<AppSession> app_session_;
 };
 
 class AppSessionTestMockTime : public AppSessionTest {
@@ -113,7 +121,21 @@ class AppSessionTestMockTime : public AppSessionTest {
 };
 
 TEST_F(AppSessionTest, WebKioskTracksBrowserCreation) {
-  WebKioskTracksBrowserCreationTest();
+  StartWebKioskSession();
+  histogram()->ExpectBucketCount(kKioskSessionStateHistogram,
+                                 KioskSessionState::kWebStarted, 1);
+  histogram()->ExpectTotalCount(kKioskSessionCountPerDayHistogram, 1);
+
+  OpenSecondBrowserAndEnsureItIsClosed();
+  histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
+                                 KioskBrowserWindowType::kOther, 1);
+  histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
+                                 KioskBrowserWindowType::kSettingsPage, 0);
+  // Opening a new browser should not be counted as a new session.
+  histogram()->ExpectTotalCount(kKioskSessionCountPerDayHistogram, 1);
+
+  CloseMainBrowser();
+  EXPECT_TRUE(IsSessionShuttingDown());
 
   const base::Value::Dict& dict =
       local_state()->GetValueDict(prefs::kKioskMetrics);
@@ -123,19 +145,11 @@ TEST_F(AppSessionTest, WebKioskTracksBrowserCreation) {
   EXPECT_EQ(1, sessions_list->size());
 
   histogram()->ExpectBucketCount(kKioskSessionStateHistogram,
-                                 KioskSessionState::kWebStarted, 1);
-  histogram()->ExpectBucketCount(kKioskSessionStateHistogram,
                                  KioskSessionState::kStopped, 1);
   EXPECT_EQ(2, histogram()->GetAllSamples(kKioskSessionStateHistogram).size());
 
   histogram()->ExpectTotalCount(kKioskSessionDurationNormalHistogram, 1);
   histogram()->ExpectTotalCount(kKioskSessionDurationInDaysNormalHistogram, 0);
-  histogram()->ExpectTotalCount(kKioskSessionCountPerDayHistogram, 1);
-
-  histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
-                                 KioskBrowserWindowType::kOther, 1);
-  histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
-                                 KioskBrowserWindowType::kSettingsPage, 0);
 }
 
 // Check that sessions list in local_state contains only sessions within the
@@ -165,7 +179,19 @@ TEST_F(AppSessionTest, WebKioskLastDaySessions) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       ash::switches::kLoginUser, "fake-user");
 
-  WebKioskTracksBrowserCreationTest();
+  StartWebKioskSession();
+  // We set |kKioskSessionStartTime| for previous session and did not clear them
+  // up, so it emulates previous session crashes.
+  histogram()->ExpectBucketCount(kKioskSessionStateHistogram,
+                                 KioskSessionState::kRestored, 1);
+  histogram()->ExpectBucketCount(kKioskSessionStateHistogram,
+                                 KioskSessionState::kCrashed, 1);
+  histogram()->ExpectTotalCount(kKioskSessionDurationCrashedHistogram, 1);
+  histogram()->ExpectTotalCount(kKioskSessionDurationInDaysCrashedHistogram, 1);
+  histogram()->ExpectTotalCount(kKioskSessionCountPerDayHistogram, 1);
+
+  CloseMainBrowser();
+  EXPECT_TRUE(IsSessionShuttingDown());
 
   const base::Value::Dict& dict =
       local_state()->GetValueDict(prefs::kKioskMetrics);
@@ -181,34 +207,17 @@ TEST_F(AppSessionTest, WebKioskLastDaySessions) {
   }
 
   histogram()->ExpectBucketCount(kKioskSessionStateHistogram,
-                                 KioskSessionState::kRestored, 1);
-  histogram()->ExpectBucketCount(kKioskSessionStateHistogram,
-                                 KioskSessionState::kCrashed, 1);
-  histogram()->ExpectBucketCount(kKioskSessionStateHistogram,
                                  KioskSessionState::kStopped, 1);
   EXPECT_EQ(3, histogram()->GetAllSamples(kKioskSessionStateHistogram).size());
-
-  histogram()->ExpectTotalCount(kKioskSessionDurationCrashedHistogram, 1);
   histogram()->ExpectTotalCount(kKioskSessionDurationNormalHistogram, 1);
-
-  histogram()->ExpectTotalCount(kKioskSessionDurationInDaysCrashedHistogram, 1);
   histogram()->ExpectTotalCount(kKioskSessionDurationInDaysNormalHistogram, 0);
-
-  histogram()->ExpectTotalCount(kKioskSessionCountPerDayHistogram, 1);
 }
 
 TEST_F(AppSessionTestMockTime, PeriodicMetrics) {
   const char* const kPeriodicMetrics[] = {kKioskRamUsagePercentageHistogram,
                                           kKioskSwapUsagePercentageHistogram,
                                           kKioskDiskUsagePercentageHistogram};
-
-  auto app_session =
-      std::make_unique<AppSession>(base::DoNothing(), local_state());
-
-  TestingProfile profile;
-  auto app_browser = CreateBrowserWithTestWindow(&profile);
-
-  app_session->InitForWebKiosk(app_browser.get());
+  StartWebKioskSession();
 
   task_environment()->FastForwardBy(kPeriodicMetricsInterval / 2);
   for (const char* metric : kPeriodicMetrics) {

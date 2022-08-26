@@ -64,6 +64,8 @@ class AppSession {
 
   KioskSessionPluginHandlerDelegate* GetPluginHandlerDelegateForTesting();
 
+  bool is_shutting_down() const { return is_shutting_down_; }
+
  protected:
   // Set the |profile_| object.
   void SetProfile(Profile* profile);

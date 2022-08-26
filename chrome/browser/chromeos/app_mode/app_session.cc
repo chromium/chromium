@@ -168,7 +168,7 @@ class AppSession::PluginHandlerDelegateImpl
     return IsPepperPlugin(plugin_path);
   }
   void OnPluginCrashed(const base::FilePath& plugin_path) override {
-    if (owner_->is_shutting_down_)
+    if (owner_->is_shutting_down())
       return;
     owner_->metrics_service_->RecordKioskSessionPluginCrashed();
     owner_->is_shutting_down_ = true;
@@ -178,7 +178,7 @@ class AppSession::PluginHandlerDelegateImpl
   }
 
   void OnPluginHung(const std::set<int>& hung_plugins) override {
-    if (owner_->is_shutting_down_)
+    if (owner_->is_shutting_down())
       return;
     owner_->metrics_service_->RecordKioskSessionPluginHung();
     owner_->is_shutting_down_ = true;
@@ -216,7 +216,7 @@ AppSession::AppSession(base::OnceClosure attempt_user_exit,
 }
 
 AppSession::~AppSession() {
-  if (!is_shutting_down_)
+  if (!is_shutting_down())
     metrics_service_->RecordKioskSessionStopped();
 }
 
@@ -280,7 +280,7 @@ void AppSession::OnHandledNewBrowserWindow() {
 }
 
 void AppSession::OnAppWindowAdded(AppWindow* app_window) {
-  if (is_shutting_down_)
+  if (is_shutting_down())
     return;
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -290,7 +290,7 @@ void AppSession::OnAppWindowAdded(AppWindow* app_window) {
 
 void AppSession::OnGuestAdded(content::WebContents* guest_web_contents) {
   // Bail if the session is shutting down.
-  if (is_shutting_down_)
+  if (is_shutting_down())
     return;
 
   // Bail if the guest is not a WebViewGuest.
@@ -303,7 +303,7 @@ void AppSession::OnGuestAdded(content::WebContents* guest_web_contents) {
 }
 
 void AppSession::OnLastAppWindowClosed() {
-  if (is_shutting_down_)
+  if (is_shutting_down())
     return;
   is_shutting_down_ = true;
   metrics_service_->RecordKioskSessionStopped();
