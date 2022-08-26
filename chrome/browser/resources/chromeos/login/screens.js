@@ -22,7 +22,7 @@ import './screens/common/gaia_signin.m.js';
 import './screens/common/gesture_navigation.m.js';
 import './screens/common/guest_tos.m.js';
 import './screens/common/hw_data_collection.m.js';
-import './screens/common/managed_terms_of_service.m.js';
+import './screens/common/managed_terms_of_service.js';
 import './screens/common/marketing_opt_in.m.js';
 import './screens/common/multidevice_setup.m.js';
 import './screens/common/offline_ad_login.m.js';

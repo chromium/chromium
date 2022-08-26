@@ -27,7 +27,6 @@ group("polymer3_elements") {
     ":gesture_navigation_module",
     ":guest_tos_module",
     ":hw_data_collection_module",
-    ":managed_terms_of_service_module",
     ":marketing_opt_in_module",
     ":multidevice_setup_module",
     ":offline_ad_login_module",
@@ -74,7 +73,7 @@ js_type_check("closure_compile_local") {
     ":gesture_navigation.m",
     ":guest_tos.m",
     ":hw_data_collection.m",
-    ":managed_terms_of_service.m",
+    ":managed_terms_of_service",
     ":marketing_opt_in.m",
     ":offline_ad_login.m",
     ":oobe_eula.m",
@@ -334,8 +333,8 @@ js_library("hw_data_collection.m") {
   extra_deps = [ ":hw_data_collection_module" ]
 }
 
-js_library("managed_terms_of_service.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/managed_terms_of_service.m.js" ]
+js_library("managed_terms_of_service") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/managed_terms_of_service.js" ]
   deps = [
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
@@ -352,7 +351,7 @@ js_library("managed_terms_of_service.m") {
     "$externs_path/webview_tag.js",
   ]
 
-  extra_deps = [ ":managed_terms_of_service_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("marketing_opt_in.m") {
@@ -773,14 +772,6 @@ polymer_modulizer("hw_data_collection") {
   migrated_imports = oobe_migrated_imports
 }
 
-polymer_modulizer("managed_terms_of_service") {
-  js_file = "managed_terms_of_service.js"
-  html_file = "managed_terms_of_service.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 polymer_modulizer("marketing_opt_in") {
   js_file = "marketing_opt_in.js"
   html_file = "marketing_opt_in.html"
@@ -920,6 +911,7 @@ html_to_js("web_components") {
   js_files = [
     "adb_sideloading.js",
     "arc_terms_of_service.js",
+    "managed_terms_of_service.js",
     "oobe_reset.js",
     "parental_handoff.js",
     "saml_confirm_password.js",
