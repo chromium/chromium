@@ -4,23 +4,26 @@
 
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu.h"
 
+#include "ash/style/ash_color_id.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu_event_handler.h"
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view.h"
-#include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/background.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace ash {
 
 namespace {
 
-constexpr int kMultitaskMenuVerticalPadding = 4;
-constexpr int kMultitaskMenuWidth = 540;
-constexpr int kMultitaskMenuLandscapeHeight = 124;
-constexpr int kBetweenButtonSpacing = 16;
+constexpr int kMultitaskMenuVerticalPadding = 8;
+constexpr int kMultitaskMenuWidth = 510;
+constexpr int kMultitaskMenuLandscapeHeight = 133;
+constexpr int kBetweenButtonSpacing = 12;
+constexpr int kCornerRadius = 8;
+constexpr int kShadowElevation = 3;
 
 }  // namespace
 
@@ -31,7 +34,12 @@ class TabletModeMultitaskMenuView : public views::View {
 
   TabletModeMultitaskMenuView(aura::Window* window,
                               base::RepeatingClosure hide_menu) {
-    SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
+    SetBackground(views::CreateThemedRoundedRectBackground(
+        kColorAshShieldAndBase80, kCornerRadius));
+    SetBorder(std::make_unique<views::HighlightBorder>(
+        kCornerRadius, views::HighlightBorder::Type::kHighlightBorder1,
+        /*use_light_colors=*/false));
+
     SetUseDefaultFillLayout(true);
 
     auto* multitask_menu_view = AddChildView(
@@ -73,6 +81,10 @@ TabletModeMultitaskMenu::TabletModeMultitaskMenu(
                 kMultitaskMenuVerticalPadding, kMultitaskMenuWidth,
                 kMultitaskMenuLandscapeHeight);
   params.name = "TabletModeMultitaskMenuWidget";
+  params.corner_radius = kCornerRadius;
+  params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
+  params.shadow_elevation = kShadowElevation;
+
   // TODO(crbug.com/1355572): Set widget as activatable and hide in overview.
 
   multitask_menu_widget_->Init(std::move(params));
