@@ -14,6 +14,8 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
+#include "components/remote_cocoa/app_shim/immersive_mode_controller.h"
+#include "components/remote_cocoa/app_shim/immersive_mode_delegate_mac.h"
 #include "components/remote_cocoa/app_shim/mouse_capture.h"
 #include "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
@@ -35,7 +37,6 @@
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
 #include "ui/native_theme/native_theme_mac.h"
-#include "ui/views/cocoa/immersive_mode_delegate_mac.h"
 #include "ui/views/cocoa/text_input_host.h"
 #include "ui/views/cocoa/tooltip_manager_mac.h"
 #include "ui/views/controls/label.h"
@@ -44,7 +45,6 @@
 #include "ui/views/views_delegate.h"
 #include "ui/views/widget/native_widget_mac.h"
 #include "ui/views/widget/widget_delegate.h"
-#include "ui/views/widget/widget_utils_mac.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "ui/views/word_lookup_client.h"
 
@@ -241,7 +241,9 @@ NativeWidgetMacNSWindowHost* NativeWidgetMacNSWindowHost::GetFromNativeWindow(
 
   // If the window is a system created NSToolbarFullScreenWindow we need to do
   // some additional work to find the original window.
-  if (views::IsNSToolbarFullScreenWindow(window)) {
+  // TODO(mek): Figure out how to make this work with remote remote_cocoa
+  // windows.
+  if (remote_cocoa::IsNSToolbarFullScreenWindow(window)) {
     NSWindow* original = OriginalHostingWindowFromFullScreenWindow(window);
     if (NativeWidgetMacNSWindow* widget_window =
             base::mac::ObjCCast<NativeWidgetMacNSWindow>(original)) {

@@ -12,8 +12,6 @@ namespace views {
 
 gfx::Size GetWindowSizeForClientSize(Widget* widget, const gfx::Size& size);
 
-VIEWS_EXPORT bool IsNSToolbarFullScreenWindow(NSWindow* window);
-
 }  // namespace views
 
 #endif  // UI_VIEWS_WIDGET_WIDGET_UTILS_MAC_H_
