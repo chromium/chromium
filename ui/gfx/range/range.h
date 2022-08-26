@@ -47,7 +47,12 @@ class GFX_RANGE_EXPORT Range {
 
   // Platform constructors.
 #if BUILDFLAG(IS_APPLE)
+  // Constructs a Range from a NSRange.
+  // CHECKs if NSRange is out of the maximum bound of Range.
   explicit Range(const NSRange& range);
+  // Constructs a Range from a NSRange.
+  // Returns InvalidRange() if NSRange is out of the maximum bound of Range.
+  static Range FromPossiblyInvalidNSRange(const NSRange& range);
 #endif
 
   // Returns a range that is invalid, which is {UINT32_MAX,UINT32_MAX}.
@@ -121,6 +126,8 @@ class GFX_RANGE_EXPORT Range {
   }
 
 #if BUILDFLAG(IS_APPLE)
+  // Constructs a Range from a NSRange.
+  // CHECKs if NSRange is out of the maximum bound of Range.
   Range& operator=(const NSRange& range);
 
   // NSRange does not store the directionality of a range, so if this
