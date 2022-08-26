@@ -3718,10 +3718,9 @@
       'gn_args': 'enable_chrome_android_internal=false',
     },
 
-    # It's significantly faster to build without lint and errorprone.
+    # It's significantly faster to build without static analysis checks.
     'android_fastbuild': {
-      'gn_args': ('use_errorprone_java_compiler=false '
-                  'disable_android_lint=true'),
+      'gn_args': 'android_static_analysis="off"',
     },
 
     # TODO(https://crbug.com/1020714): This is temporary. We'd like to run a

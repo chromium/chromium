@@ -1,8 +1,8 @@
 {
   "android-marshmallow-arm64-rel-swarming": {
     "gn_args": {
+      "android_static_analysis": "off",
       "dcheck_always_on": false,
-      "disable_android_lint": true,
       "enable_resource_allowlist_generation": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -12,7 +12,6 @@
       "system_webview_package_name": "com.google.android.webview",
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_errorprone_java_compiler": false,
       "use_goma": true,
       "use_static_angle": true
     }

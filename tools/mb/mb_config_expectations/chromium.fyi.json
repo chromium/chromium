@@ -611,8 +611,8 @@
   },
   "android-code-coverage": {
     "gn_args": {
+      "android_static_analysis": "off",
       "dcheck_always_on": false,
-      "disable_android_lint": true,
       "enable_resource_allowlist_generation": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -623,7 +623,6 @@
       "system_webview_package_name": "com.google.android.webview",
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_errorprone_java_compiler": false,
       "use_jacoco_coverage": true,
       "use_remoteexec": true,
       "use_static_angle": true
@@ -631,8 +630,8 @@
   },
   "android-code-coverage-native": {
     "gn_args": {
+      "android_static_analysis": "off",
       "dcheck_always_on": false,
-      "disable_android_lint": true,
       "enable_resource_allowlist_generation": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -643,15 +642,14 @@
       "target_cpu": "arm64",
       "target_os": "android",
       "use_clang_coverage": true,
-      "use_errorprone_java_compiler": false,
       "use_remoteexec": true,
       "use_static_angle": true
     }
   },
   "android-fieldtrial-rel": {
     "gn_args": {
+      "android_static_analysis": "off",
       "dcheck_always_on": false,
-      "disable_android_lint": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -661,14 +659,13 @@
       "system_webview_package_name": "com.google.android.apps.chrome",
       "target_cpu": "x86",
       "target_os": "android",
-      "use_errorprone_java_compiler": false,
       "use_remoteexec": true
     }
   },
   "build-perf-android": {
     "gn_args": {
+      "android_static_analysis": "off",
       "dcheck_always_on": true,
-      "disable_android_lint": true,
       "fail_on_android_expectations": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -680,7 +677,6 @@
       "system_webview_package_name": "com.google.android.apps.chrome",
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_errorprone_java_compiler": false,
       "use_remoteexec": true
     }
   },
