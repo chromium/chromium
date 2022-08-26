@@ -530,9 +530,7 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
 
 #if BUILDFLAG(IS_IOS)
 void RecordConsistencyPromoUserAction(AccountConsistencyPromoAction action) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "Signin.AccountConsistencyPromoAction", static_cast<int>(action),
-      static_cast<int>(AccountConsistencyPromoAction::MAX));
+  base::UmaHistogramEnumeration("Signin.AccountConsistencyPromoAction", action);
 }
 #endif  // BUILDFLAG(IS_IOS)
 

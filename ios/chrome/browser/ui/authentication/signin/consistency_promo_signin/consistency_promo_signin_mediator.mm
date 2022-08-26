@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
+#import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 
@@ -35,6 +36,7 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
   // Closure to trigger the sign-in time out error. This closure has to be
   // canceled if the sign-in is done in time (or fails).
   base::CancelableOnceClosure _signinTimeoutClosure;
+  AuthenticationFlow* _authenticationFlow;
 }
 
 // List of gaia IDs added by the user with the consistency view.
@@ -134,18 +136,19 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
   [self.addedGaiaIDs addObject:identity.gaiaID];
 }
 
-- (void)signinWithIdentity:(ChromeIdentity*)identity {
-  self.signingIdentity = identity;
+- (void)signinWithAuthenticationFlow:(AuthenticationFlow*)authenticationFlow {
+  _authenticationFlow = authenticationFlow;
+  self.signingIdentity = authenticationFlow.identity;
   // Reset dismissal count if the user wants to sign-in.
   if (self.accessPoint ==
       signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
     self.userPrefService->SetInteger(prefs::kSigninWebSignDismissalCount, 0);
   }
-  self.authenticationService->SignIn(identity);
-  [self.delegate consistencyPromoSigninMediatorSigninStarted:self];
-  DCHECK(self.authenticationService->HasPrimaryIdentity(
-      signin::ConsentLevel::kSignin));
   __weak __typeof(self) weakSelf = self;
+  [_authenticationFlow startSignInWithCompletion:^(BOOL success) {
+    [weakSelf authenticationFlowCompletedWithSuccess:success];
+  }];
+  [self.delegate consistencyPromoSigninMediatorSigninStarted:self];
   _signinTimeoutClosure.Reset(base::BindOnce(^{
     [weakSelf cancelSigninWithError:ConsistencyPromoSigninMediatorErrorTimeout];
   }));
@@ -162,11 +165,26 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
 
 #pragma mark - Private
 
+- (void)authenticationFlowCompletedWithSuccess:(BOOL)success {
+  DCHECK(_authenticationFlow);
+  _authenticationFlow = nil;
+  if (success) {
+    // `-[ConsistencyPromoSigninMediator onAccountsInCookieUpdated:error:]` will
+    // be called when the cookies will be ready, and then the sign-in can be
+    // finished. Or `_signinTimeoutClosure` will be called if it takes too long.
+    return;
+  }
+  _signinTimeoutClosure.Cancel();
+  [self
+      cancelSigninWithError:ConsistencyPromoSigninMediatorErrorFailedToSignin];
+}
+
 // Cancels sign-in and calls the delegate to display the error.
 - (void)cancelSigninWithError:(ConsistencyPromoSigninMediatorError)error {
   if (!self.authenticationService)
     return;
   self.signingIdentity = nil;
+  _authenticationFlow = nil;
   switch (error) {
     case ConsistencyPromoSigninMediatorErrorTimeout:
       RecordConsistencyPromoUserAction(
@@ -175,6 +193,10 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
     case ConsistencyPromoSigninMediatorErrorGeneric:
       RecordConsistencyPromoUserAction(
           signin_metrics::AccountConsistencyPromoAction::GENERIC_ERROR_SHOWN);
+      break;
+    case ConsistencyPromoSigninMediatorErrorFailedToSignin:
+      RecordConsistencyPromoUserAction(
+          signin_metrics::AccountConsistencyPromoAction::SIGN_IN_FAILED);
       break;
   }
   __weak __typeof(self) weakSelf = self;
@@ -219,6 +241,7 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
     // `DCHECK(!self.alertCoordinator)`.
     return;
   }
+  DCHECK(!_authenticationFlow);
   _signinTimeoutClosure.Cancel();
   if (error.state() == GoogleServiceAuthError::State::NONE &&
       self.authenticationService->GetPrimaryIdentity(

@@ -48,7 +48,7 @@ public class SigninMetricsUtils {
     public static void logAccountConsistencyPromoAction(
             @AccountConsistencyPromoAction int promoAction) {
         RecordHistogram.recordEnumeratedHistogram("Signin.AccountConsistencyPromoAction",
-                promoAction, AccountConsistencyPromoAction.MAX);
+                promoAction, AccountConsistencyPromoAction.MAX_VALUE + 1);
     }
 
     /**

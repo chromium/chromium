@@ -66,6 +66,9 @@ class Browser;
 // The delegate.
 @property(nonatomic, weak) id<AuthenticationFlowDelegate> delegate;
 
+// Identity to sign-in.
+@property(nonatomic, strong, readonly) ChromeIdentity* identity;
+
 @end
 
 // Private methods in AuthenticationFlow to test.

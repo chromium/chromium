@@ -289,7 +289,9 @@ enum class AccountConsistencyPromoAction : int {
   TIMEOUT_ERROR_SHOWN = 17,
   // The web sign-in is not shown because the user is already signed in.
   SUPPRESSED_ALREADY_SIGNED_IN = 18,
-  MAX = 18,
+  // AuthenticationFlow failed to sign-in.
+  SIGN_IN_FAILED = 19,
+  kMaxValue = SIGN_IN_FAILED,
 };
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 

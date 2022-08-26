@@ -172,7 +172,11 @@ enum AuthenticationState {
   _presentingViewController = presentingViewController;
 }
 
-#pragma mark State machine management
+- (ChromeIdentity*)identity {
+  return _identityToSignIn;
+}
+
+#pragma mark - State machine management
 
 - (AuthenticationState)nextStateFailedOrCancelled {
   DCHECK(_failedOrCancelled);

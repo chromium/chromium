@@ -105,6 +105,7 @@ public class SigninBridgeTest {
     private void checkHistogramRecording(@AccountConsistencyPromoAction int action) {
         verify(mUmaRecorderMock)
                 .recordLinearHistogram("Signin.AccountConsistencyPromoAction", action, 1,
-                        AccountConsistencyPromoAction.MAX, AccountConsistencyPromoAction.MAX + 1);
+                        AccountConsistencyPromoAction.MAX_VALUE + 1,
+                        AccountConsistencyPromoAction.MAX_VALUE + 2);
     }
 }

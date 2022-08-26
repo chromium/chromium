@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/signin/constants.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_default_account/consistency_default_account_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_layout_delegate.h"
@@ -291,8 +292,13 @@
 - (void)consistencyDefaultAccountCoordinatorSignin:
     (ConsistencyDefaultAccountCoordinator*)coordinator {
   DCHECK_EQ(coordinator, self.defaultAccountCoordinator);
+  AuthenticationFlow* authenticationFlow =
+      [[AuthenticationFlow alloc] initWithBrowser:self.browser
+                                         identity:self.selectedIdentity
+                                 postSignInAction:POST_SIGNIN_ACTION_NONE
+                         presentingViewController:self.navigationController];
   [self.consistencyPromoSigninMediator
-      signinWithIdentity:self.selectedIdentity];
+      signinWithAuthenticationFlow:authenticationFlow];
 }
 
 #pragma mark - ConsistencyLayoutDelegate
@@ -396,6 +402,7 @@
   NSString* errorMessage = nil;
   switch (error) {
     case ConsistencyPromoSigninMediatorErrorGeneric:
+    case ConsistencyPromoSigninMediatorErrorFailedToSignin:
       errorMessage =
           l10n_util::GetNSString(IDS_IOS_WEBSIGN_ERROR_GENERIC_ERROR);
       break;

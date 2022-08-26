@@ -1179,6 +1179,7 @@ Unknown properties are collapsed to zero. -->
   <int value="18" label="SuppressedAlreadySignedIn">
     The web sign-in is not shown because the user is already signed in.
   </int>
+  <int value="19" label="SigninFailed">Sign-in failed.</int>
 </enum>
 
 <enum name="AccountConsistencyPromoAfterDismissal">
