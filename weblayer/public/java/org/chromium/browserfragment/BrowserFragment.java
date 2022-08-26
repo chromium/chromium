@@ -128,7 +128,14 @@ public class BrowserFragment extends Fragment {
         try {
             mDelegate.setClient(mClient);
             mDelegate.setTabListObserverDelegate(mTabListObserverDelegate);
-            mDelegate.onAttach();
+            if (Browser.isInProcessMode(context)) {
+                // Pass the activity context for the in-process mode.
+                // This is because the Autofill Manager is only available with activity contexts.
+                // This will be cleaned up when the fragment is detached.
+                mDelegate.onAttachWithContext(ObjectWrapper.wrap(context));
+            } else {
+                mDelegate.onAttach();
+            }
         } catch (RemoteException e) {
         }
     }

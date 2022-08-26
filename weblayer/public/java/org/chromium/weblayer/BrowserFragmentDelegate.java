@@ -20,6 +20,7 @@ import org.chromium.browserfragment.interfaces.IFragmentParams;
 import org.chromium.browserfragment.interfaces.ITabCallback;
 import org.chromium.browserfragment.interfaces.ITabListObserverDelegate;
 import org.chromium.browserfragment.interfaces.ITabParams;
+import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 
 /**
@@ -119,6 +120,11 @@ class BrowserFragmentDelegate extends IBrowserFragmentDelegate.Stub {
     @Override
     public void onAttach() {
         mHandler.post(() -> mFragment.onAttach(mContext));
+    }
+
+    @Override
+    public void onAttachWithContext(IObjectWrapper context) {
+        mHandler.post(() -> mFragment.onAttach(ObjectWrapper.unwrap(context, Context.class)));
     }
 
     @Override

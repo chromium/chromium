@@ -269,5 +269,6 @@ android_library("service_provider_java") {
     ":browserfragment_interfaces_java",
     ":java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//weblayer/browser/java:base_module_interfaces_java",
   ]
 }

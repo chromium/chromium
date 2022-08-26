@@ -98,15 +98,20 @@ public class Browser {
         if (sInstance != null) {
             return Futures.immediateFuture(sInstance);
         }
+
         return CallbackToFutureAdapter.getFuture(completer -> {
-            ConnectionSetup connectionSetup = new ConnectionSetup(context, completer);
-            Intent intent = new Intent(
-                    isInProcessMode(context) ? BROWSER_INPROCESS_ACTION : BROWSER_SANDBOX_ACTION);
-            intent.setPackage(isInProcessMode(context)
-                            ? context.getApplicationContext().getPackageName()
+            // Use the application context since the Browser Sandbox might out live the Activity.
+            Context applicationContext = context.getApplicationContext();
+
+            ConnectionSetup connectionSetup = new ConnectionSetup(applicationContext, completer);
+            Intent intent =
+                    new Intent(isInProcessMode(applicationContext) ? BROWSER_INPROCESS_ACTION
+                                                                   : BROWSER_SANDBOX_ACTION);
+            intent.setPackage(isInProcessMode(applicationContext)
+                            ? applicationContext.getPackageName()
                             : SANDBOX_BROWSER_SANDBOX_PACKAGE);
 
-            context.bindService(intent, connectionSetup, Context.BIND_AUTO_CREATE);
+            applicationContext.bindService(intent, connectionSetup, Context.BIND_AUTO_CREATE);
 
             // Debug string.
             return "Browser Sandbox Future";
@@ -149,7 +154,7 @@ public class Browser {
     }
 
     // TODO(swestphal): Remove this again.
-    protected static boolean isInProcessMode(Context appContext) {
+    static boolean isInProcessMode(Context appContext) {
         try {
             Bundle metaData = appContext.getPackageManager()
                                       .getApplicationInfo(appContext.getPackageName(),

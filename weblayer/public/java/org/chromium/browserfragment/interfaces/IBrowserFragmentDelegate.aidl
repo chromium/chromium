@@ -10,7 +10,9 @@ import org.chromium.browserfragment.interfaces.IBooleanCallback;
 import org.chromium.browserfragment.interfaces.ITabListObserverDelegate;
 import org.chromium.browserfragment.interfaces.ITabProxy;
 import org.chromium.browserfragment.interfaces.ITabCallback;
+import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 
+// Next value: 20
 oneway interface IBrowserFragmentDelegate {
     void setClient(in IBrowserFragmentDelegateClient client) = 1;
 
@@ -20,6 +22,9 @@ oneway interface IBrowserFragmentDelegate {
     // Fragment events.
     void onCreate(in Bundle savedInstanceState) = 4;
     void onAttach() = 5;
+    // This is used only for the in-process service.
+    void onAttachWithContext(IObjectWrapper context) = 19;
+
     void onDestroy() = 6;
     void onDetach() = 7;
     void onStart() = 8;
