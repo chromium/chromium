@@ -8,6 +8,9 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.view.View;
+
+import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -30,6 +33,7 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
 /** Tests for {@link StartSurfaceCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -305,6 +309,34 @@ public class StartSurfaceCoordinatorUnitTest {
                 mActivity, mActivity.getIntent(), mTabModelSelector, mChromeInactivityTracker));
 
         ReturnToChromeUtil.setSyncForTesting(false);
+    }
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.FEED_INTERACTIVE_REFRESH})
+    public void testFeedSwipeLayoutVisibility() {
+        assert mCoordinator.getStartSurfaceState() == StartSurfaceState.NOT_SHOWN;
+        Assert.assertEquals(
+                View.GONE, mCoordinator.getFeedSwipeRefreshLayoutForTesting().getVisibility());
+
+        mCoordinator.setStartSurfaceState(StartSurfaceState.SHOWING_HOMEPAGE);
+        mCoordinator.showOverview(false);
+        Assert.assertEquals(
+                View.VISIBLE, mCoordinator.getFeedSwipeRefreshLayoutForTesting().getVisibility());
+
+        mCoordinator.setStartSurfaceState(StartSurfaceState.NOT_SHOWN);
+        mCoordinator.onHide();
+        Assert.assertEquals(
+                View.GONE, mCoordinator.getFeedSwipeRefreshLayoutForTesting().getVisibility());
+
+        mCoordinator.setStartSurfaceState(StartSurfaceState.SHOWN_TABSWITCHER);
+        mCoordinator.showOverview(false);
+        Assert.assertEquals(
+                View.VISIBLE, mCoordinator.getFeedSwipeRefreshLayoutForTesting().getVisibility());
+
+        mCoordinator.setStartSurfaceState(StartSurfaceState.NOT_SHOWN);
+        mCoordinator.onHide();
+        Assert.assertEquals(
+                View.GONE, mCoordinator.getFeedSwipeRefreshLayoutForTesting().getVisibility());
     }
 
     /**

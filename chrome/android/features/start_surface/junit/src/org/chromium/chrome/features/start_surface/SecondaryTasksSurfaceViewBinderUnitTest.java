@@ -57,7 +57,7 @@ public class SecondaryTasksSurfaceViewBinderUnitTest {
 
         mPropertyModel = new PropertyModel(StartSurfaceProperties.ALL_KEYS);
         mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(mPropertyModel,
-                new TasksSurfaceViewBinder.ViewHolder(mParentView, mTasksSurfaceView),
+                new TasksSurfaceViewBinder.ViewHolder(mParentView, mTasksSurfaceView, null),
                 SecondaryTasksSurfaceViewBinder::bind);
     }
 
