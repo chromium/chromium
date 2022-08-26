@@ -9,9 +9,7 @@
 
 #include <string>
 
-namespace base {
-struct Feature;
-}  // namespace base
+#include "base/feature_list.h"
 
 namespace chrome {
 namespace android {

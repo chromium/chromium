@@ -6,6 +6,7 @@
 #define BASE_THREADING_THREADING_FEATURES_H_
 
 #include "base/base_export.h"
+#include "base/feature_list.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_APPLE)
@@ -13,8 +14,6 @@
 #endif
 
 namespace base {
-
-struct Feature;
 
 #if BUILDFLAG(IS_APPLE)
 extern const BASE_EXPORT Feature kOptimizedRealtimeThreadingMac;

@@ -6,12 +6,11 @@
 #define BASE_TASK_TASK_FEATURES_H_
 
 #include "base/base_export.h"
+#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 
 namespace base {
-
-struct Feature;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 #define HAS_NATIVE_THREAD_POOL() 1

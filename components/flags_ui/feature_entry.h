@@ -8,11 +8,8 @@
 #include <string>
 
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "build/chromeos_buildflags.h"
-
-namespace base {
-struct Feature;
-}
 
 namespace flags_ui {
 

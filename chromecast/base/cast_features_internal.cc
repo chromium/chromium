@@ -4,9 +4,8 @@
 
 #include <vector>
 
-namespace base {
-struct Feature;
-}
+#include "base/feature_list.h"
+
 namespace chromecast {
 std::vector<const base::Feature*> GetInternalFeatures() {
   return std::vector<const base::Feature*>();

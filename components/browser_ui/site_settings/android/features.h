@@ -5,9 +5,7 @@
 #ifndef COMPONENTS_BROWSER_UI_SITE_SETTINGS_ANDROID_FEATURES_H_
 #define COMPONENTS_BROWSER_UI_SITE_SETTINGS_ANDROID_FEATURES_H_
 
-namespace base {
-struct Feature;
-}  // namespace base
+#include "base/feature_list.h"
 
 namespace browser_ui {
 

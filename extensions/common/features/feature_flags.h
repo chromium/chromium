@@ -9,10 +9,7 @@
 #include <vector>
 
 #include "base/auto_reset.h"
-
-namespace base {
-struct Feature;
-}  // namespace base
+#include "base/feature_list.h"
 
 namespace extensions {
 

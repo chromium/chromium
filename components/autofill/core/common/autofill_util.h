@@ -10,13 +10,10 @@
 #include <string>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "url/gurl.h"
-
-namespace base {
-struct Feature;
-}
 
 namespace autofill {
 

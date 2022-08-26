@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -22,7 +23,6 @@
 namespace base {
 class Time;
 class TimeDelta;
-struct Feature;
 }  // namespace base
 
 // The set of parameters customizing the HUP scoring.

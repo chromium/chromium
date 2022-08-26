@@ -7,13 +7,10 @@
 
 #include <unordered_set>
 
+#include "base/feature_list.h"
 #include "components/feature_engagement/internal/condition_validator.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace base {
-struct Feature;
-}  // namespace base
 
 namespace feature_engagement {
 class AvailabilityModel;

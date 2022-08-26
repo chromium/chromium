@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/time/time.h"
 #include "components/metrics/demographics/user_demographics.h"
 #include "components/metrics/metrics_log_uploader.h"
@@ -17,10 +18,6 @@
 #include "third_party/metrics_proto/user_demographics.pb.h"
 
 class PrefService;
-
-namespace base {
-struct Feature;
-}
 
 namespace syncer {
 class SyncService;

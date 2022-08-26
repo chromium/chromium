@@ -5,9 +5,7 @@
 #ifndef COMPONENTS_EMBEDDER_SUPPORT_ORIGIN_TRIALS_FEATURES_H_
 #define COMPONENTS_EMBEDDER_SUPPORT_ORIGIN_TRIALS_FEATURES_H_
 
-namespace base {
-struct Feature;
-}
+#include "base/feature_list.h"
 
 namespace embedder_support {
 

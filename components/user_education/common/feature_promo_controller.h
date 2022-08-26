@@ -12,6 +12,7 @@
 #include "base/auto_reset.h"
 #include "base/callback.h"
 #include "base/callback_list.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/feature_engagement/public/tracker.h"
@@ -21,10 +22,6 @@
 #include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/common/tutorial_identifier.h"
-
-namespace base {
-struct Feature;
-}
 
 namespace ui {
 class AcceleratorProvider;

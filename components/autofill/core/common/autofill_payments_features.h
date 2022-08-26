@@ -9,10 +9,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 
-namespace base {
-struct Feature;
-}
-
 namespace autofill {
 namespace features {
 

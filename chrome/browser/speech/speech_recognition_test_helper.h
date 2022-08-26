@@ -9,12 +9,10 @@
 #include <string>
 #include <vector>
 
+#include "base/feature_list.h"
+
 class KeyedService;
 class Profile;
-
-namespace base {
-struct Feature;
-}  // namespace base
 
 namespace content {
 class BrowserContext;

@@ -7,11 +7,8 @@
 
 #include <map>
 
+#include "base/feature_list.h"
 #include "components/user_education/common/feature_promo_specification.h"
-
-namespace base {
-struct Feature;
-}
 
 namespace user_education {
 

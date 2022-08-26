@@ -8,11 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "base/feature_list.h"
 #include "chromecast/base/process_types.h"
-
-namespace base {
-struct Feature;
-}  // namespace base
 
 class PrefService;
 

@@ -9,13 +9,12 @@
 #include <string>
 
 #include "base/base_export.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 
 namespace base {
-
-struct Feature;
 
 // Key-value mapping type for field trial parameters.
 typedef std::map<std::string, std::string> FieldTrialParams;

@@ -11,6 +11,7 @@
 
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
@@ -56,10 +57,6 @@ class DownloadBubbleUIController;
 namespace autofill {
 class AutofillBubbleHandler;
 }  // namespace autofill
-
-namespace base {
-struct Feature;
-}
 
 namespace content {
 class WebContents;
