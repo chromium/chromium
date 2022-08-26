@@ -26,6 +26,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/search_engines/keyword_web_data_service.h"
+#include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/search_host_to_urls_map.h"
@@ -2310,4 +2311,69 @@ TEST_F(
   AddExtensionSearchEngine("keyword", "extension id", true);
   EXPECT_EQ(nullptr, model()->GetDefaultSearchProvider());
   EXPECT_EQ(nullptr, model()->GetDefaultSearchProviderIgnoringExtensions());
+}
+
+// Tests that a TemplateURL's `is_active` field is correctly set and
+// Omnibox.KeywordModeUsageByEngineType histogram is correctly emitted when a
+// TemplateURL is activated and/or deactivated.
+TEST_F(TemplateURLServiceTest, SetIsActiveTemplateURL) {
+  TemplateURL* search_engine = model()->Add(
+      std::make_unique<TemplateURL>(*GenerateDummyTemplateURLData("keyword")));
+  DCHECK(search_engine);
+
+  base::HistogramTester histogram_tester;
+  model()->SetIsActiveTemplateURL(search_engine, true);
+  EXPECT_EQ(search_engine->is_active(), TemplateURLData::ActiveStatus::kTrue);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.KeywordModeUsageByEngineType.Activated", 1);
+
+  model()->SetIsActiveTemplateURL(search_engine, false);
+  EXPECT_EQ(search_engine->is_active(), TemplateURLData::ActiveStatus::kFalse);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.KeywordModeUsageByEngineType.Deactivated", 1);
+
+  model()->SetIsActiveTemplateURL(search_engine, true);
+  EXPECT_EQ(search_engine->is_active(), TemplateURLData::ActiveStatus::kTrue);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.KeywordModeUsageByEngineType.Activated", 2);
+}
+
+// Tests that the `Omnibox.KeywordModeUsageByEngineType.ActiveOnStartup` and
+// `InactiveOnStartup` are emitted correctly when the model is loaded.
+TEST_F(TemplateURLServiceTest, EmitTemplateURLActiveOnStartupHistogram) {
+  test_util()->ResetModel(true);
+
+  TemplateURL* search_engine1 = model()->Add(
+      std::make_unique<TemplateURL>(*GenerateDummyTemplateURLData("keyword1")));
+  DCHECK(search_engine1);
+  model()->SetIsActiveTemplateURL(search_engine1, true);
+
+  TemplateURL* search_engine2 = model()->Add(
+      std::make_unique<TemplateURL>(*GenerateDummyTemplateURLData("keyword2")));
+  DCHECK(search_engine2);
+  model()->SetIsActiveTemplateURL(search_engine2, false);
+
+  base::HistogramTester histogram_tester;
+  test_util()->ResetModel(true);
+
+  // All the starter pack entries should be active by default.  We haven't
+  // deactivated them, so they should emit to the ActiveOnStartup histogram.
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.KeywordModeUsageByEngineType.ActiveOnStartup",
+      BuiltinEngineType::KEYWORD_MODE_STARTER_PACK_BOOKMARKS, 1);
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.KeywordModeUsageByEngineType.ActiveOnStartup",
+      BuiltinEngineType::KEYWORD_MODE_STARTER_PACK_HISTORY, 1);
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.KeywordModeUsageByEngineType.ActiveOnStartup",
+      BuiltinEngineType::KEYWORD_MODE_STARTER_PACK_TABS, 1);
+
+  // We have one active and one inactive "non-builtin" search engine. Check that
+  // those histograms are emitted correctly.
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.KeywordModeUsageByEngineType.ActiveOnStartup",
+      BuiltinEngineType::KEYWORD_MODE_NON_BUILT_IN, 1);
+  histogram_tester.ExpectBucketCount(
+      "Omnibox.KeywordModeUsageByEngineType.InactiveOnStartup",
+      BuiltinEngineType::KEYWORD_MODE_NON_BUILT_IN, 1);
 }

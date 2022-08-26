@@ -885,23 +885,43 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records number of times users use keyword mode enumerated by the type of
     search engine (whether the engine is &quot;built-in&quot;).
+
+    {Usage}
   </summary>
   <token key="Usage">
     <variant name="Accepted"
         summary="Logged when a user accepts a keyword suggestion while in
-                 keyword mode. This is also logged every time
-                 Omnibox.AcceptedKeywordSuggestion is logged. Not logged if a
-                 user enters keyword mode but doesn't complete a search. Not
-                 logged if a user enters keyword mode, but selects a URL
-                 suggestion or a search suggestion that is not for the
-                 keyword mode search engine."/>
+                 keyword mode. Not logged if a user enters keyword mode but
+                 doesn't complete a search. Not logged if a user enters
+                 keyword mode, but selects a URL suggestion or a search
+                 suggestion that is not for the keyword mode search engine."/>
+    <variant name="Activated"
+        summary="Logged each time a search engine's active status is switched
+                 from inactive to active by the user. Not logged if the
+                 search engine is switched to active automatically based on
+                 prior usage."/>
+    <variant name="ActiveOnStartup"
+        summary="Counts the number of search engines that are active at load
+                 time (usually on start up). Only gets logged once each time
+                 the search engines are loaded from the database. If a user
+                 changes the active status of a search engine during the same
+                 browser session, this does not get logged again."/>
+    <variant name="Deactivated"
+        summary="Logged each time a search engine's active status is switched
+                 from active to inactive by the user. Not logged when a new
+                 search engine is added in a default-inactive state."/>
     <variant name="Entered"
-        summary="Logged each time the user enters keyword mode. This is
-                 logged whenever Omnibox.EnteredKeywordMode2 is logged. If a
-                 user enters, then leaves, then re-enters keyword mode during
-                 the same session (i.e. without selecting a navigation), this
-                 is logged twice. If the user doesn't accept the keyword
+        summary="Logged each time the user enters keyword mode. If a user
+                 enters, then leaves, then re-enters keyword mode during the
+                 same session (i.e. without selecting a navigation), this is
+                 logged twice. If the user doesn't accept the keyword
                  suggestion, this is still logged."/>
+    <variant name="InactiveOnStartup"
+        summary="Counts the number of search engines that are inactive at
+                 load time (usually on start up). Only gets logged once each
+                 time the search engines are loaded from the database. If a
+                 user changes the active status of a search engine during the
+                 same browser session, this does not get logged again."/>
   </token>
 </histogram>
 
