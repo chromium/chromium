@@ -15,7 +15,7 @@
 
 namespace {
 // The set of user-selectable datatypes. This must be in the same order as
-// |SyncSetupService::SyncableDatatype|.
+// `SyncSetupService::SyncableDatatype`.
 syncer::ModelType kDataTypes[] = {
     syncer::BOOKMARKS,    syncer::TYPED_URLS, syncer::PASSWORDS,
     syncer::PROXY_TABS,   syncer::AUTOFILL,   syncer::PREFERENCES,
@@ -192,7 +192,7 @@ bool SyncSetupService::HasFinishedInitialSetup() {
 }
 
 void SyncSetupService::PrepareForFirstSyncSetup() {
-  // |PrepareForFirstSyncSetup| should always be called while the user is signed
+  // `PrepareForFirstSyncSetup` should always be called while the user is signed
   // out. At that time, sync setup is not completed.
   DCHECK(!sync_service_->GetUserSettings()->IsFirstSetupComplete());
   if (!sync_blocker_)

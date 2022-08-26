@@ -21,7 +21,7 @@
 // C++ class to monitor profile sync status in Objective-C type.
 class SyncObserverBridge : public syncer::SyncServiceObserver {
  public:
-  // |service| must outlive the SyncObserverBridge.
+  // `service` must outlive the SyncObserverBridge.
   SyncObserverBridge(id<SyncObserverModelBridge> delegate,
                      syncer::SyncService* service);
 

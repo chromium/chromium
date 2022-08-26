@@ -58,7 +58,7 @@ class IOSChromeSyncedTabDelegate
   // Storage must be used if slim navigation is enabled and the tab has not be
   // displayed.
   // If the session storage must be used and was not fetched yet, bet it from
-  // |web_state_|.
+  // `web_state_`.
   bool GetSessionStorageIfNeeded() const;
 
   web::WebState* web_state_;

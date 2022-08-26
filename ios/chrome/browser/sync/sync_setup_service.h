@@ -53,8 +53,8 @@ class SyncSetupService : public KeyedService {
 
   ~SyncSetupService() override;
 
-  // Returns the |syncer::ModelType| associated to the given
-  // |SyncableDatatypes|.
+  // Returns the `syncer::ModelType` associated to the given
+  // `SyncableDatatypes`.
   static syncer::ModelType GetModelType(SyncableDatatype datatype);
 
   // Returns whether the user wants Sync to run.
@@ -64,7 +64,7 @@ class SyncSetupService : public KeyedService {
   // Returns whether Sync-the-transport can start the Sync feature.
   virtual bool CanSyncFeatureStart() const;
   // Enables or disables sync. Changes won't take effect in the sync backend
-  // before the next call to |CommitChanges|.
+  // before the next call to `CommitChanges`.
   // TODO(crbug.com/1291946): This is only used in sync_test_util.mm; inline it
   // there.
   virtual void SetSyncEnabled(bool sync_enabled);
@@ -78,9 +78,9 @@ class SyncSetupService : public KeyedService {
   // Returns whether the given datatype is enabled by the user.
   virtual bool IsDataTypePreferred(syncer::ModelType datatype) const;
   // Enables or disables the given datatype. To be noted: this can be called at
-  // any time, but will only be meaningful if |CanSyncFeatureStart| is true and
-  // |IsSyncingAllDataTypes| is false. Changes won't take effect in the sync
-  // backend before the next call to |CommitChanges|.
+  // any time, but will only be meaningful if `CanSyncFeatureStart` is true and
+  // `IsSyncingAllDataTypes` is false. Changes won't take effect in the sync
+  // backend before the next call to `CommitChanges`.
   void SetDataTypeEnabled(syncer::ModelType datatype, bool enabled);
 
   // Returns whether the user needs to enter a passphrase or enable sync to make
@@ -90,7 +90,7 @@ class SyncSetupService : public KeyedService {
   // Returns whether all datatypes are being synced.
   virtual bool IsSyncingAllDataTypes() const;
   // Sets whether all datatypes should be synced or not. Changes won't take
-  // effect before the next call to |CommitChanges|.
+  // effect before the next call to `CommitChanges`.
   virtual void SetSyncingAllDataTypes(bool sync_all);
 
   // Returns the current sync service state.

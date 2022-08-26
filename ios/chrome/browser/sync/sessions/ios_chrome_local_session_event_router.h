@@ -97,7 +97,7 @@ class IOSChromeLocalSessionEventRouter
   // Called when a tab is parented.
   void OnTabParented(web::WebState* web_state);
 
-  // Called on observation of a change in |web_state|.
+  // Called on observation of a change in `web_state`.
   void OnWebStateChange(web::WebState* web_state);
 
   sync_sessions::LocalSessionEventHandler* handler_;

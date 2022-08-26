@@ -73,7 +73,7 @@ class IOSChromeSyncClient : public browser_sync::BrowserSyncClient {
   scoped_refptr<autofill::AutofillWebDataService> account_web_data_service_;
   scoped_refptr<password_manager::PasswordStoreInterface> password_store_;
 
-  // The task runner for the |web_data_service_|, if any.
+  // The task runner for the `web_data_service_`, if any.
   scoped_refptr<base::SingleThreadTaskRunner> db_thread_;
 };
 

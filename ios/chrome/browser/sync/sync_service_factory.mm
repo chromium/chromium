@@ -152,7 +152,7 @@ std::unique_ptr<KeyedService> SyncServiceFactory::BuildServiceInstanceFor(
       std::make_unique<syncer::SyncServiceImpl>(std::move(init_params));
   sync_service->Initialize();
 
-  // Hook |sync_service| into PersonalDataManager (a circular dependency).
+  // Hook `sync_service` into PersonalDataManager (a circular dependency).
   autofill::PersonalDataManager* pdm =
       autofill::PersonalDataManagerFactory::GetForBrowserState(browser_state);
   pdm->OnSyncServiceInitialized(sync_service.get());
