@@ -329,6 +329,20 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
     kAsReader,
   };
 
+  // An enum representing the last DoCacheReadData[Complete] call information.
+  enum class DoCacheReadDataLastCall {
+    // Neither DoCacheReadData nor DoCacheReadDataComplete were called.
+    kNone,
+
+    // DoCacheReadData was called (and that was newer than any
+    // DoCacheReadDataComplete calls).
+    kDoCacheReadData,
+
+    // DoCacheReadDataComplete was called (and that was newer than any
+    // DoCacheReadData calls).
+    kDoCacheReadDataComplete,
+  };
+
   // Runs the state transition loop. Resets and calls |callback_| on exit,
   // unless the return value is ERR_IO_PENDING.
   int DoLoop(int result);
@@ -757,6 +771,8 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // The transaction state at TransitionToReadingState. This is for debugging.
   TransactionState transaction_state_at_transition_to_reading_state_ =
       TransactionState::kUnknown;
+  DoCacheReadDataLastCall do_cache_read_data_last_call_ =
+      DoCacheReadDataLastCall::kNone;
 
   base::WeakPtrFactory<Transaction> weak_factory_{this};
 };

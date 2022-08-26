@@ -2477,6 +2477,7 @@ int HttpCache::Transaction::DoCacheReadData() {
       "net", "transaction state",
       ToString(transaction_state_at_transition_to_reading_state_));
   CHECK(InWriters() || entry_->TransactionInReaders(this));
+  do_cache_read_data_last_call_ = DoCacheReadDataLastCall::kDoCacheReadData;
 
   TRACE_EVENT_WITH_FLOW2(
       "net", "HttpCacheTransaction::DoCacheReadData", TRACE_ID_LOCAL(trace_id_),
@@ -2507,8 +2508,16 @@ int HttpCache::Transaction::DoCacheReadDataComplete(int result) {
       "net", "transaction state",
       ToString(transaction_state_at_transition_to_reading_state_));
   SCOPED_CRASH_KEY_NUMBER("net", "result", result);
+  SCOPED_CRASH_KEY_NUMBER("net", "DoCacheReadDataLastCall",
+                          static_cast<int>(do_cache_read_data_last_call_));
+  SCOPED_CRASH_KEY_BOOL("net", "!!partial", !!partial_);
+
+  CHECK_EQ(do_cache_read_data_last_call_,
+           DoCacheReadDataLastCall::kDoCacheReadData);
   CHECK(InWriters() || entry_->TransactionInReaders(this));
 
+  do_cache_read_data_last_call_ =
+      DoCacheReadDataLastCall::kDoCacheReadDataComplete;
   TRACE_EVENT_WITH_FLOW1("net", "HttpCacheTransaction::DoCacheReadDataComplete",
                          TRACE_ID_LOCAL(trace_id_),
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
