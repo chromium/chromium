@@ -163,10 +163,9 @@
       </oobe-modal-dialog>
     </template>
     <template is="dom-if" if="[[isOobeHidDetectionRevampEnabled_]]">
-      <oobe-modal-dialog id="hid-pin-popup" should-hide-close-button>
+      <oobe-modal-dialog id="hid-pin-popup" should-hide-close-button
+          should-hide-title-row>
         <div slot="content" class="content-padding">
-            <!-- TODO(b/232024471): Remove white space above
-                 "Pair new device" text. -->
           <bluetooth-pairing-enter-code-page
               id="hid-pairing-enter-code"
               code="[[pinCode]]"

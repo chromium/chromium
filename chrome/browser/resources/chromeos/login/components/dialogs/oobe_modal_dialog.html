@@ -31,12 +31,13 @@ The dialog provides two properties that can be set directly from HTML.
   <template>
     <style include="oobe-common-styles">
       :host {
-        flex: 1 1 auto;
         --cr-dialog-title-slot-padding-bottom:
             var(--oobe-modal-dialog-title-slot-padding-bottom, 8px);
         --cr-dialog-width: var(--oobe-modal-dialog-width, 552px);
         --cr-primary-text-color: var(--oobe-header-text-color);
         --cr-secondary-text-color: var(--oobe-text-color);
+        --cr-dialog-top-container-min-height : 0;
+        flex: 1 1 auto;
       }
 
       #modalDialogTitle {
@@ -58,7 +59,7 @@ The dialog provides two properties that can be set directly from HTML.
     </style>
     <cr-dialog id="modalDialog" on-close="onClose_">
       <!-- Title -->
-      <div id="modalDialogTitle" slot="title">
+      <div id="modalDialogTitle" slot="title" hidden="[[shouldHideTitleRow]]">
         <slot name="title">
           <template is="dom-if" if="[[titleKey]]">
             [[i18nDynamic(locale, titleKey)]]

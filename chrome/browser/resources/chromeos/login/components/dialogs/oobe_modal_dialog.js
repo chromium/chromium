@@ -29,6 +29,15 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /**
+     * True if title row should be hidden.
+     * @type {boolean}
+     */
+    shouldHideTitleRow: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   get open() {
