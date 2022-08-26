@@ -166,3 +166,36 @@
     assert_equals(getComputedStyle(document.querySelector("#var-subst-unknown-matching")).color, green);
   }, "Query custom property matching guaranteed-invalid values");
 </script>
+
+<style>
+  #revert {
+    --foo: revert;
+  }
+  #revert-layer {
+    --foo: revert-layer;
+  }
+  #revert-child, #revert-layer-child {
+      color: green;
+  }
+  @container style(--foo: revert) {
+    #revert-child { color: red; }
+  }
+  @container style(--foo: revert-layer) {
+    #revert-layer-child { color: red; }
+  }
+</style>
+<div id="revert">
+  <div id="revert-child"></div>
+</div>
+<div id="revert-layer">
+  <div id="revert-layer-child"></div>
+</div>
+<script>
+  test(() => {
+    assert_equals(getComputedStyle(document.querySelector("#revert-child")).color, green);
+  }, "Style query with revert keyword is false");
+
+  test(() => {
+    assert_equals(getComputedStyle(document.querySelector("#revert-layer-child")).color, green);
+  }, "Style query with revert-layer keyword is false");
+</script>
