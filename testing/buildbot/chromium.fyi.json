@@ -31212,7 +31212,7 @@
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -31226,7 +31226,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_bookmarks_eg2tests_module iPad Air 2 15.2",
+        "name": "ios_chrome_bookmarks_eg2tests_module iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -31252,21 +31252,21 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPhone 6s",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -31280,7 +31280,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_bookmarks_eg2tests_module iPhone 6s 15.2",
+        "name": "ios_chrome_bookmarks_eg2tests_module iPhone 6s 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -31306,21 +31306,21 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/",
-        "variant_id": "iPhone 6s 15.2"
+        "variant_id": "iPhone 6s 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -31334,7 +31334,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_integration_eg2tests_module iPad Air 2 15.2",
+        "name": "ios_chrome_integration_eg2tests_module iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -31360,22 +31360,22 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPhone 6s",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -31389,7 +31389,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_integration_eg2tests_module iPhone 6s 15.2",
+        "name": "ios_chrome_integration_eg2tests_module iPhone 6s 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -31415,22 +31415,22 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
-        "variant_id": "iPhone 6s 15.2"
+        "variant_id": "iPhone 6s 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -31444,7 +31444,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_settings_eg2tests_module iPad Air 2 15.2",
+        "name": "ios_chrome_settings_eg2tests_module iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -31470,22 +31470,22 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
         },
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPhone 6s",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -31499,7 +31499,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_settings_eg2tests_module iPhone 6s 15.2",
+        "name": "ios_chrome_settings_eg2tests_module iPhone 6s 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -31525,22 +31525,22 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
         },
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
-        "variant_id": "iPhone 6s 15.2"
+        "variant_id": "iPhone 6s 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -31554,7 +31554,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_signin_eg2tests_module iPad Air 2 15.2",
+        "name": "ios_chrome_signin_eg2tests_module iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -31580,22 +31580,22 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 10
         },
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPhone 6s",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -31609,7 +31609,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_signin_eg2tests_module iPhone 6s 15.2",
+        "name": "ios_chrome_signin_eg2tests_module iPhone 6s 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -31635,22 +31635,22 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 10
         },
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
-        "variant_id": "iPhone 6s 15.2"
+        "variant_id": "iPhone 6s 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -31664,7 +31664,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_smoke_eg2tests_module iPad Air 2 15.2",
+        "name": "ios_chrome_smoke_eg2tests_module iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -31690,21 +31690,21 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPhone 6s",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -31718,7 +31718,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_smoke_eg2tests_module iPhone 6s 15.2",
+        "name": "ios_chrome_smoke_eg2tests_module iPhone 6s 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -31744,21 +31744,21 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/",
-        "variant_id": "iPhone 6s 15.2"
+        "variant_id": "iPhone 6s 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -31772,7 +31772,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_ui_eg2tests_module iPad Air 2 15.2",
+        "name": "ios_chrome_ui_eg2tests_module iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -31798,22 +31798,22 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPhone 6s",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -31827,7 +31827,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_ui_eg2tests_module iPhone 6s 15.2",
+        "name": "ios_chrome_ui_eg2tests_module iPhone 6s 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -31853,22 +31853,22 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
-        "variant_id": "iPhone 6s 15.2"
+        "variant_id": "iPhone 6s 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -31882,7 +31882,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_web_eg2tests_module iPad Air 2 15.2",
+        "name": "ios_chrome_web_eg2tests_module iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -31908,21 +31908,21 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPhone 6s",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -31936,7 +31936,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_web_eg2tests_module iPhone 6s 15.2",
+        "name": "ios_chrome_web_eg2tests_module iPhone 6s 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -31962,21 +31962,21 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/",
-        "variant_id": "iPhone 6s 15.2"
+        "variant_id": "iPhone 6s 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -31990,7 +31990,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_showcase_eg2tests_module iPad Air 2 15.2",
+        "name": "ios_showcase_eg2tests_module iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -32016,21 +32016,21 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ios/showcase:ios_showcase_eg2tests_module/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPhone 6s",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -32044,7 +32044,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_showcase_eg2tests_module iPhone 6s 15.2",
+        "name": "ios_showcase_eg2tests_module iPhone 6s 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -32070,21 +32070,21 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ios/showcase:ios_showcase_eg2tests_module/",
-        "variant_id": "iPhone 6s 15.2"
+        "variant_id": "iPhone 6s 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -32098,7 +32098,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_shell_eg2tests_module iPad Air 2 15.2",
+        "name": "ios_web_shell_eg2tests_module iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -32124,21 +32124,21 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ios/web/shell/test:ios_web_shell_eg2tests_module/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPhone 6s",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -32152,7 +32152,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_shell_eg2tests_module iPhone 6s 15.2",
+        "name": "ios_web_shell_eg2tests_module iPhone 6s 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -32178,14 +32178,14 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ios/web/shell/test:ios_web_shell_eg2tests_module/",
-        "variant_id": "iPhone 6s 15.2"
+        "variant_id": "iPhone 6s 15.5"
       }
     ]
   },
@@ -36455,7 +36455,7 @@
           "--platform",
           "iPhone X",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -36467,7 +36467,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "cronet_test iPhone X 15.2",
+        "name": "cronet_test iPhone X 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -36493,14 +36493,14 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://components/cronet/ios/test:cronet_test/",
-        "variant_id": "iPhone X 15.2"
+        "variant_id": "iPhone X 15.5"
       }
     ]
   },
@@ -54016,7 +54016,7 @@
           "--platform",
           "iPhone X",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -54028,7 +54028,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "cronet_test iPhone X 15.2",
+        "name": "cronet_test iPhone X 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -54054,14 +54054,14 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://components/cronet/ios/test:cronet_test/",
-        "variant_id": "iPhone X 15.2"
+        "variant_id": "iPhone X 15.5"
       }
     ]
   },
@@ -54077,7 +54077,7 @@
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -54089,7 +54089,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "absl_hardening_tests iPad Air 2 15.2",
+        "name": "absl_hardening_tests iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -54115,21 +54115,21 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://third_party/abseil-cpp:absl_hardening_tests/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -54141,7 +54141,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "base_unittests iPad Air 2 15.2",
+        "name": "base_unittests iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -54167,21 +54167,21 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://base:base_unittests/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -54193,7 +54193,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "boringssl_crypto_tests iPad Air 2 15.2",
+        "name": "boringssl_crypto_tests iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -54219,21 +54219,21 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_crypto_tests/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -54245,7 +54245,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "boringssl_ssl_tests iPad Air 2 15.2",
+        "name": "boringssl_ssl_tests iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -54271,21 +54271,21 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_ssl_tests/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -54297,7 +54297,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "components_unittests iPad Air 2 15.2",
+        "name": "components_unittests iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -54323,21 +54323,21 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://components:components_unittests/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -54349,7 +54349,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "crashpad_tests iPad Air 2 15.2",
+        "name": "crashpad_tests iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -54375,21 +54375,21 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://third_party/crashpad/crashpad:crashpad_tests/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -54401,7 +54401,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "crypto_unittests iPad Air 2 15.2",
+        "name": "crypto_unittests iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -54427,21 +54427,21 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://crypto:crypto_unittests/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -54453,7 +54453,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "gfx_unittests iPad Air 2 15.2",
+        "name": "gfx_unittests iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -54479,21 +54479,21 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ui/gfx:gfx_unittests/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -54505,7 +54505,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "google_apis_unittests iPad Air 2 15.2",
+        "name": "google_apis_unittests iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -54531,21 +54531,21 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://google_apis:google_apis_unittests/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -54558,7 +54558,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_bookmarks_eg2tests_module iPad Air 2 15.2",
+        "name": "ios_chrome_bookmarks_eg2tests_module iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -54584,21 +54584,21 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -54611,7 +54611,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_integration_eg2tests_module iPad Air 2 15.2",
+        "name": "ios_chrome_integration_eg2tests_module iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -54637,22 +54637,22 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -54665,7 +54665,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_settings_eg2tests_module iPad Air 2 15.2",
+        "name": "ios_chrome_settings_eg2tests_module iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -54691,22 +54691,22 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
         },
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_settings_eg2tests_module/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -54719,7 +54719,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_signin_eg2tests_module iPad Air 2 15.2",
+        "name": "ios_chrome_signin_eg2tests_module iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -54745,22 +54745,22 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 10
         },
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_signin_eg2tests_module/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -54773,7 +54773,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_smoke_eg2tests_module iPad Air 2 15.2",
+        "name": "ios_chrome_smoke_eg2tests_module iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -54799,21 +54799,21 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_smoke_eg2tests_module/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -54826,7 +54826,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_ui_eg2tests_module iPad Air 2 15.2",
+        "name": "ios_chrome_ui_eg2tests_module iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -54852,22 +54852,22 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -54879,7 +54879,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_unittests iPad Air 2 15.2",
+        "name": "ios_chrome_unittests iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -54905,21 +54905,21 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ios/chrome/test:ios_chrome_unittests/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -54932,7 +54932,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_chrome_web_eg2tests_module iPad Air 2 15.2",
+        "name": "ios_chrome_web_eg2tests_module iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -54958,21 +54958,21 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_web_eg2tests_module/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -54984,7 +54984,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_components_unittests iPad Air 2 15.2",
+        "name": "ios_components_unittests iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -55010,21 +55010,21 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ios/components:ios_components_unittests/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -55036,7 +55036,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_net_unittests iPad Air 2 15.2",
+        "name": "ios_net_unittests iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -55062,22 +55062,22 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
         },
         "test_id_prefix": "ninja://ios/net:ios_net_unittests/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -55089,7 +55089,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_remoting_unittests iPad Air 2 15.2",
+        "name": "ios_remoting_unittests iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -55115,21 +55115,21 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://remoting/ios:ios_remoting_unittests/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -55142,7 +55142,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_showcase_eg2tests_module iPad Air 2 15.2",
+        "name": "ios_showcase_eg2tests_module iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -55168,21 +55168,21 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ios/showcase:ios_showcase_eg2tests_module/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -55194,7 +55194,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_testing_unittests iPad Air 2 15.2",
+        "name": "ios_testing_unittests iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -55220,21 +55220,21 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ios/testing:ios_testing_unittests/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -55246,7 +55246,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_inttests iPad Air 2 15.2",
+        "name": "ios_web_inttests iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -55272,21 +55272,21 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ios/web:ios_web_inttests/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -55299,7 +55299,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_shell_eg2tests_module iPad Air 2 15.2",
+        "name": "ios_web_shell_eg2tests_module iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -55325,21 +55325,21 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ios/web/shell/test:ios_web_shell_eg2tests_module/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -55351,7 +55351,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_unittests iPad Air 2 15.2",
+        "name": "ios_web_unittests iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -55377,21 +55377,21 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ios/web:ios_web_unittests/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -55403,7 +55403,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_view_inttests iPad Air 2 15.2",
+        "name": "ios_web_view_inttests iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -55429,21 +55429,21 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ios/web_view:ios_web_view_inttests/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -55455,7 +55455,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ios_web_view_unittests iPad Air 2 15.2",
+        "name": "ios_web_view_unittests iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -55481,21 +55481,21 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ios/web_view:ios_web_view_unittests/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -55507,7 +55507,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "net_unittests iPad Air 2 15.2",
+        "name": "net_unittests iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -55533,21 +55533,21 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://net:net_unittests/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -55559,7 +55559,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "services_unittests iPad Air 2 15.2",
+        "name": "services_unittests iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -55585,21 +55585,21 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://services:services_unittests/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -55611,7 +55611,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "skia_unittests iPad Air 2 15.2",
+        "name": "skia_unittests iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -55637,21 +55637,21 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://skia:skia_unittests/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -55663,7 +55663,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "sql_unittests iPad Air 2 15.2",
+        "name": "sql_unittests iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -55689,21 +55689,21 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://sql:sql_unittests/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -55715,7 +55715,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "ui_base_unittests iPad Air 2 15.2",
+        "name": "ui_base_unittests iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -55741,21 +55741,21 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ui/base:ui_base_unittests/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       },
       {
         "args": [
           "--platform",
           "iPad Air 2",
           "--version",
-          "15.2",
+          "15.5",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -55767,7 +55767,7 @@
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "url_unittests iPad Air 2 15.2",
+        "name": "url_unittests iPad Air 2 15.5",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -55793,14 +55793,14 @@
               "path": "Xcode.app"
             },
             {
-              "name": "runtime_ios_15_2",
-              "path": "Runtime-ios-15.2"
+              "name": "runtime_ios_15_5",
+              "path": "Runtime-ios-15.5"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://url:url_unittests/",
-        "variant_id": "iPad Air 2 15.2"
+        "variant_id": "iPad Air 2 15.5"
       }
     ]
   },

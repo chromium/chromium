@@ -6239,8 +6239,8 @@
           'disable_field_trial_config_for_earl_grey',
         ],
         'variants': [
-          'SIM_IPAD_AIR_2_15_2',
-          'SIM_IPHONE_6S_15_2',
+          'SIM_IPAD_AIR_2_15_5',
+          'SIM_IPHONE_6S_15_5',
         ]
       },
       'ios_eg2_tests': {
@@ -6249,8 +6249,8 @@
           'disable_field_trial_config_for_earl_grey',
         ],
         'variants': [
-          'SIM_IPAD_AIR_2_15_2',
-          'SIM_IPHONE_6S_15_2',
+          'SIM_IPAD_AIR_2_15_5',
+          'SIM_IPHONE_6S_15_5',
         ]
       },
     },
@@ -6455,14 +6455,14 @@
     'ios_asan_tests': {
       'ios_common_tests': {
         'variants': [
-          'SIM_IPHONE_X_15_2',
-          'SIM_IPAD_AIR_2_15_2',
+          'SIM_IPHONE_X_15_5',
+          'SIM_IPAD_AIR_2_15_5',
         ]
       },
       'ios_screen_size_dependent_tests': {
         'variants': [
-          'SIM_IPHONE_X_15_2',
-          'SIM_IPAD_AIR_2_15_2',
+          'SIM_IPHONE_X_15_5',
+          'SIM_IPAD_AIR_2_15_5',
         ]
       }
     },
@@ -6478,7 +6478,7 @@
     'ios_clang_tot_sim_tests': {
       'ios_clang_tests': {
         'variants': [
-          'SIM_IPHONE_6S_15_2',
+          'SIM_IPHONE_6S_15_5',
         ]
       }
     },
@@ -6567,7 +6567,7 @@
     'ios_simulator_cronet_tests': {
       'ios_cronet_tests': {
         'variants': [
-          'SIM_IPHONE_X_15_2',
+          'SIM_IPHONE_X_15_5',
         ]
       }
     },
@@ -6613,24 +6613,24 @@
     'ios_simulator_multi_window_tests': {
       'ios_common_tests': {
         'variants': [
-          'SIM_IPAD_AIR_2_15_2',
+          'SIM_IPAD_AIR_2_15_5',
         ]
       },
       'ios_eg2_cq_tests': {
         'mixins': ['xcode_parallelization'],
         'variants': [
-          'SIM_IPAD_AIR_2_15_2',
+          'SIM_IPAD_AIR_2_15_5',
         ]
       },
       'ios_eg2_tests': {
         'mixins': ['xcode_parallelization'],
         'variants': [
-          'SIM_IPAD_AIR_2_15_2',
+          'SIM_IPAD_AIR_2_15_5',
         ]
       },
       'ios_screen_size_dependent_tests': {
         'variants': [
-          'SIM_IPAD_AIR_2_15_2',
+          'SIM_IPAD_AIR_2_15_5',
         ]
       }
     },
