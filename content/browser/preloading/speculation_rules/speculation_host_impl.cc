@@ -7,6 +7,7 @@
 
 #include "base/containers/span.h"
 #include "base/ranges/algorithm.h"
+#include "base/scoped_observation.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/preloading//preloading.h"
@@ -46,6 +47,41 @@ bool CandidatesAreValid(
 }
 
 }  // namespace
+
+class SpeculationHostImpl::PrerenderHostObserver
+    : public PrerenderHost::Observer {
+ public:
+  explicit PrerenderHostObserver(PrerenderHost* prerender_host);
+  ~PrerenderHostObserver() override;
+
+  // PrerenderHost::Observer implementation:
+  void OnActivated() override;
+  void OnHostDestroyed(PrerenderHost::FinalStatus final_status) override;
+
+  bool destroyed_by_memory_limit_exceeded() const {
+    return destroyed_by_memory_limit_exceeded_;
+  }
+
+ private:
+  bool destroyed_by_memory_limit_exceeded_ = false;
+  base::ScopedObservation<PrerenderHost, PrerenderHost::Observer> observation_{
+      this};
+};
+
+SpeculationHostImpl::PrerenderHostObserver::PrerenderHostObserver(
+    PrerenderHost* prerender_host) {
+  if (prerender_host)
+    observation_.Observe(prerender_host);
+}
+SpeculationHostImpl::PrerenderHostObserver::~PrerenderHostObserver() = default;
+
+void SpeculationHostImpl::PrerenderHostObserver::OnActivated() {}
+void SpeculationHostImpl::PrerenderHostObserver::OnHostDestroyed(
+    PrerenderHost::FinalStatus final_status) {
+  observation_.Reset();
+  if (final_status == PrerenderHost::FinalStatus::kMemoryLimitExceeded)
+    destroyed_by_memory_limit_exceeded_ = true;
+}
 
 struct SpeculationHostImpl::PrerenderInfo {
   GURL url;
@@ -308,10 +344,35 @@ void SpeculationHostImpl::ProcessCandidatesForPrerender(
     started_prerenders_.insert(end, {.url = it->url,
                                      .referrer = referrer,
                                      .prerender_host_id = prerender_host_id});
+
+    // Start to observe PrerenderHost to get the information about FinalStatus.
+    observers_.push_back(std::make_unique<PrerenderHostObserver>(
+        registry_->FindNonReservedHostById(prerender_host_id)));
   }
 }
 
 void SpeculationHostImpl::CancelStartedPrerenders() {
+  // This function can be called twice and the histogram should be recorded in
+  // the first call. Also, skip recording the histogram when no prerendering
+  // starts.
+  if (started_prerenders_.empty()) {
+    DCHECK(observers_.empty());
+    return;
+  }
+
+  // Record the percentage of destroyed prerenders due to the excessive memory
+  // usage. `started_prerenders_` can include destroyed prerenders by other
+  // reasons.
+  // The closer the value is to 0, the less prerenders are cancelled by
+  // FinalStatus::kMemoryLimitExceeded. The result depends on Finch params
+  // `max_num_of_running_speculation_rules` and
+  // `acceptable_percent_of_system_memory`.
+  base::UmaHistogramPercentage(
+      "Prerender.Experimental.CancellationPercentageByExcessiveMemoryUsage."
+      "SpeculationRule",
+      GetNumberOfDestroyedByMemoryExceeded() * 100 /
+          started_prerenders_.size());
+
   if (registry_) {
     for (const auto& prerender : started_prerenders_) {
       int host_id = prerender.prerender_host_id;
@@ -319,6 +380,7 @@ void SpeculationHostImpl::CancelStartedPrerenders() {
         registry_->OnTriggerDestroyed(host_id);
     }
     started_prerenders_.clear();
+    observers_.clear();
   }
 }
 
@@ -364,6 +426,15 @@ SpeculationHostImpl::MakeSelfOwnedNetworkServiceDevToolsObserver() {
   auto* ftn = static_cast<RenderFrameHostImpl*>(&render_frame_host())
                   ->frame_tree_node();
   return NetworkServiceDevToolsObserver::MakeSelfOwned(ftn);
+}
+
+int SpeculationHostImpl::GetNumberOfDestroyedByMemoryExceeded() {
+  int destroyed_prerenders_by_memory_limit_exceeded = 0;
+  for (auto& observer : observers_) {
+    if (observer->destroyed_by_memory_limit_exceeded())
+      destroyed_prerenders_by_memory_limit_exceeded++;
+  }
+  return destroyed_prerenders_by_memory_limit_exceeded;
 }
 
 }  // namespace content

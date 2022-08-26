@@ -36,7 +36,7 @@ class PrerenderSubframeNavigationThrottle : public NavigationThrottle,
 
   // PrerenderHost::Observer
   void OnActivated() override;
-  void OnHostDestroyed() override;
+  void OnHostDestroyed(PrerenderHost::FinalStatus final_status) override;
 
   // WebContentsObserver:
   void DidFinishNavigation(NavigationHandle* nav_handle) override;

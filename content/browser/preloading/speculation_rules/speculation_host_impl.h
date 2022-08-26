@@ -68,6 +68,10 @@ class CONTENT_EXPORT SpeculationHostImpl final
 
   void CancelStartedPrerenders();
 
+  // Iterates started prerenders and counts how many of them were canceled
+  // due to the excessive memory usage.
+  int GetNumberOfDestroyedByMemoryExceeded();
+
   std::unique_ptr<SpeculationHostDelegate> delegate_;
 
   // TODO(https://crbug.com/1197133): Cancel started prerenders when candidates
@@ -77,6 +81,9 @@ class CONTENT_EXPORT SpeculationHostImpl final
   std::vector<PrerenderInfo> started_prerenders_;
 
   base::WeakPtr<PrerenderHostRegistry> registry_;
+
+  class PrerenderHostObserver;
+  std::vector<std::unique_ptr<PrerenderHostObserver>> observers_;
 
   base::WeakPtrFactory<SpeculationHostImpl> weak_ptr_factory_{this};
 };

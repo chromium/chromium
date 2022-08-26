@@ -173,7 +173,8 @@ PrerenderSubframeNavigationThrottle::DeferOrCancelCrossOriginSubframeNavigation(
   return NavigationThrottle::DEFER;
 }
 
-void PrerenderSubframeNavigationThrottle::OnHostDestroyed() {
+void PrerenderSubframeNavigationThrottle::OnHostDestroyed(
+    PrerenderHost::FinalStatus final_status) {
   observation_.Reset();
 }
 

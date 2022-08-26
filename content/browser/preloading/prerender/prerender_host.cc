@@ -137,7 +137,7 @@ PrerenderHost::~PrerenderHost() {
   Observe(nullptr);
 
   for (auto& observer : observers_)
-    observer.OnHostDestroyed();
+    observer.OnHostDestroyed(final_status_.value_or(FinalStatus::kDestroyed));
 
   if (!final_status_)
     RecordFinalStatus(FinalStatus::kDestroyed, attributes_.initiator_ukm_id,

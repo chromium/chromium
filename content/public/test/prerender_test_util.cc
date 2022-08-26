@@ -151,7 +151,7 @@ class PrerenderHostObserverImpl : public PrerenderHost::Observer {
       std::move(waiting_for_activation_).Run();
   }
 
-  void OnHostDestroyed() override {
+  void OnHostDestroyed(PrerenderHost::FinalStatus final_status) override {
     observation_.Reset();
     if (waiting_for_destruction_)
       std::move(waiting_for_destruction_).Run();
