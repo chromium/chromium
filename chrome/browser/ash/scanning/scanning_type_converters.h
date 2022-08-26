@@ -13,6 +13,28 @@
 namespace mojo {
 
 template <>
+struct EnumTraits<ash::scanning::mojom::ColorMode, lorgnette::ColorMode> {
+  static ash::scanning::mojom::ColorMode ToMojom(
+      lorgnette::ColorMode color_mode);
+  static bool FromMojom(ash::scanning::mojom::ColorMode input,
+                        lorgnette::ColorMode* out);
+};
+
+template <>
+struct EnumTraits<ash::scanning::mojom::SourceType, lorgnette::SourceType> {
+  static ash::scanning::mojom::SourceType ToMojom(
+      lorgnette::SourceType source_type);
+  static bool FromMojom(ash::scanning::mojom::SourceType input,
+                        lorgnette::SourceType* out);
+};
+
+template <>
+struct EnumTraits<ash::scanning::mojom::FileType, lorgnette::ImageFormat> {
+  static bool FromMojom(ash::scanning::mojom::FileType input,
+                        lorgnette::ImageFormat* out);
+};
+
+template <>
 struct EnumTraits<ash::scanning::mojom::ScanResult,
                   lorgnette::ScanFailureMode> {
   static ash::scanning::mojom::ScanResult ToMojom(

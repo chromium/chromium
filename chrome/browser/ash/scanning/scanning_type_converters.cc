@@ -16,6 +16,15 @@ namespace {
 
 namespace mojo_ipc = ash::scanning::mojom;
 
+using MojomColorMode = ash::scanning::mojom::ColorMode;
+using ProtoColorMode = lorgnette::ColorMode;
+
+using MojomSourceType = ash::scanning::mojom::SourceType;
+using ProtoSourceType = lorgnette::SourceType;
+
+using MojomFileType = ash::scanning::mojom::FileType;
+using ProtoImageFormat = lorgnette::ImageFormat;
+
 // The margin allowed when comparing a scannable area dimension to a page size
 // dimension. Accounts for differences due to rounding.
 constexpr double kMargin = 1;
@@ -133,74 +142,81 @@ void SetScanRegion(const mojo_ipc::PageSize page_size,
 
 }  // namespace
 
-template <>
-struct TypeConverter<mojo_ipc::ColorMode, lorgnette::ColorMode> {
-  static mojo_ipc::ColorMode Convert(lorgnette::ColorMode mode) {
-    switch (mode) {
-      case lorgnette::MODE_LINEART:
-        return mojo_ipc::ColorMode::kBlackAndWhite;
-      case lorgnette::MODE_GRAYSCALE:
-        return mojo_ipc::ColorMode::kGrayscale;
-      case lorgnette::MODE_COLOR:
-        return mojo_ipc::ColorMode::kColor;
-      case lorgnette::MODE_UNSPECIFIED:
-      case lorgnette::ColorMode_INT_MIN_SENTINEL_DO_NOT_USE_:
-      case lorgnette::ColorMode_INT_MAX_SENTINEL_DO_NOT_USE_:
-        NOTREACHED();
-        return mojo_ipc::ColorMode::kColor;
-    }
+// static
+MojomColorMode EnumTraits<MojomColorMode, ProtoColorMode>::ToMojom(
+    ProtoColorMode input) {
+  switch (input) {
+    case ProtoColorMode::MODE_LINEART:
+      return MojomColorMode::kBlackAndWhite;
+    case ProtoColorMode::MODE_GRAYSCALE:
+      return MojomColorMode::kGrayscale;
+    case ProtoColorMode::MODE_COLOR:
+      return MojomColorMode::kColor;
+    case ProtoColorMode::MODE_UNSPECIFIED:
+    case ProtoColorMode::ColorMode_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case ProtoColorMode::ColorMode_INT_MAX_SENTINEL_DO_NOT_USE_:
+      NOTREACHED();
+      return MojomColorMode::kColor;
   }
-};
+}
 
-template <>
-struct TypeConverter<mojo_ipc::SourceType, lorgnette::SourceType> {
-  static mojo_ipc::SourceType Convert(lorgnette::SourceType type) {
-    switch (type) {
-      case lorgnette::SOURCE_PLATEN:
-        return mojo_ipc::SourceType::kFlatbed;
-      case lorgnette::SOURCE_ADF_SIMPLEX:
-        return mojo_ipc::SourceType::kAdfSimplex;
-      case lorgnette::SOURCE_ADF_DUPLEX:
-        return mojo_ipc::SourceType::kAdfDuplex;
-      case lorgnette::SOURCE_DEFAULT:
-        return mojo_ipc::SourceType::kDefault;
-      case lorgnette::SOURCE_UNSPECIFIED:
-      case lorgnette::SourceType_INT_MIN_SENTINEL_DO_NOT_USE_:
-      case lorgnette::SourceType_INT_MAX_SENTINEL_DO_NOT_USE_:
-        NOTREACHED();
-        return mojo_ipc::SourceType::kUnknown;
-    }
+// static
+bool EnumTraits<MojomColorMode, ProtoColorMode>::FromMojom(
+    MojomColorMode input,
+    ProtoColorMode* out) {
+  switch (input) {
+    case MojomColorMode::kBlackAndWhite:
+      *out = ProtoColorMode::MODE_LINEART;
+      return true;
+    case MojomColorMode::kGrayscale:
+      *out = ProtoColorMode::MODE_GRAYSCALE;
+      return true;
+    case MojomColorMode::kColor:
+      *out = ProtoColorMode::MODE_COLOR;
+      return true;
   }
-};
+  NOTREACHED();
+  return false;
+}
 
-template <>
-struct TypeConverter<lorgnette::ColorMode, mojo_ipc::ColorMode> {
-  static lorgnette::ColorMode Convert(mojo_ipc::ColorMode mode) {
-    switch (mode) {
-      case mojo_ipc::ColorMode::kBlackAndWhite:
-        return lorgnette::MODE_LINEART;
-      case mojo_ipc::ColorMode::kGrayscale:
-        return lorgnette::MODE_GRAYSCALE;
-      case mojo_ipc::ColorMode::kColor:
-        return lorgnette::MODE_COLOR;
-    }
+// static
+MojomSourceType EnumTraits<MojomSourceType, ProtoSourceType>::ToMojom(
+    ProtoSourceType input) {
+  switch (input) {
+    case ProtoSourceType::SOURCE_PLATEN:
+      return MojomSourceType::kFlatbed;
+    case ProtoSourceType::SOURCE_ADF_SIMPLEX:
+      return MojomSourceType::kAdfSimplex;
+    case ProtoSourceType::SOURCE_ADF_DUPLEX:
+      return MojomSourceType::kAdfDuplex;
+    case ProtoSourceType::SOURCE_DEFAULT:
+      return MojomSourceType::kDefault;
+    case ProtoSourceType::SOURCE_UNSPECIFIED:
+    case ProtoSourceType::SourceType_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case ProtoSourceType::SourceType_INT_MAX_SENTINEL_DO_NOT_USE_:
+      NOTREACHED();
+      return MojomSourceType::kUnknown;
   }
-};
+}
 
-template <>
-struct TypeConverter<lorgnette::ImageFormat, mojo_ipc::FileType> {
-  static lorgnette::ImageFormat Convert(mojo_ipc::FileType type) {
-    switch (type) {
-      case mojo_ipc::FileType::kPng:
-        return lorgnette::IMAGE_FORMAT_PNG;
-      // PDF images request JPEG data from lorgnette, then
-      // convert the returned JPEG data to PDF.
-      case mojo_ipc::FileType::kPdf:            // FALLTHROUGH
-      case mojo_ipc::FileType::kJpg:
-        return lorgnette::IMAGE_FORMAT_JPEG;
-    }
+// static
+bool EnumTraits<MojomFileType, ProtoImageFormat>::FromMojom(
+    MojomFileType input,
+    ProtoImageFormat* out) {
+  switch (input) {
+    case MojomFileType::kPng:
+      *out = ProtoImageFormat::IMAGE_FORMAT_PNG;
+      return true;
+    // PDF images request JPEG data from lorgnette, then
+    // convert the returned JPEG data to PDF.
+    case MojomFileType::kPdf:  // FALLTHROUGH
+    case MojomFileType::kJpg:
+      *out = ProtoImageFormat::IMAGE_FORMAT_JPEG;
+      return true;
   }
-};
+  NOTREACHED();
+  return false;
+}
 
 // static
 mojo_ipc::ScanResult
@@ -239,14 +255,17 @@ StructTraits<ash::scanning::mojom::ScannerCapabilitiesPtr,
   mojo_caps.sources.reserve(lorgnette_caps.sources().size());
   for (const auto& source : lorgnette_caps.sources()) {
     mojo_ipc::ScanSourcePtr mojo_source = mojo_ipc::ScanSource::New();
-    mojo_source->type = mojo::ConvertTo<mojo_ipc::SourceType>(source.type());
+    mojo_source->type =
+        mojo::EnumTraits<mojo_ipc::SourceType, lorgnette::SourceType>::ToMojom(
+            source.type());
     mojo_source->name = source.name();
     mojo_source->page_sizes = GetSupportedPageSizes(source.area());
 
     mojo_source->color_modes.reserve(source.color_modes().size());
     for (const auto& mode : source.color_modes()) {
-      mojo_source->color_modes.push_back(mojo::ConvertTo<mojo_ipc::ColorMode>(
-          static_cast<lorgnette::ColorMode>(mode)));
+      mojo_source->color_modes.push_back(
+          mojo::EnumTraits<mojo_ipc::ColorMode, lorgnette::ColorMode>::ToMojom(
+              static_cast<lorgnette::ColorMode>(mode)));
     }
 
     mojo_source->resolutions.reserve(source.resolutions().size());
@@ -264,12 +283,20 @@ lorgnette::ScanSettings
 StructTraits<lorgnette::ScanSettings, mojo_ipc::ScanSettingsPtr>::ToMojom(
     const mojo_ipc::ScanSettingsPtr& mojo_settings) {
   lorgnette::ScanSettings lorgnette_settings;
+  lorgnette::ColorMode lorgnette_color_mode;
+  lorgnette::ImageFormat lorgnette_image_format;
+
+  if (mojo::EnumTraits<mojo_ipc::ColorMode, lorgnette::ColorMode>::FromMojom(
+          mojo_settings->color_mode, &lorgnette_color_mode)) {
+    lorgnette_settings.set_color_mode(lorgnette_color_mode);
+  }
+  if (mojo::EnumTraits<mojo_ipc::FileType, lorgnette::ImageFormat>::FromMojom(
+          mojo_settings->file_type, &lorgnette_image_format)) {
+    lorgnette_settings.set_image_format(lorgnette_image_format);
+  }
+
   lorgnette_settings.set_source_name(mojo_settings->source_name);
-  lorgnette_settings.set_color_mode(
-      mojo::ConvertTo<lorgnette::ColorMode>(mojo_settings->color_mode));
   lorgnette_settings.set_resolution(mojo_settings->resolution_dpi);
-  lorgnette_settings.set_image_format(
-      mojo::ConvertTo<lorgnette::ImageFormat>(mojo_settings->file_type));
   SetScanRegion(mojo_settings->page_size, lorgnette_settings);
   return lorgnette_settings;
 }
