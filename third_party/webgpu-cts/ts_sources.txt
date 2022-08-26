@@ -1,3 +1,4 @@
+src/common/framework/test_config.ts
 src/common/internal/version.ts
 src/common/internal/stack.ts
 src/common/internal/logging/log_message.ts
