@@ -37,6 +37,7 @@ std::string GetDebugJSONForVisits(
     debug_visit.Set(
         "openerVisitId",
         static_cast<int>(visit.opener_visit_of_redirect_chain_start));
+    debug_visit.Set("searchTerms", visit.content_annotations.search_terms);
     debug_visits_list.Append(std::move(debug_visit));
   }
 
