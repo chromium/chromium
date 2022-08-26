@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.chromium.third_party.android.swiperefresh;
+package com.ark.browser.ui.drawable;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -31,7 +31,6 @@ import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
 import android.view.View;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;

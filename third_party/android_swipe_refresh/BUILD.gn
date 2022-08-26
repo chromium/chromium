@@ -9,9 +9,9 @@ assert(is_android)
 android_library("android_swipe_refresh_java") {
   chromium_code = false  # Don't lint.
   sources = [
-    "java/src/org/chromium/third_party/android/swiperefresh/CircleImageView.java",
-    "java/src/org/chromium/third_party/android/swiperefresh/MaterialProgressDrawable.java",
-    "java/src/org/chromium/third_party/android/swiperefresh/SwipeRefreshLayout.java",
+    "java/src/com/ark/browser/ui/drawable/MaterialProgressDrawable.java",
+    "java/src/com/ark/browser/ui/widget/swiperefresh/SwipeRefreshLayout.java",
+    "java/src/com/ark/browser/ui/widget/CircleImageView.java",
   ]
   deps = [
     "//third_party/androidx:androidx_annotation_annotation_java",

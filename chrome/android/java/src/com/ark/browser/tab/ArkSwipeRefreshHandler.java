@@ -12,6 +12,9 @@ import android.view.ViewGroup.LayoutParams;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 
+import com.ark.browser.ui.widget.swiperefresh.SwipeRefreshLayout;
+
+import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
@@ -25,7 +28,6 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.third_party.android.swiperefresh.SwipeRefreshLayout;
 import org.chromium.ui.OverscrollAction;
 import org.chromium.ui.OverscrollRefreshHandler;
 import org.chromium.ui.base.WindowAndroid;
@@ -75,6 +77,8 @@ public class ArkSwipeRefreshHandler
     // Accessibility utterance used to indicate refresh activation.
     private String mAccessibilityRefreshString;
 
+    private boolean mNavigateForward;
+
     public static ArkSwipeRefreshHandler from(Tab tab) {
         ArkSwipeRefreshHandler handler = get(tab);
         if (handler == null) {
@@ -118,11 +122,11 @@ public class ArkSwipeRefreshHandler
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         final boolean incognito = mTab.isIncognito();
         final @ColorInt int backgroundColor = incognito
-                ? context.getColor(R.color.default_bg_color_dark_elev_2_baseline)
+                ? context.getResources().getColor(R.color.default_bg_color_dark_elev_2_baseline)
                 : ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_2);
         mSwipeRefreshLayout.setProgressBackgroundColorSchemeColor(backgroundColor);
         final @ColorInt int iconColor = incognito
-                ? context.getColor(R.color.default_icon_color_blue_light)
+                ? context.getResources().getColor(R.color.default_icon_color_blue_light)
                 : SemanticColorUtils.getDefaultIconColorAccent1(context);
         mSwipeRefreshLayout.setColorSchemeColors(iconColor);
         if (mContainerView != null) mSwipeRefreshLayout.setEnabled(true);
@@ -199,12 +203,26 @@ public class ArkSwipeRefreshHandler
             return mSwipeRefreshLayout.start();
         } else if (type == OverscrollAction.HISTORY_NAVIGATION) {
 
+            if (mSwipeRefreshLayout == null) initSwipeRefreshLayout(mTab.getContext());
+            attachSwipeRefreshLayoutIfNecessary();
+            if (!mSwipeRefreshLayout.start()) {
+                return false;
+            }
+
             Log.d(TAG, "HISTORY_NAVIGATION startX=" + startX + " startY=" + startY + " navigateForward=" + navigateForward);
 
+            boolean handle;
             if (navigateForward) {
-                TabListManager.getInstance().getCurrentTabList().goForward();
+//                TabListManager.getInstance().getCurrentTabList().goForward();
+                handle = TabListManager.getInstance().getCurrentTabList().canGoForward();
             } else {
-                TabListManager.getInstance().getCurrentTabList().goBack();
+//                TabListManager.getInstance().getCurrentTabList().goBack();
+                handle = TabListManager.getInstance().getCurrentTabList().canGoBack();
+            }
+            if (handle) {
+                mNavigateForward = navigateForward;
+                mSwipeType = OverscrollAction.HISTORY_NAVIGATION;
+                return true;
             }
         }
         mSwipeType = OverscrollAction.NONE;
@@ -218,6 +236,11 @@ public class ArkSwipeRefreshHandler
             mSwipeRefreshLayout.pull(yDelta);
         } else if (mSwipeType == OverscrollAction.HISTORY_NAVIGATION) {
             // TODO pull xDelta
+            if (mNavigateForward) {
+                mSwipeRefreshLayout.pullRight(xDelta);
+            } else {
+                mSwipeRefreshLayout.pullLeft(xDelta);
+            }
         }
         TraceEvent.end("SwipeRefreshHandler.pull");
     }
@@ -229,6 +252,14 @@ public class ArkSwipeRefreshHandler
             mSwipeRefreshLayout.release(allowRefresh);
         } else if (mSwipeType == OverscrollAction.HISTORY_NAVIGATION) {
             // TODO release
+            if (mSwipeRefreshLayout.canBackOrForward()) {
+                if (mNavigateForward) {
+                    TabListManager.getInstance().getCurrentTabList().goForward();
+                } else {
+                    TabListManager.getInstance().getCurrentTabList().goBack();
+                }
+            }
+            mSwipeRefreshLayout.release(allowRefresh);
         }
         TraceEvent.end("SwipeRefreshHandler.release");
     }

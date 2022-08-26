@@ -25,7 +25,7 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.third_party.android.swiperefresh.SwipeRefreshLayout;
+import com.ark.browser.ui.widget.swiperefresh.SwipeRefreshLayout;
 import org.chromium.ui.OverscrollAction;
 import org.chromium.ui.OverscrollRefreshHandler;
 import org.chromium.ui.base.WindowAndroid;

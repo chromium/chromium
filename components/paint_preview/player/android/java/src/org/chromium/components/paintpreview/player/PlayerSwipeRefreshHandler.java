@@ -13,7 +13,7 @@ import androidx.annotation.NonNull;
 import org.chromium.base.TraceEvent;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.third_party.android.swiperefresh.SwipeRefreshLayout;
+import com.ark.browser.ui.widget.swiperefresh.SwipeRefreshLayout;
 
 /**
  * A class for handling overscroll to refresh behavior for the Paint Preview player. This is based

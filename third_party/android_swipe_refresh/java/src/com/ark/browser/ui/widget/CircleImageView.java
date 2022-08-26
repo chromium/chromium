@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.chromium.third_party.android.swiperefresh;
+package com.ark.browser.ui.widget;
 
 import android.content.Context;
 import android.graphics.Canvas;

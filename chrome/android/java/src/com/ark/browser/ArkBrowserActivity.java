@@ -283,6 +283,7 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
                 });
 
                 EditText etUrl = findViewById(R.id.et_url);
+                etUrl.setMaxLines(1);
 
                 TabListManager.getInstance().getCurrentTabList().addObserver(new TabInfoObserver() {
                     @Override

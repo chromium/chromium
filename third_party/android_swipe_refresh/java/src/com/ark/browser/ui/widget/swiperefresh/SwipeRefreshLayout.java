@@ -14,23 +14,27 @@
  * limitations under the License.
  */
 
-package org.chromium.third_party.android.swiperefresh;
+package com.ark.browser.ui.widget.swiperefresh;
 
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.MotionEvent;
+import android.view.Gravity;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Transformation;
-import android.widget.AbsListView;
+import android.widget.FrameLayout;
+import android.widget.TextView;
+
+import com.ark.browser.ui.widget.CircleImageView;
 
 /**
  * The SwipeRefreshLayout should be used whenever the user can refresh the
@@ -54,6 +58,9 @@ import android.widget.AbsListView;
  * </p>
  */
 public class SwipeRefreshLayout extends ViewGroup {
+
+    private static final String TAG = "SwipeRefreshLayout";
+
     // Maps to ProgressBar.Large style
     public static final int LARGE = MaterialProgressDrawable.LARGE;
     // Maps to ProgressBar default style
@@ -110,6 +117,8 @@ public class SwipeRefreshLayout extends ViewGroup {
     };
 
     private CircleImageView mCircleView;
+    private View mLeftView;
+    private View mRightView;
     private int mCircleViewIndex = -1;
 
     protected int mFrom;
@@ -139,6 +148,8 @@ public class SwipeRefreshLayout extends ViewGroup {
     private int mCircleWidth;
 
     private int mCircleHeight;
+
+    private int mButtonSize;
 
     // Whether the client has set a custom starting position;
     private boolean mUsingCustomStart;
@@ -172,6 +183,7 @@ public class SwipeRefreshLayout extends ViewGroup {
 
     // Chrome-specific additions.
     private float mTotalMotionY;
+    private float mTotalMotionX;
     // Minimum number of pull updates necessary to trigger a refresh.
     private static int MIN_PULLS_TO_ACTIVATE = 3;
     // Multiplier for the default top offset relative to the size of the progress spinner.
@@ -231,8 +243,9 @@ public class SwipeRefreshLayout extends ViewGroup {
             return;
         }
         final DisplayMetrics metrics = getResources().getDisplayMetrics();
+        mButtonSize = (int) (CIRCLE_DIAMETER_LARGE * metrics.density);
         if (size == MaterialProgressDrawable.LARGE) {
-            mCircleHeight = mCircleWidth = (int) (CIRCLE_DIAMETER_LARGE * metrics.density);
+            mCircleHeight = mCircleWidth = mButtonSize;
         } else {
             mCircleHeight = mCircleWidth = (int) (CIRCLE_DIAMETER * metrics.density);
         }
@@ -276,6 +289,8 @@ public class SwipeRefreshLayout extends ViewGroup {
         mCircleWidth = (int) (CIRCLE_DIAMETER * metrics.density);
         mCircleHeight = (int) (CIRCLE_DIAMETER * metrics.density);
 
+        mButtonSize = (int) (CIRCLE_DIAMETER_LARGE * metrics.density);
+
         createProgressView();
         setChildrenDrawingOrderEnabled(true);
         // the absolute offset has to take into account that the circle starts at an offset
@@ -305,6 +320,42 @@ public class SwipeRefreshLayout extends ViewGroup {
         mCircleView.setImageDrawable(mProgress);
         mCircleView.setVisibility(View.GONE);
         addView(mCircleView);
+
+        mLeftView = createView("go back");
+        mLeftView.setVisibility(GONE);
+        addView(mLeftView);
+
+        mRightView = createView("go forward");
+        mRightView.setVisibility(GONE);
+        addView(mRightView);
+    }
+
+    private View createView(String text) {
+        FrameLayout container = new FrameLayout(getContext());
+
+        CircleImageView imageView = new CircleImageView(getContext(), CIRCLE_BG_LIGHT, CIRCLE_DIAMETER / 2);
+        imageView.setProgress(1f);
+
+        GradientDrawable drawable = new GradientDrawable();
+        drawable.setColor(CIRCLE_BG_LIGHT);
+        drawable.setCornerRadius(1000);
+
+        imageView.setImageDrawable(drawable);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(mButtonSize - 16, mButtonSize - 16);
+        params.gravity = Gravity.CENTER;
+        container.addView(imageView, params);
+
+        TextView textView = new TextView(getContext());
+        textView.setText(text);
+        textView.setGravity(Gravity.CENTER);
+        textView.setTextColor(Color.BLACK);
+        params = new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        params.gravity = Gravity.CENTER;
+        container.addView(textView, params);
+
+        textView.setElevation(imageView.getElevation() + 1);
+
+        return container;
     }
 
     /**
@@ -530,6 +581,7 @@ public class SwipeRefreshLayout extends ViewGroup {
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         final int width = getMeasuredWidth();
+        final int height = getMeasuredHeight();
         if (getChildCount() == 0) {
             return;
         }
@@ -537,6 +589,19 @@ public class SwipeRefreshLayout extends ViewGroup {
         int circleHeight = mCircleView.getMeasuredHeight();
         mCircleView.layout((width / 2 - circleWidth / 2), mCurrentTargetOffsetTop,
                 (width / 2 + circleWidth / 2), mCurrentTargetOffsetTop + circleHeight);
+
+        int leftWidth = mLeftView.getMeasuredWidth();
+        int leftHeight = mLeftView.getMeasuredHeight();
+        Log.d(TAG, "onLayout leftWidth=" + leftWidth + " leftHeight=" + leftHeight);
+        mLeftView.clearAnimation();
+        mLeftView.layout(-leftWidth, (height / 2 - leftHeight / 2), 0, (height / 2 + leftHeight / 2));
+        mLeftView.setTranslationX(0);
+
+        int rightWidth = mRightView.getMeasuredWidth();
+        int rightHeight = mRightView.getMeasuredHeight();
+        mRightView.clearAnimation();
+        mRightView.layout(width, (height / 2 - rightHeight / 2), width + rightWidth, (height / 2 + rightHeight / 2));
+        mRightView.setTranslationX(0);
     }
 
     @Override
@@ -544,6 +609,10 @@ public class SwipeRefreshLayout extends ViewGroup {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         mCircleView.measure(MeasureSpec.makeMeasureSpec(mCircleWidth, MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(mCircleHeight, MeasureSpec.EXACTLY));
+        int measureSize = MeasureSpec.makeMeasureSpec(mButtonSize, MeasureSpec.EXACTLY);
+        Log.d(TAG, "onMeasure mButtonSize=" + mButtonSize);
+        mLeftView.measure(measureSize, measureSize);
+        mRightView.measure(measureSize, measureSize);
         if (!mUsingCustomStart && !mOriginalOffsetCalculated) {
             mOriginalOffsetCalculated = true;
             mCurrentTargetOffsetTop = mOriginalOffsetTop =
@@ -572,6 +641,7 @@ public class SwipeRefreshLayout extends ViewGroup {
         // See ACTION_DOWN handling in {@link #onTouchEvent(...)}.
         setTargetOffsetTopAndBottom(mOriginalOffsetTop - mCircleView.getTop(), true);
         mTotalMotionY = 0;
+        mTotalMotionX = 0;
         mIsBeingDragged = true;
         mProgress.setAlpha(STARTING_PROGRESS_ALPHA);
         return true;
@@ -636,6 +706,41 @@ public class SwipeRefreshLayout extends ViewGroup {
                 true /* requires update */);
     }
 
+    public void pullLeft(float delta) {
+        if (!isEnabled()) return;
+        if (!mIsBeingDragged) return;
+        mTotalMotionX += delta;
+        float totalDragDistance = mButtonSize + mTotalDragDistance - mCircleWidth;
+        float translateX = Math.min(mTotalMotionX, totalDragDistance);
+        mTotalMotionX = translateX;
+        float percent = translateX / totalDragDistance;
+        Log.d(TAG, "pullLeft mTotalMotionX=" + mTotalMotionX + " translateX=" + translateX + " percent=" + percent + " getHeight=" + getHeight());
+        mLeftView.setAlpha(percent);
+        mLeftView.setVisibility(VISIBLE);
+        mLeftView.setTranslationX(translateX);
+//        setTargetOffsetLeftAndRight((int) translateX);
+    }
+
+    public void pullRight(float delta) {
+        if (!isEnabled()) return;
+        if (!mIsBeingDragged) return;
+        mTotalMotionX += delta;
+        float totalDragDistance = mButtonSize + mTotalDragDistance - mCircleWidth;
+        float translateX = Math.max(mTotalMotionX, -totalDragDistance);
+        mTotalMotionX = translateX;
+        float percent = translateX / -totalDragDistance;
+        Log.d(TAG, "pullRight mTotalMotionX=" + mTotalMotionX + " translateX=" + translateX + " percent=" + percent + " getHeight=" + getHeight());
+        mRightView.setAlpha(percent);
+        mRightView.setVisibility(VISIBLE);
+        mRightView.setTranslationX(translateX);
+//        setTargetOffsetLeftAndRight((int) translateX);
+    }
+
+    public boolean canBackOrForward() {
+        float totalDragDistance = mButtonSize + mTotalDragDistance - mCircleWidth;
+        return Math.abs(mTotalMotionX) / totalDragDistance > 0.8f;
+    }
+
     /**
      * Release the active pull. If no pull has started, the release will be
      * ignored. If the pull was sufficiently large, the refresh sequence will
@@ -645,6 +750,20 @@ public class SwipeRefreshLayout extends ViewGroup {
      */
     public void release(boolean allowRefresh) {
         if (!mIsBeingDragged) return;
+
+        if (mLeftView.getVisibility() == VISIBLE) {
+            mLeftView.animate()
+                    .alpha(0)
+                    .translationX(0)
+                    .setDuration(250)
+                    .start();
+        }
+
+        if (mRightView.getVisibility() == VISIBLE) {
+            mRightView.animate().alpha(0).translationX(0)
+                    .setDuration(250)
+                    .start();
+        }
 
         // See ACTION_UP handling in {@link #onTouchEvent(...)}.
         mIsBeingDragged = false;
@@ -691,6 +810,8 @@ public class SwipeRefreshLayout extends ViewGroup {
         setRefreshing(false, false /* notify */);
         mProgress.stop();
         mCircleView.setVisibility(View.GONE);
+        mLeftView.setVisibility(GONE);
+        mRightView.setVisibility(GONE);
         setColorViewAlpha(MAX_ALPHA);
         // Return the circle to its start position
         if (mScale) {
