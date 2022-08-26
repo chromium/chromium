@@ -45,19 +45,6 @@ using WebAppInstallDialogCallback = base::OnceCallback<void(
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     WebAppInstallationAcceptanceCallback acceptance_callback)>;
 
-enum class InstallableCheckResult {
-  kNotInstallable,
-  kInstallable,
-  kAlreadyInstalled,
-};
-// Callback with the result of manifest check.
-// |web_contents| owns the WebContents that was used to check for a manifest.
-// |app_id| will be present iff already installed.
-using WebAppManifestCheckCallback =
-    base::OnceCallback<void(std::unique_ptr<content::WebContents> web_contents,
-                            InstallableCheckResult result,
-                            absl::optional<AppId> app_id)>;
-
 // See related ExternalInstallOptions struct and
 // ConvertExternalInstallOptionsToParams function.
 struct WebAppInstallParams {

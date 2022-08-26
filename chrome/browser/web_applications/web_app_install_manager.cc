@@ -120,26 +120,6 @@ void WebAppInstallManager::SetSubsystems(
   translation_manager_ = translation_manager;
 }
 
-void WebAppInstallManager::LoadWebAppAndCheckManifest(
-    const GURL& web_app_url,
-    webapps::WebappInstallSource install_surface,
-    WebAppManifestCheckCallback callback) {
-  if (!started_)
-    return;
-
-  auto task = std::make_unique<WebAppInstallTask>(profile_, finalizer_,
-                                                  data_retriever_factory_.Run(),
-                                                  registrar_, install_surface);
-
-  task->LoadWebAppAndCheckManifest(
-      web_app_url, url_loader_.get(),
-      base::BindOnce(
-          &WebAppInstallManager::OnLoadWebAppAndCheckManifestCompleted,
-          GetWeakPtr(), task.get(), std::move(callback)));
-
-  tasks_.insert(std::move(task));
-}
-
 void WebAppInstallManager::InstallSubApp(
     const AppId& parent_app_id,
     const GURL& install_url,
@@ -338,30 +318,6 @@ void WebAppInstallManager::OnQueuedTaskCompleted(
     web_contents_.reset();
   else
     MaybeStartQueuedTask();
-}
-
-void WebAppInstallManager::OnLoadWebAppAndCheckManifestCompleted(
-    WebAppInstallTask* task,
-    WebAppManifestCheckCallback callback,
-    std::unique_ptr<content::WebContents> web_contents,
-    const AppId& app_id,
-    webapps::InstallResultCode code) {
-  DeleteTask(task);
-
-  InstallableCheckResult result;
-  absl::optional<AppId> opt_app_id;
-  if (IsSuccess(code)) {
-    if (!app_id.empty() && registrar_->IsInstalled(app_id)) {
-      result = InstallableCheckResult::kAlreadyInstalled;
-      opt_app_id = app_id;
-    } else {
-      result = InstallableCheckResult::kInstallable;
-    }
-  } else {
-    result = InstallableCheckResult::kNotInstallable;
-  }
-
-  std::move(callback).Run(std::move(web_contents), result, opt_app_id);
 }
 
 content::WebContents* WebAppInstallManager::EnsureWebContentsCreated() {

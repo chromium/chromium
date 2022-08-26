@@ -77,15 +77,6 @@ class WebAppInstallTask : content::WebContentsObserver {
 
   void SetInstallParams(const WebAppInstallParams& install_params);
 
-  using LoadWebAppAndCheckManifestCallback = base::OnceCallback<void(
-      std::unique_ptr<content::WebContents> web_contents,
-      const AppId& app_id,
-      webapps::InstallResultCode code)>;
-  // Load a web app from the given URL and check for valid manifest.
-  void LoadWebAppAndCheckManifest(const GURL& url,
-                                  WebAppUrlLoader* url_loader,
-                                  LoadWebAppAndCheckManifestCallback callback);
-
   // Checks a WebApp installability, retrieves manifest and icons and
   // then performs the actual installation.
   void InstallWebAppFromManifest(content::WebContents* web_contents,
@@ -172,15 +163,6 @@ class WebAppInstallTask : content::WebContentsObserver {
 
   void OnWebAppUrlLoadedGetWebAppInstallInfo(const GURL& url_to_load,
                                              WebAppUrlLoader::Result result);
-
-  void OnWebAppUrlLoadedCheckAndRetrieveManifest(
-      const GURL& url_to_load,
-      content::WebContents* web_contents,
-      WebAppUrlLoader::Result result);
-  void OnWebAppInstallabilityChecked(blink::mojom::ManifestPtr opt_manifest,
-                                     const GURL& manifest_url,
-                                     bool valid_manifest_for_web_app,
-                                     bool is_installable);
 
   void OnGetWebAppInstallInfo(std::unique_ptr<WebAppInstallInfo> web_app_info);
 

@@ -15,6 +15,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
@@ -77,6 +78,8 @@ class WebAppRegistrar : public ProfileManagerObserver {
 
   void SetSubsystems(WebAppPolicyManager* policy_manager,
                      WebAppTranslationManager* translation_manager);
+
+  base::WeakPtr<WebAppRegistrar> AsWeakPtr();
 
   // Returns an AppId if there exists an app inside the registry that
   // has a specific install_url.
@@ -463,6 +466,8 @@ class WebAppRegistrar : public ProfileManagerObserver {
 #if DCHECK_IS_ON()
   size_t mutations_count_ = 0;
 #endif
+
+  base::WeakPtrFactory<WebAppRegistrar> weak_factory_{this};
 };
 
 // A writable API for the registry model. Mutable WebAppRegistrar must be used

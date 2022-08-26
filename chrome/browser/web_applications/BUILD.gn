@@ -14,6 +14,8 @@ source_set("web_applications") {
     "commands/clear_browsing_data_command.h",
     "commands/externally_managed_install_command.cc",
     "commands/externally_managed_install_command.h",
+    "commands/fetch_installability_for_chrome_management.cc",
+    "commands/fetch_installability_for_chrome_management.h",
     "commands/fetch_manifest_and_install_command.cc",
     "commands/fetch_manifest_and_install_command.h",
     "commands/install_from_info_command.cc",
@@ -505,6 +507,7 @@ source_set("web_applications_unit_tests") {
   sources = [
     "commands/clear_browsing_data_command_unittest.cc",
     "commands/externally_managed_install_command_unittest.cc",
+    "commands/fetch_installability_for_chrome_management_unittest.cc",
     "commands/install_from_sync_command_unittest.cc",
     "commands/install_isolated_app_command_unittest.cc",
     "commands/run_on_os_login_command_unittest.cc",

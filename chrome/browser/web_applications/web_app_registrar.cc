@@ -607,6 +607,10 @@ void WebAppRegistrar::SetSubsystems(
   translation_manager_ = translation_manager;
 }
 
+base::WeakPtr<WebAppRegistrar> WebAppRegistrar::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 absl::optional<AppId> WebAppRegistrar::LookUpAppIdByInstallUrl(
     const GURL& install_url) const {
   for (const WebApp& web_app : GetApps()) {

@@ -66,12 +66,6 @@ class WebAppInstallManager final : public SyncInstallDelegate {
                      WebAppSyncBridge* sync_bridge,
                      WebAppTranslationManager* translation_manager);
 
-  // Loads |web_app_url| in a new WebContents and determines whether it has a
-  // valid manifest. Calls |callback| with results.
-  void LoadWebAppAndCheckManifest(const GURL& web_app_url,
-                                  webapps::WebappInstallSource install_source,
-                                  WebAppManifestCheckCallback callback);
-
   void InstallSubApp(const AppId& parent_app_id,
                      const GURL& install_url,
                      const AppId& expected_app_id,
@@ -150,13 +144,6 @@ class WebAppInstallManager final : public SyncInstallDelegate {
                              OnceInstallCallback callback,
                              const AppId& app_id,
                              webapps::InstallResultCode code);
-
-  void OnLoadWebAppAndCheckManifestCompleted(
-      WebAppInstallTask* task,
-      WebAppManifestCheckCallback callback,
-      std::unique_ptr<content::WebContents> web_contents,
-      const AppId& app_id,
-      webapps::InstallResultCode code);
 
   content::WebContents* EnsureWebContentsCreated();
 

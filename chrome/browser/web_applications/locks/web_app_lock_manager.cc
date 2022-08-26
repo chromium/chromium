@@ -4,7 +4,10 @@
 
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
 
+#include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/task_runner.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/locks/lock.h"
 #include "chrome/browser/web_applications/locks/noop_lock.h"
@@ -121,9 +124,15 @@ WebAppLockManager::UpgradeAndAcquireLock(
   std::unique_ptr<SharedWebContentsWithAppLock> result_lock =
       std::make_unique<SharedWebContentsWithAppLock>(app_ids);
   result_lock->holder_ = std::move(lock->holder_);
+  // TODO(dmurph): Create option for lock acquisition callbacks to always be
+  // posted async. https://crbug.com/1354312
+  auto posted_callback =
+      base::BindOnce(base::IgnoreResult(&base::TaskRunner::PostTask),
+                     base::SequencedTaskRunnerHandle::Get(), FROM_HERE,
+                     std::move(on_lock_acquired));
   bool success = lock_manager_.AcquireLocks(GetAppIdLocks(app_ids),
                                             result_lock->holder_->AsWeakPtr(),
-                                            std::move(on_lock_acquired));
+                                            std::move(posted_callback));
   DCHECK(success);
   return result_lock;
 }
@@ -135,9 +144,15 @@ std::unique_ptr<AppLock> WebAppLockManager::UpgradeAndAcquireLock(
   CHECK(lock->HasLockBeenRequested());
   std::unique_ptr<AppLock> result_lock = std::make_unique<AppLock>(app_ids);
   result_lock->holder_ = std::move(lock->holder_);
+  // TODO(dmurph): Create option for lock acquisition callbacks to always be
+  // posted async. https://crbug.com/1354312
+  auto posted_callback =
+      base::BindOnce(base::IgnoreResult(&base::TaskRunner::PostTask),
+                     base::SequencedTaskRunnerHandle::Get(), FROM_HERE,
+                     std::move(on_lock_acquired));
   bool success = lock_manager_.AcquireLocks(GetAppIdLocks(app_ids),
                                             result_lock->holder_->AsWeakPtr(),
-                                            std::move(on_lock_acquired));
+                                            std::move(posted_callback));
   DCHECK(success);
   return result_lock;
 }

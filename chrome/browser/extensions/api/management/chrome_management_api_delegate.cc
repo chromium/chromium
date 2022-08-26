@@ -32,9 +32,11 @@
 #include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
+#include "chrome/browser/web_applications/commands/fetch_installability_for_chrome_management.h"
 #include "chrome/browser/web_applications/commands/install_from_info_command.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -42,6 +44,7 @@
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_metrics.h"
@@ -576,10 +579,19 @@ void ChromeManagementAPIDelegate::InstallOrLaunchReplacementWebApp(
     return;
   }
 
-  provider->install_manager().LoadWebAppAndCheckManifest(
-      web_app_url, webapps::WebappInstallSource::MANAGEMENT_API,
-      base::BindOnce(&OnWebAppInstallabilityChecked, profile,
-                     std::move(callback)));
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(content::WebContents::CreateParams(profile));
+  web_app::CreateWebAppInstallTabHelpers(web_contents.get());
+
+  base::WeakPtr<content::WebContents> web_contents_ptr =
+      web_contents->GetWeakPtr();
+  provider->command_manager().ScheduleCommand(
+      std::make_unique<web_app::FetchInstallabilityForChromeManagement>(
+          web_app_url, web_contents_ptr, provider->registrar(),
+          std::make_unique<web_app::WebAppUrlLoader>(),
+          std::make_unique<web_app::WebAppDataRetriever>(),
+          base::BindOnce(&OnWebAppInstallabilityChecked, profile,
+                         std::move(callback), std::move(web_contents))));
 }
 
 bool ChromeManagementAPIDelegate::CanContextInstallAndroidApps(
