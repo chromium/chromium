@@ -59176,6 +59176,7 @@ from previous Chrome versions.
   <int value="-171232290" label="ListAllDisplayModes:disabled"/>
   <int value="-171173736" label="VrBrowsingExperimentalFeatures:disabled"/>
   <int value="-170986053" label="EnableManualFallbacksFilling:enabled"/>
+  <int value="-170809452" label="QueryTilesOnStart:enabled"/>
   <int value="-169745744" label="SyncPseudoUSSPreferences:enabled"/>
   <int value="-167744090" label="EnableHomeLauncher:enabled"/>
   <int value="-167420098" label="WebBluetoothNewPermissionsBackend:enabled"/>
@@ -61508,6 +61509,7 @@ from previous Chrome versions.
   <int value="1278580122" label="OrganicRepeatableQueries:enabled"/>
   <int value="1279422279" label="query-tiles-country-code"/>
   <int value="1279584261" label="enable-carrier-switching"/>
+  <int value="1280208275" label="QueryTilesOnStart:disabled"/>
   <int value="1280614081" label="show-overdraw-feedback"/>
   <int value="1281471853" label="UseButtonTranslateBubbleUI:disabled"/>
   <int value="1283908088" label="ImprovedLanguageSettings:disabled"/>
