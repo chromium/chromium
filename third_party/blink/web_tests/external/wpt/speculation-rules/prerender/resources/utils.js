@@ -288,3 +288,88 @@ function test_prerender_defer(fn, label) {
     await post;
   }, label);
 }
+
+/**
+ * Starts prerendering a page from the given referrer `RemoteContextWrapper`,
+ * using `<script type="speculationrules">`.
+ *
+ * See
+ * /html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js
+ * for more details on the `RemoteContextWrapper` framework.
+ *
+ * The returned `RemoteContextWrapper` for the prerendered remote
+ * context will have an extra `url` property, which is used by
+ * @see activatePrerenderRC. (Most `RemoteContextWrapper` uses should not care
+ * about the URL, but prerendering is unique in that you need to navigate to
+ * a prerendered page after creating it.)
+ *
+ * @param {RemoteContextWrapper} referrerRemoteContext
+ * @returns {Promise<RemoteContextWrapper>}
+ */
+async function addPrerenderRC(referrerRemoteContext) {
+  let savedURL;
+  const prerenderedRC = await referrerRemoteContext.helper.createContext({
+    executorCreator(url) {
+      // Save the URL which the remote context helper framework assembled for
+      // us, so that we can attach it to the returned `RemoteContextWrapper`.
+      savedURL = url;
+
+      return referrerRemoteContext.executeScript(url => {
+        const script = document.createElement("script");
+        script.type = "speculationrules";
+        script.textContent = JSON.stringify({
+          prerender: [
+            {
+              source: "list",
+              urls: [url]
+            }
+          ]
+        });
+        document.head.append(script);
+      }, [url]);
+    }
+  });
+
+  prerenderedRC.url = savedURL;
+  return prerenderedRC;
+}
+
+/**
+ * Activates a prerendered RemoteContextWrapper `prerenderedRC` by navigating
+ * the referrer RemoteContextWrapper `referrerRC` to it. If the navigation does
+ * not result in a prerender activation, the returned
+ * promise will be rejected with a testharness.js AssertionError.
+ *
+ * See
+ * /html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js
+ * for more on the RemoteContext helper framework.
+ *
+ * @param {RemoteContextWrapper} referrerRC - The referrer
+ *     `RemoteContextWrapper` in which the prerendering was triggered,
+ *     probably via `addPrerenderRC()`.
+ * @param {RemoteContextWrapper} prerenderedRC - The `RemoteContextWrapper`
+ *     pointing to the prerendered content. This is monitored to ensure the
+ *     navigation results in a prerendering activation.
+ * @returns {Promise<undefined>}
+ */
+async function activatePrerenderRC(referrerRC, prerenderedRC) {
+  // Store a promise that will fulfill when the prerenderingchange event fires.
+  await prerenderedRC.executeScript(() => {
+    window.activatedPromise = new Promise(resolve => {
+      document.addEventListener("prerenderingchange", () => resolve("activated"));
+    });
+  });
+
+  // Activate the prerendered page.
+  referrerRC.navigateTo(prerenderedRC.url);
+
+  // Wait until that event fires. If the activation fails and a normal
+  // navigation happens instead, then prerenderedRC will start pointing to that
+  // other page, where window.activatedPromise is undefined. In that case this
+  // assert will fail since undefined !== "activated".
+  assert_equals(
+    await prerenderedRC.executeScript(() => window.activatedPromise),
+    "activated",
+    "The prerendered page must be activated; instead a normal navigation happened."
+  );
+}
