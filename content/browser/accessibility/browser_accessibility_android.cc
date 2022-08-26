@@ -351,6 +351,9 @@ bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
 
   // Walk up the ancestry. A non-focusable child of a control is not
   // interesting. A child of an invisible iframe is also not interesting.
+  // A link is never a leaf node so that its children can be navigated
+  // when swiping by heading, landmark, etc. So we will also mark the
+  // children of a link as not interesting to prevent double utterances.
   const BrowserAccessibility* parent = PlatformGetParent();
   while (parent) {
     if (ui::IsControl(parent->GetRole()) && !IsFocusable())
@@ -360,6 +363,9 @@ bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
         parent->IsInvisibleOrIgnored()) {
       return false;
     }
+
+    if (parent->GetRole() == ax::mojom::Role::kLink)
+      return false;
 
     parent = parent->PlatformGetParent();
   }
