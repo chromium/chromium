@@ -167,15 +167,13 @@ to the release branch you are merging to (available on
 [Chromium Dash](https://chromiumdash.appspot.com/branches) in the "Chromium"
 column).
 
-Once the cherry-pick CL is prepared, you can have it approved and landed by
-adding Rubber Stamper (rubber-stamper@appspot.gserviceaccount.com) as a
-reviewer and setting Auto-Submit+1; the Rubber Stamper bot will approve by
-voting *Bot-Commit+1* label and submit the CL to CQ on your behalf.
-*Bot-Commit* is a label voted by bots to bypass code review.
-
-*Note: the Rubber Stamper does not provide OWNERS approval, and only works
-within 7 days of the original change; Googlers can learn more
-[here](https://goto.google.com/rubber-stamper-user-guide).*
+Once the cherry-pick CL is prepared, you can bypass code review (but not
+OWNERS approval) within 7 days of the original change by adding the Rubber
+Stamper bot (rubber-stamper@appspot.gserviceaccount.com) as a reviewer. If the
+CL meets the
+[Rubber Stamper criteria](https://chromium.googlesource.com/infra/infra/+/refs/heads/main/go/src/infra/appengine/rubber-stamper/README.md),
+the bot will vote *Bot-Commit+1* to bypass code review. If the CL is marked
+*Auto-Submit+1*, the bot will also submit the CL to the CQ on your behalf.
 
 ### Using git
 
