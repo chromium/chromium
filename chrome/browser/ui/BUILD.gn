@@ -1820,10 +1820,6 @@ static_library("ui") {
     }
   }
 
-  if (enable_paint_preview) {
-    deps += [ "//components/paint_preview/browser" ]
-  }
-
   if (enable_supervised_users) {
     sources += [
       "webui/family_link_user_internals/family_link_user_internals_message_handler.cc",

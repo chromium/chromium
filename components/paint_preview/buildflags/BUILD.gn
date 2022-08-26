@@ -11,5 +11,5 @@ import("//build/config/buildflags_paint_preview.gni")
 buildflag_header("buildflags") {
   header = "buildflags.h"
 
-  flags = [ "ENABLE_PAINT_PREVIEW=$enable_paint_preview" ]
+  flags = [ "ENABLE_PAINT_PREVIEW=false" ]
 }

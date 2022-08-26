@@ -1,7 +1,0 @@
-include_rules = [
-  "+components/browser_ui/styles/android",
-  "+content/public/android/java/src/org/chromium/content/browser",
-  "+content/public/android/java/src/org/chromium/content_public",
-  "+ui/accessibility",
-  "+ui/android",
-]

@@ -452,7 +452,6 @@ test("components_unittests") {
       "//components/messages/android:java",
       "//components/messages/android:unit_tests",
       "//components/offline_items_collection/core:native_java_unittests_java",
-      "//components/paint_preview/browser/android:java",
       "//components/payments/content/android",
       "//components/permissions/android:java",
       "//components/policy/android:native_test_support_java",

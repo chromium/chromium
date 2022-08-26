@@ -3915,19 +3915,6 @@ if (!is_android) {
         ]
       }
     }
-    if (enable_paint_preview) {
-      sources += [
-        "../browser/paint_preview/paint_preview_browsertest.cc",
-        "../browser/paint_preview/paint_preview_compositor_browsertest.cc",
-      ]
-      deps += [
-        "//components/paint_preview/browser",
-        "//components/paint_preview/browser:test_support",
-        "//components/paint_preview/common",
-        "//components/paint_preview/common:test_utils",
-        "//components/services/paint_preview_compositor/public/mojom",
-      ]
-    }
     if (use_brlapi) {
       deps += [ "//third_party/libbrlapi" ]
     } else if (enable_extensions) {
@@ -5216,7 +5203,6 @@ test("unit_tests") {
     "//components/page_load_metrics/browser:test_support",
     "//components/page_load_metrics/common",
     "//components/page_load_metrics/common:test_support",
-    "//components/paint_preview/common/mojom",
     "//components/password_manager/content/browser",
     "//components/payments/content",
     "//components/payments/content:test_support",
@@ -5590,13 +5576,6 @@ test("unit_tests") {
         "//chrome/updater:browser_sources",
       ]
     }
-  }
-
-  if (enable_paint_preview) {
-    sources += [
-      "../browser/paint_preview/services/paint_preview_tab_service_unittest.cc",
-    ]
-    deps += [ "//chrome/browser/paint_preview:services" ]
   }
 
   # TODO(crbug.com/931218): Ninja cannot handle certain characters appearing

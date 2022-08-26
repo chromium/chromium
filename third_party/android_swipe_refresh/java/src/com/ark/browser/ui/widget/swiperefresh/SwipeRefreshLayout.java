@@ -34,6 +34,7 @@ import android.view.animation.Transformation;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.ark.browser.ui.drawable.MaterialProgressDrawable;
 import com.ark.browser.ui.widget.CircleImageView;
 
 /**

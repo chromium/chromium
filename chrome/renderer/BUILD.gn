@@ -328,10 +328,6 @@ static_library("renderer") {
     ]
   }
 
-  if (enable_paint_preview) {
-    deps += [ "//components/paint_preview/renderer" ]
-  }
-
   if (is_win) {
     deps += [ "//third_party/wtl" ]
     sources += [

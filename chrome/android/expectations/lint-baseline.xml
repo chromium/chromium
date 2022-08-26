@@ -6999,17 +6999,6 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: ExitCause.PULL_TO_REFRESH, ExitCause.SNACK_BAR_ACTION, ExitCause.COMPOSITOR_FAILURE, ExitCause.TAB_FINISHED_LOADING, ExitCause.LINK_CLICKED, ExitCause.NAVIGATION_STARTED, ExitCause.TAB_DESTROYED, ExitCause.TAB_HIDDEN, ExitCause.OFFLINE_AVAILABLE, ExitCause.ACCESSIBILITY_NOT_SUPPORTED"
-        errorLine1="                &quot;Browser.PaintPreview.TabbedPlayer.ExitCause&quot;, exitCause, ExitCause.COUNT);"
-        errorLine2="                                                                                    ~~~~~">
-        <location
-            file="../../chrome/browser/paint_preview/android/java/src/org/chromium/chrome/browser/paint_preview/StartupPaintPreviewMetrics.java"
-            line="131"
-            column="85"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: LoadDecisionReason.DISABLED_BY_INTENT, LoadDecisionReason.INCOGNITO, LoadDecisionReason.INTENT_IGNORED, LoadDecisionReason.NO_URL, LoadDecisionReason.NO_TAB_CREATOR, LoadDecisionReason.WRONG_TAB_CREATOR, LoadDecisionReason.DISABLED_BY_FEATURE, LoadDecisionReason.ALL_SATISFIED"
         errorLine1="                    getLoadDecisionReason(), LoadDecisionReason.NUM_ENTRIES);"
         errorLine2="                                                                ~~~~~~~~~~~">

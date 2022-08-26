@@ -45,7 +45,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler.IntentHandlerDelegate;
@@ -90,8 +89,6 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.navigation_predictor.NavigationPredictorBridge;
 import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionController;
 import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionRationaleDialogController;
-import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
-import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelperSupplier;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -250,9 +247,6 @@ public class ChromeTabbedActivity extends ChromeActivity
     private boolean mOverviewShownOnStart;
 
     private NextTabPolicySupplier mNextTabPolicySupplier;
-
-    private final UnownedUserDataSupplier<StartupPaintPreviewHelper>
-            mStartupPaintPreviewHelperSupplier = new StartupPaintPreviewHelperSupplier();
 
     private final OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
             new OneshotSupplierImpl<>();
@@ -1126,8 +1120,6 @@ public class ChromeTabbedActivity extends ChromeActivity
         supportRequestWindowFeature(Window.FEATURE_ACTION_MODE_OVERLAY);
 
         IncognitoTabHostRegistry.getInstance().register(mIncognitoTabHost);
-
-        mStartupPaintPreviewHelperSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
     }
 
     @Override
@@ -1159,13 +1151,6 @@ public class ChromeTabbedActivity extends ChromeActivity
         mInactivityTracker = new ChromeInactivityTracker(
                 ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF);
         TabUsageTracker.initialize(this.getLifecycleDispatcher(), tabModelSelector);
-
-        if (StartupPaintPreviewHelper.isEnabled()) {
-            StartupPaintPreviewHelper paintPreviewHelper = new StartupPaintPreviewHelper(
-                    getWindowAndroid(), getOnCreateTimestampMs(), getBrowserControlsManager(),
-                    getTabModelSelector(), false);
-            mStartupPaintPreviewHelperSupplier.set(paintPreviewHelper);
-        }
     }
 
     private boolean shouldIgnoreIntent() {
@@ -1631,10 +1616,6 @@ public class ChromeTabbedActivity extends ChromeActivity
         if (mAppIndexingUtil != null) {
             mAppIndexingUtil.destroy();
             mAppIndexingUtil = null;
-        }
-
-        if (mStartupPaintPreviewHelperSupplier != null) {
-            mStartupPaintPreviewHelperSupplier.destroy();
         }
 
         IncognitoTabHostRegistry.getInstance().unregister(mIncognitoTabHost);

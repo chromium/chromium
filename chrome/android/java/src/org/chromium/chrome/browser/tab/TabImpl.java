@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
-import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
@@ -1391,10 +1390,6 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
      * history load are used.
      */
     private final void restoreIfNeeded() {
-        // Attempts to display the Paint Preview representation of this Tab. Please note that this
-        // is behind an experimental flag (crbug.com/1008520).
-        if (isFrozen()) StartupPaintPreviewHelper.showPaintPreviewOnRestore(this);
-
         try {
             TraceEvent.begin("Tab.restoreIfNeeded");
             // Restore is needed for a tab that is loaded for the first time. WebContents will
