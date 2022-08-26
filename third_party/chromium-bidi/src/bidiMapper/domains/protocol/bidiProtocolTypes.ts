@@ -492,6 +492,11 @@ export namespace Script {
     result: ScriptResult;
   };
 
+  export type Source = {
+    realm: Realm;
+    context?: CommonDataTypes.BrowsingContext;
+  };
+
   export type StackTrace = {
     callFrames: StackFrame[];
   };
@@ -716,6 +721,7 @@ export namespace Log {
 
   export type BaseLogEntry = {
     level: LogLevel;
+    source: Script.Source;
     text: string | null;
     timestamp: number;
     stackTrace?: Script.StackTrace;
@@ -728,7 +734,6 @@ export namespace Log {
   export type ConsoleLogEntry = BaseLogEntry & {
     type: 'console';
     method: string;
-    realm: Script.Realm;
     args: CommonDataTypes.RemoteValue[];
   };
 

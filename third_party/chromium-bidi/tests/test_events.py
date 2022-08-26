@@ -17,13 +17,25 @@ from _helpers import *
 
 
 @pytest.mark.asyncio
-async def test_consoleLog_logEntryAddedEventEmitted(websocket, context_id):
+async def test_consoleLog_textAndArgs(websocket, context_id):
     # Send command.
     await send_JSON_command(websocket, {
         "id": 33,
         "method": "script.evaluate",
         "params": {
-            "expression": "console.log('some log message','line 2')",
+            "expression": "console.log("
+                          "window, "
+                          "undefined, "
+                          "null,"
+                          "42, "
+                          "'text', "
+                          "false, "
+                          "123n, "
+                          "/abc/g, "
+                          "[1, 'str'], "
+                          "{a:1}, "
+                          "new Map([['key1', 'value1']]), "
+                          "new Set(['value1']))",
             "target": {"context": context_id},
             "awaitPromise": True}})
 
@@ -36,7 +48,22 @@ async def test_consoleLog_logEntryAddedEventEmitted(websocket, context_id):
         "params": {
             # BaseLogEntry
             "level": "info",
-            "text": "some log message\u0020line 2",
+            "source": {
+                "realm": any_string,
+                "context": context_id
+            },
+            "text": "window "
+                    "undefined "
+                    "null "
+                    "42 "
+                    "text "
+                    "false "
+                    "123 "
+                    "/abc/g "
+                    "Array(2) "
+                    "Object(1) "
+                    "Map(1) "
+                    "Set(1)",
             "timestamp": any_timestamp,
             "stackTrace": {
                 "callFrames": [{
@@ -47,59 +74,34 @@ async def test_consoleLog_logEntryAddedEventEmitted(websocket, context_id):
             # ConsoleLogEntry
             "type": "console",
             "method": "log",
-            "realm": context_id,
-            "args": [{
-                "type": "string",
-                "value": "some log message"}, {
-                "type": "string",
-                "value": "line 2"}]}},
-        event_response)
-
-
-@pytest.mark.asyncio
-async def test_consoleLogWithNullUndefinedValues_logEntryAddedEventEmitted(
-      websocket, context_id):
-    # Send command.
-    await send_JSON_command(websocket, {
-        "id": 33,
-        "method": "script.evaluate",
-        "params": {
-            "expression": "console.log(null, undefined)",
-            "target": {"context": context_id},
-            "awaitPromise": True}})
-
-    # Wait for responses
-    event_response = await wait_for_event(websocket, "log.entryAdded")
-
-    # Assert "log.entryAdded" event emitted.
-    recursive_compare({
-        "method": "log.entryAdded",
-        "params": {
-            # BaseLogEntry
-            "level": "info",
-            "text": "null\u0020undefined",
-            "timestamp": any_timestamp,
-            "stackTrace": {
-                "callFrames": [{
-                    "url": "",
-                    "functionName": "",
-                    "lineNumber": 0,
-                    "columnNumber": 8}]},
-            # ConsoleLogEntry
-            "type": "console",
-            "method": "log",
-            "realm": context_id,
             "args": [
-                {"type": "null"},
-                {"type": "undefined"}]}},
+                {'type': 'window'},
+                {'type': 'undefined'},
+                {'type': 'null'},
+                {'type': 'number', 'value': 42},
+                {'type': 'string', 'value': 'text'},
+                {'type': 'boolean', 'value': False},
+                {"type": "bigint", "value": "123"},
+                {"type": "regexp", "value": {"pattern": "abc", "flags": "g"}},
+                {"type": "array", "value": [
+                    {"type": "number", "value": 1},
+                    {"type": "string", "value": "str"}]},
+                {"type": "object", "value": [[
+                    "a",
+                    {"type": "number", "value": 1}]]},
+                {"type": "map", "value": [[
+                    "key1",
+                    {"type": "string", "value": "value1"}]]},
+                {"type": "set", "value": [
+                    {"type": "string", "value": "value1"}]}
+            ]}},
         event_response)
 
 
 @pytest.mark.asyncio
-async def test_consoleInfo_logEntryWithMethodInfoEmitted(websocket, context_id):
+async def test_consoleInfo_levelAndMethodAreCorrect(websocket, context_id):
     # Send command.
     await send_JSON_command(websocket, {
-        "id": 43,
         "method": "script.evaluate",
         "params": {
             "expression": "console.info('some log message')",
@@ -112,14 +114,52 @@ async def test_consoleInfo_logEntryWithMethodInfoEmitted(websocket, context_id):
     # Assert method "info".
     assert event_response["method"] == "log.entryAdded"
     assert event_response["params"]["method"] == "info"
+    assert event_response["params"]["level"] == "info"
 
 
 @pytest.mark.asyncio
-async def test_consoleError_logEntryWithMethodErrorEmitted(websocket,
-      context_id):
+async def test_consoleDebug_levelAndMethodAreCorrect(websocket, context_id):
     # Send command.
     await send_JSON_command(websocket, {
-        "id": 44,
+        "method": "script.evaluate",
+        "params": {
+            "expression": "console.debug('some log message')",
+            "target": {"context": context_id},
+            "awaitPromise": True}})
+
+    # Wait for responses
+    event_response = await wait_for_event(websocket, "log.entryAdded")
+
+    # Assert method "error".
+    assert event_response["method"] == "log.entryAdded"
+    assert event_response["params"]["method"] == "debug"
+    assert event_response["params"]["level"] == "debug"
+
+
+@pytest.mark.asyncio
+async def test_consoleWarn_levelAndMethodAreCorrect(websocket, context_id):
+    # Send command.
+    await send_JSON_command(websocket, {
+        "method": "script.evaluate",
+        "params": {
+            "expression": "console.warn('some log message')",
+            "target": {"context": context_id},
+            "awaitPromise": True}})
+
+    # Wait for responses
+    event_response = await wait_for_event(websocket, "log.entryAdded")
+
+    # Assert method "error".
+    assert event_response["method"] == "log.entryAdded"
+    # Method is `console.warn`, while the level is `warning`.
+    assert event_response["params"]["method"] == "warn"
+    assert event_response["params"]["level"] == "warning"
+
+
+@pytest.mark.asyncio
+async def test_consoleError_levelAndMethodAreCorrect(websocket, context_id):
+    # Send command.
+    await send_JSON_command(websocket, {
         "method": "script.evaluate",
         "params": {
             "expression": "console.error('some log message')",
@@ -132,79 +172,46 @@ async def test_consoleError_logEntryWithMethodErrorEmitted(websocket,
     # Assert method "error".
     assert event_response["method"] == "log.entryAdded"
     assert event_response["params"]["method"] == "error"
+    assert event_response["params"]["level"] == "error"
 
 
 @pytest.mark.asyncio
 async def test_consoleLog_logEntryAddedFormatOutput(websocket, context_id):
+    format_string = "format specifier, string: %s, integer: %d, " \
+                    "negative: %i, float: %f, %o, %O, %c EOL"
+    string_arg = "'SOME_STRING'"
+    number_arg = "1"
+    negative_number_arg = "-2"
+    float_arg = "1.234"
+    obj_arg = "{id: 1, 'font-size': '20px'}"
+
+    expected_text = 'format specifier, string: SOME_STRING, integer: 1, ' \
+                    'negative: -2, float: 1.234, ' \
+                    '{\"id\":1,\"font-size\":\"20px\"}, ' \
+                    '{\"id\":1,\"font-size\":\"20px\"}, ' \
+                    '{\"id\":1,\"font-size\":\"20px\"} EOL'
+
     # Send command.
     await send_JSON_command(websocket, {
         "id": 55,
         "method": "script.evaluate",
         "params": {
-            "expression": "console.log('format specificier, string: %s, "
-                          "integer: %d, integer: %i, float: %f, %o, %O, %c',"
-                          "'line 2', 1, -2, 1.234, 'abc', {id: 1}, "
-                          "{'font-size': '20px'})",
+            "expression": f"console.log('"
+                          f"{format_string}', "
+                          f"{string_arg}, "
+                          f"{number_arg}, "
+                          f"{negative_number_arg}, "
+                          f"{float_arg}, "
+                          f"{obj_arg}, "
+                          f"{obj_arg}, "
+                          f"{obj_arg})",
             "target": {"context": context_id},
             "awaitPromise": True}})
 
     # Wait for responses
-    event_response = await wait_for_event(websocket, "log.entryAdded")
+    response = await wait_for_event(websocket, "log.entryAdded")
 
-    # Assert "log.entryAdded" event emitted.
-    recursive_compare({
-        "method": "log.entryAdded",
-        "params": {
-            # BaseLogEntry
-            "level": "info",
-            "text": "format specificier, string: line 2, integer: 1, integer: "
-                    "-2, float: 1.234, \"abc\", {\"id\": 1}, {\"font-size\": "
-                    "\"20px\"}",
-            "timestamp": any_timestamp,
-            "stackTrace": {
-                "callFrames": [{
-                    "url": "",
-                    "functionName": "",
-                    "lineNumber": 0,
-                    "columnNumber": 8}]},
-            # ConsoleLogEntry
-            "type": "console",
-            "method": "log",
-            "realm": context_id,
-            "args": [{
-                "type": "string",
-                "value": "format specificier, string: %s, integer: %d, "
-                         "integer: %i, float: %f, %o, %O, %c"
-            }, {
-                "type": "string",
-                "value": "line 2"
-            }, {
-                "type": "number",
-                "value": 1
-            }, {
-                "type": "number",
-                "value": -2
-            }, {
-                "type": "number",
-                "value": 1.234
-            }, {
-                "type": "string",
-                "value": "abc"
-            }, {
-                "type": "object",
-                "value": [
-                    ["id", {
-                        "type": "number",
-                        "value": 1
-                    }]]
-            }, {
-                "type": "object",
-                "value": [[
-                    "font-size", {
-                        "type": "string",
-                        "value": "20px"
-                    }]]}]}},
-        event_response)
+    assert response["params"]["text"] == expected_text
 
 
 @pytest.mark.asyncio
@@ -229,6 +236,10 @@ async def test_exceptionThrown_logEntryAddedEventEmitted(websocket, context_id):
             "params": {
                 # BaseLogEntry
                 "level": "error",
+                "source": {
+                    "realm": any_string,
+                    "context": context_id
+                },
                 "text": "Error: some error",
                 "timestamp": any_timestamp,
                 "stackTrace": {
@@ -238,6 +249,5 @@ async def test_exceptionThrown_logEntryAddedEventEmitted(websocket, context_id):
                         "lineNumber": 0,
                         "columnNumber": 14}]},
                 # ConsoleLogEntry
-                "type": "javascript",
-                "realm": context_id}},
+                "type": "javascript"}},
         event_response)

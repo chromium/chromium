@@ -82,12 +82,16 @@ export class LogManager {
         await this.#bidiServer.sendMessage(
           new Log.LogEntryAddedEvent({
             level: LogManager.#getLogLevel(params.type),
+            source: {
+              realm: params.executionContextId.toString(),
+              context: this.#contextId,
+            },
             text: getRemoteValuesText(args, true),
-            timestamp: params.timestamp,
+            timestamp: Math.round(params.timestamp),
             stackTrace: LogManager.#getBidiStackTrace(params.stackTrace),
             type: 'console',
-            method: params.type,
-            realm: this.#contextId,
+            // Console method is `warn`, not `warning`.
+            method: params.type === 'warning' ? 'warn' : params.type,
             args: args,
           })
         );
@@ -116,27 +120,33 @@ export class LogManager {
         await this.#bidiServer.sendMessage(
           new Log.LogEntryAddedEvent({
             level: 'error',
+            source: {
+              // TODO sadym: add proper realm handling.
+              realm: (
+                params.exceptionDetails.executionContextId ?? 'UNKNOWN'
+              ).toString(),
+              context: this.#contextId,
+            },
             text,
-            timestamp: params.timestamp,
+            timestamp: Math.round(params.timestamp),
             stackTrace: LogManager.#getBidiStackTrace(
               params.exceptionDetails.stackTrace
             ),
             type: 'javascript',
-            realm: this.#contextId,
           })
         );
       }
     );
   }
 
-  static #getLogLevel(consoleAPIType: string): Log.LogLevel {
-    if (consoleAPIType in ['error', 'assert']) {
+  static #getLogLevel(consoleApiType: string): Log.LogLevel {
+    if (['assert', 'error'].includes(consoleApiType)) {
       return 'error';
     }
-    if (consoleAPIType in ['debug', 'trace']) {
+    if (['debug', 'trace'].includes(consoleApiType)) {
       return 'debug';
     }
-    if (consoleAPIType in ['warning', 'warn']) {
+    if (['warn', 'warning'].includes(consoleApiType)) {
       return 'warning';
     }
     return 'info';
