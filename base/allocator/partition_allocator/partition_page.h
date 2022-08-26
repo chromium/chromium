@@ -310,7 +310,7 @@ struct SlotSpanMetadata {
   //
   // Note, this declaration is kept in the header as opposed to an anonymous
   // namespace so the getter can be fully inlined.
-  static inline SlotSpanMetadata sentinel_slot_span_;
+  static SlotSpanMetadata sentinel_slot_span_;
   // For the sentinel.
   constexpr SlotSpanMetadata() noexcept
       : marked_full(0),

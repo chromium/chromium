@@ -134,6 +134,10 @@ PA_ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::RegisterEmpty() {
         root->empty_slot_spans_dirty_bytes / 2, max_empty_dirty_bytes));
   }
 }
+// static
+template <bool thread_safe>
+SlotSpanMetadata<thread_safe>
+    SlotSpanMetadata<thread_safe>::sentinel_slot_span_;
 
 // static
 template <bool thread_safe>
