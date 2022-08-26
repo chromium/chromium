@@ -129,14 +129,15 @@ void ElementRareData::RemovePopupData() {
     super_rare_data_->RemovePopupData();
 }
 
-CSSToggleMap& ElementSuperRareData::EnsureToggleMap() {
+CSSToggleMap& ElementSuperRareData::EnsureToggleMap(Element* owner_element) {
+  DCHECK(!toggle_map_ || toggle_map_->OwnerElement() == owner_element);
   if (!toggle_map_)
-    toggle_map_ = MakeGarbageCollected<CSSToggleMap>();
+    toggle_map_ = MakeGarbageCollected<CSSToggleMap>(owner_element);
   return *toggle_map_;
 }
 
-CSSToggleMap& ElementRareData::EnsureToggleMap() {
-  return EnsureSuperRareData().EnsureToggleMap();
+CSSToggleMap& ElementRareData::EnsureToggleMap(Element* owner_element) {
+  return EnsureSuperRareData().EnsureToggleMap(owner_element);
 }
 
 ElementInternals& ElementSuperRareData::EnsureElementInternals(

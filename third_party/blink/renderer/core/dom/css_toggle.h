@@ -5,21 +5,60 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_CSS_TOGGLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_CSS_TOGGLE_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/style/toggle_root.h"
 
 namespace blink {
 
+class CSSToggleData;
+class CSSToggleMap;
 class Element;
+class ExceptionState;
+class V8CSSToggleCycle;
+class V8CSSToggleScope;
+class V8UnionStringOrUnsignedLong;
+class V8UnionStringArrayOrUnsignedLong;
 
-// TODO(https://crbug.com/1250716) inherit from EventTargetWithInlineData
 class CORE_EXPORT CSSToggle : public ScriptWrappable, public ToggleRoot {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit CSSToggle(const ToggleRoot& root);
+  CSSToggle(const ToggleRoot& root, CSSToggleMap& owner_toggle_map);
+  CSSToggle(const AtomicString& name,
+            States states,
+            State initial_state,
+            ToggleOverflow overflow,
+            bool is_group,
+            ToggleScope scope);
   CSSToggle(const CSSToggle&) = delete;
   ~CSSToggle() override;
+
+  void Trace(Visitor*) const override;
+
+  CSSToggleMap* OwnerToggleMap() const { return owner_toggle_map_; }
+  Element* OwnerElement() const;
+
+  // CSSToggle API
+  V8UnionStringOrUnsignedLong* value();
+  void setValue(const V8UnionStringOrUnsignedLong* value);
+  absl::optional<unsigned> valueAsNumber();
+  void setValueAsNumber(absl::optional<unsigned> value,
+                        ExceptionState& exception_state);
+  String valueAsString();
+  void setValueAsString(const String& value, ExceptionState& exception_state);
+  V8UnionStringArrayOrUnsignedLong* states();
+  void setStates(const V8UnionStringArrayOrUnsignedLong* value,
+                 ExceptionState& exception_state);
+  bool group();
+  void setGroup(bool group);
+  V8CSSToggleScope scope();
+  void setScope(V8CSSToggleScope scope);
+  V8CSSToggleCycle cycle();
+  void setCycle(V8CSSToggleCycle cycle);
+  static CSSToggle* Create(ExceptionState& exception_state);
+  static CSSToggle* Create(CSSToggleData* options,
+                           ExceptionState& exception_state);
 
   // For Toggles, the concept is referred to as the value rather than
   // the initial state (as it is for toggle-root values, also known as
@@ -27,15 +66,29 @@ class CORE_EXPORT CSSToggle : public ScriptWrappable, public ToggleRoot {
   const State& InitialState() const = delete;
   const State& Value() const { return value_; }
 
-  void SetValue(const State& value, Element* toggle_element);
+  void ChangeOwner(CSSToggleMap& owner_toggle_map, const AtomicString& name) {
+    owner_toggle_map_ = &owner_toggle_map;
+    name_ = name;
+  }
+
+  void SetValue(const State& value);
+  void MakeRestOfToggleGroupZero();
 
   enum class PostRecalcAt : uint8_t {
-    NOW = 0,
-    LATER = 1,
+    kNow = 0,
+    kLater = 1,
   };
   void SetNeedsStyleRecalc(Element* toggle_element, PostRecalcAt when);
 
   bool ValueMatches(const State& other) const;
+
+ private:
+  void setStatesInternal(const States& states, ExceptionState& exception_state);
+  void SetValueAndCheckGroup(const State& value);
+  void SetLaterSiblingsNeedStyleRecalc(Element* toggle_element,
+                                       PostRecalcAt when);
+
+  Member<CSSToggleMap> owner_toggle_map_;
 };
 
 }  // namespace blink

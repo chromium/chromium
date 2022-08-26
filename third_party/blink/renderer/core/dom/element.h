@@ -1637,8 +1637,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // avoid recalc if neither parent nor child matched any non-universal rules.
   bool CanSkipRecalcForHighlightPseudos(const ComputedStyle& new_style) const;
 
-  static void ChangeToggle(Element* toggle_element,
-                           CSSToggle* toggle,
+  static void ChangeToggle(CSSToggle* toggle,
                            const ToggleTrigger& action,
                            const ToggleRoot* override_spec);
   void FireToggleChangeEvent(CSSToggle* toggle);

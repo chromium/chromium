@@ -8931,14 +8931,15 @@ CSSToggleMap* Element::GetToggleMap() {
 }
 
 CSSToggleMap& Element::EnsureToggleMap() {
-  return EnsureElementRareData().EnsureToggleMap();
+  return EnsureElementRareData().EnsureToggleMap(this);
 }
 
 void Element::CreateToggles(const ToggleRootList* toggle_roots) {
   const auto& roots = toggle_roots->Roots();
   DCHECK(!roots.IsEmpty());
 
-  auto& toggles = EnsureToggleMap().Toggles();
+  CSSToggleMap& toggle_map = EnsureToggleMap();
+  auto& toggles = toggle_map.Toggles();
   for (const ToggleRoot& root : roots) {
     // We want to leave the table unmodified if the key is already present, as
     // described in https://tabatkins.github.io/css-toggle/#toggle-creation
@@ -8946,9 +8947,9 @@ void Element::CreateToggles(const ToggleRootList* toggle_roots) {
     // what HashMap::insert() does.
     auto insert_result = toggles.insert(root.Name(), nullptr);
     if (insert_result.is_new_entry) {
-      CSSToggle* toggle = MakeGarbageCollected<CSSToggle>(root);
+      CSSToggle* toggle = MakeGarbageCollected<CSSToggle>(root, toggle_map);
       insert_result.stored_value->value = toggle;
-      toggle->SetNeedsStyleRecalc(this, CSSToggle::PostRecalcAt::LATER);
+      toggle->SetNeedsStyleRecalc(this, CSSToggle::PostRecalcAt::kLater);
     }
   }
 }
@@ -8992,6 +8993,8 @@ void Element::FireToggleActivation(const ToggleTrigger& activation) {
   if (!toggle)
     return;
 
+  DCHECK_EQ(toggle->OwnerElement(), element);
+
   const ToggleRoot* toggle_specifier = nullptr;
   if (const ComputedStyle* style = element->GetComputedStyle()) {
     if (const ToggleRootList* toggle_root = style->ToggleRoot()) {
@@ -9003,128 +9006,12 @@ void Element::FireToggleActivation(const ToggleTrigger& activation) {
     }
   }
 
-  ChangeToggle(element, toggle, activation, toggle_specifier);
+  ChangeToggle(toggle, activation, toggle_specifier);
   element->FireToggleChangeEvent(toggle);
 }
 
-static std::pair<Element*, ToggleScope> FindToggleGroupElement(
-    Element* toggle_element,
-    const AtomicString& name) {
-  Element* element = toggle_element;
-  bool allow_narrow_scope = true;
-  do {
-    Element* parent = element->parentElement();
-    if (!parent) {
-      // An element is in the root's group if we don't find any other group.
-      //
-      // TODO(https://github.com/tabatkins/css-toggle/issues/23): See if the
-      // spec ends up describing it this way.
-      return std::make_pair(element, ToggleScope::kNarrow);
-    }
-
-    if (const ComputedStyle* style = element->GetComputedStyle()) {
-      if (const ToggleGroupList* toggle_groups = style->ToggleGroup()) {
-        for (const auto& group : toggle_groups->Groups()) {
-          if (group.Name() == name &&
-              (allow_narrow_scope || group.Scope() == ToggleScope::kWide)) {
-            return std::make_pair(element, group.Scope());
-          }
-        }
-      }
-    }
-
-    if (Element* sibling = ElementTraversal::PreviousSibling(*element)) {
-      allow_narrow_scope = false;
-      element = sibling;
-      continue;
-    }
-
-    allow_narrow_scope = true;
-
-    element = parent;
-  } while (true);
-}
-
-static void MakeRestOfToggleGroupZero(Element* toggle_element,
-                                      const AtomicString& name) {
-  // We do not attempt to maintain any persistent state representing toggle
-  // groups, since doing so without noticeable overhead would require a decent
-  // amount of code.  Instead, we will simply find the elements in the toggle
-  // group here.  If this turns out to be too slow, we could try to maintain
-  // data structures to represent groups, but doing so requires monitoring
-  // style changes on *elements*.
-
-  using State = ToggleRoot::State;
-
-  auto [toggle_group_element, toggle_scope] =
-      FindToggleGroupElement(toggle_element, name);
-  Element* stay_within;
-  switch (toggle_scope) {
-    case ToggleScope::kNarrow:
-      stay_within = toggle_group_element;
-      break;
-    case ToggleScope::kWide:
-      stay_within = toggle_group_element->parentElement();
-      break;
-  }
-
-  Element* e = toggle_group_element;
-  do {
-    if (e == toggle_element) {
-      e = ElementTraversal::Next(*e, stay_within);
-      continue;
-    }
-    if (e != toggle_group_element) {
-      // Skip descendants in a different group.
-      //
-      // TODO(dbaron): What if style is null?  See
-      // https://github.com/tabatkins/css-toggle/issues/24 .
-      if (const ComputedStyle* style = e->GetComputedStyle()) {
-        if (const ToggleGroupList* toggle_groups = style->ToggleGroup()) {
-          bool found_group = false;  // to continue the outer loop
-          for (const ToggleGroup& group : toggle_groups->Groups()) {
-            if (group.Name() == name) {
-              // TODO(https://github.com/tabatkins/css-toggle/issues/25):
-              // Consider multiple occurrences of the same name.
-              switch (group.Scope()) {
-                case ToggleScope::kWide:
-                  if (e != stay_within && e->parentElement()) {
-                    e = ElementTraversal::NextSkippingChildren(
-                        *e->parentElement(), stay_within);
-                  } else {
-                    e = nullptr;
-                  }
-                  break;
-                case ToggleScope::kNarrow:
-                  e = ElementTraversal::NextSkippingChildren(*e, stay_within);
-                  break;
-              }
-              found_group = true;
-              break;
-            }
-          }
-          if (found_group)
-            continue;
-        }
-      }
-    }
-    if (CSSToggleMap* toggle_map = e->GetToggleMap()) {
-      ToggleMap& toggles = toggle_map->Toggles();
-      auto iter = toggles.find(name);
-      if (iter != toggles.end()) {
-        CSSToggle* toggle = iter->value;
-        if (toggle->IsGroup()) {
-          toggle->SetValue(State(0u), e);
-        }
-      }
-    }
-    e = ElementTraversal::Next(*e, stay_within);
-  } while (e);
-}
-
 // Implement https://tabatkins.github.io/css-toggle/#change-a-toggle
-void Element::ChangeToggle(Element* toggle_element,
-                           CSSToggle* t,
+void Element::ChangeToggle(CSSToggle* t,
                            const ToggleTrigger& action,
                            const ToggleRoot* override_spec) {
   using State = ToggleRoot::State;
@@ -9138,7 +9025,7 @@ void Element::ChangeToggle(Element* toggle_element,
   const auto overflow = override_spec->Overflow();
 
   if (action.Mode() == ToggleTriggerMode::kSet) {
-    t->SetValue(action.Value(), toggle_element);
+    t->SetValue(action.Value());
   } else {
     using IntegerType = ToggleRoot::State::IntegerType;
     DCHECK_EQ(std::numeric_limits<IntegerType>::lowest(), 0u);
@@ -9221,19 +9108,19 @@ void Element::ChangeToggle(Element* toggle_element,
     if (t->StateSet().IsNames()) {
       const auto& names = t->StateSet().AsNames();
       if (index < names.size()) {
-        t->SetValue(State(names[index]), toggle_element);
+        t->SetValue(State(names[index]));
       } else {
-        t->SetValue(State(index), toggle_element);
+        t->SetValue(State(index));
       }
     } else {
-      t->SetValue(State(index), toggle_element);
+      t->SetValue(State(index));
     }
   }
 
   // If t’s value does not match 0, and group is true, then set the value of
   // all other toggles in the same toggle group as t to 0.
   if (is_group && !t->ValueMatches(State(0u)))
-    MakeRestOfToggleGroupZero(toggle_element, t->Name());
+    t->MakeRestOfToggleGroupZero();
 }
 
 void Element::FireToggleChangeEvent(CSSToggle* toggle) {

@@ -4,23 +4,292 @@
 
 #include "third_party/blink/renderer/core/dom/css_toggle.h"
 
+#include <limits>
+
+#include "third_party/blink/renderer/bindings/core/v8/v8_css_toggle_cycle.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_css_toggle_data.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_css_toggle_scope.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_unsignedlong.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_stringarray_unsignedlong.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_stringsequence_unsignedlong.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
+#include "third_party/blink/renderer/core/dom/css_toggle_map.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/style/toggle_group_list.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
 
-CSSToggle::CSSToggle(const ToggleRoot& root) : ToggleRoot(root) {}
+CSSToggle::CSSToggle(const ToggleRoot& root, CSSToggleMap& owner_toggle_map)
+    : ToggleRoot(root), owner_toggle_map_(owner_toggle_map) {}
+
+CSSToggle::CSSToggle(const AtomicString& name,
+                     States states,
+                     State initial_state,
+                     ToggleOverflow overflow,
+                     bool is_group,
+                     ToggleScope scope)
+    : ToggleRoot(name, states, initial_state, overflow, is_group, scope),
+      owner_toggle_map_(nullptr) {}
 
 CSSToggle::~CSSToggle() = default;
 
-void CSSToggle::SetValue(const State& value, Element* toggle_element) {
-  bool need_recalc_style = !ValueMatches(value);
+void CSSToggle::Trace(Visitor* visitor) const {
+  visitor->Trace(owner_toggle_map_);
+
+  ScriptWrappable::Trace(visitor);
+}
+
+Element* CSSToggle::OwnerElement() const {
+  if (!owner_toggle_map_)
+    return nullptr;
+  return owner_toggle_map_->OwnerElement();
+}
+
+V8UnionStringOrUnsignedLong* CSSToggle::value() {
+  if (value_.IsInteger()) {
+    return MakeGarbageCollected<V8UnionStringOrUnsignedLong>(
+        value_.AsInteger());
+  } else {
+    return MakeGarbageCollected<V8UnionStringOrUnsignedLong>(value_.AsName());
+  }
+}
+
+void CSSToggle::setValue(const V8UnionStringOrUnsignedLong* value) {
+  State new_value(0);
+  if (value->IsUnsignedLong()) {
+    new_value = State(value->GetAsUnsignedLong());
+  } else {
+    new_value = State(AtomicString(value->GetAsString()));
+  }
+
+  SetValueAndCheckGroup(new_value);
+}
+
+absl::optional<unsigned> CSSToggle::valueAsNumber() {
+  if (value_.IsInteger())
+    return value_.AsInteger();
+
+  if (states_.IsNames()) {
+    auto ident_index = states_.AsNames().Find(value_.AsName());
+    if (ident_index != kNotFound)
+      return ident_index;
+  }
+  return absl::nullopt;
+}
+
+void CSSToggle::setValueAsNumber(absl::optional<unsigned> value,
+                                 ExceptionState& exception_state) {
+  if (!value) {
+    exception_state.ThrowTypeError("The provided value is null.");
+    return;
+  }
+
+  SetValueAndCheckGroup(State(*value));
+}
+
+String CSSToggle::valueAsString() {
+  if (value_.IsName())
+    return value_.AsName();
+
+  if (states_.IsNames()) {
+    const auto& state_names = states_.AsNames();
+    auto v = value_.AsInteger();
+    static_assert(!std::numeric_limits<decltype(v)>::is_signed);
+    if (v < state_names.size())
+      return state_names[v];
+  }
+
+  return g_null_atom;
+}
+
+void CSSToggle::setValueAsString(const String& value,
+                                 ExceptionState& exception_state) {
+  if (value.IsNull()) {
+    exception_state.ThrowTypeError("The provided value is null.");
+    return;
+  }
+
+  SetValueAndCheckGroup(State(AtomicString(value)));
+}
+
+V8UnionStringArrayOrUnsignedLong* CSSToggle::states() {
+  if (states_.IsInteger()) {
+    return MakeGarbageCollected<V8UnionStringArrayOrUnsignedLong>(
+        states_.AsInteger());
+  } else {
+    Vector<String> string_array;
+    for (const AtomicString& state : states_.AsNames())
+      string_array.push_back(state.GetString());
+    return MakeGarbageCollected<V8UnionStringArrayOrUnsignedLong>(string_array);
+  }
+}
+
+void CSSToggle::setStates(const V8UnionStringArrayOrUnsignedLong* value,
+                          ExceptionState& exception_state) {
+  States new_states(1);
+  if (value->IsUnsignedLong()) {
+    new_states = States(value->GetAsUnsignedLong());
+  } else {
+    Vector<AtomicString> new_array;
+    for (const String& state : value->GetAsStringArray()) {
+      new_array.push_back(AtomicString(state));
+    }
+    new_states = States(new_array);
+  }
+
+  setStatesInternal(new_states, exception_state);
+}
+
+void CSSToggle::setStatesInternal(const States& states,
+                                  ExceptionState& exception_state) {
+  if (states.IsNames()) {
+    HashSet<AtomicString> states_present;
+    for (const AtomicString& state : states.AsNames()) {
+      auto add_result = states_present.insert(state);
+      if (!add_result.is_new_entry) {
+        exception_state.ThrowDOMException(
+            DOMExceptionCode::kSyntaxError,
+            "The value provided contains \"" + state + "\" more than once.");
+        return;
+      }
+    }
+  }
+
+  Element* toggle_element = OwnerElement();
+  bool changed = toggle_element && states != states_;
+  states_ = std::move(states);
+
+  if (changed)
+    SetNeedsStyleRecalc(toggle_element, PostRecalcAt::kNow);
+}
+
+bool CSSToggle::group() {
+  return is_group_;
+}
+
+void CSSToggle::setGroup(bool group) {
+  is_group_ = group;
+  // No updates are needed; the group only makes a difference when changing
+  // toggles.
+}
+
+V8CSSToggleScope CSSToggle::scope() {
+  V8CSSToggleScope::Enum e;
+  switch (scope_) {
+    case ToggleScope::kWide:
+      e = V8CSSToggleScope::Enum::kWide;
+      break;
+    case ToggleScope::kNarrow:
+      e = V8CSSToggleScope::Enum::kNarrow;
+      break;
+  }
+  return V8CSSToggleScope(e);
+}
+
+void CSSToggle::setScope(V8CSSToggleScope scope) {
+  ToggleScope new_scope;
+  switch (scope.AsEnum()) {
+    case V8CSSToggleScope::Enum::kWide:
+      new_scope = ToggleScope::kWide;
+      break;
+    case V8CSSToggleScope::Enum::kNarrow:
+      new_scope = ToggleScope::kNarrow;
+      break;
+  }
+  if (scope_ == new_scope)
+    return;
+
+  scope_ = new_scope;
+  if (Element* toggle_element = OwnerElement())
+    SetLaterSiblingsNeedStyleRecalc(toggle_element, PostRecalcAt::kNow);
+}
+
+V8CSSToggleCycle CSSToggle::cycle() {
+  V8CSSToggleCycle::Enum e;
+  switch (overflow_) {
+    case ToggleOverflow::kCycle:
+      e = V8CSSToggleCycle::Enum::kCycle;
+      break;
+    case ToggleOverflow::kCycleOn:
+      e = V8CSSToggleCycle::Enum::kCycleOn;
+      break;
+    case ToggleOverflow::kSticky:
+      e = V8CSSToggleCycle::Enum::kSticky;
+      break;
+  }
+  return V8CSSToggleCycle(e);
+}
+
+void CSSToggle::setCycle(V8CSSToggleCycle cycle) {
+  ToggleOverflow new_overflow;
+  switch (cycle.AsEnum()) {
+    case V8CSSToggleCycle::Enum::kCycle:
+      new_overflow = ToggleOverflow::kCycle;
+      break;
+    case V8CSSToggleCycle::Enum::kCycleOn:
+      new_overflow = ToggleOverflow::kCycleOn;
+      break;
+    case V8CSSToggleCycle::Enum::kSticky:
+      new_overflow = ToggleOverflow::kSticky;
+      break;
+  }
+
+  overflow_ = new_overflow;
+  // No updates are needed; the overflow only makes a difference when changing
+  // toggles.
+}
+
+CSSToggle* CSSToggle::Create(ExceptionState& exception_state) {
+  return MakeGarbageCollected<CSSToggle>(g_empty_atom, States(1), State(0),
+                                         ToggleOverflow::kCycle, false,
+                                         ToggleScope::kWide);
+}
+
+CSSToggle* CSSToggle::Create(CSSToggleData* options,
+                             ExceptionState& exception_state) {
+  DCHECK(!exception_state.HadException());
+  CSSToggle* result = CSSToggle::Create(exception_state);
+  DCHECK(!exception_state.HadException());
+  result->setValue(options->value());
+  States new_states(1);
+  const auto* states_value = options->states();
+  if (states_value->IsUnsignedLong()) {
+    new_states = States(states_value->GetAsUnsignedLong());
+  } else {
+    Vector<AtomicString> new_array;
+    for (const String& state : states_value->GetAsStringSequence()) {
+      new_array.push_back(AtomicString(state));
+    }
+    new_states = States(new_array);
+  }
+  result->setStatesInternal(new_states, exception_state);
+  if (exception_state.HadException())
+    return nullptr;
+  result->setGroup(options->group());
+  result->setScope(options->scope());
+  result->setCycle(options->cycle());
+  return result;
+}
+
+void CSSToggle::SetValueAndCheckGroup(const State& value) {
+  SetValue(value);
+
+  if (is_group_ && OwnerElement() && !ValueMatches(State(0u)))
+    MakeRestOfToggleGroupZero();
+}
+
+void CSSToggle::SetValue(const State& value) {
+  Element* toggle_element = OwnerElement();
+  bool need_recalc_style = toggle_element && !ValueMatches(value);
 
   value_ = value;
 
   if (need_recalc_style)
-    SetNeedsStyleRecalc(toggle_element, PostRecalcAt::NOW);
+    SetNeedsStyleRecalc(toggle_element, PostRecalcAt::kNow);
 }
 
 namespace {
@@ -28,7 +297,7 @@ namespace {
 void SetElementNeedsStyleRecalc(Element* element,
                                 CSSToggle::PostRecalcAt when,
                                 const StyleChangeReasonForTracing& reason) {
-  if (when == CSSToggle::PostRecalcAt::NOW)
+  if (when == CSSToggle::PostRecalcAt::kNow)
     element->SetNeedsStyleRecalc(StyleChangeType::kSubtreeStyleChange, reason);
   else
     element->GetDocument().AddToRecalcStyleForToggle(element);
@@ -52,6 +321,19 @@ void CSSToggle::SetNeedsStyleRecalc(Element* toggle_element,
   }
 }
 
+void CSSToggle::SetLaterSiblingsNeedStyleRecalc(Element* toggle_element,
+                                                PostRecalcAt when) {
+  const auto& reason = StyleChangeReasonForTracing::CreateWithExtraData(
+      style_change_reason::kPseudoClass, style_change_extra_data::g_toggle);
+  Element* e = toggle_element;
+  while (true) {
+    e = ElementTraversal::NextSibling(*e);
+    if (!e)
+      break;
+    SetElementNeedsStyleRecalc(e, when, reason);
+  }
+}
+
 // https://tabatkins.github.io/css-toggle/#toggle-match-value
 bool CSSToggle::ValueMatches(const State& other) const {
   if (value_ == other)
@@ -72,6 +354,126 @@ bool CSSToggle::ValueMatches(const State& other) const {
 
   auto ident_index = states_.AsNames().Find(*ident);
   return ident_index != kNotFound && integer == ident_index;
+}
+
+namespace {
+
+std::pair<Element*, ToggleScope> FindToggleGroupElement(
+    Element* toggle_element,
+    const AtomicString& name) {
+  Element* element = toggle_element;
+  bool allow_narrow_scope = true;
+  while (true) {
+    Element* parent = element->parentElement();
+    if (!parent) {
+      // An element is in the root's group if we don't find any other group.
+      //
+      // TODO(https://github.com/tabatkins/css-toggle/issues/23): See if the
+      // spec ends up describing it this way.
+      return std::make_pair(element, ToggleScope::kNarrow);
+    }
+
+    if (const ComputedStyle* style = element->GetComputedStyle()) {
+      if (const ToggleGroupList* toggle_groups = style->ToggleGroup()) {
+        for (const auto& group : toggle_groups->Groups()) {
+          if (group.Name() == name &&
+              (allow_narrow_scope || group.Scope() == ToggleScope::kWide)) {
+            return std::make_pair(element, group.Scope());
+          }
+        }
+      }
+    }
+
+    if (Element* sibling = ElementTraversal::PreviousSibling(*element)) {
+      allow_narrow_scope = false;
+      element = sibling;
+      continue;
+    }
+
+    allow_narrow_scope = true;
+
+    element = parent;
+  }
+}
+
+}  // namespace
+
+void CSSToggle::MakeRestOfToggleGroupZero() {
+  // We do not attempt to maintain any persistent state representing toggle
+  // groups, since doing so without noticeable overhead would require a decent
+  // amount of code.  Instead, we will simply find the elements in the toggle
+  // group here.  If this turns out to be too slow, we could try to maintain
+  // data structures to represent groups, but doing so requires monitoring
+  // style changes on *elements*.
+
+  using State = ToggleRoot::State;
+
+  Element* toggle_element = OwnerElement();
+  const AtomicString& name = Name();
+  auto [toggle_group_element, toggle_scope] =
+      FindToggleGroupElement(toggle_element, name);
+  Element* stay_within;
+  switch (toggle_scope) {
+    case ToggleScope::kNarrow:
+      stay_within = toggle_group_element;
+      break;
+    case ToggleScope::kWide:
+      stay_within = toggle_group_element->parentElement();
+      break;
+  }
+
+  Element* e = toggle_group_element;
+  do {
+    if (e == toggle_element) {
+      e = ElementTraversal::Next(*e, stay_within);
+      continue;
+    }
+    if (e != toggle_group_element) {
+      // Skip descendants in a different group.
+      //
+      // TODO(dbaron): What if style is null?  See
+      // https://github.com/tabatkins/css-toggle/issues/24 .
+      if (const ComputedStyle* style = e->GetComputedStyle()) {
+        if (const ToggleGroupList* toggle_groups = style->ToggleGroup()) {
+          bool found_group = false;  // to continue the outer loop
+          for (const ToggleGroup& group : toggle_groups->Groups()) {
+            if (group.Name() == name) {
+              // TODO(https://github.com/tabatkins/css-toggle/issues/25):
+              // Consider multiple occurrences of the same name.
+              switch (group.Scope()) {
+                case ToggleScope::kWide:
+                  if (e != stay_within && e->parentElement()) {
+                    e = ElementTraversal::NextSkippingChildren(
+                        *e->parentElement(), stay_within);
+                  } else {
+                    e = nullptr;
+                  }
+                  break;
+                case ToggleScope::kNarrow:
+                  e = ElementTraversal::NextSkippingChildren(*e, stay_within);
+                  break;
+              }
+              found_group = true;
+              break;
+            }
+          }
+          if (found_group)
+            continue;
+        }
+      }
+    }
+    if (CSSToggleMap* toggle_map = e->GetToggleMap()) {
+      ToggleMap& toggles = toggle_map->Toggles();
+      auto iter = toggles.find(name);
+      if (iter != toggles.end()) {
+        CSSToggle* toggle = iter->value;
+        if (toggle->IsGroup()) {
+          toggle->SetValue(State(0u));
+        }
+      }
+    }
+    e = ElementTraversal::Next(*e, stay_within);
+  } while (e);
 }
 
 }  // namespace blink

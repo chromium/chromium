@@ -985,10 +985,35 @@ interface CSSSupportsRule : CSSConditionRule
     method constructor
 interface CSSToggle
     attribute @@toStringTag
+    getter cycle
+    getter group
+    getter scope
+    getter states
+    getter value
+    getter valueAsNumber
+    getter valueAsString
     method constructor
+    setter cycle
+    setter group
+    setter scope
+    setter states
+    setter value
+    setter valueAsNumber
+    setter valueAsString
 interface CSSToggleMap
     attribute @@toStringTag
+    getter size
+    method @@iterator
+    method clear
     method constructor
+    method delete
+    method entries
+    method forEach
+    method get
+    method has
+    method keys
+    method set
+    method values
 interface CSSTransformComponent
     attribute @@toStringTag
     getter is2D

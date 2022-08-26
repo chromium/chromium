@@ -166,7 +166,7 @@ class ElementSuperRareData : public GarbageCollected<ElementSuperRareData> {
   void RemovePopupData();
 
   CSSToggleMap* GetToggleMap() const { return toggle_map_.Get(); }
-  CSSToggleMap& EnsureToggleMap();
+  CSSToggleMap& EnsureToggleMap(Element* owner_element);
 
   FocusgroupFlags GetFocusgroupFlags() const { return focusgroup_flags_; }
 
@@ -581,7 +581,7 @@ class ElementRareData final : public NodeRareData {
       return super_rare_data_->GetToggleMap();
     return nullptr;
   }
-  CSSToggleMap& EnsureToggleMap();
+  CSSToggleMap& EnsureToggleMap(Element* owner_element);
 
   DisplayLockContext* EnsureDisplayLockContext(Element* element) {
     return EnsureSuperRareData().EnsureDisplayLockContext(element);

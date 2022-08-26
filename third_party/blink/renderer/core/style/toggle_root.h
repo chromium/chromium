@@ -33,7 +33,7 @@ class ToggleRoot {
     enum class Type : std::size_t { Integer = 0, Names = 1 };
 
     explicit States(IntegerType integer) : value_(integer) {}
-    explicit States(NamesType names) : value_(names) {}
+    explicit States(const NamesType& names) : value_(names) {}
 
     bool operator==(const States& other) const {
       return value_ == other.value_;
@@ -66,7 +66,7 @@ class ToggleRoot {
     enum class Type : std::size_t { Integer = 0, Name = 1 };
 
     explicit State(IntegerType integer) : value_(integer) {}
-    explicit State(NameType names) : value_(names) {}
+    explicit State(const NameType& names) : value_(names) {}
 
     bool operator==(const State& other) const { return value_ == other.value_; }
     bool operator!=(const State& other) const { return value_ != other.value_; }

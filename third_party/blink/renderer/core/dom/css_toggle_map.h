@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_CSS_TOGGLE_MAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_CSS_TOGGLE_MAP_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/maplike.h"
 #include "third_party/blink/renderer/core/dom/css_toggle.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -15,18 +16,56 @@
 
 namespace blink {
 
+class Element;
+
 // Represents the set of toggles on an element.
 using ToggleMap = HeapHashMap<AtomicString, Member<CSSToggle>>;
 
-class CORE_EXPORT CSSToggleMap : public ScriptWrappable {
+using CSSToggleMapMaplike =
+    Maplike<AtomicString, IDLString, Member<CSSToggle>, CSSToggle>;
+
+class CORE_EXPORT CSSToggleMap : public ScriptWrappable,
+                                 public CSSToggleMapMaplike {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  explicit CSSToggleMap(Element* owner_element);
+
   ToggleMap& Toggles() { return toggles_; }
+  Element* OwnerElement() const { return owner_element_; }
 
   void Trace(Visitor* visitor) const override;
 
+  CSSToggleMap* set(const AtomicString& key, CSSToggle* value);
+  void clearForBinding(ScriptState*, ExceptionState&);
+  bool deleteForBinding(ScriptState*, const AtomicString&, ExceptionState&);
+  wtf_size_t size() const { return toggles_.size(); }
+
  private:
+  bool GetMapEntry(ScriptState*,
+                   const AtomicString& key,
+                   Member<CSSToggle>& value,
+                   ExceptionState&) final;
+  CSSToggleMapMaplike::IterationSource* StartIteration(ScriptState*,
+                                                       ExceptionState&) final;
+
+  class IterationSource final : public CSSToggleMapMaplike::IterationSource {
+   public:
+    explicit IterationSource(const CSSToggleMap& toggle_map);
+
+    bool Next(ScriptState*,
+              AtomicString&,
+              Member<CSSToggle>&,
+              ExceptionState&) override;
+
+    void Trace(blink::Visitor*) const override;
+
+   private:
+    wtf_size_t index_ = 0;
+    HeapVector<Member<CSSToggle>> toggles_snapshot_;
+  };
+
+  Member<Element> owner_element_;
   ToggleMap toggles_;
 };
 

@@ -1730,6 +1730,8 @@ generated_union_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_string_unsignedlong.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_string_workeroptions.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_string_workeroptions.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_stringarray_unsignedlong.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_stringarray_unsignedlong.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_stringsequence_unsignedlong.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_stringsequence_unsignedlong.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_stringtreatnullasemptystring_trustedscript.cc",
