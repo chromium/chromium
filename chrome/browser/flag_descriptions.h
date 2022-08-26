@@ -2174,6 +2174,9 @@ extern const char kRequestDesktopSiteDefaultsDescription[];
 extern const char kRequestDesktopSiteExceptionsName[];
 extern const char kRequestDesktopSiteExceptionsDescription[];
 
+extern const char kRequestDesktopSiteExceptionsDowngradeName[];
+extern const char kRequestDesktopSiteExceptionsDowngradeDescription[];
+
 extern const char kRequestDesktopSiteForTabletsName[];
 extern const char kRequestDesktopSiteForTabletsDescription[];
 

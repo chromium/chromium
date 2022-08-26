@@ -3820,6 +3820,12 @@ const char kRequestDesktopSiteDefaultsDescription[] =
     "Request the desktop version of websites by default based on device "
     "conditions.";
 
+const char kRequestDesktopSiteExceptionsDowngradeName[] =
+    "Downgrade request desktop site exceptions on Android.";
+const char kRequestDesktopSiteExceptionsDowngradeDescription[] =
+    "Downgrade request desktop site domain level settings to tab level "
+    "settings.";
+
 const char kRequestDesktopSiteExceptionsName[] =
     "Per-site setting to request desktop site on Android.";
 const char kRequestDesktopSiteExceptionsDescription[] =

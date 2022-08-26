@@ -5603,6 +5603,11 @@
     "expiry_milestone": 108
   },
   {
+    "name": "request-desktop-site-exceptions-downgrade",
+    "owners": [ "aishwaryarj", "twellington", "clank-app-team@google.com" ],
+    "expiry_milestone": 108
+  },
+  {
     "name": "request-desktop-site-for-tablets",
     "owners": [ "gangwu@chromium.org", "fgorski@chromium.org" ],
     "expiry_milestone": 96
