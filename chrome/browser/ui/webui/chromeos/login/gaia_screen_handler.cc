@@ -1022,6 +1022,8 @@ void GaiaScreenHandler::HandleSecurityTokenPinEntered(
 
 void GaiaScreenHandler::HandleOnFatalError(int error_code,
                                            const base::Value::Dict& params) {
+  if (!LoginDisplayHost::default_host())
+    return;
   const base::Value params_value = base::Value(params.Clone());
   LoginDisplayHost::default_host()
       ->GetWizardController()
