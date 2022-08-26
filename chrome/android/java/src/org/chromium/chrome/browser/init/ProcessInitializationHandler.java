@@ -82,6 +82,7 @@ import org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidg
 import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.searchwidget.SearchWidgetProvider;
 import org.chromium.chrome.browser.signin.SigninCheckerProvider;
+import org.chromium.chrome.browser.tab.state.PersistedTabData;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
 import org.chromium.chrome.browser.usb.UsbNotificationManager;
@@ -457,6 +458,7 @@ public class ProcessInitializationHandler {
             new OptimizationGuideBridgeFactory(registeredTypesAllowList)
                     .create()
                     .onDeferredStartup();
+            // TODO(crbug.com/1355893) Move to PersistedTabData.onDeferredStartup
             if (PriceTrackingFeatures.isPriceTrackingEligible()
                     && ShoppingPersistedTabData.isPriceTrackingWithOptimizationGuideEnabled()) {
                 ShoppingPersistedTabData.onDeferredStartup();
@@ -468,6 +470,7 @@ public class ProcessInitializationHandler {
                         Profile.getLastUsedRegularProfile());
             }
         });
+        deferredStartupHandler.addDeferredTask(() -> { PersistedTabData.onDeferredStartup(); });
     }
 
     private void initChannelsAsync() {

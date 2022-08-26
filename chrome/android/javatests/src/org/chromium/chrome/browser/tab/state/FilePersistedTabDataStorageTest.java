@@ -8,25 +8,37 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.crypto.CipherFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.util.ByteBufferTestUtils;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Tests relating to  {@link FilePersistedTabDataStorage}
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
+@EnableFeatures({ChromeFeatureList.CRITICAL_PERSISTED_TAB_DATA + "<Study"})
+@CommandLineFlags.
+Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
 public class FilePersistedTabDataStorageTest {
     private static final int TAB_ID_1 = 1;
     private static final String DATA_ID_1 = "DataId1";
@@ -35,6 +47,9 @@ public class FilePersistedTabDataStorageTest {
 
     private static final byte[] DATA_A = {13, 14};
     private static final byte[] DATA_B = {9, 10};
+
+    @Rule
+    public TestRule mProcessor = new Features.InstrumentationProcessor();
 
     @Before
     public void setUp() throws Exception {
@@ -143,5 +158,55 @@ public class FilePersistedTabDataStorageTest {
         ThreadUtils.runOnUiThreadBlocking(() -> { storage.processNextItemOnQueue(); });
         semaphore.acquire();
         Assert.assertFalse(file.exists());
+    }
+
+    @Test
+    @SmallTest
+    @CommandLineFlags.
+    Add({"force-fieldtrial-params=Study.Group:delay_saves_until_deferred_startup/true"})
+    public void testDeferredStartup() throws TimeoutException, InterruptedException {
+        FilePersistedTabDataStorage storage =
+                PersistedTabDataConfiguration.getFilePersistedTabDataStorage();
+        CallbackHelper onSavesCompleteCallbackHelper = new CallbackHelper();
+        CallbackHelper savesCallbackHelper = new CallbackHelper();
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            storage.save(TAB_ID_1, DATA_ID_1, () -> { return ByteBuffer.wrap(DATA_A); });
+            storage.save(TAB_ID_2, DATA_ID_2,
+                    ()
+                            -> { return ByteBuffer.wrap(DATA_B); },
+                    (res) -> { onSavesCompleteCallbackHelper.notifyCalled(); });
+            savesCallbackHelper.notifyCalled();
+        });
+        savesCallbackHelper.waitForCallback(0);
+        Assert.assertEquals(2, storage.getDelayedSaveRequestsForTesting().size());
+        PersistedTabData.onDeferredStartup();
+        Assert.assertEquals(0, storage.getDelayedSaveRequestsForTesting().size());
+        onSavesCompleteCallbackHelper.waitForCallback(0);
+        Assert.assertTrue(FilePersistedTabDataStorage.getFile(TAB_ID_1, DATA_ID_1).exists());
+        Assert.assertTrue(FilePersistedTabDataStorage.getFile(TAB_ID_2, DATA_ID_2).exists());
+
+        CallbackHelper saveAfterDeferredStartupHelper = new CallbackHelper();
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            storage.save(TAB_ID_1, DATA_ID_1,
+                    ()
+                            -> { return ByteBuffer.wrap(DATA_A); },
+                    (res) -> { saveAfterDeferredStartupHelper.notifyCalled(); });
+        });
+        saveAfterDeferredStartupHelper.waitForCallback(0);
+        Assert.assertEquals(0, storage.getDelayedSaveRequestsForTesting().size());
+    }
+
+    @Test
+    @SmallTest
+    @CommandLineFlags.
+    Add({"force-fieldtrial-params=Study.Group:delay_saves_until_deferred_startup/true"})
+    public void testDeferredStartupOverwritePendingTab()
+            throws TimeoutException, InterruptedException {
+        FilePersistedTabDataStorage storage =
+                PersistedTabDataConfiguration.getFilePersistedTabDataStorage();
+        storage.save(TAB_ID_1, DATA_ID_1, () -> { return ByteBuffer.wrap(DATA_A); });
+        storage.save(TAB_ID_1, DATA_ID_1, () -> { return ByteBuffer.wrap(DATA_B); });
+        // Second save for Tab 1 should overwrite previous Tab 1 save in delayed save queue
+        Assert.assertEquals(1, storage.getDelayedSaveRequestsForTesting().size());
     }
 }
