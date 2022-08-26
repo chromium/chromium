@@ -534,7 +534,6 @@ Se você desativar a política, essa rolagem será desativada.</translation>
       Se esta configuração estiver desativada, os usuários não terão permissão para usar o recurso "Compartilhar por proximidade".
 
       Se esta política for deixada sem definição, o comportamento padrão será não permitir para usuários gerenciados por empresas e permitir para usuários não gerenciados.</translation>
-<translation id="1552612763424066828">Impedir que o dispositivo seja bloqueado quando ficar inativo ou suspenso</translation>
 <translation id="1553532014072799546">Autorização de limites de tempo por app</translation>
 <translation id="1553956579506604198">Bloqueia a instalação de extensões externas</translation>
 <translation id="1555248923316727072">Configurações do gerenciamento de identidade de usuário do SAML</translation>
@@ -1102,6 +1101,7 @@ Web e PWAs. No momento, com suporte apenas no
 <translation id="2043770014371753404">Impressoras empresariais desativadas</translation>
 <translation id="2057317273526988987">Permitir acesso a uma lista de URLs</translation>
 <translation id="2058055310819710697">Ativar o modo de desenvolvedor para apps isolados</translation>
+<translation id="205807990145127714">Dados de telemetria para registrar o evento da intensidade do sinal.</translation>
 <translation id="2061123930713023976">Permitir capturas de pacotes de rede para depuração</translation>
 <translation id="2061810934846663491">Configurar os nomes de domínio obrigatórios para hosts de acesso remoto</translation>
 <translation id="2062632109797189011">Reativar a API window.webkitStorageInfo descontinuada</translation>
@@ -3362,7 +3362,6 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
 
       Embora a política seja compatível com as plataformas acima, o recurso que ela ativa pode estar disponível em menos plataformas, Nem todos os recursos de uso suspenso da plataforma Web podem ser reativados. Apenas aqueles explicitamente listados abaixo podem ser reativados por um período de tempo limitado, e isso difere de acordo com o recurso. O formato geral da tag de string será [NomeDoRecursoDeUsoSuspenso]_EffectiveUntil[aaaammdd]. Como referência, é possível verificar o objeto por trás das alterações do recurso da plataforma Web em https://bit.ly/blinkintents.
       </translation>
-<translation id="4442582539341804154">Ativar o bloqueio quando o dispositivo entrar no modo ocioso ou suspenso</translation>
 <translation id="4443711908766051441">Ativar o jogo easter egg de dinossauro</translation>
 <translation id="4447668084338250480">Comportamento de redirecionamento à intranet</translation>
 <translation id="4449469846627734399">Definir configuração do dia para a economia de energia no período de pico</translation>
@@ -3693,6 +3692,7 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
       Se ela for definida como "Desativada" ou não for definida, o <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> será opcional e não impedirá o processo de inicialização do <ph name="PRODUCT_NAME" /> em caso de erro.
 
       A inscrição de políticas da nuvem para o escopo da máquina em computadores usa esta política. Veja mais detalhes em https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744.</translation>
+<translation id="488996881569316769">Telemetria de rede</translation>
 <translation id="4890453377345554695">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica quais sites podem pedir que os usuários concedam permissão de gravação de arquivos ou diretórios no sistema de arquivos do sistema operacional do host.
 
       Se a política não tiver definição, <ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, as configurações pessoais dos usuários serão aplicadas.
@@ -4023,6 +4023,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 
       Se a política não for definida ou for inválida, o comportamento será o mesmo de "Esperar que o canal conclua o downgrade de canal".</translation>
 <translation id="5229339291699779956">Ativa o encapsulamento de PCIe para dispositivos periféricos Thunderbolt/USB4, que funcionarão perfeitamente</translation>
+<translation id="5230095739094490896">Modelo do atributo de impressão "client-name" do IPP</translation>
 <translation id="5233239004553860036">Se esta política for definida como <ph name="POLICY_VALUE_ALL" /> ou deixada sem definição, todos os usos de contas gerenciadas serão permitidos. Isso pode fazer com que uma conta gerenciada se torne secundária, que só recebe políticas quando está conectada como conta principal em um perfil do navegador.
       As políticas definidas para a conta não são aplicadas nestes cenários:
         -  Ela é uma conta secundária no nível do SO (configurações da conta).
@@ -4329,7 +4330,6 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="5535973522252703021">Lista branca do servidor de delegação Kerberos</translation>
 <translation id="553806128266843748">Uma sinalização booleana indicando se a limitação está ativada.</translation>
 <translation id="5540885720415375851">Permitir a detecção de dispositivos locais</translation>
-<translation id="5544314852228513983">Permitir que os usuários decidam se o dispositivo será bloqueado quando ficar inativo ou suspenso</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">Ativar o alto contraste na tela de login</translation>
 <translation id="555077880566103058">Permitir que todos os sites executem o plug-in <ph name="FLASH_PLUGIN_NAME" /> automaticamente</translation>
@@ -5220,6 +5220,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 <translation id="6506486086262398387">Se a política for definida como "Ativada", o recurso Compartilhamentos de arquivos de rede do <ph name="PRODUCT_OS_NAME" /> usará NTLM para fazer a autenticação para compartilhamentos SMB, se necessário. Se a política for definida como "Desativada", a autenticação NTLM para compartilhamentos SMB será desativada.
 
       Se a política não for definida, o comportamento ficará desativado por padrão para usuários gerenciados e ativado para outros usuários.</translation>
+<translation id="6513453889192806240">Latência de HTTPS</translation>
 <translation id="6515357889978918016">Imagem de <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="6518102411616460786">Esperar que o canal conclua o downgrade de canal</translation>
 <translation id="6520802717075138474">Importar mecanismos de pesquisa do navegador padrão na primeira execução</translation>
@@ -5488,6 +5489,12 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 
       Se esta política for definida como falsa ou não for definida, o <ph name="PLUGIN_VM_NAME" /> não será ativado para o usuário.
       Se for definida como verdadeira, o <ph name="PLUGIN_VM_NAME" /> será ativado para o usuário desde que permitido por outras configurações. É necessário definir <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> e <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> como verdadeiras, e <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> ou <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> precisam ser definidas para que <ph name="PLUGIN_VM_NAME" /> possa ser executado.</translation>
+<translation id="6750902920405577210">Lista de dados de telemetria a serem informados em eventos de mudança da intensidade do sinal.
+
+      Os dados de telemetria especificados só vão ser informados se não tiverem sido desativados pela política de controle.
+      O controle de política para https_latency e network_telemetry é ReportDeviceNetworkStatus.
+
+      Se não for definido, nenhum outro dado de telemetria vai ser informado nos eventos de mudança da intensidade do sinal.</translation>
 <translation id="6752711782954612641">Se a <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> estiver ativada, definir <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> especificará os parâmetros ao pesquisar um URL com POST. Ela consiste em pares de nome-valor separados por vírgula. Se o valor for um parâmetro modelo, como <ph name="SEARCH_TERM_MARKER" />, ele será substituído pelos dados dos termos de pesquisa reais.
 
       Se a <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> não for definida, as solicitações de pesquisa serão enviadas usando o método get.</translation>
@@ -6474,11 +6481,6 @@ Se esta política não for definida, o renderizador padrão será usado para tod
 
           Se esta política não for definida, os atalhos de recursos de acessibilidade serão ativados por padrão na tela de login.</translation>
 <translation id="7777535871204167559">Tratar dispositivos de armazenamento externo como somente leitura</translation>
-<translation id="7781853854781306082">Se a política for definida como "Ativada", o <ph name="PRODUCT_OS_NAME" /> pedirá uma senha aos usuários para desbloquear o dispositivo quando ele ficar inativo.
-
-      Se a política for definida como "Desativada", não será solicitada uma senha aos usuários para desbloquear o dispositivo no modo de suspensão.
-
-      Se a política não for definida, os usuários poderão escolher se querem receber uma solicitação de senha para desbloquear o dispositivo do modo de suspensão.</translation>
 <translation id="7784062550705119230">Se <ph name="PRINTERS_ALLOWLIST" /> for escolhida para <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, a definição de <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> especificará quais impressoras os usuários podem usar. Apenas as impressoras com IDs correspondentes aos valores desta política estão disponíveis para os usuários. Os IDs precisam corresponder aos campos <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> no arquivo especificado na <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="7788511847830146438">Por perfil</translation>
 <translation id="7788632499792081231">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica os sites que podem usar a permissão do site para a área de transferência. Essa ação não inclui todas as operações da área de transferência ou origens que correspondem aos padrões. Por exemplo, os usuários ainda poderão colar usando atalhos do teclado, porque essa opção não é controlada pela permissão do site para a área de transferência.
@@ -6675,7 +6677,6 @@ Se a política não for definida, a configuração ficará ativada, mas o usuár
 <translation id="802776363472387903">Hash SHA-256 da imagem do <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Ativar o provedor de pesquisa padrão e permitir que os usuários modifiquem a lista de provedores de pesquisa</translation>
 <translation id="8029201909194194377">Duração máxima da seção permitida por conexões de acesso remoto</translation>
-<translation id="8029607810986641704">Bloquear o dispositivo quando ele estiver inativo ou suspenso</translation>
 <translation id="8032201191311129122">Esta política bloqueia a cópia para a área de transferência de dados em URLs específicas.
 
       As listas de URL <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> controlam quais sites têm permissão para salvar na área de transferência. Uma cópia na área de transferência é bloqueada se a URL corresponde a um padrão na lista "enable" (ativar) e não corresponde a um padrão em "disable" (desativar). A cópia não é bloqueada se a URL não corresponde a nenhum padrão.
@@ -7268,6 +7269,18 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 
       Se a política for definida como falsa, nenhuma guia será congelada.</translation>
 <translation id="8619748440665904084">Desativar a importação de dados de preenchimento automático de formulários na primeira execução</translation>
+<translation id="8620103780247748230">Esta política controla o valor do atributo <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> do protocolo de impressão via Internet (IPP, na sigla em inglês) em trabalhos de impressão.
+
+      Se a política for definida como uma string, um item <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> extra vai ser adicionado a cada trabalho de impressão. O membro <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> do item <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> adicionado vai ser definido como o valor da política após a substituição das variáveis.
+
+      As variáveis aceitas são <ph name="DIRECTORY_ID_PLACEHOLDER" />, <ph name="SERIAL_NUMBER_PLACEHOLDER" />, <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="ANNOTATED_LOCATION_PLACEHOLDER" />, <ph name="USER_EMAIL_PLACEHOLDER" />, <ph name="USER_EMAIL_NAME_PLACEHOLDER" /> e <ph name="USER_EMAIL_DOMAIN" />. As variáveis de marcador de posição sem suporte não vão ser expandidas.
+
+      O valor resultante após a substituição das variáveis vai ser considerado válido se consistir apenas em caracteres <ph name="ASCII" /> imprimíveis, com tamanho máximo de 255 deles.
+
+      Por motivos de privacidade, esta política se aplica apenas ao se comunicar com uma impressora usando os protocolos <ph name="IPPS_PROTOCOL" />, <ph name="HTTPS_PROTOCOL" />, <ph name="USB_PROTOCOL" /> ou <ph name="IPP_USB_PROTOCOL" />. Além disso, ela só se aplica a impressoras com suporte ao <ph name="CLIENT_NAME_IPP_ATTRIBUTE" />.
+
+      Se a política for deixada sem definição ou for definida com um valor vazio ou inválido, nenhum <ph name="CLIENT_INFO_PLACEHOLDER" /> extra vai ser adicionado às solicitações de trabalho de impressão.
+      </translation>
 <translation id="8623672932476443039">Se a política for definida como "Ativada", os usuários vão poder acessar o modo de desenvolvedor para apps isolados.
       Se a política for definida como "Desativada", os usuários não vão conseguir acessar esses recursos.
       Se esta política for deixada sem definição, o comportamento padrão vai ser bloquear o acesso de usuários gerenciados por empresas no ChromeOS a esses recursos e permitir o acesso para todos os outros usuários e sistemas operacionais.</translation>

@@ -5288,6 +5288,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6057381398996433816">Сайтът бе блокиран, така че да не използва сензорите за движение и светлина.</translation>
 <translation id="6059276912018042191">Скорошни раздели на Chrome</translation>
 <translation id="6059652578941944813">Йерархия на сертификатите</translation>
+<translation id="6059925163896151826">USB устройства</translation>
 <translation id="6063284707309177505">Създаване на QR код</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Забележка<ph name="END_BOLD" />: Възможно е да бъде осъществен достъп до персоналните резултати на <ph name="SUPERVISED_USER_NAME" /> и от човек с подобен глас или чрез запис. С цел икономия на батерията от настройките на Асистент в профила на <ph name="SUPERVISED_USER_NAME" /> можете да изберете „Ok Google“ да активира услугата само когато устройството е свързано с източник на захранване.</translation>
 <translation id="6064217302520318294">Заключване на екрана</translation>

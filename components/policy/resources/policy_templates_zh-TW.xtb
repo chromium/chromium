@@ -533,7 +533,6 @@
       如果停用這項設定，使用者就無法使用「鄰近分享」功能。
 
       如果不設定這項政策，在預設情況下，受企業管理的使用者將無法使用「鄰近分享」功能，其他一般使用者則可使用這項功能。</translation>
-<translation id="1552612763424066828">當裝置進入閒置或暫停狀態時防止裝置鎖定</translation>
 <translation id="1553532014072799546">個別應用程式時間限制許可清單</translation>
 <translation id="1553956579506604198">禁止系統安裝外部擴充功能</translation>
 <translation id="1555248923316727072">SAML 使用者身分管理設定</translation>
@@ -3299,7 +3298,6 @@
 
       雖然以上平台支援政策本身，但這些平台不一定全部支援透過政策啟用的功能。部分已淘汰的網路平台功能無法重新啟用，只有下方明確列出者可在限定時間內啟用，啟用時限則視功能而異。字串標記的通用格式是 &lt;已淘汰的功能名稱&gt;_EffectiveUntil&lt;yyyymmdd&gt;。如需參考資訊，請前往 https://bit.ly/blinkintents 查看網路平台功能變更的意義。
       </translation>
-<translation id="4442582539341804154">裝置閒置或暫停時啟用鎖定</translation>
 <translation id="4443711908766051441">啟用恐龍復活節彩蛋遊戲</translation>
 <translation id="4447668084338250480">內部網路重新導向行為</translation>
 <translation id="4449469846627734399">設定日間用電尖峰轉移配置</translation>
@@ -4264,7 +4262,6 @@
 <translation id="5535973522252703021">Kerberos 委派伺服器許可清單</translation>
 <translation id="553806128266843748">布林值標記，表示是否已啟用節流功能。</translation>
 <translation id="5540885720415375851">允許本機裝置搜尋</translation>
-<translation id="5544314852228513983">允許使用者決定在裝置進入閒置或暫停狀態時是否對裝置進行鎖定</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">在登入畫面上啟用高對比模式</translation>
 <translation id="555077880566103058">允許所有網站自動執行 <ph name="FLASH_PLUGIN_NAME" /> 外掛程式</translation>
@@ -6365,11 +6362,6 @@
 
            如果不設定這項政策，系統會在登入畫面上預設啟用無障礙功能快速鍵。</translation>
 <translation id="7777535871204167559">以唯讀模式處理外部儲存裝置</translation>
-<translation id="7781853854781306082">如果將這項政策設為啟用，當裝置進入閒置狀態時，<ph name="PRODUCT_OS_NAME" />會要求使用者以密碼解鎖裝置。
-
-      如果將這項政策設為停用，使用者在解鎖休眠的裝置時，不需要輸入密碼。
-
-      如果不設定這項政策，使用者可選擇在解鎖休眠的裝置時，是否要收到輸入密碼的提示。</translation>
 <translation id="7784062550705119230">如果在 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 中選擇了 <ph name="PRINTERS_ALLOWLIST" />，系統會根據 <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> 的設定指定使用者可操作的印表機。只有 ID 與這項政策值相符的印表機，才會提供給使用者。印表機 ID 必須與 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 政策指定檔案的 <ph name="ID_FIELD" /> 或 <ph name="GUID_FIELD" /> 欄位值相符。</translation>
 <translation id="7788511847830146438">根據設定檔</translation>
 <translation id="7788632499792081231">你可以透過這項政策設定網址模式清單，指定哪些網站可以使用剪貼簿網站權限。這不包含在符合網址模式的來源網站上執行的所有剪貼簿作業。比方說，使用者仍可使用鍵盤快速鍵貼上內容，因為這項操作並未受到剪貼簿網站權限管制。
@@ -6564,7 +6556,6 @@
 <translation id="802776363472387903"><ph name="PLUGIN_VM_NAME" /> 圖片的 SHA-256 雜湊值。</translation>
 <translation id="8028814157747157754">啟用預設搜尋引擎，並允許使用者修改搜尋引擎清單</translation>
 <translation id="8029201909194194377">遠端存取連線所允許的工作階段持續時間上限</translation>
-<translation id="8029607810986641704">當裝置進入閒置或暫停狀態時鎖定裝置</translation>
 <translation id="8032201191311129122">這項規則設定可禁止在特定網址上將資料複製到剪貼簿。
 
       <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 網址清單會控管哪些網站允許寫入剪貼簿。如果網址符合「啟用」中的模式，且不符合「停用」中的模式，系統會禁止剪貼簿寫入功能。當網址不符合任何模式時，系統則不會禁止複製功能。

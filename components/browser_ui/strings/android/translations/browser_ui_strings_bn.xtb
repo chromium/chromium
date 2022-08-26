@@ -80,6 +80,7 @@
 <translation id="2653659639078652383">জমা দিন</translation>
 <translation id="2677748264148917807">ছেড়ে চলে যান</translation>
 <translation id="2687403674020088961">সব কুকি ব্লক করুন (সাজেস্ট করা হচ্ছে না)</translation>
+<translation id="2692299144678073135">সমস্ত সাইট জুড়ে আপনাকে মনে রাখার জন্য সম্পর্কিত সাইটকে অনুমতি দিন</translation>
 <translation id="2704606927547763573">প্রতিলিপি করা হয়েছে</translation>
 <translation id="2713106313042589954">ক্যামেরা বন্ধ করুন</translation>
 <translation id="2717722538473713889">ইমেল আইডি</translation>
@@ -140,6 +141,7 @@
 <translation id="4002066346123236978">শিরোনাম</translation>
 <translation id="4008040567710660924">কোনও নির্দিষ্ট সাইটের জন্য কুকিকে অনুমতি দিন।</translation>
 <translation id="4046123991198612571">পরবর্তী ট্র্যাক</translation>
+<translation id="4048876521107516222">আপনাকে সাইন-ইন করে রাখার মতো বিষয়গুলিতে সাহায্য করার জন্য সম্পর্কিত সাইটগুলি কুকি ব্যবহার করে</translation>
 <translation id="4149994727733219643">ওয়েব পৃষ্ঠার জন্য সরলীকৃত ভিউ</translation>
 <translation id="4165986682804962316">সাইটের সেটিংস</translation>
 <translation id="4169549551965910670">একটি ইউএসবি ডিভাইসে কানেক্ট করা হয়েছে</translation>
@@ -222,6 +224,7 @@
 <translation id="5887687176710214216">গতকাল শেষবার দেখা হয়েছে</translation>
 <translation id="5916664084637901428">চালু</translation>
 <translation id="5922853908706496913">আপনার স্ক্রিন শেয়ার করা হচ্ছে</translation>
+<translation id="5922967540311291836">থার্ড-পার্টি কুকি ব্লক করুন:</translation>
 <translation id="5939518447894949180">রিসেট করুন</translation>
 <translation id="5975083100439434680">ছোট করুন</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
@@ -312,6 +315,7 @@
 <translation id="7846076177841592234">নির্বাচন বাতিল করুন</translation>
 <translation id="7846621471902887024">আপনি সমস্ত সাইট থেকে সাইন-আউট হয়ে যাবেন।</translation>
 <translation id="7882806643839505685">একটি নির্দিষ্ট সাইটের জন্য সাউন্ড প্লে করার অনুমতি দিন।</translation>
+<translation id="789180354981963912">ছদ্মবেশী মোডে থার্ড-পার্টি কুকি ব্লক করুন:</translation>
 <translation id="7940722705963108451">আমাকে মনে করিয়ে দিও</translation>
 <translation id="7986741934819883144">একটি পরিচিতি বেছে নিন</translation>
 <translation id="7999064672810608036">আপনি কি এই ওয়েবসাইটের কুকি সহ সমস্ত ডেটা পরিষ্কার করার এবং এটির সমস্ত অনুমতি রিসেট করার বিষয়ে নিশ্চিত?</translation>

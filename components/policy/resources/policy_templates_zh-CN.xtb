@@ -534,7 +534,6 @@
       如果您停用了此设置，用户将无法选择启用“附近分享”功能。
 
       如果您未设置此政策，默认情况下，受企业管理的用户无法选择启用“附近分享”功能，但不受管理的用户可以选择启用该功能。</translation>
-<translation id="1552612763424066828">禁止在设备进入空闲或暂停状态时将其锁定</translation>
 <translation id="1553532014072799546">应用级使用时间限制白名单</translation>
 <translation id="1553956579506604198">禁止安装外部扩展程序</translation>
 <translation id="1555248923316727072">SAML 用户身份管理设置</translation>
@@ -3305,7 +3304,6 @@
 
       尽管上述平台均支持此政策，但此政策启用的功能在其中的少数平台上可能无法使用。并非所有已弃用的网络平台功能都可重新启用。只有下面明确列出的功能才能在限定的时间（具体因功能而异）内重新发挥功效。字符串标记的常用格式为 [已弃用功能的名称]_EffectiveUntil[yyyymmdd]。要了解更改网络平台功能的意图，请访问 https://bit.ly/blinkintents。
       </translation>
-<translation id="4442582539341804154">当设备进入待机或暂停状态时启用锁定</translation>
 <translation id="4443711908766051441">允许玩恐龙复活节彩蛋游戏</translation>
 <translation id="4447668084338250480">内网重定向行为</translation>
 <translation id="4449469846627734399">设定日间用电高峰转移配置</translation>
@@ -4271,7 +4269,6 @@
 <translation id="5535973522252703021">Kerberos 授权服务器白名单</translation>
 <translation id="553806128266843748">一个布尔值标记，用于表明是否启用节流功能。</translation>
 <translation id="5540885720415375851">允许使用“本地设备发现”功能</translation>
-<translation id="5544314852228513983">允许用户决定是否应在设备进入空闲或暂停状态时将其锁定</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">在登录屏幕上启用高对比度模式</translation>
 <translation id="555077880566103058">允许所有网站自动运行 <ph name="FLASH_PLUGIN_NAME" /> 插件</translation>
@@ -6395,11 +6392,6 @@
 
           如果未设置此政策，默认情况下，无障碍功能快捷方式在登录屏幕上会处于启用状态。</translation>
 <translation id="7777535871204167559">以只读模式处理外部存储设备</translation>
-<translation id="7781853854781306082">如果此政策已启用，当相应设备闲置时，<ph name="PRODUCT_OS_NAME" />会要求用户提供密码来解锁设备。
-
-      如果此政策已停用，用户无需提供密码，即可将处于睡眠状态的设备解锁。
-
-      如果您未设置此政策，用户可以选择是否让系统提示输入密码以将处于睡眠状态的设备解锁。</translation>
 <translation id="7784062550705119230">如果为 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 选择了 <ph name="PRINTERS_ALLOWLIST" />，您便可通过设置 <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> 来指定用户可以使用哪些打印机。用户将只能使用那些符合条件（ID 与此政策中所列的值匹配）的打印机。ID 必须与 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 所指定文件内的<ph name="ID_FIELD" />或<ph name="GUID_FIELD" />字段相符。</translation>
 <translation id="7788511847830146438">根据个人资料</translation>
 <translation id="7788632499792081231">通过设置此政策，您可以创建一个网址格式列表，从而指定哪些网站可以使用剪贴板网站权限。这并不涵盖与相应格式匹配的源上的所有剪贴板操作。例如，用户仍能使用键盘快捷键进行粘贴，因为此操作不受剪贴板网站权限的限制。
@@ -6596,7 +6588,6 @@
 <translation id="802776363472387903"><ph name="PLUGIN_VM_NAME" /> 图片的 SHA-256 哈希值。</translation>
 <translation id="8028814157747157754">启用默认搜索服务提供商并允许用户修改搜索服务提供商列表</translation>
 <translation id="8029201909194194377">远程访问连接可达到的会话时长上限</translation>
-<translation id="8029607810986641704">在设备进入空闲或暂停状态时将其锁定</translation>
 <translation id="8032201191311129122">此政策用于禁止特定网址向剪贴板中复制数据。
 
       <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 网址列表用于控制允许哪些网站向剪贴板中写入内容。如果相应网址与“enable”中的格式相匹配，但不与“disable”中的格式相匹配，系统将会禁止该网址向剪贴板中写入内容。如果相应网址不与任何格式相匹配，系统将不会禁止该网址向剪贴板中复制内容。

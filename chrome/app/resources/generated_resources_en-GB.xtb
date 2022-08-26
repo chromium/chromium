@@ -898,7 +898,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1822140782238030981">Already a Chrome user? Sign in</translation>
 <translation id="1823098433522728610">This document has sensitive content.</translation>
 <translation id="18245044880483936">Backup data will not count toward your child's Drive storage quota.</translation>
-<translation id="1825320185978744007">Lock when sleeping or when lid is closed</translation>
 <translation id="1825565032302550710">Port must be between 1024 and 65535</translation>
 <translation id="182577151972096764">recently viewed recipes</translation>
 <translation id="18260074040409954">You can use saved passwords on any device. They're saved to <ph name="GOOGLE_PASSWORD_MANAGER" /> for <ph name="EMAIL" />.</translation>
@@ -5302,6 +5301,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6057381398996433816">This site has been blocked from using motion and light sensors.</translation>
 <translation id="6059276912018042191">Recent Chrome tabs</translation>
 <translation id="6059652578941944813">Certificate Hierarchy</translation>
+<translation id="6059925163896151826">USB devices</translation>
 <translation id="6063284707309177505">Create QR code</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Note:<ph name="END_BOLD" /> A similar voice or recording might be able to access <ph name="SUPERVISED_USER_NAME" />’s personal results. To save battery, you can select in <ph name="SUPERVISED_USER_NAME" />’s Assistant settings to have ‘Hey Google’ on only when this device is connected to a power source.</translation>
 <translation id="6064217302520318294">Screen lock</translation>

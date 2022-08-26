@@ -1705,6 +1705,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2568774940984945469">Contenedor de la barra de información</translation>
 <translation id="2571655996835834626">Permite cambiar la configuración que controla el acceso de los sitios web a ciertas funciones, como las cookies, JavaScript, los complementos, la ubicación geográfica, el micrófono, la cámara, etc.</translation>
 <translation id="2572032849266859634">Se concedió acceso de solo lectura a <ph name="VOLUME_NAME" />.</translation>
+<translation id="2573276323521243649">Salir de la página de selección de avatar</translation>
 <translation id="2573417407488272418">Antes de la actualización, crea una copia de seguridad de las apps y los archivos en Archivos &gt; Mis archivos.</translation>
 <translation id="2573831315551295105">Asignar interruptor para "<ph name="ACTION" />"</translation>
 <translation id="2575247648642144396">Este ícono estará visible cuando la extensión se pueda utilizar en la página actual. Para usar esta extensión, haz clic en el ícono o presiona <ph name="EXTENSION_SHORTCUT" />.</translation>
@@ -5270,6 +5271,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6057381398996433816">Este sitio no tiene permiso para usar los sensores de movimiento y luz.</translation>
 <translation id="6059276912018042191">Pestañas recientes de Chrome</translation>
 <translation id="6059652578941944813">Jerarquía de certificados</translation>
+<translation id="6059925163896151826">Dispositivos USB</translation>
 <translation id="6063284707309177505">Crear código QR</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> Es posible que alguien con una grabación o una voz similares también pueda acceder a los resultados personales de <ph name="SUPERVISED_USER_NAME" />. Desde la configuración del Asistente de <ph name="SUPERVISED_USER_NAME" /> puedes hacer que "Hey Google" esté activado solo cuando este dispositivo está conectado a una fuente de alimentación, a fin de ahorrar batería.</translation>
 <translation id="6064217302520318294">Bloqueo de pantalla</translation>
@@ -6395,6 +6397,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7138678301420049075">Otros</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> está usando el micrófono</translation>
 <translation id="7141105143012495934">Se produjo un error de acceso porque no se pudieron recuperar los datos de tu cuenta. Comunícate con el administrador o vuelve a intentarlo.</translation>
+<translation id="7141844554192012199">Revisión</translation>
 <translation id="7144878232160441200">Volver a intentar</translation>
 <translation id="7149839598364933473">Convierte este dispositivo en un dispositivo <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">Últimas 24 horas</translation>

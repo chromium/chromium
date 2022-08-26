@@ -748,6 +748,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5091199029769593641">Pronto verás historias de <ph name="SITE_NAME" /> cuando abras una pestaña nueva. Los sitios que sigues se guardan en tu cuenta de Google. Puedes gestionarlos en los ajustes de Discover.</translation>
 <translation id="5091249083535528968">Datos de uso ampliados</translation>
 <translation id="509429900233858213">Se ha producido un error.</translation>
+<translation id="5099845111805573968">Cuando seleccionas un sitio para ordenadores una vez, la configuración se aplica al sitio cada vez que lo visitas</translation>
 <translation id="5102401324271069229">Si un sitio intenta robarte tu contraseña o si descargas un archivo dañino, Chrome puede enviar URLs, incluidos fragmentos de contenido de la página, a Navegación segura</translation>
 <translation id="510275257476243843">Queda 1 hora</translation>
 <translation id="5115811374190515607">a <ph name="PRODUCT_NAME" /></translation>
@@ -907,6 +908,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5958275228015807058">Encuentra tus archivos y páginas en la sección Descargas</translation>
 <translation id="5962718611393537961">Toca para ocultar</translation>
 <translation id="5964869237734432770">Detener descripciones de imágenes</translation>
+<translation id="5966233851250124270">Chrome recordará tu elección</translation>
 <translation id="5979084224081478209">Comprobar contraseñas</translation>
 <translation id="5995726099713306770">¿Volver a descargar esta página?</translation>
 <translation id="6000066717592683814">Mantener Google como motor de búsqueda predeterminado</translation>

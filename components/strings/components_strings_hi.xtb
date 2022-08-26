@@ -265,6 +265,7 @@
 <translation id="1592005682883173041">स्थानीय डेटा एक्सेस</translation>
 <translation id="1594030484168838125">चुनें</translation>
 <translation id="1596296697375291157">रोमांचक, अपराध, और रहस्य वाली फ़िल्में</translation>
+<translation id="1599199147673445968">नया कार्ड है? <ph name="BEGIN_LINK" />कार्ड की जानकारी डालें<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Chrome में Dino Run गेम चलाएं</translation>
 <translation id="161042844686301425">स्यान</translation>
 <translation id="1611101756749861742">दूसरा रोल</translation>
@@ -1006,6 +1007,7 @@
 <translation id="3664782872746246217">कीवर्ड:</translation>
 <translation id="3667704023705708645">वेंचर कैपिटल</translation>
 <translation id="3671540257457995106">डिसप्ले का साइज़ बदलना चाहते हैं?</translation>
+<translation id="3672568546897166916"><ph name="ERROR_PATH" /> में गड़बड़ी: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">तीसरा रोल</translation>
 <translation id="3676592649209844519">डिवाइस आईडी:</translation>
 <translation id="3677008721441257057">क्या आपका मतलब &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; से था?</translation>

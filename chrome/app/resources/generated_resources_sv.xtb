@@ -613,7 +613,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1587129667417059148">All data och alla cookies som har sparats av <ph name="ORIGIN_NAME" /> rensas</translation>
 <translation id="1587275751631642843">&amp;JavaScript-konsol</translation>
-<translation id="1587907146729660231">Sätt fingret på strömbrytaren</translation>
+<translation id="1587907146729660231">Sätt fingret på av/på-knappen</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1588870296199743671">Öppna länk med ...</translation>
 <translation id="1588919647604819635">Högerklickskort</translation>
@@ -818,7 +818,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="175772926354468439">Aktivera tema</translation>
 <translation id="17584710573359123">Visa i Chrome Web Store</translation>
 <translation id="1761845175367251960">Konton som tillhör <ph name="NAME" /></translation>
-<translation id="176193854664720708">Fingeravtryckssensorn sitter på strömbrytaren. Tryck lätt på den med ett finger.</translation>
+<translation id="176193854664720708">Fingeravtryckssensorn sitter på av/på-knappen. Tryck lätt på den med ett finger.</translation>
 <translation id="176272781006230109">shoppingstips</translation>
 <translation id="1763046204212875858">Skapa programgenvägar</translation>
 <translation id="1763808908432309942">Öppnas på en ny flik</translation>
@@ -4174,7 +4174,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4943368462779413526">Amerikansk fotboll</translation>
 <translation id="4943691134276646401"><ph name="CHROME_EXTENSION_NAME" /> vill ansluta till en serieport</translation>
 <translation id="4944310289250773232">Den här autentiseringstjänsten tillhandahålls av <ph name="SAML_DOMAIN" /></translation>
-<translation id="4945439665401275950">Låt ditt barn trycka på strömbrytaren om fingeravtryck ska användas. Ditt barns fingeravtrycksdata lagras på ett säkert sätt och lämnar aldrig denna <ph name="DEVICE_TYPE" />.</translation>
+<translation id="4945439665401275950">Låt ditt barn trycka på av/på-knappen om fingeravtryck ska användas. Ditt barns fingeravtrycksdata lagras på ett säkert sätt och lämnar aldrig denna <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4946459324029651239">Du har standardskydd</translation>
 <translation id="4950993567860689081">Sessionen hanteras av organisationen. Administratören kan radera din profil och även övervaka nätverkstrafiken.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{en fil}other{# filer}}</translation>
@@ -5007,7 +5007,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5790085346892983794">Klart</translation>
 <translation id="5790651917470750848">Portvidarebefordran finns redan</translation>
 <translation id="5792295754950501287">Fler åtgärder för <ph name="CARD_DESCRIPTION" /></translation>
-<translation id="5792728279623964091">Tryck på strömbrytaren</translation>
+<translation id="5792728279623964091">Tryck på av/på-knappen</translation>
 <translation id="5793339252089865437">Om du laddar ned uppdateringen via mobilnätverket kan det leda till avgifter för överskriden förbrukningsgräns.</translation>
 <translation id="5793420564274426163">Bekräftelse av parkoppling</translation>
 <translation id="5793430094159150686">Ditt lösenord har ändrats. Du måste ange ditt gamla lösenord för att återställa lokal data.</translation>
@@ -5290,6 +5290,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6057381398996433816">Den här webbplatsen får inte använda enhetens rörelse- och ljussensor.</translation>
 <translation id="6059276912018042191">Senaste flikarna i Chrome</translation>
 <translation id="6059652578941944813">Certifikathierarki</translation>
+<translation id="6059925163896151826">USB-enheter</translation>
 <translation id="6063284707309177505">Skapa QR-kod</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Obs!<ph name="END_BOLD" /> Det kan hända att de personliga resultaten för <ph name="SUPERVISED_USER_NAME" /> även går att komma åt med en liknande röst eller en inspelning. För att spara batteri kan du välja att ”Hey Google” endast är aktiverat när enheten är ansluten till en strömkälla. Detta gör du i Assistent-inställningarna för <ph name="SUPERVISED_USER_NAME" />.</translation>
 <translation id="6064217302520318294">Skärmlås</translation>
@@ -8613,7 +8614,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 flik}other{# flikar}}</translation>
 <translation id="971510864672937292">Vill du rensa webbplatsdata och behörigheter för <ph name="SITE_NAME" /> och alla underordnade webbplatser?</translation>
 <translation id="971774202801778802">Bokmärkets webbadress</translation>
-<translation id="972996901592717370">Sätt fingret på strömbrytaren. Data lagras på ett säkert sätt och lämnar aldrig din <ph name="DEVICE_TYPE" />.</translation>
+<translation id="972996901592717370">Sätt fingret på av/på-knappen. Data lagras på ett säkert sätt och lämnar aldrig din <ph name="DEVICE_TYPE" />.</translation>
 <translation id="973473557718930265">Avsluta</translation>
 <translation id="973558314812359997">Muspekarens storlek</translation>
 <translation id="975893173032473675">Språk att översätta till</translation>

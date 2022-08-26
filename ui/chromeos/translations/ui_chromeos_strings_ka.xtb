@@ -312,6 +312,7 @@
 <translation id="3689865792480713551">გაუქმდეს <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, არააქტიური, <ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერეა <ph name="SIGNAL_STRENGTH" />%, დეტალები</translation>
 <translation id="3691184985318546178">სინჰალური</translation>
+<translation id="3722341589402358578">შეცდომა მოხდა. ზოგიერთი ერთეულის წაშლილებში გადატანა, შესაძლოა, ვერ მოხერხებულიყო.</translation>
 <translation id="3726463242007121105">ამ მოწყობილობის გახსნა შეუძლებელია, რადგან მისი ფაილური სისტემა არ არის მხარდაჭერილი.</translation>
 <translation id="3727148787322499904">ამ პარამეტრის შეცვლა ყველა გაზიარებულ ქსელზე აისახება</translation>
 <translation id="3737576078404241332">გვერდითი ზოლიდან წაშლა</translation>

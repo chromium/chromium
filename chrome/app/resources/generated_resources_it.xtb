@@ -324,6 +324,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1307165550267142340">Il PIN è stato creato</translation>
 <translation id="1307431692088049276">Non ripetere più la domanda</translation>
 <translation id="1307559529304613120">Spiacenti, il sistema non è riuscito a memorizzare il token di accesso all'API a lungo termine per questo dispositivo.</translation>
+<translation id="1312811472299082263">Crea da un playbook Ansible o da un file di backup di Crostini</translation>
 <translation id="1313405956111467313">Configurazione automatica del proxy</translation>
 <translation id="131364520783682672">Bloc maiusc</translation>
 <translation id="1313660246522271310">Uscirai da tutti i siti, schede aperte incluse</translation>
@@ -1097,6 +1098,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="2028449514182362831">Le funzionalità che richiedono sensori di movimento non funzioneranno</translation>
 <translation id="202918510990975568">Inserisci la password per configurare sicurezza e accesso</translation>
 <translation id="2030455719695904263">Trackpad</translation>
+<translation id="2031385797619033640">Fai clic per consentire a <ph name="EXTENSIONS_REQUESTING_ACCESS" /> di leggere e modificare <ph name="ORIGIN" />:</translation>
 <translation id="2031639749079821948">La password è salvata nel tuo Account Google</translation>
 <translation id="2031914984822377766">Aggiungi le tue <ph name="LINK_BEGIN" />lingue per i siti web<ph name="LINK_END" /> preferite. Per le traduzioni verrà usata la lingua in cima all'elenco.</translation>
 <translation id="2033758234986231162">Impossibile mantenere una connessione con il telefono. Assicurati che il telefono sia nelle vicinanze e sbloccato, nonché che il Bluetooth e il Wi-Fi siano attivi.</translation>
@@ -1453,6 +1455,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2328561734797404498">Riavvia il dispositivo per utilizzare <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">Quando sei in modalità di navigazione in incognito, i siti possono usare i cookie solo per vedere la tua attività di navigazione su di essi. I cookie vengono eliminati al termine della sessione in incognito.</translation>
 <translation id="2329597144923131178">Accedi per visualizzare i tuoi Preferiti, la cronologia, le password e altre impostazioni su tutti i tuoi dispositivi.</translation>
+<translation id="2332115969598251205">Impossibile caricare i dispositivi salvati in <ph name="PRIMARY_EMAIL" />. Controlla la connessione a Internet e riprova.</translation>
 <translation id="2332131598580221120">Visualizza nello store</translation>
 <translation id="2332192922827071008">Apri Preferenze</translation>
 <translation id="2332515770639153015">Navigazione sicura avanzata attiva</translation>
@@ -1708,6 +1711,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2568774940984945469">Infobar Container</translation>
 <translation id="2571655996835834626">Modifica delle impostazioni che controllano l'accesso dei siti web a funzioni quali cookie, JavaScript, plug-in, geolocalizzazione, microfono, videocamera e così via.</translation>
 <translation id="2572032849266859634">È stato concesso l'accesso in sola lettura a <ph name="VOLUME_NAME" />.</translation>
+<translation id="2573276323521243649">Indietro dalla pagina di selezione dell'avatar</translation>
 <translation id="2573417407488272418">Esegui il backup di app e file in File &gt; I miei file prima dell'upgrade.</translation>
 <translation id="2573831315551295105">Assegna sensore per "<ph name="ACTION" />"</translation>
 <translation id="2575247648642144396">Questa icona sarà visibile quando l'estensione potrà agire sulla pagina corrente. Utilizza questa estensione facendo clic sull'icona o premendo <ph name="EXTENSION_SHORTCUT" />.</translation>
@@ -1895,6 +1899,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Controllo ortografia e grammatica</translation>
 <translation id="2753677631968972007">Controlla manualmente le autorizzazioni del sito.</translation>
+<translation id="2754226775788136540">Ricerca di dispositivi con Accoppiamento rapido salvati su <ph name="PRIMARY_EMAIL" /> in corso…</translation>
 <translation id="2754825024506485820">Trova le app che ti servono sul Google Play Store, dalle app per la produttività a quelle per l'intrattenimento. Puoi installare app in qualsiasi momento.</translation>
 <translation id="2755349111255270002">Reimposta questo dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">Gestisci funzioni di accessibilità</translation>
@@ -2110,6 +2115,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2942279350258725020">Android Messaggi</translation>
 <translation id="2942560570858569904">In attesa…</translation>
 <translation id="2942581856830209953">Personalizza questa pagina</translation>
+<translation id="2943268899142471972">Seleziona un playbook Ansible o un file di backup di Crostini</translation>
 <translation id="2944060181911631861">Invia dati diagnostici e sull'utilizzo. Contribuisci a migliorare la tua esperienza Android tramite l'invio automatico a Google di dati diagnostici e sull'utilizzo delle app e del dispositivo. Tali dati contribuiranno alla stabilità di app e sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche alle app e ai partner di Google, ad esempio agli sviluppatori Android. Se hai attivato l'impostazione Attività web e app aggiuntiva, queste informazioni potrebbero essere salvate nel tuo Account Google. <ph name="BEGIN_LINK1" />Ulteriori informazioni<ph name="END_LINK1" /></translation>
 <translation id="2946054015403765210">Vai ai file</translation>
 <translation id="2946119680249604491">Aggiungi connessione</translation>
@@ -2949,6 +2955,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3784472333786002075">I cookie sono file creati dai siti web. Esistono due tipi di cookie: i cookie originali, che vengono creati dal sito visitato, visualizzato nella barra degli indirizzi, e i cookie di terze parti, che vengono creati da altri siti. Questi ultimi sono proprietari di alcuni dei contenuti, ad esempio annunci o immagini, che vengono visualizzati sul sito web che visiti.</translation>
 <translation id="3785308913036335955">Mostra scorciatoia app</translation>
 <translation id="3785727820640310185">Password salvate per questo sito</translation>
+<translation id="3787434344076711519">In attesa di traduzione</translation>
 <translation id="3788301286821743879">Non è possibile avviare l'applicazione kiosk.</translation>
 <translation id="3788331399335602504">questi file</translation>
 <translation id="3788401245189148511">Potrebbe:</translation>
@@ -3231,6 +3238,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4036778507053569103">La norma scaricata dal server non è valida.</translation>
 <translation id="4037084878352560732">Cavallo</translation>
 <translation id="403725336528835653">Prova prima</translation>
+<translation id="4040041015953651705">Lingua da cui tradurre</translation>
 <translation id="4040105702484676956">Cancellare le autorizzazioni e i dati dei siti per <ph name="SITE_NAME" /> e la relativa app installata?</translation>
 <translation id="4042863763121826131">{NUM_PAGES,plural, =1{Esci dalla pagina}other{Esci dalle pagine}}</translation>
 <translation id="4043267180218562935">Dimensioni cursore</translation>
@@ -4035,6 +4043,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4838170306476614339">Visualizza foto, contenuti multimediali e notifiche del tuo telefono</translation>
 <translation id="4838836835474292213">Accesso alla lettura degli appunti consentito</translation>
 <translation id="4838907349371614303">Password aggiornata</translation>
+<translation id="4838958829619609362">La selezione non è in <ph name="LANGUAGE" /></translation>
 <translation id="4839303808932127586">Sal&amp;va video come...</translation>
 <translation id="4840096453115567876">Vuoi uscire comunque dalla modalità di navigazione in incognito?</translation>
 <translation id="4841741146571978176">Non esiste una macchina virtuale obbligatoria. Prova a configurare <ph name="VM_TYPE" /> per continuare.</translation>
@@ -4803,6 +4812,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="558918721941304263">Caricamento app...</translation>
 <translation id="5590418976913374224">Riproduci suono all'avvio del dispositivo</translation>
 <translation id="5592595402373377407">Dati disponibili insufficienti.</translation>
+<translation id="5594899180331219722">Seleziona file</translation>
 <translation id="5595307023264033512">Spazio di archiviazione totale usato dai siti: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Modifica indirizzo</translation>
 <translation id="5596627076506792578">Altre opzioni</translation>
@@ -5033,6 +5043,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5834581999798853053">Circa <ph name="TIME" /> minuti rimanenti</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - Registrazione tramite fotocamera o microfono in corso</translation>
 <translation id="583673505367439042">I siti possono chiedere di modificare file o cartelle sul dispositivo</translation>
+<translation id="5836999627049108525">Lingua da cui tradurre</translation>
 <translation id="583756221537636748">Custodia</translation>
 <translation id="5840658767386246331">Cerca con Google</translation>
 <translation id="5840680448799937675">I file verranno condivisi sempre offline</translation>
@@ -5268,6 +5279,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6057381398996433816">A questo sito è stato impedito di usare i sensori di movimento e della luce.</translation>
 <translation id="6059276912018042191">Schede Chrome recenti</translation>
 <translation id="6059652578941944813">Gerarchia certificati</translation>
+<translation id="6059925163896151826">Dispositivi USB</translation>
 <translation id="6063284707309177505">Crea codice QR</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Nota<ph name="END_BOLD" />: anche qualcuno con una voce simile o in possesso di una registrazione della sua voce potrebbe essere in grado di accedere ai risultati personali di <ph name="SUPERVISED_USER_NAME" />. Per consumare meno batteria, puoi configurare le impostazioni dell'assistente di <ph name="SUPERVISED_USER_NAME" /> in modo che "Hey Google" sia attivo solo quando il dispositivo è connesso a una fonte di alimentazione.</translation>
 <translation id="6064217302520318294">Blocco schermo</translation>
@@ -5540,6 +5552,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6318944945640833942">Impossibile rilevare una stampante. Inserisci di nuovo l'indirizzo della stampante.</translation>
 <translation id="6322370287306604163">Sblocco più veloce con l'impronta</translation>
 <translation id="6322559670748154781">Questo file non viene comunemente scaricato ed è stato bloccato dalla protezione avanzata</translation>
+<translation id="6324083483652497048">Fai clic per consentire a queste estensioni di leggere e modificare <ph name="ORIGIN" />:</translation>
 <translation id="6324916366299863871">Modifica scorciatoia</translation>
 <translation id="6325191661371220117">Disattiva avvio automatico</translation>
 <translation id="6326175484149238433">Rimuovi da Chrome</translation>
@@ -6392,6 +6405,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7138678301420049075">Altro</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> sta utilizzando il microfono</translation>
 <translation id="7141105143012495934">Accesso non riuscito perché non è stato possibile recuperare i dati dell'account. Contatta l'amministratore o riprova.</translation>
+<translation id="7141844554192012199">Controllo</translation>
 <translation id="7144878232160441200">Riprova</translation>
 <translation id="7149839598364933473">Converti questo dispositivo in un dispositivo <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">Ultimo giorno</translation>
@@ -6567,6 +6581,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7343372807593926528">Prima di inviare il feedback, descrivi il problema.</translation>
 <translation id="7344585835349671209">Gestisci i certificati HTTPS/SSL sul tuo dispositivo</translation>
 <translation id="7345706641791090287">Conferma la password</translation>
+<translation id="7345919885156673810">La selezione non è in <ph name="LANGUAGE" /></translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7347452120014970266">Verranno cancellati tutti i dati e i cookie memorizzati da <ph name="ORIGIN_NAME" /> e dalle relative app installate</translation>
 <translation id="7347751611463936647">Per utilizzare questa estensione, digita "<ph name="EXTENSION_KEYWORD" />", quindi TAB, poi il tuo comando o la tua ricerca.</translation>

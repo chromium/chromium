@@ -2,8 +2,11 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
 <translation id="1068168522143272502">Liste des adresses et des options de paiement à remplir pendant le processus de règlement, ouverte à mi-hauteur.</translation>
+<translation id="4401440167302712543">Saisissez automatiquement les infos de livraison et de paiement lors du règlement</translation>
 <translation id="567079066552447069">La liste des adresses et des options de paiement à saisir lors du règlement est fermée.</translation>
 <translation id="780301667611848630">Non merci</translation>
 <translation id="8264703973415044493">Liste des adresses et des options de paiement à remplir lors du processus de règlement, ouverte à pleine hauteur.</translation>
 <translation id="8315600272591552085">Liste des adresses et des options de paiement à remplir lors du processus de règlement.</translation>
+<translation id="8873105120914375071">Payer plus vite ?</translation>
+<translation id="9032876013752408138">Saisir automatiquement mes infos</translation>
 </translationbundle>

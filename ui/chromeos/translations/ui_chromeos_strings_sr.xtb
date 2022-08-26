@@ -312,6 +312,7 @@
 <translation id="3689865792480713551">Откажите <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, није активирана, <ph name="CONNECTION_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />%, детаљи</translation>
 <translation id="3691184985318546178">синхала</translation>
+<translation id="3722341589402358578">Дошло је до грешке. Неке ставке можда нису премештене у отпад.</translation>
 <translation id="3726463242007121105">Овај уређај не може да се отвори јер његов систем датотека није подржан.</translation>
 <translation id="3727148787322499904">Ако промените ово подешавање, то ће утицати на све дељене мреже</translation>
 <translation id="3737576078404241332">Уклони са бочне траке</translation>

@@ -265,6 +265,7 @@
 <translation id="1592005682883173041">Доступ до локальних даних</translation>
 <translation id="1594030484168838125">Вибрати</translation>
 <translation id="1596296697375291157">Трилери, детективи та кримінальні фільми</translation>
+<translation id="1599199147673445968">Якщо це нова картка, введіть її дані <ph name="BEGIN_LINK" />тут<ph name="END_LINK" />.</translation>
 <translation id="160851722280695521">Грайте в гру Dino Run у Chrome</translation>
 <translation id="161042844686301425">Бірюзовий</translation>
 <translation id="1611101756749861742">Другий рулон</translation>
@@ -1006,6 +1007,7 @@
 <translation id="3664782872746246217">Ключові слова:</translation>
 <translation id="3667704023705708645">Венчурний капітал</translation>
 <translation id="3671540257457995106">Дозволити змінити розмір?</translation>
+<translation id="3672568546897166916">Помилка (<ph name="ERROR_PATH" />): <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">Третій рулон</translation>
 <translation id="3676592649209844519">Ідентифікатор пристрою:</translation>
 <translation id="3677008721441257057">Ви мали на увазі &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>

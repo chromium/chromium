@@ -516,7 +516,6 @@
       この設定が無効な場合、ユーザーはニアバイシェアを有効にできません。
 
       このポリシーが未設定の場合、デフォルトにより、企業の管理対象ユーザーは使用を許可されず、管理対象外のユーザーは使用を許可されます。</translation>
-<translation id="1552612763424066828">アイドルまたは停止の状態になったときにデバイスをロックしない</translation>
 <translation id="1553532014072799546">アプリごとの時間制限のホワイトリスト</translation>
 <translation id="1553956579506604198">外部拡張機能のインストールをブロックする</translation>
 <translation id="1555248923316727072">SAML ユーザー ID 管理の設定</translation>
@@ -3155,7 +3154,6 @@
 
       ポリシー自体は上記のプラットフォームでサポートされますが、このポリシーの対象となる機能を利用できるプラットフォームはそれより少ないことがあります。サポートが終了したすべてのウェブ プラットフォーム機能を再び有効にできるとは限りません。一時的に有効になるのは、下記のリストに指定されている機能のみで、有効になる期間は機能によって異なります。文字列タグの一般的な形式は [DeprecatedFeatureName]_EffectiveUntil[yyyymmdd] です。詳しくは、https://bit.ly/blinkintents でウェブ プラットフォーム機能を変更する意図をご確認ください。
       </translation>
-<translation id="4442582539341804154">デバイスがアイドルまたは停止の状態になったときにロックを有効にする</translation>
 <translation id="4443711908766051441">恐竜のイースター エッグゲームを有効にする</translation>
 <translation id="4447668084338250480">イントラネット リダイレクトの処理</translation>
 <translation id="4449469846627734399">電力ピークシフトの曜日の設定を指定する</translation>
@@ -4038,7 +4036,6 @@
 <translation id="5535973522252703021">Kerberos 委任サーバーのホワイトリスト</translation>
 <translation id="553806128266843748">ネットワーク制限を有効にするかどうかを示すブール値のフラグです。</translation>
 <translation id="5540885720415375851">ローカル デバイスの検出を許可する</translation>
-<translation id="5544314852228513983">アイドルまたは停止の状態になったときにデバイスをロックするかどうかの指定をユーザーに許可</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">ログイン画面でハイ コントラストを有効にする</translation>
 <translation id="555077880566103058">すべてのサイトで <ph name="FLASH_PLUGIN_NAME" /> プラグインの自動実行を許可する</translation>
@@ -6073,11 +6070,6 @@
 
           このポリシーを設定しない場合、ログイン画面でユーザー補助機能のショートカットはデフォルトで有効になります。</translation>
 <translation id="7777535871204167559">外部ストレージ デバイスを読み取り専用にする</translation>
-<translation id="7781853854781306082">このポリシーを有効に設定した場合、<ph name="PRODUCT_OS_NAME" /> ではアイドル状態からデバイスのロックを解除する際にパスワードの入力をユーザーに求めます。
-
-      このポリシーを無効に設定した場合、スリープ状態からデバイスのロックを解除する際にパスワードの入力をユーザーに求めません。
-
-      このポリシーを未設定のままにした場合、ユーザーはスリープ状態からデバイスのロックを解除する際にパスワードの入力を求めるかどうかを選択できます。</translation>
 <translation id="7784062550705119230"><ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> の値に <ph name="PRINTERS_ALLOWLIST" /> が選択されている場合、<ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> でユーザーが使用できるプリンタを指定できます。ユーザーは、このポリシーで指定されている値に ID が一致するプリンタのみを使用できます。この ID は、<ph name="DEVICE_PRINTERS_POLICY_NAME" /> で指定されたファイル内の「<ph name="ID_FIELD" />」または「<ph name="GUID_FIELD" />」フィールドに対応している必要があります。</translation>
 <translation id="7788511847830146438">プロフィール単位</translation>
 <translation id="7788632499792081231">このポリシーでは、クリップボードのサイト権限の使用を許可するサイトの URL パターンリストを指定できます。このポリシーは、指定したパターンと一致するオリジンのすべてのクリップボード操作に適用されるわけではありません。たとえば、キーボード ショートカットはクリップボードのサイト権限で管理されないため、キーボード ショートカットを使った貼り付けはこのポリシーに関係なく可能です。
@@ -6270,7 +6262,6 @@
 <translation id="802776363472387903"><ph name="PLUGIN_VM_NAME" /> 画像の SHA-256 ハッシュです。</translation>
 <translation id="8028814157747157754">デフォルトの検索プロバイダを有効にし、ユーザーに検索プロバイダ リストの変更を許可</translation>
 <translation id="8029201909194194377">リモート アクセス接続で許可する最長セッション継続時間</translation>
-<translation id="8029607810986641704">アイドルまたは停止の状態になったときにデバイスをロック</translation>
 <translation id="8032201191311129122">このポリシーによって、特定の URL 上のクリップボードにデータをコピーすることがブロックされます。<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> と <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> の URL リストは、クリップボードへの書き込みを許可するサイトを管理します。クリップボードへの書き込みは、URL が「enable」のパターンに一致し、「disable」のパターンとは一致しない場合にブロックされます。URL がいずれのパターンとも一致しない場合、コピーはブロックされません。提供元の一致パターンは、<ph name="URL_BLOCKLIST_POLICY_NAME" /> ポリシーと同様の形式で指定します。詳しくは、http://www.chromium.org/administrators/url-blocklist-filter-format をご覧ください。<ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> は、パターンのチェックをトリガーする最小データ量（単位: バイト）を示します。つまり、ブロック対象の URL からのクリップボードへの書き込みは、コピーするデータのサイズがこのフィールドで指定された値未満である場合に許可されます。このフィールドが未設定の場合のデフォルト値は 100 バイトです。
       </translation>
 <translation id="8035570672225663428">アダプティブ充電モデルを有効にして、バッテリー寿命を延ばすため充電プロセスを保留する</translation>

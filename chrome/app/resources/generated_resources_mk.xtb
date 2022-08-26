@@ -899,7 +899,6 @@
 <translation id="1822140782238030981">Веќе сте корисник на Chrome? Најавете се</translation>
 <translation id="1823098433522728610">Документов содржи чувствителни содржини.</translation>
 <translation id="18245044880483936">Податоците од бекапот нема да се вбројуваат во квотата за простор на Drive на вашето дете.</translation>
-<translation id="1825320185978744007">Заклучи при спиење или кога капакот е затворен</translation>
 <translation id="1825565032302550710">Портата мора да биде помеѓу 1024 и 65535</translation>
 <translation id="182577151972096764">неодамна прегледани рецепти</translation>
 <translation id="18260074040409954">Зачуваните лозинки може да ги користите на кој било уред. Тие се зачувуваат во <ph name="GOOGLE_PASSWORD_MANAGER" /> за <ph name="EMAIL" />.</translation>
@@ -5303,6 +5302,7 @@
 <translation id="6057381398996433816">Користењето на сензорите за движење и светлина е блокирано за сајтов.</translation>
 <translation id="6059276912018042191">Неодамнешни картички на Chrome</translation>
 <translation id="6059652578941944813">Хиерархија на сертификат</translation>
+<translation id="6059925163896151826">USB-уреди</translation>
 <translation id="6063284707309177505">Создај QR-код</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Напомена:<ph name="END_BOLD" /> некој со сличен глас или снимка ќе може да пристапи до личните резултати на <ph name="SUPERVISED_USER_NAME" />. За да заштедите батерија, во поставките за „Помошникот“ на <ph name="SUPERVISED_USER_NAME" /> може да изберете „Ok Google“ да биде вклучено само кога уредов е поврзан со извор на напојување.</translation>
 <translation id="6064217302520318294">Заклучување екран</translation>

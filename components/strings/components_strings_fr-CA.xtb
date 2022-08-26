@@ -265,6 +265,7 @@
 <translation id="1592005682883173041">Accès aux données locales</translation>
 <translation id="1594030484168838125">Choisir</translation>
 <translation id="1596296697375291157">Films à suspense, policiers et mystères</translation>
+<translation id="1599199147673445968">Nouvelle carte? <ph name="BEGIN_LINK" />Entrer les détails de la carte<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Jouer au jeu du dinosaure dans Chrome</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611101756749861742">Deuxième rouleau</translation>
@@ -1006,6 +1007,7 @@
 <translation id="3664782872746246217">Mots clés :</translation>
 <translation id="3667704023705708645">Capital de risque</translation>
 <translation id="3671540257457995106">Autoriser le redimensionnement?</translation>
+<translation id="3672568546897166916">Erreur à <ph name="ERROR_PATH" /> : <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">Troisième rouleau</translation>
 <translation id="3676592649209844519">Identifiant de l'appareil :</translation>
 <translation id="3677008721441257057">Vouliez-vous dire &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>

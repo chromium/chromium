@@ -265,6 +265,7 @@
 <translation id="1592005682883173041">ସ୍ଥାନୀୟ ଡାଟା ଆକ୍ସେସ୍</translation>
 <translation id="1594030484168838125">ବାଛନ୍ତୁ</translation>
 <translation id="1596296697375291157">ଥ୍ରିଲର, ଅପରାଧ ଏବଂ ରହସ୍ୟ ମୁଭିଗୁଡ଼ିକ</translation>
+<translation id="1599199147673445968">ନୂଆ କାର୍ଡ? <ph name="BEGIN_LINK" />କାର୍ଡର ବିବରଣୀ ଲେଖନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Chromeରେ Dino Run ଗେମ ଖେଳନ୍ତୁ</translation>
 <translation id="161042844686301425">ସାୟାନ୍</translation>
 <translation id="1611101756749861742">ଦ୍ୱିତୀୟ ରୋଲ୍</translation>
@@ -1003,6 +1004,7 @@
 <translation id="3664782872746246217">କୀୱାର୍ଡଗୁଡ଼ିକ:</translation>
 <translation id="3667704023705708645">ଭେଞ୍ଚର କ୍ୟାପିଟାଲ</translation>
 <translation id="3671540257457995106">ରିସାଇଜ୍ କରିବା ପାଇଁ ଅନୁମତି ଦେବେ?</translation>
+<translation id="3672568546897166916"><ph name="ERROR_PATH" />ରେ ତ୍ରୁଟି: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">ତୃତୀୟ ରୋଲ୍</translation>
 <translation id="3676592649209844519">ଡିଭାଇସ୍‌ ID:</translation>
 <translation id="3677008721441257057">ଆପଣଙ୍କର କହିବା ଅର୍ଥ &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;କି?</translation>

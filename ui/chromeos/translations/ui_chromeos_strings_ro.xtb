@@ -312,6 +312,7 @@
 <translation id="3689865792480713551">Anulează <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, inactivă, <ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, detalii</translation>
 <translation id="3691184985318546178">Singaleză</translation>
+<translation id="3722341589402358578">A apărut o eroare. Este posibil ca unele elemente să nu fi fost adăugate în coșul de gunoi.</translation>
 <translation id="3726463242007121105">Acest dispozitiv nu poate fi deschis, deoarece sistemul său de fișiere nu este acceptat.</translation>
 <translation id="3727148787322499904">Modificarea acestei setări se va aplica tuturor rețelelor folosite în comun</translation>
 <translation id="3737576078404241332">Elimină din bara laterală</translation>

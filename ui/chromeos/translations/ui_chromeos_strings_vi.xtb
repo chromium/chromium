@@ -312,6 +312,7 @@
 <translation id="3689865792480713551">Hủy <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Chưa kích hoạt, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu: <ph name="SIGNAL_STRENGTH" />%, Thông tin chi tiết</translation>
 <translation id="3691184985318546178">Tiếng Sinhala</translation>
+<translation id="3722341589402358578">Đã xảy ra lỗi. Một số mục có thể chưa bị xoá.</translation>
 <translation id="3726463242007121105">Thiết bị này không thể mở được vì hệ thống tệp của thiết bị không được hỗ trợ.</translation>
 <translation id="3727148787322499904">Việc thay đổi cài đặt này sẽ ảnh hưởng đến tất cả các mạng chia sẻ</translation>
 <translation id="3737576078404241332">Xoá khỏi thanh bên</translation>

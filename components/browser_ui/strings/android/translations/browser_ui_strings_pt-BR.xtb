@@ -79,6 +79,7 @@
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2677748264148917807">Sair</translation>
 <translation id="2687403674020088961">Bloquear todos os cookies (não recomendado)</translation>
+<translation id="2692299144678073135">Permitir que sites relacionados se lembrem de você em outras páginas</translation>
 <translation id="2704606927547763573">Copiado</translation>
 <translation id="2713106313042589954">Desativar câmera</translation>
 <translation id="2717722538473713889">Endereços de e-mail</translation>
@@ -139,6 +140,7 @@
 <translation id="4002066346123236978">Título</translation>
 <translation id="4008040567710660924">Permita cookies de um site específico.</translation>
 <translation id="4046123991198612571">Próxima faixa</translation>
+<translation id="4048876521107516222">Os sites relacionados usam cookies para ajudar a manter sua conta conectada</translation>
 <translation id="4149994727733219643">Versão simplificada das páginas da Web</translation>
 <translation id="4165986682804962316">Configurações do site</translation>
 <translation id="4169549551965910670">Conectado a um dispositivo USB</translation>
@@ -220,6 +222,7 @@
 <translation id="5887687176710214216">Última visita: ontem</translation>
 <translation id="5916664084637901428">Ativado</translation>
 <translation id="5922853908706496913">Compartilhando a tela</translation>
+<translation id="5922967540311291836">Bloquear cookies de terceiros:</translation>
 <translation id="5939518447894949180">Redefinir</translation>
 <translation id="5975083100439434680">Diminuir zoom</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
@@ -310,6 +313,7 @@
 <translation id="7846076177841592234">Cancelar seleção</translation>
 <translation id="7846621471902887024">Sua conta será desconectada de todos os sites.</translation>
 <translation id="7882806643839505685">Permitir o som de um site específico.</translation>
+<translation id="789180354981963912">Bloquear cookies de terceiros na navegação anônima:</translation>
 <translation id="7940722705963108451">Lembrar</translation>
 <translation id="7986741934819883144">Selecione um contato</translation>
 <translation id="7999064672810608036">Você quer mesmo apagar todos os dados locais, inclusive os cookies, e redefinir todas as permissões para este website?</translation>

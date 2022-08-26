@@ -1875,7 +1875,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2738030019664645674">Websites dürfen keine auf meinem Gerät installierten Schriftarten verwenden</translation>
 <translation id="2738771556149464852">Nicht nach</translation>
 <translation id="2739191690716947896">Fehlerbehebung</translation>
-<translation id="2739240477418971307">Einstellungen für Zugänglichkeit ändern</translation>
+<translation id="2739240477418971307">Einstellungen für Bedienungshilfen ändern</translation>
 <translation id="274029851662193272">Vertieft</translation>
 <translation id="2740363334137520315">Dadurch wird ein neuer Bereich zu „Tabs suchen“ hinzugefügt, damit du Tabs, auf denen Audio oder Video abgespielt wird, ganz einfach finden kannst. Du kannst über die Schaltfläche in der oberen Ecke des Browsers darauf zugreifen.</translation>
 <translation id="2740531572673183784">Ok</translation>
@@ -3063,7 +3063,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3890064827463908288">Chrome-Synchronisierung aktivieren, um WLAN-Synchronisation zu verwenden</translation>
 <translation id="389313931326656921">Schalter für „Weiter“ zuweisen</translation>
 <translation id="3893295674388762059">Schließe alle Inkognitofenster, um die Daten zu löschen</translation>
-<translation id="3893536212201235195">Einstellungen für Eingabehilfen lesen und ändern</translation>
+<translation id="3893536212201235195">Einstellungen für Bedienungshilfen lesen und ändern</translation>
 <translation id="3893630138897523026">ChromeVox (gesprochenes Feedback)</translation>
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3894123633473837029">Letzten Assistant-Verlauf über Sherlog einbeziehen. Darin können Angaben zu deiner Identität und deinem Standort sowie Informationen zur Fehlerbehebung enthalten sein. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
@@ -5267,6 +5267,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6057381398996433816">Diese Website darf keine Bewegungs- und Lichtsensoren verwenden.</translation>
 <translation id="6059276912018042191">Zuletzt geöffnete Chrome-Tabs</translation>
 <translation id="6059652578941944813">Zertifikathierarchie</translation>
+<translation id="6059925163896151826">USB-Geräte</translation>
 <translation id="6063284707309177505">QR-Code erstellen</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Hinweis<ph name="END_BOLD" />: Eine Person mit einer ähnlichen Stimme wie <ph name="SUPERVISED_USER_NAME" /> oder einer Aufnahme der Stimme kann möglicherweise auf die persönlichen Ergebnisse deines Kindes zugreifen. Zur Schonung des Akkus kannst du in den Assistant-Einstellungen von <ph name="SUPERVISED_USER_NAME" /> festlegen, dass „Hey Google“ nur aktiviert ist, wenn dieses Gerät an eine Stromquelle angeschlossen ist.</translation>
 <translation id="6064217302520318294">Displaysperre</translation>

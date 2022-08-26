@@ -537,7 +537,6 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
       Als deze instelling uitstaat, kunnen gebruikers zich niet aanmelden voor Dichtbij delen.
 
       Als je dit beleid niet instelt, geldt de standaardwaarde 'niet toegestaan' voor beheerde zakelijke gebruikers en 'toegestaan' voor niet-beheerde gebruikers.</translation>
-<translation id="1552612763424066828">Voorkomen dat het apparaat wordt vergrendeld als het inactief of opgeschort wordt</translation>
 <translation id="1553532014072799546">Witte lijst voor tijdslimieten per app</translation>
 <translation id="1553956579506604198">Blokkeert de installatie van externe extensies</translation>
 <translation id="1555248923316727072">Beheerinstellingen voor SAML-gebruikersidentiteit</translation>
@@ -3309,7 +3308,6 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
       Als dit beleid niet wordt ingesteld, of als de lijst leeg is of niet overeenkomt met een van de ondersteunde stringtags, blijven alle verouderde webplatformfuncties uit.
 
       Hoewel het beleid zelf op de bovenstaande platforms wordt ondersteund, is de functie die ermee wordt aangezet mogelijk op minder platforms beschikbaar. Niet alle verouderde webplatformfuncties kunnen opnieuw worden aangezet. Alleen de webplatformfuncties die hieronder worden vermeld, kunnen tijdelijk opnieuw worden aangezet, waarbij de periode per functie verschilt. De algemene indeling van de stringtag is [NaamVerouderdeFunctie]_EffectiveUntil[jjjjmmdd]. De reden voor de wijzigingen van webplatformfuncties vind je op https://bit.ly/blinkintents.</translation>
-<translation id="4442582539341804154">Vergrendelen als het apparaat inactief is of in de slaapstand gaat</translation>
 <translation id="4443711908766051441">Easter egg-dinosaurusgame aanzetten</translation>
 <translation id="4447668084338250480">Gedrag voor intranetomleidingen</translation>
 <translation id="4449469846627734399">Dagelijkse configuratie voor stroompiekverschuiving instellen</translation>
@@ -4277,7 +4275,6 @@ Opmerking: Als iOS wordt gebruikt en het beleid wordt aangepast tijdens een sess
 <translation id="5535973522252703021">Witte lijst voor Kerberos-delegatieserver</translation>
 <translation id="553806128266843748">Een Booleaanse markering die aangeeft of throttling aanstaat.</translation>
 <translation id="5540885720415375851">Toestaan dat lokale apparaten worden gevonden</translation>
-<translation id="5544314852228513983">Toestaan dat gebruikers beslissen of het apparaat moet worden vergrendeld als het inactief of opgeschort wordt</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">Hoog contrast op het inlogscherm aanzetten</translation>
 <translation id="555077880566103058">Alle sites toestaan om de <ph name="FLASH_PLUGIN_NAME" />-plug-in automatisch uit te voeren</translation>
@@ -6397,11 +6394,6 @@ https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.ht
 
           Als dit beleid niet is ingesteld, staan snelkoppelingen voor toegankelijkheidsfuncties standaard aan op het inlogscherm.</translation>
 <translation id="7777535871204167559">Externe opslagapparaten behandelen als alleen-lezen</translation>
-<translation id="7781853854781306082">Als je het beleid toepast, vraagt <ph name="PRODUCT_OS_NAME" /> gebruikers om een wachtwoord om het apparaat te ontgrendelen wanneer het inactief is.
-
-      Als je het beleid niet toepast, worden gebruikers niet om een wachtwoord gevraagd om het apparaat uit de slaapstand te halen en te ontgrendelen.
-
-      Als je het beleid niet instelt, kunnen gebruikers kiezen of zij een wachtwoord moeten opgeven om het apparaat uit de slaapstand te halen en te ontgrendelen.</translation>
 <translation id="7784062550705119230">Als <ph name="PRINTERS_ALLOWLIST" /> wordt gekozen voor <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, kun je door <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> in te stellen aangeven welke printers gebruikers kunnen gebruiken. Alleen printers waarvan de ID overeenkomt met de waarden in dit beleid, zijn beschikbaar voor gebruikers. De ID's moeten overeenkomen met het veld <ph name="ID_FIELD" /> of <ph name="GUID_FIELD" /> in het bestand dat is opgegeven in <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="7788511847830146438">Per profiel</translation>
 <translation id="7788632499792081231">Als je het beleid instelt, kun je een lijst met URL-patronen instellen voor sites die het klembord kunnen gebruiken. Dit omvat niet alle klembordbewerkingen op oorsprongen die overeenkomen met de patronen. Gebruikers kunnen bijvoorbeeld nog steeds plakken met sneltoetsen, aangezien dit niet wordt beperkt door de klembordrechten voor sites.
@@ -6603,7 +6595,6 @@ https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.ht
 <translation id="802776363472387903">De SHA-256-hash van de <ph name="PLUGIN_VM_NAME" />-afbeelding.</translation>
 <translation id="8028814157747157754">De standaard zoekprovider aanzetten en toestaan dat gebruikers de lijst met zoekproviders wijzigen</translation>
 <translation id="8029201909194194377">Maximale toegestane sessieduur voor verbindingen voor externe toegang</translation>
-<translation id="8029607810986641704">Het apparaat vergrendelen als het inactief of opgeschort wordt</translation>
 <translation id="8032201191311129122">Met dit beleid blokkeer je het kopiëren van gegevens naar het klembord voor specifieke URL's.
 
 De URL-lijsten <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> en <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> bepalen welke sites naar het klembord mogen schrijven. Een schrijfactie naar het klembord wordt geblokkeerd als de URL overeenkomt met een patroon in 'enable' en niet overeenkomt met een patroon in 'disable'. Een kopieeractie wordt niet geblokkeerd als de URL met geen enkel patroon overeenkomt.

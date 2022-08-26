@@ -48,6 +48,7 @@
 <translation id="2107397443965016585">Упит се приказује пре него што дозволите сајтовима да пуштају заштићени садржај (препоручено)</translation>
 <translation id="2146738493024040262">Отвори инстант апликацију</translation>
 <translation id="2148716181193084225">Данас</translation>
+<translation id="2155988908301433309">Увек прегледајте мобилни сајт</translation>
 <translation id="2182457891543959921">Пре него што дозволите сајтовима да праве 3D мапу окружења или прате положај камере приказује се упит (препоручено)</translation>
 <translation id="2212565012507486665">Дозволи колачиће</translation>
 <translation id="2228071138934252756">Да бисте дозволили да <ph name="APP_NAME" /> приступа камери, укључите камеру и у <ph name="BEGIN_LINK" />Android подешавањима<ph name="END_LINK" />.</translation>
@@ -79,6 +80,7 @@
 <translation id="2653659639078652383">Пошаљи</translation>
 <translation id="2677748264148917807">Затвори</translation>
 <translation id="2687403674020088961">Блокирај све колачиће (не препоручује се)</translation>
+<translation id="2692299144678073135">Дозволи да те сродни сајтови памте на различитим сајтовима</translation>
 <translation id="2704606927547763573">Копирано</translation>
 <translation id="2713106313042589954">Искључи камеру</translation>
 <translation id="2717722538473713889">Имејл адресе</translation>
@@ -139,6 +141,7 @@
 <translation id="4002066346123236978">Наслов</translation>
 <translation id="4008040567710660924">Омогућава колачиће за одређени сајт.</translation>
 <translation id="4046123991198612571">Следећа песма</translation>
+<translation id="4048876521107516222">Сродни сајтови користе колачиће да би вам, на пример, помогли да останете пријављени</translation>
 <translation id="4149994727733219643">Поједностављен приказ веб-страница</translation>
 <translation id="4165986682804962316">Подешавања сајта</translation>
 <translation id="4169549551965910670">Повезано са USB уређајем</translation>
@@ -204,6 +207,7 @@
 <translation id="5505264765875738116">Сајтови не могу да траже да шаљу обавештења</translation>
 <translation id="5516455585884385570">Отворите подешавања обавештења</translation>
 <translation id="5527111080432883924">Питај пре него што дозволиш сајтовима да читају текст и слике из привремене меморије (препоручено)</translation>
+<translation id="5553273073880784901">Увек прегледајте верзију сајта за рачунар</translation>
 <translation id="5553374991681107062">Најновије</translation>
 <translation id="5556459405103347317">Учитај поново</translation>
 <translation id="5596627076506792578">Још опција</translation>
@@ -220,6 +224,7 @@
 <translation id="5887687176710214216">Последња посета: јуче</translation>
 <translation id="5916664084637901428">Укључено</translation>
 <translation id="5922853908706496913">Дели се екран</translation>
+<translation id="5922967540311291836">Блокирајте колачиће трећих страна:</translation>
 <translation id="5939518447894949180">Ресетуј</translation>
 <translation id="5975083100439434680">Умањивање</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
@@ -310,6 +315,7 @@
 <translation id="7846076177841592234">Откажи избор</translation>
 <translation id="7846621471902887024">Одјавићете се са свих сајтова.</translation>
 <translation id="7882806643839505685">Дозволи звук за одређени сајт.</translation>
+<translation id="789180354981963912">Блокирајте колачиће трећих страна у режиму без архивирања:</translation>
 <translation id="7940722705963108451">Подсети ме</translation>
 <translation id="7986741934819883144">Изаберите контакт</translation>
 <translation id="7999064672810608036">Желите ли стварно да обришете све локалне податке, укључујући колачиће, и ресетујете све дозволе за овај веб-сајт?</translation>

@@ -312,6 +312,7 @@
 <translation id="3689865792480713551">Otkaži <ph name="ACTIVITY_DESCRIPTION" /></translation>
 <translation id="3690128548376345212">Mreže: <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Deaktivirano, <ph name="CONNECTION_STATUS" />, Jačina signala <ph name="SIGNAL_STRENGTH" />%, Detalji</translation>
 <translation id="3691184985318546178">sinhaleški</translation>
+<translation id="3722341589402358578">Došlo je do greške. Moguće je da neke stavke nisu premještene u otpad.</translation>
 <translation id="3726463242007121105">Nije moguće otvoriti uređaj jer sistem fajlova nije podržan.</translation>
 <translation id="3727148787322499904">Promjenom ove postavke uticat ćete na sve dijeljene mreže</translation>
 <translation id="3737576078404241332">Ukloni s bočne trake</translation>

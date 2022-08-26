@@ -312,6 +312,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" />ను రద్దు చేయి.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" />లోని నెట్‌వర్క్ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, యాక్టివేట్ చేయబడలేదు, <ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, వివరాలు</translation>
 <translation id="3691184985318546178">సింహళం</translation>
+<translation id="3722341589402358578">ఎర్రర్ ఏర్పడింది. కొన్ని ఐటెమ్‌లు ట్రాష్ చేయబడకపోవచ్చు.</translation>
 <translation id="3726463242007121105">పరికరం తెరవడం సాధ్యం కాదు ఎందుకంటే దాని ఫైల్‌సిస్టమ్‌కు మద్దతు లేదు.</translation>
 <translation id="3727148787322499904">ఈ సెట్టింగ్‌ను మార్చడం వలన అన్ని భాగస్వామ్య నెట్‌వర్క్‌లు ప్రభావితం అవుతాయి</translation>
 <translation id="3737576078404241332">సైడ్‌బార్ నుండి తీసివేయండి</translation>
@@ -931,7 +932,7 @@
 <translation id="8808686172382650546">పిల్లి</translation>
 <translation id="8810671769985673465">జిప్ చేయడంలో విఫలమైంది, ఈ అంశం ఉనికిలో ఉంది: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">స్పానిష్ (స్పెయిన్)</translation>
-<translation id="8834164572807951958">'<ph name="DESTINATION_NAME" />' యొక్క సభ్యులు ఈ అంశాల కాపీకి యాక్సెస్‌ను పొందుతారు.</translation>
+<translation id="8834164572807951958">'<ph name="DESTINATION_NAME" />' మెంబర్‌లు ఈ ఐటెమ్‌ల కాపీకి యాక్సెస్‌ను పొందుతారు.</translation>
 <translation id="8857149712089373752">ఫోనెటిక్ కీబోర్డ్‌తో నేపాలీ</translation>
 <translation id="8860454412039442620">Excel స్ప్రెడ్‌షీట్</translation>
 <translation id="8866284467018526531">అరబిక్ ట్రాన్స్‌లిటరేషన్</translation>
@@ -957,7 +958,7 @@
 <translation id="9110990317705400362">మేము మీ బ్రౌజింగ్‌ను సురక్షితం చేసే మార్గాల కోసం నిరంతరం శోధిస్తున్నాము. గతంలో, ఏ వెబ్‌సైట్ అయినా మీ బ్రౌజర్‌కు ఎక్స్‌టెన్ష‌న్‌ను జోడించడానికి మిమ్మల్ని ప్రాంప్ట్ చేసి ఉండ‌వ‌చ్చు. Google Chrome తాజా వెర్ష‌న్‌ల‌లో, మీరు తప్పనిసరిగా ఎక్స్‌టెన్ష‌న్‌ల పేజీలో వాటిని జోడించడం ద్వారా ఈ ఎక్స్‌టెన్ష‌న్‌లను ఇన్‌స్టాల్ చేయాలని అనుకుంటున్నట్లు Chromeకు ప్రత్యేకించి తెలియజేయాలి. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">అన్‌లాక్ చేయి</translation>
 <translation id="912419004897138677">కోడెక్</translation>
-<translation id="9130775360844693113">'<ph name="DESTINATION_NAME" />' యొక్క సభ్యులు ఈ అంశాలకు యాక్సెస్ పొందుతారు.</translation>
+<translation id="9130775360844693113">'<ph name="DESTINATION_NAME" />' మెంబర్‌లు ఈ ఐటెమ్‌లకు యాక్సెస్ పొందుతారు.</translation>
 <translation id="9131598836763251128">దయచేసి ఒకటి లేదా మరిన్ని ఫైళ్ళను ఎంచుకోండి</translation>
 <translation id="9133055936679483811">జిప్ చేయడంలో విఫలమైంది. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="9144340019284012223">కేటలాన్</translation>

@@ -542,7 +542,6 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
       Se viene disattivata, gli utenti non possono attivare la funzionalità.
 
       Se il criterio non viene configurato, per impostazione predefinita, la funzionalità non è consentita per gli utenti gestiti a livello aziendale ed è consentita per gli utenti non gestiti.</translation>
-<translation id="1552612763424066828">Impedisci al dispositivo di bloccarsi quando è inattivo o in stato di sospensione</translation>
 <translation id="1553532014072799546">Whitelist limiti di utilizzo per app</translation>
 <translation id="1553956579506604198">Blocca l'installazione delle estensioni esterne</translation>
 <translation id="1555248923316727072">Impostazioni di gestione dell'identità degli utenti SAML</translation>
@@ -763,6 +762,12 @@ Indipendentemente dal valore, l'utente potrà decidere se mantenere o meno i dat
 
 Questo criterio non ha effetto se l'opzione per mantenere i dati di navigazione esistenti non è disponibile. Questo accade se viene applicata in modo forzato la separazione dei profili aziendali o se i dati provengono da un profilo già gestito.
 </translation>
+<translation id="1795105105645381965">
+      Se il criterio viene impostato su Attivato (True), <ph name="PRODUCT_NAME" /> chiede il consenso degli utenti gestiti prima di condividere gli indicatori dei dispositivi sui dispositivi non gestiti per ottenere l'accesso.
+
+      Se il criterio viene impostato su Disattivato (False) o se non viene configurato, <ph name="PRODUCT_NAME" /> non può raccogliere gli indicatori dei dispositivi.
+
+      Alcuni esempi di indicatori dei dispositivi includono, a titolo esemplificativo, informazioni sul sistema operativo, registro e presenza di file.</translation>
 <translation id="179694024208061102">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_NAME" /> proverà ad avviare alcuni URL in un browser alternativo, ad esempio <ph name="IE_PRODUCT_NAME" />. Questa funzionalità viene impostata con i criteri del gruppo <ph name="LEGACY_BROWSER_SUPPORT_POLICY_GROUP" />.
 
       Se il criterio viene impostato su Disattivato o se non viene impostato, <ph name="PRODUCT_NAME" /> non proverà ad avviare gli URL impostati in un browser alternativo.</translation>
@@ -1098,6 +1103,7 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
 <translation id="2043770014371753404">Stampanti aziendali disattivate</translation>
 <translation id="2057317273526988987">Consenti l'accesso a un elenco di URL</translation>
 <translation id="2058055310819710697">Attiva la modalità sviluppatore per app isolate.</translation>
+<translation id="205807990145127714">Dati di telemetria da segnalare per gli eventi di intensità del segnale</translation>
 <translation id="2061123930713023976">Consenti acquisizioni di pacchetti di rete di debug</translation>
 <translation id="2061810934846663491">Configura i nomi di dominio richiesti per gli host di accesso remoto</translation>
 <translation id="2062632109797189011">Riattiva l'API window.webkitStorageInfo</translation>
@@ -1396,6 +1402,19 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
 <translation id="2384233438419344179">Se il criterio è impostato su Attivato, gli elementi della pagina web che non provengono dal dominio presente nella barra degli indirizzi del browser non possono impostare i cookie. Se il criterio è impostato su Disattivato, tali elementi possono impostare i cookie e gli utenti non possono modificare l'impostazione.
 
       Se il criterio non viene impostato, i cookie di terze parti vengono attivati, ma gli utenti possono modificare l'impostazione.</translation>
+<translation id="2384553027681594203">Attiva <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" /> per un elenco di URL nella schermata di accesso e di blocco.
+
+      La configurazione di questo criterio consente di specificare gli URL autorizzati a far parte del flusso di attestazione per ricevere l'insieme di indicatori dalla macchina.
+
+      Se questo criterio non viene impostato o se viene lasciato vuoto, nessun endpoint potrà avviare il flusso di attestazione o ricevere indicatori dalla macchina.
+
+      Gli URL devono avere uno schema HTTPS, ad esempio "https://example.com".
+
+      Nota: i caratteri jolly, <ph name="WILDCARD_VALUE" />, sono consentiti.
+
+      Questo criterio inciderà soltanto sul flusso di attestazione nella schermata di accesso e di blocco. Per modificare il flusso di attestazione all'interno della sessione, utilizza il criterio <ph name="CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" />.
+
+      Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="2386362615870139244">Consenti Wakelock dello schermo</translation>
 <translation id="2387469539700985783">Questo criterio non influisce sui report generati da Android.</translation>
 <translation id="238885588439957890">L'ora in cui il dispositivo userà la corrente alternata per ricaricare la batteria, nel fuso orario locale del dispositivo.</translation>
@@ -2089,6 +2108,27 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 
       Se viene impostato su Disattivato, i controlli multimediali nella schermata di blocco vengono disattivati.</translation>
 <translation id="3072847235228302527">Imposta i Termini di servizio di un account locale del dispositivo</translation>
+<translation id="3077650998740742747">
+Comportamento predefinito (Criterio non impostato)
+Quando viene aggiunto un account nell'area dei contenuti, potrebbe essere visualizzata una piccola finestra di dialogo che chiede all'utente di creare un nuovo profilo. Questa finestra di dialogo è ignorabile.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />
+Se un utente accede a un servizio Google per la prima volta in un browser <ph name="PRODUCT_NAME" />, viene visualizzata una finestra di dialogo che chiede all'utente di creare un nuovo profilo per il proprio account aziendale. L'utente può fare clic su Annulla e uscire, oppure su Continua per creare un nuovo profilo. I dati di navigazione esistenti non verranno aggiunti al nuovo profilo. Il profilo appena creato può avere account secondari, ad esempio l'utente può accedere a un altro account nell'area dei contenuti.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT" />
+Questo è lo stesso comportamento di <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />, ad eccezione del fatto che il profilo appena creato non può avere account secondari.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />
+Questo è lo stesso comportamento di <ph name="POLICY_VALUE_PRIMARY_ACCOUNT" />, ad eccezione dell'aggiunta di una casella di controllo nella finestra di dialogo per consentire all'utente di conservare i dati di navigazione locali.
+Se l'utente seleziona la casella, i dati del profilo esistenti vengono associati all'account gestito.
+- Tutti i dati di navigazione esistenti saranno presenti nel nuovo profilo.
+- Questi dati includono preferiti, cronologia, password, dati di compilazione automatica, schede aperte, cookie, cache, spazio di archiviazione web, estensioni e così via.
+Se l'utente non seleziona la casella:
+- Il vecchio profilo continuerà a esistere, nessun dato andrà perso.
+- Verrà creato un nuovo profilo.
+
+<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />
+Questo è lo stesso comportamento di <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />, ad eccezione del fatto che il profilo appena creato non può avere account secondari.</translation>
 <translation id="3083259245974004342">Protezione della password</translation>
 <translation id="3086995894968271156">Consente di configurare Cast Receiver in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3087346703976541109">Consente di specificare se il criterio SharedArrayBuffers può essere utilizzato in un contesto isolato da tutte le origini</translation>
@@ -3311,7 +3351,6 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
 
       La norma stessa è supportata sulle piattaforme precedenti, ma la funzione attivata dalla norma potrebbe essere disponibile su meno piattaforme. Non è possibile riattivare tutte le funzioni ritirate della piattaforma web, ma soltanto quelle elencate esplicitamente di seguito e soltanto per un periodo di tempo limitato, che è diverso per ogni funzione. Il formato generico del tag string sarà [NomeFunzioneRitirata]_EffectiveUntil[aaaammgg]. È possibile conoscere lo scopo delle modifiche alle funzioni della piattaforma web all'indirizzo https://bit.ly/blinkintents.
       </translation>
-<translation id="4442582539341804154">Attiva il blocco quando lo stato del dispositivo diventa inattivo o sospeso</translation>
 <translation id="4443711908766051441">Viene attivato il gioco del dinosauro</translation>
 <translation id="4447668084338250480">Comportamento di reindirizzamento Intranet</translation>
 <translation id="4449469846627734399">Consente di impostare la configurazione giornaliera della variazione dei picchi energetici</translation>
@@ -3646,6 +3685,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
       Se il criterio viene impostato su Disattivato o non viene impostato, <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> diventa facoltativo e non blocca il processo di avvio di <ph name="PRODUCT_NAME" /> in caso di esito negativo.
 
       Questo criterio viene utilizzato su desktop dalla registrazione con criteri cloud in ambito macchina. Per ulteriori informazioni, vai all'indirizzo https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744.</translation>
+<translation id="488996881569316769">Telemetria di rete</translation>
 <translation id="4890453377345554695">La configurazione del criterio consente di elencare i pattern URL che specificano i siti che possono richiedere agli utenti l'accesso di scrittura di file o directory nel file system del sistema operativo host.
 
       Se il criterio non viene configurato, <ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato. In caso contrario, vengono applicate le impostazioni personali degli utenti.
@@ -3834,6 +3874,12 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 <translation id="5085647276663819155">Disattiva anteprima di stampa</translation>
 <translation id="5090791951240382356">Consenti l'unione dei criteri del dizionario provenienti da origini diverse</translation>
 <translation id="5091315650312105069">Consenti l'autenticazione <ph name="BASIC_AUTH" /> per HTTP</translation>
+<translation id="5099239365323299669">L'avvio della quota permanente non sarà più supportato a partire dalla versione M106. Questo criterio consente di riattivare la funzionalità della quota permanente fino alla versione M107.
+
+      Se questo criterio viene impostato su Attivato, webkitRequestFileSystem con tipo permanente funzionerà con la quota permanente.
+
+      Se questo criterio non viene configurato o se viene impostato su Disattivato, webkitRequestFileSystem con tipo permanente funzionerà con la quota temporanea.
+      </translation>
 <translation id="5103112931744164177">Questo criterio consente di controllare quale stack software viene utilizzato per comunicare con il server DNS: il client DNS del sistema operativo o quello integrato di <ph name="PRODUCT_NAME" />. Questo criterio non influisce sui server DNS utilizzati: se, ad esempio, il sistema operativo viene configurato in modo da usare un server DNS aziendale, lo stesso server viene usato dal client DNS integrato. Non consente nemmeno di controllare se viene utilizzato il protocollo DNS-over-HTTPS; <ph name="PRODUCT_NAME" /> userà sempre il resolver integrato per le richieste DNS-over-HTTPS. Per informazioni relative al controllo del protocollo DNS-over-HTTPS, consulta il criterio <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" />.
 
       Se il criterio viene impostato su Attivato, viene utilizzato il client DNS integrato, se disponibile.
@@ -3973,6 +4019,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 
       Se il criterio non viene configurato o se non è valido, viene eseguito lo stesso comportamento dell'opzione "Attendi che il canale di destinazione controlli il downgrade del canale".</translation>
 <translation id="5229339291699779956">Viene attivato il tunneling PCIe per i dispositivi periferici Thunderbolt/USB4, i dispositivi periferici funzioneranno con le loro capacità complete</translation>
+<translation id="5230095739094490896">Modello dell'attributo IPP "client-name" per la stampa</translation>
 <translation id="5233239004553860036">Se questo criterio viene impostato su <ph name="POLICY_VALUE_ALL" /> o se non viene configurato, sono consentiti tutti gli utilizzi degli account gestiti. Di conseguenza, un account gestito potrebbe essere un account secondario, che riceverebbe i criteri soltanto se venisse eseguito l'accesso all'account come account principale in un profilo del browser.
       I criteri impostati per l'account non verranno applicati nei seguenti casi:
         -  Se l'account è un account secondario a livello di sistema operativo (Impostazioni account)
@@ -4279,7 +4326,6 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="5535973522252703021">Whitelist server di delega Kerberos</translation>
 <translation id="553806128266843748">Un flag booleano che indica se la limitazione è attiva o meno.</translation>
 <translation id="5540885720415375851">Consenti rilevamento dei dispositivi locali</translation>
-<translation id="5544314852228513983">Consenti agli utenti di decidere se il dispositivo deve bloccarsi quando è inattivo o in stato di sospensione</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">Attiva l'alto contrasto nella schermata di accesso</translation>
 <translation id="555077880566103058">Consenti l'esecuzione automatica del plug-in <ph name="FLASH_PLUGIN_NAME" /> in tutti i siti</translation>
@@ -5152,6 +5198,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="6506486086262398387">Se il criterio viene impostato su Attivato, la funzionalità Condivisione file di rete di <ph name="PRODUCT_OS_NAME" /> utilizza l'autenticazione NTLM per le condivisioni SMB, se necessario. Se viene impostato su Disattivato, l'autenticazione NTLM per le condivisioni SMB viene disattivata.
 
       Se non viene configurato, il comportamento predefinito è off per gli utenti gestiti e on per gli altri utenti.</translation>
+<translation id="6513453889192806240">Latenza HTTPS</translation>
 <translation id="6515357889978918016">Immagine <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="6518102411616460786">Attendi che il canale di destinazione controlli il downgrade del canale</translation>
 <translation id="6520802717075138474">Importa motori di ricerca dal browser predefinito alla prima esecuzione</translation>
@@ -5421,6 +5468,12 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 
       Se il criterio è impostato su False o non viene impostato, <ph name="PLUGIN_VM_NAME" /> non viene attivato per l'utente.
       Se è impostato su True, <ph name="PLUGIN_VM_NAME" /> viene attivato per l'utente, a condizione che anche le altre impostazioni lo permettano. Il valore dei criteri <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> e <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> deve essere True ed è necessario impostare i criteri <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> o <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> per consentire l'esecuzione di <ph name="PLUGIN_VM_NAME" />.</translation>
+<translation id="6750902920405577210">L'elenco di dati di telemetria da segnalare per gli eventi di variazione dell'intensità del segnale.
+
+      Ogni dato di telemetria specificato verrà segnalato soltanto se non è stato disattivato tramite il relativo criterio di controllo.
+      Il criterio di controllo di https_latency e network_telemetry è ReportDeviceNetworkStatus.
+
+      Se non viene impostato, non verranno segnalati dati di telemetria aggiuntivi per gli eventi di variazione dell'intensità del segnale.</translation>
 <translation id="6752711782954612641">Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attivo, l'assegnazione di un valore al criterio <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> consente di specificare i parametri durante la ricerca di un URL con POST. Si tratta di coppie di tipo nome-valore separate da virgole. Se un valore è il parametro di un modello, ad esempio <ph name="SEARCH_TERM_MARKER" />, viene sostituito con i dati dei termini di ricerca reali.
 
       Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> non viene configurato, le richieste di ricerca vengono inviate utilizzando il metodo Get.</translation>
@@ -6410,11 +6463,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 
           Se questo criterio non viene impostato, le scorciatoie delle funzioni di accessibilità saranno attive per impostazione predefinita nella schermata di accesso.</translation>
 <translation id="7777535871204167559">Considera i dispositivi di archiviazione esterni come di sola lettura</translation>
-<translation id="7781853854781306082">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_OS_NAME" /> richiede agli utenti una password per sbloccare il dispositivo quando è inattivo.
-
-      Se viene impostato su Disattivato, agli utenti non viene richiesta alcuna password per sbloccare il dispositivo quando è in modalità di sospensione.
-
-      Se non viene configurato, gli utenti possono scegliere se devono inserire una password o meno per sbloccare il dispositivo quando è in modalità di sospensione.</translation>
 <translation id="7784062550705119230">Se per il criterio <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> viene selezionata l'opzione <ph name="PRINTERS_ALLOWLIST" />, la configurazione del criterio <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> consente di specificare le stampanti che possono essere utilizzate dagli utenti. Soltanto le stampanti con ID corrispondenti ai valori specificati in questo criterio saranno a disposizione degli utenti. Gli ID devono corrispondere ai campi <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del file specificato nel criterio <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="7788511847830146438">Per profilo</translation>
 <translation id="7788632499792081231">La configurazione del criterio consente di impostare un elenco di pattern URL che specificano i siti che possono usare l'autorizzazione di accesso dei siti agli appunti. Tutte le operazioni relative agli appunti nelle origini corrispondenti ai pattern non sono incluse. Ad esempio, gli utenti potranno ancora incollare usando scorciatoie da tastiera perché questa operazione non è controllata dall'autorizzazione di accesso dei siti agli appunti.
@@ -6611,7 +6659,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="802776363472387903">L'hash SHA-256 dell'immagine <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Attiva il provider di ricerca predefinito e consenti agli utenti di modificare l'elenco dei provider di ricerca</translation>
 <translation id="8029201909194194377">Durata massima della sessione consentita per le connessioni di accesso remoto</translation>
-<translation id="8029607810986641704">Blocca il dispositivo quando è inattivo o in stato di sospensione</translation>
 <translation id="8032201191311129122">Questo criterio impedisce la copia dei dati negli appunti per URL specifici.
 
       Gli elenchi di URL<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> consentono di controllare a quali siti è consentito scrivere negli appunti. La scrittura negli appunti viene bloccata se l'URL corrisponde a un pattern in "enable" e non corrisponde a un pattern in "disable". La copia non viene bloccata se l'URL non corrisponde ad alcun pattern.
@@ -7195,6 +7242,18 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 
       Se il criterio viene impostato su false, le schede non verranno bloccate.</translation>
 <translation id="8619748440665904084">Disabilita l'importazione dei dati di compilazione automatica dei moduli alla prima esecuzione</translation>
+<translation id="8620103780247748230">Questo criterio consente di stabilire il valore dell'attributo IPP (Internet Printing Protocol) <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> nei processi di stampa.
+
+      Se il criterio viene impostato su una stringa, viene aggiunto un ulteriore elemento <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> a ogni processo di stampa. Il membro <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> dell'elemento <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> aggiunto verrà impostato sul valore del criterio dopo la sostituzione delle variabili.
+
+      Le variabili supportate sono <ph name="DIRECTORY_ID_PLACEHOLDER" />, <ph name="SERIAL_NUMBER_PLACEHOLDER" />, <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="ANNOTATED_LOCATION_PLACEHOLDER" />, <ph name="USER_EMAIL_PLACEHOLDER" />, <ph name="USER_EMAIL_NAME_PLACEHOLDER" /> e <ph name="USER_EMAIL_DOMAIN" />. Le variabili segnaposto non supportate non verranno espanse.
+
+      Il valore ottenuto dopo la sostituzione delle variabili viene considerato valido se è costituito soltanto da caratteri stampabili <ph name="ASCII" /> e non supera i 255 caratteri.
+
+      Tieni presente che, per motivi di privacy, questo criterio si applica soltanto in caso di comunicazione con una stampante usando i protocolli <ph name="IPPS_PROTOCOL" />, <ph name="HTTPS_PROTOCOL" />, <ph name="USB_PROTOCOL" /> o <ph name="IPP_USB_PROTOCOL" />. Tieni inoltre presente che questo criterio si applica soltanto alle stampanti che supportano <ph name="CLIENT_NAME_IPP_ATTRIBUTE" />.
+
+      Se il criterio non viene configurato oppure se viene impostato un valore vuoto o non valido, non verrà aggiunto un ulteriore elemento <ph name="CLIENT_INFO_PLACEHOLDER" /> alle richieste di processi di stampa.
+      </translation>
 <translation id="8623672932476443039">Se il criterio viene impostato su enabled, gli utenti possono accedere alla modalità sviluppatore per le app isolate.
       Se viene impostato su disabled, gli utenti non possono accedere a queste funzionalità.
       Se non viene configurato, per impostazione predefinita le funzionalità non sono consentite per gli utenti gestiti a livello aziendale su Chrome OS, mentre sono consentite per tutti gli altri utenti e sistemi operativi.</translation>
