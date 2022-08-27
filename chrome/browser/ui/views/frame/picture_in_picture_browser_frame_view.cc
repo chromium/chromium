@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/overlay/overlay_window_image_button.h"
+#include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/location_bar_model_impl.h"
 #include "components/vector_icons/vector_icons.h"
@@ -155,7 +156,8 @@ int PictureInPictureBrowserFrameView::NonClientHitTest(
     return HTNOWHERE;
 
   // Allow interacting with the buttons.
-  if (GetBackToTabControlsBounds().Contains(point) ||
+  if (GetLocationIconViewBounds().Contains(point) ||
+      GetBackToTabControlsBounds().Contains(point) ||
       GetCloseControlsBounds().Contains(point))
     return HTCLIENT;
 
@@ -253,7 +255,19 @@ SkColor PictureInPictureBrowserFrameView::GetSecurityChipColor(
 }
 
 bool PictureInPictureBrowserFrameView::ShowPageInfoDialog() {
-  return false;
+  content::WebContents* contents = GetWebContents();
+  if (!contents)
+    return false;
+
+  views::BubbleDialogDelegateView* bubble =
+      PageInfoBubbleView::CreatePageInfoBubble(
+          location_icon_view_, gfx::Rect(), GetWidget()->GetNativeWindow(),
+          contents, contents->GetLastCommittedURL(),
+          /*initialized_callback=*/base::DoNothing(),
+          /*closing_callback=*/base::DoNothing());
+  bubble->SetHighlightedButton(location_icon_view_);
+  bubble->GetWidget()->Show();
+  return true;
 }
 
 LocationBarModel* PictureInPictureBrowserFrameView::GetLocationBarModel()
@@ -284,6 +298,11 @@ SkColor PictureInPictureBrowserFrameView::GetIconLabelBubbleBackgroundColor()
 
 ///////////////////////////////////////////////////////////////////////////////
 // PictureInPictureBrowserFrameView implementations:
+
+gfx::Rect PictureInPictureBrowserFrameView::GetLocationIconViewBounds() const {
+  DCHECK(location_icon_view_);
+  return location_icon_view_->GetMirroredBounds();
+}
 
 gfx::Rect PictureInPictureBrowserFrameView::GetBackToTabControlsBounds() const {
   DCHECK(back_to_tab_button_);

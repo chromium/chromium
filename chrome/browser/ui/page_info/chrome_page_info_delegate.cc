@@ -168,6 +168,11 @@ permissions::PermissionResult ChromePageInfoDelegate::GetPermissionResult(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+void ChromePageInfoDelegate::FocusWebContents() {
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  browser->ActivateContents(web_contents_);
+}
+
 absl::optional<std::u16string> ChromePageInfoDelegate::GetFpsOwner(
     const GURL& site_url) {
   return IsFpsAllowed()
@@ -205,6 +210,7 @@ void ChromePageInfoDelegate::ShowAllSitesSettings() {
 }
 
 void ChromePageInfoDelegate::OpenCookiesDialog() {
+  FocusWebContents();
   TabDialogs::FromWebContents(web_contents_)->ShowCollectedCookies();
 }
 
@@ -214,6 +220,7 @@ void ChromePageInfoDelegate::OpenCertificateDialog(
   DCHECK(certificate);
   DCHECK(top_window);
 
+  FocusWebContents();
   ShowCertificateViewer(web_contents_, top_window, certificate);
 }
 

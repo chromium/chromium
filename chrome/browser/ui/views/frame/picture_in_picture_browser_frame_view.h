@@ -75,6 +75,7 @@ class PictureInPictureBrowserFrameView : public BrowserNonClientFrameView,
   SkColor GetIconLabelBubbleBackgroundColor() const override;
 
   // Gets the bounds of the controls.
+  gfx::Rect GetLocationIconViewBounds() const;
   gfx::Rect GetBackToTabControlsBounds() const;
   gfx::Rect GetCloseControlsBounds() const;
 

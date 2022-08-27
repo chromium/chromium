@@ -88,17 +88,23 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
  private:
   bool IsFpsAllowed() const;
   Profile* GetProfile() const;
+
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   safe_browsing::ChromePasswordProtectionService*
   GetChromePasswordProtectionService() const;
 #endif
-  raw_ptr<content::WebContents> web_contents_;
+
 #if !BUILDFLAG(IS_ANDROID)
+  // Focus the window and tab for the web contents.
+  void FocusWebContents();
+
   // The sentiment service is owned by the profile and will outlive this. The
   // service cannot be retrieved via |web_contents_| as that may be destroyed
   // before this is.
   raw_ptr<TrustSafetySentimentService> sentiment_service_;
 #endif
+
+  raw_ptr<content::WebContents> web_contents_;
   security_state::SecurityLevel security_level_for_tests_;
   security_state::VisibleSecurityState visible_security_state_for_tests_;
   bool security_state_for_tests_set_ = false;
