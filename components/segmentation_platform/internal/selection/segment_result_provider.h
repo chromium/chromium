@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
+#include "components/segmentation_platform/internal/execution/execution_request.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -48,13 +49,19 @@ class SegmentResultProvider {
   };
   struct SegmentResult {
     explicit SegmentResult(ResultState state);
-    SegmentResult(ResultState state, int rank);
+    SegmentResult(ResultState state,
+                  int rank,
+                  std::unique_ptr<ModelExecutionResult> execution_result);
     ~SegmentResult();
     SegmentResult(SegmentResult&) = delete;
     SegmentResult& operator=(SegmentResult&) = delete;
 
     ResultState state = ResultState::kUnknown;
     absl::optional<int> rank;
+
+    // The execution result is only available when the model is executed.
+    // TODO(ssid): Support storing inputs to disk if needed.
+    std::unique_ptr<ModelExecutionResult> execution_result;
   };
   using SegmentResultCallback =
       base::OnceCallback<void(std::unique_ptr<SegmentResult>)>;

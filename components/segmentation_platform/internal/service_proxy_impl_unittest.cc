@@ -6,9 +6,7 @@
 #include <memory>
 
 #include "base/run_loop.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
-#include "components/leveldb_proto/testing/fake_db.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/segmentation_platform/internal/constants.h"
@@ -64,7 +62,7 @@ class MockModelExecutionScheduler : public ModelExecutionScheduler {
   MOCK_METHOD(void, RequestModelExecutionForEligibleSegments, (bool));
   MOCK_METHOD(void,
               OnModelExecutionCompleted,
-              (SegmentId, (const std::pair<float, ModelExecutionStatus>&)));
+              (SegmentId, (std::unique_ptr<ModelExecutionResult>)));
 };
 
 class MockModelExecutionManager : public ModelExecutionManager {

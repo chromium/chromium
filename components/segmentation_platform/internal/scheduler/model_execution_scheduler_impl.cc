@@ -5,7 +5,6 @@
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler_impl.h"
 
 #include "base/logging.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
@@ -85,16 +84,16 @@ void ModelExecutionSchedulerImpl::RequestModelExecution(
 
 void ModelExecutionSchedulerImpl::OnModelExecutionCompleted(
     SegmentId segment_id,
-    const std::pair<float, ModelExecutionStatus>& result) {
+    std::unique_ptr<ModelExecutionResult> result) {
   // TODO(shaktisahu): Check ModelExecutionStatus and handle failure cases.
   // Should we save it to DB?
   proto::PredictionResult segment_result;
-  bool success = result.second == ModelExecutionStatus::kSuccess;
+  bool success = result->status == ModelExecutionStatus::kSuccess;
   if (success) {
-    segment_result.set_result(result.first);
+    segment_result.set_result(result->score);
     segment_result.set_timestamp_us(
         clock_->Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
-    stats::RecordModelScore(segment_id, result.first);
+    stats::RecordModelScore(segment_id, result->score);
   }
 
   segment_database_->SaveSegmentResult(

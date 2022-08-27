@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/segmentation_platform/internal/execution/model_execution_status.h"
 #include "components/segmentation_platform/internal/selection/segment_selector_impl.h"
 
 #include "base/run_loop.h"
@@ -201,7 +202,9 @@ TEST_F(SegmentSelectorTest, RunSelectionOnDemand) {
             auto result =
                 std::make_unique<SegmentResultProvider::SegmentResult>(
                     SegmentResultProvider::ResultState::kTfliteModelScoreUsed,
-                    rank);
+                    rank,
+                    std::make_unique<ModelExecutionResult>(
+                        ModelExecutionStatus::kSuccess));
             std::move(options->callback).Run(std::move(result));
           }));
   segment_selector_->set_segment_result_provider_for_testing(

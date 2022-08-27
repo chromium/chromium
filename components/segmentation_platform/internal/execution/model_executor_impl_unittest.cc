@@ -76,25 +76,25 @@ class ModelExecutorTest : public testing::Test {
 
   void ExecuteModel(const proto::SegmentInfo& info,
                     ModelProvider* model,
-                    const std::pair<float, ModelExecutionStatus>& expected) {
+                    std::unique_ptr<ModelExecutionResult> expected) {
     base::RunLoop loop;
     auto request = std::make_unique<ExecutionRequest>();
     request->segment_info = &info;
     request->model_provider = model;
     request->save_result_to_db = false;
-    request->callback =
-        base::BindOnce(&ModelExecutorTest::OnExecutionCallback,
-                       base::Unretained(this), loop.QuitClosure(), expected);
+    request->callback = base::BindOnce(&ModelExecutorTest::OnExecutionCallback,
+                                       base::Unretained(this),
+                                       loop.QuitClosure(), std::move(expected));
     model_executor_->ExecuteModel(std::move(request));
     loop.Run();
   }
 
-  void OnExecutionCallback(
-      base::RepeatingClosure closure,
-      const std::pair<float, ModelExecutionStatus>& expected,
-      const std::pair<float, ModelExecutionStatus>& actual) {
-    EXPECT_EQ(expected.second, actual.second);
-    EXPECT_NEAR(expected.first, actual.first, 1e-5);
+  void OnExecutionCallback(base::RepeatingClosure closure,
+                           std::unique_ptr<ModelExecutionResult> expected,
+                           std::unique_ptr<ModelExecutionResult> actual) {
+    EXPECT_EQ(expected->status, actual->status);
+    EXPECT_NEAR(expected->score, actual->score, 1e-5);
+    EXPECT_EQ(expected->inputs, actual->inputs);
     std::move(closure).Run();
   }
 
@@ -116,17 +116,17 @@ TEST_F(ModelExecutorTest, MetadataTests) {
   segment_info.set_segment_id(kSegmentId);
 
   EXPECT_CALL(mock_model_, ModelAvailable()).WillRepeatedly(Return(true));
-  ExecuteModel(
-      segment_info, &mock_model_,
-      std::make_pair(0, ModelExecutionStatus::kSkippedInvalidMetadata));
+  ExecuteModel(segment_info, &mock_model_,
+               std::make_unique<ModelExecutionResult>(
+                   ModelExecutionStatus::kSkippedInvalidMetadata));
 
   auto& model_metadata = *segment_info.mutable_model_metadata();
   model_metadata.set_bucket_duration(14);
   model_metadata.set_time_unit(proto::TimeUnit::UNKNOWN_TIME_UNIT);
 
-  ExecuteModel(
-      segment_info, &mock_model_,
-      std::make_pair(0, ModelExecutionStatus::kSkippedInvalidMetadata));
+  ExecuteModel(segment_info, &mock_model_,
+               std::make_unique<ModelExecutionResult>(
+                   ModelExecutionStatus::kSkippedInvalidMetadata));
 }
 
 TEST_F(ModelExecutorTest, ModelNotReady) {
@@ -142,7 +142,8 @@ TEST_F(ModelExecutorTest, ModelNotReady) {
   EXPECT_CALL(mock_model_, ModelAvailable()).WillRepeatedly(Return(false));
 
   ExecuteModel(segment_info, &mock_model_,
-               std::make_pair(0, ModelExecutionStatus::kSkippedModelNotReady));
+               std::make_unique<ModelExecutionResult>(
+                   ModelExecutionStatus::kSkippedModelNotReady));
 }
 
 TEST_F(ModelExecutorTest, FailedFeatureProcessing) {
@@ -167,9 +168,9 @@ TEST_F(ModelExecutorTest, FailedFeatureProcessing) {
   EXPECT_CALL(mock_model_, ModelAvailable()).WillRepeatedly(Return(true));
   EXPECT_CALL(mock_model_, ExecuteModelWithInput(_, _)).Times(0);
 
-  ExecuteModel(
-      *metadata_writer.FindOrCreateSegment(segment_id), &mock_model_,
-      std::make_pair(0, ModelExecutionStatus::kSkippedInvalidMetadata));
+  ExecuteModel(*metadata_writer.FindOrCreateSegment(segment_id), &mock_model_,
+               std::make_unique<ModelExecutionResult>(
+                   ModelExecutionStatus::kSkippedInvalidMetadata));
 
   EXPECT_CALL(*feature_list_query_processor_,
               ProcessFeatureList(
@@ -177,9 +178,9 @@ TEST_F(ModelExecutorTest, FailedFeatureProcessing) {
                   FeatureListQueryProcessor::ProcessOption::kInputsOnly, _))
       .WillOnce(RunOnceCallback<5>(/*error=*/true, std::vector<float>(),
                                    std::vector<float>()));
-  ExecuteModel(
-      *metadata_writer.FindOrCreateSegment(segment_id), &mock_model_,
-      std::make_pair(0, ModelExecutionStatus::kSkippedInvalidMetadata));
+  ExecuteModel(*metadata_writer.FindOrCreateSegment(segment_id), &mock_model_,
+               std::make_unique<ModelExecutionResult>(
+                   ModelExecutionStatus::kSkippedInvalidMetadata));
 }
 
 TEST_F(ModelExecutorTest, ExecuteModelWithMultipleFeatures) {
@@ -191,23 +192,23 @@ TEST_F(ModelExecutorTest, ExecuteModelWithMultipleFeatures) {
   std::string user_action_name = "some_user_action";
   metadata_writer.AddUserActionFeature(kSegmentId, user_action_name, 3, 3,
                                        proto::Aggregation::BUCKETED_COUNT);
+  const std::vector<float> inputs{1, 2, 3, 4, 5, 6, 7};
 
   EXPECT_CALL(*feature_list_query_processor_,
               ProcessFeatureList(
                   _, _, kSegmentId, clock_.Now(),
                   FeatureListQueryProcessor::ProcessOption::kInputsOnly, _))
-      .WillOnce(RunOnceCallback<5>(/*error=*/false,
-                                   std::vector<float>{1, 2, 3, 4, 5, 6, 7},
-                                   std::vector<float>()));
+      .WillOnce(
+          RunOnceCallback<5>(/*error=*/false, inputs, std::vector<float>()));
 
   // The input tensor should contain all values flattened to a single vector.
   EXPECT_CALL(mock_model_, ModelAvailable()).WillRepeatedly(Return(true));
-  EXPECT_CALL(mock_model_,
-              ExecuteModelWithInput(std::vector<float>{1, 2, 3, 4, 5, 6, 7}, _))
+  EXPECT_CALL(mock_model_, ExecuteModelWithInput(inputs, _))
       .WillOnce(RunOnceCallback<1>(absl::make_optional(0.8)));
 
   ExecuteModel(*metadata_writer.FindOrCreateSegment(kSegmentId), &mock_model_,
-               std::make_pair(0.8, ModelExecutionStatus::kSuccess));
+               std::make_unique<ModelExecutionResult>(
+                   ModelExecutionResult::Tensor(inputs), 0.8));
 }
 
 }  // namespace segmentation_platform

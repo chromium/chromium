@@ -53,7 +53,7 @@ class ModelExecutionSchedulerImpl : public ModelExecutionScheduler {
   void RequestModelExecution(const proto::SegmentInfo& segment_info) override;
   void OnModelExecutionCompleted(
       SegmentId segment_id,
-      const std::pair<float, ModelExecutionStatus>& score) override;
+      std::unique_ptr<ModelExecutionResult> score) override;
 
  private:
   void FilterEligibleSegments(

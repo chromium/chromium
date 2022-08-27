@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
+#include "components/segmentation_platform/internal/execution/execution_request.h"
 #include "components/segmentation_platform/internal/execution/model_executor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -65,8 +66,7 @@ class ModelExecutorImpl : public ModelExecutor {
   // Helper function for synchronously invoking the callback with the given
   // result and status.
   void RunModelExecutionCallback(std::unique_ptr<ExecutionState> state,
-                                 float result,
-                                 ModelExecutionStatus status);
+                                 std::unique_ptr<ModelExecutionResult> result);
 
   const raw_ptr<base::Clock> clock_;
 

@@ -4,11 +4,11 @@
 
 #include "components/segmentation_platform/internal/scheduler/execution_service.h"
 
-#include "base/metrics/field_trial_params.h"
 #include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/internal/data_collection/training_data_collector.h"
 #include "components/segmentation_platform/internal/database/storage_service.h"
 #include "components/segmentation_platform/internal/execution/default_model_manager.h"
+#include "components/segmentation_platform/internal/execution/execution_request.h"
 #include "components/segmentation_platform/internal/execution/model_executor_impl.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_aggregator_impl.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_list_query_processor.h"
@@ -16,7 +16,6 @@
 #include "components/segmentation_platform/internal/segmentation_ukm_helper.h"
 #include "components/segmentation_platform/internal/signals/signal_handler.h"
 #include "components/segmentation_platform/public/config.h"
-#include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/input_delegate.h"
 
 namespace segmentation_platform {
@@ -108,7 +107,10 @@ void ExecutionService::RequestModelExecution(
 void ExecutionService::OverwriteModelExecutionResult(
     proto::SegmentId segment_id,
     const std::pair<float, ModelExecutionStatus>& result) {
-  model_execution_scheduler_->OnModelExecutionCompleted(segment_id, result);
+  auto execution_result = std::make_unique<ModelExecutionResult>(
+      ModelExecutionResult::Tensor(), result.first);
+  model_execution_scheduler_->OnModelExecutionCompleted(
+      segment_id, std::move(execution_result));
 }
 
 void ExecutionService::RefreshModelResults() {

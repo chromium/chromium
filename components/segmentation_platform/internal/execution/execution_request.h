@@ -10,6 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
 #include "components/segmentation_platform/public/input_context.h"
+#include "components/segmentation_platform/public/types/processed_value.h"
 
 namespace segmentation_platform {
 namespace proto {
@@ -18,10 +19,27 @@ class SegmentInfo;
 
 class ModelProvider;
 
+struct ModelExecutionResult {
+  using Tensor = std::vector<float>;
+
+  ModelExecutionResult(Tensor inputs, float score);
+  explicit ModelExecutionResult(ModelExecutionStatus status);
+  ~ModelExecutionResult();
+
+  ModelExecutionResult(ModelExecutionResult&) = delete;
+  ModelExecutionResult& operator=(ModelExecutionResult&) = delete;
+
+  // The float value is only valid when ModelExecutionStatus == kSuccess.
+  float score = 0;
+  ModelExecutionStatus status;
+
+  Tensor inputs;
+};
+
 // Request for model execution.
 struct ExecutionRequest {
   using ModelExecutionCallback =
-      base::OnceCallback<void(const std::pair<float, ModelExecutionStatus>&)>;
+      base::OnceCallback<void(std::unique_ptr<ModelExecutionResult>)>;
 
   ExecutionRequest();
   ~ExecutionRequest();

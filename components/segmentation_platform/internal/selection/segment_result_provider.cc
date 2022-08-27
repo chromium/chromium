@@ -102,7 +102,7 @@ class SegmentResultProviderImpl : public SegmentResultProvider {
   void OnModelExecuted(std::unique_ptr<RequestState> request_state,
                        DefaultModelManager::SegmentSource source,
                        ResultCallbackWithState callback,
-                       const std::pair<float, ModelExecutionStatus>& result);
+                       std::unique_ptr<ModelExecutionResult> result);
 
   void PostResultCallback(std::unique_ptr<RequestState> request_state,
                           std::unique_ptr<SegmentResult> result);
@@ -227,9 +227,13 @@ void SegmentResultProviderImpl::GetCachedModelScore(
 
   int rank = ComputeDiscreteMapping(request_state->options->segmentation_key,
                                     *db_segment_info);
+  auto execution_result = std::make_unique<ModelExecutionResult>(
+      ModelExecutionResult::Tensor(),
+      db_segment_info->prediction_result().result());
   std::move(callback).Run(
       std::move(request_state),
-      std::make_unique<SegmentResult>(ResultState::kSuccessFromDatabase, rank));
+      std::make_unique<SegmentResult>(ResultState::kSuccessFromDatabase, rank,
+                                      std::move(execution_result)));
 }
 
 void SegmentResultProviderImpl::ExecuteModelAndGetScore(
@@ -295,19 +299,20 @@ void SegmentResultProviderImpl::OnModelExecuted(
     std::unique_ptr<RequestState> request_state,
     DefaultModelManager::SegmentSource source,
     ResultCallbackWithState callback,
-    const std::pair<float, ModelExecutionStatus>& result) {
+    std::unique_ptr<ModelExecutionResult> result) {
   auto* segment_info =
       FilterSegmentInfoBySource(request_state->available_segments, source);
-  if (result.second == ModelExecutionStatus::kSuccess) {
-    segment_info->mutable_prediction_result()->set_result(result.first);
+  if (result->status == ModelExecutionStatus::kSuccess) {
+    segment_info->mutable_prediction_result()->set_result(result->score);
     int rank = ComputeDiscreteMapping(request_state->options->segmentation_key,
                                       *segment_info);
     ResultState state =
         source == DefaultModelManager::SegmentSource::DEFAULT_MODEL
             ? ResultState::kDefaultModelScoreUsed
             : ResultState::kTfliteModelScoreUsed;
-    std::move(callback).Run(std::move(request_state),
-                            std::make_unique<SegmentResult>(state, rank));
+    std::move(callback).Run(
+        std::move(request_state),
+        std::make_unique<SegmentResult>(state, rank, std::move(result)));
   } else {
     ResultState state =
         source == DefaultModelManager::SegmentSource::DEFAULT_MODEL
@@ -330,8 +335,11 @@ void SegmentResultProviderImpl::PostResultCallback(
 
 SegmentResultProvider::SegmentResult::SegmentResult(ResultState state)
     : state(state) {}
-SegmentResultProvider::SegmentResult::SegmentResult(ResultState state, int rank)
-    : state(state), rank(rank) {}
+SegmentResultProvider::SegmentResult::SegmentResult(
+    ResultState state,
+    int rank,
+    std::unique_ptr<ModelExecutionResult> execution_result)
+    : state(state), rank(rank), execution_result(std::move(execution_result)) {}
 SegmentResultProvider::SegmentResult::~SegmentResult() = default;
 
 SegmentResultProvider::GetResultOptions::GetResultOptions() = default;
