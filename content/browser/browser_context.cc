@@ -406,4 +406,9 @@ BrowserContext::GetFederatedIdentitySharingPermissionContext() {
   return nullptr;
 }
 
+std::unique_ptr<KAnonymityServiceDelegate>
+BrowserContext::CreateKAnonymityServiceDelegate() {
+  return nullptr;
+}
+
 }  // namespace content
