@@ -21,6 +21,7 @@ OptimizationGuideSegmentationModelProviderTest.*
 PriceTrackingActionModelTest.*
 PriceTrackingInputDelegateTest.*
 QueryTilesModelTest.*
+ResumeHeavyUserModelTest.*
 SegmentationModelExecutorTest.*
 SegmentationPlatformDummyUkmManagerTest.*
 SegmentationPlatformServiceImplEmptyConfigTest.*
