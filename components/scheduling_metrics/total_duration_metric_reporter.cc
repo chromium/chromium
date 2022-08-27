@@ -36,8 +36,7 @@ TotalDurationMetricReporter::~TotalDurationMetricReporter() = default;
 
 void TotalDurationMetricReporter::RecordAdditionalDuration(
     base::TimeDelta duration) {
-  static base::CpuReductionExperimentFilter filter;
-  if (!filter.ShouldLogHistograms())
+  if (!base::ShouldLogHistogramForCpuReductionExperiment())
     return;
   if (reported_value_)
     negative_histogram_->Add(reported_value_->InSeconds());

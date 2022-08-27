@@ -156,8 +156,7 @@ void ChannelPosix::ShutDownImpl() {
 void ChannelPosix::Write(MessagePtr message) {
   bool log_histograms = true;
 #if !defined(MOJO_CORE_SHARED_LIBRARY)
-  static base::CpuReductionExperimentFilter filter;
-  log_histograms = filter.ShouldLogHistograms();
+  log_histograms = base::ShouldLogHistogramForCpuReductionExperiment();
 #endif
   if (log_histograms) {
     UMA_HISTOGRAM_COUNTS_100000("Mojo.Channel.WriteMessageSize",

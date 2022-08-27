@@ -804,8 +804,7 @@ void CompositorFrameReporter::EndCurrentStage(base::TimeTicks end_time) {
 }
 
 void CompositorFrameReporter::ReportCompositorLatencyMetrics() const {
-  static base::CpuReductionExperimentFilter filter;
-  if (!filter.ShouldLogHistograms())
+  if (!base::ShouldLogHistogramForCpuReductionExperiment())
     return;
 
   if (global_trackers_.latency_ukm_reporter) {

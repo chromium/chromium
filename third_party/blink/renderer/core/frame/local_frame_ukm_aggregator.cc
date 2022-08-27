@@ -277,8 +277,7 @@ void LocalFrameUkmAggregator::RecordTimerSample(size_t metric_index,
 
 void LocalFrameUkmAggregator::RecordCountSample(size_t metric_index,
                                                 int64_t count) {
-  static base::CpuReductionExperimentFilter filter;
-  if (!filter.ShouldLogHistograms())
+  if (!base::ShouldLogHistogramForCpuReductionExperiment())
     return;
 
   // Always use RecordForcedLayoutSample for the kForcedStyleAndLayout

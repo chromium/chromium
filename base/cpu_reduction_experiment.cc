@@ -4,52 +4,72 @@
 
 #include "base/cpu_reduction_experiment.h"
 
+#include <atomic>
+
 #include "base/check.h"
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
+#include "base/rand_util.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 
 namespace base {
 
 namespace {
 
-// This feature controls whether to enable a series of optimizations that
-// reduces total CPU utilization of chrome.
+// Whether to enable a series of optimizations that reduce total CPU
+// utilization.
 constexpr Feature kReduceCpuUtilization{"ReduceCpuUtilization",
                                         FEATURE_DISABLED_BY_DEFAULT};
 
-// Cache of the state of the ReduceCpuUtilization feature. This avoids the need
-// to constantly query its enabled state through FeatureList::IsEnabled().
-bool g_is_reduce_cpu_enabled =
-    kReduceCpuUtilization.default_state == FEATURE_ENABLED_BY_DEFAULT;
+class CpuReductionExperimentSubSampler {
+ public:
+  CpuReductionExperimentSubSampler() = default;
+
+  bool ShouldLogHistograms() {
+    AutoLock hold(lock_);
+    return sub_sampler_.ShouldSample(0.001);
+  }
+
+ private:
+  Lock lock_;
+  MetricsSubSampler sub_sampler_ GUARDED_BY(lock_);
+};
+
+// Singleton instance of CpuReductionExperimentSubSampler. This is only set when
+// the ReduceCpuUtilization experiment is enabled -- as a result, it's ok to
+// assume that the experiment is disabled when this is not set.
+CpuReductionExperimentSubSampler* g_subsampler = nullptr;
 
 #if DCHECK_IS_ON()
 // Atomic to support concurrent writes from IsRunningCpuReductionExperiment().
-std::atomic_bool g_accessed_is_reduce_cpu_enabled = false;
+std::atomic_bool g_accessed_subsampler = false;
 #endif
 
 }  // namespace
 
 bool IsRunningCpuReductionExperiment() {
 #if DCHECK_IS_ON()
-  g_accessed_is_reduce_cpu_enabled.store(true, std::memory_order_seq_cst);
+  g_accessed_subsampler.store(true, std::memory_order_seq_cst);
 #endif
-  return g_is_reduce_cpu_enabled;
+  return !!g_subsampler;
 }
 
 void InitializeCpuReductionExperiment() {
 #if DCHECK_IS_ON()
   // TSAN should generate an error if InitializeCpuReductionExperiment() races
   // with IsRunningCpuReductionExperiment().
-  DCHECK(!g_accessed_is_reduce_cpu_enabled.load(std::memory_order_seq_cst));
+  DCHECK(!g_accessed_subsampler.load(std::memory_order_seq_cst));
 #endif
-  g_is_reduce_cpu_enabled = FeatureList::IsEnabled(kReduceCpuUtilization);
+  if (FeatureList::IsEnabled(kReduceCpuUtilization)) {
+    g_subsampler = new CpuReductionExperimentSubSampler();
+  }
 }
 
-bool CpuReductionExperimentFilter::ShouldLogHistograms() {
+bool ShouldLogHistogramForCpuReductionExperiment() {
   if (!IsRunningCpuReductionExperiment())
     return true;
-
-  return counter_.fetch_add(1, std::memory_order_relaxed) % 1000 == 1;
+  return g_subsampler->ShouldLogHistograms();
 }
 
 }  // namespace base

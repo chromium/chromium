@@ -60,7 +60,7 @@ _CONFIG = [
             'base::AutoReset',
             'base::Contains',
             'base::ConditionVariable',
-            'base::CpuReductionExperimentFilter',
+            'base::ShouldLogHistogramForCpuReductionExperiment',
             'base::ValuesEquivalent',
             'base::Days',
             'base::DefaultTickClock',

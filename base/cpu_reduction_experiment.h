@@ -5,8 +5,6 @@
 #ifndef BASE_CPU_REDUCTION_EXPERIMENT_H_
 #define BASE_CPU_REDUCTION_EXPERIMENT_H_
 
-#include <atomic>
-
 #include "base/base_export.h"
 
 namespace base {
@@ -20,17 +18,11 @@ BASE_EXPORT bool IsRunningCpuReductionExperiment();
 // single-threaded.
 BASE_EXPORT void InitializeCpuReductionExperiment();
 
-// This is a helper class to reduce common duplicate code. If the CPU reduction
-// experiment is running, then ShouldLogHistograms returns true on every 1000th
-// call. Otherwise it always returns true.
-class BASE_EXPORT CpuReductionExperimentFilter {
- public:
-  // Returns true on the first call, and every 1000th call after that.
-  bool ShouldLogHistograms();
-
- private:
-  std::atomic_int counter_ = 0;
-};
+// Returns true if the next sample should be recorded to an histogram
+// sub-sampled under the CPU reduction experiment. Returns true randomly for
+// ~1/1000 calls when the experiment is enabled, or always returns true when the
+// experiment is disabled.
+BASE_EXPORT bool ShouldLogHistogramForCpuReductionExperiment();
 
 }  // namespace base
 

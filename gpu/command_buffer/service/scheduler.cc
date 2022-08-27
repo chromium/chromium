@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/cpu_reduction_experiment.h"
 #include "base/hash/md5_constexpr.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -646,7 +647,7 @@ void Scheduler::RunNextTask() {
   auto* thread_state = &per_thread_state_map_[task_runner];
 
   const bool log_histograms =
-      cpu_reduction_experiment_filter_.ShouldLogHistograms();
+      base::ShouldLogHistogramForCpuReductionExperiment();
 
   if (log_histograms) {
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
