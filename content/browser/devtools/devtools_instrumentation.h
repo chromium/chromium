@@ -328,6 +328,13 @@ void OnServiceWorkerMainScriptRequestWillBeSent(
     int64_t version_id,
     network::ResourceRequest& request);
 
+// Fires `Network.onRequestWillBeSent` event for a dedicated worker and shared
+// worker main script. Used for PlzDedicatedWorker/PlzSharedWorker.
+void OnWorkerMainScriptRequestWillBeSent(
+    FrameTreeNode* ftn,
+    const base::UnguessableToken& worker_token,
+    network::ResourceRequest& request);
+
 // Fires `Network.onLoadingFailed` event for a dedicated worker main script.
 // Used for PlzDedicatedWorker.
 void OnWorkerMainScriptLoadingFailed(
@@ -343,13 +350,6 @@ void OnWorkerMainScriptLoadingFinished(
     FrameTreeNode* ftn,
     const base::UnguessableToken& worker_token,
     const network::URLLoaderCompletionStatus& status);
-
-// Fires `Network.onRequestWillBeSent` event for a dedicated worker and shared
-// worker main script. Used for PlzDedicatedWorker/PlzSharedWorker.
-void OnWorkerMainScriptRequestWillBeSent(
-    FrameTreeNode* ftn,
-    const base::UnguessableToken& worker_token,
-    const network::ResourceRequest& request);
 
 // Adds a message from a worklet to the devtools console. This is specific to
 // FLEDGE auction worklet and shared storage worklet where the message may

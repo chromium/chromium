@@ -58,15 +58,22 @@ namespace devtools_instrumentation {
 namespace {
 
 template <typename Handler, typename... MethodArgs, typename... Args>
+void DispatchToAgents(DevToolsAgentHostImpl* host,
+                      void (Handler::*method)(MethodArgs...),
+                      Args&&... args) {
+  if (!host)
+    return;
+  for (auto* h : Handler::ForAgentHost(host))
+    (h->*method)(std::forward<Args>(args)...);
+}
+
+template <typename Handler, typename... MethodArgs, typename... Args>
 void DispatchToAgents(FrameTreeNode* frame_tree_node,
                       void (Handler::*method)(MethodArgs...),
                       Args&&... args) {
   DevToolsAgentHostImpl* agent_host =
       RenderFrameDevToolsAgentHost::GetFor(frame_tree_node);
-  if (!agent_host)
-    return;
-  for (auto* h : Handler::ForAgentHost(agent_host))
-    (h->*method)(std::forward<Args>(args)...);
+  DispatchToAgents(agent_host, method, std::forward<Args>(args)...);
 }
 
 template <typename Handler, typename... MethodArgs, typename... Args>
@@ -1414,6 +1421,19 @@ void OnServiceWorkerMainScriptFetchingFailed(
   }
 }
 
+// Only assign request id if there's an enabled agent host.
+void MaybeAssignRequestId(DevToolsAgentHostImpl* host,
+                          const std::string& id,
+                          network::ResourceRequest& request) {
+  DCHECK(!request.devtools_request_id.has_value());
+  for (auto* network_handler : protocol::NetworkHandler::ForAgentHost(host)) {
+    if (network_handler->enabled()) {
+      request.devtools_request_id = id;
+      return;
+    }
+  }
+}
+
 void OnServiceWorkerMainScriptRequestWillBeSent(
     const GlobalRenderFrameHostId& requesting_frame_id,
     const ServiceWorkerContextWrapper* context_wrapper,
@@ -1439,11 +1459,12 @@ void OnServiceWorkerMainScriptRequestWillBeSent(
           ->GetDevToolsAgentHostForNewInstallingWorker(context_wrapper,
                                                        version_id);
   DCHECK(agent_host);
-  request.devtools_request_id = agent_host->devtools_worker_token().ToString();
+  const std::string request_id = agent_host->devtools_worker_token().ToString();
+  MaybeAssignRequestId(agent_host, request_id, request);
   for (auto* network_handler :
        protocol::NetworkHandler::ForAgentHost(agent_host)) {
     network_handler->RequestSent(
-        request.devtools_request_id.value(),
+        request_id,
         /*loader_id=*/"", request.headers, *request_info,
         protocol::Network::Initiator::TypeEnum::Other,
         requesting_frame->GetLastCommittedURL(),
@@ -1481,12 +1502,17 @@ void OnWorkerMainScriptLoadingFinished(
 void OnWorkerMainScriptRequestWillBeSent(
     FrameTreeNode* ftn,
     const base::UnguessableToken& worker_token,
-    const network::ResourceRequest& request) {
+    network::ResourceRequest& request) {
   DCHECK(ftn);
 
   auto timestamp = base::TimeTicks::Now();
   network::mojom::URLRequestDevToolsInfoPtr request_info =
       network::ExtractDevToolsInfo(request);
+
+  auto* owner_host = RenderFrameDevToolsAgentHost::GetFor(ftn);
+  if (!owner_host)
+    return;
+  MaybeAssignRequestId(owner_host, worker_token.ToString(), request);
   DispatchToAgents(
       ftn, &protocol::NetworkHandler::RequestSent, worker_token.ToString(),
       /*loader_id=*/"", request.headers, *request_info,
