@@ -38,6 +38,8 @@ const char* SegmentationKeyToUmaName(const std::string& segmentation_key) {
     return kFrequentFeatureUserUmaName;
   } else if (segmentation_key == kIntentionalUserKey) {
     return kIntentionalUserUmaName;
+  } else if (segmentation_key == kResumeHeavyUserKey) {
+    return kResumeHeavyUserUmaName;
   } else if (base::StartsWith(segmentation_key, "test_key")) {
     return "TestKey";
   }
@@ -82,6 +84,8 @@ std::string SegmentIdToHistogramVariant(proto::SegmentId segment_id) {
       return "FrequentFeatureUserSegment";
     case proto::SegmentId::INTENTIONAL_USER_SEGMENT:
       return "IntentionalUser";
+    case proto::SegmentId::RESUME_HEAVY_USER_SEGMENT:
+      return "ResumeHeavyUserSegment";
     default:
       // This case is reached when UNKNOWN segment is valid, in case of boolean
       // segment results.

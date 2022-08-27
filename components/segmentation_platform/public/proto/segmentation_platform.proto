@@ -74,4 +74,6 @@ enum SegmentId {
   // Target for intentional users (people opening Chrome on their own instead of
   // arriving from other apps).
   INTENTIONAL_USER_SEGMENT = 1003;
+  // User segment: User is more likely to use resume features in chrome..
+  RESUME_HEAVY_USER_SEGMENT = 1004;
 };

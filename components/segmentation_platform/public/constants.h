@@ -66,6 +66,10 @@ const char kFrequentFeatureUserUmaName[] = "FrequentFeatureUser";
 const char kIntentionalUserKey[] = "intentional_user";
 const char kIntentionalUserUmaName[] = "IntentionalUser";
 
+// Key for user segment that is more likely to use resume features in chrome.
+const char kResumeHeavyUserKey[] = "resume_heavy_user";
+const char kResumeHeavyUserUmaName[] = "ResumeHeavyUser";
+
 // The key provide a list of segment IDs, separated by commas, whose ML model
 // execution results are allowed to be uploaded through UKM.
 const char kSegmentIdsAllowedForReportingKey[] =
