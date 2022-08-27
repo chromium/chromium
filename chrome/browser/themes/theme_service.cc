@@ -354,6 +354,10 @@ void ThemeService::RevertToExtensionTheme(const std::string& extension_id) {
   }
 }
 
+void ThemeService::UseTheme(ui::SystemTheme system_theme) {
+  UseDefaultTheme();
+}
+
 void ThemeService::UseDefaultTheme() {
   if (UsingPolicyTheme()) {
     DVLOG(1)
@@ -564,8 +568,8 @@ void ThemeService::SetCustomDefaultTheme(
   NotifyThemeChanged();
 }
 
-bool ThemeService::ShouldInitWithSystemTheme() const {
-  return false;
+ui::SystemTheme ThemeService::GetDefaultSystemTheme() const {
+  return ui::SystemTheme::kDefault;
 }
 
 void ThemeService::ClearAllThemeData() {
@@ -597,10 +601,7 @@ void ThemeService::InitFromPrefs() {
 
   std::string current_id = GetThemeID();
   if (current_id == ThemeHelper::kDefaultThemeID) {
-    if (ShouldInitWithSystemTheme())
-      UseSystemTheme();
-    else
-      UseDefaultTheme();
+    UseTheme(GetDefaultSystemTheme());
     set_ready();
     return;
   }

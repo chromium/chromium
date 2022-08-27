@@ -75,8 +75,8 @@ NativeTheme* NativeTheme::GetInstanceForDarkUI() {
 
 NativeThemeAura::NativeThemeAura(bool use_overlay_scrollbars,
                                  bool should_only_use_dark_colors,
-                                 bool is_custom_system_theme)
-    : NativeThemeBase(should_only_use_dark_colors, is_custom_system_theme),
+                                 ui::SystemTheme system_theme)
+    : NativeThemeBase(should_only_use_dark_colors, system_theme),
       use_overlay_scrollbars_(use_overlay_scrollbars) {
 // We don't draw scrollbar buttons.
 #if BUILDFLAG(IS_CHROMEOS)

@@ -21,6 +21,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "ui/base/theme_provider.h"
+#include "ui/color/system_theme.h"
 
 class BrowserThemePack;
 class CustomThemeSupplier;
@@ -96,6 +97,9 @@ class ThemeService : public KeyedService, public BrowserThemeProviderDelegate {
 
   // Similar to SetTheme, but doesn't show an undo infobar.
   void RevertToExtensionTheme(const std::string& extension_id);
+
+  // Sets the platform theme based on `system_theme`.
+  virtual void UseTheme(ui::SystemTheme system_theme);
 
   // Reset the theme to default.
   virtual void UseDefaultTheme();
@@ -193,8 +197,8 @@ class ThemeService : public KeyedService, public BrowserThemeProviderDelegate {
   virtual void SetCustomDefaultTheme(
       scoped_refptr<CustomThemeSupplier> theme_supplier);
 
-  // Returns true if the ThemeService should use the system theme on startup.
-  virtual bool ShouldInitWithSystemTheme() const;
+  // Returns the theme service type that should be used on startup.
+  virtual ui::SystemTheme GetDefaultSystemTheme() const;
 
   // Clears all the override fields and saves the dictionary.
   virtual void ClearAllThemeData();
@@ -254,7 +258,6 @@ class ThemeService : public KeyedService, public BrowserThemeProviderDelegate {
   // virtual for testing.
   virtual void DoSetTheme(const extensions::Extension* extension,
                           bool suppress_infobar);
-
 
   // Called when the extension service is ready.
   void OnExtensionServiceReady();

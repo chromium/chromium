@@ -19,7 +19,7 @@ class NATIVE_THEME_EXPORT NativeThemeAura : public NativeThemeBase {
 
   NativeThemeAura(bool use_overlay_scrollbars,
                   bool should_only_use_dark_colors,
-                  bool is_custom_system_theme = false);
+                  ui::SystemTheme system_theme = ui::SystemTheme::kDefault);
 
   NativeThemeAura(const NativeThemeAura&) = delete;
   NativeThemeAura& operator=(const NativeThemeAura&) = delete;

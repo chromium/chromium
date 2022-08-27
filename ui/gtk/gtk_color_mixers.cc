@@ -18,7 +18,7 @@ namespace gtk {
 
 void AddGtkNativeColorMixer(ui::ColorProvider* provider,
                             const ui::ColorProviderManager::Key& key) {
-  if (key.system_theme == ui::ColorProviderManager::SystemTheme::kDefault)
+  if (key.system_theme != ui::SystemTheme::kGtk)
     return;
 
   ui::ColorMixer& mixer = provider->AddMixer();

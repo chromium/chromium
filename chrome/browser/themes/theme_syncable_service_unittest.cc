@@ -96,6 +96,13 @@ class FakeThemeService : public ThemeService {
     using_policy_theme_ = false;
   }
 
+  void UseTheme(ui::SystemTheme system_theme) override {
+    if (system_theme == ui::SystemTheme::kDefault)
+      UseDefaultTheme();
+    else
+      UseSystemTheme();
+  }
+
   void UseDefaultTheme() override {
     is_dirty_ = true;
     using_default_theme_ = true;

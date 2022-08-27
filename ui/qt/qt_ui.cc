@@ -85,7 +85,7 @@ class QtNativeTheme : public ui::NativeThemeAura {
   explicit QtNativeTheme(QtInterface* shim)
       : ui::NativeThemeAura(/*use_overlay_scrollbars=*/false,
                             /*should_only_use_dark_colors=*/false,
-                            /*is_custom_system_theme=*/true),
+                            ui::SystemTheme::kQt),
         shim_(shim) {}
   QtNativeTheme(const QtNativeTheme&) = delete;
   QtNativeTheme& operator=(const QtNativeTheme&) = delete;
@@ -362,7 +362,7 @@ void QtUi::ThemeChanged() {
 
 void QtUi::AddNativeColorMixer(ui::ColorProvider* provider,
                                const ui::ColorProviderManager::Key& key) {
-  if (key.system_theme == ui::ColorProviderManager::SystemTheme::kDefault)
+  if (key.system_theme != ui::SystemTheme::kQt)
     return;
 
   ui::ColorMixer& mixer = provider->AddMixer();

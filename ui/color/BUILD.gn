@@ -17,6 +17,7 @@ source_set("color_headers") {
     "color_provider.h",
     "color_provider_manager.h",
     "color_provider_utils.h",
+    "system_theme.h",
   ]
 
   public_deps = [

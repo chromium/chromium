@@ -49,8 +49,7 @@ int main(int argc, const char* argv[]) {
   const auto add_mixers = [](ui::ColorProvider* provider, auto color_mode,
                              auto contrast_mode) {
     const ui::ColorProviderManager::Key key = {
-        color_mode, contrast_mode,
-        ui::ColorProviderManager::SystemTheme::kDefault,
+        color_mode, contrast_mode, ui::SystemTheme::kDefault,
         ui::ColorProviderManager::FrameType::kChromium};
     ui::AddColorMixers(provider, key);
     AddChromeColorMixers(provider, key);

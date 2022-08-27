@@ -488,7 +488,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
   }
   void SetPreferredContrast(PreferredContrast preferred_contrast);
   void set_system_colors(const std::map<SystemThemeColor, SkColor>& colors);
-  bool is_custom_system_theme() const { return is_custom_system_theme_; }
+  ui::SystemTheme system_theme() const { return system_theme_; }
 
   // Set the user_color for ColorProviderManager::Key.
   void set_user_color(absl::optional<SkColor> user_color) {
@@ -517,8 +517,9 @@ class NATIVE_THEME_EXPORT NativeTheme {
                                  float zoom_level) const;
 
  protected:
-  explicit NativeTheme(bool should_only_use_dark_colors,
-                       bool is_custom_system_theme = false);
+  explicit NativeTheme(
+      bool should_only_use_dark_colors,
+      ui::SystemTheme system_theme = ui::SystemTheme::kDefault);
   virtual ~NativeTheme();
 
   // Whether high contrast is forced via command-line flag.
@@ -580,7 +581,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
   absl::optional<SkColor> user_color_;
 
   bool should_use_dark_colors_ = false;
-  const bool is_custom_system_theme_;
+  const ui::SystemTheme system_theme_;
   bool forced_colors_ = false;
   PageColors page_colors_ = PageColors::kOff;
   PreferredColorScheme preferred_color_scheme_ = PreferredColorScheme::kLight;

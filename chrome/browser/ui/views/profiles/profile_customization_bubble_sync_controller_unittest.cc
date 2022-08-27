@@ -48,9 +48,11 @@ class FakeThemeService : public ThemeService {
     NotifyThemeChanged();
   }
 
-  void UseDefaultTheme() override {
-    using_default_theme_ = true;
-    color_ = 0;
+  void UseTheme(ui::SystemTheme system_theme) override {
+    if (system_theme == ui::SystemTheme::kDefault) {
+      using_default_theme_ = true;
+      color_ = 0;
+    }
     NotifyThemeChanged();
   }
 

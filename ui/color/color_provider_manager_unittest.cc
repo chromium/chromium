@@ -33,18 +33,16 @@ class ColorProviderManagerTest : public testing::Test {
 ColorProvider* GetLightNormalColorProvider() {
   return ColorProviderManager::GetForTesting().GetColorProviderFor(
       {ColorProviderManager::ColorMode::kLight,
-       ColorProviderManager::ContrastMode::kNormal,
-       ColorProviderManager::SystemTheme::kDefault,
+       ColorProviderManager::ContrastMode::kNormal, ui::SystemTheme::kDefault,
        ColorProviderManager::FrameType::kChromium, absl::nullopt, nullptr});
 }
 
 // Returns a Key where |color| is the user_color value.
 ColorProviderManager::Key UserColorKey(SkColor color) {
-  return ColorProviderManager::Key(ColorProviderManager::ColorMode::kLight,
-                                   ColorProviderManager::ContrastMode::kNormal,
-                                   ColorProviderManager::SystemTheme::kDefault,
-                                   ColorProviderManager::FrameType::kChromium,
-                                   color, nullptr);
+  return ColorProviderManager::Key(
+      ColorProviderManager::ColorMode::kLight,
+      ColorProviderManager::ContrastMode::kNormal, ui::SystemTheme::kDefault,
+      ColorProviderManager::FrameType::kChromium, color, nullptr);
 }
 
 class TestInitializerSupplier

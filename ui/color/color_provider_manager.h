@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/system_theme.h"
 #include "ui/gfx/color_utils.h"
 
 namespace ui {
@@ -42,13 +43,6 @@ class COMPONENT_EXPORT(COLOR) ColorProviderManager {
   enum class ElevationMode {
     kLow,
     kHigh,
-  };
-  enum class SystemTheme {
-    // Classic theme, used in the default or users' chosen theme.
-    kDefault,
-    // Custom theme that follow the system style,
-    // currently used only when GTK theme is on.
-    kCustom,
   };
   enum class FrameType {
     // Chrome renders the browser frame.

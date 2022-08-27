@@ -40,7 +40,7 @@ base::StringPiece COMPONENT_EXPORT(COLOR)
 
 // Converts SystemTheme.
 base::StringPiece COMPONENT_EXPORT(COLOR)
-    SystemThemeName(ColorProviderManager::SystemTheme system_theme);
+    SystemThemeName(ui::SystemTheme system_theme);
 
 // Converts ColorId.
 std::string COMPONENT_EXPORT(COLOR) ColorIdName(ColorId color_id);

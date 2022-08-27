@@ -127,7 +127,7 @@ ui::ColorTransform GetGtkToolbarTopSeparatorColorTransform(
 
 void AddNativeChromeColorMixer(ui::ColorProvider* provider,
                                const ui::ColorProviderManager::Key& key) {
-  if (key.system_theme == ui::ColorProviderManager::SystemTheme::kDefault)
+  if (key.system_theme == ui::SystemTheme::kDefault)
     return;
 
   ui::ColorMixer& mixer = provider->AddMixer();

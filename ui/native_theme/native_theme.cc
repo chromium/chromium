@@ -47,8 +47,7 @@ ColorProviderManager::Key NativeTheme::GetColorProviderKey(
           : ColorProviderManager::ColorMode::kLight,
       UserHasContrastPreference() ? ColorProviderManager::ContrastMode::kHigh
                                   : ColorProviderManager::ContrastMode::kNormal,
-      is_custom_system_theme_ ? ColorProviderManager::SystemTheme::kCustom
-                              : ColorProviderManager::SystemTheme::kDefault,
+      system_theme_,
       use_custom_frame ? ui::ColorProviderManager::FrameType::kChromium
                        : ui::ColorProviderManager::FrameType::kNative,
       user_color_, std::move(custom_theme));
@@ -123,9 +122,9 @@ float NativeTheme::AdjustBorderRadiusByZoom(Part part,
 }
 
 NativeTheme::NativeTheme(bool should_use_dark_colors,
-                         bool is_custom_system_theme)
+                         ui::SystemTheme system_theme)
     : should_use_dark_colors_(should_use_dark_colors || IsForcedDarkMode()),
-      is_custom_system_theme_(is_custom_system_theme),
+      system_theme_(system_theme),
       forced_colors_(IsForcedHighContrast()),
       preferred_color_scheme_(CalculatePreferredColorScheme()),
       preferred_contrast_(CalculatePreferredContrast()) {}

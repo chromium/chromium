@@ -91,8 +91,27 @@ SystemThemeLinux::~SystemThemeLinux() = default;
 
 ThemeServiceAuraLinux::~ThemeServiceAuraLinux() = default;
 
-bool ThemeServiceAuraLinux::ShouldInitWithSystemTheme() const {
-  return ShouldUseSystemThemeForProfile(profile());
+ui::SystemTheme ThemeServiceAuraLinux::GetDefaultSystemTheme() const {
+#if defined(IS_LINUX)
+  // TODO(https://crbug.com/1317782): Add QT theme preference.
+  return ShouldUseSystemThemeForProfile(profile()) ? ui::SystemTheme::kGtk
+                                                   : ui::SystemTheme::kDefault;
+#endif
+  return ui::SystemTheme::kDefault;
+}
+
+void ThemeServiceAuraLinux::UseTheme(ui::SystemTheme system_theme) {
+  if (system_theme == ui::SystemTheme::kDefault) {
+    UseDefaultTheme();
+    return;
+  }
+#if BUILDFLAG(IS_LINUX)
+  if (ui::LinuxUi::instance()) {
+    SetCustomDefaultTheme(new SystemThemeLinux(profile()->GetPrefs()));
+  }
+#else
+  UseDefaultTheme();
+#endif
 }
 
 void ThemeServiceAuraLinux::UseSystemTheme() {

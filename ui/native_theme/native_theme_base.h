@@ -89,8 +89,9 @@ class NATIVE_THEME_EXPORT NativeThemeBase : public NativeTheme {
 
   using NativeTheme::NativeTheme;
   NativeThemeBase();
-  explicit NativeThemeBase(bool should_only_use_dark_colors,
-                           bool is_custom_system_theme = false);
+  explicit NativeThemeBase(
+      bool should_only_use_dark_colors,
+      ui::SystemTheme system_theme = ui::SystemTheme::kDefault);
   ~NativeThemeBase() override;
 
   // Draw the arrow. Used by scrollbar and inner spin button.

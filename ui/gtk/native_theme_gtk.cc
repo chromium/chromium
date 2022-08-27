@@ -7,6 +7,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "cc/paint/paint_canvas.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_manager.h"
@@ -20,7 +21,6 @@
 #include "ui/native_theme/common_theme.h"
 #include "ui/native_theme/native_theme_aura.h"
 #include "ui/native_theme/native_theme_utils.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 
 using base::StrCat;
 
@@ -82,7 +82,7 @@ NativeThemeGtk* NativeThemeGtk::instance() {
 
 NativeThemeGtk::NativeThemeGtk()
     : NativeThemeBase(/*should_only_use_dark_colors=*/false,
-                      /*is_custom_system_theme=*/true) {
+                      ui::SystemTheme::kGtk) {
   // g_type_from_name() is only used in GTK3.
   if (!GtkCheckVersion(4)) {
     // These types are needed by g_type_from_name(), but may not be registered

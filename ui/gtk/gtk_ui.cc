@@ -684,7 +684,7 @@ void GtkUi::UpdateColors() {
            (color_scheme == ui::NativeTheme::ColorScheme::kPlatformHighContrast)
                ? ui::ColorProviderManager::ContrastMode::kHigh
                : ui::ColorProviderManager::ContrastMode::kNormal,
-           ui::ColorProviderManager::SystemTheme::kCustom,
+           ui::SystemTheme::kGtk,
            // Some theme colors, e.g. COLOR_NTP_LINK, are derived from color
            // provider colors. We assume that those sources' colors won't change
            // with frame type.
