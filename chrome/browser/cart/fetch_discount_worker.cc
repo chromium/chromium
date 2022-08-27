@@ -144,26 +144,33 @@ void FetchDiscountWorker::ReadyToFetch(
                      weak_ptr_factory_.GetWeakPtr());
 
   cart_service_delegate_->RecordFetchTimestamp();
-  // If there is no partner merchant cart, don't fetch immediately; instead,
+  // If there is no eligible merchant cart, don't fetch immediately; instead,
   // post another delayed fetch.
   bool has_partner_merchant = false;
+  bool has_potential_merchant = false;
   for (auto pair : proto_pairs) {
-    if (commerce::IsPartnerMerchant(GURL(pair.second.merchant_cart_url()))) {
-      has_partner_merchant = true;
-      break;
-    }
+    auto cart_url = pair.second.merchant_cart_url();
+    bool is_partner_merchant = commerce::IsPartnerMerchant(GURL(cart_url));
+    bool is_potential_merchant =
+        base::FeatureList::IsEnabled(commerce::kMerchantWidePromotion) &&
+        !commerce::IsNoDiscountMerchant(GURL(cart_url));
+    has_partner_merchant |= is_partner_merchant;
+    has_potential_merchant |= is_potential_merchant;
   }
-  if (!has_partner_merchant) {
+  bool allow_to_fetch = base::GetFieldTrialParamByFeatureAsBool(
+      commerce::kMerchantWidePromotion,
+      commerce::kReadyToFetchMerchantWidePromotionParam, true);
+  if (has_partner_merchant || (has_potential_merchant && allow_to_fetch)) {
+    backend_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &FetchInBackground, std::move(pending_factory), std::move(fetcher),
+            std::move(done_fetching_callback), std::move(proto_pairs),
+            is_oauth_fetch, std::move(access_token_str),
+            g_browser_process->GetApplicationLocale(), GetVariationsHeaders()));
+  } else {
     Start(commerce::GetDiscountFetchDelay());
-    return;
   }
-  backend_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &FetchInBackground, std::move(pending_factory), std::move(fetcher),
-          std::move(done_fetching_callback), std::move(proto_pairs),
-          is_oauth_fetch, std::move(access_token_str),
-          g_browser_process->GetApplicationLocale(), GetVariationsHeaders()));
 }
 
 std::string FetchDiscountWorker::GetVariationsHeaders() {

@@ -434,10 +434,13 @@ void CartService::ShouldShowDiscountConsentCallback(
   bool should_show = false;
   if (!profile_->GetPrefs()->GetBoolean(prefs::kCartDiscountAcknowledged)) {
     // Only show discount consent when there is abandoned cart(s) from partner
-    // merchants.
+    // merchants or it's not in the no discount merchant list.
     for (auto proto_pair : proto_pairs) {
-      should_show |= commerce::IsPartnerMerchant(
-          GURL(proto_pair.second.merchant_cart_url()));
+      auto cart_url = proto_pair.second.merchant_cart_url();
+      should_show |= commerce::IsPartnerMerchant(GURL(cart_url));
+      should_show |=
+          (base::FeatureList::IsEnabled(commerce::kMerchantWidePromotion) &&
+           !commerce::IsNoDiscountMerchant(GURL(cart_url)));
     }
 
     if (base::FeatureList::IsEnabled(commerce::kDiscountConsentV2)) {

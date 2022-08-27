@@ -100,6 +100,8 @@ const char kMockMerchantB[] = "bar.com";
 const char kMockMerchantURLB[] = "https://www.bar.com";
 const char kMockMerchantC[] = "baz.com";
 const char kMockMerchantURLC[] = "https://www.baz.com";
+const char kNoDiscountMerchant[] = "nodiscount.com";
+const char kNoDiscountMerchantURL[] = "https://www.nodiscount.com";
 const char kProductURL[] = "https://www.product.com";
 const char kCommerceHintHeuristicsJSONData[] = R"###(
       {
@@ -112,6 +114,11 @@ const char kCommerceHintHeuristicsJSONData[] = R"###(
           }
       }
   )###";
+const char kGlobalHeuristicsJSONData[] = R"###(
+      {
+        "no_discount_merchant_regex": "nodiscount"
+      }
+)###";
 const cart_db::ChromeCartContentProto kMockProtoA =
     BuildProto(kMockMerchantA, kMockMerchantURLA);
 const cart_db::ChromeCartContentProto kMockProtoB =
@@ -1861,6 +1868,77 @@ TEST_F(CartServiceDiscountTest, TestRecordDiscountConsentStatus_Accepted) {
   histogram_tester_.ExpectBucketCount(
       "NewTabPage.Carts.DiscountConsentStatusAtLoad",
       CartDiscountMetricCollector::DiscountConsentStatus::ACCEPTED, 1);
+}
+
+class CartServiceMerchantWideDiscountTest : public CartServiceTest {
+ public:
+  // Features need to be initialized before CartServiceTest::SetUp runs, in
+  // order to avoid tsan data race error on FeatureList.
+  CartServiceMerchantWideDiscountTest() {
+    std::vector<base::test::ScopedFeatureList::FeatureAndParams>
+        enabled_features;
+    base::FieldTrialParams cart_params, merchant_wide_params;
+    cart_params[ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam] =
+        "true";
+    enabled_features.emplace_back(ntp_features::kNtpChromeCartModule,
+                                  cart_params);
+    enabled_features.emplace_back(commerce::kMerchantWidePromotion,
+                                  merchant_wide_params);
+
+    features_.InitWithFeaturesAndParameters(enabled_features, {});
+  }
+
+  void SetUp() override {
+    CartServiceTest::SetUp();
+
+    auto& data = commerce_heuristics::CommerceHeuristicsData::GetInstance();
+    ASSERT_TRUE(data.PopulateDataFromComponent("{}", kGlobalHeuristicsJSONData,
+                                               "", ""));
+  }
+};
+
+TEST_F(CartServiceMerchantWideDiscountTest, TestDiscountConsentShown) {
+  // Add a merchant cart.
+  service_->AddCart(kMockMerchantA, absl::nullopt, kMockProtoA);
+  task_environment_.RunUntilIdle();
+
+  base::RunLoop run_loop;
+  for (int i = 0; i < CartService::kWelcomSurfaceShowLimit + 1; i++) {
+    service_->IncreaseWelcomeSurfaceCounter();
+  }
+  ASSERT_FALSE(service_->ShouldShowWelcomeSurface());
+  ASSERT_FALSE(
+      profile_->GetPrefs()->GetBoolean(prefs::kCartDiscountConsentShown));
+
+  service_->ShouldShowDiscountConsent(
+      base::BindOnce(&CartServiceTest::GetEvaluationBoolResult,
+                     base::Unretained(this), run_loop.QuitClosure(), true));
+  run_loop.Run();
+  ASSERT_TRUE(
+      profile_->GetPrefs()->GetBoolean(prefs::kCartDiscountConsentShown));
+}
+
+TEST_F(CartServiceMerchantWideDiscountTest,
+       TestNoDiscountConsentShownForNoDiscountMerchant) {
+  // Add a no-discount merchant cart.
+  service_->AddCart(kNoDiscountMerchantURL, absl::nullopt,
+                    BuildProto(kNoDiscountMerchant, kNoDiscountMerchantURL));
+  task_environment_.RunUntilIdle();
+
+  base::RunLoop run_loop;
+  for (int i = 0; i < CartService::kWelcomSurfaceShowLimit + 1; i++) {
+    service_->IncreaseWelcomeSurfaceCounter();
+  }
+  ASSERT_FALSE(service_->ShouldShowWelcomeSurface());
+  ASSERT_FALSE(
+      profile_->GetPrefs()->GetBoolean(prefs::kCartDiscountConsentShown));
+
+  service_->ShouldShowDiscountConsent(
+      base::BindOnce(&CartServiceTest::GetEvaluationBoolResult,
+                     base::Unretained(this), run_loop.QuitClosure(), false));
+  run_loop.Run();
+  ASSERT_FALSE(
+      profile_->GetPrefs()->GetBoolean(prefs::kCartDiscountConsentShown));
 }
 
 class CartServiceSkipExtractionTest : public CartServiceTest {
