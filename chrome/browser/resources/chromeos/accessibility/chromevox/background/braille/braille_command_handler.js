@@ -6,6 +6,7 @@
  * @fileoverview ChromeVox braille commands.
  */
 import {AutomationPredicate} from '../../../common/automation_predicate.js';
+import {AutomationUtil} from '../../../common/automation_util.js';
 import {EventGenerator} from '../../../common/event_generator.js';
 import {KeyCode} from '../../../common/key_code.js';
 import {BrailleCommandData} from '../../common/braille/braille_command_data.js';
@@ -87,6 +88,14 @@ export class BrailleCommandHandler {
         CommandHandlerInterface.instance.onCommand('jumpToBottom');
         break;
       case BrailleKeyCommand.ROUTING:
+        const textEditHandler =
+            DesktopAutomationInterface.instance.textEditHandler;
+        if (textEditHandler) {
+          textEditHandler.injectInferredIntents([{
+            command: chrome.automation.IntentCommandType.MOVE_SELECTION,
+            textBoundary: chrome.automation.IntentTextBoundaryType.CHARACTER,
+          }]);
+        }
         BrailleCommandHandler.onRoutingCommand_(
             content.text,
             // Cast ok since displayPosition is always defined in this case.
@@ -192,11 +201,12 @@ export class BrailleCommandHandler {
     }
 
     const textEditHandler = DesktopAutomationInterface.instance.textEditHandler;
-    if (!textEditHandler || current.start.node !== textEditHandler.node) {
+    const editable = AutomationUtil.getEditableRoot(current.start.node);
+    if (!editable || !textEditHandler || editable !== textEditHandler.node) {
       return true;
     }
 
-    const isMultiline = AutomationPredicate.multiline(current.start.node);
+    const isMultiline = AutomationPredicate.multiline(editable);
     switch (command) {
       case 'forceClickOnCurrentItem':
         EventGenerator.sendKeyPress(KeyCode.RETURN);
