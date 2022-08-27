@@ -37,8 +37,15 @@ class HistoryClustersInternalsPageHandlerImpl
   // Will ask `history_service_` for visits.
   void GetVisitsJson(GetVisitsJsonCallback callback) override;
 
+  // Gets annotated visits from HistoryService.
+  void GetAnnotatedVisits(
+      history_clusters::QueryClustersContinuationParams continuation_params,
+      std::vector<history::AnnotatedVisit> previously_retrieved_visits,
+      GetVisitsJsonCallback callback);
+
   // Callback invoked when HistoryService returns annotated visits.
   void OnGotAnnotatedVisits(
+      std::vector<history::AnnotatedVisit> previously_retrieved_visits,
       GetVisitsJsonCallback callback,
       std::vector<int64_t> old_clusters,
       std::vector<history::AnnotatedVisit> annotated_visits,
