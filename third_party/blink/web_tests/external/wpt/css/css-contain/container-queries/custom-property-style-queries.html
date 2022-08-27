@@ -199,3 +199,68 @@
     assert_equals(getComputedStyle(document.querySelector("#revert-layer-child")).color, green);
   }, "Style query with revert-layer keyword is false");
 </script>
+
+<style>
+  #defaulting {
+    --inherit: baz;
+    --inherit-no: baz;
+  }
+  #defaulting-container {
+    --inherit-no: bar;
+    --unset-no: baz;
+    --initial-no: baz;
+  }
+  @container style(--initial: initial) {
+    #initial { color: green; }
+  }
+  @container not style(--initial-no: initial) {
+    #initial-no { color: green; }
+  }
+  @container style(--inherit: inherit) {
+    #inherit { color: green; }
+  }
+  @container not style(--inherit-no: inherit) {
+    #inherit-no { color: green; }
+  }
+  @container style(--unset: unset) {
+    #unset { color: green; }
+  }
+  @container not style(--unset-no: unset) {
+    #unset-no { color: green; }
+  }
+</style>
+<div id="defaulting">
+  <div id="defaulting-container">
+    <div id="initial"></div>
+    <div id="initial-no"></div>
+    <div id="inherit"></div>
+    <div id="inherit-no"></div>
+    <div id="unset"></div>
+    <div id="unset-no"></div>
+  </div>
+</div>
+<script>
+  test(() => {
+    assert_equals(getComputedStyle(document.querySelector("#initial")).color, green);
+  }, "Style query 'initial' matching");
+
+  test(() => {
+    assert_equals(getComputedStyle(document.querySelector("#initial-no")).color, green);
+  }, "Style query 'initial' not matching");
+
+  test(() => {
+    assert_equals(getComputedStyle(document.querySelector("#inherit")).color, green);
+  }, "Style query 'inherit' matching");
+
+  test(() => {
+    assert_equals(getComputedStyle(document.querySelector("#inherit-no")).color, green);
+  }, "Style query 'inherit' not matching");
+
+  test(() => {
+    assert_equals(getComputedStyle(document.querySelector("#unset")).color, green);
+  }, "Style query 'unset' matching");
+
+  test(() => {
+    assert_equals(getComputedStyle(document.querySelector("#unset-no")).color, green);
+  }, "Style query 'unset' not matching");
+</script>
