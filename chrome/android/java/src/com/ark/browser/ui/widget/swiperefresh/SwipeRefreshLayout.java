@@ -19,23 +19,23 @@ package com.ark.browser.ui.widget.swiperefresh;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Transformation;
-import android.widget.FrameLayout;
-import android.widget.TextView;
+import android.widget.ImageView;
+
+import androidx.annotation.DrawableRes;
 
 import com.ark.browser.ui.drawable.MaterialProgressDrawable;
-import com.ark.browser.ui.widget.CircleImageView;
+import com.ark.browser.ui.widget.ShadowCircleImageView;
+
+import org.chromium.chrome.R;
 
 /**
  * The SwipeRefreshLayout should be used whenever the user can refresh the
@@ -117,7 +117,7 @@ public class SwipeRefreshLayout extends ViewGroup {
         android.R.attr.enabled
     };
 
-    private CircleImageView mCircleView;
+    private ShadowCircleImageView mCircleView;
     private View mLeftView;
     private View mRightView;
     private int mCircleViewIndex = -1;
@@ -140,7 +140,7 @@ public class SwipeRefreshLayout extends ViewGroup {
 
     private Animation mScaleDownToStartAnimation;
 
-    private Animation.AnimationListener mCancelAnimationListener;
+    private AnimationListener mCancelAnimationListener;
 
     private float mSpinnerFinalOffset;
 
@@ -155,7 +155,7 @@ public class SwipeRefreshLayout extends ViewGroup {
     // Whether the client has set a custom starting position;
     private boolean mUsingCustomStart;
 
-    private Animation.AnimationListener mRefreshListener = new Animation.AnimationListener() {
+    private AnimationListener mRefreshListener = new AnimationListener() {
         @Override
         public void onAnimationStart(Animation animation) {
         }
@@ -315,48 +315,26 @@ public class SwipeRefreshLayout extends ViewGroup {
     }
 
     private void createProgressView() {
-        mCircleView = new CircleImageView(getContext(), CIRCLE_BG_LIGHT, CIRCLE_DIAMETER/2);
+        mCircleView = new ShadowCircleImageView(getContext(), CIRCLE_BG_LIGHT, CIRCLE_DIAMETER/2);
         mProgress = new MaterialProgressDrawable(getContext(), this);
         mProgress.setBackgroundColor(CIRCLE_BG_LIGHT);
         mCircleView.setImageDrawable(mProgress);
         mCircleView.setVisibility(View.GONE);
         addView(mCircleView);
 
-        mLeftView = createView("go back");
-        mLeftView.setVisibility(GONE);
-        addView(mLeftView);
+        mLeftView = createNavigationView(R.drawable.btn_left);
 
-        mRightView = createView("go forward");
-        mRightView.setVisibility(GONE);
-        addView(mRightView);
+        mRightView = createNavigationView(R.drawable.btn_right);
     }
 
-    private View createView(String text) {
-        FrameLayout container = new FrameLayout(getContext());
-
-        CircleImageView imageView = new CircleImageView(getContext(), CIRCLE_BG_LIGHT, CIRCLE_DIAMETER / 2);
+    private View createNavigationView(@DrawableRes int resId) {
+        ShadowCircleImageView imageView = new ShadowCircleImageView(getContext(), CIRCLE_BG_LIGHT, CIRCLE_DIAMETER / 2f);
         imageView.setProgress(1f);
-
-        GradientDrawable drawable = new GradientDrawable();
-        drawable.setColor(CIRCLE_BG_LIGHT);
-        drawable.setCornerRadius(1000);
-
-        imageView.setImageDrawable(drawable);
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(mButtonSize - 16, mButtonSize - 16);
-        params.gravity = Gravity.CENTER;
-        container.addView(imageView, params);
-
-        TextView textView = new TextView(getContext());
-        textView.setText(text);
-        textView.setGravity(Gravity.CENTER);
-        textView.setTextColor(Color.BLACK);
-        params = new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-        params.gravity = Gravity.CENTER;
-        container.addView(textView, params);
-
-        textView.setElevation(imageView.getElevation() + 1);
-
-        return container;
+        imageView.setScaleType(ImageView.ScaleType.CENTER);
+        imageView.setImageResource(resId);
+        imageView.setVisibility(GONE);
+        addView(imageView);
+        return imageView;
     }
 
     /**
@@ -455,7 +433,7 @@ public class SwipeRefreshLayout extends ViewGroup {
         }
     }
 
-    private void startScaleDownAnimation(Animation.AnimationListener listener) {
+    private void startScaleDownAnimation(AnimationListener listener) {
         if (mScaleDownAnimation == null) {
             mScaleDownAnimation = new Animation() {
                 @Override
@@ -776,10 +754,10 @@ public class SwipeRefreshLayout extends ViewGroup {
         // cancel refresh
         mRefreshing = false;
         mProgress.setStartEndTrim(0f, 0f);
-        Animation.AnimationListener listener = null;
+        AnimationListener listener = null;
         if (!mScale) {
             if (mCancelAnimationListener == null) {
-                mCancelAnimationListener = new Animation.AnimationListener() {
+                mCancelAnimationListener = new AnimationListener() {
 
                     @Override
                     public void onAnimationStart(Animation animation) {
@@ -888,7 +866,7 @@ public class SwipeRefreshLayout extends ViewGroup {
     };
 
     private void startScaleDownReturnToStartAnimation(int from,
-            Animation.AnimationListener listener) {
+            AnimationListener listener) {
         mFrom = from;
         if (isAlphaUsedForScale()) {
             mStartingScale = mProgress.getAlpha();

@@ -38,7 +38,7 @@ import androidx.annotation.ColorRes;
  *
  * @hide
  */
-public class CircleImageView extends ImageView {
+public class ShadowCircleImageView extends ImageView {
     private static final int KEY_SHADOW_COLOR = 0x1E000000;
     private static final int FILL_SHADOW_COLOR = 0x3D000000;
     // PX
@@ -54,13 +54,13 @@ public class CircleImageView extends ImageView {
     private float mDensity;
     private int mViewDimension;
 
-    public CircleImageView(Context context, int color, final float radius) {
+    public ShadowCircleImageView(Context context, int color, final float radius) {
         this(context, color, radius, 0.f, 0);
     }
 
     @SuppressWarnings("deprecation")
-    public CircleImageView(Context context, @ColorRes int color, float radius, float maxRadius,
-            @ColorInt int outerColor) {
+    public ShadowCircleImageView(Context context, @ColorRes int color, float radius, float maxRadius,
+                                 @ColorInt int outerColor) {
         super(context);
         final float density = getContext().getResources().getDisplayMetrics().density;
 
@@ -172,15 +172,15 @@ public class CircleImageView extends ImageView {
             mCircleDiameter = circleDiameter;
             mRadialGradient = new RadialGradient(mCircleDiameter / 2f, mCircleDiameter / 2f,
                     mShadowRadius, new int[] {
-                            FILL_SHADOW_COLOR, Color.TRANSPARENT
+                            FILL_SHADOW_COLOR, Color.WHITE
                     }, null, Shader.TileMode.CLAMP);
             mShadowPaint.setShader(mRadialGradient);
         }
 
         @Override
         public void draw(Canvas canvas, Paint paint) {
-            final int viewWidth = CircleImageView.this.getWidth();
-            final int viewHeight = CircleImageView.this.getHeight();
+            final int viewWidth = ShadowCircleImageView.this.getWidth();
+            final int viewHeight = ShadowCircleImageView.this.getHeight();
             canvas.drawCircle(viewWidth / 2f, viewHeight / 2f, (mCircleDiameter / 2f + mShadowRadius),
                     mShadowPaint);
             if (mOuterRadius > 0.f) {
