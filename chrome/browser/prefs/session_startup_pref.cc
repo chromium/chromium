@@ -37,9 +37,10 @@ int TypeToPrefValue(SessionStartupPref::Type type) {
   }
 }
 
-void URLListToPref(const base::Value* url_list, SessionStartupPref* pref) {
+void URLListToPref(const base::Value::List& url_list,
+                   SessionStartupPref* pref) {
   pref->urls.clear();
-  for (const base::Value& i : url_list->GetListDeprecated()) {
+  for (const base::Value& i : url_list) {
     const std::string* url_text = i.GetIfString();
     if (url_text) {
       GURL fixed_url = url_formatter::FixupURL(*url_text, std::string());
@@ -122,7 +123,8 @@ SessionStartupPref SessionStartupPref::GetStartupPref(
 
   // Always load the urls, even if the pref type isn't URLS. This way the
   // preferences panels can show the user their last choice.
-  const base::Value* url_list = prefs->GetList(prefs::kURLsToRestoreOnStartup);
+  const base::Value::List& url_list =
+      prefs->GetValueList(prefs::kURLsToRestoreOnStartup);
   URLListToPref(url_list, &pref);
 
   return pref;
