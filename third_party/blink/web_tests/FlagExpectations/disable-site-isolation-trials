@@ -49,6 +49,10 @@ crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-
 crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-security-check-same-origin-domain.sub.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/dom/nodes/NodeList-static-length-getter-tampered-3.html [ Failure Timeout ]
+crbug.com/626703 external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-1.html [ Timeout ]
+crbug.com/626703 external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-2.html [ Timeout ]
+crbug.com/626703 external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-3.html [ Timeout ]
 crbug.com/626703 external/wpt/html/semantics/embedded-content/the-img-element/image-loading-lazy-zero-intersection-area.html [ Timeout ]
 crbug.com/626703 external/wpt/html/browsers/windows/clear-window-name.https.html [ Timeout ]
 crbug.com/626703 external/wpt/custom-elements/form-associated/ElementInternals-target-element-is-held-strongly.html [ Timeout ]

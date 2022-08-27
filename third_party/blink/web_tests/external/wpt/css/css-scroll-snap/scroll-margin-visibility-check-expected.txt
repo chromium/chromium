@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL scroll-margin-visibility-check assert_true: Visibility check should not account for margin expected true got false
+Harness: the test ran to completion.
+

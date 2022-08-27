@@ -35,9 +35,7 @@ let target = document.getElementById("target");
 test(t => {
   scroller.scrollTo(0, 0);
   target.focus();
-  window.requestAnimationFrame(t.step_func_done(() => {
-    assert_true(scroller.scrollTop > 0, "Visibility check should not account for margin");
-    assert_true(scroller.scrollLeft > 0, "Visibility check should not account for margin");
-  }));
+  assert_true(scroller.scrollTop > 0, "Visibility check should not account for margin");
+  assert_true(scroller.scrollLeft > 0, "Visibility check should not account for margin");
 });
 </script>

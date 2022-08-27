@@ -71,15 +71,11 @@ function testSnap(t, child, expectedRow) {
         unsnappable.focus();
         container.style.width = "200px";
         var startingRow = container.scrollTop/100 + 1;
-        window.requestAnimationFrame(t.step_func_done(() => {
-            assert_equals(startingRow, 2, "Initially snapped to row 2");
-        }));
+        assert_equals(startingRow, 2, "Initially snapped to row 2");
         child.focus();
         container.style.width = "100px";
         var endingRow = container.scrollTop/100 + 1;
-        window.requestAnimationFrame(t.step_func_done(() => {
-            assert_equals(endingRow, expectedRow, `After resize, should snap to row ${expectedRow}.`);
-        }));
+        assert_equals(endingRow, expectedRow, `After resize, should snap to row ${expectedRow}.`);
     });
 }
 

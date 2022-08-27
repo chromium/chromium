@@ -3266,6 +3266,17 @@ crbug.com/626703 [ Linux ] external/wpt/dom/nodes/NodeList-static-length-getter-
 crbug.com/626703 [ Linux ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-3.html [ Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac12 ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-3.html [ Failure Timeout ]
+crbug.com/626703 [ Win10.20h2 ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-3.html [ Failure Timeout ]
+crbug.com/626703 [ Linux ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-1.html [ Skip Timeout ]
+crbug.com/626703 [ Mac12 ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-1.html [ Skip Timeout ]
+crbug.com/626703 [ Win ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-1.html [ Skip Timeout ]
+crbug.com/626703 [ Mac12 ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-2.html [ Skip Timeout ]
+crbug.com/626703 [ Win ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-2.html [ Skip Timeout ]
+crbug.com/626703 [ Mac12 ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-3.html [ Skip Timeout ]
+crbug.com/626703 [ Win ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-3.html [ Skip Timeout ]
+crbug.com/626703 [ Mac11 ] external/wpt/html/browsers/the-window-object/open-close/open-features-tokenization-width-height.html [ Skip Timeout ]
+crbug.com/626703 [ Mac12 ] external/wpt/html/browsers/the-window-object/open-close/open-features-tokenization-width-height.html [ Skip Timeout ]
 crbug.com/626703 [ Win10.20h2 ] wpt_internal/orientation-event/motion/page-visibility.https.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-conditional/at-supports-font-format-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-conditional/at-supports-font-tech-001.html [ Failure ]
