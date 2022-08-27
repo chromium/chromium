@@ -193,6 +193,8 @@ EXPORTS
     ??6time_internal@absl@@YAAEAV?$basic_ostream@DU?$char_traits@D@Cr@std@@@Cr@std@@AEAV234@V?$civil_time@Umonth_tag@time_internal@absl@@@detail@cctz@01@@Z
     ??6time_internal@absl@@YAAEAV?$basic_ostream@DU?$char_traits@D@Cr@std@@@Cr@std@@AEAV234@V?$civil_time@Usecond_tag@time_internal@absl@@@detail@cctz@01@@Z
     ??6time_internal@absl@@YAAEAV?$basic_ostream@DU?$char_traits@D@Cr@std@@@Cr@std@@AEAV234@V?$civil_time@Uyear_tag@time_internal@absl@@@detail@cctz@01@@Z
+    ??A?$vector@UTransition@cctz@time_internal@absl@@V?$allocator@UTransition@cctz@time_internal@absl@@@Cr@std@@@Cr@std@@QEAAAEAUTransition@cctz@time_internal@absl@@_K@Z
+    ??A?$vector@UTransitionType@cctz@time_internal@absl@@V?$allocator@UTransitionType@cctz@time_internal@absl@@@Cr@std@@@Cr@std@@QEAAAEAUTransitionType@cctz@time_internal@absl@@_K@Z
     ??ACord@absl@@QEBAD_K@Z
     ??BCord@absl@@QEBA?AV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@XZ
     ??Bint128@absl@@QEBANXZ
@@ -744,6 +746,7 @@ EXPORTS
     ?StrCat@absl@@YA?AV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@AEBVAlphaNum@1@000@Z
     ?StrCat@absl@@YA?AV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@AEBVAlphaNum@1@00@Z
     ?StrCat@absl@@YA?AV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@AEBVAlphaNum@1@0@Z
+    ?StrCat@absl@@YA?AV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@AEBVAlphaNum@1@@Z
     ?StrError@base_internal@absl@@YA?AV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@H@Z
     ?StrReplaceAll@absl@@YA?AV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@Vstring_view@1@V?$initializer_list@U?$pair@Vstring_view@absl@@V12@@Cr@std@@@4@@Z
     ?StrReplaceAll@absl@@YAHV?$initializer_list@U?$pair@Vstring_view@absl@@V12@@Cr@std@@@std@@PEAV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@3@@Z
