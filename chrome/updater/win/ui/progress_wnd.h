@@ -170,6 +170,8 @@ class ProgressWnd : public CompleteWnd, public InstallProgressObserver {
   void DeterminePostInstallUrls(const ObserverCompletionInfo& info);
   CompletionCodes GetBundleOverallCompletionCode(
       const ObserverCompletionInfo& info) const;
+  std::wstring GetBundleCompletionErrorMessages(
+      const ObserverCompletionInfo& info) const;
 
   enum class States {
     STATE_INIT = 0,
