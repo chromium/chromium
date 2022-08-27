@@ -14,7 +14,7 @@ class MockTranslateInfobarModalInteractionHandler
     : public TranslateInfobarModalInteractionHandler {
  public:
   MockTranslateInfobarModalInteractionHandler();
-  ~MockTranslateInfobarModalInteractionHandler();
+  ~MockTranslateInfobarModalInteractionHandler() override;
 
   MOCK_METHOD1(ToggleAlwaysTranslate, void(InfoBarIOS* infobar));
   MOCK_METHOD1(ToggleNeverTranslateLanguage, void(InfoBarIOS* infobar));

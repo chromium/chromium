@@ -17,13 +17,13 @@ namespace {
 class MockInfoBarIOSObserver : public InfoBarIOS::Observer {
  public:
   MockInfoBarIOSObserver() {}
-  ~MockInfoBarIOSObserver() {}
+  ~MockInfoBarIOSObserver() override {}
 
   MOCK_METHOD1(DidUpdateAcceptedState, void(InfoBarIOS*));
 
   // InfobarDetroyed not mocked so that the observer can be correctly removed
   // upon destruction.
-  void InfobarDestroyed(InfoBarIOS* infobar) {
+  void InfobarDestroyed(InfoBarIOS* infobar) override {
     infobar->RemoveObserver(this);
     infobar_destroyed_ = true;
   }

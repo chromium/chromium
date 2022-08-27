@@ -37,7 +37,7 @@ class MockOverlayPresentationContextImplObserver
     : public OverlayPresentationContextObserver {
  public:
   MockOverlayPresentationContextImplObserver() {}
-  ~MockOverlayPresentationContextImplObserver() {}
+  ~MockOverlayPresentationContextImplObserver() override {}
 
   MOCK_METHOD2(OverlayPresentationContextWillChangePresentationCapabilities,
                void(OverlayPresentationContext*,

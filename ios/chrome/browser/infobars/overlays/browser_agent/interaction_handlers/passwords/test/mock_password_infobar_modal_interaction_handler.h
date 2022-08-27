@@ -14,7 +14,7 @@ class MockPasswordInfobarModalInteractionHandler
     : public PasswordInfobarModalInteractionHandler {
  public:
   MockPasswordInfobarModalInteractionHandler();
-  ~MockPasswordInfobarModalInteractionHandler();
+  ~MockPasswordInfobarModalInteractionHandler() override;
 
   MOCK_METHOD3(UpdateCredentials,
                void(InfoBarIOS* infobar,

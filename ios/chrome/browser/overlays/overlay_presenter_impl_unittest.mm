@@ -29,7 +29,7 @@ namespace {
 class MockOverlayPresenterObserver : public OverlayPresenterObserver {
  public:
   MockOverlayPresenterObserver() {}
-  ~MockOverlayPresenterObserver() {}
+  ~MockOverlayPresenterObserver() override {}
 
   MOCK_METHOD3(WillShowOverlay, void(OverlayPresenter*, OverlayRequest*, bool));
   MOCK_METHOD2(DidHideOverlay, void(OverlayPresenter*, OverlayRequest*));

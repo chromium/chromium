@@ -13,7 +13,7 @@ class MockOverlayRequestCoordinatorDelegate
     : public OverlayRequestCoordinatorDelegate {
  public:
   MockOverlayRequestCoordinatorDelegate();
-  ~MockOverlayRequestCoordinatorDelegate();
+  ~MockOverlayRequestCoordinatorDelegate() override;
 
   MOCK_METHOD1(OverlayUIDidFinishPresentation, void(OverlayRequest* request));
   MOCK_METHOD1(OverlayUIDidFinishDismissal, void(OverlayRequest* request));

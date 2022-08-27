@@ -81,7 +81,7 @@ class MockOverlayRequestQueueImplObserver
     : public OverlayRequestQueueImpl::Observer {
  public:
   MockOverlayRequestQueueImplObserver() {}
-  ~MockOverlayRequestQueueImplObserver() {}
+  ~MockOverlayRequestQueueImplObserver() override {}
 
   MOCK_METHOD3(RequestAddedToQueue,
                void(OverlayRequestQueueImpl*, OverlayRequest*, size_t));

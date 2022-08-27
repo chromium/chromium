@@ -17,7 +17,7 @@ class MockSaveCardInfobarModalInteractionHandler
     : public SaveCardInfobarModalInteractionHandler {
  public:
   MockSaveCardInfobarModalInteractionHandler();
-  ~MockSaveCardInfobarModalInteractionHandler();
+  ~MockSaveCardInfobarModalInteractionHandler() override;
 
   MOCK_METHOD4(UpdateCredentials,
                void(InfoBarIOS* infobar,

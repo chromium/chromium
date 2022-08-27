@@ -17,7 +17,7 @@ class MockSaveAddressProfileInfobarModalInteractionHandler
     : public SaveAddressProfileInfobarModalInteractionHandler {
  public:
   MockSaveAddressProfileInfobarModalInteractionHandler();
-  ~MockSaveAddressProfileInfobarModalInteractionHandler();
+  ~MockSaveAddressProfileInfobarModalInteractionHandler() override;
 
   MOCK_METHOD2(SaveEditedProfile,
                void(InfoBarIOS* infobar, NSDictionary* profileData));

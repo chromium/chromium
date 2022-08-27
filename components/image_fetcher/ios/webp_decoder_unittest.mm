@@ -42,7 +42,7 @@ class WebpDecoderDelegate : public WebpDecoder::Delegate {
   void OnDataDecoded(NSData* data) override { [image_ appendData:data]; }
 
  private:
-  virtual ~WebpDecoderDelegate() {}
+  ~WebpDecoderDelegate() override {}
 
   __strong NSMutableData* image_;
 };

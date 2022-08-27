@@ -12,7 +12,7 @@ class MockInfobarBannerInteractionHandler
     : public InfobarBannerInteractionHandler {
  public:
   MockInfobarBannerInteractionHandler();
-  ~MockInfobarBannerInteractionHandler();
+  ~MockInfobarBannerInteractionHandler() override;
 
   MOCK_METHOD2(BannerVisibilityChanged,
                void(InfoBarIOS* infobar, bool visible));

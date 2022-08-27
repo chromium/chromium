@@ -39,7 +39,7 @@ class OverlayRequestQueueCallbackInstallerTest : public PlatformTest {
     request_installer->set_request_support(SupportedConfig::RequestSupport());
     queue_installer_->AddRequestCallbackInstaller(std::move(request_installer));
   }
-  ~OverlayRequestQueueCallbackInstallerTest() = default;
+  ~OverlayRequestQueueCallbackInstallerTest() override = default;
 
   OverlayRequestQueue* queue() {
     return OverlayRequestQueue::FromWebState(&web_state_, kModality);

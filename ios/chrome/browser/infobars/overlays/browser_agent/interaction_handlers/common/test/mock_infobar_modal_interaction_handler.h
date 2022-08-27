@@ -12,7 +12,7 @@ class MockInfobarModalInteractionHandler
     : public InfobarModalInteractionHandler {
  public:
   MockInfobarModalInteractionHandler();
-  ~MockInfobarModalInteractionHandler();
+  ~MockInfobarModalInteractionHandler() override;
 
   MOCK_METHOD1(PerformMainAction, void(InfoBarIOS* infobar));
   MOCK_METHOD0(CreateModalInstaller,

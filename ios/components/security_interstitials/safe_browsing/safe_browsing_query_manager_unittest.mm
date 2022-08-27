@@ -29,7 +29,7 @@ namespace {
 class MockQueryManagerObserver : public SafeBrowsingQueryManager::Observer {
  public:
   MockQueryManagerObserver() {}
-  ~MockQueryManagerObserver() {}
+  ~MockQueryManagerObserver() override {}
 
   MOCK_METHOD3(SafeBrowsingQueryFinished,
                void(SafeBrowsingQueryManager*,

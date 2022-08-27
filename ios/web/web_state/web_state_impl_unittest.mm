@@ -119,7 +119,7 @@ class MockWebStatePolicyDecider : public WebStatePolicyDecider {
  public:
   explicit MockWebStatePolicyDecider(WebState* web_state)
       : WebStatePolicyDecider(web_state) {}
-  virtual ~MockWebStatePolicyDecider() {}
+  ~MockWebStatePolicyDecider() override {}
 
   MOCK_METHOD3(ShouldAllowRequest,
                void(NSURLRequest* request,

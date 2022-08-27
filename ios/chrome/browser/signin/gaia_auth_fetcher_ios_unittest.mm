@@ -77,7 +77,7 @@ class FakeGaiaAuthFetcherIOSBridge : public GaiaAuthFetcherIOSBridge {
 class MockGaiaConsumer : public GaiaAuthConsumer {
  public:
   MockGaiaConsumer() {}
-  ~MockGaiaConsumer() {}
+  ~MockGaiaConsumer() override {}
 
   MOCK_METHOD1(OnMergeSessionSuccess, void(const std::string& data));
   MOCK_METHOD1(OnClientLoginFailure, void(const GoogleServiceAuthError& error));

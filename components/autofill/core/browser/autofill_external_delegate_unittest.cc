@@ -99,8 +99,12 @@ class MockAutofillClient : public TestAutofillClient {
               (const GURL& url),
               (override));
 
+#if BUILDFLAG(IS_IOS)
   // Mock the client query ID check.
-  bool IsQueryIDRelevant(int query_id) { return query_id == kRecentQueryId; }
+  bool IsQueryIDRelevant(int query_id) override {
+    return query_id == kRecentQueryId;
+  }
+#endif
 };
 
 class MockBrowserAutofillManager : public BrowserAutofillManager {
