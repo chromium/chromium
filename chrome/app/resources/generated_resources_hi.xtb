@@ -1055,7 +1055,7 @@
 <translation id="1973763416111613016"><ph name="FILE_NAME" /> को सुरक्षित तरीके से डाउनलोड नहीं किया जा सकता. डाउनलोड बार वाले हिस्से पर जाने के लिए Shift+F6 दबाएं.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">CRL वितरण बिंदु</translation>
-<translation id="1974060860693918893">बेहतर</translation>
+<translation id="1974060860693918893">बेहतर सेटिंग</translation>
 <translation id="1974159333077206889">सभी स्पीकर से एक जैसी आवाज़ (मोनो ऑडियो)</translation>
 <translation id="1974821797477522211">नेटवर्क से कनेक्ट करें</translation>
 <translation id="1975841812214822307">निकालें...</translation>
@@ -3173,6 +3173,7 @@
 <translation id="3966072572894326936">कोई अन्य फ़ोल्डर चुनें</translation>
 <translation id="3967822245660637423">डाउनलोड पूरा हुआ</translation>
 <translation id="3967841595862839006">अपनी भाषा और कीबोर्ड चुनें</translation>
+<translation id="3968739731834770921">काना</translation>
 <translation id="3970114302595058915">आईडी</translation>
 <translation id="397105322502079400">गणना की जा रही है...</translation>
 <translation id="3971764089670057203">इस सुरक्षा कुंजी के लिए दर्ज किए गए फ़िंगरप्रिंट</translation>
@@ -4250,6 +4251,7 @@
 <translation id="5038818366306248416">पिछली बार, आपने <ph name="ORIGIN" /> पर किसी भी एक्सटेंशन को अनुमति न देने का विकल्प चुना था</translation>
 <translation id="5039696241953571917">अपने Google खाते में सेव किए गए पासवर्ड देखें और उन्हें प्रबंधित करें</translation>
 <translation id="5039804452771397117">अनुमति दें</translation>
+<translation id="5040262127954254034">निजता</translation>
 <translation id="5040823038948176460">अन्य सामग्री सेटिंग</translation>
 <translation id="5041509233170835229">Chrome ऐप</translation>
 <translation id="5043440033854483429">नाम में अक्षर, संख्याएं, और हाइफ़न (-) इस्तेमाल किए जा सकते हैं. नाम 1 से 15 वर्णों के बीच का होना चाहिए.</translation>
@@ -4417,6 +4419,7 @@
 <translation id="5207949376430453814">लेख कैरेट हाइलाइट करें</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> यह देखना चाहता है कि क्या उपयोगकर्ता मंज़ूरी दिए गए किसी ChromeOS डिवाइस का इस्तेमाल कर रहे हैं.</translation>
 <translation id="5208548918290612795"><ph name="WEB_DRIVE" /> की पुष्टि करने वाले टोकन को सेव किया जा रहा है</translation>
+<translation id="5208988882104884956">आधी-चौड़ाई</translation>
 <translation id="520902706163766447">Chrome पर खुले मौजूदा टैब में खोजने के लिए, Chrome के यूज़र इंटरफ़ेस (यूआई) पर सबसे ऊपर एक पॉप-अप बबल को चालू करें.</translation>
 <translation id="5209320130288484488">कोई डिवाइस नहीं मि‍ला</translation>
 <translation id="5209513429611499188">इस्तेमाल की जानकारी वाले पेज <ph name="USAGE_PAGE" /> के मुताबिक एचआईडी डिवाइस और उनका इस्तेमाल</translation>
@@ -4634,6 +4637,7 @@
 <translation id="542750953150239272">जारी रखने का मतलब है कि यह डिवाइस, Google, आपके मोबाइल पर नेटवर्क सेवा देने वाली कंपनी, और इस डिवाइस को बनाने वाली कंपनी से मिलने वाले अपडेट और ऐप्लिकेशन को अपने-आप डाउनलोड और इंस्टॉल भी कर सकता है. ऐसा करने के लिए, हो सकता है कि डिवाइस मोबाइल डेटा का इस्तेमाल करे. इनमें से कुछ ऐप्लिकेशन, इन-ऐप्लिकेशन खरीदारी का ऑफ़र दे सकते हैं.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (अपडेट उपलब्‍ध है)</translation>
 <translation id="542948651837270806">भरोसेमंद प्लैटफ़ॉर्म मॉड्यूल फ़र्मवेयर के लिए अपडेट इंस्टॉल करने की ज़रूरत है. <ph name="TPM_FIRMWARE_UPDATE_LINK" /> देखें</translation>
+<translation id="5429818411180678468">पूर्ण-चौड़ाई</translation>
 <translation id="5430931332414098647">इंस्टैंट टेदरिंग</translation>
 <translation id="5431318178759467895">रंग</translation>
 <translation id="543338862236136125">पासवर्ड में बदलाव करें</translation>
@@ -5189,6 +5193,7 @@
 <translation id="5957987129450536192">अपनी प्रोफ़ाइल इमेज के पास वाले 'चुनें और सुनें' आइकॉन पर टैप करें, फिर आप जो सुनना चाहते हैं उसे चुनें.</translation>
 <translation id="5959471481388474538">नेटवर्क उपलब्ध नहीं</translation>
 <translation id="595959584676692139">इस एक्सटेंशन का इस्तेमाल करने के लिए पेज को फिर से लोड करें</translation>
+<translation id="5963413905009737549">अनुभाग</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> उच्चतम)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{सभी यूआरएल को &amp;नई विंडो में खोलें}=1{यूआरएल को &amp;नई विंडो में खोलें}one{दिया गया ({COUNT}) यूआरएल &amp;नई विंडो में खोलें}other{सभी ({COUNT}) यूआरएल को &amp;नई विंडो में खोलें}}</translation>
 <translation id="5965661248935608907">इससे यह भी नियंत्रित होता है कि जब आप होम बटन पर क्लिक करते हैं या ऑम्निबॉक्स (खोज वाली पट्टी) से खोजते हैं तब कौन सा पेज दिखाया जाए.</translation>
@@ -7129,6 +7134,7 @@
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> को <ph name="DEVICE_NAME" /> पर भेजा गया}one{<ph name="ATTACHMENTS" /> को <ph name="DEVICE_NAME" /> पर भेजा गया}other{<ph name="ATTACHMENTS" />, <ph name="DEVICE_NAME" /> पर भेजे गए}}</translation>
 <translation id="7839051173341654115">मीडिया देखें/बैकअप लें</translation>
 <translation id="7839192898639727867">प्रमाणपत्र विषय कुंजी आईडी</translation>
+<translation id="7842062217214609161">कोई शॉर्टकट नहीं</translation>
 <translation id="7842692330619197998">अगर आपको नया खाता बनाना है, तो g.co/ChromeEnterpriseAccount पर जाएं.</translation>
 <translation id="78427265591841839"><ph name="VISUAL_SEARCH_PROVIDER" /> की मदद से पेज का कोई भी हिस्सा खोजें</translation>
 <translation id="784273751836026224">Linux अनइंस्टॉल करें</translation>
@@ -7170,6 +7176,7 @@
 <translation id="7874257161694977650">Chrome बैकग्राउंड</translation>
 <translation id="7876027585589532670">शॉर्टकट में बदलाव नहीं किया जा सकता</translation>
 <translation id="7877451762676714207">अज्ञात सर्वर गड़बड़ी. कृपया फिर से प्रयास करें, या सर्वर व्यवस्थापक से संपर्क करें.</translation>
+<translation id="7879478708475862060">इनपुट मोड का अनुसरण करें</translation>
 <translation id="7879631849810108578">शॉर्टकट सेट हो गया: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
 <translation id="7880685873361171388">चालू होने और ऐक्टिव स्टेटस होने पर, Chrome आपके सात दिनों के ब्राउज़िंग इतिहास का इस्तेमाल करके, यह तय करता है कि आप कौनसे ग्रुप या “एक जैसे उपयोगकर्ताओं के ग्रुप” में हैं. विज्ञापन देने वाले, ग्रुप के लिए विज्ञापन चुन सकते हैं. आपका ब्राउज़िंग इतिहास, आपके डिवाइस पर गोपनीय रखा जाता है. मुफ़्त में आज़माने की यह सुविधा सिर्फ़
     <ph name="BEGIN_LINK" />कुछ क्षेत्रों<ph name="END_LINK" /> में चालू है.</translation>
@@ -8066,6 +8073,7 @@
 <translation id="8740672167979365981">ChromeOS Flex को अपडेट करना ज़रूरी है</translation>
 <translation id="8741944563400125534">स्विच ऐक्सेस की सुविधा सेट अप करने के लिए गाइड</translation>
 <translation id="8742998548129056176">यह आपके डिवाइस और इसके इस्तेमाल से जुड़ी सामान्य जानकारी है, जैसे कि जैसे कि बैटरी कितनी चार्ज है, सिस्टम और ऐप्लिकेशन की गतिविधि, और गड़बड़ियां. डिवाइस से जुड़े इस डेटा का इस्तेमाल Android काे बेहतर बनाने के लिए किया जाएगा. साथ ही, इकट्ठा की गई कुछ जानकारी की मदद से Android डेवलपर जैसे पार्टनर और Google के ऐप्लिकेशन अपने प्रॉडक्ट को बेहतर बना पाएंगे.</translation>
+<translation id="8744641000906923997">रोमाजी</translation>
 <translation id="8746654918629346731">आपने "<ph name="EXTENSION_NAME" />" का अनुरोध किया हुआ है</translation>
 <translation id="874689135111202667">{0,plural, =1{इस साइट पर एक फ़ाइल अपलोड करें?}one{इस साइट पर # फ़ाइलें अपलोड करें?}other{इस साइट पर # फ़ाइलें अपलोड करें?}}</translation>
 <translation id="8749805710397399240">आपकी स्क्रीन को कास्ट नहीं किया जा सकता. सिस्टम की प्राथमिकताओं में स्क्रीन रिकॉर्ड करने की अनुमति की जांच करें.</translation>
@@ -8091,6 +8099,7 @@
 <translation id="8761945298804995673">यह उपयोगकर्ता पहले से मौजूद है</translation>
 <translation id="8762886931014513155">आपके <ph name="DEVICE_TYPE" /> को अपडेट की ज़रूरत है</translation>
 <translation id="8763927697961133303">USB डिवाइस</translation>
+<translation id="8766796754185931010">कोटोएरी</translation>
 <translation id="8767621466733104912">Chrome को सभी उपयोगकर्ताओं के लिए अपने आप अपडेट करें</translation>
 <translation id="8769901904650373714">Steam को सेट अप करने में गड़बड़ी हुई</translation>
 <translation id="8770406935328356739">एक्‍सटेंशन मूल निर्देशिका</translation>

@@ -3160,6 +3160,7 @@
 <translation id="3966072572894326936">Выбрать другую папку...</translation>
 <translation id="3967822245660637423">Скачивание завершено.</translation>
 <translation id="3967841595862839006">Выберите язык и клавиатуру</translation>
+<translation id="3968739731834770921">Кана</translation>
 <translation id="3970114302595058915">Идентификатор</translation>
 <translation id="397105322502079400">Вычисление…</translation>
 <translation id="3971764089670057203">Цифровые отпечатки на этом электронном ключе</translation>
@@ -4236,6 +4237,7 @@
 <translation id="5038818366306248416">Ранее вы запретили все расширения на странице <ph name="ORIGIN" /></translation>
 <translation id="5039696241953571917">Находите сохраненные пароли и управляйте ими в аккаунте Google.</translation>
 <translation id="5039804452771397117">Разрешить</translation>
+<translation id="5040262127954254034">Конфиденциальность</translation>
 <translation id="5040823038948176460">Дополнительные настройки контента</translation>
 <translation id="5041509233170835229">Приложение Chrome</translation>
 <translation id="5043440033854483429">В названии можно использовать буквы, цифры и дефисы. Допустимая длина – от 1 до 15 символов.</translation>
@@ -4403,6 +4405,7 @@
 <translation id="5207949376430453814">Выделять курсор при вводе текста</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> запрашивает информацию об устройстве Chrome OS.</translation>
 <translation id="5208548918290612795">Сохранение токена аутентификации из сервиса "<ph name="WEB_DRIVE" />"</translation>
+<translation id="5208988882104884956">Половинная ширина</translation>
 <translation id="520902706163766447">Включает всплывающие подсказки в верхней части интерфейса Chrome для поиска по открытым вкладкам.</translation>
 <translation id="5209320130288484488">Устройства не найдены</translation>
 <translation id="5209513429611499188">HID-устройства с использованием на странице <ph name="USAGE_PAGE" /></translation>
@@ -4620,6 +4623,7 @@
 <translation id="542750953150239272">Продолжая, вы разрешаете устройству автоматически скачивать и устанавливать обновления и приложения от производителя устройства, оператора связи и компании Google (в том числе по мобильной сети). Некоторые из этих приложений могут предлагать платный контент.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (доступно обновление)</translation>
 <translation id="542948651837270806">Требуется обновить встроенное ПО доверенного платформенного модуля (TPM). Подробнее: <ph name="TPM_FIRMWARE_UPDATE_LINK" />.</translation>
+<translation id="5429818411180678468">Полная ширина</translation>
 <translation id="5430931332414098647">Мгновенная точка доступа</translation>
 <translation id="5431318178759467895">Цветная печать</translation>
 <translation id="543338862236136125">Изменить пароль</translation>
@@ -5175,6 +5179,7 @@
 <translation id="5957987129450536192">Коснитесь значка "Озвучивание при нажатии" рядом с фотографией профиля и выберите текст для прослушивания.</translation>
 <translation id="5959471481388474538">Сеть недоступна</translation>
 <translation id="595959584676692139">Перезагрузите страницу, чтобы использовать расширение</translation>
+<translation id="5963413905009737549">Раздел</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (макс. <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Открыть все URL в &amp;новом окне}=1{Открыть URL в &amp;новом окне}one{Открыть все URL ({COUNT}) в &amp;новом окне}few{Открыть все URL ({COUNT}) в &amp;новом окне}many{Открыть все URL ({COUNT}) в &amp;новом окне}other{Открыть все URL ({COUNT}) в &amp;новом окне}}</translation>
 <translation id="5965661248935608907">Кроме того, расширение изменило страницу, которая отображается при нажатии кнопки "Главная страница", и поисковую систему, используемую по умолчанию при вводе запроса в омнибокс.</translation>
@@ -7120,6 +7125,7 @@
 <translation id="7838971600045234625">{COUNT,plural, =1{Отправлено на устройство "<ph name="DEVICE_NAME" />": <ph name="ATTACHMENTS" />}one{Отправлено на устройство "<ph name="DEVICE_NAME" />": <ph name="ATTACHMENTS" />}few{Отправлено на устройство "<ph name="DEVICE_NAME" />": <ph name="ATTACHMENTS" />}many{Отправлено на устройство "<ph name="DEVICE_NAME" />": <ph name="ATTACHMENTS" />}other{Отправлено на устройство "<ph name="DEVICE_NAME" />": <ph name="ATTACHMENTS" />}}</translation>
 <translation id="7839051173341654115">Просмотреть/сохранить медиафайлы</translation>
 <translation id="7839192898639727867">Идентификатор ключа субъекта сертификата</translation>
+<translation id="7842062217214609161">Без быстрых клавиш</translation>
 <translation id="7842692330619197998">Чтобы создать аккаунт, перейдите на страницу g.co/ChromeEnterpriseAccount.</translation>
 <translation id="78427265591841839">Искать по области страницы, используя <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="784273751836026224">Удалить Linux</translation>
@@ -7161,6 +7167,7 @@
 <translation id="7874257161694977650">Фоновые изображения Chrome</translation>
 <translation id="7876027585589532670">Не удалось изменить ярлык.</translation>
 <translation id="7877451762676714207">Обнаружена неизвестная ошибка сервера. Повторите попытку или свяжитесь с его администратором.</translation>
+<translation id="7879478708475862060">Использовать выбранный режим ввода</translation>
 <translation id="7879631849810108578">Добавлено сочетание клавиш: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
 <translation id="7880685873361171388">Если эта функция включена и активирована, Chrome определяет группу (когорту), в которую вы входите, с помощью истории браузера за семь дней. Рекламодатели могут выбрать объявления для группы. История браузера хранится на устройстве и доступна только вам. Эта пробная функция работает только в <ph name="BEGIN_LINK" />некоторых регионах<ph name="END_LINK" />.</translation>
 <translation id="7880823633812189969">Локальные данные будут удалены после перезапуска</translation>
@@ -8056,6 +8063,7 @@
 <translation id="8740672167979365981">Обновите Chrome OS Flex</translation>
 <translation id="8741944563400125534">Мастер настройки Switch Access</translation>
 <translation id="8742998548129056176">Мы будем получать общие сведения о работе устройства, например об уровне заряда батареи, ошибках и действиях в системе и приложениях. Они помогут нам усовершенствовать Android, а наши партнеры смогут использовать некоторые агрегированные данные, чтобы улучшать свои приложения и другие продукты.</translation>
+<translation id="8744641000906923997">Ромадзи</translation>
 <translation id="8746654918629346731">Вы уже запросили расширение "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="874689135111202667">{0,plural, =1{Загрузить файл на этот сайт?}one{Загрузить # файл на этот сайт?}few{Загрузить # файла на этот сайт?}many{Загрузить # файлов на этот сайт?}other{Загрузить # файла на этот сайт?}}</translation>
 <translation id="8749805710397399240">Не удается выполнить трансляцию экрана. Откройте системные настройки и предоставьте разрешение "Запись экрана".</translation>
@@ -8081,6 +8089,7 @@
 <translation id="8761945298804995673">Такой пользователь уже существует.</translation>
 <translation id="8762886931014513155">Требуется обновить устройство <ph name="DEVICE_TYPE" /></translation>
 <translation id="8763927697961133303">USB-устройство</translation>
+<translation id="8766796754185931010">Котоери</translation>
 <translation id="8767621466733104912">Обновить Chrome для всех пользователей</translation>
 <translation id="8769901904650373714">При установке Steam произошла ошибка</translation>
 <translation id="8770406935328356739">Корневой каталог расширения</translation>

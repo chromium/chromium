@@ -3181,6 +3181,7 @@
 <translation id="3966072572894326936">Одберете друга папка...</translation>
 <translation id="3967822245660637423">Преземањето е завршено</translation>
 <translation id="3967841595862839006">Изберете ги јазикот и тастатурата</translation>
+<translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Се пресметува…</translation>
 <translation id="3971764089670057203">Отпечатоци на овој безбедносен клуч</translation>
@@ -4260,6 +4261,7 @@
 <translation id="5038818366306248416">Претходно одбравте да не дозволите екстензии на <ph name="ORIGIN" /></translation>
 <translation id="5039696241953571917">Прегледувајте ги и управувајте со зачуваните лозинки во вашата сметка на Google</translation>
 <translation id="5039804452771397117">Дозволи</translation>
+<translation id="5040262127954254034">Приватност</translation>
 <translation id="5040823038948176460">Дополнителни поставки за содржини</translation>
 <translation id="5041509233170835229">Апликација на Chrome</translation>
 <translation id="5043440033854483429">Името може да содржи букви, бројки и цртички (-) и да има од 1 до 15 знаци.</translation>
@@ -4427,6 +4429,7 @@
 <translation id="5207949376430453814">Нагласи го каретот за текст</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> сака да провери дали користите уред со Chrome OS што ги исполнува условите.</translation>
 <translation id="5208548918290612795">Се складира токенот за проверка на <ph name="WEB_DRIVE" /></translation>
+<translation id="5208988882104884956">Полуширина</translation>
 <translation id="520902706163766447">Овозможете скокачко балонче во горниот кориснички интерфејс на Chrome за да пребарувате над моментално отворените картички.</translation>
 <translation id="5209320130288484488">Не се пронајдени уреди</translation>
 <translation id="5209513429611499188">HID-уреди со искористеност од страницата за користење <ph name="USAGE_PAGE" /></translation>
@@ -4644,6 +4647,7 @@
 <translation id="542750953150239272">Ако продолжите, се согласувате дека уредов може и автоматски да презема и инсталира ажурирања и апликации од Google, од вашиот оператор и од производителот на уредот, веројатно со користење мобилен интернет. Некои од овие апликации може да нудат купувања во апликациите.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (Достапно е ажурирање)</translation>
 <translation id="542948651837270806">Треба да се инсталира ажурирање за фирмверот на Trusted Platform Module. Видете <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
+<translation id="5429818411180678468">Полна ширина</translation>
 <translation id="5430931332414098647">Инстант врзување</translation>
 <translation id="5431318178759467895">Боја</translation>
 <translation id="543338862236136125">Измени ја лозинката</translation>
@@ -5201,6 +5205,7 @@
 <translation id="5957987129450536192">Или допрете ја иконата „Изберете за говор“ во близина на сликата на профилот, а потоа изберете го тоа што сакате да го чуете.</translation>
 <translation id="5959471481388474538">Мрежата не е достапна</translation>
 <translation id="595959584676692139">Вчитајте ја страницата повторно за да ја користите екстензијава</translation>
+<translation id="5963413905009737549">Секција</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> максимум)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Отвори ги сите во &amp;нов прозорец}=1{Отвори во &amp;нов прозорец}one{Отвори ги сите ({COUNT}) во &amp;нов прозорец}other{Отвори ги сите ({COUNT}) во &amp;нов прозорец}}</translation>
 <translation id="5965661248935608907">Контролира и која страница се прикажува ако кликнете на копчето Дома или ако пребарувате од лентата за адреси.</translation>
@@ -7144,6 +7149,7 @@
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> е испратен на <ph name="DEVICE_NAME" />}one{<ph name="ATTACHMENTS" /> е испратена на <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> се испратени на <ph name="DEVICE_NAME" />}}</translation>
 <translation id="7839051173341654115">Прикажи/Направи резервни копии на медиуми</translation>
 <translation id="7839192898639727867">ИД на клуч за предмет на сертификат</translation>
+<translation id="7842062217214609161">Нема кратенка</translation>
 <translation id="7842692330619197998">Посетете ја g.co/ChromeEnterpriseAccount ако треба да создадете нова сметка.</translation>
 <translation id="78427265591841839">Пребарајте кој било дел од страницата со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="784273751836026224">Деинсталирање на Linux</translation>
@@ -7185,6 +7191,7 @@
 <translation id="7874257161694977650">Заднини на Chrome</translation>
 <translation id="7876027585589532670">Не може да се измени кратенката</translation>
 <translation id="7877451762676714207">Непозната грешка на серверот. Обидете се повторно или контактирајте со администраторот на серверот.</translation>
+<translation id="7879478708475862060">Следи режим за внесување</translation>
 <translation id="7879631849810108578">Поставена е кратенка: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
 <translation id="7880685873361171388">Кога е вклучена и статусот е активен, Chrome ја користи вашата историја на прелистување во минатите 7 дена за да ја одреди групата или „кохортата“ во која припаѓате. Огласувачите може да избираат реклами за групата. Историјата на прелистување останува приватна на вашиот уред. Оваа пробна верзија е активна само во
     <ph name="BEGIN_LINK" />некои региони<ph name="END_LINK" />.</translation>
@@ -8083,6 +8090,7 @@
 <translation id="8740672167979365981">Потребно е ажурирање на ChromeOS Flex</translation>
 <translation id="8741944563400125534">Водич за поставување „Пристап со прекинувачи“</translation>
 <translation id="8742998548129056176">Ова се општи податоци за уредов и неговата употреба (како нивото на батеријата, активноста на системот и апликациите и грешките). Податоците ќе се користат за подобрување на Android, а дел од збирните податоци ќе им помогнат и на апликациите и партнерите на Google, како што се програмерите на Android, да ги подобрат своите апликации и производи.</translation>
+<translation id="8744641000906923997">Ромаџи</translation>
 <translation id="8746654918629346731">Веќе побаравте „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="874689135111202667">{0,plural, =1{Дали да се прикачи една датотека на сајтов?}one{Дали да се прикачи # датотека на сајтов?}other{Дали да се прикачат # датотеки на сајтов?}}</translation>
 <translation id="8749805710397399240">Не може да се емитува екранот. Проверете ја дозволата за „Снимање на екранот“ во „Поставките за системот“.</translation>
@@ -8108,6 +8116,7 @@
 <translation id="8761945298804995673">Корисников веќе постои</translation>
 <translation id="8762886931014513155">На вашиот <ph name="DEVICE_TYPE" /> му е потребно ажурирање</translation>
 <translation id="8763927697961133303">USB-уред</translation>
+<translation id="8766796754185931010">Котоери</translation>
 <translation id="8767621466733104912">Автоматски ажурирај го Chrome за сите корисници</translation>
 <translation id="8769901904650373714">Настана проблем со поставувањето на Steam</translation>
 <translation id="8770406935328356739">Основен именик на екстензии</translation>

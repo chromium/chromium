@@ -3160,6 +3160,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3966072572894326936">Vybrať iný priečinok...</translation>
 <translation id="3967822245660637423">Sťahovanie dokončené</translation>
 <translation id="3967841595862839006">Výber jazyka a klávesnice</translation>
+<translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">Identifikátor</translation>
 <translation id="397105322502079400">Prebieha výpočet...</translation>
 <translation id="3971764089670057203">Odltačky prsta v tomto bezpečnostnom kľúči</translation>
@@ -4236,6 +4237,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5038818366306248416">V minulosti ste nepovolili žiadne rozšírenie na <ph name="ORIGIN" /></translation>
 <translation id="5039696241953571917">Zobrazenie a správa hesiel uložených v účte Google</translation>
 <translation id="5039804452771397117">Povoliť</translation>
+<translation id="5040262127954254034">Ochrana súkromia</translation>
 <translation id="5040823038948176460">Ďalšie nastavenia obsahu</translation>
 <translation id="5041509233170835229">Aplikácie pre Chrome</translation>
 <translation id="5043440033854483429">Názov môže obsahovať písmená, čísla a spojovníky (-). Musí mať 1 až 15 znakov (vrátane týchto hodnôt).</translation>
@@ -4403,6 +4405,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5207949376430453814">Zvýrazniť textový kurzor</translation>
 <translation id="520840839826327499">Služba <ph name="SERVICE_NAME" /> chce overiť, či používate vhodné zariadenie so systémom Chrome OS.</translation>
 <translation id="5208548918290612795">Ukladanie overovacieho tokenu <ph name="WEB_DRIVE" /></translation>
+<translation id="5208988882104884956">Polovičná šírka</translation>
 <translation id="520902706163766447">Povoľte vyskakujúcu bublinu v hornej časti používateľského rozhrania Chromu, aby ste mohli vyhľadávať v rámci aktuálne otvorených kariet.</translation>
 <translation id="5209320130288484488">Nenašli sa žiadne zariadenia</translation>
 <translation id="5209513429611499188">Zariadenia HID s typmi použitia zo stránky použití <ph name="USAGE_PAGE" /></translation>
@@ -4620,6 +4623,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="542750953150239272">Pokračovaním vyjadrujete súhlas s tým, že toto zariadenie môže tiež automaticky sťahovať a inštalovať aktualizácie a aplikácie od Googlu, vášho operátora a výrobcu zariadenia a v prípade potreby pri tom môže používať mobilné dáta. Niektoré tieto aplikácie môžu ponúkať nákupy v aplikácii.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (K dispozícií je aktualizácia)</translation>
 <translation id="542948651837270806">Musíte nainštalovať aktualizáciu firmvéru Trusted Platform Module. Pozrite si <ph name="TPM_FIRMWARE_UPDATE_LINK" />.</translation>
+<translation id="5429818411180678468">Celá šírka</translation>
 <translation id="5430931332414098647">Dynamický tethering</translation>
 <translation id="5431318178759467895">Farebne</translation>
 <translation id="543338862236136125">Upraviť heslo</translation>
@@ -5175,6 +5179,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5957987129450536192">Klepnite na ikonu počúvania vybraného textu pri profilovej fotke a vyberte obsah, ktorý si chcete vypočuť.</translation>
 <translation id="5959471481388474538">Sieť je nedostupná</translation>
 <translation id="595959584676692139">Ak chcete toto rozšírenie použiť, znova načítajte stránku</translation>
+<translation id="5963413905009737549">Sekcia</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (maximum: <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Otvoriť všetky v novom okne}=1{Otvoriť v novom okne}few{Otvoriť všetky ({COUNT}) v novom okne}many{Otvoriť všetky ({COUNT}) v novom okne}other{Otvoriť všetky ({COUNT}) v novom okne}}</translation>
 <translation id="5965661248935608907">Tiež určuje, ktorá stránka sa zobrazí po kliknutí na tlačidlo Domovská stránka alebo pri vyhľadávaní pomocou všeobecného poľa.</translation>
@@ -7118,6 +7123,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> bol odoslaný do zariadenia <ph name="DEVICE_NAME" />}few{<ph name="ATTACHMENTS" /> boli odoslané do zariadenia <ph name="DEVICE_NAME" />}many{<ph name="ATTACHMENTS" /> sent to <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> bolo odoslaných do zariadenia <ph name="DEVICE_NAME" />}}</translation>
 <translation id="7839051173341654115">Zobraziť/zálohovať médiá</translation>
 <translation id="7839192898639727867">ID kľúča subjektu certifikátu</translation>
+<translation id="7842062217214609161">Žiadna skratka</translation>
 <translation id="7842692330619197998">Ak chcete vytvoriť nový účet, prejdite na g.co/ChromeEnterpriseAccount.</translation>
 <translation id="78427265591841839">Hľadať na celej stránke pomocou funkcie <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="784273751836026224">Odinštalovať systém Linux</translation>
@@ -7159,6 +7165,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7874257161694977650">Pozadia Chromu</translation>
 <translation id="7876027585589532670">Odkaz sa nedá upraviť</translation>
 <translation id="7877451762676714207">Neznáma chyba servera. Skúste to znova alebo sa obráťte na správcu servera.</translation>
+<translation id="7879478708475862060">Nasledovať režim vstupu</translation>
 <translation id="7879631849810108578">Nastavená skratka: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
 <translation id="7880685873361171388">Keď je táto možnosť zapnutá a stav aktívny, Chrome pomocou vašej sedemdňovej histórie prehliadania určí, v ktorej skupine alebo kohorte sa nachádzate. Inzerenti môžu pre skupinu vybrať reklamy. Vaša história prehliadania je v zariadení uchovaná v súkromí. Skúšobné obdobie je aktívne iba v <ph name="BEGIN_LINK" />niektorých oblastiach<ph name="END_LINK" />.</translation>
 <translation id="7880823633812189969">Pri reštartovaní sa odstránia miestne údaje</translation>
@@ -8054,6 +8061,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8740672167979365981">Vyžaduje sa aktualizácia systému Chrome OS Flex</translation>
 <translation id="8741944563400125534">Sprievodca nastavením ovládania prepínačmi</translation>
 <translation id="8742998548129056176">Toto sú všeobecné informácie o zariadení a jeho používaní (napríklad stav batérie, aktivita v systéme a aplikáciách a chyby). Údaje sa použijú na zlepšenie Androidu a niektoré súhrnné informácie pomôžu tiež aplikáciám Google a partnerom (napríklad vývojárom pre Android) zlepšiť svoje aplikácie a produkty.</translation>
+<translation id="8744641000906923997">Romaji</translation>
 <translation id="8746654918629346731">O rozšírenie <ph name="EXTENSION_NAME" /> ste už požiadali</translation>
 <translation id="874689135111202667">{0,plural, =1{Nahrať na tento web jeden súbor?}few{Nahrať na tento web # súbory?}many{Nahrať na tento web # súboru?}other{Nahrať na tento web # súborov?}}</translation>
 <translation id="8749805710397399240">Obrazovka sa nedá prenášať. Skontrolujte povolenie nahrávať obrazovku v predvoľbách systému.</translation>
@@ -8079,6 +8087,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8761945298804995673">Tento používateľ už existuje</translation>
 <translation id="8762886931014513155">Zariadenie <ph name="DEVICE_TYPE" /> potrebuje aktualizáciu</translation>
 <translation id="8763927697961133303">Zariadenie USB</translation>
+<translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767621466733104912">Automaticky aktualizovať Chrome pre všetkých používateľov</translation>
 <translation id="8769901904650373714">Pri nastavovaní aplikácie Steam sa vyskytol problém</translation>
 <translation id="8770406935328356739">Koreňový adresár rozšírenia</translation>

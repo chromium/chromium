@@ -1068,6 +1068,7 @@ Als je het beleid niet instelt, zijn er geen extensies vrijgesteld van de resetp
 <translation id="2043770014371753404">Bedrijfsprinters staan uit</translation>
 <translation id="2057317273526988987">Toegang verlenen aan een lijst met URL's</translation>
 <translation id="2058055310819710697">Ontwikkelaarsmodus voor geïsoleerde apps aanzetten</translation>
+<translation id="205807990145127714">Telemetriegegevens om te rapporteren over signaalsterkte.</translation>
 <translation id="2061123930713023976">Opnamen van netwerkpakketten voor fouten opsporen toestaan</translation>
 <translation id="2061810934846663491">De vereiste domeinnamen configureren voor hosts voor externe toegang</translation>
 <translation id="2062632109797189011">De beëindigde API window.webkitStorageInfo opnieuw aanzetten</translation>
@@ -3638,6 +3639,7 @@ Volgens planning wordt dit beleid verwijderd vanaf <ph name="PRODUCT_NAME" /> vo
       Als je het beleid niet toepast, of niet instelt, is <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> optioneel en wordt het startproces van <ph name="PRODUCT_NAME" /> niet geblokkeerd als het mislukt.
 
       Dit beleid wordt gebruikt door cloud-beleidsinschrijving voor machinebereik op desktop. Zie https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744 voor meer informatie.</translation>
+<translation id="488996881569316769">Netwerktelemetrie</translation>
 <translation id="4890453377345554695">Als je het beleid instelt, kun je een lijst met URL-patronen maken om op te geven welke sites gebruikers mogen vragen om hun schrijftoegang te geven tot bestanden en directory's in het bestandssysteem van het besturingssysteem.
 
       Als je het beleid niet instelt, is <ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> (indien ingesteld) van toepassing op alle sites. Zo niet, dan gelden de persoonlijke instellingen van gebruikers.
@@ -3968,6 +3970,7 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen s
 
       Als het beleid niet is ingesteld of ongeldig is, is het gedrag hetzelfde als voor 'Wachten tot het doelkanaal de kanaaldowngrade heeft verwerkt'.</translation>
 <translation id="5229339291699779956">Hiermee zet je PCIe-tunneling voor Thunderbolt/USB4-randapparaten aan, waardoor alle mogelijkheden van de randapparaten werken</translation>
+<translation id="5230095739094490896">IPP-kenmerktemplate 'client-name' voor afdrukken</translation>
 <translation id="5233239004553860036">Als je dit beleid instelt op <ph name="POLICY_VALUE_ALL" /> of niet instelt, zijn alle typen gebruik van beheerde accounts toegestaan. Dit kan ertoe leiden dat een beheerd account een secundair account is, waardoor het account alleen beleidsregels krijgt als het is ingelogd als primair account in een browserprofiel.
       Beleidsregels die zijn ingesteld voor het account, worden in de volgende scenario's niet afgedwongen:
 - Het account is een secundair account op OS-niveau (accountinstellingen)
@@ -5139,6 +5142,7 @@ Als je dit beleid instelt, worden afhankelijk van de waarde verschillende van de
 <translation id="6506486086262398387">Als je het beleid toepast, gebruikt de functie Network File Shares voor <ph name="PRODUCT_OS_NAME" /> waar nodig NTLM om SMB-fileshares te verifiëren. Als je het beleid niet toepast, staat NTLM-verificatie voor SMB-fileshares uit.
 
       Als je dit beleid niet instelt, staat dit gedrag standaard uit voor beheerde gebruikers en aan voor andere gebruikers.</translation>
+<translation id="6513453889192806240">HTTPS-latentie</translation>
 <translation id="6515357889978918016"><ph name="PLUGIN_VM_NAME" />-afbeelding</translation>
 <translation id="6518102411616460786">Wachten tot het doelkanaal de kanaaldowngrade heeft verwerkt</translation>
 <translation id="6520802717075138474">Zoekmachines importeren uit standaardbrowser bij eerste uitvoering</translation>
@@ -5407,6 +5411,12 @@ Als je dit beleid instelt op True, wordt WebSQL in contexten van derden opnieuw 
 
       Als het beleid is ingesteld op False of niet is ingesteld, staat <ph name="PLUGIN_VM_NAME" /> niet aan voor de gebruiker.
       Als het beleid is ingesteld op True, staat <ph name="PLUGIN_VM_NAME" /> aan voor de gebruiker, op voorwaarde dat de andere instellingen dit ook toestaan. <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> en <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> moeten zijn ingesteld op True en <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> of <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> moet zijn ingesteld voordat <ph name="PLUGIN_VM_NAME" /> kan worden ingesteld.</translation>
+<translation id="6750902920405577210">Lijst met telemetriegegevens die moeten worden gerapporteerd bij wijzigingen in signaalsterkte.
+
+      Alle opgegeven telemetriegegevens worden alleen gerapporteerd als ze niet zijn uitgezet door het hierop van toepassing zijnde beleid.
+      Het van toepassing zijnde beleid voor https_latency en network_telemetry is ReportDeviceNetworkStatus.
+
+      Als je het beleid niet instelt, worden er geen aanvullende telemetriegegevens gerapporteerd bij wijzigingen in signaalsterkte.</translation>
 <translation id="6752711782954612641">Als <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> is aangezet en je <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> instelt, worden de parameters gespecificeerd als een URL wordt gezocht via POST. Deze bestaan uit door komma's gescheiden naam/waarde-paren. Als een waarde een templateparameter is (zoals <ph name="SEARCH_TERM_MARKER" />), wordt deze vervangen door de echte zoektermen.
 
       Als je <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POST_PARAMS_POLICY_NAME" /> niet instelt, worden zoekopdrachten gestuurd met de GET-methode.</translation>
@@ -7178,6 +7188,18 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 
       Als het beleid is ingesteld op 'False', worden er geen tabbladen vastgezet.</translation>
 <translation id="8619748440665904084">Import van formuliergegevens voor automatisch invullen bij eerste uitvoering uitzetten</translation>
+<translation id="8620103780247748230">Met dit beleid bepaal je de waarde van het kenmerk <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> IPP (Internet Printing Protocol) in afdruktaken.
+
+      Als je dit beleid instelt op een tekenreeks, wordt aan elke afdruktaak een extra <ph name="CLIENT_INFO_IPP_ATTRIBUTE" />-item toegevoegd. Het <ph name="CLIENT_NAME_IPP_ATTRIBUTE" />-element van het toegevoegde <ph name="CLIENT_INFO_IPP_ATTRIBUTE" />-item wordt ingesteld op de waarde van het beleid na vervanging van variabelen.
+
+      Ondersteunde variabelen zijn <ph name="DIRECTORY_ID_PLACEHOLDER" />, <ph name="SERIAL_NUMBER_PLACEHOLDER" />, <ph name="ASSET_ID_PLACEHOLDER" />, <ph name="ANNOTATED_LOCATION_PLACEHOLDER" />, <ph name="USER_EMAIL_PLACEHOLDER" />, <ph name="USER_EMAIL_NAME_PLACEHOLDER" />, <ph name="USER_EMAIL_DOMAIN" />. Niet-ondersteunde tijdelijke variabelen worden niet uitgebreid.
+
+      De resulterende waarde na vervanging van variabelen wordt als geldig beschouwd als deze alleen bestaat uit <ph name="ASCII" /> afdrukbare tekens en de lengte niet langer is dan 255.
+
+      Vanwege privacyredenen is dit beleid alleen van toepassing als er wordt gecommuniceerd met een printer via de protocollen <ph name="IPPS_PROTOCOL" />, <ph name="HTTPS_PROTOCOL" />, <ph name="USB_PROTOCOL" /> of <ph name="IPP_USB_PROTOCOL" />. Houd er ook rekening mee dat dit beleid alleen geldt voor printers die <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> ondersteunen.
+
+      Als je het beleid niet instelt of dit instelt op een lege of ongeldige waarde, worden er geen extra <ph name="CLIENT_INFO_PLACEHOLDER" /> toegevoegd aan verzoeken voor afdruktaken.
+      </translation>
 <translation id="8623672932476443039">Als je het beleid toepast, hebben gebruikers toegang tot de ontwikkelaarsmodus voor geïsoleerde apps.
       Als je het beleid niet toepast, hebben gebruikers geen toegang tot deze mogelijkheden.
       Als je dit beleid niet instelt, geldt de standaardwaarde 'niet toegestaan' voor beheerde zakelijke gebruikers op Chrome OS en 'toegestaan' voor alle andere gebruikers en besturingssystemen.</translation>

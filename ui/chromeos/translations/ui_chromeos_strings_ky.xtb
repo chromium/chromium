@@ -312,6 +312,7 @@
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> аракети жокко чыгарылат.</translation>
 <translation id="3690128548376345212">Тармак (<ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />), <ph name="NETWORK_NAME" />, жандырылган эмес, <ph name="CONNECTION_STATUS" />, сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, чоо-жайы</translation>
 <translation id="3691184985318546178">Сингалча</translation>
+<translation id="3722341589402358578">Ката кетти. Айрым нерселер өчүрүлбөй калган болушу мүмкүн.</translation>
 <translation id="3726463242007121105">Бул түзмөктүн файл тутуму колдоого алынбагандыктан, ал ачылбайт.</translation>
 <translation id="3727148787322499904">Бул жөндөө өзгөтүлсө, бөлүшүлгөн тармактардын баарына таасирин тийгизет</translation>
 <translation id="3737576078404241332">Капталдагы тактадан өчүрүү</translation>

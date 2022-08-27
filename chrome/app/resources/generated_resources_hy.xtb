@@ -3159,6 +3159,7 @@
 <translation id="3966072572894326936">Ընտրել մեկ այլ պանակ...</translation>
 <translation id="3967822245660637423">Ներբեռնումն ավարտվեց</translation>
 <translation id="3967841595862839006">Ընտրեք լեզուն և ստեղնաշարը</translation>
+<translation id="3968739731834770921">Կանա</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Հաշվարկում…</translation>
 <translation id="3971764089670057203">Այս անվտանգության բանալու մատնահետքերը</translation>
@@ -4235,6 +4236,7 @@
 <translation id="5038818366306248416">Դուք նախկինում արգելել եք բոլոր ընդլայնումները <ph name="ORIGIN" /> էջում</translation>
 <translation id="5039696241953571917">Դիտեք և կառավարեք պահված գաղտնաբառերը ձեր Google հաշվում</translation>
 <translation id="5039804452771397117">Թույլ տալ</translation>
+<translation id="5040262127954254034">Գաղտնիություն</translation>
 <translation id="5040823038948176460">Բովանդակության լրացուցիչ կարգավորումներ</translation>
 <translation id="5041509233170835229">Chrome հավելված</translation>
 <translation id="5043440033854483429">Անվանման մեջ կարող են օգտագործվել տառեր, թվեր և գծիկներ (-), և այն պետք է պարունակի 1-ից 15 նիշ (ներառյալ)։</translation>
@@ -4402,6 +4404,7 @@
 <translation id="5207949376430453814">Ընդգծել տեքստի նշորդը</translation>
 <translation id="520840839826327499">«<ph name="SERVICE_NAME" />» ծառայությունը ցանկանում է տեղեկություններ ստանալ ChromeOS սարքի մասին։</translation>
 <translation id="5208548918290612795"><ph name="WEB_DRIVE" /> ծառայության նույնականացման թոքենի պահպանում</translation>
+<translation id="5208988882104884956">Կիսալայնք</translation>
 <translation id="520902706163766447">Միացրեք ելնող ամպիկը Chrome-ի վերին միջերեսում՝ բացված հավելվածների վրայից որոնելու համար։</translation>
 <translation id="5209320130288484488">Սարքեր չեն գտնվել</translation>
 <translation id="5209513429611499188">HID սարքեր՝ <ph name="USAGE_PAGE" /> էջում օգտագործմամբ</translation>
@@ -4621,6 +4624,7 @@
 <translation id="542750953150239272">Շարունակելով՝ դուք համաձայնում եք, որ այս սարքը նույնպես կարող է ավտոմատ ներբեռնել և տեղադրել Google-ի, ձեր օպերատորի և սարքի արտադրողի կողմից տրամադրվող թարմացումները և հավելվածները (նաև բջջային ինտերնետի միջոցով)։ Որոշ հավելվածներում կարող է առաջարկվել վճարովի բովանդակություն։</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (մատչելի է թարմացում)</translation>
 <translation id="542948651837270806">Անհրաժեշտ է տեղադրել Trusted Platform Module-ի ներկառուցված ծրագրի թարմացում։ Անցեք <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
+<translation id="5429818411180678468">Լիալայնք</translation>
 <translation id="5430931332414098647">Անկթարթային մուտքի կետ</translation>
 <translation id="5431318178759467895">Գունավոր</translation>
 <translation id="543338862236136125">Փոխել գաղտնաբառը</translation>
@@ -5173,6 +5177,7 @@
 <translation id="5957987129450536192">Հպեք «Ընտրեք և լսեք» պատկերակին և նշեք տեքստը՝ այն հնչեցնելու համար։</translation>
 <translation id="5959471481388474538">Ցանցը մատչելի չէ</translation>
 <translation id="595959584676692139">Կրկին բեռնեք էջը՝ այս ընդլայնումն օգտագործելու համար</translation>
+<translation id="5963413905009737549">Հատված</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> առավելագույն)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Բացել բոլորը &amp;նոր պատուհանում}=1{Բացել &amp;նոր պատուհանում}one{Բացել բոլորը ({COUNT}) &amp;նոր պատուհանում}other{Բացել բոլորը ({COUNT}) &amp;նոր պատուհանում}}</translation>
 <translation id="5965661248935608907">Այն նաև վերահսկում է, թե որ էջը պետք է ցուցադրվի` Սկիզբ կոճակը սեղմելիս կամ Omnibox-ից որոնում կատարելիս:</translation>
@@ -7113,6 +7118,7 @@
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> ուղարկվեց <ph name="DEVICE_NAME" /> սարքին}one{<ph name="ATTACHMENTS" /> ուղարկվեց <ph name="DEVICE_NAME" /> սարքին}other{<ph name="ATTACHMENTS" /> ուղարկվեց <ph name="DEVICE_NAME" /> սարքին}}</translation>
 <translation id="7839051173341654115">Դիտել/Պահուստավորել մեդիա ֆայլերը</translation>
 <translation id="7839192898639727867">Վկայագրի առարկայի բանալու ID</translation>
+<translation id="7842062217214609161">Դյուրանցում չկա</translation>
 <translation id="7842692330619197998">Հաշիվ ստեղծելու համար անցեք g.co/ChromeEnterpriseAccount էջ։</translation>
 <translation id="78427265591841839">Որոնել էջի ցանկացած հատվածում <ph name="VISUAL_SEARCH_PROVIDER" /> ծառայության միջոցով</translation>
 <translation id="784273751836026224">Ապատեղադրել Լինուքսը</translation>
@@ -7154,6 +7160,7 @@
 <translation id="7874257161694977650">Chrome-ի ֆոնային պատկերներ</translation>
 <translation id="7876027585589532670">Չհաջողվեց փոփոխել դյուրանցումը</translation>
 <translation id="7877451762676714207">Սերվերի անհայտ սխալ: Կրկին փորձեք կամ դիմեք սերվերի ադմինիստրատորին:</translation>
+<translation id="7879478708475862060">Օգտագործել ներածման ընտրված ռեժիմը</translation>
 <translation id="7879631849810108578">Դյուրանցումը կարգավորված է՝ <ph name="IDS_SHORT_SET_COMMAND" /></translation>
 <translation id="7880685873361171388">Երբ գործառույթը միացված և ակտիվացված է, Chrome-ն օգտագործում է այցելությունների 7 օրվա պատմությունը՝ որոշելու խումբը կամ «կոհորտը», որում դուք ներառված եք։ Գովազդատուները կարող են գովազդներ ընտրել խմբի համար։ Ձեր այցելությունների պատմությունը գաղտի է պահվում սարքում։ Այս փորձնական գործառույթը հասանելի է միայն <ph name="BEGIN_LINK" />որոշ տարածաշրջաններում<ph name="END_LINK" />։</translation>
 <translation id="7880823633812189969">Սարքը վերագործարկելիս լոկալ տվյալները կհեռացվեն</translation>
@@ -8048,6 +8055,7 @@
 <translation id="8740672167979365981">Թարմացրեք ChromeOS Flex-ը</translation>
 <translation id="8741944563400125534">Switch Access-ի կարգավորման ուղեցույց</translation>
 <translation id="8742998548129056176">Սրանք ընդհանուր տեղեկություններ են ձեր սարքի և դրա օգտագործման (օրինակ՝ մարտկոցի լիցքի, համակարգի ու հավելվածների օգտագործման և սխալների) մասին։ Տեղեկություններն օգտագործվելու են Android-ի ծառայությունների աշխատանքը բարելավելու համար։ Տվյալների մի մասը օգտակար կլինի մեր գործընկերների, օրինակ, Android ծրագրավորողների համար և կօգնի բարելավել նաև նրանց հավելվածներն ու արտադրանքները։</translation>
+<translation id="8744641000906923997">Ռոմաձի</translation>
 <translation id="8746654918629346731">Դուք «<ph name="EXTENSION_NAME" />» ընդլայնումը տեղադրելու հայտ արդեն ուղարկել եք</translation>
 <translation id="874689135111202667">{0,plural, =1{Վերբեռնե՞լ մեկ ֆայլ այս կայք}one{Վերբեռնե՞լ # ֆայլ այս կայք}other{Վերբեռնե՞լ # ֆայլ այս կայք}}</translation>
 <translation id="8749805710397399240">Չհաջողվեց հեռարձակել էկրանը։ Ստուգեք Էկրանի տեսագրման թույլտվությունը համակարգի կարգավորումներում։</translation>
@@ -8073,6 +8081,7 @@
 <translation id="8761945298804995673">Այդպիսի օգտատեր արդեն գոյություն ունի</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> սարքն անհրաժեշտ է թարմացնել</translation>
 <translation id="8763927697961133303">USB սարք</translation>
+<translation id="8766796754185931010">Կոտոերի</translation>
 <translation id="8767621466733104912">Ինքնաթարմացնել Chrome-ը բոլոր օգտատերերի համար</translation>
 <translation id="8769901904650373714">Steam-ը տեղադրելիս սխալ առաջացավ</translation>
 <translation id="8770406935328356739">Ընդլայնման արմատային գրացուցակ</translation>

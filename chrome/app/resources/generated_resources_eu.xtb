@@ -3158,6 +3158,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3966072572894326936">Aukeratu beste karpeta bat…</translation>
 <translation id="3967822245660637423">Deskargatzen amaitu da</translation>
 <translation id="3967841595862839006">Aukeratu hizkuntza eta teklatua</translation>
+<translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">IDa</translation>
 <translation id="397105322502079400">Kalkulatzen…</translation>
 <translation id="3971764089670057203">Segurtasun-fitxa honetako hatz-markak</translation>
@@ -4234,6 +4235,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5038818366306248416"><ph name="ORIGIN" /> orrian ezein luzapen gaitzea aukeratu zenuen aurrez</translation>
 <translation id="5039696241953571917">Ikusi eta kudeatu Google-ko kontuan gordetako pasahitzak</translation>
 <translation id="5039804452771397117">Baimendu</translation>
+<translation id="5040262127954254034">Pribatutasuna</translation>
 <translation id="5040823038948176460">Edukiaren ezarpen gehigarriak</translation>
 <translation id="5041509233170835229">Chrome aplikazioa</translation>
 <translation id="5043440033854483429">Izenak hizkiak, zenbakiak eta marratxoak eduki ditzake, eta 1 eta 15 karaktere artean (biak barne) izan behar ditu</translation>
@@ -4401,6 +4403,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5207949376430453814">Nabarmendu testu-kurtsorea</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> zerbitzuak Chrome OS-ko gailu egoki bat erabiltzen ari zarela egiaztatu nahi du.</translation>
 <translation id="5208548918290612795">Gorde <ph name="WEB_DRIVE" /> zerbitzuaren autentifikazio-tokena</translation>
+<translation id="5208988882104884956">Zabalera erdiko karaktere-bihurketa</translation>
 <translation id="520902706163766447">Gaitu Chrome-ren goiko erabiltzaile-interfazean burbuila gainerakor bat agertzeko aukera, irekita dauden fitxen gainean bilaketak egin ahal izateko.</translation>
 <translation id="5209320130288484488">Ez da aurkitu gailurik</translation>
 <translation id="5209513429611499188"><ph name="USAGE_PAGE" /> erabilera-orriko erabilerak dituzten HID bidezko gailuak</translation>
@@ -4618,6 +4621,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="542750953150239272">Halaber, aurrera eginez gero, onartu egingo duzu litekeena dela Google-ren, operadorearen edo fabrikatzailearen eguneratzeak eta aplikazioak automatikoki deskargatu eta instalatzea, beharbada datu-konexioa erabilita. Baliteke aplikazio horietako batzuetan erosketak egin ahal izatea.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (eguneratze bat erabilgarri dago)</translation>
 <translation id="542948651837270806">Trusted Platform Module firmwarearen eguneratze bat instalatu behar da. Ikusi <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
+<translation id="5429818411180678468">Zabalera osoko karaktere-bihurketa</translation>
 <translation id="5430931332414098647">Konexioa bizkor partekatzeko eginbidea</translation>
 <translation id="5431318178759467895">Kolorez</translation>
 <translation id="543338862236136125">Editatu pasahitza</translation>
@@ -5170,6 +5174,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5957987129450536192">Sakatu profileko irudiaren ondoko "Hautatu ozen irakurtzeko" ikonoa, eta hautatu entzun nahi duzuna.</translation>
 <translation id="5959471481388474538">Sarea ez dago erabilgarri</translation>
 <translation id="595959584676692139">Kargatu berriro orria luzapen hori erabiltzeko</translation>
+<translation id="5963413905009737549">Atala</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (maximoa: <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Ireki guztiak &amp;beste leiho batean}=1{Ireki &amp;beste leiho batean}other{Ireki guztiak ({COUNT}) &amp;beste leiho batean}}</translation>
 <translation id="5965661248935608907">Omnibox-eko Hasiera botoia edo bilatzeko aukera sakatzen duzunean gertatzen dena ere kontrolatzen du.</translation>
@@ -7109,6 +7114,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> bidali da <ph name="DEVICE_NAME" /> gailura}other{<ph name="ATTACHMENTS" /> bidali dira <ph name="DEVICE_NAME" /> gailura}}</translation>
 <translation id="7839051173341654115">Ikusi baliabideak eta egin baliabideen babeskopiak</translation>
 <translation id="7839192898639727867">Ziurtagiriaren gaiaren gakoaren IDa</translation>
+<translation id="7842062217214609161">Ez dago lasterbiderik</translation>
 <translation id="7842692330619197998">Kontu bat sortu behar baduzu, joan g.co/ChromeEnterpriseAccount helbidera.</translation>
 <translation id="78427265591841839">Bilatu orriaren zati bat <ph name="VISUAL_SEARCH_PROVIDER" /> bidez</translation>
 <translation id="784273751836026224">Desinstalatu Linux</translation>
@@ -7150,6 +7156,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7874257161694977650">Chrome atzeko-planoak</translation>
 <translation id="7876027585589532670">Ezin da editatu lasterbidea</translation>
 <translation id="7877451762676714207">Zerbitzariko errore ezezaguna. Saiatu berriro edo jarri harremanetan zerbitzariaren administratzailearekin.</translation>
+<translation id="7879478708475862060">Jarraitu idazketa moduari</translation>
 <translation id="7879631849810108578">Ezarri da lasterbidea: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
 <translation id="7880685873361171388">Teknologia abian denean eta aktibo dagoenean, azken zazpi egunetako arakatze-historia erabiltzen du Chrome-k zer talde demografikotan zauden zehazteko. Iragarleek talde horretarako iragarkiak hauta ditzakete. Arakatze-historia pribatu mantentzen da gailuan. <ph name="BEGIN_LINK" />Lurralde batzuetan<ph name="END_LINK" /> soilik dago aktibo probaldia.</translation>
 <translation id="7880823633812189969">Gailuan dituzun datuak ezabatu egingo dira gailua berrabiarazten duzunean</translation>
@@ -8044,6 +8051,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8740672167979365981">ChromeOS Flex eguneratu egin behar da</translation>
 <translation id="8741944563400125534">Erabilerraztasun-osagarria konfiguratzeko gida</translation>
 <translation id="8742998548129056176">Gailuari eta hura erabiltzeko moduari buruzko informazio orokorra da hau (adibidez, bateria-maila, sistemako eta aplikazioetako jarduerak, eta erroreak). Android hobetzeko erabiliko dira datuok. Gainera, multzokatutako datu batzuk oso baliagarriak dira Google-ren aplikazioak hobetzeko eta bazkideei (adibidez, Android-en garatzaileei) euren aplikazio eta produktuak hobetzen laguntzeko.</translation>
+<translation id="8744641000906923997">Romaji</translation>
 <translation id="8746654918629346731">Eskatu duzu "<ph name="EXTENSION_NAME" />" dagoeneko</translation>
 <translation id="874689135111202667">{0,plural, =1{Fitxategi bat kargatu nahi duzu webgune honetara?}other{# fitxategi kargatu nahi dituzu webgune honetara?}}</translation>
 <translation id="8749805710397399240">Ezin da igorri pantaila. Egiaztatu pantaila grabatzeko baimena sistemaren hobespenetan.</translation>
@@ -8069,6 +8077,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8761945298804995673">Erabiltzaile hau badago jada</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> gailua eguneratu egin behar da</translation>
 <translation id="8763927697961133303">USB bidezko gailua</translation>
+<translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767621466733104912">Eguneratu Chrome automatikoki erabiltzaile guztiei</translation>
 <translation id="8769901904650373714">Arazo bat izan da Steam konfiguratzean</translation>
 <translation id="8770406935328356739">Luzapenaren erroko direktorioa</translation>

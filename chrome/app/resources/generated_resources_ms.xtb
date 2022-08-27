@@ -3173,6 +3173,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3966072572894326936">Pilih folder lain...</translation>
 <translation id="3967822245660637423">Muat turun selesai</translation>
 <translation id="3967841595862839006">Pilih bahasa &amp; papan kekunci anda</translation>
+<translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Mengira...</translation>
 <translation id="3971764089670057203">Cap jari pada kunci keselamatan ini</translation>
@@ -4250,6 +4251,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5038818366306248416">Sebelum ini anda memilih untuk tidak membenarkan sebarang sambungan pada <ph name="ORIGIN" /></translation>
 <translation id="5039696241953571917">Lihat dan urus kata laluan yang disimpan dalam Akaun Google anda</translation>
 <translation id="5039804452771397117">Benarkan</translation>
+<translation id="5040262127954254034">Privasi</translation>
 <translation id="5040823038948176460">Tetapan kandungan tambahan</translation>
 <translation id="5041509233170835229">Apl Chrome</translation>
 <translation id="5043440033854483429">Nama boleh menggunakan huruf, nombor dan tanda sempang (-), serta mestilah antara 1 hingga 15 aksara (terangkum).</translation>
@@ -4417,6 +4419,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5207949376430453814">Serlahkan karet teks</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> mahu menyemak sama ada anda menggunakan peranti Chrome OS yang layak.</translation>
 <translation id="5208548918290612795">Menyimpan Token Pengesahan <ph name="WEB_DRIVE" /></translation>
+<translation id="5208988882104884956">Kelebaran separa</translation>
 <translation id="520902706163766447">Dayakan gelembung timbul dalam UI Chrome Atas untuk membuat carian dalam tab yang sedang dibuka.</translation>
 <translation id="5209320130288484488">Tiada peranti ditemui</translation>
 <translation id="5209513429611499188">Peranti HID dengan penggunaan dari halaman penggunaan <ph name="USAGE_PAGE" /></translation>
@@ -4634,6 +4637,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="542750953150239272">Dengan meneruskan pemasangan, anda bersetuju bahawa peranti ini juga boleh memuat turun dan memasang kemas kini serta apl secara automatik daripada Google, pembawa dan pengeluar peranti anda, mungkin menggunakan data selular. Sesetengah apl ini mungkin menawarkan pembelian dalam apl.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (Kemas kini tersedia)</translation>
 <translation id="542948651837270806">Kemas kini untuk perisian tegar Modul Platform Dipercayai perlu dipasang. Lihat <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
+<translation id="5429818411180678468">Kelebaran penuh</translation>
 <translation id="5430931332414098647">Penambatan Segera</translation>
 <translation id="5431318178759467895">Warna</translation>
 <translation id="543338862236136125">Edit kata laluan</translation>
@@ -5189,6 +5193,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5957987129450536192">Ketik ikon Pilih untuk Cakap berdekatan imej profil anda, kemudian pilih apa yang hendak anda dengar.</translation>
 <translation id="5959471481388474538">Rangkaian tak tersedia</translation>
 <translation id="595959584676692139">Muat semula halaman untuk menggunakan sambungan ini</translation>
+<translation id="5963413905009737549">Bahagian</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> puncak)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Buka semua dalam tetingkap &amp;baharu}=1{Buka dalam tetingkap &amp;baharu}other{Buka semua ({COUNT}) dalam tetingkap &amp;baharu}}</translation>
 <translation id="5965661248935608907">Sambungan turut mengawal halaman yang ditunjukkan apabila anda mengklik butang Laman Utama atau membuat carian dari Kotak Omni.</translation>
@@ -7128,6 +7133,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> dihantar ke <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> dihantar ke <ph name="DEVICE_NAME" />}}</translation>
 <translation id="7839051173341654115">Lihat/Sandarkan media</translation>
 <translation id="7839192898639727867">ID Kunci Subjek Sijil</translation>
+<translation id="7842062217214609161">Tiada pintasan</translation>
 <translation id="7842692330619197998">Lawati g.co/ChromeEnterpriseAccount jika anda perlu membuat akaun baharu.</translation>
 <translation id="78427265591841839">Cari mana-mana bahagian daripada halaman ini dengan <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="784273751836026224">Nyahpasang Linux</translation>
@@ -7169,6 +7175,7 @@ Tekan suis atau kekunci yang telah ditetapkan untuk mengalih keluar penetapan.</
 <translation id="7874257161694977650">Latar Chrome</translation>
 <translation id="7876027585589532670">Tidak dapat mengedit pintasan</translation>
 <translation id="7877451762676714207">Ralat pelayan tidak diketahui. Sila cuba lagi atau hubungi pentadbir pelayan.</translation>
+<translation id="7879478708475862060">Ikut mod input</translation>
 <translation id="7879631849810108578">Pintasan ditetapkan: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
 <translation id="7880685873361171388">Apabila dihidupkan dan status teknologi ini aktif, Chrome akan menggunakan sejarah penyemakan imbas anda sepanjang 7 hari untuk menentukan kumpulan atau “kohort” anda. Pengiklan boleh memilih iklan untuk kumpulan itu. Sejarah penyemakan imbas anda dipastikan tertutup pada peranti anda. Percubaan ini hanya aktif di
     <ph name="BEGIN_LINK" />sesetengah rantau<ph name="END_LINK" />.</translation>
@@ -8066,6 +8073,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8740672167979365981">Kemaskinian Chrome OS Flex diperlukan</translation>
 <translation id="8741944563400125534">Panduan persediaan Akses Suis</translation>
 <translation id="8742998548129056176">Ini merupakan maklumat umum tentang peranti anda dan cara anda menggunakan peranti itu (seperti aras bateri, aktiviti sistem dan apl serta ralat). Data ini akan digunakan untuk menambah baik Android dan sesetengah maklumat teragregat juga dapat membantu apl Google dan rakan kongsi, seperti pembangun Android, memperbaik apl dan produk mereka.</translation>
+<translation id="8744641000906923997">Romaji</translation>
 <translation id="8746654918629346731">Anda sudah meminta "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="874689135111202667">{0,plural, =1{Muat naik satu fail ke tapak ini?}other{Muat naik # fail ke tapak ini?}}</translation>
 <translation id="8749805710397399240">Tidak dapat menghantar skrin anda. Semak kebenaran Perakam Skrin dalam Pilihan Sistem.</translation>
@@ -8091,6 +8099,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8761945298804995673">Pengguna ini sudah wujud</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> anda memerlukan kemas kini</translation>
 <translation id="8763927697961133303">Peranti USB</translation>
+<translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767621466733104912">Kemas kini Chrome untuk semua pengguna secara automatik</translation>
 <translation id="8769901904650373714">Masalah telah berlaku pada persediaan Stim</translation>
 <translation id="8770406935328356739">Direktori akar sambungan</translation>

@@ -3155,6 +3155,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3966072572894326936">Seleccionar otra carpeta...</translation>
 <translation id="3967822245660637423">Descarga completa</translation>
 <translation id="3967841595862839006">Seleccionar tu idioma y teclado</translation>
+<translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="3971764089670057203">Huellas digitales en esta llave de seguridad</translation>
@@ -4231,6 +4232,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5038818366306248416">Anteriormente elegiste no permitir ninguna extensión para <ph name="ORIGIN" /></translation>
 <translation id="5039696241953571917">Mira y administra las contraseñas guardadas en tu Cuenta de Google</translation>
 <translation id="5039804452771397117">Permitir</translation>
+<translation id="5040262127954254034">Privacidad</translation>
 <translation id="5040823038948176460">Configuración adicional de contenido</translation>
 <translation id="5041509233170835229">App para Chrome</translation>
 <translation id="5043440033854483429">El nombre puede incluir letras, números y guiones (-), y debe tener entre 1 y 15 caracteres (inclusive).</translation>
@@ -4398,6 +4400,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5207949376430453814">Destacar el símbolo de intercalación de texto</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> quiere comprobar si estás usando un dispositivo apto para Chrome OS.</translation>
 <translation id="5208548918290612795">Almacenamiento del token de autenticación de <ph name="WEB_DRIVE" /></translation>
+<translation id="5208988882104884956">Ancho medio</translation>
 <translation id="520902706163766447">Habilita un cuadro emergente en la parte superior de la IU de Chrome para realizar búsquedas en las pestañas abiertas actualmente.</translation>
 <translation id="5209320130288484488">No se encontraron dispositivos.</translation>
 <translation id="5209513429611499188">Dispositivos HID con usos de la página de uso <ph name="USAGE_PAGE" /></translation>
@@ -4615,6 +4618,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="542750953150239272">Si continúas, aceptas que este dispositivo también descargue e instale automáticamente actualizaciones y apps de Google, tu operador y el fabricante del dispositivo usando datos móviles. Es posible que algunas de estas apps ofrezcan compras directas desde la aplicación.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (actualización disponible)</translation>
 <translation id="542948651837270806">Debe instalarse una actualización del firmware del Módulo de plataforma de confianza. Consulta <ph name="TPM_FIRMWARE_UPDATE_LINK" />.</translation>
+<translation id="5429818411180678468">Ancho completo</translation>
 <translation id="5430931332414098647">Conexión instantánea mediante dispositivo móvil</translation>
 <translation id="5431318178759467895">Color</translation>
 <translation id="543338862236136125">Editar la contraseña</translation>
@@ -5170,6 +5174,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5957987129450536192">Presiona el ícono de Seleccionar para pronunciar que se encuentra cerca de tu imagen de perfil y, luego, elige lo que quieras escuchar.</translation>
 <translation id="5959471481388474538">Red no disponible</translation>
 <translation id="595959584676692139">Vuelve a cargar la página para usar esta extensión</translation>
+<translation id="5963413905009737549">Sección</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> máximo)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Abrir todo en una ventana &amp;nueva}=1{Abrir en una ventana &amp;nueva}other{Abrir todo ({COUNT}) en una ventana &amp;nueva}}</translation>
 <translation id="5965661248935608907">También controla qué página se muestra al hacer clic en el botón de página principal o al realizar búsquedas desde el cuadro multifunción.</translation>
@@ -7109,6 +7114,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7838971600045234625">{COUNT,plural, =1{Se envió <ph name="ATTACHMENTS" /> al dispositivo <ph name="DEVICE_NAME" />.}other{Se enviaron <ph name="ATTACHMENTS" /> al dispositivo <ph name="DEVICE_NAME" />.}}</translation>
 <translation id="7839051173341654115">Ver/realizar una copia de seguridad de contenido multimedia</translation>
 <translation id="7839192898639727867">ID de clave del sujeto del certificado</translation>
+<translation id="7842062217214609161">No hay acceso directo.</translation>
 <translation id="7842692330619197998">Visita g.co/ChromeEnterpriseAccount si necesitas crear una cuenta nueva.</translation>
 <translation id="78427265591841839">Buscar en cualquier parte de la página con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="784273751836026224">Desinstalar Linux</translation>
@@ -7150,6 +7156,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7874257161694977650">Fondos de Chrome</translation>
 <translation id="7876027585589532670">No se puede editar el acceso directo.</translation>
 <translation id="7877451762676714207">Error de servidor desconocido. Inténtalo nuevamente o comunícate con el administrador del servidor.</translation>
+<translation id="7879478708475862060">Seguir el modo de entrada de texto</translation>
 <translation id="7879631849810108578">Conjunto de combinaciones de teclas: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
 <translation id="7880685873361171388">Si habilitas esta tecnología y el estado es "activada", Chrome usará tu historial de navegación durante 7 días para determinar el grupo, o "cohorte", al que perteneces. Los anunciantes pueden seleccionar anuncios para el grupo. El historial de navegación se mantendrá privado en tu dispositivo. Esta prueba está activada solo en
     <ph name="BEGIN_LINK" />algunas regiones<ph name="END_LINK" />.</translation>
@@ -8046,6 +8053,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8740672167979365981">Es necesario actualizar Chrome OS Flex</translation>
 <translation id="8741944563400125534">Guía de configuración de Accesibilidad con interruptores</translation>
 <translation id="8742998548129056176">Aquí se muestra información general sobre tu dispositivo y cómo lo usas (como el nivel de batería, la actividad de las apps y el sistema, y errores). Los datos se usarán para mejorar Android, y la información agregada también permitirá que las apps y los socios de Google, como los desarrolladores de Android, mejoren sus apps y productos.</translation>
+<translation id="8744641000906923997">Romaji</translation>
 <translation id="8746654918629346731">Ya solicitaste "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="874689135111202667">{0,plural, =1{¿Deseas cargar un archivo a este sitio?}other{¿Deseas cargar # archivos a este sitio?}}</translation>
 <translation id="8749805710397399240">No se puede transmitir tu pantalla. Revisa el permiso de grabación de pantallas en las preferencias del sistema.</translation>
@@ -8071,6 +8079,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8761945298804995673">Ya existe este usuario</translation>
 <translation id="8762886931014513155">Tu <ph name="DEVICE_TYPE" /> necesita una actualización</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
+<translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767621466733104912">Actualizar Chrome automáticamente para todos los usuarios</translation>
 <translation id="8769901904650373714">Ocurrió un problema con la configuración de Steam</translation>
 <translation id="8770406935328356739">Directorio de raíz de la extensión</translation>

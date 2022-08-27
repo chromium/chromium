@@ -80,6 +80,7 @@
 <translation id="2653659639078652383">सबमिट करा</translation>
 <translation id="2677748264148917807">सोडा</translation>
 <translation id="2687403674020088961">सर्व कुकी ब्लॉक करा (शिफारस केली जात नाही)</translation>
+<translation id="2692299144678073135">संबंधित साइटना तुम्हाला सर्व साइटवर लक्षात ठेवण्याची अनुमती द्या</translation>
 <translation id="2704606927547763573">कॉपी केले</translation>
 <translation id="2713106313042589954">कॅमेरा बंद करा</translation>
 <translation id="2717722538473713889">ईमेल ॲड्रेस</translation>
@@ -140,6 +141,7 @@
 <translation id="4002066346123236978">शीर्षक</translation>
 <translation id="4008040567710660924">विशिष्ट साइटसाठी कुकीना अनुमती द्या.</translation>
 <translation id="4046123991198612571">पुढील ट्रॅक</translation>
+<translation id="4048876521107516222">तुम्हाला साइन इन ठेवण्यासारख्या गोष्टींमध्ये मदत करण्यासाठी संबंधित साइट कुकी वापरतात</translation>
 <translation id="4149994727733219643">वेब पेजसाठी सोपा केलेला व्ह्यू</translation>
 <translation id="4165986682804962316">साइट सेटिंग्ज</translation>
 <translation id="4169549551965910670">USB डिव्हाइसशी कनेक्ट केले आहे</translation>
@@ -222,6 +224,7 @@
 <translation id="5887687176710214216">काल शेवटची भेट दिली</translation>
 <translation id="5916664084637901428">सुरू</translation>
 <translation id="5922853908706496913">तुमची स्क्रीन शेअर करत आहे</translation>
+<translation id="5922967540311291836">तृतीय पक्ष कुकी ब्लॉक करा:</translation>
 <translation id="5939518447894949180">रीसेट करा</translation>
 <translation id="5975083100439434680">झूम कमी करा</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
@@ -312,6 +315,7 @@
 <translation id="7846076177841592234">निवड रद्द करा</translation>
 <translation id="7846621471902887024">तुम्हाला सर्व साइटमधून साइन आउट केले जाईल.</translation>
 <translation id="7882806643839505685">विशिष्ट साइटसाठी ध्वनीची परवानगी द्या.</translation>
+<translation id="789180354981963912">गुप्त मोडमधील तृतीय पक्ष कुकी ब्लॉक करा:</translation>
 <translation id="7940722705963108451">मला आठवण करून द्या</translation>
 <translation id="7986741934819883144">संपर्क निवडा</translation>
 <translation id="7999064672810608036">तुम्ही कुकीजसह, सर्व स्थानिक डेटा साफ करू इच्छिता आणि या वेबसाइटसाठी सर्व परवानग्या रीसेट करू इच्छिता?</translation>

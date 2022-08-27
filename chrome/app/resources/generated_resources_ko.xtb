@@ -3174,6 +3174,7 @@
 <translation id="3966072572894326936">다른 폴더 선택...</translation>
 <translation id="3967822245660637423">다운로드 완료</translation>
 <translation id="3967841595862839006">언어 및 키보드 선택</translation>
+<translation id="3968739731834770921">가나</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">계산 중...</translation>
 <translation id="3971764089670057203">보안 키의 지문</translation>
@@ -4249,6 +4250,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5038818366306248416">이전에 <ph name="ORIGIN" />의 확장 프로그램을 일체 허용하지 않았습니다.</translation>
 <translation id="5039696241953571917">Google 계정에 저장된 비밀번호 보기 및 관리</translation>
 <translation id="5039804452771397117">허용</translation>
+<translation id="5040262127954254034">개인정보 보호</translation>
 <translation id="5040823038948176460">추가 콘텐츠 설정</translation>
 <translation id="5041509233170835229">Chrome 앱</translation>
 <translation id="5043440033854483429">이름에는 문자, 숫자, 하이픈(-)을 사용할 수 있으며 1~15자여야 합니다.</translation>
@@ -4416,6 +4418,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5207949376430453814">텍스트 캐럿 강조표시</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" />에서 내가 사용 중인 ChromeOS 기기가 적합한지 확인하려고 합니다.</translation>
 <translation id="5208548918290612795"><ph name="WEB_DRIVE" /> 인증 토큰을 저장하는 중</translation>
+<translation id="5208988882104884956">반각</translation>
 <translation id="520902706163766447">Chrome 상단의 UI에서 말풍선 팝업을 사용 설정하여 현재 열려 있는 탭을 검색합니다.</translation>
 <translation id="5209320130288484488">기기를 찾을 수 없음</translation>
 <translation id="5209513429611499188">사용량 페이지 <ph name="USAGE_PAGE" />의 사용량이 있는 HID 기기</translation>
@@ -4633,6 +4636,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="542750953150239272">계속하면 이 기기에서 Google, 이동통신사, 기기 제조업체로부터 업데이트와 앱을 자동으로 다운로드하고 설치할 수 있으며 모바일 데이터를 사용할 수도 있음에 동의하는 것으로 간주됩니다. 일부 앱에서는 인앱 구매가 제공될 수도 있습니다.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" />(업데이트 사용 가능)</translation>
 <translation id="542948651837270806">신뢰할 수 있는 플랫폼 모듈 펌웨어 업데이트를 설치해야 합니다. <ph name="TPM_FIRMWARE_UPDATE_LINK" /> 보기</translation>
+<translation id="5429818411180678468">전각</translation>
 <translation id="5430931332414098647">인스턴트 테더링</translation>
 <translation id="5431318178759467895">컬러</translation>
 <translation id="543338862236136125">비밀번호 수정</translation>
@@ -5188,6 +5192,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5957987129450536192">프로필 이미지 근처의 텍스트 읽어주기 아이콘을 탭한 다음 음성으로 들으려는 부분을 선택합니다.</translation>
 <translation id="5959471481388474538">네트워크에 연결할 수 없음</translation>
 <translation id="595959584676692139">페이지를 새로고침하여 이 확장 프로그램 사용</translation>
+<translation id="5963413905009737549">섹션</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" />(최대 <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{새 창에서 모두 열기(N)}=1{새 창에서 열기(N)}other{새 창에서 {COUNT}개 모두 열기(N)}}</translation>
 <translation id="5965661248935608907">또한 홈 버튼을 클릭하거나 검색주소창에서 검색할 때 표시되는 페이지를 설정합니다.</translation>
@@ -7127,6 +7132,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="DEVICE_NAME" />에 <ph name="ATTACHMENTS" /> 전송됨}other{<ph name="DEVICE_NAME" />에 <ph name="ATTACHMENTS" /> 전송됨}}</translation>
 <translation id="7839051173341654115">미디어 보기/백업</translation>
 <translation id="7839192898639727867">인증서 대상 키 ID</translation>
+<translation id="7842062217214609161">단축키 없음</translation>
 <translation id="7842692330619197998">새 계정을 만들려면 g.co/ChromeEnterpriseAccount를 방문하세요.</translation>
 <translation id="78427265591841839"><ph name="VISUAL_SEARCH_PROVIDER" />로 페이지 일부 임의 검색</translation>
 <translation id="784273751836026224">Linux 제거</translation>
@@ -7169,6 +7175,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7874257161694977650">Chrome 배경</translation>
 <translation id="7876027585589532670">바로가기를 수정할 수 없음</translation>
 <translation id="7877451762676714207">알 수 없는 서버 오류입니다. 다시 시도하거나 서버 관리자에게 문의하시기 바랍니다.</translation>
+<translation id="7879478708475862060">입력 모드 따라하기</translation>
 <translation id="7879631849810108578">단축키 조합: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
 <translation id="7880685873361171388">사용 설정되어 있고 무료 체험이 제공되는 경우 Chrome에서 지난 7일간의 방문 기록을 토대로 내가 속한 그룹 또는 '동질 집단'을 결정합니다. 광고주는 그룹에 보여 줄 광고를 선택할 수 있습니다. 방문 기록은 기기에 비공개로 유지됩니다. 이 무료 체험은
     <ph name="BEGIN_LINK" />일부 지역<ph name="END_LINK" />에서만 진행됩니다.</translation>
@@ -8065,6 +8072,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8740672167979365981">ChromeOS Flex 업데이트 필요</translation>
 <translation id="8741944563400125534">스위치 제어 설정 가이드</translation>
 <translation id="8742998548129056176">기기 및 기기 사용 방식에 관한 일반적인 정보(배터리 수준, 시스템 및 앱 활동, 오류 등)입니다. 데이터는 Android를 개선하는 데 사용되며 일부 수집 정보는 Google 앱과 파트너(Android 개발자 등)가 앱 및 제품을 개선하는 데도 도움이 됩니다.</translation>
+<translation id="8744641000906923997">로마자(Romaji)</translation>
 <translation id="8746654918629346731">이미 '<ph name="EXTENSION_NAME" />'을(를) 요청하셨습니다</translation>
 <translation id="874689135111202667">{0,plural, =1{파일 1개를 이 사이트에 업로드하시겠습니까?}other{파일 #개를 이 사이트에 업로드하시겠습니까?}}</translation>
 <translation id="8749805710397399240">화면을 전송할 수 없습니다. 시스템 환경설정에서 화면 녹화 권한을 확인하세요.</translation>
@@ -8090,6 +8098,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8761945298804995673">이미 존재하는 사용자입니다.</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> 업데이트 필요</translation>
 <translation id="8763927697961133303">USB 기기</translation>
+<translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767621466733104912">모든 사용자의 Chrome 자동 업데이트</translation>
 <translation id="8769901904650373714">Steam 설정에 문제 발생</translation>
 <translation id="8770406935328356739">확장 프로그램 루트 디렉터리</translation>

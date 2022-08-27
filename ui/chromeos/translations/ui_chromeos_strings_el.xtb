@@ -319,6 +319,7 @@
 <translation id="3689865792480713551">Ακύρωση <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Απενεργοποιημένο, <ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Λεπτομέρειες</translation>
 <translation id="3691184985318546178">Σινχάλα</translation>
+<translation id="3722341589402358578">Παρουσιάστηκε σφάλμα. Ενδέχεται να μην έγινε μεταφορά στον κάδο ορισμένων στοιχείων.</translation>
 <translation id="3726463242007121105">Δεν είναι δυνατό το άνοιγμα αυτής της συσκευής επειδή δεν υποστηρίζεται το σύστημα αρχείων της.</translation>
 <translation id="3727148787322499904">Η αλλαγή αυτής της ρύθμισης θα επηρεάσει όλα τα κοινόχρηστα δίκτυα</translation>
 <translation id="3737576078404241332">Κατάργηση από την πλευρική γραμμή</translation>

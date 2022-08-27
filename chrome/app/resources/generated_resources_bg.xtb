@@ -3170,6 +3170,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3966072572894326936">Изберете друга папка...</translation>
 <translation id="3967822245660637423">Изтеглянето завърши</translation>
 <translation id="3967841595862839006">Избиране на език и клавиатура</translation>
+<translation id="3968739731834770921">кана</translation>
 <translation id="3970114302595058915">Идентификатор</translation>
 <translation id="397105322502079400">Изчислява се...</translation>
 <translation id="3971764089670057203">Отпечатъци, регистрирани на този ключ за сигурност</translation>
@@ -4247,6 +4248,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5038818366306248416">По-рано избрахте да не разрешавате разширенията на <ph name="ORIGIN" /></translation>
 <translation id="5039696241953571917">Преглеждайте и управлявайте запазените пароли в профила си в Google</translation>
 <translation id="5039804452771397117">Разрешаване</translation>
+<translation id="5040262127954254034">Поверителност</translation>
 <translation id="5040823038948176460">Допълнителни настройки за съдържанието</translation>
 <translation id="5041509233170835229">Приложението Chrome</translation>
 <translation id="5043440033854483429">Името може да съдържа букви, цифри и тирета (-) и трябва да бъде с дължина между 1 и 15 знака.</translation>
@@ -4414,6 +4416,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5207949376430453814">Открояване на точката на вмъкване в текста</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> иска да провери дали използвате отговарящо на условията устройство с Chrome OS.</translation>
 <translation id="5208548918290612795">Съхраняване на означение за удостоверяване за <ph name="WEB_DRIVE" /></translation>
+<translation id="5208988882104884956">С половин ширина</translation>
 <translation id="520902706163766447">Активиране на изскачащо балонче за търсене на отворени в момента раздели в горната част на потребителския интерфейс на Chrome.</translation>
 <translation id="5209320130288484488">Няма намерени устройства</translation>
 <translation id="5209513429611499188">HID устройство с предназначение от страница <ph name="USAGE_PAGE" /> с предназначения</translation>
@@ -4631,6 +4634,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="542750953150239272">С продължаването си приемате, че това устройство може също автоматично да изтегля и инсталира актуализации и приложения от Google, оператора ви и производителя си, при което е възможно да използва мобилни данни. В някои от тези приложения може да се предлагат покупки.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (Налице е актуализация)</translation>
 <translation id="542948651837270806">Трябва да бъде инсталирана актуализация на фърмуера на модула за надеждна платформа. Вижте информацията на адрес <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
+<translation id="5429818411180678468">С пълна ширина</translation>
 <translation id="5430931332414098647">Незабавен тетъринг</translation>
 <translation id="5431318178759467895">Цветно</translation>
 <translation id="543338862236136125">Редактиране на паролата</translation>
@@ -5187,6 +5191,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5957987129450536192">Докоснете иконата на Прочитане на глас до изображението на потребителския си профил и изберете текста, който искате да чуете.</translation>
 <translation id="5959471481388474538">Мрежата не е налице</translation>
 <translation id="595959584676692139">Презаредете страницата, за да използвате това разширение</translation>
+<translation id="5963413905009737549">Секция</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (най-много <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Отваряне на всички в &amp;нов прозорец}=1{Отваряне в &amp;нов прозорец}other{Отваряне на всички ({COUNT}) в &amp;нов прозорец}}</translation>
 <translation id="5965661248935608907">То също контролира коя страница се показва при кликване върху бутона „Начална страница“ или при търсене от полето за всичко.</translation>
@@ -7126,6 +7131,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7838971600045234625">{COUNT,plural, =1{Успешно изпращане на <ph name="ATTACHMENTS" /> до <ph name="DEVICE_NAME" />}other{Успешно изпращане на <ph name="ATTACHMENTS" /> до <ph name="DEVICE_NAME" />}}</translation>
 <translation id="7839051173341654115">Преглед/създаване на резервно копие на носителя</translation>
 <translation id="7839192898639727867">Идентификатор (ИД) на ключ за субекта на сертификата</translation>
+<translation id="7842062217214609161">Без пряк път</translation>
 <translation id="7842692330619197998">Посетете g.co/ChromeEnterpriseAccount, ако трябва да създадете нов профил.</translation>
 <translation id="78427265591841839">Търсене в част от страницата чрез <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="784273751836026224">Деинсталиране на Linux</translation>
@@ -7167,6 +7173,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7874257161694977650">Фонове за Chrome</translation>
 <translation id="7876027585589532670">Прекият път не бе редактиран</translation>
 <translation id="7877451762676714207">Неизвестна грешка в сървъра. Моля, опитайте отново или се свържете с администратора му.</translation>
+<translation id="7879478708475862060">Следване на режима за въвеждане</translation>
 <translation id="7879631849810108578">Прекият път е зададен: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
 <translation id="7880685873361171388">Когато настройката е включена и състоянието е активно, Chrome използва историята ви на сърфиране в продължение на 7 дни, за да определи групата, или кохортата, от която сте част. Рекламодателите могат да избират реклами за групата. Историята ви на сърфиране остава частна на устройството ви. Този експеримент е активен само в
 <ph name="BEGIN_LINK" />някои региони<ph name="END_LINK" />.</translation>
@@ -8063,6 +8070,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8740672167979365981">Изисква се актуализация на ChromeOS Flex</translation>
 <translation id="8741944563400125534">Ръководство за настройване на „Достъп с превключване“</translation>
 <translation id="8742998548129056176">Това е обща информация за устройството ви и употребата му (например за нивото на батерията, активността на системата и приложенията, както и за грешките). Тези данни ще се използват за подобряването на Android, а част от обобщената информация ще помогне и на приложенията и партньорите ни, например програмисти за Android, да усъвършенстват приложенията и продуктите си.</translation>
+<translation id="8744641000906923997">Ромаджи</translation>
 <translation id="8746654918629346731">Вече заявихте <ph name="EXTENSION_NAME" /></translation>
 <translation id="874689135111202667">{0,plural, =1{Искате ли да качите един файл на този сайт?}other{Искате ли да качите # файла на този сайт?}}</translation>
 <translation id="8749805710397399240">Предаването на екрана не е възможно. Проверете разрешението за записване на екрана в системните предпочитания.</translation>
@@ -8088,6 +8096,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8761945298804995673">Този потребител вече съществува</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> се нуждае от актуализация</translation>
 <translation id="8763927697961133303">USB устройство</translation>
+<translation id="8766796754185931010">Котоери</translation>
 <translation id="8767621466733104912">Автоматично актуализиране на Chrome за всички потребители</translation>
 <translation id="8769901904650373714">Възникна проблем с настройването на Steam</translation>
 <translation id="8770406935328356739">Основна директория на разширението</translation>

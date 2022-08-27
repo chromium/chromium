@@ -3176,6 +3176,7 @@
 <translation id="3966072572894326936">Вибрати іншу папку...</translation>
 <translation id="3967822245660637423">Завантажено</translation>
 <translation id="3967841595862839006">Виберіть мову та клавіатуру</translation>
+<translation id="3968739731834770921">Кана</translation>
 <translation id="3970114302595058915">ІДЕНТИФІКАТОР</translation>
 <translation id="397105322502079400">Обчислення...</translation>
 <translation id="3971764089670057203">Цифрові відбитки на цьому ключі безпеки</translation>
@@ -4253,6 +4254,7 @@
 <translation id="5038818366306248416">Раніше ви вирішили заборонити всі розширення на сторінці <ph name="ORIGIN" /></translation>
 <translation id="5039696241953571917">Переглядайте збережені паролі й керуйте ними в обліковому записі Google</translation>
 <translation id="5039804452771397117">Дозволити</translation>
+<translation id="5040262127954254034">Конфіденційність</translation>
 <translation id="5040823038948176460">Додаткові налаштування контенту</translation>
 <translation id="5041509233170835229">Додаток Chrome</translation>
 <translation id="5043440033854483429">Назва може складатися з літер, цифр і дефісів (-), але не більше ніж 15 (мінімум – 1 символ).</translation>
@@ -4420,6 +4422,7 @@
 <translation id="5207949376430453814">Підсвічувати місце введення тексту</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> хоче перевірити, чи користуєтеся ви придатним пристроєм з ОС Chrome.</translation>
 <translation id="5208548918290612795">Зберігання маркера автентифікації сервісу <ph name="WEB_DRIVE" /></translation>
+<translation id="5208988882104884956">Половинна ширина</translation>
 <translation id="520902706163766447">У головному інтерфейсі Chrome з'являється спливаюче вікно для пошуку серед відкритих вкладок.</translation>
 <translation id="5209320130288484488">Пристрої не знайдено.</translation>
 <translation id="5209513429611499188">Пристрої HID із використанням на сторінці <ph name="USAGE_PAGE" /></translation>
@@ -4637,6 +4640,7 @@
 <translation id="542750953150239272">Продовжуючи, ви дозволяєте цьому пристрою автоматично завантажувати та встановлювати оновлення й додатки від Google, вашого оператора та виробника пристрою, зокрема через мобільний трафік. Деякі додатки можуть пропонувати внутрішні покупки.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (оновлення доступне)</translation>
 <translation id="542948651837270806">Потрібно встановити оновлення мікропрограми Trusted Platform Module. <ph name="TPM_FIRMWARE_UPDATE_LINK" />: переглянути</translation>
+<translation id="5429818411180678468">Повна ширина</translation>
 <translation id="5430931332414098647">Миттєва точка доступу</translation>
 <translation id="5431318178759467895">Колір</translation>
 <translation id="543338862236136125">Змінити пароль</translation>
@@ -5189,6 +5193,7 @@
 <translation id="5957987129450536192">Торкніться значка "Читання з екрана" біля зображення профілю, а тоді виберіть фрагмент, який хочете почути.</translation>
 <translation id="5959471481388474538">Мережа не доступна</translation>
 <translation id="595959584676692139">Оновіть сторінку, щоб використовувати це розширення</translation>
+<translation id="5963413905009737549">Розділ</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (максимум <ph name="NUM_KILOBYTES_LIVE" />)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Відкрити всі в &amp;новому вікні}=1{Відкрити в &amp;новому вікні}one{Відкрити всі ({COUNT}) у &amp;новому вікні}few{Відкрити всі ({COUNT}) у &amp;новому вікні}many{Відкрити всі ({COUNT}) у &amp;новому вікні}other{Відкрити всі ({COUNT}) у &amp;новому вікні}}</translation>
 <translation id="5965661248935608907">Також указує сторінку, яка відкривається під час натискання кнопки "Домашня сторінка" чи пошуку в універсальному вікні пошуку.</translation>
@@ -7134,6 +7139,7 @@
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> надіслано на пристрій <ph name="DEVICE_NAME" />}one{<ph name="ATTACHMENTS" /> надіслано на пристрій <ph name="DEVICE_NAME" />}few{<ph name="ATTACHMENTS" /> надіслано на пристрій <ph name="DEVICE_NAME" />}many{<ph name="ATTACHMENTS" /> надіслано на пристрій <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> надіслано на пристрій <ph name="DEVICE_NAME" />}}</translation>
 <translation id="7839051173341654115">Переглянути медіа-вміст або створити його резервну копію</translation>
 <translation id="7839192898639727867">Ідентифікатор ключа суб'єкта сертифіката</translation>
+<translation id="7842062217214609161">Немає комбінації клавіш</translation>
 <translation id="7842692330619197998">Щоб створити новий обліковий запис, перейдіть на сторінку g.co/ChromeEnterpriseAccount.</translation>
 <translation id="78427265591841839">Шукати частину сторінки за допомогою сервісу <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="784273751836026224">Видалити Linux</translation>
@@ -7175,6 +7181,7 @@
 <translation id="7874257161694977650">Фони Chrome</translation>
 <translation id="7876027585589532670">Не вдалося змінити ярлик</translation>
 <translation id="7877451762676714207">Невідома помилка сервера. Повторіть спробу чи зв’яжіться з адміністратором сервера.</translation>
+<translation id="7879478708475862060">Як у режимі введення</translation>
 <translation id="7879631849810108578">Комбінацію клавіш установлено: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
 <translation id="7880685873361171388">Якщо цю технологію ввімкнено й активовано, Chrome використовує історію веб-перегляду за останні 7 днів, щоб визначити, до якої групи чи "когорти" ви належите. Рекламодавці можуть вибирати оголошення для тієї чи іншої групи. Історія веб-перегляду конфіденційно зберігається на вашому пристрої. Ця пробна версія доступна лише в
     <ph name="BEGIN_LINK" />певних регіонах<ph name="END_LINK" />.</translation>
@@ -8071,6 +8078,7 @@
 <translation id="8740672167979365981">Оновіть ОС Chrome Flex</translation>
 <translation id="8741944563400125534">Налаштування кнопкового доступу</translation>
 <translation id="8742998548129056176">Це загальна інформація про пристрій і його використання (як-от дані про рівень заряду акумулятора, систему, історію додатків і помилки). Ці відомості використовуватимуться, щоб покращити Android, а деякі зведені дані корисні для додатків і партнерів Google, як-от розробників Android.</translation>
+<translation id="8744641000906923997">Ромадзі</translation>
 <translation id="8746654918629346731">Ви вже надіслали запит на розширення "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="874689135111202667">{0,plural, =1{Завантажити один файл на цей сайт?}one{Завантажити # файл на цей сайт?}few{Завантажити # файли на цей сайт?}many{Завантажити # файлів на цей сайт?}other{Завантажити # файлу на цей сайт?}}</translation>
 <translation id="8749805710397399240">Не вдається транслювати ваш екран. Перевірте дозволи на запис екрана в параметрах системи.</translation>
@@ -8096,6 +8104,7 @@
 <translation id="8761945298804995673">Такий користувач уже існує</translation>
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> потребує оновлення</translation>
 <translation id="8763927697961133303">Пристрій USB</translation>
+<translation id="8766796754185931010">Котоері</translation>
 <translation id="8767621466733104912">Автоматично оновлювати Chrome для всіх користувачів</translation>
 <translation id="8769901904650373714">Не вдалося налаштувати додаток Steam</translation>
 <translation id="8770406935328356739">Кореневий каталог розширення</translation>

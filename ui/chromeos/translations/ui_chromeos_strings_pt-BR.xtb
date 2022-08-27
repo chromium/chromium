@@ -312,6 +312,7 @@
 <translation id="3689865792480713551">Cancelar <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, inativa, <ph name="CONNECTION_STATUS" />, intensidade do sinal <ph name="SIGNAL_STRENGTH" />%, detalhes</translation>
 <translation id="3691184985318546178">Cingalês</translation>
+<translation id="3722341589402358578">Ocorreu um erro. Alguns itens podem não ter sido descartados.</translation>
 <translation id="3726463242007121105">Não foi possível abrir este dispositivo porque seu sistema de arquivos não é suportado.</translation>
 <translation id="3727148787322499904">A alteração dessa configuração afetará todas as redes compartilhadas</translation>
 <translation id="3737576078404241332">Remover da barra lateral</translation>

@@ -3157,6 +3157,7 @@
 <translation id="3966072572894326936">選擇其他資料夾...</translation>
 <translation id="3967822245660637423">下載完成</translation>
 <translation id="3967841595862839006">選擇語言和鍵盤</translation>
+<translation id="3968739731834770921">假名</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">計算中…</translation>
 <translation id="3971764089670057203">這個安全金鑰上的指紋</translation>
@@ -4233,6 +4234,7 @@
 <translation id="5038818366306248416">你先前已選擇不允許 <ph name="ORIGIN" /> 上的任何擴充功能</translation>
 <translation id="5039696241953571917">查看及管理 Google 帳戶中儲存的密碼</translation>
 <translation id="5039804452771397117">允許</translation>
+<translation id="5040262127954254034">隱私權</translation>
 <translation id="5040823038948176460">其他內容設定</translation>
 <translation id="5041509233170835229">Chrome 應用程式</translation>
 <translation id="5043440033854483429">名稱可以包含字母、數字和連字號 (-)，且必須介於 1 到 15 個 (含上下限) 字元之間。</translation>
@@ -4400,6 +4402,7 @@
 <translation id="5207949376430453814">醒目顯示文字插入點</translation>
 <translation id="520840839826327499">「<ph name="SERVICE_NAME" />」想要確認你是否使用合格的 Chrome OS 裝置。</translation>
 <translation id="5208548918290612795">儲存「<ph name="WEB_DRIVE" />」驗證權杖</translation>
+<translation id="5208988882104884956">半形</translation>
 <translation id="520902706163766447">在 Chrome 頂層 UI 中啟用彈出式方塊，以便在目前開啟的分頁中執行搜尋。</translation>
 <translation id="5209320130288484488">找不到裝置</translation>
 <translation id="5209513429611499188">已有使用量 (數據來自 <ph name="USAGE_PAGE" /> 使用量頁面) 的 HID 裝置</translation>
@@ -4617,6 +4620,7 @@
 <translation id="542750953150239272">如果選擇繼續，即表示您允許這部裝置自動下載及安裝來自 Google、您的電信業者和裝置製造商的更新內容和應用程式，上述程序可能會使用行動數據。這類應用程式中，有些可能會提供應用程式內購。</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (有可用的更新)</translation>
 <translation id="542948651837270806">必須安裝可信任平台模組韌體的更新項目。詳情請參閱 <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
+<translation id="5429818411180678468">全形</translation>
 <translation id="5430931332414098647">即時網路共用</translation>
 <translation id="5431318178759467895">彩色</translation>
 <translation id="543338862236136125">修改密碼</translation>
@@ -5169,6 +5173,7 @@
 <translation id="5957987129450536192">輕觸靠近設定檔圖片的「隨選朗讀」圖示，然後選取你要聆聽的內容。</translation>
 <translation id="5959471481388474538">網路無法使用</translation>
 <translation id="595959584676692139">重新載入網頁即可使用這個擴充功能</translation>
+<translation id="5963413905009737549">區段</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> 個 (最多 <ph name="NUM_KILOBYTES_LIVE" /> 個)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{在新視窗中開啟所有網址(&amp;N)}=1{在新視窗中開啟(&amp;N)}other{在新視窗中開啟所有 ({COUNT} 個) 網址(&amp;N)}}</translation>
 <translation id="5965661248935608907">這個擴充功能也會控管你點選 [首頁] 按鈕或使用網址列搜尋時所顯示的網頁。</translation>
@@ -7108,6 +7113,7 @@
 <translation id="7838971600045234625">{COUNT,plural, =1{已傳送 <ph name="ATTACHMENTS" />給 <ph name="DEVICE_NAME" />}other{已傳送 <ph name="ATTACHMENTS" />給 <ph name="DEVICE_NAME" />}}</translation>
 <translation id="7839051173341654115">查看/備份媒體</translation>
 <translation id="7839192898639727867">憑證主體金鑰識別碼</translation>
+<translation id="7842062217214609161">沒有快速鍵</translation>
 <translation id="7842692330619197998">如需建立新帳戶，請前往 g.co/ChromeEnterpriseAccount。</translation>
 <translation id="78427265591841839">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜尋頁面上的任何內容</translation>
 <translation id="784273751836026224">解除安裝 Linux</translation>
@@ -7149,6 +7155,7 @@
 <translation id="7874257161694977650">Chrome 背景</translation>
 <translation id="7876027585589532670">無法編輯捷徑</translation>
 <translation id="7877451762676714207">不明的伺服器錯誤。請再試一次，或與伺服器管理員聯絡。</translation>
+<translation id="7879478708475862060">按照輸入模式</translation>
 <translation id="7879631849810108578">已設定快速鍵：<ph name="IDS_SHORT_SET_COMMAND" /></translation>
 <translation id="7880685873361171388">如果這項功能已啟用且處於有效狀態，Chrome 就能使用你過去 7 天的瀏覽記錄來判斷你所在的群組 (或稱「同類群組」)。廣告客戶可以選擇要向該群組顯示的廣告，而你的瀏覽記錄會保留在裝置上，僅供本人存取。這項功能目前僅開放
     <ph name="BEGIN_LINK" />部分地區<ph name="END_LINK" />試用。</translation>
@@ -8045,6 +8052,7 @@
 <translation id="8740672167979365981">需要更新 ChromeOS Flex</translation>
 <translation id="8741944563400125534">切換控制功能設定指南</translation>
 <translation id="8742998548129056176">這個頁面會顯示裝置和裝置使用情況的一般資訊 (例如電池電量、系統和應用程式活動，以及錯誤資訊)。這些資料將用於改善 Android，且部分匯總資訊還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 提高應用程式和產品的服務品質。</translation>
+<translation id="8744641000906923997">羅馬字</translation>
 <translation id="8746654918629346731">你已要求安裝「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="874689135111202667">{0,plural, =1{要將 1 個檔案上傳到這個網站嗎？}other{要將 # 個檔案上傳到這個網站嗎？}}</translation>
 <translation id="8749805710397399240">無法投放螢幕。請檢查「系統偏好設定」中的「螢幕畫面錄製」權限。</translation>
@@ -8070,6 +8078,7 @@
 <translation id="8761945298804995673">這名使用者已經存在。</translation>
 <translation id="8762886931014513155">你的 <ph name="DEVICE_TYPE" /> 需要更新</translation>
 <translation id="8763927697961133303">USB 裝置</translation>
+<translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767621466733104912">自動為所有使用者更新 Chrome</translation>
 <translation id="8769901904650373714">設定 Steam 時時發生問題</translation>
 <translation id="8770406935328356739">擴充功能根目錄</translation>

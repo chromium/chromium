@@ -48,6 +48,7 @@
 <translation id="2107397443965016585">Prikaži poziv, preden se spletnim mestom dovoli predvajanje zaščitene vsebine (priporočeno)</translation>
 <translation id="2146738493024040262">Odpri nenamestljivo aplikacijo</translation>
 <translation id="2148716181193084225">Danes</translation>
+<translation id="2155988908301433309">Vedno prikaži spletno mesto za mobilne naprave</translation>
 <translation id="2182457891543959921">Vprašaj, preden se spletnim mestom dovoli ustvarjanje 3D-zemljevida vaše okolice ali spremljanje položaja kamere (priporočljivo)</translation>
 <translation id="2212565012507486665">Dovoli piškotke</translation>
 <translation id="2228071138934252756">Če želite aplikaciji <ph name="APP_NAME" /> omogočiti dostop do fotoaparata, fotoaparat vklopite tudi v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
@@ -79,6 +80,7 @@
 <translation id="2653659639078652383">Pošlji</translation>
 <translation id="2677748264148917807">Zapusti</translation>
 <translation id="2687403674020088961">Blokiranje vseh piškotkov (ni priporočljivo)</translation>
+<translation id="2692299144678073135">Dovolite, da si vas povezana spletna mesta zapomnijo na več spletnih mestih</translation>
 <translation id="2704606927547763573">Kopirano</translation>
 <translation id="2713106313042589954">Izklopi kamero</translation>
 <translation id="2717722538473713889">E-poštni naslovi</translation>
@@ -139,6 +141,7 @@
 <translation id="4002066346123236978">Naslov</translation>
 <translation id="4008040567710660924">Omogočanje piškotkov za določeno spletno mesto.</translation>
 <translation id="4046123991198612571">Naslednja skladba</translation>
+<translation id="4048876521107516222">Povezana spletna mesta uporabljajo piškotke za zagotavljanje na primer tega, da ste prijavljeni.</translation>
 <translation id="4149994727733219643">Poenostavljen pogled za spletne strani</translation>
 <translation id="4165986682804962316">Nastavitve spletnega mesta</translation>
 <translation id="4169549551965910670">Povezano z napravo USB</translation>
@@ -204,6 +207,7 @@
 <translation id="5505264765875738116">Spletna mesta vas ne smejo vprašati, ali želite, da vam pošiljajo obvestila</translation>
 <translation id="5516455585884385570">Odpiranje nastavitev obvestil</translation>
 <translation id="5527111080432883924">Prikaži poziv, preden se spletnim mestom dovoli branje besedila in slik v odložišču (priporočeno)</translation>
+<translation id="5553273073880784901">Vedno prikaži namizno spletno mesto</translation>
 <translation id="5553374991681107062">Najnovejše</translation>
 <translation id="5556459405103347317">Znova naloži</translation>
 <translation id="5596627076506792578">Več možnosti</translation>
@@ -220,6 +224,7 @@
 <translation id="5887687176710214216">Nazadnje obiskano včeraj</translation>
 <translation id="5916664084637901428">Vklopljeno</translation>
 <translation id="5922853908706496913">Deljenje zaslona</translation>
+<translation id="5922967540311291836">Blokiranje piškotkov tretjih oseb:</translation>
 <translation id="5939518447894949180">Ponastavi</translation>
 <translation id="5975083100439434680">Pomanjšaj</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
@@ -310,6 +315,7 @@
 <translation id="7846076177841592234">Prekliči izbor</translation>
 <translation id="7846621471902887024">Odjavljeni boste z vseh spletnih mest.</translation>
 <translation id="7882806643839505685">Dovolitev zvoka za določeno spletno mesto.</translation>
+<translation id="789180354981963912">Blokiranje piškotkov tretjih oseb v anonimnem načinu:</translation>
 <translation id="7940722705963108451">Opomni me</translation>
 <translation id="7986741934819883144">Izberite stik</translation>
 <translation id="7999064672810608036">Ali želite res izbrisati vse lokalne podatke, vključno s piškotki, in ponastaviti vsa dovoljenja za to spletno mesto?</translation>

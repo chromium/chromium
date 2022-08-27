@@ -3174,6 +3174,7 @@
 <translation id="3966072572894326936">Өөр хавтас сонгох ...</translation>
 <translation id="3967822245660637423">Татаж авч дууслаа</translation>
 <translation id="3967841595862839006">Хэл, гараа сонгоно уу</translation>
+<translation id="3968739731834770921">Kana</translation>
 <translation id="3970114302595058915">ID</translation>
 <translation id="397105322502079400">Тооцоолж байна ...</translation>
 <translation id="3971764089670057203">Энэ аюулгүй байдлын түлхүүр дээр байгаа хурууны хээ</translation>
@@ -4253,6 +4254,7 @@
 <translation id="5038818366306248416">Та өмнө нь <ph name="ORIGIN" /> дээрх бүх өргөтгөлийг зөвшөөрөхгүй гэж сонгосон</translation>
 <translation id="5039696241953571917">Google Бүртгэлдээ хадгалсан нууц үгнүүдийг харах болон удирдах</translation>
 <translation id="5039804452771397117">Зөвшөөрөх</translation>
+<translation id="5040262127954254034">Нууцлал</translation>
 <translation id="5040823038948176460">Контентын нэмэлт тохиргоо</translation>
 <translation id="5041509233170835229">Chrome Апп</translation>
 <translation id="5043440033854483429">Нэр нь үсэг, тоо, дундуур зураас (-) ашиглах боломжтой бөгөөд 1-ээс 15 тэмдэгттэй ёстой.</translation>
@@ -4420,6 +4422,7 @@
 <translation id="5207949376430453814">Текст оруулах тэмдгийг тодруулах</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> таныг эрх бүхий ChromeOS төхөөрөмж ашиглаж байгаа эсэхийг шалгах хүсэлтэй байна.</translation>
 <translation id="5208548918290612795"><ph name="WEB_DRIVE" />-н баталгаажуулалтын токеныг хадгалж байна</translation>
+<translation id="5208988882104884956">Хагас өргөн</translation>
 <translation id="520902706163766447">Одоогоор нээлттэй байгаа табууд дээр хайхын тулд Chrome UI-н дээд хэсэгт попап бөмбөлгийг идэвхжүүлнэ үү.</translation>
 <translation id="5209320130288484488">Төхөөрөмж олдсонгүй</translation>
 <translation id="5209513429611499188"><ph name="USAGE_PAGE" /> ашиглалтын хуудасны ашиглалттай HID төхөөрөмжүүд</translation>
@@ -4637,6 +4640,7 @@
 <translation id="542750953150239272">Үргэлжлүүлснээр та энэ төхөөрөмж нь мөн мобайл дата ашиглан Google, таны оператор компани, таны төхөөрөмжийн үйлдвэрлэгчээс шинэчлэлт болон аппыг автоматаар татаж суулгаж болохыг зөвшөөрч байна. Эдгээр аппын зарим нь аппын худалдан авалтыг санал болгож магадгүй.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (шинэчлэх боломжтой)</translation>
 <translation id="542948651837270806">Итгэмжлэгдсэн платформ модулийн жижиг программын шинэчлэлтийг суулгах хэрэгтэй. <ph name="TPM_FIRMWARE_UPDATE_LINK" />-г үзнэ үү</translation>
+<translation id="5429818411180678468">Бүтэн өргөн</translation>
 <translation id="5430931332414098647">Шуурхай модем болгох</translation>
 <translation id="5431318178759467895">Өнгө</translation>
 <translation id="543338862236136125">Нууц үг засах</translation>
@@ -5194,6 +5198,7 @@
 <translation id="5957987129450536192">Профайл зургийнхаа ойролцоо байрлах Ярихын тулд сонгох дүрс тэмдгийг товшоод дараа нь сонсохыг хүссэн зүйлээ сонгоно уу.</translation>
 <translation id="5959471481388474538">Сүлжээг ажиллахгүй байна.</translation>
 <translation id="595959584676692139">Энэ өргөтгөлийг ашиглахын тулд хуудсыг дахин ачаалах</translation>
+<translation id="5963413905009737549">Хэсэг</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> ( <ph name="NUM_KILOBYTES_LIVE" /> оргил)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Бүгдийг &amp;шинэ цонхонд нээх}=1{&amp;Шинэ цонхонд нээх}other{Бүгдийг ({COUNT}) &amp;шинэ цонхонд нээх}}</translation>
 <translation id="5965661248935608907">Энэ нь таныг Home Товчийг дарах эсвэл өмнө нь хайж байсан линкүүд дотроос айлт хийж байх үед гарч ирэх хуудсыг мөн хянадаг.</translation>
@@ -7134,6 +7139,7 @@
 <translation id="7838971600045234625">{COUNT,plural, =1{<ph name="DEVICE_NAME" />-д <ph name="ATTACHMENTS" /> илгээсэн}other{<ph name="DEVICE_NAME" />-д <ph name="ATTACHMENTS" /> илгээсэн}}</translation>
 <translation id="7839051173341654115">Өгөгдлийг харах/хадгалах</translation>
 <translation id="7839192898639727867">Certificate Subject Key ID</translation>
+<translation id="7842062217214609161">Ямар ч богино холболт алга</translation>
 <translation id="7842692330619197998">Хэрэв та шинэ бүртгэл үүсгэх шаардлагатай бол g.co/ChromeEnterpriseAccount хаягаар зочилно уу.</translation>
 <translation id="78427265591841839"><ph name="VISUAL_SEARCH_PROVIDER" />-р хуудасны дурын хэсгийг хайх</translation>
 <translation id="784273751836026224">Linux-г устгах</translation>
@@ -7175,6 +7181,7 @@
 <translation id="7874257161694977650">Chrome-н арын дэвсгэр</translation>
 <translation id="7876027585589532670">Товчлолыг засах боломжгүй</translation>
 <translation id="7877451762676714207">Тодорхойгүй серверийн алдаа. Серверийн администратор тойгоо холбогдох эсвэл дахин оролдоод үзээрэй.</translation>
+<translation id="7879478708475862060">Оролтын горимыг дага</translation>
 <translation id="7879631849810108578">Товчлолыг тохирууллаа: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
 <translation id="7880685873361171388">Асаалттай бөгөөд төлөв нь идэвхтэй үед Chrome таны 7-оос дээш өдрийн хөтчийн түүхийг таны байгаа бүлэг эсвэл "нэг үеийнхэн"-ийг тодорхойлоход ашиглана. Сурталчлагчид бүлэгт зар сонгох боломжтой. Таны хөтчийн түүхийг төхөөрөмж дээр тань аюулгүй хадгалдаг. Энэ туршилт зөвхөн
     <ph name="BEGIN_LINK" />зарим бүс нутагт<ph name="END_LINK" /> идэвхтэй байна.</translation>
@@ -8069,6 +8076,7 @@
 <translation id="8740672167979365981">ChromeOS Flex-г шинэчлэх шаардлагатай</translation>
 <translation id="8741944563400125534">Сэлгүүрийн тохируулгын хөтөч</translation>
 <translation id="8742998548129056176">Энэ нь таны төхөөрөмжийн болон та түүнийг хэрхэн ашигладаг тухай (батарейн түвшин, систем болон аппын үйл ажиллагаа, алдаа зэрэг) ерөнхий мэдээлэл юм. Энэ өгөгдлийг Android-г сайжруулах зорилгоор ашиглах бөгөөд хуримтлуулсан зарим мэдээлэл нь Google-н аппууд болон Android хөгжүүлэгч зэрэг түншүүдэд апп болон бүтээгдэхүүнээ сайжруулахад нь мөн тусална.</translation>
+<translation id="8744641000906923997">Ромажи</translation>
 <translation id="8746654918629346731">Та аль хэдийн "<ph name="EXTENSION_NAME" />" өргөтгөлийг суулгах хүсэлт тавьсан</translation>
 <translation id="874689135111202667">{0,plural, =1{Энэ сайтад нэг файл байршуулах уу?}other{Энэ сайтад # файл байршуулах уу?}}</translation>
 <translation id="8749805710397399240">Таны дэлгэцийг дамжуулах боломжгүй байна. Системийн тохиргоон дээрээс Дэлгэцийн үйлдэл бичигчийн зөвшөөрлийг шалгана уу.</translation>
@@ -8092,6 +8100,7 @@
 <translation id="8761945298804995673">Ийм хэрэглэгч аль хэдийн байна</translation>
 <translation id="8762886931014513155">Таны <ph name="DEVICE_TYPE" />-г шинэчлэх шаардлагатай байна</translation>
 <translation id="8763927697961133303">USB төхөөрөмж</translation>
+<translation id="8766796754185931010">Японы оролтын аргачлал</translation>
 <translation id="8767621466733104912">Бүх хэрэглэгчид Chrome-г автоматаар шинэчилнэ үү</translation>
 <translation id="8769901904650373714">Steam-н тохируулгатай холбоотой асуудал гарлаа</translation>
 <translation id="8770406935328356739">Өргөтгөлийн үндсэн лавлалт</translation>
