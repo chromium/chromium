@@ -10,6 +10,11 @@
 #include <lib/sys/component/cpp/testing/realm_builder_types.h>
 
 #include <memory>
+#include <string_view>
+
+namespace component_testing {
+class RealmBuilder;
+}
 
 namespace test {
 
@@ -21,7 +26,8 @@ class FakeFeedbackService
       public ::fuchsia::feedback::CrashReportingProductRegister,
       public ::component_testing::LocalComponent {
  public:
-  FakeFeedbackService();
+  FakeFeedbackService(::component_testing::RealmBuilder& realm_builder,
+                      std::string_view child_name);
   FakeFeedbackService(const FakeFeedbackService&) = delete;
   FakeFeedbackService& operator=(const FakeFeedbackService&) = delete;
   ~FakeFeedbackService() override;

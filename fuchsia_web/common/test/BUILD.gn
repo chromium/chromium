@@ -19,6 +19,8 @@ source_set("test_support") {
     "test_devtools_list_fetcher.h",
     "test_navigation_listener.cc",
     "test_navigation_listener.h",
+    "test_realm_support.cc",
+    "test_realm_support.h",
     "url_request_rewrite_test_util.cc",
     "url_request_rewrite_test_util.h",
   ]
