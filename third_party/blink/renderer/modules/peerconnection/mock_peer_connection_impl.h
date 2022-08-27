@@ -48,6 +48,20 @@ class FakeRtpSender : public webrtc::RtpSenderInterface {
     transport_ = transport;
   }
 
+  void SetFrameEncryptor(rtc::scoped_refptr<webrtc::FrameEncryptorInterface>
+                             frame_encryptor) override {}
+  rtc::scoped_refptr<webrtc::FrameEncryptorInterface> GetFrameEncryptor()
+      const override {
+    return nullptr;
+  }
+
+  void SetEncoderToPacketizerFrameTransformer(
+      rtc::scoped_refptr<webrtc::FrameTransformerInterface> frame_transformer)
+      override {}
+  void SetEncoderSelector(
+      std::unique_ptr<webrtc::VideoEncoderFactory::EncoderSelectorInterface>
+          encoder_selector) override {}
+
  private:
   rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> track_;
   rtc::scoped_refptr<webrtc::DtlsTransportInterface> transport_;
