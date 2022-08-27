@@ -144,7 +144,7 @@ void IOSSSLErrorHandler::ShowSSLInterstitial() {
   timer_.Stop();
 
   // Cancel the captive portal detection if it is still ongoing. This will be
-  // the case if |timer_| triggered the call of this method.
+  // the case if `timer_` triggered the call of this method.
   if (captive_portal_detector_) {
     captive_portal_detector_->Cancel();
     captive_portal_detector_.reset();

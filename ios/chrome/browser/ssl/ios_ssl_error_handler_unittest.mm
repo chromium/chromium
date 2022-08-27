@@ -121,7 +121,7 @@ class IOSSSLErrorHandlerTest : public IOSSSLErrorHandlerWithoutTabHelpersTest {
 };
 
 // Tests that error HTML is returned instead of calling the usual show
-// interstitial logic when passed a non-null |blocking_page_callback|.
+// interstitial logic when passed a non-null `blocking_page_callback`.
 TEST_F(IOSSSLErrorHandlerTest, CommittedInterstitialErrorHtml) {
   net::SSLInfo ssl_info;
   ssl_info.cert = cert();

@@ -18,7 +18,7 @@ enum class CaptivePortalStatus {
 };
 
 // Returns the associated CaptivePortalStatus value for logging to UMA metrics
-// based on detection |result|.
+// based on detection `result`.
 CaptivePortalStatus CaptivePortalStatusFromDetectionResult(
     captive_portal::CaptivePortalResult result);
 

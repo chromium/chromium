@@ -65,7 +65,7 @@ void IOSCaptivePortalBlockingPage::PopulateInterstitialStrings(
         IDS_CAPTIVE_PORTAL_PRIMARY_PARAGRAPH_NO_LOGIN_URL_WIFI);
   } else {
     // Portal redirection was done with HTTP redirects, so show the login URL.
-    // If |languages| is empty, punycode in |login_host| will always be decoded.
+    // If `languages` is empty, punycode in `login_host` will always be decoded.
     std::u16string login_host =
         url_formatter::IDNToUnicode(landing_url_.host());
     if (base::i18n::IsRTL())

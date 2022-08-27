@@ -21,7 +21,7 @@ class CaptivePortalTabHelper
 
   ~CaptivePortalTabHelper() override;
 
-  // Displays the Captive Portal Login page at |landing_url|.
+  // Displays the Captive Portal Login page at `landing_url`.
   void DisplayCaptivePortalLoginPage(GURL landing_url);
 
   void SetTabInsertionBrowserAgent(TabInsertionBrowserAgent* insertionAgent);
