@@ -33,19 +33,25 @@ class CheckedNumeric {
   constexpr CheckedNumeric(const CheckedNumeric<Src>& rhs)
       : state_(rhs.state_.value(), rhs.IsValid()) {}
 
+  // Strictly speaking, this is not necessary, but declaring this allows class
+  // template argument deduction to be used so that it is possible to simply
+  // write `CheckedNumeric(777)` instead of `CheckedNumeric<int>(777)`.
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  constexpr CheckedNumeric(T value) : state_(value) {}
+
   // This is not an explicit constructor because we implicitly upgrade regular
   // numerics to CheckedNumerics to make them easier to use.
   template <typename Src>
-  constexpr CheckedNumeric(Src value)  // NOLINT(runtime/explicit)
-      : state_(value) {
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  constexpr CheckedNumeric(Src value) : state_(value) {
     static_assert(UnderlyingType<Src>::is_numeric, "Argument must be numeric.");
   }
 
   // This is not an explicit constructor because we want a seamless conversion
   // from StrictNumeric types.
   template <typename Src>
-  constexpr CheckedNumeric(
-      StrictNumeric<Src> value)  // NOLINT(runtime/explicit)
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  constexpr CheckedNumeric(StrictNumeric<Src> value)
       : state_(static_cast<Src>(value)) {}
 
   // IsValid() - The public API to test if a CheckedNumeric is currently valid.
@@ -269,9 +275,6 @@ class CheckedNumeric {
     }
   };
 };
-
-template <typename T>
-CheckedNumeric(T t) -> CheckedNumeric<T>;
 
 // Convenience functions to avoid the ugly template disambiguator syntax.
 template <typename Dst, typename Src>

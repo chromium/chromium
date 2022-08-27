@@ -284,11 +284,17 @@ class StrictNumeric {
   constexpr StrictNumeric(const StrictNumeric<Src>& rhs)
       : value_(strict_cast<T>(rhs.value_)) {}
 
+  // Strictly speaking, this is not necessary, but declaring this allows class
+  // template argument deduction to be used so that it is possible to simply
+  // write `StrictNumeric(777)` instead of `StrictNumeric<int>(777)`.
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  constexpr StrictNumeric(T value) : value_(value) {}
+
   // This is not an explicit constructor because we implicitly upgrade regular
   // numerics to StrictNumerics to make them easier to use.
   template <typename Src>
-  constexpr StrictNumeric(Src value)  // NOLINT(runtime/explicit)
-      : value_(strict_cast<T>(value)) {}
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  constexpr StrictNumeric(Src value) : value_(strict_cast<T>(value)) {}
 
   // If you got here from a compiler error, it's because you tried to assign
   // from a source type to a destination type that has insufficient range.

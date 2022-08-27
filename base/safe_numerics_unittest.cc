@@ -672,6 +672,14 @@ template <typename Dst>
 static void TestArithmetic(const char* dst, int line) {
   using DstLimits = SaturationDefaultLimits<Dst>;
 
+  // Test C++17 class template argument deduction
+  static_assert(
+      std::is_same_v<Dst, typename decltype(CheckedNumeric(Dst{0}))::type>);
+  static_assert(
+      std::is_same_v<Dst, typename decltype(ClampedNumeric(Dst{0}))::type>);
+  static_assert(
+      std::is_same_v<Dst, typename decltype(StrictNumeric(Dst{0}))::type>);
+
   EXPECT_EQ(true, CheckedNumeric<Dst>().IsValid());
   EXPECT_EQ(false, CheckedNumeric<Dst>(CheckedNumeric<Dst>(DstLimits::max()) *
                                        DstLimits::max())
