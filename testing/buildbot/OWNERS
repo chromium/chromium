@@ -38,8 +38,6 @@ per-file internal.chromeos.fyi.json=svenzheng@chromium.org
 per-file *chromium.perf*.json=johnchen@chromium.org
 per-file *chromium.perf*.json=wenbinzhang@google.com
 per-file *chromium.perf*.json=hypan@google.com
-per-file chromium.webrtc.json=mbonadei@chromium.org
-per-file chromium.webrtc.fyi.json=mbonadei@chromium.org
 
 # For OOBE-related test filters.
 per-file *oobe*=file://chrome/browser/ui/webui/chromeos/login/OWNERS
@@ -58,6 +56,10 @@ per-file chromium.perf.fyi.json=chonggu@google.com
 
 # Rust owners
 per-file chromium.rust.json=file://build/rust/OWNERS
+
+# WebRTC owners
+per-file chromium.webrtc.json=file://infra/config/subprojects/webrtc/OWNERS
+per-file chromium.webrtc.fyi.json=file://infra/config/subprojects/webrtc/OWNERS
 
 # Any non-trivial change to a *.pyl file has corresponding changes to at least
 # one *.json file. Consequently, any change to a *.pyl file will still need
