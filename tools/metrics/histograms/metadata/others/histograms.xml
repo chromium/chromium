@@ -4387,8 +4387,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DefaultBrowser.InfoBar.UserInteraction"
-    enum="DefaultBrowserInfoBarUserInteraction" expires_after="M85">
+    enum="DefaultBrowserInfoBarUserInteraction" expires_after="M115">
   <owner>pmonette@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
   <summary>
     Possible user interactions with the default browser info bar.
   </summary>
