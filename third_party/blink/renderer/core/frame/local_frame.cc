@@ -306,7 +306,7 @@ LocalFrame* LocalFrame::FromFrameToken(const LocalFrameToken& frame_token) {
 
 void LocalFrame::Init(Frame* opener,
                       std::unique_ptr<PolicyContainer> policy_container,
-                      const blink::StorageKey& storage_key) {
+                      const StorageKey& storage_key) {
   if (!policy_container)
     policy_container = PolicyContainer::CreateEmpty();
 
@@ -2236,7 +2236,7 @@ bool LocalFrame::IsAdRoot() const {
   return IsAdFrame() && !ad_evidence_->parent_is_ad();
 }
 
-void LocalFrame::SetAdEvidence(const blink::FrameAdEvidence& ad_evidence) {
+void LocalFrame::SetAdEvidence(const FrameAdEvidence& ad_evidence) {
   DCHECK(!IsMainFrame() || IsInFencedFrameTree());
   DCHECK(ad_evidence.is_complete());
 
@@ -2305,7 +2305,7 @@ void LocalFrame::UpdateAdHighlight() {
 }
 
 void LocalFrame::PauseSubresourceLoading(
-    mojo::PendingReceiver<blink::mojom::blink::PauseSubresourceLoadingHandle>
+    mojo::PendingReceiver<mojom::blink::PauseSubresourceLoadingHandle>
         receiver) {
   auto handle = GetFrameScheduler()->GetPauseSubresourceLoadingHandle();
   if (!handle)
@@ -2989,7 +2989,7 @@ void LocalFrame::SaveImageAt(const gfx::Point& window_point) {
 
 void LocalFrame::MediaPlayerActionAtViewportPoint(
     const gfx::Point& viewport_position,
-    const blink::mojom::blink::MediaPlayerActionType type,
+    const mojom::blink::MediaPlayerActionType type,
     bool enable) {
   HitTestResult result = HitTestResultForVisualViewportPos(viewport_position);
   Node* node = result.InnerNode();
@@ -2998,22 +2998,22 @@ void LocalFrame::MediaPlayerActionAtViewportPoint(
 
   auto* media_element = To<HTMLMediaElement>(node);
   switch (type) {
-    case blink::mojom::blink::MediaPlayerActionType::kPlay:
+    case mojom::blink::MediaPlayerActionType::kPlay:
       if (enable)
         media_element->Play();
       else
         media_element->pause();
       break;
-    case blink::mojom::blink::MediaPlayerActionType::kMute:
+    case mojom::blink::MediaPlayerActionType::kMute:
       media_element->setMuted(enable);
       break;
-    case blink::mojom::blink::MediaPlayerActionType::kLoop:
+    case mojom::blink::MediaPlayerActionType::kLoop:
       media_element->SetLoop(enable);
       break;
-    case blink::mojom::blink::MediaPlayerActionType::kControls:
+    case mojom::blink::MediaPlayerActionType::kControls:
       media_element->SetUserWantsControlsVisible(enable);
       break;
-    case blink::mojom::blink::MediaPlayerActionType::kPictureInPicture:
+    case mojom::blink::MediaPlayerActionType::kPictureInPicture:
       DCHECK(IsA<HTMLVideoElement>(media_element));
       if (enable) {
         PictureInPictureController::From(node->GetDocument())

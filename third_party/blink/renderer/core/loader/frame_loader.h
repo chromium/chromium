@@ -85,7 +85,7 @@ class CORE_EXPORT FrameLoader final {
   ~FrameLoader();
 
   void Init(std::unique_ptr<PolicyContainer> policy_container,
-            const blink::StorageKey& storage_key);
+            const StorageKey& storage_key);
 
   ResourceRequest ResourceRequestForReload(
       WebFrameLoadType,

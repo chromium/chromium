@@ -60,10 +60,12 @@ class PLATFORM_EXPORT BlinkStorageKey {
                   mojom::blink::AncestorChainBit ancestor_chain_bit);
 
   // Creates a BlinkStorageKey converting the given StorageKey `storage_key`.
-  BlinkStorageKey(const blink::StorageKey& storage_key);
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  BlinkStorageKey(const StorageKey& storage_key);
 
   // Converts this BlinkStorageKey into a StorageKey.
-  operator blink::StorageKey() const;
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  operator StorageKey() const;
 
   ~BlinkStorageKey() = default;
 

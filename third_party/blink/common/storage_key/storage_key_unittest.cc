@@ -17,6 +17,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+namespace blink {
 namespace {
 
 // Opaqueness here is used as a way of checking for "correctly constructed" in
@@ -24,13 +25,11 @@ namespace {
 //
 // Why not call it IsValid()? Because some tests actually want to check for
 // opaque origins.
-bool IsOpaque(const blink::StorageKey& key) {
+bool IsOpaque(const StorageKey& key) {
   return key.origin().opaque() && key.top_level_site().opaque();
 }
 
 }  // namespace
-
-namespace blink {
 
 // Test when a constructed StorageKey object should be considered valid/opaque.
 TEST(StorageKeyTest, ConstructionValidity) {
@@ -44,8 +43,7 @@ TEST(StorageKeyTest, ConstructionValidity) {
   // TODO(https://crbug.com/1287130): Change or remove this expectation once the
   // full ancestor tree has been properly searched to determine AncestorChainBit
   // value.
-  EXPECT_EQ(valid.ancestor_chain_bit(),
-            blink::mojom::AncestorChainBit::kSameSite);
+  EXPECT_EQ(valid.ancestor_chain_bit(), mojom::AncestorChainBit::kSameSite);
 
   url::Origin invalid_origin =
       url::Origin::Create(GURL("I'm not a valid URL."));
@@ -533,9 +531,9 @@ TEST(StorageKeyTest, AncestorChainBitGetter) {
 
   EXPECT_TRUE(key_same_site.has_value());
   EXPECT_TRUE(key_cross_site.has_value());
-  EXPECT_EQ(blink::mojom::AncestorChainBit::kSameSite,
+  EXPECT_EQ(mojom::AncestorChainBit::kSameSite,
             key_same_site->ancestor_chain_bit());
-  EXPECT_EQ(blink::mojom::AncestorChainBit::kSameSite,
+  EXPECT_EQ(mojom::AncestorChainBit::kSameSite,
             key_cross_site->ancestor_chain_bit());
 }
 
@@ -557,9 +555,9 @@ TEST(StorageKeyTest, AncestorChainBitGetterWithPartitioningEnabled) {
 
   EXPECT_TRUE(key_same_site.has_value());
   EXPECT_TRUE(key_cross_site.has_value());
-  EXPECT_EQ(blink::mojom::AncestorChainBit::kSameSite,
+  EXPECT_EQ(mojom::AncestorChainBit::kSameSite,
             key_same_site->ancestor_chain_bit());
-  EXPECT_EQ(blink::mojom::AncestorChainBit::kCrossSite,
+  EXPECT_EQ(mojom::AncestorChainBit::kCrossSite,
             key_cross_site->ancestor_chain_bit());
 }
 
@@ -608,7 +606,7 @@ TEST(StorageKeyTest, IsThirdPartyContext) {
   // Same origin and top-level site but cross-site ancestor
   StorageKey cross_key = StorageKey::CreateWithOptionalNonce(
       kOrigin, net::SchemefulSite(kOrigin), nullptr,
-      blink::mojom::AncestorChainBit::kCrossSite);
+      mojom::AncestorChainBit::kCrossSite);
   EXPECT_EQ(true, cross_key.IsThirdPartyContext());
 }
 
@@ -651,10 +649,10 @@ TEST(StorageKeyTest, ToNetSiteForCookies) {
       net::SchemefulSite top_level_site =
           net::SchemefulSite(test_case.top_level_origin);
 
-      blink::mojom::AncestorChainBit ancestor_chain_bit =
+      mojom::AncestorChainBit ancestor_chain_bit =
           top_level_site == net::SchemefulSite(test_case.origin)
-              ? blink::mojom::AncestorChainBit::kSameSite
-              : blink::mojom::AncestorChainBit::kCrossSite;
+              ? mojom::AncestorChainBit::kSameSite
+              : mojom::AncestorChainBit::kCrossSite;
 
       got_site =
           StorageKey::CreateWithOptionalNonce(test_case.origin, top_level_site,
@@ -681,13 +679,13 @@ TEST(StorageKeyTest, CopyWithForceEnabledThirdPartyStoragePartitioning) {
 
     const StorageKey storage_key = StorageKey::CreateWithOptionalNonce(
         kOrigin, net::SchemefulSite(kOtherOrigin), nullptr,
-        blink::mojom::AncestorChainBit::kCrossSite);
+        mojom::AncestorChainBit::kCrossSite);
     EXPECT_EQ(storage_key.IsThirdPartyContext(), toggle);
     EXPECT_EQ(storage_key.top_level_site(),
               net::SchemefulSite(toggle ? kOtherOrigin : kOrigin));
     EXPECT_EQ(storage_key.ancestor_chain_bit(),
-              toggle ? blink::mojom::AncestorChainBit::kCrossSite
-                     : blink::mojom::AncestorChainBit::kSameSite);
+              toggle ? mojom::AncestorChainBit::kCrossSite
+                     : mojom::AncestorChainBit::kSameSite);
 
     const StorageKey storage_key_with_3psp =
         storage_key.CopyWithForceEnabledThirdPartyStoragePartitioning();
@@ -695,7 +693,7 @@ TEST(StorageKeyTest, CopyWithForceEnabledThirdPartyStoragePartitioning) {
     EXPECT_EQ(storage_key_with_3psp.top_level_site(),
               net::SchemefulSite(kOtherOrigin));
     EXPECT_EQ(storage_key_with_3psp.ancestor_chain_bit(),
-              blink::mojom::AncestorChainBit::kCrossSite);
+              mojom::AncestorChainBit::kCrossSite);
   }
 }
 

@@ -207,7 +207,7 @@ class CORE_EXPORT LocalFrame final
   // synchronously created LocalFrame child.
   void Init(Frame* opener,
             std::unique_ptr<PolicyContainer> policy_container,
-            const blink::StorageKey& storage_key);
+            const StorageKey& storage_key);
   void SetView(LocalFrameView*);
   void CreateView(const gfx::Size&, const Color&);
 

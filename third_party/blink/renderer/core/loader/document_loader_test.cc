@@ -278,7 +278,7 @@ TEST_F(DocumentLoaderSimTest, FramePolicyIntegrityOnNavigationCommit) {
   auto* child_window = child_frame->GetFrame()->DomWindow();
 
   EXPECT_TRUE(child_window->IsFeatureEnabled(
-      blink::mojom::blink::PermissionsPolicyFeature::kPayment));
+      mojom::blink::PermissionsPolicyFeature::kPayment));
 }
 
 TEST_F(DocumentLoaderTest, CommitsDeferredOnSameOriginNavigation) {
@@ -510,7 +510,7 @@ TEST_F(DocumentLoaderTest, StorageKeyFromNavigationParams) {
           SharedBuffer::Create(), other_origin_url);
   params->requestor_origin = WebSecurityOrigin::Create(WebURL(requestor_url));
 
-  blink::StorageKey storage_key_to_commit = blink::StorageKey::CreateWithNonce(
+  StorageKey storage_key_to_commit = StorageKey::CreateWithNonce(
       url::Origin(), base::UnguessableToken::Create());
   params->storage_key = storage_key_to_commit;
 

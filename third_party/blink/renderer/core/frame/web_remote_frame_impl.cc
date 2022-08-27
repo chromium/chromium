@@ -243,7 +243,7 @@ WebLocalFrame* WebRemoteFrameImpl::CreateLocalChild(
   // https://chromium-review.googlesource.com/c/chromium/src/+/3851381/6
   // A remote frame being asked to create a child only happens in some cases to
   // recover from a crash.
-  blink::StorageKey storage_key;
+  StorageKey storage_key;
 
   child->InitializeCoreFrame(
       *GetFrame()->GetPage(), owner, this, previous_sibling,

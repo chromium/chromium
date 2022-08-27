@@ -30,8 +30,7 @@ TEST_F(PostMessageCounterTest, UsageWithoutStorageKey) {
   EXPECT_EQ(recorder_.GetEntriesByName("PostMessage.Incoming.Page").size(), 0u);
 
   // Check frame counter state
-  frame_counter_.RecordMessage(1, blink::StorageKey(), 2, blink::StorageKey(),
-                               &recorder_);
+  frame_counter_.RecordMessage(1, StorageKey(), 2, StorageKey(), &recorder_);
   EXPECT_EQ(recorder_.entries_count(), 2u);
   EXPECT_EQ(recorder_.GetEntriesByName("PostMessage.Incoming.Frame").size(),
             1u);
@@ -43,8 +42,7 @@ TEST_F(PostMessageCounterTest, UsageWithoutStorageKey) {
   EXPECT_EQ(recorder_.GetEntriesByName("PostMessage.Incoming.Page").size(), 0u);
 
   // Check page counter state
-  page_counter_.RecordMessage(1, blink::StorageKey(), 2, blink::StorageKey(),
-                              &recorder_);
+  page_counter_.RecordMessage(1, StorageKey(), 2, StorageKey(), &recorder_);
   EXPECT_EQ(recorder_.entries_count(), 4u);
   EXPECT_EQ(recorder_.GetEntriesByName("PostMessage.Incoming.Frame").size(),
             1u);
@@ -69,8 +67,7 @@ TEST_F(PostMessageCounterTest, UsageWithDeduplicationRecall) {
   EXPECT_EQ(recorder_.GetEntriesByName("PostMessage.Incoming.Page").size(), 0u);
 
   // Check frame counter state after first bump
-  frame_counter_.RecordMessage(1, blink::StorageKey(), 2, blink::StorageKey(),
-                               &recorder_);
+  frame_counter_.RecordMessage(1, StorageKey(), 2, StorageKey(), &recorder_);
   EXPECT_EQ(recorder_.entries_count(), 2u);
   EXPECT_EQ(recorder_.GetEntriesByName("PostMessage.Incoming.Frame").size(),
             1u);
@@ -79,8 +76,7 @@ TEST_F(PostMessageCounterTest, UsageWithDeduplicationRecall) {
   EXPECT_EQ(recorder_.GetEntriesByName("PostMessage.Incoming.Page").size(), 0u);
 
   // Check frame counter state after second bump
-  frame_counter_.RecordMessage(1, blink::StorageKey(), 2, blink::StorageKey(),
-                               &recorder_);
+  frame_counter_.RecordMessage(1, StorageKey(), 2, StorageKey(), &recorder_);
   EXPECT_EQ(recorder_.entries_count(), 2u);
   EXPECT_EQ(recorder_.GetEntriesByName("PostMessage.Incoming.Frame").size(),
             1u);
@@ -89,8 +85,7 @@ TEST_F(PostMessageCounterTest, UsageWithDeduplicationRecall) {
   EXPECT_EQ(recorder_.GetEntriesByName("PostMessage.Incoming.Page").size(), 0u);
 
   // Check page counter state after first bump
-  page_counter_.RecordMessage(1, blink::StorageKey(), 2, blink::StorageKey(),
-                              &recorder_);
+  page_counter_.RecordMessage(1, StorageKey(), 2, StorageKey(), &recorder_);
   EXPECT_EQ(recorder_.entries_count(), 4u);
   EXPECT_EQ(recorder_.GetEntriesByName("PostMessage.Incoming.Frame").size(),
             1u);
@@ -99,8 +94,7 @@ TEST_F(PostMessageCounterTest, UsageWithDeduplicationRecall) {
   EXPECT_EQ(recorder_.GetEntriesByName("PostMessage.Incoming.Page").size(), 1u);
 
   // Check page counter state after second bump
-  page_counter_.RecordMessage(1, blink::StorageKey(), 2, blink::StorageKey(),
-                              &recorder_);
+  page_counter_.RecordMessage(1, StorageKey(), 2, StorageKey(), &recorder_);
   EXPECT_EQ(recorder_.entries_count(), 4u);
   EXPECT_EQ(recorder_.GetEntriesByName("PostMessage.Incoming.Frame").size(),
             1u);
@@ -119,8 +113,7 @@ TEST_F(PostMessageCounterTest, UsageWithoutDeduplicationRecall) {
   EXPECT_EQ(recorder_.GetEntriesByName("PostMessage.Incoming.Page").size(), 0u);
 
   // Check frame counter state after first bump
-  frame_counter_.RecordMessage(1, blink::StorageKey(), 2, blink::StorageKey(),
-                               &recorder_);
+  frame_counter_.RecordMessage(1, StorageKey(), 2, StorageKey(), &recorder_);
   EXPECT_EQ(recorder_.entries_count(), 2u);
   EXPECT_EQ(recorder_.GetEntriesByName("PostMessage.Incoming.Frame").size(),
             1u);
@@ -130,8 +123,8 @@ TEST_F(PostMessageCounterTest, UsageWithoutDeduplicationRecall) {
 
   // Bump frame counter twenty times
   for (int i = 0; i < 20; i++) {
-    frame_counter_.RecordMessage(i + 2, blink::StorageKey(), i + 3,
-                                 blink::StorageKey(), &recorder_);
+    frame_counter_.RecordMessage(i + 2, StorageKey(), i + 3, StorageKey(),
+                                 &recorder_);
   }
   EXPECT_EQ(recorder_.entries_count(), 42u);
   EXPECT_EQ(recorder_.GetEntriesByName("PostMessage.Incoming.Frame").size(),
@@ -141,8 +134,7 @@ TEST_F(PostMessageCounterTest, UsageWithoutDeduplicationRecall) {
   EXPECT_EQ(recorder_.GetEntriesByName("PostMessage.Incoming.Page").size(), 0u);
 
   // Check frame counter state with same source and target as first bump
-  frame_counter_.RecordMessage(1, blink::StorageKey(), 2, blink::StorageKey(),
-                               &recorder_);
+  frame_counter_.RecordMessage(1, StorageKey(), 2, StorageKey(), &recorder_);
   EXPECT_EQ(recorder_.entries_count(), 44u);
   EXPECT_EQ(recorder_.GetEntriesByName("PostMessage.Incoming.Frame").size(),
             22u);
@@ -151,8 +143,7 @@ TEST_F(PostMessageCounterTest, UsageWithoutDeduplicationRecall) {
   EXPECT_EQ(recorder_.GetEntriesByName("PostMessage.Incoming.Page").size(), 0u);
 
   // Check page counter state after first bump
-  page_counter_.RecordMessage(1, blink::StorageKey(), 2, blink::StorageKey(),
-                              &recorder_);
+  page_counter_.RecordMessage(1, StorageKey(), 2, StorageKey(), &recorder_);
   EXPECT_EQ(recorder_.entries_count(), 46u);
   EXPECT_EQ(recorder_.GetEntriesByName("PostMessage.Incoming.Frame").size(),
             22u);
@@ -162,8 +153,8 @@ TEST_F(PostMessageCounterTest, UsageWithoutDeduplicationRecall) {
 
   // Bump page counter twenty times
   for (int i = 0; i < 20; i++) {
-    page_counter_.RecordMessage(i + 2, blink::StorageKey(), i + 3,
-                                blink::StorageKey(), &recorder_);
+    page_counter_.RecordMessage(i + 2, StorageKey(), i + 3, StorageKey(),
+                                &recorder_);
   }
   EXPECT_EQ(recorder_.entries_count(), 86u);
   EXPECT_EQ(recorder_.GetEntriesByName("PostMessage.Incoming.Frame").size(),
@@ -174,8 +165,7 @@ TEST_F(PostMessageCounterTest, UsageWithoutDeduplicationRecall) {
             21u);
 
   // Check page counter state with same source and target as first bump
-  page_counter_.RecordMessage(1, blink::StorageKey(), 2, blink::StorageKey(),
-                              &recorder_);
+  page_counter_.RecordMessage(1, StorageKey(), 2, StorageKey(), &recorder_);
   EXPECT_EQ(recorder_.entries_count(), 88u);
   EXPECT_EQ(recorder_.GetEntriesByName("PostMessage.Incoming.Frame").size(),
             22u);
@@ -197,9 +187,8 @@ TEST_F(PostMessageCounterTest, FirstPartyToFirstPartyDifferentBucket) {
 
   // Check storage key counter state
   frame_counter_.RecordMessage(
-      1, blink::StorageKey(url::Origin::Create(GURL("https://foo.com/"))), 2,
-      blink::StorageKey(url::Origin::Create(GURL("https://bar.com/"))),
-      &recorder_);
+      1, StorageKey(url::Origin::Create(GURL("https://foo.com/"))), 2,
+      StorageKey(url::Origin::Create(GURL("https://bar.com/"))), &recorder_);
   EXPECT_EQ(recorder_.entries_count(), 2u);
   EXPECT_EQ(
       recorder_
@@ -220,9 +209,8 @@ TEST_F(PostMessageCounterTest, FirstPartyToFirstPartySameBucket) {
 
   // Check storage key counter state
   frame_counter_.RecordMessage(
-      1, blink::StorageKey(url::Origin::Create(GURL("https://foo.com/"))), 2,
-      blink::StorageKey(url::Origin::Create(GURL("https://foo.com/"))),
-      &recorder_);
+      1, StorageKey(url::Origin::Create(GURL("https://foo.com/"))), 2,
+      StorageKey(url::Origin::Create(GURL("https://foo.com/"))), &recorder_);
   EXPECT_EQ(recorder_.entries_count(), 2u);
   EXPECT_EQ(recorder_
                 .GetEntriesByName(
@@ -243,8 +231,8 @@ TEST_F(PostMessageCounterTest,
 
   // Check storage key counter state
   frame_counter_.RecordMessage(
-      1, blink::StorageKey(url::Origin::Create(GURL("https://foo.com/"))), 2,
-      blink::StorageKey::CreateForTesting(
+      1, StorageKey(url::Origin::Create(GURL("https://foo.com/"))), 2,
+      StorageKey::CreateForTesting(
           url::Origin::Create(GURL("https://qux.com/")),
           url::Origin::Create(GURL("https://bar.com/"))),
       &recorder_);
@@ -268,8 +256,8 @@ TEST_F(PostMessageCounterTest,
 
   // Check storage key counter state
   frame_counter_.RecordMessage(
-      1, blink::StorageKey(url::Origin::Create(GURL("https://foo.com/"))), 2,
-      blink::StorageKey::CreateForTesting(
+      1, StorageKey(url::Origin::Create(GURL("https://foo.com/"))), 2,
+      StorageKey::CreateForTesting(
           url::Origin::Create(GURL("https://foo.com/")),
           url::Origin::Create(GURL("https://qux.com/"))),
       &recorder_);
@@ -294,11 +282,10 @@ TEST_F(PostMessageCounterTest,
   // Check storage key counter state
   frame_counter_.RecordMessage(
       1,
-      blink::StorageKey::CreateForTesting(
+      StorageKey::CreateForTesting(
           url::Origin::Create(GURL("https://qux.com/")),
           url::Origin::Create(GURL("https://bar.com/"))),
-      2, blink::StorageKey(url::Origin::Create(GURL("https://foo.com/"))),
-      &recorder_);
+      2, StorageKey(url::Origin::Create(GURL("https://foo.com/"))), &recorder_);
   EXPECT_EQ(recorder_.entries_count(), 2u);
   EXPECT_EQ(recorder_
                 .GetEntriesByName("PostMessage.Incoming.ThirdPartyToFirstParty."
@@ -320,11 +307,10 @@ TEST_F(PostMessageCounterTest,
   // Check storage key counter state
   frame_counter_.RecordMessage(
       1,
-      blink::StorageKey::CreateForTesting(
+      StorageKey::CreateForTesting(
           url::Origin::Create(GURL("https://foo.com/")),
           url::Origin::Create(GURL("https://qux.com/"))),
-      2, blink::StorageKey(url::Origin::Create(GURL("https://foo.com/"))),
-      &recorder_);
+      2, StorageKey(url::Origin::Create(GURL("https://foo.com/"))), &recorder_);
   EXPECT_EQ(recorder_.entries_count(), 2u);
   EXPECT_EQ(recorder_
                 .GetEntriesByName("PostMessage.Incoming.ThirdPartyToFirstParty."
@@ -346,11 +332,11 @@ TEST_F(PostMessageCounterTest,
   // Check storage key counter state
   frame_counter_.RecordMessage(
       1,
-      blink::StorageKey::CreateForTesting(
+      StorageKey::CreateForTesting(
           url::Origin::Create(GURL("https://foo.com/")),
           url::Origin::Create(GURL("https://qux.com/"))),
       2,
-      blink::StorageKey::CreateForTesting(
+      StorageKey::CreateForTesting(
           url::Origin::Create(GURL("https://bar.com/")),
           url::Origin::Create(GURL("https://qux.com/"))),
       &recorder_);
@@ -375,11 +361,11 @@ TEST_F(PostMessageCounterTest,
   // Check storage key counter state
   frame_counter_.RecordMessage(
       1,
-      blink::StorageKey::CreateForTesting(
+      StorageKey::CreateForTesting(
           url::Origin::Create(GURL("https://foo.com/")),
           url::Origin::Create(GURL("https://qux.com/"))),
       2,
-      blink::StorageKey::CreateForTesting(
+      StorageKey::CreateForTesting(
           url::Origin::Create(GURL("https://foo.com/")),
           url::Origin::Create(GURL("https://bar.com/"))),
       &recorder_);
@@ -403,11 +389,11 @@ TEST_F(PostMessageCounterTest, ThirdPartyToThirdPartySameBucket) {
   // Check storage key counter state
   frame_counter_.RecordMessage(
       1,
-      blink::StorageKey::CreateForTesting(
+      StorageKey::CreateForTesting(
           url::Origin::Create(GURL("https://foo.com/")),
           url::Origin::Create(GURL("https://bar.com/"))),
       2,
-      blink::StorageKey::CreateForTesting(
+      StorageKey::CreateForTesting(
           url::Origin::Create(GURL("https://foo.com/")),
           url::Origin::Create(GURL("https://bar.com/"))),
       &recorder_);

@@ -242,7 +242,7 @@ void FrameLoader::Trace(Visitor* visitor) const {
 }
 
 void FrameLoader::Init(std::unique_ptr<PolicyContainer> policy_container,
-                       const blink::StorageKey& storage_key) {
+                       const StorageKey& storage_key) {
   DCHECK(policy_container);
   ScriptForbiddenScope forbid_scripts;
 
@@ -1412,8 +1412,7 @@ String FrameLoader::ApplyUserAgentOverrideAndLog(
     user_agent_override = user_agent;
   }
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kUserAgentOverrideExperiment)) {
+  if (base::FeatureList::IsEnabled(features::kUserAgentOverrideExperiment)) {
     String ua_original = Platform::Current()->UserAgent();
 
     auto it = user_agent_override.Find(ua_original);

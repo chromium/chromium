@@ -56,16 +56,14 @@ BlinkStorageKey::BlinkStorageKey(
     const base::UnguessableToken* nonce,
     mojom::blink::AncestorChainBit ancestor_chain_bit)
     : origin_(origin),
-      top_level_site_(
-          blink::StorageKey::IsThirdPartyStoragePartitioningEnabled()
-              ? top_level_site
-              : BlinkSchemefulSite(origin)),
+      top_level_site_(StorageKey::IsThirdPartyStoragePartitioningEnabled()
+                          ? top_level_site
+                          : BlinkSchemefulSite(origin)),
       top_level_site_if_third_party_enabled_(top_level_site),
       nonce_(nonce ? absl::make_optional(*nonce) : absl::nullopt),
-      ancestor_chain_bit_(
-          blink::StorageKey::IsThirdPartyStoragePartitioningEnabled()
-              ? ancestor_chain_bit
-              : mojom::blink::AncestorChainBit::kSameSite),
+      ancestor_chain_bit_(StorageKey::IsThirdPartyStoragePartitioningEnabled()
+                              ? ancestor_chain_bit
+                              : mojom::blink::AncestorChainBit::kSameSite),
       ancestor_chain_bit_if_third_party_enabled_(ancestor_chain_bit) {
   DCHECK(origin_);
 }

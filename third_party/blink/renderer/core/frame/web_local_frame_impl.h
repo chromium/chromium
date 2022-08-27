@@ -117,7 +117,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   WebLocalFrameImpl* CreateLocalChild(
       mojom::blink::TreeScopeType,
       WebLocalFrameClient*,
-      blink::InterfaceRegistry*,
+      InterfaceRegistry*,
       const LocalFrameToken& frame_token) override;
   WebLocalFrameClient* Client() const override { return client_; }
   void SetAutofillClient(WebAutofillClient*) override;
@@ -316,7 +316,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   WebPerformance Performance() const override;
   bool IsAdFrame() const override;
   bool IsAdScriptInStack() const override;
-  void SetAdEvidence(const blink::FrameAdEvidence& ad_evidence) override;
+  void SetAdEvidence(const FrameAdEvidence& ad_evidence) override;
   const absl::optional<blink::FrameAdEvidence>& AdEvidence() override;
   bool IsFrameCreatedByAdScript() override;
   gfx::Size SpoolSizeInPixelsForTesting(
@@ -354,8 +354,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       CrossVariantMojoRemote<mojom::StorageAreaInterfaceBase>
           session_storage_area) override;
   void AddHitTestOnTouchStartCallback(
-      base::RepeatingCallback<void(const blink::WebHitTestResult&)> callback)
-      override;
+      base::RepeatingCallback<void(const WebHitTestResult&)> callback) override;
 
   // WebNavigationControl overrides:
   bool DispatchBeforeUnloadEvent(bool) override;
@@ -395,7 +394,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       WindowAgentFactory*,
       WebFrame* opener,
       std::unique_ptr<blink::WebPolicyContainer> policy_container,
-      const blink::StorageKey& storage_key,
+      const StorageKey& storage_key,
       network::mojom::blink::WebSandboxFlags sandbox_flags =
           network::mojom::blink::WebSandboxFlags::kNone);
   LocalFrame* GetFrame() const { return frame_.Get(); }
@@ -527,7 +526,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   // the given frame. Additional context data and location are supplied.
   void ShowContextMenu(
       mojo::PendingAssociatedRemote<mojom::blink::ContextMenuClient> client,
-      const blink::ContextMenuData& data,
+      const ContextMenuData& data,
       const absl::optional<gfx::Point>& host_context_menu_location);
 
   virtual void Trace(Visitor*) const;
@@ -596,7 +595,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       WindowAgentFactory*,
       WebFrame* opener,
       std::unique_ptr<PolicyContainer> policy_container,
-      const blink::StorageKey& storage_key,
+      const StorageKey& storage_key,
       network::mojom::blink::WebSandboxFlags sandbox_flags =
           network::mojom::blink::WebSandboxFlags::kNone);
 
@@ -633,7 +632,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   Member<ChromePrintContext> print_context_;
 
   // Borrowed pointers to Mojo objects.
-  blink::InterfaceRegistry* interface_registry_;
+  InterfaceRegistry* interface_registry_;
 
   WebInputMethodControllerImpl input_method_controller_;
 
