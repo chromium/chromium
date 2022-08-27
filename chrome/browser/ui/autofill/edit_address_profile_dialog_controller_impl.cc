@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
 
 #include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller_impl.h"
@@ -88,7 +89,7 @@ void EditAddressProfileDialogControllerImpl::OnUserDecision(
       SaveUpdateAddressProfileBubbleControllerImpl::FromWebContents(
           web_contents());
   controller->OfferSave(
-      address_profile_to_edit_, base::OptionalOrNullptr(original_profile_),
+      address_profile_to_edit_, base::OptionalToPtr(original_profile_),
       AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
       std::move(address_profile_save_prompt_callback_));
 }
