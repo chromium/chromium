@@ -1,0 +1,10 @@
+Name: Nightly Rust toolchain source package
+Short Name: rust-src-nightly
+Version: 0
+License: Apache License, Version 2 and the MIT License
+License File: LICENSE
+Security Critical: yes
+CPEPrefix: cpe:/a:rust-lang:rust
+
+Description:
+Official Rust nightly source release, including all submodules and vendored dependencies.
