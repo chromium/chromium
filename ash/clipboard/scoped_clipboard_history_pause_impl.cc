@@ -9,7 +9,7 @@
 
 namespace ash {
 
-using PauseBehavior = ClipboardHistoryUtil::PauseBehavior;
+using PauseBehavior = clipboard_history_util::PauseBehavior;
 
 ScopedClipboardHistoryPauseImpl::ScopedClipboardHistoryPauseImpl(
     ClipboardHistory* clipboard_history)

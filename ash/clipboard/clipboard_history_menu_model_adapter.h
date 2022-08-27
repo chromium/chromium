@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "base/time/time.h"
-#include "base/unguessable_token.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
@@ -25,9 +24,9 @@ class MenuRunner;
 
 namespace ash {
 
-namespace ClipboardHistoryUtil {
+namespace clipboard_history_util {
 enum class Action;
-}  // namespace ClipboardHistoryUtil
+}  // namespace clipboard_history_util
 
 class ClipboardHistory;
 class ClipboardHistoryItem;
@@ -84,7 +83,7 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter : views::MenuModelAdapter {
   void AdvancePseudoFocus(bool reverse);
 
   // Returns the action to take on the menu item specified by `command_id`.
-  ClipboardHistoryUtil::Action GetActionForCommandId(int command_id) const;
+  clipboard_history_util::Action GetActionForCommandId(int command_id) const;
 
   // Returns menu bounds in screen coordinates.
   gfx::Rect GetMenuBoundsInScreenForTest() const;

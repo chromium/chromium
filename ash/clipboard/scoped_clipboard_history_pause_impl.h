@@ -6,13 +6,16 @@
 #define ASH_CLIPBOARD_SCOPED_CLIPBOARD_HISTORY_PAUSE_IMPL_H_
 
 #include "ash/ash_export.h"
-#include "ash/clipboard/clipboard_history_util.h"
 #include "ash/public/cpp/scoped_clipboard_history_pause.h"
 #include "base/memory/weak_ptr.h"
 #include "base/token.h"
 
 namespace ash {
 class ClipboardHistory;
+
+namespace clipboard_history_util {
+enum class PauseBehavior;
+}  // namespace clipboard_history_util
 
 // Controls modifications to clipboard history within its lifetime. If clipboard
 // data is read or modified within its lifetime, the individual pause's behavior
@@ -21,8 +24,9 @@ class ASH_EXPORT ScopedClipboardHistoryPauseImpl
     : public ScopedClipboardHistoryPause {
  public:
   explicit ScopedClipboardHistoryPauseImpl(ClipboardHistory* clipboard_history);
-  ScopedClipboardHistoryPauseImpl(ClipboardHistory* clipboard_history,
-                                  ClipboardHistoryUtil::PauseBehavior behavior);
+  ScopedClipboardHistoryPauseImpl(
+      ClipboardHistory* clipboard_history,
+      clipboard_history_util::PauseBehavior behavior);
   ScopedClipboardHistoryPauseImpl(const ScopedClipboardHistoryPauseImpl&) =
       delete;
   ScopedClipboardHistoryPauseImpl& operator=(

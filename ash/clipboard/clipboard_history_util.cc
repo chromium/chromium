@@ -21,8 +21,7 @@
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/gfx/paint_vector_icon.h"
 
-namespace ash {
-namespace ClipboardHistoryUtil {
+namespace ash::clipboard_history_util {
 
 namespace {
 
@@ -51,29 +50,27 @@ absl::optional<ui::ClipboardInternalFormat> CalculateMainFormat(
   return absl::nullopt;
 }
 
-ClipboardHistoryDisplayFormat CalculateDisplayFormat(
-    const ui::ClipboardData& data) {
+DisplayFormat CalculateDisplayFormat(const ui::ClipboardData& data) {
   switch (CalculateMainFormat(data).value()) {
     case ui::ClipboardInternalFormat::kPng:
-      return ClipboardHistoryDisplayFormat::kPng;
+      return DisplayFormat::kPng;
     case ui::ClipboardInternalFormat::kHtml:
       if ((data.markup_data().find("<img") == std::string::npos) &&
           (data.markup_data().find("<table") == std::string::npos)) {
-        return ClipboardHistoryDisplayFormat::kText;
+        return DisplayFormat::kText;
       }
-      return ClipboardHistoryDisplayFormat::kHtml;
+      return DisplayFormat::kHtml;
     case ui::ClipboardInternalFormat::kText:
     case ui::ClipboardInternalFormat::kSvg:
     case ui::ClipboardInternalFormat::kRtf:
     case ui::ClipboardInternalFormat::kBookmark:
     case ui::ClipboardInternalFormat::kWeb:
-      return ClipboardHistoryDisplayFormat::kText;
+      return DisplayFormat::kText;
     case ui::ClipboardInternalFormat::kFilenames:
-      return ClipboardHistoryDisplayFormat::kFile;
+      return DisplayFormat::kFile;
     case ui::ClipboardInternalFormat::kCustom:
-      return ContainsFileSystemData(data)
-                 ? ClipboardHistoryDisplayFormat::kFile
-                 : ClipboardHistoryDisplayFormat::kText;
+      return ContainsFileSystemData(data) ? DisplayFormat::kFile
+                                          : DisplayFormat::kText;
   }
 }
 
@@ -192,8 +189,7 @@ bool IsEnabledInCurrentMode() {
 
 gfx::ImageSkia GetIconForFileClipboardItem(const ClipboardHistoryItem& item,
                                            const std::string& file_name) {
-  DCHECK_EQ(ClipboardHistoryDisplayFormat::kFile,
-            CalculateDisplayFormat(item.data()));
+  DCHECK_EQ(DisplayFormat::kFile, CalculateDisplayFormat(item.data()));
   const int copied_files_count = GetCountOfCopiedFiles(item.data());
 
   if (copied_files_count == 0)
@@ -213,5 +209,4 @@ gfx::ImageSkia GetIconForFileClipboardItem(const ClipboardHistoryItem& item,
   return CreateVectorIcon(*icons[icon_index], icon_color);
 }
 
-}  // namespace ClipboardHistoryUtil
-}  // namespace ash
+}  // namespace ash::clipboard_history_util

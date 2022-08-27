@@ -127,7 +127,7 @@ void RecordMenuIndexPastedUserAction(int command_id) {
 }
 
 using ClipboardHistoryPasteType =
-    ash::ClipboardHistoryControllerImpl::ClipboardHistoryPasteType;
+    ClipboardHistoryControllerImpl::ClipboardHistoryPasteType;
 bool IsPlainTextPaste(ClipboardHistoryPasteType paste_type) {
   switch (paste_type) {
     case ClipboardHistoryPasteType::kPlainTextAccelerator:
@@ -288,12 +288,12 @@ void ClipboardHistoryControllerImpl::ToggleMenuShownByAccelerator() {
     // Before hiding the menu, paste the selected menu item, or the first item
     // if none is selected.
     PasteMenuItemData(context_menu_->GetSelectedMenuItemCommand().value_or(
-                          ClipboardHistoryUtil::kFirstItemCommandId),
+                          clipboard_history_util::kFirstItemCommandId),
                       ClipboardHistoryPasteType::kRichTextAccelerator);
     return;
   }
 
-  if (ClipboardHistoryUtil::IsEnabledInCurrentMode() && IsEmpty()) {
+  if (clipboard_history_util::IsEnabledInCurrentMode() && IsEmpty()) {
     nudge_controller_->ShowNudge(ClipboardNudgeType::kZeroStateNudge);
     return;
   }
@@ -350,7 +350,7 @@ void ClipboardHistoryControllerImpl::ShowMenu(
               return;
 
             controller_weak_ptr->context_menu_->SelectMenuItemWithCommandId(
-                ClipboardHistoryUtil::kFirstItemCommandId);
+                clipboard_history_util::kFirstItemCommandId);
             if (controller_weak_ptr->initial_item_selected_callback_for_test_) {
               controller_weak_ptr->initial_item_selected_callback_for_test_
                   .Run();
@@ -396,7 +396,7 @@ void ClipboardHistoryControllerImpl::OnScreenshotNotificationCreated() {
 }
 
 bool ClipboardHistoryControllerImpl::CanShowMenu() const {
-  return !IsEmpty() && ClipboardHistoryUtil::IsEnabledInCurrentMode();
+  return !IsEmpty() && clipboard_history_util::IsEnabledInCurrentMode();
 }
 
 bool ClipboardHistoryControllerImpl::IsEmpty() const {
@@ -423,8 +423,8 @@ void ClipboardHistoryControllerImpl::GetHistoryValues(
       continue;
     }
 
-    if (ash::ClipboardHistoryUtil::CalculateDisplayFormat(item.data()) ==
-        ash::ClipboardHistoryUtil::ClipboardHistoryDisplayFormat::kPng) {
+    if (clipboard_history_util::CalculateDisplayFormat(item.data()) ==
+        clipboard_history_util::DisplayFormat::kPng) {
       const auto& maybe_png = item.data().maybe_png();
       if (!maybe_png.has_value()) {
         // The clipboard contains an image which has not yet been encoded to a
@@ -492,7 +492,7 @@ void ClipboardHistoryControllerImpl::GetHistoryValuesWithEncodedPNGs(
 
   // Check after asynchronous PNG encoding finishes to make sure we have not
   // entered a state where clipboard history is disabled, e.g., a locked screen.
-  if (!ClipboardHistoryUtil::IsEnabledInCurrentMode()) {
+  if (!clipboard_history_util::IsEnabledInCurrentMode()) {
     std::move(callback).Run(std::move(item_results));
     return;
   }
@@ -508,8 +508,8 @@ void ClipboardHistoryControllerImpl::GetHistoryValuesWithEncodedPNGs(
     }
 
     base::Value item_value(base::Value::Type::DICTIONARY);
-    switch (ash::ClipboardHistoryUtil::CalculateDisplayFormat(item.data())) {
-      case ash::ClipboardHistoryUtil::ClipboardHistoryDisplayFormat::kPng: {
+    switch (clipboard_history_util::CalculateDisplayFormat(item.data())) {
+      case clipboard_history_util::DisplayFormat::kPng: {
         if (!item.data().maybe_png().has_value()) {
           // The clipboard contains an image which has not yet been encoded to a
           // PNG. Hopefully we just finished encoding and the PNG can be found
@@ -536,7 +536,7 @@ void ClipboardHistoryControllerImpl::GetHistoryValuesWithEncodedPNGs(
         }
         break;
       }
-      case ash::ClipboardHistoryUtil::ClipboardHistoryDisplayFormat::kHtml: {
+      case clipboard_history_util::DisplayFormat::kHtml: {
         const SkBitmap& bitmap =
             *(resource_manager_->GetImageModel(item).GetImage().ToSkBitmap());
         item_value.SetKey(kImageDataKey,
@@ -544,17 +544,18 @@ void ClipboardHistoryControllerImpl::GetHistoryValuesWithEncodedPNGs(
         item_value.SetKey(kFormatDataKey, base::Value(kHtmlFormat));
         break;
       }
-      case ash::ClipboardHistoryUtil::ClipboardHistoryDisplayFormat::kText:
+      case clipboard_history_util::DisplayFormat::kText:
         item_value.SetKey(kTextDataKey, base::Value(item.data().text()));
         item_value.SetKey(kFormatDataKey, base::Value(kTextFormat));
         break;
-      case ash::ClipboardHistoryUtil::ClipboardHistoryDisplayFormat::kFile: {
+      case clipboard_history_util::DisplayFormat::kFile: {
         std::string file_name =
             base::UTF16ToUTF8(resource_manager_->GetLabel(item));
         item_value.SetKey(kTextDataKey, base::Value(file_name));
         ScopedLightModeAsDefault scoped_light_mode_as_default;
         std::string data_url = webui::GetBitmapDataUrl(
-            *ClipboardHistoryUtil::GetIconForFileClipboardItem(item, file_name)
+            *clipboard_history_util::GetIconForFileClipboardItem(item,
+                                                                 file_name)
                  .bitmap());
         item_value.SetKey(kImageDataKey, base::Value(data_url));
         item_value.SetKey(kFormatDataKey, base::Value(kFileFormat));
@@ -703,10 +704,10 @@ void ClipboardHistoryControllerImpl::ExecuteCommand(int command_id,
                                                     int event_flags) {
   DCHECK(context_menu_);
 
-  DCHECK_GE(command_id, ClipboardHistoryUtil::kFirstItemCommandId);
-  DCHECK_LE(command_id, ClipboardHistoryUtil::kMaxItemCommandId);
+  DCHECK_GE(command_id, clipboard_history_util::kFirstItemCommandId);
+  DCHECK_LE(command_id, clipboard_history_util::kMaxItemCommandId);
 
-  using Action = ClipboardHistoryUtil::Action;
+  using Action = clipboard_history_util::Action;
   Action action = context_menu_->GetActionForCommandId(command_id);
   switch (action) {
     case Action::kPaste:
@@ -757,7 +758,7 @@ void ClipboardHistoryControllerImpl::PasteMenuItemData(
   // distribution of where in the list users paste from.
   UMA_HISTOGRAM_ENUMERATION(
       "Ash.ClipboardHistory.ContextMenu.MenuOptionSelected", command_id,
-      ClipboardHistoryUtil::kMaxCommandId);
+      clipboard_history_util::kCommandIdBoundary);
   // Record the paste item's history list index as a user action to analyze
   // usage patterns, e.g., how frequently the same index is pasted multiple
   // times in a row.
@@ -793,7 +794,7 @@ void ClipboardHistoryControllerImpl::PasteClipboardHistoryItem(
   // It's possible that the window could change or we could enter a disabled
   // mode after posting the `PasteClipboardHistoryItem()` task.
   if (!intended_window || intended_window != window_util::GetActiveWindow() ||
-      !ClipboardHistoryUtil::IsEnabledInCurrentMode()) {
+      !clipboard_history_util::IsEnabledInCurrentMode()) {
     if (confirmed_operation_callback_for_test_)
       confirmed_operation_callback_for_test_.Run(/*success=*/false);
     return;
@@ -832,7 +833,7 @@ void ClipboardHistoryControllerImpl::PasteClipboardHistoryItem(
   // text data that reaches clipboard history cannot reliably identify the item
   // that should be reordered. In all cases, reorders should only be allowed
   // when the experimental behavior is enabled.
-  using PauseBehavior = ClipboardHistoryUtil::PauseBehavior;
+  using PauseBehavior = clipboard_history_util::PauseBehavior;
   auto pause_behavior =
       !paste_plain_text && features::IsClipboardHistoryReorderEnabled()
           ? PauseBehavior::kAllowReorderOnPaste
@@ -972,7 +973,7 @@ void ClipboardHistoryControllerImpl::DeleteItemWithCommandId(int command_id) {
 
 void ClipboardHistoryControllerImpl::DeleteClipboardHistoryItem(
     const ClipboardHistoryItem& item) {
-  ClipboardHistoryUtil::RecordClipboardHistoryItemDeleted(item);
+  clipboard_history_util::RecordClipboardHistoryItemDeleted(item);
   clipboard_history_->RemoveItemForId(item.id());
 }
 
@@ -983,7 +984,7 @@ void ClipboardHistoryControllerImpl::AdvancePseudoFocus(bool reverse) {
 
 gfx::Rect ClipboardHistoryControllerImpl::CalculateAnchorRect() const {
   display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
-  auto* host = ash::GetWindowTreeHostForDisplay(display.id());
+  auto* host = GetWindowTreeHostForDisplay(display.id());
 
   // Some web apps render the caret in an IFrame, and we will not get the
   // bounds in that case.

@@ -10,7 +10,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/clipboard/clipboard_history_item.h"
-#include "ash/clipboard/clipboard_history_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/token.h"
@@ -20,6 +19,10 @@
 namespace ash {
 
 class ScopedClipboardHistoryPauseImpl;
+
+namespace clipboard_history_util {
+enum class PauseBehavior;
+}  // namespace clipboard_history_util
 
 // Keeps track of the last few things saved in the clipboard.
 class ASH_EXPORT ClipboardHistory : public ui::ClipboardObserver {
@@ -90,11 +93,12 @@ class ASH_EXPORT ClipboardHistory : public ui::ClipboardObserver {
   // `pause_id`. If `Pause()` is called while another pause is active, the
   // newest pause's behavior will be respected. When the newest pause ends, the
   // next newest pause's behavior will be restored.
-  const base::Token& Pause(ClipboardHistoryUtil::PauseBehavior pause_behavior);
+  const base::Token& Pause(
+      clipboard_history_util::PauseBehavior pause_behavior);
   void Resume(const base::Token& pause_id);
   struct PauseInfo {
     base::Token pause_id;
-    ClipboardHistoryUtil::PauseBehavior pause_behavior;
+    clipboard_history_util::PauseBehavior pause_behavior;
   };
 
   // Keeps track of consecutive clipboard operations and records metrics.

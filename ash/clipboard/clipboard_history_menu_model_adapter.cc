@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/base/clipboard/clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
@@ -80,7 +79,7 @@ void ClipboardHistoryMenuModelAdapter::Run(
 
   menu_open_time_ = base::TimeTicks::Now();
 
-  int command_id = ClipboardHistoryUtil::kFirstItemCommandId;
+  int command_id = clipboard_history_util::kFirstItemCommandId;
   const auto& items = clipboard_history_->GetItems();
   // Do not include the final kDeleteCommandId item in histograms, because it
   // is not shown.
@@ -250,14 +249,14 @@ void ClipboardHistoryMenuModelAdapter::AdvancePseudoFocus(bool reverse) {
   if (!selected_command.has_value()) {
     SelectMenuItemWithCommandId(
         reverse ? item_views_by_command_id_.rbegin()->first
-                : ClipboardHistoryUtil::kFirstItemCommandId);
+                : clipboard_history_util::kFirstItemCommandId);
     return;
   }
 
   AdvancePseudoFocusFromSelectedItem(reverse);
 }
 
-ClipboardHistoryUtil::Action
+clipboard_history_util::Action
 ClipboardHistoryMenuModelAdapter::GetActionForCommandId(int command_id) const {
   auto selected_item_iter = item_views_by_command_id_.find(command_id);
   DCHECK(selected_item_iter != item_views_by_command_id_.cend());

@@ -18,12 +18,10 @@
 #include "base/notreached.h"
 #include "base/stl_util.h"
 #include "base/strings/escape.h"
-#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/clipboard/clipboard_data.h"
-#include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -103,7 +101,7 @@ std::u16string GetLabelForFileSystemData(const ui::ClipboardData& data) {
   // This code should not be reached if `data` doesn't contain file system data.
   std::u16string sources;
   std::vector<base::StringPiece16> source_list;
-  ClipboardHistoryUtil::GetSplitFileSystemData(data, &source_list, &sources);
+  clipboard_history_util::GetSplitFileSystemData(data, &source_list, &sources);
   if (sources.empty()) {
     NOTREACHED();
     return std::u16string();
@@ -158,7 +156,7 @@ ui::ImageModel ClipboardHistoryResourceManager::GetImageModel(
 std::u16string ClipboardHistoryResourceManager::GetLabel(
     const ClipboardHistoryItem& item) const {
   const ui::ClipboardData& data = item.data();
-  switch (ClipboardHistoryUtil::CalculateMainFormat(data).value()) {
+  switch (clipboard_history_util::CalculateMainFormat(data).value()) {
     case ui::ClipboardInternalFormat::kPng:
       RecordPlaceholderString(ClipboardHistoryPlaceholderStringType::kBitmap);
       return GetLocalizedString(IDS_CLIPBOARD_MENU_IMAGE);
@@ -261,8 +259,8 @@ void ClipboardHistoryResourceManager::OnClipboardHistoryItemAdded(
 
   // For items that will be represented by their rendered HTML, we need to do
   // some prep work to pre-render and cache an image model.
-  if (ClipboardHistoryUtil::CalculateDisplayFormat(item.data()) !=
-      ClipboardHistoryUtil::ClipboardHistoryDisplayFormat::kHtml) {
+  if (clipboard_history_util::CalculateDisplayFormat(item.data()) !=
+      clipboard_history_util::DisplayFormat::kHtml) {
     return;
   }
 
@@ -314,8 +312,8 @@ void ClipboardHistoryResourceManager::OnClipboardHistoryItemAdded(
 void ClipboardHistoryResourceManager::OnClipboardHistoryItemRemoved(
     const ClipboardHistoryItem& item) {
   // For items that will not be represented by their rendered HTML, do nothing.
-  if (ClipboardHistoryUtil::CalculateDisplayFormat(item.data()) !=
-      ClipboardHistoryUtil::ClipboardHistoryDisplayFormat::kHtml) {
+  if (clipboard_history_util::CalculateDisplayFormat(item.data()) !=
+      clipboard_history_util::DisplayFormat::kHtml) {
     return;
   }
 

@@ -298,7 +298,7 @@ TEST_F(ClipboardHistoryTest, PauseHistoryAllowReorders) {
 
   ScopedClipboardHistoryPauseImpl scoped_pause(
       clipboard_history(),
-      ClipboardHistoryUtil::PauseBehavior::kAllowReorderOnPaste);
+      clipboard_history_util::PauseBehavior::kAllowReorderOnPaste);
   WriteAndEnsureTextHistory(input_string1, expected_strings_reordered);
   // Clipboard history modifications made during a reorder-on-paste operation
   // should not count as copies (or pastes). A reorder is not a user action.
@@ -326,7 +326,7 @@ TEST_F(ClipboardHistoryTest, PauseHistoryNested) {
 
   // By default, pausing prevents clipboard history modifications.
   ScopedClipboardHistoryPauseImpl scoped_pause_default_1(
-      clipboard_history(), ClipboardHistoryUtil::PauseBehavior::kDefault);
+      clipboard_history(), clipboard_history_util::PauseBehavior::kDefault);
   WriteAndEnsureTextHistory(input_string3, expected_strings_initial);
   histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.Operation", 0u);
 
@@ -336,7 +336,7 @@ TEST_F(ClipboardHistoryTest, PauseHistoryNested) {
     // overridden.
     ScopedClipboardHistoryPauseImpl scoped_pause_allow_reorders(
         clipboard_history(),
-        ClipboardHistoryUtil::PauseBehavior::kAllowReorderOnPaste);
+        clipboard_history_util::PauseBehavior::kAllowReorderOnPaste);
     WriteAndEnsureTextHistory(input_string1, expected_strings_reordered1);
     // Clipboard history modifications made during a reorder-on-paste operation
     // should not count as copies (or pastes). A reorder is not a user action.
@@ -346,7 +346,7 @@ TEST_F(ClipboardHistoryTest, PauseHistoryNested) {
       // Test that the newest behavior always applies, regardless of what order
       // behaviors were overridden.
       ScopedClipboardHistoryPauseImpl scoped_pause_default_2(
-          clipboard_history(), ClipboardHistoryUtil::PauseBehavior::kDefault);
+          clipboard_history(), clipboard_history_util::PauseBehavior::kDefault);
       WriteAndEnsureTextHistory(input_string3, expected_strings_reordered1);
       histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.Operation", 0u);
     }
@@ -384,14 +384,14 @@ TEST_F(ClipboardHistoryTest, PauseHistoryResumeOutOfOrder) {
   histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.Operation", 0u);
 
   auto scoped_pause_default = std::make_unique<ScopedClipboardHistoryPauseImpl>(
-      clipboard_history(), ClipboardHistoryUtil::PauseBehavior::kDefault);
+      clipboard_history(), clipboard_history_util::PauseBehavior::kDefault);
   WriteAndEnsureTextHistory(input_string3, expected_strings_initial);
   histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.Operation", 0u);
 
   auto scoped_pause_allow_reorders =
       std::make_unique<ScopedClipboardHistoryPauseImpl>(
           clipboard_history(),
-          ClipboardHistoryUtil::PauseBehavior::kAllowReorderOnPaste);
+          clipboard_history_util::PauseBehavior::kAllowReorderOnPaste);
   WriteAndEnsureTextHistory(input_string1, expected_strings_reordered1);
   // Clipboard history modifications made during a reorder-on-paste operation
   // should not count as copies (or pastes). A reorder is not a user action.
@@ -503,19 +503,18 @@ TEST_F(ClipboardHistoryTest, BasicFileSystemData) {
   WriteAndEnsureCustomDataHistory(input_data, expected_data);
 }
 
-// Tests that the ClipboardHistoryDisplayFormat for HTML with no <img or <table
-// tags is text.
+// Tests that the display format for HTML with no <img> or <table> tags is text.
 TEST_F(ClipboardHistoryTest, DisplayFormatForPlainHTML) {
   ui::ClipboardData data;
   data.set_markup_data("plain html with no img or table tags");
 
-  EXPECT_EQ(ClipboardHistoryUtil::ClipboardHistoryDisplayFormat::kText,
-            ClipboardHistoryUtil::CalculateDisplayFormat(data));
+  EXPECT_EQ(clipboard_history_util::DisplayFormat::kText,
+            clipboard_history_util::CalculateDisplayFormat(data));
 
   data.set_markup_data("<img> </img>");
 
-  EXPECT_EQ(ClipboardHistoryUtil::ClipboardHistoryDisplayFormat::kHtml,
-            ClipboardHistoryUtil::CalculateDisplayFormat(data));
+  EXPECT_EQ(clipboard_history_util::DisplayFormat::kHtml,
+            clipboard_history_util::CalculateDisplayFormat(data));
 }
 
 // Tests that Ash.ClipboardHistory.ControlToVDelay is only recorded if

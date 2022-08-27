@@ -314,7 +314,7 @@ ClipboardHistoryBitmapItemView::ClipboardHistoryBitmapItemView(
     views::MenuItemView* container)
     : ClipboardHistoryItemView(clipboard_history_item, container),
       resource_manager_(resource_manager),
-      data_format_(*ClipboardHistoryUtil::CalculateMainFormat(
+      data_format_(*clipboard_history_util::CalculateMainFormat(
           clipboard_history_item->data())) {}
 
 ClipboardHistoryBitmapItemView::~ClipboardHistoryBitmapItemView() = default;

@@ -6,7 +6,6 @@
 
 #include <deque>
 
-#include "ash/clipboard/clipboard_history_metrics.h"
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/scoped_clipboard_history_pause_impl.h"
 #include "base/bind.h"
@@ -22,7 +21,7 @@
 
 namespace ash {
 
-using PauseBehavior = ClipboardHistoryUtil::PauseBehavior;
+using PauseBehavior = clipboard_history_util::PauseBehavior;
 
 ClipboardHistory::ClipboardHistory() {
   ui::ClipboardMonitor::GetInstance()->AddObserver(this);
@@ -74,7 +73,7 @@ void ClipboardHistory::RemoveItemForId(const base::UnguessableToken& id) {
 }
 
 void ClipboardHistory::OnClipboardDataChanged() {
-  if (!ClipboardHistoryUtil::IsEnabledInCurrentMode())
+  if (!clipboard_history_util::IsEnabledInCurrentMode())
     return;
 
   if (!pauses_.empty() &&
@@ -155,9 +154,9 @@ void ClipboardHistory::OnClipboardOperation(bool copy) {
   for (auto& observer : observers_)
     observer.OnOperationConfirmed(copy);
 
+  using Operation = clipboard_history_util::Operation;
   base::UmaHistogramEnumeration("Ash.ClipboardHistory.Operation",
-                                copy ? ClipboardHistoryOperation::kCopy
-                                     : ClipboardHistoryOperation::kPaste);
+                                copy ? Operation::kCopy : Operation::kPaste);
 
   if (copy) {
     consecutive_copies_++;
@@ -209,7 +208,7 @@ void ClipboardHistory::SyncClipboardToClipboardHistory() {
 
 void ClipboardHistory::MaybeCommitData(ui::ClipboardData data,
                                        bool is_reorder_on_paste) {
-  if (!ClipboardHistoryUtil::IsSupported(data))
+  if (!clipboard_history_util::IsSupported(data))
     return;
 
   auto iter = std::find_if(history_list_.begin(), history_list_.end(),
@@ -223,10 +222,10 @@ void ClipboardHistory::MaybeCommitData(ui::ClipboardData data,
     // current state.
     iter->ReplaceEquivalentData(std::move(data));
     history_list_.splice(history_list_.begin(), history_list_, iter);
-    base::UmaHistogramEnumeration("Ash.ClipboardHistory.ReorderType",
-                                  is_reorder_on_paste
-                                      ? ClipboardHistoryReorderType::kOnPaste
-                                      : ClipboardHistoryReorderType::kOnCopy);
+    using ReorderType = clipboard_history_util::ReorderType;
+    base::UmaHistogramEnumeration(
+        "Ash.ClipboardHistory.ReorderType",
+        is_reorder_on_paste ? ReorderType::kOnPaste : ReorderType::kOnCopy);
   } else {
     DCHECK(!is_reorder_on_paste);
     history_list_.emplace_front(std::move(data));
@@ -235,7 +234,7 @@ void ClipboardHistory::MaybeCommitData(ui::ClipboardData data,
   for (auto& observer : observers_)
     observer.OnClipboardHistoryItemAdded(history_list_.front(), is_duplicate);
 
-  if (history_list_.size() > ClipboardHistoryUtil::kMaxClipboardItemsShared) {
+  if (history_list_.size() > clipboard_history_util::kMaxClipboardItems) {
     auto removed = std::move(history_list_.back());
     history_list_.pop_back();
     for (auto& observer : observers_)

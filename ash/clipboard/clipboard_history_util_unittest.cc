@@ -12,8 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace ClipboardHistoryUtil {
+namespace ash::clipboard_history_util {
 
 namespace {
 
@@ -185,5 +184,4 @@ TEST_F(ClipboardHistoryUtilTest, IsSupported) {
   EXPECT_TRUE(IsSupported(builder.Build().data()));
 }
 
-}  // namespace ClipboardHistoryUtil
-}  // namespace ash
+}  // namespace ash::clipboard_history_util

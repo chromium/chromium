@@ -6,6 +6,7 @@
 
 #include <array>
 
+#include "ash/clipboard/clipboard_history_util.h"
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/view_class_properties.h"
@@ -52,7 +53,7 @@ void ClipboardHistoryFileItemView::OnThemeChanged() {
   // TODO(andrewxu): remove this line after https://crbug.com/1143009 is fixed.
   ScopedLightModeAsDefault scoped_light_mode_as_default;
 
-  file_icon_->SetImage(ClipboardHistoryUtil::GetIconForFileClipboardItem(
+  file_icon_->SetImage(clipboard_history_util::GetIconForFileClipboardItem(
       *clipboard_history_item(), base::UTF16ToUTF8(text())));
 }
 

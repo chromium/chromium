@@ -4,6 +4,7 @@
 
 #include "ash/clipboard/views/clipboard_history_delete_button.h"
 
+#include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/views/clipboard_history_item_view.h"
 #include "ash/style/style_util.h"
 #include "base/bind.h"
@@ -25,7 +26,7 @@ ClipboardHistoryDeleteButton::ClipboardHistoryDeleteButton(
           CloseButton::Type::kSmall,
           /*use_light_colors=*/true),
       listener_(listener) {
-  SetID(ClipboardHistoryUtil::kDeleteButtonViewID);
+  SetID(clipboard_history_util::kDeleteButtonViewID);
   SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_CLIPBOARD_HISTORY_DELETE_BUTTON));
   SetVisible(false);

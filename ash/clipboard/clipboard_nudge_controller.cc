@@ -11,17 +11,12 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "base/bind.h"
 #include "base/json/values_util.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
-#include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_layer_animation_settings.h"
 
 namespace ash {
 namespace {
@@ -166,7 +161,7 @@ bool ClipboardNudgeController::ShouldShowNewFeatureBadge() {
 void ClipboardNudgeController::OnClipboardDataRead() {
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-  if (!ClipboardHistoryUtil::IsEnabledInCurrentMode() || !prefs ||
+  if (!clipboard_history_util::IsEnabledInCurrentMode() || !prefs ||
       !ShouldShowNudge(prefs)) {
     return;
   }
