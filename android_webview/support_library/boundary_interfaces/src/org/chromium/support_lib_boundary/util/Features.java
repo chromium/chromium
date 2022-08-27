@@ -106,6 +106,9 @@ public class Features {
             "SAFE_BROWSING_RESPONSE_SHOW_INTERSTITIAL";
 
     // WebMessage.getMessagePayload
+    // WebMessagePayload.getType
+    // WebMessagePayload.getAsString
+    // WebMessagePayload.getAsArrayBuffer
     public static final String WEB_MESSAGE_GET_MESSAGE_PAYLOAD = "WEB_MESSAGE_GET_MESSAGE_PAYLOAD";
 
     // WebMessagePortCompat.postMessage

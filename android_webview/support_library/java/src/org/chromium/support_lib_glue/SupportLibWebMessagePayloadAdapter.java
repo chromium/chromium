@@ -4,6 +4,8 @@
 
 package org.chromium.support_lib_glue;
 
+import static org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.recordApiCall;
+
 import android.annotation.SuppressLint;
 
 import androidx.annotation.NonNull;
@@ -14,6 +16,7 @@ import org.chromium.support_lib_boundary.WebMessageBoundaryInterface;
 import org.chromium.support_lib_boundary.WebMessagePayloadBoundaryInterface;
 import org.chromium.support_lib_boundary.util.BoundaryInterfaceReflectionUtil;
 import org.chromium.support_lib_boundary.util.Features;
+import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 
 import java.lang.reflect.InvocationHandler;
 
@@ -36,28 +39,26 @@ class SupportLibWebMessagePayloadAdapter implements WebMessagePayloadBoundaryInt
     @SuppressLint("WrongConstant")
     @Override
     public int getType() {
+        recordApiCall(ApiCall.WEB_MESSAGE_PAYLOAD_GET_TYPE);
         return mMessagePayload.getType();
     }
 
     @Nullable
     @Override
     public String getAsString() {
+        recordApiCall(ApiCall.WEB_MESSAGE_PAYLOAD_GET_AS_STRING);
         return mMessagePayload.getAsString();
+    }
+
+    @NonNull
+    @Override
+    public byte[] getAsArrayBuffer() {
+        recordApiCall(ApiCall.WEB_MESSAGE_PAYLOAD_GET_AS_ARRAY_BUFFER);
+        return mMessagePayload.getAsArrayBuffer();
     }
 
     public /* MessagePayload */ InvocationHandler getInvocationHandler() {
         return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(this);
-    }
-
-    public static MessagePayload toMessagePayload(
-            /* MessagePayload */ InvocationHandler invocationHandler) {
-        if (invocationHandler == null) {
-            return null;
-        }
-        WebMessagePayloadBoundaryInterface webMessagePayloadBoundaryInterface =
-                BoundaryInterfaceReflectionUtil.castToSuppLibClass(
-                        WebMessagePayloadBoundaryInterface.class, invocationHandler);
-        return new MessagePayload(webMessagePayloadBoundaryInterface.getAsString());
     }
 
     public static MessagePayload fromWebMessageBoundaryInterface(
@@ -65,7 +66,7 @@ class SupportLibWebMessagePayloadAdapter implements WebMessagePayloadBoundaryInt
         if (BoundaryInterfaceReflectionUtil.containsFeature(
                     boundaryInterface.getSupportedFeatures(),
                     Features.WEB_MESSAGE_GET_MESSAGE_PAYLOAD)) {
-            // MessagePayload supported by supported lib.
+            // MessagePayload API is supported by AndroidX.
             final MessagePayload messagePayload =
                     SupportLibWebMessagePayloadAdapter.toMessagePayload(
                             boundaryInterface.getMessagePayload());
@@ -76,5 +77,27 @@ class SupportLibWebMessagePayloadAdapter implements WebMessagePayloadBoundaryInt
         }
         // Fallback to old string-only API.
         return new MessagePayload(boundaryInterface.getData());
+    }
+
+    private static MessagePayload toMessagePayload(
+            /* MessagePayload */ InvocationHandler invocationHandler) {
+        if (invocationHandler == null) {
+            return null;
+        }
+        WebMessagePayloadBoundaryInterface webMessagePayloadBoundaryInterface =
+                BoundaryInterfaceReflectionUtil.castToSuppLibClass(
+                        WebMessagePayloadBoundaryInterface.class, invocationHandler);
+        @WebMessagePayloadType
+        final int type = webMessagePayloadBoundaryInterface.getType();
+        switch (type) {
+            case WebMessagePayloadType.TYPE_STRING:
+                return new MessagePayload(webMessagePayloadBoundaryInterface.getAsString());
+            case WebMessagePayloadType.TYPE_ARRAY_BUFFER:
+                return new MessagePayload(webMessagePayloadBoundaryInterface.getAsArrayBuffer());
+            default:
+                // String and ArrayBuffer are covered by WEB_MESSAGE_GET_MESSAGE_PAYLOAD feature.
+                // Please add new feature flags for new types.
+                throw new RuntimeException("Unsupported type: " + type);
+        }
     }
 }

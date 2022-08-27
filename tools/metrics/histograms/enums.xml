@@ -2965,6 +2965,18 @@ Unknown properties are collapsed to zero. -->
   <int value="63" label="WEB_VIEW_COOKIE_MANAGER_GET_COOKIE_INFO">
     CookieManagerCompat#getCookieInfo()
   </int>
+  <int value="64" label="WEB_MESSAGE_GET_MESSAGE_PAYLOAD">
+    WebMessageCompat#getMessagePayload()
+  </int>
+  <int value="65" label="WEB_MESSAGE_PAYLOAD_GET_TYPE">
+    WebMessagePayload#getType();
+  </int>
+  <int value="66" label="WEB_MESSAGE_PAYLOAD_GET_AS_STRING">
+    WebMessagePayload#getAsString();
+  </int>
+  <int value="67" label="WEB_MESSAGE_PAYLOAD_GET_AS_ARRAY_BUFFER">
+    WebMessagePayload#getAsArrayBuffer();
+  </int>
 </enum>
 
 <enum name="AnnouncementNotificationEvent">

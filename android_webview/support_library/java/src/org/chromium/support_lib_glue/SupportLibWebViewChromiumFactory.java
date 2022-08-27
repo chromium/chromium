@@ -89,6 +89,7 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
                     Features.ALGORITHMIC_DARKENING,
                     Features.ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY,
                     Features.GET_COOKIE_INFO + Features.DEV_SUFFIX,
+                    Features.WEB_MESSAGE_GET_MESSAGE_PAYLOAD + Features.DEV_SUFFIX,
                     // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                     // when they're initially added (this can be removed in a future CL). The final
                     // feature should have a trailing comma for cleaner diffs.
@@ -160,6 +161,10 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
             ApiCall.WEB_SETTINGS_GET_ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY_ENABLED,
             ApiCall.WEB_SETTINGS_SET_ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY_ENABLED,
             ApiCall.COOKIE_MANAGER_GET_COOKIE_INFO,
+            ApiCall.WEB_MESSAGE_GET_MESSAGE_PAYLOAD,
+            ApiCall.WEB_MESSAGE_PAYLOAD_GET_TYPE,
+            ApiCall.WEB_MESSAGE_PAYLOAD_GET_AS_STRING,
+            ApiCall.WEB_MESSAGE_PAYLOAD_GET_AS_ARRAY_BUFFER,
             // Add new constants above. The final constant should have a trailing comma for cleaner
             // diffs.
     })
@@ -228,8 +233,12 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
         int WEB_SETTINGS_GET_ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY_ENABLED = 61;
         int WEB_SETTINGS_SET_ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY_ENABLED = 62;
         int COOKIE_MANAGER_GET_COOKIE_INFO = 63;
+        int WEB_MESSAGE_GET_MESSAGE_PAYLOAD = 64;
+        int WEB_MESSAGE_PAYLOAD_GET_TYPE = 65;
+        int WEB_MESSAGE_PAYLOAD_GET_AS_STRING = 66;
+        int WEB_MESSAGE_PAYLOAD_GET_AS_ARRAY_BUFFER = 67;
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 64;
+        int COUNT = 68;
     }
     // clang-format on
 

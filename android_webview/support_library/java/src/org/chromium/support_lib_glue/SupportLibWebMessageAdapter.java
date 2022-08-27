@@ -35,6 +35,7 @@ public class SupportLibWebMessageAdapter implements WebMessageBoundaryInterface 
 
     @Override
     public /* MessagePayload */ InvocationHandler getMessagePayload() {
+        recordApiCall(ApiCall.WEB_MESSAGE_GET_MESSAGE_PAYLOAD);
         return new SupportLibWebMessagePayloadAdapter(mMessagePayload).getInvocationHandler();
     }
 
