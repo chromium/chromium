@@ -37,10 +37,6 @@
 #include "sandbox/policy/linux/bpf_gpu_policy_linux.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
 
-#if BUILDFLAG(USE_V4L2_CODEC)
-#include "media/gpu/v4l2/v4l2_device.h"
-#endif
-
 using sandbox::bpf_dsl::Policy;
 using sandbox::syscall_broker::BrokerFilePermission;
 using sandbox::syscall_broker::BrokerProcess;
@@ -84,8 +80,9 @@ inline bool UseV4L2Codec() {
 }
 
 inline bool UseLibV4L2() {
-#if BUILDFLAG(USE_V4L2_CODEC)
-  return media::V4L2Device::UseLibV4L2();
+  // TODO(b/240881905): for LaCrOS, this will need to be determined at runtime.
+#if BUILDFLAG(USE_LIBV4L2)
+  return true;
 #else
   return false;
 #endif
@@ -534,8 +531,6 @@ bool IsAcceleratedVideoEnabled(
 
 void LoadV4L2Libraries(
     const sandbox::policy::SandboxSeccompBPF::Options& options) {
-  DCHECK(UseV4L2Codec());
-
   if (IsAcceleratedVideoEnabled(options) && UseLibV4L2()) {
     dlopen(kLibV4l2Path, dlopen_flag);
 

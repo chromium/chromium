@@ -648,17 +648,6 @@ class MEDIA_GPU_EXPORT V4L2Device
     kJpegEncoder,
   };
 
-  inline static constexpr char kLibV4l2Path[] =
-#if defined(__aarch64__)
-      "/usr/lib64/libv4l2.so";
-#else
-      "/usr/lib/libv4l2.so";
-#endif
-
-  // Returns true iff libv4l2 should be used to interact with the V4L2 driver.
-  // This method is thread-safe.
-  static bool UseLibV4L2();
-
   // Create and initialize an appropriate V4L2Device instance for the current
   // platform, or return nullptr if not available.
   static scoped_refptr<V4L2Device> Create();

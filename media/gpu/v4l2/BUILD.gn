@@ -13,11 +13,13 @@ import("//ui/gl/features.gni")
 
 assert(use_v4l2_codec)
 
-generate_stubs("libv4l2_stubs") {
-  extra_header = "v4l2_stub_header.fragment"
-  sigs = [ "v4l2.sig" ]
-  output_name = "v4l2_stubs"
-  deps = [ "//base" ]
+if (use_v4lplugin) {
+  generate_stubs("libv4l2_stubs") {
+    extra_header = "v4l2_stub_header.fragment"
+    sigs = [ "v4l2.sig" ]
+    output_name = "v4l2_stubs"
+    deps = [ "//base" ]
+  }
 }
 
 source_set("v4l2") {
@@ -100,7 +102,6 @@ source_set("v4l2") {
   public_deps = [ "//ui/gl" ]
 
   deps = [
-    ":libv4l2_stubs",
     ":v4l2_status",
     "//base",
     "//gpu/ipc/common",
@@ -114,6 +115,10 @@ source_set("v4l2") {
     "//ui/gfx/geometry",
     "//ui/ozone",
   ]
+
+  if (use_v4lplugin) {
+    deps += [ ":libv4l2_stubs" ]
+  }
 
   if (is_chromeos_ash) {
     sources += [
