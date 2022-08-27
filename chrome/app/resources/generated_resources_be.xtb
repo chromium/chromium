@@ -3589,7 +3589,7 @@
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> і яшчэ некалькі (<ph name="NUMBER_OF_OTHER_SWITCHES" />) пераключальнікаў</translation>
 <translation id="439266289085815679">Карыстальнік <ph name="USER_EMAIL" /> кіруе канфігурацыяй Bluetooth.</translation>
 <translation id="4392896746540753732">Рэдагаванне файла канфігурацыі</translation>
-<translation id="4393713825278446281">Прылады з Хуткім спалучэннем, захаваныя ва ўліковым запісе <ph name="PRIMARY_EMAIL" /></translation>
+<translation id="4393713825278446281">Прылады з хуткім спалучэннем, захаваныя ва ўліковым запісе <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4394049700291259645">Выключыць</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;Адкрыць усе}=1{&amp;Адкрыць закладку}one{&amp;Адкрыць усе ({COUNT})}few{&amp;Адкрыць усе ({COUNT})}many{&amp;Адкрыць усе ({COUNT})}other{&amp;Адкрыць усе ({COUNT})}}</translation>
 <translation id="4397372003838952832">Вам не трэба запамінаць гэты пароль. <ph name="GOOGLE_PASSWORD_MANAGER" /> захавае яго для ўліковага запісу <ph name="EMAIL" />.</translation>
@@ -4312,7 +4312,7 @@
 <translation id="5111646998522066203">Выйсці з рэжыму інкогніта</translation>
 <translation id="5111692334209731439">&amp;Менеджар закладак</translation>
 <translation id="5112577000029535889">&amp;Інструменты распрацоўшчыка</translation>
-<translation id="511313294362309725">Уключыць Хуткае спалучэнне</translation>
+<translation id="511313294362309725">Уключыць хуткае спалучэнне</translation>
 <translation id="5113739826273394829">Націснуўшы на гэты значок, вы ўручную заблакіруеце <ph name="DEVICE_TYPE" />. Для разблакіроўкі трэба будзе ўвесці пароль.</translation>
 <translation id="51143538739122961">Устаўце ключ бяспекі і дакраніцеся да яго</translation>
 <translation id="5115309401544567011">Падключыце <ph name="DEVICE_TYPE" /> да крыніцы сілкавання.</translation>
@@ -5896,7 +5896,7 @@
 <translation id="6644512095122093795">Паказваць прапанову захаваць паролі</translation>
 <translation id="6644513150317163574">Няправільны фармат URL-адраса. Пры выкарыстанні аўтэнтыфікацыі SSO сервер трэба ўказваць як імя хоста.</translation>
 <translation id="6644846457769259194">Ідзе абнаўленне прылады (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="6646476869708241165">Выключыць Хуткае спалучэнне</translation>
+<translation id="6646476869708241165">Выключыць хуткае спалучэнне</translation>
 <translation id="6647228709620733774">URL-адрас адклікання для цэнтра сертыфікацыі Netscape</translation>
 <translation id="6647441008198474441">URL-адрасы старонак, якія вы наведваеце, адпраўляюцца ў Google, каб прадказваць, якія сайты вы можаце наведаць далей</translation>
 <translation id="6648911618876616409">Крытычнае абнаўленне гатовае да ўсталявання. Каб усталяваць яго, увайдзіце ва ўліковы запіс.</translation>
@@ -6020,7 +6020,7 @@
 <translation id="6771503742377376720">З'яўляецца цэнтрам сертыфікацыі</translation>
 <translation id="6775163072363532304">Тут будуць з'яўляцца даступныя прылады.</translation>
 <translation id="677646486571529447">Дадаць нататку</translation>
-<translation id="6776729248872343918">Уключыць Хуткае спалучэнне</translation>
+<translation id="6776729248872343918">Уключыць хуткае спалучэнне</translation>
 <translation id="6777817260680419853">Перанакіраванне заблакіравана</translation>
 <translation id="6778737459546443941">Бацькі яшчэ не ўхвалілі гэты сайт</translation>
 <translation id="6779092717724412415">Каб стварыць такое вылучэнне, як гэта, выберыце які-небудзь тэкст і націсніце на яго правай кнопкай мышы.</translation>
@@ -6636,7 +6636,7 @@
 <translation id="7377481913241237033">Падключыцца з дапамогай кода</translation>
 <translation id="7378611153938412599">Ненадзейныя паролі лёгка адгадаць. Выкарыстоўвайце толькі надзейныя паролі. <ph name="BEGIN_LINK" />Праглядзець іншыя парады па бяспецы.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Адкрыць Вэб-краму Chrome</translation>
-<translation id="737938816678769289">З лёгкасцю падключайцеся да прылад паблізу і наладжвайце Хуткае падключэнне</translation>
+<translation id="737938816678769289">З лёгкасцю падключайцеся да прылад паблізу і наладжвайце хуткае падключэнне</translation>
 <translation id="7380459290951585794">Упэўніцеся, што тэлефон разблакіраваны, знаходзіцца паблізу і на ім уключаны Bluetooth і Wi-Fi</translation>
 <translation id="7380622428988553498">Назва прылады змяшчае недапушчальныя сімвалы</translation>
 <translation id="7380768571499464492">Прынтар "<ph name="PRINTER_NAME" />" абноўлены</translation>
@@ -8375,7 +8375,7 @@
 <translation id="9030855135435061269"><ph name="PLUGIN_NAME" /> больш не падтрымліваецца</translation>
 <translation id="9031549947500880805">Рэзервовае капіраванне на Google Дыск. Лёгка аднаўляйце даныя і пераносьце іх на іншыя прылады. У рэзервовую копію ўваходзяць даныя праграм.</translation>
 <translation id="9031811691986152304">паўтарыць спробу</translation>
-<translation id="9032097289595078011">Адключыць Хуткае спалучэнне</translation>
+<translation id="9032097289595078011">Адключыць хуткае спалучэнне</translation>
 <translation id="9033765790910064284">Усё роўна працягнуць</translation>
 <translation id="9033857511263905942">&amp;Уставіць</translation>
 <translation id="903480517321259405">Увядзіце PIN-код яшчэ раз</translation>

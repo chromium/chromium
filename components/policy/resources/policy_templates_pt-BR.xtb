@@ -3000,6 +3000,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       No <ph name="MS_WIN_NAME" />, essa funcionalidade está disponível apenas em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, executadas no Windows 10 Pro ou registradas no <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. No <ph name="MAC_OS_NAME" />, essa funcionalidade está disponível apenas em instâncias gerenciadas por MDM ou associadas a um domínio via MCX.</translation>
 <translation id="4043796890723386527">Impedir que os usuários criem e usem perfis secundários e usem o modo visitante no navegador <ph name="LACROS_NAME" /></translation>
 <translation id="4051723201852944592">Ativar oclusão de janelas</translation>
+<translation id="4052529125939620019">Carregar a extensão do componente do CryptoToken na inicialização</translation>
 <translation id="4053157306171963473">Desativar relatórios sobre o horário das atividades do dispositivo</translation>
 <translation id="4056910949759281379">Desativar o protocolo SPDY</translation>
 <translation id="4061107397839125009">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica os sites que não podem exibir notificações.
@@ -4446,6 +4447,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
       Observação: reiniciar o dispositivo ou sair da conta faz com que o cache seja limpo.</translation>
 <translation id="5717973246079053225">Desativar os relatórios de nuvem do perfil gerenciado</translation>
 <translation id="572155275267014074">Configurações do Android</translation>
+<translation id="5722577409367087850">Carregar a extensão</translation>
 <translation id="5728154254076636808">Permite a criação de cópias em roaming dos dados de perfil do <ph name="PRODUCT_NAME" /></translation>
 <translation id="5729308727912841256">Senha do Kerberos. O marcador <ph name="PASSWORD_PLACEHOLDER" /> é substituído pela senha de login.</translation>
 <translation id="5732972008943405952">Importar dados de preenchimento automático de formulários do navegador padrão na primeira execução</translation>
@@ -5150,6 +5152,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="6440051664870270040">Permitir que sites naveguem e abram pop-ups simultaneamente</translation>
 <translation id="6447948611083700881">Backup e restauração desativados</translation>
 <translation id="6449476513004303784">Não permitir que os usuários gerenciem certificados</translation>
+<translation id="6452882999388592166">Quando a política está ativada, a extensão do componente do CryptoToken integrada é carregada na inicialização. Se ela for desativada ou deixada sem definição, o CryptoToken não vai ser carregado na inicialização do navegador. Esta política é apenas uma solução temporária para sites corrompidos por chrome.runtime indefinido como um efeito colateral da remoção de CryptoToken no M106. Os sites não podem depender da definição incondicional de chrome.runtime.</translation>
 <translation id="6453641799812499182">Ativar as mitigações de verificação de <ph name="CORS" /> na nova implementação de <ph name="CORS" /></translation>
 <translation id="645425387487868471">Ativar login forçado no <ph name="PRODUCT_NAME" /></translation>
 <translation id="6455842857207956758">Monitora o valor do token de sincronização de senhas e, caso uma senha tenha sido atualizada e precise ser sincronizada, leva o usuário para a reautenticação on-line para ativar a sincronização de senhas do SAML entre vários dispositivos Chrome.
@@ -7848,6 +7851,7 @@ A configuração padrão é permitir que o navegador do host faça a renderizaç
       Se a política for definida como falsa, apenas os usuários presentes na <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> poderão fazer login.
 
       Se a política for definida como verdadeira ou for deixada sem definição, todos os usuários poderão fazer login.</translation>
+<translation id="966425658642788645">Aplicar comportamento padrão</translation>
 <translation id="971677226939413180">A opção "Imprimir como imagem" não está disponível para a seleção do usuário.</translation>
 <translation id="974349541138387272">Especifica o modelo de URI do resolvedor DNS sobre HTTPS desejado</translation>
 <translation id="979467274961593903">Não permitir o uso da depuração remota</translation>

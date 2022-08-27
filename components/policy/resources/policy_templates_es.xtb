@@ -3016,6 +3016,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       En <ph name="MS_WIN_NAME" />, esta función solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" /> que se ejecuten en Windows 10 Pro o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. En <ph name="MAC_OS_NAME" />, esta función solo está disponible en instancias que se gestionen mediante MDM o que estén vinculadas a un dominio a través de MCX.</translation>
 <translation id="4043796890723386527">Evita que los usuarios creen y utilicen perfiles secundarios, y que usen el modo Invitado en el navegador <ph name="LACROS_NAME" />.</translation>
 <translation id="4051723201852944592">Habilitar la oclusión de ventana</translation>
+<translation id="4052529125939620019">Cargar la extensión del componente CryptoToken al iniciar el navegador</translation>
 <translation id="4053157306171963473">Inhabilitar los informes sobre el tiempo de actividad del dispositivo</translation>
 <translation id="4056910949759281379">Inhabilitar protocolo SPDY</translation>
 <translation id="4061107397839125009">Si se establece la política, podrás definir una lista de patrones de URL donde se especifique qué sitios no pueden mostrar notificaciones.
@@ -4465,6 +4466,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Nota: La caché se borra al reiniciar y al cerrar sesión.</translation>
 <translation id="5717973246079053225">Inhabilitar los informes en la nube de un perfil gestionado</translation>
 <translation id="572155275267014074">Configuración de Android</translation>
+<translation id="5722577409367087850">Cargar la extensión</translation>
 <translation id="5728154254076636808">Habilitar la creación de copias de roaming de los datos del perfil de <ph name="PRODUCT_NAME" /></translation>
 <translation id="5729308727912841256">Contraseña de Kerberos. El marcador de posición <ph name="PASSWORD_PLACEHOLDER" /> se reemplazará por la contraseña de inicio de sesión.</translation>
 <translation id="5732972008943405952">Importar los datos autocompletados del navegador predeterminado en la primera ejecución</translation>
@@ -5174,6 +5176,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="6440051664870270040">Permitir que los sitios abran ventanas emergentes y naveguen de forma simultánea</translation>
 <translation id="6447948611083700881">La función de copia de seguridad y restauración está inhabilitada</translation>
 <translation id="6449476513004303784">No permitir que los usuarios gestionen certificados</translation>
+<translation id="6452882999388592166">Si se habilita, la extensión del componente CryptoToken integrada se cargará al iniciar el navegador. Si se inhabilita o no se le asigna ningún valor, CryptoToken no se cargará cuando se inicie el navegador. Esta política está pensada como una solución temporal para los sitios que no funcionan por no haber definido `chrome.runtime`, que es un efecto secundario de haber eliminado CryptoToken en M106. Los sitios web no deben depender de que `chrome.runtime` se defina incondicionalmente.</translation>
 <translation id="6453641799812499182">Permite habilitar las mitigaciones de comprobación de <ph name="CORS" /> en la nueva implementación de <ph name="CORS" /></translation>
 <translation id="645425387487868471">Habilitar el inicio de sesión forzoso de <ph name="PRODUCT_NAME" /></translation>
 <translation id="6455842857207956758">Habilita la sincronización de contraseñas de SAML entre varios dispositivos Chrome monitorizando el valor del token de sincronización de la contraseña y dirigiendo al usuario a través de la reautenticación online si la contraseña se ha actualizado y tiene que sincronizarse.
@@ -7896,6 +7899,7 @@ Si se configura la política, los usuarios no podrán cambiar esta función. Si 
       Si se asigna el valor False a esta política, solo los usuarios presentes en <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> podrán iniciar sesión.
 
       Si se le asigna el valor True o no se configura, todos los usuarios podrán iniciar sesión.</translation>
+<translation id="966425658642788645">Aplicar comportamiento predeterminado</translation>
 <translation id="971677226939413180">Opción Imprimir como imagen no disponible para el usuario.</translation>
 <translation id="974349541138387272">Especifica la plantilla URI de resolución de DNS-over-HTTPS deseada</translation>
 <translation id="979467274961593903">No permitir el uso de la depuración remota</translation>

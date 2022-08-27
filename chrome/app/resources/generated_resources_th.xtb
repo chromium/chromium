@@ -5476,7 +5476,7 @@
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">ระบบ: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="624789221780392884">พร้อมอัปเดต</translation>
-<translation id="6248988683584659830">ค้นการตั้งค่า</translation>
+<translation id="6248988683584659830">ค้นหาการตั้งค่า</translation>
 <translation id="6249200942125593849">จัดการการช่วยเหลือพิเศษ</translation>
 <translation id="6250186368828697007">รายละเอียดจะซ่อนอยู่ขณะที่คุณแชร์หน้าจอ</translation>
 <translation id="6251870443722440887">GDI จัดการ</translation>
@@ -8375,7 +8375,7 @@
 <translation id="9040661932550800571">อัปเดตรหัสผ่านสำหรับ <ph name="ORIGIN" /> ไหม</translation>
 <translation id="9041692268811217999">ผู้ดูแลระบบปิดการเข้าถึงไฟล์ในเครื่องของคุณ</translation>
 <translation id="904224458472510106">การดำเนินการนี้เลิกทำไม่ได้</translation>
-<translation id="9042893549633094279">ข้อมูลส่วนบุคคลและความปลอดภัย</translation>
+<translation id="9042893549633094279">ความเป็นส่วนตัวและความปลอดภัย</translation>
 <translation id="904451693890288097">โปรดป้อนรหัสผ่านสำหรับ "<ph name="DEVICE_NAME" />":</translation>
 <translation id="9044646465488564462">ไม่สามารถเชื่อมต่อเครือข่าย: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">เรื่องรออ่านย้ายไปแผงด้านข้างใหม่แล้ว ลองที่นี่</translation>

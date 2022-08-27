@@ -2556,6 +2556,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3406290648907941085">Possono utilizzare dispositivi e dati per la realtà virtuale</translation>
 <translation id="3406396172897554194">Cerca per lingua o nome del metodo di immissione</translation>
 <translation id="3406605057700382950">&amp;Mostra barra dei Preferiti</translation>
+<translation id="3408849592677950451">{NUM_PASSWORDS,plural, =1{1 password importata in Gestore delle password di Google per <ph name="USER_EMAIL" />}other{{NUM_PASSWORDS} password importate in Gestore delle password di Google per <ph name="USER_EMAIL" />}}</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3412265149091626468">Passa alla selezione</translation>
 <translation id="3413122095806433232">Autorità emittenti di CA: <ph name="LOCATION" /></translation>
@@ -3740,6 +3741,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4541123282641193691">Impossibile verificare l'account. Riprova o riavvia il tuo Chromebook.</translation>
 <translation id="4541662893742891060">Impossibile connettersi a questo profilo. Per assistenza tecnica, contatta il tuo operatore.</translation>
 <translation id="4541706525461326392">Rimozione del profilo in corso. Questa operazione può richiedere alcuni minuti.</translation>
+<translation id="4542332958571335077">{NUM_PASSWORDS,plural, =1{1 password importata in Gestore delle password di Google su questo dispositivo}other{{NUM_PASSWORDS} password importate in Gestore delle password di Google su questo dispositivo}}</translation>
 <translation id="4542520061254486227">Lettura dei dati su <ph name="WEBSITE_1" /> e <ph name="WEBSITE_2" /></translation>
 <translation id="4543778593405494224">Gestione certificati</translation>
 <translation id="4544174279960331769">Avatar blu predefinito</translation>
@@ -6226,6 +6228,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6968288415730398122">Inserisci la password per configurare il blocco schermo</translation>
 <translation id="6969047215179982698">Disattiva Condivisione nelle vicinanze</translation>
 <translation id="6970480684834282392">Tipo di avvio</translation>
+<translation id="6970543303783413625">Impossibile importare le password. Puoi importarne massimo <ph name="COUNT" /> alla volta.</translation>
 <translation id="6970856801391541997">Stampa pagine specifiche</translation>
 <translation id="6970861306198150268">Assicurati di salvare la tua password corrente per questo sito</translation>
 <translation id="6972180789171089114">Audio/video</translation>
@@ -6458,6 +6461,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Esci dalla pagina}other{Esci dalle pagine}}</translation>
 <translation id="7207457272187520234">Invia dati diagnostici e sull'utilizzo. Attualmente, questo dispositivo invia a Google dati diagnostici e sull'utilizzo delle app e del dispositivo. Tali dati contribuiranno alla stabilità delle app e del sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche alle app e ai partner di Google, come ad esempio agli sviluppatori Android. Questa impostazione è applicata dal proprietario. Se hai attivato l'impostazione Attività web e app aggiuntiva, queste informazioni potrebbero essere salvate nel tuo Account Google.</translation>
 <translation id="7207631048330366454">Cerca nelle app</translation>
+<translation id="7210471695184432500">Seleziona un file CSV per importare password in Gestore delle password di Google su questo dispositivo</translation>
 <translation id="7210499381659830293">Stampanti estensione</translation>
 <translation id="7211783048245131419">Nessun sensore assegnato per il momento</translation>
 <translation id="7212097698621322584">Inserisci il PIN attuale per modificarlo. Se non conosci il PIN, devi reimpostare il token di sicurezza, quindi creare un nuovo PIN.</translation>
@@ -7518,6 +7522,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8206859287963243715">Cellulare</translation>
 <translation id="8208216423136871611">Non salvare</translation>
 <translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Nuova notifica}other{# nuove notifiche}}</translation>
+<translation id="821119981794423735">Seleziona un file CSV per importare password in Gestore delle password di Google per <ph name="USER_EMAIL" /></translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Download in corso}other{Download in corso}}</translation>
 <translation id="8213449224684199188">Modalità foto attivata</translation>
 <translation id="8214489666383623925">Apri file...</translation>
