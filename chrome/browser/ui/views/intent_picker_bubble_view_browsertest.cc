@@ -83,6 +83,26 @@ class IntentPickerBubbleViewBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// Tests that clicking a link from a tabbed browser to outside the scope of an
+// installed app does not show the intent picker.
+IN_PROC_BROWSER_TEST_P(IntentPickerBubbleViewBrowserTest,
+                       NavigationToOutofScopeLinkDoesNotShowIntentPicker) {
+  InstallTestWebApp();
+
+  const GURL out_of_scope_url =
+      https_server().GetURL(GetAppUrlHost(), GetOutOfScopeUrlPath());
+  NavigateToLaunchingPage(browser());
+  TestTabActionDoesNotOpenAppWindow(
+      out_of_scope_url,
+      base::BindOnce(&ClickLinkAndWait,
+                     browser()->tab_strip_model()->GetActiveWebContents(),
+                     out_of_scope_url, LinkTarget::SELF, GetParam()));
+
+  EXPECT_EQ(nullptr, intent_picker_bubble());
+}
+
+// TODO(crbug.com/1252812): Enable the following two tests on Lacros.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Tests that clicking a link from a tabbed browser to within the scope of an
 // installed app shows the intent picker icon in Omnibox.
 IN_PROC_BROWSER_TEST_P(IntentPickerBubbleViewBrowserTest,
@@ -123,24 +143,6 @@ IN_PROC_BROWSER_TEST_P(IntentPickerBubbleViewBrowserTest,
                                                          test_web_app_id()));
 }
 
-// Tests that clicking a link from a tabbed browser to outside the scope of an
-// installed app does not show the intent picker.
-IN_PROC_BROWSER_TEST_P(IntentPickerBubbleViewBrowserTest,
-                       NavigationToOutofScopeLinkDoesNotShowIntentPicker) {
-  InstallTestWebApp();
-
-  const GURL out_of_scope_url =
-      https_server().GetURL(GetAppUrlHost(), GetOutOfScopeUrlPath());
-  NavigateToLaunchingPage(browser());
-  TestTabActionDoesNotOpenAppWindow(
-      out_of_scope_url,
-      base::BindOnce(&ClickLinkAndWait,
-                     browser()->tab_strip_model()->GetActiveWebContents(),
-                     out_of_scope_url, LinkTarget::SELF, GetParam()));
-
-  EXPECT_EQ(nullptr, intent_picker_bubble());
-}
-
 #if BUILDFLAG(IS_CHROMEOS)
 // Tests that clicking a link from an app browser to either within or outside
 // the scope of an installed app does not show the intent picker, even when an
@@ -178,7 +180,8 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_EQ(nullptr, intent_picker_bubble());
   }
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Tests that the intent icon updates its visibiliy when switching between
 // tabs.
