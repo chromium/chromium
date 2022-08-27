@@ -82,6 +82,7 @@ source_set("sandbox_hook") {
   deps = [
     ":constants",
     "//base",
+    "//chromeos/assistant/internal:internal",
     "//sandbox/linux:sandbox_services",
     "//sandbox/policy",
   ]
