@@ -35,6 +35,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
+#include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "ui/accessibility/ax_assistant_structure.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -531,6 +532,30 @@ bool WebContentsAndroid::InitializeRenderFrameForJavaScript() {
     return false;
   }
   return true;
+}
+
+void WebContentsAndroid::SetUserAgentOverride(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& userAgent) {
+    std::string ua = ConvertJavaStringToUTF8(env, userAgent);
+    blink::UserAgentOverride ua_override = blink::UserAgentOverride::UserAgentOnly(ua);
+    web_contents_->SetUserAgentOverride(ua_override, false);
+
+//    // Reset state that an earlier call to Navigation::SetUserAgentString()
+//    // could have modified.
+//    embedder_support::SetUserAgentOverride(web_contents_.get(), ua);
+    web_contents_->SetRendererInitiatedUserAgentOverrideOption(
+            content::NavigationController::UA_OVERRIDE_INHERIT);
+
+    content::NavigationEntry* entry =
+            web_contents_->GetController().GetLastCommittedEntry();
+    if (!entry)
+        return;
+
+    entry->SetIsOverridingUserAgent(true);
+    web_contents_->NotifyPreferencesChanged();
+    web_contents_->GetController().Reload(
+            content::ReloadType::ORIGINAL_REQUEST_URL, true);
 }
 
 void WebContentsAndroid::EvaluateJavaScript(

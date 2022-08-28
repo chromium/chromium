@@ -186,6 +186,10 @@ public class ArkCompositorViewHolder extends FrameLayout
             });
         }
 
+        @Override
+        public void onLoadProgressChanged(Tab tab, float progress) {
+            super.onLoadProgressChanged(tab, progress);
+        }
     };
 
 
@@ -1386,7 +1390,12 @@ public class ArkCompositorViewHolder extends FrameLayout
         if (mTabVisible != tab) {
             // Reset the geometrychange event flag so it can fire on the current active tab.
             mHasKeyboardGeometryChangeFired = false;
-            if (mTabVisible != null) mTabVisible.removeObserver(mTabObserver);
+            if (mTabVisible != null) {
+                mTabVisible.removeObserver(mTabObserver);
+                if (mCallback != null) {
+                    mCallback.onPageDetached(mTabVisible);
+                }
+            }
             if (tab != null) {
                 tab.addObserver(mTabObserver);
                 mCompositorView.onTabChanged();
@@ -1402,14 +1411,14 @@ public class ArkCompositorViewHolder extends FrameLayout
             }
 
             mTabVisible = tab;
-            if (tab != null) {
-                ArkTabWebContentsObserver.from(tab).addInitWebContentsObserver(
+            if (mTabVisible != null) {
+                ArkTabWebContentsObserver.from(mTabVisible).addInitWebContentsObserver(
                         mInitWebContentsObserver);
+                if (mCallback != null) {
+                    mCallback.onPageAttached(mTabVisible);
+                }
             }
-
         }
-
-
 
         mView = newView;
 

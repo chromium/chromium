@@ -331,6 +331,8 @@ public interface WebContents extends Parcelable {
      */
     void resumeLoadingCreatedWebContents();
 
+    void setUserAgentOverride(String userAgent);
+
     /**
      * Injects the passed Javascript code in the current page and evaluates it.
      * If a result is required, pass in a callback.

@@ -97,6 +97,9 @@ blink::UserAgentBrandVersion GetGreasedUserAgentBrandVersion(
 void SetDesktopUserAgentOverride(content::WebContents* web_contents,
                                  const blink::UserAgentMetadata& metadata,
                                  bool override_in_new_tabs);
+
+void SetUserAgentOverride(content::WebContents* web_contents,
+                          const std::string& ua);
 #endif
 
 #if BUILDFLAG(IS_WIN)

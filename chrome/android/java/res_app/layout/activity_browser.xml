@@ -78,7 +78,7 @@
             <ProgressBar
                 android:id="@+id/progress_bar"
                 android:layout_width="match_parent"
-                android:layout_height="3dp"
+                android:layout_height="2dp"
                 android:layout_gravity="start|bottom"
                 style="?android:attr/progressBarStyleHorizontal"
                 />
@@ -91,62 +91,68 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:orientation="horizontal"
-            android:background="#eecccccc"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="8dp"
+            android:background="#ffffff"
+            android:paddingHorizontal="6dp"
+            android:elevation="2dp"
             >
 
-            <TextView
-                android:id="@+id/tv_back"
+            <ImageView
+                android:id="@+id/btn_back"
+                android:contentDescription="@null"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="后退"
-                android:textSize="12sp"
+                android:layout_height="match_parent"
                 android:padding="8dp"
-                android:background="?android:selectableItemBackground"
-                />
+                android:src="@drawable/btn_back"
+                android:background="?android:attr/actionBarItemBackground"/>
 
-            <TextView
-                android:id="@+id/tv_forward"
+            <ImageView
+                android:id="@+id/btn_forward"
+                android:contentDescription="@null"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="前进"
-                android:textSize="12sp"
+                android:layout_height="match_parent"
                 android:padding="8dp"
-                android:background="?android:selectableItemBackground"
-                />
+                android:src="@drawable/btn_forward"
+                android:background="?android:attr/actionBarItemBackground"/>
 
-            <EditText
+            <AutoCompleteTextView
                 android:id="@+id/et_url"
-                android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:minHeight="42dp"
-                android:text="wwww.baidu.com"
-                android:textSize="12sp"
-                android:layout_gravity="bottom"
-
-                />
-
-            <TextView
-                android:id="@+id/tv_go"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="加载"
-                android:textSize="12sp"
                 android:padding="8dp"
-                android:background="?android:selectableItemBackground"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:selectAllOnFocus="true"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:hint="请输入链接"
+                android:textColor="#000000"
+                android:textColorHint="#cccccc"
+                android:textSize="14sp"
+                android:text="www.baidu.com"
+                android:background="@android:color/transparent"
                 />
 
-            <TextView
-                android:id="@+id/tv_refresh"
+            <ImageView
+                android:id="@+id/btn_refresh"
+                android:contentDescription="@null"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="刷新"
-                android:textSize="12sp"
+                android:layout_height="match_parent"
                 android:padding="8dp"
-                android:background="?android:selectableItemBackground"
-                />
+                android:src="@drawable/ic_refresh"
+                android:tint="#000000"
+                android:background="?android:attr/actionBarItemBackground"/>
+
+            <ImageView
+                android:id="@+id/btn_menu"
+                android:contentDescription="@null"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:padding="8dp"
+                android:src="@drawable/ic_menu"
+                android:background="?android:attr/actionBarItemBackground"/>
 
         </LinearLayout>
 

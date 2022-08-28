@@ -106,6 +106,10 @@ class CONTENT_EXPORT WebContentsAndroid {
                                         jint start_adjust,
                                         jint end_adjust,
                                         jboolean show_selection_menu);
+
+  void SetUserAgentOverride(JNIEnv* env,
+                          const base::android::JavaParamRef<jstring>& userAgent);
+
   void EvaluateJavaScript(JNIEnv* env,
                           const base::android::JavaParamRef<jstring>& script,
                           const base::android::JavaParamRef<jobject>& callback);

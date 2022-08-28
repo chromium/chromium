@@ -668,6 +668,11 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     }
 
     @Override
+    public void setUserAgentOverride(String userAgent) {
+        WebContentsImplJni.get().setUserAgentOverride(mNativeWebContentsAndroid, userAgent);
+    }
+
+    @Override
     public void evaluateJavaScript(String script, JavaScriptCallback callback) {
         ThreadUtils.assertOnUiThread();
         if (isDestroyed() || script == null) return;
@@ -1097,6 +1102,7 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         GURL getLastCommittedURL(long nativeWebContentsAndroid);
         boolean isIncognito(long nativeWebContentsAndroid);
         void resumeLoadingCreatedWebContents(long nativeWebContentsAndroid);
+        void setUserAgentOverride(long nativeWebContentsAndroid, String userAgent);
         void evaluateJavaScript(
                 long nativeWebContentsAndroid, String script, JavaScriptCallback callback);
         void evaluateJavaScriptForTests(

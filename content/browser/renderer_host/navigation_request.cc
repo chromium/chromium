@@ -7145,11 +7145,15 @@ NavigationRequest::BuildClientSecurityState() {
 }
 
 std::string NavigationRequest::GetUserAgentOverride() {
-  return is_overriding_user_agent() ? frame_tree_node_->navigator()
-                                          .GetDelegate()
-                                          ->GetUserAgentOverride()
-                                          .ua_string_override
-                                    : std::string();
+  return frame_tree_node_->navigator()
+            .GetDelegate()
+            ->GetUserAgentOverride()
+            .ua_string_override;
+//  return is_overriding_user_agent() ? frame_tree_node_->navigator()
+//                                          .GetDelegate()
+//                                          ->GetUserAgentOverride()
+//                                          .ua_string_override
+//                                    : std::string();
 }
 
 NavigationControllerImpl* NavigationRequest::GetNavigationController() {

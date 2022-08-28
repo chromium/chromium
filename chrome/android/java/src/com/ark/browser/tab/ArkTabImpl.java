@@ -490,6 +490,8 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         }
 
         params.setUrl(fixedUrl.getSpec());
+//        params.setOverrideUserAgent(UserAgentOverrideOption.TRUE);
+//        mWebContents.setUserAgentOverride("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.60 Safari/537.36 Edg/100.0.1185.29");
         mWebContents.getNavigationController().loadUrl(params);
         return TabLoadStatus.DEFAULT_PAGE_LOAD;
     }
@@ -1281,8 +1283,10 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
             mWebContents.setImportance(mImportance);
 
-            ContentUtils.setUserAgentOverride(mWebContents,
-                    calculateUserAgentOverrideOption() == UserAgentOverrideOption.TRUE);
+            mWebContents.setUserAgentOverride("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.60 Safari/537.36 Edg/100.0.1185.29");
+
+//            ContentUtils.setUserAgentOverride(mWebContents,
+//                    calculateUserAgentOverrideOption() == UserAgentOverrideOption.TRUE);
 
             mContentView.addOnAttachStateChangeListener(mAttachStateChangeListener);
             updateInteractableState();
@@ -1538,57 +1542,58 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
     }
 
     private @UserAgentOverrideOption int calculateUserAgentOverrideOption() {
-        WebContents webContents = getWebContents();
-        boolean currentRequestDesktopSite = webContents != null && webContents.getNavigationController().getUseDesktopUserAgent();
-
-        @TabUserAgent
-        int tabUserAgent = CriticalPersistedTabData.from(this).getUserAgent();
-        // TabUserAgent.UNSET means this is a pre-existing tab from an earlier build. In this case
-        // we set the TabUserAgent bit based on last committed entry's user agent. If webContents is
-        // null, this method is triggered too early, and we cannot read the last committed entry's
-        // user agent yet. We will skip for now and let the following call set the TabUserAgent bit.
-        if (webContents != null && tabUserAgent == TabUserAgent.UNSET) {
-            if (currentRequestDesktopSite) {
-                tabUserAgent = TabUserAgent.DESKTOP;
-            } else {
-                tabUserAgent = TabUserAgent.DEFAULT;
-            }
-            CriticalPersistedTabData.from(this).setUserAgent(tabUserAgent);
-        }
-        // We only calculate the user agent when users did not manually choose one.
-        if (tabUserAgent == TabUserAgent.DEFAULT
-                && ContentFeatureList.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_GLOBAL)) {
-            // We only do the following logic to choose the desktop/mobile user agent if:
-            // 1. User never manually made a choice in the app menu for requesting desktop site.
-            // 2. User-enabled request desktop site in site settings.
-            Profile profile =
-                    IncognitoUtils.getProfileFromWindowAndroid(mWindowAndroid, isIncognito());
-            boolean shouldRequestDesktopSite;
-            if (ContentFeatureList.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)) {
-                shouldRequestDesktopSite = getWebContents() != null
-                        && TabUtils.isDesktopSiteEnabled(profile, getWebContents().getVisibleUrl());
-            } else {
-                shouldRequestDesktopSite = TabUtils.isDesktopSiteGlobalEnabled(profile);
-            }
-
-            if (shouldRequestDesktopSite != currentRequestDesktopSite) {
-                // TODO(crbug.com/1243758): Confirm if a new histogram should be used.
-                RecordHistogram.recordBooleanHistogram(
-                        "Android.RequestDesktopSite.UseDesktopUserAgent", shouldRequestDesktopSite);
-
-                // The user is not forcing any mode and we determined that we need to
-                // change, therefore we are using TRUE or FALSE option. On Android TRUE mean
-                // override to Desktop user agent, while FALSE means go with Mobile version.
-                return shouldRequestDesktopSite ? UserAgentOverrideOption.TRUE
-                                                : UserAgentOverrideOption.FALSE;
-            }
-        }
-
-        RecordHistogram.recordBooleanHistogram(
-                "Android.RequestDesktopSite.UseDesktopUserAgent", currentRequestDesktopSite);
-
-        // INHERIT means use the same that was used last time.
-        return UserAgentOverrideOption.INHERIT;
+        return UserAgentOverrideOption.TRUE;
+//        WebContents webContents = getWebContents();
+//        boolean currentRequestDesktopSite = webContents != null && webContents.getNavigationController().getUseDesktopUserAgent();
+//
+//        @TabUserAgent
+//        int tabUserAgent = CriticalPersistedTabData.from(this).getUserAgent();
+//        // TabUserAgent.UNSET means this is a pre-existing tab from an earlier build. In this case
+//        // we set the TabUserAgent bit based on last committed entry's user agent. If webContents is
+//        // null, this method is triggered too early, and we cannot read the last committed entry's
+//        // user agent yet. We will skip for now and let the following call set the TabUserAgent bit.
+//        if (webContents != null && tabUserAgent == TabUserAgent.UNSET) {
+//            if (currentRequestDesktopSite) {
+//                tabUserAgent = TabUserAgent.DESKTOP;
+//            } else {
+//                tabUserAgent = TabUserAgent.DEFAULT;
+//            }
+//            CriticalPersistedTabData.from(this).setUserAgent(tabUserAgent);
+//        }
+//        // We only calculate the user agent when users did not manually choose one.
+//        if (tabUserAgent == TabUserAgent.DEFAULT
+//                && ContentFeatureList.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_GLOBAL)) {
+//            // We only do the following logic to choose the desktop/mobile user agent if:
+//            // 1. User never manually made a choice in the app menu for requesting desktop site.
+//            // 2. User-enabled request desktop site in site settings.
+//            Profile profile =
+//                    IncognitoUtils.getProfileFromWindowAndroid(mWindowAndroid, isIncognito());
+//            boolean shouldRequestDesktopSite;
+//            if (ContentFeatureList.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)) {
+//                shouldRequestDesktopSite = getWebContents() != null
+//                        && TabUtils.isDesktopSiteEnabled(profile, getWebContents().getVisibleUrl());
+//            } else {
+//                shouldRequestDesktopSite = TabUtils.isDesktopSiteGlobalEnabled(profile);
+//            }
+//
+//            if (shouldRequestDesktopSite != currentRequestDesktopSite) {
+//                // TODO(crbug.com/1243758): Confirm if a new histogram should be used.
+//                RecordHistogram.recordBooleanHistogram(
+//                        "Android.RequestDesktopSite.UseDesktopUserAgent", shouldRequestDesktopSite);
+//
+//                // The user is not forcing any mode and we determined that we need to
+//                // change, therefore we are using TRUE or FALSE option. On Android TRUE mean
+//                // override to Desktop user agent, while FALSE means go with Mobile version.
+//                return shouldRequestDesktopSite ? UserAgentOverrideOption.TRUE
+//                                                : UserAgentOverrideOption.FALSE;
+//            }
+//        }
+//
+//        RecordHistogram.recordBooleanHistogram(
+//                "Android.RequestDesktopSite.UseDesktopUserAgent", currentRequestDesktopSite);
+//
+//        // INHERIT means use the same that was used last time.
+//        return UserAgentOverrideOption.INHERIT;
     }
 
     private void switchUserAgentIfNeeded() {
@@ -1596,10 +1601,10 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
                 || getWebContents() == null) {
             return;
         }
-        boolean usingDesktopUserAgent =
-                getWebContents().getNavigationController().getUseDesktopUserAgent();
-        TabUtils.switchUserAgent(this, /* switchToDesktop */ !usingDesktopUserAgent,
-                /* forcedByUser */ false);
+//        boolean usingDesktopUserAgent =
+//                getWebContents().getNavigationController().getUseDesktopUserAgent();
+//        TabUtils.switchUserAgent(this, /* switchToDesktop */ !usingDesktopUserAgent,
+//                /* forcedByUser */ false);
     }
 
     @Override

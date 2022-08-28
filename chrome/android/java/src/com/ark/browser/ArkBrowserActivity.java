@@ -1,13 +1,20 @@
 package com.ark.browser;
 
 import android.graphics.drawable.ColorDrawable;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 
 import com.ark.browser.tab.TabInfoObserver;
 import com.ark.browser.tab.TabListManager;
@@ -34,26 +41,32 @@ import org.chromium.chrome.browser.flags.ChromeSessionState;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 public class ArkBrowserActivity extends AsyncInitializationActivity {
 
     private static final String TAG = "BrowserActivity";
 
     private ArkCompositorViewHolder mViewHolder;
+    private ProgressBar mProgressBar;
+    private EditText mUrlBar;
     private ViewGroup mContentContainer;
 
     @Override
@@ -183,6 +196,8 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
 
         mViewHolder = findViewById(R.id.compositor_view_holder);
         mContentContainer = (ViewGroup) findViewById(android.R.id.content);
+        mProgressBar = findViewById(R.id.progress_bar);
+        mProgressBar.setMax(100);
 
         // If the UI was inflated on a background thread, then the CompositorView may not have been
         // fully initialized yet as that may require the creation of a handler which is not allowed
@@ -265,60 +280,49 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
                 setContentView(R.layout.activity_browser);
 
 
-                TextView tvBack = findViewById(R.id.tv_back);
-                TextView tvForward = findViewById(R.id.tv_forward);
+                ImageView btnBack = findViewById(R.id.btn_back);
+                ImageView btnForward = findViewById(R.id.btn_forward);
 
-                tvBack.setOnClickListener(v -> {
+                btnBack.setOnClickListener(v -> {
                     if (TabListManager.getInstance().getCurrentTabList().goBack()) {
                         return;
                     }
                     Toast.makeText(this, "cant go back!", Toast.LENGTH_SHORT).show();
                 });
 
-                tvForward.setOnClickListener(v -> {
+                btnForward.setOnClickListener(v -> {
                     if (TabListManager.getInstance().getCurrentTabList().goForward()) {
                         return;
                     }
                     Toast.makeText(this, "cant go forward!", Toast.LENGTH_SHORT).show();
                 });
 
-                EditText etUrl = findViewById(R.id.et_url);
-                etUrl.setMaxLines(1);
-
-                TabListManager.getInstance().getCurrentTabList().addObserver(new TabInfoObserver() {
-                    @Override
-                    public void didSelectTab(IPage page, int type, int lastId) {
-                        Tab tab = page.getNativePage();
-                        if (tab == null) {
-                            return;
-                        }
-                        etUrl.setText(tab.getUrl().getSpec());
+                mUrlBar = findViewById(R.id.et_url);
+                mUrlBar.setOnEditorActionListener((v, actionId, event) -> {
+                    if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                        LoadUrlParams params = new LoadUrlParams(mUrlBar.getText().toString()
+                                , PageTransition.LINK);
+                        TabListManager.getInstance().openNewTab(params, TabLaunchType.FROM_CHROME_UI);
                     }
-
-                    @Override
-                    public void didCloseTab(int tabId, boolean incognito) {
-
-                    }
-
-                    @Override
-                    public void didAddTab(IPage pageInfo, int type) {
-
-                    }
+                    return false;
                 });
 
-
-                TextView tvGo = findViewById(R.id.tv_go);
-                tvGo.setOnClickListener(v -> {
-                    LoadUrlParams params = new LoadUrlParams(etUrl.getText().toString()
-                            , PageTransition.LINK);
-                    TabListManager.getInstance().openNewTab(params, TabLaunchType.FROM_CHROME_UI);
-                });
-
-                TextView tvRefresh = findViewById(R.id.tv_refresh);
-                tvRefresh.setOnClickListener(v -> {
+                ImageView btnRefresh = findViewById(R.id.btn_refresh);
+                btnRefresh.setOnClickListener(v -> {
                     Tab tab = getActivityTab();
                     if (tab != null) {
                         tab.reload();
+                    }
+                });
+
+                ImageView btnMenu = findViewById(R.id.btn_menu);
+                btnMenu.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+//                        View view = LayoutInflater.from(ArkBrowserActivity.this).inflate(R.layout.layout_menu, null)
+//                        AlertDialog dialog = new AlertDialog.Builder(ArkBrowserActivity.this)
+//                                .setView()
+//                                .create();
                     }
                 });
 
@@ -352,6 +356,60 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
                 "BrowserActivity.setupCompositorContentPostNative")) {
             mViewHolder.setFocusable(false);
             mViewHolder.initCompositor(getWindowAndroid(), new ArkCompositorViewHolder.Callback() {
+
+                private final TabObserver observer = new EmptyTabObserver() {
+
+                    @Override
+                    public void onLoadProgressChanged(Tab tab, float progress) {
+                        super.onLoadProgressChanged(tab, progress);
+                        ArkLogger.d(TAG, "onLoadProgressChanged tab=" + tab.getId() + " progress=" + progress);
+                        if (progress >= 1f) {
+                            mProgressBar.setVisibility(View.GONE);
+                        } else {
+                            mProgressBar.setVisibility(View.VISIBLE);
+                            mProgressBar.setProgress((int) (progress * 100));
+                        }
+                    }
+
+                    @Override
+                    public void onUrlUpdated(Tab tab) {
+                        super.onUrlUpdated(tab);
+                        if (tab == null) {
+                            return;
+                        }
+                        mUrlBar.setText(tab.getUrl().getSpec());
+                    }
+
+                    @Override
+                    public void onLoadStarted(Tab tab, boolean toDifferentDocument) {
+                        super.onLoadStarted(tab, toDifferentDocument);
+                        ArkLogger.d(TAG, "onLoadStarted tab=" + tab.getId());
+                        mProgressBar.setVisibility(View.VISIBLE);
+                        mProgressBar.setProgress(0);
+                    }
+
+                    @Override
+                    public void onLoadStopped(Tab tab, boolean toDifferentDocument) {
+                        super.onLoadStopped(tab, toDifferentDocument);
+                        mProgressBar.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onPageLoadStarted(Tab tab, GURL url) {
+                        super.onPageLoadStarted(tab, url);
+                        ArkLogger.d(TAG, "onPageLoadStarted tab=" + tab.getId());
+                        mProgressBar.setVisibility(View.VISIBLE);
+                        mProgressBar.setProgress(0);
+                    }
+
+                    @Override
+                    public void onPageLoadFinished(Tab tab, GURL url) {
+                        super.onPageLoadFinished(tab, url);
+                        mProgressBar.setVisibility(View.GONE);
+                    }
+                };
+
+
                 @Override
                 public boolean openNewPage(@NonNull Tab current, @TabLaunchType int type, String url) {
                     return TabListManager.getInstance().openNewPage(current, type, url);
@@ -364,12 +422,17 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
 
                 @Override
                 public void onPageAttached(@NonNull Tab page) {
-
+                    page.addObserver(observer);
+                    if (!page.isLoading()) {
+                        mProgressBar.setVisibility(View.GONE);
+                    }
+                    mUrlBar.setText(page.getUrl().getSpec());
                 }
 
                 @Override
                 public void onPageDetached(@NonNull Tab page) {
-
+                    page.removeObserver(observer);
+                    mProgressBar.setVisibility(View.GONE);
                 }
 
                 @Override

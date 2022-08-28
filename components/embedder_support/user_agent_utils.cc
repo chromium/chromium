@@ -587,6 +587,20 @@ void SetDesktopUserAgentOverride(content::WebContents* web_contents,
 
   web_contents->SetUserAgentOverride(spoofed_ua, override_in_new_tabs);
 }
+
+void SetUserAgentOverride(content::WebContents* web_contents,
+                                 const std::string& ua) {
+  blink::UserAgentOverride spoofed_ua = blink::UserAgentOverride::UserAgentOnly(ua);
+//  spoofed_ua.ua_metadata_override = embedder_support::GetUserAgentMetadata();
+//  spoofed_ua.ua_metadata_override->platform = "Linux";
+//  spoofed_ua.ua_metadata_override->platform_version =
+//      std::string();  // match content::GetOSVersion(false) on Linux
+//  spoofed_ua.ua_metadata_override->model = std::string();
+//  spoofed_ua.ua_metadata_override->mobile = false;
+
+  web_contents->SetUserAgentOverride(spoofed_ua, false);
+}
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
