@@ -7371,4 +7371,106 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, CaretAtEndOfTextFieldReadOnly) {
   EXPECT_EQ(5, end->text_offset());
 }
 
+TEST_F(AXPlatformNodeTextRangeProviderTest,
+       GeneratedNewlineReturnsCommonAnchorReadonly) {
+  // This test places a range that starts at the end of a paragraph and
+  // ends at the beginning of the next paragraph. The range only contains the
+  // generated newline character. The readonly attribute value returned should
+  // be the one of the common anchor of the start and end endpoint.
+
+  // ++1 kRootWebArea
+  // ++++2 kGenericContainer
+  // ++++++3 kImage
+  // ++++++4 kTextField editable
+  // ++++5 kGenericContainer editable
+  // ++++++6 kImage
+  // ++++++7 kTextField editable
+  AXNodeData root_1;
+  AXNodeData generic_container_2;
+  AXNodeData image_3;
+  AXNodeData text_field_4;
+  AXNodeData generic_container_5;
+  AXNodeData image_6;
+  AXNodeData text_field_7;
+
+  root_1.id = 1;
+  generic_container_2.id = 2;
+  image_3.id = 3;
+  text_field_4.id = 4;
+  generic_container_5.id = 5;
+  image_6.id = 6;
+  text_field_7.id = 7;
+
+  root_1.role = ax::mojom::Role::kRootWebArea;
+  root_1.child_ids = {generic_container_2.id, generic_container_5.id};
+
+  generic_container_2.role = ax::mojom::Role::kGenericContainer;
+  generic_container_2.child_ids = {image_3.id, text_field_4.id};
+
+  image_3.role = ax::mojom::Role::kImage;
+  image_3.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                           true);
+
+  text_field_4.role = ax::mojom::Role::kTextField;
+  text_field_4.AddState(ax::mojom::State::kEditable);
+
+  generic_container_5.role = ax::mojom::Role::kGenericContainer;
+  generic_container_5.AddState(ax::mojom::State::kEditable);
+  generic_container_5.child_ids = {image_6.id, text_field_7.id};
+
+  image_6.role = ax::mojom::Role::kImage;
+  image_6.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                           true);
+
+  text_field_7.role = ax::mojom::Role::kTextField;
+  text_field_7.AddState(ax::mojom::State::kEditable);
+
+  ui::AXTreeUpdate update;
+  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  update.root_id = root_1.id;
+  update.tree_data.tree_id = tree_id;
+  update.has_tree_data = true;
+  update.nodes = {root_1,       generic_container_2, image_3,
+                  text_field_4, generic_container_5, image_6,
+                  text_field_7};
+  Init(update);
+
+  // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
+  // will build the entire tree.
+  AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
+      AXPlatformNodeFromNode(GetNodeFromTree(tree_id, 1)));
+
+  base::win::ScopedVariant expected_variant;
+
+  ComPtr<AXPlatformNodeTextRangeProviderWin> range_1;
+  CreateTextRangeProviderWin(
+      range_1, owner, tree_id,
+      /*start_anchor_id*/ image_3.id, /*start_offset*/ 1,
+      /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
+      /*end_anchor_id*/ text_field_4.id, /*end_offset*/ 0,
+      /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  EXPECT_UIA_TEXTRANGE_EQ(range_1, /*expected_text*/ L"\n");
+
+  expected_variant.Set(true);
+  EXPECT_UIA_TEXTATTRIBUTE_EQ(range_1, UIA_IsReadOnlyAttributeId,
+                              expected_variant);
+  expected_variant.Reset();
+
+  ComPtr<AXPlatformNodeTextRangeProviderWin> range_2;
+  CreateTextRangeProviderWin(
+      range_2, owner, tree_id,
+      /*start_anchor_id*/ image_6.id, /*start_offset*/ 1,
+      /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
+      /*end_anchor_id*/ text_field_7.id, /*end_offset*/ 0,
+      /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  EXPECT_UIA_TEXTRANGE_EQ(range_2, /*expected_text*/ L"\n");
+
+  expected_variant.Set(false);
+  EXPECT_UIA_TEXTATTRIBUTE_EQ(range_2, UIA_IsReadOnlyAttributeId,
+                              expected_variant);
+  expected_variant.Reset();
+}
+
 }  // namespace ui

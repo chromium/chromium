@@ -555,6 +555,37 @@ HRESULT AXPlatformNodeTextRangeProviderWin::GetAttributeValue(
 
   base::win::VariantVector attribute_value;
 
+  // When the range spans only a generated newline (a generated newline is not
+  // part of a node, but rather introduced by AXRange::GetText when at a
+  // paragraph boundary), it doesn't make sense to return the readonly value of
+  // the start or end anchor since the newline character is not part of any of
+  // those nodes. Thus, this attribute value is independent from these nodes.
+  //
+  // Instead, we should return the readonly attribute value of the common anchor
+  // for these two endpoints since the newline character has more in common with
+  // its ancestor than its siblings. Important: This might not be true for all
+  // attributes, but it appears to be reasonable enough for the readonly one.
+  //
+  // To determine if the range encompasses *only* a generated newline, we need
+  // to validate that both the start and end endpoints are around a paragraph
+  // boundary and that, when normalized, the range would be a degenerate range.
+  if (attribute_id == UIA_IsReadOnlyAttributeId &&
+      start()->anchor_id() != end()->anchor_id() &&
+      start()->AtEndOfParagraph() && end()->AtStartOfParagraph() &&
+      *normalized_start == *normalized_end) {
+    AXPlatformNodeWin* common_anchor = GetLowestAccessibleCommonPlatformNode();
+    DCHECK(common_anchor);
+
+    HRESULT hr = common_anchor->GetTextAttributeValue(
+        attribute_id, absl::nullopt, absl::nullopt, &attribute_value);
+
+    if (FAILED(hr))
+      return E_FAIL;
+
+    *value = attribute_value.ReleaseAsScalarVariant();
+    return S_OK;
+  }
+
   // The range is inclusive, so advance our endpoint to the next position
   const auto end_leaf_text_position = normalized_end->AsLeafTextPosition();
   auto end = end_leaf_text_position->CreateNextAnchorPosition();
