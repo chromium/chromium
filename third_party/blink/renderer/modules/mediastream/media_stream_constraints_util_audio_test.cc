@@ -14,6 +14,7 @@
 #include "base/containers/contains.h"
 #include "base/stl_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_switches.h"
@@ -476,7 +477,7 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
             false /* disable_local_echo */,
             false /* render_to_associated_sink */,
             false /* enable_experimental_echo_canceller */,
-            base::OptionalOrNullptr(result.requested_buffer_size()));
+            base::OptionalToPtr(result.requested_buffer_size()));
     EXPECT_EQ(local_source->GetAudioParameters().frames_per_buffer(),
               expected_buffer_size);
   }

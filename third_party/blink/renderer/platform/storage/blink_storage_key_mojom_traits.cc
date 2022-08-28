@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/storage/blink_storage_key_mojom_traits.h"
 
 #include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"
 #include "third_party/blink/public/mojom/storage_key/ancestor_chain_bit.mojom-blink.h"
@@ -36,8 +37,7 @@ bool StructTraits<blink::mojom::StorageKeyDataView, blink::BlinkStorageKey>::
     return false;
 
   *out = blink::BlinkStorageKey(std::move(origin), top_level_site,
-                                base::OptionalOrNullptr(nonce),
-                                ancestor_chain_bit);
+                                base::OptionalToPtr(nonce), ancestor_chain_bit);
   return true;
 }
 

@@ -16,6 +16,7 @@
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/types/optional_util.h"
 #include "net/base/features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
@@ -255,7 +256,7 @@ StorageKey StorageKey::CreateFromOriginAndIsolationInfo(
     const net::IsolationInfo& isolation_info) {
   return CreateWithOptionalNonce(
       origin, net::SchemefulSite(isolation_info.top_frame_origin().value()),
-      base::OptionalOrNullptr(isolation_info.nonce()),
+      base::OptionalToPtr(isolation_info.nonce()),
       isolation_info.site_for_cookies().IsNull()
           ? blink::mojom::AncestorChainBit::kCrossSite
           : blink::mojom::AncestorChainBit::kSameSite);
@@ -263,7 +264,7 @@ StorageKey StorageKey::CreateFromOriginAndIsolationInfo(
 
 StorageKey StorageKey::WithOrigin(const url::Origin& origin) const {
   return CreateWithOptionalNonce(origin, top_level_site_,
-                                 base::OptionalOrNullptr(nonce_),
+                                 base::OptionalToPtr(nonce_),
                                  ancestor_chain_bit_);
 }
 

@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/platform/graphics/filters/fe_displacement_map.h"
 
 #include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
@@ -124,7 +125,7 @@ sk_sp<PaintFilter> FEDisplacementMap::CreateImageFilter() {
   return sk_make_sp<DisplacementMapEffectPaintFilter>(
       type_x, type_y,
       SkFloatToScalar(GetFilter()->ApplyHorizontalScale(scale_)),
-      std::move(displ), std::move(color), base::OptionalOrNullptr(crop_rect));
+      std::move(displ), std::move(color), base::OptionalToPtr(crop_rect));
 }
 
 static WTF::TextStream& operator<<(WTF::TextStream& ts,

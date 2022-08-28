@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
 
 #include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "cc/layers/surface_layer.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
@@ -271,7 +272,7 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
   params->initiator_policy_container_keep_alive_handle =
       std::move(initiator_policy_container_keep_alive_handle);
   params->initiator_frame_token =
-      base::OptionalFromPtr(base::OptionalOrNullptr(initiator_frame_token));
+      base::OptionalFromPtr(base::OptionalToPtr(initiator_frame_token));
   params->source_location = network::mojom::blink::SourceLocation::New();
 
   std::unique_ptr<SourceLocation> source_location =

@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/platform/graphics/filters/filter_effect.h"
 
 #include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -136,8 +137,8 @@ bool FilterEffect::InputsTaintOrigin() const {
 sk_sp<PaintFilter> FilterEffect::CreateTransparentBlack() const {
   sk_sp<SkColorFilter> color_filter =
       SkColorFilters::Blend(0, SkBlendMode::kClear);
-  return sk_make_sp<ColorFilterPaintFilter>(
-      std::move(color_filter), nullptr, base::OptionalOrNullptr(GetCropRect()));
+  return sk_make_sp<ColorFilterPaintFilter>(std::move(color_filter), nullptr,
+                                            base::OptionalToPtr(GetCropRect()));
 }
 
 absl::optional<PaintFilter::CropRect> FilterEffect::GetCropRect() const {

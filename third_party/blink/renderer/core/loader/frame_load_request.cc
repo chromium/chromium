@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 
 #include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -91,7 +92,7 @@ bool FrameLoadRequest::CanDisplay(const KURL& url) const {
 }
 
 const LocalFrameToken* FrameLoadRequest::GetInitiatorFrameToken() const {
-  return base::OptionalOrNullptr(initiator_frame_token_);
+  return base::OptionalToPtr(initiator_frame_token_);
 }
 
 }  // namespace blink

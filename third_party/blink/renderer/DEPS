@@ -67,6 +67,7 @@ include_rules = [
     "+base/containers/lru_cache.h",
     "+base/token.h",
     "+base/trace_event",
+    "+base/types/optional_util.h",
     "+base/types/pass_key.h",
     "+base/types/strong_alias.h",
     "+build",

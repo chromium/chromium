@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/platform/graphics/filters/fe_color_matrix.h"
 
 #include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
@@ -150,7 +151,7 @@ sk_sp<PaintFilter> FEColorMatrix::CreateImageFilter() {
   sk_sp<SkColorFilter> filter = CreateColorFilter(type_, values_);
   absl::optional<PaintFilter::CropRect> crop_rect = GetCropRect();
   return sk_make_sp<ColorFilterPaintFilter>(std::move(filter), std::move(input),
-                                            base::OptionalOrNullptr(crop_rect));
+                                            base::OptionalToPtr(crop_rect));
 }
 
 static WTF::TextStream& operator<<(WTF::TextStream& ts,

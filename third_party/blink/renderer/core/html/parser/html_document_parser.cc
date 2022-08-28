@@ -33,6 +33,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
+#include "base/types/optional_util.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -1476,7 +1477,7 @@ void HTMLDocumentParser::ProcessPreloadData(
       {
         TRACE_EVENT0("blink", "HTMLDocumentParser::DispatchLinkHeaderPreloads");
         GetDocument()->Loader()->DispatchLinkHeaderPreloads(
-            base::OptionalOrNullptr(preload_data->viewport),
+            base::OptionalToPtr(preload_data->viewport),
             PreloadHelper::kOnlyLoadMedia);
       }
       if (GetDocument()->Loader()->GetPrefetchedSignedExchangeManager()) {

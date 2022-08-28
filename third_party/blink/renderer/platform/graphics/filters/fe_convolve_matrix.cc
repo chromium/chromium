@@ -29,6 +29,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
 
@@ -146,7 +147,7 @@ sk_sp<PaintFilter> FEConvolveMatrix::CreateImageFilter() {
   absl::optional<PaintFilter::CropRect> crop_rect = GetCropRect();
   return sk_make_sp<MatrixConvolutionPaintFilter>(
       kernel_size, kernel.get(), gain, bias, target, tile_mode, convolve_alpha,
-      std::move(input), base::OptionalOrNullptr(crop_rect));
+      std::move(input), base::OptionalToPtr(crop_rect));
 }
 
 static WTF::TextStream& operator<<(WTF::TextStream& ts,

@@ -5,6 +5,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key_mojom_traits.h"
 
 #include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"
 #include "net/base/schemeful_site.h"
@@ -36,8 +37,7 @@ bool StructTraits<blink::mojom::StorageKeyDataView, blink::StorageKey>::Read(
     return false;
 
   *out = blink::StorageKey::CreateWithOptionalNonce(
-      origin, top_level_site, base::OptionalOrNullptr(nonce),
-      ancestor_chain_bit);
+      origin, top_level_site, base::OptionalToPtr(nonce), ancestor_chain_bit);
   return true;
 }
 

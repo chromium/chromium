@@ -6,6 +6,7 @@
 
 #include "base/auto_reset.h"
 #include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -583,7 +584,7 @@ NGTextPainter::SvgTextPaintState& NGTextPainter::SetSvgState(
 }
 
 NGTextPainter::SvgTextPaintState* NGTextPainter::GetSvgState() {
-  return base::OptionalOrNullptr(svg_text_paint_state_);
+  return base::OptionalToPtr(svg_text_paint_state_);
 }
 
 NGTextPainter::SvgTextPaintState::SvgTextPaintState(
@@ -661,7 +662,7 @@ AffineTransform& NGTextPainter::SvgTextPaintState::EnsureShaderTransform() {
 
 const AffineTransform* NGTextPainter::SvgTextPaintState::GetShaderTransform()
     const {
-  return base::OptionalOrNullptr(shader_transform_);
+  return base::OptionalToPtr(shader_transform_);
 }
 
 }  // namespace blink

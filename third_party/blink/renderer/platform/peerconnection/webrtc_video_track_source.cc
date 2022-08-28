@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/optional_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/webrtc/convert_to_webrtc_video_frame_buffer.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
@@ -256,7 +257,7 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
   // of the pipeline.
   if (video_frame->natural_size() == video_frame->visible_rect().size()) {
     DeliverFrame(std::move(video_frame), std::move(scaled_frames),
-                 base::OptionalOrNullptr(accumulated_update_rect_),
+                 base::OptionalToPtr(accumulated_update_rect_),
                  translated_camera_time_us);
     return;
   }
@@ -268,7 +269,7 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
   }
 
   DeliverFrame(std::move(video_frame), std::move(scaled_frames),
-               base::OptionalOrNullptr(accumulated_update_rect_),
+               base::OptionalToPtr(accumulated_update_rect_),
                translated_camera_time_us);
 }
 

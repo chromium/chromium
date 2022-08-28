@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/paint/svg_shape_painter.h"
 
 #include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_marker.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_shape.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
@@ -109,7 +110,7 @@ void SVGShapePainter::Paint(const PaintInfo& paint_info) {
                            paint_info.context,
                            paint_info.IsRenderingClipPathAsMaskImage(), style,
                            kApplyToStrokeMode, stroke_flags,
-                           base::OptionalOrNullptr(non_scaling_transform))) {
+                           base::OptionalToPtr(non_scaling_transform))) {
                 break;
               }
               stroke_flags.setAntiAlias(should_anti_alias);

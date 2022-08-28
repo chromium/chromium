@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/platform/graphics/filters/fe_morphology.h"
 
 #include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
@@ -95,7 +96,7 @@ sk_sp<PaintFilter> FEMorphology::CreateImageFilter() {
           : MorphologyPaintFilter::MorphType::kErode;
   return sk_make_sp<MorphologyPaintFilter>(morph_type, radius_x, radius_y,
                                            std::move(input),
-                                           base::OptionalOrNullptr(crop_rect));
+                                           base::OptionalToPtr(crop_rect));
 }
 
 static WTF::TextStream& operator<<(WTF::TextStream& ts,

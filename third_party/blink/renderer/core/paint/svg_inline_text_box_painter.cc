@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
@@ -210,14 +211,14 @@ void SVGInlineTextBoxPainter::PaintTextFragments(
           if (has_fill) {
             PaintText(paint_info, style, *selection_style, fragment,
                       kApplyToFillMode, should_paint_selection,
-                      base::OptionalOrNullptr(shader_transform));
+                      base::OptionalToPtr(shader_transform));
           }
           break;
         case PT_STROKE:
           if (has_visible_stroke) {
             PaintText(paint_info, style, *selection_style, fragment,
                       kApplyToStrokeMode, should_paint_selection,
-                      base::OptionalOrNullptr(shader_transform));
+                      base::OptionalToPtr(shader_transform));
           }
           break;
         case PT_MARKERS:
@@ -460,7 +461,7 @@ bool SVGInlineTextBoxPainter::SetupTextPaint(
            .PreparePaint(paint_info.context,
                          paint_info.IsRenderingClipPathAsMaskImage(), style,
                          resource_mode, flags,
-                         base::OptionalOrNullptr(paint_server_transform))) {
+                         base::OptionalToPtr(paint_server_transform))) {
     return false;
   }
 

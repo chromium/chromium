@@ -27,6 +27,7 @@
 #include <algorithm>
 
 #include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
@@ -137,7 +138,7 @@ sk_sp<PaintFilter> FEComponentTransfer::CreateImageFilter() {
       SkTableColorFilter::MakeARGB(a_values, r_values, g_values, b_values);
   return sk_make_sp<ColorFilterPaintFilter>(std::move(color_filter),
                                             std::move(input),
-                                            base::OptionalOrNullptr(crop_rect));
+                                            base::OptionalToPtr(crop_rect));
 }
 
 void FEComponentTransfer::GetValues(unsigned char r_values[256],

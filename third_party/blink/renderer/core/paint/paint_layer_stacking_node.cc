@@ -48,6 +48,7 @@
 #include <memory>
 
 #include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -248,7 +249,7 @@ void PaintLayerStackingNode::CollectLayers(PaintLayer& paint_layer,
 
   for (PaintLayer* child = paint_layer.FirstChild(); child;
        child = child->NextSibling()) {
-    CollectLayers(*child, base::OptionalOrNullptr(subtree_highest_layers));
+    CollectLayers(*child, base::OptionalToPtr(subtree_highest_layers));
   }
 
   if (has_overlay_overflow_controls) {

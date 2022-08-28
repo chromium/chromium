@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "components/power_scheduler/power_mode_arbiter.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/mojom/cors.mojom-forward.h"
@@ -302,7 +303,7 @@ void ResourceLoadObserverForFrame::DidReceiveResponse(
       response.HttpHeaderField(http_names::kLink), response.CurrentRequestUrl(),
       *frame, document_, resource_loading_policy, PreloadHelper::kLoadAll,
       nullptr /* viewport_description */, std::move(alternate_resource_info),
-      base::OptionalOrNullptr(response.RecursivePrefetchToken()));
+      base::OptionalToPtr(response.RecursivePrefetchToken()));
 
   if (response.HasMajorCertificateErrors()) {
     MixedContentChecker::HandleCertificateError(

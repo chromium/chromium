@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/paint/pre_paint_tree_walk.h"
 
 #include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -504,7 +505,7 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
 
   if (paint_invalidator_.InvalidatePaint(
           object, pre_paint_info,
-          base::OptionalOrNullptr(context.tree_builder_context),
+          base::OptionalToPtr(context.tree_builder_context),
           paint_invalidator_context))
     needs_invalidate_chrome_client_ = true;
 

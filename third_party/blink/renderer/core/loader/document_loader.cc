@@ -42,6 +42,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/stl_util.h"
 #include "base/time/default_tick_clock.h"
+#include "base/types/optional_util.h"
 #include "build/chromeos_buildflags.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
@@ -2250,7 +2251,7 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
   // browser once the browser will be able to compute the origin in all cases.
   frame_->DomWindow()->SetStorageKey(
       BlinkStorageKey(security_origin, storage_key_.GetTopLevelSite(),
-                      base::OptionalOrNullptr(storage_key_.GetNonce())));
+                      base::OptionalToPtr(storage_key_.GetNonce())));
 
   // Conceptually, SecurityOrigin doesn't have to be initialized after sandbox
   // flags are applied, but there's a UseCounter in SetSecurityOrigin() that

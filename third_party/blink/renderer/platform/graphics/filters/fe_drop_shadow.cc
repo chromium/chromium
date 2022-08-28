@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/platform/graphics/filters/fe_drop_shadow.h"
 
 #include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/fe_gaussian_blur.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
@@ -78,7 +79,7 @@ sk_sp<PaintFilter> FEDropShadow::CreateImageFilter() {
       SkFloatToScalar(dx), SkFloatToScalar(dy), SkFloatToScalar(std_x),
       SkFloatToScalar(std_y), SkColor4f::FromColor(color.Rgb()),
       DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground,
-      std::move(input), base::OptionalOrNullptr(crop_rect));
+      std::move(input), base::OptionalToPtr(crop_rect));
 }
 
 WTF::TextStream& FEDropShadow::ExternalRepresentation(WTF::TextStream& ts,

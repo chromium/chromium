@@ -7,6 +7,7 @@
 #include <ostream>
 
 #include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/storage_key/ancestor_chain_bit.mojom-blink.h"
 #include "third_party/blink/renderer/platform/network/blink_schemeful_site.h"
@@ -108,8 +109,7 @@ BlinkStorageKey::operator StorageKey() const {
   return StorageKey::CreateWithOptionalNonce(
       origin_->ToUrlOrigin(),
       static_cast<net::SchemefulSite>(top_level_site_if_third_party_enabled_),
-      base::OptionalOrNullptr(nonce_),
-      ancestor_chain_bit_if_third_party_enabled_);
+      base::OptionalToPtr(nonce_), ancestor_chain_bit_if_third_party_enabled_);
 }
 
 String BlinkStorageKey::ToDebugString() const {

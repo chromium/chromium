@@ -18,6 +18,7 @@
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "media/base/audio_parameters.h"
 #include "media/capture/video_capture_types.h"
@@ -1561,8 +1562,8 @@ UserMediaProcessor::CreateAudioSource(
         base::StringPrintf("%s => (no audiprocessing is used)", __func__));
     return std::make_unique<blink::LocalMediaStreamAudioSource>(
         frame_, device,
-        base::OptionalOrNullptr(current_request_info_->audio_capture_settings()
-                                    .requested_buffer_size()),
+        base::OptionalToPtr(current_request_info_->audio_capture_settings()
+                                .requested_buffer_size()),
         stream_controls->disable_local_echo, std::move(source_ready),
         task_runner_);
   }

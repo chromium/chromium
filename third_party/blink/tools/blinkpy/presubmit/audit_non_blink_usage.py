@@ -89,7 +89,7 @@ _CONFIG = [
             'base::Minutes',
             'base::Nanoseconds',
             'base::OptionalFromPtr',
-            'base::OptionalOrNullptr',
+            'base::OptionalToPtr',
             'base::PassKey',
             'base::PlatformThread',
             'base::PlatformThreadId',
