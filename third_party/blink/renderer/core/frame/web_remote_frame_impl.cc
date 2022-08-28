@@ -8,6 +8,7 @@
 
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom.h"
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom-blink.h"
@@ -237,10 +238,17 @@ WebLocalFrame* WebRemoteFrameImpl::CreateLocalChild(
     window_agent_factory = &GetFrame()->window_agent_factory();
   }
 
+  // TODO(https://crbug.com/1355751): Plumb the StorageKey from a value provided
+  // by the browser process. This was attempted in patchset 6 of:
+  // https://chromium-review.googlesource.com/c/chromium/src/+/3851381/6
+  // A remote frame being asked to create a child only happens in some cases to
+  // recover from a crash.
+  blink::StorageKey storage_key;
+
   child->InitializeCoreFrame(
       *GetFrame()->GetPage(), owner, this, previous_sibling,
       FrameInsertType::kInsertInConstructor, name, window_agent_factory, opener,
-      std::move(policy_container));
+      std::move(policy_container), storage_key);
   DCHECK(child->GetFrame());
   return child;
 }

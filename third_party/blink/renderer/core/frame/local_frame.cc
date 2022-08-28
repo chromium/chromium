@@ -50,6 +50,7 @@
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event_attribution.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
@@ -304,7 +305,8 @@ LocalFrame* LocalFrame::FromFrameToken(const LocalFrameToken& frame_token) {
 }
 
 void LocalFrame::Init(Frame* opener,
-                      std::unique_ptr<PolicyContainer> policy_container) {
+                      std::unique_ptr<PolicyContainer> policy_container,
+                      const blink::StorageKey& storage_key) {
   if (!policy_container)
     policy_container = PolicyContainer::CreateEmpty();
 
@@ -316,7 +318,7 @@ void LocalFrame::Init(Frame* opener,
   mojo_handler_ = MakeGarbageCollected<LocalFrameMojoHandler>(*this);
 
   SetOpenerDoNotNotify(opener);
-  loader_.Init(std::move(policy_container));
+  loader_.Init(std::move(policy_container), storage_key);
 }
 
 void LocalFrame::SetView(LocalFrameView* view) {

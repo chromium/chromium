@@ -33,6 +33,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
@@ -103,7 +104,7 @@ DummyPageHolder::DummyPageHolder(
   frame_->SetView(
       MakeGarbageCollected<LocalFrameView>(*frame_, initial_view_size));
   frame_->View()->GetPage()->GetVisualViewport().SetSize(initial_view_size);
-  frame_->Init(/*opener=*/nullptr, /*policy_container=*/nullptr);
+  frame_->Init(/*opener=*/nullptr, /*policy_container=*/nullptr, StorageKey());
 
   CoreInitializer::GetInstance().ProvideModulesToPage(GetPage(),
                                                       base::EmptyString());

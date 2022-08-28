@@ -2248,8 +2248,6 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
 
   // TODO(https://crbug.com/888079): Just use the storage key sent by the
   // browser once the browser will be able to compute the origin in all cases.
-  // TODO(https://crbug.com/1271402): Make sure we have the intended behavior
-  // for initial about:blank navigations, where storage_key_ might be unset.
   frame_->DomWindow()->SetStorageKey(
       BlinkStorageKey(security_origin, storage_key_.GetTopLevelSite(),
                       base::OptionalOrNullptr(storage_key_.GetNonce())));

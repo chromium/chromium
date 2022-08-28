@@ -49,6 +49,7 @@
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
@@ -240,7 +241,8 @@ void FrameLoader::Trace(Visitor* visitor) const {
   visitor->Trace(document_loader_);
 }
 
-void FrameLoader::Init(std::unique_ptr<PolicyContainer> policy_container) {
+void FrameLoader::Init(std::unique_ptr<PolicyContainer> policy_container,
+                       const blink::StorageKey& storage_key) {
   DCHECK(policy_container);
   ScriptForbiddenScope forbid_scripts;
 
@@ -249,6 +251,7 @@ void FrameLoader::Init(std::unique_ptr<PolicyContainer> policy_container) {
   navigation_params->url = KURL(g_empty_string);
   navigation_params->frame_policy =
       frame_->Owner() ? frame_->Owner()->GetFramePolicy() : FramePolicy();
+  navigation_params->storage_key = storage_key;
 
   DocumentLoader* new_document_loader = MakeGarbageCollected<DocumentLoader>(
       frame_, kWebNavigationTypeOther, std::move(navigation_params),

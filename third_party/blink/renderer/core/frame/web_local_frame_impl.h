@@ -72,30 +72,31 @@
 namespace blink {
 
 class ChromePrintContext;
-struct ContextMenuData;
 class FindInPage;
 class HTMLFencedFrameElement;
 class HTMLPortalElement;
 class LocalFrameClientImpl;
 class ResourceError;
 class ScrollableArea;
+class StorageKey;
 class TextFinder;
 class WebAssociatedURLLoader;
-struct WebAssociatedURLLoaderOptions;
 class WebAutofillClient;
 class WebContentSettingsClient;
 class WebDevToolsAgentImpl;
-class WebLocalFrameClient;
 class WebFrameWidgetImpl;
+class WebLocalFrameClient;
 class WebNode;
 class WebPerformance;
 class WebRemoteFrameImpl;
 class WebSpellCheckPanelHostClient;
 class WebView;
 class WebViewImpl;
-enum class WebFrameLoadType;
-struct WebPrintParams;
 class WindowAgentFactory;
+enum class WebFrameLoadType;
+struct ContextMenuData;
+struct WebAssociatedURLLoaderOptions;
+struct WebPrintParams;
 
 template <typename T>
 class WebVector;
@@ -382,6 +383,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       WindowAgentFactory*,
       WebFrame* opener,
       std::unique_ptr<blink::WebPolicyContainer> policy_container,
+      const blink::StorageKey& storage_key,
       network::mojom::blink::WebSandboxFlags sandbox_flags =
           network::mojom::blink::WebSandboxFlags::kNone);
   LocalFrame* GetFrame() const { return frame_.Get(); }
@@ -578,6 +580,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       WindowAgentFactory*,
       WebFrame* opener,
       std::unique_ptr<PolicyContainer> policy_container,
+      const blink::StorageKey& storage_key,
       network::mojom::blink::WebSandboxFlags sandbox_flags =
           network::mojom::blink::WebSandboxFlags::kNone);
 
