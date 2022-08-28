@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/stl_util.h"
 #include "base/synchronization/lock.h"
+#include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "media/base/cdm_config.h"
 #include "media/base/cdm_context.h"
@@ -153,7 +154,7 @@ void MojoCdmService::OnCdmCreated(
   cdm_ = cdm;
   cdm_id_ = context_->RegisterCdm(this);
   DVLOG(1) << __func__ << ": CDM successfully registered with ID "
-           << CdmContext::CdmIdToString(base::OptionalOrNullptr(cdm_id_));
+           << CdmContext::CdmIdToString(base::OptionalToPtr(cdm_id_));
 
   auto mojo_cdm_context = mojom::CdmContext::New();
   mojo_cdm_context->cdm_id = cdm_id();
