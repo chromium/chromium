@@ -5,5 +5,5 @@
 declare_args() {
   # Used to cause full rebuilds on libc++ rolls. This should be kept in sync
   # with the libcxx_revision vars in //DEPS.
-  libcxx_revision = "5132d715e60a13d78e2c871bb8214f29c07c8ada"
+  libcxx_revision = "26e3467ee8494629799408ac63e2bc3a77948aed"
 }
