@@ -99,7 +99,8 @@ void SetDesktopUserAgentOverride(content::WebContents* web_contents,
                                  bool override_in_new_tabs);
 
 void SetUserAgentOverride(content::WebContents* web_contents,
-                          const std::string& ua);
+                          const std::string& ua,
+                          bool is_mobile);
 #endif
 
 #if BUILDFLAG(IS_WIN)

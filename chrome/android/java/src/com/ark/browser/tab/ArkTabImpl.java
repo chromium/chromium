@@ -19,6 +19,7 @@ import androidx.annotation.VisibleForTesting;
 
 import com.ark.browser.ArkBrowserActivity;
 import com.ark.browser.ArkWindowAndroid;
+import com.ark.browser.core.UserAgentManager;
 import com.ark.browser.utils.ArkLogger;
 
 import org.chromium.base.ContextUtils;
@@ -492,6 +493,10 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         params.setUrl(fixedUrl.getSpec());
 //        params.setOverrideUserAgent(UserAgentOverrideOption.TRUE);
 //        mWebContents.setUserAgentOverride("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.60 Safari/537.36 Edg/100.0.1185.29");
+
+//        mWebContents.setUserAgentOverride(UserAgentManager.getUserAgentByUrl(fixedUrl));
+        ContentUtils.setUserAgentOverride(mWebContents, UserAgentManager.getUserAgentByUrl(fixedUrl));
+
         mWebContents.getNavigationController().loadUrl(params);
         return TabLoadStatus.DEFAULT_PAGE_LOAD;
     }
@@ -1283,7 +1288,8 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
 
             mWebContents.setImportance(mImportance);
 
-            mWebContents.setUserAgentOverride("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.60 Safari/537.36 Edg/100.0.1185.29");
+//            mWebContents.setUserAgentOverride(UserAgentManager.getUserAgentByUrl(getUrl()));
+            ContentUtils.setUserAgentOverride(mWebContents, UserAgentManager.getUserAgentByUrl(getUrl()));
 
 //            ContentUtils.setUserAgentOverride(mWebContents,
 //                    calculateUserAgentOverrideOption() == UserAgentOverrideOption.TRUE);

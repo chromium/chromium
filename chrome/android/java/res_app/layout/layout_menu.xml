@@ -3,7 +3,38 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="8dp"
+    >
+
+    <LinearLayout
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="16dp"
+        >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_launcher"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:text="Ark浏览器"
+            android:layout_gravity="center_vertical"
+            android:textColor="#333333"
+            />
+
+
+    </LinearLayout>
 
     <androidx.gridlayout.widget.GridLayout
         android:layout_width="match_parent"
@@ -13,22 +44,39 @@
         app:rowCount="2"
         >
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tv_fullscreen"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+        <com.ark.browser.ui.widget.DrawableTintTextView
+            android:id="@+id/btn_user_agent"
+            style="@style/menu_item"
             android:drawableTop="@drawable/ic_more_vert_24dp"
-            android:text="UserAgent"
-            app:layout_columnWeight="1"
+            android:text="浏览器标识"
             />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tv_refresh"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+        <com.ark.browser.ui.widget.DrawableTintTextView
+            android:id="@+id/btn_refresh"
+            style="@style/menu_item"
             android:drawableTop="@drawable/ic_refresh"
-            android:text="222"
-            app:layout_columnWeight="1"
+            android:text="刷新"
+            />
+
+        <com.ark.browser.ui.widget.DrawableTintTextView
+            android:id="@+id/btn_refresh1"
+            style="@style/menu_item"
+            android:drawableTop="@drawable/ic_refresh"
+            android:text="刷新"
+            />
+
+        <com.ark.browser.ui.widget.DrawableTintTextView
+            android:id="@+id/btn_refresh2"
+            style="@style/menu_item"
+            android:drawableTop="@drawable/ic_refresh"
+            android:text="刷新"
+            />
+
+        <com.ark.browser.ui.widget.DrawableTintTextView
+            android:id="@+id/btn_refresh3"
+            style="@style/menu_item"
+            android:drawableTop="@drawable/ic_refresh"
+            android:text="刷新"
             />
 
 

@@ -12,6 +12,8 @@ chrome_java_sources = [
   "java/src/com/ark/browser/ArkWindowAndroid.java",
   "java/src/com/ark/browser/ArkBrowserActivity.java",
 
+  "java/src/com/ark/browser/core/UserAgentManager.java",
+
   "java/src/com/ark/browser/tab/ArkInterceptNavigationDelegateClientImpl.java",
   "java/src/com/ark/browser/tab/ArkInterceptNavigationDelegateImpl.java",
   "java/src/com/ark/browser/tab/ArkInterceptNavigationDelegateTabHelper.java",
@@ -47,10 +49,12 @@ chrome_java_sources = [
   "java/src/com/ark/browser/tab/core/TabImpl.java",
 
   "java/src/com/ark/browser/ui/drawable/MaterialProgressDrawable.java",
+  "java/src/com/ark/browser/ui/widget/DrawableTintTextView.java",
   "java/src/com/ark/browser/ui/widget/ShadowCircleImageView.java",
   "java/src/com/ark/browser/ui/widget/swiperefresh/SwipeRefreshLayout.java",
 
   "java/src/com/ark/browser/utils/ArkLogger.java",
+  "java/src/com/ark/browser/utils/PrefsHelper.java",
   "java/src/com/ark/browser/utils/ThreadPool.java",
 
   "java/src/org/chromium/chrome/browser/ActivityTabProvider.java",

@@ -589,14 +589,29 @@ void SetDesktopUserAgentOverride(content::WebContents* web_contents,
 }
 
 void SetUserAgentOverride(content::WebContents* web_contents,
-                                 const std::string& ua) {
+                                 const std::string& ua,
+                                 bool is_mobile) {
   blink::UserAgentOverride spoofed_ua = blink::UserAgentOverride::UserAgentOnly(ua);
-//  spoofed_ua.ua_metadata_override = embedder_support::GetUserAgentMetadata();
+//  spoofed_ua.ua_metadata_override = GetUserAgentMetadata();
 //  spoofed_ua.ua_metadata_override->platform = "Linux";
 //  spoofed_ua.ua_metadata_override->platform_version =
 //      std::string();  // match content::GetOSVersion(false) on Linux
 //  spoofed_ua.ua_metadata_override->model = std::string();
 //  spoofed_ua.ua_metadata_override->mobile = false;
+
+  if (!is_mobile) {
+      spoofed_ua.ua_metadata_override = GetUserAgentMetadata();
+      spoofed_ua.ua_metadata_override->platform = "Linux";
+      spoofed_ua.ua_metadata_override->platform_version =
+          std::string();  // match content::GetOSVersion(false) on Linux
+      spoofed_ua.ua_metadata_override->model = std::string();
+      spoofed_ua.ua_metadata_override->mobile = false;
+      // Match the above "CpuInfo" string, which is also the most common Linux
+      // CPU architecture and bitness.`
+      spoofed_ua.ua_metadata_override->architecture = "x86";
+      spoofed_ua.ua_metadata_override->bitness = "64";
+      spoofed_ua.ua_metadata_override->wow64 = false;
+  }
 
   web_contents->SetUserAgentOverride(spoofed_ua, false);
 }

@@ -1,5 +1,8 @@
 package com.ark.browser.tab;
 
+import android.text.TextUtils;
+
+import com.ark.browser.core.UserAgentManager;
 import com.ark.browser.utils.ArkLogger;
 
 import org.chromium.base.Log;
@@ -58,7 +61,16 @@ public class ArkInterceptNavigationDelegateImpl extends InterceptNavigationDeleg
             @Override
             public void onDidRedirectNavigation(Tab tab, NavigationHandle navigationHandle) {
                 super.onDidRedirectNavigation(tab, navigationHandle);
-                ArkLogger.d(TAG, "onDidRedirectNavigation url=" + tab.getUrl().getSpec());
+                ArkLogger.d(TAG, "onDidRedirectNavigation url=" + tab.getUrl()
+                        + " originalUrl=" + tab.getOriginalUrl());
+
+                String host = navigationHandle.getUrl().getHost();
+                if (TextUtils.equals(host, tab.getOriginalUrl().getHost())) {
+                    return;
+                }
+
+                int index = UserAgentManager.getUserAgentIndexByUrl(tab.getOriginalUrl());
+                UserAgentManager.setUserAgentByUrl(host, index);
             }
 
             @Override

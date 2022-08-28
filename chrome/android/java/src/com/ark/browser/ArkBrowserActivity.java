@@ -1,10 +1,13 @@
 package com.ark.browser;
 
 import android.graphics.drawable.ColorDrawable;
-import android.view.KeyEvent;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -16,29 +19,23 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
-import com.ark.browser.tab.TabInfoObserver;
+import com.ark.browser.core.UserAgentManager;
 import com.ark.browser.tab.TabListManager;
-import com.ark.browser.tab.TabManagerObserver;
 import com.ark.browser.tab.core.IPage;
 import com.ark.browser.tab.core.ITabGroup;
 import com.ark.browser.utils.ArkLogger;
 
 import org.chromium.base.Callback;
-import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
-import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.ChromeActivitySessionTracker;
-import org.chromium.chrome.browser.ChromeWindow;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.app.flags.ChromeCachedFlags;
-import org.chromium.chrome.browser.compositor.layouts.content.ContentOffsetProvider;
-import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.content.ContentUtils;
 import org.chromium.chrome.browser.flags.ChromeSessionState;
-import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -48,16 +45,12 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.PageTransition;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 public class ArkBrowserActivity extends AsyncInitializationActivity {
@@ -316,15 +309,7 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
                 });
 
                 ImageView btnMenu = findViewById(R.id.btn_menu);
-                btnMenu.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-//                        View view = LayoutInflater.from(ArkBrowserActivity.this).inflate(R.layout.layout_menu, null)
-//                        AlertDialog dialog = new AlertDialog.Builder(ArkBrowserActivity.this)
-//                                .setView()
-//                                .create();
-                    }
-                });
+                btnMenu.setOnClickListener(v -> showMenuDialog());
 
 
                 TraceEvent.end("setContentView(R.layout.main)");
@@ -441,6 +426,83 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
                 }
             });
         }
+    }
+
+    private void showMenuDialog() {
+        View view = LayoutInflater.from(ArkBrowserActivity.this).inflate(R.layout.layout_menu, null);
+
+        AlertDialog dialog = new AlertDialog.Builder(ArkBrowserActivity.this)
+                .setView(view)
+                .create();
+
+        TextView userAgentButton = view.findViewById(R.id.btn_user_agent);
+        userAgentButton.setOnClickListener(v -> {
+            dialog.dismiss();
+            showUserAgentSelector();
+        });
+
+        TextView refreshButton = view.findViewById(R.id.btn_refresh);
+        refreshButton.setOnClickListener(v -> {
+            Tab tab = getActivityTab();
+            if (tab != null) {
+                tab.reload();
+            }
+            dialog.dismiss();
+        });
+
+        dialog.show();
+
+        //设置弹窗在底部
+        Window window = dialog.getWindow();
+        window.setGravity(Gravity.BOTTOM);
+
+        WindowManager m = getWindowManager();
+        Display d = m.getDefaultDisplay(); //为获取屏幕宽、高
+        WindowManager.LayoutParams p = dialog.getWindow().getAttributes(); //获取对话框当前的参数值
+        p.width = d.getWidth(); //宽度设置为屏幕
+        dialog.getWindow().setAttributes(p); //设置生效
+
+    }
+
+    private void showUserAgentSelector() {
+        Tab tab = getActivityTab();
+
+        String title;
+        String host;
+        int index;
+        String[] items;
+        if (tab == null) {
+            title = "选择浏览器标识";
+            host = "default";
+            index = UserAgentManager.getDefaultUserAgentIndex();
+            items = UserAgentManager.getUserAgentNames();
+        } else {
+            host = tab.getUrl().getHost();
+            title = "选择浏览器标识:" + host;
+            index = UserAgentManager.getUserAgentIndexByUrl(host);
+            String[] names = UserAgentManager.getUserAgentNames();
+            names[0] = "默认UA";
+            items = new String[names.length + 1];
+            System.arraycopy(names, 0, items, 1, names.length);
+        }
+        AlertDialog selector = new AlertDialog.Builder(ArkBrowserActivity.this)
+                .setTitle(title)
+                .setSingleChoiceItems(items, index, (dialog, which) -> {
+                    if (tab == null) {
+                        UserAgentManager.setDefaultUserAgentIndex(which);
+                    } else {
+                        which -= 1;
+                        UserAgentManager.setUserAgentByUrl(host, which);
+                        if (tab.getWebContents() != null) {
+                            UserAgentManager.UserAgent ua = UserAgentManager.getUserAgent(which);
+                            ContentUtils.setUserAgentOverride(tab.getWebContents(), ua);
+                        }
+                    }
+
+                    dialog.dismiss();
+                })
+                .create();
+        selector.show();
     }
 
 }

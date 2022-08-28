@@ -6,6 +6,8 @@
 #include "chrome/android/chrome_jni_headers/ContentUtils_jni.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 
 static base::android::ScopedJavaLocalRef<jstring>
@@ -23,4 +25,27 @@ static void JNI_ContentUtils_SetUserAgentOverride(
   embedder_support::SetDesktopUserAgentOverride(
       web_contents, embedder_support::GetUserAgentMetadata(),
       j_override_in_new_tabs);
+}
+
+static void JNI_ContentUtils_SetUserAgent(
+        JNIEnv* env,
+        const base::android::JavaParamRef<jobject>& jweb_contents,
+        const base::android::JavaParamRef<jstring>& ua,
+        jboolean is_mobile) {
+    content::WebContents* web_contents =
+            content::WebContents::FromJavaWebContents(jweb_contents);
+    std::string userAgent = ConvertJavaStringToUTF8(env, ua);
+    embedder_support::SetUserAgentOverride(web_contents, userAgent, is_mobile);
+    web_contents->SetRendererInitiatedUserAgentOverrideOption(
+            content::NavigationController::UA_OVERRIDE_INHERIT);
+
+    content::NavigationEntry* entry =
+            web_contents->GetController().GetLastCommittedEntry();
+    if (!entry)
+        return;
+
+    entry->SetIsOverridingUserAgent(true);
+    web_contents->NotifyPreferencesChanged();
+    web_contents->GetController().Reload(
+            content::ReloadType::ORIGINAL_REQUEST_URL, true);
 }

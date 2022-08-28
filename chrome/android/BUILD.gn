@@ -199,6 +199,9 @@ android_resources("chrome_app_java_resources") {
     "//chrome/android/java/res_app/drawable-xxhdpi/ic_refresh.png",
     "//chrome/android/java/res_app/drawable-xxhdpi/ic_touch.png",
 
+    "//chrome/android/java/res_app/values/attrs.xml",
+    "//chrome/android/java/res_app/values/styles.xml",
+
     "//chrome/android/java/res_chromium/drawable-hdpi/fre_product_logo.png",
     "//chrome/android/java/res_chromium/drawable-hdpi/product_logo_name.png",
     "//chrome/android/java/res_chromium/drawable-mdpi/fre_product_logo.png",
