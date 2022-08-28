@@ -122,13 +122,17 @@ class BrowserDevToolsAgentHost::BrowserAutoAttacher final
     // are created, otherwise if they don't incur any network activity we'll
     // never get a chance to throttle them (and auto-attach there).
 
-    if (IsMainFrameHost(host)) {
+    if (IsMainFrameHost(host) || IsSharedWorkerHost(host)) {
       DispatchAutoAttach(
           host, wait_for_debugger_on_start() && !processing_existent_targets_);
     }
   }
 
   bool ShouldForceDevToolsAgentHostCreation() override { return true; }
+
+  static bool IsSharedWorkerHost(DevToolsAgentHost* host) {
+    return host->GetType() == DevToolsAgentHost::kTypeSharedWorker;
+  }
 
   static bool IsMainFrameHost(DevToolsAgentHost* host) {
     WebContentsImpl* web_contents =
