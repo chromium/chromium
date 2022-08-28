@@ -16,6 +16,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/types/optional_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -211,7 +212,7 @@ base::Value::Dict GetSettingsOnBlockingTaskRunner(
 
   return AssemblePrinterSettings(device_name, basic_info, user_defined_papers,
                                  has_secure_protocol,
-                                 base::OptionalOrNullptr(caps));
+                                 base::OptionalToPtr(caps));
 }
 
 }  // namespace printing
