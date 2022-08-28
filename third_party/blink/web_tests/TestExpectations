@@ -3262,10 +3262,11 @@ crbug.com/626703 virtual/prerender/external/wpt/speculation-rules/prerender/work
 crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/prerender/restriction-presentation-request.https.html [ Failure ]
 crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/prerender/storage-foundation.https.html [ Failure ]
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
-crbug.com/626703 [ Linux ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-2.html [ Timeout ]
-crbug.com/626703 [ Linux ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-3.html [ Timeout ]
+crbug.com/626703 [ Linux ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-2.html [ Skip Timeout ]
+crbug.com/626703 [ Linux ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-3.html [ Skip Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac10.13 ] external/wpt/html/browsers/the-window-object/open-close/open-features-tokenization-width-height.html [ Skip Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-3.html [ Failure Timeout ]
 crbug.com/626703 [ Win10.20h2 ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-3.html [ Failure Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-1.html [ Skip Timeout ]
