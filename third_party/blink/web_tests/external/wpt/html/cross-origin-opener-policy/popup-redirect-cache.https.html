@@ -19,20 +19,18 @@
 
 function url_test_cache(t, url, responseToken, iframeToken, hasOpener) {
   return new Promise(async (resolve, reject) => {
-    const w = window.open(url, responseToken);
-    // The popup is closed by dispatcher_url_test.
     try {
-      var payload = await receive(responseToken);
-      payload = JSON.parse(payload);
-      assert_equals('error' in payload, false, 'Unexpected error response received');
-      validate_results(resolve, t, w, responseToken, hasOpener, undefined /* OpenerDomAccess */, payload)
+      await dispatcher_url_test(t, url, responseToken, iframeToken, hasOpener, undefined /* OpenerDomAccess */, resolve);
     } catch(e) {
       reject(e);
     }
   }).then(() => {
-    // test the same url for cache.
     return new Promise(async (resolve, reject) => {
       try {
+        // Test the same url for cache.
+        // Note that at this point the popup from the first
+        // `dispatcher_url_test()` call hasn't been closed yet, but once this
+        // test has finished both will be cleaned up.
         await dispatcher_url_test(t, url, responseToken, iframeToken, hasOpener, undefined /* OpenerDomAccess */, resolve);
       } catch(e) {
         reject(e);
