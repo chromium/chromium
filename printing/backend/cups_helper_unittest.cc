@@ -4,6 +4,9 @@
 
 #include "printing/backend/cups_helper.h"
 
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/scoped_environment_variable_override.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "printing/backend/print_backend.h"
@@ -636,6 +639,34 @@ TEST(PrintBackendCupsHelperTest, PpdSetsDestOptions) {
   EXPECT_EQ(mojom::DuplexMode::kLongEdge, caps.duplex_default);
 
   cupsFreeDests(num_dests, dest);
+}
+
+// For crbug.com/1245412
+TEST(PrintBackendCupsHelperTest, NoTempFileLeftBehind) {
+  // Create a temp dir and set it as the global temp dir, so
+  // ParsePpdCapabilities() will put its temporary files there.
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  EXPECT_TRUE(base::IsDirectoryEmpty(temp_dir.GetPath()));
+
+  {
+#if BUILDFLAG(IS_MAC)
+    const char kTempDirEnvVar[] = "MAC_CHROMIUM_TMPDIR";
+#else
+    const char kTempDirEnvVar[] = "TMPDIR";
+#endif
+    base::ScopedEnvironmentVariableOverride env_override(
+        kTempDirEnvVar, temp_dir.GetPath().value());
+
+    // Make sure ParsePpdCapabilities() does some work and succeeds.
+    PrinterSemanticCapsAndDefaults dummy_caps;
+    EXPECT_TRUE(ParsePpdCapabilities(
+        /*dest=*/nullptr, /*locale=*/"",
+        GeneratePpdResolutionTestData("Resolution").c_str(), &dummy_caps));
+  }
+
+  // TODO(crbug.com/1245412): This should return true.
+  EXPECT_FALSE(base::IsDirectoryEmpty(temp_dir.GetPath()));
 }
 
 }  // namespace printing
