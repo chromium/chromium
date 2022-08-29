@@ -4,8 +4,9 @@ _BEACON_ID_KEY = b"uuid"
 _BEACON_DATA_PATH = "beacon_data"
 _BEACON_FORM_PAYLOAD_KEY = b"payload"
 _BEACON_BODY_PAYLOAD_KEY = "payload="
-_BEACON_EXPECT_ORIGIN_KEY = b"expectedOrigin"
-_BEACON_EXPECT_PREFLIGHT_KEY = b"expectedPreflight"
+_BEACON_EXPECT_ORIGIN_KEY = b"expectOrigin"
+_BEACON_EXPECT_PREFLIGHT_KEY = b"expectPreflight"
+_BEACON_EXPECT_CREDS_KEY = b"expectCredentials"
 
 
 def main(request, response):
@@ -38,9 +39,26 @@ def main(request, response):
     if request.method == u"OPTIONS":
         assert request.GET.get(
             _BEACON_EXPECT_PREFLIGHT_KEY) == b"true", "Preflight not expected."
+
+        # preflight must not have cookies.
+        assert b"Cookie" not in request.headers
+
+        requested_headers = request.headers.get(
+            b"Access-Control-Request-Headers")
+        assert b"content-type" in requested_headers, f"expected content-type, got {requested_headers}"
         response.headers.set(b"Access-Control-Allow-Headers", b"content-type")
+
+        requested_method = request.headers.get(b"Access-Control-Request-Method")
+        assert requested_method == b"POST", f"expected POST, got {requested_method}"
         response.headers.set(b"Access-Control-Allow-Methods", b"POST")
+
         return response
+
+    expect_creds = request.GET.get(_BEACON_EXPECT_CREDS_KEY) == b"true"
+    if expect_creds:
+        assert b"Cookie" in request.headers
+    else:
+        assert b"Cookie" not in request.headers
 
     data = None
     if request.method == u"POST":

@@ -122,7 +122,6 @@ class Beacon : public blink::mojom::PendingBeacon {
   //    - Contain NO `kChunkedDataPipe` data element.
   //    The above restrictions come from how PendingBeaconService handles
   //    requests.
-  // `content_type` must be an empty string or a safelisted one.
   void SetRequestData(scoped_refptr<network::ResourceRequestBody> request_body,
                       const std::string& content_type) override;
 

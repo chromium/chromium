@@ -270,25 +270,6 @@ TEST_F(GetBeaconTest, AttemptToSetRequestDataForGetBeaconAndTerminated) {
 
 using PostBeaconTest = BeaconTestBase;
 
-TEST_F(PostBeaconTest,
-       AttemptToSetRequestDataWithUnsafeContentTypeAndTerminated) {
-  auto beacon_remote =
-      CreateBeaconAndPassRemote(net::HttpRequestHeaders::kPostMethod);
-  // Intercepts Mojo bad-message error.
-  std::string bad_message;
-  mojo::SetDefaultProcessErrorHandler(
-      base::BindLambdaForTesting([&](const std::string& error) {
-        ASSERT_TRUE(bad_message.empty());
-        bad_message = error;
-      }));
-
-  beacon_remote->SetRequestData(CreateRequestBody("data"),
-                                "application/unsafe");
-  beacon_remote.FlushForTesting();
-
-  EXPECT_EQ(bad_message, "Unexpected Content-Type from renderer");
-}
-
 TEST_F(PostBeaconTest, AttemptToSetRequestDataWithComplexBodyAndTerminated) {
   auto beacon_remote =
       CreateBeaconAndPassRemote(net::HttpRequestHeaders::kPostMethod);
@@ -438,6 +419,17 @@ TEST_F(PostBeaconRequestDataTest, SendBlobWithEmptyContentType) {
   beacon_remote->SetRequestData(body, "");
 
   SetExpectNetworkRequest(FROM_HERE, body);
+  beacon_remote->SendNow();
+  ExpectTotalNetworkRequests(FROM_HERE, 1);
+}
+
+TEST_F(PostBeaconRequestDataTest, SendBlobWithNonCorsSafelistedContentType) {
+  auto beacon_remote = CreateBeaconAndPassRemote();
+
+  auto body = CreateFileRequestBody();
+  beacon_remote->SetRequestData(body, "application/unsafe");
+
+  SetExpectNetworkRequest(FROM_HERE, body, "application/unsafe");
   beacon_remote->SendNow();
   ExpectTotalNetworkRequests(FROM_HERE, 1);
 }

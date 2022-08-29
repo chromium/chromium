@@ -94,11 +94,6 @@ void Beacon::SetRequestData(
     mojo::ReportBadMessage("Unexpected BeaconMethod from renderer");
     return;
   }
-  if (!content_type.empty() &&
-      !network::cors::IsCorsSafelistedContentType(content_type)) {
-    mojo::ReportBadMessage("Unexpected Content-Type from renderer");
-    return;
-  }
 
   content_type_ = content_type;
 
