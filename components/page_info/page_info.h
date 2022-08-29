@@ -12,6 +12,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/content_settings/browser/ui/cookie_controls_controller.h"
+#include "components/content_settings/browser/ui/cookie_controls_view.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/safe_browsing/buildflags.h"
@@ -44,7 +46,7 @@ class PageInfoUI;
 // information and allows users to change the permissions. |PageInfo|
 // objects must be created on the heap. They destroy themselves after the UI is
 // closed.
-class PageInfo {
+class PageInfo : private content_settings::CookieControlsView {
  public:
   // Status of a connection to a website.
   enum SiteConnectionStatus {
@@ -192,7 +194,11 @@ class PageInfo {
   PageInfo(const PageInfo&) = delete;
   PageInfo& operator=(const PageInfo&) = delete;
 
-  ~PageInfo();
+  ~PageInfo() override;
+
+  // Called when the third-party blocking toggle in the cookies subpage gets
+  // clicked.
+  void OnThirdPartyToggleClicked(bool block_third_party_cookies);
 
   // Checks whether this permission is currently the factory default, as set by
   // Chrome. Specifically, that the following three conditions are true:
@@ -309,6 +315,13 @@ class PageInfo {
                            NonFactoryDefaultAndRecentlyChangedPermissionsShown);
   FRIEND_TEST_ALL_PREFIXES(PageInfoTest, IncognitoPermissionsEmptyByDefault);
   FRIEND_TEST_ALL_PREFIXES(PageInfoTest, IncognitoPermissionsDontShowAsk);
+
+  // CookieControlsView:
+  void OnStatusChanged(CookieControlsStatus status,
+                       CookieControlsEnforcement enforcement,
+                       int allowed_cookies,
+                       int blocked_cookies) override;
+  void OnCookiesCountChanged(int allowed_cookies, int blocked_cookies) override;
 
   // Populates this object's UI state with provided security context. This
   // function does not update visible UI-- that's part of Present*().
@@ -468,6 +481,13 @@ class PageInfo {
   bool was_about_this_site_shown_ = false;
 
   std::u16string site_name_for_testing_;
+
+  std::unique_ptr<content_settings::CookieControlsController> controller_;
+  base::ScopedObservation<content_settings::CookieControlsController,
+                          content_settings::CookieControlsView>
+      observation_{this};
+
+  CookieControlsStatus status_ = CookieControlsStatus::kUninitialized;
 
   base::WeakPtrFactory<PageInfo> weak_factory_{this};
 };

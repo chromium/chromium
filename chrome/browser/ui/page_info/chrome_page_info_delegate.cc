@@ -9,6 +9,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
@@ -189,6 +190,16 @@ bool ChromePageInfoDelegate::CreateInfoBarDelegate() {
     return true;
   }
   return false;
+}
+
+std::unique_ptr<content_settings::CookieControlsController>
+ChromePageInfoDelegate::CreateCookieControlsController() {
+  Profile* profile = GetProfile();
+  return std::make_unique<content_settings::CookieControlsController>(
+      CookieSettingsFactory::GetForProfile(profile),
+      profile->IsOffTheRecord()
+          ? CookieSettingsFactory::GetForProfile(profile->GetOriginalProfile())
+          : nullptr);
 }
 
 void ChromePageInfoDelegate::ShowSiteSettings(const GURL& site_url) {

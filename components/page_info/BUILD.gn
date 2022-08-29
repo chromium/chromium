@@ -17,6 +17,7 @@ static_library("page_info") {
     "//build:chromeos_buildflags",
     "//components/browsing_data/content",
     "//components/content_settings/browser",
+    "//components/content_settings/browser/ui",
     "//components/content_settings/core/browser",
     "//components/keyed_service/core",
     "//components/omnibox/common",

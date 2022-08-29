@@ -2,6 +2,7 @@ include_rules = [
   "+components/browser_ui",
   "+components/browsing_data",
   "+components/content_settings",
+  "+components/content_settings/browser/ui",
   "+components/history/core/browser",
   "+components/keyed_service/core",
   "+components/optimization_guide/core",

@@ -75,6 +75,8 @@ class PageInfoDelegate {
   // otherwise.
   virtual bool CreateInfoBarDelegate() = 0;
 
+  virtual std::unique_ptr<content_settings::CookieControlsController>
+  CreateCookieControlsController() = 0;
   virtual void ShowSiteSettings(const GURL& site_url) = 0;
   virtual void ShowCookiesSettings() = 0;
   virtual void ShowAllSitesSettings() = 0;

@@ -110,6 +110,12 @@ class PageInfoUI {
     // The number of sites allowed to access cookies.
     int allowed_sites_count = -1;
 
+    // The status of blocking third-party cookies.
+    CookieControlsStatus status;
+
+    // The status of enforcement of blocking third-party cookies.
+    CookieControlsEnforcement enforcement;
+
     absl::optional<CookiesFPSInfo> fps_info;
   };
 

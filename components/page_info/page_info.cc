@@ -23,6 +23,7 @@
 #include "components/browser_ui/util/android/url_constants.h"
 #include "components/browsing_data/content/local_storage_helper.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -324,6 +325,15 @@ PageInfo::PageInfo(std::unique_ptr<PageInfoDelegate> delegate,
   // Record the time when the page info dialog is opened so the total time it is
   // open can be measured.
   start_time_ = base::TimeTicks::Now();
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (web_contents) {
+    controller_ = delegate_->CreateCookieControlsController();
+    observation_.Observe(controller_.get());
+
+    controller_->Update(web_contents);
+  }
+#endif
 }
 
 PageInfo::~PageInfo() {
@@ -363,6 +373,30 @@ PageInfo::~PageInfo() {
                                                   safety_tip_info_.status),
         start_time_);
   }
+}
+
+void PageInfo::OnStatusChanged(CookieControlsStatus status,
+                               CookieControlsEnforcement enforcement,
+                               int allowed_cookies,
+                               int blocked_cookies) {
+#if !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/1346305): React to enforcement.
+  if (base::FeatureList::IsEnabled(page_info::kPageInfoCookiesSubpage)) {
+    if (status != status_) {
+      status_ = status;
+      PresentSiteData(base::DoNothing());
+    }
+  }
+#endif
+}
+
+void PageInfo::OnCookiesCountChanged(int allowed_cookies, int blocked_cookies) {
+}
+
+void PageInfo::OnThirdPartyToggleClicked(bool block_third_party_cookies) {
+  DCHECK(status_ != CookieControlsStatus::kDisabled);
+  DCHECK(status_ != CookieControlsStatus::kUninitialized);
+  controller_->OnCookieBlockingEnabledForSite(block_third_party_cookies);
 }
 
 // static
@@ -1168,6 +1202,7 @@ void PageInfo::PresentSiteDataInternal(base::OnceClosure done) {
 
 #endif
     }
+    cookies_info.status = status_;
 
     ui_->SetCookieInfo(cookies_info);
   } else {

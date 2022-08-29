@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_hover_button.h"
 #include "chrome/browser/ui/views/page_info/page_info_row_view.h"
 #include "components/page_info/page_info_ui.h"
+#include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/view.h"
 
 // The view that is used as a content view of the Cookies subpage in page info.
@@ -33,6 +34,8 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   // information if necessary.
   void InitCookiesDialogButton();
 
+  void UpdateBlockingThirdPartyCookiesToggle(bool are_cookies_blocked);
+
   // Ensures the blocked sites information UI is present, with placeholder
   // information if necessary.
   void InitBlockingThirdPartyCookiesRow();
@@ -56,6 +59,9 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
 
   // The Label which is a subtitle of |blocking_third_party_cookies_row|.
   raw_ptr<views::Label> blocking_third_party_cookies_subtitle_label_ = nullptr;
+
+  // The toggle on |blocking_third_party_cookies_row|.
+  raw_ptr<views::ToggleButton> blocking_third_party_cookies_toggle_ = nullptr;
 
   // The button that displays First-Party-Set information with a link to
   // 'All sites' settings page.
