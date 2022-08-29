@@ -361,6 +361,7 @@ polymer_modulizer("oobe_i18n_dropdown") {
   html_file = "oobe_i18n_dropdown.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
   namespace_rewrites = oobe_namespace_rewrites
 }
 

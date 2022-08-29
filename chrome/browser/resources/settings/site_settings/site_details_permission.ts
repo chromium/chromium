@@ -7,7 +7,7 @@
  * 'site-details-permission' handles showing the state of one permission, such
  * as Geolocation, for a given origin.
  */
-import 'chrome://resources/cr_elements/md_select_css.m.js';
+import 'chrome://resources/cr_elements/md_select.css.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';

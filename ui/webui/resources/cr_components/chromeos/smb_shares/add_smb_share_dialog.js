@@ -17,7 +17,7 @@ import '../../../cr_elements/cr_searchable_drop_down/cr_searchable_drop_down.js'
 import '../../../cr_elements/icons.m.js';
 import '../../../cr_elements/shared_style_css.m.js';
 import '../../../cr_elements/shared_vars_css.m.js';
-import '../../../cr_elements/md_select_css.m.js';
+import '../../../cr_elements/md_select.css.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';

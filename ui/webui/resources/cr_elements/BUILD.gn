@@ -93,7 +93,6 @@ if (include_polymer) {
       "cr_lottie/cr_lottie.js",
       "hidden_style_css.m.js",
       "icons.m.js",
-      "md_select_css.m.js",
       "policy/cr_policy_indicator.js",
       "policy/cr_policy_pref_indicator.js",
       "policy/cr_tooltip_icon.js",
@@ -140,12 +139,6 @@ if (include_polymer) {
     html_type = "style-module"
   }
 
-  polymer_modulizer("md_select_css") {
-    js_file = "md_select_css.m.js"
-    html_file = "md_select_css.html"
-    html_type = "style-module"
-  }
-
   polymer_modulizer("cr_icons_css") {
     js_file = "cr_icons_css.m.js"
     html_file = "cr_icons_css.html"
@@ -165,7 +158,6 @@ if (include_polymer) {
       ":cr_icons_css_module",
       ":hidden_style_css_module",
       ":icons_module",
-      ":md_select_css_module",
       ":shared_style_css_module",
       ":shared_vars_css_module",
       "cr_button:web_components",
@@ -178,9 +170,7 @@ if (include_polymer) {
       public_deps += [ "chromeos:polymer3_elements" ]
     }
   }
-}
 
-if (include_polymer) {
   js_type_check("cr_elements_module_resources") {
     is_polymer3 = true
     deps = [ ":cr_scrollable_behavior" ]
