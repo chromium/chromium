@@ -1669,6 +1669,9 @@
       'filepath': 'chrome/browser/resources/print_preview/' \
                   '|chrome/browser/ui/webui/print_preview/'
     },
+    'privacy_budget': {
+      'filepath': 'privacy_budget',
+    },
     'push_messaging': {
       'filepath': 'push_messaging'
     },
@@ -2821,6 +2824,7 @@
     'presentation': ['mfoltz+watch@chromium.org'],
     'preview_features': ['chrome-lite-pages+watch@google.com'],
     'print_preview': ['print-reviews+preview@chromium.org'],
+    'privacy_budget': ['antoniosartori+watch-privacy_budget@chromium.org'],
     'push_messaging': ['peter@chromium.org'],
     'quick_answers': ['croissant-eng+reviews@chromium.org'],
     'relaunch_notification': ['grt+watch@chromium.org'],
