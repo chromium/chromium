@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "cc/paint/decoded_draw_image.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/image_provider.h"
@@ -1915,7 +1916,7 @@ void SaveLayerAlphaOp::Raster(const SaveLayerAlphaOp* op,
     paint->setAlpha(op->alpha * 255.0f);
   }
   SkCanvas::SaveLayerRec rec(unset ? nullptr : &op->bounds,
-                             base::OptionalOrNullptr(paint));
+                             base::OptionalToPtr(paint));
   if (params.save_layer_alpha_should_preserve_lcd_text.has_value() &&
       *params.save_layer_alpha_should_preserve_lcd_text) {
     rec.fSaveLayerFlags = SkCanvas::kPreserveLCDText_SaveLayerFlag |

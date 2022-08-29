@@ -12,6 +12,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "cc/paint/draw_image.h"
 #include "cc/paint/filter_operations.h"
@@ -343,7 +344,7 @@ std::string PaintFilter::TypeToString(Type type) {
 }
 
 const PaintFilter::CropRect* PaintFilter::GetCropRect() const {
-  return base::OptionalOrNullptr(crop_rect_);
+  return base::OptionalToPtr(crop_rect_);
 }
 
 size_t PaintFilter::GetFilterSize(const PaintFilter* filter) {

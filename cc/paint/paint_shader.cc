@@ -9,6 +9,7 @@
 #include "base/atomic_sequence_num.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "cc/paint/image_provider.h"
 #include "cc/paint/paint_image_builder.h"
 #include "cc/paint/paint_op_writer.h"
@@ -407,7 +408,7 @@ sk_sp<SkShader> PaintShader::GetSkShader(
           points, colors.data(),
           positions_.empty() ? nullptr : positions_.data(),
           static_cast<int>(colors.size()), tx_, flags_,
-          base::OptionalOrNullptr(local_matrix_));
+          base::OptionalToPtr(local_matrix_));
     }
     case Type::kRadialGradient:
       return SkGradientShader::MakeRadial(
@@ -415,25 +416,25 @@ sk_sp<SkShader> PaintShader::GetSkShader(
           nullptr /*sk_sp<SkColorSpace>*/,
           positions_.empty() ? nullptr : positions_.data(),
           static_cast<int>(colors_.size()), tx_, flags_,
-          base::OptionalOrNullptr(local_matrix_));
+          base::OptionalToPtr(local_matrix_));
     case Type::kTwoPointConicalGradient:
       return SkGradientShader::MakeTwoPointConical(
           start_point_, start_radius_, end_point_, end_radius_, colors_.data(),
           nullptr /*sk_sp<SkColorSpace>*/,
           positions_.empty() ? nullptr : positions_.data(),
           static_cast<int>(colors_.size()), tx_, flags_,
-          base::OptionalOrNullptr(local_matrix_));
+          base::OptionalToPtr(local_matrix_));
     case Type::kSweepGradient:
       return SkGradientShader::MakeSweep(
           center_.x(), center_.y(), colors_.data(),
           nullptr /*sk_sp<SkColorSpace>*/,
           positions_.empty() ? nullptr : positions_.data(),
           static_cast<int>(colors_.size()), tx_, start_degrees_, end_degrees_,
-          flags_, base::OptionalOrNullptr(local_matrix_));
+          flags_, base::OptionalToPtr(local_matrix_));
     case Type::kImage:
       if (sk_cached_image_) {
-        return sk_cached_image_->makeShader(
-            tx_, ty_, sampling, base::OptionalOrNullptr(local_matrix_));
+        return sk_cached_image_->makeShader(tx_, ty_, sampling,
+                                            base::OptionalToPtr(local_matrix_));
       }
       break;
     case Type::kPaintRecord:
@@ -442,8 +443,8 @@ sk_sp<SkShader> PaintShader::GetSkShader(
           // For raster scale, we create a picture shader directly.
           case ScalingBehavior::kRasterAtScale:
             return sk_cached_picture_->makeShader(
-                tx_, ty_, sampling.filter,
-                base::OptionalOrNullptr(local_matrix_), nullptr);
+                tx_, ty_, sampling.filter, base::OptionalToPtr(local_matrix_),
+                nullptr);
           // For fixed scale, we create an image shader with an image backed by
           // the picture.
           case ScalingBehavior::kFixedScale: {
@@ -452,7 +453,7 @@ sk_sp<SkShader> PaintShader::GetSkShader(
                 SkISize::Make(tile_.width(), tile_.height()), nullptr, nullptr,
                 SkImage::BitDepth::kU8, SkColorSpace::MakeSRGB());
             return image->makeShader(tx_, ty_, sampling,
-                                     base::OptionalOrNullptr(local_matrix_));
+                                     base::OptionalToPtr(local_matrix_));
           }
         }
         break;
