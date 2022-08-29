@@ -39,7 +39,7 @@ class FlossSocketManagerTest : public testing::Test {
   FlossSocketManagerTest() = default;
 
   void SetUpMocks() {
-    adapter_path_ = FlossManagerClient::GenerateAdapterPath(adapter_index_);
+    adapter_path_ = FlossDBusClient::GenerateAdapterPath(adapter_index_);
     sockmgr_proxy_ = base::MakeRefCounted<::dbus::MockObjectProxy>(
         bus_.get(), kSocketManagerInterface, adapter_path_);
     exported_callbacks_ = base::MakeRefCounted<::dbus::MockExportedObject>(
@@ -80,7 +80,7 @@ class FlossSocketManagerTest : public testing::Test {
   }
 
   void Init() {
-    sockmgr_->Init(bus_.get(), kSocketManagerInterface, adapter_path_.value());
+    sockmgr_->Init(bus_.get(), kSocketManagerInterface, adapter_index_);
   }
 
   void SetupListeningSocket() {

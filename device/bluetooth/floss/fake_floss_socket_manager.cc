@@ -92,7 +92,7 @@ FakeFlossSocketManager::~FakeFlossSocketManager() = default;
 
 void FakeFlossSocketManager::Init(dbus::Bus* bus,
                                   const std::string& service_name,
-                                  const std::string& adapter_path) {}
+                                  const int adapter_index) {}
 
 void FakeFlossSocketManager::ListenUsingL2cap(
     const Security security_level,

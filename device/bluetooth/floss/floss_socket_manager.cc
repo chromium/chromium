@@ -431,10 +431,10 @@ void FlossSocketManager::Close(const SocketId id,
 
 void FlossSocketManager::Init(dbus::Bus* bus,
                               const std::string& service_name,
-                              const std::string& adapter_path) {
+                              const int adapter_index) {
   bus_ = bus;
   service_name_ = service_name;
-  adapter_path_ = dbus::ObjectPath(adapter_path);
+  adapter_path_ = GenerateAdapterPath(adapter_index);
 
   dbus::ObjectProxy* object_proxy =
       bus_->GetObjectProxy(service_name_, adapter_path_);

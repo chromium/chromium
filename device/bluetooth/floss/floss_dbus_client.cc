@@ -22,6 +22,7 @@ const char kAdapterInterface[] = "org.chromium.bluetooth.Bluetooth";
 const char kManagerInterface[] = "org.chromium.bluetooth.Manager";
 const char kManagerObject[] = "/org/chromium/bluetooth/Manager";
 const char kAdapterObjectFormat[] = "/org/chromium/bluetooth/hci%d/adapter";
+const char kGattObjectFormat[] = "/org/chromium/bluetooth/hci%d/gatt";
 
 const char kSocketManagerInterface[] = "org.chromium.bluetooth.SocketManager";
 
@@ -284,6 +285,17 @@ const char FlossDBusClient::kErrorInvalidReturn[] =
 const char FlossDBusClient::kErrorDoesNotExist[] =
     "org.chromium.Error.DoesNotExist";
 const char FlossDBusClient::kOptionalValueKey[] = "optional_value";
+
+// static
+dbus::ObjectPath FlossDBusClient::GenerateAdapterPath(int adapter_index) {
+  return dbus::ObjectPath(
+      base::StringPrintf(kAdapterObjectFormat, adapter_index));
+}
+
+// static
+dbus::ObjectPath FlossDBusClient::GenerateGattPath(int adapter_index) {
+  return dbus::ObjectPath(base::StringPrintf(kGattObjectFormat, adapter_index));
+}
 
 // Default error handler for dbus clients is to just print the error right now.
 // TODO(abps) - Deprecate this once error handling is implemented in the upper

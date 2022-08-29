@@ -243,7 +243,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   // Initialize the adapter client.
   void Init(dbus::Bus* bus,
             const std::string& service_name,
-            const std::string& adapter_path) override;
+            const int adapter_index) override;
 
  protected:
   friend class FlossAdapterClientTest;

@@ -34,7 +34,7 @@ const uint32_t FakeFlossAdapterClient::kHeadsetClassOfDevice = 2360344;
 
 void FakeFlossAdapterClient::Init(dbus::Bus* bus,
                                   const std::string& service_name,
-                                  const std::string& adapter_path) {}
+                                  const int adapter_index) {}
 
 void FakeFlossAdapterClient::StartDiscovery(ResponseCallback<Void> callback) {
   // Fail fast if we're meant to fail discovery

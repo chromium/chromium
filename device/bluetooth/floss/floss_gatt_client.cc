@@ -308,13 +308,10 @@ void FlossGattClient::ConfigureMTU(ResponseCallback<Void> callback,
 
 void FlossGattClient::Init(dbus::Bus* bus,
                            const std::string& service_name,
-                           const std::string& adapter_path) {
+                           const int adapter_index) {
   bus_ = bus;
   service_name_ = service_name;
-
-  // TODO(b/193686094) - Gatt path is different from adapter path. We will need
-  // to refactor this Init to construct either an adapter path or gatt path.
-  gatt_adapter_path_ = dbus::ObjectPath(adapter_path);
+  gatt_adapter_path_ = GenerateGattPath(adapter_index);
 
   dbus::ObjectProxy* object_proxy =
       bus_->GetObjectProxy(service_name_, gatt_adapter_path_);

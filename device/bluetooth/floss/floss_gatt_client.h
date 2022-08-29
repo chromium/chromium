@@ -303,7 +303,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattClient
   // Initialize the gatt client for the given adapter.
   void Init(dbus::Bus* bus,
             const std::string& service_name,
-            const std::string& adapter_path) override;
+            const int adapter_index) override;
 
  protected:
   // FlossGattClientCallbacks overrides

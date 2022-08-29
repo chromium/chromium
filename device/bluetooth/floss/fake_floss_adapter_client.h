@@ -33,7 +33,7 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossAdapterClient
   // Fake overrides.
   void Init(dbus::Bus* bus,
             const std::string& service_name,
-            const std::string& adapter_path) override;
+            const int adapter_index) override;
   void StartDiscovery(ResponseCallback<Void> callback) override;
   void CancelDiscovery(ResponseCallback<Void> callback) override;
   void CreateBond(ResponseCallback<bool> callback,

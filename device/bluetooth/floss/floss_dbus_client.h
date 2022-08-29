@@ -291,6 +291,12 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusClient {
   // Error: does not exist.
   static const char DEVICE_BLUETOOTH_EXPORT kErrorDoesNotExist[];
 
+  // Convert adapter number to adapter object path.
+  static dbus::ObjectPath GenerateAdapterPath(int adapter_index);
+
+  // Convert adapter number to gatt object path.
+  static dbus::ObjectPath GenerateGattPath(int adapter_index);
+
   // Generalized DBus serialization (used for generalized method call
   // invocation).
   template <typename T>
@@ -557,7 +563,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusClient {
   // Common init signature for all clients.
   virtual void Init(dbus::Bus* bus,
                     const std::string& bluetooth_service_name,
-                    const std::string& bluetooth_adapter_path) = 0;
+                    const int adapter_index) = 0;
 
  protected:
   // Convert a dbus::ErrorResponse into a floss::Error struct.

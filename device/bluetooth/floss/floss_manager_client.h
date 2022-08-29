@@ -77,9 +77,6 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
     base::WeakPtrFactory<PoweredCallback> weak_ptr_factory_{this};
   };
 
-  // Convert adapter number to object path.
-  static dbus::ObjectPath GenerateAdapterPath(int adapter);
-
   // Creates the instance.
   static std::unique_ptr<FlossManagerClient> Create();
 
@@ -115,7 +112,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
   // Initializes the manager client.
   void Init(dbus::Bus* bus,
             const std::string& service_name,
-            const std::string& adapter_path) override;
+            const int adapter_index) override;
 
  protected:
   friend class FlossManagerClientTest;

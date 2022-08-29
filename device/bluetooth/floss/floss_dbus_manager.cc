@@ -136,7 +136,7 @@ void FlossDBusManager::OnObjectManagerSupported(dbus::Response* response) {
   // Initialize the manager client (which doesn't depend on any specific
   // adapter being present)
   client_bundle_->manager_client()->Init(GetSystemBus(), kManagerInterface,
-                                         std::string());
+                                         kInvalidAdapter);
 
   object_manager_support_known_ = true;
   if (object_manager_support_known_callback_) {
@@ -195,14 +195,11 @@ void FlossDBusManager::InitializeAdapterClients(int adapter) {
     return;
   }
 
-  dbus::ObjectPath adapter_path =
-      FlossManagerClient::GenerateAdapterPath(adapter);
-
   // Initialize any adapter clients.
   client_bundle_->adapter_client()->Init(GetSystemBus(), kAdapterService,
-                                         adapter_path.value());
+                                         active_adapter_);
   client_bundle_->socket_manager()->Init(GetSystemBus(), kAdapterService,
-                                         adapter_path.value());
+                                         active_adapter_);
 }
 
 void FlossDBusManagerSetter::SetFlossManagerClient(

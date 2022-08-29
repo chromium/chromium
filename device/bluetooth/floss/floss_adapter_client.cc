@@ -157,9 +157,9 @@ void FlossAdapterClient::GetConnectedDevices() {
 
 void FlossAdapterClient::Init(dbus::Bus* bus,
                               const std::string& service_name,
-                              const std::string& adapter_path) {
+                              const int adapter_index) {
   bus_ = bus;
-  adapter_path_ = dbus::ObjectPath(adapter_path);
+  adapter_path_ = GenerateAdapterPath(adapter_index);
   service_name_ = service_name;
 
   dbus::ObjectProxy* object_proxy =

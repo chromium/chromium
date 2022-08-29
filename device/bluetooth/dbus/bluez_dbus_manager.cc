@@ -239,7 +239,7 @@ void BluezDBusManager::OnFlossObjectManagerSupported(dbus::Response* response) {
   DVLOG(1) << "Floss manager present. Making sure Floss is enabled/disabled.";
   floss_manager_client_ = floss::FlossManagerClient::Create();
   floss_manager_client_->Init(GetSystemBus(), floss::kManagerInterface,
-                              std::string());
+                              /*adapter_index=*/0);
 }
 
 void BluezDBusManager::OnFlossObjectManagerNotSupported(
