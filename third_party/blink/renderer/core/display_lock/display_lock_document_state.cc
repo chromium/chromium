@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_entry.h"
 #include "third_party/blink/renderer/core/layout/deferred_shaping.h"
+#include "third_party/blink/renderer/core/layout/deferred_shaping_controller.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
@@ -448,10 +449,10 @@ void DisplayLockDocumentState::NotifyPrintingOrPreviewChanged() {
 void DisplayLockDocumentState::UnlockShapingDeferredElements() {
   if (!RuntimeEnabledFeatures::DeferredShapingEnabled())
     return;
-  auto* view = document_->View();
-  if (!view)
+  auto* ds_controller = DeferredShapingController::From(*document_);
+  if (!ds_controller)
     return;
-  size_t count = view->ReshapeAllDeferred();
+  size_t count = ds_controller->ReshapeAllDeferred();
   if (count > 0) {
     UseCounter::Count(document_,
                       WebFeature::kDeferredShapingReshapedByForceLayout);

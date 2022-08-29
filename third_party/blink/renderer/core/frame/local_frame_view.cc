@@ -107,6 +107,7 @@
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_controller.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/deferred_shaping.h"
+#include "third_party/blink/renderer/core/layout/deferred_shaping_controller.h"
 #include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
@@ -256,6 +257,8 @@ LocalFrameView::LocalFrameView(LocalFrame& frame, const gfx::Size& initial_size)
 LocalFrameView::LocalFrameView(LocalFrame& frame, gfx::Rect frame_rect)
     : FrameView(frame_rect),
       frame_(frame),
+      deferred_shaping_controller_(
+          MakeGarbageCollected<DeferredShapingController>(frame)),
       can_have_scrollbars_(true),
       has_pending_layout_(false),
       layout_scheduling_enabled_(true),
@@ -312,7 +315,7 @@ LocalFrameView::~LocalFrameView() {
 void LocalFrameView::Trace(Visitor* visitor) const {
   visitor->Trace(part_update_set_);
   visitor->Trace(frame_);
-  visitor->Trace(deferred_to_be_locked_);
+  visitor->Trace(deferred_shaping_controller_);
   visitor->Trace(update_plugins_timer_);
   visitor->Trace(layout_subtree_root_list_);
   visitor->Trace(orthogonal_writing_mode_root_list_);
@@ -830,14 +833,16 @@ void LocalFrameView::PerformLayout() {
       if (HasOrthogonalWritingModeRoots())
         LayoutOrthogonalWritingModeRoots();
 
-      default_allow_deferred_shaping_ =
-          default_allow_deferred_shaping_ &&
+      bool default_allow_deferred_shaping =
+          GetDeferredShapingController().DefaultAllowDeferredShaping() &&
           RuntimeEnabledFeatures::DeferredShapingEnabled() &&
           !frame_->PagePopupOwner() && !auto_size_info_ &&
           !GetScrollableArea()->HasPendingHistoryRestoreScrollOffset();
+      if (!default_allow_deferred_shaping)
+        GetDeferredShapingController().DisallowDeferredShaping();
       base::AutoReset<bool> deferred_shaping(
           &allow_deferred_shaping_,
-          default_allow_deferred_shaping_ && !document->Printing());
+          default_allow_deferred_shaping && !document->Printing());
       DeferredShapingViewportScope viewport_scope(*this, *GetLayoutView());
       GetLayoutView()->UpdateLayout();
     }
@@ -1357,7 +1362,7 @@ void LocalFrameView::ProcessUrlFragment(const KURL& url,
     // part of the lifecycle.
     if (same_document_navigation)
       ScheduleAnimation();
-    ReshapeAllDeferred();
+    GetDeferredShapingController().ReshapeAllDeferred();
   }
 }
 
@@ -1855,55 +1860,7 @@ void LocalFrameView::PerformPostLayoutTasks(bool visual_viewport_size_changed) {
   if (visual_viewport_size_changed && !document->Printing())
     frame_->GetDocument()->EnqueueVisualViewportResizeEvent();
 
-  if (deferred_to_be_locked_.size() > 0) {
-    DCHECK(RuntimeEnabledFeatures::DeferredShapingEnabled());
-    DEFERRED_SHAPING_VLOG(1)
-        << "Deferred " << deferred_to_be_locked_.size() << " elements";
-    UseCounter::Count(document, WebFeature::kDeferredShapingWorked);
-  }
-}
-
-void LocalFrameView::ScheduleReshapeAllDeferred() {
-  if (!RuntimeEnabledFeatures::DeferredShapingEnabled())
-    return;
-  if (!default_allow_deferred_shaping_)
-    return;
-  default_allow_deferred_shaping_ = false;
-  reshaping_task_handle_ = PostCancellableTask(
-      *GetFrame().GetTaskRunner(TaskType::kInternalDefault), FROM_HERE,
-      WTF::Bind(&LocalFrameView::ReshapeAllDeferredInternal,
-                WrapWeakPersistent(this)));
-}
-
-size_t LocalFrameView::ReshapeAllDeferred() {
-  default_allow_deferred_shaping_ = false;
-  if (deferred_to_be_locked_.IsEmpty())
-    return 0;
-  size_t count = 0;
-  for (auto& element : deferred_to_be_locked_) {
-    if (!element->isConnected())
-      continue;
-    LayoutBox* box = element->GetLayoutBox();
-    if (!box || !box->IsShapingDeferred())
-      continue;
-    ++count;
-    box->MarkContainerChainForLayout();
-    box->SetIntrinsicLogicalWidthsDirty();
-    box->SetChildNeedsLayout();
-    // Make sure we don't use cached NGFragmentItem objects.
-    box->DisassociatePhysicalFragments();
-    box->ClearLayoutResults();
-  }
-  deferred_to_be_locked_.clear();
-  return count;
-}
-
-void LocalFrameView::ReshapeAllDeferredInternal() {
-  size_t count = ReshapeAllDeferred();
-  if (count) {
-    DEFERRED_SHAPING_VLOG(1)
-        << "Re-shaped all " << count << " elements by idle-after-parsing";
-  }
+  GetDeferredShapingController().PerformPostLayoutTask();
 }
 
 float LocalFrameView::InputEventsScaleFactor() const {
@@ -4766,8 +4723,7 @@ void LocalFrameView::OnFirstContentfulPaint() {
   if (frame_->IsLocalRoot())
     EnsureUkmAggregator().DidReachFirstContentfulPaint();
 
-  if (frame_->GetDocument()->HasFinishedParsing())
-    ScheduleReshapeAllDeferred();
+  GetDeferredShapingController().OnFirstContentfulPaint();
 }
 
 void LocalFrameView::RegisterForLifecycleNotifications(
@@ -5008,25 +4964,6 @@ DarkModeFilter& LocalFrameView::EnsureDarkModeFilter() {
         std::make_unique<DarkModeFilter>(GetCurrentDarkModeSettings());
   }
   return *dark_mode_filter_;
-}
-
-void LocalFrameView::DisallowDeferredShaping() {
-  DCHECK_EQ(current_viewport_bottom_, kIndefiniteSize);
-  DCHECK_EQ(current_minimum_top_, LayoutUnit());
-  default_allow_deferred_shaping_ = false;
-}
-
-void LocalFrameView::RequestToLockDeferred(Element& element) {
-  deferred_to_be_locked_.insert(&element);
-}
-
-bool LocalFrameView::LockDeferredRequested(Element& element) const {
-  return !deferred_to_be_locked_.IsEmpty() &&
-         deferred_to_be_locked_.Contains(&element);
-}
-
-void LocalFrameView::UnregisterShapingDeferredElement(Element& element) {
-  deferred_to_be_locked_.erase(&element);
 }
 
 void LocalFrameView::AddPendingTransformUpdate(LayoutObject& object) {

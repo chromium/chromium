@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/deferred_shaping.h"
+#include "third_party/blink/renderer/core/layout/deferred_shaping_controller.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -558,7 +559,7 @@ void NGInlineNode::ShapeTextOrDefer(const NGConstraintSpace& space) const {
 
       if (Element* element = DynamicTo<Element>(GetDOMNode())) {
         // We can't call DisplayLockContext::SetRequestedState() during layout.
-        view.RequestToLockDeferred(*element);
+        view.GetDeferredShapingController().RegisterDeferred(*element);
       } else {
         // We don't support deferring anonymous IFCs because DisplayLock
         // supports only elements.
@@ -2027,13 +2028,14 @@ bool NGInlineNode::UseFirstLineStyle() const {
 bool NGInlineNode::ShouldBeReshaped() const {
   if (!Data().IsShapingDeferred())
     return false;
-  return !GetLayoutBox()->GetFrameView()->LockDeferredRequested(
-      *To<Element>(GetDOMNode()));
+  return !IsDisplayLocked();
 }
 
 bool NGInlineNode::IsDisplayLocked() const {
-  return GetLayoutBox()->GetFrameView()->LockDeferredRequested(
-      *To<Element>(GetDOMNode()));
+  return GetLayoutBox()
+      ->GetFrameView()
+      ->GetDeferredShapingController()
+      .IsRegisteredDeferred(*To<Element>(GetDOMNode()));
 }
 
 void NGInlineNode::CheckConsistency() const {

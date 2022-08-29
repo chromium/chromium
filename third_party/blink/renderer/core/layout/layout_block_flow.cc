@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
+#include "third_party/blink/renderer/core/layout/deferred_shaping_controller.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/layout_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
@@ -3317,8 +3318,10 @@ static void GetInlineRun(LayoutObject* start,
 void LayoutBlockFlow::MakeChildrenNonInline(LayoutObject* insertion_point) {
   NOT_DESTROYED();
 
-  if (IsShapingDeferred())
-    GetFrameView()->UnregisterShapingDeferredElement(*To<Element>(GetNode()));
+  if (IsShapingDeferred()) {
+    GetFrameView()->GetDeferredShapingController().UnregisterDeferred(
+        *To<Element>(GetNode()));
+  }
 
   // makeChildrenNonInline takes a block whose children are *all* inline and it
   // makes sure that inline children are coalesced under anonymous blocks.

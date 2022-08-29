@@ -65,6 +65,8 @@ blink_core_sources_layout = [
   "depth_ordered_layout_object_list.h",
   "deferred_shaping.cc",
   "deferred_shaping.h",
+  "deferred_shaping_controller.cc",
+  "deferred_shaping_controller.h",
   "flexible_box_algorithm.cc",
   "flexible_box_algorithm.h",
   "floating_objects.cc",

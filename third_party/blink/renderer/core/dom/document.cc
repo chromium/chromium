@@ -245,6 +245,7 @@
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_controller.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_entry.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
+#include "third_party/blink/renderer/core/layout/deferred_shaping_controller.h"
 #include "third_party/blink/renderer/core/layout/hit_test_canvas_result.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
@@ -3219,8 +3220,8 @@ void Document::SetPrinting(PrintingState state) {
 
   if (was_printing != is_printing) {
     GetDisplayLockDocumentState().NotifyPrintingOrPreviewChanged();
-    if (View())
-      View()->ReshapeAllDeferred();
+    if (auto* ds_controller = DeferredShapingController::From(*this))
+      ds_controller->ReshapeAllDeferred();
 
     // We force the color-scheme to light for printing.
     ColorSchemeChanged();
@@ -4106,10 +4107,10 @@ void Document::SetParsingState(ParsingState parsing_state) {
       parsing_state_ == kFinishedParsing) {
     if (form_controller_ && form_controller_->HasControlStates())
       form_controller_->ScheduleRestore();
-    if (auto* view = View()) {
+    if (auto* ds_controller = DeferredShapingController::From(*this)) {
       PaintTiming& timing = PaintTiming::From(*this);
       if (!timing.FirstContentfulPaint().is_null())
-        view->ReshapeAllDeferred();
+        ds_controller->ReshapeAllDeferred();
     }
   }
 }

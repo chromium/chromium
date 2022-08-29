@@ -159,6 +159,7 @@
 #include "third_party/blink/renderer/core/intersection_observer/element_intersection_observer_data.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_controller.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
+#include "third_party/blink/renderer/core/layout/deferred_shaping_controller.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
@@ -1610,7 +1611,7 @@ void Element::setScrollLeft(double new_left) {
   if (!InActiveDocument())
     return;
 
-  GetDocument().View()->ReshapeAllDeferred();
+  DeferredShapingController::From(GetDocument())->ReshapeAllDeferred();
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
 
@@ -1662,7 +1663,7 @@ void Element::setScrollTop(double new_top) {
   if (!InActiveDocument())
     return;
 
-  GetDocument().View()->ReshapeAllDeferred();
+  DeferredShapingController::From(GetDocument())->ReshapeAllDeferred();
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
 
@@ -3749,7 +3750,7 @@ void Element::DetachLayoutTree(bool performing_reattach) {
   if (context)
     context->DetachLayoutTree();
   if (was_shaping_deferred && GetDocument().View())
-    GetDocument().View()->UnregisterShapingDeferredElement(*this);
+    DeferredShapingController::From(GetDocument())->UnregisterDeferred(*this);
 }
 
 void Element::ReattachLayoutTreeChildren(base::PassKey<StyleEngine>) {

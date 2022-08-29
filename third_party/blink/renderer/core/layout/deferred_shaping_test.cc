@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
+#include "third_party/blink/renderer/core/layout/deferred_shaping_controller.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/page/print_context.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
@@ -237,7 +238,7 @@ TEST_F(DeferredShapingTest, UpdateTextInDeferred) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(IsDefer("target"));
 
-  GetFrame().View()->DisallowDeferredShaping();
+  DeferredShapingController::From(GetDocument())->DisallowDeferredShaping();
 
   // Re-layout the target while it was deferred but deferred shaping is
   // disabled. We had an inconsistent state issue.
