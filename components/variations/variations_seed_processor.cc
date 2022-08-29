@@ -24,6 +24,10 @@
 
 namespace variations {
 
+namespace internal {
+const char kFeatureConflictGroupName[] = "ClientSideFeatureConflict";
+}  // namespace internal
+
 namespace {
 
 // Associates the variations params of |experiment|, if present.
@@ -187,6 +191,21 @@ bool ShouldForceExperiment(const Study::Experiment& experiment,
   return false;
 }
 
+// Creates a trial with the name |trial_name|, and forcibly selects the
+// |kFeatureConflictGroupName| group, which specifies no feature, params, or
+// variation IDs. This group is used to indicate that there was a feature
+// conflict. For example, toggling a flag with params in chrome://flags, which
+// will associate the feature with a trial. If the variations seed specifies a
+// different trial with the same feature, then there is a conflict.
+void CreateTrialWithFeatureConflictGroup(const std::string& trial_name) {
+  base::FieldTrial* trial = base::FieldTrialList::CreateFieldTrial(
+      trial_name, internal::kFeatureConflictGroupName);
+  DCHECK(trial);
+  // Query the trial's group in order to immediately activate it. This way,
+  // from the metrics logs, it will be obvious that there was a conflict.
+  trial->group();
+}
+
 }  // namespace
 
 VariationsSeedProcessor::VariationsSeedProcessor() = default;
@@ -232,6 +251,11 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
     const UIStringOverrideCallback& override_callback,
     const base::FieldTrial::EntropyProvider* low_entropy_provider,
     base::FeatureList* feature_list) {
+  // Since trials and features can come from many different sources (variations
+  // seed, about://flags, and command line), there are special cases for when
+  // they conflict with each other. See the following doc:
+  // https://docs.google.com/document/d/1PAlx0KyjRwLJsmkIWlZMgZ-R422Oetgxa3ZPq0Q98aQ
+
   const Study& study = *processed_study.study();
 
   // If the trial already exists, check if the selected group exists in the
@@ -242,6 +266,39 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
         existing_trial->GetGroupNameWithoutActivation());
     if (experiment_index == -1)
       return;
+    // If the selected group exists in |processed_study|, then there may be some
+    // variation ids, params, and features to pick up, so do not return early.
+    // For example, if a user specifies the command line flag
+    // "--force-fieldtrials=Study/Enabled" and the variations seed includes
+    // a "Study" trial with an "Enabled" group that specifies features or other
+    // details, then use those details, even though they were not directly
+    // specified on the command line.
+  } else {
+    // If an experiment group in the study specifies a feature that is already
+    // associated with another trial, forcibly select the
+    // |kFeatureConflictGroupName| group to indicate a conflict. Usually, the
+    // server-side enforces that no two studies enable/disable the same feature,
+    // but this might happen from the client-side, such as through flags or
+    // through the command line.
+    //
+    // Only check for this if the trial does not already exist. If it already
+    // exists, then we cannot create the |kFeatureConflictGroupName| group for
+    // it.
+    for (const Study::Experiment& experiment : study.experiment()) {
+      const auto& features = experiment.feature_association();
+      for (const std::string& feature_name : features.enable_feature()) {
+        if (feature_list->HasAssociatedFieldTrialByFeatureName(feature_name)) {
+          CreateTrialWithFeatureConflictGroup(study.name());
+          return;
+        }
+      }
+      for (const std::string& feature_name : features.disable_feature()) {
+        if (feature_list->HasAssociatedFieldTrialByFeatureName(feature_name)) {
+          CreateTrialWithFeatureConflictGroup(study.name());
+          return;
+        }
+      }
+    }
   }
 
   // Check if any experiments need to be forced due to a command line

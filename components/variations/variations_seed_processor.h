@@ -24,6 +24,12 @@ class FeatureList;
 
 namespace variations {
 
+namespace internal {
+// The trial group selected when a study specifies a feature that is already
+// associated with another trial. Exposed in the header file for testing.
+COMPONENT_EXPORT(VARIATIONS) extern const char kFeatureConflictGroupName[];
+}  // namespace internal
+
 class ProcessedStudy;
 struct ClientFilterableState;
 

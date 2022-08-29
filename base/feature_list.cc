@@ -307,8 +307,7 @@ void FeatureList::RegisterFieldTrialOverride(const std::string& feature_name,
                                              OverrideState override_state,
                                              FieldTrial* field_trial) {
   DCHECK(field_trial);
-  DCHECK(!Contains(overrides_, feature_name) ||
-         !overrides_.find(feature_name)->second.field_trial)
+  DCHECK(!HasAssociatedFieldTrialByFeatureName(feature_name))
       << "Feature " << feature_name << " is overriden multiple times in these "
       << "trials: "
       << overrides_.find(feature_name)->second.field_trial->trial_name()
@@ -642,6 +641,12 @@ FieldTrial* FeatureList::GetAssociatedFieldTrialByFeatureName(
     return entry->field_trial;
   }
   return nullptr;
+}
+
+bool FeatureList::HasAssociatedFieldTrialByFeatureName(StringPiece name) const {
+  DCHECK(!initialized_);
+  auto entry = overrides_.find(name);
+  return entry != overrides_.end() && entry->second.field_trial != nullptr;
 }
 
 FieldTrial* FeatureList::GetEnabledFieldTrialByFeatureName(

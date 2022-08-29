@@ -294,6 +294,17 @@ class BASE_EXPORT FeatureList {
   base::FieldTrial* GetAssociatedFieldTrialByFeatureName(
       StringPiece name) const;
 
+  // DO NOT USE outside of internal field trial implementation code. Instead use
+  // GetAssociatedFieldTrialByFeatureName(), which performs some additional
+  // validation.
+  //
+  // Returns whether the given feature |name| is associated with a field trial.
+  // If the given feature |name| does not exist, return false. Unlike
+  // GetAssociatedFieldTrialByFeatureName(), this function must be called during
+  // |FeatureList| initialization; the returned value will report whether the
+  // provided |name| has been used so far.
+  bool HasAssociatedFieldTrialByFeatureName(StringPiece name) const;
+
   // Get associated field trial for the given feature |name| only if override
   // enables it.
   FieldTrial* GetEnabledFieldTrialByFeatureName(StringPiece name) const;

@@ -1374,4 +1374,88 @@ TYPED_TEST(VariationsSeedProcessorTest, StudyWithLowerEntropyThanLayer) {
   EXPECT_FALSE(base::FieldTrialList::IsTrialActive(study->name()));
 }
 
+TYPED_TEST(VariationsSeedProcessorTest, StudiesWithOverlappingEnabledFeatures) {
+  static struct base::Feature kFeature {
+    "FeatureName", base::FEATURE_ENABLED_BY_DEFAULT
+  };
+
+  VariationsSeed seed;
+
+  // Create two studies that enable |kFeature|.
+  Study* flags_study = seed.add_study();
+  flags_study->set_name("FlagsStudy");
+  flags_study->set_default_experiment_name("A");
+  flags_study->set_activation_type(Study_ActivationType_ACTIVATE_ON_STARTUP);
+  Study::Experiment* experiment =
+      AddExperiment("A", /*probability=*/1, flags_study);
+  experiment->mutable_feature_association()->add_enable_feature(kFeature.name);
+
+  Study* server_side_study = seed.add_study();
+  server_side_study->set_name("ServerSideStudy");
+  server_side_study->set_default_experiment_name("A");
+  server_side_study->set_activation_type(
+      Study_ActivationType_ACTIVATE_ON_STARTUP);
+  Study::Experiment* experiment2 =
+      AddExperiment("A", /*probability=*/1, server_side_study);
+  experiment2->mutable_feature_association()->add_enable_feature(kFeature.name);
+
+  this->CreateTrialsFromSeed(seed);
+
+  // Verify that FlagsStudy was created and activated, and that the "A"
+  // experiment group was selected.
+  ASSERT_TRUE(base::FieldTrialList::IsTrialActive(flags_study->name()));
+  EXPECT_EQ(base::FieldTrialList::Find(flags_study->name())->group_name(), "A");
+
+  // Verify that ServerSideStudy was created and activated, but that the
+  // |kFeatureConflictGroupName| experiment group was forcibly selected due to
+  // the study being associated with |kFeature| (which is already associated
+  // with trial FlagsStudy).
+  ASSERT_TRUE(base::FieldTrialList::IsTrialActive(server_side_study->name()));
+  EXPECT_EQ(base::FieldTrialList::Find(server_side_study->name())->group_name(),
+            internal::kFeatureConflictGroupName);
+}
+
+TYPED_TEST(VariationsSeedProcessorTest,
+           StudiesWithOverlappingDisabledFeatures) {
+  static struct base::Feature kFeature {
+    "FeatureName", base::FEATURE_ENABLED_BY_DEFAULT
+  };
+
+  VariationsSeed seed;
+
+  // Create two studies that disable |kFeature|.
+  Study* flags_study = seed.add_study();
+  flags_study->set_name("FlagsStudy");
+  flags_study->set_default_experiment_name("A");
+  flags_study->set_activation_type(Study_ActivationType_ACTIVATE_ON_STARTUP);
+  Study::Experiment* experiment =
+      AddExperiment("A", /*probability=*/1, flags_study);
+  experiment->mutable_feature_association()->add_disable_feature(kFeature.name);
+
+  Study* server_side_study = seed.add_study();
+  server_side_study->set_name("ServerSideStudy");
+  server_side_study->set_default_experiment_name("A");
+  server_side_study->set_activation_type(
+      Study_ActivationType_ACTIVATE_ON_STARTUP);
+  Study::Experiment* experiment2 =
+      AddExperiment("A", /*probability=*/1, server_side_study);
+  experiment2->mutable_feature_association()->add_disable_feature(
+      kFeature.name);
+
+  this->CreateTrialsFromSeed(seed);
+
+  // Verify that FlagsStudy was created and activated, and that the "A"
+  // experiment group was selected.
+  ASSERT_TRUE(base::FieldTrialList::IsTrialActive(flags_study->name()));
+  EXPECT_EQ(base::FieldTrialList::Find(flags_study->name())->group_name(), "A");
+
+  // Verify that ServerSideStudy was created and activated, but that the
+  // |kFeatureConflictGroupName| experiment group was forcibly selected due to
+  // the study being associated with |kFeature| (which is already associated
+  // with trial FlagsStudy).
+  ASSERT_TRUE(base::FieldTrialList::IsTrialActive(server_side_study->name()));
+  EXPECT_EQ(base::FieldTrialList::Find(server_side_study->name())->group_name(),
+            internal::kFeatureConflictGroupName);
+}
+
 }  // namespace variations
