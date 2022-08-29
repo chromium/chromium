@@ -204,15 +204,18 @@ class Manager(object):
 
         self._printer.write_update('Summarizing results ...')
         summarized_full_results = test_run_results.summarize_results(
-            self._port, self._expectations, initial_results, all_retry_results)
+            self._port, self._options, self._expectations, initial_results,
+            all_retry_results)
         summarized_failing_results = test_run_results.summarize_results(
             self._port,
+            self._options,
             self._expectations,
             initial_results,
             all_retry_results,
             only_include_failing=True)
         run_histories = test_run_results.test_run_histories(
-            self._port, self._expectations, initial_results, all_retry_results)
+            self._options, self._expectations, initial_results,
+            all_retry_results)
 
         exit_code = summarized_failing_results['num_regressions']
         if exit_code > exit_codes.MAX_FAILURES_EXIT_STATUS:

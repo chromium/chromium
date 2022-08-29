@@ -29,6 +29,7 @@
 import json
 import mock
 import unittest
+import optparse
 
 from blinkpy.common.host_mock import MockHost
 from blinkpy.web_tests.models import test_expectations
@@ -210,6 +211,7 @@ def generate_results(port, expected, passing, flaky, extra_skipped_tests=None):
 
 
 def summarized_results(port,
+                       options,
                        expected,
                        passing,
                        flaky,
@@ -219,6 +221,7 @@ def summarized_results(port,
         port, expected, passing, flaky, extra_skipped_tests)
     return test_run_results.summarize_results(
         port,
+        options,
         initial_results.expectations,
         initial_results,
         all_retry_results,
@@ -303,16 +306,24 @@ class InterpretTestFailuresTest(unittest.TestCase):
 class SummarizedResultsTest(unittest.TestCase):
     def setUp(self):
         host = MockHost()
-        self.port = host.port_factory.get(port_name='test')
+        self.options = optparse.Values()
+        self.port = host.port_factory.get(port_name='test',
+                                          options=self.options)
 
     def test_no_chromium_revision(self):
-        summary = summarized_results(
-            self.port, expected=False, passing=False, flaky=False)
+        summary = summarized_results(self.port,
+                                     self.options,
+                                     expected=False,
+                                     passing=False,
+                                     flaky=False)
         self.assertNotIn('revision', summary)
 
     def test_num_failures_by_type(self):
-        summary = summarized_results(
-            self.port, expected=False, passing=False, flaky=False)
+        summary = summarized_results(self.port,
+                                     self.options,
+                                     expected=False,
+                                     passing=False,
+                                     flaky=False)
         self.assertEquals(summary['num_failures_by_type'], {
             'CRASH': 1,
             'PASS': 1,
@@ -321,8 +332,11 @@ class SummarizedResultsTest(unittest.TestCase):
             'FAIL': 2,
         })
 
-        summary = summarized_results(
-            self.port, expected=True, passing=False, flaky=False)
+        summary = summarized_results(self.port,
+                                     self.options,
+                                     expected=True,
+                                     passing=False,
+                                     flaky=False)
         self.assertEquals(summary['num_failures_by_type'], {
             'CRASH': 1,
             'PASS': 1,
@@ -331,8 +345,11 @@ class SummarizedResultsTest(unittest.TestCase):
             'FAIL': 2,
         })
 
-        summary = summarized_results(
-            self.port, expected=False, passing=True, flaky=False)
+        summary = summarized_results(self.port,
+                                     self.options,
+                                     expected=False,
+                                     passing=True,
+                                     flaky=False)
         self.assertEquals(summary['num_failures_by_type'], {
             'CRASH': 0,
             'PASS': 5,
@@ -342,33 +359,50 @@ class SummarizedResultsTest(unittest.TestCase):
         })
 
     def test_chromium_revision(self):
-        self.port._options.builder_name = 'dummy builder'
-        summary = summarized_results(
-            self.port, expected=False, passing=False, flaky=False)
+        self.options.builder_name = 'dummy builder'
+        summary = summarized_results(self.port,
+                                     self.options,
+                                     expected=False,
+                                     passing=False,
+                                     flaky=False)
         self.assertNotEquals(summary['chromium_revision'], '')
 
     def test_bug_entry(self):
-        self.port._options.builder_name = 'dummy builder'
-        summary = summarized_results(
-            self.port, expected=False, passing=True, flaky=False)
+        self.options.builder_name = 'dummy builder'
+        summary = summarized_results(self.port,
+                                     self.options,
+                                     expected=False,
+                                     passing=True,
+                                     flaky=False)
         self.assertEquals(
             summary['tests']['passes']['skipped']['skip.html']['bugs'],
             ['crbug.com/123'])
 
+    def test_shard_index(self):
+        self.options.shard_index = 42
+        summary = summarized_results(self.port,
+                                     self.options,
+                                     expected=False,
+                                     passing=True,
+                                     flaky=False)
+        self.assertEquals(
+            summary['tests']['passes']['skipped']['skip.html']['shard'], 42)
+
     def test_extra_skipped_tests(self):
-        self.port._options.builder_name = 'dummy builder'
-        summary = summarized_results(
-            self.port,
-            expected=False,
-            passing=True,
-            flaky=False,
-            extra_skipped_tests=['passes/text.html'])
+        self.options.builder_name = 'dummy builder'
+        summary = summarized_results(self.port,
+                                     self.options,
+                                     expected=False,
+                                     passing=True,
+                                     flaky=False,
+                                     extra_skipped_tests=['passes/text.html'])
         actual = summary['tests']['passes']['text.html']['expected']
         self.assertEquals(sorted(list(actual.split(" "))), ['PASS', 'SKIP'])
 
     def test_summarized_results_image_diff_stats(self):
-        self.port._options.builder_name = 'dummy builder'
+        self.options.builder_name = 'dummy builder'
         summary = summarized_results(self.port,
+                                     self.options,
                                      expected=False,
                                      passing=False,
                                      flaky=False)
@@ -380,9 +414,12 @@ class SummarizedResultsTest(unittest.TestCase):
             summary['tests']['failures']['expected']['keyboard.html'])
 
     def test_summarized_results_wontfix(self):
-        self.port._options.builder_name = 'dummy builder'
-        summary = summarized_results(
-            self.port, expected=False, passing=False, flaky=False)
+        self.options.builder_name = 'dummy builder'
+        summary = summarized_results(self.port,
+                                     self.options,
+                                     expected=False,
+                                     passing=False,
+                                     flaky=False)
         actual = summary['tests']['failures']['expected']['keyboard.html'][
             'expected']
         self.assertEquals(sorted(list(actual.split(" "))), ['CRASH', 'SKIP'])
@@ -393,22 +430,25 @@ class SummarizedResultsTest(unittest.TestCase):
         self.assertEqual(summary['num_flaky'], 0)
 
     def test_summarized_results_expected_pass(self):
-        self.port._options.builder_name = 'dummy builder'
-        summary = summarized_results(
-            self.port, expected=False, passing=True, flaky=False)
+        self.options.builder_name = 'dummy builder'
+        summary = summarized_results(self.port,
+                                     self.options,
+                                     expected=False,
+                                     passing=True,
+                                     flaky=False)
         self.assertTrue(summary['tests']['passes']['text.html'])
         self.assertEqual(summary['num_passes'], 5)
         self.assertEqual(summary['num_regressions'], 0)
         self.assertEqual(summary['num_flaky'], 0)
 
     def test_summarized_results_expected_only_include_failing(self):
-        self.port._options.builder_name = 'dummy builder'
-        summary = summarized_results(
-            self.port,
-            expected=True,
-            passing=False,
-            flaky=False,
-            only_include_failing=True)
+        self.options.builder_name = 'dummy builder'
+        summary = summarized_results(self.port,
+                                     self.options,
+                                     expected=True,
+                                     passing=False,
+                                     flaky=False,
+                                     only_include_failing=True)
         self.assertNotIn('passes', summary['tests'])
         self.assertTrue(summary['tests']['failures']['expected']['audio.html'])
         self.assertTrue(
@@ -420,29 +460,35 @@ class SummarizedResultsTest(unittest.TestCase):
         self.assertEqual(summary['num_flaky'], 0)
 
     def test_summarized_results_skipped(self):
-        self.port._options.builder_name = 'dummy builder'
-        summary = summarized_results(
-            self.port, expected=False, passing=True, flaky=False)
+        self.options.builder_name = 'dummy builder'
+        summary = summarized_results(self.port,
+                                     self.options,
+                                     expected=False,
+                                     passing=True,
+                                     flaky=False)
         self.assertEquals(
             summary['tests']['passes']['skipped']['skip.html']['expected'],
             'SKIP')
 
     def test_summarized_results_only_include_failing(self):
-        self.port._options.builder_name = 'dummy builder'
-        summary = summarized_results(
-            self.port,
-            expected=False,
-            passing=True,
-            flaky=False,
-            only_include_failing=True)
+        self.options.builder_name = 'dummy builder'
+        summary = summarized_results(self.port,
+                                     self.options,
+                                     expected=False,
+                                     passing=True,
+                                     flaky=False,
+                                     only_include_failing=True)
         self.assertTrue('passes' not in summary['tests'])
         self.assertEqual(summary['num_passes'], 5)
         self.assertEqual(summary['num_regressions'], 0)
         self.assertEqual(summary['num_flaky'], 0)
 
     def test_rounded_run_times(self):
-        summary = summarized_results(
-            self.port, expected=False, passing=False, flaky=False)
+        summary = summarized_results(self.port,
+                                     self.options,
+                                     expected=False,
+                                     passing=False,
+                                     flaky=False)
         self.assertEquals(summary['tests']['passes']['text.html']['time'], 1)
         self.assertTrue('time' not in summary['tests']['failures']['expected']
                         ['audio.html'])
@@ -474,8 +520,10 @@ class SummarizedResultsTest(unittest.TestCase):
             get_result(test_name, ResultType.Pass, run_time=0.1), False, False)
         all_retry_results[2].add(
             get_result(test_name, ResultType.Pass, run_time=0.1), False, False)
-        summary = test_run_results.summarize_results(
-            self.port, expectations, initial_results, all_retry_results)
+        summary = test_run_results.summarize_results(self.port, self.options,
+                                                     expectations,
+                                                     initial_results,
+                                                     all_retry_results)
         self.assertIn('is_unexpected',
                       summary['tests']['failures']['expected']['text.html'])
         self.assertEquals(
@@ -489,8 +537,11 @@ class SummarizedResultsTest(unittest.TestCase):
         self.assertEquals(summary['num_flaky'], 0)
 
     def test_summarized_results_flaky(self):
-        summary = summarized_results(
-            self.port, expected=False, passing=False, flaky=True)
+        summary = summarized_results(self.port,
+                                     self.options,
+                                     expected=False,
+                                     passing=False,
+                                     flaky=True)
 
         self.assertEquals(
             summary['tests']['failures']['expected']['crash.html']['expected'],
@@ -561,8 +612,10 @@ class SummarizedResultsTest(unittest.TestCase):
             get_result(test_name, ResultType.Pass), True, False)
         all_retry_results[2].add(
             get_result(test_name, ResultType.Pass), True, False)
-        summary = test_run_results.summarize_results(
-            self.port, expectations, initial_results, all_retry_results)
+        summary = test_run_results.summarize_results(self.port, self.options,
+                                                     expectations,
+                                                     initial_results,
+                                                     all_retry_results)
         self.assertTrue(
             'is_unexpected' not in summary['tests']['passes']['text.html'])
         self.assertEquals(summary['tests']['passes']['text.html']['expected'],
@@ -592,8 +645,10 @@ class SummarizedResultsTest(unittest.TestCase):
         all_retry_results[0].add(
             get_result(test_name, ResultType.Failure), False, False)
 
-        summary = test_run_results.summarize_results(
-            self.port, expectations, initial_results, all_retry_results)
+        summary = test_run_results.summarize_results(self.port, self.options,
+                                                     expectations,
+                                                     initial_results,
+                                                     all_retry_results)
         self.assertEquals(summary['tests']['passes']['text.html']['expected'],
                           'PASS')
         self.assertEquals(summary['tests']['passes']['text.html']['actual'],
@@ -603,8 +658,11 @@ class SummarizedResultsTest(unittest.TestCase):
         self.assertEquals(summary['num_regressions'], 1)
 
     def test_summarized_results_regression(self):
-        summary = summarized_results(
-            self.port, expected=False, passing=False, flaky=False)
+        summary = summarized_results(self.port,
+                                     self.options,
+                                     expected=False,
+                                     passing=False,
+                                     flaky=False)
 
         self.assertTrue(summary['tests']['failures']['expected']
                         ['timeout.html']['is_unexpected'])
@@ -652,8 +710,11 @@ class SummarizedResultsTest(unittest.TestCase):
         self.assertEquals(summary['num_flaky'], 0)
 
     def test_results_contains_path_delimiter(self):
-        summary = summarized_results(
-            self.port, expected=False, passing=False, flaky=False)
+        summary = summarized_results(self.port,
+                                     self.options,
+                                     expected=False,
+                                     passing=False,
+                                     flaky=False)
         self.assertEqual(summary['path_delimiter'], '/')
 
 

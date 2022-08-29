@@ -869,6 +869,9 @@ const Report = {
       toolbars.push(new SimpleLinkToolbar().createDom(
             pathParser.resultLink("-command.txt"), "Command", "command"));
     }
+    if (test.shard != undefined && test.shard != "null") {
+      toolbars.push(new PlainHtmlToolbar().createDom("Shard: " + test.shard))
+    }
     return toolbars;
   },
   getResultsDiv: (test) => {
