@@ -40,15 +40,10 @@ promise_test(async test => {
     assert_equals(toggle.value, 2, "value after first change");
   });
 
-  // Test that the event still fires even when the toggle doesn't change
-  // due to being "sticky" and stuck, although
-  // https://github.com/tabatkins/css-toggle/issues/35 suggests that
-  // maybe this is the wrong behavior.
-  await click_while_waiting_for_togglechange(watcher, element).then(ev => {
-    assert_equals(ev.toggleName, "mytoggle", "event.toggleName after second change");
-    assert_equals(ev.toggle, toggle, "event.toggle after second change");
-    assert_equals(toggle.value, 2, "value after second change");
-  });
+  // Test that the event does not fire when the toggle doesn't change due to
+  // being "sticky" and stuck.  EventWatcher will assert if there is an event.
+  element.click();
+  assert_equals(toggle.value, 2, "value after second change");
 
   toggle.value = 0;
   // there should be no event; EventWatcher will assert if there is one.

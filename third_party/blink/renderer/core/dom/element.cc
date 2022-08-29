@@ -9003,8 +9003,12 @@ void Element::FireToggleActivation(const ToggleTrigger& activation) {
     }
   }
 
+  CSSToggle::State old_value = toggle->Value();
   ChangeToggle(toggle, activation, toggle_specifier);
-  toggle->FireToggleChangeEvent();
+  CSSToggle::State new_value = toggle->Value();
+
+  if (old_value != new_value)
+    toggle->FireToggleChangeEvent();
 }
 
 // Implement https://tabatkins.github.io/css-toggle/#change-a-toggle
