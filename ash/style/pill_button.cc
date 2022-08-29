@@ -13,6 +13,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -52,7 +53,7 @@ bool IsFloatingPillButton(PillButton::Type type) {
 
 // Returns true if the button has an icon.
 bool IsIconPillButton(PillButton::Type type) {
-  return type & PillButton::kIconLeading;
+  return type & (PillButton::kIconLeading | PillButton::kIconFollowing);
 }
 
 // Returns the button height according to the given type.
@@ -166,8 +167,11 @@ PillButton::PillButton(PressedCallback callback,
       rounded_highlight_path_(rounded_highlight_path) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
-  SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  InitializeButtonLayout();
+  if (type_ & kIconFollowing)
+    SetHorizontalAlignment(gfx::ALIGN_RIGHT);
+  else
+    SetHorizontalAlignment(gfx::ALIGN_CENTER);
+  InitFocusRingAndBackground();
   label()->SetSubpixelRenderingEnabled(false);
   // TODO: Unify the font size, weight under ash/style as well.
   label()->SetFontList(views::Label::GetDefaultFontList().Derive(
@@ -259,6 +263,21 @@ void PillButton::OnThemeChanged() {
                AshColorProvider::GetDisabledColor(enabled_text_color));
 }
 
+gfx::Insets PillButton::GetInsets() const {
+  const int height = GetButtonHeight(type_);
+  const int vertical_spacing =
+      std::max((height - GetPreferredSize().height()) / 2, 0);
+  const int icon_padding = IsIconPillButton(type_)
+                               ? GetHorizontalSpacingWithIcon()
+                               : horizontal_spacing_;
+  if (type_ & kIconFollowing) {
+    return gfx::Insets::TLBR(vertical_spacing, horizontal_spacing_,
+                             vertical_spacing, icon_padding);
+  }
+  return gfx::Insets::TLBR(vertical_spacing, icon_padding, vertical_spacing,
+                           horizontal_spacing_);
+}
+
 void PillButton::SetBackgroundColor(const SkColor background_color) {
   if (background_color_ == background_color)
     return;
@@ -296,16 +315,8 @@ void PillButton::SetUseDefaultLabelFont() {
   label()->SetFontList(views::Label::GetDefaultFontList());
 }
 
-void PillButton::InitializeButtonLayout() {
+void PillButton::InitFocusRingAndBackground() {
   const int height = GetButtonHeight(type_);
-
-  const int vertical_spacing =
-      std::max((height - GetPreferredSize().height()) / 2, 0);
-  const int left_padding = IsIconPillButton(type_)
-                               ? GetHorizontalSpacingWithIcon()
-                               : horizontal_spacing_;
-  SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
-      vertical_spacing, left_padding, vertical_spacing, horizontal_spacing_)));
 
   if (rounded_highlight_path_) {
     if ((type_ & kButtonColorVariant) == kPrimary) {

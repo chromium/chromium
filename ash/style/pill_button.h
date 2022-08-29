@@ -43,6 +43,7 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   static constexpr TypeFlag kAccent = 1 << 6;
   static constexpr TypeFlag kLarge = 1 << 7;
   static constexpr TypeFlag kIconLeading = 1 << 8;
+  static constexpr TypeFlag kIconFollowing = 1 << 9;
 
   // Types of the PillButton. Each type is represented as the bitwise OR
   // operation of the feature bit masks. The naming rule of the button type is
@@ -50,9 +51,14 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   enum Type {
     // PillButton with default text and background colors, a leading icon.
     kDefaultWithIconLeading = kDefault | kIconLeading,
+    // PillButton with default text and background colors, a following icon.
+    kDefaultWithIconFollowing = kDefault | kIconFollowing,
     // PillButton with default text and background colors, a large button size,
     // a leading icon.
     kDefaultLargeWithIconLeading = kDefault | kLarge | kIconLeading,
+    // PillButton with default text and background colors, a large button size,
+    // a following icon.
+    kDefaultLargeWithIconFollowing = kDefault | kLarge | kIconFollowing,
     // PillButton with default text and background colors, no icon.
     kDefaultWithoutIcon = kDefault,
     // PillButton with default text and background colors, a large button size,
@@ -62,10 +68,15 @@ class ASH_EXPORT PillButton : public views::LabelButton {
     // PillButton with default-elevated text and background colors, a leading
     // icon.
     kDefaultElevatedWithIconLeading = kDefault | kIconLeading,
+    // PillButton with default-elevated text and background colors, a following
+    // icon.
+    kDefaultElevatedWithIconFollowing = kDefault | kIconFollowing,
     // PillButton with default-elevated text and background colors, a large
-    // button size,
-    // a leading icon.
+    // button size, a leading icon.
     kDefaultElevatedLargeWithIconLeading = kDefault | kLarge | kIconLeading,
+    // PillButton with default-elevated text and background colors, a large
+    // button size, a following icon.
+    kDefaultElevatedLargeWithIconFollowing = kDefault | kLarge | kIconFollowing,
     // PillButton with default-elevated text and background colors, no icon.
     kDefaultElevatedWithoutIcon = kDefault,
     // PillButton with default-elevated text and background colors, a large
@@ -75,9 +86,14 @@ class ASH_EXPORT PillButton : public views::LabelButton {
 
     // PillButton with primary text and background colors, a leading icon.
     kPrimaryWithIconLeading = kPrimary | kIconLeading,
+    // PillButton with primary text and background colors, a following icon.
+    kPrimaryWithIconFollowing = kPrimary | kIconFollowing,
     // PillButton with primary text and background colors, a large button size,
     // a leading icon.
     kPrimaryLargeWithIconLeading = kPrimary | kLarge | kIconLeading,
+    // PillButton with primary text and background colors, a large button size,
+    // a following icon.
+    kPrimaryLargeWithIconFollowing = kPrimary | kLarge | kIconFollowing,
     // PillButton with primary text and background colors, no icon.
     kPrimaryWithoutIcon = kPrimary,
     // PillButton with primary text and background colors, a large button size,
@@ -86,9 +102,14 @@ class ASH_EXPORT PillButton : public views::LabelButton {
 
     // PillButton with secondary text and background colors, a leading icon.
     kSecondaryWithIconLeading = kSecondary | kIconLeading,
+    // PillButton with secondary text and background colors, a following icon.
+    kSecondaryWithIconFollowing = kSecondary | kIconFollowing,
     // PillButton with secondary text and background colors, a large button
     // size, a leading icon.
     kSecondaryLargeWithIconLeading = kSecondary | kLarge | kIconLeading,
+    // PillButton with secondary text and background colors, a large button
+    // size, a following icon.
+    kSecondaryLargeWithIconFollowing = kSecondary | kLarge | kIconFollowing,
     // PillButton with secondary text and background colors, no icon.
     kSecondaryWithoutIcon = kSecondary,
     // PillButton with secondary text and background colors, a large button
@@ -97,9 +118,14 @@ class ASH_EXPORT PillButton : public views::LabelButton {
 
     // PillButton with floating text colors, no background, a leading icon.
     kFloatingWithIconLeading = kFloating | kIconLeading,
+    // PillButton with floating text colors, no background, a following icon.
+    kFloatingWithIconFollowing = kFloating | kIconFollowing,
     // PillButton with floating text colors, no background, a large button size,
     // a leading icon.
     kFloatingLargeWithIconLeading = kFloating | kLarge | kIconLeading,
+    // PillButton with floating text colors, no background, a large button size,
+    // a following icon.
+    kFloatingLargeWithIconFollowing = kFloating | kLarge | kIconFollowing,
     // PillButton with floating text colors, no background, no icon.
     kFloatingWithoutIcon = kFloating,
     // PillButton with floating text colors, no background, a large button size,
@@ -108,9 +134,14 @@ class ASH_EXPORT PillButton : public views::LabelButton {
 
     // PillButton with alert text and background colors, a leading icon.
     kAlertWithIconLeading = kAlert | kIconLeading,
+    // PillButton with alert text and background colors, a following icon.
+    kAlertWithIconFollowing = kAlert | kIconFollowing,
     // PillButton with alert text and background colors, a large button size, a
     // leading icon.
     kAlertLargeWithIconLeading = kAlert | kLarge | kIconLeading,
+    // PillButton with alert text and background colors, a large button size, a
+    // following icon.
+    kAlertLargeWithIconFollowing = kAlert | kLarge | kIconFollowing,
     // PillButton with alert text and background colors, no icon.
     kAlertWithoutIcon = kAlert,
     // PillButton with alert text and background colors, a large button size, no
@@ -146,6 +177,7 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   gfx::Size CalculatePreferredSize() const override;
   int GetHeightForWidth(int width) const override;
   void OnThemeChanged() override;
+  gfx::Insets GetInsets() const override;
 
   // Sets the button's background color, text's color or icon's color. Note, do
   // this only when the button wants to have different colors from the default
@@ -160,8 +192,9 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   void SetUseDefaultLabelFont();
 
  private:
-  // Initialize the button layout according to the button type.
-  void InitializeButtonLayout();
+  // Initialize the button focus ring and background according to the button
+  // type.
+  void InitFocusRingAndBackground();
 
   // Returns the spacing on the side where the icon locates. The value is set
   // smaller to make the spacing on two sides visually look the same.
